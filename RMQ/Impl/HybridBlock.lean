@@ -413,12 +413,9 @@ theorem query_valid_exact
     rcases RMQ.LinearScan.query_valid_exact xs left leftEnd hleftValid with
       ⟨li, hlres, hlarg⟩
     have hmiddleCase :
-        (sparseChunkQueryFromTable xs b (buildChunkSparseTable xs b)
-            leftEnd middleChunks = none /\ leftEnd = middleEnd) \/
-          exists mi,
-            sparseChunkQueryFromTable xs b (buildChunkSparseTable xs b)
-                leftEnd middleChunks = some mi /\
-              RMQ.LeftmostArgMin xs leftEnd middleEnd mi := by
+        RMQ.CandidateExact xs leftEnd middleEnd
+          (sparseChunkQueryFromTable xs b (buildChunkSparseTable xs b)
+            leftEnd middleChunks) := by
       by_cases hmiddle_zero : middleChunks = 0
       · have hmiddleEnd_eq_leftEnd : middleEnd = leftEnd := by
           unfold middleEnd
@@ -439,9 +436,7 @@ theorem query_valid_exact
         refine Or.inr ⟨mi, hmres, ?_⟩
         simpa [middleEnd] using hmarg
     have hrightCase :
-        (rangeScan xs middleEnd right = none /\ middleEnd = right) \/
-          exists ri, rangeScan xs middleEnd right = some ri /\
-            RMQ.LeftmostArgMin xs middleEnd right ri := by
+        RMQ.CandidateExact xs middleEnd right (rangeScan xs middleEnd right) := by
       by_cases hright_nonempty : middleEnd < right
       · have hrightValid : RMQ.ValidRange xs middleEnd right := by
           exact ⟨hright_nonempty, hValid.2⟩

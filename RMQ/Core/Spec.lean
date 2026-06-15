@@ -106,6 +106,79 @@ theorem combineLeftmost
       exact hi_leftmost t w ht_left ht_i hget
 
 /--
+`CandidateExact xs left right candidate` connects an optional candidate to an
+interval: `some idx` carries an exact leftmost argmin witness, while `none`
+is allowed exactly for an empty interval.
+-/
+def CandidateExact
+    (xs : List Int) (left right : Nat) (candidate : Option Nat) : Prop :=
+  (candidate = none /\ left = right) \/
+    exists idx, candidate = some idx /\ LeftmostArgMin xs left right idx
+
+theorem candidateExact_none {xs : List Int} {left right : Nat}
+    (h : left = right) :
+    CandidateExact xs left right none := by
+  exact Or.inl ⟨rfl, h⟩
+
+theorem candidateExact_some {xs : List Int} {left right idx : Nat}
+    (h : LeftmostArgMin xs left right idx) :
+    CandidateExact xs left right (some idx) := by
+  exact Or.inr ⟨idx, rfl, h⟩
+
+theorem CandidateExact.exists_of_nonempty
+    {xs : List Int} {left right : Nat} {candidate : Option Nat}
+    (h : CandidateExact xs left right candidate)
+    (hne : left < right) :
+    exists idx, candidate = some idx /\ LeftmostArgMin xs left right idx := by
+  rcases h with ⟨_hnone, hempty⟩ | hsome
+  · omega
+  · exact hsome
+
+/-- Adjacent exact optional candidates compose through `combineIndex`. -/
+theorem candidateExact_combineAdjacent
+    {xs : List Int} {left middle right : Nat}
+    {leftCandidate rightCandidate : Option Nat}
+    (hLeft : CandidateExact xs left middle leftCandidate)
+    (hRight : CandidateExact xs middle right rightCandidate) :
+    CandidateExact xs left right
+      (combineIndex xs leftCandidate rightCandidate) := by
+  rcases hLeft with ⟨hlNone, hleft_empty⟩ | ⟨li, hlSome, hlarg⟩
+  · rcases hRight with ⟨hrNone, hright_empty⟩ | ⟨ri, hrSome, hrarg⟩
+    · exact Or.inl ⟨by simp [combineIndex, hlNone, hrNone], by omega⟩
+    · refine Or.inr ⟨ri, ?_, ?_⟩
+      · simp [combineIndex, hlNone, hrSome]
+      · simpa [hleft_empty] using hrarg
+  · rcases hRight with ⟨hrNone, hright_empty⟩ | ⟨ri, hrSome, hrarg⟩
+    · refine Or.inr ⟨li, ?_, ?_⟩
+      · simp [combineIndex, hlSome, hrNone]
+      · simpa [hright_empty] using hlarg
+    · refine Or.inr ⟨betterIndex xs li ri, ?_, ?_⟩
+      · simp [combineIndex, hlSome, hrSome]
+      · have hcover :
+            forall t, left <= t -> t < right ->
+              t < middle \/ middle <= t := by
+          intro t _ht_left _ht_right
+          by_cases ht : t < middle
+          · exact Or.inl ht
+          · exact Or.inr (by omega)
+        have hA_sub : middle <= right := Nat.le_of_lt hrarg.1
+        have hB_sub : left <= middle := Nat.le_of_lt hlarg.1
+        exact combineLeftmost hlarg hrarg hA_sub hB_sub hcover
+
+/-- Three adjacent exact optional candidates compose associatively in query order. -/
+theorem candidateExact_combineThree
+    {xs : List Int} {left middle right end_ : Nat}
+    {leftCandidate middleCandidate rightCandidate : Option Nat}
+    (hLeft : CandidateExact xs left middle leftCandidate)
+    (hMiddle : CandidateExact xs middle right middleCandidate)
+    (hRight : CandidateExact xs right end_ rightCandidate) :
+    CandidateExact xs left end_
+      (combineIndex xs (combineIndex xs leftCandidate middleCandidate)
+        rightCandidate) := by
+  exact candidateExact_combineAdjacent
+    (candidateExact_combineAdjacent hLeft hMiddle) hRight
+
+/--
 Combine the three candidate pieces used by hybrid RMQ schedules.
 
 The left boundary piece is nonempty and exact. The middle and right pieces may
@@ -115,65 +188,22 @@ theorem combineHybridLeftmost
     {xs : List Int} {left leftEnd middleEnd right li : Nat}
     {middleCandidate rightCandidate : Option Nat}
     (hLeft : LeftmostArgMin xs left leftEnd li)
-    (hMiddle :
-      (middleCandidate = none /\ leftEnd = middleEnd) \/
-        exists mi, middleCandidate = some mi /\
-          LeftmostArgMin xs leftEnd middleEnd mi)
-    (hRight :
-      (rightCandidate = none /\ middleEnd = right) \/
-        exists ri, rightCandidate = some ri /\
-          LeftmostArgMin xs middleEnd right ri)
+    (hMiddle : CandidateExact xs leftEnd middleEnd middleCandidate)
+    (hRight : CandidateExact xs middleEnd right rightCandidate)
     (hLeftMiddle : leftEnd <= middleEnd)
     (hMiddleRight : middleEnd <= right) :
     exists idx,
       combineIndex xs (combineIndex xs (some li) middleCandidate) rightCandidate =
         some idx /\
       LeftmostArgMin xs left right idx := by
-  rcases hMiddle with ⟨hmnone, hmiddle_empty⟩ | ⟨mi, hmres, hmarg⟩
-  · rcases hRight with ⟨hrnone, hright_empty⟩ | ⟨ri, hrres, hrarg⟩
-    · refine ⟨li, ?_, ?_⟩
-      · simp [combineIndex, hmnone, hrnone]
-      · have hfinal : leftEnd = right := by omega
-        simpa [hfinal] using hLeft
-    · refine ⟨betterIndex xs li ri, ?_, ?_⟩
-      · simp [combineIndex, hmnone, hrres]
-      · have hcover :
-            forall t, left <= t -> t < right ->
-              t < leftEnd \/ middleEnd <= t := by
-          intro t _ht_left _ht_right
-          by_cases ht : t < leftEnd
-          · exact Or.inl ht
-          · exact Or.inr (by omega)
-        have hA_sub : leftEnd <= right := by omega
-        have hB_sub : left <= middleEnd := by
-          have hleft_le_leftEnd : left <= leftEnd := Nat.le_of_lt hLeft.1
-          omega
-        exact combineLeftmost hLeft hrarg hA_sub hB_sub hcover
-  · have hleft_middle :
-        LeftmostArgMin xs left middleEnd (betterIndex xs li mi) := by
-      have hcover :
-          forall t, left <= t -> t < middleEnd ->
-            t < leftEnd \/ leftEnd <= t := by
-        intro t _ht_left _ht_right
-        by_cases ht : t < leftEnd
-        · exact Or.inl ht
-        · exact Or.inr (by omega)
-      have hB_sub : left <= leftEnd := Nat.le_of_lt hLeft.1
-      exact combineLeftmost hLeft hmarg hLeftMiddle hB_sub hcover
-    rcases hRight with ⟨hrnone, hright_empty⟩ | ⟨ri, hrres, hrarg⟩
-    · refine ⟨betterIndex xs li mi, ?_, ?_⟩
-      · simp [combineIndex, hmres, hrnone]
-      · simpa [hright_empty] using hleft_middle
-    · refine ⟨betterIndex xs (betterIndex xs li mi) ri, ?_, ?_⟩
-      · simp [combineIndex, hmres, hrres]
-      · have hcover :
-            forall t, left <= t -> t < right ->
-              t < middleEnd \/ middleEnd <= t := by
-          intro t _ht_left _ht_right
-          by_cases ht : t < middleEnd
-          · exact Or.inl ht
-          · exact Or.inr (by omega)
-        have hB_sub : left <= middleEnd := Nat.le_of_lt hleft_middle.1
-        exact combineLeftmost hleft_middle hrarg hMiddleRight hB_sub hcover
+  have hCombined :
+      CandidateExact xs left right
+        (combineIndex xs (combineIndex xs (some li) middleCandidate)
+          rightCandidate) :=
+    candidateExact_combineThree
+      (candidateExact_some hLeft) hMiddle hRight
+  have hleft_lt_leftEnd : left < leftEnd := hLeft.1
+  have hne : left < right := by omega
+  exact hCombined.exists_of_nonempty hne
 
 end RMQ
