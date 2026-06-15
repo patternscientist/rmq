@@ -249,6 +249,36 @@ mutual
 end
 
 mutual
+  theorem mem_eulerNodes_of_mem_labelsPreorder
+      {tree : RoseTree} {label : Nat}
+      (hmem : label ∈ tree.labelsPreorder) :
+      label ∈ tree.eulerNodes := by
+    cases tree with
+    | node root children =>
+        simp [labelsPreorder, eulerNodes] at hmem ⊢
+        rcases hmem with hroot | hchildren
+        · exact Or.inl hroot
+        · exact Or.inr
+            (mem_eulerNodesForest_of_mem_labelsPreorderForest
+              (parent := root) hchildren)
+
+  theorem mem_eulerNodesForest_of_mem_labelsPreorderForest
+      {forest : List RoseTree} {parent label : Nat}
+      (hmem : label ∈ labelsPreorderForest forest) :
+      label ∈ eulerNodesForest parent forest := by
+    cases forest with
+    | nil =>
+        simp [labelsPreorderForest] at hmem
+    | cons child rest =>
+        simp [labelsPreorderForest, eulerNodesForest] at hmem ⊢
+        rcases hmem with hchild | hrest
+        · exact Or.inl (mem_eulerNodes_of_mem_labelsPreorder hchild)
+        · exact Or.inr (Or.inr
+            (mem_eulerNodesForest_of_mem_labelsPreorderForest
+              (parent := parent) hrest))
+end
+
+mutual
   /-- Euler-tour root paths for a tree, using `basePath` as the parent path. -/
   def eulerPathsAt (basePath : List Nat) : RoseTree -> List (List Nat)
     | node label children =>
@@ -521,6 +551,15 @@ theorem pathLCA?_isPathLCA
           simp [hu, hv] at h
           exact ⟨pathU, pathV, hu, hv, pathLCA?_isPathLCAOfPaths h⟩
 
+theorem pathLCA?_eq_of_isPathLCA
+    {tree : RoseTree} {u v ancestor : Nat}
+    (h : tree.IsPathLCA u v ancestor) :
+    tree.pathLCA? u v = some ancestor := by
+  rcases h with ⟨pathU, pathV, hu, hv, hlca, _hcommon⟩
+  unfold pathLCA?
+  rw [hu, hv]
+  exact hlca
+
 mutual
   theorem pathTo?_mem_labelsPreorder
       {tree : RoseTree} {target : Nat} {path : List Nat}
@@ -745,6 +784,23 @@ theorem firstIndexOf?_mem
     target ∈ xs := by
   exact List.mem_of_getElem? (firstIndexOf?_getElem? h)
 
+theorem firstIndexOf?_exists_of_mem
+    {α : Type u} [DecidableEq α] {target : α} :
+    forall {xs : List α}, target ∈ xs -> exists idx, firstIndexOf? target xs = some idx
+  | [], hmem => by
+      simp at hmem
+  | x :: xs, hmem => by
+      unfold firstIndexOf?
+      by_cases hx : x = target
+      · exact ⟨0, by simp [hx]⟩
+      · have htarget_x : target ≠ x := by
+          intro htarget_x
+          exact hx htarget_x.symm
+        simp [hx, htarget_x] at hmem ⊢
+        rcases firstIndexOf?_exists_of_mem (target := target) hmem with
+          ⟨idx, hidx⟩
+        exact ⟨idx + 1, by simp [hidx]⟩
+
 /--
 An Euler trace pairs tour nodes with tour depths. The plus/minus-one invariant is kept as
 data so later LCA proofs can consume traces independently of the tree generator.
@@ -968,6 +1024,43 @@ theorem leftmostMinNode?_eq_of_isLCAAnswer
   rw [hu, hv]
   simpa [left, right, len, hidx] using hnode
 
+theorem isLCAAnswer_of_leftmostMinNode?_eq
+    {trace : EulerTrace} {u v node : Nat}
+    (hresult : trace.leftmostMinNode? u v = some node) :
+    IsLCAAnswer trace u v node := by
+  unfold leftmostMinNode? at hresult
+  cases hu : trace.firstOccurrence? u with
+  | none =>
+      simp [hu] at hresult
+  | some i =>
+      cases hv : trace.firstOccurrence? v with
+      | none =>
+          simp [hu, hv] at hresult
+      | some j =>
+          let left := (occurrenceWindow i j).1
+          let right := (occurrenceWindow i j).2
+          let len := right - left
+          have hValid : ValidRange trace.depths left right := by
+            simpa [left, right] using trace.occurrenceWindow_valid hu hv
+          have hlen : 0 < len := by
+            unfold len
+            omega
+          have hbound : left + len <= trace.depths.length := by
+            unfold len
+            omega
+          have hright : left + len = right := by
+            unfold len
+            omega
+          have harg :
+              LeftmostArgMin trace.depths left right
+                (scanWindow trace.depths left len) := by
+            simpa [hright] using
+              scanWindow_leftmost trace.depths left len hlen hbound
+          simp [hu, hv] at hresult
+          refine ⟨i, j, scanWindow trace.depths left len, hu, hv, ?_, ?_⟩
+          · simpa [left, right, len] using hresult
+          · simpa [left, right] using harg
+
 theorem lcaCandidate_valid_exact
     (trace : EulerTrace) (backend : RMQBackend trace.depths)
     {u v i j : Nat}
@@ -1072,6 +1165,57 @@ theorem pathWitness_of_isLCAAnswer
     ⟨path, hpath, hlast⟩
   exact ⟨i, j, idx, path, hu, hv, hpath, hlast, harg⟩
 
+theorem firstOccurrence?_exists_of_mem_labelsPreorder
+    {tree : RoseTree} {label : Nat}
+    (hmem : label ∈ tree.labelsPreorder) :
+    exists idx, tree.eulerTrace.firstOccurrence? label = some idx := by
+  have hnodes : label ∈ tree.eulerTrace.nodes := by
+    simpa [eulerTrace, eulerTraceAt] using
+      (mem_eulerNodes_of_mem_labelsPreorder hmem)
+  exact firstIndexOf?_exists_of_mem hnodes
+
+theorem leftmostMinNode?_exists_of_mem_labelsPreorder
+    {tree : RoseTree} {u v : Nat}
+    (hu_mem : u ∈ tree.labelsPreorder)
+    (hv_mem : v ∈ tree.labelsPreorder) :
+    exists node, tree.eulerTrace.leftmostMinNode? u v = some node := by
+  rcases firstOccurrence?_exists_of_mem_labelsPreorder hu_mem with ⟨i, hu⟩
+  rcases firstOccurrence?_exists_of_mem_labelsPreorder hv_mem with ⟨j, hv⟩
+  let left := (EulerTrace.occurrenceWindow i j).1
+  let right := (EulerTrace.occurrenceWindow i j).2
+  let len := right - left
+  have hValid : ValidRange tree.eulerTrace.depths left right := by
+    simpa [left, right] using tree.eulerTrace.occurrenceWindow_valid hu hv
+  have hlen : 0 < len := by
+    unfold len
+    omega
+  have hbound : left + len <= tree.eulerTrace.depths.length := by
+    unfold len
+    omega
+  have hright : left + len = right := by
+    unfold len
+    omega
+  have harg :
+      LeftmostArgMin tree.eulerTrace.depths left right
+        (scanWindow tree.eulerTrace.depths left len) := by
+    simpa [hright] using
+      scanWindow_leftmost tree.eulerTrace.depths left len hlen hbound
+  have hidx_depths :
+      scanWindow tree.eulerTrace.depths left len < tree.eulerTrace.depths.length := by
+    exact Nat.lt_of_lt_of_le harg.2.2.2.1 hValid.2
+  have hidx_nodes :
+      scanWindow tree.eulerTrace.depths left len < tree.eulerTrace.nodes.length := by
+    rw [tree.eulerTrace.length_eq]
+    exact hidx_depths
+  let node := tree.eulerTrace.nodes[scanWindow tree.eulerTrace.depths left len]'hidx_nodes
+  have hnode :
+      tree.eulerTrace.nodes[scanWindow tree.eulerTrace.depths left len]? = some node := by
+    simp [node, hidx_nodes]
+  refine ⟨node, ?_⟩
+  unfold EulerTrace.leftmostMinNode?
+  rw [hu, hv]
+  simpa [left, right, len] using hnode
+
 /--
 Semantic agreement between generated Euler traces and direct root-path LCAs.
 This is the remaining nontrivial tree theorem: every trace-level LCA answer for
@@ -1093,6 +1237,21 @@ def TracePathExactOnLabels (tree : RoseTree) : Prop :=
     u ∈ tree.labelsPreorder ->
       v ∈ tree.labelsPreorder ->
         tree.eulerTrace.leftmostMinNode? u v = tree.pathLCA? u v
+
+theorem tracePathExactOnLabels_of_tracePathAgreement
+    (tree : RoseTree)
+    (hagreement : tree.TracePathAgreement) :
+    tree.TracePathExactOnLabels := by
+  intro u v hu_mem hv_mem
+  rcases leftmostMinNode?_exists_of_mem_labelsPreorder hu_mem hv_mem with
+    ⟨node, hleft⟩
+  have hanswer :
+      EulerTrace.IsLCAAnswer tree.eulerTrace u v node :=
+    EulerTrace.isLCAAnswer_of_leftmostMinNode?_eq hleft
+  have hpath :
+      tree.pathLCA? u v = some node :=
+    pathLCA?_eq_of_isPathLCA (hagreement hanswer)
+  rw [hleft, hpath]
 
 theorem tracePathAgreement_of_leftmostMinNode_eq_pathLCA
     (tree : RoseTree)

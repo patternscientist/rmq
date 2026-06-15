@@ -32,13 +32,13 @@ right interval combine into one exact leftmost argmin witness.
   completeness, invalid-query rejection, and generic built-backend equality.
 - `RMQ/Core/LCA.lean`: proof-friendly rose-tree Euler node/depth traces, the
   plus/minus-one depth invariant, first-occurrence windows, direct root-path
-  LCA semantics, the `TracePathAgreement` bridge statement, the stronger
-  `TracePathExactOnLabels` semantic contract, a trace-side
+  LCA semantics, the `TracePathAgreement` bridge statement, a derived
+  `TracePathExactOnLabels` semantic exactness theorem, a trace-side
   leftmost-minimum reference candidate, generated path-annotated Euler traces,
   a finite generated-label agreement certificate, and the RMQ-backed
   tree-level LCA theorem for certified traces.
 - `RMQ/Core/Reduction.lean`: contract-level RMQ/LCA reduction interfaces:
-  semantically exact generated Euler traces turn RMQ backends into LCA
+  trace/path-agreeing generated Euler traces turn RMQ backends into LCA
   backends, with a finite-check wrapper still available, and certified
   interval-to-LCA encodings turn LCA backends into RMQ backends.
 - `RMQ/Core/Recursion.lean`: Mathlib-free well-founded recursion over strictly
@@ -75,6 +75,6 @@ rg -n "sorry|admit|axiom|unsafe|opaque|implemented_by" RMQ lakefile.toml
 
 The RMQ/LCA equivalence is now factored at the backend-contract boundary. The
 remaining optional strengthening is constructive: discharge the
-`TracePathExactOnLabels` contract from a structural theorem such as
-`LabelsUnique -> TracePathExactOnLabels`, then discharge the
+`TracePathAgreement` contract from a structural theorem such as
+`LabelsUnique -> TracePathAgreement`, then discharge the
 `RMQToLCAReduction` certificate with a Cartesian-tree construction.
