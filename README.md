@@ -34,7 +34,8 @@ right interval combine into one exact leftmost argmin witness.
   plus/minus-one depth invariant, first-occurrence windows, direct root-path
   LCA semantics, the `TracePathAgreement` bridge statement, a trace-side
   leftmost-minimum reference candidate, generated path-annotated Euler traces,
-  and the RMQ-backed trace-level LCA answer theorem.
+  a finite generated-label agreement certificate, and the RMQ-backed
+  tree-level LCA theorem for certified traces.
 - `RMQ/Core/Recursion.lean`: Mathlib-free well-founded recursion over strictly
   shorter summary lists, concrete full-block minimum summaries, and lifting
   lemmas from summary candidates back to original-list candidates, including
@@ -67,11 +68,10 @@ rg -n "sorry|admit|axiom|unsafe|opaque|implemented_by" RMQ lakefile.toml
 
 ## Next Direction
 
-The next proof direction is the hard Euler/path agreement lemma with the right
-node-identity assumption. A duplicate-label counterexample is now formalized:
-label-only root paths can disagree with first-occurrence Euler windows unless
-labels are unique, or unless the path semantics is upgraded to use structural
-addresses. The generated path-annotated trace now aligns paths with Euler nodes
-and lifts trace-level answers to selected root-path witnesses; the clean target
-is to prove that the selected witness is the final path in the common prefix of
-the two query paths under one of those repaired semantics.
+The LCA reduction is now complete for certified generated traces:
+`labelPairAgreement = true` proves `TracePathAgreement`, and any exact RMQ
+backend candidate is then a direct root-path LCA. The remaining optional
+strengthening is to replace the finite generated-label certificate with a
+structural theorem, for example proving that every `LabelsUnique` rose tree
+satisfies the certificate or switching the semantic layer to structural
+addresses.

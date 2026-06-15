@@ -216,6 +216,39 @@ def LabelsUnique (tree : RoseTree) : Prop :=
   tree.labelsPreorder.Nodup
 
 mutual
+  theorem mem_labelsPreorder_of_mem_eulerNodes
+      {tree : RoseTree} {label : Nat}
+      (hmem : label ∈ tree.eulerNodes) :
+      label ∈ tree.labelsPreorder := by
+    cases tree with
+    | node root children =>
+        simp [eulerNodes, labelsPreorder] at hmem ⊢
+        rcases hmem with hroot | hforest
+        · exact Or.inl hroot
+        · rcases mem_labelsPreorderForest_or_parent_of_mem_eulerNodesForest
+            hforest with hparent | hchildren
+          · exact Or.inl hparent
+          · exact Or.inr hchildren
+
+  theorem mem_labelsPreorderForest_or_parent_of_mem_eulerNodesForest
+      {forest : List RoseTree} {parent label : Nat}
+      (hmem : label ∈ eulerNodesForest parent forest) :
+      label = parent ∨ label ∈ labelsPreorderForest forest := by
+    cases forest with
+    | nil =>
+        simp [eulerNodesForest] at hmem
+    | cons child rest =>
+        simp [eulerNodesForest, labelsPreorderForest] at hmem ⊢
+        rcases hmem with hchild | hparent | hrest
+        · exact Or.inr (Or.inl (mem_labelsPreorder_of_mem_eulerNodes hchild))
+        · exact Or.inl hparent
+        · rcases mem_labelsPreorderForest_or_parent_of_mem_eulerNodesForest
+            hrest with hparent' | hrest'
+          · exact Or.inl hparent'
+          · exact Or.inr (Or.inr hrest')
+end
+
+mutual
   /-- Euler-tour root paths for a tree, using `basePath` as the parent path. -/
   def eulerPathsAt (basePath : List Nat) : RoseTree -> List (List Nat)
     | node label children =>
@@ -525,6 +558,37 @@ theorem firstIndexOf?_lt_length
             cases h
             simp
             omega
+
+theorem firstIndexOf?_getElem?
+    {α : Type u} [DecidableEq α] {target : α} :
+    forall {xs : List α} {idx : Nat},
+      firstIndexOf? target xs = some idx -> xs[idx]? = some target
+  | [], _, h => by
+      simp [firstIndexOf?] at h
+  | x :: xs, idx, h => by
+      unfold firstIndexOf? at h
+      by_cases hx : x = target
+      · simp [hx] at h
+        cases h
+        simp [hx]
+      · simp [hx] at h
+        cases htail : firstIndexOf? target xs with
+        | none =>
+            simp [htail] at h
+        | some tailIdx =>
+            simp [htail] at h
+            cases h
+            have hget :
+                xs[tailIdx]? = some target :=
+              firstIndexOf?_getElem? (target := target) htail
+            simpa using hget
+
+theorem firstIndexOf?_mem
+    {α : Type u} [DecidableEq α] {target : α}
+    {xs : List α} {idx : Nat}
+    (h : firstIndexOf? target xs = some idx) :
+    target ∈ xs := by
+  exact List.mem_of_getElem? (firstIndexOf?_getElem? h)
 
 /--
 An Euler trace pairs tour nodes with tour depths. The plus/minus-one invariant is kept as
@@ -877,6 +941,52 @@ theorem tracePathAgreement_of_leftmostMinNode_eq_pathLCA
   rw [← hpath]
   exact hscan
 
+/--
+Finite generated-label certificate for the remaining trace/path agreement.
+For every label that occurs in the tree, the trace-side reference answer must
+match the direct path-LCA answer.
+-/
+def labelPairAgreement (tree : RoseTree) : Bool :=
+  tree.labelsPreorder.all fun u =>
+    tree.labelsPreorder.all fun v =>
+      decide (tree.eulerTrace.leftmostMinNode? u v = tree.pathLCA? u v)
+
+theorem tracePathAgreement_of_labelPairAgreement
+    (tree : RoseTree)
+    (hcheck : tree.labelPairAgreement = true) :
+    tree.TracePathAgreement := by
+  intro u v node hanswer
+  apply pathLCA?_isPathLCA
+  rcases hanswer with ⟨i, j, idx, hu, hv, hnode, harg⟩
+  have hleft :
+      tree.eulerTrace.leftmostMinNode? u v = some node :=
+    EulerTrace.leftmostMinNode?_eq_of_isLCAAnswer
+      ⟨i, j, idx, hu, hv, hnode, harg⟩
+  have hu_nodes : u ∈ tree.eulerTrace.nodes :=
+    firstIndexOf?_mem hu
+  have hv_nodes : v ∈ tree.eulerTrace.nodes :=
+    firstIndexOf?_mem hv
+  have hu_labels : u ∈ tree.labelsPreorder := by
+    apply mem_labelsPreorder_of_mem_eulerNodes
+    simpa [eulerTrace, eulerTraceAt] using hu_nodes
+  have hv_labels : v ∈ tree.labelsPreorder := by
+    apply mem_labelsPreorder_of_mem_eulerNodes
+    simpa [eulerTrace, eulerTraceAt] using hv_nodes
+  have hall_u :
+      (tree.labelsPreorder.all fun v =>
+        decide (tree.eulerTrace.leftmostMinNode? u v = tree.pathLCA? u v)) =
+        true := by
+    exact (List.all_eq_true.mp hcheck) u hu_labels
+  have hagree_decide :
+      decide (tree.eulerTrace.leftmostMinNode? u v = tree.pathLCA? u v) =
+        true := by
+    exact (List.all_eq_true.mp hall_u) v hv_labels
+  have hagree :
+      tree.eulerTrace.leftmostMinNode? u v = tree.pathLCA? u v := by
+    exact of_decide_eq_true hagree_decide
+  rw [← hagree]
+  exact hleft
+
 theorem lcaCandidate_isPathLCA_of_tracePathAgreement
     (tree : RoseTree) (backend : RMQBackend tree.eulerTrace.depths)
     (hagreement : tree.TracePathAgreement)
@@ -884,6 +994,15 @@ theorem lcaCandidate_isPathLCA_of_tracePathAgreement
     (hresult : tree.lcaCandidate backend u v = some node) :
     tree.IsPathLCA u v node := by
   exact hagreement (tree.lcaCandidate_isLCAAnswer backend hresult)
+
+theorem lcaCandidate_isPathLCA_of_labelPairAgreement
+    (tree : RoseTree) (backend : RMQBackend tree.eulerTrace.depths)
+    (hcheck : tree.labelPairAgreement = true)
+    {u v node : Nat}
+    (hresult : tree.lcaCandidate backend u v = some node) :
+    tree.IsPathLCA u v node := by
+  exact lcaCandidate_isPathLCA_of_tracePathAgreement tree backend
+    (tree.tracePathAgreement_of_labelPairAgreement hcheck) hresult
 
 /--
 Bridge from the RMQ-generated candidate to the path-level LCA spec, assuming
@@ -919,6 +1038,11 @@ example :
       some 0 := by
   native_decide
 
+example :
+    (RoseTree.node 0 [RoseTree.node 1 [], RoseTree.node 2 []]).labelPairAgreement =
+      true := by
+  native_decide
+
 /--
 A duplicate-label tree showing why the generated trace/path agreement needs
 either unique node labels or an address-based path semantics.
@@ -939,6 +1063,9 @@ example : duplicateLabelCounterexample.eulerTrace.leftmostMinNode? 1 2 = some 0 
   native_decide
 
 example : duplicateLabelCounterexample.pathLCA? 1 2 = some 1 := by
+  native_decide
+
+example : duplicateLabelCounterexample.labelPairAgreement = false := by
   native_decide
 
 theorem duplicateLabelCounterexample_traceAnswer :
