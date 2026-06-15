@@ -1,0 +1,179 @@
+import Std
+
+/-!
+# Core RMQ specification
+
+This module contains the canonical value-correctness contract used by the RMQ
+library: valid queries are nonempty half-open windows, and successful answers
+return the leftmost index attaining the minimum value in that window.
+-/
+
+namespace RMQ
+
+/-- A valid RMQ query is a nonempty half-open range inside the list. -/
+abbrev ValidRange (xs : List Int) (left right : Nat) : Prop :=
+  left < right /\ right <= xs.length
+
+/-- Prefer index `i` exactly when it has a strictly smaller value than `best`. -/
+def betterIndex (xs : List Int) (best i : Nat) : Nat :=
+  match xs[best]?, xs[i]? with
+  | some bestVal, some iVal => if iVal < bestVal then i else best
+  | none, some _ => i
+  | _, _ => best
+
+/-- Option-level argmin combination. `none` represents an absent subrange. -/
+def combineIndex (xs : List Int) : Option Nat -> Option Nat -> Option Nat
+  | none, other => other
+  | other, none => other
+  | some i, some j => some (betterIndex xs i j)
+
+/--
+`LeftmostArgMin xs left right idx` says `idx` is the leftmost position attaining
+the minimum value in the valid half-open range `[left, right)`.
+-/
+def LeftmostArgMin (xs : List Int) (left right idx : Nat) : Prop :=
+  left < right /\ right <= xs.length /\
+    left <= idx /\ idx < right /\
+      exists v, xs[idx]? = some v /\
+        (forall j w, left <= j -> j < right -> xs[j]? = some w -> v <= w) /\
+        (forall j w, left <= j -> j < idx -> xs[j]? = some w -> v < w)
+
+/-- A leftmost-argmin witness implies the query range is valid. -/
+theorem LeftmostArgMin.valid {xs : List Int} {left right idx : Nat}
+    (h : LeftmostArgMin xs left right idx) :
+    ValidRange xs left right :=
+  ⟨h.1, h.2.1⟩
+
+/-- Leftmost argmin witnesses are unique. -/
+theorem leftmostArgMin_unique (xs : List Int) (left right : Nat) :
+    forall i j,
+      LeftmostArgMin xs left right i ->
+        LeftmostArgMin xs left right j -> i = j := by
+  intro i j hi hj
+  rcases hi with ⟨_hli, _hri, hleft_i, hright_i, vi, hget_i, hmin_i, hleftmost_i⟩
+  rcases hj with ⟨_hlj, _hrj, hleft_j, hright_j, vj, hget_j, hmin_j, hleftmost_j⟩
+  by_cases hij : i = j
+  · exact hij
+  · by_cases hlt : i < j
+    · have hvj_lt_vi := hleftmost_j i vi hleft_i hlt hget_i
+      have hvi_le_vj := hmin_i j vj hleft_j hright_j hget_j
+      omega
+    · have hji : j < i := by omega
+      have hvi_lt_vj := hleftmost_i j vj hleft_j hji hget_j
+      have hvj_le_vi := hmin_j i vi hleft_i hright_i hget_i
+      omega
+
+/--
+If two exact argmin witnesses cover a larger range, `betterIndex` combines
+them into the exact leftmost argmin for the larger range.
+-/
+theorem combineLeftmost
+    {xs : List Int} {left r1 l2 right i j : Nat}
+    (hA : LeftmostArgMin xs left r1 i)
+    (hB : LeftmostArgMin xs l2 right j)
+    (hA_sub : r1 <= right)
+    (hB_sub : left <= l2)
+    (hcover : forall t, left <= t -> t < right -> t < r1 \/ l2 <= t) :
+    LeftmostArgMin xs left right (betterIndex xs i j) := by
+  rcases hA with ⟨_hleft_r1, _hr1_len, hleft_i, hi_r1, vi, hi_get, hi_min,
+    hi_leftmost⟩
+  rcases hB with ⟨_hl2_right, hright_len, hl2_j, hj_right, vj, hj_get, hj_min,
+    hj_leftmost⟩
+  unfold betterIndex
+  simp [hi_get, hj_get]
+  by_cases hlt : vj < vi
+  · simp [hlt]
+    refine ⟨by omega, hright_len, by omega, hj_right, vj, hj_get, ?_, ?_⟩
+    · intro t w ht_left ht_right hget
+      rcases hcover t ht_left ht_right with htA | htB
+      · have hvi_le := hi_min t w ht_left htA hget
+        omega
+      · exact hj_min t w htB ht_right hget
+    · intro t w ht_left ht_j hget
+      rcases hcover t ht_left (Nat.lt_trans ht_j hj_right) with htA | htB
+      · have hvi_le := hi_min t w ht_left htA hget
+        omega
+      · exact hj_leftmost t w htB ht_j hget
+  · simp [hlt]
+    have hvi_le_vj : vi <= vj := by omega
+    refine ⟨by omega, by omega, hleft_i, by omega, vi, hi_get, ?_, ?_⟩
+    · intro t w ht_left ht_right hget
+      rcases hcover t ht_left ht_right with htA | htB
+      · exact hi_min t w ht_left htA hget
+      · have hvj_le := hj_min t w htB ht_right hget
+        omega
+    · intro t w ht_left ht_i hget
+      exact hi_leftmost t w ht_left ht_i hget
+
+/--
+Combine the three candidate pieces used by hybrid RMQ schedules.
+
+The left boundary piece is nonempty and exact. The middle and right pieces may
+be absent, but only when their corresponding interval is empty.
+-/
+theorem combineHybridLeftmost
+    {xs : List Int} {left leftEnd middleEnd right li : Nat}
+    {middleCandidate rightCandidate : Option Nat}
+    (hLeft : LeftmostArgMin xs left leftEnd li)
+    (hMiddle :
+      (middleCandidate = none /\ leftEnd = middleEnd) \/
+        exists mi, middleCandidate = some mi /\
+          LeftmostArgMin xs leftEnd middleEnd mi)
+    (hRight :
+      (rightCandidate = none /\ middleEnd = right) \/
+        exists ri, rightCandidate = some ri /\
+          LeftmostArgMin xs middleEnd right ri)
+    (hLeftMiddle : leftEnd <= middleEnd)
+    (hMiddleRight : middleEnd <= right) :
+    exists idx,
+      combineIndex xs (combineIndex xs (some li) middleCandidate) rightCandidate =
+        some idx /\
+      LeftmostArgMin xs left right idx := by
+  rcases hMiddle with ⟨hmnone, hmiddle_empty⟩ | ⟨mi, hmres, hmarg⟩
+  · rcases hRight with ⟨hrnone, hright_empty⟩ | ⟨ri, hrres, hrarg⟩
+    · refine ⟨li, ?_, ?_⟩
+      · simp [combineIndex, hmnone, hrnone]
+      · have hfinal : leftEnd = right := by omega
+        simpa [hfinal] using hLeft
+    · refine ⟨betterIndex xs li ri, ?_, ?_⟩
+      · simp [combineIndex, hmnone, hrres]
+      · have hcover :
+            forall t, left <= t -> t < right ->
+              t < leftEnd \/ middleEnd <= t := by
+          intro t _ht_left _ht_right
+          by_cases ht : t < leftEnd
+          · exact Or.inl ht
+          · exact Or.inr (by omega)
+        have hA_sub : leftEnd <= right := by omega
+        have hB_sub : left <= middleEnd := by
+          have hleft_le_leftEnd : left <= leftEnd := Nat.le_of_lt hLeft.1
+          omega
+        exact combineLeftmost hLeft hrarg hA_sub hB_sub hcover
+  · have hleft_middle :
+        LeftmostArgMin xs left middleEnd (betterIndex xs li mi) := by
+      have hcover :
+          forall t, left <= t -> t < middleEnd ->
+            t < leftEnd \/ leftEnd <= t := by
+        intro t _ht_left _ht_right
+        by_cases ht : t < leftEnd
+        · exact Or.inl ht
+        · exact Or.inr (by omega)
+      have hB_sub : left <= leftEnd := Nat.le_of_lt hLeft.1
+      exact combineLeftmost hLeft hmarg hLeftMiddle hB_sub hcover
+    rcases hRight with ⟨hrnone, hright_empty⟩ | ⟨ri, hrres, hrarg⟩
+    · refine ⟨betterIndex xs li mi, ?_, ?_⟩
+      · simp [combineIndex, hmres, hrnone]
+      · simpa [hright_empty] using hleft_middle
+    · refine ⟨betterIndex xs (betterIndex xs li mi) ri, ?_, ?_⟩
+      · simp [combineIndex, hmres, hrres]
+      · have hcover :
+            forall t, left <= t -> t < right ->
+              t < middleEnd \/ middleEnd <= t := by
+          intro t _ht_left _ht_right
+          by_cases ht : t < middleEnd
+          · exact Or.inl ht
+          · exact Or.inr (by omega)
+        have hB_sub : left <= middleEnd := Nat.le_of_lt hleft_middle.1
+        exact combineLeftmost hleft_middle hrarg hMiddleRight hB_sub hcover
+
+end RMQ
