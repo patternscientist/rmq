@@ -32,8 +32,9 @@ right interval combine into one exact leftmost argmin witness.
   completeness, invalid-query rejection, and generic built-backend equality.
 - `RMQ/Core/LCA.lean`: proof-friendly rose-tree Euler node/depth traces, the
   plus/minus-one depth invariant, first-occurrence windows, direct root-path
-  LCA semantics, the `TracePathAgreement` bridge statement, and the RMQ-backed
-  trace-level LCA answer theorem.
+  LCA semantics, the `TracePathAgreement` bridge statement, a trace-side
+  leftmost-minimum reference candidate, and the RMQ-backed trace-level LCA
+  answer theorem.
 - `RMQ/Core/Recursion.lean`: Mathlib-free well-founded recursion over strictly
   shorter summary lists, concrete full-block minimum summaries, and lifting
   lemmas from summary candidates back to original-list candidates, including
@@ -66,6 +67,10 @@ rg -n "sorry|admit|axiom|unsafe|opaque|implemented_by" RMQ lakefile.toml
 
 ## Next Direction
 
-The next proof direction is the hard Euler/path agreement lemma: prove that the
-minimum-depth node in a generated first-occurrence Euler window is the same node
-as the direct common-prefix LCA of the two generated root paths.
+The next proof direction is the hard Euler/path agreement lemma with the right
+node-identity assumption. A duplicate-label counterexample is now formalized:
+label-only root paths can disagree with first-occurrence Euler windows unless
+labels are unique, or unless the path semantics is upgraded to use structural
+addresses. The clean target is to prove that the generated trace-side
+leftmost-minimum reference candidate matches the direct path LCA under one of
+those repaired semantics.

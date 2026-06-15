@@ -196,6 +196,25 @@ mutual
         | none => pathToForest? target rest
 end
 
+mutual
+  /-- Preorder list of labels in a tree. -/
+  def labelsPreorder : RoseTree -> List Nat
+    | node label children => label :: labelsPreorderForest children
+
+  /-- Preorder list of labels in a forest. -/
+  def labelsPreorderForest : List RoseTree -> List Nat
+    | [] => []
+    | child :: rest => labelsPreorder child ++ labelsPreorderForest rest
+end
+
+/--
+Labels are intended to act as node identities for the label-path semantics.
+Without this side condition, two different tree nodes with the same label can
+make a label common-prefix path disagree with the Euler first-occurrence path.
+-/
+def LabelsUnique (tree : RoseTree) : Prop :=
+  tree.labelsPreorder.Nodup
+
 end RoseTree
 
 /-- Common prefix of two root paths. -/
@@ -375,6 +394,17 @@ def firstOccurrence? (trace : EulerTrace) (node : Nat) : Option Nat :=
 def occurrenceWindow (i j : Nat) : Nat × Nat :=
   (Nat.min i j, Nat.max i j + 1)
 
+/--
+Reference trace-side LCA candidate: scan the first-occurrence window and return
+the node at the leftmost minimum-depth position.
+-/
+def leftmostMinNode? (trace : EulerTrace) (u v : Nat) : Option Nat :=
+  match trace.firstOccurrence? u, trace.firstOccurrence? v with
+  | some i, some j =>
+      let window := occurrenceWindow i j
+      trace.nodes[scanWindow trace.depths window.1 (window.2 - window.1)]?
+  | _, _ => none
+
 theorem occurrenceWindow_valid
     (trace : EulerTrace) {u v i j : Nat}
     (hu : trace.firstOccurrence? u = some i)
@@ -467,6 +497,38 @@ def IsLCAAnswer (trace : EulerTrace) (u v node : Nat) : Prop :=
       LeftmostArgMin trace.depths
         (occurrenceWindow i j).1 (occurrenceWindow i j).2 idx
 
+theorem leftmostMinNode?_eq_of_isLCAAnswer
+    {trace : EulerTrace} {u v node : Nat}
+    (hanswer : IsLCAAnswer trace u v node) :
+    trace.leftmostMinNode? u v = some node := by
+  rcases hanswer with ⟨i, j, idx, hu, hv, hnode, harg⟩
+  let left := (occurrenceWindow i j).1
+  let right := (occurrenceWindow i j).2
+  let len := right - left
+  have hValid : ValidRange trace.depths left right := by
+    simpa [left, right] using trace.occurrenceWindow_valid hu hv
+  have hlen : 0 < len := by
+    unfold len
+    omega
+  have hbound : left + len <= trace.depths.length := by
+    unfold len
+    omega
+  have hright : left + len = right := by
+    unfold len
+    omega
+  have hscan :
+      LeftmostArgMin trace.depths left right
+        (scanWindow trace.depths left len) := by
+    simpa [hright] using scanWindow_leftmost trace.depths left len hlen hbound
+  have hidx :
+      scanWindow trace.depths left len = idx :=
+    leftmostArgMin_unique trace.depths left right
+      (scanWindow trace.depths left len) idx hscan (by
+        simpa [left, right] using harg)
+  unfold leftmostMinNode?
+  rw [hu, hv]
+  simpa [left, right, len, hidx] using hnode
+
 theorem lcaCandidate_valid_exact
     (trace : EulerTrace) (backend : RMQBackend trace.depths)
     {u v i j : Nat}
@@ -552,6 +614,20 @@ def TracePathAgreement (tree : RoseTree) : Prop :=
     EulerTrace.IsLCAAnswer tree.eulerTrace u v node ->
       tree.IsPathLCA u v node
 
+theorem tracePathAgreement_of_leftmostMinNode_eq_pathLCA
+    (tree : RoseTree)
+    (hagrees :
+      forall u v, tree.eulerTrace.leftmostMinNode? u v = tree.pathLCA? u v) :
+    tree.TracePathAgreement := by
+  intro u v node hanswer
+  apply pathLCA?_isPathLCA
+  have hscan :
+      tree.eulerTrace.leftmostMinNode? u v = some node :=
+    EulerTrace.leftmostMinNode?_eq_of_isLCAAnswer hanswer
+  have hpath := hagrees u v
+  rw [← hpath]
+  exact hscan
+
 theorem lcaCandidate_isPathLCA_of_tracePathAgreement
     (tree : RoseTree) (backend : RMQBackend tree.eulerTrace.depths)
     (hagreement : tree.TracePathAgreement)
@@ -593,6 +669,77 @@ example :
     (RoseTree.node 0 [RoseTree.node 1 [], RoseTree.node 2 []]).pathLCA? 1 2 =
       some 0 := by
   native_decide
+
+/--
+A duplicate-label tree showing why the generated trace/path agreement needs
+either unique node labels or an address-based path semantics.
+-/
+def duplicateLabelCounterexample : RoseTree :=
+  RoseTree.node 0
+    [RoseTree.node 1 [], RoseTree.node 1 [RoseTree.node 2 []]]
+
+example : Not duplicateLabelCounterexample.LabelsUnique := by
+  have hlabels :
+      duplicateLabelCounterexample.labelsPreorder = [0, 1, 1, 2] := by
+    native_decide
+  unfold LabelsUnique
+  rw [hlabels]
+  simp
+
+example : duplicateLabelCounterexample.eulerTrace.leftmostMinNode? 1 2 = some 0 := by
+  native_decide
+
+example : duplicateLabelCounterexample.pathLCA? 1 2 = some 1 := by
+  native_decide
+
+theorem duplicateLabelCounterexample_traceAnswer :
+    EulerTrace.IsLCAAnswer duplicateLabelCounterexample.eulerTrace 1 2 0 := by
+  refine ⟨1, 4, 2, ?_, ?_, ?_, ?_⟩
+  · native_decide
+  · native_decide
+  · native_decide
+  · have hdepths :
+        duplicateLabelCounterexample.eulerTrace.depths =
+          [0, 1, 0, 1, 2, 1, 0] := by
+      native_decide
+    simpa [EulerTrace.occurrenceWindow, hdepths] using
+      (show LeftmostArgMin [0, 1, 0, 1, 2, 1, 0] 1 5 2 from by
+        refine ⟨by omega, by decide, by omega, by omega, 0, by simp, ?_, ?_⟩
+        · intro j w hj_left hj_right hget
+          have hj_cases : j = 1 ∨ j = 2 ∨ j = 3 ∨ j = 4 := by
+            omega
+          rcases hj_cases with rfl | rfl | rfl | rfl
+          · simp at hget
+            omega
+          · simp at hget
+            omega
+          · simp at hget
+            omega
+          · simp at hget
+            omega
+        · intro j w hj_left hj_idx hget
+          have hj : j = 1 := by
+            omega
+          subst j
+          simp at hget
+          omega)
+
+theorem duplicateLabelCounterexample_not_tracePathAgreement :
+    Not duplicateLabelCounterexample.TracePathAgreement := by
+  intro hagreement
+  have hpath :
+      duplicateLabelCounterexample.IsPathLCA 1 2 0 :=
+    hagreement duplicateLabelCounterexample_traceAnswer
+  rcases hpath with ⟨pathU, pathV, hu, hv, hlca, _hcommon⟩
+  have hpathU : duplicateLabelCounterexample.pathTo? 1 = some [0, 1] := by
+    native_decide
+  have hpathV : duplicateLabelCounterexample.pathTo? 2 = some [0, 1, 2] := by
+    native_decide
+  rw [hpathU] at hu
+  rw [hpathV] at hv
+  cases hu
+  cases hv
+  simp [RMQ.pathLCA?, commonPrefix] at hlca
 
 end RoseTree
 
