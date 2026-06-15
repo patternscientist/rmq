@@ -36,6 +36,9 @@ right interval combine into one exact leftmost argmin witness.
   leftmost-minimum reference candidate, generated path-annotated Euler traces,
   a finite generated-label agreement certificate, and the RMQ-backed
   tree-level LCA theorem for certified traces.
+- `RMQ/Core/Reduction.lean`: contract-level RMQ/LCA reduction interfaces:
+  certified generated Euler traces turn RMQ backends into LCA backends, and
+  certified interval-to-LCA encodings turn LCA backends into RMQ backends.
 - `RMQ/Core/Recursion.lean`: Mathlib-free well-founded recursion over strictly
   shorter summary lists, concrete full-block minimum summaries, and lifting
   lemmas from summary candidates back to original-list candidates, including
@@ -68,10 +71,8 @@ rg -n "sorry|admit|axiom|unsafe|opaque|implemented_by" RMQ lakefile.toml
 
 ## Next Direction
 
-The LCA reduction is now complete for certified generated traces:
-`labelPairAgreement = true` proves `TracePathAgreement`, and any exact RMQ
-backend candidate is then a direct root-path LCA. The remaining optional
-strengthening is to replace the finite generated-label certificate with a
-structural theorem, for example proving that every `LabelsUnique` rose tree
-satisfies the certificate or switching the semantic layer to structural
-addresses.
+The RMQ/LCA equivalence is now factored at the backend-contract boundary. The
+remaining optional strengthening is constructive: discharge the
+`RMQToLCAReduction` certificate with a Cartesian-tree construction, and replace
+the finite generated-label LCA certificate with a structural theorem such as
+`LabelsUnique -> labelPairAgreement = true`.

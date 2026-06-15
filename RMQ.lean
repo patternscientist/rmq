@@ -2,6 +2,7 @@ import RMQ.Core.Spec
 import RMQ.Core.Window
 import RMQ.Core.Backend
 import RMQ.Core.LCA
+import RMQ.Core.Reduction
 import RMQ.Core.Schedule
 import RMQ.Core.Recursion
 import RMQ.Impl.LinearScan
