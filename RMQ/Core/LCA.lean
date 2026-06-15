@@ -521,6 +521,161 @@ theorem pathLCA?_isPathLCA
           simp [hu, hv] at h
           exact ⟨pathU, pathV, hu, hv, pathLCA?_isPathLCAOfPaths h⟩
 
+mutual
+  theorem pathTo?_mem_labelsPreorder
+      {tree : RoseTree} {target : Nat} {path : List Nat}
+      (hpath : tree.pathTo? target = some path) :
+      target ∈ tree.labelsPreorder := by
+    cases tree with
+    | node label children =>
+        unfold pathTo? at hpath
+        by_cases hlabel : label = target
+        · simp [hlabel] at hpath
+          simp [labelsPreorder, hlabel]
+        · simp [hlabel] at hpath
+          cases hforest : pathToForest? target children with
+          | none =>
+              simp [hforest] at hpath
+          | some childPath =>
+              simp [hforest] at hpath
+              have hmem :
+                  target ∈ labelsPreorderForest children :=
+                pathToForest?_mem_labelsPreorderForest hforest
+              simp [labelsPreorder, hmem]
+
+  theorem pathToForest?_mem_labelsPreorderForest
+      {forest : List RoseTree} {target : Nat} {path : List Nat}
+      (hpath : pathToForest? target forest = some path) :
+      target ∈ labelsPreorderForest forest := by
+    cases forest with
+    | nil =>
+        simp [pathToForest?] at hpath
+    | cons child rest =>
+        unfold pathToForest? at hpath
+        match hchild : child.pathTo? target with
+        | some _ =>
+            simp [hchild] at hpath
+            have hmem :
+                target ∈ child.labelsPreorder :=
+              pathTo?_mem_labelsPreorder hchild
+            simp [labelsPreorderForest, hmem]
+        | none =>
+            simp [hchild] at hpath
+            have hmem :
+                target ∈ labelsPreorderForest rest :=
+              pathToForest?_mem_labelsPreorderForest hpath
+            simp [labelsPreorderForest, hmem]
+end
+
+theorem labels_mem_of_pathLCA?_some
+    {tree : RoseTree} {u v ancestor : Nat}
+    (hpath : tree.pathLCA? u v = some ancestor) :
+    u ∈ tree.labelsPreorder ∧ v ∈ tree.labelsPreorder := by
+  unfold pathLCA? at hpath
+  cases hu : tree.pathTo? u with
+  | none =>
+      simp [hu] at hpath
+  | some pathU =>
+      cases hv : tree.pathTo? v with
+      | none =>
+          simp [hu, hv] at hpath
+      | some pathV =>
+          exact ⟨pathTo?_mem_labelsPreorder hu,
+            pathTo?_mem_labelsPreorder hv⟩
+
+mutual
+  theorem pathTo?_getLast?
+      {tree : RoseTree} {target : Nat} {path : List Nat}
+      (hpath : tree.pathTo? target = some path) :
+      path.getLast? = some target := by
+    cases tree with
+    | node label children =>
+        unfold pathTo? at hpath
+        by_cases hlabel : label = target
+        · simp [hlabel] at hpath
+          cases hpath
+          simp
+        · simp [hlabel] at hpath
+          cases hforest : pathToForest? target children with
+          | none =>
+              simp [hforest] at hpath
+          | some childPath =>
+              simp [hforest] at hpath
+              cases hpath
+              have hlast :
+                  childPath.getLast? = some target :=
+                pathToForest?_getLast? hforest
+              cases childPath with
+              | nil =>
+                  simp at hlast
+              | cons childLabel childRest =>
+                  simpa using hlast
+
+  theorem pathToForest?_getLast?
+      {forest : List RoseTree} {target : Nat} {path : List Nat}
+      (hpath : pathToForest? target forest = some path) :
+      path.getLast? = some target := by
+    cases forest with
+    | nil =>
+        simp [pathToForest?] at hpath
+    | cons child rest =>
+        unfold pathToForest? at hpath
+        match hchild : child.pathTo? target with
+        | some _ =>
+            simp [hchild] at hpath
+            cases hpath
+            exact pathTo?_getLast? hchild
+        | none =>
+            simp [hchild] at hpath
+            exact pathToForest?_getLast? hpath
+end
+
+mutual
+  theorem pathTo?_exists_of_mem_labelsPreorder
+      {tree : RoseTree} {target : Nat}
+      (hmem : target ∈ tree.labelsPreorder) :
+      exists path, tree.pathTo? target = some path := by
+    cases tree with
+    | node label children =>
+        by_cases hlabel : label = target
+        · refine ⟨[label], ?_⟩
+          simp [pathTo?, hlabel]
+        · have hchildMem : target ∈ labelsPreorderForest children := by
+            have htarget_label : target ≠ label := by
+              intro htarget_label
+              exact hlabel htarget_label.symm
+            simpa [labelsPreorder, htarget_label] using hmem
+          rcases pathToForest?_exists_of_mem_labelsPreorderForest hchildMem with
+            ⟨path, hpath⟩
+          refine ⟨label :: path, ?_⟩
+          simp [pathTo?, hlabel, hpath]
+
+  theorem pathToForest?_exists_of_mem_labelsPreorderForest
+      {forest : List RoseTree} {target : Nat}
+      (hmem : target ∈ labelsPreorderForest forest) :
+      exists path, pathToForest? target forest = some path := by
+    cases forest with
+    | nil =>
+        simp [labelsPreorderForest] at hmem
+    | cons child rest =>
+        simp [labelsPreorderForest] at hmem
+        rcases hmem with hchildMem | hrestMem
+        · rcases pathTo?_exists_of_mem_labelsPreorder hchildMem with
+            ⟨path, hpath⟩
+          refine ⟨path, ?_⟩
+          simp [pathToForest?, hpath]
+        · rcases pathToForest?_exists_of_mem_labelsPreorderForest hrestMem with
+            ⟨path, hpath⟩
+          unfold pathToForest?
+          cases hchild : child.pathTo? target with
+          | none =>
+              refine ⟨path, ?_⟩
+              simp [hpath]
+          | some childPath =>
+              refine ⟨childPath, ?_⟩
+              simp
+end
+
 end RoseTree
 
 /-- Find the first index containing `target`. -/
@@ -927,6 +1082,18 @@ def TracePathAgreement (tree : RoseTree) : Prop :=
     EulerTrace.IsLCAAnswer tree.eulerTrace u v node ->
       tree.IsPathLCA u v node
 
+/--
+Semantic exactness of the generated Euler reduction on labels that occur in the
+tree. This is the proof-facing replacement for the finite boolean certificate:
+for every real tree-label query, the trace-side reference answer agrees with
+the direct common-prefix path LCA.
+-/
+def TracePathExactOnLabels (tree : RoseTree) : Prop :=
+  forall {u v : Nat},
+    u ∈ tree.labelsPreorder ->
+      v ∈ tree.labelsPreorder ->
+        tree.eulerTrace.leftmostMinNode? u v = tree.pathLCA? u v
+
 theorem tracePathAgreement_of_leftmostMinNode_eq_pathLCA
     (tree : RoseTree)
     (hagrees :
@@ -941,19 +1108,9 @@ theorem tracePathAgreement_of_leftmostMinNode_eq_pathLCA
   rw [← hpath]
   exact hscan
 
-/--
-Finite generated-label certificate for the remaining trace/path agreement.
-For every label that occurs in the tree, the trace-side reference answer must
-match the direct path-LCA answer.
--/
-def labelPairAgreement (tree : RoseTree) : Bool :=
-  tree.labelsPreorder.all fun u =>
-    tree.labelsPreorder.all fun v =>
-      decide (tree.eulerTrace.leftmostMinNode? u v = tree.pathLCA? u v)
-
-theorem tracePathAgreement_of_labelPairAgreement
+theorem tracePathAgreement_of_tracePathExactOnLabels
     (tree : RoseTree)
-    (hcheck : tree.labelPairAgreement = true) :
+    (hexact : tree.TracePathExactOnLabels) :
     tree.TracePathAgreement := by
   intro u v node hanswer
   apply pathLCA?_isPathLCA
@@ -972,6 +1129,27 @@ theorem tracePathAgreement_of_labelPairAgreement
   have hv_labels : v ∈ tree.labelsPreorder := by
     apply mem_labelsPreorder_of_mem_eulerNodes
     simpa [eulerTrace, eulerTraceAt] using hv_nodes
+  have hagree :
+      tree.eulerTrace.leftmostMinNode? u v = tree.pathLCA? u v :=
+    hexact hu_labels hv_labels
+  rw [← hagree]
+  exact hleft
+
+/--
+Finite generated-label certificate for the remaining trace/path agreement.
+For every label that occurs in the tree, the trace-side reference answer must
+match the direct path-LCA answer.
+-/
+def labelPairAgreement (tree : RoseTree) : Bool :=
+  tree.labelsPreorder.all fun u =>
+    tree.labelsPreorder.all fun v =>
+      decide (tree.eulerTrace.leftmostMinNode? u v = tree.pathLCA? u v)
+
+theorem tracePathExactOnLabels_of_labelPairAgreement
+    (tree : RoseTree)
+    (hcheck : tree.labelPairAgreement = true) :
+    tree.TracePathExactOnLabels := by
+  intro u v hu_labels hv_labels
   have hall_u :
       (tree.labelsPreorder.all fun v =>
         decide (tree.eulerTrace.leftmostMinNode? u v = tree.pathLCA? u v)) =
@@ -984,8 +1162,14 @@ theorem tracePathAgreement_of_labelPairAgreement
   have hagree :
       tree.eulerTrace.leftmostMinNode? u v = tree.pathLCA? u v := by
     exact of_decide_eq_true hagree_decide
-  rw [← hagree]
-  exact hleft
+  exact hagree
+
+theorem tracePathAgreement_of_labelPairAgreement
+    (tree : RoseTree)
+    (hcheck : tree.labelPairAgreement = true) :
+    tree.TracePathAgreement := by
+  exact tree.tracePathAgreement_of_tracePathExactOnLabels
+    (tree.tracePathExactOnLabels_of_labelPairAgreement hcheck)
 
 theorem lcaCandidate_isPathLCA_of_tracePathAgreement
     (tree : RoseTree) (backend : RMQBackend tree.eulerTrace.depths)
@@ -994,6 +1178,15 @@ theorem lcaCandidate_isPathLCA_of_tracePathAgreement
     (hresult : tree.lcaCandidate backend u v = some node) :
     tree.IsPathLCA u v node := by
   exact hagreement (tree.lcaCandidate_isLCAAnswer backend hresult)
+
+theorem lcaCandidate_isPathLCA_of_tracePathExactOnLabels
+    (tree : RoseTree) (backend : RMQBackend tree.eulerTrace.depths)
+    (hexact : tree.TracePathExactOnLabels)
+    {u v node : Nat}
+    (hresult : tree.lcaCandidate backend u v = some node) :
+    tree.IsPathLCA u v node := by
+  exact lcaCandidate_isPathLCA_of_tracePathAgreement tree backend
+    (tree.tracePathAgreement_of_tracePathExactOnLabels hexact) hresult
 
 theorem lcaCandidate_isPathLCA_of_labelPairAgreement
     (tree : RoseTree) (backend : RMQBackend tree.eulerTrace.depths)

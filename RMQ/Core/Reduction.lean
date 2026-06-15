@@ -52,68 +52,6 @@ theorem pathLCA?_eq_of_isPathLCA
   rw [hu, hv]
   exact hlca
 
-mutual
-  theorem pathTo?_mem_labelsPreorder
-      {tree : RoseTree} {target : Nat} {path : List Nat}
-      (hpath : tree.pathTo? target = some path) :
-      target ∈ tree.labelsPreorder := by
-    cases tree with
-    | node label children =>
-        unfold pathTo? at hpath
-        by_cases hlabel : label = target
-        · simp [hlabel] at hpath
-          simp [labelsPreorder, hlabel]
-        · simp [hlabel] at hpath
-          cases hforest : pathToForest? target children with
-          | none =>
-              simp [hforest] at hpath
-          | some childPath =>
-              simp [hforest] at hpath
-              have hmem :
-                  target ∈ labelsPreorderForest children :=
-                pathToForest?_mem_labelsPreorderForest hforest
-              simp [labelsPreorder, hmem]
-
-  theorem pathToForest?_mem_labelsPreorderForest
-      {forest : List RoseTree} {target : Nat} {path : List Nat}
-      (hpath : pathToForest? target forest = some path) :
-      target ∈ labelsPreorderForest forest := by
-    cases forest with
-    | nil =>
-        simp [pathToForest?] at hpath
-    | cons child rest =>
-        unfold pathToForest? at hpath
-        match hchild : child.pathTo? target with
-        | some _ =>
-            simp [hchild] at hpath
-            have hmem :
-                target ∈ child.labelsPreorder :=
-              pathTo?_mem_labelsPreorder hchild
-            simp [labelsPreorderForest, hmem]
-        | none =>
-            simp [hchild] at hpath
-            have hmem :
-                target ∈ labelsPreorderForest rest :=
-              pathToForest?_mem_labelsPreorderForest hpath
-            simp [labelsPreorderForest, hmem]
-end
-
-theorem labels_mem_of_pathLCA?_some
-    {tree : RoseTree} {u v ancestor : Nat}
-    (hpath : tree.pathLCA? u v = some ancestor) :
-    u ∈ tree.labelsPreorder ∧ v ∈ tree.labelsPreorder := by
-  unfold pathLCA? at hpath
-  cases hu : tree.pathTo? u with
-  | none =>
-      simp [hu] at hpath
-  | some pathU =>
-      cases hv : tree.pathTo? v with
-      | none =>
-          simp [hu, hv] at hpath
-      | some pathV =>
-          exact ⟨pathTo?_mem_labelsPreorder hu,
-            pathTo?_mem_labelsPreorder hv⟩
-
 theorem leftmostMinNode?_eq_pathLCA_of_labelPairAgreement
     (tree : RoseTree)
     (hcheck : tree.labelPairAgreement = true)
@@ -186,26 +124,40 @@ generated depth trace induces an exact LCA backend over the tree labels.
 def lcaBackendOfRMQBackend
     (tree : RoseTree)
     (backend : RMQBackend tree.eulerTrace.depths)
-    (hcheck : tree.labelPairAgreement = true) :
+    (hexact : tree.TracePathExactOnLabels) :
     LCABackend tree where
   State := Unit
   build := ()
   query := fun _ u v => tree.lcaCandidate backend u v
   sound := by
     intro u v ancestor hresult
-    exact tree.lcaCandidate_isPathLCA_of_labelPairAgreement backend hcheck hresult
+    exact tree.lcaCandidate_isPathLCA_of_tracePathExactOnLabels
+      backend hexact hresult
   complete := by
     intro u v ancestor hpath
     rcases labels_mem_of_pathLCA?_some hpath with ⟨hu, hv⟩
     have hagree :
         tree.eulerTrace.leftmostMinNode? u v = tree.pathLCA? u v :=
-      tree.leftmostMinNode?_eq_pathLCA_of_labelPairAgreement hcheck hu hv
+      hexact hu hv
     have hcand :
         tree.lcaCandidate backend u v =
           tree.eulerTrace.leftmostMinNode? u v := by
       exact EulerTrace.lcaCandidate_eq_leftmostMinNode?
         tree.eulerTrace backend u v
     rw [hcand, hagree, hpath]
+
+/--
+Boolean-check wrapper for the generated Euler reduction. The core reduction
+above depends only on the semantic exactness contract, while this wrapper keeps
+the existing finite certificate entry point available.
+-/
+def lcaBackendOfRMQBackendChecked
+    (tree : RoseTree)
+    (backend : RMQBackend tree.eulerTrace.depths)
+    (hcheck : tree.labelPairAgreement = true) :
+    LCABackend tree :=
+  tree.lcaBackendOfRMQBackend backend
+    (tree.tracePathExactOnLabels_of_labelPairAgreement hcheck)
 
 end RoseTree
 
@@ -345,17 +297,26 @@ generated Euler trace.
 -/
 def rmq_lca_reduction_equiv
     {xs : List Int} (reduction : RMQToLCAReduction xs)
-    (tree : RoseTree) (hcheck : tree.labelPairAgreement = true) :
+    (tree : RoseTree) (hexact : tree.TracePathExactOnLabels) :
     (LCABackend reduction.tree -> RMQBackend xs) ×
       (RMQBackend tree.eulerTrace.depths -> LCABackend tree) :=
   (fun backend => reduction.rmqBackendOfLCABackend backend,
-    fun backend => tree.lcaBackendOfRMQBackend backend hcheck)
+    fun backend => tree.lcaBackendOfRMQBackend backend hexact)
 
 theorem rmq_lca_reduction_equiv_exists
     {xs : List Int} (reduction : RMQToLCAReduction xs)
-    (tree : RoseTree) (hcheck : tree.labelPairAgreement = true) :
+    (tree : RoseTree) (hexact : tree.TracePathExactOnLabels) :
     Nonempty ((LCABackend reduction.tree -> RMQBackend xs) ×
       (RMQBackend tree.eulerTrace.depths -> LCABackend tree)) := by
-  exact ⟨rmq_lca_reduction_equiv reduction tree hcheck⟩
+  exact ⟨rmq_lca_reduction_equiv reduction tree hexact⟩
+
+/-- Backward-compatible boolean-check entry point for the equivalence wrapper. -/
+def rmq_lca_reduction_equiv_checked
+    {xs : List Int} (reduction : RMQToLCAReduction xs)
+    (tree : RoseTree) (hcheck : tree.labelPairAgreement = true) :
+    (LCABackend reduction.tree -> RMQBackend xs) ×
+      (RMQBackend tree.eulerTrace.depths -> LCABackend tree) :=
+  rmq_lca_reduction_equiv reduction tree
+    (tree.tracePathExactOnLabels_of_labelPairAgreement hcheck)
 
 end RMQ
