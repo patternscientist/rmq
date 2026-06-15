@@ -30,9 +30,9 @@ right interval combine into one exact leftmost argmin witness.
 - `RMQ/Core/Window.lean`: direct scan/window lemmas.
 - `RMQ/Core/Backend.lean`: explicit backend interface with soundness,
   completeness, invalid-query rejection, and generic built-backend equality.
-- `RMQ/Core/LCA.lean`: proof-friendly rose-tree Euler depth moves, the
+- `RMQ/Core/LCA.lean`: proof-friendly rose-tree Euler node/depth traces, the
   plus/minus-one depth invariant, first-occurrence windows, and the RMQ-backed
-  minimum-depth tour-node reduction.
+  trace-level LCA answer theorem.
 - `RMQ/Core/Recursion.lean`: Mathlib-free well-founded recursion over strictly
   shorter summary lists, concrete full-block minimum summaries, and lifting
   lemmas from summary candidates back to original-list candidates, including
@@ -65,6 +65,7 @@ rg -n "sorry|admit|axiom|unsafe|opaque|implemented_by" RMQ lakefile.toml
 
 ## Next Direction
 
-The next proof direction is to complete the LCA client story: connect generated
-rose-tree Euler node tours to the depth traces, then prove that the
-minimum-depth first-occurrence candidate is the expected ancestor.
+The next proof direction is to strengthen the trace-level LCA answer into a
+path-based tree theorem: define root-to-label paths, common ancestors, and prove
+that the RMQ-selected trace node is the lowest common ancestor in that path
+semantics.

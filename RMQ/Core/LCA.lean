@@ -32,6 +32,17 @@ mutual
     | child :: rest => 1 :: (eulerMoves child ++ (-1) :: eulerMovesForest rest)
 end
 
+mutual
+  /-- Euler-tour node labels for a tree. -/
+  def eulerNodes : RoseTree -> List Nat
+    | node label children => label :: eulerNodesForest label children
+
+  /-- Euler-tour node labels for a forest of children, returning to `parent`. -/
+  def eulerNodesForest (parent : Nat) : List RoseTree -> List Nat
+    | [] => []
+    | child :: rest => eulerNodes child ++ parent :: eulerNodesForest parent rest
+end
+
 end RoseTree
 
 /-- A depth move is one Euler step up or down. -/
@@ -116,6 +127,36 @@ theorem depthsFromMoves_adjacent
           exact ⟨unitDepthMove_step start move hmove,
             ih (start + move) hrest⟩
 
+theorem depthsFromMoves_length (start : Int) (moves : List Int) :
+    (depthsFromMoves start moves).length = moves.length + 1 := by
+  induction moves generalizing start with
+  | nil =>
+      simp [depthsFromMoves]
+  | cons move rest ih =>
+      simp [depthsFromMoves, ih (start + move)]
+
+mutual
+  theorem RoseTree.eulerNodes_length_eq_moves (tree : RoseTree) :
+      tree.eulerNodes.length = tree.eulerMoves.length + 1 := by
+    cases tree with
+    | node label children =>
+        have hforest := RoseTree.eulerNodesForest_length_eq_moves label children
+        simp [RoseTree.eulerNodes, RoseTree.eulerMoves, hforest]
+
+  theorem RoseTree.eulerNodesForest_length_eq_moves
+      (parent : Nat) (forest : List RoseTree) :
+      (RoseTree.eulerNodesForest parent forest).length =
+        (RoseTree.eulerMovesForest forest).length := by
+    cases forest with
+    | nil =>
+        simp [RoseTree.eulerNodesForest, RoseTree.eulerMovesForest]
+    | cons child rest =>
+        have hchild := RoseTree.eulerNodes_length_eq_moves child
+        have hrest := RoseTree.eulerNodesForest_length_eq_moves parent rest
+        simp [RoseTree.eulerNodesForest, RoseTree.eulerMovesForest, hchild, hrest]
+        omega
+end
+
 /-- Euler-tour depths for a tree rooted at `startDepth`. -/
 def RoseTree.eulerDepthsAt (startDepth : Int) (tree : RoseTree) : List Int :=
   depthsFromMoves startDepth tree.eulerMoves
@@ -178,6 +219,19 @@ structure EulerTrace where
   depths : List Int
   length_eq : nodes.length = depths.length
   adjacent_depths : AdjacentDepthsDifferByOne depths
+
+/-- The generated Euler trace for a rose tree rooted at `startDepth`. -/
+def RoseTree.eulerTraceAt (startDepth : Int) (tree : RoseTree) : EulerTrace where
+  nodes := tree.eulerNodes
+  depths := tree.eulerDepthsAt startDepth
+  length_eq := by
+    simp [RoseTree.eulerDepthsAt, depthsFromMoves_length,
+      RoseTree.eulerNodes_length_eq_moves]
+  adjacent_depths := tree.eulerDepthsAt_adjacent startDepth
+
+/-- The generated Euler trace for a rose tree rooted at depth zero. -/
+def RoseTree.eulerTrace (tree : RoseTree) : EulerTrace :=
+  tree.eulerTraceAt 0
 
 namespace EulerTrace
 
@@ -271,6 +325,16 @@ def lcaCandidate
       minDepthNodeInWindow trace backend window.1 window.2
   | _, _ => none
 
+/-- Trace-level LCA reduction spec: the answer is the node at the leftmost
+minimum depth in the first-occurrence window. -/
+def IsLCAAnswer (trace : EulerTrace) (u v node : Nat) : Prop :=
+  exists i j idx,
+    trace.firstOccurrence? u = some i /\
+      trace.firstOccurrence? v = some j /\
+      trace.nodes[idx]? = some node /\
+      LeftmostArgMin trace.depths
+        (occurrenceWindow i j).1 (occurrenceWindow i j).2 idx
+
 theorem lcaCandidate_valid_exact
     (trace : EulerTrace) (backend : RMQBackend trace.depths)
     {u v i j : Nat}
@@ -289,6 +353,73 @@ theorem lcaCandidate_valid_exact
   rw [hu, hv]
   exact hres
 
+theorem lcaCandidate_isLCAAnswer
+    (trace : EulerTrace) (backend : RMQBackend trace.depths)
+    {u v node : Nat}
+    (hresult : lcaCandidate trace backend u v = some node) :
+    IsLCAAnswer trace u v node := by
+  unfold lcaCandidate at hresult
+  cases hu : trace.firstOccurrence? u with
+  | none =>
+      simp [hu] at hresult
+  | some i =>
+      cases hv : trace.firstOccurrence? v with
+      | none =>
+          simp [hu, hv] at hresult
+      | some j =>
+          rcases lcaCandidate_valid_exact trace backend hu hv with
+            ⟨idx, node', hcandidate, hnode, harg⟩
+          unfold lcaCandidate at hcandidate
+          simp [hu, hv] at hcandidate
+          simp [hu, hv] at hresult
+          have hnode_eq : node' = node := by
+            have hsome : some node' = some node := by
+              rw [← hcandidate, hresult]
+            exact Option.some.inj hsome
+          refine ⟨i, j, idx, hu, hv, ?_, ?_⟩
+          · simpa [hnode_eq] using hnode
+          · exact harg
+
 end EulerTrace
+
+namespace RoseTree
+
+/-- Run the LCA reduction on the generated Euler trace of a tree. -/
+def lcaCandidate
+    (tree : RoseTree) (backend : RMQBackend tree.eulerTrace.depths)
+    (u v : Nat) : Option Nat :=
+  tree.eulerTrace.lcaCandidate backend u v
+
+theorem lcaCandidate_valid_exact
+    (tree : RoseTree) (backend : RMQBackend tree.eulerTrace.depths)
+    {u v i j : Nat}
+    (hu : tree.eulerTrace.firstOccurrence? u = some i)
+    (hv : tree.eulerTrace.firstOccurrence? v = some j) :
+    exists idx node,
+      tree.lcaCandidate backend u v = some node /\
+        tree.eulerTrace.nodes[idx]? = some node /\
+        LeftmostArgMin tree.eulerTrace.depths
+          (EulerTrace.occurrenceWindow i j).1
+          (EulerTrace.occurrenceWindow i j).2 idx := by
+  exact EulerTrace.lcaCandidate_valid_exact tree.eulerTrace backend hu hv
+
+theorem lcaCandidate_isLCAAnswer
+    (tree : RoseTree) (backend : RMQBackend tree.eulerTrace.depths)
+    {u v node : Nat}
+    (hresult : tree.lcaCandidate backend u v = some node) :
+    EulerTrace.IsLCAAnswer tree.eulerTrace u v node := by
+  exact EulerTrace.lcaCandidate_isLCAAnswer tree.eulerTrace backend hresult
+
+example :
+    (RoseTree.node 0 [RoseTree.node 1 [], RoseTree.node 2 []]).eulerTrace.nodes =
+      [0, 1, 0, 2, 0] := by
+  native_decide
+
+example :
+    (RoseTree.node 0 [RoseTree.node 1 [], RoseTree.node 2 []]).eulerTrace.depths =
+      [0, 1, 0, 1, 0] := by
+  native_decide
+
+end RoseTree
 
 end RMQ
