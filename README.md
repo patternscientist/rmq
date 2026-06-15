@@ -14,8 +14,10 @@ The project currently builds without Mathlib, using only Lean/Std plus `omega`.
 It proves a common half-open, leftmost-argmin contract for:
 
 - a direct linear scan backend,
-- a sparse table backend, and
-- a hybrid block backend with boundary scans and sparse middle summaries.
+- a sparse table backend,
+- a hybrid block backend with boundary scans and sparse middle summaries, and
+- a self-recursive hybrid backend with aligned boundary scans and recursive
+  middle summaries.
 
 The hybrid proof is already factored through a generic three-piece combinator:
 an exact nonempty left boundary, an optional middle interval, and an optional
@@ -37,6 +39,8 @@ right interval combine into one exact leftmost argmin witness.
   and backend proof.
 - `RMQ/Impl/HybridBlock.lean`: block summaries, sparse middle query, public
   hybrid query, and backend proof.
+- `RMQ/Impl/RecursiveHybrid.lean`: aligned query schedule and public
+  self-recursive hybrid backend built with `recurseOnSummary`.
 
 ## Build
 
@@ -54,7 +58,6 @@ rg -n "sorry|admit|axiom|unsafe|opaque|implemented_by" RMQ lakefile.toml
 
 ## Next Direction
 
-The next proof direction is to turn the recursive-middle combinator into a full
-self-recursive backend: compute aligned boundary windows for arbitrary queries,
-use `recurseOnSummary` to supply the summary backend, and discharge the public
-query schedule arithmetic.
+The next proof direction is to compare the sparse-middle and recursive-middle
+hybrid backends, then decide which scheduling lemmas should become stable API
+for future RMQ variants.
