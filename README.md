@@ -34,6 +34,8 @@ right interval combine into one exact leftmost argmin witness.
   shorter summary lists, concrete full-block minimum summaries, and lifting
   lemmas from summary candidates back to original-list candidates, including
   a generic recursive-middle hybrid combinator.
+- `RMQ/Core/Schedule.lean`: stable block-boundary scheduling helpers shared by
+  hybrid variants.
 - `RMQ/Impl/LinearScan.lean`: simplest exact backend.
 - `RMQ/Impl/SparseTable.lean`: sparse table cells, materialized table lookup,
   and backend proof.
@@ -41,6 +43,8 @@ right interval combine into one exact leftmost argmin witness.
   hybrid query, and backend proof.
 - `RMQ/Impl/RecursiveHybrid.lean`: aligned query schedule and public
   self-recursive hybrid backend built with `recurseOnSummary`.
+- `RMQ/Impl/Equivalence.lean`: contract-level equality between the sparse-middle
+  and self-recursive hybrid public queries.
 
 ## Build
 
@@ -58,6 +62,7 @@ rg -n "sorry|admit|axiom|unsafe|opaque|implemented_by" RMQ lakefile.toml
 
 ## Next Direction
 
-The next proof direction is to compare the sparse-middle and recursive-middle
-hybrid backends, then decide which scheduling lemmas should become stable API
-for future RMQ variants.
+The next proof direction is to broaden implementation comparisons: either prove
+contract-level equality between all public backends, or factor a generic
+backend-equality theorem from soundness, completeness, and invalid-query
+rejection.

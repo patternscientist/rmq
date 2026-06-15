@@ -1,4 +1,5 @@
 import RMQ.Core.Backend
+import RMQ.Core.Schedule
 import RMQ.Core.Window
 
 /-!
@@ -27,16 +28,6 @@ def lengthRec
 termination_by xs.length
 decreasing_by
   assumption
-
-/-- Number of full `b`-sized blocks in a list of length `n`. -/
-def compressedLength (n b : Nat) : Nat :=
-  n / b
-
-theorem compressedLength_lt_self
-    {n b : Nat} (hn : 0 < n) (hb : 1 < b) :
-    compressedLength n b < n := by
-  unfold compressedLength
-  exact Nat.div_lt_self hn hb
 
 theorem block_bound_of_lt_compressedLength
     {n b q : Nat} (hb : 0 < b) (hq : q < compressedLength n b) :
