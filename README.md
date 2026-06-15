@@ -30,6 +30,9 @@ right interval combine into one exact leftmost argmin witness.
 - `RMQ/Core/Window.lean`: direct scan/window lemmas.
 - `RMQ/Core/Backend.lean`: explicit backend interface with soundness,
   completeness, invalid-query rejection, and generic built-backend equality.
+- `RMQ/Core/LCA.lean`: proof-friendly rose-tree Euler depth moves, the
+  plus/minus-one depth invariant, first-occurrence windows, and the RMQ-backed
+  minimum-depth tour-node reduction.
 - `RMQ/Core/Recursion.lean`: Mathlib-free well-founded recursion over strictly
   shorter summary lists, concrete full-block minimum summaries, and lifting
   lemmas from summary candidates back to original-list candidates, including
@@ -62,6 +65,6 @@ rg -n "sorry|admit|axiom|unsafe|opaque|implemented_by" RMQ lakefile.toml
 
 ## Next Direction
 
-The next proof direction is to decide how much of this should be packaged for
-VeriBench: either keep the API theorem-oriented, or add executable comparison
-examples and small extraction notes around the four public backends.
+The next proof direction is to complete the LCA client story: connect generated
+rose-tree Euler node tours to the depth traces, then prove that the
+minimum-depth first-occurrence candidate is the expected ancestor.
