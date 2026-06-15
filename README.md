@@ -29,7 +29,8 @@ right interval combine into one exact leftmost argmin witness.
 - `RMQ/Core/Backend.lean`: explicit backend interface with soundness,
   completeness, and invalid-query rejection.
 - `RMQ/Core/Recursion.lean`: Mathlib-free well-founded recursion over strictly
-  shorter summary lists, plus public block-size shrink facts.
+  shorter summary lists, concrete full-block minimum summaries, and lifting
+  lemmas from summary candidates back to original-list candidates.
 - `RMQ/Impl/LinearScan.lean`: simplest exact backend.
 - `RMQ/Impl/SparseTable.lean`: sparse table cells, materialized table lookup,
   and backend proof.
@@ -52,7 +53,8 @@ rg -n "sorry|admit|axiom|unsafe|opaque|implemented_by" RMQ lakefile.toml
 
 ## Next Direction
 
-The next proof direction is to connect the new self-recursive summary scaffold
-to real block minima: replace the placeholder public summary shape with a
-block-minimum list, prove its exactness, and instantiate the recursive hybrid
-construction over that smaller RMQ problem.
+The next proof direction is to instantiate the recursive hybrid construction
+over the concrete block-minimum summary problem: use a recursively constructed
+summary backend to answer the middle full-block query, lift the selected block
+back to an original index, and plug that candidate into the existing hybrid
+combinator.

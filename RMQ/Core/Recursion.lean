@@ -1,4 +1,4 @@
-import RMQ.Core.Spec
+import RMQ.Core.Window
 
 /-!
 # Mathlib-free well-founded recursion helpers
@@ -36,6 +36,183 @@ theorem compressedLength_lt_self
     compressedLength n b < n := by
   unfold compressedLength
   exact Nat.div_lt_self hn hb
+
+theorem block_bound_of_lt_compressedLength
+    {n b q : Nat} (hb : 0 < b) (hq : q < compressedLength n b) :
+    q * b + b <= n := by
+  unfold compressedLength at hq
+  have hsucc_le : q + 1 <= n / b := by omega
+  have hmul_le : (q + 1) * b <= n := by
+    exact (Nat.le_div_iff_mul_le hb).1 hsucc_le
+  rw [Nat.add_mul] at hmul_le
+  simpa [Nat.one_mul, Nat.add_comm, Nat.add_left_comm, Nat.add_assoc] using hmul_le
+
+theorem block_start_lt_of_lt_compressedLength
+    {n b q : Nat} (hb : 0 < b) (hq : q < compressedLength n b) :
+    q * b < n := by
+  have hbound := block_bound_of_lt_compressedLength (n := n) hb hq
+  omega
+
+/-- Original-list index selected as the leftmost minimum of full block `q`. -/
+def blockMinIndex (xs : List Int) (b q : Nat) : Nat :=
+  scanWindow xs (q * b) b
+
+/-- Value stored for full block `q`; invalid blocks fall back to `0`. -/
+def blockMinValue (xs : List Int) (b q : Nat) : Int :=
+  match xs[blockMinIndex xs b q]? with
+  | some v => v
+  | none => 0
+
+/-- Full-block summary values for a fixed block size. -/
+def blockMinSummary (xs : List Int) (b : Nat) : List Int :=
+  List.ofFn (fun q : Fin (compressedLength xs.length b) =>
+    blockMinValue xs b q.1)
+
+theorem blockMinSummary_length (xs : List Int) (b : Nat) :
+    (blockMinSummary xs b).length = compressedLength xs.length b := by
+  simp [blockMinSummary]
+
+theorem blockMinSummary_get?_eq_blockMinValue
+    (xs : List Int) (b q : Nat) (hq : q < compressedLength xs.length b) :
+    (blockMinSummary xs b)[q]? = some (blockMinValue xs b q) := by
+  have hrow : q < (blockMinSummary xs b).length := by
+    simpa [blockMinSummary_length] using hq
+  rw [List.getElem?_eq_getElem hrow]
+  unfold blockMinSummary
+  simp
+
+theorem blockMinIndex_leftmost
+    (xs : List Int) (b q : Nat)
+    (hb : 0 < b) (hq : q < compressedLength xs.length b) :
+    LeftmostArgMin xs (q * b) (q * b + b) (blockMinIndex xs b q) := by
+  unfold blockMinIndex
+  have hbound : q * b + b <= xs.length :=
+    block_bound_of_lt_compressedLength (n := xs.length) hb hq
+  exact scanWindow_leftmost xs (q * b) b hb hbound
+
+theorem blockMinSummary_entry_exact
+    (xs : List Int) (b q : Nat)
+    (hb : 0 < b) (hq : q < compressedLength xs.length b) :
+    exists idx v,
+      (blockMinSummary xs b)[q]? = some v /\
+        xs[idx]? = some v /\
+        LeftmostArgMin xs (q * b) (q * b + b) idx := by
+  have harg := blockMinIndex_leftmost xs b q hb hq
+  rcases harg with ⟨_hpos, _hlen, _hleft, _hright, v, hget, hmin, hleftmost⟩
+  refine ⟨blockMinIndex xs b q, v, ?_, hget, ?_⟩
+  · have hsummary := blockMinSummary_get?_eq_blockMinValue xs b q hq
+    unfold blockMinValue at hsummary
+    simp [hget] at hsummary
+    exact hsummary
+  · exact ⟨_hpos, _hlen, _hleft, _hright, v, hget, hmin, hleftmost⟩
+
+theorem blockMinSummary_lift_leftmost
+    (xs : List Int) (b left right q : Nat)
+    (hb : 0 < b)
+    (hsummary : LeftmostArgMin (blockMinSummary xs b) left right q) :
+    LeftmostArgMin xs (left * b) (right * b) (blockMinIndex xs b q) := by
+  rcases hsummary with ⟨hleft_right, hright_len, hleft_q, hq_right, summaryVal,
+    hq_summary_get, hsummary_min, hsummary_leftmost⟩
+  have hright_le_compressed : right <= compressedLength xs.length b := by
+    simpa [blockMinSummary_length] using hright_len
+  have hq_compressed : q < compressedLength xs.length b := by omega
+  have hq_block := blockMinIndex_leftmost xs b q hb hq_compressed
+  rcases hq_block with ⟨_hq_pos, _hq_len, hq_block_left, hq_block_right,
+    blockVal, hq_block_get, hq_block_min, hq_block_leftmost⟩
+  have hq_summary_eq :=
+    blockMinSummary_get?_eq_blockMinValue xs b q hq_compressed
+  unfold blockMinValue at hq_summary_eq
+  simp [hq_block_get] at hq_summary_eq
+  have hsummary_blockVal : summaryVal = blockVal := by
+    exact Option.some.inj (by rw [← hq_summary_get, hq_summary_eq])
+  have hright_bound : right * b <= xs.length := by
+    exact (Nat.le_div_iff_mul_le hb).1 hright_le_compressed
+  have hrange_pos : left * b < right * b := by
+    exact Nat.mul_lt_mul_of_pos_right hleft_right hb
+  refine ⟨hrange_pos, hright_bound, ?_, ?_, blockVal, hq_block_get, ?_, ?_⟩
+  · exact Nat.le_trans (Nat.mul_le_mul_right b hleft_q) hq_block_left
+  · have hq_succ_bound : q * b + b <= right * b := by
+      have hsucc_le : q + 1 <= right := by omega
+      have hmul := Nat.mul_le_mul_right b hsucc_le
+      rw [Nat.add_mul] at hmul
+      simpa [Nat.one_mul, Nat.add_comm, Nat.add_left_comm, Nat.add_assoc] using hmul
+    omega
+  · intro t w ht_left ht_right hget
+    let j := t / b
+    have hj_left : left <= j := by
+      exact (Nat.le_div_iff_mul_le hb).2 ht_left
+    have hj_right : j < right := by
+      exact (Nat.div_lt_iff_lt_mul hb).2 ht_right
+    have hj_compressed : j < compressedLength xs.length b := by omega
+    rcases blockMinSummary_entry_exact xs b j hb hj_compressed with
+      ⟨jIdx, jVal, hj_summary_get, hj_get, hj_arg⟩
+    have hsummary_le : summaryVal <= jVal :=
+      hsummary_min j jVal hj_left hj_right hj_summary_get
+    have hblockVal_le_jVal : blockVal <= jVal := by
+      simpa [hsummary_blockVal] using hsummary_le
+    rcases hj_arg with ⟨_hj_pos, _hj_len, _hj_left, _hj_right, vj, hj_get_arg,
+      hj_min, _hj_leftmost⟩
+    have hvj : vj = jVal := by
+      exact Option.some.inj (by rw [← hj_get_arg, hj_get])
+    have ht_j_left : j * b <= t := by
+      unfold j
+      exact Nat.div_mul_le_self t b
+    have ht_j_right : t < j * b + b := by
+      unfold j
+      exact Nat.lt_div_mul_add hb
+    have hvj_le_w := hj_min t w ht_j_left ht_j_right hget
+    omega
+  · intro t w ht_left ht_idx hget
+    let j := t / b
+    have hj_left : left <= j := by
+      exact (Nat.le_div_iff_mul_le hb).2 ht_left
+    have ht_j_left : j * b <= t := by
+      unfold j
+      exact Nat.div_mul_le_self t b
+    have ht_j_right : t < j * b + b := by
+      unfold j
+      exact Nat.lt_div_mul_add hb
+    have ht_before_q_end : t < q * b + b := by
+      exact Nat.lt_trans ht_idx hq_block_right
+    have hj_lt_q_succ : j < q + 1 := by
+      exact (Nat.div_lt_iff_lt_mul hb).2 (by
+        simpa [Nat.add_mul, Nat.one_mul, Nat.add_comm, Nat.add_left_comm,
+          Nat.add_assoc] using ht_before_q_end)
+    by_cases hj_before_q : j < q
+    · have hj_compressed : j < compressedLength xs.length b := by omega
+      rcases blockMinSummary_entry_exact xs b j hb hj_compressed with
+        ⟨jIdx, jVal, hj_summary_get, hj_get, hj_arg⟩
+      have hsummary_lt : summaryVal < jVal :=
+        hsummary_leftmost j jVal hj_left hj_before_q hj_summary_get
+      have hblockVal_lt_jVal : blockVal < jVal := by
+        simpa [hsummary_blockVal] using hsummary_lt
+      rcases hj_arg with ⟨_hj_pos, _hj_len, _hj_left, _hj_right, vj, hj_get_arg,
+        hj_min, _hj_leftmost⟩
+      have hvj : vj = jVal := by
+        exact Option.some.inj (by rw [← hj_get_arg, hj_get])
+      have hvj_le_w := hj_min t w ht_j_left ht_j_right hget
+      omega
+    · have hj_eq_q : j = q := by omega
+      have ht_q_left : q * b <= t := by
+        simpa [j, hj_eq_q] using ht_j_left
+      exact hq_block_leftmost t w ht_q_left ht_idx hget
+
+/-- Map a summary block candidate back to its original-list block-minimum index. -/
+def liftBlockCandidate (xs : List Int) (b : Nat) : Option Nat -> Option Nat
+  | none => none
+  | some q => some (blockMinIndex xs b q)
+
+theorem blockMinSummary_lift_candidate
+    (xs : List Int) (b left right : Nat) {candidate : Option Nat}
+    (hb : 0 < b)
+    (hsummary : CandidateExact (blockMinSummary xs b) left right candidate) :
+    CandidateExact xs (left * b) (right * b)
+      (liftBlockCandidate xs b candidate) := by
+  rcases hsummary with ⟨hnone, hempty⟩ | ⟨q, hsome, harg⟩
+  · exact Or.inl ⟨by simp [liftBlockCandidate, hnone], by simp [hempty]⟩
+  · refine Or.inr ⟨blockMinIndex xs b q, ?_, ?_⟩
+    · simp [liftBlockCandidate, hsome]
+    · exact blockMinSummary_lift_leftmost xs b left right q hb harg
 
 /--
 For nontrivial inputs, the public hybrid block size is strictly larger than
@@ -128,18 +305,16 @@ theorem recurseOnSummary_of_large
   simp [hnot_small]
 
 /--
-The public hybrid block-size summary shape, currently tracking only the
-compressed problem size. The summary values are placeholders; later hybrid
-layers can replace them with actual block-minimum values while reusing the same
-shrink proof.
+The public hybrid block-size summary shape. Each full block contributes the
+value at its original leftmost block minimum, and the summary length is
+strictly smaller for nontrivial inputs.
 -/
 def publicBlockSummaryShape : SummaryShape where
-  summary := fun xs =>
-    List.replicate (compressedLength xs.length (Nat.log2 xs.length + 1)) 0
+  summary := fun xs => blockMinSummary xs (Nat.log2 xs.length + 1)
   shrink := by
     intro xs hlarge
-    simp [compressedLength]
-    exact publicCompressedLength_lt_self (xs := xs) hlarge
+    simpa [blockMinSummary_length] using
+      publicCompressedLength_lt_self (xs := xs) hlarge
 
 /--
 A tiny executable witness that the self-recursive shape is accepted by Lean's
