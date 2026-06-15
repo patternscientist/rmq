@@ -174,6 +174,138 @@ theorem RoseTree.eulerDepths_adjacent (tree : RoseTree) :
     AdjacentDepthsDifferByOne tree.eulerDepths := by
   exact tree.eulerDepthsAt_adjacent 0
 
+namespace RoseTree
+
+mutual
+  /-- First root-to-label path in the tree, if the label is present. -/
+  def pathTo? (target : Nat) : RoseTree -> Option (List Nat)
+    | node label children =>
+        if label = target then
+          some [label]
+        else
+          match pathToForest? target children with
+          | some path => some (label :: path)
+          | none => none
+
+  /-- First root-to-label path in a forest, if the label is present. -/
+  def pathToForest? (target : Nat) : List RoseTree -> Option (List Nat)
+    | [] => none
+    | child :: rest =>
+        match pathTo? target child with
+        | some path => some path
+        | none => pathToForest? target rest
+end
+
+end RoseTree
+
+/-- Common prefix of two root paths. -/
+def commonPrefix : List Nat -> List Nat -> List Nat
+  | [], _ => []
+  | _, [] => []
+  | x :: xs, y :: ys =>
+      if x = y then
+        x :: commonPrefix xs ys
+      else
+        []
+
+theorem commonPrefix_prefix_left (xs ys : List Nat) :
+    commonPrefix xs ys <+: xs := by
+  induction xs generalizing ys with
+  | nil =>
+      simp [commonPrefix, List.IsPrefix]
+  | cons x xs ih =>
+      cases ys with
+      | nil =>
+          simp [commonPrefix, List.IsPrefix]
+      | cons y ys =>
+          by_cases hxy : x = y
+          · subst y
+            cases ih ys with
+            | intro suffix hsuffix =>
+                apply Exists.intro suffix
+                simp [commonPrefix, hsuffix]
+          · apply Exists.intro (x :: xs)
+            simp [commonPrefix, hxy]
+
+theorem commonPrefix_prefix_right (xs ys : List Nat) :
+    commonPrefix xs ys <+: ys := by
+  induction xs generalizing ys with
+  | nil =>
+      simp [commonPrefix, List.IsPrefix]
+  | cons x xs ih =>
+      cases ys with
+      | nil =>
+          simp [commonPrefix, List.IsPrefix]
+      | cons y ys =>
+          by_cases hxy : x = y
+          · subst y
+            cases ih ys with
+            | intro suffix hsuffix =>
+                apply Exists.intro suffix
+                simp [commonPrefix, hsuffix]
+          · apply Exists.intro (y :: ys)
+            simp [commonPrefix, hxy]
+
+/-- Direct path-based LCA of two root paths. -/
+def pathLCA? (pathU pathV : List Nat) : Option Nat :=
+  (commonPrefix pathU pathV).getLast?
+
+/-- A node is a common ancestor of two root paths when it ends a common prefix. -/
+def PathCommonAncestor (pathU pathV : List Nat) (ancestor : Nat) : Prop :=
+  Exists fun pref : List Nat =>
+    pref <+: pathU /\ pref <+: pathV /\ pref.getLast? = some ancestor
+
+/--
+Path-level LCA: the ancestor is the final label in the maximal common prefix of
+the two root paths.
+-/
+def IsPathLCAOfPaths (pathU pathV : List Nat) (ancestor : Nat) : Prop :=
+  pathLCA? pathU pathV = some ancestor /\
+    PathCommonAncestor pathU pathV ancestor
+
+theorem pathLCA?_isPathLCAOfPaths
+    {pathU pathV : List Nat} {ancestor : Nat}
+    (h : pathLCA? pathU pathV = some ancestor) :
+    IsPathLCAOfPaths pathU pathV ancestor := by
+  refine ⟨h, ?_⟩
+  exact ⟨commonPrefix pathU pathV,
+    commonPrefix_prefix_left pathU pathV,
+    commonPrefix_prefix_right pathU pathV,
+    h⟩
+
+namespace RoseTree
+
+/-- Direct path-based LCA for two labels in a tree. -/
+def pathLCA? (tree : RoseTree) (u v : Nat) : Option Nat :=
+  match tree.pathTo? u, tree.pathTo? v with
+  | some pathU, some pathV => RMQ.pathLCA? pathU pathV
+  | _, _ => none
+
+/-- Tree-level path LCA spec for first-match root paths. -/
+def IsPathLCA (tree : RoseTree) (u v ancestor : Nat) : Prop :=
+  exists pathU pathV,
+    tree.pathTo? u = some pathU /\
+      tree.pathTo? v = some pathV /\
+      IsPathLCAOfPaths pathU pathV ancestor
+
+theorem pathLCA?_isPathLCA
+    {tree : RoseTree} {u v ancestor : Nat}
+    (h : tree.pathLCA? u v = some ancestor) :
+    tree.IsPathLCA u v ancestor := by
+  unfold pathLCA? at h
+  cases hu : tree.pathTo? u with
+  | none =>
+      simp [hu] at h
+  | some pathU =>
+      cases hv : tree.pathTo? v with
+      | none =>
+          simp [hu, hv] at h
+      | some pathV =>
+          simp [hu, hv] at h
+          exact ⟨pathU, pathV, hu, hv, pathLCA?_isPathLCAOfPaths h⟩
+
+end RoseTree
+
 /-- Find the first index containing `target`. -/
 def firstIndexOf? {α : Type u} [DecidableEq α] (target : α) : List α -> Option Nat
   | [] => none
@@ -410,6 +542,38 @@ theorem lcaCandidate_isLCAAnswer
     EulerTrace.IsLCAAnswer tree.eulerTrace u v node := by
   exact EulerTrace.lcaCandidate_isLCAAnswer tree.eulerTrace backend hresult
 
+/--
+Semantic agreement between generated Euler traces and direct root-path LCAs.
+This is the remaining nontrivial tree theorem: every trace-level LCA answer for
+the generated trace is also the direct common-prefix LCA of the root paths.
+-/
+def TracePathAgreement (tree : RoseTree) : Prop :=
+  forall {u v node : Nat},
+    EulerTrace.IsLCAAnswer tree.eulerTrace u v node ->
+      tree.IsPathLCA u v node
+
+theorem lcaCandidate_isPathLCA_of_tracePathAgreement
+    (tree : RoseTree) (backend : RMQBackend tree.eulerTrace.depths)
+    (hagreement : tree.TracePathAgreement)
+    {u v node : Nat}
+    (hresult : tree.lcaCandidate backend u v = some node) :
+    tree.IsPathLCA u v node := by
+  exact hagreement (tree.lcaCandidate_isLCAAnswer backend hresult)
+
+/--
+Bridge from the RMQ-generated candidate to the path-level LCA spec, assuming
+the trace candidate has been identified with the direct common-prefix path LCA.
+The remaining tree-semantic theorem is precisely the proof of this agreement
+for generated Euler traces.
+-/
+theorem lcaCandidate_isPathLCA_of_pathLCA
+    (tree : RoseTree) (backend : RMQBackend tree.eulerTrace.depths)
+    {u v node : Nat}
+    (_hresult : tree.lcaCandidate backend u v = some node)
+    (hpath : tree.pathLCA? u v = some node) :
+    tree.IsPathLCA u v node := by
+  exact pathLCA?_isPathLCA hpath
+
 example :
     (RoseTree.node 0 [RoseTree.node 1 [], RoseTree.node 2 []]).eulerTrace.nodes =
       [0, 1, 0, 2, 0] := by
@@ -418,6 +582,16 @@ example :
 example :
     (RoseTree.node 0 [RoseTree.node 1 [], RoseTree.node 2 []]).eulerTrace.depths =
       [0, 1, 0, 1, 0] := by
+  native_decide
+
+example :
+    (RoseTree.node 0 [RoseTree.node 1 [], RoseTree.node 2 []]).pathTo? 2 =
+      some [0, 2] := by
+  native_decide
+
+example :
+    (RoseTree.node 0 [RoseTree.node 1 [], RoseTree.node 2 []]).pathLCA? 1 2 =
+      some 0 := by
   native_decide
 
 end RoseTree
