@@ -28,6 +28,8 @@ right interval combine into one exact leftmost argmin witness.
 - `RMQ/Core/Window.lean`: direct scan/window lemmas.
 - `RMQ/Core/Backend.lean`: explicit backend interface with soundness,
   completeness, and invalid-query rejection.
+- `RMQ/Core/Recursion.lean`: Mathlib-free well-founded recursion over strictly
+  shorter summary lists, plus public block-size shrink facts.
 - `RMQ/Impl/LinearScan.lean`: simplest exact backend.
 - `RMQ/Impl/SparseTable.lean`: sparse table cells, materialized table lookup,
   and backend proof.
@@ -50,7 +52,7 @@ rg -n "sorry|admit|axiom|unsafe|opaque|implemented_by" RMQ lakefile.toml
 
 ## Next Direction
 
-The next proof direction is to push the generic hybrid theorem further away
-from the concrete block implementation: abstract over the boundary query and
-summary query exactness assumptions, then instantiate the current `HybridBlock`
-backend as one concrete schedule.
+The next proof direction is to connect the new self-recursive summary scaffold
+to real block minima: replace the placeholder public summary shape with a
+block-minimum list, prove its exactness, and instantiate the recursive hybrid
+construction over that smaller RMQ problem.
