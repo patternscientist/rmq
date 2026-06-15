@@ -1,3 +1,5 @@
+import RMQ.Impl.LinearScan
+import RMQ.Impl.SparseTable
 import RMQ.Impl.HybridBlock
 import RMQ.Impl.RecursiveHybrid
 
@@ -10,26 +12,75 @@ These results compare implementations at the public RMQ contract boundary.
 namespace RMQ
 
 /--
+The linear-scan and sparse-table public queries are extensionally equal by the
+generic backend contract.
+-/
+theorem linearScan_query_eq_sparseTable_query
+    (xs : List Int) (left right : Nat) :
+    LinearScan.query xs left right = SparseTable.query xs left right := by
+  simpa [RMQBackend.queryBuilt, LinearScan.backend, SparseTable.backend,
+    SparseTable.query]
+    using RMQBackend.queryBuilt_eq (LinearScan.backend xs)
+      (SparseTable.backend xs) left right
+
+/--
+The linear-scan and sparse-middle hybrid public queries are extensionally equal
+by the generic backend contract.
+-/
+theorem linearScan_query_eq_hybridBlock_query
+    (xs : List Int) (left right : Nat) :
+    LinearScan.query xs left right = HybridBlock.query xs left right := by
+  simpa [RMQBackend.queryBuilt, LinearScan.backend, HybridBlock.backend,
+    HybridBlock.query]
+    using RMQBackend.queryBuilt_eq (LinearScan.backend xs)
+      (HybridBlock.backend xs) left right
+
+/--
+The linear-scan and self-recursive hybrid public queries are extensionally equal
+by the generic backend contract.
+-/
+theorem linearScan_query_eq_recursiveHybrid_query
+    (xs : List Int) (left right : Nat) :
+    LinearScan.query xs left right = RecursiveHybrid.query xs left right := by
+  simpa [RMQBackend.queryBuilt, LinearScan.backend, RecursiveHybrid.query]
+    using RMQBackend.queryBuilt_eq (LinearScan.backend xs)
+      (RecursiveHybrid.backend xs) left right
+
+/--
+The sparse-table and sparse-middle hybrid public queries are extensionally
+equal by the generic backend contract.
+-/
+theorem sparseTable_query_eq_hybridBlock_query
+    (xs : List Int) (left right : Nat) :
+    SparseTable.query xs left right = HybridBlock.query xs left right := by
+  simpa [RMQBackend.queryBuilt, SparseTable.backend, SparseTable.query,
+    HybridBlock.backend, HybridBlock.query]
+    using RMQBackend.queryBuilt_eq (SparseTable.backend xs)
+      (HybridBlock.backend xs) left right
+
+/--
+The sparse-table and self-recursive hybrid public queries are extensionally
+equal by the generic backend contract.
+-/
+theorem sparseTable_query_eq_recursiveHybrid_query
+    (xs : List Int) (left right : Nat) :
+    SparseTable.query xs left right = RecursiveHybrid.query xs left right := by
+  simpa [RMQBackend.queryBuilt, SparseTable.backend, SparseTable.query,
+    RecursiveHybrid.query]
+    using RMQBackend.queryBuilt_eq (SparseTable.backend xs)
+      (RecursiveHybrid.backend xs) left right
+
+/--
 The sparse-middle hybrid and self-recursive hybrid public queries are
-extensionally equal. The proof uses only the shared leftmost-argmin contract:
-valid queries return the unique leftmost minimum, and invalid queries return
-`none`.
+extensionally equal by the generic backend contract.
 -/
 theorem hybridBlock_query_eq_recursiveHybrid_query
     (xs : List Int) (left right : Nat) :
     HybridBlock.query xs left right = RecursiveHybrid.query xs left right := by
-  by_cases hValid : ValidRange xs left right
-  · rcases HybridBlock.query_valid_exact xs left right hValid with
-      ⟨idx, hHybrid, harg⟩
-    have hRecursive : RecursiveHybrid.query xs left right = some idx :=
-      RecursiveHybrid.query_complete harg
-    rw [hHybrid, hRecursive]
-  · have hHybrid : HybridBlock.query xs left right = none :=
-      HybridBlock.invalid_none (xs := xs) (left := left) (right := right) hValid
-    have hRecursive : RecursiveHybrid.query xs left right = none :=
-      RecursiveHybrid.invalid_none (xs := xs) (left := left) (right := right)
-        hValid
-    rw [hHybrid, hRecursive]
+  simpa [RMQBackend.queryBuilt, HybridBlock.backend, HybridBlock.query,
+    RecursiveHybrid.query]
+    using RMQBackend.queryBuilt_eq (HybridBlock.backend xs)
+      (RecursiveHybrid.backend xs) left right
 
 theorem recursiveHybrid_query_eq_hybridBlock_query
     (xs : List Int) (left right : Nat) :

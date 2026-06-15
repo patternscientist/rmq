@@ -29,7 +29,7 @@ right interval combine into one exact leftmost argmin witness.
   and reusable exactness combinators.
 - `RMQ/Core/Window.lean`: direct scan/window lemmas.
 - `RMQ/Core/Backend.lean`: explicit backend interface with soundness,
-  completeness, and invalid-query rejection.
+  completeness, invalid-query rejection, and generic built-backend equality.
 - `RMQ/Core/Recursion.lean`: Mathlib-free well-founded recursion over strictly
   shorter summary lists, concrete full-block minimum summaries, and lifting
   lemmas from summary candidates back to original-list candidates, including
@@ -43,8 +43,8 @@ right interval combine into one exact leftmost argmin witness.
   hybrid query, and backend proof.
 - `RMQ/Impl/RecursiveHybrid.lean`: aligned query schedule and public
   self-recursive hybrid backend built with `recurseOnSummary`.
-- `RMQ/Impl/Equivalence.lean`: contract-level equality between the sparse-middle
-  and self-recursive hybrid public queries.
+- `RMQ/Impl/Equivalence.lean`: contract-level equality instantiations for all
+  public backend pairs.
 
 ## Build
 
@@ -62,7 +62,6 @@ rg -n "sorry|admit|axiom|unsafe|opaque|implemented_by" RMQ lakefile.toml
 
 ## Next Direction
 
-The next proof direction is to broaden implementation comparisons: either prove
-contract-level equality between all public backends, or factor a generic
-backend-equality theorem from soundness, completeness, and invalid-query
-rejection.
+The next proof direction is to decide how much of this should be packaged for
+VeriBench: either keep the API theorem-oriented, or add executable comparison
+examples and small extraction notes around the four public backends.
