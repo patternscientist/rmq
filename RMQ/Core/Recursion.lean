@@ -1,3 +1,4 @@
+import RMQ.Core.Backend
 import RMQ.Core.Window
 
 /-!
@@ -213,6 +214,100 @@ theorem blockMinSummary_lift_candidate
   · refine Or.inr ⟨blockMinIndex xs b q, ?_, ?_⟩
     · simp [liftBlockCandidate, hsome]
     · exact blockMinSummary_lift_leftmost xs b left right q hb harg
+
+/-- Query a summary backend on block indices, then lift its candidate. -/
+def recursiveMiddleCandidate
+    (xs : List Int) (b : Nat)
+    (summaryBackend : RMQBackend (blockMinSummary xs b))
+    (leftBlock rightBlock : Nat) : Option Nat :=
+  liftBlockCandidate xs b
+    (summaryBackend.query summaryBackend.build leftBlock rightBlock)
+
+theorem recursiveMiddleCandidate_exact
+    (xs : List Int) (b leftBlock rightBlock : Nat)
+    (summaryBackend : RMQBackend (blockMinSummary xs b))
+    (hb : 0 < b)
+    (hblocks : leftBlock <= rightBlock)
+    (hright : rightBlock <= compressedLength xs.length b) :
+    CandidateExact xs (leftBlock * b) (rightBlock * b)
+      (recursiveMiddleCandidate xs b summaryBackend leftBlock rightBlock) := by
+  by_cases hnonempty : leftBlock < rightBlock
+  · have hValid :
+        ValidRange (blockMinSummary xs b) leftBlock rightBlock := by
+      constructor
+      · exact hnonempty
+      · simpa [blockMinSummary_length] using hright
+    let len := rightBlock - leftBlock
+    have hlen : 0 < len := by
+      unfold len
+      omega
+    have hbound : leftBlock + len <= (blockMinSummary xs b).length := by
+      unfold len
+      omega
+    have hright_eq : leftBlock + len = rightBlock := by
+      unfold len
+      omega
+    have harg_scan :=
+      scanWindow_leftmost (blockMinSummary xs b) leftBlock len hlen hbound
+    have harg :
+        LeftmostArgMin (blockMinSummary xs b) leftBlock rightBlock
+          (scanWindow (blockMinSummary xs b) leftBlock len) := by
+      simpa [hright_eq] using harg_scan
+    have hquery :
+        summaryBackend.query summaryBackend.build leftBlock rightBlock =
+          some (scanWindow (blockMinSummary xs b) leftBlock len) :=
+      summaryBackend.complete harg
+    have hsummary :
+        CandidateExact (blockMinSummary xs b) leftBlock rightBlock
+          (summaryBackend.query summaryBackend.build leftBlock rightBlock) :=
+      Or.inr ⟨scanWindow (blockMinSummary xs b) leftBlock len, hquery, harg⟩
+    simpa [recursiveMiddleCandidate] using
+      blockMinSummary_lift_candidate xs b leftBlock rightBlock hb hsummary
+  · have hempty : leftBlock = rightBlock := by omega
+    have hbad :
+        Not (ValidRange (blockMinSummary xs b) leftBlock rightBlock) := by
+      intro hValid
+      omega
+    have hquery_none :
+        summaryBackend.query summaryBackend.build leftBlock rightBlock = none :=
+      summaryBackend.invalid_none hbad
+    exact Or.inl ⟨by simp [recursiveMiddleCandidate, hquery_none, liftBlockCandidate],
+      by simp [hempty]⟩
+
+/--
+Compose a nonempty left boundary, a recursively answered full-block middle, and
+an optional right boundary into an exact original-list RMQ witness.
+-/
+theorem combineRecursiveMiddleLeftmost
+    {xs : List Int} {b left leftBlock rightBlock right li : Nat}
+    {rightCandidate : Option Nat}
+    (summaryBackend : RMQBackend (blockMinSummary xs b))
+    (hb : 0 < b)
+    (hLeft : LeftmostArgMin xs left (leftBlock * b) li)
+    (hblocks : leftBlock <= rightBlock)
+    (hrightBlock : rightBlock <= compressedLength xs.length b)
+    (hRight : CandidateExact xs (rightBlock * b) right rightCandidate)
+    (hMiddleRight : rightBlock * b <= right) :
+    exists idx,
+      combineIndex xs
+        (combineIndex xs (some li)
+          (recursiveMiddleCandidate xs b summaryBackend leftBlock rightBlock))
+        rightCandidate = some idx /\
+      LeftmostArgMin xs left right idx := by
+  have hMiddle :
+      CandidateExact xs (leftBlock * b) (rightBlock * b)
+        (recursiveMiddleCandidate xs b summaryBackend leftBlock rightBlock) :=
+    recursiveMiddleCandidate_exact xs b leftBlock rightBlock summaryBackend hb
+      hblocks hrightBlock
+  have hLeftMiddle : leftBlock * b <= rightBlock * b :=
+    Nat.mul_le_mul_right b hblocks
+  exact combineHybridLeftmost
+    (xs := xs) (left := left) (leftEnd := leftBlock * b)
+    (middleEnd := rightBlock * b) (right := right) (li := li)
+    (middleCandidate :=
+      recursiveMiddleCandidate xs b summaryBackend leftBlock rightBlock)
+    (rightCandidate := rightCandidate)
+    hLeft hMiddle hRight hLeftMiddle hMiddleRight
 
 /--
 For nontrivial inputs, the public hybrid block size is strictly larger than
