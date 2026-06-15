@@ -215,6 +215,171 @@ make a label common-prefix path disagree with the Euler first-occurrence path.
 def LabelsUnique (tree : RoseTree) : Prop :=
   tree.labelsPreorder.Nodup
 
+mutual
+  /-- Euler-tour root paths for a tree, using `basePath` as the parent path. -/
+  def eulerPathsAt (basePath : List Nat) : RoseTree -> List (List Nat)
+    | node label children =>
+        let here := basePath ++ [label]
+        here :: eulerPathsForestAt here children
+
+  /-- Euler-tour root paths for a forest, returning to `parentPath` between children. -/
+  def eulerPathsForestAt
+      (parentPath : List Nat) : List RoseTree -> List (List Nat)
+    | [] => []
+    | child :: rest =>
+        eulerPathsAt parentPath child ++
+          parentPath :: eulerPathsForestAt parentPath rest
+end
+
+/-- Euler-tour root paths for a generated tree trace. -/
+def eulerPaths (tree : RoseTree) : List (List Nat) :=
+  tree.eulerPathsAt []
+
+theorem getLast?_append_singleton {α : Type u} (xs : List α) (x : α) :
+    (xs ++ [x]).getLast? = some x := by
+  exact List.getLast?_concat
+
+mutual
+  theorem eulerPathsAt_length_eq_eulerNodes
+      (basePath : List Nat) (tree : RoseTree) :
+      (tree.eulerPathsAt basePath).length = tree.eulerNodes.length := by
+    cases tree with
+    | node label children =>
+        have hforest :
+            (eulerPathsForestAt (basePath ++ [label]) children).length =
+              (eulerNodesForest label children).length :=
+          eulerPathsForestAt_length_eq_eulerNodesForest
+            (basePath ++ [label]) label children
+        simp [eulerPathsAt, eulerNodes, hforest]
+
+  theorem eulerPathsForestAt_length_eq_eulerNodesForest
+      (parentPath : List Nat) (parent : Nat) (forest : List RoseTree) :
+      (eulerPathsForestAt parentPath forest).length =
+        (eulerNodesForest parent forest).length := by
+    cases forest with
+    | nil =>
+        simp [eulerPathsForestAt, eulerNodesForest]
+    | cons child rest =>
+        have hchild :
+            (child.eulerPathsAt parentPath).length = child.eulerNodes.length :=
+          eulerPathsAt_length_eq_eulerNodes parentPath child
+        have hrest :
+            (eulerPathsForestAt parentPath rest).length =
+              (eulerNodesForest parent rest).length :=
+          eulerPathsForestAt_length_eq_eulerNodesForest parentPath parent rest
+        simp [eulerPathsForestAt, eulerNodesForest, hchild, hrest]
+end
+
+theorem eulerPaths_length_eq_eulerNodes (tree : RoseTree) :
+    tree.eulerPaths.length = tree.eulerNodes.length := by
+  exact eulerPathsAt_length_eq_eulerNodes [] tree
+
+mutual
+  theorem eulerPathsAt_last?_eq_eulerNodes
+      (basePath : List Nat) (tree : RoseTree) :
+      (tree.eulerPathsAt basePath).map List.getLast? =
+        tree.eulerNodes.map some := by
+    cases tree with
+    | node label children =>
+        have hhere : (basePath ++ [label]).getLast? = some label :=
+          getLast?_append_singleton basePath label
+        have hforest :
+            (eulerPathsForestAt (basePath ++ [label]) children).map List.getLast? =
+              (eulerNodesForest label children).map some :=
+          eulerPathsForestAt_last?_eq_eulerNodesForest
+            (basePath ++ [label]) label hhere children
+        simp [eulerPathsAt, eulerNodes, hhere, hforest]
+
+  theorem eulerPathsForestAt_last?_eq_eulerNodesForest
+      (parentPath : List Nat) (parent : Nat)
+      (hparent : parentPath.getLast? = some parent)
+      (forest : List RoseTree) :
+      (eulerPathsForestAt parentPath forest).map List.getLast? =
+        (eulerNodesForest parent forest).map some := by
+    cases forest with
+    | nil =>
+        simp [eulerPathsForestAt, eulerNodesForest]
+    | cons child rest =>
+        have hchild :
+            (child.eulerPathsAt parentPath).map List.getLast? =
+              child.eulerNodes.map some :=
+          eulerPathsAt_last?_eq_eulerNodes parentPath child
+        have hrest :
+            (eulerPathsForestAt parentPath rest).map List.getLast? =
+              (eulerNodesForest parent rest).map some :=
+          eulerPathsForestAt_last?_eq_eulerNodesForest
+            parentPath parent hparent rest
+        simp [eulerPathsForestAt, eulerNodesForest, hchild, hparent, hrest]
+end
+
+theorem eulerPaths_last?_eq_eulerNodes (tree : RoseTree) :
+    tree.eulerPaths.map List.getLast? = tree.eulerNodes.map some := by
+  exact eulerPathsAt_last?_eq_eulerNodes [] tree
+
+mutual
+  theorem pathTo?_mem_eulerPathsAt
+      (tree : RoseTree) (basePath : List Nat)
+      {target : Nat} {path : List Nat}
+      (hpath : tree.pathTo? target = some path) :
+      basePath ++ path ∈ eulerPathsAt basePath tree := by
+    cases tree with
+    | node label children =>
+        unfold pathTo? at hpath
+        by_cases hlabel : label = target
+        · simp [hlabel] at hpath
+          cases hpath
+          simp [eulerPathsAt, hlabel]
+        · simp [hlabel] at hpath
+          cases hforest : pathToForest? target children with
+          | none =>
+              simp [hforest] at hpath
+          | some childPath =>
+              simp [hforest] at hpath
+              cases hpath
+              have hmem :
+                  (basePath ++ [label]) ++ childPath ∈
+                    eulerPathsForestAt (basePath ++ [label]) children :=
+                pathToForest?_mem_eulerPathsForestAt
+                  children (basePath ++ [label]) hforest
+              change basePath ++ (label :: childPath) ∈
+                (basePath ++ [label]) ::
+                  eulerPathsForestAt (basePath ++ [label]) children
+              simp only [List.mem_cons]
+              right
+              simpa [List.append_assoc] using hmem
+
+  theorem pathToForest?_mem_eulerPathsForestAt
+      (forest : List RoseTree) (basePath : List Nat)
+      {target : Nat} {path : List Nat}
+      (hpath : pathToForest? target forest = some path) :
+      basePath ++ path ∈ eulerPathsForestAt basePath forest := by
+    cases forest with
+    | nil =>
+        simp [pathToForest?] at hpath
+    | cons child rest =>
+        unfold pathToForest? at hpath
+        match hchild : child.pathTo? target with
+        | some _ =>
+            simp [hchild] at hpath
+            cases hpath
+            have hmem :
+                basePath ++ path ∈ eulerPathsAt basePath child :=
+              pathTo?_mem_eulerPathsAt child basePath hchild
+            simp [eulerPathsForestAt, hmem]
+        | none =>
+            simp [hchild] at hpath
+            have hmem :
+                basePath ++ path ∈ eulerPathsForestAt basePath rest :=
+              pathToForest?_mem_eulerPathsForestAt rest basePath hpath
+            simp [eulerPathsForestAt, hmem]
+end
+
+theorem pathTo?_mem_eulerPaths
+    {tree : RoseTree} {target : Nat} {path : List Nat}
+    (hpath : tree.pathTo? target = some path) :
+    path ∈ tree.eulerPaths := by
+  simpa [eulerPaths] using pathTo?_mem_eulerPathsAt tree [] hpath
+
 end RoseTree
 
 /-- Common prefix of two root paths. -/
@@ -371,6 +536,17 @@ structure EulerTrace where
   length_eq : nodes.length = depths.length
   adjacent_depths : AdjacentDepthsDifferByOne depths
 
+/--
+An Euler trace paired with root-path annotations for every tour position. The
+paths are kept separate from `EulerTrace` so RMQ backends can remain purely
+depth/list based.
+-/
+structure EulerPathTrace where
+  trace : EulerTrace
+  paths : List (List Nat)
+  length_eq : paths.length = trace.nodes.length
+  last?_eq_nodes : paths.map List.getLast? = trace.nodes.map some
+
 /-- The generated Euler trace for a rose tree rooted at `startDepth`. -/
 def RoseTree.eulerTraceAt (startDepth : Int) (tree : RoseTree) : EulerTrace where
   nodes := tree.eulerNodes
@@ -383,6 +559,50 @@ def RoseTree.eulerTraceAt (startDepth : Int) (tree : RoseTree) : EulerTrace wher
 /-- The generated Euler trace for a rose tree rooted at depth zero. -/
 def RoseTree.eulerTrace (tree : RoseTree) : EulerTrace :=
   tree.eulerTraceAt 0
+
+/-- The generated Euler trace together with root-path annotations. -/
+def RoseTree.eulerPathTrace (tree : RoseTree) : EulerPathTrace where
+  trace := tree.eulerTrace
+  paths := tree.eulerPaths
+  length_eq := by
+    simpa [RoseTree.eulerTrace, RoseTree.eulerTraceAt] using
+      tree.eulerPaths_length_eq_eulerNodes
+  last?_eq_nodes := by
+    simpa [RoseTree.eulerTrace, RoseTree.eulerTraceAt] using
+      tree.eulerPaths_last?_eq_eulerNodes
+
+namespace EulerPathTrace
+
+/--
+A node lookup in a path-annotated trace can be lifted to the path at the same
+tour position, whose final label is exactly that node.
+-/
+theorem pathAt?_of_nodeAt?
+    (pathTrace : EulerPathTrace) {idx node : Nat}
+    (hnode : pathTrace.trace.nodes[idx]? = some node) :
+    exists path,
+      pathTrace.paths[idx]? = some path /\
+        path.getLast? = some node := by
+  rcases List.getElem?_eq_some_iff.mp hnode with ⟨hidx_nodes, hget_node⟩
+  have hidx_paths : idx < pathTrace.paths.length := by
+    rw [pathTrace.length_eq]
+    exact hidx_nodes
+  let path := pathTrace.paths[idx]'hidx_paths
+  have hpath : pathTrace.paths[idx]? = some path := by
+    simp [path, hidx_paths]
+  have hmap := congrArg (fun xs => xs[idx]?) pathTrace.last?_eq_nodes
+  have hleft :
+      (pathTrace.paths.map List.getLast?)[idx]? = some path.getLast? := by
+    simp [List.getElem?_map, hpath]
+  have hright :
+      (pathTrace.trace.nodes.map some)[idx]? = some (some node) := by
+    simp [List.getElem?_map, hnode]
+  change (pathTrace.paths.map List.getLast?)[idx]? =
+    (pathTrace.trace.nodes.map some)[idx]? at hmap
+  rw [hleft, hright] at hmap
+  exact ⟨path, hpath, Option.some.inj hmap⟩
+
+end EulerPathTrace
 
 namespace EulerTrace
 
@@ -603,6 +823,35 @@ theorem lcaCandidate_isLCAAnswer
     (hresult : tree.lcaCandidate backend u v = some node) :
     EulerTrace.IsLCAAnswer tree.eulerTrace u v node := by
   exact EulerTrace.lcaCandidate_isLCAAnswer tree.eulerTrace backend hresult
+
+theorem eulerPathAt?_of_eulerTraceNodeAt?
+    {tree : RoseTree} {idx node : Nat}
+    (hnode : tree.eulerTrace.nodes[idx]? = some node) :
+    exists path,
+      tree.eulerPaths[idx]? = some path /\
+        path.getLast? = some node := by
+  simpa [eulerPathTrace] using
+    (EulerPathTrace.pathAt?_of_nodeAt? tree.eulerPathTrace hnode)
+
+/--
+Every trace-level LCA answer for a generated trace has a generated root-path
+witness at the selected Euler-tour position.
+-/
+theorem pathWitness_of_isLCAAnswer
+    {tree : RoseTree} {u v node : Nat}
+    (hanswer : EulerTrace.IsLCAAnswer tree.eulerTrace u v node) :
+    exists i j idx path,
+      tree.eulerTrace.firstOccurrence? u = some i /\
+        tree.eulerTrace.firstOccurrence? v = some j /\
+        tree.eulerPaths[idx]? = some path /\
+        path.getLast? = some node /\
+        LeftmostArgMin tree.eulerTrace.depths
+          (EulerTrace.occurrenceWindow i j).1
+          (EulerTrace.occurrenceWindow i j).2 idx := by
+  rcases hanswer with ⟨i, j, idx, hu, hv, hnode, harg⟩
+  rcases eulerPathAt?_of_eulerTraceNodeAt? hnode with
+    ⟨path, hpath, hlast⟩
+  exact ⟨i, j, idx, path, hu, hv, hpath, hlast, harg⟩
 
 /--
 Semantic agreement between generated Euler traces and direct root-path LCAs.
