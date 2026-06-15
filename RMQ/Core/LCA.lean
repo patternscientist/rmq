@@ -215,6 +215,79 @@ make a label common-prefix path disagree with the Euler first-occurrence path.
 def LabelsUnique (tree : RoseTree) : Prop :=
   tree.labelsPreorder.Nodup
 
+theorem nodup_append_not_mem_right {α : Type u} {x : α} {xs ys : List α}
+    (h : (xs ++ ys).Nodup) (hx : x ∈ xs) :
+    x ∉ ys := by
+  induction xs with
+  | nil =>
+      simp at hx
+  | cons head tail ih =>
+      simp at h hx
+      rcases h with ⟨hhead, htail⟩
+      rcases hx with hx | hx
+      · intro hy
+        subst x
+        exact hhead.2 hy
+      · exact ih htail hx
+
+theorem nodup_append_not_mem_left {α : Type u} {x : α} {xs ys : List α}
+    (h : (xs ++ ys).Nodup) (hy : x ∈ ys) :
+    x ∉ xs := by
+  intro hx
+  exact nodup_append_not_mem_right h hx hy
+
+theorem labelsUnique_root_not_mem_children
+    {root : Nat} {children : List RoseTree}
+    (h : (RoseTree.node root children).LabelsUnique) :
+    root ∉ labelsPreorderForest children := by
+  unfold LabelsUnique at h
+  simp [labelsPreorder] at h
+  exact h.1
+
+theorem labelsUnique_children_nodup
+    {root : Nat} {children : List RoseTree}
+    (h : (RoseTree.node root children).LabelsUnique) :
+    (labelsPreorderForest children).Nodup := by
+  unfold LabelsUnique at h
+  simp [labelsPreorder] at h
+  exact h.2
+
+theorem labelsUnique_child_of_cons
+    {root : Nat} {child : RoseTree} {rest : List RoseTree}
+    (h : (RoseTree.node root (child :: rest)).LabelsUnique) :
+    child.LabelsUnique := by
+  unfold LabelsUnique at h ⊢
+  simp [labelsPreorder, labelsPreorderForest] at h ⊢
+  exact List.Nodup.sublist
+    (List.sublist_append_left child.labelsPreorder (labelsPreorderForest rest)) h.2
+
+theorem labelsUnique_root_rest_of_cons
+    {root : Nat} {child : RoseTree} {rest : List RoseTree}
+    (h : (RoseTree.node root (child :: rest)).LabelsUnique) :
+    (RoseTree.node root rest).LabelsUnique := by
+  unfold LabelsUnique at h ⊢
+  simp [labelsPreorder, labelsPreorderForest] at h ⊢
+  exact ⟨h.1.2, List.Nodup.sublist
+    (List.sublist_append_right child.labelsPreorder (labelsPreorderForest rest)) h.2⟩
+
+theorem labelsUnique_child_not_mem_rest
+    {root label : Nat} {child : RoseTree} {rest : List RoseTree}
+    (h : (RoseTree.node root (child :: rest)).LabelsUnique)
+    (hmem : label ∈ child.labelsPreorder) :
+    label ∉ labelsPreorderForest rest := by
+  unfold LabelsUnique at h
+  simp [labelsPreorder, labelsPreorderForest] at h
+  exact nodup_append_not_mem_right h.2 hmem
+
+theorem labelsUnique_rest_not_mem_child
+    {root label : Nat} {child : RoseTree} {rest : List RoseTree}
+    (h : (RoseTree.node root (child :: rest)).LabelsUnique)
+    (hmem : label ∈ labelsPreorderForest rest) :
+    label ∉ child.labelsPreorder := by
+  unfold LabelsUnique at h
+  simp [labelsPreorder, labelsPreorderForest] at h
+  exact nodup_append_not_mem_left h.2 hmem
+
 mutual
   theorem mem_labelsPreorder_of_mem_eulerNodes
       {tree : RoseTree} {label : Nat}
@@ -715,6 +788,145 @@ mutual
               simp
 end
 
+mutual
+  theorem pathTo?_eq_of_mem_eulerPathsAt_unique
+      (tree : RoseTree) (basePath : List Nat)
+      (hunique : tree.LabelsUnique)
+      {path : List Nat} {target : Nat}
+      (hmem : path ∈ tree.eulerPathsAt basePath)
+      (hlast : path.getLast? = some target) :
+      exists localPath,
+        tree.pathTo? target = some localPath ∧
+          path = basePath ++ localPath := by
+    cases tree with
+    | node label children =>
+        simp [eulerPathsAt] at hmem
+        rcases hmem with hhere | hforest
+        · subst path
+          have htarget : target = label := by
+            have hlast_label :
+                (basePath ++ [label]).getLast? = some label :=
+              getLast?_append_singleton basePath label
+            rw [hlast_label] at hlast
+            exact (Option.some.inj hlast).symm
+          subst target
+          refine ⟨[label], ?_, ?_⟩
+          · simp [pathTo?]
+          · simp
+        · have hparent :
+              (basePath ++ [label]).getLast? = some label :=
+            getLast?_append_singleton basePath label
+          have hforestNodup :
+              (labelsPreorderForest children).Nodup :=
+            labelsUnique_children_nodup hunique
+          have hlabel_not :
+              label ∉ labelsPreorderForest children :=
+            labelsUnique_root_not_mem_children hunique
+          rcases pathToForest?_eq_or_parent_of_mem_eulerPathsForestAt_unique
+              children (basePath ++ [label]) label
+              hparent hforestNodup hlabel_not hforest hlast with
+            ⟨htarget, hpath⟩ | ⟨childPath, hchildPath, hpath⟩
+          · subst target
+            refine ⟨[label], ?_, ?_⟩
+            · simp [pathTo?]
+            · simpa using hpath
+          · have htarget_mem :
+                target ∈ labelsPreorderForest children :=
+              pathToForest?_mem_labelsPreorderForest hchildPath
+            have htarget_ne : label ≠ target := by
+              intro hlabel_target
+              subst target
+              exact hlabel_not htarget_mem
+            refine ⟨label :: childPath, ?_, ?_⟩
+            · simp [pathTo?, htarget_ne, hchildPath]
+            · rw [hpath]
+              simp [List.append_assoc]
+
+  theorem pathToForest?_eq_or_parent_of_mem_eulerPathsForestAt_unique
+      (forest : List RoseTree) (parentPath : List Nat) (parent : Nat)
+      (hparent : parentPath.getLast? = some parent)
+      (hforestNodup : (labelsPreorderForest forest).Nodup)
+      (hparent_not : parent ∉ labelsPreorderForest forest)
+      {path : List Nat} {target : Nat}
+      (hmem : path ∈ eulerPathsForestAt parentPath forest)
+      (hlast : path.getLast? = some target) :
+      (target = parent ∧ path = parentPath) ∨
+        exists localPath,
+          pathToForest? target forest = some localPath ∧
+            path = parentPath ++ localPath := by
+    cases forest with
+    | nil =>
+        simp [eulerPathsForestAt] at hmem
+    | cons child rest =>
+        simp [eulerPathsForestAt] at hmem
+        have hchildUnique : child.LabelsUnique := by
+          unfold LabelsUnique
+          simp [labelsPreorderForest] at hforestNodup
+          exact List.Nodup.sublist
+            (List.sublist_append_left child.labelsPreorder
+              (labelsPreorderForest rest)) hforestNodup
+        have hrestNodup : (labelsPreorderForest rest).Nodup := by
+          simp [labelsPreorderForest] at hforestNodup
+          exact List.Nodup.sublist
+            (List.sublist_append_right child.labelsPreorder
+              (labelsPreorderForest rest)) hforestNodup
+        have hparent_not_child : parent ∉ child.labelsPreorder := by
+          intro hmem_child
+          exact hparent_not (by simp [labelsPreorderForest, hmem_child])
+        have hparent_not_rest : parent ∉ labelsPreorderForest rest := by
+          intro hmem_rest
+          exact hparent_not (by simp [labelsPreorderForest, hmem_rest])
+        rcases hmem with hchildMem | hreturn | hrestMem
+        · rcases pathTo?_eq_of_mem_eulerPathsAt_unique
+            child parentPath hchildUnique hchildMem hlast with
+            ⟨localPath, hlocal, hpath⟩
+          right
+          refine ⟨localPath, ?_, hpath⟩
+          simp [pathToForest?, hlocal]
+        · subst path
+          left
+          have htarget : target = parent := by
+            rw [hparent] at hlast
+            exact (Option.some.inj hlast).symm
+          exact ⟨htarget, rfl⟩
+        · rcases pathToForest?_eq_or_parent_of_mem_eulerPathsForestAt_unique
+            rest parentPath parent hparent hrestNodup hparent_not_rest
+            hrestMem hlast with
+            ⟨htarget, hpath⟩ | ⟨localPath, hlocal, hpath⟩
+          · left
+            exact ⟨htarget, hpath⟩
+          · have htarget_rest :
+                target ∈ labelsPreorderForest rest :=
+              pathToForest?_mem_labelsPreorderForest hlocal
+            have htarget_not_child : target ∉ child.labelsPreorder := by
+              simp [labelsPreorderForest] at hforestNodup
+              exact nodup_append_not_mem_left hforestNodup htarget_rest
+            have hchild_none : child.pathTo? target = none := by
+              cases hchild : child.pathTo? target with
+              | none => rfl
+              | some childPath =>
+                  have htarget_child :
+                      target ∈ child.labelsPreorder :=
+                    pathTo?_mem_labelsPreorder hchild
+                  exact False.elim (htarget_not_child htarget_child)
+            right
+            refine ⟨localPath, ?_, hpath⟩
+            simp [pathToForest?, hchild_none, hlocal]
+end
+
+theorem pathTo?_eq_of_mem_eulerPaths_unique
+    {tree : RoseTree} (hunique : tree.LabelsUnique)
+    {path : List Nat} {target : Nat}
+    (hmem : path ∈ tree.eulerPaths)
+    (hlast : path.getLast? = some target) :
+    tree.pathTo? target = some path := by
+  rcases pathTo?_eq_of_mem_eulerPathsAt_unique
+    tree [] hunique hmem hlast with
+    ⟨localPath, hlocal, hpath⟩
+  simp at hpath
+  subst path
+  simpa using hlocal
+
 end RoseTree
 
 /-- Find the first index containing `target`. -/
@@ -1164,6 +1376,72 @@ theorem pathWitness_of_isLCAAnswer
   rcases eulerPathAt?_of_eulerTraceNodeAt? hnode with
     ⟨path, hpath, hlast⟩
   exact ⟨i, j, idx, path, hu, hv, hpath, hlast, harg⟩
+
+theorem pathWitness_pathTo_of_isLCAAnswer_unique
+    {tree : RoseTree} (hunique : tree.LabelsUnique)
+    {u v node : Nat}
+    (hanswer : EulerTrace.IsLCAAnswer tree.eulerTrace u v node) :
+    exists i j idx path,
+      tree.eulerTrace.firstOccurrence? u = some i ∧
+        tree.eulerTrace.firstOccurrence? v = some j ∧
+        tree.eulerPaths[idx]? = some path ∧
+        tree.pathTo? node = some path ∧
+        LeftmostArgMin tree.eulerTrace.depths
+          (EulerTrace.occurrenceWindow i j).1
+          (EulerTrace.occurrenceWindow i j).2 idx := by
+  rcases pathWitness_of_isLCAAnswer hanswer with
+    ⟨i, j, idx, path, hu, hv, hpath, hlast, harg⟩
+  have hmem : path ∈ tree.eulerPaths :=
+    List.mem_of_getElem? hpath
+  have hpathTo :
+      tree.pathTo? node = some path :=
+    pathTo?_eq_of_mem_eulerPaths_unique hunique hmem hlast
+  exact ⟨i, j, idx, path, hu, hv, hpath, hpathTo, harg⟩
+
+theorem pathAtFirstOccurrence?_pathTo_unique
+    {tree : RoseTree} (hunique : tree.LabelsUnique)
+    {label idx : Nat}
+    (hfirst : tree.eulerTrace.firstOccurrence? label = some idx) :
+    exists path,
+      tree.eulerPaths[idx]? = some path ∧
+        tree.pathTo? label = some path := by
+  have hnode :
+      tree.eulerTrace.nodes[idx]? = some label :=
+    firstIndexOf?_getElem? hfirst
+  rcases eulerPathAt?_of_eulerTraceNodeAt? hnode with
+    ⟨path, hpath, hlast⟩
+  have hmem : path ∈ tree.eulerPaths :=
+    List.mem_of_getElem? hpath
+  have hpathTo :
+      tree.pathTo? label = some path :=
+    pathTo?_eq_of_mem_eulerPaths_unique hunique hmem hlast
+  exact ⟨path, hpath, hpathTo⟩
+
+theorem pathWitness_with_endpoints_of_isLCAAnswer_unique
+    {tree : RoseTree} (hunique : tree.LabelsUnique)
+    {u v node : Nat}
+    (hanswer : EulerTrace.IsLCAAnswer tree.eulerTrace u v node) :
+    exists i j idx pathU pathV pathNode,
+      tree.eulerTrace.firstOccurrence? u = some i ∧
+        tree.eulerTrace.firstOccurrence? v = some j ∧
+        tree.eulerPaths[i]? = some pathU ∧
+        tree.eulerPaths[j]? = some pathV ∧
+        tree.eulerPaths[idx]? = some pathNode ∧
+        tree.pathTo? u = some pathU ∧
+        tree.pathTo? v = some pathV ∧
+        tree.pathTo? node = some pathNode ∧
+        LeftmostArgMin tree.eulerTrace.depths
+          (EulerTrace.occurrenceWindow i j).1
+          (EulerTrace.occurrenceWindow i j).2 idx := by
+  rcases pathWitness_pathTo_of_isLCAAnswer_unique hunique hanswer with
+    ⟨i, j, idx, pathNode, hu, hv, hpathNode, hpathToNode, harg⟩
+  rcases pathAtFirstOccurrence?_pathTo_unique hunique hu with
+    ⟨pathU, hpathU, hpathToU⟩
+  rcases pathAtFirstOccurrence?_pathTo_unique hunique hv with
+    ⟨pathV, hpathV, hpathToV⟩
+  exact ⟨i, j, idx, pathU, pathV, pathNode,
+    hu, hv, hpathU, hpathV, hpathNode,
+    hpathToU, hpathToV, hpathToNode, harg⟩
 
 theorem firstOccurrence?_exists_of_mem_labelsPreorder
     {tree : RoseTree} {label : Nat}
