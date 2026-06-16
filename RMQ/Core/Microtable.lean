@@ -117,6 +117,195 @@ theorem localScanOffset_leftmost
     omega
   simpa [hidx, hend] using hscan
 
+theorem queryOffset?_blockSignature
+    {xs : List Int} {start blockSize left right : Nat}
+    (hbound : start + blockSize <= xs.length) :
+    (blockSignature xs start blockSize).queryOffset? left right =
+      if _hvalid : LocalValid blockSize left right then
+        some (localScanOffset xs start left right)
+      else
+        none := by
+  unfold blockSignature
+  exact
+    Nat.strongRecOn
+      (motive := fun blockSize =>
+        forall start left right,
+          start + blockSize <= xs.length ->
+            (shapeRange xs start blockSize).queryOffset? left right =
+              if _hvalid : LocalValid blockSize left right then
+                some (localScanOffset xs start left right)
+              else
+                none)
+      blockSize
+      (fun blockSize ih start left right hbound => by
+        cases blockSize with
+        | zero =>
+            simp [shapeRange, CartesianShape.queryOffset?, LocalValid]
+            omega
+        | succ blockSize' =>
+            let width := blockSize' + 1
+            let root := scanWindow xs start width
+            let leftLen := root - start
+            let rightStart := root + 1
+            let rightLen := start + width - rightStart
+            have hbounds : start <= root /\ root < start + width :=
+              scanWindow_bounds xs start width (by omega)
+            have hleftLen_lt : leftLen < width := by
+              unfold leftLen
+              omega
+            have hrightLen_lt : rightLen < width := by
+              unfold rightLen rightStart
+              omega
+            have hleftBound : start + leftLen <= xs.length := by
+              unfold leftLen
+              omega
+            have hrightBound : rightStart + rightLen <= xs.length := by
+              unfold rightStart rightLen
+              omega
+            have hleftSize :
+                (shapeRange xs start leftLen).size = leftLen :=
+              shapeRange_size xs start leftLen
+            have hrightSize :
+                (shapeRange xs rightStart rightLen).size = rightLen :=
+              shapeRange_size xs rightStart rightLen
+            have hpivot :
+                (shapeRange xs start
+                    (scanWindow xs start (blockSize' + 1) - start)).size =
+                  leftLen := by
+              simpa [width, root, leftLen] using hleftSize
+            have hsize : leftLen + 1 + rightLen = width := by
+              unfold leftLen rightLen rightStart
+              omega
+            by_cases hvalid : LocalValid width left right
+            · have hvalidShape :
+                  left < right /\
+                    right <=
+                      (shapeRange xs start leftLen).size + 1 +
+                        (shapeRange xs rightStart rightLen).size := by
+                simpa [LocalValid, hleftSize, hrightSize, hsize] using hvalid
+              rw [dif_pos hvalid]
+              simp [shapeRange, CartesianShape.queryOffset?, width, root,
+                leftLen, rightStart, rightLen, hvalidShape]
+              simp [hpivot]
+              by_cases hleft : right <= leftLen
+              · rw [dif_pos hleft]
+                have hvalidLeft : LocalValid leftLen left right := by
+                  unfold LocalValid at *
+                  omega
+                have hrec :=
+                  ih leftLen hleftLen_lt start left right hleftBound
+                have hrec' :
+                    (shapeRange xs start
+                        (scanWindow xs start (blockSize' + 1) - start)).queryOffset?
+                      left right =
+                        if _hvalid : LocalValid leftLen left right then
+                          some (localScanOffset xs start left right)
+                        else
+                          none := by
+                  simpa [width, root, leftLen] using hrec
+                rw [hrec', dif_pos hvalidLeft]
+              · rw [dif_neg hleft]
+                by_cases hright : leftLen < left
+                · rw [dif_pos hright]
+                  have hvalidRight :
+                      LocalValid rightLen
+                        (left - (leftLen + 1)) (right - (leftLen + 1)) := by
+                    unfold LocalValid at *
+                    omega
+                  have hrec :=
+                    ih rightLen hrightLen_lt rightStart
+                      (left - (leftLen + 1)) (right - (leftLen + 1))
+                      hrightBound
+                  have hrec' :
+                      (shapeRange xs
+                          (scanWindow xs start (blockSize' + 1) + 1)
+                          (start + (blockSize' + 1) -
+                            (scanWindow xs start (blockSize' + 1) + 1))).queryOffset?
+                        (left - (leftLen + 1)) (right - (leftLen + 1)) =
+                          if _hvalid :
+                              LocalValid rightLen
+                                (left - (leftLen + 1))
+                                (right - (leftLen + 1)) then
+                            some
+                              (localScanOffset xs rightStart
+                                (left - (leftLen + 1))
+                                (right - (leftLen + 1)))
+                          else
+                            none := by
+                    simpa [width, root, rightStart, rightLen] using hrec
+                  rw [hrec', dif_pos hvalidRight]
+                  simp
+                  have hrightStart : rightStart = start + (leftLen + 1) := by
+                    unfold rightStart leftLen
+                    omega
+                  have hchild_add := localScanOffset_add_start
+                    (xs := xs) (start := rightStart) (blockSize := rightLen)
+                    (left := left - (leftLen + 1))
+                    (right := right - (leftLen + 1)) hvalidRight
+                  have hfull_add := localScanOffset_add_start
+                    (xs := xs) (start := start) (blockSize := width)
+                    (left := left) (right := right) hvalid
+                  have hstart_eq :
+                      rightStart + (left - (leftLen + 1)) =
+                        start + left := by
+                    omega
+                  have hlen_eq :
+                      right - (leftLen + 1) - (left - (leftLen + 1)) =
+                        right - left := by
+                    omega
+                  rw [hstart_eq, hlen_eq] at hchild_add
+                  omega
+                · rw [dif_neg hright]
+                  have hrootArg :
+                      LeftmostArgMin xs (start + left) (start + right) root := by
+                    have hfullRoot :
+                        LeftmostArgMin xs start (start + width) root := by
+                      have hscanFull :=
+                        scanWindow_leftmost xs start width (by omega) hbound
+                      simpa [root] using hscanFull
+                    have hroot_eq : root = start + leftLen := by
+                      unfold leftLen
+                      omega
+                    exact leftmostArgMin_restrict_containing hfullRoot
+                      (by omega) (by omega)
+                      (by omega) (by omega)
+                  have hscan0 :=
+                    scanWindow_leftmost xs (start + left) (right - left)
+                      (by omega) (by omega)
+                  have hend :
+                      start + left + (right - left) = start + right := by
+                    omega
+                  have hscan :
+                      LeftmostArgMin xs (start + left) (start + right)
+                        (scanWindow xs (start + left) (right - left)) := by
+                    simpa [hend] using hscan0
+                  have hscan_eq_root :
+                      scanWindow xs (start + left) (right - left) = root :=
+                    leftmostArgMin_unique xs (start + left) (start + right)
+                      (scanWindow xs (start + left) (right - left)) root
+                      hscan hrootArg
+                  have hfull_add := localScanOffset_add_start
+                    (xs := xs) (start := start) (blockSize := width)
+                    (left := left) (right := right) hvalid
+                  have hlocal : localScanOffset xs start left right = leftLen := by
+                    unfold leftLen
+                    omega
+                  simp [hlocal]
+            · have hinvalidShape :
+                  Not
+                    (left < right /\
+                      right <=
+                        (shapeRange xs start leftLen).size + 1 +
+                          (shapeRange xs rightStart rightLen).size) := by
+                intro hshapeValid
+                apply hvalid
+                unfold LocalValid
+                omega
+              rw [dif_neg hvalid]
+              simp [shapeRange, CartesianShape.queryOffset?, width, root,
+                leftLen, rightStart, rightLen, hinvalidShape])
+      start left right hbound
+
 /--
 A certified fixed-size microtable. Only entries for shapes in
 `shapeUniverse blockSize` are semantically relevant; the exactness field states
@@ -135,6 +324,13 @@ structure Microtable (blockSize : Nat) where
             none
 
 namespace Microtable
+
+/-- The canonical certified microtable implemented by `CartesianShape.queryOffset?`. -/
+def raw (blockSize : Nat) : Microtable blockSize where
+  queryOffset? := CartesianShape.queryOffset?
+  exact := by
+    intro xs start left right hbound
+    exact queryOffset?_blockSignature hbound
 
 /-- Query a concrete block and lift the returned local offset to an index. -/
 def queryIndex?
@@ -256,6 +452,10 @@ def backend (xs : List Int) (table : Microtable xs.length) :
       simp
     exact queryIndex?_invalid table hbound hbad
 
+/-- Whole-list RMQ backend backed by the canonical raw shape microtable. -/
+def rawBackend (xs : List Int) : RMQBackend xs :=
+  backend xs (raw xs.length)
+
 end Microtable
 
 example :
@@ -265,6 +465,11 @@ example :
         CartesianShape.empty
         (CartesianShape.node CartesianShape.empty CartesianShape.empty))).queryOffset?
       2 4 = some 2 := by
+  native_decide
+
+example :
+    (Microtable.raw 4).queryOffset?
+      (blockSignature [4, 1, 1, 2] 0 4) 2 4 = some 2 := by
   native_decide
 
 end Cartesian
