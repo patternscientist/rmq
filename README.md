@@ -55,7 +55,8 @@ right interval combine into one exact leftmost argmin witness.
   shape universe for block signatures, a proved raw shape-only microtable, and
   a certified microtable contract that lifts to an exact in-block `RMQBackend`.
 - `RMQ/Core/CostKernels.lean`: costed direct window scan and raw microtable
-  lookup, with erasure theorems and first cost formulas/bounds.
+  lookup, with erasure theorems and first cost formulas/bounds. Query/table
+  lookup costs use a RAM model where indexed reads are unit-cost.
 - `RMQ/Core/Recursion.lean`: Mathlib-free well-founded recursion over strictly
   shorter summary lists, concrete full-block minimum summaries, and lifting
   lemmas from summary candidates back to original-list candidates, including
@@ -72,10 +73,15 @@ right interval combine into one exact leftmost argmin witness.
   layer, with memoized successor rows proved equivalent to recursive sparse
   rows, an exact-cost log-row builder, query equivalence with the verified
   sparse table, and exact fresh-table query costs.
+- `RMQ/Impl/FischerHeunCost.lean`: exact finite microtable cost/count profile:
+  raw shape lookup costs at most `blockSize + 1`, and the shape-table universe
+  has exactly `shapeCount blockSize` entries.
 - `RMQ/Impl/HybridBlock.lean`: block summaries, sparse middle query, public
   hybrid query, and backend proof.
 - `RMQ/Impl/RecursiveHybrid.lean`: aligned query schedule and public
   self-recursive hybrid backend built with `recurseOnSummary`.
+- `RMQ/Impl/RecursiveHybridCost.lean`: first recursive-hybrid build/query cost
+  recurrences, parameterized by the recursive summary-query cost.
 - `RMQ/Impl/Equivalence.lean`: contract-level equality instantiations for all
   public backend pairs.
 

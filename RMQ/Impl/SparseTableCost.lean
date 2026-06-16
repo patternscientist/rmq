@@ -203,6 +203,7 @@ def queryFromTableCosted
       queryFromTable xs table left right := by
   exact queryFromTableCosted_value xs table left right
 
+/-- RAM-model query cost: supplied table row/cell lookups are unit-cost. -/
 theorem queryFromTableCosted_cost
     (xs : List Int) (table : List (List (Option Nat)))
     (left right : Nat) :

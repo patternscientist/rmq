@@ -68,6 +68,62 @@ theorem scanWindowCosted_leftmost
       (Costed.erase (scanWindowCosted xs start len)) := by
   simpa using scanWindow_leftmost xs start len hlen hbound
 
+/-- Cost of an optional half-open range scan. Invalid ranges pay one check. -/
+def rangeScanCost (xs : List Int) (left right : Nat) : Nat :=
+  if _h : ValidRange xs left right then right - left - 1 else 1
+
+/-- Costed optional half-open range scan matching the linear-scan query shape. -/
+def rangeScanCosted (xs : List Int) (left right : Nat) :
+    Costed (Option Nat) :=
+  if _h : ValidRange xs left right then
+    Costed.map some (scanWindowCosted xs left (right - left))
+  else
+    Costed.tickValue 1 none
+
+@[simp] theorem rangeScanCosted_value
+    (xs : List Int) (left right : Nat) :
+    (rangeScanCosted xs left right).value =
+      if _h : ValidRange xs left right then
+        some (scanWindow xs left (right - left))
+      else
+        none := by
+  unfold rangeScanCosted
+  by_cases h : ValidRange xs left right
+  · rw [dif_pos h, dif_pos h]
+    simp [Costed.map_value]
+  · rw [dif_neg h, dif_neg h]
+    simp
+
+@[simp] theorem rangeScanCosted_erase
+    (xs : List Int) (left right : Nat) :
+    Costed.erase (rangeScanCosted xs left right) =
+      if _h : ValidRange xs left right then
+        some (scanWindow xs left (right - left))
+      else
+        none := by
+  exact rangeScanCosted_value xs left right
+
+theorem rangeScanCosted_cost
+    (xs : List Int) (left right : Nat) :
+    (rangeScanCosted xs left right).cost =
+      rangeScanCost xs left right := by
+  unfold rangeScanCosted rangeScanCost
+  by_cases h : ValidRange xs left right
+  · rw [dif_pos h, dif_pos h]
+    simp [Costed.map_cost, scanWindowCosted_cost]
+  · rw [dif_neg h, dif_neg h]
+    simp
+
+theorem rangeScanCosted_run
+    (xs : List Int) (left right : Nat) :
+    Costed.run (rangeScanCosted xs left right) =
+      (if _h : ValidRange xs left right then
+          some (scanWindow xs left (right - left))
+        else
+          none,
+        rangeScanCost xs left right) := by
+  simp [Costed.run, rangeScanCosted_value, rangeScanCosted_cost]
+
 namespace Cartesian
 
 namespace CartesianShape
