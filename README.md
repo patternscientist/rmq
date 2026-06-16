@@ -8,6 +8,10 @@ development. The code here is intentionally library-shaped rather than
 benchmark-shaped: the goal is to factor reusable specifications, backend
 contracts, and correctness lemmas that can support multiple RMQ algorithms.
 
+For a family-level theorem inventory, dependency DAG, correctness/cost matrix,
+and consolidated modeling notes, see
+[`docs/FAMILY_SUMMARY.md`](docs/FAMILY_SUMMARY.md).
+
 ## Current Status
 
 The project currently builds without Mathlib, using only Lean/Std plus `omega`.
