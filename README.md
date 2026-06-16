@@ -89,7 +89,8 @@ right interval combine into one exact leftmost argmin witness.
   materialized state with certified raw microtable, block-minimum summary, and
   summary sparse table; canonical build/query wrappers; and an exact backend
   proof that composes full-block boundary microtable lookups with the
-  recursive-hybrid summary scheduler. The final short right boundary still
+  recursive-hybrid summary scheduler. It also includes supplied-state query
+  cost erasure for freshly built states. The final short right boundary still
   uses a direct scan until the public wrapper grows a padding or tail policy.
 - `RMQ/Impl/HybridBlock.lean`: block summaries, sparse middle query, public
   hybrid query, and backend proof.

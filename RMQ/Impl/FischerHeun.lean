@@ -187,14 +187,313 @@ def queryWithState
   else
     none
 
+/-- Costed materialized local-table lookup for a supplied Fischer-Heun state. -/
+def microQueryIndexCosted
+    (xs : List Int) (state : State)
+    (start left right : Nat) : Costed (Option Nat) :=
+  Costed.tickValue materializedMicrotableLookupCost
+    (state.microtable.queryIndex? xs start left right)
+
+@[simp] theorem microQueryIndexCosted_value
+    (xs : List Int) (state : State) (start left right : Nat) :
+    (microQueryIndexCosted xs state start left right).value =
+      state.microtable.queryIndex? xs start left right := by
+  rfl
+
+theorem microQueryIndexCosted_cost
+    (xs : List Int) (state : State) (start left right : Nat) :
+    (microQueryIndexCosted xs state start left right).cost =
+      materializedMicrotableLookupCost := by
+  rfl
+
+/-- Exact cost expression for the costed right-boundary candidate. -/
+def rightBoundaryCandidateCost
+    (xs : List Int) (state : State) (start right : Nat) : Nat :=
+  if _hnonempty : start < right then
+    if _hbound : start + state.blockSize <= xs.length then
+      materializedMicrotableLookupCost
+    else
+      rangeScanCost xs start right
+  else
+    1
+
+/-- Costed right-boundary candidate matching `rightBoundaryCandidate`. -/
+def rightBoundaryCandidateCosted
+    (xs : List Int) (state : State) (start right : Nat) :
+    Costed (Option Nat) :=
+  if _hnonempty : start < right then
+    if _hbound : start + state.blockSize <= xs.length then
+      microQueryIndexCosted xs state start 0 (right - start)
+    else
+      rangeScanCosted xs start right
+  else
+    Costed.tickValue 1 none
+
+@[simp] theorem rightBoundaryCandidateCosted_value
+    (xs : List Int) (state : State) (start right : Nat) :
+    (rightBoundaryCandidateCosted xs state start right).value =
+      rightBoundaryCandidate xs state start right := by
+  unfold rightBoundaryCandidateCosted rightBoundaryCandidate
+  by_cases hnonempty : start < right
+  case pos =>
+    rw [dif_pos hnonempty, dif_pos hnonempty]
+    by_cases hbound : start + state.blockSize <= xs.length
+    case pos =>
+      rw [dif_pos hbound, dif_pos hbound]
+      simp [microQueryIndexCosted]
+    case neg =>
+      rw [dif_neg hbound, dif_neg hbound]
+      simp [RMQ.LinearScan.query]
+  case neg =>
+    rw [dif_neg hnonempty, dif_neg hnonempty]
+    simp
+
+theorem rightBoundaryCandidateCosted_cost
+    (xs : List Int) (state : State) (start right : Nat) :
+    (rightBoundaryCandidateCosted xs state start right).cost =
+      rightBoundaryCandidateCost xs state start right := by
+  unfold rightBoundaryCandidateCosted rightBoundaryCandidateCost
+  by_cases hnonempty : start < right
+  case pos =>
+    rw [dif_pos hnonempty, dif_pos hnonempty]
+    by_cases hbound : start + state.blockSize <= xs.length
+    case pos =>
+      rw [dif_pos hbound, dif_pos hbound]
+      simp [microQueryIndexCosted_cost]
+    case neg =>
+      rw [dif_neg hbound, dif_neg hbound]
+      exact rangeScanCosted_cost xs start right
+  case neg =>
+    rw [dif_neg hnonempty, dif_neg hnonempty]
+    rfl
+
+theorem rightBoundaryCandidateCost_eq_materialized
+    {xs : List Int} {state : State} {start right : Nat}
+    (hmaterialized :
+      start = right \/ start + state.blockSize <= xs.length) :
+    rightBoundaryCandidateCost xs state start right =
+      materializedMicrotableLookupCost := by
+  unfold rightBoundaryCandidateCost
+  by_cases hnonempty : start < right
+  case pos =>
+    rw [dif_pos hnonempty]
+    rcases hmaterialized with hempty | hbound
+    case inl =>
+      omega
+    case inr =>
+      rw [dif_pos hbound]
+  case neg =>
+    rw [dif_neg hnonempty]
+    rfl
+
+/-- Exact cost expression for `queryWithStateCosted`. -/
+def queryWithStateCost
+    (xs : List Int) (state : State) (left right : Nat) : Nat :=
+  if _hValid : ValidRange xs left right then
+    if _hb : 0 < state.blockSize then
+      let b := state.blockSize
+      let leftBlock := leftBoundaryBlock left b
+      let rightBlock := rightBoundaryBlock right b
+      if _hschedule : leftBlock <= rightBlock then
+        let rightStart := rightBlock * b
+        materializedMicrotableLookupCost +
+          SparseTable.queryFromTableCost (blockMinSummary xs b)
+            leftBlock rightBlock +
+            rightBoundaryCandidateCost xs state rightStart right + 2
+      else
+        rangeScanCost xs left right
+    else
+      rangeScanCost xs left right
+  else
+    1
+
+/--
+Costed supplied-state Fischer-Heun query.
+
+This consumes the state's materialized summary table. For freshly built states
+that table is the memoized sparse table used by `queryWithState`, so the
+erasure theorem below connects this supplied-table implementation back to the
+verified value query.
+-/
+def queryWithStateCosted
+    (xs : List Int) (state : State) (left right : Nat) :
+    Costed (Option Nat) :=
+  if _hValid : ValidRange xs left right then
+    if _hb : 0 < state.blockSize then
+      let b := state.blockSize
+      let leftBlock := leftBoundaryBlock left b
+      let rightBlock := rightBoundaryBlock right b
+      if _hschedule : leftBlock <= rightBlock then
+        let leftStart := (leftBlock - 1) * b
+        let rightStart := rightBlock * b
+        Costed.bind
+          (microQueryIndexCosted xs state leftStart
+            (left - leftStart) (leftBlock * b - leftStart))
+          fun leftCandidate =>
+        Costed.bind
+          (Costed.map (liftBlockCandidate xs b)
+            (SparseTable.queryFromTableCosted (blockMinSummary xs b)
+              state.summaryTable leftBlock rightBlock))
+          fun middleCandidate =>
+        Costed.bind
+          (rightBoundaryCandidateCosted xs state rightStart right)
+          fun rightCandidate =>
+        Costed.tickValue 2
+          (combineIndex xs (combineIndex xs leftCandidate middleCandidate)
+            rightCandidate)
+      else
+        rangeScanCosted xs left right
+    else
+      rangeScanCosted xs left right
+  else
+    Costed.tickValue 1 none
+
+theorem queryWithStateCosted_cost
+    (xs : List Int) (state : State) (left right : Nat) :
+    (queryWithStateCosted xs state left right).cost =
+      queryWithStateCost xs state left right := by
+  unfold queryWithStateCosted queryWithStateCost
+  by_cases hValid : ValidRange xs left right
+  case pos =>
+    rw [dif_pos hValid, dif_pos hValid]
+    by_cases hb : 0 < state.blockSize
+    case pos =>
+      rw [dif_pos hb, dif_pos hb]
+      by_cases hschedule :
+          leftBoundaryBlock left state.blockSize <=
+            rightBoundaryBlock right state.blockSize
+      case pos =>
+        rw [dif_pos hschedule, dif_pos hschedule]
+        simp [microQueryIndexCosted_cost, Costed.map_cost,
+          SparseTable.queryFromTableCosted_cost,
+          rightBoundaryCandidateCosted_cost]
+        omega
+      case neg =>
+        rw [dif_neg hschedule, dif_neg hschedule]
+        exact rangeScanCosted_cost xs left right
+    case neg =>
+      rw [dif_neg hb, dif_neg hb]
+      exact rangeScanCosted_cost xs left right
+  case neg =>
+    rw [dif_neg hValid, dif_neg hValid]
+    rfl
+
+theorem queryWithStateCost_eq_suppliedQueryCost_of_materialized
+    {xs : List Int} {state : State} {left right : Nat}
+    (hb : 0 < state.blockSize)
+    (hschedule :
+      leftBoundaryBlock left state.blockSize <=
+        rightBoundaryBlock right state.blockSize)
+    (hright :
+      rightBoundaryBlock right state.blockSize * state.blockSize = right \/
+        rightBoundaryBlock right state.blockSize * state.blockSize +
+            state.blockSize <= xs.length) :
+    queryWithStateCost xs state left right =
+      suppliedQueryCost xs state.blockSize left right := by
+  have hrightCost :
+      rightBoundaryCandidateCost xs state
+          (rightBoundaryBlock right state.blockSize * state.blockSize) right =
+        materializedMicrotableLookupCost := by
+    exact rightBoundaryCandidateCost_eq_materialized
+      (xs := xs) (state := state)
+      (start := rightBoundaryBlock right state.blockSize * state.blockSize)
+      (right := right) hright
+  simp [queryWithStateCost, suppliedQueryCost, hb, hschedule, hrightCost]
+
+theorem queryWithStateCosted_cost_eq_suppliedQueryCost_of_materialized
+    {xs : List Int} {state : State} {left right : Nat}
+    (hb : 0 < state.blockSize)
+    (hschedule :
+      leftBoundaryBlock left state.blockSize <=
+        rightBoundaryBlock right state.blockSize)
+    (hright :
+      rightBoundaryBlock right state.blockSize * state.blockSize = right \/
+        rightBoundaryBlock right state.blockSize * state.blockSize +
+            state.blockSize <= xs.length) :
+    (queryWithStateCosted xs state left right).cost =
+      suppliedQueryCost xs state.blockSize left right := by
+  rw [queryWithStateCosted_cost]
+  exact queryWithStateCost_eq_suppliedQueryCost_of_materialized
+    hb hschedule hright
+
+@[simp] theorem queryWithStateCosted_value_built
+    (xs : List Int) (blockSize left right : Nat) :
+    (queryWithStateCosted xs (buildWithBlockSize xs blockSize) left right).value =
+      queryWithState xs (buildWithBlockSize xs blockSize) left right := by
+  unfold queryWithStateCosted queryWithState
+  by_cases hValid : ValidRange xs left right
+  case pos =>
+    rw [dif_pos hValid, dif_pos hValid]
+    by_cases hb : 0 < blockSize
+    case pos =>
+      simp [buildWithBlockSize, hb]
+      by_cases hschedule :
+          leftBoundaryBlock left blockSize <=
+            rightBoundaryBlock right blockSize
+      case pos =>
+        simp [Costed.map_value, recursiveMiddleCandidate, summaryBackend,
+          RMQ.SparseTable.memoBackend, rightBoundaryCandidateCosted_value,
+          hschedule]
+      case neg =>
+        simp [RMQ.LinearScan.query, hschedule]
+    case neg =>
+      simp [buildWithBlockSize, hb, RMQ.LinearScan.query]
+  case neg =>
+    rw [dif_neg hValid, dif_neg hValid]
+    rfl
+
+theorem queryWithStateCosted_run_built
+    (xs : List Int) (blockSize left right : Nat) :
+    Costed.run
+        (queryWithStateCosted xs (buildWithBlockSize xs blockSize) left right) =
+      (queryWithState xs (buildWithBlockSize xs blockSize) left right,
+        queryWithStateCost xs (buildWithBlockSize xs blockSize) left right) := by
+  simp [Costed.run, queryWithStateCosted_cost]
+
 /-- Query with a freshly built explicit-block-size state. -/
 def queryWithBlockSize
     (xs : List Int) (blockSize left right : Nat) : Option Nat :=
   queryWithState xs (buildWithBlockSize xs blockSize) left right
 
+/-- Costed supplied-state query with a freshly built explicit-block-size state. -/
+def queryWithBlockSizeCosted
+    (xs : List Int) (blockSize left right : Nat) : Costed (Option Nat) :=
+  queryWithStateCosted xs (buildWithBlockSize xs blockSize) left right
+
+@[simp] theorem queryWithBlockSizeCosted_value
+    (xs : List Int) (blockSize left right : Nat) :
+    (queryWithBlockSizeCosted xs blockSize left right).value =
+      queryWithBlockSize xs blockSize left right := by
+  exact queryWithStateCosted_value_built xs blockSize left right
+
+theorem queryWithBlockSizeCosted_run
+    (xs : List Int) (blockSize left right : Nat) :
+    Costed.run (queryWithBlockSizeCosted xs blockSize left right) =
+      (queryWithBlockSize xs blockSize left right,
+        queryWithStateCost xs (buildWithBlockSize xs blockSize) left right) := by
+  exact queryWithStateCosted_run_built xs blockSize left right
+
 /-- Public query using the canonical quarter-log block size. -/
 def query (xs : List Int) (left right : Nat) : Option Nat :=
   queryWithState xs (build xs) left right
+
+/-- Public costed supplied-state query using the canonical quarter-log block size. -/
+def queryCosted (xs : List Int) (left right : Nat) : Costed (Option Nat) :=
+  queryWithStateCosted xs (build xs) left right
+
+@[simp] theorem queryCosted_value
+    (xs : List Int) (left right : Nat) :
+    (queryCosted xs left right).value = query xs left right := by
+  unfold queryCosted query build
+  exact queryWithStateCosted_value_built xs (canonicalBlockSize xs) left right
+
+theorem queryCosted_run
+    (xs : List Int) (left right : Nat) :
+    Costed.run (queryCosted xs left right) =
+      (query xs left right,
+        queryWithStateCost xs (build xs) left right) := by
+  unfold queryCosted query build
+  exact queryWithStateCosted_run_built xs (canonicalBlockSize xs) left right
 
 theorem queryWithState_valid_exact
     (xs : List Int) (state : State) (left right : Nat)

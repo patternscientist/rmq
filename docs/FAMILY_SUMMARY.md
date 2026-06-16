@@ -23,9 +23,8 @@ separate appendix.
   recursive-hybrid build recurrence solved linear, raw microtable lookup/count
   profile, and assembled Fischer-Heun linear-build/constant-supplied-query
   profile.
-- Main open integration point: connect the current microtable-backed
-  value-level Fischer-Heun query directly to its costed erasure theorem, then
-  add the final all-input wrapper with the small-input and tail policy.
+- Main open integration point: add the costed Fischer-Heun builder, then add
+  the final all-input wrapper with the small-input and tail policy.
 
 ## Dependency DAG
 
@@ -99,7 +98,7 @@ flowchart TD
 | Hybrid block | Exact public hybrid backend with boundary scans and sparse middle summaries. | No first-class cost profile yet. | Useful proof predecessor for the recursive and Fischer-Heun schedules. |
 | Recursive hybrid | Exact public recursive backend via `recurseOnSummary`. | Build recurrence solved: `buildCost xs <= 2 * xs.length`; query-step costed erasure and cost formula with supplied summary query. | End-to-end recursive query bound is still not the flagship result; Fischer-Heun now carries the constant-query story. |
 | Shape and microtable core | Shape/RMQ behavior equivalence, exact fixed-size shape signatures, shape universe count, certified raw local microtable, exact in-block backend. | Raw shape lookup cost bounded by `blockSize + 1`; shape count bounded by Catalan envelope `shapeCount b <= 4^b`. | The local theorem is now consumed by `Impl.FischerHeun`. |
-| Fischer-Heun value backend | `State` carries block size, raw microtable, block-minimum summary, and summary sparse table. `queryWithState` composes full-boundary microtable lookups, recursive-middle summary query, and a direct scan for the short trailing right boundary. Exactness, soundness, completeness, invalid rejection, and backend wrappers are proved. | Cost profile is proved separately in `FischerHeunCost`; direct erasure connection from this value query remains to be added. | Current value-level short-tail fallback is exact but not yet charged in the final all-input wrapper. |
+| Fischer-Heun value backend | `State` carries block size, raw microtable, block-minimum summary, and summary sparse table. `queryWithState` composes full-boundary microtable lookups, recursive-middle summary query, and a direct scan for the short trailing right boundary. Exactness, soundness, completeness, invalid rejection, and backend wrappers are proved. | `queryWithStateCosted` charges materialized microtable lookups, supplied summary sparse-table query, combines, and tail fallback; for freshly built states its value/run theorems erase to the verified value query. Its materialized-path cost is also identified with `suppliedQueryCost`. | Current value-level short-tail fallback is exact and charged in the supplied-state query cost, but the final constant-query wrapper still needs its padding or tail policy. |
 | Fischer-Heun cost profile | Correctness-independent counting/cost assumptions are packaged as theorem premises and canonical corollaries. | `buildCost <= 15 * xs.length`; supplied query cost `<= 8`; canonical theorem discharges budgets when `16 <= canonicalBlockSize xs`. | Cost claims are scoped to the RAM/unit-cost indexed-access model. |
 | LCA from RMQ | Generated Euler trace plus `TracePathAgreement` turns an exact RMQ backend over depths into an exact `LCABackend`; unique labels discharge trace/path agreement structurally. | No LCA build/query cost profile yet. | Natural next bridge: costed Euler build plus Fischer-Heun RMQ over depths gives O(n), O(1) LCA. |
 | RMQ from LCA | `RMQToLCAReduction` plus an exact LCA backend gives an exact RMQ backend. | No cost profile yet. | `Core.Cartesian` supplies a concrete certified reduction for RMQ intervals. |
@@ -122,10 +121,10 @@ flowchart TD
   `canonicalBlockSize xs = Nat.log2 xs.length / 4` and currently assumes
   `16 <= canonicalBlockSize xs`. Under that large-input regime the microtable
   slot budget and summary sparse-table log-row budget are discharged.
-- The value-level Fischer-Heun query is exact for all inputs, but the current
-  cost profile is not yet an erasure theorem for that exact value query. The
-  remaining wrapper should choose scan/sparse-table behavior for small inputs
-  and a canonical Fischer-Heun state for large inputs.
+- The value-level Fischer-Heun query is exact for all inputs, and the supplied
+  query now has a costed erasure theorem for freshly built states. The remaining
+  wrapper should choose scan/sparse-table behavior for small inputs and a
+  canonical Fischer-Heun state for large inputs.
 - The project remains Mathlib-free: imports are Lean/Std plus existing Lean
   arithmetic automation such as `omega`.
 
@@ -205,8 +204,10 @@ flowchart TD
   `materializedMicrotableLookupCost`, `suppliedQueryCost`, `buildCost`.
 - `RMQ/Impl/FischerHeun.lean`: `MicrotableFor`, `State`,
   `rightBoundaryCandidate`, `summaryBackend`, `buildWithBlockSize`, `build`,
-  `queryWithState`, `queryWithBlockSize`, `query`, `backendWithBlockSize`,
-  `backend`.
+  `queryWithState`, `microQueryIndexCosted`, `rightBoundaryCandidateCost`,
+  `rightBoundaryCandidateCosted`, `queryWithStateCost`,
+  `queryWithStateCosted`, `queryWithBlockSize`, `queryWithBlockSizeCosted`,
+  `query`, `queryCosted`, `backendWithBlockSize`, `backend`.
 
 ## Public Theorem Inventory
 
@@ -438,10 +439,18 @@ The names below are grouped by source module. Repeated base names in
   `linearBuild_constantQuery_profile`,
   `linearBuild_constantQuery_profile_of_shape_budget`,
   `linearBuild_constantQuery_profile_canonical`.
-- `RMQ/Impl/FischerHeun.lean` (13): `microQueryIndex_valid_exact`,
+- `RMQ/Impl/FischerHeun.lean` (27): `microQueryIndex_valid_exact`,
   `rightBoundaryCandidate_exact`, `buildWithBlockSize_blockSize`,
   `buildWithBlockSize_summary`, `buildWithBlockSize_summaryTable`,
-  `buildWithBlockSize_microtable`, `queryWithState_valid_exact`,
+  `buildWithBlockSize_microtable`, `microQueryIndexCosted_value`,
+  `microQueryIndexCosted_cost`, `rightBoundaryCandidateCosted_value`,
+  `rightBoundaryCandidateCosted_cost`,
+  `rightBoundaryCandidateCost_eq_materialized`, `queryWithStateCosted_cost`,
+  `queryWithStateCost_eq_suppliedQueryCost_of_materialized`,
+  `queryWithStateCosted_cost_eq_suppliedQueryCost_of_materialized`,
+  `queryWithStateCosted_value_built`, `queryWithStateCosted_run_built`,
+  `queryWithBlockSizeCosted_value`, `queryWithBlockSizeCosted_run`,
+  `queryCosted_value`, `queryCosted_run`, `queryWithState_valid_exact`,
   `queryWithState_sound`, `queryWithState_complete`,
   `queryWithState_invalid_none`, `query_sound`, `query_complete`,
   `invalid_none`.
@@ -480,9 +489,9 @@ completeness.
 
 ## Suggested Next Milestones
 
-1. Cost erasure for `FischerHeun.queryWithState`: define a costed counterpart
-   that charges materialized microtable lookups, summary sparse-table supplied
-   query, two combines, and the current short-tail fallback.
+1. Costed Fischer-Heun build: construct `State` with a costed builder that
+   charges the microtable slot budget, block-minimum summary construction, and
+   memoized summary sparse-table build, then prove erasure to `buildWithBlockSize`.
 2. Final all-input Fischer-Heun wrapper: small input falls back to scan or
    sparse table; large input uses canonical quarter-log Fischer-Heun and
    discharges the large-input side condition.
