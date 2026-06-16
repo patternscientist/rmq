@@ -170,6 +170,151 @@ theorem rawShapeTableCount_square_le_of_four_mul_le_log2
     (shapeCountEnvelope_square_le_of_four_mul_le_log2
       (blockSize := blockSize) (n := n) hn hlog)
 
+/--
+Canonical Fischer-Heun block size for the cost proof: one quarter of the
+base-2 logarithm of the input length.
+-/
+def canonicalBlockSize (xs : List Int) : Nat :=
+  Nat.log2 xs.length / 4
+
+theorem canonicalBlockSize_four_mul_le_log2 (xs : List Int) :
+    4 * canonicalBlockSize xs <= Nat.log2 xs.length := by
+  unfold canonicalBlockSize
+  simpa [Nat.mul_comm] using Nat.div_mul_le_self (Nat.log2 xs.length) 4
+
+private theorem nat_le_two_pow (n : Nat) :
+    n <= 2 ^ n := by
+  induction n with
+  | zero =>
+      simp
+  | succ n ih =>
+      rw [Nat.pow_succ]
+      have hpos : 1 <= 2 ^ n := Nat.succ_le_of_lt (Nat.pow_pos (by omega))
+      omega
+
+private theorem nat_succ_le_two_pow (n : Nat) :
+    n + 1 <= 2 ^ n := by
+  induction n with
+  | zero =>
+      simp
+  | succ n ih =>
+      rw [Nat.pow_succ]
+      have hpos : 1 <= 2 ^ n := Nat.succ_le_of_lt (Nat.pow_pos (by omega))
+      omega
+
+theorem localQuerySlotBudget_le_shapeCountEnvelope (b : Nat) :
+    localQuerySlotBudget b <= shapeCountEnvelope b := by
+  unfold localQuerySlotBudget
+  rw [shapeCountEnvelope_eq_two_pow_two_mul]
+  have hb := nat_le_two_pow b
+  have hsucc := nat_succ_le_two_pow b
+  have hmul : b * (b + 1) <= 2 ^ b * 2 ^ b :=
+    Nat.mul_le_mul hb hsucc
+  have hdiv : b * (b + 1) / 2 <= b * (b + 1) :=
+    Nat.div_le_self _ _
+  have hpow : 2 ^ b * 2 ^ b = 2 ^ (2 * b) := by
+    rw [← Nat.pow_add]
+    congr
+    omega
+  exact Nat.le_trans hdiv (Nat.le_trans hmul (Nat.le_of_eq hpow))
+
+theorem rawMicrotableSlotBudget_le_shapeCountEnvelope_square (b : Nat) :
+    rawMicrotableSlotBudget b <= shapeCountEnvelope b * shapeCountEnvelope b := by
+  unfold rawMicrotableSlotBudget
+  exact Nat.mul_le_mul
+    (rawShapeTableCount_le_shapeCountEnvelope b)
+    (localQuerySlotBudget_le_shapeCountEnvelope b)
+
+theorem rawMicrotableSlotBudget_le_length_of_four_mul_le_log2
+    {xs : List Int} {b : Nat}
+    (hpos : 0 < xs.length)
+    (hlog : 4 * b <= Nat.log2 xs.length) :
+    rawMicrotableSlotBudget b <= xs.length := by
+  exact Nat.le_trans
+    (rawMicrotableSlotBudget_le_shapeCountEnvelope_square b)
+    (shapeCountEnvelope_square_le_of_four_mul_le_log2
+      (blockSize := b) (n := xs.length) hpos hlog)
+
+theorem rawMicrotableSlotBudget_canonical_le_length
+    (xs : List Int) (hpos : 0 < xs.length) :
+    rawMicrotableSlotBudget (canonicalBlockSize xs) <= xs.length := by
+  exact rawMicrotableSlotBudget_le_length_of_four_mul_le_log2
+    (xs := xs) (b := canonicalBlockSize xs) hpos
+    (canonicalBlockSize_four_mul_le_log2 xs)
+
+private theorem log2_le_of_lt_pow_succ {n k : Nat}
+    (h : n < 2 ^ (k + 1)) :
+    Nat.log2 n <= k := by
+  by_cases hzero : n = 0
+  · simp [hzero]
+  · by_cases hle : Nat.log2 n <= k
+    · exact hle
+    have hk : k + 1 <= Nat.log2 n := by omega
+    have hmono : 2 ^ (k + 1) <= 2 ^ Nat.log2 n := by
+      exact Nat.pow_le_pow_right (by omega) hk
+    have hself : 2 ^ Nat.log2 n <= n := Nat.log2_self_le hzero
+    have : 2 ^ (k + 1) <= n := Nat.le_trans hmono hself
+    omega
+
+private theorem div_lt_pow_of_lt_pow_add_four
+    {n b k : Nat} (hb : 16 <= b) (hn : n < 2 ^ (k + 4)) :
+    n / b < 2 ^ k := by
+  by_cases hlt : n / b < 2 ^ k
+  · exact hlt
+  have hq : 2 ^ k <= n / b := Nat.le_of_not_gt hlt
+  have hqmul : 2 ^ k * b <= (n / b) * b :=
+    Nat.mul_le_mul_right b hq
+  have hdivmul : (n / b) * b <= n :=
+    Nat.div_mul_le_self n b
+  have hbmul : 2 ^ k * 16 <= 2 ^ k * b :=
+    Nat.mul_le_mul_left (2 ^ k) hb
+  have hpow : 2 ^ k * 16 = 2 ^ (k + 4) := by
+    rw [Nat.pow_add]
+  have : 2 ^ (k + 4) <= n := by
+    rw [← hpow]
+    exact Nat.le_trans hbmul (Nat.le_trans hqmul hdivmul)
+  omega
+
+theorem summaryLog_canonical_le_four_mul
+    (xs : List Int) (hb : 16 <= canonicalBlockSize xs) :
+    Nat.log2 (blockMinSummary xs (canonicalBlockSize xs)).length <=
+      4 * canonicalBlockSize xs := by
+  let l := Nat.log2 xs.length
+  let b := canonicalBlockSize xs
+  have hb' : 16 <= b := by simpa [b] using hb
+  have hlog_lt : l < b * 4 + 4 := by
+    have h := Nat.lt_div_mul_add (by omega : 0 < 4) (a := l)
+    simpa [b, canonicalBlockSize, Nat.mul_comm] using h
+  have hlog_succ : l + 1 <= 4 * b + 4 := by
+    omega
+  have hlen_lt_log : xs.length < 2 ^ (l + 1) := by
+    simpa [l] using (Nat.lt_log2_self (n := xs.length))
+  have hpow_le : 2 ^ (l + 1) <= 2 ^ (4 * b + 4) := by
+    exact Nat.pow_le_pow_right (by omega) hlog_succ
+  have hlen_lt : xs.length < 2 ^ (4 * b + 4) :=
+    Nat.lt_of_lt_of_le hlen_lt_log hpow_le
+  have hsummary_len :
+      (blockMinSummary xs b).length = xs.length / b := by
+    simp [blockMinSummary_length, compressedLength]
+  have hdiv_lt : xs.length / b < 2 ^ (4 * b) :=
+    div_lt_pow_of_lt_pow_add_four (n := xs.length) (b := b)
+      (k := 4 * b) hb' hlen_lt
+  have hdiv_lt_succ : xs.length / b < 2 ^ (4 * b + 1) := by
+    have hpow_mono : 2 ^ (4 * b) <= 2 ^ (4 * b + 1) := by
+      exact Nat.pow_le_pow_right (by omega) (by omega)
+    exact Nat.lt_of_lt_of_le hdiv_lt hpow_mono
+  have htarget := log2_le_of_lt_pow_succ
+    (n := xs.length / b) (k := 4 * b) hdiv_lt_succ
+  simpa [b, hsummary_len] using htarget
+
+theorem canonicalBlockSize_pos_length_of_ge_sixteen
+    {xs : List Int} (hb : 16 <= canonicalBlockSize xs) :
+    0 < xs.length := by
+  by_cases hpos : 0 < xs.length
+  · exact hpos
+  have hzero : xs.length = 0 := Nat.eq_zero_of_not_pos hpos
+  simp [canonicalBlockSize, hzero] at hb
+
 def summarySparseBuildCost (xs : List Int) (b : Nat) : Nat :=
   SparseTable.memoBuildSparseTableCost (blockMinSummary xs b)
 
@@ -360,6 +505,29 @@ theorem linearBuild_constantQuery_profile_of_shape_budget :
   exact ⟨buildCost_le_fifteen_mul_length_of_shape_budget
       xs b hslots hsquare hlog,
     fun left right => suppliedQueryCost_le_eight xs b left right⟩
+
+/--
+Canonical-block-size Fischer-Heun profile. For inputs large enough that the
+quarter-log block size is at least `16`, the canonical choice discharges the
+microtable budget and summary sparse-table log-row budget automatically.
+-/
+theorem linearBuild_constantQuery_profile_canonical :
+    exists buildC queryC,
+      forall xs,
+        16 <= canonicalBlockSize xs ->
+          buildCost xs (canonicalBlockSize xs) <= buildC * xs.length /\
+            forall left right,
+              suppliedQueryCost xs (canonicalBlockSize xs) left right <=
+                queryC := by
+  refine ⟨15, 8, ?_⟩
+  intro xs hb
+  have hpos := canonicalBlockSize_pos_length_of_ge_sixteen (xs := xs) hb
+  have hmicro := rawMicrotableSlotBudget_canonical_le_length xs hpos
+  have hsummary := summaryLog_canonical_le_four_mul xs hb
+  exact ⟨buildCost_le_fifteen_mul_length xs (canonicalBlockSize xs)
+      hmicro hsummary,
+    fun left right => suppliedQueryCost_le_eight xs (canonicalBlockSize xs)
+      left right⟩
 
 end FischerHeun
 

@@ -79,7 +79,8 @@ right interval combine into one exact leftmost argmin witness.
   `shapeCount b <= 4^b` and the square-root table-count corollary
   `rawShapeTableCount b * rawShapeTableCount b <= n`. It also contains the
   assembled Fischer-Heun cost profile: linear preprocessing and constant
-  supplied-query cost under the stated RAM/unit-cost indexed-access model.
+  supplied-query cost under the stated RAM/unit-cost indexed-access model,
+  plus the canonical quarter-log block-size theorem for large inputs.
 - `RMQ/Impl/HybridBlock.lean`: block summaries, sparse middle query, public
   hybrid query, and backend proof.
 - `RMQ/Impl/RecursiveHybrid.lean`: aligned query schedule and public
@@ -112,15 +113,14 @@ side now has a concrete Cartesian tree proof: endpoint LCAs in the built
 Cartesian tree are exactly leftmost RMQ witnesses, yielding
 `Cartesian.certifiedReduction`.
 
-The current cost frontier is to discharge the remaining Fischer-Heun side
-conditions for a canonical block-size choice, then lift the recursive-hybrid
-query recurrence to an end-to-end query bound. Good polishing targets also
-include API ergonomics around the certified Cartesian reduction and examples
-that compose it with `LCABackend`s.
+The current cost frontier is to lift the recursive-hybrid query recurrence to
+an end-to-end query bound and to connect the cost profiles more directly to the
+verified value-level backends. Good polishing targets also include API
+ergonomics around the certified Cartesian reduction and examples that compose
+it with `LCABackend`s.
 
 The recursive-hybrid build recurrence is now solved with an explicit linear
 bound, and the Fischer-Heun shape-table count is now bounded by the
-square-root budget under the base-2 condition `4*b <= log2 n`. The assembled
-Fischer-Heun theorem packages these into a `⟨linear build, constant supplied
-query⟩` cost profile once the microtable slot budget and summary-table log-row
-budget are supplied.
+square-root budget under the base-2 condition `4*b <= log2 n`. The canonical
+Fischer-Heun theorem now chooses `b = log2 n / 4` and proves the remaining
+microtable and summary-log budgets automatically once `16 <= b`.
