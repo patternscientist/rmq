@@ -1,3 +1,4 @@
+import RMQ.Core.Microtable
 import RMQ.Impl.LinearScan
 import RMQ.Impl.SparseTable
 import RMQ.Impl.HybridBlock
@@ -47,6 +48,18 @@ theorem linearScan_query_eq_recursiveHybrid_query
       (RecursiveHybrid.backend xs) left right
 
 /--
+The linear-scan and raw shape-microtable public queries are extensionally equal
+by the generic backend contract.
+-/
+theorem linearScan_query_eq_microtableRaw_query
+    (xs : List Int) (left right : Nat) :
+    LinearScan.query xs left right =
+      RMQBackend.queryBuilt (Cartesian.Microtable.rawBackend xs) left right := by
+  simpa [RMQBackend.queryBuilt, LinearScan.backend, LinearScan.query]
+    using RMQBackend.queryBuilt_eq (LinearScan.backend xs)
+      (Cartesian.Microtable.rawBackend xs) left right
+
+/--
 The sparse-table and sparse-middle hybrid public queries are extensionally
 equal by the generic backend contract.
 -/
@@ -69,6 +82,18 @@ theorem sparseTable_query_eq_recursiveHybrid_query
     RecursiveHybrid.query]
     using RMQBackend.queryBuilt_eq (SparseTable.backend xs)
       (RecursiveHybrid.backend xs) left right
+
+/--
+The sparse-table and raw shape-microtable public queries are extensionally
+equal by the generic backend contract.
+-/
+theorem sparseTable_query_eq_microtableRaw_query
+    (xs : List Int) (left right : Nat) :
+    SparseTable.query xs left right =
+      RMQBackend.queryBuilt (Cartesian.Microtable.rawBackend xs) left right := by
+  simpa [RMQBackend.queryBuilt, SparseTable.backend, SparseTable.query]
+    using RMQBackend.queryBuilt_eq (SparseTable.backend xs)
+      (Cartesian.Microtable.rawBackend xs) left right
 
 /--
 The sparse-middle hybrid and self-recursive hybrid public queries are
