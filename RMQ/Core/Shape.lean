@@ -267,8 +267,7 @@ theorem ShapeOfSize.size_eq
 
 /--
 Computable universe of binary Cartesian shapes of a fixed size. Its length is
-the Catalan number for that size; the formal length/counting theorem is the next
-layer above this enumerator.
+the Catalan number for that size, witnessed below by `shapeCount_succ`.
 -/
 def shapesOfSize (n : Nat) : List CartesianShape :=
   match n with
@@ -289,6 +288,19 @@ decreasing_by
 /-- The finite shape count; this is the Catalan-count sequence for shapes. -/
 def shapeCount (n : Nat) : Nat :=
   (shapesOfSize n).length
+
+private theorem sum_map_const_nat {α : Type} (xs : List α) (n : Nat) :
+    ((xs.map fun _ => n).sum) = xs.length * n := by
+  simp [List.map_const']
+
+@[simp] theorem shapeCount_zero : shapeCount 0 = 1 := by
+  simp [shapeCount, shapesOfSize]
+
+theorem shapeCount_succ (n : Nat) :
+    shapeCount (n + 1) =
+      ((List.finRange (n + 1)).map fun split =>
+        shapeCount split.val * shapeCount (n - split.val)).sum := by
+  simp [shapeCount, shapesOfSize, List.length_flatMap, sum_map_const_nat]
 
 theorem mem_shapesOfSize_shapeOfSize
     {n : Nat} {shape : CartesianShape}
@@ -331,6 +343,38 @@ theorem mem_shapesOfSize_shapeOfSize
               omega
             simpa [hsize] using hnode)
       hmem
+
+theorem shapeOfSize_mem_shapesOfSize
+    {n : Nat} {shape : CartesianShape}
+    (hshape : ShapeOfSize n shape) :
+    shape ∈ shapesOfSize n := by
+  induction hshape with
+  | empty =>
+      simp [shapesOfSize]
+  | node hleft hright ihleft ihright =>
+      rename_i leftSize rightSize left right
+      let split : Fin (leftSize + rightSize + 1) :=
+        ⟨leftSize, by omega⟩
+      have hrightSize :
+          leftSize + rightSize - split.val = rightSize := by
+        simp [split]
+      have hmem :
+          CartesianShape.node left right ∈
+            shapesOfSize (leftSize + rightSize + 1) := by
+        simp [shapesOfSize]
+        refine ⟨split, ?_, ?_, ?_⟩
+        · rw [List.finRange]
+          exact (List.mem_ofFn).2 ⟨split, rfl⟩
+        · simpa [split] using ihleft
+        · simpa [hrightSize] using ihright
+      simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using hmem
+
+theorem mem_shapesOfSize_iff_shapeOfSize
+    {n : Nat} {shape : CartesianShape} :
+    shape ∈ shapesOfSize n ↔ ShapeOfSize n shape := by
+  constructor
+  · exact mem_shapesOfSize_shapeOfSize
+  · exact shapeOfSize_mem_shapesOfSize
 
 theorem shapeRange_shapeOfSize
     (xs : List Int) (left len : Nat) :
@@ -398,7 +442,7 @@ theorem shape_shapeOfSize (xs : List Int) :
 
 /--
 Block signatures are explicit Cartesian shapes. This is the bridge from the
-RMQ-characterization theorem above to the future Catalan-count/microtable
+RMQ-characterization theorem above to the Catalan-count/microtable
 argument.
 -/
 def blockSignature (xs : List Int) (start len : Nat) : CartesianShape :=
