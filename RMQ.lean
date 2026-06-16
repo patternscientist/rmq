@@ -1,4 +1,5 @@
 import RMQ.Core.Spec
+import RMQ.Core.Cost
 import RMQ.Core.Window
 import RMQ.Core.Backend
 import RMQ.Core.LCA

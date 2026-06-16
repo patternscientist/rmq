@@ -27,6 +27,8 @@ right interval combine into one exact leftmost argmin witness.
 
 - `RMQ/Core/Spec.lean`: query validity, `LeftmostArgMin`, index combination,
   and reusable exactness combinators.
+- `RMQ/Core/Cost.lean`: lightweight Mathlib-free cost accounting with
+  `Costed`, `pure`, `bind`, `tick`, `run`, erase laws, and additive cost laws.
 - `RMQ/Core/Window.lean`: direct scan/window lemmas.
 - `RMQ/Core/Backend.lean`: explicit backend interface with soundness,
   completeness, invalid-query rejection, and generic built-backend equality.
@@ -90,8 +92,8 @@ side now has a concrete Cartesian tree proof: endpoint LCAs in the built
 Cartesian tree are exactly leftmost RMQ witnesses, yielding
 `Cartesian.certifiedReduction`.
 
-The current shape frontier is to compose certified raw microtable answers with
-boundary scans and a summary backend, producing a Fischer-Heun-shaped backend
-whose local block queries are dispatched by Cartesian signatures. Good polishing
-targets also include API ergonomics around the certified Cartesian reduction
-and examples that compose it with `LCABackend`s.
+The current cost frontier is to instrument simple kernels with `Costed` first:
+linear scan and local microtable lookup are the natural first clients before
+charging the full Fischer-Heun block decomposition. Good polishing targets also
+include API ergonomics around the certified Cartesian reduction and examples
+that compose it with `LCABackend`s.
