@@ -54,6 +54,8 @@ right interval combine into one exact leftmost argmin witness.
 - `RMQ/Core/Microtable.lean`: shape-indexed local query offsets, the finite
   shape universe for block signatures, a proved raw shape-only microtable, and
   a certified microtable contract that lifts to an exact in-block `RMQBackend`.
+- `RMQ/Core/CostKernels.lean`: costed direct window scan and raw microtable
+  lookup, with erasure theorems and first cost formulas/bounds.
 - `RMQ/Core/Recursion.lean`: Mathlib-free well-founded recursion over strictly
   shorter summary lists, concrete full-block minimum summaries, and lifting
   lemmas from summary candidates back to original-list candidates, including
@@ -92,8 +94,8 @@ side now has a concrete Cartesian tree proof: endpoint LCAs in the built
 Cartesian tree are exactly leftmost RMQ witnesses, yielding
 `Cartesian.certifiedReduction`.
 
-The current cost frontier is to instrument simple kernels with `Costed` first:
-linear scan and local microtable lookup are the natural first clients before
-charging the full Fischer-Heun block decomposition. Good polishing targets also
-include API ergonomics around the certified Cartesian reduction and examples
-that compose it with `LCABackend`s.
+The current cost frontier is to lift the kernel-level accounting into public
+queries: first a costed linear-scan backend, then a Fischer-Heun-shaped query
+that charges boundary scans, raw microtable lookup, and summary queries. Good
+polishing targets also include API ergonomics around the certified Cartesian
+reduction and examples that compose it with `LCABackend`s.
