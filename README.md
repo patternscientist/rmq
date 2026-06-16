@@ -91,8 +91,10 @@ right interval combine into one exact leftmost argmin witness.
   proof that composes full-block boundary microtable lookups with the
   recursive-hybrid summary scheduler. It also includes costed build erasure,
   supplied-state query cost erasure for freshly built states, and fresh-query
-  cost/run theorems. The final short right boundary still uses a direct scan
-  until the public wrapper grows a padding or tail policy.
+  cost/run theorems, plus an exact all-input wrapper that falls back to linear
+  scan outside the canonical large-input regime. The final short right boundary
+  still uses a direct scan until the assembled path grows a padding or tail
+  policy.
 - `RMQ/Impl/HybridBlock.lean`: block summaries, sparse middle query, public
   hybrid query, and backend proof.
 - `RMQ/Impl/RecursiveHybrid.lean`: aligned query schedule and public
@@ -125,11 +127,12 @@ side now has a concrete Cartesian tree proof: endpoint LCAs in the built
 Cartesian tree are exactly leftmost RMQ witnesses, yielding
 `Cartesian.certifiedReduction`.
 
-The current Fischer-Heun frontier is to connect the microtable-backed value
-query to the exact cost profile, then add the final all-input wrapper with its
-small-input and tail policy. Good polishing targets also include API
-ergonomics around the certified Cartesian reduction and examples that compose
-it with `LCABackend`s.
+The current Fischer-Heun frontier is to turn the exact all-input wrapper into
+the fully polished headline theorem: either add a padding/tail policy that
+keeps the last boundary lookup materialized, or package the finite small-tail
+regime with an explicit constant. Good polishing targets also include adding
+Fischer-Heun to the backend-equivalence layer and composing the certified
+Cartesian reduction with `LCABackend`s.
 
 The recursive-hybrid build recurrence is now solved with an explicit linear
 bound, and the Fischer-Heun shape-table count is now bounded by the

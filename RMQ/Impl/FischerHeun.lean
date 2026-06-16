@@ -839,6 +839,225 @@ theorem invalid_none {xs : List Int} {left right : Nat}
   unfold query
   exact queryWithState_invalid_none hbad
 
+/--
+Large-input side condition for the canonical quarter-log Fischer-Heun profile.
+
+Small inputs can still use the exact value-level Fischer-Heun query, but the
+linear-build/constant-supplied-query cost certificate is currently stated for
+this finite-table regime.
+-/
+def canonicalReady (xs : List Int) : Prop :=
+  16 <= canonicalBlockSize xs
+
+instance canonicalReadyDecidable (xs : List Int) :
+    Decidable (canonicalReady xs) := by
+  unfold canonicalReady
+  infer_instance
+
+/--
+All-input RMQ query policy.
+
+Large inputs use the canonical Fischer-Heun assembly. Inputs outside the
+current canonical cost regime fall back to the reference linear scan.
+-/
+def allInputQuery (xs : List Int) (left right : Nat) : Option Nat :=
+  if _hlarge : canonicalReady xs then
+    query xs left right
+  else
+    RMQ.LinearScan.query xs left right
+
+@[simp] theorem allInputQuery_large
+    {xs : List Int} {left right : Nat} (hlarge : canonicalReady xs) :
+    allInputQuery xs left right = query xs left right := by
+  simp [allInputQuery, hlarge]
+
+@[simp] theorem allInputQuery_small
+    {xs : List Int} {left right : Nat} (hlarge : Not (canonicalReady xs)) :
+    allInputQuery xs left right = RMQ.LinearScan.query xs left right := by
+  simp [allInputQuery, hlarge]
+
+/-- Exact cost expression for the all-input fresh query policy. -/
+def allInputQueryCost (xs : List Int) (left right : Nat) : Nat :=
+  if _hlarge : canonicalReady xs then
+    buildCost xs (canonicalBlockSize xs) +
+      queryWithStateCost xs (build xs) left right
+  else
+    rangeScanCost xs left right
+
+/-- Costed all-input fresh query policy. -/
+def allInputQueryCosted (xs : List Int) (left right : Nat) :
+    Costed (Option Nat) :=
+  if _hlarge : canonicalReady xs then
+    freshQueryCosted xs left right
+  else
+    rangeScanCosted xs left right
+
+@[simp] theorem allInputQueryCosted_value
+    (xs : List Int) (left right : Nat) :
+    (allInputQueryCosted xs left right).value =
+      allInputQuery xs left right := by
+  unfold allInputQueryCosted allInputQuery
+  by_cases hlarge : canonicalReady xs
+  case pos =>
+    rw [dif_pos hlarge, dif_pos hlarge]
+    exact freshQueryCosted_value xs left right
+  case neg =>
+    rw [dif_neg hlarge, dif_neg hlarge]
+    simp [RMQ.LinearScan.query]
+
+theorem allInputQueryCosted_cost
+    (xs : List Int) (left right : Nat) :
+    (allInputQueryCosted xs left right).cost =
+      allInputQueryCost xs left right := by
+  unfold allInputQueryCosted allInputQueryCost
+  by_cases hlarge : canonicalReady xs
+  case pos =>
+    rw [dif_pos hlarge, dif_pos hlarge]
+    exact freshQueryCosted_cost xs left right
+  case neg =>
+    rw [dif_neg hlarge, dif_neg hlarge]
+    exact rangeScanCosted_cost xs left right
+
+theorem allInputQueryCosted_run
+    (xs : List Int) (left right : Nat) :
+    Costed.run (allInputQueryCosted xs left right) =
+      (allInputQuery xs left right, allInputQueryCost xs left right) := by
+  simp [Costed.run, allInputQueryCosted_cost]
+
+theorem allInputQueryCost_large
+    {xs : List Int} {left right : Nat} (hlarge : canonicalReady xs) :
+    allInputQueryCost xs left right =
+      buildCost xs (canonicalBlockSize xs) +
+        queryWithStateCost xs (build xs) left right := by
+  simp [allInputQueryCost, hlarge]
+
+theorem allInputQueryCost_small
+    {xs : List Int} {left right : Nat}
+    (hlarge : Not (canonicalReady xs)) :
+    allInputQueryCost xs left right = rangeScanCost xs left right := by
+  simp [allInputQueryCost, hlarge]
+
+theorem allInputQueryCost_eq_build_plus_supplied_of_large_materialized
+    {xs : List Int} {left right : Nat}
+    (hlarge : canonicalReady xs)
+    (hschedule :
+      leftBoundaryBlock left (canonicalBlockSize xs) <=
+        rightBoundaryBlock right (canonicalBlockSize xs))
+    (hright :
+      rightBoundaryBlock right (canonicalBlockSize xs) *
+          canonicalBlockSize xs = right \/
+        rightBoundaryBlock right (canonicalBlockSize xs) *
+            canonicalBlockSize xs + canonicalBlockSize xs <= xs.length) :
+    allInputQueryCost xs left right =
+      buildCost xs (canonicalBlockSize xs) +
+        suppliedQueryCost xs (canonicalBlockSize xs) left right := by
+  rw [allInputQueryCost_large hlarge]
+  have hbCanon : 0 < canonicalBlockSize xs := by
+    have h : 16 <= canonicalBlockSize xs := by
+      simpa [canonicalReady] using hlarge
+    omega
+  have hb : 0 < (build xs).blockSize := by
+    simpa [build] using hbCanon
+  have hscheduleBuild :
+      leftBoundaryBlock left (build xs).blockSize <=
+        rightBoundaryBlock right (build xs).blockSize := by
+    simpa [build] using hschedule
+  have hrightBuild :
+      rightBoundaryBlock right (build xs).blockSize *
+          (build xs).blockSize = right \/
+        rightBoundaryBlock right (build xs).blockSize *
+            (build xs).blockSize + (build xs).blockSize <= xs.length := by
+    simpa [build] using hright
+  rw [queryWithStateCost_eq_suppliedQueryCost_of_materialized
+    (xs := xs) (state := build xs) (left := left) (right := right)
+    hb hscheduleBuild hrightBuild]
+  simp [build]
+
+theorem allInputQueryCosted_cost_eq_build_plus_supplied_of_large_materialized
+    {xs : List Int} {left right : Nat}
+    (hlarge : canonicalReady xs)
+    (hschedule :
+      leftBoundaryBlock left (canonicalBlockSize xs) <=
+        rightBoundaryBlock right (canonicalBlockSize xs))
+    (hright :
+      rightBoundaryBlock right (canonicalBlockSize xs) *
+          canonicalBlockSize xs = right \/
+        rightBoundaryBlock right (canonicalBlockSize xs) *
+            canonicalBlockSize xs + canonicalBlockSize xs <= xs.length) :
+    (allInputQueryCosted xs left right).cost =
+      buildCost xs (canonicalBlockSize xs) +
+        suppliedQueryCost xs (canonicalBlockSize xs) left right := by
+  rw [allInputQueryCosted_cost]
+  exact allInputQueryCost_eq_build_plus_supplied_of_large_materialized
+    hlarge hschedule hright
+
+theorem allInputQuery_sound {xs : List Int} {left right idx : Nat}
+    (hres : allInputQuery xs left right = some idx) :
+    LeftmostArgMin xs left right idx := by
+  unfold allInputQuery at hres
+  by_cases hlarge : canonicalReady xs
+  case pos =>
+    rw [dif_pos hlarge] at hres
+    exact query_sound hres
+  case neg =>
+    rw [dif_neg hlarge] at hres
+    exact RMQ.LinearScan.query_sound hres
+
+theorem allInputQuery_complete
+    {xs : List Int} {left right idx : Nat}
+    (harg : LeftmostArgMin xs left right idx) :
+    allInputQuery xs left right = some idx := by
+  unfold allInputQuery
+  by_cases hlarge : canonicalReady xs
+  case pos =>
+    rw [dif_pos hlarge]
+    exact query_complete harg
+  case neg =>
+    rw [dif_neg hlarge]
+    exact RMQ.LinearScan.query_complete harg
+
+theorem allInputQuery_valid_exact
+    (xs : List Int) (left right : Nat)
+    (hValid : ValidRange xs left right) :
+    exists idx,
+      allInputQuery xs left right = some idx /\
+        LeftmostArgMin xs left right idx := by
+  exact Exists.elim
+    (RMQ.LinearScan.query_valid_exact xs left right hValid)
+    (fun idx hpair => by
+      exact Exists.intro idx
+        (And.intro (allInputQuery_complete hpair.2) hpair.2))
+
+theorem allInputQuery_invalid_none
+    {xs : List Int} {left right : Nat}
+    (hbad : Not (ValidRange xs left right)) :
+    allInputQuery xs left right = none := by
+  unfold allInputQuery
+  by_cases hlarge : canonicalReady xs
+  case pos =>
+    rw [dif_pos hlarge]
+    exact invalid_none hbad
+  case neg =>
+    rw [dif_neg hlarge]
+    exact RMQ.LinearScan.invalid_none hbad
+
+/-- All-input backend with linear-scan fallback outside the canonical regime. -/
+def allInputBackend (xs : List Int) : RMQBackend xs where
+  State := Unit
+  build := ()
+  query := fun _ => allInputQuery xs
+  sound := by
+    intro left right idx hres
+    exact allInputQuery_sound hres
+  complete := by
+    intro left right idx harg
+    exact allInputQuery_complete harg
+  invalid_none := by
+    intro left right hbad
+    exact allInputQuery_invalid_none hbad
+
+example : allInputQuery [5, 2, 7, 1, 3] 1 4 = some 3 := by native_decide
+
 example : query [5, 2, 7, 1, 3] 1 4 = some 3 := by native_decide
 example : queryWithBlockSize [4, 1, 1, 2] 2 0 4 = some 1 := by native_decide
 example : query [5, 2, 7] 2 2 = none := by native_decide
