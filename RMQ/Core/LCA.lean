@@ -672,6 +672,43 @@ theorem pathTo?_mem_eulerPaths
     path ∈ tree.eulerPaths := by
   simpa [eulerPaths] using pathTo?_mem_eulerPathsAt tree [] hpath
 
+mutual
+  theorem basePath_prefix_of_mem_eulerPathsAt
+      (tree : RoseTree) (basePath : List Nat)
+      {path : List Nat}
+      (hmem : path ∈ tree.eulerPathsAt basePath) :
+      basePath <+: path := by
+    cases tree with
+    | node label children =>
+        simp [eulerPathsAt] at hmem
+        rcases hmem with hhere | hforest
+        · subst path
+          exact ⟨[label], rfl⟩
+        · have hprefix :
+              (basePath ++ [label]) <+: path :=
+            basePath_prefix_of_mem_eulerPathsForestAt
+              children (basePath ++ [label]) hforest
+          rcases hprefix with ⟨suffix, hsuffix⟩
+          refine ⟨label :: suffix, ?_⟩
+          simpa [List.append_assoc] using hsuffix
+
+  theorem basePath_prefix_of_mem_eulerPathsForestAt
+      (forest : List RoseTree) (basePath : List Nat)
+      {path : List Nat}
+      (hmem : path ∈ eulerPathsForestAt basePath forest) :
+      basePath <+: path := by
+    cases forest with
+    | nil =>
+        simp [eulerPathsForestAt] at hmem
+    | cons child rest =>
+        simp [eulerPathsForestAt] at hmem
+        rcases hmem with hchild | hparent | hrest
+        · exact basePath_prefix_of_mem_eulerPathsAt child basePath hchild
+        · subst path
+          exact ⟨[], by simp⟩
+        · exact basePath_prefix_of_mem_eulerPathsForestAt rest basePath hrest
+end
+
 end RoseTree
 
 /-- Common prefix of two root paths. -/
@@ -721,6 +758,71 @@ theorem commonPrefix_prefix_right (xs ys : List Nat) :
                 simp [commonPrefix, hsuffix]
           · apply Exists.intro (y :: ys)
             simp [commonPrefix, hxy]
+
+theorem commonPrefix_eq_left_of_prefix
+    {xs ys : List Nat} (hprefix : xs <+: ys) :
+    commonPrefix xs ys = xs := by
+  rcases hprefix with ⟨suffix, rfl⟩
+  induction xs with
+  | nil =>
+      simp [commonPrefix]
+  | cons x xs ih =>
+      simp [commonPrefix, ih]
+
+theorem commonPrefix_eq_right_of_prefix
+    {xs ys : List Nat} (hprefix : ys <+: xs) :
+    commonPrefix xs ys = ys := by
+  rcases hprefix with ⟨suffix, rfl⟩
+  induction ys with
+  | nil =>
+      cases suffix with
+      | nil => simp [commonPrefix]
+      | cons x xs => simp [commonPrefix]
+  | cons y ys ih =>
+      simp [commonPrefix, ih]
+
+theorem prefix_eq_of_prefix_of_length_le
+    {xs ys : List Nat}
+    (hprefix : xs <+: ys)
+    (hlen : ys.length <= xs.length) :
+    xs = ys := by
+  rcases hprefix with ⟨suffix, rfl⟩
+  have hsuffix : suffix = [] := by
+    cases suffix with
+    | nil => rfl
+    | cons x xs =>
+        simp at hlen
+        have hfalse : False := by
+          omega
+        exact False.elim hfalse
+  simp [hsuffix]
+
+theorem prefix_commonPrefix_of_prefixes
+    {pref xs ys : List Nat}
+    (hpref_x : pref <+: xs)
+    (hpref_y : pref <+: ys) :
+    pref <+: commonPrefix xs ys := by
+  induction pref generalizing xs ys with
+  | nil =>
+      exact ⟨commonPrefix xs ys, by simp⟩
+  | cons p pref ih =>
+      rcases hpref_x with ⟨sx, rfl⟩
+      rcases hpref_y with ⟨sy, rfl⟩
+      have htail :
+          pref <+: commonPrefix (pref ++ sx) (pref ++ sy) :=
+        ih ⟨sx, rfl⟩ ⟨sy, rfl⟩
+      rcases htail with ⟨suffix, hsuffix⟩
+      refine ⟨suffix, ?_⟩
+      simp [commonPrefix, hsuffix]
+
+theorem eq_commonPrefix_of_prefixes_of_length_ge
+    {pref xs ys : List Nat}
+    (hpref_x : pref <+: xs)
+    (hpref_y : pref <+: ys)
+    (hlen : (commonPrefix xs ys).length <= pref.length) :
+    pref = commonPrefix xs ys := by
+  exact prefix_eq_of_prefix_of_length_le
+    (prefix_commonPrefix_of_prefixes hpref_x hpref_y) hlen
 
 /-- Direct path-based LCA of two root paths. -/
 def pathLCA? (pathU pathV : List Nat) : Option Nat :=
@@ -897,6 +999,27 @@ mutual
             simp [hchild] at hpath
             exact pathToForest?_getLast? hpath
 end
+
+theorem isPathLCA_of_pathTo_prefixes_of_commonPrefix_length_le
+    {tree : RoseTree} {u v ancestor : Nat}
+    {pathU pathV pathAncestor : List Nat}
+    (hu : tree.pathTo? u = some pathU)
+    (hv : tree.pathTo? v = some pathV)
+    (hancestor : tree.pathTo? ancestor = some pathAncestor)
+    (hprefU : pathAncestor <+: pathU)
+    (hprefV : pathAncestor <+: pathV)
+    (hlen : (commonPrefix pathU pathV).length <= pathAncestor.length) :
+    tree.IsPathLCA u v ancestor := by
+  have hpath_eq :
+      pathAncestor = commonPrefix pathU pathV :=
+    eq_commonPrefix_of_prefixes_of_length_ge hprefU hprefV hlen
+  have hlast :
+      pathAncestor.getLast? = some ancestor :=
+    pathTo?_getLast? hancestor
+  apply pathLCA?_isPathLCA
+  unfold pathLCA?
+  rw [hu, hv]
+  simpa [RMQ.pathLCA?, ← hpath_eq] using hlast
 
 mutual
   theorem pathTo?_exists_of_mem_labelsPreorder
