@@ -1,4 +1,5 @@
-import RMQ.Core.CostKernels
+import RMQ.Impl.RecursiveHybridCost
+import RMQ.Impl.SparseTableMemoCost
 
 /-!
 # Fischer-Heun microtable cost profile
@@ -50,6 +51,17 @@ theorem rawMicrotableSlotBudget_eq_shapeCount_mul
     rawMicrotableSlotBudget blockSize =
       Cartesian.shapeCount blockSize * localQuerySlotBudget blockSize := by
   simp [rawMicrotableSlotBudget, rawShapeTableCount_eq_shapeCount]
+
+theorem rawMicrotableSlotBudget_le_of_local_slots_le_shape_count
+    {blockSize n : Nat}
+    (hslots : localQuerySlotBudget blockSize <= rawShapeTableCount blockSize)
+    (hsquare :
+      rawShapeTableCount blockSize * rawShapeTableCount blockSize <= n) :
+    rawMicrotableSlotBudget blockSize <= n := by
+  unfold rawMicrotableSlotBudget
+  exact Nat.le_trans
+    (Nat.mul_le_mul_left (rawShapeTableCount blockSize) hslots)
+    hsquare
 
 theorem rawLookupCosted_cost_le_bound
     (xs : List Int) (start blockSize left right : Nat) :
@@ -157,6 +169,197 @@ theorem rawShapeTableCount_square_le_of_four_mul_le_log2
   exact rawShapeTableCount_square_le_of_envelope_budget
     (shapeCountEnvelope_square_le_of_four_mul_le_log2
       (blockSize := blockSize) (n := n) hn hlog)
+
+def summarySparseBuildCost (xs : List Int) (b : Nat) : Nat :=
+  SparseTable.memoBuildSparseTableCost (blockMinSummary xs b)
+
+theorem blockMinSummary_length_mul_le_length
+    (xs : List Int) (b : Nat) :
+    (blockMinSummary xs b).length * b <= xs.length := by
+  rw [blockMinSummary_length]
+  unfold compressedLength
+  exact Nat.div_mul_le_self xs.length b
+
+theorem blockMinSummary_length_le_length
+    (xs : List Int) (b : Nat) :
+    (blockMinSummary xs b).length <= xs.length := by
+  rw [blockMinSummary_length]
+  unfold compressedLength
+  exact Nat.div_le_self xs.length b
+
+theorem summarySparseBuildCost_le_thirteen_mul_length
+    (xs : List Int) (b : Nat)
+    (hlog : Nat.log2 (blockMinSummary xs b).length <= 4 * b) :
+    summarySparseBuildCost xs b <= 13 * xs.length := by
+  unfold summarySparseBuildCost
+  rw [SparseTable.memoBuildSparseTableCost_eq_log]
+  by_cases hzero : (blockMinSummary xs b).length = 0
+  · simp [hzero]
+  · simp [hzero]
+    let m := (blockMinSummary xs b).length
+    have hm_le_n : m <= xs.length := by
+      exact blockMinSummary_length_le_length xs b
+    have hmb_le_n : m * b <= xs.length := by
+      exact blockMinSummary_length_mul_le_length xs b
+    have hterm :
+        Nat.log2 m * (m * SparseTable.memoNextCellCost) <= 12 * xs.length := by
+      have hlog' : Nat.log2 m <= 4 * b := by
+        simpa [m] using hlog
+      have hcell : SparseTable.memoNextCellCost = 3 := by
+        rfl
+      rw [hcell]
+      have hmul1 :
+          Nat.log2 m * (m * 3) <= (4 * b) * (m * 3) :=
+        Nat.mul_le_mul_right (m * 3) hlog'
+      have hmul2 : (4 * b) * (m * 3) = 12 * (m * b) := by
+        ac_rfl
+      have hmul3 : 12 * (m * b) <= 12 * xs.length :=
+        Nat.mul_le_mul_left 12 hmb_le_n
+      exact Nat.le_trans hmul1 (by simpa [hmul2] using hmul3)
+    have hterm_actual :
+        Nat.log2 (blockMinSummary xs b).length *
+            ((blockMinSummary xs b).length * SparseTable.memoNextCellCost) <=
+          12 * xs.length := by
+      simpa [m] using hterm
+    have hsum := Nat.add_le_add hm_le_n hterm_actual
+    exact Nat.le_trans hsum (by omega)
+
+/--
+RAM/unit-cost indexed-access model: supplied sparse-table row/cell reads and
+materialized microtable entry reads are each charged as one indexed lookup.
+-/
+def materializedMicrotableLookupCost : Nat := 1
+
+/--
+Query cost for a supplied Fischer-Heun state: two materialized microtable
+lookups for boundary blocks, one supplied sparse-table query over full-block
+summaries, and two candidate combines.
+-/
+def suppliedQueryCost
+    (xs : List Int) (b left right : Nat) : Nat :=
+  if _h : ValidRange xs left right /\ 0 < b then
+    let leftBlock := leftBoundaryBlock left b
+    let rightBlock := rightBoundaryBlock right b
+    materializedMicrotableLookupCost +
+      SparseTable.queryFromTableCost (blockMinSummary xs b) leftBlock rightBlock +
+        materializedMicrotableLookupCost + 2
+  else
+    1
+
+theorem sparseQueryFromTableCost_le_four
+    (xs : List Int) (left right : Nat) :
+    SparseTable.queryFromTableCost xs left right <= 4 := by
+  unfold SparseTable.queryFromTableCost
+  by_cases h : ValidRange xs left right
+  · rw [dif_pos h]
+    exact Nat.le_refl _
+  · rw [dif_neg h]
+    omega
+
+theorem suppliedQueryCost_le_eight
+    (xs : List Int) (b left right : Nat) :
+    suppliedQueryCost xs b left right <= 8 := by
+  unfold suppliedQueryCost
+  by_cases h : ValidRange xs left right /\ 0 < b
+  · rw [dif_pos h]
+    have hsummaryCost := sparseQueryFromTableCost_le_four
+      (blockMinSummary xs b) (leftBoundaryBlock left b)
+      (rightBoundaryBlock right b)
+    simp [materializedMicrotableLookupCost]
+    omega
+  · rw [dif_neg h]
+    omega
+
+/--
+End-to-end preprocessing budget for the assembled Fischer-Heun structure:
+materialized shape microtables, block-minimum summary construction, and the
+memoized sparse table over block summaries.
+-/
+def buildCost (xs : List Int) (b : Nat) : Nat :=
+  rawMicrotableSlotBudget b +
+    (RecursiveHybrid.blockMinSummaryBuildCost xs b +
+      summarySparseBuildCost xs b)
+
+theorem buildCost_le_fifteen_mul_length
+    (xs : List Int) (b : Nat)
+    (hmicro : rawMicrotableSlotBudget b <= xs.length)
+    (hsummaryLog :
+      Nat.log2 (blockMinSummary xs b).length <= 4 * b) :
+    buildCost xs b <= 15 * xs.length := by
+  unfold buildCost
+  have hsummaryBuild :
+      RecursiveHybrid.blockMinSummaryBuildCost xs b <= xs.length :=
+    RecursiveHybrid.blockMinSummaryBuildCost_le_length xs b
+  have hsparse :
+      summarySparseBuildCost xs b <= 13 * xs.length :=
+    summarySparseBuildCost_le_thirteen_mul_length xs b hsummaryLog
+  have hsum :
+      rawMicrotableSlotBudget b +
+          (RecursiveHybrid.blockMinSummaryBuildCost xs b +
+            summarySparseBuildCost xs b) <=
+        xs.length + (xs.length + 13 * xs.length) :=
+    Nat.add_le_add hmicro (Nat.add_le_add hsummaryBuild hsparse)
+  exact Nat.le_trans hsum (by omega)
+
+theorem buildCost_le_fifteen_mul_length_of_shape_budget
+    (xs : List Int) (b : Nat)
+    (hslots : localQuerySlotBudget b <= rawShapeTableCount b)
+    (hsquare : rawShapeTableCount b * rawShapeTableCount b <= xs.length)
+    (hsummaryLog :
+      Nat.log2 (blockMinSummary xs b).length <= 4 * b) :
+    buildCost xs b <= 15 * xs.length := by
+  exact buildCost_le_fifteen_mul_length xs b
+    (rawMicrotableSlotBudget_le_of_local_slots_le_shape_count
+      hslots hsquare)
+    hsummaryLog
+
+theorem buildCost_linear_under_budget :
+    exists c,
+      forall xs b,
+        rawMicrotableSlotBudget b <= xs.length ->
+          Nat.log2 (blockMinSummary xs b).length <= 4 * b ->
+            buildCost xs b <= c * xs.length := by
+  exact ⟨15, buildCost_le_fifteen_mul_length⟩
+
+theorem suppliedQueryCost_constant :
+    exists c,
+      forall xs b left right,
+        suppliedQueryCost xs b left right <= c := by
+  exact ⟨8, suppliedQueryCost_le_eight⟩
+
+/--
+Assembled Fischer-Heun cost profile. Under the finite-table budget for the
+materialized microtables and the log-row budget for the summary sparse table,
+preprocessing is linear in the input length and supplied queries are constant
+time in the RAM/unit-cost indexed-access model named above.
+-/
+theorem linearBuild_constantQuery_profile :
+    exists buildC queryC,
+      forall xs b,
+        rawMicrotableSlotBudget b <= xs.length ->
+          Nat.log2 (blockMinSummary xs b).length <= 4 * b ->
+            buildCost xs b <= buildC * xs.length /\
+              forall left right,
+                suppliedQueryCost xs b left right <= queryC := by
+  refine ⟨15, 8, ?_⟩
+  intro xs b hm hlog
+  exact ⟨buildCost_le_fifteen_mul_length xs b hm hlog,
+    fun left right => suppliedQueryCost_le_eight xs b left right⟩
+
+theorem linearBuild_constantQuery_profile_of_shape_budget :
+    exists buildC queryC,
+      forall xs b,
+        localQuerySlotBudget b <= rawShapeTableCount b ->
+          rawShapeTableCount b * rawShapeTableCount b <= xs.length ->
+            Nat.log2 (blockMinSummary xs b).length <= 4 * b ->
+              buildCost xs b <= buildC * xs.length /\
+                forall left right,
+                  suppliedQueryCost xs b left right <= queryC := by
+  refine ⟨15, 8, ?_⟩
+  intro xs b hslots hsquare hlog
+  exact ⟨buildCost_le_fifteen_mul_length_of_shape_budget
+      xs b hslots hsquare hlog,
+    fun left right => suppliedQueryCost_le_eight xs b left right⟩
 
 end FischerHeun
 
