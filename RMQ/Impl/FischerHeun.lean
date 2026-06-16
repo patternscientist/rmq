@@ -147,9 +147,81 @@ def buildWithBlockSize (xs : List Int) (blockSize : Nat) : State :=
     (buildWithBlockSize xs blockSize).microtable =
       RMQ.Cartesian.Microtable.raw blockSize := rfl
 
+/-- Costed materialization of the fixed-size shape microtable family. -/
+def microtableBuildCosted (blockSize : Nat) :
+    Costed (MicrotableFor blockSize) :=
+  Costed.tickValue (rawMicrotableSlotBudget blockSize)
+    (RMQ.Cartesian.Microtable.raw blockSize)
+
+@[simp] theorem microtableBuildCosted_value (blockSize : Nat) :
+    (microtableBuildCosted blockSize).value =
+      RMQ.Cartesian.Microtable.raw blockSize := by
+  rfl
+
+theorem microtableBuildCosted_cost (blockSize : Nat) :
+    (microtableBuildCosted blockSize).cost =
+      rawMicrotableSlotBudget blockSize := by
+  rfl
+
+/--
+Costed Fischer-Heun state build for an explicit block size.
+
+The cost charges the materialized shape-table universe, the block-minimum
+summary construction, and the memoized sparse table over that summary.
+-/
+def buildWithBlockSizeCosted
+    (xs : List Int) (blockSize : Nat) : Costed State :=
+  Costed.bind (microtableBuildCosted blockSize) fun microtable =>
+    Costed.bind
+      (RMQ.RecursiveHybrid.blockMinSummaryCosted xs blockSize) fun summary =>
+      Costed.bind (RMQ.SparseTable.memoBuildSparseTableCosted summary)
+        fun summaryTable =>
+        Costed.pure
+          { blockSize := blockSize
+            microtable := microtable
+            summary := summary
+            summaryTable := summaryTable }
+
+@[simp] theorem buildWithBlockSizeCosted_value
+    (xs : List Int) (blockSize : Nat) :
+    (buildWithBlockSizeCosted xs blockSize).value =
+      buildWithBlockSize xs blockSize := by
+  simp [buildWithBlockSizeCosted, buildWithBlockSize, microtableBuildCosted]
+
+theorem buildWithBlockSizeCosted_cost
+    (xs : List Int) (blockSize : Nat) :
+    (buildWithBlockSizeCosted xs blockSize).cost =
+      buildCost xs blockSize := by
+  simp [buildWithBlockSizeCosted, microtableBuildCosted, buildCost,
+    summarySparseBuildCost, RMQ.RecursiveHybrid.blockMinSummaryCosted_cost,
+    RMQ.SparseTable.memoBuildSparseTableCosted_cost]
+
+theorem buildWithBlockSizeCosted_run
+    (xs : List Int) (blockSize : Nat) :
+    Costed.run (buildWithBlockSizeCosted xs blockSize) =
+      (buildWithBlockSize xs blockSize, buildCost xs blockSize) := by
+  simp [Costed.run, buildWithBlockSizeCosted_cost]
+
 /-- Build using the canonical quarter-log block size from the cost profile. -/
 def build (xs : List Int) : State :=
   buildWithBlockSize xs (canonicalBlockSize xs)
+
+/-- Costed build using the canonical quarter-log block size. -/
+def buildCosted (xs : List Int) : Costed State :=
+  buildWithBlockSizeCosted xs (canonicalBlockSize xs)
+
+@[simp] theorem buildCosted_value (xs : List Int) :
+    (buildCosted xs).value = build xs := by
+  exact buildWithBlockSizeCosted_value xs (canonicalBlockSize xs)
+
+theorem buildCosted_cost (xs : List Int) :
+    (buildCosted xs).cost = buildCost xs (canonicalBlockSize xs) := by
+  exact buildWithBlockSizeCosted_cost xs (canonicalBlockSize xs)
+
+theorem buildCosted_run (xs : List Int) :
+    Costed.run (buildCosted xs) =
+      (build xs, buildCost xs (canonicalBlockSize xs)) := by
+  exact buildWithBlockSizeCosted_run xs (canonicalBlockSize xs)
 
 /--
 Query a Fischer-Heun state.
@@ -494,6 +566,65 @@ theorem queryCosted_run
         queryWithStateCost xs (build xs) left right) := by
   unfold queryCosted query build
   exact queryWithStateCosted_run_built xs (canonicalBlockSize xs) left right
+
+/-- Fresh explicit-block-size query that charges both build and supplied query. -/
+def queryWithBlockSizeFreshCosted
+    (xs : List Int) (blockSize left right : Nat) : Costed (Option Nat) :=
+  Costed.bind (buildWithBlockSizeCosted xs blockSize) fun state =>
+    queryWithStateCosted xs state left right
+
+@[simp] theorem queryWithBlockSizeFreshCosted_value
+    (xs : List Int) (blockSize left right : Nat) :
+    (queryWithBlockSizeFreshCosted xs blockSize left right).value =
+      queryWithBlockSize xs blockSize left right := by
+  simp [queryWithBlockSizeFreshCosted, queryWithBlockSize]
+
+theorem queryWithBlockSizeFreshCosted_cost
+    (xs : List Int) (blockSize left right : Nat) :
+    (queryWithBlockSizeFreshCosted xs blockSize left right).cost =
+      buildCost xs blockSize +
+        queryWithStateCost xs (buildWithBlockSize xs blockSize) left right := by
+  simp [queryWithBlockSizeFreshCosted, buildWithBlockSizeCosted_cost,
+    queryWithStateCosted_cost]
+
+theorem queryWithBlockSizeFreshCosted_run
+    (xs : List Int) (blockSize left right : Nat) :
+    Costed.run (queryWithBlockSizeFreshCosted xs blockSize left right) =
+      (queryWithBlockSize xs blockSize left right,
+        buildCost xs blockSize +
+          queryWithStateCost xs (buildWithBlockSize xs blockSize)
+            left right) := by
+  simp [Costed.run, queryWithBlockSizeFreshCosted_cost]
+
+/-- Fresh canonical query that charges both canonical build and supplied query. -/
+def freshQueryCosted (xs : List Int) (left right : Nat) :
+    Costed (Option Nat) :=
+  Costed.bind (buildCosted xs) fun state =>
+    queryWithStateCosted xs state left right
+
+@[simp] theorem freshQueryCosted_value
+    (xs : List Int) (left right : Nat) :
+    (freshQueryCosted xs left right).value = query xs left right := by
+  unfold freshQueryCosted query
+  simp [buildCosted_value]
+  unfold build
+  exact queryWithStateCosted_value_built xs (canonicalBlockSize xs) left right
+
+theorem freshQueryCosted_cost
+    (xs : List Int) (left right : Nat) :
+    (freshQueryCosted xs left right).cost =
+      buildCost xs (canonicalBlockSize xs) +
+        queryWithStateCost xs (build xs) left right := by
+  simp [freshQueryCosted, buildCosted_cost, queryWithStateCosted_cost,
+    build]
+
+theorem freshQueryCosted_run
+    (xs : List Int) (left right : Nat) :
+    Costed.run (freshQueryCosted xs left right) =
+      (query xs left right,
+        buildCost xs (canonicalBlockSize xs) +
+          queryWithStateCost xs (build xs) left right) := by
+  simp [Costed.run, freshQueryCosted_cost]
 
 theorem queryWithState_valid_exact
     (xs : List Int) (state : State) (left right : Nat)
