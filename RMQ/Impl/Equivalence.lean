@@ -1,6 +1,7 @@
 import RMQ.Core.Microtable
 import RMQ.Impl.LinearScan
 import RMQ.Impl.SparseTable
+import RMQ.Impl.SparseTableMemoCost
 import RMQ.Impl.HybridBlock
 import RMQ.Impl.RecursiveHybrid
 
@@ -23,6 +24,25 @@ theorem linearScan_query_eq_sparseTable_query
     SparseTable.query]
     using RMQBackend.queryBuilt_eq (LinearScan.backend xs)
       (SparseTable.backend xs) left right
+
+/--
+The original overprovisioned sparse-table query and the cost-faithful memoized
+log-row sparse-table query are extensionally equal.
+-/
+theorem sparseTable_query_eq_memoSparseTable_query
+    (xs : List Int) (left right : Nat) :
+    SparseTable.query xs left right = SparseTable.memoQuery xs left right :=
+  (SparseTable.memoQuery_eq_query xs left right).symm
+
+/--
+The linear-scan and memoized sparse-table public queries are extensionally equal
+by the verified sparse-table bridge.
+-/
+theorem linearScan_query_eq_memoSparseTable_query
+    (xs : List Int) (left right : Nat) :
+    LinearScan.query xs left right = SparseTable.memoQuery xs left right := by
+  rw [linearScan_query_eq_sparseTable_query,
+    sparseTable_query_eq_memoSparseTable_query]
 
 /--
 The linear-scan and sparse-middle hybrid public queries are extensionally equal
