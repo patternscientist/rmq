@@ -81,6 +81,12 @@ right interval combine into one exact leftmost argmin witness.
   assembled Fischer-Heun cost profile: linear preprocessing and constant
   supplied-query cost under the stated RAM/unit-cost indexed-access model,
   plus the canonical quarter-log block-size theorem for large inputs.
+- `RMQ/Impl/FischerHeun.lean`: first value-level Fischer-Heun assembly:
+  materialized state with certified raw microtable, block-minimum summary, and
+  summary sparse table; canonical build/query wrappers; and an exact backend
+  proof via the recursive-hybrid summary scheduler. It also records the local
+  theorem that a certified full-block microtable lookup is an exact global RMQ
+  candidate, setting up the boundary-table replacement step.
 - `RMQ/Impl/HybridBlock.lean`: block summaries, sparse middle query, public
   hybrid query, and backend proof.
 - `RMQ/Impl/RecursiveHybrid.lean`: aligned query schedule and public
@@ -113,11 +119,11 @@ side now has a concrete Cartesian tree proof: endpoint LCAs in the built
 Cartesian tree are exactly leftmost RMQ witnesses, yielding
 `Cartesian.certifiedReduction`.
 
-The current cost frontier is to lift the recursive-hybrid query recurrence to
-an end-to-end query bound and to connect the cost profiles more directly to the
-verified value-level backends. Good polishing targets also include API
-ergonomics around the certified Cartesian reduction and examples that compose
-it with `LCABackend`s.
+The current Fischer-Heun frontier is to replace the assembled value backend's
+boundary scans with the certified local microtable lookups already carried in
+`FischerHeun.State`, then connect that query implementation to the exact cost
+profile. Good polishing targets also include API ergonomics around the
+certified Cartesian reduction and examples that compose it with `LCABackend`s.
 
 The recursive-hybrid build recurrence is now solved with an explicit linear
 bound, and the Fischer-Heun shape-table count is now bounded by the

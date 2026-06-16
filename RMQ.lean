@@ -15,6 +15,7 @@ import RMQ.Impl.SparseTable
 import RMQ.Impl.SparseTableCost
 import RMQ.Impl.SparseTableMemoCost
 import RMQ.Impl.FischerHeunCost
+import RMQ.Impl.FischerHeun
 import RMQ.Impl.HybridBlock
 import RMQ.Impl.RecursiveHybrid
 import RMQ.Impl.RecursiveHybridCost
