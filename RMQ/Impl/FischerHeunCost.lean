@@ -9,11 +9,12 @@ microtable story:
 * raw shape lookup follows one decision path, so its cost is at most
   `blockSize + 1`;
 * a block of size `blockSize` ranges over exactly `shapeCount blockSize`
-  Cartesian signatures.
+  Cartesian signatures;
+* the Catalan envelope `shapeCount b <= 4^b` turns the exact count into a
+  square-root table-budget corollary when `4*b <= log2 n`.
 
-The usual `O(sqrt n)` preprocessing-table story is a later asymptotic corollary
-after choosing `blockSize` around `(log n) / 2`; this module keeps the Mathlib-free
-core at the exact finite-count level.
+The corollary is stated without introducing a separate square-root function:
+`rawShapeTableCount b * rawShapeTableCount b <= n`.
 -/
 
 namespace RMQ
@@ -78,6 +79,13 @@ theorem rawShapeTableCount_le_envelope
     rawShapeTableCount blockSize <= shapeCountEnvelope blockSize := by
   simpa [rawShapeTableCount_eq_shapeCount] using hcat
 
+theorem rawShapeTableCount_le_shapeCountEnvelope (blockSize : Nat) :
+    rawShapeTableCount blockSize <= shapeCountEnvelope blockSize := by
+  exact rawShapeTableCount_le_envelope blockSize
+    (by
+      simpa [shapeCountEnvelope] using
+        Cartesian.shapeCount_le_four_pow blockSize)
+
 /--
 Squared form of the eventual `O(sqrt n)` table-count corollary.
 
@@ -92,6 +100,63 @@ theorem rawShapeTableCount_square_le_of_envelope_square
     rawShapeTableCount blockSize * rawShapeTableCount blockSize <= n := by
   have htable := rawShapeTableCount_le_envelope blockSize hcat
   exact Nat.le_trans (Nat.mul_le_mul htable htable) hbudget
+
+/--
+Fischer-Heun square-root table-count corollary, stated without introducing a
+separate square-root function: if the block-size choice makes the Catalan
+envelope square fit under `n`, then the exact raw shape-table count does too.
+-/
+theorem rawShapeTableCount_square_le_of_envelope_budget
+    {blockSize n : Nat}
+    (hbudget :
+      shapeCountEnvelope blockSize * shapeCountEnvelope blockSize <= n) :
+    rawShapeTableCount blockSize * rawShapeTableCount blockSize <= n := by
+  exact rawShapeTableCount_square_le_of_envelope_square
+    (blockSize := blockSize) (n := n)
+    (by
+      simpa [shapeCountEnvelope] using
+        Cartesian.shapeCount_le_four_pow blockSize)
+    hbudget
+
+theorem shapeCountEnvelope_eq_two_pow_two_mul (blockSize : Nat) :
+    shapeCountEnvelope blockSize = 2 ^ (2 * blockSize) := by
+  simp [shapeCountEnvelope]
+  calc
+    4 ^ blockSize = (2 ^ 2) ^ blockSize := by
+      simp
+    _ = 2 ^ (2 * blockSize) := by
+      rw [← Nat.pow_mul]
+
+theorem shapeCountEnvelope_square_eq_two_pow_four_mul
+    (blockSize : Nat) :
+    shapeCountEnvelope blockSize * shapeCountEnvelope blockSize =
+      2 ^ (4 * blockSize) := by
+  rw [shapeCountEnvelope_eq_two_pow_two_mul, ← Nat.pow_add]
+  congr
+  omega
+
+theorem shapeCountEnvelope_square_le_of_four_mul_le_log2
+    {blockSize n : Nat}
+    (hn : 0 < n) (hlog : 4 * blockSize <= Nat.log2 n) :
+    shapeCountEnvelope blockSize * shapeCountEnvelope blockSize <= n := by
+  rw [shapeCountEnvelope_square_eq_two_pow_four_mul]
+  have hmono : 2 ^ (4 * blockSize) <= 2 ^ Nat.log2 n := by
+    exact Nat.pow_le_pow_right (by omega) hlog
+  have hself : 2 ^ Nat.log2 n <= n := Nat.log2_self_le (by omega)
+  exact Nat.le_trans hmono hself
+
+/--
+Base-2-log version of the square-root table-count corollary. Since
+`shapeCount b <= 4^b`, the squared budget is discharged by
+`4*b <= log2 n`.
+-/
+theorem rawShapeTableCount_square_le_of_four_mul_le_log2
+    {blockSize n : Nat}
+    (hn : 0 < n) (hlog : 4 * blockSize <= Nat.log2 n) :
+    rawShapeTableCount blockSize * rawShapeTableCount blockSize <= n := by
+  exact rawShapeTableCount_square_le_of_envelope_budget
+    (shapeCountEnvelope_square_le_of_four_mul_le_log2
+      (blockSize := blockSize) (n := n) hn hlog)
 
 end FischerHeun
 
