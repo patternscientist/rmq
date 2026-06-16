@@ -11,9 +11,10 @@ boundary.
 * Any certified encoding of RMQ intervals as LCA queries turns any exact LCA
   backend into an exact RMQ backend.
 
-The second direction is intentionally certificate-shaped: a future Cartesian
-tree construction can discharge `RMQToLCAReduction`, while the theorem here
-keeps the backend equivalence independent of that representation choice.
+The second direction is intentionally certificate-shaped: the Cartesian-tree
+module discharges it by proving an endpoint-LCA range specification, while the
+theorem here keeps the backend equivalence independent of that representation
+choice.
 -/
 
 namespace RMQ

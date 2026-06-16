@@ -42,6 +42,9 @@ right interval combine into one exact leftmost argmin witness.
   label-unique generated Euler traces turn RMQ backends into LCA backends,
   with trace/path-agreement and finite-check wrappers still available, and
   certified interval-to-LCA encodings turn LCA backends into RMQ backends.
+- `RMQ/Core/Cartesian.lean`: proof-friendly Cartesian tree construction over
+  list indices, root/range-minimum lemmas, and the `RangeLCASpec ->
+  RMQToLCAReduction` bridge for the reverse direction.
 - `RMQ/Core/Recursion.lean`: Mathlib-free well-founded recursion over strictly
   shorter summary lists, concrete full-block minimum summaries, and lifting
   lemmas from summary candidates back to original-list candidates, including
@@ -76,5 +79,6 @@ rg -n "sorry|admit|axiom|unsafe|opaque|implemented_by" RMQ lakefile.toml
 
 The forward LCA side is now structural: a label-unique generated Euler trace
 plus any exact RMQ backend over its depths induces an exact LCA backend. The
-remaining constructive strengthening is the reverse side: discharge the
-`RMQToLCAReduction` certificate with a Cartesian-tree construction.
+reverse side has a concrete Cartesian tree and certificate bridge; the remaining
+proof target is `Cartesian.BuiltRangeLCASpec`, the theorem that endpoint LCAs in
+the built Cartesian tree are exactly leftmost RMQ witnesses.
