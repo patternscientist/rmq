@@ -49,6 +49,9 @@ right interval combine into one exact leftmost argmin witness.
   the first RMQ-behavior/shape equivalence theorem over all subranges,
   exact fixed-size shape signatures, and the Catalan split recurrence for
   `shapeCount`.
+- `RMQ/Core/Microtable.lean`: shape-indexed local query offsets, the finite
+  shape universe for block signatures, and a certified microtable contract
+  that lifts to an exact in-block `RMQBackend`.
 - `RMQ/Core/Recursion.lean`: Mathlib-free well-founded recursion over strictly
   shorter summary lists, concrete full-block minimum summaries, and lifting
   lemmas from summary candidates back to original-list candidates, including
@@ -87,8 +90,8 @@ side now has a concrete Cartesian tree proof: endpoint LCAs in the built
 Cartesian tree are exactly leftmost RMQ witnesses, yielding
 `Cartesian.certifiedReduction`.
 
-The current shape frontier is to connect these signatures to a microtable API:
-enumerate every block shape once, build per-shape local RMQ answers, and expose
-a contract-level backend that uses signatures plus a summary backend. Good
-polishing targets also include API ergonomics around the certified Cartesian
-reduction and examples that compose it with `LCABackend`s.
+The current shape frontier is to instantiate the certified microtable contract:
+prove the raw shape-only query procedure exact for concrete block signatures,
+then compose those in-block answers with boundary scans and a summary backend.
+Good polishing targets also include API ergonomics around the certified
+Cartesian reduction and examples that compose it with `LCABackend`s.
