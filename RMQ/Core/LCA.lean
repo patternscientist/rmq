@@ -91,6 +91,32 @@ def depthsFromMoves (start : Int) : List Int -> List Int
   | [] => [start]
   | move :: rest => start :: depthsFromMoves (start + move) rest
 
+/-- Final depth reached after applying a list of Euler moves. -/
+def depthAfterMoves (start : Int) : List Int -> Int
+  | [] => start
+  | move :: rest => depthAfterMoves (start + move) rest
+
+theorem depthAfterMoves_append
+    (start : Int) (xs ys : List Int) :
+    depthAfterMoves start (xs ++ ys) =
+      depthAfterMoves (depthAfterMoves start xs) ys := by
+  induction xs generalizing start with
+  | nil =>
+      simp [depthAfterMoves]
+  | cons move rest ih =>
+      simp [depthAfterMoves, ih]
+
+theorem depthsFromMoves_append_cons
+    (start : Int) (xs : List Int) (move : Int) (ys : List Int) :
+    depthsFromMoves start (xs ++ move :: ys) =
+      depthsFromMoves start xs ++
+        depthsFromMoves (depthAfterMoves start xs + move) ys := by
+  induction xs generalizing start with
+  | nil =>
+      simp [depthsFromMoves, depthAfterMoves]
+  | cons head tail ih =>
+      simp [depthsFromMoves, depthAfterMoves, ih]
+
 /-- Adjacent depth values differ by exactly one. -/
 def AdjacentDepthsDifferByOne : List Int -> Prop
   | [] => True
@@ -155,6 +181,38 @@ mutual
         have hrest := RoseTree.eulerNodesForest_length_eq_moves parent rest
         simp [RoseTree.eulerNodesForest, RoseTree.eulerMovesForest, hchild, hrest]
         omega
+end
+
+mutual
+  theorem RoseTree.depthAfterMoves_eulerMoves
+      (tree : RoseTree) (startDepth : Int) :
+      depthAfterMoves startDepth tree.eulerMoves = startDepth := by
+    cases tree with
+    | node _ children =>
+        simpa [RoseTree.eulerMoves] using
+          RoseTree.depthAfterMoves_eulerMovesForest children startDepth
+
+  theorem RoseTree.depthAfterMoves_eulerMovesForest
+      (forest : List RoseTree) (startDepth : Int) :
+      depthAfterMoves startDepth (RoseTree.eulerMovesForest forest) =
+        startDepth := by
+    cases forest with
+    | nil =>
+        simp [RoseTree.eulerMovesForest, depthAfterMoves]
+    | cons child rest =>
+        have hchild :
+            depthAfterMoves (startDepth + 1) child.eulerMoves =
+              startDepth + 1 :=
+          RoseTree.depthAfterMoves_eulerMoves child (startDepth + 1)
+        have hrest :
+            depthAfterMoves startDepth (RoseTree.eulerMovesForest rest) =
+              startDepth :=
+          RoseTree.depthAfterMoves_eulerMovesForest rest startDepth
+        simp [RoseTree.eulerMovesForest, depthAfterMoves, depthAfterMoves_append,
+          hchild]
+        have hstart : startDepth + 1 + -1 = startDepth := by
+          omega
+        simpa [hstart] using hrest
 end
 
 /-- Euler-tour depths for a tree rooted at `startDepth`. -/
@@ -375,6 +433,10 @@ theorem getLast?_append_singleton {α : Type u} (xs : List α) (x : α) :
     (xs ++ [x]).getLast? = some x := by
   exact List.getLast?_concat
 
+/-- Depth associated with a generated root path. -/
+def pathDepth (path : List Nat) : Int :=
+  (path.length : Int) - 1
+
 mutual
   theorem eulerPathsAt_length_eq_eulerNodes
       (basePath : List Nat) (tree : RoseTree) :
@@ -409,6 +471,100 @@ end
 theorem eulerPaths_length_eq_eulerNodes (tree : RoseTree) :
     tree.eulerPaths.length = tree.eulerNodes.length := by
   exact eulerPathsAt_length_eq_eulerNodes [] tree
+
+mutual
+  theorem eulerDepthsAt_eq_eulerPathsAt_map_pathDepth
+      (basePath : List Nat) (tree : RoseTree) :
+      tree.eulerDepthsAt (basePath.length : Int) =
+        (tree.eulerPathsAt basePath).map pathDepth := by
+    cases tree with
+    | node label children =>
+        have hforest :=
+          eulerMovesForest_depths_eq_eulerPathsForestAt_map_pathDepth
+            (basePath ++ [label]) children
+        have hstart :
+            ((basePath ++ [label]).length : Int) - 1 =
+              (basePath.length : Int) := by
+          simp
+        have hforest' :
+            depthsFromMoves (basePath.length : Int)
+                (RoseTree.eulerMovesForest children) =
+              ((basePath ++ [label]) ::
+                eulerPathsForestAt (basePath ++ [label]) children).map
+                  pathDepth := by
+          simpa [hstart] using hforest
+        simpa [RoseTree.eulerDepthsAt, RoseTree.eulerMoves, eulerPathsAt,
+          pathDepth] using hforest'
+
+  theorem eulerMovesForest_depths_eq_eulerPathsForestAt_map_pathDepth
+      (parentPath : List Nat) (forest : List RoseTree) :
+      depthsFromMoves ((parentPath.length : Int) - 1)
+          (RoseTree.eulerMovesForest forest) =
+        (parentPath :: eulerPathsForestAt parentPath forest).map pathDepth := by
+    cases forest with
+    | nil =>
+        simp [RoseTree.eulerMovesForest, eulerPathsForestAt, depthsFromMoves,
+          pathDepth]
+    | cons child rest =>
+        let parentDepth := (parentPath.length : Int) - 1
+        have hchild :
+            child.eulerDepthsAt (parentPath.length : Int) =
+              (child.eulerPathsAt parentPath).map pathDepth :=
+          eulerDepthsAt_eq_eulerPathsAt_map_pathDepth parentPath child
+        have hrest :
+            depthsFromMoves parentDepth (RoseTree.eulerMovesForest rest) =
+              (parentPath :: eulerPathsForestAt parentPath rest).map pathDepth := by
+          simpa [parentDepth] using
+            eulerMovesForest_depths_eq_eulerPathsForestAt_map_pathDepth
+              parentPath rest
+        have hreturn :
+            depthAfterMoves (parentPath.length : Int) child.eulerMoves =
+              (parentPath.length : Int) :=
+          RoseTree.depthAfterMoves_eulerMoves child (parentPath.length : Int)
+        have hparent_start :
+            parentDepth + 1 = (parentPath.length : Int) := by
+          unfold parentDepth
+          omega
+        have hafter :
+            depthAfterMoves (parentPath.length : Int) child.eulerMoves + -1 =
+              parentDepth := by
+          rw [hreturn]
+          unfold parentDepth
+          omega
+        have hchildDepths :
+            depthsFromMoves (parentPath.length : Int) child.eulerMoves =
+              (child.eulerPathsAt parentPath).map pathDepth := by
+          simpa [RoseTree.eulerDepthsAt] using hchild
+        have hparentDepth : pathDepth parentPath = parentDepth := by
+          simp [pathDepth, parentDepth]
+        calc
+          depthsFromMoves parentDepth
+              (RoseTree.eulerMovesForest (child :: rest))
+              =
+            parentDepth ::
+              depthsFromMoves (parentDepth + 1)
+                (child.eulerMoves ++ (-1) :: RoseTree.eulerMovesForest rest) := by
+              simp [RoseTree.eulerMovesForest, depthsFromMoves]
+          _ =
+            parentDepth ::
+              (depthsFromMoves (parentPath.length : Int) child.eulerMoves ++
+                depthsFromMoves parentDepth (RoseTree.eulerMovesForest rest)) := by
+              rw [hparent_start, depthsFromMoves_append_cons, hafter]
+          _ =
+            parentDepth ::
+              ((child.eulerPathsAt parentPath).map pathDepth ++
+                (parentPath :: eulerPathsForestAt parentPath rest).map pathDepth) := by
+              rw [hchildDepths, hrest]
+          _ =
+            (parentPath ::
+              eulerPathsForestAt parentPath (child :: rest)).map pathDepth := by
+              simp [eulerPathsForestAt, List.map_append, hparentDepth]
+end
+
+theorem eulerDepths_eq_eulerPaths_map_pathDepth (tree : RoseTree) :
+    tree.eulerDepths = tree.eulerPaths.map pathDepth := by
+  simpa [RoseTree.eulerDepths, eulerPaths] using
+    eulerDepthsAt_eq_eulerPathsAt_map_pathDepth [] tree
 
 mutual
   theorem eulerPathsAt_last?_eq_eulerNodes
