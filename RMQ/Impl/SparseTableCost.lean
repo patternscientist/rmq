@@ -13,6 +13,11 @@ lightweight `Costed` carrier. The cost model is deliberately simple and local:
 * querying a supplied table charges one row lookup, two cell lookups, and one
   combine for valid ranges, or one failed validity check for invalid ranges.
 
+The supplied-table query costs use the usual RAM-model abstraction: row and
+cell lookups are charged as unit-cost indexed accesses. The erased sparse table
+is still represented with `List`s, so these query-cost theorems describe an
+array-backed table view rather than the concrete cost of Lean list indexing.
+
 The erasure theorems connect these costed kernels back to the existing
 value-correct sparse-table functions.
 -/

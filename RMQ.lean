@@ -13,6 +13,7 @@ import RMQ.Core.Recursion
 import RMQ.Impl.LinearScan
 import RMQ.Impl.SparseTable
 import RMQ.Impl.SparseTableCost
+import RMQ.Impl.SparseTableMemoCost
 import RMQ.Impl.HybridBlock
 import RMQ.Impl.RecursiveHybrid
 import RMQ.Impl.Equivalence

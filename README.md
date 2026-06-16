@@ -66,8 +66,11 @@ right interval combine into one exact leftmost argmin witness.
 - `RMQ/Impl/SparseTable.lean`: sparse table cells, materialized table lookup,
   and backend proof.
 - `RMQ/Impl/SparseTableCost.lean`: costed sparse-table cell construction,
-  materialized build cost, supplied-table query cost, and costed fresh-table
-  query erasure/cost theorems.
+  materialized build cost, supplied-table query cost under a RAM/unit-cost
+  indexed-access model, and costed fresh-table query erasure/cost theorems.
+- `RMQ/Impl/SparseTableMemoCost.lean`: first cost-faithful sparse-table build
+  layer, with memoized successor rows proved equivalent to recursive sparse
+  rows, an exact-cost log-row builder, and exact linear row-cost formulas.
 - `RMQ/Impl/HybridBlock.lean`: block summaries, sparse middle query, public
   hybrid query, and backend proof.
 - `RMQ/Impl/RecursiveHybrid.lean`: aligned query schedule and public
@@ -97,8 +100,9 @@ side now has a concrete Cartesian tree proof: endpoint LCAs in the built
 Cartesian tree are exactly leftmost RMQ witnesses, yielding
 `Cartesian.certifiedReduction`.
 
-The current cost frontier is to connect sparse-table costs to higher-level
-hybrid/Fischer-Heun schedules: charge boundary scans, raw microtable lookup,
-summary sparse-table queries, and recursive summary queries. Good polishing
-targets also include API ergonomics around the certified Cartesian reduction
-and examples that compose it with `LCABackend`s.
+The current cost frontier is to complete the memoized/log-row sparse-table
+builder and then connect sparse-table costs to higher-level hybrid/Fischer-Heun
+schedules: charge boundary scans, raw microtable lookup, summary sparse-table
+queries, and recursive summary queries. Good polishing targets also include API
+ergonomics around the certified Cartesian reduction and examples that compose
+it with `LCABackend`s.
