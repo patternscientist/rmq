@@ -45,6 +45,9 @@ right interval combine into one exact leftmost argmin witness.
 - `RMQ/Core/Cartesian.lean`: proof-friendly Cartesian tree construction over
   list indices, root/range-minimum lemmas, the proved `BuiltRangeLCASpec`
   endpoint-LCA certificate, and a concrete certified RMQ-to-LCA reduction.
+- `RMQ/Core/Shape.lean`: explicit binary Cartesian shapes with empty children,
+  the first RMQ-behavior/shape equivalence theorem over all subranges, and
+  proof-side fixed-size shape signatures for future Catalan counting.
 - `RMQ/Core/Recursion.lean`: Mathlib-free well-founded recursion over strictly
   shorter summary lists, concrete full-block minimum summaries, and lifting
   lemmas from summary candidates back to original-list candidates, including
@@ -83,6 +86,8 @@ side now has a concrete Cartesian tree proof: endpoint LCAs in the built
 Cartesian tree are exactly leftmost RMQ witnesses, yielding
 `Cartesian.certifiedReduction`.
 
-Good next polishing targets are API ergonomics around the certified Cartesian
-reduction, examples that compose it with `LCABackend`s, and shortening a few of
-the larger arithmetic path-search lemmas into reusable helper blocks.
+The current shape frontier is to prove completeness of `Cartesian.shapesOfSize`,
+then identify `Cartesian.shapeCount` with the Catalan recurrence used by the
+Fischer-Heun microtable bound. Good polishing targets also include API
+ergonomics around the certified Cartesian reduction and examples that compose it
+with `LCABackend`s.
