@@ -140,6 +140,19 @@ def lcaBackendOfRMQBackend
     rw [hcand, hagree, hpath]
 
 /--
+Structural generated-Euler reduction from LCA to RMQ. Unique labels make the
+generated Euler DFS-window theorem available, so no finite agreement
+certificate is needed.
+-/
+def lcaBackendOfRMQBackendUnique
+    (tree : RoseTree)
+    (backend : RMQBackend tree.eulerTrace.depths)
+    (hunique : tree.LabelsUnique) :
+    LCABackend tree :=
+  tree.lcaBackendOfRMQBackend backend
+    (tree.tracePathAgreement_of_labelsUnique hunique)
+
+/--
 Boolean-check wrapper for the generated Euler reduction. The core reduction
 above depends only on the trace/path agreement contract, while this wrapper keeps
 the existing finite certificate entry point available.

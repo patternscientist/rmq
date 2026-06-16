@@ -709,6 +709,61 @@ mutual
         · exact basePath_prefix_of_mem_eulerPathsForestAt rest basePath hrest
 end
 
+theorem getElem?_length_of_append_singleton_prefix
+    {base path : List Nat} {label : Nat}
+    (hprefix : base ++ [label] <+: path) :
+    path[base.length]? = some label := by
+  rcases hprefix with ⟨suffix, rfl⟩
+  simp
+
+theorem here_prefix_of_mem_eulerPathsAt_node
+    (basePath : List Nat) (label : Nat) (children : List RoseTree)
+    {path : List Nat}
+    (hmem : path ∈ (RoseTree.node label children).eulerPathsAt basePath) :
+    basePath ++ [label] <+: path := by
+  simp [eulerPathsAt] at hmem
+  rcases hmem with hhere | hforest
+  · subst path
+    exact ⟨[], by simp⟩
+  · exact basePath_prefix_of_mem_eulerPathsForestAt
+      children (basePath ++ [label]) hforest
+
+theorem first_extra_of_mem_eulerPathsAt_node
+    (basePath : List Nat) (label : Nat) (children : List RoseTree)
+    {path : List Nat}
+    (hmem : path ∈ (RoseTree.node label children).eulerPathsAt basePath) :
+    path[basePath.length]? = some label := by
+  exact getElem?_length_of_append_singleton_prefix
+    (here_prefix_of_mem_eulerPathsAt_node basePath label children hmem)
+
+theorem first_extra_mem_labelsPreorderForest_of_mem_eulerPathsForestAt
+    (forest : List RoseTree) (basePath : List Nat)
+    {path : List Nat} {label : Nat}
+    (hmem : path ∈ eulerPathsForestAt basePath forest)
+    (hget : path[basePath.length]? = some label) :
+    label ∈ labelsPreorderForest forest := by
+  induction forest with
+  | nil =>
+      simp [eulerPathsForestAt] at hmem
+  | cons child rest ih =>
+      cases child with
+      | node childLabel childChildren =>
+          simp [eulerPathsForestAt, labelsPreorderForest] at hmem ⊢
+          rcases hmem with hchild | hparent | hrest
+          · left
+            have hfirst :
+                path[basePath.length]? = some childLabel :=
+              first_extra_of_mem_eulerPathsAt_node
+                basePath childLabel childChildren hchild
+            rw [hfirst] at hget
+            have hlabel_eq : label = childLabel :=
+              (Option.some.inj hget).symm
+            simp [labelsPreorder, hlabel_eq]
+          · subst path
+            simp at hget
+          · right
+            exact ih hrest
+
 end RoseTree
 
 /-- Common prefix of two root paths. -/
@@ -781,6 +836,34 @@ theorem commonPrefix_eq_right_of_prefix
   | cons y ys ih =>
       simp [commonPrefix, ih]
 
+theorem commonPrefix_append_common
+    (base xs ys : List Nat) :
+    commonPrefix (base ++ xs) (base ++ ys) =
+      base ++ commonPrefix xs ys := by
+  induction base with
+  | nil =>
+      simp
+  | cons head tail ih =>
+      simp [commonPrefix, ih]
+
+theorem commonPrefix_comm (xs ys : List Nat) :
+    commonPrefix xs ys = commonPrefix ys xs := by
+  induction xs generalizing ys with
+  | nil =>
+      cases ys <;> simp [commonPrefix]
+  | cons x xs ih =>
+      cases ys with
+      | nil =>
+          simp [commonPrefix]
+      | cons y ys =>
+          by_cases hxy : x = y
+          · subst y
+            simp [commonPrefix, ih]
+          · have hyx : y ≠ x := by
+              intro hyx
+              exact hxy hyx.symm
+            simp [commonPrefix, hxy, hyx]
+
 theorem prefix_eq_of_prefix_of_length_le
     {xs ys : List Nat}
     (hprefix : xs <+: ys)
@@ -815,6 +898,16 @@ theorem prefix_commonPrefix_of_prefixes
       refine ⟨suffix, ?_⟩
       simp [commonPrefix, hsuffix]
 
+theorem getElem?_of_prefix
+    {xs ys : List Nat} (hprefix : xs <+: ys)
+    {idx value : Nat}
+    (hget : xs[idx]? = some value) :
+    ys[idx]? = some value := by
+  rcases hprefix with ⟨suffix, rfl⟩
+  have hidx : idx < xs.length :=
+    (List.getElem?_eq_some_iff.mp hget).1
+  simpa [List.getElem?_append, hidx] using hget
+
 theorem eq_commonPrefix_of_prefixes_of_length_ge
     {pref xs ys : List Nat}
     (hpref_x : pref <+: xs)
@@ -823,6 +916,79 @@ theorem eq_commonPrefix_of_prefixes_of_length_ge
     pref = commonPrefix xs ys := by
   exact prefix_eq_of_prefix_of_length_le
     (prefix_commonPrefix_of_prefixes hpref_x hpref_y) hlen
+
+namespace RoseTree
+
+theorem commonPrefix_eq_parentPath_of_child_and_rightForest
+    (parentPath : List Nat)
+    (childLabel : Nat) (childChildren rest : List RoseTree)
+    (hchild_not_rest : childLabel ∉ labelsPreorderForest rest)
+    {i j : Nat} {pathChild pathRight : List Nat}
+    (hchild :
+      ((RoseTree.node childLabel childChildren).eulerPathsAt parentPath)[i]? =
+        some pathChild)
+    (hright :
+      (parentPath :: eulerPathsForestAt parentPath rest)[j]? =
+        some pathRight) :
+    commonPrefix pathChild pathRight = parentPath := by
+  have hchild_mem :
+      pathChild ∈ (RoseTree.node childLabel childChildren).eulerPathsAt parentPath :=
+    List.mem_of_getElem? hchild
+  cases j with
+  | zero =>
+      simp at hright
+      subst pathRight
+      exact commonPrefix_eq_right_of_prefix
+        (basePath_prefix_of_mem_eulerPathsAt
+          (RoseTree.node childLabel childChildren) parentPath hchild_mem)
+  | succ j =>
+      simp at hright
+      have hright_mem :
+          pathRight ∈ eulerPathsForestAt parentPath rest :=
+        List.mem_of_getElem? hright
+      let cp := commonPrefix pathChild pathRight
+      have hparent_child : parentPath <+: pathChild :=
+        basePath_prefix_of_mem_eulerPathsAt
+          (RoseTree.node childLabel childChildren) parentPath hchild_mem
+      have hparent_right : parentPath <+: pathRight :=
+        basePath_prefix_of_mem_eulerPathsForestAt rest parentPath hright_mem
+      have hcp_prefix_child : cp <+: pathChild := by
+        exact commonPrefix_prefix_left pathChild pathRight
+      have hcp_prefix_right : cp <+: pathRight := by
+        exact commonPrefix_prefix_right pathChild pathRight
+      have hlen : cp.length <= parentPath.length := by
+        by_cases hle : cp.length <= parentPath.length
+        · exact hle
+        have hlt : parentPath.length < cp.length := by omega
+        let extra := cp[parentPath.length]'hlt
+        have hcp_get : cp[parentPath.length]? = some extra := by
+          simp [extra, hlt]
+        have hchild_get :
+            pathChild[parentPath.length]? = some extra :=
+          getElem?_of_prefix hcp_prefix_child hcp_get
+        have hright_get :
+            pathRight[parentPath.length]? = some extra :=
+          getElem?_of_prefix hcp_prefix_right hcp_get
+        have hchild_first :
+            pathChild[parentPath.length]? = some childLabel :=
+          first_extra_of_mem_eulerPathsAt_node
+            parentPath childLabel childChildren hchild_mem
+        rw [hchild_first] at hchild_get
+        have hextra_eq : extra = childLabel :=
+          (Option.some.inj hchild_get).symm
+        have hextra_rest :
+            extra ∈ labelsPreorderForest rest :=
+          first_extra_mem_labelsPreorderForest_of_mem_eulerPathsForestAt
+            rest parentPath hright_mem hright_get
+        exact False.elim
+          (hchild_not_rest (by simpa [hextra_eq] using hextra_rest))
+      have hparent_eq_cp :
+          parentPath = cp :=
+        eq_commonPrefix_of_prefixes_of_length_ge
+          hparent_child hparent_right (by simpa [cp] using hlen)
+      simpa [cp] using hparent_eq_cp.symm
+
+end RoseTree
 
 /-- Direct path-based LCA of two root paths. -/
 def pathLCA? (pathU pathV : List Nat) : Option Nat :=
@@ -1380,6 +1546,32 @@ def firstOccurrence? (trace : EulerTrace) (node : Nat) : Option Nat :=
 def occurrenceWindow (i j : Nat) : Nat × Nat :=
   (Nat.min i j, Nat.max i j + 1)
 
+theorem occurrenceWindow_shift_fst
+    {offset i j : Nat} (_hi : offset <= i) (_hj : offset <= j) :
+    (occurrenceWindow (i - offset) (j - offset)).1 =
+      (occurrenceWindow i j).1 - offset := by
+  rcases Nat.le_total i j with hij | hji
+  · have hsub : i - offset <= j - offset :=
+      Nat.sub_le_sub_right hij offset
+    simp [occurrenceWindow, Nat.min_eq_left hij, Nat.min_eq_left hsub]
+  · have hsub : j - offset <= i - offset :=
+      Nat.sub_le_sub_right hji offset
+    simp [occurrenceWindow, Nat.min_eq_right hji, Nat.min_eq_right hsub]
+
+theorem occurrenceWindow_shift_snd
+    {offset i j : Nat} (hi : offset <= i) (hj : offset <= j) :
+    (occurrenceWindow (i - offset) (j - offset)).2 =
+      (occurrenceWindow i j).2 - offset := by
+  rcases Nat.le_total i j with hij | hji
+  · have hsub : i - offset <= j - offset :=
+      Nat.sub_le_sub_right hij offset
+    simp [occurrenceWindow, Nat.max_eq_right hij, Nat.max_eq_right hsub]
+    omega
+  · have hsub : j - offset <= i - offset :=
+      Nat.sub_le_sub_right hji offset
+    simp [occurrenceWindow, Nat.max_eq_left hji, Nat.max_eq_left hsub]
+    omega
+
 /--
 Reference trace-side LCA candidate: scan the first-occurrence window and return
 the node at the leftmost minimum-depth position.
@@ -1782,6 +1974,669 @@ def TracePathAgreement (tree : RoseTree) : Prop :=
   forall {u v node : Nat},
     EulerTrace.IsLCAAnswer tree.eulerTrace u v node ->
       tree.IsPathLCA u v node
+
+/--
+Pure generated-path window agreement: in any Euler window, the leftmost
+minimum-depth path is exactly the common prefix of the endpoint paths.
+
+This is the classical DFS/Euler-tour invariant needed to discharge
+`TracePathAgreement` from structural uniqueness.
+-/
+def EulerPathWindowAgreement (tree : RoseTree) : Prop :=
+  forall {i j idx : Nat} {pathI pathJ pathIdx : List Nat},
+    tree.eulerPaths[i]? = some pathI ->
+      tree.eulerPaths[j]? = some pathJ ->
+        tree.eulerPaths[idx]? = some pathIdx ->
+          LeftmostArgMin tree.eulerTrace.depths
+            (EulerTrace.occurrenceWindow i j).1
+            (EulerTrace.occurrenceWindow i j).2 idx ->
+            pathIdx = commonPrefix pathI pathJ
+
+/-- Every path inside a window extends the common prefix of the window endpoints. -/
+def PathWindowPrefixInvariant (paths : List (List Nat)) : Prop :=
+  forall {i j k : Nat} {pathI pathJ pathK : List Nat},
+    paths[i]? = some pathI ->
+      paths[j]? = some pathJ ->
+        paths[k]? = some pathK ->
+          (EulerTrace.occurrenceWindow i j).1 <= k ->
+            k < (EulerTrace.occurrenceWindow i j).2 ->
+              commonPrefix pathI pathJ <+: pathK
+
+/--
+Every generated path inside an Euler window extends the common prefix of the
+window endpoints.
+-/
+def EulerPathWindowPrefixInvariant (tree : RoseTree) : Prop :=
+  PathWindowPrefixInvariant tree.eulerPaths
+
+/--
+The common prefix of the endpoint paths is itself visited somewhere in the
+corresponding Euler window.
+-/
+def PathWindowCommonPrefixWitness (paths : List (List Nat)) : Prop :=
+  forall {i j : Nat} {pathI pathJ : List Nat},
+    paths[i]? = some pathI ->
+      paths[j]? = some pathJ ->
+        exists k,
+          (EulerTrace.occurrenceWindow i j).1 <= k /\
+            k < (EulerTrace.occurrenceWindow i j).2 /\
+              paths[k]? = some (commonPrefix pathI pathJ)
+
+/--
+The common prefix of the endpoint paths is itself visited somewhere in the
+corresponding generated Euler window.
+-/
+def EulerPathWindowCommonPrefixWitness (tree : RoseTree) : Prop :=
+  PathWindowCommonPrefixWitness tree.eulerPaths
+
+theorem pathWindowPrefixInvariant_cons
+    {base : List Nat} {paths : List (List Nat)}
+    (htail : PathWindowPrefixInvariant paths)
+    (hall : forall {k : Nat} {path : List Nat},
+      paths[k]? = some path -> base <+: path) :
+    PathWindowPrefixInvariant (base :: paths) := by
+  intro i j k pathI pathJ pathK hpathI hpathJ hpathK hleft hright
+  cases i with
+  | zero =>
+      simp at hpathI
+      subst pathI
+      cases j with
+      | zero =>
+          simp at hpathJ
+          subst pathJ
+          have hk_zero : k = 0 := by
+            simp [EulerTrace.occurrenceWindow] at hright
+            omega
+          subst k
+          simp at hpathK
+          subst pathK
+          exact commonPrefix_prefix_left base base
+      | succ j =>
+          simp at hpathJ
+          have hbase_pathJ : base <+: pathJ := hall hpathJ
+          have hcp : commonPrefix base pathJ = base :=
+            commonPrefix_eq_left_of_prefix hbase_pathJ
+          rw [hcp]
+          cases k with
+          | zero =>
+              simp at hpathK
+              subst pathK
+              exact ⟨[], by simp⟩
+          | succ k =>
+              simp at hpathK
+              exact hall hpathK
+  | succ i =>
+      simp at hpathI
+      cases j with
+      | zero =>
+          simp at hpathJ
+          subst pathJ
+          have hbase_pathI : base <+: pathI := hall hpathI
+          have hcp : commonPrefix pathI base = base :=
+            commonPrefix_eq_right_of_prefix hbase_pathI
+          rw [hcp]
+          cases k with
+          | zero =>
+              simp at hpathK
+              subst pathK
+              exact ⟨[], by simp⟩
+          | succ k =>
+              simp at hpathK
+              exact hall hpathK
+      | succ j =>
+          simp at hpathJ
+          cases k with
+          | zero =>
+              simp [EulerTrace.occurrenceWindow] at hleft
+          | succ k =>
+              simp at hpathK
+              exact htail hpathI hpathJ hpathK (by
+                simp [EulerTrace.occurrenceWindow] at hleft ⊢
+                omega) (by
+                simp [EulerTrace.occurrenceWindow] at hright ⊢
+                omega)
+
+theorem pathWindowCommonPrefixWitness_cons
+    {base : List Nat} {paths : List (List Nat)}
+    (htail : PathWindowCommonPrefixWitness paths)
+    (hall : forall {k : Nat} {path : List Nat},
+      paths[k]? = some path -> base <+: path) :
+    PathWindowCommonPrefixWitness (base :: paths) := by
+  intro i j pathI pathJ hpathI hpathJ
+  cases i with
+  | zero =>
+      simp at hpathI
+      subst pathI
+      cases j with
+      | zero =>
+          simp at hpathJ
+          subst pathJ
+          have hcp : commonPrefix base base = base :=
+            commonPrefix_eq_left_of_prefix ⟨[], by simp⟩
+          refine ⟨0, ?_, ?_, ?_⟩
+          · simp [EulerTrace.occurrenceWindow]
+          · simp [EulerTrace.occurrenceWindow]
+          · simp [hcp]
+      | succ j =>
+          simp at hpathJ
+          have hbase_pathJ : base <+: pathJ := hall hpathJ
+          have hcp : commonPrefix base pathJ = base :=
+            commonPrefix_eq_left_of_prefix hbase_pathJ
+          refine ⟨0, ?_, ?_, ?_⟩
+          · simp [EulerTrace.occurrenceWindow]
+          · simp [EulerTrace.occurrenceWindow]
+          · simp [hcp]
+  | succ i =>
+      simp at hpathI
+      cases j with
+      | zero =>
+          simp at hpathJ
+          subst pathJ
+          have hbase_pathI : base <+: pathI := hall hpathI
+          have hcp : commonPrefix pathI base = base :=
+            commonPrefix_eq_right_of_prefix hbase_pathI
+          refine ⟨0, ?_, ?_, ?_⟩
+          · simp [EulerTrace.occurrenceWindow]
+          · simp [EulerTrace.occurrenceWindow]
+          · simp [hcp]
+      | succ j =>
+          simp at hpathJ
+          rcases htail hpathI hpathJ with ⟨k, hleft, hright, hpath⟩
+          refine ⟨k + 1, ?_, ?_, ?_⟩
+          · simp [EulerTrace.occurrenceWindow] at hleft ⊢
+            omega
+          · simp [EulerTrace.occurrenceWindow] at hright ⊢
+            omega
+          · simpa using hpath
+
+theorem pathWindowPrefixInvariant_append
+    {base : List Nat} {leftPaths rightPaths : List (List Nat)}
+    (hleft : PathWindowPrefixInvariant leftPaths)
+    (hright : PathWindowPrefixInvariant rightPaths)
+    (hallLeft : forall {k : Nat} {path : List Nat},
+      leftPaths[k]? = some path -> base <+: path)
+    (hallRight : forall {k : Nat} {path : List Nat},
+      rightPaths[k]? = some path -> base <+: path)
+    (hcross : forall {i j : Nat} {pathI pathJ : List Nat},
+      leftPaths[i]? = some pathI ->
+        rightPaths[j]? = some pathJ ->
+          commonPrefix pathI pathJ = base) :
+    PathWindowPrefixInvariant (leftPaths ++ rightPaths) := by
+  intro i j k pathI pathJ pathK hpathI hpathJ hpathK hleft_k hright_k
+  by_cases hi_left : i < leftPaths.length
+  · have hpathI_left : leftPaths[i]? = some pathI := by
+      simpa [List.getElem?_append, hi_left] using hpathI
+    by_cases hj_left : j < leftPaths.length
+    · have hpathJ_left : leftPaths[j]? = some pathJ := by
+        simpa [List.getElem?_append, hj_left] using hpathJ
+      have hk_left_lt : k < leftPaths.length := by
+        have hmax_lt : Nat.max i j < leftPaths.length :=
+          Nat.max_lt.2 ⟨hi_left, hj_left⟩
+        simp [EulerTrace.occurrenceWindow] at hright_k
+        omega
+      have hpathK_left : leftPaths[k]? = some pathK := by
+        simpa [List.getElem?_append, hk_left_lt] using hpathK
+      exact hleft hpathI_left hpathJ_left hpathK_left hleft_k hright_k
+    · have hj_ge : leftPaths.length <= j := by omega
+      have hpathJ_right : rightPaths[j - leftPaths.length]? = some pathJ := by
+        simpa [List.getElem?_append, hj_ge] using hpathJ
+      have hcp : commonPrefix pathI pathJ = base :=
+        hcross hpathI_left hpathJ_right
+      rw [hcp]
+      by_cases hk_left : k < leftPaths.length
+      · have hpathK_left : leftPaths[k]? = some pathK := by
+          simpa [List.getElem?_append, hk_left] using hpathK
+        exact hallLeft hpathK_left
+      · have hk_ge : leftPaths.length <= k := by omega
+        have hpathK_right : rightPaths[k - leftPaths.length]? = some pathK := by
+          simpa [List.getElem?_append, hk_ge] using hpathK
+        exact hallRight hpathK_right
+  · have hi_ge : leftPaths.length <= i := by omega
+    have hpathI_right : rightPaths[i - leftPaths.length]? = some pathI := by
+      simpa [List.getElem?_append, hi_ge] using hpathI
+    by_cases hj_left : j < leftPaths.length
+    · have hpathJ_left : leftPaths[j]? = some pathJ := by
+        simpa [List.getElem?_append, hj_left] using hpathJ
+      have hcp : commonPrefix pathI pathJ = base := by
+        calc
+          commonPrefix pathI pathJ = commonPrefix pathJ pathI := by
+            exact commonPrefix_comm pathI pathJ
+          _ = base := hcross hpathJ_left hpathI_right
+      rw [hcp]
+      by_cases hk_left : k < leftPaths.length
+      · have hpathK_left : leftPaths[k]? = some pathK := by
+          simpa [List.getElem?_append, hk_left] using hpathK
+        exact hallLeft hpathK_left
+      · have hk_ge : leftPaths.length <= k := by omega
+        have hpathK_right : rightPaths[k - leftPaths.length]? = some pathK := by
+          simpa [List.getElem?_append, hk_ge] using hpathK
+        exact hallRight hpathK_right
+    · have hj_ge : leftPaths.length <= j := by omega
+      have hpathJ_right : rightPaths[j - leftPaths.length]? = some pathJ := by
+        simpa [List.getElem?_append, hj_ge] using hpathJ
+      have hk_ge : leftPaths.length <= k := by
+        have hmin_ge : leftPaths.length <= Nat.min i j :=
+          Nat.le_min.mpr ⟨hi_ge, hj_ge⟩
+        simp [EulerTrace.occurrenceWindow] at hleft_k
+        omega
+      have hpathK_right : rightPaths[k - leftPaths.length]? = some pathK := by
+        simpa [List.getElem?_append, hk_ge] using hpathK
+      exact hright hpathI_right hpathJ_right hpathK_right (by
+        rw [EulerTrace.occurrenceWindow_shift_fst hi_ge hj_ge]
+        exact Nat.sub_le_sub_right hleft_k leftPaths.length) (by
+        rw [EulerTrace.occurrenceWindow_shift_snd hi_ge hj_ge]
+        omega)
+
+theorem pathWindowCommonPrefixWitness_append
+    {base : List Nat} {leftPaths rightPaths : List (List Nat)}
+    (hleft : PathWindowCommonPrefixWitness leftPaths)
+    (hright : PathWindowCommonPrefixWitness rightPaths)
+    (hrightBase : rightPaths[0]? = some base)
+    (hcross : forall {i j : Nat} {pathI pathJ : List Nat},
+      leftPaths[i]? = some pathI ->
+        rightPaths[j]? = some pathJ ->
+          commonPrefix pathI pathJ = base) :
+    PathWindowCommonPrefixWitness (leftPaths ++ rightPaths) := by
+  intro i j pathI pathJ hpathI hpathJ
+  by_cases hi_left : i < leftPaths.length
+  · have hpathI_left : leftPaths[i]? = some pathI := by
+      simpa [List.getElem?_append, hi_left] using hpathI
+    by_cases hj_left : j < leftPaths.length
+    · have hpathJ_left : leftPaths[j]? = some pathJ := by
+        simpa [List.getElem?_append, hj_left] using hpathJ
+      rcases hleft hpathI_left hpathJ_left with
+        ⟨k, hk_left, hk_right, hpathK⟩
+      have hk_len : k < leftPaths.length :=
+        (List.getElem?_eq_some_iff.mp hpathK).1
+      refine ⟨k, hk_left, hk_right, ?_⟩
+      simpa [List.getElem?_append, hk_len] using hpathK
+    · have hj_ge : leftPaths.length <= j := by omega
+      have hpathJ_right : rightPaths[j - leftPaths.length]? = some pathJ := by
+        simpa [List.getElem?_append, hj_ge] using hpathJ
+      have hcp : commonPrefix pathI pathJ = base :=
+        hcross hpathI_left hpathJ_right
+      refine ⟨leftPaths.length, ?_, ?_, ?_⟩
+      · have hij : i <= j := by omega
+        simp [EulerTrace.occurrenceWindow, Nat.min_eq_left hij]
+        omega
+      · have hij : i <= j := by omega
+        simp [EulerTrace.occurrenceWindow, Nat.max_eq_right hij]
+        omega
+      · rw [hcp]
+        simpa [List.getElem?_append] using hrightBase
+  · have hi_ge : leftPaths.length <= i := by omega
+    have hpathI_right : rightPaths[i - leftPaths.length]? = some pathI := by
+      simpa [List.getElem?_append, hi_ge] using hpathI
+    by_cases hj_left : j < leftPaths.length
+    · have hpathJ_left : leftPaths[j]? = some pathJ := by
+        simpa [List.getElem?_append, hj_left] using hpathJ
+      have hcp : commonPrefix pathI pathJ = base := by
+        calc
+          commonPrefix pathI pathJ = commonPrefix pathJ pathI := by
+            exact commonPrefix_comm pathI pathJ
+          _ = base := hcross hpathJ_left hpathI_right
+      refine ⟨leftPaths.length, ?_, ?_, ?_⟩
+      · have hji : j <= i := by omega
+        simp [EulerTrace.occurrenceWindow, Nat.min_eq_right hji]
+        omega
+      · have hji : j <= i := by omega
+        simp [EulerTrace.occurrenceWindow, Nat.max_eq_left hji]
+        omega
+      · rw [hcp]
+        simpa [List.getElem?_append] using hrightBase
+    · have hj_ge : leftPaths.length <= j := by omega
+      have hpathJ_right : rightPaths[j - leftPaths.length]? = some pathJ := by
+        simpa [List.getElem?_append, hj_ge] using hpathJ
+      rcases hright hpathI_right hpathJ_right with
+        ⟨k, hk_left, hk_right, hpathK⟩
+      refine ⟨leftPaths.length + k, ?_, ?_, ?_⟩
+      · have hmin_ge : leftPaths.length <= (EulerTrace.occurrenceWindow i j).1 := by
+          have hmin_ge' : leftPaths.length <= Nat.min i j :=
+            Nat.le_min.mpr ⟨hi_ge, hj_ge⟩
+          simpa [EulerTrace.occurrenceWindow] using hmin_ge'
+        rw [EulerTrace.occurrenceWindow_shift_fst hi_ge hj_ge] at hk_left
+        omega
+      · rw [EulerTrace.occurrenceWindow_shift_snd hi_ge hj_ge] at hk_right
+        omega
+      · have hge : leftPaths.length <= leftPaths.length + k := by omega
+        simpa [List.getElem?_append, hge, Nat.add_comm, Nat.add_left_comm,
+          Nat.add_assoc] using hpathK
+
+mutual
+  theorem pathWindowPrefixInvariant_eulerPathsAt
+      (basePath : List Nat) (tree : RoseTree)
+      (hunique : tree.LabelsUnique) :
+      PathWindowPrefixInvariant (tree.eulerPathsAt basePath) := by
+    cases tree with
+    | node label children =>
+        have hforest :
+            PathWindowPrefixInvariant
+              (eulerPathsForestAt (basePath ++ [label]) children) :=
+          pathWindowPrefixInvariant_eulerPathsForestAt
+            (basePath ++ [label]) children
+            (labelsUnique_children_nodup hunique)
+        have hall :
+            forall {k : Nat} {path : List Nat},
+              (eulerPathsForestAt (basePath ++ [label]) children)[k]? =
+                some path ->
+                  basePath ++ [label] <+: path := by
+          intro k path hget
+          exact basePath_prefix_of_mem_eulerPathsForestAt
+            children (basePath ++ [label]) (List.mem_of_getElem? hget)
+        unfold PathWindowPrefixInvariant
+        intro i j k pathI pathJ pathK hpathI hpathJ hpathK hleft hright
+        simpa [eulerPathsAt] using
+          (pathWindowPrefixInvariant_cons hforest hall
+            hpathI hpathJ hpathK hleft hright)
+
+  theorem pathWindowPrefixInvariant_eulerPathsForestAt
+      (parentPath : List Nat) (forest : List RoseTree)
+      (hforestNodup : (labelsPreorderForest forest).Nodup) :
+      PathWindowPrefixInvariant (eulerPathsForestAt parentPath forest) := by
+    cases forest with
+    | nil =>
+        intro i j k pathI pathJ pathK hpathI _hpathJ _hpathK _hleft _hright
+        simp [eulerPathsForestAt] at hpathI
+    | cons child rest =>
+        cases child with
+        | node childLabel childChildren =>
+            have hforestNodup' :
+                ((RoseTree.node childLabel childChildren).labelsPreorder ++
+                  labelsPreorderForest rest).Nodup := by
+              simpa [labelsPreorderForest] using hforestNodup
+            have hchildUnique :
+                (RoseTree.node childLabel childChildren).LabelsUnique := by
+              unfold LabelsUnique
+              exact List.Nodup.sublist
+                (List.sublist_append_left
+                  (RoseTree.node childLabel childChildren).labelsPreorder
+                  (labelsPreorderForest rest)) hforestNodup'
+            have hrestNodup : (labelsPreorderForest rest).Nodup := by
+              exact List.Nodup.sublist
+                (List.sublist_append_right
+                  (RoseTree.node childLabel childChildren).labelsPreorder
+                  (labelsPreorderForest rest)) hforestNodup'
+            have hchild_not_rest :
+                childLabel ∉ labelsPreorderForest rest := by
+              have hchildLabel_mem :
+                  childLabel ∈
+                    (RoseTree.node childLabel childChildren).labelsPreorder := by
+                simp [labelsPreorder]
+              exact nodup_append_not_mem_right hforestNodup' hchildLabel_mem
+            have hchildInv :
+                PathWindowPrefixInvariant
+                  ((RoseTree.node childLabel childChildren).eulerPathsAt
+                    parentPath) :=
+              pathWindowPrefixInvariant_eulerPathsAt
+                parentPath (RoseTree.node childLabel childChildren) hchildUnique
+            have hrestInv :
+                PathWindowPrefixInvariant
+                  (eulerPathsForestAt parentPath rest) :=
+              pathWindowPrefixInvariant_eulerPathsForestAt
+                parentPath rest hrestNodup
+            have hrestHall :
+                forall {k : Nat} {path : List Nat},
+                  (eulerPathsForestAt parentPath rest)[k]? = some path ->
+                    parentPath <+: path := by
+              intro k path hget
+              exact basePath_prefix_of_mem_eulerPathsForestAt
+                rest parentPath (List.mem_of_getElem? hget)
+            have hrightInv :
+                PathWindowPrefixInvariant
+                  (parentPath :: eulerPathsForestAt parentPath rest) :=
+              pathWindowPrefixInvariant_cons hrestInv hrestHall
+            have hallLeft :
+                forall {k : Nat} {path : List Nat},
+                  ((RoseTree.node childLabel childChildren).eulerPathsAt
+                    parentPath)[k]? = some path ->
+                    parentPath <+: path := by
+              intro k path hget
+              exact basePath_prefix_of_mem_eulerPathsAt
+                (RoseTree.node childLabel childChildren) parentPath
+                (List.mem_of_getElem? hget)
+            have hallRight :
+                forall {k : Nat} {path : List Nat},
+                  (parentPath :: eulerPathsForestAt parentPath rest)[k]? =
+                    some path ->
+                    parentPath <+: path := by
+              intro k path hget
+              cases k with
+              | zero =>
+                  simp at hget
+                  subst path
+                  exact ⟨[], by simp⟩
+              | succ k =>
+                  simp at hget
+                  exact basePath_prefix_of_mem_eulerPathsForestAt
+                    rest parentPath (List.mem_of_getElem? hget)
+            have hcross :
+                forall {i j : Nat} {pathI pathJ : List Nat},
+                  ((RoseTree.node childLabel childChildren).eulerPathsAt
+                    parentPath)[i]? = some pathI ->
+                    (parentPath :: eulerPathsForestAt parentPath rest)[j]? =
+                      some pathJ ->
+                    commonPrefix pathI pathJ = parentPath := by
+              intro i j pathI pathJ hpathI hpathJ
+              exact commonPrefix_eq_parentPath_of_child_and_rightForest
+                parentPath childLabel childChildren rest hchild_not_rest
+                hpathI hpathJ
+            unfold PathWindowPrefixInvariant
+            intro i j k pathI pathJ pathK hpathI hpathJ hpathK hleft hright
+            simpa [eulerPathsForestAt] using
+              (pathWindowPrefixInvariant_append hchildInv hrightInv
+                hallLeft hallRight hcross
+                hpathI hpathJ hpathK hleft hright)
+end
+
+mutual
+  theorem pathWindowCommonPrefixWitness_eulerPathsAt
+      (basePath : List Nat) (tree : RoseTree)
+      (hunique : tree.LabelsUnique) :
+      PathWindowCommonPrefixWitness (tree.eulerPathsAt basePath) := by
+    cases tree with
+    | node label children =>
+        have hforest :
+            PathWindowCommonPrefixWitness
+              (eulerPathsForestAt (basePath ++ [label]) children) :=
+          pathWindowCommonPrefixWitness_eulerPathsForestAt
+            (basePath ++ [label]) children
+            (labelsUnique_children_nodup hunique)
+        have hall :
+            forall {k : Nat} {path : List Nat},
+              (eulerPathsForestAt (basePath ++ [label]) children)[k]? =
+                some path ->
+                  basePath ++ [label] <+: path := by
+          intro k path hget
+          exact basePath_prefix_of_mem_eulerPathsForestAt
+            children (basePath ++ [label]) (List.mem_of_getElem? hget)
+        unfold PathWindowCommonPrefixWitness
+        intro i j pathI pathJ hpathI hpathJ
+        simpa [eulerPathsAt] using
+          (pathWindowCommonPrefixWitness_cons hforest hall hpathI hpathJ)
+
+  theorem pathWindowCommonPrefixWitness_eulerPathsForestAt
+      (parentPath : List Nat) (forest : List RoseTree)
+      (hforestNodup : (labelsPreorderForest forest).Nodup) :
+      PathWindowCommonPrefixWitness (eulerPathsForestAt parentPath forest) := by
+    cases forest with
+    | nil =>
+        intro i j pathI pathJ hpathI _hpathJ
+        simp [eulerPathsForestAt] at hpathI
+    | cons child rest =>
+        cases child with
+        | node childLabel childChildren =>
+            have hforestNodup' :
+                ((RoseTree.node childLabel childChildren).labelsPreorder ++
+                  labelsPreorderForest rest).Nodup := by
+              simpa [labelsPreorderForest] using hforestNodup
+            have hchildUnique :
+                (RoseTree.node childLabel childChildren).LabelsUnique := by
+              unfold LabelsUnique
+              exact List.Nodup.sublist
+                (List.sublist_append_left
+                  (RoseTree.node childLabel childChildren).labelsPreorder
+                  (labelsPreorderForest rest)) hforestNodup'
+            have hrestNodup : (labelsPreorderForest rest).Nodup := by
+              exact List.Nodup.sublist
+                (List.sublist_append_right
+                  (RoseTree.node childLabel childChildren).labelsPreorder
+                  (labelsPreorderForest rest)) hforestNodup'
+            have hchild_not_rest :
+                childLabel ∉ labelsPreorderForest rest := by
+              have hchildLabel_mem :
+                  childLabel ∈
+                    (RoseTree.node childLabel childChildren).labelsPreorder := by
+                simp [labelsPreorder]
+              exact nodup_append_not_mem_right hforestNodup' hchildLabel_mem
+            have hchildWitness :
+                PathWindowCommonPrefixWitness
+                  ((RoseTree.node childLabel childChildren).eulerPathsAt
+                    parentPath) :=
+              pathWindowCommonPrefixWitness_eulerPathsAt
+                parentPath (RoseTree.node childLabel childChildren) hchildUnique
+            have hrestWitness :
+                PathWindowCommonPrefixWitness
+                  (eulerPathsForestAt parentPath rest) :=
+              pathWindowCommonPrefixWitness_eulerPathsForestAt
+                parentPath rest hrestNodup
+            have hrestHall :
+                forall {k : Nat} {path : List Nat},
+                  (eulerPathsForestAt parentPath rest)[k]? = some path ->
+                    parentPath <+: path := by
+              intro k path hget
+              exact basePath_prefix_of_mem_eulerPathsForestAt
+                rest parentPath (List.mem_of_getElem? hget)
+            have hrightWitness :
+                PathWindowCommonPrefixWitness
+                  (parentPath :: eulerPathsForestAt parentPath rest) :=
+              pathWindowCommonPrefixWitness_cons hrestWitness hrestHall
+            have hrightBase :
+                (parentPath :: eulerPathsForestAt parentPath rest)[0]? =
+                  some parentPath := by
+              simp
+            have hcross :
+                forall {i j : Nat} {pathI pathJ : List Nat},
+                  ((RoseTree.node childLabel childChildren).eulerPathsAt
+                    parentPath)[i]? = some pathI ->
+                    (parentPath :: eulerPathsForestAt parentPath rest)[j]? =
+                      some pathJ ->
+                    commonPrefix pathI pathJ = parentPath := by
+              intro i j pathI pathJ hpathI hpathJ
+              exact commonPrefix_eq_parentPath_of_child_and_rightForest
+                parentPath childLabel childChildren rest hchild_not_rest
+                hpathI hpathJ
+            unfold PathWindowCommonPrefixWitness
+            intro i j pathI pathJ hpathI hpathJ
+            simpa [eulerPathsForestAt] using
+              (pathWindowCommonPrefixWitness_append
+                hchildWitness hrightWitness hrightBase hcross
+                hpathI hpathJ)
+end
+
+theorem eulerPathWindowAgreement_of_prefix_and_witness
+    (tree : RoseTree)
+    (hprefix : tree.EulerPathWindowPrefixInvariant)
+    (hwitness : tree.EulerPathWindowCommonPrefixWitness) :
+    tree.EulerPathWindowAgreement := by
+  intro i j idx pathI pathJ pathIdx hpathI hpathJ hpathIdx harg
+  let left := (EulerTrace.occurrenceWindow i j).1
+  let right := (EulerTrace.occurrenceWindow i j).2
+  let cp := commonPrefix pathI pathJ
+  rcases harg with
+    ⟨_hleft_right, _hright_len, hleft_idx, hidx_right,
+      idxDepth, hidxDepth, hmin, _hleftmost⟩
+  have hcp_prefix_idx : cp <+: pathIdx := by
+    exact hprefix hpathI hpathJ hpathIdx hleft_idx hidx_right
+  rcases hwitness hpathI hpathJ with
+    ⟨cpIdx, hleft_cp, hcp_right, hcpPath⟩
+  have hdepths :
+      tree.eulerTrace.depths = tree.eulerPaths.map pathDepth := by
+    simpa [RoseTree.eulerTrace, RoseTree.eulerTraceAt, RoseTree.eulerDepths] using
+      eulerDepths_eq_eulerPaths_map_pathDepth tree
+  have hidxDepthMap :
+      (tree.eulerPaths.map pathDepth)[idx]? = some (pathDepth pathIdx) := by
+    simp [List.getElem?_map, hpathIdx]
+  have hcpDepthMap :
+      (tree.eulerPaths.map pathDepth)[cpIdx]? = some (pathDepth cp) := by
+    simp [cp, List.getElem?_map, hcpPath]
+  have hidxDepthEq : idxDepth = pathDepth pathIdx := by
+    rw [hdepths] at hidxDepth
+    rw [hidxDepthMap] at hidxDepth
+    exact (Option.some.inj hidxDepth).symm
+  have hdepth_le : pathDepth pathIdx <= pathDepth cp := by
+    have hmin_cp :
+        idxDepth <= pathDepth cp := by
+      exact hmin cpIdx (pathDepth cp) hleft_cp hcp_right (by
+        rw [hdepths]
+        exact hcpDepthMap)
+    simpa [hidxDepthEq] using hmin_cp
+  have hlen_le : pathIdx.length <= cp.length := by
+    unfold pathDepth at hdepth_le
+    omega
+  have hcp_eq_idx : cp = pathIdx :=
+    prefix_eq_of_prefix_of_length_le hcp_prefix_idx hlen_le
+  exact hcp_eq_idx.symm
+
+theorem tracePathAgreement_of_eulerPathWindowAgreement
+    (tree : RoseTree)
+    (hunique : tree.LabelsUnique)
+    (hwindow : tree.EulerPathWindowAgreement) :
+    tree.TracePathAgreement := by
+  intro u v node hanswer
+  rcases pathWitness_with_endpoints_of_isLCAAnswer_unique hunique hanswer with
+    ⟨i, j, idx, pathU, pathV, pathNode,
+      hu, hv, hpathU, hpathV, hpathNode,
+      hpathToU, hpathToV, hpathToNode, harg⟩
+  have hcommon :
+      pathNode = commonPrefix pathU pathV :=
+    hwindow hpathU hpathV hpathNode harg
+  have hlast :
+      pathNode.getLast? = some node :=
+    pathTo?_getLast? hpathToNode
+  apply pathLCA?_isPathLCA
+  unfold pathLCA?
+  rw [hpathToU, hpathToV]
+  simpa [RMQ.pathLCA?, ← hcommon] using hlast
+
+theorem tracePathAgreement_of_eulerPathWindowInvariants
+    (tree : RoseTree)
+    (hunique : tree.LabelsUnique)
+    (hprefix : tree.EulerPathWindowPrefixInvariant)
+    (hwitness : tree.EulerPathWindowCommonPrefixWitness) :
+    tree.TracePathAgreement := by
+  exact tree.tracePathAgreement_of_eulerPathWindowAgreement hunique
+    (tree.eulerPathWindowAgreement_of_prefix_and_witness hprefix hwitness)
+
+theorem eulerPathWindowPrefixInvariant_of_labelsUnique
+    (tree : RoseTree) (hunique : tree.LabelsUnique) :
+    tree.EulerPathWindowPrefixInvariant := by
+  unfold EulerPathWindowPrefixInvariant PathWindowPrefixInvariant
+  intro i j k pathI pathJ pathK hpathI hpathJ hpathK hleft hright
+  simpa [eulerPaths] using
+    (pathWindowPrefixInvariant_eulerPathsAt [] tree hunique
+      hpathI hpathJ hpathK hleft hright)
+
+theorem eulerPathWindowCommonPrefixWitness_of_labelsUnique
+    (tree : RoseTree) (hunique : tree.LabelsUnique) :
+    tree.EulerPathWindowCommonPrefixWitness := by
+  unfold EulerPathWindowCommonPrefixWitness PathWindowCommonPrefixWitness
+  intro i j pathI pathJ hpathI hpathJ
+  simpa [eulerPaths] using
+    (pathWindowCommonPrefixWitness_eulerPathsAt [] tree hunique
+      hpathI hpathJ)
+
+theorem eulerPathWindowAgreement_of_labelsUnique
+    (tree : RoseTree) (hunique : tree.LabelsUnique) :
+    tree.EulerPathWindowAgreement := by
+  exact tree.eulerPathWindowAgreement_of_prefix_and_witness
+    (tree.eulerPathWindowPrefixInvariant_of_labelsUnique hunique)
+    (tree.eulerPathWindowCommonPrefixWitness_of_labelsUnique hunique)
+
+theorem tracePathAgreement_of_labelsUnique
+    (tree : RoseTree) (hunique : tree.LabelsUnique) :
+    tree.TracePathAgreement := by
+  exact tree.tracePathAgreement_of_eulerPathWindowAgreement hunique
+    (tree.eulerPathWindowAgreement_of_labelsUnique hunique)
 
 /--
 Semantic exactness of the generated Euler reduction on labels that occur in the

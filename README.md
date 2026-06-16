@@ -35,12 +35,13 @@ right interval combine into one exact leftmost argmin witness.
   LCA semantics, the `TracePathAgreement` bridge statement, a derived
   `TracePathExactOnLabels` semantic exactness theorem, a trace-side
   leftmost-minimum reference candidate, generated path-annotated Euler traces,
-  a finite generated-label agreement certificate, and the RMQ-backed
-  tree-level LCA theorem for certified traces.
+  a finite generated-label agreement certificate, structural
+  `LabelsUnique -> TracePathAgreement` proof via generated Euler-window
+  invariants, and the RMQ-backed tree-level LCA theorem for certified traces.
 - `RMQ/Core/Reduction.lean`: contract-level RMQ/LCA reduction interfaces:
-  trace/path-agreeing generated Euler traces turn RMQ backends into LCA
-  backends, with a finite-check wrapper still available, and certified
-  interval-to-LCA encodings turn LCA backends into RMQ backends.
+  label-unique generated Euler traces turn RMQ backends into LCA backends,
+  with trace/path-agreement and finite-check wrappers still available, and
+  certified interval-to-LCA encodings turn LCA backends into RMQ backends.
 - `RMQ/Core/Recursion.lean`: Mathlib-free well-founded recursion over strictly
   shorter summary lists, concrete full-block minimum summaries, and lifting
   lemmas from summary candidates back to original-list candidates, including
@@ -73,8 +74,7 @@ rg -n "sorry|admit|axiom|unsafe|opaque|implemented_by" RMQ lakefile.toml
 
 ## Next Direction
 
-The RMQ/LCA equivalence is now factored at the backend-contract boundary. The
-remaining optional strengthening is constructive: discharge the
-`TracePathAgreement` contract from a structural theorem such as
-`LabelsUnique -> TracePathAgreement`, then discharge the
+The forward LCA side is now structural: a label-unique generated Euler trace
+plus any exact RMQ backend over its depths induces an exact LCA backend. The
+remaining constructive strengthening is the reverse side: discharge the
 `RMQToLCAReduction` certificate with a Cartesian-tree construction.
