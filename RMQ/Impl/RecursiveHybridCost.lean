@@ -14,7 +14,8 @@ keeps the recurrence explicit:
   one direct range scan.
 
 The definitions are parameterized over the summary query cost so the next layer
-can instantiate them with another recursive call.
+can instantiate them with another recursive call. The build recurrence is
+solved here with the concrete bound `buildCost xs <= 2 * xs.length`.
 -/
 
 namespace RMQ.RecursiveHybrid
@@ -72,6 +73,81 @@ theorem buildCost_of_large
   unfold buildCost
   rw [recurseOnSummary_of_large publicBlockSummaryShape _ _ hlarge]
   simp [publicBlockSummaryShape]
+
+/-- One level of summary construction costs at most the current input length. -/
+theorem blockMinSummaryBuildCost_le_length (xs : List Int) (b : Nat) :
+    blockMinSummaryBuildCost xs b <= xs.length := by
+  unfold blockMinSummaryBuildCost blockSummaryEntryCost compressedLength
+  exact Nat.div_mul_le_self xs.length b
+
+/--
+For nontrivial inputs, the public recursive-hybrid summary has at most half as
+many entries as the current input.
+-/
+theorem publicCompressedLength_le_half
+    {xs : List Int} (hlarge : 1 < xs.length) :
+    compressedLength xs.length (Nat.log2 xs.length + 1) <= xs.length / 2 := by
+  have hb_two : 2 <= Nat.log2 xs.length + 1 := by
+    have hb_gt := publicBlockSize_gt_one_of_length_gt_one (xs := xs) hlarge
+    omega
+  unfold compressedLength
+  exact Nat.div_le_div_left hb_two (by omega)
+
+theorem blockMinSummary_public_length_le_half
+    {xs : List Int} (hlarge : 1 < xs.length) :
+    (blockMinSummary xs (Nat.log2 xs.length + 1)).length <= xs.length / 2 := by
+  simpa [blockMinSummary_length] using
+    publicCompressedLength_le_half (xs := xs) hlarge
+
+theorem two_mul_half_le (n : Nat) :
+    2 * (n / 2) <= n := by
+  simpa [Nat.mul_comm] using Nat.div_mul_le_self n 2
+
+/--
+The recursive-hybrid summary build recurrence is linear. More explicitly, the
+accumulated build cost is bounded by twice the input length.
+-/
+theorem buildCost_le_two_mul_length (xs : List Int) :
+    buildCost xs <= 2 * xs.length := by
+  exact
+    lengthRec
+      (motive := fun xs => buildCost xs <= 2 * xs.length)
+      (fun xs ih => by
+        by_cases hsmall : xs.length <= 1
+        · change buildCost xs <= 2 * xs.length
+          rw [buildCost_of_small hsmall]
+          omega
+        · have hlarge : 1 < xs.length := by omega
+          let b := Nat.log2 xs.length + 1
+          have hrec_lt :
+              (blockMinSummary xs b).length < xs.length := by
+            simpa [b, blockMinSummary_length] using
+              publicCompressedLength_lt_self (xs := xs) hlarge
+          have ih_summary := ih (blockMinSummary xs b) hrec_lt
+          have hsummary_half :
+              (blockMinSummary xs b).length <= xs.length / 2 := by
+            simpa [b] using blockMinSummary_public_length_le_half
+              (xs := xs) hlarge
+          have hrec_half :
+              buildCost (blockMinSummary xs b) <= 2 * (xs.length / 2) :=
+            Nat.le_trans ih_summary
+              (Nat.mul_le_mul_left 2 hsummary_half)
+          have hlevel :
+              blockMinSummaryBuildCost xs b <= xs.length :=
+            blockMinSummaryBuildCost_le_length xs b
+          have hhalf := two_mul_half_le xs.length
+          change buildCost xs <= 2 * xs.length
+          rw [buildCost_of_large hlarge]
+          change
+            blockMinSummaryBuildCost xs b +
+              buildCost (blockMinSummary xs b) <= 2 * xs.length
+          omega)
+      xs
+
+/-- Big-O style linear witness for the recursive-hybrid build recurrence. -/
+theorem buildCost_linear :
+    exists c, forall xs : List Int, buildCost xs <= c * xs.length := by
+  exact ⟨2, buildCost_le_two_mul_length⟩
 
 /-- Query-step cost with a supplied summary-query cost function. -/
 def queryWithSummaryCost

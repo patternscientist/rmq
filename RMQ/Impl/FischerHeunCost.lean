@@ -36,6 +36,10 @@ def localQuerySlotBudget (blockSize : Nat) : Nat :=
 def rawMicrotableSlotBudget (blockSize : Nat) : Nat :=
   rawShapeTableCount blockSize * localQuerySlotBudget blockSize
 
+/-- Standard Catalan-envelope target used by the Fischer-Heun table-count proof. -/
+def shapeCountEnvelope (blockSize : Nat) : Nat :=
+  4 ^ blockSize
+
 theorem rawShapeTableCount_eq_shapeCount (blockSize : Nat) :
     rawShapeTableCount blockSize = Cartesian.shapeCount blockSize := by
   simp [rawShapeTableCount, Cartesian.shapeUniverse_length]
@@ -67,6 +71,27 @@ theorem rawMicrotable_cost_count_profile
       rawShapeTableCount blockSize = Cartesian.shapeCount blockSize := by
   exact ⟨rawLookupCosted_cost_le_bound xs start blockSize left right,
     rawShapeTableCount_eq_shapeCount blockSize⟩
+
+theorem rawShapeTableCount_le_envelope
+    (blockSize : Nat)
+    (hcat : Cartesian.shapeCount blockSize <= shapeCountEnvelope blockSize) :
+    rawShapeTableCount blockSize <= shapeCountEnvelope blockSize := by
+  simpa [rawShapeTableCount_eq_shapeCount] using hcat
+
+/--
+Squared form of the eventual `O(sqrt n)` table-count corollary.
+
+Once the Catalan envelope `shapeCount b <= 4^b` and the block-size choice
+`(4^b)^2 <= n` are supplied, the number of shape tables fits a square-root
+budget, stated without introducing a separate square-root function.
+-/
+theorem rawShapeTableCount_square_le_of_envelope_square
+    {blockSize n : Nat}
+    (hcat : Cartesian.shapeCount blockSize <= shapeCountEnvelope blockSize)
+    (hbudget : shapeCountEnvelope blockSize * shapeCountEnvelope blockSize <= n) :
+    rawShapeTableCount blockSize * rawShapeTableCount blockSize <= n := by
+  have htable := rawShapeTableCount_le_envelope blockSize hcat
+  exact Nat.le_trans (Nat.mul_le_mul htable htable) hbudget
 
 end FischerHeun
 

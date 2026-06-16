@@ -75,13 +75,15 @@ right interval combine into one exact leftmost argmin witness.
   sparse table, and exact fresh-table query costs.
 - `RMQ/Impl/FischerHeunCost.lean`: exact finite microtable cost/count profile:
   raw shape lookup costs at most `blockSize + 1`, and the shape-table universe
-  has exactly `shapeCount blockSize` entries.
+  has exactly `shapeCount blockSize` entries, with a squared table-budget bridge
+  ready for the Catalan-count envelope.
 - `RMQ/Impl/HybridBlock.lean`: block summaries, sparse middle query, public
   hybrid query, and backend proof.
 - `RMQ/Impl/RecursiveHybrid.lean`: aligned query schedule and public
   self-recursive hybrid backend built with `recurseOnSummary`.
-- `RMQ/Impl/RecursiveHybridCost.lean`: first recursive-hybrid build/query cost
-  recurrences, parameterized by the recursive summary-query cost.
+- `RMQ/Impl/RecursiveHybridCost.lean`: recursive-hybrid build/query cost
+  recurrences, including the solved linear build bound
+  `buildCost xs <= 2 * xs.length`.
 - `RMQ/Impl/Equivalence.lean`: contract-level equality instantiations for all
   public backend pairs.
 
@@ -113,3 +115,8 @@ schedules: charge boundary scans, raw microtable lookup, summary sparse-table
 queries, and recursive summary queries. Good polishing targets also include API
 ergonomics around the certified Cartesian reduction and examples that compose
 it with `LCABackend`s.
+
+The recursive-hybrid build recurrence is now solved with an explicit linear
+bound. The next Fischer-Heun proof target is the Catalan envelope
+`shapeCount b <= 4 ^ b`, which plugs into the existing squared table-budget
+bridge in `RMQ/Impl/FischerHeunCost.lean`.
