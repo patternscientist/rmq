@@ -1,6 +1,6 @@
 # RMQ Family Summary
 
-Snapshot: 2026-06-17, after the Remy-style Catalan lower-bound proof.
+Snapshot: 2026-06-17, after the plus-minus-one RMQ package.
 
 This document is the family-level map for the current Lean development. It
 records the module dependency DAG, correctness and cost status by structure,
@@ -12,9 +12,9 @@ separate appendix.
 
 - Core contract: half-open RMQ ranges `[left, right)` over `List Int`, returning
   the leftmost minimum index when `left < right` and `right <= xs.length`.
-- Exact public RMQ backends: linear scan, sparse table, memoized sparse table,
-  hybrid block, recursive hybrid, raw whole-list microtable, and value-level
-  Fischer-Heun.
+- Exact public RMQ backends: linear scan, plus-minus-one linear instance,
+  sparse table, memoized sparse table, hybrid block, recursive hybrid, raw
+  whole-list microtable, and value-level Fischer-Heun.
 - Exact LCA bridge: generated Euler traces plus exact RMQ backends induce exact
   LCA backends, and certified LCA encodings induce exact RMQ backends.
 - Reverse RMQ-to-LCA witness: the built Cartesian tree supplies a concrete
@@ -30,6 +30,9 @@ separate appendix.
 - Main open integration point: package canonical representative arrays for
   external exact RMQ encoders and connect the lower-bound API to concrete
   data-structure state encodings.
+- Succinct frontier: replace the conservative plus-minus-one linear instance
+  with a specialized plus-minus-one RMQ backend, then connect Euler tours to a
+  bit-level balanced-parentheses/rank/select upper-bound story.
 
 ## Dependency DAG
 
@@ -47,6 +50,7 @@ flowchart TD
   Backend --> LinearScan["Impl.LinearScan"]
   Backend --> SparseTable["Impl.SparseTable"]
   Backend --> LCA["Core.LCA"]
+  LCA --> PlusMinusOneCore["Core.PlusMinusOne"]
   LCA --> Reduction["Core.Reduction"]
   Reduction --> Cartesian["Core.Cartesian"]
   Cartesian --> Shape["Core.Shape"]
@@ -67,6 +71,9 @@ flowchart TD
   Window --> HybridBlock["Impl.HybridBlock"]
   LinearScan --> HybridBlock
   SparseTable --> HybridBlock
+
+  PlusMinusOneCore --> PlusMinusOneImpl["Impl.PlusMinusOne"]
+  LinearScan --> PlusMinusOneImpl
 
   Schedule --> RecursiveHybrid["Impl.RecursiveHybrid"]
   Recursion --> RecursiveHybrid
@@ -100,6 +107,7 @@ flowchart TD
 | --- | --- | --- | --- |
 | Core RMQ spec and backend contract | `LeftmostArgMin`, `CandidateExact`, `RMQBackend`, and contract-level backend equality are proved. | No cost model here. | All public RMQ backends target the same half-open leftmost-argmin contract. |
 | Linear scan | Exact query, soundness, completeness, invalid-range rejection, backend. | Costed scan kernel exists in `Core.CostKernels`; no separate backend-level cost wrapper. | Direct reference backend. |
+| Plus-minus-one RMQ | `Core.PlusMinusOne` packages `AdjacentDepthsDifferByOne` as a first-class RMQ input and wraps exact RMQ backends over such inputs. Euler traces and generated rose-tree Euler depths instantiate the invariant directly. | No specialized cost profile yet. | `Impl.PlusMinusOne` currently provides the conservative verified instance via linear scan; this is the hook for future succinct `+-1` RMQ. |
 | Sparse table | Exact materialized sparse table query and backend. | `SparseTableCost` gives costed materialized build, supplied-table query, fresh-table query erasure/run/cost. | Supplied-table query is constant under RAM/unit-cost indexed access. |
 | Memoized sparse table | Memoized build is extensionally equivalent to the verified sparse table, with backend and fresh-query erasure/cost theorems. | Exact log-row build cost formula, memo row count, and fresh-query cost equality. | This is the cost-faithful sparse-table builder used by Fischer-Heun summaries. |
 | Hybrid block | Exact public hybrid backend with boundary scans and sparse middle summaries. | No first-class cost profile yet. | Useful proof predecessor for the recursive and Fischer-Heun schedules. |
@@ -138,6 +146,10 @@ flowchart TD
 - The lower-bound scaffold works at the Cartesian-shape encoding level and now
   includes the exact-RMQ-decoder bridge, the quadratic Catalan count, and the
   unconditional fixed-length exact-RMQ `2*n - O(log n)` bit lower bound.
+- The plus-minus-one RMQ package records the Euler-depth adjacent-step
+  invariant at the input/API level. Its first implementation is still linear
+  scan; it does not yet claim a succinct representation or constant-time
+  plus-minus-one query algorithm.
 - The project remains Mathlib-free: imports are Lean/Std plus existing Lean
   arithmetic automation such as `omega`.
 
@@ -181,6 +193,11 @@ flowchart TD
   `PathWindowCommonPrefixWitness`, `EulerPathWindowCommonPrefixWitness`,
   `TracePathExactOnLabels`, `labelPairAgreement`,
   `duplicateLabelCounterexample`.
+- `RMQ/Core/PlusMinusOne.lean`: `PlusMinusOne.IsDepthTrace`,
+  `PlusMinusOne.Input`, `PlusMinusOne.Input.ofEulerTrace`,
+  `PlusMinusOne.Input.ofRoseTree`, `PlusMinusOne.Backend`,
+  `PlusMinusOne.Backend.toRMQBackend`,
+  `PlusMinusOne.Backend.queryBuilt`.
 - `RMQ/Core/Reduction.lean`: `LCABackend`, `LCABackend.queryBuilt`,
   `RoseTree.lcaBackendOfRMQBackend`, `RoseTree.lcaBackendOfRMQBackendUnique`,
   `RoseTree.lcaBackendOfRMQBackendChecked`, `RMQToLCAReduction`,
@@ -191,6 +208,8 @@ flowchart TD
   `InRange`, `indexPath`, `RangeLCASpec`, `reductionOfRangeLCASpec`,
   `BuiltRangeLCASpec`, `reduction`, `certifiedReduction`.
 - `RMQ/Impl/LinearScan.lean`: `query`, `backend`.
+- `RMQ/Impl/PlusMinusOne.lean`: `linearScanBackend`, `query`,
+  `linearScanBackendOfEulerTrace`, `linearScanBackendOfRoseTree`.
 - `RMQ/Impl/SparseTable.lean`: `blockLen`, `combineIndex`, `blockArgMin`,
   `sparseRow`, `rowCell`, `buildSparseTable`, `tableRow`, `queryFromTable`,
   `query`, `backend`.
@@ -371,6 +390,17 @@ The names below are grouped by source module. Repeated base names in
   `lcaCandidate_isPathLCA_of_pathLCA`,
   `duplicateLabelCounterexample_traceAnswer`,
   `duplicateLabelCounterexample_not_tracePathAgreement`.
+- `RMQ/Core/PlusMinusOne.lean` (10):
+  `PlusMinusOne.Input.ofEulerTrace_depths`,
+  `PlusMinusOne.Input.ofEulerTrace_adjacent`,
+  `PlusMinusOne.Input.ofRoseTree_depths`,
+  `PlusMinusOne.Input.ofRoseTree_depths_eq_eulerDepths`,
+  `PlusMinusOne.Input.ofRoseTree_adjacent`,
+  `PlusMinusOne.Input.roseTree_eulerDepths_are_trace`,
+  `PlusMinusOne.Backend.queryBuilt_sound`,
+  `PlusMinusOne.Backend.queryBuilt_complete`,
+  `PlusMinusOne.Backend.queryBuilt_invalid_none`,
+  `PlusMinusOne.Backend.queryBuilt_eq`.
 - `RMQ/Core/Reduction.lean` (6):
   `RoseTree.leftmostMinNode?_eq_pathLCA_of_labelPairAgreement`,
   `EulerTrace.lcaCandidate_eq_leftmostMinNode?`,
@@ -397,6 +427,8 @@ The names below are grouped by source module. Repeated base names in
 
 - `RMQ/Impl/LinearScan.lean` (4): `query_valid_exact`, `query_sound`,
   `query_complete`, `invalid_none`.
+- `RMQ/Impl/PlusMinusOne.lean` (3): `PlusMinusOne.query_sound`,
+  `PlusMinusOne.query_complete`, `PlusMinusOne.query_invalid_none`.
 - `RMQ/Impl/SparseTable.lean` (7): `blockArgMin_leftmost_exists`,
   `sparseRow_cell_eq_blockArgMin`, `tableRow_build_eq_sparseRow`,
   `query_valid_exact`, `query_sound`, `query_complete`, `invalid_none`.
@@ -570,10 +602,16 @@ completeness.
 
 ## Suggested Next Milestones
 
-1. Package canonical representative arrays for every Cartesian
+1. Build the first specialized plus-minus-one RMQ backend: block signatures
+   over `+-1` depth deltas, local table exactness, and a contract-level
+   replacement for the current linear instance.
+2. Start the bit-level succinct upper-bound layer: balanced parentheses,
+   rank/select primitives, and the connection from Euler-tour parentheses to
+   plus-minus-one RMQ/LCA queries.
+3. Package canonical representative arrays for every Cartesian
    shape, making the `ExactRMQShapeEncoding.sample_shape_eq` premise easier to
    instantiate from external encoders.
-2. Connect concrete Fischer-Heun-style state encoders to the exact-RMQ
+4. Connect concrete Fischer-Heun-style state encoders to the exact-RMQ
    encoding lower-bound API, separating payload bits from proof-only fields.
-3. Costed LCA via RMQ: build Euler depths, instantiate Fischer-Heun over those
+5. Costed LCA via RMQ: build Euler depths, instantiate Fischer-Heun over those
    depths, and package an O(n), O(1) LCA backend under the same model notes.

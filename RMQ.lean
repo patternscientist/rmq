@@ -3,6 +3,7 @@ import RMQ.Core.Cost
 import RMQ.Core.Window
 import RMQ.Core.Backend
 import RMQ.Core.LCA
+import RMQ.Core.PlusMinusOne
 import RMQ.Core.Reduction
 import RMQ.Core.Cartesian
 import RMQ.Core.Shape
@@ -12,6 +13,7 @@ import RMQ.Core.CostKernels
 import RMQ.Core.Schedule
 import RMQ.Core.Recursion
 import RMQ.Impl.LinearScan
+import RMQ.Impl.PlusMinusOne
 import RMQ.Impl.SparseTable
 import RMQ.Impl.SparseTableCost
 import RMQ.Impl.SparseTableMemoCost

@@ -18,6 +18,8 @@ The project currently builds without Mathlib, using only Lean/Std plus `omega`.
 It proves a common half-open, leftmost-argmin contract for:
 
 - a direct linear scan backend,
+- a plus-minus-one RMQ package with the Euler-depth invariant and a verified
+  linear-scan instance,
 - a sparse table backend,
 - a hybrid block backend with boundary scans and sparse middle summaries, and
 - a self-recursive hybrid backend with aligned boundary scans and recursive
@@ -44,6 +46,9 @@ right interval combine into one exact leftmost argmin witness.
   a finite generated-label agreement certificate, structural
   `LabelsUnique -> TracePathAgreement` proof via generated Euler-window
   invariants, and the RMQ-backed tree-level LCA theorem for certified traces.
+- `RMQ/Core/PlusMinusOne.lean`: first-class plus-minus-one RMQ inputs,
+  packaging `AdjacentDepthsDifferByOne` for Euler-depth lists, plus a verified
+  backend wrapper that can forget back to the ordinary `RMQBackend` contract.
 - `RMQ/Core/Reduction.lean`: contract-level RMQ/LCA reduction interfaces:
   label-unique generated Euler traces turn RMQ backends into LCA backends,
   with trace/path-agreement and finite-check wrappers still available, and
@@ -75,6 +80,9 @@ right interval combine into one exact leftmost argmin witness.
 - `RMQ/Core/Schedule.lean`: stable block-boundary scheduling helpers shared by
   hybrid variants.
 - `RMQ/Impl/LinearScan.lean`: simplest exact backend.
+- `RMQ/Impl/PlusMinusOne.lean`: first verified plus-minus-one backend
+  instance, implemented by the existing linear scan while retaining the
+  adjacent-depth invariant for specialized successors.
 - `RMQ/Impl/SparseTable.lean`: sparse table cells, materialized table lookup,
   and backend proof.
 - `RMQ/Impl/SparseTableCost.lean`: costed sparse-table cell construction,
@@ -136,10 +144,12 @@ Cartesian tree are exactly leftmost RMQ witnesses, yielding
 
 The lower-bound frontier has moved past the Catalan count: the project now
 proves the quadratic bound and the resulting fixed-length exact-RMQ
-log-slack bit lower bound. Good next targets include canonical representative
-arrays for external encoders, a stateful Fischer-Heun public API around the
-supplied-query theorem, and composing the certified Cartesian reduction with
-`LCABackend`s.
+log-slack bit lower bound. The new plus-minus-one RMQ package gives the
+succinct-RMQ line a natural next target: replace the linear instance with a
+specialized plus-minus-one backend, then move toward bit-level balanced
+parentheses, rank/select, and succinct LCA upper bounds. Good adjacent targets
+also include canonical representative arrays for external encoders and
+concrete state-encoding wrappers for the lower-bound API.
 
 The recursive-hybrid build recurrence is now solved with an explicit linear
 bound, and the Fischer-Heun shape-table count is now bounded by the
