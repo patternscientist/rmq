@@ -21,6 +21,66 @@ namespace FischerHeun
 abbrev MicrotableFor (blockSize : Nat) :=
   RMQ.Cartesian.Microtable blockSize
 
+/-- Append one dummy block so every real block start has a full local shape. -/
+def paddedInput (xs : List Int) (blockSize : Nat) : List Int :=
+  xs ++ List.replicate blockSize 0
+
+@[simp] theorem paddedInput_length (xs : List Int) (blockSize : Nat) :
+    (paddedInput xs blockSize).length = xs.length + blockSize := by
+  simp [paddedInput]
+
+theorem paddedInput_get?_eq
+    {xs : List Int} {blockSize i : Nat} (hi : i < xs.length) :
+    (paddedInput xs blockSize)[i]? = xs[i]? := by
+  simp [paddedInput, List.getElem?_append, hi]
+
+theorem leftmostArgMin_of_eq_on_range
+    {xs ys : List Int} {left right idx : Nat}
+    (hright : right <= xs.length)
+    (heq :
+      forall j, left <= j -> j < right -> ys[j]? = xs[j]?)
+    (harg : LeftmostArgMin ys left right idx) :
+    LeftmostArgMin xs left right idx := by
+  have hleft_right : left < right := harg.1
+  have hleft_idx : left <= idx := harg.2.2.1
+  have hidx_right : idx < right := harg.2.2.2.1
+  cases harg.2.2.2.2 with
+  | intro v hv =>
+      have hget : ys[idx]? = some v := hv.1
+      have hmin :
+          forall j w, left <= j -> j < right -> ys[j]? = some w ->
+            v <= w := hv.2.1
+      have hleftmost :
+          forall j w, left <= j -> j < idx -> ys[j]? = some w ->
+            v < w := hv.2.2
+      have hget_xs : xs[idx]? = some v := by
+        have hidx_eq := heq idx hleft_idx hidx_right
+        simpa [hidx_eq] using hget
+      have hmin_xs :
+          forall j w, left <= j -> j < right -> xs[j]? = some w ->
+            v <= w := by
+        intro j w hleft_j hj_right hget_j
+        have hj_eq := heq j hleft_j hj_right
+        have hget_y : ys[j]? = some w := by
+          simpa [hj_eq] using hget_j
+        exact hmin j w hleft_j hj_right hget_y
+      have hleftmost_xs :
+          forall j w, left <= j -> j < idx -> xs[j]? = some w ->
+            v < w := by
+        intro j w hleft_j hj_idx hget_j
+        have hj_right : j < right := Nat.lt_trans hj_idx hidx_right
+        have hj_eq := heq j hleft_j hj_right
+        have hget_y : ys[j]? = some w := by
+          simpa [hj_eq] using hget_j
+        exact hleftmost j w hleft_j hj_idx hget_y
+      exact And.intro hleft_right
+        (And.intro hright
+          (And.intro hleft_idx
+            (And.intro hidx_right
+              (Exists.intro v
+                (And.intro hget_xs
+                  (And.intro hmin_xs hleftmost_xs))))))
+
 /--
 A certified microtable lookup over one full concrete block is an exact global
 RMQ answer for the corresponding subinterval.
@@ -60,21 +120,62 @@ structure State where
   summaryTable : List (List (Option Nat))
 
 /--
-Right-boundary candidate.
+Local candidate inside one block.
 
-The final queried boundary can lie in a short trailing block.  Full concrete
-blocks use the certified shape microtable; short trailing blocks fall back to
-the direct scan until the public wrapper grows a padding or tail policy.
+The lookup is run against `paddedInput xs state.blockSize`, so the final short
+block and same-block intervals have the same unit-cost materialized lookup
+shape as interior full blocks.  The queried half-open window itself remains
+inside `xs`.
 -/
-def rightBoundaryCandidate
-    (xs : List Int) (state : State) (start right : Nat) : Option Nat :=
-  if _hnonempty : start < right then
-    if _hbound : start + state.blockSize <= xs.length then
-      state.microtable.queryIndex? xs start 0 (right - start)
-    else
-      RMQ.LinearScan.query xs start right
+def localBlockCandidate
+    (xs : List Int) (state : State) (start left right : Nat) : Option Nat :=
+  if _hnonempty : left < right then
+    state.microtable.queryIndex? (paddedInput xs state.blockSize) start
+      (left - start) (right - start)
   else
     none
+
+theorem localBlockCandidate_exact
+    (xs : List Int) (state : State) (start left right : Nat)
+    (hstart_left : start <= left)
+    (hleft_right : left <= right)
+    (hright_len : right <= xs.length)
+    (hright_block : right <= start + state.blockSize) :
+    CandidateExact xs left right
+      (localBlockCandidate xs state start left right) := by
+  unfold localBlockCandidate
+  by_cases hnonempty : left < right
+  case pos =>
+    rw [dif_pos hnonempty]
+    have hpaddedBound :
+        start + state.blockSize <=
+          (paddedInput xs state.blockSize).length := by
+      rw [paddedInput_length]
+      omega
+    have hpaddedValid :
+        ValidRange (paddedInput xs state.blockSize) left right := by
+      exact And.intro hnonempty (by rw [paddedInput_length]; omega)
+    exact Exists.elim
+      (microQueryIndex_valid_exact state.microtable hpaddedBound
+        hstart_left hright_block hpaddedValid)
+      (fun idx hpair => by
+        cases hpair with
+        | intro hquery harg =>
+          have harg_xs : LeftmostArgMin xs left right idx :=
+            leftmostArgMin_of_eq_on_range hright_len
+              (fun j _hleft_j hj_right =>
+                paddedInput_get?_eq (xs := xs)
+                  (blockSize := state.blockSize) (by omega))
+              harg
+          exact Or.inr (Exists.intro idx (And.intro hquery harg_xs)))
+  case neg =>
+    rw [dif_neg hnonempty]
+    exact Or.inl (And.intro rfl (by omega))
+
+/-- Right-boundary candidate, implemented as a local padded-block lookup. -/
+def rightBoundaryCandidate
+    (xs : List Int) (state : State) (start right : Nat) : Option Nat :=
+  localBlockCandidate xs state start start right
 
 theorem rightBoundaryCandidate_exact
     (xs : List Int) (state : State) (start right : Nat)
@@ -83,37 +184,8 @@ theorem rightBoundaryCandidate_exact
     (hright_block : right <= start + state.blockSize) :
     CandidateExact xs start right
       (rightBoundaryCandidate xs state start right) := by
-  unfold rightBoundaryCandidate
-  by_cases hnonempty : start < right
-  case pos =>
-    simp [hnonempty]
-    by_cases hbound : start + state.blockSize <= xs.length
-    case pos =>
-      simp [hbound]
-      exact Exists.elim
-        (microQueryIndex_valid_exact state.microtable hbound
-          (by omega) hright_block (And.intro hnonempty hright_len))
-        (fun idx hpair => by
-          cases hpair with
-          | intro hquery harg =>
-            have hzero : start - start = 0 := by omega
-            have hquery_zero :
-                state.microtable.queryIndex? xs start 0 (right - start) =
-                  some idx := by
-              simpa [hzero] using hquery
-            exact Or.inr (Exists.intro idx (And.intro hquery_zero harg)))
-    case neg =>
-      simp [hbound]
-      exact Exists.elim
-        (RMQ.LinearScan.query_valid_exact xs start right
-          (And.intro hnonempty hright_len))
-        (fun idx hpair => by
-          cases hpair with
-          | intro hquery harg =>
-            exact Or.inr (Exists.intro idx (And.intro hquery harg)))
-  case neg =>
-    simp [hnonempty]
-    exact Or.inl (And.intro rfl (by omega))
+  exact localBlockCandidate_exact xs state start start right
+    (by omega) hstart_right hright_len hright_block
 
 /-- Sparse-table backend used to answer the block-minimum summary RMQ. -/
 def summaryBackend (xs : List Int) (blockSize : Nat) :
@@ -253,7 +325,8 @@ def queryWithState
         combineIndex xs (combineIndex xs leftCandidate middleCandidate)
           rightCandidate
       else
-        RMQ.LinearScan.query xs left right
+        let blockStart := rightBlock * b
+        localBlockCandidate xs state blockStart left right
     else
       RMQ.LinearScan.query xs left right
   else
@@ -278,82 +351,99 @@ theorem microQueryIndexCosted_cost
       materializedMicrotableLookupCost := by
   rfl
 
+/-- Exact cost expression for the costed local-block candidate. -/
+def localBlockCandidateCost
+    (_xs : List Int) (_state : State) (_start left right : Nat) : Nat :=
+  if _hnonempty : left < right then
+    materializedMicrotableLookupCost
+  else
+    1
+
+/-- Costed local-block candidate matching `localBlockCandidate`. -/
+def localBlockCandidateCosted
+    (xs : List Int) (state : State) (start left right : Nat) :
+    Costed (Option Nat) :=
+  if _hnonempty : left < right then
+    microQueryIndexCosted (paddedInput xs state.blockSize) state start
+      (left - start) (right - start)
+  else
+    Costed.tickValue 1 none
+
+@[simp] theorem localBlockCandidateCosted_value
+    (xs : List Int) (state : State) (start left right : Nat) :
+    (localBlockCandidateCosted xs state start left right).value =
+      localBlockCandidate xs state start left right := by
+  unfold localBlockCandidateCosted localBlockCandidate
+  by_cases hnonempty : left < right
+  case pos =>
+    rw [dif_pos hnonempty, dif_pos hnonempty]
+    simp [microQueryIndexCosted]
+  case neg =>
+    rw [dif_neg hnonempty, dif_neg hnonempty]
+    simp
+
+theorem localBlockCandidateCosted_cost
+    (xs : List Int) (state : State) (start left right : Nat) :
+    (localBlockCandidateCosted xs state start left right).cost =
+      localBlockCandidateCost xs state start left right := by
+  unfold localBlockCandidateCosted localBlockCandidateCost
+  by_cases hnonempty : left < right
+  case pos =>
+    rw [dif_pos hnonempty, dif_pos hnonempty]
+    simp [microQueryIndexCosted_cost]
+  case neg =>
+    rw [dif_neg hnonempty, dif_neg hnonempty]
+    rfl
+
+theorem localBlockCandidateCost_le_one
+    (xs : List Int) (state : State) (start left right : Nat) :
+    localBlockCandidateCost xs state start left right <= 1 := by
+  unfold localBlockCandidateCost materializedMicrotableLookupCost
+  by_cases hnonempty : left < right
+  case pos =>
+    rw [dif_pos hnonempty]
+    exact Nat.le_refl _
+  case neg =>
+    rw [dif_neg hnonempty]
+    exact Nat.le_refl _
+
 /-- Exact cost expression for the costed right-boundary candidate. -/
 def rightBoundaryCandidateCost
     (xs : List Int) (state : State) (start right : Nat) : Nat :=
-  if _hnonempty : start < right then
-    if _hbound : start + state.blockSize <= xs.length then
-      materializedMicrotableLookupCost
-    else
-      rangeScanCost xs start right
-  else
-    1
+  localBlockCandidateCost xs state start start right
 
 /-- Costed right-boundary candidate matching `rightBoundaryCandidate`. -/
 def rightBoundaryCandidateCosted
     (xs : List Int) (state : State) (start right : Nat) :
     Costed (Option Nat) :=
-  if _hnonempty : start < right then
-    if _hbound : start + state.blockSize <= xs.length then
-      microQueryIndexCosted xs state start 0 (right - start)
-    else
-      rangeScanCosted xs start right
-  else
-    Costed.tickValue 1 none
+  localBlockCandidateCosted xs state start start right
 
 @[simp] theorem rightBoundaryCandidateCosted_value
     (xs : List Int) (state : State) (start right : Nat) :
     (rightBoundaryCandidateCosted xs state start right).value =
       rightBoundaryCandidate xs state start right := by
-  unfold rightBoundaryCandidateCosted rightBoundaryCandidate
-  by_cases hnonempty : start < right
-  case pos =>
-    rw [dif_pos hnonempty, dif_pos hnonempty]
-    by_cases hbound : start + state.blockSize <= xs.length
-    case pos =>
-      rw [dif_pos hbound, dif_pos hbound]
-      simp [microQueryIndexCosted]
-    case neg =>
-      rw [dif_neg hbound, dif_neg hbound]
-      simp [RMQ.LinearScan.query]
-  case neg =>
-    rw [dif_neg hnonempty, dif_neg hnonempty]
-    simp
+  exact localBlockCandidateCosted_value xs state start start right
 
 theorem rightBoundaryCandidateCosted_cost
     (xs : List Int) (state : State) (start right : Nat) :
     (rightBoundaryCandidateCosted xs state start right).cost =
       rightBoundaryCandidateCost xs state start right := by
-  unfold rightBoundaryCandidateCosted rightBoundaryCandidateCost
-  by_cases hnonempty : start < right
-  case pos =>
-    rw [dif_pos hnonempty, dif_pos hnonempty]
-    by_cases hbound : start + state.blockSize <= xs.length
-    case pos =>
-      rw [dif_pos hbound, dif_pos hbound]
-      simp [microQueryIndexCosted_cost]
-    case neg =>
-      rw [dif_neg hbound, dif_neg hbound]
-      exact rangeScanCosted_cost xs start right
-  case neg =>
-    rw [dif_neg hnonempty, dif_neg hnonempty]
-    rfl
+  exact localBlockCandidateCosted_cost xs state start start right
+
+theorem rightBoundaryCandidateCost_le_one
+    (xs : List Int) (state : State) (start right : Nat) :
+    rightBoundaryCandidateCost xs state start right <= 1 := by
+  exact localBlockCandidateCost_le_one xs state start start right
 
 theorem rightBoundaryCandidateCost_eq_materialized
     {xs : List Int} {state : State} {start right : Nat}
-    (hmaterialized :
-      start = right \/ start + state.blockSize <= xs.length) :
+    (_hmaterialized : start = right \/ start + state.blockSize <= xs.length) :
     rightBoundaryCandidateCost xs state start right =
       materializedMicrotableLookupCost := by
-  unfold rightBoundaryCandidateCost
+  unfold rightBoundaryCandidateCost localBlockCandidateCost
   by_cases hnonempty : start < right
   case pos =>
     rw [dif_pos hnonempty]
-    rcases hmaterialized with hempty | hbound
-    case inl =>
-      omega
-    case inr =>
-      rw [dif_pos hbound]
   case neg =>
     rw [dif_neg hnonempty]
     rfl
@@ -373,7 +463,8 @@ def queryWithStateCost
             leftBlock rightBlock +
             rightBoundaryCandidateCost xs state rightStart right + 2
       else
-        rangeScanCost xs left right
+        let blockStart := rightBlock * b
+        localBlockCandidateCost xs state blockStart left right
     else
       rangeScanCost xs left right
   else
@@ -414,7 +505,8 @@ def queryWithStateCosted
           (combineIndex xs (combineIndex xs leftCandidate middleCandidate)
             rightCandidate)
       else
-        rangeScanCosted xs left right
+        let blockStart := rightBlock * b
+        localBlockCandidateCosted xs state blockStart left right
     else
       rangeScanCosted xs left right
   else
@@ -442,13 +534,54 @@ theorem queryWithStateCosted_cost
         omega
       case neg =>
         rw [dif_neg hschedule, dif_neg hschedule]
-        exact rangeScanCosted_cost xs left right
+        exact localBlockCandidateCosted_cost xs state
+          (rightBoundaryBlock right state.blockSize * state.blockSize)
+          left right
     case neg =>
       rw [dif_neg hb, dif_neg hb]
       exact rangeScanCosted_cost xs left right
   case neg =>
     rw [dif_neg hValid, dif_neg hValid]
     rfl
+
+theorem queryWithStateCost_le_eight_of_blockSize_pos
+    (xs : List Int) (state : State) (left right : Nat)
+    (hb : 0 < state.blockSize) :
+    queryWithStateCost xs state left right <= 8 := by
+  unfold queryWithStateCost
+  by_cases hValid : ValidRange xs left right
+  case pos =>
+    rw [dif_pos hValid]
+    rw [dif_pos hb]
+    by_cases hschedule :
+        leftBoundaryBlock left state.blockSize <=
+          rightBoundaryBlock right state.blockSize
+    case pos =>
+      rw [dif_pos hschedule]
+      have hsparse := sparseQueryFromTableCost_le_four
+        (blockMinSummary xs state.blockSize)
+        (leftBoundaryBlock left state.blockSize)
+        (rightBoundaryBlock right state.blockSize)
+      have hright := rightBoundaryCandidateCost_le_one xs state
+        (rightBoundaryBlock right state.blockSize * state.blockSize) right
+      simp [materializedMicrotableLookupCost]
+      omega
+    case neg =>
+      rw [dif_neg hschedule]
+      have hlocal := localBlockCandidateCost_le_one xs state
+        (rightBoundaryBlock right state.blockSize * state.blockSize)
+        left right
+      exact Nat.le_trans (by simpa using hlocal) (by omega)
+  case neg =>
+    rw [dif_neg hValid]
+    omega
+
+theorem queryWithStateCosted_cost_le_eight_of_blockSize_pos
+    (xs : List Int) (state : State) (left right : Nat)
+    (hb : 0 < state.blockSize) :
+    (queryWithStateCosted xs state left right).cost <= 8 := by
+  rw [queryWithStateCosted_cost]
+  exact queryWithStateCost_le_eight_of_blockSize_pos xs state left right hb
 
 theorem queryWithStateCost_eq_suppliedQueryCost_of_materialized
     {xs : List Int} {state : State} {left right : Nat}
@@ -507,7 +640,7 @@ theorem queryWithStateCosted_cost_eq_suppliedQueryCost_of_materialized
           RMQ.SparseTable.memoBackend, rightBoundaryCandidateCosted_value,
           hschedule]
       case neg =>
-        simp [RMQ.LinearScan.query, hschedule]
+        simp [localBlockCandidateCosted_value, hschedule]
     case neg =>
       simp [buildWithBlockSize, hb, RMQ.LinearScan.query]
   case neg =>
@@ -729,13 +862,32 @@ theorem queryWithState_valid_exact
                     hlres, RMQ.RecursiveHybrid.combineIndex,
                     RMQ.combineIndex] using hcombined))
     case neg =>
+      let blockStart := rightBlock * b
       have hquery :
           queryWithState xs state left right =
-            RMQ.LinearScan.query xs left right := by
+            localBlockCandidate xs state blockStart left right := by
         unfold queryWithState
-        simp [hValid, hb, b, leftBlock, rightBlock, hschedule]
+        simp [hValid, hb, b, leftBlock, rightBlock, hschedule, blockStart]
+      have hblockStart_le_left : blockStart <= left := by
+        have hrightBlock_lt_leftBlock : rightBlock < leftBlock := by omega
+        have htmp : rightBlock < left / b + 1 := by
+          simpa [leftBlock, leftBoundaryBlock] using hrightBlock_lt_leftBlock
+        have hrightBlock_le_left_div : rightBlock <= left / b := by omega
+        have hmul := Nat.mul_le_mul_right b hrightBlock_le_left_div
+        have hfloor : (left / b) * b <= left := Nat.div_mul_le_self left b
+        exact Nat.le_trans (by simpa [blockStart] using hmul) hfloor
+      have hright_block : right <= blockStart + state.blockSize := by
+        have hlt := Nat.lt_div_mul_add hb (a := right)
+        simpa [blockStart, rightBlock, b, Nat.add_comm, Nat.add_left_comm,
+          Nat.add_assoc] using Nat.le_of_lt hlt
+      have hlocalExact :
+          CandidateExact xs left right
+            (localBlockCandidate xs state blockStart left right) :=
+        localBlockCandidate_exact xs state blockStart left right
+          hblockStart_le_left (Nat.le_of_lt hValid.1) hValid.2
+          hright_block
       exact Exists.elim
-        (RMQ.LinearScan.query_valid_exact xs left right hValid)
+        (hlocalExact.exists_of_nonempty hValid.1)
         (fun idx hpair => by
           cases hpair with
           | intro hres harg =>
@@ -990,6 +1142,68 @@ theorem allInputQueryCosted_cost_eq_build_plus_supplied_of_large_materialized
   rw [allInputQueryCosted_cost]
   exact allInputQueryCost_eq_build_plus_supplied_of_large_materialized
     hlarge hschedule hright
+
+theorem queryWithStateCost_built_le_eight_of_large
+    {xs : List Int} (hlarge : canonicalReady xs) (left right : Nat) :
+    queryWithStateCost xs (build xs) left right <= 8 := by
+  have hcanon : 16 <= canonicalBlockSize xs := by
+    simpa [canonicalReady] using hlarge
+  have hbCanon : 0 < canonicalBlockSize xs := by
+    omega
+  have hb : 0 < (build xs).blockSize := by
+    simpa [build] using hbCanon
+  exact queryWithStateCost_le_eight_of_blockSize_pos
+    xs (build xs) left right hb
+
+theorem queryWithStateCosted_built_cost_le_eight_of_large
+    {xs : List Int} (hlarge : canonicalReady xs) (left right : Nat) :
+    (queryWithStateCosted xs (build xs) left right).cost <= 8 := by
+  rw [queryWithStateCosted_cost]
+  exact queryWithStateCost_built_le_eight_of_large hlarge left right
+
+theorem allInputQueryCost_large_le_build_plus_eight
+    {xs : List Int} {left right : Nat} (hlarge : canonicalReady xs) :
+    allInputQueryCost xs left right <=
+      buildCost xs (canonicalBlockSize xs) + 8 := by
+  rw [allInputQueryCost_large hlarge]
+  exact Nat.add_le_add_left
+    (queryWithStateCost_built_le_eight_of_large hlarge left right)
+    (buildCost xs (canonicalBlockSize xs))
+
+theorem allInputQueryCosted_cost_large_le_build_plus_eight
+    {xs : List Int} {left right : Nat} (hlarge : canonicalReady xs) :
+    (allInputQueryCosted xs left right).cost <=
+      buildCost xs (canonicalBlockSize xs) + 8 := by
+  rw [allInputQueryCosted_cost]
+  exact allInputQueryCost_large_le_build_plus_eight hlarge
+
+/--
+Canonical large-input profile for the assembled all-input policy.
+
+The build side is linear in `xs.length`; supplied queries against the built
+canonical Fischer-Heun state are bounded by a constant in the RAM/unit-cost
+indexed-access model.
+-/
+theorem linearBuild_constantQuery_profile_allInput_large :
+    exists buildC queryC,
+      forall xs,
+        canonicalReady xs ->
+          buildCost xs (canonicalBlockSize xs) <= buildC * xs.length /\
+            forall left right,
+              queryWithStateCost xs (build xs) left right <= queryC := by
+  refine Exists.intro 15 ?_
+  refine Exists.intro 8 ?_
+  intro xs hlarge
+  have hb16 : 16 <= canonicalBlockSize xs := by
+    simpa [canonicalReady] using hlarge
+  have hpos := canonicalBlockSize_pos_length_of_ge_sixteen (xs := xs) hb16
+  have hmicro := rawMicrotableSlotBudget_canonical_le_length xs hpos
+  have hsummary := summaryLog_canonical_le_four_mul xs hb16
+  exact And.intro
+    (buildCost_le_fifteen_mul_length xs (canonicalBlockSize xs)
+      hmicro hsummary)
+    (fun left right =>
+      queryWithStateCost_built_le_eight_of_large hlarge left right)
 
 theorem allInputQuery_sound {xs : List Int} {left right idx : Nat}
     (hres : allInputQuery xs left right = some idx) :
