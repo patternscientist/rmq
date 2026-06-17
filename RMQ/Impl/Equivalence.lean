@@ -4,6 +4,7 @@ import RMQ.Impl.SparseTable
 import RMQ.Impl.SparseTableMemoCost
 import RMQ.Impl.HybridBlock
 import RMQ.Impl.RecursiveHybrid
+import RMQ.Impl.FischerHeun
 
 /-!
 # Backend equivalence theorems
@@ -80,6 +81,40 @@ theorem linearScan_query_eq_microtableRaw_query
       (Cartesian.Microtable.rawBackend xs) left right
 
 /--
+The linear-scan and canonical Fischer-Heun public queries are extensionally
+equal by the generic backend contract.
+-/
+theorem linearScan_query_eq_fischerHeun_query
+    (xs : List Int) (left right : Nat) :
+    LinearScan.query xs left right = FischerHeun.query xs left right := by
+  simpa [RMQBackend.queryBuilt, LinearScan.backend, FischerHeun.backend,
+    FischerHeun.backendWithBlockSize, FischerHeun.query]
+    using RMQBackend.queryBuilt_eq (LinearScan.backend xs)
+      (FischerHeun.backend xs) left right
+
+/--
+The linear-scan and all-input Fischer-Heun wrapper queries are extensionally
+equal by the generic backend contract.
+-/
+theorem linearScan_query_eq_fischerHeun_allInputQuery
+    (xs : List Int) (left right : Nat) :
+    LinearScan.query xs left right = FischerHeun.allInputQuery xs left right := by
+  simpa [RMQBackend.queryBuilt, LinearScan.backend,
+    FischerHeun.allInputBackend]
+    using RMQBackend.queryBuilt_eq (LinearScan.backend xs)
+      (FischerHeun.allInputBackend xs) left right
+
+/--
+The canonical Fischer-Heun query and its all-input wrapper are extensionally
+equal at the RMQ contract boundary.
+-/
+theorem fischerHeun_query_eq_allInputQuery
+    (xs : List Int) (left right : Nat) :
+    FischerHeun.query xs left right = FischerHeun.allInputQuery xs left right := by
+  rw [(linearScan_query_eq_fischerHeun_query xs left right).symm,
+    linearScan_query_eq_fischerHeun_allInputQuery]
+
+/--
 The sparse-table and sparse-middle hybrid public queries are extensionally
 equal by the generic backend contract.
 -/
@@ -116,6 +151,18 @@ theorem sparseTable_query_eq_microtableRaw_query
       (Cartesian.Microtable.rawBackend xs) left right
 
 /--
+The sparse-table and canonical Fischer-Heun public queries are extensionally
+equal by the generic backend contract.
+-/
+theorem sparseTable_query_eq_fischerHeun_query
+    (xs : List Int) (left right : Nat) :
+    SparseTable.query xs left right = FischerHeun.query xs left right := by
+  simpa [RMQBackend.queryBuilt, SparseTable.backend, SparseTable.query,
+    FischerHeun.backend, FischerHeun.backendWithBlockSize, FischerHeun.query]
+    using RMQBackend.queryBuilt_eq (SparseTable.backend xs)
+      (FischerHeun.backend xs) left right
+
+/--
 The sparse-middle hybrid and self-recursive hybrid public queries are
 extensionally equal by the generic backend contract.
 -/
@@ -131,5 +178,22 @@ theorem recursiveHybrid_query_eq_hybridBlock_query
     (xs : List Int) (left right : Nat) :
     RecursiveHybrid.query xs left right = HybridBlock.query xs left right :=
   (hybridBlock_query_eq_recursiveHybrid_query xs left right).symm
+
+/--
+The self-recursive hybrid and canonical Fischer-Heun public queries are
+extensionally equal by the generic backend contract.
+-/
+theorem recursiveHybrid_query_eq_fischerHeun_query
+    (xs : List Int) (left right : Nat) :
+    RecursiveHybrid.query xs left right = FischerHeun.query xs left right := by
+  simpa [RMQBackend.queryBuilt, RecursiveHybrid.query,
+    FischerHeun.backend, FischerHeun.backendWithBlockSize, FischerHeun.query]
+    using RMQBackend.queryBuilt_eq (RecursiveHybrid.backend xs)
+      (FischerHeun.backend xs) left right
+
+theorem fischerHeun_query_eq_recursiveHybrid_query
+    (xs : List Int) (left right : Nat) :
+    FischerHeun.query xs left right = RecursiveHybrid.query xs left right :=
+  (recursiveHybrid_query_eq_fischerHeun_query xs left right).symm
 
 end RMQ

@@ -55,6 +55,9 @@ right interval combine into one exact leftmost argmin witness.
   the first RMQ-behavior/shape equivalence theorem over all subranges,
   exact fixed-size shape signatures, and the Catalan split recurrence for
   `shapeCount`.
+- `RMQ/Core/EncodingLowerBound.lean`: first information-theoretic scaffold:
+  fixed-length bit encodings that distinguish all Cartesian shapes of size `n`
+  have capacity at least `shapeCount n`.
 - `RMQ/Core/Microtable.lean`: shape-indexed local query offsets, the finite
   shape universe for block signatures, a proved raw shape-only microtable, and
   a certified microtable contract that lifts to an exact in-block `RMQBackend`.
@@ -102,8 +105,8 @@ right interval combine into one exact leftmost argmin witness.
 - `RMQ/Impl/RecursiveHybridCost.lean`: recursive-hybrid build/query cost
   recurrences, including the solved linear build bound
   `buildCost xs <= 2 * xs.length`.
-- `RMQ/Impl/Equivalence.lean`: contract-level equality instantiations for all
-  public backend pairs.
+- `RMQ/Impl/Equivalence.lean`: contract-level equality instantiations for the
+  public RMQ backends, now including canonical and all-input Fischer-Heun.
 
 ## Build
 
@@ -127,11 +130,11 @@ side now has a concrete Cartesian tree proof: endpoint LCAs in the built
 Cartesian tree are exactly leftmost RMQ witnesses, yielding
 `Cartesian.certifiedReduction`.
 
-The current Fischer-Heun frontier is now polish and integration: add
-Fischer-Heun to the backend-equivalence layer, package a stateful public
-build/query API around the supplied-query theorem, and then begin the
-space-optimality story via the RMQ encoding lower bound. Good adjacent targets
-also include composing the certified Cartesian reduction with `LCABackend`s.
+The current frontier is the RMQ space lower bound: connect exact RMQ behavior
+to lossless Cartesian-shape encodings, prove a Catalan lower bound, and derive
+the `2*n - O(log n)` bit requirement. Good adjacent targets also include a
+stateful Fischer-Heun public API around the supplied-query theorem and
+composing the certified Cartesian reduction with `LCABackend`s.
 
 The recursive-hybrid build recurrence is now solved with an explicit linear
 bound, and the Fischer-Heun shape-table count is now bounded by the

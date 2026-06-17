@@ -1,6 +1,6 @@
 # RMQ Family Summary
 
-Snapshot: 2026-06-16, after padded Fischer-Heun local lookups.
+Snapshot: 2026-06-16, after Fischer-Heun equivalence and lower-bound scaffold.
 
 This document is the family-level map for the current Lean development. It
 records the module dependency DAG, correctness and cost status by structure,
@@ -23,9 +23,12 @@ separate appendix.
   recursive-hybrid build recurrence solved linear, raw microtable lookup/count
   profile, and assembled Fischer-Heun linear-build/constant-supplied-query
   profile.
-- Main open integration point: add Fischer-Heun to the backend-equivalence
-  layer and package the stateful build/query API around the supplied-query
-  constant theorem.
+- Lower-bound layer: first fixed-length lossless Cartesian-shape encoding
+  capacity theorem, ready for the Catalan lower-bound and RMQ-behavior
+  distinguishability steps.
+- Main open integration point: connect exact RMQ behavior to lossless
+  Cartesian-shape encodings, then prove the Catalan lower-bound path to
+  `2*n - O(log n)` bits.
 
 ## Dependency DAG
 
@@ -46,6 +49,7 @@ flowchart TD
   LCA --> Reduction["Core.Reduction"]
   Reduction --> Cartesian["Core.Cartesian"]
   Cartesian --> Shape["Core.Shape"]
+  Shape --> EncodingLowerBound["Core.EncodingLowerBound"]
   Shape --> Microtable["Core.Microtable"]
 
   Cost --> CostKernels["Core.CostKernels"]
@@ -84,6 +88,7 @@ flowchart TD
   SparseTableMemoCost --> Equivalence
   HybridBlock --> Equivalence
   RecursiveHybrid --> Equivalence
+  FischerHeun --> Equivalence
 ```
 
 `RMQ.lean` imports the full family root.
@@ -99,11 +104,12 @@ flowchart TD
 | Hybrid block | Exact public hybrid backend with boundary scans and sparse middle summaries. | No first-class cost profile yet. | Useful proof predecessor for the recursive and Fischer-Heun schedules. |
 | Recursive hybrid | Exact public recursive backend via `recurseOnSummary`. | Build recurrence solved: `buildCost xs <= 2 * xs.length`; query-step costed erasure and cost formula with supplied summary query. | End-to-end recursive query bound is still not the flagship result; Fischer-Heun now carries the constant-query story. |
 | Shape and microtable core | Shape/RMQ behavior equivalence, exact fixed-size shape signatures, shape universe count, certified raw local microtable, exact in-block backend. | Raw shape lookup cost bounded by `blockSize + 1`; shape count bounded by Catalan envelope `shapeCount b <= 4^b`. | The local theorem is now consumed by `Impl.FischerHeun`. |
+| Encoding lower-bound scaffold | Fixed-length lossless Cartesian-shape encodings must have at least `shapeCount n` available bitstrings. | No runtime cost model; this is information-theoretic capacity. | Next proof layer should connect exact RMQ behavior to lossless shape encoding, then prove a Catalan lower bound. |
 | Fischer-Heun value backend | `State` carries block size, raw microtable, block-minimum summary, and summary sparse table. `queryWithState` composes padded local microtable lookups for same-block/boundary windows with the recursive-middle summary query. Exactness, soundness, completeness, invalid rejection, backend wrappers, and an all-input wrapper are proved. | `buildWithBlockSizeCosted` erases to `buildWithBlockSize` and costs exactly `buildCost`; `queryWithStateCosted` charges materialized microtable lookups, supplied summary sparse-table query, and combines; fresh-query and all-input cost/run theorems compose both costs. Positive-block supplied query cost is bounded by `8`, and the canonical large profile proves linear build plus constant supplied query. | The all-input wrapper is exact and costed, with linear scan outside the large canonical regime. The old short-tail scan gap is closed by padded local lookups; remaining polish is API/equivalence packaging. |
 | Fischer-Heun cost profile | Correctness-independent counting/cost assumptions are packaged as theorem premises and canonical corollaries. | `buildCost <= 15 * xs.length`; supplied query cost `<= 8`; canonical theorem discharges budgets when `16 <= canonicalBlockSize xs`. | Cost claims are scoped to the RAM/unit-cost indexed-access model. |
 | LCA from RMQ | Generated Euler trace plus `TracePathAgreement` turns an exact RMQ backend over depths into an exact `LCABackend`; unique labels discharge trace/path agreement structurally. | No LCA build/query cost profile yet. | Natural next bridge: costed Euler build plus Fischer-Heun RMQ over depths gives O(n), O(1) LCA. |
 | RMQ from LCA | `RMQToLCAReduction` plus an exact LCA backend gives an exact RMQ backend. | No cost profile yet. | `Core.Cartesian` supplies a concrete certified reduction for RMQ intervals. |
-| Equivalence layer | Contract-level equality proved among linear scan, sparse table, memo sparse table, hybrid block, recursive hybrid, and raw whole-list microtable. | No cost layer. | Fischer-Heun can be added once desired as another backend equality instance. |
+| Equivalence layer | Contract-level equality proved among linear scan, sparse table, memo sparse table, hybrid block, recursive hybrid, raw whole-list microtable, canonical Fischer-Heun, and all-input Fischer-Heun. | No cost layer. | Uses the generic backend contract rather than implementation-specific reasoning. |
 
 ## Consolidated Scope Notes
 
@@ -128,6 +134,10 @@ flowchart TD
   erasure/run theorems. Same-block and final-boundary windows are handled by
   padded local microtable lookups, so positive-block supplied queries are now
   bounded by a constant.
+- The lower-bound scaffold currently works at the Cartesian-shape encoding
+  level: it proves fixed-length lossless encodings need at least
+  `shapeCount n` distinct bitstrings, but does not yet claim the final
+  `2*n - O(log n)` asymptotic lower bound.
 - The project remains Mathlib-free: imports are Lean/Std plus existing Lean
   arithmetic automation such as `omega`.
 
@@ -152,6 +162,8 @@ flowchart TD
   `CartesianShape.rootOffset?`, `shapeRange`, `shape`, `SameRMQBehavior`,
   `ShapeOfSize`, `shapesOfSize`, `shapeCount`, `CartesianShape.fullCode`,
   `blockSignature`.
+- `RMQ/Core/EncodingLowerBound.lean`: `bitStrings`,
+  `LosslessShapeEncoding`.
 - `RMQ/Core/Microtable.lean`: `CartesianShape.queryOffset?`, `LocalValid`,
   `shapeUniverse`, `localScanOffset`, `Microtable`, `Microtable.raw`,
   `Microtable.queryIndex?`, `Microtable.backend`, `Microtable.rawBackend`.
@@ -278,6 +290,9 @@ The names below are grouped by source module. Repeated base names in
   `CartesianShape.fullCode_tail_length_of_shapeOfSize`,
   `shapeCount_le_four_pow`, `shapeRange_shapeOfSize`, `shape_shapeOfSize`,
   `blockSignature_shapeOfSize`.
+- `RMQ/Core/EncodingLowerBound.lean` (4): `bitStrings_length`,
+  `mem_bitStrings_of_length`, `length_le_of_nodup_injective_into`,
+  `shapeCount_le_two_pow_of_lossless_shape_encoding`.
 - `RMQ/Core/Microtable.lean` (11): `shapeUniverse_length`,
   `blockSignature_mem_shapeUniverse`, `localScanOffset_bounds`,
   `localScanOffset_add_start`, `localScanOffset_leftmost`,
@@ -489,17 +504,23 @@ The names below are grouped by source module. Repeated base names in
   `linearBuild_constantQuery_profile_allInput_large`,
   `allInputQuery_sound`, `allInputQuery_complete`,
   `allInputQuery_valid_exact`, `allInputQuery_invalid_none`.
-- `RMQ/Impl/Equivalence.lean` (11): `linearScan_query_eq_sparseTable_query`,
+- `RMQ/Impl/Equivalence.lean` (17): `linearScan_query_eq_sparseTable_query`,
   `sparseTable_query_eq_memoSparseTable_query`,
   `linearScan_query_eq_memoSparseTable_query`,
   `linearScan_query_eq_hybridBlock_query`,
   `linearScan_query_eq_recursiveHybrid_query`,
   `linearScan_query_eq_microtableRaw_query`,
+  `linearScan_query_eq_fischerHeun_query`,
+  `linearScan_query_eq_fischerHeun_allInputQuery`,
+  `fischerHeun_query_eq_allInputQuery`,
   `sparseTable_query_eq_hybridBlock_query`,
   `sparseTable_query_eq_recursiveHybrid_query`,
   `sparseTable_query_eq_microtableRaw_query`,
+  `sparseTable_query_eq_fischerHeun_query`,
   `hybridBlock_query_eq_recursiveHybrid_query`,
-  `recursiveHybrid_query_eq_hybridBlock_query`.
+  `recursiveHybrid_query_eq_hybridBlock_query`,
+  `recursiveHybrid_query_eq_fischerHeun_query`,
+  `fischerHeun_query_eq_recursiveHybrid_query`.
 
 ## Private Helper Theorem Inventory
 
@@ -514,6 +535,8 @@ completeness.
   `mem_nodeProducts`, `nodup_nodeProducts`,
   `nodup_flatMap_of_nodup_disjoint`, `mem_splitShapeProducts`,
   `splitShapeProducts_nodup`, `fullCode_eq_of_tail_eq_of_pos`.
+- `RMQ/Core/EncodingLowerBound.lean`: `sum_map_const_nat`,
+  `mem_erase_of_ne_of_mem`.
 - `RMQ/Impl/SparseTable.lean`: `get?_some_of_lt`, `betterIndex_self`,
   `leftmost_singleton`, `sparseRow_get?_eq_blockArgMin`, `log2_block_bounds`.
 - `RMQ/Impl/HybridBlock.lean`: `chunkRow_get?_eq_chunkCell`,
@@ -524,10 +547,10 @@ completeness.
 
 ## Suggested Next Milestones
 
-1. Add Fischer-Heun to `Impl/Equivalence.lean` now that the public value
-   backend and supplied-query cost theorem are stable.
-2. Start the RMQ encoding lower-bound module: distinguishability of Cartesian
-   shapes, abstract encodings, and the Catalan lower-bound path to
-   `2*n - O(log n)` bits.
+1. Connect exact RMQ behavior to lossless Cartesian-shape encodings: show that
+   any encoding that answers all RMQs exactly must distinguish the shape
+   universe.
+2. Prove the Catalan lower-bound arithmetic needed to turn
+   `shapeCount n <= 2^bits` into a `2*n - O(log n)` bit lower bound.
 3. Costed LCA via RMQ: build Euler depths, instantiate Fischer-Heun over those
    depths, and package an O(n), O(1) LCA backend under the same model notes.

@@ -6,6 +6,7 @@ import RMQ.Core.LCA
 import RMQ.Core.Reduction
 import RMQ.Core.Cartesian
 import RMQ.Core.Shape
+import RMQ.Core.EncodingLowerBound
 import RMQ.Core.Microtable
 import RMQ.Core.CostKernels
 import RMQ.Core.Schedule
