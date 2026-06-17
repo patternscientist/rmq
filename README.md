@@ -57,7 +57,9 @@ right interval combine into one exact leftmost argmin witness.
   `shapeCount`.
 - `RMQ/Core/EncodingLowerBound.lean`: first information-theoretic scaffold:
   fixed-length bit encodings that distinguish all Cartesian shapes of size `n`
-  have capacity at least `shapeCount n`.
+  have capacity at least `shapeCount n`; exact RMQ query decoders over
+  representative arrays induce such lossless shape encodings, and Catalan
+  lower bounds now convert directly into bit lower bounds.
 - `RMQ/Core/Microtable.lean`: shape-indexed local query offsets, the finite
   shape universe for block signatures, a proved raw shape-only microtable, and
   a certified microtable contract that lifts to an exact in-block `RMQBackend`.
@@ -130,9 +132,10 @@ side now has a concrete Cartesian tree proof: endpoint LCAs in the built
 Cartesian tree are exactly leftmost RMQ witnesses, yielding
 `Cartesian.certifiedReduction`.
 
-The current frontier is the RMQ space lower bound: connect exact RMQ behavior
-to lossless Cartesian-shape encodings, prove a Catalan lower bound, and derive
-the `2*n - O(log n)` bit requirement. Good adjacent targets also include a
+The current frontier is the RMQ space lower bound: prove the Catalan lower
+bound needed to instantiate
+`two_mul_sub_slack_le_bits_of_exactRMQShapeEncoding`, yielding the
+`2*n - O(log n)` bit requirement. Good adjacent targets also include a
 stateful Fischer-Heun public API around the supplied-query theorem and
 composing the certified Cartesian reduction with `LCABackend`s.
 
