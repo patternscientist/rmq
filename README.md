@@ -59,7 +59,10 @@ right interval combine into one exact leftmost argmin witness.
   fixed-length bit encodings that distinguish all Cartesian shapes of size `n`
   have capacity at least `shapeCount n`; exact RMQ query decoders over
   representative arrays induce such lossless shape encodings, and Catalan
-  lower bounds now convert directly into bit lower bounds.
+  lower bounds now convert directly into bit lower bounds. In particular, the
+  standard quadratic Catalan target
+  `2^(2*n) <= (2*n+1)^2 * shapeCount n` implies the concrete
+  `2*n - (2*log2(2*n+1)+2)` bit lower bound.
 - `RMQ/Core/Microtable.lean`: shape-indexed local query offsets, the finite
   shape universe for block signatures, a proved raw shape-only microtable, and
   a certified microtable contract that lifts to an exact in-block `RMQBackend`.
@@ -132,12 +135,12 @@ side now has a concrete Cartesian tree proof: endpoint LCAs in the built
 Cartesian tree are exactly leftmost RMQ witnesses, yielding
 `Cartesian.certifiedReduction`.
 
-The current frontier is the RMQ space lower bound: prove the Catalan lower
-bound needed to instantiate
-`two_mul_sub_slack_le_bits_of_exactRMQShapeEncoding`, yielding the
-`2*n - O(log n)` bit requirement. Good adjacent targets also include a
-stateful Fischer-Heun public API around the supplied-query theorem and
-composing the certified Cartesian reduction with `LCABackend`s.
+The current frontier is the remaining combinatorial Catalan lower bound:
+prove `2^(2*n) <= (2*n+1)^2 * shapeCount n`, which now immediately
+instantiates `two_mul_sub_log_slack_le_bits_of_exactRMQShapeEncoding` and
+yields the `2*n - O(log n)` bit requirement. Good adjacent targets also
+include a stateful Fischer-Heun public API around the supplied-query theorem
+and composing the certified Cartesian reduction with `LCABackend`s.
 
 The recursive-hybrid build recurrence is now solved with an explicit linear
 bound, and the Fischer-Heun shape-table count is now bounded by the

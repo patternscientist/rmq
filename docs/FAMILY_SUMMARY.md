@@ -24,11 +24,10 @@ separate appendix.
   profile, and assembled Fischer-Heun linear-build/constant-supplied-query
   profile.
 - Lower-bound layer: fixed-length lossless Cartesian-shape capacity theorem,
-  plus an exact-RMQ-decoder bridge showing that exact RMQ behavior over
-  representative arrays induces lossless Cartesian-shape encodings.
-- Main open integration point: prove the Catalan lower bound needed to
-  instantiate the existing `2*n - slack` bit lower-bound theorem with
-  logarithmic slack.
+  exact-RMQ-decoder bridge, and the logarithmic-slack arithmetic theorem that
+  turns the standard quadratic Catalan target into a bit lower bound.
+- Main open integration point: prove the remaining combinatorial Catalan
+  lower bound `2^(2*n) <= (2*n+1)^2 * shapeCount n`.
 
 ## Dependency DAG
 
@@ -104,7 +103,7 @@ flowchart TD
 | Hybrid block | Exact public hybrid backend with boundary scans and sparse middle summaries. | No first-class cost profile yet. | Useful proof predecessor for the recursive and Fischer-Heun schedules. |
 | Recursive hybrid | Exact public recursive backend via `recurseOnSummary`. | Build recurrence solved: `buildCost xs <= 2 * xs.length`; query-step costed erasure and cost formula with supplied summary query. | End-to-end recursive query bound is still not the flagship result; Fischer-Heun now carries the constant-query story. |
 | Shape and microtable core | Shape/RMQ behavior equivalence, exact fixed-size shape signatures, shape universe count, certified raw local microtable, exact in-block backend. | Raw shape lookup cost bounded by `blockSize + 1`; shape count bounded by Catalan envelope `shapeCount b <= 4^b`. | The local theorem is now consumed by `Impl.FischerHeun`. |
-| Encoding lower-bound scaffold | Fixed-length lossless Cartesian-shape encodings must have at least `shapeCount n` available bitstrings. Exact RMQ query decoders over representative arrays induce such lossless encodings, and Catalan lower bounds imply concrete bit lower bounds. | No runtime cost model; this is information-theoretic capacity. | Next proof layer should prove a Catalan lower bound strong enough for `2*n - O(log n)` bits. |
+| Encoding lower-bound scaffold | Fixed-length lossless Cartesian-shape encodings must have at least `shapeCount n` available bitstrings. Exact RMQ query decoders over representative arrays induce such lossless encodings. The standard quadratic Catalan target now implies the concrete `2*n - (2*log2(2*n+1)+2)` bit lower bound. | No runtime cost model; this is information-theoretic capacity. | Remaining gap is the combinatorial proof of `2^(2*n) <= (2*n+1)^2 * shapeCount n`. |
 | Fischer-Heun value backend | `State` carries block size, raw microtable, block-minimum summary, and summary sparse table. `queryWithState` composes padded local microtable lookups for same-block/boundary windows with the recursive-middle summary query. Exactness, soundness, completeness, invalid rejection, backend wrappers, and an all-input wrapper are proved. | `buildWithBlockSizeCosted` erases to `buildWithBlockSize` and costs exactly `buildCost`; `queryWithStateCosted` charges materialized microtable lookups, supplied summary sparse-table query, and combines; fresh-query and all-input cost/run theorems compose both costs. Positive-block supplied query cost is bounded by `8`, and the canonical large profile proves linear build plus constant supplied query. | The all-input wrapper is exact and costed, with linear scan outside the large canonical regime. The old short-tail scan gap is closed by padded local lookups; remaining polish is API/equivalence packaging. |
 | Fischer-Heun cost profile | Correctness-independent counting/cost assumptions are packaged as theorem premises and canonical corollaries. | `buildCost <= 15 * xs.length`; supplied query cost `<= 8`; canonical theorem discharges budgets when `16 <= canonicalBlockSize xs`. | Cost claims are scoped to the RAM/unit-cost indexed-access model. |
 | LCA from RMQ | Generated Euler trace plus `TracePathAgreement` turns an exact RMQ backend over depths into an exact `LCABackend`; unique labels discharge trace/path agreement structurally. | No LCA build/query cost profile yet. | Natural next bridge: costed Euler build plus Fischer-Heun RMQ over depths gives O(n), O(1) LCA. |
@@ -135,9 +134,9 @@ flowchart TD
   padded local microtable lookups, so positive-block supplied queries are now
   bounded by a constant.
 - The lower-bound scaffold works at the Cartesian-shape encoding level and now
-  includes the exact-RMQ-decoder bridge. It still does not claim the final
-  `2*n - O(log n)` asymptotic lower bound until the Catalan lower bound is
-  proved.
+  includes the exact-RMQ-decoder bridge plus the log-slack arithmetic payoff.
+  It still does not claim the final unconditional `2*n - O(log n)` lower bound
+  until the quadratic Catalan lower bound is proved.
 - The project remains Mathlib-free: imports are Lean/Std plus existing Lean
   arithmetic automation such as `omega`.
 
@@ -291,14 +290,17 @@ The names below are grouped by source module. Repeated base names in
   `CartesianShape.fullCode_tail_length_of_shapeOfSize`,
   `shapeCount_le_four_pow`, `shapeRange_shapeOfSize`, `shape_shapeOfSize`,
   `blockSignature_shapeOfSize`.
-- `RMQ/Core/EncodingLowerBound.lean` (9): `bitStrings_length`,
+- `RMQ/Core/EncodingLowerBound.lean` (13): `bitStrings_length`,
   `mem_bitStrings_of_length`, `length_le_of_nodup_injective_into`,
   `sameRMQBehavior_of_exactRMQShapeEncoding_eq`,
   `shapeCount_le_two_pow_of_lossless_shape_encoding`,
   `shapeCount_le_two_pow_of_exactRMQShapeEncoding`,
   `lower_le_bits_of_shapeCount_lower_bound`,
   `lower_le_bits_of_exactRMQShapeEncoding`,
-  `two_mul_sub_slack_le_bits_of_exactRMQShapeEncoding`.
+  `shapeCount_pos`, `odd_square_le_two_pow_log_slack`,
+  `shapeCount_log_lower_of_quadratic_bound`,
+  `two_mul_sub_slack_le_bits_of_exactRMQShapeEncoding`,
+  `two_mul_sub_log_slack_le_bits_of_exactRMQShapeEncoding`.
 - `RMQ/Core/Microtable.lean` (11): `shapeUniverse_length`,
   `blockSignature_mem_shapeUniverse`, `localScanOffset_bounds`,
   `localScanOffset_add_start`, `localScanOffset_leftmost`,
@@ -542,7 +544,8 @@ completeness.
   `nodup_flatMap_of_nodup_disjoint`, `mem_splitShapeProducts`,
   `splitShapeProducts_nodup`, `fullCode_eq_of_tail_eq_of_pos`.
 - `RMQ/Core/EncodingLowerBound.lean`: `sum_map_const_nat`,
-  `mem_erase_of_ne_of_mem`.
+  `mem_erase_of_ne_of_mem`, `rightSpine`, `rightSpine_shapeOfSize`,
+  `two_pow_sub_le_of_le_mul_pow`.
 - `RMQ/Impl/SparseTable.lean`: `get?_some_of_lt`, `betterIndex_self`,
   `leftmost_singleton`, `sparseRow_get?_eq_blockArgMin`, `log2_block_bounds`.
 - `RMQ/Impl/HybridBlock.lean`: `chunkRow_get?_eq_chunkCell`,
@@ -553,8 +556,9 @@ completeness.
 
 ## Suggested Next Milestones
 
-1. Prove the Catalan lower bound needed to instantiate
-   `two_mul_sub_slack_le_bits_of_exactRMQShapeEncoding` with logarithmic slack.
+1. Prove the remaining combinatorial Catalan lower bound
+   `2^(2*n) <= (2*n+1)^2 * shapeCount n`; the log-slack bit theorem is now
+   already packaged.
 2. Optionally package canonical representative arrays for every Cartesian
    shape, making the `ExactRMQShapeEncoding.sample_shape_eq` premise easier to
    instantiate from external encoders.

@@ -308,6 +308,118 @@ theorem lower_le_bits_of_exactRMQShapeEncoding
     (losslessShapeEncoding_of_exactRMQShapeEncoding encoding)
     hshape_lower
 
+private def rightSpine : Nat -> Cartesian.CartesianShape
+  | 0 => Cartesian.CartesianShape.empty
+  | n + 1 =>
+      Cartesian.CartesianShape.node Cartesian.CartesianShape.empty
+        (rightSpine n)
+
+private theorem rightSpine_shapeOfSize (n : Nat) :
+    Cartesian.ShapeOfSize n (rightSpine n) := by
+  induction n with
+  | zero =>
+      simp [rightSpine]
+      exact Cartesian.ShapeOfSize.empty
+  | succ n ih =>
+      simpa [rightSpine, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using
+        (Cartesian.ShapeOfSize.node
+          (leftSize := 0)
+          (rightSize := n)
+          Cartesian.ShapeOfSize.empty ih)
+
+theorem shapeCount_pos (n : Nat) :
+    0 < Cartesian.shapeCount n := by
+  unfold Cartesian.shapeCount
+  exact
+    List.length_pos_of_mem
+      (Cartesian.shapeOfSize_mem_shapesOfSize (rightSpine_shapeOfSize n))
+
+/--
+The square of the odd width `2*n+1` fits in a logarithmic power-of-two budget.
+This is the arithmetic slack used by the quadratic Catalan lower-bound target.
+-/
+theorem odd_square_le_two_pow_log_slack (n : Nat) :
+    (2 * n + 1) * (2 * n + 1) <=
+      2 ^ (2 * Nat.log2 (2 * n + 1) + 2) := by
+  let width := 2 * n + 1
+  have hlt : width < 2 ^ (Nat.log2 width + 1) :=
+    Nat.lt_log2_self (n := width)
+  have hle : width <= 2 ^ (Nat.log2 width + 1) :=
+    Nat.le_of_lt hlt
+  have hsquare :
+      width * width <=
+        2 ^ (Nat.log2 width + 1) * 2 ^ (Nat.log2 width + 1) :=
+    Nat.mul_le_mul hle hle
+  have hpow :
+      2 ^ (Nat.log2 width + 1) * 2 ^ (Nat.log2 width + 1) =
+        2 ^ (2 * Nat.log2 width + 2) := by
+    rw [<- Nat.pow_add]
+    congr 1
+    omega
+  simpa [width, hpow] using hsquare
+
+private theorem two_pow_sub_le_of_le_mul_pow
+    {total slack count : Nat}
+    (hbound : 2 ^ total <= 2 ^ slack * count) :
+    2 ^ (total - slack) <= count := by
+  by_cases hslack : slack <= total
+  case pos =>
+    let lower := total - slack
+    have hsum : slack + lower = total := by
+      unfold lower
+      omega
+    have hleft : 2 ^ slack * 2 ^ lower = 2 ^ total := by
+      rw [<- Nat.pow_add, hsum]
+    have hmul : 2 ^ slack * 2 ^ lower <= 2 ^ slack * count := by
+      simpa [hleft] using hbound
+    exact
+      Nat.le_of_mul_le_mul_left hmul
+        (Nat.pow_pos (by omega : 0 < 2))
+  case neg =>
+    have hzero : total - slack = 0 := by
+      omega
+    rw [hzero]
+    have hcount_pos : 0 < count := by
+      cases count with
+      | zero =>
+          have hpos : 0 < 2 ^ total :=
+            Nat.pow_pos (by omega : 0 < 2)
+          have hle_zero : 2 ^ total <= 0 := by
+            exact hbound
+          omega
+      | succ count =>
+          omega
+    exact hcount_pos
+
+/--
+Turn a quadratic Catalan lower-bound target into the logarithmic exponent form
+needed by `two_mul_sub_slack_le_bits_of_exactRMQShapeEncoding`.
+
+The remaining combinatorial theorem is the premise:
+`2^(2*n) <= (2*n+1)^2 * shapeCount n`.
+-/
+theorem shapeCount_log_lower_of_quadratic_bound
+    {n : Nat}
+    (hquad :
+      2 ^ (2 * n) <=
+        ((2 * n + 1) * (2 * n + 1)) * Cartesian.shapeCount n) :
+    2 ^ (2 * n - (2 * Nat.log2 (2 * n + 1) + 2)) <=
+      Cartesian.shapeCount n := by
+  let slack := 2 * Nat.log2 (2 * n + 1) + 2
+  have hodd :
+      (2 * n + 1) * (2 * n + 1) <= 2 ^ slack := by
+    simpa [slack] using odd_square_le_two_pow_log_slack n
+  have hbound :
+      2 ^ (2 * n) <= 2 ^ slack * Cartesian.shapeCount n :=
+    Nat.le_trans hquad
+      (Nat.mul_le_mul_right (Cartesian.shapeCount n) hodd)
+  simpa [slack] using
+    two_pow_sub_le_of_le_mul_pow
+      (total := 2 * n)
+      (slack := slack)
+      (count := Cartesian.shapeCount n)
+      hbound
+
 /--
 Final-form arithmetic scaffold for the standard RMQ lower-bound headline.
 
@@ -321,6 +433,20 @@ theorem two_mul_sub_slack_le_bits_of_exactRMQShapeEncoding
     (hshape_lower : 2 ^ (2 * n - slack) <= Cartesian.shapeCount n) :
     2 * n - slack <= bits :=
   lower_le_bits_of_exactRMQShapeEncoding encoding hshape_lower
+
+/--
+End-to-end logarithmic-slack bit lower bound, conditional only on the standard
+quadratic Catalan counting inequality.
+-/
+theorem two_mul_sub_log_slack_le_bits_of_exactRMQShapeEncoding
+    {n bits : Nat} (encoding : ExactRMQShapeEncoding n bits)
+    (hquad :
+      2 ^ (2 * n) <=
+        ((2 * n + 1) * (2 * n + 1)) * Cartesian.shapeCount n) :
+    2 * n - (2 * Nat.log2 (2 * n + 1) + 2) <= bits :=
+  two_mul_sub_slack_le_bits_of_exactRMQShapeEncoding
+    encoding
+    (shapeCount_log_lower_of_quadratic_bound hquad)
 
 end EncodingLowerBound
 
