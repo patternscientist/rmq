@@ -40,6 +40,42 @@ theorem query_invalid_none
     query input left right = none := by
   exact Backend.queryBuilt_invalid_none (linearScanBackend input) hbad
 
+/-- Verified backend for the normalized trace represented by a delta signature. -/
+def signatureBackend (signature : List Bool) :
+    Backend (inputOfSignature signature) :=
+  SignatureTable.rawBackend signature
+
+/-- Query the normalized trace represented by a delta signature. -/
+def signatureQuery (signature : List Bool) (left right : Nat) : Option Nat :=
+  Backend.queryBuilt (signatureBackend signature) left right
+
+theorem signatureQuery_sound
+    {signature : List Bool} {left right idx : Nat}
+    (hres : signatureQuery signature left right = some idx) :
+    LeftmostArgMin (traceFromSignature signature) left right idx := by
+  exact Backend.queryBuilt_sound (signatureBackend signature) hres
+
+theorem signatureQuery_complete
+    {signature : List Bool} {left right idx : Nat}
+    (harg : LeftmostArgMin (traceFromSignature signature) left right idx) :
+    signatureQuery signature left right = some idx := by
+  exact Backend.queryBuilt_complete (signatureBackend signature) harg
+
+theorem signatureQuery_invalid_none
+    {signature : List Bool} {left right : Nat}
+    (hbad : Not (ValidRange (traceFromSignature signature) left right)) :
+    signatureQuery signature left right = none := by
+  exact Backend.queryBuilt_invalid_none (signatureBackend signature) hbad
+
+theorem signatureQuery_eq_linearQuery
+    (signature : List Bool) (left right : Nat) :
+    signatureQuery signature left right =
+      query (inputOfSignature signature) left right := by
+  exact Backend.queryBuilt_eq
+    (signatureBackend signature)
+    (linearScanBackend (inputOfSignature signature))
+    left right
+
 /-- Euler traces immediately instantiate the plus-minus-one linear backend. -/
 def linearScanBackendOfEulerTrace (trace : EulerTrace) :
     Backend (Input.ofEulerTrace trace) :=

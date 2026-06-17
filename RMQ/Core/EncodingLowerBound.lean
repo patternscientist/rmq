@@ -192,6 +192,52 @@ structure ExactRMQShapeEncoding (n bits : Nat) where
               query (encode shape) left (left + len) =
                 some (scanWindow (sample shape) left len)
 
+/--
+State-oriented version of `ExactRMQShapeEncoding`.
+
+This is the lower-bound adapter intended for concrete data structures: build a
+state from each representative shape, encode that state into exactly `bits`
+payload bits, and answer RMQ queries using only the payload.
+-/
+structure ExactRMQStateEncoding (n bits : Nat) where
+  State : Type
+  buildState : Cartesian.CartesianShape -> State
+  encodeState : State -> List Bool
+  queryEncoded : List Bool -> Nat -> Nat -> Option Nat
+  sample : Cartesian.CartesianShape -> List Int
+  length_eq :
+    forall {shape : Cartesian.CartesianShape},
+      List.Mem shape (Cartesian.shapesOfSize n) ->
+        (encodeState (buildState shape)).length = bits
+  sample_length_eq :
+    forall {shape : Cartesian.CartesianShape},
+      List.Mem shape (Cartesian.shapesOfSize n) ->
+        (sample shape).length = n
+  sample_shape_eq :
+    forall {shape : Cartesian.CartesianShape},
+      List.Mem shape (Cartesian.shapesOfSize n) ->
+        Cartesian.shape (sample shape) = shape
+  query_exact :
+    forall {shape : Cartesian.CartesianShape},
+      List.Mem shape (Cartesian.shapesOfSize n) ->
+        forall {left len : Nat},
+          0 < len ->
+            left + len <= n ->
+              queryEncoded (encodeState (buildState shape)) left (left + len) =
+                some (scanWindow (sample shape) left len)
+
+/-- Forget the concrete built state and view a state encoding as a shape encoding. -/
+def exactRMQShapeEncoding_of_stateEncoding
+    {n bits : Nat} (encoding : ExactRMQStateEncoding n bits) :
+    ExactRMQShapeEncoding n bits where
+  encode shape := encoding.encodeState (encoding.buildState shape)
+  query := encoding.queryEncoded
+  sample := encoding.sample
+  length_eq := encoding.length_eq
+  sample_length_eq := encoding.sample_length_eq
+  sample_shape_eq := encoding.sample_shape_eq
+  query_exact := encoding.query_exact
+
 theorem sameRMQBehavior_of_exactRMQShapeEncoding_eq
     {n bits : Nat} (encoding : ExactRMQShapeEncoding n bits)
     {leftShape rightShape : Cartesian.CartesianShape}
@@ -1224,6 +1270,18 @@ theorem two_mul_sub_log_slack_le_bits_of_exactRMQShapeEncoding
   two_mul_sub_log_slack_le_bits_of_exactRMQShapeEncoding_of_quadratic_bound
     encoding
     (shapeCount_quadratic_lower n)
+
+theorem shapeCount_le_two_pow_of_exactRMQStateEncoding
+    {n bits : Nat} (encoding : ExactRMQStateEncoding n bits) :
+    Cartesian.shapeCount n <= 2 ^ bits :=
+  shapeCount_le_two_pow_of_exactRMQShapeEncoding
+    (exactRMQShapeEncoding_of_stateEncoding encoding)
+
+theorem two_mul_sub_log_slack_le_bits_of_exactRMQStateEncoding
+    {n bits : Nat} (encoding : ExactRMQStateEncoding n bits) :
+    2 * n - (2 * Nat.log2 (2 * n + 1) + 2) <= bits :=
+  two_mul_sub_log_slack_le_bits_of_exactRMQShapeEncoding
+    (exactRMQShapeEncoding_of_stateEncoding encoding)
 
 end EncodingLowerBound
 

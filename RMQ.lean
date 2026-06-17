@@ -4,6 +4,7 @@ import RMQ.Core.Window
 import RMQ.Core.Backend
 import RMQ.Core.LCA
 import RMQ.Core.PlusMinusOne
+import RMQ.Core.Succinct
 import RMQ.Core.Reduction
 import RMQ.Core.Cartesian
 import RMQ.Core.Shape
@@ -22,4 +23,5 @@ import RMQ.Impl.FischerHeun
 import RMQ.Impl.HybridBlock
 import RMQ.Impl.RecursiveHybrid
 import RMQ.Impl.RecursiveHybridCost
+import RMQ.Impl.LCACost
 import RMQ.Impl.Equivalence

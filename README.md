@@ -47,8 +47,9 @@ right interval combine into one exact leftmost argmin witness.
   `LabelsUnique -> TracePathAgreement` proof via generated Euler-window
   invariants, and the RMQ-backed tree-level LCA theorem for certified traces.
 - `RMQ/Core/PlusMinusOne.lean`: first-class plus-minus-one RMQ inputs,
-  packaging `AdjacentDepthsDifferByOne` for Euler-depth lists, plus a verified
-  backend wrapper that can forget back to the ordinary `RMQBackend` contract.
+  packaging `AdjacentDepthsDifferByOne` for Euler-depth lists, plus
+  delta-signature replay, certified normalized signature tables, and a backend
+  wrapper that can forget back to the ordinary `RMQBackend` contract.
 - `RMQ/Core/Reduction.lean`: contract-level RMQ/LCA reduction interfaces:
   label-unique generated Euler traces turn RMQ backends into LCA backends,
   with trace/path-agreement and finite-check wrappers still available, and
@@ -58,15 +59,19 @@ right interval combine into one exact leftmost argmin witness.
   endpoint-LCA certificate, and a concrete certified RMQ-to-LCA reduction.
 - `RMQ/Core/Shape.lean`: explicit binary Cartesian shapes with empty children,
   the first RMQ-behavior/shape equivalence theorem over all subranges,
-  exact fixed-size shape signatures, and the Catalan split recurrence for
-  `shapeCount`.
+  exact fixed-size shape signatures, constant-shift RMQ/shape preservation,
+  and the Catalan split recurrence for `shapeCount`.
 - `RMQ/Core/EncodingLowerBound.lean`: first information-theoretic scaffold:
   fixed-length bit encodings that distinguish all Cartesian shapes of size `n`
   have capacity at least `shapeCount n`; exact RMQ query decoders over
   representative arrays induce such lossless shape encodings. A Mathlib-free
   Remy-style counting argument proves the quadratic Catalan bound
   `2^(2*n) <= (2*n+1)^2 * shapeCount n`, yielding the concrete
-  no-premise `2*n - (2*log2(2*n+1)+2)` bit lower bound.
+  no-premise `2*n - (2*log2(2*n+1)+2)` bit lower bound. A state-encoding
+  adapter lets concrete built-state encoders inherit the same lower bound.
+- `RMQ/Core/Succinct.lean`: exact list-backed rank/select primitives,
+  balanced-parentheses predicates, and the first bridge from parenthesis bits
+  to normalized plus-minus-one depth traces.
 - `RMQ/Core/Microtable.lean`: shape-indexed local query offsets, the finite
   shape universe for block signatures, a proved raw shape-only microtable, and
   a certified microtable contract that lifts to an exact in-block `RMQBackend`.
@@ -81,8 +86,8 @@ right interval combine into one exact leftmost argmin witness.
   hybrid variants.
 - `RMQ/Impl/LinearScan.lean`: simplest exact backend.
 - `RMQ/Impl/PlusMinusOne.lean`: first verified plus-minus-one backend
-  instance, implemented by the existing linear scan while retaining the
-  adjacent-depth invariant for specialized successors.
+  instance, plus the normalized delta-signature backend and its contract-level
+  equivalence to the linear instance.
 - `RMQ/Impl/SparseTable.lean`: sparse table cells, materialized table lookup,
   and backend proof.
 - `RMQ/Impl/SparseTableCost.lean`: costed sparse-table cell construction,
@@ -117,6 +122,8 @@ right interval combine into one exact leftmost argmin witness.
 - `RMQ/Impl/RecursiveHybridCost.lean`: recursive-hybrid build/query cost
   recurrences, including the solved linear build bound
   `buildCost xs <= 2 * xs.length`.
+- `RMQ/Impl/LCACost.lean`: costed Euler-trace construction and supplied
+  LCA/RMQ-reduction query wrappers with erasure and exact-cost theorems.
 - `RMQ/Impl/Equivalence.lean`: contract-level equality instantiations for the
   public RMQ backends, now including canonical and all-input Fischer-Heun.
 
@@ -144,12 +151,12 @@ Cartesian tree are exactly leftmost RMQ witnesses, yielding
 
 The lower-bound frontier has moved past the Catalan count: the project now
 proves the quadratic bound and the resulting fixed-length exact-RMQ
-log-slack bit lower bound. The new plus-minus-one RMQ package gives the
-succinct-RMQ line a natural next target: replace the linear instance with a
-specialized plus-minus-one backend, then move toward bit-level balanced
-parentheses, rank/select, and succinct LCA upper bounds. Good adjacent targets
-also include canonical representative arrays for external encoders and
-concrete state-encoding wrappers for the lower-bound API.
+log-slack bit lower bound. The plus-minus-one and succinct layers now provide
+the first verified hooks for normalized delta signatures, rank/select, and
+balanced parentheses. The main remaining proof target in this cluster is the
+recursive canonical representative-array construction for every Cartesian
+shape; the constant-shift preservation lemmas needed for it are already in
+place.
 
 The recursive-hybrid build recurrence is now solved with an explicit linear
 bound, and the Fischer-Heun shape-table count is now bounded by the

@@ -127,6 +127,64 @@ def SameRMQBehavior (xs ys : List Int) : Prop :=
         left + len <= xs.length ->
           scanWindow xs left len = scanWindow ys left len
 
+/-- Add the same integer offset to every entry of an RMQ input. -/
+def addConst (delta : Int) (xs : List Int) : List Int :=
+  xs.map fun value => value + delta
+
+theorem addConst_length (delta : Int) (xs : List Int) :
+    (addConst delta xs).length = xs.length := by
+  simp [addConst]
+
+private theorem get?_addConst
+    (delta : Int) (xs : List Int) (idx : Nat) :
+    (addConst delta xs)[idx]? = (xs[idx]?).map fun value => value + delta := by
+  simp [addConst]
+
+theorem betterIndex_addConst
+    (delta : Int) (xs : List Int) (best idx : Nat) :
+    betterIndex (addConst delta xs) best idx = betterIndex xs best idx := by
+  unfold betterIndex
+  rw [get?_addConst, get?_addConst]
+  cases xs[best]? with
+  | none =>
+      cases xs[idx]? <;> simp
+  | some bestValue =>
+      cases xs[idx]? with
+      | none =>
+          simp
+      | some idxValue =>
+          by_cases hlt : idxValue < bestValue
+          case pos =>
+            have hlt_shift : idxValue + delta < bestValue + delta := by
+              omega
+            simp [hlt, hlt_shift]
+          case neg =>
+            have hnot_shift : Not (idxValue + delta < bestValue + delta) := by
+              omega
+            simp [hlt, hnot_shift]
+
+theorem scanWindow_addConst
+    (delta : Int) (xs : List Int) (start len : Nat) :
+    scanWindow (addConst delta xs) start len = scanWindow xs start len := by
+  induction len with
+  | zero =>
+      simp [scanWindow]
+  | succ len ih =>
+      cases len with
+      | zero =>
+          simp [scanWindow]
+      | succ len =>
+          simp [scanWindow, ih, betterIndex_addConst]
+
+theorem sameRMQBehavior_addConst (delta : Int) (xs : List Int) :
+    SameRMQBehavior (addConst delta xs) xs := by
+  constructor
+  case left =>
+    exact addConst_length delta xs
+  case right =>
+    intro left len _hlen _hbound
+    exact scanWindow_addConst delta xs left len
+
 theorem shapeRange_eq_of_sameRMQBehavior
     {xs ys : List Int} (hbehavior : SameRMQBehavior xs ys)
     {left len : Nat} (hbound : left + len <= xs.length) :
@@ -202,6 +260,17 @@ theorem shape_eq_of_sameRMQBehavior
   rw [← hbehavior.1]
   exact shapeRange_eq_of_sameRMQBehavior
     (left := 0) (len := xs.length) hbehavior (by simp)
+
+theorem shapeRange_addConst
+    (delta : Int) (xs : List Int) {left len : Nat}
+    (hbound : left + len <= (addConst delta xs).length) :
+    shapeRange (addConst delta xs) left len = shapeRange xs left len := by
+  exact shapeRange_eq_of_sameRMQBehavior
+    (sameRMQBehavior_addConst delta xs) hbound
+
+theorem shape_addConst (delta : Int) (xs : List Int) :
+    shape (addConst delta xs) = shape xs := by
+  exact shape_eq_of_sameRMQBehavior (sameRMQBehavior_addConst delta xs)
 
 theorem scanWindow_eq_of_shapeRange_eq
     {xs ys : List Int} {left len : Nat}

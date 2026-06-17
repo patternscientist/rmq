@@ -1,6 +1,6 @@
 # RMQ Family Summary
 
-Snapshot: 2026-06-17, after the plus-minus-one RMQ package.
+Snapshot: 2026-06-17, after the plus-minus-one/succinct scaffolding pass.
 
 This document is the family-level map for the current Lean development. It
 records the module dependency DAG, correctness and cost status by structure,
@@ -21,18 +21,19 @@ separate appendix.
   `RMQToLCAReduction`.
 - Cost layer: Mathlib-free `Costed` monad, sparse-table build/query costs,
   recursive-hybrid build recurrence solved linear, raw microtable lookup/count
-  profile, and assembled Fischer-Heun linear-build/constant-supplied-query
-  profile.
+  profile, assembled Fischer-Heun linear-build/constant-supplied-query
+  profile, and costed LCA-via-RMQ bridge wrappers.
 - Lower-bound layer: fixed-length lossless Cartesian-shape capacity theorem,
   exact-RMQ-decoder bridge, Mathlib-free Remy-style proof of
   `2^(2*n) <= (2*n+1)^2 * shapeCount n`, and the resulting no-premise
   logarithmic-slack bit lower bound.
 - Main open integration point: package canonical representative arrays for
-  external exact RMQ encoders and connect the lower-bound API to concrete
-  data-structure state encodings.
-- Succinct frontier: replace the conservative plus-minus-one linear instance
-  with a specialized plus-minus-one RMQ backend, then connect Euler tours to a
-  bit-level balanced-parentheses/rank/select upper-bound story.
+  external exact RMQ encoders. Constant-shift RMQ/shape preservation is proved;
+  the remaining work is the recursive sample construction for every shape.
+- Succinct frontier: normalized plus-minus-one delta signatures, exact
+  rank/select primitives, and balanced-parentheses predicates are now present;
+  the next step is the packed constant-time representation and Euler-tour
+  parentheses bridge.
 
 ## Dependency DAG
 
@@ -51,6 +52,7 @@ flowchart TD
   Backend --> SparseTable["Impl.SparseTable"]
   Backend --> LCA["Core.LCA"]
   LCA --> PlusMinusOneCore["Core.PlusMinusOne"]
+  PlusMinusOneCore --> Succinct["Core.Succinct"]
   LCA --> Reduction["Core.Reduction"]
   Reduction --> Cartesian["Core.Cartesian"]
   Cartesian --> Shape["Core.Shape"]
@@ -84,6 +86,8 @@ flowchart TD
 
   RecursiveHybridCost --> FischerHeunCost["Impl.FischerHeunCost"]
   SparseTableMemoCost --> FischerHeunCost
+  Reduction --> LCACost["Impl.LCACost"]
+  Cost --> LCACost
 
   Microtable --> FischerHeun["Impl.FischerHeun"]
   RecursiveHybrid --> FischerHeun
@@ -107,16 +111,17 @@ flowchart TD
 | --- | --- | --- | --- |
 | Core RMQ spec and backend contract | `LeftmostArgMin`, `CandidateExact`, `RMQBackend`, and contract-level backend equality are proved. | No cost model here. | All public RMQ backends target the same half-open leftmost-argmin contract. |
 | Linear scan | Exact query, soundness, completeness, invalid-range rejection, backend. | Costed scan kernel exists in `Core.CostKernels`; no separate backend-level cost wrapper. | Direct reference backend. |
-| Plus-minus-one RMQ | `Core.PlusMinusOne` packages `AdjacentDepthsDifferByOne` as a first-class RMQ input and wraps exact RMQ backends over such inputs. Euler traces and generated rose-tree Euler depths instantiate the invariant directly. | No specialized cost profile yet. | `Impl.PlusMinusOne` currently provides the conservative verified instance via linear scan; this is the hook for future succinct `+-1` RMQ. |
+| Plus-minus-one RMQ | `Core.PlusMinusOne` packages `AdjacentDepthsDifferByOne` as a first-class RMQ input, adds delta-signature replay, and proves a certified normalized signature-table contract. Euler traces and generated rose-tree Euler depths instantiate the invariant directly. | No packed constant-time cost profile yet. | `Impl.PlusMinusOne` provides both the conservative linear instance and a normalized delta-signature backend, with contract-level equivalence between them. |
+| Succinct bit layer | `Core.Succinct` defines exact rank/select over `List Bool`, balanced-parentheses predicates, and a bridge from parenthesis bits to normalized plus-minus-one inputs. | No packed bitvector cost model yet. | This is the foundation for balanced-parentheses/rank/select upper-bound proofs. |
 | Sparse table | Exact materialized sparse table query and backend. | `SparseTableCost` gives costed materialized build, supplied-table query, fresh-table query erasure/run/cost. | Supplied-table query is constant under RAM/unit-cost indexed access. |
 | Memoized sparse table | Memoized build is extensionally equivalent to the verified sparse table, with backend and fresh-query erasure/cost theorems. | Exact log-row build cost formula, memo row count, and fresh-query cost equality. | This is the cost-faithful sparse-table builder used by Fischer-Heun summaries. |
 | Hybrid block | Exact public hybrid backend with boundary scans and sparse middle summaries. | No first-class cost profile yet. | Useful proof predecessor for the recursive and Fischer-Heun schedules. |
 | Recursive hybrid | Exact public recursive backend via `recurseOnSummary`. | Build recurrence solved: `buildCost xs <= 2 * xs.length`; query-step costed erasure and cost formula with supplied summary query. | End-to-end recursive query bound is still not the flagship result; Fischer-Heun now carries the constant-query story. |
 | Shape and microtable core | Shape/RMQ behavior equivalence, exact fixed-size shape signatures, shape universe count, certified raw local microtable, exact in-block backend. | Raw shape lookup cost bounded by `blockSize + 1`; shape count bounded by Catalan envelope `shapeCount b <= 4^b`. | The local theorem is now consumed by `Impl.FischerHeun`. |
-| Encoding lower-bound scaffold | Fixed-length lossless Cartesian-shape encodings must have at least `shapeCount n` available bitstrings. Exact RMQ query decoders over representative arrays induce such lossless encodings. A Remy-style insertion/counting proof establishes `2^(2*n) <= (2*n+1)^2 * shapeCount n`, yielding the concrete no-premise `2*n - (2*log2(2*n+1)+2)` bit lower bound. | No runtime cost model; this is information-theoretic capacity. | The current polish target is external-instantiation ergonomics: canonical representative arrays and concrete state-encoding wrappers. |
+| Encoding lower-bound scaffold | Fixed-length lossless Cartesian-shape encodings must have at least `shapeCount n` available bitstrings. Exact RMQ query decoders over representative arrays induce such lossless encodings. A Remy-style insertion/counting proof establishes `2^(2*n) <= (2*n+1)^2 * shapeCount n`, yielding the concrete no-premise `2*n - (2*log2(2*n+1)+2)` bit lower bound. Concrete state encodings can now adapt into this API through `ExactRMQStateEncoding`. | No runtime cost model; this is information-theoretic capacity. | The current polish target is external-instantiation ergonomics: recursive canonical representative arrays for every Cartesian shape. |
 | Fischer-Heun value backend | `State` carries block size, raw microtable, block-minimum summary, and summary sparse table. `queryWithState` composes padded local microtable lookups for same-block/boundary windows with the recursive-middle summary query. Exactness, soundness, completeness, invalid rejection, backend wrappers, and an all-input wrapper are proved. | `buildWithBlockSizeCosted` erases to `buildWithBlockSize` and costs exactly `buildCost`; `queryWithStateCosted` charges materialized microtable lookups, supplied summary sparse-table query, and combines; fresh-query and all-input cost/run theorems compose both costs. Positive-block supplied query cost is bounded by `8`, and the canonical large profile proves linear build plus constant supplied query. | The all-input wrapper is exact and costed, with linear scan outside the large canonical regime. The old short-tail scan gap is closed by padded local lookups; remaining polish is API/equivalence packaging. |
 | Fischer-Heun cost profile | Correctness-independent counting/cost assumptions are packaged as theorem premises and canonical corollaries. | `buildCost <= 15 * xs.length`; supplied query cost `<= 8`; canonical theorem discharges budgets when `16 <= canonicalBlockSize xs`. | Cost claims are scoped to the RAM/unit-cost indexed-access model. |
-| LCA from RMQ | Generated Euler trace plus `TracePathAgreement` turns an exact RMQ backend over depths into an exact `LCABackend`; unique labels discharge trace/path agreement structurally. | No LCA build/query cost profile yet. | Natural next bridge: costed Euler build plus Fischer-Heun RMQ over depths gives O(n), O(1) LCA. |
+| LCA from RMQ | Generated Euler trace plus `TracePathAgreement` turns an exact RMQ backend over depths into an exact `LCABackend`; unique labels discharge trace/path agreement structurally. | `Impl.LCACost` gives costed Euler-trace construction and supplied-backend query erasure/cost wrappers. | Natural next bridge: instantiate the supplied backend with Fischer-Heun or packed plus-minus-one RMQ for O(n), O(1) LCA. |
 | RMQ from LCA | `RMQToLCAReduction` plus an exact LCA backend gives an exact RMQ backend. | No cost profile yet. | `Core.Cartesian` supplies a concrete certified reduction for RMQ intervals. |
 | Equivalence layer | Contract-level equality proved among linear scan, sparse table, memo sparse table, hybrid block, recursive hybrid, raw whole-list microtable, canonical Fischer-Heun, and all-input Fischer-Heun. | No cost layer. | Uses the generic backend contract rather than implementation-specific reasoning. |
 
@@ -147,9 +152,12 @@ flowchart TD
   includes the exact-RMQ-decoder bridge, the quadratic Catalan count, and the
   unconditional fixed-length exact-RMQ `2*n - O(log n)` bit lower bound.
 - The plus-minus-one RMQ package records the Euler-depth adjacent-step
-  invariant at the input/API level. Its first implementation is still linear
-  scan; it does not yet claim a succinct representation or constant-time
-  plus-minus-one query algorithm.
+  invariant at the input/API level. It now includes normalized delta-signature
+  tables, but it does not yet claim a packed succinct representation or
+  constant-time plus-minus-one query algorithm.
+- The succinct layer is exact and value-level: rank/select are over `List Bool`.
+  Packed-word layouts, broadword operations, and RAM word-size assumptions are
+  future model refinements.
 - The project remains Mathlib-free: imports are Lean/Std plus existing Lean
   arithmetic automation such as `omega`.
 
@@ -172,10 +180,11 @@ flowchart TD
   `publicSummaryDepth`.
 - `RMQ/Core/Shape.lean`: `CartesianShape`, `CartesianShape.size`,
   `CartesianShape.rootOffset?`, `shapeRange`, `shape`, `SameRMQBehavior`,
-  `ShapeOfSize`, `shapesOfSize`, `shapeCount`, `CartesianShape.fullCode`,
-  `blockSignature`.
+  `addConst`, `ShapeOfSize`, `shapesOfSize`, `shapeCount`,
+  `CartesianShape.fullCode`, `blockSignature`.
 - `RMQ/Core/EncodingLowerBound.lean`: `bitStrings`,
   `LosslessShapeEncoding`, `ExactRMQShapeEncoding`,
+  `ExactRMQStateEncoding`,
   `losslessShapeEncoding_of_exactRMQShapeEncoding`.
 - `RMQ/Core/Microtable.lean`: `CartesianShape.queryOffset?`, `LocalValid`,
   `shapeUniverse`, `localScanOffset`, `Microtable`, `Microtable.raw`,
@@ -194,10 +203,17 @@ flowchart TD
   `TracePathExactOnLabels`, `labelPairAgreement`,
   `duplicateLabelCounterexample`.
 - `RMQ/Core/PlusMinusOne.lean`: `PlusMinusOne.IsDepthTrace`,
-  `PlusMinusOne.Input`, `PlusMinusOne.Input.ofEulerTrace`,
-  `PlusMinusOne.Input.ofRoseTree`, `PlusMinusOne.Backend`,
+  `PlusMinusOne.stepValue`, `PlusMinusOne.blockDeltaSignature`,
+  `PlusMinusOne.traceFromSignature`, `PlusMinusOne.SignatureTable`,
+  `PlusMinusOne.Input`, `PlusMinusOne.inputOfSignature`,
+  `PlusMinusOne.Input.ofEulerTrace`, `PlusMinusOne.Input.ofRoseTree`,
+  `PlusMinusOne.Backend`,
   `PlusMinusOne.Backend.toRMQBackend`,
   `PlusMinusOne.Backend.queryBuilt`.
+- `RMQ/Core/Succinct.lean`: `Succinct.rankPrefix`, `Succinct.select`,
+  `Succinct.BalancedPrefixes`, `Succinct.Balanced`,
+  `Succinct.BalancedParens`, `Succinct.depthsFromParens`,
+  `Succinct.plusMinusOneInputOfParens`, `Succinct.RankSelectIndex`.
 - `RMQ/Core/Reduction.lean`: `LCABackend`, `LCABackend.queryBuilt`,
   `RoseTree.lcaBackendOfRMQBackend`, `RoseTree.lcaBackendOfRMQBackendUnique`,
   `RoseTree.lcaBackendOfRMQBackendChecked`, `RMQToLCAReduction`,
@@ -209,7 +225,8 @@ flowchart TD
   `BuiltRangeLCASpec`, `reduction`, `certifiedReduction`.
 - `RMQ/Impl/LinearScan.lean`: `query`, `backend`.
 - `RMQ/Impl/PlusMinusOne.lean`: `linearScanBackend`, `query`,
-  `linearScanBackendOfEulerTrace`, `linearScanBackendOfRoseTree`.
+  `signatureBackend`, `signatureQuery`, `linearScanBackendOfEulerTrace`,
+  `linearScanBackendOfRoseTree`.
 - `RMQ/Impl/SparseTable.lean`: `blockLen`, `combineIndex`, `blockArgMin`,
   `sparseRow`, `rowCell`, `buildSparseTable`, `tableRow`, `queryFromTable`,
   `query`, `backend`.
@@ -233,6 +250,8 @@ flowchart TD
 - `RMQ/Impl/RecursiveHybridCost.lean`: `blockSummaryEntryCost`,
   `blockMinSummaryBuildCost`, `blockMinSummaryCosted`, `buildCost`,
   `queryWithSummaryCost`, `queryWithSummaryCosted`.
+- `RMQ/Impl/LCACost.lean`: `eulerTraceBuildCost`, `eulerTraceCosted`,
+  `suppliedQueryCost`, `queryCosted`, `queryViaRMQCosted`.
 - `RMQ/Impl/FischerHeunCost.lean`: `rawLookupCostBound`,
   `rawShapeTableCount`, `localQuerySlotBudget`, `rawMicrotableSlotBudget`,
   `shapeCountEnvelope`, `canonicalBlockSize`, `summarySparseBuildCost`,
@@ -299,9 +318,12 @@ The names below are grouped by source module. Repeated base names in
   `combineRecursiveMiddleLeftmost`, `publicBlockSize_gt_one_of_length_gt_one`,
   `publicCompressedLength_lt_self`, `recurseOnSummary_of_small`,
   `recurseOnSummary_of_large`.
-- `RMQ/Core/Shape.lean` (22): `shapeRange_size`, `shape_size`,
-  `rootOffset?_shapeRange`, `shapeRange_eq_of_sameRMQBehavior`,
-  `shape_eq_of_sameRMQBehavior`, `scanWindow_eq_of_shapeRange_eq`,
+- `RMQ/Core/Shape.lean` (28): `shapeRange_size`, `shape_size`,
+  `rootOffset?_shapeRange`, `addConst_length`, `betterIndex_addConst`,
+  `scanWindow_addConst`, `sameRMQBehavior_addConst`,
+  `shapeRange_eq_of_sameRMQBehavior`, `shape_eq_of_sameRMQBehavior`,
+  `shapeRange_addConst`, `shape_addConst`,
+  `scanWindow_eq_of_shapeRange_eq`,
   `sameRMQBehavior_of_shapeRange_eq`, `sameRMQBehavior_iff_shapeRange_eq`,
   `ShapeOfSize.size_eq`, `shapeCount_zero`, `shapeCount_succ`,
   `mem_shapesOfSize_shapeOfSize`, `shapeOfSize_mem_shapesOfSize`,
@@ -310,7 +332,7 @@ The names below are grouped by source module. Repeated base names in
   `CartesianShape.fullCode_tail_length_of_shapeOfSize`,
   `shapeCount_le_four_pow`, `shapeRange_shapeOfSize`, `shape_shapeOfSize`,
   `blockSignature_shapeOfSize`.
-- `RMQ/Core/EncodingLowerBound.lean` (15): `bitStrings_length`,
+- `RMQ/Core/EncodingLowerBound.lean` (17): `bitStrings_length`,
   `mem_bitStrings_of_length`, `length_le_of_nodup_injective_into`,
   `sameRMQBehavior_of_exactRMQShapeEncoding_eq`,
   `shapeCount_le_two_pow_of_lossless_shape_encoding`,
@@ -321,7 +343,9 @@ The names below are grouped by source module. Repeated base names in
   `shapeCount_quadratic_lower`, `shapeCount_log_lower_of_quadratic_bound`,
   `two_mul_sub_slack_le_bits_of_exactRMQShapeEncoding`,
   `two_mul_sub_log_slack_le_bits_of_exactRMQShapeEncoding_of_quadratic_bound`,
-  `two_mul_sub_log_slack_le_bits_of_exactRMQShapeEncoding`.
+  `two_mul_sub_log_slack_le_bits_of_exactRMQShapeEncoding`,
+  `shapeCount_le_two_pow_of_exactRMQStateEncoding`,
+  `two_mul_sub_log_slack_le_bits_of_exactRMQStateEncoding`.
 - `RMQ/Core/Microtable.lean` (11): `shapeUniverse_length`,
   `blockSignature_mem_shapeUniverse`, `localScanOffset_bounds`,
   `localScanOffset_add_start`, `localScanOffset_leftmost`,
@@ -390,7 +414,18 @@ The names below are grouped by source module. Repeated base names in
   `lcaCandidate_isPathLCA_of_pathLCA`,
   `duplicateLabelCounterexample_traceAnswer`,
   `duplicateLabelCounterexample_not_tracePathAgreement`.
-- `RMQ/Core/PlusMinusOne.lean` (10):
+- `RMQ/Core/PlusMinusOne.lean` (21):
+  `PlusMinusOne.traceFromSignatureAt_length`,
+  `PlusMinusOne.traceFromSignature_length`,
+  `PlusMinusOne.traceFromSignatureAt_adjacent`,
+  `PlusMinusOne.traceFromSignature_adjacent`,
+  `PlusMinusOne.blockDeltaSignature_length`,
+  `PlusMinusOne.SignatureTable.queryIndex?_eq`,
+  `PlusMinusOne.SignatureTable.queryIndex?_leftmost`,
+  `PlusMinusOne.SignatureTable.queryIndex?_sound`,
+  `PlusMinusOne.SignatureTable.queryIndex?_complete`,
+  `PlusMinusOne.SignatureTable.queryIndex?_invalid`,
+  `PlusMinusOne.inputOfSignature_depths`,
   `PlusMinusOne.Input.ofEulerTrace_depths`,
   `PlusMinusOne.Input.ofEulerTrace_adjacent`,
   `PlusMinusOne.Input.ofRoseTree_depths`,
@@ -401,6 +436,15 @@ The names below are grouped by source module. Repeated base names in
   `PlusMinusOne.Backend.queryBuilt_complete`,
   `PlusMinusOne.Backend.queryBuilt_invalid_none`,
   `PlusMinusOne.Backend.queryBuilt_eq`.
+- `RMQ/Core/Succinct.lean` (12): `Succinct.rankPrefix_zero`,
+  `Succinct.rankPrefix_nil`, `Succinct.rankPrefix_le_limit`,
+  `Succinct.rankPrefix_le_length`, `Succinct.selectFrom_bounds`,
+  `Succinct.select_bounds`, `Succinct.BalancedParens.close_rank_le_open_rank`,
+  `Succinct.BalancedParens.final_rank_eq`,
+  `Succinct.depthsFromParens_adjacent`,
+  `Succinct.plusMinusOneInputOfParens_depths`,
+  `Succinct.RankSelectIndex.rank_le_limit`,
+  `Succinct.RankSelectIndex.select_bounds`.
 - `RMQ/Core/Reduction.lean` (6):
   `RoseTree.leftmostMinNode?_eq_pathLCA_of_labelPairAgreement`,
   `EulerTrace.lcaCandidate_eq_leftmostMinNode?`,
@@ -427,8 +471,12 @@ The names below are grouped by source module. Repeated base names in
 
 - `RMQ/Impl/LinearScan.lean` (4): `query_valid_exact`, `query_sound`,
   `query_complete`, `invalid_none`.
-- `RMQ/Impl/PlusMinusOne.lean` (3): `PlusMinusOne.query_sound`,
-  `PlusMinusOne.query_complete`, `PlusMinusOne.query_invalid_none`.
+- `RMQ/Impl/PlusMinusOne.lean` (7): `PlusMinusOne.query_sound`,
+  `PlusMinusOne.query_complete`, `PlusMinusOne.query_invalid_none`,
+  `PlusMinusOne.signatureQuery_sound`,
+  `PlusMinusOne.signatureQuery_complete`,
+  `PlusMinusOne.signatureQuery_invalid_none`,
+  `PlusMinusOne.signatureQuery_eq_linearQuery`.
 - `RMQ/Impl/SparseTable.lean` (7): `blockArgMin_leftmost_exists`,
   `sparseRow_cell_eq_blockArgMin`, `tableRow_build_eq_sparseRow`,
   `query_valid_exact`, `query_sound`, `query_complete`, `invalid_none`.
@@ -477,6 +525,11 @@ The names below are grouped by source module. Repeated base names in
   `buildCost_le_two_mul_length`, `buildCost_linear`,
   `queryWithSummaryCosted_value`, `queryWithSummaryCosted_erase`,
   `queryWithSummaryCosted_cost`, `queryWithSummaryCosted_run`.
+- `RMQ/Impl/LCACost.lean` (8): `LCACost.eulerTraceCosted_erase`,
+  `LCACost.eulerTraceCosted_cost`, `LCACost.eulerTraceCosted_run`,
+  `LCACost.queryCosted_erase`, `LCACost.queryCosted_cost`,
+  `LCACost.queryCosted_run`, `LCACost.queryViaRMQCosted_erase`,
+  `LCACost.queryViaRMQCosted_cost`.
 - `RMQ/Impl/FischerHeunCost.lean` (32):
   `rawShapeTableCount_eq_shapeCount`,
   `rawMicrotableSlotBudget_eq_shapeCount_mul`,
@@ -570,7 +623,8 @@ These are intentionally non-API helpers, but they are listed here for audit
 completeness.
 
 - `RMQ/Core/Window.lean`: `get?_some_of_lt`.
-- `RMQ/Core/Shape.lean`: `sum_map_const_nat`, `fin_succ_inj`, `nodup_ofFn`,
+- `RMQ/Core/Shape.lean`: `sum_map_const_nat`, `get?_addConst`,
+  `fin_succ_inj`, `nodup_ofFn`,
   `finRange_nodup`, `boolLists_length`, `mem_boolLists_of_length`,
   `decodeFullCodeFuel_fullCode_append`, `mem_erase_of_ne_of_mem`,
   `length_le_of_nodup_injective_into`, `nodup_map_node_left`,
@@ -602,16 +656,14 @@ completeness.
 
 ## Suggested Next Milestones
 
-1. Build the first specialized plus-minus-one RMQ backend: block signatures
-   over `+-1` depth deltas, local table exactness, and a contract-level
-   replacement for the current linear instance.
-2. Start the bit-level succinct upper-bound layer: balanced parentheses,
-   rank/select primitives, and the connection from Euler-tour parentheses to
-   plus-minus-one RMQ/LCA queries.
-3. Package canonical representative arrays for every Cartesian
-   shape, making the `ExactRMQShapeEncoding.sample_shape_eq` premise easier to
-   instantiate from external encoders.
-4. Connect concrete Fischer-Heun-style state encoders to the exact-RMQ
-   encoding lower-bound API, separating payload bits from proof-only fields.
-5. Costed LCA via RMQ: build Euler depths, instantiate Fischer-Heun over those
-   depths, and package an O(n), O(1) LCA backend under the same model notes.
+1. Finish canonical representative arrays for every Cartesian shape. The
+   constant-shift RMQ/shape preservation lemmas are now in place; the remaining
+   work is the recursive sample construction and `shape sample = shape`.
+2. Upgrade the value-level succinct layer into a packed model: bitvector layout,
+   rank/select table budgets, and RAM-model query bounds.
+3. Connect Euler-tour balanced parentheses to generated rose-tree traces, then
+   instantiate the plus-minus-one RMQ/LCA bridge over that representation.
+4. Instantiate the costed LCA-via-RMQ wrapper with Fischer-Heun or packed
+   plus-minus-one RMQ to state the full O(n), O(1) LCA profile.
+5. Connect a concrete Fischer-Heun-style state encoder to
+   `ExactRMQStateEncoding`, separating payload bits from proof-only fields.
