@@ -167,3 +167,48 @@ Audit performed against the working-tree state on 2026-06-18. Build green, trust
 base standard-axioms-only. This doc records the snapshot and the A design
 rationale; the actionable edit is the Part 2 rewrite applied to the canonical
 working-tree `ROADMAP.md`.
+
+---
+
+# Round log
+
+## 2026-06-18 (later round) — FH microtable: unwired-migration stop ⚠️
+
+**What landed (real):** the RAM escape hatch was closed — `Exec.primitive` is now
+`private`, public users get only typed value-computing primitives
+(`readArray?`, `compareLtInt`, `branch`, `allocArray`, `push`). That is a genuine
+A-hardening (checklist item 1) and makes value/trace correspondence structural.
+
+**What went wrong (the pattern to learn from):** the round also built a traced
+FH boundary-microtable path — `storedMicrotableForInput` and
+`storedLocalBlockCandidateCosted` (with `_value_of_lt` / `_cost` theorems) — but
+**left it wired into nothing.** Verified: those names are referenced only inside
+their own definitions and their own theorems; the live query
+`queryWithStateCosted` still calls the asserted `localBlockCandidateCosted`
+(`materializedMicrotableLookupCost := 1`, still 9 live sites), and the FH ≤11
+bound is still the asserted one. There is no `fischerHeun_refines_with_steps`
+capstone.
+
+**Net:** build green, trust base clean — but **no target closed and the
+asserted-cost debt grew** (a derived path added beside the asserted one,
+≈ +252/−2 lines; the new path is dead code). Target B is still open.
+
+**Was the stop justified? No.** The completion is non-forky and needs no `State`
+change (`storedMicrotableForInput xs blockSize` builds on the fly):
+1. substitute `storedLocalBlockCandidateCosted` for `localBlockCandidateCosted`
+   in the live `queryWithStateCosted`;
+2. discharge the `_of_lt` in-bounds obligation from the query's `ValidRange`
+   (ordinary proof work — do **not** leave the refinement permanently
+   conditional);
+3. retire `localBlockCandidateCosted` / `materializedMicrotableLookupCost`;
+4. state `fischerHeun_refines_with_steps` and add it to `scripts/axiom_check.lean`.
+
+**Loop rule added by this finding:** *never stop with unwired scaffolding.*
+Building a parallel structure and not connecting it (no consumer, no retired
+predecessor, no capstone) is a stop-condition violation, not a checkpoint — it
+closes no target, leaves dead code, and does not reduce a tracked debt metric.
+A round that builds derived machinery must, in the same round, wire it into the
+live path and retire what it replaces, or it has not earned a green light.
+
+**Next run:** finish this migration (steps 1–4) to close B before starting any
+new target. C is done; D-LCA is next after B.
