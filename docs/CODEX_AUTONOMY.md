@@ -5,6 +5,11 @@ covers three things the base orchestration note does not yet: how to run the
 loop with far fewer human checkpoints, how to stop the loop from producing
 filler, and how to parallelize without make-work.
 
+**Before running the loop, read `docs/ROADMAP.md` → "Mission and positioning"**
+for the big-picture goal (RMQ as the research-grade, CSLib-compatible,
+gap-filling proof of concept for a hub-and-spoke library) and the A–D finish
+line the loop is driving toward.
+
 ## The core principle
 
 This is a Lean project, so "sound and complete" is largely machine-decidable:
