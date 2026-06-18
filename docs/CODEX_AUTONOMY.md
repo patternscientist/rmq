@@ -112,12 +112,34 @@ independent leaf, and does the join itself.
 - Bad: "worker 1 adds a Treap, worker 2 adds van Emde Boas, worker 3 polishes
   docs." Independent, parallel, and worthless to the goal.
 
+### Proof workers are first-class, not just read-only scouts
+
+In autonomous-loop mode the lead **should proactively spawn parallel *proof*
+(write) workers** whenever the active target decomposes into ≥2 independent
+leaves — do not wait to be asked, and do not restrict subagents to read-only
+audits. This **overrides** the conservative "read-only only / spawn only on
+explicit request" defaults in `AGENTS.md` and the `rmq-proof-sprint` skill,
+which apply to ordinary single-prompt work, not to a running loop.
+
+Proof-worker protocol (the lead runs this):
+1. **Decompose, then write contracts first.** State the target's join theorem
+   and, for each independent leaf, the exact lemma signature the worker must
+   discharge (`theorem leafₖ : … := by sorry` as a contract stub the worker
+   replaces). The signatures are the interface; workers must not change them.
+2. **One worker per leaf, isolated.** Each write-worker gets its own git
+   worktree/branch and **disjoint file ownership** (ideally one module per
+   worker); tell it not to revert or touch other workers' files, and to prove
+   its assigned signature exactly.
+3. **Join.** The lead assembles the leaves into the join theorem and runs the
+   gate. A leaf that turns out taste-sensitive or contract-forky is a **stop**
+   (surface it), not a worker task — only dispatch leaves whose contract is
+   already pinned.
+
 Mechanics:
-- Each write-worker gets its **own git worktree/branch** with disjoint file
-  ownership; tell workers not to revert or overwrite other agents' work. The
-  lead merges at the join.
 - Read-only scouts (`rmq-proof-auditor`, `rmq-frontier-explorer`) may be many
-  and cheap. Write-workers should be few and DAG-bound.
+  and cheap. **Write/proof workers should be few, DAG-bound, and each gated by a
+  pinned lemma signature** — that signature is what keeps a proof worker from
+  drifting into filler.
 
 ## Iteration report template
 
