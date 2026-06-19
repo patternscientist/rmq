@@ -314,3 +314,49 @@ do not open it before then. Near-term priority is a clean, presentable, complete
 POC for the demo: finish items 1–2 above so the demo shows a complete A+B+C+D
 story, and keep the narrative tight (hub-and-spoke positioning, the gap it fills:
 derived machine-step cost model + formalized lower bound, both CSLib gaps).
+
+## 2026-06-18 (later) — D-LCA fully closed (dense case): complete faithful preprocess+query ✅
+
+**The headline is complete.** `densePreprocessAndQuery_refines_with_steps_of_denseNatLabels`
+(`LCAFischerHeun.lean:731`) is an end-to-end preprocess+query theorem:
+- all five builds traced and refining their references — Euler trace, node
+  array, depth array, first-occurrence array, FH state;
+- **linear preprocessing budget** — `densePreprocessBuildCost ≤
+  densePreprocessBuildBudget`, where the budget
+  (`eulerTraceBuildCost + (|nodes|+1) + (|depths|+1) + (|labels|+1+3|nodes|) +
+  15·|depths|`) is O(n) in every term (FH canonical build is the linear ≤15·n);
+- O(1) query (`cost ≤ 16`) with array-backed honest reads (node/depth/first-occ
+  now `Refine.StoredSeq`, built via the new `RAM.arrayOfList`/`writeArray?`);
+- correctness `query.value = some node → IsPathLCA u v node`;
+- preconditions `DenseNatLabels` + `canonicalReady` (RMQ-natural, legitimate).
+
+So D-LCA is the complete, machine-faithful Bender–Farach-Colton result for the
+dense/RMQ-natural case. Trust base standard-axioms-only; build green. This round
+also extended the costed-array treatment from first-occurrence to the node and
+depth tables (`buildNodeArray_refines_with_steps`, `buildDepthArray_refines_with_steps`).
+
+**Persistent blemish — assoc path delisted, not retired.** The flagged cleanup
+is still undone: the assoc-list path remains in source with its unfaithful cost
+theorems (`canonicalConcreteAssocQueryCosted_refines_with_steps_of_tracePathAgreement`
+:339, `canonicalConcreteAssocQueryCosted_cost_le_sixteen_of_large` :323,
+`firstOccurrenceAssocCosted`) — the O(1)-charged-for-O(n)-assoc-scan claims. It
+was only **removed from `axiom_check`** (a weak demotion), not deleted.
+**0 net deletions for three rounds running** — the loop keeps adding faithful
+paths without retiring superseded unfaithful ones.
+
+**Stop assessment: appropriate on the deliverable; persistent cleanup deferral.**
+Landing the complete faithful D-LCA is a strong, headline stop. Not a violation
+(the headline is real; the assoc path isn't in the trust list), but the
+assoc-retirement has now been deferred across three additive rounds and should
+be done before the demo.
+
+**Scorecard:** A nearly done (residual: value-side `List` plumbing count in the
+sparse build); B ✅; C ✅; D ✅ (complete faithful dense preprocess+query). The
+A + B + C + one-of-D finish line is substantively reached — remaining work is
+cleanup, not new math.
+
+**Pre-demo punch list (≈ 2026-06-24):**
+1. Retire the assoc first-occurrence path (delete the unfaithful cost theorems;
+   keep correctness-only if a general-label fallback is wanted).
+2. Close A's residual (count the sparse-build value-side `List` plumbing).
+3. Flip ROADMAP A–D statuses to done; tidy `FAMILY_SUMMARY.md`.
