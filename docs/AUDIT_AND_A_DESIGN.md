@@ -259,3 +259,58 @@ same way the sparse table and FH microtable were done. That closes both gaps at
 once and yields the single build-plus-query theorem that is D-LCA's deliverable.
 With B and C done and A nearly there, D-LCA done this way is essentially the POC
 finish line.
+
+## 2026-06-18 (later) — D-LCA closed for the dense (RMQ-natural) case ✅
+
+**Headline landed, the honest way.** The previous round's two gaps (uncosted
+build; assoc-list O(n) lookup charged O(1)) are both fixed for the dense case.
+`firstOccurrenceBuildAndDenseQuery_refines_with_steps_of_denseNatLabels` is a
+genuine unified build+query theorem:
+- linear traced build — `(buildFirstOccurrenceDirectArray tree).steps ≤
+  |labels| + 1 + 3·|nodes|` (O(n)), via `initFirstOccurrenceSlots` + counted
+  `writeArray?` (new RAM primitive), with the array proven to refine the
+  reference rows;
+- honest O(1) query — first-occurrence table is now Array-backed (`Refine.StoredSeq`),
+  so the unit-cost indexed read is real; query `cost ≤ 16`;
+- correctness — `query.value = some node → IsPathLCA u v node`;
+- preconditions — `DenseNatLabels` (`LabelsUnique ∧ ∀ label ∈ labelsPreorder,
+  label < length`) is exactly the RMQ-via-LCA setting (Cartesian-tree nodes are
+  indices `0..n-1`), plus `canonicalReady`. Legitimate, dischargeable,
+  non-vacuous.
+
+Trust base clean (standard axioms only; `StoredSeq.get?_eq_absGet?` is
+`[propext]`, `writeArray?_run` axiom-free). Build green.
+
+**Blemish — assoc path not retired (0 net deletions).** The honest Dense/Direct
+path was added *alongside* the old assoc-list path
+(`firstOccurrenceAssocIndex`/`firstOccurrenceAssocCosted`,
+`canonicalConcreteAssocQueryCosted`,
+`queryWithBuiltConcreteStateCosted_..._of_tracePathAgreement`), whose cost
+claims are **not** machine-faithful (O(1) charged for an O(n) assoc scan,
+uncosted build). Milder than the dead-code round (the new path is wired and
+capstoned — this is failure-to-clean-up, not new dead scaffolding), but the
+superseded assoc cost theorems must not be banked beside the honest Dense ones.
+
+**Stop assessment: appropriate (strong).** A real headline (D-LCA dense) landed,
+trust clean, build green. The un-retired assoc path is a cleanup item, not a
+stop violation (it predates this round). Ideal round would have retired/demoted
+it in the same pass per migrate-don't-accumulate.
+
+**Scorecard:** A nearly there (residual: value-side `List` plumbing count in the
+sparse build); B ✅; C ✅; D ✅ for the dense/RMQ-natural case. The bounded
+finish line (A + B + C + one of D) is substantively reached.
+
+**Next (re-prioritized for the demo — see below):**
+1. Retire or demote the assoc first-occurrence path (single faithful story).
+2. Close A's residual: count the value-side `List` plumbing so derived steps are
+   a full machine-step claim, not probe-count.
+3. Then flip ROADMAP A–D statuses to done.
+
+## Project note — demo before CSLib coordination
+
+Target: demo at the user's Lean + AI club, a little under a week out (≈ 2026-06-24).
+**CSLib coordination (the @sorrachai thread) is deferred until after the demo** —
+do not open it before then. Near-term priority is a clean, presentable, complete
+POC for the demo: finish items 1–2 above so the demo shows a complete A+B+C+D
+story, and keep the narrative tight (hub-and-spoke positioning, the gap it fills:
+derived machine-step cost model + formalized lower bound, both CSLib gaps).
