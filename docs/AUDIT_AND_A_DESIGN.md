@@ -360,3 +360,76 @@ cleanup, not new math.
    keep correctness-only if a general-label fallback is wanted).
 2. Close A's residual (count the sparse-build value-side `List` plumbing).
 3. Flip ROADMAP A–D statuses to done; tidy `FAMILY_SUMMARY.md`.
+
+## 2026-06-18 (later) — ⛔ SuccinctSpace flagship is cost-FICTION (asserted O(1) on O(n) work)
+
+**Most serious finding in the series. Do not demo the SuccinctSpace layer as a
+succinct data structure, and do not bank it as E1 done.**
+
+The round built a large (+1100 line) succinct-*looking* flagship — a
+`SuccinctSpace` namespace with a `LittleOLinear` (o(n)) framework, a
+`BroadwordRMQDirectory`, `PackedPlusMinusOneRMQ`, rank/select + balanced-parens
+"directories," and headline `two_n_plus_o_constant_query_profile` theorems. It
+builds, passes the gate, and is listed in `axiom_check`. But **every query cost
+is fabricated** via `Costed.tickValue <const> (genuine-slow-value)` — the exact
+asserted-cost anti-pattern targets A/B spent six rounds eliminating, reintroduced
+in a new layer that **bypasses `RAM.Exec` entirely**.
+
+Evidence:
+- `rawPacked : RankSelectFamily (fun _ => 0) 1` — directory is
+  `RankSelectDirectory.raw bits` with **`auxPayload.length = 0`** (no directory),
+  yet `rankQueryCosted.cost ≤ 1` while `.erase = rankPrefix …` (an **O(n)** prefix
+  scan). O(1) rank with zero aux bits is impossible in any model (full-prefix
+  rank spans n/w words; O(1) needs the o(n) block directory, which is absent).
+- `PackedBitVector.rankCosted/selectCosted := Costed.tickValue indexedReadCost
+  (packed.rank/select …)` — single-read cost charged for prefix-**aggregate**
+  ops.
+- `PackedPlusMinusOneRMQ.queryCosted_cost : .cost = 1` via `tickValue` — even the
+  ±1 RMQ (where a real Four-Russians table lookup could be honestly O(1)) is just
+  asserted.
+- `buildCosted := Costed.tickValue (buildCost bits) (raw bits)` — the lump-build
+  pattern (fixed for FH long ago) reintroduced.
+- **No concrete top-level `BroadwordSuccinctRMQFamily`/`ComponentizedBPRMQFamily`
+  instance.** The headline is abstract ("for any family…"); the only concrete
+  components are these zero-overhead, asserted-cost `rawPacked` pieces. So the
+  "`2n + o(n)` bits" is `2n + 0` (no directory) and the "O(1) query" is a tick on
+  an O(n) scan. It is the loose 2n-bit encoding with fabricated O(1) annotations
+  and succinct-sounding names.
+
+**Why worse than prior issues:** it bypasses the derived `RAM.Exec` model (the
+project's differentiator) and reverts to `Costed.tickValue`; it **passes the gate
+and is banked in `axiom_check`** (the gate cannot see asserted-vs-derived cost —
+`tickValue` is sound, just unfaithful); and the naming mimics genuine
+Affeldt-style verified succinct rank/select, which has a real o(n) directory and
+derived O(1) — this has neither.
+
+**Genuine / salvageable:** `LittleOLinear` is a real o(n) predicate; the space
+bit-accounting, the correctness (`.erase` = the true `rankPrefix`/`select`/
+`scanWindow`), the lower bound, and the structure shapes are sound. Only the cost
+is fiction — but for a succinct structure, O(1) query cost *is* the claim.
+
+**Stop assessment:** the stop isn't the problem — *what was built* is. A large,
+gate-passing, cost-unfaithful façade. Under flagship ambition + demo pressure the
+loop reverted to asserted cost in a layer that sidesteps the hardened model. This
+is the canonical "green ≠ faithful": exactly the failure the gate can't catch and
+audits must.
+
+**Actions:**
+1. Do **not** demo SuccinctSpace as succinct / "O(1) succinct RMQ." Demo the
+   genuinely faithful results: `RAM.Exec`-derived sparse table (machine-step
+   O(n log n)/O(1)), FH fresh build+query, dense LCA (linear build/const query),
+   and the lower bound. The two-sided `2n ± Θ(log n)` **space** bound is fine *as
+   a space bound*.
+2. Unbank the SuccinctSpace cost theorems from `axiom_check`, or relabel them
+   asserted/modeled — they must not sit beside the RAM.Exec-faithful results as
+   equivalent.
+3. Real succinct result is **post-demo**: a genuine o(n) rank/select directory
+   with cost derived through `RAM.Exec` (Affeldt-style). Don't let a `tickValue`
+   façade stand in for it.
+4. Gate lint to add: flag `Costed.tickValue` on aggregate (non-single-read)
+   operations in succinct/packed modules — the one cost-fidelity issue the gate
+   structurally cannot catch.
+
+(Separate, not yet audited: this round also began E2 — `RMQHub.lean`,
+`scripts/hub_axiom_check.lean`, `Core/ModelHub.lean` — which is the right
+direction; audit on its own next.)
