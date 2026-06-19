@@ -212,3 +212,50 @@ live path and retire what it replaces, or it has not earned a green light.
 
 **Next run:** finish this migration (steps 1–4) to close B before starting any
 new target. C is done; D-LCA is next after B.
+
+## 2026-06-18 (later) — B closed; D-LCA started (built state, with a fidelity gap) ✅/⚠️
+
+**B is closed.** `fischerHeun_refines_with_steps` is a genuine capstone:
+`(queryCosted xs left right).value = query xs left right ∧ cost ≤ 13`,
+unconditional except for `canonicalReady` (legitimate large-input precondition).
+Two fully-derived `Refine.StoredMatrix` instances (sparse + FH); asserted
+microtable cost retired. The prior unwired-scaffolding round was correctly
+finished rather than abandoned.
+
+**D-LCA: real structural progress, honestly labeled as incomplete.** A
+`ConcreteQueryState` (FH RMQ state + first-occurrence table + node view) was
+assembled, and `queryWithBuiltConcreteStateCosted_refines_with_steps_of_tracePathAgreement`
+makes the query consume a **built** first-occurrence table (drops the
+`_of_firstOccurrences` *supplied* hypothesis), with correctness via
+`tracePathAgreement` (discharged by `labelsUnique`).
+
+**Two gaps — one disclosed, one not:**
+1. *Build cost not charged (disclosed).* The `ConcreteQueryState` docstring
+   states it "does not yet claim a faithful preprocessing cost for constructing
+   the first-occurrence table." `queryWithBuiltConcreteStateCosted_cost_le_sixteen_of_large`
+   bounds only the query (≤16); there is no `buildSteps ≤ c·n`.
+2. *Lookup fidelity (undisclosed).* `firstOccurrences : TableModel.IndexedAccess`
+   is populated with `firstOccurrenceAssocIndex` — an **assoc list** whose
+   `firstOccurrenceAssocLookup?` (`LCACost.lean:74`) is an **O(n) linear scan** —
+   but read via `getCosted`, which charges **unit cost**. So the ≤16 bound
+   charges O(1) per first-occurrence lookup for O(n) work: the exact
+   "modeled-O(1)-for-real-linear-work" pattern the FH/sparse hardening
+   eliminated, reappearing in the LCA layer. Correctness is fine
+   (`firstOccurrenceAssocIndex_get?_of_mem_labelsPreorder`); the issue is purely
+   cost fidelity.
+
+**Stop assessment: appropriate.** The round closed a real target (B) and laid
+D-LCA groundwork that is *disclosed as incomplete* (not banked as done) — so,
+unlike the prior unwired-microtable round, this is not a stop-rule violation.
+
+**Caveat / do not bank:** the LCA `≤16 refines-with-steps` must **not** count
+toward D-LCA "done": the build is uncosted and the assoc-list lookup is charged
+O(1) for O(n) work.
+
+**Next run (non-forky completion, reuses existing machinery):** re-back the
+first-occurrence table with `Core.Refine.StoredMatrix` (Array — so the unit-cost
+indexed read is *honest*) and charge its O(n) build through the RAM model, the
+same way the sparse table and FH microtable were done. That closes both gaps at
+once and yields the single build-plus-query theorem that is D-LCA's deliverable.
+With B and C done and A nearly there, D-LCA done this way is essentially the POC
+finish line.
