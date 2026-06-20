@@ -944,7 +944,7 @@ theorem twoWordDescriptorTableRead_choice_exact_of_select_in_run
         simpa [twoWordDescriptorFirstCount] using hfirst)
       hlo hhi
 
-theorem twoWordDescriptorWordIndex_exact_implies_select_in_run
+theorem twoWordDescriptorWordIndex_exact_implies_position_in_run
     {wordSize baseWordIndex rankBefore firstWordCount occurrence pos : Nat}
     (hwordSize : 0 < wordSize)
     (hexact :
@@ -1005,6 +1005,84 @@ theorem twoWordDescriptorWordIndex_exact_implies_select_in_run
         rw [Nat.succ_mul]
       simpa [htwo] using hnext
     exact ⟨hlo, hhi⟩
+
+/--
+The bit-blind arithmetic route `descriptorIndex = occurrence / 2` is not a
+global select routing.  Sparse target bits can put the requested occurrence in
+a later two-word payload run than this index chooses.
+-/
+theorem occurrencePairTwoWordDescriptorRouting_not_global :
+    let bits : List Bool := [false, true, true, false]
+    let wordSize : Nat := 1
+    let occurrence : Nat := 1
+    let descriptorIndex : Nat := occurrence / 2
+    exists pos,
+      RMQ.Succinct.select false bits occurrence = some pos /\
+        ¬ (twoWordDescriptorBaseWordIndex descriptorIndex * wordSize <= pos /\
+          pos <
+            (twoWordDescriptorBaseWordIndex descriptorIndex + 2) *
+              wordSize) := by
+  refine ⟨3, ?_, ?_⟩
+  · simp [RMQ.Succinct.select, RMQ.Succinct.selectFrom]
+  · simp [twoWordDescriptorBaseWordIndex]
+
+/--
+More generally, no descriptor route that depends only on the queried
+`target/occurrence` pair can cover all bitvectors.  The same query can require
+different two-word payload runs in dense and sparse inputs.
+-/
+theorem occurrenceOnlyTwoWordDescriptorRouting_impossible
+    (route : Bool -> Nat -> Nat) :
+    ¬ (forall (bits : List Bool) (wordSize : Nat)
+          (target : Bool) (occurrence pos : Nat),
+        0 < wordSize ->
+        RMQ.Succinct.select target bits occurrence = some pos ->
+          twoWordDescriptorBaseWordIndex (route target occurrence) *
+                wordSize <= pos /\
+            pos <
+              (twoWordDescriptorBaseWordIndex (route target occurrence) + 2) *
+                wordSize) := by
+  intro hroute
+  have hdense :=
+    hroute [false, false] 1 false 1 1 (by omega) (by
+      simp [RMQ.Succinct.select, RMQ.Succinct.selectFrom])
+  have hsparse :=
+    hroute [true, true, false, false] 1 false 1 3 (by omega) (by
+      simp [RMQ.Succinct.select, RMQ.Succinct.selectFrom])
+  have hroute_eq_zero : route false 1 = 0 := by
+    have hle := hdense.left
+    simp [twoWordDescriptorBaseWordIndex] at hle
+    omega
+  have hhi := hsparse.right
+  rw [hroute_eq_zero] at hhi
+  simp [twoWordDescriptorBaseWordIndex] at hhi
+
+/--
+Reading only the coarse locator's payload word and using its two-word run as
+the descriptor route is not enough either: the next target occurrence in the
+same coarse region may already be outside that run.
+-/
+theorem coarseBaseTwoWordDescriptorRouting_not_global :
+    let bits : List Bool := [false, true, true, false]
+    let wordSize : Nat := 1
+    let baseOccurrence : Nat := 0
+    let occurrence : Nat := 1
+    let base :=
+      selectSampleOfSelectedPos false bits wordSize 0
+    let descriptorIndex : Nat := base.wordIndex / 2
+    exists pos,
+      selectSampleAt? false bits wordSize baseOccurrence = some base /\
+        RMQ.Succinct.select false bits occurrence = some pos /\
+          ¬ (twoWordDescriptorBaseWordIndex descriptorIndex * wordSize <= pos /\
+            pos <
+              (twoWordDescriptorBaseWordIndex descriptorIndex + 2) *
+                wordSize) := by
+  refine ⟨3, ?_, ?_, ?_⟩
+  · simp [selectSampleAt?, RMQ.Succinct.select, RMQ.Succinct.selectFrom,
+      selectSampleOfSelectedPos, selectWordStart, RMQ.Succinct.rankPrefix]
+  · simp [RMQ.Succinct.select, RMQ.Succinct.selectFrom]
+  · simp [twoWordDescriptorBaseWordIndex, selectSampleOfSelectedPos,
+      selectWordStart]
 
 /--
 A single aligned payload word cannot serve two successful select queries whose

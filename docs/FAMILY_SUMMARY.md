@@ -252,6 +252,13 @@ aligned machine chunk, both selected positions have the same `pos / wordSize`.
 A compact final builder therefore needs a real descriptor that computes that
 chunk choice through charged payload, or an extended local dense-block query
 path, not just a non-identity `blockIndex`.
+`SuccinctSelectProposal.occurrenceOnlyTwoWordDescriptorRouting_impossible`,
+`occurrencePairTwoWordDescriptorRouting_not_global`, and
+`coarseBaseTwoWordDescriptorRouting_not_global` further rule out the tempting
+bit-blind occurrence-pair and coarse-base routes for consuming the two-word
+descriptor kernel globally; the remaining positive select path needs a
+bitvector-dependent charged routing/predecessor layer rather than another local
+descriptor fact.
 
 - The RMQ contract is half-open: a valid query satisfies `left < right` and
   `right <= xs.length`; invalid or empty ranges return `none`.
