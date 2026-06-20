@@ -47,12 +47,16 @@ Use this workflow for nontrivial work in the RMQ Lean repository.
 ## Unattended Loops
 
 When the user asks for an unattended loop, restart/continue the loop, or says to
-raise loop-end criteria, treat it as a multi-iteration proof sprint rather than
-a single milestone.
+raise loop-end criteria, treat it as a target-closing proof sprint, not a
+single milestone and not a single "good progress" checkpoint. The loop target
+is the ambitious owned goal named in the prompt or roadmap. Individual
+iterations may land substantial intermediate lemmas or component layers, but
+those are reasons to reassess and keep going, not reasons to stop.
 
 Loop behavior:
 
-1. Pick the next substantial roadmap milestone from local context.
+1. Pick the ambitious owned target from local context, such as the concrete
+   component profile or capstone theorem the worker is meant to close.
 2. Write a short goal reflection:
    - Overall goal: the capstone theorem or concrete component profile.
    - Current gap: what still prevents that theorem from typechecking.
@@ -60,9 +64,9 @@ Loop behavior:
    - This iteration: the most ambitious concrete step toward that gap.
    - Not doing: technically useful side work to avoid this round.
 3. Implement and verify it.
-4. Reassess the roadmap immediately after verification.
-5. Continue into the next substantial milestone when there is no real design
-   decision, user input need, merge conflict, tool/approval blocker, or proven
+4. Reassess the same target immediately after verification.
+5. Continue into the next iteration when there is no real design decision, user
+   input need, merge conflict, tool/approval blocker, or proven
    target-misspecification.
 
 If the reflection shows that "This iteration" does not attack the hard live
@@ -70,12 +74,26 @@ gap, revise the target before editing. Do not fill an unattended loop with
 substantial but adjacent outputs that leave the named hard construction exactly
 where it was.
 
-Minimum bar before stopping an unattended loop:
+Strict break criteria for unattended loops:
 
-- Complete at least two substantial milestones, or
-- complete one large milestone and make verified progress on the next adjacent
-  milestone, or
-- hit a genuine stop condition below.
+- Stop normally only when the owned target is closed: the named theorem,
+  concrete component profile, or capstone construction typechecks and the
+  relevant gate passes.
+- Stop for design rethink only after hitting real brick walls: multiple serious
+  attempts at the named positive construction fail for the same fundamental
+  reason, and the worker records the attempted signatures, obstruction lemmas
+  or error shapes, and why the local next move cannot repair them.
+- Stop for external blockers only when tooling, approvals, branch conflicts, or
+  unavailable dependencies prevent further local progress.
+
+"Good progress" is not a strict break criterion. A verified helper layer,
+partial profile, local kernel, or first successful construction step is an
+iteration result. After reporting it in the scratch notes, continue toward the
+owned target unless one of the strict break criteria above applies.
+
+For this policy, "multiple serious attempts" normally means at least three
+distinct concrete construction/proof attempts. One attempt is enough only if it
+produces a formal impossibility theorem for the target statement itself.
 
 Do not count tiny substeps as separate milestones. A substantial milestone must
 land at least one of:
@@ -100,6 +118,9 @@ Valid stop conditions:
 - a concrete construction attempt proves the target statement is
   mis-specified or impossible as stated, with a minimal theorem documenting the
   obstruction;
+- a brick-wall dossier shows at least three serious construction attempts have failed
+  for a common design-level reason and the next move is a fundamental design
+  choice rather than more local proof work;
 - required tooling, network, approvals, or local branch conflicts block further
   progress;
 - the user interrupts or redirects.
@@ -117,6 +138,10 @@ Invalid stop reasons:
   the same target.
 - the round produced technically substantial side work while explicitly
   deferring the hard part named in the goal reflection.
+- one substantial intermediate theorem or component layer landed, but the
+  owned target still has an obvious next construction/proof step.
+- the worker hit one or two hard proof errors without trying the natural
+  repaired statements or nearby construction variants.
 
 Before stopping, run this loop-stop audit:
 
@@ -127,13 +152,18 @@ Before stopping, run this loop-stop audit:
 3. Did this round leave a canonical identity witness, abstract family
    parameter, or proof-only placeholder where the target asked for a compact or
    payload-live construction?
+4. If stopping short of the target, is there a brick-wall dossier with at least
+   three serious attempts and a design-level reason local proof work cannot
+   proceed, or one formal impossibility theorem for the target statement?
 
-If the answer to 1 is "no" and 2 or 3 is "yes", continue the loop. For the
-succinct RMQ finish line specifically, a round that only creates hooks for
-select locators, BP block code classifiers, macro directories, or close/LCA
-navigation does not stop until it also supplies the concrete witness/profile.
-A new blocker only justifies stopping if it comes from a serious attempt at the
-named positive construction and shows the target signature itself must change.
+If the answer to 1 is "no" and 2 or 3 is "yes", continue the loop. If the
+answer to 1 is "no" and 4 is "no", continue the loop. For the succinct RMQ
+finish line specifically, a round that only creates hooks for select locators,
+BP block code classifiers, macro directories, range-min/max summaries, local
+descriptor kernels, or close/LCA navigation does not stop until it also supplies
+the concrete witness/profile. A new blocker only justifies stopping if it comes
+from serious attempts at the named positive construction and shows the target
+signature itself must change.
 
 For unattended loops, keep interim updates concise and periodic, but reserve the
 final response for a valid stop condition. If stopping for target

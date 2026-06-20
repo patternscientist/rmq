@@ -63,6 +63,10 @@ Loop stop audit:
   requested? YES/NO:
 - Did this branch reduce the current distance to the capstone, rather than only
   producing technically substantial adjacent work? YES/NO:
+- If the target is not closed, which three serious attempts at the named
+  positive construction were made, and what common brick wall did they hit?:
+- Why is the next move a fundamental design/coordinator choice rather than
+  another local proof iteration?:
 - If stopping on impossibility, which concrete construction was attempted and
   which minimal theorem proves the target signature must change?:
 - Why stopping is valid under `docs/CODEX_AUTONOMY.md`:
@@ -92,6 +96,12 @@ to the capstone is exploratory, not complete. The worker should either keep
 looping toward the named hard construction or report that the branch should be
 treated as a side artifact rather than a merge-ready finish.
 
+A branch that shortens the path but leaves the owned concrete component profile
+or capstone theorem obviously unfinished is an iteration checkpoint, not a
+valid unattended-loop endpoint. The worker should keep going unless it can
+provide a brick-wall dossier showing that further local progress now depends on
+a fundamental design choice.
+
 If the branch adds a new parameter, field, adapter, or bridge theorem, it must
 also name the concrete instance that consumes it. If that concrete instance is
 still missing and lies in the worker's owned files, the loop should continue.
@@ -100,6 +110,12 @@ For the succinct RMQ capstone, a new blocker theorem is not enough unless it
 comes from an attempted positive construction and shows that the requested
 target statement is mis-specified. Known blockers should be cited as design
 constraints, not rediscovered as stop points.
+
+For short-of-target stops, require the worker to report at least three concrete
+attempts, not just one failed proof. The report should make clear why the next
+action cannot be "try the natural repaired statement" or "consume the new local
+kernel in the promised profile." A formal impossibility theorem for the target
+statement can replace the three-attempt threshold.
 
 ### Cost Or Space Worker
 
@@ -199,6 +215,10 @@ Reject or send back for revision when:
 - the branch delivers docs, helper layers, adapters, or extra blockers while
   deferring the named hard construction that is still inside the worker's owned
   file surface.
+- the branch proves a useful local kernel or partial profile and stops even
+  though the owned concrete component profile has an obvious next local step.
+- the branch claims a brick wall after only one or two proof failures, without
+  attempts at nearby repaired signatures or construction variants.
 
 ## Current Suggested Split
 

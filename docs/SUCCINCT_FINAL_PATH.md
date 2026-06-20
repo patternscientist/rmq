@@ -336,6 +336,12 @@ If the selected work does not directly reduce the distance to the final
 allowed to build helper lemmas, but only while immediately consuming them in
 the descriptor builder, BP macro/close component, or final join.
 
+For this target, local wins are iteration checkpoints. A descriptor kernel,
+sample table, range-min/max summary table, local codebook, endpoint lemma, or
+adapter theorem should be followed in the same unattended loop by the next
+attempt to consume it in the concrete C1/C2 profile. Do not stop merely because
+the local layer is useful and verified.
+
 The next rounds are positive-construction rounds. The existing no-go theorems
 already rule out the tempting false shortcuts. A worker should not stop after
 another blocker unless it attempted the named C1/C2 construction and proved
@@ -351,11 +357,19 @@ Invalid stop points for this final path:
 - proving a profile over a hypothetical family with no concrete instance.
 - producing a technically substantial theorem cluster that does not feed the
   current descriptor-select, BP macro/close, or final-join target.
+- proving only a local descriptor-choice theorem, local range-min/max summary
+  table, block codebook, or partial charged read profile while the C1/C2
+  concrete component profile remains the next obvious step.
+- stopping after one or two hard proof failures without a brick-wall dossier
+  explaining why the target requires a fundamental redesign.
 
 Valid stop points:
 
-- a concrete component profile lands and the next step crosses into another
-  worker's owned branch;
+- the owned concrete component profile lands, not merely a helper profile, and
+  the next step truly crosses into another worker's owned branch;
 - a concrete construction attempt proves the target statement is impossible as
   stated, with a minimal obstruction theorem and a precise replacement target;
+- at least three serious attempts at the named positive construction hit the
+  same design-level brick wall, with enough evidence for the coordinator to
+  choose a new invariant, representation, or target statement;
 - the final theorem above typechecks and the full gate passes.

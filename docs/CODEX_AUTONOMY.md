@@ -118,10 +118,20 @@ In unattended mode, change the checkpoint rule to:
 > If the gate is green and a roadmap target remains, continue autonomously to
 > the next target. Do not return to the human between green rounds.
 
-A single run should aim to discharge one full roadmap target end to end, and may
+A single run should aim to close its ambitious owned target end to end, and may
 chain into the next target if the gate stays green and budget remains. Do not
 split what should be one milestone into several small "wins" just to claim more
 iterations.
+
+For unattended workers, distinguish iteration progress from loop completion:
+
+- An iteration can land a hard lemma, local kernel, representation layer, or
+  partial profile.
+- A loop should keep going after such progress if the owned concrete component
+  profile or capstone theorem still has an obvious next construction/proof
+  step.
+- A loop break is justified only by target closure, an external/tool blocker,
+  or a design-level brick wall that requires human/coordinator judgment.
 
 At the start of every loop iteration, write a short goal reflection before
 editing:
@@ -146,10 +156,14 @@ Before stopping an unattended loop, run a stop audit:
 3. Did the round introduce an API hook, parameter, abstract family, or canonical
    identity witness while the concrete compact/payload-live witness remains
    exactly the missing item?
+4. If the target is not closed, did the worker record a brick-wall dossier:
+   several serious attempts at the positive construction, the common
+   obstruction, and why the next move is a fundamental design choice rather
+   than more local proof work?
 
-If 1 is no and either 2 or 3 is yes, the loop should continue. "The gate is
-green" only proves soundness; it does not prove that a worker has reached a
-valid loop endpoint.
+If 1 is no and either 2 or 3 is yes, the loop should continue. If 1 is no and
+4 is no, the loop should continue. "The gate is green" only proves soundness;
+it does not prove that a worker has reached a valid loop endpoint.
 
 For the succinct RMQ capstone, a blocker theorem is no longer enough by
 default. The project has already pinned the obvious bad designs. A blocker may
@@ -158,12 +172,25 @@ while attempting the named positive construction, and the worker can state why
 the target signature itself must change. Otherwise keep going to the concrete
 builder/profile.
 
+A "brick wall" is not "this proof is hard" or "the next lemma is nontrivial."
+It means the worker has made multiple concrete attempts at the named positive
+construction, those attempts fail for the same structural reason, and repairing
+the failure would require changing the target statement, representation model,
+cost model, ownership split, or another design choice the coordinator should
+approve.
+
+By default, "multiple concrete attempts" means at least three distinct serious
+attempts. A single attempt is enough only if it produces a formal impossibility
+theorem for the target statement itself.
+
 ## Stop Conditions
 
 Surface early in unattended mode, or stop the current attended slice, when any
 of these happens:
 
-1. Gate red after one retry.
+1. Gate red after the worker has isolated or repaired the local edit once and
+   there is no obvious local proof repair left. Ordinary Lean failures are loop
+   work, not a stop condition.
 2. A public contract change is needed: `RMQBackend`, `LeftmostArgMin`,
    `ExactRMQStateEncoding`, or the LCA/RMQ bridge types.
 3. A policy break is needed: adding Mathlib, admitting an axiom, changing the
@@ -171,8 +198,11 @@ of these happens:
 4. A concrete construction attempt proves the target signature is
    mis-specified or unprovable as stated, and the branch records the minimal
    impossibility theorem. Repeating a known blocker is not a stop condition.
-5. A taste-sensitive API or abstraction fork has no clear winner.
-6. The roadmap is exhausted.
+5. At least three concrete construction attempts hit the same design-level
+   brick wall, and the branch records enough evidence for the coordinator to
+   choose a new representation, invariant, or target statement.
+6. A taste-sensitive API or abstraction fork has no clear winner.
+7. The roadmap is exhausted.
 
 Within an explicitly approved unattended budget, anything else should be worked
 through rather than surfaced immediately.
@@ -217,6 +247,10 @@ through rather than surfaced immediately.
 12. Each worker must keep the big picture in view. Reports and loop iterations
     should name how the branch changes the shortest path to the final theorem,
     not merely what new objects exist.
+13. Treat partial wins as iteration checkpoints, not loop endpoints. If the
+    branch proves a useful local kernel, sample table, range summary, adapter,
+    or helper exactness theorem, the next action is to consume it in the owned
+    concrete profile unless that is blocked by a documented design-level wall.
 
 Useful debt metrics:
 
