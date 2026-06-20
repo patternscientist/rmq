@@ -38,6 +38,10 @@ and formalization gaps.
 
 - "Done" means the stated theorem typechecks `sorry`-free with the standard Lean
   trust base only. The build gate enforces soundness; this file enforces value.
+- For the active `2*n + o(n), O(1)` succinct RMQ finish line, read
+  `docs/SUCCINCT_FINAL_PATH.md` before starting worker loops. That file is the
+  current component contract and stop-audit companion for the final succinct
+  path.
 - Materialize a target as a compiled theorem only once its supporting
   definitions exist. Until then, keep it as prose plus the intended theorem
   shape.
@@ -637,6 +641,13 @@ into that boundary. The remaining missing construction is the payload-live BP
 close/LCA instantiation itself: build a real succinct macro/micro close-LCA
 entry scheme rather than a dense pair table, then discharge the final two-level
 encoded BP close-navigation family.
+
+Current final-path spec: `docs/SUCCINCT_FINAL_PATH.md`. The tentative path is
+now split into a descriptor-based select component, a concrete macro/micro
+BP-close/LCA component, and a final join theorem. The existing non-identity
+select `blockIndex` hook is not enough by itself: the final select worker must
+either implement the descriptor path or prove an equally concrete alternative
+that lets one local entry choose among multiple machine-word payload words.
 
 ### E2 - Reusable Hub Extraction
 
