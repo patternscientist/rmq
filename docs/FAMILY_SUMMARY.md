@@ -221,6 +221,10 @@ globally bounded block entry per occurrence, a concrete macro directory
 implementation behind the new macro interface, and then an encoded/payload-only
 version of this join. They are no longer rank endpoint, rank local-width,
 proof-only block-code, or built-query close-navigation blockers.
+`SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient` pins the first
+macro-design blocker: a macro keyed only by endpoint close-block pairs is false
+even on a four-node right spine, so the concrete macro must store
+endpoint-sensitive fringe information or use a real BP excess/RMQ macro.
 
 - The RMQ contract is half-open: a valid query satisfies `left < right` and
   `right <= xs.length`; invalid or empty ranges return `none`.
@@ -1174,6 +1178,7 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.BlockLocalBPCloseLCATable.concrete_profile`,
   `SuccinctCloseProposal.blockStartOf_blockOfClose_le`,
   `SuccinctCloseProposal.close_lt_blockStartOf_blockOfClose_add`,
+  `SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient`,
   `SuccinctCloseProposal.BlockMicroCodebook.payload_length`,
   `SuccinctCloseProposal.BlockMicroCodebook.lcaCloseCosted_cost_le_one`,
   `SuccinctCloseProposal.BlockMicroCodebook.lcaCloseCostedAtBlock_exact`,

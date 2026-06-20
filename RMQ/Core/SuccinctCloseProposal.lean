@@ -559,6 +559,70 @@ theorem close_lt_blockStartOf_blockOfClose_add
   omega
 
 /--
+The right-spine shape of size four is the smallest useful witness that a macro
+entry keyed only by the pair of endpoint close blocks cannot be exact.
+-/
+def blockPairMacroBlockerShape : Cartesian.CartesianShape :=
+  Cartesian.CartesianShape.node Cartesian.CartesianShape.empty
+    (Cartesian.CartesianShape.node Cartesian.CartesianShape.empty
+      (Cartesian.CartesianShape.node Cartesian.CartesianShape.empty
+        (Cartesian.CartesianShape.node Cartesian.CartesianShape.empty
+          Cartesian.CartesianShape.empty)))
+
+/--
+A concrete blocker for the tempting compact macro layout keyed only by
+`(blockOfClose leftClose, blockOfClose rightClose)`.
+
+For `blockSize = 3`, the two valid queries `[1, 4)` and `[2, 4)` in the
+right-spine shape have endpoint closes in the same pair of close blocks, but
+their BP-LCA close answers are different (`3` and `5`).  Therefore a macro
+directory whose inter-block entry is only a function of the endpoint block pair
+cannot satisfy the close-LCA exactness contract.
+-/
+theorem blockPairMacroDirectory_not_sufficient
+    (blockAnswer : Nat -> Nat -> Option Nat) :
+    ¬ (forall {left len leftClose rightClose answerClose : Nat},
+      0 < len ->
+        left + len <= blockPairMacroBlockerShape.size ->
+          bpCloseOfInorder? blockPairMacroBlockerShape left = some leftClose ->
+            bpCloseOfInorder? blockPairMacroBlockerShape
+                (left + len - 1) =
+              some rightClose ->
+              bpCloseOfInorder? blockPairMacroBlockerShape
+                  (scanWindow blockPairMacroBlockerShape.representative
+                    left len) =
+                some answerClose ->
+                blockAnswer (blockOfClose 3 leftClose)
+                    (blockOfClose 3 rightClose) =
+                  some answerClose) := by
+  intro hexact
+  have hfirst :
+      blockAnswer (blockOfClose 3 3) (blockOfClose 3 7) = some 3 := by
+    exact
+      hexact (left := 1) (len := 3) (leftClose := 3)
+        (rightClose := 7) (answerClose := 3)
+        (by decide)
+        (by decide)
+        (by decide)
+        (by decide)
+        (by decide)
+  have hsecond :
+      blockAnswer (blockOfClose 3 5) (blockOfClose 3 7) = some 5 := by
+    exact
+      hexact (left := 2) (len := 2) (leftClose := 5)
+        (rightClose := 7) (answerClose := 5)
+        (by decide)
+        (by decide)
+        (by decide)
+        (by decide)
+        (by decide)
+  have hfirstKey :
+      blockAnswer (blockOfClose 3 5) (blockOfClose 3 7) = some 3 := by
+    simpa [blockOfClose] using hfirst
+  rw [hsecond] at hfirstKey
+  simp at hfirstKey
+
+/--
 Payload-live table of per-block close/LCA micro-codes.
 
 The old `BlockMicroCodebook` stores only the finite codebook payload and takes
