@@ -531,3 +531,47 @@ level, and is the next thing to make genuine.
 
 **Path to genuine 2n+o(n) (still achievable):** space is now genuine; what
 remains is a counted RMQ query over the payload (not pure-Lean decode + ≤1).
+
+## 2026-06-19 (later) — RMQ-query cost decoupling FIXED (composed BP navigation); residual is word-size/two-level
+
+**The prior soft spot is genuinely fixed.** The implausible `≤1` one-read RMQ
+query is gone, replaced by `BPCloseRMQNavigationDirectory`: the RMQ query is now
+a *counted composition* of three costed components (`selectCloseCosted`,
+`lcaCloseCosted`, `rankCloseCosted`, each with a cost bound), and
+`queryEncodedCosted_cost_le` proves `cost ≤ 2·selectCost + lcaCost + rankCost`
+(the headline `WordBoundedSampled…two_n_plus_o_bounded_built_query_profile` gives
+`cost ≤ 10`). So the RMQ-query cost is a genuine derived constant, not a tick on
+a pure-Lean decode. Also added: `BoundedPayloadWordStore` (payload chunked into
+words with a proven `word.length ≤ wordSize` bound). Space stays genuine
+(`payload.length = 2n + overhead`, `overhead = sampledDirectoryOverhead slots n
+= slots·(n/(log₂n+1))`, proven `LittleOLinear`); correctness `= scanWindow`;
+trust clean; build green.
+
+**Residual (the recurring fundamental tension, now localized): `wordSize` is a
+free parameter, not tied to a Θ(log n) machine word.** `Op.wordRank` charges 1
+per word-rank *regardless of word length*; the family only proves
+`word.length ≤ wordSize` with `wordSize` an arbitrary per-instance value. There
+is **no two-level (superblock+block) directory** anywhere. The fundamental
+tension: single-level full-precision samples give `overhead = (n/wordSize)·sampleWidth`;
+proven `o(n)` overhead with full-precision samples (`sampleWidth ≈ log n`, forced
+by exact correctness) requires `wordSize = ω(log n)` (≈ log²n) — at which point a
+single `Op.wordRank` over a `wordSize`-bit word is really Θ(log n) machine-word
+ops, so the "O(1) per word op" charge is a residual word-RAM fidelity gap. (Not
+read to the concrete `wordSize` value this pass; inferred from the o(n)-overhead +
+single-level + proven-correctness combination — verify the concrete `wordSize`.)
+Genuine fix: a two-level directory so `wordSize = Θ(log n)` (honest machine-word
+`Op.wordRank`) **and** `overhead = o(n)` hold together.
+
+**Net:** query cost is now a genuine *composed constant* (counted ops), space is
+genuine o(n), correctness exact — a real, layered succinct RMQ. The one
+remaining word-RAM-fidelity question is whether each `Op.wordRank` op is over a
+genuine Θ(log n) machine word (needs two-level) or a Θ(log²n) super-word charged
+O(1) (what single-level + o(n) forces). That is the last gap between "constant
+number of word-ops" and "genuine word-RAM O(1)."
+
+**Stop assessment:** appropriate — substantial genuine progress directly closing
+the prior RMQ-query-cost finding. The word-size/two-level question is the next
+(subtle, recurring) crux.
+
+**Also pending:** old decoupled `PayloadBackedStoredWordRankData` still coexists
+with the genuine `PayloadLive` path (delist/retire).
