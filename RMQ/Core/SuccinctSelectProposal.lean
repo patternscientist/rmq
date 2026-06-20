@@ -482,6 +482,48 @@ def SelectSampleWordExact
       (fun offset => sample.wordStart + offset) =
     RMQ.Succinct.select target bits occurrence
 
+theorem SelectSampleWordExact.exists_word_offset_of_select
+    {target : Bool} {bits word : List Bool}
+    {occurrence pos : Nat}
+    {sample : SuccinctSpace.StoredWordSelectSample}
+    (hexact :
+      SelectSampleWordExact target bits occurrence sample word)
+    (hselect : RMQ.Succinct.select target bits occurrence = some pos) :
+    exists offset,
+      RMQ.RAM.boolSelectInWord target word
+          (occurrence - sample.rankBefore) = some offset /\
+        sample.wordStart + offset = pos := by
+  unfold SelectSampleWordExact at hexact
+  cases hlocal :
+      RMQ.RAM.boolSelectInWord target word
+        (occurrence - sample.rankBefore) with
+  | none =>
+      simp [hlocal, hselect] at hexact
+  | some offset =>
+      simp [hlocal, hselect] at hexact
+      exact ⟨offset, rfl, hexact⟩
+
+theorem SelectSampleWordExact.selected_position_in_read_word
+    {target : Bool} {bits word : List Bool}
+    {occurrence pos : Nat}
+    {sample : SuccinctSpace.StoredWordSelectSample}
+    (hexact :
+      SelectSampleWordExact target bits occurrence sample word)
+    (hselect : RMQ.Succinct.select target bits occurrence = some pos) :
+    sample.wordStart <= pos /\ pos < sample.wordStart + word.length := by
+  rcases
+      SelectSampleWordExact.exists_word_offset_of_select
+        hexact hselect with
+    ⟨offset, hlocal, hpos⟩
+  have hoffset :
+      offset < word.length := by
+    have hselectWord :
+        RMQ.Succinct.select target word
+            (occurrence - sample.rankBefore) = some offset := by
+      simpa [RMQ.Succinct.ram_boolSelectInWord_eq_select] using hlocal
+    exact RMQ.Succinct.select_bounds hselectWord
+  constructor <;> omega
+
 theorem selectBlockDeltaEntry?_select_some_exact_of_word
     {target : Bool} {bits word : List Bool}
     {wordSize occurrencesPerSuper occurrence : Nat}
@@ -1378,6 +1420,36 @@ theorem selectCosted_exact
           simp [RMQ.Costed.bind, RMQ.Costed.map, RMQ.Costed.pure,
             RMQ.Costed.erase, hsuperValue, hdeltaValue, hwordValue,
             hexact, hclamp]
+
+theorem selected_position_in_read_word_of_sample
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data :
+      TwoLevelPayloadLiveStoredWordSelectData
+        bits superOverhead blockOverhead queryCost)
+    {target : Bool} {occurrence pos : Nat}
+    {super delta : SuccinctSpace.StoredWordSelectSample}
+    {word : List Bool}
+    (hocc : occurrence <= bits.length)
+    (hsuper :
+      (data.superTables.entries target)[occurrence / data.occurrencesPerSuper]? =
+        some (some super))
+    (hdelta :
+      (data.blockTables.entries target)[data.blockIndex target occurrence]? =
+        some (some delta))
+    (hword :
+      data.bitWords.store.words[(addSelectSample super delta).wordIndex]? =
+        some word)
+    (hselect : RMQ.Succinct.select target bits occurrence = some pos) :
+    (addSelectSample super delta).wordStart <= pos /\
+      pos < (addSelectSample super delta).wordStart + word.length := by
+  have hexact :
+      SelectSampleWordExact target bits occurrence
+        (addSelectSample super delta) word :=
+    data.select_some_exact target occurrence super delta word
+      hocc hsuper hdelta hword
+  exact
+    SelectSampleWordExact.selected_position_in_read_word
+      hexact hselect
 
 theorem payload_word_length_le_machine
     {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}

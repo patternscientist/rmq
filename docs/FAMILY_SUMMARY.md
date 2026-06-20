@@ -217,6 +217,13 @@ dense/sparse select locator builder behind that block-indexed API, the
 payload-live treatment of the per-block close-LCA code classifier, a real macro
 directory instance, and the final cost-parametric close-navigation join. They
 are no longer rank endpoint, rank local-width, or select API-shape blockers.
+`SelectSampleWordExact.selected_position_in_read_word` and
+`TwoLevelPayloadLiveStoredWordSelectData.selected_position_in_read_word_of_sample`
+make the current select-side design fork explicit: with the present query path,
+any occurrence answered through a shared local locator must lie in the single
+payload word read by that locator. A compact final builder therefore needs a
+real dense/sparse address scheme or an extended local dense-block query path,
+not just a non-identity `blockIndex`.
 
 - The RMQ contract is half-open: a valid query satisfies `left < right` and
   `right <= xs.length`; invalid or empty ranges return `none`.
@@ -1118,6 +1125,8 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctSelectProposal.selectBlockDeltaEntries_present_of_lt`,
   `SuccinctSelectProposal.selectBlockDeltaEntry?_add_exact_of_le`,
   `SuccinctSelectProposal.selectBlockDeltaEntry?_select_some_exact_of_word`,
+  `SuccinctSelectProposal.SelectSampleWordExact.exists_word_offset_of_select`,
+  `SuccinctSelectProposal.SelectSampleWordExact.selected_position_in_read_word`,
   `SuccinctSelectProposal.canonicalSelectSuperTablesFinite_present`,
   `SuccinctSelectProposal.canonicalSelectBlockTablesFinite_present`,
   `SuccinctSelectProposal.canonicalTwoLevelSelectData`,
@@ -1129,6 +1138,7 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctSelectProposal.fixedWidthSelectSampleTables_payload_length_le_sampled`,
   `SuccinctSelectProposal.twoLevelSelectOverhead_littleO`,
   `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData.selectCosted_cost_le_four`,
+  `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData.selected_position_in_read_word_of_sample`,
   `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData.profile`,
   `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectFamily.constant_query_profile`,
   `SuccinctSelectProposal.canonicalTwoLevelSelectSuperOverhead_littleO`,
