@@ -43,6 +43,13 @@ Integration notes:
 - Expected conflicts:
 - Remaining blockers:
 - Smallest next theorem:
+
+Loop stop audit:
+- Named target theorem/blocker retired? YES/NO:
+- Next theorem/construction obvious within owned files? YES/NO:
+- Abstract hook/canonical identity witness left where a concrete witness was
+  requested? YES/NO:
+- Why stopping is valid under `docs/CODEX_AUTONOMY.md`:
 ```
 
 If a worker did not run a full gate, that is acceptable only when they report
@@ -63,6 +70,10 @@ Must report:
 Should not report "progress" only as scaffolding. A proof branch should land a
 consumed lemma cluster, a representation layer, or a theorem that feeds the
 active join.
+
+If the branch adds a new parameter, field, adapter, or bridge theorem, it must
+also name the concrete instance that consumes it. If that concrete instance is
+still missing and lies in the worker's owned files, the loop should continue.
 
 ### Cost Or Space Worker
 
@@ -151,6 +162,9 @@ Reject or send back for revision when:
 - a headline theorem relies on uncounted linear work;
 - charged bits are not tied to decoded payloads;
 - the branch cannot explain how its theorem feeds the current join.
+- the branch stops after adding only an API hook while its own docs/report say
+  that the concrete builder, compact instance, payload-live witness, or final
+  profile remains for the same owned target.
 
 ## Current Suggested Split
 
