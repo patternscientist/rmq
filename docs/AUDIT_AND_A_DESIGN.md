@@ -694,3 +694,52 @@ prior art ← Affeldt et al. (Coq, rank/select/LOUDS only — no RMQ/LCA-via-exc
 no lower bound, so this work genuinely extends the formalization frontier).
 Recommended order: C1 (select) → C2 (rmM-tree macro + micro) → C3 (join,
 retaining the `logSlackLower` lower-bound tie).
+
+## 2026-06-20 (later) — C1 select genuinely closed; C2 rmM macro half-landed (data, not answer); loop self-hardened
+
+The loop took the C1→C2 plan and parallelized it: merged
+`codex/rmq-select-descriptor-positive` (C1) and `codex/rmq-bp-range-minmax-concrete`
+(C2). +~1.6k lines (28376 total). Build green, trust clean (0 bad-axiom).
+
+**C1 select — genuinely CLOSED as a concrete component.**
+`canonicalTwoLevelSelectDataOfChunksExact` is a concrete builder from real chunks
+(`BoundedPayloadWordStore.ofChunks`, `wordSize ≤ machineWordBits`), and
+`canonicalTwoLevelSelectDataOfChunksExact_selectCosted_profile` proves —
+*unconditionally*, for all target/occurrence — `cost ≤ queryCost` (queryCost ≥ 4,
+derived O(1)) **and** `.erase = Succinct.select target bits occurrence` (exact).
+Overhead is proven `LittleOLinear` (`canonicalTwoLevelSelectOverhead_littleO`).
+Note: closed via the **TwoLevel** route, *not* the spec's `Descriptor` design
+(`word_choice_exact`/`DescriptorPayloadLive` are absent from the code) — a valid
+substitution, because the two-level super/block sample tables are exact without
+relying on the disproven shared-aligned-word locator. This **retires the select
+blocker with a witnessed construction**; citable as a concrete, exact, O(1),
+o(n)-overhead, machine-word-bounded two-level succinct select in Lean.
+
+**C2 rmM macro — half landed (the recommended Navarro–Sadakane structure, but
+data-only).** `concreteBPRangeMinMaxSummaryTable` concretely stores per-block
+`min`/`max` BP prefix excess (with a balanced-prefix invariant), payload-live,
+with derived `minExcessCosted_cost_le_one`, a machine-word side condition
+(`…read_words_length_le_machine`), and overhead/profile theorems. **But no
+theorem yet consumes the summaries into an exact RMQ/LCA-close answer** — the
+existing `lcaCloseCosted_exact` is the earlier directory, not the rmM. So the
+macro *data* is concrete; the **excess-navigation that computes the answer is the
+load-bearing piece still missing**.
+
+**C3 join — open.** Still no concrete top-level `def : …Family` witness and no
+final bundled `2n + o(n) ∧ O(1) ∧ exact` theorem; the navigation family
+structures exist but are uninstantiated.
+
+**Loop self-hardened (`bd36d99`), directly responsive to the prior caveat.** Added
+`CODEX_AUTONOMY` rule 16 — "audit-caveat cleanup is not target closure"; a worker
+that only repairs a helper-layer caveat (explicitly: the rmM machine-word side
+condition or balanced-prefix invariant) and stops "before the next concrete
+answer-close attempt" is an **invalid** stop; it must immediately consume the
+repaired layer into the concrete component profile or capstone.
+
+**Stop: appropriate, and not filler** — this round closed a genuine concrete
+component (C1) and landed concrete macro data (C2). The next required step is now
+explicit *and policy-enforced*: the **concrete rmM answer-close** (C2
+completion: rmM summaries → exact LCA-close/RMQ answer, charged), then the C3
+join. Watch that the next round delivers that answer-close, not another
+summary-layer caveat repair. Distance: **C1 done; C2 ~half; C3 open** — critical
+path is rmM answer-close → join.
