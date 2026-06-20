@@ -238,6 +238,17 @@ macro/micro surface with charged reads and exact answers, while
 this dense all-close table is not an `o(n)` auxiliary payload. The remaining
 macro fork is therefore not another wrapper around `macroCosted`, but a real
 succinct BP-excess/RMQ macro with charged endpoint-fringe repair.
+`SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.profile` and
+`SuccinctCloseProposal.concreteBPRangeMinMaxSummaryTable_sampled_profile` now
+land the first positive charged substrate for that fork: each block stores
+fixed-width minimum and maximum BP-excess samples, the query reads those payload
+words with cost `<= 2`, and the sampled-overhead version is tied to a named
+`LittleOLinear` budget. This is still the block-summary layer; the exact
+answer-close theorem still has to connect those summaries to endpoint-fringe
+repair. `SuccinctCloseProposal.bpExcessAt_prefix_nonnegative` records the
+balanced-prefix invariant needed when interpreting the Nat-subtraction excess,
+and `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.summary_read_words_length_le_machine`
+exposes the machine-word side condition for the charged summary table reads.
 `SelectSampleWordExact.selected_position_in_read_word` and
 `TwoLevelPayloadLiveStoredWordSelectData.selected_position_in_read_word_of_sample`,
 together with the aligned-word refinements
@@ -1224,6 +1235,23 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.denseAllCloseBPCloseLCAOverhead_not_littleO`,
   `SuccinctCloseProposal.blockStartOf_blockOfClose_le`,
   `SuccinctCloseProposal.close_lt_blockStartOf_blockOfClose_add`,
+  `SuccinctCloseProposal.bpExcessAt_le_length`,
+  `SuccinctCloseProposal.bpExcessAt_prefix_nonnegative`,
+  `SuccinctCloseProposal.bpExcessAt_add_close_rank_eq_open_rank_of_le`,
+  `SuccinctCloseProposal.bpBlockMinExcess_le_length`,
+  `SuccinctCloseProposal.bpBlockMaxExcess_le_length`,
+  `SuccinctCloseProposal.bpBlockMinExcessEntries_mem_bound`,
+  `SuccinctCloseProposal.bpBlockMaxExcessEntries_mem_bound`,
+  `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.payload_length`,
+  `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.summaryCosted_cost_le_two`,
+  `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.summaryCosted_erase`,
+  `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.minExcess_read_word_length_le_machine`,
+  `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.maxExcess_read_word_length_le_machine`,
+  `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.summary_read_words_length_le_machine`,
+  `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.profile`,
+  `SuccinctCloseProposal.concreteBPRangeMinMaxSummaryTable_profile`,
+  `SuccinctCloseProposal.concreteBPRangeMinMaxSummaryTable_sampled_profile`,
+  `SuccinctCloseProposal.concreteBPRangeMinMaxSummaryTable_read_words_length_le_machine`,
   `SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient`,
   `SuccinctCloseProposal.BlockMicroCodebook.payload_length`,
   `SuccinctCloseProposal.BlockMicroCodebook.lcaCloseCosted_cost_le_one`,
