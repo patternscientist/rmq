@@ -231,6 +231,13 @@ blockers.
 macro-design blocker: a macro keyed only by endpoint close-block pairs is false
 even on a four-node right spine, so the concrete macro must store
 endpoint-sensitive fringe information or use a real BP excess/RMQ macro.
+`SuccinctCloseProposal.denseFallbackPayloadLiveMacroMicroBPCloseLCADirectory_profile`
+then wires the most direct endpoint-sensitive fallback into the payload-live
+macro/micro surface with charged reads and exact answers, while
+`SuccinctCloseProposal.denseAllCloseBPCloseLCAOverhead_not_littleO` proves that
+this dense all-close table is not an `o(n)` auxiliary payload. The remaining
+macro fork is therefore not another wrapper around `macroCosted`, but a real
+succinct BP-excess/RMQ macro with charged endpoint-fringe repair.
 `SelectSampleWordExact.selected_position_in_read_word` and
 `TwoLevelPayloadLiveStoredWordSelectData.selected_position_in_read_word_of_sample`,
 together with the aligned-word refinements
@@ -1204,6 +1211,10 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.BlockLocalBPCloseLCATable.profile`,
   `SuccinctCloseProposal.BlockLocalBPCloseLCATable.ofEntries_profile`,
   `SuccinctCloseProposal.BlockLocalBPCloseLCATable.concrete_profile`,
+  `SuccinctCloseProposal.denseAllCloseBPCloseLCATable_profile`,
+  `SuccinctCloseProposal.denseAllCloseBPCloseLCATable_payload_length_of_shapeOfSize`,
+  `SuccinctCloseProposal.not_littleOLinear_square`,
+  `SuccinctCloseProposal.denseAllCloseBPCloseLCAOverhead_not_littleO`,
   `SuccinctCloseProposal.blockStartOf_blockOfClose_le`,
   `SuccinctCloseProposal.close_lt_blockStartOf_blockOfClose_add`,
   `SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient`,
@@ -1228,6 +1239,8 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseLCADirectory.lcaCloseCosted_cost_le`,
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseLCADirectory.lcaCloseCosted_exact`,
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseLCADirectory.profile`,
+  `SuccinctCloseProposal.emptyPayloadLiveBlockMicroCodebook_lcaCloseCosted_erase`,
+  `SuccinctCloseProposal.denseFallbackPayloadLiveMacroMicroBPCloseLCADirectory_profile`,
   `SuccinctCloseProposal.payloadLiveMacroMicroBPCloseLCAOverhead_littleO`,
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseLCAFamily.overhead_littleO`,
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseLCAFamily.profile`,
