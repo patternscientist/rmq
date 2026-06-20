@@ -271,6 +271,13 @@ through rather than surfaced immediately.
     uses a free index function, must be followed by the concrete builder that
     fills those fields from payload tables and either charges the routing or
     proves it is bounded arithmetic.
+18. A range witness is not a BP close answer. A macro candidate or
+    `_exact_of_prefix_pos` theorem must be followed by charged endpoint-fringe
+    repair and the semantic theorem that the built prefix position is the
+    representative-array RMQ answer close.
+19. Worker audits always include loop-stop validity and prompt/spec delta.
+    Every audit should explicitly say whether the worker should have stopped,
+    and whether the next prompts or loop specs need tightening.
 
 Useful debt metrics:
 

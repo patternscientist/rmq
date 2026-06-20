@@ -400,6 +400,10 @@ Invalid stop points for this final path:
 - proving `PayloadLiveBPRangeMinMaxSummaryTable...` facts without a concrete
   close-LCA answer theorem that consumes the summaries plus charged endpoint
   repair.
+- proving a position-bearing BP range-witness or block-pair macro-candidate
+  profile, or an `_exact_of_prefix_pos` theorem, without a global close-LCA
+  answer theorem that consumes the witness via charged endpoint-fringe repair
+  and the leftmost-minimum-excess BP semantics.
 - repairing the machine-word side condition or balanced-prefix invariant for
   the BP range-min/max summary layer and then stopping before the next concrete
   answer-close attempt.

@@ -129,6 +129,13 @@ payload tables. Any routing or index function used by a constant-time query must
 be simple bounded arithmetic or derived through charged payload reads. It cannot
 hide an uncharged search, predecessor, or oracle.
 
+For C2 BP-close work, a position-bearing range witness or macro candidate is
+not target closure if exactness is still conditional on a supplied prefix
+position such as `answerClose + 1`. The loop should continue until that witness
+is consumed by charged endpoint-fringe repair plus the BP semantic theorem that
+identifies the leftmost minimum-excess prefix/close with the representative RMQ
+answer close.
+
 For C1/C2 specifically, do not stop after the previous known traps:
 
 - a two-word descriptor/local-run theorem without a global descriptor-backed
@@ -138,6 +145,9 @@ For C1/C2 specifically, do not stop after the previous known traps:
 - an uncharged descriptor/routing index that could hide search, predecessor, or
   oracle work;
 - a BP range-min/max summary table without an answer-close theorem consuming it;
+- a BP range-witness or macro-candidate profile, or an `_exact_of_prefix_pos`
+  theorem, without the charged endpoint-fringe repair and BP semantic theorem
+  that turn it into a global answer-close theorem;
 - a repaired machine-word bound or invariant for that summary table without the
   next answer-close theorem attempt that consumes the repaired table;
 - a newly charged fixed-width table without an explicit machine-word bound; or
