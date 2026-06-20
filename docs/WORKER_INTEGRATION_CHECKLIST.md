@@ -70,6 +70,9 @@ Known-trap checklist:
   consumed by charged endpoint-fringe repair plus a global answer-close theorem?:
 - If this branch proves an `_exact_of_prefix_pos` theorem, where is the theorem
   proving that the built prefix position is the semantic BP close/LCA answer?:
+- If this branch proves an `_exact_of_merged_candidate` theorem, where is the
+  theorem proving the supplied merge fact from built payload entries and
+  BP/RMQ semantics?:
 - If this branch only repairs an audit caveat on such a helper layer, why was
   the owned target explicitly scoped to caveat repair rather than C1/C2/C3?:
 - For every newly charged fixed-width table or payload-word read, where is the
@@ -126,6 +129,8 @@ Must report:
 - for BP close work, whether any range witness or macro candidate has been
   consumed by endpoint-fringe repair and a BP semantic theorem, or remains only
   conditional on a supplied prefix position.
+- for BP close work, whether endpoint-fringe exactness is global or still
+  conditional on a supplied merged-candidate fact such as `hmerge`.
 
 Should not report "progress" only as scaffolding. A proof branch should land a
 consumed lemma cluster, a representation layer, or a theorem that feeds the
@@ -160,6 +165,11 @@ close-answer witness. Unless the owned target explicitly stopped at that
 surface, the worker should continue to the charged endpoint-fringe repair and
 the BP semantic theorem identifying the built prefix position with the
 representative-array RMQ answer close.
+
+An endpoint-fringe macro whose strongest exactness theorem is still
+`_exact_of_merged_candidate` is also not the answer theorem. The worker should
+continue until the merge fact is proved from the concrete payload entries and
+BP/RMQ semantics, not supplied as a hypothesis.
 
 For the succinct RMQ capstone, a new blocker theorem is not enough unless it
 comes from an attempted positive construction and shows that the requested

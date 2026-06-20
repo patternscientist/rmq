@@ -136,6 +136,13 @@ is consumed by charged endpoint-fringe repair plus the BP semantic theorem that
 identifies the leftmost minimum-excess prefix/close with the representative RMQ
 answer close.
 
+Charged endpoint-fringe repair is also not target closure by itself. If the
+strongest exactness theorem is still an `_exact_of_merged_candidate` theorem or
+has a hypothesis such as `hmerge` asserting that the merged payload candidates
+already equal `(bpExcessAt shape (answerClose + 1), answerClose + 1)`, the loop
+must continue to prove that merge fact from the concrete built entries and the
+BP/RMQ semantics.
+
 For C1/C2 specifically, do not stop after the previous known traps:
 
 - a two-word descriptor/local-run theorem without a global descriptor-backed
@@ -148,6 +155,8 @@ For C1/C2 specifically, do not stop after the previous known traps:
 - a BP range-witness or macro-candidate profile, or an `_exact_of_prefix_pos`
   theorem, without the charged endpoint-fringe repair and BP semantic theorem
   that turn it into a global answer-close theorem;
+- a charged endpoint-fringe macro/profile whose exactness still assumes a
+  supplied merged-candidate fact such as `hmerge`;
 - a repaired machine-word bound or invariant for that summary table without the
   next answer-close theorem attempt that consumes the repaired table;
 - a newly charged fixed-width table without an explicit machine-word bound; or

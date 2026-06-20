@@ -275,7 +275,11 @@ through rather than surfaced immediately.
     `_exact_of_prefix_pos` theorem must be followed by charged endpoint-fringe
     repair and the semantic theorem that the built prefix position is the
     representative-array RMQ answer close.
-19. Worker audits always include loop-stop validity and prompt/spec delta.
+19. Endpoint-fringe repair is not enough if exactness still assumes the merged
+    candidate. A theorem such as `_exact_of_merged_candidate` must be followed
+    by the proof that the concrete payload entries actually merge to the
+    semantic answer candidate.
+20. Worker audits always include loop-stop validity and prompt/spec delta.
     Every audit should explicitly say whether the worker should have stopped,
     and whether the next prompts or loop specs need tightening.
 

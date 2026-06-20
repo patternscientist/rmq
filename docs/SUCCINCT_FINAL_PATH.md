@@ -404,6 +404,10 @@ Invalid stop points for this final path:
   profile, or an `_exact_of_prefix_pos` theorem, without a global close-LCA
   answer theorem that consumes the witness via charged endpoint-fringe repair
   and the leftmost-minimum-excess BP semantics.
+- proving a charged endpoint-fringe macro/profile whose strongest exactness
+  theorem is still conditional on a supplied merged-candidate hypothesis such
+  as `hmerge`, rather than proving that merge fact from the built payload
+  entries and BP/RMQ semantics.
 - repairing the machine-word side condition or balanced-prefix invariant for
   the BP range-min/max summary layer and then stopping before the next concrete
   answer-close attempt.
