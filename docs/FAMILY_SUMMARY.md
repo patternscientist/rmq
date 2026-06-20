@@ -1,6 +1,6 @@
 # RMQ Family Summary
 
-Snapshot: 2026-06-19, after the first table/access, payload, indexed LCA
+Snapshot: 2026-06-20, after the first table/access, payload, indexed LCA
 query-cost, Fischer-Heun-backed LCA model, traced sparse-query substrate,
 fixed-length exact-RMQ space sandwich, payload-lower-bound hub adapter,
 packed plus-minus-one RMQ/LCA model layer, uniform charged-budget lower-bound
@@ -203,15 +203,20 @@ field width is justified by `blocksPerSuper * wordSize` instead of
 `canonicalTwoLevelSelectDataOfChunksExact_selectCosted_profile`; the combined
 `canonicalTwoLevelRankSelectDirectoryOfChunksExact_profile` and
 `canonicalTwoLevelBalancedParensAccessOfChunksExact_profile` lift the global
-width path, while the `...LocalRankBlock_profile` variants lift the reduced
-rank-block parameter. `SuccinctCloseProposal.BlockMicroCodebook.profile` and
+width identity-index path, while the `...LocalRankBlock_profile` variants lift
+the reduced rank-block parameter. The select-side two-level API now routes
+local locator reads through an explicit block index, so the reusable
+payload-live/exact/profile layer no longer forces one local table word at every
+occurrence index; the canonical finite constructor remains the old identity
+index witness until a concrete dense/sparse select builder supplies compact
+block indexes. `SuccinctCloseProposal.BlockMicroCodebook.profile` and
 `SuccinctCloseProposal.MacroMicroBPCloseLCADirectory.profile` add the
 close-LCA micro-codebook/fallback skeleton that the final BP navigation layer
-should instantiate. The remaining BP-native succinct gaps are a select-side
-locator API that avoids one globally bounded block entry per occurrence, the
+should instantiate. The remaining BP-native succinct gaps are the concrete
+dense/sparse select locator builder behind that block-indexed API, the
 payload-live treatment of the per-block close-LCA code classifier, a real macro
 directory instance, and the final cost-parametric close-navigation join. They
-are no longer rank endpoint or rank local-width blockers.
+are no longer rank endpoint, rank local-width, or select API-shape blockers.
 
 - The RMQ contract is half-open: a valid query satisfies `left < right` and
   `right <= xs.length`; invalid or empty ranges return `none`.

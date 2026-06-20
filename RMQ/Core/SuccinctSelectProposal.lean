@@ -10,11 +10,13 @@ advance the payload-live succinct RMQ path without changing the main
 The hard construction still has to build the locator tables.  The definitions
 below say precisely what that construction should return: payload-live select
 data whose auxiliary locator payload is bounded by the canonical sampled
-directory envelope, while queries still use the existing counted path
+directory envelope, while queries still use a counted path through
+block-indexed payload tables:
 
-1. read one locator word,
-2. read one payload word,
-3. run the word-select primitive.
+1. read one coarse locator word,
+2. read one local locator word,
+3. read one payload word,
+4. run the word-select primitive.
 
 That is the useful next boundary for a concrete two-level select codec.
 -/
@@ -218,11 +220,14 @@ def selectSuperSampleEntry?
     (selectSuperOccurrence occurrencesPerSuper superIndex)
 
 /--
-Canonical local locator entry.
+Canonical local locator entry for the identity-index finite constructor.
 
-The block table is indexed directly by occurrence.  Its entry stores the delta
-from that occurrence's superblock locator to the exact locator for the
-occurrence.  If either locator is absent, the stored entry is absent.
+The reusable two-level select API below is parametric in a local block index;
+this canonical table keeps the older direct occurrence index as a witness while
+compact dense/sparse builders can route many occurrences through fewer local
+slots.  The stored entry is the delta from the occurrence's superblock locator
+to the exact locator for the occurrence.  If either locator is absent, the
+stored entry is absent.
 -/
 def selectBlockDeltaEntry?
     (target : Bool) (bits : List Bool) (wordSize occurrencesPerSuper
@@ -1055,6 +1060,12 @@ structure TwoLevelPayloadLiveStoredWordSelectData
     wordSize <= SuccinctRankProposal.machineWordBits bits.length
   occurrencesPerSuper : Nat
   occurrencesPerSuper_pos : 0 < occurrencesPerSuper
+  /--
+  Address used for the local locator table.  This is deliberately independent
+  of the queried occurrence, so a concrete dense/sparse select codec is not
+  forced to materialize one local table word at every occurrence index.
+  -/
+  blockIndex : Bool -> Nat -> Nat
   superFieldWidth : Nat
   blockFieldWidth : Nat
   superTrueEntries :
@@ -1085,14 +1096,16 @@ structure TwoLevelPayloadLiveStoredWordSelectData
     forall (target : Bool) (occurrence : Nat),
       occurrence <= bits.length ->
       exists entry : Option SuccinctSpace.StoredWordSelectSample,
-        (blockTables.entries target)[occurrence]? = some entry
+        (blockTables.entries target)[blockIndex target occurrence]? =
+          some entry
   word_present_of_sample :
     forall (target : Bool) (occurrence : Nat)
         (super delta : SuccinctSpace.StoredWordSelectSample),
       occurrence <= bits.length ->
       (superTables.entries target)[occurrence / occurrencesPerSuper]? =
           some (some super) ->
-      (blockTables.entries target)[occurrence]? = some (some delta) ->
+      (blockTables.entries target)[blockIndex target occurrence]? =
+          some (some delta) ->
         exists word,
           bitWords.store.words[(addSelectSample super delta).wordIndex]? =
             some word
@@ -1103,7 +1116,8 @@ structure TwoLevelPayloadLiveStoredWordSelectData
       occurrence <= bits.length ->
       (superTables.entries target)[occurrence / occurrencesPerSuper]? =
           some (some super) ->
-      (blockTables.entries target)[occurrence]? = some (some delta) ->
+      (blockTables.entries target)[blockIndex target occurrence]? =
+          some (some delta) ->
       bitWords.store.words[(addSelectSample super delta).wordIndex]? =
           some word ->
         (RMQ.RAM.boolSelectInWord target word
@@ -1123,7 +1137,7 @@ structure TwoLevelPayloadLiveStoredWordSelectData
       occurrence <= bits.length ->
       (superTables.entries target)[occurrence / occurrencesPerSuper]? =
           some (some super) ->
-      (blockTables.entries target)[occurrence]? =
+      (blockTables.entries target)[blockIndex target occurrence]? =
           some (none : Option SuccinctSpace.StoredWordSelectSample) ->
         RMQ.Succinct.select target bits occurrence = none
 
@@ -1180,7 +1194,8 @@ def selectCosted
     (data.superTables.sampleCosted target (data.superIndex occurrence))
     fun super? =>
       RMQ.Costed.bind
-        (data.blockTables.sampleCosted target (data.queryOccurrence occurrence))
+        (data.blockTables.sampleCosted target
+          (data.blockIndex target (data.queryOccurrence occurrence)))
         fun delta? =>
           match super?, delta? with
           | some (some super), some (some delta) =>
@@ -1232,7 +1247,8 @@ theorem selectCosted_cost_le_four
         target (data.superIndex occurrence)).value <;>
     cases hdelta :
       (data.blockTables.sampleCosted
-        target (data.queryOccurrence occurrence)).value <;>
+        target (data.blockIndex target
+          (data.queryOccurrence occurrence))).value <;>
     try
       simp [RMQ.Costed.bind, RMQ.Costed.map, RMQ.Costed.pure,
         hsuper, hdelta]
@@ -1296,15 +1312,19 @@ theorem selectCosted_exact
     exact h
   have hdeltaValue :
       (data.blockTables.sampleCosted
-        target (data.queryOccurrence occurrence)).value =
+        target (data.blockIndex target
+          (data.queryOccurrence occurrence))).value =
         some deltaEntry := by
     have h :=
       data.blockTables.sampleCosted_erase
-        target (data.queryOccurrence occurrence)
+        target (data.blockIndex target
+          (data.queryOccurrence occurrence))
     change
       (data.blockTables.sampleCosted
-        target (data.queryOccurrence occurrence)).value =
-        (data.blockTables.entries target)[data.queryOccurrence occurrence]? at h
+        target (data.blockIndex target
+          (data.queryOccurrence occurrence))).value =
+        (data.blockTables.entries target)[
+          data.blockIndex target (data.queryOccurrence occurrence)]? at h
     rw [hdelta] at h
     exact h
   cases superEntry with
@@ -1429,6 +1449,7 @@ def canonicalTwoLevelSelectData
   wordSize_le_machine := hwordMachine
   occurrencesPerSuper := occurrencesPerSuper
   occurrencesPerSuper_pos := hoccurrences
+  blockIndex := fun _ occurrence => occurrence
   superFieldWidth := superFieldWidth
   blockFieldWidth := blockFieldWidth
   superTrueEntries :=
