@@ -111,6 +111,14 @@ Helper lemmas, proposal docs, adapters, and blocker variants count only when
 they are immediately consumed by one of those targets or prove the target
 signature itself must change.
 
+For C1/C2 specifically, do not stop after the previous known traps:
+
+- a two-word descriptor/local-run theorem without a global descriptor-backed
+  `selectCosted_exact`;
+- a BP range-min/max summary table without an answer-close theorem consuming it;
+- a newly charged fixed-width table without an explicit machine-word bound; or
+- a theorem name that suggests stronger semantics than the statement proves.
+
 Valid stop conditions:
 
 - the requested roadmap slice is genuinely complete;

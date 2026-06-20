@@ -188,6 +188,20 @@ these facts for a concrete construction. A structure that merely stores
 `selectCosted` as a supplied function is only an interface and does not retire
 the select blocker.
 
+Known trap from the previous worker round: a local theorem such as
+`twoWordDescriptorTableRead_choice_exact_of_select_in_run` is useful but not
+enough. It is only a descriptor kernel unless the same loop consumes it in a
+global `selectCosted` construction that:
+
+- chooses the descriptor from `(target, occurrence)`;
+- proves the selected position lies in that descriptor's covered run, not just
+  conditionally assumes it;
+- reads descriptor payload and payload words through counted operations;
+- proves exact erasure for all `target` and `occurrence`, not just for the
+  branch where the answer is already known to be in one local run;
+- proves the auxiliary descriptor payload is in a `LittleOLinear` budget; and
+- carries the machine-word side condition for every charged payload word.
+
 Expected concrete builder theorem shape:
 
 ```lean
@@ -287,6 +301,19 @@ macro layout if its overhead proof is `LittleOLinear` and every read is charged.
 It is not acceptable to charge one word for a proof-side table or to leave
 `split_exact` as an unimplemented field in the final family.
 
+Known trap from the previous worker round: a profile for
+`PayloadLiveBPRangeMinMaxSummaryTable` or
+`concreteBPRangeMinMaxSummaryTable_sampled_profile` is only a block-summary
+checkpoint. It is not a C2 stop point unless the same loop consumes those
+summaries in a `ConcreteMacroBPCloseLCADirectory` or equivalent directory whose
+`lcaCloseCosted_exact` proves the returned close is the answer close for the
+RMQ/LCA query. Any fixed-width summary table charged as O(1) must also expose
+the relevant machine-word bound, such as
+`fieldWidth <= SuccinctRankProposal.machineWordBits shape.bpCode.length` or an
+equivalent theorem over the actual stored words. If the proof interprets BP
+excess via `Nat` subtraction, the construction must state the balanced-prefix
+or nonnegative-excess invariant needed by the answer-close theorem.
+
 ## Component 3: Final Join
 
 After Components 1 and 2 land, the coordinator or join worker should combine:
@@ -360,6 +387,15 @@ Invalid stop points for this final path:
 - proving only a local descriptor-choice theorem, local range-min/max summary
   table, block codebook, or partial charged read profile while the C1/C2
   concrete component profile remains the next obvious step.
+- proving `twoWordDescriptor...` facts without a global descriptor-backed
+  `selectCosted_exact` theorem over all occurrences.
+- proving `PayloadLiveBPRangeMinMaxSummaryTable...` facts without a concrete
+  close-LCA answer theorem that consumes the summaries plus charged endpoint
+  repair.
+- omitting the machine-word side condition for a newly charged fixed-width
+  table or payload-word read.
+- leaving a misleading theorem name that claims more than its statement proves,
+  such as an `...select...` theorem that does not mention `select`.
 - stopping after one or two hard proof failures without a brick-wall dossier
   explaining why the target requires a fundamental redesign.
 

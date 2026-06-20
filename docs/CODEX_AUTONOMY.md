@@ -251,6 +251,14 @@ through rather than surfaced immediately.
     branch proves a useful local kernel, sample table, range summary, adapter,
     or helper exactness theorem, the next action is to consume it in the owned
     concrete profile unless that is blocked by a documented design-level wall.
+14. Conditional-local exactness is not component exactness. A theorem whose
+    hypotheses already assume the answer lies in a chosen local block, run, or
+    descriptor range must be followed by the global routing theorem that proves
+    those hypotheses from the query inputs.
+15. A charged word read must be machine-bounded. Any new constant-time
+    fixed-width table, descriptor word, summary word, or payload word must carry
+    an explicit bound tying the read word width to the machine-word model before
+    it can support an O(1) claim.
 
 Useful debt metrics:
 

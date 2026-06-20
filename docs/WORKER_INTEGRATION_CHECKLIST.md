@@ -56,6 +56,15 @@ Integration notes:
 - Remaining construction gaps:
 - Smallest next theorem:
 
+Known-trap checklist:
+- If this branch adds a local descriptor lemma, where is it consumed by a
+  global descriptor-backed `selectCosted_exact` theorem over all occurrences?:
+- If this branch adds a BP range/min/max or block-summary table, where is it
+  consumed by an answer-close `lcaCloseCosted_exact` theorem?:
+- For every newly charged fixed-width table or payload-word read, where is the
+  machine-word bound proved?:
+- Did any theorem name overstate its statement? If yes, what was renamed?:
+
 Loop stop audit:
 - Named target theorem or concrete component profile proved? YES/NO:
 - Next theorem/construction obvious within owned files? YES/NO:
@@ -86,6 +95,10 @@ Must report:
 - whether proof-only fields are separated from payload fields;
 - whether any old theorem or definition was superseded and should be retired;
 - narrow module check at minimum.
+- for descriptor/select work, whether exactness is global over all
+  `(target, occurrence)` or conditional on a preselected local run;
+- for BP close work, whether summary tables are consumed by a concrete
+  answer-close theorem or remain helper payload.
 
 Should not report "progress" only as scaffolding. A proof branch should land a
 consumed lemma cluster, a representation layer, or a theorem that feeds the
@@ -125,6 +138,8 @@ Must report:
 - whether costs are derived from primitives or asserted as aggregate ticks;
 - whether word operations are applied only to machine-bounded words;
 - whether charged bits are the payload actually read by the decoder/query;
+- the exact theorem carrying the machine-word bound for each new charged
+  fixed-width table or payload-word primitive;
 - any change to tracked caveats in `docs/ROADMAP.md` or
   `docs/FAMILY_SUMMARY.md`.
 
@@ -219,6 +234,12 @@ Reject or send back for revision when:
   though the owned concrete component profile has an obvious next local step.
 - the branch claims a brick wall after only one or two proof failures, without
   attempts at nearby repaired signatures or construction variants.
+- descriptor/select work proves only conditional local-run exactness, with no
+  global `selectCosted` exactness over all target/occurrence queries.
+- BP close work proves only charged block-summary reads, with no answer-close
+  theorem consuming those summaries and endpoint-fringe repair.
+- a new O(1) charged word/table read lacks an explicit machine-word bound.
+- theorem names suggest stronger semantics than their statements prove.
 
 ## Current Suggested Split
 
