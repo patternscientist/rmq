@@ -249,6 +249,11 @@ repair. `SuccinctCloseProposal.bpExcessAt_prefix_nonnegative` records the
 balanced-prefix invariant needed when interpreting the Nat-subtraction excess,
 and `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.summary_read_words_length_le_machine`
 exposes the machine-word side condition for the charged summary table reads.
+`SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`
+sharpens the C2 blocker: a macro keyed only by endpoint block ids plus the
+existing endpoint block min/max summaries still cannot return exact answer
+closes, so the next positive construction needs a position-bearing
+endpoint/fringe or range-min witness.
 `SelectSampleWordExact.selected_position_in_read_word` and
 `TwoLevelPayloadLiveStoredWordSelectData.selected_position_in_read_word_of_sample`,
 together with the aligned-word refinements
@@ -1253,6 +1258,8 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.concreteBPRangeMinMaxSummaryTable_sampled_profile`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxSummaryTable_read_words_length_le_machine`,
   `SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient`,
+  `SuccinctCloseProposal.endpointSummaryBlockKey`,
+  `SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`,
   `SuccinctCloseProposal.BlockMicroCodebook.payload_length`,
   `SuccinctCloseProposal.BlockMicroCodebook.lcaCloseCosted_cost_le_one`,
   `SuccinctCloseProposal.BlockMicroCodebook.lcaCloseCostedAtBlock_exact`,

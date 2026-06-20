@@ -1341,6 +1341,89 @@ theorem blockPairMacroDirectory_not_sufficient
   simp at hfirstKey
 
 /--
+Endpoint summary key for the tempting "read the endpoint block summaries, then
+answer by key" macro shortcut.
+
+This records exactly the information returned by the existing min/max summary
+layer for one endpoint block: the block id plus that block's sampled minimum
+and maximum BP excess.
+-/
+def endpointSummaryBlockKey
+    (shape : Cartesian.CartesianShape) (blockSize close : Nat) :
+    Nat × (Nat × Nat) :=
+  let block := blockOfClose blockSize close
+  (block,
+    (bpBlockMinExcess shape blockSize block,
+      bpBlockMaxExcess shape blockSize block))
+
+/--
+Reading only the two endpoint block min/max summaries still cannot be a global
+macro answer.
+
+On the same four-node right spine as `blockPairMacroDirectory_not_sufficient`,
+the queries `[1, 4)` and `[2, 4)` have the same endpoint summary keys at
+`blockSize = 3`, because their endpoints fall in the same two BP blocks.  Their
+correct close answers are nevertheless different.  A concrete macro therefore
+needs position-bearing endpoint/fringe or range-min witnesses; the existing
+summary values alone are not enough to determine the answer close.
+-/
+theorem endpointSummaryBlockMacroDirectory_not_sufficient
+    (summaryAnswer :
+      (Nat × (Nat × Nat)) -> (Nat × (Nat × Nat)) -> Option Nat) :
+    ¬ (forall {left len leftClose rightClose answerClose : Nat},
+      0 < len ->
+        left + len <= blockPairMacroBlockerShape.size ->
+          bpCloseOfInorder? blockPairMacroBlockerShape left = some leftClose ->
+            bpCloseOfInorder? blockPairMacroBlockerShape
+                (left + len - 1) =
+              some rightClose ->
+              bpCloseOfInorder? blockPairMacroBlockerShape
+                  (scanWindow blockPairMacroBlockerShape.representative
+                    left len) =
+                some answerClose ->
+                summaryAnswer
+                    (endpointSummaryBlockKey
+                      blockPairMacroBlockerShape 3 leftClose)
+                    (endpointSummaryBlockKey
+                      blockPairMacroBlockerShape 3 rightClose) =
+                  some answerClose) := by
+  intro hexact
+  have hfirst :
+      summaryAnswer
+          (endpointSummaryBlockKey blockPairMacroBlockerShape 3 3)
+          (endpointSummaryBlockKey blockPairMacroBlockerShape 3 7) =
+        some 3 := by
+    exact
+      hexact (left := 1) (len := 3) (leftClose := 3)
+        (rightClose := 7) (answerClose := 3)
+        (by decide)
+        (by decide)
+        (by decide)
+        (by decide)
+        (by decide)
+  have hsecond :
+      summaryAnswer
+          (endpointSummaryBlockKey blockPairMacroBlockerShape 3 5)
+          (endpointSummaryBlockKey blockPairMacroBlockerShape 3 7) =
+        some 5 := by
+    exact
+      hexact (left := 2) (len := 2) (leftClose := 5)
+        (rightClose := 7) (answerClose := 5)
+        (by decide)
+        (by decide)
+        (by decide)
+        (by decide)
+        (by decide)
+  have hfirstKey :
+      summaryAnswer
+          (endpointSummaryBlockKey blockPairMacroBlockerShape 3 5)
+          (endpointSummaryBlockKey blockPairMacroBlockerShape 3 7) =
+        some 3 := by
+    simpa [endpointSummaryBlockKey, blockOfClose] using hfirst
+  rw [hsecond] at hfirstKey
+  simp at hfirstKey
+
+/--
 Payload-live table of per-block close/LCA micro-codes.
 
 The old `BlockMicroCodebook` stores only the finite codebook payload and takes
