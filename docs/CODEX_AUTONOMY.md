@@ -266,6 +266,11 @@ through rather than surfaced immediately.
     repaired layer in the concrete component profile or capstone theorem. It is
     a valid endpoint only when the prompt explicitly scoped the target to that
     caveat repair.
+17. A proof-field surface is not a payload witness. A descriptor-select or
+    navigation structure whose exactness is stored in fields, or whose routing
+    uses a free index function, must be followed by the concrete builder that
+    fills those fields from payload tables and either charges the routing or
+    proves it is bounded arithmetic.
 
 Useful debt metrics:
 
