@@ -526,5 +526,435 @@ theorem concrete_profile
 
 end BlockLocalBPCloseLCATable
 
+/-- Block number containing a BP close position. -/
+def blockOfClose (blockSize close : Nat) : Nat :=
+  close / blockSize
+
+/-- First BP position in a block. -/
+def blockStartOf (blockSize block : Nat) : Nat :=
+  block * blockSize
+
+theorem blockStartOf_blockOfClose_le
+    {blockSize close : Nat} :
+    blockStartOf blockSize (blockOfClose blockSize close) <= close := by
+  unfold blockStartOf blockOfClose
+  have hdiv := Nat.div_add_mod close blockSize
+  have hcomm :
+      close / blockSize * blockSize =
+        blockSize * (close / blockSize) := by
+    exact Nat.mul_comm (close / blockSize) blockSize
+  omega
+
+theorem close_lt_blockStartOf_blockOfClose_add
+    {blockSize close : Nat} (hblockSize : 0 < blockSize) :
+    close < blockStartOf blockSize (blockOfClose blockSize close) +
+      blockSize := by
+  unfold blockStartOf blockOfClose
+  have hdiv := Nat.div_add_mod close blockSize
+  have hmod := Nat.mod_lt close hblockSize
+  have hcomm :
+      close / blockSize * blockSize =
+        blockSize * (close / blockSize) := by
+    exact Nat.mul_comm (close / blockSize) blockSize
+  omega
+
+/--
+Reusable micro-codebook for block-local BP close/LCA tables.
+
+The dense table from `BlockLocalBPCloseLCATable.concrete` is no longer charged
+once per block here.  Each block carries a small code into a finite codebook,
+and the counted micro payload is the concatenation of the table payloads for
+those codes.  This is the micro half that a real macro/micro BP navigation
+scheme can consume.
+
+This is still a skeleton: `codeOfBlock` is a supplied classifier, not yet a
+payload-live code table with a counted read.  The final succinct directory must
+either derive that code from packed BP words or charge/store the per-block code
+sequence separately.
+-/
+structure BlockMicroCodebook
+    (shape : Cartesian.CartesianShape)
+    (blockSize codeCount tableOverhead : Nat) where
+  fieldWidth : Nat
+  entriesByCode : Nat -> List (Option Nat)
+  table :
+    (code : Nat) ->
+      FixedWidthOptionNatTable (entriesByCode code) fieldWidth
+  slotIndex : Nat -> Nat -> Nat
+  codeOfBlock : Nat -> Nat
+  codeOfBlock_lt : forall block, codeOfBlock block < codeCount
+  payload : List Bool
+  payload_eq_tables :
+    payload =
+      (List.range codeCount).flatMap fun code => (table code).payload
+  payload_length_eq : payload.length = codeCount * tableOverhead
+  table_payload_length_eq :
+    forall {code : Nat}, code < codeCount ->
+      (table code).payload.length = tableOverhead
+  block_spec :
+    forall block : Nat,
+      BlockLocalBPCloseLCASpec shape
+        (blockStartOf blockSize block) blockSize
+        (entriesByCode (codeOfBlock block)) slotIndex
+
+namespace BlockMicroCodebook
+
+def tableForBlock
+    {shape : Cartesian.CartesianShape}
+    {blockSize codeCount tableOverhead : Nat}
+    (micro :
+      BlockMicroCodebook shape blockSize codeCount tableOverhead)
+    (block : Nat) :
+    FixedWidthOptionNatTable
+      (micro.entriesByCode (micro.codeOfBlock block)) micro.fieldWidth :=
+  micro.table (micro.codeOfBlock block)
+
+def lcaCloseCostedAtBlock
+    {shape : Cartesian.CartesianShape}
+    {blockSize codeCount tableOverhead : Nat}
+    (micro :
+      BlockMicroCodebook shape blockSize codeCount tableOverhead)
+    (block leftClose rightClose : Nat) :
+    Costed (Option Nat) :=
+  Costed.map (fun entry? => entry?.join)
+    ((micro.tableForBlock block).readCosted
+      (micro.slotIndex
+        (leftClose - blockStartOf blockSize block)
+        (rightClose - blockStartOf blockSize block)))
+
+def lcaCloseCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize codeCount tableOverhead : Nat}
+    (micro :
+      BlockMicroCodebook shape blockSize codeCount tableOverhead)
+    (leftClose rightClose : Nat) :
+    Costed (Option Nat) :=
+  micro.lcaCloseCostedAtBlock
+    (blockOfClose blockSize leftClose) leftClose rightClose
+
+theorem payload_length
+    {shape : Cartesian.CartesianShape}
+    {blockSize codeCount tableOverhead : Nat}
+    (micro :
+      BlockMicroCodebook shape blockSize codeCount tableOverhead) :
+    micro.payload.length = codeCount * tableOverhead := by
+  exact micro.payload_length_eq
+
+theorem lcaCloseCostedAtBlock_cost
+    {shape : Cartesian.CartesianShape}
+    {blockSize codeCount tableOverhead : Nat}
+    (micro :
+      BlockMicroCodebook shape blockSize codeCount tableOverhead)
+    (block leftClose rightClose : Nat) :
+    (micro.lcaCloseCostedAtBlock block leftClose rightClose).cost = 1 := by
+  simp [lcaCloseCostedAtBlock, Costed.map_cost]
+
+theorem lcaCloseCostedAtBlock_cost_le_one
+    {shape : Cartesian.CartesianShape}
+    {blockSize codeCount tableOverhead : Nat}
+    (micro :
+      BlockMicroCodebook shape blockSize codeCount tableOverhead)
+    (block leftClose rightClose : Nat) :
+    (micro.lcaCloseCostedAtBlock block leftClose rightClose).cost <= 1 := by
+  simp [micro.lcaCloseCostedAtBlock_cost block leftClose rightClose]
+
+theorem lcaCloseCosted_cost_le_one
+    {shape : Cartesian.CartesianShape}
+    {blockSize codeCount tableOverhead : Nat}
+    (micro :
+      BlockMicroCodebook shape blockSize codeCount tableOverhead)
+    (leftClose rightClose : Nat) :
+    (micro.lcaCloseCosted leftClose rightClose).cost <= 1 := by
+  unfold lcaCloseCosted
+  exact micro.lcaCloseCostedAtBlock_cost_le_one
+    (blockOfClose blockSize leftClose) leftClose rightClose
+
+theorem lcaCloseCostedAtBlock_exact
+    {shape : Cartesian.CartesianShape}
+    {blockSize codeCount tableOverhead : Nat}
+    (micro :
+      BlockMicroCodebook shape blockSize codeCount tableOverhead)
+    {block left len leftClose rightClose answerClose : Nat}
+    (hlen : 0 < len)
+    (hbound : left + len <= shape.size)
+    (hleft : bpCloseOfInorder? shape left = some leftClose)
+    (hright :
+      bpCloseOfInorder? shape (left + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder? shape
+          (scanWindow shape.representative left len) =
+        some answerClose)
+    (hleftLo : blockStartOf blockSize block <= leftClose)
+    (hleftHi :
+      leftClose < blockStartOf blockSize block + blockSize)
+    (hrightLo : blockStartOf blockSize block <= rightClose)
+    (hrightHi :
+      rightClose < blockStartOf blockSize block + blockSize)
+    (hanswerLo : blockStartOf blockSize block <= answerClose)
+    (hanswerHi :
+      answerClose < blockStartOf blockSize block + blockSize) :
+    (micro.lcaCloseCostedAtBlock block leftClose rightClose).erase =
+      some answerClose := by
+  exact
+    blockLocalBPCloseLCA_read_exact
+      (micro.tableForBlock block) (micro.block_spec block)
+      hlen hbound hleft hright hanswer hleftLo hleftHi
+      hrightLo hrightHi hanswerLo hanswerHi
+
+theorem lcaCloseCosted_exact_of_left_block
+    {shape : Cartesian.CartesianShape}
+    {blockSize codeCount tableOverhead : Nat}
+    (micro :
+      BlockMicroCodebook shape blockSize codeCount tableOverhead)
+    (hblockSize : 0 < blockSize)
+    {left len leftClose rightClose answerClose : Nat}
+    (hlen : 0 < len)
+    (hbound : left + len <= shape.size)
+    (hleft : bpCloseOfInorder? shape left = some leftClose)
+    (hright :
+      bpCloseOfInorder? shape (left + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder? shape
+          (scanWindow shape.representative left len) =
+        some answerClose)
+    (hrightLo :
+      blockStartOf blockSize (blockOfClose blockSize leftClose) <=
+        rightClose)
+    (hrightHi :
+      rightClose <
+        blockStartOf blockSize (blockOfClose blockSize leftClose) +
+          blockSize)
+    (hanswerLo :
+      blockStartOf blockSize (blockOfClose blockSize leftClose) <=
+        answerClose)
+    (hanswerHi :
+      answerClose <
+        blockStartOf blockSize (blockOfClose blockSize leftClose) +
+          blockSize) :
+    (micro.lcaCloseCosted leftClose rightClose).erase =
+      some answerClose := by
+  unfold lcaCloseCosted
+  exact
+    micro.lcaCloseCostedAtBlock_exact hlen hbound hleft hright hanswer
+      blockStartOf_blockOfClose_le
+      (close_lt_blockStartOf_blockOfClose_add hblockSize)
+      hrightLo hrightHi hanswerLo hanswerHi
+
+theorem profile
+    {shape : Cartesian.CartesianShape}
+    {blockSize codeCount tableOverhead : Nat}
+    (micro :
+      BlockMicroCodebook shape blockSize codeCount tableOverhead) :
+    micro.payload.length = codeCount * tableOverhead /\
+      (forall leftClose rightClose,
+        (micro.lcaCloseCosted leftClose rightClose).cost <= 1) /\
+      (forall {left len leftClose rightClose answerClose : Nat},
+        0 < len ->
+          left + len <= shape.size ->
+            bpCloseOfInorder? shape left = some leftClose ->
+              bpCloseOfInorder? shape (left + len - 1) =
+                  some rightClose ->
+                bpCloseOfInorder? shape
+                    (scanWindow shape.representative left len) =
+                  some answerClose ->
+                  0 < blockSize ->
+                    blockStartOf blockSize
+                        (blockOfClose blockSize leftClose) <=
+                      rightClose ->
+                    rightClose <
+                      blockStartOf blockSize
+                          (blockOfClose blockSize leftClose) +
+                        blockSize ->
+                    blockStartOf blockSize
+                        (blockOfClose blockSize leftClose) <=
+                      answerClose ->
+                    answerClose <
+                      blockStartOf blockSize
+                          (blockOfClose blockSize leftClose) +
+                        blockSize ->
+                      (micro.lcaCloseCosted
+                        leftClose rightClose).erase =
+                        some answerClose) := by
+  constructor
+  · exact micro.payload_length
+  constructor
+  · intro leftClose rightClose
+    exact micro.lcaCloseCosted_cost_le_one leftClose rightClose
+  intro left len leftClose rightClose answerClose hlen hbound hleft
+    hright hanswer hblockSize hrightLo hrightHi hanswerLo hanswerHi
+  exact
+    micro.lcaCloseCosted_exact_of_left_block hblockSize hlen hbound hleft
+      hright hanswer hrightLo hrightHi hanswerLo hanswerHi
+
+end BlockMicroCodebook
+
+/--
+Macro/micro BP close/LCA query skeleton.
+
+The micro codebook gets the first constant-time attempt.  If it misses, the
+query falls back to an explicit macro component.  The exactness field matches
+this control flow instead of pretending that a real macro/micro navigation
+structure is still a single fixed-width table read.
+-/
+structure MacroMicroBPCloseLCADirectory
+    (shape : Cartesian.CartesianShape)
+    (blockSize codeCount microTableOverhead macroOverhead macroCost : Nat)
+    where
+  micro :
+    BlockMicroCodebook shape blockSize codeCount microTableOverhead
+  macroPayload : List Bool
+  macroPayload_length_eq : macroPayload.length = macroOverhead
+  macroCosted : Nat -> Nat -> Costed (Option Nat)
+  macro_cost_le :
+    forall leftClose rightClose,
+      (macroCosted leftClose rightClose).cost <= macroCost
+  split_exact :
+    forall {left len leftClose rightClose answerClose : Nat},
+      0 < len ->
+        left + len <= shape.size ->
+          bpCloseOfInorder? shape left = some leftClose ->
+            bpCloseOfInorder? shape (left + len - 1) =
+                some rightClose ->
+              bpCloseOfInorder? shape
+                  (scanWindow shape.representative left len) =
+                some answerClose ->
+                (micro.lcaCloseCosted leftClose rightClose).erase =
+                    some answerClose \/
+                  ((micro.lcaCloseCosted leftClose rightClose).erase =
+                      none /\
+                    (macroCosted leftClose rightClose).erase =
+                      some answerClose)
+
+namespace MacroMicroBPCloseLCADirectory
+
+def payload
+    {shape : Cartesian.CartesianShape}
+    {blockSize codeCount microTableOverhead macroOverhead macroCost : Nat}
+    (directory :
+      MacroMicroBPCloseLCADirectory shape blockSize codeCount
+        microTableOverhead macroOverhead macroCost) : List Bool :=
+  directory.micro.payload ++ directory.macroPayload
+
+def lcaCloseCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize codeCount microTableOverhead macroOverhead macroCost : Nat}
+    (directory :
+      MacroMicroBPCloseLCADirectory shape blockSize codeCount
+        microTableOverhead macroOverhead macroCost)
+    (leftClose rightClose : Nat) :
+    Costed (Option Nat) :=
+  Costed.bind (directory.micro.lcaCloseCosted leftClose rightClose)
+    fun local? =>
+      match local? with
+      | some answerClose => Costed.pure (some answerClose)
+      | none => directory.macroCosted leftClose rightClose
+
+theorem payload_length
+    {shape : Cartesian.CartesianShape}
+    {blockSize codeCount microTableOverhead macroOverhead macroCost : Nat}
+    (directory :
+      MacroMicroBPCloseLCADirectory shape blockSize codeCount
+        microTableOverhead macroOverhead macroCost) :
+    directory.payload.length =
+      codeCount * microTableOverhead + macroOverhead := by
+  simp [payload, directory.micro.payload_length,
+    directory.macroPayload_length_eq]
+
+theorem lcaCloseCosted_cost_le
+    {shape : Cartesian.CartesianShape}
+    {blockSize codeCount microTableOverhead macroOverhead macroCost : Nat}
+    (directory :
+      MacroMicroBPCloseLCADirectory shape blockSize codeCount
+        microTableOverhead macroOverhead macroCost)
+    (leftClose rightClose : Nat) :
+    (directory.lcaCloseCosted leftClose rightClose).cost <=
+      1 + macroCost := by
+  unfold lcaCloseCosted
+  have hmicro :=
+    directory.micro.lcaCloseCosted_cost_le_one leftClose rightClose
+  cases hlocal :
+      (directory.micro.lcaCloseCosted leftClose rightClose).value with
+  | none =>
+      have hmacro := directory.macro_cost_le leftClose rightClose
+      simp [Costed.bind, hlocal]
+      omega
+  | some answerClose =>
+      simp [Costed.bind, Costed.pure, hlocal]
+      omega
+
+theorem lcaCloseCosted_exact
+    {shape : Cartesian.CartesianShape}
+    {blockSize codeCount microTableOverhead macroOverhead macroCost : Nat}
+    (directory :
+      MacroMicroBPCloseLCADirectory shape blockSize codeCount
+        microTableOverhead macroOverhead macroCost)
+    {left len leftClose rightClose answerClose : Nat}
+    (hlen : 0 < len)
+    (hbound : left + len <= shape.size)
+    (hleft : bpCloseOfInorder? shape left = some leftClose)
+    (hright :
+      bpCloseOfInorder? shape (left + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder? shape
+          (scanWindow shape.representative left len) =
+        some answerClose) :
+    (directory.lcaCloseCosted leftClose rightClose).erase =
+      some answerClose := by
+  have hsplit :=
+    directory.split_exact hlen hbound hleft hright hanswer
+  unfold lcaCloseCosted
+  cases hsplit with
+  | inl hlocalExact =>
+      have hlocalValue :
+          (directory.micro.lcaCloseCosted leftClose rightClose).value =
+            some answerClose := by
+        simpa [Costed.erase] using hlocalExact
+      simp [Costed.bind, Costed.pure, Costed.erase, hlocalValue]
+  | inr hfallback =>
+      rcases hfallback with ⟨hlocalNone, hmacroExact⟩
+      have hlocalValue :
+          (directory.micro.lcaCloseCosted leftClose rightClose).value =
+            none := by
+        simpa [Costed.erase] using hlocalNone
+      have hmacroValue :
+          (directory.macroCosted leftClose rightClose).value =
+            some answerClose := by
+        simpa [Costed.erase] using hmacroExact
+      simp [Costed.bind, Costed.erase, hlocalValue, hmacroValue]
+
+theorem profile
+    {shape : Cartesian.CartesianShape}
+    {blockSize codeCount microTableOverhead macroOverhead macroCost : Nat}
+    (directory :
+      MacroMicroBPCloseLCADirectory shape blockSize codeCount
+        microTableOverhead macroOverhead macroCost) :
+    directory.payload.length =
+        codeCount * microTableOverhead + macroOverhead /\
+      (forall leftClose rightClose,
+        (directory.lcaCloseCosted leftClose rightClose).cost <=
+          1 + macroCost) /\
+      forall {left len leftClose rightClose answerClose : Nat},
+        0 < len ->
+          left + len <= shape.size ->
+            bpCloseOfInorder? shape left = some leftClose ->
+              bpCloseOfInorder? shape (left + len - 1) =
+                  some rightClose ->
+                bpCloseOfInorder? shape
+                    (scanWindow shape.representative left len) =
+                  some answerClose ->
+                  (directory.lcaCloseCosted
+                    leftClose rightClose).erase =
+                    some answerClose := by
+  constructor
+  · exact directory.payload_length
+  constructor
+  · intro leftClose rightClose
+    exact directory.lcaCloseCosted_cost_le leftClose rightClose
+  intro left len leftClose rightClose answerClose hlen hbound hleft
+    hright hanswer
+  exact directory.lcaCloseCosted_exact hlen hbound hleft hright hanswer
+
+end MacroMicroBPCloseLCADirectory
+
 end SuccinctCloseProposal
 end RMQ

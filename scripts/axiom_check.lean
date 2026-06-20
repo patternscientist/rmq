@@ -213,6 +213,8 @@ claims that matter, not every local arithmetic helper.
 #print axioms RMQ.SuccinctCloseProposal.blockLocalBPCloseLCA_read_exact
 #print axioms RMQ.SuccinctCloseProposal.BlockLocalBPCloseLCATable.profile
 #print axioms RMQ.SuccinctCloseProposal.BlockLocalBPCloseLCATable.ofEntries_profile
+#print axioms RMQ.SuccinctCloseProposal.BlockMicroCodebook.profile
+#print axioms RMQ.SuccinctCloseProposal.MacroMicroBPCloseLCADirectory.profile
 #print axioms RMQ.SuccinctSpace.BPBroadwordSuccinctRMQFamily.two_n_plus_o_constant_query_profile
 #print axioms RMQ.SuccinctSpace.ComponentizedBPRMQFamily.two_n_plus_o_constant_query_profile
 #print axioms RMQ.Succinct.lcaCandidateOfEulerParensBackend_isPathLCA_of_labelsUnique

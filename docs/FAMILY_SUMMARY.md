@@ -201,7 +201,9 @@ slice-local word exactness and
 `canonicalTwoLevelRankSelectDirectoryOfChunksExact_profile` and
 `canonicalTwoLevelBalancedParensAccessOfChunksExact_profile` lift those pieces
 to rank/select and BP access. The remaining BP-native succinct gap is the real
-macro/micro close-LCA directory, not the rank endpoint or select word bridge.
+macro directory instantiation over the new close-LCA micro-codebook/fallback
+skeleton, the payload-live treatment of the per-block code classifier, and the
+final cost-parametric close-navigation join.
 
 - The RMQ contract is half-open: a valid query satisfies `left < right` and
   `right <= xs.length`; invalid or empty ranges return `none`.
@@ -1142,7 +1144,18 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.BlockLocalBPCloseLCATable.lcaCloseCosted_exact`,
   `SuccinctCloseProposal.BlockLocalBPCloseLCATable.profile`,
   `SuccinctCloseProposal.BlockLocalBPCloseLCATable.ofEntries_profile`,
-  `SuccinctCloseProposal.BlockLocalBPCloseLCATable.concrete_profile`.
+  `SuccinctCloseProposal.BlockLocalBPCloseLCATable.concrete_profile`,
+  `SuccinctCloseProposal.blockStartOf_blockOfClose_le`,
+  `SuccinctCloseProposal.close_lt_blockStartOf_blockOfClose_add`,
+  `SuccinctCloseProposal.BlockMicroCodebook.payload_length`,
+  `SuccinctCloseProposal.BlockMicroCodebook.lcaCloseCosted_cost_le_one`,
+  `SuccinctCloseProposal.BlockMicroCodebook.lcaCloseCostedAtBlock_exact`,
+  `SuccinctCloseProposal.BlockMicroCodebook.lcaCloseCosted_exact_of_left_block`,
+  `SuccinctCloseProposal.BlockMicroCodebook.profile`,
+  `SuccinctCloseProposal.MacroMicroBPCloseLCADirectory.payload_length`,
+  `SuccinctCloseProposal.MacroMicroBPCloseLCADirectory.lcaCloseCosted_cost_le`,
+  `SuccinctCloseProposal.MacroMicroBPCloseLCADirectory.lcaCloseCosted_exact`,
+  `SuccinctCloseProposal.MacroMicroBPCloseLCADirectory.profile`.
 - `RMQ/Core/SuccinctReduction.lean` (7):
   `Succinct.rmqBackendOfEulerParensBackend_queryBuilt`,
   `Succinct.lcaCandidateOfEulerParensBackend_eq_queryBuilt`,
