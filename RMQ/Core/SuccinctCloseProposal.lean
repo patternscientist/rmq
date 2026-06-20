@@ -1705,5 +1705,431 @@ theorem profile
 
 end PayloadLiveMacroMicroBPCloseLCAFamily
 
+/--
+Overhead for the built-query BP close-navigation join that uses payload-live
+rank/select plus the payload-live macro/micro BP close-LCA directory.
+-/
+def payloadLiveMacroMicroBPCloseNavigationOverhead
+    (rankOverhead selectOverhead codeOverhead codeCount
+      microTableOverhead macroOverhead : Nat -> Nat)
+    (n : Nat) : Nat :=
+  rankOverhead n + selectOverhead n +
+    payloadLiveMacroMicroBPCloseLCAOverhead
+      codeOverhead codeCount microTableOverhead macroOverhead n
+
+theorem payloadLiveMacroMicroBPCloseNavigationOverhead_littleO
+    {rankOverhead selectOverhead codeOverhead codeCount
+      microTableOverhead macroOverhead : Nat -> Nat}
+    (hrank : LittleOLinear rankOverhead)
+    (hselect : LittleOLinear selectOverhead)
+    (hlca :
+      LittleOLinear
+        (payloadLiveMacroMicroBPCloseLCAOverhead
+          codeOverhead codeCount microTableOverhead macroOverhead)) :
+    LittleOLinear
+      (payloadLiveMacroMicroBPCloseNavigationOverhead
+        rankOverhead selectOverhead codeOverhead codeCount
+        microTableOverhead macroOverhead) := by
+  unfold payloadLiveMacroMicroBPCloseNavigationOverhead
+  exact (hrank.add hselect).add hlca
+
+/--
+Built-query BP close-navigation family using the payload-live macro/micro
+close-LCA component.
+
+This is the cost-parametric join layer: select-close and rank-close are the
+existing payload-live rank/select reads, while the LCA leg is the
+`PayloadLiveMacroMicroBPCloseLCAFamily` with its exposed `lcaQueryCost`.
+-/
+structure PayloadLiveMacroMicroBPCloseNavigationFamily
+    (rankOverhead selectOverhead codeOverhead codeCount
+      microTableOverhead macroOverhead : Nat -> Nat)
+    (lcaQueryCost : Nat) where
+  lcaFamily :
+    PayloadLiveMacroMicroBPCloseLCAFamily codeOverhead codeCount
+      microTableOverhead macroOverhead lcaQueryCost
+  rankData :
+    forall {n : Nat} (shape : Cartesian.CartesianShape),
+      List.Mem shape (Cartesian.shapesOfSize n) ->
+        PayloadLiveStoredWordRankData shape.bpCode (rankOverhead n)
+  selectData :
+    forall {n : Nat} (shape : Cartesian.CartesianShape),
+      List.Mem shape (Cartesian.shapesOfSize n) ->
+        PayloadLiveStoredWordSelectData shape.bpCode (selectOverhead n)
+  rank_littleO : LittleOLinear rankOverhead
+  select_littleO : LittleOLinear selectOverhead
+
+namespace PayloadLiveMacroMicroBPCloseNavigationFamily
+
+def overhead
+    {rankOverhead selectOverhead codeOverhead codeCount
+      microTableOverhead macroOverhead : Nat -> Nat}
+    {lcaQueryCost : Nat}
+    (_family :
+      PayloadLiveMacroMicroBPCloseNavigationFamily
+        rankOverhead selectOverhead codeOverhead codeCount
+        microTableOverhead macroOverhead lcaQueryCost) : Nat -> Nat :=
+  payloadLiveMacroMicroBPCloseNavigationOverhead
+    rankOverhead selectOverhead codeOverhead codeCount
+    microTableOverhead macroOverhead
+
+def payload
+    {rankOverhead selectOverhead codeOverhead codeCount
+      microTableOverhead macroOverhead : Nat -> Nat}
+    {lcaQueryCost n : Nat}
+    (family :
+      PayloadLiveMacroMicroBPCloseNavigationFamily
+        rankOverhead selectOverhead codeOverhead codeCount
+        microTableOverhead macroOverhead lcaQueryCost)
+    (shape : Cartesian.CartesianShape)
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n)) : List Bool :=
+  shape.bpCode ++
+    (family.rankData shape hshape).auxPayload ++
+      (family.selectData shape hshape).auxPayload ++
+        (family.lcaFamily.directory (n := n) shape hshape).payload
+
+def selectCloseCosted
+    {rankOverhead selectOverhead codeOverhead codeCount
+      microTableOverhead macroOverhead : Nat -> Nat}
+    {lcaQueryCost n : Nat}
+    (family :
+      PayloadLiveMacroMicroBPCloseNavigationFamily
+        rankOverhead selectOverhead codeOverhead codeCount
+        microTableOverhead macroOverhead lcaQueryCost)
+    (shape : Cartesian.CartesianShape)
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n))
+    (idx : Nat) : Costed (Option Nat) :=
+  (family.selectData shape hshape).selectCosted false idx
+
+def lcaCloseCosted
+    {rankOverhead selectOverhead codeOverhead codeCount
+      microTableOverhead macroOverhead : Nat -> Nat}
+    {lcaQueryCost n : Nat}
+    (family :
+      PayloadLiveMacroMicroBPCloseNavigationFamily
+        rankOverhead selectOverhead codeOverhead codeCount
+        microTableOverhead macroOverhead lcaQueryCost)
+    (shape : Cartesian.CartesianShape)
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n))
+    (leftClose rightClose : Nat) : Costed (Option Nat) :=
+  (family.lcaFamily.directory (n := n) shape hshape).lcaCloseCosted
+    leftClose rightClose
+
+def rankCloseCosted
+    {rankOverhead selectOverhead codeOverhead codeCount
+      microTableOverhead macroOverhead : Nat -> Nat}
+    {lcaQueryCost n : Nat}
+    (family :
+      PayloadLiveMacroMicroBPCloseNavigationFamily
+        rankOverhead selectOverhead codeOverhead codeCount
+        microTableOverhead macroOverhead lcaQueryCost)
+    (shape : Cartesian.CartesianShape)
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n))
+    (pos : Nat) : Costed Nat :=
+  (family.rankData shape hshape).rankCostedClamped false pos
+
+def queryBuiltCosted
+    {rankOverhead selectOverhead codeOverhead codeCount
+      microTableOverhead macroOverhead : Nat -> Nat}
+    {lcaQueryCost n : Nat}
+    (family :
+      PayloadLiveMacroMicroBPCloseNavigationFamily
+        rankOverhead selectOverhead codeOverhead codeCount
+        microTableOverhead macroOverhead lcaQueryCost)
+    (shape : Cartesian.CartesianShape)
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n))
+    (left right : Nat) : Costed (Option Nat) :=
+  Costed.bind (family.selectCloseCosted shape hshape left) fun leftClose? =>
+    Costed.bind
+      (family.selectCloseCosted shape hshape (right - 1))
+      fun rightClose? =>
+        match leftClose?, rightClose? with
+        | some leftClose, some rightClose =>
+            Costed.bind
+              (family.lcaCloseCosted shape hshape leftClose rightClose)
+              fun answerClose? =>
+                match answerClose? with
+                | some answerClose =>
+                    Costed.map (fun closeRank => some (closeRank - 1))
+                      (family.rankCloseCosted shape hshape (answerClose + 1))
+                | none => Costed.pure none
+        | _, _ => Costed.pure none
+
+theorem overhead_littleO
+    {rankOverhead selectOverhead codeOverhead codeCount
+      microTableOverhead macroOverhead : Nat -> Nat}
+    {lcaQueryCost : Nat}
+    (family :
+      PayloadLiveMacroMicroBPCloseNavigationFamily
+        rankOverhead selectOverhead codeOverhead codeCount
+        microTableOverhead macroOverhead lcaQueryCost) :
+    LittleOLinear family.overhead := by
+  exact
+    payloadLiveMacroMicroBPCloseNavigationOverhead_littleO
+      family.rank_littleO family.select_littleO
+      family.lcaFamily.overhead_littleO
+
+theorem payload_length
+    {rankOverhead selectOverhead codeOverhead codeCount
+      microTableOverhead macroOverhead : Nat -> Nat}
+    {lcaQueryCost n : Nat}
+    (family :
+      PayloadLiveMacroMicroBPCloseNavigationFamily
+        rankOverhead selectOverhead codeOverhead codeCount
+        microTableOverhead macroOverhead lcaQueryCost)
+    {shape : Cartesian.CartesianShape}
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n)) :
+    (family.payload shape hshape).length =
+      2 * n + family.overhead n := by
+  have hshapeSize := Cartesian.mem_shapesOfSize_shapeOfSize hshape
+  have hbp :
+      shape.bpCode.length = 2 * n := by
+    exact Cartesian.CartesianShape.bpCode_length_of_shapeOfSize hshapeSize
+  have hrank :
+      (family.rankData shape hshape).auxPayload.length =
+        rankOverhead n :=
+    (family.rankData shape hshape).auxPayload_length
+  have hselect :
+      (family.selectData shape hshape).auxPayload.length =
+        selectOverhead n :=
+    (family.selectData shape hshape).auxPayload_length
+  have hlca :
+      ((family.lcaFamily.directory (n := n) shape hshape).payload.length =
+        family.lcaFamily.overhead n) :=
+    ((family.lcaFamily.profile).2 n hshape).1
+  simp [payload, overhead, PayloadLiveMacroMicroBPCloseLCAFamily.overhead,
+    payloadLiveMacroMicroBPCloseNavigationOverhead, hbp, hrank, hselect,
+    hlca]
+  omega
+
+theorem queryBuiltCosted_cost_le
+    {rankOverhead selectOverhead codeOverhead codeCount
+      microTableOverhead macroOverhead : Nat -> Nat}
+    {lcaQueryCost n : Nat}
+    (family :
+      PayloadLiveMacroMicroBPCloseNavigationFamily
+        rankOverhead selectOverhead codeOverhead codeCount
+        microTableOverhead macroOverhead lcaQueryCost)
+    (shape : Cartesian.CartesianShape)
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n))
+    (left right : Nat) :
+    (family.queryBuiltCosted shape hshape left right).cost <=
+      9 + lcaQueryCost := by
+  unfold queryBuiltCosted selectCloseCosted lcaCloseCosted rankCloseCosted
+  have hleft :=
+    (family.selectData shape hshape).selectCosted_cost_le_three false left
+  have hright :=
+    (family.selectData shape hshape).selectCosted_cost_le_three
+      false (right - 1)
+  cases hleftValue :
+      ((family.selectData shape hshape).selectCosted false left).value with
+  | none =>
+      simp [Costed.bind, hleftValue]
+      omega
+  | some leftClose =>
+      cases hrightValue :
+          ((family.selectData shape hshape).selectCosted
+            false (right - 1)).value with
+      | none =>
+          simp [Costed.bind, hleftValue, hrightValue]
+          omega
+      | some rightClose =>
+          have hlca :=
+            ((family.lcaFamily.profile).2 n hshape).2.1
+              leftClose rightClose
+          cases hlcaValue :
+              ((family.lcaFamily.directory
+                (n := n) shape hshape).lcaCloseCosted
+                  leftClose rightClose).value with
+          | none =>
+              simp [Costed.bind, hleftValue, hrightValue, hlcaValue]
+              omega
+          | some answerClose =>
+              have hrank :=
+                (family.rankData shape hshape).rankCostedClamped_cost_le_three
+                  false (answerClose + 1)
+              simp [Costed.bind, Costed.map, hleftValue, hrightValue,
+                hlcaValue]
+              omega
+
+theorem selectCloseCosted_exact
+    {rankOverhead selectOverhead codeOverhead codeCount
+      microTableOverhead macroOverhead : Nat -> Nat}
+    {lcaQueryCost n : Nat}
+    (family :
+      PayloadLiveMacroMicroBPCloseNavigationFamily
+        rankOverhead selectOverhead codeOverhead codeCount
+        microTableOverhead macroOverhead lcaQueryCost)
+    (shape : Cartesian.CartesianShape)
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n))
+    (idx : Nat) :
+    (family.selectCloseCosted shape hshape idx).erase =
+      bpCloseOfInorder? shape idx := by
+  calc
+    (family.selectCloseCosted shape hshape idx).erase =
+        Succinct.select false shape.bpCode idx := by
+      exact (family.selectData shape hshape).selectCosted_exact false idx
+    _ = bpCloseOfInorder? shape idx := by
+      exact select_false_bpCode_eq_bpCloseOfInorder? shape idx
+
+theorem rankCloseCosted_exact
+    {rankOverhead selectOverhead codeOverhead codeCount
+      microTableOverhead macroOverhead : Nat -> Nat}
+    {lcaQueryCost n : Nat}
+    (family :
+      PayloadLiveMacroMicroBPCloseNavigationFamily
+        rankOverhead selectOverhead codeOverhead codeCount
+        microTableOverhead macroOverhead lcaQueryCost)
+    (shape : Cartesian.CartesianShape)
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n))
+    (pos : Nat) :
+    (family.rankCloseCosted shape hshape pos).erase =
+      Succinct.rankPrefix false shape.bpCode pos := by
+  exact (family.rankData shape hshape).rankCostedClamped_exact false pos
+
+theorem queryBuiltCosted_exact
+    {rankOverhead selectOverhead codeOverhead codeCount
+      microTableOverhead macroOverhead : Nat -> Nat}
+    {lcaQueryCost n : Nat}
+    (family :
+      PayloadLiveMacroMicroBPCloseNavigationFamily
+        rankOverhead selectOverhead codeOverhead codeCount
+        microTableOverhead macroOverhead lcaQueryCost)
+    {shape : Cartesian.CartesianShape}
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n))
+    {left len : Nat} (hlen : 0 < len) (hbound : left + len <= n) :
+    (family.queryBuiltCosted shape hshape left (left + len)).erase =
+      some (scanWindow shape.representative left len) := by
+  have hshapeSize := Cartesian.mem_shapesOfSize_shapeOfSize hshape
+  have hleftLt : left < n := by omega
+  have hrightLt : left + len - 1 < n := by omega
+  have hboundShape : left + len <= shape.size := by
+    rw [Cartesian.ShapeOfSize.size_eq hshapeSize]
+    exact hbound
+  have hleftLtShape : left < shape.size := by
+    rw [Cartesian.ShapeOfSize.size_eq hshapeSize]
+    exact hleftLt
+  have hrightLtShape : left + len - 1 < shape.size := by
+    rw [Cartesian.ShapeOfSize.size_eq hshapeSize]
+    exact hrightLt
+  have hscanBounds :=
+    Cartesian.scanWindow_bounds shape.representative left len hlen
+  have hscanLt :
+      scanWindow shape.representative left len < shape.size := by
+    rw [Cartesian.ShapeOfSize.size_eq hshapeSize]
+    omega
+  rcases bpCloseOfInorder?_some_of_lt shape hleftLtShape with
+    ⟨leftClose, hleftClose⟩
+  rcases bpCloseOfInorder?_some_of_lt shape hrightLtShape with
+    ⟨rightClose, hrightClose⟩
+  rcases bpCloseOfInorder?_some_of_lt shape hscanLt with
+    ⟨answerClose, hanswerClose⟩
+  have hselectLeft :
+      (family.selectCloseCosted shape hshape left).value =
+        some leftClose := by
+    have h := family.selectCloseCosted_exact shape hshape left
+    simpa [Costed.erase, hleftClose] using h
+  have hselectRight :
+      (family.selectCloseCosted shape hshape
+          (left + len - 1)).value =
+        some rightClose := by
+    have h :=
+      family.selectCloseCosted_exact shape hshape (left + len - 1)
+    simpa [Costed.erase, hrightClose] using h
+  have hlca :
+      (family.lcaCloseCosted shape hshape leftClose rightClose).value =
+        some answerClose := by
+    have h :=
+      ((family.lcaFamily.profile).2 n hshape).2.2
+        hlen hboundShape hleftClose hrightClose hanswerClose
+    simpa [Costed.erase, lcaCloseCosted, hanswerClose] using h
+  have hrank :
+      (family.rankCloseCosted shape hshape (answerClose + 1)).value =
+        scanWindow shape.representative left len + 1 := by
+    have hrankExact :=
+      family.rankCloseCosted_exact shape hshape (answerClose + 1)
+    have hrankRecover :=
+      bpCloseOfInorder?_rankFalse_succ shape hanswerClose
+    calc
+      (family.rankCloseCosted shape hshape (answerClose + 1)).value =
+          Succinct.rankPrefix false shape.bpCode (answerClose + 1) := by
+        simpa [Costed.erase] using hrankExact
+      _ = scanWindow shape.representative left len + 1 := hrankRecover
+  have hselectLeftRaw :
+      ((family.selectData shape hshape).selectCosted false left).value =
+        some leftClose := by
+    simpa [selectCloseCosted] using hselectLeft
+  have hselectRightRaw :
+      ((family.selectData shape hshape).selectCosted
+          false (left + len - 1)).value =
+        some rightClose := by
+    simpa [selectCloseCosted] using hselectRight
+  have hlcaRaw :
+      ((family.lcaFamily.directory
+          (n := n) shape hshape).lcaCloseCosted
+          leftClose rightClose).value =
+        some answerClose := by
+    simpa [lcaCloseCosted] using hlca
+  have hrankRaw :
+      ((family.rankData shape hshape).rankCostedClamped false
+          (answerClose + 1)).value =
+        scanWindow shape.representative left len + 1 := by
+    simpa [rankCloseCosted] using hrank
+  have hrankSub :
+      scanWindow shape.representative left len + 1 - 1 =
+        scanWindow shape.representative left len := by
+    omega
+  unfold queryBuiltCosted
+  simp [selectCloseCosted, lcaCloseCosted, rankCloseCosted, Costed.erase,
+    Costed.bind, Costed.map, Costed.pure, hselectLeftRaw,
+    hselectRightRaw, hlcaRaw, hrankRaw, hrankSub]
+
+theorem two_n_plus_o_built_query_profile
+    {rankOverhead selectOverhead codeOverhead codeCount
+      microTableOverhead macroOverhead : Nat -> Nat}
+    {lcaQueryCost : Nat}
+    (family :
+      PayloadLiveMacroMicroBPCloseNavigationFamily
+        rankOverhead selectOverhead codeOverhead codeCount
+        microTableOverhead macroOverhead lcaQueryCost) :
+    LittleOLinear family.overhead /\
+      forall n : Nat,
+        EncodingLowerBound.logSlackLower n <=
+          2 * n + family.overhead n /\
+        (forall {shape : Cartesian.CartesianShape},
+          (hshape : List.Mem shape (Cartesian.shapesOfSize n)) ->
+            (family.payload shape hshape).length =
+              2 * n + family.overhead n) /\
+        (forall {shape : Cartesian.CartesianShape},
+          (hshape : List.Mem shape (Cartesian.shapesOfSize n)) ->
+            forall left right,
+              (family.queryBuiltCosted shape hshape left right).cost <=
+                9 + lcaQueryCost) /\
+        (forall {shape : Cartesian.CartesianShape},
+          (hshape : List.Mem shape (Cartesian.shapesOfSize n)) ->
+            forall {left len : Nat},
+              0 < len ->
+                left + len <= n ->
+                  (family.queryBuiltCosted
+                    shape hshape left (left + len)).erase =
+                    some (scanWindow shape.representative left len)) := by
+  constructor
+  · exact family.overhead_littleO
+  intro n
+  constructor
+  · have hbase :=
+      EncodingLowerBound.canonicalRepresentativePayloadSpaceBounds_lower_le_upper n
+    omega
+  constructor
+  · intro shape hshape
+    exact family.payload_length hshape
+  constructor
+  · intro shape hshape left right
+    exact family.queryBuiltCosted_cost_le shape hshape left right
+  intro shape hshape left len hlen hbound
+  exact family.queryBuiltCosted_exact hshape hlen hbound
+
+end PayloadLiveMacroMicroBPCloseNavigationFamily
+
 end SuccinctCloseProposal
 end RMQ
