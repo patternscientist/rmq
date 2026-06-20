@@ -64,12 +64,18 @@ Known-trap checklist:
 - If this branch uses `descriptorIndex` or another routing/index function, why
   is it bounded arithmetic or charged payload-derived rather than an uncharged
   search/predecessor/oracle?:
+- If this branch adds a packed descriptor-select profile, where is the theorem
+  proving the descriptor payload is `LittleOLinear` under the machine-word side
+  conditions, rather than just an exact full local-delta-slot length formula?:
 - If this branch adds a BP range/min/max or block-summary table, where is it
   consumed by an answer-close `lcaCloseCosted_exact` theorem?:
 - If this branch adds a BP range witness or macro candidate, where is it
   consumed by charged endpoint-fringe repair plus a global answer-close theorem?:
 - If this branch proves an `_exact_of_prefix_pos` theorem, where is the theorem
   proving that the built prefix position is the semantic BP close/LCA answer?:
+- If this branch proves an `_exact_of_merged_candidate` theorem, where is the
+  theorem proving the supplied merge fact from built payload entries and
+  BP/RMQ semantics?:
 - If this branch only repairs an audit caveat on such a helper layer, why was
   the owned target explicitly scoped to caveat repair rather than C1/C2/C3?:
 - For every newly charged fixed-width table or payload-word read, where is the
@@ -126,6 +132,8 @@ Must report:
 - for BP close work, whether any range witness or macro candidate has been
   consumed by endpoint-fringe repair and a BP semantic theorem, or remains only
   conditional on a supplied prefix position.
+- for BP close work, whether endpoint-fringe exactness is global or still
+  conditional on a supplied merged-candidate fact such as `hmerge`.
 
 Should not report "progress" only as scaffolding. A proof branch should land a
 consumed lemma cluster, a representation layer, or a theorem that feeds the
@@ -154,12 +162,23 @@ obligation surface, not a closure witness. Unless the owned target explicitly
 stopped at that surface, the worker should continue to the compact builder that
 fills those fields from payload tables and accounts for the routing/index cost.
 
+An exact packed descriptor-select profile with quotient/remainder routing is
+likewise not a compact C1 witness if its only descriptor-space theorem is a
+full per-occurrence local-delta-slot payload length. It must be followed by a
+compact dense/sparse descriptor builder and a `LittleOLinear` payload theorem,
+or by a formal obstruction theorem for that representation.
+
 A BP range-witness or macro-candidate structure whose exactness is still an
 `_exact_of_prefix_pos` theorem is likewise a useful obligation surface, not a
 close-answer witness. Unless the owned target explicitly stopped at that
 surface, the worker should continue to the charged endpoint-fringe repair and
 the BP semantic theorem identifying the built prefix position with the
 representative-array RMQ answer close.
+
+An endpoint-fringe macro whose strongest exactness theorem is still
+`_exact_of_merged_candidate` is also not the answer theorem. The worker should
+continue until the merge fact is proved from the concrete payload entries and
+BP/RMQ semantics, not supplied as a hypothesis.
 
 For the succinct RMQ capstone, a new blocker theorem is not enough unless it
 comes from an attempted positive construction and shows that the requested

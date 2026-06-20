@@ -129,6 +129,13 @@ payload tables. Any routing or index function used by a constant-time query must
 be simple bounded arithmetic or derived through charged payload reads. It cannot
 hide an uncharged search, predecessor, or oracle.
 
+A concrete packed descriptor profile is also not C1 closure unless it proves the
+descriptor auxiliary payload is in the intended `LittleOLinear` budget under the
+machine-word side conditions. An exact global `selectCosted` theorem plus a
+payload-length formula that still stores one full local-delta slot per
+occurrence is a strong iteration result, but the same loop should continue to
+the compact dense/sparse descriptor builder or a formal obstruction theorem.
+
 For C2 BP-close work, a position-bearing range witness or macro candidate is
 not target closure if exactness is still conditional on a supplied prefix
 position such as `answerClose + 1`. The loop should continue until that witness
@@ -136,18 +143,30 @@ is consumed by charged endpoint-fringe repair plus the BP semantic theorem that
 identifies the leftmost minimum-excess prefix/close with the representative RMQ
 answer close.
 
+Charged endpoint-fringe repair is also not target closure by itself. If the
+strongest exactness theorem is still an `_exact_of_merged_candidate` theorem or
+has a hypothesis such as `hmerge` asserting that the merged payload candidates
+already equal `(bpExcessAt shape (answerClose + 1), answerClose + 1)`, the loop
+must continue to prove that merge fact from the concrete built entries and the
+BP/RMQ semantics.
+
 For C1/C2 specifically, do not stop after the previous known traps:
 
 - a two-word descriptor/local-run theorem without a global descriptor-backed
   `selectCosted_exact`;
 - a descriptor-select profile surface whose exactness still rests on proof
   fields and has no compact payload builder instantiating those fields;
+- a packed descriptor-select profile whose exactness is global but whose
+  descriptor payload is only given by a full per-occurrence local-delta length,
+  with no `LittleOLinear` compact-budget theorem under the machine-word model;
 - an uncharged descriptor/routing index that could hide search, predecessor, or
   oracle work;
 - a BP range-min/max summary table without an answer-close theorem consuming it;
 - a BP range-witness or macro-candidate profile, or an `_exact_of_prefix_pos`
   theorem, without the charged endpoint-fringe repair and BP semantic theorem
   that turn it into a global answer-close theorem;
+- a charged endpoint-fringe macro/profile whose exactness still assumes a
+  supplied merged-candidate fact such as `hmerge`;
 - a repaired machine-word bound or invariant for that summary table without the
   next answer-close theorem attempt that consumes the repaired table;
 - a newly charged fixed-width table without an explicit machine-word bound; or
