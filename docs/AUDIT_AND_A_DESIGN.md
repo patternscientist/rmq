@@ -575,3 +575,45 @@ the prior RMQ-query-cost finding. The word-size/two-level question is the next
 
 **Also pending:** old decoupled `PayloadBackedStoredWordRankData` still coexists
 with the genuine `PayloadLive` path (delist/retire).
+
+## 2026-06-20 — succinct bit-codec hardened; flagship still abstract (no witness) + word-size/two-level gap open
+
+**Genuine component progress.** Added a real little-endian bit codec —
+`natToBitsLE` with roundtrip `bitsToNatLE_natToBitsLE_of_lt` (decode∘encode = id
+for values `< 2^width`), `optionNatToBitsLE` likewise, and
+`FixedWidthNatTable.ofEntries`/`ofEncodedWords` constructors — so the sample
+tables are now *genuinely bit-encoded* (the arbitrary-decoder concern is fully
+closed at the component level). Build green, trust clean.
+
+**But two firm structural findings keep the flagship from being a real result:**
+
+1. **No concrete witness.** Searching the whole repo, there is **no concrete
+   instance** of any top-level succinct RMQ family — every
+   `…Family.two_n_plus_o_*_query_profile` is an *abstract conditional* ("for any
+   family with these bundled fields, the profile holds"); no `def … : …Family`
+   constructs one. So nothing demonstrates a `2n+o(n)`/O(1)/exact succinct RMQ is
+   *constructible* — the headline is a near-tautological unpacking of hypotheses.
+
+2. **The word-RAM honesty parameter is absent.** `wordSize` is never tied to
+   `Θ(log n)` anywhere (`rg "wordSize := .*log"` → empty), `Op.wordRank` charges
+   1 regardless of word length, and there is **no two-level (superblock+block)
+   directory**. The new roundtrip *reinforces* the tension: exact correctness
+   needs `sampleWidth ≥ log n`, so single-level + proven `o(n)` overhead forces
+   `wordSize = ω(log n)` (≈ log²n) — making each "O(1)" `Op.wordRank` really
+   Θ(log n) machine-word ops.
+
+**Net.** The succinct layer is a tower of real components (codec, BP navigation,
+FixedWidth tables, sampled o(n) overhead, derived component costs) under an
+**abstract top** with no constructed witness and an unresolved word-RAM/two-level
+gap. The two load-bearing items to make it a genuine result — *(a)* a concrete
+family instance and *(b)* a two-level directory with `wordSize = Θ(log n)` (so
+O(1) word-ops and o(n) overhead hold together) — were **not** advanced this round.
+
+**Stop assessment.** Sound and non-regressing; the codec work is genuine and
+needed. But this is the recurring pattern: the succinct layer deepens its
+*components* each round (FixedWidth → live → navigation → codec) without closing
+the *top-level claim* (witness + two-level). Many rounds in, the genuine succinct
+RMQ headline is still not demonstrated. Worth a deliberate choice: push the two
+load-bearing items, or timebox the succinct flagship.
+
+**Still pending:** retire the old decoupled `PayloadBackedStoredWordRankData`.
