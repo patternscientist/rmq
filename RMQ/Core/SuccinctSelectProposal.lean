@@ -561,6 +561,39 @@ theorem SelectSampleWordExact.selected_wordIndex_eq_of_aligned_read_word
       Nat.add_assoc] using hpos
   exact Nat.div_eq_of_lt_le hlo' hhi'
 
+/--
+A single aligned payload word cannot serve two successful select queries whose
+answers lie in different payload chunks.
+
+This is the minimal obstruction behind the descriptor-select fork: if a compact
+local entry is shared, the entry must contain a charged way to choose a
+different payload word before `wordSelect`; otherwise exactness collapses both
+answers to the same chunk index.
+-/
+theorem SelectSampleWordExact.shared_aligned_read_word_forces_same_wordIndex
+    {target : Bool} {bits word : List Bool}
+    {occurrenceA occurrenceB posA posB wordSize : Nat}
+    {sample : SuccinctSpace.StoredWordSelectSample}
+    (hwordSize : 0 < wordSize)
+    (hexactA :
+      SelectSampleWordExact target bits occurrenceA sample word)
+    (hexactB :
+      SelectSampleWordExact target bits occurrenceB sample word)
+    (hselectA : RMQ.Succinct.select target bits occurrenceA = some posA)
+    (hselectB : RMQ.Succinct.select target bits occurrenceB = some posB)
+    (hstart : sample.wordStart = sample.wordIndex * wordSize)
+    (hwordLen : word.length <= wordSize) :
+    posA / wordSize = posB / wordSize := by
+  have hA :
+      posA / wordSize = sample.wordIndex :=
+    SelectSampleWordExact.selected_wordIndex_eq_of_aligned_read_word
+      hwordSize hexactA hselectA hstart hwordLen
+  have hB :
+      posB / wordSize = sample.wordIndex :=
+    SelectSampleWordExact.selected_wordIndex_eq_of_aligned_read_word
+      hwordSize hexactB hselectB hstart hwordLen
+  exact hA.trans hB.symm
+
 theorem selectBlockDeltaEntry?_select_some_exact_of_word
     {target : Bool} {bits word : List Bool}
     {wordSize occurrencesPerSuper occurrence : Nat}
@@ -1525,6 +1558,108 @@ theorem selected_wordIndex_eq_of_sample
   exact
     SelectSampleWordExact.selected_wordIndex_eq_of_aligned_read_word
       data.wordSize_pos hexact hselect hstart hwordLen
+
+/--
+If the two-level select query reads the same super locator, the same local
+locator, and therefore the same aligned payload word for two successful
+occurrences, both selected positions must lie in the same payload chunk.
+
+Consequently a compact descriptor that shares one local entry across a sampled
+run must read charged descriptor payload that can choose the final payload word;
+the current shared-aligned-locator path cannot be the witness.
+-/
+theorem shared_local_locator_forces_same_selected_wordIndex
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data :
+      TwoLevelPayloadLiveStoredWordSelectData
+        bits superOverhead blockOverhead queryCost)
+    {target : Bool} {occurrenceA occurrenceB posA posB : Nat}
+    {super delta : SuccinctSpace.StoredWordSelectSample}
+    {word : List Bool}
+    (hoccA : occurrenceA <= bits.length)
+    (hoccB : occurrenceB <= bits.length)
+    (hsuperA :
+      (data.superTables.entries target)[
+          occurrenceA / data.occurrencesPerSuper]? =
+        some (some super))
+    (hsuperB :
+      (data.superTables.entries target)[
+          occurrenceB / data.occurrencesPerSuper]? =
+        some (some super))
+    (hdeltaA :
+      (data.blockTables.entries target)[
+          data.blockIndex target occurrenceA]? =
+        some (some delta))
+    (hdeltaB :
+      (data.blockTables.entries target)[
+          data.blockIndex target occurrenceB]? =
+        some (some delta))
+    (hword :
+      data.bitWords.store.words[(addSelectSample super delta).wordIndex]? =
+        some word)
+    (hselectA :
+      RMQ.Succinct.select target bits occurrenceA = some posA)
+    (hselectB :
+      RMQ.Succinct.select target bits occurrenceB = some posB)
+    (hstart :
+      (addSelectSample super delta).wordStart =
+        (addSelectSample super delta).wordIndex * data.wordSize) :
+    posA / data.wordSize = posB / data.wordSize := by
+  have hA :
+      posA / data.wordSize =
+        (addSelectSample super delta).wordIndex :=
+    data.selected_wordIndex_eq_of_sample
+      hoccA hsuperA hdeltaA hword hselectA hstart
+  have hB :
+      posB / data.wordSize =
+        (addSelectSample super delta).wordIndex :=
+    data.selected_wordIndex_eq_of_sample
+      hoccB hsuperB hdeltaB hword hselectB hstart
+  exact hA.trans hB.symm
+
+theorem shared_local_locator_contradicts_distinct_selected_wordIndex
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data :
+      TwoLevelPayloadLiveStoredWordSelectData
+        bits superOverhead blockOverhead queryCost)
+    {target : Bool} {occurrenceA occurrenceB posA posB : Nat}
+    {super delta : SuccinctSpace.StoredWordSelectSample}
+    {word : List Bool}
+    (hoccA : occurrenceA <= bits.length)
+    (hoccB : occurrenceB <= bits.length)
+    (hsuperA :
+      (data.superTables.entries target)[
+          occurrenceA / data.occurrencesPerSuper]? =
+        some (some super))
+    (hsuperB :
+      (data.superTables.entries target)[
+          occurrenceB / data.occurrencesPerSuper]? =
+        some (some super))
+    (hdeltaA :
+      (data.blockTables.entries target)[
+          data.blockIndex target occurrenceA]? =
+        some (some delta))
+    (hdeltaB :
+      (data.blockTables.entries target)[
+          data.blockIndex target occurrenceB]? =
+        some (some delta))
+    (hword :
+      data.bitWords.store.words[(addSelectSample super delta).wordIndex]? =
+        some word)
+    (hselectA :
+      RMQ.Succinct.select target bits occurrenceA = some posA)
+    (hselectB :
+      RMQ.Succinct.select target bits occurrenceB = some posB)
+    (hstart :
+      (addSelectSample super delta).wordStart =
+        (addSelectSample super delta).wordIndex * data.wordSize)
+    (hdistinct :
+      posA / data.wordSize = posB / data.wordSize -> False) :
+    False := by
+  exact hdistinct
+    (data.shared_local_locator_forces_same_selected_wordIndex
+      hoccA hoccB hsuperA hsuperB hdeltaA hdeltaB hword
+      hselectA hselectB hstart)
 
 theorem payload_word_length_le_machine
     {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}

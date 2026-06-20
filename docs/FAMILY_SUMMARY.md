@@ -235,14 +235,16 @@ endpoint-sensitive fringe information or use a real BP excess/RMQ macro.
 `TwoLevelPayloadLiveStoredWordSelectData.selected_position_in_read_word_of_sample`,
 together with the aligned-word refinements
 `SelectSampleWordExact.selected_wordIndex_eq_of_aligned_read_word` and
-`TwoLevelPayloadLiveStoredWordSelectData.selected_wordIndex_eq_of_sample`, make
-the current select-side design fork explicit: with the present query path, any
-occurrence answered through a shared local locator must lie in the single
-payload word read by that locator; if the read word is an aligned machine chunk,
-the chosen chunk index is forced to be the actual `pos / wordSize` of the
-selected bit. A compact final builder therefore needs a real descriptor that
-computes that chunk choice through charged payload, or an extended local
-dense-block query path, not just a non-identity `blockIndex`.
+`TwoLevelPayloadLiveStoredWordSelectData.selected_wordIndex_eq_of_sample`, plus
+the paired blocker
+`TwoLevelPayloadLiveStoredWordSelectData.shared_local_locator_forces_same_selected_wordIndex`,
+make the current select-side design fork explicit: with the present query path,
+two successful occurrences answered through the same shared local locator must
+lie in the single payload word read by that locator; if the read word is an
+aligned machine chunk, both selected positions have the same `pos / wordSize`.
+A compact final builder therefore needs a real descriptor that computes that
+chunk choice through charged payload, or an extended local dense-block query
+path, not just a non-identity `blockIndex`.
 
 - The RMQ contract is half-open: a valid query satisfies `left < right` and
   `right <= xs.length`; invalid or empty ranges return `none`.
@@ -1147,6 +1149,7 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctSelectProposal.SelectSampleWordExact.exists_word_offset_of_select`,
   `SuccinctSelectProposal.SelectSampleWordExact.selected_position_in_read_word`,
   `SuccinctSelectProposal.SelectSampleWordExact.selected_wordIndex_eq_of_aligned_read_word`,
+  `SuccinctSelectProposal.SelectSampleWordExact.shared_aligned_read_word_forces_same_wordIndex`,
   `SuccinctSelectProposal.canonicalSelectSuperTablesFinite_present`,
   `SuccinctSelectProposal.canonicalSelectBlockTablesFinite_present`,
   `SuccinctSelectProposal.canonicalTwoLevelSelectData`,
@@ -1160,6 +1163,8 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData.selectCosted_cost_le_four`,
   `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData.selected_position_in_read_word_of_sample`,
   `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData.selected_wordIndex_eq_of_sample`,
+  `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData.shared_local_locator_forces_same_selected_wordIndex`,
+  `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData.shared_local_locator_contradicts_distinct_selected_wordIndex`,
   `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData.profile`,
   `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectFamily.constant_query_profile`,
   `SuccinctSelectProposal.canonicalTwoLevelSelectSuperOverhead_littleO`,
