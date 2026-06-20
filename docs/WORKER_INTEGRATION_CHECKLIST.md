@@ -56,6 +56,15 @@ Integration notes:
 - Remaining construction gaps:
 - Smallest next theorem:
 
+Known-trap checklist:
+- If this branch adds a local descriptor lemma, where is it consumed by a
+  global descriptor-backed `selectCosted_exact` theorem over all occurrences?:
+- If this branch adds a BP range/min/max or block-summary table, where is it
+  consumed by an answer-close `lcaCloseCosted_exact` theorem?:
+- For every newly charged fixed-width table or payload-word read, where is the
+  machine-word bound proved?:
+- Did any theorem name overstate its statement? If yes, what was renamed?:
+
 Loop stop audit:
 - Named target theorem or concrete component profile proved? YES/NO:
 - Next theorem/construction obvious within owned files? YES/NO:
@@ -63,6 +72,10 @@ Loop stop audit:
   requested? YES/NO:
 - Did this branch reduce the current distance to the capstone, rather than only
   producing technically substantial adjacent work? YES/NO:
+- If the target is not closed, which three serious attempts at the named
+  positive construction were made, and what common brick wall did they hit?:
+- Why is the next move a fundamental design/coordinator choice rather than
+  another local proof iteration?:
 - If stopping on impossibility, which concrete construction was attempted and
   which minimal theorem proves the target signature must change?:
 - Why stopping is valid under `docs/CODEX_AUTONOMY.md`:
@@ -82,6 +95,10 @@ Must report:
 - whether proof-only fields are separated from payload fields;
 - whether any old theorem or definition was superseded and should be retired;
 - narrow module check at minimum.
+- for descriptor/select work, whether exactness is global over all
+  `(target, occurrence)` or conditional on a preselected local run;
+- for BP close work, whether summary tables are consumed by a concrete
+  answer-close theorem or remain helper payload.
 
 Should not report "progress" only as scaffolding. A proof branch should land a
 consumed lemma cluster, a representation layer, or a theorem that feeds the
@@ -92,6 +109,12 @@ to the capstone is exploratory, not complete. The worker should either keep
 looping toward the named hard construction or report that the branch should be
 treated as a side artifact rather than a merge-ready finish.
 
+A branch that shortens the path but leaves the owned concrete component profile
+or capstone theorem obviously unfinished is an iteration checkpoint, not a
+valid unattended-loop endpoint. The worker should keep going unless it can
+provide a brick-wall dossier showing that further local progress now depends on
+a fundamental design choice.
+
 If the branch adds a new parameter, field, adapter, or bridge theorem, it must
 also name the concrete instance that consumes it. If that concrete instance is
 still missing and lies in the worker's owned files, the loop should continue.
@@ -101,6 +124,12 @@ comes from an attempted positive construction and shows that the requested
 target statement is mis-specified. Known blockers should be cited as design
 constraints, not rediscovered as stop points.
 
+For short-of-target stops, require the worker to report at least three concrete
+attempts, not just one failed proof. The report should make clear why the next
+action cannot be "try the natural repaired statement" or "consume the new local
+kernel in the promised profile." A formal impossibility theorem for the target
+statement can replace the three-attempt threshold.
+
 ### Cost Or Space Worker
 
 Must report:
@@ -109,6 +138,8 @@ Must report:
 - whether costs are derived from primitives or asserted as aggregate ticks;
 - whether word operations are applied only to machine-bounded words;
 - whether charged bits are the payload actually read by the decoder/query;
+- the exact theorem carrying the machine-word bound for each new charged
+  fixed-width table or payload-word primitive;
 - any change to tracked caveats in `docs/ROADMAP.md` or
   `docs/FAMILY_SUMMARY.md`.
 
@@ -199,6 +230,16 @@ Reject or send back for revision when:
 - the branch delivers docs, helper layers, adapters, or extra blockers while
   deferring the named hard construction that is still inside the worker's owned
   file surface.
+- the branch proves a useful local kernel or partial profile and stops even
+  though the owned concrete component profile has an obvious next local step.
+- the branch claims a brick wall after only one or two proof failures, without
+  attempts at nearby repaired signatures or construction variants.
+- descriptor/select work proves only conditional local-run exactness, with no
+  global `selectCosted` exactness over all target/occurrence queries.
+- BP close work proves only charged block-summary reads, with no answer-close
+  theorem consuming those summaries and endpoint-fringe repair.
+- a new O(1) charged word/table read lacks an explicit machine-word bound.
+- theorem names suggest stronger semantics than their statements prove.
 
 ## Current Suggested Split
 
