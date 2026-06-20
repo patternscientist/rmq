@@ -473,10 +473,13 @@ is half-real.
 **Stop assessment:** appropriate for the cleanup/select/demotion it did (trust
 clean, build green). The space codec is the next fix and the central open item.
 
-**Demo framing:** honest claim is "verified word-RAM rank *and* select with
-derived O(1) query"; do **not** claim "succinct 2n+o(n) RMQ" (space decoupled).
-Lead with the airtight results (RAM.Exec sparse table, FH fresh build/query,
-dense LCA, lower bound).
+**Path to genuine 2n+o(n) (achievable before the demo):** make the query read
+from the o(n) `payload` via a proven injective bit-codec (word-RAM extraction of
+a sample/word from a payload word), so `overhead` bounds the structure the query
+actually operates on — instead of indexing a Θ(n) `IndexedSeq Nat` beside a
+decoupled accounting field. Once that lands, the `2n+o(n)` succinct claim becomes
+genuine. (No demo-framing prescriptions here — that's the user's call closer to
+the date and depends on what lands.)
 
 ---
 
