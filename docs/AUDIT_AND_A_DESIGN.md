@@ -485,3 +485,49 @@ the date and depends on what lands.)
 
 *Process: from 2026-06-19 onward, each audit is written up here as a dated
 round-log entry by default (no need to ask).*
+
+## 2026-06-19 (later) — succinct SPACE decoupling genuinely closed; RMQ-query cost now the soft spot
+
+**Genuine, confirmed progress (the twice-flagged space gap is fixed at the
+rank/select level).** `FixedWidthNatTable (entries width)` stores entries as real
+fixed-width bit fields: `payload_length_eq : payload.length = entries.length *
+width` (a genuine bit count, not a decoupled accounting field) and `read_exact :
+(store.words[i]?).map bitsToNatLE = entries[i]?` (a real injective bit-codec —
+reading `width` bits and decoding LE recovers the entry). `PayloadLiveStoredWordRankData`
+uses it with `aux_length_eq : samples.payload.length = overhead`, so the o(n)
+overhead is the *actual* bit length of a payload the query reads from. No
+`tickValue` anywhere in `SuccinctSpace.lean`. The headline payload is
+`shape.bpCode ++ encodeAux …` — a genuine concatenated `2n + o(n)` bitstring.
+`select` got the same live treatment. Trust clean, build green. This directly
+answers the prior space-decoupling finding. (Old decoupled `PayloadBackedStoredWordRankData`
+still coexists at ~2112 — delist/retire it.)
+
+**New soft spot: the top-level succinct RMQ query cost is implausibly small.**
+`BroadwordRMQDirectory` carries `queryEncodedCosted : List Bool → Nat → Nat →
+Costed (Option Nat)` as a structure field, with `query_cost_le : cost ≤ queryCost`
+and `query_exact : … = scanWindow shape.representative left len`. The headline
+`SampledStoredBPNativeRMQFamily.two_n_plus_o_one_read_query_profile` has
+**`queryCost ≤ 1`**. A *complete* RMQ-from-encoding query being one operation is
+implausible as a genuine derived composition — the honest LCA composition of the
+same kind of pieces was ≤14–16. With no `tickValue`, the most likely mechanism is
+the query decoding the payload and computing the answer largely in **pure Lean**
+(`Costed.pure`/`.map`, cost ~0) and charging ≤1 — i.e., the RMQ-query *time* is
+still decoupled from the actual decode+scan work, even though the rank/select
+*pieces* are now genuinely costed (≤3, real primitives) and the *space* is
+genuinely o(n). **Not fully confirmed** — the concrete `queryEncodedCosted`
+construction wasn't located this pass — but the ≤1 cost is the tell; verify next.
+
+**Net:** the succinct claim flipped which half is soft. Earlier: cost genuine /
+space decoupled. Now: **space genuine / RMQ-query cost soft** (≤1 is not a
+credible derived O(1) for a full query). Genuine fix: build the succinct RMQ
+query as a *counted composition* of the already-genuine rank/select +
+first-occurrence + block-RMQ primitives reading from the payload, yielding a
+derived constant > 1 (cf. the LCA's ~16) — not a ≤1 charge over a pure-Lean
+decode.
+
+**Stop assessment:** appropriate on the space deliverable (a real fix); the
+RMQ-query-cost decoupling is the recurring core issue, now surfaced at the top
+level, and is the next thing to make genuine.
+
+**Path to genuine 2n+o(n) (still achievable):** space is now genuine; what
+remains is a counted RMQ query over the payload (not pure-Lean decode + ≤1).
