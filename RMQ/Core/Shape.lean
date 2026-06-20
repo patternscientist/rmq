@@ -34,6 +34,28 @@ def rootOffset? : CartesianShape -> Option Nat
   | empty => none
   | node left _right => some left.size
 
+/--
+Balanced-parentheses code for a Cartesian shape.
+
+This is deliberately separate from `fullCode`: `fullCode.tail` is the compact
+decoder payload used by the lower-bound adapter, while `bpCode` is the
+open/close representation used by broadword balanced-parentheses directories.
+For a node we emit an opening bit, the left subtree, the matching close, and
+then the right subtree.
+-/
+def bpCode : CartesianShape -> List Bool
+  | empty => []
+  | node left right => true :: left.bpCode ++ false :: right.bpCode
+
+theorem bpCode_length (shape : CartesianShape) :
+    shape.bpCode.length = 2 * shape.size := by
+  induction shape with
+  | empty =>
+      simp [bpCode, size]
+  | node left right ihleft ihright =>
+      simp [bpCode, size, ihleft, ihright]
+      omega
+
 end CartesianShape
 
 /--
@@ -185,6 +207,310 @@ theorem sameRMQBehavior_addConst (delta : Int) (xs : List Int) :
     intro left len _hlen _hbound
     exact scanWindow_addConst delta xs left len
 
+theorem leftmostArgMin_congr_on_range
+    {xs ys : List Int} {left right idx : Nat}
+    (_hxbound : right <= xs.length)
+    (hybound : right <= ys.length)
+    (heq :
+      forall j, left <= j -> j < right -> xs[j]? = ys[j]?)
+    (harg : LeftmostArgMin xs left right idx) :
+    LeftmostArgMin ys left right idx := by
+  rcases harg with
+    ⟨hleft_right, _hright_len, hleft_idx, hidx_right, v, hget,
+      hmin, hleftmost⟩
+  have hidx_eq := heq idx hleft_idx hidx_right
+  have hget_y : ys[idx]? = some v := by
+    simpa [← hidx_eq] using hget
+  refine ⟨hleft_right, hybound, hleft_idx, hidx_right, v, hget_y, ?_, ?_⟩
+  · intro j w hleft_j hj_right hget_j
+    have hj_eq := heq j hleft_j hj_right
+    have hget_x : xs[j]? = some w := by
+      simpa [hj_eq] using hget_j
+    exact hmin j w hleft_j hj_right hget_x
+  · intro j w hleft_j hj_idx hget_j
+    have hj_right : j < right := by omega
+    have hj_eq := heq j hleft_j hj_right
+    have hget_x : xs[j]? = some w := by
+      simpa [hj_eq] using hget_j
+    exact hleftmost j w hleft_j hj_idx hget_x
+
+theorem scanWindow_congr_on_range
+    {xs ys : List Int} {left len : Nat}
+    (hxbound : left + len <= xs.length)
+    (hybound : left + len <= ys.length)
+    (heq :
+      forall j, left <= j -> j < left + len -> xs[j]? = ys[j]?) :
+    scanWindow xs left len = scanWindow ys left len := by
+  by_cases hlen : len = 0
+  · subst len
+    simp [scanWindow]
+  · have hpos : 0 < len := by omega
+    have hxarg : LeftmostArgMin xs left (left + len)
+        (scanWindow xs left len) :=
+      scanWindow_leftmost xs left len hpos hxbound
+    have hyarg : LeftmostArgMin ys left (left + len)
+        (scanWindow ys left len) :=
+      scanWindow_leftmost ys left len hpos hybound
+    have hxarg_y : LeftmostArgMin ys left (left + len)
+        (scanWindow xs left len) :=
+      leftmostArgMin_congr_on_range hxbound hybound heq hxarg
+    exact leftmostArgMin_unique ys left (left + len)
+      (scanWindow xs left len) (scanWindow ys left len) hxarg_y hyarg
+
+theorem shapeRange_congr_on_range
+    {xs ys : List Int} {left len : Nat}
+    (hxbound : left + len <= xs.length)
+    (hybound : left + len <= ys.length)
+    (heq :
+      forall j, left <= j -> j < left + len -> xs[j]? = ys[j]?) :
+    shapeRange xs left len = shapeRange ys left len := by
+  exact
+    Nat.strongRecOn
+      (motive := fun len =>
+        forall left,
+          left + len <= xs.length ->
+            left + len <= ys.length ->
+              (forall j,
+                left <= j -> j < left + len -> xs[j]? = ys[j]?) ->
+                shapeRange xs left len = shapeRange ys left len)
+      len
+      (fun len ih left hxbound hybound heq => by
+        cases len with
+        | zero =>
+            simp [shapeRange]
+        | succ len' =>
+            let width := len' + 1
+            let root := scanWindow xs left width
+            let leftLen := root - left
+            let rightStart := root + 1
+            let rightLen := left + width - rightStart
+            have hroot :
+                scanWindow xs left width = scanWindow ys left width :=
+              scanWindow_congr_on_range hxbound hybound heq
+            have hbounds : left <= root /\ root < left + width :=
+              scanWindow_bounds xs left width (by omega)
+            have hleftLen_lt : leftLen < len' + 1 := by
+              unfold leftLen
+              omega
+            have hrightLen_lt : rightLen < len' + 1 := by
+              unfold rightLen rightStart
+              omega
+            have hleftBound_x : left + leftLen <= xs.length := by
+              unfold leftLen
+              omega
+            have hleftBound_y : left + leftLen <= ys.length := by
+              unfold leftLen
+              omega
+            have hrightBound_x : rightStart + rightLen <= xs.length := by
+              unfold rightStart rightLen
+              omega
+            have hrightBound_y : rightStart + rightLen <= ys.length := by
+              unfold rightStart rightLen
+              omega
+            have hleftEq :
+                shapeRange xs left leftLen =
+                  shapeRange ys left leftLen := by
+              exact ih leftLen hleftLen_lt left hleftBound_x hleftBound_y
+                (fun j hleft_j hj_right =>
+                  heq j hleft_j (by
+                    unfold leftLen at hj_right
+                    omega))
+            have hrightEq :
+                shapeRange xs rightStart rightLen =
+                  shapeRange ys rightStart rightLen := by
+              exact ih rightLen hrightLen_lt rightStart hrightBound_x
+                hrightBound_y
+                (fun j hleft_j hj_right =>
+                  heq j (by
+                    unfold rightStart at hleft_j
+                    omega) (by
+                    unfold rightLen rightStart at hj_right
+                    omega))
+            have hleftEq' :
+                shapeRange xs left
+                    (scanWindow ys left (len' + 1) - left) =
+                  shapeRange ys left
+                    (scanWindow ys left (len' + 1) - left) := by
+              simpa [width, root, leftLen, hroot] using hleftEq
+            have hrightEq' :
+                shapeRange xs (scanWindow ys left (len' + 1) + 1)
+                    (left + (len' + 1) -
+                      (scanWindow ys left (len' + 1) + 1)) =
+                  shapeRange ys (scanWindow ys left (len' + 1) + 1)
+                    (left + (len' + 1) -
+                      (scanWindow ys left (len' + 1) + 1)) := by
+              simpa [width, root, rightStart, rightLen, hroot] using
+                hrightEq
+            simp [shapeRange]
+            rw [hroot]
+            constructor
+            · exact hleftEq'
+            · exact hrightEq')
+      left hxbound hybound heq
+
+theorem scanWindow_append_left
+    (xs suffix : List Int) {left len : Nat}
+    (hbound : left + len <= xs.length) :
+    scanWindow (xs ++ suffix) left len = scanWindow xs left len := by
+  apply scanWindow_congr_on_range
+  · simp [List.length_append]
+    omega
+  · exact hbound
+  · intro j _hleft_j hj_right
+    have hj : j < xs.length := by omega
+    simp [List.getElem?_append, hj]
+
+theorem shapeRange_append_left
+    (xs suffix : List Int) {left len : Nat}
+    (hbound : left + len <= xs.length) :
+    shapeRange (xs ++ suffix) left len = shapeRange xs left len := by
+  apply shapeRange_congr_on_range
+  · simp [List.length_append]
+    omega
+  · exact hbound
+  · intro j _hleft_j hj_right
+    have hj : j < xs.length := by omega
+    simp [List.getElem?_append, hj]
+
+theorem leftmostArgMin_append_right
+    (pre xs : List Int) {left right idx : Nat}
+    (harg : LeftmostArgMin xs left right idx) :
+    LeftmostArgMin (pre ++ xs) (pre.length + left)
+      (pre.length + right) (pre.length + idx) := by
+  rcases harg with
+    ⟨hleft_right, hright_len, hleft_idx, hidx_right, v, hget,
+      hmin, hleftmost⟩
+  have hget_full :
+      (pre ++ xs)[pre.length + idx]? = some v := by
+    simp [List.getElem?_append, hget]
+  refine ⟨by omega, by simpa [List.length_append] using (by omega : pre.length + right <= pre.length + xs.length),
+    by omega, by omega, v, hget_full, ?_, ?_⟩
+  · intro j w hleft_j hj_right hget_j
+    have hj_ge : pre.length <= j := by omega
+    have hleft_xs : left <= j - pre.length := by omega
+    have hright_xs : j - pre.length < right := by omega
+    have hget_xs : xs[j - pre.length]? = some w := by
+      simpa [List.getElem?_append, hj_ge] using hget_j
+    exact hmin (j - pre.length) w hleft_xs hright_xs hget_xs
+  · intro j w hleft_j hj_idx hget_j
+    have hj_ge : pre.length <= j := by omega
+    have hleft_xs : left <= j - pre.length := by omega
+    have hidx_xs : j - pre.length < idx := by omega
+    have hget_xs : xs[j - pre.length]? = some w := by
+      simpa [List.getElem?_append, hj_ge] using hget_j
+    exact hleftmost (j - pre.length) w hleft_xs hidx_xs hget_xs
+
+theorem scanWindow_append_right
+    (pre xs : List Int) {left len : Nat}
+    (hbound : left + len <= xs.length) :
+    scanWindow (pre ++ xs) (pre.length + left) len =
+      pre.length + scanWindow xs left len := by
+  by_cases hlen : len = 0
+  · subst len
+    simp [scanWindow]
+  · have hpos : 0 < len := by omega
+    have hfullBound :
+        (pre.length + left) + len <= (pre ++ xs).length := by
+      simp [List.length_append]
+      omega
+    have hfull : LeftmostArgMin (pre ++ xs)
+        (pre.length + left) ((pre.length + left) + len)
+        (scanWindow (pre ++ xs) (pre.length + left) len) :=
+      scanWindow_leftmost (pre ++ xs) (pre.length + left) len
+        hpos hfullBound
+    have hxs : LeftmostArgMin xs left (left + len)
+        (scanWindow xs left len) :=
+      scanWindow_leftmost xs left len hpos hbound
+    have hshift : LeftmostArgMin (pre ++ xs)
+        (pre.length + left) ((pre.length + left) + len)
+        (pre.length + scanWindow xs left len) := by
+      simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using
+        leftmostArgMin_append_right pre xs hxs
+    exact leftmostArgMin_unique (pre ++ xs)
+      (pre.length + left) ((pre.length + left) + len)
+      (scanWindow (pre ++ xs) (pre.length + left) len)
+      (pre.length + scanWindow xs left len) hfull hshift
+
+theorem shapeRange_append_right
+    (pre xs : List Int) {left len : Nat}
+    (hbound : left + len <= xs.length) :
+    shapeRange (pre ++ xs) (pre.length + left) len =
+      shapeRange xs left len := by
+  exact
+    Nat.strongRecOn
+      (motive := fun len =>
+        forall left,
+          left + len <= xs.length ->
+            shapeRange (pre ++ xs) (pre.length + left) len =
+              shapeRange xs left len)
+      len
+      (fun len ih left hbound => by
+        cases len with
+        | zero =>
+            simp [shapeRange]
+        | succ len' =>
+            let width := len' + 1
+            let root := scanWindow xs left width
+            let leftLen := root - left
+            let rightStart := root + 1
+            let rightLen := left + width - rightStart
+            have hroot :
+                scanWindow (pre ++ xs) (pre.length + left) width =
+                  pre.length + root := by
+              simpa [width, root] using
+                scanWindow_append_right pre xs (left := left)
+                  (len := width) hbound
+            have hroot_comm :
+                scanWindow (pre ++ xs) (left + pre.length) width =
+                  pre.length + root := by
+              simpa [Nat.add_comm] using hroot
+            have hleftLen_full :
+                pre.length + root - (left + pre.length) = leftLen := by
+              unfold leftLen
+              omega
+            have hrightLen_full :
+                left + (len' + (pre.length + 1)) -
+                    (pre.length + (1 + root)) = rightLen := by
+              unfold rightLen rightStart width
+              omega
+            have hbounds : left <= root /\ root < left + width :=
+              scanWindow_bounds xs left width (by omega)
+            have hleftLen_lt : leftLen < len' + 1 := by
+              unfold leftLen
+              omega
+            have hrightLen_lt : rightLen < len' + 1 := by
+              unfold rightLen rightStart
+              omega
+            have hleftBound : left + leftLen <= xs.length := by
+              unfold leftLen
+              omega
+            have hrightBound : rightStart + rightLen <= xs.length := by
+              unfold rightStart rightLen
+              omega
+            have hleftShape :
+                shapeRange (pre ++ xs) (pre.length + left) leftLen =
+                  shapeRange xs left leftLen :=
+              ih leftLen hleftLen_lt left hleftBound
+            have hrightShape :
+                shapeRange (pre ++ xs) (pre.length + rightStart)
+                    rightLen =
+                  shapeRange xs rightStart rightLen :=
+              ih rightLen hrightLen_lt rightStart hrightBound
+            have hnode :
+                CartesianShape.node
+                    (shapeRange (pre ++ xs) (pre.length + left) leftLen)
+                    (shapeRange (pre ++ xs)
+                      (pre.length + rightStart) rightLen) =
+                  CartesianShape.node
+                    (shapeRange xs left leftLen)
+                    (shapeRange xs rightStart rightLen) := by
+              simp [hleftShape, hrightShape]
+            simpa [shapeRange, width, root, leftLen, rightStart, rightLen,
+              hroot, hroot_comm, hleftLen_full, hrightLen_full,
+              Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using
+              hnode)
+      left hbound
+
 theorem shapeRange_eq_of_sameRMQBehavior
     {xs ys : List Int} (hbehavior : SameRMQBehavior xs ys)
     {left len : Nat} (hbound : left + len <= xs.length) :
@@ -272,6 +598,204 @@ theorem shape_addConst (delta : Int) (xs : List Int) :
     shape (addConst delta xs) = shape xs := by
   exact shape_eq_of_sameRMQBehavior (sameRMQBehavior_addConst delta xs)
 
+namespace CartesianShape
+
+/--
+Canonical representative array for a Cartesian shape.
+
+Each child representative is shifted upward by one, then a zero separator is
+placed at the root. Recursing this way makes the root the unique minimum of
+the represented subtree while preserving each child shape under additive
+shifts.
+-/
+def representative : CartesianShape -> List Int
+  | empty => []
+  | node left right =>
+      addConst 1 left.representative ++ (0 :: addConst 1 right.representative)
+
+theorem representative_length (treeShape : CartesianShape) :
+    treeShape.representative.length = treeShape.size := by
+  induction treeShape with
+  | empty =>
+      simp [representative, size]
+  | node left right ihleft ihright =>
+      simp [representative, size, addConst_length, ihleft, ihright]
+      omega
+
+theorem representative_nonnegative (treeShape : CartesianShape) :
+    forall value, value ∈ treeShape.representative -> 0 <= value := by
+  induction treeShape with
+  | empty =>
+      intro value hmem
+      simp [representative] at hmem
+  | node left right ihleft ihright =>
+      intro value hmem
+      simp [representative, addConst, List.mem_append, List.mem_map] at hmem
+      rcases hmem with ⟨base, hbase_mem, rfl⟩ | htail
+      · have hnonneg := ihleft base hbase_mem
+        omega
+      · rcases htail with rfl | ⟨base, hbase_mem, rfl⟩
+        · omega
+        · have hnonneg := ihright base hbase_mem
+          omega
+
+theorem representative_shift_positive (treeShape : CartesianShape) :
+    forall value, value ∈ addConst 1 treeShape.representative -> 0 < value := by
+  intro value hmem
+  simp [addConst, List.mem_map] at hmem
+  rcases hmem with ⟨base, hbase_mem, rfl⟩
+  have hnonneg :=
+    representative_nonnegative treeShape base hbase_mem
+  omega
+
+end CartesianShape
+
+private theorem leftmostArgMin_append_zero_of_positive
+    (leftValues rightValues : List Int)
+    (hleft : forall value, value ∈ leftValues -> 0 < value)
+    (hright : forall value, value ∈ rightValues -> 0 < value) :
+    LeftmostArgMin (leftValues ++ (0 :: rightValues)) 0
+      (leftValues ++ (0 :: rightValues)).length leftValues.length := by
+  have hget_root :
+      (leftValues ++ (0 :: rightValues))[leftValues.length]? = some 0 := by
+    simp
+  have hnonempty :
+      0 < (leftValues ++ (0 :: rightValues)).length := by
+    simp
+    omega
+  refine ⟨hnonempty, by simp, by omega, by simp, 0, hget_root, ?_, ?_⟩
+  · intro j w _hleft_j hj_right hget_j
+    by_cases hj_left : j < leftValues.length
+    · have hget_left : leftValues[j]? = some w := by
+        simpa [List.getElem?_append, hj_left] using hget_j
+      have hpos : 0 < w := hleft w (List.mem_of_getElem? hget_left)
+      omega
+    · by_cases hj_root : j = leftValues.length
+      · subst j
+        rw [hget_root] at hget_j
+        injection hget_j with hw
+        omega
+      · have hj_right_part : leftValues.length + 1 <= j := by omega
+        have hget_assoc :
+            ((leftValues ++ [0]) ++ rightValues)[j]? = some w := by
+          simpa [List.append_assoc] using hget_j
+        have hget_right :
+            rightValues[j - (leftValues.length + 1)]? = some w := by
+          have hprefix : (leftValues ++ [0]).length <= j := by
+            simp
+            exact hj_right_part
+          have hnot_left_length : ¬ j < leftValues.length + 1 := by
+            omega
+          rw [List.getElem?_append] at hget_assoc
+          simp [hnot_left_length] at hget_assoc
+          simpa using hget_assoc
+        have hpos : 0 < w := hright w (List.mem_of_getElem? hget_right)
+        omega
+  · intro j w _hleft_j hj_idx hget_j
+    have hj_left : j < leftValues.length := hj_idx
+    have hget_left : leftValues[j]? = some w := by
+      simpa [List.getElem?_append, hj_left] using hget_j
+    exact hleft w (List.mem_of_getElem? hget_left)
+
+private theorem scanWindow_append_zero_of_positive
+    (leftValues rightValues : List Int)
+    (hleft : forall value, value ∈ leftValues -> 0 < value)
+    (hright : forall value, value ∈ rightValues -> 0 < value) :
+    scanWindow (leftValues ++ (0 :: rightValues)) 0
+      (leftValues ++ (0 :: rightValues)).length = leftValues.length := by
+  let xs := leftValues ++ (0 :: rightValues)
+  have harg : LeftmostArgMin xs 0 xs.length leftValues.length := by
+    simpa [xs] using
+      leftmostArgMin_append_zero_of_positive leftValues rightValues
+        hleft hright
+  have hscan : LeftmostArgMin xs 0 xs.length
+      (scanWindow xs 0 xs.length) := by
+    simpa using
+      scanWindow_leftmost xs 0 xs.length (by
+        simp [xs]
+        omega) (by simp)
+  exact leftmostArgMin_unique xs 0 xs.length
+    (scanWindow xs 0 xs.length) leftValues.length hscan harg
+
+theorem CartesianShape.shape_representative
+    (treeShape : CartesianShape) :
+    shape treeShape.representative = treeShape := by
+  induction treeShape with
+  | empty =>
+      simp [CartesianShape.representative, shape, shapeRange]
+  | node left right ihleft ihright =>
+      let leftValues := addConst 1 left.representative
+      let rightValues := addConst 1 right.representative
+      let xs := leftValues ++ (0 :: rightValues)
+      have hleftPos :
+          forall value, value ∈ leftValues -> 0 < value := by
+        simpa [leftValues] using
+          CartesianShape.representative_shift_positive left
+      have hrightPos :
+          forall value, value ∈ rightValues -> 0 < value := by
+        simpa [rightValues] using
+          CartesianShape.representative_shift_positive right
+      have hscan :
+          scanWindow xs 0 xs.length = leftValues.length := by
+        simpa [xs] using
+          scanWindow_append_zero_of_positive leftValues rightValues
+            hleftPos hrightPos
+      have hleftShape :
+          shapeRange xs 0 leftValues.length = left := by
+        have happend :
+            shapeRange (leftValues ++ (0 :: rightValues)) 0
+                leftValues.length =
+              shapeRange leftValues 0 leftValues.length :=
+          shapeRange_append_left leftValues (0 :: rightValues) (by simp)
+        calc
+          shapeRange xs 0 leftValues.length
+              = shapeRange leftValues 0 leftValues.length := by
+                simpa [xs] using happend
+          _ = shape leftValues := rfl
+          _ = shape left.representative := by
+                simpa [leftValues] using
+                  shape_addConst 1 left.representative
+          _ = left := ihleft
+      have hrightShape :
+          shapeRange xs (leftValues.length + 1) rightValues.length = right := by
+        have happend :
+            shapeRange ((leftValues ++ [0]) ++ rightValues)
+                ((leftValues ++ [0]).length + 0) rightValues.length =
+              shapeRange rightValues 0 rightValues.length :=
+          shapeRange_append_right (leftValues ++ [0]) rightValues (by simp)
+        calc
+          shapeRange xs (leftValues.length + 1) rightValues.length
+              =
+            shapeRange ((leftValues ++ [0]) ++ rightValues)
+                ((leftValues ++ [0]).length + 0) rightValues.length := by
+                simp [xs, List.append_assoc]
+          _ = shapeRange rightValues 0 rightValues.length := happend
+          _ = shape rightValues := rfl
+          _ = shape right.representative := by
+                simpa [rightValues] using
+                  shape_addConst 1 right.representative
+          _ = right := ihright
+      have hlen : xs.length = leftValues.length + 1 + rightValues.length := by
+        simp [xs, Nat.add_assoc]
+        omega
+      unfold shape
+      cases hlen_cases : xs.length with
+      | zero =>
+          simp [xs] at hlen_cases
+      | succ len' =>
+          have hscan' :
+              scanWindow xs 0 (len' + 1) = leftValues.length := by
+            simpa [hlen_cases] using hscan
+          have hrightLen :
+              len' - leftValues.length = rightValues.length := by
+            omega
+          have hshape :
+              shapeRange xs 0 (len' + 1) =
+                CartesianShape.node left right := by
+            simp [shapeRange, hscan', hrightLen, hleftShape, hrightShape]
+          simpa [CartesianShape.representative, leftValues, rightValues, xs,
+            hlen_cases] using hshape
+
 theorem scanWindow_eq_of_shapeRange_eq
     {xs ys : List Int} {left len : Nat}
     (hlen : 0 < len)
@@ -333,6 +857,14 @@ theorem ShapeOfSize.size_eq
       simp [CartesianShape.size]
   | node hleft hright ihleft ihright =>
       simp [CartesianShape.size, ihleft, ihright]
+
+theorem ShapeOfSize.exists_representative_array
+    {n : Nat} {treeShape : CartesianShape}
+    (hshape : ShapeOfSize n treeShape) :
+    exists xs, xs.length = n /\ shape xs = treeShape := by
+  refine ⟨treeShape.representative, ?_, ?_⟩
+  · rw [CartesianShape.representative_length, hshape.size_eq]
+  · exact CartesianShape.shape_representative treeShape
 
 /--
 Computable universe of binary Cartesian shapes of a fixed size. Its length is
@@ -597,6 +1129,26 @@ theorem CartesianShape.fullCode_injective
   injection hright with hpair
   exact Prod.ext_iff.mp hpair |>.1
 
+/-- Decode a full explicit preorder shape code, rejecting trailing bits. -/
+def CartesianShape.decodeFullCode? (bits : List Bool) :
+    Option CartesianShape :=
+  match decodeFullCodeFuel bits.length bits with
+  | some (shape, []) => some shape
+  | _ => none
+
+theorem CartesianShape.decodeFullCode?_fullCode
+    (shape : CartesianShape) :
+    CartesianShape.decodeFullCode? shape.fullCode = some shape := by
+  have hdecode :=
+    decodeFullCodeFuel_fullCode_append shape []
+      (fuel := shape.fullCode.length) (by omega)
+  have hdecode' :
+      decodeFullCodeFuel shape.fullCode.length shape.fullCode =
+        some (shape, []) := by
+    simpa using hdecode
+  unfold CartesianShape.decodeFullCode?
+  rw [hdecode']
+
 private theorem mem_erase_of_ne_of_mem {α : Type} [BEq α] [LawfulBEq α]
     {a b : α} {xs : List α} (hne : a ≠ b) (hmem : a ∈ xs) :
     a ∈ xs.erase b := by
@@ -844,6 +1396,12 @@ theorem CartesianShape.fullCode_tail_length_of_shapeOfSize
       simp [CartesianShape.size] at hsize
       omega
 
+theorem CartesianShape.bpCode_length_of_shapeOfSize
+    {n : Nat} {shape : CartesianShape}
+    (hshape : ShapeOfSize n shape) :
+    shape.bpCode.length = 2 * n := by
+  rw [CartesianShape.bpCode_length, ShapeOfSize.size_eq hshape]
+
 private theorem fullCode_eq_of_tail_eq_of_pos
     {n : Nat} {left right : CartesianShape}
     (hleft : left ∈ shapesOfSize (n + 1))
@@ -970,25 +1528,6 @@ theorem blockSignature_shapeOfSize
     ShapeOfSize len (blockSignature xs start len) := by
   unfold blockSignature
   exact shapeRange_shapeOfSize xs start len
-
-example : shape [5, 2, 7, 1, 3] =
-    CartesianShape.node
-      (CartesianShape.node
-        (CartesianShape.node CartesianShape.empty CartesianShape.empty)
-        (CartesianShape.node CartesianShape.empty CartesianShape.empty))
-      (CartesianShape.node CartesianShape.empty CartesianShape.empty) := by
-  native_decide
-
-example : blockSignature [4, 1, 1, 2] 0 4 =
-    CartesianShape.node
-      (CartesianShape.node CartesianShape.empty CartesianShape.empty)
-      (CartesianShape.node
-        CartesianShape.empty
-        (CartesianShape.node CartesianShape.empty CartesianShape.empty)) := by
-  native_decide
-
-example : (List.map shapeCount [0, 1, 2, 3, 4]) = [1, 1, 2, 5, 14] := by
-  native_decide
 
 end Cartesian
 

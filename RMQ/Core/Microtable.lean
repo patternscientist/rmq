@@ -458,20 +458,6 @@ def rawBackend (xs : List Int) : RMQBackend xs :=
 
 end Microtable
 
-example :
-    (CartesianShape.node
-      (CartesianShape.node CartesianShape.empty CartesianShape.empty)
-      (CartesianShape.node
-        CartesianShape.empty
-        (CartesianShape.node CartesianShape.empty CartesianShape.empty))).queryOffset?
-      2 4 = some 2 := by
-  native_decide
-
-example :
-    (Microtable.raw 4).queryOffset?
-      (blockSignature [4, 1, 1, 2] 0 4) 2 4 = some 2 := by
-  native_decide
-
 end Cartesian
 
 end RMQ

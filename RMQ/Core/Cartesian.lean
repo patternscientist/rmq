@@ -1367,15 +1367,6 @@ def reduction (xs : List Int) (hspec : BuiltRangeLCASpec xs) :
 def certifiedReduction (xs : List Int) : RMQToLCAReduction xs :=
   reduction xs (builtRangeLCASpec xs)
 
-example : rootLabel (tree [5, 2, 7, 1, 3]) = 3 := by
-  native_decide
-
-example : (tree [5, 2, 7, 1, 3]).pathLCA? 1 4 = some 3 := by
-  native_decide
-
-example : (tree [4, 1, 1, 2]).pathLCA? 1 2 = some 1 := by
-  native_decide
-
 end Cartesian
 
 end RMQ

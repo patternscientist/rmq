@@ -1,3 +1,4 @@
+import RMQ.Core.TableModel
 import RMQ.Impl.RecursiveHybridCost
 import RMQ.Impl.SparseTableMemoCost
 
@@ -370,48 +371,31 @@ theorem summarySparseBuildCost_le_thirteen_mul_length
     exact Nat.le_trans hsum (by omega)
 
 /--
-RAM/unit-cost indexed-access model: supplied sparse-table row/cell reads and
-materialized microtable entry reads are each charged as one indexed lookup.
+RAM/unit-cost indexed-access model: a stored local microtable query reads the
+block signature and then the shape/query slot, one modeled indexed read each.
 -/
-def materializedMicrotableLookupCost : Nat := 1
+def storedMicrotableLookupCost : Nat :=
+  TableModel.indexedReadCost + TableModel.indexedReadCost
 
 /--
-Query cost for a supplied Fischer-Heun state: two materialized microtable
+Query cost for a supplied Fischer-Heun state: two stored local microtable
 lookups for boundary blocks, one supplied sparse-table query over full-block
 summaries, and two candidate combines.
 -/
 def suppliedQueryCost
     (xs : List Int) (b left right : Nat) : Nat :=
   if _h : ValidRange xs left right /\ 0 < b then
-    let leftBlock := leftBoundaryBlock left b
-    let rightBlock := rightBoundaryBlock right b
-    materializedMicrotableLookupCost +
-      SparseTable.queryFromTableCost (blockMinSummary xs b) leftBlock rightBlock +
-        materializedMicrotableLookupCost + 2
+    storedMicrotableLookupCost + 7 + storedMicrotableLookupCost + 2
   else
     1
 
-theorem sparseQueryFromTableCost_le_four
-    (xs : List Int) (left right : Nat) :
-    SparseTable.queryFromTableCost xs left right <= 4 := by
-  unfold SparseTable.queryFromTableCost
-  by_cases h : ValidRange xs left right
-  · rw [dif_pos h]
-    exact Nat.le_refl _
-  · rw [dif_neg h]
-    omega
-
-theorem suppliedQueryCost_le_eight
+theorem suppliedQueryCost_le_thirteen
     (xs : List Int) (b left right : Nat) :
-    suppliedQueryCost xs b left right <= 8 := by
+    suppliedQueryCost xs b left right <= 13 := by
   unfold suppliedQueryCost
   by_cases h : ValidRange xs left right /\ 0 < b
   · rw [dif_pos h]
-    have hsummaryCost := sparseQueryFromTableCost_le_four
-      (blockMinSummary xs b) (leftBoundaryBlock left b)
-      (rightBoundaryBlock right b)
-    simp [materializedMicrotableLookupCost]
-    omega
+    simp [storedMicrotableLookupCost, TableModel.indexedReadCost]
   · rw [dif_neg h]
     omega
 
@@ -470,7 +454,7 @@ theorem suppliedQueryCost_constant :
     exists c,
       forall xs b left right,
         suppliedQueryCost xs b left right <= c := by
-  exact ⟨8, suppliedQueryCost_le_eight⟩
+  exact ⟨13, suppliedQueryCost_le_thirteen⟩
 
 /--
 Assembled Fischer-Heun cost profile. Under the finite-table budget for the
@@ -486,10 +470,10 @@ theorem linearBuild_constantQuery_profile :
             buildCost xs b <= buildC * xs.length /\
               forall left right,
                 suppliedQueryCost xs b left right <= queryC := by
-  refine ⟨15, 8, ?_⟩
+  refine ⟨15, 13, ?_⟩
   intro xs b hm hlog
   exact ⟨buildCost_le_fifteen_mul_length xs b hm hlog,
-    fun left right => suppliedQueryCost_le_eight xs b left right⟩
+    fun left right => suppliedQueryCost_le_thirteen xs b left right⟩
 
 theorem linearBuild_constantQuery_profile_of_shape_budget :
     exists buildC queryC,
@@ -500,11 +484,11 @@ theorem linearBuild_constantQuery_profile_of_shape_budget :
               buildCost xs b <= buildC * xs.length /\
                 forall left right,
                   suppliedQueryCost xs b left right <= queryC := by
-  refine ⟨15, 8, ?_⟩
+  refine ⟨15, 13, ?_⟩
   intro xs b hslots hsquare hlog
   exact ⟨buildCost_le_fifteen_mul_length_of_shape_budget
       xs b hslots hsquare hlog,
-    fun left right => suppliedQueryCost_le_eight xs b left right⟩
+    fun left right => suppliedQueryCost_le_thirteen xs b left right⟩
 
 /--
 Canonical-block-size Fischer-Heun profile. For inputs large enough that the
@@ -519,14 +503,14 @@ theorem linearBuild_constantQuery_profile_canonical :
             forall left right,
               suppliedQueryCost xs (canonicalBlockSize xs) left right <=
                 queryC := by
-  refine ⟨15, 8, ?_⟩
+  refine ⟨15, 13, ?_⟩
   intro xs hb
   have hpos := canonicalBlockSize_pos_length_of_ge_sixteen (xs := xs) hb
   have hmicro := rawMicrotableSlotBudget_canonical_le_length xs hpos
   have hsummary := summaryLog_canonical_le_four_mul xs hb
   exact ⟨buildCost_le_fifteen_mul_length xs (canonicalBlockSize xs)
       hmicro hsummary,
-    fun left right => suppliedQueryCost_le_eight xs (canonicalBlockSize xs)
+    fun left right => suppliedQueryCost_le_thirteen xs (canonicalBlockSize xs)
       left right⟩
 
 end FischerHeun

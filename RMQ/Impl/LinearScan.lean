@@ -80,9 +80,9 @@ def backend (xs : List Int) : RMQ.RMQBackend xs where
     intro left right hbad
     exact invalid_none hbad
 
-example : query [5, 2, 7, 1, 3] 1 4 = some 3 := by native_decide
-example : query [4, 1, 1, 2] 0 4 = some 1 := by native_decide
-example : query [5, 2, 7] 2 2 = none := by native_decide
+example : query [5, 2, 7, 1, 3] 1 4 = some 3 := by decide
+example : query [4, 1, 1, 2] 0 4 = some 1 := by decide
+example : query [5, 2, 7] 2 2 = none := by decide
 
 end RMQ.LinearScan
 

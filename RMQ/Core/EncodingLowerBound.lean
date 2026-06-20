@@ -1,4 +1,7 @@
 import RMQ.Core.Shape
+import RMQ.Core.TableModel
+import RMQ.Core.LowerBound
+import RMQ.Core.PayloadLowerBound
 
 /-!
 # RMQ encoding lower-bound scaffolding
@@ -16,11 +19,9 @@ namespace RMQ
 
 namespace EncodingLowerBound
 
-/-- All bitstrings of length `n`. -/
-def bitStrings : Nat -> List (List Bool)
-  | 0 => [[]]
-  | n + 1 => (bitStrings n).flatMap fun bits =>
-      [false :: bits, true :: bits]
+/-- Compatibility wrapper for the generic fixed-length bitstring universe. -/
+abbrev bitStrings : Nat -> List (List Bool) :=
+  LowerBound.bitStrings
 
 private theorem sum_map_const_nat {alpha : Type} (xs : List alpha) (n : Nat) :
     ((xs.map fun _ => n).sum) = xs.length * n := by
@@ -28,42 +29,12 @@ private theorem sum_map_const_nat {alpha : Type} (xs : List alpha) (n : Nat) :
 
 theorem bitStrings_length (n : Nat) :
     (bitStrings n).length = 2 ^ n := by
-  induction n with
-  | zero =>
-      simp [bitStrings]
-  | succ n ih =>
-      simp [bitStrings, List.length_flatMap, sum_map_const_nat]
-      rw [ih, Nat.pow_succ]
+  exact LowerBound.bitStrings_length n
 
 theorem mem_bitStrings_of_length
     {bits : List Bool} {n : Nat} (hlen : bits.length = n) :
     List.Mem bits (bitStrings n) := by
-  induction n generalizing bits with
-  | zero =>
-      cases bits with
-      | nil =>
-          exact List.Mem.head []
-      | cons _ _ =>
-          simp at hlen
-  | succ n ih =>
-      cases bits with
-      | nil =>
-          simp at hlen
-      | cons b bits =>
-          have htail : bits.length = n := by
-            simp at hlen
-            exact hlen
-          have hmem := ih htail
-          cases b
-          case false =>
-            exact List.mem_flatMap.mpr
-              (Exists.intro bits
-                (And.intro hmem (List.Mem.head _)))
-          case true =>
-            exact List.mem_flatMap.mpr
-              (Exists.intro bits
-                (And.intro hmem
-                  (List.Mem.tail _ (List.Mem.head _))))
+  exact LowerBound.mem_bitStrings_of_length hlen
 
 private theorem mem_erase_of_ne_of_mem
     {alpha : Type} [BEq alpha] [LawfulBEq alpha]
@@ -99,7 +70,7 @@ private theorem mem_erase_of_ne_of_mem
           exact Or.inr (ih hmem)
 
 theorem length_le_of_nodup_injective_into
-    {alpha beta : Type} [BEq beta] [LawfulBEq beta]
+    {alpha : Type u} {beta : Type v} [BEq beta] [LawfulBEq beta]
     (xs : List alpha) (ys : List beta) (f : alpha -> beta)
     (hxs : xs.Nodup)
     (hmem : forall x, List.Mem x xs -> List.Mem (f x) ys)
@@ -107,41 +78,8 @@ theorem length_le_of_nodup_injective_into
       forall x, List.Mem x xs ->
         forall y, List.Mem y xs -> f x = f y -> x = y) :
     xs.length <= ys.length := by
-  induction xs generalizing ys with
-  | nil =>
-      simp
-  | cons x xs ih =>
-      rw [List.nodup_cons] at hxs
-      have hxmem : List.Mem (f x) ys := hmem x (List.Mem.head xs)
-      have htail :
-          xs.length <= (ys.erase (f x)).length := by
-        apply ih
-        case hxs =>
-          exact hxs.2
-        case hmem =>
-          intro y hy
-          have hymem : List.Mem (f y) ys :=
-            hmem y (List.Mem.tail x hy)
-          have hne : Not (f y = f x) := by
-            intro hEq
-            have hyx : y = x :=
-              hinj y (List.Mem.tail x hy) x (List.Mem.head xs) hEq
-            rw [hyx] at hy
-            exact hxs.1 hy
-          exact mem_erase_of_ne_of_mem hne hymem
-        case hinj =>
-          intro y hy z hz hEq
-          exact hinj y (List.Mem.tail x hy) z (List.Mem.tail x hz) hEq
-      have herase_len := List.length_erase_of_mem hxmem
-      have hys_pos : 0 < ys.length := by
-        cases ys with
-        | nil =>
-            cases hxmem
-        | cons _ _ =>
-            simp
-      rw [herase_len] at htail
-      change xs.length + 1 <= ys.length
-      omega
+  exact LowerBound.length_le_of_nodup_injective_into
+    xs ys f hxs hmem hinj
 
 /--
 A fixed-length bit encoding of all Cartesian shapes of size `n` that loses no
@@ -238,6 +176,86 @@ def exactRMQShapeEncoding_of_stateEncoding
   sample_shape_eq := encoding.sample_shape_eq
   query_exact := encoding.query_exact
 
+/-- Payload used by the canonical representative state encoding. -/
+def canonicalShapePayload
+    (shape : Cartesian.CartesianShape) : List Bool :=
+  shape.fullCode.tail
+
+/--
+Recover the full explicit shape code from a fixed-size payload. For size zero
+the only shape is empty, whose full code is `[false]`; for positive sizes the
+payload is the tail of a nonempty `true :: ...` full code.
+-/
+def fullCodeOfPayload (n : Nat) (payload : List Bool) : List Bool :=
+  if n = 0 then [false] else true :: payload
+
+/-- Decode a canonical fixed-size shape payload. -/
+def decodeShapePayload? (n : Nat) (payload : List Bool) :
+    Option Cartesian.CartesianShape :=
+  Cartesian.CartesianShape.decodeFullCode? (fullCodeOfPayload n payload)
+
+theorem fullCodeOfPayload_canonicalShapePayload
+    {n : Nat} {shape : Cartesian.CartesianShape}
+    (hshape : Cartesian.ShapeOfSize n shape) :
+    fullCodeOfPayload n (canonicalShapePayload shape) = shape.fullCode := by
+  cases hshape with
+  | empty =>
+      simp [fullCodeOfPayload, Cartesian.CartesianShape.fullCode]
+  | node hleft hright =>
+      simp [fullCodeOfPayload, canonicalShapePayload,
+        Cartesian.CartesianShape.fullCode]
+
+theorem decodeShapePayload?_canonicalShapePayload
+    {n : Nat} {shape : Cartesian.CartesianShape}
+    (hshape : Cartesian.ShapeOfSize n shape) :
+    decodeShapePayload? n (canonicalShapePayload shape) = some shape := by
+  unfold decodeShapePayload?
+  rw [fullCodeOfPayload_canonicalShapePayload hshape]
+  exact Cartesian.CartesianShape.decodeFullCode?_fullCode shape
+
+/-- Query decoder for the canonical representative state encoding. -/
+def canonicalRepresentativeStateQuery
+    (n : Nat) (payload : List Bool) (left right : Nat) : Option Nat :=
+  match decodeShapePayload? n payload with
+  | some shape =>
+      some (scanWindow shape.representative left (right - left))
+  | none => none
+
+/--
+Concrete baseline `ExactRMQStateEncoding` instance.
+
+It stores the explicit Cartesian shape payload (`fullCode.tail`) and answers
+queries by decoding that payload and scanning the canonical representative
+array. This is not a succinct upper bound; it is the first concrete state
+encoding that exercises the lower-bound adapter end to end.
+-/
+def canonicalRepresentativeStateEncoding
+    (n : Nat) : ExactRMQStateEncoding n (2 * n) where
+  State := Cartesian.CartesianShape
+  buildState shape := shape
+  encodeState shape := canonicalShapePayload shape
+  queryEncoded := canonicalRepresentativeStateQuery n
+  sample shape := shape.representative
+  length_eq := by
+    intro shape hmem
+    exact Cartesian.CartesianShape.fullCode_tail_length_of_shapeOfSize
+      (Cartesian.mem_shapesOfSize_shapeOfSize hmem)
+  sample_length_eq := by
+    intro shape hmem
+    have hshape := Cartesian.mem_shapesOfSize_shapeOfSize hmem
+    rw [Cartesian.CartesianShape.representative_length,
+      Cartesian.ShapeOfSize.size_eq hshape]
+  sample_shape_eq := by
+    intro shape _hmem
+    exact Cartesian.CartesianShape.shape_representative shape
+  query_exact := by
+    intro shape hmem left len _hlen _hbound
+    have hshape := Cartesian.mem_shapesOfSize_shapeOfSize hmem
+    have hdecode :=
+      decodeShapePayload?_canonicalShapePayload hshape
+    have hsub : left + len - left = len := by omega
+    simp [canonicalRepresentativeStateQuery, hdecode, hsub]
+
 theorem sameRMQBehavior_of_exactRMQShapeEncoding_eq
     {n bits : Nat} (encoding : ExactRMQShapeEncoding n bits)
     {leftShape rightShape : Cartesian.CartesianShape}
@@ -266,6 +284,148 @@ theorem sameRMQBehavior_of_exactRMQShapeEncoding_eq
     injection hquery_left with hscan
     exact hscan.symm
 
+namespace ExactRMQStateEncoding
+
+/-- The counted payload produced by building a state for a representative shape. -/
+def payloadOf
+    {n bits : Nat} (encoding : ExactRMQStateEncoding n bits)
+    (shape : Cartesian.CartesianShape) : List Bool :=
+  encoding.encodeState (encoding.buildState shape)
+
+/-- View a state encoding's concrete states through their serialized payload bits. -/
+def payloadView
+    {n bits : Nat} (encoding : ExactRMQStateEncoding n bits) :
+    TableModel.PayloadView encoding.State :=
+  TableModel.PayloadView.exact encoding.encodeState
+
+theorem payloadOf_length_eq
+    {n bits : Nat} (encoding : ExactRMQStateEncoding n bits)
+    {shape : Cartesian.CartesianShape}
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n)) :
+    (encoding.payloadOf shape).length = bits := by
+  exact encoding.length_eq hshape
+
+theorem sameRMQBehavior_of_payload_eq
+    {n bits : Nat} (encoding : ExactRMQStateEncoding n bits)
+    {leftShape rightShape : Cartesian.CartesianShape}
+    (hleft : List.Mem leftShape (Cartesian.shapesOfSize n))
+    (hright : List.Mem rightShape (Cartesian.shapesOfSize n))
+    (hpayload :
+      encoding.payloadOf leftShape = encoding.payloadOf rightShape) :
+    Cartesian.SameRMQBehavior
+      (encoding.sample leftShape) (encoding.sample rightShape) := by
+  exact sameRMQBehavior_of_exactRMQShapeEncoding_eq
+    (exactRMQShapeEncoding_of_stateEncoding encoding)
+    hleft hright hpayload
+
+theorem shape_eq_of_payload_eq
+    {n bits : Nat} (encoding : ExactRMQStateEncoding n bits)
+    {leftShape rightShape : Cartesian.CartesianShape}
+    (hleft : List.Mem leftShape (Cartesian.shapesOfSize n))
+    (hright : List.Mem rightShape (Cartesian.shapesOfSize n))
+    (hpayload :
+      encoding.payloadOf leftShape = encoding.payloadOf rightShape) :
+    leftShape = rightShape := by
+  have hbehavior :=
+    encoding.sameRMQBehavior_of_payload_eq hleft hright hpayload
+  have hshape :=
+    Cartesian.shape_eq_of_sameRMQBehavior hbehavior
+  rw [encoding.sample_shape_eq hleft,
+    encoding.sample_shape_eq hright] at hshape
+  exact hshape
+
+/--
+Payload-accounted lossless shape encoding induced by an exact RMQ state
+encoding.
+
+This is the generic hub-facing view: the encoded finite domain is recovered
+from the payload bits of the built state, while the RMQ-specific theorem above
+proves those payload bits are injective over Cartesian shapes.
+-/
+def payloadLosslessEncoding
+    {n bits : Nat} (encoding : ExactRMQStateEncoding n bits) :
+    LowerBound.PayloadLosslessEncoding (Cartesian.shapesOfSize n) bits where
+  State := encoding.State
+  buildState := encoding.buildState
+  payloadView := encoding.payloadView
+  length_eq := by
+    intro shape hshape
+    simpa [payloadView, payloadOf] using
+      encoding.payloadOf_length_eq hshape
+  injective_on := by
+    intro leftShape rightShape hleft hright hpayload
+    have hpayload' :
+        encoding.payloadOf leftShape =
+          encoding.payloadOf rightShape := by
+      simpa [payloadView, payloadOf] using hpayload
+    exact
+      encoding.shape_eq_of_payload_eq hleft hright hpayload'
+
+theorem payloadLosslessEncoding_toLosslessEncoding_encode
+    {n bits : Nat} (encoding : ExactRMQStateEncoding n bits)
+    (shape : Cartesian.CartesianShape) :
+    ((encoding.payloadLosslessEncoding).toLosslessEncoding).encode shape =
+      encoding.payloadOf shape := by
+  rfl
+
+theorem payloadBitCount_ge_bits_of_mem
+    {n bits : Nat} (encoding : ExactRMQStateEncoding n bits)
+    {shape : Cartesian.CartesianShape}
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n)) :
+    bits <=
+      (encoding.payloadView).payloadBitCount
+        (encoding.buildState shape) := by
+  exact
+    LowerBound.PayloadLosslessEncoding.payloadBitCount_ge_bits_of_mem
+      encoding.payloadLosslessEncoding hshape
+
+theorem payloadBitCount_eq_bits_of_mem
+    {n bits : Nat} (encoding : ExactRMQStateEncoding n bits)
+    {shape : Cartesian.CartesianShape}
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n)) :
+    (encoding.payloadView).payloadBitCount
+        (encoding.buildState shape) = bits := by
+  simpa [payloadView, payloadOf] using
+    encoding.payloadOf_length_eq hshape
+
+/--
+Add proof-only or auxiliary data to a state encoding without changing the
+counted payload bits or the payload-only query decoder.
+-/
+def withUnchargedAux
+    {n bits : Nat} (encoding : ExactRMQStateEncoding n bits)
+    (aux : encoding.State -> Type)
+    (mkAux :
+      forall shape : Cartesian.CartesianShape,
+        aux (encoding.buildState shape)) :
+    ExactRMQStateEncoding n bits where
+  State := Sigma aux
+  buildState shape := ⟨encoding.buildState shape, mkAux shape⟩
+  encodeState state := encoding.encodeState state.1
+  queryEncoded := encoding.queryEncoded
+  sample := encoding.sample
+  length_eq := by
+    intro shape hshape
+    exact encoding.length_eq hshape
+  sample_length_eq := encoding.sample_length_eq
+  sample_shape_eq := encoding.sample_shape_eq
+  query_exact := by
+    intro shape hshape left len hlen hbound
+    exact encoding.query_exact hshape hlen hbound
+
+@[simp] theorem payloadOf_withUnchargedAux
+    {n bits : Nat} (encoding : ExactRMQStateEncoding n bits)
+    (aux : encoding.State -> Type)
+    (mkAux :
+      forall shape : Cartesian.CartesianShape,
+        aux (encoding.buildState shape))
+    (shape : Cartesian.CartesianShape) :
+    (encoding.withUnchargedAux aux mkAux).payloadOf shape =
+      encoding.payloadOf shape := by
+  rfl
+
+end ExactRMQStateEncoding
+
 /--
 Exact RMQ behavior over representative arrays induces a lossless Cartesian-shape
 encoding. This is the semantic bridge from a data-structure correctness
@@ -287,6 +447,13 @@ def losslessShapeEncoding_of_exactRMQShapeEncoding
       encoding.sample_shape_eq hright] at hshape
     exact hshape
 
+/-- Direct lossless shape encoding induced by a state encoding's payload view. -/
+def losslessShapeEncoding_of_exactRMQStateEncoding
+    {n bits : Nat} (encoding : ExactRMQStateEncoding n bits) :
+    LosslessShapeEncoding n bits :=
+  losslessShapeEncoding_of_exactRMQShapeEncoding
+    (exactRMQShapeEncoding_of_stateEncoding encoding)
+
 /--
 Capacity lower bound for fixed-length lossless Cartesian-shape encodings.
 
@@ -297,19 +464,17 @@ then `shapeCount n <= 2^bits`.
 theorem shapeCount_le_two_pow_of_lossless_shape_encoding
     {n bits : Nat} (encoding : LosslessShapeEncoding n bits) :
     Cartesian.shapeCount n <= 2 ^ bits := by
-  have hle :
-      (Cartesian.shapesOfSize n).length <= (bitStrings bits).length := by
-    apply length_le_of_nodup_injective_into
-    case hxs =>
-      exact Cartesian.shapesOfSize_nodup n
-    case hmem =>
-      intro shape hshape
-      have hlen := encoding.length_eq hshape
-      exact mem_bitStrings_of_length hlen
-    case hinj =>
-      intro left hleft right hright hcode
-      exact encoding.injective_on hleft hright hcode
-  simpa [Cartesian.shapeCount, bitStrings_length] using hle
+  let generic :
+      LowerBound.LosslessEncoding (Cartesian.shapesOfSize n) bits :=
+    {
+    encode := encoding.encode
+    length_eq := encoding.length_eq
+    injective_on := encoding.injective_on
+    }
+  have hcapacity :=
+    LowerBound.domain_length_le_two_pow_of_lossless_encoding
+      generic (Cartesian.shapesOfSize_nodup n)
+  simpa [Cartesian.shapeCount] using hcapacity
 
 /--
 Capacity lower bound specialized to exact RMQ encodings. If a fixed-length
@@ -337,11 +502,9 @@ theorem lower_le_bits_of_shapeCount_lower_bound
   have hcapacity :
       Cartesian.shapeCount n <= 2 ^ bits :=
     shapeCount_le_two_pow_of_lossless_shape_encoding encoding
-  have hpow : 2 ^ lower <= 2 ^ bits :=
-    Nat.le_trans hshape_lower hcapacity
   exact
-    (Nat.pow_le_pow_iff_right
-      (a := 2) (n := lower) (m := bits) (by omega)).mp hpow
+    LowerBound.lower_le_bits_of_count_lower_bound
+      hcapacity hshape_lower
 
 /--
 The same Catalan-to-bits bridge specialized to exact RMQ encodings.
@@ -397,55 +560,13 @@ This is the arithmetic slack used by the quadratic Catalan lower-bound target.
 theorem odd_square_le_two_pow_log_slack (n : Nat) :
     (2 * n + 1) * (2 * n + 1) <=
       2 ^ (2 * Nat.log2 (2 * n + 1) + 2) := by
-  let width := 2 * n + 1
-  have hlt : width < 2 ^ (Nat.log2 width + 1) :=
-    Nat.lt_log2_self (n := width)
-  have hle : width <= 2 ^ (Nat.log2 width + 1) :=
-    Nat.le_of_lt hlt
-  have hsquare :
-      width * width <=
-        2 ^ (Nat.log2 width + 1) * 2 ^ (Nat.log2 width + 1) :=
-    Nat.mul_le_mul hle hle
-  have hpow :
-      2 ^ (Nat.log2 width + 1) * 2 ^ (Nat.log2 width + 1) =
-        2 ^ (2 * Nat.log2 width + 2) := by
-    rw [<- Nat.pow_add]
-    congr 1
-    omega
-  simpa [width, hpow] using hsquare
+  exact LowerBound.odd_square_le_two_pow_log_slack n
 
 private theorem two_pow_sub_le_of_le_mul_pow
     {total slack count : Nat}
     (hbound : 2 ^ total <= 2 ^ slack * count) :
     2 ^ (total - slack) <= count := by
-  by_cases hslack : slack <= total
-  case pos =>
-    let lower := total - slack
-    have hsum : slack + lower = total := by
-      unfold lower
-      omega
-    have hleft : 2 ^ slack * 2 ^ lower = 2 ^ total := by
-      rw [<- Nat.pow_add, hsum]
-    have hmul : 2 ^ slack * 2 ^ lower <= 2 ^ slack * count := by
-      simpa [hleft] using hbound
-    exact
-      Nat.le_of_mul_le_mul_left hmul
-        (Nat.pow_pos (by omega : 0 < 2))
-  case neg =>
-    have hzero : total - slack = 0 := by
-      omega
-    rw [hzero]
-    have hcount_pos : 0 < count := by
-      cases count with
-      | zero =>
-          have hpos : 0 < 2 ^ total :=
-            Nat.pow_pos (by omega : 0 < 2)
-          have hle_zero : 2 ^ total <= 0 := by
-            exact hbound
-          omega
-      | succ count =>
-          omega
-    exact hcount_pos
+  exact LowerBound.two_pow_sub_le_of_le_mul_pow hbound
 
 private def remyPositions : Cartesian.CartesianShape -> List (List Bool)
   | Cartesian.CartesianShape.empty => [[]]
@@ -1213,20 +1334,7 @@ theorem shapeCount_log_lower_of_quadratic_bound
         ((2 * n + 1) * (2 * n + 1)) * Cartesian.shapeCount n) :
     2 ^ (2 * n - (2 * Nat.log2 (2 * n + 1) + 2)) <=
       Cartesian.shapeCount n := by
-  let slack := 2 * Nat.log2 (2 * n + 1) + 2
-  have hodd :
-      (2 * n + 1) * (2 * n + 1) <= 2 ^ slack := by
-    simpa [slack] using odd_square_le_two_pow_log_slack n
-  have hbound :
-      2 ^ (2 * n) <= 2 ^ slack * Cartesian.shapeCount n :=
-    Nat.le_trans hquad
-      (Nat.mul_le_mul_right (Cartesian.shapeCount n) hodd)
-  simpa [slack] using
-    two_pow_sub_le_of_le_mul_pow
-      (total := 2 * n)
-      (slack := slack)
-      (count := Cartesian.shapeCount n)
-      hbound
+  exact LowerBound.count_log_lower_of_quadratic_bound hquad
 
 /--
 Final-form arithmetic scaffold for the standard RMQ lower-bound headline.
@@ -1277,11 +1385,238 @@ theorem shapeCount_le_two_pow_of_exactRMQStateEncoding
   shapeCount_le_two_pow_of_exactRMQShapeEncoding
     (exactRMQShapeEncoding_of_stateEncoding encoding)
 
+/--
+The same capacity bound routed through the generic payload-accounted lower-bound
+adapter.  This is the hub-facing form used when the counted state payload, not a
+bare shape encoder, is the object being analyzed.
+-/
+theorem shapeCount_le_two_pow_of_exactRMQStateEncoding_payloadView
+    {n bits : Nat} (encoding : ExactRMQStateEncoding n bits) :
+    Cartesian.shapeCount n <= 2 ^ bits := by
+  have hcapacity :=
+    LowerBound.domain_length_le_two_pow_of_payload_lossless_encoding
+      encoding.payloadLosslessEncoding (Cartesian.shapesOfSize_nodup n)
+  simpa [Cartesian.shapeCount] using hcapacity
+
 theorem two_mul_sub_log_slack_le_bits_of_exactRMQStateEncoding
     {n bits : Nat} (encoding : ExactRMQStateEncoding n bits) :
     2 * n - (2 * Nat.log2 (2 * n + 1) + 2) <= bits :=
   two_mul_sub_log_slack_le_bits_of_exactRMQShapeEncoding
     (exactRMQShapeEncoding_of_stateEncoding encoding)
+
+/--
+Payload-view route for the state-encoding lower bound.  Unlike the direct
+shape-encoding route, this theorem explicitly passes through the generic
+`PayloadLosslessEncoding` adapter from `Core.PayloadLowerBound`.
+-/
+theorem two_mul_sub_log_slack_le_bits_of_exactRMQStateEncoding_payloadView
+    {n bits : Nat} (encoding : ExactRMQStateEncoding n bits) :
+    2 * n - (2 * Nat.log2 (2 * n + 1) + 2) <= bits :=
+  LowerBound.lower_le_bits_of_count_lower_bound
+    (shapeCount_le_two_pow_of_exactRMQStateEncoding_payloadView encoding)
+    (shapeCount_log_lower_of_quadratic_bound
+      (shapeCount_quadratic_lower n))
+
+/--
+Payload-bit spelling of the state-encoding lower bound. This is definitionally
+the same theorem as `two_mul_sub_log_slack_le_bits_of_exactRMQStateEncoding`,
+but the name makes the counted quantity explicit for paper-facing statements.
+-/
+theorem two_mul_sub_log_slack_le_payloadBits_of_exactRMQStateEncoding
+    {n bits : Nat} (encoding : ExactRMQStateEncoding n bits) :
+    2 * n - (2 * Nat.log2 (2 * n + 1) + 2) <= bits :=
+  two_mul_sub_log_slack_le_bits_of_exactRMQStateEncoding encoding
+
+theorem two_mul_sub_log_slack_le_bits_of_canonicalRepresentativeStateEncoding
+    (n : Nat) :
+    2 * n - (2 * Nat.log2 (2 * n + 1) + 2) <= 2 * n :=
+  two_mul_sub_log_slack_le_bits_of_exactRMQStateEncoding
+    (canonicalRepresentativeStateEncoding n)
+
+/--
+Two-sided fixed-length RMQ space bounds for a concrete exact payload model.
+
+`lower_le_any` is the universal lower bound: every exact state encoding over
+representative arrays needs at least `lower` bits. `upperEncoding` is a
+concrete payload-only decoder at `upper` bits, so the upper side is not a bare
+existential.
+-/
+structure ExactRMQSpaceBounds (n lower upper : Nat) where
+  lower_le_any :
+    forall {bits : Nat}, ExactRMQStateEncoding n bits -> lower <= bits
+  upperEncoding : ExactRMQStateEncoding n upper
+
+/-- The logarithmic-slack lower expression from the Catalan/RMQ lower bound. -/
+def logSlackLower (n : Nat) : Nat :=
+  2 * n - (2 * Nat.log2 (2 * n + 1) + 2)
+
+/--
+Charged-payload form of the exact RMQ lower bound.
+
+For any exact fixed-length state encoding, every on-domain built state charges
+at least the logarithmic-slack lower bound in its `PayloadView`.  This is the
+bridge from the abstract `bits` parameter to the model-level payload budget.
+-/
+theorem logSlackLower_le_payloadBitCount_of_exactRMQStateEncoding
+    {n bits : Nat} (encoding : ExactRMQStateEncoding n bits)
+    {shape : Cartesian.CartesianShape}
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n)) :
+    logSlackLower n <=
+      (encoding.payloadView).payloadBitCount
+        (encoding.buildState shape) := by
+  have hlower :
+      logSlackLower n <= bits := by
+    simpa [logSlackLower] using
+      two_mul_sub_log_slack_le_bits_of_exactRMQStateEncoding_payloadView
+        encoding
+  have hbits :
+      bits <=
+        (encoding.payloadView).payloadBitCount
+          (encoding.buildState shape) :=
+    encoding.payloadBitCount_ge_bits_of_mem hshape
+  exact Nat.le_trans hlower hbits
+
+theorem logSlackLower_le_budget_of_exactRMQStateEncoding
+    {n bits budget : Nat} (encoding : ExactRMQStateEncoding n bits)
+    {shape : Cartesian.CartesianShape}
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n))
+    (hbudget :
+      forall {shape : Cartesian.CartesianShape},
+        List.Mem shape (Cartesian.shapesOfSize n) ->
+          (encoding.payloadView).payloadBitCount
+            (encoding.buildState shape) <= budget) :
+    logSlackLower n <= budget := by
+  exact Nat.le_trans
+    (logSlackLower_le_payloadBitCount_of_exactRMQStateEncoding
+      encoding hshape)
+    (hbudget hshape)
+
+theorem canonicalRepresentative_payloadBitCount_eq_two_mul
+    {n : Nat} {shape : Cartesian.CartesianShape}
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n)) :
+    ((canonicalRepresentativeStateEncoding n).payloadView).payloadBitCount
+        ((canonicalRepresentativeStateEncoding n).buildState shape) =
+      2 * n := by
+  exact
+    ExactRMQStateEncoding.payloadBitCount_eq_bits_of_mem
+      (canonicalRepresentativeStateEncoding n) hshape
+
+/--
+Generic hub-level payload-space bounds for the RMQ representative-shape domain.
+
+The lower side is the Catalan/RMQ logarithmic-slack count bound, and the upper
+side is the canonical explicit `2*n` shape payload viewed through
+`PayloadLosslessEncoding`.
+-/
+def canonicalRepresentativePayloadSpaceBounds (n : Nat) :
+    LowerBound.PayloadSpaceBounds
+      (Cartesian.shapesOfSize n) (logSlackLower n) (2 * n) where
+  nodup := Cartesian.shapesOfSize_nodup n
+  count_lower := by
+    simpa [logSlackLower, Cartesian.shapeCount] using
+      shapeCount_log_lower_of_quadratic_bound
+        (shapeCount_quadratic_lower n)
+  upperEncoding :=
+    (canonicalRepresentativeStateEncoding n).payloadLosslessEncoding
+
+theorem canonicalRepresentativePayloadSpaceBounds_lower_le_bits
+    (n : Nat) {bits : Nat}
+    (encoding :
+      LowerBound.PayloadLosslessEncoding (Cartesian.shapesOfSize n) bits) :
+    logSlackLower n <= bits :=
+  (canonicalRepresentativePayloadSpaceBounds n).lower_le_bits encoding
+
+theorem canonicalRepresentativePayloadSpaceBounds_lower_le_budget
+    (n : Nat) {bits budget : Nat}
+    (encoding :
+      LowerBound.PayloadLosslessEncoding (Cartesian.shapesOfSize n) bits)
+    {shape : Cartesian.CartesianShape}
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n))
+    (hbudget :
+      forall {shape : Cartesian.CartesianShape},
+        List.Mem shape (Cartesian.shapesOfSize n) ->
+          encoding.payloadView.payloadBitCount
+            (encoding.buildState shape) <= budget) :
+    logSlackLower n <= budget :=
+  (canonicalRepresentativePayloadSpaceBounds n).lower_le_budget
+    encoding hshape hbudget
+
+theorem canonicalRepresentativePayloadSpaceBounds_lower_le_upper
+    (n : Nat) :
+    logSlackLower n <= 2 * n :=
+  (canonicalRepresentativePayloadSpaceBounds n).lower_le_upper
+
+/--
+Concrete two-sided RMQ space bound.
+
+The lower side is the no-premise `2n - O(log n)` exact-RMQ lower bound.  The
+upper side is the explicit canonical Cartesian-shape payload of length `2*n`,
+whose decoder answers every representative RMQ query from the payload alone.
+This is the tight fixed-length `2n` plus/minus logarithmic-slack sandwich; packed
+`2n + o(n)` query structures remain a stronger future refinement.
+-/
+def canonicalRepresentativeSpaceBounds (n : Nat) :
+    ExactRMQSpaceBounds n (logSlackLower n) (2 * n) where
+  lower_le_any := by
+    intro bits encoding
+    exact two_mul_sub_log_slack_le_bits_of_exactRMQStateEncoding encoding
+  upperEncoding := canonicalRepresentativeStateEncoding n
+
+theorem canonicalRepresentativeSpaceBounds_lower_le_any
+    (n : Nat) {bits : Nat} (encoding : ExactRMQStateEncoding n bits) :
+    logSlackLower n <= bits :=
+  (canonicalRepresentativeSpaceBounds n).lower_le_any encoding
+
+theorem canonicalRepresentativeSpaceBounds_upper_bits
+    (n : Nat) :
+    (canonicalRepresentativeSpaceBounds n).upperEncoding =
+      canonicalRepresentativeStateEncoding n := by
+  rfl
+
+theorem exactRMQ_two_sided_log_slack_space_bound
+    (n : Nat) :
+    (forall {bits : Nat}, ExactRMQStateEncoding n bits ->
+        logSlackLower n <= bits) ∧
+      (exists _encoding : ExactRMQStateEncoding n (2 * n), True) := by
+  exact ⟨canonicalRepresentativeSpaceBounds_lower_le_any n,
+    ⟨(canonicalRepresentativeSpaceBounds n).upperEncoding, True.intro⟩⟩
+
+/--
+Tight fixed-length payload-space sandwich for exact RMQ state encodings.
+
+Every exact state encoding over representative arrays needs at least
+`2*n - (2*log2 (2*n+1)+2)` payload bits, the same lower bound applies to any
+uniform charged payload budget, and the canonical representative decoder gives
+a concrete exact upper witness charging exactly `2*n` bits on every shape.
+-/
+theorem exactRMQ_tight_fixed_length_payload_space_bound
+    (n : Nat) :
+    (forall {bits : Nat}, ExactRMQStateEncoding n bits ->
+        logSlackLower n <= bits) /\
+      (forall {bits budget : Nat}
+          (encoding : ExactRMQStateEncoding n bits)
+          {shape : Cartesian.CartesianShape},
+        List.Mem shape (Cartesian.shapesOfSize n) ->
+          (forall {shape : Cartesian.CartesianShape},
+            List.Mem shape (Cartesian.shapesOfSize n) ->
+              (encoding.payloadView).payloadBitCount
+                (encoding.buildState shape) <= budget) ->
+          logSlackLower n <= budget) /\
+      (exists encoding : ExactRMQStateEncoding n (2 * n),
+        forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            (encoding.payloadView).payloadBitCount
+              (encoding.buildState shape) = 2 * n) := by
+  constructor
+  · intro bits encoding
+    exact canonicalRepresentativeSpaceBounds_lower_le_any n encoding
+  · constructor
+    · intro bits budget encoding shape hshape hbudget
+      exact logSlackLower_le_budget_of_exactRMQStateEncoding
+        encoding hshape hbudget
+    · exact ⟨canonicalRepresentativeStateEncoding n, by
+        intro shape hshape
+        exact canonicalRepresentative_payloadBitCount_eq_two_mul hshape⟩
 
 end EncodingLowerBound
 

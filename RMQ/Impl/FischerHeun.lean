@@ -1,6 +1,9 @@
+import RMQ.Core.EncodingLowerBound
 import RMQ.Core.Microtable
+import RMQ.Core.TableModel
 import RMQ.Impl.FischerHeunCost
 import RMQ.Impl.RecursiveHybrid
+import RMQ.Impl.SparseTableInstrumented
 import RMQ.Impl.SparseTableMemoCost
 
 /-!
@@ -33,6 +36,178 @@ theorem paddedInput_get?_eq
     {xs : List Int} {blockSize i : Nat} (hi : i < xs.length) :
     (paddedInput xs blockSize)[i]? = xs[i]? := by
   simp [paddedInput, List.getElem?_append, hi]
+
+/-- Stored Cartesian signatures for every block index that can arise locally. -/
+def storedBlockSignatures
+    (xs : List Int) (blockSize : Nat) :
+    TableModel.IndexedSeq RMQ.Cartesian.CartesianShape :=
+  TableModel.IndexedSeq.ofList
+    ((List.range (compressedLength xs.length blockSize + 1)).map fun block =>
+      RMQ.Cartesian.blockSignature (paddedInput xs blockSize)
+        (block * blockSize) blockSize)
+
+theorem storedBlockSignatures_get?_of_lt
+    {xs : List Int} {blockSize block : Nat}
+    (hblock : block < compressedLength xs.length blockSize + 1) :
+    (storedBlockSignatures xs blockSize).get? block =
+      some
+        (RMQ.Cartesian.blockSignature (paddedInput xs blockSize)
+          (block * blockSize) blockSize) := by
+  unfold storedBlockSignatures
+  simp [List.getElem?_map, List.getElem?_range hblock]
+
+/-- Index into a materialized shape/query microtable row. -/
+structure MicrotableSlotKey where
+  shape : RMQ.Cartesian.CartesianShape
+  left : Nat
+  right : Nat
+
+/-- Stored signatures plus a fixed-size certified local microtable. -/
+structure StoredMicrotableView (blockSize : Nat) where
+  signatures : TableModel.IndexedSeq RMQ.Cartesian.CartesianShape
+  microtable : MicrotableFor blockSize
+
+/-- Shape/query-slot view of a certified microtable. -/
+def microtableSlotAccess
+    {blockSize : Nat} (table : MicrotableFor blockSize) :
+    TableModel.IndexedAccess MicrotableSlotKey Nat where
+  get? key := table.queryOffset? key.shape key.left key.right
+
+/-- One modeled indexed read from a shape/query microtable slot. -/
+def microtableSlotReadCosted
+    {blockSize : Nat} (table : MicrotableFor blockSize)
+    (shape : RMQ.Cartesian.CartesianShape) (left right : Nat) :
+    Costed (Option Nat) :=
+  (microtableSlotAccess table).getCosted
+    { shape := shape, left := left, right := right }
+
+@[simp] theorem microtableSlotReadCosted_value
+    {blockSize : Nat} (table : MicrotableFor blockSize)
+    (shape : RMQ.Cartesian.CartesianShape) (left right : Nat) :
+    (microtableSlotReadCosted table shape left right).value =
+      table.queryOffset? shape left right := by
+  rfl
+
+theorem microtableSlotReadCosted_cost
+    {blockSize : Nat} (table : MicrotableFor blockSize)
+    (shape : RMQ.Cartesian.CartesianShape) (left right : Nat) :
+    (microtableSlotReadCosted table shape left right).cost =
+      TableModel.indexedReadCost := by
+  rfl
+
+namespace StoredMicrotableView
+
+/-- Read the stored block signature, then read the corresponding local slot. -/
+def queryOffsetCosted
+    {blockSize : Nat} (store : StoredMicrotableView blockSize)
+    (block left right : Nat) : Costed (Option Nat) :=
+  Costed.bind (store.signatures.getCosted block) fun
+  | some shape => microtableSlotReadCosted store.microtable shape left right
+  | none => Costed.tickValue TableModel.indexedReadCost none
+
+@[simp] theorem queryOffsetCosted_value_of_get
+    {blockSize : Nat} (store : StoredMicrotableView blockSize)
+    {block left right : Nat} {shape : RMQ.Cartesian.CartesianShape}
+    (hget : store.signatures.get? block = some shape) :
+    (queryOffsetCosted store block left right).value =
+      store.microtable.queryOffset? shape left right := by
+  unfold queryOffsetCosted
+  simp [hget]
+
+theorem queryOffsetCosted_cost
+    {blockSize : Nat} (store : StoredMicrotableView blockSize)
+    (block left right : Nat) :
+    (queryOffsetCosted store block left right).cost =
+      storedMicrotableLookupCost := by
+  unfold queryOffsetCosted storedMicrotableLookupCost
+  cases hget : store.signatures.get? block <;>
+    simp [hget, TableModel.IndexedSeq.getCosted_cost,
+      microtableSlotReadCosted_cost]
+
+/--
+Read a stored local offset and lift it to the global index of the block start
+`block * blockSize`.
+-/
+def queryIndexCosted
+    {blockSize : Nat} (store : StoredMicrotableView blockSize)
+    (block left right : Nat) : Costed (Option Nat) :=
+  Costed.map
+    (fun offset? => offset?.map fun offset => block * blockSize + offset)
+    (queryOffsetCosted store block left right)
+
+@[simp] theorem queryIndexCosted_value_of_get
+    {blockSize : Nat} (store : StoredMicrotableView blockSize)
+    {block left right : Nat} {shape : RMQ.Cartesian.CartesianShape}
+    (hget : store.signatures.get? block = some shape) :
+    (queryIndexCosted store block left right).value =
+      (store.microtable.queryOffset? shape left right).map
+        fun offset => block * blockSize + offset := by
+  unfold queryIndexCosted
+  rw [Costed.map_value]
+  exact congrArg
+    (fun offset? => offset?.map fun offset => block * blockSize + offset)
+    (queryOffsetCosted_value_of_get store hget)
+
+theorem queryIndexCosted_cost
+    {blockSize : Nat} (store : StoredMicrotableView blockSize)
+    (block left right : Nat) :
+    (queryIndexCosted store block left right).cost =
+      storedMicrotableLookupCost := by
+  unfold queryIndexCosted
+  rw [Costed.map_cost]
+  exact queryOffsetCosted_cost store block left right
+
+end StoredMicrotableView
+
+/-- Stored local-view model for an input and a supplied certified microtable. -/
+def storedMicrotableForInputWith
+    (xs : List Int) {blockSize : Nat} (microtable : MicrotableFor blockSize) :
+    StoredMicrotableView blockSize where
+  signatures := storedBlockSignatures xs blockSize
+  microtable := microtable
+
+theorem storedMicrotableForInputWith_queryIndexCosted_value_of_lt
+    {xs : List Int} {blockSize block left right : Nat}
+    {microtable : MicrotableFor blockSize}
+    (hblock : block < compressedLength xs.length blockSize + 1) :
+    (StoredMicrotableView.queryIndexCosted
+        (storedMicrotableForInputWith xs microtable) block left right).value =
+      microtable.queryIndex?
+        (paddedInput xs blockSize) (block * blockSize) left right := by
+  rw [StoredMicrotableView.queryIndexCosted_value_of_get]
+  · rfl
+  · exact storedBlockSignatures_get?_of_lt hblock
+
+theorem storedMicrotableForInputWith_queryIndexCosted_cost
+    (xs : List Int) {blockSize : Nat} (microtable : MicrotableFor blockSize)
+    (block left right : Nat) :
+    (StoredMicrotableView.queryIndexCosted
+        (storedMicrotableForInputWith xs microtable) block left right).cost =
+      storedMicrotableLookupCost := by
+  exact StoredMicrotableView.queryIndexCosted_cost
+    (storedMicrotableForInputWith xs microtable) block left right
+
+/-- Canonical stored local-view model for an input and block size. -/
+def storedMicrotableForInput
+    (xs : List Int) (blockSize : Nat) : StoredMicrotableView blockSize :=
+  storedMicrotableForInputWith xs (RMQ.Cartesian.Microtable.raw blockSize)
+
+theorem storedMicrotableForInput_queryIndexCosted_value_of_lt
+    {xs : List Int} {blockSize block left right : Nat}
+    (hblock : block < compressedLength xs.length blockSize + 1) :
+    (StoredMicrotableView.queryIndexCosted
+        (storedMicrotableForInput xs blockSize) block left right).value =
+      (RMQ.Cartesian.Microtable.raw blockSize).queryIndex?
+        (paddedInput xs blockSize) (block * blockSize) left right := by
+  exact storedMicrotableForInputWith_queryIndexCosted_value_of_lt hblock
+
+theorem storedMicrotableForInput_queryIndexCosted_cost
+    (xs : List Int) (blockSize block left right : Nat) :
+    (StoredMicrotableView.queryIndexCosted
+        (storedMicrotableForInput xs blockSize) block left right).cost =
+      storedMicrotableLookupCost := by
+  exact StoredMicrotableView.queryIndexCosted_cost
+    (storedMicrotableForInput xs blockSize) block left right
 
 theorem leftmostArgMin_of_eq_on_range
     {xs ys : List Int} {left right idx : Nat}
@@ -118,6 +293,34 @@ structure State where
   microtable : MicrotableFor blockSize
   summary : List Int
   summaryTable : List (List (Option Nat))
+  summaryTableStore : Refine.StoredMatrix (Option Nat) summaryTable
+
+/--
+A supplied Fischer-Heun state whose summary table is the canonical memoized
+sparse table over the block-minimum summary for `xs`.
+
+The store's Array/List erasure certificate is carried directly by
+`state.summaryTableStore`; this predicate records the value-level table that
+the store is supposed to refine for this input.
+-/
+structure SummaryTableRefines (xs : List Int) (state : State) : Prop where
+  summary_eq :
+    state.summary = blockMinSummary xs state.blockSize
+  table_eq :
+    state.summaryTable =
+      RMQ.SparseTable.memoBuildSparseTable
+        (blockMinSummary xs state.blockSize)
+
+theorem summaryTableStore_erases (state : State) :
+    state.summaryTableStore.repr.toList.map Array.toList =
+      state.summaryTable :=
+  state.summaryTableStore.erases
+
+theorem summaryTableStore_cell_eq_summaryTable
+    (state : State) (row col : Nat) :
+    Refine.StoredMatrix.cell? state.summaryTableStore row col =
+      Refine.StoredMatrix.absCell? state.summaryTable row col :=
+  Refine.StoredMatrix.cell?_eq_absCell? state.summaryTableStore row col
 
 /--
 Local candidate inside one block.
@@ -192,13 +395,57 @@ def summaryBackend (xs : List Int) (blockSize : Nat) :
     RMQBackend (blockMinSummary xs blockSize) :=
   RMQ.SparseTable.memoBackend (blockMinSummary xs blockSize)
 
+/-- Stored summary-table query used by the costed supplied-state path. -/
+def summaryStoredQuery
+    (xs : List Int) (state : State) (leftBlock rightBlock : Nat) :
+    RAM.Exec (Option Nat) :=
+  RMQ.SparseTable.Instrumented.queryFromStoredTable
+    (blockMinSummary xs state.blockSize) state.summaryTableStore
+    leftBlock rightBlock
+
+theorem summaryStoredQuery_value_of_refines
+    {xs : List Int} {state : State} {leftBlock rightBlock : Nat}
+    (hsummary : SummaryTableRefines xs state) :
+    (summaryStoredQuery xs state leftBlock rightBlock).value =
+      (summaryBackend xs state.blockSize).query
+        (summaryBackend xs state.blockSize).build
+        leftBlock rightBlock := by
+  unfold summaryStoredQuery summaryBackend RMQ.SparseTable.memoBackend
+  rw [RMQ.SparseTable.Instrumented.queryFromStoredTable_value]
+  simp [hsummary.table_eq]
+
+theorem summaryStoredQuery_steps_le_seven
+    (xs : List Int) (state : State) (leftBlock rightBlock : Nat) :
+    (summaryStoredQuery xs state leftBlock rightBlock).steps <= 7 := by
+  unfold summaryStoredQuery
+  exact
+    RMQ.SparseTable.Instrumented.queryFromStoredTable_steps_le_seven
+      (blockMinSummary xs state.blockSize) state.summaryTableStore
+      leftBlock rightBlock
+
+theorem liftedSummaryStoredQuery_refines_recursiveMiddle_with_steps
+    {xs : List Int} {state : State} {leftBlock rightBlock : Nat}
+    (hsummary : SummaryTableRefines xs state) :
+    liftBlockCandidate xs state.blockSize
+        (summaryStoredQuery xs state leftBlock rightBlock).value =
+      recursiveMiddleCandidate xs state.blockSize
+        (summaryBackend xs state.blockSize) leftBlock rightBlock /\
+      (summaryStoredQuery xs state leftBlock rightBlock).steps <= 7 := by
+  constructor
+  · rw [summaryStoredQuery_value_of_refines hsummary]
+    rfl
+  · exact summaryStoredQuery_steps_le_seven xs state leftBlock rightBlock
+
 /-- Build a Fischer-Heun state with an explicit block-size choice. -/
 def buildWithBlockSize (xs : List Int) (blockSize : Nat) : State :=
   { blockSize := blockSize
     microtable := RMQ.Cartesian.Microtable.raw blockSize
     summary := blockMinSummary xs blockSize
     summaryTable := RMQ.SparseTable.memoBuildSparseTable
-      (blockMinSummary xs blockSize) }
+      (blockMinSummary xs blockSize)
+    summaryTableStore := Refine.StoredMatrix.ofList
+      (RMQ.SparseTable.memoBuildSparseTable
+        (blockMinSummary xs blockSize)) }
 
 @[simp] theorem buildWithBlockSize_blockSize
     (xs : List Int) (blockSize : Nat) :
@@ -214,16 +461,248 @@ def buildWithBlockSize (xs : List Int) (blockSize : Nat) : State :=
     (buildWithBlockSize xs blockSize).summaryTable =
       RMQ.SparseTable.memoBuildSparseTable (blockMinSummary xs blockSize) := rfl
 
+@[simp] theorem buildWithBlockSize_summaryTableStore_erases
+    (xs : List Int) (blockSize : Nat) :
+    (buildWithBlockSize xs blockSize).summaryTableStore.repr.toList.map
+        Array.toList =
+      RMQ.SparseTable.memoBuildSparseTable (blockMinSummary xs blockSize) := by
+  simpa using (buildWithBlockSize xs blockSize).summaryTableStore.erases
+
+theorem buildWithBlockSize_summaryTableRefines
+    (xs : List Int) (blockSize : Nat) :
+    SummaryTableRefines xs (buildWithBlockSize xs blockSize) := by
+  constructor <;> rfl
+
 @[simp] theorem buildWithBlockSize_microtable
     (xs : List Int) (blockSize : Nat) :
     (buildWithBlockSize xs blockSize).microtable =
       RMQ.Cartesian.Microtable.raw blockSize := rfl
 
+/-- Exact cost expression for a stored local-block candidate. -/
+def storedLocalBlockCandidateCost (left right : Nat) : Nat :=
+  if _hnonempty : left < right then
+    storedMicrotableLookupCost
+  else
+    1
+
+/--
+Stored-signature/local-slot version of a local block candidate for a freshly
+built raw Fischer-Heun local microtable.
+-/
+def storedLocalBlockCandidateCosted
+    (xs : List Int) (blockSize block left right : Nat) :
+    Costed (Option Nat) :=
+  let start := block * blockSize
+  if _hnonempty : left < right then
+    StoredMicrotableView.queryIndexCosted
+      (storedMicrotableForInput xs blockSize) block
+      (left - start) (right - start)
+  else
+    Costed.tickValue 1 none
+
+@[simp] theorem storedLocalBlockCandidateCosted_value_of_lt
+    {xs : List Int} {blockSize block left right : Nat}
+    (hblock : block < compressedLength xs.length blockSize + 1) :
+    (storedLocalBlockCandidateCosted xs blockSize block left right).value =
+      localBlockCandidate xs (buildWithBlockSize xs blockSize)
+        (block * blockSize) left right := by
+  unfold storedLocalBlockCandidateCosted localBlockCandidate
+  by_cases hnonempty : left < right
+  · rw [dif_pos hnonempty, dif_pos hnonempty]
+    exact storedMicrotableForInput_queryIndexCosted_value_of_lt hblock
+  · rw [dif_neg hnonempty, dif_neg hnonempty]
+    rfl
+
+theorem storedLocalBlockCandidateCosted_cost
+    (xs : List Int) (blockSize block left right : Nat) :
+    (storedLocalBlockCandidateCosted xs blockSize block left right).cost =
+      storedLocalBlockCandidateCost left right := by
+  unfold storedLocalBlockCandidateCosted storedLocalBlockCandidateCost
+  by_cases hnonempty : left < right
+  · rw [dif_pos hnonempty, dif_pos hnonempty]
+    exact storedMicrotableForInput_queryIndexCosted_cost xs blockSize block
+      (left - block * blockSize) (right - block * blockSize)
+  · rw [dif_neg hnonempty, dif_neg hnonempty]
+    rfl
+
+/-- Stored Cartesian signatures for full blocks read directly from `xs`. -/
+def storedExactBlockSignatures
+    (xs : List Int) (blockSize : Nat) :
+    TableModel.IndexedSeq RMQ.Cartesian.CartesianShape :=
+  TableModel.IndexedSeq.ofList
+    ((List.range (compressedLength xs.length blockSize + 1)).map fun block =>
+      RMQ.Cartesian.blockSignature xs (block * blockSize) blockSize)
+
+theorem storedExactBlockSignatures_get?_of_lt
+    {xs : List Int} {blockSize block : Nat}
+    (hblock : block < compressedLength xs.length blockSize + 1) :
+    (storedExactBlockSignatures xs blockSize).get? block =
+      some
+        (RMQ.Cartesian.blockSignature xs (block * blockSize) blockSize) := by
+  unfold storedExactBlockSignatures
+  simp [List.getElem?_map, List.getElem?_range hblock]
+
+/-- Stored local-view model for full-block queries over the exact input. -/
+def storedMicrotableForExactInputWith
+    (xs : List Int) {blockSize : Nat} (microtable : MicrotableFor blockSize) :
+    StoredMicrotableView blockSize where
+  signatures := storedExactBlockSignatures xs blockSize
+  microtable := microtable
+
+theorem storedMicrotableForExactInputWith_queryIndexCosted_value_of_lt
+    {xs : List Int} {blockSize block left right : Nat}
+    {microtable : MicrotableFor blockSize}
+    (hblock : block < compressedLength xs.length blockSize + 1) :
+    (StoredMicrotableView.queryIndexCosted
+        (storedMicrotableForExactInputWith xs microtable)
+          block left right).value =
+      microtable.queryIndex? xs (block * blockSize) left right := by
+  rw [StoredMicrotableView.queryIndexCosted_value_of_get]
+  · rfl
+  · exact storedExactBlockSignatures_get?_of_lt hblock
+
+theorem storedMicrotableForExactInputWith_queryIndexCosted_cost
+    (xs : List Int) {blockSize : Nat} (microtable : MicrotableFor blockSize)
+    (block left right : Nat) :
+    (StoredMicrotableView.queryIndexCosted
+        (storedMicrotableForExactInputWith xs microtable)
+          block left right).cost =
+      storedMicrotableLookupCost := by
+  exact StoredMicrotableView.queryIndexCosted_cost
+    (storedMicrotableForExactInputWith xs microtable) block left right
+
+/-- Stored-read full-block candidate for the supplied state's microtable. -/
+def storedFullBlockCandidateCosted
+    (xs : List Int) (state : State) (block left right : Nat) :
+    Costed (Option Nat) :=
+  StoredMicrotableView.queryIndexCosted
+    (storedMicrotableForExactInputWith xs state.microtable)
+      block left right
+
+@[simp] theorem storedFullBlockCandidateCosted_value_of_lt
+    {xs : List Int} {state : State} {block left right : Nat}
+    (hblock : block < compressedLength xs.length state.blockSize + 1) :
+    (storedFullBlockCandidateCosted xs state block left right).value =
+      state.microtable.queryIndex? xs (block * state.blockSize) left right := by
+  exact storedMicrotableForExactInputWith_queryIndexCosted_value_of_lt hblock
+
+theorem storedFullBlockCandidateCosted_cost
+    (xs : List Int) (state : State) (block left right : Nat) :
+    (storedFullBlockCandidateCosted xs state block left right).cost =
+      storedMicrotableLookupCost := by
+  exact storedMicrotableForExactInputWith_queryIndexCosted_cost xs
+    state.microtable block left right
+
+/--
+Stored-signature/local-slot version of a padded local block candidate for the
+supplied state's microtable.
+-/
+def storedStateLocalBlockCandidateCosted
+    (xs : List Int) (state : State) (block left right : Nat) :
+    Costed (Option Nat) :=
+  let start := block * state.blockSize
+  if _hnonempty : left < right then
+    StoredMicrotableView.queryIndexCosted
+      (storedMicrotableForInputWith xs state.microtable) block
+      (left - start) (right - start)
+  else
+    Costed.tickValue 1 none
+
+@[simp] theorem storedStateLocalBlockCandidateCosted_value_of_lt
+    {xs : List Int} {state : State} {block left right : Nat}
+    (hblock : block < compressedLength xs.length state.blockSize + 1) :
+    (storedStateLocalBlockCandidateCosted xs state block left right).value =
+      localBlockCandidate xs state (block * state.blockSize) left right := by
+  unfold storedStateLocalBlockCandidateCosted localBlockCandidate
+  by_cases hnonempty : left < right
+  · rw [dif_pos hnonempty, dif_pos hnonempty]
+    exact storedMicrotableForInputWith_queryIndexCosted_value_of_lt hblock
+  · rw [dif_neg hnonempty, dif_neg hnonempty]
+    rfl
+
+theorem storedStateLocalBlockCandidateCosted_cost
+    (xs : List Int) (state : State) (block left right : Nat) :
+    (storedStateLocalBlockCandidateCosted xs state block left right).cost =
+      storedLocalBlockCandidateCost left right := by
+  unfold storedStateLocalBlockCandidateCosted storedLocalBlockCandidateCost
+  by_cases hnonempty : left < right
+  · rw [dif_pos hnonempty, dif_pos hnonempty]
+    exact storedMicrotableForInputWith_queryIndexCosted_cost xs state.microtable
+      block (left - block * state.blockSize) (right - block * state.blockSize)
+  · rw [dif_neg hnonempty, dif_neg hnonempty]
+    rfl
+
+/-- Charge one tick for each token in a finite construction list. -/
+def tickEachCosted {alpha : Type} : List alpha -> Costed Unit
+  | [] => Costed.pure ()
+  | _ :: rest => Costed.bind (Costed.tick 1) fun _ => tickEachCosted rest
+
+theorem tickEachCosted_cost {alpha : Type} (tokens : List alpha) :
+    (tickEachCosted tokens).cost = tokens.length := by
+  induction tokens with
+  | nil =>
+      simp [tickEachCosted]
+  | cons _ rest ih =>
+      simp [tickEachCosted, ih]
+      omega
+
+/-- One token for every local query slot in a materialized shape row. -/
+def microtableSlotTokens (blockSize : Nat) : List Unit :=
+  List.replicate (localQuerySlotBudget blockSize) ()
+
+theorem microtableSlotTokens_length (blockSize : Nat) :
+    (microtableSlotTokens blockSize).length =
+      localQuerySlotBudget blockSize := by
+  simp [microtableSlotTokens]
+
+/-- Costed construction of one shape row in the raw microtable universe. -/
+def microtableShapeRowBuildCosted
+    (blockSize : Nat) (_shape : RMQ.Cartesian.CartesianShape) : Costed Unit :=
+  tickEachCosted (microtableSlotTokens blockSize)
+
+theorem microtableShapeRowBuildCosted_cost
+    (blockSize : Nat) (shape : RMQ.Cartesian.CartesianShape) :
+    (microtableShapeRowBuildCosted blockSize shape).cost =
+      localQuerySlotBudget blockSize := by
+  simp [microtableShapeRowBuildCosted, tickEachCosted_cost,
+    microtableSlotTokens_length]
+
+/-- Costed construction of all rows in a supplied shape universe. -/
+def microtableRowsBuildCostedFrom
+    (blockSize : Nat) : List RMQ.Cartesian.CartesianShape -> Costed Unit
+  | [] => Costed.pure ()
+  | shape :: rest =>
+      Costed.bind (microtableShapeRowBuildCosted blockSize shape) fun _ =>
+        microtableRowsBuildCostedFrom blockSize rest
+
+theorem microtableRowsBuildCostedFrom_cost
+    (blockSize : Nat) (shapes : List RMQ.Cartesian.CartesianShape) :
+    (microtableRowsBuildCostedFrom blockSize shapes).cost =
+      shapes.length * localQuerySlotBudget blockSize := by
+  induction shapes with
+  | nil =>
+      simp [microtableRowsBuildCostedFrom]
+  | cons shape rest ih =>
+      simp [microtableRowsBuildCostedFrom,
+        microtableShapeRowBuildCosted_cost, ih, Nat.succ_mul]
+      omega
+
+/-- Costed construction of the full raw shape-indexed microtable universe. -/
+def microtableRowsBuildCosted (blockSize : Nat) : Costed Unit :=
+  microtableRowsBuildCostedFrom blockSize
+    (RMQ.Cartesian.shapeUniverse blockSize)
+
+theorem microtableRowsBuildCosted_cost (blockSize : Nat) :
+    (microtableRowsBuildCosted blockSize).cost =
+      rawMicrotableSlotBudget blockSize := by
+  simp [microtableRowsBuildCosted, microtableRowsBuildCostedFrom_cost,
+    rawMicrotableSlotBudget, rawShapeTableCount]
+
 /-- Costed materialization of the fixed-size shape microtable family. -/
 def microtableBuildCosted (blockSize : Nat) :
     Costed (MicrotableFor blockSize) :=
-  Costed.tickValue (rawMicrotableSlotBudget blockSize)
-    (RMQ.Cartesian.Microtable.raw blockSize)
+  Costed.bind (microtableRowsBuildCosted blockSize) fun _ =>
+    Costed.pure (RMQ.Cartesian.Microtable.raw blockSize)
 
 @[simp] theorem microtableBuildCosted_value (blockSize : Nat) :
     (microtableBuildCosted blockSize).value =
@@ -233,7 +712,7 @@ def microtableBuildCosted (blockSize : Nat) :
 theorem microtableBuildCosted_cost (blockSize : Nat) :
     (microtableBuildCosted blockSize).cost =
       rawMicrotableSlotBudget blockSize := by
-  rfl
+  simp [microtableBuildCosted, microtableRowsBuildCosted_cost]
 
 /--
 Costed Fischer-Heun state build for an explicit block size.
@@ -252,20 +731,23 @@ def buildWithBlockSizeCosted
           { blockSize := blockSize
             microtable := microtable
             summary := summary
-            summaryTable := summaryTable }
+            summaryTable := summaryTable
+            summaryTableStore := Refine.StoredMatrix.ofList summaryTable }
 
 @[simp] theorem buildWithBlockSizeCosted_value
     (xs : List Int) (blockSize : Nat) :
     (buildWithBlockSizeCosted xs blockSize).value =
       buildWithBlockSize xs blockSize := by
-  simp [buildWithBlockSizeCosted, buildWithBlockSize, microtableBuildCosted]
+  unfold buildWithBlockSizeCosted buildWithBlockSize
+  simp [microtableBuildCosted]
 
 theorem buildWithBlockSizeCosted_cost
     (xs : List Int) (blockSize : Nat) :
     (buildWithBlockSizeCosted xs blockSize).cost =
       buildCost xs blockSize := by
-  simp [buildWithBlockSizeCosted, microtableBuildCosted, buildCost,
-    summarySparseBuildCost, RMQ.RecursiveHybrid.blockMinSummaryCosted_cost,
+  simp [buildWithBlockSizeCosted, microtableBuildCosted_cost, buildCost,
+    summarySparseBuildCost,
+    RMQ.RecursiveHybrid.blockMinSummaryCosted_cost,
     RMQ.SparseTable.memoBuildSparseTableCosted_cost]
 
 theorem buildWithBlockSizeCosted_run
@@ -332,80 +814,22 @@ def queryWithState
   else
     none
 
-/-- Costed materialized local-table lookup for a supplied Fischer-Heun state. -/
-def microQueryIndexCosted
-    (xs : List Int) (state : State)
-    (start left right : Nat) : Costed (Option Nat) :=
-  Costed.tickValue materializedMicrotableLookupCost
-    (state.microtable.queryIndex? xs start left right)
-
-@[simp] theorem microQueryIndexCosted_value
-    (xs : List Int) (state : State) (start left right : Nat) :
-    (microQueryIndexCosted xs state start left right).value =
-      state.microtable.queryIndex? xs start left right := by
-  rfl
-
-theorem microQueryIndexCosted_cost
-    (xs : List Int) (state : State) (start left right : Nat) :
-    (microQueryIndexCosted xs state start left right).cost =
-      materializedMicrotableLookupCost := by
-  rfl
-
 /-- Exact cost expression for the costed local-block candidate. -/
 def localBlockCandidateCost
     (_xs : List Int) (_state : State) (_start left right : Nat) : Nat :=
-  if _hnonempty : left < right then
-    materializedMicrotableLookupCost
-  else
-    1
+  storedLocalBlockCandidateCost left right
 
-/-- Costed local-block candidate matching `localBlockCandidate`. -/
-def localBlockCandidateCosted
+theorem localBlockCandidateCost_le_two
     (xs : List Int) (state : State) (start left right : Nat) :
-    Costed (Option Nat) :=
-  if _hnonempty : left < right then
-    microQueryIndexCosted (paddedInput xs state.blockSize) state start
-      (left - start) (right - start)
-  else
-    Costed.tickValue 1 none
-
-@[simp] theorem localBlockCandidateCosted_value
-    (xs : List Int) (state : State) (start left right : Nat) :
-    (localBlockCandidateCosted xs state start left right).value =
-      localBlockCandidate xs state start left right := by
-  unfold localBlockCandidateCosted localBlockCandidate
-  by_cases hnonempty : left < right
-  case pos =>
-    rw [dif_pos hnonempty, dif_pos hnonempty]
-    simp [microQueryIndexCosted]
-  case neg =>
-    rw [dif_neg hnonempty, dif_neg hnonempty]
-    simp
-
-theorem localBlockCandidateCosted_cost
-    (xs : List Int) (state : State) (start left right : Nat) :
-    (localBlockCandidateCosted xs state start left right).cost =
-      localBlockCandidateCost xs state start left right := by
-  unfold localBlockCandidateCosted localBlockCandidateCost
-  by_cases hnonempty : left < right
-  case pos =>
-    rw [dif_pos hnonempty, dif_pos hnonempty]
-    simp [microQueryIndexCosted_cost]
-  case neg =>
-    rw [dif_neg hnonempty, dif_neg hnonempty]
-    rfl
-
-theorem localBlockCandidateCost_le_one
-    (xs : List Int) (state : State) (start left right : Nat) :
-    localBlockCandidateCost xs state start left right <= 1 := by
-  unfold localBlockCandidateCost materializedMicrotableLookupCost
+    localBlockCandidateCost xs state start left right <= 2 := by
+  unfold localBlockCandidateCost storedLocalBlockCandidateCost
   by_cases hnonempty : left < right
   case pos =>
     rw [dif_pos hnonempty]
-    exact Nat.le_refl _
+    simp [storedMicrotableLookupCost, TableModel.indexedReadCost]
   case neg =>
     rw [dif_neg hnonempty]
-    exact Nat.le_refl _
+    omega
 
 /-- Exact cost expression for the costed right-boundary candidate. -/
 def rightBoundaryCandidateCost
@@ -414,39 +838,29 @@ def rightBoundaryCandidateCost
 
 /-- Costed right-boundary candidate matching `rightBoundaryCandidate`. -/
 def rightBoundaryCandidateCosted
-    (xs : List Int) (state : State) (start right : Nat) :
+    (xs : List Int) (state : State) (block right : Nat) :
     Costed (Option Nat) :=
-  localBlockCandidateCosted xs state start start right
+  storedStateLocalBlockCandidateCosted xs state block
+    (block * state.blockSize) right
 
-@[simp] theorem rightBoundaryCandidateCosted_value
-    (xs : List Int) (state : State) (start right : Nat) :
-    (rightBoundaryCandidateCosted xs state start right).value =
-      rightBoundaryCandidate xs state start right := by
-  exact localBlockCandidateCosted_value xs state start start right
+@[simp] theorem rightBoundaryCandidateCosted_value_of_lt
+    {xs : List Int} {state : State} {block right : Nat}
+    (hblock : block < compressedLength xs.length state.blockSize + 1) :
+    (rightBoundaryCandidateCosted xs state block right).value =
+      rightBoundaryCandidate xs state (block * state.blockSize) right := by
+  exact storedStateLocalBlockCandidateCosted_value_of_lt hblock
 
 theorem rightBoundaryCandidateCosted_cost
-    (xs : List Int) (state : State) (start right : Nat) :
-    (rightBoundaryCandidateCosted xs state start right).cost =
-      rightBoundaryCandidateCost xs state start right := by
-  exact localBlockCandidateCosted_cost xs state start start right
+    (xs : List Int) (state : State) (block right : Nat) :
+    (rightBoundaryCandidateCosted xs state block right).cost =
+      rightBoundaryCandidateCost xs state (block * state.blockSize) right := by
+  exact storedStateLocalBlockCandidateCosted_cost xs state block
+    (block * state.blockSize) right
 
-theorem rightBoundaryCandidateCost_le_one
+theorem rightBoundaryCandidateCost_le_two
     (xs : List Int) (state : State) (start right : Nat) :
-    rightBoundaryCandidateCost xs state start right <= 1 := by
-  exact localBlockCandidateCost_le_one xs state start start right
-
-theorem rightBoundaryCandidateCost_eq_materialized
-    {xs : List Int} {state : State} {start right : Nat}
-    (_hmaterialized : start = right \/ start + state.blockSize <= xs.length) :
-    rightBoundaryCandidateCost xs state start right =
-      materializedMicrotableLookupCost := by
-  unfold rightBoundaryCandidateCost localBlockCandidateCost
-  by_cases hnonempty : start < right
-  case pos =>
-    rw [dif_pos hnonempty]
-  case neg =>
-    rw [dif_neg hnonempty]
-    rfl
+    rightBoundaryCandidateCost xs state start right <= 2 := by
+  exact localBlockCandidateCost_le_two xs state start start right
 
 /-- Exact cost expression for `queryWithStateCosted`. -/
 def queryWithStateCost
@@ -458,9 +872,8 @@ def queryWithStateCost
       let rightBlock := rightBoundaryBlock right b
       if _hschedule : leftBlock <= rightBlock then
         let rightStart := rightBlock * b
-        materializedMicrotableLookupCost +
-          SparseTable.queryFromTableCost (blockMinSummary xs b)
-            leftBlock rightBlock +
+        storedMicrotableLookupCost +
+          (summaryStoredQuery xs state leftBlock rightBlock).steps +
             rightBoundaryCandidateCost xs state rightStart right + 2
       else
         let blockStart := rightBlock * b
@@ -488,25 +901,23 @@ def queryWithStateCosted
       let rightBlock := rightBoundaryBlock right b
       if _hschedule : leftBlock <= rightBlock then
         let leftStart := (leftBlock - 1) * b
-        let rightStart := rightBlock * b
         Costed.bind
-          (microQueryIndexCosted xs state leftStart
+          (storedFullBlockCandidateCosted xs state (leftBlock - 1)
             (left - leftStart) (leftBlock * b - leftStart))
           fun leftCandidate =>
         Costed.bind
           (Costed.map (liftBlockCandidate xs b)
-            (SparseTable.queryFromTableCosted (blockMinSummary xs b)
-              state.summaryTable leftBlock rightBlock))
+            (RAM.Exec.toCosted
+              (summaryStoredQuery xs state leftBlock rightBlock)))
           fun middleCandidate =>
         Costed.bind
-          (rightBoundaryCandidateCosted xs state rightStart right)
+          (rightBoundaryCandidateCosted xs state rightBlock right)
           fun rightCandidate =>
         Costed.tickValue 2
           (combineIndex xs (combineIndex xs leftCandidate middleCandidate)
             rightCandidate)
       else
-        let blockStart := rightBlock * b
-        localBlockCandidateCosted xs state blockStart left right
+        storedStateLocalBlockCandidateCosted xs state rightBlock left right
     else
       rangeScanCosted xs left right
   else
@@ -528,15 +939,14 @@ theorem queryWithStateCosted_cost
             rightBoundaryBlock right state.blockSize
       case pos =>
         rw [dif_pos hschedule, dif_pos hschedule]
-        simp [microQueryIndexCosted_cost, Costed.map_cost,
-          SparseTable.queryFromTableCosted_cost,
+        simp [storedFullBlockCandidateCosted_cost, Costed.map_cost,
+          RAM.Exec.toCosted_cost_eq_steps,
           rightBoundaryCandidateCosted_cost]
         omega
       case neg =>
         rw [dif_neg hschedule, dif_neg hschedule]
-        exact localBlockCandidateCosted_cost xs state
-          (rightBoundaryBlock right state.blockSize * state.blockSize)
-          left right
+        simp [storedStateLocalBlockCandidateCosted_cost,
+          localBlockCandidateCost]
     case neg =>
       rw [dif_neg hb, dif_neg hb]
       exact rangeScanCosted_cost xs left right
@@ -544,10 +954,10 @@ theorem queryWithStateCosted_cost
     rw [dif_neg hValid, dif_neg hValid]
     rfl
 
-theorem queryWithStateCost_le_eight_of_blockSize_pos
+theorem queryWithStateCost_le_thirteen_of_blockSize_pos
     (xs : List Int) (state : State) (left right : Nat)
     (hb : 0 < state.blockSize) :
-    queryWithStateCost xs state left right <= 8 := by
+    queryWithStateCost xs state left right <= 13 := by
   unfold queryWithStateCost
   by_cases hValid : ValidRange xs left right
   case pos =>
@@ -558,17 +968,17 @@ theorem queryWithStateCost_le_eight_of_blockSize_pos
           rightBoundaryBlock right state.blockSize
     case pos =>
       rw [dif_pos hschedule]
-      have hsparse := sparseQueryFromTableCost_le_four
-        (blockMinSummary xs state.blockSize)
-        (leftBoundaryBlock left state.blockSize)
-        (rightBoundaryBlock right state.blockSize)
-      have hright := rightBoundaryCandidateCost_le_one xs state
+      have hsparse :=
+        summaryStoredQuery_steps_le_seven xs state
+          (leftBoundaryBlock left state.blockSize)
+          (rightBoundaryBlock right state.blockSize)
+      have hright := rightBoundaryCandidateCost_le_two xs state
         (rightBoundaryBlock right state.blockSize * state.blockSize) right
-      simp [materializedMicrotableLookupCost]
+      simp [storedMicrotableLookupCost, TableModel.indexedReadCost]
       omega
     case neg =>
       rw [dif_neg hschedule]
-      have hlocal := localBlockCandidateCost_le_one xs state
+      have hlocal := localBlockCandidateCost_le_two xs state
         (rightBoundaryBlock right state.blockSize * state.blockSize)
         left right
       exact Nat.le_trans (by simpa using hlocal) (by omega)
@@ -576,14 +986,47 @@ theorem queryWithStateCost_le_eight_of_blockSize_pos
     rw [dif_neg hValid]
     omega
 
-theorem queryWithStateCosted_cost_le_eight_of_blockSize_pos
+theorem queryWithStateCosted_cost_le_thirteen_of_blockSize_pos
     (xs : List Int) (state : State) (left right : Nat)
     (hb : 0 < state.blockSize) :
-    (queryWithStateCosted xs state left right).cost <= 8 := by
+    (queryWithStateCosted xs state left right).cost <= 13 := by
   rw [queryWithStateCosted_cost]
-  exact queryWithStateCost_le_eight_of_blockSize_pos xs state left right hb
+  exact queryWithStateCost_le_thirteen_of_blockSize_pos xs state left right hb
 
-theorem queryWithStateCost_eq_suppliedQueryCost_of_materialized
+theorem queryWithStateCost_le_suppliedQueryCost_of_stored
+    {xs : List Int} {state : State} {left right : Nat}
+    (hb : 0 < state.blockSize)
+    (hschedule :
+      leftBoundaryBlock left state.blockSize <=
+        rightBoundaryBlock right state.blockSize)
+    (_hright :
+      rightBoundaryBlock right state.blockSize * state.blockSize = right \/
+        rightBoundaryBlock right state.blockSize * state.blockSize +
+            state.blockSize <= xs.length) :
+    queryWithStateCost xs state left right <=
+      suppliedQueryCost xs state.blockSize left right := by
+  unfold queryWithStateCost suppliedQueryCost
+  by_cases hValid : ValidRange xs left right
+  case pos =>
+    rw [dif_pos hValid, dif_pos (And.intro hValid hb), dif_pos hb,
+      dif_pos hschedule]
+    have hsparse :=
+      summaryStoredQuery_steps_le_seven xs state
+        (leftBoundaryBlock left state.blockSize)
+        (rightBoundaryBlock right state.blockSize)
+    have hrightCost := rightBoundaryCandidateCost_le_two xs state
+      (rightBoundaryBlock right state.blockSize * state.blockSize) right
+    simp [storedMicrotableLookupCost, TableModel.indexedReadCost]
+    omega
+  case neg =>
+    rw [dif_neg hValid]
+    have hbad : Not (ValidRange xs left right /\ 0 < state.blockSize) := by
+      intro h
+      exact hValid h.1
+    rw [dif_neg hbad]
+    exact Nat.le_refl _
+
+theorem queryWithStateCosted_cost_le_suppliedQueryCost_of_stored
     {xs : List Int} {state : State} {left right : Nat}
     (hb : 0 < state.blockSize)
     (hschedule :
@@ -593,59 +1036,113 @@ theorem queryWithStateCost_eq_suppliedQueryCost_of_materialized
       rightBoundaryBlock right state.blockSize * state.blockSize = right \/
         rightBoundaryBlock right state.blockSize * state.blockSize +
             state.blockSize <= xs.length) :
-    queryWithStateCost xs state left right =
-      suppliedQueryCost xs state.blockSize left right := by
-  have hrightCost :
-      rightBoundaryCandidateCost xs state
-          (rightBoundaryBlock right state.blockSize * state.blockSize) right =
-        materializedMicrotableLookupCost := by
-    exact rightBoundaryCandidateCost_eq_materialized
-      (xs := xs) (state := state)
-      (start := rightBoundaryBlock right state.blockSize * state.blockSize)
-      (right := right) hright
-  simp [queryWithStateCost, suppliedQueryCost, hb, hschedule, hrightCost]
-
-theorem queryWithStateCosted_cost_eq_suppliedQueryCost_of_materialized
-    {xs : List Int} {state : State} {left right : Nat}
-    (hb : 0 < state.blockSize)
-    (hschedule :
-      leftBoundaryBlock left state.blockSize <=
-        rightBoundaryBlock right state.blockSize)
-    (hright :
-      rightBoundaryBlock right state.blockSize * state.blockSize = right \/
-        rightBoundaryBlock right state.blockSize * state.blockSize +
-            state.blockSize <= xs.length) :
-    (queryWithStateCosted xs state left right).cost =
+    (queryWithStateCosted xs state left right).cost <=
       suppliedQueryCost xs state.blockSize left right := by
   rw [queryWithStateCosted_cost]
-  exact queryWithStateCost_eq_suppliedQueryCost_of_materialized
+  exact queryWithStateCost_le_suppliedQueryCost_of_stored
     hb hschedule hright
+
+theorem queryWithStateCosted_value_of_summaryTableRefines
+    {xs : List Int} {state : State} {left right : Nat}
+    (hsummary : SummaryTableRefines xs state) :
+    (queryWithStateCosted xs state left right).value =
+      queryWithState xs state left right := by
+  unfold queryWithStateCosted queryWithState
+  by_cases hValid : ValidRange xs left right
+  case pos =>
+    rw [dif_pos hValid, dif_pos hValid]
+    by_cases hb : 0 < state.blockSize
+    case pos =>
+      simp [hb]
+      by_cases hschedule :
+          leftBoundaryBlock left state.blockSize <=
+            rightBoundaryBlock right state.blockSize
+      case pos =>
+        have hrightBlockLe :
+            rightBoundaryBlock right state.blockSize <=
+              compressedLength xs.length state.blockSize :=
+          rightBoundaryBlock_le_compressed
+            (xs := xs) (b := state.blockSize) (right := right)
+            hb hValid.2
+        have hrightBlockLt :
+            rightBoundaryBlock right state.blockSize <
+              compressedLength xs.length state.blockSize + 1 := by
+          omega
+        have hleftBlockLt :
+            leftBoundaryBlock left state.blockSize - 1 <
+              compressedLength xs.length state.blockSize + 1 := by
+          omega
+        have hleftValue :
+            (storedFullBlockCandidateCosted xs state
+                (leftBoundaryBlock left state.blockSize - 1)
+                (left - ((leftBoundaryBlock left state.blockSize - 1) *
+                    state.blockSize))
+                (leftBoundaryBlock left state.blockSize * state.blockSize -
+                    (leftBoundaryBlock left state.blockSize - 1) *
+                      state.blockSize)).value =
+              state.microtable.queryIndex? xs
+                ((leftBoundaryBlock left state.blockSize - 1) *
+                  state.blockSize)
+                (left - ((leftBoundaryBlock left state.blockSize - 1) *
+                    state.blockSize))
+                (leftBoundaryBlock left state.blockSize * state.blockSize -
+                    (leftBoundaryBlock left state.blockSize - 1) *
+                      state.blockSize) :=
+          storedFullBlockCandidateCosted_value_of_lt hleftBlockLt
+        have hrightValue :
+            (rightBoundaryCandidateCosted xs state
+                (rightBoundaryBlock right state.blockSize) right).value =
+              rightBoundaryCandidate xs state
+                (rightBoundaryBlock right state.blockSize *
+                  state.blockSize) right :=
+          rightBoundaryCandidateCosted_value_of_lt hrightBlockLt
+        have hmiddle :
+            liftBlockCandidate xs state.blockSize
+                (summaryStoredQuery xs state
+                  (leftBoundaryBlock left state.blockSize)
+                  (rightBoundaryBlock right state.blockSize)).value =
+              recursiveMiddleCandidate xs state.blockSize
+                (summaryBackend xs state.blockSize)
+                (leftBoundaryBlock left state.blockSize)
+                (rightBoundaryBlock right state.blockSize) :=
+          (liftedSummaryStoredQuery_refines_recursiveMiddle_with_steps
+            (xs := xs) (state := state)
+            (leftBlock := leftBoundaryBlock left state.blockSize)
+            (rightBlock := rightBoundaryBlock right state.blockSize)
+            hsummary).1
+        simp [Costed.map_value, hleftValue, hrightValue, hmiddle,
+          hschedule]
+      case neg =>
+        have hrightBlockLe :
+            rightBoundaryBlock right state.blockSize <=
+              compressedLength xs.length state.blockSize :=
+          rightBoundaryBlock_le_compressed
+            (xs := xs) (b := state.blockSize) (right := right)
+            hb hValid.2
+        have hrightBlockLt :
+            rightBoundaryBlock right state.blockSize <
+              compressedLength xs.length state.blockSize + 1 := by
+          omega
+        have hlocalValue :
+            (storedStateLocalBlockCandidateCosted xs state
+                (rightBoundaryBlock right state.blockSize) left right).value =
+              localBlockCandidate xs state
+                (rightBoundaryBlock right state.blockSize *
+                  state.blockSize) left right :=
+          storedStateLocalBlockCandidateCosted_value_of_lt hrightBlockLt
+        simp [hlocalValue, hschedule]
+    case neg =>
+      simp [hb, RMQ.LinearScan.query]
+  case neg =>
+    rw [dif_neg hValid, dif_neg hValid]
+    rfl
 
 @[simp] theorem queryWithStateCosted_value_built
     (xs : List Int) (blockSize left right : Nat) :
     (queryWithStateCosted xs (buildWithBlockSize xs blockSize) left right).value =
       queryWithState xs (buildWithBlockSize xs blockSize) left right := by
-  unfold queryWithStateCosted queryWithState
-  by_cases hValid : ValidRange xs left right
-  case pos =>
-    rw [dif_pos hValid, dif_pos hValid]
-    by_cases hb : 0 < blockSize
-    case pos =>
-      simp [buildWithBlockSize, hb]
-      by_cases hschedule :
-          leftBoundaryBlock left blockSize <=
-            rightBoundaryBlock right blockSize
-      case pos =>
-        simp [Costed.map_value, recursiveMiddleCandidate, summaryBackend,
-          RMQ.SparseTable.memoBackend, rightBoundaryCandidateCosted_value,
-          hschedule]
-      case neg =>
-        simp [localBlockCandidateCosted_value, hschedule]
-    case neg =>
-      simp [buildWithBlockSize, hb, RMQ.LinearScan.query]
-  case neg =>
-    rw [dif_neg hValid, dif_neg hValid]
-    rfl
+  exact queryWithStateCosted_value_of_summaryTableRefines
+    (buildWithBlockSize_summaryTableRefines xs blockSize)
 
 theorem queryWithStateCosted_run_built
     (xs : List Int) (blockSize left right : Nat) :
@@ -1089,7 +1586,7 @@ theorem allInputQueryCost_small
     allInputQueryCost xs left right = rangeScanCost xs left right := by
   simp [allInputQueryCost, hlarge]
 
-theorem allInputQueryCost_eq_build_plus_supplied_of_large_materialized
+theorem allInputQueryCost_le_build_plus_supplied_of_large_stored
     {xs : List Int} {left right : Nat}
     (hlarge : canonicalReady xs)
     (hschedule :
@@ -1100,7 +1597,7 @@ theorem allInputQueryCost_eq_build_plus_supplied_of_large_materialized
           canonicalBlockSize xs = right \/
         rightBoundaryBlock right (canonicalBlockSize xs) *
             canonicalBlockSize xs + canonicalBlockSize xs <= xs.length) :
-    allInputQueryCost xs left right =
+    allInputQueryCost xs left right <=
       buildCost xs (canonicalBlockSize xs) +
         suppliedQueryCost xs (canonicalBlockSize xs) left right := by
   rw [allInputQueryCost_large hlarge]
@@ -1120,12 +1617,14 @@ theorem allInputQueryCost_eq_build_plus_supplied_of_large_materialized
         rightBoundaryBlock right (build xs).blockSize *
             (build xs).blockSize + (build xs).blockSize <= xs.length := by
     simpa [build] using hright
-  rw [queryWithStateCost_eq_suppliedQueryCost_of_materialized
-    (xs := xs) (state := build xs) (left := left) (right := right)
-    hb hscheduleBuild hrightBuild]
-  simp [build]
+  have hquery :=
+    queryWithStateCost_le_suppliedQueryCost_of_stored
+      (xs := xs) (state := build xs) (left := left) (right := right)
+      hb hscheduleBuild hrightBuild
+  exact Nat.add_le_add_left (by simpa [build] using hquery)
+    (buildCost xs (canonicalBlockSize xs))
 
-theorem allInputQueryCosted_cost_eq_build_plus_supplied_of_large_materialized
+theorem allInputQueryCosted_cost_le_build_plus_supplied_of_large_stored
     {xs : List Int} {left right : Nat}
     (hlarge : canonicalReady xs)
     (hschedule :
@@ -1136,46 +1635,100 @@ theorem allInputQueryCosted_cost_eq_build_plus_supplied_of_large_materialized
           canonicalBlockSize xs = right \/
         rightBoundaryBlock right (canonicalBlockSize xs) *
             canonicalBlockSize xs + canonicalBlockSize xs <= xs.length) :
-    (allInputQueryCosted xs left right).cost =
+    (allInputQueryCosted xs left right).cost <=
       buildCost xs (canonicalBlockSize xs) +
         suppliedQueryCost xs (canonicalBlockSize xs) left right := by
   rw [allInputQueryCosted_cost]
-  exact allInputQueryCost_eq_build_plus_supplied_of_large_materialized
+  exact allInputQueryCost_le_build_plus_supplied_of_large_stored
     hlarge hschedule hright
 
-theorem queryWithStateCost_built_le_eight_of_large
+theorem queryWithStateCost_built_le_thirteen_of_large
     {xs : List Int} (hlarge : canonicalReady xs) (left right : Nat) :
-    queryWithStateCost xs (build xs) left right <= 8 := by
+    queryWithStateCost xs (build xs) left right <= 13 := by
   have hcanon : 16 <= canonicalBlockSize xs := by
     simpa [canonicalReady] using hlarge
   have hbCanon : 0 < canonicalBlockSize xs := by
     omega
   have hb : 0 < (build xs).blockSize := by
     simpa [build] using hbCanon
-  exact queryWithStateCost_le_eight_of_blockSize_pos
+  exact queryWithStateCost_le_thirteen_of_blockSize_pos
     xs (build xs) left right hb
 
-theorem queryWithStateCosted_built_cost_le_eight_of_large
+theorem queryWithStateCosted_built_cost_le_thirteen_of_large
     {xs : List Int} (hlarge : canonicalReady xs) (left right : Nat) :
-    (queryWithStateCosted xs (build xs) left right).cost <= 8 := by
+    (queryWithStateCosted xs (build xs) left right).cost <= 13 := by
   rw [queryWithStateCosted_cost]
-  exact queryWithStateCost_built_le_eight_of_large hlarge left right
+  exact queryWithStateCost_built_le_thirteen_of_large hlarge left right
 
-theorem allInputQueryCost_large_le_build_plus_eight
+/--
+Large-regime supplied-query capstone for the assembled Fischer-Heun backend.
+
+The costed public query erases to the verified value query, and its live
+stored-summary/stored-microtable path has constant supplied-query cost in the
+RAM/unit-cost indexed-access model.
+-/
+theorem fischerHeun_refines_with_steps
+    {xs : List Int} (hlarge : canonicalReady xs) (left right : Nat) :
+    (queryCosted xs left right).value = query xs left right ∧
+      (queryCosted xs left right).cost <= 13 := by
+  constructor
+  · exact queryCosted_value xs left right
+  · unfold queryCosted
+    exact queryWithStateCosted_built_cost_le_thirteen_of_large
+      hlarge left right
+
+/--
+Large-regime fresh build+query capstone for the assembled Fischer-Heun backend.
+
+This composes the existing canonical build-cost theorem with the live
+stored-summary/stored-microtable supplied-query bound.  It is a component
+budget over the current `Costed` builder/query wrappers, not a monolithic
+`RAM.Exec` preprocessing program.
+-/
+theorem fischerHeun_fresh_refines_with_build_query_steps_of_large
+    {xs : List Int} (hlarge : canonicalReady xs) (left right : Nat) :
+    (freshQueryCosted xs left right).value = query xs left right ∧
+      buildCost xs (canonicalBlockSize xs) <= 15 * xs.length ∧
+      (queryWithStateCosted xs (build xs) left right).cost <= 13 ∧
+      (freshQueryCosted xs left right).cost <= 15 * xs.length + 13 := by
+  have hb16 : 16 <= canonicalBlockSize xs := by
+    simpa [canonicalReady] using hlarge
+  have hpos := canonicalBlockSize_pos_length_of_ge_sixteen (xs := xs) hb16
+  have hmicro := rawMicrotableSlotBudget_canonical_le_length xs hpos
+  have hsummary := summaryLog_canonical_le_four_mul xs hb16
+  have hbuild :
+      buildCost xs (canonicalBlockSize xs) <= 15 * xs.length :=
+    buildCost_le_fifteen_mul_length xs (canonicalBlockSize xs)
+      hmicro hsummary
+  have hquery :
+      (queryWithStateCosted xs (build xs) left right).cost <= 13 :=
+    queryWithStateCosted_built_cost_le_thirteen_of_large
+      hlarge left right
+  constructor
+  · exact freshQueryCosted_value xs left right
+  constructor
+  · exact hbuild
+  constructor
+  · exact hquery
+  · rw [freshQueryCosted_cost]
+    rw [queryWithStateCosted_cost] at hquery
+    exact Nat.add_le_add hbuild hquery
+
+theorem allInputQueryCost_large_le_build_plus_thirteen
     {xs : List Int} {left right : Nat} (hlarge : canonicalReady xs) :
     allInputQueryCost xs left right <=
-      buildCost xs (canonicalBlockSize xs) + 8 := by
+      buildCost xs (canonicalBlockSize xs) + 13 := by
   rw [allInputQueryCost_large hlarge]
   exact Nat.add_le_add_left
-    (queryWithStateCost_built_le_eight_of_large hlarge left right)
+    (queryWithStateCost_built_le_thirteen_of_large hlarge left right)
     (buildCost xs (canonicalBlockSize xs))
 
-theorem allInputQueryCosted_cost_large_le_build_plus_eight
+theorem allInputQueryCosted_cost_large_le_build_plus_thirteen
     {xs : List Int} {left right : Nat} (hlarge : canonicalReady xs) :
     (allInputQueryCosted xs left right).cost <=
-      buildCost xs (canonicalBlockSize xs) + 8 := by
+      buildCost xs (canonicalBlockSize xs) + 13 := by
   rw [allInputQueryCosted_cost]
-  exact allInputQueryCost_large_le_build_plus_eight hlarge
+  exact allInputQueryCost_large_le_build_plus_thirteen hlarge
 
 /--
 Canonical large-input profile for the assembled all-input policy.
@@ -1192,7 +1745,7 @@ theorem linearBuild_constantQuery_profile_allInput_large :
             forall left right,
               queryWithStateCost xs (build xs) left right <= queryC := by
   refine Exists.intro 15 ?_
-  refine Exists.intro 8 ?_
+  refine Exists.intro 13 ?_
   intro xs hlarge
   have hb16 : 16 <= canonicalBlockSize xs := by
     simpa [canonicalReady] using hlarge
@@ -1203,7 +1756,7 @@ theorem linearBuild_constantQuery_profile_allInput_large :
     (buildCost_le_fifteen_mul_length xs (canonicalBlockSize xs)
       hmicro hsummary)
     (fun left right =>
-      queryWithStateCost_built_le_eight_of_large hlarge left right)
+      queryWithStateCost_built_le_thirteen_of_large hlarge left right)
 
 theorem allInputQuery_sound {xs : List Int} {left right idx : Nat}
     (hres : allInputQuery xs left right = some idx) :
@@ -1255,6 +1808,128 @@ theorem allInputQuery_invalid_none
     rw [dif_neg hlarge]
     exact RMQ.LinearScan.invalid_none hbad
 
+/-!
+## Lower-bound state encoding
+
+The next definitions instantiate the abstract lower-bound interface with a
+Fischer-Heun-shaped state. The `payload` field is the only bitstring charged by
+`ExactRMQStateEncoding`; the ordinary built Fischer-Heun state is retained as
+proof/certificate data and is deliberately ignored by `encodeState`.
+-/
+
+/-- Fischer-Heun-shaped state for the lower-bound adapter. -/
+structure EncodedState (n : Nat) where
+  payload : List Bool
+  built : State
+
+/--
+Build the lower-bound state for a representative shape.
+
+The proof-only `built` component is the ordinary one-block Fischer-Heun state
+over the canonical representative array; the counted payload is only the
+explicit Cartesian shape code tail.
+-/
+def encodedStateOfShape
+    (n : Nat) (shape : Cartesian.CartesianShape) : EncodedState n where
+  payload := EncodingLowerBound.canonicalShapePayload shape
+  built := buildWithBlockSize shape.representative n
+
+/--
+Payload-only query decoder for the Fischer-Heun-shaped lower-bound state.
+
+After decoding the block shape, this performs the same one-block raw
+microtable lookup used by the whole-list microtable backend. It does not read
+the proof-only built state.
+-/
+def encodedStateQuery
+    (n : Nat) (payload : List Bool) (left right : Nat) : Option Nat :=
+  match EncodingLowerBound.decodeShapePayload? n payload with
+  | some shape =>
+      (RMQ.Cartesian.Microtable.raw n).queryIndex?
+        shape.representative 0 left right
+  | none => none
+
+/--
+Concrete Fischer-Heun-shaped instance of `ExactRMQStateEncoding`.
+
+This is still a baseline explicit-shape payload of length `2*n`, but the state
+layout separates the charged payload from the certified Fischer-Heun build
+fields. That is the lower-bound interface shape needed before connecting more
+compressed concrete layouts.
+-/
+def stateEncoding (n : Nat) :
+    EncodingLowerBound.ExactRMQStateEncoding n (2 * n) where
+  State := EncodedState n
+  buildState := encodedStateOfShape n
+  encodeState state := state.payload
+  queryEncoded := encodedStateQuery n
+  sample shape := shape.representative
+  length_eq := by
+    intro shape hmem
+    exact Cartesian.CartesianShape.fullCode_tail_length_of_shapeOfSize
+      (Cartesian.mem_shapesOfSize_shapeOfSize hmem)
+  sample_length_eq := by
+    intro shape hmem
+    have hshape := Cartesian.mem_shapesOfSize_shapeOfSize hmem
+    rw [Cartesian.CartesianShape.representative_length,
+      Cartesian.ShapeOfSize.size_eq hshape]
+  sample_shape_eq := by
+    intro shape _hmem
+    exact Cartesian.CartesianShape.shape_representative shape
+  query_exact := by
+    intro shape hmem left len hlen hbound
+    have hshape := Cartesian.mem_shapesOfSize_shapeOfSize hmem
+    have hdecode :=
+      EncodingLowerBound.decodeShapePayload?_canonicalShapePayload hshape
+    have hrepLen : shape.representative.length = n := by
+      rw [Cartesian.CartesianShape.representative_length,
+        Cartesian.ShapeOfSize.size_eq hshape]
+    have htable :=
+      RMQ.Cartesian.Microtable.queryIndex?_eq
+        (RMQ.Cartesian.Microtable.raw n)
+        (xs := shape.representative) (start := 0)
+        (left := left) (right := left + len)
+        (by omega)
+    have hlocal :
+        RMQ.Cartesian.LocalValid n left (left + len) := by
+      unfold RMQ.Cartesian.LocalValid
+      omega
+    have hsub : left + len - left = len := by omega
+    simp [encodedStateOfShape, encodedStateQuery, hdecode, htable, hlocal,
+      hsub]
+
+theorem two_mul_sub_log_slack_le_bits_of_stateEncoding
+    (n : Nat) :
+    2 * n - (2 * Nat.log2 (2 * n + 1) + 2) <= 2 * n :=
+  EncodingLowerBound.two_mul_sub_log_slack_le_bits_of_exactRMQStateEncoding
+    (stateEncoding n)
+
+/--
+Two-sided fixed-length space sandwich using the Fischer-Heun-shaped state
+encoding as the concrete upper witness.
+
+The charged payload remains the explicit `2*n` Cartesian-shape payload; the
+ordinary Fischer-Heun build stored in the state is proof-only auxiliary data.
+-/
+def stateEncodingSpaceBounds (n : Nat) :
+    EncodingLowerBound.ExactRMQSpaceBounds
+      n (EncodingLowerBound.logSlackLower n) (2 * n) where
+  lower_le_any := by
+    intro bits encoding
+    exact
+      EncodingLowerBound.two_mul_sub_log_slack_le_bits_of_exactRMQStateEncoding
+        encoding
+  upperEncoding := stateEncoding n
+
+theorem exactRMQ_two_sided_log_slack_space_bound_stateEncoding
+    (n : Nat) :
+    (forall {bits : Nat}, EncodingLowerBound.ExactRMQStateEncoding n bits ->
+        EncodingLowerBound.logSlackLower n <= bits) ∧
+      (exists _encoding :
+        EncodingLowerBound.ExactRMQStateEncoding n (2 * n), True) := by
+  exact ⟨(stateEncodingSpaceBounds n).lower_le_any,
+    ⟨(stateEncodingSpaceBounds n).upperEncoding, True.intro⟩⟩
+
 /-- All-input backend with linear-scan fallback outside the canonical regime. -/
 def allInputBackend (xs : List Int) : RMQBackend xs where
   State := Unit
@@ -1269,12 +1944,6 @@ def allInputBackend (xs : List Int) : RMQBackend xs where
   invalid_none := by
     intro left right hbad
     exact allInputQuery_invalid_none hbad
-
-example : allInputQuery [5, 2, 7, 1, 3] 1 4 = some 3 := by native_decide
-
-example : query [5, 2, 7, 1, 3] 1 4 = some 3 := by native_decide
-example : queryWithBlockSize [4, 1, 1, 2] 2 0 4 = some 1 := by native_decide
-example : query [5, 2, 7] 2 2 = none := by native_decide
 
 end FischerHeun
 

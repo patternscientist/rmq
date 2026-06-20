@@ -1,11 +1,16 @@
 import RMQ.Core.Spec
-import RMQ.Core.Cost
+import RMQ.Core.ModelHub
 import RMQ.Core.Window
 import RMQ.Core.Backend
 import RMQ.Core.LCA
 import RMQ.Core.PlusMinusOne
 import RMQ.Core.Succinct
+import RMQ.Core.SuccinctSpace
+import RMQ.Core.SuccinctRankProposal
+import RMQ.Core.SuccinctSelectProposal
+import RMQ.Core.SuccinctCloseProposal
 import RMQ.Core.Reduction
+import RMQ.Core.SuccinctReduction
 import RMQ.Core.Cartesian
 import RMQ.Core.Shape
 import RMQ.Core.EncodingLowerBound
@@ -16,7 +21,7 @@ import RMQ.Core.Recursion
 import RMQ.Impl.LinearScan
 import RMQ.Impl.PlusMinusOne
 import RMQ.Impl.SparseTable
-import RMQ.Impl.SparseTableCost
+import RMQ.Impl.SparseTableInstrumented
 import RMQ.Impl.SparseTableMemoCost
 import RMQ.Impl.FischerHeunCost
 import RMQ.Impl.FischerHeun
@@ -24,4 +29,5 @@ import RMQ.Impl.HybridBlock
 import RMQ.Impl.RecursiveHybrid
 import RMQ.Impl.RecursiveHybridCost
 import RMQ.Impl.LCACost
+import RMQ.Impl.LCAFischerHeun
 import RMQ.Impl.Equivalence

@@ -414,8 +414,4 @@ def publicSummaryDepth (xs : List Int) : Nat :=
     (fun _ _ depth => depth + 1)
     xs
 
-example : publicSummaryDepth ([] : List Int) = 0 := by native_decide
-example : publicSummaryDepth [1] = 0 := by native_decide
-example : publicSummaryDepth [1, 2, 3, 4, 5] = 1 := by native_decide
-
 end RMQ

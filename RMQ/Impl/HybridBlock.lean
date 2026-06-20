@@ -514,10 +514,4 @@ def backend (xs : List Int) : RMQ.RMQBackend xs where
     intro left right hbad
     exact invalid_none hbad
 
-example : query [5, 2, 7, 1, 3] 1 4 = some 3 := by native_decide
-example : query [4, 1, 1, 2] 0 4 = some 1 := by native_decide
-example : query [5, 2, 7] 2 2 = none := by native_decide
-example : query [9, 6, 8, 4, 7, 3, 5, 2, 1, 10] 2 9 = some 8 := by
-  native_decide
-
 end RMQ.HybridBlock

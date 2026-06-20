@@ -273,6 +273,52 @@ make a label common-prefix path disagree with the Euler first-occurrence path.
 def LabelsUnique (tree : RoseTree) : Prop :=
   tree.labelsPreorder.Nodup
 
+/--
+Every label in the tree is a valid direct-address index into a table of size
+`labelsPreorder.length`.  This is the cost-model assumption used by dense-node
+LCA structures; it is intentionally separate from uniqueness.
+-/
+def LabelsBoundedBySize (tree : RoseTree) : Prop :=
+  forall label, label ∈ tree.labelsPreorder -> label < tree.labelsPreorder.length
+
+/--
+Dense natural-number node labels: labels are unique semantic node identifiers
+and also fit in the direct-address range used by costed first-occurrence tables.
+-/
+def DenseNatLabels (tree : RoseTree) : Prop :=
+  tree.LabelsUnique ∧ tree.LabelsBoundedBySize
+
+mutual
+  /--
+  The dense node-ID table has one slot per syntactic tree node, and each such
+  node appears at least once in the generated Euler tour.
+  -/
+  theorem labelsPreorder_length_le_eulerNodes_length
+      (tree : RoseTree) :
+      tree.labelsPreorder.length <= tree.eulerNodes.length := by
+    cases tree with
+    | node label children =>
+        have hforest :=
+          labelsPreorderForest_length_le_eulerNodesForest_length label children
+        simp [labelsPreorder, eulerNodes]
+        omega
+
+  theorem labelsPreorderForest_length_le_eulerNodesForest_length
+      (parent : Nat) (forest : List RoseTree) :
+      (labelsPreorderForest forest).length <=
+        (eulerNodesForest parent forest).length := by
+    cases forest with
+    | nil =>
+        simp [labelsPreorderForest, eulerNodesForest]
+    | cons child rest =>
+        have hchild :=
+          labelsPreorder_length_le_eulerNodes_length child
+        have hrest :=
+          labelsPreorderForest_length_le_eulerNodesForest_length parent rest
+        simp [labelsPreorderForest, eulerNodesForest]
+        omega
+end
+
 theorem nodup_append_not_mem_right {α : Type u} {x : α} {xs ys : List α}
     (h : (xs ++ ys).Nodup) (hx : x ∈ xs) :
     x ∉ ys := by
@@ -1546,6 +1592,22 @@ def firstOccurrence? (trace : EulerTrace) (node : Nat) : Option Nat :=
 def occurrenceWindow (i j : Nat) : Nat × Nat :=
   (Nat.min i j, Nat.max i j + 1)
 
+theorem occurrenceWindow_fst_le_left (i j : Nat) :
+    (occurrenceWindow i j).1 <= i := by
+  exact Nat.min_le_left i j
+
+theorem occurrenceWindow_fst_le_right (i j : Nat) :
+    (occurrenceWindow i j).1 <= j := by
+  exact Nat.min_le_right i j
+
+theorem occurrenceWindow_left_lt_snd (i j : Nat) :
+    i < (occurrenceWindow i j).2 := by
+  exact Nat.lt_succ_of_le (Nat.le_max_left i j)
+
+theorem occurrenceWindow_right_lt_snd (i j : Nat) :
+    j < (occurrenceWindow i j).2 := by
+  exact Nat.lt_succ_of_le (Nat.le_max_right i j)
+
 theorem occurrenceWindow_shift_fst
     {offset i j : Nat} (_hi : offset <= i) (_hj : offset <= j) :
     (occurrenceWindow (i - offset) (j - offset)).1 =
@@ -2785,27 +2847,27 @@ theorem lcaCandidate_isPathLCA_of_pathLCA
 example :
     (RoseTree.node 0 [RoseTree.node 1 [], RoseTree.node 2 []]).eulerTrace.nodes =
       [0, 1, 0, 2, 0] := by
-  native_decide
+  decide
 
 example :
     (RoseTree.node 0 [RoseTree.node 1 [], RoseTree.node 2 []]).eulerTrace.depths =
       [0, 1, 0, 1, 0] := by
-  native_decide
+  decide
 
 example :
     (RoseTree.node 0 [RoseTree.node 1 [], RoseTree.node 2 []]).pathTo? 2 =
       some [0, 2] := by
-  native_decide
+  decide
 
 example :
     (RoseTree.node 0 [RoseTree.node 1 [], RoseTree.node 2 []]).pathLCA? 1 2 =
       some 0 := by
-  native_decide
+  decide
 
 example :
     (RoseTree.node 0 [RoseTree.node 1 [], RoseTree.node 2 []]).labelPairAgreement =
       true := by
-  native_decide
+  decide
 
 /--
 A duplicate-label tree showing why the generated trace/path agreement needs
@@ -2818,30 +2880,30 @@ def duplicateLabelCounterexample : RoseTree :=
 example : Not duplicateLabelCounterexample.LabelsUnique := by
   have hlabels :
       duplicateLabelCounterexample.labelsPreorder = [0, 1, 1, 2] := by
-    native_decide
+    decide
   unfold LabelsUnique
   rw [hlabels]
   simp
 
 example : duplicateLabelCounterexample.eulerTrace.leftmostMinNode? 1 2 = some 0 := by
-  native_decide
+  decide
 
 example : duplicateLabelCounterexample.pathLCA? 1 2 = some 1 := by
-  native_decide
+  decide
 
 example : duplicateLabelCounterexample.labelPairAgreement = false := by
-  native_decide
+  decide
 
 theorem duplicateLabelCounterexample_traceAnswer :
     EulerTrace.IsLCAAnswer duplicateLabelCounterexample.eulerTrace 1 2 0 := by
   refine ⟨1, 4, 2, ?_, ?_, ?_, ?_⟩
-  · native_decide
-  · native_decide
-  · native_decide
+  · decide
+  · decide
+  · decide
   · have hdepths :
         duplicateLabelCounterexample.eulerTrace.depths =
           [0, 1, 0, 1, 2, 1, 0] := by
-      native_decide
+      decide
     simpa [EulerTrace.occurrenceWindow, hdepths] using
       (show LeftmostArgMin [0, 1, 0, 1, 2, 1, 0] 1 5 2 from by
         refine ⟨by omega, by decide, by omega, by omega, 0, by simp, ?_, ?_⟩
@@ -2872,9 +2934,9 @@ theorem duplicateLabelCounterexample_not_tracePathAgreement :
     hagreement duplicateLabelCounterexample_traceAnswer
   rcases hpath with ⟨pathU, pathV, hu, hv, hlca, _hcommon⟩
   have hpathU : duplicateLabelCounterexample.pathTo? 1 = some [0, 1] := by
-    native_decide
+    decide
   have hpathV : duplicateLabelCounterexample.pathTo? 2 = some [0, 1, 2] := by
-    native_decide
+    decide
   rw [hpathU] at hu
   rw [hpathV] at hv
   cases hu

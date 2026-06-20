@@ -1,14 +1,14 @@
-import RMQ.Impl.SparseTableCost
+import RMQ.Core.Cost
+import RMQ.Impl.SparseTable
 
 /-!
 # Memoized sparse-table build costs
 
-This module starts the cost-faithful sparse-table build track. The existing
-`SparseTableCost` module faithfully costs the simple recursive cell builder; in
-contrast, the definitions here build each successor row from the previous
-materialized row, charging only two unit-cost reads and one combine per cell
-under the same RAM-model indexed-access abstraction used for supplied-table
-queries.
+This module contains the value-level memoized sparse-table build and the
+remaining model-level build-cost API used by Fischer-Heun summaries. The older
+naive fresh sparse-table build/query cost module has been retired; supplied
+summary-table queries keep a small RAM/unit-cost adapter here until they are
+migrated to the traced Array substrate end-to-end.
 
 The first milestone is structural rather than asymptotic notation: memoized
 successor rows are proved equal to the corresponding recursive `sparseRow`, the
@@ -413,49 +413,5 @@ def memoBackend (xs : List Int) : RMQ.RMQBackend xs where
       rw [memoQuery_eq_query]
       exact hquery
     simpa [memoQuery] using hmemo
-
-/-- Costed query over a freshly built memoized sparse table. -/
-def memoQueryCosted (xs : List Int) (left right : Nat) :
-    Costed (Option Nat) :=
-  Costed.bind (memoBuildSparseTableCosted xs) fun table =>
-    queryFromTableCosted xs table left right
-
-@[simp] theorem memoQueryCosted_value
-    (xs : List Int) (left right : Nat) :
-    (memoQueryCosted xs left right).value = query xs left right := by
-  calc
-    (memoQueryCosted xs left right).value = memoQuery xs left right := by
-      simp [memoQueryCosted, memoQuery]
-    _ = query xs left right := memoQuery_eq_query xs left right
-
-@[simp] theorem memoQueryCosted_erase
-    (xs : List Int) (left right : Nat) :
-    Costed.erase (memoQueryCosted xs left right) = query xs left right := by
-  exact memoQueryCosted_value xs left right
-
-theorem memoQueryCosted_cost
-    (xs : List Int) (left right : Nat) :
-    (memoQueryCosted xs left right).cost =
-      memoBuildSparseTableCost xs + queryFromTableCost xs left right := by
-  simp [memoQueryCosted, memoBuildSparseTableCosted_cost,
-    queryFromTableCosted_cost]
-
-theorem memoQueryCosted_run
-    (xs : List Int) (left right : Nat) :
-    Costed.run (memoQueryCosted xs left right) =
-      (query xs left right,
-        memoBuildSparseTableCost xs + queryFromTableCost xs left right) := by
-  simp [Costed.run, memoQueryCosted_value, memoQueryCosted_cost]
-
-/-- Fresh memoized sparse-table query cost with the build cost in log-row form. -/
-theorem memoQueryCosted_cost_eq_log
-    (xs : List Int) (left right : Nat) :
-    (memoQueryCosted xs left right).cost =
-      (if xs.length = 0 then
-        0
-      else
-        xs.length + Nat.log2 xs.length * (xs.length * memoNextCellCost)) +
-        queryFromTableCost xs left right := by
-  rw [memoQueryCosted_cost, memoBuildSparseTableCost_eq_log]
 
 end RMQ.SparseTable
