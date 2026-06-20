@@ -46,14 +46,16 @@ Debt delta:
 Integration notes:
 - Imports or public APIs touched:
 - Expected conflicts:
-- Remaining blockers:
+- Remaining construction gaps:
 - Smallest next theorem:
 
 Loop stop audit:
-- Named target theorem/blocker retired? YES/NO:
+- Named target theorem or concrete component profile proved? YES/NO:
 - Next theorem/construction obvious within owned files? YES/NO:
 - Abstract hook/canonical identity witness left where a concrete witness was
   requested? YES/NO:
+- If stopping on impossibility, which concrete construction was attempted and
+  which minimal theorem proves the target signature must change?:
 - Why stopping is valid under `docs/CODEX_AUTONOMY.md`:
 ```
 
@@ -79,6 +81,11 @@ active join.
 If the branch adds a new parameter, field, adapter, or bridge theorem, it must
 also name the concrete instance that consumes it. If that concrete instance is
 still missing and lies in the worker's owned files, the loop should continue.
+
+For the succinct RMQ capstone, a new blocker theorem is not enough unless it
+comes from an attempted positive construction and shows that the requested
+target statement is mis-specified. Known blockers should be cited as design
+constraints, not rediscovered as stop points.
 
 ### Cost Or Space Worker
 
@@ -142,7 +149,8 @@ whitespace errors as blockers; record pre-existing CRLF noise separately.
 
 A worker branch is mergeable when all are true:
 
-1. Its result feeds the current roadmap join theorem or retires tracked debt.
+1. Its result feeds the current roadmap join theorem, proves a concrete
+   component profile, or retires tracked debt.
 2. Its file ownership is narrow enough to review.
 3. The branch does not introduce forbidden terms, Mathlib, or proof-path
    `native_decide`.
@@ -170,15 +178,17 @@ Reject or send back for revision when:
 - the branch stops after adding only an API hook while its own docs/report say
   that the concrete builder, compact instance, payload-live witness, or final
   profile remains for the same owned target.
+- the branch stops on another negative theorem without documenting a concrete
+  construction attempt and a target-signature change forced by that theorem.
 
 ## Current Suggested Split
 
 For the succinct RMQ capstone:
 
-- Worker A: concrete macro/micro BP close-LCA construction behind the
-  payload-live interface, plus the close-navigation join it feeds.
+- Worker A: concrete BP range-min-max / macro-micro close-LCA construction
+  behind the payload-live interface, plus the close-navigation join it feeds.
 - Worker B: descriptor-based select component that replaces the one-locator,
-  one-payload-word blocker with a concrete local descriptor query path.
+  one-payload-word blocker with a concrete charged local descriptor query path.
 - Coordinator: merge order, adapter work, final `2*n + o(n), O(1)` theorem,
   gate, and docs.
 

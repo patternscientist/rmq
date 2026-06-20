@@ -42,6 +42,9 @@ and formalization gaps.
   `docs/SUCCINCT_FINAL_PATH.md` before starting worker loops. That file is the
   current component contract and stop-audit companion for the final succinct
   path.
+- For the research-backed construction choices behind that finish line, read
+  `docs/SUCCINCT_RESEARCH_AND_PLAN.md`. It maps C1/C2/C3 to the intended
+  descriptor-select, BP range-min-max, and final-join constructions.
 - Materialize a target as a compiled theorem only once its supporting
   definitions exist. Until then, keep it as prose plus the intended theorem
   shape.

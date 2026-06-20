@@ -49,13 +49,15 @@ also require a restart if they do not appear immediately.
 4. Integrate scout findings without broadening the milestone.
 5. Iterate on `lake env lean <touched module>` failures with a small retry cap.
 6. If the proof wants a new abstraction, the API choice is taste-sensitive, or
-   the same blocker repeats, stop and report the blocker instead of churning.
+   a concrete construction attempt proves the target statement is wrong, stop
+   and report the minimal obstruction instead of churning. Repeating a known
+   blocker is not itself a loop endpoint.
 7. Run a checkpoint: touched-module checks, then `lake build`, the trust-base
    scan, the `native_decide` scan when relevant, and `git diff --check`.
 8. Update `docs/FAMILY_SUMMARY.md`.
 9. If the checkpoint is clean and no stop condition fired, choose the next
    substantial milestone adaptively and repeat the loop. Otherwise report the
-   checkpoint and blocker.
+   checkpoint and the exact stop condition.
 
 Default loop size: multiple meaningful milestone iterations, not one iteration
 by default and not several tiny lemmas relabeled as milestones. Keep the user in

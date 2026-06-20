@@ -56,8 +56,8 @@ Loop behavior:
 2. Implement and verify it.
 3. Reassess the roadmap immediately after verification.
 4. Continue into the next substantial milestone when there is no real design
-   decision, user input need, merge conflict, tool/approval blocker, or hard
-   proof blocker.
+   decision, user input need, merge conflict, tool/approval blocker, or proven
+   target-misspecification.
 
 Minimum bar before stopping an unattended loop:
 
@@ -72,15 +72,16 @@ land at least one of:
 - a public theorem surface or exactness/cost/space capstone,
 - a concrete structure or representation layer consumed by later proofs,
 - a retired tracked debt item,
-- a reusable lemma cluster that removes a known blocker for the next concrete
-  theorem.
+- a reusable lemma cluster that is immediately consumed by a concrete
+  construction/profile.
 
 Valid stop conditions:
 
 - the requested roadmap slice is genuinely complete;
 - the next step requires a non-obvious design choice from the user;
-- a hard proof blocker remains after meaningful attempts and cannot be reduced
-  to a smaller useful lemma in the same area;
+- a concrete construction attempt proves the target statement is
+  mis-specified or impossible as stated, with a minimal theorem documenting the
+  obstruction;
 - required tooling, network, approvals, or local branch conflicts block further
   progress;
 - the user interrupts or redirects.
@@ -99,7 +100,8 @@ Invalid stop reasons:
 
 Before stopping, run this loop-stop audit:
 
-1. Did this round prove the named target theorem or retire the named blocker?
+1. Did this round prove the named target theorem, concrete component profile,
+   or final construction promised at loop start?
 2. Is the next theorem or construction from the diff obvious and still inside
    the worker's owned file surface?
 3. Did this round leave a canonical identity witness, abstract family
@@ -109,12 +111,14 @@ Before stopping, run this loop-stop audit:
 If the answer to 1 is "no" and 2 or 3 is "yes", continue the loop. For the
 succinct RMQ finish line specifically, a round that only creates hooks for
 select locators, BP block code classifiers, macro directories, or close/LCA
-navigation does not stop until it also supplies the concrete witness/profile or
-hits a valid blocker.
+navigation does not stop until it also supplies the concrete witness/profile.
+A new blocker only justifies stopping if it comes from a serious attempt at the
+named positive construction and shows the target signature itself must change.
 
 For unattended loops, keep interim updates concise and periodic, but reserve the
-final response for a valid stop condition. If stopping for a blocker, report
-the concrete attempts and the smallest next theorem/design decision.
+final response for a valid stop condition. If stopping for target
+misspecification, report the concrete construction attempted, the minimal
+obstruction theorem, and the exact signature/design decision now required.
 
 ## Edit And Verify
 

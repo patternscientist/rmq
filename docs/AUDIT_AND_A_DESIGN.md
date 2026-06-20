@@ -289,3 +289,36 @@ assoc list. It is the normalization of the assembled component budget into the
 final demo-facing theorem: choose the tree-size measure, state the dense-label
 preprocessing-plus-query profile against it, and keep arbitrary-label LCA
 correctness as the separate semantic layer.
+
+## 2026-06-20 (succinct capstone) - blockers pinned; next round must be positive
+
+The succinct BP-native RMQ path is now better constrained, but still not closed.
+The latest merged work added design-constraining negative theorems:
+
+- `SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient`: endpoint
+  close-block pairs are not enough information for an exact BP close/LCA macro.
+- `SuccinctCloseProposal.denseAllCloseBPCloseLCAOverhead_not_littleO`: the
+  direct all-close endpoint fallback is exact and charged, but not an `o(n)`
+  auxiliary payload.
+- `SuccinctSelectProposal.SelectSampleWordExact.shared_aligned_read_word_forces_same_wordIndex`
+  and the two-level `shared_local_locator...` lemmas: one shared aligned
+  payload word cannot serve successful selects whose answers lie in different
+  chunks.
+
+These results are useful anti-vacuity guards: they prevent a fake capstone over
+an under-keyed macro, a dense non-succinct table, or a shared select locator
+that silently reads the wrong payload word. They are not themselves the
+succinct-RMQ capstone.
+
+The companion note `docs/SUCCINCT_RESEARCH_AND_PLAN.md` records the current
+positive plan: C1 descriptor select based on two-level select sampling; C2 a
+Navarro-Sadakane-style BP range-min-max macro with charged endpoint-fringe
+repair and a Four-Russians local micro table; C3 the concrete final join with
+the existing `logSlackLower` lower-bound tie.
+
+Stop assessment: the negative-theorem round was legitimate once because it
+pruned tempting but false closes. The next round should not stop on another
+blocker unless a concrete C1/C2 construction attempt makes the target
+ill-specified and produces a minimal impossibility theorem. The expected
+deliverable is a positive component profile or a concrete construction consumed
+by such a profile.

@@ -125,7 +125,8 @@ iterations.
 
 Before stopping an unattended loop, run a stop audit:
 
-1. Did this round prove the named roadmap theorem or retire the named blocker?
+1. Did this round prove the named roadmap theorem, concrete component profile,
+   or final construction promised at loop start?
 2. Is the next theorem or construction suggested by the diff obvious and still
    within the current branch's owned files?
 3. Did the round introduce an API hook, parameter, abstract family, or canonical
@@ -135,6 +136,13 @@ Before stopping an unattended loop, run a stop audit:
 If 1 is no and either 2 or 3 is yes, the loop should continue. "The gate is
 green" only proves soundness; it does not prove that a worker has reached a
 valid loop endpoint.
+
+For the succinct RMQ capstone, a blocker theorem is no longer enough by
+default. The project has already pinned the obvious bad designs. A blocker may
+justify stopping only when it is a minimal impossibility theorem discovered
+while attempting the named positive construction, and the worker can state why
+the target signature itself must change. Otherwise keep going to the concrete
+builder/profile.
 
 ## Stop Conditions
 
@@ -146,7 +154,9 @@ of these happens:
    `ExactRMQStateEncoding`, or the LCA/RMQ bridge types.
 3. A policy break is needed: adding Mathlib, admitting an axiom, changing the
    cost convention, or dropping a key invariant.
-4. The same blocker recurs, or a target is mis-specified / unprovable as stated.
+4. A concrete construction attempt proves the target signature is
+   mis-specified or unprovable as stated, and the branch records the minimal
+   impossibility theorem. Repeating a known blocker is not a stop condition.
 5. A taste-sensitive API or abstraction fork has no clear winner.
 6. The roadmap is exhausted.
 
@@ -180,6 +190,10 @@ through rather than surfaced immediately.
    directory parameter, or bridge theorem is useful only if the same round keeps
    going to the concrete construction/profile, unless a valid stop condition
    blocks it.
+10. A blocker is not the milestone. Negative theorems are valuable when they
+    prune false designs, but after a blocker is documented, future loop rounds
+    must land a positive construction/profile unless they prove the requested
+    theorem is itself ill-specified.
 
 Useful debt metrics:
 

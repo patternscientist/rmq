@@ -320,6 +320,11 @@ agree with the built payloads.
 
 Workers must run the stop audit from `docs/CODEX_AUTONOMY.md`.
 
+The next rounds are positive-construction rounds. The existing no-go theorems
+already rule out the tempting false shortcuts. A worker should not stop after
+another blocker unless it attempted the named C1/C2 construction and proved
+that the requested target statement itself is ill-specified.
+
 Invalid stop points for this final path:
 
 - adding only a field such as `blockIndex`, `macroCosted`, `codeOfBlock`, or an
@@ -333,6 +338,6 @@ Valid stop points:
 
 - a concrete component profile lands and the next step crosses into another
   worker's owned branch;
-- a proof attempt exposes a real design fork, documented as a minimal blocker
-  theorem, as the one-word select locator path did;
+- a concrete construction attempt proves the target statement is impossible as
+  stated, with a minimal obstruction theorem and a precise replacement target;
 - the final theorem above typechecks and the full gate passes.
