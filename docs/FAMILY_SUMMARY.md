@@ -207,11 +207,24 @@ width path, while the `...LocalRankBlock_profile` variants lift the reduced
 rank-block parameter. `SuccinctCloseProposal.BlockMicroCodebook.profile` and
 `SuccinctCloseProposal.MacroMicroBPCloseLCADirectory.profile` add the
 close-LCA micro-codebook/fallback skeleton that the final BP navigation layer
-should instantiate. The remaining BP-native succinct gaps are a select-side
-locator API that avoids one globally bounded block entry per occurrence, the
-payload-live treatment of the per-block close-LCA code classifier, a real macro
-directory instance, and the final cost-parametric close-navigation join. They
-are no longer rank endpoint or rank local-width blockers.
+should instantiate. `SuccinctCloseProposal.BlockCodeTable.profile`,
+`SuccinctCloseProposal.PayloadLiveBlockMicroCodebook.profile`, and
+`SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseLCAFamily.profile` move that
+path to a charged per-block code classifier plus componentwise LittleOLinear
+codebook/macro overhead.
+`SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.two_n_plus_o_built_query_profile`
+now consumes that payload-live macro/micro LCA family together with
+payload-live rank/select data, giving a built-query BP close-navigation profile
+with payload length `2*n + o(n)` and query cost `<= 9 + lcaQueryCost`. The
+remaining BP-native succinct gaps are a select-side locator API that avoids one
+globally bounded block entry per occurrence, a concrete macro directory
+implementation behind the new macro interface, and then an encoded/payload-only
+version of this join. They are no longer rank endpoint, rank local-width,
+proof-only block-code, or built-query close-navigation blockers.
+`SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient` pins the first
+macro-design blocker: a macro keyed only by endpoint close-block pairs is false
+even on a four-node right spine, so the concrete macro must store
+endpoint-sensitive fringe information or use a real BP excess/RMQ macro.
 
 - The RMQ contract is half-open: a valid query satisfies `left < right` and
   `right <= xs.length`; invalid or empty ranges return `none`.
@@ -1165,6 +1178,7 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.BlockLocalBPCloseLCATable.concrete_profile`,
   `SuccinctCloseProposal.blockStartOf_blockOfClose_le`,
   `SuccinctCloseProposal.close_lt_blockStartOf_blockOfClose_add`,
+  `SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient`,
   `SuccinctCloseProposal.BlockMicroCodebook.payload_length`,
   `SuccinctCloseProposal.BlockMicroCodebook.lcaCloseCosted_cost_le_one`,
   `SuccinctCloseProposal.BlockMicroCodebook.lcaCloseCostedAtBlock_exact`,
@@ -1173,7 +1187,28 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.MacroMicroBPCloseLCADirectory.payload_length`,
   `SuccinctCloseProposal.MacroMicroBPCloseLCADirectory.lcaCloseCosted_cost_le`,
   `SuccinctCloseProposal.MacroMicroBPCloseLCADirectory.lcaCloseCosted_exact`,
-  `SuccinctCloseProposal.MacroMicroBPCloseLCADirectory.profile`.
+  `SuccinctCloseProposal.MacroMicroBPCloseLCADirectory.profile`,
+  `SuccinctCloseProposal.BlockCodeTable.payload_length`,
+  `SuccinctCloseProposal.BlockCodeTable.codeCosted_erase`,
+  `SuccinctCloseProposal.BlockCodeTable.profile`,
+  `SuccinctCloseProposal.BlockCodeTable.ofEntries_profile`,
+  `SuccinctCloseProposal.PayloadLiveBlockMicroCodebook.payload_length`,
+  `SuccinctCloseProposal.PayloadLiveBlockMicroCodebook.lcaCloseCosted_cost_le_two`,
+  `SuccinctCloseProposal.PayloadLiveBlockMicroCodebook.lcaCloseCosted_exact_of_left_block`,
+  `SuccinctCloseProposal.PayloadLiveBlockMicroCodebook.profile`,
+  `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseLCADirectory.payload_length`,
+  `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseLCADirectory.lcaCloseCosted_cost_le`,
+  `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseLCADirectory.lcaCloseCosted_exact`,
+  `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseLCADirectory.profile`,
+  `SuccinctCloseProposal.payloadLiveMacroMicroBPCloseLCAOverhead_littleO`,
+  `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseLCAFamily.overhead_littleO`,
+  `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseLCAFamily.profile`,
+  `SuccinctCloseProposal.payloadLiveMacroMicroBPCloseNavigationOverhead_littleO`,
+  `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.overhead_littleO`,
+  `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.payload_length`,
+  `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.queryBuiltCosted_cost_le`,
+  `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.queryBuiltCosted_exact`,
+  `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.two_n_plus_o_built_query_profile`.
 - `RMQ/Core/SuccinctReduction.lean` (7):
   `Succinct.rmqBackendOfEulerParensBackend_queryBuilt`,
   `Succinct.lcaCandidateOfEulerParensBackend_eq_queryBuilt`,
