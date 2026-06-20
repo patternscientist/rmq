@@ -257,10 +257,23 @@ and reads a per-block argmin prefix position, while
 that idea to charged block-range witnesses and an `lcaCloseCosted`-shaped
 block-pair macro candidate. These range witnesses return close candidates from
 payload words with cost `<= 2`, expose machine-word read bounds, and have
-sampled-overhead profile theorems. They are not yet the full C2 close answer:
-the next proof still has to combine the macro range witness with charged
-endpoint-fringe repair and the BP semantic theorem identifying the leftmost
-minimum-excess close with the representative-array RMQ answer close.
+sampled-overhead profile theorems. The next positive layer now has charged
+endpoint repair:
+`SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.profile` combines
+left endpoint-fringe prefix witnesses, the existing interior block-range
+witness, and right endpoint-fringe prefix witnesses in one counted
+`lcaCloseCosted` path with cost `<= 6`;
+`SuccinctCloseProposal.concreteBPEndpointFringeRangeMacro_profile` constructs
+that path from fixed-width payload tables; and
+`SuccinctCloseProposal.concreteBPEndpointFringeRangeMacro_read_words_length_le_machine`
+exposes the machine-word bounds for every charged fringe/interior read.
+`SuccinctCloseProposal.bpCloseOfInorder?_le_of_le`,
+`SuccinctCloseProposal.answerClose_between_endpoint_closes`, and
+`SuccinctCloseProposal.answerClose_prefix_between_endpoint_prefixes` start the
+BP semantic bridge by proving endpoint containment of the representative-array
+answer close. C2 is still not closed: the remaining proof must show that this
+contained answer prefix is the leftmost minimum-excess prefix selected by the
+merged charged fringe/interior candidates.
 `SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`
 sharpens the C2 blocker: a macro keyed only by endpoint block ids plus the
 existing endpoint block min/max summaries still cannot return exact answer

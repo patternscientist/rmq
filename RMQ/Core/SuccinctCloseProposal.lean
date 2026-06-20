@@ -67,6 +67,145 @@ theorem closeToInorder_eq_of_bpCloseOfInorder?
   rw [hrank]
   omega
 
+theorem bpCloseOfInorder?_le_of_le
+    {shape : Cartesian.CartesianShape} {leftIdx rightIdx leftClose rightClose : Nat}
+    (hleft : bpCloseOfInorder? shape leftIdx = some leftClose)
+    (hright : bpCloseOfInorder? shape rightIdx = some rightClose)
+    (hidx : leftIdx <= rightIdx) :
+    leftClose <= rightClose := by
+  induction shape generalizing leftIdx rightIdx leftClose rightClose with
+  | empty =>
+      simp [bpCloseOfInorder?] at hleft
+  | node left right ihleft ihright =>
+      by_cases hleftBranch : leftIdx < left.size
+      · cases hleftRec : bpCloseOfInorder? left leftIdx with
+        | none =>
+            simp [bpCloseOfInorder?, hleftBranch, hleftRec] at hleft
+        | some innerLeft =>
+            have hinnerLeftBound :
+                innerLeft < left.bpCode.length :=
+              bpCloseOfInorder?_bounds left hleftRec
+            simp [bpCloseOfInorder?, hleftBranch, hleftRec] at hleft
+            subst leftClose
+            by_cases hrightBranch : rightIdx < left.size
+            · cases hrightRec : bpCloseOfInorder? left rightIdx with
+              | none =>
+                  simp [bpCloseOfInorder?, hrightBranch, hrightRec] at hright
+              | some innerRight =>
+                  have hrec :
+                      innerLeft <= innerRight :=
+                    ihleft hleftRec hrightRec hidx
+                  simp [bpCloseOfInorder?, hrightBranch, hrightRec] at hright
+                  subst rightClose
+                  omega
+            · by_cases hrightRoot : rightIdx = left.size
+              · simp [bpCloseOfInorder?, hrightRoot] at hright
+                subst rightClose
+                omega
+              · cases hrightRec :
+                    bpCloseOfInorder? right
+                      (rightIdx - left.size - 1) with
+                | none =>
+                    simp [bpCloseOfInorder?, hrightBranch, hrightRoot,
+                      hrightRec] at hright
+                | some innerRight =>
+                    simp [bpCloseOfInorder?, hrightBranch, hrightRoot,
+                      hrightRec] at hright
+                    subst rightClose
+                    omega
+      · by_cases hleftRoot : leftIdx = left.size
+        · simp [bpCloseOfInorder?, hleftRoot] at hleft
+          subst leftClose
+          by_cases hrightBranch : rightIdx < left.size
+          · omega
+          · by_cases hrightRoot : rightIdx = left.size
+            · simp [bpCloseOfInorder?, hrightRoot] at hright
+              subst rightClose
+              omega
+            · cases hrightRec :
+                  bpCloseOfInorder? right
+                    (rightIdx - left.size - 1) with
+              | none =>
+                  simp [bpCloseOfInorder?, hrightBranch, hrightRoot,
+                    hrightRec] at hright
+              | some innerRight =>
+                  simp [bpCloseOfInorder?, hrightBranch, hrightRoot,
+                    hrightRec] at hright
+                  subst rightClose
+                  omega
+        · cases hleftRec :
+              bpCloseOfInorder? right (leftIdx - left.size - 1) with
+          | none =>
+              simp [bpCloseOfInorder?, hleftBranch, hleftRoot,
+                hleftRec] at hleft
+          | some innerLeft =>
+              simp [bpCloseOfInorder?, hleftBranch, hleftRoot,
+                hleftRec] at hleft
+              subst leftClose
+              by_cases hrightBranch : rightIdx < left.size
+              · omega
+              · by_cases hrightRoot : rightIdx = left.size
+                · omega
+                · cases hrightRec :
+                      bpCloseOfInorder? right
+                        (rightIdx - left.size - 1) with
+                  | none =>
+                      simp [bpCloseOfInorder?, hrightBranch, hrightRoot,
+                        hrightRec] at hright
+                  | some innerRight =>
+                      have hshift :
+                          leftIdx - left.size - 1 <=
+                            rightIdx - left.size - 1 := by
+                        omega
+                      have hrec :
+                          innerLeft <= innerRight :=
+                        ihright hleftRec hrightRec hshift
+                      simp [bpCloseOfInorder?, hrightBranch, hrightRoot,
+                        hrightRec] at hright
+                      subst rightClose
+                      omega
+
+theorem answerClose_between_endpoint_closes
+    {shape : Cartesian.CartesianShape}
+    {left len leftClose rightClose answerClose : Nat}
+    (hlen : 0 < len)
+    (hleft : bpCloseOfInorder? shape left = some leftClose)
+    (hright :
+      bpCloseOfInorder? shape (left + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder? shape
+          (scanWindow shape.representative left len) =
+        some answerClose) :
+    leftClose <= answerClose /\ answerClose <= rightClose := by
+  have hscan :=
+    Cartesian.scanWindow_bounds shape.representative left len hlen
+  constructor
+  · exact bpCloseOfInorder?_le_of_le hleft hanswer hscan.1
+  · have hscanRight :
+        scanWindow shape.representative left len <= left + len - 1 := by
+      omega
+    exact bpCloseOfInorder?_le_of_le hanswer hright hscanRight
+
+theorem answerClose_prefix_between_endpoint_prefixes
+    {shape : Cartesian.CartesianShape}
+    {left len leftClose rightClose answerClose : Nat}
+    (hlen : 0 < len)
+    (hleft : bpCloseOfInorder? shape left = some leftClose)
+    (hright :
+      bpCloseOfInorder? shape (left + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder? shape
+          (scanWindow shape.representative left len) =
+        some answerClose) :
+    leftClose + 1 <= answerClose + 1 /\
+      answerClose + 1 <= rightClose + 1 := by
+  have hbetween :=
+    answerClose_between_endpoint_closes
+      (shape := shape) (left := left) (len := len)
+      (leftClose := leftClose) (rightClose := rightClose)
+      (answerClose := answerClose) hlen hleft hright hanswer
+  omega
+
 /-- Dense row-major slot for a block-local pair of close positions. -/
 def densePairSlot
     (blockSize leftLocal rightLocal : Nat) : Nat :=
@@ -2593,6 +2732,967 @@ theorem concreteBPBlockPairRangeWitnessMacro_read_words_length_le_machine
   exact
     PayloadLiveBPBlockPairRangeWitnessMacro.read_words_length_le_machine
       (concreteBPBlockPairRangeWitnessMacro
+        shape blockSize blockCount fieldWidth hwidth) hmachine
+
+/-!
+## Charged endpoint-fringe range repair
+
+The block-pair macro above reads a real position-bearing payload entry, but it
+ranges over whole endpoint blocks.  A close/LCA answer needs the exact prefix
+interval from `leftClose + 1` through `rightClose + 1`.  The next layer stores
+charged prefix-range witnesses for endpoint fringes and combines them with the
+existing full-block range witness.
+-/
+
+def bpPrefixRangeArgMinPrefixPosFrom
+    (shape : Cartesian.CartesianShape) :
+    Nat -> Nat -> Nat -> Nat
+  | _pos, 0, best => best
+  | pos, steps + 1, best =>
+      let sample := Nat.min pos shape.bpCode.length
+      let best' := bpBetterArgMinPrefixPos shape best sample
+      bpPrefixRangeArgMinPrefixPosFrom shape (pos + 1) steps best'
+
+theorem bpPrefixRangeArgMinPrefixPosFrom_le_length
+    (shape : Cartesian.CartesianShape)
+    (pos steps best : Nat)
+    (hbest : best <= shape.bpCode.length) :
+    bpPrefixRangeArgMinPrefixPosFrom shape pos steps best <=
+      shape.bpCode.length := by
+  induction steps generalizing pos best with
+  | zero =>
+      simpa [bpPrefixRangeArgMinPrefixPosFrom] using hbest
+  | succ steps ih =>
+      unfold bpPrefixRangeArgMinPrefixPosFrom
+      exact ih (pos + 1)
+        (bpBetterArgMinPrefixPos shape best
+          (Nat.min pos shape.bpCode.length))
+        (bpBetterArgMinPrefixPos_le_length shape hbest
+          (Nat.min_le_right pos shape.bpCode.length))
+
+def bpPrefixRangeArgMinPrefixPos
+    (shape : Cartesian.CartesianShape)
+    (start count : Nat) : Nat :=
+  match count with
+  | 0 => Nat.min start shape.bpCode.length
+  | steps + 1 =>
+      bpPrefixRangeArgMinPrefixPosFrom shape (start + 1) steps
+        (Nat.min start shape.bpCode.length)
+
+theorem bpPrefixRangeArgMinPrefixPos_le_length
+    (shape : Cartesian.CartesianShape)
+    (start count : Nat) :
+    bpPrefixRangeArgMinPrefixPos shape start count <=
+      shape.bpCode.length := by
+  unfold bpPrefixRangeArgMinPrefixPos
+  cases count with
+  | zero =>
+      exact Nat.min_le_right start shape.bpCode.length
+  | succ steps =>
+      exact bpPrefixRangeArgMinPrefixPosFrom_le_length shape
+        (start + 1) steps (Nat.min start shape.bpCode.length)
+        (Nat.min_le_right start shape.bpCode.length)
+
+def bpPrefixRangeMinExcess
+    (shape : Cartesian.CartesianShape)
+    (start count : Nat) : Nat :=
+  bpExcessAt shape (bpPrefixRangeArgMinPrefixPos shape start count)
+
+theorem bpPrefixRangeMinExcess_le_length
+    (shape : Cartesian.CartesianShape)
+    (start count : Nat) :
+    bpPrefixRangeMinExcess shape start count <= shape.bpCode.length := by
+  exact bpExcessAt_le_length shape
+    (bpPrefixRangeArgMinPrefixPos shape start count)
+
+def bpPrefixRangeMinExcessEntries
+    (shape : Cartesian.CartesianShape)
+    (ranges : List (Nat × Nat)) : List Nat :=
+  ranges.map fun range => bpPrefixRangeMinExcess shape range.1 range.2
+
+def bpPrefixRangeArgMinPrefixPosEntries
+    (shape : Cartesian.CartesianShape)
+    (ranges : List (Nat × Nat)) : List Nat :=
+  ranges.map fun range =>
+    bpPrefixRangeArgMinPrefixPos shape range.1 range.2
+
+theorem bpPrefixRangeMinExcessEntries_length
+    (shape : Cartesian.CartesianShape)
+    (ranges : List (Nat × Nat)) :
+    (bpPrefixRangeMinExcessEntries shape ranges).length = ranges.length := by
+  simp [bpPrefixRangeMinExcessEntries]
+
+theorem bpPrefixRangeArgMinPrefixPosEntries_length
+    (shape : Cartesian.CartesianShape)
+    (ranges : List (Nat × Nat)) :
+    (bpPrefixRangeArgMinPrefixPosEntries shape ranges).length =
+      ranges.length := by
+  simp [bpPrefixRangeArgMinPrefixPosEntries]
+
+theorem bpPrefixRangeMinExcessEntries_mem_bound
+    {shape : Cartesian.CartesianShape}
+    {fieldWidth entry : Nat}
+    {ranges : List (Nat × Nat)}
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth)
+    (hmem :
+      List.Mem entry (bpPrefixRangeMinExcessEntries shape ranges)) :
+    entry < 2 ^ fieldWidth := by
+  unfold bpPrefixRangeMinExcessEntries at hmem
+  rcases List.mem_map.mp hmem with ⟨range, _hrange, hentry⟩
+  rw [← hentry]
+  exact Nat.lt_of_le_of_lt
+    (bpPrefixRangeMinExcess_le_length shape range.1 range.2) hwidth
+
+theorem bpPrefixRangeArgMinPrefixPosEntries_mem_bound
+    {shape : Cartesian.CartesianShape}
+    {fieldWidth entry : Nat}
+    {ranges : List (Nat × Nat)}
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth)
+    (hmem :
+      List.Mem entry (bpPrefixRangeArgMinPrefixPosEntries shape ranges)) :
+    entry < 2 ^ fieldWidth := by
+  unfold bpPrefixRangeArgMinPrefixPosEntries at hmem
+  rcases List.mem_map.mp hmem with ⟨range, _hrange, hentry⟩
+  rw [← hentry]
+  exact Nat.lt_of_le_of_lt
+    (bpPrefixRangeArgMinPrefixPos_le_length shape range.1 range.2)
+    hwidth
+
+structure PayloadLiveBPPrefixRangeArgMinWitnessTable
+    (shape : Cartesian.CartesianShape)
+    (fieldWidth overhead : Nat)
+    (ranges : List (Nat × Nat)) where
+  minTable :
+    FixedWidthNatTable
+      (bpPrefixRangeMinExcessEntries shape ranges) fieldWidth
+  argTable :
+    FixedWidthNatTable
+      (bpPrefixRangeArgMinPrefixPosEntries shape ranges) fieldWidth
+  payload_length_eq :
+    minTable.payload.length + argTable.payload.length = overhead
+
+namespace PayloadLiveBPPrefixRangeArgMinWitnessTable
+
+def payload
+    {shape : Cartesian.CartesianShape}
+    {fieldWidth overhead : Nat}
+    {ranges : List (Nat × Nat)}
+    (table :
+      PayloadLiveBPPrefixRangeArgMinWitnessTable shape fieldWidth overhead
+        ranges) : List Bool :=
+  table.minTable.payload ++ table.argTable.payload
+
+def rangeWitnessCosted
+    {shape : Cartesian.CartesianShape}
+    {fieldWidth overhead : Nat}
+    {ranges : List (Nat × Nat)}
+    (table :
+      PayloadLiveBPPrefixRangeArgMinWitnessTable shape fieldWidth overhead
+        ranges)
+    (rangeIndex : Nat) : Costed (Option (Nat × Nat)) :=
+  Costed.bind (table.minTable.readCosted rangeIndex) fun min? =>
+    Costed.map
+      (fun arg? =>
+        match min?, arg? with
+        | some minExcess, some prefixPos => some (minExcess, prefixPos)
+        | _, _ => none)
+      (table.argTable.readCosted rangeIndex)
+
+theorem payload_length
+    {shape : Cartesian.CartesianShape}
+    {fieldWidth overhead : Nat}
+    {ranges : List (Nat × Nat)}
+    (table :
+      PayloadLiveBPPrefixRangeArgMinWitnessTable shape fieldWidth overhead
+        ranges) :
+    table.payload.length = overhead := by
+  simp [payload, table.payload_length_eq]
+
+theorem rangeWitnessCosted_cost_le_two
+    {shape : Cartesian.CartesianShape}
+    {fieldWidth overhead : Nat}
+    {ranges : List (Nat × Nat)}
+    (table :
+      PayloadLiveBPPrefixRangeArgMinWitnessTable shape fieldWidth overhead
+        ranges)
+    (rangeIndex : Nat) :
+    (table.rangeWitnessCosted rangeIndex).cost <= 2 := by
+  unfold rangeWitnessCosted
+  cases hread :
+      (table.minTable.readCosted rangeIndex).value with
+  | none =>
+      simp [Costed.bind, Costed.map, hread]
+  | some minExcess =>
+      simp [Costed.bind, Costed.map, hread]
+
+theorem rangeWitnessCosted_erase
+    {shape : Cartesian.CartesianShape}
+    {fieldWidth overhead : Nat}
+    {ranges : List (Nat × Nat)}
+    (table :
+      PayloadLiveBPPrefixRangeArgMinWitnessTable shape fieldWidth overhead
+        ranges)
+    (rangeIndex : Nat) :
+    (table.rangeWitnessCosted rangeIndex).erase =
+      match
+        (bpPrefixRangeMinExcessEntries shape ranges)[rangeIndex]?,
+        (bpPrefixRangeArgMinPrefixPosEntries shape ranges)[rangeIndex]? with
+      | some minExcess, some prefixPos => some (minExcess, prefixPos)
+      | _, _ => none := by
+  unfold rangeWitnessCosted
+  have hmin :
+      (table.minTable.readCosted rangeIndex).value =
+        (bpPrefixRangeMinExcessEntries shape ranges)[rangeIndex]? := by
+    exact table.minTable.readCosted_erase rangeIndex
+  have harg :
+      (table.argTable.readCosted rangeIndex).value =
+        (bpPrefixRangeArgMinPrefixPosEntries shape ranges)[rangeIndex]? := by
+    exact table.argTable.readCosted_erase rangeIndex
+  cases hminEntry :
+      (bpPrefixRangeMinExcessEntries shape ranges)[rangeIndex]?
+  <;> cases hargEntry :
+      (bpPrefixRangeArgMinPrefixPosEntries shape ranges)[rangeIndex]?
+  <;> simp [Costed.bind, Costed.map, Costed.erase, hmin, harg,
+    hminEntry, hargEntry]
+
+theorem min_read_word_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {fieldWidth overhead : Nat}
+    {ranges : List (Nat × Nat)}
+    (table :
+      PayloadLiveBPPrefixRangeArgMinWitnessTable shape fieldWidth overhead
+        ranges)
+    (hmachine :
+      fieldWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    {rangeIndex : Nat} {word : List Bool}
+    (hword : table.minTable.store.words[rangeIndex]? = some word) :
+    word.length <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  have hlen := table.minTable.read_word_length_of_some hword
+  omega
+
+theorem arg_read_word_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {fieldWidth overhead : Nat}
+    {ranges : List (Nat × Nat)}
+    (table :
+      PayloadLiveBPPrefixRangeArgMinWitnessTable shape fieldWidth overhead
+        ranges)
+    (hmachine :
+      fieldWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    {rangeIndex : Nat} {word : List Bool}
+    (hword : table.argTable.store.words[rangeIndex]? = some word) :
+    word.length <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  have hlen := table.argTable.read_word_length_of_some hword
+  omega
+
+theorem read_words_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {fieldWidth overhead : Nat}
+    {ranges : List (Nat × Nat)}
+    (table :
+      PayloadLiveBPPrefixRangeArgMinWitnessTable shape fieldWidth overhead
+        ranges)
+    (hmachine :
+      fieldWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+    (forall {rangeIndex : Nat} {word : List Bool},
+      table.minTable.store.words[rangeIndex]? = some word ->
+        word.length <=
+          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+    (forall {rangeIndex : Nat} {word : List Bool},
+      table.argTable.store.words[rangeIndex]? = some word ->
+        word.length <=
+          SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+  constructor
+  · intro rangeIndex word hword
+    exact table.min_read_word_length_le_machine hmachine hword
+  · intro rangeIndex word hword
+    exact table.arg_read_word_length_le_machine hmachine hword
+
+theorem profile
+    {shape : Cartesian.CartesianShape}
+    {fieldWidth overhead : Nat}
+    {ranges : List (Nat × Nat)}
+    (table :
+      PayloadLiveBPPrefixRangeArgMinWitnessTable shape fieldWidth overhead
+        ranges) :
+    table.payload.length = overhead /\
+      forall rangeIndex,
+        (table.rangeWitnessCosted rangeIndex).cost <= 2 /\
+          (table.rangeWitnessCosted rangeIndex).erase =
+            match
+              (bpPrefixRangeMinExcessEntries shape ranges)[rangeIndex]?,
+              (bpPrefixRangeArgMinPrefixPosEntries shape ranges)[rangeIndex]?
+            with
+            | some minExcess, some prefixPos =>
+                some (minExcess, prefixPos)
+            | _, _ => none := by
+  constructor
+  · exact table.payload_length
+  intro rangeIndex
+  exact ⟨table.rangeWitnessCosted_cost_le_two rangeIndex,
+    table.rangeWitnessCosted_erase rangeIndex⟩
+
+end PayloadLiveBPPrefixRangeArgMinWitnessTable
+
+def concreteBPPrefixRangeArgMinWitnessTable
+    (shape : Cartesian.CartesianShape)
+    (fieldWidth : Nat)
+    (ranges : List (Nat × Nat))
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth) :
+    PayloadLiveBPPrefixRangeArgMinWitnessTable shape fieldWidth
+      (2 * (ranges.length * fieldWidth)) ranges where
+  minTable :=
+    FixedWidthNatTable.ofEntries
+      (bpPrefixRangeMinExcessEntries shape ranges) fieldWidth
+      (bpPrefixRangeMinExcessEntries_mem_bound hwidth)
+  argTable :=
+    FixedWidthNatTable.ofEntries
+      (bpPrefixRangeArgMinPrefixPosEntries shape ranges) fieldWidth
+      (bpPrefixRangeArgMinPrefixPosEntries_mem_bound hwidth)
+  payload_length_eq := by
+    have hmin :
+        (FixedWidthNatTable.ofEntries
+          (bpPrefixRangeMinExcessEntries shape ranges) fieldWidth
+          (bpPrefixRangeMinExcessEntries_mem_bound hwidth)).payload.length =
+          ranges.length * fieldWidth := by
+      simpa [bpPrefixRangeMinExcessEntries_length] using
+        (FixedWidthNatTable.ofEntries
+          (bpPrefixRangeMinExcessEntries shape ranges) fieldWidth
+          (bpPrefixRangeMinExcessEntries_mem_bound hwidth)).payload_length
+    have harg :
+        (FixedWidthNatTable.ofEntries
+          (bpPrefixRangeArgMinPrefixPosEntries shape ranges) fieldWidth
+          (bpPrefixRangeArgMinPrefixPosEntries_mem_bound hwidth)).payload.length =
+          ranges.length * fieldWidth := by
+      simpa [bpPrefixRangeArgMinPrefixPosEntries_length] using
+        (FixedWidthNatTable.ofEntries
+          (bpPrefixRangeArgMinPrefixPosEntries shape ranges) fieldWidth
+          (bpPrefixRangeArgMinPrefixPosEntries_mem_bound hwidth)).payload_length
+    omega
+
+def bpCandidateBetter (left right : Nat × Nat) : Nat × Nat :=
+  if right.1 < left.1 then right else left
+
+def bpCandidateMerge? :
+    Option (Nat × Nat) -> Option (Nat × Nat) -> Option (Nat × Nat)
+  | none, candidate => candidate
+  | candidate, none => candidate
+  | some left, some right => some (bpCandidateBetter left right)
+
+def bpCandidateMerge3?
+    (left middle right : Option (Nat × Nat)) : Option (Nat × Nat) :=
+  bpCandidateMerge? (bpCandidateMerge? left middle) right
+
+def bpCandidateClose? (candidate? : Option (Nat × Nat)) : Option Nat :=
+  candidate?.map fun candidate => candidate.2 - 1
+
+def endpointFringeSlot (blockSize close : Nat) : Nat :=
+  let block := blockOfClose blockSize close
+  block * blockSize + (close - blockStartOf blockSize block)
+
+def endpointLeftFringeRangeOfSlot
+    (blockSize slot : Nat) : Nat × Nat :=
+  let block := slot / blockSize
+  let offset := slot % blockSize
+  (blockStartOf blockSize block + offset + 1, blockSize - offset)
+
+def endpointRightFringeRangeOfSlot
+    (blockSize slot : Nat) : Nat × Nat :=
+  let block := slot / blockSize
+  let offset := slot % blockSize
+  (blockStartOf blockSize block, offset + 2)
+
+def endpointLeftFringeRanges
+    (blockSize blockCount : Nat) : List (Nat × Nat) :=
+  (List.range (blockCount * blockSize)).map
+    (endpointLeftFringeRangeOfSlot blockSize)
+
+theorem endpointLeftFringeRanges_length
+    (blockSize blockCount : Nat) :
+    (endpointLeftFringeRanges blockSize blockCount).length =
+      blockCount * blockSize := by
+  simp [endpointLeftFringeRanges]
+
+def endpointRightFringeRanges
+    (blockSize blockCount : Nat) : List (Nat × Nat) :=
+  (List.range (blockCount * blockSize)).map
+    (endpointRightFringeRangeOfSlot blockSize)
+
+theorem endpointRightFringeRanges_length
+    (blockSize blockCount : Nat) :
+    (endpointRightFringeRanges blockSize blockCount).length =
+      blockCount * blockSize := by
+  simp [endpointRightFringeRanges]
+
+def interiorBlockPairRangeOfSlot
+    (blockCount slot : Nat) : Nat × Nat :=
+  let leftBlock := slot / blockCount
+  let rightBlock := slot % blockCount
+  if leftBlock + 1 < rightBlock then
+    (leftBlock + 1, rightBlock - leftBlock - 1)
+  else
+    (leftBlock + 1, 0)
+
+def interiorBlockPairRanges (blockCount : Nat) : List (Nat × Nat) :=
+  (List.range (blockCount * blockCount)).map
+    (interiorBlockPairRangeOfSlot blockCount)
+
+theorem interiorBlockPairRanges_length (blockCount : Nat) :
+    (interiorBlockPairRanges blockCount).length =
+      blockCount * blockCount := by
+  simp [interiorBlockPairRanges]
+
+structure PayloadLiveBPEndpointFringeRangeMacro
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat) where
+  leftFringe :
+    PayloadLiveBPPrefixRangeArgMinWitnessTable shape fieldWidth leftOverhead
+      (endpointLeftFringeRanges blockSize blockCount)
+  interior :
+    PayloadLiveBPRangeArgMinWitnessTable shape blockSize fieldWidth
+      interiorOverhead (interiorBlockPairRanges blockCount)
+  rightFringe :
+    PayloadLiveBPPrefixRangeArgMinWitnessTable shape fieldWidth rightOverhead
+      (endpointRightFringeRanges blockSize blockCount)
+
+namespace PayloadLiveBPEndpointFringeRangeMacro
+
+def payload
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat}
+    (component :
+      PayloadLiveBPEndpointFringeRangeMacro shape blockSize blockCount
+        fieldWidth leftOverhead interiorOverhead rightOverhead) :
+    List Bool :=
+  component.leftFringe.payload ++ component.interior.payload ++
+    component.rightFringe.payload
+
+def interiorIndex
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat}
+    (_component :
+      PayloadLiveBPEndpointFringeRangeMacro shape blockSize blockCount
+        fieldWidth leftOverhead interiorOverhead rightOverhead)
+    (leftClose rightClose : Nat) : Nat :=
+  blockPairRangeSlot blockCount
+    (blockOfClose blockSize leftClose)
+    (blockOfClose blockSize rightClose)
+
+def interiorWitnessCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat}
+    (component :
+      PayloadLiveBPEndpointFringeRangeMacro shape blockSize blockCount
+        fieldWidth leftOverhead interiorOverhead rightOverhead)
+    (leftClose rightClose : Nat) : Costed (Option (Nat × Nat)) :=
+  if blockOfClose blockSize leftClose + 1 <
+      blockOfClose blockSize rightClose then
+    component.interior.rangeWitnessCosted
+      (component.interiorIndex leftClose rightClose)
+  else
+    Costed.pure none
+
+def lcaCloseCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat}
+    (component :
+      PayloadLiveBPEndpointFringeRangeMacro shape blockSize blockCount
+        fieldWidth leftOverhead interiorOverhead rightOverhead)
+    (leftClose rightClose : Nat) : Costed (Option Nat) :=
+  Costed.bind
+    (component.leftFringe.rangeWitnessCosted
+      (endpointFringeSlot blockSize leftClose)) fun left? =>
+    Costed.bind
+      (component.interiorWitnessCosted leftClose rightClose) fun middle? =>
+      Costed.map
+        (fun right? =>
+          bpCandidateClose? (bpCandidateMerge3? left? middle? right?))
+        (component.rightFringe.rangeWitnessCosted
+          (endpointFringeSlot blockSize rightClose))
+
+theorem payload_length
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat}
+    (component :
+      PayloadLiveBPEndpointFringeRangeMacro shape blockSize blockCount
+        fieldWidth leftOverhead interiorOverhead rightOverhead) :
+    component.payload.length =
+      leftOverhead + interiorOverhead + rightOverhead := by
+  simp [payload, component.leftFringe.payload_length,
+    component.interior.payload_length, component.rightFringe.payload_length]
+  omega
+
+theorem interiorWitnessCosted_cost_le_two
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat}
+    (component :
+      PayloadLiveBPEndpointFringeRangeMacro shape blockSize blockCount
+        fieldWidth leftOverhead interiorOverhead rightOverhead)
+    (leftClose rightClose : Nat) :
+    (component.interiorWitnessCosted leftClose rightClose).cost <= 2 := by
+  unfold interiorWitnessCosted
+  by_cases hblocks :
+      blockOfClose blockSize leftClose + 1 <
+        blockOfClose blockSize rightClose
+  · simp [hblocks]
+    exact component.interior.rangeWitnessCosted_cost_le_two
+      (component.interiorIndex leftClose rightClose)
+  · simp [hblocks, Costed.pure]
+
+theorem lcaCloseCosted_cost_le_six
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat}
+    (component :
+      PayloadLiveBPEndpointFringeRangeMacro shape blockSize blockCount
+        fieldWidth leftOverhead interiorOverhead rightOverhead)
+    (leftClose rightClose : Nat) :
+    (component.lcaCloseCosted leftClose rightClose).cost <= 6 := by
+  unfold lcaCloseCosted
+  have hleft :=
+    component.leftFringe.rangeWitnessCosted_cost_le_two
+      (endpointFringeSlot blockSize leftClose)
+  have hmiddle :=
+    component.interiorWitnessCosted_cost_le_two leftClose rightClose
+  have hright :=
+    component.rightFringe.rangeWitnessCosted_cost_le_two
+      (endpointFringeSlot blockSize rightClose)
+  simp [Costed.bind, Costed.map]
+  omega
+
+theorem lcaCloseCosted_erase
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat}
+    (component :
+      PayloadLiveBPEndpointFringeRangeMacro shape blockSize blockCount
+        fieldWidth leftOverhead interiorOverhead rightOverhead)
+    (leftClose rightClose : Nat) :
+    (component.lcaCloseCosted leftClose rightClose).erase =
+      bpCandidateClose?
+        (bpCandidateMerge3?
+          (match
+            (bpPrefixRangeMinExcessEntries shape
+              (endpointLeftFringeRanges blockSize blockCount))[
+                endpointFringeSlot blockSize leftClose]?,
+            (bpPrefixRangeArgMinPrefixPosEntries shape
+              (endpointLeftFringeRanges blockSize blockCount))[
+                endpointFringeSlot blockSize leftClose]? with
+          | some minExcess, some prefixPos => some (minExcess, prefixPos)
+          | _, _ => none)
+          (if blockOfClose blockSize leftClose + 1 <
+              blockOfClose blockSize rightClose then
+            match
+              (bpRangeMinExcessEntries shape blockSize
+                (interiorBlockPairRanges blockCount))[
+                  component.interiorIndex leftClose rightClose]?,
+              (bpRangeArgMinPrefixPosEntries shape blockSize
+                (interiorBlockPairRanges blockCount))[
+                  component.interiorIndex leftClose rightClose]? with
+            | some minExcess, some prefixPos => some (minExcess, prefixPos)
+            | _, _ => none
+          else
+            none)
+          (match
+            (bpPrefixRangeMinExcessEntries shape
+              (endpointRightFringeRanges blockSize blockCount))[
+                endpointFringeSlot blockSize rightClose]?,
+            (bpPrefixRangeArgMinPrefixPosEntries shape
+              (endpointRightFringeRanges blockSize blockCount))[
+                endpointFringeSlot blockSize rightClose]? with
+          | some minExcess, some prefixPos => some (minExcess, prefixPos)
+          | _, _ => none)) := by
+  have hleft :
+      (component.leftFringe.rangeWitnessCosted
+          (endpointFringeSlot blockSize leftClose)).value =
+        match
+          (bpPrefixRangeMinExcessEntries shape
+            (endpointLeftFringeRanges blockSize blockCount))[
+              endpointFringeSlot blockSize leftClose]?,
+          (bpPrefixRangeArgMinPrefixPosEntries shape
+            (endpointLeftFringeRanges blockSize blockCount))[
+              endpointFringeSlot blockSize leftClose]? with
+        | some minExcess, some prefixPos => some (minExcess, prefixPos)
+        | _, _ => none := by
+    simpa [Costed.erase] using
+      component.leftFringe.rangeWitnessCosted_erase
+        (endpointFringeSlot blockSize leftClose)
+  have hright :
+      (component.rightFringe.rangeWitnessCosted
+          (endpointFringeSlot blockSize rightClose)).value =
+        match
+          (bpPrefixRangeMinExcessEntries shape
+            (endpointRightFringeRanges blockSize blockCount))[
+              endpointFringeSlot blockSize rightClose]?,
+          (bpPrefixRangeArgMinPrefixPosEntries shape
+            (endpointRightFringeRanges blockSize blockCount))[
+              endpointFringeSlot blockSize rightClose]? with
+        | some minExcess, some prefixPos => some (minExcess, prefixPos)
+        | _, _ => none := by
+    simpa [Costed.erase] using
+      component.rightFringe.rangeWitnessCosted_erase
+        (endpointFringeSlot blockSize rightClose)
+  have hmiddle :
+      (component.interior.rangeWitnessCosted
+          (component.interiorIndex leftClose rightClose)).value =
+        match
+          (bpRangeMinExcessEntries shape blockSize
+            (interiorBlockPairRanges blockCount))[
+              component.interiorIndex leftClose rightClose]?,
+          (bpRangeArgMinPrefixPosEntries shape blockSize
+            (interiorBlockPairRanges blockCount))[
+              component.interiorIndex leftClose rightClose]? with
+        | some minExcess, some prefixPos => some (minExcess, prefixPos)
+        | _, _ => none := by
+    simpa [Costed.erase] using
+      component.interior.rangeWitnessCosted_erase
+        (component.interiorIndex leftClose rightClose)
+  unfold lcaCloseCosted interiorWitnessCosted
+  by_cases hblocks :
+      blockOfClose blockSize leftClose + 1 <
+        blockOfClose blockSize rightClose
+  · simp [Costed.bind, Costed.map, Costed.erase,
+      hleft, hmiddle, hright, hblocks]
+  · simp [Costed.bind, Costed.map, Costed.erase, Costed.pure,
+      hleft, hright, hblocks]
+
+theorem lcaCloseCosted_exact_of_merged_candidate
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth
+      leftOverhead interiorOverhead rightOverhead answerClose : Nat}
+    (component :
+      PayloadLiveBPEndpointFringeRangeMacro shape blockSize blockCount
+        fieldWidth leftOverhead interiorOverhead rightOverhead)
+    (leftClose rightClose : Nat)
+    (hmerge :
+      bpCandidateMerge3?
+          (match
+            (bpPrefixRangeMinExcessEntries shape
+              (endpointLeftFringeRanges blockSize blockCount))[
+                endpointFringeSlot blockSize leftClose]?,
+            (bpPrefixRangeArgMinPrefixPosEntries shape
+              (endpointLeftFringeRanges blockSize blockCount))[
+                endpointFringeSlot blockSize leftClose]? with
+          | some minExcess, some prefixPos => some (minExcess, prefixPos)
+          | _, _ => none)
+          (if blockOfClose blockSize leftClose + 1 <
+              blockOfClose blockSize rightClose then
+            match
+              (bpRangeMinExcessEntries shape blockSize
+                (interiorBlockPairRanges blockCount))[
+                  component.interiorIndex leftClose rightClose]?,
+              (bpRangeArgMinPrefixPosEntries shape blockSize
+                (interiorBlockPairRanges blockCount))[
+                  component.interiorIndex leftClose rightClose]? with
+            | some minExcess, some prefixPos => some (minExcess, prefixPos)
+            | _, _ => none
+          else
+            none)
+          (match
+            (bpPrefixRangeMinExcessEntries shape
+              (endpointRightFringeRanges blockSize blockCount))[
+                endpointFringeSlot blockSize rightClose]?,
+            (bpPrefixRangeArgMinPrefixPosEntries shape
+              (endpointRightFringeRanges blockSize blockCount))[
+                endpointFringeSlot blockSize rightClose]? with
+          | some minExcess, some prefixPos => some (minExcess, prefixPos)
+          | _, _ => none) =
+        some (bpExcessAt shape (answerClose + 1), answerClose + 1)) :
+    (component.lcaCloseCosted leftClose rightClose).erase =
+      some answerClose := by
+  simp [component.lcaCloseCosted_erase, hmerge, bpCandidateClose?]
+
+theorem read_words_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat}
+    (component :
+      PayloadLiveBPEndpointFringeRangeMacro shape blockSize blockCount
+        fieldWidth leftOverhead interiorOverhead rightOverhead)
+    (hmachine :
+      fieldWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+    (forall {rangeIndex : Nat} {word : List Bool},
+      component.leftFringe.minTable.store.words[rangeIndex]? = some word ->
+        word.length <=
+          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+    (forall {rangeIndex : Nat} {word : List Bool},
+      component.leftFringe.argTable.store.words[rangeIndex]? = some word ->
+        word.length <=
+          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+    (forall {rangeIndex : Nat} {word : List Bool},
+      component.interior.minTable.store.words[rangeIndex]? = some word ->
+        word.length <=
+          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+    (forall {rangeIndex : Nat} {word : List Bool},
+      component.interior.argTable.store.words[rangeIndex]? = some word ->
+        word.length <=
+          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+    (forall {rangeIndex : Nat} {word : List Bool},
+      component.rightFringe.minTable.store.words[rangeIndex]? = some word ->
+        word.length <=
+          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+    (forall {rangeIndex : Nat} {word : List Bool},
+      component.rightFringe.argTable.store.words[rangeIndex]? = some word ->
+        word.length <=
+          SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+  have hleft := component.leftFringe.read_words_length_le_machine hmachine
+  have hmid := component.interior.read_words_length_le_machine hmachine
+  have hright := component.rightFringe.read_words_length_le_machine hmachine
+  exact ⟨hleft.1, hleft.2, hmid.1, hmid.2, hright.1, hright.2⟩
+
+theorem profile
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat}
+    (component :
+      PayloadLiveBPEndpointFringeRangeMacro shape blockSize blockCount
+        fieldWidth leftOverhead interiorOverhead rightOverhead) :
+    component.payload.length =
+        leftOverhead + interiorOverhead + rightOverhead /\
+      forall leftClose rightClose,
+        (component.lcaCloseCosted leftClose rightClose).cost <= 6 /\
+          (component.lcaCloseCosted leftClose rightClose).erase =
+            bpCandidateClose?
+              (bpCandidateMerge3?
+                (match
+                  (bpPrefixRangeMinExcessEntries shape
+                    (endpointLeftFringeRanges blockSize blockCount))[
+                      endpointFringeSlot blockSize leftClose]?,
+                  (bpPrefixRangeArgMinPrefixPosEntries shape
+                    (endpointLeftFringeRanges blockSize blockCount))[
+                      endpointFringeSlot blockSize leftClose]? with
+                | some minExcess, some prefixPos =>
+                    some (minExcess, prefixPos)
+                | _, _ => none)
+                (if blockOfClose blockSize leftClose + 1 <
+                    blockOfClose blockSize rightClose then
+                  match
+                    (bpRangeMinExcessEntries shape blockSize
+                      (interiorBlockPairRanges blockCount))[
+                        component.interiorIndex leftClose rightClose]?,
+                    (bpRangeArgMinPrefixPosEntries shape blockSize
+                      (interiorBlockPairRanges blockCount))[
+                        component.interiorIndex leftClose rightClose]? with
+                  | some minExcess, some prefixPos =>
+                      some (minExcess, prefixPos)
+                  | _, _ => none
+                else
+                  none)
+                (match
+                  (bpPrefixRangeMinExcessEntries shape
+                    (endpointRightFringeRanges blockSize blockCount))[
+                      endpointFringeSlot blockSize rightClose]?,
+                  (bpPrefixRangeArgMinPrefixPosEntries shape
+                    (endpointRightFringeRanges blockSize blockCount))[
+                      endpointFringeSlot blockSize rightClose]? with
+                | some minExcess, some prefixPos =>
+                    some (minExcess, prefixPos)
+                | _, _ => none)) := by
+  constructor
+  · exact component.payload_length
+  intro leftClose rightClose
+  exact ⟨component.lcaCloseCosted_cost_le_six leftClose rightClose,
+    component.lcaCloseCosted_erase leftClose rightClose⟩
+
+end PayloadLiveBPEndpointFringeRangeMacro
+
+def concreteBPEndpointFringeRangeMacro
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount fieldWidth : Nat)
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth) :
+    PayloadLiveBPEndpointFringeRangeMacro shape blockSize blockCount
+      fieldWidth
+      (2 * ((endpointLeftFringeRanges blockSize blockCount).length *
+        fieldWidth))
+      (2 * ((interiorBlockPairRanges blockCount).length * fieldWidth))
+      (2 * ((endpointRightFringeRanges blockSize blockCount).length *
+        fieldWidth)) where
+  leftFringe :=
+    concreteBPPrefixRangeArgMinWitnessTable shape fieldWidth
+      (endpointLeftFringeRanges blockSize blockCount) hwidth
+  interior :=
+    concreteBPRangeArgMinWitnessTable shape blockSize fieldWidth
+      (interiorBlockPairRanges blockCount) hwidth
+  rightFringe :=
+    concreteBPPrefixRangeArgMinWitnessTable shape fieldWidth
+      (endpointRightFringeRanges blockSize blockCount) hwidth
+
+theorem concreteBPEndpointFringeRangeMacro_profile
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount fieldWidth : Nat)
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth) :
+    let component :=
+      concreteBPEndpointFringeRangeMacro
+        shape blockSize blockCount fieldWidth hwidth
+    component.payload.length =
+        2 * ((blockCount * blockSize) * fieldWidth) +
+          2 * ((blockCount * blockCount) * fieldWidth) +
+          2 * ((blockCount * blockSize) * fieldWidth) /\
+      forall leftClose rightClose,
+        (component.lcaCloseCosted leftClose rightClose).cost <= 6 /\
+          (component.lcaCloseCosted leftClose rightClose).erase =
+            bpCandidateClose?
+              (bpCandidateMerge3?
+                (match
+                  (bpPrefixRangeMinExcessEntries shape
+                    (endpointLeftFringeRanges blockSize blockCount))[
+                      endpointFringeSlot blockSize leftClose]?,
+                  (bpPrefixRangeArgMinPrefixPosEntries shape
+                    (endpointLeftFringeRanges blockSize blockCount))[
+                      endpointFringeSlot blockSize leftClose]? with
+                | some minExcess, some prefixPos =>
+                    some (minExcess, prefixPos)
+                | _, _ => none)
+                (if blockOfClose blockSize leftClose + 1 <
+                    blockOfClose blockSize rightClose then
+                  match
+                    (bpRangeMinExcessEntries shape blockSize
+                      (interiorBlockPairRanges blockCount))[
+                        component.interiorIndex leftClose rightClose]?,
+                    (bpRangeArgMinPrefixPosEntries shape blockSize
+                      (interiorBlockPairRanges blockCount))[
+                        component.interiorIndex leftClose rightClose]? with
+                  | some minExcess, some prefixPos =>
+                      some (minExcess, prefixPos)
+                  | _, _ => none
+                else
+                  none)
+                (match
+                  (bpPrefixRangeMinExcessEntries shape
+                    (endpointRightFringeRanges blockSize blockCount))[
+                      endpointFringeSlot blockSize rightClose]?,
+                  (bpPrefixRangeArgMinPrefixPosEntries shape
+                    (endpointRightFringeRanges blockSize blockCount))[
+                      endpointFringeSlot blockSize rightClose]? with
+                | some minExcess, some prefixPos =>
+                    some (minExcess, prefixPos)
+                | _, _ => none)) := by
+  let component :=
+    concreteBPEndpointFringeRangeMacro
+      shape blockSize blockCount fieldWidth hwidth
+  have hprofile := component.profile
+  constructor
+  · simpa [component, concreteBPEndpointFringeRangeMacro,
+      endpointLeftFringeRanges_length, endpointRightFringeRanges_length,
+      interiorBlockPairRanges_length] using hprofile.1
+  · exact hprofile.2
+
+theorem concreteBPEndpointFringeRangeMacro_sampled_profile
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount fieldWidth slots n : Nat)
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth)
+    (hbudget :
+      2 * ((blockCount * blockSize) * fieldWidth) +
+          2 * ((blockCount * blockCount) * fieldWidth) +
+          2 * ((blockCount * blockSize) * fieldWidth) <=
+        sampledDirectoryOverhead slots n) :
+    let component :=
+      concreteBPEndpointFringeRangeMacro
+        shape blockSize blockCount fieldWidth hwidth
+    LittleOLinear (sampledDirectoryOverhead slots) /\
+      component.payload.length <= sampledDirectoryOverhead slots n /\
+      forall leftClose rightClose,
+        (component.lcaCloseCosted leftClose rightClose).cost <= 6 /\
+          (component.lcaCloseCosted leftClose rightClose).erase =
+            bpCandidateClose?
+              (bpCandidateMerge3?
+                (match
+                  (bpPrefixRangeMinExcessEntries shape
+                    (endpointLeftFringeRanges blockSize blockCount))[
+                      endpointFringeSlot blockSize leftClose]?,
+                  (bpPrefixRangeArgMinPrefixPosEntries shape
+                    (endpointLeftFringeRanges blockSize blockCount))[
+                      endpointFringeSlot blockSize leftClose]? with
+                | some minExcess, some prefixPos =>
+                    some (minExcess, prefixPos)
+                | _, _ => none)
+                (if blockOfClose blockSize leftClose + 1 <
+                    blockOfClose blockSize rightClose then
+                  match
+                    (bpRangeMinExcessEntries shape blockSize
+                      (interiorBlockPairRanges blockCount))[
+                        component.interiorIndex leftClose rightClose]?,
+                    (bpRangeArgMinPrefixPosEntries shape blockSize
+                      (interiorBlockPairRanges blockCount))[
+                        component.interiorIndex leftClose rightClose]? with
+                  | some minExcess, some prefixPos =>
+                      some (minExcess, prefixPos)
+                  | _, _ => none
+                else
+                  none)
+                (match
+                  (bpPrefixRangeMinExcessEntries shape
+                    (endpointRightFringeRanges blockSize blockCount))[
+                      endpointFringeSlot blockSize rightClose]?,
+                  (bpPrefixRangeArgMinPrefixPosEntries shape
+                    (endpointRightFringeRanges blockSize blockCount))[
+                      endpointFringeSlot blockSize rightClose]? with
+                | some minExcess, some prefixPos =>
+                    some (minExcess, prefixPos)
+                | _, _ => none)) := by
+  let component :=
+    concreteBPEndpointFringeRangeMacro
+      shape blockSize blockCount fieldWidth hwidth
+  have hprofile :=
+    concreteBPEndpointFringeRangeMacro_profile
+      shape blockSize blockCount fieldWidth hwidth
+  constructor
+  · exact sampledDirectoryOverhead_littleO slots
+  constructor
+  · rw [hprofile.1]
+    exact hbudget
+  · exact hprofile.2
+
+theorem concreteBPEndpointFringeRangeMacro_read_words_length_le_machine
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount fieldWidth : Nat)
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth)
+    (hmachine :
+      fieldWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+    let component :=
+      concreteBPEndpointFringeRangeMacro
+        shape blockSize blockCount fieldWidth hwidth
+    (forall {rangeIndex : Nat} {word : List Bool},
+      component.leftFringe.minTable.store.words[rangeIndex]? = some word ->
+        word.length <=
+          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+    (forall {rangeIndex : Nat} {word : List Bool},
+      component.leftFringe.argTable.store.words[rangeIndex]? = some word ->
+        word.length <=
+          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+    (forall {rangeIndex : Nat} {word : List Bool},
+      component.interior.minTable.store.words[rangeIndex]? = some word ->
+        word.length <=
+          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+    (forall {rangeIndex : Nat} {word : List Bool},
+      component.interior.argTable.store.words[rangeIndex]? = some word ->
+        word.length <=
+          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+    (forall {rangeIndex : Nat} {word : List Bool},
+      component.rightFringe.minTable.store.words[rangeIndex]? = some word ->
+        word.length <=
+          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+    (forall {rangeIndex : Nat} {word : List Bool},
+      component.rightFringe.argTable.store.words[rangeIndex]? = some word ->
+        word.length <=
+          SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+  exact
+    PayloadLiveBPEndpointFringeRangeMacro.read_words_length_le_machine
+      (concreteBPEndpointFringeRangeMacro
         shape blockSize blockCount fieldWidth hwidth) hmachine
 
 /--
