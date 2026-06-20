@@ -90,6 +90,27 @@ Invalid stop reasons:
 - one module built cleanly but the next target is obvious;
 - only docs or axiom inventory were updated after code landed;
 - proof work remains and the only issue is that more work is ahead.
+- the branch only added an API hook, parameter, constructor field, or bridge
+  theorem while the concrete instance/witness named by the target is still
+  missing;
+- the docs or final report say that a "concrete builder", "compact instance",
+  "payload-live witness", or analogous construction remains to be supplied for
+  the same target.
+
+Before stopping, run this loop-stop audit:
+
+1. Did this round prove the named target theorem or retire the named blocker?
+2. Is the next theorem or construction from the diff obvious and still inside
+   the worker's owned file surface?
+3. Did this round leave a canonical identity witness, abstract family
+   parameter, or proof-only placeholder where the target asked for a compact or
+   payload-live construction?
+
+If the answer to 1 is "no" and 2 or 3 is "yes", continue the loop. For the
+succinct RMQ finish line specifically, a round that only creates hooks for
+select locators, BP block code classifiers, macro directories, or close/LCA
+navigation does not stop until it also supplies the concrete witness/profile or
+hits a valid blocker.
 
 For unattended loops, keep interim updates concise and periodic, but reserve the
 final response for a valid stop condition. If stopping for a blocker, report

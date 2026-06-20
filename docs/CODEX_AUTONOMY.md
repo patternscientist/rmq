@@ -123,6 +123,19 @@ chain into the next target if the gate stays green and budget remains. Do not
 split what should be one milestone into several small "wins" just to claim more
 iterations.
 
+Before stopping an unattended loop, run a stop audit:
+
+1. Did this round prove the named roadmap theorem or retire the named blocker?
+2. Is the next theorem or construction suggested by the diff obvious and still
+   within the current branch's owned files?
+3. Did the round introduce an API hook, parameter, abstract family, or canonical
+   identity witness while the concrete compact/payload-live witness remains
+   exactly the missing item?
+
+If 1 is no and either 2 or 3 is yes, the loop should continue. "The gate is
+green" only proves soundness; it does not prove that a worker has reached a
+valid loop endpoint.
+
 ## Stop Conditions
 
 Surface early in unattended mode, or stop the current attended slice, when any
@@ -163,6 +176,10 @@ through rather than surfaced immediately.
 8. Never stop with unwired scaffolding. A structure that has no live consumer,
    retired predecessor, or capstone theorem is not a checkpoint; it is unfinished
    work.
+9. A hook is not the witness. Adding a configurable index, codec slot,
+   directory parameter, or bridge theorem is useful only if the same round keeps
+   going to the concrete construction/profile, unless a valid stop condition
+   blocks it.
 
 Useful debt metrics:
 
@@ -227,6 +244,7 @@ Debt delta:    asserted-cost count A -> B ; gated-hypothesis count C -> D
 Gate:          PASS/FAIL (build / hygiene / axioms / diff)
 Parallelism:   <leaves spawned and the join they fed, or "none">
 Next:          <next roadmap target, or stop condition hit>
+Stop audit:    <target retired? next obvious? abstract hook left? why stop is valid>
 ```
 
 If "Headline" and "Debt delta" are both empty, the round was filler regardless
