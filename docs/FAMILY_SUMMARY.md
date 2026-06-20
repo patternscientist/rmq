@@ -204,10 +204,14 @@ field width is justified by `blocksPerSuper * wordSize` instead of
 `canonicalTwoLevelRankSelectDirectoryOfChunksExact_profile` and
 `canonicalTwoLevelBalancedParensAccessOfChunksExact_profile` lift the global
 width path, while the `...LocalRankBlock_profile` variants lift the reduced
-rank-block parameter. The remaining BP-native succinct gaps are the real
-macro/micro close-LCA directory and a select-side locator API that avoids one
-globally bounded block entry per occurrence; they are no longer rank endpoint
-or rank local-width blockers.
+rank-block parameter. `SuccinctCloseProposal.BlockMicroCodebook.profile` and
+`SuccinctCloseProposal.MacroMicroBPCloseLCADirectory.profile` add the
+close-LCA micro-codebook/fallback skeleton that the final BP navigation layer
+should instantiate. The remaining BP-native succinct gaps are a select-side
+locator API that avoids one globally bounded block entry per occurrence, the
+payload-live treatment of the per-block close-LCA code classifier, a real macro
+directory instance, and the final cost-parametric close-navigation join. They
+are no longer rank endpoint or rank local-width blockers.
 
 - The RMQ contract is half-open: a valid query satisfies `left < right` and
   `right <= xs.length`; invalid or empty ranges return `none`.
@@ -1158,7 +1162,18 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.BlockLocalBPCloseLCATable.lcaCloseCosted_exact`,
   `SuccinctCloseProposal.BlockLocalBPCloseLCATable.profile`,
   `SuccinctCloseProposal.BlockLocalBPCloseLCATable.ofEntries_profile`,
-  `SuccinctCloseProposal.BlockLocalBPCloseLCATable.concrete_profile`.
+  `SuccinctCloseProposal.BlockLocalBPCloseLCATable.concrete_profile`,
+  `SuccinctCloseProposal.blockStartOf_blockOfClose_le`,
+  `SuccinctCloseProposal.close_lt_blockStartOf_blockOfClose_add`,
+  `SuccinctCloseProposal.BlockMicroCodebook.payload_length`,
+  `SuccinctCloseProposal.BlockMicroCodebook.lcaCloseCosted_cost_le_one`,
+  `SuccinctCloseProposal.BlockMicroCodebook.lcaCloseCostedAtBlock_exact`,
+  `SuccinctCloseProposal.BlockMicroCodebook.lcaCloseCosted_exact_of_left_block`,
+  `SuccinctCloseProposal.BlockMicroCodebook.profile`,
+  `SuccinctCloseProposal.MacroMicroBPCloseLCADirectory.payload_length`,
+  `SuccinctCloseProposal.MacroMicroBPCloseLCADirectory.lcaCloseCosted_cost_le`,
+  `SuccinctCloseProposal.MacroMicroBPCloseLCADirectory.lcaCloseCosted_exact`,
+  `SuccinctCloseProposal.MacroMicroBPCloseLCADirectory.profile`.
 - `RMQ/Core/SuccinctReduction.lean` (7):
   `Succinct.rmqBackendOfEulerParensBackend_queryBuilt`,
   `Succinct.lcaCandidateOfEulerParensBackend_eq_queryBuilt`,
