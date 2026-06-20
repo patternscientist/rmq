@@ -524,6 +524,43 @@ theorem SelectSampleWordExact.selected_position_in_read_word
     exact RMQ.Succinct.select_bounds hselectWord
   constructor <;> omega
 
+/--
+If the payload word read by a select sample is an aligned machine chunk, then
+local exactness determines its chunk index: it must be the chunk containing the
+selected global bit position.
+
+This is the descriptor-select obligation that the compact final builder has to
+meet without falling back to one local locator per occurrence.
+-/
+theorem SelectSampleWordExact.selected_wordIndex_eq_of_aligned_read_word
+    {target : Bool} {bits word : List Bool}
+    {occurrence pos wordSize : Nat}
+    {sample : SuccinctSpace.StoredWordSelectSample}
+    (_hwordSize : 0 < wordSize)
+    (hexact :
+      SelectSampleWordExact target bits occurrence sample word)
+    (hselect : RMQ.Succinct.select target bits occurrence = some pos)
+    (hstart : sample.wordStart = sample.wordIndex * wordSize)
+    (hwordLen : word.length <= wordSize) :
+    pos / wordSize = sample.wordIndex := by
+  rcases
+      SelectSampleWordExact.selected_position_in_read_word
+        hexact hselect with
+    ⟨hlo, hhi⟩
+  have hlo' : sample.wordIndex * wordSize <= pos := by
+    simpa [hstart] using hlo
+  have hhi' : pos < (sample.wordIndex + 1) * wordSize := by
+    have hbound :
+        sample.wordStart + word.length <=
+          sample.wordIndex * wordSize + wordSize := by
+      omega
+    have hpos :
+        pos < sample.wordIndex * wordSize + wordSize :=
+      Nat.lt_of_lt_of_le hhi hbound
+    simpa [Nat.succ_mul, Nat.add_comm, Nat.add_left_comm,
+      Nat.add_assoc] using hpos
+  exact Nat.div_eq_of_lt_le hlo' hhi'
+
 theorem selectBlockDeltaEntry?_select_some_exact_of_word
     {target : Bool} {bits word : List Bool}
     {wordSize occurrencesPerSuper occurrence : Nat}
@@ -1450,6 +1487,44 @@ theorem selected_position_in_read_word_of_sample
   exact
     SelectSampleWordExact.selected_position_in_read_word
       hexact hselect
+
+theorem selected_wordIndex_eq_of_sample
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data :
+      TwoLevelPayloadLiveStoredWordSelectData
+        bits superOverhead blockOverhead queryCost)
+    {target : Bool} {occurrence pos : Nat}
+    {super delta : SuccinctSpace.StoredWordSelectSample}
+    {word : List Bool}
+    (hocc : occurrence <= bits.length)
+    (hsuper :
+      (data.superTables.entries target)[occurrence / data.occurrencesPerSuper]? =
+        some (some super))
+    (hdelta :
+      (data.blockTables.entries target)[data.blockIndex target occurrence]? =
+        some (some delta))
+    (hword :
+      data.bitWords.store.words[(addSelectSample super delta).wordIndex]? =
+        some word)
+    (hselect : RMQ.Succinct.select target bits occurrence = some pos)
+    (hstart :
+      (addSelectSample super delta).wordStart =
+        (addSelectSample super delta).wordIndex * data.wordSize) :
+    pos / data.wordSize = (addSelectSample super delta).wordIndex := by
+  have hexact :
+      SelectSampleWordExact target bits occurrence
+        (addSelectSample super delta) word :=
+    data.select_some_exact target occurrence super delta word
+      hocc hsuper hdelta hword
+  have hlist :
+      data.bitWords.store.words.toList[
+          (addSelectSample super delta).wordIndex]? = some word := by
+    simpa [Array.getElem?_toList] using hword
+  have hwordLen : word.length <= data.wordSize :=
+    data.bitWords.word_length_le (List.mem_of_getElem? hlist)
+  exact
+    SelectSampleWordExact.selected_wordIndex_eq_of_aligned_read_word
+      data.wordSize_pos hexact hselect hstart hwordLen
 
 theorem payload_word_length_le_machine
     {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
