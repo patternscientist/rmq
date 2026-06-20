@@ -372,7 +372,9 @@ the local layer is useful and verified.
 The next rounds are positive-construction rounds. The existing no-go theorems
 already rule out the tempting false shortcuts. A worker should not stop after
 another blocker unless it attempted the named C1/C2 construction and proved
-that the requested target statement itself is ill-specified.
+that the requested target statement itself is ill-specified. Failed
+construction attempts, even serious ones, should normally be treated as
+iteration notes and used to choose the next repaired positive construction.
 
 Invalid stop points for this final path:
 
@@ -399,8 +401,8 @@ Invalid stop points for this final path:
   table or payload-word read.
 - leaving a misleading theorem name that claims more than its statement proves,
   such as an `...select...` theorem that does not mention `select`.
-- stopping after one or two hard proof failures without a brick-wall dossier
-  explaining why the target requires a fundamental redesign.
+- stopping after hard proof failures, new local blockers, or a partial
+  obstruction dossier while the next positive construction remains obvious.
 
 Valid stop points:
 
@@ -408,7 +410,7 @@ Valid stop points:
   the next step truly crosses into another worker's owned branch;
 - a concrete construction attempt proves the target statement is impossible as
   stated, with a minimal obstruction theorem and a precise replacement target;
-- at least three serious attempts at the named positive construction hit the
+- at least fifty serious attempts at the named positive construction hit the
   same design-level brick wall, with enough evidence for the coordinator to
   choose a new invariant, representation, or target statement;
 - the final theorem above typechecks and the full gate passes.
