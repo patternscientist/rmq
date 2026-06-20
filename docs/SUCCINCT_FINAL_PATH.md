@@ -36,6 +36,24 @@ The current merged surface provides useful partial surface:
   `(blockOfClose leftClose, blockOfClose rightClose)` is not exact, already on
   a four-node right spine with `blockSize = 3`.
 
+- The close/LCA side has also checked the obvious endpoint-sensitive dense
+  fallback:
+
+  ```lean
+  theorem RMQ.SuccinctCloseProposal
+      .denseFallbackPayloadLiveMacroMicroBPCloseLCADirectory_profile :
+    ...
+
+  theorem RMQ.SuccinctCloseProposal
+      .denseAllCloseBPCloseLCAOverhead_not_littleO :
+    ...
+  ```
+
+  This fallback is exact, charged, and constant-query, but its all-close
+  endpoint table is not `o(n)`. The next concrete macro should therefore be a
+  real succinct BP-excess/RMQ macro with charged endpoint-fringe repair, not a
+  dense direct-access endpoint table.
+
 - The select side proves the current query-shape forcing facts:
 
   ```lean
@@ -56,14 +74,25 @@ The current merged surface provides useful partial surface:
       .TwoLevelPayloadLiveStoredWordSelectData
       .selected_wordIndex_eq_of_sample :
     ...
+
+  theorem RMQ.SuccinctSelectProposal
+      .SelectSampleWordExact
+      .shared_aligned_read_word_forces_same_wordIndex :
+    ...
+
+  theorem RMQ.SuccinctSelectProposal
+      .TwoLevelPayloadLiveStoredWordSelectData
+      .shared_local_locator_forces_same_selected_wordIndex :
+    ...
   ```
 
   These facts show that a shared local locator sample can only answer
   occurrences whose selected bit lies in the one payload word read by that
   sample. If that read word is an aligned machine chunk, exactness forces its
-  word index to be `pos / wordSize` for the selected bit. A final compact
-  select builder therefore needs a charged descriptor that computes that word
-  choice, or a changed local dense-block query path.
+  word index to be `pos / wordSize` for the selected bit; two successful
+  queries sharing that aligned word must therefore have the same selected
+  chunk. A final compact select builder needs a charged descriptor that
+  computes that word choice, or a changed local dense-block query path.
 
 ## Final Theorem Shape
 
@@ -115,9 +144,11 @@ wordSelect
 Do not revive the one-entry/one-aligned-word shortcut. The merged theorem
 `SelectSampleWordExact.selected_wordIndex_eq_of_aligned_read_word` says that
 an aligned read word is forced to be the selected position's own chunk. Sharing
-is only legitimate if the descriptor includes a charged way to choose that
-chunk, or if the local query path is changed so it does not pretend that one
-aligned payload word answers multiple selected chunks.
+is only legitimate if the descriptor includes a charged way to choose the final
+payload word. The sharper blocker
+`TwoLevelPayloadLiveStoredWordSelectData.shared_local_locator_forces_same_selected_wordIndex`
+rules out a shared local locator that reads one aligned payload word while
+serving selected bits in different chunks.
 
 The component should expose a surface equivalent to:
 
@@ -206,6 +237,12 @@ that design false. A viable macro must store enough endpoint-sensitive fringe
 information, include local offsets inside endpoint blocks, or use a real
 BP-excess/RMQ macro over block summaries whose answer is then repaired by
 charged local micro queries.
+
+Do not use the fully dense all-close endpoint fallback as the final space
+witness. `SuccinctCloseProposal.denseFallbackPayloadLiveMacroMicroBPCloseLCADirectory_profile`
+shows it is exact and charged, but
+`SuccinctCloseProposal.denseAllCloseBPCloseLCAOverhead_not_littleO` proves its
+auxiliary payload is not `o(n)`.
 
 Target construction:
 
