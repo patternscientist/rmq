@@ -91,6 +91,12 @@ partial profile, local kernel, or first successful construction step is an
 iteration result. After reporting it in the scratch notes, continue toward the
 owned target unless one of the strict break criteria above applies.
 
+Closing the latest audit caveat is also not a loop endpoint unless the prompt's
+owned target was exactly "patch these audit caveats." If the loop target is a
+C1/C2/C3 component or the final succinct theorem, a caveat repair on a helper
+layer is one iteration result; immediately attempt to consume the repaired
+layer in the owned concrete profile or capstone theorem.
+
 For this policy, "multiple serious attempts" normally means at least three
 distinct concrete construction/proof attempts. One attempt is enough only if it
 produces a formal impossibility theorem for the target statement itself.
@@ -116,6 +122,8 @@ For C1/C2 specifically, do not stop after the previous known traps:
 - a two-word descriptor/local-run theorem without a global descriptor-backed
   `selectCosted_exact`;
 - a BP range-min/max summary table without an answer-close theorem consuming it;
+- a repaired machine-word bound or invariant for that summary table without the
+  next answer-close theorem attempt that consumes the repaired table;
 - a newly charged fixed-width table without an explicit machine-word bound; or
 - a theorem name that suggests stronger semantics than the statement proves.
 

@@ -61,6 +61,8 @@ Known-trap checklist:
   global descriptor-backed `selectCosted_exact` theorem over all occurrences?:
 - If this branch adds a BP range/min/max or block-summary table, where is it
   consumed by an answer-close `lcaCloseCosted_exact` theorem?:
+- If this branch only repairs an audit caveat on such a helper layer, why was
+  the owned target explicitly scoped to caveat repair rather than C1/C2/C3?:
 - For every newly charged fixed-width table or payload-word read, where is the
   machine-word bound proved?:
 - Did any theorem name overstate its statement? If yes, what was renamed?:

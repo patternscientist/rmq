@@ -259,6 +259,12 @@ through rather than surfaced immediately.
     fixed-width table, descriptor word, summary word, or payload word must carry
     an explicit bound tying the read word width to the machine-word model before
     it can support an O(1) claim.
+16. Audit-caveat cleanup is not target closure. If the owned target is C1, C2,
+    C3, or the final succinct theorem, repairing a caveat on a helper layer is
+    one loop iteration; the worker should immediately try to consume that
+    repaired layer in the concrete component profile or capstone theorem. It is
+    a valid endpoint only when the prompt explicitly scoped the target to that
+    caveat repair.
 
 Useful debt metrics:
 

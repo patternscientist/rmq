@@ -392,6 +392,9 @@ Invalid stop points for this final path:
 - proving `PayloadLiveBPRangeMinMaxSummaryTable...` facts without a concrete
   close-LCA answer theorem that consumes the summaries plus charged endpoint
   repair.
+- repairing the machine-word side condition or balanced-prefix invariant for
+  the BP range-min/max summary layer and then stopping before the next concrete
+  answer-close attempt.
 - omitting the machine-word side condition for a newly charged fixed-width
   table or payload-word read.
 - leaving a misleading theorem name that claims more than its statement proves,
