@@ -1,6 +1,6 @@
 # RMQ Family Summary
 
-Snapshot: 2026-06-19, after the first table/access, payload, indexed LCA
+Snapshot: 2026-06-20, after the first table/access, payload, indexed LCA
 query-cost, Fischer-Heun-backed LCA model, traced sparse-query substrate,
 fixed-length exact-RMQ space sandwich, payload-lower-bound hub adapter,
 packed plus-minus-one RMQ/LCA model layer, uniform charged-budget lower-bound
@@ -203,8 +203,13 @@ field width is justified by `blocksPerSuper * wordSize` instead of
 `canonicalTwoLevelSelectDataOfChunksExact_selectCosted_profile`; the combined
 `canonicalTwoLevelRankSelectDirectoryOfChunksExact_profile` and
 `canonicalTwoLevelBalancedParensAccessOfChunksExact_profile` lift the global
-width path, while the `...LocalRankBlock_profile` variants lift the reduced
-rank-block parameter. `SuccinctCloseProposal.BlockMicroCodebook.profile` and
+width identity-index path, while the `...LocalRankBlock_profile` variants lift
+the reduced rank-block parameter. The select-side two-level API now routes
+local locator reads through an explicit block index, so the reusable
+payload-live/exact/profile layer no longer forces one local table word at every
+occurrence index; the canonical finite constructor remains the old identity
+index witness until a concrete dense/sparse select builder supplies compact
+block indexes. `SuccinctCloseProposal.BlockMicroCodebook.profile` and
 `SuccinctCloseProposal.MacroMicroBPCloseLCADirectory.profile` add the
 close-LCA micro-codebook/fallback skeleton that the final BP navigation layer
 should instantiate. `SuccinctCloseProposal.BlockCodeTable.profile`,
@@ -216,15 +221,28 @@ codebook/macro overhead.
 now consumes that payload-live macro/micro LCA family together with
 payload-live rank/select data, giving a built-query BP close-navigation profile
 with payload length `2*n + o(n)` and query cost `<= 9 + lcaQueryCost`. The
-remaining BP-native succinct gaps are a select-side locator API that avoids one
-globally bounded block entry per occurrence, a concrete macro directory
+remaining BP-native succinct gaps are the concrete dense/sparse select
+descriptor behind the block-indexed API, a concrete macro directory
 implementation behind the new macro interface, and then an encoded/payload-only
 version of this join. They are no longer rank endpoint, rank local-width,
-proof-only block-code, or built-query close-navigation blockers.
+proof-only block-code, select API-shape, or built-query close-navigation
+blockers.
 `SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient` pins the first
 macro-design blocker: a macro keyed only by endpoint close-block pairs is false
 even on a four-node right spine, so the concrete macro must store
 endpoint-sensitive fringe information or use a real BP excess/RMQ macro.
+`SelectSampleWordExact.selected_position_in_read_word` and
+`TwoLevelPayloadLiveStoredWordSelectData.selected_position_in_read_word_of_sample`,
+together with the aligned-word refinements
+`SelectSampleWordExact.selected_wordIndex_eq_of_aligned_read_word` and
+`TwoLevelPayloadLiveStoredWordSelectData.selected_wordIndex_eq_of_sample`, make
+the current select-side design fork explicit: with the present query path, any
+occurrence answered through a shared local locator must lie in the single
+payload word read by that locator; if the read word is an aligned machine chunk,
+the chosen chunk index is forced to be the actual `pos / wordSize` of the
+selected bit. A compact final builder therefore needs a real descriptor that
+computes that chunk choice through charged payload, or an extended local
+dense-block query path, not just a non-identity `blockIndex`.
 
 - The RMQ contract is half-open: a valid query satisfies `left < right` and
   `right <= xs.length`; invalid or empty ranges return `none`.
@@ -1126,6 +1144,9 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctSelectProposal.selectBlockDeltaEntries_present_of_lt`,
   `SuccinctSelectProposal.selectBlockDeltaEntry?_add_exact_of_le`,
   `SuccinctSelectProposal.selectBlockDeltaEntry?_select_some_exact_of_word`,
+  `SuccinctSelectProposal.SelectSampleWordExact.exists_word_offset_of_select`,
+  `SuccinctSelectProposal.SelectSampleWordExact.selected_position_in_read_word`,
+  `SuccinctSelectProposal.SelectSampleWordExact.selected_wordIndex_eq_of_aligned_read_word`,
   `SuccinctSelectProposal.canonicalSelectSuperTablesFinite_present`,
   `SuccinctSelectProposal.canonicalSelectBlockTablesFinite_present`,
   `SuccinctSelectProposal.canonicalTwoLevelSelectData`,
@@ -1137,6 +1158,8 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctSelectProposal.fixedWidthSelectSampleTables_payload_length_le_sampled`,
   `SuccinctSelectProposal.twoLevelSelectOverhead_littleO`,
   `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData.selectCosted_cost_le_four`,
+  `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData.selected_position_in_read_word_of_sample`,
+  `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData.selected_wordIndex_eq_of_sample`,
   `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData.profile`,
   `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectFamily.constant_query_profile`,
   `SuccinctSelectProposal.canonicalTwoLevelSelectSuperOverhead_littleO`,

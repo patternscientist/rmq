@@ -9,10 +9,10 @@ compiled exactness/cost/profile theorems.
 
 ## Current Inputs
 
-The current worker branches provide useful partial surface:
+The current merged surface provides useful partial surface:
 
-- Worker A, `codex/rmq-bp-code-macro-directory`, adds a payload-live
-  macro/micro BP close-navigation join. Its key capstone is intended to be:
+- The close/LCA side has a payload-live macro/micro BP close-navigation join.
+  Its key capstone is:
 
   ```lean
   theorem RMQ.SuccinctCloseProposal
@@ -25,8 +25,18 @@ The current worker branches provide useful partial surface:
   LCA-close family. It still leaves the macro side abstract through a
   `macroCosted`/`split_exact` style interface.
 
-- Worker B, `codex/rmq-select-locator-payload`, proves the current select
-  query-shape blocker. Its key facts are intended to be:
+- The close/LCA side also has a concrete negative theorem:
+
+  ```lean
+  theorem RMQ.SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient :
+    ...
+  ```
+
+  This proves that a macro keyed only by
+  `(blockOfClose leftClose, blockOfClose rightClose)` is not exact, already on
+  a four-node right spine with `blockSize = 3`.
+
+- The select side proves the current query-shape forcing facts:
 
   ```lean
   theorem RMQ.SuccinctSelectProposal
@@ -37,12 +47,23 @@ The current worker branches provide useful partial surface:
       .TwoLevelPayloadLiveStoredWordSelectData
       .selected_position_in_read_word_of_sample :
     ...
+
+  theorem RMQ.SuccinctSelectProposal
+      .SelectSampleWordExact.selected_wordIndex_eq_of_aligned_read_word :
+    ...
+
+  theorem RMQ.SuccinctSelectProposal
+      .TwoLevelPayloadLiveStoredWordSelectData
+      .selected_wordIndex_eq_of_sample :
+    ...
   ```
 
   These facts show that a shared local locator sample can only answer
   occurrences whose selected bit lies in the one payload word read by that
-  sample. A final compact select builder therefore needs a richer local
-  descriptor or a changed local query path.
+  sample. If that read word is an aligned machine chunk, exactness forces its
+  word index to be `pos / wordSize` for the selected bit. A final compact
+  select builder therefore needs a charged descriptor that computes that word
+  choice, or a changed local dense-block query path.
 
 ## Final Theorem Shape
 
@@ -91,6 +112,13 @@ payload word read
 wordSelect
 ```
 
+Do not revive the one-entry/one-aligned-word shortcut. The merged theorem
+`SelectSampleWordExact.selected_wordIndex_eq_of_aligned_read_word` says that
+an aligned read word is forced to be the selected position's own chunk. Sharing
+is only legitimate if the descriptor includes a charged way to choose that
+chunk, or if the local query path is changed so it does not pretend that one
+aligned payload word answers multiple selected chunks.
+
 The component should expose a surface equivalent to:
 
 ```lean
@@ -117,6 +145,11 @@ structure DescriptorPayloadLiveStoredWordSelectData
     forall {word : List Bool},
       List.Mem word (payloadWordsReadByQuery target occurrence) ->
         word.length <= SuccinctRankProposal.machineWordBits bits.length
+
+  word_choice_exact :
+    forall target occurrence pos,
+      Succinct.select target bits occurrence = some pos ->
+        selectedPayloadWordIndex target occurrence = pos / wordSize
 ```
 
 The final theorem need not use exactly this structure name, but it must prove
@@ -163,8 +196,16 @@ theorem DescriptorPayloadLiveStoredWordSelectFamily
 
 ## Component 2: Concrete Macro/Micro BP Close-LCA
 
-Worker A's join is valuable, but the macro side must become concrete. The next
-BP worker should not add another family wrapper around `macroCosted`.
+The merged close-navigation join is valuable, but the macro side must become
+concrete. The next BP worker should not add another family wrapper around
+`macroCosted`.
+
+Do not use a macro directory keyed only by endpoint close-block pair. The merged
+theorem `SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient` proves
+that design false. A viable macro must store enough endpoint-sensitive fringe
+information, include local offsets inside endpoint blocks, or use a real
+BP-excess/RMQ macro over block summaries whose answer is then repaired by
+charged local micro queries.
 
 Target construction:
 
@@ -256,6 +297,5 @@ Valid stop points:
 - a concrete component profile lands and the next step crosses into another
   worker's owned branch;
 - a proof attempt exposes a real design fork, documented as a minimal blocker
-  theorem, as Worker B did for the one-word select locator path;
+  theorem, as the one-word select locator path did;
 - the final theorem above typechecks and the full gate passes.
-

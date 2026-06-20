@@ -624,7 +624,12 @@ sentinel-backed endpoint presence, `canonicalTwoLevelRankDataOfChunksExact`,
 and its profile theorem. Select has generated coarse/local locator entries,
 fixed-width locator table constructors, bounded-query clamping, slice-local
 word-select exactness, `canonicalTwoLevelSelectDataOfChunksExact`, and its
-profile theorem. The two sides are combined by
+profile theorem. The select two-level API now uses an explicit local
+block-index function for block-table reads, so the reusable profile no longer
+forces compact builders to expose one globally addressed local locator word per
+occurrence; the canonical finite constructor remains the identity-index witness
+until the dense/sparse select builder is instantiated. The two sides are
+combined by
 `canonicalTwoLevelRankSelectDirectoryOfChunksExact_profile` and lifted to
 balanced-parentheses access by
 `canonicalTwoLevelBalancedParensAccessOfChunksExact_profile`.
