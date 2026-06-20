@@ -664,3 +664,33 @@ pattern *at scale*: sound and building, with the top still unclosed and no
 concrete witness. The single highest-value next move is **not** more components;
 it is the concrete capstone (witness + final theorem). Watch for continued
 deferral.
+
+## 2026-06-20 (latest) — capstone path de-risked with negative theorems; not filler; research+plan written
+
+No Lean-source change since the prior entry; this round added
+`docs/SUCCINCT_FINAL_PATH.md` (worker-visible capstone spec) + 3 select
+forcing-lemma `axiom_check` entries. Build green, trust clean.
+
+**Not filler.** Instead of another wrapper, the loop proved *design-constraining
+negatives* that prune the wrong shortcuts: `blockPairMacroDirectory_not_sufficient`
+(endpoint-pair-keyed macro is not exact), `denseAllCloseBPCloseLCAOverhead_not_littleO`
+(dense fallback not o(n)), and the select forcing-lemmas
+(`shared_aligned_read_word_forces_same_wordIndex` etc. — the one-aligned-word
+select locator cannot be exact across chunks). These are the anti-vacuity guards
+that stop a fake capstone close.
+
+**Stop: appropriate** — hit a real design fork (select locator), proved the
+minimal blocker, documented it (a "valid stop point" by the project's own rules).
+Caveat: this was a characterize-and-spec round with no new positive capstone
+progress; legitimate once, but the *next* round must land a concrete component
+builder (C1/C2), not more specs/negatives.
+
+**Research + plan written** to `docs/SUCCINCT_RESEARCH_AND_PLAN.md` (with
+citations): every remaining component has a textbook-canonical construction —
+descriptor select ← Vigna `select9`/Clark; BP-excess macro ← Navarro–Sadakane
+**range min-max tree**; ±1-RMQ micro ← Bender–Farach-Colton (reuse in-repo
+`Cartesian.Microtable`); target = Fischer–Heun `2n+o(n)`/O(1); formalization
+prior art ← Affeldt et al. (Coq, rank/select/LOUDS only — no RMQ/LCA-via-excess,
+no lower bound, so this work genuinely extends the formalization frontier).
+Recommended order: C1 (select) → C2 (rmM-tree macro + micro) → C3 (join,
+retaining the `logSlackLower` lower-bound tie).
