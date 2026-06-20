@@ -433,3 +433,52 @@ audits must.
 (Separate, not yet audited: this round also began E2 — `RMQHub.lean`,
 `scripts/hub_axiom_check.lean`, `Core/ModelHub.lean` — which is the right
 direction; audit on its own next.)
+
+## 2026-06-19 — succinct cost FIXED (derived word-RAM rank/select); space still decoupled
+
+This is the corrective response to the cost-fiction finding, and it largely
+worked **on the time axis**. The query *cost* is now genuinely derived:
+`StoredWordRankData.rankCosted = bind (sampleSeq.getCosted …) (bind
+(words.getCosted …) (rankBoolWordPrefix target word …))`, with
+`rankCosted_cost_le_three` (≤3 counted ops) and `rankCosted_exact`
+(`rank = sample + within-word-rank`). The word-rank primitive applies to a single
+fetched word (word-RAM-legitimate). `n/(log₂ n+1)` is proven `LittleOLinear`.
+
+Two follow-on rounds of cleanup/honesty also landed:
+- the fake `rawPacked` (overhead 0, `tickValue` cost on O(n) `rankPrefix`) was
+  **deleted** (`rg "def rawPacked"` → empty);
+- `select` got the same genuine derived-cost treatment as `rank`
+  (`selectCosted_cost_le_three`, `selectCosted_exact`);
+- `packedEulerParensRMQ_space_query_profile` was **demoted to
+  `…_space_profile`** (query-cost claim dropped — honest).
+
+**Unresolved (now twice-flagged): succinct *space* is decoupled.**
+`PayloadBackedStoredWordRankData` is byte-for-byte unchanged — arbitrary decoder
+fields (`decodeTrueSamples : List Bool → IndexedSeq Nat`, constraint only
+`decode payload = data.trueSamples`) over full-precision `IndexedSeq Nat`
+samples. The query reads `trueSamples` (pre-decoded Nats) at unit cost — a
+**Θ(n)-bit** structure (n/wordSize entries × log n bits) — while the o(n)
+`overhead` counts a *separate* `encodeAux`/`payload` connected only by
+unconstrained decoders (`fun _ => data.trueSamples` + a content-free payload
+satisfies it). So `payloadBitCount = 2n + overhead (o(n))` is true of the
+accounting artifact but **not of the structure the query operates on**. This is
+the space-axis analog of last round's cost fiction. Genuine fix: make the query
+read from the o(n) payload via a proven injective bit-codec (word-RAM sample
+extraction), so `overhead` bounds the queried structure.
+
+**Net:** rank/select **query-time O(1) is genuine** (both sides, derived, exact,
+real directory); succinct **space-o(n) is not** (decoupled). The succinct claim
+is half-real.
+
+**Stop assessment:** appropriate for the cleanup/select/demotion it did (trust
+clean, build green). The space codec is the next fix and the central open item.
+
+**Demo framing:** honest claim is "verified word-RAM rank *and* select with
+derived O(1) query"; do **not** claim "succinct 2n+o(n) RMQ" (space decoupled).
+Lead with the airtight results (RAM.Exec sparse table, FH fresh build/query,
+dense LCA, lower bound).
+
+---
+
+*Process: from 2026-06-19 onward, each audit is written up here as a dated
+round-log entry by default (no need to ask).*
