@@ -21,10 +21,10 @@ also require a restart if they do not appear immediately.
 
 - Normal theorem implementation: use the main thread plus the
   `rmq-proof-sprint` skill.
-- Bounded proof loops: use the main thread as coordinator, with substantial
-  milestones chosen adaptively at each checkpoint. A loop should accomplish
-  more than a normal single-prompt proof step without splitting tiny lemmas into
-  artificial milestones.
+- Bounded proof loops: use the main thread as coordinator, with an ambitious
+  owned target chosen adaptively at each checkpoint. A loop should try to close
+  that target overall. Substantial proof steps are iteration results inside the
+  loop, not automatic loop endpoints.
 - Before a large milestone: explicitly ask to spawn read-only subagents, for
   example:
 
@@ -42,7 +42,9 @@ also require a restart if they do not appear immediately.
 
 ## Bounded Proof Loop Template
 
-1. Choose the next substantial milestone from the current family summary.
+1. Choose the next ambitious target from the current family summary: the
+   concrete component profile or capstone theorem to close, not merely the next
+   helper layer.
 2. Write the iteration goal reflection:
    - Overall goal: the capstone theorem or concrete component profile.
    - Current gap: what blocks it now.
@@ -53,28 +55,38 @@ also require a restart if they do not appear immediately.
    proof/off-by-one risks, and cost/model/documentation consistency.
 4. Implement the smallest coherent slice locally while scouts run.
 5. Integrate scout findings without broadening the milestone.
-6. Iterate on `lake env lean <touched module>` failures with a small retry cap.
+6. Iterate on `lake env lean <touched module>` failures. A single tactic or
+   proof-shape retry can have a small cap, but an obvious repaired statement,
+   helper lemma, or construction variant starts the next iteration rather than
+   ending the loop.
 7. If the proof wants a new abstraction, the API choice is taste-sensitive, or
-   a concrete construction attempt proves the target statement is wrong, stop
-   and report the minimal obstruction instead of churning. Repeating a known
-   blocker is not itself a loop endpoint.
+   at least three concrete construction attempts hit the same design-level wall, stop
+   and report the brick-wall dossier instead of churning. Repeating a known
+   blocker or landing one useful partial theorem is not itself a loop endpoint.
 8. Run a checkpoint: touched-module checks, then `lake build`, the trust-base
    scan, the `native_decide` scan when relevant, and `git diff --check`.
 9. Update `docs/FAMILY_SUMMARY.md`.
-10. If the checkpoint is clean and no stop condition fired, choose the next
-   substantial milestone adaptively and repeat the loop. Otherwise report the
-   checkpoint and the exact stop condition.
+10. If the checkpoint is clean and no strict stop condition fired, choose the
+   next iteration adaptively and repeat the loop against the same owned target.
+   Otherwise report the checkpoint and the exact stop condition.
 
-Default loop size: multiple meaningful milestone iterations, not one iteration
-by default and not several tiny lemmas relabeled as milestones. Keep the user in
-the loop at each checkpoint so the frontier can be redirected before proof churn
-sets in.
+Default loop size: enough meaningful iterations to close the owned target, or
+to demonstrate that closing it now requires a fundamental design choice. A loop
+should not stop just because it has produced one or two substantial steps in
+the right direction. Keep the user in the loop only at strict stop points so the
+frontier can be redirected before real design churn sets in.
 
 The reflection is a guard against polished procrastination. If the best next
 step is a difficult payload-live construction, a loop should not spend its
 iteration on extra wrappers, docs, or negative variants unless those artifacts
 are immediately consumed by that construction or prove the target signature
 itself must change.
+
+When reporting a short-of-target stop, include the brick-wall dossier: at least
+three attempts made, signatures tried, the common obstruction, why obvious local
+repairs do not suffice, and which design choice the coordinator must make. A
+formal impossibility theorem for the target statement can replace the three
+attempt threshold.
 
 ## Features Not Adopted Yet
 
