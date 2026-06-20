@@ -271,9 +271,17 @@ exposes the machine-word bounds for every charged fringe/interior read.
 `SuccinctCloseProposal.answerClose_between_endpoint_closes`, and
 `SuccinctCloseProposal.answerClose_prefix_between_endpoint_prefixes` start the
 BP semantic bridge by proving endpoint containment of the representative-array
-answer close. C2 is still not closed: the remaining proof must show that this
-contained answer prefix is the leftmost minimum-excess prefix selected by the
-merged charged fringe/interior candidates.
+answer close. The bridge now also exposes executable prefix-range argmin
+correctness via
+`SuccinctCloseProposal.bpPrefixRangeArgMinPrefixPos_excess_le_offset` and
+`SuccinctCloseProposal.bpEndpointPrefixRangeMinExcess_le_answerClose`, concrete
+endpoint/interior slot decoding through the `endpoint*Entries_get?` and
+`interiorBlockPairRange*Entries_get?` lemmas, and
+`SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_decoded_merged_candidate`,
+which reduces the live query exactness obligation to decoded candidate values
+instead of raw table lookups. C2 is still not closed: the remaining proof must
+show that this contained answer prefix is the leftmost minimum-excess prefix
+selected by the merged charged fringe/interior candidates.
 `SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`
 sharpens the C2 blocker: a macro keyed only by endpoint block ids plus the
 existing endpoint block min/max summaries still cannot return exact answer
@@ -1268,6 +1276,9 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.bpExcessAt_le_length`,
   `SuccinctCloseProposal.bpExcessAt_prefix_nonnegative`,
   `SuccinctCloseProposal.bpExcessAt_add_close_rank_eq_open_rank_of_le`,
+  `SuccinctCloseProposal.bpExcessAt_close_succ_add_inorder_succ_eq_open_rank`,
+  `SuccinctCloseProposal.bpCloseOfInorder?_lt_of_lt`,
+  `SuccinctCloseProposal.answerClose_prefix_mem_endpoint_prefix_range`,
   `SuccinctCloseProposal.bpBlockMinExcess_le_length`,
   `SuccinctCloseProposal.bpBlockMaxExcess_le_length`,
   `SuccinctCloseProposal.bpBlockArgMinPrefixPos_le_length`,
@@ -1296,6 +1307,16 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.PayloadLiveBPBlockPairRangeWitnessMacro.profile`,
   `SuccinctCloseProposal.concreteBPBlockPairRangeWitnessMacro_sampled_profile`,
   `SuccinctCloseProposal.concreteBPBlockPairRangeWitnessMacro_read_words_length_le_machine`,
+  `SuccinctCloseProposal.bpPrefixRangeArgMinPrefixPos_excess_le_offset`,
+  `SuccinctCloseProposal.bpPrefixRangeMinExcess_le_prefix_of_mem`,
+  `SuccinctCloseProposal.bpEndpointPrefixRangeMinExcess_le_answerClose`,
+  `SuccinctCloseProposal.endpointLeftFringeMinExcessEntries_get?_of_close_bounds`,
+  `SuccinctCloseProposal.endpointLeftFringeArgMinEntries_get?_of_close_bounds`,
+  `SuccinctCloseProposal.endpointRightFringeMinExcessEntries_get?_of_close_bounds`,
+  `SuccinctCloseProposal.endpointRightFringeArgMinEntries_get?_of_close_bounds`,
+  `SuccinctCloseProposal.interiorBlockPairRangeMinExcessEntries_get?_of_gap_bounds`,
+  `SuccinctCloseProposal.interiorBlockPairRangeArgMinEntries_get?_of_gap_bounds`,
+  `SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_decoded_merged_candidate`,
   `SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient`,
   `SuccinctCloseProposal.endpointSummaryBlockKey`,
   `SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`,
