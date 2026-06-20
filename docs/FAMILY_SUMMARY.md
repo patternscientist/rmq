@@ -195,13 +195,19 @@ flowchart TD
 
 Succinct E1 update: the concrete two-level rank/select chunk-backed path has
 advanced beyond the older table-row wording above. Rank now has the
-sentinel-backed `canonicalTwoLevelRankDataOfChunksExact_profile`; select has
-slice-local word exactness and
+sentinel-backed `canonicalTwoLevelRankDataOfChunksExact_profile` and the
+local-span variant
+`canonicalTwoLevelRankDataOfChunksExactLocalBlock_profile`, whose block-table
+field width is justified by `blocksPerSuper * wordSize` instead of
+`bits.length`; select has slice-local word exactness and
 `canonicalTwoLevelSelectDataOfChunksExact_selectCosted_profile`; the combined
 `canonicalTwoLevelRankSelectDirectoryOfChunksExact_profile` and
-`canonicalTwoLevelBalancedParensAccessOfChunksExact_profile` lift those pieces
-to rank/select and BP access. The remaining BP-native succinct gap is the real
-macro/micro close-LCA directory, not the rank endpoint or select word bridge.
+`canonicalTwoLevelBalancedParensAccessOfChunksExact_profile` lift the global
+width path, while the `...LocalRankBlock_profile` variants lift the reduced
+rank-block parameter. The remaining BP-native succinct gaps are the real
+macro/micro close-LCA directory and a select-side locator API that avoids one
+globally bounded block entry per occurrence; they are no longer rank endpoint
+or rank local-width blockers.
 
 - The RMQ contract is half-open: a valid query satisfies `left < right` and
   `right <= xs.length`; invalid or empty ranges return `none`.
@@ -1069,12 +1075,20 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctRankProposal.ofChunksWithSentinel_rankPrefix_exact`,
   `SuccinctRankProposal.canonicalSuperRankSampleTables_present`,
   `SuccinctRankProposal.canonicalBlockRankSampleTables_present`,
+  `SuccinctRankProposal.canonicalBlockRankEntries_mem_bound_of_local_span`,
+  `SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan_present`,
+  `SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan_payload_length`,
   `SuccinctRankProposal.canonicalRankParts_exact_of_word_local`,
   `SuccinctRankProposal.canonicalTwoLevelRankDataOfBridge`,
+  `SuccinctRankProposal.canonicalTwoLevelRankDataOfBridgeLocalBlock`,
   `SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksPresent`,
+  `SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksPresentLocalBlock`,
   `SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExact`,
+  `SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExactLocalBlock`,
   `SuccinctRankProposal.canonicalTwoLevelRankDataOfBridge_profile`,
   `SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExact_profile`,
+  `SuccinctRankProposal.canonicalTwoLevelRankDataOfBridgeLocalBlock_profile`,
+  `SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExactLocalBlock_profile`,
   `SuccinctRankProposal.twoLevelRankOverhead_littleO`,
   `SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankData.rankCosted_cost_le_four`,
   `SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankData.profile`,
@@ -1115,7 +1129,9 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctSelectProposal.canonicalTwoLevelRankSelectOverhead_littleO`,
   `SuccinctSelectProposal.twoLevelRankSelectDirectory_profile`,
   `SuccinctSelectProposal.canonicalTwoLevelRankSelectDirectoryOfChunksExact_profile`,
+  `SuccinctSelectProposal.canonicalTwoLevelRankSelectDirectoryOfChunksExactLocalRankBlock_profile`,
   `SuccinctSelectProposal.canonicalTwoLevelBalancedParensAccessOfChunksExact_profile`,
+  `SuccinctSelectProposal.canonicalTwoLevelBalancedParensAccessOfChunksExactLocalRankBlock_profile`,
   `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily.constant_query_profile`,
   `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily.word_bounded_constant_query_profile`,
   `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily.bp_constant_query_profile`,

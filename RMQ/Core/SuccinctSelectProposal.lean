@@ -2086,6 +2086,100 @@ theorem canonicalTwoLevelRankSelectDirectoryOfChunksExact_profile
         bits hword hwordMachine hoccurrences hselectSuperBits
           hselectBlockBits hquery)
 
+def canonicalTwoLevelRankSelectDirectoryOfChunksExactLocalRankBlock
+    (bits : List Bool)
+    {wordSize blocksPerSuper rankSuperWidth rankBlockWidth
+      occurrencesPerSuper selectSuperWidth selectBlockWidth queryCost :
+        Nat}
+    (hword : 0 < wordSize)
+    (hwordMachine :
+      wordSize <= SuccinctRankProposal.machineWordBits bits.length)
+    (hblocks : 0 < blocksPerSuper)
+    (hoccurrences : 0 < occurrencesPerSuper)
+    (hrankSuperBits : bits.length < 2 ^ rankSuperWidth)
+    (hrankBlockBits : blocksPerSuper * wordSize < 2 ^ rankBlockWidth)
+    (hselectSuperBits : bits.length < 2 ^ selectSuperWidth)
+    (hselectBlockBits : bits.length < 2 ^ selectBlockWidth)
+    (hquery : 4 <= queryCost) :
+    SuccinctSpace.RankSelectDirectory bits
+      (((SuccinctRankProposal.canonicalSuperRankSampleTables
+          bits wordSize blocksPerSuper rankSuperWidth
+          hrankSuperBits).payload.length +
+        (SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan
+          bits wordSize blocksPerSuper rankBlockWidth hblocks
+          hrankBlockBits).payload.length) +
+        ((canonicalSelectSuperTablesFinite
+          bits wordSize occurrencesPerSuper selectSuperWidth
+          hselectSuperBits).payload.length +
+        (canonicalSelectBlockTablesFinite
+          bits wordSize occurrencesPerSuper selectBlockWidth
+          hselectBlockBits).payload.length))
+      queryCost :=
+  twoLevelRankSelectDirectory
+    (SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExactLocalBlock
+      bits hword hwordMachine hblocks hrankSuperBits hrankBlockBits hquery)
+    (canonicalTwoLevelSelectDataOfChunksExact
+      bits hword hwordMachine hoccurrences hselectSuperBits
+        hselectBlockBits hquery)
+
+theorem canonicalTwoLevelRankSelectDirectoryOfChunksExactLocalRankBlock_profile
+    (bits : List Bool)
+    {wordSize blocksPerSuper rankSuperWidth rankBlockWidth
+      occurrencesPerSuper selectSuperWidth selectBlockWidth queryCost :
+        Nat}
+    (hword : 0 < wordSize)
+    (hwordMachine :
+      wordSize <= SuccinctRankProposal.machineWordBits bits.length)
+    (hblocks : 0 < blocksPerSuper)
+    (hoccurrences : 0 < occurrencesPerSuper)
+    (hrankSuperBits : bits.length < 2 ^ rankSuperWidth)
+    (hrankBlockBits : blocksPerSuper * wordSize < 2 ^ rankBlockWidth)
+    (hselectSuperBits : bits.length < 2 ^ selectSuperWidth)
+    (hselectBlockBits : bits.length < 2 ^ selectBlockWidth)
+    (hquery : 4 <= queryCost) :
+    (canonicalTwoLevelRankSelectDirectoryOfChunksExactLocalRankBlock
+        bits hword hwordMachine hblocks hoccurrences hrankSuperBits
+        hrankBlockBits hselectSuperBits hselectBlockBits hquery).auxPayload.length =
+        (((SuccinctRankProposal.canonicalSuperRankSampleTables
+          bits wordSize blocksPerSuper rankSuperWidth
+          hrankSuperBits).payload.length +
+        (SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan
+          bits wordSize blocksPerSuper rankBlockWidth hblocks
+          hrankBlockBits).payload.length) +
+        ((canonicalSelectSuperTablesFinite
+          bits wordSize occurrencesPerSuper selectSuperWidth
+          hselectSuperBits).payload.length +
+        (canonicalSelectBlockTablesFinite
+          bits wordSize occurrencesPerSuper selectBlockWidth
+          hselectBlockBits).payload.length)) /\
+      (forall target pos,
+        ((canonicalTwoLevelRankSelectDirectoryOfChunksExactLocalRankBlock
+            bits hword hwordMachine hblocks hoccurrences hrankSuperBits
+            hrankBlockBits hselectSuperBits hselectBlockBits hquery).rankQueryCosted
+              target pos).cost <= queryCost /\
+          ((canonicalTwoLevelRankSelectDirectoryOfChunksExactLocalRankBlock
+            bits hword hwordMachine hblocks hoccurrences hrankSuperBits
+            hrankBlockBits hselectSuperBits hselectBlockBits hquery).rankQueryCosted
+              target pos).erase =
+            RMQ.Succinct.rankPrefix target bits pos) /\
+      (forall target occurrence,
+        ((canonicalTwoLevelRankSelectDirectoryOfChunksExactLocalRankBlock
+            bits hword hwordMachine hblocks hoccurrences hrankSuperBits
+            hrankBlockBits hselectSuperBits hselectBlockBits hquery).selectQueryCosted
+              target occurrence).cost <= queryCost /\
+          ((canonicalTwoLevelRankSelectDirectoryOfChunksExactLocalRankBlock
+            bits hword hwordMachine hblocks hoccurrences hrankSuperBits
+            hrankBlockBits hselectSuperBits hselectBlockBits hquery).selectQueryCosted
+              target occurrence).erase =
+            RMQ.Succinct.select target bits occurrence) := by
+  exact
+    twoLevelRankSelectDirectory_profile
+      (SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExactLocalBlock
+        bits hword hwordMachine hblocks hrankSuperBits hrankBlockBits hquery)
+      (canonicalTwoLevelSelectDataOfChunksExact
+        bits hword hwordMachine hoccurrences hselectSuperBits
+          hselectBlockBits hquery)
+
 def canonicalTwoLevelBalancedParensAccessOfChunksExact
     (parens : RMQ.Succinct.BalancedParens)
     {wordSize blocksPerSuper rankSuperWidth rankBlockWidth
@@ -2175,6 +2269,137 @@ theorem canonicalTwoLevelBalancedParensAccessOfChunksExact_profile
   dsimp
   let access :=
     canonicalTwoLevelBalancedParensAccessOfChunksExact
+      parens hword hwordMachine hblocks hoccurrences hrankSuperBits
+      hrankBlockBits hselectSuperBits hselectBlockBits hquery
+  change
+    access.rankSelect.auxPayload.length = _ /\
+      (forall target pos,
+        (access.rankCosted target pos).cost <= queryCost /\
+          (access.rankCosted target pos).erase =
+            RMQ.Succinct.rankPrefix target parens.bits pos) /\
+      (forall target occurrence,
+        (access.selectCosted target occurrence).cost <= queryCost /\
+          (access.selectCosted target occurrence).erase =
+            RMQ.Succinct.select target parens.bits occurrence) /\
+      (forall {pos : Nat},
+        pos <= parens.bits.length ->
+          (access.rankCosted false pos).erase <=
+            (access.rankCosted true pos).erase) /\
+      ((access.rankCosted true parens.bits.length).erase =
+        (access.rankCosted false parens.bits.length).erase) /\
+      (forall pos,
+        (access.excessCosted pos).cost <= 2 * queryCost /\
+          (access.excessCosted pos).erase =
+            RMQ.Succinct.rankPrefix true parens.bits pos -
+              RMQ.Succinct.rankPrefix false parens.bits pos)
+  constructor
+  · exact access.auxPayload_length
+  · constructor
+    · intro target pos
+      exact ⟨access.rankCosted_cost_le target pos,
+        access.rankCosted_erase target pos⟩
+    · constructor
+      · intro target occurrence
+        exact ⟨access.selectCosted_cost_le target occurrence,
+          access.selectCosted_erase target occurrence⟩
+      · constructor
+        · intro pos hpos
+          exact access.close_rank_le_open_rank hpos
+        · constructor
+          · exact access.final_rank_eq
+          · intro pos
+            exact ⟨access.excessCosted_cost_le pos,
+              access.excessCosted_erase pos⟩
+
+def canonicalTwoLevelBalancedParensAccessOfChunksExactLocalRankBlock
+    (parens : RMQ.Succinct.BalancedParens)
+    {wordSize blocksPerSuper rankSuperWidth rankBlockWidth
+      occurrencesPerSuper selectSuperWidth selectBlockWidth queryCost :
+        Nat}
+    (hword : 0 < wordSize)
+    (hwordMachine :
+      wordSize <= SuccinctRankProposal.machineWordBits parens.bits.length)
+    (hblocks : 0 < blocksPerSuper)
+    (hoccurrences : 0 < occurrencesPerSuper)
+    (hrankSuperBits : parens.bits.length < 2 ^ rankSuperWidth)
+    (hrankBlockBits : blocksPerSuper * wordSize < 2 ^ rankBlockWidth)
+    (hselectSuperBits : parens.bits.length < 2 ^ selectSuperWidth)
+    (hselectBlockBits : parens.bits.length < 2 ^ selectBlockWidth)
+    (hquery : 4 <= queryCost) :
+    SuccinctSpace.BalancedParensAccess parens
+      (((SuccinctRankProposal.canonicalSuperRankSampleTables
+          parens.bits wordSize blocksPerSuper rankSuperWidth
+          hrankSuperBits).payload.length +
+        (SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan
+          parens.bits wordSize blocksPerSuper rankBlockWidth hblocks
+          hrankBlockBits).payload.length) +
+        ((canonicalSelectSuperTablesFinite
+          parens.bits wordSize occurrencesPerSuper selectSuperWidth
+          hselectSuperBits).payload.length +
+        (canonicalSelectBlockTablesFinite
+          parens.bits wordSize occurrencesPerSuper selectBlockWidth
+          hselectBlockBits).payload.length))
+      queryCost where
+  rankSelect :=
+    canonicalTwoLevelRankSelectDirectoryOfChunksExactLocalRankBlock
+      parens.bits hword hwordMachine hblocks hoccurrences
+      hrankSuperBits hrankBlockBits hselectSuperBits hselectBlockBits
+      hquery
+
+theorem canonicalTwoLevelBalancedParensAccessOfChunksExactLocalRankBlock_profile
+    (parens : RMQ.Succinct.BalancedParens)
+    {wordSize blocksPerSuper rankSuperWidth rankBlockWidth
+      occurrencesPerSuper selectSuperWidth selectBlockWidth queryCost :
+        Nat}
+    (hword : 0 < wordSize)
+    (hwordMachine :
+      wordSize <= SuccinctRankProposal.machineWordBits parens.bits.length)
+    (hblocks : 0 < blocksPerSuper)
+    (hoccurrences : 0 < occurrencesPerSuper)
+    (hrankSuperBits : parens.bits.length < 2 ^ rankSuperWidth)
+    (hrankBlockBits : blocksPerSuper * wordSize < 2 ^ rankBlockWidth)
+    (hselectSuperBits : parens.bits.length < 2 ^ selectSuperWidth)
+    (hselectBlockBits : parens.bits.length < 2 ^ selectBlockWidth)
+    (hquery : 4 <= queryCost) :
+    let access :=
+      canonicalTwoLevelBalancedParensAccessOfChunksExactLocalRankBlock
+        parens hword hwordMachine hblocks hoccurrences hrankSuperBits
+        hrankBlockBits hselectSuperBits hselectBlockBits hquery
+    access.rankSelect.auxPayload.length =
+        (((SuccinctRankProposal.canonicalSuperRankSampleTables
+          parens.bits wordSize blocksPerSuper rankSuperWidth
+          hrankSuperBits).payload.length +
+        (SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan
+          parens.bits wordSize blocksPerSuper rankBlockWidth hblocks
+          hrankBlockBits).payload.length) +
+        ((canonicalSelectSuperTablesFinite
+          parens.bits wordSize occurrencesPerSuper selectSuperWidth
+          hselectSuperBits).payload.length +
+        (canonicalSelectBlockTablesFinite
+          parens.bits wordSize occurrencesPerSuper selectBlockWidth
+          hselectBlockBits).payload.length)) /\
+      (forall target pos,
+        (access.rankCosted target pos).cost <= queryCost /\
+          (access.rankCosted target pos).erase =
+            RMQ.Succinct.rankPrefix target parens.bits pos) /\
+      (forall target occurrence,
+        (access.selectCosted target occurrence).cost <= queryCost /\
+          (access.selectCosted target occurrence).erase =
+            RMQ.Succinct.select target parens.bits occurrence) /\
+      (forall {pos : Nat},
+        pos <= parens.bits.length ->
+          (access.rankCosted false pos).erase <=
+            (access.rankCosted true pos).erase) /\
+      ((access.rankCosted true parens.bits.length).erase =
+        (access.rankCosted false parens.bits.length).erase) /\
+      (forall pos,
+        (access.excessCosted pos).cost <= 2 * queryCost /\
+          (access.excessCosted pos).erase =
+            RMQ.Succinct.rankPrefix true parens.bits pos -
+              RMQ.Succinct.rankPrefix false parens.bits pos) := by
+  dsimp
+  let access :=
+    canonicalTwoLevelBalancedParensAccessOfChunksExactLocalRankBlock
       parens hword hwordMachine hblocks hoccurrences hrankSuperBits
       hrankBlockBits hselectSuperBits hselectBlockBits hquery
   change

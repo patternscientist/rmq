@@ -211,6 +211,72 @@ theorem canonicalBlockRankEntries_mem_bound
       (RMQ.Succinct.rankPrefix_le_length target bits (i * wordSize))
       hwidth)
 
+theorem canonicalBlockRankEntries_mem_bound_of_local_span
+    {target : Bool} {bits : List Bool}
+    {wordSize blocksPerSuper width entry : Nat}
+    (hblocks : 0 < blocksPerSuper)
+    (hmem :
+      List.Mem entry
+        (canonicalBlockRankEntries target bits wordSize blocksPerSuper))
+    (hwidth : blocksPerSuper * wordSize < 2 ^ width) :
+    entry < 2 ^ width := by
+  unfold canonicalBlockRankEntries at hmem
+  rcases List.mem_map.mp hmem with ⟨i, hi, rfl⟩
+  have hi_lt : i < bits.length / wordSize + 1 :=
+    List.mem_range.mp hi
+  have hi_le : i <= bits.length / wordSize := by
+    omega
+  have hlimit : i * wordSize <= bits.length := by
+    have hmul :
+        i * wordSize <= (bits.length / wordSize) * wordSize :=
+      Nat.mul_le_mul_right wordSize hi_le
+    exact Nat.le_trans hmul (Nat.div_mul_le_self bits.length wordSize)
+  have hstart_le_i :
+      (i / blocksPerSuper) * blocksPerSuper <= i :=
+    Nat.div_mul_le_self i blocksPerSuper
+  have hstart_le_limit :
+      ((i / blocksPerSuper) * blocksPerSuper) * wordSize <=
+        i * wordSize :=
+    Nat.mul_le_mul_right wordSize hstart_le_i
+  have hdrop :=
+    RMQ.Succinct.rankPrefix_drop_eq_sub_of_le
+      target bits hstart_le_limit hlimit
+  have hdelta_le_span :
+      RMQ.Succinct.rankPrefix target bits (i * wordSize) -
+          RMQ.Succinct.rankPrefix target bits
+            (((i / blocksPerSuper) * blocksPerSuper) * wordSize) <=
+        i * wordSize -
+          ((i / blocksPerSuper) * blocksPerSuper) * wordSize := by
+    have hle :=
+      RMQ.Succinct.rankPrefix_le_limit target
+        (bits.drop (((i / blocksPerSuper) * blocksPerSuper) * wordSize))
+        (i * wordSize -
+          ((i / blocksPerSuper) * blocksPerSuper) * wordSize)
+    rwa [hdrop] at hle
+  have hdecomp :
+      (i / blocksPerSuper) * blocksPerSuper + i % blocksPerSuper = i := by
+    rw [Nat.mul_comm]
+    exact Nat.div_add_mod i blocksPerSuper
+  have hsum :
+      ((i / blocksPerSuper) * blocksPerSuper) * wordSize +
+          (i % blocksPerSuper) * wordSize =
+        i * wordSize := by
+    have hmul := congrArg (fun x => x * wordSize) hdecomp
+    simpa [Nat.add_mul] using hmul
+  have hdiff :
+      i * wordSize -
+          ((i / blocksPerSuper) * blocksPerSuper) * wordSize =
+        (i % blocksPerSuper) * wordSize := by
+    omega
+  have hmod_span :
+      (i % blocksPerSuper) * wordSize <=
+        blocksPerSuper * wordSize :=
+    Nat.mul_le_mul_right wordSize
+      (Nat.le_of_lt (Nat.mod_lt i hblocks))
+  exact Nat.lt_of_le_of_lt
+    (Nat.le_trans hdelta_le_span (by simpa [hdiff] using hmod_span))
+    hwidth
+
 def canonicalSuperRankSampleTables
     (bits : List Bool) (wordSize blocksPerSuper width : Nat)
     (hwidth : bits.length < 2 ^ width) :
@@ -247,6 +313,25 @@ def canonicalBlockRankSampleTables
       canonicalBlockRankEntries_mem_bound
         (target := false) hmem hwidth)
 
+def canonicalBlockRankSampleTablesOfLocalSpan
+    (bits : List Bool) (wordSize blocksPerSuper width : Nat)
+    (hblocks : 0 < blocksPerSuper)
+    (hwidth : blocksPerSuper * wordSize < 2 ^ width) :
+    SuccinctSpace.FixedWidthRankSampleTables
+      (canonicalBlockRankEntries true bits wordSize blocksPerSuper)
+      (canonicalBlockRankEntries false bits wordSize blocksPerSuper)
+      width :=
+  SuccinctSpace.FixedWidthRankSampleTables.ofEntries
+    (canonicalBlockRankEntries true bits wordSize blocksPerSuper)
+    (canonicalBlockRankEntries false bits wordSize blocksPerSuper)
+    width
+    (fun hmem =>
+      canonicalBlockRankEntries_mem_bound_of_local_span
+        (target := true) hblocks hmem hwidth)
+    (fun hmem =>
+      canonicalBlockRankEntries_mem_bound_of_local_span
+        (target := false) hblocks hmem hwidth)
+
 @[simp] theorem canonicalSuperRankSampleTables_entries
     {bits : List Bool} {wordSize blocksPerSuper width : Nat}
     (hwidth : bits.length < 2 ^ width) (target : Bool) :
@@ -260,6 +345,15 @@ def canonicalBlockRankSampleTables
     (hwidth : bits.length < 2 ^ width) (target : Bool) :
     (canonicalBlockRankSampleTables
         bits wordSize blocksPerSuper width hwidth).entries target =
+      canonicalBlockRankEntries target bits wordSize blocksPerSuper := by
+  cases target <;> rfl
+
+@[simp] theorem canonicalBlockRankSampleTablesOfLocalSpan_entries
+    {bits : List Bool} {wordSize blocksPerSuper width : Nat}
+    (hblocks : 0 < blocksPerSuper)
+    (hwidth : blocksPerSuper * wordSize < 2 ^ width) (target : Bool) :
+    (canonicalBlockRankSampleTablesOfLocalSpan
+        bits wordSize blocksPerSuper width hblocks hwidth).entries target =
       canonicalBlockRankEntries target bits wordSize blocksPerSuper := by
   cases target <;> rfl
 
@@ -291,6 +385,21 @@ theorem canonicalBlockRankSampleTables_present
       (wordSize := wordSize) (blocksPerSuper := blocksPerSuper)
       (pos := pos) hpos)
 
+theorem canonicalBlockRankSampleTablesOfLocalSpan_present
+    {bits : List Bool} {wordSize blocksPerSuper width pos : Nat}
+    (hblocks : 0 < blocksPerSuper)
+    (hwidth : blocksPerSuper * wordSize < 2 ^ width)
+    (target : Bool) (hpos : pos <= bits.length) :
+    exists delta,
+      ((canonicalBlockRankSampleTablesOfLocalSpan
+          bits wordSize blocksPerSuper width hblocks hwidth).entries
+          target)[pos / wordSize]? = some delta := by
+  simpa using
+    (canonicalBlockRankEntries_present
+      (target := target) (bits := bits)
+      (wordSize := wordSize) (blocksPerSuper := blocksPerSuper)
+      (pos := pos) hpos)
+
 theorem canonicalSuperRankSampleTables_payload_length
     {bits : List Bool} {wordSize blocksPerSuper width : Nat}
     (hwidth : bits.length < 2 ^ width) :
@@ -316,6 +425,35 @@ theorem canonicalBlockRankSampleTables_payload_length
   exact SuccinctSpace.FixedWidthRankSampleTables.payload_length
     (canonicalBlockRankSampleTables
       bits wordSize blocksPerSuper width hwidth)
+
+theorem canonicalBlockRankSampleTablesOfLocalSpan_payload_length
+    {bits : List Bool} {wordSize blocksPerSuper width : Nat}
+    (hblocks : 0 < blocksPerSuper)
+    (hwidth : blocksPerSuper * wordSize < 2 ^ width) :
+    (canonicalBlockRankSampleTablesOfLocalSpan
+        bits wordSize blocksPerSuper width hblocks hwidth).payload.length =
+      (canonicalBlockRankEntries true bits wordSize blocksPerSuper).length *
+          width +
+        (canonicalBlockRankEntries false bits wordSize blocksPerSuper).length *
+          width := by
+  exact SuccinctSpace.FixedWidthRankSampleTables.payload_length
+    (canonicalBlockRankSampleTablesOfLocalSpan
+      bits wordSize blocksPerSuper width hblocks hwidth)
+
+theorem canonicalBlockRankSampleTablesOfLocalSpan_payload_eq
+    {bits : List Bool} {wordSize blocksPerSuper width : Nat}
+    {hblocks : 0 < blocksPerSuper}
+    {hlocal : blocksPerSuper * wordSize < 2 ^ width}
+    {hglobal : bits.length < 2 ^ width} :
+    (canonicalBlockRankSampleTablesOfLocalSpan
+        bits wordSize blocksPerSuper width hblocks hlocal).payload =
+      (canonicalBlockRankSampleTables
+        bits wordSize blocksPerSuper width hglobal).payload := by
+  simp [canonicalBlockRankSampleTablesOfLocalSpan,
+    canonicalBlockRankSampleTables, SuccinctSpace.FixedWidthRankSampleTables.payload,
+    SuccinctSpace.FixedWidthRankSampleTables.ofEntries,
+    SuccinctSpace.FixedWidthNatTable.ofEntries,
+    SuccinctSpace.FixedWidthNatTable.ofEncodedWords]
 
 theorem canonicalRankParts_exact_of_word_local
     {target : Bool} {bits word : List Bool}
@@ -1032,6 +1170,79 @@ def canonicalTwoLevelRankDataOfBridge
     · exact bridge.word_rank_exact target pos word hpos hwordGet
 
 /--
+Package the canonical rank sample tables using a local block-width bound.
+
+Compared with `canonicalTwoLevelRankDataOfBridge`, this constructor no longer
+requires block deltas to fit in a global `log n` counter.  The block table is
+accepted when every local delta fits in the superblock span
+`blocksPerSuper * wordSize`, which is the classical two-level rank parameter.
+-/
+def canonicalTwoLevelRankDataOfBridgeLocalBlock
+    (bits : List Bool)
+    {wordSize blocksPerSuper superWidth blockWidth queryCost : Nat}
+    (hword : 0 < wordSize)
+    (hwordMachine : wordSize <= machineWordBits bits.length)
+    (hblocks : 0 < blocksPerSuper)
+    (hsuperWidth : bits.length < 2 ^ superWidth)
+    (hblockWidth : blocksPerSuper * wordSize < 2 ^ blockWidth)
+    (hquery : 4 <= queryCost)
+    (bridge : CanonicalRankWordBridge bits wordSize) :
+    TwoLevelPayloadLiveStoredWordRankData bits
+      (canonicalSuperRankSampleTables
+        bits wordSize blocksPerSuper superWidth hsuperWidth).payload.length
+      (canonicalBlockRankSampleTablesOfLocalSpan
+        bits wordSize blocksPerSuper blockWidth hblocks hblockWidth).payload.length
+      queryCost where
+  wordSize := wordSize
+  wordSize_pos := hword
+  wordSize_le_machine := hwordMachine
+  blocksPerSuper := blocksPerSuper
+  blocksPerSuper_pos := hblocks
+  superWidth := superWidth
+  blockWidth := blockWidth
+  superTrueEntries :=
+    canonicalSuperRankEntries true bits wordSize blocksPerSuper
+  superFalseEntries :=
+    canonicalSuperRankEntries false bits wordSize blocksPerSuper
+  blockTrueEntries :=
+    canonicalBlockRankEntries true bits wordSize blocksPerSuper
+  blockFalseEntries :=
+    canonicalBlockRankEntries false bits wordSize blocksPerSuper
+  superTables :=
+    canonicalSuperRankSampleTables
+      bits wordSize blocksPerSuper superWidth hsuperWidth
+  blockTables :=
+    canonicalBlockRankSampleTablesOfLocalSpan
+      bits wordSize blocksPerSuper blockWidth hblocks hblockWidth
+  bitWords := bridge.bitWords
+  superPayload_length := rfl
+  blockPayload_length := rfl
+  queryCost_ge_four := hquery
+  super_present := by
+    intro target pos hpos
+    simpa using
+      (canonicalSuperRankSampleTables_present
+        (bits := bits) (wordSize := wordSize)
+        (blocksPerSuper := blocksPerSuper)
+        (width := superWidth) hsuperWidth target hpos)
+  block_present := by
+    intro target pos hpos
+    simpa using
+      (canonicalBlockRankSampleTablesOfLocalSpan_present
+        (bits := bits) (wordSize := wordSize)
+        (blocksPerSuper := blocksPerSuper)
+        (width := blockWidth) hblocks hblockWidth target hpos)
+  word_present := by
+    intro pos hpos
+    exact bridge.word_present pos hpos
+  rank_parts_exact := by
+    intro target pos super delta word hpos hsuper hdelta hwordGet
+    apply canonicalRankParts_exact_of_word_local
+    · simpa using hsuper
+    · simpa using hdelta
+    · exact bridge.word_rank_exact target pos word hpos hwordGet
+
+/--
 Canonical two-level rank data from ordinary chunks, once the chunk store is
 known to contain a word at every queried `pos / wordSize`.
 -/
@@ -1060,6 +1271,31 @@ def canonicalTwoLevelRankDataOfChunksPresent
     bits hword hwordMachine hblocks hsuperWidth hblockWidth hquery
       (canonicalRankWordBridgeOfChunks bits hword hpresent)
 
+def canonicalTwoLevelRankDataOfChunksPresentLocalBlock
+    (bits : List Bool)
+    {wordSize blocksPerSuper superWidth blockWidth queryCost : Nat}
+    (hword : 0 < wordSize)
+    (hwordMachine : wordSize <= machineWordBits bits.length)
+    (hblocks : 0 < blocksPerSuper)
+    (hsuperWidth : bits.length < 2 ^ superWidth)
+    (hblockWidth : blocksPerSuper * wordSize < 2 ^ blockWidth)
+    (hquery : 4 <= queryCost)
+    (hpresent :
+      forall pos,
+        pos <= bits.length ->
+          exists word,
+            (SuccinctSpace.BoundedPayloadWordStore.ofChunks
+              bits hword).store.words[pos / wordSize]? = some word) :
+    TwoLevelPayloadLiveStoredWordRankData bits
+      (canonicalSuperRankSampleTables
+        bits wordSize blocksPerSuper superWidth hsuperWidth).payload.length
+      (canonicalBlockRankSampleTablesOfLocalSpan
+        bits wordSize blocksPerSuper blockWidth hblocks hblockWidth).payload.length
+      queryCost :=
+  canonicalTwoLevelRankDataOfBridgeLocalBlock
+    bits hword hwordMachine hblocks hsuperWidth hblockWidth hquery
+      (canonicalRankWordBridgeOfChunks bits hword hpresent)
+
 def canonicalTwoLevelRankDataOfChunksExact
     (bits : List Bool)
     {wordSize blocksPerSuper superWidth blockWidth queryCost : Nat}
@@ -1076,6 +1312,25 @@ def canonicalTwoLevelRankDataOfChunksExact
         bits wordSize blocksPerSuper blockWidth hblockWidth).payload.length
       queryCost :=
   canonicalTwoLevelRankDataOfBridge
+    bits hword hwordMachine hblocks hsuperWidth hblockWidth hquery
+      (canonicalRankWordBridgeOfChunksWithSentinel bits hword)
+
+def canonicalTwoLevelRankDataOfChunksExactLocalBlock
+    (bits : List Bool)
+    {wordSize blocksPerSuper superWidth blockWidth queryCost : Nat}
+    (hword : 0 < wordSize)
+    (hwordMachine : wordSize <= machineWordBits bits.length)
+    (hblocks : 0 < blocksPerSuper)
+    (hsuperWidth : bits.length < 2 ^ superWidth)
+    (hblockWidth : blocksPerSuper * wordSize < 2 ^ blockWidth)
+    (hquery : 4 <= queryCost) :
+    TwoLevelPayloadLiveStoredWordRankData bits
+      (canonicalSuperRankSampleTables
+        bits wordSize blocksPerSuper superWidth hsuperWidth).payload.length
+      (canonicalBlockRankSampleTablesOfLocalSpan
+        bits wordSize blocksPerSuper blockWidth hblocks hblockWidth).payload.length
+      queryCost :=
+  canonicalTwoLevelRankDataOfBridgeLocalBlock
     bits hword hwordMachine hblocks hsuperWidth hblockWidth hquery
       (canonicalRankWordBridgeOfChunksWithSentinel bits hword)
 
@@ -1146,6 +1401,74 @@ theorem canonicalTwoLevelRankDataOfChunksExact_profile
             RMQ.Succinct.rankPrefix target bits pos := by
   exact
     canonicalTwoLevelRankDataOfBridge_profile
+      bits hword hwordMachine hblocks hsuperWidth hblockWidth hquery
+      (canonicalRankWordBridgeOfChunksWithSentinel bits hword)
+
+theorem canonicalTwoLevelRankDataOfBridgeLocalBlock_profile
+    (bits : List Bool)
+    {wordSize blocksPerSuper superWidth blockWidth queryCost : Nat}
+    (hword : 0 < wordSize)
+    (hwordMachine : wordSize <= machineWordBits bits.length)
+    (hblocks : 0 < blocksPerSuper)
+    (hsuperWidth : bits.length < 2 ^ superWidth)
+    (hblockWidth : blocksPerSuper * wordSize < 2 ^ blockWidth)
+    (hquery : 4 <= queryCost)
+    (bridge : CanonicalRankWordBridge bits wordSize) :
+    let data :=
+      canonicalTwoLevelRankDataOfBridgeLocalBlock
+        bits hword hwordMachine hblocks hsuperWidth hblockWidth hquery
+          bridge
+    data.auxPayload.length =
+        (canonicalSuperRankSampleTables
+          bits wordSize blocksPerSuper superWidth hsuperWidth).payload.length +
+          (canonicalBlockRankSampleTablesOfLocalSpan
+            bits wordSize blocksPerSuper blockWidth
+              hblocks hblockWidth).payload.length /\
+      data.wordSize <= machineWordBits bits.length /\
+      SuccinctSpace.flattenPayloadWords data.bitWords.store.words.toList =
+        bits /\
+      (forall {word : List Bool},
+        List.Mem word data.bitWords.store.words.toList ->
+          word.length <= machineWordBits bits.length) /\
+      forall target pos,
+        (data.rankCosted target pos).cost <= queryCost /\
+          (data.rankCosted target pos).erase =
+            RMQ.Succinct.rankPrefix target bits pos := by
+  exact
+    (canonicalTwoLevelRankDataOfBridgeLocalBlock
+      bits hword hwordMachine hblocks hsuperWidth hblockWidth hquery
+        bridge).profile
+
+theorem canonicalTwoLevelRankDataOfChunksExactLocalBlock_profile
+    (bits : List Bool)
+    {wordSize blocksPerSuper superWidth blockWidth queryCost : Nat}
+    (hword : 0 < wordSize)
+    (hwordMachine : wordSize <= machineWordBits bits.length)
+    (hblocks : 0 < blocksPerSuper)
+    (hsuperWidth : bits.length < 2 ^ superWidth)
+    (hblockWidth : blocksPerSuper * wordSize < 2 ^ blockWidth)
+    (hquery : 4 <= queryCost) :
+    let data :=
+      canonicalTwoLevelRankDataOfChunksExactLocalBlock
+        bits hword hwordMachine hblocks hsuperWidth hblockWidth hquery
+    data.auxPayload.length =
+        (canonicalSuperRankSampleTables
+          bits wordSize blocksPerSuper superWidth hsuperWidth).payload.length +
+          (canonicalBlockRankSampleTablesOfLocalSpan
+            bits wordSize blocksPerSuper blockWidth
+              hblocks hblockWidth).payload.length /\
+      data.wordSize <= machineWordBits bits.length /\
+      SuccinctSpace.flattenPayloadWords data.bitWords.store.words.toList =
+        bits /\
+      (forall {word : List Bool},
+        List.Mem word data.bitWords.store.words.toList ->
+          word.length <= machineWordBits bits.length) /\
+      forall target pos,
+        (data.rankCosted target pos).cost <= queryCost /\
+          (data.rankCosted target pos).erase =
+            RMQ.Succinct.rankPrefix target bits pos := by
+  exact
+    canonicalTwoLevelRankDataOfBridgeLocalBlock_profile
       bits hword hwordMachine hblocks hsuperWidth hblockWidth hquery
       (canonicalRankWordBridgeOfChunksWithSentinel bits hword)
 
