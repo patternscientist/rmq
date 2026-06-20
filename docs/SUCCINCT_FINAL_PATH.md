@@ -384,6 +384,12 @@ Invalid stop points for this final path:
   owned file surface;
 - updating docs to say "concrete builder remains" and then stopping;
 - proving a profile over a hypothetical family with no concrete instance.
+- proving a descriptor-select component/profile surface whose exactness still
+  comes from proof fields such as `descriptor_some_exact`,
+  `descriptor_none_exact`, `descriptor_word_choice_exact`, or a free
+  `descriptorIndex`, while the compact payload builder remains missing.
+- leaving `descriptorIndex` or an analogous routing function as an uncharged
+  arbitrary function that could hide search, predecessor, or oracle work.
 - producing a technically substantial theorem cluster that does not feed the
   current descriptor-select, BP macro/close, or final-join target.
 - proving only a local descriptor-choice theorem, local range-min/max summary
@@ -394,6 +400,10 @@ Invalid stop points for this final path:
 - proving `PayloadLiveBPRangeMinMaxSummaryTable...` facts without a concrete
   close-LCA answer theorem that consumes the summaries plus charged endpoint
   repair.
+- proving a position-bearing BP range-witness or block-pair macro-candidate
+  profile, or an `_exact_of_prefix_pos` theorem, without a global close-LCA
+  answer theorem that consumes the witness via charged endpoint-fringe repair
+  and the leftmost-minimum-excess BP semantics.
 - repairing the machine-word side condition or balanced-prefix invariant for
   the BP range-min/max summary layer and then stopping before the next concrete
   answer-close attempt.

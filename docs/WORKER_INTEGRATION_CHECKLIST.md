@@ -59,8 +59,17 @@ Integration notes:
 Known-trap checklist:
 - If this branch adds a local descriptor lemma, where is it consumed by a
   global descriptor-backed `selectCosted_exact` theorem over all occurrences?:
+- If this branch adds a descriptor-select profile surface, which concrete
+  compact payload builder instantiates its proof fields?:
+- If this branch uses `descriptorIndex` or another routing/index function, why
+  is it bounded arithmetic or charged payload-derived rather than an uncharged
+  search/predecessor/oracle?:
 - If this branch adds a BP range/min/max or block-summary table, where is it
   consumed by an answer-close `lcaCloseCosted_exact` theorem?:
+- If this branch adds a BP range witness or macro candidate, where is it
+  consumed by charged endpoint-fringe repair plus a global answer-close theorem?:
+- If this branch proves an `_exact_of_prefix_pos` theorem, where is the theorem
+  proving that the built prefix position is the semantic BP close/LCA answer?:
 - If this branch only repairs an audit caveat on such a helper layer, why was
   the owned target explicitly scoped to caveat repair rather than C1/C2/C3?:
 - For every newly charged fixed-width table or payload-word read, where is the
@@ -90,6 +99,11 @@ Loop stop audit:
 If a worker did not run a full gate, that is acceptable only when they report
 the narrow check they did run and why a full check was deferred.
 
+Coordinator audits of worker output must always include two extra judgments:
+whether the worker should actually have stopped its unattended loop, and how
+the loop specs or next prompts should be modified in response. If no prompt or
+spec change is needed, say so explicitly.
+
 ## Required Evidence By Worker Type
 
 ### Proof Worker
@@ -103,8 +117,15 @@ Must report:
 - narrow module check at minimum.
 - for descriptor/select work, whether exactness is global over all
   `(target, occurrence)` or conditional on a preselected local run;
+- for descriptor/select work, whether exactness is supplied by a concrete
+  builder or remains stored as proof fields that still need instantiation;
+- for descriptor/select work, whether descriptor/routing index computation is
+  bounded arithmetic or charged payload-derived;
 - for BP close work, whether summary tables are consumed by a concrete
   answer-close theorem or remain helper payload.
+- for BP close work, whether any range witness or macro candidate has been
+  consumed by endpoint-fringe repair and a BP semantic theorem, or remains only
+  conditional on a supplied prefix position.
 
 Should not report "progress" only as scaffolding. A proof branch should land a
 consumed lemma cluster, a representation layer, or a theorem that feeds the
@@ -125,6 +146,20 @@ fundamental design choice.
 If the branch adds a new parameter, field, adapter, or bridge theorem, it must
 also name the concrete instance that consumes it. If that concrete instance is
 still missing and lies in the worker's owned files, the loop should continue.
+
+A descriptor-select structure whose exactness is carried by fields such as
+`descriptor_some_exact`, `descriptor_none_exact`,
+`descriptor_word_choice_exact`, or a free `descriptorIndex` is a useful
+obligation surface, not a closure witness. Unless the owned target explicitly
+stopped at that surface, the worker should continue to the compact builder that
+fills those fields from payload tables and accounts for the routing/index cost.
+
+A BP range-witness or macro-candidate structure whose exactness is still an
+`_exact_of_prefix_pos` theorem is likewise a useful obligation surface, not a
+close-answer witness. Unless the owned target explicitly stopped at that
+surface, the worker should continue to the charged endpoint-fringe repair and
+the BP semantic theorem identifying the built prefix position with the
+representative-array RMQ answer close.
 
 For the succinct RMQ capstone, a new blocker theorem is not enough unless it
 comes from an attempted positive construction and shows that the requested
