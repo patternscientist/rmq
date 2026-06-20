@@ -693,6 +693,485 @@ theorem close_lt_blockStartOf_blockOfClose_add
     exact Nat.mul_comm (close / blockSize) blockSize
   omega
 
+/-!
+## Concrete BP range min/max block summaries
+
+The final BP close/LCA macro needs a charged range-min/max substrate over
+block summaries, rather than an all-close endpoint table.  The definitions in
+this section build the first concrete payload-live layer for that substrate:
+each BP block stores its minimum and maximum prefix excess in fixed-width
+payload words, and query lemmas read those payload words back exactly.
+-/
+
+/-- BP prefix excess at position `pos`, counted as opens minus closes. -/
+def bpExcessAt (shape : Cartesian.CartesianShape) (pos : Nat) : Nat :=
+  Succinct.rankPrefix true shape.bpCode pos -
+    Succinct.rankPrefix false shape.bpCode pos
+
+theorem bpExcessAt_le_length
+    (shape : Cartesian.CartesianShape) (pos : Nat) :
+    bpExcessAt shape pos <= shape.bpCode.length := by
+  unfold bpExcessAt
+  exact Nat.le_trans
+    (Nat.sub_le _ _)
+    (Succinct.rankPrefix_le_length true shape.bpCode pos)
+
+/-- Tail-recursive minimum over a list, seeded by an explicit bound. -/
+def natListMinFrom (seed : Nat) : List Nat -> Nat
+  | [] => seed
+  | value :: rest => natListMinFrom (Nat.min seed value) rest
+
+theorem natListMinFrom_le_seed (seed : Nat) (values : List Nat) :
+    natListMinFrom seed values <= seed := by
+  induction values generalizing seed with
+  | nil =>
+      simp [natListMinFrom]
+  | cons value rest ih =>
+      exact Nat.le_trans
+        (ih (Nat.min seed value))
+        (Nat.min_le_left seed value)
+
+/-- Maximum over a list, using zero as the empty-list value. -/
+def natListMax : List Nat -> Nat
+  | [] => 0
+  | value :: rest => Nat.max value (natListMax rest)
+
+theorem natListMax_le_of_forall_mem
+    {values : List Nat} {bound : Nat}
+    (hbound : forall {value : Nat}, List.Mem value values -> value <= bound) :
+    natListMax values <= bound := by
+  induction values with
+  | nil =>
+      simp [natListMax]
+  | cons value rest ih =>
+      have hvalue : value <= bound := hbound List.mem_cons_self
+      have hrest : natListMax rest <= bound := by
+        exact ih (by
+          intro restValue hmem
+          exact hbound (List.mem_cons_of_mem value hmem))
+      exact Nat.max_le.2 ⟨hvalue, hrest⟩
+
+/-- BP excess samples at the `blockSize + 1` prefix positions of one block. -/
+def bpBlockExcessSamples
+    (shape : Cartesian.CartesianShape)
+    (blockSize block : Nat) : List Nat :=
+  (List.range (blockSize + 1)).map fun offset =>
+    bpExcessAt shape (blockStartOf blockSize block + offset)
+
+theorem bpBlockExcessSamples_mem_le_length
+    {shape : Cartesian.CartesianShape}
+    {blockSize block value : Nat}
+    (hmem :
+      List.Mem value (bpBlockExcessSamples shape blockSize block)) :
+    value <= shape.bpCode.length := by
+  unfold bpBlockExcessSamples at hmem
+  rcases List.mem_map.mp hmem with ⟨offset, _hoffset, hvalue⟩
+  rw [← hvalue]
+  exact bpExcessAt_le_length shape
+    (blockStartOf blockSize block + offset)
+
+/-- Minimum BP excess sampled inside one block. -/
+def bpBlockMinExcess
+    (shape : Cartesian.CartesianShape)
+    (blockSize block : Nat) : Nat :=
+  natListMinFrom shape.bpCode.length
+    (bpBlockExcessSamples shape blockSize block)
+
+/-- Maximum BP excess sampled inside one block. -/
+def bpBlockMaxExcess
+    (shape : Cartesian.CartesianShape)
+    (blockSize block : Nat) : Nat :=
+  natListMax (bpBlockExcessSamples shape blockSize block)
+
+theorem bpBlockMinExcess_le_length
+    (shape : Cartesian.CartesianShape)
+    (blockSize block : Nat) :
+    bpBlockMinExcess shape blockSize block <= shape.bpCode.length := by
+  exact natListMinFrom_le_seed shape.bpCode.length
+    (bpBlockExcessSamples shape blockSize block)
+
+theorem bpBlockMaxExcess_le_length
+    (shape : Cartesian.CartesianShape)
+    (blockSize block : Nat) :
+    bpBlockMaxExcess shape blockSize block <= shape.bpCode.length := by
+  unfold bpBlockMaxExcess
+  exact natListMax_le_of_forall_mem
+    (by
+      intro value hmem
+      exact bpBlockExcessSamples_mem_le_length hmem)
+
+def bpBlockMinExcessEntries
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount : Nat) : List Nat :=
+  (List.range blockCount).map fun block =>
+    bpBlockMinExcess shape blockSize block
+
+def bpBlockMaxExcessEntries
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount : Nat) : List Nat :=
+  (List.range blockCount).map fun block =>
+    bpBlockMaxExcess shape blockSize block
+
+theorem bpBlockMinExcessEntries_length
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount : Nat) :
+    (bpBlockMinExcessEntries shape blockSize blockCount).length =
+      blockCount := by
+  simp [bpBlockMinExcessEntries]
+
+theorem bpBlockMaxExcessEntries_length
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount : Nat) :
+    (bpBlockMaxExcessEntries shape blockSize blockCount).length =
+      blockCount := by
+  simp [bpBlockMaxExcessEntries]
+
+theorem bpBlockMinExcessEntries_mem_bound
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth entry : Nat}
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth)
+    (hmem :
+      List.Mem entry
+        (bpBlockMinExcessEntries shape blockSize blockCount)) :
+    entry < 2 ^ fieldWidth := by
+  unfold bpBlockMinExcessEntries at hmem
+  rcases List.mem_map.mp hmem with ⟨block, _hblock, hentry⟩
+  rw [← hentry]
+  exact Nat.lt_of_le_of_lt
+    (bpBlockMinExcess_le_length shape blockSize block) hwidth
+
+theorem bpBlockMaxExcessEntries_mem_bound
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth entry : Nat}
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth)
+    (hmem :
+      List.Mem entry
+        (bpBlockMaxExcessEntries shape blockSize blockCount)) :
+    entry < 2 ^ fieldWidth := by
+  unfold bpBlockMaxExcessEntries at hmem
+  rcases List.mem_map.mp hmem with ⟨block, _hblock, hentry⟩
+  rw [← hentry]
+  exact Nat.lt_of_le_of_lt
+    (bpBlockMaxExcess_le_length shape blockSize block) hwidth
+
+/--
+Payload-live BP range-min/max summary table.
+
+The min and max summary arrays are concrete fixed-width payload tables.  A
+macro directory can read these two charged words before deciding which macro
+summary range or endpoint repair to use.
+-/
+structure PayloadLiveBPRangeMinMaxSummaryTable
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount fieldWidth overhead : Nat) where
+  minTable :
+    FixedWidthNatTable
+      (bpBlockMinExcessEntries shape blockSize blockCount) fieldWidth
+  maxTable :
+    FixedWidthNatTable
+      (bpBlockMaxExcessEntries shape blockSize blockCount) fieldWidth
+  payload_length_eq :
+    minTable.payload.length + maxTable.payload.length = overhead
+
+namespace PayloadLiveBPRangeMinMaxSummaryTable
+
+def payload
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRangeMinMaxSummaryTable shape blockSize blockCount
+        fieldWidth overhead) : List Bool :=
+  table.minTable.payload ++ table.maxTable.payload
+
+def minExcessCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRangeMinMaxSummaryTable shape blockSize blockCount
+        fieldWidth overhead)
+    (block : Nat) : Costed (Option Nat) :=
+  table.minTable.readCosted block
+
+def maxExcessCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRangeMinMaxSummaryTable shape blockSize blockCount
+        fieldWidth overhead)
+    (block : Nat) : Costed (Option Nat) :=
+  table.maxTable.readCosted block
+
+def summaryCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRangeMinMaxSummaryTable shape blockSize blockCount
+        fieldWidth overhead)
+    (block : Nat) : Costed (Option (Nat × Nat)) :=
+  Costed.bind (table.minExcessCosted block) fun min? =>
+    Costed.map
+      (fun max? =>
+        match min?, max? with
+        | some minExcess, some maxExcess => some (minExcess, maxExcess)
+        | _, _ => none)
+      (table.maxExcessCosted block)
+
+theorem payload_length
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRangeMinMaxSummaryTable shape blockSize blockCount
+        fieldWidth overhead) :
+    table.payload.length = overhead := by
+  simp [payload, table.payload_length_eq]
+
+theorem minExcessCosted_cost_le_one
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRangeMinMaxSummaryTable shape blockSize blockCount
+        fieldWidth overhead)
+    (block : Nat) :
+    (table.minExcessCosted block).cost <= 1 := by
+  simp [minExcessCosted]
+
+theorem maxExcessCosted_cost_le_one
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRangeMinMaxSummaryTable shape blockSize blockCount
+        fieldWidth overhead)
+    (block : Nat) :
+    (table.maxExcessCosted block).cost <= 1 := by
+  simp [maxExcessCosted]
+
+theorem summaryCosted_cost_le_two
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRangeMinMaxSummaryTable shape blockSize blockCount
+        fieldWidth overhead)
+    (block : Nat) :
+    (table.summaryCosted block).cost <= 2 := by
+  unfold summaryCosted minExcessCosted maxExcessCosted
+  have hmin := table.minTable.readCosted_cost_le_one block
+  have hmax := table.maxTable.readCosted_cost_le_one block
+  cases hread :
+      (table.minTable.readCosted block).value <;>
+    simp [Costed.bind, Costed.map, hread]
+
+theorem minExcessCosted_erase
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRangeMinMaxSummaryTable shape blockSize blockCount
+        fieldWidth overhead)
+    (block : Nat) :
+    (table.minExcessCosted block).erase =
+      (bpBlockMinExcessEntries shape blockSize blockCount)[block]? := by
+  simp [minExcessCosted]
+
+theorem maxExcessCosted_erase
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRangeMinMaxSummaryTable shape blockSize blockCount
+        fieldWidth overhead)
+    (block : Nat) :
+    (table.maxExcessCosted block).erase =
+      (bpBlockMaxExcessEntries shape blockSize blockCount)[block]? := by
+  simp [maxExcessCosted]
+
+theorem summaryCosted_erase
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRangeMinMaxSummaryTable shape blockSize blockCount
+        fieldWidth overhead)
+    (block : Nat) :
+    (table.summaryCosted block).erase =
+      match
+        (bpBlockMinExcessEntries shape blockSize blockCount)[block]?,
+        (bpBlockMaxExcessEntries shape blockSize blockCount)[block]? with
+      | some minExcess, some maxExcess => some (minExcess, maxExcess)
+      | _, _ => none := by
+  unfold summaryCosted
+  have hmin :
+      (table.minTable.readCosted block).value =
+        (bpBlockMinExcessEntries shape blockSize blockCount)[block]? := by
+    exact table.minTable.readCosted_erase block
+  have hmax :
+      (table.maxTable.readCosted block).value =
+        (bpBlockMaxExcessEntries shape blockSize blockCount)[block]? := by
+    exact table.maxTable.readCosted_erase block
+  simp [Costed.bind, Costed.map, Costed.erase, minExcessCosted,
+    maxExcessCosted, hmin, hmax]
+
+theorem payload_length_le_sampled
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth overhead slots n : Nat}
+    (table :
+      PayloadLiveBPRangeMinMaxSummaryTable shape blockSize blockCount
+        fieldWidth overhead)
+    (hbudget :
+      overhead <= sampledDirectoryOverhead slots n) :
+    table.payload.length <= sampledDirectoryOverhead slots n := by
+  rw [table.payload_length]
+  exact hbudget
+
+theorem profile
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRangeMinMaxSummaryTable shape blockSize blockCount
+        fieldWidth overhead) :
+    table.payload.length = overhead /\
+      (forall block,
+        (table.minExcessCosted block).cost <= 1 /\
+          (table.minExcessCosted block).erase =
+            (bpBlockMinExcessEntries shape blockSize blockCount)[block]?) /\
+      (forall block,
+        (table.maxExcessCosted block).cost <= 1 /\
+          (table.maxExcessCosted block).erase =
+            (bpBlockMaxExcessEntries shape blockSize blockCount)[block]?) /\
+      forall block,
+        (table.summaryCosted block).cost <= 2 /\
+          (table.summaryCosted block).erase =
+            match
+              (bpBlockMinExcessEntries shape blockSize blockCount)[block]?,
+              (bpBlockMaxExcessEntries shape blockSize blockCount)[block]? with
+            | some minExcess, some maxExcess =>
+                some (minExcess, maxExcess)
+            | _, _ => none := by
+  constructor
+  · exact table.payload_length
+  constructor
+  · intro block
+    exact ⟨table.minExcessCosted_cost_le_one block,
+      table.minExcessCosted_erase block⟩
+  constructor
+  · intro block
+    exact ⟨table.maxExcessCosted_cost_le_one block,
+      table.maxExcessCosted_erase block⟩
+  intro block
+  exact ⟨table.summaryCosted_cost_le_two block,
+    table.summaryCosted_erase block⟩
+
+end PayloadLiveBPRangeMinMaxSummaryTable
+
+def concreteBPRangeMinMaxSummaryTable
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount fieldWidth : Nat)
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth) :
+    PayloadLiveBPRangeMinMaxSummaryTable shape blockSize blockCount
+      fieldWidth (2 * (blockCount * fieldWidth)) where
+  minTable :=
+    FixedWidthNatTable.ofEntries
+      (bpBlockMinExcessEntries shape blockSize blockCount)
+      fieldWidth
+      (by
+        intro entry hmem
+        exact bpBlockMinExcessEntries_mem_bound hwidth hmem)
+  maxTable :=
+    FixedWidthNatTable.ofEntries
+      (bpBlockMaxExcessEntries shape blockSize blockCount)
+      fieldWidth
+      (by
+        intro entry hmem
+        exact bpBlockMaxExcessEntries_mem_bound hwidth hmem)
+  payload_length_eq := by
+    have hmin :
+        (FixedWidthNatTable.ofEntries
+          (bpBlockMinExcessEntries shape blockSize blockCount)
+          fieldWidth
+          (by
+            intro entry hmem
+            exact bpBlockMinExcessEntries_mem_bound hwidth hmem)).payload.length =
+          blockCount * fieldWidth := by
+      simpa [bpBlockMinExcessEntries_length] using
+        (FixedWidthNatTable.ofEntries
+          (bpBlockMinExcessEntries shape blockSize blockCount)
+          fieldWidth
+          (by
+            intro entry hmem
+            exact bpBlockMinExcessEntries_mem_bound hwidth hmem)).payload_length
+    have hmax :
+        (FixedWidthNatTable.ofEntries
+          (bpBlockMaxExcessEntries shape blockSize blockCount)
+          fieldWidth
+          (by
+            intro entry hmem
+            exact bpBlockMaxExcessEntries_mem_bound hwidth hmem)).payload.length =
+          blockCount * fieldWidth := by
+      simpa [bpBlockMaxExcessEntries_length] using
+        (FixedWidthNatTable.ofEntries
+          (bpBlockMaxExcessEntries shape blockSize blockCount)
+          fieldWidth
+          (by
+            intro entry hmem
+            exact bpBlockMaxExcessEntries_mem_bound hwidth hmem)).payload_length
+    omega
+
+theorem concreteBPRangeMinMaxSummaryTable_profile
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount fieldWidth : Nat)
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth) :
+    let table :=
+      concreteBPRangeMinMaxSummaryTable
+        shape blockSize blockCount fieldWidth hwidth
+    table.payload.length = 2 * (blockCount * fieldWidth) /\
+      (forall block,
+        (table.minExcessCosted block).cost <= 1 /\
+          (table.minExcessCosted block).erase =
+            (bpBlockMinExcessEntries shape blockSize blockCount)[block]?) /\
+      (forall block,
+        (table.maxExcessCosted block).cost <= 1 /\
+          (table.maxExcessCosted block).erase =
+            (bpBlockMaxExcessEntries shape blockSize blockCount)[block]?) /\
+      forall block,
+        (table.summaryCosted block).cost <= 2 /\
+          (table.summaryCosted block).erase =
+            match
+              (bpBlockMinExcessEntries shape blockSize blockCount)[block]?,
+              (bpBlockMaxExcessEntries shape blockSize blockCount)[block]? with
+            | some minExcess, some maxExcess =>
+                some (minExcess, maxExcess)
+            | _, _ => none := by
+  exact
+    (concreteBPRangeMinMaxSummaryTable
+      shape blockSize blockCount fieldWidth hwidth).profile
+
+theorem concreteBPRangeMinMaxSummaryTable_sampled_profile
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount fieldWidth slots n : Nat)
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth)
+    (hbudget :
+      2 * (blockCount * fieldWidth) <= sampledDirectoryOverhead slots n) :
+    let table :=
+      concreteBPRangeMinMaxSummaryTable
+        shape blockSize blockCount fieldWidth hwidth
+    LittleOLinear (sampledDirectoryOverhead slots) /\
+      table.payload.length <= sampledDirectoryOverhead slots n /\
+      (forall block,
+        (table.summaryCosted block).cost <= 2 /\
+          (table.summaryCosted block).erase =
+            match
+              (bpBlockMinExcessEntries shape blockSize blockCount)[block]?,
+              (bpBlockMaxExcessEntries shape blockSize blockCount)[block]? with
+            | some minExcess, some maxExcess =>
+                some (minExcess, maxExcess)
+            | _, _ => none) := by
+  let table :=
+    concreteBPRangeMinMaxSummaryTable
+      shape blockSize blockCount fieldWidth hwidth
+  constructor
+  · exact sampledDirectoryOverhead_littleO slots
+  constructor
+  · exact table.payload_length_le_sampled hbudget
+  intro block
+  exact ⟨table.summaryCosted_cost_le_two block,
+    table.summaryCosted_erase block⟩
+
 /--
 The right-spine shape of size four is the smallest useful witness that a macro
 entry keyed only by the pair of endpoint close blocks cannot be exact.
