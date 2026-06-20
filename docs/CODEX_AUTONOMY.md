@@ -131,7 +131,8 @@ For unattended workers, distinguish iteration progress from loop completion:
   profile or capstone theorem still has an obvious next construction/proof
   step.
 - A loop break is justified only by target closure, an external/tool blocker,
-  or a design-level brick wall that requires human/coordinator judgment.
+  a formal theorem that the owned target itself is impossible or mis-specified,
+  or an extreme exhaustion dossier.
 
 At the start of every loop iteration, write a short goal reflection before
 editing:
@@ -157,9 +158,10 @@ Before stopping an unattended loop, run a stop audit:
    identity witness while the concrete compact/payload-live witness remains
    exactly the missing item?
 4. If the target is not closed, did the worker record a brick-wall dossier:
-   several serious attempts at the positive construction, the common
+   at least fifty serious attempts at the positive construction, the common
    obstruction, and why the next move is a fundamental design choice rather
-   than more local proof work?
+   than more local proof work? Or did the worker prove a formal impossibility
+   theorem for the target statement itself?
 
 If 1 is no and either 2 or 3 is yes, the loop should continue. If 1 is no and
 4 is no, the loop should continue. "The gate is green" only proves soundness;
@@ -173,15 +175,14 @@ the target signature itself must change. Otherwise keep going to the concrete
 builder/profile.
 
 A "brick wall" is not "this proof is hard" or "the next lemma is nontrivial."
-It means the worker has made multiple concrete attempts at the named positive
-construction, those attempts fail for the same structural reason, and repairing
-the failure would require changing the target statement, representation model,
-cost model, ownership split, or another design choice the coordinator should
-approve.
-
-By default, "multiple concrete attempts" means at least three distinct serious
-attempts. A single attempt is enough only if it produces a formal impossibility
-theorem for the target statement itself.
+Failed constructions are normally evidence for the next repaired statement or
+construction variant, not a reason to stop. A brick-wall stop requires either a
+formal impossibility theorem for the target statement itself or an extreme
+exhaustion dossier: at least fifty distinct serious attempts at the named
+positive construction, all failing for the same structural reason, where
+repairing the failure would require changing the target statement,
+representation model, cost model, ownership split, or another design choice the
+coordinator should approve.
 
 ## Stop Conditions
 
@@ -198,7 +199,7 @@ of these happens:
 4. A concrete construction attempt proves the target signature is
    mis-specified or unprovable as stated, and the branch records the minimal
    impossibility theorem. Repeating a known blocker is not a stop condition.
-5. At least three concrete construction attempts hit the same design-level
+5. At least fifty concrete construction attempts hit the same design-level
    brick wall, and the branch records enough evidence for the coordinator to
    choose a new representation, invariant, or target statement.
 6. A taste-sensitive API or abstraction fork has no clear winner.

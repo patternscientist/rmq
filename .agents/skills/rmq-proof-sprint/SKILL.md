@@ -79,10 +79,11 @@ Strict break criteria for unattended loops:
 - Stop normally only when the owned target is closed: the named theorem,
   concrete component profile, or capstone construction typechecks and the
   relevant gate passes.
-- Stop for design rethink only after hitting real brick walls: multiple serious
-  attempts at the named positive construction fail for the same fundamental
-  reason, and the worker records the attempted signatures, obstruction lemmas
-  or error shapes, and why the local next move cannot repair them.
+- Stop for design rethink only when a formal theorem shows the owned target
+  itself is impossible or mis-specified. Failed construction attempts are loop
+  scratchpad evidence, not a stop condition, unless the worker has recorded an
+  extreme exhaustion dossier of at least fifty distinct serious attempts at the
+  named positive construction and a common design-level obstruction.
 - Stop for external blockers only when tooling, approvals, branch conflicts, or
   unavailable dependencies prevent further local progress.
 
@@ -97,9 +98,11 @@ C1/C2/C3 component or the final succinct theorem, a caveat repair on a helper
 layer is one iteration result; immediately attempt to consume the repaired
 layer in the owned concrete profile or capstone theorem.
 
-For this policy, "multiple serious attempts" normally means at least three
-distinct concrete construction/proof attempts. One attempt is enough only if it
-produces a formal impossibility theorem for the target statement itself.
+For this policy, failed construction attempts do not justify a normal loop
+break. They should inform the next repaired statement or construction. Only a
+formal impossibility theorem for the target statement itself, or an explicitly
+documented fifty-attempt exhaustion dossier, can replace a positive
+construction/profile as a stop reason.
 
 Do not count tiny substeps as separate milestones. A substantial milestone must
 land at least one of:
@@ -134,8 +137,9 @@ Valid stop conditions:
 - a concrete construction attempt proves the target statement is
   mis-specified or impossible as stated, with a minimal theorem documenting the
   obstruction;
-- a brick-wall dossier shows at least three serious construction attempts have failed
-  for a common design-level reason and the next move is a fundamental design
+- an extreme exhaustion dossier records at least fifty distinct serious
+  attempts at the named positive construction, all failing for the same
+  design-level reason, and explains why the next move is a fundamental design
   choice rather than more local proof work;
 - required tooling, network, approvals, or local branch conflicts block further
   progress;
@@ -156,8 +160,8 @@ Invalid stop reasons:
   deferring the hard part named in the goal reflection.
 - one substantial intermediate theorem or component layer landed, but the
   owned target still has an obvious next construction/proof step.
-- the worker hit one or two hard proof errors without trying the natural
-  repaired statements or nearby construction variants.
+- the worker hit hard proof errors, no matter how annoying, without continuing
+  through the natural repaired statements or nearby construction variants.
 
 Before stopping, run this loop-stop audit:
 
@@ -168,9 +172,9 @@ Before stopping, run this loop-stop audit:
 3. Did this round leave a canonical identity witness, abstract family
    parameter, or proof-only placeholder where the target asked for a compact or
    payload-live construction?
-4. If stopping short of the target, is there a brick-wall dossier with at least
-   three serious attempts and a design-level reason local proof work cannot
-   proceed, or one formal impossibility theorem for the target statement?
+4. If stopping short of the target, is there one formal impossibility theorem
+   for the target statement, or an extreme fifty-attempt exhaustion dossier
+   showing a common design-level reason local proof work cannot proceed?
 
 If the answer to 1 is "no" and 2 or 3 is "yes", continue the loop. If the
 answer to 1 is "no" and 4 is "no", continue the loop. For the succinct RMQ

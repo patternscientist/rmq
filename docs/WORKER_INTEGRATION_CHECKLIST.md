@@ -74,8 +74,12 @@ Loop stop audit:
   requested? YES/NO:
 - Did this branch reduce the current distance to the capstone, rather than only
   producing technically substantial adjacent work? YES/NO:
-- If the target is not closed, which three serious attempts at the named
-  positive construction were made, and what common brick wall did they hit?:
+- If the target is not closed, did this branch prove the target statement
+  impossible as stated? If yes, name the theorem:
+- If no impossibility theorem, what meaningful positive construction/profile
+  did this branch land?:
+- If stopping on exhaustion, which fifty serious attempts at the named positive
+  construction were made, and what common brick wall did they hit?:
 - Why is the next move a fundamental design/coordinator choice rather than
   another local proof iteration?:
 - If stopping on impossibility, which concrete construction was attempted and
@@ -113,9 +117,10 @@ treated as a side artifact rather than a merge-ready finish.
 
 A branch that shortens the path but leaves the owned concrete component profile
 or capstone theorem obviously unfinished is an iteration checkpoint, not a
-valid unattended-loop endpoint. The worker should keep going unless it can
-provide a brick-wall dossier showing that further local progress now depends on
-a fundamental design choice.
+valid unattended-loop endpoint. The worker should keep going unless it proves
+the target statement itself impossible or has an extreme fifty-attempt
+exhaustion dossier showing that further local progress now depends on a
+fundamental design choice.
 
 If the branch adds a new parameter, field, adapter, or bridge theorem, it must
 also name the concrete instance that consumes it. If that concrete instance is
@@ -126,11 +131,11 @@ comes from an attempted positive construction and shows that the requested
 target statement is mis-specified. Known blockers should be cited as design
 constraints, not rediscovered as stop points.
 
-For short-of-target stops, require the worker to report at least three concrete
-attempts, not just one failed proof. The report should make clear why the next
-action cannot be "try the natural repaired statement" or "consume the new local
-kernel in the promised profile." A formal impossibility theorem for the target
-statement can replace the three-attempt threshold.
+For short-of-target stops, failed attempts alone are not enough. The report
+should make clear why the branch nevertheless landed a meaningful positive
+construction/profile. A formal impossibility theorem for the target statement
+can justify stopping. Without that, only an extreme fifty-attempt exhaustion
+dossier can replace target closure.
 
 ### Cost Or Space Worker
 
