@@ -526,6 +526,141 @@ theorem concrete_profile
 
 end BlockLocalBPCloseLCATable
 
+/--
+A fully endpoint-sensitive direct-access BP close/LCA table.
+
+This is a concrete charged macro fallback: it is just the certified block-local
+table run with one block covering the whole BP payload.  It is useful as a
+baseline because the query is exact and costs one payload-table read, but the
+payload is dense in endpoint close positions.
+-/
+def denseAllCloseBPCloseLCATable
+    (shape : Cartesian.CartesianShape)
+    (fieldWidth : Nat)
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth) :
+    BlockLocalBPCloseLCATable shape 0 shape.bpCode.length
+      ((shape.bpCode.length * shape.bpCode.length) *
+        optionNatWordWidth fieldWidth) :=
+  BlockLocalBPCloseLCATable.concrete shape 0 shape.bpCode.length
+    fieldWidth hwidth
+
+theorem denseAllCloseBPCloseLCATable_profile
+    (shape : Cartesian.CartesianShape)
+    (fieldWidth : Nat)
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth) :
+    ((denseAllCloseBPCloseLCATable shape fieldWidth hwidth).payload.length =
+        (shape.bpCode.length * shape.bpCode.length) *
+          optionNatWordWidth fieldWidth) /\
+      (forall leftClose rightClose,
+        ((denseAllCloseBPCloseLCATable shape fieldWidth hwidth).lcaCloseCosted
+          leftClose rightClose).cost <= 1) /\
+      forall {left len leftClose rightClose answerClose : Nat},
+        0 < len ->
+          left + len <= shape.size ->
+            bpCloseOfInorder? shape left = some leftClose ->
+              bpCloseOfInorder? shape (left + len - 1) =
+                  some rightClose ->
+                bpCloseOfInorder? shape
+                    (scanWindow shape.representative left len) =
+                  some answerClose ->
+                  ((denseAllCloseBPCloseLCATable
+                    shape fieldWidth hwidth).lcaCloseCosted
+                      leftClose rightClose).erase =
+                    some answerClose := by
+  constructor
+  · exact
+      (denseAllCloseBPCloseLCATable
+        shape fieldWidth hwidth).payload_length
+  constructor
+  · intro leftClose rightClose
+    exact
+      (denseAllCloseBPCloseLCATable
+        shape fieldWidth hwidth).lcaCloseCosted_cost_le_one
+          leftClose rightClose
+  intro left len leftClose rightClose answerClose
+    hlen hbound hleft hright hanswer
+  have hleftHi : leftClose < shape.bpCode.length :=
+    bpCloseOfInorder?_bounds shape hleft
+  have hrightHi : rightClose < shape.bpCode.length :=
+    bpCloseOfInorder?_bounds shape hright
+  have hanswerHi : answerClose < shape.bpCode.length :=
+    bpCloseOfInorder?_bounds shape hanswer
+  exact
+    (denseAllCloseBPCloseLCATable
+      shape fieldWidth hwidth).lcaCloseCosted_exact
+        hlen hbound hleft hright hanswer
+        (by omega) (by simpa using hleftHi)
+        (by omega) (by simpa using hrightHi)
+        (by omega) (by simpa using hanswerHi)
+
+/--
+The family-level overhead of the dense all-close endpoint table for shapes of
+size `n`.  This is deliberately named so the space blocker below can refer to
+the concrete direct-access fallback rather than to a vague "quadratic table".
+-/
+def denseAllCloseBPCloseLCAOverhead
+    (fieldWidth : Nat -> Nat) (n : Nat) : Nat :=
+  ((2 * n) * (2 * n)) * optionNatWordWidth (fieldWidth n)
+
+theorem denseAllCloseBPCloseLCATable_payload_length_of_shapeOfSize
+    {shape : Cartesian.CartesianShape} {n : Nat}
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n))
+    (fieldWidth : Nat -> Nat)
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth n) :
+    ((denseAllCloseBPCloseLCATable
+      shape (fieldWidth n) hwidth).payload.length =
+        denseAllCloseBPCloseLCAOverhead fieldWidth n) := by
+  have hshapeSize := Cartesian.mem_shapesOfSize_shapeOfSize hshape
+  have hbp :
+      shape.bpCode.length = 2 * n :=
+    Cartesian.CartesianShape.bpCode_length_of_shapeOfSize hshapeSize
+  simpa [denseAllCloseBPCloseLCAOverhead, hbp] using
+    (denseAllCloseBPCloseLCATable
+      shape (fieldWidth n) hwidth).payload_length
+
+theorem not_littleOLinear_square :
+    ¬ LittleOLinear (fun n : Nat => n * n) := by
+  intro hsquare
+  rcases hsquare 1 (by omega) with ⟨threshold, hthreshold⟩
+  let n := Nat.max threshold 2
+  have hthreshold_le : threshold <= n := Nat.le_max_left threshold 2
+  have htwo_le : 2 <= n := Nat.le_max_right threshold 2
+  have hle : n * n <= n := by
+    simpa using hthreshold n hthreshold_le
+  have hlt : n < n * n := by
+    have hone_lt : 1 < n := by omega
+    have hpos : 0 < n := by omega
+    have hmul : n * 1 < n * n :=
+      Nat.mul_lt_mul_of_pos_left hone_lt hpos
+    simpa using hmul
+  exact (Nat.not_lt_of_ge hle) hlt
+
+theorem denseAllCloseBPCloseLCAOverhead_not_littleO
+    (fieldWidth : Nat -> Nat) :
+    ¬ LittleOLinear (denseAllCloseBPCloseLCAOverhead fieldWidth) := by
+  intro hdense
+  have hquad :
+      LittleOLinear (fun n : Nat => n * n) := by
+    exact hdense.of_le (fun n => by
+      unfold denseAllCloseBPCloseLCAOverhead
+      have hn_le : n <= 2 * n := by omega
+      have hsquare :
+          n * n <= (2 * n) * (2 * n) :=
+        Nat.mul_le_mul hn_le hn_le
+      have hword :
+          1 <= optionNatWordWidth (fieldWidth n) := by
+        unfold optionNatWordWidth
+        omega
+      have hdense_ge :
+          (2 * n) * (2 * n) <=
+            ((2 * n) * (2 * n)) *
+              optionNatWordWidth (fieldWidth n) := by
+        have hmul :=
+          Nat.mul_le_mul_left ((2 * n) * (2 * n)) hword
+        simpa using hmul
+      exact Nat.le_trans hsquare hdense_ge)
+  exact not_littleOLinear_square hquad
+
 /-- Block number containing a BP close position. -/
 def blockOfClose (blockSize close : Nat) : Nat :=
   close / blockSize
@@ -1299,6 +1434,75 @@ theorem profile
 
 end PayloadLiveBlockMicroCodebook
 
+/-- Empty fixed-width Nat classifier used by the dense fallback construction. -/
+def emptyBlockCodeTable : BlockCodeTable 0 1 0 0 :=
+  BlockCodeTable.ofEntries 0 1 0 0 ([] : List Nat)
+    (by intro code hmem; cases hmem)
+    rfl
+    rfl
+    (by intro block code hget; cases hget)
+
+/-- Empty optional-Nat table used by the dense fallback construction. -/
+def emptyOptionNatTable
+    (fieldWidth : Nat) :
+    FixedWidthOptionNatTable ([] : List (Option Nat)) fieldWidth :=
+  FixedWidthOptionNatTable.ofEntries
+    ([] : List (Option Nat)) fieldWidth
+    (by intro entry value hmem _hentry; cases hmem)
+
+/--
+Payload-live micro phase that always misses.
+
+It still performs the charged classifier read before returning `none`; the
+point is to make the dense fallback macro leg below a concrete consumer of the
+existing payload-live macro/micro directory surface.
+-/
+def emptyPayloadLiveBlockMicroCodebook
+    (shape : Cartesian.CartesianShape)
+    (blockSize fieldWidth : Nat) :
+    PayloadLiveBlockMicroCodebook shape blockSize 0 1 0 0 0 where
+  classifier := emptyBlockCodeTable
+  fieldWidth := fieldWidth
+  entriesByCode := fun _ => []
+  table := fun _ => emptyOptionNatTable fieldWidth
+  slotIndex := densePairSlot blockSize
+  tablePayload := []
+  tablePayload_eq_tables := by
+    simp [emptyOptionNatTable, FixedWidthOptionNatTable.ofEntries,
+      FixedWidthOptionNatTable.ofEncodedWords, flattenPayloadWords]
+  tablePayload_length_eq := by
+    simp
+  table_payload_length_eq := by
+    intro code _hcode
+    simp [emptyOptionNatTable, FixedWidthOptionNatTable.ofEntries,
+      FixedWidthOptionNatTable.ofEncodedWords, flattenPayloadWords]
+  block_spec := by
+    intro block code hcodeAt
+    have hnone : (emptyBlockCodeTable.codeAt block) = none := by
+      simp [emptyBlockCodeTable, BlockCodeTable.codeAt,
+        BlockCodeTable.ofEntries]
+    rw [hnone] at hcodeAt
+    cases hcodeAt
+
+theorem emptyPayloadLiveBlockMicroCodebook_lcaCloseCosted_erase
+    (shape : Cartesian.CartesianShape)
+    (blockSize fieldWidth leftClose rightClose : Nat) :
+    ((emptyPayloadLiveBlockMicroCodebook
+      shape blockSize fieldWidth).lcaCloseCosted
+        leftClose rightClose).erase = none := by
+  have hcode :
+      (emptyBlockCodeTable.codeCosted
+        (blockOfClose blockSize leftClose)).value = none := by
+    have h :=
+      emptyBlockCodeTable.codeCosted_erase
+        (blockOfClose blockSize leftClose)
+    simpa [Costed.erase, emptyBlockCodeTable, BlockCodeTable.codeAt,
+      BlockCodeTable.ofEntries] using h
+  unfold PayloadLiveBlockMicroCodebook.lcaCloseCosted
+    PayloadLiveBlockMicroCodebook.lcaCloseCostedAtBlock
+  simp [emptyPayloadLiveBlockMicroCodebook, hcode, Costed.bind,
+    Costed.pure]
+
 /--
 Macro/micro BP close/LCA query skeleton.
 
@@ -1647,6 +1851,86 @@ theorem profile
   exact directory.lcaCloseCosted_exact hlen hbound hleft hright hanswer
 
 end PayloadLiveMacroMicroBPCloseLCADirectory
+
+/--
+Concrete dense fallback instance for the payload-live macro/micro surface.
+
+The micro phase is the charged empty classifier above, and the macro phase is
+the dense all-close table.  This construction is exact and constant-cost, but
+`denseAllCloseBPCloseLCAOverhead_not_littleO` shows why it is only a blocker
+baseline, not the final succinct macro.
+-/
+def denseFallbackPayloadLiveMacroMicroBPCloseLCADirectory
+    (shape : Cartesian.CartesianShape)
+    (blockSize fieldWidth : Nat)
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth) :
+    PayloadLiveMacroMicroBPCloseLCADirectory shape blockSize 0 1 0 0 0
+      ((shape.bpCode.length * shape.bpCode.length) *
+        optionNatWordWidth fieldWidth) 1 where
+  micro := emptyPayloadLiveBlockMicroCodebook shape blockSize fieldWidth
+  macroPayload :=
+    (denseAllCloseBPCloseLCATable shape fieldWidth hwidth).payload
+  macroPayload_length_eq := by
+    exact
+      (denseAllCloseBPCloseLCATable
+        shape fieldWidth hwidth).payload_length
+  macroCosted :=
+    (denseAllCloseBPCloseLCATable shape fieldWidth hwidth).lcaCloseCosted
+  macro_cost_le := by
+    intro leftClose rightClose
+    exact
+      (denseAllCloseBPCloseLCATable
+        shape fieldWidth hwidth).lcaCloseCosted_cost_le_one
+          leftClose rightClose
+  split_exact := by
+    intro left len leftClose rightClose answerClose
+      hlen hbound hleft hright hanswer
+    right
+    constructor
+    · exact
+        emptyPayloadLiveBlockMicroCodebook_lcaCloseCosted_erase
+          shape blockSize fieldWidth leftClose rightClose
+    · exact
+        (denseAllCloseBPCloseLCATable_profile
+          shape fieldWidth hwidth).2.2 hlen hbound hleft hright hanswer
+
+theorem denseFallbackPayloadLiveMacroMicroBPCloseLCADirectory_profile
+    (shape : Cartesian.CartesianShape)
+    (blockSize fieldWidth : Nat)
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth) :
+    ((denseFallbackPayloadLiveMacroMicroBPCloseLCADirectory
+        shape blockSize fieldWidth hwidth).payload.length =
+        (shape.bpCode.length * shape.bpCode.length) *
+          optionNatWordWidth fieldWidth) /\
+      (forall leftClose rightClose,
+        ((denseFallbackPayloadLiveMacroMicroBPCloseLCADirectory
+          shape blockSize fieldWidth hwidth).lcaCloseCosted
+            leftClose rightClose).cost <= 3) /\
+      forall {left len leftClose rightClose answerClose : Nat},
+        0 < len ->
+          left + len <= shape.size ->
+            bpCloseOfInorder? shape left = some leftClose ->
+              bpCloseOfInorder? shape (left + len - 1) =
+                  some rightClose ->
+                bpCloseOfInorder? shape
+                    (scanWindow shape.representative left len) =
+                  some answerClose ->
+                  ((denseFallbackPayloadLiveMacroMicroBPCloseLCADirectory
+                    shape blockSize fieldWidth hwidth).lcaCloseCosted
+                      leftClose rightClose).erase =
+                    some answerClose := by
+  have hprofile :=
+    (denseFallbackPayloadLiveMacroMicroBPCloseLCADirectory
+      shape blockSize fieldWidth hwidth).profile
+  constructor
+  · simpa using hprofile.1
+  constructor
+  · intro leftClose rightClose
+    have hcost := hprofile.2.1 leftClose rightClose
+    simpa using hcost
+  · intro left len leftClose rightClose answerClose
+      hlen hbound hleft hright hanswer
+    exact hprofile.2.2 hlen hbound hleft hright hanswer
 
 def payloadLiveMacroMicroBPCloseLCAOverhead
     (codeOverhead codeCount microTableOverhead macroOverhead : Nat -> Nat)
