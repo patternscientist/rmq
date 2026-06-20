@@ -7,6 +7,11 @@ proof churn.
 The coordinator chat owns integration. Worker chats own narrow branches and
 report enough evidence for the coordinator to merge, port, or reject their work.
 
+For the active succinct-RMQ finish line, every worker should read
+`docs/SUCCINCT_FINAL_PATH.md` before editing. That file is the current contract
+for the descriptor-select component, concrete macro/micro BP-close component,
+and final `2*n + o(n), O(1)` join.
+
 ## Worker Completion Report
 
 Each worker branch should end with a report in this shape:
@@ -170,11 +175,12 @@ Reject or send back for revision when:
 
 For the succinct RMQ capstone:
 
-- Worker A: BP close/LCA macro-micro representation and payload agreement.
-- Worker B: canonical two-level rank/select parameter arithmetic and profile
-  glue.
-- Coordinator: merge order, final `2*n + o(n), O(1)` join theorem, gate, and
-  docs.
+- Worker A: concrete macro/micro BP close-LCA construction behind the
+  payload-live interface, plus the close-navigation join it feeds.
+- Worker B: descriptor-based select component that replaces the one-locator,
+  one-payload-word blocker with a concrete local descriptor query path.
+- Coordinator: merge order, adapter work, final `2*n + o(n), O(1)` theorem,
+  gate, and docs.
 
-Worker C can run later for docs and theorem inventory after A/B land enough
-surface to document.
+Worker C can run once A/B land concrete component profiles, or earlier only if
+its target is a true join/adaptation theorem from `docs/SUCCINCT_FINAL_PATH.md`.
