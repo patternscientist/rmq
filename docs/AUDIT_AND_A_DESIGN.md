@@ -617,3 +617,50 @@ RMQ headline is still not demonstrated. Worth a deliberate choice: push the two
 load-bearing items, or timebox the succinct flagship.
 
 **Still pending:** retire the old decoupled `PayloadBackedStoredWordRankData`.
+
+## 2026-06-20 (later) — two-level rank/select genuinely landed; succinct-RMQ capstone (witness + final theorem) still open
+
+**Huge round** (+~20k lines; three new imported files: `SuccinctRankProposal`
+70KB, `SuccinctSelectProposal` 170KB, `SuccinctCloseProposal` 101KB). Build
+green, trust clean (0 bad-axiom across the full curated list).
+
+**Genuine deep progress — the two-level / word-size gap is being closed for rank
+and select** (the hard part flagged for many rounds):
+- `machineWordBits n := Nat.log2 n + 1` — the machine word is now *tied to
+  Θ(log n)*, and select word data carries `wordSize ≤ machineWordBits`.
+- Two-level **rank**: `canonicalSuperRankEntries` (superblock absolute) +
+  `canonicalBlockRankEntries` (block-*relative* — the key to o(n)), with
+  `…_getOpt_exact`/`…_present` proofs, `canonicalTwoLevelRankOverhead` proven
+  `LittleOLinear` (super + block), derived `rankCosted_cost_le_four`, exact, and
+  **concrete** constructors (`canonicalTwoLevelRankDataOfChunksExact`).
+- Two-level **select**: analogous (`canonicalTwoLevelSelect*Overhead`,
+  `selectCosted_cost_le_four`, concrete `canonicalTwoLevelSelectData`).
+- Good anti-vacuity: proved a naive dense overhead (`n*n`) is **not**
+  `LittleOLinear`, motivating the macro/micro decomposition.
+- Close layer: `PayloadLiveMacroMicroBPCloseLCAFamily` (Four-Russians-style
+  macro blocks + micro codebook) with *separate composable* o(n) obligations
+  (code + codebook + macro) and `overhead_littleO`.
+
+**Still open — the capstone (gap 1):** a whole-repo search finds **no concrete
+top-level succinct-RMQ witness** (`def … : …RMQ…Family`) and **no final bundled
+theorem** (`payload = 2n + o(n)` ∧ derived O(1) query ∧ exact RMQ/`IsPathLCA`
+for a concrete instance). The macro/micro close-LCA family is still abstract
+(takes a family + obligations); the micro codebook is an obligation, not (yet) a
+concretely-populated Four-Russians table.
+
+**Distance to a genuine `2n + o(n)` / O(1) succinct RMQ:** the hard *components*
+(two-level rank + select, concrete, o(n), O(1), Θ(log n) words, exact) are
+essentially landed and are citable results in their own right. What remains is
+the **capstone assembly**: (1) a concrete micro codebook instance (precomputed
+within-block close/RMQ for all block signatures, o(n) size + O(1) lookup,
+payload-live); (2) one concrete top-level family composing BP-encoding +
+two-level rank/select + macro/micro close; (3) the final bundled theorem for
+that instance. Well-defined and components mostly present, but non-trivial — and
+it is exactly the step that keeps being deferred.
+
+**Stop assessment / risk:** genuine, substantial component progress — but the
++20k-line "Proposal" explosion is the abstract-tower / component-deepening
+pattern *at scale*: sound and building, with the top still unclosed and no
+concrete witness. The single highest-value next move is **not** more components;
+it is the concrete capstone (witness + final theorem). Watch for continued
+deferral.
