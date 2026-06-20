@@ -64,6 +64,9 @@ Known-trap checklist:
 - If this branch uses `descriptorIndex` or another routing/index function, why
   is it bounded arithmetic or charged payload-derived rather than an uncharged
   search/predecessor/oracle?:
+- If this branch adds a packed descriptor-select profile, where is the theorem
+  proving the descriptor payload is `LittleOLinear` under the machine-word side
+  conditions, rather than just an exact full local-delta-slot length formula?:
 - If this branch adds a BP range/min/max or block-summary table, where is it
   consumed by an answer-close `lcaCloseCosted_exact` theorem?:
 - If this branch adds a BP range witness or macro candidate, where is it
@@ -158,6 +161,12 @@ A descriptor-select structure whose exactness is carried by fields such as
 obligation surface, not a closure witness. Unless the owned target explicitly
 stopped at that surface, the worker should continue to the compact builder that
 fills those fields from payload tables and accounts for the routing/index cost.
+
+An exact packed descriptor-select profile with quotient/remainder routing is
+likewise not a compact C1 witness if its only descriptor-space theorem is a
+full per-occurrence local-delta-slot payload length. It must be followed by a
+compact dense/sparse descriptor builder and a `LittleOLinear` payload theorem,
+or by a formal obstruction theorem for that representation.
 
 A BP range-witness or macro-candidate structure whose exactness is still an
 `_exact_of_prefix_pos` theorem is likewise a useful obligation surface, not a

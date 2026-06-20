@@ -397,6 +397,10 @@ Invalid stop points for this final path:
   concrete component profile remains the next obvious step.
 - proving `twoWordDescriptor...` facts without a global descriptor-backed
   `selectCosted_exact` theorem over all occurrences.
+- proving a global packed descriptor-backed `selectCosted_exact` while the only
+  descriptor-space theorem is an exact full per-occurrence local-delta-slot
+  payload length, with no `LittleOLinear` compact-budget theorem under the
+  machine-word model.
 - proving `PayloadLiveBPRangeMinMaxSummaryTable...` facts without a concrete
   close-LCA answer theorem that consumes the summaries plus charged endpoint
   repair.

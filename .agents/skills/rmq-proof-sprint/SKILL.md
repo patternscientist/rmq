@@ -129,6 +129,13 @@ payload tables. Any routing or index function used by a constant-time query must
 be simple bounded arithmetic or derived through charged payload reads. It cannot
 hide an uncharged search, predecessor, or oracle.
 
+A concrete packed descriptor profile is also not C1 closure unless it proves the
+descriptor auxiliary payload is in the intended `LittleOLinear` budget under the
+machine-word side conditions. An exact global `selectCosted` theorem plus a
+payload-length formula that still stores one full local-delta slot per
+occurrence is a strong iteration result, but the same loop should continue to
+the compact dense/sparse descriptor builder or a formal obstruction theorem.
+
 For C2 BP-close work, a position-bearing range witness or macro candidate is
 not target closure if exactness is still conditional on a supplied prefix
 position such as `answerClose + 1`. The loop should continue until that witness
@@ -149,6 +156,9 @@ For C1/C2 specifically, do not stop after the previous known traps:
   `selectCosted_exact`;
 - a descriptor-select profile surface whose exactness still rests on proof
   fields and has no compact payload builder instantiating those fields;
+- a packed descriptor-select profile whose exactness is global but whose
+  descriptor payload is only given by a full per-occurrence local-delta length,
+  with no `LittleOLinear` compact-budget theorem under the machine-word model;
 - an uncharged descriptor/routing index that could hide search, predecessor, or
   oracle work;
 - a BP range-min/max summary table without an answer-close theorem consuming it;

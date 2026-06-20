@@ -271,15 +271,20 @@ through rather than surfaced immediately.
     uses a free index function, must be followed by the concrete builder that
     fills those fields from payload tables and either charges the routing or
     proves it is bounded arithmetic.
-18. A range witness is not a BP close answer. A macro candidate or
+18. A packed descriptor exactness theorem is not a compact select witness by
+    itself. If the descriptor payload is still accounted as one full local
+    delta slot per occurrence, the worker must continue to a compact
+    dense/sparse descriptor builder with a `LittleOLinear` payload theorem, or
+    prove a formal obstruction for that representation.
+19. A range witness is not a BP close answer. A macro candidate or
     `_exact_of_prefix_pos` theorem must be followed by charged endpoint-fringe
     repair and the semantic theorem that the built prefix position is the
     representative-array RMQ answer close.
-19. Endpoint-fringe repair is not enough if exactness still assumes the merged
+20. Endpoint-fringe repair is not enough if exactness still assumes the merged
     candidate. A theorem such as `_exact_of_merged_candidate` must be followed
     by the proof that the concrete payload entries actually merge to the
     semantic answer candidate.
-20. Worker audits always include loop-stop validity and prompt/spec delta.
+21. Worker audits always include loop-stop validity and prompt/spec delta.
     Every audit should explicitly say whether the worker should have stopped,
     and whether the next prompts or loop specs need tightening.
 
