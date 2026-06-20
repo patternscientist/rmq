@@ -1,4 +1,4 @@
-import RMQ.Core.SuccinctSpace
+import RMQ.Core.SuccinctRankProposal
 
 /-!
 # BP close/LCA succinct-navigation proposal
@@ -716,6 +716,31 @@ theorem bpExcessAt_le_length
     (Nat.sub_le _ _)
     (Succinct.rankPrefix_le_length true shape.bpCode pos)
 
+/--
+Balanced-prefix invariant for the `Nat`-subtraction BP excess.
+
+Inside the BP payload bounds, close-rank never exceeds open-rank, so
+`bpExcessAt` is the ordinary open-minus-close difference rather than a
+saturated subtraction artifact.
+-/
+theorem bpExcessAt_prefix_nonnegative
+    (shape : Cartesian.CartesianShape) {pos : Nat}
+    (hpos : pos <= shape.bpCode.length) :
+    Succinct.rankPrefix false shape.bpCode pos <=
+      Succinct.rankPrefix true shape.bpCode pos := by
+  simpa [bpParensOfShape] using
+    Succinct.BalancedParens.close_rank_le_open_rank
+      (bpParensOfShape shape) (pos := pos) hpos
+
+theorem bpExcessAt_add_close_rank_eq_open_rank_of_le
+    (shape : Cartesian.CartesianShape) {pos : Nat}
+    (hpos : pos <= shape.bpCode.length) :
+    bpExcessAt shape pos +
+        Succinct.rankPrefix false shape.bpCode pos =
+      Succinct.rankPrefix true shape.bpCode pos := by
+  unfold bpExcessAt
+  exact Nat.sub_add_cancel (bpExcessAt_prefix_nonnegative shape hpos)
+
 /-- Tail-recursive minimum over a list, seeded by an explicit bound. -/
 def natListMinFrom (seed : Nat) : List Nat -> Nat
   | [] => seed
@@ -1007,6 +1032,61 @@ theorem summaryCosted_erase
   simp [Costed.bind, Costed.map, Costed.erase, minExcessCosted,
     maxExcessCosted, hmin, hmax]
 
+theorem minExcess_read_word_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRangeMinMaxSummaryTable shape blockSize blockCount
+        fieldWidth overhead)
+    (hmachine :
+      fieldWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    {block : Nat} {word : List Bool}
+    (hword : table.minTable.store.words[block]? = some word) :
+    word.length <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  have hlen := table.minTable.read_word_length_of_some hword
+  omega
+
+theorem maxExcess_read_word_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRangeMinMaxSummaryTable shape blockSize blockCount
+        fieldWidth overhead)
+    (hmachine :
+      fieldWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    {block : Nat} {word : List Bool}
+    (hword : table.maxTable.store.words[block]? = some word) :
+    word.length <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  have hlen := table.maxTable.read_word_length_of_some hword
+  omega
+
+theorem summary_read_words_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRangeMinMaxSummaryTable shape blockSize blockCount
+        fieldWidth overhead)
+    (hmachine :
+      fieldWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+    (forall {block : Nat} {word : List Bool},
+      table.minTable.store.words[block]? = some word ->
+        word.length <=
+          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.maxTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+  constructor
+  · intro block word hword
+    exact table.minExcess_read_word_length_le_machine hmachine hword
+  · intro block word hword
+    exact table.maxExcess_read_word_length_le_machine hmachine hword
+
 theorem payload_length_le_sampled
     {shape : Cartesian.CartesianShape}
     {blockSize blockCount fieldWidth overhead slots n : Nat}
@@ -1171,6 +1251,30 @@ theorem concreteBPRangeMinMaxSummaryTable_sampled_profile
   intro block
   exact ⟨table.summaryCosted_cost_le_two block,
     table.summaryCosted_erase block⟩
+
+theorem concreteBPRangeMinMaxSummaryTable_read_words_length_le_machine
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount fieldWidth : Nat)
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth)
+    (hmachine :
+      fieldWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+    let table :=
+      concreteBPRangeMinMaxSummaryTable
+        shape blockSize blockCount fieldWidth hwidth
+    (forall {block : Nat} {word : List Bool},
+      table.minTable.store.words[block]? = some word ->
+        word.length <=
+          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.maxTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+  exact
+    PayloadLiveBPRangeMinMaxSummaryTable.summary_read_words_length_le_machine
+      (concreteBPRangeMinMaxSummaryTable
+        shape blockSize blockCount fieldWidth hwidth)
+      hmachine
 
 /--
 The right-spine shape of size four is the smallest useful witness that a macro
