@@ -123,6 +123,20 @@ chain into the next target if the gate stays green and budget remains. Do not
 split what should be one milestone into several small "wins" just to claim more
 iterations.
 
+At the start of every loop iteration, write a short goal reflection before
+editing:
+
+```text
+Overall goal:   <the actual capstone or roadmap theorem>
+Current gap:    <what still prevents that theorem from typechecking>
+Hard part:      <the real construction/proof obligation being avoided most easily>
+This iteration: <the most ambitious concrete step toward closing that gap>
+Not doing:      <technically-valid but lower-priority outputs to avoid>
+```
+
+This reflection is not ceremony. If "This iteration" does not attack the
+hardest live gap, revise the target before editing.
+
 Before stopping an unattended loop, run a stop audit:
 
 1. Did this round prove the named roadmap theorem, concrete component profile,
@@ -194,6 +208,15 @@ through rather than surfaced immediately.
     prune false designs, but after a blocker is documented, future loop rounds
     must land a positive construction/profile unless they prove the requested
     theorem is itself ill-specified.
+11. Do not procrastinate with substantial side outputs. A theorem cluster can
+    be sound, interesting, and technically nontrivial while still being the
+    wrong work right now. If it does not reduce the current distance to the
+    named capstone, concrete component profile, or join theorem, it is
+    procrastination. Prefer one hard lemma that moves the live construction over
+    ten polished helper surfaces that leave the hard part untouched.
+12. Each worker must keep the big picture in view. Reports and loop iterations
+    should name how the branch changes the shortest path to the final theorem,
+    not merely what new objects exist.
 
 Useful debt metrics:
 
@@ -252,6 +275,7 @@ DAG-bound, and pinned by exact lemma signatures.
 
 ```text
 Target:        <roadmap id + name>
+Goal check:    <overall goal / current gap / hard part / this iteration>
 Discharged:    <theorem names that now typecheck, or "in progress, leaf X">
 Headline:      <the citable theorem this produced>
 Debt delta:    asserted-cost count A -> B ; gated-hypothesis count C -> D

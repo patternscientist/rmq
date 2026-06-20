@@ -22,6 +22,13 @@ Owned target:  <roadmap target and join theorem this feeds>
 Branch:        <git branch>
 Changed files: <file list>
 
+Goal reflection:
+- Overall capstone:
+- Current gap:
+- Hard part:
+- This branch's ambitious step:
+- Explicitly avoided as lower-priority:
+
 New theorem/def surface:
 - <name> : <one-line purpose>
 
@@ -54,6 +61,8 @@ Loop stop audit:
 - Next theorem/construction obvious within owned files? YES/NO:
 - Abstract hook/canonical identity witness left where a concrete witness was
   requested? YES/NO:
+- Did this branch reduce the current distance to the capstone, rather than only
+  producing technically substantial adjacent work? YES/NO:
 - If stopping on impossibility, which concrete construction was attempted and
   which minimal theorem proves the target signature must change?:
 - Why stopping is valid under `docs/CODEX_AUTONOMY.md`:
@@ -77,6 +86,11 @@ Must report:
 Should not report "progress" only as scaffolding. A proof branch should land a
 consumed lemma cluster, a representation layer, or a theorem that feeds the
 active join.
+
+A branch that is technically substantial but does not shorten the active path
+to the capstone is exploratory, not complete. The worker should either keep
+looping toward the named hard construction or report that the branch should be
+treated as a side artifact rather than a merge-ready finish.
 
 If the branch adds a new parameter, field, adapter, or bridge theorem, it must
 also name the concrete instance that consumes it. If that concrete instance is
@@ -156,7 +170,9 @@ A worker branch is mergeable when all are true:
    `native_decide`.
 4. Cost/space claims are model-faithful under `docs/CODEX_AUTONOMY.md`.
 5. Any public claim drift is patched or explicitly assigned to the coordinator.
-6. The integrated branch passes the coordinator gate, or a clear tool-only
+6. The worker report explains how the branch reduces the current distance to
+   the active capstone, concrete component profile, or join theorem.
+7. The integrated branch passes the coordinator gate, or a clear tool-only
    blocker is recorded.
 
 ## Rejection Or Port-Only Rules
@@ -180,6 +196,9 @@ Reject or send back for revision when:
   profile remains for the same owned target.
 - the branch stops on another negative theorem without documenting a concrete
   construction attempt and a target-signature change forced by that theorem.
+- the branch delivers docs, helper layers, adapters, or extra blockers while
+  deferring the named hard construction that is still inside the worker's owned
+  file surface.
 
 ## Current Suggested Split
 

@@ -43,19 +43,25 @@ also require a restart if they do not appear immediately.
 ## Bounded Proof Loop Template
 
 1. Choose the next substantial milestone from the current family summary.
-2. Spawn two or three read-only scouts for independent risks: API inventory,
+2. Write the iteration goal reflection:
+   - Overall goal: the capstone theorem or concrete component profile.
+   - Current gap: what blocks it now.
+   - Hard part: the proof/construction most tempting to postpone.
+   - This iteration: the largest coherent step toward that hard part.
+   - Not doing: adjacent outputs that would look useful but leave the gap.
+3. Spawn two or three read-only scouts for independent risks: API inventory,
    proof/off-by-one risks, and cost/model/documentation consistency.
-3. Implement the smallest coherent slice locally while scouts run.
-4. Integrate scout findings without broadening the milestone.
-5. Iterate on `lake env lean <touched module>` failures with a small retry cap.
-6. If the proof wants a new abstraction, the API choice is taste-sensitive, or
+4. Implement the smallest coherent slice locally while scouts run.
+5. Integrate scout findings without broadening the milestone.
+6. Iterate on `lake env lean <touched module>` failures with a small retry cap.
+7. If the proof wants a new abstraction, the API choice is taste-sensitive, or
    a concrete construction attempt proves the target statement is wrong, stop
    and report the minimal obstruction instead of churning. Repeating a known
    blocker is not itself a loop endpoint.
-7. Run a checkpoint: touched-module checks, then `lake build`, the trust-base
+8. Run a checkpoint: touched-module checks, then `lake build`, the trust-base
    scan, the `native_decide` scan when relevant, and `git diff --check`.
-8. Update `docs/FAMILY_SUMMARY.md`.
-9. If the checkpoint is clean and no stop condition fired, choose the next
+9. Update `docs/FAMILY_SUMMARY.md`.
+10. If the checkpoint is clean and no stop condition fired, choose the next
    substantial milestone adaptively and repeat the loop. Otherwise report the
    checkpoint and the exact stop condition.
 
@@ -63,6 +69,12 @@ Default loop size: multiple meaningful milestone iterations, not one iteration
 by default and not several tiny lemmas relabeled as milestones. Keep the user in
 the loop at each checkpoint so the frontier can be redirected before proof churn
 sets in.
+
+The reflection is a guard against polished procrastination. If the best next
+step is a difficult payload-live construction, a loop should not spend its
+iteration on extra wrappers, docs, or negative variants unless those artifacts
+are immediately consumed by that construction or prove the target signature
+itself must change.
 
 ## Features Not Adopted Yet
 

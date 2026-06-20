@@ -53,11 +53,22 @@ a single milestone.
 Loop behavior:
 
 1. Pick the next substantial roadmap milestone from local context.
-2. Implement and verify it.
-3. Reassess the roadmap immediately after verification.
-4. Continue into the next substantial milestone when there is no real design
+2. Write a short goal reflection:
+   - Overall goal: the capstone theorem or concrete component profile.
+   - Current gap: what still prevents that theorem from typechecking.
+   - Hard part: the construction or proof obligation easiest to postpone.
+   - This iteration: the most ambitious concrete step toward that gap.
+   - Not doing: technically useful side work to avoid this round.
+3. Implement and verify it.
+4. Reassess the roadmap immediately after verification.
+5. Continue into the next substantial milestone when there is no real design
    decision, user input need, merge conflict, tool/approval blocker, or proven
    target-misspecification.
+
+If the reflection shows that "This iteration" does not attack the hard live
+gap, revise the target before editing. Do not fill an unattended loop with
+substantial but adjacent outputs that leave the named hard construction exactly
+where it was.
 
 Minimum bar before stopping an unattended loop:
 
@@ -74,6 +85,13 @@ land at least one of:
 - a retired tracked debt item,
 - a reusable lemma cluster that is immediately consumed by a concrete
   construction/profile.
+
+For the current succinct RMQ finish line, "substantial" means shortening the
+path to the concrete `2*n + o(n), O(1)` theorem: a descriptor select builder, a
+payload-live BP macro/close component, their join, or a retired false shortcut.
+Helper lemmas, proposal docs, adapters, and blocker variants count only when
+they are immediately consumed by one of those targets or prove the target
+signature itself must change.
 
 Valid stop conditions:
 
@@ -97,6 +115,8 @@ Invalid stop reasons:
 - the docs or final report say that a "concrete builder", "compact instance",
   "payload-live witness", or analogous construction remains to be supplied for
   the same target.
+- the round produced technically substantial side work while explicitly
+  deferring the hard part named in the goal reflection.
 
 Before stopping, run this loop-stop audit:
 
@@ -144,6 +164,8 @@ obstruction theorem, and the exact signature/design decision now required.
 
 Summarize:
 
+- the goal reflection: overall goal, current gap, hard part, and how the branch
+  reduced the distance to the capstone,
 - changed modules and theorem names,
 - verification commands and outcomes,
 - any remaining model caveats,

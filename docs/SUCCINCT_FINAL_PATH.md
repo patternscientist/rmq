@@ -320,6 +320,22 @@ agree with the built payloads.
 
 Workers must run the stop audit from `docs/CODEX_AUTONOMY.md`.
 
+At the start of every C1/C2/C3 loop iteration, write the capstone reflection in
+the worker report or scratch notes:
+
+```text
+Overall goal:   final concrete BP-native succinct RMQ profile
+Current gap:    the missing descriptor select, macro/close component, or join
+Hard part:      the concrete payload-live construction most tempting to defer
+This iteration: the largest coherent proof/construction step toward it
+Not doing:      adjacent helper/docs/blocker work that would leave it untouched
+```
+
+If the selected work does not directly reduce the distance to the final
+`2*n + o(n), O(1)` theorem, choose a harder target before editing. The loop is
+allowed to build helper lemmas, but only while immediately consuming them in
+the descriptor builder, BP macro/close component, or final join.
+
 The next rounds are positive-construction rounds. The existing no-go theorems
 already rule out the tempting false shortcuts. A worker should not stop after
 another blocker unless it attempted the named C1/C2 construction and proved
@@ -333,6 +349,8 @@ Invalid stop points for this final path:
   owned file surface;
 - updating docs to say "concrete builder remains" and then stopping;
 - proving a profile over a hypothetical family with no concrete instance.
+- producing a technically substantial theorem cluster that does not feed the
+  current descriptor-select, BP macro/close, or final-join target.
 
 Valid stop points:
 
