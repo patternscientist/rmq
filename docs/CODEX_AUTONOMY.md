@@ -27,8 +27,83 @@ instead of the hard target. So:
 > round moved the needle. The gate is necessary, not sufficient. Filler is
 > almost always gate-green.
 
-Two mechanisms therefore run together: the **gate** (soundness) and the
-**roadmap contract** (value). Neither alone is enough.
+**Three** mechanisms therefore run together: the **gate** (soundness), the
+**roadmap contract** (value), and an independent **adversarial audit**
+(fidelity — see next section). None alone is enough.
+
+## What the gate cannot see: cost-fidelity (the recurring blind spot)
+
+The gate checks `lake build` + a hygiene scan + a curated `#print axioms`. It is
+structurally **blind to whether a cost/complexity/space claim is real** —
+`Costed.tickValue 1 (anExpensiveThing)` is perfectly sound and standard-axioms
+clean. *Every* cost-fiction round in this project's history was gate-green. The
+gate cannot tell:
+
+- whether a cost is **derived** (a count of executed primitive ops) or
+  **asserted** (`tickValue <const>` / a `:= 1` field);
+- whether the returned **value is computed by the counted ops**, or computed
+  separately in pure Lean (`Costed.pure`/`.map`) with a cost charged alongside;
+- whether a **space** count (`payload.length = overhead`) is the structure the
+  query *reads*, or a decoupled accounting field tied to it only by an arbitrary
+  decoder;
+- whether a `…_profile` headline has a **concrete instance**, or is an abstract
+  conditional with no witness;
+- whether a unit-cost "word op" is over a genuine **Θ(log n) machine word** or a
+  super-word.
+
+So treat green as "not unsound," never "faithful." Cost-fidelity is the audit's
+job, plus the lints below.
+
+### A cost/complexity/space claim is genuine only if ALL of:
+
+1. **Derived, not asserted.** Cost = trace length / sum of primitive-op costs
+   (`RAM.Exec` or equivalent), not a handwritten `tickValue`/constant field.
+2. **Value flows through the ops.** The returned value is computed *by* the
+   counted primitives — not produced in pure Lean and wrapped with a cost.
+   (`Exec.primitive op x` with arbitrary `x` is the escape hatch; typed
+   value-computing primitives close it.)
+3. **Faithful primitives.** Unit cost only for a genuine single-machine-word /
+   single-indexed-read op. Prefix-rank / scans are not O(1); a word op is O(1)
+   only when the word is Θ(log n) bits — and that bound must be **concretely
+   instantiated**, not a free parameter.
+4. **Witnessed.** A family/profile is "done" only when a **concrete instance**
+   exists (`def … : …Family`), not "for any structure with these fields." An
+   abstract conditional with no witness is not a result.
+5. **Space genuinely counted.** An o(n) / 2n+o(n) claim counts the structure the
+   query actually reads, via a proven injective codec (e.g. `natToBitsLE` with a
+   roundtrip) — not a parallel `encodeAux`/payload bound joined by an arbitrary
+   decoder.
+6. **Predecessors retired.** When a faithful version supersedes an unfaithful
+   one, **delete** the old def + theorems *in the same round*. Removing it from
+   `axiom_check` only ("delist") is not retiring — the fiction stays in source.
+
+### Anti-pattern catalog (each was caught here; each was gate-green)
+
+- **Asserted cost** — `tickValue <const>` / `:= 1` on an aggregate op.
+- **Value/trace decoupling** — value in pure Lean, small cost charged; or
+  `primitive op x` smuggling a heavy value.
+- **Decoupled space accounting** — counted `payload` ≠ the (larger) structure
+  the query reads; arbitrary `decode` fields.
+- **Abstract-no-witness** — `…_profile` over a hypothesized family with no
+  `def : …Family`.
+- **Modeled-O(1)-for-O(n)** — unit cost over a super-machine-word; o(n) without a
+  two-level directory.
+- **Delist-don't-retire** — unfaithful theorem dropped from `axiom_check` but
+  left in source.
+- **Component-deepening** — hardening sub-components round after round without
+  advancing the target's load-bearing close.
+
+### Gate enhancements to add (catch the catchable subset)
+
+- Lint: `tickValue` / literal `:= 1` cost on a non-single-read op in
+  cost-bearing modules.
+- Lint: a `…_profile` whose family type has **no** `def : …Family` instance
+  (abstract-no-witness).
+- Lint: a name dropped from `axiom_check` that still resolves and is
+  unused/superseded (delist-without-delete).
+
+The uncatchable remainder (value-flow, faithful-primitive, genuine-space) stays
+the audit's job.
 
 ## Autonomous loop
 
@@ -91,6 +166,16 @@ Anything else: keep going.
 5. **The "so what" check.** Each closed target names one theorem a researcher
    would cite. If the report cannot point to one, the round was filler -- redo
    it.
+6. **A claim with no concrete witness is not done.** An abstract `…_profile`
+   over a hypothesized family does not count until a `def … : …Family`
+   instantiates it (see fidelity criterion 4).
+7. **Retire in the same round.** If this round supersedes an unfaithful/old def,
+   delete it now -- do not leave it behind or merely delist it from
+   `axiom_check`.
+8. **Never stop with unwired scaffolding.** A structure built but not connected
+   to a live path (no consumer, no retired predecessor, no capstone) is a
+   stop-rule violation, not a checkpoint -- it closes no target and leaves dead
+   code.
 
 ## Parallelization policy
 
