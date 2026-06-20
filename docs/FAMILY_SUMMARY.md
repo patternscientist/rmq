@@ -249,6 +249,18 @@ repair. `SuccinctCloseProposal.bpExcessAt_prefix_nonnegative` records the
 balanced-prefix invariant needed when interpreting the Nat-subtraction excess,
 and `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.summary_read_words_length_le_machine`
 exposes the machine-word side condition for the charged summary table reads.
+The positive C2 macro side now also has position-bearing payload reads:
+`SuccinctCloseProposal.PayloadLiveBPRangeMinMaxArgSummaryTable.profile` stores
+and reads a per-block argmin prefix position, while
+`SuccinctCloseProposal.PayloadLiveBPRangeArgMinWitnessTable.profile` and
+`SuccinctCloseProposal.PayloadLiveBPBlockPairRangeWitnessMacro.profile` lift
+that idea to charged block-range witnesses and an `lcaCloseCosted`-shaped
+block-pair macro candidate. These range witnesses return close candidates from
+payload words with cost `<= 2`, expose machine-word read bounds, and have
+sampled-overhead profile theorems. They are not yet the full C2 close answer:
+the next proof still has to combine the macro range witness with charged
+endpoint-fringe repair and the BP semantic theorem identifying the leftmost
+minimum-excess close with the representative-array RMQ answer close.
 `SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`
 sharpens the C2 blocker: a macro keyed only by endpoint block ids plus the
 existing endpoint block min/max summaries still cannot return exact answer
@@ -1245,8 +1257,10 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.bpExcessAt_add_close_rank_eq_open_rank_of_le`,
   `SuccinctCloseProposal.bpBlockMinExcess_le_length`,
   `SuccinctCloseProposal.bpBlockMaxExcess_le_length`,
+  `SuccinctCloseProposal.bpBlockArgMinPrefixPos_le_length`,
   `SuccinctCloseProposal.bpBlockMinExcessEntries_mem_bound`,
   `SuccinctCloseProposal.bpBlockMaxExcessEntries_mem_bound`,
+  `SuccinctCloseProposal.bpBlockArgMinPrefixPosEntries_mem_bound`,
   `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.payload_length`,
   `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.summaryCosted_cost_le_two`,
   `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.summaryCosted_erase`,
@@ -1257,6 +1271,18 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.concreteBPRangeMinMaxSummaryTable_profile`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxSummaryTable_sampled_profile`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxSummaryTable_read_words_length_le_machine`,
+  `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxArgSummaryTable.profile`,
+  `SuccinctCloseProposal.concreteBPRangeMinMaxArgSummaryTable_sampled_profile`,
+  `SuccinctCloseProposal.concreteBPRangeMinMaxArgSummaryTable_read_words_length_le_machine`,
+  `SuccinctCloseProposal.PayloadLiveBPRangeArgMinWitnessTable.rangeCloseCosted_exact_of_prefix_pos`,
+  `SuccinctCloseProposal.PayloadLiveBPRangeArgMinWitnessTable.profile`,
+  `SuccinctCloseProposal.concreteBPRangeArgMinWitnessTable_sampled_profile`,
+  `SuccinctCloseProposal.concreteBPRangeArgMinWitnessTable_read_words_length_le_machine`,
+  `SuccinctCloseProposal.blockPairRanges_get?_of_ordered_bounds`,
+  `SuccinctCloseProposal.PayloadLiveBPBlockPairRangeWitnessMacro.lcaCloseCosted_exact_of_prefix_pos`,
+  `SuccinctCloseProposal.PayloadLiveBPBlockPairRangeWitnessMacro.profile`,
+  `SuccinctCloseProposal.concreteBPBlockPairRangeWitnessMacro_sampled_profile`,
+  `SuccinctCloseProposal.concreteBPBlockPairRangeWitnessMacro_read_words_length_le_machine`,
   `SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient`,
   `SuccinctCloseProposal.endpointSummaryBlockKey`,
   `SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`,
