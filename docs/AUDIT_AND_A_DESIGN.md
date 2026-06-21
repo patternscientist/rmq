@@ -1340,3 +1340,64 @@ same pass, so the next "o(n)" can't lean on fiction.
 **Verdict:** green-light the direction; apply refinements 1 (reuse `selectBoolWord`)
 and 2 (witness over interface). With those, this closes the goal via the same
 reuse-the-machinery pattern that worked for rank, close, and the navigator.
+
+## 2026-06-21 (compact select + final-join attempt, ADVERSARIAL) — VACUOUS o(n): A masks a linear block table with `LittleOLinear (fun _ => const)`; B still conditional. Goal NOT closed.
+
+Both worktrees build green and are trust-clean (0 bad-axiom) — i.e. **sound, but
+hollow.** Both uncommitted (at `30995d8`), not integrated with each other.
+
+**Worker A (`c1-compact-false-select-locator`) — followed the architecture
+refinements but the o(n) is FICTION.** Good: `compactSelectCloseLocatorData` is a
+concrete select-close locator that is **exact** (`selectCosted false idx).erase =
+bpCloseOfInorder? shape idx`), **O(1)** (`cost ≤ queryCost`), payload-live,
+machine-word-bounded, and **reuses `selectBoolWord`** (no new primitive — refinement
+1 respected). **But its only space claim is**
+`SuccinctSpace.LittleOLinear (fun _ => data.auxPayload.length)` — `LittleOLinear`
+of a **constant function** (the argument is ignored; `data` is fixed by `shape`).
+That is *trivially true for any constant* and says **nothing** about the payload
+growing sublinearly in n. And the block table is indexed **per occurrence**
+(`blockTables.entries false [idx]` for each occurrence `idx`), so on the BP's n
+closes it has n delta entries ⇒ **Θ(n), genuinely linear** — exactly the
+"one local-delta slot per occurrence" design A's *own* earlier obstruction forbade.
+So A did **not** close the select o(n); it re-built the linear per-occurrence table
+and masked it with a vacuous littleO. Sound, sorry-free — and hollow.
+
+**Worker B (`false-close-access-final-join`) — still conditional; interface, not
+witness.** The capstone is now
+`concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile_of_rankSelectFamily`,
+i.e. still parameterized by the **un-inhabitable**
+`TwoLevelPayloadLiveStoredWordRankSelectFamily`, plus a new
+`PayloadLiveBPCloseAccessFamily` interface. No concrete witness; it does **not**
+consume A's locator. This is precisely the "interface instead of witness /
+conditional capstone" pattern flagged in the plan audit.
+
+**Headline: the goal is NOT closed, and this is a trap to catch pre-merge.** If
+A's locator + B's join were merged and wired naively, the "2n + o(n)" theorem would
+be **vacuous** — the real select payload is Θ(n), so the real total is linear, not
+2n + o(n) — yet it would pass the gate (build green, sorry-free, standard axioms).
+The audit caught it before merge.
+
+**New anti-pattern to add to the catalog: vacuous-littleO-of-constant.**
+`LittleOLinear (fun _ => <fixed length>)` is trivially true and must **never** count
+as a space claim. A genuine o(n) claim is `LittleOLinear (fun n => overhead n)`
+together with `payload.length ≤ overhead n` (the *real* payload bounded by the
+overhead *as a function of n*). Add a lint/gate check: flag any `LittleOLinear
+(fun _ => …)` (ignored binder) in a space-claim position, and any space `_profile`
+lacking a `payload.length ≤ overhead n` companion.
+
+**How to proceed (unchanged gap, sharper spec).** The binding constraint is still a
+genuinely sublinear `select false` directory. A got three of four properties right
+(concrete, exact, O(1), `selectBoolWord` reuse); the missing one is the only one
+that matters now: the **block level must be sub-linear**, not one delta per
+occurrence. Fix: sub-sample the block level too (two levels of sparsity) or use the
+Clark/Vigna dense-vs-sparse-region split, and **state the bound honestly** —
+`LittleOLinear (fun n => realSelectOverhead n)` with `auxPayload.length ≤
+realSelectOverhead n`. Then a concrete, genuinely-o(n) witness inhabits B's
+interface and discharges the conditional join ⇒ goal. Also retire the
+`blockCount²` mirage + the decoupled `canonicalTwoLevelSelectOverhead_littleO`.
+
+**Verdict:** no progress toward the goal this round, plus a vacuous-o(n) fiction
+that must not be merged. Not dead in the water (rank/close/BP/lower-bound/join-logic
+intact; A's exact+O(1)+selectBoolWord scaffolding is reusable), but the select o(n)
+remains open and the worker spec must explicitly forbid `LittleOLinear (fun _ => …)`
+and require `payload.length ≤ overhead n` as the o(n) obligation.
