@@ -249,8 +249,22 @@ words with cost `<= 2`, and the sampled-overhead version is tied to a named
 package that table under the intended compact close-summary envelope: a
 log-log sampled block-code term plus sampled universal micro, block-summary,
 and superblock-summary terms, with no dense endpoint-pair or interior block-pair
-payload. This is still the block-summary layer; the exact answer-close theorem
-still has to connect those summaries to endpoint-fringe repair.
+payload. The absolute-width compact profile is only a warning boundary, not the
+final budget witness. `SuccinctCloseProposal.relativeBPCloseSummaryPayloadOverhead_littleO`
+and
+`SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_relative_payload_profile`
+now add the missing relative/log-log version: sparse absolute superblock
+baselines are stored in a sampled directory, while each block stores shifted
+min/max excess deltas and a local argmin offset in a
+`logLogSampledDirectoryOverhead` payload. The theorem proves the concrete table
+length under those two envelopes directly, rather than assuming a compact
+budget for absolute `Theta(log n)` block summaries.
+`SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_compact_payload_profile`
+then plugs the same concrete relative table into
+`compactBPCloseSummaryPayloadOverhead`, using the log-log term for relative
+block summaries and the sampled term for superblock baselines. This is still
+the block-summary layer; the exact answer-close theorem still has to connect
+those relative summaries to endpoint-fringe repair.
 `SuccinctCloseProposal.bpExcessAt_prefix_nonnegative` records the
 balanced-prefix invariant needed when interpreting the Nat-subtraction excess,
 and `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.summary_read_words_length_le_machine`
@@ -1340,6 +1354,11 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.concreteBPRangeMinMaxSummaryTable_read_words_length_le_machine`,
   `SuccinctCloseProposal.compactBPCloseSummaryPayloadOverhead_littleO`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxSummaryTable_compact_summary_profile`,
+  `SuccinctCloseProposal.relativeBPCloseSummaryPayloadOverhead_littleO`,
+  `SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_profile`,
+  `SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_relative_payload_profile`,
+  `SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_compact_payload_profile`,
+  `SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_read_words_length_le_machine`,
   `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxArgSummaryTable.profile`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxArgSummaryTable_sampled_profile`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxArgSummaryTable_read_words_length_le_machine`,
