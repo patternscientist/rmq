@@ -369,6 +369,12 @@ adapter theorem should be followed in the same unattended loop by the next
 attempt to consume it in the concrete C1/C2 profile. Do not stop merely because
 the local layer is useful and verified.
 
+The loop-stop audit is a gate, not a confession box. If the audit concludes the
+stop is invalid, the worker is not allowed to produce a final completion report;
+it must immediately continue with the next obvious theorem in the same owned
+file surface. A report that admits "this is not a valid stop" without continuing
+is a loop protocol failure.
+
 The next rounds are positive-construction rounds. The existing no-go theorems
 already rule out the tempting false shortcuts. A worker should not stop after
 another blocker unless it attempted the named C1/C2 construction and proved
@@ -421,6 +427,8 @@ Invalid stop points for this final path:
   such as an `...select...` theorem that does not mention `select`.
 - stopping after hard proof failures, new local blockers, or a partial
   obstruction dossier while the next positive construction remains obvious.
+- sending a completion report whose own loop-stop audit says the stop is
+  invalid, instead of continuing immediately to the next iteration.
 
 Valid stop points:
 

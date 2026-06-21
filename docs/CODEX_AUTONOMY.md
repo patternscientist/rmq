@@ -15,6 +15,11 @@ This is a Lean project, so "sound and complete" is largely machine-checkable:
 `lake build`, a hygiene scan, and curated `#print axioms` checks. That objective
 gate buys autonomy.
 
+The axiom gate is curated, so new public theorem surfaces must update it. If a
+worker adds or documents a public exactness, cost, space, or obstruction theorem
+but leaves it out of `scripts/axiom_check.lean`, the report must say why it is a
+local helper rather than a checkpoint theorem.
+
 But this repo has already shown the failure mode: a round can pass the gate and
 still be filler. More `_value/_erase/_cost/_run` wrappers, new breadth backends,
 or abstraction layers on top of asserted costs can all be sound while failing to
@@ -284,7 +289,11 @@ through rather than surfaced immediately.
     candidate. A theorem such as `_exact_of_merged_candidate` must be followed
     by the proof that the concrete payload entries actually merge to the
     semantic answer candidate.
-21. Worker audits always include loop-stop validity and prompt/spec delta.
+21. Invalid stop audits are not permission to stop. If a worker's own audit says
+    the loop stop is invalid, it must continue the loop immediately instead of
+    sending a final completion report. A final report that admits invalidity
+    without further implementation is a protocol failure.
+22. Worker audits always include loop-stop validity and prompt/spec delta.
     Every audit should explicitly say whether the worker should have stopped,
     and whether the next prompts or loop specs need tightening.
 

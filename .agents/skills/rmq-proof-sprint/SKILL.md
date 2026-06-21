@@ -227,6 +227,14 @@ the concrete witness/profile. A new blocker only justifies stopping if it comes
 from serious attempts at the named positive construction and shows the target
 signature itself must change.
 
+The loop-stop audit is a control-flow guard, not a disclosure checklist. If the
+audit says the stop is invalid, the worker must not send a final completion
+report. It must immediately begin the next loop iteration in the same turn,
+using the "next theorem/construction" named by the audit as the new iteration
+target. A final response that says "this should not be considered a valid stop"
+is itself a protocol failure unless it is followed by more implementation and
+verification before the final response.
+
 For unattended loops, keep interim updates concise and periodic, but reserve the
 final response for a valid stop condition. If stopping for target
 misspecification, report the concrete construction attempted, the minimal
@@ -238,7 +246,12 @@ obstruction theorem, and the exact signature/design decision now required.
 2. Use `apply_patch` for manual edits.
 3. Update `docs/FAMILY_SUMMARY.md` when public theorem inventories, dependency
    status, or scope notes change.
-4. Run:
+4. If the branch adds or documents a new public exactness, cost, space, or
+   obstruction theorem as part of the milestone, add a corresponding
+   `#print axioms` line to `scripts/axiom_check.lean`, unless the report
+   explicitly explains why the theorem is only a local helper and not a curated
+   headline/checkpoint surface.
+5. Run:
 
    ```powershell
    lake build

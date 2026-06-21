@@ -102,6 +102,11 @@ Loop stop audit:
 - Why stopping is valid under `docs/CODEX_AUTONOMY.md`:
 ```
 
+If this audit says the stop is invalid, do not send a final completion report.
+Start the next loop iteration immediately, using the obvious next theorem or
+construction named above. A report that admits the stop is invalid but stops
+anyway is a protocol failure, not a transparent partial success.
+
 If a worker did not run a full gate, that is acceptable only when they report
 the narrow check they did run and why a full check was deferred.
 
@@ -211,6 +216,8 @@ Must report:
 - stale claims found and fixed;
 - claims intentionally left unchanged, with theorem references;
 - any public theorem names mentioned in docs;
+- whether those public theorem names are covered by `scripts/axiom_check.lean`,
+  or why they are intentionally local-helper names;
 - whether proof files were untouched.
 
 Docs-only branches do not need a full build unless they edit imports, Lean
@@ -247,6 +254,12 @@ rg -n "native_decide|Lean\.ofReduceBool" RMQ scripts
 scripts\succinct_cost_lint.ps1
 git diff --check
 ```
+
+For proof-worker branches, also check that every new public exactness, cost,
+space, or obstruction theorem mentioned in `docs/FAMILY_SUMMARY.md` is either
+added to `scripts/axiom_check.lean` or explicitly classified as a local helper
+in the worker report. Passing the old axiom gate is not enough if the branch
+created a new public theorem surface and left it outside the curated inventory.
 
 `git diff --check` may report repository-wide CRLF warnings. Treat new
 whitespace errors as blockers; record pre-existing CRLF noise separately.
