@@ -878,3 +878,40 @@ leverage steer: point C2 at **path (i)** (word-level min-excess primitive), not
 another precompute/dense variant; and decide C1's fate. Distance is no longer
 "build the components" — it is specifically **the o(n) overhead of the close
 directory** plus the join.
+
+## 2026-06-20 (deep worktree audit) — the o(n) headline is a non-instantiable mirage; full plan written
+
+Deep read of both worker worktrees + research pass. Full write-up with citations:
+`docs/SUCCINCT_OVERHEAD_WALL_AND_PLAN.md`. Headlines:
+
+- **The wall is worse than "unproven o(n)": the headline close theorem is
+  vacuous.** `concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_sampled_profile`
+  (o(n) ∧ cost ≤ 6 ∧ exact) is an abstract conditional whose premises are
+  **mutually unsatisfiable**: its macro `interiorBlockPairRanges` is
+  `blockCount²` (dense all-pairs), so `hmacroBudget` forces blockSize=ω(√(n log n))
+  while `hmicroLittle` (universal codebook o(n)) forces blockSize=O(log n).
+  No block size satisfies both ⇒ abstract-no-witness; the coordinator must not
+  accept it as closing the target. Exact + O(1) are genuinely proven; **o(n) is
+  not, by any instantiable construction.**
+- **Deeper cause:** every close summary stores a `fieldWidth`=Θ(log n) *absolute*
+  value per block/range — already Θ(n) before the dense blowup. Wrong family
+  (precompute-the-answers) vs. the right one (navigate compact summaries +
+  universal tables).
+- **The fix is the repo's own rank/select technique:** universal table for
+  ≤½log n blocks (o(n), the role `BlockMicroCodebook` should fill) + block-excess
+  stored **relative** to sampled superblocks in O(log log n) bits (exactly what
+  `canonicalBlockRankEntries` already does) + O(1) navigation — not per-range
+  answers. Reuse `sampledDirectoryOverhead`/relative-codec machinery.
+- **Worker misallocation:** neither active worker is on the wall. Worker A
+  (`rmq-c2-bp-close-answer`) is on exactness; the second worker
+  (`rmq-c1-descriptor-select-global`) is **+4016 dirty lines into a dense
+  descriptor select that is redundant** (select already o(n)+exact in coord) — not
+  the intended "rank/select parameter arithmetic" role. Re-task it to the close
+  directory's o(n) overhead arithmetic.
+- **Research (cited in the plan):** Fischer–Heun 2011 (2n+o(n)/O(1) via universal
+  tables), Fischer 2010 (2n optimal), Navarro–Sadakane 2014 + Cordova–Navarro
+  2016 (range min-max tree; small blocks via table lookups, sampled summaries),
+  Bender–Farach-Colton 2000 (±1 Four-Russians), Jacobson/Clark/Vigna/Navarro
+  (relative rank/select encoding), Liu–Yu 2020 (succinct-RMQ lower bound).
+  Prefer the universal table over a new word-level argmin primitive (no trust-base
+  expansion).
