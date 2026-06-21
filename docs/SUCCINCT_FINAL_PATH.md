@@ -371,6 +371,140 @@ The final theorem should be payload-live and concrete. A theorem over encoded
 component functions is useful only when it also proves those encoded functions
 agree with the built payloads.
 
+## Non-Negotiable Close Chain
+
+The C2 BP-close side is now theorem-shaped. Workers should not redefine
+success as "a useful interface landed" or "a concrete builder remains." The
+chain below names the next closure targets. A branch may introduce helper
+lemmas, structures, or local profiles only while consuming them toward one of
+these targets in the same unattended loop.
+
+1. Relative summary budget, with no hidden dense term:
+
+```lean
+theorem concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile
+    (shape : Cartesian.CartesianShape) :
+    let table := concreteBPRelativeMinMaxArgSummaryTable_canonical shape
+    SuccinctSpace.LittleOLinear
+      (compactBPCloseSummaryPayloadOverhead
+        codeSlots microSlots blockSummarySlots superSummarySlots) /\
+      table.payload.length <=
+        compactBPCloseSummaryPayloadOverhead
+          codeSlots microSlots blockSummarySlots superSummarySlots
+          shape.size /\
+      (forall block,
+        (table.summaryCosted block).cost <= 4 /\
+          (table.summaryCosted block).erase =
+            some (bpSummaryValue shape block)) /\
+      table.read_words_length_le_machine := ...
+```
+
+This theorem is not closed if it still has premises analogous to
+`hsuperPayload`, `hblockPayload`, or a budget for
+`interiorBlockPairRanges blockCount`. It must discharge the canonical sampled
+superblock and log-log relative-block budgets from the chosen parameters.
+
+2. Pure candidate merge, not a structure field:
+
+```lean
+theorem bpRelativeRmmCandidateMerge_exact
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount leftClose rightClose answerClose : Nat} :
+    0 < blockSize ->
+      blockOfClose blockSize leftClose < blockCount ->
+      blockOfClose blockSize rightClose < blockCount ->
+      blockOfClose blockSize leftClose <
+        blockOfClose blockSize rightClose ->
+      answerClose_prefix_leftmost_min_excess_hypotheses shape
+        leftClose rightClose answerClose ->
+      bpCandidateMerge3? leftFringeCandidate middleCandidate
+        rightFringeCandidate =
+          some (bpExcessAt shape (answerClose + 1), answerClose + 1) := ...
+```
+
+The exact helper names may differ, but the substance may not: the merge fact
+must be proved from BP/RMQ semantics and candidate definitions, not supplied as
+`semantic_merge_exact`, `hmerge`, or another proof-only field.
+
+3. Concrete relative-rmM macro, backed by charged payload reads:
+
+```lean
+def concretePayloadLiveRelativeRmmBPCloseMacro
+    (shape : Cartesian.CartesianShape) :
+    PayloadLiveRelativeRmmBPCloseMacro shape
+      canonicalBlockSize canonicalBlockCount
+      concreteRelativeOverhead concreteMiddleQueryCost := ...
+
+theorem concretePayloadLiveRelativeRmmBPCloseMacro_profile
+    (shape : Cartesian.CartesianShape) :
+    let macro := concretePayloadLiveRelativeRmmBPCloseMacro shape
+    macro.payload.length <= concreteRelativeOverhead shape.size /\
+      (forall leftClose rightClose,
+        (macro.lcaCloseCosted leftClose rightClose).cost <=
+          concreteMiddleQueryCost + 4) /\
+      forall {left len leftClose rightClose answerClose : Nat},
+        0 < len ->
+          left + len <= shape.size ->
+          bpCloseOfInorder? shape left = some leftClose ->
+          bpCloseOfInorder? shape (left + len - 1) = some rightClose ->
+          bpCloseOfInorder? shape
+              (scanWindow shape.representative left len) =
+            some answerClose ->
+          (macro.lcaCloseCosted leftClose rightClose).erase =
+            some answerClose := ...
+```
+
+This theorem is not closed if the concrete macro is instantiated by arbitrary
+exactness fields or uncharged routing. Its reads must come from the relative
+summary payload, universal/local codebooks, or bounded arithmetic.
+
+4. Concrete compact close directory:
+
+```lean
+theorem concreteCompactBPCloseLCADirectory_profile
+    (shape : Cartesian.CartesianShape) :
+    let directory := concreteCompactBPCloseLCADirectory shape
+    directory.payload.length <= compactBPCloseOverhead shape.size /\
+      SuccinctSpace.LittleOLinear compactBPCloseOverhead /\
+      (forall leftClose rightClose,
+        (directory.lcaCloseCosted leftClose rightClose).cost <=
+          closeQueryCost) /\
+      forall {left len leftClose rightClose answerClose : Nat},
+        0 < len ->
+          left + len <= shape.size ->
+          bpCloseOfInorder? shape left = some leftClose ->
+          bpCloseOfInorder? shape (left + len - 1) = some rightClose ->
+          bpCloseOfInorder? shape
+              (scanWindow shape.representative left len) =
+            some answerClose ->
+          (directory.lcaCloseCosted leftClose rightClose).erase =
+            some answerClose := ...
+```
+
+This is the C2 closure point. Same-block micro results, endpoint-fringe repair,
+relative-rmM interior summaries, machine-word bounds, and payload budgets must
+all be consumed here. A branch that stops before this theorem must identify
+which earlier theorem in this chain it closed and why the next theorem is
+outside its assigned ownership.
+
+5. Final BP-native RMQ join:
+
+```lean
+theorem concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
+    (shape : Cartesian.CartesianShape) :
+    let directory := concreteBPNativeSuccinctRMQDirectory shape
+    directory.payload.length <= 2 * shape.size + finalOverhead shape.size /\
+      SuccinctSpace.LittleOLinear finalOverhead /\
+      (forall left right,
+        (directory.queryEncodedCosted left right).cost <= finalQueryCost) /\
+      directory.queryEncodedCosted_exact := ...
+```
+
+This final join should consume the two-level rank/select payload, descriptor
+select component, and C2 close directory. It is not enough to wrap encoded
+functions unless the theorem also proves those functions agree with the built
+payload.
+
 ## Concrete Close Contract
 
 The retask target for the BP close/LCA side is a concrete payload-live directory

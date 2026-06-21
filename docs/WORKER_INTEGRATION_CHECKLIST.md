@@ -324,16 +324,25 @@ Reject or send back for revision when:
 
 For the succinct RMQ capstone:
 
-- Worker A: compact BP close/LCA exactness over the next non-dense
-  relative/universal-table summary scheme, reusing the guarded same-block versus
-  cross-block semantic layer where it helps.
-- Worker B: compact BP close/LCA payload accounting and construction support:
-  universal small-block table bounds, relative sampled summaries, and the
-  theorem that the close overhead is `LittleOLinear`. If a generic two-level
-  rank/select/close-navigation join is already in progress, package it only as
-  the envelope consumed by this concrete close directory.
+- Worker A owns the integration theorem, not just an interface. Its target is
+  `concreteCompactBPCloseLCADirectory_profile` from
+  `docs/SUCCINCT_FINAL_PATH.md`. If it needs an intermediate theorem, it should
+  first close `bpRelativeRmmCandidateMerge_exact` and
+  `concretePayloadLiveRelativeRmmBPCloseMacro_profile`, then immediately
+  consume them in the directory profile. Adding a field such as
+  `semantic_merge_exact`, a hypothesis such as `hmerge`, or a doc note saying
+  that the concrete builder remains is an invalid final response.
+- Worker B owns the compact relative-summary budget theorem. Its target is
+  `concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile`
+  from `docs/SUCCINCT_FINAL_PATH.md`. This is not closed while premises such as
+  `hsuperPayload`, `hblockPayload`, a dense `interiorBlockPairRanges`
+  envelope, or an unproved machine-word bound remain. If B closes that theorem
+  before A has consumed it, B should continue to the next chain theorem it can
+  own locally, rather than reporting only that the table is ready.
 - Coordinator: merge order, adapter work, final `2*n + o(n), O(1)` theorem,
   gate, and docs.
 
 Worker C can run once A/B land concrete component profiles, or earlier only if
-its target is a true join/adaptation theorem from `docs/SUCCINCT_FINAL_PATH.md`.
+its target is the named
+`concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile` join
+or a true adapter theorem that consumes both A and B outputs.
