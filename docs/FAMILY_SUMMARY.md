@@ -286,6 +286,15 @@ packages the large-regime branch equalities, raw cover and positivity facts,
 relative-entry machine-word bound, relative-summary read exactness/cost, and
 payload bound under that interior envelope so the later concrete interior
 directory profile can consume those side conditions directly.
+`SuccinctCloseProposal.canonicalBPRelativeSummaryLargeRegime_of_size_ge`
+removes that raw regime premise for the canonical option-1 parameters from the
+explicit threshold `2^128 <= shape.size`; the proof discharges base density,
+the superblock machine-word/base comparison, span and block-size width bounds,
+and the relative-width machine-word comparison.  The wrapper
+`SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_size_ge`
+feeds this threshold theorem into the same interior parameter profile, so the
+next concrete directory can consume a size hypothesis instead of a bundled
+`canonicalBPRelativeSummaryLargeRegime` assumption.
 `SuccinctCloseProposal.bpExcessAt_prefix_nonnegative` records the
 balanced-prefix invariant needed when interpreting the Nat-subtraction excess,
 and `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.summary_read_words_length_le_machine`
@@ -1415,9 +1424,11 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile`,
   `SuccinctCloseProposal.canonicalBPRelativeMinMaxArgSummaryTableActive_of_large`,
   `SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile_of_large`,
+  `SuccinctCloseProposal.canonicalBPRelativeSummaryLargeRegime_of_size_ge`,
   `SuccinctCloseProposal.canonicalBPRelativeSummaryRelativeWidthRaw_machine_of_large`,
   `SuccinctCloseProposal.concreteBPRelativeRmmInteriorOverhead_littleO`,
   `SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_large`,
+  `SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_size_ge`,
   `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxArgSummaryTable.profile`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxArgSummaryTable_sampled_profile`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxArgSummaryTable_read_words_length_le_machine`,
