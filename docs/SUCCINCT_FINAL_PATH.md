@@ -552,6 +552,13 @@ all be consumed here. A branch that stops before this theorem must identify
 which earlier theorem in this chain it closed and why the next theorem is
 outside its assigned ownership.
 
+Current caveat: this C2 closure is allowed to use a bounded-local-BP primitive
+surface for same-block and endpoint-fringe repair. The primitive must account
+for a constant number of BP payload words and prove exact local BP semantics,
+but it need not yet derive the answer by interpreting those words. Strengthening
+that local decoder is a later hardening item; the final BP-native RMQ join must
+carry the caveat rather than silently claiming bit-level local decoding.
+
 6. Final BP-native RMQ join:
 
 ```lean
