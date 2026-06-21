@@ -408,12 +408,17 @@ non-scan compact rmM range navigator whose charged query is O(1).
 pins the replacement contract for that navigator, and
 `SuccinctCloseProposal.payloadLiveRelativeRmmBPCloseMacroOfInterior_profile`
 immediately feeds any such interior directory into the charged
-left-fringe/interior/right-fringe relative macro.  The available concrete
+left-fringe/interior/right-fringe relative macro, including machine-word bounds
+for the charged words named by `payloadWordsRead`.  The available concrete
 two-level instance is now
-`SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_profile`; the
-remaining C2 work is to consume this concrete interior checkpoint in
-`concretePayloadLiveRelativeRmmBPCloseMacro_profile` and then the compact close
-directory profile.
+`SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_profile`, and
+`SuccinctCloseProposal.concretePayloadLiveRelativeRmmBPCloseMacro_profile`
+packages it into a large-regime concrete relative-rmM cross-block macro with
+payload bounded by the concrete endpoint-fringe plus two-level interior budget,
+query cost `<= 4 + concreteBPRelativeRmmInteriorQueryCost`, semantic
+cross-block exactness, and machine-word bounded charged reads.  The remaining
+C2 work is to consume this concrete macro in the compact close directory
+profile.
 `SuccinctCloseProposal.payloadLiveBPRelativeRmmInteriorDirectory_profile_allows_proof_only_oracle`
 records the corresponding contract caveat: the generic interior-directory
 record alone can be inhabited by an empty-payload proof-only oracle, so the
