@@ -19828,6 +19828,29 @@ theorem profile
 
 end PayloadLiveRelativeRmmBPCloseMacro
 
+def payloadWordReadOfGet?
+    (words : Array (List Bool)) (index : Nat) : List (List Bool) :=
+  match words[index]? with
+  | some word => [word]
+  | none => []
+
+theorem payloadWordReadOfGet?_length_le
+    {words : Array (List Bool)} {index limit : Nat}
+    (hword :
+      forall {word : List Bool},
+        words[index]? = some word -> word.length <= limit)
+    {word : List Bool}
+    (hmem : word ∈ payloadWordReadOfGet? words index) :
+    word.length <= limit := by
+  unfold payloadWordReadOfGet? at hmem
+  cases hget : words[index]? with
+  | none =>
+      simp [hget] at hmem
+  | some stored =>
+      simp [hget] at hmem
+      rcases hmem with rfl
+      exact hword hget
+
 def payloadLiveRelativeRmmBPCloseMacroOfInterior
     {shape : Cartesian.CartesianShape}
     {blockSize blockCount fieldWidth
@@ -19841,7 +19864,10 @@ def payloadLiveRelativeRmmBPCloseMacroOfInterior
     (rightFringe :
       PayloadLiveBPPrefixRangeArgMinWitnessTable shape fieldWidth
         rightOverhead (endpointRightFringeRanges blockSize blockCount))
-    (hblockSize : 0 < blockSize) :
+    (hblockSize : 0 < blockSize)
+    (hmachine :
+      fieldWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
     PayloadLiveRelativeRmmBPCloseMacro shape blockSize blockCount
       (leftOverhead + interiorOverhead + rightOverhead) middleQueryCost where
   payload := leftFringe.payload ++ interior.payload ++ rightFringe.payload
@@ -19849,7 +19875,24 @@ def payloadLiveRelativeRmmBPCloseMacroOfInterior
     simp [leftFringe.payload_length, interior.payload_length_eq,
       rightFringe.payload_length]
     omega
-  payloadWordsRead := fun _ _ => []
+  payloadWordsRead := fun leftClose rightClose =>
+    let leftSlot := endpointFringeSlot blockSize leftClose
+    let rightSlot := endpointFringeSlot blockSize rightClose
+    let startBlock := blockOfClose blockSize leftClose + 1
+    let count :=
+      blockOfClose blockSize rightClose -
+        blockOfClose blockSize leftClose - 1
+    payloadWordReadOfGet? leftFringe.minTable.store.words leftSlot ++
+      payloadWordReadOfGet? leftFringe.argTable.store.words leftSlot ++
+        (if blockOfClose blockSize leftClose + 1 <
+            blockOfClose blockSize rightClose then
+          interior.payloadWordsRead startBlock count
+        else
+          []) ++
+          payloadWordReadOfGet? rightFringe.minTable.store.words
+            rightSlot ++
+            payloadWordReadOfGet? rightFringe.argTable.store.words
+              rightSlot
   leftFringeCosted := fun leftClose =>
     leftFringe.rangeWitnessCosted (endpointFringeSlot blockSize leftClose)
   rightFringeCosted := fun rightClose =>
@@ -19948,7 +19991,30 @@ def payloadLiveRelativeRmmBPCloseMacroOfInterior
     exact interior.rangeMin_exact hcount hbound
   read_words_length_le_machine := by
     intro leftClose rightClose word hmem
-    cases hmem
+    have hleft := leftFringe.read_words_length_le_machine hmachine
+    have hright := rightFringe.read_words_length_le_machine hmachine
+    have hmid :
+        forall {startBlock count : Nat} {word : List Bool},
+          word ∈ interior.payloadWordsRead startBlock count ->
+            word.length <=
+              SuccinctRankProposal.machineWordBits shape.bpCode.length :=
+      interior.read_words_length_le_machine
+    dsimp only at hmem
+    simp only [List.mem_append] at hmem
+    rcases hmem with hmem | hrightArg
+    · rcases hmem with hmem | hrightMin
+      · rcases hmem with hmem | hmiddle
+        · rcases hmem with hleftMin | hleftArg
+          · exact payloadWordReadOfGet?_length_le hleft.1 hleftMin
+          · exact payloadWordReadOfGet?_length_le hleft.2 hleftArg
+        · by_cases hgap :
+            blockOfClose blockSize leftClose + 1 <
+              blockOfClose blockSize rightClose
+          · simp [hgap] at hmiddle
+            exact hmid hmiddle
+          · simp [hgap] at hmiddle
+      · exact payloadWordReadOfGet?_length_le hright.1 hrightMin
+    · exact payloadWordReadOfGet?_length_le hright.2 hrightArg
 
 theorem payloadLiveRelativeRmmBPCloseMacroOfInterior_profile
     {shape : Cartesian.CartesianShape}
@@ -19963,18 +20029,233 @@ theorem payloadLiveRelativeRmmBPCloseMacroOfInterior_profile
     (rightFringe :
       PayloadLiveBPPrefixRangeArgMinWitnessTable shape fieldWidth
         rightOverhead (endpointRightFringeRanges blockSize blockCount))
-    (hblockSize : 0 < blockSize) :
+    (hblockSize : 0 < blockSize)
+    (hmachine :
+      fieldWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
     let component :=
       payloadLiveRelativeRmmBPCloseMacroOfInterior
-        leftFringe interior rightFringe hblockSize
+        leftFringe interior rightFringe hblockSize hmachine
     component.payload.length =
         leftOverhead + interiorOverhead + rightOverhead /\
       (forall leftClose rightClose,
         (component.lcaCloseCosted leftClose rightClose).cost <=
-          4 + middleQueryCost) := by
+          4 + middleQueryCost) /\
+      (forall {left len leftClose rightClose answerClose : Nat},
+        0 < len ->
+          left + len <= shape.size ->
+            bpCloseOfInorder? shape left = some leftClose ->
+              bpCloseOfInorder? shape (left + len - 1) =
+                  some rightClose ->
+                bpCloseOfInorder? shape
+                    (scanWindow shape.representative left len) =
+                  some answerClose ->
+                  blockOfClose blockSize leftClose < blockCount ->
+                    blockOfClose blockSize rightClose < blockCount ->
+                      blockOfClose blockSize leftClose <
+                        blockOfClose blockSize rightClose ->
+                        (component.lcaCloseCosted
+                          leftClose rightClose).erase =
+                          some answerClose) /\
+        forall {leftClose rightClose : Nat} {word : List Bool},
+          word ∈ component.payloadWordsRead leftClose rightClose ->
+            word.length <=
+              SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  let component :=
+    payloadLiveRelativeRmmBPCloseMacroOfInterior
+      leftFringe interior rightFringe hblockSize hmachine
+  have hprofile := component.profile
+  constructor
+  · exact hprofile.1
+  constructor
+  · exact hprofile.2
+  constructor
+  · intro left len leftClose rightClose answerClose hlen hbound hleft
+      hright hanswer hleftBlock hrightBlock hcross
+    exact
+      component.lcaCloseCosted_exact_of_query_cross_block
+        hlen hbound hleft hright hanswer hblockSize hleftBlock
+        hrightBlock hcross
+  · intro leftClose rightClose word hmem
+    exact component.read_words_length_le_machine hmem
+
+def concretePayloadLiveRelativeRmmBPCloseMacroPayloadLength
+    (shape : Cartesian.CartesianShape) : Nat :=
+  2 * ((endpointLeftFringeRanges
+          (canonicalBPRelativeSummaryBlockSize shape)
+          (canonicalBPRelativeSummaryBlockCount shape)).length *
+        SuccinctRankProposal.machineWordBits shape.bpCode.length) +
+    concreteBPRelativeRmmInteriorDirectoryPayloadLength shape +
+      2 * ((endpointRightFringeRanges
+          (canonicalBPRelativeSummaryBlockSize shape)
+          (canonicalBPRelativeSummaryBlockCount shape)).length *
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+
+def concretePayloadLiveRelativeRmmBPCloseMacroOverhead
+    (shape : Cartesian.CartesianShape) : Nat :=
+  2 * ((endpointLeftFringeRanges
+          (canonicalBPRelativeSummaryBlockSize shape)
+          (canonicalBPRelativeSummaryBlockCount shape)).length *
+        SuccinctRankProposal.machineWordBits shape.bpCode.length) +
+    concreteBPRelativeRmmInteriorOverhead shape.size +
+      2 * ((endpointRightFringeRanges
+          (canonicalBPRelativeSummaryBlockSize shape)
+          (canonicalBPRelativeSummaryBlockCount shape)).length *
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+
+def concretePayloadLiveRelativeRmmBPCloseMacro
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size) :
+    PayloadLiveRelativeRmmBPCloseMacro shape
+      (canonicalBPRelativeSummaryBlockSize shape)
+      (canonicalBPRelativeSummaryBlockCount shape)
+      (concretePayloadLiveRelativeRmmBPCloseMacroPayloadLength shape)
+      concreteBPRelativeRmmInteriorQueryCost := by
+  let fieldWidth := SuccinctRankProposal.machineWordBits shape.bpCode.length
+  let leftFringe :=
+    concreteBPPrefixRangeArgMinWitnessTable shape fieldWidth
+      (endpointLeftFringeRanges
+        (canonicalBPRelativeSummaryBlockSize shape)
+        (canonicalBPRelativeSummaryBlockCount shape))
+      (by
+        simpa [fieldWidth, canonicalBPRelativeSummarySuperWidth] using
+          canonicalBPRelativeSummary_superWidth_bound shape)
+  let rightFringe :=
+    concreteBPPrefixRangeArgMinWitnessTable shape fieldWidth
+      (endpointRightFringeRanges
+        (canonicalBPRelativeSummaryBlockSize shape)
+        (canonicalBPRelativeSummaryBlockCount shape))
+      (by
+        simpa [fieldWidth, canonicalBPRelativeSummarySuperWidth] using
+          canonicalBPRelativeSummary_superWidth_bound shape)
+  let interior := concreteBPRelativeRmmInteriorDirectory shape
+  have hparams :=
+    concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_size_ge
+      shape hsize
+  rcases hparams with
+    ⟨hblockSizeEq, _hblocksPerSuperEq, _hblockCountEq,
+      _hsuperCountEq, _hrelativeWidthEq, _hlittleO, _hactive,
+      hrawBlockSizePos, _hrawBlocksPerSuperPos, _hrawBlockCountPos,
+      _hcover, _hcountLe, _hrelativeMachine, _hsummaryPayload,
+      _hsummaryExact, _hbaselineRead, _hminRead, _hmaxRead,
+      _hargRead⟩
+  have hblockSize :
+      0 < canonicalBPRelativeSummaryBlockSize shape := by
+    rw [hblockSizeEq]
+    exact hrawBlockSizePos
   exact
-    (payloadLiveRelativeRmmBPCloseMacroOfInterior
-      leftFringe interior rightFringe hblockSize).profile
+    payloadLiveRelativeRmmBPCloseMacroOfInterior
+      leftFringe interior rightFringe hblockSize (Nat.le_refl fieldWidth)
+
+theorem concretePayloadLiveRelativeRmmBPCloseMacro_profile
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size) :
+    let component := concretePayloadLiveRelativeRmmBPCloseMacro shape hsize
+    component.payload.length <=
+        concretePayloadLiveRelativeRmmBPCloseMacroOverhead shape /\
+      (forall leftClose rightClose,
+        (component.lcaCloseCosted leftClose rightClose).cost <=
+          4 + concreteBPRelativeRmmInteriorQueryCost) /\
+      (forall {left len leftClose rightClose answerClose : Nat},
+        0 < len ->
+          left + len <= shape.size ->
+            bpCloseOfInorder? shape left = some leftClose ->
+              bpCloseOfInorder? shape (left + len - 1) =
+                  some rightClose ->
+                bpCloseOfInorder? shape
+                    (scanWindow shape.representative left len) =
+                  some answerClose ->
+                  blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+                      leftClose <
+                    canonicalBPRelativeSummaryBlockCount shape ->
+                    blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+                        rightClose <
+                      canonicalBPRelativeSummaryBlockCount shape ->
+                      blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+                          leftClose <
+                        blockOfClose
+                          (canonicalBPRelativeSummaryBlockSize shape)
+                          rightClose ->
+                        (component.lcaCloseCosted
+                          leftClose rightClose).erase =
+                          some answerClose) /\
+        forall {leftClose rightClose : Nat} {word : List Bool},
+          word ∈ component.payloadWordsRead leftClose rightClose ->
+            word.length <=
+              SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  let fieldWidth := SuccinctRankProposal.machineWordBits shape.bpCode.length
+  let leftFringe :=
+    concreteBPPrefixRangeArgMinWitnessTable shape fieldWidth
+      (endpointLeftFringeRanges
+        (canonicalBPRelativeSummaryBlockSize shape)
+        (canonicalBPRelativeSummaryBlockCount shape))
+      (by
+        simpa [fieldWidth, canonicalBPRelativeSummarySuperWidth] using
+          canonicalBPRelativeSummary_superWidth_bound shape)
+  let rightFringe :=
+    concreteBPPrefixRangeArgMinWitnessTable shape fieldWidth
+      (endpointRightFringeRanges
+        (canonicalBPRelativeSummaryBlockSize shape)
+        (canonicalBPRelativeSummaryBlockCount shape))
+      (by
+        simpa [fieldWidth, canonicalBPRelativeSummarySuperWidth] using
+          canonicalBPRelativeSummary_superWidth_bound shape)
+  let interior := concreteBPRelativeRmmInteriorDirectory shape
+  have hparams :=
+    concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_size_ge
+      shape hsize
+  rcases hparams with
+    ⟨hblockSizeEq, _hblocksPerSuperEq, _hblockCountEq,
+      _hsuperCountEq, _hrelativeWidthEq, _hlittleO, _hactive,
+      hrawBlockSizePos, _hrawBlocksPerSuperPos, _hrawBlockCountPos,
+      _hcover, _hcountLe, _hrelativeMachine, _hsummaryPayload,
+      _hsummaryExact, _hbaselineRead, _hminRead, _hmaxRead,
+      _hargRead⟩
+  have hblockSize :
+      0 < canonicalBPRelativeSummaryBlockSize shape := by
+    rw [hblockSizeEq]
+    exact hrawBlockSizePos
+  have hcomponentProfile :=
+    payloadLiveRelativeRmmBPCloseMacroOfInterior_profile
+      leftFringe interior rightFringe hblockSize
+      (Nat.le_refl fieldWidth)
+  have hinteriorProfile :=
+    concreteBPRelativeRmmInteriorDirectory_profile shape hsize
+  let component := concretePayloadLiveRelativeRmmBPCloseMacro shape hsize
+  rcases hcomponentProfile with
+    ⟨_hpayload, _hcost, _hexact, _hread⟩
+  rcases hinteriorProfile with
+    ⟨_hinteriorLittleO, hinteriorPayload, _hinteriorCost,
+      _hinteriorExact, _hinteriorRead⟩
+  have hinteriorPayloadLength :
+      concreteBPRelativeRmmInteriorDirectoryPayloadLength shape <=
+        concreteBPRelativeRmmInteriorOverhead shape.size := by
+    have hp := hinteriorPayload
+    rw [(concreteBPRelativeRmmInteriorDirectory shape).payload_length_eq] at hp
+    exact hp
+  constructor
+  · rw [(concretePayloadLiveRelativeRmmBPCloseMacro
+        shape hsize).payload_length]
+    unfold concretePayloadLiveRelativeRmmBPCloseMacroOverhead
+      concretePayloadLiveRelativeRmmBPCloseMacroPayloadLength
+    omega
+  constructor
+  · intro leftClose rightClose
+    exact
+      (concretePayloadLiveRelativeRmmBPCloseMacro
+        shape hsize).lcaCloseCosted_cost_le leftClose rightClose
+  constructor
+  · intro left len leftClose rightClose answerClose hlen hbound hleft
+      hright hanswer hleftBlock hrightBlock hcross
+    exact
+      (concretePayloadLiveRelativeRmmBPCloseMacro
+        shape hsize).lcaCloseCosted_exact_of_query_cross_block
+          hlen hbound hleft hright hanswer hblockSize hleftBlock
+          hrightBlock hcross
+  · intro leftClose rightClose word hmem
+    exact
+      (concretePayloadLiveRelativeRmmBPCloseMacro
+        shape hsize).read_words_length_le_machine hmem
 
 /--
 Guarded macro/micro close directory using a relative-rmM cross-block macro.
