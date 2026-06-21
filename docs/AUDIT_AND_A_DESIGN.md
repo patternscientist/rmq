@@ -795,3 +795,86 @@ answer); nothing else counts as capstone progress. Add one objective guard: a
 **docs-only round is not progress** toward the succinct target — if a round
 touches no `.lean` under `RMQ/`, it does not satisfy the anti-filler "debt fell
 or a target closed" contract.
+
+## 2026-06-20 (worktree-aware) — precise gap: exact + O(1) essentially solved; o(n) overhead is the wall
+
+Audited with the new multi-worktree workflow in mind (2 workers + coordinator).
+This corrects the prior "governance churn" entry: that was a **coordinator-only**
+view; the real proof work is live and unmerged in the worker worktrees.
+
+### Workflow / where the work is
+- **Coordinator**: `codex/rmq-small-extraction` (main checkout) — integrated,
+  gate-green; this is where the governance-doc commits landed.
+- **Worker C2**: `codex/rmq-c2-bp-close-answer` — 9 ahead, dirty (+700 uncommitted
+  lines). The rmM **answer-close**. The live critical path.
+- **Worker C1**: `codex/rmq-c1-descriptor-select-global` — 7 ahead, dirty. A
+  **descriptor** select variant.
+- Join branch `codex/rmq-final-succinct-join` is **not ahead of coord** (stale);
+  no live C3 work. 8 other worktrees are spent/merged worker branches.
+
+### Floor (coordinator, merged, gate-green, trust clean)
+BP encoding `2n` bits (lossless); two-level **rank** (concrete, exact, O(1),
+o(n)); two-level **select** (concrete, exact, O(1), o(n) via
+`canonicalTwoLevelSelectOverhead_littleO`); lower bound `2n − O(log n)`; the
+design-pruning negatives.
+
+### Worker C2 — exact + charged are landing; o(n) overhead is unaddressed
+- **Exact**: layered `lcaCloseCosted_exact … = scanWindow …` over the geometric
+  cases (at-block, left/right fringe, cross-block, spanning-root); the +700 dirty
+  lines are finishing those cases right now (`lcaCloseCosted_exact_of_query_semantics_cross_block`).
+  The fringe repair correctly sidesteps the earlier
+  `blockPairMacroDirectory_not_sufficient` blocker. Exactness is ~nearly complete.
+- **Charged O(1)**: every macro/witness/summary read is a *true constant* —
+  `lcaCloseCosted_cost_le_one`/`_two`, `rangeWitnessCosted_cost_le_two`,
+  `summaryCosted_cost_le_two`, `minExcessCosted_cost_le_one` — independent of
+  blockSize. O(1) query is genuinely in hand on the close side.
+- **o(n) overhead**: **NOT proven.** There is *no* `LittleOLinear` on the new
+  block-pair range-witness / fringe macro. Worse, the architecture is the
+  *precompute-the-answers* family (store a witness per block-range, read in O(1)):
+  the same family as the disproven `denseAllCloseBPCloseLCAOverhead` and C1's
+  full-slot layout, which cannot be o(n) without large blocks — and large blocks
+  break the in-block O(1)/o(n) tradeoff. The per-block min/max-excess summaries
+  (the rmM ingredients) *exist* but are read directly, not consumed by a
+  **navigating** forward/backward search. Precomputing answers ≠ navigating.
+
+### Worker C1 — partly redundant; rediscovering the o(n) wall
+A descriptor-select surface *with* `descriptor_word_choice_exact` + profiles
+exists (exact + charged). But the latest committed result is a **negative**:
+`packedDescriptorFullSlotOverhead_linear_lower_bound` (`n ≤` overhead) ⇒
+`…_not_littleO_under_machine_bound`. I.e. the packed full-slot descriptor layout
+is Θ(n), not o(n). Meanwhile **select is already o(n) + exact in the coordinator**
+(TwoLevel route). So C1 is chasing a descriptor variant that keeps hitting the
+o(n) wall while a working o(n) select already exists. Either justify it (does the
+C3 join actually need the `word_choice` property TwoLevel lacks?) or **retire C1
+and redirect to the real gap**.
+
+### The precise gap to the goal (2n+o(n), O(1), concrete witness + final theorem)
+1. **[HARD — the crux] o(n) overhead of the RMQ/close directory.** Exact and O(1)
+   are essentially solved; o(n) is not, and both workers keep emitting "not
+   little-o" negatives — the symptom of attacking o(n) with flat
+   precompute/dense layouts. RMQ is harder here than rank/select for one concrete
+   reason: there is no *free single-machine-word RMQ primitive* analogous to the
+   word popcount/`selectBoolWord` that let rank/select close cleanly. Two clean
+   ways out:
+   - **(i) add a word-level min-excess/argmin RAM primitive** over a Θ(log n)
+     word (as legitimate as the existing `rankBoolWordPrefix`/`selectBoolWord`),
+     making the in-block fringe O(1) and letting blockSize = Θ(log n) give o(n)
+     summaries — *mirrors exactly how rank/select closed*; likely the fastest,
+     most codebase-consistent path; **or**
+   - **(ii) genuine rmM-tree navigation** (forward/backward search over the
+     existing min/max-excess summaries) instead of precomputing block-pair
+     answers — more proof work (the search algorithm + its O(1)-on-polylog bound).
+2. **[MEDIUM] finish C2 exactness** case analysis (in progress, close).
+3. **[MEDIUM] C3 join**: one concrete `def : …Family` composing BP + rank +
+   select + (exact, O(1), o(n)) close, plus the final bundled theorem retaining
+   the `logSlackLower n ≤ 2n + overhead` tie. Not started (join branch stale).
+4. **[EFFICIENCY] resolve C1 redundancy** (retire or justify).
+
+### Stop / loop health
+Workers are doing genuine proof work (good — corrects the prior entry). But the
+recurring "not little-o" negatives show the team has not yet pivoted from
+*flat/precomputed* layouts to the architecture that is actually o(n). Highest-
+leverage steer: point C2 at **path (i)** (word-level min-excess primitive), not
+another precompute/dense variant; and decide C1's fate. Distance is no longer
+"build the components" — it is specifically **the o(n) overhead of the close
+directory** plus the join.
