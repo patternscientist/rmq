@@ -1116,3 +1116,51 @@ arbitrary `[i,j]`); small-n regime; retire the mirage; then the C3 join
 **Verdict:** strongest round yet — the precise object identified as the wall (the
 interior O(1) navigator) is built sorry-free, trust-clean, per design. Distance is
 now composition + join + cleanup, not a hard new construction.
+
+## 2026-06-21 (later) — CLOSE SIDE COMPLETE: concrete all-n O(1)+exact+o(n) close/LCA directory merged
+
+Build green, trust clean (0 bad-axiom), no sorries in the close file. In one round
+the coordinator merged the navigator (`cb347d9`), built+merged the concrete
+relative RMQ close macro (`c9cb172`), and built+merged the **compact BP close
+directory profile** (`fca3f48`) — items #1, #2, #3 of the remaining path, all
+landed.
+
+**The entire close side is now done.** `concreteCompactBPCloseLCADirectory_profile`
+takes **only `(shape)` — no size threshold, no premises (all n)** — and proves,
+for `directory := concreteCompactBPCloseLCADirectory shape`:
+- `payload.length ≤ compactBPCloseOverhead shape.size` ∧ `LittleOLinear
+  compactBPCloseOverhead` (o(n));
+- `∀ leftClose rightClose, (lcaCloseCosted …).cost ≤ const` (O(1));
+- `∀ left len …, 0 < len → left+len ≤ size → … → (lcaCloseCosted …).erase =
+  some answerClose` where `answerClose = bpClose (scanWindow …)` (exact for
+  arbitrary `[left, left+len]`).
+Blessed in `axiom_check` (lines 234/237), sorry-free, trust clean. The small-n
+regime (#3) is handled — this is the all-n version, sitting beside the
+`_of_size_ge` large-regime one.
+
+**Remaining to the headline: only #4 (the C3 join) + #5 (cleanup).** No concrete
+full RMQ family yet: `bpCode (2n) + rank + select + close → def : …Family` with
+the final bundled theorem (`payload = 2n + overhead`, `LittleOLinear overhead`,
+`cost ≤ const`, `erase = scanWindow` via the end-to-end RMQ→LCA→BP-close chain,
+`logSlackLower n ≤ 2n + overhead`). That capstone is the long pole; everything it
+composes is now done.
+
+**Concern — delist-don't-retire (the recurring hygiene miss, now confirmed dead
+code).** The guarded mirage profile
+(`concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_sampled_profile`)
+was **removed from `axiom_check` but is still in source** (1 ref), and
+`interiorBlockPairRanges` (the dense `blockCount²` machinery) is still 34 refs.
+The compact directory provably does **not** use it (docstring: "no dense
+`interiorBlockPairRanges`"), so it is now genuinely dead code — delisted from the
+trust inventory without being deleted, exactly the `CODEX_AUTONOMY` anti-pattern.
+Delete it (def + lemmas + guarded profile) in the join round.
+
+**Governance:** `311f5da Encourage DAG-bound parallel proof loops` — one small,
+reasonable note (fits the multi-worker setup); not churn-level.
+
+**Verdict:** milestone round — the close side, the last hard part, is fully done
+(concrete, all-n, O(1), exact, o(n), payload-live, sorry-free, trust-clean). They
+executed #1+#2+#3 in a single round, faster than predicted. Distance to the
+headline is now exactly the C3 join + the dead-code cleanup. Watch the join for
+the recurring abstract-first temptation (the proof-only-oracle/rule-14a guards
+should bite there).
