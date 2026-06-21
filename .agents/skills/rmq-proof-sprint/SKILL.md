@@ -169,6 +169,9 @@ For C1/C2 specifically, do not stop after the previous known traps:
   supplied merged-candidate fact such as `hmerge`;
 - a repaired machine-word bound or invariant for that summary table without the
   next answer-close theorem attempt that consumes the repaired table;
+- a BP close sampled profile whose space theorem still assumes a budget for
+  dense `interiorBlockPairRanges blockCount` entries or an equivalent all-pairs
+  interior payload;
 - a newly charged fixed-width table without an explicit machine-word bound; or
 - a theorem name that suggests stronger semantics than the statement proves.
 

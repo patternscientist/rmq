@@ -139,6 +139,9 @@ Must report:
   conditional on a supplied prefix position.
 - for BP close work, whether endpoint-fringe exactness is global or still
   conditional on a supplied merged-candidate fact such as `hmerge`.
+- for BP close work, whether any `LittleOLinear` claim still assumes a budget
+  for dense `interiorBlockPairRanges blockCount` entries rather than proving a
+  compact close-directory payload bound from the actual layout.
 
 Should not report "progress" only as scaffolding. A proof branch should land a
 consumed lemma cluster, a representation layer, or a theorem that feeds the
@@ -312,6 +315,8 @@ Reject or send back for revision when:
   global `selectCosted` exactness over all target/occurrence queries.
 - BP close work proves only charged block-summary reads, with no answer-close
   theorem consuming those summaries and endpoint-fringe repair.
+- BP close work proves a sampled profile only by assuming a budget for dense
+  `interiorBlockPairRanges blockCount` entries.
 - a new O(1) charged word/table read lacks an explicit machine-word bound.
 - theorem names suggest stronger semantics than their statements prove.
 
@@ -319,10 +324,14 @@ Reject or send back for revision when:
 
 For the succinct RMQ capstone:
 
-- Worker A: concrete BP range-min-max / macro-micro close-LCA construction
-  behind the payload-live interface, plus the close-navigation join it feeds.
-- Worker B: descriptor-based select component that replaces the one-locator,
-  one-payload-word blocker with a concrete charged local descriptor query path.
+- Worker A: compact BP close/LCA exactness over the next non-dense
+  relative/universal-table summary scheme, reusing the guarded same-block versus
+  cross-block semantic layer where it helps.
+- Worker B: compact BP close/LCA payload accounting and construction support:
+  universal small-block table bounds, relative sampled summaries, and the
+  theorem that the close overhead is `LittleOLinear`. If a generic two-level
+  rank/select/close-navigation join is already in progress, package it only as
+  the envelope consumed by this concrete close directory.
 - Coordinator: merge order, adapter work, final `2*n + o(n), O(1)` theorem,
   gate, and docs.
 

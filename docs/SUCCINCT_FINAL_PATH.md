@@ -54,6 +54,26 @@ The current merged surface provides useful partial surface:
   real succinct BP-excess/RMQ macro with charged endpoint-fringe repair, not a
   dense direct-access endpoint table.
 
+- The close/LCA side now also has a guarded concrete macro/micro layer:
+
+  ```lean
+  theorem RMQ.SuccinctCloseProposal
+      .concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_profile :
+    ...
+
+  theorem RMQ.SuccinctCloseProposal
+      .concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_sampled_profile :
+    ...
+  ```
+
+  The first theorem is real semantic progress: same-block close queries use the
+  charged micro-codebook, cross-block close queries use charged endpoint-fringe
+  and interior macro reads, and the close/LCA answer is exact with constant
+  cost. The sampled theorem is intentionally only conditional scaffolding. Its
+  `hmacroBudget` premise still has to cover a dense
+  `interiorBlockPairRanges blockCount` payload, so it is not a concrete
+  `2*n + o(n)` witness and should not be cited as closing C2.
+
 - The select side proves the current query-shape forcing facts:
 
   ```lean
@@ -258,6 +278,14 @@ shows it is exact and charged, but
 `SuccinctCloseProposal.denseAllCloseBPCloseLCAOverhead_not_littleO` proves its
 auxiliary payload is not `o(n)`.
 
+Do not treat the guarded endpoint-fringe/interior macro as the final succinct
+space witness while it still stores dense block-pair range entries. In
+particular, a theorem whose final space step assumes
+`hmacroBudget` for a payload containing
+`interiorBlockPairRanges blockCount` is an abstract conditional wrapper, not the
+needed concrete little-o close directory. The final close component must prove
+its own `LittleOLinear closeOverhead` from its actual payload layout.
+
 Target construction:
 
 ```lean
@@ -342,6 +370,44 @@ theorem descriptorMacroMicroBPCloseNavigationFamily
 The final theorem should be payload-live and concrete. A theorem over encoded
 component functions is useful only when it also proves those encoded functions
 agree with the built payloads.
+
+## Concrete Close Contract
+
+The retask target for the BP close/LCA side is a concrete payload-live directory
+with no dense-budget escape hatch:
+
+```lean
+def compactBPCloseOverhead : Nat -> Nat := ...
+
+theorem compactBPCloseOverhead_littleO :
+    SuccinctSpace.LittleOLinear compactBPCloseOverhead := ...
+
+theorem concreteCompactBPCloseLCADirectory_profile
+    (shape : Cartesian.CartesianShape) :
+    let directory := concreteCompactBPCloseLCADirectory shape
+    directory.payload.length <= compactBPCloseOverhead shape.size /\
+      (forall leftClose rightClose,
+        (directory.lcaCloseCosted leftClose rightClose).cost <= closeQueryCost) /\
+      forall {left len leftClose rightClose answerClose : Nat},
+        0 < len ->
+          left + len <= shape.size ->
+            bpCloseOfInorder? shape left = some leftClose ->
+              bpCloseOfInorder? shape (left + len - 1) = some rightClose ->
+                bpCloseOfInorder? shape
+                    (scanWindow shape.representative left len) =
+                  some answerClose ->
+                  (directory.lcaCloseCosted leftClose rightClose).erase =
+                    some answerClose := ...
+```
+
+The concrete implementation should be based on universal small-block tables plus
+relative sampled summaries, or another equally explicit compact scheme. It must
+not rely on:
+
+- a dense all-close table;
+- dense all block-pair answer/range entries;
+- a sampled-budget premise for `interiorBlockPairRanges blockCount`;
+- proof-only exactness fields that are not backed by charged payload reads.
 
 ## Loop Rules For This Target
 

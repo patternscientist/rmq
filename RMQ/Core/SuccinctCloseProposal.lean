@@ -1847,6 +1847,96 @@ theorem concreteBPRangeMinMaxSummaryTable_read_words_length_le_machine
         shape blockSize blockCount fieldWidth hwidth)
       hmachine
 
+/--
+A compact asymptotic envelope for the charged BP close/LCA summary payload.
+
+The four terms reserve sampled space for a block-code classifier, universal
+small-block tables, relative block summaries, and relative superblock summaries.
+There is deliberately no dense endpoint-pair or interior block-pair payload in
+this budget.
+-/
+def compactBPCloseSummaryPayloadOverhead
+    (codeSlots microSlots blockSummarySlots superSummarySlots : Nat)
+    (n : Nat) : Nat :=
+  logLogSampledDirectoryOverhead codeSlots n +
+    sampledDirectoryOverhead microSlots n +
+      sampledDirectoryOverhead blockSummarySlots n +
+        sampledDirectoryOverhead superSummarySlots n
+
+theorem compactBPCloseSummaryPayloadOverhead_littleO
+    (codeSlots microSlots blockSummarySlots superSummarySlots : Nat) :
+    LittleOLinear
+      (compactBPCloseSummaryPayloadOverhead
+        codeSlots microSlots blockSummarySlots superSummarySlots) := by
+  unfold compactBPCloseSummaryPayloadOverhead
+  exact
+    (((logLogSampledDirectoryOverhead_littleO codeSlots).add
+      (sampledDirectoryOverhead_littleO microSlots)).add
+      (sampledDirectoryOverhead_littleO blockSummarySlots)).add
+      (sampledDirectoryOverhead_littleO superSummarySlots)
+
+theorem concreteBPRangeMinMaxSummaryTable_compact_summary_profile
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount fieldWidth
+      codeSlots microSlots blockSummarySlots superSummarySlots n : Nat)
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth)
+    (hmachine :
+      fieldWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hbudget :
+      2 * (blockCount * fieldWidth) <=
+        compactBPCloseSummaryPayloadOverhead
+          codeSlots microSlots blockSummarySlots superSummarySlots n) :
+    let table :=
+      concreteBPRangeMinMaxSummaryTable
+        shape blockSize blockCount fieldWidth hwidth
+    LittleOLinear
+      (compactBPCloseSummaryPayloadOverhead
+        codeSlots microSlots blockSummarySlots superSummarySlots) /\
+      table.payload.length <=
+        compactBPCloseSummaryPayloadOverhead
+          codeSlots microSlots blockSummarySlots superSummarySlots n /\
+      (forall {block : Nat} {word : List Bool},
+        table.minTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.maxTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+      forall block,
+        (table.summaryCosted block).cost <= 2 /\
+          (table.summaryCosted block).erase =
+            match
+              (bpBlockMinExcessEntries shape blockSize blockCount)[block]?,
+              (bpBlockMaxExcessEntries shape blockSize blockCount)[block]? with
+            | some minExcess, some maxExcess =>
+                some (minExcess, maxExcess)
+            | _, _ => none := by
+  let table :=
+    concreteBPRangeMinMaxSummaryTable
+      shape blockSize blockCount fieldWidth hwidth
+  have hwords :=
+    concreteBPRangeMinMaxSummaryTable_read_words_length_le_machine
+      shape blockSize blockCount fieldWidth hwidth hmachine
+  constructor
+  · exact
+      compactBPCloseSummaryPayloadOverhead_littleO
+        codeSlots microSlots blockSummarySlots superSummarySlots
+  constructor
+  · have hlen : table.payload.length = 2 * (blockCount * fieldWidth) :=
+      table.payload_length
+    exact Nat.le_trans (Nat.le_of_eq hlen) hbudget
+  constructor
+  · intro block word hget
+    exact hwords.1 hget
+  constructor
+  · intro block word hget
+    exact hwords.2 hget
+  intro block
+  exact ⟨table.summaryCosted_cost_le_two block,
+    table.summaryCosted_erase block⟩
+
 /-!
 ## Position-bearing BP block summaries
 

@@ -643,7 +643,11 @@ local block-table component a real succinct BP navigation scheme should feed
 into that boundary. The remaining missing construction is the payload-live BP
 close/LCA instantiation itself: build a real succinct macro/micro close-LCA
 entry scheme rather than a dense pair table, then discharge the final two-level
-encoded BP close-navigation family.
+encoded BP close-navigation family. The guarded endpoint-fringe macro/micro
+profile is exact and useful, but its sampled wrapper is still conditional on a
+budget for the dense `interiorBlockPairRanges blockCount` payload; that premise
+must be eliminated by a compact relative/universal-table close scheme before it
+can support the final `2*n + o(n)` headline.
 
 Current final-path spec: `docs/SUCCINCT_FINAL_PATH.md`. The tentative path is
 now split into a descriptor-based select component, a concrete macro/micro

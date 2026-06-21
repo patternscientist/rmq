@@ -59,10 +59,13 @@ also require a restart if they do not appear immediately.
    proof-shape retry can have a small cap, but an obvious repaired statement,
    helper lemma, or construction variant starts the next iteration rather than
    ending the loop.
-7. If the proof wants a new abstraction, the API choice is taste-sensitive, or
-   at least three concrete construction attempts hit the same design-level wall, stop
-   and report the brick-wall dossier instead of churning. Repeating a known
-   blocker or landing one useful partial theorem is not itself a loop endpoint.
+7. If the proof wants a new abstraction or the API choice is taste-sensitive,
+   stop and report the design choice. Failed construction attempts by
+   themselves are not enough to stop; continue through repaired statements and
+   nearby construction variants unless a formal impossibility theorem shows the
+   target is mis-specified, or an extreme dossier records at least fifty serious
+   attempts failing for the same design-level reason. Repeating a known blocker
+   or landing one useful partial theorem is not itself a loop endpoint.
 8. Run a checkpoint: touched-module checks, then `lake build`, the trust-base
    scan, the `native_decide` scan when relevant, and `git diff --check`.
 9. Update `docs/FAMILY_SUMMARY.md`.
@@ -82,11 +85,11 @@ iteration on extra wrappers, docs, or negative variants unless those artifacts
 are immediately consumed by that construction or prove the target signature
 itself must change.
 
-When reporting a short-of-target stop, include the brick-wall dossier: at least
-three attempts made, signatures tried, the common obstruction, why obvious local
-repairs do not suffice, and which design choice the coordinator must make. A
-formal impossibility theorem for the target statement can replace the three
-attempt threshold.
+When reporting a short-of-target stop, include the brick-wall dossier: signatures
+tried, the common obstruction, why obvious local repairs do not suffice, and
+which design choice the coordinator must make. Failed constructions justify a
+stop only after the fifty-attempt exhaustion standard above; a formal
+impossibility theorem for the target statement can replace that threshold.
 
 ## Features Not Adopted Yet
 

@@ -243,9 +243,15 @@ succinct BP-excess/RMQ macro with charged endpoint-fringe repair.
 land the first positive charged substrate for that fork: each block stores
 fixed-width minimum and maximum BP-excess samples, the query reads those payload
 words with cost `<= 2`, and the sampled-overhead version is tied to a named
-`LittleOLinear` budget. This is still the block-summary layer; the exact
-answer-close theorem still has to connect those summaries to endpoint-fringe
-repair. `SuccinctCloseProposal.bpExcessAt_prefix_nonnegative` records the
+`LittleOLinear` budget.
+`SuccinctCloseProposal.compactBPCloseSummaryPayloadOverhead_littleO` and
+`SuccinctCloseProposal.concreteBPRangeMinMaxSummaryTable_compact_summary_profile`
+package that table under the intended compact close-summary envelope: a
+log-log sampled block-code term plus sampled universal micro, block-summary,
+and superblock-summary terms, with no dense endpoint-pair or interior block-pair
+payload. This is still the block-summary layer; the exact answer-close theorem
+still has to connect those summaries to endpoint-fringe repair.
+`SuccinctCloseProposal.bpExcessAt_prefix_nonnegative` records the
 balanced-prefix invariant needed when interpreting the Nat-subtraction excess,
 and `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.summary_read_words_length_le_machine`
 exposes the machine-word side condition for the charged summary table reads.
@@ -300,10 +306,12 @@ endpoint closes to the charged endpoint-fringe/interior macro, proving semantic
 close/LCA exactness with query cost `<= 6`.
 `SuccinctCloseProposal.concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_sampled_profile`
 combines that concrete macro with a supplied payload-live micro budget and a
-sampled `LittleOLinear` endpoint-fringe macro budget. The remaining C2
-integration work is to package the guarded directory into the close-navigation
-family/join used by the final BP-native theorem, not to prove another supplied
-segment or prefix-position hypothesis.
+sampled `LittleOLinear` endpoint-fringe macro budget. That sampled theorem is
+conditional: its macro-budget premise still has to pay for the dense
+`interiorBlockPairRanges blockCount` payload, so it is not a concrete
+`2*n + o(n)` close-directory witness. The remaining C2 work is to replace the
+dense block-pair/interior macro payload with a compact little-o BP-close/LCA
+scheme and then package that directory into the final close-navigation join.
 `SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`
 sharpens the C2 blocker: a macro keyed only by endpoint block ids plus the
 existing endpoint block min/max summaries still cannot return exact answer
@@ -1319,6 +1327,8 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.concreteBPRangeMinMaxSummaryTable_profile`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxSummaryTable_sampled_profile`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxSummaryTable_read_words_length_le_machine`,
+  `SuccinctCloseProposal.compactBPCloseSummaryPayloadOverhead_littleO`,
+  `SuccinctCloseProposal.concreteBPRangeMinMaxSummaryTable_compact_summary_profile`,
   `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxArgSummaryTable.profile`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxArgSummaryTable_sampled_profile`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxArgSummaryTable_read_words_length_le_machine`,

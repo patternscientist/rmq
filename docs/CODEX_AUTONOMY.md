@@ -289,11 +289,16 @@ through rather than surfaced immediately.
     candidate. A theorem such as `_exact_of_merged_candidate` must be followed
     by the proof that the concrete payload entries actually merge to the
     semantic answer candidate.
-21. Invalid stop audits are not permission to stop. If a worker's own audit says
+21. A dense block-pair budget premise is not a succinct close witness. For C2,
+    a sampled profile whose space result assumes a budget for
+    `interiorBlockPairRanges blockCount` or an equivalent all-pairs/interior
+    payload must be followed by a compact relative/universal-table close
+    directory with its own `LittleOLinear` overhead proof.
+22. Invalid stop audits are not permission to stop. If a worker's own audit says
     the loop stop is invalid, it must continue the loop immediately instead of
     sending a final completion report. A final report that admits invalidity
     without further implementation is a protocol failure.
-22. Worker audits always include loop-stop validity and prompt/spec delta.
+23. Worker audits always include loop-stop validity and prompt/spec delta.
     Every audit should explicitly say whether the worker should have stopped,
     and whether the next prompts or loop specs need tightening.
 
