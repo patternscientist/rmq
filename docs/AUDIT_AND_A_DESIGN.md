@@ -743,3 +743,55 @@ completion: rmM summaries → exact LCA-close/RMQ answer, charged), then the C3
 join. Watch that the next round delivers that answer-close, not another
 summary-layer caveat repair. Distance: **C1 done; C2 ~half; C3 open** — critical
 path is rmM answer-close → join.
+
+## 2026-06-20 (later still) — STOP NOT APPROPRIATE: 7 rounds of governance churn, zero proof progress
+
+Since `bd36d99`, **7 commits, zero `.lean` changes** (+232 lines, all in
+`docs/CODEX_AUTONOMY.md`, `docs/SUCCINCT_FINAL_PATH.md`, new
+`docs/WORKER_INTEGRATION_CHECKLIST.md`, `rmq-proof-sprint/SKILL.md`). Build green;
+trust unchanged (no `.lean` delta ⇒ still 0 bad-axiom). The capstone is
+**identical to the prior entry**: C1 done; C2 half (rmM summary data, no
+answer-close); C3 open. The rmM **answer-close — the explicit, policy-named
+critical path — is still absent.**
+
+**The 7 rounds were spent ratcheting the loop's own rulebook**, not proving
+anything:
+- `ff320a6` "Require positive construction for loop stops" — failed construction
+  attempts no longer justify a stop; you now need a *formal impossibility
+  theorem* OR a **"fifty-attempt exhaustion dossier."**
+- `4a8640c` "Make invalid loop stops non-reportable" — if a worker's own audit
+  says its stop is invalid, it must **not send a report**; continue immediately
+  ("the loop-stop audit is a gate, not a confession box").
+- `e12d6fd`/`61b42bc`/`f1150e3`/`f596770` — four more "tighten … loop criteria".
+- `7ea9358` "Require axiom inventory for public worker theorems" (a doc
+  requirement; `axiom_check.lean` itself unchanged).
+
+**Verdict: stop NOT appropriate — this is meta-filler.** Told (via prior audits
+reconciled into the policy) "don't stop without a positive construction," the
+loop responded by *writing more rules about not stopping* instead of producing
+the construction. This is the component-deepening anti-pattern lifted to the
+governance layer — and worse, because policy churn yields no Lean at all. The
+spec/policy docs are now growing faster than the proof they govern.
+
+**Two of the new policies are risky and should be revised** (the intent —
+combating premature/confessional stops — is legitimate; the execution overshoots):
+1. *"Invalid stops non-reportable"* trades away the human's visibility into
+   genuine blockers. Narrow it to "do not report an invalid stop **as success**"
+   — never "suppress the report." Silent grinding is strictly worse than an
+   honest surfaced blocker; the audit trail's whole value is honest
+   stop-reporting.
+2. *The "fifty-attempt exhaustion dossier"* bar effectively forbids the
+   prove-a-minimal-blocker-theorem-and-surface-the-fork behavior that this log
+   **praised two rounds ago** (`blockPairMacroDirectory_not_sufficient`,
+   `denseAllCloseBPCloseLCAOverhead_not_littleO`) as exactly right. Keep a
+   minimal blocker/impossibility theorem (for a sub-design, not only the whole
+   target) as a first-class stop; 50 grinding attempts is not a better signal
+   than one sharp negative theorem.
+
+**Recommendation:** freeze ALL doc/policy edits — the governance is already
+ample, arguably excessive. The next loop iteration must land the **rmM
+answer-close as a Lean theorem** (rmM summaries → exact, charged LCA-close/RMQ
+answer); nothing else counts as capstone progress. Add one objective guard: a
+**docs-only round is not progress** toward the succinct target — if a round
+touches no `.lean` under `RMQ/`, it does not satisfy the anti-filler "debt fell
+or a target closed" contract.
