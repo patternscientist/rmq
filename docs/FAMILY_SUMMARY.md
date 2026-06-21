@@ -267,9 +267,16 @@ block summaries and the sampled term for superblock baselines.
 is the no-premise canonical checkpoint: it builds the concrete payload-live
 relative table from fixed sampled/log-log slots, proves compact little-o
 payload, finite summary-read exactness, cost `<= 4`, and machine-word bounds
-for every charged baseline/min/max/arg-offset read. This is still the
-block-summary layer; the exact answer-close theorem still has to connect those
-relative summaries to endpoint-fringe repair.
+for every charged baseline/min/max/arg-offset read.
+`SuccinctCloseProposal.canonicalBPRelativeMinMaxArgSummaryTableActive_of_large`
+and
+`SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile_of_large`
+now justify and expose the intended raw-parameter branch under an explicit
+large-regime condition: enough sampled block density for the sparse baseline
+budget, a superblock word width linear in the canonical base, relative
+span/arg-width bounds, and relative entries fitting in a machine word. This is
+still the block-summary layer; the exact answer-close theorem still has to
+connect those relative summaries to endpoint-fringe repair.
 `SuccinctCloseProposal.bpExcessAt_prefix_nonnegative` records the
 balanced-prefix invariant needed when interpreting the Nat-subtraction excess,
 and `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.summary_read_words_length_le_machine`
@@ -1359,6 +1366,8 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_compact_payload_profile`,
   `SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_read_words_length_le_machine`,
   `SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile`,
+  `SuccinctCloseProposal.canonicalBPRelativeMinMaxArgSummaryTableActive_of_large`,
+  `SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile_of_large`,
   `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxArgSummaryTable.profile`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxArgSummaryTable_sampled_profile`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxArgSummaryTable_read_words_length_le_machine`,
