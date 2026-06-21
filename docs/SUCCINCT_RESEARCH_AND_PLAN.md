@@ -21,8 +21,17 @@ cheap false closes:
   payload chunk.
 
 These are useful anti-vacuity facts, but they should not define the next round.
-The next round needs a positive component builder: C1 descriptor select or C2
-BP-excess macro.
+Since then, the relative summary component has landed:
+`concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile`
+provides a concrete, payload-live, machine-word-bounded, unconditional
+`LittleOLinear` summary table for BP block min/max/arg data. That closes the
+old "summary envelope is only abstract" gap.
+
+The remaining close-side wall is therefore narrower and sharper: build the
+option-1 compact rmM/min-max-tree-style interior navigator over complete-block
+minimum candidates. The next positive component theorem is
+`concreteBPRelativeRmmInteriorDirectory_profile`, not another scan, dense table,
+or blocker catalog entry.
 
 ## Remaining Components
 
@@ -34,7 +43,10 @@ The capstone splits into three concrete components.
 
 2. C2 concrete macro/micro BP close-LCA.
    Replace abstract `macroCosted` with a real BP-excess/RMQ macro over block
-   summaries plus charged endpoint-fringe repair.
+   summaries plus charged endpoint-fringe repair. The adopted subtarget is the
+   concrete interior rmM/min-max-tree navigator
+   `concreteBPRelativeRmmInteriorDirectory_profile`, consumed immediately by
+   `concretePayloadLiveRelativeRmmBPCloseMacro_profile`.
 
 3. C3 final join.
    Combine exact `shape.bpCode` payload length `2*n`, payload-live rank, C1,
@@ -79,6 +91,22 @@ This is the canonical way to avoid both false designs already ruled out in the
 repo: endpoint-block-pair-only tables are not exact, and fully dense endpoint
 tables are not `o(n)`.
 
+The current option-1 specialization is deliberately modest: prove only the
+interior full-block range-minimum operation needed by the close/LCA macro. The
+directory should expose a costed `rangeMinCosted startBlock count` whose erasure
+is
+
+```lean
+some
+  (bpRangeMinExcess shape canonicalBlockSize startBlock count,
+   bpRangeArgMinPrefixPos shape canonicalBlockSize startBlock count)
+```
+
+under the usual nonempty in-bounds hypotheses, with a constant query bound and
+`LittleOLinear` payload. Directly scanning the relative per-block summaries is a
+valid obstruction/diagnostic theorem but not a component close, because its
+charged cost grows with the number of interior blocks.
+
 ### C2 Micro Layer
 
 Use a Four-Russians plus-minus-one RMQ table for local blocks. This repo already
@@ -115,10 +143,15 @@ The likely novelty remains strong:
 
 ## Recommended Order
 
-1. C1 descriptor select first. It is the most local component and the current
-   blockers are sharp.
-2. C2 range-min-max BP-excess macro with charged fringe repair.
+1. C2 interior first: land
+   `concreteBPRelativeRmmInteriorDirectory_profile` for the option-1 compact
+   rmM/min-max-tree-style navigator over complete-block minimum candidates.
+2. Consume that in `concretePayloadLiveRelativeRmmBPCloseMacro_profile`, then
+   `concreteCompactBPCloseLCADirectory_profile`.
 3. C3 final join, including the lower-bound tie.
+4. C1 descriptor/select work should continue only if the final BP-native join
+   still needs a select-side gap closed; it should not displace the current C2
+   interior target.
 
 For the next worker round, a useful branch must land a concrete component
 profile or a concrete construction consumed by such a profile. More negative

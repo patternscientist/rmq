@@ -326,19 +326,29 @@ For the succinct RMQ capstone:
 
 - Worker A owns the integration theorem, not just an interface. Its target is
   `concreteCompactBPCloseLCADirectory_profile` from
-  `docs/SUCCINCT_FINAL_PATH.md`. If it needs an intermediate theorem, it should
-  first close `bpRelativeRmmCandidateMerge_exact` and
-  `concretePayloadLiveRelativeRmmBPCloseMacro_profile`, then immediately
-  consume them in the directory profile. Adding a field such as
-  `semantic_merge_exact`, a hypothesis such as `hmerge`, or a doc note saying
-  that the concrete builder remains is an invalid final response.
+  `docs/SUCCINCT_FINAL_PATH.md`, but the next local checkpoint is now the
+  adopted option-1 interior theorem:
+  `concreteBPRelativeRmmInteriorDirectory_profile`. A's construction should be
+  a compact rmM/min-max-tree-style navigator over complete-block minimum
+  candidates. It may consume B's relative per-block summary table as leaves, but
+  it must not answer middle intervals by scanning all interior blocks. After
+  the interior profile lands, A should immediately consume it in
+  `concretePayloadLiveRelativeRmmBPCloseMacro_profile`, and then in
+  `concreteCompactBPCloseLCADirectory_profile`. Adding a field such as
+  `semantic_merge_exact`, a hypothesis such as `hmerge`, an exact-but-linear
+  scan, or a doc note saying that the concrete builder remains is an invalid
+  final response.
 - Worker B owns the compact relative-summary budget theorem. Its target is
   `concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile`
   from `docs/SUCCINCT_FINAL_PATH.md`. This is not closed while premises such as
   `hsuperPayload`, `hblockPayload`, a dense `interiorBlockPairRanges`
   envelope, or an unproved machine-word bound remain. If B closes that theorem
-  before A has consumed it, B should continue to the next chain theorem it can
-  own locally, rather than reporting only that the table is ready.
+  before A has consumed it, B should continue to the arithmetic side of
+  `concreteBPRelativeRmmInteriorDirectory_profile`: active/large-regime
+  discharge, little-o overhead of the interior directory parameters, and
+  machine-word bounds for the compact navigator reads. B should not build a
+  second scan-based interior path except as a short obstruction lemma consumed
+  by A's positive rmM target.
 - Coordinator: merge order, adapter work, final `2*n + o(n), O(1)` theorem,
   gate, and docs.
 

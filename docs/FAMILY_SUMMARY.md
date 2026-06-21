@@ -357,6 +357,11 @@ path is formally a blocker, not the rmM macro needed for
 `concretePayloadLiveRelativeRmmBPCloseMacro_profile` or
 `concreteCompactBPCloseLCADirectory_profile`; the remaining positive step is a
 non-scan compact rmM range navigator whose charged query is O(1).
+The coordinator-selected C2 path is to replace the dense block-pair/interior
+macro payload with the compact rmM/min-max-tree-style interior navigator over
+complete-block minimum candidates, prove its constant charged range-min witness
+and `LittleOLinear` payload profile, and then package that directory into the
+final close-navigation join.
 `SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`
 sharpens the C2 blocker: a macro keyed only by endpoint block ids plus the
 existing endpoint block min/max summaries still cannot return exact answer

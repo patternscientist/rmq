@@ -643,18 +643,20 @@ local block-table component a real succinct BP navigation scheme should feed
 into that boundary. The remaining missing construction is the payload-live BP
 close/LCA instantiation itself: build a real succinct macro/micro close-LCA
 entry scheme rather than a dense pair table, then discharge the final two-level
-encoded BP close-navigation family. The guarded endpoint-fringe macro/micro
-profile is exact and useful, but its sampled wrapper is still conditional on a
-budget for the dense `interiorBlockPairRanges blockCount` payload; that premise
-must be eliminated by a compact relative/universal-table close scheme before it
-can support the final `2*n + o(n)` headline.
+encoded BP close-navigation family. The relative BP block-summary table is now
+a concrete payload-live `o(n)` component, so the live C2 checkpoint is the
+option-1 compact rmM/min-max-tree-style interior navigator:
+`concreteBPRelativeRmmInteriorDirectory_profile`. The guarded endpoint-fringe
+macro/micro profile is exact and useful, but its sampled wrapper is still
+conditional on a budget for the dense `interiorBlockPairRanges blockCount`
+payload; that premise must be replaced by the compact interior navigator before
+it can support the final `2*n + o(n)` headline.
 
 Current final-path spec: `docs/SUCCINCT_FINAL_PATH.md`. The tentative path is
-now split into a descriptor-based select component, a concrete macro/micro
-BP-close/LCA component, and a final join theorem. The existing non-identity
-select `blockIndex` hook is not enough by itself: the final select worker must
-either implement the descriptor path or prove an equally concrete alternative
-that lets one local entry choose among multiple machine-word payload words.
+now split into the C2 compact interior navigator, the concrete macro/micro
+BP-close/LCA component that consumes it, and a final join theorem. Select-side
+descriptor work remains relevant only if the final BP-native join exposes a
+live select gap; it should not displace the current C2 interior target.
 
 ### E2 - Reusable Hub Extraction
 

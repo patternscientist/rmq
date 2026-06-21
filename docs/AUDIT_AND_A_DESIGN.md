@@ -322,3 +322,47 @@ blocker unless a concrete C1/C2 construction attempt makes the target
 ill-specified and produces a minimal impossibility theorem. The expected
 deliverable is a positive component profile or a concrete construction consumed
 by such a profile.
+
+## 2026-06-21 - Relative summary wall broken; option-1 interior target pinned
+
+The audit branch's latest note was written before the coordinator pinned option
+1, but its central finding survives reconciliation: the relative summary
+component is now real, unconditional progress rather than another abstract
+budget envelope.
+
+`SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_canonical` and
+`SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile`
+give the project a concrete BP relative min/max/arg summary table with fixed
+canonical parameters, no budget/satisfiability premise, `LittleOLinear`
+compact-overhead accounting, bounded four-word reads, and machine-word
+side conditions. This is the first close-side summary component that is both
+payload-live and instantiable at the intended succinct scale.
+
+The audit's "retire the mirage" warning is also directionally right:
+`interiorBlockPairRanges` and the sampled guarded endpoint-fringe theorem remain
+useful as scaffolding and negative evidence, but they must not be treated as a
+headline close-directory witness because the sampled theorem still depends on a
+dense all-pairs interior payload budget. Once the compact replacement lands,
+the dense sampled profile should be removed from the curated headline inventory
+or deleted outright.
+
+The option-1 decision sharpens the remaining C2 target. We are not pursuing a
+direct scan over the relative summaries, a sparse-table-sized payload, or a
+recursive final-RMQ oracle. The next positive checkpoint is:
+
+```lean
+concreteBPRelativeRmmInteriorDirectory_profile
+```
+
+That theorem should build a compact rmM/min-max-tree-style interior navigator
+over complete-block minimum candidates. It may consume the relative summary
+table as leaves, but it must answer the middle full-block interval by a constant
+number of charged payload reads plus bounded arithmetic, prove exact leftmost
+range-minimum witnesses, prove `LittleOLinear` auxiliary payload, and expose
+machine-word bounds for every read.
+
+After that, the close chain is mechanical in shape but still substantial:
+consume the interior navigator in
+`concretePayloadLiveRelativeRmmBPCloseMacro_profile`, then in
+`concreteCompactBPCloseLCADirectory_profile`, and finally in the BP-native
+succinct RMQ join.
