@@ -9599,6 +9599,686 @@ theorem concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_sampled_pro
   · exact hprofile.2.1
   · exact hprofile.2.2
 
+/-!
+## Relative rmM-style close macro interface
+
+The guarded endpoint-fringe directory above is exact, but its concrete macro
+payload still contains a dense `interiorBlockPairRanges blockCount` table.  The
+next surface below isolates the query-side contract needed from a compact
+Navarro-Sadakane/rmM-style macro: endpoint repairs and the middle full-block
+range are charged candidate reads, while the middle candidate is supplied by a
+relative summary navigator rather than an all-pairs block table.
+-/
+
+/--
+Payload-live relative-rmM macro for cross-block BP close/LCA queries.
+
+The payload layout is intentionally abstract here because the concrete
+relative/log-log summary builder is a separate component.  The query contract is
+not abstract: `lcaCloseCosted` is built from three charged candidate reads, and
+the semantic exactness theorem below consumes their decoded range-witness facts.
+The `semantic_merge_exact` field is the remaining pure BP/rmM merge lemma that
+the concrete summary builder must discharge; it is separated from payload and
+cost fields so it cannot be mistaken for charged data.
+-/
+structure PayloadLiveRelativeRmmBPCloseMacro
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount overhead middleQueryCost : Nat) where
+  payload : List Bool
+  payload_length_eq : payload.length = overhead
+  payloadWordsRead : Nat -> Nat -> List (List Bool)
+  leftFringeCosted : Nat -> Costed (Option (Nat × Nat))
+  rightFringeCosted : Nat -> Costed (Option (Nat × Nat))
+  interiorRmmCosted : Nat -> Nat -> Costed (Option (Nat × Nat))
+  leftFringe_cost_le_two :
+    forall leftClose,
+      (leftFringeCosted leftClose).cost <= 2
+  rightFringe_cost_le_two :
+    forall rightClose,
+      (rightFringeCosted rightClose).cost <= 2
+  interiorRmm_cost_le :
+    forall leftClose rightClose,
+      (interiorRmmCosted leftClose rightClose).cost <= middleQueryCost
+  leftFringe_exact :
+    forall {leftClose : Nat},
+      blockOfClose blockSize leftClose < blockCount ->
+        (leftFringeCosted leftClose).erase =
+          some
+            (bpPrefixRangeMinExcess shape (leftClose + 1)
+              (blockStartOf blockSize
+                  (blockOfClose blockSize leftClose) +
+                blockSize - leftClose),
+              bpPrefixRangeArgMinPrefixPos shape (leftClose + 1)
+                (blockStartOf blockSize
+                    (blockOfClose blockSize leftClose) +
+                  blockSize - leftClose))
+  rightFringe_exact :
+    forall {rightClose : Nat},
+      blockOfClose blockSize rightClose < blockCount ->
+        (rightFringeCosted rightClose).erase =
+          some
+            (bpPrefixRangeMinExcess shape
+              (blockStartOf blockSize
+                (blockOfClose blockSize rightClose))
+              (rightClose -
+                  blockStartOf blockSize
+                    (blockOfClose blockSize rightClose) +
+                2),
+              bpPrefixRangeArgMinPrefixPos shape
+                (blockStartOf blockSize
+                  (blockOfClose blockSize rightClose))
+                (rightClose -
+                    blockStartOf blockSize
+                      (blockOfClose blockSize rightClose) +
+                  2))
+  interiorRmm_exact :
+    forall {leftClose rightClose : Nat},
+      blockOfClose blockSize leftClose < blockCount ->
+        blockOfClose blockSize rightClose < blockCount ->
+          blockOfClose blockSize leftClose + 1 <
+              blockOfClose blockSize rightClose ->
+            (interiorRmmCosted leftClose rightClose).erase =
+              some
+                (bpRangeMinExcess shape blockSize
+                  (blockOfClose blockSize leftClose + 1)
+                  (blockOfClose blockSize rightClose -
+                    blockOfClose blockSize leftClose - 1),
+                  bpRangeArgMinPrefixPos shape blockSize
+                    (blockOfClose blockSize leftClose + 1)
+                    (blockOfClose blockSize rightClose -
+                      blockOfClose blockSize leftClose - 1))
+  semantic_merge_exact :
+    forall {leftClose rightClose answerClose : Nat},
+      0 < blockSize ->
+        blockOfClose blockSize leftClose < blockCount ->
+          blockOfClose blockSize rightClose < blockCount ->
+            blockOfClose blockSize leftClose <
+              blockOfClose blockSize rightClose ->
+              (forall {pos : Nat},
+                leftClose + 1 <= pos ->
+                  pos < rightClose + 2 ->
+                    bpExcessAt shape (answerClose + 1) <=
+                      bpExcessAt shape pos) ->
+                (forall {pos : Nat},
+                  leftClose + 1 <= pos ->
+                    pos < answerClose + 1 ->
+                      bpExcessAt shape (answerClose + 1) <
+                        bpExcessAt shape pos) ->
+                  bpCandidateMerge3?
+                      (some
+                        (bpPrefixRangeMinExcess shape (leftClose + 1)
+                          (blockStartOf blockSize
+                              (blockOfClose blockSize leftClose) +
+                            blockSize - leftClose),
+                          bpPrefixRangeArgMinPrefixPos shape
+                            (leftClose + 1)
+                            (blockStartOf blockSize
+                                (blockOfClose blockSize leftClose) +
+                              blockSize - leftClose)))
+                      (if blockOfClose blockSize leftClose + 1 <
+                            blockOfClose blockSize rightClose then
+                          some
+                            (bpRangeMinExcess shape blockSize
+                              (blockOfClose blockSize leftClose + 1)
+                              (blockOfClose blockSize rightClose -
+                                blockOfClose blockSize leftClose - 1),
+                              bpRangeArgMinPrefixPos shape blockSize
+                                (blockOfClose blockSize leftClose + 1)
+                                (blockOfClose blockSize rightClose -
+                                  blockOfClose blockSize leftClose - 1))
+                        else
+                          none)
+                      (some
+                        (bpPrefixRangeMinExcess shape
+                          (blockStartOf blockSize
+                            (blockOfClose blockSize rightClose))
+                          (rightClose -
+                              blockStartOf blockSize
+                                (blockOfClose blockSize rightClose) +
+                            2),
+                          bpPrefixRangeArgMinPrefixPos shape
+                            (blockStartOf blockSize
+                              (blockOfClose blockSize rightClose))
+                            (rightClose -
+                                blockStartOf blockSize
+                                  (blockOfClose blockSize rightClose) +
+                              2))) =
+                    some
+                      (bpExcessAt shape (answerClose + 1),
+                        answerClose + 1)
+  read_words_length_le_machine :
+    forall {leftClose rightClose : Nat} {word : List Bool},
+      word ∈ payloadWordsRead leftClose rightClose ->
+        word.length <=
+          SuccinctRankProposal.machineWordBits shape.bpCode.length
+
+namespace PayloadLiveRelativeRmmBPCloseMacro
+
+def interiorCandidateCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount overhead middleQueryCost : Nat}
+    (component :
+      PayloadLiveRelativeRmmBPCloseMacro shape blockSize blockCount
+        overhead middleQueryCost)
+    (leftClose rightClose : Nat) : Costed (Option (Nat × Nat)) :=
+  if blockOfClose blockSize leftClose + 1 <
+      blockOfClose blockSize rightClose then
+    component.interiorRmmCosted leftClose rightClose
+  else
+    Costed.pure none
+
+def lcaCloseCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount overhead middleQueryCost : Nat}
+    (component :
+      PayloadLiveRelativeRmmBPCloseMacro shape blockSize blockCount
+        overhead middleQueryCost)
+    (leftClose rightClose : Nat) : Costed (Option Nat) :=
+  Costed.bind (component.leftFringeCosted leftClose) fun left? =>
+    Costed.bind (component.interiorCandidateCosted leftClose rightClose)
+      fun middle? =>
+        Costed.map
+          (fun right? =>
+            bpCandidateClose? (bpCandidateMerge3? left? middle? right?))
+          (component.rightFringeCosted rightClose)
+
+theorem payload_length
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount overhead middleQueryCost : Nat}
+    (component :
+      PayloadLiveRelativeRmmBPCloseMacro shape blockSize blockCount
+        overhead middleQueryCost) :
+    component.payload.length = overhead := by
+  exact component.payload_length_eq
+
+theorem interiorCandidateCosted_cost_le
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount overhead middleQueryCost : Nat}
+    (component :
+      PayloadLiveRelativeRmmBPCloseMacro shape blockSize blockCount
+        overhead middleQueryCost)
+    (leftClose rightClose : Nat) :
+    (component.interiorCandidateCosted leftClose rightClose).cost <=
+      middleQueryCost := by
+  unfold interiorCandidateCosted
+  by_cases hgap :
+      blockOfClose blockSize leftClose + 1 <
+        blockOfClose blockSize rightClose
+  · simp [hgap]
+    exact component.interiorRmm_cost_le leftClose rightClose
+  · simp [hgap, Costed.pure]
+
+theorem lcaCloseCosted_cost_le
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount overhead middleQueryCost : Nat}
+    (component :
+      PayloadLiveRelativeRmmBPCloseMacro shape blockSize blockCount
+        overhead middleQueryCost)
+    (leftClose rightClose : Nat) :
+    (component.lcaCloseCosted leftClose rightClose).cost <=
+      4 + middleQueryCost := by
+  unfold lcaCloseCosted
+  have hleft := component.leftFringe_cost_le_two leftClose
+  have hmiddle :=
+    component.interiorCandidateCosted_cost_le leftClose rightClose
+  have hright := component.rightFringe_cost_le_two rightClose
+  simp [Costed.bind, Costed.map]
+  omega
+
+theorem lcaCloseCosted_erase_decoded
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount overhead middleQueryCost leftClose rightClose : Nat}
+    (component :
+      PayloadLiveRelativeRmmBPCloseMacro shape blockSize blockCount
+        overhead middleQueryCost)
+    (hleftBlock :
+      blockOfClose blockSize leftClose < blockCount)
+    (hrightBlock :
+      blockOfClose blockSize rightClose < blockCount) :
+    (component.lcaCloseCosted leftClose rightClose).erase =
+      bpCandidateClose?
+        (bpCandidateMerge3?
+          (some
+            (bpPrefixRangeMinExcess shape (leftClose + 1)
+              (blockStartOf blockSize
+                  (blockOfClose blockSize leftClose) +
+                blockSize - leftClose),
+              bpPrefixRangeArgMinPrefixPos shape (leftClose + 1)
+                (blockStartOf blockSize
+                    (blockOfClose blockSize leftClose) +
+                  blockSize - leftClose)))
+          (if blockOfClose blockSize leftClose + 1 <
+                blockOfClose blockSize rightClose then
+              some
+                (bpRangeMinExcess shape blockSize
+                  (blockOfClose blockSize leftClose + 1)
+                  (blockOfClose blockSize rightClose -
+                    blockOfClose blockSize leftClose - 1),
+                  bpRangeArgMinPrefixPos shape blockSize
+                    (blockOfClose blockSize leftClose + 1)
+                    (blockOfClose blockSize rightClose -
+                      blockOfClose blockSize leftClose - 1))
+            else
+              none)
+          (some
+            (bpPrefixRangeMinExcess shape
+              (blockStartOf blockSize
+                (blockOfClose blockSize rightClose))
+              (rightClose -
+                  blockStartOf blockSize
+                    (blockOfClose blockSize rightClose) +
+                2),
+              bpPrefixRangeArgMinPrefixPos shape
+                (blockStartOf blockSize
+                  (blockOfClose blockSize rightClose))
+                (rightClose -
+                    blockStartOf blockSize
+                      (blockOfClose blockSize rightClose) +
+                  2)))) := by
+  have hleft :
+      (component.leftFringeCosted leftClose).value =
+        some
+          (bpPrefixRangeMinExcess shape (leftClose + 1)
+            (blockStartOf blockSize
+                (blockOfClose blockSize leftClose) +
+              blockSize - leftClose),
+            bpPrefixRangeArgMinPrefixPos shape (leftClose + 1)
+              (blockStartOf blockSize
+                  (blockOfClose blockSize leftClose) +
+                blockSize - leftClose)) := by
+    simpa [Costed.erase] using component.leftFringe_exact hleftBlock
+  have hright :
+      (component.rightFringeCosted rightClose).value =
+        some
+          (bpPrefixRangeMinExcess shape
+            (blockStartOf blockSize
+              (blockOfClose blockSize rightClose))
+            (rightClose -
+                blockStartOf blockSize
+                  (blockOfClose blockSize rightClose) +
+              2),
+            bpPrefixRangeArgMinPrefixPos shape
+              (blockStartOf blockSize
+                (blockOfClose blockSize rightClose))
+              (rightClose -
+                  blockStartOf blockSize
+                    (blockOfClose blockSize rightClose) +
+                2)) := by
+    simpa [Costed.erase] using component.rightFringe_exact hrightBlock
+  unfold lcaCloseCosted interiorCandidateCosted
+  by_cases hgap :
+      blockOfClose blockSize leftClose + 1 <
+        blockOfClose blockSize rightClose
+  · have hmiddle :
+        (component.interiorRmmCosted leftClose rightClose).value =
+          some
+            (bpRangeMinExcess shape blockSize
+              (blockOfClose blockSize leftClose + 1)
+              (blockOfClose blockSize rightClose -
+                blockOfClose blockSize leftClose - 1),
+              bpRangeArgMinPrefixPos shape blockSize
+                (blockOfClose blockSize leftClose + 1)
+                (blockOfClose blockSize rightClose -
+                  blockOfClose blockSize leftClose - 1)) := by
+      simpa [Costed.erase] using
+        component.interiorRmm_exact hleftBlock hrightBlock hgap
+    simp [Costed.bind, Costed.map, Costed.erase, hleft, hright,
+      hmiddle, hgap]
+  · simp [Costed.bind, Costed.map, Costed.erase, Costed.pure,
+      hleft, hright, hgap]
+
+theorem lcaCloseCosted_exact_of_query_semantics_cross_block
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount overhead middleQueryCost : Nat}
+    (component :
+      PayloadLiveRelativeRmmBPCloseMacro shape blockSize blockCount
+        overhead middleQueryCost)
+    {leftClose rightClose answerClose : Nat}
+    (hblockSize : 0 < blockSize)
+    (hleftBlock :
+      blockOfClose blockSize leftClose < blockCount)
+    (hrightBlock :
+      blockOfClose blockSize rightClose < blockCount)
+    (hcross :
+      blockOfClose blockSize leftClose <
+        blockOfClose blockSize rightClose)
+    (hmin :
+      forall {pos : Nat},
+        leftClose + 1 <= pos ->
+          pos < rightClose + 2 ->
+            bpExcessAt shape (answerClose + 1) <=
+              bpExcessAt shape pos)
+    (hleftmost :
+      forall {pos : Nat},
+        leftClose + 1 <= pos ->
+          pos < answerClose + 1 ->
+            bpExcessAt shape (answerClose + 1) <
+              bpExcessAt shape pos) :
+    (component.lcaCloseCosted leftClose rightClose).erase =
+      some answerClose := by
+  rw [component.lcaCloseCosted_erase_decoded hleftBlock hrightBlock]
+  have hmerge :=
+    component.semantic_merge_exact hblockSize hleftBlock hrightBlock
+      hcross hmin hleftmost
+  simp [hmerge, bpCandidateClose?]
+
+theorem lcaCloseCosted_exact_of_query_cross_block
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount overhead middleQueryCost : Nat}
+    (component :
+      PayloadLiveRelativeRmmBPCloseMacro shape blockSize blockCount
+        overhead middleQueryCost)
+    {left len leftClose rightClose answerClose : Nat}
+    (hlen : 0 < len)
+    (hbound : left + len <= shape.size)
+    (hleft : bpCloseOfInorder? shape left = some leftClose)
+    (hright :
+      bpCloseOfInorder? shape (left + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder? shape
+          (scanWindow shape.representative left len) =
+        some answerClose)
+    (hblockSize : 0 < blockSize)
+    (hleftBlock :
+      blockOfClose blockSize leftClose < blockCount)
+    (hrightBlock :
+      blockOfClose blockSize rightClose < blockCount)
+    (hcross :
+      blockOfClose blockSize leftClose <
+        blockOfClose blockSize rightClose) :
+    (component.lcaCloseCosted leftClose rightClose).erase =
+      some answerClose := by
+  have hsemantic :=
+    answerClose_prefix_leftmost_min_excess_of_query
+      (shape := shape) (start := left) (len := len)
+      (leftClose := leftClose) (rightClose := rightClose)
+      (answerClose := answerClose)
+      hlen hbound hleft hright hanswer
+  exact
+    component.lcaCloseCosted_exact_of_query_semantics_cross_block
+      hblockSize hleftBlock hrightBlock hcross hsemantic.1 hsemantic.2
+
+theorem profile
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount overhead middleQueryCost : Nat}
+    (component :
+      PayloadLiveRelativeRmmBPCloseMacro shape blockSize blockCount
+        overhead middleQueryCost) :
+    component.payload.length = overhead /\
+      (forall leftClose rightClose,
+        (component.lcaCloseCosted leftClose rightClose).cost <=
+          4 + middleQueryCost) := by
+  exact ⟨component.payload_length, component.lcaCloseCosted_cost_le⟩
+
+end PayloadLiveRelativeRmmBPCloseMacro
+
+/--
+Guarded macro/micro close directory using a relative-rmM cross-block macro.
+
+This is the positive C2 query surface that avoids dense interior block-pair
+payloads.  Same-block queries use the existing payload-live micro codebook;
+cross-block queries use the relative-rmM macro component.
+-/
+structure PayloadLiveRelativeRmmMacroMicroBPCloseLCADirectory
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount codeCount codeWidth codeOverhead
+      microTableOverhead relativeOverhead middleQueryCost : Nat) where
+  micro :
+    PayloadLiveBlockMicroCodebook shape blockSize blockCount codeCount
+      codeWidth codeOverhead microTableOverhead
+  macroComponent :
+    PayloadLiveRelativeRmmBPCloseMacro shape blockSize blockCount
+      relativeOverhead middleQueryCost
+  blockSize_pos : 0 < blockSize
+  close_block_lt :
+    forall {close : Nat},
+      close < shape.bpCode.length ->
+        blockOfClose blockSize close < blockCount
+
+namespace PayloadLiveRelativeRmmMacroMicroBPCloseLCADirectory
+
+def payload
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount codeCount codeWidth codeOverhead
+      microTableOverhead relativeOverhead middleQueryCost : Nat}
+    (directory :
+      PayloadLiveRelativeRmmMacroMicroBPCloseLCADirectory
+        shape blockSize blockCount codeCount codeWidth codeOverhead
+        microTableOverhead relativeOverhead middleQueryCost) : List Bool :=
+  directory.micro.payload ++ directory.macroComponent.payload
+
+def lcaCloseCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount codeCount codeWidth codeOverhead
+      microTableOverhead relativeOverhead middleQueryCost : Nat}
+    (directory :
+      PayloadLiveRelativeRmmMacroMicroBPCloseLCADirectory
+        shape blockSize blockCount codeCount codeWidth codeOverhead
+        microTableOverhead relativeOverhead middleQueryCost)
+    (leftClose rightClose : Nat) :
+    Costed (Option Nat) :=
+  if blockOfClose blockSize leftClose =
+      blockOfClose blockSize rightClose then
+    directory.micro.lcaCloseCosted leftClose rightClose
+  else
+    directory.macroComponent.lcaCloseCosted leftClose rightClose
+
+theorem payload_length
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount codeCount codeWidth codeOverhead
+      microTableOverhead relativeOverhead middleQueryCost : Nat}
+    (directory :
+      PayloadLiveRelativeRmmMacroMicroBPCloseLCADirectory
+        shape blockSize blockCount codeCount codeWidth codeOverhead
+        microTableOverhead relativeOverhead middleQueryCost) :
+    directory.payload.length =
+      codeOverhead + codeCount * microTableOverhead + relativeOverhead := by
+  simp [payload, directory.micro.payload_length,
+    directory.macroComponent.payload_length]
+
+theorem lcaCloseCosted_cost_le
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount codeCount codeWidth codeOverhead
+      microTableOverhead relativeOverhead middleQueryCost : Nat}
+    (directory :
+      PayloadLiveRelativeRmmMacroMicroBPCloseLCADirectory
+        shape blockSize blockCount codeCount codeWidth codeOverhead
+        microTableOverhead relativeOverhead middleQueryCost)
+    (leftClose rightClose : Nat) :
+    (directory.lcaCloseCosted leftClose rightClose).cost <=
+      4 + middleQueryCost := by
+  unfold lcaCloseCosted
+  by_cases hsame :
+      blockOfClose blockSize leftClose =
+        blockOfClose blockSize rightClose
+  · simp [hsame]
+    have hmicro := directory.micro.lcaCloseCosted_cost_le_two
+      leftClose rightClose
+    omega
+  · simp [hsame]
+    exact directory.macroComponent.lcaCloseCosted_cost_le
+      leftClose rightClose
+
+theorem lcaCloseCosted_exact
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount codeCount codeWidth codeOverhead
+      microTableOverhead relativeOverhead middleQueryCost : Nat}
+    (directory :
+      PayloadLiveRelativeRmmMacroMicroBPCloseLCADirectory
+        shape blockSize blockCount codeCount codeWidth codeOverhead
+        microTableOverhead relativeOverhead middleQueryCost)
+    {left len leftClose rightClose answerClose : Nat}
+    (hlen : 0 < len)
+    (hbound : left + len <= shape.size)
+    (hleft : bpCloseOfInorder? shape left = some leftClose)
+    (hright :
+      bpCloseOfInorder? shape (left + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder? shape
+          (scanWindow shape.representative left len) =
+        some answerClose) :
+    (directory.lcaCloseCosted leftClose rightClose).erase =
+      some answerClose := by
+  have hleftCloseBound := bpCloseOfInorder?_bounds shape hleft
+  have hrightCloseBound := bpCloseOfInorder?_bounds shape hright
+  have hleftBlock :
+      blockOfClose blockSize leftClose < blockCount :=
+    directory.close_block_lt hleftCloseBound
+  have hrightBlock :
+      blockOfClose blockSize rightClose < blockCount :=
+    directory.close_block_lt hrightCloseBound
+  have hbetween :=
+    answerClose_between_endpoint_closes
+      (shape := shape) (left := left) (len := len)
+      (leftClose := leftClose) (rightClose := rightClose)
+      (answerClose := answerClose)
+      hlen hleft hright hanswer
+  unfold lcaCloseCosted
+  by_cases hsame :
+      blockOfClose blockSize leftClose =
+        blockOfClose blockSize rightClose
+  · simp [hsame]
+    rcases directory.micro.classifier.codeAt_exists_of_lt hleftBlock with
+      ⟨code, hcodeAt⟩
+    have hrightLo :
+        blockStartOf blockSize (blockOfClose blockSize leftClose) <=
+          rightClose := by
+      simpa [hsame] using
+        (blockStartOf_blockOfClose_le
+          (blockSize := blockSize) (close := rightClose))
+    have hrightHi :
+        rightClose <
+          blockStartOf blockSize (blockOfClose blockSize leftClose) +
+            blockSize := by
+      simpa [hsame] using
+        (close_lt_blockStartOf_blockOfClose_add
+          (blockSize := blockSize) (close := rightClose)
+          directory.blockSize_pos)
+    have hanswerLo :
+        blockStartOf blockSize (blockOfClose blockSize leftClose) <=
+          answerClose := by
+      exact Nat.le_trans blockStartOf_blockOfClose_le hbetween.1
+    have hanswerHi :
+        answerClose <
+          blockStartOf blockSize (blockOfClose blockSize leftClose) +
+            blockSize := by
+      exact Nat.lt_of_le_of_lt hbetween.2 hrightHi
+    exact
+      directory.micro.lcaCloseCosted_exact_of_left_block
+        directory.blockSize_pos hcodeAt hlen hbound hleft hright hanswer
+        hrightLo hrightHi hanswerLo hanswerHi
+  · simp [hsame]
+    have hleftRight : leftClose <= rightClose := by
+      omega
+    have hblockLe :
+        blockOfClose blockSize leftClose <=
+          blockOfClose blockSize rightClose := by
+      unfold blockOfClose
+      exact Nat.div_le_div_right hleftRight
+    have hcross :
+        blockOfClose blockSize leftClose <
+          blockOfClose blockSize rightClose := by
+      omega
+    exact
+      directory.macroComponent.lcaCloseCosted_exact_of_query_cross_block
+        hlen hbound hleft hright hanswer directory.blockSize_pos
+        hleftBlock hrightBlock hcross
+
+theorem profile
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount codeCount codeWidth codeOverhead
+      microTableOverhead relativeOverhead middleQueryCost : Nat}
+    (directory :
+      PayloadLiveRelativeRmmMacroMicroBPCloseLCADirectory
+        shape blockSize blockCount codeCount codeWidth codeOverhead
+        microTableOverhead relativeOverhead middleQueryCost) :
+    directory.payload.length =
+        codeOverhead + codeCount * microTableOverhead + relativeOverhead /\
+      (forall leftClose rightClose,
+        (directory.lcaCloseCosted leftClose rightClose).cost <=
+          4 + middleQueryCost) /\
+      forall {left len leftClose rightClose answerClose : Nat},
+        0 < len ->
+          left + len <= shape.size ->
+            bpCloseOfInorder? shape left = some leftClose ->
+              bpCloseOfInorder? shape (left + len - 1) =
+                  some rightClose ->
+                bpCloseOfInorder? shape
+                    (scanWindow shape.representative left len) =
+                  some answerClose ->
+                  (directory.lcaCloseCosted leftClose rightClose).erase =
+                    some answerClose := by
+  constructor
+  · exact directory.payload_length
+  constructor
+  · intro leftClose rightClose
+    exact directory.lcaCloseCosted_cost_le leftClose rightClose
+  intro left len leftClose rightClose answerClose hlen hbound hleft
+    hright hanswer
+  exact directory.lcaCloseCosted_exact hlen hbound hleft hright hanswer
+
+end PayloadLiveRelativeRmmMacroMicroBPCloseLCADirectory
+
+def relativeRmmMacroMicroBPCloseLCAOverhead
+    (microOverhead relativeOverhead : Nat -> Nat) (n : Nat) : Nat :=
+  microOverhead n + relativeOverhead n
+
+theorem relativeRmmMacroMicroBPCloseLCAOverhead_littleO
+    {microOverhead relativeOverhead : Nat -> Nat}
+    (hmicro : LittleOLinear microOverhead)
+    (hrelative : LittleOLinear relativeOverhead) :
+    LittleOLinear
+      (relativeRmmMacroMicroBPCloseLCAOverhead
+        microOverhead relativeOverhead) := by
+  unfold relativeRmmMacroMicroBPCloseLCAOverhead
+  exact hmicro.add hrelative
+
+theorem relativeRmmMacroMicroBPCloseLCADirectory_profile
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount codeCount codeWidth codeOverhead
+      microTableOverhead relativeOverhead middleQueryCost n : Nat)
+    (microBudget relativeBudget : Nat -> Nat)
+    (directory :
+      PayloadLiveRelativeRmmMacroMicroBPCloseLCADirectory
+        shape blockSize blockCount codeCount codeWidth codeOverhead
+        microTableOverhead relativeOverhead middleQueryCost)
+    (hmicroLittle : LittleOLinear microBudget)
+    (hrelativeLittle : LittleOLinear relativeBudget)
+    (hmicroBudget :
+      codeOverhead + codeCount * microTableOverhead <= microBudget n)
+    (hrelativeBudget : relativeOverhead <= relativeBudget n) :
+    LittleOLinear
+        (relativeRmmMacroMicroBPCloseLCAOverhead
+          microBudget relativeBudget) /\
+      directory.payload.length <=
+        relativeRmmMacroMicroBPCloseLCAOverhead
+          microBudget relativeBudget n /\
+      (forall leftClose rightClose,
+        (directory.lcaCloseCosted leftClose rightClose).cost <=
+          4 + middleQueryCost) /\
+      forall {left len leftClose rightClose answerClose : Nat},
+        0 < len ->
+          left + len <= shape.size ->
+            bpCloseOfInorder? shape left = some leftClose ->
+              bpCloseOfInorder? shape (left + len - 1) =
+                  some rightClose ->
+                bpCloseOfInorder? shape
+                    (scanWindow shape.representative left len) =
+                  some answerClose ->
+                  (directory.lcaCloseCosted leftClose rightClose).erase =
+                    some answerClose := by
+  have hprofile := directory.profile
+  constructor
+  · exact relativeRmmMacroMicroBPCloseLCAOverhead_littleO
+      hmicroLittle hrelativeLittle
+  constructor
+  · rw [hprofile.1]
+    unfold relativeRmmMacroMicroBPCloseLCAOverhead
+    omega
+  constructor
+  · exact hprofile.2.1
+  · exact hprofile.2.2
+
 /--
 Concrete dense fallback instance for the payload-live macro/micro surface.
 

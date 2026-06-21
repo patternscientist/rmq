@@ -309,9 +309,20 @@ combines that concrete macro with a supplied payload-live micro budget and a
 sampled `LittleOLinear` endpoint-fringe macro budget. That sampled theorem is
 conditional: its macro-budget premise still has to pay for the dense
 `interiorBlockPairRanges blockCount` payload, so it is not a concrete
-`2*n + o(n)` close-directory witness. The remaining C2 work is to replace the
-dense block-pair/interior macro payload with a compact little-o BP-close/LCA
-scheme and then package that directory into the final close-navigation join.
+`2*n + o(n)` close-directory witness. The relative-rmM successor surface is
+now explicit:
+`SuccinctCloseProposal.PayloadLiveRelativeRmmBPCloseMacro.lcaCloseCosted_exact_of_query_cross_block`
+builds the cross-block query from charged left-fringe, relative-rmM interior,
+and right-fringe candidate reads, and
+`SuccinctCloseProposal.PayloadLiveRelativeRmmMacroMicroBPCloseLCADirectory.profile`
+routes same-block queries through the charged micro-codebook while routing
+cross-block queries through that relative-rmM macro.
+`SuccinctCloseProposal.relativeRmmMacroMicroBPCloseLCADirectory_profile`
+packages the resulting answer-close exactness, query-cost bound, and
+`LittleOLinear` micro-plus-relative overhead budget without mentioning
+`interiorBlockPairRanges blockCount`. The concrete relative/log-log summary
+builder still has to instantiate the macro's rmM candidate-read interface and
+its pure semantic merge law.
 `SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`
 sharpens the C2 blocker: a macro keyed only by endpoint block ids plus the
 existing endpoint block min/max summaries still cannot return exact answer
@@ -1412,6 +1423,12 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_profile`,
   `SuccinctCloseProposal.guardedEndpointFringeMacroMicroOverhead_littleO`,
   `SuccinctCloseProposal.concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_sampled_profile`,
+  `SuccinctCloseProposal.PayloadLiveRelativeRmmBPCloseMacro.lcaCloseCosted_exact_of_query_cross_block`,
+  `SuccinctCloseProposal.PayloadLiveRelativeRmmBPCloseMacro.profile`,
+  `SuccinctCloseProposal.PayloadLiveRelativeRmmMacroMicroBPCloseLCADirectory.lcaCloseCosted_exact`,
+  `SuccinctCloseProposal.PayloadLiveRelativeRmmMacroMicroBPCloseLCADirectory.profile`,
+  `SuccinctCloseProposal.relativeRmmMacroMicroBPCloseLCAOverhead_littleO`,
+  `SuccinctCloseProposal.relativeRmmMacroMicroBPCloseLCADirectory_profile`,
   `SuccinctCloseProposal.emptyPayloadLiveBlockMicroCodebook_lcaCloseCosted_erase`,
   `SuccinctCloseProposal.denseFallbackPayloadLiveMacroMicroBPCloseLCADirectory_profile`,
   `SuccinctCloseProposal.payloadLiveMacroMicroBPCloseLCAOverhead_littleO`,
