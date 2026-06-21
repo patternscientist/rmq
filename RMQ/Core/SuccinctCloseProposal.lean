@@ -3159,6 +3159,352 @@ theorem concreteBPRelativeMinMaxArgSummaryTable_read_words_length_le_machine
         hblocks hcover hsuperWidth hrelativeWidth hargWidth)
       hsuperMachine hrelativeMachine
 
+def canonicalBPRelativeSummaryBase
+    (shape : Cartesian.CartesianShape) : Nat :=
+  Nat.log2 shape.size + 1
+
+def canonicalBPRelativeSummaryBlockSizeRaw
+    (shape : Cartesian.CartesianShape) : Nat :=
+  2 * canonicalBPRelativeSummaryBase shape
+
+def canonicalBPRelativeSummaryBlocksPerSuperRaw
+    (shape : Cartesian.CartesianShape) : Nat :=
+  canonicalBPRelativeSummaryBase shape
+
+def canonicalBPRelativeSummaryBlockCountRaw
+    (shape : Cartesian.CartesianShape) : Nat :=
+  shape.size / canonicalBPRelativeSummaryBase shape
+
+def canonicalBPRelativeSummarySuperCountRaw
+    (shape : Cartesian.CartesianShape) : Nat :=
+  canonicalBPRelativeSummaryBlockCountRaw shape /
+      canonicalBPRelativeSummaryBlocksPerSuperRaw shape + 1
+
+def canonicalBPRelativeSummarySuperWidth
+    (shape : Cartesian.CartesianShape) : Nat :=
+  SuccinctRankProposal.machineWordBits shape.bpCode.length
+
+def canonicalBPRelativeSummaryRelativeWidthRaw
+    (shape : Cartesian.CartesianShape) : Nat :=
+  2 * (Nat.log2 (canonicalBPRelativeSummaryBase shape) + 1) + 3
+
+def canonicalBPRelativeSummarySuperSlots : Nat := 16
+
+def canonicalBPRelativeSummaryBlockSlots : Nat := 64
+
+def canonicalBPRelativeMinMaxArgSummaryTableActive
+    (shape : Cartesian.CartesianShape) : Prop :=
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
+  let blocksPerSuper := canonicalBPRelativeSummaryBlocksPerSuperRaw shape
+  let blockCount := canonicalBPRelativeSummaryBlockCountRaw shape
+  let superCount := canonicalBPRelativeSummarySuperCountRaw shape
+  let superWidth := canonicalBPRelativeSummarySuperWidth shape
+  let relativeWidth := canonicalBPRelativeSummaryRelativeWidthRaw shape
+  blockCount * blockSize <= shape.bpCode.length /\
+    2 * bpSuperblockSpan blockSize blocksPerSuper < 2 ^ relativeWidth /\
+    blockSize < 2 ^ relativeWidth /\
+    superCount * superWidth <=
+      sampledDirectoryOverhead canonicalBPRelativeSummarySuperSlots
+        shape.size /\
+    3 * (blockCount * relativeWidth) <=
+      logLogSampledDirectoryOverhead canonicalBPRelativeSummaryBlockSlots
+        shape.size /\
+    relativeWidth <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length
+
+instance canonicalBPRelativeMinMaxArgSummaryTableActive_decidable
+    (shape : Cartesian.CartesianShape) :
+    Decidable (canonicalBPRelativeMinMaxArgSummaryTableActive shape) := by
+  unfold canonicalBPRelativeMinMaxArgSummaryTableActive
+  infer_instance
+
+def canonicalBPRelativeSummaryBlockSize
+    (shape : Cartesian.CartesianShape) : Nat :=
+  if canonicalBPRelativeMinMaxArgSummaryTableActive shape then
+    canonicalBPRelativeSummaryBlockSizeRaw shape
+  else
+    0
+
+def canonicalBPRelativeSummaryBlocksPerSuper
+    (shape : Cartesian.CartesianShape) : Nat :=
+  if canonicalBPRelativeMinMaxArgSummaryTableActive shape then
+    canonicalBPRelativeSummaryBlocksPerSuperRaw shape
+  else
+    1
+
+def canonicalBPRelativeSummaryBlockCount
+    (shape : Cartesian.CartesianShape) : Nat :=
+  if canonicalBPRelativeMinMaxArgSummaryTableActive shape then
+    canonicalBPRelativeSummaryBlockCountRaw shape
+  else
+    0
+
+def canonicalBPRelativeSummarySuperCount
+    (shape : Cartesian.CartesianShape) : Nat :=
+  if canonicalBPRelativeMinMaxArgSummaryTableActive shape then
+    canonicalBPRelativeSummarySuperCountRaw shape
+  else
+    0
+
+def canonicalBPRelativeSummaryRelativeWidth
+    (shape : Cartesian.CartesianShape) : Nat :=
+  if canonicalBPRelativeMinMaxArgSummaryTableActive shape then
+    canonicalBPRelativeSummaryRelativeWidthRaw shape
+  else
+    0
+
+private theorem canonicalBPRelativeSummary_active_parts
+    {shape : Cartesian.CartesianShape}
+    (hactive :
+      canonicalBPRelativeMinMaxArgSummaryTableActive shape) :
+    canonicalBPRelativeSummaryBlockCountRaw shape *
+          canonicalBPRelativeSummaryBlockSizeRaw shape <=
+        shape.bpCode.length /\
+      2 * bpSuperblockSpan
+          (canonicalBPRelativeSummaryBlockSizeRaw shape)
+          (canonicalBPRelativeSummaryBlocksPerSuperRaw shape) <
+        2 ^ canonicalBPRelativeSummaryRelativeWidthRaw shape /\
+      canonicalBPRelativeSummaryBlockSizeRaw shape <
+        2 ^ canonicalBPRelativeSummaryRelativeWidthRaw shape /\
+      canonicalBPRelativeSummarySuperCountRaw shape *
+          canonicalBPRelativeSummarySuperWidth shape <=
+        sampledDirectoryOverhead canonicalBPRelativeSummarySuperSlots
+          shape.size /\
+      3 * (canonicalBPRelativeSummaryBlockCountRaw shape *
+          canonicalBPRelativeSummaryRelativeWidthRaw shape) <=
+        logLogSampledDirectoryOverhead canonicalBPRelativeSummaryBlockSlots
+          shape.size /\
+      canonicalBPRelativeSummaryRelativeWidthRaw shape <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  simpa [canonicalBPRelativeMinMaxArgSummaryTableActive] using hactive
+
+theorem canonicalBPRelativeSummary_blocksPerSuper_pos
+    (shape : Cartesian.CartesianShape) :
+    0 < canonicalBPRelativeSummaryBlocksPerSuper shape := by
+  by_cases hactive :
+      canonicalBPRelativeMinMaxArgSummaryTableActive shape
+  · simp [canonicalBPRelativeSummaryBlocksPerSuper,
+      canonicalBPRelativeSummaryBlocksPerSuperRaw,
+      canonicalBPRelativeSummaryBase, hactive]
+  · simp [canonicalBPRelativeSummaryBlocksPerSuper, hactive]
+
+theorem canonicalBPRelativeSummary_cover
+    (shape : Cartesian.CartesianShape) :
+    canonicalBPRelativeSummaryBlockCount shape *
+        canonicalBPRelativeSummaryBlockSize shape <=
+      shape.bpCode.length := by
+  by_cases hactive :
+      canonicalBPRelativeMinMaxArgSummaryTableActive shape
+  · have hparts :=
+      canonicalBPRelativeSummary_active_parts (shape := shape) hactive
+    simpa [canonicalBPRelativeSummaryBlockCount,
+      canonicalBPRelativeSummaryBlockSize, hactive] using hparts.1
+  · simp [canonicalBPRelativeSummaryBlockCount,
+      canonicalBPRelativeSummaryBlockSize, hactive]
+
+theorem canonicalBPRelativeSummary_superWidth_bound
+    (shape : Cartesian.CartesianShape) :
+    shape.bpCode.length <
+      2 ^ canonicalBPRelativeSummarySuperWidth shape := by
+  unfold canonicalBPRelativeSummarySuperWidth
+  unfold SuccinctRankProposal.machineWordBits
+  exact Nat.lt_log2_self (n := shape.bpCode.length)
+
+theorem canonicalBPRelativeSummary_relativeWidth_bound
+    (shape : Cartesian.CartesianShape) :
+    2 * bpSuperblockSpan
+        (canonicalBPRelativeSummaryBlockSize shape)
+        (canonicalBPRelativeSummaryBlocksPerSuper shape) <
+      2 ^ canonicalBPRelativeSummaryRelativeWidth shape := by
+  by_cases hactive :
+      canonicalBPRelativeMinMaxArgSummaryTableActive shape
+  · have hparts :=
+      canonicalBPRelativeSummary_active_parts (shape := shape) hactive
+    simpa [canonicalBPRelativeSummaryBlockSize,
+      canonicalBPRelativeSummaryBlocksPerSuper,
+      canonicalBPRelativeSummaryRelativeWidth, hactive] using hparts.2.1
+  · simp [canonicalBPRelativeSummaryBlockSize,
+      canonicalBPRelativeSummaryBlocksPerSuper,
+      canonicalBPRelativeSummaryRelativeWidth, bpSuperblockSpan, hactive]
+
+theorem canonicalBPRelativeSummary_argWidth_bound
+    (shape : Cartesian.CartesianShape) :
+    canonicalBPRelativeSummaryBlockSize shape <
+      2 ^ canonicalBPRelativeSummaryRelativeWidth shape := by
+  by_cases hactive :
+      canonicalBPRelativeMinMaxArgSummaryTableActive shape
+  · have hparts :=
+      canonicalBPRelativeSummary_active_parts (shape := shape) hactive
+    simpa [canonicalBPRelativeSummaryBlockSize,
+      canonicalBPRelativeSummaryRelativeWidth, hactive] using hparts.2.2.1
+  · simp [canonicalBPRelativeSummaryBlockSize,
+      canonicalBPRelativeSummaryRelativeWidth, hactive]
+
+theorem canonicalBPRelativeSummary_superPayload_bound
+    (shape : Cartesian.CartesianShape) :
+    canonicalBPRelativeSummarySuperCount shape *
+        canonicalBPRelativeSummarySuperWidth shape <=
+      sampledDirectoryOverhead canonicalBPRelativeSummarySuperSlots
+        shape.size := by
+  by_cases hactive :
+      canonicalBPRelativeMinMaxArgSummaryTableActive shape
+  · have hparts :=
+      canonicalBPRelativeSummary_active_parts (shape := shape) hactive
+    simpa [canonicalBPRelativeSummarySuperCount, hactive] using
+      hparts.2.2.2.1
+  · simp [canonicalBPRelativeSummarySuperCount, hactive]
+
+theorem canonicalBPRelativeSummary_blockPayload_bound
+    (shape : Cartesian.CartesianShape) :
+    3 * (canonicalBPRelativeSummaryBlockCount shape *
+        canonicalBPRelativeSummaryRelativeWidth shape) <=
+      logLogSampledDirectoryOverhead canonicalBPRelativeSummaryBlockSlots
+        shape.size := by
+  by_cases hactive :
+      canonicalBPRelativeMinMaxArgSummaryTableActive shape
+  · have hparts :=
+      canonicalBPRelativeSummary_active_parts (shape := shape) hactive
+    simpa [canonicalBPRelativeSummaryBlockCount,
+      canonicalBPRelativeSummaryRelativeWidth, hactive] using
+      hparts.2.2.2.2.1
+  · simp [canonicalBPRelativeSummaryBlockCount,
+      canonicalBPRelativeSummaryRelativeWidth, hactive]
+
+theorem canonicalBPRelativeSummary_superWidth_machine
+    (shape : Cartesian.CartesianShape) :
+    canonicalBPRelativeSummarySuperWidth shape <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  exact Nat.le_refl _
+
+theorem canonicalBPRelativeSummary_relativeWidth_machine
+    (shape : Cartesian.CartesianShape) :
+    canonicalBPRelativeSummaryRelativeWidth shape <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  by_cases hactive :
+      canonicalBPRelativeMinMaxArgSummaryTableActive shape
+  · have hparts :=
+      canonicalBPRelativeSummary_active_parts (shape := shape) hactive
+    simpa [canonicalBPRelativeSummaryRelativeWidth, hactive] using
+      hparts.2.2.2.2.2
+  · simp [canonicalBPRelativeSummaryRelativeWidth, hactive]
+
+def concreteBPRelativeMinMaxArgSummaryTable_canonical
+    (shape : Cartesian.CartesianShape) :
+    PayloadLiveBPRelativeMinMaxArgSummaryTable shape
+      (canonicalBPRelativeSummaryBlockSize shape)
+      (canonicalBPRelativeSummaryBlocksPerSuper shape)
+      (canonicalBPRelativeSummaryBlockCount shape)
+      (canonicalBPRelativeSummarySuperCount shape)
+      (canonicalBPRelativeSummarySuperWidth shape)
+      (canonicalBPRelativeSummaryRelativeWidth shape)
+      (canonicalBPRelativeSummarySuperCount shape *
+          canonicalBPRelativeSummarySuperWidth shape +
+        3 * (canonicalBPRelativeSummaryBlockCount shape *
+          canonicalBPRelativeSummaryRelativeWidth shape)) :=
+  concreteBPRelativeMinMaxArgSummaryTable shape
+    (canonicalBPRelativeSummaryBlockSize shape)
+    (canonicalBPRelativeSummaryBlocksPerSuper shape)
+    (canonicalBPRelativeSummaryBlockCount shape)
+    (canonicalBPRelativeSummarySuperCount shape)
+    (canonicalBPRelativeSummarySuperWidth shape)
+    (canonicalBPRelativeSummaryRelativeWidth shape)
+    (canonicalBPRelativeSummary_blocksPerSuper_pos shape)
+    (canonicalBPRelativeSummary_cover shape)
+    (canonicalBPRelativeSummary_superWidth_bound shape)
+    (canonicalBPRelativeSummary_relativeWidth_bound shape)
+    (canonicalBPRelativeSummary_argWidth_bound shape)
+
+theorem concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile
+    (shape : Cartesian.CartesianShape) :
+    let table := concreteBPRelativeMinMaxArgSummaryTable_canonical shape
+    LittleOLinear
+      (compactBPCloseSummaryPayloadOverhead
+        canonicalBPRelativeSummaryBlockSlots 0 0
+        canonicalBPRelativeSummarySuperSlots) /\
+      table.payload.length <=
+        compactBPCloseSummaryPayloadOverhead
+          canonicalBPRelativeSummaryBlockSlots 0 0
+          canonicalBPRelativeSummarySuperSlots shape.size /\
+      (forall block,
+        (table.summaryCosted block).cost <= 4 /\
+          (table.summaryCosted block).erase =
+            match
+              (bpSuperblockBaselineEntries shape
+                (canonicalBPRelativeSummaryBlockSize shape)
+                (canonicalBPRelativeSummaryBlocksPerSuper shape)
+                (canonicalBPRelativeSummarySuperCount shape))[
+                  block /
+                    canonicalBPRelativeSummaryBlocksPerSuper shape]?,
+              (bpBlockRelativeMinExcessEntries shape
+                (canonicalBPRelativeSummaryBlockSize shape)
+                (canonicalBPRelativeSummaryBlocksPerSuper shape)
+                (canonicalBPRelativeSummaryBlockCount shape))[block]?,
+              (bpBlockRelativeMaxExcessEntries shape
+                (canonicalBPRelativeSummaryBlockSize shape)
+                (canonicalBPRelativeSummaryBlocksPerSuper shape)
+                (canonicalBPRelativeSummaryBlockCount shape))[block]?,
+              (bpBlockArgMinLocalOffsetEntries shape
+                (canonicalBPRelativeSummaryBlockSize shape)
+                (canonicalBPRelativeSummaryBlockCount shape))[block]?
+            with
+            | some baseline, some minRel, some maxRel, some argOffset =>
+                some (baseline, minRel, maxRel, argOffset)
+            | _, _, _, _ => none) /\
+      (forall {index : Nat} {word : List Bool},
+        table.baselineTable.store.words[index]? = some word ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.minRelTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.maxRelTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.argOffsetTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+  let table := concreteBPRelativeMinMaxArgSummaryTable_canonical shape
+  have hprofile :=
+    concreteBPRelativeMinMaxArgSummaryTable_compact_payload_profile
+      shape
+      (canonicalBPRelativeSummaryBlockSize shape)
+      (canonicalBPRelativeSummaryBlocksPerSuper shape)
+      (canonicalBPRelativeSummaryBlockCount shape)
+      (canonicalBPRelativeSummarySuperCount shape)
+      (canonicalBPRelativeSummarySuperWidth shape)
+      (canonicalBPRelativeSummaryRelativeWidth shape)
+      canonicalBPRelativeSummarySuperSlots
+      canonicalBPRelativeSummaryBlockSlots
+      shape.size
+      (canonicalBPRelativeSummary_blocksPerSuper_pos shape)
+      (canonicalBPRelativeSummary_cover shape)
+      (canonicalBPRelativeSummary_superWidth_bound shape)
+      (canonicalBPRelativeSummary_relativeWidth_bound shape)
+      (canonicalBPRelativeSummary_argWidth_bound shape)
+      (canonicalBPRelativeSummary_superPayload_bound shape)
+      (canonicalBPRelativeSummary_blockPayload_bound shape)
+  have hwords :=
+    concreteBPRelativeMinMaxArgSummaryTable_read_words_length_le_machine
+      shape
+      (canonicalBPRelativeSummaryBlockSize shape)
+      (canonicalBPRelativeSummaryBlocksPerSuper shape)
+      (canonicalBPRelativeSummaryBlockCount shape)
+      (canonicalBPRelativeSummarySuperCount shape)
+      (canonicalBPRelativeSummarySuperWidth shape)
+      (canonicalBPRelativeSummaryRelativeWidth shape)
+      (canonicalBPRelativeSummary_blocksPerSuper_pos shape)
+      (canonicalBPRelativeSummary_cover shape)
+      (canonicalBPRelativeSummary_superWidth_bound shape)
+      (canonicalBPRelativeSummary_relativeWidth_bound shape)
+      (canonicalBPRelativeSummary_argWidth_bound shape)
+      (canonicalBPRelativeSummary_superWidth_machine shape)
+      (canonicalBPRelativeSummary_relativeWidth_machine shape)
+  exact ⟨hprofile.1, hprofile.2.1, hprofile.2.2, hwords.1,
+    hwords.2.1, hwords.2.2.1, hwords.2.2.2⟩
+
 /-!
 ## Position-bearing BP block summaries
 

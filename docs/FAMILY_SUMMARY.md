@@ -262,9 +262,14 @@ budget for absolute `Theta(log n)` block summaries.
 `SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_compact_payload_profile`
 then plugs the same concrete relative table into
 `compactBPCloseSummaryPayloadOverhead`, using the log-log term for relative
-block summaries and the sampled term for superblock baselines. This is still
-the block-summary layer; the exact answer-close theorem still has to connect
-those relative summaries to endpoint-fringe repair.
+block summaries and the sampled term for superblock baselines.
+`SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile`
+is the no-premise canonical checkpoint: it builds the concrete payload-live
+relative table from fixed sampled/log-log slots, proves compact little-o
+payload, finite summary-read exactness, cost `<= 4`, and machine-word bounds
+for every charged baseline/min/max/arg-offset read. This is still the
+block-summary layer; the exact answer-close theorem still has to connect those
+relative summaries to endpoint-fringe repair.
 `SuccinctCloseProposal.bpExcessAt_prefix_nonnegative` records the
 balanced-prefix invariant needed when interpreting the Nat-subtraction excess,
 and `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.summary_read_words_length_le_machine`
@@ -1348,6 +1353,7 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_relative_payload_profile`,
   `SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_compact_payload_profile`,
   `SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_read_words_length_le_machine`,
+  `SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile`,
   `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxArgSummaryTable.profile`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxArgSummaryTable_sampled_profile`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxArgSummaryTable_read_words_length_le_machine`,
