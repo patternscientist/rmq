@@ -10,22 +10,27 @@ compiled exactness/cost/profile theorems.
 ## Current Capstone Status
 
 `SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
-has landed as the final BP-native join over the concrete compact close
-directory. It is a real join theorem: the payload is `shape.bpCode ++ aux`, the
+has landed as the BP-native join over the concrete compact close directory. It
+is a real composition theorem: the payload is `shape.bpCode ++ aux`, the
 auxiliary payload is padded to the stated overhead, query cost is bounded, and
 valid representative windows erase to `scanWindow`.
 
-That theorem is still conditional. Its first argument is an abstract
-`SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily`; the
-repository does not yet contain a concrete family witness inhabiting that
-structure. Treating the joined theorem as the final `2*n + o(n), O(1)` result
-without such a witness is an invalid stop.
+That theorem is deliberately weak as a final worker target. Its argument is a
+`SuccinctFinal.PayloadLiveBPCloseAccessFamily`, whose `selectCloseCosted` and
+`rankCloseCosted` operations are still fields. A proof-routed inhabitant can
+compute the semantic close/rank value in pure Lean and charge an unrelated read.
+Such an inhabitant is useful as an interface caveat, but treating it as the
+final `2*n + o(n), O(1)` result is an invalid stop.
 
-The latest rank/select audit changes the target shape. The old two-level
-family is now a scaffold, not the sacred capstone interface: the canonical
-select-block table stores absolute positions densely enough that its payload is
-not the required `o(n)` witness. The final RMQ query uses only false-target BP
-operations:
+The hardened target is
+`SuccinctFinal.readBackedBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`.
+It consumes `SuccinctFinal.ReadBackedBPCloseAccessFamily`, whose close-select
+and rank-close operations are derived from stored-word rank/select data rather
+than supplied as arbitrary functions. This does not remove every future proof
+obligation, but it makes the worker scorecard a concrete read-backed family,
+not a free costed-function bundle.
+
+The final RMQ query uses only false-target BP operations:
 
 - `select false shape.bpCode idx`, transported through
   `SuccinctSpace.select_false_bpCode_eq_bpCloseOfInorder?`;
@@ -33,35 +38,31 @@ operations:
   `SuccinctSpace.bpCloseOfInorder?_rankFalse_succ`; and
 - the already concrete compact close/LCA directory.
 
-The next required target is therefore concrete and non-negotiable, but it should
-be false-only and payload-live rather than committed to the old full
-rank/select-family witness:
+The next required target is therefore concrete and non-negotiable: produce a
+read-backed false-only access family, then consume it in the read-backed final
+join.
 
 ```lean
-structure BPCloseAccessDirectory
-    (shape : Cartesian.CartesianShape) (overhead queryCost : Nat) where
-  payload : List Bool
-  payload_length_le_overhead : payload.length <= overhead
-  selectCloseCosted : Nat -> Costed (Option Nat)
-  rankCloseCosted : Nat -> Costed Nat
-  selectClose_cost_le :
-    forall idx, (selectCloseCosted idx).cost <= queryCost
-  rankClose_cost_le :
-    forall pos, (rankCloseCosted pos).cost <= queryCost
-  selectClose_exact :
-    forall idx,
-      (selectCloseCosted idx).erase =
-        SuccinctSpace.bpCloseOfInorder? shape idx
-  rankClose_exact :
-    forall pos,
-      (rankCloseCosted pos).erase =
-        Succinct.rankPrefix false shape.bpCode pos
-  read_words_length_le_machine : ...
+structure ReadBackedBPCloseAccessFamily
+    (rankSuperOverhead rankBlockOverhead
+      selectSuperOverhead selectBlockOverhead
+      overhead : Nat -> Nat)
+    (queryCost : Nat) where
+  directory :
+    forall shape : Cartesian.CartesianShape,
+      ReadBackedBPCloseAccessDirectory shape
+        (rankSuperOverhead shape.size)
+        (rankBlockOverhead shape.size)
+        (selectSuperOverhead shape.size)
+        (selectBlockOverhead shape.size)
+        (overhead shape.size)
+        queryCost
+  overhead_littleO : SuccinctSpace.LittleOLinear overhead
 
-theorem concreteBPCloseAccessFamily_profile :
+theorem concreteReadBackedBPCloseAccessFamily_profile :
     SuccinctSpace.LittleOLinear closeAccessOverhead /\
       forall shape,
-        let access := concreteBPCloseAccessDirectory shape
+        let access := concreteReadBackedBPCloseAccessFamily.directory shape
         access.payload.length <= closeAccessOverhead shape.size /\
           (forall idx,
             (access.selectCloseCosted idx).cost <= closeAccessQueryCost) /\
@@ -77,17 +78,16 @@ theorem concreteBPCloseAccessFamily_profile :
 
 theorem concreteBPNativeSuccinctRMQ_two_n_plus_o_constant_query_profile :
     -- the same payload length, LittleOLinear overhead, constant query, and
-    -- exact valid-window erasure conclusions as the conditional join, with no
-    -- abstract rank/select family or close-access parameter
+    -- exact valid-window erasure conclusions as the read-backed join, with no
+    -- abstract weak close-access parameter
     ... := ...
 ```
 
-The close-access witness should assemble the existing rank-false machinery, the
-new compact false-select locator, and the concrete close/LCA directory. It
-should not hide behind an arbitrary `selectCloseCosted` field. The final theorem
-may still keep a generic conditional join as a reusable lemma, but worker
-success is the concrete access witness plus its consumption in the
-unconditional RMQ theorem.
+The close-access witness should assemble the existing stored-word rank-false
+machinery, the new compact false-select locator, and the concrete close/LCA
+directory. It should not hide behind an arbitrary `selectCloseCosted` field.
+Worker success is a concrete read-backed access witness plus its consumption in
+the read-backed final theorem.
 
 The final interface must not accept a vacuous fixed-shape space proof such as
 `LittleOLinear (fun _ => data.auxPayload.length)`. A valid close-access witness
@@ -675,35 +675,40 @@ carry the caveat rather than silently claiming bit-level local decoding.
 6. Final BP-native RMQ join:
 
 ```lean
-theorem concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
+theorem readBackedBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
     (accessFamily :
-      PayloadLiveBPCloseAccessFamily closeAccessOverhead closeAccessQueryCost) :
+      ReadBackedBPCloseAccessFamily
+        rankSuperOverhead rankBlockOverhead
+        selectSuperOverhead selectBlockOverhead
+        closeAccessOverhead closeAccessQueryCost) :
     SuccinctSpace.LittleOLinear
-        (concreteBPNativeSuccinctRMQOverhead accessFamily.overhead) /\
+        (concreteBPNativeSuccinctRMQOverhead closeAccessOverhead) /\
       forall n,
         EncodingLowerBound.logSlackLower n <=
           2 * n +
-            concreteBPNativeSuccinctRMQOverhead accessFamily.overhead n /\
+            concreteBPNativeSuccinctRMQOverhead closeAccessOverhead n /\
         (forall {shape},
           shape ∈ Cartesian.shapesOfSize n ->
-            (concreteBPNativeSuccinctRMQPayload accessFamily shape).length =
+            (concreteBPNativeSuccinctRMQPayload
+              accessFamily.toWeakFamily shape).length =
               2 * n +
-                concreteBPNativeSuccinctRMQOverhead accessFamily.overhead n) /\
+                concreteBPNativeSuccinctRMQOverhead closeAccessOverhead n) /\
         (forall shape left right,
           (concreteBPNativeSuccinctRMQQueryCosted
-            accessFamily shape left right).cost <=
+            accessFamily.toWeakFamily shape left right).cost <=
             concreteBPNativeSuccinctRMQQueryCost closeAccessQueryCost) /\
         -- exact built-query RMQ erasure for every valid representative window
         ... := ...
 ```
 
-This final join consumes the false-only close-access surface and the C2 concrete
-compact close directory. The current theorem is a built-payload join, not an
-arbitrary encoded-function wrapper: its payload is `shape.bpCode ++ aux`, with
-aux padded to the exact reserved overhead, and its query erases to the exact
-representative-array RMQ result. The remaining C1 task is still the concrete
-compact instantiation of the close-select access surface; do not claim that a
-conditional access theorem retires the compact locator caveat by itself.
+This final join consumes the read-backed false-only close-access surface and the
+C2 concrete compact close directory. The current theorem is a built-payload
+join, not an arbitrary encoded-function wrapper: its payload is
+`shape.bpCode ++ aux`, with aux padded to the exact reserved overhead, and its
+query erases to the exact representative-array RMQ result. The remaining C1
+task is still the concrete compact instantiation of the read-backed close-select
+surface; do not claim that the weak conditional access theorem retires the
+compact locator caveat by itself.
 
 ## Concrete Close Contract
 
@@ -757,7 +762,7 @@ the worker report or scratch notes:
 
 ```text
 Overall goal:   final concrete BP-native succinct RMQ profile
-Current gap:    concrete false-select close access, then the unconditional join
+Current gap:    concrete read-backed false-select close access, then the unconditional join
 Hard part:      routing idx to the selected BP payload word with charged o(n) locator payload
 This iteration: the largest coherent proof/construction step toward it
 Not doing:      adjacent helper/docs/blocker work that would leave it untouched
@@ -799,6 +804,9 @@ Invalid stop points for this final path:
 - re-proving or restating the conditional
   `concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
   without producing the concrete false-only close-access witness that it consumes.
+- proving a `PayloadLiveBPCloseAccessFamily` inhabitant whose costed functions
+  first compute `bpCloseOfInorder?`, `rankPrefix`, `scanWindow`, or another
+  semantic reference answer and then charge an unrelated/dummy payload read.
 - proving a compact-select/close-access component surface whose exactness still
   comes from proof fields such as `descriptor_some_exact`,
   `descriptor_none_exact`, `descriptor_word_choice_exact`, or a free

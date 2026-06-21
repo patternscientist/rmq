@@ -462,22 +462,30 @@ and `LittleOLinear` payload profile, and then package that directory into the
 final close-navigation join; this is the path now consumed by
 `SuccinctCloseProposal.concreteCompactBPCloseLCADirectory_profile`.
 `SuccinctFinal.BPCloseAccessDirectory` and
-`SuccinctFinal.PayloadLiveBPCloseAccessFamily.constant_query_profile` now name
-the final false-only BP close-access surface: `selectCloseCosted` erases to
+`SuccinctFinal.PayloadLiveBPCloseAccessFamily.constant_query_profile` now name a
+weak false-only BP close-access adapter: `selectCloseCosted` erases to
 `bpCloseOfInorder?`, `rankCloseCosted` erases to false-prefix rank over
 `shape.bpCode`, and the rank/select payload word reads carry machine-word
-bounds. The access surface now requires the non-vacuous space obligation as a
-field, `payload_length_le_overhead : payload.length <= overhead`; the final
-join consumes this bound by padding the close-access payload up to the reserved
-overhead instead of relying on an uninspected `LittleOLinear` claim.
+bounds. The adapter requires the non-vacuous space obligation as a field,
+`payload_length_le_overhead : payload.length <= overhead`; the join consumes
+this bound by padding the close-access payload up to the reserved overhead
+instead of relying on an uninspected `LittleOLinear` claim. The adapter is not
+the final worker target, because its costed operations are fields and can hide
+semantic reference computation.
 `SuccinctFinal.concreteBPNativeCloseAccessPayload_length_le_overhead` exposes
 the shape-indexed bound used by the capstone theorem.
 `SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
-is the BP-native built-query join over that access family plus the concrete
-compact close/LCA directory: the payload is exactly `shape.bpCode` plus padded
-auxiliary close-access and close-directory payloads, the payload length is
-`2*n + concreteBPNativeSuccinctRMQOverhead ... n`, the combined overhead is
-`LittleOLinear`, the query cost is bounded by
+is the BP-native built-query join over that weak access family plus the concrete
+compact close/LCA directory. `SuccinctFinal.ReadBackedBPCloseAccessDirectory`
+and `SuccinctFinal.ReadBackedBPCloseAccessFamily.constant_query_profile` are the
+hardened target: close-select and rank-close are derived from concrete two-level
+stored-word rank/select data rather than supplied as arbitrary functions.
+`SuccinctFinal.readBackedBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
+is the research-facing final-join corollary workers should consume once the
+compact read-backed C1 witness exists. Its payload is exactly `shape.bpCode`
+plus padded auxiliary close-access and close-directory payloads, the payload
+length is `2*n + concreteBPNativeSuccinctRMQOverhead ... n`, the combined
+overhead is `LittleOLinear`, the query cost is bounded by
 `3 * closeAccessCost + concreteCompactBPCloseQueryCost`, and erasure returns the
 exact representative-array RMQ answer. The old two-level rank/select family is
 kept only as an adapter via
@@ -486,10 +494,10 @@ compatibility corollary
 `SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile_of_rankSelectFamily`.
 The theorem remains conditional: the repository still needs Worker A's concrete
 compact false-select/close-access family witness inhabiting
-`PayloadLiveBPCloseAccessFamily` with both an `o(n)` overhead and the explicit
-`payload.length <= overhead shape.size` bound before the unconditional
-BP-native `2*n + o(n), O(1)` theorem is closed. `scripts/succinct_cost_lint.ps1`
-is wired into `scripts/gate.ps1` and now flags the audited anti-pattern
+`ReadBackedBPCloseAccessFamily` with both an `o(n)` overhead and the explicit
+`payload.length <= overhead shape.size` bound before the unconditional BP-native
+`2*n + o(n), O(1)` theorem is closed. `scripts/succinct_cost_lint.ps1` is wired
+into `scripts/gate.ps1` and now flags the audited anti-pattern
 `LittleOLinear (fun _ => ...)` in succinct proposal/final source files.
 `SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`
 sharpens the C2 blocker: a macro keyed only by endpoint block ids plus the
@@ -1636,8 +1644,16 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.queryBuiltCosted_cost_le`,
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.queryBuiltCosted_exact`,
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.two_n_plus_o_built_query_profile`.
-- `RMQ/Core/SuccinctFinal.lean` (15):
+- `RMQ/Core/SuccinctFinal.lean` (24):
   `SuccinctFinal.PayloadLiveBPCloseAccessFamily.constant_query_profile`,
+  `SuccinctFinal.ReadBackedBPCloseAccessDirectory.payload_length_le_overhead`,
+  `SuccinctFinal.ReadBackedBPCloseAccessDirectory.selectCloseCosted_cost_le`,
+  `SuccinctFinal.ReadBackedBPCloseAccessDirectory.rankCloseCosted_cost_le`,
+  `SuccinctFinal.ReadBackedBPCloseAccessDirectory.selectCloseCosted_exact`,
+  `SuccinctFinal.ReadBackedBPCloseAccessDirectory.rankCloseCosted_exact`,
+  `SuccinctFinal.ReadBackedBPCloseAccessDirectory.rank_read_words_length_le_machine`,
+  `SuccinctFinal.ReadBackedBPCloseAccessDirectory.select_read_words_length_le_machine`,
+  `SuccinctFinal.ReadBackedBPCloseAccessFamily.constant_query_profile`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQOverhead_littleO`,
   `SuccinctFinal.concreteBPNativeSelectCloseCosted_cost_le`,
   `SuccinctFinal.concreteBPNativeRankCloseCosted_cost_le`,
@@ -1651,6 +1667,7 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctFinal.concreteBPNativeSuccinctRMQQueryCosted_cost_le`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQQueryCosted_exact`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`,
+  `SuccinctFinal.readBackedBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile_of_rankSelectFamily`.
 - `RMQ/Core/SuccinctReduction.lean` (7):
   `Succinct.rmqBackendOfEulerParensBackend_queryBuilt`,

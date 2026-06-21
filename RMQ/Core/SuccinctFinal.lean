@@ -33,13 +33,14 @@ def concreteBPNativeCloseDirectory
   SuccinctCloseProposal.concreteCompactBPCloseLCADirectory shape
 
 /--
-False-only access to the BP close/rank operations needed by the final
-BP-native RMQ join.
+Weak false-only access to the BP close/rank operations needed by the BP-native
+RMQ join.
 
-This is the integration surface for the compact close-select construction:
-`selectCloseCosted` answers `bpCloseOfInorder?`, `rankCloseCosted` answers
-false-prefix rank on `shape.bpCode`, and the listed read words expose the
-machine-word side condition for access payload reads.
+This adapter surface is intentionally kept for compatibility and for theorem
+composition. It is not, by itself, the final word-RAM-fidelity target: the
+costed functions are fields, so a concrete headline theorem should consume a
+read-backed construction that derives those functions from stored rank/select
+data instead of supplying them directly.
 -/
 structure BPCloseAccessDirectory
     (shape : Cartesian.CartesianShape) (overhead queryCost : Nat) where
@@ -126,6 +127,305 @@ theorem constant_query_profile
         (family.directory shape).select_read_words_length_le_machine⟩
 
 end PayloadLiveBPCloseAccessFamily
+
+/-!
+## Read-backed close-access surface
+
+The weak access surface above is convenient for composing the final RMQ query,
+but it is too permissive as a worker target: an inhabitant can put reference
+semantics inside the `selectCloseCosted` or `rankCloseCosted` fields and charge
+a dummy read.  The structures below are the stronger target. They derive the
+close-select and rank-close operations from the existing two-level stored-word
+rank/select data, whose query definitions read fixed-width locator tables,
+payload words, and word-RAM primitives.
+-/
+
+/--
+Read-backed false-only close access for a single Cartesian shape.
+
+The auxiliary payload is exactly the concatenation of the rank and select
+directory payloads.  The query operations are definitions below, not fields, so
+workers cannot satisfy this surface by supplying arbitrary costed functions.
+-/
+structure ReadBackedBPCloseAccessDirectory
+    (shape : Cartesian.CartesianShape)
+    (rankSuperOverhead rankBlockOverhead
+      selectSuperOverhead selectBlockOverhead
+      overhead queryCost : Nat) where
+  rankData :
+    SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankData
+      shape.bpCode rankSuperOverhead rankBlockOverhead queryCost
+  selectData :
+    SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData
+      shape.bpCode selectSuperOverhead selectBlockOverhead queryCost
+  payload_le_overhead :
+    (rankData.auxPayload ++ selectData.auxPayload).length <= overhead
+
+namespace ReadBackedBPCloseAccessDirectory
+
+def payload
+    {shape : Cartesian.CartesianShape}
+    {rankSuperOverhead rankBlockOverhead
+      selectSuperOverhead selectBlockOverhead
+      overhead queryCost : Nat}
+    (directory :
+      ReadBackedBPCloseAccessDirectory shape
+        rankSuperOverhead rankBlockOverhead
+        selectSuperOverhead selectBlockOverhead
+        overhead queryCost) : List Bool :=
+  directory.rankData.auxPayload ++ directory.selectData.auxPayload
+
+def selectCloseCosted
+    {shape : Cartesian.CartesianShape}
+    {rankSuperOverhead rankBlockOverhead
+      selectSuperOverhead selectBlockOverhead
+      overhead queryCost : Nat}
+    (directory :
+      ReadBackedBPCloseAccessDirectory shape
+        rankSuperOverhead rankBlockOverhead
+        selectSuperOverhead selectBlockOverhead
+        overhead queryCost)
+    (idx : Nat) : Costed (Option Nat) :=
+  directory.selectData.selectCosted false idx
+
+def rankCloseCosted
+    {shape : Cartesian.CartesianShape}
+    {rankSuperOverhead rankBlockOverhead
+      selectSuperOverhead selectBlockOverhead
+      overhead queryCost : Nat}
+    (directory :
+      ReadBackedBPCloseAccessDirectory shape
+        rankSuperOverhead rankBlockOverhead
+        selectSuperOverhead selectBlockOverhead
+        overhead queryCost)
+    (pos : Nat) : Costed Nat :=
+  directory.rankData.rankCosted false pos
+
+theorem payload_length_le_overhead
+    {shape : Cartesian.CartesianShape}
+    {rankSuperOverhead rankBlockOverhead
+      selectSuperOverhead selectBlockOverhead
+      overhead queryCost : Nat}
+    (directory :
+      ReadBackedBPCloseAccessDirectory shape
+        rankSuperOverhead rankBlockOverhead
+        selectSuperOverhead selectBlockOverhead
+        overhead queryCost) :
+    directory.payload.length <= overhead := by
+  exact directory.payload_le_overhead
+
+theorem selectCloseCosted_cost_le
+    {shape : Cartesian.CartesianShape}
+    {rankSuperOverhead rankBlockOverhead
+      selectSuperOverhead selectBlockOverhead
+      overhead queryCost : Nat}
+    (directory :
+      ReadBackedBPCloseAccessDirectory shape
+        rankSuperOverhead rankBlockOverhead
+        selectSuperOverhead selectBlockOverhead
+        overhead queryCost)
+    (idx : Nat) :
+    (directory.selectCloseCosted idx).cost <= queryCost := by
+  exact directory.selectData.selectCosted_cost_le false idx
+
+theorem rankCloseCosted_cost_le
+    {shape : Cartesian.CartesianShape}
+    {rankSuperOverhead rankBlockOverhead
+      selectSuperOverhead selectBlockOverhead
+      overhead queryCost : Nat}
+    (directory :
+      ReadBackedBPCloseAccessDirectory shape
+        rankSuperOverhead rankBlockOverhead
+        selectSuperOverhead selectBlockOverhead
+        overhead queryCost)
+    (pos : Nat) :
+    (directory.rankCloseCosted pos).cost <= queryCost := by
+  exact directory.rankData.rankCosted_cost_le false pos
+
+theorem selectCloseCosted_exact
+    {shape : Cartesian.CartesianShape}
+    {rankSuperOverhead rankBlockOverhead
+      selectSuperOverhead selectBlockOverhead
+      overhead queryCost : Nat}
+    (directory :
+      ReadBackedBPCloseAccessDirectory shape
+        rankSuperOverhead rankBlockOverhead
+        selectSuperOverhead selectBlockOverhead
+        overhead queryCost)
+    (idx : Nat) :
+    (directory.selectCloseCosted idx).erase =
+      SuccinctSpace.bpCloseOfInorder? shape idx := by
+  calc
+    (directory.selectCloseCosted idx).erase =
+        Succinct.select false shape.bpCode idx := by
+      exact directory.selectData.selectCosted_exact false idx
+    _ = SuccinctSpace.bpCloseOfInorder? shape idx := by
+      exact SuccinctSpace.select_false_bpCode_eq_bpCloseOfInorder? shape idx
+
+theorem rankCloseCosted_exact
+    {shape : Cartesian.CartesianShape}
+    {rankSuperOverhead rankBlockOverhead
+      selectSuperOverhead selectBlockOverhead
+      overhead queryCost : Nat}
+    (directory :
+      ReadBackedBPCloseAccessDirectory shape
+        rankSuperOverhead rankBlockOverhead
+        selectSuperOverhead selectBlockOverhead
+        overhead queryCost)
+    (pos : Nat) :
+    (directory.rankCloseCosted pos).erase =
+      Succinct.rankPrefix false shape.bpCode pos := by
+  exact directory.rankData.rankCosted_exact false pos
+
+theorem rank_read_words_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {rankSuperOverhead rankBlockOverhead
+      selectSuperOverhead selectBlockOverhead
+      overhead queryCost : Nat}
+    (directory :
+      ReadBackedBPCloseAccessDirectory shape
+        rankSuperOverhead rankBlockOverhead
+        selectSuperOverhead selectBlockOverhead
+        overhead queryCost)
+    {word : List Bool}
+    (hmem : List.Mem word directory.rankData.bitWords.store.words.toList) :
+    word.length <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  exact directory.rankData.payload_word_length_le_machine hmem
+
+theorem select_read_words_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {rankSuperOverhead rankBlockOverhead
+      selectSuperOverhead selectBlockOverhead
+      overhead queryCost : Nat}
+    (directory :
+      ReadBackedBPCloseAccessDirectory shape
+        rankSuperOverhead rankBlockOverhead
+        selectSuperOverhead selectBlockOverhead
+        overhead queryCost)
+    {word : List Bool}
+    (hmem : List.Mem word directory.selectData.bitWords.store.words.toList) :
+    word.length <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  exact directory.selectData.payload_word_length_le_machine hmem
+
+def toWeakDirectory
+    {shape : Cartesian.CartesianShape}
+    {rankSuperOverhead rankBlockOverhead
+      selectSuperOverhead selectBlockOverhead
+      overhead queryCost : Nat}
+    (directory :
+      ReadBackedBPCloseAccessDirectory shape
+        rankSuperOverhead rankBlockOverhead
+        selectSuperOverhead selectBlockOverhead
+        overhead queryCost) :
+    BPCloseAccessDirectory shape overhead queryCost where
+  payload := directory.payload
+  payload_length_le_overhead := directory.payload_length_le_overhead
+  selectCloseCosted := directory.selectCloseCosted
+  rankCloseCosted := directory.rankCloseCosted
+  selectClose_cost_le := directory.selectCloseCosted_cost_le
+  rankClose_cost_le := directory.rankCloseCosted_cost_le
+  selectClose_exact := directory.selectCloseCosted_exact
+  rankClose_exact := directory.rankCloseCosted_exact
+  rankReadWords := directory.rankData.bitWords.store.words.toList
+  selectReadWords := directory.selectData.bitWords.store.words.toList
+  rank_read_words_length_le_machine := by
+    intro word hmem
+    exact directory.rank_read_words_length_le_machine hmem
+  select_read_words_length_le_machine := by
+    intro word hmem
+    exact directory.select_read_words_length_le_machine hmem
+
+end ReadBackedBPCloseAccessDirectory
+
+/--
+Family form of the read-backed close-access target.  Overhead functions are
+indexed by Cartesian-shape size, while the stored rank/select data themselves
+operate on `shape.bpCode`.
+-/
+structure ReadBackedBPCloseAccessFamily
+    (rankSuperOverhead rankBlockOverhead
+      selectSuperOverhead selectBlockOverhead
+      overhead : Nat -> Nat)
+    (queryCost : Nat) where
+  directory :
+    forall shape : Cartesian.CartesianShape,
+      ReadBackedBPCloseAccessDirectory shape
+        (rankSuperOverhead shape.size)
+        (rankBlockOverhead shape.size)
+        (selectSuperOverhead shape.size)
+        (selectBlockOverhead shape.size)
+        (overhead shape.size)
+        queryCost
+  overhead_littleO : SuccinctSpace.LittleOLinear overhead
+
+namespace ReadBackedBPCloseAccessFamily
+
+def toWeakFamily
+    {rankSuperOverhead rankBlockOverhead
+      selectSuperOverhead selectBlockOverhead
+      overhead : Nat -> Nat}
+    {queryCost : Nat}
+    (family :
+      ReadBackedBPCloseAccessFamily
+        rankSuperOverhead rankBlockOverhead
+        selectSuperOverhead selectBlockOverhead
+        overhead queryCost) :
+    PayloadLiveBPCloseAccessFamily overhead queryCost where
+  directory shape := (family.directory shape).toWeakDirectory
+  overhead_littleO := family.overhead_littleO
+
+theorem constant_query_profile
+    {rankSuperOverhead rankBlockOverhead
+      selectSuperOverhead selectBlockOverhead
+      overhead : Nat -> Nat}
+    {queryCost : Nat}
+    (family :
+      ReadBackedBPCloseAccessFamily
+        rankSuperOverhead rankBlockOverhead
+        selectSuperOverhead selectBlockOverhead
+        overhead queryCost) :
+    SuccinctSpace.LittleOLinear overhead /\
+      forall shape : Cartesian.CartesianShape,
+        (((family.directory shape).payload).length <= overhead shape.size) /\
+          (forall idx,
+            ((family.directory shape).selectCloseCosted idx).cost <=
+              queryCost) /\
+          (forall pos,
+            ((family.directory shape).rankCloseCosted pos).cost <=
+              queryCost) /\
+          (forall idx,
+            ((family.directory shape).selectCloseCosted idx).erase =
+              SuccinctSpace.bpCloseOfInorder? shape idx) /\
+          (forall pos,
+            ((family.directory shape).rankCloseCosted pos).erase =
+              Succinct.rankPrefix false shape.bpCode pos) /\
+          (forall {word : List Bool},
+            List.Mem word
+                (family.directory shape).rankData.bitWords.store.words.toList ->
+              word.length <=
+                SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          (forall {word : List Bool},
+            List.Mem word
+                (family.directory shape).selectData.bitWords.store.words.toList ->
+              word.length <=
+                SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+  constructor
+  · exact family.overhead_littleO
+  · intro shape
+    exact
+      ⟨(family.directory shape).payload_length_le_overhead,
+        (family.directory shape).selectCloseCosted_cost_le,
+        (family.directory shape).rankCloseCosted_cost_le,
+        (family.directory shape).selectCloseCosted_exact,
+        (family.directory shape).rankCloseCosted_exact,
+        fun hmem =>
+          (family.directory shape).rank_read_words_length_le_machine hmem,
+        fun hmem =>
+          (family.directory shape).select_read_words_length_le_machine hmem⟩
+
+end ReadBackedBPCloseAccessFamily
 
 def rankSelectBPCloseAccessOverhead
     {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
@@ -619,6 +919,49 @@ theorem concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
   · intro shape hshape left len hlen hbound
     exact concreteBPNativeSuccinctRMQQueryCosted_exact
       accessFamily hshape hlen hbound
+
+theorem readBackedBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
+    {rankSuperOverhead rankBlockOverhead
+      selectSuperOverhead selectBlockOverhead
+      closeAccessOverhead : Nat -> Nat}
+    {closeAccessCost : Nat}
+    (accessFamily :
+      ReadBackedBPCloseAccessFamily
+        rankSuperOverhead rankBlockOverhead
+        selectSuperOverhead selectBlockOverhead
+        closeAccessOverhead closeAccessCost) :
+    SuccinctSpace.LittleOLinear
+        (concreteBPNativeSuccinctRMQOverhead closeAccessOverhead) /\
+      forall n : Nat,
+        EncodingLowerBound.logSlackLower n <=
+          2 * n +
+            concreteBPNativeSuccinctRMQOverhead closeAccessOverhead n /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            ((accessFamily.toWeakFamily).directory shape).payload.length <=
+              closeAccessOverhead n) /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            (concreteBPNativeSuccinctRMQPayload
+              accessFamily.toWeakFamily shape).length =
+              2 * n +
+                concreteBPNativeSuccinctRMQOverhead
+                  closeAccessOverhead n) /\
+        (forall shape left right,
+          (concreteBPNativeSuccinctRMQQueryCosted
+            accessFamily.toWeakFamily shape left right).cost <=
+              concreteBPNativeSuccinctRMQQueryCost closeAccessCost) /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            forall {left len : Nat},
+              0 < len ->
+                left + len <= n ->
+                  (concreteBPNativeSuccinctRMQQueryCosted
+                    accessFamily.toWeakFamily shape left (left + len)).erase =
+                    some (scanWindow shape.representative left len)) := by
+  exact
+    concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
+      accessFamily.toWeakFamily
 
 theorem concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile_of_rankSelectFamily
     {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
