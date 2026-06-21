@@ -302,6 +302,21 @@ payload plus local offset sparse tables, global macroblock sparse table, and top
 routing all fit under the same `LittleOLinear` interior envelope, while local
 offset width, block-count routing capacity, and every charged summary word read
 remain machine-word bounded.
+`SuccinctCloseProposal.bpTwoLevelInteriorCandidateCosted_erase_exact` is the
+payload-backed two-level selector exactness theorem: the query reads local
+offset sparse-table candidates, a global macroblock candidate, and relative
+summary words, then returns the semantic complete-block range witness without
+using `bpRangeArgMinBlock` as an oracle.  The concrete table payload bounds
+`SuccinctCloseProposal.concreteBPRelativeRmmInteriorLocalTable_payload_le_budget_of_size_ge`
+and
+`SuccinctCloseProposal.concreteBPRelativeRmmInteriorGlobalTable_payload_le_budget_of_size_ge`
+connect the built local/global table payloads to the squared-log-log and
+log-log reserves.  Finally
+`SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_profile` packages
+the actual two-level interior directory with `LittleOLinear` payload overhead,
+query cost `<= SuccinctCloseProposal.concreteBPRelativeRmmInteriorQueryCost`,
+semantic range-witness exactness, and machine-word bounds for charged reads
+under `2^128 <= shape.size`.
 `SuccinctCloseProposal.bpExcessAt_prefix_nonnegative` records the
 balanced-prefix invariant needed when interpreting the Nat-subtraction excess,
 and `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.summary_read_words_length_le_machine`
@@ -394,8 +409,11 @@ pins the replacement contract for that navigator, and
 `SuccinctCloseProposal.payloadLiveRelativeRmmBPCloseMacroOfInterior_profile`
 immediately feeds any such interior directory into the charged
 left-fringe/interior/right-fringe relative macro.  The available concrete
-instance of that contract is still the diagnostic scan and is therefore not a
-C2 stop point.
+two-level instance is now
+`SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_profile`; the
+remaining C2 work is to consume this concrete interior checkpoint in
+`concretePayloadLiveRelativeRmmBPCloseMacro_profile` and then the compact close
+directory profile.
 `SuccinctCloseProposal.payloadLiveBPRelativeRmmInteriorDirectory_profile_allows_proof_only_oracle`
 records the corresponding contract caveat: the generic interior-directory
 record alone can be inhabited by an empty-payload proof-only oracle, so the
@@ -1438,6 +1456,10 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_large`,
   `SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_size_ge`,
   `SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_size_ge`,
+  `SuccinctCloseProposal.bpTwoLevelInteriorCandidateCosted_erase_exact`,
+  `SuccinctCloseProposal.concreteBPRelativeRmmInteriorLocalTable_payload_le_budget_of_size_ge`,
+  `SuccinctCloseProposal.concreteBPRelativeRmmInteriorGlobalTable_payload_le_budget_of_size_ge`,
+  `SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_profile`,
   `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxArgSummaryTable.profile`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxArgSummaryTable_sampled_profile`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxArgSummaryTable_read_words_length_le_machine`,
