@@ -1014,3 +1014,53 @@ instantiable o(n) on the close side" to "summary done; micro table + navigation 
 full-directory composition + join remain." Next: retire the mirage; finish the
 micro table o(n) + navigation exactness; compose the full directory profile with
 no premises.
+
+## 2026-06-21 (later) — navigator groundwork + excellent guardrails, but the positive O(1) construction is not built; mirage still growing
+
+Build green, trust clean (0 bad-axiom). The team **adopted option 1** (compact
+rmM interior navigator) per the design checkpoint (`19722cc Adopt compact rmM
+interior target`, `75a2325 Reconcile … with option one path`) and did genuine,
+disciplined groundwork:
+
+- **Relative-encoding decode correctness** (`bpBlockRelativeMinExcess_decode`,
+  `bpBlockArgMinLocalOffset_decode`, `bpBlockMinExcess_eq_excess_argMin`, …) —
+  proves the relative deltas reconstruct the true absolute min/max excess and
+  argmin. Necessary foundation for the navigator.
+- **Interior parameter budget** (`concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_large`,
+  the `c2-rmm-interior-parameters` / `c2-relative-summary-large-regime` workers) —
+  the space-arithmetic (Worker-B-role) side.
+- **Excellent self-auditing guardrails** (the "obstruction" commits) — exactly
+  the anti-filler discipline, self-applied:
+  - `boundedRangeScanCosted_cost_le_blockCount` — the scan interior directory is
+    exact but **O(blockCount), not O(1)** (formal proof the scan shortcut is dead).
+  - `payloadLiveBPRelativeRmmInteriorDirectory_profile_allows_proof_only_oracle` —
+    proves the **abstract** interior contract is too weak: it admits a
+    "proof-only oracle" charging a constant **without reading payload** (the
+    value/trace-decoupling trap). So an abstract profile will not count — only a
+    concrete payload-live navigator. This is the loop catching its own potential
+    cheat in advance; credit it.
+
+**But the concrete O(1) navigator is NOT built.** There is no full
+`concreteBPRelativeRmmInteriorDirectory_profile` proving O(1) ∧ exact ∧ o(n) ∧
+payload-live for range-min over block minima — only the parameter budget
+(`_of_large`), the scan baseline (O(blockCount)), and the obstruction saying the
+abstract path is a cheat. The hard positive construction — the two-level
+relative/offset-encoded range-min navigator (sparse superblock table + universal
+Cartesian table within superblocks) — remains the gap.
+
+**Mirage still not retired, and growing:** `interiorBlockPairRanges` (dense
+`blockCount²`) is now **34 refs** (was 32), and
+`concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_sampled_profile`
+is **still in `axiom_check`**. The design checkpoint was the moment to delete it;
+instead the dead machinery accreted.
+
+**Verdict:** disciplined groundwork, not filler — the decode correctness is real
+and the two guardrails are the right adversarial instincts self-applied. But this
+is the **second consecutive close-side round without a positive construction**
+(last round: summary wall broken; this round: navigator set-up only). The next
+round **must** deliver the concrete O(1) navigator, not a third round of
+budgets/obstructions. Watch specifically for: (a) a third setup round in place of
+the construction (document-instead-of-build), and (b) the un-retired `blockCount²`
+machinery continuing to grow. Distance unchanged in substance: the concrete O(1)
+range-min navigator is THE remaining close-directory object; summary o(n), decode
+correctness, guardrails, and parameter budget are all in place around it.
