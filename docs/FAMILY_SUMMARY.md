@@ -469,8 +469,11 @@ rank/select and close payloads, the payload length is
 `LittleOLinear`, the query cost is bounded by
 `3 * rankSelectCost + concreteCompactBPCloseQueryCost`, and erasure returns the
 exact representative-array RMQ answer. The theorem consumes the existing
-two-level payload-live rank/select family surface; it does not by itself retire
-the separate compact descriptor-select builder caveat.
+two-level payload-live rank/select family surface. It is therefore a conditional
+capstone, not the closed headline theorem: the repository still needs a
+concrete `TwoLevelPayloadLiveStoredWordRankSelectFamily` witness assembled from
+the canonical two-level rank/select builders, after which the unconditional
+BP-native `2*n + o(n), O(1)` theorem should be an application of this join.
 `SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`
 sharpens the C2 blocker: a macro keyed only by endpoint block ids plus the
 existing endpoint block min/max summaries still cannot return exact answer

@@ -7,6 +7,42 @@ The goal is not another conditional wrapper. The final path must be witnessed by
 payload that the query actually reads, machine-word-bounded word primitives, and
 compiled exactness/cost/profile theorems.
 
+## Current Capstone Status
+
+`SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
+has landed as the final BP-native join over the concrete compact close
+directory. It is a real join theorem: the payload is `shape.bpCode ++ aux`, the
+auxiliary payload is padded to the stated overhead, query cost is bounded, and
+valid representative windows erase to `scanWindow`.
+
+That theorem is still conditional. Its first argument is an abstract
+`SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily`; the
+repository does not yet contain a concrete family witness inhabiting that
+structure. Treating the joined theorem as the final `2*n + o(n), O(1)` result
+without such a witness is an invalid stop.
+
+The next required target is therefore concrete and non-negotiable:
+
+```lean
+def concreteTwoLevelPayloadLiveStoredWordRankSelectFamily :
+    SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
+      rankSuper rankBlock selectSuper selectBlock rankSelectCost := ...
+
+theorem concreteBPNativeSuccinctRMQ_two_n_plus_o_constant_query_profile :
+    -- the same payload length, LittleOLinear overhead, constant query, and
+    -- exact valid-window erasure conclusions as the conditional join, with no
+    -- abstract rank/select family parameter
+    ... := ...
+```
+
+The family witness should assemble the existing canonical two-level
+rank/select builders over every `bits : List Bool`, discharge the word-size,
+sample-width, positivity, and payload-budget side conditions with
+machine-word-compatible parameters, and expose the resulting `LittleOLinear`
+overhead. The second theorem should be the one-line consumption of
+`SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
+at that witness.
+
 ## Current Inputs
 
 The current merged surface provides useful partial surface:
@@ -645,8 +681,8 @@ the worker report or scratch notes:
 
 ```text
 Overall goal:   final concrete BP-native succinct RMQ profile
-Current gap:    the missing descriptor select, macro/close component, or join
-Hard part:      the concrete payload-live construction most tempting to defer
+Current gap:    the concrete rank/select family witness, then the unconditional join
+Hard part:      discharging family-wide word-size/sample-width/budget side conditions
 This iteration: the largest coherent proof/construction step toward it
 Not doing:      adjacent helper/docs/blocker work that would leave it untouched
 ```
@@ -683,6 +719,10 @@ Invalid stop points for this final path:
   owned file surface;
 - updating docs to say "concrete builder remains" and then stopping;
 - proving a profile over a hypothetical family with no concrete instance.
+- re-proving or restating the conditional
+  `concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
+  without producing the concrete
+  `TwoLevelPayloadLiveStoredWordRankSelectFamily` witness that it consumes.
 - proving a descriptor-select component/profile surface whose exactness still
   comes from proof fields such as `descriptor_some_exact`,
   `descriptor_none_exact`, `descriptor_word_choice_exact`, or a free

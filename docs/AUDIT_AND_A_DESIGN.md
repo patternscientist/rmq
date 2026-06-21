@@ -393,3 +393,31 @@ Remaining C2/C3 work is now composition rather than discovery: consume
 `concreteBPRelativeRmmInteriorDirectory_profile` in the relative-rmM close macro,
 then the compact BP close/LCA directory, then the final BP-native succinct RMQ
 join with the lower-bound slack theorem.
+
+## 2026-06-21 - Capstone audit reconciled: final join is conditional
+
+The audit branch's adversarial capstone note is correct on the binding
+constraint. Worker B's `RMQ/Core/SuccinctFinal.lean` join is real and has now
+been merged: it composes BP select, concrete compact BP close/LCA navigation,
+and BP rank back to representative-array RMQ, with payload length
+`2*n + overhead`, `LittleOLinear` overhead, bounded query cost, and exact
+valid-window erasure.
+
+But the theorem is still conditional on an abstract
+`SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily`. A repo
+search confirms that structure has profile theorems and canonical builder
+pieces, but no concrete family witness yet. The headline is therefore not closed
+until such a witness is built and the merged
+`SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
+is instantiated at it.
+
+Worker A's close-navigation adapter remains parked. It builds a clean
+close-side socket/family layer, but the close side is already concrete and the
+merged final join consumes `concreteCompactBPCloseLCADirectory` directly. It is
+not the missing capstone ingredient.
+
+The next proof target is intentionally theorem-shaped rather than exploratory:
+construct a concrete two-level payload-live stored-word rank/select family over
+all bitvectors from the canonical two-level rank/select builders, discharge the
+word-size, sample-width, positivity, and little-o side conditions, then apply
+the final BP-native join theorem with no abstract family parameter remaining.
