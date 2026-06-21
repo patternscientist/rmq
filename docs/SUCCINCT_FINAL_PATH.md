@@ -463,6 +463,15 @@ It must not be a direct scan over all interior blocks, a sparse-table payload
 with non-little-o space, a dense all-pairs table, or a recursive final RMQ
 claim hidden behind this C2 theorem.
 
+The abstract `PayloadLiveBPRelativeRmmInteriorDirectory.profile` theorem is
+only an interface sanity check, not target closure. In particular,
+`payloadLiveBPRelativeRmmInteriorDirectory_profile_allows_proof_only_oracle`
+shows that the generic record can be inhabited by an empty-payload semantic
+oracle unless the final theorem names a concrete built directory and ties the
+answer to charged payload word reads. A construction whose
+`payloadWordsRead := fun _ _ => []` while the query computes semantic range
+minima directly is a documented anti-pattern, not a compact rmM witness.
+
 The exact structure name may differ, but the theorem obligation may not: this
 checkpoint closes only when the built payload gives constant-cost leftmost
 range-minimum witnesses over complete blocks and proves its payload overhead is

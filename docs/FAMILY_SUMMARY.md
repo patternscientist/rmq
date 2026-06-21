@@ -344,14 +344,52 @@ combines that concrete macro with a supplied payload-live micro budget and a
 sampled `LittleOLinear` endpoint-fringe macro budget. That sampled theorem is
 conditional: its macro-budget premise still has to pay for the dense
 `interiorBlockPairRanges blockCount` payload, so it is not a concrete
-`2*n + o(n)` close-directory witness. The remaining C2 work is to replace the
-dense block-pair/interior macro payload with the adopted compact
-rmM/min-max-tree-style interior navigator over complete-block minimum
-candidates, prove its constant charged range-min witness and `LittleOLinear`
-payload profile, and then package that directory into the final
-close-navigation join. Exact scans over relative block summaries are useful
-obstruction checks, but they do not close C2 because their charged query cost
-grows with the number of interior blocks.
+`2*n + o(n)` close-directory witness. The relative-rmM successor surface is
+now explicit:
+`SuccinctCloseProposal.bpRelativeRmmCandidateMerge_exact` proves the pure
+endpoint-fringe/interior/right-fringe merge from the representative-query BP
+semantics, so the merge fact is no longer a proof-only field of the relative
+macro interface.
+`SuccinctCloseProposal.PayloadLiveRelativeRmmBPCloseMacro.lcaCloseCosted_exact_of_query_cross_block`
+builds the cross-block query from charged left-fringe, relative-rmM interior,
+and right-fringe candidate reads, and
+`SuccinctCloseProposal.PayloadLiveRelativeRmmMacroMicroBPCloseLCADirectory.profile`
+routes same-block queries through the charged micro-codebook while routing
+cross-block queries through that relative-rmM macro.
+`SuccinctCloseProposal.relativeRmmMacroMicroBPCloseLCADirectory_profile`
+packages the resulting answer-close exactness, query-cost bound, and
+`LittleOLinear` micro-plus-relative overhead budget without mentioning
+`interiorBlockPairRanges blockCount`. The concrete relative/log-log summary
+builder still has to instantiate the macro's rmM candidate-read interface.
+`SuccinctCloseProposal.PayloadLiveBPRelativeMinMaxArgSummaryTable.rangeScanCosted_erase_exact`
+is the honest charged scan over Worker B's relative summary table: every
+interior block contributes a charged four-word summary read, and the scan
+erases to the exact `(minimum excess, prefix position)` range witness.
+`SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_canonical_interior_scan_not_constant`
+specializes that scan to the canonical compact relative table and proves it has
+no uniform constant query bound for positive block size.  Thus the canonical
+relative table is now consumed by an exact payload-live range path, but that
+path is formally a blocker, not the rmM macro needed for
+`concretePayloadLiveRelativeRmmBPCloseMacro_profile` or
+`concreteCompactBPCloseLCADirectory_profile`; the remaining positive step is a
+non-scan compact rmM range navigator whose charged query is O(1).
+`SuccinctCloseProposal.PayloadLiveBPRelativeRmmInteriorDirectory.profile` now
+pins the replacement contract for that navigator, and
+`SuccinctCloseProposal.payloadLiveRelativeRmmBPCloseMacroOfInterior_profile`
+immediately feeds any such interior directory into the charged
+left-fringe/interior/right-fringe relative macro.  The available concrete
+instance of that contract is still the diagnostic scan and is therefore not a
+C2 stop point.
+`SuccinctCloseProposal.payloadLiveBPRelativeRmmInteriorDirectory_profile_allows_proof_only_oracle`
+records the corresponding contract caveat: the generic interior-directory
+record alone can be inhabited by an empty-payload proof-only oracle, so the
+named compact C2 checkpoint still has to build a concrete navigator whose
+constant query is tied to charged payload reads.
+The coordinator-selected C2 path is to replace the dense block-pair/interior
+macro payload with the compact rmM/min-max-tree-style interior navigator over
+complete-block minimum candidates, prove its constant charged range-min witness
+and `LittleOLinear` payload profile, and then package that directory into the
+final close-navigation join.
 `SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`
 sharpens the C2 blocker: a macro keyed only by endpoint block ids plus the
 existing endpoint block min/max summaries still cannot return exact answer
@@ -1463,6 +1501,13 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_profile`,
   `SuccinctCloseProposal.guardedEndpointFringeMacroMicroOverhead_littleO`,
   `SuccinctCloseProposal.concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_sampled_profile`,
+  `SuccinctCloseProposal.bpRelativeRmmCandidateMerge_exact`,
+  `SuccinctCloseProposal.PayloadLiveRelativeRmmBPCloseMacro.lcaCloseCosted_exact_of_query_cross_block`,
+  `SuccinctCloseProposal.PayloadLiveRelativeRmmBPCloseMacro.profile`,
+  `SuccinctCloseProposal.PayloadLiveRelativeRmmMacroMicroBPCloseLCADirectory.lcaCloseCosted_exact`,
+  `SuccinctCloseProposal.PayloadLiveRelativeRmmMacroMicroBPCloseLCADirectory.profile`,
+  `SuccinctCloseProposal.relativeRmmMacroMicroBPCloseLCAOverhead_littleO`,
+  `SuccinctCloseProposal.relativeRmmMacroMicroBPCloseLCADirectory_profile`,
   `SuccinctCloseProposal.emptyPayloadLiveBlockMicroCodebook_lcaCloseCosted_erase`,
   `SuccinctCloseProposal.denseFallbackPayloadLiveMacroMicroBPCloseLCADirectory_profile`,
   `SuccinctCloseProposal.payloadLiveMacroMicroBPCloseLCAOverhead_littleO`,

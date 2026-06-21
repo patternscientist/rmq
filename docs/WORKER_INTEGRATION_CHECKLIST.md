@@ -317,6 +317,10 @@ Reject or send back for revision when:
   theorem consuming those summaries and endpoint-fringe repair.
 - BP close work proves a sampled profile only by assuming a budget for dense
   `interiorBlockPairRanges blockCount` entries.
+- BP close work stops at `PayloadLiveBPRelativeRmmInteriorDirectory.profile`,
+  `payloadLiveBPRelativeRmmInteriorDirectory_profile_allows_proof_only_oracle`,
+  or an adapter that sets `payloadWordsRead := fun _ _ => []` for the interior
+  while the concrete rmM directory remains unbuilt.
 - a new O(1) charged word/table read lacks an explicit machine-word bound.
 - theorem names suggest stronger semantics than their statements prove.
 
@@ -336,8 +340,9 @@ For the succinct RMQ capstone:
   `concretePayloadLiveRelativeRmmBPCloseMacro_profile`, and then in
   `concreteCompactBPCloseLCADirectory_profile`. Adding a field such as
   `semantic_merge_exact`, a hypothesis such as `hmerge`, an exact-but-linear
-  scan, or a doc note saying that the concrete builder remains is an invalid
-  final response.
+  scan, the generic `PayloadLiveBPRelativeRmmInteriorDirectory.profile`, an
+  empty-read proof-only oracle, or a doc note saying that the concrete builder
+  remains is an invalid final response.
 - Worker B owns the compact relative-summary budget theorem. Its target is
   `concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile`
   from `docs/SUCCINCT_FINAL_PATH.md`. This is not closed while premises such as

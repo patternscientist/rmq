@@ -259,6 +259,17 @@ target. A final response that says "this should not be considered a valid stop"
 is itself a protocol failure unless it is followed by more implementation and
 verification before the final response.
 
+For the compact relative rmM interior specifically, the generic
+`PayloadLiveBPRelativeRmmInteriorDirectory.profile` theorem and the
+`payloadLiveBPRelativeRmmInteriorDirectory_profile_allows_proof_only_oracle`
+obstruction are not stop points for a C2 worker. They are evidence that the
+interface is too weak by itself. A valid positive stop must name a concrete
+built compact navigator such as `concreteBPRelativeRmmInteriorDirectory_profile`
+and tie its answers to charged payload word reads. An adapter or construction
+that keeps `payloadWordsRead := fun _ _ => []` while the range answer is
+computed by semantic reference functions is a documented anti-pattern, not the
+target theorem.
+
 For unattended loops, keep interim updates concise and periodic, but reserve the
 final response for a valid stop condition. If stopping for target
 misspecification, report the concrete construction attempted, the minimal
