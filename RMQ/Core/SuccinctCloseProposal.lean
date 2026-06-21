@@ -3400,6 +3400,283 @@ private theorem canonicalBPRelativeSummary_blockPayload_bound_raw
     base, blockCount, logBase, Nat.mul_assoc, Nat.mul_left_comm,
     Nat.mul_comm] using hmul
 
+theorem natLog2_ge_of_pow_le
+    {k n : Nat} (hpow : 2 ^ k <= n) :
+    k <= Nat.log2 n := by
+  have hn : n ≠ 0 := by
+    intro hzero
+    subst n
+    have hpos : 0 < 2 ^ k := Nat.pow_pos (by omega)
+    omega
+  exact (Nat.le_log2 hn).2 hpow
+
+theorem natLog2_succ_le_of_pos_lt_pow
+    {n k : Nat} (hnpos : 0 < n) (hlt : n < 2 ^ k) :
+    Nat.log2 n + 1 <= k := by
+  by_cases hk : k <= Nat.log2 n
+  · have hn : n ≠ 0 := by omega
+    have hpow : 2 ^ k <= n := (Nat.le_log2 hn).1 hk
+    omega
+  · omega
+
+theorem nat_succ_square_le_two_pow_of_six_le
+    (q : Nat) :
+    6 <= q -> (q + 1) * (q + 1) <= 2 ^ q := by
+  exact Nat.strongRecOn q (fun q ih hq => by
+    by_cases hq8 : 8 <= q
+    · have hprev : 6 <= q - 2 := by omega
+      have hprev_lt : q - 2 < q := by omega
+      have ihprev := ih (q - 2) hprev_lt hprev
+      have hlin : q + 1 <= 2 * ((q - 2) + 1) := by omega
+      have hsq :
+          (q + 1) * (q + 1) <=
+            2 * (2 * (((q - 2) + 1) * ((q - 2) + 1))) := by
+        have hmul := Nat.mul_le_mul hlin hlin
+        simpa [Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hmul
+      have hpowMul : 2 * (2 * 2 ^ (q - 2)) = 2 ^ q := by
+        have hqeq : q = (q - 2) + 2 := by omega
+        calc
+          2 * (2 * 2 ^ (q - 2)) = 2 ^ ((q - 2) + 2) := by
+            simp [Nat.pow_succ, Nat.mul_comm]
+          _ = 2 ^ q := by rw [← hqeq]
+      exact Nat.le_trans hsq
+        (by
+          have hmul := Nat.mul_le_mul_left 2
+            (Nat.mul_le_mul_left 2 ihprev)
+          simpa [hpowMul] using hmul)
+    · have hqCases : q = 6 ∨ q = 7 := by omega
+      rcases hqCases with hqeq | hqeq
+      · subst q
+        decide
+      · subst q
+        decide)
+
+theorem nat_log2_succ_square_le_self_of_log2_ge_six
+    {n : Nat} (hn : n ≠ 0) (hlog : 6 <= Nat.log2 n) :
+    (Nat.log2 n + 1) * (Nat.log2 n + 1) <= n := by
+  exact Nat.le_trans
+    (nat_succ_square_le_two_pow_of_six_le (Nat.log2 n) hlog)
+    (Nat.log2_self_le hn)
+
+theorem canonicalBPRelativeSummaryBase_le_blockCountRaw_of_size_ge
+    {shape : Cartesian.CartesianShape}
+    (hsize : 2 ^ 128 <= shape.size) :
+    canonicalBPRelativeSummaryBase shape <=
+      canonicalBPRelativeSummaryBlockCountRaw shape := by
+  have hsize_pos : shape.size ≠ 0 := by
+    have hpow : 0 < 2 ^ 128 := Nat.pow_pos (by omega)
+    omega
+  have hlog128 : 128 <= Nat.log2 shape.size :=
+    natLog2_ge_of_pow_le hsize
+  have hlog6 : 6 <= Nat.log2 shape.size := by omega
+  have hsquare :=
+    nat_log2_succ_square_le_self_of_log2_ge_six
+      (n := shape.size) hsize_pos hlog6
+  have hbase_pos : 0 < canonicalBPRelativeSummaryBase shape := by
+    simp [canonicalBPRelativeSummaryBase]
+  exact (Nat.le_div_iff_mul_le hbase_pos).2 (by
+    simpa [canonicalBPRelativeSummaryBase,
+      canonicalBPRelativeSummaryBlockCountRaw, Nat.mul_comm] using
+      hsquare)
+
+theorem canonicalBPRelativeSummaryBase_ge_128_of_size_ge
+    {shape : Cartesian.CartesianShape}
+    (hsize : 2 ^ 128 <= shape.size) :
+    128 <= canonicalBPRelativeSummaryBase shape := by
+  have hlog128 : 128 <= Nat.log2 shape.size :=
+    natLog2_ge_of_pow_le hsize
+  simp [canonicalBPRelativeSummaryBase]
+  omega
+
+theorem canonicalBPRelativeSummaryBase_le_superWidth_of_size_pos
+    {shape : Cartesian.CartesianShape}
+    (hsize_pos : 0 < shape.size) :
+    canonicalBPRelativeSummaryBase shape <=
+      canonicalBPRelativeSummarySuperWidth shape := by
+  unfold canonicalBPRelativeSummaryBase
+  unfold canonicalBPRelativeSummarySuperWidth
+  rw [Cartesian.CartesianShape.bpCode_length]
+  unfold SuccinctRankProposal.machineWordBits
+  have hlen_pos : 0 < 2 * shape.size := by omega
+  have hpown : 2 ^ Nat.log2 shape.size <= shape.size := by
+    exact Nat.log2_self_le (by omega)
+  have hpowLen : 2 ^ Nat.log2 shape.size <= 2 * shape.size := by
+    omega
+  have hlogLen :
+      Nat.log2 shape.size <= Nat.log2 (2 * shape.size) :=
+    (Nat.le_log2 (by omega)).2 hpowLen
+  omega
+
+theorem canonicalBPRelativeSummarySuperWidth_le_eight_base_of_size_pos
+    {shape : Cartesian.CartesianShape}
+    (hsize_pos : 0 < shape.size) :
+    canonicalBPRelativeSummarySuperWidth shape <=
+      8 * canonicalBPRelativeSummaryBase shape := by
+  unfold canonicalBPRelativeSummarySuperWidth
+  rw [Cartesian.CartesianShape.bpCode_length]
+  unfold SuccinctRankProposal.machineWordBits
+  let base := canonicalBPRelativeSummaryBase shape
+  have hbase_pos : 0 < base := by
+    simp [base, canonicalBPRelativeSummaryBase]
+  have hn_lt : shape.size < 2 ^ base := by
+    simpa [base, canonicalBPRelativeSummaryBase] using
+      Nat.lt_log2_self (n := shape.size)
+  have hlen_lt_base :
+      2 * shape.size < 2 ^ (base + 1) := by
+    have hmul := Nat.mul_lt_mul_of_pos_left hn_lt (by omega : 0 < 2)
+    simpa [Nat.pow_succ, Nat.mul_assoc, Nat.mul_left_comm,
+      Nat.mul_comm] using hmul
+  have hpow_le :
+      2 ^ (base + 1) <= 2 ^ (8 * base) := by
+    exact Nat.pow_le_pow_right (by omega : 0 < 2) (by omega)
+  have hlen_lt : 2 * shape.size < 2 ^ (8 * base) :=
+    Nat.lt_of_lt_of_le hlen_lt_base hpow_le
+  have hlen_pos : 0 < 2 * shape.size := by omega
+  have hlog :=
+    natLog2_succ_le_of_pos_lt_pow hlen_pos hlen_lt
+  simpa [base] using hlog
+
+theorem four_mul_square_lt_two_pow_two_log_succ_add_three
+    (base : Nat) :
+    2 * (2 * (base * base)) <
+      2 ^ (2 * (Nat.log2 base + 1) + 3) := by
+  let width := Nat.log2 base + 1
+  let powWidth := 2 ^ width
+  have hbase_lt : base < powWidth := by
+    simpa [width, powWidth] using Nat.lt_log2_self (n := base)
+  have hbase_square :
+      base * base <= powWidth * powWidth :=
+    Nat.mul_le_mul (Nat.le_of_lt hbase_lt) (Nat.le_of_lt hbase_lt)
+  have hscaled :
+      2 * (2 * (base * base)) <=
+        2 * (2 * (powWidth * powWidth)) :=
+    Nat.mul_le_mul_left 2 (Nat.mul_le_mul_left 2 hbase_square)
+  have hpowWidth_pos : 0 < powWidth * powWidth := by
+    exact Nat.mul_pos (Nat.pow_pos (by omega)) (Nat.pow_pos (by omega))
+  have hstrict :
+      2 * (2 * (powWidth * powWidth)) <
+        8 * (powWidth * powWidth) := by
+    omega
+  have htarget :
+      8 * (powWidth * powWidth) =
+        2 ^ (2 * (Nat.log2 base + 1) + 3) := by
+    have hexp : width + width + 3 = 2 * width + 3 := by omega
+    calc
+      8 * (powWidth * powWidth) =
+          2 ^ (width + width + 3) := by
+        simp [powWidth, Nat.pow_add, Nat.mul_assoc, Nat.mul_comm]
+      _ = 2 ^ (2 * (Nat.log2 base + 1) + 3) := by
+        rw [hexp]
+  exact Nat.lt_of_le_of_lt hscaled (by simpa [htarget] using hstrict)
+
+theorem canonicalBPRelativeSummarySpanRaw_width_bound
+    (shape : Cartesian.CartesianShape) :
+    2 * bpSuperblockSpan
+        (canonicalBPRelativeSummaryBlockSizeRaw shape)
+        (canonicalBPRelativeSummaryBlocksPerSuperRaw shape) <
+      2 ^ canonicalBPRelativeSummaryRelativeWidthRaw shape := by
+  simpa [bpSuperblockSpan, canonicalBPRelativeSummaryBlockSizeRaw,
+    canonicalBPRelativeSummaryBlocksPerSuperRaw,
+    canonicalBPRelativeSummaryRelativeWidthRaw,
+    canonicalBPRelativeSummaryBase, Nat.mul_assoc, Nat.mul_left_comm,
+    Nat.mul_comm] using
+    four_mul_square_lt_two_pow_two_log_succ_add_three
+      (canonicalBPRelativeSummaryBase shape)
+
+theorem canonicalBPRelativeSummaryBlockSizeRaw_width_bound
+    (shape : Cartesian.CartesianShape) :
+    canonicalBPRelativeSummaryBlockSizeRaw shape <
+      2 ^ canonicalBPRelativeSummaryRelativeWidthRaw shape := by
+  have hspan := canonicalBPRelativeSummarySpanRaw_width_bound shape
+  let base := canonicalBPRelativeSummaryBase shape
+  have hbase_pos : 1 <= base := by
+    simp [base, canonicalBPRelativeSummaryBase]
+  have hbase_le_square : base <= base * base := by
+    calc
+      base = base * 1 := by rw [Nat.mul_one]
+      _ <= base * base := Nat.mul_le_mul_left base hbase_pos
+  have hle : 2 * base <= 2 * (2 * (base * base)) := by
+    have hmul := Nat.mul_le_mul_left 2 hbase_le_square
+    have hright :
+        2 * (base * base) <= 2 * (2 * (base * base)) := by
+      omega
+    exact Nat.le_trans hmul hright
+  have hleRaw :
+      canonicalBPRelativeSummaryBlockSizeRaw shape <=
+        2 * bpSuperblockSpan
+          (canonicalBPRelativeSummaryBlockSizeRaw shape)
+          (canonicalBPRelativeSummaryBlocksPerSuperRaw shape) := by
+    simpa [base, bpSuperblockSpan,
+      canonicalBPRelativeSummaryBlockSizeRaw,
+      canonicalBPRelativeSummaryBlocksPerSuperRaw,
+      Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hle
+  exact Nat.lt_of_le_of_lt hleRaw hspan
+
+theorem canonicalBPRelativeSummaryRelativeWidthRaw_le_base_of_base_ge_128
+    {shape : Cartesian.CartesianShape}
+    (hbase : 128 <= canonicalBPRelativeSummaryBase shape) :
+    canonicalBPRelativeSummaryRelativeWidthRaw shape <=
+      canonicalBPRelativeSummaryBase shape := by
+  let base := canonicalBPRelativeSummaryBase shape
+  let logBase := Nat.log2 base + 1
+  have hbase_ne : base ≠ 0 := by omega
+  have hlogBase_ge : 6 <= Nat.log2 base := by
+    have h128 : 2 ^ 7 <= base := by
+      simpa using hbase
+    have hlog7 : 7 <= Nat.log2 base :=
+      natLog2_ge_of_pow_le h128
+    omega
+  have hsquare :=
+    nat_log2_succ_square_le_self_of_log2_ge_six
+      (n := base) hbase_ne hlogBase_ge
+  have hlogBase_three : 3 <= logBase := by
+    have hlog7 : 7 <= Nat.log2 base := by
+      have h128 : 2 ^ 7 <= base := by
+        simpa using hbase
+      exact natLog2_ge_of_pow_le h128
+    omega
+  have hthree_le_square : 3 * logBase <= logBase * logBase :=
+    Nat.mul_le_mul_right logBase hlogBase_three
+  have hrel_le_three :
+      2 * logBase + 3 <= 3 * logBase := by
+    omega
+  have hrel :
+      canonicalBPRelativeSummaryRelativeWidthRaw shape <=
+        3 * logBase := by
+    simpa [canonicalBPRelativeSummaryRelativeWidthRaw, base, logBase]
+      using hrel_le_three
+  have hsq : logBase * logBase <= base := by
+    simpa [logBase] using hsquare
+  have hthree_le_base : 3 * logBase <= base :=
+    Nat.le_trans hthree_le_square hsq
+  exact Nat.le_trans hrel (by simpa [base] using hthree_le_base)
+
+theorem canonicalBPRelativeSummaryLargeRegime_of_size_ge
+    {shape : Cartesian.CartesianShape}
+    (hsize : 2 ^ 128 <= shape.size) :
+    canonicalBPRelativeSummaryLargeRegime shape := by
+  have hsize_pos : 0 < shape.size := by
+    have hpow : 0 < 2 ^ 128 := Nat.pow_pos (by omega)
+    omega
+  have hbase_ge :=
+    canonicalBPRelativeSummaryBase_ge_128_of_size_ge
+      (shape := shape) hsize
+  have hrel_le_base :=
+    canonicalBPRelativeSummaryRelativeWidthRaw_le_base_of_base_ge_128
+      (shape := shape) hbase_ge
+  have hbase_le_super :=
+    canonicalBPRelativeSummaryBase_le_superWidth_of_size_pos
+      (shape := shape) hsize_pos
+  unfold canonicalBPRelativeSummaryLargeRegime
+  exact ⟨
+    canonicalBPRelativeSummaryBase_le_blockCountRaw_of_size_ge
+      (shape := shape) hsize,
+    canonicalBPRelativeSummarySuperWidth_le_eight_base_of_size_pos
+      (shape := shape) hsize_pos,
+    canonicalBPRelativeSummarySpanRaw_width_bound shape,
+    canonicalBPRelativeSummaryBlockSizeRaw_width_bound shape,
+    Nat.le_trans hrel_le_base hbase_le_super⟩
+
 theorem canonicalBPRelativeMinMaxArgSummaryTableActive_of_large
     {shape : Cartesian.CartesianShape}
     (hlarge : canonicalBPRelativeSummaryLargeRegime shape) :
@@ -3923,6 +4200,81 @@ theorem concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_large
     canonicalBPRelativeSummaryBlockCountRaw_le_bpCode_length shape,
     hrelativeMachine, Nat.le_trans hsummaryPayload hpayloadLe,
     hsummaryExact, hbaselineRead, hminRead, hmaxRead, hargRead⟩
+
+theorem concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_size_ge
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size) :
+    let table := concreteBPRelativeMinMaxArgSummaryTable_canonical shape
+    canonicalBPRelativeSummaryBlockSize shape =
+        canonicalBPRelativeSummaryBlockSizeRaw shape /\
+      canonicalBPRelativeSummaryBlocksPerSuper shape =
+        canonicalBPRelativeSummaryBlocksPerSuperRaw shape /\
+      canonicalBPRelativeSummaryBlockCount shape =
+        canonicalBPRelativeSummaryBlockCountRaw shape /\
+      canonicalBPRelativeSummarySuperCount shape =
+        canonicalBPRelativeSummarySuperCountRaw shape /\
+      canonicalBPRelativeSummaryRelativeWidth shape =
+        canonicalBPRelativeSummaryRelativeWidthRaw shape /\
+      LittleOLinear concreteBPRelativeRmmInteriorOverhead /\
+      canonicalBPRelativeMinMaxArgSummaryTableActive shape /\
+      0 < canonicalBPRelativeSummaryBlockSizeRaw shape /\
+      0 < canonicalBPRelativeSummaryBlocksPerSuperRaw shape /\
+      0 < canonicalBPRelativeSummaryBlockCountRaw shape /\
+      canonicalBPRelativeSummaryBlockCountRaw shape *
+          canonicalBPRelativeSummaryBlockSizeRaw shape <=
+        shape.bpCode.length /\
+      canonicalBPRelativeSummaryBlockCountRaw shape <=
+        shape.bpCode.length /\
+      canonicalBPRelativeSummaryRelativeWidthRaw shape <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length /\
+      table.payload.length <=
+        concreteBPRelativeRmmInteriorOverhead shape.size /\
+      (forall block,
+        (table.summaryCosted block).cost <= 4 /\
+          (table.summaryCosted block).erase =
+            match
+              (bpSuperblockBaselineEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+                (canonicalBPRelativeSummarySuperCountRaw shape))[
+                  block /
+                    canonicalBPRelativeSummaryBlocksPerSuperRaw shape]?,
+              (bpBlockRelativeMinExcessEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+                (canonicalBPRelativeSummaryBlockCountRaw shape))[block]?,
+              (bpBlockRelativeMaxExcessEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+                (canonicalBPRelativeSummaryBlockCountRaw shape))[block]?,
+              (bpBlockArgMinLocalOffsetEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlockCountRaw shape))[block]?
+            with
+            | some baseline, some minRel, some maxRel, some argOffset =>
+                some (baseline, minRel, maxRel, argOffset)
+            | _, _, _, _ => none) /\
+      (forall {index : Nat} {word : List Bool},
+        table.baselineTable.store.words[index]? = some word ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.minRelTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.maxRelTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.argOffsetTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+  exact
+    concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_large
+      shape
+      (canonicalBPRelativeSummaryLargeRegime_of_size_ge
+        (shape := shape) hsize)
 
 /-!
 ## Position-bearing BP block summaries
