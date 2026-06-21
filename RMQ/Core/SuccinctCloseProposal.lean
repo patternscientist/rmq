@@ -4066,7 +4066,12 @@ theorem canonicalBPRelativeSummaryRelativeWidthRaw_machine_of_large
     ⟨_hbase_le_count, _hsuperWidth, _hspan, _harg, hmachine⟩
   simpa [canonicalBPRelativeSummarySuperWidth] using hmachine
 
-def concreteBPRelativeRmmInteriorNodeSlots : Nat := 64
+def concreteBPRelativeRmmInteriorLocalOffsetSlots : Nat := 64
+
+def concreteBPRelativeRmmInteriorGlobalMacroSlots : Nat := 32
+
+def concreteBPRelativeRmmInteriorNodeSlots : Nat :=
+  concreteBPRelativeRmmInteriorLocalOffsetSlots
 
 def concreteBPRelativeRmmInteriorTopSlots : Nat := 16
 
@@ -4077,26 +4082,32 @@ Canonical compact overhead envelope for the intended relative-rmM interior
 navigator.
 
 The first summand is the charged relative min/max/arg block summary table.  The
-last two summands reserve fixed many log-log and sampled directory words for
-the compact rmM/min-max-tree routing layer.  There is intentionally no dense
-`interiorBlockPairRanges` or all-pairs range payload in this budget.
+second summand reserves local-offset sparse tables over macroblocks, with
+`log log n`-bit offsets across `log log n` levels.  The last two summands pay for
+the global macroblock sparse table and top routing layer.  There is intentionally
+no dense `interiorBlockPairRanges` or all-pairs range payload in this budget.
 -/
 def concreteBPRelativeRmmInteriorOverhead (n : Nat) : Nat :=
   compactBPCloseSummaryPayloadOverhead
       canonicalBPRelativeSummaryBlockSlots 0 0
       canonicalBPRelativeSummarySuperSlots n +
-    logLogSampledDirectoryOverhead concreteBPRelativeRmmInteriorNodeSlots n +
-      sampledDirectoryOverhead concreteBPRelativeRmmInteriorTopSlots n
+    logLogSquaredSampledDirectoryOverhead
+        concreteBPRelativeRmmInteriorLocalOffsetSlots n +
+      logLogSampledDirectoryOverhead
+          concreteBPRelativeRmmInteriorGlobalMacroSlots n +
+        sampledDirectoryOverhead concreteBPRelativeRmmInteriorTopSlots n
 
 theorem concreteBPRelativeRmmInteriorOverhead_littleO :
     LittleOLinear concreteBPRelativeRmmInteriorOverhead := by
   unfold concreteBPRelativeRmmInteriorOverhead
   exact
-    ((compactBPCloseSummaryPayloadOverhead_littleO
+    (((compactBPCloseSummaryPayloadOverhead_littleO
       canonicalBPRelativeSummaryBlockSlots 0 0
       canonicalBPRelativeSummarySuperSlots).add
+      (logLogSquaredSampledDirectoryOverhead_littleO
+        concreteBPRelativeRmmInteriorLocalOffsetSlots)).add
       (logLogSampledDirectoryOverhead_littleO
-        concreteBPRelativeRmmInteriorNodeSlots)).add
+        concreteBPRelativeRmmInteriorGlobalMacroSlots)).add
       (sampledDirectoryOverhead_littleO
         concreteBPRelativeRmmInteriorTopSlots)
 
@@ -4275,6 +4286,154 @@ theorem concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_size_ge
       shape
       (canonicalBPRelativeSummaryLargeRegime_of_size_ge
         (shape := shape) hsize)
+
+/--
+Two-level interior-navigator budget package for the canonical large regime.
+
+This is the arithmetic surface the concrete rmM navigator should consume: it
+charges the relative summary table, the local offset sparse tables, the global
+macroblock sparse table, and the top routing reserve inside one `o(n)` envelope,
+while also exposing the fixed-width read bounds needed by the charged summary
+queries.
+-/
+theorem concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_size_ge
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size) :
+    let table := concreteBPRelativeMinMaxArgSummaryTable_canonical shape
+    let relativeSummaryBudget :=
+      compactBPCloseSummaryPayloadOverhead
+        canonicalBPRelativeSummaryBlockSlots 0 0
+        canonicalBPRelativeSummarySuperSlots shape.size
+    let localOffsetBudget :=
+      logLogSquaredSampledDirectoryOverhead
+        concreteBPRelativeRmmInteriorLocalOffsetSlots shape.size
+    let globalMacroBudget :=
+      logLogSampledDirectoryOverhead
+        concreteBPRelativeRmmInteriorGlobalMacroSlots shape.size
+    let topRoutingBudget :=
+      sampledDirectoryOverhead concreteBPRelativeRmmInteriorTopSlots shape.size
+    LittleOLinear concreteBPRelativeRmmInteriorOverhead /\
+      relativeSummaryBudget + localOffsetBudget +
+          globalMacroBudget + topRoutingBudget =
+        concreteBPRelativeRmmInteriorOverhead shape.size /\
+      table.payload.length + localOffsetBudget +
+          globalMacroBudget + topRoutingBudget <=
+        concreteBPRelativeRmmInteriorOverhead shape.size /\
+      canonicalBPRelativeMinMaxArgSummaryTableActive shape /\
+      canonicalBPRelativeSummaryBlockSizeRaw shape <
+        2 ^ canonicalBPRelativeSummaryRelativeWidthRaw shape /\
+      canonicalBPRelativeSummaryRelativeWidthRaw shape <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length /\
+      canonicalBPRelativeSummaryBlockCountRaw shape <
+        2 ^ SuccinctRankProposal.machineWordBits shape.bpCode.length /\
+      (forall block,
+        (table.summaryCosted block).cost <= 4 /\
+          (table.summaryCosted block).erase =
+            match
+              (bpSuperblockBaselineEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+                (canonicalBPRelativeSummarySuperCountRaw shape))[
+                  block /
+                    canonicalBPRelativeSummaryBlocksPerSuperRaw shape]?,
+              (bpBlockRelativeMinExcessEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+                (canonicalBPRelativeSummaryBlockCountRaw shape))[block]?,
+              (bpBlockRelativeMaxExcessEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+                (canonicalBPRelativeSummaryBlockCountRaw shape))[block]?,
+              (bpBlockArgMinLocalOffsetEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlockCountRaw shape))[block]?
+            with
+            | some baseline, some minRel, some maxRel, some argOffset =>
+                some (baseline, minRel, maxRel, argOffset)
+            | _, _, _, _ => none) /\
+      (forall {index : Nat} {word : List Bool},
+        table.baselineTable.store.words[index]? = some word ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.minRelTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.maxRelTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.argOffsetTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+  let table := concreteBPRelativeMinMaxArgSummaryTable_canonical shape
+  let relativeSummaryBudget :=
+    compactBPCloseSummaryPayloadOverhead
+      canonicalBPRelativeSummaryBlockSlots 0 0
+      canonicalBPRelativeSummarySuperSlots shape.size
+  let localOffsetBudget :=
+    logLogSquaredSampledDirectoryOverhead
+      concreteBPRelativeRmmInteriorLocalOffsetSlots shape.size
+  let globalMacroBudget :=
+    logLogSampledDirectoryOverhead
+      concreteBPRelativeRmmInteriorGlobalMacroSlots shape.size
+  let topRoutingBudget :=
+    sampledDirectoryOverhead concreteBPRelativeRmmInteriorTopSlots shape.size
+  have hlarge :=
+    canonicalBPRelativeSummaryLargeRegime_of_size_ge
+      (shape := shape) hsize
+  have hsummary :=
+    concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile_of_large
+      shape hlarge
+  rcases hsummary with
+    ⟨_hblockSize, _hblocksPerSuper, _hblockCount, _hsuperCount,
+      _hrelativeWidth, _hsummaryLittleO, hsummaryPayload, hsummaryExact,
+      hbaselineRead, hminRead, hmaxRead, hargRead⟩
+  rcases canonicalBPRelativeSummary_large_parts
+      (shape := shape) hlarge with
+    ⟨_hbase_le_count, _hsuperWidth, _hspan, hargWidth,
+      _hrelative_le_super⟩
+  have hactive :=
+    canonicalBPRelativeMinMaxArgSummaryTableActive_of_large
+      (shape := shape) hlarge
+  have hrelativeMachine :=
+    canonicalBPRelativeSummaryRelativeWidthRaw_machine_of_large
+      (shape := shape) hlarge
+  have hblockCountMachine :
+      canonicalBPRelativeSummaryBlockCountRaw shape <
+        2 ^ SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+    have hcount :=
+      canonicalBPRelativeSummaryBlockCountRaw_le_bpCode_length shape
+    have hcapacity :
+        shape.bpCode.length <
+          2 ^ SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      unfold SuccinctRankProposal.machineWordBits
+      exact Nat.lt_log2_self (n := shape.bpCode.length)
+    exact Nat.lt_of_le_of_lt hcount hcapacity
+  have hbudgetEq :
+      relativeSummaryBudget + localOffsetBudget +
+          globalMacroBudget + topRoutingBudget =
+        concreteBPRelativeRmmInteriorOverhead shape.size := by
+    rfl
+  have hpayloadBudget :
+      table.payload.length + localOffsetBudget +
+          globalMacroBudget + topRoutingBudget <=
+        concreteBPRelativeRmmInteriorOverhead shape.size := by
+    have hpayloadLeRelative :
+        table.payload.length <= relativeSummaryBudget := by
+      simpa [table, relativeSummaryBudget] using hsummaryPayload
+    have hsum :
+        table.payload.length + localOffsetBudget +
+            globalMacroBudget + topRoutingBudget <=
+          relativeSummaryBudget + localOffsetBudget +
+            globalMacroBudget + topRoutingBudget := by
+      omega
+    simpa [hbudgetEq] using hsum
+  exact ⟨concreteBPRelativeRmmInteriorOverhead_littleO, hbudgetEq,
+    hpayloadBudget, hactive, hargWidth, hrelativeMachine,
+    hblockCountMachine, hsummaryExact, hbaselineRead, hminRead, hmaxRead,
+    hargRead⟩
 
 /-!
 ## Position-bearing BP block summaries

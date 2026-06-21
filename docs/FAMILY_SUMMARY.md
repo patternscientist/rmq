@@ -279,8 +279,9 @@ still the block-summary layer; the exact answer-close theorem still has to
 connect those relative summaries to endpoint-fringe repair.
 `SuccinctCloseProposal.concreteBPRelativeRmmInteriorOverhead_littleO` names the
 compact overhead envelope for the intended rmM/min-max-tree interior navigator:
-the charged relative summary table plus fixed log-log node summaries and fixed
-sampled top-level routing, with no dense interior block-pair payload.
+the charged relative summary table, fixed squared-log-log local offset sparse
+tables, fixed log-log global macroblock routing, and fixed sampled top-level
+routing, with no dense interior block-pair payload.
 `SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_large`
 packages the large-regime branch equalities, raw cover and positivity facts,
 relative-entry machine-word bound, relative-summary read exactness/cost, and
@@ -295,6 +296,12 @@ and the relative-width machine-word comparison.  The wrapper
 feeds this threshold theorem into the same interior parameter profile, so the
 next concrete directory can consume a size hypothesis instead of a bundled
 `canonicalBPRelativeSummaryLargeRegime` assumption.
+`SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_size_ge`
+adds the two-level budget package A needs next: the concrete relative summary
+payload plus local offset sparse tables, global macroblock sparse table, and top
+routing all fit under the same `LittleOLinear` interior envelope, while local
+offset width, block-count routing capacity, and every charged summary word read
+remain machine-word bounded.
 `SuccinctCloseProposal.bpExcessAt_prefix_nonnegative` records the
 balanced-prefix invariant needed when interpreting the Nat-subtraction excess,
 and `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.summary_read_words_length_le_machine`
@@ -1139,6 +1146,7 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctSpace.eventually_scale_logLog_succ_le_log_succ`,
   `SuccinctSpace.sampledDirectoryOverhead_littleO`,
   `SuccinctSpace.logLogSampledDirectoryOverhead_littleO`,
+  `SuccinctSpace.logLogSquaredSampledDirectoryOverhead_littleO`,
   `SuccinctSpace.natToBitsLE_length`,
   `SuccinctSpace.bitsToNatLE_natToBitsLE_of_lt`,
   `SuccinctSpace.optionNatToBitsLE_length`,
@@ -1429,6 +1437,7 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.concreteBPRelativeRmmInteriorOverhead_littleO`,
   `SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_large`,
   `SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_size_ge`,
+  `SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_size_ge`,
   `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxArgSummaryTable.profile`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxArgSummaryTable_sampled_profile`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxArgSummaryTable_read_words_length_le_machine`,
