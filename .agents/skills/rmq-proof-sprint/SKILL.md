@@ -238,7 +238,12 @@ obstruction theorem, and the exact signature/design decision now required.
 2. Use `apply_patch` for manual edits.
 3. Update `docs/FAMILY_SUMMARY.md` when public theorem inventories, dependency
    status, or scope notes change.
-4. Run:
+4. If the branch adds or documents a new public exactness, cost, space, or
+   obstruction theorem as part of the milestone, add a corresponding
+   `#print axioms` line to `scripts/axiom_check.lean`, unless the report
+   explicitly explains why the theorem is only a local helper and not a curated
+   headline/checkpoint surface.
+5. Run:
 
    ```powershell
    lake build
