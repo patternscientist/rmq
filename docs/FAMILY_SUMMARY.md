@@ -277,6 +277,15 @@ budget, a superblock word width linear in the canonical base, relative
 span/arg-width bounds, and relative entries fitting in a machine word. This is
 still the block-summary layer; the exact answer-close theorem still has to
 connect those relative summaries to endpoint-fringe repair.
+`SuccinctCloseProposal.concreteBPRelativeRmmInteriorOverhead_littleO` names the
+compact overhead envelope for the intended rmM/min-max-tree interior navigator:
+the charged relative summary table plus fixed log-log node summaries and fixed
+sampled top-level routing, with no dense interior block-pair payload.
+`SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_large`
+packages the large-regime branch equalities, raw cover and positivity facts,
+relative-entry machine-word bound, relative-summary read exactness/cost, and
+payload bound under that interior envelope so the later concrete interior
+directory profile can consume those side conditions directly.
 `SuccinctCloseProposal.bpExcessAt_prefix_nonnegative` records the
 balanced-prefix invariant needed when interpreting the Nat-subtraction excess,
 and `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.summary_read_words_length_le_machine`
@@ -1368,6 +1377,9 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile`,
   `SuccinctCloseProposal.canonicalBPRelativeMinMaxArgSummaryTableActive_of_large`,
   `SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile_of_large`,
+  `SuccinctCloseProposal.canonicalBPRelativeSummaryRelativeWidthRaw_machine_of_large`,
+  `SuccinctCloseProposal.concreteBPRelativeRmmInteriorOverhead_littleO`,
+  `SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_large`,
   `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxArgSummaryTable.profile`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxArgSummaryTable_sampled_profile`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxArgSummaryTable_read_words_length_le_machine`,
