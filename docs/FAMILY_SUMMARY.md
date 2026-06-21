@@ -1542,7 +1542,6 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.PayloadLiveGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory.profile`,
   `SuccinctCloseProposal.concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_profile`,
   `SuccinctCloseProposal.guardedEndpointFringeMacroMicroOverhead_littleO`,
-  `SuccinctCloseProposal.concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_sampled_profile`,
   `SuccinctCloseProposal.bpRelativeRmmCandidateMerge_exact`,
   `SuccinctCloseProposal.PayloadLiveRelativeRmmBPCloseMacro.lcaCloseCosted_exact_of_query_cross_block`,
   `SuccinctCloseProposal.PayloadLiveRelativeRmmBPCloseMacro.profile`,

@@ -366,3 +366,30 @@ consume the interior navigator in
 `concretePayloadLiveRelativeRmmBPCloseMacro_profile`, then in
 `concreteCompactBPCloseLCADirectory_profile`, and finally in the BP-native
 succinct RMQ join.
+
+## 2026-06-21 - Interior navigator built and merged
+
+The compact relative-rmM interior navigator is now in the coordinator branch.
+`SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_profile` is the
+positive C2 interior checkpoint the audit had been demanding: under the
+large-regime threshold `2^128 <= shape.size`, it packages a concrete two-level
+directory with `LittleOLinear` payload overhead, payload bounded by the concrete
+overhead term, bounded query cost, exact leftmost range-minimum witness erasure,
+and machine-word bounds for the charged local/global/summary reads.
+
+This result is materially different from the older dense
+`interiorBlockPairRanges` path. The new profile derives the local offset-table
+and global macroblock-table budgets instead of assuming a dense all-pairs
+interior budget, and it routes the answer through payload-backed reads rather
+than an answer-as-premise selector cell.
+
+The dense sampled guarded endpoint-fringe theorem is no longer in the curated
+`scripts/axiom_check.lean` headline inventory. It remains in source as legacy
+scaffolding and contrast material until the close-directory composition fully
+consumes the compact interior navigator; it should not be cited as a concrete
+`2*n + o(n)` close-directory witness.
+
+Remaining C2/C3 work is now composition rather than discovery: consume
+`concreteBPRelativeRmmInteriorDirectory_profile` in the relative-rmM close macro,
+then the compact BP close/LCA directory, then the final BP-native succinct RMQ
+join with the lower-bound slack theorem.
