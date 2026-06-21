@@ -7568,6 +7568,239 @@ theorem rangeScanCosted_erase_exact
 
 end PayloadLiveBPRelativeMinMaxArgSummaryTable
 
+/--
+Interior full-block range-minimum directory for the relative-rmM close layer.
+
+This interface is deliberately narrow: a concrete implementation has to expose
+one charged `rangeMinCosted` path whose erasure is the leftmost block-minimum
+candidate over the requested complete-block range.  The compact C2 target must
+instantiate this with a constant `queryCost`; the scan instance below is kept
+only as a diagnostic replacement target.
+-/
+structure PayloadLiveBPRelativeRmmInteriorDirectory
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount overhead queryCost : Nat) where
+  payload : List Bool
+  payload_length_eq : payload.length = overhead
+  rangeMinCosted : Nat -> Nat -> Costed (Option (Nat × Nat))
+  rangeMin_cost_le :
+    forall startBlock count,
+      (rangeMinCosted startBlock count).cost <= queryCost
+  rangeMin_exact :
+    forall {startBlock count : Nat},
+      0 < count ->
+        startBlock + count <= blockCount ->
+          (rangeMinCosted startBlock count).erase =
+            some
+              (bpRangeMinExcess shape blockSize startBlock count,
+                bpRangeArgMinPrefixPos shape blockSize startBlock count)
+
+namespace PayloadLiveBPRelativeRmmInteriorDirectory
+
+theorem profile
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount overhead queryCost : Nat}
+    (directory :
+      PayloadLiveBPRelativeRmmInteriorDirectory shape blockSize blockCount
+        overhead queryCost) :
+    directory.payload.length = overhead /\
+      (forall startBlock count,
+        (directory.rangeMinCosted startBlock count).cost <= queryCost) /\
+      forall {startBlock count : Nat},
+        0 < count ->
+          startBlock + count <= blockCount ->
+            (directory.rangeMinCosted startBlock count).erase =
+              some
+                (bpRangeMinExcess shape blockSize startBlock count,
+                  bpRangeArgMinPrefixPos shape blockSize startBlock count) := by
+  exact ⟨directory.payload_length_eq, directory.rangeMin_cost_le,
+    directory.rangeMin_exact⟩
+
+end PayloadLiveBPRelativeRmmInteriorDirectory
+
+/--
+Proof-only range-min oracle used to document a target-shape obstruction.
+
+This is intentionally *not* a compact C2 construction: it answers by directly
+calling the semantic reference functions and charges a constant without reading
+payload bits.  The theorem below records why `concreteBPRelativeRmmInteriorDirectory_profile`
+cannot be closed merely by exposing the abstract `PayloadLiveBPRelativeRmmInteriorDirectory`
+record and invoking its generic `.profile`.
+-/
+def proofOnlyBPRelativeRmmInteriorDirectory
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount : Nat) :
+    PayloadLiveBPRelativeRmmInteriorDirectory shape blockSize blockCount
+      0 1 where
+  payload := []
+  payload_length_eq := rfl
+  rangeMinCosted := fun startBlock count =>
+    { value :=
+        if 0 < count ∧ startBlock + count <= blockCount then
+          some
+            (bpRangeMinExcess shape blockSize startBlock count,
+              bpRangeArgMinPrefixPos shape blockSize startBlock count)
+        else
+          none
+      cost := 1 }
+  rangeMin_cost_le := by
+    intro startBlock count
+    simp
+  rangeMin_exact := by
+    intro startBlock count hcount hbound
+    have hcond : 0 < count ∧ startBlock + count <= blockCount :=
+      ⟨hcount, hbound⟩
+    simp [hcond]
+
+theorem payloadLiveBPRelativeRmmInteriorDirectory_profile_allows_proof_only_oracle
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount : Nat) :
+    let directory :=
+      proofOnlyBPRelativeRmmInteriorDirectory shape blockSize blockCount
+    directory.payload.length = 0 /\
+      (forall startBlock count,
+        (directory.rangeMinCosted startBlock count).cost <= 1) /\
+      forall {startBlock count : Nat},
+        0 < count ->
+          startBlock + count <= blockCount ->
+            (directory.rangeMinCosted startBlock count).erase =
+              some
+                (bpRangeMinExcess shape blockSize startBlock count,
+                  bpRangeArgMinPrefixPos shape blockSize startBlock count) := by
+  exact
+    (proofOnlyBPRelativeRmmInteriorDirectory
+      shape blockSize blockCount).profile
+
+namespace PayloadLiveBPRelativeMinMaxArgSummaryTable
+
+def boundedRangeScanCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (startBlock count : Nat) : Costed (Option (Nat × Nat)) :=
+  if startBlock + count <= blockCount then
+    table.rangeScanCosted startBlock count
+  else
+    Costed.pure none
+
+theorem boundedRangeScanCosted_cost_le_blockCount
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (startBlock count : Nat) :
+    (table.boundedRangeScanCosted startBlock count).cost <=
+      4 * blockCount := by
+  unfold boundedRangeScanCosted
+  by_cases hbound : startBlock + count <= blockCount
+  · simp [hbound]
+    have hcost := table.rangeScanCosted_cost_le startBlock count
+    have hcount : count <= blockCount := by omega
+    have hmul : 4 * count <= 4 * blockCount :=
+      Nat.mul_le_mul_left 4 hcount
+    exact Nat.le_trans hcost hmul
+  · simp [hbound, Costed.pure]
+
+theorem div_lt_succ_div_of_lt
+    {block blocksPerSuper blockCount : Nat}
+    (hblock : block < blockCount) :
+    block / blocksPerSuper < blockCount / blocksPerSuper + 1 := by
+  have hle : block / blocksPerSuper <= blockCount / blocksPerSuper := by
+    exact Nat.div_le_div_right (Nat.le_of_lt hblock)
+  omega
+
+theorem boundedRangeScanCosted_erase_exact
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead startBlock count : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (hblocks : 0 < blocksPerSuper)
+    (hcover : blockCount * blockSize <= shape.bpCode.length)
+    (hsuperCount :
+      forall {block : Nat}, block < blockCount ->
+        block / blocksPerSuper < superCount)
+    (hcount : 0 < count)
+    (hbound : startBlock + count <= blockCount) :
+    (table.boundedRangeScanCosted startBlock count).erase =
+      some
+        (bpRangeMinExcess shape blockSize startBlock count,
+          bpRangeArgMinPrefixPos shape blockSize startBlock count) := by
+  unfold boundedRangeScanCosted
+  simp [hbound]
+  exact
+    table.rangeScanCosted_erase_exact hblocks hcover hcount
+      (by
+        intro offset hoffset
+        omega)
+      (by
+        intro offset hoffset
+        exact hsuperCount (by omega))
+
+def scanInteriorDirectory
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (hblocks : 0 < blocksPerSuper)
+    (hcover : blockCount * blockSize <= shape.bpCode.length)
+    (hsuperCount :
+      forall {block : Nat}, block < blockCount ->
+        block / blocksPerSuper < superCount) :
+    PayloadLiveBPRelativeRmmInteriorDirectory shape blockSize blockCount
+      overhead (4 * blockCount) where
+  payload := table.payload
+  payload_length_eq := table.payload_length
+  rangeMinCosted := table.boundedRangeScanCosted
+  rangeMin_cost_le := table.boundedRangeScanCosted_cost_le_blockCount
+  rangeMin_exact := by
+    intro startBlock count hcount hbound
+    exact table.boundedRangeScanCosted_erase_exact hblocks hcover
+      hsuperCount hcount hbound
+
+theorem scanInteriorDirectory_profile
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (hblocks : 0 < blocksPerSuper)
+    (hcover : blockCount * blockSize <= shape.bpCode.length)
+    (hsuperCount :
+      forall {block : Nat}, block < blockCount ->
+        block / blocksPerSuper < superCount) :
+    let directory :=
+      table.scanInteriorDirectory hblocks hcover hsuperCount
+    directory.payload.length = overhead /\
+      (forall startBlock count,
+        (directory.rangeMinCosted startBlock count).cost <=
+          4 * blockCount) /\
+      forall {startBlock count : Nat},
+        0 < count ->
+          startBlock + count <= blockCount ->
+            (directory.rangeMinCosted startBlock count).erase =
+              some
+                (bpRangeMinExcess shape blockSize startBlock count,
+                  bpRangeArgMinPrefixPos shape blockSize startBlock count) := by
+  exact
+    (table.scanInteriorDirectory hblocks hcover hsuperCount).profile
+
+end PayloadLiveBPRelativeMinMaxArgSummaryTable
+
 theorem concreteBPRelativeMinMaxArgSummaryTable_canonical_interior_scan_not_constant
     (shape : Cartesian.CartesianShape)
     (hblockSize : 0 < canonicalBPRelativeSummaryBlockSize shape) :
@@ -13557,6 +13790,154 @@ theorem profile
   exact ⟨component.payload_length, component.lcaCloseCosted_cost_le⟩
 
 end PayloadLiveRelativeRmmBPCloseMacro
+
+def payloadLiveRelativeRmmBPCloseMacroOfInterior
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth
+      leftOverhead interiorOverhead rightOverhead middleQueryCost : Nat}
+    (leftFringe :
+      PayloadLiveBPPrefixRangeArgMinWitnessTable shape fieldWidth
+        leftOverhead (endpointLeftFringeRanges blockSize blockCount))
+    (interior :
+      PayloadLiveBPRelativeRmmInteriorDirectory shape blockSize blockCount
+        interiorOverhead middleQueryCost)
+    (rightFringe :
+      PayloadLiveBPPrefixRangeArgMinWitnessTable shape fieldWidth
+        rightOverhead (endpointRightFringeRanges blockSize blockCount))
+    (hblockSize : 0 < blockSize) :
+    PayloadLiveRelativeRmmBPCloseMacro shape blockSize blockCount
+      (leftOverhead + interiorOverhead + rightOverhead) middleQueryCost where
+  payload := leftFringe.payload ++ interior.payload ++ rightFringe.payload
+  payload_length_eq := by
+    simp [leftFringe.payload_length, interior.payload_length_eq,
+      rightFringe.payload_length]
+    omega
+  payloadWordsRead := fun _ _ => []
+  leftFringeCosted := fun leftClose =>
+    leftFringe.rangeWitnessCosted (endpointFringeSlot blockSize leftClose)
+  rightFringeCosted := fun rightClose =>
+    rightFringe.rangeWitnessCosted (endpointFringeSlot blockSize rightClose)
+  interiorRmmCosted := fun leftClose rightClose =>
+    interior.rangeMinCosted (blockOfClose blockSize leftClose + 1)
+      (blockOfClose blockSize rightClose -
+        blockOfClose blockSize leftClose - 1)
+  leftFringe_cost_le_two := by
+    intro leftClose
+    exact leftFringe.rangeWitnessCosted_cost_le_two
+      (endpointFringeSlot blockSize leftClose)
+  rightFringe_cost_le_two := by
+    intro rightClose
+    exact rightFringe.rangeWitnessCosted_cost_le_two
+      (endpointFringeSlot blockSize rightClose)
+  interiorRmm_cost_le := by
+    intro leftClose rightClose
+    exact interior.rangeMin_cost_le
+      (blockOfClose blockSize leftClose + 1)
+      (blockOfClose blockSize rightClose -
+        blockOfClose blockSize leftClose - 1)
+  leftFringe_exact := by
+    intro leftClose hleftBlock
+    have hmin :
+        (bpPrefixRangeMinExcessEntries shape
+          (endpointLeftFringeRanges blockSize blockCount))[
+            endpointFringeSlot blockSize leftClose]? =
+          some
+            (bpPrefixRangeMinExcess shape (leftClose + 1)
+              (blockStartOf blockSize
+                  (blockOfClose blockSize leftClose) +
+                blockSize - leftClose)) :=
+      endpointLeftFringeMinExcessEntries_get?_of_close_bounds
+        hblockSize
+        hleftBlock
+    have harg :
+        (bpPrefixRangeArgMinPrefixPosEntries shape
+          (endpointLeftFringeRanges blockSize blockCount))[
+            endpointFringeSlot blockSize leftClose]? =
+          some
+            (bpPrefixRangeArgMinPrefixPos shape (leftClose + 1)
+              (blockStartOf blockSize
+                  (blockOfClose blockSize leftClose) +
+                blockSize - leftClose)) :=
+      endpointLeftFringeArgMinEntries_get?_of_close_bounds
+        hblockSize
+        hleftBlock
+    simpa [Costed.erase, hmin, harg] using
+      leftFringe.rangeWitnessCosted_erase
+        (endpointFringeSlot blockSize leftClose)
+  rightFringe_exact := by
+    intro rightClose hrightBlock
+    have hmin :
+        (bpPrefixRangeMinExcessEntries shape
+          (endpointRightFringeRanges blockSize blockCount))[
+            endpointFringeSlot blockSize rightClose]? =
+          some
+            (bpPrefixRangeMinExcess shape
+              (blockStartOf blockSize (blockOfClose blockSize rightClose))
+              (rightClose -
+                  blockStartOf blockSize
+                    (blockOfClose blockSize rightClose) +
+                2)) :=
+      endpointRightFringeMinExcessEntries_get?_of_close_bounds
+        hblockSize hrightBlock
+    have harg :
+        (bpPrefixRangeArgMinPrefixPosEntries shape
+          (endpointRightFringeRanges blockSize blockCount))[
+            endpointFringeSlot blockSize rightClose]? =
+          some
+            (bpPrefixRangeArgMinPrefixPos shape
+              (blockStartOf blockSize (blockOfClose blockSize rightClose))
+              (rightClose -
+                  blockStartOf blockSize
+                    (blockOfClose blockSize rightClose) +
+                2)) :=
+      endpointRightFringeArgMinEntries_get?_of_close_bounds
+        hblockSize hrightBlock
+    simpa [Costed.erase, hmin, harg] using
+      rightFringe.rangeWitnessCosted_erase
+        (endpointFringeSlot blockSize rightClose)
+  interiorRmm_exact := by
+    intro leftClose rightClose hleftBlock hrightBlock hgap
+    have hcount :
+        0 <
+          blockOfClose blockSize rightClose -
+            blockOfClose blockSize leftClose - 1 := by
+      omega
+    have hbound :
+        blockOfClose blockSize leftClose + 1 +
+            (blockOfClose blockSize rightClose -
+              blockOfClose blockSize leftClose - 1) <=
+          blockCount := by
+      omega
+    exact interior.rangeMin_exact hcount hbound
+  read_words_length_le_machine := by
+    intro leftClose rightClose word hmem
+    cases hmem
+
+theorem payloadLiveRelativeRmmBPCloseMacroOfInterior_profile
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth
+      leftOverhead interiorOverhead rightOverhead middleQueryCost : Nat}
+    (leftFringe :
+      PayloadLiveBPPrefixRangeArgMinWitnessTable shape fieldWidth
+        leftOverhead (endpointLeftFringeRanges blockSize blockCount))
+    (interior :
+      PayloadLiveBPRelativeRmmInteriorDirectory shape blockSize blockCount
+        interiorOverhead middleQueryCost)
+    (rightFringe :
+      PayloadLiveBPPrefixRangeArgMinWitnessTable shape fieldWidth
+        rightOverhead (endpointRightFringeRanges blockSize blockCount))
+    (hblockSize : 0 < blockSize) :
+    let component :=
+      payloadLiveRelativeRmmBPCloseMacroOfInterior
+        leftFringe interior rightFringe hblockSize
+    component.payload.length =
+        leftOverhead + interiorOverhead + rightOverhead /\
+      (forall leftClose rightClose,
+        (component.lcaCloseCosted leftClose rightClose).cost <=
+          4 + middleQueryCost) := by
+  exact
+    (payloadLiveRelativeRmmBPCloseMacroOfInterior
+      leftFringe interior rightFringe hblockSize).profile
 
 /--
 Guarded macro/micro close directory using a relative-rmM cross-block macro.

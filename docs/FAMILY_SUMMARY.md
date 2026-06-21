@@ -357,6 +357,18 @@ path is formally a blocker, not the rmM macro needed for
 `concretePayloadLiveRelativeRmmBPCloseMacro_profile` or
 `concreteCompactBPCloseLCADirectory_profile`; the remaining positive step is a
 non-scan compact rmM range navigator whose charged query is O(1).
+`SuccinctCloseProposal.PayloadLiveBPRelativeRmmInteriorDirectory.profile` now
+pins the replacement contract for that navigator, and
+`SuccinctCloseProposal.payloadLiveRelativeRmmBPCloseMacroOfInterior_profile`
+immediately feeds any such interior directory into the charged
+left-fringe/interior/right-fringe relative macro.  The available concrete
+instance of that contract is still the diagnostic scan and is therefore not a
+C2 stop point.
+`SuccinctCloseProposal.payloadLiveBPRelativeRmmInteriorDirectory_profile_allows_proof_only_oracle`
+records the corresponding contract caveat: the generic interior-directory
+record alone can be inhabited by an empty-payload proof-only oracle, so the
+named compact C2 checkpoint still has to build a concrete navigator whose
+constant query is tied to charged payload reads.
 The coordinator-selected C2 path is to replace the dense block-pair/interior
 macro payload with the compact rmM/min-max-tree-style interior navigator over
 complete-block minimum candidates, prove its constant charged range-min witness
