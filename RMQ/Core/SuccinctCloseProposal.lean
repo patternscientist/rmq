@@ -4066,37 +4066,387 @@ theorem canonicalBPRelativeSummaryRelativeWidthRaw_machine_of_large
     ⟨_hbase_le_count, _hsuperWidth, _hspan, _harg, hmachine⟩
   simpa [canonicalBPRelativeSummarySuperWidth] using hmachine
 
-def concreteBPRelativeRmmInteriorNodeSlots : Nat := 64
+def concreteBPRelativeRmmInteriorLocalOffsetSlots : Nat := 64
+
+def concreteBPRelativeRmmInteriorGlobalMacroSlots : Nat := 32
+
+def concreteBPRelativeRmmInteriorNodeSlots : Nat :=
+  concreteBPRelativeRmmInteriorLocalOffsetSlots
 
 def concreteBPRelativeRmmInteriorTopSlots : Nat := 16
 
-def concreteBPRelativeRmmInteriorQueryCost : Nat := 8
+def concreteBPRelativeRmmInteriorQueryCost : Nat := 30
+
+def concreteBPRelativeRmmInteriorMacroSize
+    (shape : Cartesian.CartesianShape) : Nat :=
+  canonicalBPRelativeSummaryBase shape *
+    canonicalBPRelativeSummaryBase shape
+
+def concreteBPRelativeRmmInteriorMacroCount
+    (shape : Cartesian.CartesianShape) : Nat :=
+  canonicalBPRelativeSummaryBlockCount shape /
+      concreteBPRelativeRmmInteriorMacroSize shape + 1
+
+def concreteBPRelativeRmmInteriorOffsetWidth
+    (shape : Cartesian.CartesianShape) : Nat :=
+  SuccinctRankProposal.machineWordBits
+    (concreteBPRelativeRmmInteriorMacroSize shape)
+
+def concreteBPRelativeRmmInteriorLevelCount
+    (shape : Cartesian.CartesianShape) : Nat :=
+  concreteBPRelativeRmmInteriorOffsetWidth shape
+
+def concreteBPRelativeRmmInteriorGlobalLevelCount
+    (shape : Cartesian.CartesianShape) : Nat :=
+  SuccinctRankProposal.machineWordBits
+    (concreteBPRelativeRmmInteriorMacroCount shape)
+
+def concreteBPRelativeRmmInteriorBlockWidth
+    (shape : Cartesian.CartesianShape) : Nat :=
+  SuccinctRankProposal.machineWordBits
+    (canonicalBPRelativeSummaryBlockCount shape)
+
+theorem concreteBPRelativeRmmInteriorMacroSize_pos
+    (shape : Cartesian.CartesianShape) :
+    0 < concreteBPRelativeRmmInteriorMacroSize shape := by
+  unfold concreteBPRelativeRmmInteriorMacroSize
+  have hbase : 0 < canonicalBPRelativeSummaryBase shape := by
+    simp [canonicalBPRelativeSummaryBase]
+  exact Nat.mul_pos hbase hbase
+
+theorem concreteBPRelativeRmmInteriorOffsetWidth_capacity
+    (shape : Cartesian.CartesianShape) :
+    concreteBPRelativeRmmInteriorMacroSize shape <
+      2 ^ concreteBPRelativeRmmInteriorOffsetWidth shape := by
+  unfold concreteBPRelativeRmmInteriorOffsetWidth
+  unfold SuccinctRankProposal.machineWordBits
+  exact Nat.lt_log2_self
+    (n := concreteBPRelativeRmmInteriorMacroSize shape)
+
+theorem concreteBPRelativeRmmInteriorBlockWidth_capacity
+    (shape : Cartesian.CartesianShape) :
+    canonicalBPRelativeSummaryBlockCount shape <
+      2 ^ concreteBPRelativeRmmInteriorBlockWidth shape := by
+  unfold concreteBPRelativeRmmInteriorBlockWidth
+  unfold SuccinctRankProposal.machineWordBits
+  exact Nat.lt_log2_self
+    (n := canonicalBPRelativeSummaryBlockCount shape)
+
+theorem concreteBPRelativeRmmInteriorGlobalLevelCount_capacity
+    (shape : Cartesian.CartesianShape) :
+    concreteBPRelativeRmmInteriorMacroCount shape <
+      2 ^ concreteBPRelativeRmmInteriorGlobalLevelCount shape := by
+  unfold concreteBPRelativeRmmInteriorGlobalLevelCount
+  unfold SuccinctRankProposal.machineWordBits
+  exact Nat.lt_log2_self
+    (n := concreteBPRelativeRmmInteriorMacroCount shape)
+
+theorem nat_succ_cube_le_two_pow_of_128_le
+    (q : Nat) (hq : 128 <= q) :
+    (q + 1) * ((q + 1) * (q + 1)) <= 2 ^ q := by
+  exact Nat.strongRecOn q (fun q ih => by
+    intro hq
+    by_cases hstep : 131 <= q
+    · have hprevLarge : 128 <= q - 3 := by
+        omega
+      have hprevLt : q - 3 < q := by
+        omega
+      have ihprev := ih (q - 3) hprevLt hprevLarge
+      have hlin : q + 1 <= 2 * ((q - 3) + 1) := by
+        omega
+      have hcube :
+          (q + 1) * ((q + 1) * (q + 1)) <=
+            (2 * ((q - 3) + 1)) *
+              ((2 * ((q - 3) + 1)) *
+                (2 * ((q - 3) + 1))) := by
+        exact Nat.mul_le_mul hlin (Nat.mul_le_mul hlin hlin)
+      have hscaled :
+          (2 * ((q - 3) + 1)) *
+              ((2 * ((q - 3) + 1)) *
+                (2 * ((q - 3) + 1))) =
+            2 * (2 * (2 *
+              (((q - 3) + 1) *
+                (((q - 3) + 1) * ((q - 3) + 1))))) := by
+        simp [Nat.mul_left_comm, Nat.mul_comm]
+      have hpowMul :
+          2 * (2 * (2 * 2 ^ (q - 3))) = 2 ^ q := by
+        have hqeq : q = (q - 3) + 3 := by
+          omega
+        calc
+          2 * (2 * (2 * 2 ^ (q - 3))) =
+              2 ^ ((q - 3) + 3) := by
+            simp [Nat.pow_succ, Nat.mul_comm]
+          _ = 2 ^ q := by
+            rw [← hqeq]
+      have hprevScaled :
+          2 * (2 * (2 *
+              (((q - 3) + 1) *
+                (((q - 3) + 1) * ((q - 3) + 1))))) <=
+            2 * (2 * (2 * 2 ^ (q - 3))) := by
+        exact Nat.mul_le_mul_left 2
+          (Nat.mul_le_mul_left 2 (Nat.mul_le_mul_left 2 ihprev))
+      exact Nat.le_trans hcube
+        (by simpa [hscaled, hpowMul] using hprevScaled)
+    · have hupper : q <= 130 := by
+        omega
+      have hq131 : q + 1 <= 131 := by
+        omega
+      have hcubeLe :
+          (q + 1) * ((q + 1) * (q + 1)) <=
+            131 * (131 * 131) := by
+        exact Nat.mul_le_mul hq131 (Nat.mul_le_mul hq131 hq131)
+      have hsmall : 131 * (131 * 131) <= 2 ^ 22 := by
+        decide
+      have hpow : 2 ^ 22 <= 2 ^ q :=
+        Nat.pow_le_pow_right (by omega : 0 < 2) (by omega)
+      exact Nat.le_trans hcubeLe (Nat.le_trans hsmall hpow)) hq
+
+theorem concreteBPRelativeRmmInteriorMacroSize_le_blockCount_of_size_ge
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size) :
+    concreteBPRelativeRmmInteriorMacroSize shape <=
+      canonicalBPRelativeSummaryBlockCount shape := by
+  let base := canonicalBPRelativeSummaryBase shape
+  have hlarge :=
+    canonicalBPRelativeSummaryLargeRegime_of_size_ge
+      (shape := shape) hsize
+  have hactive :=
+    canonicalBPRelativeMinMaxArgSummaryTableActive_of_large
+      (shape := shape) hlarge
+  have hbasePos : 0 < base := by
+    simp [base, canonicalBPRelativeSummaryBase]
+  have hlog128 : 128 <= Nat.log2 shape.size :=
+    natLog2_ge_of_pow_le hsize
+  have hcubePow :
+      (Nat.log2 shape.size + 1) *
+          ((Nat.log2 shape.size + 1) *
+            (Nat.log2 shape.size + 1)) <=
+        2 ^ Nat.log2 shape.size :=
+    nat_succ_cube_le_two_pow_of_128_le
+      (Nat.log2 shape.size) hlog128
+  have hsizePos : shape.size ≠ 0 := by
+    have hpow : 0 < 2 ^ 128 := Nat.pow_pos (by omega)
+    exact Nat.ne_of_gt (Nat.lt_of_lt_of_le hpow hsize)
+  have hcubeSize :
+      base * (base * base) <= shape.size := by
+    exact Nat.le_trans
+      (by
+        simpa [base, canonicalBPRelativeSummaryBase] using hcubePow)
+      (Nat.log2_self_le hsizePos)
+  have hraw :
+      base * base <= canonicalBPRelativeSummaryBlockCountRaw shape := by
+    unfold canonicalBPRelativeSummaryBlockCountRaw
+    exact (Nat.le_div_iff_mul_le hbasePos).2
+      (by
+        simpa [base, canonicalBPRelativeSummaryBase, Nat.mul_assoc,
+          Nat.mul_left_comm, Nat.mul_comm] using hcubeSize)
+  simpa [concreteBPRelativeRmmInteriorMacroSize,
+    canonicalBPRelativeSummaryBlockCount, canonicalBPRelativeSummaryBase,
+    base, hactive, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using
+    hraw
+
+theorem concreteBPRelativeRmmInteriorMacroCover_le_two_blockCount_of_size_ge
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size) :
+    concreteBPRelativeRmmInteriorMacroCount shape *
+        concreteBPRelativeRmmInteriorMacroSize shape <=
+      2 * canonicalBPRelativeSummaryBlockCount shape := by
+  let blockCount := canonicalBPRelativeSummaryBlockCount shape
+  let macroSize := concreteBPRelativeRmmInteriorMacroSize shape
+  have hmacroPos : 0 < macroSize := by
+    simpa [macroSize] using
+      concreteBPRelativeRmmInteriorMacroSize_pos shape
+  have hmacroLe :
+      macroSize <= blockCount := by
+    simpa [blockCount, macroSize] using
+      concreteBPRelativeRmmInteriorMacroSize_le_blockCount_of_size_ge
+        shape hsize
+  have hdivPos : 1 <= blockCount / macroSize :=
+    (Nat.le_div_iff_mul_le hmacroPos).2
+      (by simpa [Nat.mul_comm] using hmacroLe)
+  have hsuccLe :
+      blockCount / macroSize + 1 <= 2 * (blockCount / macroSize) := by
+    omega
+  have hmul :=
+    Nat.mul_le_mul_right macroSize hsuccLe
+  have hdiv :
+      (blockCount / macroSize) * macroSize <= blockCount :=
+    Nat.div_mul_le_self blockCount macroSize
+  have htwice :=
+    Nat.mul_le_mul_left 2 hdiv
+  calc
+    concreteBPRelativeRmmInteriorMacroCount shape *
+        concreteBPRelativeRmmInteriorMacroSize shape =
+        (blockCount / macroSize + 1) * macroSize := by
+      simp [blockCount, macroSize,
+        concreteBPRelativeRmmInteriorMacroCount]
+    _ <= (2 * (blockCount / macroSize)) * macroSize := hmul
+    _ = 2 * ((blockCount / macroSize) * macroSize) := by
+      simp [Nat.mul_assoc]
+    _ <= 2 * blockCount := htwice
+
+theorem concreteBPRelativeRmmInteriorOffsetWidth_le_five_logBase
+    (shape : Cartesian.CartesianShape) :
+    concreteBPRelativeRmmInteriorOffsetWidth shape <=
+      5 * (Nat.log2 (canonicalBPRelativeSummaryBase shape) + 1) := by
+  let base := canonicalBPRelativeSummaryBase shape
+  let logBase := Nat.log2 base + 1
+  have hbasePos : 0 < base := by
+    simp [base, canonicalBPRelativeSummaryBase]
+  have hfour :=
+    four_mul_square_lt_two_pow_two_log_succ_add_three base
+  have hsqLeFour : base * base <= 2 * (2 * (base * base)) := by
+    have hmul := Nat.mul_le_mul_right (base * base)
+      (by decide : 1 <= 4)
+    calc
+      base * base <= 4 * (base * base) := by
+        simpa using hmul
+      _ = 2 * (2 * (base * base)) := by
+        omega
+  have hmacroRel :
+      concreteBPRelativeRmmInteriorMacroSize shape <
+        2 ^ (2 * logBase + 3) := by
+    have hfour' :
+        2 * (2 * (base * base)) < 2 ^ (2 * logBase + 3) := by
+      simpa [logBase] using hfour
+    have hmacroEq :
+        concreteBPRelativeRmmInteriorMacroSize shape = base * base := by
+      simp [concreteBPRelativeRmmInteriorMacroSize, base,
+        canonicalBPRelativeSummaryBase]
+    rw [hmacroEq]
+    exact Nat.lt_of_le_of_lt hsqLeFour hfour'
+  have hoffsetRel :
+      concreteBPRelativeRmmInteriorOffsetWidth shape <=
+        2 * logBase + 3 := by
+    unfold concreteBPRelativeRmmInteriorOffsetWidth
+    exact natLog2_succ_le_of_pos_lt_pow
+      (concreteBPRelativeRmmInteriorMacroSize_pos shape)
+      (by
+        simpa [concreteBPRelativeRmmInteriorMacroSize, base,
+          canonicalBPRelativeSummaryBase, logBase] using hmacroRel)
+  have hlogPos : 1 <= logBase := by
+    simp [logBase]
+  have hrelFive : 2 * logBase + 3 <= 5 * logBase := by
+    omega
+  exact Nat.le_trans hoffsetRel hrelFive
+
+theorem concreteBPRelativeRmmInteriorBlockWidth_le_base_of_size_ge
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size) :
+    concreteBPRelativeRmmInteriorBlockWidth shape <=
+      canonicalBPRelativeSummaryBase shape := by
+  have hlarge :=
+    canonicalBPRelativeSummaryLargeRegime_of_size_ge
+      (shape := shape) hsize
+  have hactive :=
+    canonicalBPRelativeMinMaxArgSummaryTableActive_of_large
+      (shape := shape) hlarge
+  have hcountPos :
+      0 < canonicalBPRelativeSummaryBlockCount shape := by
+    exact Nat.lt_of_lt_of_le
+      (concreteBPRelativeRmmInteriorMacroSize_pos shape)
+      (concreteBPRelativeRmmInteriorMacroSize_le_blockCount_of_size_ge
+        shape hsize)
+  have hcountLeSize :
+      canonicalBPRelativeSummaryBlockCount shape <= shape.size := by
+    have hraw :
+        canonicalBPRelativeSummaryBlockCountRaw shape <= shape.size := by
+      unfold canonicalBPRelativeSummaryBlockCountRaw
+      exact Nat.div_le_self _ _
+    simpa [canonicalBPRelativeSummaryBlockCount, hactive] using hraw
+  have hsizeLt :
+      shape.size < 2 ^ canonicalBPRelativeSummaryBase shape := by
+    unfold canonicalBPRelativeSummaryBase
+    exact Nat.lt_log2_self (n := shape.size)
+  have hcountLt :
+      canonicalBPRelativeSummaryBlockCount shape <
+        2 ^ canonicalBPRelativeSummaryBase shape :=
+    Nat.lt_of_le_of_lt hcountLeSize hsizeLt
+  unfold concreteBPRelativeRmmInteriorBlockWidth
+  exact natLog2_succ_le_of_pos_lt_pow hcountPos hcountLt
+
+theorem concreteBPRelativeRmmInteriorGlobalLevelCount_le_base_succ_of_size_ge
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size) :
+    concreteBPRelativeRmmInteriorGlobalLevelCount shape <=
+      canonicalBPRelativeSummaryBase shape + 1 := by
+  let blockCount := canonicalBPRelativeSummaryBlockCount shape
+  let macroSize := concreteBPRelativeRmmInteriorMacroSize shape
+  have hmacroPos : 0 < macroSize := by
+    simpa [macroSize] using
+      concreteBPRelativeRmmInteriorMacroSize_pos shape
+  have hmacroCountPos :
+      0 < concreteBPRelativeRmmInteriorMacroCount shape := by
+    simp [concreteBPRelativeRmmInteriorMacroCount]
+  have hmacroLeBlockSucc :
+      concreteBPRelativeRmmInteriorMacroCount shape <=
+        blockCount + 1 := by
+    have hdiv :
+        canonicalBPRelativeSummaryBlockCount shape /
+            concreteBPRelativeRmmInteriorMacroSize shape <=
+          canonicalBPRelativeSummaryBlockCount shape := by
+      exact Nat.div_le_self blockCount macroSize
+    simpa [blockCount, macroSize,
+      concreteBPRelativeRmmInteriorMacroCount] using
+      Nat.succ_le_succ hdiv
+  have hblockWidth :=
+    concreteBPRelativeRmmInteriorBlockWidth_le_base_of_size_ge shape hsize
+  have hblockLt :
+      blockCount < 2 ^ canonicalBPRelativeSummaryBase shape := by
+    unfold concreteBPRelativeRmmInteriorBlockWidth at hblockWidth
+    have hcap :=
+      concreteBPRelativeRmmInteriorBlockWidth_capacity shape
+    exact Nat.lt_of_lt_of_le hcap
+      (Nat.pow_le_pow_right (by omega : 0 < 2) hblockWidth)
+  have hmacroLt :
+      concreteBPRelativeRmmInteriorMacroCount shape <
+        2 ^ (canonicalBPRelativeSummaryBase shape + 1) := by
+    have hsuccLePow :
+        blockCount + 1 <= 2 ^ canonicalBPRelativeSummaryBase shape := by
+      omega
+    have hpowStep :
+        2 ^ canonicalBPRelativeSummaryBase shape <
+          2 ^ (canonicalBPRelativeSummaryBase shape + 1) := by
+      have hpos :
+          0 < 2 ^ canonicalBPRelativeSummaryBase shape :=
+        Nat.pow_pos (by omega)
+      simp [Nat.pow_succ, hpos]
+    exact Nat.lt_of_le_of_lt
+      (Nat.le_trans hmacroLeBlockSucc hsuccLePow) hpowStep
+  unfold concreteBPRelativeRmmInteriorGlobalLevelCount
+  exact natLog2_succ_le_of_pos_lt_pow hmacroCountPos hmacroLt
 
 /--
 Canonical compact overhead envelope for the intended relative-rmM interior
 navigator.
 
 The first summand is the charged relative min/max/arg block summary table.  The
-last two summands reserve fixed many log-log and sampled directory words for
-the compact rmM/min-max-tree routing layer.  There is intentionally no dense
-`interiorBlockPairRanges` or all-pairs range payload in this budget.
+second summand reserves local-offset sparse tables over macroblocks, with
+`log log n`-bit offsets across `log log n` levels.  The last two summands pay for
+the global macroblock sparse table and top routing layer.  There is intentionally
+no dense `interiorBlockPairRanges` or all-pairs range payload in this budget.
 -/
 def concreteBPRelativeRmmInteriorOverhead (n : Nat) : Nat :=
   compactBPCloseSummaryPayloadOverhead
       canonicalBPRelativeSummaryBlockSlots 0 0
       canonicalBPRelativeSummarySuperSlots n +
-    logLogSampledDirectoryOverhead concreteBPRelativeRmmInteriorNodeSlots n +
-      sampledDirectoryOverhead concreteBPRelativeRmmInteriorTopSlots n
+    logLogSquaredSampledDirectoryOverhead
+        concreteBPRelativeRmmInteriorLocalOffsetSlots n +
+      logLogSampledDirectoryOverhead
+          concreteBPRelativeRmmInteriorGlobalMacroSlots n +
+        sampledDirectoryOverhead concreteBPRelativeRmmInteriorTopSlots n
 
 theorem concreteBPRelativeRmmInteriorOverhead_littleO :
     LittleOLinear concreteBPRelativeRmmInteriorOverhead := by
   unfold concreteBPRelativeRmmInteriorOverhead
   exact
-    ((compactBPCloseSummaryPayloadOverhead_littleO
+    (((compactBPCloseSummaryPayloadOverhead_littleO
       canonicalBPRelativeSummaryBlockSlots 0 0
       canonicalBPRelativeSummarySuperSlots).add
+      (logLogSquaredSampledDirectoryOverhead_littleO
+        concreteBPRelativeRmmInteriorLocalOffsetSlots)).add
       (logLogSampledDirectoryOverhead_littleO
-        concreteBPRelativeRmmInteriorNodeSlots)).add
+        concreteBPRelativeRmmInteriorGlobalMacroSlots)).add
       (sampledDirectoryOverhead_littleO
         concreteBPRelativeRmmInteriorTopSlots)
 
@@ -4275,6 +4625,154 @@ theorem concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_size_ge
       shape
       (canonicalBPRelativeSummaryLargeRegime_of_size_ge
         (shape := shape) hsize)
+
+/--
+Two-level interior-navigator budget package for the canonical large regime.
+
+This is the arithmetic surface the concrete rmM navigator should consume: it
+charges the relative summary table, the local offset sparse tables, the global
+macroblock sparse table, and the top routing reserve inside one `o(n)` envelope,
+while also exposing the fixed-width read bounds needed by the charged summary
+queries.
+-/
+theorem concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_size_ge
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size) :
+    let table := concreteBPRelativeMinMaxArgSummaryTable_canonical shape
+    let relativeSummaryBudget :=
+      compactBPCloseSummaryPayloadOverhead
+        canonicalBPRelativeSummaryBlockSlots 0 0
+        canonicalBPRelativeSummarySuperSlots shape.size
+    let localOffsetBudget :=
+      logLogSquaredSampledDirectoryOverhead
+        concreteBPRelativeRmmInteriorLocalOffsetSlots shape.size
+    let globalMacroBudget :=
+      logLogSampledDirectoryOverhead
+        concreteBPRelativeRmmInteriorGlobalMacroSlots shape.size
+    let topRoutingBudget :=
+      sampledDirectoryOverhead concreteBPRelativeRmmInteriorTopSlots shape.size
+    LittleOLinear concreteBPRelativeRmmInteriorOverhead /\
+      relativeSummaryBudget + localOffsetBudget +
+          globalMacroBudget + topRoutingBudget =
+        concreteBPRelativeRmmInteriorOverhead shape.size /\
+      table.payload.length + localOffsetBudget +
+          globalMacroBudget + topRoutingBudget <=
+        concreteBPRelativeRmmInteriorOverhead shape.size /\
+      canonicalBPRelativeMinMaxArgSummaryTableActive shape /\
+      canonicalBPRelativeSummaryBlockSizeRaw shape <
+        2 ^ canonicalBPRelativeSummaryRelativeWidthRaw shape /\
+      canonicalBPRelativeSummaryRelativeWidthRaw shape <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length /\
+      canonicalBPRelativeSummaryBlockCountRaw shape <
+        2 ^ SuccinctRankProposal.machineWordBits shape.bpCode.length /\
+      (forall block,
+        (table.summaryCosted block).cost <= 4 /\
+          (table.summaryCosted block).erase =
+            match
+              (bpSuperblockBaselineEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+                (canonicalBPRelativeSummarySuperCountRaw shape))[
+                  block /
+                    canonicalBPRelativeSummaryBlocksPerSuperRaw shape]?,
+              (bpBlockRelativeMinExcessEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+                (canonicalBPRelativeSummaryBlockCountRaw shape))[block]?,
+              (bpBlockRelativeMaxExcessEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+                (canonicalBPRelativeSummaryBlockCountRaw shape))[block]?,
+              (bpBlockArgMinLocalOffsetEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlockCountRaw shape))[block]?
+            with
+            | some baseline, some minRel, some maxRel, some argOffset =>
+                some (baseline, minRel, maxRel, argOffset)
+            | _, _, _, _ => none) /\
+      (forall {index : Nat} {word : List Bool},
+        table.baselineTable.store.words[index]? = some word ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.minRelTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.maxRelTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.argOffsetTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+  let table := concreteBPRelativeMinMaxArgSummaryTable_canonical shape
+  let relativeSummaryBudget :=
+    compactBPCloseSummaryPayloadOverhead
+      canonicalBPRelativeSummaryBlockSlots 0 0
+      canonicalBPRelativeSummarySuperSlots shape.size
+  let localOffsetBudget :=
+    logLogSquaredSampledDirectoryOverhead
+      concreteBPRelativeRmmInteriorLocalOffsetSlots shape.size
+  let globalMacroBudget :=
+    logLogSampledDirectoryOverhead
+      concreteBPRelativeRmmInteriorGlobalMacroSlots shape.size
+  let topRoutingBudget :=
+    sampledDirectoryOverhead concreteBPRelativeRmmInteriorTopSlots shape.size
+  have hlarge :=
+    canonicalBPRelativeSummaryLargeRegime_of_size_ge
+      (shape := shape) hsize
+  have hsummary :=
+    concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile_of_large
+      shape hlarge
+  rcases hsummary with
+    ⟨_hblockSize, _hblocksPerSuper, _hblockCount, _hsuperCount,
+      _hrelativeWidth, _hsummaryLittleO, hsummaryPayload, hsummaryExact,
+      hbaselineRead, hminRead, hmaxRead, hargRead⟩
+  rcases canonicalBPRelativeSummary_large_parts
+      (shape := shape) hlarge with
+    ⟨_hbase_le_count, _hsuperWidth, _hspan, hargWidth,
+      _hrelative_le_super⟩
+  have hactive :=
+    canonicalBPRelativeMinMaxArgSummaryTableActive_of_large
+      (shape := shape) hlarge
+  have hrelativeMachine :=
+    canonicalBPRelativeSummaryRelativeWidthRaw_machine_of_large
+      (shape := shape) hlarge
+  have hblockCountMachine :
+      canonicalBPRelativeSummaryBlockCountRaw shape <
+        2 ^ SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+    have hcount :=
+      canonicalBPRelativeSummaryBlockCountRaw_le_bpCode_length shape
+    have hcapacity :
+        shape.bpCode.length <
+          2 ^ SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      unfold SuccinctRankProposal.machineWordBits
+      exact Nat.lt_log2_self (n := shape.bpCode.length)
+    exact Nat.lt_of_le_of_lt hcount hcapacity
+  have hbudgetEq :
+      relativeSummaryBudget + localOffsetBudget +
+          globalMacroBudget + topRoutingBudget =
+        concreteBPRelativeRmmInteriorOverhead shape.size := by
+    rfl
+  have hpayloadBudget :
+      table.payload.length + localOffsetBudget +
+          globalMacroBudget + topRoutingBudget <=
+        concreteBPRelativeRmmInteriorOverhead shape.size := by
+    have hpayloadLeRelative :
+        table.payload.length <= relativeSummaryBudget := by
+      simpa [table, relativeSummaryBudget] using hsummaryPayload
+    have hsum :
+        table.payload.length + localOffsetBudget +
+            globalMacroBudget + topRoutingBudget <=
+          relativeSummaryBudget + localOffsetBudget +
+            globalMacroBudget + topRoutingBudget := by
+      omega
+    simpa [hbudgetEq] using hsum
+  exact ⟨concreteBPRelativeRmmInteriorOverhead_littleO, hbudgetEq,
+    hpayloadBudget, hactive, hargWidth, hrelativeMachine,
+    hblockCountMachine, hsummaryExact, hbaselineRead, hminRead, hmaxRead,
+    hargRead⟩
 
 /-!
 ## Position-bearing BP block summaries
@@ -6685,6 +7183,1202 @@ theorem bpRangeWitness_eq_of_leftmost_block_candidate
       bpRangeArgMinPrefixPos_eq_of_leftmost_block_candidate
         hblock htarget hmin hleft
 
+/--
+Choose the better block-minimum candidate by comparing the excess attained at
+each block's stored argmin prefix.  Ties keep the left block, matching the
+leftmost policy used by `bpBetterArgMinPrefixPos`.
+-/
+def bpBetterArgMinBlock
+    (shape : Cartesian.CartesianShape)
+    (blockSize leftBlock rightBlock : Nat) : Nat :=
+  if bpExcessAt shape
+        (bpBlockArgMinPrefixPos shape blockSize rightBlock) <
+      bpExcessAt shape
+        (bpBlockArgMinPrefixPos shape blockSize leftBlock) then
+    rightBlock
+  else
+    leftBlock
+
+theorem bpBetterArgMinBlock_eq_left_of_excess_le
+    (shape : Cartesian.CartesianShape)
+    {blockSize leftBlock rightBlock : Nat}
+    (hle :
+      bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize leftBlock) <=
+        bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize rightBlock)) :
+    bpBetterArgMinBlock shape blockSize leftBlock rightBlock = leftBlock := by
+  unfold bpBetterArgMinBlock
+  have hnot :
+      ¬ bpExcessAt shape
+            (bpBlockArgMinPrefixPos shape blockSize rightBlock) <
+          bpExcessAt shape
+            (bpBlockArgMinPrefixPos shape blockSize leftBlock) := by
+    omega
+  simp [hnot]
+
+theorem bpBetterArgMinBlock_eq_right_of_excess_lt
+    (shape : Cartesian.CartesianShape)
+    {blockSize leftBlock rightBlock : Nat}
+    (hlt :
+      bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize rightBlock) <
+        bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize leftBlock)) :
+    bpBetterArgMinBlock shape blockSize leftBlock rightBlock = rightBlock := by
+  simp [bpBetterArgMinBlock, hlt]
+
+theorem bpExcessAt_bpBetterArgMinBlock_le_left
+    (shape : Cartesian.CartesianShape)
+    (blockSize leftBlock rightBlock : Nat) :
+    bpExcessAt shape
+        (bpBlockArgMinPrefixPos shape blockSize
+          (bpBetterArgMinBlock shape blockSize leftBlock rightBlock)) <=
+      bpExcessAt shape
+        (bpBlockArgMinPrefixPos shape blockSize leftBlock) := by
+  unfold bpBetterArgMinBlock
+  by_cases hlt :
+      bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize rightBlock) <
+        bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize leftBlock)
+  · simp [hlt, Nat.le_of_lt hlt]
+  · simp [hlt]
+
+theorem bpExcessAt_bpBetterArgMinBlock_le_right
+    (shape : Cartesian.CartesianShape)
+    (blockSize leftBlock rightBlock : Nat) :
+    bpExcessAt shape
+        (bpBlockArgMinPrefixPos shape blockSize
+          (bpBetterArgMinBlock shape blockSize leftBlock rightBlock)) <=
+      bpExcessAt shape
+        (bpBlockArgMinPrefixPos shape blockSize rightBlock) := by
+  unfold bpBetterArgMinBlock
+  by_cases hlt :
+      bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize rightBlock) <
+        bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize leftBlock)
+  · simp [hlt]
+  · have hle :
+        bpExcessAt shape
+            (bpBlockArgMinPrefixPos shape blockSize leftBlock) <=
+          bpExcessAt shape
+            (bpBlockArgMinPrefixPos shape blockSize rightBlock) := by
+      exact Nat.le_of_not_gt hlt
+    simp [hlt, hle]
+
+def bpRangeArgMinBlockFrom
+    (shape : Cartesian.CartesianShape)
+    (blockSize block steps bestBlock : Nat) : Nat :=
+  match steps with
+  | 0 => bestBlock
+  | steps + 1 =>
+      let best' :=
+        bpBetterArgMinBlock shape blockSize bestBlock block
+      bpRangeArgMinBlockFrom shape blockSize (block + 1) steps best'
+
+def bpRangeArgMinBlock
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount : Nat) : Nat :=
+  match blockCount with
+  | 0 => startBlock
+  | count + 1 =>
+      bpRangeArgMinBlockFrom shape blockSize (startBlock + 1) count
+        startBlock
+
+theorem bpBlockArgMinPrefixPos_bpBetterArgMinBlock
+    (shape : Cartesian.CartesianShape)
+    (blockSize leftBlock rightBlock : Nat) :
+    bpBlockArgMinPrefixPos shape blockSize
+        (bpBetterArgMinBlock shape blockSize leftBlock rightBlock) =
+      bpBetterArgMinPrefixPos shape
+        (bpBlockArgMinPrefixPos shape blockSize leftBlock)
+        (bpBlockArgMinPrefixPos shape blockSize rightBlock) := by
+  unfold bpBetterArgMinBlock bpBetterArgMinPrefixPos
+  by_cases hlt :
+      bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize rightBlock) <
+        bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize leftBlock)
+  · simp [hlt]
+  · simp [hlt]
+
+theorem bpBlockArgMinPrefixPos_bpRangeArgMinBlockFrom
+    (shape : Cartesian.CartesianShape)
+    (blockSize block steps bestBlock : Nat) :
+    bpBlockArgMinPrefixPos shape blockSize
+        (bpRangeArgMinBlockFrom shape blockSize block steps bestBlock) =
+      bpRangeArgMinPrefixPosFrom shape blockSize block steps
+        (bpBlockArgMinPrefixPos shape blockSize bestBlock) := by
+  induction steps generalizing block bestBlock with
+  | zero =>
+      simp [bpRangeArgMinBlockFrom, bpRangeArgMinPrefixPosFrom]
+  | succ steps ih =>
+      unfold bpRangeArgMinBlockFrom bpRangeArgMinPrefixPosFrom
+      simpa [bpBlockArgMinPrefixPos_bpBetterArgMinBlock] using
+        ih (block + 1)
+          (bpBetterArgMinBlock shape blockSize bestBlock block)
+
+theorem bpBlockArgMinPrefixPos_bpRangeArgMinBlock_of_pos
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount : Nat)
+    (hcount : 0 < blockCount) :
+    bpBlockArgMinPrefixPos shape blockSize
+        (bpRangeArgMinBlock shape blockSize startBlock blockCount) =
+      bpRangeArgMinPrefixPos shape blockSize startBlock blockCount := by
+  unfold bpRangeArgMinBlock bpRangeArgMinPrefixPos
+  cases blockCount with
+  | zero =>
+      omega
+  | succ count =>
+      exact
+        bpBlockArgMinPrefixPos_bpRangeArgMinBlockFrom
+          shape blockSize (startBlock + 1) count startBlock
+
+theorem bpRangeArgMinBlockFrom_mem
+    (shape : Cartesian.CartesianShape)
+    (blockSize block steps bestBlock lo hi : Nat)
+    (hbest : lo <= bestBlock /\ bestBlock < hi)
+    (hcandidate :
+      forall {offset : Nat}, offset < steps ->
+        lo <= block + offset /\ block + offset < hi) :
+    lo <= bpRangeArgMinBlockFrom shape blockSize block steps bestBlock /\
+      bpRangeArgMinBlockFrom shape blockSize block steps bestBlock < hi := by
+  induction steps generalizing block bestBlock with
+  | zero =>
+      simpa [bpRangeArgMinBlockFrom] using hbest
+  | succ steps ih =>
+      unfold bpRangeArgMinBlockFrom
+      let next := bpBetterArgMinBlock shape blockSize bestBlock block
+      have hcandidate0 : lo <= block /\ block < hi := by
+        simpa using hcandidate (offset := 0) (by omega)
+      have hnext : lo <= next /\ next < hi := by
+        unfold next bpBetterArgMinBlock
+        by_cases hlt :
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize block) <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize bestBlock)
+        · simp [hlt, hcandidate0]
+        · simp [hlt, hbest]
+      exact
+        ih (block := block + 1)
+          (bestBlock := next)
+          hnext
+          (by
+            intro offset hoffset
+            have htail := hcandidate (offset := offset + 1) (by omega)
+            have hblock :
+                block + (offset + 1) = block + 1 + offset := by
+              omega
+            simpa [hblock] using htail)
+
+theorem bpRangeArgMinBlock_mem
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount : Nat)
+    (hcount : 0 < blockCount) :
+    startBlock <=
+        bpRangeArgMinBlock shape blockSize startBlock blockCount /\
+      bpRangeArgMinBlock shape blockSize startBlock blockCount <
+        startBlock + blockCount := by
+  unfold bpRangeArgMinBlock
+  cases blockCount with
+  | zero =>
+      omega
+  | succ count =>
+      exact
+        bpRangeArgMinBlockFrom_mem shape blockSize (startBlock + 1)
+          count startBlock startBlock (startBlock + (count + 1))
+          (by omega)
+          (by
+            intro offset hoffset
+            omega)
+
+theorem bpRangeArgMinBlockFrom_leftmost
+    (shape : Cartesian.CartesianShape)
+    (blockSize block steps bestBlock lo hi : Nat)
+    (hbestMem : lo <= bestBlock /\ bestBlock < hi)
+    (hbestBefore : bestBlock < block)
+    (hbestLe :
+      forall {candidateBlock : Nat},
+        lo <= candidateBlock ->
+          candidateBlock < block ->
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize bestBlock) <=
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize candidateBlock))
+    (hbestLeft :
+      forall {candidateBlock : Nat},
+        lo <= candidateBlock ->
+          candidateBlock < bestBlock ->
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize bestBlock) <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize candidateBlock))
+    (hcandidate :
+      forall {offset : Nat},
+        offset < steps -> lo <= block + offset /\ block + offset < hi) :
+    let target :=
+      bpRangeArgMinBlockFrom shape blockSize block steps bestBlock
+    lo <= target /\ target < hi /\ target < block + steps /\
+      (forall {candidateBlock : Nat},
+        lo <= candidateBlock ->
+          candidateBlock < block + steps ->
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize target) <=
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize candidateBlock)) /\
+      forall {candidateBlock : Nat},
+        lo <= candidateBlock ->
+          candidateBlock < target ->
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize target) <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize candidateBlock) := by
+  induction steps generalizing block bestBlock with
+  | zero =>
+      simp [bpRangeArgMinBlockFrom]
+      exact
+        ⟨hbestMem.1, hbestMem.2, hbestBefore,
+          (by
+            intro candidateBlock hlo hlt
+            exact hbestLe hlo hlt),
+          hbestLeft⟩
+  | succ steps ih =>
+      unfold bpRangeArgMinBlockFrom
+      let current := block
+      let best' := bpBetterArgMinBlock shape blockSize bestBlock current
+      have hcurrentMem : lo <= current /\ current < hi := by
+        simpa [current] using hcandidate (offset := 0) (by omega)
+      have htailCandidate :
+          forall {offset : Nat},
+            offset < steps ->
+              lo <= block + 1 + offset /\
+                block + 1 + offset < hi := by
+        intro offset hoffset
+        have htail := hcandidate (offset := offset + 1) (by omega)
+        have hpos : block + (offset + 1) = block + 1 + offset := by
+          omega
+        simpa [hpos] using htail
+      have hbest'Mem : lo <= best' /\ best' < hi := by
+        unfold best' bpBetterArgMinBlock
+        by_cases htake :
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize current) <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize bestBlock)
+        · simp [htake, hcurrentMem]
+        · simp [htake, hbestMem]
+      have hbest'Before : best' < block + 1 := by
+        unfold best' bpBetterArgMinBlock
+        by_cases htake :
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize current) <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize bestBlock)
+        · simp [htake, current]
+        · simp [htake]
+          omega
+      have hbest'Le :
+          forall {candidateBlock : Nat},
+            lo <= candidateBlock ->
+              candidateBlock < block + 1 ->
+                bpExcessAt shape
+                    (bpBlockArgMinPrefixPos shape blockSize best') <=
+                  bpExcessAt shape
+                    (bpBlockArgMinPrefixPos shape blockSize candidateBlock) := by
+        intro candidateBlock hlo hltBlock
+        unfold best' bpBetterArgMinBlock
+        by_cases htake :
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize current) <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize bestBlock)
+        · simp [htake]
+          by_cases hcandidateCurrent : candidateBlock = current
+          · subst candidateBlock
+            exact Nat.le_refl _
+          · have hcandidateBefore : candidateBlock < block := by
+              omega
+            exact Nat.le_trans (Nat.le_of_lt htake)
+              (hbestLe hlo hcandidateBefore)
+        · simp [htake]
+          by_cases hcandidateCurrent : candidateBlock = current
+          · subst candidateBlock
+            exact Nat.le_of_not_gt htake
+          · have hcandidateBefore : candidateBlock < block := by
+              omega
+            exact hbestLe hlo hcandidateBefore
+      have hbest'Left :
+          forall {candidateBlock : Nat},
+            lo <= candidateBlock ->
+              candidateBlock < best' ->
+                bpExcessAt shape
+                    (bpBlockArgMinPrefixPos shape blockSize best') <
+                  bpExcessAt shape
+                    (bpBlockArgMinPrefixPos shape blockSize candidateBlock) := by
+        intro candidateBlock hlo hltBest
+        unfold best' bpBetterArgMinBlock at hltBest ⊢
+        by_cases htake :
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize current) <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize bestBlock)
+        · simp [htake] at hltBest ⊢
+          have hcandidateBefore : candidateBlock < block := by
+            omega
+          exact Nat.lt_of_lt_of_le htake
+            (hbestLe hlo hcandidateBefore)
+        · simp [htake] at hltBest ⊢
+          exact hbestLeft hlo hltBest
+      have hrec :=
+        ih (block := block + 1) (bestBlock := best')
+          hbest'Mem hbest'Before hbest'Le hbest'Left htailCandidate
+      have hsteps : 1 + steps = steps + 1 := by omega
+      simpa [best', current, hsteps, Nat.add_assoc] using hrec
+
+theorem bpRangeArgMinBlock_leftmost
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount : Nat)
+    (hcount : 0 < blockCount) :
+    let target := bpRangeArgMinBlock shape blockSize startBlock blockCount
+    startBlock <= target /\ target < startBlock + blockCount /\
+      (forall {candidateBlock : Nat},
+        startBlock <= candidateBlock ->
+          candidateBlock < startBlock + blockCount ->
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize target) <=
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize candidateBlock)) /\
+      forall {candidateBlock : Nat},
+        startBlock <= candidateBlock ->
+          candidateBlock < target ->
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize target) <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize candidateBlock) := by
+  unfold bpRangeArgMinBlock
+  cases blockCount with
+  | zero =>
+      omega
+  | succ count =>
+      have hfrom :=
+        bpRangeArgMinBlockFrom_leftmost
+          shape blockSize (startBlock + 1) count startBlock
+          startBlock (startBlock + (count + 1))
+          (by omega)
+          (by omega)
+          (by
+            intro candidateBlock hlo hlt
+            have hcandidate : candidateBlock = startBlock := by omega
+            subst candidateBlock
+            exact Nat.le_refl _)
+          (by
+            intro candidateBlock hlo hlt
+            omega)
+          (by
+            intro offset hoffset
+            omega)
+      rcases hfrom with ⟨hlo, hhi, _htargetLt, hle, hleft⟩
+      have hle' :
+          forall {candidateBlock : Nat},
+            startBlock <= candidateBlock ->
+              candidateBlock < startBlock + (count + 1) ->
+                bpExcessAt shape
+                    (bpBlockArgMinPrefixPos shape blockSize
+                      (bpRangeArgMinBlockFrom shape blockSize
+                        (startBlock + 1) count startBlock)) <=
+                  bpExcessAt shape
+                    (bpBlockArgMinPrefixPos shape blockSize
+                      candidateBlock) := by
+        intro candidateBlock hloCandidate hltCandidate
+        exact hle hloCandidate (by omega)
+      exact ⟨hlo, hhi, hle', hleft⟩
+
+def bpSparseTwoSpanArgMinBlock
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount span : Nat) : Nat :=
+  let leftBlock :=
+    bpRangeArgMinBlock shape blockSize startBlock span
+  let rightStart := startBlock + blockCount - span
+  let rightBlock :=
+    bpRangeArgMinBlock shape blockSize rightStart span
+  bpBetterArgMinBlock shape blockSize leftBlock rightBlock
+
+theorem bpSparseTwoSpanArgMinBlock_leftmost
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount span : Nat)
+    (hspan : 0 < span)
+    (hspanLe : span <= blockCount)
+    (hcover : blockCount <= 2 * span) :
+    let target :=
+      bpSparseTwoSpanArgMinBlock shape blockSize startBlock blockCount span
+    startBlock <= target /\ target < startBlock + blockCount /\
+      (forall {candidateBlock : Nat},
+        startBlock <= candidateBlock ->
+          candidateBlock < startBlock + blockCount ->
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize target) <=
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize candidateBlock)) /\
+      forall {candidateBlock : Nat},
+        startBlock <= candidateBlock ->
+          candidateBlock < target ->
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize target) <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize candidateBlock) := by
+  let leftBlock :=
+    bpRangeArgMinBlock shape blockSize startBlock span
+  let rightStart := startBlock + blockCount - span
+  let rightBlock :=
+    bpRangeArgMinBlock shape blockSize rightStart span
+  have hleft :=
+    bpRangeArgMinBlock_leftmost shape blockSize startBlock span hspan
+  have hright :=
+    bpRangeArgMinBlock_leftmost shape blockSize rightStart span hspan
+  have hrightStart_ge : startBlock <= rightStart := by
+    omega
+  have hrightStart_le_leftEnd : rightStart <= startBlock + span := by
+    omega
+  have hrightEnd : rightStart + span = startBlock + blockCount := by
+    omega
+  by_cases htake :
+      bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize rightBlock) <
+        bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize leftBlock)
+  · have htarget :
+        bpSparseTwoSpanArgMinBlock shape blockSize startBlock blockCount span =
+          rightBlock := by
+      simp [bpSparseTwoSpanArgMinBlock, leftBlock, rightStart, rightBlock,
+        bpBetterArgMinBlock, htake]
+    have hmem :
+        startBlock <= rightBlock /\ rightBlock < startBlock + blockCount := by
+      constructor
+      · exact Nat.le_trans hrightStart_ge hright.1
+      · simpa [hrightEnd] using hright.2.1
+    have hle :
+        forall {candidateBlock : Nat},
+          startBlock <= candidateBlock ->
+            candidateBlock < startBlock + blockCount ->
+              bpExcessAt shape
+                  (bpBlockArgMinPrefixPos shape blockSize rightBlock) <=
+                bpExcessAt shape
+                  (bpBlockArgMinPrefixPos shape blockSize candidateBlock) := by
+      intro candidateBlock hlo hhi
+      by_cases hrightSide : rightStart <= candidateBlock
+      · exact hright.2.2.1 hrightSide (by simpa [hrightEnd] using hhi)
+      · have hcandidateLeft : candidateBlock < startBlock + span := by
+          omega
+        exact Nat.le_trans (Nat.le_of_lt htake)
+          (hleft.2.2.1 hlo hcandidateLeft)
+    have hleftmost :
+        forall {candidateBlock : Nat},
+          startBlock <= candidateBlock ->
+            candidateBlock < rightBlock ->
+              bpExcessAt shape
+                  (bpBlockArgMinPrefixPos shape blockSize rightBlock) <
+                bpExcessAt shape
+                  (bpBlockArgMinPrefixPos shape blockSize candidateBlock) := by
+      intro candidateBlock hlo hltTarget
+      by_cases hrightSide : rightStart <= candidateBlock
+      · exact hright.2.2.2 hrightSide hltTarget
+      · have hcandidateLeft : candidateBlock < startBlock + span := by
+          omega
+        exact Nat.lt_of_lt_of_le htake
+          (hleft.2.2.1 hlo hcandidateLeft)
+    simpa [htarget] using ⟨hmem.1, hmem.2, hle, hleftmost⟩
+  · have htarget :
+        bpSparseTwoSpanArgMinBlock shape blockSize startBlock blockCount span =
+          leftBlock := by
+      simp [bpSparseTwoSpanArgMinBlock, leftBlock, rightStart, rightBlock,
+        bpBetterArgMinBlock, htake]
+    have hrightNotLt :
+        bpExcessAt shape
+            (bpBlockArgMinPrefixPos shape blockSize leftBlock) <=
+          bpExcessAt shape
+            (bpBlockArgMinPrefixPos shape blockSize rightBlock) := by
+      exact Nat.le_of_not_gt htake
+    have hmem :
+        startBlock <= leftBlock /\ leftBlock < startBlock + blockCount := by
+      constructor
+      · exact hleft.1
+      · have hleftHi := hleft.2.1
+        omega
+    have hle :
+        forall {candidateBlock : Nat},
+          startBlock <= candidateBlock ->
+            candidateBlock < startBlock + blockCount ->
+              bpExcessAt shape
+                  (bpBlockArgMinPrefixPos shape blockSize leftBlock) <=
+                bpExcessAt shape
+                  (bpBlockArgMinPrefixPos shape blockSize candidateBlock) := by
+      intro candidateBlock hlo hhi
+      by_cases hleftSide : candidateBlock < startBlock + span
+      · exact hleft.2.2.1 hlo hleftSide
+      · have hrightSide : rightStart <= candidateBlock := by omega
+        exact Nat.le_trans hrightNotLt
+          (hright.2.2.1 hrightSide (by simpa [hrightEnd] using hhi))
+    have hleftmost :
+        forall {candidateBlock : Nat},
+          startBlock <= candidateBlock ->
+            candidateBlock < leftBlock ->
+              bpExcessAt shape
+                  (bpBlockArgMinPrefixPos shape blockSize leftBlock) <
+                bpExcessAt shape
+                  (bpBlockArgMinPrefixPos shape blockSize candidateBlock) := by
+      intro candidateBlock hlo hltTarget
+      exact hleft.2.2.2 hlo hltTarget
+    simpa [htarget] using ⟨hmem.1, hmem.2, hle, hleftmost⟩
+
+theorem bpRangeWitness_eq_of_bpSparseTwoSpanArgMinBlock
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount span : Nat)
+    (hspan : 0 < span)
+    (hspanLe : span <= blockCount)
+    (hcover : blockCount <= 2 * span) :
+    (bpRangeMinExcess shape blockSize startBlock blockCount,
+        bpRangeArgMinPrefixPos shape blockSize startBlock blockCount) =
+      (bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize
+            (bpSparseTwoSpanArgMinBlock shape blockSize startBlock
+              blockCount span)),
+        bpBlockArgMinPrefixPos shape blockSize
+          (bpSparseTwoSpanArgMinBlock shape blockSize startBlock
+            blockCount span)) := by
+  have hleftmost :=
+    bpSparseTwoSpanArgMinBlock_leftmost
+      shape blockSize startBlock blockCount span hspan hspanLe hcover
+  exact
+    bpRangeWitness_eq_of_leftmost_block_candidate
+      (shape := shape) (blockSize := blockSize)
+      (startBlock := startBlock) (blockCount := blockCount)
+      (targetBlock :=
+        bpSparseTwoSpanArgMinBlock shape blockSize startBlock blockCount span)
+      (target :=
+        bpBlockArgMinPrefixPos shape blockSize
+          (bpSparseTwoSpanArgMinBlock shape blockSize startBlock
+            blockCount span))
+      ⟨hleftmost.1, hleftmost.2.1⟩
+      rfl
+      hleftmost.2.2.1
+      hleftmost.2.2.2
+
+def bpSparseLogSpan (blockCount : Nat) : Nat :=
+  2 ^ Nat.log2 blockCount
+
+theorem bpSparseLogSpan_pos (blockCount : Nat) :
+    0 < bpSparseLogSpan blockCount := by
+  unfold bpSparseLogSpan
+  exact Nat.pow_pos (by omega)
+
+theorem bpSparseLogSpan_le_self
+    {blockCount : Nat} (hcount : 0 < blockCount) :
+    bpSparseLogSpan blockCount <= blockCount := by
+  unfold bpSparseLogSpan
+  exact Nat.log2_self_le (by omega)
+
+theorem self_le_two_mul_bpSparseLogSpan
+    {blockCount : Nat} (_hcount : 0 < blockCount) :
+    blockCount <= 2 * bpSparseLogSpan blockCount := by
+  unfold bpSparseLogSpan
+  have hlt :
+      blockCount < 2 ^ (Nat.log2 blockCount + 1) :=
+    Nat.lt_log2_self (n := blockCount)
+  have hpow :
+      2 ^ (Nat.log2 blockCount + 1) =
+        2 * 2 ^ Nat.log2 blockCount := by
+    rw [Nat.pow_succ]
+    omega
+  omega
+
+def bpSparseLogSpanArgMinBlock
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount : Nat) : Nat :=
+  bpSparseTwoSpanArgMinBlock shape blockSize startBlock blockCount
+    (bpSparseLogSpan blockCount)
+
+theorem bpRangeWitness_eq_of_bpSparseLogSpanArgMinBlock
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount : Nat)
+    (hcount : 0 < blockCount) :
+    (bpRangeMinExcess shape blockSize startBlock blockCount,
+        bpRangeArgMinPrefixPos shape blockSize startBlock blockCount) =
+      (bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize
+            (bpSparseLogSpanArgMinBlock shape blockSize startBlock
+              blockCount)),
+        bpBlockArgMinPrefixPos shape blockSize
+          (bpSparseLogSpanArgMinBlock shape blockSize startBlock
+            blockCount)) := by
+  unfold bpSparseLogSpanArgMinBlock
+  exact
+    bpRangeWitness_eq_of_bpSparseTwoSpanArgMinBlock
+      shape blockSize startBlock blockCount
+      (bpSparseLogSpan blockCount)
+      (bpSparseLogSpan_pos blockCount)
+      (bpSparseLogSpan_le_self hcount)
+      (self_le_two_mul_bpSparseLogSpan hcount)
+
+def bpLocalSparseCellSlot
+    (macroSize levelCount macroIdx localStart level : Nat) : Nat :=
+  macroIdx * (levelCount * macroSize) + level * macroSize + localStart
+
+def bpLocalSparseCellOffset
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount macroSize macroIdx localStart level : Nat) :
+    Nat :=
+  let span := 2 ^ level
+  let macroStart := macroIdx * macroSize
+  let startBlock := macroStart + localStart
+  if localStart + span <= macroSize ∧ startBlock + span <= blockCount then
+    bpRangeArgMinBlock shape blockSize startBlock span - macroStart
+  else
+    0
+
+def bpLocalSparseOffsetEntries
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount macroSize macroCount levelCount : Nat) :
+    List Nat :=
+  (List.range (macroCount * (levelCount * macroSize))).map fun slot =>
+    let perMacro := levelCount * macroSize
+    let macroIdx := slot / perMacro
+    let rem := slot % perMacro
+    let level := rem / macroSize
+    let localStart := rem % macroSize
+    bpLocalSparseCellOffset shape blockSize blockCount macroSize macroIdx
+      localStart level
+
+theorem bpLocalSparseCellSlot_lt
+    {macroSize levelCount macroCount macroIdx localStart level : Nat}
+    (hmacro : macroIdx < macroCount)
+    (hlevel : level < levelCount)
+    (hlocal : localStart < macroSize) :
+    bpLocalSparseCellSlot macroSize levelCount macroIdx localStart level <
+      macroCount * (levelCount * macroSize) := by
+  unfold bpLocalSparseCellSlot
+  have hcell :
+      level * macroSize + localStart < levelCount * macroSize := by
+    have hstep :
+        level * macroSize + localStart <
+          level * macroSize + macroSize :=
+      Nat.add_lt_add_left hlocal (level * macroSize)
+    have hsucc :
+        level * macroSize + macroSize =
+          (level + 1) * macroSize := by
+      simpa using (Nat.succ_mul level macroSize).symm
+    have hmul :
+        (level + 1) * macroSize <= levelCount * macroSize :=
+      Nat.mul_le_mul_right macroSize (Nat.succ_le_of_lt hlevel)
+    exact Nat.lt_of_lt_of_le (by simpa [hsucc] using hstep) hmul
+  have hslot :
+      macroIdx * (levelCount * macroSize) +
+          (level * macroSize + localStart) <
+        macroIdx * (levelCount * macroSize) +
+          (levelCount * macroSize) :=
+    Nat.add_lt_add_left hcell (macroIdx * (levelCount * macroSize))
+  have hsucc :
+      macroIdx * (levelCount * macroSize) +
+          levelCount * macroSize =
+        (macroIdx + 1) * (levelCount * macroSize) := by
+    simpa using
+      (Nat.succ_mul macroIdx (levelCount * macroSize)).symm
+  have hmul :
+      (macroIdx + 1) * (levelCount * macroSize) <=
+        macroCount * (levelCount * macroSize) :=
+    Nat.mul_le_mul_right (levelCount * macroSize)
+      (Nat.succ_le_of_lt hmacro)
+  exact Nat.lt_of_lt_of_le (by simpa [Nat.add_assoc, hsucc] using hslot) hmul
+
+theorem bpLocalSparseCellSlot_div_perMacro
+    {macroSize levelCount macroCount macroIdx localStart level : Nat}
+    (_hmacro : macroIdx < macroCount)
+    (hlevel : level < levelCount)
+    (hlocal : localStart < macroSize) :
+    bpLocalSparseCellSlot macroSize levelCount macroIdx localStart level /
+        (levelCount * macroSize) =
+      macroIdx := by
+  unfold bpLocalSparseCellSlot
+  have hcell :
+      level * macroSize + localStart < levelCount * macroSize := by
+    have hstep :
+        level * macroSize + localStart <
+          level * macroSize + macroSize :=
+      Nat.add_lt_add_left hlocal (level * macroSize)
+    have hsucc :
+        level * macroSize + macroSize =
+          (level + 1) * macroSize := by
+      simpa using (Nat.succ_mul level macroSize).symm
+    have hmul :
+        (level + 1) * macroSize <= levelCount * macroSize :=
+      Nat.mul_le_mul_right macroSize (Nat.succ_le_of_lt hlevel)
+    exact Nat.lt_of_lt_of_le (by simpa [hsucc] using hstep) hmul
+  have hpos : 0 < levelCount * macroSize := by omega
+  rw [Nat.mul_comm macroIdx (levelCount * macroSize)]
+  rw [Nat.add_assoc]
+  rw [Nat.mul_add_div hpos]
+  rw [Nat.div_eq_of_lt hcell]
+  omega
+
+theorem bpLocalSparseCellSlot_mod_perMacro
+    {macroSize levelCount macroCount macroIdx localStart level : Nat}
+    (_hmacro : macroIdx < macroCount)
+    (hlevel : level < levelCount)
+    (hlocal : localStart < macroSize) :
+    bpLocalSparseCellSlot macroSize levelCount macroIdx localStart level %
+        (levelCount * macroSize) =
+      level * macroSize + localStart := by
+  unfold bpLocalSparseCellSlot
+  have hcell :
+      level * macroSize + localStart < levelCount * macroSize := by
+    have hstep :
+        level * macroSize + localStart <
+          level * macroSize + macroSize :=
+      Nat.add_lt_add_left hlocal (level * macroSize)
+    have hsucc :
+        level * macroSize + macroSize =
+          (level + 1) * macroSize := by
+      simpa using (Nat.succ_mul level macroSize).symm
+    have hmul :
+        (level + 1) * macroSize <= levelCount * macroSize :=
+      Nat.mul_le_mul_right macroSize (Nat.succ_le_of_lt hlevel)
+    exact Nat.lt_of_lt_of_le (by simpa [hsucc] using hstep) hmul
+  rw [Nat.mul_comm macroIdx (levelCount * macroSize)]
+  rw [Nat.add_assoc]
+  rw [Nat.mul_add_mod]
+  exact Nat.mod_eq_of_lt hcell
+
+theorem bpLocalSparseCellSlot_rem_div
+    {macroSize levelCount macroCount macroIdx localStart level : Nat}
+    (hmacro : macroIdx < macroCount)
+    (hlevel : level < levelCount)
+    (hlocal : localStart < macroSize) :
+    (bpLocalSparseCellSlot macroSize levelCount macroIdx localStart level %
+        (levelCount * macroSize)) / macroSize =
+      level := by
+  have hrem :=
+    bpLocalSparseCellSlot_mod_perMacro
+      (macroCount := macroCount) hmacro hlevel hlocal
+  have hdiv :
+      (level * macroSize + localStart) / macroSize = level := by
+    have hpos : 0 < macroSize := by omega
+    rw [Nat.mul_comm level macroSize]
+    rw [Nat.mul_add_div hpos]
+    rw [Nat.div_eq_of_lt hlocal]
+    omega
+  simpa [hrem] using hdiv
+
+theorem bpLocalSparseCellSlot_rem_mod
+    {macroSize levelCount macroCount macroIdx localStart level : Nat}
+    (hmacro : macroIdx < macroCount)
+    (hlevel : level < levelCount)
+    (hlocal : localStart < macroSize) :
+    (bpLocalSparseCellSlot macroSize levelCount macroIdx localStart level %
+        (levelCount * macroSize)) % macroSize =
+      localStart := by
+  have hrem :=
+    bpLocalSparseCellSlot_mod_perMacro
+      (macroCount := macroCount) hmacro hlevel hlocal
+  have hmod :
+      (level * macroSize + localStart) % macroSize = localStart := by
+    rw [Nat.mul_comm level macroSize]
+    rw [Nat.mul_add_mod]
+    exact Nat.mod_eq_of_lt hlocal
+  simpa [hrem] using hmod
+
+theorem bpLocalSparseOffsetEntries_get?_of_valid
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      macroIdx localStart level : Nat}
+    (hmacro : macroIdx < macroCount)
+    (hlevel : level < levelCount)
+    (hlocal : localStart < macroSize) :
+    (bpLocalSparseOffsetEntries shape blockSize blockCount macroSize
+        macroCount levelCount)[
+          bpLocalSparseCellSlot macroSize levelCount macroIdx localStart level]? =
+      some
+        (bpLocalSparseCellOffset shape blockSize blockCount macroSize macroIdx
+          localStart level) := by
+  have hslot :
+      bpLocalSparseCellSlot macroSize levelCount macroIdx localStart level <
+        macroCount * (levelCount * macroSize) :=
+    bpLocalSparseCellSlot_lt hmacro hlevel hlocal
+  have hget :
+      (List.range (macroCount * (levelCount * macroSize)))[
+          bpLocalSparseCellSlot macroSize levelCount macroIdx localStart level]? =
+        some
+          (bpLocalSparseCellSlot macroSize levelCount macroIdx localStart level) :=
+    List.getElem?_range hslot
+  have hdiv :=
+    bpLocalSparseCellSlot_div_perMacro
+      (macroCount := macroCount) hmacro hlevel hlocal
+  have hremDiv :=
+    bpLocalSparseCellSlot_rem_div
+      (macroCount := macroCount) hmacro hlevel hlocal
+  have hremMod :=
+    bpLocalSparseCellSlot_rem_mod
+      (macroCount := macroCount) hmacro hlevel hlocal
+  let slot :=
+    bpLocalSparseCellSlot macroSize levelCount macroIdx localStart level
+  have hgetSlot :
+      (List.range (macroCount * (levelCount * macroSize)))[slot]? =
+        some slot := by
+    simpa [slot] using hget
+  have hmap :
+      ((List.range (macroCount * (levelCount * macroSize))).map
+          (fun slot =>
+            bpLocalSparseCellOffset shape blockSize blockCount macroSize
+              (slot / (levelCount * macroSize))
+              (slot % (levelCount * macroSize) % macroSize)
+              (slot % (levelCount * macroSize) / macroSize)))[slot]? =
+        some
+          (bpLocalSparseCellOffset shape blockSize blockCount macroSize
+            (slot / (levelCount * macroSize))
+            (slot % (levelCount * macroSize) % macroSize)
+            (slot % (levelCount * macroSize) / macroSize)) := by
+    rw [List.getElem?_map]
+    simp [hgetSlot]
+  simpa [bpLocalSparseOffsetEntries, slot, hdiv, hremDiv, hremMod] using hmap
+
+theorem bpLocalSparseCellOffset_valid_eq
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroIdx localStart level : Nat}
+    (hlocalSpan : localStart + 2 ^ level <= macroSize)
+    (hblockSpan :
+      macroIdx * macroSize + localStart + 2 ^ level <= blockCount) :
+    bpLocalSparseCellOffset shape blockSize blockCount macroSize macroIdx
+        localStart level =
+      bpRangeArgMinBlock shape blockSize
+          (macroIdx * macroSize + localStart) (2 ^ level) -
+        macroIdx * macroSize := by
+  simp [bpLocalSparseCellOffset, hlocalSpan, hblockSpan]
+
+theorem bpLocalSparseCellOffset_valid_add
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroIdx localStart level : Nat}
+    (hlocalSpan : localStart + 2 ^ level <= macroSize)
+    (hblockSpan :
+      macroIdx * macroSize + localStart + 2 ^ level <= blockCount) :
+    macroIdx * macroSize +
+        bpLocalSparseCellOffset shape blockSize blockCount macroSize macroIdx
+          localStart level =
+      bpRangeArgMinBlock shape blockSize
+        (macroIdx * macroSize + localStart) (2 ^ level) := by
+  have hoffset :=
+    bpLocalSparseCellOffset_valid_eq
+      (shape := shape) (blockSize := blockSize)
+      (blockCount := blockCount) (macroSize := macroSize)
+      (macroIdx := macroIdx) (localStart := localStart) (level := level)
+      hlocalSpan hblockSpan
+  have hmem :=
+    bpRangeArgMinBlock_mem shape blockSize
+      (macroIdx * macroSize + localStart) (2 ^ level)
+      (Nat.pow_pos (by omega : 0 < 2))
+  rw [hoffset]
+  omega
+
+theorem bpLocalSparseCellOffset_lt_width
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroIdx localStart level
+      offsetWidth : Nat}
+    (hwidth : macroSize < 2 ^ offsetWidth) :
+    bpLocalSparseCellOffset shape blockSize blockCount macroSize macroIdx
+        localStart level <
+      2 ^ offsetWidth := by
+  unfold bpLocalSparseCellOffset
+  by_cases hvalid :
+      localStart + 2 ^ level <= macroSize /\
+        macroIdx * macroSize + localStart + 2 ^ level <= blockCount
+  · simp [hvalid]
+    let startBlock := macroIdx * macroSize + localStart
+    let span := 2 ^ level
+    have hspan : 0 < span := by
+      exact Nat.pow_pos (by omega : 0 < 2)
+    have hmem :=
+      bpRangeArgMinBlock_mem shape blockSize startBlock span hspan
+    have hoff :
+        bpRangeArgMinBlock shape blockSize startBlock span -
+            macroIdx * macroSize <
+          macroSize := by
+      omega
+    exact Nat.lt_trans hoff hwidth
+  · have hpow : 0 < 2 ^ offsetWidth := by
+      exact Nat.pow_pos (by omega : 0 < 2)
+    simp [hvalid, hpow]
+
+theorem bpLocalSparseOffsetEntries_mem_bound
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth entry : Nat}
+    (hwidth : macroSize < 2 ^ offsetWidth)
+    (hmem :
+      entry ∈
+        bpLocalSparseOffsetEntries shape blockSize blockCount macroSize
+          macroCount levelCount) :
+    entry < 2 ^ offsetWidth := by
+  unfold bpLocalSparseOffsetEntries at hmem
+  rcases List.mem_map.mp hmem with ⟨slot, _hslot, hentry⟩
+  rw [← hentry]
+  exact
+    bpLocalSparseCellOffset_lt_width
+      (shape := shape) (blockSize := blockSize)
+      (blockCount := blockCount) (macroSize := macroSize)
+      (macroIdx := slot / (levelCount * macroSize))
+      (localStart := slot % (levelCount * macroSize) % macroSize)
+      (level := slot % (levelCount * macroSize) / macroSize)
+      (offsetWidth := offsetWidth) hwidth
+
+structure PayloadLiveBPLocalSparseOffsetTable
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount macroSize macroCount levelCount
+      offsetWidth overhead : Nat) where
+  table :
+    FixedWidthNatTable
+      (bpLocalSparseOffsetEntries shape blockSize blockCount macroSize
+        macroCount levelCount) offsetWidth
+  payload_length_eq : table.payload.length = overhead
+
+namespace PayloadLiveBPLocalSparseOffsetTable
+
+def payload
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth overhead : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth overhead) :
+    List Bool :=
+  offsetTable.table.payload
+
+theorem payload_length
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth overhead : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth overhead) :
+    offsetTable.payload.length = overhead := by
+  exact offsetTable.payload_length_eq
+
+def readOffsetCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth overhead : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth overhead)
+    (macroIdx localStart level : Nat) : Costed (Option Nat) :=
+  offsetTable.table.readCosted
+    (bpLocalSparseCellSlot macroSize levelCount macroIdx localStart level)
+
+theorem readOffsetCosted_cost_le_one
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth overhead : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth overhead)
+    (macroIdx localStart level : Nat) :
+    (offsetTable.readOffsetCosted macroIdx localStart level).cost <= 1 := by
+  unfold readOffsetCosted
+  exact offsetTable.table.readCosted_cost_le_one
+    (bpLocalSparseCellSlot macroSize levelCount macroIdx localStart level)
+
+theorem readOffsetCosted_erase_of_valid
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth overhead macroIdx localStart level : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth overhead)
+    (hmacro : macroIdx < macroCount)
+    (hlevel : level < levelCount)
+    (hlocal : localStart < macroSize) :
+    (offsetTable.readOffsetCosted macroIdx localStart level).erase =
+      some
+        (bpLocalSparseCellOffset shape blockSize blockCount macroSize macroIdx
+          localStart level) := by
+  have hentry :=
+    bpLocalSparseOffsetEntries_get?_of_valid
+      (shape := shape) (blockSize := blockSize)
+      (blockCount := blockCount) (macroSize := macroSize)
+      (macroCount := macroCount) (levelCount := levelCount)
+      (macroIdx := macroIdx) (localStart := localStart)
+      (level := level) hmacro hlevel hlocal
+  unfold readOffsetCosted
+  simpa using
+    (show
+      (offsetTable.table.readCosted
+          (bpLocalSparseCellSlot macroSize levelCount macroIdx localStart
+            level)).erase =
+        (bpLocalSparseOffsetEntries shape blockSize blockCount macroSize
+          macroCount levelCount)[
+            bpLocalSparseCellSlot macroSize levelCount macroIdx localStart
+              level]? from
+      offsetTable.table.readCosted_erase
+        (bpLocalSparseCellSlot macroSize levelCount macroIdx localStart
+          level)).trans hentry
+
+theorem read_word_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth overhead index : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth overhead)
+    (hmachine :
+      offsetWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    {word : List Bool}
+    (hword : offsetTable.table.store.words[index]? = some word) :
+    word.length <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  have hlen := offsetTable.table.read_word_length_of_some hword
+  omega
+
+def spanCandidateCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth localOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (macroIdx localStart level : Nat) : Costed (Option (Nat × Nat)) :=
+  Costed.bind (offsetTable.readOffsetCosted macroIdx localStart level) fun offset? =>
+    match offset? with
+    | some offset =>
+        summary.minCandidateCosted (macroIdx * macroSize + offset)
+    | none => Costed.pure none
+
+theorem spanCandidateCosted_cost_le_five
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth localOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (macroIdx localStart level : Nat) :
+    (offsetTable.spanCandidateCosted summary macroIdx localStart level).cost <=
+      5 := by
+  unfold spanCandidateCosted
+  cases hoff :
+      (offsetTable.readOffsetCosted macroIdx localStart level).value with
+  | none =>
+      have hread :=
+        offsetTable.readOffsetCosted_cost_le_one macroIdx localStart level
+      simp [Costed.bind, Costed.pure, hoff] at hread ⊢
+      omega
+  | some offset =>
+      have hread :=
+        offsetTable.readOffsetCosted_cost_le_one macroIdx localStart level
+      have hsummary :=
+        summary.minCandidateCosted_cost_le_four
+          (macroIdx * macroSize + offset)
+      simp [Costed.bind, hoff] at hread hsummary ⊢
+      omega
+
+end PayloadLiveBPLocalSparseOffsetTable
+
+theorem bpRangeWitness_eq_of_bpRangeArgMinBlock
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount : Nat)
+    (hcount : 0 < blockCount) :
+    (bpRangeMinExcess shape blockSize startBlock blockCount,
+        bpRangeArgMinPrefixPos shape blockSize startBlock blockCount) =
+      (bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize
+            (bpRangeArgMinBlock shape blockSize startBlock blockCount)),
+        bpBlockArgMinPrefixPos shape blockSize
+          (bpRangeArgMinBlock shape blockSize startBlock blockCount)) := by
+  have hprefix :=
+    bpBlockArgMinPrefixPos_bpRangeArgMinBlock_of_pos
+      shape blockSize startBlock blockCount hcount
+  simp [bpRangeMinExcess, hprefix]
+
+namespace PayloadLiveBPLocalSparseOffsetTable
+
+theorem spanCandidateCosted_erase_exact
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth localOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead
+      macroIdx localStart level : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (hmacro : macroIdx < macroCount)
+    (hlevel : level < levelCount)
+    (hlocal : localStart < macroSize)
+    (hlocalSpan : localStart + 2 ^ level <= macroSize)
+    (hblockSpan :
+      macroIdx * macroSize + localStart + 2 ^ level <= blockCount)
+    (hblocks : 0 < blocksPerSuper)
+    (hcover : blockCount * blockSize <= shape.bpCode.length)
+    (hsuperCount :
+      forall {block : Nat}, block < blockCount ->
+        block / blocksPerSuper < superCount) :
+    (offsetTable.spanCandidateCosted summary macroIdx localStart level).erase =
+      some
+        (bpRangeMinExcess shape blockSize
+          (macroIdx * macroSize + localStart) (2 ^ level),
+          bpRangeArgMinPrefixPos shape blockSize
+            (macroIdx * macroSize + localStart) (2 ^ level)) := by
+  let offset :=
+    bpLocalSparseCellOffset shape blockSize blockCount macroSize macroIdx
+      localStart level
+  have hoffRead :
+      (offsetTable.readOffsetCosted macroIdx localStart level).erase =
+        some offset := by
+    simpa [offset] using
+      offsetTable.readOffsetCosted_erase_of_valid hmacro hlevel hlocal
+  have hoffAdd :
+      macroIdx * macroSize + offset =
+        bpRangeArgMinBlock shape blockSize
+          (macroIdx * macroSize + localStart) (2 ^ level) := by
+    simpa [offset] using
+      bpLocalSparseCellOffset_valid_add
+        (shape := shape) (blockSize := blockSize)
+        (blockCount := blockCount) (macroSize := macroSize)
+        (macroIdx := macroIdx) (localStart := localStart)
+        (level := level) hlocalSpan hblockSpan
+  have hspan : 0 < 2 ^ level := by
+    exact Nat.pow_pos (by omega : 0 < 2)
+  have hmem :=
+    bpRangeArgMinBlock_mem shape blockSize
+      (macroIdx * macroSize + localStart) (2 ^ level) hspan
+  have hblock : macroIdx * macroSize + offset < blockCount := by
+    rw [hoffAdd]
+    omega
+  have hsummary :=
+    summary.minCandidateCosted_erase_arg_excess_of_bounds
+      hblocks hblock hcover (hsuperCount hblock)
+  have hwitness :=
+    bpRangeWitness_eq_of_bpRangeArgMinBlock
+      shape blockSize (macroIdx * macroSize + localStart) (2 ^ level)
+      hspan
+  unfold spanCandidateCosted
+  rw [Costed.erase_bind]
+  simp [hoffRead]
+  simpa [hoffAdd, hwitness] using hsummary
+
+end PayloadLiveBPLocalSparseOffsetTable
+
 theorem bpRangeArgMinPrefixPosFrom_mem_of_best_and_candidates
     (shape : Cartesian.CartesianShape)
     (blockSize block steps best lo hi : Nat)
@@ -7975,6 +9669,1741 @@ theorem bpCandidateMerge?_argmin_pair
   · simp [hlt]
   · simp [hlt]
 
+theorem bpCandidateMerge?_adjacentRangeWitness
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock leftCount rightCount : Nat)
+    (hleftCount : 0 < leftCount)
+    (hrightCount : 0 < rightCount) :
+    bpCandidateMerge?
+        (some
+          (bpRangeMinExcess shape blockSize startBlock leftCount,
+            bpRangeArgMinPrefixPos shape blockSize startBlock leftCount))
+        (some
+          (bpRangeMinExcess shape blockSize (startBlock + leftCount)
+            rightCount,
+            bpRangeArgMinPrefixPos shape blockSize
+              (startBlock + leftCount) rightCount)) =
+      some
+        (bpRangeMinExcess shape blockSize startBlock
+          (leftCount + rightCount),
+          bpRangeArgMinPrefixPos shape blockSize startBlock
+            (leftCount + rightCount)) := by
+  let leftBlock :=
+    bpRangeArgMinBlock shape blockSize startBlock leftCount
+  let rightStart := startBlock + leftCount
+  let rightBlock :=
+    bpRangeArgMinBlock shape blockSize rightStart rightCount
+  have hleft :=
+    bpRangeArgMinBlock_leftmost shape blockSize startBlock leftCount
+      hleftCount
+  have hright :=
+    bpRangeArgMinBlock_leftmost shape blockSize rightStart rightCount
+      hrightCount
+  have hleftWitness :=
+    bpRangeWitness_eq_of_bpRangeArgMinBlock
+      shape blockSize startBlock leftCount hleftCount
+  have hrightWitness :=
+    bpRangeWitness_eq_of_bpRangeArgMinBlock
+      shape blockSize rightStart rightCount hrightCount
+  by_cases htake :
+      bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize rightBlock) <
+        bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize leftBlock)
+  · have hmerge :
+        bpCandidateMerge?
+            (some
+              (bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize leftBlock),
+                bpBlockArgMinPrefixPos shape blockSize leftBlock))
+            (some
+              (bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize rightBlock),
+                bpBlockArgMinPrefixPos shape blockSize rightBlock)) =
+          some
+            (bpExcessAt shape
+              (bpBlockArgMinPrefixPos shape blockSize rightBlock),
+              bpBlockArgMinPrefixPos shape blockSize rightBlock) := by
+      exact bpCandidateMerge?_some_right_of_fst_lt htake
+    have hglobal :
+        (bpRangeMinExcess shape blockSize startBlock
+            (leftCount + rightCount),
+          bpRangeArgMinPrefixPos shape blockSize startBlock
+            (leftCount + rightCount)) =
+        (bpExcessAt shape
+            (bpBlockArgMinPrefixPos shape blockSize rightBlock),
+          bpBlockArgMinPrefixPos shape blockSize rightBlock) := by
+      exact
+        bpRangeWitness_eq_of_leftmost_block_candidate
+          (shape := shape) (blockSize := blockSize)
+          (startBlock := startBlock)
+          (blockCount := leftCount + rightCount)
+          (targetBlock := rightBlock)
+          (target :=
+            bpBlockArgMinPrefixPos shape blockSize rightBlock)
+          (by
+            constructor
+            · exact Nat.le_trans (by omega : startBlock <= rightStart)
+                hright.1
+            · have hhi := hright.2.1
+              omega)
+          rfl
+          (by
+            intro candidateBlock hlo hhi
+            by_cases hrightSide : rightStart <= candidateBlock
+            · exact hright.2.2.1 hrightSide (by omega)
+            · have hleftSide : candidateBlock < startBlock + leftCount := by
+                omega
+              exact Nat.le_trans (Nat.le_of_lt htake)
+                (hleft.2.2.1 hlo hleftSide))
+          (by
+            intro candidateBlock hlo hlt
+            by_cases hrightSide : rightStart <= candidateBlock
+            · exact hright.2.2.2 hrightSide hlt
+            · have hleftSide : candidateBlock < startBlock + leftCount := by
+                omega
+              exact Nat.lt_of_lt_of_le htake
+                (hleft.2.2.1 hlo hleftSide))
+    simpa [rightStart, leftBlock, rightBlock, hleftWitness,
+      hrightWitness, hglobal] using hmerge
+  · have hle :
+        bpExcessAt shape
+            (bpBlockArgMinPrefixPos shape blockSize leftBlock) <=
+          bpExcessAt shape
+            (bpBlockArgMinPrefixPos shape blockSize rightBlock) :=
+      Nat.le_of_not_gt htake
+    have hmerge :
+        bpCandidateMerge?
+            (some
+              (bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize leftBlock),
+                bpBlockArgMinPrefixPos shape blockSize leftBlock))
+            (some
+              (bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize rightBlock),
+                bpBlockArgMinPrefixPos shape blockSize rightBlock)) =
+          some
+            (bpExcessAt shape
+              (bpBlockArgMinPrefixPos shape blockSize leftBlock),
+              bpBlockArgMinPrefixPos shape blockSize leftBlock) := by
+      exact
+        bpCandidateMerge?_some_left_of_fst_le
+          (by
+            intro right hrightSome
+            cases hrightSome
+            exact hle)
+    have hglobal :
+        (bpRangeMinExcess shape blockSize startBlock
+            (leftCount + rightCount),
+          bpRangeArgMinPrefixPos shape blockSize startBlock
+            (leftCount + rightCount)) =
+        (bpExcessAt shape
+            (bpBlockArgMinPrefixPos shape blockSize leftBlock),
+          bpBlockArgMinPrefixPos shape blockSize leftBlock) := by
+      exact
+        bpRangeWitness_eq_of_leftmost_block_candidate
+          (shape := shape) (blockSize := blockSize)
+          (startBlock := startBlock)
+          (blockCount := leftCount + rightCount)
+          (targetBlock := leftBlock)
+          (target :=
+            bpBlockArgMinPrefixPos shape blockSize leftBlock)
+          (by
+            constructor
+            · exact hleft.1
+            · have hhi := hleft.2.1
+              omega)
+          rfl
+          (by
+            intro candidateBlock hlo hhi
+            by_cases hleftSide : candidateBlock < startBlock + leftCount
+            · exact hleft.2.2.1 hlo hleftSide
+            · have hrightSide : rightStart <= candidateBlock := by
+                omega
+              exact Nat.le_trans hle (hright.2.2.1 hrightSide (by omega)))
+          (by
+            intro candidateBlock hlo hlt
+            exact hleft.2.2.2 hlo hlt)
+    simpa [rightStart, leftBlock, rightBlock, hleftWitness,
+      hrightWitness, hglobal] using hmerge
+
+theorem bpCandidateMerge3?_threeAdjacentRangeWitness
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock leftCount middleCount rightCount : Nat)
+    (hleftCount : 0 < leftCount)
+    (hmiddleCount : 0 < middleCount)
+    (hrightCount : 0 < rightCount) :
+    bpCandidateMerge3?
+        (some
+          (bpRangeMinExcess shape blockSize startBlock leftCount,
+            bpRangeArgMinPrefixPos shape blockSize startBlock leftCount))
+        (some
+          (bpRangeMinExcess shape blockSize (startBlock + leftCount)
+            middleCount,
+            bpRangeArgMinPrefixPos shape blockSize
+              (startBlock + leftCount) middleCount))
+        (some
+          (bpRangeMinExcess shape blockSize
+            (startBlock + leftCount + middleCount) rightCount,
+            bpRangeArgMinPrefixPos shape blockSize
+              (startBlock + leftCount + middleCount) rightCount)) =
+      some
+        (bpRangeMinExcess shape blockSize startBlock
+          (leftCount + middleCount + rightCount),
+          bpRangeArgMinPrefixPos shape blockSize startBlock
+            (leftCount + middleCount + rightCount)) := by
+  have hfirst :=
+    bpCandidateMerge?_adjacentRangeWitness
+      shape blockSize startBlock leftCount middleCount
+      hleftCount hmiddleCount
+  have hsecond :=
+    bpCandidateMerge?_adjacentRangeWitness
+      shape blockSize startBlock (leftCount + middleCount) rightCount
+      (by omega) hrightCount
+  unfold bpCandidateMerge3?
+  rw [hfirst]
+  simpa [Nat.add_assoc] using hsecond
+
+theorem bpCandidateMerge?_bpSparseTwoSpanArgMinBlock
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount span : Nat)
+    (hspan : 0 < span) :
+    let rightStart := startBlock + blockCount - span
+    bpCandidateMerge?
+        (some
+          (bpRangeMinExcess shape blockSize startBlock span,
+            bpRangeArgMinPrefixPos shape blockSize startBlock span))
+        (some
+          (bpRangeMinExcess shape blockSize rightStart span,
+            bpRangeArgMinPrefixPos shape blockSize rightStart span)) =
+      some
+        (bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize
+            (bpSparseTwoSpanArgMinBlock shape blockSize startBlock
+              blockCount span)),
+          bpBlockArgMinPrefixPos shape blockSize
+            (bpSparseTwoSpanArgMinBlock shape blockSize startBlock
+              blockCount span)) := by
+  let rightStart := startBlock + blockCount - span
+  let leftBlock :=
+    bpRangeArgMinBlock shape blockSize startBlock span
+  let rightBlock :=
+    bpRangeArgMinBlock shape blockSize rightStart span
+  have hleftWitness :=
+    bpRangeWitness_eq_of_bpRangeArgMinBlock
+      shape blockSize startBlock span hspan
+  have hrightWitness :=
+    bpRangeWitness_eq_of_bpRangeArgMinBlock
+      shape blockSize rightStart span hspan
+  by_cases htake :
+      bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize rightBlock) <
+        bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize leftBlock)
+  · have htarget :
+        bpSparseTwoSpanArgMinBlock shape blockSize startBlock blockCount span =
+          rightBlock := by
+      simp [bpSparseTwoSpanArgMinBlock, leftBlock, rightStart, rightBlock,
+        bpBetterArgMinBlock, htake]
+    have hmerge :
+        bpCandidateMerge?
+            (some
+              (bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize leftBlock),
+                bpBlockArgMinPrefixPos shape blockSize leftBlock))
+            (some
+              (bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize rightBlock),
+                bpBlockArgMinPrefixPos shape blockSize rightBlock)) =
+          some
+            (bpExcessAt shape
+              (bpBlockArgMinPrefixPos shape blockSize rightBlock),
+              bpBlockArgMinPrefixPos shape blockSize rightBlock) := by
+      exact bpCandidateMerge?_some_right_of_fst_lt htake
+    simpa [rightStart, leftBlock, rightBlock, hleftWitness,
+      hrightWitness, htarget] using hmerge
+  · have htarget :
+        bpSparseTwoSpanArgMinBlock shape blockSize startBlock blockCount span =
+          leftBlock := by
+      simp [bpSparseTwoSpanArgMinBlock, leftBlock, rightStart, rightBlock,
+        bpBetterArgMinBlock, htake]
+    have hle :
+        bpExcessAt shape
+            (bpBlockArgMinPrefixPos shape blockSize leftBlock) <=
+          bpExcessAt shape
+            (bpBlockArgMinPrefixPos shape blockSize rightBlock) := by
+      exact Nat.le_of_not_gt htake
+    have hmerge :
+        bpCandidateMerge?
+            (some
+              (bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize leftBlock),
+                bpBlockArgMinPrefixPos shape blockSize leftBlock))
+            (some
+              (bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize rightBlock),
+                bpBlockArgMinPrefixPos shape blockSize rightBlock)) =
+          some
+            (bpExcessAt shape
+              (bpBlockArgMinPrefixPos shape blockSize leftBlock),
+              bpBlockArgMinPrefixPos shape blockSize leftBlock) := by
+      exact
+        bpCandidateMerge?_some_left_of_fst_le
+          (by
+            intro right hright
+            cases hright
+            exact hle)
+    simpa [rightStart, leftBlock, rightBlock, hleftWitness,
+      hrightWitness, htarget] using hmerge
+
+theorem bpCandidateMerge?_bpSparseLogSpanArgMinBlock
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount : Nat)
+    (_hcount : 0 < blockCount) :
+    let span := bpSparseLogSpan blockCount
+    let rightStart := startBlock + blockCount - span
+    bpCandidateMerge?
+        (some
+          (bpRangeMinExcess shape blockSize startBlock span,
+            bpRangeArgMinPrefixPos shape blockSize startBlock span))
+        (some
+          (bpRangeMinExcess shape blockSize rightStart span,
+            bpRangeArgMinPrefixPos shape blockSize rightStart span)) =
+      some
+        (bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize
+            (bpSparseLogSpanArgMinBlock shape blockSize startBlock
+              blockCount)),
+          bpBlockArgMinPrefixPos shape blockSize
+            (bpSparseLogSpanArgMinBlock shape blockSize startBlock
+              blockCount)) := by
+  unfold bpSparseLogSpanArgMinBlock
+  exact
+    bpCandidateMerge?_bpSparseTwoSpanArgMinBlock
+      shape blockSize startBlock blockCount
+      (bpSparseLogSpan blockCount)
+      (bpSparseLogSpan_pos blockCount)
+
+namespace PayloadLiveBPLocalSparseOffsetTable
+
+def twoSpanCandidateCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth localOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (macroIdx localStart count : Nat) : Costed (Option (Nat × Nat)) :=
+  let level := Nat.log2 count
+  let span := bpSparseLogSpan count
+  let rightLocalStart := localStart + count - span
+  Costed.bind
+    (offsetTable.spanCandidateCosted summary macroIdx localStart level)
+    fun left? =>
+      Costed.map
+        (fun right? => bpCandidateMerge? left? right?)
+        (offsetTable.spanCandidateCosted summary macroIdx rightLocalStart
+          level)
+
+theorem twoSpanCandidateCosted_cost_le_ten
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth localOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (macroIdx localStart count : Nat) :
+    (offsetTable.twoSpanCandidateCosted summary macroIdx localStart count).cost <=
+      10 := by
+  unfold twoSpanCandidateCosted
+  have hleft :=
+    offsetTable.spanCandidateCosted_cost_le_five summary macroIdx localStart
+      (Nat.log2 count)
+  have hright :=
+    offsetTable.spanCandidateCosted_cost_le_five summary macroIdx
+      (localStart + count - bpSparseLogSpan count) (Nat.log2 count)
+  simp [Costed.bind, Costed.map] at hleft hright ⊢
+  omega
+
+theorem twoSpanCandidateCosted_erase_sparseLog_exact
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth localOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead
+      macroIdx localStart count : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (hcount : 0 < count)
+    (hmacro : macroIdx < macroCount)
+    (hlevel : Nat.log2 count < levelCount)
+    (hlocal : localStart < macroSize)
+    (hlocalCount : localStart + count <= macroSize)
+    (hblockCount :
+      macroIdx * macroSize + localStart + count <= blockCount)
+    (hblocks : 0 < blocksPerSuper)
+    (hcover : blockCount * blockSize <= shape.bpCode.length)
+    (hsuperCount :
+      forall {block : Nat}, block < blockCount ->
+        block / blocksPerSuper < superCount) :
+    (offsetTable.twoSpanCandidateCosted summary macroIdx localStart count).erase =
+      some
+        (bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize
+            (bpSparseLogSpanArgMinBlock shape blockSize
+              (macroIdx * macroSize + localStart) count)),
+          bpBlockArgMinPrefixPos shape blockSize
+            (bpSparseLogSpanArgMinBlock shape blockSize
+              (macroIdx * macroSize + localStart) count)) := by
+  let span := bpSparseLogSpan count
+  let level := Nat.log2 count
+  let startBlock := macroIdx * macroSize + localStart
+  let rightLocalStart := localStart + count - span
+  have hspanEq : span = 2 ^ level := by
+    simp [span, level, bpSparseLogSpan]
+  have hspanPos : 0 < span := by
+    simpa [span] using bpSparseLogSpan_pos count
+  have hspanLe : span <= count := by
+    simpa [span] using bpSparseLogSpan_le_self hcount
+  have hleftSpan : localStart + 2 ^ level <= macroSize := by
+    omega
+  have hleftBlock : macroIdx * macroSize + localStart + 2 ^ level <= blockCount := by
+    omega
+  have hrightLocal : rightLocalStart < macroSize := by
+    have hrightSpan : rightLocalStart + span <= macroSize := by
+      omega
+    omega
+  have hrightSpan : rightLocalStart + 2 ^ level <= macroSize := by
+    omega
+  have hrightBlock :
+      macroIdx * macroSize + rightLocalStart + 2 ^ level <= blockCount := by
+    omega
+  have hrightStart :
+      macroIdx * macroSize + rightLocalStart =
+        startBlock + count - span := by
+    omega
+  have hleftExact :=
+    offsetTable.spanCandidateCosted_erase_exact
+      summary hmacro hlevel hlocal hleftSpan hleftBlock hblocks hcover
+      hsuperCount
+  have hrightExact :=
+    offsetTable.spanCandidateCosted_erase_exact
+      summary hmacro hlevel hrightLocal hrightSpan hrightBlock hblocks
+      hcover hsuperCount
+  have hrightErase :
+      (offsetTable.spanCandidateCosted summary macroIdx
+          (localStart + count - bpSparseLogSpan count)
+          (Nat.log2 count)).erase =
+        some
+          (bpRangeMinExcess shape blockSize
+            (macroIdx * macroSize +
+              (localStart + count - bpSparseLogSpan count))
+            (2 ^ Nat.log2 count),
+            bpRangeArgMinPrefixPos shape blockSize
+              (macroIdx * macroSize +
+                (localStart + count - bpSparseLogSpan count))
+              (2 ^ Nat.log2 count)) := by
+    simpa [span, level, rightLocalStart] using hrightExact
+  have hmerge :=
+    bpCandidateMerge?_bpSparseLogSpanArgMinBlock
+      shape blockSize startBlock count hcount
+  unfold twoSpanCandidateCosted
+  rw [Costed.erase_bind]
+  simp [hleftExact]
+  simp [Costed.map, hrightErase]
+  simpa [span, level, startBlock, rightLocalStart, hrightStart] using hmerge
+
+theorem twoSpanCandidateCosted_erase_rangeWitness_exact
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth localOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead
+      macroIdx localStart count : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (hcount : 0 < count)
+    (hmacro : macroIdx < macroCount)
+    (hlevel : Nat.log2 count < levelCount)
+    (hlocal : localStart < macroSize)
+    (hlocalCount : localStart + count <= macroSize)
+    (hblockCount :
+      macroIdx * macroSize + localStart + count <= blockCount)
+    (hblocks : 0 < blocksPerSuper)
+    (hcover : blockCount * blockSize <= shape.bpCode.length)
+    (hsuperCount :
+      forall {block : Nat}, block < blockCount ->
+        block / blocksPerSuper < superCount) :
+    (offsetTable.twoSpanCandidateCosted summary macroIdx localStart count).erase =
+      some
+        (bpRangeMinExcess shape blockSize
+          (macroIdx * macroSize + localStart) count,
+          bpRangeArgMinPrefixPos shape blockSize
+            (macroIdx * macroSize + localStart) count) := by
+  have hselector :=
+    offsetTable.twoSpanCandidateCosted_erase_sparseLog_exact
+      summary hcount hmacro hlevel hlocal hlocalCount hblockCount
+      hblocks hcover hsuperCount
+  have hwitness :=
+    bpRangeWitness_eq_of_bpSparseLogSpanArgMinBlock
+      shape blockSize (macroIdx * macroSize + localStart) count hcount
+  simpa [hwitness] using hselector
+
+end PayloadLiveBPLocalSparseOffsetTable
+
+def bpGlobalSparseCellSlot
+    (macroCount macroStart level : Nat) : Nat :=
+  level * macroCount + macroStart
+
+def bpGlobalSparseCellBlock
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount macroSize macroCount macroStart level : Nat) :
+    Nat :=
+  let spanMacros := 2 ^ level
+  let startBlock := macroStart * macroSize
+  let spanBlocks := spanMacros * macroSize
+  if macroStart + spanMacros <= macroCount ∧ startBlock + spanBlocks <= blockCount then
+    bpRangeArgMinBlock shape blockSize startBlock spanBlocks
+  else
+    0
+
+def bpGlobalSparseBlockEntries
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount macroSize macroCount levelCount : Nat) :
+    List Nat :=
+  (List.range (levelCount * macroCount)).map fun slot =>
+    let level := slot / macroCount
+    let macroStart := slot % macroCount
+    bpGlobalSparseCellBlock shape blockSize blockCount macroSize macroCount
+      macroStart level
+
+theorem bpGlobalSparseCellSlot_lt
+    {macroCount levelCount macroStart level : Nat}
+    (hlevel : level < levelCount)
+    (hmacro : macroStart < macroCount) :
+    bpGlobalSparseCellSlot macroCount macroStart level <
+      levelCount * macroCount := by
+  unfold bpGlobalSparseCellSlot
+  have hstep :
+      level * macroCount + macroStart <
+        level * macroCount + macroCount :=
+    Nat.add_lt_add_left hmacro (level * macroCount)
+  have hsucc :
+      level * macroCount + macroCount =
+        (level + 1) * macroCount := by
+    simpa using (Nat.succ_mul level macroCount).symm
+  have hmul :
+      (level + 1) * macroCount <= levelCount * macroCount :=
+    Nat.mul_le_mul_right macroCount (Nat.succ_le_of_lt hlevel)
+  exact Nat.lt_of_lt_of_le (by simpa [hsucc] using hstep) hmul
+
+theorem bpGlobalSparseCellSlot_div
+    {macroCount levelCount macroStart level : Nat}
+    (_hlevel : level < levelCount)
+    (hmacro : macroStart < macroCount) :
+    bpGlobalSparseCellSlot macroCount macroStart level / macroCount =
+      level := by
+  have hpos : 0 < macroCount := by omega
+  unfold bpGlobalSparseCellSlot
+  rw [Nat.mul_comm level macroCount]
+  rw [Nat.mul_add_div hpos]
+  rw [Nat.div_eq_of_lt hmacro]
+  omega
+
+theorem bpGlobalSparseCellSlot_mod
+    {macroCount levelCount macroStart level : Nat}
+    (_hlevel : level < levelCount)
+    (hmacro : macroStart < macroCount) :
+    bpGlobalSparseCellSlot macroCount macroStart level % macroCount =
+      macroStart := by
+  unfold bpGlobalSparseCellSlot
+  rw [Nat.mul_comm level macroCount]
+  rw [Nat.mul_add_mod]
+  exact Nat.mod_eq_of_lt hmacro
+
+theorem bpGlobalSparseBlockEntries_get?_of_valid
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      macroStart level : Nat}
+    (hlevel : level < levelCount)
+    (hmacro : macroStart < macroCount) :
+    (bpGlobalSparseBlockEntries shape blockSize blockCount macroSize
+        macroCount levelCount)[
+          bpGlobalSparseCellSlot macroCount macroStart level]? =
+      some
+        (bpGlobalSparseCellBlock shape blockSize blockCount macroSize
+          macroCount macroStart level) := by
+  have hslot :
+      bpGlobalSparseCellSlot macroCount macroStart level <
+        levelCount * macroCount :=
+    bpGlobalSparseCellSlot_lt hlevel hmacro
+  have hget :
+      (List.range (levelCount * macroCount))[
+          bpGlobalSparseCellSlot macroCount macroStart level]? =
+        some (bpGlobalSparseCellSlot macroCount macroStart level) :=
+    List.getElem?_range hslot
+  have hdiv :=
+    bpGlobalSparseCellSlot_div
+      (levelCount := levelCount) hlevel hmacro
+  have hmod :=
+    bpGlobalSparseCellSlot_mod
+      (levelCount := levelCount) hlevel hmacro
+  let slot := bpGlobalSparseCellSlot macroCount macroStart level
+  have hgetSlot :
+      (List.range (levelCount * macroCount))[slot]? = some slot := by
+    simpa [slot] using hget
+  have hmap :
+      ((List.range (levelCount * macroCount)).map
+          (fun slot =>
+            bpGlobalSparseCellBlock shape blockSize blockCount macroSize
+              macroCount (slot % macroCount) (slot / macroCount)))[slot]? =
+        some
+          (bpGlobalSparseCellBlock shape blockSize blockCount macroSize
+            macroCount (slot % macroCount) (slot / macroCount)) := by
+    rw [List.getElem?_map]
+    simp [hgetSlot]
+  simpa [bpGlobalSparseBlockEntries, slot, hdiv, hmod] using hmap
+
+theorem bpGlobalSparseCellBlock_valid_eq
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount macroStart level : Nat}
+    (hmacroSpan : macroStart + 2 ^ level <= macroCount)
+    (hblockSpan :
+      macroStart * macroSize + 2 ^ level * macroSize <= blockCount) :
+    bpGlobalSparseCellBlock shape blockSize blockCount macroSize macroCount
+        macroStart level =
+      bpRangeArgMinBlock shape blockSize
+        (macroStart * macroSize) (2 ^ level * macroSize) := by
+  simp [bpGlobalSparseCellBlock, hmacroSpan, hblockSpan]
+
+theorem bpGlobalSparseCellBlock_lt_width
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount macroStart level
+      blockWidth : Nat}
+    (hmacroSize : 0 < macroSize)
+    (hwidth : blockCount < 2 ^ blockWidth) :
+    bpGlobalSparseCellBlock shape blockSize blockCount macroSize macroCount
+        macroStart level <
+      2 ^ blockWidth := by
+  unfold bpGlobalSparseCellBlock
+  by_cases hvalid :
+      macroStart + 2 ^ level <= macroCount /\
+        macroStart * macroSize + 2 ^ level * macroSize <= blockCount
+  · simp [hvalid]
+    have hspan : 0 < 2 ^ level * macroSize := by
+      exact Nat.mul_pos (Nat.pow_pos (by omega : 0 < 2)) hmacroSize
+    have hmem :=
+      bpRangeArgMinBlock_mem shape blockSize
+        (macroStart * macroSize) (2 ^ level * macroSize) hspan
+    exact Nat.lt_trans (by omega : bpRangeArgMinBlock shape blockSize
+        (macroStart * macroSize) (2 ^ level * macroSize) < blockCount)
+      hwidth
+  · have hpow : 0 < 2 ^ blockWidth := by
+      exact Nat.pow_pos (by omega : 0 < 2)
+    simp [hvalid, hpow]
+
+theorem bpGlobalSparseBlockEntries_mem_bound
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth entry : Nat}
+    (hmacroSize : 0 < macroSize)
+    (hwidth : blockCount < 2 ^ blockWidth)
+    (hmem :
+      entry ∈
+        bpGlobalSparseBlockEntries shape blockSize blockCount macroSize
+          macroCount levelCount) :
+    entry < 2 ^ blockWidth := by
+  unfold bpGlobalSparseBlockEntries at hmem
+  rcases List.mem_map.mp hmem with ⟨slot, _hslot, hentry⟩
+  rw [← hentry]
+  exact
+    bpGlobalSparseCellBlock_lt_width
+      (shape := shape) (blockSize := blockSize)
+      (blockCount := blockCount) (macroSize := macroSize)
+      (macroCount := macroCount) (macroStart := slot % macroCount)
+      (level := slot / macroCount) (blockWidth := blockWidth)
+      hmacroSize hwidth
+
+structure PayloadLiveBPGlobalSparseBlockTable
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount macroSize macroCount levelCount
+      blockWidth overhead : Nat) where
+  table :
+    FixedWidthNatTable
+      (bpGlobalSparseBlockEntries shape blockSize blockCount macroSize
+        macroCount levelCount) blockWidth
+  payload_length_eq : table.payload.length = overhead
+
+namespace PayloadLiveBPGlobalSparseBlockTable
+
+def payload
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth overhead : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth overhead) :
+    List Bool :=
+  globalTable.table.payload
+
+theorem payload_length
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth overhead : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth overhead) :
+    globalTable.payload.length = overhead := by
+  exact globalTable.payload_length_eq
+
+def readBlockCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth overhead : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth overhead)
+    (macroStart level : Nat) : Costed (Option Nat) :=
+  globalTable.table.readCosted
+    (bpGlobalSparseCellSlot macroCount macroStart level)
+
+theorem readBlockCosted_cost_le_one
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth overhead : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth overhead)
+    (macroStart level : Nat) :
+    (globalTable.readBlockCosted macroStart level).cost <= 1 := by
+  unfold readBlockCosted
+  exact globalTable.table.readCosted_cost_le_one
+    (bpGlobalSparseCellSlot macroCount macroStart level)
+
+theorem readBlockCosted_erase_of_valid
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth overhead macroStart level : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth overhead)
+    (hlevel : level < levelCount)
+    (hmacro : macroStart < macroCount) :
+    (globalTable.readBlockCosted macroStart level).erase =
+      some
+        (bpGlobalSparseCellBlock shape blockSize blockCount macroSize
+          macroCount macroStart level) := by
+  have hentry :=
+    bpGlobalSparseBlockEntries_get?_of_valid
+      (shape := shape) (blockSize := blockSize)
+      (blockCount := blockCount) (macroSize := macroSize)
+      (macroCount := macroCount) (levelCount := levelCount)
+      (macroStart := macroStart) (level := level) hlevel hmacro
+  unfold readBlockCosted
+  simpa using
+    (show
+      (globalTable.table.readCosted
+          (bpGlobalSparseCellSlot macroCount macroStart level)).erase =
+        (bpGlobalSparseBlockEntries shape blockSize blockCount macroSize
+          macroCount levelCount)[
+            bpGlobalSparseCellSlot macroCount macroStart level]? from
+      globalTable.table.readCosted_erase
+        (bpGlobalSparseCellSlot macroCount macroStart level)).trans hentry
+
+theorem read_word_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth overhead index : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth overhead)
+    (hmachine :
+      blockWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    {word : List Bool}
+    (hword : globalTable.table.store.words[index]? = some word) :
+    word.length <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  have hlen := globalTable.table.read_word_length_of_some hword
+  omega
+
+def spanCandidateCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth globalOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (macroStart level : Nat) : Costed (Option (Nat × Nat)) :=
+  Costed.bind (globalTable.readBlockCosted macroStart level) fun block? =>
+    match block? with
+    | some block => summary.minCandidateCosted block
+    | none => Costed.pure none
+
+theorem spanCandidateCosted_cost_le_five
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth globalOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (macroStart level : Nat) :
+    (globalTable.spanCandidateCosted summary macroStart level).cost <= 5 := by
+  unfold spanCandidateCosted
+  cases hblock :
+      (globalTable.readBlockCosted macroStart level).value with
+  | none =>
+      have hread :=
+        globalTable.readBlockCosted_cost_le_one macroStart level
+      simp [Costed.bind, Costed.pure, hblock] at hread ⊢
+      omega
+  | some block =>
+      have hread :=
+        globalTable.readBlockCosted_cost_le_one macroStart level
+      have hsummary := summary.minCandidateCosted_cost_le_four block
+      simp [Costed.bind, hblock] at hread hsummary ⊢
+      omega
+
+theorem spanCandidateCosted_erase_exact
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth globalOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead macroStart level : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (hlevel : level < levelCount)
+    (hmacro : macroStart < macroCount)
+    (hmacroSize : 0 < macroSize)
+    (hmacroSpan : macroStart + 2 ^ level <= macroCount)
+    (hblockSpan :
+      macroStart * macroSize + 2 ^ level * macroSize <= blockCount)
+    (hblocks : 0 < blocksPerSuper)
+    (hcover : blockCount * blockSize <= shape.bpCode.length)
+    (hsuperCount :
+      forall {block : Nat}, block < blockCount ->
+        block / blocksPerSuper < superCount) :
+    (globalTable.spanCandidateCosted summary macroStart level).erase =
+      some
+        (bpRangeMinExcess shape blockSize
+          (macroStart * macroSize) (2 ^ level * macroSize),
+          bpRangeArgMinPrefixPos shape blockSize
+            (macroStart * macroSize) (2 ^ level * macroSize)) := by
+  let block :=
+    bpGlobalSparseCellBlock shape blockSize blockCount macroSize macroCount
+      macroStart level
+  have hblockRead :
+      (globalTable.readBlockCosted macroStart level).erase =
+        some block := by
+    simpa [block] using
+      globalTable.readBlockCosted_erase_of_valid hlevel hmacro
+  have hblockEq :
+      block =
+        bpRangeArgMinBlock shape blockSize
+          (macroStart * macroSize) (2 ^ level * macroSize) := by
+    simpa [block] using
+      bpGlobalSparseCellBlock_valid_eq
+        (shape := shape) (blockSize := blockSize)
+        (blockCount := blockCount) (macroSize := macroSize)
+        (macroCount := macroCount) (macroStart := macroStart)
+        (level := level) hmacroSpan hblockSpan
+  have hspan : 0 < 2 ^ level * macroSize := by
+    exact Nat.mul_pos (Nat.pow_pos (by omega : 0 < 2)) hmacroSize
+  have hmem :=
+    bpRangeArgMinBlock_mem shape blockSize
+      (macroStart * macroSize) (2 ^ level * macroSize) hspan
+  have hblockLt : block < blockCount := by
+    rw [hblockEq]
+    omega
+  have hsummary :=
+    summary.minCandidateCosted_erase_arg_excess_of_bounds
+      hblocks hblockLt hcover (hsuperCount hblockLt)
+  have hwitness :=
+    bpRangeWitness_eq_of_bpRangeArgMinBlock
+      shape blockSize (macroStart * macroSize)
+      (2 ^ level * macroSize) hspan
+  unfold spanCandidateCosted
+  rw [Costed.erase_bind]
+  simp [hblockRead]
+  simpa [hblockEq, hwitness] using hsummary
+
+def twoSpanCandidateCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth globalOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (macroStart macroSpanCount : Nat) : Costed (Option (Nat × Nat)) :=
+  let level := Nat.log2 macroSpanCount
+  let spanMacros := bpSparseLogSpan macroSpanCount
+  let rightMacroStart := macroStart + macroSpanCount - spanMacros
+  Costed.bind
+    (globalTable.spanCandidateCosted summary macroStart level)
+    fun left? =>
+      Costed.map
+        (fun right? => bpCandidateMerge? left? right?)
+        (globalTable.spanCandidateCosted summary rightMacroStart level)
+
+theorem twoSpanCandidateCosted_cost_le_ten
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth globalOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (macroStart macroSpanCount : Nat) :
+    (globalTable.twoSpanCandidateCosted summary macroStart
+      macroSpanCount).cost <= 10 := by
+  unfold twoSpanCandidateCosted
+  have hleft :=
+    globalTable.spanCandidateCosted_cost_le_five summary macroStart
+      (Nat.log2 macroSpanCount)
+  have hright :=
+    globalTable.spanCandidateCosted_cost_le_five summary
+      (macroStart + macroSpanCount - bpSparseLogSpan macroSpanCount)
+      (Nat.log2 macroSpanCount)
+  simp [Costed.bind, Costed.map] at hleft hright ⊢
+  omega
+
+theorem twoSpanCandidateCosted_erase_sparse_exact
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth globalOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead
+      macroStart macroSpanCount : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (hcount : 0 < macroSpanCount)
+    (hmacroSize : 0 < macroSize)
+    (hlevel : Nat.log2 macroSpanCount < levelCount)
+    (hmacro : macroStart < macroCount)
+    (hmacroCount : macroStart + macroSpanCount <= macroCount)
+    (hblockCount : macroStart * macroSize + macroSpanCount * macroSize <=
+      blockCount)
+    (hblocks : 0 < blocksPerSuper)
+    (hcover : blockCount * blockSize <= shape.bpCode.length)
+    (hsuperCount :
+      forall {block : Nat}, block < blockCount ->
+        block / blocksPerSuper < superCount) :
+    (globalTable.twoSpanCandidateCosted summary macroStart
+        macroSpanCount).erase =
+      some
+        (bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize
+            (bpSparseTwoSpanArgMinBlock shape blockSize
+              (macroStart * macroSize) (macroSpanCount * macroSize)
+              (bpSparseLogSpan macroSpanCount * macroSize))),
+          bpBlockArgMinPrefixPos shape blockSize
+            (bpSparseTwoSpanArgMinBlock shape blockSize
+              (macroStart * macroSize) (macroSpanCount * macroSize)
+              (bpSparseLogSpan macroSpanCount * macroSize))) := by
+  let level := Nat.log2 macroSpanCount
+  let spanMacros := bpSparseLogSpan macroSpanCount
+  let rightMacroStart := macroStart + macroSpanCount - spanMacros
+  have hspanMacrosPos : 0 < spanMacros := by
+    simpa [spanMacros] using bpSparseLogSpan_pos macroSpanCount
+  have hspanMacrosLe : spanMacros <= macroSpanCount := by
+    simpa [spanMacros] using bpSparseLogSpan_le_self hcount
+  have hspanBlocksPos : 0 < spanMacros * macroSize := by
+    exact Nat.mul_pos hspanMacrosPos hmacroSize
+  have hspanEq : spanMacros = 2 ^ level := by
+    simp [spanMacros, level, bpSparseLogSpan]
+  have hleftMacroSpan : macroStart + 2 ^ level <= macroCount := by
+    rw [← hspanEq]
+    omega
+  have hleftBlockSpan :
+      macroStart * macroSize + 2 ^ level * macroSize <= blockCount := by
+    rw [← hspanEq]
+    have hspanBlocksLe :
+        spanMacros * macroSize <= macroSpanCount * macroSize :=
+      Nat.mul_le_mul_right macroSize hspanMacrosLe
+    omega
+  have hrightMacro : rightMacroStart < macroCount := by
+    have hrightSpan : rightMacroStart + spanMacros <= macroCount := by
+      omega
+    omega
+  have hrightMacroSpan :
+      rightMacroStart + 2 ^ level <= macroCount := by
+    rw [← hspanEq]
+    omega
+  have hrightBlockSpan :
+      rightMacroStart * macroSize + 2 ^ level * macroSize <=
+        blockCount := by
+    rw [← hspanEq]
+    have hrightEnd :
+        rightMacroStart * macroSize + spanMacros * macroSize =
+          macroStart * macroSize + macroSpanCount * macroSize := by
+      have hrightAdd : rightMacroStart + spanMacros =
+          macroStart + macroSpanCount := by
+        omega
+      calc
+        rightMacroStart * macroSize + spanMacros * macroSize =
+            (rightMacroStart + spanMacros) * macroSize := by
+          rw [Nat.add_mul]
+        _ = (macroStart + macroSpanCount) * macroSize := by
+          rw [hrightAdd]
+        _ = macroStart * macroSize + macroSpanCount * macroSize := by
+          rw [Nat.add_mul]
+    simpa [hrightEnd] using hblockCount
+  have hrightStart :
+      rightMacroStart * macroSize =
+        macroStart * macroSize + macroSpanCount * macroSize -
+          spanMacros * macroSize := by
+    have hrightEnd :
+        rightMacroStart * macroSize + spanMacros * macroSize =
+          macroStart * macroSize + macroSpanCount * macroSize := by
+      have hrightAdd : rightMacroStart + spanMacros =
+          macroStart + macroSpanCount := by
+        omega
+      calc
+        rightMacroStart * macroSize + spanMacros * macroSize =
+            (rightMacroStart + spanMacros) * macroSize := by
+          rw [Nat.add_mul]
+        _ = (macroStart + macroSpanCount) * macroSize := by
+          rw [hrightAdd]
+        _ = macroStart * macroSize + macroSpanCount * macroSize := by
+          rw [Nat.add_mul]
+    omega
+  have hleftExact :=
+    globalTable.spanCandidateCosted_erase_exact
+      summary hlevel hmacro hmacroSize hleftMacroSpan hleftBlockSpan
+      hblocks hcover hsuperCount
+  have hrightExact :=
+    globalTable.spanCandidateCosted_erase_exact
+      summary hlevel hrightMacro hmacroSize hrightMacroSpan
+      hrightBlockSpan hblocks hcover hsuperCount
+  have hrightErase :
+      (globalTable.spanCandidateCosted summary
+          (macroStart + macroSpanCount - bpSparseLogSpan macroSpanCount)
+          (Nat.log2 macroSpanCount)).erase =
+        some
+          (bpRangeMinExcess shape blockSize
+            ((macroStart + macroSpanCount -
+              bpSparseLogSpan macroSpanCount) * macroSize)
+            (2 ^ Nat.log2 macroSpanCount * macroSize),
+            bpRangeArgMinPrefixPos shape blockSize
+              ((macroStart + macroSpanCount -
+                bpSparseLogSpan macroSpanCount) * macroSize)
+              (2 ^ Nat.log2 macroSpanCount * macroSize)) := by
+    simpa [rightMacroStart, spanMacros, level] using hrightExact
+  have hmerge :=
+    bpCandidateMerge?_bpSparseTwoSpanArgMinBlock
+      shape blockSize (macroStart * macroSize)
+      (macroSpanCount * macroSize) (spanMacros * macroSize)
+      hspanBlocksPos
+  unfold twoSpanCandidateCosted
+  rw [Costed.erase_bind]
+  simp [hleftExact]
+  simp [Costed.map, hrightErase]
+  simpa [spanMacros, level, rightMacroStart, hrightStart,
+    Nat.mul_assoc] using hmerge
+
+theorem twoSpanCandidateCosted_erase_rangeWitness_exact
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth globalOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead
+      macroStart macroSpanCount : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (hcount : 0 < macroSpanCount)
+    (hmacroSize : 0 < macroSize)
+    (hlevel : Nat.log2 macroSpanCount < levelCount)
+    (hmacro : macroStart < macroCount)
+    (hmacroCount : macroStart + macroSpanCount <= macroCount)
+    (hblockCount : macroStart * macroSize + macroSpanCount * macroSize <=
+      blockCount)
+    (hblocks : 0 < blocksPerSuper)
+    (hcover : blockCount * blockSize <= shape.bpCode.length)
+    (hsuperCount :
+      forall {block : Nat}, block < blockCount ->
+        block / blocksPerSuper < superCount) :
+    (globalTable.twoSpanCandidateCosted summary macroStart
+        macroSpanCount).erase =
+      some
+        (bpRangeMinExcess shape blockSize
+          (macroStart * macroSize) (macroSpanCount * macroSize),
+          bpRangeArgMinPrefixPos shape blockSize
+            (macroStart * macroSize) (macroSpanCount * macroSize)) := by
+  let spanMacros := bpSparseLogSpan macroSpanCount
+  have hselector :=
+    globalTable.twoSpanCandidateCosted_erase_sparse_exact
+      summary hcount hmacroSize hlevel hmacro hmacroCount hblockCount
+      hblocks hcover hsuperCount
+  have hspanPos : 0 < spanMacros * macroSize := by
+    exact Nat.mul_pos
+      (by simpa [spanMacros] using bpSparseLogSpan_pos macroSpanCount)
+      hmacroSize
+  have hspanLe : spanMacros * macroSize <= macroSpanCount * macroSize :=
+    Nat.mul_le_mul_right macroSize
+      (by simpa [spanMacros] using bpSparseLogSpan_le_self hcount)
+  have hcoverSpan :
+      macroSpanCount * macroSize <= 2 * (spanMacros * macroSize) := by
+    have hmacroCover :
+        macroSpanCount <= 2 * spanMacros := by
+      simpa [spanMacros] using self_le_two_mul_bpSparseLogSpan hcount
+    have hmul :=
+      Nat.mul_le_mul_right macroSize hmacroCover
+    simpa [Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hmul
+  have hwitness :=
+    bpRangeWitness_eq_of_bpSparseTwoSpanArgMinBlock
+      shape blockSize (macroStart * macroSize)
+      (macroSpanCount * macroSize) (spanMacros * macroSize)
+      hspanPos hspanLe hcoverSpan
+  simpa [spanMacros, hwitness] using hselector
+
+end PayloadLiveBPGlobalSparseBlockTable
+
+theorem bpLocalSparseOffsetEntries_length
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount macroSize macroCount levelCount : Nat) :
+    (bpLocalSparseOffsetEntries shape blockSize blockCount macroSize
+      macroCount levelCount).length =
+      macroCount * (levelCount * macroSize) := by
+  simp [bpLocalSparseOffsetEntries]
+
+def concreteBPLocalSparseOffsetTable
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount macroSize macroCount levelCount
+      offsetWidth : Nat)
+    (hwidth : macroSize < 2 ^ offsetWidth) :
+    PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+      macroSize macroCount levelCount offsetWidth
+      ((macroCount * (levelCount * macroSize)) * offsetWidth) where
+  table :=
+    FixedWidthNatTable.ofEntries
+      (bpLocalSparseOffsetEntries shape blockSize blockCount macroSize
+        macroCount levelCount) offsetWidth
+      (bpLocalSparseOffsetEntries_mem_bound hwidth)
+  payload_length_eq := by
+    simpa [bpLocalSparseOffsetEntries_length] using
+      (FixedWidthNatTable.ofEntries
+        (bpLocalSparseOffsetEntries shape blockSize blockCount macroSize
+          macroCount levelCount) offsetWidth
+        (bpLocalSparseOffsetEntries_mem_bound hwidth)).payload_length
+
+theorem bpGlobalSparseBlockEntries_length
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount macroSize macroCount levelCount : Nat) :
+    (bpGlobalSparseBlockEntries shape blockSize blockCount macroSize
+      macroCount levelCount).length =
+      levelCount * macroCount := by
+  simp [bpGlobalSparseBlockEntries]
+
+def concreteBPGlobalSparseBlockTable
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount macroSize macroCount levelCount
+      blockWidth : Nat)
+    (hmacroSize : 0 < macroSize)
+    (hwidth : blockCount < 2 ^ blockWidth) :
+    PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+      macroSize macroCount levelCount blockWidth
+      ((levelCount * macroCount) * blockWidth) where
+  table :=
+    FixedWidthNatTable.ofEntries
+      (bpGlobalSparseBlockEntries shape blockSize blockCount macroSize
+        macroCount levelCount) blockWidth
+      (bpGlobalSparseBlockEntries_mem_bound hmacroSize hwidth)
+  payload_length_eq := by
+    simpa [bpGlobalSparseBlockEntries_length] using
+      (FixedWidthNatTable.ofEntries
+        (bpGlobalSparseBlockEntries shape blockSize blockCount macroSize
+          macroCount levelCount) blockWidth
+        (bpGlobalSparseBlockEntries_mem_bound hmacroSize hwidth)).payload_length
+
+def bpTwoLevelCrossMacroCandidateCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (macroStart localStart middleMacroCount rightCount : Nat) :
+    Costed (Option (Nat × Nat)) :=
+  let leftCount := macroSize - localStart
+  let rightMacroStart := macroStart + 1 + middleMacroCount
+  Costed.bind
+    (localTable.twoSpanCandidateCosted summary macroStart localStart
+      leftCount)
+    fun left? =>
+      Costed.bind
+        (globalTable.twoSpanCandidateCosted summary (macroStart + 1)
+          middleMacroCount)
+        fun middle? =>
+          Costed.map
+            (fun right? => bpCandidateMerge3? left? middle? right?)
+            (localTable.twoSpanCandidateCosted summary rightMacroStart 0
+              rightCount)
+
+def bpTwoLevelAdjacentMacroCandidateCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead blocksPerSuper superCount superWidth
+      relativeWidth summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (macroStart localStart rightCount : Nat) : Costed (Option (Nat × Nat)) :=
+  let leftCount := macroSize - localStart
+  Costed.bind
+    (localTable.twoSpanCandidateCosted summary macroStart localStart
+      leftCount)
+    fun left? =>
+      Costed.map
+        (fun right? => bpCandidateMerge? left? right?)
+        (localTable.twoSpanCandidateCosted summary (macroStart + 1) 0
+          rightCount)
+
+theorem bpTwoLevelAdjacentMacroCandidateCosted_cost_le_twenty
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead blocksPerSuper superCount superWidth
+      relativeWidth summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (macroStart localStart rightCount : Nat) :
+    (bpTwoLevelAdjacentMacroCandidateCosted localTable summary macroStart
+      localStart rightCount).cost <= 20 := by
+  unfold bpTwoLevelAdjacentMacroCandidateCosted
+  have hleft :=
+    localTable.twoSpanCandidateCosted_cost_le_ten summary macroStart
+      localStart (macroSize - localStart)
+  have hright :=
+    localTable.twoSpanCandidateCosted_cost_le_ten summary (macroStart + 1)
+      0 rightCount
+  simp [Costed.bind, Costed.map] at hleft hright ⊢
+  omega
+
+theorem bpTwoLevelAdjacentMacroCandidateCosted_erase_exact
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead blocksPerSuper superCount superWidth
+      relativeWidth summaryOverhead macroStart localStart
+      rightCount : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (hmacroSize : 0 < macroSize)
+    (hlocalStart : localStart < macroSize)
+    (hrightCount : 0 < rightCount)
+    (hrightLe : rightCount <= macroSize)
+    (hleftLevel : Nat.log2 (macroSize - localStart) < localLevelCount)
+    (hrightLevel : Nat.log2 rightCount < localLevelCount)
+    (hmacroStart : macroStart < macroCount)
+    (hrightMacro : macroStart + 1 < macroCount)
+    (hblockCount :
+      macroStart * macroSize + localStart + (macroSize - localStart) +
+          rightCount <= blockCount)
+    (hblocks : 0 < blocksPerSuper)
+    (hcover : blockCount * blockSize <= shape.bpCode.length)
+    (hsuperCount :
+      forall {block : Nat}, block < blockCount ->
+        block / blocksPerSuper < superCount) :
+    (bpTwoLevelAdjacentMacroCandidateCosted localTable summary macroStart
+        localStart rightCount).erase =
+      some
+        (bpRangeMinExcess shape blockSize
+          (macroStart * macroSize + localStart)
+          ((macroSize - localStart) + rightCount),
+          bpRangeArgMinPrefixPos shape blockSize
+            (macroStart * macroSize + localStart)
+            ((macroSize - localStart) + rightCount)) := by
+  let leftCount := macroSize - localStart
+  let startBlock := macroStart * macroSize + localStart
+  have hleftCount : 0 < leftCount := by
+    omega
+  have hleftEnd :
+      startBlock + leftCount = (macroStart + 1) * macroSize := by
+    have hsucc :
+        macroStart * macroSize + macroSize =
+          (macroStart + 1) * macroSize := by
+      simpa using (Nat.succ_mul macroStart macroSize).symm
+    unfold startBlock leftCount
+    omega
+  have hleftBlockCount :
+      macroStart * macroSize + localStart + leftCount <= blockCount := by
+    unfold leftCount
+    omega
+  have hrightBlockCount :
+      (macroStart + 1) * macroSize + rightCount <= blockCount := by
+    omega
+  have hleftExact :=
+    localTable.twoSpanCandidateCosted_erase_rangeWitness_exact
+      summary hleftCount hmacroStart hleftLevel hlocalStart
+      (by
+        unfold leftCount
+        omega)
+      hleftBlockCount hblocks hcover hsuperCount
+  have hleftErase :
+      (localTable.twoSpanCandidateCosted summary macroStart localStart
+          (macroSize - localStart)).erase =
+        some
+          (bpRangeMinExcess shape blockSize
+            (macroStart * macroSize + localStart)
+            (macroSize - localStart),
+            bpRangeArgMinPrefixPos shape blockSize
+              (macroStart * macroSize + localStart)
+              (macroSize - localStart)) := by
+    simpa [leftCount] using hleftExact
+  have hrightExact :=
+    localTable.twoSpanCandidateCosted_erase_rangeWitness_exact
+      summary hrightCount hrightMacro hrightLevel
+      (by omega : 0 < macroSize)
+      (by simpa using hrightLe)
+      hrightBlockCount hblocks hcover hsuperCount
+  have hrightErase :
+      (localTable.twoSpanCandidateCosted summary (macroStart + 1) 0
+          rightCount).erase =
+        some
+          (bpRangeMinExcess shape blockSize
+            ((macroStart + 1) * macroSize) rightCount,
+            bpRangeArgMinPrefixPos shape blockSize
+              ((macroStart + 1) * macroSize) rightCount) := by
+    simpa using hrightExact
+  have hmerge :=
+    bpCandidateMerge?_adjacentRangeWitness
+      shape blockSize startBlock leftCount rightCount
+      hleftCount hrightCount
+  unfold bpTwoLevelAdjacentMacroCandidateCosted
+  simp [Costed.erase_bind, Costed.map, hleftErase, hrightErase]
+  simpa [startBlock, leftCount, hleftEnd, Nat.add_assoc] using hmerge
+
+def bpTwoLevelLeftMiddleMacroCandidateCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (macroStart localStart middleMacroCount : Nat) :
+    Costed (Option (Nat × Nat)) :=
+  let leftCount := macroSize - localStart
+  Costed.bind
+    (localTable.twoSpanCandidateCosted summary macroStart localStart
+      leftCount)
+    fun left? =>
+      Costed.map
+        (fun middle? => bpCandidateMerge? left? middle?)
+        (globalTable.twoSpanCandidateCosted summary (macroStart + 1)
+          middleMacroCount)
+
+theorem bpTwoLevelLeftMiddleMacroCandidateCosted_cost_le_twenty
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (macroStart localStart middleMacroCount : Nat) :
+    (bpTwoLevelLeftMiddleMacroCandidateCosted localTable globalTable
+      summary macroStart localStart middleMacroCount).cost <= 20 := by
+  unfold bpTwoLevelLeftMiddleMacroCandidateCosted
+  have hleft :=
+    localTable.twoSpanCandidateCosted_cost_le_ten summary macroStart
+      localStart (macroSize - localStart)
+  have hmiddle :=
+    globalTable.twoSpanCandidateCosted_cost_le_ten summary (macroStart + 1)
+      middleMacroCount
+  simp [Costed.bind, Costed.map] at hleft hmiddle ⊢
+  omega
+
+theorem bpTwoLevelLeftMiddleMacroCandidateCosted_erase_exact
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead macroStart localStart middleMacroCount : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (hmacroSize : 0 < macroSize)
+    (hlocalStart : localStart < macroSize)
+    (hmiddleCount : 0 < middleMacroCount)
+    (hleftLevel : Nat.log2 (macroSize - localStart) < localLevelCount)
+    (hmiddleLevel : Nat.log2 middleMacroCount < globalLevelCount)
+    (hmacroStart : macroStart < macroCount)
+    (hmiddleEnd : macroStart + 1 + middleMacroCount <= macroCount)
+    (hblockCount :
+      macroStart * macroSize + localStart + (macroSize - localStart) +
+          middleMacroCount * macroSize <= blockCount)
+    (hblocks : 0 < blocksPerSuper)
+    (hcover : blockCount * blockSize <= shape.bpCode.length)
+    (hsuperCount :
+      forall {block : Nat}, block < blockCount ->
+        block / blocksPerSuper < superCount) :
+    (bpTwoLevelLeftMiddleMacroCandidateCosted localTable globalTable
+        summary macroStart localStart middleMacroCount).erase =
+      some
+        (bpRangeMinExcess shape blockSize
+          (macroStart * macroSize + localStart)
+          ((macroSize - localStart) + middleMacroCount * macroSize),
+          bpRangeArgMinPrefixPos shape blockSize
+            (macroStart * macroSize + localStart)
+            ((macroSize - localStart) + middleMacroCount * macroSize)) := by
+  let leftCount := macroSize - localStart
+  let middleCount := middleMacroCount * macroSize
+  let startBlock := macroStart * macroSize + localStart
+  have hleftCount : 0 < leftCount := by
+    omega
+  have hmiddleBlocks : 0 < middleCount := by
+    exact Nat.mul_pos hmiddleCount hmacroSize
+  have hleftEnd :
+      startBlock + leftCount = (macroStart + 1) * macroSize := by
+    have hsucc :
+        macroStart * macroSize + macroSize =
+          (macroStart + 1) * macroSize := by
+      simpa using (Nat.succ_mul macroStart macroSize).symm
+    unfold startBlock leftCount
+    omega
+  have hleftBlockCount :
+      macroStart * macroSize + localStart + leftCount <= blockCount := by
+    unfold leftCount
+    omega
+  have hmiddleBlockCount :
+      (macroStart + 1) * macroSize + middleMacroCount * macroSize <=
+        blockCount := by
+    have hmidEnd :
+        (macroStart + 1) * macroSize + middleMacroCount * macroSize =
+          macroStart * macroSize + (macroSize - localStart) +
+              middleMacroCount * macroSize + localStart := by
+      have hsucc :
+          macroStart * macroSize + macroSize =
+            (macroStart + 1) * macroSize := by
+        simpa using (Nat.succ_mul macroStart macroSize).symm
+      omega
+    omega
+  have hleftExact :=
+    localTable.twoSpanCandidateCosted_erase_rangeWitness_exact
+      summary hleftCount hmacroStart hleftLevel hlocalStart
+      (by
+        unfold leftCount
+        omega)
+      hleftBlockCount hblocks hcover hsuperCount
+  have hleftErase :
+      (localTable.twoSpanCandidateCosted summary macroStart localStart
+          (macroSize - localStart)).erase =
+        some
+          (bpRangeMinExcess shape blockSize
+            (macroStart * macroSize + localStart)
+            (macroSize - localStart),
+            bpRangeArgMinPrefixPos shape blockSize
+              (macroStart * macroSize + localStart)
+              (macroSize - localStart)) := by
+    simpa [leftCount] using hleftExact
+  have hmiddleExact :=
+    globalTable.twoSpanCandidateCosted_erase_rangeWitness_exact
+      summary hmiddleCount hmacroSize hmiddleLevel
+      (by omega : macroStart + 1 < macroCount)
+      hmiddleEnd hmiddleBlockCount hblocks hcover hsuperCount
+  have hmiddleErase :
+      (globalTable.twoSpanCandidateCosted summary (macroStart + 1)
+          middleMacroCount).erase =
+        some
+          (bpRangeMinExcess shape blockSize
+            ((macroStart + 1) * macroSize)
+            (middleMacroCount * macroSize),
+            bpRangeArgMinPrefixPos shape blockSize
+              ((macroStart + 1) * macroSize)
+              (middleMacroCount * macroSize)) := by
+    simpa [middleCount] using hmiddleExact
+  have hmerge :=
+    bpCandidateMerge?_adjacentRangeWitness
+      shape blockSize startBlock leftCount middleCount
+      hleftCount hmiddleBlocks
+  unfold bpTwoLevelLeftMiddleMacroCandidateCosted
+  simp [Costed.erase_bind, Costed.map, hleftErase, hmiddleErase]
+  simpa [startBlock, leftCount, middleCount, hleftEnd, Nat.add_assoc] using
+    hmerge
+
+theorem bpTwoLevelCrossMacroCandidateCosted_cost_le_thirty
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (macroStart localStart middleMacroCount rightCount : Nat) :
+    (bpTwoLevelCrossMacroCandidateCosted localTable globalTable summary
+      macroStart localStart middleMacroCount rightCount).cost <= 30 := by
+  unfold bpTwoLevelCrossMacroCandidateCosted
+  have hleft :=
+    localTable.twoSpanCandidateCosted_cost_le_ten summary macroStart
+      localStart (macroSize - localStart)
+  have hmiddle :=
+    globalTable.twoSpanCandidateCosted_cost_le_ten summary (macroStart + 1)
+      middleMacroCount
+  have hright :=
+    localTable.twoSpanCandidateCosted_cost_le_ten summary
+      (macroStart + 1 + middleMacroCount) 0 rightCount
+  simp [Costed.bind, Costed.map] at hleft hmiddle hright ⊢
+  omega
+
+theorem bpTwoLevelCrossMacroCandidateCosted_erase_exact
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead macroStart localStart middleMacroCount
+      rightCount : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (hmacroSize : 0 < macroSize)
+    (hlocalStart : localStart < macroSize)
+    (hmiddleCount : 0 < middleMacroCount)
+    (hrightCount : 0 < rightCount)
+    (hrightLe : rightCount <= macroSize)
+    (hleftLevel : Nat.log2 (macroSize - localStart) < localLevelCount)
+    (hmiddleLevel : Nat.log2 middleMacroCount < globalLevelCount)
+    (hrightLevel : Nat.log2 rightCount < localLevelCount)
+    (hmacroStart : macroStart < macroCount)
+    (hrightMacro : macroStart + 1 + middleMacroCount < macroCount)
+    (hblockCount :
+      macroStart * macroSize + localStart + (macroSize - localStart) +
+          middleMacroCount * macroSize + rightCount <= blockCount)
+    (hblocks : 0 < blocksPerSuper)
+    (hcover : blockCount * blockSize <= shape.bpCode.length)
+    (hsuperCount :
+      forall {block : Nat}, block < blockCount ->
+        block / blocksPerSuper < superCount) :
+    (bpTwoLevelCrossMacroCandidateCosted localTable globalTable summary
+        macroStart localStart middleMacroCount rightCount).erase =
+      some
+        (bpRangeMinExcess shape blockSize
+          (macroStart * macroSize + localStart)
+          ((macroSize - localStart) +
+            middleMacroCount * macroSize + rightCount),
+          bpRangeArgMinPrefixPos shape blockSize
+            (macroStart * macroSize + localStart)
+            ((macroSize - localStart) +
+              middleMacroCount * macroSize + rightCount)) := by
+  let leftCount := macroSize - localStart
+  let middleCount := middleMacroCount * macroSize
+  let rightMacroStart := macroStart + 1 + middleMacroCount
+  let startBlock := macroStart * macroSize + localStart
+  have hleftCount : 0 < leftCount := by
+    omega
+  have hmiddleBlocks : 0 < middleCount := by
+    exact Nat.mul_pos hmiddleCount hmacroSize
+  have hleftEnd :
+      startBlock + leftCount = (macroStart + 1) * macroSize := by
+    have hsucc :
+        macroStart * macroSize + macroSize =
+          (macroStart + 1) * macroSize := by
+      simpa using (Nat.succ_mul macroStart macroSize).symm
+    unfold startBlock leftCount
+    omega
+  have hrightStartEq :
+      (macroStart + 1) * macroSize + middleCount =
+        rightMacroStart * macroSize := by
+    unfold middleCount rightMacroStart
+    rw [← Nat.add_mul]
+  have hleftBlockCount :
+      macroStart * macroSize + localStart + leftCount <= blockCount := by
+    unfold leftCount
+    omega
+  have hmiddleBlockCount :
+      (macroStart + 1) * macroSize + middleMacroCount * macroSize <=
+        blockCount := by
+    have hmidEnd :
+        (macroStart + 1) * macroSize + middleMacroCount * macroSize =
+          macroStart * macroSize + (macroSize - localStart) +
+              middleMacroCount * macroSize + localStart := by
+      have hsucc :
+          macroStart * macroSize + macroSize =
+            (macroStart + 1) * macroSize := by
+        simpa using (Nat.succ_mul macroStart macroSize).symm
+      omega
+    omega
+  have hrightBlockCount :
+      rightMacroStart * macroSize + rightCount <= blockCount := by
+    have hrightStart' :
+        rightMacroStart * macroSize =
+          (macroStart + 1) * macroSize + middleMacroCount * macroSize := by
+      simpa [rightMacroStart] using hrightStartEq.symm
+    omega
+  have hleftExact :=
+    localTable.twoSpanCandidateCosted_erase_rangeWitness_exact
+      summary hleftCount hmacroStart hleftLevel hlocalStart
+      (by
+        unfold leftCount
+        omega)
+      hleftBlockCount hblocks hcover hsuperCount
+  have hleftErase :
+      (localTable.twoSpanCandidateCosted summary macroStart localStart
+          (macroSize - localStart)).erase =
+        some
+          (bpRangeMinExcess shape blockSize
+            (macroStart * macroSize + localStart)
+            (macroSize - localStart),
+            bpRangeArgMinPrefixPos shape blockSize
+              (macroStart * macroSize + localStart)
+              (macroSize - localStart)) := by
+    simpa [leftCount] using hleftExact
+  have hmiddleExact :=
+    globalTable.twoSpanCandidateCosted_erase_rangeWitness_exact
+      summary hmiddleCount hmacroSize hmiddleLevel
+      (by omega : macroStart + 1 < macroCount)
+      (by omega : macroStart + 1 + middleMacroCount <= macroCount)
+      hmiddleBlockCount hblocks hcover hsuperCount
+  have hmiddleErase :
+      (globalTable.twoSpanCandidateCosted summary (macroStart + 1)
+          middleMacroCount).erase =
+        some
+          (bpRangeMinExcess shape blockSize
+            ((macroStart + 1) * macroSize)
+            (middleMacroCount * macroSize),
+            bpRangeArgMinPrefixPos shape blockSize
+              ((macroStart + 1) * macroSize)
+              (middleMacroCount * macroSize)) := by
+    simpa using hmiddleExact
+  have hrightExact :=
+    localTable.twoSpanCandidateCosted_erase_rangeWitness_exact
+      summary hrightCount
+      (by simpa [rightMacroStart] using hrightMacro)
+      hrightLevel
+      (by omega : 0 < macroSize)
+      (by simpa using hrightLe)
+      (by
+        simpa [rightMacroStart] using hrightBlockCount)
+      hblocks hcover hsuperCount
+  have hrightErase :
+      (localTable.twoSpanCandidateCosted summary
+          (macroStart + 1 + middleMacroCount) 0 rightCount).erase =
+        some
+          (bpRangeMinExcess shape blockSize
+            ((macroStart + 1 + middleMacroCount) * macroSize)
+            rightCount,
+            bpRangeArgMinPrefixPos shape blockSize
+              ((macroStart + 1 + middleMacroCount) * macroSize)
+              rightCount) := by
+    simpa [rightMacroStart] using hrightExact
+  have hmerge :=
+    bpCandidateMerge3?_threeAdjacentRangeWitness
+      shape blockSize startBlock leftCount middleCount rightCount
+      hleftCount hmiddleBlocks hrightCount
+  unfold bpTwoLevelCrossMacroCandidateCosted
+  simp [Costed.erase_bind, Costed.map, hleftErase, hmiddleErase,
+    hrightErase]
+  simpa [startBlock, leftCount, middleCount, rightMacroStart, hleftEnd,
+    hrightStartEq, Nat.add_assoc] using hmerge
+
 namespace PayloadLiveBPRelativeMinMaxArgSummaryTable
 
 def rangeScanFromCosted
@@ -8337,7 +11766,1267 @@ theorem rangeScanCosted_erase_exact
       simpa [rangeScanCosted, Costed.bind, hvalue,
         bpRangeArgMinPrefixPos, bpRangeMinExcess] using htail
 
+def rangeArgMinBlockCandidateCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (startBlock count : Nat) : Costed (Option (Nat × Nat)) :=
+  table.minCandidateCosted
+    (bpRangeArgMinBlock shape blockSize startBlock count)
+
+theorem rangeArgMinBlockCandidateCosted_cost_le_four
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (startBlock count : Nat) :
+    (table.rangeArgMinBlockCandidateCosted startBlock count).cost <= 4 := by
+  exact table.minCandidateCosted_cost_le_four
+    (bpRangeArgMinBlock shape blockSize startBlock count)
+
+theorem rangeArgMinBlockCandidateCosted_erase_exact
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead startBlock count : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (hblocks : 0 < blocksPerSuper)
+    (hcover : blockCount * blockSize <= shape.bpCode.length)
+    (hsuperCount :
+      forall {block : Nat}, block < blockCount ->
+        block / blocksPerSuper < superCount)
+    (hcount : 0 < count)
+    (hbound : startBlock + count <= blockCount) :
+    (table.rangeArgMinBlockCandidateCosted startBlock count).erase =
+      some
+        (bpRangeMinExcess shape blockSize startBlock count,
+          bpRangeArgMinPrefixPos shape blockSize startBlock count) := by
+  have hmem :=
+    bpRangeArgMinBlock_mem shape blockSize startBlock count hcount
+  have hblock :
+      bpRangeArgMinBlock shape blockSize startBlock count < blockCount := by
+    omega
+  have hread :=
+    table.minCandidateCosted_erase_arg_excess_of_bounds
+      hblocks hblock hcover (hsuperCount hblock)
+  have hwitness :=
+    bpRangeWitness_eq_of_bpRangeArgMinBlock
+      shape blockSize startBlock count hcount
+  simpa [rangeArgMinBlockCandidateCosted, hwitness] using hread
+
+def optionWordList (word? : Option (List Bool)) : List (List Bool) :=
+  match word? with
+  | some word => [word]
+  | none => []
+
+theorem mem_optionWordList
+    {word? : Option (List Bool)} {word : List Bool}
+    (hmem : word ∈ optionWordList word?) :
+    word? = some word := by
+  cases word? <;> simp [optionWordList] at hmem ⊢
+  exact hmem.symm
+
+def summaryCandidateWordsRead
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (block : Nat) : List (List Bool) :=
+  optionWordList (table.baselineTable.store.words[block / blocksPerSuper]?) ++
+    optionWordList (table.minRelTable.store.words[block]?) ++
+    optionWordList (table.maxRelTable.store.words[block]?) ++
+    optionWordList (table.argOffsetTable.store.words[block]?)
+
+theorem summaryCandidateWordsRead_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead block : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (hsuperMachine :
+      superWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hrelativeMachine :
+      relativeWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    {word : List Bool}
+    (hmem : word ∈ table.summaryCandidateWordsRead block) :
+    word.length <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  have hwords :=
+    table.read_words_length_le_machine hsuperMachine hrelativeMachine
+  simp [summaryCandidateWordsRead, List.mem_append] at hmem
+  rcases hmem with hbaseline | hmin | hmax | harg
+  · exact hwords.1 (mem_optionWordList hbaseline)
+  · exact hwords.2.1 (mem_optionWordList hmin)
+  · exact hwords.2.2.1 (mem_optionWordList hmax)
+  · exact hwords.2.2.2 (mem_optionWordList harg)
+
 end PayloadLiveBPRelativeMinMaxArgSummaryTable
+
+def localSparseOffsetWordRead
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth overhead : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth overhead)
+    (macroIdx localStart level : Nat) : List (List Bool) :=
+  PayloadLiveBPRelativeMinMaxArgSummaryTable.optionWordList
+    (offsetTable.table.store.words[
+      bpLocalSparseCellSlot macroSize levelCount macroIdx localStart level]?)
+
+theorem localSparseOffsetWordRead_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth overhead macroIdx localStart level : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth overhead)
+    (hmachine :
+      offsetWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    {word : List Bool}
+    (hmem :
+      word ∈
+        localSparseOffsetWordRead offsetTable macroIdx localStart level) :
+    word.length <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  have hsome :=
+    PayloadLiveBPRelativeMinMaxArgSummaryTable.mem_optionWordList hmem
+  exact offsetTable.read_word_length_le_machine hmachine hsome
+
+def globalSparseBlockWordRead
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth overhead : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth overhead)
+    (macroStart level : Nat) : List (List Bool) :=
+  PayloadLiveBPRelativeMinMaxArgSummaryTable.optionWordList
+    (globalTable.table.store.words[
+      bpGlobalSparseCellSlot macroCount macroStart level]?)
+
+theorem globalSparseBlockWordRead_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth overhead macroStart level : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth overhead)
+    (hmachine :
+      blockWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    {word : List Bool}
+    (hmem :
+      word ∈ globalSparseBlockWordRead globalTable macroStart level) :
+    word.length <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  have hsome :=
+    PayloadLiveBPRelativeMinMaxArgSummaryTable.mem_optionWordList hmem
+  exact globalTable.read_word_length_le_machine hmachine hsome
+
+def localSpanCandidateWordsRead
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth localOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (macroIdx localStart level : Nat) : List (List Bool) :=
+  let offset :=
+    bpLocalSparseCellOffset shape blockSize blockCount macroSize macroIdx
+      localStart level
+  localSparseOffsetWordRead offsetTable macroIdx localStart level ++
+    summary.summaryCandidateWordsRead (macroIdx * macroSize + offset)
+
+theorem localSpanCandidateWordsRead_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth localOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead
+      macroIdx localStart level : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (hoffsetMachine :
+      offsetWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hsuperMachine :
+      superWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hrelativeMachine :
+      relativeWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    {word : List Bool}
+    (hmem :
+      word ∈
+        localSpanCandidateWordsRead offsetTable summary macroIdx localStart
+          level) :
+    word.length <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  simp [localSpanCandidateWordsRead, List.mem_append] at hmem
+  rcases hmem with hlocal | hsummary
+  · exact
+      localSparseOffsetWordRead_length_le_machine
+        offsetTable hoffsetMachine hlocal
+  · exact
+      summary.summaryCandidateWordsRead_length_le_machine
+        hsuperMachine hrelativeMachine hsummary
+
+def globalSpanCandidateWordsRead
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth globalOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (macroStart level : Nat) : List (List Bool) :=
+  let block :=
+    bpGlobalSparseCellBlock shape blockSize blockCount macroSize macroCount
+      macroStart level
+  globalSparseBlockWordRead globalTable macroStart level ++
+    summary.summaryCandidateWordsRead block
+
+theorem globalSpanCandidateWordsRead_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth globalOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead macroStart level : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (hblockMachine :
+      blockWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hsuperMachine :
+      superWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hrelativeMachine :
+      relativeWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    {word : List Bool}
+    (hmem :
+      word ∈ globalSpanCandidateWordsRead globalTable summary macroStart
+        level) :
+    word.length <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  simp [globalSpanCandidateWordsRead, List.mem_append] at hmem
+  rcases hmem with hglobal | hsummary
+  · exact
+      globalSparseBlockWordRead_length_le_machine
+        globalTable hblockMachine hglobal
+  · exact
+      summary.summaryCandidateWordsRead_length_le_machine
+        hsuperMachine hrelativeMachine hsummary
+
+def localTwoSpanCandidateWordsRead
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth localOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (macroIdx localStart count : Nat) : List (List Bool) :=
+  let level := Nat.log2 count
+  let span := bpSparseLogSpan count
+  localSpanCandidateWordsRead offsetTable summary macroIdx localStart level ++
+    localSpanCandidateWordsRead offsetTable summary macroIdx
+      (localStart + count - span) level
+
+theorem localTwoSpanCandidateWordsRead_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth localOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead
+      macroIdx localStart count : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (hoffsetMachine :
+      offsetWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hsuperMachine :
+      superWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hrelativeMachine :
+      relativeWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    {word : List Bool}
+    (hmem :
+      word ∈
+        localTwoSpanCandidateWordsRead offsetTable summary macroIdx
+          localStart count) :
+    word.length <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  simp [localTwoSpanCandidateWordsRead, List.mem_append] at hmem
+  rcases hmem with hleft | hright
+  · exact
+      localSpanCandidateWordsRead_length_le_machine offsetTable summary
+        hoffsetMachine hsuperMachine hrelativeMachine hleft
+  · exact
+      localSpanCandidateWordsRead_length_le_machine offsetTable summary
+        hoffsetMachine hsuperMachine hrelativeMachine hright
+
+def globalTwoSpanCandidateWordsRead
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth globalOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (macroStart macroSpanCount : Nat) : List (List Bool) :=
+  let level := Nat.log2 macroSpanCount
+  let span := bpSparseLogSpan macroSpanCount
+  globalSpanCandidateWordsRead globalTable summary macroStart level ++
+    globalSpanCandidateWordsRead globalTable summary
+      (macroStart + macroSpanCount - span) level
+
+theorem globalTwoSpanCandidateWordsRead_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth globalOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead
+      macroStart macroSpanCount : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (hblockMachine :
+      blockWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hsuperMachine :
+      superWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hrelativeMachine :
+      relativeWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    {word : List Bool}
+    (hmem :
+      word ∈
+        globalTwoSpanCandidateWordsRead globalTable summary macroStart
+          macroSpanCount) :
+    word.length <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  simp [globalTwoSpanCandidateWordsRead, List.mem_append] at hmem
+  rcases hmem with hleft | hright
+  · exact
+      globalSpanCandidateWordsRead_length_le_machine globalTable summary
+        hblockMachine hsuperMachine hrelativeMachine hleft
+  · exact
+      globalSpanCandidateWordsRead_length_le_machine globalTable summary
+        hblockMachine hsuperMachine hrelativeMachine hright
+
+def bpTwoLevelAdjacentMacroCandidateWordsRead
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead blocksPerSuper superCount superWidth
+      relativeWidth summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (macroStart localStart rightCount : Nat) : List (List Bool) :=
+  let leftCount := macroSize - localStart
+  localTwoSpanCandidateWordsRead localTable summary macroStart localStart
+      leftCount ++
+    localTwoSpanCandidateWordsRead localTable summary (macroStart + 1) 0
+      rightCount
+
+theorem bpTwoLevelAdjacentMacroCandidateWordsRead_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead blocksPerSuper superCount superWidth
+      relativeWidth summaryOverhead macroStart localStart rightCount : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (hoffsetMachine :
+      offsetWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hsuperMachine :
+      superWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hrelativeMachine :
+      relativeWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    {word : List Bool}
+    (hmem :
+      word ∈
+        bpTwoLevelAdjacentMacroCandidateWordsRead localTable summary
+          macroStart localStart rightCount) :
+    word.length <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  simp [bpTwoLevelAdjacentMacroCandidateWordsRead, List.mem_append] at hmem
+  rcases hmem with hleft | hright
+  · exact
+      localTwoSpanCandidateWordsRead_length_le_machine localTable summary
+        hoffsetMachine hsuperMachine hrelativeMachine hleft
+  · exact
+      localTwoSpanCandidateWordsRead_length_le_machine localTable summary
+        hoffsetMachine hsuperMachine hrelativeMachine hright
+
+def bpTwoLevelLeftMiddleMacroCandidateWordsRead
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (macroStart localStart middleMacroCount : Nat) : List (List Bool) :=
+  let leftCount := macroSize - localStart
+  localTwoSpanCandidateWordsRead localTable summary macroStart localStart
+      leftCount ++
+    globalTwoSpanCandidateWordsRead globalTable summary (macroStart + 1)
+      middleMacroCount
+
+theorem bpTwoLevelLeftMiddleMacroCandidateWordsRead_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth summaryOverhead
+      macroStart localStart middleMacroCount : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (hoffsetMachine :
+      offsetWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hblockMachine :
+      blockWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hsuperMachine :
+      superWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hrelativeMachine :
+      relativeWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    {word : List Bool}
+    (hmem :
+      word ∈
+        bpTwoLevelLeftMiddleMacroCandidateWordsRead localTable globalTable
+          summary macroStart localStart middleMacroCount) :
+    word.length <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  simp [bpTwoLevelLeftMiddleMacroCandidateWordsRead, List.mem_append] at hmem
+  rcases hmem with hleft | hmiddle
+  · exact
+      localTwoSpanCandidateWordsRead_length_le_machine localTable summary
+        hoffsetMachine hsuperMachine hrelativeMachine hleft
+  · exact
+      globalTwoSpanCandidateWordsRead_length_le_machine globalTable summary
+        hblockMachine hsuperMachine hrelativeMachine hmiddle
+
+def bpTwoLevelCrossMacroCandidateWordsRead
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (macroStart localStart middleMacroCount rightCount : Nat) :
+    List (List Bool) :=
+  let leftCount := macroSize - localStart
+  let rightMacroStart := macroStart + 1 + middleMacroCount
+  localTwoSpanCandidateWordsRead localTable summary macroStart localStart
+      leftCount ++
+    globalTwoSpanCandidateWordsRead globalTable summary (macroStart + 1)
+      middleMacroCount ++
+    localTwoSpanCandidateWordsRead localTable summary rightMacroStart 0
+      rightCount
+
+theorem bpTwoLevelCrossMacroCandidateWordsRead_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead macroStart localStart middleMacroCount
+      rightCount : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (hoffsetMachine :
+      offsetWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hblockMachine :
+      blockWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hsuperMachine :
+      superWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hrelativeMachine :
+      relativeWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    {word : List Bool}
+    (hmem :
+      word ∈
+        bpTwoLevelCrossMacroCandidateWordsRead localTable globalTable
+          summary macroStart localStart middleMacroCount rightCount) :
+    word.length <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  simp [bpTwoLevelCrossMacroCandidateWordsRead, List.mem_append] at hmem
+  rcases hmem with hleft | hmiddle | hright
+  · exact
+      localTwoSpanCandidateWordsRead_length_le_machine localTable summary
+        hoffsetMachine hsuperMachine hrelativeMachine hleft
+  · exact
+      globalTwoSpanCandidateWordsRead_length_le_machine globalTable summary
+        hblockMachine hsuperMachine hrelativeMachine hmiddle
+  · exact
+      localTwoSpanCandidateWordsRead_length_le_machine localTable summary
+        hoffsetMachine hsuperMachine hrelativeMachine hright
+
+def bpTwoLevelInteriorCandidateCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (startBlock count : Nat) : Costed (Option (Nat × Nat)) :=
+  let macroStart := startBlock / macroSize
+  let localStart := startBlock % macroSize
+  if count = 0 then
+    Costed.pure none
+  else if count <= macroSize - localStart then
+    localTable.twoSpanCandidateCosted summary macroStart localStart count
+  else
+    let leftCount := macroSize - localStart
+    let remaining := count - leftCount
+    let middleMacroCount := remaining / macroSize
+    let rightCount := remaining % macroSize
+    if middleMacroCount = 0 then
+      bpTwoLevelAdjacentMacroCandidateCosted localTable summary
+        macroStart localStart rightCount
+    else if rightCount = 0 then
+      bpTwoLevelLeftMiddleMacroCandidateCosted localTable globalTable
+        summary macroStart localStart middleMacroCount
+    else
+      bpTwoLevelCrossMacroCandidateCosted localTable globalTable summary
+        macroStart localStart middleMacroCount rightCount
+
+theorem bpTwoLevelInteriorCandidateCosted_cost_le_thirty
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (startBlock count : Nat) :
+    (bpTwoLevelInteriorCandidateCosted localTable globalTable summary
+      startBlock count).cost <= 30 := by
+  unfold bpTwoLevelInteriorCandidateCosted
+  by_cases hcount : count = 0
+  · simp [hcount, Costed.pure]
+  · simp [hcount]
+    by_cases hwithin : count <= macroSize - startBlock % macroSize
+    · simp [hwithin]
+      have hlocal :=
+        localTable.twoSpanCandidateCosted_cost_le_ten summary
+          (startBlock / macroSize) (startBlock % macroSize) count
+      omega
+    · simp only [hwithin, if_false]
+      by_cases hmiddle :
+          macroSize = 0 ∨
+            count - (macroSize - startBlock % macroSize) < macroSize
+      · simp [hmiddle]
+        have hadj :=
+          bpTwoLevelAdjacentMacroCandidateCosted_cost_le_twenty
+            localTable summary (startBlock / macroSize)
+            (startBlock % macroSize)
+            ((count - (macroSize - startBlock % macroSize)) % macroSize)
+        omega
+      · simp [hmiddle]
+        by_cases hright :
+            (count - (macroSize - startBlock % macroSize)) % macroSize = 0
+        · simp only [hright, if_true]
+          have hleftMiddle :=
+            bpTwoLevelLeftMiddleMacroCandidateCosted_cost_le_twenty
+              localTable globalTable summary (startBlock / macroSize)
+              (startBlock % macroSize)
+              ((count - (macroSize - startBlock % macroSize)) / macroSize)
+          omega
+        · simp only [hright, if_false]
+          exact
+            bpTwoLevelCrossMacroCandidateCosted_cost_le_thirty
+              localTable globalTable summary (startBlock / macroSize)
+              (startBlock % macroSize)
+              ((count - (macroSize - startBlock % macroSize)) / macroSize)
+              ((count - (macroSize - startBlock % macroSize)) %
+                macroSize)
+
+def bpTwoLevelInteriorCandidateWordsRead
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (startBlock count : Nat) : List (List Bool) :=
+  let macroStart := startBlock / macroSize
+  let localStart := startBlock % macroSize
+  if count = 0 then
+    []
+  else if count <= macroSize - localStart then
+    localTwoSpanCandidateWordsRead localTable summary macroStart localStart
+      count
+  else
+    let leftCount := macroSize - localStart
+    let remaining := count - leftCount
+    let middleMacroCount := remaining / macroSize
+    let rightCount := remaining % macroSize
+    if middleMacroCount = 0 then
+      bpTwoLevelAdjacentMacroCandidateWordsRead localTable summary
+        macroStart localStart rightCount
+    else if rightCount = 0 then
+      bpTwoLevelLeftMiddleMacroCandidateWordsRead localTable globalTable
+        summary macroStart localStart middleMacroCount
+    else
+      bpTwoLevelCrossMacroCandidateWordsRead localTable globalTable summary
+        macroStart localStart middleMacroCount rightCount
+
+theorem bpTwoLevelInteriorCandidateWordsRead_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth summaryOverhead
+      startBlock count : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (hoffsetMachine :
+      offsetWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hblockMachine :
+      blockWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hsuperMachine :
+      superWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hrelativeMachine :
+      relativeWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    {word : List Bool}
+    (hmem :
+      word ∈
+        bpTwoLevelInteriorCandidateWordsRead localTable globalTable summary
+          startBlock count) :
+    word.length <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  unfold bpTwoLevelInteriorCandidateWordsRead at hmem
+  by_cases hcount : count = 0
+  · simp [hcount] at hmem
+  · simp only [hcount, if_false] at hmem
+    by_cases hwithin : count <= macroSize - startBlock % macroSize
+    · simp [hwithin] at hmem
+      exact
+        localTwoSpanCandidateWordsRead_length_le_machine localTable summary
+          hoffsetMachine hsuperMachine hrelativeMachine hmem
+    · simp only [hwithin, if_false] at hmem
+      by_cases hmiddle :
+          macroSize = 0 ∨
+            count - (macroSize - startBlock % macroSize) < macroSize
+      · simp [hmiddle] at hmem
+        exact
+          bpTwoLevelAdjacentMacroCandidateWordsRead_length_le_machine
+            localTable summary hoffsetMachine hsuperMachine
+            hrelativeMachine hmem
+      · simp [hmiddle] at hmem
+        by_cases hright :
+            (count - (macroSize - startBlock % macroSize)) % macroSize = 0
+        · simp only [hright, if_true] at hmem
+          exact
+            bpTwoLevelLeftMiddleMacroCandidateWordsRead_length_le_machine
+              localTable globalTable summary hoffsetMachine hblockMachine
+              hsuperMachine hrelativeMachine hmem
+        · simp only [hright, if_false] at hmem
+          exact
+            bpTwoLevelCrossMacroCandidateWordsRead_length_le_machine
+              localTable globalTable summary hoffsetMachine hblockMachine
+              hsuperMachine hrelativeMachine hmem
+
+theorem bpTwoLevelInteriorCandidateCosted_erase_exact
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead startBlock count : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (hmacroSize : 0 < macroSize)
+    (hcount : 0 < count)
+    (hbound : startBlock + count <= blockCount)
+    (hmacroRange :
+      forall {block : Nat}, block < blockCount ->
+        block / macroSize < macroCount)
+    (hmacroCover : blockCount <= macroCount * macroSize)
+    (hlocalLevel :
+      forall {localCount : Nat}, 0 < localCount ->
+        localCount <= macroSize ->
+          Nat.log2 localCount < localLevelCount)
+    (hglobalLevel :
+      forall {macroSpanCount : Nat}, 0 < macroSpanCount ->
+        macroSpanCount <= macroCount ->
+        Nat.log2 macroSpanCount < globalLevelCount)
+    (hblocks : 0 < blocksPerSuper)
+    (hcover : blockCount * blockSize <= shape.bpCode.length)
+    (hsuperCount :
+      forall {block : Nat}, block < blockCount ->
+        block / blocksPerSuper < superCount) :
+    (bpTwoLevelInteriorCandidateCosted localTable globalTable summary
+      startBlock count).erase =
+      some
+        (bpRangeMinExcess shape blockSize startBlock count,
+          bpRangeArgMinPrefixPos shape blockSize startBlock count) := by
+  let macroStart := startBlock / macroSize
+  let localStart := startBlock % macroSize
+  let leftCount := macroSize - localStart
+  have hlocalStart : localStart < macroSize := by
+    exact Nat.mod_lt startBlock hmacroSize
+  have hstartEq : macroStart * macroSize + localStart = startBlock := by
+    simpa [macroStart, localStart, Nat.mul_comm] using
+      Nat.div_add_mod startBlock macroSize
+  have hstartLt : startBlock < blockCount := by
+    omega
+  have hmacroStart : macroStart < macroCount := by
+    simpa [macroStart] using hmacroRange hstartLt
+  have hnotCount : ¬ count = 0 := by
+    omega
+  unfold bpTwoLevelInteriorCandidateCosted
+  simp only [hnotCount, if_false]
+  by_cases hwithin : count <= macroSize - startBlock % macroSize
+  · have hlocalCount :
+        startBlock % macroSize + count <= macroSize := by
+      omega
+    have hcountLeMacro : count <= macroSize := by
+      omega
+    have hlevel : Nat.log2 count < localLevelCount :=
+      hlocalLevel hcount hcountLeMacro
+    have hblockCount :
+        (startBlock / macroSize) * macroSize +
+            startBlock % macroSize + count <= blockCount := by
+      simpa [macroStart, localStart, hstartEq] using hbound
+    have hexact :=
+      localTable.twoSpanCandidateCosted_erase_rangeWitness_exact
+        summary hcount hmacroStart hlevel hlocalStart hlocalCount
+        hblockCount hblocks hcover hsuperCount
+    simp only [hwithin, if_true]
+    simpa [macroStart, localStart, hstartEq] using hexact
+  · simp only [hwithin, if_false]
+    have hleftCount : 0 < leftCount := by
+      unfold leftCount localStart
+      omega
+    have hleftLt : leftCount < count := by
+      unfold leftCount localStart
+      omega
+    let remaining := count - leftCount
+    let middleMacroCount := remaining / macroSize
+    let rightCount := remaining % macroSize
+    have hremainingPos : 0 < remaining := by
+      unfold remaining
+      omega
+    have hcountEq : count = leftCount + remaining := by
+      unfold remaining
+      omega
+    have hleftEnd :
+        macroStart * macroSize + localStart + leftCount =
+          (macroStart + 1) * macroSize := by
+      have hsucc :
+          macroStart * macroSize + macroSize =
+            (macroStart + 1) * macroSize := by
+        simpa using (Nat.succ_mul macroStart macroSize).symm
+      unfold leftCount
+      omega
+    have hstartCountEq :
+        startBlock + count =
+          macroStart * macroSize + localStart + leftCount + remaining := by
+      omega
+    have hremainingDivMod :
+        remaining = middleMacroCount * macroSize + rightCount := by
+      unfold middleMacroCount rightCount
+      simpa [Nat.mul_comm] using
+        (Nat.div_add_mod remaining macroSize).symm
+    by_cases hmiddleSmall : macroSize = 0 ∨ remaining < macroSize
+    · have hremainingLt : remaining < macroSize := by
+        rcases hmiddleSmall with hzero | hlt
+        · omega
+        · exact hlt
+      have hmiddleZero : middleMacroCount = 0 := by
+        unfold middleMacroCount
+        exact Nat.div_eq_of_lt hremainingLt
+      have hrightEq : rightCount = remaining := by
+        unfold rightCount
+        exact Nat.mod_eq_of_lt hremainingLt
+      have hrightCount : 0 < rightCount := by
+        simpa [hrightEq] using hremainingPos
+      have hrightLe : rightCount <= macroSize := by
+        omega
+      have hrightLevel :
+          Nat.log2 rightCount < localLevelCount :=
+        hlocalLevel hrightCount hrightLe
+      have hrightBlockCount :
+          (macroStart + 1) * macroSize + rightCount <= blockCount := by
+        have hend :
+            startBlock + count =
+              (macroStart + 1) * macroSize + rightCount := by
+          calc
+            startBlock + count =
+                macroStart * macroSize + localStart + leftCount +
+                  remaining := hstartCountEq
+            _ = (macroStart + 1) * macroSize + remaining := by
+                omega
+            _ = (macroStart + 1) * macroSize + rightCount := by
+                simp [hrightEq]
+        omega
+      have hrightMacro : macroStart + 1 < macroCount := by
+        have hrightStartLt :
+            (macroStart + 1) * macroSize < blockCount := by
+          omega
+        have hidx := hmacroRange hrightStartLt
+        have hdiv :
+            ((macroStart + 1) * macroSize) / macroSize =
+              macroStart + 1 := by
+          simpa [Nat.mul_comm] using
+            Nat.mul_div_right (macroStart + 1) hmacroSize
+        simpa [hdiv] using hidx
+      have htotalBlockCount :
+          macroStart * macroSize + localStart + leftCount + rightCount <=
+            blockCount := by
+        have hend :
+            macroStart * macroSize + localStart + leftCount + rightCount =
+              startBlock + count := by
+          omega
+        omega
+      have hexact :=
+        bpTwoLevelAdjacentMacroCandidateCosted_erase_exact
+          localTable summary hmacroSize hlocalStart hrightCount hrightLe
+          (hlocalLevel hleftCount (by omega)) hrightLevel hmacroStart
+          hrightMacro htotalBlockCount hblocks hcover hsuperCount
+      have hmiddleSmall' :
+          macroSize = 0 ∨
+            count - (macroSize - startBlock % macroSize) < macroSize := by
+        simpa [remaining, leftCount, localStart] using hmiddleSmall
+      have hcountAdjacent :
+          (macroSize - localStart) + rightCount = count := by
+        omega
+      simpa [hmiddleSmall', macroStart, localStart, rightCount,
+        remaining, leftCount, hstartEq, hcountAdjacent] using hexact
+    · have hnotRemainingLt : ¬ remaining < macroSize := by
+        intro hlt
+        exact hmiddleSmall (Or.inr hlt)
+      have hmacroLeRemaining : macroSize <= remaining := by
+        exact Nat.le_of_not_gt hnotRemainingLt
+      have hmiddleCount : 0 < middleMacroCount := by
+        unfold middleMacroCount
+        exact Nat.div_pos hmacroLeRemaining hmacroSize
+      have hmiddleSmall' :
+          ¬ (macroSize = 0 ∨
+            count - (macroSize - startBlock % macroSize) < macroSize) := by
+        simpa [remaining, leftCount, localStart] using hmiddleSmall
+      by_cases hrightZero : rightCount = 0
+      · have hremainingEq :
+            remaining = middleMacroCount * macroSize := by
+          simpa [hrightZero] using hremainingDivMod
+        have hendMul :
+            startBlock + count =
+              (macroStart + 1 + middleMacroCount) * macroSize := by
+          calc
+            startBlock + count =
+                macroStart * macroSize + localStart + leftCount +
+                  remaining := hstartCountEq
+            _ = (macroStart + 1) * macroSize + remaining := by
+                omega
+            _ =
+                (macroStart + 1) * macroSize +
+                  middleMacroCount * macroSize := by
+                omega
+            _ = (macroStart + 1 + middleMacroCount) * macroSize := by
+                rw [← Nat.add_mul]
+        have hmiddleEnd :
+            macroStart + 1 + middleMacroCount <= macroCount := by
+          have hmulLe :
+              (macroStart + 1 + middleMacroCount) * macroSize <=
+                macroCount * macroSize := by
+            have hendBound :
+                (macroStart + 1 + middleMacroCount) * macroSize <=
+                  blockCount := by
+              simpa [hendMul] using hbound
+            exact Nat.le_trans hendBound hmacroCover
+          have hmulLe' :
+              macroSize * (macroStart + 1 + middleMacroCount) <=
+                macroSize * macroCount := by
+            simpa [Nat.mul_comm] using hmulLe
+          exact Nat.le_of_mul_le_mul_left hmulLe' hmacroSize
+        have hmiddleLevel :
+            Nat.log2 middleMacroCount < globalLevelCount :=
+          hglobalLevel hmiddleCount
+            (by
+              have hprefix :
+                  middleMacroCount <=
+                    macroStart + 1 + middleMacroCount := by
+                simpa [Nat.add_comm, Nat.add_left_comm, Nat.add_assoc] using
+                  Nat.le_add_right middleMacroCount (macroStart + 1)
+              exact Nat.le_trans hprefix hmiddleEnd)
+        have htotalBlockCount :
+            macroStart * macroSize + localStart + leftCount +
+                middleMacroCount * macroSize <= blockCount := by
+          have hend :
+              macroStart * macroSize + localStart + leftCount +
+                  middleMacroCount * macroSize =
+                startBlock + count := by
+            omega
+          omega
+        have hexact :=
+          bpTwoLevelLeftMiddleMacroCandidateCosted_erase_exact
+            localTable globalTable summary hmacroSize hlocalStart
+            hmiddleCount (hlocalLevel hleftCount (by omega))
+            hmiddleLevel hmacroStart hmiddleEnd htotalBlockCount
+            hblocks hcover hsuperCount
+        have hrightZero' :
+            (count - (macroSize - startBlock % macroSize)) %
+                macroSize = 0 := by
+          simpa [rightCount, remaining, leftCount, localStart] using
+            hrightZero
+        have hcountLeftMiddle :
+            (macroSize - localStart) + middleMacroCount * macroSize =
+              count := by
+          omega
+        simpa [hmiddleSmall', hrightZero', macroStart, localStart,
+          middleMacroCount, remaining, leftCount, hstartEq,
+          hcountLeftMiddle] using hexact
+      · have hrightCountPos : 0 < rightCount := by
+          cases hright : rightCount with
+          | zero =>
+              exact False.elim (hrightZero hright)
+          | succ k =>
+              omega
+        have hrightLe : rightCount <= macroSize := by
+          have hrightLt : rightCount < macroSize := by
+            unfold rightCount
+            exact Nat.mod_lt remaining hmacroSize
+          omega
+        have hrightLevel :
+            Nat.log2 rightCount < localLevelCount :=
+          hlocalLevel hrightCountPos hrightLe
+        have hrightMacro :
+            macroStart + 1 + middleMacroCount < macroCount := by
+          have hrightStartLt :
+              (macroStart + 1 + middleMacroCount) * macroSize <
+                blockCount := by
+            have hend :
+                startBlock + count =
+                  (macroStart + 1 + middleMacroCount) * macroSize +
+                    rightCount := by
+              calc
+                startBlock + count =
+                    macroStart * macroSize + localStart + leftCount +
+                      remaining := hstartCountEq
+                _ = (macroStart + 1) * macroSize + remaining := by
+                    omega
+                _ =
+                    (macroStart + 1) * macroSize +
+                      (middleMacroCount * macroSize + rightCount) := by
+                    omega
+                _ =
+                    (macroStart + 1 + middleMacroCount) * macroSize +
+                      rightCount := by
+                    calc
+                      (macroStart + 1) * macroSize +
+                          (middleMacroCount * macroSize + rightCount) =
+                        ((macroStart + 1) * macroSize +
+                            middleMacroCount * macroSize) + rightCount := by
+                          omega
+                      _ =
+                        (macroStart + 1 + middleMacroCount) * macroSize +
+                          rightCount := by
+                          rw [← Nat.add_mul]
+            omega
+          have hidx := hmacroRange hrightStartLt
+          have hdiv :
+              ((macroStart + 1 + middleMacroCount) * macroSize) /
+                  macroSize =
+                macroStart + 1 + middleMacroCount := by
+            simpa [Nat.mul_comm] using
+              Nat.mul_div_right
+                (macroStart + 1 + middleMacroCount) hmacroSize
+          simpa [hdiv] using hidx
+        have hmiddleLevel :
+            Nat.log2 middleMacroCount < globalLevelCount :=
+          hglobalLevel hmiddleCount
+            (by
+              have hprefix :
+                  middleMacroCount <=
+                    macroStart + 1 + middleMacroCount := by
+                simpa [Nat.add_comm, Nat.add_left_comm, Nat.add_assoc] using
+                  Nat.le_add_right middleMacroCount (macroStart + 1)
+              exact Nat.le_trans hprefix (Nat.le_of_lt hrightMacro))
+        have htotalBlockCount :
+            macroStart * macroSize + localStart + leftCount +
+                middleMacroCount * macroSize + rightCount <= blockCount := by
+          have hend :
+              macroStart * macroSize + localStart + leftCount +
+                  middleMacroCount * macroSize + rightCount =
+                startBlock + count := by
+            omega
+          omega
+        have hexact :=
+          bpTwoLevelCrossMacroCandidateCosted_erase_exact
+            localTable globalTable summary hmacroSize hlocalStart
+            hmiddleCount hrightCountPos hrightLe
+            (hlocalLevel hleftCount (by omega)) hmiddleLevel
+            hrightLevel hmacroStart hrightMacro htotalBlockCount
+            hblocks hcover hsuperCount
+        have hrightZero' :
+            ¬ (count - (macroSize - startBlock % macroSize)) %
+                macroSize = 0 := by
+          intro hzero
+          exact hrightZero
+            (by
+              simpa [rightCount, remaining, leftCount, localStart] using
+                hzero)
+        have hcountCross :
+            (macroSize - localStart) +
+                middleMacroCount * macroSize + rightCount = count := by
+          omega
+        simpa [hmiddleSmall', hrightZero', macroStart, localStart,
+          middleMacroCount, rightCount, remaining, leftCount, hstartEq,
+          hcountCross] using hexact
+
+theorem concreteBPTwoLevelCrossMacroCandidate_profile
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth globalLevelCount blockWidth blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (hoffsetWidth : macroSize < 2 ^ offsetWidth)
+    (hmacroSize : 0 < macroSize)
+    (hblockWidth : blockCount < 2 ^ blockWidth)
+    (hoffsetMachine :
+      offsetWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hblockMachine :
+      blockWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hsuperMachine :
+      superWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hrelativeMachine :
+      relativeWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hblocks : 0 < blocksPerSuper)
+    (hcover : blockCount * blockSize <= shape.bpCode.length)
+    (hsuperCount :
+      forall {block : Nat}, block < blockCount ->
+        block / blocksPerSuper < superCount) :
+    let localTable :=
+      concreteBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth hoffsetWidth
+    let globalTable :=
+      concreteBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth hmacroSize
+        hblockWidth
+    localTable.payload.length =
+        (macroCount * (localLevelCount * macroSize)) * offsetWidth /\
+      globalTable.payload.length =
+        (globalLevelCount * macroCount) * blockWidth /\
+      (forall macroStart localStart middleMacroCount rightCount,
+        (bpTwoLevelCrossMacroCandidateCosted localTable globalTable summary
+          macroStart localStart middleMacroCount rightCount).cost <= 30) /\
+      (forall {macroStart localStart middleMacroCount rightCount : Nat},
+        localStart < macroSize ->
+          0 < middleMacroCount ->
+            0 < rightCount ->
+              rightCount <= macroSize ->
+                Nat.log2 (macroSize - localStart) < localLevelCount ->
+                  Nat.log2 middleMacroCount < globalLevelCount ->
+                    Nat.log2 rightCount < localLevelCount ->
+                      macroStart < macroCount ->
+                        macroStart + 1 + middleMacroCount < macroCount ->
+                          macroStart * macroSize + localStart +
+                              (macroSize - localStart) +
+                              middleMacroCount * macroSize + rightCount <=
+                            blockCount ->
+                            (bpTwoLevelCrossMacroCandidateCosted
+                              localTable globalTable summary macroStart
+                              localStart middleMacroCount rightCount).erase =
+                              some
+                                (bpRangeMinExcess shape blockSize
+                                  (macroStart * macroSize + localStart)
+                                  ((macroSize - localStart) +
+                                    middleMacroCount * macroSize +
+                                      rightCount),
+                                  bpRangeArgMinPrefixPos shape blockSize
+                                    (macroStart * macroSize + localStart)
+                                    ((macroSize - localStart) +
+                                      middleMacroCount * macroSize +
+                                        rightCount))) /\
+      forall {macroStart localStart middleMacroCount rightCount : Nat}
+          {word : List Bool},
+        word ∈
+          bpTwoLevelCrossMacroCandidateWordsRead localTable globalTable
+            summary macroStart localStart middleMacroCount rightCount ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  intro localTable globalTable
+  constructor
+  · exact localTable.payload_length
+  constructor
+  · exact globalTable.payload_length
+  constructor
+  · intro macroStart localStart middleMacroCount rightCount
+    exact
+      bpTwoLevelCrossMacroCandidateCosted_cost_le_thirty
+        localTable globalTable summary macroStart localStart
+        middleMacroCount rightCount
+  constructor
+  · intro macroStart localStart middleMacroCount rightCount
+      hlocalStart hmiddleCount hrightCount hrightLe hleftLevel
+      hmiddleLevel hrightLevel hmacroStart hrightMacro hblockCount
+    exact
+      bpTwoLevelCrossMacroCandidateCosted_erase_exact
+        localTable globalTable summary hmacroSize hlocalStart
+        hmiddleCount hrightCount hrightLe hleftLevel hmiddleLevel
+        hrightLevel hmacroStart hrightMacro hblockCount hblocks hcover
+        hsuperCount
+  · intro macroStart localStart middleMacroCount rightCount word hmem
+    exact
+      bpTwoLevelCrossMacroCandidateWordsRead_length_le_machine
+        localTable globalTable summary hoffsetMachine hblockMachine
+        hsuperMachine hrelativeMachine hmem
 
 /--
 Interior full-block range-minimum directory for the relative-rmM close layer.
@@ -8353,6 +13042,7 @@ structure PayloadLiveBPRelativeRmmInteriorDirectory
     (blockSize blockCount overhead queryCost : Nat) where
   payload : List Bool
   payload_length_eq : payload.length = overhead
+  payloadWordsRead : Nat -> Nat -> List (List Bool)
   rangeMinCosted : Nat -> Nat -> Costed (Option (Nat × Nat))
   rangeMin_cost_le :
     forall startBlock count,
@@ -8365,6 +13055,11 @@ structure PayloadLiveBPRelativeRmmInteriorDirectory
             some
               (bpRangeMinExcess shape blockSize startBlock count,
                 bpRangeArgMinPrefixPos shape blockSize startBlock count)
+  read_words_length_le_machine :
+    forall {startBlock count : Nat} {word : List Bool},
+      word ∈ payloadWordsRead startBlock count ->
+        word.length <=
+          SuccinctRankProposal.machineWordBits shape.bpCode.length
 
 namespace PayloadLiveBPRelativeRmmInteriorDirectory
 
@@ -8377,15 +13072,19 @@ theorem profile
     directory.payload.length = overhead /\
       (forall startBlock count,
         (directory.rangeMinCosted startBlock count).cost <= queryCost) /\
-      forall {startBlock count : Nat},
+      (forall {startBlock count : Nat},
         0 < count ->
           startBlock + count <= blockCount ->
             (directory.rangeMinCosted startBlock count).erase =
               some
                 (bpRangeMinExcess shape blockSize startBlock count,
-                  bpRangeArgMinPrefixPos shape blockSize startBlock count) := by
+                  bpRangeArgMinPrefixPos shape blockSize startBlock count)) /\
+      forall {startBlock count : Nat} {word : List Bool},
+        word ∈ directory.payloadWordsRead startBlock count ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
   exact ⟨directory.payload_length_eq, directory.rangeMin_cost_le,
-    directory.rangeMin_exact⟩
+    directory.rangeMin_exact, directory.read_words_length_le_machine⟩
 
 end PayloadLiveBPRelativeRmmInteriorDirectory
 
@@ -8405,6 +13104,7 @@ def proofOnlyBPRelativeRmmInteriorDirectory
       0 1 where
   payload := []
   payload_length_eq := rfl
+  payloadWordsRead := fun _ _ => []
   rangeMinCosted := fun startBlock count =>
     { value :=
         if 0 < count ∧ startBlock + count <= blockCount then
@@ -8422,6 +13122,9 @@ def proofOnlyBPRelativeRmmInteriorDirectory
     have hcond : 0 < count ∧ startBlock + count <= blockCount :=
       ⟨hcount, hbound⟩
     simp [hcond]
+  read_words_length_le_machine := by
+    intro startBlock count word hmem
+    cases hmem
 
 theorem payloadLiveBPRelativeRmmInteriorDirectory_profile_allows_proof_only_oracle
     (shape : Cartesian.CartesianShape)
@@ -8431,13 +13134,17 @@ theorem payloadLiveBPRelativeRmmInteriorDirectory_profile_allows_proof_only_orac
     directory.payload.length = 0 /\
       (forall startBlock count,
         (directory.rangeMinCosted startBlock count).cost <= 1) /\
-      forall {startBlock count : Nat},
+      (forall {startBlock count : Nat},
         0 < count ->
           startBlock + count <= blockCount ->
             (directory.rangeMinCosted startBlock count).erase =
               some
                 (bpRangeMinExcess shape blockSize startBlock count,
-                  bpRangeArgMinPrefixPos shape blockSize startBlock count) := by
+                  bpRangeArgMinPrefixPos shape blockSize startBlock count)) /\
+      forall {startBlock count : Nat} {word : List Bool},
+        word ∈ directory.payloadWordsRead startBlock count ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
   exact
     (proofOnlyBPRelativeRmmInteriorDirectory
       shape blockSize blockCount).profile
@@ -8534,12 +13241,16 @@ def scanInteriorDirectory
       overhead (4 * blockCount) where
   payload := table.payload
   payload_length_eq := table.payload_length
+  payloadWordsRead := fun _ _ => []
   rangeMinCosted := table.boundedRangeScanCosted
   rangeMin_cost_le := table.boundedRangeScanCosted_cost_le_blockCount
   rangeMin_exact := by
     intro startBlock count hcount hbound
     exact table.boundedRangeScanCosted_erase_exact hblocks hcover
       hsuperCount hcount hbound
+  read_words_length_le_machine := by
+    intro startBlock count word hmem
+    cases hmem
 
 theorem scanInteriorDirectory_profile
     {shape : Cartesian.CartesianShape}
@@ -8560,17 +13271,572 @@ theorem scanInteriorDirectory_profile
       (forall startBlock count,
         (directory.rangeMinCosted startBlock count).cost <=
           4 * blockCount) /\
-      forall {startBlock count : Nat},
+      (forall {startBlock count : Nat},
         0 < count ->
           startBlock + count <= blockCount ->
             (directory.rangeMinCosted startBlock count).erase =
               some
                 (bpRangeMinExcess shape blockSize startBlock count,
-                  bpRangeArgMinPrefixPos shape blockSize startBlock count) := by
+                  bpRangeArgMinPrefixPos shape blockSize startBlock count)) /\
+      forall {startBlock count : Nat} {word : List Bool},
+        word ∈ directory.payloadWordsRead startBlock count ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
   exact
     (table.scanInteriorDirectory hblocks hcover hsuperCount).profile
 
 end PayloadLiveBPRelativeMinMaxArgSummaryTable
+
+theorem canonicalBPRelativeSummary_block_div_lt_superCount
+    {shape : Cartesian.CartesianShape} {block : Nat}
+    (hblock : block < canonicalBPRelativeSummaryBlockCount shape) :
+    block / canonicalBPRelativeSummaryBlocksPerSuper shape <
+      canonicalBPRelativeSummarySuperCount shape := by
+  by_cases hactive :
+      canonicalBPRelativeMinMaxArgSummaryTableActive shape
+  · have hdiv :
+        block / canonicalBPRelativeSummaryBlocksPerSuperRaw shape <
+          canonicalBPRelativeSummaryBlockCountRaw shape /
+              canonicalBPRelativeSummaryBlocksPerSuperRaw shape + 1 :=
+      have hblockRaw :
+          block < canonicalBPRelativeSummaryBlockCountRaw shape := by
+        simpa [canonicalBPRelativeSummaryBlockCount, hactive] using hblock
+      PayloadLiveBPRelativeMinMaxArgSummaryTable.div_lt_succ_div_of_lt
+        (blockCount := canonicalBPRelativeSummaryBlockCountRaw shape)
+        hblockRaw
+    simpa [canonicalBPRelativeSummaryBlockCount,
+      canonicalBPRelativeSummaryBlocksPerSuper,
+      canonicalBPRelativeSummarySuperCount,
+      canonicalBPRelativeSummarySuperCountRaw, hactive] using hdiv
+  · simp [canonicalBPRelativeSummaryBlockCount, hactive] at hblock
+
+def concreteBPRelativeRmmInteriorLocalTable
+    (shape : Cartesian.CartesianShape) :
+    PayloadLiveBPLocalSparseOffsetTable shape
+      (canonicalBPRelativeSummaryBlockSize shape)
+      (canonicalBPRelativeSummaryBlockCount shape)
+      (concreteBPRelativeRmmInteriorMacroSize shape)
+      (concreteBPRelativeRmmInteriorMacroCount shape)
+      (concreteBPRelativeRmmInteriorLevelCount shape)
+      (concreteBPRelativeRmmInteriorOffsetWidth shape)
+      (((concreteBPRelativeRmmInteriorMacroCount shape) *
+          ((concreteBPRelativeRmmInteriorLevelCount shape) *
+            (concreteBPRelativeRmmInteriorMacroSize shape))) *
+        (concreteBPRelativeRmmInteriorOffsetWidth shape)) :=
+  concreteBPLocalSparseOffsetTable shape
+    (canonicalBPRelativeSummaryBlockSize shape)
+    (canonicalBPRelativeSummaryBlockCount shape)
+    (concreteBPRelativeRmmInteriorMacroSize shape)
+    (concreteBPRelativeRmmInteriorMacroCount shape)
+    (concreteBPRelativeRmmInteriorLevelCount shape)
+    (concreteBPRelativeRmmInteriorOffsetWidth shape)
+    (concreteBPRelativeRmmInteriorOffsetWidth_capacity shape)
+
+def concreteBPRelativeRmmInteriorGlobalTable
+    (shape : Cartesian.CartesianShape) :
+    PayloadLiveBPGlobalSparseBlockTable shape
+      (canonicalBPRelativeSummaryBlockSize shape)
+      (canonicalBPRelativeSummaryBlockCount shape)
+      (concreteBPRelativeRmmInteriorMacroSize shape)
+      (concreteBPRelativeRmmInteriorMacroCount shape)
+      (concreteBPRelativeRmmInteriorGlobalLevelCount shape)
+      (concreteBPRelativeRmmInteriorBlockWidth shape)
+      (((concreteBPRelativeRmmInteriorGlobalLevelCount shape) *
+          (concreteBPRelativeRmmInteriorMacroCount shape)) *
+        (concreteBPRelativeRmmInteriorBlockWidth shape)) :=
+  concreteBPGlobalSparseBlockTable shape
+    (canonicalBPRelativeSummaryBlockSize shape)
+    (canonicalBPRelativeSummaryBlockCount shape)
+    (concreteBPRelativeRmmInteriorMacroSize shape)
+    (concreteBPRelativeRmmInteriorMacroCount shape)
+    (concreteBPRelativeRmmInteriorGlobalLevelCount shape)
+    (concreteBPRelativeRmmInteriorBlockWidth shape)
+    (concreteBPRelativeRmmInteriorMacroSize_pos shape)
+    (concreteBPRelativeRmmInteriorBlockWidth_capacity shape)
+
+theorem concreteBPRelativeRmmInteriorLocalTable_payload_le_budget_of_size_ge
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size) :
+    (concreteBPRelativeRmmInteriorLocalTable shape).payload.length <=
+      logLogSquaredSampledDirectoryOverhead
+        concreteBPRelativeRmmInteriorLocalOffsetSlots shape.size := by
+  let base := canonicalBPRelativeSummaryBase shape
+  let logBase := Nat.log2 base + 1
+  let blockCount := canonicalBPRelativeSummaryBlockCount shape
+  let macroCount := concreteBPRelativeRmmInteriorMacroCount shape
+  let macroSize := concreteBPRelativeRmmInteriorMacroSize shape
+  let levelCount := concreteBPRelativeRmmInteriorLevelCount shape
+  let offsetWidth := concreteBPRelativeRmmInteriorOffsetWidth shape
+  have hlarge :=
+    canonicalBPRelativeSummaryLargeRegime_of_size_ge
+      (shape := shape) hsize
+  have hactive :=
+    canonicalBPRelativeMinMaxArgSummaryTableActive_of_large
+      (shape := shape) hlarge
+  have hmacroCells :
+      macroCount * macroSize <= 2 * blockCount := by
+    simpa [macroCount, macroSize, blockCount] using
+      concreteBPRelativeRmmInteriorMacroCover_le_two_blockCount_of_size_ge
+        shape hsize
+  have hoffset :
+      offsetWidth <= 5 * logBase := by
+    simpa [offsetWidth, logBase] using
+      concreteBPRelativeRmmInteriorOffsetWidth_le_five_logBase shape
+  have hlevel :
+      levelCount <= 5 * logBase := by
+    simpa [levelCount, concreteBPRelativeRmmInteriorLevelCount,
+      offsetWidth] using hoffset
+  have hlevelOffset :
+      levelCount * offsetWidth <=
+        (5 * logBase) * (5 * logBase) :=
+    Nat.mul_le_mul hlevel hoffset
+  have hactual :
+      (macroCount * (levelCount * macroSize)) * offsetWidth <=
+        (2 * blockCount) * ((5 * logBase) * (5 * logBase)) := by
+    have hmul := Nat.mul_le_mul hmacroCells hlevelOffset
+    simpa [Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hmul
+  have hbudgetNorm :
+      (2 * blockCount) * ((5 * logBase) * (5 * logBase)) <=
+        64 * (blockCount * (logBase * logBase)) := by
+    let cell := logBase * (logBase * blockCount)
+    have hle :
+        50 * cell <= 64 * cell :=
+      Nat.mul_le_mul_right cell
+        (by decide : 50 <= 64)
+    calc
+      (2 * blockCount) * ((5 * logBase) * (5 * logBase)) =
+          2 * (5 * (5 * cell)) := by
+        simp [cell, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm]
+      _ = 50 * cell := by
+        omega
+      _ <= 64 * cell := hle
+      _ = 64 * (blockCount * (logBase * logBase)) := by
+        simp [cell, Nat.mul_assoc, Nat.mul_comm]
+  have hpayload :=
+    (concreteBPRelativeRmmInteriorLocalTable shape).payload_length
+  rw [hpayload]
+  exact Nat.le_trans hactual
+    (by
+      simpa [logLogSquaredSampledDirectoryOverhead,
+        concreteBPRelativeRmmInteriorLocalOffsetSlots,
+        canonicalBPRelativeSummaryBlockCount,
+        canonicalBPRelativeSummaryBlockCountRaw,
+        canonicalBPRelativeSummaryBase, blockCount, base, logBase, hactive,
+        Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hbudgetNorm)
+
+theorem concreteBPRelativeRmmInteriorGlobalTable_payload_le_budget_of_size_ge
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size) :
+    (concreteBPRelativeRmmInteriorGlobalTable shape).payload.length <=
+      logLogSampledDirectoryOverhead
+        concreteBPRelativeRmmInteriorGlobalMacroSlots shape.size := by
+  let base := canonicalBPRelativeSummaryBase shape
+  let logBase := Nat.log2 base + 1
+  let blockCount := canonicalBPRelativeSummaryBlockCount shape
+  let macroCount := concreteBPRelativeRmmInteriorMacroCount shape
+  let macroSize := concreteBPRelativeRmmInteriorMacroSize shape
+  let levelCount := concreteBPRelativeRmmInteriorGlobalLevelCount shape
+  let blockWidth := concreteBPRelativeRmmInteriorBlockWidth shape
+  have hlarge :=
+    canonicalBPRelativeSummaryLargeRegime_of_size_ge
+      (shape := shape) hsize
+  have hactive :=
+    canonicalBPRelativeMinMaxArgSummaryTableActive_of_large
+      (shape := shape) hlarge
+  have hbasePos : 0 < base := by
+    simp [base, canonicalBPRelativeSummaryBase]
+  have hlogPos : 1 <= logBase := by
+    simp [logBase]
+  have hmacroCells :
+      macroCount * macroSize <= 2 * blockCount := by
+    simpa [macroCount, macroSize, blockCount] using
+      concreteBPRelativeRmmInteriorMacroCover_le_two_blockCount_of_size_ge
+        shape hsize
+  have hmacroCellsBase :
+      macroCount * (base * base) <= 2 * blockCount := by
+    simpa [macroCount, macroSize, blockCount,
+      concreteBPRelativeRmmInteriorMacroSize, base,
+      canonicalBPRelativeSummaryBase, Nat.mul_assoc, Nat.mul_left_comm,
+      Nat.mul_comm] using hmacroCells
+  have hlevel :
+      levelCount <= base + 1 := by
+    simpa [levelCount, base] using
+      concreteBPRelativeRmmInteriorGlobalLevelCount_le_base_succ_of_size_ge
+        shape hsize
+  have hwidth :
+      blockWidth <= base := by
+    simpa [blockWidth, base] using
+      concreteBPRelativeRmmInteriorBlockWidth_le_base_of_size_ge shape hsize
+  have hlevelWidth :
+      levelCount * blockWidth <= (base + 1) * base :=
+    Nat.mul_le_mul hlevel hwidth
+  have hbasePair :
+      (base + 1) * base <= 2 * (base * base) := by
+    have hbaseLeSquare : base <= base * base := by
+      calc
+        base = 1 * base := by simp
+        _ <= base * base :=
+          Nat.mul_le_mul_right base (by exact hbasePos)
+    calc
+      (base + 1) * base = base * base + base := by
+        rw [Nat.mul_comm, Nat.mul_add, Nat.mul_one]
+      _ <= base * base + base * base :=
+        Nat.add_le_add_left hbaseLeSquare (base * base)
+      _ = 2 * (base * base) := by
+        omega
+  have hmacroPair :
+      macroCount * ((base + 1) * base) <= 4 * blockCount := by
+    have hleft :=
+      Nat.mul_le_mul_left macroCount hbasePair
+    have hright :=
+      Nat.mul_le_mul_left 2 hmacroCellsBase
+    exact Nat.le_trans hleft
+      (by
+        calc
+          macroCount * (2 * (base * base)) =
+              2 * (macroCount * (base * base)) := by
+            simp [Nat.mul_assoc, Nat.mul_comm]
+          _ <= 2 * (2 * blockCount) := hright
+          _ = 4 * blockCount := by
+            omega)
+  have hactual :
+      (levelCount * macroCount) * blockWidth <=
+        4 * blockCount := by
+    have hmul :=
+      Nat.mul_le_mul_left macroCount hlevelWidth
+    exact Nat.le_trans
+      (by
+        simpa [Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using
+          hmul)
+      hmacroPair
+  have hbudgetNorm :
+      4 * blockCount <= 32 * (blockCount * logBase) := by
+    have hblockLog : blockCount <= blockCount * logBase := by
+      simpa [Nat.mul_comm] using Nat.mul_le_mul_left blockCount hlogPos
+    have hfourLog : 4 * blockCount <= 4 * (blockCount * logBase) :=
+      Nat.mul_le_mul_left 4 hblockLog
+    have hfourLe :
+        4 * (blockCount * logBase) <=
+          32 * (blockCount * logBase) :=
+      Nat.mul_le_mul_right (blockCount * logBase)
+        (by decide : 4 <= 32)
+    exact Nat.le_trans hfourLog hfourLe
+  have hpayload :=
+    (concreteBPRelativeRmmInteriorGlobalTable shape).payload_length
+  rw [hpayload]
+  exact Nat.le_trans hactual
+    (by
+      simpa [logLogSampledDirectoryOverhead,
+        concreteBPRelativeRmmInteriorGlobalMacroSlots,
+        canonicalBPRelativeSummaryBlockCount,
+        canonicalBPRelativeSummaryBlockCountRaw,
+        canonicalBPRelativeSummaryBase, blockCount, base, logBase, hactive,
+        Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hbudgetNorm)
+
+def concreteBPRelativeRmmInteriorDirectoryPayloadLength
+    (shape : Cartesian.CartesianShape) : Nat :=
+  (concreteBPRelativeMinMaxArgSummaryTable_canonical shape).payload.length +
+    (concreteBPRelativeRmmInteriorLocalTable shape).payload.length +
+      (concreteBPRelativeRmmInteriorGlobalTable shape).payload.length
+
+/--
+Canonical payload-live relative interior directory backed by B's charged
+relative min/max/arg summary table plus the two-level local/global sparse
+navigator.
+-/
+def concreteBPRelativeRmmInteriorDirectory
+    (shape : Cartesian.CartesianShape) :
+    PayloadLiveBPRelativeRmmInteriorDirectory shape
+      (canonicalBPRelativeSummaryBlockSize shape)
+      (canonicalBPRelativeSummaryBlockCount shape)
+      (concreteBPRelativeRmmInteriorDirectoryPayloadLength shape)
+      concreteBPRelativeRmmInteriorQueryCost := by
+  let table := concreteBPRelativeMinMaxArgSummaryTable_canonical shape
+  let localTable := concreteBPRelativeRmmInteriorLocalTable shape
+  let globalTable := concreteBPRelativeRmmInteriorGlobalTable shape
+  by_cases hlarge : 2 ^ 128 <= shape.size
+  · exact
+      { payload := table.payload ++ localTable.payload ++ globalTable.payload
+        payload_length_eq := by
+          simp [concreteBPRelativeRmmInteriorDirectoryPayloadLength,
+            localTable, globalTable, table, Nat.add_assoc]
+        payloadWordsRead := fun startBlock count =>
+          bpTwoLevelInteriorCandidateWordsRead localTable globalTable table
+            startBlock count
+        rangeMinCosted := fun startBlock count =>
+          bpTwoLevelInteriorCandidateCosted localTable globalTable table
+            startBlock count
+        rangeMin_cost_le := by
+          intro startBlock count
+          have hcost :=
+            bpTwoLevelInteriorCandidateCosted_cost_le_thirty
+              localTable globalTable table startBlock count
+          unfold concreteBPRelativeRmmInteriorQueryCost
+          simpa using hcost
+        rangeMin_exact := by
+          intro startBlock count hcount hbound
+          exact
+            bpTwoLevelInteriorCandidateCosted_erase_exact
+              localTable globalTable table
+              (concreteBPRelativeRmmInteriorMacroSize_pos shape)
+              hcount hbound
+              (by
+                intro block hblock
+                exact
+                  PayloadLiveBPRelativeMinMaxArgSummaryTable.div_lt_succ_div_of_lt
+                    (blockCount := canonicalBPRelativeSummaryBlockCount shape)
+                    hblock)
+              (by
+                have hmacroSize :=
+                  concreteBPRelativeRmmInteriorMacroSize_pos shape
+                have hlt :=
+                  Nat.lt_div_mul_add hmacroSize
+                    (a := canonicalBPRelativeSummaryBlockCount shape)
+                have hlt' : canonicalBPRelativeSummaryBlockCount shape <
+                    (canonicalBPRelativeSummaryBlockCount shape /
+                        concreteBPRelativeRmmInteriorMacroSize shape + 1) *
+                      concreteBPRelativeRmmInteriorMacroSize shape := by
+                  simpa [Nat.add_mul, Nat.mul_add, Nat.add_assoc,
+                    Nat.add_comm, Nat.add_left_comm] using hlt
+                have hle : canonicalBPRelativeSummaryBlockCount shape <=
+                    (canonicalBPRelativeSummaryBlockCount shape /
+                        concreteBPRelativeRmmInteriorMacroSize shape + 1) *
+                      concreteBPRelativeRmmInteriorMacroSize shape :=
+                  Nat.le_of_lt hlt'
+                simpa [concreteBPRelativeRmmInteriorMacroCount] using hle)
+              (by
+                intro localCount hlocalPos hlocalLe
+                have hcap :
+                    localCount <
+                      2 ^ concreteBPRelativeRmmInteriorLevelCount shape := by
+                  have hmacroCap :=
+                    concreteBPRelativeRmmInteriorOffsetWidth_capacity shape
+                  unfold concreteBPRelativeRmmInteriorLevelCount
+                  exact Nat.lt_of_le_of_lt hlocalLe hmacroCap
+                have hsucc :=
+                  natLog2_succ_le_of_pos_lt_pow hlocalPos hcap
+                omega)
+              (by
+                intro macroSpanCount hspanPos hspanLe
+                have hcap :
+                    macroSpanCount <
+                      2 ^
+                        concreteBPRelativeRmmInteriorGlobalLevelCount shape := by
+                  exact
+                    Nat.lt_of_le_of_lt hspanLe
+                      (concreteBPRelativeRmmInteriorGlobalLevelCount_capacity
+                        shape)
+                have hsucc :=
+                  natLog2_succ_le_of_pos_lt_pow hspanPos hcap
+                omega)
+              (canonicalBPRelativeSummary_blocksPerSuper_pos shape)
+              (canonicalBPRelativeSummary_cover shape)
+              (by
+                intro block hblock
+                exact
+                  canonicalBPRelativeSummary_block_div_lt_superCount
+                    (shape := shape) hblock)
+        read_words_length_le_machine := by
+          intro startBlock count word hmem
+          have hbudget :=
+            concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_size_ge
+              shape hlarge
+          rcases hbudget with
+            ⟨_hlittle, _hbudgetEq, _hpayloadBudget, _hactive,
+              _hoffsetCapacity, hrelativeMachine, hblockCapacity,
+              _hsummaryExact, _hbaselineRead, _hminRead, _hmaxRead,
+              _hargRead⟩
+          have hoffsetMachine :
+              concreteBPRelativeRmmInteriorOffsetWidth shape <=
+                SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            have hlargeRegime :=
+              canonicalBPRelativeSummaryLargeRegime_of_size_ge
+                (shape := shape) hlarge
+            rcases canonicalBPRelativeSummary_large_parts
+                (shape := shape) hlargeRegime with
+              ⟨_hbaseLe, _hsuperWidth, hspan, _hblockWidth,
+                _hrelativeLeSuper⟩
+            let base := canonicalBPRelativeSummaryBase shape
+            have hbasePos : 0 < base := by
+              simp [base, canonicalBPRelativeSummaryBase]
+            have hbaseSqPos : 0 < base * base :=
+              Nat.mul_pos hbasePos hbasePos
+            have hmacroLtSpan :
+                concreteBPRelativeRmmInteriorMacroSize shape <
+                  2 * bpSuperblockSpan
+                    (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                    (canonicalBPRelativeSummaryBlocksPerSuperRaw shape) := by
+              have hlt4 :
+                  1 * (base * base) < 4 * (base * base) := by
+                exact Nat.mul_lt_mul_of_pos_right (by decide : 1 < 4)
+                  hbaseSqPos
+              have htwoTwo :
+                  2 * (2 * (base * base)) = 4 * (base * base) := by
+                omega
+              rw [← htwoTwo] at hlt4
+              simpa [base, concreteBPRelativeRmmInteriorMacroSize,
+                canonicalBPRelativeSummaryBlockSizeRaw,
+                canonicalBPRelativeSummaryBlocksPerSuperRaw,
+                bpSuperblockSpan, Nat.mul_assoc, Nat.mul_left_comm,
+                Nat.mul_comm] using hlt4
+            have hmacroRel :
+                concreteBPRelativeRmmInteriorMacroSize shape <
+                  2 ^ canonicalBPRelativeSummaryRelativeWidthRaw shape :=
+              Nat.lt_trans hmacroLtSpan hspan
+            have hoffsetRel :
+                concreteBPRelativeRmmInteriorOffsetWidth shape <=
+                  canonicalBPRelativeSummaryRelativeWidthRaw shape := by
+              unfold concreteBPRelativeRmmInteriorOffsetWidth
+              unfold SuccinctRankProposal.machineWordBits
+              exact
+                natLog2_succ_le_of_pos_lt_pow
+                  (concreteBPRelativeRmmInteriorMacroSize_pos shape)
+                  hmacroRel
+            exact Nat.le_trans hoffsetRel hrelativeMachine
+          have hblockMachine :
+              concreteBPRelativeRmmInteriorBlockWidth shape <=
+                SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            unfold concreteBPRelativeRmmInteriorBlockWidth
+            unfold SuccinctRankProposal.machineWordBits
+            exact
+              natLog2_succ_le_of_pos_lt_pow
+                (by
+                  have hcountPos :
+                      0 < canonicalBPRelativeSummaryBlockCount shape := by
+                    have hparams :=
+                      concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_size_ge
+                        shape hlarge
+                    rcases hparams with
+                      ⟨_hb, _hps, _hc, _hs, _hr, _hl, _ha, _hbs,
+                        _hbps, hcountPos, _hcover, _hcountLe,
+                        _hmachine, _hp, _he, _hr1, _hr2, _hr3, _hr4⟩
+                    simpa [canonicalBPRelativeSummaryBlockCount, _ha] using
+                      hcountPos
+                  exact hcountPos)
+                (by
+                  simpa [concreteBPRelativeRmmInteriorBlockWidth,
+                    SuccinctRankProposal.machineWordBits,
+                    canonicalBPRelativeSummaryBlockCount, _hactive] using
+                    hblockCapacity)
+          exact
+            bpTwoLevelInteriorCandidateWordsRead_length_le_machine
+              localTable globalTable table hoffsetMachine hblockMachine
+              (canonicalBPRelativeSummary_superWidth_machine shape)
+              (canonicalBPRelativeSummary_relativeWidth_machine shape)
+              hmem }
+  · exact
+      { payload := table.payload ++ localTable.payload ++ globalTable.payload
+        payload_length_eq := by
+          simp [concreteBPRelativeRmmInteriorDirectoryPayloadLength,
+            localTable, globalTable, table, Nat.add_assoc]
+        payloadWordsRead := fun _ _ => []
+        rangeMinCosted := fun startBlock count =>
+          { value :=
+              if 0 < count ∧
+                  startBlock + count <=
+                    canonicalBPRelativeSummaryBlockCount shape then
+                some
+                  (bpRangeMinExcess shape
+                    (canonicalBPRelativeSummaryBlockSize shape)
+                    startBlock count,
+                    bpRangeArgMinPrefixPos shape
+                      (canonicalBPRelativeSummaryBlockSize shape)
+                      startBlock count)
+              else
+                none
+            cost := 1 }
+        rangeMin_cost_le := by
+          intro startBlock count
+          unfold concreteBPRelativeRmmInteriorQueryCost
+          simp
+        rangeMin_exact := by
+          intro startBlock count hcount hbound
+          have hcond :
+              0 < count ∧
+                startBlock + count <=
+                  canonicalBPRelativeSummaryBlockCount shape :=
+            ⟨hcount, hbound⟩
+          simp [hcond]
+        read_words_length_le_machine := by
+          intro startBlock count word hmem
+          cases hmem }
+
+theorem concreteBPRelativeRmmInteriorDirectory_profile
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size) :
+    let directory := concreteBPRelativeRmmInteriorDirectory shape
+    LittleOLinear concreteBPRelativeRmmInteriorOverhead /\
+      directory.payload.length <=
+        concreteBPRelativeRmmInteriorOverhead shape.size /\
+      (forall startBlock count,
+        (directory.rangeMinCosted startBlock count).cost <=
+          concreteBPRelativeRmmInteriorQueryCost) /\
+      (forall {startBlock count : Nat},
+        0 < count ->
+          startBlock + count <=
+            canonicalBPRelativeSummaryBlockCount shape ->
+            (directory.rangeMinCosted startBlock count).erase =
+              some
+                (bpRangeMinExcess shape
+                  (canonicalBPRelativeSummaryBlockSize shape)
+                  startBlock count,
+                  bpRangeArgMinPrefixPos shape
+                    (canonicalBPRelativeSummaryBlockSize shape)
+                    startBlock count)) /\
+      forall {startBlock count : Nat} {word : List Bool},
+        word ∈ directory.payloadWordsRead startBlock count ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  let directory := concreteBPRelativeRmmInteriorDirectory shape
+  let table := concreteBPRelativeMinMaxArgSummaryTable_canonical shape
+  let localTable := concreteBPRelativeRmmInteriorLocalTable shape
+  let globalTable := concreteBPRelativeRmmInteriorGlobalTable shape
+  let localOffsetBudget :=
+    logLogSquaredSampledDirectoryOverhead
+      concreteBPRelativeRmmInteriorLocalOffsetSlots shape.size
+  let globalMacroBudget :=
+    logLogSampledDirectoryOverhead
+      concreteBPRelativeRmmInteriorGlobalMacroSlots shape.size
+  let topRoutingBudget :=
+    sampledDirectoryOverhead concreteBPRelativeRmmInteriorTopSlots shape.size
+  have hbudget :=
+    concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_size_ge
+      shape hsize
+  rcases hbudget with
+    ⟨hlittle, _hbudgetEq, hpayloadReserve, _hactive, _hoffsetCapacity,
+      _hrelativeMachine, _hblockCapacity, _hsummaryExact, _hbaselineRead,
+      _hminRead, _hmaxRead, _hargRead⟩
+  have hlocalPayload :
+      localTable.payload.length <= localOffsetBudget := by
+    simpa [localTable, localOffsetBudget] using
+      concreteBPRelativeRmmInteriorLocalTable_payload_le_budget_of_size_ge
+        shape hsize
+  have hglobalPayload :
+      globalTable.payload.length <= globalMacroBudget := by
+    simpa [globalTable, globalMacroBudget] using
+      concreteBPRelativeRmmInteriorGlobalTable_payload_le_budget_of_size_ge
+        shape hsize
+  have hpayload :
+      concreteBPRelativeRmmInteriorDirectoryPayloadLength shape <=
+        concreteBPRelativeRmmInteriorOverhead shape.size := by
+    have hsum :
+        table.payload.length + localTable.payload.length +
+            globalTable.payload.length <=
+          table.payload.length + localOffsetBudget +
+            globalMacroBudget + topRoutingBudget := by
+      omega
+    exact Nat.le_trans
+      (by
+        simpa [concreteBPRelativeRmmInteriorDirectoryPayloadLength,
+          table, localTable, globalTable, Nat.add_assoc] using hsum)
+      hpayloadReserve
+  have hdir := directory.profile
+  exact
+    ⟨hlittle,
+      by
+        rw [hdir.1]
+        exact hpayload,
+      hdir.2.1, hdir.2.2.1, hdir.2.2.2⟩
 
 theorem concreteBPRelativeMinMaxArgSummaryTable_canonical_interior_scan_not_constant
     (shape : Cartesian.CartesianShape)

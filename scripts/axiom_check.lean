@@ -82,6 +82,8 @@ claims that matter, not every local arithmetic helper.
 #print axioms RMQ.SuccinctSpace.LittleOLinear.mul_left
 #print axioms RMQ.SuccinctSpace.littleOLinear_id_div_log2_succ
 #print axioms RMQ.SuccinctSpace.sampledDirectoryOverhead_littleO
+#print axioms RMQ.SuccinctSpace.logLogSampledDirectoryOverhead_littleO
+#print axioms RMQ.SuccinctSpace.logLogSquaredSampledDirectoryOverhead_littleO
 #print axioms RMQ.SuccinctSpace.natToBitsLE_length
 #print axioms RMQ.SuccinctSpace.bitsToNatLE_natToBitsLE_of_lt
 #print axioms RMQ.SuccinctSpace.optionNatToBitsLE_length
@@ -255,6 +257,11 @@ claims that matter, not every local arithmetic helper.
 #print axioms RMQ.SuccinctCloseProposal.concreteBPRelativeRmmInteriorOverhead_littleO
 #print axioms RMQ.SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_large
 #print axioms RMQ.SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_size_ge
+#print axioms RMQ.SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_size_ge
+#print axioms RMQ.SuccinctCloseProposal.bpTwoLevelInteriorCandidateCosted_erase_exact
+#print axioms RMQ.SuccinctCloseProposal.concreteBPRelativeRmmInteriorLocalTable_payload_le_budget_of_size_ge
+#print axioms RMQ.SuccinctCloseProposal.concreteBPRelativeRmmInteriorGlobalTable_payload_le_budget_of_size_ge
+#print axioms RMQ.SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_profile
 #print axioms RMQ.SuccinctCloseProposal.PayloadLiveBPRelativeMinMaxArgSummaryTable.rangeScanCosted_erase_exact
 #print axioms RMQ.SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_canonical_interior_scan_not_constant
 #print axioms RMQ.SuccinctCloseProposal.PayloadLiveBPRelativeRmmInteriorDirectory.profile
