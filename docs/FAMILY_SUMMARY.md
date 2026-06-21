@@ -329,8 +329,13 @@ sampled `LittleOLinear` endpoint-fringe macro budget. That sampled theorem is
 conditional: its macro-budget premise still has to pay for the dense
 `interiorBlockPairRanges blockCount` payload, so it is not a concrete
 `2*n + o(n)` close-directory witness. The remaining C2 work is to replace the
-dense block-pair/interior macro payload with a compact little-o BP-close/LCA
-scheme and then package that directory into the final close-navigation join.
+dense block-pair/interior macro payload with the adopted compact
+rmM/min-max-tree-style interior navigator over complete-block minimum
+candidates, prove its constant charged range-min witness and `LittleOLinear`
+payload profile, and then package that directory into the final
+close-navigation join. Exact scans over relative block summaries are useful
+obstruction checks, but they do not close C2 because their charged query cost
+grows with the number of interior blocks.
 `SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`
 sharpens the C2 blocker: a macro keyed only by endpoint block ids plus the
 existing endpoint block min/max summaries still cannot return exact answer

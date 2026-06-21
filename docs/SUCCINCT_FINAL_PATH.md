@@ -426,7 +426,49 @@ The exact helper names may differ, but the substance may not: the merge fact
 must be proved from BP/RMQ semantics and candidate definitions, not supplied as
 `semantic_merge_exact`, `hmerge`, or another proof-only field.
 
-3. Concrete relative-rmM macro, backed by charged payload reads:
+3. Concrete compact rmM interior navigator, not a scan:
+
+```lean
+def concreteBPRelativeRmmInteriorDirectory
+    (shape : Cartesian.CartesianShape) :
+    PayloadLiveBPRelativeRmmInteriorDirectory shape
+      canonicalBlockSize canonicalBlockCount
+      concreteInteriorOverhead concreteInteriorQueryCost := ...
+
+theorem concreteBPRelativeRmmInteriorDirectory_profile
+    (shape : Cartesian.CartesianShape) :
+    let directory := concreteBPRelativeRmmInteriorDirectory shape
+    SuccinctSpace.LittleOLinear concreteInteriorOverhead /\
+      directory.payload.length <=
+        concreteInteriorOverhead shape.size /\
+      (forall startBlock count,
+        (directory.rangeMinCosted startBlock count).cost <=
+          concreteInteriorQueryCost) /\
+      (forall {startBlock count : Nat},
+        0 < count ->
+          startBlock + count <= canonicalBlockCount shape ->
+          (directory.rangeMinCosted startBlock count).erase =
+            some
+              (bpRangeMinExcess shape canonicalBlockSize startBlock count,
+               bpRangeArgMinPrefixPos shape canonicalBlockSize
+                 startBlock count)) /\
+      directory.read_words_length_le_machine := ...
+```
+
+This is the adopted option-1 design: a compact rmM/min-max-tree-style navigator
+over block-minimum candidates. It may use B's relative per-block summaries as
+leaf values and small universal/local tables, but it must answer the full-block
+middle interval by a constant number of charged reads plus bounded arithmetic.
+It must not be a direct scan over all interior blocks, a sparse-table payload
+with non-little-o space, a dense all-pairs table, or a recursive final RMQ
+claim hidden behind this C2 theorem.
+
+The exact structure name may differ, but the theorem obligation may not: this
+checkpoint closes only when the built payload gives constant-cost leftmost
+range-minimum witnesses over complete blocks and proves its payload overhead is
+`LittleOLinear`.
+
+4. Concrete relative-rmM macro, backed by charged payload reads:
 
 ```lean
 def concretePayloadLiveRelativeRmmBPCloseMacro
@@ -456,9 +498,10 @@ theorem concretePayloadLiveRelativeRmmBPCloseMacro_profile
 
 This theorem is not closed if the concrete macro is instantiated by arbitrary
 exactness fields or uncharged routing. Its reads must come from the relative
-summary payload, universal/local codebooks, or bounded arithmetic.
+summary payload, the compact interior rmM navigator from step 3,
+universal/local codebooks, or bounded arithmetic.
 
-4. Concrete compact close directory:
+5. Concrete compact close directory:
 
 ```lean
 theorem concreteCompactBPCloseLCADirectory_profile
@@ -487,7 +530,7 @@ all be consumed here. A branch that stops before this theorem must identify
 which earlier theorem in this chain it closed and why the next theorem is
 outside its assigned ownership.
 
-5. Final BP-native RMQ join:
+6. Final BP-native RMQ join:
 
 ```lean
 theorem concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
@@ -535,12 +578,17 @@ theorem concreteCompactBPCloseLCADirectory_profile
 ```
 
 The concrete implementation should be based on universal small-block tables plus
-relative sampled summaries, or another equally explicit compact scheme. It must
-not rely on:
+the adopted compact rmM/min-max-tree interior navigator over relative block
+summaries. It must not rely on:
 
 - a dense all-close table;
 - dense all block-pair answer/range entries;
 - a sampled-budget premise for `interiorBlockPairRanges blockCount`;
+- a direct scan over all interior blocks, even if the scan is exact;
+- a sparse-table payload unless its own profile proves little-o space under the
+  same machine-word model;
+- a recursive final succinct-RMQ theorem used as an unexpanded oracle for the
+  C2 interior query;
 - proof-only exactness fields that are not backed by charged payload reads.
 
 ## Loop Rules For This Target

@@ -150,6 +150,16 @@ is consumed by charged endpoint-fringe repair plus the BP semantic theorem that
 identifies the leftmost minimum-excess prefix/close with the representative RMQ
 answer close.
 
+For the adopted compact C2 design, the middle full-block query is a
+payload-live rmM/min-max-tree-style interior navigator over block-minimum
+candidates. A direct scan over the relative block summaries is useful only as a
+negative checkpoint: even if it is exact, its cost grows with the number of
+interior blocks and therefore cannot close the constant-query target. The
+positive target is a theorem such as
+`concreteBPRelativeRmmInteriorDirectory_profile`, proving constant charged
+range-minimum witnesses, LittleOLinear payload overhead, and machine-word
+bounded reads for the built compact navigator.
+
 Charged endpoint-fringe repair is also not target closure by itself. If the
 strongest exactness theorem is still an `_exact_of_merged_candidate` theorem or
 has a hypothesis such as `hmerge` asserting that the merged payload candidates
@@ -179,6 +189,10 @@ For C1/C2 specifically, do not stop after the previous known traps:
 - a BP close sampled profile whose space theorem still assumes a budget for
   dense `interiorBlockPairRanges blockCount` entries or an equivalent all-pairs
   interior payload;
+- a direct-scan interior range theorem over relative block summaries, even
+  paired with a theorem showing that this scan is not uniformly constant;
+- a compact-interior API whose range-min exactness or payload budget is still
+  supplied by proof-only fields rather than charged payload reads;
 - a newly charged fixed-width table without an explicit machine-word bound; or
 - a theorem name that suggests stronger semantics than the statement proves.
 
