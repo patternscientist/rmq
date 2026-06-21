@@ -325,6 +325,10 @@ conditional: its macro-budget premise still has to pay for the dense
 `interiorBlockPairRanges blockCount` payload, so it is not a concrete
 `2*n + o(n)` close-directory witness. The relative-rmM successor surface is
 now explicit:
+`SuccinctCloseProposal.bpRelativeRmmCandidateMerge_exact` proves the pure
+endpoint-fringe/interior/right-fringe merge from the representative-query BP
+semantics, so the merge fact is no longer a proof-only field of the relative
+macro interface.
 `SuccinctCloseProposal.PayloadLiveRelativeRmmBPCloseMacro.lcaCloseCosted_exact_of_query_cross_block`
 builds the cross-block query from charged left-fringe, relative-rmM interior,
 and right-fringe candidate reads, and
@@ -335,8 +339,7 @@ cross-block queries through that relative-rmM macro.
 packages the resulting answer-close exactness, query-cost bound, and
 `LittleOLinear` micro-plus-relative overhead budget without mentioning
 `interiorBlockPairRanges blockCount`. The concrete relative/log-log summary
-builder still has to instantiate the macro's rmM candidate-read interface and
-its pure semantic merge law.
+builder still has to instantiate the macro's rmM candidate-read interface.
 `SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`
 sharpens the C2 blocker: a macro keyed only by endpoint block ids plus the
 existing endpoint block min/max summaries still cannot return exact answer
@@ -1442,6 +1445,7 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_profile`,
   `SuccinctCloseProposal.guardedEndpointFringeMacroMicroOverhead_littleO`,
   `SuccinctCloseProposal.concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_sampled_profile`,
+  `SuccinctCloseProposal.bpRelativeRmmCandidateMerge_exact`,
   `SuccinctCloseProposal.PayloadLiveRelativeRmmBPCloseMacro.lcaCloseCosted_exact_of_query_cross_block`,
   `SuccinctCloseProposal.PayloadLiveRelativeRmmBPCloseMacro.profile`,
   `SuccinctCloseProposal.PayloadLiveRelativeRmmMacroMicroBPCloseLCADirectory.lcaCloseCosted_exact`,
