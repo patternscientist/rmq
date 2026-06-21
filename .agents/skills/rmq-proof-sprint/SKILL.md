@@ -127,6 +127,15 @@ statement is impossible as stated, or after an external blocker. A new
 structure field, budget premise, adapter theorem, or "concrete builder remains"
 doc note is an iteration checkpoint, not loop completion.
 
+A theorem whose key hypothesis already contains the answer required by the
+named target is also only an iteration checkpoint. For example, a selector-cell
+lemma with a premise such as `selectorEntries[slot]? = some
+(bpRangeArgMinBlock ...)` is useful only after the same loop builds the
+selector entries, proves the query routes to that slot from `startBlock` and
+`count`, and consumes the lemma in the named concrete profile. The named
+theorem/profile is the scorecard; answer-as-premise bridges do not count as
+target closure.
+
 For C1 descriptor-select work, a component/profile surface whose exactness is
 still supplied by proof fields is not target closure. Fields such as
 `descriptor_some_exact`, `descriptor_none_exact`,
@@ -159,6 +168,13 @@ positive target is a theorem such as
 `concreteBPRelativeRmmInteriorDirectory_profile`, proving constant charged
 range-minimum witnesses, LittleOLinear payload overhead, and machine-word
 bounded reads for the built compact navigator.
+
+For that interior navigator, a charged read of a selector cell is not enough if
+the theorem assumes that the cell already stores the semantic winner. The loop
+must continue through the concrete local/global/top selector construction:
+payload entries, slot arithmetic from the query, payload budget, machine-word
+read bounds, and exactness that no longer has an answer-containing selector
+premise.
 
 Charged endpoint-fringe repair is also not target closure by itself. If the
 strongest exactness theorem is still an `_exact_of_merged_candidate` theorem or
@@ -193,6 +209,10 @@ For C1/C2 specifically, do not stop after the previous known traps:
   paired with a theorem showing that this scan is not uniformly constant;
 - a compact-interior API whose range-min exactness or payload budget is still
   supplied by proof-only fields rather than charged payload reads;
+- a selected-block or selector-cell bridge whose exactness assumes a table cell
+  already contains `bpRangeArgMinBlock` or another semantic winner, unless the
+  same loop also builds and routes the concrete selector table and consumes the
+  bridge in `concreteBPRelativeRmmInteriorDirectory_profile`;
 - a newly charged fixed-width table without an explicit machine-word bound; or
 - a theorem name that suggests stronger semantics than the statement proves.
 

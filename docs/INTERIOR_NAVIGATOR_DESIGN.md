@@ -143,6 +143,11 @@ These do not close the milestone:
 - a proof-only oracle or abstract profile whose query reads no payload;
 - an adapter with `payloadWordsRead := fun _ _ => []`;
 - an uncharged external accessor standing in for candidate values.
+- a selector-cell bridge whose exactness assumes the cell already contains the
+  semantic winner, such as `selectorEntries[slot]? = some
+  (bpRangeArgMinBlock ...)`, unless the same construction also builds the
+  local/global/top selector entries, routes the query to that slot, and consumes
+  the bridge in `concreteBPRelativeRmmInteriorDirectory_profile`.
 
 ## Worker Split
 
@@ -160,6 +165,11 @@ Worker B owns the remaining space arithmetic:
 - prove it is `LittleOLinear`;
 - package the final interior overhead budget and machine-word side conditions
   in a theorem A can consume directly.
+- if the space arithmetic is already closed, the next B-owned target is not
+  another answer-as-premise bridge. It is the concrete selector layer: built
+  entries, slot arithmetic, payload budget, machine-word bounds, and an
+  exactness theorem with no premise that a selector cell already stores the
+  semantic winner.
 
 The coordinator should retire the dense `interiorBlockPairRanges` path once the
 concrete navigator profile lands.

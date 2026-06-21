@@ -261,6 +261,13 @@ through rather than surfaced immediately.
     hypotheses already assume the answer lies in a chosen local block, run, or
     descriptor range must be followed by the global routing theorem that proves
     those hypotheses from the query inputs.
+14a. Answer-as-premise bridges are not loop endpoints. A theorem whose central
+     premise says that a payload table, selector cell, descriptor entry, or
+     routing slot already contains the semantic answer does not close the named
+     target. For C2, a premise such as `selectorEntries[slot]? = some
+     (bpRangeArgMinBlock ...)` must be followed in the same unattended loop by
+     the concrete selector builder, slot arithmetic from the query, payload
+     budget, machine-word read bounds, and consumption in the named profile.
 15. A charged word read must be machine-bounded. Any new constant-time
     fixed-width table, descriptor word, summary word, or payload word must carry
     an explicit bound tying the read word width to the machine-word model before

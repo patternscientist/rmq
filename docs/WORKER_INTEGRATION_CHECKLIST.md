@@ -315,6 +315,10 @@ Reject or send back for revision when:
   global `selectCosted` exactness over all target/occurrence queries.
 - BP close work proves only charged block-summary reads, with no answer-close
   theorem consuming those summaries and endpoint-fringe repair.
+- C2 interior work proves only a selected-block or selector-cell bridge whose
+  exactness assumes the selector cell already contains `bpRangeArgMinBlock` or
+  another semantic winner, without also building/routing that selector table and
+  consuming it in the named concrete profile.
 - BP close work proves a sampled profile only by assuming a budget for dense
   `interiorBlockPairRanges blockCount` entries.
 - BP close work stops at `PayloadLiveBPRelativeRmmInteriorDirectory.profile`,
@@ -356,9 +360,14 @@ For the succinct RMQ capstone:
   before A has consumed it, B should continue to the arithmetic side of
   `concreteBPRelativeRmmInteriorDirectory_profile`: active/large-regime
   discharge, little-o overhead of the interior directory parameters, and
-  machine-word bounds for the compact navigator reads. B should not build a
-  second scan-based interior path except as a short obstruction lemma consumed
-  by A's positive rmM target.
+  machine-word bounds for the compact navigator reads. Once those arithmetic
+  obligations are closed, B's next valid target is the concrete selector layer
+  feeding `concreteBPRelativeRmmInteriorDirectory_profile`: built local/global/top
+  selector entries, slot arithmetic from `(startBlock, count)`, payload budget,
+  machine-word bounds, and exactness with no premise that a selector cell
+  already stores `bpRangeArgMinBlock`. B should not build a second scan-based
+  interior path except as a short obstruction lemma consumed by A's positive
+  rmM target.
 - Coordinator: merge order, adapter work, final `2*n + o(n), O(1)` theorem,
   gate, and docs.
 

@@ -481,6 +481,15 @@ checkpoint closes only when the built payload gives constant-cost leftmost
 range-minimum witnesses over complete blocks and proves its payload overhead is
 `LittleOLinear`.
 
+Do not count a selected-block bridge as this checkpoint if its exactness still
+assumes that the selector entry already contains the semantic winner, for
+example a premise of the form `selectorEntries[slot]? = some
+(bpRangeArgMinBlock ...)`. Such a lemma is useful only as an iteration result.
+The same loop must build the local/global/top selector entries, prove the query
+computes the correct slot by bounded arithmetic and charged reads, prove the
+payload and machine-word bounds, and consume the bridge in
+`concreteBPRelativeRmmInteriorDirectory_profile`.
+
 4. Concrete relative-rmM macro, backed by charged payload reads:
 
 ```lean
@@ -679,6 +688,10 @@ Invalid stop points for this final path:
   theorem is still conditional on a supplied merged-candidate hypothesis such
   as `hmerge`, rather than proving that merge fact from the built payload
   entries and BP/RMQ semantics.
+- proving a selected-block or selector-cell bridge whose exactness assumes the
+  selector cell already stores `bpRangeArgMinBlock` or another semantic answer,
+  without building and routing the concrete local/global/top selector tables in
+  the same loop.
 - repairing the machine-word side condition or balanced-prefix invariant for
   the BP range-min/max summary layer and then stopping before the next concrete
   answer-close attempt.
