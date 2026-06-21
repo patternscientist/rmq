@@ -36,6 +36,10 @@ Use this workflow for nontrivial work in the RMQ Lean repository.
 
 - Do not spawn subagents unless the user explicitly asks for parallel agents,
   delegation, or subagent work.
+- Once the user has explicitly approved an unattended loop with parallelization,
+  treat that approval as active for the loop target: look for independent proof
+  leaves before starting each substantial iteration, and use a small number of
+  DAG-bound workers when their outputs feed the same named join theorem.
 - Good read-only subagent splits:
   - theorem inventory and trust-base audit,
   - proof-gap scan for a target milestone,
@@ -43,6 +47,11 @@ Use this workflow for nontrivial work in the RMQ Lean repository.
   - cost/space model consistency review.
 - Good worker splits require disjoint write ownership, such as one module per
   worker. Tell workers not to revert other changes.
+- Good proof-worker splits require pinned theorem signatures or construction
+  contracts up front. If the leaf contract is not stable enough to hand to a
+  worker, keep it in the lead loop rather than spawning exploratory churn.
+- If there are no independent leaves, state that briefly in the goal reflection
+  and proceed single-threaded; do not invent parallel side quests.
 
 ## Unattended Loops
 
@@ -57,15 +66,23 @@ Loop behavior:
 
 1. Pick the ambitious owned target from local context, such as the concrete
    component profile or capstone theorem the worker is meant to close.
-2. Write a short goal reflection:
+2. Check the parallelization shape of the target:
+   - Join theorem: the named theorem/profile all leaves must feed.
+   - Independent leaves: proof tasks that can be worked in separate branches
+     without changing shared public surfaces.
+   - Worker contracts: exact theorem signatures or construction obligations.
+   - Decision: spawn/use workers if the user has approved parallelization and
+     the leaves are genuinely independent; otherwise continue in the lead loop.
+3. Write a short goal reflection:
    - Overall goal: the capstone theorem or concrete component profile.
    - Current gap: what still prevents that theorem from typechecking.
    - Hard part: the construction or proof obligation easiest to postpone.
    - This iteration: the most ambitious concrete step toward that gap.
+   - Parallel plan: workers/leaves used this iteration, or why none are useful.
    - Not doing: technically useful side work to avoid this round.
-3. Implement and verify it.
-4. Reassess the same target immediately after verification.
-5. Continue into the next iteration when there is no real design decision, user
+4. Implement and verify it.
+5. Reassess the same target immediately after verification.
+6. Continue into the next iteration when there is no real design decision, user
    input need, merge conflict, tool/approval blocker, or proven
    target-misspecification.
 

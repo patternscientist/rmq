@@ -7,6 +7,28 @@ proof churn.
 The coordinator chat owns integration. Worker chats own narrow branches and
 report enough evidence for the coordinator to merge, port, or reject their work.
 
+## Parallelization Contract
+
+Parallelism is useful only when it shortens the current path to the named join
+theorem. Before starting a multi-chat or agent-backed loop, the coordinator
+should identify:
+
+- the join theorem/profile all branches feed;
+- the independent leaves that can be proved without changing shared public
+  surfaces;
+- each worker's exact theorem signature or construction obligation;
+- the branch/worktree and file surface owned by each worker.
+
+When the user has approved parallelization for an unattended loop, workers
+should actively look for such leaves rather than defaulting to one centralized
+proof stream. If a worker sees a new independent leaf inside its target, it
+should either use an approved subagent/worktree split or report the split as a
+coordination action, while continuing on its own owned theorem when possible.
+
+Do not create parallel work for unrelated targets, documentation polish, or
+future-roadmap items. If a leaf would not be consumed by the current join
+theorem, it is not a parallelization candidate for the loop.
+
 For the active succinct-RMQ finish line, every worker should read
 `docs/SUCCINCT_FINAL_PATH.md` before editing. That file is the current contract
 for the descriptor-select component, concrete macro/micro BP-close component,
@@ -27,6 +49,8 @@ Goal reflection:
 - Current gap:
 - Hard part:
 - This branch's ambitious step:
+- Parallelization plan: <worker leaves used, or why this branch is deliberately
+  single-threaded>
 - Explicitly avoided as lower-priority:
 
 New theorem/def surface:
