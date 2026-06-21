@@ -915,3 +915,49 @@ Deep read of both worker worktrees + research pass. Full write-up with citations
   (relative rank/select encoding), Liu–Yu 2020 (succinct-RMQ lower bound).
   Prefer the universal table over a new word-level argmin primitive (no trust-base
   expansion).
+
+## 2026-06-20 (latest) — correct pivot to the compact/relative target; wall not yet broken; mirage blessed not retired
+
+Build green, trust clean (0 bad-axiom). Coordinator advanced 3 commits: proved +
+merged the guarded BP close macro/micro profile (`308ce39`, `676e360`) and pinned
+a **compact BP close retask contract** (`d1ca4a9`). Worker A's close work is now
+merged (0 ahead). The second worker is still grinding the redundant descriptor
+select (+6301 dirty lines in `SuccinctSelectProposal.lean`), not re-tasked.
+
+**The good — the team pivoted exactly as recommended.** New
+`compactBPCloseSummaryPayloadOverhead`: `logLogSampledDirectoryOverhead` (relative
+code classifier) + 3× `sampledDirectoryOverhead` (universal small-block tables +
+relative block + relative superblock summaries), docstring: *"deliberately no
+dense endpoint-pair or interior block-pair payload."* Proven **unconditionally
+`LittleOLinear`** (`compactBPCloseSummaryPayloadOverhead_littleO`). The retask
+contract notes the "payload must be followed by a compact relative/universal-table
+close." This is the recommended fix, now encoded as the target budget.
+
+**Concern 1 — the mirage was merged AND axiom-blessed, not retired.** The
+non-instantiable `concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_sampled_profile`
+(premises `hmicroLittle` ∧ `hmacroBudget` not co-satisfiable; macro
+`interiorBlockPairRanges` still `blockCount²`) is now in the coordinator and in
+the 9 new `axiom_check` entries. Blessing a vacuous conditional as a milestone
+overstates progress; the `blockCount²` machinery should be **retired** now that
+the compact direction supersedes it (retire-don't-bless).
+
+**Concern 2 — the compact path is target-only; the wall is NOT yet broken.** The
+only concrete summary is the **absolute-width** `concreteBPRangeMinMaxSummaryTable`
+(`fieldWidth`=Θ(log n)); `concreteBPRangeMinMaxSummaryTable_compact_summary_profile`
+feeds it via `hbudget : 2*(blockCount*fieldWidth) ≤ compactOverhead`, which at
+blockSize=½log n is `2n ≤ o(n)` — still unsatisfiable. **No relative/logLog
+summary table exists yet** (the only `logLog` use is in the overhead *envelope*).
+The missing piece is the relative block-summary table — store block min-excess
+*relative* to a sampled superblock in O(log log n) bits, exactly the repo's own
+`canonicalBlockRankEntries` technique — so blockCount·logLogWidth = o(n) at
+blockSize=O(log n). Until that exists and instantiates the compact profile
+*unconditionally*, the wall stands.
+
+**Verdict / stop.** Not filler — the compact pivot is the correct, recommended
+response to the wall, and the unconditional o(n) of the compact envelope is real.
+But (a) the wall is not broken (no instantiable o(n) close directory yet), and
+(b) the round overstates itself by merging + blessing the vacuous guarded profile
+instead of retiring the `blockCount²` machinery. Next: build the relative
+(logLog) summary table → instantiate the compact profile with **no budget
+premises** → join; retire the mirage; re-task the descriptor worker off the
+redundant select.
