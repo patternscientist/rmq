@@ -873,6 +873,21 @@ def blockOfClose (blockSize close : Nat) : Nat :=
 def blockStartOf (blockSize block : Nat) : Nat :=
   block * blockSize
 
+theorem blockStartOf_succ
+    (blockSize block : Nat) :
+    blockStartOf blockSize block + blockSize =
+      blockStartOf blockSize (block + 1) := by
+  unfold blockStartOf
+  simpa using (Nat.succ_mul block blockSize).symm
+
+theorem blockStartOf_mono
+    {blockSize leftBlock rightBlock : Nat}
+    (hblock : leftBlock <= rightBlock) :
+    blockStartOf blockSize leftBlock <=
+      blockStartOf blockSize rightBlock := by
+  unfold blockStartOf
+  exact Nat.mul_le_mul_right blockSize hblock
+
 theorem blockStartOf_blockOfClose_le
     {blockSize close : Nat} :
     blockStartOf blockSize (blockOfClose blockSize close) <= close := by
@@ -945,6 +960,14 @@ theorem bpExcessAt_add_close_rank_eq_open_rank_of_le
   unfold bpExcessAt
   exact Nat.sub_add_cancel (bpExcessAt_prefix_nonnegative shape hpos)
 
+theorem bpCode_rankTrue_full (shape : Cartesian.CartesianShape) :
+    Succinct.rankPrefix true shape.bpCode shape.bpCode.length =
+      shape.size := by
+  have hfinal :=
+    Succinct.BalancedParens.final_rank_eq (bpParensOfShape shape)
+  have hfalse := bpCode_rankFalse_full shape
+  simpa [bpParensOfShape, hfalse] using hfinal
+
 theorem bpExcessAt_close_succ_add_inorder_succ_eq_open_rank
     {shape : Cartesian.CartesianShape} {idx close : Nat}
     (hclose : bpCloseOfInorder? shape idx = some close) :
@@ -961,6 +984,109 @@ theorem bpExcessAt_close_succ_add_inorder_succ_eq_open_rank
       rw [hrank]
     _ = Succinct.rankPrefix true shape.bpCode (close + 1) := by
       exact bpExcessAt_add_close_rank_eq_open_rank_of_le shape hbound
+
+theorem bpExcessAt_node_root_close_succ
+    (left right : Cartesian.CartesianShape) :
+    bpExcessAt (Cartesian.CartesianShape.node left right)
+      (left.bpCode.length + 2) = 0 := by
+  have hfalseTail :
+      Succinct.rankPrefix false (left.bpCode ++ false :: right.bpCode)
+          (left.bpCode.length + 1) =
+        Succinct.rankPrefix false left.bpCode left.bpCode.length + 1 := by
+    have hge : left.bpCode.length <= left.bpCode.length + 1 := by
+      omega
+    have happ :=
+      Succinct.rankPrefix_append_of_ge false left.bpCode
+        (false :: right.bpCode)
+        (limit := left.bpCode.length + 1) hge
+    have htail :
+        Succinct.rankPrefix false (false :: right.bpCode)
+            (left.bpCode.length + 1 - left.bpCode.length) = 1 := by
+      have hsub : left.bpCode.length + 1 - left.bpCode.length = 1 := by
+        omega
+      simp [hsub, Succinct.rankPrefix]
+    rw [happ, htail]
+  have htrueTail :
+      Succinct.rankPrefix true (left.bpCode ++ false :: right.bpCode)
+          (left.bpCode.length + 1) =
+        Succinct.rankPrefix true left.bpCode left.bpCode.length := by
+    have hge : left.bpCode.length <= left.bpCode.length + 1 := by
+      omega
+    have happ :=
+      Succinct.rankPrefix_append_of_ge true left.bpCode
+        (false :: right.bpCode)
+        (limit := left.bpCode.length + 1) hge
+    have htail :
+        Succinct.rankPrefix true (false :: right.bpCode)
+            (left.bpCode.length + 1 - left.bpCode.length) = 0 := by
+      have hsub : left.bpCode.length + 1 - left.bpCode.length = 1 := by
+        omega
+      simp [hsub, Succinct.rankPrefix]
+    rw [happ, htail]
+    omega
+  have hleftBalanced :
+      Succinct.rankPrefix true left.bpCode left.bpCode.length =
+        Succinct.rankPrefix false left.bpCode left.bpCode.length := by
+    exact Succinct.BalancedParens.final_rank_eq (bpParensOfShape left)
+  unfold bpExcessAt
+  simp [Cartesian.CartesianShape.bpCode, Succinct.rankPrefix,
+    hfalseTail, htrueTail, hleftBalanced]
+  omega
+
+theorem bpExcessAt_node_pos_before_root_close_succ_pos
+    (left right : Cartesian.CartesianShape)
+    {pos : Nat}
+    (hpos : 0 < pos)
+    (hbefore : pos < left.bpCode.length + 2) :
+    0 <
+      bpExcessAt (Cartesian.CartesianShape.node left right) pos := by
+  cases pos with
+  | zero =>
+      omega
+  | succ p =>
+      have hp_le : p <= left.bpCode.length := by
+        omega
+      have hfalseTail :
+          Succinct.rankPrefix false
+              (left.bpCode ++ false :: right.bpCode) p =
+            Succinct.rankPrefix false left.bpCode p :=
+        Succinct.rankPrefix_append_of_le false left.bpCode
+          (false :: right.bpCode) hp_le
+      have htrueTail :
+          Succinct.rankPrefix true
+              (left.bpCode ++ false :: right.bpCode) p =
+            Succinct.rankPrefix true left.bpCode p :=
+        Succinct.rankPrefix_append_of_le true left.bpCode
+          (false :: right.bpCode) hp_le
+      have hprefix :
+          Succinct.rankPrefix false left.bpCode p <=
+            Succinct.rankPrefix true left.bpCode p :=
+        bpExcessAt_prefix_nonnegative left hp_le
+      unfold bpExcessAt
+      simp [Cartesian.CartesianShape.bpCode, Succinct.rankPrefix,
+        hfalseTail, htrueTail]
+      omega
+
+theorem bpExcessAt_node_root_close_succ_le_prefix
+    (left right : Cartesian.CartesianShape)
+    (pos : Nat) :
+    bpExcessAt (Cartesian.CartesianShape.node left right)
+        (left.bpCode.length + 2) <=
+      bpExcessAt (Cartesian.CartesianShape.node left right) pos := by
+  rw [bpExcessAt_node_root_close_succ]
+  exact Nat.zero_le _
+
+theorem bpExcessAt_node_root_close_succ_lt_before
+    (left right : Cartesian.CartesianShape)
+    {pos : Nat}
+    (hpos : 0 < pos)
+    (hbefore : pos < left.bpCode.length + 2) :
+    bpExcessAt (Cartesian.CartesianShape.node left right)
+        (left.bpCode.length + 2) <
+      bpExcessAt (Cartesian.CartesianShape.node left right) pos := by
+  rw [bpExcessAt_node_root_close_succ]
+  exact bpExcessAt_node_pos_before_root_close_succ_pos
+    left right hpos hbefore
 
 /-- Tail-recursive minimum over a list, seeded by an explicit bound. -/
 def natListMinFrom (seed : Nat) : List Nat -> Nat
@@ -2961,6 +3087,118 @@ theorem bpPrefixRangeArgMinPrefixPosFrom_excess_le_pos_add
           omega
         simpa [hpos] using htail
 
+theorem bpPrefixRangeArgMinPrefixPosFrom_eq_best_of_best_le_all
+    (shape : Cartesian.CartesianShape)
+    (pos steps best : Nat)
+    (hall :
+      forall {offset : Nat},
+        offset < steps ->
+          bpExcessAt shape best <=
+            bpExcessAt shape
+              (Nat.min (pos + offset) shape.bpCode.length)) :
+    bpPrefixRangeArgMinPrefixPosFrom shape pos steps best = best := by
+  induction steps generalizing pos best with
+  | zero =>
+      simp [bpPrefixRangeArgMinPrefixPosFrom]
+  | succ steps ih =>
+      unfold bpPrefixRangeArgMinPrefixPosFrom
+      have hhead :
+          bpBetterArgMinPrefixPos shape best
+              (Nat.min pos shape.bpCode.length) = best := by
+        exact bpBetterArgMinPrefixPos_eq_left_of_excess_le
+          shape (hall (offset := 0) (by omega))
+      simp [hhead]
+      apply ih
+      intro offset hoffset
+      have htail := hall (offset := offset + 1) (by omega)
+      have hpos :
+          pos + (offset + 1) = pos + 1 + offset := by
+        omega
+      simpa [hpos] using htail
+
+theorem bpPrefixRangeArgMinPrefixPosFrom_eq_of_leftmost_min_excess
+    (shape : Cartesian.CartesianShape)
+    {pos steps best target : Nat}
+    (hbest :
+      bpExcessAt shape target < bpExcessAt shape best)
+    (hlo : pos <= target)
+    (hhi : target < pos + steps)
+    (hbound : pos + steps <= shape.bpCode.length + 1)
+    (hmin :
+      forall {sample : Nat},
+        pos <= sample ->
+          sample < pos + steps ->
+            bpExcessAt shape target <= bpExcessAt shape sample)
+    (hleft :
+      forall {sample : Nat},
+        pos <= sample ->
+          sample < target ->
+            bpExcessAt shape target < bpExcessAt shape sample) :
+    bpPrefixRangeArgMinPrefixPosFrom shape pos steps best = target := by
+  induction steps generalizing pos best with
+  | zero =>
+      omega
+  | succ steps ih =>
+      unfold bpPrefixRangeArgMinPrefixPosFrom
+      have hposLeLen : pos <= shape.bpCode.length := by
+        omega
+      have hsample :
+          Nat.min pos shape.bpCode.length = pos :=
+        Nat.min_eq_left hposLeLen
+      by_cases hposEq : pos = target
+      · subst target
+        have hchoose :
+            bpBetterArgMinPrefixPos shape best
+                (Nat.min pos shape.bpCode.length) = pos := by
+          rw [hsample]
+          exact bpBetterArgMinPrefixPos_eq_right_of_excess_lt
+            shape hbest
+        simp [hchoose]
+        exact
+          bpPrefixRangeArgMinPrefixPosFrom_eq_best_of_best_le_all
+            shape (pos + 1) steps pos (by
+              intro offset hoffset
+              have hsampleLe :
+                  pos + 1 + offset <= shape.bpCode.length := by
+                omega
+              have hsampleMin :
+                  Nat.min (pos + 1 + offset)
+                      shape.bpCode.length =
+                    pos + 1 + offset :=
+                Nat.min_eq_left hsampleLe
+              rw [hsampleMin]
+              exact hmin (by omega) (by omega))
+      · have hposLt : pos < target := by
+          omega
+        have hsampleGt :
+            bpExcessAt shape target <
+              bpExcessAt shape
+                (Nat.min pos shape.bpCode.length) := by
+          rw [hsample]
+          exact hleft (by omega) hposLt
+        have hnextBest :
+            bpExcessAt shape target <
+              bpExcessAt shape
+                (bpBetterArgMinPrefixPos shape best
+                  (Nat.min pos shape.bpCode.length)) := by
+          unfold bpBetterArgMinPrefixPos
+          by_cases hlt :
+              bpExcessAt shape
+                  (Nat.min pos shape.bpCode.length) <
+                bpExcessAt shape best
+          · simp [hlt, hsampleGt]
+          · simp [hlt, hbest]
+        exact ih hnextBest
+          (by omega)
+          (by omega)
+          (by omega)
+          (by
+            intro sample hslo hshi
+            exact hmin (by omega) (by omega))
+          (by
+            intro sample hslo hshi
+            exact hleft (by omega) hshi)
+
 def bpPrefixRangeArgMinPrefixPos
     (shape : Cartesian.CartesianShape)
     (start count : Nat) : Nat :=
@@ -2983,6 +3221,134 @@ theorem bpPrefixRangeArgMinPrefixPos_le_length
       exact bpPrefixRangeArgMinPrefixPosFrom_le_length shape
         (start + 1) steps (Nat.min start shape.bpCode.length)
         (Nat.min_le_right start shape.bpCode.length)
+
+theorem bpPrefixRangeArgMinPrefixPos_eq_of_leftmost_min_excess
+    {shape : Cartesian.CartesianShape}
+    {start count target : Nat}
+    (hmem : start <= target /\ target < start + count)
+    (hbound : start + count <= shape.bpCode.length + 1)
+    (hmin :
+      forall {pos : Nat},
+        start <= pos ->
+          pos < start + count ->
+            bpExcessAt shape target <= bpExcessAt shape pos)
+    (hleft :
+      forall {pos : Nat},
+        start <= pos ->
+          pos < target ->
+            bpExcessAt shape target < bpExcessAt shape pos) :
+    bpPrefixRangeArgMinPrefixPos shape start count = target := by
+  unfold bpPrefixRangeArgMinPrefixPos
+  cases count with
+  | zero =>
+      omega
+  | succ steps =>
+      have hstartLeLen : start <= shape.bpCode.length := by
+        omega
+      have hstartMin :
+          Nat.min start shape.bpCode.length = start :=
+        Nat.min_eq_left hstartLeLen
+      by_cases htargetStart : target = start
+      · subst target
+        simp [hstartMin]
+        exact
+          bpPrefixRangeArgMinPrefixPosFrom_eq_best_of_best_le_all
+            shape (start + 1) steps start (by
+              intro offset hoffset
+              have hposLeLen :
+                  start + 1 + offset <= shape.bpCode.length := by
+                omega
+              have hposMin :
+                  Nat.min (start + 1 + offset)
+                      shape.bpCode.length =
+                    start + 1 + offset :=
+                Nat.min_eq_left hposLeLen
+              rw [hposMin]
+              exact hmin (by omega) (by omega))
+      · have hstartLt : start < target := by
+          omega
+        have hbest :
+            bpExcessAt shape target < bpExcessAt shape start :=
+          hleft (by omega) hstartLt
+        simp [hstartMin]
+        exact
+          bpPrefixRangeArgMinPrefixPosFrom_eq_of_leftmost_min_excess
+            shape hbest
+            (by omega)
+            (by omega)
+            (by omega)
+            (by
+              intro pos hposLo hposHi
+              exact hmin (by omega) (by omega))
+          (by
+            intro pos hposLo hposHi
+            exact hleft (by omega) hposHi)
+
+theorem bpPrefixRangeArgMinPrefixPosFrom_mem_range
+    (shape : Cartesian.CartesianShape)
+    {start pos steps best : Nat}
+    (hbest : start <= best /\ best < pos + steps)
+    (hpos : start <= pos)
+    (hbound : pos + steps <= shape.bpCode.length + 1) :
+    start <= bpPrefixRangeArgMinPrefixPosFrom shape pos steps best /\
+      bpPrefixRangeArgMinPrefixPosFrom shape pos steps best <
+        pos + steps := by
+  induction steps generalizing pos best with
+  | zero =>
+      simpa [bpPrefixRangeArgMinPrefixPosFrom] using hbest
+  | succ steps ih =>
+      unfold bpPrefixRangeArgMinPrefixPosFrom
+      have hposLeLen : pos <= shape.bpCode.length := by
+        omega
+      have hsample :
+          Nat.min pos shape.bpCode.length = pos :=
+        Nat.min_eq_left hposLeLen
+      let next :=
+        bpBetterArgMinPrefixPos shape best
+          (Nat.min pos shape.bpCode.length)
+      have hnext :
+          start <= next /\ next < pos + 1 + steps := by
+        unfold next bpBetterArgMinPrefixPos
+        rw [hsample]
+        by_cases hlt :
+            bpExcessAt shape pos < bpExcessAt shape best
+        · simp [hlt]
+          omega
+        · simp [hlt]
+          omega
+      have hrec :=
+        ih (pos := pos + 1) (best := next)
+          hnext (by omega) (by omega)
+      simpa [next, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
+        using hrec
+
+theorem bpPrefixRangeArgMinPrefixPos_mem_range
+    {shape : Cartesian.CartesianShape}
+    {start count : Nat}
+    (hcount : 0 < count)
+    (hbound : start + count <= shape.bpCode.length + 1) :
+    start <= bpPrefixRangeArgMinPrefixPos shape start count /\
+      bpPrefixRangeArgMinPrefixPos shape start count < start + count := by
+  unfold bpPrefixRangeArgMinPrefixPos
+  cases count with
+  | zero =>
+      omega
+  | succ steps =>
+      have hstartLeLen : start <= shape.bpCode.length := by
+        omega
+      have hstartMin :
+          Nat.min start shape.bpCode.length = start :=
+        Nat.min_eq_left hstartLeLen
+      simp [hstartMin]
+      have hmem :=
+        bpPrefixRangeArgMinPrefixPosFrom_mem_range
+          shape
+          (start := start)
+          (pos := start + 1)
+          (steps := steps)
+          (best := start)
+          (by omega) (by omega) (by omega)
+      simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using hmem
 
 theorem bpPrefixRangeArgMinPrefixPos_excess_le_offset
     (shape : Cartesian.CartesianShape)
@@ -3016,6 +3382,615 @@ def bpPrefixRangeMinExcess
     (shape : Cartesian.CartesianShape)
     (start count : Nat) : Nat :=
   bpExcessAt shape (bpPrefixRangeArgMinPrefixPos shape start count)
+
+theorem bpPrefixRangeMinExcess_eq_of_leftmost_min_excess
+    {shape : Cartesian.CartesianShape}
+    {start count target : Nat}
+    (hmem : start <= target /\ target < start + count)
+    (hbound : start + count <= shape.bpCode.length + 1)
+    (hmin :
+      forall {pos : Nat},
+        start <= pos ->
+          pos < start + count ->
+            bpExcessAt shape target <= bpExcessAt shape pos)
+    (hleft :
+      forall {pos : Nat},
+        start <= pos ->
+          pos < target ->
+            bpExcessAt shape target < bpExcessAt shape pos) :
+    bpPrefixRangeMinExcess shape start count =
+      bpExcessAt shape target := by
+  unfold bpPrefixRangeMinExcess
+  rw [bpPrefixRangeArgMinPrefixPos_eq_of_leftmost_min_excess
+    hmem hbound hmin hleft]
+
+theorem bpPrefixRangeWitness_eq_of_leftmost_min_excess
+    {shape : Cartesian.CartesianShape}
+    {start count target : Nat}
+    (hmem : start <= target /\ target < start + count)
+    (hbound : start + count <= shape.bpCode.length + 1)
+    (hmin :
+      forall {pos : Nat},
+        start <= pos ->
+          pos < start + count ->
+            bpExcessAt shape target <= bpExcessAt shape pos)
+    (hleft :
+      forall {pos : Nat},
+        start <= pos ->
+          pos < target ->
+            bpExcessAt shape target < bpExcessAt shape pos) :
+    (bpPrefixRangeMinExcess shape start count,
+        bpPrefixRangeArgMinPrefixPos shape start count) =
+      (bpExcessAt shape target, target) := by
+  apply Prod.ext
+  · exact
+      bpPrefixRangeMinExcess_eq_of_leftmost_min_excess
+        hmem hbound hmin hleft
+  · exact
+      bpPrefixRangeArgMinPrefixPos_eq_of_leftmost_min_excess
+        hmem hbound hmin hleft
+
+theorem bpBlockArgMinPrefixPosFrom_eq_prefixRangeArgMinPrefixPosFrom
+    (shape : Cartesian.CartesianShape)
+    (pos steps best : Nat) :
+    bpBlockArgMinPrefixPosFrom shape pos steps best =
+      bpPrefixRangeArgMinPrefixPosFrom shape pos steps best := by
+  induction steps generalizing pos best with
+  | zero =>
+      simp [bpBlockArgMinPrefixPosFrom,
+        bpPrefixRangeArgMinPrefixPosFrom]
+  | succ steps ih =>
+      unfold bpBlockArgMinPrefixPosFrom
+      unfold bpPrefixRangeArgMinPrefixPosFrom
+      unfold bpBetterArgMinPrefixPos
+      by_cases hlt :
+          bpExcessAt shape (Nat.min pos shape.bpCode.length) <
+            bpExcessAt shape best
+      · simp [hlt, ih]
+      · simp [hlt, ih]
+
+theorem bpBlockArgMinPrefixPos_eq_prefixRangeArgMinPrefixPos
+    (shape : Cartesian.CartesianShape)
+    (blockSize block : Nat) :
+    bpBlockArgMinPrefixPos shape blockSize block =
+      bpPrefixRangeArgMinPrefixPos shape
+        (blockStartOf blockSize block) (blockSize + 1) := by
+  unfold bpBlockArgMinPrefixPos
+  unfold bpPrefixRangeArgMinPrefixPos
+  have hfirst :
+      (if bpExcessAt shape
+            (Nat.min (blockStartOf blockSize block)
+              shape.bpCode.length) <
+          bpExcessAt shape
+            (Nat.min (blockStartOf blockSize block)
+              shape.bpCode.length)
+        then
+          Nat.min (blockStartOf blockSize block) shape.bpCode.length
+        else
+          Nat.min (blockStartOf blockSize block)
+            shape.bpCode.length) =
+        Nat.min (blockStartOf blockSize block) shape.bpCode.length := by
+    simp
+  simp [bpBlockArgMinPrefixPosFrom,
+    bpBlockArgMinPrefixPosFrom_eq_prefixRangeArgMinPrefixPosFrom]
+
+theorem bpBlockArgMinPrefixPos_eq_of_leftmost_min_excess
+    {shape : Cartesian.CartesianShape}
+    {blockSize block target : Nat}
+    (hmem :
+      blockStartOf blockSize block <= target /\
+        target < blockStartOf blockSize block + (blockSize + 1))
+    (hbound :
+      blockStartOf blockSize block + (blockSize + 1) <=
+        shape.bpCode.length + 1)
+    (hmin :
+      forall {pos : Nat},
+        blockStartOf blockSize block <= pos ->
+          pos < blockStartOf blockSize block + (blockSize + 1) ->
+            bpExcessAt shape target <= bpExcessAt shape pos)
+    (hleft :
+      forall {pos : Nat},
+        blockStartOf blockSize block <= pos ->
+          pos < target ->
+            bpExcessAt shape target < bpExcessAt shape pos) :
+    bpBlockArgMinPrefixPos shape blockSize block = target := by
+  rw [bpBlockArgMinPrefixPos_eq_prefixRangeArgMinPrefixPos]
+  exact
+    bpPrefixRangeArgMinPrefixPos_eq_of_leftmost_min_excess
+      hmem hbound hmin hleft
+
+theorem bpBlockArgMinPrefixPos_mem_range
+    {shape : Cartesian.CartesianShape}
+    {blockSize block : Nat}
+    (hbound :
+      blockStartOf blockSize block + (blockSize + 1) <=
+        shape.bpCode.length + 1) :
+    blockStartOf blockSize block <=
+        bpBlockArgMinPrefixPos shape blockSize block /\
+      bpBlockArgMinPrefixPos shape blockSize block <
+        blockStartOf blockSize block + (blockSize + 1) := by
+  rw [bpBlockArgMinPrefixPos_eq_prefixRangeArgMinPrefixPos]
+  exact bpPrefixRangeArgMinPrefixPos_mem_range
+    (shape := shape) (start := blockStartOf blockSize block)
+    (count := blockSize + 1) (by omega) hbound
+
+theorem bpRangeArgMinPrefixPosFrom_eq_best_of_best_le_all
+    (shape : Cartesian.CartesianShape)
+    (blockSize block steps best : Nat)
+    (hall :
+      forall {offset : Nat},
+        offset < steps ->
+          bpExcessAt shape best <=
+            bpExcessAt shape
+              (bpBlockArgMinPrefixPos shape blockSize
+                (block + offset))) :
+    bpRangeArgMinPrefixPosFrom shape blockSize block steps best = best := by
+  induction steps generalizing block best with
+  | zero =>
+      simp [bpRangeArgMinPrefixPosFrom]
+  | succ steps ih =>
+      unfold bpRangeArgMinPrefixPosFrom
+      have hhead :
+          bpBetterArgMinPrefixPos shape best
+              (bpBlockArgMinPrefixPos shape blockSize block) = best := by
+        exact bpBetterArgMinPrefixPos_eq_left_of_excess_le
+          shape (hall (offset := 0) (by omega))
+      simp [hhead]
+      apply ih
+      intro offset hoffset
+      have htail := hall (offset := offset + 1) (by omega)
+      have hblock :
+          block + (offset + 1) = block + 1 + offset := by
+        omega
+      simpa [hblock] using htail
+
+theorem bpRangeArgMinPrefixPosFrom_eq_of_leftmost_block_candidate
+    (shape : Cartesian.CartesianShape)
+    {blockSize block steps best targetBlock target : Nat}
+    (hbest :
+      bpExcessAt shape target < bpExcessAt shape best)
+    (hlo : block <= targetBlock)
+    (hhi : targetBlock < block + steps)
+    (htarget :
+      bpBlockArgMinPrefixPos shape blockSize targetBlock = target)
+    (hmin :
+      forall {candidateBlock : Nat},
+        block <= candidateBlock ->
+          candidateBlock < block + steps ->
+            bpExcessAt shape target <=
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize
+                  candidateBlock))
+    (hleft :
+      forall {candidateBlock : Nat},
+        block <= candidateBlock ->
+          candidateBlock < targetBlock ->
+            bpExcessAt shape target <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize
+                  candidateBlock)) :
+    bpRangeArgMinPrefixPosFrom shape blockSize block steps best =
+      target := by
+  induction steps generalizing block best with
+  | zero =>
+      omega
+  | succ steps ih =>
+      unfold bpRangeArgMinPrefixPosFrom
+      by_cases hblockEq : block = targetBlock
+      · subst targetBlock
+        have hchoose :
+            bpBetterArgMinPrefixPos shape best
+                (bpBlockArgMinPrefixPos shape blockSize block) =
+              target := by
+          rw [htarget]
+          exact bpBetterArgMinPrefixPos_eq_right_of_excess_lt
+            shape hbest
+        simp [hchoose]
+        exact
+          bpRangeArgMinPrefixPosFrom_eq_best_of_best_le_all
+            shape blockSize (block + 1) steps target (by
+              intro offset hoffset
+              exact hmin (by omega) (by omega))
+      · have hblockLt : block < targetBlock := by
+          omega
+        have hcandidateGt :
+            bpExcessAt shape target <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize block) :=
+          hleft (by omega) hblockLt
+        have hnextBest :
+            bpExcessAt shape target <
+              bpExcessAt shape
+                (bpBetterArgMinPrefixPos shape best
+                  (bpBlockArgMinPrefixPos shape blockSize block)) := by
+          by_cases hlt :
+              bpExcessAt shape
+                  (bpBlockArgMinPrefixPos shape blockSize block) <
+                bpExcessAt shape best
+          · rw [bpBetterArgMinPrefixPos_eq_right_of_excess_lt
+              shape hlt]
+            exact hcandidateGt
+          · have hle :
+                bpExcessAt shape best <=
+                  bpExcessAt shape
+                    (bpBlockArgMinPrefixPos shape blockSize block) :=
+              Nat.le_of_not_gt hlt
+            rw [bpBetterArgMinPrefixPos_eq_left_of_excess_le
+              shape hle]
+            exact hbest
+        exact ih
+          (block := block + 1)
+          (best :=
+            bpBetterArgMinPrefixPos shape best
+              (bpBlockArgMinPrefixPos shape blockSize block))
+          hnextBest
+          (by omega)
+          (by omega)
+          (by
+            intro candidateBlock hlo' hhi'
+            exact hmin (by omega) (by omega))
+          (by
+            intro candidateBlock hlo' hlt'
+            exact hleft (by omega) hlt')
+
+theorem bpRangeArgMinPrefixPos_eq_of_leftmost_block_candidate
+    {shape : Cartesian.CartesianShape}
+    {blockSize startBlock blockCount targetBlock target : Nat}
+    (hblock : startBlock <= targetBlock /\
+      targetBlock < startBlock + blockCount)
+    (htarget :
+      bpBlockArgMinPrefixPos shape blockSize targetBlock = target)
+    (hmin :
+      forall {candidateBlock : Nat},
+        startBlock <= candidateBlock ->
+          candidateBlock < startBlock + blockCount ->
+            bpExcessAt shape target <=
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize
+                  candidateBlock))
+    (hleft :
+      forall {candidateBlock : Nat},
+        startBlock <= candidateBlock ->
+          candidateBlock < targetBlock ->
+            bpExcessAt shape target <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize
+                  candidateBlock)) :
+    bpRangeArgMinPrefixPos shape blockSize startBlock blockCount =
+      target := by
+  unfold bpRangeArgMinPrefixPos
+  cases blockCount with
+  | zero =>
+      omega
+  | succ count =>
+      by_cases htargetStart : targetBlock = startBlock
+      · subst targetBlock
+        rw [htarget]
+        exact
+          bpRangeArgMinPrefixPosFrom_eq_best_of_best_le_all
+            shape blockSize (startBlock + 1) count target (by
+              intro offset hoffset
+              exact hmin (by omega) (by omega))
+      · have hstartLt : startBlock < targetBlock := by
+          omega
+        have hbest :
+            bpExcessAt shape target <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize startBlock) :=
+          hleft (by omega) hstartLt
+        exact
+          bpRangeArgMinPrefixPosFrom_eq_of_leftmost_block_candidate
+            shape hbest
+            (by omega)
+            (by omega)
+            htarget
+            (by
+              intro candidateBlock hlo hhi
+              exact hmin (by omega) (by omega))
+            (by
+              intro candidateBlock hlo hlt
+              exact hleft (by omega) hlt)
+
+theorem bpRangeMinExcess_eq_of_leftmost_block_candidate
+    {shape : Cartesian.CartesianShape}
+    {blockSize startBlock blockCount targetBlock target : Nat}
+    (hblock : startBlock <= targetBlock /\
+      targetBlock < startBlock + blockCount)
+    (htarget :
+      bpBlockArgMinPrefixPos shape blockSize targetBlock = target)
+    (hmin :
+      forall {candidateBlock : Nat},
+        startBlock <= candidateBlock ->
+          candidateBlock < startBlock + blockCount ->
+            bpExcessAt shape target <=
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize
+                  candidateBlock))
+    (hleft :
+      forall {candidateBlock : Nat},
+        startBlock <= candidateBlock ->
+          candidateBlock < targetBlock ->
+            bpExcessAt shape target <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize
+                  candidateBlock)) :
+    bpRangeMinExcess shape blockSize startBlock blockCount =
+      bpExcessAt shape target := by
+  unfold bpRangeMinExcess
+  rw [bpRangeArgMinPrefixPos_eq_of_leftmost_block_candidate
+    hblock htarget hmin hleft]
+
+theorem bpRangeWitness_eq_of_leftmost_block_candidate
+    {shape : Cartesian.CartesianShape}
+    {blockSize startBlock blockCount targetBlock target : Nat}
+    (hblock : startBlock <= targetBlock /\
+      targetBlock < startBlock + blockCount)
+    (htarget :
+      bpBlockArgMinPrefixPos shape blockSize targetBlock = target)
+    (hmin :
+      forall {candidateBlock : Nat},
+        startBlock <= candidateBlock ->
+          candidateBlock < startBlock + blockCount ->
+            bpExcessAt shape target <=
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize
+                  candidateBlock))
+    (hleft :
+      forall {candidateBlock : Nat},
+        startBlock <= candidateBlock ->
+          candidateBlock < targetBlock ->
+            bpExcessAt shape target <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize
+                  candidateBlock)) :
+    (bpRangeMinExcess shape blockSize startBlock blockCount,
+        bpRangeArgMinPrefixPos shape blockSize startBlock blockCount) =
+      (bpExcessAt shape target, target) := by
+  apply Prod.ext
+  · exact
+      bpRangeMinExcess_eq_of_leftmost_block_candidate
+        hblock htarget hmin hleft
+  · exact
+      bpRangeArgMinPrefixPos_eq_of_leftmost_block_candidate
+        hblock htarget hmin hleft
+
+theorem bpRangeArgMinPrefixPosFrom_mem_of_best_and_candidates
+    (shape : Cartesian.CartesianShape)
+    (blockSize block steps best lo hi : Nat)
+    (hbest : lo <= best /\ best < hi)
+    (hcandidate :
+      forall {offset : Nat},
+        offset < steps ->
+          lo <= bpBlockArgMinPrefixPos shape blockSize (block + offset) /\
+            bpBlockArgMinPrefixPos shape blockSize (block + offset) < hi) :
+    lo <= bpRangeArgMinPrefixPosFrom shape blockSize block steps best /\
+      bpRangeArgMinPrefixPosFrom shape blockSize block steps best < hi := by
+  induction steps generalizing block best with
+  | zero =>
+      simpa [bpRangeArgMinPrefixPosFrom] using hbest
+  | succ steps ih =>
+      unfold bpRangeArgMinPrefixPosFrom
+      let candidate := bpBlockArgMinPrefixPos shape blockSize block
+      let next := bpBetterArgMinPrefixPos shape best candidate
+      have hcand0 : lo <= candidate /\ candidate < hi := by
+        simpa [candidate] using hcandidate (offset := 0) (by omega)
+      have hnext : lo <= next /\ next < hi := by
+        unfold next bpBetterArgMinPrefixPos
+        by_cases hlt : bpExcessAt shape candidate < bpExcessAt shape best
+        · simp [hlt, hcand0]
+        · simp [hlt, hbest]
+      have hrec :=
+        ih (block := block + 1) (best := next)
+          hnext
+          (by
+            intro offset hoffset
+            have htail := hcandidate (offset := offset + 1) (by omega)
+            have hblock :
+                block + (offset + 1) = block + 1 + offset := by
+              omega
+            simpa [hblock] using htail)
+      simpa [candidate, next] using hrec
+
+theorem bpRangeArgMinPrefixPos_mem_prefix_range
+    {shape : Cartesian.CartesianShape}
+    {blockSize startBlock blockCount : Nat}
+    (hcount : 0 < blockCount)
+    (hbound :
+      blockStartOf blockSize (startBlock + blockCount) + 1 <=
+        shape.bpCode.length + 1) :
+    blockStartOf blockSize startBlock <=
+        bpRangeArgMinPrefixPos shape blockSize startBlock blockCount /\
+      bpRangeArgMinPrefixPos shape blockSize startBlock blockCount <
+        blockStartOf blockSize (startBlock + blockCount) + 1 := by
+  unfold bpRangeArgMinPrefixPos
+  cases blockCount with
+  | zero =>
+      omega
+  | succ count =>
+      have hstartBlockBound :
+          blockStartOf blockSize startBlock + (blockSize + 1) <=
+            shape.bpCode.length + 1 := by
+        have hlocal :
+            blockStartOf blockSize startBlock + (blockSize + 1) <=
+              blockStartOf blockSize (startBlock + (count + 1)) + 1 := by
+          have hstep :
+              blockStartOf blockSize startBlock + (blockSize + 1) =
+                blockStartOf blockSize (startBlock + 1) + 1 := by
+            rw [← blockStartOf_succ blockSize startBlock]
+            omega
+          have hmono :
+              blockStartOf blockSize (startBlock + 1) <=
+                blockStartOf blockSize (startBlock + (count + 1)) :=
+            blockStartOf_mono (blockSize := blockSize) (by omega)
+          omega
+        omega
+      have hbestLocal :=
+        bpBlockArgMinPrefixPos_mem_range
+          (shape := shape) (blockSize := blockSize)
+          (block := startBlock) hstartBlockBound
+      have hbest :
+          blockStartOf blockSize startBlock <=
+              bpBlockArgMinPrefixPos shape blockSize startBlock /\
+            bpBlockArgMinPrefixPos shape blockSize startBlock <
+              blockStartOf blockSize (startBlock + (count + 1)) + 1 := by
+        constructor
+        · exact hbestLocal.1
+        · have hlocal :
+              blockStartOf blockSize startBlock + (blockSize + 1) <=
+                blockStartOf blockSize (startBlock + (count + 1)) + 1 := by
+            have hstep :
+                blockStartOf blockSize startBlock + (blockSize + 1) =
+                  blockStartOf blockSize (startBlock + 1) + 1 := by
+              rw [← blockStartOf_succ blockSize startBlock]
+              omega
+            have hmono :
+                blockStartOf blockSize (startBlock + 1) <=
+                  blockStartOf blockSize (startBlock + (count + 1)) :=
+              blockStartOf_mono (blockSize := blockSize) (by omega)
+            omega
+          omega
+      exact
+        bpRangeArgMinPrefixPosFrom_mem_of_best_and_candidates
+          shape blockSize (startBlock + 1) count
+          (bpBlockArgMinPrefixPos shape blockSize startBlock)
+          (blockStartOf blockSize startBlock)
+          (blockStartOf blockSize (startBlock + (count + 1)) + 1)
+          hbest
+          (by
+            intro offset hoffset
+            have hcandidateBound :
+                blockStartOf blockSize (startBlock + 1 + offset) +
+                    (blockSize + 1) <=
+                  shape.bpCode.length + 1 := by
+              have hlocal :
+                  blockStartOf blockSize (startBlock + 1 + offset) +
+                      (blockSize + 1) <=
+                    blockStartOf blockSize (startBlock + (count + 1)) +
+                      1 := by
+                have hstep :
+                    blockStartOf blockSize (startBlock + 1 + offset) +
+                        (blockSize + 1) =
+                      blockStartOf blockSize
+                          (startBlock + 1 + offset + 1) + 1 := by
+                  rw [← blockStartOf_succ
+                    blockSize (startBlock + 1 + offset)]
+                  omega
+                have hmono :
+                    blockStartOf blockSize
+                        (startBlock + 1 + offset + 1) <=
+                      blockStartOf blockSize
+                        (startBlock + (count + 1)) :=
+                  blockStartOf_mono (blockSize := blockSize) (by omega)
+                omega
+              omega
+            have hcand :=
+              bpBlockArgMinPrefixPos_mem_range
+                (shape := shape) (blockSize := blockSize)
+                (block := startBlock + 1 + offset)
+                hcandidateBound
+            constructor
+            · have hlo :
+                  blockStartOf blockSize startBlock <=
+                    blockStartOf blockSize (startBlock + 1 + offset) := by
+                exact blockStartOf_mono (blockSize := blockSize) (by omega)
+              omega
+            · have hhi :
+                  blockStartOf blockSize (startBlock + 1 + offset) +
+                      (blockSize + 1) <=
+                    blockStartOf blockSize (startBlock + (count + 1)) +
+                      1 := by
+                have hstep :
+                    blockStartOf blockSize (startBlock + 1 + offset) +
+                        (blockSize + 1) =
+                      blockStartOf blockSize
+                          (startBlock + 1 + offset + 1) + 1 := by
+                  rw [← blockStartOf_succ
+                    blockSize (startBlock + 1 + offset)]
+                  omega
+                have hmono :
+                    blockStartOf blockSize
+                        (startBlock + 1 + offset + 1) <=
+                      blockStartOf blockSize
+                        (startBlock + (count + 1)) :=
+                  blockStartOf_mono (blockSize := blockSize) (by omega)
+                omega
+              omega)
+
+theorem bpPrefixRangeMinExcess_ge_of_all_prefix_ge
+    {shape : Cartesian.CartesianShape}
+    {start count lower : Nat}
+    (hcount : 0 < count)
+    (hbound : start + count <= shape.bpCode.length + 1)
+    (hge :
+      forall {pos : Nat},
+        start <= pos ->
+          pos < start + count ->
+            lower <= bpExcessAt shape pos) :
+    lower <= bpPrefixRangeMinExcess shape start count := by
+  have hmem :=
+    bpPrefixRangeArgMinPrefixPos_mem_range
+      (shape := shape) (start := start) (count := count)
+      hcount hbound
+  exact hge hmem.1 hmem.2
+
+theorem bpPrefixRangeMinExcess_gt_of_all_prefix_gt
+    {shape : Cartesian.CartesianShape}
+    {start count lower : Nat}
+    (hcount : 0 < count)
+    (hbound : start + count <= shape.bpCode.length + 1)
+    (hgt :
+      forall {pos : Nat},
+        start <= pos ->
+          pos < start + count ->
+            lower < bpExcessAt shape pos) :
+    lower < bpPrefixRangeMinExcess shape start count := by
+  have hmem :=
+    bpPrefixRangeArgMinPrefixPos_mem_range
+      (shape := shape) (start := start) (count := count)
+      hcount hbound
+  exact hgt hmem.1 hmem.2
+
+theorem bpRangeMinExcess_ge_of_all_prefix_ge
+    {shape : Cartesian.CartesianShape}
+    {blockSize startBlock blockCount lower : Nat}
+    (hcount : 0 < blockCount)
+    (hbound :
+      blockStartOf blockSize (startBlock + blockCount) + 1 <=
+        shape.bpCode.length + 1)
+    (hge :
+      forall {pos : Nat},
+        blockStartOf blockSize startBlock <= pos ->
+          pos < blockStartOf blockSize (startBlock + blockCount) + 1 ->
+            lower <= bpExcessAt shape pos) :
+    lower <=
+      bpRangeMinExcess shape blockSize startBlock blockCount := by
+  have hmem :=
+    bpRangeArgMinPrefixPos_mem_prefix_range
+      (shape := shape) (blockSize := blockSize)
+      (startBlock := startBlock) (blockCount := blockCount)
+      hcount hbound
+  exact hge hmem.1 hmem.2
+
+theorem bpRangeMinExcess_gt_of_all_prefix_gt
+    {shape : Cartesian.CartesianShape}
+    {blockSize startBlock blockCount lower : Nat}
+    (hcount : 0 < blockCount)
+    (hbound :
+      blockStartOf blockSize (startBlock + blockCount) + 1 <=
+        shape.bpCode.length + 1)
+    (hgt :
+      forall {pos : Nat},
+        blockStartOf blockSize startBlock <= pos ->
+          pos < blockStartOf blockSize (startBlock + blockCount) + 1 ->
+            lower < bpExcessAt shape pos) :
+    lower <
+      bpRangeMinExcess shape blockSize startBlock blockCount := by
+  have hmem :=
+    bpRangeArgMinPrefixPos_mem_prefix_range
+      (shape := shape) (blockSize := blockSize)
+      (startBlock := startBlock) (blockCount := blockCount)
+      hcount hbound
+  exact hgt hmem.1 hmem.2
 
 theorem bpPrefixRangeMinExcess_le_length
     (shape : Cartesian.CartesianShape)
@@ -3070,6 +4045,221 @@ theorem bpEndpointPrefixRangeMinExcess_le_answerClose
       (count := rightClose - leftClose + 1)
       (prefixPos := answerClose + 1)
       hmem hprefixBound
+
+theorem scanWindow_node_representative_spanning_root
+    (leftShape rightShape : Cartesian.CartesianShape)
+    {start len : Nat}
+    (hlen : 0 < len)
+    (hbound :
+      start + len <=
+        (Cartesian.CartesianShape.node leftShape rightShape).size)
+    (hrootLo : start <= leftShape.size)
+    (hrootHi : leftShape.size < start + len) :
+    scanWindow
+        (Cartesian.CartesianShape.node
+          leftShape rightShape).representative start len =
+      leftShape.size := by
+  let xs :=
+    (Cartesian.CartesianShape.node
+      leftShape rightShape).representative
+  let leftValues := Cartesian.addConst 1 leftShape.representative
+  let rightValues := Cartesian.addConst 1 rightShape.representative
+  have hxs :
+      xs = leftValues ++ (0 :: rightValues) := by
+    simp [xs, leftValues, rightValues,
+      Cartesian.CartesianShape.representative]
+  have hleftValuesLen : leftValues.length = leftShape.size := by
+    simp [leftValues, Cartesian.addConst_length,
+      Cartesian.CartesianShape.representative_length]
+  have hrootGet : xs[leftShape.size]? = some 0 := by
+    rw [hxs]
+    have hidx : leftShape.size = leftValues.length := by
+      omega
+    simp [hidx]
+  have harg :
+      LeftmostArgMin xs start (start + len) leftShape.size := by
+    refine ⟨by omega, ?_, hrootLo, hrootHi, 0, hrootGet, ?_, ?_⟩
+    · simpa [xs, Cartesian.CartesianShape.representative_length] using hbound
+    · intro j w _hjLo _hjHi hget
+      have hmem : w ∈ xs := List.mem_of_getElem? hget
+      have hnonneg :=
+        Cartesian.CartesianShape.representative_nonnegative
+          (Cartesian.CartesianShape.node leftShape rightShape) w
+          (by simpa [xs] using hmem)
+      omega
+    · intro j w _hjLo hjRoot hget
+      have hgetLeft :
+          leftValues[j]? = some w := by
+        rw [hxs] at hget
+        have hjLeftValues : j < leftValues.length := by
+          omega
+        simpa [List.getElem?_append, hjLeftValues] using hget
+      have hpos :=
+        Cartesian.CartesianShape.representative_shift_positive
+          leftShape w (List.mem_of_getElem? hgetLeft)
+      omega
+  have hscan :
+      LeftmostArgMin xs start (start + len)
+        (scanWindow xs start len) := by
+    exact scanWindow_leftmost xs start len hlen (by
+      simpa [xs, Cartesian.CartesianShape.representative_length] using hbound)
+  have huniq :=
+    leftmostArgMin_unique xs start (start + len)
+      (scanWindow xs start len) leftShape.size hscan harg
+  simpa [xs] using huniq
+
+theorem answerClose_eq_root_close_of_spanning_root
+    {leftShape rightShape : Cartesian.CartesianShape}
+    {start len answerClose : Nat}
+    (hlen : 0 < len)
+    (hbound :
+      start + len <=
+        (Cartesian.CartesianShape.node leftShape rightShape).size)
+    (hrootLo : start <= leftShape.size)
+    (hrootHi : leftShape.size < start + len)
+    (hanswer :
+      bpCloseOfInorder?
+          (Cartesian.CartesianShape.node leftShape rightShape)
+          (scanWindow
+            (Cartesian.CartesianShape.node
+              leftShape rightShape).representative start len) =
+        some answerClose) :
+    answerClose = leftShape.bpCode.length + 1 := by
+  have hscan :=
+    scanWindow_node_representative_spanning_root
+      leftShape rightShape hlen hbound hrootLo hrootHi
+  rw [hscan] at hanswer
+  simp [bpCloseOfInorder?] at hanswer
+  exact hanswer.symm
+
+theorem answerClose_prefix_leftmost_min_excess_of_spanning_root
+    {leftShape rightShape : Cartesian.CartesianShape}
+    {start len leftClose rightClose answerClose : Nat}
+    (hlen : 0 < len)
+    (hbound :
+      start + len <=
+        (Cartesian.CartesianShape.node leftShape rightShape).size)
+    (hrootLo : start <= leftShape.size)
+    (hrootHi : leftShape.size < start + len)
+    (_hleft :
+      bpCloseOfInorder?
+          (Cartesian.CartesianShape.node leftShape rightShape)
+          start = some leftClose)
+    (_hright :
+      bpCloseOfInorder?
+          (Cartesian.CartesianShape.node leftShape rightShape)
+          (start + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder?
+          (Cartesian.CartesianShape.node leftShape rightShape)
+          (scanWindow
+            (Cartesian.CartesianShape.node
+              leftShape rightShape).representative start len) =
+        some answerClose) :
+    (forall {pos : Nat},
+      leftClose + 1 <= pos ->
+        pos < rightClose + 2 ->
+          bpExcessAt
+              (Cartesian.CartesianShape.node leftShape rightShape)
+              (answerClose + 1) <=
+            bpExcessAt
+              (Cartesian.CartesianShape.node leftShape rightShape) pos) /\
+      (forall {pos : Nat},
+        leftClose + 1 <= pos ->
+          pos < answerClose + 1 ->
+            bpExcessAt
+                (Cartesian.CartesianShape.node leftShape rightShape)
+                (answerClose + 1) <
+              bpExcessAt
+                (Cartesian.CartesianShape.node leftShape rightShape) pos) := by
+  have hanswerEq :=
+    answerClose_eq_root_close_of_spanning_root
+      (leftShape := leftShape) (rightShape := rightShape)
+      (start := start) (len := len) (answerClose := answerClose)
+      hlen hbound hrootLo hrootHi hanswer
+  constructor
+  · intro pos _hlo _hhi
+    subst answerClose
+    exact bpExcessAt_node_root_close_succ_le_prefix
+      leftShape rightShape pos
+  · intro pos hlo hlt
+    subst answerClose
+    have hpos : 0 < pos := by
+      omega
+    exact bpExcessAt_node_root_close_succ_lt_before
+      leftShape rightShape hpos hlt
+
+theorem endpointPrefixRangeWitness_eq_answerClose_of_spanning_root
+    {leftShape rightShape : Cartesian.CartesianShape}
+    {start len leftClose rightClose answerClose : Nat}
+    (hlen : 0 < len)
+    (hbound :
+      start + len <=
+        (Cartesian.CartesianShape.node leftShape rightShape).size)
+    (hrootLo : start <= leftShape.size)
+    (hrootHi : leftShape.size < start + len)
+    (hleft :
+      bpCloseOfInorder?
+          (Cartesian.CartesianShape.node leftShape rightShape)
+          start = some leftClose)
+    (hright :
+      bpCloseOfInorder?
+          (Cartesian.CartesianShape.node leftShape rightShape)
+          (start + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder?
+          (Cartesian.CartesianShape.node leftShape rightShape)
+          (scanWindow
+            (Cartesian.CartesianShape.node
+              leftShape rightShape).representative start len) =
+        some answerClose) :
+    (bpPrefixRangeMinExcess
+        (Cartesian.CartesianShape.node leftShape rightShape)
+        (leftClose + 1) (rightClose - leftClose + 1),
+      bpPrefixRangeArgMinPrefixPos
+        (Cartesian.CartesianShape.node leftShape rightShape)
+        (leftClose + 1) (rightClose - leftClose + 1)) =
+      (bpExcessAt
+          (Cartesian.CartesianShape.node leftShape rightShape)
+          (answerClose + 1),
+        answerClose + 1) := by
+  have hsemantic :=
+    answerClose_prefix_leftmost_min_excess_of_spanning_root
+      (leftShape := leftShape) (rightShape := rightShape)
+      (start := start) (len := len)
+      (leftClose := leftClose) (rightClose := rightClose)
+      (answerClose := answerClose)
+      hlen hbound hrootLo hrootHi hleft hright hanswer
+  have hmem :=
+    answerClose_prefix_mem_endpoint_prefix_range
+      (shape := Cartesian.CartesianShape.node leftShape rightShape)
+      (left := start) (len := len)
+      (leftClose := leftClose) (rightClose := rightClose)
+      (answerClose := answerClose)
+      hlen hleft hright hanswer
+  have hordered :=
+    endpoint_closes_ordered_of_query_span
+      (shape := Cartesian.CartesianShape.node leftShape rightShape)
+      (left := start) (len := len)
+      (leftClose := leftClose) (rightClose := rightClose)
+      hlen hleft hright
+  have hrightBound :=
+    bpCloseOfInorder?_bounds
+      (Cartesian.CartesianShape.node leftShape rightShape) hright
+  have hrangeBound :
+      leftClose + 1 + (rightClose - leftClose + 1) <=
+        (Cartesian.CartesianShape.node leftShape rightShape).bpCode.length +
+          1 := by
+    omega
+  exact
+    bpPrefixRangeWitness_eq_of_leftmost_min_excess
+      hmem hrangeBound
+      (by
+        intro pos hlo hhi
+        exact hsemantic.1 hlo (by omega))
+      (by
+        intro pos hlo hhi
+        exact hsemantic.2 hlo hhi)
 
 def bpPrefixRangeMinExcessEntries
     (shape : Cartesian.CartesianShape)
@@ -4233,6 +5423,783 @@ theorem lcaCloseCosted_exact_of_decoded_merged_candidate
       hrightMin, hrightArg, hblocks] using hmerge
   · simpa [hleftMin, hleftArg, hrightMin, hrightArg, hblocks]
       using hmerge
+
+theorem lcaCloseCosted_exact_of_left_fringe_leftmost
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth
+      leftOverhead interiorOverhead rightOverhead answerClose : Nat}
+    (component :
+      PayloadLiveBPEndpointFringeRangeMacro shape blockSize blockCount
+        fieldWidth leftOverhead interiorOverhead rightOverhead)
+    (leftClose rightClose : Nat)
+    (hblockSize : 0 < blockSize)
+    (hleftBlock :
+      blockOfClose blockSize leftClose < blockCount)
+    (hrightBlock :
+      blockOfClose blockSize rightClose < blockCount)
+    (hanswerLeft :
+      leftClose + 1 <= answerClose + 1 /\
+        answerClose + 1 <
+          leftClose + 1 +
+            (blockStartOf blockSize
+                (blockOfClose blockSize leftClose) +
+              blockSize - leftClose))
+    (hleftBound :
+      leftClose + 1 +
+          (blockStartOf blockSize
+              (blockOfClose blockSize leftClose) +
+            blockSize - leftClose) <=
+        shape.bpCode.length + 1)
+    (hleftInside :
+      forall {pos : Nat},
+        leftClose + 1 <= pos ->
+          pos <
+            leftClose + 1 +
+              (blockStartOf blockSize
+                  (blockOfClose blockSize leftClose) +
+                blockSize - leftClose) ->
+            pos < rightClose + 2)
+    (hrightBound :
+      blockStartOf blockSize (blockOfClose blockSize rightClose) +
+          (rightClose -
+              blockStartOf blockSize
+                (blockOfClose blockSize rightClose) +
+            2) <=
+        shape.bpCode.length + 1)
+    (hrightInside :
+      forall {pos : Nat},
+        blockStartOf blockSize (blockOfClose blockSize rightClose) <= pos ->
+          pos <
+            blockStartOf blockSize (blockOfClose blockSize rightClose) +
+              (rightClose -
+                  blockStartOf blockSize
+                    (blockOfClose blockSize rightClose) +
+                2) ->
+            leftClose + 1 <= pos /\ pos < rightClose + 2)
+    (hmiddleBound :
+      blockOfClose blockSize leftClose + 1 <
+          blockOfClose blockSize rightClose ->
+        blockStartOf blockSize (blockOfClose blockSize rightClose) + 1 <=
+          shape.bpCode.length + 1)
+    (hmiddleInside :
+      forall {pos : Nat},
+        blockOfClose blockSize leftClose + 1 <
+            blockOfClose blockSize rightClose ->
+          blockStartOf blockSize
+              (blockOfClose blockSize leftClose + 1) <= pos ->
+            pos <
+              blockStartOf blockSize (blockOfClose blockSize rightClose) +
+                1 ->
+              leftClose + 1 <= pos /\ pos < rightClose + 2)
+    (hmin :
+      forall {pos : Nat},
+        leftClose + 1 <= pos ->
+          pos < rightClose + 2 ->
+            bpExcessAt shape (answerClose + 1) <=
+              bpExcessAt shape pos)
+    (hleftmost :
+      forall {pos : Nat},
+        leftClose + 1 <= pos ->
+          pos < answerClose + 1 ->
+            bpExcessAt shape (answerClose + 1) <
+              bpExcessAt shape pos) :
+    (component.lcaCloseCosted leftClose rightClose).erase =
+      some answerClose := by
+  apply component.lcaCloseCosted_exact_of_decoded_merged_candidate
+    (leftClose := leftClose) (rightClose := rightClose)
+    (answerClose := answerClose)
+    hblockSize hleftBlock hrightBlock
+  have hleftPair :
+      (bpPrefixRangeMinExcess shape (leftClose + 1)
+          (blockStartOf blockSize
+              (blockOfClose blockSize leftClose) +
+            blockSize - leftClose),
+        bpPrefixRangeArgMinPrefixPos shape (leftClose + 1)
+          (blockStartOf blockSize
+              (blockOfClose blockSize leftClose) +
+            blockSize - leftClose)) =
+        (bpExcessAt shape (answerClose + 1), answerClose + 1) := by
+    exact
+      bpPrefixRangeWitness_eq_of_leftmost_min_excess
+        hanswerLeft hleftBound
+        (by
+          intro pos hlo hhi
+          exact hmin hlo (hleftInside hlo hhi))
+        (by
+          intro pos hlo hhi
+          exact hleftmost hlo hhi)
+  have hrightCount :
+      0 <
+        rightClose -
+            blockStartOf blockSize
+              (blockOfClose blockSize rightClose) +
+          2 := by
+    omega
+  have hrightLe :
+      bpExcessAt shape (answerClose + 1) <=
+        bpPrefixRangeMinExcess shape
+          (blockStartOf blockSize
+            (blockOfClose blockSize rightClose))
+          (rightClose -
+              blockStartOf blockSize
+                (blockOfClose blockSize rightClose) +
+            2) := by
+    exact
+      bpPrefixRangeMinExcess_ge_of_all_prefix_ge
+        hrightCount hrightBound
+        (by
+          intro pos hlo hhi
+          have hinside := hrightInside hlo hhi
+          exact hmin hinside.1 hinside.2)
+  have hmiddleLe :
+      forall middle,
+        (if blockOfClose blockSize leftClose + 1 <
+              blockOfClose blockSize rightClose then
+            some
+              (bpRangeMinExcess shape blockSize
+                (blockOfClose blockSize leftClose + 1)
+                (blockOfClose blockSize rightClose -
+                  blockOfClose blockSize leftClose - 1),
+                bpRangeArgMinPrefixPos shape blockSize
+                  (blockOfClose blockSize leftClose + 1)
+                  (blockOfClose blockSize rightClose -
+                    blockOfClose blockSize leftClose - 1))
+          else
+            none) = some middle ->
+          bpExcessAt shape (answerClose + 1) <= middle.1 := by
+    intro middle hmiddle
+    by_cases hblocks :
+        blockOfClose blockSize leftClose + 1 <
+          blockOfClose blockSize rightClose
+    · simp [hblocks] at hmiddle
+      subst middle
+      have hcount :
+          0 <
+            blockOfClose blockSize rightClose -
+              blockOfClose blockSize leftClose - 1 := by
+        omega
+      exact
+        bpRangeMinExcess_ge_of_all_prefix_ge
+          (shape := shape) (blockSize := blockSize)
+          (startBlock := blockOfClose blockSize leftClose + 1)
+          (blockCount :=
+            blockOfClose blockSize rightClose -
+              blockOfClose blockSize leftClose - 1)
+          (lower := bpExcessAt shape (answerClose + 1))
+          hcount
+          (by
+            have hend :
+                blockOfClose blockSize leftClose + 1 +
+                    (blockOfClose blockSize rightClose -
+                      blockOfClose blockSize leftClose - 1) =
+                  blockOfClose blockSize rightClose := by
+              omega
+            simpa [hend] using hmiddleBound hblocks)
+          (by
+            intro pos hlo hhi
+            have hend :
+                blockOfClose blockSize leftClose + 1 +
+                    (blockOfClose blockSize rightClose -
+                      blockOfClose blockSize leftClose - 1) =
+                  blockOfClose blockSize rightClose := by
+              omega
+            have hinside :=
+              hmiddleInside (pos := pos) hblocks hlo
+                (by simpa [hend] using hhi)
+            exact hmin hinside.1 hinside.2)
+    · simp [hblocks] at hmiddle
+  have hmerge :
+      bpCandidateMerge3?
+          (some
+            (bpPrefixRangeMinExcess shape (leftClose + 1)
+              (blockStartOf blockSize
+                  (blockOfClose blockSize leftClose) +
+                blockSize - leftClose),
+              bpPrefixRangeArgMinPrefixPos shape (leftClose + 1)
+                (blockStartOf blockSize
+                    (blockOfClose blockSize leftClose) +
+                  blockSize - leftClose)))
+          (if blockOfClose blockSize leftClose + 1 <
+              blockOfClose blockSize rightClose then
+            some
+              (bpRangeMinExcess shape blockSize
+                (blockOfClose blockSize leftClose + 1)
+                (blockOfClose blockSize rightClose -
+                  blockOfClose blockSize leftClose - 1),
+                bpRangeArgMinPrefixPos shape blockSize
+                  (blockOfClose blockSize leftClose + 1)
+                  (blockOfClose blockSize rightClose -
+                    blockOfClose blockSize leftClose - 1))
+          else
+            none)
+          (some
+            (bpPrefixRangeMinExcess shape
+              (blockStartOf blockSize
+                (blockOfClose blockSize rightClose))
+              (rightClose -
+                  blockStartOf blockSize
+                    (blockOfClose blockSize rightClose) +
+                2),
+              bpPrefixRangeArgMinPrefixPos shape
+                (blockStartOf blockSize
+                  (blockOfClose blockSize rightClose))
+                (rightClose -
+                    blockStartOf blockSize
+                      (blockOfClose blockSize rightClose) +
+                  2))) =
+        some (bpExcessAt shape (answerClose + 1), answerClose + 1) := by
+    simpa [hleftPair] using
+      bpCandidateMerge3?_eq_some_left_of_fst_le
+        (left := (bpExcessAt shape (answerClose + 1), answerClose + 1))
+        (middle? :=
+          if blockOfClose blockSize leftClose + 1 <
+              blockOfClose blockSize rightClose then
+            some
+              (bpRangeMinExcess shape blockSize
+                (blockOfClose blockSize leftClose + 1)
+                (blockOfClose blockSize rightClose -
+                  blockOfClose blockSize leftClose - 1),
+                bpRangeArgMinPrefixPos shape blockSize
+                  (blockOfClose blockSize leftClose + 1)
+                  (blockOfClose blockSize rightClose -
+                    blockOfClose blockSize leftClose - 1))
+          else
+            none)
+        (right? :=
+          some
+            (bpPrefixRangeMinExcess shape
+              (blockStartOf blockSize
+                (blockOfClose blockSize rightClose))
+              (rightClose -
+                  blockStartOf blockSize
+                    (blockOfClose blockSize rightClose) +
+                2),
+              bpPrefixRangeArgMinPrefixPos shape
+                (blockStartOf blockSize
+                  (blockOfClose blockSize rightClose))
+                (rightClose -
+                    blockStartOf blockSize
+                      (blockOfClose blockSize rightClose) +
+                  2)))
+        (by
+          intro middle hmiddle
+          exact hmiddleLe middle hmiddle)
+        (by
+          intro right hright
+          cases hright
+          exact hrightLe)
+  exact hmerge
+
+theorem lcaCloseCosted_exact_of_decoded_right_fringe_candidate
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth
+      leftOverhead interiorOverhead rightOverhead answerClose : Nat}
+    (component :
+      PayloadLiveBPEndpointFringeRangeMacro shape blockSize blockCount
+        fieldWidth leftOverhead interiorOverhead rightOverhead)
+    (leftClose rightClose : Nat)
+    (hblockSize : 0 < blockSize)
+    (hleftBlock :
+      blockOfClose blockSize leftClose < blockCount)
+    (hrightBlock :
+      blockOfClose blockSize rightClose < blockCount)
+    (hrightPair :
+      (bpPrefixRangeMinExcess shape
+          (blockStartOf blockSize
+            (blockOfClose blockSize rightClose))
+          (rightClose -
+              blockStartOf blockSize
+                (blockOfClose blockSize rightClose) +
+            2),
+        bpPrefixRangeArgMinPrefixPos shape
+          (blockStartOf blockSize
+            (blockOfClose blockSize rightClose))
+          (rightClose -
+              blockStartOf blockSize
+                (blockOfClose blockSize rightClose) +
+            2)) =
+        (bpExcessAt shape (answerClose + 1), answerClose + 1))
+    (hleftGt :
+      bpExcessAt shape (answerClose + 1) <
+        bpPrefixRangeMinExcess shape (leftClose + 1)
+          (blockStartOf blockSize
+              (blockOfClose blockSize leftClose) +
+            blockSize - leftClose))
+    (hmiddleGt :
+      forall middle,
+        (if blockOfClose blockSize leftClose + 1 <
+              blockOfClose blockSize rightClose then
+            some
+              (bpRangeMinExcess shape blockSize
+                (blockOfClose blockSize leftClose + 1)
+                (blockOfClose blockSize rightClose -
+                  blockOfClose blockSize leftClose - 1),
+                bpRangeArgMinPrefixPos shape blockSize
+                  (blockOfClose blockSize leftClose + 1)
+                  (blockOfClose blockSize rightClose -
+                    blockOfClose blockSize leftClose - 1))
+          else
+            none) = some middle ->
+          bpExcessAt shape (answerClose + 1) < middle.1) :
+    (component.lcaCloseCosted leftClose rightClose).erase =
+      some answerClose := by
+  apply component.lcaCloseCosted_exact_of_decoded_merged_candidate
+    (leftClose := leftClose) (rightClose := rightClose)
+    (answerClose := answerClose)
+    hblockSize hleftBlock hrightBlock
+  simpa [hrightPair] using
+    bpCandidateMerge3?_eq_some_right_of_fst_lt_left_middle
+      (left :=
+        (bpPrefixRangeMinExcess shape (leftClose + 1)
+          (blockStartOf blockSize
+              (blockOfClose blockSize leftClose) +
+            blockSize - leftClose),
+          bpPrefixRangeArgMinPrefixPos shape (leftClose + 1)
+            (blockStartOf blockSize
+                (blockOfClose blockSize leftClose) +
+              blockSize - leftClose)))
+      (right := (bpExcessAt shape (answerClose + 1), answerClose + 1))
+      (middle? :=
+        if blockOfClose blockSize leftClose + 1 <
+            blockOfClose blockSize rightClose then
+          some
+            (bpRangeMinExcess shape blockSize
+              (blockOfClose blockSize leftClose + 1)
+              (blockOfClose blockSize rightClose -
+                blockOfClose blockSize leftClose - 1),
+              bpRangeArgMinPrefixPos shape blockSize
+                (blockOfClose blockSize leftClose + 1)
+                (blockOfClose blockSize rightClose -
+                  blockOfClose blockSize leftClose - 1))
+        else
+          none)
+      hleftGt
+      (by
+        intro middle hmiddle
+        exact hmiddleGt middle hmiddle)
+
+theorem lcaCloseCosted_exact_of_decoded_middle_candidate
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth
+      leftOverhead interiorOverhead rightOverhead answerClose : Nat}
+    (component :
+      PayloadLiveBPEndpointFringeRangeMacro shape blockSize blockCount
+        fieldWidth leftOverhead interiorOverhead rightOverhead)
+    (leftClose rightClose : Nat)
+    (hblockSize : 0 < blockSize)
+    (hleftBlock :
+      blockOfClose blockSize leftClose < blockCount)
+    (hrightBlock :
+      blockOfClose blockSize rightClose < blockCount)
+    (hblocks :
+      blockOfClose blockSize leftClose + 1 <
+        blockOfClose blockSize rightClose)
+    (hmiddlePair :
+      (bpRangeMinExcess shape blockSize
+          (blockOfClose blockSize leftClose + 1)
+          (blockOfClose blockSize rightClose -
+            blockOfClose blockSize leftClose - 1),
+        bpRangeArgMinPrefixPos shape blockSize
+          (blockOfClose blockSize leftClose + 1)
+          (blockOfClose blockSize rightClose -
+            blockOfClose blockSize leftClose - 1)) =
+        (bpExcessAt shape (answerClose + 1), answerClose + 1))
+    (hmiddleLeft :
+      bpExcessAt shape (answerClose + 1) <
+        bpPrefixRangeMinExcess shape (leftClose + 1)
+          (blockStartOf blockSize
+              (blockOfClose blockSize leftClose) +
+            blockSize - leftClose))
+    (hrightLe :
+      bpExcessAt shape (answerClose + 1) <=
+        bpPrefixRangeMinExcess shape
+          (blockStartOf blockSize
+            (blockOfClose blockSize rightClose))
+          (rightClose -
+              blockStartOf blockSize
+                (blockOfClose blockSize rightClose) +
+            2)) :
+    (component.lcaCloseCosted leftClose rightClose).erase =
+      some answerClose := by
+  apply component.lcaCloseCosted_exact_of_decoded_merged_candidate
+    (leftClose := leftClose) (rightClose := rightClose)
+    (answerClose := answerClose)
+    hblockSize hleftBlock hrightBlock
+  simpa [hblocks, hmiddlePair] using
+    bpCandidateMerge3?_eq_some_middle_of_fst_lt_left_le_right
+      (left :=
+        (bpPrefixRangeMinExcess shape (leftClose + 1)
+          (blockStartOf blockSize
+              (blockOfClose blockSize leftClose) +
+            blockSize - leftClose),
+          bpPrefixRangeArgMinPrefixPos shape (leftClose + 1)
+            (blockStartOf blockSize
+                (blockOfClose blockSize leftClose) +
+              blockSize - leftClose)))
+      (middle := (bpExcessAt shape (answerClose + 1), answerClose + 1))
+      (right? :=
+        some
+          (bpPrefixRangeMinExcess shape
+            (blockStartOf blockSize
+              (blockOfClose blockSize rightClose))
+            (rightClose -
+                blockStartOf blockSize
+                  (blockOfClose blockSize rightClose) +
+              2),
+            bpPrefixRangeArgMinPrefixPos shape
+              (blockStartOf blockSize
+                (blockOfClose blockSize rightClose))
+              (rightClose -
+                  blockStartOf blockSize
+                    (blockOfClose blockSize rightClose) +
+                2)))
+      hmiddleLeft
+      (by
+        intro right hright
+        cases hright
+        exact hrightLe)
+
+theorem lcaCloseCosted_exact_of_spanning_root_left_fringe
+    {leftShape rightShape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat}
+    {start len leftClose rightClose answerClose : Nat}
+    (component :
+      PayloadLiveBPEndpointFringeRangeMacro
+        (Cartesian.CartesianShape.node leftShape rightShape)
+        blockSize blockCount fieldWidth
+        leftOverhead interiorOverhead rightOverhead)
+    (hlen : 0 < len)
+    (hbound :
+      start + len <=
+        (Cartesian.CartesianShape.node leftShape rightShape).size)
+    (hrootLo : start <= leftShape.size)
+    (hrootHi : leftShape.size < start + len)
+    (hleft :
+      bpCloseOfInorder?
+          (Cartesian.CartesianShape.node leftShape rightShape)
+          start = some leftClose)
+    (hright :
+      bpCloseOfInorder?
+          (Cartesian.CartesianShape.node leftShape rightShape)
+          (start + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder?
+          (Cartesian.CartesianShape.node leftShape rightShape)
+          (scanWindow
+            (Cartesian.CartesianShape.node
+              leftShape rightShape).representative start len) =
+        some answerClose)
+    (hblockSize : 0 < blockSize)
+    (hleftBlock :
+      blockOfClose blockSize leftClose < blockCount)
+    (hrightBlock :
+      blockOfClose blockSize rightClose < blockCount)
+    (hanswerLeft :
+      leftClose + 1 <= answerClose + 1 /\
+        answerClose + 1 <
+          leftClose + 1 +
+            (blockStartOf blockSize
+                (blockOfClose blockSize leftClose) +
+              blockSize - leftClose))
+    (hleftBound :
+      leftClose + 1 +
+          (blockStartOf blockSize
+              (blockOfClose blockSize leftClose) +
+            blockSize - leftClose) <=
+        (Cartesian.CartesianShape.node leftShape rightShape).bpCode.length +
+          1)
+    (hleftInside :
+      forall {pos : Nat},
+        leftClose + 1 <= pos ->
+          pos <
+            leftClose + 1 +
+              (blockStartOf blockSize
+                  (blockOfClose blockSize leftClose) +
+                blockSize - leftClose) ->
+            pos < rightClose + 2)
+    (hrightBound :
+      blockStartOf blockSize (blockOfClose blockSize rightClose) +
+          (rightClose -
+              blockStartOf blockSize
+                (blockOfClose blockSize rightClose) +
+            2) <=
+        (Cartesian.CartesianShape.node leftShape rightShape).bpCode.length +
+          1)
+    (hrightInside :
+      forall {pos : Nat},
+        blockStartOf blockSize (blockOfClose blockSize rightClose) <= pos ->
+          pos <
+            blockStartOf blockSize (blockOfClose blockSize rightClose) +
+              (rightClose -
+                  blockStartOf blockSize
+                    (blockOfClose blockSize rightClose) +
+                2) ->
+            leftClose + 1 <= pos /\ pos < rightClose + 2)
+    (hmiddleBound :
+      blockOfClose blockSize leftClose + 1 <
+          blockOfClose blockSize rightClose ->
+        blockStartOf blockSize (blockOfClose blockSize rightClose) + 1 <=
+          (Cartesian.CartesianShape.node leftShape rightShape).bpCode.length +
+            1)
+    (hmiddleInside :
+      forall {pos : Nat},
+        blockOfClose blockSize leftClose + 1 <
+            blockOfClose blockSize rightClose ->
+          blockStartOf blockSize
+              (blockOfClose blockSize leftClose + 1) <= pos ->
+            pos <
+              blockStartOf blockSize (blockOfClose blockSize rightClose) +
+                1 ->
+              leftClose + 1 <= pos /\ pos < rightClose + 2) :
+    (component.lcaCloseCosted leftClose rightClose).erase =
+      some answerClose := by
+  have hsemantic :=
+    answerClose_prefix_leftmost_min_excess_of_spanning_root
+      (leftShape := leftShape) (rightShape := rightShape)
+      (start := start) (len := len)
+      (leftClose := leftClose) (rightClose := rightClose)
+      (answerClose := answerClose)
+      hlen hbound hrootLo hrootHi hleft hright hanswer
+  exact
+    component.lcaCloseCosted_exact_of_left_fringe_leftmost
+      leftClose rightClose hblockSize hleftBlock hrightBlock
+      hanswerLeft hleftBound hleftInside
+      hrightBound hrightInside hmiddleBound hmiddleInside
+      hsemantic.1 hsemantic.2
+
+theorem lcaCloseCosted_exact_of_spanning_root_right_fringe
+    {leftShape rightShape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat}
+    {start len leftClose rightClose answerClose : Nat}
+    (component :
+      PayloadLiveBPEndpointFringeRangeMacro
+        (Cartesian.CartesianShape.node leftShape rightShape)
+        blockSize blockCount fieldWidth
+        leftOverhead interiorOverhead rightOverhead)
+    (hlen : 0 < len)
+    (hbound :
+      start + len <=
+        (Cartesian.CartesianShape.node leftShape rightShape).size)
+    (hrootLo : start <= leftShape.size)
+    (hrootHi : leftShape.size < start + len)
+    (hleft :
+      bpCloseOfInorder?
+          (Cartesian.CartesianShape.node leftShape rightShape)
+          start = some leftClose)
+    (hright :
+      bpCloseOfInorder?
+          (Cartesian.CartesianShape.node leftShape rightShape)
+          (start + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder?
+          (Cartesian.CartesianShape.node leftShape rightShape)
+          (scanWindow
+            (Cartesian.CartesianShape.node
+              leftShape rightShape).representative start len) =
+        some answerClose)
+    (hblockSize : 0 < blockSize)
+    (hleftBlock :
+      blockOfClose blockSize leftClose < blockCount)
+    (hrightBlock :
+      blockOfClose blockSize rightClose < blockCount)
+    (hanswerRight :
+      blockStartOf blockSize (blockOfClose blockSize rightClose) <=
+          answerClose + 1 /\
+        answerClose + 1 <
+          blockStartOf blockSize (blockOfClose blockSize rightClose) +
+            (rightClose -
+                blockStartOf blockSize
+                  (blockOfClose blockSize rightClose) +
+              2))
+    (hleftBound :
+      leftClose + 1 +
+          (blockStartOf blockSize
+              (blockOfClose blockSize leftClose) +
+            blockSize - leftClose) <=
+        (Cartesian.CartesianShape.node leftShape rightShape).bpCode.length +
+          1)
+    (hleftBefore :
+      forall {pos : Nat},
+        leftClose + 1 <= pos ->
+          pos <
+            leftClose + 1 +
+              (blockStartOf blockSize
+                  (blockOfClose blockSize leftClose) +
+                blockSize - leftClose) ->
+            pos < answerClose + 1)
+    (hrightBound :
+      blockStartOf blockSize (blockOfClose blockSize rightClose) +
+          (rightClose -
+              blockStartOf blockSize
+                (blockOfClose blockSize rightClose) +
+            2) <=
+        (Cartesian.CartesianShape.node leftShape rightShape).bpCode.length +
+          1)
+    (hrightInside :
+      forall {pos : Nat},
+        blockStartOf blockSize (blockOfClose blockSize rightClose) <= pos ->
+          pos <
+            blockStartOf blockSize (blockOfClose blockSize rightClose) +
+              (rightClose -
+                  blockStartOf blockSize
+                    (blockOfClose blockSize rightClose) +
+                2) ->
+            leftClose + 1 <= pos /\ pos < rightClose + 2)
+    (hmiddleBound :
+      blockOfClose blockSize leftClose + 1 <
+          blockOfClose blockSize rightClose ->
+        blockStartOf blockSize (blockOfClose blockSize rightClose) + 1 <=
+          (Cartesian.CartesianShape.node leftShape rightShape).bpCode.length +
+            1)
+    (hmiddleBefore :
+      forall {pos : Nat},
+        blockOfClose blockSize leftClose + 1 <
+            blockOfClose blockSize rightClose ->
+          blockStartOf blockSize
+              (blockOfClose blockSize leftClose + 1) <= pos ->
+            pos <
+              blockStartOf blockSize (blockOfClose blockSize rightClose) +
+                1 ->
+              leftClose + 1 <= pos /\ pos < answerClose + 1) :
+    (component.lcaCloseCosted leftClose rightClose).erase =
+      some answerClose := by
+  have hsemantic :=
+    answerClose_prefix_leftmost_min_excess_of_spanning_root
+      (leftShape := leftShape) (rightShape := rightShape)
+      (start := start) (len := len)
+      (leftClose := leftClose) (rightClose := rightClose)
+      (answerClose := answerClose)
+      hlen hbound hrootLo hrootHi hleft hright hanswer
+  have hrightPair :
+      (bpPrefixRangeMinExcess
+          (Cartesian.CartesianShape.node leftShape rightShape)
+          (blockStartOf blockSize
+            (blockOfClose blockSize rightClose))
+          (rightClose -
+              blockStartOf blockSize
+                (blockOfClose blockSize rightClose) +
+            2),
+        bpPrefixRangeArgMinPrefixPos
+          (Cartesian.CartesianShape.node leftShape rightShape)
+          (blockStartOf blockSize
+            (blockOfClose blockSize rightClose))
+          (rightClose -
+              blockStartOf blockSize
+                (blockOfClose blockSize rightClose) +
+            2)) =
+        (bpExcessAt
+            (Cartesian.CartesianShape.node leftShape rightShape)
+            (answerClose + 1),
+          answerClose + 1) := by
+    exact
+      bpPrefixRangeWitness_eq_of_leftmost_min_excess
+        hanswerRight hrightBound
+        (by
+          intro pos hlo hhi
+          have hinside := hrightInside hlo hhi
+          exact hsemantic.1 hinside.1 hinside.2)
+        (by
+          intro pos hlo hhi
+          have hinside := hrightInside hlo (by omega)
+          exact hsemantic.2 hinside.1 hhi)
+  have hleftCount :
+      0 <
+        blockStartOf blockSize
+            (blockOfClose blockSize leftClose) +
+          blockSize - leftClose := by
+    have hend :=
+      close_lt_blockStartOf_blockOfClose_add
+        (blockSize := blockSize) (close := leftClose) hblockSize
+    omega
+  have hleftGt :
+      bpExcessAt
+          (Cartesian.CartesianShape.node leftShape rightShape)
+          (answerClose + 1) <
+        bpPrefixRangeMinExcess
+          (Cartesian.CartesianShape.node leftShape rightShape)
+          (leftClose + 1)
+          (blockStartOf blockSize
+              (blockOfClose blockSize leftClose) +
+            blockSize - leftClose) := by
+    exact
+      bpPrefixRangeMinExcess_gt_of_all_prefix_gt
+        hleftCount hleftBound
+        (by
+          intro pos hlo hhi
+          exact hsemantic.2 hlo (hleftBefore hlo hhi))
+  have hmiddleGt :
+      forall middle,
+        (if blockOfClose blockSize leftClose + 1 <
+              blockOfClose blockSize rightClose then
+            some
+              (bpRangeMinExcess
+                (Cartesian.CartesianShape.node leftShape rightShape)
+                blockSize
+                (blockOfClose blockSize leftClose + 1)
+                (blockOfClose blockSize rightClose -
+                  blockOfClose blockSize leftClose - 1),
+                bpRangeArgMinPrefixPos
+                  (Cartesian.CartesianShape.node leftShape rightShape)
+                  blockSize
+                  (blockOfClose blockSize leftClose + 1)
+                  (blockOfClose blockSize rightClose -
+                    blockOfClose blockSize leftClose - 1))
+          else
+            none) = some middle ->
+          bpExcessAt
+              (Cartesian.CartesianShape.node leftShape rightShape)
+              (answerClose + 1) < middle.1 := by
+    intro middle hmiddle
+    by_cases hblocks :
+        blockOfClose blockSize leftClose + 1 <
+          blockOfClose blockSize rightClose
+    · simp [hblocks] at hmiddle
+      subst middle
+      have hcount :
+          0 <
+            blockOfClose blockSize rightClose -
+              blockOfClose blockSize leftClose - 1 := by
+        omega
+      exact
+        bpRangeMinExcess_gt_of_all_prefix_gt
+          (shape := Cartesian.CartesianShape.node leftShape rightShape)
+          (blockSize := blockSize)
+          (startBlock := blockOfClose blockSize leftClose + 1)
+          (blockCount :=
+            blockOfClose blockSize rightClose -
+              blockOfClose blockSize leftClose - 1)
+          (lower :=
+            bpExcessAt
+              (Cartesian.CartesianShape.node leftShape rightShape)
+              (answerClose + 1))
+          hcount
+          (by
+            have hend :
+                blockOfClose blockSize leftClose + 1 +
+                    (blockOfClose blockSize rightClose -
+                      blockOfClose blockSize leftClose - 1) =
+                  blockOfClose blockSize rightClose := by
+              omega
+            simpa [hend] using hmiddleBound hblocks)
+          (by
+            intro pos hlo hhi
+            have hend :
+                blockOfClose blockSize leftClose + 1 +
+                    (blockOfClose blockSize rightClose -
+                      blockOfClose blockSize leftClose - 1) =
+                  blockOfClose blockSize rightClose := by
+              omega
+            have hbefore :=
+              hmiddleBefore (pos := pos) hblocks hlo
+                (by simpa [hend] using hhi)
+            exact hsemantic.2 hbefore.1 hbefore.2)
+    · simp [hblocks] at hmiddle
+  exact
+    component.lcaCloseCosted_exact_of_decoded_right_fringe_candidate
+      leftClose rightClose hblockSize hleftBlock hrightBlock
+      hrightPair hleftGt hmiddleGt
 
 theorem read_words_length_le_machine
     {shape : Cartesian.CartesianShape}

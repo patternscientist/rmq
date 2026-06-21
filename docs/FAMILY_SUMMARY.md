@@ -273,15 +273,29 @@ exposes the machine-word bounds for every charged fringe/interior read.
 BP semantic bridge by proving endpoint containment of the representative-array
 answer close. The bridge now also exposes executable prefix-range argmin
 correctness via
-`SuccinctCloseProposal.bpPrefixRangeArgMinPrefixPos_excess_le_offset` and
+`SuccinctCloseProposal.bpPrefixRangeArgMinPrefixPos_excess_le_offset`,
+`SuccinctCloseProposal.bpPrefixRangeArgMinPrefixPos_eq_of_leftmost_min_excess`,
+`SuccinctCloseProposal.bpPrefixRangeWitness_eq_of_leftmost_min_excess`,
+`SuccinctCloseProposal.bpRangeWitness_eq_of_leftmost_block_candidate`, and
 `SuccinctCloseProposal.bpEndpointPrefixRangeMinExcess_le_answerClose`, concrete
 endpoint/interior slot decoding through the `endpoint*Entries_get?` and
-`interiorBlockPairRange*Entries_get?` lemmas, and
+`interiorBlockPairRange*Entries_get?` lemmas,
+root-spanning BP semantic witnesses via
+`SuccinctCloseProposal.endpointPrefixRangeWitness_eq_answerClose_of_spanning_root`,
+and charged endpoint-merge bridges including
 `SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_decoded_merged_candidate`,
-which reduces the live query exactness obligation to decoded candidate values
-instead of raw table lookups. C2 is still not closed: the remaining proof must
-show that this contained answer prefix is the leftmost minimum-excess prefix
-selected by the merged charged fringe/interior candidates.
+`SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_left_fringe_leftmost`,
+`SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_decoded_right_fringe_candidate`,
+`SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_decoded_middle_candidate`,
+`SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_spanning_root_left_fringe`,
+and
+`SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_spanning_root_right_fringe`.
+These reduce the live query exactness obligation to decoded candidate values,
+segment-local leftmost-minimum facts, and root-spanning BP semantics instead of
+raw table lookups. C2 is still not closed: the remaining proof must discharge
+the segment coverage cases and the global same-side BP semantic theorem so that
+the merged charged fringe/interior candidates select the representative-array
+answer close unconditionally.
 `SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`
 sharpens the C2 blocker: a macro keyed only by endpoint block ids plus the
 existing endpoint block min/max summaries still cannot return exact answer
@@ -1307,9 +1321,30 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.PayloadLiveBPBlockPairRangeWitnessMacro.profile`,
   `SuccinctCloseProposal.concreteBPBlockPairRangeWitnessMacro_sampled_profile`,
   `SuccinctCloseProposal.concreteBPBlockPairRangeWitnessMacro_read_words_length_le_machine`,
+  `SuccinctCloseProposal.blockStartOf_succ`,
+  `SuccinctCloseProposal.blockStartOf_mono`,
+  `SuccinctCloseProposal.bpPrefixRangeArgMinPrefixPosFrom_eq_best_of_best_le_all`,
+  `SuccinctCloseProposal.bpPrefixRangeArgMinPrefixPosFrom_eq_of_leftmost_min_excess`,
+  `SuccinctCloseProposal.bpPrefixRangeArgMinPrefixPos_eq_of_leftmost_min_excess`,
+  `SuccinctCloseProposal.bpPrefixRangeArgMinPrefixPos_mem_range`,
   `SuccinctCloseProposal.bpPrefixRangeArgMinPrefixPos_excess_le_offset`,
+  `SuccinctCloseProposal.bpPrefixRangeMinExcess_eq_of_leftmost_min_excess`,
+  `SuccinctCloseProposal.bpPrefixRangeWitness_eq_of_leftmost_min_excess`,
+  `SuccinctCloseProposal.bpBlockArgMinPrefixPos_eq_prefixRangeArgMinPrefixPos`,
+  `SuccinctCloseProposal.bpBlockArgMinPrefixPos_eq_of_leftmost_min_excess`,
+  `SuccinctCloseProposal.bpBlockArgMinPrefixPos_mem_range`,
+  `SuccinctCloseProposal.bpRangeArgMinPrefixPosFrom_eq_best_of_best_le_all`,
+  `SuccinctCloseProposal.bpRangeArgMinPrefixPosFrom_eq_of_leftmost_block_candidate`,
+  `SuccinctCloseProposal.bpRangeArgMinPrefixPos_eq_of_leftmost_block_candidate`,
+  `SuccinctCloseProposal.bpRangeWitness_eq_of_leftmost_block_candidate`,
+  `SuccinctCloseProposal.bpRangeArgMinPrefixPos_mem_prefix_range`,
+  `SuccinctCloseProposal.bpPrefixRangeMinExcess_ge_of_all_prefix_ge`,
+  `SuccinctCloseProposal.bpPrefixRangeMinExcess_gt_of_all_prefix_gt`,
+  `SuccinctCloseProposal.bpRangeMinExcess_ge_of_all_prefix_ge`,
+  `SuccinctCloseProposal.bpRangeMinExcess_gt_of_all_prefix_gt`,
   `SuccinctCloseProposal.bpPrefixRangeMinExcess_le_prefix_of_mem`,
   `SuccinctCloseProposal.bpEndpointPrefixRangeMinExcess_le_answerClose`,
+  `SuccinctCloseProposal.endpointPrefixRangeWitness_eq_answerClose_of_spanning_root`,
   `SuccinctCloseProposal.endpointLeftFringeMinExcessEntries_get?_of_close_bounds`,
   `SuccinctCloseProposal.endpointLeftFringeArgMinEntries_get?_of_close_bounds`,
   `SuccinctCloseProposal.endpointRightFringeMinExcessEntries_get?_of_close_bounds`,
@@ -1317,6 +1352,11 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.interiorBlockPairRangeMinExcessEntries_get?_of_gap_bounds`,
   `SuccinctCloseProposal.interiorBlockPairRangeArgMinEntries_get?_of_gap_bounds`,
   `SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_decoded_merged_candidate`,
+  `SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_left_fringe_leftmost`,
+  `SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_decoded_right_fringe_candidate`,
+  `SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_decoded_middle_candidate`,
+  `SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_spanning_root_left_fringe`,
+  `SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_spanning_root_right_fringe`,
   `SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient`,
   `SuccinctCloseProposal.endpointSummaryBlockKey`,
   `SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`,
