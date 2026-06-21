@@ -1220,3 +1220,72 @@ a coordination miss: the binding constraint was the rank/select family witness,
 and nobody owned it. Also: nothing committed; the `blockCount²` mirage is still in
 `fca3f48`. Next: assign the rank/select family witness explicitly; then B's join
 closes by application; commit; retire the mirage.
+
+## 2026-06-21 (rank/select witness) — A exposed a REAL decoupled-space fiction: the canonical SELECT is Θ(n), not o(n). Not fatal; standard fix available.
+
+Both worker worktrees build green; the coordinator merged B's conditional join
+(`84b36b3`). Both new branches sit at `30995d8`, 0 ahead (uncommitted).
+
+**Worker A (`rankselect-capstone-witness`) — the bad news, and it is REAL
+(verified: builds green, sorry-free, obstruction theorems in `axiom_check`).** A
+proved that the canonical two-level select stores **absolute positions**
+(`positionWidth = machineWordBits = Θ(log n)` bits) per block entry, so its block
+table is **Θ(n) — not o(n)**:
+- `canonicalSelectBlockTablesFinite_identity_payload_not_littleO` (with
+  `occurrencesPerSuper = 1`, payload `≥ n+1`); and the family-level
+  `noTwoLevelPayloadLiveStoredWordRankSelectFamily_with_identity_select_block` /
+  `…_of_identity_select_block_le` — **no rank/select family can use such a
+  select-block.**
+This means the select side's "o(n)", relied on for many rounds, was a **decoupled
+overhead function** (`canonicalTwoLevelSelectOverhead_littleO` is littleO as a
+*function* but never bounded the real Θ(n) payload). **Correction to my own prior
+audits:** I repeatedly called select "o(n) done" and the C1 descriptor-select work
+"redundant" — both wrong; I over-trusted the decoupled overhead. A caught the exact
+decoupled-space-accounting fiction the audit is supposed to catch. Credit A.
+
+**Worker B (`rankselect-sideconditions`) — sound infrastructure, but did NOT close
+the select gap.** B built honest, reusable pieces (builds green): concrete
+parameter functions of `n` (`…WordSize/BlocksPerSuper/OccurrencesPerSuper/
+PositionWidth/RankBlockWidth`), `canonicalTwoLevelRankSelectBuilderSideConditions`
+(positivity + field-width + `4 ≤ queryCost` + `LittleOLinear compactOverhead`),
+the rank-side builders, and `canonicalTwoLevelSelectDataOfChunksExact_canonical_profile`
+which *honestly* equates `auxPayload.length = superTable.payload + blockTable.payload`.
+**But B never bounds that real payload by `compactOverhead`** — and provably can't,
+because the block table is Θ(n). B's `compactOverhead_littleO` is exactly the
+decoupled function A warns about; B's select builder is still a wrapper around the
+linear canonical select (`positionWidth = machineWordBits`). So the select o(n)
+remains open.
+
+**Severity: a real setback, but NOT dead in the water.** Rank (relative *counts*,
+O(log log n) bits/block — genuinely o(n)), the close directory, BP, the lower
+bound, and B's join *logic* are all sound. The asymmetry is the whole story: rank
+stores relative **counts** (shrinkable) while the naive select stores absolute
+**positions** (Θ(log n) each ⇒ Θ(n)). We are *further* from the goal than the
+prior "one line away" note implied — the select o(n) is a genuine unfinished
+construction, not assembly.
+
+**How to proceed — the key insight + plan.** Select's o(n) does **not** come from
+relative encoding (positions can't shrink like counts); it comes from the standard
+**Clark/Vigna sparse-sample select directory**, which is actually *more tractable*
+here than the RMQ navigator was, because select has a **free O(1) word primitive
+already in the repo: `selectBoolWord`** (`RAM.lean:168`, `selectBoolWord_run`
+verified) — the analogue of popcount that the RMQ navigator lacked. Construction:
+1. **Sparse select-sample**: store every Θ(log²n)-th one-bit's absolute position
+   ⇒ o(n) positions (not one per block).
+2. **Reuse the rank summaries** (already o(n)) to locate the block from the sample.
+3. **In-block via `selectBoolWord`** ⇒ O(1), no stored positions, no universal
+   table.
+Then: keep B's parameter/side-condition infra + the rank side, swap in this
+sparse-sample select as the family's `selectBlock`, assemble the concrete
+`TwoLevelPayloadLiveStoredWordRankSelectFamily`, discharge B's side-conditions,
+and apply B's already-proven join profile ⇒ goal closed. Retire the decoupled
+canonical-select o(n) claim and the `blockCount²` mirage in the same pass.
+
+**Coordination note:** both workers were aimed at "the family witness," but the
+binding sub-constraint — a genuinely o(n) `selectBlock` — was isolated by neither
+in advance; A found it impossible for the canonical builder, B built infra around
+that same (linear) builder. Next assignment should be explicit: the Clark/Vigna
+sparse-sample select directory (via `selectBoolWord` + rank reuse), then family +
+join. Estimate: a few rounds — a known construction with a free primitive and
+reusable infra; comparable to (and arguably easier than) the navigator already
+landed.
