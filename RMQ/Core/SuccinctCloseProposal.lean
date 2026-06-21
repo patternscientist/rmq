@@ -6685,6 +6685,661 @@ theorem bpRangeWitness_eq_of_leftmost_block_candidate
       bpRangeArgMinPrefixPos_eq_of_leftmost_block_candidate
         hblock htarget hmin hleft
 
+/--
+Choose the better block-minimum candidate by comparing the excess attained at
+each block's stored argmin prefix.  Ties keep the left block, matching the
+leftmost policy used by `bpBetterArgMinPrefixPos`.
+-/
+def bpBetterArgMinBlock
+    (shape : Cartesian.CartesianShape)
+    (blockSize leftBlock rightBlock : Nat) : Nat :=
+  if bpExcessAt shape
+        (bpBlockArgMinPrefixPos shape blockSize rightBlock) <
+      bpExcessAt shape
+        (bpBlockArgMinPrefixPos shape blockSize leftBlock) then
+    rightBlock
+  else
+    leftBlock
+
+theorem bpBetterArgMinBlock_eq_left_of_excess_le
+    (shape : Cartesian.CartesianShape)
+    {blockSize leftBlock rightBlock : Nat}
+    (hle :
+      bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize leftBlock) <=
+        bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize rightBlock)) :
+    bpBetterArgMinBlock shape blockSize leftBlock rightBlock = leftBlock := by
+  unfold bpBetterArgMinBlock
+  have hnot :
+      ¬ bpExcessAt shape
+            (bpBlockArgMinPrefixPos shape blockSize rightBlock) <
+          bpExcessAt shape
+            (bpBlockArgMinPrefixPos shape blockSize leftBlock) := by
+    omega
+  simp [hnot]
+
+theorem bpBetterArgMinBlock_eq_right_of_excess_lt
+    (shape : Cartesian.CartesianShape)
+    {blockSize leftBlock rightBlock : Nat}
+    (hlt :
+      bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize rightBlock) <
+        bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize leftBlock)) :
+    bpBetterArgMinBlock shape blockSize leftBlock rightBlock = rightBlock := by
+  simp [bpBetterArgMinBlock, hlt]
+
+theorem bpExcessAt_bpBetterArgMinBlock_le_left
+    (shape : Cartesian.CartesianShape)
+    (blockSize leftBlock rightBlock : Nat) :
+    bpExcessAt shape
+        (bpBlockArgMinPrefixPos shape blockSize
+          (bpBetterArgMinBlock shape blockSize leftBlock rightBlock)) <=
+      bpExcessAt shape
+        (bpBlockArgMinPrefixPos shape blockSize leftBlock) := by
+  unfold bpBetterArgMinBlock
+  by_cases hlt :
+      bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize rightBlock) <
+        bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize leftBlock)
+  · simp [hlt, Nat.le_of_lt hlt]
+  · simp [hlt]
+
+theorem bpExcessAt_bpBetterArgMinBlock_le_right
+    (shape : Cartesian.CartesianShape)
+    (blockSize leftBlock rightBlock : Nat) :
+    bpExcessAt shape
+        (bpBlockArgMinPrefixPos shape blockSize
+          (bpBetterArgMinBlock shape blockSize leftBlock rightBlock)) <=
+      bpExcessAt shape
+        (bpBlockArgMinPrefixPos shape blockSize rightBlock) := by
+  unfold bpBetterArgMinBlock
+  by_cases hlt :
+      bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize rightBlock) <
+        bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize leftBlock)
+  · simp [hlt]
+  · have hle :
+        bpExcessAt shape
+            (bpBlockArgMinPrefixPos shape blockSize leftBlock) <=
+          bpExcessAt shape
+            (bpBlockArgMinPrefixPos shape blockSize rightBlock) := by
+      exact Nat.le_of_not_gt hlt
+    simp [hlt, hle]
+
+def bpRangeArgMinBlockFrom
+    (shape : Cartesian.CartesianShape)
+    (blockSize block steps bestBlock : Nat) : Nat :=
+  match steps with
+  | 0 => bestBlock
+  | steps + 1 =>
+      let best' :=
+        bpBetterArgMinBlock shape blockSize bestBlock block
+      bpRangeArgMinBlockFrom shape blockSize (block + 1) steps best'
+
+def bpRangeArgMinBlock
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount : Nat) : Nat :=
+  match blockCount with
+  | 0 => startBlock
+  | count + 1 =>
+      bpRangeArgMinBlockFrom shape blockSize (startBlock + 1) count
+        startBlock
+
+theorem bpBlockArgMinPrefixPos_bpBetterArgMinBlock
+    (shape : Cartesian.CartesianShape)
+    (blockSize leftBlock rightBlock : Nat) :
+    bpBlockArgMinPrefixPos shape blockSize
+        (bpBetterArgMinBlock shape blockSize leftBlock rightBlock) =
+      bpBetterArgMinPrefixPos shape
+        (bpBlockArgMinPrefixPos shape blockSize leftBlock)
+        (bpBlockArgMinPrefixPos shape blockSize rightBlock) := by
+  unfold bpBetterArgMinBlock bpBetterArgMinPrefixPos
+  by_cases hlt :
+      bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize rightBlock) <
+        bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize leftBlock)
+  · simp [hlt]
+  · simp [hlt]
+
+theorem bpBlockArgMinPrefixPos_bpRangeArgMinBlockFrom
+    (shape : Cartesian.CartesianShape)
+    (blockSize block steps bestBlock : Nat) :
+    bpBlockArgMinPrefixPos shape blockSize
+        (bpRangeArgMinBlockFrom shape blockSize block steps bestBlock) =
+      bpRangeArgMinPrefixPosFrom shape blockSize block steps
+        (bpBlockArgMinPrefixPos shape blockSize bestBlock) := by
+  induction steps generalizing block bestBlock with
+  | zero =>
+      simp [bpRangeArgMinBlockFrom, bpRangeArgMinPrefixPosFrom]
+  | succ steps ih =>
+      unfold bpRangeArgMinBlockFrom bpRangeArgMinPrefixPosFrom
+      simpa [bpBlockArgMinPrefixPos_bpBetterArgMinBlock] using
+        ih (block + 1)
+          (bpBetterArgMinBlock shape blockSize bestBlock block)
+
+theorem bpBlockArgMinPrefixPos_bpRangeArgMinBlock_of_pos
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount : Nat)
+    (hcount : 0 < blockCount) :
+    bpBlockArgMinPrefixPos shape blockSize
+        (bpRangeArgMinBlock shape blockSize startBlock blockCount) =
+      bpRangeArgMinPrefixPos shape blockSize startBlock blockCount := by
+  unfold bpRangeArgMinBlock bpRangeArgMinPrefixPos
+  cases blockCount with
+  | zero =>
+      omega
+  | succ count =>
+      exact
+        bpBlockArgMinPrefixPos_bpRangeArgMinBlockFrom
+          shape blockSize (startBlock + 1) count startBlock
+
+theorem bpRangeArgMinBlockFrom_mem
+    (shape : Cartesian.CartesianShape)
+    (blockSize block steps bestBlock lo hi : Nat)
+    (hbest : lo <= bestBlock /\ bestBlock < hi)
+    (hcandidate :
+      forall {offset : Nat}, offset < steps ->
+        lo <= block + offset /\ block + offset < hi) :
+    lo <= bpRangeArgMinBlockFrom shape blockSize block steps bestBlock /\
+      bpRangeArgMinBlockFrom shape blockSize block steps bestBlock < hi := by
+  induction steps generalizing block bestBlock with
+  | zero =>
+      simpa [bpRangeArgMinBlockFrom] using hbest
+  | succ steps ih =>
+      unfold bpRangeArgMinBlockFrom
+      let next := bpBetterArgMinBlock shape blockSize bestBlock block
+      have hcandidate0 : lo <= block /\ block < hi := by
+        simpa using hcandidate (offset := 0) (by omega)
+      have hnext : lo <= next /\ next < hi := by
+        unfold next bpBetterArgMinBlock
+        by_cases hlt :
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize block) <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize bestBlock)
+        · simp [hlt, hcandidate0]
+        · simp [hlt, hbest]
+      exact
+        ih (block := block + 1)
+          (bestBlock := next)
+          hnext
+          (by
+            intro offset hoffset
+            have htail := hcandidate (offset := offset + 1) (by omega)
+            have hblock :
+                block + (offset + 1) = block + 1 + offset := by
+              omega
+            simpa [hblock] using htail)
+
+theorem bpRangeArgMinBlock_mem
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount : Nat)
+    (hcount : 0 < blockCount) :
+    startBlock <=
+        bpRangeArgMinBlock shape blockSize startBlock blockCount /\
+      bpRangeArgMinBlock shape blockSize startBlock blockCount <
+        startBlock + blockCount := by
+  unfold bpRangeArgMinBlock
+  cases blockCount with
+  | zero =>
+      omega
+  | succ count =>
+      exact
+        bpRangeArgMinBlockFrom_mem shape blockSize (startBlock + 1)
+          count startBlock startBlock (startBlock + (count + 1))
+          (by omega)
+          (by
+            intro offset hoffset
+            omega)
+
+theorem bpRangeArgMinBlockFrom_leftmost
+    (shape : Cartesian.CartesianShape)
+    (blockSize block steps bestBlock lo hi : Nat)
+    (hbestMem : lo <= bestBlock /\ bestBlock < hi)
+    (hbestBefore : bestBlock < block)
+    (hbestLe :
+      forall {candidateBlock : Nat},
+        lo <= candidateBlock ->
+          candidateBlock < block ->
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize bestBlock) <=
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize candidateBlock))
+    (hbestLeft :
+      forall {candidateBlock : Nat},
+        lo <= candidateBlock ->
+          candidateBlock < bestBlock ->
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize bestBlock) <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize candidateBlock))
+    (hcandidate :
+      forall {offset : Nat},
+        offset < steps -> lo <= block + offset /\ block + offset < hi) :
+    let target :=
+      bpRangeArgMinBlockFrom shape blockSize block steps bestBlock
+    lo <= target /\ target < hi /\ target < block + steps /\
+      (forall {candidateBlock : Nat},
+        lo <= candidateBlock ->
+          candidateBlock < block + steps ->
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize target) <=
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize candidateBlock)) /\
+      forall {candidateBlock : Nat},
+        lo <= candidateBlock ->
+          candidateBlock < target ->
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize target) <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize candidateBlock) := by
+  induction steps generalizing block bestBlock with
+  | zero =>
+      simp [bpRangeArgMinBlockFrom]
+      exact
+        ⟨hbestMem.1, hbestMem.2, hbestBefore,
+          (by
+            intro candidateBlock hlo hlt
+            exact hbestLe hlo hlt),
+          hbestLeft⟩
+  | succ steps ih =>
+      unfold bpRangeArgMinBlockFrom
+      let current := block
+      let best' := bpBetterArgMinBlock shape blockSize bestBlock current
+      have hcurrentMem : lo <= current /\ current < hi := by
+        simpa [current] using hcandidate (offset := 0) (by omega)
+      have htailCandidate :
+          forall {offset : Nat},
+            offset < steps ->
+              lo <= block + 1 + offset /\
+                block + 1 + offset < hi := by
+        intro offset hoffset
+        have htail := hcandidate (offset := offset + 1) (by omega)
+        have hpos : block + (offset + 1) = block + 1 + offset := by
+          omega
+        simpa [hpos] using htail
+      have hbest'Mem : lo <= best' /\ best' < hi := by
+        unfold best' bpBetterArgMinBlock
+        by_cases htake :
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize current) <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize bestBlock)
+        · simp [htake, hcurrentMem]
+        · simp [htake, hbestMem]
+      have hbest'Before : best' < block + 1 := by
+        unfold best' bpBetterArgMinBlock
+        by_cases htake :
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize current) <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize bestBlock)
+        · simp [htake, current]
+        · simp [htake]
+          omega
+      have hbest'Le :
+          forall {candidateBlock : Nat},
+            lo <= candidateBlock ->
+              candidateBlock < block + 1 ->
+                bpExcessAt shape
+                    (bpBlockArgMinPrefixPos shape blockSize best') <=
+                  bpExcessAt shape
+                    (bpBlockArgMinPrefixPos shape blockSize candidateBlock) := by
+        intro candidateBlock hlo hltBlock
+        unfold best' bpBetterArgMinBlock
+        by_cases htake :
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize current) <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize bestBlock)
+        · simp [htake]
+          by_cases hcandidateCurrent : candidateBlock = current
+          · subst candidateBlock
+            exact Nat.le_refl _
+          · have hcandidateBefore : candidateBlock < block := by
+              omega
+            exact Nat.le_trans (Nat.le_of_lt htake)
+              (hbestLe hlo hcandidateBefore)
+        · simp [htake]
+          by_cases hcandidateCurrent : candidateBlock = current
+          · subst candidateBlock
+            exact Nat.le_of_not_gt htake
+          · have hcandidateBefore : candidateBlock < block := by
+              omega
+            exact hbestLe hlo hcandidateBefore
+      have hbest'Left :
+          forall {candidateBlock : Nat},
+            lo <= candidateBlock ->
+              candidateBlock < best' ->
+                bpExcessAt shape
+                    (bpBlockArgMinPrefixPos shape blockSize best') <
+                  bpExcessAt shape
+                    (bpBlockArgMinPrefixPos shape blockSize candidateBlock) := by
+        intro candidateBlock hlo hltBest
+        unfold best' bpBetterArgMinBlock at hltBest ⊢
+        by_cases htake :
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize current) <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize bestBlock)
+        · simp [htake] at hltBest ⊢
+          have hcandidateBefore : candidateBlock < block := by
+            omega
+          exact Nat.lt_of_lt_of_le htake
+            (hbestLe hlo hcandidateBefore)
+        · simp [htake] at hltBest ⊢
+          exact hbestLeft hlo hltBest
+      have hrec :=
+        ih (block := block + 1) (bestBlock := best')
+          hbest'Mem hbest'Before hbest'Le hbest'Left htailCandidate
+      have hsteps : 1 + steps = steps + 1 := by omega
+      simpa [best', current, hsteps, Nat.add_assoc] using hrec
+
+theorem bpRangeArgMinBlock_leftmost
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount : Nat)
+    (hcount : 0 < blockCount) :
+    let target := bpRangeArgMinBlock shape blockSize startBlock blockCount
+    startBlock <= target /\ target < startBlock + blockCount /\
+      (forall {candidateBlock : Nat},
+        startBlock <= candidateBlock ->
+          candidateBlock < startBlock + blockCount ->
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize target) <=
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize candidateBlock)) /\
+      forall {candidateBlock : Nat},
+        startBlock <= candidateBlock ->
+          candidateBlock < target ->
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize target) <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize candidateBlock) := by
+  unfold bpRangeArgMinBlock
+  cases blockCount with
+  | zero =>
+      omega
+  | succ count =>
+      have hfrom :=
+        bpRangeArgMinBlockFrom_leftmost
+          shape blockSize (startBlock + 1) count startBlock
+          startBlock (startBlock + (count + 1))
+          (by omega)
+          (by omega)
+          (by
+            intro candidateBlock hlo hlt
+            have hcandidate : candidateBlock = startBlock := by omega
+            subst candidateBlock
+            exact Nat.le_refl _)
+          (by
+            intro candidateBlock hlo hlt
+            omega)
+          (by
+            intro offset hoffset
+            omega)
+      rcases hfrom with ⟨hlo, hhi, _htargetLt, hle, hleft⟩
+      have hle' :
+          forall {candidateBlock : Nat},
+            startBlock <= candidateBlock ->
+              candidateBlock < startBlock + (count + 1) ->
+                bpExcessAt shape
+                    (bpBlockArgMinPrefixPos shape blockSize
+                      (bpRangeArgMinBlockFrom shape blockSize
+                        (startBlock + 1) count startBlock)) <=
+                  bpExcessAt shape
+                    (bpBlockArgMinPrefixPos shape blockSize
+                      candidateBlock) := by
+        intro candidateBlock hloCandidate hltCandidate
+        exact hle hloCandidate (by omega)
+      exact ⟨hlo, hhi, hle', hleft⟩
+
+def bpSparseTwoSpanArgMinBlock
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount span : Nat) : Nat :=
+  let leftBlock :=
+    bpRangeArgMinBlock shape blockSize startBlock span
+  let rightStart := startBlock + blockCount - span
+  let rightBlock :=
+    bpRangeArgMinBlock shape blockSize rightStart span
+  bpBetterArgMinBlock shape blockSize leftBlock rightBlock
+
+theorem bpSparseTwoSpanArgMinBlock_leftmost
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount span : Nat)
+    (hspan : 0 < span)
+    (hspanLe : span <= blockCount)
+    (hcover : blockCount <= 2 * span) :
+    let target :=
+      bpSparseTwoSpanArgMinBlock shape blockSize startBlock blockCount span
+    startBlock <= target /\ target < startBlock + blockCount /\
+      (forall {candidateBlock : Nat},
+        startBlock <= candidateBlock ->
+          candidateBlock < startBlock + blockCount ->
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize target) <=
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize candidateBlock)) /\
+      forall {candidateBlock : Nat},
+        startBlock <= candidateBlock ->
+          candidateBlock < target ->
+            bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize target) <
+              bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize candidateBlock) := by
+  let leftBlock :=
+    bpRangeArgMinBlock shape blockSize startBlock span
+  let rightStart := startBlock + blockCount - span
+  let rightBlock :=
+    bpRangeArgMinBlock shape blockSize rightStart span
+  have hleft :=
+    bpRangeArgMinBlock_leftmost shape blockSize startBlock span hspan
+  have hright :=
+    bpRangeArgMinBlock_leftmost shape blockSize rightStart span hspan
+  have hrightStart_ge : startBlock <= rightStart := by
+    omega
+  have hrightStart_le_leftEnd : rightStart <= startBlock + span := by
+    omega
+  have hrightEnd : rightStart + span = startBlock + blockCount := by
+    omega
+  by_cases htake :
+      bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize rightBlock) <
+        bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize leftBlock)
+  · have htarget :
+        bpSparseTwoSpanArgMinBlock shape blockSize startBlock blockCount span =
+          rightBlock := by
+      simp [bpSparseTwoSpanArgMinBlock, leftBlock, rightStart, rightBlock,
+        bpBetterArgMinBlock, htake]
+    have hmem :
+        startBlock <= rightBlock /\ rightBlock < startBlock + blockCount := by
+      constructor
+      · exact Nat.le_trans hrightStart_ge hright.1
+      · simpa [hrightEnd] using hright.2.1
+    have hle :
+        forall {candidateBlock : Nat},
+          startBlock <= candidateBlock ->
+            candidateBlock < startBlock + blockCount ->
+              bpExcessAt shape
+                  (bpBlockArgMinPrefixPos shape blockSize rightBlock) <=
+                bpExcessAt shape
+                  (bpBlockArgMinPrefixPos shape blockSize candidateBlock) := by
+      intro candidateBlock hlo hhi
+      by_cases hrightSide : rightStart <= candidateBlock
+      · exact hright.2.2.1 hrightSide (by simpa [hrightEnd] using hhi)
+      · have hcandidateLeft : candidateBlock < startBlock + span := by
+          omega
+        exact Nat.le_trans (Nat.le_of_lt htake)
+          (hleft.2.2.1 hlo hcandidateLeft)
+    have hleftmost :
+        forall {candidateBlock : Nat},
+          startBlock <= candidateBlock ->
+            candidateBlock < rightBlock ->
+              bpExcessAt shape
+                  (bpBlockArgMinPrefixPos shape blockSize rightBlock) <
+                bpExcessAt shape
+                  (bpBlockArgMinPrefixPos shape blockSize candidateBlock) := by
+      intro candidateBlock hlo hltTarget
+      by_cases hrightSide : rightStart <= candidateBlock
+      · exact hright.2.2.2 hrightSide hltTarget
+      · have hcandidateLeft : candidateBlock < startBlock + span := by
+          omega
+        exact Nat.lt_of_lt_of_le htake
+          (hleft.2.2.1 hlo hcandidateLeft)
+    simpa [htarget] using ⟨hmem.1, hmem.2, hle, hleftmost⟩
+  · have htarget :
+        bpSparseTwoSpanArgMinBlock shape blockSize startBlock blockCount span =
+          leftBlock := by
+      simp [bpSparseTwoSpanArgMinBlock, leftBlock, rightStart, rightBlock,
+        bpBetterArgMinBlock, htake]
+    have hrightNotLt :
+        bpExcessAt shape
+            (bpBlockArgMinPrefixPos shape blockSize leftBlock) <=
+          bpExcessAt shape
+            (bpBlockArgMinPrefixPos shape blockSize rightBlock) := by
+      exact Nat.le_of_not_gt htake
+    have hmem :
+        startBlock <= leftBlock /\ leftBlock < startBlock + blockCount := by
+      constructor
+      · exact hleft.1
+      · have hleftHi := hleft.2.1
+        omega
+    have hle :
+        forall {candidateBlock : Nat},
+          startBlock <= candidateBlock ->
+            candidateBlock < startBlock + blockCount ->
+              bpExcessAt shape
+                  (bpBlockArgMinPrefixPos shape blockSize leftBlock) <=
+                bpExcessAt shape
+                  (bpBlockArgMinPrefixPos shape blockSize candidateBlock) := by
+      intro candidateBlock hlo hhi
+      by_cases hleftSide : candidateBlock < startBlock + span
+      · exact hleft.2.2.1 hlo hleftSide
+      · have hrightSide : rightStart <= candidateBlock := by omega
+        exact Nat.le_trans hrightNotLt
+          (hright.2.2.1 hrightSide (by simpa [hrightEnd] using hhi))
+    have hleftmost :
+        forall {candidateBlock : Nat},
+          startBlock <= candidateBlock ->
+            candidateBlock < leftBlock ->
+              bpExcessAt shape
+                  (bpBlockArgMinPrefixPos shape blockSize leftBlock) <
+                bpExcessAt shape
+                  (bpBlockArgMinPrefixPos shape blockSize candidateBlock) := by
+      intro candidateBlock hlo hltTarget
+      exact hleft.2.2.2 hlo hltTarget
+    simpa [htarget] using ⟨hmem.1, hmem.2, hle, hleftmost⟩
+
+theorem bpRangeWitness_eq_of_bpSparseTwoSpanArgMinBlock
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount span : Nat)
+    (hspan : 0 < span)
+    (hspanLe : span <= blockCount)
+    (hcover : blockCount <= 2 * span) :
+    (bpRangeMinExcess shape blockSize startBlock blockCount,
+        bpRangeArgMinPrefixPos shape blockSize startBlock blockCount) =
+      (bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize
+            (bpSparseTwoSpanArgMinBlock shape blockSize startBlock
+              blockCount span)),
+        bpBlockArgMinPrefixPos shape blockSize
+          (bpSparseTwoSpanArgMinBlock shape blockSize startBlock
+            blockCount span)) := by
+  have hleftmost :=
+    bpSparseTwoSpanArgMinBlock_leftmost
+      shape blockSize startBlock blockCount span hspan hspanLe hcover
+  exact
+    bpRangeWitness_eq_of_leftmost_block_candidate
+      (shape := shape) (blockSize := blockSize)
+      (startBlock := startBlock) (blockCount := blockCount)
+      (targetBlock :=
+        bpSparseTwoSpanArgMinBlock shape blockSize startBlock blockCount span)
+      (target :=
+        bpBlockArgMinPrefixPos shape blockSize
+          (bpSparseTwoSpanArgMinBlock shape blockSize startBlock
+            blockCount span))
+      ⟨hleftmost.1, hleftmost.2.1⟩
+      rfl
+      hleftmost.2.2.1
+      hleftmost.2.2.2
+
+def bpSparseLogSpan (blockCount : Nat) : Nat :=
+  2 ^ Nat.log2 blockCount
+
+theorem bpSparseLogSpan_pos (blockCount : Nat) :
+    0 < bpSparseLogSpan blockCount := by
+  unfold bpSparseLogSpan
+  exact Nat.pow_pos (by omega)
+
+theorem bpSparseLogSpan_le_self
+    {blockCount : Nat} (hcount : 0 < blockCount) :
+    bpSparseLogSpan blockCount <= blockCount := by
+  unfold bpSparseLogSpan
+  exact Nat.log2_self_le (by omega)
+
+theorem self_le_two_mul_bpSparseLogSpan
+    {blockCount : Nat} (_hcount : 0 < blockCount) :
+    blockCount <= 2 * bpSparseLogSpan blockCount := by
+  unfold bpSparseLogSpan
+  have hlt :
+      blockCount < 2 ^ (Nat.log2 blockCount + 1) :=
+    Nat.lt_log2_self (n := blockCount)
+  have hpow :
+      2 ^ (Nat.log2 blockCount + 1) =
+        2 * 2 ^ Nat.log2 blockCount := by
+    rw [Nat.pow_succ]
+    omega
+  omega
+
+def bpSparseLogSpanArgMinBlock
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount : Nat) : Nat :=
+  bpSparseTwoSpanArgMinBlock shape blockSize startBlock blockCount
+    (bpSparseLogSpan blockCount)
+
+theorem bpRangeWitness_eq_of_bpSparseLogSpanArgMinBlock
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount : Nat)
+    (hcount : 0 < blockCount) :
+    (bpRangeMinExcess shape blockSize startBlock blockCount,
+        bpRangeArgMinPrefixPos shape blockSize startBlock blockCount) =
+      (bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize
+            (bpSparseLogSpanArgMinBlock shape blockSize startBlock
+              blockCount)),
+        bpBlockArgMinPrefixPos shape blockSize
+          (bpSparseLogSpanArgMinBlock shape blockSize startBlock
+            blockCount)) := by
+  unfold bpSparseLogSpanArgMinBlock
+  exact
+    bpRangeWitness_eq_of_bpSparseTwoSpanArgMinBlock
+      shape blockSize startBlock blockCount
+      (bpSparseLogSpan blockCount)
+      (bpSparseLogSpan_pos blockCount)
+      (bpSparseLogSpan_le_self hcount)
+      (self_le_two_mul_bpSparseLogSpan hcount)
+
+theorem bpRangeWitness_eq_of_bpRangeArgMinBlock
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount : Nat)
+    (hcount : 0 < blockCount) :
+    (bpRangeMinExcess shape blockSize startBlock blockCount,
+        bpRangeArgMinPrefixPos shape blockSize startBlock blockCount) =
+      (bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize
+            (bpRangeArgMinBlock shape blockSize startBlock blockCount)),
+        bpBlockArgMinPrefixPos shape blockSize
+          (bpRangeArgMinBlock shape blockSize startBlock blockCount)) := by
+  have hprefix :=
+    bpBlockArgMinPrefixPos_bpRangeArgMinBlock_of_pos
+      shape blockSize startBlock blockCount hcount
+  simp [bpRangeMinExcess, hprefix]
+
 theorem bpRangeArgMinPrefixPosFrom_mem_of_best_and_candidates
     (shape : Cartesian.CartesianShape)
     (blockSize block steps best lo hi : Nat)
@@ -7975,6 +8630,126 @@ theorem bpCandidateMerge?_argmin_pair
   · simp [hlt]
   · simp [hlt]
 
+theorem bpCandidateMerge?_bpSparseTwoSpanArgMinBlock
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount span : Nat)
+    (hspan : 0 < span) :
+    let rightStart := startBlock + blockCount - span
+    bpCandidateMerge?
+        (some
+          (bpRangeMinExcess shape blockSize startBlock span,
+            bpRangeArgMinPrefixPos shape blockSize startBlock span))
+        (some
+          (bpRangeMinExcess shape blockSize rightStart span,
+            bpRangeArgMinPrefixPos shape blockSize rightStart span)) =
+      some
+        (bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize
+            (bpSparseTwoSpanArgMinBlock shape blockSize startBlock
+              blockCount span)),
+          bpBlockArgMinPrefixPos shape blockSize
+            (bpSparseTwoSpanArgMinBlock shape blockSize startBlock
+              blockCount span)) := by
+  let rightStart := startBlock + blockCount - span
+  let leftBlock :=
+    bpRangeArgMinBlock shape blockSize startBlock span
+  let rightBlock :=
+    bpRangeArgMinBlock shape blockSize rightStart span
+  have hleftWitness :=
+    bpRangeWitness_eq_of_bpRangeArgMinBlock
+      shape blockSize startBlock span hspan
+  have hrightWitness :=
+    bpRangeWitness_eq_of_bpRangeArgMinBlock
+      shape blockSize rightStart span hspan
+  by_cases htake :
+      bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize rightBlock) <
+        bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize leftBlock)
+  · have htarget :
+        bpSparseTwoSpanArgMinBlock shape blockSize startBlock blockCount span =
+          rightBlock := by
+      simp [bpSparseTwoSpanArgMinBlock, leftBlock, rightStart, rightBlock,
+        bpBetterArgMinBlock, htake]
+    have hmerge :
+        bpCandidateMerge?
+            (some
+              (bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize leftBlock),
+                bpBlockArgMinPrefixPos shape blockSize leftBlock))
+            (some
+              (bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize rightBlock),
+                bpBlockArgMinPrefixPos shape blockSize rightBlock)) =
+          some
+            (bpExcessAt shape
+              (bpBlockArgMinPrefixPos shape blockSize rightBlock),
+              bpBlockArgMinPrefixPos shape blockSize rightBlock) := by
+      exact bpCandidateMerge?_some_right_of_fst_lt htake
+    simpa [rightStart, leftBlock, rightBlock, hleftWitness,
+      hrightWitness, htarget] using hmerge
+  · have htarget :
+        bpSparseTwoSpanArgMinBlock shape blockSize startBlock blockCount span =
+          leftBlock := by
+      simp [bpSparseTwoSpanArgMinBlock, leftBlock, rightStart, rightBlock,
+        bpBetterArgMinBlock, htake]
+    have hle :
+        bpExcessAt shape
+            (bpBlockArgMinPrefixPos shape blockSize leftBlock) <=
+          bpExcessAt shape
+            (bpBlockArgMinPrefixPos shape blockSize rightBlock) := by
+      exact Nat.le_of_not_gt htake
+    have hmerge :
+        bpCandidateMerge?
+            (some
+              (bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize leftBlock),
+                bpBlockArgMinPrefixPos shape blockSize leftBlock))
+            (some
+              (bpExcessAt shape
+                (bpBlockArgMinPrefixPos shape blockSize rightBlock),
+                bpBlockArgMinPrefixPos shape blockSize rightBlock)) =
+          some
+            (bpExcessAt shape
+              (bpBlockArgMinPrefixPos shape blockSize leftBlock),
+              bpBlockArgMinPrefixPos shape blockSize leftBlock) := by
+      exact
+        bpCandidateMerge?_some_left_of_fst_le
+          (by
+            intro right hright
+            cases hright
+            exact hle)
+    simpa [rightStart, leftBlock, rightBlock, hleftWitness,
+      hrightWitness, htarget] using hmerge
+
+theorem bpCandidateMerge?_bpSparseLogSpanArgMinBlock
+    (shape : Cartesian.CartesianShape)
+    (blockSize startBlock blockCount : Nat)
+    (_hcount : 0 < blockCount) :
+    let span := bpSparseLogSpan blockCount
+    let rightStart := startBlock + blockCount - span
+    bpCandidateMerge?
+        (some
+          (bpRangeMinExcess shape blockSize startBlock span,
+            bpRangeArgMinPrefixPos shape blockSize startBlock span))
+        (some
+          (bpRangeMinExcess shape blockSize rightStart span,
+            bpRangeArgMinPrefixPos shape blockSize rightStart span)) =
+      some
+        (bpExcessAt shape
+          (bpBlockArgMinPrefixPos shape blockSize
+            (bpSparseLogSpanArgMinBlock shape blockSize startBlock
+              blockCount)),
+          bpBlockArgMinPrefixPos shape blockSize
+            (bpSparseLogSpanArgMinBlock shape blockSize startBlock
+              blockCount)) := by
+  unfold bpSparseLogSpanArgMinBlock
+  exact
+    bpCandidateMerge?_bpSparseTwoSpanArgMinBlock
+      shape blockSize startBlock blockCount
+      (bpSparseLogSpan blockCount)
+      (bpSparseLogSpan_pos blockCount)
+
 namespace PayloadLiveBPRelativeMinMaxArgSummaryTable
 
 def rangeScanFromCosted
@@ -8337,6 +9112,116 @@ theorem rangeScanCosted_erase_exact
       simpa [rangeScanCosted, Costed.bind, hvalue,
         bpRangeArgMinPrefixPos, bpRangeMinExcess] using htail
 
+def rangeArgMinBlockCandidateCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (startBlock count : Nat) : Costed (Option (Nat × Nat)) :=
+  table.minCandidateCosted
+    (bpRangeArgMinBlock shape blockSize startBlock count)
+
+theorem rangeArgMinBlockCandidateCosted_cost_le_four
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (startBlock count : Nat) :
+    (table.rangeArgMinBlockCandidateCosted startBlock count).cost <= 4 := by
+  exact table.minCandidateCosted_cost_le_four
+    (bpRangeArgMinBlock shape blockSize startBlock count)
+
+theorem rangeArgMinBlockCandidateCosted_erase_exact
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead startBlock count : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (hblocks : 0 < blocksPerSuper)
+    (hcover : blockCount * blockSize <= shape.bpCode.length)
+    (hsuperCount :
+      forall {block : Nat}, block < blockCount ->
+        block / blocksPerSuper < superCount)
+    (hcount : 0 < count)
+    (hbound : startBlock + count <= blockCount) :
+    (table.rangeArgMinBlockCandidateCosted startBlock count).erase =
+      some
+        (bpRangeMinExcess shape blockSize startBlock count,
+          bpRangeArgMinPrefixPos shape blockSize startBlock count) := by
+  have hmem :=
+    bpRangeArgMinBlock_mem shape blockSize startBlock count hcount
+  have hblock :
+      bpRangeArgMinBlock shape blockSize startBlock count < blockCount := by
+    omega
+  have hread :=
+    table.minCandidateCosted_erase_arg_excess_of_bounds
+      hblocks hblock hcover (hsuperCount hblock)
+  have hwitness :=
+    bpRangeWitness_eq_of_bpRangeArgMinBlock
+      shape blockSize startBlock count hcount
+  simpa [rangeArgMinBlockCandidateCosted, hwitness] using hread
+
+def optionWordList (word? : Option (List Bool)) : List (List Bool) :=
+  match word? with
+  | some word => [word]
+  | none => []
+
+theorem mem_optionWordList
+    {word? : Option (List Bool)} {word : List Bool}
+    (hmem : word ∈ optionWordList word?) :
+    word? = some word := by
+  cases word? <;> simp [optionWordList] at hmem ⊢
+  exact hmem.symm
+
+def summaryCandidateWordsRead
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (block : Nat) : List (List Bool) :=
+  optionWordList (table.baselineTable.store.words[block / blocksPerSuper]?) ++
+    optionWordList (table.minRelTable.store.words[block]?) ++
+    optionWordList (table.maxRelTable.store.words[block]?) ++
+    optionWordList (table.argOffsetTable.store.words[block]?)
+
+theorem summaryCandidateWordsRead_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead block : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (hsuperMachine :
+      superWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hrelativeMachine :
+      relativeWidth <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    {word : List Bool}
+    (hmem : word ∈ table.summaryCandidateWordsRead block) :
+    word.length <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  have hwords :=
+    table.read_words_length_le_machine hsuperMachine hrelativeMachine
+  simp [summaryCandidateWordsRead, List.mem_append] at hmem
+  rcases hmem with hbaseline | hmin | hmax | harg
+  · exact hwords.1 (mem_optionWordList hbaseline)
+  · exact hwords.2.1 (mem_optionWordList hmin)
+  · exact hwords.2.2.1 (mem_optionWordList hmax)
+  · exact hwords.2.2.2 (mem_optionWordList harg)
+
 end PayloadLiveBPRelativeMinMaxArgSummaryTable
 
 /--
@@ -8353,6 +9238,7 @@ structure PayloadLiveBPRelativeRmmInteriorDirectory
     (blockSize blockCount overhead queryCost : Nat) where
   payload : List Bool
   payload_length_eq : payload.length = overhead
+  payloadWordsRead : Nat -> Nat -> List (List Bool)
   rangeMinCosted : Nat -> Nat -> Costed (Option (Nat × Nat))
   rangeMin_cost_le :
     forall startBlock count,
@@ -8365,6 +9251,11 @@ structure PayloadLiveBPRelativeRmmInteriorDirectory
             some
               (bpRangeMinExcess shape blockSize startBlock count,
                 bpRangeArgMinPrefixPos shape blockSize startBlock count)
+  read_words_length_le_machine :
+    forall {startBlock count : Nat} {word : List Bool},
+      word ∈ payloadWordsRead startBlock count ->
+        word.length <=
+          SuccinctRankProposal.machineWordBits shape.bpCode.length
 
 namespace PayloadLiveBPRelativeRmmInteriorDirectory
 
@@ -8377,15 +9268,19 @@ theorem profile
     directory.payload.length = overhead /\
       (forall startBlock count,
         (directory.rangeMinCosted startBlock count).cost <= queryCost) /\
-      forall {startBlock count : Nat},
+      (forall {startBlock count : Nat},
         0 < count ->
           startBlock + count <= blockCount ->
             (directory.rangeMinCosted startBlock count).erase =
               some
                 (bpRangeMinExcess shape blockSize startBlock count,
-                  bpRangeArgMinPrefixPos shape blockSize startBlock count) := by
+                  bpRangeArgMinPrefixPos shape blockSize startBlock count)) /\
+      forall {startBlock count : Nat} {word : List Bool},
+        word ∈ directory.payloadWordsRead startBlock count ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
   exact ⟨directory.payload_length_eq, directory.rangeMin_cost_le,
-    directory.rangeMin_exact⟩
+    directory.rangeMin_exact, directory.read_words_length_le_machine⟩
 
 end PayloadLiveBPRelativeRmmInteriorDirectory
 
@@ -8405,6 +9300,7 @@ def proofOnlyBPRelativeRmmInteriorDirectory
       0 1 where
   payload := []
   payload_length_eq := rfl
+  payloadWordsRead := fun _ _ => []
   rangeMinCosted := fun startBlock count =>
     { value :=
         if 0 < count ∧ startBlock + count <= blockCount then
@@ -8422,6 +9318,9 @@ def proofOnlyBPRelativeRmmInteriorDirectory
     have hcond : 0 < count ∧ startBlock + count <= blockCount :=
       ⟨hcount, hbound⟩
     simp [hcond]
+  read_words_length_le_machine := by
+    intro startBlock count word hmem
+    cases hmem
 
 theorem payloadLiveBPRelativeRmmInteriorDirectory_profile_allows_proof_only_oracle
     (shape : Cartesian.CartesianShape)
@@ -8431,13 +9330,17 @@ theorem payloadLiveBPRelativeRmmInteriorDirectory_profile_allows_proof_only_orac
     directory.payload.length = 0 /\
       (forall startBlock count,
         (directory.rangeMinCosted startBlock count).cost <= 1) /\
-      forall {startBlock count : Nat},
+      (forall {startBlock count : Nat},
         0 < count ->
           startBlock + count <= blockCount ->
             (directory.rangeMinCosted startBlock count).erase =
               some
                 (bpRangeMinExcess shape blockSize startBlock count,
-                  bpRangeArgMinPrefixPos shape blockSize startBlock count) := by
+                  bpRangeArgMinPrefixPos shape blockSize startBlock count)) /\
+      forall {startBlock count : Nat} {word : List Bool},
+        word ∈ directory.payloadWordsRead startBlock count ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
   exact
     (proofOnlyBPRelativeRmmInteriorDirectory
       shape blockSize blockCount).profile
@@ -8534,12 +9437,16 @@ def scanInteriorDirectory
       overhead (4 * blockCount) where
   payload := table.payload
   payload_length_eq := table.payload_length
+  payloadWordsRead := fun _ _ => []
   rangeMinCosted := table.boundedRangeScanCosted
   rangeMin_cost_le := table.boundedRangeScanCosted_cost_le_blockCount
   rangeMin_exact := by
     intro startBlock count hcount hbound
     exact table.boundedRangeScanCosted_erase_exact hblocks hcover
       hsuperCount hcount hbound
+  read_words_length_le_machine := by
+    intro startBlock count word hmem
+    cases hmem
 
 theorem scanInteriorDirectory_profile
     {shape : Cartesian.CartesianShape}
@@ -8560,17 +9467,147 @@ theorem scanInteriorDirectory_profile
       (forall startBlock count,
         (directory.rangeMinCosted startBlock count).cost <=
           4 * blockCount) /\
-      forall {startBlock count : Nat},
+      (forall {startBlock count : Nat},
         0 < count ->
           startBlock + count <= blockCount ->
             (directory.rangeMinCosted startBlock count).erase =
               some
                 (bpRangeMinExcess shape blockSize startBlock count,
-                  bpRangeArgMinPrefixPos shape blockSize startBlock count) := by
+                  bpRangeArgMinPrefixPos shape blockSize startBlock count)) /\
+      forall {startBlock count : Nat} {word : List Bool},
+        word ∈ directory.payloadWordsRead startBlock count ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
   exact
     (table.scanInteriorDirectory hblocks hcover hsuperCount).profile
 
 end PayloadLiveBPRelativeMinMaxArgSummaryTable
+
+theorem canonicalBPRelativeSummary_block_div_lt_superCount
+    {shape : Cartesian.CartesianShape} {block : Nat}
+    (hblock : block < canonicalBPRelativeSummaryBlockCount shape) :
+    block / canonicalBPRelativeSummaryBlocksPerSuper shape <
+      canonicalBPRelativeSummarySuperCount shape := by
+  by_cases hactive :
+      canonicalBPRelativeMinMaxArgSummaryTableActive shape
+  · have hdiv :
+        block / canonicalBPRelativeSummaryBlocksPerSuperRaw shape <
+          canonicalBPRelativeSummaryBlockCountRaw shape /
+              canonicalBPRelativeSummaryBlocksPerSuperRaw shape + 1 :=
+      have hblockRaw :
+          block < canonicalBPRelativeSummaryBlockCountRaw shape := by
+        simpa [canonicalBPRelativeSummaryBlockCount, hactive] using hblock
+      PayloadLiveBPRelativeMinMaxArgSummaryTable.div_lt_succ_div_of_lt
+        (blockCount := canonicalBPRelativeSummaryBlockCountRaw shape)
+        hblockRaw
+    simpa [canonicalBPRelativeSummaryBlockCount,
+      canonicalBPRelativeSummaryBlocksPerSuper,
+      canonicalBPRelativeSummarySuperCount,
+      canonicalBPRelativeSummarySuperCountRaw, hactive] using hdiv
+  · simp [canonicalBPRelativeSummaryBlockCount, hactive] at hblock
+
+def concreteBPRelativeRmmInteriorDirectoryPayloadLength
+    (shape : Cartesian.CartesianShape) : Nat :=
+  (concreteBPRelativeMinMaxArgSummaryTable_canonical shape).payload.length
+
+/--
+Canonical payload-live relative interior directory backed by B's charged
+relative min/max/arg summary table.
+
+The selected block is recovered through the relative summary payload read, so
+the value witness itself is live payload.  The remaining C2 routing work is to
+replace the semantic `bpRangeArgMinBlock` selector below with the two-level
+local/global sparse navigator without changing this external profile shape.
+-/
+def concreteBPRelativeRmmInteriorDirectory
+    (shape : Cartesian.CartesianShape) :
+    PayloadLiveBPRelativeRmmInteriorDirectory shape
+      (canonicalBPRelativeSummaryBlockSize shape)
+      (canonicalBPRelativeSummaryBlockCount shape)
+      (concreteBPRelativeRmmInteriorDirectoryPayloadLength shape)
+      concreteBPRelativeRmmInteriorQueryCost := by
+  let table := concreteBPRelativeMinMaxArgSummaryTable_canonical shape
+  exact
+    { payload := table.payload
+      payload_length_eq := rfl
+      payloadWordsRead := fun startBlock count =>
+        table.summaryCandidateWordsRead
+          (bpRangeArgMinBlock shape
+            (canonicalBPRelativeSummaryBlockSize shape) startBlock count)
+      rangeMinCosted := fun startBlock count =>
+        table.rangeArgMinBlockCandidateCosted startBlock count
+      rangeMin_cost_le := by
+        intro startBlock count
+        have hcost :=
+          table.rangeArgMinBlockCandidateCosted_cost_le_four
+            startBlock count
+        unfold concreteBPRelativeRmmInteriorQueryCost
+        omega
+      rangeMin_exact := by
+        intro startBlock count hcount hbound
+        exact
+          table.rangeArgMinBlockCandidateCosted_erase_exact
+            (canonicalBPRelativeSummary_blocksPerSuper_pos shape)
+            (canonicalBPRelativeSummary_cover shape)
+            (by
+              intro block hblock
+              exact
+                canonicalBPRelativeSummary_block_div_lt_superCount
+                  (shape := shape) hblock)
+            hcount hbound
+      read_words_length_le_machine := by
+        intro startBlock count word hmem
+        exact
+          table.summaryCandidateWordsRead_length_le_machine
+            (canonicalBPRelativeSummary_superWidth_machine shape)
+            (canonicalBPRelativeSummary_relativeWidth_machine shape)
+            hmem }
+
+theorem concreteBPRelativeRmmInteriorDirectory_profile
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size) :
+    let directory := concreteBPRelativeRmmInteriorDirectory shape
+    LittleOLinear concreteBPRelativeRmmInteriorOverhead /\
+      directory.payload.length <=
+        concreteBPRelativeRmmInteriorOverhead shape.size /\
+      (forall startBlock count,
+        (directory.rangeMinCosted startBlock count).cost <=
+          concreteBPRelativeRmmInteriorQueryCost) /\
+      (forall {startBlock count : Nat},
+        0 < count ->
+          startBlock + count <=
+            canonicalBPRelativeSummaryBlockCount shape ->
+            (directory.rangeMinCosted startBlock count).erase =
+              some
+                (bpRangeMinExcess shape
+                  (canonicalBPRelativeSummaryBlockSize shape)
+                  startBlock count,
+                  bpRangeArgMinPrefixPos shape
+                    (canonicalBPRelativeSummaryBlockSize shape)
+                    startBlock count)) /\
+      forall {startBlock count : Nat} {word : List Bool},
+        word ∈ directory.payloadWordsRead startBlock count ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  let directory := concreteBPRelativeRmmInteriorDirectory shape
+  let table := concreteBPRelativeMinMaxArgSummaryTable_canonical shape
+  have hparams :=
+    concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_size_ge
+      shape hsize
+  rcases hparams with
+    ⟨_hblockSize, _hblocksPerSuper, _hblockCount, _hsuperCount,
+      _hrelativeWidth, hlittle, _hactive, _hblockSizePos,
+      _hblocksPerSuperPos, _hblockCountPos, _hcover, _hcountLe,
+      _hmachine, hpayload, _hsummaryExact, _hbaselineRead,
+      _hminRead, _hmaxRead, _hargRead⟩
+  have hdir := directory.profile
+  exact
+    ⟨hlittle,
+      by
+        simpa [directory, concreteBPRelativeRmmInteriorDirectory,
+          concreteBPRelativeRmmInteriorDirectoryPayloadLength, table] using
+          hpayload,
+      hdir.2.1, hdir.2.2.1, hdir.2.2.2⟩
 
 theorem concreteBPRelativeMinMaxArgSummaryTable_canonical_interior_scan_not_constant
     (shape : Cartesian.CartesianShape)
