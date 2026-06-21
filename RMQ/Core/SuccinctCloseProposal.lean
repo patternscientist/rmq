@@ -985,6 +985,144 @@ theorem bpExcessAt_close_succ_add_inorder_succ_eq_open_rank
     _ = Succinct.rankPrefix true shape.bpCode (close + 1) := by
       exact bpExcessAt_add_close_rank_eq_open_rank_of_le shape hbound
 
+theorem bpExcessAt_node_left_prefix_succ
+    (left right : Cartesian.CartesianShape) {pos : Nat}
+    (hpos : pos <= left.bpCode.length) :
+    bpExcessAt (Cartesian.CartesianShape.node left right) (pos + 1) =
+      bpExcessAt left pos + 1 := by
+  have hfalseTail :
+      Succinct.rankPrefix false
+          (left.bpCode ++ false :: right.bpCode) pos =
+        Succinct.rankPrefix false left.bpCode pos :=
+    Succinct.rankPrefix_append_of_le false left.bpCode
+      (false :: right.bpCode) hpos
+  have htrueTail :
+      Succinct.rankPrefix true
+          (left.bpCode ++ false :: right.bpCode) pos =
+        Succinct.rankPrefix true left.bpCode pos :=
+    Succinct.rankPrefix_append_of_le true left.bpCode
+      (false :: right.bpCode) hpos
+  have hnonneg := bpExcessAt_prefix_nonnegative left hpos
+  unfold bpExcessAt
+  simp [Cartesian.CartesianShape.bpCode, Succinct.rankPrefix,
+    hfalseTail, htrueTail]
+  omega
+
+theorem bpExcessAt_node_right_prefix_shift
+    (left right : Cartesian.CartesianShape) {pos : Nat}
+    (hpos : pos <= right.bpCode.length) :
+    bpExcessAt (Cartesian.CartesianShape.node left right)
+        (left.bpCode.length + 2 + pos) =
+      bpExcessAt right pos := by
+  have hfalseTail :
+      Succinct.rankPrefix false
+          (left.bpCode ++ false :: right.bpCode)
+          (left.bpCode.length + 1 + pos) =
+        Succinct.rankPrefix false left.bpCode left.bpCode.length +
+          Succinct.rankPrefix false (false :: right.bpCode) (1 + pos) := by
+    have happ :=
+      Succinct.rankPrefix_append_of_ge false left.bpCode
+        (false :: right.bpCode)
+        (limit := left.bpCode.length + 1 + pos) (by omega)
+    have hsub :
+        left.bpCode.length + 1 + pos - left.bpCode.length = 1 + pos := by
+      omega
+    rw [hsub] at happ
+    simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using happ
+  have htrueTail :
+      Succinct.rankPrefix true
+          (left.bpCode ++ false :: right.bpCode)
+          (left.bpCode.length + 1 + pos) =
+        Succinct.rankPrefix true left.bpCode left.bpCode.length +
+          Succinct.rankPrefix true (false :: right.bpCode) (1 + pos) := by
+    have happ :=
+      Succinct.rankPrefix_append_of_ge true left.bpCode
+        (false :: right.bpCode)
+        (limit := left.bpCode.length + 1 + pos) (by omega)
+    have hsub :
+        left.bpCode.length + 1 + pos - left.bpCode.length = 1 + pos := by
+      omega
+    rw [hsub] at happ
+    simpa [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using happ
+  have hleftFalse := bpCode_rankFalse_full left
+  have hleftTrue := bpCode_rankTrue_full left
+  have hrightNonneg := bpExcessAt_prefix_nonnegative right hpos
+  have hfalseParent :
+      Succinct.rankPrefix false
+          (Cartesian.CartesianShape.node left right).bpCode
+          (left.bpCode.length + 2 + pos) =
+        left.size + 1 +
+          Succinct.rankPrefix false right.bpCode pos := by
+    calc
+      Succinct.rankPrefix false
+          (Cartesian.CartesianShape.node left right).bpCode
+          (left.bpCode.length + 2 + pos) =
+        Succinct.rankPrefix false
+          (left.bpCode ++ false :: right.bpCode)
+          (left.bpCode.length + 1 + pos) := by
+          have hlimit :
+              left.bpCode.length + 2 + pos =
+                (left.bpCode.length + 1 + pos) + 1 := by
+            omega
+          rw [hlimit]
+          simp [Cartesian.CartesianShape.bpCode, Succinct.rankPrefix]
+      _ =
+        Succinct.rankPrefix false left.bpCode left.bpCode.length +
+          Succinct.rankPrefix false (false :: right.bpCode) (1 + pos) :=
+          hfalseTail
+      _ =
+        left.size + (1 +
+          Succinct.rankPrefix false right.bpCode pos) := by
+          rw [hleftFalse]
+          have hlimit : 1 + pos = pos + 1 := by
+            omega
+          rw [hlimit]
+          simp [Succinct.rankPrefix]
+      _ =
+        left.size + 1 +
+          Succinct.rankPrefix false right.bpCode pos := by
+          omega
+  have htrueParent :
+      Succinct.rankPrefix true
+          (Cartesian.CartesianShape.node left right).bpCode
+          (left.bpCode.length + 2 + pos) =
+        left.size + 1 +
+          Succinct.rankPrefix true right.bpCode pos := by
+    calc
+      Succinct.rankPrefix true
+          (Cartesian.CartesianShape.node left right).bpCode
+          (left.bpCode.length + 2 + pos) =
+        1 +
+          Succinct.rankPrefix true
+            (left.bpCode ++ false :: right.bpCode)
+            (left.bpCode.length + 1 + pos) := by
+          have hlimit :
+              left.bpCode.length + 2 + pos =
+                (left.bpCode.length + 1 + pos) + 1 := by
+            omega
+          rw [hlimit]
+          simp [Cartesian.CartesianShape.bpCode, Succinct.rankPrefix]
+      _ =
+        1 +
+          (Succinct.rankPrefix true left.bpCode left.bpCode.length +
+            Succinct.rankPrefix true (false :: right.bpCode) (1 + pos)) := by
+          rw [htrueTail]
+      _ =
+        1 + (left.size +
+          Succinct.rankPrefix true right.bpCode pos) := by
+          rw [hleftTrue]
+          have hlimit : 1 + pos = pos + 1 := by
+            omega
+          rw [hlimit]
+          simp [Succinct.rankPrefix]
+      _ =
+        left.size + 1 +
+          Succinct.rankPrefix true right.bpCode pos := by
+          omega
+  unfold bpExcessAt
+  rw [htrueParent, hfalseParent]
+  omega
+
 theorem bpExcessAt_node_root_close_succ
     (left right : Cartesian.CartesianShape) :
     bpExcessAt (Cartesian.CartesianShape.node left right)
@@ -4189,6 +4327,370 @@ theorem answerClose_prefix_leftmost_min_excess_of_spanning_root
     exact bpExcessAt_node_root_close_succ_lt_before
       leftShape rightShape hpos hlt
 
+theorem answerClose_prefix_leftmost_min_excess_of_query
+    {shape : Cartesian.CartesianShape}
+    {start len leftClose rightClose answerClose : Nat}
+    (hlen : 0 < len)
+    (hbound : start + len <= shape.size)
+    (hleft : bpCloseOfInorder? shape start = some leftClose)
+    (hright :
+      bpCloseOfInorder? shape (start + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder? shape
+          (scanWindow shape.representative start len) =
+        some answerClose) :
+    (forall {pos : Nat},
+      leftClose + 1 <= pos ->
+        pos < rightClose + 2 ->
+          bpExcessAt shape (answerClose + 1) <=
+            bpExcessAt shape pos) /\
+      (forall {pos : Nat},
+        leftClose + 1 <= pos ->
+          pos < answerClose + 1 ->
+            bpExcessAt shape (answerClose + 1) <
+              bpExcessAt shape pos) := by
+  induction shape generalizing start len leftClose rightClose answerClose with
+  | empty =>
+      simp [Cartesian.CartesianShape.size] at hbound
+      omega
+  | node leftShape rightShape ihLeft ihRight =>
+      by_cases hrootLo : start <= leftShape.size
+      · by_cases hrootHi : leftShape.size < start + len
+        · exact
+            answerClose_prefix_leftmost_min_excess_of_spanning_root
+              (leftShape := leftShape) (rightShape := rightShape)
+              (start := start) (len := len)
+              (leftClose := leftClose) (rightClose := rightClose)
+              (answerClose := answerClose)
+              hlen hbound hrootLo hrootHi hleft hright hanswer
+        · have hleftWindow : start + len <= leftShape.size :=
+            Nat.le_of_not_gt hrootHi
+          have hstartLeft : start < leftShape.size := by
+            omega
+          have hendLeft : start + len - 1 < leftShape.size := by
+            omega
+          let leftValues := Cartesian.addConst 1 leftShape.representative
+          let rightValues := Cartesian.addConst 1 rightShape.representative
+          have hleftValuesBound :
+              start + len <= leftValues.length := by
+            simp [leftValues, Cartesian.addConst_length,
+              Cartesian.CartesianShape.representative_length]
+            exact hleftWindow
+          have hscanParent :
+              scanWindow
+                  (Cartesian.CartesianShape.node
+                    leftShape rightShape).representative start len =
+                scanWindow leftShape.representative start len := by
+            have happ :=
+              Cartesian.scanWindow_append_left leftValues
+                (0 :: rightValues) (left := start) (len := len)
+                hleftValuesBound
+            calc
+              scanWindow
+                  (Cartesian.CartesianShape.node
+                    leftShape rightShape).representative start len =
+                scanWindow (leftValues ++ (0 :: rightValues)) start len := by
+                  simp [leftValues, rightValues,
+                    Cartesian.CartesianShape.representative]
+              _ = scanWindow leftValues start len := happ
+              _ = scanWindow leftShape.representative start len := by
+                  exact Cartesian.scanWindow_addConst 1
+                    leftShape.representative start len
+          cases hleftRec :
+              bpCloseOfInorder? leftShape start with
+          | none =>
+              simp [bpCloseOfInorder?, hstartLeft, hleftRec] at hleft
+          | some childLeftClose =>
+              simp [bpCloseOfInorder?, hstartLeft, hleftRec] at hleft
+              subst leftClose
+              cases hrightRec :
+                  bpCloseOfInorder? leftShape (start + len - 1) with
+              | none =>
+                  simp [bpCloseOfInorder?, hendLeft, hrightRec] at hright
+              | some childRightClose =>
+                  simp [bpCloseOfInorder?, hendLeft, hrightRec] at hright
+                  subst rightClose
+                  have hscanBounds :=
+                    Cartesian.scanWindow_bounds leftShape.representative
+                      start len hlen
+                  have hscanLeft :
+                      scanWindow leftShape.representative start len <
+                        leftShape.size := by
+                    omega
+                  cases hanswerRec :
+                      bpCloseOfInorder? leftShape
+                        (scanWindow leftShape.representative start len) with
+                  | none =>
+                      simp [bpCloseOfInorder?, hscanParent, hscanLeft,
+                        hanswerRec] at hanswer
+                  | some childAnswerClose =>
+                      simp [bpCloseOfInorder?, hscanParent, hscanLeft,
+                        hanswerRec] at hanswer
+                      subst answerClose
+                      have hchild :=
+                        ihLeft hlen hleftWindow hleftRec hrightRec
+                          hanswerRec
+                      have hanswerBound :
+                          childAnswerClose + 1 <= leftShape.bpCode.length := by
+                        have hcloseBound :=
+                          bpCloseOfInorder?_bounds leftShape hanswerRec
+                        omega
+                      have hrightBound :
+                          childRightClose + 1 <= leftShape.bpCode.length := by
+                        have hcloseBound :=
+                          bpCloseOfInorder?_bounds leftShape hrightRec
+                        omega
+                      constructor
+                      · intro pos hlo hhi
+                        have hchildLo :
+                            childLeftClose + 1 <= pos - 1 := by
+                          omega
+                        have hchildHi :
+                            pos - 1 < childRightClose + 2 := by
+                          omega
+                        have hposBound :
+                            pos - 1 <= leftShape.bpCode.length := by
+                          omega
+                        have hanswerShift :=
+                          bpExcessAt_node_left_prefix_succ
+                            leftShape rightShape
+                            (pos := childAnswerClose + 1) hanswerBound
+                        have hposShift :=
+                          bpExcessAt_node_left_prefix_succ
+                            leftShape rightShape
+                            (pos := pos - 1) hposBound
+                        have hposEq : pos = (pos - 1) + 1 := by
+                          omega
+                        rw [show childAnswerClose + 1 + 1 =
+                            (childAnswerClose + 1) + 1 by omega]
+                        rw [hanswerShift]
+                        rw [hposEq, hposShift]
+                        have hcmp := hchild.1 hchildLo hchildHi
+                        omega
+                      · intro pos hlo hhi
+                        have hchildLo :
+                            childLeftClose + 1 <= pos - 1 := by
+                          omega
+                        have hchildHi :
+                            pos - 1 < childAnswerClose + 1 := by
+                          omega
+                        have hposBound :
+                            pos - 1 <= leftShape.bpCode.length := by
+                          omega
+                        have hanswerShift :=
+                          bpExcessAt_node_left_prefix_succ
+                            leftShape rightShape
+                            (pos := childAnswerClose + 1) hanswerBound
+                        have hposShift :=
+                          bpExcessAt_node_left_prefix_succ
+                            leftShape rightShape
+                            (pos := pos - 1) hposBound
+                        have hposEq : pos = (pos - 1) + 1 := by
+                          omega
+                        rw [show childAnswerClose + 1 + 1 =
+                            (childAnswerClose + 1) + 1 by omega]
+                        rw [hanswerShift]
+                        rw [hposEq, hposShift]
+                        have hcmp := hchild.2 hchildLo hchildHi
+                        omega
+      · have hstartRight : leftShape.size < start := Nat.lt_of_not_ge hrootLo
+        let localStart := start - leftShape.size - 1
+        have hstartEq : start = leftShape.size + 1 + localStart := by
+          simp [localStart]
+          omega
+        have hrightWindow : localStart + len <= rightShape.size := by
+          simp [Cartesian.CartesianShape.size] at hbound
+          omega
+        have hendLocalEq :
+            start + len - 1 - leftShape.size - 1 =
+              localStart + len - 1 := by
+          simp [localStart]
+          omega
+        let leftValues := Cartesian.addConst 1 leftShape.representative
+        let rightValues := Cartesian.addConst 1 rightShape.representative
+        let pre := leftValues ++ [0]
+        have hpreLen : pre.length = leftShape.size + 1 := by
+          simp [pre, leftValues, Cartesian.addConst_length,
+            Cartesian.CartesianShape.representative_length]
+        have hrightValuesBound :
+            localStart + len <= rightValues.length := by
+          simp [rightValues, Cartesian.addConst_length,
+            Cartesian.CartesianShape.representative_length]
+          exact hrightWindow
+        have hscanParent :
+            scanWindow
+                (Cartesian.CartesianShape.node
+                  leftShape rightShape).representative start len =
+              leftShape.size + 1 +
+                scanWindow rightShape.representative localStart len := by
+          have happ :=
+            Cartesian.scanWindow_append_right pre rightValues
+              (left := localStart) (len := len) hrightValuesBound
+          calc
+            scanWindow
+                (Cartesian.CartesianShape.node
+                  leftShape rightShape).representative start len =
+              scanWindow (pre ++ rightValues) (pre.length + localStart)
+                len := by
+                have hstartPre : start = pre.length + localStart := by
+                  omega
+                simp [pre, leftValues, rightValues,
+                  Cartesian.CartesianShape.representative, hstartPre,
+                  List.append_assoc]
+            _ = pre.length + scanWindow rightValues localStart len := happ
+            _ = leftShape.size + 1 +
+                scanWindow rightShape.representative localStart len := by
+                rw [hpreLen]
+                rw [Cartesian.scanWindow_addConst]
+        have hnotStartLeft : ¬ start < leftShape.size := by
+          omega
+        have hnotStartRoot : ¬ start = leftShape.size := by
+          omega
+        cases hleftRec :
+            bpCloseOfInorder? rightShape localStart with
+        | none =>
+            simp [bpCloseOfInorder?, hnotStartLeft, hnotStartRoot,
+              localStart, hleftRec] at hleft
+        | some childLeftClose =>
+            simp [bpCloseOfInorder?, hnotStartLeft, hnotStartRoot,
+              localStart, hleftRec] at hleft
+            subst leftClose
+            have hnotEndLeft : ¬ start + len - 1 < leftShape.size := by
+              omega
+            have hnotEndRoot : ¬ start + len - 1 = leftShape.size := by
+              omega
+            cases hrightRec :
+                bpCloseOfInorder? rightShape
+                  (localStart + len - 1) with
+            | none =>
+                simp [bpCloseOfInorder?, hnotEndLeft, hnotEndRoot,
+                  localStart, hendLocalEq, hrightRec] at hright
+            | some childRightClose =>
+                simp [bpCloseOfInorder?, hnotEndLeft, hnotEndRoot,
+                  localStart, hendLocalEq, hrightRec] at hright
+                subst rightClose
+                have hscanBounds :=
+                  Cartesian.scanWindow_bounds rightShape.representative
+                    localStart len hlen
+                have hscanRight :
+                    scanWindow rightShape.representative localStart len <
+                      rightShape.size := by
+                  omega
+                have hnotAnswerLeft :
+                    ¬ scanWindow
+                        (Cartesian.CartesianShape.node
+                          leftShape rightShape).representative start len <
+                      leftShape.size := by
+                  rw [hscanParent]
+                  omega
+                have hnotAnswerRoot :
+                    ¬ scanWindow
+                        (Cartesian.CartesianShape.node
+                          leftShape rightShape).representative start len =
+                      leftShape.size := by
+                  rw [hscanParent]
+                  omega
+                have hanswerLocalEq :
+                    scanWindow
+                          (Cartesian.CartesianShape.node
+                            leftShape rightShape).representative start len -
+                        leftShape.size - 1 =
+                      scanWindow rightShape.representative localStart len := by
+                  rw [hscanParent]
+                  omega
+                cases hanswerRec :
+                    bpCloseOfInorder? rightShape
+                      (scanWindow rightShape.representative
+                        localStart len) with
+                | none =>
+                    simp [bpCloseOfInorder?, hnotAnswerLeft,
+                      hnotAnswerRoot, hanswerLocalEq, hanswerRec] at hanswer
+                | some childAnswerClose =>
+                    simp [bpCloseOfInorder?, hnotAnswerLeft,
+                      hnotAnswerRoot, hanswerLocalEq, hanswerRec] at hanswer
+                    subst answerClose
+                    have hchild :=
+                      ihRight hlen hrightWindow hleftRec hrightRec hanswerRec
+                    have hanswerBound :
+                        childAnswerClose + 1 <= rightShape.bpCode.length := by
+                      have hcloseBound :=
+                        bpCloseOfInorder?_bounds rightShape hanswerRec
+                      omega
+                    have hrightBound :
+                        childRightClose + 1 <= rightShape.bpCode.length := by
+                      have hcloseBound :=
+                        bpCloseOfInorder?_bounds rightShape hrightRec
+                      omega
+                    constructor
+                    · intro pos hlo hhi
+                      have hchildLo :
+                          childLeftClose + 1 <=
+                            pos - (leftShape.bpCode.length + 2) := by
+                        omega
+                      have hchildHi :
+                          pos - (leftShape.bpCode.length + 2) <
+                            childRightClose + 2 := by
+                        omega
+                      have hposBound :
+                          pos - (leftShape.bpCode.length + 2) <=
+                            rightShape.bpCode.length := by
+                        omega
+                      have hanswerShift :=
+                        bpExcessAt_node_right_prefix_shift
+                          leftShape rightShape
+                          (pos := childAnswerClose + 1) hanswerBound
+                      have hposShift :=
+                        bpExcessAt_node_right_prefix_shift
+                          leftShape rightShape
+                          (pos := pos - (leftShape.bpCode.length + 2))
+                          hposBound
+                      have hposEq :
+                          pos =
+                            leftShape.bpCode.length + 2 +
+                              (pos - (leftShape.bpCode.length + 2)) := by
+                        omega
+                      rw [show leftShape.bpCode.length + 2 +
+                          childAnswerClose + 1 =
+                        leftShape.bpCode.length + 2 +
+                          (childAnswerClose + 1) by omega]
+                      rw [hanswerShift]
+                      rw [hposEq, hposShift]
+                      exact hchild.1 hchildLo hchildHi
+                    · intro pos hlo hhi
+                      have hchildLo :
+                          childLeftClose + 1 <=
+                            pos - (leftShape.bpCode.length + 2) := by
+                        omega
+                      have hchildHi :
+                          pos - (leftShape.bpCode.length + 2) <
+                            childAnswerClose + 1 := by
+                        omega
+                      have hposBound :
+                          pos - (leftShape.bpCode.length + 2) <=
+                            rightShape.bpCode.length := by
+                        omega
+                      have hanswerShift :=
+                        bpExcessAt_node_right_prefix_shift
+                          leftShape rightShape
+                          (pos := childAnswerClose + 1) hanswerBound
+                      have hposShift :=
+                        bpExcessAt_node_right_prefix_shift
+                          leftShape rightShape
+                          (pos := pos - (leftShape.bpCode.length + 2))
+                          hposBound
+                      have hposEq :
+                          pos =
+                            leftShape.bpCode.length + 2 +
+                              (pos - (leftShape.bpCode.length + 2)) := by
+                        omega
+                      rw [show leftShape.bpCode.length + 2 +
+                          childAnswerClose + 1 =
+                        leftShape.bpCode.length + 2 +
+                          (childAnswerClose + 1) by omega]
+                      rw [hanswerShift]
+                      rw [hposEq, hposShift]
+                      exact hchild.2 hchildLo hchildHi
+
 theorem endpointPrefixRangeWitness_eq_answerClose_of_spanning_root
     {leftShape rightShape : Cartesian.CartesianShape}
     {start len leftClose rightClose answerClose : Nat}
@@ -6201,6 +6703,804 @@ theorem lcaCloseCosted_exact_of_spanning_root_right_fringe
       leftClose rightClose hblockSize hleftBlock hrightBlock
       hrightPair hleftGt hmiddleGt
 
+theorem lcaCloseCosted_exact_of_query_semantics_cross_block
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat}
+    (component :
+      PayloadLiveBPEndpointFringeRangeMacro shape blockSize blockCount
+        fieldWidth leftOverhead interiorOverhead rightOverhead)
+    {left len leftClose rightClose answerClose : Nat}
+    (hlen : 0 < len)
+    (hleft : bpCloseOfInorder? shape left = some leftClose)
+    (hright :
+      bpCloseOfInorder? shape (left + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder? shape
+          (scanWindow shape.representative left len) =
+        some answerClose)
+    (hblockSize : 0 < blockSize)
+    (hleftBlock :
+      blockOfClose blockSize leftClose < blockCount)
+    (hrightBlock :
+      blockOfClose blockSize rightClose < blockCount)
+    (hcross :
+      blockOfClose blockSize leftClose <
+        blockOfClose blockSize rightClose)
+    (hmin :
+      forall {pos : Nat},
+        leftClose + 1 <= pos ->
+          pos < rightClose + 2 ->
+            bpExcessAt shape (answerClose + 1) <=
+              bpExcessAt shape pos)
+    (hleftmost :
+      forall {pos : Nat},
+        leftClose + 1 <= pos ->
+          pos < answerClose + 1 ->
+            bpExcessAt shape (answerClose + 1) <
+              bpExcessAt shape pos) :
+    (component.lcaCloseCosted leftClose rightClose).erase =
+      some answerClose := by
+  let leftBlock := blockOfClose blockSize leftClose
+  let rightBlock := blockOfClose blockSize rightClose
+  let answerPrefix := answerClose + 1
+  have hleftCloseBound := bpCloseOfInorder?_bounds shape hleft
+  have hrightCloseBound := bpCloseOfInorder?_bounds shape hright
+  have hanswerCloseBound := bpCloseOfInorder?_bounds shape hanswer
+  have hrightStartLe :
+      blockStartOf blockSize rightBlock <= rightClose := by
+    simpa [rightBlock] using
+      (blockStartOf_blockOfClose_le
+        (blockSize := blockSize) (close := rightClose))
+  have hleftNextStart :
+      leftClose < blockStartOf blockSize (leftBlock + 1) := by
+    have hend :=
+      close_lt_blockStartOf_blockOfClose_add
+        (blockSize := blockSize) (close := leftClose) hblockSize
+    simpa [leftBlock, blockStartOf_succ] using hend
+  have hleftLimitEq :
+      leftClose + 1 +
+          (blockStartOf blockSize leftBlock + blockSize - leftClose) =
+        blockStartOf blockSize (leftBlock + 1) + 1 := by
+    have hstart :
+        blockStartOf blockSize leftBlock <= leftClose := by
+      simpa [leftBlock] using
+        (blockStartOf_blockOfClose_le
+          (blockSize := blockSize) (close := leftClose))
+    have hsucc :
+        blockStartOf blockSize leftBlock + blockSize =
+          blockStartOf blockSize (leftBlock + 1) :=
+      blockStartOf_succ blockSize leftBlock
+    omega
+  have hrightLimitEq :
+      blockStartOf blockSize rightBlock +
+          (rightClose - blockStartOf blockSize rightBlock + 2) =
+        rightClose + 2 := by
+    omega
+  have hleftToRightStart :
+      blockStartOf blockSize (leftBlock + 1) <=
+        blockStartOf blockSize rightBlock := by
+    exact blockStartOf_mono (blockSize := blockSize) (by
+      simpa [leftBlock, rightBlock] using hcross)
+  have hleftBound :
+      leftClose + 1 +
+          (blockStartOf blockSize leftBlock + blockSize - leftClose) <=
+        shape.bpCode.length + 1 := by
+    rw [hleftLimitEq]
+    omega
+  have hrightBound :
+      blockStartOf blockSize rightBlock +
+          (rightClose - blockStartOf blockSize rightBlock + 2) <=
+        shape.bpCode.length + 1 := by
+    rw [hrightLimitEq]
+    omega
+  have hmiddleBound :
+      blockOfClose blockSize leftClose + 1 <
+          blockOfClose blockSize rightClose ->
+        blockStartOf blockSize (blockOfClose blockSize rightClose) + 1 <=
+          shape.bpCode.length + 1 := by
+    intro _hgap
+    have hstart :
+        blockStartOf blockSize
+            (blockOfClose blockSize rightClose) <= rightClose :=
+      blockStartOf_blockOfClose_le
+        (blockSize := blockSize) (close := rightClose)
+    omega
+  have hleftInside :
+      forall {pos : Nat},
+        leftClose + 1 <= pos ->
+          pos <
+            leftClose + 1 +
+              (blockStartOf blockSize
+                  (blockOfClose blockSize leftClose) +
+                blockSize - leftClose) ->
+            pos < rightClose + 2 := by
+    intro pos _hlo hhi
+    have hhi' :
+        pos < blockStartOf blockSize (leftBlock + 1) + 1 := by
+      simpa [leftBlock, hleftLimitEq] using hhi
+    have hleRight :
+        blockStartOf blockSize (leftBlock + 1) + 1 <= rightClose + 1 := by
+      omega
+    omega
+  have hrightInside :
+      forall {pos : Nat},
+        blockStartOf blockSize (blockOfClose blockSize rightClose) <= pos ->
+          pos <
+            blockStartOf blockSize (blockOfClose blockSize rightClose) +
+              (rightClose -
+                  blockStartOf blockSize
+                    (blockOfClose blockSize rightClose) +
+                2) ->
+            leftClose + 1 <= pos /\ pos < rightClose + 2 := by
+    intro pos hlo hhi
+    have hleftLe :
+        leftClose + 1 <=
+          blockStartOf blockSize (blockOfClose blockSize rightClose) := by
+      have hlt := hleftNextStart
+      have hmono :
+          blockStartOf blockSize (leftBlock + 1) <=
+            blockStartOf blockSize rightBlock :=
+        hleftToRightStart
+      simpa [rightBlock] using (by omega : leftClose + 1 <=
+        blockStartOf blockSize rightBlock)
+    constructor
+    · exact Nat.le_trans hleftLe hlo
+    · simpa [rightBlock, hrightLimitEq] using hhi
+  have hmiddleInside :
+      forall {pos : Nat},
+        blockOfClose blockSize leftClose + 1 <
+            blockOfClose blockSize rightClose ->
+          blockStartOf blockSize
+              (blockOfClose blockSize leftClose + 1) <= pos ->
+            pos <
+              blockStartOf blockSize (blockOfClose blockSize rightClose) +
+                1 ->
+              leftClose + 1 <= pos /\ pos < rightClose + 2 := by
+    intro pos _hgap hlo hhi
+    have hleftLe :
+        leftClose + 1 <=
+          blockStartOf blockSize (blockOfClose blockSize leftClose + 1) := by
+      simpa [leftBlock] using (by omega :
+        leftClose + 1 <= blockStartOf blockSize (leftBlock + 1))
+    constructor
+    · exact Nat.le_trans hleftLe hlo
+    · have hrightLeClose :
+          blockStartOf blockSize
+              (blockOfClose blockSize rightClose) <= rightClose :=
+        blockStartOf_blockOfClose_le
+          (blockSize := blockSize) (close := rightClose)
+      omega
+  have hanswerMem :=
+    answerClose_prefix_mem_endpoint_prefix_range
+      (shape := shape) (left := left) (len := len)
+      (leftClose := leftClose) (rightClose := rightClose)
+      (answerClose := answerClose)
+      hlen hleft hright hanswer
+  have hanswerUpper : answerPrefix < rightClose + 2 := by
+    simpa [answerPrefix] using (by omega :
+      answerClose + 1 < rightClose + 2)
+  by_cases hanswerLeft :
+      answerPrefix <
+        leftClose + 1 +
+          (blockStartOf blockSize
+              (blockOfClose blockSize leftClose) +
+            blockSize - leftClose)
+  · exact
+      component.lcaCloseCosted_exact_of_left_fringe_leftmost
+        leftClose rightClose hblockSize hleftBlock hrightBlock
+        (by
+          constructor
+          · simpa [answerPrefix] using hanswerMem.1
+          · exact hanswerLeft)
+        (by simpa [leftBlock] using hleftBound)
+        hleftInside
+        (by simpa [rightBlock] using hrightBound)
+        hrightInside
+        hmiddleBound
+        hmiddleInside
+        hmin hleftmost
+  · by_cases hanswerRight :
+        blockStartOf blockSize rightBlock + 1 <= answerPrefix
+    · have hrightAnswer :
+        blockStartOf blockSize (blockOfClose blockSize rightClose) <=
+            answerClose + 1 /\
+          answerClose + 1 <
+            blockStartOf blockSize (blockOfClose blockSize rightClose) +
+              (rightClose -
+                  blockStartOf blockSize
+                    (blockOfClose blockSize rightClose) +
+                2) := by
+        constructor
+        · simpa [rightBlock, answerPrefix] using
+            (Nat.le_trans (Nat.le_of_lt (by omega :
+              blockStartOf blockSize rightBlock <
+                blockStartOf blockSize rightBlock + 1)) hanswerRight)
+        · simpa [rightBlock, hrightLimitEq, answerPrefix] using hanswerUpper
+      have hleftBefore :
+          forall {pos : Nat},
+            leftClose + 1 <= pos ->
+              pos <
+                leftClose + 1 +
+                  (blockStartOf blockSize
+                      (blockOfClose blockSize leftClose) +
+                    blockSize - leftClose) ->
+                pos < answerClose + 1 := by
+        intro pos _hlo hhi
+        have hlimit :
+            leftClose + 1 +
+                (blockStartOf blockSize
+                    (blockOfClose blockSize leftClose) +
+                  blockSize - leftClose) <= answerPrefix := by
+          omega
+        simpa [answerPrefix] using (by omega : pos < answerPrefix)
+      have hmiddleBefore :
+          forall {pos : Nat},
+            blockOfClose blockSize leftClose + 1 <
+                blockOfClose blockSize rightClose ->
+              blockStartOf blockSize
+                  (blockOfClose blockSize leftClose + 1) <= pos ->
+                pos <
+                  blockStartOf blockSize
+                      (blockOfClose blockSize rightClose) +
+                    1 ->
+                  leftClose + 1 <= pos /\ pos < answerClose + 1 := by
+        intro pos hgap hlo hhi
+        have hinside := hmiddleInside (pos := pos) hgap hlo hhi
+        constructor
+        · exact hinside.1
+        · have hhi' : pos < blockStartOf blockSize rightBlock + 1 := by
+            simpa [rightBlock] using hhi
+          simpa [answerPrefix] using
+            (by omega : pos < answerPrefix)
+      exact
+        component.lcaCloseCosted_exact_of_decoded_right_fringe_candidate
+          leftClose rightClose hblockSize hleftBlock hrightBlock
+          (by
+            exact
+              bpPrefixRangeWitness_eq_of_leftmost_min_excess
+                hrightAnswer
+                (by simpa [rightBlock] using hrightBound)
+                (by
+                  intro pos hlo hhi
+                  have hinside := hrightInside hlo hhi
+                  exact hmin hinside.1 hinside.2)
+                (by
+                  intro pos hlo hhi
+                  have hinside := hrightInside hlo (by omega)
+                  exact hleftmost hinside.1 hhi))
+          (by
+            have hleftCount :
+                0 <
+                  blockStartOf blockSize
+                      (blockOfClose blockSize leftClose) +
+                    blockSize - leftClose := by
+              have hend :=
+                close_lt_blockStartOf_blockOfClose_add
+                  (blockSize := blockSize) (close := leftClose)
+                  hblockSize
+              omega
+            exact
+              bpPrefixRangeMinExcess_gt_of_all_prefix_gt
+                hleftCount
+                (by simpa [leftBlock] using hleftBound)
+                (by
+                  intro pos hlo hhi
+                  exact hleftmost hlo (hleftBefore hlo hhi)))
+          (by
+            intro middle hmiddle
+            by_cases hgap :
+                blockOfClose blockSize leftClose + 1 <
+                  blockOfClose blockSize rightClose
+            · simp [hgap] at hmiddle
+              subst middle
+              have hcount :
+                  0 <
+                    blockOfClose blockSize rightClose -
+                      blockOfClose blockSize leftClose - 1 := by
+                omega
+              exact
+                bpRangeMinExcess_gt_of_all_prefix_gt
+                  (shape := shape) (blockSize := blockSize)
+                  (startBlock :=
+                    blockOfClose blockSize leftClose + 1)
+                  (blockCount :=
+                    blockOfClose blockSize rightClose -
+                      blockOfClose blockSize leftClose - 1)
+                  (lower := bpExcessAt shape (answerClose + 1))
+                  hcount
+                  (by
+                    have hend :
+                        blockOfClose blockSize leftClose + 1 +
+                            (blockOfClose blockSize rightClose -
+                              blockOfClose blockSize leftClose - 1) =
+                          blockOfClose blockSize rightClose := by
+                      omega
+                    simpa [hend] using hmiddleBound hgap)
+                  (by
+                    intro pos hlo hhi
+                    have hend :
+                        blockOfClose blockSize leftClose + 1 +
+                            (blockOfClose blockSize rightClose -
+                              blockOfClose blockSize leftClose - 1) =
+                          blockOfClose blockSize rightClose := by
+                      omega
+                    have hbefore :=
+                      hmiddleBefore (pos := pos) hgap hlo
+                        (by simpa [hend] using hhi)
+                    exact hleftmost hbefore.1 hbefore.2)
+            · simp [hgap] at hmiddle)
+    · have hmiddleGap :
+          blockOfClose blockSize leftClose + 1 <
+            blockOfClose blockSize rightClose := by
+        by_cases heq : rightBlock = leftBlock + 1
+        · have hlimitEq :
+              leftClose + 1 +
+                  (blockStartOf blockSize
+                      (blockOfClose blockSize leftClose) +
+                    blockSize - leftClose) =
+                blockStartOf blockSize rightBlock + 1 := by
+            simpa [leftBlock, rightBlock, heq] using hleftLimitEq
+          have hlimitLe :
+              blockStartOf blockSize rightBlock + 1 <= answerPrefix := by
+            simpa [hlimitEq] using (Nat.le_of_not_gt hanswerLeft)
+          exact False.elim (hanswerRight hlimitLe)
+        · have hcross' : leftBlock < rightBlock := by
+            simpa [leftBlock, rightBlock] using hcross
+          have hgap' : leftBlock + 1 < rightBlock := by
+            omega
+          simpa [leftBlock, rightBlock] using hgap'
+      have hrangeEndEq :
+          blockOfClose blockSize leftClose + 1 +
+              (blockOfClose blockSize rightClose -
+                blockOfClose blockSize leftClose - 1) =
+            blockOfClose blockSize rightClose := by
+        omega
+      let answerBlock := blockOfClose blockSize answerClose
+      have hanswerBlockMem :
+          blockOfClose blockSize leftClose + 1 <= answerBlock /\
+            answerBlock <
+              blockOfClose blockSize leftClose + 1 +
+                (blockOfClose blockSize rightClose -
+                  blockOfClose blockSize leftClose - 1) := by
+        have hnotLeftLe :
+            leftClose + 1 +
+                (blockStartOf blockSize
+                    (blockOfClose blockSize leftClose) +
+                  blockSize - leftClose) <= answerPrefix :=
+          Nat.le_of_not_gt hanswerLeft
+        have hanswerBeforeRight :
+            answerPrefix < blockStartOf blockSize rightBlock + 1 :=
+          Nat.lt_of_not_ge hanswerRight
+        have hanswerCloseGeNext :
+            blockStartOf blockSize (leftBlock + 1) <= answerClose := by
+          have hlimit :
+              blockStartOf blockSize (leftBlock + 1) + 1 <=
+                answerPrefix := by
+            simpa [leftBlock, hleftLimitEq] using hnotLeftLe
+          omega
+        have hanswerCloseLtRight :
+            answerClose < blockStartOf blockSize rightBlock := by
+          omega
+        constructor
+        · have hanswerBlockGeLeftNext : leftBlock + 1 <= answerBlock := by
+            by_cases hge : leftBlock + 1 <= answerBlock
+            · exact hge
+            · have hltBlock : answerBlock < leftBlock + 1 :=
+                Nat.lt_of_not_ge hge
+              have hend :=
+                close_lt_blockStartOf_blockOfClose_add
+                  (blockSize := blockSize) (close := answerClose)
+                  hblockSize
+              have hend' :
+                  answerClose <
+                    blockStartOf blockSize answerBlock + blockSize := by
+                simpa [answerBlock] using hend
+              have hsucc :
+                  blockStartOf blockSize answerBlock + blockSize =
+                    blockStartOf blockSize (answerBlock + 1) :=
+                blockStartOf_succ blockSize answerBlock
+              have hmono :
+                  blockStartOf blockSize (answerBlock + 1) <=
+                    blockStartOf blockSize (leftBlock + 1) :=
+                blockStartOf_mono (blockSize := blockSize) (by omega)
+              have hnext :
+                  answerClose < blockStartOf blockSize (leftBlock + 1) := by
+                omega
+              omega
+          simpa [answerBlock, leftBlock] using hanswerBlockGeLeftNext
+        · have hanswerBlockLtRight : answerBlock < rightBlock := by
+            by_cases hlt : answerBlock < rightBlock
+            · exact hlt
+            · have hge : rightBlock <= answerBlock := Nat.le_of_not_gt hlt
+              have hstartAns :=
+                blockStartOf_blockOfClose_le
+                  (blockSize := blockSize) (close := answerClose)
+              have hstartAns' :
+                  blockStartOf blockSize answerBlock <= answerClose := by
+                simpa [answerBlock] using hstartAns
+              have hmono :
+                  blockStartOf blockSize rightBlock <=
+                    blockStartOf blockSize answerBlock :=
+                blockStartOf_mono (blockSize := blockSize) hge
+              omega
+          simpa [answerBlock, rightBlock, hrangeEndEq] using
+            hanswerBlockLtRight
+      have hanswerBlockLtRight : answerBlock < rightBlock := by
+        have h := hanswerBlockMem.2
+        simpa [answerBlock, rightBlock, hrangeEndEq] using h
+      have hanswerBlockTarget :
+          bpBlockArgMinPrefixPos shape blockSize answerBlock =
+            answerPrefix := by
+        have hlocalMem :
+            blockStartOf blockSize answerBlock <= answerPrefix /\
+              answerPrefix <
+                blockStartOf blockSize answerBlock + (blockSize + 1) := by
+          have hstart :=
+            blockStartOf_blockOfClose_le
+              (blockSize := blockSize) (close := answerClose)
+          have hend :=
+            close_lt_blockStartOf_blockOfClose_add
+              (blockSize := blockSize) (close := answerClose)
+              hblockSize
+          constructor
+          · simpa [answerBlock, answerPrefix] using
+              (by omega : blockStartOf blockSize
+                  (blockOfClose blockSize answerClose) <=
+                answerClose + 1)
+          · simpa [answerBlock, answerPrefix] using
+              (by omega : answerClose + 1 <
+                blockStartOf blockSize
+                    (blockOfClose blockSize answerClose) +
+                  (blockSize + 1))
+        have hlocalBound :
+            blockStartOf blockSize answerBlock + (blockSize + 1) <=
+              shape.bpCode.length + 1 := by
+          have hmono :
+              blockStartOf blockSize (answerBlock + 1) <=
+                blockStartOf blockSize rightBlock :=
+            blockStartOf_mono (blockSize := blockSize) (by omega)
+          have hsucc :
+              blockStartOf blockSize answerBlock + blockSize =
+                blockStartOf blockSize (answerBlock + 1) :=
+            blockStartOf_succ blockSize answerBlock
+          omega
+        exact
+          bpBlockArgMinPrefixPos_eq_of_leftmost_min_excess
+            hlocalMem hlocalBound
+            (by
+              intro pos hlo hhi
+              have hinside :
+                  leftClose + 1 <= pos /\ pos < rightClose + 2 := by
+                have hstartLower :
+                    leftClose + 1 <= blockStartOf blockSize answerBlock := by
+                  have hleftLeBlock :
+                      blockStartOf blockSize (leftBlock + 1) <=
+                        blockStartOf blockSize answerBlock :=
+                    blockStartOf_mono (blockSize := blockSize)
+                      (by
+                        have h := hanswerBlockMem.1
+                        simpa [answerBlock, leftBlock] using h)
+                  omega
+                have hupper :
+                    pos < blockStartOf blockSize rightBlock + 1 := by
+                  have hanswerBlockLtRight : answerBlock < rightBlock := by
+                    have h := hanswerBlockMem.2
+                    omega
+                  have hmono :
+                      blockStartOf blockSize (answerBlock + 1) <=
+                        blockStartOf blockSize rightBlock :=
+                    blockStartOf_mono (blockSize := blockSize) (by omega)
+                  have hsucc :
+                      blockStartOf blockSize answerBlock + blockSize =
+                        blockStartOf blockSize (answerBlock + 1) :=
+                    blockStartOf_succ blockSize answerBlock
+                  omega
+                constructor
+                · exact Nat.le_trans hstartLower hlo
+                · have hrightStartLe' :
+                    blockStartOf blockSize rightBlock <= rightClose :=
+                    hrightStartLe
+                  omega
+              exact hmin hinside.1 hinside.2)
+            (by
+              intro pos hlo hhi
+              have hstartLower :
+                  leftClose + 1 <= blockStartOf blockSize answerBlock := by
+                have hleftLeBlock :
+                    blockStartOf blockSize (leftBlock + 1) <=
+                      blockStartOf blockSize answerBlock :=
+                  blockStartOf_mono (blockSize := blockSize)
+                    (by
+                      have h := hanswerBlockMem.1
+                      simpa [answerBlock, leftBlock] using h)
+                omega
+              exact hleftmost (Nat.le_trans hstartLower hlo) hhi)
+      have hmiddlePair :
+          (bpRangeMinExcess shape blockSize
+              (blockOfClose blockSize leftClose + 1)
+              (blockOfClose blockSize rightClose -
+                blockOfClose blockSize leftClose - 1),
+            bpRangeArgMinPrefixPos shape blockSize
+              (blockOfClose blockSize leftClose + 1)
+              (blockOfClose blockSize rightClose -
+                blockOfClose blockSize leftClose - 1)) =
+            (bpExcessAt shape (answerClose + 1), answerClose + 1) := by
+        exact
+          bpRangeWitness_eq_of_leftmost_block_candidate
+            hanswerBlockMem
+            hanswerBlockTarget
+            (by
+              intro candidateBlock hcLo hcHi
+              have hcountBound :
+                  blockStartOf blockSize candidateBlock + (blockSize + 1) <=
+                    shape.bpCode.length + 1 := by
+                have hcandidateLtRight : candidateBlock < rightBlock := by
+                  have hend :
+                      blockOfClose blockSize leftClose + 1 +
+                          (blockOfClose blockSize rightClose -
+                            blockOfClose blockSize leftClose - 1) =
+                        blockOfClose blockSize rightClose := by
+                    omega
+                  omega
+                have hmono :
+                    blockStartOf blockSize (candidateBlock + 1) <=
+                      blockStartOf blockSize rightBlock :=
+                  blockStartOf_mono (blockSize := blockSize) (by omega)
+                have hsucc :
+                    blockStartOf blockSize candidateBlock + blockSize =
+                      blockStartOf blockSize (candidateBlock + 1) :=
+                  blockStartOf_succ blockSize candidateBlock
+                omega
+              have hcandMem :=
+                bpBlockArgMinPrefixPos_mem_range
+                  (shape := shape) (blockSize := blockSize)
+                  (block := candidateBlock) hcountBound
+              have hinside :
+                  leftClose + 1 <=
+                      bpBlockArgMinPrefixPos shape blockSize candidateBlock /\
+                    bpBlockArgMinPrefixPos shape blockSize candidateBlock <
+                      rightClose + 2 := by
+                have hstartLower :
+                    leftClose + 1 <= blockStartOf blockSize candidateBlock := by
+                  have hleftLeBlock :
+                      blockStartOf blockSize (leftBlock + 1) <=
+                        blockStartOf blockSize candidateBlock :=
+                    blockStartOf_mono (blockSize := blockSize)
+                      (by
+                        simpa [leftBlock] using hcLo)
+                  omega
+                have hupper :
+                    bpBlockArgMinPrefixPos shape blockSize candidateBlock <
+                      blockStartOf blockSize rightBlock + 1 := by
+                  have hcandidateLtRight : candidateBlock < rightBlock := by
+                    have hend :
+                        blockOfClose blockSize leftClose + 1 +
+                            (blockOfClose blockSize rightClose -
+                              blockOfClose blockSize leftClose - 1) =
+                          blockOfClose blockSize rightClose := by
+                      omega
+                    omega
+                  have hmono :
+                      blockStartOf blockSize (candidateBlock + 1) <=
+                        blockStartOf blockSize rightBlock :=
+                    blockStartOf_mono (blockSize := blockSize) (by omega)
+                  have hsucc :
+                      blockStartOf blockSize candidateBlock + blockSize =
+                        blockStartOf blockSize (candidateBlock + 1) :=
+                    blockStartOf_succ blockSize candidateBlock
+                  omega
+                constructor
+                · exact Nat.le_trans hstartLower hcandMem.1
+                · omega
+              exact hmin hinside.1 hinside.2)
+            (by
+              intro candidateBlock hcLo hcLt
+              have hcountBound :
+                  blockStartOf blockSize candidateBlock + (blockSize + 1) <=
+                    shape.bpCode.length + 1 := by
+                have hcandidateLtRight : candidateBlock < rightBlock := by
+                  have hABLtRight : answerBlock < rightBlock := by
+                    have h := hanswerBlockMem.2
+                    omega
+                  omega
+                have hmono :
+                    blockStartOf blockSize (candidateBlock + 1) <=
+                      blockStartOf blockSize rightBlock :=
+                  blockStartOf_mono (blockSize := blockSize) (by omega)
+                have hsucc :
+                    blockStartOf blockSize candidateBlock + blockSize =
+                      blockStartOf blockSize (candidateBlock + 1) :=
+                  blockStartOf_succ blockSize candidateBlock
+                omega
+              have hcandMem :=
+                bpBlockArgMinPrefixPos_mem_range
+                  (shape := shape) (blockSize := blockSize)
+                  (block := candidateBlock) hcountBound
+              have hlower :
+                  leftClose + 1 <=
+                    bpBlockArgMinPrefixPos shape blockSize candidateBlock := by
+                have hstartLower :
+                    leftClose + 1 <= blockStartOf blockSize candidateBlock := by
+                  have hleftLeBlock :
+                      blockStartOf blockSize (leftBlock + 1) <=
+                        blockStartOf blockSize candidateBlock :=
+                    blockStartOf_mono (blockSize := blockSize)
+                      (by simpa [leftBlock] using hcLo)
+                  omega
+                exact Nat.le_trans hstartLower hcandMem.1
+              have hbefore :
+                  bpBlockArgMinPrefixPos shape blockSize candidateBlock <
+                    answerPrefix := by
+                have hmono :
+                    blockStartOf blockSize (candidateBlock + 1) <=
+                      blockStartOf blockSize answerBlock :=
+                  blockStartOf_mono (blockSize := blockSize) (by omega)
+                have hsucc :
+                    blockStartOf blockSize candidateBlock + blockSize =
+                      blockStartOf blockSize (candidateBlock + 1) :=
+                  blockStartOf_succ blockSize candidateBlock
+                have hanswerLower :
+                    blockStartOf blockSize answerBlock + 1 <= answerPrefix := by
+                  have hstart :=
+                    blockStartOf_blockOfClose_le
+                      (blockSize := blockSize) (close := answerClose)
+                  simpa [answerBlock, answerPrefix] using
+                    (by omega : blockStartOf blockSize
+                        (blockOfClose blockSize answerClose) + 1 <=
+                      answerClose + 1)
+                omega
+              exact hleftmost hlower (by simpa [answerPrefix] using hbefore))
+      have hleftGt :
+          bpExcessAt shape (answerClose + 1) <
+            bpPrefixRangeMinExcess shape (leftClose + 1)
+              (blockStartOf blockSize
+                  (blockOfClose blockSize leftClose) +
+                blockSize - leftClose) := by
+        have hleftCount :
+            0 <
+              blockStartOf blockSize
+                  (blockOfClose blockSize leftClose) +
+                blockSize - leftClose := by
+          have hend :=
+            close_lt_blockStartOf_blockOfClose_add
+              (blockSize := blockSize) (close := leftClose)
+              hblockSize
+          omega
+        exact
+          bpPrefixRangeMinExcess_gt_of_all_prefix_gt
+            hleftCount
+            (by simpa [leftBlock] using hleftBound)
+            (by
+              intro pos hlo hhi
+              have hlimit :
+                  leftClose + 1 +
+                      (blockStartOf blockSize
+                          (blockOfClose blockSize leftClose) +
+                        blockSize - leftClose) <= answerPrefix :=
+                Nat.le_of_not_gt hanswerLeft
+              exact hleftmost hlo (by simpa [answerPrefix] using
+                (by omega : pos < answerPrefix)))
+      have hrightLe :
+          bpExcessAt shape (answerClose + 1) <=
+            bpPrefixRangeMinExcess shape
+              (blockStartOf blockSize
+                (blockOfClose blockSize rightClose))
+              (rightClose -
+                  blockStartOf blockSize
+                    (blockOfClose blockSize rightClose) +
+                2) := by
+        have hrightCount :
+            0 <
+              rightClose -
+                  blockStartOf blockSize
+                    (blockOfClose blockSize rightClose) +
+                2 := by
+          omega
+        exact
+          bpPrefixRangeMinExcess_ge_of_all_prefix_ge
+            hrightCount
+            (by simpa [rightBlock] using hrightBound)
+            (by
+              intro pos hlo hhi
+              have hinside := hrightInside hlo hhi
+              exact hmin hinside.1 hinside.2)
+      exact
+        component.lcaCloseCosted_exact_of_decoded_middle_candidate
+          leftClose rightClose hblockSize hleftBlock hrightBlock
+          hmiddleGap hmiddlePair hleftGt hrightLe
+
+theorem lcaCloseCosted_exact_of_query_cross_block
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat}
+    (component :
+      PayloadLiveBPEndpointFringeRangeMacro shape blockSize blockCount
+        fieldWidth leftOverhead interiorOverhead rightOverhead)
+    {left len leftClose rightClose answerClose : Nat}
+    (hlen : 0 < len)
+    (hbound : left + len <= shape.size)
+    (hleft : bpCloseOfInorder? shape left = some leftClose)
+    (hright :
+      bpCloseOfInorder? shape (left + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder? shape
+          (scanWindow shape.representative left len) =
+        some answerClose)
+    (hblockSize : 0 < blockSize)
+    (hleftBlock :
+      blockOfClose blockSize leftClose < blockCount)
+    (hrightBlock :
+      blockOfClose blockSize rightClose < blockCount)
+    (hcross :
+      blockOfClose blockSize leftClose <
+        blockOfClose blockSize rightClose) :
+    (component.lcaCloseCosted leftClose rightClose).erase =
+      some answerClose := by
+  have hsemantic :=
+    answerClose_prefix_leftmost_min_excess_of_query
+      (shape := shape) (start := left) (len := len)
+      (leftClose := leftClose) (rightClose := rightClose)
+      (answerClose := answerClose)
+      hlen hbound hleft hright hanswer
+  exact
+    component.lcaCloseCosted_exact_of_query_semantics_cross_block
+      hlen hleft hright hanswer hblockSize hleftBlock hrightBlock hcross
+      hsemantic.1 hsemantic.2
+
+theorem lcaCloseCosted_exact_of_spanning_root_cross_block
+    {leftShape rightShape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat}
+    {start len leftClose rightClose answerClose : Nat}
+    (component :
+      PayloadLiveBPEndpointFringeRangeMacro
+        (Cartesian.CartesianShape.node leftShape rightShape)
+        blockSize blockCount fieldWidth
+        leftOverhead interiorOverhead rightOverhead)
+    (hlen : 0 < len)
+    (hbound :
+      start + len <=
+        (Cartesian.CartesianShape.node leftShape rightShape).size)
+    (hrootLo : start <= leftShape.size)
+    (hrootHi : leftShape.size < start + len)
+    (hleft :
+      bpCloseOfInorder?
+          (Cartesian.CartesianShape.node leftShape rightShape)
+          start = some leftClose)
+    (hright :
+      bpCloseOfInorder?
+          (Cartesian.CartesianShape.node leftShape rightShape)
+          (start + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder?
+          (Cartesian.CartesianShape.node leftShape rightShape)
+          (scanWindow
+            (Cartesian.CartesianShape.node
+              leftShape rightShape).representative start len) =
+        some answerClose)
+    (hblockSize : 0 < blockSize)
+    (hleftBlock :
+      blockOfClose blockSize leftClose < blockCount)
+    (hrightBlock :
+      blockOfClose blockSize rightClose < blockCount)
+    (hcross :
+      blockOfClose blockSize leftClose <
+        blockOfClose blockSize rightClose) :
+    (component.lcaCloseCosted leftClose rightClose).erase =
+      some answerClose := by
+  have hsemantic :=
+    answerClose_prefix_leftmost_min_excess_of_spanning_root
+      (leftShape := leftShape) (rightShape := rightShape)
+      (start := start) (len := len)
+      (leftClose := leftClose) (rightClose := rightClose)
+      (answerClose := answerClose)
+      hlen hbound hrootLo hrootHi hleft hright hanswer
+  exact
+    component.lcaCloseCosted_exact_of_query_semantics_cross_block
+      hlen hleft hright hanswer hblockSize hleftBlock hrightBlock hcross
+      hsemantic.1 hsemantic.2
+
 theorem read_words_length_le_machine
     {shape : Cartesian.CartesianShape}
     {blockSize blockCount fieldWidth
@@ -6293,6 +7593,46 @@ theorem profile
   intro leftClose rightClose
   exact ⟨component.lcaCloseCosted_cost_le_six leftClose rightClose,
     component.lcaCloseCosted_erase leftClose rightClose⟩
+
+theorem profile_cross_block_exact
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat}
+    (component :
+      PayloadLiveBPEndpointFringeRangeMacro shape blockSize blockCount
+        fieldWidth leftOverhead interiorOverhead rightOverhead) :
+    component.payload.length =
+        leftOverhead + interiorOverhead + rightOverhead /\
+      (forall leftClose rightClose,
+        (component.lcaCloseCosted leftClose rightClose).cost <= 6) /\
+      forall {left len leftClose rightClose answerClose : Nat},
+        0 < len ->
+          left + len <= shape.size ->
+            bpCloseOfInorder? shape left = some leftClose ->
+              bpCloseOfInorder? shape (left + len - 1) =
+                  some rightClose ->
+                bpCloseOfInorder? shape
+                    (scanWindow shape.representative left len) =
+                  some answerClose ->
+                  0 < blockSize ->
+                    blockOfClose blockSize leftClose < blockCount ->
+                      blockOfClose blockSize rightClose < blockCount ->
+                        blockOfClose blockSize leftClose <
+                            blockOfClose blockSize rightClose ->
+                          (component.lcaCloseCosted
+                            leftClose rightClose).erase =
+                            some answerClose := by
+  constructor
+  · exact component.payload_length
+  constructor
+  · intro leftClose rightClose
+    exact component.lcaCloseCosted_cost_le_six leftClose rightClose
+  intro left len leftClose rightClose answerClose hlen hbound hleft
+    hright hanswer hblockSize hleftBlock hrightBlock hcross
+  exact
+    component.lcaCloseCosted_exact_of_query_cross_block
+      hlen hbound hleft hright hanswer hblockSize
+      hleftBlock hrightBlock hcross
 
 end PayloadLiveBPEndpointFringeRangeMacro
 
@@ -6442,6 +7782,56 @@ theorem concreteBPEndpointFringeRangeMacro_sampled_profile
   · rw [hprofile.1]
     exact hbudget
   · exact hprofile.2
+
+theorem concreteBPEndpointFringeRangeMacro_sampled_query_profile
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount fieldWidth slots n : Nat)
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth)
+    (hbudget :
+      2 * ((blockCount * blockSize) * fieldWidth) +
+          2 * ((blockCount * blockCount) * fieldWidth) +
+          2 * ((blockCount * blockSize) * fieldWidth) <=
+        sampledDirectoryOverhead slots n) :
+    let component :=
+      concreteBPEndpointFringeRangeMacro
+        shape blockSize blockCount fieldWidth hwidth
+    LittleOLinear (sampledDirectoryOverhead slots) /\
+      component.payload.length <= sampledDirectoryOverhead slots n /\
+      (forall leftClose rightClose,
+        (component.lcaCloseCosted leftClose rightClose).cost <= 6) /\
+      forall {left len leftClose rightClose answerClose : Nat},
+        0 < len ->
+          left + len <= shape.size ->
+            bpCloseOfInorder? shape left = some leftClose ->
+              bpCloseOfInorder? shape (left + len - 1) =
+                  some rightClose ->
+                bpCloseOfInorder? shape
+                    (scanWindow shape.representative left len) =
+                  some answerClose ->
+                  0 < blockSize ->
+                    blockOfClose blockSize leftClose < blockCount ->
+                      blockOfClose blockSize rightClose < blockCount ->
+                        blockOfClose blockSize leftClose <
+                            blockOfClose blockSize rightClose ->
+                          (component.lcaCloseCosted
+                            leftClose rightClose).erase =
+                            some answerClose := by
+  let component :=
+    concreteBPEndpointFringeRangeMacro
+      shape blockSize blockCount fieldWidth hwidth
+  have hprofile :=
+    (component.profile_cross_block_exact)
+  have hpayload :=
+    (concreteBPEndpointFringeRangeMacro_profile
+      shape blockSize blockCount fieldWidth hwidth).1
+  constructor
+  · exact sampledDirectoryOverhead_littleO slots
+  constructor
+  · rw [hpayload]
+    exact hbudget
+  constructor
+  · exact hprofile.2.1
+  · exact hprofile.2.2
 
 theorem concreteBPEndpointFringeRangeMacro_read_words_length_le_machine
     (shape : Cartesian.CartesianShape)
@@ -6716,6 +8106,36 @@ theorem codeAt_lt
     (hcode : classifier.codeAt block = some code) :
     code < codeCount := by
   exact classifier.code_lt (by simpa [codeAt] using hcode)
+
+private theorem list_get?_exists_of_lt
+    {α : Type} (xs : List α) {idx : Nat}
+    (hidx : idx < xs.length) :
+    exists value, xs[idx]? = some value := by
+  induction xs generalizing idx with
+  | nil =>
+      simp at hidx
+  | cons head tail ih =>
+      cases idx with
+      | zero =>
+          exact ⟨head, by simp⟩
+      | succ idx =>
+          have htail : idx < tail.length := by
+            simp at hidx
+            exact hidx
+          rcases ih htail with ⟨value, hvalue⟩
+          exact ⟨value, by simpa using hvalue⟩
+
+theorem codeAt_exists_of_lt
+    {blockCount codeCount codeWidth overhead : Nat}
+    (classifier :
+      BlockCodeTable blockCount codeCount codeWidth overhead)
+    {block : Nat}
+    (hblock : block < blockCount) :
+    exists code, classifier.codeAt block = some code := by
+  have hidx : block < classifier.codes.length := by
+    rw [classifier.codes_length_eq]
+    exact hblock
+  simpa [codeAt] using list_get?_exists_of_lt classifier.codes hidx
 
 theorem profile
     {blockCount codeCount codeWidth overhead : Nat}
@@ -7723,6 +9143,371 @@ theorem profile
   exact directory.lcaCloseCosted_exact hlen hbound hleft hright hanswer
 
 end PayloadLiveMacroMicroBPCloseLCADirectory
+
+/--
+Guarded payload-live macro/micro BP close/LCA directory.
+
+Unlike the compatibility `PayloadLiveMacroMicroBPCloseLCADirectory`, this query
+does not ask the micro table about cross-block endpoints.  Same-block queries
+use the charged micro-codebook path; cross-block queries use the charged
+endpoint-fringe/range macro path.
+-/
+structure PayloadLiveGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount codeCount codeWidth codeOverhead
+      microTableOverhead fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat) where
+  micro :
+    PayloadLiveBlockMicroCodebook shape blockSize blockCount codeCount
+      codeWidth codeOverhead microTableOverhead
+  macroComponent :
+    PayloadLiveBPEndpointFringeRangeMacro shape blockSize blockCount
+      fieldWidth leftOverhead interiorOverhead rightOverhead
+  blockSize_pos : 0 < blockSize
+  close_block_lt :
+    forall {close : Nat},
+      close < shape.bpCode.length ->
+        blockOfClose blockSize close < blockCount
+
+namespace PayloadLiveGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory
+
+def payload
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount codeCount codeWidth codeOverhead
+      microTableOverhead fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat}
+    (directory :
+      PayloadLiveGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory
+        shape blockSize blockCount codeCount codeWidth codeOverhead
+        microTableOverhead fieldWidth leftOverhead interiorOverhead
+        rightOverhead) : List Bool :=
+  directory.micro.payload ++ directory.macroComponent.payload
+
+def lcaCloseCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount codeCount codeWidth codeOverhead
+      microTableOverhead fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat}
+    (directory :
+      PayloadLiveGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory
+        shape blockSize blockCount codeCount codeWidth codeOverhead
+        microTableOverhead fieldWidth leftOverhead interiorOverhead
+        rightOverhead)
+    (leftClose rightClose : Nat) :
+    Costed (Option Nat) :=
+  if blockOfClose blockSize leftClose =
+      blockOfClose blockSize rightClose then
+    directory.micro.lcaCloseCosted leftClose rightClose
+  else
+    directory.macroComponent.lcaCloseCosted leftClose rightClose
+
+theorem payload_length
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount codeCount codeWidth codeOverhead
+      microTableOverhead fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat}
+    (directory :
+      PayloadLiveGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory
+        shape blockSize blockCount codeCount codeWidth codeOverhead
+        microTableOverhead fieldWidth leftOverhead interiorOverhead
+        rightOverhead) :
+    directory.payload.length =
+      codeOverhead + codeCount * microTableOverhead +
+        (leftOverhead + interiorOverhead + rightOverhead) := by
+  simp [payload, directory.micro.payload_length,
+    directory.macroComponent.payload_length]
+
+theorem lcaCloseCosted_cost_le_six
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount codeCount codeWidth codeOverhead
+      microTableOverhead fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat}
+    (directory :
+      PayloadLiveGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory
+        shape blockSize blockCount codeCount codeWidth codeOverhead
+        microTableOverhead fieldWidth leftOverhead interiorOverhead
+        rightOverhead)
+    (leftClose rightClose : Nat) :
+    (directory.lcaCloseCosted leftClose rightClose).cost <= 6 := by
+  unfold lcaCloseCosted
+  by_cases hsame :
+      blockOfClose blockSize leftClose =
+        blockOfClose blockSize rightClose
+  · simp [hsame]
+    have hmicro :=
+      directory.micro.lcaCloseCosted_cost_le_two leftClose rightClose
+    omega
+  · simp [hsame]
+    exact directory.macroComponent.lcaCloseCosted_cost_le_six
+      leftClose rightClose
+
+theorem lcaCloseCosted_exact
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount codeCount codeWidth codeOverhead
+      microTableOverhead fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat}
+    (directory :
+      PayloadLiveGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory
+        shape blockSize blockCount codeCount codeWidth codeOverhead
+        microTableOverhead fieldWidth leftOverhead interiorOverhead
+        rightOverhead)
+    {left len leftClose rightClose answerClose : Nat}
+    (hlen : 0 < len)
+    (hbound : left + len <= shape.size)
+    (hleft : bpCloseOfInorder? shape left = some leftClose)
+    (hright :
+      bpCloseOfInorder? shape (left + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder? shape
+          (scanWindow shape.representative left len) =
+        some answerClose) :
+    (directory.lcaCloseCosted leftClose rightClose).erase =
+      some answerClose := by
+  have hleftCloseBound := bpCloseOfInorder?_bounds shape hleft
+  have hrightCloseBound := bpCloseOfInorder?_bounds shape hright
+  have hleftBlock :
+      blockOfClose blockSize leftClose < blockCount :=
+    directory.close_block_lt hleftCloseBound
+  have hrightBlock :
+      blockOfClose blockSize rightClose < blockCount :=
+    directory.close_block_lt hrightCloseBound
+  have hbetween :=
+    answerClose_between_endpoint_closes
+      (shape := shape) (left := left) (len := len)
+      (leftClose := leftClose) (rightClose := rightClose)
+      (answerClose := answerClose)
+      hlen hleft hright hanswer
+  unfold lcaCloseCosted
+  by_cases hsame :
+      blockOfClose blockSize leftClose =
+        blockOfClose blockSize rightClose
+  · simp [hsame]
+    rcases directory.micro.classifier.codeAt_exists_of_lt hleftBlock with
+      ⟨code, hcodeAt⟩
+    have hrightLo :
+        blockStartOf blockSize (blockOfClose blockSize leftClose) <=
+          rightClose := by
+      simpa [hsame] using
+        (blockStartOf_blockOfClose_le
+          (blockSize := blockSize) (close := rightClose))
+    have hrightHi :
+        rightClose <
+          blockStartOf blockSize (blockOfClose blockSize leftClose) +
+            blockSize := by
+      simpa [hsame] using
+        (close_lt_blockStartOf_blockOfClose_add
+          (blockSize := blockSize) (close := rightClose)
+          directory.blockSize_pos)
+    have hanswerLo :
+        blockStartOf blockSize (blockOfClose blockSize leftClose) <=
+          answerClose := by
+      exact Nat.le_trans blockStartOf_blockOfClose_le hbetween.1
+    have hanswerHi :
+        answerClose <
+          blockStartOf blockSize (blockOfClose blockSize leftClose) +
+            blockSize := by
+      exact Nat.lt_of_le_of_lt hbetween.2 hrightHi
+    exact
+      directory.micro.lcaCloseCosted_exact_of_left_block
+        directory.blockSize_pos hcodeAt hlen hbound hleft hright hanswer
+        hrightLo hrightHi hanswerLo hanswerHi
+  · simp [hsame]
+    have hleftRight : leftClose <= rightClose := by
+      omega
+    have hblockLe :
+        blockOfClose blockSize leftClose <=
+          blockOfClose blockSize rightClose := by
+      unfold blockOfClose
+      exact Nat.div_le_div_right hleftRight
+    have hcross :
+        blockOfClose blockSize leftClose <
+          blockOfClose blockSize rightClose := by
+      omega
+    exact
+      directory.macroComponent.lcaCloseCosted_exact_of_query_cross_block
+        hlen hbound hleft hright hanswer directory.blockSize_pos
+        hleftBlock hrightBlock hcross
+
+theorem profile
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount codeCount codeWidth codeOverhead
+      microTableOverhead fieldWidth
+      leftOverhead interiorOverhead rightOverhead : Nat}
+    (directory :
+      PayloadLiveGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory
+        shape blockSize blockCount codeCount codeWidth codeOverhead
+        microTableOverhead fieldWidth leftOverhead interiorOverhead
+        rightOverhead) :
+    directory.payload.length =
+        codeOverhead + codeCount * microTableOverhead +
+          (leftOverhead + interiorOverhead + rightOverhead) /\
+      (forall leftClose rightClose,
+        (directory.lcaCloseCosted leftClose rightClose).cost <= 6) /\
+      forall {left len leftClose rightClose answerClose : Nat},
+        0 < len ->
+          left + len <= shape.size ->
+            bpCloseOfInorder? shape left = some leftClose ->
+              bpCloseOfInorder? shape (left + len - 1) =
+                  some rightClose ->
+                bpCloseOfInorder? shape
+                    (scanWindow shape.representative left len) =
+                  some answerClose ->
+                  (directory.lcaCloseCosted
+                    leftClose rightClose).erase =
+                    some answerClose := by
+  constructor
+  · exact directory.payload_length
+  constructor
+  · intro leftClose rightClose
+    exact directory.lcaCloseCosted_cost_le_six leftClose rightClose
+  intro left len leftClose rightClose answerClose hlen hbound hleft
+    hright hanswer
+  exact directory.lcaCloseCosted_exact hlen hbound hleft hright hanswer
+
+end PayloadLiveGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory
+
+def concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount codeCount codeWidth codeOverhead
+      microTableOverhead fieldWidth : Nat)
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth)
+    (micro :
+      PayloadLiveBlockMicroCodebook shape blockSize blockCount codeCount
+        codeWidth codeOverhead microTableOverhead)
+    (hblockSize : 0 < blockSize)
+    (hcover :
+      forall {close : Nat},
+        close < shape.bpCode.length ->
+          blockOfClose blockSize close < blockCount) :
+    PayloadLiveGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory
+      shape blockSize blockCount codeCount codeWidth codeOverhead
+      microTableOverhead fieldWidth
+      (2 * ((endpointLeftFringeRanges blockSize blockCount).length *
+        fieldWidth))
+      (2 * ((interiorBlockPairRanges blockCount).length * fieldWidth))
+      (2 * ((endpointRightFringeRanges blockSize blockCount).length *
+        fieldWidth)) where
+  micro := micro
+  macroComponent :=
+    concreteBPEndpointFringeRangeMacro
+      shape blockSize blockCount fieldWidth hwidth
+  blockSize_pos := hblockSize
+  close_block_lt := hcover
+
+theorem concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_profile
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount codeCount codeWidth codeOverhead
+      microTableOverhead fieldWidth : Nat)
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth)
+    (micro :
+      PayloadLiveBlockMicroCodebook shape blockSize blockCount codeCount
+        codeWidth codeOverhead microTableOverhead)
+    (hblockSize : 0 < blockSize)
+    (hcover :
+      forall {close : Nat},
+        close < shape.bpCode.length ->
+          blockOfClose blockSize close < blockCount) :
+    let directory :=
+      concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory
+        shape blockSize blockCount codeCount codeWidth codeOverhead
+        microTableOverhead fieldWidth hwidth micro hblockSize hcover
+    directory.payload.length =
+        codeOverhead + codeCount * microTableOverhead +
+          (2 * ((endpointLeftFringeRanges blockSize blockCount).length *
+              fieldWidth) +
+            2 * ((interiorBlockPairRanges blockCount).length *
+              fieldWidth) +
+            2 * ((endpointRightFringeRanges blockSize blockCount).length *
+              fieldWidth)) /\
+      (forall leftClose rightClose,
+        (directory.lcaCloseCosted leftClose rightClose).cost <= 6) /\
+      forall {left len leftClose rightClose answerClose : Nat},
+        0 < len ->
+          left + len <= shape.size ->
+            bpCloseOfInorder? shape left = some leftClose ->
+              bpCloseOfInorder? shape (left + len - 1) =
+                  some rightClose ->
+                bpCloseOfInorder? shape
+                    (scanWindow shape.representative left len) =
+                  some answerClose ->
+                  (directory.lcaCloseCosted
+                    leftClose rightClose).erase =
+                    some answerClose := by
+  let directory :=
+    concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory
+      shape blockSize blockCount codeCount codeWidth codeOverhead
+      microTableOverhead fieldWidth hwidth micro hblockSize hcover
+  simpa [directory] using directory.profile
+
+theorem guardedEndpointFringeMacroMicroOverhead_littleO
+    (microOverhead : Nat -> Nat) (slots : Nat)
+    (hmicro : LittleOLinear microOverhead) :
+    LittleOLinear
+      (fun n => microOverhead n + sampledDirectoryOverhead slots n) := by
+  exact LittleOLinear.add hmicro (sampledDirectoryOverhead_littleO slots)
+
+theorem concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_sampled_profile
+    (shape : Cartesian.CartesianShape)
+    (blockSize blockCount codeCount codeWidth codeOverhead
+      microTableOverhead fieldWidth slots n : Nat)
+    (microOverhead : Nat -> Nat)
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth)
+    (micro :
+      PayloadLiveBlockMicroCodebook shape blockSize blockCount codeCount
+        codeWidth codeOverhead microTableOverhead)
+    (hblockSize : 0 < blockSize)
+    (hcover :
+      forall {close : Nat},
+        close < shape.bpCode.length ->
+          blockOfClose blockSize close < blockCount)
+    (hmicroLittle : LittleOLinear microOverhead)
+    (hmicroBudget :
+      codeOverhead + codeCount * microTableOverhead <= microOverhead n)
+    (hmacroBudget :
+      2 * ((endpointLeftFringeRanges blockSize blockCount).length *
+          fieldWidth) +
+        2 * ((interiorBlockPairRanges blockCount).length * fieldWidth) +
+        2 * ((endpointRightFringeRanges blockSize blockCount).length *
+          fieldWidth) <= sampledDirectoryOverhead slots n) :
+    let directory :=
+      concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory
+        shape blockSize blockCount codeCount codeWidth codeOverhead
+        microTableOverhead fieldWidth hwidth micro hblockSize hcover
+    LittleOLinear
+        (fun n => microOverhead n + sampledDirectoryOverhead slots n) /\
+      directory.payload.length <=
+        microOverhead n + sampledDirectoryOverhead slots n /\
+      (forall leftClose rightClose,
+        (directory.lcaCloseCosted leftClose rightClose).cost <= 6) /\
+      forall {left len leftClose rightClose answerClose : Nat},
+        0 < len ->
+          left + len <= shape.size ->
+            bpCloseOfInorder? shape left = some leftClose ->
+              bpCloseOfInorder? shape (left + len - 1) =
+                  some rightClose ->
+                bpCloseOfInorder? shape
+                    (scanWindow shape.representative left len) =
+                  some answerClose ->
+                  (directory.lcaCloseCosted
+                    leftClose rightClose).erase =
+                    some answerClose := by
+  let directory :=
+    concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory
+      shape blockSize blockCount codeCount codeWidth codeOverhead
+      microTableOverhead fieldWidth hwidth micro hblockSize hcover
+  have hprofile :=
+    concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_profile
+      shape blockSize blockCount codeCount codeWidth codeOverhead
+      microTableOverhead fieldWidth hwidth micro hblockSize hcover
+  constructor
+  · exact guardedEndpointFringeMacroMicroOverhead_littleO
+      microOverhead slots hmicroLittle
+  constructor
+  · rw [hprofile.1]
+    omega
+  constructor
+  · exact hprofile.2.1
+  · exact hprofile.2.2
 
 /--
 Concrete dense fallback instance for the payload-live macro/micro surface.
