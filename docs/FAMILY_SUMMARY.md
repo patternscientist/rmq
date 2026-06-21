@@ -345,6 +345,18 @@ packages the resulting answer-close exactness, query-cost bound, and
 `LittleOLinear` micro-plus-relative overhead budget without mentioning
 `interiorBlockPairRanges blockCount`. The concrete relative/log-log summary
 builder still has to instantiate the macro's rmM candidate-read interface.
+`SuccinctCloseProposal.PayloadLiveBPRelativeMinMaxArgSummaryTable.rangeScanCosted_erase_exact`
+is the honest charged scan over Worker B's relative summary table: every
+interior block contributes a charged four-word summary read, and the scan
+erases to the exact `(minimum excess, prefix position)` range witness.
+`SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_canonical_interior_scan_not_constant`
+specializes that scan to the canonical compact relative table and proves it has
+no uniform constant query bound for positive block size.  Thus the canonical
+relative table is now consumed by an exact payload-live range path, but that
+path is formally a blocker, not the rmM macro needed for
+`concretePayloadLiveRelativeRmmBPCloseMacro_profile` or
+`concreteCompactBPCloseLCADirectory_profile`; the remaining positive step is a
+non-scan compact rmM range navigator whose charged query is O(1).
 `SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`
 sharpens the C2 blocker: a macro keyed only by endpoint block ids plus the
 existing endpoint block min/max summaries still cannot return exact answer
