@@ -1289,3 +1289,54 @@ sparse-sample select directory (via `selectBoolWord` + rank reuse), then family 
 join. Estimate: a few rounds — a known construction with a free primitive and
 reusable infra; comparable to (and arguably easier than) the navigator already
 landed.
+
+## 2026-06-21 (coordinator-plan audit) — sound pivot; two refinements (reuse selectBoolWord; witness > interface)
+
+Audited the coordinator's proposed plan (it had not yet seen the rank/select
+witness audit above; it converged on the same diagnosis independently — a good
+sign).
+
+**Endorse the thrust.** The plan correctly identifies `select false` over
+`shape.bpCode` as the real gap, treats A's obstruction as load-bearing, demotes
+`TwoLevelPayloadLiveStoredWordRankSelectFamily` from capstone to scaffold (correct
+— A proved it can't be inhabited with the canonical linear select), and targets a
+Clark/RRR dense-sparse compact select. Research alignment is accurate (RRR
+`0705.0552`, Navarro–Sadakane `0905.0768`, Liu–Yu `2004.05738`, Vigna broadword
+parens `1301.5468`). The proposed narrower `BPCloseAccessDirectory` interface
+(only `select false` = `bpCloseOfInorder?` + `rank false` = `rankPrefix false`)
+matches actual usage — B's merged join already uses only false-target ops.
+
+**Refinement 1 (the main one): reuse `selectBoolWord` before adding a new
+primitive.** The plan's step 4 proposes a *new* `RAM.selectPackedCounterWord` but
+never notes that `selectBoolWord` already exists (`RAM.lean:168`, verified O(1)
+with a machine-word bound) — the popcount-analogue for select. The cleanest
+compact select is *select via the existing rank summaries + `selectBoolWord`*:
+sparse select-sample (every Θ(log²n)-th one, o(n)) → locate the block via the
+already-o(n) rank summaries → in-block via `selectBoolWord` (O(1)), with no stored
+per-occurrence positions and **no new trusted primitive**. Adding
+`selectPackedCounterWord` expands the trusted cost-model base (faithful-primitive
+criterion) and should be a fallback only — used if a clean O(1) genuinely can't be
+had via sampling + `selectBoolWord`, and if added, held to the existing primitives'
+bar (faithful Θ(log n) bound, value flows through it, listed in `axiom_check`).
+
+**Refinement 2: prioritize the witness, not the interface.** The
+`BPCloseAccessDirectory` refactor is good hygiene but it is *repackaging* — a
+structure that must be inhabited. Until the concrete o(n) `select₀` exists,
+"prove the RMQ join from `BPCloseAccessDirectory`" is just another *conditional
+capstone* (the exact shape flagged this week). Pin the interface fast, prove the
+small conditional join, then put **both** workers on the concrete compact select
+directory (the binding constraint). Do not score "define interface + conditional
+join" as closing the gap; the select directory is interface-agnostic and is the
+whole game. This also tempers the proposed split (one on interface, one on select)
+— weight both toward the select directory once the interface is pinned.
+
+**Minor:** (a) `bpCloseOfInorder? shape i` is genuinely `select₀` on `bpCode`
+(B's join already proves `selectClose(left) = bpCloseOfInorder`), so the interface
+obligation *is* the select gap, no hidden inorder-mapping extra; (b) fold in the
+cleanup the plan omits — retire the dead `interiorBlockPairRanges` (`blockCount²`)
+mirage and the decoupled `canonicalTwoLevelSelectOverhead_littleO` claim in the
+same pass, so the next "o(n)" can't lean on fiction.
+
+**Verdict:** green-light the direction; apply refinements 1 (reuse `selectBoolWord`)
+and 2 (witness over interface). With those, this closes the goal via the same
+reuse-the-machinery pattern that worked for rank, close, and the navigator.
