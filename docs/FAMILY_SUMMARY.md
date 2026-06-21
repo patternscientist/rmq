@@ -249,6 +249,66 @@ repair. `SuccinctCloseProposal.bpExcessAt_prefix_nonnegative` records the
 balanced-prefix invariant needed when interpreting the Nat-subtraction excess,
 and `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.summary_read_words_length_le_machine`
 exposes the machine-word side condition for the charged summary table reads.
+The positive C2 macro side now also has position-bearing payload reads:
+`SuccinctCloseProposal.PayloadLiveBPRangeMinMaxArgSummaryTable.profile` stores
+and reads a per-block argmin prefix position, while
+`SuccinctCloseProposal.PayloadLiveBPRangeArgMinWitnessTable.profile` and
+`SuccinctCloseProposal.PayloadLiveBPBlockPairRangeWitnessMacro.profile` lift
+that idea to charged block-range witnesses and an `lcaCloseCosted`-shaped
+block-pair macro candidate. These range witnesses return close candidates from
+payload words with cost `<= 2`, expose machine-word read bounds, and have
+sampled-overhead profile theorems. The next positive layer now has charged
+endpoint repair:
+`SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.profile` combines
+left endpoint-fringe prefix witnesses, the existing interior block-range
+witness, and right endpoint-fringe prefix witnesses in one counted
+`lcaCloseCosted` path with cost `<= 6`;
+`SuccinctCloseProposal.concreteBPEndpointFringeRangeMacro_profile` constructs
+that path from fixed-width payload tables; and
+`SuccinctCloseProposal.concreteBPEndpointFringeRangeMacro_read_words_length_le_machine`
+exposes the machine-word bounds for every charged fringe/interior read.
+`SuccinctCloseProposal.bpCloseOfInorder?_le_of_le`,
+`SuccinctCloseProposal.answerClose_between_endpoint_closes`, and
+`SuccinctCloseProposal.answerClose_prefix_between_endpoint_prefixes` start the
+BP semantic bridge by proving endpoint containment of the representative-array
+answer close. The bridge now also exposes executable prefix-range argmin
+correctness via
+`SuccinctCloseProposal.bpPrefixRangeArgMinPrefixPos_excess_le_offset`,
+`SuccinctCloseProposal.bpPrefixRangeArgMinPrefixPos_eq_of_leftmost_min_excess`,
+`SuccinctCloseProposal.bpPrefixRangeWitness_eq_of_leftmost_min_excess`,
+`SuccinctCloseProposal.bpRangeWitness_eq_of_leftmost_block_candidate`, and
+`SuccinctCloseProposal.bpEndpointPrefixRangeMinExcess_le_answerClose`, concrete
+endpoint/interior slot decoding through the `endpoint*Entries_get?` and
+`interiorBlockPairRange*Entries_get?` lemmas,
+root-spanning BP semantic witnesses via
+`SuccinctCloseProposal.endpointPrefixRangeWitness_eq_answerClose_of_spanning_root`,
+the global representative-query semantic theorem
+`SuccinctCloseProposal.answerClose_prefix_leftmost_min_excess_of_query`, and
+charged endpoint-merge bridges including
+`SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_decoded_merged_candidate`,
+`SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_left_fringe_leftmost`,
+`SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_decoded_right_fringe_candidate`,
+`SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_decoded_middle_candidate`,
+`SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_spanning_root_left_fringe`,
+`SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_spanning_root_right_fringe`,
+and
+`SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_query_cross_block`.
+The new guarded concrete layer
+`SuccinctCloseProposal.PayloadLiveGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory.profile`
+routes same-block endpoint closes to the charged micro-codebook and cross-block
+endpoint closes to the charged endpoint-fringe/interior macro, proving semantic
+close/LCA exactness with query cost `<= 6`.
+`SuccinctCloseProposal.concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_sampled_profile`
+combines that concrete macro with a supplied payload-live micro budget and a
+sampled `LittleOLinear` endpoint-fringe macro budget. The remaining C2
+integration work is to package the guarded directory into the close-navigation
+family/join used by the final BP-native theorem, not to prove another supplied
+segment or prefix-position hypothesis.
+`SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`
+sharpens the C2 blocker: a macro keyed only by endpoint block ids plus the
+existing endpoint block min/max summaries still cannot return exact answer
+closes, so the next positive construction needs a position-bearing
+endpoint/fringe or range-min witness.
 `SelectSampleWordExact.selected_position_in_read_word` and
 `TwoLevelPayloadLiveStoredWordSelectData.selected_position_in_read_word_of_sample`,
 together with the aligned-word refinements
@@ -1238,10 +1298,17 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.bpExcessAt_le_length`,
   `SuccinctCloseProposal.bpExcessAt_prefix_nonnegative`,
   `SuccinctCloseProposal.bpExcessAt_add_close_rank_eq_open_rank_of_le`,
+  `SuccinctCloseProposal.bpExcessAt_close_succ_add_inorder_succ_eq_open_rank`,
+  `SuccinctCloseProposal.bpExcessAt_node_left_prefix_succ`,
+  `SuccinctCloseProposal.bpExcessAt_node_right_prefix_shift`,
+  `SuccinctCloseProposal.bpCloseOfInorder?_lt_of_lt`,
+  `SuccinctCloseProposal.answerClose_prefix_mem_endpoint_prefix_range`,
   `SuccinctCloseProposal.bpBlockMinExcess_le_length`,
   `SuccinctCloseProposal.bpBlockMaxExcess_le_length`,
+  `SuccinctCloseProposal.bpBlockArgMinPrefixPos_le_length`,
   `SuccinctCloseProposal.bpBlockMinExcessEntries_mem_bound`,
   `SuccinctCloseProposal.bpBlockMaxExcessEntries_mem_bound`,
+  `SuccinctCloseProposal.bpBlockArgMinPrefixPosEntries_mem_bound`,
   `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.payload_length`,
   `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.summaryCosted_cost_le_two`,
   `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.summaryCosted_erase`,
@@ -1252,7 +1319,61 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.concreteBPRangeMinMaxSummaryTable_profile`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxSummaryTable_sampled_profile`,
   `SuccinctCloseProposal.concreteBPRangeMinMaxSummaryTable_read_words_length_le_machine`,
+  `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxArgSummaryTable.profile`,
+  `SuccinctCloseProposal.concreteBPRangeMinMaxArgSummaryTable_sampled_profile`,
+  `SuccinctCloseProposal.concreteBPRangeMinMaxArgSummaryTable_read_words_length_le_machine`,
+  `SuccinctCloseProposal.PayloadLiveBPRangeArgMinWitnessTable.rangeCloseCosted_exact_of_prefix_pos`,
+  `SuccinctCloseProposal.PayloadLiveBPRangeArgMinWitnessTable.profile`,
+  `SuccinctCloseProposal.concreteBPRangeArgMinWitnessTable_sampled_profile`,
+  `SuccinctCloseProposal.concreteBPRangeArgMinWitnessTable_read_words_length_le_machine`,
+  `SuccinctCloseProposal.blockPairRanges_get?_of_ordered_bounds`,
+  `SuccinctCloseProposal.PayloadLiveBPBlockPairRangeWitnessMacro.lcaCloseCosted_exact_of_prefix_pos`,
+  `SuccinctCloseProposal.PayloadLiveBPBlockPairRangeWitnessMacro.profile`,
+  `SuccinctCloseProposal.concreteBPBlockPairRangeWitnessMacro_sampled_profile`,
+  `SuccinctCloseProposal.concreteBPBlockPairRangeWitnessMacro_read_words_length_le_machine`,
+  `SuccinctCloseProposal.blockStartOf_succ`,
+  `SuccinctCloseProposal.blockStartOf_mono`,
+  `SuccinctCloseProposal.bpPrefixRangeArgMinPrefixPosFrom_eq_best_of_best_le_all`,
+  `SuccinctCloseProposal.bpPrefixRangeArgMinPrefixPosFrom_eq_of_leftmost_min_excess`,
+  `SuccinctCloseProposal.bpPrefixRangeArgMinPrefixPos_eq_of_leftmost_min_excess`,
+  `SuccinctCloseProposal.bpPrefixRangeArgMinPrefixPos_mem_range`,
+  `SuccinctCloseProposal.bpPrefixRangeArgMinPrefixPos_excess_le_offset`,
+  `SuccinctCloseProposal.bpPrefixRangeMinExcess_eq_of_leftmost_min_excess`,
+  `SuccinctCloseProposal.bpPrefixRangeWitness_eq_of_leftmost_min_excess`,
+  `SuccinctCloseProposal.bpBlockArgMinPrefixPos_eq_prefixRangeArgMinPrefixPos`,
+  `SuccinctCloseProposal.bpBlockArgMinPrefixPos_eq_of_leftmost_min_excess`,
+  `SuccinctCloseProposal.bpBlockArgMinPrefixPos_mem_range`,
+  `SuccinctCloseProposal.bpRangeArgMinPrefixPosFrom_eq_best_of_best_le_all`,
+  `SuccinctCloseProposal.bpRangeArgMinPrefixPosFrom_eq_of_leftmost_block_candidate`,
+  `SuccinctCloseProposal.bpRangeArgMinPrefixPos_eq_of_leftmost_block_candidate`,
+  `SuccinctCloseProposal.bpRangeWitness_eq_of_leftmost_block_candidate`,
+  `SuccinctCloseProposal.bpRangeArgMinPrefixPos_mem_prefix_range`,
+  `SuccinctCloseProposal.bpPrefixRangeMinExcess_ge_of_all_prefix_ge`,
+  `SuccinctCloseProposal.bpPrefixRangeMinExcess_gt_of_all_prefix_gt`,
+  `SuccinctCloseProposal.bpRangeMinExcess_ge_of_all_prefix_ge`,
+  `SuccinctCloseProposal.bpRangeMinExcess_gt_of_all_prefix_gt`,
+  `SuccinctCloseProposal.bpPrefixRangeMinExcess_le_prefix_of_mem`,
+  `SuccinctCloseProposal.bpEndpointPrefixRangeMinExcess_le_answerClose`,
+  `SuccinctCloseProposal.endpointPrefixRangeWitness_eq_answerClose_of_spanning_root`,
+  `SuccinctCloseProposal.answerClose_prefix_leftmost_min_excess_of_query`,
+  `SuccinctCloseProposal.endpointLeftFringeMinExcessEntries_get?_of_close_bounds`,
+  `SuccinctCloseProposal.endpointLeftFringeArgMinEntries_get?_of_close_bounds`,
+  `SuccinctCloseProposal.endpointRightFringeMinExcessEntries_get?_of_close_bounds`,
+  `SuccinctCloseProposal.endpointRightFringeArgMinEntries_get?_of_close_bounds`,
+  `SuccinctCloseProposal.interiorBlockPairRangeMinExcessEntries_get?_of_gap_bounds`,
+  `SuccinctCloseProposal.interiorBlockPairRangeArgMinEntries_get?_of_gap_bounds`,
+  `SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_decoded_merged_candidate`,
+  `SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_left_fringe_leftmost`,
+  `SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_decoded_right_fringe_candidate`,
+  `SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_decoded_middle_candidate`,
+  `SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_spanning_root_left_fringe`,
+  `SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_spanning_root_right_fringe`,
+  `SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_query_cross_block`,
+  `SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.profile_cross_block_exact`,
+  `SuccinctCloseProposal.concreteBPEndpointFringeRangeMacro_sampled_query_profile`,
   `SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient`,
+  `SuccinctCloseProposal.endpointSummaryBlockKey`,
+  `SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`,
   `SuccinctCloseProposal.BlockMicroCodebook.payload_length`,
   `SuccinctCloseProposal.BlockMicroCodebook.lcaCloseCosted_cost_le_one`,
   `SuccinctCloseProposal.BlockMicroCodebook.lcaCloseCostedAtBlock_exact`,
@@ -1263,6 +1384,7 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.MacroMicroBPCloseLCADirectory.lcaCloseCosted_exact`,
   `SuccinctCloseProposal.MacroMicroBPCloseLCADirectory.profile`,
   `SuccinctCloseProposal.BlockCodeTable.payload_length`,
+  `SuccinctCloseProposal.BlockCodeTable.codeAt_exists_of_lt`,
   `SuccinctCloseProposal.BlockCodeTable.codeCosted_erase`,
   `SuccinctCloseProposal.BlockCodeTable.profile`,
   `SuccinctCloseProposal.BlockCodeTable.ofEntries_profile`,
@@ -1274,6 +1396,12 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseLCADirectory.lcaCloseCosted_cost_le`,
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseLCADirectory.lcaCloseCosted_exact`,
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseLCADirectory.profile`,
+  `SuccinctCloseProposal.PayloadLiveGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory.payload_length`,
+  `SuccinctCloseProposal.PayloadLiveGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory.lcaCloseCosted_exact`,
+  `SuccinctCloseProposal.PayloadLiveGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory.profile`,
+  `SuccinctCloseProposal.concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_profile`,
+  `SuccinctCloseProposal.guardedEndpointFringeMacroMicroOverhead_littleO`,
+  `SuccinctCloseProposal.concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_sampled_profile`,
   `SuccinctCloseProposal.emptyPayloadLiveBlockMicroCodebook_lcaCloseCosted_erase`,
   `SuccinctCloseProposal.denseFallbackPayloadLiveMacroMicroBPCloseLCADirectory_profile`,
   `SuccinctCloseProposal.payloadLiveMacroMicroBPCloseLCAOverhead_littleO`,
