@@ -461,6 +461,16 @@ complete-block minimum candidates, prove its constant charged range-min witness
 and `LittleOLinear` payload profile, and then package that directory into the
 final close-navigation join; this is the path now consumed by
 `SuccinctCloseProposal.concreteCompactBPCloseLCADirectory_profile`.
+`SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
+is the first final BP-native built-query join over that concrete close
+directory: the payload is exactly `shape.bpCode` plus padded auxiliary
+rank/select and close payloads, the payload length is
+`2*n + concreteBPNativeSuccinctRMQOverhead ... n`, the combined overhead is
+`LittleOLinear`, the query cost is bounded by
+`3 * rankSelectCost + concreteCompactBPCloseQueryCost`, and erasure returns the
+exact representative-array RMQ answer. The theorem consumes the existing
+two-level payload-live rank/select family surface; it does not by itself retire
+the separate compact descriptor-select builder caveat.
 `SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`
 sharpens the C2 blocker: a macro keyed only by endpoint block ids plus the
 existing endpoint block min/max summaries still cannot return exact answer
@@ -1190,6 +1200,7 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctSpace.LittleOLinear.of_eventually_le`,
   `SuccinctSpace.LittleOLinear.mul_left`,
   `SuccinctSpace.LittleOLinear.mul_right`,
+  `SuccinctSpace.LittleOLinear.comp_two_mul_arg`,
   `SuccinctSpace.LittleOLinear.add`,
   `SuccinctSpace.LittleOLinear.add_const`,
   `SuccinctSpace.LittleOLinear.const_add`,
@@ -1605,6 +1616,19 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.queryBuiltCosted_cost_le`,
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.queryBuiltCosted_exact`,
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.two_n_plus_o_built_query_profile`.
+- `RMQ/Core/SuccinctFinal.lean` (12):
+  `SuccinctFinal.concreteBPNativeSuccinctRMQOverhead_littleO`,
+  `SuccinctFinal.concreteBPNativeSelectCloseCosted_cost_le`,
+  `SuccinctFinal.concreteBPNativeRankCloseCosted_cost_le`,
+  `SuccinctFinal.concreteBPNativeLCACloseCosted_cost_le`,
+  `SuccinctFinal.concreteBPNativeSelectCloseCosted_exact`,
+  `SuccinctFinal.concreteBPNativeRankCloseCosted_exact`,
+  `SuccinctFinal.concreteBPNativeLCACloseCosted_exact`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQAuxPayload_length`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQPayload_length`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQQueryCosted_cost_le`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQQueryCosted_exact`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`.
 - `RMQ/Core/SuccinctReduction.lean` (7):
   `Succinct.rmqBackendOfEulerParensBackend_queryBuilt`,
   `Succinct.lcaCandidateOfEulerParensBackend_eq_queryBuilt`,

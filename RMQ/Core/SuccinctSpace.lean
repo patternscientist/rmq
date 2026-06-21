@@ -824,6 +824,24 @@ private theorem le_of_two_mul_le_two_mul
     {a b : Nat} (h : 2 * a <= 2 * b) : a <= b := by
   exact Nat.le_of_mul_le_mul_left h (by omega)
 
+theorem LittleOLinear.comp_two_mul_arg
+    {f : Nat -> Nat}
+    (hf : LittleOLinear f) :
+    LittleOLinear (fun n => f (2 * n)) := by
+  intro scale hscale
+  have htwoScale : 0 < 2 * scale := Nat.mul_pos (by omega) hscale
+  rcases hf (2 * scale) htwoScale with ⟨threshold, hthreshold⟩
+  exact ⟨threshold, by
+    intro n hn
+    have hthreshold' : threshold <= 2 * n := by
+      have hnle : n <= 2 * n := by omega
+      exact Nat.le_trans hn hnle
+    have h := hthreshold (2 * n) hthreshold'
+    have htwo :
+        2 * (scale * f (2 * n)) <= 2 * n := by
+      simpa [Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using h
+    exact le_of_two_mul_le_two_mul htwo⟩
+
 theorem LittleOLinear.add
     {f g : Nat -> Nat}
     (hf : LittleOLinear f) (hg : LittleOLinear g) :

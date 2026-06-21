@@ -563,19 +563,35 @@ carry the caveat rather than silently claiming bit-level local decoding.
 
 ```lean
 theorem concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
-    (shape : Cartesian.CartesianShape) :
-    let directory := concreteBPNativeSuccinctRMQDirectory shape
-    directory.payload.length <= 2 * shape.size + finalOverhead shape.size /\
-      SuccinctSpace.LittleOLinear finalOverhead /\
-      (forall left right,
-        (directory.queryEncodedCosted left right).cost <= finalQueryCost) /\
-      directory.queryEncodedCosted_exact := ...
+    (family :
+      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
+        rankSuper rankBlock selectSuper selectBlock rankSelectCost) :
+    SuccinctSpace.LittleOLinear
+        (concreteBPNativeSuccinctRMQOverhead family.overhead) /\
+      forall n,
+        EncodingLowerBound.logSlackLower n <=
+          2 * n +
+            concreteBPNativeSuccinctRMQOverhead family.overhead n /\
+        (forall {shape},
+          shape ∈ Cartesian.shapesOfSize n ->
+            (concreteBPNativeSuccinctRMQPayload family shape).length =
+              2 * n +
+                concreteBPNativeSuccinctRMQOverhead family.overhead n) /\
+        (forall shape left right,
+          (concreteBPNativeSuccinctRMQQueryCosted family shape left right).cost <=
+            concreteBPNativeSuccinctRMQQueryCost rankSelectCost) /\
+        -- exact built-query RMQ erasure for every valid representative window
+        ... := ...
 ```
 
-This final join should consume the two-level rank/select payload, descriptor
-select component, and C2 close directory. It is not enough to wrap encoded
-functions unless the theorem also proves those functions agree with the built
-payload.
+This final join consumes the two-level rank/select payload-live family surface
+and the C2 concrete compact close directory. The current theorem is a
+built-payload join, not an arbitrary encoded-function wrapper: its payload is
+`shape.bpCode ++ aux`, with aux padded to the exact reserved overhead, and its
+query erases to the exact representative-array RMQ result. The remaining C1
+descriptor-select task is still the concrete compact instantiation of the
+rank/select family surface; do not claim that theorem retires the descriptor
+builder caveat by itself.
 
 ## Concrete Close Contract
 

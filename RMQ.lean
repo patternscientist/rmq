@@ -9,6 +9,7 @@ import RMQ.Core.SuccinctSpace
 import RMQ.Core.SuccinctRankProposal
 import RMQ.Core.SuccinctSelectProposal
 import RMQ.Core.SuccinctCloseProposal
+import RMQ.Core.SuccinctFinal
 import RMQ.Core.Reduction
 import RMQ.Core.SuccinctReduction
 import RMQ.Core.Cartesian

@@ -78,6 +78,7 @@ claims that matter, not every local arithmetic helper.
 #print axioms RMQ.Succinct.selectFrom_append_right_after_count
 #print axioms RMQ.SuccinctSpace.littleOLinear_const
 #print axioms RMQ.SuccinctSpace.LittleOLinear.of_eventually_le
+#print axioms RMQ.SuccinctSpace.LittleOLinear.comp_two_mul_arg
 #print axioms RMQ.SuccinctSpace.LittleOLinear.add
 #print axioms RMQ.SuccinctSpace.LittleOLinear.mul_left
 #print axioms RMQ.SuccinctSpace.littleOLinear_id_div_log2_succ
@@ -281,6 +282,7 @@ claims that matter, not every local arithmetic helper.
 #print axioms RMQ.SuccinctCloseProposal.concretePayloadLiveRelativeRmmBPCloseMacro_profile
 #print axioms RMQ.SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseLCAFamily.profile
 #print axioms RMQ.SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.two_n_plus_o_built_query_profile
+#print axioms RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
 #print axioms RMQ.SuccinctSpace.BPBroadwordSuccinctRMQFamily.two_n_plus_o_constant_query_profile
 #print axioms RMQ.SuccinctSpace.ComponentizedBPRMQFamily.two_n_plus_o_constant_query_profile
 #print axioms RMQ.Succinct.lcaCandidateOfEulerParensBackend_isPathLCA_of_labelsUnique
