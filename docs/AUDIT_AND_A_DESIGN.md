@@ -1164,3 +1164,59 @@ executed #1+#2+#3 in a single round, faster than predicted. Distance to the
 headline is now exactly the C3 join + the dead-code cleanup. Watch the join for
 the recurring abstract-first temptation (the proof-only-oracle/rule-14a guards
 should bite there).
+
+## 2026-06-21 (capstone, ADVERSARIAL) — the "final join" is real but CONDITIONAL on an unwitnessed rank/select family; headline NOT closed
+
+Highly adversarial audit of the two workers' capstone claims. Both worktrees build
+green and are sorry-free (B trust-clean, 0 bad-axiom; A builds). **Neither is
+committed** — both branches sit at `fca3f48` (coordinator); the work is dirty in
+the worktrees.
+
+**Worker B — `codex/final-bpnative-succinct-rmq`, new `RMQ/Core/SuccinctFinal.lean`
+(447 lines).** The join is genuinely well-built and concrete-shaped:
+payload = `bpCode (2n) ++ rankSelect.auxPayload ++ close.payload ++ padding`; the
+query is the authentic reduction — `select(left)`, `select(right-1)` → close
+directory `lcaClose` → `rank` back to the array index. The headline theorem
+`concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile` proves all
+the right conjuncts (LittleOLinear overhead; `logSlackLower n ≤ 2n+overhead`;
+`payload.length = 2n + overhead`; `cost ≤ const`; `erase = some (scanWindow …)`),
+all n, and the exactness proof is a complete chain from proven component lemmas —
+**no answer-as-premise, no sorry.** Credit: the architecture and the exactness
+chain are the real thing.
+**BUT every theorem is parameterized by an abstract
+`(family : SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily …)`
+with NO concrete witness.** That type occurs in the repo *only* as a `structure`
++ namespace theorems that take a family — **never a `def` instance.** So the
+"final" theorem is really *"IF a two-level payload-live rank/select family exists,
+THEN 2n+o(n)/O(1)/exact succinct RMQ."* This is **abstract-no-witness at the
+capstone** (fidelity criterion 4): gate-green and sorry-free, but a *conditional*,
+not the closed headline. Worker B's claim is overstated.
+
+**Worker A — `codex/c2-close-navigation-adapter`, +210 lines in
+`SuccinctCloseProposal.lean`.** Built a *close-side* socket/family wrapper
+(`CompactBPCloseLCANavigationSocket`/`…Family` + a concrete instance + profile).
+Builds green. **But it is orthogonal to the goal:** the close side is *already* a
+concrete directory (`concreteCompactBPCloseLCADirectory`), B's join uses *that*
+directly and does **not** use A's adapter, and the adapter does nothing about the
+actual gap. An extra abstraction layer on an already-done component; unused by the
+capstone.
+
+**The actual remaining gap — which NEITHER worker filled:** a concrete
+`def : TwoLevelPayloadLiveStoredWordRankSelectFamily` — assemble the existing
+canonical two-level rank/select builders
+(`canonicalTwoLevelRankSelectDirectoryOfChunksExact`, the select/rank exactness +
+`…Overhead_littleO`) into a family over all bits, discharging the per-`bits`
+side-conditions (`0 < wordSize`, `bits.length < 2^fieldWidth`, …) with parameters
+chosen for o(n). Assemblable from existing pieces; **moderate, not trivial, not
+done.** Once it exists,
+`concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile <witness>`
+discharges to the unconditional headline in one line.
+
+**Verdict:** the headline 2n+o(n)/O(1) succinct RMQ is **NOT closed.** It is one
+concrete rank/select-family witness away (plus apply-the-profile) — genuinely
+close — but that witness is real, unfinished work both workers skipped: B proved a
+strong *conditional* capstone, A built an *unused* close-side abstraction. This is
+a coordination miss: the binding constraint was the rank/select family witness,
+and nobody owned it. Also: nothing committed; the `blockCount²` mirage is still in
+`fca3f48`. Next: assign the rank/select family witness explicitly; then B's join
+closes by application; commit; retire the mirage.
