@@ -400,10 +400,11 @@ erases to the exact `(minimum excess, prefix position)` range witness.
 specializes that scan to the canonical compact relative table and proves it has
 no uniform constant query bound for positive block size.  Thus the canonical
 relative table is now consumed by an exact payload-live range path, but that
-path is formally a blocker, not the rmM macro needed for
-`concretePayloadLiveRelativeRmmBPCloseMacro_profile` or
-`concreteCompactBPCloseLCADirectory_profile`; the remaining positive step is a
-non-scan compact rmM range navigator whose charged query is O(1).
+path is formally a blocker rather than the final macro.  The positive path is
+the non-scan compact two-level rmM range navigator whose charged query is O(1),
+now packaged by
+`SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_profile` and
+consumed below by the compact close directory.
 `SuccinctCloseProposal.PayloadLiveBPRelativeRmmInteriorDirectory.profile` now
 pins the replacement contract for that navigator, and
 `SuccinctCloseProposal.payloadLiveRelativeRmmBPCloseMacroOfInterior_profile`
@@ -417,18 +418,49 @@ packages it into a large-regime concrete relative-rmM cross-block macro with
 payload bounded by the concrete endpoint-fringe plus two-level interior budget,
 query cost `<= 4 + concreteBPRelativeRmmInteriorQueryCost`, semantic
 cross-block exactness, and machine-word bounded charged reads.  The remaining
-C2 work is to consume this concrete macro in the compact close directory
-profile.
+C2 work is now the final BP-native join with rank/select.
+`SuccinctCloseProposal.PayloadLiveBlockEndpointFringeCodebook.profile` adds the
+compact endpoint-fringe leaf needed to remove dense global
+`endpointLeftFringeRanges`/`endpointRightFringeRanges` payloads from that path:
+the endpoint candidate is read by a charged per-block code lookup followed by
+two charged local min/arg witness reads from a finite per-code table.
+`SuccinctCloseProposal.PayloadLiveCompactEndpointRelativeRmmBPCloseMacro.profile`
+then consumes those local endpoint-fringe candidates together with the
+relative-rmM interior directory, proving cross-block answer-close exactness,
+query cost `<= 6 + middleQueryCost`, compact endpoint/interior payload length,
+and machine-word bounds for the charged endpoint and interior words.  The
+concrete checkpoint
+`SuccinctCloseProposal.concretePayloadLiveBlockEndpointFringeCodebook_profile`
+instantiates that leaf with a payload-backed block-code table and local
+endpoint min/arg tables, while
+`SuccinctCloseProposal.concretePayloadLiveCompactEndpointRelativeRmmBPCloseMacro_profile`
+consumes it with
+`SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_profile` to give a
+charged endpoint+interior macro with explicit payload length, constant query
+cost, cross-block exactness, and machine-word bounded reads.  The final compact
+directory no longer uses that identity endpoint classifier as its surface:
+`SuccinctCloseProposal.concreteCompactBPCloseLCADirectory_profile` packages
+same-block dispatch, charged constant-width local BP-code window reads for
+endpoint repair, the concrete relative-rmM interior directory, payload length
+bounded by `SuccinctCloseProposal.compactBPCloseOverhead`, the
+`SuccinctCloseProposal.compactBPCloseOverhead_littleO` proof, constant query
+cost, arbitrary representative-query exactness, and machine-word bounds for
+every charged BP/interior word read.  This closes C2 at the bounded-local-BP-
+primitive layer: the same-block and endpoint-fringe local primitives are
+specified by exact local BP semantics and account for a constant BP-word window,
+but the values are not yet derived by an interpreter over those listed words.
 `SuccinctCloseProposal.payloadLiveBPRelativeRmmInteriorDirectory_profile_allows_proof_only_oracle`
 records the corresponding contract caveat: the generic interior-directory
 record alone can be inhabited by an empty-payload proof-only oracle, so the
-named compact C2 checkpoint still has to build a concrete navigator whose
-constant query is tied to charged payload reads.
+named compact C2 path relies on the concrete
+`SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_profile` rather
+than the generic record.
 The coordinator-selected C2 path is to replace the dense block-pair/interior
 macro payload with the compact rmM/min-max-tree-style interior navigator over
 complete-block minimum candidates, prove its constant charged range-min witness
 and `LittleOLinear` payload profile, and then package that directory into the
-final close-navigation join.
+final close-navigation join; this is the path now consumed by
+`SuccinctCloseProposal.concreteCompactBPCloseLCADirectory_profile`.
 `SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`
 sharpens the C2 blocker: a macro keyed only by endpoint block ids plus the
 existing endpoint block min/max summaries still cannot return exact answer
@@ -1538,6 +1570,14 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.PayloadLiveBlockMicroCodebook.lcaCloseCosted_cost_le_two`,
   `SuccinctCloseProposal.PayloadLiveBlockMicroCodebook.lcaCloseCosted_exact_of_left_block`,
   `SuccinctCloseProposal.PayloadLiveBlockMicroCodebook.profile`,
+  `SuccinctCloseProposal.PayloadLiveBlockEndpointFringeCodebook.profile`,
+  `SuccinctCloseProposal.PayloadLiveBlockEndpointFringeCodebook.read_words_length_le_machine`,
+  `SuccinctCloseProposal.concretePayloadLiveBlockEndpointFringeCodebook_profile`,
+  `SuccinctCloseProposal.concretePayloadLiveBlockEndpointFringeCodebook_canonical_profile`,
+  `SuccinctCloseProposal.PayloadLiveCompactEndpointRelativeRmmBPCloseMacro.lcaCloseCosted_exact_of_query_cross_block`,
+  `SuccinctCloseProposal.PayloadLiveCompactEndpointRelativeRmmBPCloseMacro.read_words_length_le_machine`,
+  `SuccinctCloseProposal.PayloadLiveCompactEndpointRelativeRmmBPCloseMacro.profile`,
+  `SuccinctCloseProposal.concretePayloadLiveCompactEndpointRelativeRmmBPCloseMacro_profile`,
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseLCADirectory.payload_length`,
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseLCADirectory.lcaCloseCosted_cost_le`,
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseLCADirectory.lcaCloseCosted_exact`,
