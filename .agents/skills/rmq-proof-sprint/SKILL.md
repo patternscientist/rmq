@@ -120,6 +120,13 @@ Helper lemmas, proposal docs, adapters, and blocker variants count only when
 they are immediately consumed by one of those targets or prove the target
 signature itself must change.
 
+When `docs/SUCCINCT_FINAL_PATH.md` names a theorem chain for the current
+succinct target, use that chain as the loop stop gate. A worker may stop only
+after closing its assigned named theorem/profile, after proving that named
+statement is impossible as stated, or after an external blocker. A new
+structure field, budget premise, adapter theorem, or "concrete builder remains"
+doc note is an iteration checkpoint, not loop completion.
+
 For C1 descriptor-select work, a component/profile surface whose exactness is
 still supplied by proof fields is not target closure. Fields such as
 `descriptor_some_exact`, `descriptor_none_exact`,
