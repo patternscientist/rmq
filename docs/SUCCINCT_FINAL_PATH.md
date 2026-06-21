@@ -462,6 +462,10 @@ middle interval by a constant number of charged reads plus bounded arithmetic.
 It must not be a direct scan over all interior blocks, a sparse-table payload
 with non-little-o space, a dense all-pairs table, or a recursive final RMQ
 claim hidden behind this C2 theorem.
+The current concrete construction plan is `docs/INTERIOR_NAVIGATOR_DESIGN.md`:
+a two-level sparse-table-style navigator over the shrunk block-minimum sequence,
+with local offset tables, a global macroblock table, and charged relative-summary
+reads for candidate comparison.
 
 The abstract `PayloadLiveBPRelativeRmmInteriorDirectory.profile` theorem is
 only an interface sanity check, not target closure. In particular,

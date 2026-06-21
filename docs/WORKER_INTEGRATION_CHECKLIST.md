@@ -334,9 +334,14 @@ For the succinct RMQ capstone:
   adopted option-1 interior theorem:
   `concreteBPRelativeRmmInteriorDirectory_profile`. A's construction should be
   a compact rmM/min-max-tree-style navigator over complete-block minimum
-  candidates. It may consume B's relative per-block summary table as leaves, but
-  it must not answer middle intervals by scanning all interior blocks. After
-  the interior profile lands, A should immediately consume it in
+  candidates, following `docs/INTERIOR_NAVIGATOR_DESIGN.md`. The current plan is
+  a two-level sparse-table-style navigator over the shrunk block-minimum
+  sequence: local offset tables, a global macroblock table, and charged
+  relative-summary reads for candidate comparison. It may consume B's relative
+  per-block summary table as leaves, but it must not answer middle intervals by
+  scanning all interior blocks or by using an uncharged `Array Int` value
+  accessor. Relative summary reads for the min/max/arg table cost `<= 4`.
+  After the interior profile lands, A should immediately consume it in
   `concretePayloadLiveRelativeRmmBPCloseMacro_profile`, and then in
   `concreteCompactBPCloseLCADirectory_profile`. Adding a field such as
   `semantic_merge_exact`, a hypothesis such as `hmerge`, an exact-but-linear
