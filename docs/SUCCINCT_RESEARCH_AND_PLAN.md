@@ -27,56 +27,80 @@ provides a concrete, payload-live, machine-word-bounded, unconditional
 `LittleOLinear` summary table for BP block min/max/arg data. That closes the
 old "summary envelope is only abstract" gap.
 
-The remaining close-side wall is therefore narrower and sharper: build the
-option-1 compact rmM/min-max-tree-style interior navigator over complete-block
-minimum candidates. The next positive component theorem is
-`concreteBPRelativeRmmInteriorDirectory_profile`, not another scan, dense table,
-or blocker catalog entry.
+Since that note was written, the close side has advanced further: the concrete
+compact close/LCA directory and the BP-native join have landed. The remaining
+wall is now rank/select-side, and more specifically `select false` over
+`shape.bpCode`. The old full
+`SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily` is still
+useful scaffold, but it is no longer the right object to make sacred: the
+canonical select-block payload stores absolute positions densely enough that it
+does not provide the needed `o(n)` witness. The capstone should consume a
+concrete false-only BP close-access witness:
+
+```lean
+selectCloseCosted idx  -- exact for bpCloseOfInorder? shape idx
+rankCloseCosted pos    -- exact for rankPrefix false shape.bpCode pos
+```
+
+This is not a new semantic burden. `bpCloseOfInorder?` is already proved to be
+`select false` over `shape.bpCode`; the burden is the compact payload-live
+locator for that select operation.
 
 ## Remaining Components
 
-The capstone splits into three concrete components.
+The capstone now splits into three concrete components, with C1 as the binding
+constraint.
 
-1. C1 descriptor-based select.
-   Replace the disproven shared aligned-word locator with a charged descriptor
-   that chooses the payload word, then runs in-word select.
+1. C1 compact false-select / close-access.
+   Replace the disproven shared aligned-word locator with a charged compact
+   locator that chooses the payload word for `select false shape.bpCode idx`,
+   then runs the existing in-word `RAM.selectBoolWord`.
 
 2. C2 concrete macro/micro BP close-LCA.
-   Replace abstract `macroCosted` with a real BP-excess/RMQ macro over block
-   summaries plus charged endpoint-fringe repair. The adopted subtarget is the
-   concrete interior rmM/min-max-tree navigator
-   `concreteBPRelativeRmmInteriorDirectory_profile`, consumed immediately by
-   `concretePayloadLiveRelativeRmmBPCloseMacro_profile`.
+   This is currently the strongest landed side of the construction: the compact
+   interior navigator and concrete compact close/LCA profile are available as
+   the close-side consumer. Further local-decoder hardening is allowed later,
+   but it is not the current capstone blocker.
 
 3. C3 final join.
-   Combine exact `shape.bpCode` payload length `2*n`, payload-live rank, C1,
-   C2, and the close-navigation join into a concrete family theorem with
-   `LittleOLinear overhead`, exact query erasure, bounded query cost, and the
-   lower-bound tie `EncodingLowerBound.logSlackLower n <= 2*n + overhead n`.
+   Combine exact `shape.bpCode` payload length `2*n`, payload-live rank-false,
+   C1 false-select/close access, C2 close/LCA, and the close-navigation join
+   into a concrete family theorem with `LittleOLinear overhead`, exact query
+   erasure, bounded query cost, and the lower-bound tie
+   `EncodingLowerBound.logSlackLower n <= 2*n + overhead n`.
 
 ## Canonical Constructions
 
 The project does not need a new data-structure invention. The likely winning
 path is to formalize known structures in the existing payload-live model.
 
-### C1: Select Descriptor
+### C1: Compact False-Select Locator
 
-Use a Clark/Vigna-style two-level select directory:
+Use a Clark/RRR/Vigna-style select directory specialized first to close
+parentheses:
 
 ```text
-coarse locator read
-local descriptor read
-charged word-choice inside the local descriptor
+coarse select-sample read
+compact locator / local descriptor read
+charged word-choice from the locator payload
 payload word read
-wordSelect
+RAM.selectBoolWord
 ```
 
 The exact constants can be loose. The important facts are:
 
-- every payload word used by `wordSelect` is machine-word bounded;
-- the descriptor computes the actual word containing the selected position;
-- the auxiliary descriptor payload is `o(n)`;
-- `selectCosted` erases to `Succinct.select`.
+- every payload word used by `RAM.selectBoolWord` is machine-word bounded;
+- the compact locator computes the actual word containing the selected close;
+- the auxiliary locator payload is `o(n)`;
+- `selectCloseCosted` erases to `bpCloseOfInorder? shape idx`.
+
+The existing `RAM.selectBoolWord` primitive should be reused before adding any
+new RAM primitive. It handles the final in-word select once the word is known.
+It does not solve the global locator problem by itself, and rank summaries alone
+do not invert an occurrence into a word index in constant time. Rank summaries
+can be reused for counted local counts or verification, but the route from
+`idx` to the selected payload word must be a real payload-live compact locator
+or dense/sparse select directory.
 
 ### C2: BP-Excess Macro
 
@@ -143,15 +167,18 @@ The likely novelty remains strong:
 
 ## Recommended Order
 
-1. C2 interior first: land
-   `concreteBPRelativeRmmInteriorDirectory_profile` for the option-1 compact
-   rmM/min-max-tree-style navigator over complete-block minimum candidates.
-2. Consume that in `concretePayloadLiveRelativeRmmBPCloseMacro_profile`, then
-   `concreteCompactBPCloseLCADirectory_profile`.
-3. C3 final join, including the lower-bound tie.
-4. C1 descriptor/select work should continue only if the final BP-native join
-   still needs a select-side gap closed; it should not displace the current C2
-   interior target.
+1. C1 compact false-select first: land a concrete payload-live close-select
+   locator profile whose query uses charged sample/descriptor reads, reads a
+   bounded BP payload word, calls `RAM.selectBoolWord`, proves
+   `bpCloseOfInorder?` exactness, and proves `LittleOLinear` auxiliary payload.
+2. Package rank-false plus close-select as the concrete `BPCloseAccessDirectory`
+   or equivalent false-only access witness. A generic conditional join is fine
+   as helper glue, but it is not a stop point without this witness.
+3. C3 final join, including the lower-bound tie. Consume the concrete access
+   witness and the existing concrete compact close/LCA directory to produce the
+   unconditional `2*n + o(n), O(1)` BP-native RMQ theorem.
+4. After the capstone, optionally generalize the false-only close-select witness
+   back to a full two-target rank/select family and harden the local BP decoder.
 
 For the next worker round, a useful branch must land a concrete component
 profile or a concrete construction consumed by such a profile. More negative

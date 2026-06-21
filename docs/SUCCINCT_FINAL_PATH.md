@@ -21,27 +21,79 @@ repository does not yet contain a concrete family witness inhabiting that
 structure. Treating the joined theorem as the final `2*n + o(n), O(1)` result
 without such a witness is an invalid stop.
 
-The next required target is therefore concrete and non-negotiable:
+The latest rank/select audit changes the target shape. The old two-level
+family is now a scaffold, not the sacred capstone interface: the canonical
+select-block table stores absolute positions densely enough that its payload is
+not the required `o(n)` witness. The final RMQ query uses only false-target BP
+operations:
+
+- `select false shape.bpCode idx`, transported through
+  `SuccinctSpace.select_false_bpCode_eq_bpCloseOfInorder?`;
+- `rank false shape.bpCode (answerClose + 1)`, transported through
+  `SuccinctSpace.bpCloseOfInorder?_rankFalse_succ`; and
+- the already concrete compact close/LCA directory.
+
+The next required target is therefore concrete and non-negotiable, but it should
+be false-only and payload-live rather than committed to the old full
+rank/select-family witness:
 
 ```lean
-def concreteTwoLevelPayloadLiveStoredWordRankSelectFamily :
-    SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
-      rankSuper rankBlock selectSuper selectBlock rankSelectCost := ...
+structure BPCloseAccessDirectory
+    (shape : Cartesian.CartesianShape) (overhead queryCost : Nat) where
+  payload : List Bool
+  payload_length_le_overhead : payload.length <= overhead
+  selectCloseCosted : Nat -> Costed (Option Nat)
+  rankCloseCosted : Nat -> Costed Nat
+  selectClose_cost_le :
+    forall idx, (selectCloseCosted idx).cost <= queryCost
+  rankClose_cost_le :
+    forall pos, (rankCloseCosted pos).cost <= queryCost
+  selectClose_exact :
+    forall idx,
+      (selectCloseCosted idx).erase =
+        SuccinctSpace.bpCloseOfInorder? shape idx
+  rankClose_exact :
+    forall pos,
+      (rankCloseCosted pos).erase =
+        Succinct.rankPrefix false shape.bpCode pos
+  read_words_length_le_machine : ...
+
+theorem concreteBPCloseAccessFamily_profile :
+    SuccinctSpace.LittleOLinear closeAccessOverhead /\
+      forall shape,
+        let access := concreteBPCloseAccessDirectory shape
+        access.payload.length <= closeAccessOverhead shape.size /\
+          (forall idx,
+            (access.selectCloseCosted idx).cost <= closeAccessQueryCost) /\
+          (forall pos,
+            (access.rankCloseCosted pos).cost <= closeAccessQueryCost) /\
+          (forall idx,
+            (access.selectCloseCosted idx).erase =
+              SuccinctSpace.bpCloseOfInorder? shape idx) /\
+          (forall pos,
+            (access.rankCloseCosted pos).erase =
+              Succinct.rankPrefix false shape.bpCode pos) /\
+          access.read_words_length_le_machine := ...
 
 theorem concreteBPNativeSuccinctRMQ_two_n_plus_o_constant_query_profile :
     -- the same payload length, LittleOLinear overhead, constant query, and
     -- exact valid-window erasure conclusions as the conditional join, with no
-    -- abstract rank/select family parameter
+    -- abstract rank/select family or close-access parameter
     ... := ...
 ```
 
-The family witness should assemble the existing canonical two-level
-rank/select builders over every `bits : List Bool`, discharge the word-size,
-sample-width, positivity, and payload-budget side conditions with
-machine-word-compatible parameters, and expose the resulting `LittleOLinear`
-overhead. The second theorem should be the one-line consumption of
-`SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
-at that witness.
+The close-access witness should assemble the existing rank-false machinery, the
+new compact false-select locator, and the concrete close/LCA directory. It
+should not hide behind an arbitrary `selectCloseCosted` field. The final theorem
+may still keep a generic conditional join as a reusable lemma, but worker
+success is the concrete access witness plus its consumption in the
+unconditional RMQ theorem.
+
+The final interface must not accept a vacuous fixed-shape space proof such as
+`LittleOLinear (fun _ => data.auxPayload.length)`. A valid close-access witness
+needs an overhead function of `n`, a proof of `LittleOLinear overhead`, and the
+explicit payload bound `payload.length <= overhead shape.size`. The final join
+pads payloads up to the reserved overhead and consumes that bound directly.
 
 ## Current Inputs
 
@@ -181,20 +233,28 @@ Do not close this target with a theorem over hypothetical operations unless the
 same round also supplies the concrete family instance that those operations read
 from.
 
-## Component 1: Descriptor-Based Select
+## Component 1: Compact False-Select Locator
 
 The current `blockIndex` hook is not enough. The final select component should
-let one local entry cover a bounded run of payload words by storing a small
-descriptor that chooses the payload word before running `wordSelect`.
+specialize first to `select false shape.bpCode`, since that is what the
+BP-native RMQ query actually consumes. A later general rank/select family can
+generalize the construction, but it is not the binding theorem.
+
+The final false-select component should let one local entry cover a bounded run
+of payload words by storing a compact descriptor that chooses the payload word
+before running `RAM.selectBoolWord`. The existing `selectBoolWord` primitive is
+the right in-word operation and should be reused before adding any new RAM
+primitive. It does not, by itself, locate the word containing the requested
+occurrence.
 
 Target query shape:
 
 ```text
-coarse locator read
-local descriptor read
-bounded word-choice primitive over descriptor payload
+coarse select-sample read
+compact locator / local descriptor read
+charged word-choice from the locator payload
 payload word read
-wordSelect
+RAM.selectBoolWord
 ```
 
 Do not revive the one-entry/one-aligned-word shortcut. The merged theorem
@@ -206,54 +266,61 @@ payload word. The sharper blocker
 rules out a shared local locator that reads one aligned payload word while
 serving selected bits in different chunks.
 
+Do not say "reuse rank summaries to locate the block" unless the construction
+also proves the actual locator. Rank summaries answer prefix counts at a known
+position; they are not an uncharged predecessor/select structure from an
+occurrence to a payload-word index. Rank summaries may be reused for validation,
+local counts, or side conditions, but the word-choice step must be backed by a
+payload-live compact locator or by a standard dense/sparse select directory with
+charged reads.
+
 The component should expose a surface equivalent to:
 
 ```lean
-structure DescriptorPayloadLiveStoredWordSelectData
-    (bits : List Bool) (overhead queryCost : Nat) where
+structure PayloadLiveBPSelectCloseData
+    (shape : Cartesian.CartesianShape) (overhead queryCost : Nat) where
   wordSize : Nat
   wordSize_pos : 0 < wordSize
   wordSize_le_machine :
-    wordSize <= SuccinctRankProposal.machineWordBits bits.length
+    wordSize <= SuccinctRankProposal.machineWordBits shape.bpCode.length
 
   auxPayload : List Bool
   auxPayload_length : auxPayload.length = overhead
 
-  selectCosted : Bool -> Nat -> Costed (Option Nat)
-  selectCosted_cost_le :
-    forall target occurrence,
-      (selectCosted target occurrence).cost <= queryCost
-  selectCosted_exact :
-    forall target occurrence,
-      (selectCosted target occurrence).erase =
-        Succinct.select target bits occurrence
+  selectCloseCosted : Nat -> Costed (Option Nat)
+  selectCloseCosted_cost_le :
+    forall idx, (selectCloseCosted idx).cost <= queryCost
+  selectCloseCosted_exact :
+    forall idx,
+      (selectCloseCosted idx).erase =
+        SuccinctSpace.bpCloseOfInorder? shape idx
 
   payload_word_length_le_machine :
     forall {word : List Bool},
-      List.Mem word (payloadWordsReadByQuery target occurrence) ->
-        word.length <= SuccinctRankProposal.machineWordBits bits.length
+      List.Mem word (payloadWordsReadByQuery idx) ->
+        word.length <= SuccinctRankProposal.machineWordBits shape.bpCode.length
 
   word_choice_exact :
-    forall target occurrence pos,
-      Succinct.select target bits occurrence = some pos ->
-        selectedPayloadWordIndex target occurrence = pos / wordSize
+    forall idx pos,
+      SuccinctSpace.bpCloseOfInorder? shape idx = some pos ->
+        selectedPayloadWordIndex idx = pos / wordSize
 ```
 
 The final theorem need not use exactly this structure name, but it must prove
 these facts for a concrete construction. A structure that merely stores
-`selectCosted` as a supplied function is only an interface and does not retire
-the select blocker.
+`selectCloseCosted` as a supplied function is only an interface and does not
+retire the select blocker.
 
 Known trap from the previous worker round: a local theorem such as
 `twoWordDescriptorTableRead_choice_exact_of_select_in_run` is useful but not
 enough. It is only a descriptor kernel unless the same loop consumes it in a
-global `selectCosted` construction that:
+global `selectCloseCosted` construction that:
 
-- chooses the descriptor from `(target, occurrence)`;
+- chooses the descriptor from `idx`;
 - proves the selected position lies in that descriptor's covered run, not just
   conditionally assumes it;
 - reads descriptor payload and payload words through counted operations;
-- proves exact erasure for all `target` and `occurrence`, not just for the
+- proves exact erasure for all indices, not just for the
   branch where the answer is already known to be in one local run;
 - proves the auxiliary descriptor payload is in a `LittleOLinear` budget; and
 - carries the machine-word side condition for every charged payload word.
@@ -261,39 +328,48 @@ global `selectCosted` construction that:
 Expected concrete builder theorem shape:
 
 ```lean
-theorem descriptorSelectDataOfChunks_profile
-    {bits : List Bool}
+theorem compactSelectCloseLocatorData_profile
+    (shape : Cartesian.CartesianShape)
     (hword : 0 < wordSize)
     (hmachine :
-      wordSize <= SuccinctRankProposal.machineWordBits bits.length)
+      wordSize <= SuccinctRankProposal.machineWordBits shape.bpCode.length)
     ... :
     let data :=
-      descriptorSelectDataOfChunks bits hword hmachine ...
-    data.auxPayload.length <= descriptorSelectOverhead bits.length /\
-      (forall target occurrence,
-        (data.selectCosted target occurrence).cost <= descriptorSelectQueryCost) /\
-      (forall target occurrence,
-        (data.selectCosted target occurrence).erase =
-          Succinct.select target bits occurrence) /\
-      ...
+      compactSelectCloseLocatorData shape hword hmachine ...
+    data.auxPayload.length <= compactSelectCloseOverhead shape.size /\
+      (forall idx,
+        (data.selectCloseCosted idx).cost <= compactSelectCloseQueryCost) /\
+      (forall idx,
+        (data.selectCloseCosted idx).erase =
+          SuccinctSpace.bpCloseOfInorder? shape idx) /\
+      data.read_words_length_le_machine /\
+      data.word_choice_exact
 ```
 
 Expected family theorem shape:
 
 ```lean
-theorem DescriptorPayloadLiveStoredWordSelectFamily
-    .constant_query_profile
-    (family : DescriptorPayloadLiveStoredWordSelectFamily overhead queryCost) :
+theorem PayloadLiveBPSelectCloseFamily.constant_query_profile
+    (family : PayloadLiveBPSelectCloseFamily overhead queryCost) :
     LittleOLinear overhead /\
-      forall bits,
-        ((family.component bits).auxPayload.length = overhead bits.length) /\
-        (forall target occurrence,
-          ((family.component bits).selectCosted target occurrence).cost <=
+      forall shape,
+        ((family.component shape).auxPayload.length <= overhead shape.size) /\
+        (forall idx,
+          ((family.component shape).selectCloseCosted idx).cost <=
             queryCost) /\
-        (forall target occurrence,
-          ((family.component bits).selectCosted target occurrence).erase =
-            Succinct.select target bits occurrence)
+        (forall idx,
+          ((family.component shape).selectCloseCosted idx).erase =
+            SuccinctSpace.bpCloseOfInorder? shape idx) /\
+        (family.component shape).read_words_length_le_machine
 ```
+
+Valid implementation strategies include a Clark/RRR-style sparse select sample
+plus a compact dense/sparse locator. The locator may reuse rank-side sample
+tables for counted local counts, but the proof must still show how `idx` routes
+to the selected payload word in constant charged work. A full general
+`select target bits occurrence` structure is acceptable only if the same branch
+instantiates the false-target BP close-select theorem and proves the payload
+budget of the actual built tables.
 
 ## Component 2: Concrete Macro/Micro BP Close-LCA
 
@@ -380,13 +456,14 @@ or nonnegative-excess invariant needed by the answer-close theorem.
 
 ## Component 3: Final Join
 
-After Components 1 and 2 land, the coordinator or join worker should combine:
+After Component 1 lands, the coordinator or join worker should combine:
 
 - exact `shape.bpCode` payload length `2*n`;
-- payload-live rank with bounded machine words;
-- descriptor-based payload-live select;
-- concrete macro/micro BP close-LCA;
-- the Worker A close-navigation join, adapted if necessary.
+- payload-live rank-false with bounded machine words;
+- compact payload-live select-false/close access;
+- the concrete compact macro/micro BP close-LCA directory;
+- the close-navigation join, adapted to the false-only access interface if
+  useful.
 
 Expected theorem shape:
 
@@ -599,35 +676,34 @@ carry the caveat rather than silently claiming bit-level local decoding.
 
 ```lean
 theorem concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
-    (family :
-      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
-        rankSuper rankBlock selectSuper selectBlock rankSelectCost) :
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily closeAccessOverhead closeAccessQueryCost) :
     SuccinctSpace.LittleOLinear
-        (concreteBPNativeSuccinctRMQOverhead family.overhead) /\
+        (concreteBPNativeSuccinctRMQOverhead accessFamily.overhead) /\
       forall n,
         EncodingLowerBound.logSlackLower n <=
           2 * n +
-            concreteBPNativeSuccinctRMQOverhead family.overhead n /\
+            concreteBPNativeSuccinctRMQOverhead accessFamily.overhead n /\
         (forall {shape},
           shape ∈ Cartesian.shapesOfSize n ->
-            (concreteBPNativeSuccinctRMQPayload family shape).length =
+            (concreteBPNativeSuccinctRMQPayload accessFamily shape).length =
               2 * n +
-                concreteBPNativeSuccinctRMQOverhead family.overhead n) /\
+                concreteBPNativeSuccinctRMQOverhead accessFamily.overhead n) /\
         (forall shape left right,
-          (concreteBPNativeSuccinctRMQQueryCosted family shape left right).cost <=
-            concreteBPNativeSuccinctRMQQueryCost rankSelectCost) /\
+          (concreteBPNativeSuccinctRMQQueryCosted
+            accessFamily shape left right).cost <=
+            concreteBPNativeSuccinctRMQQueryCost closeAccessQueryCost) /\
         -- exact built-query RMQ erasure for every valid representative window
         ... := ...
 ```
 
-This final join consumes the two-level rank/select payload-live family surface
-and the C2 concrete compact close directory. The current theorem is a
-built-payload join, not an arbitrary encoded-function wrapper: its payload is
-`shape.bpCode ++ aux`, with aux padded to the exact reserved overhead, and its
-query erases to the exact representative-array RMQ result. The remaining C1
-descriptor-select task is still the concrete compact instantiation of the
-rank/select family surface; do not claim that theorem retires the descriptor
-builder caveat by itself.
+This final join consumes the false-only close-access surface and the C2 concrete
+compact close directory. The current theorem is a built-payload join, not an
+arbitrary encoded-function wrapper: its payload is `shape.bpCode ++ aux`, with
+aux padded to the exact reserved overhead, and its query erases to the exact
+representative-array RMQ result. The remaining C1 task is still the concrete
+compact instantiation of the close-select access surface; do not claim that a
+conditional access theorem retires the compact locator caveat by itself.
 
 ## Concrete Close Contract
 
@@ -681,8 +757,8 @@ the worker report or scratch notes:
 
 ```text
 Overall goal:   final concrete BP-native succinct RMQ profile
-Current gap:    the concrete rank/select family witness, then the unconditional join
-Hard part:      discharging family-wide word-size/sample-width/budget side conditions
+Current gap:    concrete false-select close access, then the unconditional join
+Hard part:      routing idx to the selected BP payload word with charged o(n) locator payload
 This iteration: the largest coherent proof/construction step toward it
 Not doing:      adjacent helper/docs/blocker work that would leave it untouched
 ```
@@ -690,13 +766,14 @@ Not doing:      adjacent helper/docs/blocker work that would leave it untouched
 If the selected work does not directly reduce the distance to the final
 `2*n + o(n), O(1)` theorem, choose a harder target before editing. The loop is
 allowed to build helper lemmas, but only while immediately consuming them in
-the descriptor builder, BP macro/close component, or final join.
+the compact false-select locator, BP macro/close component, close-access
+witness, or final join.
 
 For this target, local wins are iteration checkpoints. A descriptor kernel,
 sample table, range-min/max summary table, local codebook, endpoint lemma, or
 adapter theorem should be followed in the same unattended loop by the next
-attempt to consume it in the concrete C1/C2 profile. Do not stop merely because
-the local layer is useful and verified.
+attempt to consume it in the concrete C1 profile, close-access witness, or final
+join. Do not stop merely because the local layer is useful and verified.
 
 The loop-stop audit is a gate, not a confession box. If the audit concludes the
 stop is invalid, the worker is not allowed to produce a final completion report;
@@ -714,32 +791,34 @@ iteration notes and used to choose the next repaired positive construction.
 Invalid stop points for this final path:
 
 - adding only a field such as `blockIndex`, `macroCosted`, `codeOfBlock`, or an
-  abstract `selectCosted`;
+  abstract `selectCosted`/`selectCloseCosted`;
 - adding only an adapter theorem while the concrete builder remains in the same
   owned file surface;
 - updating docs to say "concrete builder remains" and then stopping;
 - proving a profile over a hypothetical family with no concrete instance.
 - re-proving or restating the conditional
   `concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
-  without producing the concrete
-  `TwoLevelPayloadLiveStoredWordRankSelectFamily` witness that it consumes.
-- proving a descriptor-select component/profile surface whose exactness still
+  without producing the concrete false-only close-access witness that it consumes.
+- proving a compact-select/close-access component surface whose exactness still
   comes from proof fields such as `descriptor_some_exact`,
   `descriptor_none_exact`, `descriptor_word_choice_exact`, or a free
   `descriptorIndex`, while the compact payload builder remains missing.
 - leaving `descriptorIndex` or an analogous routing function as an uncharged
   arbitrary function that could hide search, predecessor, or oracle work.
 - producing a technically substantial theorem cluster that does not feed the
-  current descriptor-select, BP macro/close, or final-join target.
+  current compact false-select, close-access, BP macro/close, or final-join
+  target.
 - proving only a local descriptor-choice theorem, local range-min/max summary
   table, block codebook, or partial charged read profile while the C1/C2
   concrete component profile remains the next obvious step.
 - proving `twoWordDescriptor...` facts without a global descriptor-backed
-  `selectCosted_exact` theorem over all occurrences.
-- proving a global packed descriptor-backed `selectCosted_exact` while the only
-  descriptor-space theorem is an exact full per-occurrence local-delta-slot
+  `selectCloseCosted_exact` theorem over all close indices.
+- proving a global packed descriptor-backed `selectCloseCosted_exact` while the
+  only descriptor-space theorem is an exact full per-occurrence local-delta-slot
   payload length, with no `LittleOLinear` compact-budget theorem under the
   machine-word model.
+- proving a rank-summary exactness theorem and then claiming it locates select
+  queries without a charged occurrence-to-word locator.
 - proving `PayloadLiveBPRangeMinMaxSummaryTable...` facts without a concrete
   close-LCA answer theorem that consumes the summaries plus charged endpoint
   repair.

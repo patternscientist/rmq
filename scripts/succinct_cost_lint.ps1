@@ -5,16 +5,40 @@ $ErrorActionPreference = "Stop"
 # step for an aggregate reference computation. Keep any matches visible during
 # the real 2n+o(n), O(1) succinct-RMQ work.
 
-$matches = rg -n "Costed\.tickValue" RMQ/Core/Succinct.lean RMQ/Core/SuccinctSpace.lean
+$tickValueMatches = rg -n "Costed\.tickValue" RMQ/Core/Succinct.lean RMQ/Core/SuccinctSpace.lean
 
-if ($LASTEXITCODE -eq 1) {
-  exit 0
-}
-
-if ($LASTEXITCODE -ne 0) {
+if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 1) {
   exit $LASTEXITCODE
 }
 
-Write-Output "Potential asserted succinct-cost charges:"
-Write-Output $matches
-exit 1
+$littleOPattern = "LittleOLinear\s*\(\s*fun\s+_\s*=>"
+$littleOMatches = rg -n -U $littleOPattern `
+  RMQ/Core/SuccinctRankProposal.lean `
+  RMQ/Core/SuccinctSelectProposal.lean `
+  RMQ/Core/SuccinctCloseProposal.lean `
+  RMQ/Core/SuccinctFinal.lean
+
+if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 1) {
+  exit $LASTEXITCODE
+}
+
+$failed = $false
+
+if ($tickValueMatches) {
+  Write-Output "Potential asserted succinct-cost charges:"
+  Write-Output $tickValueMatches
+  $failed = $true
+}
+
+if ($littleOMatches) {
+  Write-Output "Potential vacuous constant-function LittleOLinear claims:"
+  Write-Output $littleOMatches
+  Write-Output "Use an overhead function of n plus an explicit payload.length <= overhead n bound."
+  $failed = $true
+}
+
+if ($failed) {
+  exit 1
+}
+
+exit 0

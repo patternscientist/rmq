@@ -30,7 +30,11 @@ if ($ax | Select-String -Pattern "sorryAx|ofReduceBool") {
   Fail "non-standard axiom in a load-bearing theorem:`n$ax"
 }
 
-# 4. Whitespace / leftover merge markers.
+# 4. Succinct frontier cost/space lints.
+& "$PSScriptRoot\succinct_cost_lint.ps1"
+if ($LASTEXITCODE -ne 0) { Fail "succinct_cost_lint.ps1 found issues" }
+
+# 5. Whitespace / leftover merge markers.
 git diff --check
 if ($LASTEXITCODE -ne 0) { Fail "git diff --check found issues" }
 

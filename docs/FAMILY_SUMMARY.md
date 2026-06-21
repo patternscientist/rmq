@@ -461,19 +461,36 @@ complete-block minimum candidates, prove its constant charged range-min witness
 and `LittleOLinear` payload profile, and then package that directory into the
 final close-navigation join; this is the path now consumed by
 `SuccinctCloseProposal.concreteCompactBPCloseLCADirectory_profile`.
+`SuccinctFinal.BPCloseAccessDirectory` and
+`SuccinctFinal.PayloadLiveBPCloseAccessFamily.constant_query_profile` now name
+the final false-only BP close-access surface: `selectCloseCosted` erases to
+`bpCloseOfInorder?`, `rankCloseCosted` erases to false-prefix rank over
+`shape.bpCode`, and the rank/select payload word reads carry machine-word
+bounds. The access surface now requires the non-vacuous space obligation as a
+field, `payload_length_le_overhead : payload.length <= overhead`; the final
+join consumes this bound by padding the close-access payload up to the reserved
+overhead instead of relying on an uninspected `LittleOLinear` claim.
+`SuccinctFinal.concreteBPNativeCloseAccessPayload_length_le_overhead` exposes
+the shape-indexed bound used by the capstone theorem.
 `SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
-is the first final BP-native built-query join over that concrete close
-directory: the payload is exactly `shape.bpCode` plus padded auxiliary
-rank/select and close payloads, the payload length is
+is the BP-native built-query join over that access family plus the concrete
+compact close/LCA directory: the payload is exactly `shape.bpCode` plus padded
+auxiliary close-access and close-directory payloads, the payload length is
 `2*n + concreteBPNativeSuccinctRMQOverhead ... n`, the combined overhead is
 `LittleOLinear`, the query cost is bounded by
-`3 * rankSelectCost + concreteCompactBPCloseQueryCost`, and erasure returns the
-exact representative-array RMQ answer. The theorem consumes the existing
-two-level payload-live rank/select family surface. It is therefore a conditional
-capstone, not the closed headline theorem: the repository still needs a
-concrete `TwoLevelPayloadLiveStoredWordRankSelectFamily` witness assembled from
-the canonical two-level rank/select builders, after which the unconditional
-BP-native `2*n + o(n), O(1)` theorem should be an application of this join.
+`3 * closeAccessCost + concreteCompactBPCloseQueryCost`, and erasure returns the
+exact representative-array RMQ answer. The old two-level rank/select family is
+kept only as an adapter via
+`SuccinctFinal.concreteBPNativeCloseAccessFamilyOfRankSelectFamily` and the
+compatibility corollary
+`SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile_of_rankSelectFamily`.
+The theorem remains conditional: the repository still needs Worker A's concrete
+compact false-select/close-access family witness inhabiting
+`PayloadLiveBPCloseAccessFamily` with both an `o(n)` overhead and the explicit
+`payload.length <= overhead shape.size` bound before the unconditional
+BP-native `2*n + o(n), O(1)` theorem is closed. `scripts/succinct_cost_lint.ps1`
+is wired into `scripts/gate.ps1` and now flags the audited anti-pattern
+`LittleOLinear (fun _ => ...)` in succinct proposal/final source files.
 `SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`
 sharpens the C2 blocker: a macro keyed only by endpoint block ids plus the
 existing endpoint block min/max summaries still cannot return exact answer
@@ -1619,19 +1636,22 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.queryBuiltCosted_cost_le`,
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.queryBuiltCosted_exact`,
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.two_n_plus_o_built_query_profile`.
-- `RMQ/Core/SuccinctFinal.lean` (12):
+- `RMQ/Core/SuccinctFinal.lean` (15):
+  `SuccinctFinal.PayloadLiveBPCloseAccessFamily.constant_query_profile`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQOverhead_littleO`,
   `SuccinctFinal.concreteBPNativeSelectCloseCosted_cost_le`,
   `SuccinctFinal.concreteBPNativeRankCloseCosted_cost_le`,
   `SuccinctFinal.concreteBPNativeLCACloseCosted_cost_le`,
   `SuccinctFinal.concreteBPNativeSelectCloseCosted_exact`,
   `SuccinctFinal.concreteBPNativeRankCloseCosted_exact`,
+  `SuccinctFinal.concreteBPNativeCloseAccessPayload_length_le_overhead`,
   `SuccinctFinal.concreteBPNativeLCACloseCosted_exact`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQAuxPayload_length`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQPayload_length`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQQueryCosted_cost_le`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQQueryCosted_exact`,
-  `SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`.
+  `SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile_of_rankSelectFamily`.
 - `RMQ/Core/SuccinctReduction.lean` (7):
   `Succinct.rmqBackendOfEulerParensBackend_queryBuilt`,
   `Succinct.lcaCandidateOfEulerParensBackend_eq_queryBuilt`,

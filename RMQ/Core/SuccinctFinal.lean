@@ -7,13 +7,13 @@ namespace SuccinctFinal
 open SuccinctSpace
 
 def concreteBPNativeSuccinctRMQOverhead
-    (rankSelectOverhead : Nat -> Nat) (n : Nat) : Nat :=
-  rankSelectOverhead (2 * n) +
+    (closeAccessOverhead : Nat -> Nat) (n : Nat) : Nat :=
+  closeAccessOverhead n +
     SuccinctCloseProposal.compactBPCloseOverhead n
 
 def concreteBPNativeSuccinctRMQQueryCost
-    (rankSelectCost : Nat) : Nat :=
-  3 * rankSelectCost +
+    (closeAccessCost : Nat) : Nat :=
+  3 * closeAccessCost +
     SuccinctCloseProposal.concreteCompactBPCloseQueryCost
 
 def concreteBPNativeRankSelectDirectory
@@ -32,18 +32,201 @@ def concreteBPNativeCloseDirectory
     SuccinctCloseProposal.ConcreteCompactBPCloseLCADirectory shape :=
   SuccinctCloseProposal.concreteCompactBPCloseLCADirectory shape
 
-def concreteBPNativeSuccinctRMQAuxPayload
+/--
+False-only access to the BP close/rank operations needed by the final
+BP-native RMQ join.
+
+This is the integration surface for the compact close-select construction:
+`selectCloseCosted` answers `bpCloseOfInorder?`, `rankCloseCosted` answers
+false-prefix rank on `shape.bpCode`, and the listed read words expose the
+machine-word side condition for access payload reads.
+-/
+structure BPCloseAccessDirectory
+    (shape : Cartesian.CartesianShape) (overhead queryCost : Nat) where
+  payload : List Bool
+  payload_length_le_overhead : payload.length <= overhead
+  selectCloseCosted : Nat -> Costed (Option Nat)
+  rankCloseCosted : Nat -> Costed Nat
+  selectClose_cost_le :
+    forall idx, (selectCloseCosted idx).cost <= queryCost
+  rankClose_cost_le :
+    forall pos, (rankCloseCosted pos).cost <= queryCost
+  selectClose_exact :
+    forall idx,
+      (selectCloseCosted idx).erase =
+        SuccinctSpace.bpCloseOfInorder? shape idx
+  rankClose_exact :
+    forall pos,
+      (rankCloseCosted pos).erase =
+        Succinct.rankPrefix false shape.bpCode pos
+  rankReadWords : List (List Bool)
+  selectReadWords : List (List Bool)
+  rank_read_words_length_le_machine :
+    forall {word : List Bool},
+      List.Mem word rankReadWords ->
+        word.length <=
+          SuccinctRankProposal.machineWordBits shape.bpCode.length
+  select_read_words_length_le_machine :
+    forall {word : List Bool},
+      List.Mem word selectReadWords ->
+        word.length <=
+          SuccinctRankProposal.machineWordBits shape.bpCode.length
+
+namespace BPCloseAccessDirectory
+
+end BPCloseAccessDirectory
+
+/-- Family form of the false-only BP close access surface. -/
+structure PayloadLiveBPCloseAccessFamily
+    (overhead : Nat -> Nat) (queryCost : Nat) where
+  directory :
+    forall shape : Cartesian.CartesianShape,
+      BPCloseAccessDirectory shape (overhead shape.size) queryCost
+  overhead_littleO : SuccinctSpace.LittleOLinear overhead
+
+namespace PayloadLiveBPCloseAccessFamily
+
+theorem constant_query_profile
+    {overhead : Nat -> Nat} {queryCost : Nat}
+    (family : PayloadLiveBPCloseAccessFamily overhead queryCost) :
+    SuccinctSpace.LittleOLinear overhead /\
+      forall shape : Cartesian.CartesianShape,
+        ((family.directory shape).payload.length <=
+          overhead shape.size) /\
+          (forall idx,
+            ((family.directory shape).selectCloseCosted idx).cost <=
+              queryCost) /\
+          (forall pos,
+            ((family.directory shape).rankCloseCosted pos).cost <=
+              queryCost) /\
+          (forall idx,
+            ((family.directory shape).selectCloseCosted idx).erase =
+              SuccinctSpace.bpCloseOfInorder? shape idx) /\
+          (forall pos,
+            ((family.directory shape).rankCloseCosted pos).erase =
+              Succinct.rankPrefix false shape.bpCode pos) /\
+          (forall {word : List Bool},
+            List.Mem word (family.directory shape).rankReadWords ->
+              word.length <=
+                SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          (forall {word : List Bool},
+            List.Mem word (family.directory shape).selectReadWords ->
+              word.length <=
+                SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+  constructor
+  · exact family.overhead_littleO
+  · intro shape
+    exact
+      ⟨(family.directory shape).payload_length_le_overhead,
+        (family.directory shape).selectClose_cost_le,
+        (family.directory shape).rankClose_cost_le,
+        (family.directory shape).selectClose_exact,
+        (family.directory shape).rankClose_exact,
+        (family.directory shape).rank_read_words_length_le_machine,
+        (family.directory shape).select_read_words_length_le_machine⟩
+
+end PayloadLiveBPCloseAccessFamily
+
+def rankSelectBPCloseAccessOverhead
+    {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
+    {rankSelectCost : Nat}
+    (family :
+      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
+        rankSuper rankBlock selectSuper selectBlock rankSelectCost) :
+    Nat -> Nat :=
+  fun n => family.overhead (2 * n)
+
+def concreteBPNativeCloseAccessDirectoryOfRankSelectFamily
     {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
     {rankSelectCost : Nat}
     (family :
       SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
         rankSuper rankBlock selectSuper selectBlock rankSelectCost)
     (shape : Cartesian.CartesianShape) :
+    BPCloseAccessDirectory shape
+      (rankSelectBPCloseAccessOverhead family shape.size) rankSelectCost where
+  payload := (concreteBPNativeRankSelectDirectory family shape).auxPayload
+  payload_length_le_overhead := by
+    have hbp : shape.bpCode.length = 2 * shape.size :=
+      Cartesian.CartesianShape.bpCode_length shape
+    have hlen :
+        (concreteBPNativeRankSelectDirectory family shape).auxPayload.length =
+          rankSelectBPCloseAccessOverhead family shape.size := by
+      simp [rankSelectBPCloseAccessOverhead,
+        concreteBPNativeRankSelectDirectory, hbp]
+    omega
+  selectCloseCosted := fun idx =>
+    (concreteBPNativeRankSelectDirectory family shape).selectQueryCosted
+      false idx
+  rankCloseCosted := fun pos =>
+    (concreteBPNativeRankSelectDirectory family shape).rankQueryCosted
+      false pos
+  selectClose_cost_le := by
+    intro idx
+    exact
+      (concreteBPNativeRankSelectDirectory family shape).selectQueryCosted_cost_le
+        false idx
+  rankClose_cost_le := by
+    intro pos
+    exact
+      (concreteBPNativeRankSelectDirectory family shape).rankQueryCosted_cost_le
+        false pos
+  selectClose_exact := by
+    intro idx
+    calc
+      ((concreteBPNativeRankSelectDirectory family shape).selectQueryCosted
+          false idx).erase =
+          Succinct.select false shape.bpCode idx := by
+        exact
+          SuccinctSpace.RankSelectDirectory.selectQueryCosted_erase
+            (concreteBPNativeRankSelectDirectory family shape) false idx
+      _ = SuccinctSpace.bpCloseOfInorder? shape idx := by
+        exact SuccinctSpace.select_false_bpCode_eq_bpCloseOfInorder? shape idx
+  rankClose_exact := by
+    intro pos
+    exact
+      SuccinctSpace.RankSelectDirectory.rankQueryCosted_erase
+        (concreteBPNativeRankSelectDirectory family shape) false pos
+  rankReadWords :=
+    (family.rankComponent shape.bpCode).bitWords.store.words.toList
+  selectReadWords :=
+    (family.selectComponent shape.bpCode).bitWords.store.words.toList
+  rank_read_words_length_le_machine := by
+    intro word hmem
+    exact
+      (family.rankComponent shape.bpCode).payload_word_length_le_machine
+        hmem
+  select_read_words_length_le_machine := by
+    intro word hmem
+    exact
+      (family.selectComponent shape.bpCode).payload_word_length_le_machine
+        hmem
+
+def concreteBPNativeCloseAccessFamilyOfRankSelectFamily
+    {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
+    {rankSelectCost : Nat}
+    (family :
+      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
+        rankSuper rankBlock selectSuper selectBlock rankSelectCost) :
+    PayloadLiveBPCloseAccessFamily
+      (rankSelectBPCloseAccessOverhead family) rankSelectCost where
+  directory shape :=
+    concreteBPNativeCloseAccessDirectoryOfRankSelectFamily family shape
+  overhead_littleO := family.overhead_littleO.comp_two_mul_arg
+
+def concreteBPNativeSuccinctRMQAuxPayload
+    {closeAccessOverhead : Nat -> Nat} {closeAccessCost : Nat}
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily
+        closeAccessOverhead closeAccessCost)
+    (shape : Cartesian.CartesianShape) :
     List Bool :=
-  let rankSelectDirectory :=
-    concreteBPNativeRankSelectDirectory family shape
+  let accessDirectory := accessFamily.directory shape
   let closeDirectory := concreteBPNativeCloseDirectory shape
-  rankSelectDirectory.auxPayload ++
+  accessDirectory.payload ++
+    List.replicate
+      (closeAccessOverhead shape.size - accessDirectory.payload.length)
+      false ++
     closeDirectory.payload ++
       List.replicate
         (SuccinctCloseProposal.compactBPCloseOverhead shape.size -
@@ -51,36 +234,32 @@ def concreteBPNativeSuccinctRMQAuxPayload
         false
 
 def concreteBPNativeSuccinctRMQPayload
-    {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
-    {rankSelectCost : Nat}
-    (family :
-      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
-        rankSuper rankBlock selectSuper selectBlock rankSelectCost)
+    {closeAccessOverhead : Nat -> Nat} {closeAccessCost : Nat}
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily
+        closeAccessOverhead closeAccessCost)
     (shape : Cartesian.CartesianShape) :
     List Bool :=
-  shape.bpCode ++ concreteBPNativeSuccinctRMQAuxPayload family shape
+  shape.bpCode ++
+    concreteBPNativeSuccinctRMQAuxPayload accessFamily shape
 
 def concreteBPNativeSelectCloseCosted
-    {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
-    {rankSelectCost : Nat}
-    (family :
-      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
-        rankSuper rankBlock selectSuper selectBlock rankSelectCost)
+    {closeAccessOverhead : Nat -> Nat} {closeAccessCost : Nat}
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily
+        closeAccessOverhead closeAccessCost)
     (shape : Cartesian.CartesianShape)
     (idx : Nat) : Costed (Option Nat) :=
-  (concreteBPNativeRankSelectDirectory family shape).selectQueryCosted
-    false idx
+  (accessFamily.directory shape).selectCloseCosted idx
 
 def concreteBPNativeRankCloseCosted
-    {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
-    {rankSelectCost : Nat}
-    (family :
-      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
-        rankSuper rankBlock selectSuper selectBlock rankSelectCost)
+    {closeAccessOverhead : Nat -> Nat} {closeAccessCost : Nat}
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily
+        closeAccessOverhead closeAccessCost)
     (shape : Cartesian.CartesianShape)
     (pos : Nat) : Costed Nat :=
-  (concreteBPNativeRankSelectDirectory family shape).rankQueryCosted
-    false pos
+  (accessFamily.directory shape).rankCloseCosted pos
 
 def concreteBPNativeLCACloseCosted
     (shape : Cartesian.CartesianShape)
@@ -89,17 +268,16 @@ def concreteBPNativeLCACloseCosted
     leftClose rightClose
 
 def concreteBPNativeSuccinctRMQQueryCosted
-    {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
-    {rankSelectCost : Nat}
-    (family :
-      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
-        rankSuper rankBlock selectSuper selectBlock rankSelectCost)
+    {closeAccessOverhead : Nat -> Nat} {closeAccessCost : Nat}
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily
+        closeAccessOverhead closeAccessCost)
     (shape : Cartesian.CartesianShape)
     (left right : Nat) : Costed (Option Nat) :=
-  Costed.bind (concreteBPNativeSelectCloseCosted family shape left)
+  Costed.bind (concreteBPNativeSelectCloseCosted accessFamily shape left)
     fun leftClose? =>
       Costed.bind
-        (concreteBPNativeSelectCloseCosted family shape (right - 1))
+        (concreteBPNativeSelectCloseCosted accessFamily shape (right - 1))
         fun rightClose? =>
           match leftClose?, rightClose? with
           | some leftClose, some rightClose =>
@@ -110,47 +288,40 @@ def concreteBPNativeSuccinctRMQQueryCosted
                   | some answerClose =>
                       Costed.map (fun closeRank => some (closeRank - 1))
                         (concreteBPNativeRankCloseCosted
-                          family shape (answerClose + 1))
+                          accessFamily shape (answerClose + 1))
                   | none => Costed.pure none
           | _, _ => Costed.pure none
 
 theorem concreteBPNativeSuccinctRMQOverhead_littleO
-    {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
-    {rankSelectCost : Nat}
-    (family :
-      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
-        rankSuper rankBlock selectSuper selectBlock rankSelectCost) :
+    {closeAccessOverhead : Nat -> Nat} {closeAccessCost : Nat}
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily
+        closeAccessOverhead closeAccessCost) :
     SuccinctSpace.LittleOLinear
-      (concreteBPNativeSuccinctRMQOverhead family.overhead) := by
+      (concreteBPNativeSuccinctRMQOverhead closeAccessOverhead) := by
   exact
-    (family.overhead_littleO.comp_two_mul_arg).add
+    accessFamily.overhead_littleO.add
       SuccinctCloseProposal.compactBPCloseOverhead_littleO
 
 theorem concreteBPNativeSelectCloseCosted_cost_le
-    {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
-    {rankSelectCost : Nat}
-    (family :
-      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
-        rankSuper rankBlock selectSuper selectBlock rankSelectCost)
+    {closeAccessOverhead : Nat -> Nat} {closeAccessCost : Nat}
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily
+        closeAccessOverhead closeAccessCost)
     (shape : Cartesian.CartesianShape) (idx : Nat) :
-    (concreteBPNativeSelectCloseCosted family shape idx).cost <=
-      rankSelectCost := by
-  exact
-    (concreteBPNativeRankSelectDirectory family shape).selectQueryCosted_cost_le
-      false idx
+    (concreteBPNativeSelectCloseCosted accessFamily shape idx).cost <=
+      closeAccessCost := by
+  exact (accessFamily.directory shape).selectClose_cost_le idx
 
 theorem concreteBPNativeRankCloseCosted_cost_le
-    {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
-    {rankSelectCost : Nat}
-    (family :
-      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
-        rankSuper rankBlock selectSuper selectBlock rankSelectCost)
+    {closeAccessOverhead : Nat -> Nat} {closeAccessCost : Nat}
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily
+        closeAccessOverhead closeAccessCost)
     (shape : Cartesian.CartesianShape) (pos : Nat) :
-    (concreteBPNativeRankCloseCosted family shape pos).cost <=
-      rankSelectCost := by
-  exact
-    (concreteBPNativeRankSelectDirectory family shape).rankQueryCosted_cost_le
-      false pos
+    (concreteBPNativeRankCloseCosted accessFamily shape pos).cost <=
+      closeAccessCost := by
+  exact (accessFamily.directory shape).rankClose_cost_le pos
 
 theorem concreteBPNativeLCACloseCosted_cost_le
     (shape : Cartesian.CartesianShape)
@@ -163,35 +334,37 @@ theorem concreteBPNativeLCACloseCosted_cost_le
     using hprofile.2.2.1 leftClose rightClose
 
 theorem concreteBPNativeSelectCloseCosted_exact
-    {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
-    {rankSelectCost : Nat}
-    (family :
-      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
-        rankSuper rankBlock selectSuper selectBlock rankSelectCost)
+    {closeAccessOverhead : Nat -> Nat} {closeAccessCost : Nat}
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily
+        closeAccessOverhead closeAccessCost)
     (shape : Cartesian.CartesianShape) (idx : Nat) :
-    (concreteBPNativeSelectCloseCosted family shape idx).erase =
+    (concreteBPNativeSelectCloseCosted accessFamily shape idx).erase =
       SuccinctSpace.bpCloseOfInorder? shape idx := by
-  calc
-    (concreteBPNativeSelectCloseCosted family shape idx).erase =
-        Succinct.select false shape.bpCode idx := by
-      exact
-        SuccinctSpace.RankSelectDirectory.selectQueryCosted_erase
-          (concreteBPNativeRankSelectDirectory family shape) false idx
-    _ = SuccinctSpace.bpCloseOfInorder? shape idx := by
-      exact SuccinctSpace.select_false_bpCode_eq_bpCloseOfInorder? shape idx
+  exact (accessFamily.directory shape).selectClose_exact idx
 
 theorem concreteBPNativeRankCloseCosted_exact
-    {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
-    {rankSelectCost : Nat}
-    (family :
-      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
-        rankSuper rankBlock selectSuper selectBlock rankSelectCost)
+    {closeAccessOverhead : Nat -> Nat} {closeAccessCost : Nat}
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily
+        closeAccessOverhead closeAccessCost)
     (shape : Cartesian.CartesianShape) (pos : Nat) :
-    (concreteBPNativeRankCloseCosted family shape pos).erase =
+    (concreteBPNativeRankCloseCosted accessFamily shape pos).erase =
       Succinct.rankPrefix false shape.bpCode pos := by
-  exact
-    SuccinctSpace.RankSelectDirectory.rankQueryCosted_erase
-      (concreteBPNativeRankSelectDirectory family shape) false pos
+  exact (accessFamily.directory shape).rankClose_exact pos
+
+theorem concreteBPNativeCloseAccessPayload_length_le_overhead
+    {closeAccessOverhead : Nat -> Nat} {closeAccessCost n : Nat}
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily
+        closeAccessOverhead closeAccessCost)
+    {shape : Cartesian.CartesianShape}
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n)) :
+    (accessFamily.directory shape).payload.length <=
+      closeAccessOverhead n := by
+  have hshapeSize := Cartesian.mem_shapesOfSize_shapeOfSize hshape
+  simpa [Cartesian.ShapeOfSize.size_eq hshapeSize] using
+    (accessFamily.directory shape).payload_length_le_overhead
 
 theorem concreteBPNativeLCACloseCosted_exact
     {shape : Cartesian.CartesianShape}
@@ -214,23 +387,20 @@ theorem concreteBPNativeLCACloseCosted_exact
     using hprofile.2.2.2.1 hlen hbound hleft hright hanswer
 
 theorem concreteBPNativeSuccinctRMQAuxPayload_length
-    {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
-    {rankSelectCost n : Nat}
-    (family :
-      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
-        rankSuper rankBlock selectSuper selectBlock rankSelectCost)
+    {closeAccessOverhead : Nat -> Nat} {closeAccessCost n : Nat}
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily
+        closeAccessOverhead closeAccessCost)
     {shape : Cartesian.CartesianShape}
     (hshape : List.Mem shape (Cartesian.shapesOfSize n)) :
-    (concreteBPNativeSuccinctRMQAuxPayload family shape).length =
-      concreteBPNativeSuccinctRMQOverhead family.overhead n := by
+    (concreteBPNativeSuccinctRMQAuxPayload accessFamily shape).length =
+      concreteBPNativeSuccinctRMQOverhead closeAccessOverhead n := by
   have hshapeSize := Cartesian.mem_shapesOfSize_shapeOfSize hshape
-  have hbp :
-      shape.bpCode.length = 2 * n :=
-    Cartesian.CartesianShape.bpCode_length_of_shapeOfSize hshapeSize
-  have hrank :
-      ((concreteBPNativeRankSelectDirectory family shape).auxPayload).length =
-        family.overhead (2 * n) := by
-    simp [concreteBPNativeRankSelectDirectory, hbp]
+  have haccessLe :
+      ((accessFamily.directory shape).payload).length <=
+        closeAccessOverhead n :=
+    concreteBPNativeCloseAccessPayload_length_le_overhead
+      accessFamily hshape
   have hcloseLe :
       (concreteBPNativeCloseDirectory shape).payload.length <=
         SuccinctCloseProposal.compactBPCloseOverhead n := by
@@ -240,44 +410,44 @@ theorem concreteBPNativeSuccinctRMQAuxPayload_length
       Cartesian.ShapeOfSize.size_eq hshapeSize] using hprofile.1
   simp [concreteBPNativeSuccinctRMQAuxPayload,
     concreteBPNativeSuccinctRMQOverhead,
-    Cartesian.ShapeOfSize.size_eq hshapeSize, hrank]
+    Cartesian.ShapeOfSize.size_eq hshapeSize]
   omega
 
 theorem concreteBPNativeSuccinctRMQPayload_length
-    {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
-    {rankSelectCost n : Nat}
-    (family :
-      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
-        rankSuper rankBlock selectSuper selectBlock rankSelectCost)
+    {closeAccessOverhead : Nat -> Nat} {closeAccessCost n : Nat}
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily
+        closeAccessOverhead closeAccessCost)
     {shape : Cartesian.CartesianShape}
     (hshape : List.Mem shape (Cartesian.shapesOfSize n)) :
-    (concreteBPNativeSuccinctRMQPayload family shape).length =
-      2 * n + concreteBPNativeSuccinctRMQOverhead family.overhead n := by
+    (concreteBPNativeSuccinctRMQPayload accessFamily shape).length =
+      2 * n + concreteBPNativeSuccinctRMQOverhead closeAccessOverhead n := by
   have hshapeSize := Cartesian.mem_shapesOfSize_shapeOfSize hshape
   have hbp :
       shape.bpCode.length = 2 * n :=
     Cartesian.CartesianShape.bpCode_length_of_shapeOfSize hshapeSize
   have haux :=
-    concreteBPNativeSuccinctRMQAuxPayload_length family hshape
+    concreteBPNativeSuccinctRMQAuxPayload_length accessFamily hshape
   simp [concreteBPNativeSuccinctRMQPayload, hbp, haux]
 
 theorem concreteBPNativeSuccinctRMQQueryCosted_cost_le
-    {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
-    {rankSelectCost : Nat}
-    (family :
-      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
-        rankSuper rankBlock selectSuper selectBlock rankSelectCost)
+    {closeAccessOverhead : Nat -> Nat} {closeAccessCost : Nat}
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily
+        closeAccessOverhead closeAccessCost)
     (shape : Cartesian.CartesianShape) (left right : Nat) :
-    (concreteBPNativeSuccinctRMQQueryCosted family shape left right).cost <=
-      concreteBPNativeSuccinctRMQQueryCost rankSelectCost := by
+    (concreteBPNativeSuccinctRMQQueryCosted
+        accessFamily shape left right).cost <=
+      concreteBPNativeSuccinctRMQQueryCost closeAccessCost := by
   unfold concreteBPNativeSuccinctRMQQueryCosted
   have hleft :=
-    concreteBPNativeSelectCloseCosted_cost_le family shape left
+    concreteBPNativeSelectCloseCosted_cost_le accessFamily shape left
   have hright :=
     concreteBPNativeSelectCloseCosted_cost_le
-      family shape (right - 1)
+      accessFamily shape (right - 1)
   cases hleftValue :
-      (concreteBPNativeSelectCloseCosted family shape left).value with
+      (concreteBPNativeSelectCloseCosted
+        accessFamily shape left).value with
   | none =>
       simp [Costed.bind, concreteBPNativeSuccinctRMQQueryCost,
         hleftValue]
@@ -285,7 +455,7 @@ theorem concreteBPNativeSuccinctRMQQueryCosted_cost_le
   | some leftClose =>
       cases hrightValue :
           (concreteBPNativeSelectCloseCosted
-            family shape (right - 1)).value with
+            accessFamily shape (right - 1)).value with
       | none =>
           simp [Costed.bind, concreteBPNativeSuccinctRMQQueryCost,
             hleftValue, hrightValue]
@@ -304,23 +474,22 @@ theorem concreteBPNativeSuccinctRMQQueryCosted_cost_le
           | some answerClose =>
               have hrank :=
                 concreteBPNativeRankCloseCosted_cost_le
-                  family shape (answerClose + 1)
+                  accessFamily shape (answerClose + 1)
               simp [Costed.bind, Costed.map,
                 concreteBPNativeSuccinctRMQQueryCost, hleftValue,
                 hrightValue, hlcaValue]
               omega
 
 theorem concreteBPNativeSuccinctRMQQueryCosted_exact
-    {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
-    {rankSelectCost n : Nat}
-    (family :
-      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
-        rankSuper rankBlock selectSuper selectBlock rankSelectCost)
+    {closeAccessOverhead : Nat -> Nat} {closeAccessCost n : Nat}
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily
+        closeAccessOverhead closeAccessCost)
     {shape : Cartesian.CartesianShape}
     (hshape : List.Mem shape (Cartesian.shapesOfSize n))
     {left len : Nat} (hlen : 0 < len) (hbound : left + len <= n) :
     (concreteBPNativeSuccinctRMQQueryCosted
-      family shape left (left + len)).erase =
+      accessFamily shape left (left + len)).erase =
         some (scanWindow shape.representative left len) := by
   have hshapeSize := Cartesian.mem_shapesOfSize_shapeOfSize hshape
   have hleftLt : left < n := by omega
@@ -350,17 +519,17 @@ theorem concreteBPNativeSuccinctRMQQueryCosted_exact
     ⟨answerClose, hanswerClose⟩
   have hselectLeft :
       (concreteBPNativeSelectCloseCosted
-          family shape left).value = some leftClose := by
+          accessFamily shape left).value = some leftClose := by
     have h :=
-      concreteBPNativeSelectCloseCosted_exact family shape left
+      concreteBPNativeSelectCloseCosted_exact accessFamily shape left
     simpa [Costed.erase, hleftClose] using h
   have hselectRight :
       (concreteBPNativeSelectCloseCosted
-          family shape (left + len - 1)).value =
+          accessFamily shape (left + len - 1)).value =
         some rightClose := by
     have h :=
       concreteBPNativeSelectCloseCosted_exact
-        family shape (left + len - 1)
+        accessFamily shape (left + len - 1)
     simpa [Costed.erase, hrightClose] using h
   have hlca :
       (concreteBPNativeLCACloseCosted
@@ -373,16 +542,16 @@ theorem concreteBPNativeSuccinctRMQQueryCosted_exact
     simpa [Costed.erase] using h
   have hrank :
       (concreteBPNativeRankCloseCosted
-          family shape (answerClose + 1)).value =
+          accessFamily shape (answerClose + 1)).value =
         scanWindow shape.representative left len + 1 := by
     have hrankExact :=
       concreteBPNativeRankCloseCosted_exact
-        family shape (answerClose + 1)
+        accessFamily shape (answerClose + 1)
     have hrankRecover :=
       SuccinctSpace.bpCloseOfInorder?_rankFalse_succ shape hanswerClose
     calc
       (concreteBPNativeRankCloseCosted
-          family shape (answerClose + 1)).value =
+          accessFamily shape (answerClose + 1)).value =
           Succinct.rankPrefix false shape.bpCode
             (answerClose + 1) := by
         simpa [Costed.erase] using hrankExact
@@ -397,36 +566,40 @@ theorem concreteBPNativeSuccinctRMQQueryCosted_exact
     hselectLeft, hselectRight, hlca, hrank, hrankSub]
 
 theorem concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
-    {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
-    {rankSelectCost : Nat}
-    (family :
-      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
-        rankSuper rankBlock selectSuper selectBlock rankSelectCost) :
+    {closeAccessOverhead : Nat -> Nat} {closeAccessCost : Nat}
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily
+        closeAccessOverhead closeAccessCost) :
     SuccinctSpace.LittleOLinear
-        (concreteBPNativeSuccinctRMQOverhead family.overhead) /\
+        (concreteBPNativeSuccinctRMQOverhead closeAccessOverhead) /\
       forall n : Nat,
         EncodingLowerBound.logSlackLower n <=
           2 * n +
-            concreteBPNativeSuccinctRMQOverhead family.overhead n /\
+            concreteBPNativeSuccinctRMQOverhead closeAccessOverhead n /\
         (forall {shape : Cartesian.CartesianShape},
           List.Mem shape (Cartesian.shapesOfSize n) ->
-            (concreteBPNativeSuccinctRMQPayload family shape).length =
+            (accessFamily.directory shape).payload.length <=
+              closeAccessOverhead n) /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            (concreteBPNativeSuccinctRMQPayload accessFamily shape).length =
               2 * n +
-                concreteBPNativeSuccinctRMQOverhead family.overhead n) /\
+                concreteBPNativeSuccinctRMQOverhead
+                  closeAccessOverhead n) /\
         (forall shape left right,
           (concreteBPNativeSuccinctRMQQueryCosted
-            family shape left right).cost <=
-              concreteBPNativeSuccinctRMQQueryCost rankSelectCost) /\
+            accessFamily shape left right).cost <=
+              concreteBPNativeSuccinctRMQQueryCost closeAccessCost) /\
         (forall {shape : Cartesian.CartesianShape},
           List.Mem shape (Cartesian.shapesOfSize n) ->
             forall {left len : Nat},
               0 < len ->
                 left + len <= n ->
                   (concreteBPNativeSuccinctRMQQueryCosted
-                    family shape left (left + len)).erase =
+                    accessFamily shape left (left + len)).erase =
                     some (scanWindow shape.representative left len)) := by
   constructor
-  · exact concreteBPNativeSuccinctRMQOverhead_littleO family
+  · exact concreteBPNativeSuccinctRMQOverhead_littleO accessFamily
   intro n
   constructor
   · have hbase :=
@@ -434,14 +607,64 @@ theorem concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
     omega
   constructor
   · intro shape hshape
-    exact concreteBPNativeSuccinctRMQPayload_length family hshape
+    exact concreteBPNativeCloseAccessPayload_length_le_overhead
+      accessFamily hshape
+  constructor
+  · intro shape hshape
+    exact concreteBPNativeSuccinctRMQPayload_length accessFamily hshape
   constructor
   · intro shape left right
     exact concreteBPNativeSuccinctRMQQueryCosted_cost_le
-      family shape left right
+      accessFamily shape left right
   · intro shape hshape left len hlen hbound
     exact concreteBPNativeSuccinctRMQQueryCosted_exact
-      family hshape hlen hbound
+      accessFamily hshape hlen hbound
+
+theorem concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile_of_rankSelectFamily
+    {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
+    {rankSelectCost : Nat}
+    (family :
+      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
+        rankSuper rankBlock selectSuper selectBlock rankSelectCost) :
+    SuccinctSpace.LittleOLinear
+        (concreteBPNativeSuccinctRMQOverhead
+          (rankSelectBPCloseAccessOverhead family)) /\
+      forall n : Nat,
+        EncodingLowerBound.logSlackLower n <=
+          2 * n +
+            concreteBPNativeSuccinctRMQOverhead
+              (rankSelectBPCloseAccessOverhead family) n /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            (concreteBPNativeCloseAccessFamilyOfRankSelectFamily family
+              |>.directory shape).payload.length <=
+              rankSelectBPCloseAccessOverhead family n) /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            (concreteBPNativeSuccinctRMQPayload
+              (concreteBPNativeCloseAccessFamilyOfRankSelectFamily family)
+              shape).length =
+              2 * n +
+                concreteBPNativeSuccinctRMQOverhead
+                  (rankSelectBPCloseAccessOverhead family) n) /\
+        (forall shape left right,
+          (concreteBPNativeSuccinctRMQQueryCosted
+            (concreteBPNativeCloseAccessFamilyOfRankSelectFamily family)
+            shape left right).cost <=
+              concreteBPNativeSuccinctRMQQueryCost rankSelectCost) /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            forall {left len : Nat},
+              0 < len ->
+                left + len <= n ->
+                  (concreteBPNativeSuccinctRMQQueryCosted
+                    (concreteBPNativeCloseAccessFamilyOfRankSelectFamily
+                      family)
+                    shape left (left + len)).erase =
+                    some (scanWindow shape.representative left len)) := by
+  exact
+    concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
+      (concreteBPNativeCloseAccessFamilyOfRankSelectFamily family)
 
 end SuccinctFinal
 end RMQ
