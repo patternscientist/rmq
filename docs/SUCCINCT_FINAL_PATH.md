@@ -42,6 +42,15 @@ The next required target is therefore concrete and non-negotiable: produce a
 read-backed false-only access family, then consume it in the read-backed final
 join.
 
+The select locator design is now pinned in
+`docs/SUCCINCT_SELECT_LOCATOR_ARCHITECTURE.md`.  The intended construction is a
+Clark/RRR-style sparse/dense inventory for false occurrences in `shape.bpCode`:
+super samples, explicit long-super exceptions, local samples inside short
+super intervals, explicit sparse-local exceptions, and a dense local path that
+reads at most two aligned payload words before calling `RAM.selectBoolWord`.
+This is the architecture workers should implement unless they prove the named
+sparse/dense target itself is misspecified.
+
 ```lean
 structure ReadBackedBPCloseAccessFamily
     (rankSuperOverhead rankBlockOverhead
@@ -235,10 +244,18 @@ from.
 
 ## Component 1: Compact False-Select Locator
 
-The current `blockIndex` hook is not enough. The final select component should
-specialize first to `select false shape.bpCode`, since that is what the
-BP-native RMQ query actually consumes. A later general rank/select family can
-generalize the construction, but it is not the binding theorem.
+The current `blockIndex` hook is not enough.  The old
+`TwoLevelPayloadLiveStoredWordSelectData` query shape is also probably too
+narrow for the final construction because it reads one local sample and one
+aligned payload word.  The final false-select locator needs branch-specific
+explicit reads for sparse cases and a dense local path that may read two
+aligned payload words.  Do not force the final proof through the old one-word
+shape if doing so reintroduces an uncharged locator.
+
+The final select component should specialize first to
+`select false shape.bpCode`, since that is what the BP-native RMQ query actually
+consumes. A later general rank/select family can generalize the construction,
+but it is not the binding theorem.
 
 The final false-select component should let one local entry cover a bounded run
 of payload words by storing a compact descriptor that chooses the payload word
@@ -363,13 +380,29 @@ theorem PayloadLiveBPSelectCloseFamily.constant_query_profile
         (family.component shape).read_words_length_le_machine
 ```
 
-Valid implementation strategies include a Clark/RRR-style sparse select sample
-plus a compact dense/sparse locator. The locator may reuse rank-side sample
-tables for counted local counts, but the proof must still show how `idx` routes
-to the selected payload word in constant charged work. A full general
-`select target bits occurrence` structure is acceptable only if the same branch
-instantiates the false-target BP close-select theorem and proves the payload
-budget of the actual built tables.
+The binding implementation strategy is the sparse/dense select inventory in
+`docs/SUCCINCT_SELECT_LOCATOR_ARCHITECTURE.md`.  At a high level:
+
+- sample every `w^2`-ish false occurrence, where
+  `w = machineWordBits shape.bpCode.length`;
+- store explicit positions for long super intervals;
+- inside short super intervals, sample every
+  `w / (log w)^2`-ish false occurrence;
+- store explicit positions for local intervals whose span exceeds one machine
+  word; and
+- answer the remaining dense local case by reading at most two aligned payload
+  words and using counted word-rank/select primitives.
+
+The locator may reuse rank-side sample tables for counted local counts, but the
+proof must still show how `idx` routes to the selected payload word in constant
+charged work. A full general `select target bits occurrence` structure is
+acceptable only if the same branch instantiates the false-target BP
+close-select theorem and proves the payload budget of the actual built tables.
+
+If the current read-backed close-access structure remains tied to
+`TwoLevelPayloadLiveStoredWordSelectData`, add a sibling close-access/final-join
+theorem for the sparse/dense false-select component instead of weakening the
+sparse/dense construction to fit the old one-word select record.
 
 ## Component 2: Concrete Macro/Micro BP Close-LCA
 

@@ -478,14 +478,14 @@ the shape-indexed bound used by the capstone theorem.
 is the BP-native built-query join over that weak access family plus the concrete
 compact close/LCA directory. `SuccinctFinal.ReadBackedBPCloseAccessDirectory`
 and `SuccinctFinal.ReadBackedBPCloseAccessFamily.constant_query_profile` are the
-hardened target: close-select and rank-close are derived from concrete two-level
+hardened two-level adapter: close-select and rank-close are derived from
 stored-word rank/select data rather than supplied as arbitrary functions.
 `SuccinctFinal.readBackedBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
-is the research-facing final-join corollary workers should consume once the
-compact read-backed C1 witness exists. Its payload is exactly `shape.bpCode`
-plus padded auxiliary close-access and close-directory payloads, the payload
-length is `2*n + concreteBPNativeSuccinctRMQOverhead ... n`, the combined
-overhead is `LittleOLinear`, the query cost is bounded by
+is the research-facing final-join corollary for that adapter. Its payload is
+exactly `shape.bpCode` plus padded auxiliary close-access and close-directory
+payloads, the payload length is
+`2*n + concreteBPNativeSuccinctRMQOverhead ... n`, the combined overhead is
+`LittleOLinear`, the query cost is bounded by
 `3 * closeAccessCost + concreteCompactBPCloseQueryCost`, and erasure returns the
 exact representative-array RMQ answer. The old two-level rank/select family is
 kept only as an adapter via
@@ -499,6 +499,14 @@ compact false-select/close-access family witness inhabiting
 `2*n + o(n), O(1)` theorem is closed. `scripts/succinct_cost_lint.ps1` is wired
 into `scripts/gate.ps1` and now flags the audited anti-pattern
 `LittleOLinear (fun _ => ...)` in succinct proposal/final source files.
+`docs/SUCCINCT_SELECT_LOCATOR_ARCHITECTURE.md` pins the C1 path to a
+Clark/RRR-style sparse/dense false-select inventory: super samples, explicit
+long-super exceptions, local samples, explicit sparse-local exceptions, and a
+dense local query that reads at most two aligned payload words before invoking
+the counted word-select primitive. This design may require a sibling
+close-access/final-join theorem instead of forcing the final construction
+through the current one-sample/one-word `TwoLevelPayloadLiveStoredWordSelectData`
+shape.
 `SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`
 sharpens the C2 blocker: a macro keyed only by endpoint block ids plus the
 existing endpoint block min/max summaries still cannot return exact answer
