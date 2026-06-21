@@ -613,6 +613,177 @@ theorem logLogSampledDirectoryOverhead_littleO (slots : Nat) :
         Nat.div_mul_le_self n (Nat.log2 n + 1)
     exact Nat.le_trans hfirst hdiv⟩
 
+theorem four_mul_add_eighteen_le_two_pow_add_five
+    (n : Nat) :
+    4 * n + 18 <= 2 ^ (n + 5) := by
+  induction n with
+  | zero =>
+      decide
+  | succ n ih =>
+      have hlinear : 4 * (n + 1) + 18 <= 2 * (4 * n + 18) := by
+        omega
+      have hpow := Nat.mul_le_mul_left 2 ih
+      have htwo :
+          2 * 2 ^ (n + 5) = 2 ^ (n + 1 + 5) := by
+        simp [Nat.pow_succ, Nat.mul_comm]
+      exact Nat.le_trans hlinear (by simpa [htwo] using hpow)
+
+private theorem scale_mul_log_succ_square_le_pow_of_large_log
+    {scale q : Nat}
+    (hlarge : 4 * scale + 16 <= q) :
+    scale * ((q + 1) * (q + 1)) <= 2 ^ q := by
+  exact
+    (Nat.strongRecOn q
+      (motive := fun q =>
+        4 * scale + 16 <= q ->
+          scale * ((q + 1) * (q + 1)) <= 2 ^ q)
+      (fun q ih hlarge => by
+    by_cases hstep : 4 * scale + 18 <= q
+    · have hprevLarge : 4 * scale + 16 <= q - 2 := by
+        omega
+      have hprev_lt : q - 2 < q := by
+        omega
+      have ihprev := ih (q - 2) hprev_lt hprevLarge
+      have hlin : q + 1 <= 2 * ((q - 2) + 1) := by
+        omega
+      have hsq :
+          (q + 1) * (q + 1) <=
+            2 * (2 * (((q - 2) + 1) * ((q - 2) + 1))) := by
+        have hmul := Nat.mul_le_mul hlin hlin
+        simpa [Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hmul
+      have hscaled :
+          scale * ((q + 1) * (q + 1)) <=
+            2 * (2 * (scale * (((q - 2) + 1) * ((q - 2) + 1)))) := by
+        have hmul := Nat.mul_le_mul_left scale hsq
+        simpa [Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hmul
+      have hpowMul :
+          2 * (2 * 2 ^ (q - 2)) = 2 ^ q := by
+        have hqeq : q = (q - 2) + 2 := by
+          omega
+        calc
+          2 * (2 * 2 ^ (q - 2)) = 2 ^ ((q - 2) + 2) := by
+            simp [Nat.pow_succ, Nat.mul_comm]
+          _ = 2 ^ q := by rw [← hqeq]
+      exact Nat.le_trans hscaled (by
+        have hmul := Nat.mul_le_mul_left 2
+          (Nat.mul_le_mul_left 2 ihprev)
+        simpa [hpowMul] using hmul)
+    · have hqUpper : q <= 4 * scale + 17 := by
+        omega
+      have hqSucc :
+          q + 1 <= 2 ^ (scale + 5) := by
+        exact Nat.le_trans (by omega)
+          (four_mul_add_eighteen_le_two_pow_add_five scale)
+      have hscale : scale <= 2 ^ scale := nat_le_two_pow scale
+      have hsq :
+          (q + 1) * (q + 1) <=
+            2 ^ (scale + 5) * 2 ^ (scale + 5) :=
+        Nat.mul_le_mul hqSucc hqSucc
+      have hmul :
+          scale * ((q + 1) * (q + 1)) <=
+            2 ^ scale *
+              (2 ^ (scale + 5) * 2 ^ (scale + 5)) :=
+        Nat.mul_le_mul hscale hsq
+      have hpows :
+          2 ^ scale *
+              (2 ^ (scale + 5) * 2 ^ (scale + 5)) =
+            2 ^ (3 * scale + 10) := by
+        calc
+          2 ^ scale *
+              (2 ^ (scale + 5) * 2 ^ (scale + 5)) =
+            (2 ^ scale * 2 ^ (scale + 5)) *
+              2 ^ (scale + 5) := by
+              rw [Nat.mul_assoc]
+          _ =
+            2 ^ (scale + (scale + 5)) * 2 ^ (scale + 5) := by
+              rw [← Nat.pow_add]
+          _ = 2 ^ ((scale + (scale + 5)) + (scale + 5)) := by
+              rw [← Nat.pow_add]
+          _ = 2 ^ (3 * scale + 10) := by
+              congr 1
+              omega
+      have hexp_le : 3 * scale + 10 <= q := by
+        omega
+      have hpow_le :
+          2 ^ (3 * scale + 10) <= 2 ^ q :=
+        Nat.pow_le_pow_right (by omega : 0 < 2) hexp_le
+      exact Nat.le_trans hmul (by simpa [hpows] using hpow_le))) hlarge
+
+theorem eventually_scale_log2_succ_square_le_self
+    (scale : Nat) :
+    exists threshold : Nat,
+      forall n : Nat, threshold <= n ->
+        scale * ((Nat.log2 n + 1) * (Nat.log2 n + 1)) <= n := by
+  refine ⟨2 ^ (4 * scale + 16), ?_⟩
+  intro n hn
+  have hlog : 4 * scale + 16 <= Nat.log2 n :=
+    log2_ge_of_pow_le hn
+  have hpow :
+      scale * ((Nat.log2 n + 1) * (Nat.log2 n + 1)) <=
+        2 ^ Nat.log2 n :=
+    scale_mul_log_succ_square_le_pow_of_large_log hlog
+  have hn_ne : n ≠ 0 := by
+    intro hzero
+    subst n
+    have hpos : 0 < 2 ^ (4 * scale + 16) := pow_two_pos _
+    omega
+  exact Nat.le_trans hpow (Nat.log2_self_le hn_ne)
+
+theorem eventually_scale_logLog_succ_square_le_log_succ
+    (scale : Nat) :
+    exists threshold : Nat,
+      forall n : Nat, threshold <= n ->
+        scale *
+            ((Nat.log2 (Nat.log2 n + 1) + 1) *
+              (Nat.log2 (Nat.log2 n + 1) + 1)) <=
+          Nat.log2 n + 1 := by
+  rcases eventually_scale_log2_succ_square_le_self scale with
+    ⟨logThreshold, hlogThreshold⟩
+  rcases eventually_scale_le_log2_succ logThreshold with
+    ⟨threshold, hthreshold⟩
+  exact ⟨threshold, by
+    intro n hn
+    exact hlogThreshold (Nat.log2 n + 1) (hthreshold n hn)⟩
+
+/--
+Canonical local-directory budget for two-level interior sparse tables over
+about `n / log n` block minima with `log log n`-bit offsets and another
+`log log n` factor for sparse-table levels.
+-/
+def logLogSquaredSampledDirectoryOverhead (slots : Nat) (n : Nat) : Nat :=
+  slots * ((n / (Nat.log2 n + 1)) *
+    ((Nat.log2 (Nat.log2 n + 1) + 1) *
+      (Nat.log2 (Nat.log2 n + 1) + 1)))
+
+theorem logLogSquaredSampledDirectoryOverhead_littleO (slots : Nat) :
+    LittleOLinear (logLogSquaredSampledDirectoryOverhead slots) := by
+  intro scale _hscale
+  rcases eventually_scale_logLog_succ_square_le_log_succ
+      (scale * slots) with
+    ⟨threshold, hthreshold⟩
+  exact ⟨threshold, by
+    intro n hn
+    have hlog :
+        (scale * slots) *
+            ((Nat.log2 (Nat.log2 n + 1) + 1) *
+              (Nat.log2 (Nat.log2 n + 1) + 1)) <=
+          Nat.log2 n + 1 :=
+      hthreshold n hn
+    have hmul :=
+      Nat.mul_le_mul_right (n / (Nat.log2 n + 1)) hlog
+    have hfirst :
+        scale *
+            (slots * ((n / (Nat.log2 n + 1)) *
+              ((Nat.log2 (Nat.log2 n + 1) + 1) *
+                (Nat.log2 (Nat.log2 n + 1) + 1)))) <=
+          (Nat.log2 n + 1) * (n / (Nat.log2 n + 1)) := by
+      simpa [Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hmul
+    have hdiv :
+        (Nat.log2 n + 1) * (n / (Nat.log2 n + 1)) <= n := by
+      simpa [Nat.mul_comm] using
+        Nat.div_mul_le_self n (Nat.log2 n + 1)
+    exact Nat.le_trans hfirst hdiv⟩
+
 /--
 Canonical Mathlib-free sampled-directory budget used by the succinct frontier.
 
