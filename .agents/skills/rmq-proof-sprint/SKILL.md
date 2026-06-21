@@ -227,6 +227,14 @@ the concrete witness/profile. A new blocker only justifies stopping if it comes
 from serious attempts at the named positive construction and shows the target
 signature itself must change.
 
+The loop-stop audit is a control-flow guard, not a disclosure checklist. If the
+audit says the stop is invalid, the worker must not send a final completion
+report. It must immediately begin the next loop iteration in the same turn,
+using the "next theorem/construction" named by the audit as the new iteration
+target. A final response that says "this should not be considered a valid stop"
+is itself a protocol failure unless it is followed by more implementation and
+verification before the final response.
+
 For unattended loops, keep interim updates concise and periodic, but reserve the
 final response for a valid stop condition. If stopping for target
 misspecification, report the concrete construction attempted, the minimal

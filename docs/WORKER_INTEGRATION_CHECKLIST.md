@@ -102,6 +102,11 @@ Loop stop audit:
 - Why stopping is valid under `docs/CODEX_AUTONOMY.md`:
 ```
 
+If this audit says the stop is invalid, do not send a final completion report.
+Start the next loop iteration immediately, using the obvious next theorem or
+construction named above. A report that admits the stop is invalid but stops
+anyway is a protocol failure, not a transparent partial success.
+
 If a worker did not run a full gate, that is acceptable only when they report
 the narrow check they did run and why a full check was deferred.
 
