@@ -961,3 +961,56 @@ instead of retiring the `blockCount²` machinery. Next: build the relative
 (logLog) summary table → instantiate the compact profile with **no budget
 premises** → join; retire the mirage; re-task the descriptor worker off the
 redundant select.
+
+## 2026-06-21 — WALL BROKEN for the summary component: unconditional relative o(n)
+
+Build green, trust clean (0 bad-axiom). Best round in a while. The team spun up
+dedicated relative-summary workers (`c2-relative-summary-budget`,
+`c2-relative-summary-large-regime`, `c2-relative-rmm-close-exactness`) and merged
+`134679b Add canonical relative BP summary profile` — exactly the one missing
+object from the last audit.
+
+**The summary-component o(n) wall is genuinely broken.**
+`concreteBPRelativeMinMaxArgSummaryTable_canonical` is a concrete table with
+**fixed** parameters (`superSlots := 16`, `blockSlots := 64`), and
+`concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile` takes
+**only a `shape` — no budget/satisfiability premise** — and proves:
+- `LittleOLinear (compactBPCloseSummaryPayloadOverhead …)` (o(n)); and
+- `table.payload.length ≤ compactBPCloseSummaryPayloadOverhead … shape.size`
+  **unconditionally** (the actual payload fits the o(n) budget); and
+- `summaryCosted` cost ≤ 4 (O(1)) returning (superblock **baseline** + block
+  **relative** min/max excess + arg local offset) — the genuine relative encoding
+  (absolute baseline sampled at superblock, relative deltas at block, charged to
+  the `logLogSampledDirectoryOverhead` term); and
+- machine-word bounds on all four sub-tables.
+
+This replaces the mirage with a real instantiable o(n)+exact+O(1) result for the
+summary — the repo's own `canonicalBlockRankEntries` relative technique, applied
+to BP excess, as recommended.
+
+**Precise remaining gap to the full close directory (then join):**
+1. **Universal micro table** (in-block argmin, `BlockMicroCodebook` at ½log n) —
+   its own unconditional o(n) (the `microSlots` term, currently 0 in the summary
+   profile) + wiring.
+2. **Navigation exactness** — combine superblock baseline + block relative + the
+   micro table into the exact close/RMQ answer (active:
+   `c2-relative-rmm-close-exactness`, 6 ahead / 3 dirty).
+3. **Full-directory compact profile, unconditional** — directory payload =
+   summary + micro ≤ all four compact terms, o(n) ∧ exact ∧ O(1), no premises.
+4. **C3 join** — BP + rank + select + close → one concrete `def : …Family` +
+   final bundled theorem with the `logSlackLower` tie.
+
+**Persisting concern (unchanged from last round): the mirage is still blessed,
+not retired.** `interiorBlockPairRanges` (the dense `blockCount²` macro) still has
+32 references in `SuccinctCloseProposal.lean`, and the non-instantiable
+`concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_sampled_profile` is
+**still in `axiom_check`**. Now that the relative path supersedes it, the dense
+guarded machinery and its axiom blessing should be **deleted** (retire-don't-bless;
+it is superseded dead code that overstates the trust-base inventory).
+
+**Verdict:** genuine milestone, not filler — the hardest-looking piece (the
+relative summary o(n)) is unconditionally done. Distance has shrunk from "no
+instantiable o(n) on the close side" to "summary done; micro table + navigation +
+full-directory composition + join remain." Next: retire the mirage; finish the
+micro table o(n) + navigation exactness; compose the full directory profile with
+no premises.
