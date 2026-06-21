@@ -1064,3 +1064,55 @@ the construction (document-instead-of-build), and (b) the un-retired `blockCount
 machinery continuing to grow. Distance unchanged in substance: the concrete O(1)
 range-min navigator is THE remaining close-directory object; summary o(n), decode
 correctness, guardrails, and parameter budget are all in place around it.
+
+## 2026-06-21 (later) — INTERIOR NAVIGATOR BUILT (worktree): O(1)+exact+o(n)+payload-live, per the design note
+
+Coordinator imported the integrated design note (`66e7f26 Import interior
+navigator design`) and split exactly as recommended: `c2-two-level-interior-navigator`
+(construction), `c2-interior-overhead-squared-loglog` (Worker-B arithmetic),
+`c2-interior-selector` (packaging). Coordinator + nav-worktree both build green;
+trust clean in both (0 bad-axiom, incl. the 4 new navigator entries).
+
+**The interior O(1) range-min navigator is genuinely built** (in
+`c2-two-level-interior-navigator`, sorry-free). `concreteBPRelativeRmmInteriorDirectory_profile`
+takes only `(shape)` + a large-regime threshold `2^128 ≤ shape.size` — **no
+answer-as-premise, no budget premise** — and proves, for
+`directory := concreteBPRelativeRmmInteriorDirectory shape`:
+- `LittleOLinear concreteBPRelativeRmmInteriorOverhead` (o(n));
+- `directory.payload.length ≤ …Overhead shape.size` (payload fits, unconditional);
+- `rangeMinCosted.cost ≤ const` (O(1));
+- `rangeMinCosted.erase = some (bpRangeMinExcess …, bpRangeArgMinPrefixPos …)`
+  (exact range-min **and** leftmost argmin);
+- all read words ≤ `machineWordBits` (payload-live).
+
+Built exactly per the design note: two-level sparse table = local offset tables
+(charged to **`logLogSquaredSampledDirectoryOverhead`**, R4) + global macroblock
+table (`logLogSampledDirectoryOverhead`) + summary point-access, composed; budget
+**derived**, not hypothesized. Independent of the mirage (its docstring: "no dense
+`interiorBlockPairRanges`"). This is the wall broken for the last hard close-side
+object.
+
+**Good governance, not churn:** the new stop-criterion (`9ef91a8`, rule 14a —
+"answer-as-premise bridges are not loop endpoints") is a relevant guardrail, and
+the navigator respects it (it is not answer-as-premise). Governance tracking real
+risk.
+
+**Caveats:**
+1. **Uncommitted + unmerged** — the navigator is +4585 *dirty* lines in one
+   worktree, not committed, not merged. The coordinator still must commit, merge,
+   and gate it; until then it is fragile (single uncommitted worktree).
+2. **Large-regime only** (`2^128 ≤ shape.size`): exactness, cost, and payload are
+   all under `hsize`; the small-n case is not covered by this theorem. Standard
+   asymptotic-regime split, acceptable, but a remaining piece for the headline.
+3. **Mirage still not retired** — `interiorBlockPairRanges` (dense `blockCount²`)
+   is still 34 refs and still in `axiom_check`. Now inexcusable: the replacement
+   exists and is provably independent. Delete it on merge.
+
+**Remaining to the headline:** commit+merge the navigator; compose navigator +
+endpoint micro/fringe into the full close directory profile (o(n)∧O(1)∧exact for
+arbitrary `[i,j]`); small-n regime; retire the mirage; then the C3 join
+(BP + rank + select + close → final bundled theorem with the `logSlackLower` tie).
+
+**Verdict:** strongest round yet — the precise object identified as the wall (the
+interior O(1) navigator) is built sorry-free, trust-clean, per design. Distance is
+now composition + join + cleanup, not a hard new construction.
