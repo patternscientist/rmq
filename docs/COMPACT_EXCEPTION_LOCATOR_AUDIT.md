@@ -190,3 +190,56 @@ recorded obstruction. Spin a successor record **only if** a downstream consumer
 turns out to depend on the padded long-super coordinate in its own type signature
 (not expected). The misspec is in the *builder/coordinate*, not in the record's
 existence, so the record can host the compact long-super fields.
+
+## Coordinator review — accepted corrections (folded in) + 2 refinements
+
+The coordinator reviewed this audit and added five corrections. **All five are
+valid and grounded; accept all.** Verified against the surfaces:
+
+1. **Own flag vector, not the same object.** The existing
+   `builtRelativeSplitFalseSelectFlagRankData` is over `…SparseFlagBits` (sparse
+   universe). Long-super needs its **own** flag bitvector **over super slots** and
+   its own rank directory. Reuse the *construction pattern*, not the object.
+2. **Separate rank-overhead accounting per directory.** The record currently
+   carries one `(rankSuperOverhead, rankBlockOverhead)` pair. With both
+   sparse-local and long-super exception directories present, each needs its own
+   rank-overhead term (or a wrapper hiding each). Do not force a shared overhead.
+   (Verify which directory the current pair serves; the per-directory-accounting
+   principle holds either way.)
+3. **Partial last super guard.** `exceptionRank*superStride+localOccurrence` can
+   address cells beyond `falseSelectOccurrenceCount` (last super is partial). Add
+   a top-level valid-occurrence guard (`q < falseSelectOccurrenceCount` /
+   `idx < shape.size` → `none`) **or** an option/sentinel table with a proof that
+   padded offsets erase to `none`. Prefer the cheap guard. (Precise boundary case
+   under-specified by A4/C3 above.)
+4. **Branch/flag consistency.** `superMarked superSlot ↔
+   longFlagBits[superSlot]? = some true`; else the query branches on the super
+   entry while ranking over a different flag universe.
+5. **Don't overstate sparse-local as "done."** The sparse-local compact
+   directory/profile exists and is reusable, but the end-to-end C1 builder still
+   must consume concrete built tables; "parity" ≠ "sparse-local closed to final
+   RMQ." (This audit's "already compact o(n)" is a *component*-level claim.)
+
+Two refinements on top of the corrections:
+
+- **R-a (avoid churning the working sparse path).** "Define a generic
+  `CompactExceptionDirectory`" must not become a refactor that destabilizes the
+  already-working sparse-local machinery. Preferred: add the long-super compact
+  directory *alongside* the existing sparse vectors/`FlagRankData`, mirroring them;
+  extract a shared record only if it demonstrably *reduces* proof burden.
+  (Consistent with AGENTS.md "keep changes scoped.")
+- **R-b (make correction 4 free).** "Is long" is already
+  `sparseDenseFalseSelectEntryIsMarked super`, and the long-flag vector is exactly
+  "which supers are marked." So **define `longFlagBits := superEntries.map
+  isMarked`**; then correction 4 is definitional (a one-line `getElem?`-map lemma)
+  rather than a co-construction obligation, removing flag/branch divergence by
+  construction.
+
+Also retain (not re-listed in the verdict but in this plan, and must reach worker
+prompts): the **machine-word / one-field-per-word** obligations (D1/D2) for every
+new flag/rank/compact table, and the single **explicit `LittleOLinear` sum with
+`payload.length ≤ overhead n`** (A5/A3).
+
+**Net:** convergence, not conflict. Hardened worker spec = this audit's chain +
+corrections 1–5 + refinements R-a/R-b. No broad redesign; localized interface
+hardening of the existing record.
