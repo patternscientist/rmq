@@ -180,6 +180,30 @@ structure SparseDenseFalseSelectCloseData
   -- concrete fixed-width payload decoders, not arbitrary answer fields.
 ```
 
+Checked caveat for the current Lean surface: the implemented
+`SparseDenseFalseSelectLocatorEntry` packs four equal-width fields into one
+charged word. The theorem
+`sparseDenseFalseSelectLocatorEntry_fullMachineField_not_word_bounded` proves
+that four full machine-width fields cannot satisfy the machine-word read bound,
+and the `SparseDenseFalseSelectCloseData.*_full_machine_field_impossible`
+theorems lift this to present super/local locator entries. A concrete
+dense-local builder should not try to store absolute BP base positions in that
+one-word entry. It should use relative fields, split locator fields across a
+bounded number of charged words, or prove that explicit exception payloads cover
+the affected intervals within the named little-o budget.
+
+Current positive repair surface:
+`FixedWidthSparseDenseFalseSelectDenseLocalEntryTable` splits dense-local fields
+across four independent fixed-width Nat tables and proves payload length,
+unit-cost per-field reads, and machine-word bounds from only
+`fieldWidth <= machineWordBits n`. The routing-helper theorem
+`sparseDenseFalseSelectBranchObligations_of_built_entries` then shows how to
+turn coverage facts, explicit-position segment facts, and dense-span
+certificates into the five `SparseDenseFalseSelectCloseData` exactness fields.
+The generated `builtLongExplicitFalseSelectBranch` is useful as a sanity check
+for long-explicit exactness, but it stores every false position and is not the
+compact final construction.
+
 Then define, not store as a field:
 
 ```lean
@@ -227,4 +251,3 @@ These are known traps, not milestones:
 
 The named positive target is the concrete sparse/dense false-select profile and
 its consumption by the final BP-native RMQ theorem.
-

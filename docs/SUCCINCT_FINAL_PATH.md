@@ -408,6 +408,21 @@ payload words. This is an interface and adapter layer only: a valid C1 stop must
 still construct the tables from `shape.bpCode` and prove the branch-exactness
 fields of `SparseDenseFalseSelectCloseData` from that construction.
 
+The current reconciled C1 socket has two useful but non-final ingredients.
+First, `sparseDenseFalseSelectLocatorEntry_fullMachineField_not_word_bounded`
+shows that the old one-word four-field locator entry cannot carry full
+machine-width fields while satisfying the machine-word read bound. Dense-local
+absolute-base data must therefore use relative fields, split fields, or another
+explicitly budgeted layout. The positive repair surface is
+`FixedWidthSparseDenseFalseSelectDenseLocalEntryTable`, which stores
+dense-local fields in four independently bounded fixed-width Nat tables.
+Second, `sparseDenseFalseSelectBranchObligations_of_built_entries` derives the
+five `SparseDenseFalseSelectCloseData` branch-exactness fields from concrete
+routing/coverage facts and dense-span certificates. Those facts are the next
+builder obligations, not final proof-only fields. `builtLongExplicitFalseSelectBranch`
+is retained only as a generated long-explicit sanity/reference branch; it stores
+all false positions and cannot witness `o(n)` auxiliary space.
+
 ## Component 2: Concrete Macro/Micro BP Close-LCA
 
 The merged close-navigation join is valuable, but the macro side must become

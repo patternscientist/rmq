@@ -4242,6 +4242,17 @@ def sparseDenseFalseSelectLocatorEntryWordWidth
     (fieldWidth : Nat) : Nat :=
   4 * fieldWidth
 
+theorem sparseDenseFalseSelectLocatorEntry_fullMachineField_not_word_bounded
+    (n : Nat) :
+    ¬ sparseDenseFalseSelectLocatorEntryWordWidth
+        (SuccinctRankProposal.machineWordBits n) <=
+      SuccinctRankProposal.machineWordBits n := by
+  intro hbounded
+  have hpos : 0 < SuccinctRankProposal.machineWordBits n :=
+    SuccinctRankProposal.machineWordBits_pos n
+  unfold sparseDenseFalseSelectLocatorEntryWordWidth at hbounded
+  omega
+
 def sparseDenseFalseSelectLocatorEntryToBitsLE
     (fieldWidth : Nat)
     (entry : SparseDenseFalseSelectLocatorEntry) :
@@ -4717,6 +4728,262 @@ theorem ofEntries_profile
   exact (ofEntries entries fieldWidth hbound).profile
 
 end FixedWidthSparseDenseFalseSelectLocatorEntryTable
+
+/--
+Dense-local false-select locator split across multiple payload words.
+
+This supplements the four-field packed locator above: dense local queries need
+the sampled occurrence and a relative/aligned view of the sampled position, but
+the builder must not be forced to fit every field into one machine word at once.
+-/
+structure SparseDenseFalseSelectDenseLocalEntry where
+  baseOccurrence : Nat
+  baseWordIndex : Nat
+  rankBefore : Nat
+  firstOffset : Nat
+
+namespace SparseDenseFalseSelectDenseLocalEntry
+
+def baseOccurrences
+    (entries : List SparseDenseFalseSelectDenseLocalEntry) : List Nat :=
+  entries.map (fun entry => entry.baseOccurrence)
+
+def baseWordIndices
+    (entries : List SparseDenseFalseSelectDenseLocalEntry) : List Nat :=
+  entries.map (fun entry => entry.baseWordIndex)
+
+def ranksBefore
+    (entries : List SparseDenseFalseSelectDenseLocalEntry) : List Nat :=
+  entries.map (fun entry => entry.rankBefore)
+
+def firstOffsets
+    (entries : List SparseDenseFalseSelectDenseLocalEntry) : List Nat :=
+  entries.map (fun entry => entry.firstOffset)
+
+end SparseDenseFalseSelectDenseLocalEntry
+
+def sparseDenseFalseSelectDenseLocalEntryMultiwordPayloadBudget
+    (entries : List SparseDenseFalseSelectDenseLocalEntry)
+    (fieldWidth : Nat) : Nat :=
+  entries.length * fieldWidth +
+    entries.length * fieldWidth +
+      entries.length * fieldWidth +
+        entries.length * fieldWidth
+
+/--
+Multiword fixed-width payload table for dense-local false-select entries.
+
+Each field is stored in its own fixed-width Nat table. Thus every payload word
+is bounded by `fieldWidth`, and `fieldWidth <= machineWordBits n` is sufficient
+for machine-word reads; no `4 * fieldWidth <= machineWordBits n` obligation is
+introduced.
+-/
+structure FixedWidthSparseDenseFalseSelectDenseLocalEntryTable
+    (entries : List SparseDenseFalseSelectDenseLocalEntry)
+    (fieldWidth : Nat) where
+  baseOccurrenceTable :
+    SuccinctSpace.FixedWidthNatTable
+      (SparseDenseFalseSelectDenseLocalEntry.baseOccurrences entries)
+      fieldWidth
+  baseWordIndexTable :
+    SuccinctSpace.FixedWidthNatTable
+      (SparseDenseFalseSelectDenseLocalEntry.baseWordIndices entries)
+      fieldWidth
+  rankBeforeTable :
+    SuccinctSpace.FixedWidthNatTable
+      (SparseDenseFalseSelectDenseLocalEntry.ranksBefore entries)
+      fieldWidth
+  firstOffsetTable :
+    SuccinctSpace.FixedWidthNatTable
+      (SparseDenseFalseSelectDenseLocalEntry.firstOffsets entries)
+      fieldWidth
+
+namespace FixedWidthSparseDenseFalseSelectDenseLocalEntryTable
+
+def payload
+    {entries : List SparseDenseFalseSelectDenseLocalEntry}
+    {fieldWidth : Nat}
+    (table :
+      FixedWidthSparseDenseFalseSelectDenseLocalEntryTable
+        entries fieldWidth) : List Bool :=
+  table.baseOccurrenceTable.payload ++
+    table.baseWordIndexTable.payload ++
+      table.rankBeforeTable.payload ++
+        table.firstOffsetTable.payload
+
+def ofEntries
+    (entries : List SparseDenseFalseSelectDenseLocalEntry)
+    (fieldWidth : Nat)
+    (hbound :
+      forall {entry : SparseDenseFalseSelectDenseLocalEntry},
+        List.Mem entry entries ->
+          entry.baseOccurrence < 2 ^ fieldWidth /\
+            entry.baseWordIndex < 2 ^ fieldWidth /\
+              entry.rankBefore < 2 ^ fieldWidth /\
+                entry.firstOffset < 2 ^ fieldWidth) :
+    FixedWidthSparseDenseFalseSelectDenseLocalEntryTable
+      entries fieldWidth where
+  baseOccurrenceTable :=
+    SuccinctSpace.FixedWidthNatTable.ofEntries
+      (SparseDenseFalseSelectDenseLocalEntry.baseOccurrences entries)
+      fieldWidth (by
+        intro value hmem
+        rcases List.mem_map.mp hmem with ⟨entry, hentry, rfl⟩
+        exact (hbound hentry).1)
+  baseWordIndexTable :=
+    SuccinctSpace.FixedWidthNatTable.ofEntries
+      (SparseDenseFalseSelectDenseLocalEntry.baseWordIndices entries)
+      fieldWidth (by
+        intro value hmem
+        rcases List.mem_map.mp hmem with ⟨entry, hentry, rfl⟩
+        exact (hbound hentry).2.1)
+  rankBeforeTable :=
+    SuccinctSpace.FixedWidthNatTable.ofEntries
+      (SparseDenseFalseSelectDenseLocalEntry.ranksBefore entries)
+      fieldWidth (by
+        intro value hmem
+        rcases List.mem_map.mp hmem with ⟨entry, hentry, rfl⟩
+        exact (hbound hentry).2.2.1)
+  firstOffsetTable :=
+    SuccinctSpace.FixedWidthNatTable.ofEntries
+      (SparseDenseFalseSelectDenseLocalEntry.firstOffsets entries)
+      fieldWidth (by
+        intro value hmem
+        rcases List.mem_map.mp hmem with ⟨entry, hentry, rfl⟩
+        exact (hbound hentry).2.2.2)
+
+theorem payload_length
+    {entries : List SparseDenseFalseSelectDenseLocalEntry}
+    {fieldWidth : Nat}
+    (table :
+      FixedWidthSparseDenseFalseSelectDenseLocalEntryTable
+        entries fieldWidth) :
+    table.payload.length =
+      sparseDenseFalseSelectDenseLocalEntryMultiwordPayloadBudget
+        entries fieldWidth := by
+  simp [payload,
+    sparseDenseFalseSelectDenseLocalEntryMultiwordPayloadBudget,
+    SparseDenseFalseSelectDenseLocalEntry.baseOccurrences,
+    SparseDenseFalseSelectDenseLocalEntry.baseWordIndices,
+    SparseDenseFalseSelectDenseLocalEntry.ranksBefore,
+    SparseDenseFalseSelectDenseLocalEntry.firstOffsets,
+    SuccinctSpace.FixedWidthNatTable.payload_length, Nat.add_assoc]
+
+def ReadProfile
+    {entries : List SparseDenseFalseSelectDenseLocalEntry}
+    {fieldWidth : Nat}
+    (table :
+      FixedWidthSparseDenseFalseSelectDenseLocalEntryTable
+        entries fieldWidth) : Prop :=
+  (forall i, (table.baseOccurrenceTable.readCosted i).cost <= 1 /\
+    (table.baseOccurrenceTable.readCosted i).erase =
+      (SparseDenseFalseSelectDenseLocalEntry.baseOccurrences entries)[i]?) /\
+  (forall i, (table.baseWordIndexTable.readCosted i).cost <= 1 /\
+    (table.baseWordIndexTable.readCosted i).erase =
+      (SparseDenseFalseSelectDenseLocalEntry.baseWordIndices entries)[i]?) /\
+  (forall i, (table.rankBeforeTable.readCosted i).cost <= 1 /\
+    (table.rankBeforeTable.readCosted i).erase =
+      (SparseDenseFalseSelectDenseLocalEntry.ranksBefore entries)[i]?) /\
+  (forall i, (table.firstOffsetTable.readCosted i).cost <= 1 /\
+    (table.firstOffsetTable.readCosted i).erase =
+      (SparseDenseFalseSelectDenseLocalEntry.firstOffsets entries)[i]?)
+
+theorem readProfile
+    {entries : List SparseDenseFalseSelectDenseLocalEntry}
+    {fieldWidth : Nat}
+    (table :
+      FixedWidthSparseDenseFalseSelectDenseLocalEntryTable
+        entries fieldWidth) :
+    table.ReadProfile := by
+  constructor
+  · intro i
+    exact ⟨table.baseOccurrenceTable.readCosted_cost_le_one i,
+      table.baseOccurrenceTable.readCosted_erase i⟩
+  · constructor
+    · intro i
+      exact ⟨table.baseWordIndexTable.readCosted_cost_le_one i,
+        table.baseWordIndexTable.readCosted_erase i⟩
+    · constructor
+      · intro i
+        exact ⟨table.rankBeforeTable.readCosted_cost_le_one i,
+          table.rankBeforeTable.readCosted_erase i⟩
+      · intro i
+        exact ⟨table.firstOffsetTable.readCosted_cost_le_one i,
+          table.firstOffsetTable.readCosted_erase i⟩
+
+def ReadWordsLengthLeMachine
+    {entries : List SparseDenseFalseSelectDenseLocalEntry}
+    {fieldWidth : Nat}
+    (table :
+      FixedWidthSparseDenseFalseSelectDenseLocalEntryTable
+        entries fieldWidth)
+    (n : Nat) : Prop :=
+  (forall {i : Nat} {word : List Bool},
+    table.baseOccurrenceTable.store.words[i]? = some word ->
+      word.length <= SuccinctRankProposal.machineWordBits n) /\
+  (forall {i : Nat} {word : List Bool},
+    table.baseWordIndexTable.store.words[i]? = some word ->
+      word.length <= SuccinctRankProposal.machineWordBits n) /\
+  (forall {i : Nat} {word : List Bool},
+    table.rankBeforeTable.store.words[i]? = some word ->
+      word.length <= SuccinctRankProposal.machineWordBits n) /\
+  (forall {i : Nat} {word : List Bool},
+    table.firstOffsetTable.store.words[i]? = some word ->
+      word.length <= SuccinctRankProposal.machineWordBits n)
+
+theorem readWordsLengthLeMachine
+    {entries : List SparseDenseFalseSelectDenseLocalEntry}
+    {fieldWidth n : Nat}
+    (table :
+      FixedWidthSparseDenseFalseSelectDenseLocalEntryTable
+        entries fieldWidth)
+    (hfield : fieldWidth <= SuccinctRankProposal.machineWordBits n) :
+    table.ReadWordsLengthLeMachine n := by
+  constructor
+  · intro i word hword
+    rw [table.baseOccurrenceTable.read_word_length_of_some hword]
+    exact hfield
+  · constructor
+    · intro i word hword
+      rw [table.baseWordIndexTable.read_word_length_of_some hword]
+      exact hfield
+    · constructor
+      · intro i word hword
+        rw [table.rankBeforeTable.read_word_length_of_some hword]
+        exact hfield
+      · intro i word hword
+        rw [table.firstOffsetTable.read_word_length_of_some hword]
+        exact hfield
+
+theorem profile
+    {entries : List SparseDenseFalseSelectDenseLocalEntry}
+    {fieldWidth : Nat}
+    (table :
+      FixedWidthSparseDenseFalseSelectDenseLocalEntryTable
+        entries fieldWidth) :
+    table.payload.length =
+        sparseDenseFalseSelectDenseLocalEntryMultiwordPayloadBudget
+          entries fieldWidth /\
+      table.ReadProfile := by
+  exact ⟨table.payload_length, table.readProfile⟩
+
+theorem ofEntries_profile
+    (entries : List SparseDenseFalseSelectDenseLocalEntry)
+    (fieldWidth : Nat)
+    (hbound :
+      forall {entry : SparseDenseFalseSelectDenseLocalEntry},
+        List.Mem entry entries ->
+          entry.baseOccurrence < 2 ^ fieldWidth /\
+            entry.baseWordIndex < 2 ^ fieldWidth /\
+              entry.rankBefore < 2 ^ fieldWidth /\
+                entry.firstOffset < 2 ^ fieldWidth) :
+    (ofEntries entries fieldWidth hbound).payload.length =
+        sparseDenseFalseSelectDenseLocalEntryMultiwordPayloadBudget
+          entries fieldWidth /\
+      (ofEntries entries fieldWidth hbound).ReadProfile := by
+  exact (ofEntries entries fieldWidth hbound).profile
+
+end FixedWidthSparseDenseFalseSelectDenseLocalEntryTable
 
 def fixedWidthLongSuperExplicitTable
     (entries : List Nat) (width : Nat)
@@ -5312,6 +5579,108 @@ def sparseDenseFalseSelectEntryIsMarked
     (entry : SparseDenseFalseSelectLocatorEntry) : Bool :=
   entry.spanClass != 0
 
+/-- Collect target-bit positions, continuing from an absolute base offset. -/
+def selectPositionsFrom
+    (target : Bool) : List Bool -> Nat -> List Nat
+  | [], _base => []
+  | bit :: rest, base =>
+      let tail := selectPositionsFrom target rest (base + 1)
+      if bit = target then base :: tail else tail
+
+/-- Collect all absolute positions whose bit equals `target`. -/
+def selectPositions (target : Bool) (bits : List Bool) : List Nat :=
+  selectPositionsFrom target bits 0
+
+theorem selectPositionsFrom_get?_eq_selectFrom
+    (target : Bool) (bits : List Bool) (base occurrence : Nat) :
+    (selectPositionsFrom target bits base)[occurrence]? =
+      RMQ.Succinct.selectFrom target bits base occurrence := by
+  induction bits generalizing base occurrence with
+  | nil =>
+      simp [selectPositionsFrom, RMQ.Succinct.selectFrom]
+  | cons bit rest ih =>
+      by_cases hbit : bit = target
+      · cases occurrence with
+        | zero =>
+            simp [selectPositionsFrom, RMQ.Succinct.selectFrom, hbit]
+        | succ occurrence =>
+            simp [selectPositionsFrom, RMQ.Succinct.selectFrom, hbit,
+              ih (base + 1) occurrence]
+      · simp [selectPositionsFrom, RMQ.Succinct.selectFrom, hbit,
+          ih (base + 1) occurrence]
+
+theorem selectPositions_get?_eq_select
+    (target : Bool) (bits : List Bool) (occurrence : Nat) :
+    (selectPositions target bits)[occurrence]? =
+      RMQ.Succinct.select target bits occurrence := by
+  simp [selectPositions, RMQ.Succinct.select,
+    selectPositionsFrom_get?_eq_selectFrom]
+
+def builtLongExplicitFalseSelectEntries
+    (shape : Cartesian.CartesianShape) : List Nat :=
+  selectPositions false shape.bpCode
+
+def builtLongExplicitFalseSelectSuperEntry :
+    SparseDenseFalseSelectLocatorEntry where
+  baseOccurrence := 0
+  basePosition := 0
+  spanClass := 1
+  pointer := 0
+
+def builtLongExplicitFalseSelectSuperEntries
+    (_shape : Cartesian.CartesianShape) :
+    List SparseDenseFalseSelectLocatorEntry :=
+  [builtLongExplicitFalseSelectSuperEntry]
+
+structure BuiltLongExplicitFalseSelectBranch
+    (shape : Cartesian.CartesianShape) where
+  superEntries : List SparseDenseFalseSelectLocatorEntry
+  longSuperExplicitEntries : List Nat
+
+def builtLongExplicitFalseSelectBranch
+    (shape : Cartesian.CartesianShape) :
+    BuiltLongExplicitFalseSelectBranch shape where
+  superEntries := builtLongExplicitFalseSelectSuperEntries shape
+  longSuperExplicitEntries := builtLongExplicitFalseSelectEntries shape
+
+theorem builtLongExplicitFalseSelectSuperEntry_marked :
+    sparseDenseFalseSelectEntryIsMarked
+      builtLongExplicitFalseSelectSuperEntry = true := by
+  simp [sparseDenseFalseSelectEntryIsMarked,
+    builtLongExplicitFalseSelectSuperEntry]
+
+theorem builtLongExplicitFalseSelectBranch_long_explicit_exact
+    (shape : Cartesian.CartesianShape) (q : Nat) :
+    (builtLongExplicitFalseSelectBranch shape).longSuperExplicitEntries[
+        builtLongExplicitFalseSelectSuperEntry.pointer +
+          (q - builtLongExplicitFalseSelectSuperEntry.baseOccurrence)]? =
+      RMQ.Succinct.select false shape.bpCode q := by
+  simp [builtLongExplicitFalseSelectBranch,
+    builtLongExplicitFalseSelectEntries,
+    builtLongExplicitFalseSelectSuperEntry,
+    selectPositions_get?_eq_select]
+
+theorem builtLongExplicitFalseSelectBranch_long_explicit_obligation
+    (shape : Cartesian.CartesianShape) (q : Nat)
+    (super : SparseDenseFalseSelectLocatorEntry)
+    (hsuper :
+      (builtLongExplicitFalseSelectBranch shape).superEntries[
+          q / sparseDenseFalseSelectSuperStride shape]? = some super)
+    (_hmarked : sparseDenseFalseSelectEntryIsMarked super = true) :
+    (builtLongExplicitFalseSelectBranch shape).longSuperExplicitEntries[
+        super.pointer + (q - super.baseOccurrence)]? =
+      RMQ.Succinct.select false shape.bpCode q := by
+  dsimp [builtLongExplicitFalseSelectBranch,
+    builtLongExplicitFalseSelectSuperEntries] at hsuper ⊢
+  cases hslot : q / sparseDenseFalseSelectSuperStride shape with
+  | zero =>
+      simp [hslot, builtLongExplicitFalseSelectSuperEntry] at hsuper
+      subst super
+      simp [builtLongExplicitFalseSelectEntries,
+        selectPositions_get?_eq_select]
+  | succ k =>
+      simp [hslot] at hsuper
+
 /--
 Dense local fallback for a sparse/dense select interval.
 
@@ -5387,6 +5756,510 @@ theorem denseTwoWordFalseSelectCosted_cost_le_five
         | some secondWord =>
             simp [Costed.bind, Costed.map, Costed.pure, hfirst, hchoose,
               hsecond]
+
+/-!
+### Built sparse/dense false-select routing helpers
+
+These helpers are the bridge between a concrete builder's entries and the
+branch-exactness fields of `SparseDenseFalseSelectCloseData`.  They keep the
+slot arithmetic explicit and leave only local construction facts for Worker A:
+coverage for missing slots, built explicit-position segments for exception
+payloads, and a dense local word certificate for the two-word fallback.
+-/
+
+def falseSelectSuperSlot (q superStride : Nat) : Nat :=
+  q / superStride
+
+def falseSelectLocalSlot
+    (entry : SparseDenseFalseSelectLocatorEntry)
+    (q localStride : Nat) : Nat :=
+  entry.pointer + ((q - entry.baseOccurrence) / localStride)
+
+def falseSelectPositions (bits : List Bool) (base count : Nat) :
+    List Nat :=
+  (List.range count).map fun offset =>
+    (RMQ.Succinct.select false bits (base + offset)).getD bits.length
+
+theorem falseSelectPositions_length
+    (bits : List Bool) (base count : Nat) :
+    (falseSelectPositions bits base count).length = count := by
+  simp [falseSelectPositions]
+
+theorem falseSelectPositions_lookup_exact
+    {bits : List Bool} {base count q pos : Nat}
+    (hlo : base <= q)
+    (hhi : q < base + count)
+    (hselect : RMQ.Succinct.select false bits q = some pos) :
+    (falseSelectPositions bits base count)[q - base]? =
+      RMQ.Succinct.select false bits q := by
+  have hoff : q - base < count := by omega
+  have hq : base + (q - base) = q := by omega
+  simp [falseSelectPositions, List.getElem?_map,
+    List.getElem?_range hoff, hq, hselect]
+
+theorem falseSelectExplicitTable_lookup_exact
+    {bits : List Bool} {pre post entries : List Nat}
+    {base count q pos : Nat}
+    (hentries :
+      entries =
+        pre ++ falseSelectPositions bits base count ++ post)
+    (hlo : base <= q)
+    (hhi : q < base + count)
+    (hselect : RMQ.Succinct.select false bits q = some pos) :
+    entries[pre.length + (q - base)]? =
+      RMQ.Succinct.select false bits q := by
+  rw [hentries]
+  rw [List.append_assoc]
+  rw [List.getElem?_append_right (by omega)]
+  have hidx : pre.length + (q - base) - pre.length = q - base := by
+    omega
+  rw [hidx]
+  have hoff : q - base < (falseSelectPositions bits base count).length := by
+    rw [falseSelectPositions_length]
+    omega
+  rw [List.getElem?_append_left hoff]
+  exact falseSelectPositions_lookup_exact hlo hhi hselect
+
+theorem falseSelectSuperEntry_lookup_exact
+    {entries : List SparseDenseFalseSelectLocatorEntry}
+    {fieldWidth q superStride : Nat}
+    (table :
+      FixedWidthSparseDenseFalseSelectLocatorEntryTable
+        entries fieldWidth)
+    {entry : SparseDenseFalseSelectLocatorEntry}
+    (hlookup :
+      entries[falseSelectSuperSlot q superStride]? = some entry) :
+    (table.readCosted (q / superStride)).erase = some entry := by
+  rw [FixedWidthSparseDenseFalseSelectLocatorEntryTable.readCosted_erase]
+  simpa [falseSelectSuperSlot] using hlookup
+
+theorem falseSelectLocalEntry_lookup_exact
+    {entries : List SparseDenseFalseSelectLocatorEntry}
+    {fieldWidth q localStride : Nat}
+    (table :
+      FixedWidthSparseDenseFalseSelectLocatorEntryTable
+        entries fieldWidth)
+    {super loc : SparseDenseFalseSelectLocatorEntry}
+    (hlookup :
+      entries[falseSelectLocalSlot super q localStride]? = some loc) :
+    (table.readCosted
+        (super.pointer +
+          ((q - super.baseOccurrence) / localStride))).erase =
+      some loc := by
+  rw [FixedWidthSparseDenseFalseSelectLocatorEntryTable.readCosted_erase]
+  simpa [falseSelectLocalSlot] using hlookup
+
+theorem falseSelectSuperEntry_missing_exact
+    {bits : List Bool}
+    {entries : List SparseDenseFalseSelectLocatorEntry}
+    {q superStride : Nat}
+    (hcovered :
+      forall pos,
+        RMQ.Succinct.select false bits q = some pos ->
+          exists entry,
+            entries[falseSelectSuperSlot q superStride]? = some entry)
+    (hmissing :
+      entries[falseSelectSuperSlot q superStride]? = none) :
+    RMQ.Succinct.select false bits q = none := by
+  cases hselect : RMQ.Succinct.select false bits q with
+  | none =>
+      rfl
+  | some pos =>
+      have hsome := hcovered pos hselect
+      cases hsome with
+      | intro entry hentry =>
+          rw [hmissing] at hentry
+          contradiction
+
+theorem falseSelectLocalEntry_missing_exact
+    {bits : List Bool}
+    {entries : List SparseDenseFalseSelectLocatorEntry}
+    {q localStride : Nat}
+    {super : SparseDenseFalseSelectLocatorEntry}
+    (hcovered :
+      forall pos,
+        RMQ.Succinct.select false bits q = some pos ->
+          exists loc,
+            entries[falseSelectLocalSlot super q localStride]? = some loc)
+    (hmissing :
+      entries[falseSelectLocalSlot super q localStride]? = none) :
+    RMQ.Succinct.select false bits q = none := by
+  cases hselect : RMQ.Succinct.select false bits q with
+  | none =>
+      rfl
+  | some pos =>
+      have hsome := hcovered pos hselect
+      cases hsome with
+      | intro loc hloc =>
+          rw [hmissing] at hloc
+          contradiction
+
+theorem longSuperExplicitEntry_lookup_exact
+    {bits : List Bool} {pre post entries : List Nat}
+    {q count : Nat}
+    {super : SparseDenseFalseSelectLocatorEntry}
+    (hptr : super.pointer = pre.length)
+    (hentries :
+      entries =
+        pre ++
+          falseSelectPositions bits super.baseOccurrence count ++ post)
+    (hlo : super.baseOccurrence <= q)
+    (hhi : q < super.baseOccurrence + count)
+    {pos : Nat}
+    (hselect : RMQ.Succinct.select false bits q = some pos) :
+    entries[super.pointer + (q - super.baseOccurrence)]? =
+      RMQ.Succinct.select false bits q := by
+  rw [hptr]
+  exact falseSelectExplicitTable_lookup_exact hentries hlo hhi hselect
+
+theorem sparseLocalExplicitEntry_lookup_exact
+    {bits : List Bool} {pre post entries : List Nat}
+    {q count : Nat}
+    {loc : SparseDenseFalseSelectLocatorEntry}
+    (hptr : loc.pointer = pre.length)
+    (hentries :
+      entries =
+        pre ++ falseSelectPositions bits loc.baseOccurrence count ++ post)
+    (hlo : loc.baseOccurrence <= q)
+    (hhi : q < loc.baseOccurrence + count)
+    {pos : Nat}
+    (hselect : RMQ.Succinct.select false bits q = some pos) :
+    entries[loc.pointer + (q - loc.baseOccurrence)]? =
+      RMQ.Succinct.select false bits q := by
+  rw [hptr]
+  exact falseSelectExplicitTable_lookup_exact hentries hlo hhi hselect
+
+structure FalseSelectAlignedBitWords
+    (bits : List Bool) (wordSize : Nat)
+    (bitWords : SuccinctSpace.BoundedPayloadWordStore bits wordSize) :
+    Prop where
+  get_eq_take_drop :
+    forall {i : Nat} {word : List Bool},
+      bitWords.store.words[i]? = some word ->
+        word = (bits.drop (i * wordSize)).take wordSize
+  get_some_of_mul_lt :
+    forall {i : Nat},
+      i * wordSize < bits.length ->
+        exists word, bitWords.store.words[i]? = some word
+
+theorem falseSelectAlignedBitWords_ofChunks
+    (bits : List Bool) {wordSize : Nat} (hword : 0 < wordSize) :
+    FalseSelectAlignedBitWords bits wordSize
+      (SuccinctSpace.BoundedPayloadWordStore.ofChunks bits hword) := by
+  exact {
+    get_eq_take_drop := by
+      intro i word hget
+      have hchunk :
+          (SuccinctSpace.chunkPayloadWords wordSize bits)[i]? =
+            some word := by
+        simpa [SuccinctSpace.BoundedPayloadWordStore.ofChunks,
+          Array.getElem?_toList] using hget
+      exact SuccinctSpace.chunkPayloadWords_get?_eq_take_drop hchunk
+    get_some_of_mul_lt := by
+      intro i hi
+      have h :=
+        SuccinctSpace.chunkPayloadWords_get?_some_of_mul_lt
+          (wordSize := wordSize) hword (payload := bits) (i := i) hi
+      cases h with
+      | intro word hchunk =>
+          exact Exists.intro word (by
+            simpa [SuccinctSpace.BoundedPayloadWordStore.ofChunks,
+              Array.getElem?_toList] using hchunk) }
+
+structure FalseSelectDenseLocalSpanCertificate
+    (bits : List Bool) (wordSize : Nat)
+    (bitWords : SuccinctSpace.BoundedPayloadWordStore bits wordSize)
+    (basePosition baseOccurrence q : Nat) where
+  firstWord : List Bool
+  first_read :
+    bitWords.store.words[basePosition / wordSize]? = some firstWord
+  first_branch_exact :
+    q - baseOccurrence <
+      RMQ.RAM.boolRankPrefix false firstWord firstWord.length -
+        RMQ.RAM.boolRankPrefix false firstWord
+          (basePosition - basePosition / wordSize * wordSize) ->
+      (RMQ.RAM.boolSelectInWord false firstWord
+        (RMQ.RAM.boolRankPrefix false firstWord
+            (basePosition - basePosition / wordSize * wordSize) +
+          (q - baseOccurrence))).map
+        (fun offset => basePosition / wordSize * wordSize + offset) =
+          RMQ.Succinct.select false bits q
+  second_branch_exact :
+    Not (q - baseOccurrence <
+      RMQ.RAM.boolRankPrefix false firstWord firstWord.length -
+        RMQ.RAM.boolRankPrefix false firstWord
+          (basePosition - basePosition / wordSize * wordSize)) ->
+      exists secondWord,
+        bitWords.store.words[basePosition / wordSize + 1]? =
+            some secondWord /\
+          (RMQ.RAM.boolSelectInWord false secondWord
+            (q - baseOccurrence -
+              (RMQ.RAM.boolRankPrefix false firstWord firstWord.length -
+                RMQ.RAM.boolRankPrefix false firstWord
+                  (basePosition -
+                    basePosition / wordSize * wordSize)))).map
+            (fun offset =>
+              (basePosition / wordSize + 1) * wordSize + offset) =
+              RMQ.Succinct.select false bits q
+
+set_option linter.unusedSimpArgs false in
+theorem denseTwoWordFalseSelectCosted_exact_of_local_span
+    {bits : List Bool} {wordSize : Nat}
+    {bitWords : SuccinctSpace.BoundedPayloadWordStore bits wordSize}
+    {basePosition baseOccurrence q : Nat}
+    (hcert :
+      FalseSelectDenseLocalSpanCertificate
+        bits wordSize bitWords basePosition baseOccurrence q) :
+    (denseTwoWordFalseSelectCosted
+      bitWords basePosition baseOccurrence q).erase =
+      RMQ.Succinct.select false bits q := by
+  by_cases hchoose :
+      q - baseOccurrence <
+        RMQ.RAM.boolRankPrefix false hcert.firstWord
+          hcert.firstWord.length -
+          RMQ.RAM.boolRankPrefix false hcert.firstWord
+            (basePosition - basePosition / wordSize * wordSize)
+  case pos =>
+    have hexact := hcert.first_branch_exact hchoose
+    simp [denseTwoWordFalseSelectCosted,
+      SuccinctSpace.PayloadWordStore.readWordCosted,
+      RMQ.RAM.readArray?, Costed.bind, Costed.map,
+      Costed.pure, Costed.erase, RMQ.RAM.Exec.toCosted,
+      hcert.first_read, hchoose, hexact]
+  case neg =>
+    have hsecond := hcert.second_branch_exact hchoose
+    cases hsecond with
+    | intro secondWord hpair =>
+        cases hpair with
+        | intro hread hexact =>
+            simp [denseTwoWordFalseSelectCosted,
+              SuccinctSpace.PayloadWordStore.readWordCosted,
+              RMQ.RAM.readArray?, Costed.bind, Costed.map,
+              Costed.pure, Costed.erase, RMQ.RAM.Exec.toCosted,
+              hcert.first_read, hchoose, hread, hexact]
+
+structure SparseDenseFalseSelectBranchObligations
+    (shape : Cartesian.CartesianShape)
+    (wordSize superStride localStride : Nat)
+    (superEntries : List SparseDenseFalseSelectLocatorEntry)
+    (longSuperExplicitEntries : List Nat)
+    (localEntries : List SparseDenseFalseSelectLocatorEntry)
+    (sparseLocalExplicitEntries : List Nat)
+    (bitWords :
+      SuccinctSpace.BoundedPayloadWordStore shape.bpCode wordSize) :
+    Prop where
+  super_missing_exact :
+    forall q,
+      superEntries[q / superStride]? = none ->
+        RMQ.Succinct.select false shape.bpCode q = none
+  long_explicit_exact :
+    forall q super,
+      superEntries[q / superStride]? = some super ->
+      sparseDenseFalseSelectEntryIsMarked super = true ->
+        longSuperExplicitEntries[
+            super.pointer + (q - super.baseOccurrence)]? =
+          RMQ.Succinct.select false shape.bpCode q
+  local_missing_exact :
+    forall q super,
+      superEntries[q / superStride]? = some super ->
+      sparseDenseFalseSelectEntryIsMarked super = false ->
+      localEntries[
+          super.pointer +
+            ((q - super.baseOccurrence) / localStride)]? = none ->
+        RMQ.Succinct.select false shape.bpCode q = none
+  sparse_explicit_exact :
+    forall q super loc,
+      superEntries[q / superStride]? = some super ->
+      sparseDenseFalseSelectEntryIsMarked super = false ->
+      localEntries[
+          super.pointer +
+            ((q - super.baseOccurrence) / localStride)]? = some loc ->
+      sparseDenseFalseSelectEntryIsMarked loc = true ->
+        sparseLocalExplicitEntries[
+            loc.pointer + (q - loc.baseOccurrence)]? =
+          RMQ.Succinct.select false shape.bpCode q
+  dense_exact :
+    forall q super loc,
+      superEntries[q / superStride]? = some super ->
+      sparseDenseFalseSelectEntryIsMarked super = false ->
+      localEntries[
+          super.pointer +
+            ((q - super.baseOccurrence) / localStride)]? = some loc ->
+      sparseDenseFalseSelectEntryIsMarked loc = false ->
+        (denseTwoWordFalseSelectCosted
+          bitWords loc.basePosition loc.baseOccurrence q).erase =
+          RMQ.Succinct.select false shape.bpCode q
+
+theorem sparseDenseFalseSelectBranchObligations_of_built_entries
+    {shape : Cartesian.CartesianShape}
+    {wordSize superStride localStride : Nat}
+    {superEntries : List SparseDenseFalseSelectLocatorEntry}
+    {longSuperExplicitEntries : List Nat}
+    {localEntries : List SparseDenseFalseSelectLocatorEntry}
+    {sparseLocalExplicitEntries : List Nat}
+    {bitWords :
+      SuccinctSpace.BoundedPayloadWordStore shape.bpCode wordSize}
+    (hsuperCovered :
+      forall q pos,
+        RMQ.Succinct.select false shape.bpCode q = some pos ->
+          exists super,
+            superEntries[falseSelectSuperSlot q superStride]? =
+              some super)
+    (hlongCover :
+      forall q super,
+        superEntries[falseSelectSuperSlot q superStride]? = some super ->
+        sparseDenseFalseSelectEntryIsMarked super = true ->
+          exists count, exists pre, exists post, exists pos,
+            super.pointer = pre.length /\
+            longSuperExplicitEntries =
+              pre ++
+                falseSelectPositions shape.bpCode
+                  super.baseOccurrence count ++ post /\
+            super.baseOccurrence <= q /\
+            q < super.baseOccurrence + count /\
+            RMQ.Succinct.select false shape.bpCode q = some pos)
+    (hlocalCovered :
+      forall q super pos,
+        superEntries[falseSelectSuperSlot q superStride]? = some super ->
+        sparseDenseFalseSelectEntryIsMarked super = false ->
+        RMQ.Succinct.select false shape.bpCode q = some pos ->
+          exists loc,
+            localEntries[falseSelectLocalSlot super q localStride]? =
+              some loc)
+    (hsparseCover :
+      forall q super loc,
+        superEntries[falseSelectSuperSlot q superStride]? = some super ->
+        sparseDenseFalseSelectEntryIsMarked super = false ->
+        localEntries[falseSelectLocalSlot super q localStride]? =
+          some loc ->
+        sparseDenseFalseSelectEntryIsMarked loc = true ->
+          exists count, exists pre, exists post, exists pos,
+            loc.pointer = pre.length /\
+            sparseLocalExplicitEntries =
+              pre ++
+                falseSelectPositions shape.bpCode
+                  loc.baseOccurrence count ++ post /\
+            loc.baseOccurrence <= q /\
+            q < loc.baseOccurrence + count /\
+            RMQ.Succinct.select false shape.bpCode q = some pos)
+    (hdenseCert :
+      forall q super loc,
+        superEntries[falseSelectSuperSlot q superStride]? = some super ->
+        sparseDenseFalseSelectEntryIsMarked super = false ->
+        localEntries[falseSelectLocalSlot super q localStride]? =
+          some loc ->
+        sparseDenseFalseSelectEntryIsMarked loc = false ->
+          FalseSelectDenseLocalSpanCertificate
+            shape.bpCode wordSize bitWords
+            loc.basePosition loc.baseOccurrence q) :
+    SparseDenseFalseSelectBranchObligations
+      shape wordSize superStride localStride superEntries
+      longSuperExplicitEntries localEntries sparseLocalExplicitEntries
+      bitWords := by
+  exact {
+    super_missing_exact := by
+      intro q hmissing
+      exact
+        falseSelectSuperEntry_missing_exact
+          (bits := shape.bpCode) (entries := superEntries)
+          (q := q) (superStride := superStride)
+          (fun pos hselect => hsuperCovered q pos hselect)
+          (by simpa [falseSelectSuperSlot] using hmissing)
+    long_explicit_exact := by
+      intro q super hsuper hmark
+      have hslot :
+          superEntries[falseSelectSuperSlot q superStride]? =
+            some super := by
+        simpa [falseSelectSuperSlot] using hsuper
+      have hcover := hlongCover q super hslot hmark
+      cases hcover with
+      | intro count hcover =>
+          cases hcover with
+          | intro pre hcover =>
+              cases hcover with
+              | intro post hcover =>
+                  cases hcover with
+                  | intro pos hcover =>
+                      cases hcover with
+                      | intro hptr hcover =>
+                          cases hcover with
+                          | intro hentries hcover =>
+                              cases hcover with
+                              | intro hlo hcover =>
+                                  cases hcover with
+                                  | intro hhi hselect =>
+                                      exact
+                                        longSuperExplicitEntry_lookup_exact
+                                          (bits := shape.bpCode)
+                                          (pre := pre) (post := post)
+                                          (entries :=
+                                            longSuperExplicitEntries)
+                                          (q := q) (count := count)
+                                          (super := super)
+                                          hptr hentries hlo hhi hselect
+    local_missing_exact := by
+      intro q super hsuper hmark hmissing
+      have hslot :
+          superEntries[falseSelectSuperSlot q superStride]? =
+            some super := by
+        simpa [falseSelectSuperSlot] using hsuper
+      exact
+        falseSelectLocalEntry_missing_exact
+          (bits := shape.bpCode) (entries := localEntries)
+          (q := q) (localStride := localStride) (super := super)
+          (fun pos hselect =>
+            hlocalCovered q super pos hslot hmark hselect)
+          (by simpa [falseSelectLocalSlot] using hmissing)
+    sparse_explicit_exact := by
+      intro q super loc hsuper hmark hlocal hsparse
+      have hslot :
+          superEntries[falseSelectSuperSlot q superStride]? =
+            some super := by
+        simpa [falseSelectSuperSlot] using hsuper
+      have hlocalSlot :
+          localEntries[falseSelectLocalSlot super q localStride]? =
+            some loc := by
+        simpa [falseSelectLocalSlot] using hlocal
+      have hcover :=
+        hsparseCover q super loc hslot hmark hlocalSlot hsparse
+      cases hcover with
+      | intro count hcover =>
+          cases hcover with
+          | intro pre hcover =>
+              cases hcover with
+              | intro post hcover =>
+                  cases hcover with
+                  | intro pos hcover =>
+                      cases hcover with
+                      | intro hptr hcover =>
+                          cases hcover with
+                          | intro hentries hcover =>
+                              cases hcover with
+                              | intro hlo hcover =>
+                                  cases hcover with
+                                  | intro hhi hselect =>
+                                      exact
+                                        sparseLocalExplicitEntry_lookup_exact
+                                          (bits := shape.bpCode)
+                                          (pre := pre) (post := post)
+                                          (entries :=
+                                            sparseLocalExplicitEntries)
+                                          (q := q) (count := count)
+                                          (loc := loc)
+                                          hptr hentries hlo hhi hselect
+    dense_exact := by
+      intro q super loc hsuper hmark hlocal hdense
+      have hslot :
+          superEntries[falseSelectSuperSlot q superStride]? =
+            some super := by
+        simpa [falseSelectSuperSlot] using hsuper
+      have hlocalSlot :
+          localEntries[falseSelectLocalSlot super q localStride]? =
+            some loc := by
+        simpa [falseSelectLocalSlot] using hlocal
+      exact
+        denseTwoWordFalseSelectCosted_exact_of_local_span
+          (hdenseCert q super loc hslot hmark hlocalSlot hdense) }
 
 /--
 Concrete sparse/dense false-select close data for one Cartesian shape.
@@ -5566,6 +6439,86 @@ theorem read_word_length_le_machine
       exact hsparse hget
   · exact Nat.le_trans (data.bitWords.word_length_le hbitsMem)
       data.wordSize_le_machine
+
+theorem super_locator_entry_word_width_le_machine
+    {shape : Cartesian.CartesianShape}
+    (data : SparseDenseFalseSelectCloseData shape)
+    {i : Nat} {super : SparseDenseFalseSelectLocatorEntry}
+    (hget : data.superEntries[i]? = some super) :
+    sparseDenseFalseSelectLocatorEntryWordWidth data.superFieldWidth <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  have hread := data.tables.superTable.read_exact i
+  rw [hget] at hread
+  rcases data.tables_read_words_length_le_machine with
+    ⟨hsuper, _hlong, _hlocal, _hsparse⟩
+  cases hword : data.tables.superTable.store.words[i]? with
+  | none =>
+      simp [hword] at hread
+  | some word =>
+      have hlen :
+          word.length =
+            sparseDenseFalseSelectLocatorEntryWordWidth
+              data.superFieldWidth :=
+        data.tables.superTable.read_word_length_of_some hword
+      have hle :
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length :=
+        hsuper hword
+      rwa [hlen] at hle
+
+theorem local_locator_entry_word_width_le_machine
+    {shape : Cartesian.CartesianShape}
+    (data : SparseDenseFalseSelectCloseData shape)
+    {i : Nat} {loc : SparseDenseFalseSelectLocatorEntry}
+    (hget : data.localEntries[i]? = some loc) :
+    sparseDenseFalseSelectLocatorEntryWordWidth data.localFieldWidth <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  have hread := data.tables.localTable.read_exact i
+  rw [hget] at hread
+  rcases data.tables_read_words_length_le_machine with
+    ⟨_hsuper, _hlong, hlocal, _hsparse⟩
+  cases hword : data.tables.localTable.store.words[i]? with
+  | none =>
+      simp [hword] at hread
+  | some word =>
+      have hlen :
+          word.length =
+            sparseDenseFalseSelectLocatorEntryWordWidth
+              data.localFieldWidth :=
+        data.tables.localTable.read_word_length_of_some hword
+      have hle :
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length :=
+        hlocal hword
+      rwa [hlen] at hle
+
+theorem super_locator_full_machine_field_impossible
+    {shape : Cartesian.CartesianShape}
+    (data : SparseDenseFalseSelectCloseData shape)
+    {i : Nat} {super : SparseDenseFalseSelectLocatorEntry}
+    (hget : data.superEntries[i]? = some super) :
+    data.superFieldWidth ≠
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  intro hwidth
+  have hbounded := data.super_locator_entry_word_width_le_machine hget
+  rw [hwidth] at hbounded
+  exact
+    sparseDenseFalseSelectLocatorEntry_fullMachineField_not_word_bounded
+      shape.bpCode.length hbounded
+
+theorem local_locator_full_machine_field_impossible
+    {shape : Cartesian.CartesianShape}
+    (data : SparseDenseFalseSelectCloseData shape)
+    {i : Nat} {loc : SparseDenseFalseSelectLocatorEntry}
+    (hget : data.localEntries[i]? = some loc) :
+    data.localFieldWidth ≠
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  intro hwidth
+  have hbounded := data.local_locator_entry_word_width_le_machine hget
+  rw [hwidth] at hbounded
+  exact
+    sparseDenseFalseSelectLocatorEntry_fullMachineField_not_word_bounded
+      shape.bpCode.length hbounded
 
 set_option linter.unusedSimpArgs false in
 theorem selectCloseCosted_cost_le

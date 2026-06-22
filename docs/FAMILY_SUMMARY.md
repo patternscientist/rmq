@@ -7,7 +7,8 @@ packed plus-minus-one RMQ/LCA model layer, uniform charged-budget lower-bound
 theorems, reusable hub import surface layers, and the first certified
 broadword/succinct-space profile interface, now including a BP-native shape
 payload and close-navigation RMQ adapter, plus the sparse/dense false-select
-codec budget layer.
+codec budget layer, routing-helper exactness scaffold, checked one-word
+locator-width obstruction, and first multiword dense-local repair surface.
 
 This document is the family-level map for the current Lean development. It
 records the module dependency DAG, correctness and cost status by structure,
@@ -246,7 +247,20 @@ from charged super/local locator reads, explicit exception reads, and the dense
 two-word BP payload fallback. This is still a surface theorem, not C1 closure;
 the canonical packed builder must next construct those tables from
 `shape.bpCode` and prove the branch-exactness obligations now carried by
-`SparseDenseFalseSelectCloseData`. `SuccinctFinal` exposes the corresponding
+`SparseDenseFalseSelectCloseData`. The current C1 layer also includes
+`sparseDenseFalseSelectLocatorEntry_fullMachineField_not_word_bounded`, which
+formally rules out the old one-word four-full-field locator layout, and
+`FixedWidthSparseDenseFalseSelectDenseLocalEntryTable`, which repairs the
+dense-local representation by splitting independently bounded fields across a
+constant number of charged payload tables. `builtLongExplicitFalseSelectBranch`
+is a generated reference/sanity branch proving the long-explicit equation from
+actual false positions in `shape.bpCode`; it is not compact C1 closure because
+it stores every false position. `sparseDenseFalseSelectBranchObligations_of_built_entries`
+is the current routing-helper scaffold: it derives the five close-data
+branch-exactness fields from coverage, explicit-segment, and dense-span
+certificate facts. The next valid C1 stop must consume these helpers in a
+concrete payload-backed builder, not merely add another proof-field surface.
+`SuccinctFinal` exposes the corresponding
 `SparseDenseFalseSelectBPCloseAccessDirectory` and family adapter so that the
 builder has a direct close-access target to inhabit.
 `SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient` pins the first
@@ -1475,20 +1489,31 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctSelectProposal.canonicalTwoLevelSelectDataOfChunksExact_selectCosted_profile`,
   `SuccinctSelectProposal.fixedWidthSelectSampleTables_payload_length_eq_budget`,
   `SuccinctSelectProposal.fixedWidthSelectSampleTables_payload_length_le_sampled`,
+  `SuccinctSelectProposal.sparseDenseFalseSelectLocatorEntry_fullMachineField_not_word_bounded`,
   `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectLocatorEntryTable.ofEncodedWords_profile`,
   `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectLocatorEntryTable.ofEntries_profile`,
   `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectLocatorEntryTable.read_word_length_le_machine`,
   `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectLocatorEntryTable.profile`,
+  `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectDenseLocalEntryTable.ofEntries_profile`,
+  `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectDenseLocalEntryTable.readWordsLengthLeMachine`,
+  `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectDenseLocalEntryTable.profile`,
+  `SuccinctSelectProposal.selectPositions_get?_eq_select`,
+  `SuccinctSelectProposal.builtLongExplicitFalseSelectBranch_long_explicit_exact`,
+  `SuccinctSelectProposal.builtLongExplicitFalseSelectBranch_long_explicit_obligation`,
   `SuccinctSelectProposal.fixedWidthLongSuperExplicitTable_profile`,
   `SuccinctSelectProposal.fixedWidthSparseLocalExplicitTable_profile`,
   `SuccinctSelectProposal.sparseDenseFalseSelectOverhead_littleO`,
   `SuccinctSelectProposal.canonicalSparseDenseFalseSelectOverhead_littleO`,
   `SuccinctSelectProposal.denseTwoWordFalseSelectCosted_cost_le_five`,
+  `SuccinctSelectProposal.denseTwoWordFalseSelectCosted_exact_of_local_span`,
+  `SuccinctSelectProposal.sparseDenseFalseSelectBranchObligations_of_built_entries`,
   `SuccinctSelectProposal.SparseDenseFalseSelectCodecTables.payload_length`,
   `SuccinctSelectProposal.SparseDenseFalseSelectCodecTables.readProfile`,
   `SuccinctSelectProposal.SparseDenseFalseSelectCodecTables.readWordsLengthLeMachine`,
   `SuccinctSelectProposal.SparseDenseFalseSelectCodecTables.profile_le_sparseDenseFalseSelectOverhead`,
   `SuccinctSelectProposal.SparseDenseFalseSelectCloseData.payload_length_le_overhead`,
+  `SuccinctSelectProposal.SparseDenseFalseSelectCloseData.super_locator_full_machine_field_impossible`,
+  `SuccinctSelectProposal.SparseDenseFalseSelectCloseData.local_locator_full_machine_field_impossible`,
   `SuccinctSelectProposal.SparseDenseFalseSelectCloseData.selectCloseCosted_cost_le`,
   `SuccinctSelectProposal.SparseDenseFalseSelectCloseData.selectCloseCosted_exact`,
   `SuccinctSelectProposal.SparseDenseFalseSelectCloseData.profile`,
