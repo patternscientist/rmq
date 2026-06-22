@@ -416,10 +416,19 @@ absolute-base data must therefore use relative fields, split fields, or another
 explicitly budgeted layout. The positive repair surface is
 `FixedWidthSparseDenseFalseSelectDenseLocalEntryTable`, which stores
 dense-local fields in four independently bounded fixed-width Nat tables.
-Second, `sparseDenseFalseSelectBranchObligations_of_built_entries` derives the
-five `SparseDenseFalseSelectCloseData` branch-exactness fields from concrete
-routing/coverage facts and dense-span certificates. Those facts are the next
-builder obligations, not final proof-only fields. `builtLongExplicitFalseSelectBranch`
+`SparseDenseFalseSelectCloseData.selectCloseCosted` now consumes this split
+table in the dense path by reading `denseLocalTable.readCosted loc.pointer`
+before the two-word BP payload fallback, so dense local exactness no longer
+depends on `loc.basePosition` from the packed local locator. Second,
+`sparseDenseFalseSelectBranchObligations_of_built_entries` derives the five
+`SparseDenseFalseSelectCloseData` branch-exactness fields from concrete
+routing/coverage facts and dense-span certificates along that same split-entry
+route. The strengthened sibling
+`sparseDenseFalseSelectBranchObligations_of_built_entries_and_dense_payload_facts`
+builds the dense-span certificate from aligned BP payload words plus split-entry
+rank/routing facts, so the remaining dense obligation is to instantiate those
+facts from the actual compact builder tables. Those facts are the next builder
+obligations, not final proof-only fields. `builtLongExplicitFalseSelectBranch`
 is retained only as a generated long-explicit sanity/reference branch; it stores
 all false positions and cannot witness `o(n)` auxiliary space.
 

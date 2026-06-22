@@ -196,12 +196,18 @@ Current positive repair surface:
 `FixedWidthSparseDenseFalseSelectDenseLocalEntryTable` splits dense-local fields
 across four independent fixed-width Nat tables and proves payload length,
 unit-cost per-field reads, and machine-word bounds from only
-`fieldWidth <= machineWordBits n`. The routing-helper theorem
-`sparseDenseFalseSelectBranchObligations_of_built_entries` then shows how to
-turn coverage facts, explicit-position segment facts, and dense-span
-certificates into the five `SparseDenseFalseSelectCloseData` exactness fields.
-The generated `builtLongExplicitFalseSelectBranch` is useful as a sanity check
-for long-explicit exactness, but it stores every false position and is not the
+`fieldWidth <= machineWordBits n`. `SparseDenseFalseSelectCloseData` now
+consumes that table in its dense branch: after the packed local locator marks a
+dense case, `selectCloseCosted` reads
+`denseLocalTable.readCosted loc.pointer` and then runs the two-word BP payload
+fallback from the split dense-local entry. The routing-helper theorem
+`sparseDenseFalseSelectBranchObligations_of_built_entries` has been aligned to
+the same split dense entry route, and
+`sparseDenseFalseSelectBranchObligations_of_built_entries_and_dense_payload_facts`
+replaces the dense answer-certificate premise with aligned-word and rank/local
+occurrence routing facts over that split entry. The generated
+`builtLongExplicitFalseSelectBranch` is useful as a sanity check for
+long-explicit exactness, but it stores every false position and is not the
 compact final construction.
 
 Then define, not store as a field:

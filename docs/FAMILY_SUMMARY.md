@@ -8,7 +8,8 @@ theorems, reusable hub import surface layers, and the first certified
 broadword/succinct-space profile interface, now including a BP-native shape
 payload and close-navigation RMQ adapter, plus the sparse/dense false-select
 codec budget layer, routing-helper exactness scaffold, checked one-word
-locator-width obstruction, and first multiword dense-local repair surface.
+locator-width obstruction, and first multiword dense-local repair surface now
+consumed by the close-data dense branch.
 
 This document is the family-level map for the current Lean development. It
 records the module dependency DAG, correctness and cost status by structure,
@@ -252,14 +253,23 @@ the canonical packed builder must next construct those tables from
 formally rules out the old one-word four-full-field locator layout, and
 `FixedWidthSparseDenseFalseSelectDenseLocalEntryTable`, which repairs the
 dense-local representation by splitting independently bounded fields across a
-constant number of charged payload tables. `builtLongExplicitFalseSelectBranch`
-is a generated reference/sanity branch proving the long-explicit equation from
-actual false positions in `shape.bpCode`; it is not compact C1 closure because
-it stores every false position. `sparseDenseFalseSelectBranchObligations_of_built_entries`
+constant number of charged payload tables. `SparseDenseFalseSelectCloseData`
+now consumes that split dense table: its dense branch reads
+`denseLocalTable.readCosted loc.pointer` and feeds the resulting dense entry to
+the two-word BP payload fallback, so it no longer uses `loc.basePosition` from
+the packed local locator. `builtLongExplicitFalseSelectBranch` is a generated
+reference/sanity branch proving the long-explicit equation from actual false
+positions in `shape.bpCode`; it is not compact C1 closure because it stores
+every false position. `sparseDenseFalseSelectBranchObligations_of_built_entries`
 is the current routing-helper scaffold: it derives the five close-data
-branch-exactness fields from coverage, explicit-segment, and dense-span
-certificate facts. The next valid C1 stop must consume these helpers in a
-concrete payload-backed builder, not merely add another proof-field surface.
+branch-exactness fields from coverage, explicit-segment, and split dense-span
+certificate facts. The sibling
+`sparseDenseFalseSelectBranchObligations_of_built_entries_and_dense_payload_facts`
+removes the answer-containing dense-span certificate premise: it builds the
+dense certificate from aligned BP payload words, split dense-local fields,
+branch rank bounds, and local occurrence arithmetic. The next valid C1 stop
+must instantiate those coverage/routing facts from compact tables over
+`shape.bpCode`, not merely add another proof-field surface.
 `SuccinctFinal` exposes the corresponding
 `SparseDenseFalseSelectBPCloseAccessDirectory` and family adapter so that the
 builder has a direct close-access target to inhabit.
@@ -1495,9 +1505,12 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectLocatorEntryTable.read_word_length_le_machine`,
   `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectLocatorEntryTable.profile`,
   `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectDenseLocalEntryTable.ofEntries_profile`,
+  `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectDenseLocalEntryTable.readCosted_cost_le_four`,
+  `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectDenseLocalEntryTable.readCosted_erase`,
   `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectDenseLocalEntryTable.readWordsLengthLeMachine`,
   `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectDenseLocalEntryTable.profile`,
   `SuccinctSelectProposal.selectPositions_get?_eq_select`,
+  `SuccinctSelectProposal.select_exists_of_lt_rankPrefix`,
   `SuccinctSelectProposal.builtLongExplicitFalseSelectBranch_long_explicit_exact`,
   `SuccinctSelectProposal.builtLongExplicitFalseSelectBranch_long_explicit_obligation`,
   `SuccinctSelectProposal.fixedWidthLongSuperExplicitTable_profile`,
@@ -1505,8 +1518,12 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctSelectProposal.sparseDenseFalseSelectOverhead_littleO`,
   `SuccinctSelectProposal.canonicalSparseDenseFalseSelectOverhead_littleO`,
   `SuccinctSelectProposal.denseTwoWordFalseSelectCosted_cost_le_five`,
+  `SuccinctSelectProposal.denseLocalEntryFalseSelectCosted_cost_le_five`,
   `SuccinctSelectProposal.denseTwoWordFalseSelectCosted_exact_of_local_span`,
+  `SuccinctSelectProposal.falseSelectDenseLocalSpanCertificate_of_payload_routing_facts`,
+  `SuccinctSelectProposal.denseTwoWordFalseSelectCosted_exact_of_payload_routing_facts`,
   `SuccinctSelectProposal.sparseDenseFalseSelectBranchObligations_of_built_entries`,
+  `SuccinctSelectProposal.sparseDenseFalseSelectBranchObligations_of_built_entries_and_dense_payload_facts`,
   `SuccinctSelectProposal.SparseDenseFalseSelectCodecTables.payload_length`,
   `SuccinctSelectProposal.SparseDenseFalseSelectCodecTables.readProfile`,
   `SuccinctSelectProposal.SparseDenseFalseSelectCodecTables.readWordsLengthLeMachine`,
