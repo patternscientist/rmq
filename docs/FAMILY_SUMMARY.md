@@ -1,12 +1,13 @@
 # RMQ Family Summary
 
-Snapshot: 2026-06-20, after the first table/access, payload, indexed LCA
+Snapshot: 2026-06-21, after the first table/access, payload, indexed LCA
 query-cost, Fischer-Heun-backed LCA model, traced sparse-query substrate,
 fixed-length exact-RMQ space sandwich, payload-lower-bound hub adapter,
 packed plus-minus-one RMQ/LCA model layer, uniform charged-budget lower-bound
 theorems, reusable hub import surface layers, and the first certified
 broadword/succinct-space profile interface, now including a BP-native shape
-payload and close-navigation RMQ adapter.
+payload and close-navigation RMQ adapter, plus the sparse/dense false-select
+codec budget layer.
 
 This document is the family-level map for the current Lean development. It
 records the module dependency DAG, correctness and cost status by structure,
@@ -227,6 +228,18 @@ implementation behind the new macro interface, and then an encoded/payload-only
 version of this join. They are no longer rank endpoint, rank local-width,
 proof-only block-code, select API-shape, or built-query close-navigation
 blockers.
+Succinct C1 sparse/dense codec update: `SuccinctSpace` now supplies
+`littleOLinear_id_div_logLog_succ`, `idDivLogLogOverhead_littleO`, and
+`logLogCubedSampledDirectoryOverhead_littleO`, covering the explicit
+`n / loglog n` exception budget and the
+`n * (loglog n)^3 / log n` local-directory envelope from
+`docs/SUCCINCT_SELECT_LOCATOR_ARCHITECTURE.md`. `SuccinctSelectProposal`
+adds fixed-width payload codecs for sparse/dense super/local locator entries
+and named Nat-table constructors for long-super and sparse-local explicit
+positions. `SparseDenseFalseSelectCodecTables.profile_le_sparseDenseFalseSelectOverhead`
+ties the four table classes to the named total overhead, unit-cost reads,
+exact decoder erasure, and machine-word read bounds without adding selected
+position or answer proof fields.
 `SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient` pins the first
 macro-design blocker: a macro keyed only by endpoint close-block pairs is false
 even on a four-node right spine, so the concrete macro must store
@@ -1241,14 +1254,17 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctSpace.LittleOLinear.add_const`,
   `SuccinctSpace.LittleOLinear.const_add`,
   `SuccinctSpace.littleOLinear_id_div_log2_succ`,
+  `SuccinctSpace.littleOLinear_id_div_logLog_succ`,
   `SuccinctSpace.nat_succ_le_two_pow`,
   `SuccinctSpace.nat_le_two_pow`,
   `SuccinctSpace.two_mul_le_two_pow`,
   `SuccinctSpace.eventually_scale_log2_succ_le_self`,
   `SuccinctSpace.eventually_scale_logLog_succ_le_log_succ`,
+  `SuccinctSpace.idDivLogLogOverhead_littleO`,
   `SuccinctSpace.sampledDirectoryOverhead_littleO`,
   `SuccinctSpace.logLogSampledDirectoryOverhead_littleO`,
   `SuccinctSpace.logLogSquaredSampledDirectoryOverhead_littleO`,
+  `SuccinctSpace.logLogCubedSampledDirectoryOverhead_littleO`,
   `SuccinctSpace.natToBitsLE_length`,
   `SuccinctSpace.bitsToNatLE_natToBitsLE_of_lt`,
   `SuccinctSpace.optionNatToBitsLE_length`,
@@ -1449,6 +1465,17 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctSelectProposal.canonicalTwoLevelSelectDataOfChunksExact_selectCosted_profile`,
   `SuccinctSelectProposal.fixedWidthSelectSampleTables_payload_length_eq_budget`,
   `SuccinctSelectProposal.fixedWidthSelectSampleTables_payload_length_le_sampled`,
+  `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectLocatorEntryTable.ofEncodedWords_profile`,
+  `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectLocatorEntryTable.ofEntries_profile`,
+  `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectLocatorEntryTable.read_word_length_le_machine`,
+  `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectLocatorEntryTable.profile`,
+  `SuccinctSelectProposal.fixedWidthLongSuperExplicitTable_profile`,
+  `SuccinctSelectProposal.fixedWidthSparseLocalExplicitTable_profile`,
+  `SuccinctSelectProposal.sparseDenseFalseSelectOverhead_littleO`,
+  `SuccinctSelectProposal.SparseDenseFalseSelectCodecTables.payload_length`,
+  `SuccinctSelectProposal.SparseDenseFalseSelectCodecTables.readProfile`,
+  `SuccinctSelectProposal.SparseDenseFalseSelectCodecTables.readWordsLengthLeMachine`,
+  `SuccinctSelectProposal.SparseDenseFalseSelectCodecTables.profile_le_sparseDenseFalseSelectOverhead`,
   `SuccinctSelectProposal.twoLevelSelectOverhead_littleO`,
   `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData.selectCosted_cost_le_four`,
   `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData.selected_position_in_read_word_of_sample`,

@@ -4226,6 +4226,862 @@ theorem fixedWidthSelectSampleTables_payload_length_le_sampled
   exact hbudget
 
 /--
+Four-field sparse/dense false-select locator entry.
+
+The same fixed-width codec is used for super entries and local entries.  The
+entry records the sampled occurrence, sampled BP position, a small span-class
+tag, and a payload pointer into the appropriate explicit table.
+-/
+structure SparseDenseFalseSelectLocatorEntry where
+  baseOccurrence : Nat
+  basePosition : Nat
+  spanClass : Nat
+  pointer : Nat
+
+def sparseDenseFalseSelectLocatorEntryWordWidth
+    (fieldWidth : Nat) : Nat :=
+  4 * fieldWidth
+
+def sparseDenseFalseSelectLocatorEntryToBitsLE
+    (fieldWidth : Nat)
+    (entry : SparseDenseFalseSelectLocatorEntry) :
+    List Bool :=
+  SuccinctSpace.natToBitsLE fieldWidth entry.baseOccurrence ++
+    SuccinctSpace.natToBitsLE fieldWidth entry.basePosition ++
+      SuccinctSpace.natToBitsLE fieldWidth entry.spanClass ++
+        SuccinctSpace.natToBitsLE fieldWidth entry.pointer
+
+theorem sparseDenseFalseSelectLocatorEntryToBitsLE_length
+    (fieldWidth : Nat)
+    (entry : SparseDenseFalseSelectLocatorEntry) :
+    (sparseDenseFalseSelectLocatorEntryToBitsLE fieldWidth entry).length =
+      sparseDenseFalseSelectLocatorEntryWordWidth fieldWidth := by
+  simp [sparseDenseFalseSelectLocatorEntryToBitsLE,
+    sparseDenseFalseSelectLocatorEntryWordWidth,
+    SuccinctSpace.natToBitsLE_length]
+  omega
+
+def bitsToSparseDenseFalseSelectLocatorEntry
+    (fieldWidth : Nat) (bits : List Bool) :
+    SparseDenseFalseSelectLocatorEntry where
+  baseOccurrence :=
+    SuccinctSpace.bitsToNatLE (bits.take fieldWidth)
+  basePosition :=
+    SuccinctSpace.bitsToNatLE ((bits.drop fieldWidth).take fieldWidth)
+  spanClass :=
+    SuccinctSpace.bitsToNatLE ((bits.drop (2 * fieldWidth)).take fieldWidth)
+  pointer :=
+    SuccinctSpace.bitsToNatLE ((bits.drop (3 * fieldWidth)).take fieldWidth)
+
+theorem bitsToSparseDenseFalseSelectLocatorEntry_toBits_of_bound
+    {fieldWidth : Nat}
+    {entry : SparseDenseFalseSelectLocatorEntry}
+    (hbound :
+      entry.baseOccurrence < 2 ^ fieldWidth /\
+        entry.basePosition < 2 ^ fieldWidth /\
+          entry.spanClass < 2 ^ fieldWidth /\
+            entry.pointer < 2 ^ fieldWidth) :
+    bitsToSparseDenseFalseSelectLocatorEntry fieldWidth
+        (sparseDenseFalseSelectLocatorEntryToBitsLE fieldWidth entry) =
+      entry := by
+  rcases entry with
+    ⟨baseOccurrence, basePosition, spanClass, pointer⟩
+  rcases hbound with ⟨hbaseOccurrence, hbasePosition, hspanClass, hpointer⟩
+  let baseOccurrenceBits :=
+    SuccinctSpace.natToBitsLE fieldWidth baseOccurrence
+  let basePositionBits :=
+    SuccinctSpace.natToBitsLE fieldWidth basePosition
+  let spanClassBits :=
+    SuccinctSpace.natToBitsLE fieldWidth spanClass
+  let pointerBits :=
+    SuccinctSpace.natToBitsLE fieldWidth pointer
+  have hbaseOccurrenceLen :
+      baseOccurrenceBits.length = fieldWidth := by
+    simp [baseOccurrenceBits, SuccinctSpace.natToBitsLE_length]
+  have hbasePositionLen :
+      basePositionBits.length = fieldWidth := by
+    simp [basePositionBits, SuccinctSpace.natToBitsLE_length]
+  have hspanClassLen :
+      spanClassBits.length = fieldWidth := by
+    simp [spanClassBits, SuccinctSpace.natToBitsLE_length]
+  have hpointerLen :
+      pointerBits.length = fieldWidth := by
+    simp [pointerBits, SuccinctSpace.natToBitsLE_length]
+  have htakeBaseOccurrence :
+      (baseOccurrenceBits ++ basePositionBits ++ spanClassBits ++
+          pointerBits).take fieldWidth =
+        baseOccurrenceBits := by
+    calc
+      (baseOccurrenceBits ++ basePositionBits ++ spanClassBits ++
+          pointerBits).take fieldWidth =
+        (baseOccurrenceBits ++
+            (basePositionBits ++ spanClassBits ++ pointerBits)).take
+          baseOccurrenceBits.length := by
+          rw [hbaseOccurrenceLen]
+          simp [List.append_assoc]
+      _ = baseOccurrenceBits := by
+          rw [List.take_append_of_le_length (Nat.le_refl _)]
+          rw [List.take_of_length_le (Nat.le_refl _)]
+  have hdropBaseOccurrence :
+      (baseOccurrenceBits ++ basePositionBits ++ spanClassBits ++
+          pointerBits).drop fieldWidth =
+        basePositionBits ++ spanClassBits ++ pointerBits := by
+    calc
+      (baseOccurrenceBits ++ basePositionBits ++ spanClassBits ++
+          pointerBits).drop fieldWidth =
+        (baseOccurrenceBits ++
+            (basePositionBits ++ spanClassBits ++ pointerBits)).drop
+          baseOccurrenceBits.length := by
+          rw [hbaseOccurrenceLen]
+          simp [List.append_assoc]
+      _ = basePositionBits ++ spanClassBits ++ pointerBits := by
+          rw [List.drop_append_of_le_length (Nat.le_refl _)]
+          rw [List.drop_of_length_le (Nat.le_refl _)]
+          simp
+  have htakeBasePosition :
+      ((baseOccurrenceBits ++ basePositionBits ++ spanClassBits ++
+          pointerBits).drop fieldWidth).take fieldWidth =
+        basePositionBits := by
+    rw [hdropBaseOccurrence]
+    calc
+      (basePositionBits ++ spanClassBits ++ pointerBits).take fieldWidth =
+        (basePositionBits ++ (spanClassBits ++ pointerBits)).take
+          basePositionBits.length := by
+          rw [hbasePositionLen]
+          simp [List.append_assoc]
+      _ = basePositionBits := by
+          rw [List.take_append_of_le_length (Nat.le_refl _)]
+          rw [List.take_of_length_le (Nat.le_refl _)]
+  have hdropTwo :
+      (baseOccurrenceBits ++ basePositionBits ++ spanClassBits ++
+          pointerBits).drop (2 * fieldWidth) =
+        spanClassBits ++ pointerBits := by
+    calc
+      (baseOccurrenceBits ++ basePositionBits ++ spanClassBits ++
+          pointerBits).drop (2 * fieldWidth) =
+        ((baseOccurrenceBits ++ basePositionBits) ++
+            (spanClassBits ++ pointerBits)).drop
+          (baseOccurrenceBits ++ basePositionBits).length := by
+          have hlen :
+              (baseOccurrenceBits ++ basePositionBits).length =
+                2 * fieldWidth := by
+            simp [hbaseOccurrenceLen, hbasePositionLen]
+            omega
+          rw [hlen]
+          simp [List.append_assoc]
+      _ = spanClassBits ++ pointerBits := by
+          rw [List.drop_append_of_le_length (Nat.le_refl _)]
+          rw [List.drop_of_length_le (Nat.le_refl _)]
+          simp
+  have htakeSpanClass :
+      ((baseOccurrenceBits ++ basePositionBits ++ spanClassBits ++
+          pointerBits).drop (2 * fieldWidth)).take fieldWidth =
+        spanClassBits := by
+    rw [hdropTwo]
+    calc
+      (spanClassBits ++ pointerBits).take fieldWidth =
+        (spanClassBits ++ pointerBits).take spanClassBits.length := by
+          rw [hspanClassLen]
+      _ = spanClassBits := by
+          rw [List.take_append_of_le_length (Nat.le_refl _)]
+          rw [List.take_of_length_le (Nat.le_refl _)]
+  have hdropThree :
+      (baseOccurrenceBits ++ basePositionBits ++ spanClassBits ++
+          pointerBits).drop (3 * fieldWidth) =
+        pointerBits := by
+    calc
+      (baseOccurrenceBits ++ basePositionBits ++ spanClassBits ++
+          pointerBits).drop (3 * fieldWidth) =
+        ((baseOccurrenceBits ++ basePositionBits ++ spanClassBits) ++
+            pointerBits).drop
+          (baseOccurrenceBits ++ basePositionBits ++ spanClassBits).length := by
+          have hlen :
+              (baseOccurrenceBits ++ basePositionBits ++
+                  spanClassBits).length =
+                3 * fieldWidth := by
+            simp [hbaseOccurrenceLen, hbasePositionLen, hspanClassLen]
+            omega
+          rw [hlen]
+      _ = pointerBits := by
+          rw [List.drop_append_of_le_length (Nat.le_refl _)]
+          rw [List.drop_of_length_le (Nat.le_refl _)]
+          simp
+  have htakePointer :
+      ((baseOccurrenceBits ++ basePositionBits ++ spanClassBits ++
+          pointerBits).drop (3 * fieldWidth)).take fieldWidth =
+        pointerBits := by
+    rw [hdropThree]
+    rw [List.take_of_length_le]
+    rw [hpointerLen]
+    exact Nat.le_refl fieldWidth
+  have htakeBaseOccurrenceRaw :
+      (SuccinctSpace.natToBitsLE fieldWidth baseOccurrence ++
+          SuccinctSpace.natToBitsLE fieldWidth basePosition ++
+            SuccinctSpace.natToBitsLE fieldWidth spanClass ++
+              SuccinctSpace.natToBitsLE fieldWidth pointer).take fieldWidth =
+        SuccinctSpace.natToBitsLE fieldWidth baseOccurrence := by
+    simpa [baseOccurrenceBits, basePositionBits, spanClassBits, pointerBits]
+      using htakeBaseOccurrence
+  have htakeBasePositionRaw :
+      ((SuccinctSpace.natToBitsLE fieldWidth baseOccurrence ++
+          SuccinctSpace.natToBitsLE fieldWidth basePosition ++
+            SuccinctSpace.natToBitsLE fieldWidth spanClass ++
+              SuccinctSpace.natToBitsLE fieldWidth pointer).drop
+          fieldWidth).take fieldWidth =
+        SuccinctSpace.natToBitsLE fieldWidth basePosition := by
+    simpa [baseOccurrenceBits, basePositionBits, spanClassBits, pointerBits]
+      using htakeBasePosition
+  have htakeSpanClassRaw :
+      ((SuccinctSpace.natToBitsLE fieldWidth baseOccurrence ++
+          SuccinctSpace.natToBitsLE fieldWidth basePosition ++
+            SuccinctSpace.natToBitsLE fieldWidth spanClass ++
+              SuccinctSpace.natToBitsLE fieldWidth pointer).drop
+          (2 * fieldWidth)).take fieldWidth =
+        SuccinctSpace.natToBitsLE fieldWidth spanClass := by
+    simpa [baseOccurrenceBits, basePositionBits, spanClassBits, pointerBits]
+      using htakeSpanClass
+  have htakePointerRaw :
+      ((SuccinctSpace.natToBitsLE fieldWidth baseOccurrence ++
+          SuccinctSpace.natToBitsLE fieldWidth basePosition ++
+            SuccinctSpace.natToBitsLE fieldWidth spanClass ++
+              SuccinctSpace.natToBitsLE fieldWidth pointer).drop
+          (3 * fieldWidth)).take fieldWidth =
+        SuccinctSpace.natToBitsLE fieldWidth pointer := by
+    simpa [baseOccurrenceBits, basePositionBits, spanClassBits, pointerBits]
+      using htakePointer
+  simp [List.append_assoc] at htakeBaseOccurrenceRaw htakeBasePositionRaw htakeSpanClassRaw htakePointerRaw
+  simp [bitsToSparseDenseFalseSelectLocatorEntry,
+    sparseDenseFalseSelectLocatorEntryToBitsLE]
+  rw [htakeBaseOccurrenceRaw, htakeBasePositionRaw, htakeSpanClassRaw,
+    htakePointerRaw]
+  simp [SuccinctSpace.bitsToNatLE_natToBitsLE_of_lt hbaseOccurrence,
+    SuccinctSpace.bitsToNatLE_natToBitsLE_of_lt hbasePosition,
+    SuccinctSpace.bitsToNatLE_natToBitsLE_of_lt hspanClass,
+    SuccinctSpace.bitsToNatLE_natToBitsLE_of_lt hpointer]
+
+/-- Fixed-width payload table for super/local sparse-dense locator entries. -/
+structure FixedWidthSparseDenseFalseSelectLocatorEntryTable
+    (entries : List SparseDenseFalseSelectLocatorEntry)
+    (fieldWidth : Nat) where
+  payload : List Bool
+  store : SuccinctSpace.PayloadWordStore payload
+  payload_length_eq :
+    payload.length =
+      entries.length *
+        sparseDenseFalseSelectLocatorEntryWordWidth fieldWidth
+  word_length_of_get? :
+    forall {i : Nat} {bits : List Bool},
+      store.words[i]? = some bits ->
+        bits.length =
+          sparseDenseFalseSelectLocatorEntryWordWidth fieldWidth
+  read_exact :
+    forall i : Nat,
+      (store.words[i]?).map
+          (bitsToSparseDenseFalseSelectLocatorEntry fieldWidth) =
+        entries[i]?
+
+namespace FixedWidthSparseDenseFalseSelectLocatorEntryTable
+
+def ofEncodedWords
+    (entries : List SparseDenseFalseSelectLocatorEntry)
+    (fieldWidth : Nat) (words : List (List Bool))
+    (hentries :
+      words.map (bitsToSparseDenseFalseSelectLocatorEntry fieldWidth) =
+        entries)
+    (hwidth :
+      forall {word : List Bool},
+        List.Mem word words ->
+          word.length =
+            sparseDenseFalseSelectLocatorEntryWordWidth fieldWidth) :
+    FixedWidthSparseDenseFalseSelectLocatorEntryTable entries fieldWidth where
+  payload := SuccinctSpace.flattenPayloadWords words
+  store :=
+    { words := words.toArray
+      erases := by simp }
+  payload_length_eq := by
+    calc
+      (SuccinctSpace.flattenPayloadWords words).length =
+          words.length *
+            sparseDenseFalseSelectLocatorEntryWordWidth fieldWidth :=
+        SuccinctSpace.flattenPayloadWords_length_of_forall_length hwidth
+      _ =
+          entries.length *
+            sparseDenseFalseSelectLocatorEntryWordWidth fieldWidth := by
+        rw [<- hentries]
+        simp
+  word_length_of_get? := by
+    intro i bits hget
+    have hlist : words[i]? = some bits := by
+      simpa [Array.getElem?_toList] using hget
+    exact hwidth (List.mem_of_getElem? hlist)
+  read_exact := by
+    intro i
+    have hmap :
+        (words.map
+            (bitsToSparseDenseFalseSelectLocatorEntry fieldWidth))[i]? =
+          entries[i]? := by
+      rw [hentries]
+    simpa [Array.getElem?_toList] using hmap
+
+def ofEntries
+    (entries : List SparseDenseFalseSelectLocatorEntry)
+    (fieldWidth : Nat)
+    (hbound :
+      forall {entry : SparseDenseFalseSelectLocatorEntry},
+        List.Mem entry entries ->
+          entry.baseOccurrence < 2 ^ fieldWidth /\
+            entry.basePosition < 2 ^ fieldWidth /\
+              entry.spanClass < 2 ^ fieldWidth /\
+                entry.pointer < 2 ^ fieldWidth) :
+    FixedWidthSparseDenseFalseSelectLocatorEntryTable
+      entries fieldWidth :=
+  ofEncodedWords entries fieldWidth
+    (entries.map
+      (sparseDenseFalseSelectLocatorEntryToBitsLE fieldWidth)) (by
+      induction entries with
+      | nil =>
+          simp
+      | cons entry rest ih =>
+          have hentry :
+              bitsToSparseDenseFalseSelectLocatorEntry fieldWidth
+                  (sparseDenseFalseSelectLocatorEntryToBitsLE
+                    fieldWidth entry) =
+                entry := by
+            exact
+              bitsToSparseDenseFalseSelectLocatorEntry_toBits_of_bound
+                (hbound List.mem_cons_self)
+          have hrest :
+              forall {tailEntry : SparseDenseFalseSelectLocatorEntry},
+                List.Mem tailEntry rest ->
+                  tailEntry.baseOccurrence < 2 ^ fieldWidth /\
+                    tailEntry.basePosition < 2 ^ fieldWidth /\
+                      tailEntry.spanClass < 2 ^ fieldWidth /\
+                        tailEntry.pointer < 2 ^ fieldWidth := by
+            intro tailEntry hmem
+            exact hbound (List.mem_cons_of_mem entry hmem)
+          simp [hentry, ih hrest])
+      (by
+        intro word hmem
+        rcases List.mem_map.mp hmem with ⟨entry, _hentry, rfl⟩
+        exact
+          sparseDenseFalseSelectLocatorEntryToBitsLE_length
+            fieldWidth entry)
+
+def readCosted
+    {entries : List SparseDenseFalseSelectLocatorEntry}
+    {fieldWidth : Nat}
+    (table :
+      FixedWidthSparseDenseFalseSelectLocatorEntryTable
+        entries fieldWidth)
+    (i : Nat) :
+    Costed (Option SparseDenseFalseSelectLocatorEntry) :=
+  Costed.map
+    (fun word? =>
+      word?.map (bitsToSparseDenseFalseSelectLocatorEntry fieldWidth))
+    (table.store.readWordCosted i)
+
+@[simp] theorem readCosted_cost
+    {entries : List SparseDenseFalseSelectLocatorEntry}
+    {fieldWidth : Nat}
+    (table :
+      FixedWidthSparseDenseFalseSelectLocatorEntryTable
+        entries fieldWidth)
+    (i : Nat) :
+    (table.readCosted i).cost = 1 := by
+  simp [readCosted, Costed.map_cost]
+
+theorem readCosted_cost_le_one
+    {entries : List SparseDenseFalseSelectLocatorEntry}
+    {fieldWidth : Nat}
+    (table :
+      FixedWidthSparseDenseFalseSelectLocatorEntryTable
+        entries fieldWidth)
+    (i : Nat) :
+    (table.readCosted i).cost <= 1 := by
+  simp
+
+@[simp] theorem readCosted_erase
+    {entries : List SparseDenseFalseSelectLocatorEntry}
+    {fieldWidth : Nat}
+    (table :
+      FixedWidthSparseDenseFalseSelectLocatorEntryTable
+        entries fieldWidth)
+    (i : Nat) :
+    (table.readCosted i).erase = entries[i]? := by
+  simp [readCosted, Costed.erase_map, table.read_exact i]
+
+theorem payload_length
+    {entries : List SparseDenseFalseSelectLocatorEntry}
+    {fieldWidth : Nat}
+    (table :
+      FixedWidthSparseDenseFalseSelectLocatorEntryTable
+        entries fieldWidth) :
+    table.payload.length =
+      entries.length *
+        sparseDenseFalseSelectLocatorEntryWordWidth fieldWidth :=
+  table.payload_length_eq
+
+theorem read_word_length_of_some
+    {entries : List SparseDenseFalseSelectLocatorEntry}
+    {fieldWidth : Nat}
+    (table :
+      FixedWidthSparseDenseFalseSelectLocatorEntryTable
+        entries fieldWidth)
+    {i : Nat} {word : List Bool}
+    (hword : table.store.words[i]? = some word) :
+    word.length =
+      sparseDenseFalseSelectLocatorEntryWordWidth fieldWidth :=
+  table.word_length_of_get? hword
+
+theorem read_word_length_le_machine
+    {entries : List SparseDenseFalseSelectLocatorEntry}
+    {fieldWidth n : Nat}
+    (table :
+      FixedWidthSparseDenseFalseSelectLocatorEntryTable
+        entries fieldWidth)
+    (hmachine :
+      sparseDenseFalseSelectLocatorEntryWordWidth fieldWidth <=
+        SuccinctRankProposal.machineWordBits n)
+    {i : Nat} {word : List Bool}
+    (hword : table.store.words[i]? = some word) :
+    word.length <= SuccinctRankProposal.machineWordBits n := by
+  rw [table.read_word_length_of_some hword]
+  exact hmachine
+
+theorem profile
+    {entries : List SparseDenseFalseSelectLocatorEntry}
+    {fieldWidth : Nat}
+    (table :
+      FixedWidthSparseDenseFalseSelectLocatorEntryTable
+        entries fieldWidth) :
+    table.payload.length =
+        entries.length *
+          sparseDenseFalseSelectLocatorEntryWordWidth fieldWidth /\
+      (forall i, (table.readCosted i).cost <= 1 /\
+        (table.readCosted i).erase = entries[i]?) /\
+      SuccinctSpace.flattenPayloadWords table.store.words.toList =
+        table.payload := by
+  constructor
+  · exact table.payload_length
+  · constructor
+    · intro i
+      exact ⟨table.readCosted_cost_le_one i,
+        table.readCosted_erase i⟩
+    · exact table.store.payload_eq_words_join
+
+theorem ofEncodedWords_profile
+    (entries : List SparseDenseFalseSelectLocatorEntry)
+    (fieldWidth : Nat) (words : List (List Bool))
+    (hentries :
+      words.map (bitsToSparseDenseFalseSelectLocatorEntry fieldWidth) =
+        entries)
+    (hwidth :
+      forall {word : List Bool},
+        List.Mem word words ->
+          word.length =
+            sparseDenseFalseSelectLocatorEntryWordWidth fieldWidth) :
+    (ofEncodedWords entries fieldWidth words hentries hwidth).payload.length =
+        entries.length *
+          sparseDenseFalseSelectLocatorEntryWordWidth fieldWidth /\
+      (forall i,
+        ((ofEncodedWords entries fieldWidth words hentries hwidth).readCosted
+          i).cost <= 1 /\
+          ((ofEncodedWords entries fieldWidth words hentries hwidth).readCosted
+            i).erase = entries[i]?) /\
+      SuccinctSpace.flattenPayloadWords
+          (ofEncodedWords entries fieldWidth words hentries
+            hwidth).store.words.toList =
+        (ofEncodedWords entries fieldWidth words hentries hwidth).payload := by
+  exact (ofEncodedWords entries fieldWidth words hentries hwidth).profile
+
+theorem ofEntries_profile
+    (entries : List SparseDenseFalseSelectLocatorEntry)
+    (fieldWidth : Nat)
+    (hbound :
+      forall {entry : SparseDenseFalseSelectLocatorEntry},
+        List.Mem entry entries ->
+          entry.baseOccurrence < 2 ^ fieldWidth /\
+            entry.basePosition < 2 ^ fieldWidth /\
+              entry.spanClass < 2 ^ fieldWidth /\
+                entry.pointer < 2 ^ fieldWidth) :
+    (ofEntries entries fieldWidth hbound).payload.length =
+        entries.length *
+          sparseDenseFalseSelectLocatorEntryWordWidth fieldWidth /\
+      (forall i,
+        ((ofEntries entries fieldWidth hbound).readCosted i).cost <= 1 /\
+          ((ofEntries entries fieldWidth hbound).readCosted i).erase =
+            entries[i]?) /\
+      SuccinctSpace.flattenPayloadWords
+          (ofEntries entries fieldWidth hbound).store.words.toList =
+        (ofEntries entries fieldWidth hbound).payload := by
+  exact (ofEntries entries fieldWidth hbound).profile
+
+end FixedWidthSparseDenseFalseSelectLocatorEntryTable
+
+def fixedWidthLongSuperExplicitTable
+    (entries : List Nat) (width : Nat)
+    (hbound :
+      forall {entry : Nat}, List.Mem entry entries -> entry < 2 ^ width) :
+    SuccinctSpace.FixedWidthNatTable entries width :=
+  SuccinctSpace.FixedWidthNatTable.ofEntries entries width hbound
+
+theorem fixedWidthLongSuperExplicitTable_profile
+    (entries : List Nat) (width : Nat)
+    (hbound :
+      forall {entry : Nat}, List.Mem entry entries -> entry < 2 ^ width) :
+    (fixedWidthLongSuperExplicitTable entries width hbound).payload.length =
+        entries.length * width /\
+      (forall i,
+        ((fixedWidthLongSuperExplicitTable entries width hbound).readCosted
+          i).cost <= 1 /\
+          ((fixedWidthLongSuperExplicitTable entries width hbound).readCosted
+            i).erase = entries[i]?) /\
+      SuccinctSpace.flattenPayloadWords
+          (fixedWidthLongSuperExplicitTable entries width
+            hbound).store.words.toList =
+        (fixedWidthLongSuperExplicitTable entries width hbound).payload := by
+  exact
+    SuccinctSpace.FixedWidthNatTable.ofEntries_profile
+      entries width hbound
+
+def fixedWidthSparseLocalExplicitTable
+    (entries : List Nat) (width : Nat)
+    (hbound :
+      forall {entry : Nat}, List.Mem entry entries -> entry < 2 ^ width) :
+    SuccinctSpace.FixedWidthNatTable entries width :=
+  SuccinctSpace.FixedWidthNatTable.ofEntries entries width hbound
+
+theorem fixedWidthSparseLocalExplicitTable_profile
+    (entries : List Nat) (width : Nat)
+    (hbound :
+      forall {entry : Nat}, List.Mem entry entries -> entry < 2 ^ width) :
+    (fixedWidthSparseLocalExplicitTable entries width hbound).payload.length =
+        entries.length * width /\
+      (forall i,
+        ((fixedWidthSparseLocalExplicitTable entries width hbound).readCosted
+          i).cost <= 1 /\
+          ((fixedWidthSparseLocalExplicitTable entries width hbound).readCosted
+            i).erase = entries[i]?) /\
+      SuccinctSpace.flattenPayloadWords
+          (fixedWidthSparseLocalExplicitTable entries width
+            hbound).store.words.toList =
+        (fixedWidthSparseLocalExplicitTable entries width hbound).payload := by
+  exact
+    SuccinctSpace.FixedWidthNatTable.ofEntries_profile
+      entries width hbound
+
+def sparseDenseFalseSelectOverhead
+    (superDirectorySlots longSuperExplicitSlots localDirectorySlots
+      sparseLocalExplicitSlots : Nat)
+    (n : Nat) : Nat :=
+  SuccinctSpace.sampledDirectoryOverhead superDirectorySlots n +
+    SuccinctSpace.idDivLogLogOverhead longSuperExplicitSlots n +
+      SuccinctSpace.logLogCubedSampledDirectoryOverhead
+        localDirectorySlots n +
+        SuccinctSpace.idDivLogLogOverhead sparseLocalExplicitSlots n
+
+theorem sparseDenseFalseSelectOverhead_littleO
+    (superDirectorySlots longSuperExplicitSlots localDirectorySlots
+      sparseLocalExplicitSlots : Nat) :
+    SuccinctSpace.LittleOLinear
+      (sparseDenseFalseSelectOverhead
+        superDirectorySlots longSuperExplicitSlots localDirectorySlots
+        sparseLocalExplicitSlots) := by
+  unfold sparseDenseFalseSelectOverhead
+  simpa [Nat.add_assoc] using
+    (((SuccinctSpace.sampledDirectoryOverhead_littleO
+        superDirectorySlots).add
+      (SuccinctSpace.idDivLogLogOverhead_littleO
+        longSuperExplicitSlots)).add
+      (SuccinctSpace.logLogCubedSampledDirectoryOverhead_littleO
+        localDirectorySlots)).add
+      (SuccinctSpace.idDivLogLogOverhead_littleO
+        sparseLocalExplicitSlots)
+
+def sparseDenseFalseSelectCodecPayloadBudget
+    (superEntries : List SparseDenseFalseSelectLocatorEntry)
+    (longSuperExplicitEntries : List Nat)
+    (localEntries : List SparseDenseFalseSelectLocatorEntry)
+    (sparseLocalExplicitEntries : List Nat)
+    (superFieldWidth longSuperExplicitWidth localFieldWidth
+      sparseLocalExplicitWidth : Nat) : Nat :=
+  superEntries.length *
+      sparseDenseFalseSelectLocatorEntryWordWidth superFieldWidth +
+    longSuperExplicitEntries.length * longSuperExplicitWidth +
+      localEntries.length *
+          sparseDenseFalseSelectLocatorEntryWordWidth localFieldWidth +
+        sparseLocalExplicitEntries.length * sparseLocalExplicitWidth
+
+/-- Payload codec bundle for the four sparse/dense false-select table classes. -/
+structure SparseDenseFalseSelectCodecTables
+    (superEntries : List SparseDenseFalseSelectLocatorEntry)
+    (longSuperExplicitEntries : List Nat)
+    (localEntries : List SparseDenseFalseSelectLocatorEntry)
+    (sparseLocalExplicitEntries : List Nat)
+    (superFieldWidth longSuperExplicitWidth localFieldWidth
+      sparseLocalExplicitWidth : Nat) where
+  superTable :
+    FixedWidthSparseDenseFalseSelectLocatorEntryTable
+      superEntries superFieldWidth
+  longSuperExplicitTable :
+    SuccinctSpace.FixedWidthNatTable
+      longSuperExplicitEntries longSuperExplicitWidth
+  localTable :
+    FixedWidthSparseDenseFalseSelectLocatorEntryTable
+      localEntries localFieldWidth
+  sparseLocalExplicitTable :
+    SuccinctSpace.FixedWidthNatTable
+      sparseLocalExplicitEntries sparseLocalExplicitWidth
+
+namespace SparseDenseFalseSelectCodecTables
+
+def payload
+    {superEntries : List SparseDenseFalseSelectLocatorEntry}
+    {longSuperExplicitEntries : List Nat}
+    {localEntries : List SparseDenseFalseSelectLocatorEntry}
+    {sparseLocalExplicitEntries : List Nat}
+    {superFieldWidth longSuperExplicitWidth localFieldWidth
+      sparseLocalExplicitWidth : Nat}
+    (tables :
+      SparseDenseFalseSelectCodecTables
+        superEntries longSuperExplicitEntries localEntries
+        sparseLocalExplicitEntries superFieldWidth longSuperExplicitWidth
+        localFieldWidth sparseLocalExplicitWidth) :
+    List Bool :=
+  tables.superTable.payload ++
+    tables.longSuperExplicitTable.payload ++
+      tables.localTable.payload ++
+        tables.sparseLocalExplicitTable.payload
+
+theorem payload_length
+    {superEntries : List SparseDenseFalseSelectLocatorEntry}
+    {longSuperExplicitEntries : List Nat}
+    {localEntries : List SparseDenseFalseSelectLocatorEntry}
+    {sparseLocalExplicitEntries : List Nat}
+    {superFieldWidth longSuperExplicitWidth localFieldWidth
+      sparseLocalExplicitWidth : Nat}
+    (tables :
+      SparseDenseFalseSelectCodecTables
+        superEntries longSuperExplicitEntries localEntries
+        sparseLocalExplicitEntries superFieldWidth longSuperExplicitWidth
+        localFieldWidth sparseLocalExplicitWidth) :
+    tables.payload.length =
+      sparseDenseFalseSelectCodecPayloadBudget
+        superEntries longSuperExplicitEntries localEntries
+        sparseLocalExplicitEntries superFieldWidth longSuperExplicitWidth
+        localFieldWidth sparseLocalExplicitWidth := by
+  simp [payload, sparseDenseFalseSelectCodecPayloadBudget,
+    FixedWidthSparseDenseFalseSelectLocatorEntryTable.payload_length,
+    SuccinctSpace.FixedWidthNatTable.payload_length, Nat.add_assoc]
+
+def ReadProfile
+    {superEntries : List SparseDenseFalseSelectLocatorEntry}
+    {longSuperExplicitEntries : List Nat}
+    {localEntries : List SparseDenseFalseSelectLocatorEntry}
+    {sparseLocalExplicitEntries : List Nat}
+    {superFieldWidth longSuperExplicitWidth localFieldWidth
+      sparseLocalExplicitWidth : Nat}
+    (tables :
+      SparseDenseFalseSelectCodecTables
+        superEntries longSuperExplicitEntries localEntries
+        sparseLocalExplicitEntries superFieldWidth longSuperExplicitWidth
+        localFieldWidth sparseLocalExplicitWidth) : Prop :=
+  (forall i, (tables.superTable.readCosted i).cost <= 1 /\
+    (tables.superTable.readCosted i).erase = superEntries[i]?) /\
+  (forall i, (tables.longSuperExplicitTable.readCosted i).cost <= 1 /\
+    (tables.longSuperExplicitTable.readCosted i).erase =
+      longSuperExplicitEntries[i]?) /\
+  (forall i, (tables.localTable.readCosted i).cost <= 1 /\
+    (tables.localTable.readCosted i).erase = localEntries[i]?) /\
+  (forall i, (tables.sparseLocalExplicitTable.readCosted i).cost <= 1 /\
+    (tables.sparseLocalExplicitTable.readCosted i).erase =
+      sparseLocalExplicitEntries[i]?)
+
+theorem readProfile
+    {superEntries : List SparseDenseFalseSelectLocatorEntry}
+    {longSuperExplicitEntries : List Nat}
+    {localEntries : List SparseDenseFalseSelectLocatorEntry}
+    {sparseLocalExplicitEntries : List Nat}
+    {superFieldWidth longSuperExplicitWidth localFieldWidth
+      sparseLocalExplicitWidth : Nat}
+    (tables :
+      SparseDenseFalseSelectCodecTables
+        superEntries longSuperExplicitEntries localEntries
+        sparseLocalExplicitEntries superFieldWidth longSuperExplicitWidth
+        localFieldWidth sparseLocalExplicitWidth) :
+    tables.ReadProfile := by
+  constructor
+  · intro i
+    exact ⟨tables.superTable.readCosted_cost_le_one i,
+      tables.superTable.readCosted_erase i⟩
+  · constructor
+    · intro i
+      exact
+        ⟨tables.longSuperExplicitTable.readCosted_cost_le_one i,
+          tables.longSuperExplicitTable.readCosted_erase i⟩
+    · constructor
+      · intro i
+        exact ⟨tables.localTable.readCosted_cost_le_one i,
+          tables.localTable.readCosted_erase i⟩
+      · intro i
+        exact
+          ⟨tables.sparseLocalExplicitTable.readCosted_cost_le_one i,
+            tables.sparseLocalExplicitTable.readCosted_erase i⟩
+
+def ReadWordsLengthLeMachine
+    {superEntries : List SparseDenseFalseSelectLocatorEntry}
+    {longSuperExplicitEntries : List Nat}
+    {localEntries : List SparseDenseFalseSelectLocatorEntry}
+    {sparseLocalExplicitEntries : List Nat}
+    {superFieldWidth longSuperExplicitWidth localFieldWidth
+      sparseLocalExplicitWidth : Nat}
+    (tables :
+      SparseDenseFalseSelectCodecTables
+        superEntries longSuperExplicitEntries localEntries
+        sparseLocalExplicitEntries superFieldWidth longSuperExplicitWidth
+        localFieldWidth sparseLocalExplicitWidth)
+    (n : Nat) : Prop :=
+  (forall {i : Nat} {word : List Bool},
+    tables.superTable.store.words[i]? = some word ->
+      word.length <= SuccinctRankProposal.machineWordBits n) /\
+  (forall {i : Nat} {word : List Bool},
+    tables.longSuperExplicitTable.store.words[i]? = some word ->
+      word.length <= SuccinctRankProposal.machineWordBits n) /\
+  (forall {i : Nat} {word : List Bool},
+    tables.localTable.store.words[i]? = some word ->
+      word.length <= SuccinctRankProposal.machineWordBits n) /\
+  (forall {i : Nat} {word : List Bool},
+    tables.sparseLocalExplicitTable.store.words[i]? = some word ->
+      word.length <= SuccinctRankProposal.machineWordBits n)
+
+theorem readWordsLengthLeMachine
+    {superEntries : List SparseDenseFalseSelectLocatorEntry}
+    {longSuperExplicitEntries : List Nat}
+    {localEntries : List SparseDenseFalseSelectLocatorEntry}
+    {sparseLocalExplicitEntries : List Nat}
+    {superFieldWidth longSuperExplicitWidth localFieldWidth
+      sparseLocalExplicitWidth n : Nat}
+    (tables :
+      SparseDenseFalseSelectCodecTables
+        superEntries longSuperExplicitEntries localEntries
+        sparseLocalExplicitEntries superFieldWidth longSuperExplicitWidth
+        localFieldWidth sparseLocalExplicitWidth)
+    (hsuper :
+      sparseDenseFalseSelectLocatorEntryWordWidth superFieldWidth <=
+        SuccinctRankProposal.machineWordBits n)
+    (hlong :
+      longSuperExplicitWidth <=
+        SuccinctRankProposal.machineWordBits n)
+    (hlocal :
+      sparseDenseFalseSelectLocatorEntryWordWidth localFieldWidth <=
+        SuccinctRankProposal.machineWordBits n)
+    (hsparse :
+      sparseLocalExplicitWidth <=
+        SuccinctRankProposal.machineWordBits n) :
+    tables.ReadWordsLengthLeMachine n := by
+  constructor
+  · intro i word hword
+    exact tables.superTable.read_word_length_le_machine hsuper hword
+  · constructor
+    · intro i word hword
+      rw [tables.longSuperExplicitTable.read_word_length_of_some hword]
+      exact hlong
+    · constructor
+      · intro i word hword
+        exact tables.localTable.read_word_length_le_machine hlocal hword
+      · intro i word hword
+        rw [tables.sparseLocalExplicitTable.read_word_length_of_some hword]
+        exact hsparse
+
+theorem payload_length_le_sparseDenseFalseSelectOverhead
+    {superEntries : List SparseDenseFalseSelectLocatorEntry}
+    {longSuperExplicitEntries : List Nat}
+    {localEntries : List SparseDenseFalseSelectLocatorEntry}
+    {sparseLocalExplicitEntries : List Nat}
+    {superFieldWidth longSuperExplicitWidth localFieldWidth
+      sparseLocalExplicitWidth : Nat}
+    (tables :
+      SparseDenseFalseSelectCodecTables
+        superEntries longSuperExplicitEntries localEntries
+        sparseLocalExplicitEntries superFieldWidth longSuperExplicitWidth
+        localFieldWidth sparseLocalExplicitWidth)
+    {superDirectorySlots longSuperExplicitSlots localDirectorySlots
+      sparseLocalExplicitSlots n : Nat}
+    (hbudget :
+      sparseDenseFalseSelectCodecPayloadBudget
+          superEntries longSuperExplicitEntries localEntries
+          sparseLocalExplicitEntries superFieldWidth longSuperExplicitWidth
+          localFieldWidth sparseLocalExplicitWidth <=
+        sparseDenseFalseSelectOverhead
+          superDirectorySlots longSuperExplicitSlots localDirectorySlots
+          sparseLocalExplicitSlots n) :
+    tables.payload.length <=
+      sparseDenseFalseSelectOverhead
+        superDirectorySlots longSuperExplicitSlots localDirectorySlots
+        sparseLocalExplicitSlots n := by
+  rw [tables.payload_length]
+  exact hbudget
+
+theorem profile_le_sparseDenseFalseSelectOverhead
+    {superEntries : List SparseDenseFalseSelectLocatorEntry}
+    {longSuperExplicitEntries : List Nat}
+    {localEntries : List SparseDenseFalseSelectLocatorEntry}
+    {sparseLocalExplicitEntries : List Nat}
+    {superFieldWidth longSuperExplicitWidth localFieldWidth
+      sparseLocalExplicitWidth : Nat}
+    (tables :
+      SparseDenseFalseSelectCodecTables
+        superEntries longSuperExplicitEntries localEntries
+        sparseLocalExplicitEntries superFieldWidth longSuperExplicitWidth
+        localFieldWidth sparseLocalExplicitWidth)
+    {superDirectorySlots longSuperExplicitSlots localDirectorySlots
+      sparseLocalExplicitSlots n : Nat}
+    (hbudget :
+      sparseDenseFalseSelectCodecPayloadBudget
+          superEntries longSuperExplicitEntries localEntries
+          sparseLocalExplicitEntries superFieldWidth longSuperExplicitWidth
+          localFieldWidth sparseLocalExplicitWidth <=
+        sparseDenseFalseSelectOverhead
+          superDirectorySlots longSuperExplicitSlots localDirectorySlots
+          sparseLocalExplicitSlots n)
+    (hsuper :
+      sparseDenseFalseSelectLocatorEntryWordWidth superFieldWidth <=
+        SuccinctRankProposal.machineWordBits n)
+    (hlong :
+      longSuperExplicitWidth <=
+        SuccinctRankProposal.machineWordBits n)
+    (hlocal :
+      sparseDenseFalseSelectLocatorEntryWordWidth localFieldWidth <=
+        SuccinctRankProposal.machineWordBits n)
+    (hsparse :
+      sparseLocalExplicitWidth <=
+        SuccinctRankProposal.machineWordBits n) :
+    SuccinctSpace.LittleOLinear
+        (sparseDenseFalseSelectOverhead
+          superDirectorySlots longSuperExplicitSlots localDirectorySlots
+          sparseLocalExplicitSlots) /\
+      tables.payload.length <=
+        sparseDenseFalseSelectOverhead
+          superDirectorySlots longSuperExplicitSlots localDirectorySlots
+          sparseLocalExplicitSlots n /\
+      tables.ReadProfile /\
+      tables.ReadWordsLengthLeMachine n := by
+  constructor
+  · exact
+      sparseDenseFalseSelectOverhead_littleO
+        superDirectorySlots longSuperExplicitSlots localDirectorySlots
+        sparseLocalExplicitSlots
+  · constructor
+    · exact
+        tables.payload_length_le_sparseDenseFalseSelectOverhead hbudget
+    · constructor
+      · exact tables.readProfile
+      · exact
+          tables.readWordsLengthLeMachine hsuper hlong hlocal hsparse
+
+end SparseDenseFalseSelectCodecTables
+
+/--
 A payload-live select component whose locator payload fits in a sampled
 directory envelope.
 
