@@ -4284,6 +4284,35 @@ def bitsToSparseDenseFalseSelectLocatorEntry
   pointer :=
     SuccinctSpace.bitsToNatLE ((bits.drop (3 * fieldWidth)).take fieldWidth)
 
+theorem bitsToNatLE_lt_two_pow_length (bits : List Bool) :
+    SuccinctSpace.bitsToNatLE bits < 2 ^ bits.length := by
+  induction bits with
+  | nil =>
+      simp [SuccinctSpace.bitsToNatLE]
+  | cons bit rest ih =>
+      cases bit <;>
+        simp [SuccinctSpace.bitsToNatLE, SuccinctSpace.bitToNat,
+          Nat.pow_succ] at ih ⊢ <;>
+        omega
+
+theorem bitsToNatLE_take_lt_two_pow (bits : List Bool) (width : Nat) :
+    SuccinctSpace.bitsToNatLE (bits.take width) < 2 ^ width := by
+  have hlt := bitsToNatLE_lt_two_pow_length (bits.take width)
+  have hlen : (bits.take width).length <= width := by
+    simpa [List.length_take] using Nat.min_le_left width bits.length
+  exact Nat.lt_of_lt_of_le hlt
+    (Nat.pow_le_pow_right (by omega : 0 < 2) hlen)
+
+theorem bitsToSparseDenseFalseSelectLocatorEntry_fields_lt
+    (fieldWidth : Nat) (bits : List Bool) :
+    let entry := bitsToSparseDenseFalseSelectLocatorEntry fieldWidth bits
+    entry.baseOccurrence < 2 ^ fieldWidth /\
+      entry.basePosition < 2 ^ fieldWidth /\
+        entry.spanClass < 2 ^ fieldWidth /\
+          entry.pointer < 2 ^ fieldWidth := by
+  simp [bitsToSparseDenseFalseSelectLocatorEntry,
+    bitsToNatLE_take_lt_two_pow]
+
 theorem bitsToSparseDenseFalseSelectLocatorEntry_toBits_of_bound
     {fieldWidth : Nat}
     {entry : SparseDenseFalseSelectLocatorEntry}
@@ -4643,6 +4672,33 @@ theorem read_word_length_of_some
     word.length =
       sparseDenseFalseSelectLocatorEntryWordWidth fieldWidth :=
   table.word_length_of_get? hword
+
+theorem entry_fields_lt
+    {entries : List SparseDenseFalseSelectLocatorEntry}
+    {fieldWidth : Nat}
+    (table :
+      FixedWidthSparseDenseFalseSelectLocatorEntryTable
+        entries fieldWidth)
+    {i : Nat} {entry : SparseDenseFalseSelectLocatorEntry}
+    (hget : entries[i]? = some entry) :
+    entry.baseOccurrence < 2 ^ fieldWidth /\
+      entry.basePosition < 2 ^ fieldWidth /\
+        entry.spanClass < 2 ^ fieldWidth /\
+          entry.pointer < 2 ^ fieldWidth := by
+  have hread := table.read_exact i
+  rw [hget] at hread
+  cases hword : table.store.words[i]? with
+  | none =>
+      simp [hword] at hread
+  | some word =>
+      have hentry :
+          bitsToSparseDenseFalseSelectLocatorEntry fieldWidth word =
+            entry := by
+        simpa [hword] using hread
+      subst entry
+      exact
+        bitsToSparseDenseFalseSelectLocatorEntry_fields_lt
+          fieldWidth word
 
 theorem read_word_length_le_machine
     {entries : List SparseDenseFalseSelectLocatorEntry}
@@ -7230,6 +7286,65 @@ theorem local_locator_entry_word_width_le_machine
             SuccinctRankProposal.machineWordBits shape.bpCode.length :=
         hlocal hword
       rwa [hlen] at hle
+
+theorem super_locator_entry_fields_lt
+    {shape : Cartesian.CartesianShape}
+    (data : SparseDenseFalseSelectCloseData shape)
+    {i : Nat} {super : SparseDenseFalseSelectLocatorEntry}
+    (hget : data.superEntries[i]? = some super) :
+    super.baseOccurrence < 2 ^ data.superFieldWidth /\
+      super.basePosition < 2 ^ data.superFieldWidth /\
+        super.spanClass < 2 ^ data.superFieldWidth /\
+          super.pointer < 2 ^ data.superFieldWidth := by
+  exact data.tables.superTable.entry_fields_lt hget
+
+theorem local_locator_entry_fields_lt
+    {shape : Cartesian.CartesianShape}
+    (data : SparseDenseFalseSelectCloseData shape)
+    {i : Nat} {loc : SparseDenseFalseSelectLocatorEntry}
+    (hget : data.localEntries[i]? = some loc) :
+    loc.baseOccurrence < 2 ^ data.localFieldWidth /\
+      loc.basePosition < 2 ^ data.localFieldWidth /\
+        loc.spanClass < 2 ^ data.localFieldWidth /\
+          loc.pointer < 2 ^ data.localFieldWidth := by
+  exact data.tables.localTable.entry_fields_lt hget
+
+theorem local_locator_dense_pointer_capacity_obstruction
+    {shape : Cartesian.CartesianShape}
+    (data : SparseDenseFalseSelectCloseData shape)
+    {i : Nat} {loc : SparseDenseFalseSelectLocatorEntry}
+    (hget : data.localEntries[i]? = some loc)
+    (hneeds : 2 ^ data.localFieldWidth <= loc.pointer) :
+    False := by
+  have hptr := (data.local_locator_entry_fields_lt hget).2.2.2
+  omega
+
+theorem short_super_local_pointer_capacity_obstruction
+    {shape : Cartesian.CartesianShape}
+    (data : SparseDenseFalseSelectCloseData shape)
+    {q : Nat} {super : SparseDenseFalseSelectLocatorEntry}
+    (hsuper : data.superEntries[q / data.superStride]? = some super)
+    (hneeds : 2 ^ data.superFieldWidth <= super.pointer) :
+    False := by
+  have hptr := (data.super_locator_entry_fields_lt hsuper).2.2.2
+  omega
+
+theorem dense_branch_packed_local_pointer_capacity_obstruction
+    {shape : Cartesian.CartesianShape}
+    (data : SparseDenseFalseSelectCloseData shape)
+    {q : Nat} {super loc : SparseDenseFalseSelectLocatorEntry}
+    (_hsuper : data.superEntries[q / data.superStride]? = some super)
+    (_hshort : sparseDenseFalseSelectEntryIsMarked super = false)
+    (hlocal :
+      data.localEntries[
+          super.pointer +
+            ((q - super.baseOccurrence) / data.localStride)]? =
+        some loc)
+    (_hdense : sparseDenseFalseSelectEntryIsMarked loc = false)
+    (hneeds : 2 ^ data.localFieldWidth <= loc.pointer) :
+    False := by
+  exact data.local_locator_dense_pointer_capacity_obstruction
+    hlocal hneeds
 
 theorem super_locator_full_machine_field_impossible
     {shape : Cartesian.CartesianShape}

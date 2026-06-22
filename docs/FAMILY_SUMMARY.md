@@ -270,6 +270,23 @@ dense certificate from aligned BP payload words, split dense-local fields,
 branch rank bounds, and local occurrence arithmetic. The next valid C1 stop
 must instantiate those coverage/routing facts from compact tables over
 `shape.bpCode`, not merely add another proof-field surface.
+The packed-pointer obstruction is now explicit:
+`SparseDenseFalseSelectCloseData.super_locator_entry_fields_lt` and
+`SparseDenseFalseSelectCloseData.local_locator_entry_fields_lt` show that
+decoded super/local locator fields are bounded by their packed field width,
+while
+`SparseDenseFalseSelectCloseData.dense_branch_packed_local_pointer_capacity_obstruction`
+proves that a dense branch whose `loc.pointer` must address a dense-local
+entry at or beyond `2 ^ localFieldWidth` is contradictory. This does not close
+C1, but it rules out the old absolute-pointer route as the compact positive
+target. The repaired target is a rectangular local inventory: high-frequency
+local descriptors carry only tags, local offsets, local rank deltas, or bounded
+word-index deltas; absolute fields belong only in low-frequency super tables,
+rare explicit payloads, or charged side locators with their own little-o
+payload proof. Sparse-local explicit answers should be stored as relative
+offsets in padded exception blocks, or routed through a charged variable-length
+base directory with its own budget proof; absolute BP positions at local-entry
+frequency are another disguised non-succinct shortcut.
 `SuccinctFinal` exposes the corresponding
 `SparseDenseFalseSelectBPCloseAccessDirectory` and family adapter so that the
 builder has a direct close-access target to inhabit.

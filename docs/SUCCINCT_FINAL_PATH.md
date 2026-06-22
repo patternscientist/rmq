@@ -413,7 +413,39 @@ First, `sparseDenseFalseSelectLocatorEntry_fullMachineField_not_word_bounded`
 shows that the old one-word four-field locator entry cannot carry full
 machine-width fields while satisfying the machine-word read bound. Dense-local
 absolute-base data must therefore use relative fields, split fields, or another
-explicitly budgeted layout. The positive repair surface is
+explicitly budgeted layout. The stronger final invariant is that high-frequency
+local descriptors may not carry absolute `0..n` positions, absolute
+payload-word indices, or absolute table pointers. Absolute full-width fields are
+allowed only in low-frequency super tables, rare explicit payloads, or charged
+side tables whose total payload is separately proved `LittleOLinear`. If a
+low-frequency super table needs several absolute full-width fields, those
+fields must be split across charged word-bounded tables or another explicit
+word-bounded layout; the old one-word four-full-field codec remains invalid.
+
+The preferred repaired layout is rectangular local routing:
+
+```text
+superSlot        := q / superStride
+localSlotInSuper := (q - super.baseOccurrence) / localStride
+globalLocalSlot  := superSlot * localSlotsPerSuper + localSlotInSuper
+```
+
+Dense local entries should live at this deterministic slot or be reached by a
+charged dense-side locator. Sparse-local explicit payload bases should likewise
+come from a charged sparse flag/rank side structure, not from an absolute
+`loc.pointer` packed into every high-frequency local entry.
+
+Explicit exception payloads should be relative and preferably padded by stride:
+long-super blocks reserve `superStride` relative offsets and sparse-local
+blocks reserve `localStride` relative offsets. Then the query computes the
+explicit entry index by charged exception-block rank plus the local occurrence
+offset. A variable-length explicit table is acceptable only with a charged base
+directory and a payload proof for that directory. Sparse-local exceptions must
+not store absolute `0..n` positions at local-entry frequency unless the same
+profile proves the absolute encoding still lies under the named little-o
+overhead.
+
+The current positive repair surface is
 `FixedWidthSparseDenseFalseSelectDenseLocalEntryTable`, which stores
 dense-local fields in four independently bounded fixed-width Nat tables.
 `SparseDenseFalseSelectCloseData.selectCloseCosted` now consumes this split
@@ -431,6 +463,28 @@ facts from the actual compact builder tables. Those facts are the next builder
 obligations, not final proof-only fields. `builtLongExplicitFalseSelectBranch`
 is retained only as a generated long-explicit sanity/reference branch; it stores
 all false positions and cannot witness `o(n)` auxiliary space.
+
+The next C1 closure target should therefore be the repaired rectangular profile,
+not another attempt to instantiate absolute local/dense pointers:
+
+```lean
+theorem rectangularSparseDenseFalseSelectCloseData_profile
+    (shape : Cartesian.CartesianShape) :
+    let data := rectangularSparseDenseFalseSelectCloseData shape
+    data.payload.length <=
+        canonicalSparseDenseFalseSelectOverhead shape.size /\
+      (forall idx,
+        (data.selectCloseCosted idx).cost <=
+          sparseDenseFalseSelectQueryCost) /\
+      (forall idx,
+        (data.selectCloseCosted idx).erase =
+          SuccinctSpace.bpCloseOfInorder? shape idx) /\
+      data.read_words_length_le_machine
+```
+
+The exact names may differ, but the theorem must consume the deterministic
+local-slot routing or charged side locators and must not leave the branch
+exactness facts as free fields.
 
 ## Component 2: Concrete Macro/Micro BP Close-LCA
 
@@ -876,6 +930,15 @@ Invalid stop points for this final path:
   `SparseDenseFalseSelectBPCloseAccessFamily.constant_query_profile` while the
   super/local/exception tables are not constructed from `shape.bpCode` and the
   branch-exactness fields are still supplied as assumptions.
+- repairing the dense/local route by storing one full-width row per
+  high-frequency local interval, unless the same theorem proves that the row
+  count and field widths fit the named little-o C1 overhead. Splitting an
+  absolute pointer into charged full-width fields is not a succinct repair by
+  itself.
+- storing sparse-local explicit answers as absolute BP positions at
+  local-entry frequency without a LittleOLinear payload proof. The intended
+  compact path stores relative offsets in padded exception blocks, or supplies
+  a charged variable-length base directory with its own budget proof.
 - leaving `descriptorIndex` or an analogous routing function as an uncharged
   arbitrary function that could hide search, predecessor, or oracle work.
 - producing a technically substantial theorem cluster that does not feed the

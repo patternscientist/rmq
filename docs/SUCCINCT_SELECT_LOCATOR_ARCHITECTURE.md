@@ -69,8 +69,11 @@ The directory stores four kinds of payload-backed entries.
 
 4. Sparse-local explicit payload:
    if a local interval has span `> localSparseSpan n`, store all selected
-   positions in that local interval.  Sparse local spans are disjoint, so the
-   number of such intervals is at most `bits.length / localSparseSpan n`.
+   positions in that local interval as offsets from the interval's local base,
+   not as absolute `0..n` BP positions, unless a separate theorem proves the
+   absolute encoding still fits the named little-o budget. Sparse local spans
+   are disjoint, so the number of such intervals is at most
+   `bits.length / localSparseSpan n`.
 
 If a local interval has span `<= localSparseSpan n`, the selected false bit is
 within a window of length at most one machine word.  Because the window may
@@ -192,6 +195,53 @@ one-word entry. It should use relative fields, split locator fields across a
 bounded number of charged words, or prove that explicit exception payloads cover
 the affected intervals within the named little-o budget.
 
+The stronger invariant for the final C1 construction is:
+
+- high-frequency local entries may not carry absolute `0..n` positions,
+  absolute payload-word indices, or absolute table pointers;
+- packed local fields must be tags, intra-window offsets, local rank deltas, or
+  word-index deltas whose range is covered by the local span invariant;
+- absolute full-width fields are allowed only in low-frequency super tables,
+  long/sparse explicit exception payloads, or charged side tables whose total
+  payload is separately proved `LittleOLinear`;
+- when a low-frequency super table uses absolute full-width fields, it should
+  store them in split charged fields or another word-bounded layout, not in the
+  old one-word four-full-field locator codec;
+- routing from an occurrence `q` to the local descriptor slot must be bounded
+  arithmetic, not an uncharged predecessor/search function.
+
+The preferred repaired layout is a rectangular local inventory. For a query
+occurrence `q`, compute:
+
+```text
+superSlot        := q / superStride
+localSlotInSuper := (q - super.baseOccurrence) / localStride
+globalLocalSlot  := superSlot * localSlotsPerSuper + localSlotInSuper
+```
+
+With this layout, the super entry no longer needs to store an absolute base
+pointer into the local table. A dense local descriptor should either live at
+`globalLocalSlot` itself or be found through a charged dense-side locator whose
+payload budget is proved separately. In particular, the final compact builder
+should not use `loc.pointer` as an absolute index into a global
+`denseLocalEntries` table.
+
+For sparse-local exceptions, the same rule applies. A packed local descriptor
+should not store an absolute pointer into the sparse explicit table. Use a
+charged sparse-local flag/rank side structure, or another explicitly budgeted
+side locator, to derive the exception base. The side locator may reuse the
+rank/select primitives already present in the project, but its reads and
+payload bits must be visible in the C1 profile.
+
+The preferred exception-table layout is padded and relative, because it avoids a
+second predecessor/prefix-sum problem. A long-super exception block reserves
+`superStride` relative offsets; a sparse-local exception block reserves
+`localStride` relative offsets. The query computes
+`exceptionBlockRank * stride + localOccurrence` from a charged flag-rank
+directory and reads a relative offset, then adds the stored base position. A
+variable-length explicit table is acceptable only if it also supplies a charged
+base-offset directory and proves that directory's payload budget.
+
 Current positive repair surface:
 `FixedWidthSparseDenseFalseSelectDenseLocalEntryTable` splits dense-local fields
 across four independent fixed-width Nat tables and proves payload length,
@@ -209,6 +259,15 @@ occurrence routing facts over that split entry. The generated
 `builtLongExplicitFalseSelectBranch` is useful as a sanity check for
 long-explicit exactness, but it stores every false position and is not the
 compact final construction.
+
+Adversarial audit note: the split dense-local table is a useful representation
+primitive, not by itself the final compact route. If it is populated with one
+full-width row per high-frequency local interval, or addressed by an absolute
+packed `loc.pointer`, it recreates the same space/routing failure in a more
+polished form. The final C1 theorem must show both that the dense-entry address
+is obtained by the rectangular arithmetic or charged side locator above, and
+that the table's field widths and number of rows fit the named
+`canonicalSparseDenseFalseSelectOverhead` budget.
 
 Then define, not store as a field:
 
@@ -246,6 +305,13 @@ These are known traps, not milestones:
 
 - A dense occurrence-indexed local table.  It gives exact select but its payload
   is linear or worse.
+- A full-width dense/local descriptor row for every high-frequency local
+  interval unless its row count times field width is proved within the named
+  little-o C1 budget. Splitting a bad global pointer into several charged words
+  does not by itself make the construction succinct.
+- Absolute `0..n` positions for sparse-local explicit entries at local-entry
+  frequency. Sparse-local explicit payloads should store relative offsets, or
+  the same theorem must prove the absolute payload remains little-o.
 - A pure `blockIndex : Bool -> Nat -> Nat` that computes the selected payload
   word without charged reads.
 - A local descriptor theorem whose hypotheses already contain the selected
