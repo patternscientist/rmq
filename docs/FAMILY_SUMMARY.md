@@ -239,7 +239,16 @@ and named Nat-table constructors for long-super and sparse-local explicit
 positions. `SparseDenseFalseSelectCodecTables.profile_le_sparseDenseFalseSelectOverhead`
 ties the four table classes to the named total overhead, unit-cost reads,
 exact decoder erasure, and machine-word read bounds without adding selected
-position or answer proof fields.
+position or answer proof fields. The reconciled close-select surface now adds
+`canonicalSparseDenseFalseSelectOverhead`, `denseTwoWordFalseSelectCosted`, and
+`SparseDenseFalseSelectCloseData.profile`: close-select queries are defined
+from charged super/local locator reads, explicit exception reads, and the dense
+two-word BP payload fallback. This is still a surface theorem, not C1 closure;
+the canonical packed builder must next construct those tables from
+`shape.bpCode` and prove the branch-exactness obligations now carried by
+`SparseDenseFalseSelectCloseData`. `SuccinctFinal` exposes the corresponding
+`SparseDenseFalseSelectBPCloseAccessDirectory` and family adapter so that the
+builder has a direct close-access target to inhabit.
 `SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient` pins the first
 macro-design blocker: a macro keyed only by endpoint close-block pairs is false
 even on a four-node right spine, so the concrete macro must store
@@ -505,12 +514,13 @@ kept only as an adapter via
 `SuccinctFinal.concreteBPNativeCloseAccessFamilyOfRankSelectFamily` and the
 compatibility corollary
 `SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile_of_rankSelectFamily`.
-The theorem remains conditional: the repository still needs Worker A's concrete
-compact false-select/close-access family witness inhabiting
-`ReadBackedBPCloseAccessFamily` with both an `o(n)` overhead and the explicit
-`payload.length <= overhead shape.size` bound before the unconditional BP-native
-`2*n + o(n), O(1)` theorem is closed. `scripts/succinct_cost_lint.ps1` is wired
-into `scripts/gate.ps1` and now flags the audited anti-pattern
+The theorem remains conditional: the repository now has a sparse/dense
+false-select close-access adapter, but it still needs the concrete
+`shape.bpCode` builder proving the `SparseDenseFalseSelectCloseData` branch
+obligations from constructed super/local/exception tables before the
+unconditional BP-native `2*n + o(n), O(1)` theorem is closed.
+`scripts/succinct_cost_lint.ps1` is wired into `scripts/gate.ps1` and now flags
+the audited anti-pattern
 `LittleOLinear (fun _ => ...)` in succinct proposal/final source files.
 `docs/SUCCINCT_SELECT_LOCATOR_ARCHITECTURE.md` pins the C1 path to a
 Clark/RRR-style sparse/dense false-select inventory: super samples, explicit
@@ -1472,10 +1482,16 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctSelectProposal.fixedWidthLongSuperExplicitTable_profile`,
   `SuccinctSelectProposal.fixedWidthSparseLocalExplicitTable_profile`,
   `SuccinctSelectProposal.sparseDenseFalseSelectOverhead_littleO`,
+  `SuccinctSelectProposal.canonicalSparseDenseFalseSelectOverhead_littleO`,
+  `SuccinctSelectProposal.denseTwoWordFalseSelectCosted_cost_le_five`,
   `SuccinctSelectProposal.SparseDenseFalseSelectCodecTables.payload_length`,
   `SuccinctSelectProposal.SparseDenseFalseSelectCodecTables.readProfile`,
   `SuccinctSelectProposal.SparseDenseFalseSelectCodecTables.readWordsLengthLeMachine`,
   `SuccinctSelectProposal.SparseDenseFalseSelectCodecTables.profile_le_sparseDenseFalseSelectOverhead`,
+  `SuccinctSelectProposal.SparseDenseFalseSelectCloseData.payload_length_le_overhead`,
+  `SuccinctSelectProposal.SparseDenseFalseSelectCloseData.selectCloseCosted_cost_le`,
+  `SuccinctSelectProposal.SparseDenseFalseSelectCloseData.selectCloseCosted_exact`,
+  `SuccinctSelectProposal.SparseDenseFalseSelectCloseData.profile`,
   `SuccinctSelectProposal.twoLevelSelectOverhead_littleO`,
   `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData.selectCosted_cost_le_four`,
   `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData.selected_position_in_read_word_of_sample`,
@@ -1679,7 +1695,7 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.queryBuiltCosted_cost_le`,
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.queryBuiltCosted_exact`,
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.two_n_plus_o_built_query_profile`.
-- `RMQ/Core/SuccinctFinal.lean` (24):
+- `RMQ/Core/SuccinctFinal.lean` (32):
   `SuccinctFinal.PayloadLiveBPCloseAccessFamily.constant_query_profile`,
   `SuccinctFinal.ReadBackedBPCloseAccessDirectory.payload_length_le_overhead`,
   `SuccinctFinal.ReadBackedBPCloseAccessDirectory.selectCloseCosted_cost_le`,
@@ -1689,6 +1705,14 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctFinal.ReadBackedBPCloseAccessDirectory.rank_read_words_length_le_machine`,
   `SuccinctFinal.ReadBackedBPCloseAccessDirectory.select_read_words_length_le_machine`,
   `SuccinctFinal.ReadBackedBPCloseAccessFamily.constant_query_profile`,
+  `SuccinctFinal.SparseDenseFalseSelectBPCloseAccessDirectory.payload_length_le_overhead`,
+  `SuccinctFinal.SparseDenseFalseSelectBPCloseAccessDirectory.selectCloseCosted_cost_le`,
+  `SuccinctFinal.SparseDenseFalseSelectBPCloseAccessDirectory.rankCloseCosted_cost_le`,
+  `SuccinctFinal.SparseDenseFalseSelectBPCloseAccessDirectory.selectCloseCosted_exact`,
+  `SuccinctFinal.SparseDenseFalseSelectBPCloseAccessDirectory.rankCloseCosted_exact`,
+  `SuccinctFinal.SparseDenseFalseSelectBPCloseAccessDirectory.select_read_words_length_le_machine`,
+  `SuccinctFinal.SparseDenseFalseSelectBPCloseAccessDirectory.profile`,
+  `SuccinctFinal.SparseDenseFalseSelectBPCloseAccessFamily.constant_query_profile`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQOverhead_littleO`,
   `SuccinctFinal.concreteBPNativeSelectCloseCosted_cost_le`,
   `SuccinctFinal.concreteBPNativeRankCloseCosted_cost_le`,

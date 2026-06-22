@@ -399,10 +399,14 @@ charged work. A full general `select target bits occurrence` structure is
 acceptable only if the same branch instantiates the false-target BP
 close-select theorem and proves the payload budget of the actual built tables.
 
-If the current read-backed close-access structure remains tied to
-`TwoLevelPayloadLiveStoredWordSelectData`, add a sibling close-access/final-join
-theorem for the sparse/dense false-select component instead of weakening the
-sparse/dense construction to fit the old one-word select record.
+The sibling sparse/dense close-access socket now exists as
+`SuccinctFinal.SparseDenseFalseSelectBPCloseAccessDirectory` and
+`SuccinctFinal.SparseDenseFalseSelectBPCloseAccessFamily`. It consumes
+`SuccinctSelectProposal.SparseDenseFalseSelectCloseData`, whose query reads the
+packed super/local locator tables, explicit exception tables, and dense BP
+payload words. This is an interface and adapter layer only: a valid C1 stop must
+still construct the tables from `shape.bpCode` and prove the branch-exactness
+fields of `SparseDenseFalseSelectCloseData` from that construction.
 
 ## Component 2: Concrete Macro/Micro BP Close-LCA
 
@@ -739,9 +743,9 @@ C2 concrete compact close directory. The current theorem is a built-payload
 join, not an arbitrary encoded-function wrapper: its payload is
 `shape.bpCode ++ aux`, with aux padded to the exact reserved overhead, and its
 query erases to the exact representative-array RMQ result. The remaining C1
-task is still the concrete compact instantiation of the read-backed close-select
-surface; do not claim that the weak conditional access theorem retires the
-compact locator caveat by itself.
+task is now the concrete compact instantiation of the sparse/dense
+close-select surface; do not claim that the weak conditional access theorem or
+the new sparse/dense family socket retires the compact locator caveat by itself.
 
 ## Concrete Close Contract
 
@@ -844,6 +848,10 @@ Invalid stop points for this final path:
   comes from proof fields such as `descriptor_some_exact`,
   `descriptor_none_exact`, `descriptor_word_choice_exact`, or a free
   `descriptorIndex`, while the compact payload builder remains missing.
+- proving `SparseDenseFalseSelectCloseData.profile` or
+  `SparseDenseFalseSelectBPCloseAccessFamily.constant_query_profile` while the
+  super/local/exception tables are not constructed from `shape.bpCode` and the
+  branch-exactness fields are still supplied as assumptions.
 - leaving `descriptorIndex` or an analogous routing function as an uncharged
   arbitrary function that could hide search, predecessor, or oracle work.
 - producing a technically substantial theorem cluster that does not feed the

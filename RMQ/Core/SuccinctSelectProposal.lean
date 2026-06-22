@@ -5256,5 +5256,481 @@ theorem bounded_constant_query_profile
 
 end ExactSampledPayloadLiveStoredWordSelectFamily
 
+/-!
+## Sparse/dense false-select close locator
+
+This is the C1-specific close-select surface for `select false shape.bpCode`.
+It reuses the packed four-field locator-entry codec above for both super and
+local inventories.  The dense case is allowed to read two aligned BP payload
+words; all directory reads go through the payload stores exposed by
+`SparseDenseFalseSelectCodecTables`.
+-/
+
+/-- Canonical coarse slot budget for the sparse/dense false-select locator. -/
+def canonicalSparseDenseFalseSelectOverhead (n : Nat) : Nat :=
+  sparseDenseFalseSelectOverhead 32 32 32 32 (2 * n)
+
+theorem canonicalSparseDenseFalseSelectOverhead_littleO :
+    SuccinctSpace.LittleOLinear canonicalSparseDenseFalseSelectOverhead := by
+  unfold canonicalSparseDenseFalseSelectOverhead
+  exact (sparseDenseFalseSelectOverhead_littleO 32 32 32 32).comp_two_mul_arg
+
+/-- Fixed model cost for one sparse/dense close-select query. -/
+def sparseDenseFalseSelectQueryCost : Nat := 16
+
+def sparseDenseFalseSelectWordBits
+    (shape : Cartesian.CartesianShape) : Nat :=
+  SuccinctRankProposal.machineWordBits shape.bpCode.length
+
+def sparseDenseFalseSelectEll
+    (shape : Cartesian.CartesianShape) : Nat :=
+  Nat.log2 (sparseDenseFalseSelectWordBits shape) + 1
+
+def sparseDenseFalseSelectSuperStride
+    (shape : Cartesian.CartesianShape) : Nat :=
+  sparseDenseFalseSelectWordBits shape *
+    sparseDenseFalseSelectWordBits shape
+
+def sparseDenseFalseSelectLocalStride
+    (shape : Cartesian.CartesianShape) : Nat :=
+  max 1
+    (sparseDenseFalseSelectWordBits shape /
+      (sparseDenseFalseSelectEll shape *
+        sparseDenseFalseSelectEll shape))
+
+def sparseDenseFalseSelectSuperLongSpan
+    (shape : Cartesian.CartesianShape) : Nat :=
+  sparseDenseFalseSelectSuperStride shape *
+    sparseDenseFalseSelectWordBits shape *
+      sparseDenseFalseSelectEll shape
+
+def sparseDenseFalseSelectLocalSparseSpan
+    (shape : Cartesian.CartesianShape) : Nat :=
+  sparseDenseFalseSelectWordBits shape
+
+def sparseDenseFalseSelectEntryIsMarked
+    (entry : SparseDenseFalseSelectLocatorEntry) : Bool :=
+  entry.spanClass != 0
+
+/--
+Dense local fallback for a sparse/dense select interval.
+
+The base position may be unaligned, so the query reads the aligned word
+containing it and, only when necessary, the next aligned word.  The only
+non-read primitives are counted word-rank and word-select operations.
+-/
+def denseTwoWordFalseSelectCosted
+    {bits : List Bool} {wordSize : Nat}
+    (bitWords : SuccinctSpace.BoundedPayloadWordStore bits wordSize)
+    (basePosition baseOccurrence q : Nat) : Costed (Option Nat) :=
+  let firstWordIndex := basePosition / wordSize
+  let firstWordStart := firstWordIndex * wordSize
+  let firstOffset := basePosition - firstWordStart
+  let localOccurrence := q - baseOccurrence
+  Costed.bind (bitWords.store.readWordCosted firstWordIndex) fun firstWord? =>
+    match firstWord? with
+    | none => Costed.pure none
+    | some firstWord =>
+        Costed.bind
+          (RMQ.RAM.rankBoolWordPrefix false firstWord firstOffset).toCosted
+          fun beforeFirst =>
+            Costed.bind
+              (RMQ.RAM.rankBoolWordPrefix
+                false firstWord firstWord.length).toCosted
+              fun uptoFirst =>
+                let firstCount := uptoFirst - beforeFirst
+                if localOccurrence < firstCount then
+                  Costed.map
+                    (fun local? =>
+                      local?.map fun offset => firstWordStart + offset)
+                    (RMQ.RAM.selectBoolWord false firstWord
+                      (beforeFirst + localOccurrence)).toCosted
+                else
+                  Costed.bind
+                    (bitWords.store.readWordCosted (firstWordIndex + 1))
+                    fun secondWord? =>
+                      match secondWord? with
+                      | none => Costed.pure none
+                      | some secondWord =>
+                          Costed.map
+                            (fun local? =>
+                              local?.map fun offset =>
+                                (firstWordIndex + 1) * wordSize + offset)
+                            (RMQ.RAM.selectBoolWord false secondWord
+                              (localOccurrence - firstCount)).toCosted
+
+theorem denseTwoWordFalseSelectCosted_cost_le_five
+    {bits : List Bool} {wordSize : Nat}
+    (bitWords : SuccinctSpace.BoundedPayloadWordStore bits wordSize)
+    (basePosition baseOccurrence q : Nat) :
+    (denseTwoWordFalseSelectCosted
+      bitWords basePosition baseOccurrence q).cost <= 5 := by
+  unfold denseTwoWordFalseSelectCosted
+  cases hfirst :
+      (bitWords.store.readWordCosted
+        (basePosition / wordSize)).value with
+  | none =>
+      simp [Costed.bind, Costed.pure, hfirst]
+  | some firstWord =>
+      by_cases hchoose :
+          q - baseOccurrence <
+            RMQ.RAM.boolRankPrefix false firstWord firstWord.length -
+              RMQ.RAM.boolRankPrefix false firstWord
+                (basePosition - basePosition / wordSize * wordSize)
+      · simp [Costed.bind, Costed.map, Costed.pure, hfirst, hchoose]
+      · cases hsecond :
+            (bitWords.store.readWordCosted
+              (basePosition / wordSize + 1)).value with
+        | none =>
+            simp [Costed.bind, Costed.pure, hfirst, hchoose,
+              hsecond]
+        | some secondWord =>
+            simp [Costed.bind, Costed.map, Costed.pure, hfirst, hchoose,
+              hsecond]
+
+/--
+Concrete sparse/dense false-select close data for one Cartesian shape.
+
+The four payload classes are carried by `SparseDenseFalseSelectCodecTables` so
+the table payload and read-word accounting come from the shared codec layer.
+The branch-exactness fields are the current reconciliation surface; the next
+construction milestone is to build the entries from `shape.bpCode` and prove
+these fields from that builder.
+-/
+structure SparseDenseFalseSelectCloseData
+    (shape : Cartesian.CartesianShape) where
+  wordSize : Nat
+  wordSize_eq :
+    wordSize = sparseDenseFalseSelectWordBits shape
+  wordSize_pos : 0 < wordSize
+  wordSize_le_machine :
+    wordSize <= SuccinctRankProposal.machineWordBits shape.bpCode.length
+  superStride : Nat
+  superStride_eq :
+    superStride = sparseDenseFalseSelectSuperStride shape
+  superStride_pos : 0 < superStride
+  localStride : Nat
+  localStride_eq :
+    localStride = sparseDenseFalseSelectLocalStride shape
+  localStride_pos : 0 < localStride
+  superEntries : List SparseDenseFalseSelectLocatorEntry
+  longSuperExplicitEntries : List Nat
+  localEntries : List SparseDenseFalseSelectLocatorEntry
+  sparseLocalExplicitEntries : List Nat
+  superFieldWidth : Nat
+  longSuperExplicitWidth : Nat
+  localFieldWidth : Nat
+  sparseLocalExplicitWidth : Nat
+  tables :
+    SparseDenseFalseSelectCodecTables
+      superEntries longSuperExplicitEntries localEntries
+      sparseLocalExplicitEntries superFieldWidth longSuperExplicitWidth
+      localFieldWidth sparseLocalExplicitWidth
+  bitWords : SuccinctSpace.BoundedPayloadWordStore shape.bpCode wordSize
+  payload_length_le :
+    tables.payload.length <=
+      canonicalSparseDenseFalseSelectOverhead shape.size
+  tables_read_words_length_le_machine :
+    tables.ReadWordsLengthLeMachine shape.bpCode.length
+  super_missing_exact :
+    forall q,
+      superEntries[q / superStride]? = none ->
+        RMQ.Succinct.select false shape.bpCode q = none
+  long_explicit_exact :
+    forall q super,
+      superEntries[q / superStride]? = some super ->
+      sparseDenseFalseSelectEntryIsMarked super = true ->
+        longSuperExplicitEntries[
+            super.pointer + (q - super.baseOccurrence)]? =
+          RMQ.Succinct.select false shape.bpCode q
+  local_missing_exact :
+    forall q super,
+      superEntries[q / superStride]? = some super ->
+      sparseDenseFalseSelectEntryIsMarked super = false ->
+      localEntries[
+          super.pointer +
+            ((q - super.baseOccurrence) / localStride)]? = none ->
+        RMQ.Succinct.select false shape.bpCode q = none
+  sparse_explicit_exact :
+    forall q super loc,
+      superEntries[q / superStride]? = some super ->
+      sparseDenseFalseSelectEntryIsMarked super = false ->
+      localEntries[
+          super.pointer +
+            ((q - super.baseOccurrence) / localStride)]? = some loc ->
+      sparseDenseFalseSelectEntryIsMarked loc = true ->
+        sparseLocalExplicitEntries[
+            loc.pointer + (q - loc.baseOccurrence)]? =
+          RMQ.Succinct.select false shape.bpCode q
+  dense_exact :
+    forall q super loc,
+      superEntries[q / superStride]? = some super ->
+      sparseDenseFalseSelectEntryIsMarked super = false ->
+      localEntries[
+          super.pointer +
+            ((q - super.baseOccurrence) / localStride)]? = some loc ->
+      sparseDenseFalseSelectEntryIsMarked loc = false ->
+        (denseTwoWordFalseSelectCosted
+          bitWords loc.basePosition loc.baseOccurrence q).erase =
+          RMQ.Succinct.select false shape.bpCode q
+
+namespace SparseDenseFalseSelectCloseData
+
+def payload
+    {shape : Cartesian.CartesianShape}
+    (data : SparseDenseFalseSelectCloseData shape) : List Bool :=
+  data.tables.payload
+
+def readWords
+    {shape : Cartesian.CartesianShape}
+    (data : SparseDenseFalseSelectCloseData shape) : List (List Bool) :=
+  data.tables.superTable.store.words.toList ++
+    data.tables.longSuperExplicitTable.store.words.toList ++
+      data.tables.localTable.store.words.toList ++
+        data.tables.sparseLocalExplicitTable.store.words.toList ++
+          data.bitWords.store.words.toList
+
+def queryOccurrence
+    {shape : Cartesian.CartesianShape}
+    (_data : SparseDenseFalseSelectCloseData shape) (idx : Nat) : Nat :=
+  Nat.min idx shape.bpCode.length
+
+def selectCloseCosted
+    {shape : Cartesian.CartesianShape}
+    (data : SparseDenseFalseSelectCloseData shape)
+    (idx : Nat) : Costed (Option Nat) :=
+  let q := data.queryOccurrence idx
+  let superSlot := q / data.superStride
+  Costed.bind (data.tables.superTable.readCosted superSlot) fun super? =>
+    match super? with
+    | none => Costed.pure none
+    | some super =>
+        if sparseDenseFalseSelectEntryIsMarked super = true then
+          data.tables.longSuperExplicitTable.readCosted
+            (super.pointer + (q - super.baseOccurrence))
+        else
+          let localSlot :=
+            super.pointer + ((q - super.baseOccurrence) / data.localStride)
+          Costed.bind (data.tables.localTable.readCosted localSlot) fun local? =>
+            match local? with
+            | none => Costed.pure none
+            | some loc =>
+                if sparseDenseFalseSelectEntryIsMarked loc = true then
+                  data.tables.sparseLocalExplicitTable.readCosted
+                    (loc.pointer + (q - loc.baseOccurrence))
+                else
+                  denseTwoWordFalseSelectCosted
+                    data.bitWords loc.basePosition loc.baseOccurrence q
+
+theorem payload_length_le_overhead
+    {shape : Cartesian.CartesianShape}
+    (data : SparseDenseFalseSelectCloseData shape) :
+    data.payload.length <=
+      canonicalSparseDenseFalseSelectOverhead shape.size := by
+  simpa [payload] using data.payload_length_le
+
+theorem read_word_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    (data : SparseDenseFalseSelectCloseData shape)
+    {word : List Bool}
+    (hmem : List.Mem word data.readWords) :
+    word.length <= SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  rcases data.tables_read_words_length_le_machine with
+    ⟨hsuper, hlong, hlocal, hsparse⟩
+  rw [readWords] at hmem
+  rcases List.mem_append.mp hmem with hprefix0 | hbitsMem
+  · rcases List.mem_append.mp hprefix0 with hprefix1 | hsparseMem
+    · rcases List.mem_append.mp hprefix1 with hprefix2 | hlocalMem
+      · rcases List.mem_append.mp hprefix2 with hsuperMem | hlongMem
+        · rcases (List.mem_iff_getElem?.mp hsuperMem) with ⟨i, hgetList⟩
+          have hget :
+              data.tables.superTable.store.words[i]? = some word := by
+            simpa [Array.getElem?_toList] using hgetList
+          exact hsuper hget
+        · rcases (List.mem_iff_getElem?.mp hlongMem) with ⟨i, hgetList⟩
+          have hget :
+              data.tables.longSuperExplicitTable.store.words[i]? =
+                some word := by
+            simpa [Array.getElem?_toList] using hgetList
+          exact hlong hget
+      · rcases (List.mem_iff_getElem?.mp hlocalMem) with ⟨i, hgetList⟩
+        have hget :
+            data.tables.localTable.store.words[i]? = some word := by
+          simpa [Array.getElem?_toList] using hgetList
+        exact hlocal hget
+    · rcases (List.mem_iff_getElem?.mp hsparseMem) with ⟨i, hgetList⟩
+      have hget :
+          data.tables.sparseLocalExplicitTable.store.words[i]? =
+            some word := by
+        simpa [Array.getElem?_toList] using hgetList
+      exact hsparse hget
+  · exact Nat.le_trans (data.bitWords.word_length_le hbitsMem)
+      data.wordSize_le_machine
+
+set_option linter.unusedSimpArgs false in
+theorem selectCloseCosted_cost_le
+    {shape : Cartesian.CartesianShape}
+    (data : SparseDenseFalseSelectCloseData shape) (idx : Nat) :
+    (data.selectCloseCosted idx).cost <= sparseDenseFalseSelectQueryCost := by
+  unfold selectCloseCosted sparseDenseFalseSelectQueryCost
+  simp only [queryOccurrence]
+  cases hsuperValue :
+      (data.tables.superTable.readCosted
+        ((Nat.min idx shape.bpCode.length) / data.superStride)).value with
+  | none =>
+      simp [Costed.bind, Costed.pure, hsuperValue] <;> omega
+  | some super =>
+      by_cases hlong : sparseDenseFalseSelectEntryIsMarked super = true
+      · have hlongCost :=
+          data.tables.longSuperExplicitTable.readCosted_cost_le_one
+            (super.pointer +
+              (Nat.min idx shape.bpCode.length - super.baseOccurrence))
+        simp [Costed.bind, Costed.pure, hsuperValue, hlong] <;> omega
+      · let localSlot :=
+          super.pointer +
+            ((Nat.min idx shape.bpCode.length - super.baseOccurrence) /
+              data.localStride)
+        cases hlocalValue :
+            (data.tables.localTable.readCosted localSlot).value with
+        | none =>
+            simp [Costed.bind, Costed.pure, hsuperValue, hlong,
+              localSlot, hlocalValue] <;> omega
+        | some loc =>
+            by_cases hsparse :
+                sparseDenseFalseSelectEntryIsMarked loc = true
+            · have hsparseCost :=
+                data.tables.sparseLocalExplicitTable.readCosted_cost_le_one
+                  (loc.pointer +
+                    (Nat.min idx shape.bpCode.length -
+                      loc.baseOccurrence))
+              simp [Costed.bind, Costed.pure, hsuperValue, hlong,
+                localSlot, hlocalValue, hsparse] <;> omega
+            · have hdense :=
+                denseTwoWordFalseSelectCosted_cost_le_five
+                  data.bitWords loc.basePosition loc.baseOccurrence
+                  (Nat.min idx shape.bpCode.length)
+              simp [Costed.bind, Costed.pure, hsuperValue, hlong,
+                localSlot, hlocalValue, hsparse] <;> omega
+
+theorem selectCloseCosted_exact
+    {shape : Cartesian.CartesianShape}
+    (data : SparseDenseFalseSelectCloseData shape) (idx : Nat) :
+    (data.selectCloseCosted idx).erase =
+      SuccinctSpace.bpCloseOfInorder? shape idx := by
+  let q := Nat.min idx shape.bpCode.length
+  have hclamp :
+      RMQ.Succinct.select false shape.bpCode q =
+        SuccinctSpace.bpCloseOfInorder? shape idx := by
+    calc
+      RMQ.Succinct.select false shape.bpCode q =
+          RMQ.Succinct.select false shape.bpCode idx := by
+            simpa [q] using
+              RMQ.Succinct.select_min_length_eq false shape.bpCode idx
+      _ = SuccinctSpace.bpCloseOfInorder? shape idx := by
+            exact SuccinctSpace.select_false_bpCode_eq_bpCloseOfInorder?
+              shape idx
+  unfold selectCloseCosted queryOccurrence
+  simp only [Costed.erase_bind,
+    FixedWidthSparseDenseFalseSelectLocatorEntryTable.readCosted_erase]
+  cases hsuper :
+      data.superEntries[q / data.superStride]? with
+  | none =>
+      simp
+      rw [<- hclamp]
+      exact (data.super_missing_exact q hsuper).symm
+  | some super =>
+      by_cases hlong : sparseDenseFalseSelectEntryIsMarked super = true
+      · simp [hlong, SuccinctSpace.FixedWidthNatTable.readCosted_erase]
+        rw [<- hclamp]
+        exact data.long_explicit_exact q super hsuper hlong
+      · have hlongFalse :
+            sparseDenseFalseSelectEntryIsMarked super = false := by
+          cases hmark : sparseDenseFalseSelectEntryIsMarked super
+          · rfl
+          · contradiction
+        let localSlot :=
+          super.pointer + ((q - super.baseOccurrence) / data.localStride)
+        cases hlocal : data.localEntries[localSlot]? with
+        | none =>
+            simp [hlong,
+              FixedWidthSparseDenseFalseSelectLocatorEntryTable.readCosted_erase]
+            have hlocal' :
+                data.localEntries[
+                    super.pointer +
+                      ((q - super.baseOccurrence) / data.localStride)]? =
+                  none := by
+              simpa [localSlot] using hlocal
+            rw [hlocal']
+            simp
+            rw [<- hclamp]
+            exact (data.local_missing_exact q super hsuper hlongFalse
+              hlocal').symm
+        | some loc =>
+            by_cases hsparse :
+                sparseDenseFalseSelectEntryIsMarked loc = true
+            · simp [hlong,
+                FixedWidthSparseDenseFalseSelectLocatorEntryTable.readCosted_erase]
+              have hlocal' :
+                  data.localEntries[
+                      super.pointer +
+                        ((q - super.baseOccurrence) /
+                          data.localStride)]? =
+                    some loc := by
+                simpa [localSlot] using hlocal
+              rw [hlocal']
+              simp [hsparse,
+                SuccinctSpace.FixedWidthNatTable.readCosted_erase]
+              rw [<- hclamp]
+              exact data.sparse_explicit_exact q super loc hsuper
+                hlongFalse hlocal' hsparse
+            · have hsparseFalse :
+                  sparseDenseFalseSelectEntryIsMarked loc = false := by
+                cases hmark : sparseDenseFalseSelectEntryIsMarked loc
+                · rfl
+                · contradiction
+              simp [hlong,
+                FixedWidthSparseDenseFalseSelectLocatorEntryTable.readCosted_erase]
+              have hlocal' :
+                  data.localEntries[
+                      super.pointer +
+                        ((q - super.baseOccurrence) /
+                          data.localStride)]? =
+                    some loc := by
+                simpa [localSlot] using hlocal
+              rw [hlocal']
+              simp [hsparse]
+              rw [<- hclamp]
+              exact data.dense_exact q super loc hsuper hlongFalse
+                hlocal' hsparseFalse
+
+theorem profile
+    {shape : Cartesian.CartesianShape}
+    (data : SparseDenseFalseSelectCloseData shape) :
+    data.payload.length <=
+        canonicalSparseDenseFalseSelectOverhead shape.size /\
+      SuccinctSpace.LittleOLinear canonicalSparseDenseFalseSelectOverhead /\
+      (forall idx,
+        (data.selectCloseCosted idx).cost <=
+          sparseDenseFalseSelectQueryCost) /\
+      (forall idx,
+        (data.selectCloseCosted idx).erase =
+          SuccinctSpace.bpCloseOfInorder? shape idx) /\
+      forall {word : List Bool},
+        List.Mem word data.readWords ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  constructor
+  · exact data.payload_length_le_overhead
+  · constructor
+    · exact canonicalSparseDenseFalseSelectOverhead_littleO
+    · constructor
+      · exact data.selectCloseCosted_cost_le
+      · constructor
+        · exact data.selectCloseCosted_exact
+        · intro word hmem
+          exact data.read_word_length_le_machine hmem
+
+end SparseDenseFalseSelectCloseData
+
 end SuccinctSelectProposal
 end RMQ
