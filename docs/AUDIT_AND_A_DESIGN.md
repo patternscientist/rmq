@@ -1401,3 +1401,60 @@ that must not be merged. Not dead in the water (rank/close/BP/lower-bound/join-l
 intact; A's exact+O(1)+selectBoolWord scaffolding is reusable), but the select o(n)
 remains open and the worker spec must explicitly forbid `LittleOLinear (fun _ => …)`
 and require `payload.length ≤ overhead n` as the o(n) obligation.
+
+## 2026-06-21 (rectangular built close-access) — concrete EXACT O(1) witness landed, but it is LINEAR (≥2n); o(n) still open. Design is sound; the gap is assembly on the narrow foundation.
+
+`codex/c1-rectangular-built-close-access` (+~7.7k dirty lines, 44 new axiom
+entries). Build green, trust clean (0 bad-axiom), hygiene + native scans clean.
+
+**Genuine progress on the witness/construction front.** The "rectangular" pivot
+replaces the pointer-based locator (which hit the proven
+`*_pointer_capacity_obstruction`) with a fixed superSlot×localSlot grid addressed
+by arithmetic — no stored pointer. The result is a **concrete, hypothesis-free,
+exact, O(1), payload-live** built witness: `builtRectangularChargedFalseSelectCloseData`
+/ `builtTwoLevelFalseSelectCloseData` (`def (shape)`), with
+`builtTwoLevelFalseSelectBPCloseAccessDirectory_profile` proving
+`selectClose.erase = bpCloseOfInorder?`, `rankClose.erase = rankPrefix false`,
+constant cost, and machine-word bounds — **exactness discharged from the
+construction, not assumed.** This retires the assumption-field / abstract-witness
+problems that dogged earlier rounds, and the dense path reads the split fields.
+
+**But it is NOT succinct.** `builtTwoLevelFalseSelectBlockOverhead_ge_bpCode_length_succ`
+proves the block overhead is `≥ bpCode.length + 1 = ≥ 2n+1` (LINEAR), and the
+profile is `payload.length = superOverhead + blockOverhead`. The witness still
+rests on the linear `TwoLevelPayloadLiveStoredWordSelectData` (one full-width
+position per occurrence). There is **no `LittleOLinear` for the assembled
+rectangular/two-level overhead** (only the negative
+`relativeSplitRectangular_global_padded_sparse_payload_not_littleO` and friends).
+So: concrete + exact + O(1) ✓, o(n) ✗.
+
+**The o(n) components exist but aren't assembled into the exact witness.** The
+relative-split sparse-exception machinery has genuine positive o(n) overheads
+(`canonicalRelativeSplitSparseExceptionFalseSelectOverhead_littleO`,
+`sparseExceptionRelativeTableOverhead_littleO`,
+`sparseExceptionDirectoryOverhead_littleO`), and the `padded…not_littleO`
+obstructions correctly prune the dead padded variants. The gap is that the
+*assembled* exact close-data routes its local inventory through the linear
+TwoLevel block table instead of the narrow relative-split tables.
+
+**Do we need to rethink design? No — not the plan, the BP-close route, or the
+sparse/dense select architecture.** RRR/Clark/Vigna guarantee o(n)+O(1) select is
+achievable on the word-RAM, the close side is done, and the o(n) component
+overheads are already proven. The recurring collapse-to-linear is an *assembly*
+failure, not a design flaw: every concrete witness keeps being built on the
+structurally-linear `TwoLevelPayloadLiveStoredWordSelectData` foundation.
+
+**Key insight to reach 2n+o(n)/O(1):** assemble the exact close-data ENTIRELY on
+the narrow/sparse-sampled/compact-exception components (all of which now have
+proven `LittleOLinear` overheads), and *abandon the full-width TwoLevel block
+table as the foundation*. Concretely, the local inventory must store positions
+**relative to the super base in Θ(log log n) bits**, sampled every
+`localStride = Θ(w/(log log n)²)`-th occurrence (so o(n) of them); long-super and
+sparse-local exceptions are bounded by the count of **disjoint** long/sparse
+intervals (o(n)), stored compactly; dense-local uses the split two-word path
+(already o(n)). The one missing theorem is a concrete exact close-data witness
+whose `payload_length_le` sums these already-littleO components — i.e. replace the
+`≥2n` `builtTwoLevelFalseSelectBlockOverhead` with the relative-split total and
+prove its `LittleOLinear`. The pieces are proven; the next round must *merge them
+into the exact witness*, not produce another linear baseline or another padding
+obstruction.
