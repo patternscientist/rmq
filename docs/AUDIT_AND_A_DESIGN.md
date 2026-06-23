@@ -1458,3 +1458,57 @@ whose `payload_length_le` sums these already-littleO components — i.e. replace
 prove its `LittleOLinear`. The pieces are proven; the next round must *merge them
 into the exact witness*, not produce another linear baseline or another padding
 obstruction.
+
+## 2026-06-21 (compact long-super) — GOAL ACHIEVED (in worktree): concrete hypothesis-free 2n+o(n), O(1), exact succinct RMQ, sorry-free, standard axioms only
+
+`codex/c1-compact-long-super-exception` imported the compact-exception-locator
+audit (`e7cf688`) and implemented the hardened chain exactly. **Build green;
+hygiene + native scans clean; `axiom_check` 0 bad-axiom.**
+
+**The headline theorem exists and is genuine:**
+`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
+is **hypothesis-free** (no abstract-family parameter; `accessFamily` is the
+*concrete built* family via `.toWeakFamily` of a concrete inhabitant) and proves:
+- `LittleOLinear (concreteBPNativeSuccinctRMQOverhead …)` — genuine o(n);
+- `∀ n, logSlackLower n ≤ 2*n + overhead n` — the lower-bound tie;
+- `payload.length = 2*n + overhead n` — exact `2n + o(n)` bits;
+- `queryCosted.cost ≤ const` — O(1);
+- `queryCosted.erase = some (scanWindow shape.representative left len)` — exact
+  leftmost-argmin RMQ for every valid window.
+`#print axioms` (transitive over the whole chain) = `[propext, Classical.choice,
+Quot.sound]` only — **the entire proof is sorry-free.**
+
+**How it closed (the design we hardened, executed):** the long-super branch is now
+compact — `exceptionRank * superStride + localOccurrence` with `exceptionRank =
+rankPrefix true longFlagBits` (charged flag-rank), not the padded
+`superSlot*superStride`. The make-or-break o(n) is real:
+`builtRelativeSplitFalseSelectLongSuperSpanSum_le_bpCode_length` (disjoint spans ≤
+2n) + `compactLongSuperRelativeTable_payload_mul_ell_le_spanSum` ⇒
+`compactLongSuperRelativeTableOverhead_littleO`, summed via `.add` into the total.
+All five coordinator corrections landed: own super-slot flag vector + own rank
+directory (1); separate `longFlagRank*Overhead` params (2); partial-super capacity
+bound `builtRectangularFalseSelectPaddedLocalCapacity_ge_size` (3); and refinement
+R-b — `longFlagBits = relativeSplitFalseSelectLongFlagBits superEntries` makes the
+branch/flag consistency (4) definitional. `compactLongSuperFlagRank_eq_segmentIndex`
++ `compactLongSuperRelativeTable_lookup_exact` discharge exactness from
+construction (not assumed). The record was **edited in place** (R-a). Then
+assembled: false-select close-data → `RelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily`
+(select-close + rank-close) → final BP-native RMQ family.
+
+**Honest caveats (not soundness gaps):**
+1. **Uncommitted/unmerged** — this is a dirty worktree snapshot; needs commit +
+   merge to the coordinator + the full gate. The achievement is real but not yet
+   integrated.
+2. **Cost model** — "O(1)" is in the established charged word-RAM model: word
+   `rankBoolWordPrefix`/`selectBoolWord` are O(1) primitives, and the close/LCA
+   side uses a charged bounded-local-BP primitive whose *bit-level* local decoding
+   is a documented later-hardening item (`docs/SUCCINCT_FINAL_PATH.md` C2 caveat).
+   This is standard for succinct-DS word-RAM results and is charged + exact at the
+   local-BP-semantics level — not a `sorry`.
+
+**Verdict:** the select-side o(n) wall — open for ~30 rounds — is broken, and the
+whole chain closes to a concrete, witnessed, payload-live `2n + o(n)` / O(1) exact
+succinct RMQ paired with the `2n − O(log n)` lower bound. This is the project's
+headline target. Immediate next step is **commit + merge + gate**, then (optional)
+discharge the bounded-local-BP bit-level decoder caveat. Do not let the win sit
+uncommitted in a worktree.
