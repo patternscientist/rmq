@@ -13,6 +13,9 @@ and consolidated modeling notes, see
 [`docs/FAMILY_SUMMARY.md`](docs/FAMILY_SUMMARY.md).
 For a demo-facing story and theorem map, see
 [`docs/DEMO_GUIDE.md`](docs/DEMO_GUIDE.md).
+For the plan to grow this RMQ proof-of-concept into a larger verified
+data-structures library, see
+[`docs/REPOSITORY_STRATEGY.md`](docs/REPOSITORY_STRATEGY.md).
 
 ## What This Is, And Why Care
 
@@ -232,12 +235,15 @@ rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncompu
 ## Next Direction
 
 The RMQ proof-of-concept is now past the main capstone. Natural follow-ups are
-polish and export rather than another hidden blocker:
+polish, extraction, and the next spoke rather than another hidden RMQ blocker:
 
 - make an even flatter encoded/payload-only presentation of the BP-native
   succinct theorem;
 - turn the shallow `RAM.Exec` trace model into a first-order interpreter if the
   next research target needs interpreter-level anti-vacuity;
 - extract the reusable cost/refinement/lower-bound hub toward a CSLib-style
-  library surface; and
-- start the next advanced data-structure spoke using the same pattern.
+  library surface;
+- extract standalone succinct rank/select and balanced-parentheses navigation
+  as the first reusable bit-level spoke; and
+- start union-find or another CS166-style structure once it can consume the
+  hub rather than rebuild it.

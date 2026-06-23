@@ -16,7 +16,7 @@ The main capstone is now:
 
 ```lean
 theorem SuccinctFinal
-    .builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile :
+    .builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile :
     ...
 ```
 
@@ -27,6 +27,8 @@ with the concrete C2 close directory
 payload is `shape.bpCode ++ aux`, the auxiliary payload is padded to the stated
 `o(n)` overhead, the query cost is bounded by a constant, and valid
 representative-array windows erase to the exact `scanWindow` RMQ answer.
+The older non-`total` theorem name remains as the direct proof; the `total`
+wrapper makes explicit that the profile has no large-regime premise.
 
 The false-close/select path now uses the concrete relative-split sparse/dense
 inventory pinned in `docs/SUCCINCT_SELECT_LOCATOR_ARCHITECTURE.md`: super
@@ -34,14 +36,18 @@ samples, explicit long-super exceptions, local samples inside short super
 intervals, explicit sparse-local exceptions, and a dense local path that reads
 at most two aligned payload words before calling `RAM.selectBoolWord`.
 
-The important remaining caveat is C2-local fidelity. The compact close/LCA
-directory uses charged bounded-local-BP primitives for local windows; the next
-research-hardening target is to derive those primitives from explicit local
-decoder payload words, or to present an even flatter encoded/payload-only
-version of the final theorem. The older worker scorecards and anti-pattern
-catalog below are retained as historical guardrails. Treat any later sentence
-that describes the C1 sparse/dense locator, compact close directory, or final
-join as "remaining" as superseded by this status section.
+The C2-local fidelity hardening has also landed on the final path: endpoint
+fringes and positive-block same-block queries route through local BP windows
+and rank-false seeds supplied by the final close-rank access path. The
+zero-block semantic fallback remains only for all-input totality on
+tiny/inactive cases; the large/canonical regime has `_of_size_ge` branch
+normalization lemmas showing that the positive-block path is used. The remaining
+succinct work is presentation/model polish, especially an even flatter
+encoded/payload-only version of the final theorem. The older worker scorecards
+and anti-pattern catalog below are retained as historical guardrails. Treat any
+later sentence that describes the C1 sparse/dense locator, compact close
+directory, local BP decoder, or final join as "remaining" as superseded by this
+status section.
 
 The local-decoder hardening plan is pinned in
 `docs/LOCAL_BP_DECODER_PATH.md`. Workers should use that theorem chain before
@@ -450,16 +456,17 @@ The theorem consumes deterministic local-slot routing, charged side locators,
 the repaired sparse-exception relative table, compact long-super exceptions,
 and the dense two-word payload fallback. It is consumed in
 `SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`,
-which feeds the concrete close-access witness into the BP-native final theorem.
+whose public total wrapper
+`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile`
+feeds the concrete close-access witness into the BP-native final theorem.
 A verified adapter around `builtTwoLevelFalseSelectCloseData` remains useful
 baseline evidence only, because its own overhead theorem exposes the linear
 payload.
 
-## Component 2: Concrete Macro/Micro BP Close-LCA
+## Component 2: Concrete Macro/Micro BP Close-LCA (Historical Guardrails)
 
-The merged close-navigation join is valuable, but the macro side must become
-concrete. The next BP worker should not add another family wrapper around
-`macroCosted`.
+The macro side is now concrete in the final path. The notes below are retained
+as guardrails against reopening false designs, not as active worker targets.
 
 Do not use a macro directory keyed only by endpoint close-block pair. The merged
 theorem `SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient` proves

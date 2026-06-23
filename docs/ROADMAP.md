@@ -38,13 +38,12 @@ and formalization gaps.
 
 - "Done" means the stated theorem typechecks `sorry`-free with the standard Lean
   trust base only. The build gate enforces soundness; this file enforces value.
-- For the active `2*n + o(n), O(1)` succinct RMQ finish line, read
-  `docs/SUCCINCT_FINAL_PATH.md` before starting worker loops. That file is the
-  current component contract and stop-audit companion for the final succinct
-  path.
+- For the landed `2*n + o(n), O(1)` succinct RMQ finish line, read
+  `docs/SUCCINCT_FINAL_PATH.md` for current status plus historical stop-audit
+  guardrails. It is no longer an active missing-component contract.
 - For the research-backed construction choices behind that finish line, read
-  `docs/SUCCINCT_RESEARCH_AND_PLAN.md`. It maps C1/C2/C3 to the intended
-  descriptor-select, BP range-min-max, and final-join constructions.
+  `docs/SUCCINCT_RESEARCH_AND_PLAN.md`. It records the C1/C2/C3 design path
+  and the false starts that should not be reintroduced.
 - Materialize a target as a compiled theorem only once its supporting
   definitions exist. Until then, keep it as prose plus the intended theorem
   shape.
@@ -63,9 +62,12 @@ infrastructure, and D lands the extra research headline.
 
 Current status: the proof-of-concept finish line is landed. D-LCA is the
 dense-label LCA cost headline, and D-Space is now also landed as the BP-native
-succinct RMQ capstone. The remaining roadmap items are post-POC hardening: a
-full first-order RAM interpreter, further CSLib-style extraction, and an
-optional flatter encoded/payload-only presentation of the succinct theorem.
+succinct RMQ capstone. The total public capstone is
+`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile`.
+The remaining roadmap items are post-POC hardening: a full first-order RAM
+interpreter if a later target needs it, further CSLib-style extraction, an
+optional flatter encoded/payload-only presentation of the succinct theorem, and
+the next data-structure spoke.
 
 Dependency order: A -> B -> (C, D). C can progress in parallel with A/B when it
 is pure extraction/generalization. D-LCA depends on the A/B cost/refinement
@@ -646,21 +648,16 @@ balanced-parentheses access by
 `PayloadLiveBPCloseLCADirectory.ofEntries` packages supplied BP close/LCA
 entries into the counted optional-Nat payload table, and
 `SuccinctCloseProposal.BlockLocalBPCloseLCATable.ofEntries_profile` records the
-local block-table component a real succinct BP navigation scheme should feed
-into that boundary. The remaining missing construction is the payload-live BP
-close/LCA instantiation itself: build a real succinct macro/micro close-LCA
-entry scheme rather than a dense pair table, then discharge the final two-level
-encoded BP close-navigation family. The relative BP block-summary table is now
-a concrete payload-live `o(n)` component, so the live C2 checkpoint is the
-option-1 compact rmM/min-max-tree-style interior navigator:
-`concreteBPRelativeRmmInteriorDirectory_profile`. The guarded endpoint-fringe
-macro/micro profile is exact and useful, but its sampled wrapper is still
-conditional on a budget for the dense `interiorBlockPairRanges blockCount`
-payload; that premise must be replaced by the compact interior navigator before
-it can support the final `2*n + o(n)` headline.
+local block-table component that the later succinct BP navigation scheme fed
+into. The earlier missing payload-live BP close/LCA construction has now been
+discharged by the compact relative rmM/min-max-tree-style interior navigator,
+the endpoint-fringe repair, and the rank-seeded local decoder path. The live C2
+checkpoint is now the landed theorem
+`SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_profile`, consumed
+by the final BP-native capstone rather than a remaining blocker.
 
-Current final-path spec: `docs/SUCCINCT_FINAL_PATH.md`. The tentative path is
-now split into the C2 compact interior navigator, the concrete macro/micro
+Current final-path spec: `docs/SUCCINCT_FINAL_PATH.md`. Historically the path
+split into the C2 compact interior navigator, the concrete macro/micro
 BP-close/LCA component that consumes it, and a final join theorem. Select-side
 descriptor work remains relevant only if the final BP-native join exposes a
 live select gap; it should not displace the current C2 interior target.
@@ -692,7 +689,9 @@ that pattern, and
 it for exact RMQ over Cartesian-shape representatives.
 
 Next refinement: move from an import/build boundary to a physical package split
-only after the API stabilizes and the next spoke needs it.
+only after the API stabilizes and the next spoke needs it. The current
+repository should remain the RMQ spoke until that trigger fires; see
+`docs/REPOSITORY_STRATEGY.md`.
 
 ## Target Hub Layout
 
@@ -710,8 +709,9 @@ RMQ/
 ```
 
 The existing `LeftmostArgMin` / `RMQBackend` correctness layer is the stable
-reference layer. The remaining work is to route cost, refinement, and lower
-bounds through reusable hub APIs.
+reference layer. The RMQ spoke has now routed the main cost, refinement,
+succinct-space, and lower-bound claims through reusable hub-style APIs. The
+next question is which APIs survive contact with a second spoke.
 
 ## Dependency Policy
 

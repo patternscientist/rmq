@@ -8,8 +8,10 @@ the worker contract in `docs/SUCCINCT_FINAL_PATH.md`.
 
 ## Current Audit
 
-The latest proof rounds did not close the capstone, but they did prune several
-cheap false closes:
+This note began as the research plan for the succinct capstone. The capstone
+has since landed; the items below are retained as design provenance and
+anti-vacuity guardrails. Earlier proof rounds pruned several cheap false
+closes:
 
 - `SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient`: a BP
   close/LCA macro keyed only by endpoint close-block pair is not exact.
@@ -27,29 +29,28 @@ provides a concrete, payload-live, machine-word-bounded, unconditional
 `LittleOLinear` summary table for BP block min/max/arg data. That closes the
 old "summary envelope is only abstract" gap.
 
-Since that note was written, the close side has advanced further: the concrete
-compact close/LCA directory and the BP-native join have landed. The remaining
-wall is now rank/select-side, and more specifically `select false` over
-`shape.bpCode`. The old full
-`SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily` is still
-useful scaffold, but it is no longer the right object to make sacred: the
-canonical select-block payload stores absolute positions densely enough that it
-does not provide the needed `o(n)` witness. The capstone should consume a
-concrete false-only BP close-access witness:
+Since that note was written, the concrete compact close/LCA directory, the
+relative-split false-close/select witness, and the BP-native join have landed.
+The public total capstone is
+`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile`.
+The old full
+`SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily` remains
+useful scaffold, but the final capstone consumes the concrete false-only BP
+close-access witness:
 
 ```lean
 selectCloseCosted idx  -- exact for bpCloseOfInorder? shape idx
 rankCloseCosted pos    -- exact for rankPrefix false shape.bpCode pos
 ```
 
-This is not a new semantic burden. `bpCloseOfInorder?` is already proved to be
-`select false` over `shape.bpCode`; the burden is the compact payload-live
-locator for that select operation.
+This was not a new semantic burden. `bpCloseOfInorder?` was already proved to
+be `select false` over `shape.bpCode`; the real burden was the compact
+payload-live locator for that select operation.
 
 ## Remaining Components
 
-The capstone now splits into three concrete components, with C1 as the binding
-constraint.
+Historically, the capstone split into three concrete components, with C1 as the
+binding constraint. All three have now been consumed by the final theorem.
 
 1. C1 compact false-select / close-access.
    Replace the disproven shared aligned-word locator with a charged compact

@@ -6,10 +6,10 @@ The concrete BP-native `2*n + o(n), O(1)` theorem is already in place:
 
 ```lean
 RMQ.SuccinctFinal
-  .builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
+  .builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile
 ```
 
-The remaining caveat is local, not architectural.  The compact close directory
+The original caveat was local, not architectural.  The compact close directory
 charges a constant BP-word window through:
 
 ```lean
@@ -43,13 +43,16 @@ The coverage obstruction
 same-block classification alone does not imply a four-word local BP window
 covers the right endpoint.
 
-## Goal
+## Status
 
-Replace the remaining semantic local-helper uses with decoded helpers whose
-values are computed from the same constant BP words already listed by
-`localBPBlockWordsRead`, plus an explicitly charged base-excess/rank-false
-seed where the obstruction theorem shows such a seed is necessary. Preserve the
-existing final theorem names and payload bounds.
+The goal has been met for the final positive-block path.  Remaining semantic
+fallback behavior is confined to the zero-block totality branch for
+tiny/inactive cases, and the large/canonical regime proves that branch
+unreachable through
+`ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_eq_positive_dispatch_of_size_ge`.
+Future local-decoder work should be presentation or model-strengthening only,
+for example an even flatter encoded/payload-only statement of the same final
+capstone.
 
 Do not reopen the C1 false-close/select architecture, the compact interior
 rmM navigator, or the final BP-native join unless the local-decoder target is
@@ -164,12 +167,11 @@ The endpoint-fringe and same-block migrations use this equivalence-first path:
    SuccinctCloseProposal
      .ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_exact_of_query
    SuccinctFinal
-     .builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
+     .builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile
    ```
 
-The migration should keep the public capstone theorem names stable if
-practical.  If a temporary sibling theorem is needed, it should be consumed back
-into the existing public theorem before the loop stops.
+The migration kept the direct capstone theorem stable and added the explicit
+total wrapper as the public theorem surface.
 
 ## Decoder Guidance
 
