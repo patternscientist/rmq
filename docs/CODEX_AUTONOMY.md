@@ -81,6 +81,12 @@ Recurring anti-patterns:
   with no concrete `def : ...Family`.
 - Modeled O(1) for O(n) work, especially word operations over unbounded words or
   unit reads from structures backed by scans.
+- Uncharged semantic guards in costed query definitions. Full-list/reference
+  computations such as `rankPrefix ... bits.length`, `List.length` of
+  materialized references, `scanWindow`, or `bpCloseOfInorder?` are invalid in
+  an O(1) query path unless the work is charged through the model; use cheap
+  metadata guards such as shape/index bounds, or move the semantic facts to
+  proof-only exactness lemmas.
 - Delist-don't-retire, where an obsolete theorem is dropped from
   `axiom_check` but left in source.
 - Component-deepening, where subcomponents are hardened repeatedly without

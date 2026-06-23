@@ -404,9 +404,15 @@ The sibling sparse/dense close-access socket now exists as
 `SuccinctFinal.SparseDenseFalseSelectBPCloseAccessFamily`. It consumes
 `SuccinctSelectProposal.SparseDenseFalseSelectCloseData`, whose query reads the
 packed super/local locator tables, explicit exception tables, and dense BP
-payload words. This is an interface and adapter layer only: a valid C1 stop must
-still construct the tables from `shape.bpCode` and prove the branch-exactness
-fields of `SparseDenseFalseSelectCloseData` from that construction.
+payload words. This older sparse/dense route is an interface and adapter layer
+only. The repaired relative-split compact route is now the concrete C1 witness:
+`SuccinctSelectProposal.builtRelativeSplitSparseExceptionFalseSelectCloseData_profile`
+constructs the super/local, sparse-exception, long-flag-rank, and compact
+long-super relative tables from `shape.bpCode`, and
+`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
+consumes it in the BP-native final join. Its executable close-select query uses
+the cheap validity guard `idx < shape.size`; the full false-count identity
+`rankPrefix false shape.bpCode shape.bpCode.length = shape.size` is proof-only.
 
 The current reconciled C1 socket has two useful but non-final ingredients.
 First, `sparseDenseFalseSelectLocatorEntry_fullMachineField_not_word_bounded`
@@ -877,8 +883,8 @@ the worker report or scratch notes:
 
 ```text
 Overall goal:   final concrete BP-native succinct RMQ profile
-Current gap:    concrete read-backed false-select close access, then the unconditional join
-Hard part:      routing idx to the selected BP payload word with charged o(n) locator payload
+Current gap:    the selected concrete C1/C2 component or final integration still not consumed
+Hard part:      routing queries through charged o(n) payloads without answer/proof-only fields
 This iteration: the largest coherent proof/construction step toward it
 Not doing:      adjacent helper/docs/blocker work that would leave it untouched
 ```

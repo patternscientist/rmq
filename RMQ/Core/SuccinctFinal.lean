@@ -683,6 +683,741 @@ theorem constant_query_profile
 
 end SparseDenseFalseSelectBPCloseAccessFamily
 
+/--
+Final-facing close access for the repaired relative-split sparse-exception
+false-select component.
+
+The rank side remains the stored-word two-level rank data used by the existing
+BP-native join.  The close-select side is the repaired compact long-super
+component, whose query path charges rank over its own long-super flag vector
+before reading the compact relative table.
+-/
+structure RelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
+    (shape : Cartesian.CartesianShape)
+    (overhead queryCost : Nat) where
+  rankSuperOverhead : Nat
+  rankBlockOverhead : Nat
+  rankData :
+    SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankData
+      shape.bpCode rankSuperOverhead rankBlockOverhead queryCost
+  selectRankSuperOverhead : Nat
+  selectRankBlockOverhead : Nat
+  selectData :
+    SuccinctSelectProposal.RelativeSplitSparseExceptionFalseSelectCloseData
+      shape selectRankSuperOverhead selectRankBlockOverhead
+  selectCost_le_query :
+    SuccinctSelectProposal.sparseDenseFalseSelectQueryCost <= queryCost
+  payload_le_overhead :
+    (rankData.auxPayload ++ selectData.payload).length <= overhead
+
+namespace RelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
+
+def payload
+    {shape : Cartesian.CartesianShape}
+    {overhead queryCost : Nat}
+    (directory :
+      RelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
+        shape overhead queryCost) : List Bool :=
+  directory.rankData.auxPayload ++ directory.selectData.payload
+
+def selectCloseCosted
+    {shape : Cartesian.CartesianShape}
+    {overhead queryCost : Nat}
+    (directory :
+      RelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
+        shape overhead queryCost)
+    (idx : Nat) : Costed (Option Nat) :=
+  directory.selectData.selectCloseCosted idx
+
+def rankCloseCosted
+    {shape : Cartesian.CartesianShape}
+    {overhead queryCost : Nat}
+    (directory :
+      RelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
+        shape overhead queryCost)
+    (pos : Nat) : Costed Nat :=
+  directory.rankData.rankCosted false pos
+
+theorem payload_length_le_overhead
+    {shape : Cartesian.CartesianShape}
+    {overhead queryCost : Nat}
+    (directory :
+      RelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
+        shape overhead queryCost) :
+    directory.payload.length <= overhead := by
+  exact directory.payload_le_overhead
+
+theorem selectCloseCosted_cost_le
+    {shape : Cartesian.CartesianShape}
+    {overhead queryCost : Nat}
+    (directory :
+      RelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
+        shape overhead queryCost)
+    (idx : Nat) :
+    (directory.selectCloseCosted idx).cost <= queryCost := by
+  exact Nat.le_trans
+    (directory.selectData.selectCloseCosted_cost_le idx)
+    directory.selectCost_le_query
+
+theorem rankCloseCosted_cost_le
+    {shape : Cartesian.CartesianShape}
+    {overhead queryCost : Nat}
+    (directory :
+      RelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
+        shape overhead queryCost)
+    (pos : Nat) :
+    (directory.rankCloseCosted pos).cost <= queryCost := by
+  exact directory.rankData.rankCosted_cost_le false pos
+
+theorem selectCloseCosted_exact
+    {shape : Cartesian.CartesianShape}
+    {overhead queryCost : Nat}
+    (directory :
+      RelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
+        shape overhead queryCost)
+    (idx : Nat) :
+    (directory.selectCloseCosted idx).erase =
+      SuccinctSpace.bpCloseOfInorder? shape idx := by
+  exact directory.selectData.selectCloseCosted_exact idx
+
+theorem rankCloseCosted_exact
+    {shape : Cartesian.CartesianShape}
+    {overhead queryCost : Nat}
+    (directory :
+      RelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
+        shape overhead queryCost)
+    (pos : Nat) :
+    (directory.rankCloseCosted pos).erase =
+      Succinct.rankPrefix false shape.bpCode pos := by
+  exact directory.rankData.rankCosted_exact false pos
+
+theorem rank_read_words_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {overhead queryCost : Nat}
+    (directory :
+      RelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
+        shape overhead queryCost)
+    {word : List Bool}
+    (hmem : List.Mem word directory.rankData.bitWords.store.words.toList) :
+    word.length <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  exact directory.rankData.payload_word_length_le_machine hmem
+
+theorem select_read_words_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {overhead queryCost : Nat}
+    (directory :
+      RelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
+        shape overhead queryCost)
+    {word : List Bool}
+    (hmem : List.Mem word directory.selectData.readWords) :
+    word.length <=
+      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  exact directory.selectData.read_word_length_le_machine hmem
+
+def toWeakDirectory
+    {shape : Cartesian.CartesianShape}
+    {overhead queryCost : Nat}
+    (directory :
+      RelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
+        shape overhead queryCost) :
+    BPCloseAccessDirectory shape overhead queryCost where
+  payload := directory.payload
+  payload_length_le_overhead := directory.payload_length_le_overhead
+  selectCloseCosted := directory.selectCloseCosted
+  rankCloseCosted := directory.rankCloseCosted
+  selectClose_cost_le := directory.selectCloseCosted_cost_le
+  rankClose_cost_le := directory.rankCloseCosted_cost_le
+  selectClose_exact := directory.selectCloseCosted_exact
+  rankClose_exact := directory.rankCloseCosted_exact
+  rankReadWords := directory.rankData.bitWords.store.words.toList
+  selectReadWords := directory.selectData.readWords
+  rank_read_words_length_le_machine := by
+    intro word hmem
+    exact directory.rank_read_words_length_le_machine hmem
+  select_read_words_length_le_machine := by
+    intro word hmem
+    exact directory.select_read_words_length_le_machine hmem
+
+theorem profile
+    {shape : Cartesian.CartesianShape}
+    {overhead queryCost : Nat}
+    (directory :
+      RelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
+        shape overhead queryCost) :
+    directory.payload.length <= overhead /\
+      (forall idx,
+        (directory.selectCloseCosted idx).cost <= queryCost) /\
+      (forall pos,
+        (directory.rankCloseCosted pos).cost <= queryCost) /\
+      (forall idx,
+        (directory.selectCloseCosted idx).erase =
+          SuccinctSpace.bpCloseOfInorder? shape idx) /\
+      (forall pos,
+        (directory.rankCloseCosted pos).erase =
+          Succinct.rankPrefix false shape.bpCode pos) /\
+      (forall {word : List Bool},
+        List.Mem word directory.rankData.bitWords.store.words.toList ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+      forall {word : List Bool},
+        List.Mem word directory.selectData.readWords ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  exact
+    ⟨directory.payload_length_le_overhead,
+      directory.selectCloseCosted_cost_le,
+      directory.rankCloseCosted_cost_le,
+      directory.selectCloseCosted_exact,
+      directory.rankCloseCosted_exact,
+      fun hmem => directory.rank_read_words_length_le_machine hmem,
+      fun hmem => directory.select_read_words_length_le_machine hmem⟩
+
+end RelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
+
+/-- Family form of the repaired relative-split close-access target. -/
+structure RelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily
+    (overhead : Nat -> Nat) (queryCost : Nat) where
+  directory :
+    forall shape : Cartesian.CartesianShape,
+      RelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
+        shape (overhead shape.size) queryCost
+  overhead_littleO : SuccinctSpace.LittleOLinear overhead
+
+namespace RelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily
+
+def toWeakFamily
+    {overhead : Nat -> Nat} {queryCost : Nat}
+    (family :
+      RelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily
+        overhead queryCost) :
+    PayloadLiveBPCloseAccessFamily overhead queryCost where
+  directory shape := (family.directory shape).toWeakDirectory
+  overhead_littleO := family.overhead_littleO
+
+theorem constant_query_profile
+    {overhead : Nat -> Nat} {queryCost : Nat}
+    (family :
+      RelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily
+        overhead queryCost) :
+    SuccinctSpace.LittleOLinear overhead /\
+      forall shape : Cartesian.CartesianShape,
+        (((family.directory shape).payload).length <= overhead shape.size) /\
+          (forall idx,
+            ((family.directory shape).selectCloseCosted idx).cost <=
+              queryCost) /\
+          (forall pos,
+            ((family.directory shape).rankCloseCosted pos).cost <=
+              queryCost) /\
+          (forall idx,
+            ((family.directory shape).selectCloseCosted idx).erase =
+              SuccinctSpace.bpCloseOfInorder? shape idx) /\
+          (forall pos,
+            ((family.directory shape).rankCloseCosted pos).erase =
+              Succinct.rankPrefix false shape.bpCode pos) /\
+          (forall {word : List Bool},
+            List.Mem word
+                (family.directory shape).rankData.bitWords.store.words.toList ->
+              word.length <=
+                SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          forall {word : List Bool},
+            List.Mem word (family.directory shape).selectData.readWords ->
+              word.length <=
+                SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  constructor
+  · exact family.overhead_littleO
+  · intro shape
+    exact (family.directory shape).profile
+
+end RelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily
+
+def builtRelativeSplitBPCloseRankWordSize
+    (shape : Cartesian.CartesianShape) : Nat :=
+  SuccinctRankProposal.machineWordBits shape.bpCode.length
+
+def builtRelativeSplitBPCloseRankBlocksPerSuper
+    (shape : Cartesian.CartesianShape) : Nat :=
+  builtRelativeSplitBPCloseRankWordSize shape
+
+def builtRelativeSplitBPCloseRankBlockWidth
+    (shape : Cartesian.CartesianShape) : Nat :=
+  SuccinctRankProposal.machineWordBits
+    (builtRelativeSplitBPCloseRankWordSize shape *
+      builtRelativeSplitBPCloseRankWordSize shape)
+
+theorem builtRelativeSplitBPCloseRankWordSize_pos
+    (shape : Cartesian.CartesianShape) :
+    0 < builtRelativeSplitBPCloseRankWordSize shape := by
+  simp [builtRelativeSplitBPCloseRankWordSize,
+    SuccinctRankProposal.machineWordBits_pos]
+
+theorem builtRelativeSplitBPCloseRankBlocksPerSuper_pos
+    (shape : Cartesian.CartesianShape) :
+    0 < builtRelativeSplitBPCloseRankBlocksPerSuper shape := by
+  simpa [builtRelativeSplitBPCloseRankBlocksPerSuper] using
+    builtRelativeSplitBPCloseRankWordSize_pos shape
+
+theorem builtRelativeSplitBPCloseRank_bpCode_length_lt_word_pow
+    (shape : Cartesian.CartesianShape) :
+    shape.bpCode.length <
+      2 ^ builtRelativeSplitBPCloseRankWordSize shape := by
+  simpa [builtRelativeSplitBPCloseRankWordSize,
+    SuccinctRankProposal.machineWordBits] using
+    (Nat.lt_log2_self (n := shape.bpCode.length))
+
+theorem builtRelativeSplitBPCloseRankBlockSpan_lt_pow
+    (shape : Cartesian.CartesianShape) :
+    builtRelativeSplitBPCloseRankBlocksPerSuper shape *
+        builtRelativeSplitBPCloseRankWordSize shape <
+      2 ^ builtRelativeSplitBPCloseRankBlockWidth shape := by
+  simpa [builtRelativeSplitBPCloseRankBlocksPerSuper,
+    builtRelativeSplitBPCloseRankBlockWidth,
+    SuccinctRankProposal.machineWordBits] using
+    (Nat.lt_log2_self
+      (n := builtRelativeSplitBPCloseRankWordSize shape *
+        builtRelativeSplitBPCloseRankWordSize shape))
+
+def builtRelativeSplitBPCloseRankSuperOverhead
+    (shape : Cartesian.CartesianShape) : Nat :=
+  (SuccinctRankProposal.canonicalSuperRankSampleTables
+      shape.bpCode
+      (builtRelativeSplitBPCloseRankWordSize shape)
+      (builtRelativeSplitBPCloseRankBlocksPerSuper shape)
+      (builtRelativeSplitBPCloseRankWordSize shape)
+      (builtRelativeSplitBPCloseRank_bpCode_length_lt_word_pow shape)).payload.length
+
+def builtRelativeSplitBPCloseRankBlockOverhead
+    (shape : Cartesian.CartesianShape) : Nat :=
+  (SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan
+      shape.bpCode
+      (builtRelativeSplitBPCloseRankWordSize shape)
+      (builtRelativeSplitBPCloseRankBlocksPerSuper shape)
+      (builtRelativeSplitBPCloseRankBlockWidth shape)
+      (builtRelativeSplitBPCloseRankBlocksPerSuper_pos shape)
+      (builtRelativeSplitBPCloseRankBlockSpan_lt_pow shape)).payload.length
+
+def builtRelativeSplitBPCloseRankData
+    (shape : Cartesian.CartesianShape) :
+    SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankData
+      shape.bpCode
+      (builtRelativeSplitBPCloseRankSuperOverhead shape)
+      (builtRelativeSplitBPCloseRankBlockOverhead shape)
+      SuccinctSelectProposal.sparseDenseFalseSelectQueryCost :=
+  SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExactLocalBlock
+    shape.bpCode
+    (builtRelativeSplitBPCloseRankWordSize_pos shape)
+    (by simp [builtRelativeSplitBPCloseRankWordSize])
+    (builtRelativeSplitBPCloseRankBlocksPerSuper_pos shape)
+    (builtRelativeSplitBPCloseRank_bpCode_length_lt_word_pow shape)
+    (builtRelativeSplitBPCloseRankBlockSpan_lt_pow shape)
+    (by
+      unfold SuccinctSelectProposal.sparseDenseFalseSelectQueryCost
+      omega)
+
+theorem builtRelativeSplitBPCloseRankData_profile
+    (shape : Cartesian.CartesianShape) :
+    let data := builtRelativeSplitBPCloseRankData shape
+    data.auxPayload.length =
+        builtRelativeSplitBPCloseRankSuperOverhead shape +
+          builtRelativeSplitBPCloseRankBlockOverhead shape /\
+      data.wordSize <=
+        SuccinctRankProposal.machineWordBits shape.bpCode.length /\
+      SuccinctSpace.flattenPayloadWords data.bitWords.store.words.toList =
+        shape.bpCode /\
+      (forall {word : List Bool},
+        List.Mem word data.bitWords.store.words.toList ->
+          word.length <=
+            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+      forall target pos,
+        (data.rankCosted target pos).cost <=
+            SuccinctSelectProposal.sparseDenseFalseSelectQueryCost /\
+          (data.rankCosted target pos).erase =
+            Succinct.rankPrefix target shape.bpCode pos := by
+  exact
+    SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExactLocalBlock_profile
+      shape.bpCode
+      (builtRelativeSplitBPCloseRankWordSize_pos shape)
+      (by simp [builtRelativeSplitBPCloseRankWordSize])
+      (builtRelativeSplitBPCloseRankBlocksPerSuper_pos shape)
+      (builtRelativeSplitBPCloseRank_bpCode_length_lt_word_pow shape)
+      (builtRelativeSplitBPCloseRankBlockSpan_lt_pow shape)
+      (by
+        unfold SuccinctSelectProposal.sparseDenseFalseSelectQueryCost
+        omega)
+
+theorem canonicalSuperRankEntries_length
+    (target : Bool) (bits : List Bool)
+    (wordSize blocksPerSuper : Nat) :
+    (SuccinctRankProposal.canonicalSuperRankEntries
+      target bits wordSize blocksPerSuper).length =
+      bits.length / wordSize / blocksPerSuper + 1 := by
+  simp [SuccinctRankProposal.canonicalSuperRankEntries]
+
+theorem canonicalBlockRankEntries_length
+    (target : Bool) (bits : List Bool)
+    (wordSize blocksPerSuper : Nat) :
+    (SuccinctRankProposal.canonicalBlockRankEntries
+      target bits wordSize blocksPerSuper).length =
+      bits.length / wordSize + 1 := by
+  simp [SuccinctRankProposal.canonicalBlockRankEntries]
+
+theorem builtRelativeSplitBPCloseRankBlockWidth_le_two_ell
+    (shape : Cartesian.CartesianShape) :
+    builtRelativeSplitBPCloseRankBlockWidth shape <=
+      2 * SuccinctSelectProposal.sparseDenseFalseSelectEll shape := by
+  let wordBits := builtRelativeSplitBPCloseRankWordSize shape
+  let ell := SuccinctSelectProposal.sparseDenseFalseSelectEll shape
+  have hwordPos : 0 < wordBits := by
+    simpa [wordBits] using builtRelativeSplitBPCloseRankWordSize_pos shape
+  have hwwPos : 0 < wordBits * wordBits :=
+    Nat.mul_pos hwordPos hwordPos
+  have hwordLt : wordBits < 2 ^ ell := by
+    simpa [wordBits, ell,
+      builtRelativeSplitBPCloseRankWordSize,
+      SuccinctSelectProposal.sparseDenseFalseSelectEll,
+      SuccinctSelectProposal.sparseDenseFalseSelectWordBits,
+      SuccinctRankProposal.machineWordBits] using
+      (Nat.lt_log2_self (n := wordBits))
+  have hellPowPos : 0 < 2 ^ ell := Nat.pow_pos (by omega : 0 < 2)
+  have hwwLtMul : wordBits * wordBits < 2 ^ ell * 2 ^ ell := by
+    calc
+      wordBits * wordBits < 2 ^ ell * wordBits := by
+        exact Nat.mul_lt_mul_of_pos_right hwordLt hwordPos
+      _ < 2 ^ ell * 2 ^ ell := by
+        exact Nat.mul_lt_mul_of_pos_left hwordLt hellPowPos
+  have hwwLtPow : wordBits * wordBits < 2 ^ (2 * ell) := by
+    have hpowEq : 2 ^ ell * 2 ^ ell = 2 ^ (2 * ell) := by
+      calc
+        2 ^ ell * 2 ^ ell = 2 ^ (ell + ell) := by
+          rw [Nat.pow_add]
+        _ = 2 ^ (2 * ell) := by
+          have hell : ell + ell = 2 * ell := by omega
+          rw [hell]
+    simpa [hpowEq] using hwwLtMul
+  have hle :=
+    SuccinctSelectProposal.natLog2_succ_le_of_pos_lt_pow
+      (n := wordBits * wordBits) (k := 2 * ell) hwwPos hwwLtPow
+  simpa [wordBits, ell, builtRelativeSplitBPCloseRankBlockWidth,
+    SuccinctRankProposal.machineWordBits] using hle
+
+def relativeSplitSparseExceptionBPCloseRankOverhead
+    (n : Nat) : Nat :=
+  SuccinctSpace.logLogCubedSampledDirectoryOverhead 36 (2 * n) + 16
+
+theorem relativeSplitSparseExceptionBPCloseRankOverhead_littleO :
+    SuccinctSpace.LittleOLinear
+      relativeSplitSparseExceptionBPCloseRankOverhead := by
+  unfold relativeSplitSparseExceptionBPCloseRankOverhead
+  exact
+    ((SuccinctSpace.logLogCubedSampledDirectoryOverhead_littleO 36)
+      |>.comp_two_mul_arg).add_const 16
+
+theorem builtRelativeSplitBPCloseRankData_auxPayload_le_overhead
+    (shape : Cartesian.CartesianShape) :
+    (builtRelativeSplitBPCloseRankData shape).auxPayload.length <=
+      relativeSplitSparseExceptionBPCloseRankOverhead shape.size := by
+  let data := builtRelativeSplitBPCloseRankData shape
+  let payload := data.auxPayload.length
+  let n := shape.bpCode.length
+  let wordBits := builtRelativeSplitBPCloseRankWordSize shape
+  let ell := SuccinctSelectProposal.sparseDenseFalseSelectEll shape
+  let blockWidth := builtRelativeSplitBPCloseRankBlockWidth shape
+  have hbp : n = 2 * shape.size := by
+    simpa [n] using Cartesian.CartesianShape.bpCode_length shape
+  by_cases hnZero : n = 0
+  · have hsize : shape.size = 0 := by omega
+    have hbpLen : shape.bpCode.length = 0 := by
+      simpa [n] using hnZero
+    have hpayload : payload <= 16 := by
+      have hprofile := builtRelativeSplitBPCloseRankData_profile shape
+      have hlog1 : Nat.log2 1 = 0 := by
+        have hpow : (1 : Nat) < 2 ^ (1 : Nat) := by simp
+        have hlt : Nat.log2 1 < 1 :=
+          (Nat.log2_lt (by omega : (1 : Nat) ≠ 0)).2 hpow
+        omega
+      have hsuper :
+          builtRelativeSplitBPCloseRankSuperOverhead shape = 2 := by
+        simp [builtRelativeSplitBPCloseRankSuperOverhead,
+          SuccinctRankProposal.canonicalSuperRankSampleTables_payload_length,
+          canonicalSuperRankEntries_length,
+          builtRelativeSplitBPCloseRankWordSize,
+          builtRelativeSplitBPCloseRankBlocksPerSuper,
+          SuccinctRankProposal.machineWordBits,
+          hbpLen]
+      have hblock :
+          builtRelativeSplitBPCloseRankBlockOverhead shape = 2 := by
+        simp [builtRelativeSplitBPCloseRankBlockOverhead,
+          SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan_payload_length,
+          canonicalBlockRankEntries_length,
+          builtRelativeSplitBPCloseRankWordSize,
+          builtRelativeSplitBPCloseRankBlocksPerSuper,
+          builtRelativeSplitBPCloseRankBlockWidth,
+          SuccinctRankProposal.machineWordBits,
+          hbpLen, hlog1]
+      have hpayloadEq :
+          payload =
+            builtRelativeSplitBPCloseRankSuperOverhead shape +
+              builtRelativeSplitBPCloseRankBlockOverhead shape := by
+        simpa [payload, data] using hprofile.1
+      omega
+    have hover :
+        16 <= relativeSplitSparseExceptionBPCloseRankOverhead shape.size := by
+      simp [relativeSplitSparseExceptionBPCloseRankOverhead,
+        SuccinctSpace.logLogCubedSampledDirectoryOverhead, hsize]
+    exact Nat.le_trans (by simpa [payload, data] using hpayload) hover
+  · have hnPos : 0 < n := Nat.pos_of_ne_zero hnZero
+    have hwordPos : 0 < wordBits := by
+      simpa [wordBits] using builtRelativeSplitBPCloseRankWordSize_pos shape
+    have hellOne : 1 <= ell := by
+      simp [ell, SuccinctSelectProposal.sparseDenseFalseSelectEll]
+    have hell3One : 1 <= ell * (ell * ell) := by
+      have hmul := Nat.mul_le_mul hellOne (Nat.mul_le_mul hellOne hellOne)
+      simpa [Nat.mul_assoc] using hmul
+    have hwordLeN : wordBits <= n := by
+      simpa [wordBits, builtRelativeSplitBPCloseRankWordSize] using
+        SuccinctSelectProposal.machineWordBits_le_self_of_pos hnPos
+    let superLen := n / wordBits / wordBits + 1
+    let blockLen := n / wordBits + 1
+    have hsuperPayload :
+        builtRelativeSplitBPCloseRankSuperOverhead shape =
+          superLen * wordBits + superLen * wordBits := by
+      simp [builtRelativeSplitBPCloseRankSuperOverhead,
+        SuccinctRankProposal.canonicalSuperRankSampleTables_payload_length,
+        canonicalSuperRankEntries_length, superLen, wordBits, n,
+        builtRelativeSplitBPCloseRankSuperOverhead,
+        builtRelativeSplitBPCloseRankWordSize,
+        builtRelativeSplitBPCloseRankBlocksPerSuper,
+        builtRelativeSplitBPCloseRankBlocksPerSuper]
+    have hblockPayload :
+        builtRelativeSplitBPCloseRankBlockOverhead shape =
+          blockLen * blockWidth + blockLen * blockWidth := by
+      simp [builtRelativeSplitBPCloseRankBlockOverhead,
+        SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan_payload_length,
+        canonicalBlockRankEntries_length, blockLen, blockWidth, wordBits, n,
+        builtRelativeSplitBPCloseRankWordSize,
+        builtRelativeSplitBPCloseRankBlocksPerSuper,
+        builtRelativeSplitBPCloseRankBlockWidth]
+    have hprofile := builtRelativeSplitBPCloseRankData_profile shape
+    have hpayloadEq :
+        payload =
+          builtRelativeSplitBPCloseRankSuperOverhead shape +
+            builtRelativeSplitBPCloseRankBlockOverhead shape := by
+      simpa [payload, data] using hprofile.1
+    have hsuperLenMul :
+        superLen * (wordBits * wordBits) <= 5 * n := by
+      have hdiv :
+          (n / wordBits / wordBits) * (wordBits * wordBits) <= n := by
+        have hfirst :
+            (n / wordBits / wordBits) * wordBits <= n / wordBits := by
+          exact Nat.div_mul_le_self (n / wordBits) wordBits
+        have hscaled := Nat.mul_le_mul_right wordBits hfirst
+        have hsecond :
+            (n / wordBits) * wordBits <= n :=
+          Nat.div_mul_le_self n wordBits
+        exact Nat.le_trans (by
+          simpa [Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using
+            hscaled) hsecond
+      have hww : wordBits * wordBits <= 4 * n := by
+        simpa [wordBits, builtRelativeSplitBPCloseRankWordSize] using
+          SuccinctSelectProposal.machineWordBits_sq_le_four_mul_self_of_pos
+            hnPos
+      calc
+        superLen * (wordBits * wordBits) =
+            (n / wordBits / wordBits) * (wordBits * wordBits) +
+              wordBits * wordBits := by
+                simp [superLen, Nat.add_mul]
+        _ <= n + 4 * n := Nat.add_le_add hdiv hww
+        _ = 5 * n := by omega
+    have hblockLenMul :
+        blockLen * wordBits <= 2 * n := by
+      have hdiv : (n / wordBits) * wordBits <= n :=
+        Nat.div_mul_le_self n wordBits
+      calc
+        blockLen * wordBits =
+            (n / wordBits) * wordBits + wordBits := by
+              simp [blockLen, Nat.add_mul]
+        _ <= n + n := Nat.add_le_add hdiv hwordLeN
+        _ = 2 * n := by omega
+    have hblockWidth : blockWidth <= 2 * ell := by
+      simpa [blockWidth, ell] using
+        builtRelativeSplitBPCloseRankBlockWidth_le_two_ell shape
+    have hsuperMul :
+        builtRelativeSplitBPCloseRankSuperOverhead shape * wordBits <=
+          10 * n := by
+      rw [hsuperPayload]
+      calc
+        (superLen * wordBits + superLen * wordBits) * wordBits =
+            superLen * (wordBits * wordBits) +
+              superLen * (wordBits * wordBits) := by
+              rw [Nat.add_mul]
+              simp [Nat.mul_assoc]
+        _ = 2 * (superLen * (wordBits * wordBits)) := by omega
+        _ <= 2 * (5 * n) := Nat.mul_le_mul_left 2 hsuperLenMul
+        _ = 10 * n := by omega
+    have hblockMul :
+        builtRelativeSplitBPCloseRankBlockOverhead shape * wordBits <=
+          8 * (n * ell) := by
+      rw [hblockPayload]
+      calc
+        (blockLen * blockWidth + blockLen * blockWidth) * wordBits =
+            (blockLen * wordBits) * blockWidth +
+            (blockLen * wordBits) * blockWidth := by
+              rw [Nat.add_mul]
+              simp [Nat.mul_left_comm, Nat.mul_comm]
+        _ = 2 * ((blockLen * wordBits) * blockWidth) := by omega
+        _ <= 2 * ((2 * n) * blockWidth) := by
+              exact Nat.mul_le_mul_left 2
+                (Nat.mul_le_mul_right blockWidth hblockLenMul)
+        _ <= 2 * ((2 * n) * (2 * ell)) := by
+              exact Nat.mul_le_mul_left 2
+                (Nat.mul_le_mul_left (2 * n) hblockWidth)
+        _ = 8 * (n * ell) := by
+              rw [show 2 * ell = ell * 2 by omega]
+              simp [Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm]
+              let t := ell * n
+              change 2 * (2 * (2 * t)) = 8 * t
+              omega
+    have hpayloadMul :
+        payload * wordBits <=
+          18 * (n * (ell * (ell * ell))) := by
+      rw [hpayloadEq]
+      calc
+        (builtRelativeSplitBPCloseRankSuperOverhead shape +
+            builtRelativeSplitBPCloseRankBlockOverhead shape) *
+            wordBits =
+            builtRelativeSplitBPCloseRankSuperOverhead shape * wordBits +
+              builtRelativeSplitBPCloseRankBlockOverhead shape * wordBits := by
+                rw [Nat.add_mul]
+        _ <= 10 * n + 8 * (n * ell) :=
+              Nat.add_le_add hsuperMul hblockMul
+        _ <= 10 * (n * (ell * (ell * ell))) +
+              8 * (n * (ell * (ell * ell))) := by
+              have hscale1 :
+                  n <= n * (ell * (ell * ell)) :=
+                Nat.le_trans (by omega : n <= 1 * n)
+                  (by
+                    have h := Nat.mul_le_mul_right n hell3One
+                    simpa [Nat.mul_comm] using h)
+              have hscale2 :
+                  n * ell <= n * (ell * (ell * ell)) := by
+                have hellSq : 1 <= ell * ell :=
+                  Nat.mul_le_mul hellOne hellOne
+                have h := Nat.mul_le_mul_left (n * ell) hellSq
+                simpa [Nat.mul_assoc] using h
+              exact Nat.add_le_add
+                (Nat.mul_le_mul_left 10 hscale1)
+                (Nat.mul_le_mul_left 8 hscale2)
+        _ = 18 * (n * (ell * (ell * ell))) := by omega
+    have hpacked :
+        payload <=
+          SuccinctSpace.logLogCubedSampledDirectoryOverhead 36 n :=
+      SuccinctSelectProposal.payload_le_logLogCubedSampledDirectoryOverhead_of_mul_wordBits_le
+        (shape := shape) (payload := payload) (scale := 18)
+        (by
+          simpa [wordBits, ell, n,
+            SuccinctSelectProposal.sparseDenseFalseSelectWordBits,
+            Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using
+            hpayloadMul)
+    have hwithConst :
+        payload <=
+          SuccinctSpace.logLogCubedSampledDirectoryOverhead 36 n + 16 :=
+      Nat.le_trans hpacked (Nat.le_add_right _ _)
+    simpa [relativeSplitSparseExceptionBPCloseRankOverhead, hbp, n] using
+      hwithConst
+
+def relativeSplitSparseExceptionBPCloseAccessOverhead
+    (n : Nat) : Nat :=
+  relativeSplitSparseExceptionBPCloseRankOverhead n +
+    SuccinctSelectProposal.canonicalRelativeSplitSparseExceptionFalseSelectOverhead n
+
+theorem relativeSplitSparseExceptionBPCloseAccessOverhead_littleO :
+    SuccinctSpace.LittleOLinear
+      relativeSplitSparseExceptionBPCloseAccessOverhead := by
+  unfold relativeSplitSparseExceptionBPCloseAccessOverhead
+  exact
+    relativeSplitSparseExceptionBPCloseRankOverhead_littleO.add
+      SuccinctSelectProposal.canonicalRelativeSplitSparseExceptionFalseSelectOverhead_littleO
+
+def builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
+    (shape : Cartesian.CartesianShape) :
+    RelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
+      shape
+      (relativeSplitSparseExceptionBPCloseAccessOverhead shape.size)
+      SuccinctSelectProposal.sparseDenseFalseSelectQueryCost where
+  rankSuperOverhead := builtRelativeSplitBPCloseRankSuperOverhead shape
+  rankBlockOverhead := builtRelativeSplitBPCloseRankBlockOverhead shape
+  rankData := builtRelativeSplitBPCloseRankData shape
+  selectRankSuperOverhead :=
+    SuccinctSelectProposal.builtRelativeSplitFalseSelectSparseExceptionEffectiveFlagRankSuperOverhead
+      shape
+  selectRankBlockOverhead :=
+    SuccinctSelectProposal.builtRelativeSplitFalseSelectSparseExceptionEffectiveFlagRankBlockOverhead
+      shape
+  selectData :=
+    SuccinctSelectProposal.builtRelativeSplitSparseExceptionFalseSelectCloseData shape
+  selectCost_le_query := Nat.le_refl _
+  payload_le_overhead := by
+    have hrank :=
+      builtRelativeSplitBPCloseRankData_auxPayload_le_overhead shape
+    have hselect :
+        (SuccinctSelectProposal.builtRelativeSplitSparseExceptionFalseSelectCloseData
+          shape).payload.length <=
+          SuccinctSelectProposal.canonicalRelativeSplitSparseExceptionFalseSelectOverhead
+            shape.size :=
+      (SuccinctSelectProposal.builtRelativeSplitSparseExceptionFalseSelectCloseData
+          shape).payload_length_le_canonical
+    simp [relativeSplitSparseExceptionBPCloseAccessOverhead,
+      List.length_append]
+    omega
+
+def builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily :
+    RelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily
+      relativeSplitSparseExceptionBPCloseAccessOverhead
+      SuccinctSelectProposal.sparseDenseFalseSelectQueryCost where
+  directory shape :=
+    builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory shape
+  overhead_littleO :=
+    relativeSplitSparseExceptionBPCloseAccessOverhead_littleO
+
+theorem builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily_profile :
+    SuccinctSpace.LittleOLinear
+        relativeSplitSparseExceptionBPCloseAccessOverhead /\
+      forall shape : Cartesian.CartesianShape,
+        (((builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.directory
+            shape).payload).length <=
+            relativeSplitSparseExceptionBPCloseAccessOverhead shape.size) /\
+          (forall idx,
+            ((builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.directory
+              shape).selectCloseCosted idx).cost <=
+              SuccinctSelectProposal.sparseDenseFalseSelectQueryCost) /\
+          (forall pos,
+            ((builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.directory
+              shape).rankCloseCosted pos).cost <=
+              SuccinctSelectProposal.sparseDenseFalseSelectQueryCost) /\
+          (forall idx,
+            ((builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.directory
+              shape).selectCloseCosted idx).erase =
+              SuccinctSpace.bpCloseOfInorder? shape idx) /\
+          (forall pos,
+            ((builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.directory
+              shape).rankCloseCosted pos).erase =
+              Succinct.rankPrefix false shape.bpCode pos) /\
+          (forall {word : List Bool},
+            List.Mem word
+                (builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.directory
+                  shape).rankData.bitWords.store.words.toList ->
+              word.length <=
+                SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          forall {word : List Bool},
+            List.Mem word
+                (builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.directory
+                  shape).selectData.readWords ->
+              word.length <=
+                SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  exact
+    RelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.constant_query_profile
+      builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily
+
 def rankSelectBPCloseAccessOverhead
     {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
     {rankSelectCost : Nat}
@@ -1264,6 +1999,45 @@ theorem concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile_of
   exact
     concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
       (concreteBPNativeCloseAccessFamilyOfRankSelectFamily family)
+
+theorem builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile :
+    let accessFamily :=
+      builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.toWeakFamily
+    SuccinctSpace.LittleOLinear
+        (concreteBPNativeSuccinctRMQOverhead
+          relativeSplitSparseExceptionBPCloseAccessOverhead) /\
+      forall n : Nat,
+        EncodingLowerBound.logSlackLower n <=
+          2 * n +
+            concreteBPNativeSuccinctRMQOverhead
+              relativeSplitSparseExceptionBPCloseAccessOverhead n /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            (accessFamily.directory shape).payload.length <=
+              relativeSplitSparseExceptionBPCloseAccessOverhead n) /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            (concreteBPNativeSuccinctRMQPayload
+              accessFamily shape).length =
+              2 * n +
+                concreteBPNativeSuccinctRMQOverhead
+                  relativeSplitSparseExceptionBPCloseAccessOverhead n) /\
+        (forall shape left right,
+          (concreteBPNativeSuccinctRMQQueryCosted
+            accessFamily shape left right).cost <=
+              concreteBPNativeSuccinctRMQQueryCost
+                SuccinctSelectProposal.sparseDenseFalseSelectQueryCost) /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            forall {left len : Nat},
+              0 < len ->
+                left + len <= n ->
+                  (concreteBPNativeSuccinctRMQQueryCosted
+                    accessFamily shape left (left + len)).erase =
+                    some (scanWindow shape.representative left len)) := by
+  exact
+    concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
+      builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.toWeakFamily
 
 end SuccinctFinal
 end RMQ
