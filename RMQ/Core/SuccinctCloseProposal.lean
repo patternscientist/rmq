@@ -4024,6 +4024,29 @@ theorem canonicalBPRelativeSummaryBlockSizeRaw_pos
   simp [canonicalBPRelativeSummaryBlockSizeRaw,
     canonicalBPRelativeSummaryBase]
 
+theorem canonicalBPRelativeSummaryBlockSize_pos_of_active
+    {shape : Cartesian.CartesianShape}
+    (hactive :
+      canonicalBPRelativeMinMaxArgSummaryTableActive shape) :
+    0 < canonicalBPRelativeSummaryBlockSize shape := by
+  simpa [canonicalBPRelativeSummaryBlockSize, hactive] using
+    canonicalBPRelativeSummaryBlockSizeRaw_pos shape
+
+theorem canonicalBPRelativeSummaryBlockSize_pos_of_large
+    {shape : Cartesian.CartesianShape}
+    (hlarge : canonicalBPRelativeSummaryLargeRegime shape) :
+    0 < canonicalBPRelativeSummaryBlockSize shape :=
+  canonicalBPRelativeSummaryBlockSize_pos_of_active
+    (canonicalBPRelativeMinMaxArgSummaryTableActive_of_large hlarge)
+
+theorem canonicalBPRelativeSummaryBlockSize_pos_of_size_ge
+    {shape : Cartesian.CartesianShape}
+    (hsize : 2 ^ 128 <= shape.size) :
+    0 < canonicalBPRelativeSummaryBlockSize shape :=
+  canonicalBPRelativeSummaryBlockSize_pos_of_large
+    (canonicalBPRelativeSummaryLargeRegime_of_size_ge
+      (shape := shape) hsize)
+
 theorem canonicalBPRelativeSummaryBlocksPerSuperRaw_pos
     (shape : Cartesian.CartesianShape) :
     0 < canonicalBPRelativeSummaryBlocksPerSuperRaw shape := by
@@ -23704,6 +23727,45 @@ def lcaCloseCostedWithRankSeed
     directory.crossBlockCloseCostedWithRankSeed rankCloseCosted leftClose
       rightClose
 
+theorem lcaCloseCostedWithRankSeed_eq_positive_dispatch
+    {shape : Cartesian.CartesianShape}
+    (directory : ConcreteCompactBPCloseLCADirectory shape)
+    (rankCloseCosted : Nat -> Costed Nat)
+    (leftClose rightClose : Nat)
+    (hblockSize : 0 < canonicalBPRelativeSummaryBlockSize shape) :
+    directory.lcaCloseCostedWithRankSeed rankCloseCosted leftClose
+        rightClose =
+      if blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose =
+          blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+            rightClose then
+        localBPSameBlockCloseDecodedCostedWithRankSeed shape rankCloseCosted
+          (canonicalBPRelativeSummaryBlockSize shape) leftClose rightClose
+      else
+        directory.crossBlockCloseCostedWithRankSeed rankCloseCosted leftClose
+          rightClose := by
+  unfold lcaCloseCostedWithRankSeed
+  simp [Nat.ne_of_gt hblockSize]
+
+theorem lcaCloseCostedWithRankSeed_eq_positive_dispatch_of_size_ge
+    {shape : Cartesian.CartesianShape}
+    (directory : ConcreteCompactBPCloseLCADirectory shape)
+    (rankCloseCosted : Nat -> Costed Nat)
+    (leftClose rightClose : Nat)
+    (hsize : 2 ^ 128 <= shape.size) :
+    directory.lcaCloseCostedWithRankSeed rankCloseCosted leftClose
+        rightClose =
+      if blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose =
+          blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+            rightClose then
+        localBPSameBlockCloseDecodedCostedWithRankSeed shape rankCloseCosted
+          (canonicalBPRelativeSummaryBlockSize shape) leftClose rightClose
+      else
+        directory.crossBlockCloseCostedWithRankSeed rankCloseCosted leftClose
+          rightClose :=
+  directory.lcaCloseCostedWithRankSeed_eq_positive_dispatch
+    rankCloseCosted leftClose rightClose
+    (canonicalBPRelativeSummaryBlockSize_pos_of_size_ge hsize)
+
 theorem crossBlockCloseCosted_cost_le
     {shape : Cartesian.CartesianShape}
     (directory : ConcreteCompactBPCloseLCADirectory shape)
@@ -24730,6 +24792,40 @@ theorem lcaCloseCostedWithRankSeed_exact_of_query
         directory.crossBlockCloseCostedWithRankSeed_exact_of_query
           rankCloseCosted hrankExact hlen hbound
           hleft hright hanswer hcross
+
+theorem lcaCloseCostedWithRankSeed_exact_of_query_of_size_ge
+    {shape : Cartesian.CartesianShape}
+    (directory : ConcreteCompactBPCloseLCADirectory shape)
+    (rankCloseCosted : Nat -> Costed Nat)
+    {left len leftClose rightClose answerClose : Nat}
+    (hsize : 2 ^ 128 <= shape.size)
+    (hrankExact :
+      forall pos,
+        (rankCloseCosted pos).erase =
+          Succinct.rankPrefix false shape.bpCode pos)
+    (hlen : 0 < len)
+    (hbound : left + len <= shape.size)
+    (hleft : bpCloseOfInorder? shape left = some leftClose)
+    (hright :
+      bpCloseOfInorder? shape (left + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder? shape
+          (scanWindow shape.representative left len) =
+        some answerClose) :
+    (directory.lcaCloseCostedWithRankSeed rankCloseCosted leftClose
+        rightClose).erase =
+      some answerClose := by
+  have hdispatch :=
+    directory.lcaCloseCostedWithRankSeed_eq_positive_dispatch_of_size_ge
+      rankCloseCosted leftClose rightClose hsize
+  rw [hdispatch]
+  exact
+    (by
+      have hexact :=
+        directory.lcaCloseCostedWithRankSeed_exact_of_query
+          rankCloseCosted hrankExact hlen hbound hleft hright hanswer
+      rw [hdispatch] at hexact
+      exact hexact)
 
 theorem read_words_length_le_machine
     {shape : Cartesian.CartesianShape}

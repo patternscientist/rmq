@@ -32,10 +32,13 @@ computes its candidate from the flattened `localBPBlockWordsRead` window.  The
 final BP-native stack now consumes the sibling
 `ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed`, whose seed is
 derived from the final payload-backed `rankCloseCosted` callback via
-`localBPSeedFromRankCloseCosted`. The only remaining semantic fallback is the
-inactive zero-block branch, where the
-canonical block size is zero and every endpoint pair is classified as
-same-block.  The coverage obstruction
+`localBPSeedFromRankCloseCosted`. The zero-block semantic fallback is now
+confined to the all-input totality branch: the large/canonical succinct regime
+proves
+`canonicalBPRelativeSummaryBlockSize_pos_of_size_ge` and rewrites
+`lcaCloseCostedWithRankSeed` through
+`ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_eq_positive_dispatch_of_size_ge`.
+The coverage obstruction
 `zeroBlockSameBlock_does_not_imply_localBPWindowCoverage` records that this
 same-block classification alone does not imply a four-word local BP window
 covers the right endpoint.
@@ -222,9 +225,11 @@ or a seed-field/interface hook if the next directory migration theorem is still
 obvious and inside its ownership.  For the endpoint-fringe and positive
 block-size same-block slices, the bridge and directory migration are now closed;
 future local-decoder work should target the inactive zero-block fallback only if
-the all-input small-regime presentation matters. The main integration cleanup is
-now closed for the final payload-backed rank path; the remaining optional work
-is a payload-only encoded presentation of the same capstone.
+the all-input small-regime presentation matters. For the large/canonical
+succinct regime, the positive-block dispatch theorem above proves that the
+zero-block branch is unreachable. The main integration cleanup is now closed
+for the final payload-backed rank path; the remaining optional work is a
+payload-only encoded presentation of the same capstone.
 
 A valid positive stop closes one of these named outcomes:
 

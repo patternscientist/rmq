@@ -230,10 +230,14 @@ The local BP seed-routing hardening item is now closed for the final BP-native
 path. The main remaining succinct work is optional presentation polish,
 especially packaging an encoded/payload-only view of the same final theorem. The positive
 block-size same-block decoder has been routed through the charged
-bounded-local-BP primitive, with an explicit semantic fallback only for the
-inactive zero-block branch; the theorem
+bounded-local-BP primitive. The all-input zero-block semantic fallback is now
+separated from the asymptotic final path: `SuccinctCloseProposal.canonicalBPRelativeSummaryBlockSize_pos_of_size_ge`
+and
+`SuccinctCloseProposal.ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_eq_positive_dispatch_of_size_ge`
+prove that the large/canonical regime dispatches through the positive-block
+decoded/cross-block branches, while
 `SuccinctCloseProposal.zeroBlockSameBlock_does_not_imply_localBPWindowCoverage`
-records why zero-block same-block classification does not provide four-word
+records why the small zero-block fallback cannot pretend to have four-word
 window coverage. The seeded
 local decoder path now proves coverage, charged-window recovery, and seed
 recovery through
@@ -262,6 +266,8 @@ block-code, select API-shape, built-query close-navigation, dense/sparse
 select-descriptor, concrete macro-directory, or same-block local-decoder
 blocker. The final BP-native stack now consumes the sibling
 `SuccinctCloseProposal.ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_exact_of_query`,
+with the large-regime branch-normalized wrapper
+`SuccinctCloseProposal.ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_exact_of_query_of_size_ge`,
 which routes local decoder seeds through the final payload-backed
 `rankCloseCosted` access path. The theorem-shaped local-decoder path is recorded in
 `docs/LOCAL_BP_DECODER_PATH.md`.
