@@ -239,7 +239,9 @@ left/right fringe erasure theorems
 `SuccinctCloseProposal.localBPRightFringeCandidateSeededCosted_eq_semantic`.
 The remaining local BP migration gap is that the compact close directory must
 pass or read this base-excess/rank-false seed before those helpers can replace
-the current semantic endpoint helpers. They are no longer rank endpoint, rank
+the current semantic endpoint helpers, and the proof-facing
+`localBPWindowBits` slice must still be tied back to the flattened charged
+`localBPBlockWordsRead` payload words. They are no longer rank endpoint, rank
 local-width, proof-only block-code, select API-shape, built-query
 close-navigation, dense/sparse select-descriptor, or concrete macro-directory
 blockers. The theorem-shaped local-decoder path is recorded in
