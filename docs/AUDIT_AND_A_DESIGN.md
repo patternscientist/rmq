@@ -6,7 +6,9 @@ record. The working-tree `docs/ROADMAP.md` and `docs/CODEX_AUTONOMY.md` are the
 Mathlib-free Lean/Std as the default and refines D-LCA toward a dense
 direct-address node-ID theorem while preserving arbitrary-label correctness.
 Use this document for audit rationale and failure-mode reminders, not as an
-override of the live roadmap.
+override of the live roadmap. This record also predates the final BP-native
+succinct RMQ capstone; any line below that calls D-Space optional or future is
+historical rather than current.
 
 ---
 
@@ -48,7 +50,7 @@ and one monolithic executable dense-LCA preprocessing trace.
 | **A** machine-step cost model | POC complete, interpreter future | `Core.RAM` is a hardened shallow trace substrate: raw primitives are sealed, sparse build/query use derived traces, FH stored summary/local reads are charged through counted adapters, and the `xs.toList.length` guard leak was fixed to `Array.size`. It is still a probe/indexed-access trace model, not a first-order machine interpreter. |
 | **B** refinement framework + 2 instances | POC complete | `Core.Refine.StoredMatrix`/`StoredSeq` now support sparse-table queries, FH summary tables, and dense LCA first-occurrence/node/depth stores. FH boundary microtable reads are no longer the old asserted `materializedMicrotableLookupCost := 1` path; the public large-regime supplied-query bound is `<= 13`. |
 | **C** lower-bound framework + RMQ instance | 🟢 done | `Core.LowerBound` is generic (docstring: "does not mention RMQ, Cartesian trees, or shapes"): finite bitstring universe, finite-domain `LosslessEncoding`, injection/capacity counting, log-slack arithmetic. `EncodingLowerBound` re-derives the no-premise `2n − (2log₂(2n+1)+2)` bound *through* it. Reusable, non-vacuous (decoder answers from bits alone). |
-| **D** one research headline | D-LCA landed | `denseLCA_linearBuild_constantQuery_profile` is the selected POC headline: dense/preindexed labels, canonical large-regime Euler depths, linear assembled preprocessing budget `22 * eulerTrace.nodes.length + 3`, path-LCA query correctness, query cost `<= 16`, and combined build-plus-query budget. D-Space remains optional future work. |
+| **D** research headlines | D-LCA and D-Space landed | `denseLCA_linearBuild_constantQuery_profile` is the dense/preindexed LCA cost headline. The later BP-native succinct RMQ capstone is recorded in the live roadmap and `docs/DEMO_GUIDE.md`; older D-Space notes in this historical audit are superseded. |
 
 **Finish line:** A + B + C + one of D. The POC finish line is now landed under
 the documented hardened-shallow RAM/component-budget model.

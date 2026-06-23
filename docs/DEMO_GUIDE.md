@@ -90,8 +90,9 @@ A slightly more technical version:
 
 ## Suggested Demo Flow
 
-1. Run `lake build`.
-2. Run `lake env lean scripts/axiom_check.lean`.
+1. Run `powershell -ExecutionPolicy Bypass -File scripts/demo_check.ps1`.
+2. For the full acceptance gate, run
+   `powershell -ExecutionPolicy Bypass -File scripts/gate.ps1`.
 3. Show the spec in `RMQ/Core/Spec.lean`.
 4. Show one ordinary backend theorem, such as Fischer-Heun.
 5. Show the lower-bound theorem in `RMQ/Core/EncodingLowerBound.lean`.

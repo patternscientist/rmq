@@ -1,0 +1,21 @@
+import RMQ
+
+/-!
+Concise trust-base check for the demo path.
+
+The full `scripts/axiom_check.lean` is the acceptance gate. This smaller file
+prints only the theorem surfaces most likely to appear in a demo: shared
+contract, RMQ/LCA reduction, lower bound, Fischer-Heun/LCA costs, and the
+BP-native succinct capstone.
+-/
+
+#print axioms RMQ.RMQBackend.queryBuilt_eq
+#print axioms RMQ.Cartesian.certifiedReduction
+#print axioms RMQ.EncodingLowerBound.shapeCount_quadratic_lower
+#print axioms RMQ.EncodingLowerBound.two_mul_sub_log_slack_le_bits_of_exactRMQShapeEncoding
+#print axioms RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound
+#print axioms RMQ.FischerHeun.fischerHeun_refines_with_steps
+#print axioms RMQ.LCAFischerHeun.denseLCA_linearBuild_constantQuery_profile
+#print axioms RMQ.SuccinctCloseProposal.ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_exact_of_query
+#print axioms RMQ.SuccinctFinal.builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily_profile
+#print axioms RMQ.SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
