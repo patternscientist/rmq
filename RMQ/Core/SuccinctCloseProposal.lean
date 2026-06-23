@@ -21908,6 +21908,29 @@ theorem localBPWindowBits_length_le
   simp [localBPWindowBits, List.length_take]
   exact Nat.min_le_left _ _
 
+/--
+When the block size is zero, all closes have the same `blockOfClose`, so the
+same-block test alone gives no endpoint coverage guarantee for a four-word
+local BP window.
+-/
+theorem zeroBlockSameBlock_does_not_imply_localBPWindowCoverage
+    (shape : Cartesian.CartesianShape)
+    {rightClose : Nat}
+    (hwide :
+      4 * SuccinctRankProposal.machineWordBits shape.bpCode.length <
+        rightClose + 1) :
+    blockOfClose 0 0 = blockOfClose 0 rightClose /\
+      ¬ rightClose + 1 <=
+        localBPWindowBase shape 0 0 +
+          (localBPWindowBits shape 0 0).length := by
+  constructor
+  · simp [blockOfClose]
+  · intro hcovered
+    have hlen := localBPWindowBits_length_le shape 0 0
+    have hbase : localBPWindowBase shape 0 0 = 0 := by
+      simp [localBPWindowBase, blockStartOf]
+    omega
+
 theorem localBPWindowGet?_eq_bpCode_get?
     {shape : Cartesian.CartesianShape}
     {blockSize close globalPos : Nat}
@@ -21932,6 +21955,30 @@ theorem localBPWindowGet?_eq_bpCode_get?
         globalPos := by
     omega
   rw [hpos]
+
+/--
+Reading a bit from the flattened charged local BP words agrees with the global
+BP code whenever the requested position lies in the four-word local window.
+-/
+theorem localBPBlockWordsRead_get?_eq_bpCode_get?
+    {shape : Cartesian.CartesianShape}
+    {blockSize close globalPos : Nat}
+    (hcovered :
+      localBPWindowBase shape blockSize close <= globalPos /\
+        globalPos <
+          localBPWindowBase shape blockSize close +
+            4 * SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+    (SuccinctSpace.flattenPayloadWords
+        (localBPBlockWordsRead shape blockSize close))[
+          globalPos - localBPWindowBase shape blockSize close]? =
+      shape.bpCode[globalPos]? := by
+  have hget :=
+    localBPWindowGet?_eq_bpCode_get?
+      (shape := shape) (blockSize := blockSize) (close := close)
+      (globalPos := globalPos) hcovered
+  simpa [localBPWindowGet?, hcovered.1,
+    localBPWindowBits_eq_flatten_localBPBlockWordsRead shape blockSize close]
+    using hget
 
 theorem localBPWindowBits_end_le_bpCode_length
     (shape : Cartesian.CartesianShape)
@@ -22619,6 +22666,323 @@ theorem localBPRightFringeCandidateSeededCosted_cost_le
       4 := by
   simp [localBPRightFringeCandidateSeededCosted]
 
+def localBPSameBlockCloseSeededCosted
+    (shape : Cartesian.CartesianShape)
+    (blockSize leftClose rightClose seed : Nat) : Costed (Option Nat) :=
+  let window :=
+    SuccinctSpace.flattenPayloadWords
+      (localBPBlockWordsRead shape blockSize leftClose)
+  let base := localBPWindowBase shape blockSize leftClose
+  let start := leftClose + 1
+  let count := rightClose - leftClose + 1
+  { value :=
+      bpCandidateClose?
+        (some
+          (localBPSeededPrefixRangeMinExcess window seed base start count,
+            localBPSeededPrefixRangeArgMinPrefixPos window seed base
+              start count))
+    cost := 4 }
+
+def localBPSameBlockCloseDecodedCosted
+    (shape : Cartesian.CartesianShape)
+    (blockSize leftClose rightClose : Nat) : Costed (Option Nat) :=
+  Costed.bind
+    (localBPSeedFromRankFalseCosted shape blockSize leftClose)
+    fun seed =>
+      localBPSameBlockCloseSeededCosted shape blockSize leftClose rightClose
+        seed
+
+theorem localBPSameBlockCloseSeededCosted_cost_le
+    (shape : Cartesian.CartesianShape)
+    (blockSize leftClose rightClose seed : Nat) :
+    (localBPSameBlockCloseSeededCosted shape blockSize leftClose rightClose
+        seed).cost <= 4 := by
+  simp [localBPSameBlockCloseSeededCosted]
+
+theorem localBPSameBlockCloseDecodedCosted_cost_le
+    (shape : Cartesian.CartesianShape)
+    (blockSize leftClose rightClose : Nat) :
+    (localBPSameBlockCloseDecodedCosted shape blockSize leftClose
+        rightClose).cost <= 5 := by
+  simp [localBPSameBlockCloseDecodedCosted, Costed.bind,
+    localBPSeedFromRankFalseCosted, localBPSameBlockCloseSeededCosted]
+
+theorem localBPSameBlockCloseSeededCosted_eq_semantic
+    {shape : Cartesian.CartesianShape}
+    {blockSize leftClose rightClose : Nat}
+    (hbase :
+      localBPWindowBase shape blockSize leftClose <= shape.bpCode.length)
+    (hstartBase :
+      localBPWindowBase shape blockSize leftClose <= leftClose + 1)
+    (hrightCovered :
+      rightClose + 1 <=
+        localBPWindowBase shape blockSize leftClose +
+          (localBPWindowBits shape blockSize leftClose).length)
+    (hordered : leftClose <= rightClose) :
+    (localBPSameBlockCloseSeededCosted shape blockSize leftClose rightClose
+        (localBPSeedExcess shape blockSize leftClose)).erase =
+      bpCandidateClose?
+        (some
+          (bpPrefixRangeMinExcess shape (leftClose + 1)
+            (rightClose - leftClose + 1),
+            bpPrefixRangeArgMinPrefixPos shape (leftClose + 1)
+              (rightClose - leftClose + 1))) := by
+  let start := leftClose + 1
+  let count := rightClose - leftClose + 1
+  have hcount : 0 < count := by
+    omega
+  have hcovered :
+      start + count <=
+        localBPWindowBase shape blockSize leftClose +
+          (localBPWindowBits shape blockSize leftClose).length + 1 := by
+    simp [start, count]
+    omega
+  have hmin :=
+    localBPSeededPrefixRangeMinExcess_eq_bpPrefixRangeMinExcess_of_pos
+      (shape := shape) (blockSize := blockSize) (close := leftClose)
+      (start := start) (count := count)
+      hcount hbase (by simpa [start] using hstartBase) hcovered
+  have harg :=
+    localBPSeededPrefixRangeArgMinPrefixPos_eq_bpPrefixRangeArgMinPrefixPos_of_pos
+      (shape := shape) (blockSize := blockSize) (close := leftClose)
+      (start := start) (count := count)
+      hcount hbase (by simpa [start] using hstartBase) hcovered
+  have hwindow :=
+    localBPWindowBits_eq_flatten_localBPBlockWordsRead
+      shape blockSize leftClose
+  have hminFlat :
+      localBPSeededPrefixRangeMinExcess
+          (SuccinctSpace.flattenPayloadWords
+            (localBPBlockWordsRead shape blockSize leftClose))
+          (localBPSeedExcess shape blockSize leftClose)
+          (localBPWindowBase shape blockSize leftClose)
+          start count =
+        bpPrefixRangeMinExcess shape start count := by
+    simpa [← hwindow] using hmin
+  have hargFlat :
+      localBPSeededPrefixRangeArgMinPrefixPos
+          (SuccinctSpace.flattenPayloadWords
+            (localBPBlockWordsRead shape blockSize leftClose))
+          (localBPSeedExcess shape blockSize leftClose)
+          (localBPWindowBase shape blockSize leftClose)
+          start count =
+        bpPrefixRangeArgMinPrefixPos shape start count := by
+    simpa [← hwindow] using harg
+  simp [localBPSameBlockCloseSeededCosted, start, count, hminFlat,
+    hargFlat]
+
+theorem localBPSameBlockCloseDecodedCosted_eq_semantic
+    {shape : Cartesian.CartesianShape}
+    {blockSize leftClose rightClose : Nat}
+    (hbase :
+      localBPWindowBase shape blockSize leftClose <= shape.bpCode.length)
+    (hstartBase :
+      localBPWindowBase shape blockSize leftClose <= leftClose + 1)
+    (hrightCovered :
+      rightClose + 1 <=
+        localBPWindowBase shape blockSize leftClose +
+          (localBPWindowBits shape blockSize leftClose).length)
+    (hordered : leftClose <= rightClose) :
+    (localBPSameBlockCloseDecodedCosted shape blockSize leftClose
+        rightClose).erase =
+      bpCandidateClose?
+        (some
+          (bpPrefixRangeMinExcess shape (leftClose + 1)
+            (rightClose - leftClose + 1),
+            bpPrefixRangeArgMinPrefixPos shape (leftClose + 1)
+              (rightClose - leftClose + 1))) := by
+  have hseed :
+      (localBPSeedFromRankFalseCosted shape blockSize leftClose).value =
+        localBPSeedExcess shape blockSize leftClose := by
+    simpa [Costed.erase] using
+      localBPSeedFromRankFalseCosted_eq_localBPSeedExcess
+        shape blockSize leftClose hbase
+  have hseeded :=
+    localBPSameBlockCloseSeededCosted_eq_semantic
+      (shape := shape) (blockSize := blockSize)
+      (leftClose := leftClose) (rightClose := rightClose)
+      hbase hstartBase hrightCovered hordered
+  simpa [localBPSameBlockCloseDecodedCosted, Costed.bind, Costed.erase,
+    hseed] using hseeded
+
+theorem localBPSameBlockClosePrefixRange_exact
+    {shape : Cartesian.CartesianShape}
+    {left len leftClose rightClose answerClose : Nat}
+    (hlen : 0 < len)
+    (hbound : left + len <= shape.size)
+    (hleft : bpCloseOfInorder? shape left = some leftClose)
+    (hright :
+      bpCloseOfInorder? shape (left + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder? shape
+          (scanWindow shape.representative left len) =
+        some answerClose) :
+    bpCandidateClose?
+        (some
+          (bpPrefixRangeMinExcess shape (leftClose + 1)
+            (rightClose - leftClose + 1),
+            bpPrefixRangeArgMinPrefixPos shape (leftClose + 1)
+              (rightClose - leftClose + 1))) =
+      some answerClose := by
+  have hordered :=
+    endpoint_closes_ordered_of_query_span
+      (shape := shape) (left := left) (len := len)
+      (leftClose := leftClose) (rightClose := rightClose)
+      hlen hleft hright
+  have hmem :=
+    answerClose_prefix_mem_endpoint_prefix_range
+      (shape := shape) (left := left) (len := len)
+      (leftClose := leftClose) (rightClose := rightClose)
+      (answerClose := answerClose)
+      hlen hleft hright hanswer
+  have hsemantic :=
+    answerClose_prefix_leftmost_min_excess_of_query
+      (shape := shape) (start := left) (len := len)
+      (leftClose := leftClose) (rightClose := rightClose)
+      (answerClose := answerClose)
+      hlen hbound hleft hright hanswer
+  have hrightBound := bpCloseOfInorder?_bounds shape hright
+  have hprefixBound :
+      leftClose + 1 + (rightClose - leftClose + 1) <=
+        shape.bpCode.length + 1 := by
+    omega
+  have hwitness :=
+    bpPrefixRangeWitness_eq_of_leftmost_min_excess
+      (shape := shape)
+      (start := leftClose + 1)
+      (count := rightClose - leftClose + 1)
+      (target := answerClose + 1)
+      hmem hprefixBound
+      (by
+        intro pos hlo hhi
+        exact hsemantic.1 hlo (by omega))
+      hsemantic.2
+  rw [hwitness]
+  simp [bpCandidateClose?]
+
+theorem localBPSameBlockCloseDecodedCosted_exact
+    {shape : Cartesian.CartesianShape}
+    {blockSize left len leftClose rightClose answerClose : Nat}
+    (hbase :
+      localBPWindowBase shape blockSize leftClose <= shape.bpCode.length)
+    (hstartBase :
+      localBPWindowBase shape blockSize leftClose <= leftClose + 1)
+    (hrightCovered :
+      rightClose + 1 <=
+        localBPWindowBase shape blockSize leftClose +
+          (localBPWindowBits shape blockSize leftClose).length)
+    (hlen : 0 < len)
+    (hbound : left + len <= shape.size)
+    (hleft : bpCloseOfInorder? shape left = some leftClose)
+    (hright :
+      bpCloseOfInorder? shape (left + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder? shape
+          (scanWindow shape.representative left len) =
+        some answerClose) :
+    (localBPSameBlockCloseDecodedCosted shape blockSize leftClose
+        rightClose).erase =
+      some answerClose := by
+  have hordered :=
+    endpoint_closes_ordered_of_query_span
+      (shape := shape) (left := left) (len := len)
+      (leftClose := leftClose) (rightClose := rightClose)
+      hlen hleft hright
+  have hdecoded :=
+    localBPSameBlockCloseDecodedCosted_eq_semantic
+      (shape := shape) (blockSize := blockSize)
+      (leftClose := leftClose) (rightClose := rightClose)
+      hbase hstartBase hrightCovered hordered
+  rw [hdecoded]
+  exact
+    localBPSameBlockClosePrefixRange_exact
+      (shape := shape) (left := left) (len := len)
+      (leftClose := leftClose) (rightClose := rightClose)
+      (answerClose := answerClose)
+      hlen hbound hleft hright hanswer
+
+theorem localBPSameBlockCloseDecodedCosted_exact_of_query_same_block
+    {shape : Cartesian.CartesianShape}
+    {blockSize left len leftClose rightClose answerClose : Nat}
+    (hblockSizePos : 0 < blockSize)
+    (hblockSizeLeThree :
+      blockSize <=
+        3 * SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (hsame :
+      blockOfClose blockSize leftClose =
+        blockOfClose blockSize rightClose)
+    (hlen : 0 < len)
+    (hbound : left + len <= shape.size)
+    (hleft : bpCloseOfInorder? shape left = some leftClose)
+    (hright :
+      bpCloseOfInorder? shape (left + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder? shape
+          (scanWindow shape.representative left len) =
+        some answerClose) :
+    (localBPSameBlockCloseDecodedCosted shape blockSize leftClose
+        rightClose).erase =
+      some answerClose := by
+  have hordered :=
+    endpoint_closes_ordered_of_query_span
+      (shape := shape) (left := left) (len := len)
+      (leftClose := leftClose) (rightClose := rightClose)
+      hlen hleft hright
+  have hleftCloseBound := bpCloseOfInorder?_bounds shape hleft
+  have hrightCloseBound := bpCloseOfInorder?_bounds shape hright
+  have hbaseBlock :
+      localBPWindowBase shape blockSize leftClose <=
+        blockStartOf blockSize (blockOfClose blockSize leftClose) :=
+    localBPWindowBase_le_blockStart shape blockSize leftClose
+  have hbaseClose :
+      localBPWindowBase shape blockSize leftClose <= leftClose :=
+    Nat.le_trans hbaseBlock blockStartOf_blockOfClose_le
+  have hbaseLen :
+      localBPWindowBase shape blockSize leftClose <= shape.bpCode.length := by
+    omega
+  have hstartBase :
+      localBPWindowBase shape blockSize leftClose <= leftClose + 1 := by
+    omega
+  have hblockEndWidth :
+      blockStartOf blockSize (blockOfClose blockSize leftClose) +
+          blockSize <=
+        localBPWindowBase shape blockSize leftClose +
+          4 * SuccinctRankProposal.machineWordBits shape.bpCode.length :=
+    localBPWindow_block_end_le_four_words shape blockSize leftClose
+      hblockSizeLeThree
+  have hrightInside :
+      rightClose <
+        blockStartOf blockSize (blockOfClose blockSize rightClose) +
+          blockSize :=
+    close_lt_blockStartOf_blockOfClose_add
+      (blockSize := blockSize) (close := rightClose) hblockSizePos
+  have hrightEndWidth :
+      rightClose + 1 <=
+        localBPWindowBase shape blockSize leftClose +
+          4 * SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+    have hrightBlockStart :
+        blockStartOf blockSize (blockOfClose blockSize rightClose) =
+          blockStartOf blockSize (blockOfClose blockSize leftClose) := by
+      rw [← hsame]
+    omega
+  have hrightEndLen : rightClose + 1 <= shape.bpCode.length := by
+    omega
+  have hrightCovered :
+      rightClose + 1 <=
+        localBPWindowBase shape blockSize leftClose +
+          (localBPWindowBits shape blockSize leftClose).length :=
+    localBPWindowBits_covers_of_le_width
+      (shape := shape) (blockSize := blockSize) (close := leftClose)
+      (pos := rightClose + 1)
+      (by omega) hrightEndLen hrightEndWidth
+  exact
+    localBPSameBlockCloseDecodedCosted_exact
+      (shape := shape) (blockSize := blockSize)
+      (left := left) (len := len)
+      (leftClose := leftClose) (rightClose := rightClose)
+      (answerClose := answerClose)
+      hbaseLen hstartBase hrightCovered hlen hbound hleft hright hanswer
+
 def localBPSameBlockCloseCosted
     (shape : Cartesian.CartesianShape)
     (leftClose rightClose : Nat) : Costed (Option Nat) :=
@@ -23032,9 +23396,11 @@ def lcaCloseCosted
     (directory : ConcreteCompactBPCloseLCADirectory shape)
     (leftClose rightClose : Nat) : Costed (Option Nat) :=
   let blockSize := canonicalBPRelativeSummaryBlockSize shape
-  if blockOfClose blockSize leftClose =
-      blockOfClose blockSize rightClose then
+  if blockSize = 0 then
     localBPSameBlockCloseCosted shape leftClose rightClose
+  else if blockOfClose blockSize leftClose =
+      blockOfClose blockSize rightClose then
+    localBPSameBlockCloseDecodedCosted shape blockSize leftClose rightClose
   else
     directory.crossBlockCloseCosted leftClose rightClose
 
@@ -23100,16 +23466,24 @@ theorem lcaCloseCosted_cost_le
     (directory.lcaCloseCosted leftClose rightClose).cost <=
       concreteCompactBPCloseQueryCost := by
   unfold lcaCloseCosted
-  by_cases hsame :
-      blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose =
-        blockOfClose (canonicalBPRelativeSummaryBlockSize shape) rightClose
-  · simp [hsame]
+  by_cases hzero : canonicalBPRelativeSummaryBlockSize shape = 0
+  · simp [hzero]
     have hlocal :=
       localBPSameBlockCloseCosted_cost_le shape leftClose rightClose
     unfold concreteCompactBPCloseQueryCost
     omega
-  · simp [hsame]
-    exact directory.crossBlockCloseCosted_cost_le leftClose rightClose
+  · simp [hzero]
+    by_cases hsame :
+        blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose =
+          blockOfClose (canonicalBPRelativeSummaryBlockSize shape) rightClose
+    · simp [hsame]
+      have hlocal :=
+        localBPSameBlockCloseDecodedCosted_cost_le shape
+          (canonicalBPRelativeSummaryBlockSize shape) leftClose rightClose
+      unfold concreteCompactBPCloseQueryCost
+      omega
+    · simp [hsame]
+      exact directory.crossBlockCloseCosted_cost_le leftClose rightClose
 
 theorem crossBlockCloseCosted_erase_decoded
     {shape : Cartesian.CartesianShape}
@@ -23465,34 +23839,67 @@ theorem lcaCloseCosted_exact_of_query
     (directory.lcaCloseCosted leftClose rightClose).erase =
       some answerClose := by
   unfold lcaCloseCosted
-  by_cases hsame :
-      blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose =
-        blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
-          rightClose
-  · simp [hsame]
+  by_cases hzero : canonicalBPRelativeSummaryBlockSize shape = 0
+  · simp [hzero]
     exact
       localBPSameBlockCloseCosted_exact hlen hbound hleft hright hanswer
-  · simp [hsame]
-    have hbetween :=
-      answerClose_between_endpoint_closes
-        (shape := shape) (left := left) (len := len)
-        (leftClose := leftClose) (rightClose := rightClose)
-        (answerClose := answerClose)
-        hlen hleft hright hanswer
-    have hblockLe :
-        blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose <=
+  · simp [hzero]
+    by_cases hsame :
+        blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose =
           blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
-            rightClose := by
-      unfold blockOfClose
-      exact Nat.div_le_div_right (Nat.le_trans hbetween.1 hbetween.2)
-    have hcross :
-        blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose <
-          blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
-            rightClose := by
-      omega
-    exact
-      directory.crossBlockCloseCosted_exact_of_query hlen hbound
-        hleft hright hanswer hcross
+            rightClose
+    · simp [hsame]
+      by_cases hactive :
+          canonicalBPRelativeMinMaxArgSummaryTableActive shape
+      · have hsizePos : 0 < shape.size := by omega
+        have hblockSizePos :
+            0 < canonicalBPRelativeSummaryBlockSize shape := by
+          simpa [canonicalBPRelativeSummaryBlockSize, hactive] using
+            canonicalBPRelativeSummaryBlockSizeRaw_pos shape
+        have hblockSizeLeTwo :
+            canonicalBPRelativeSummaryBlockSize shape <=
+              2 * SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+          exact
+            canonicalBPRelativeSummaryBlockSize_le_two_machine_of_size_pos
+              (shape := shape) hsizePos
+        have hblockSizeLeThree :
+            canonicalBPRelativeSummaryBlockSize shape <=
+              3 * SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+          omega
+        exact
+          localBPSameBlockCloseDecodedCosted_exact_of_query_same_block
+            (shape := shape)
+            (blockSize := canonicalBPRelativeSummaryBlockSize shape)
+            (left := left) (len := len)
+            (leftClose := leftClose) (rightClose := rightClose)
+            (answerClose := answerClose)
+            hblockSizePos hblockSizeLeThree hsame
+            hlen hbound hleft hright hanswer
+      · have hblockZero :
+            canonicalBPRelativeSummaryBlockSize shape = 0 := by
+          simp [canonicalBPRelativeSummaryBlockSize, hactive]
+        exact False.elim (hzero hblockZero)
+    · simp [hsame]
+      have hbetween :=
+        answerClose_between_endpoint_closes
+          (shape := shape) (left := left) (len := len)
+          (leftClose := leftClose) (rightClose := rightClose)
+          (answerClose := answerClose)
+          hlen hleft hright hanswer
+      have hblockLe :
+          blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose <=
+            blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+              rightClose := by
+        unfold blockOfClose
+        exact Nat.div_le_div_right (Nat.le_trans hbetween.1 hbetween.2)
+      have hcross :
+          blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose <
+            blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+              rightClose := by
+        omega
+      exact
+        directory.crossBlockCloseCosted_exact_of_query hlen hbound
+          hleft hright hanswer hcross
 
 theorem read_words_length_le_machine
     {shape : Cartesian.CartesianShape}

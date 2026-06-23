@@ -21,14 +21,23 @@ localBPRightFringeCandidateCosted
 ConcreteCompactBPCloseLCADirectory.lcaCloseCosted
 ```
 
-but the local helpers still compute some values with semantic BP functions over
-`shape`, while charging the constant local word budget.  The endpoint-fringe
-side now has a seeded decoder tied to the charged word reads by
+but the local helpers historically computed some values with semantic BP
+functions over `shape`, while charging the constant local word budget.  The
+endpoint-fringe side now has a seeded decoder tied to the charged word reads by
 `localBPWindowBits_eq_flatten_localBPBlockWordsRead`; the compact directory
 passes explicit rank-false seeds through
 `localBPSeedFromRankFalseCosted_eq_localBPSeedExcess` and consumes the seeded
-left/right fringe helpers.  The remaining local caveat is the same-block helper,
-not the cross-block endpoint-fringe path.
+left/right fringe helpers.  The positive block-size same-block path now uses
+`localBPSameBlockCloseDecodedCosted`, which reads the same explicit seed and
+computes its candidate from the flattened `localBPBlockWordsRead` window.  The
+only remaining semantic fallback is the inactive zero-block branch, where the
+canonical block size is zero and every endpoint pair is classified as
+same-block.  The coverage obstruction
+`zeroBlockSameBlock_does_not_imply_localBPWindowCoverage` records that this
+same-block classification alone does not imply a four-word local BP window
+covers the right endpoint. The remaining integration hardening is not another
+local decoder: it is to route the seed through the final payload-backed
+`rankCloseCosted` access path instead of the local modeled rank-prefix helper.
 
 ## Goal
 
@@ -67,15 +76,19 @@ also pass/read `localBPSeedExcess` at the window base, or equivalently pass/read
 `Succinct.rankPrefix false shape.bpCode (localBPWindowBase ...)` and recover the
 seed using `localBPSeedFromRankFalse`.
 
-The current `ConcreteCompactBPCloseLCADirectory` interface still lists only
-`localBPBlockWordsRead` for endpoint BP windows; it has no charged seed read.
-Combined with `localBPWindowBits_alone_does_not_determine_base_excess`, this is
-the formal reason the directory migration should wait for a seed-bearing read
-surface instead of pretending the unseeded helper is decoded.
+The current `ConcreteCompactBPCloseLCADirectory` interface now threads a
+charged seed read through both endpoint fringes and the positive block-size
+same-block path. This read is currently the local helper
+`localBPSeedFromRankFalseCosted`; the next final-stack hardening step is a
+rank-callback-backed sibling path that obtains the same seed from an existing
+payload-backed `rankCloseCosted`. Combined with
+`localBPWindowBits_alone_does_not_determine_base_excess`, this is the formal
+reason the directory migration uses a seed-bearing read surface instead of
+pretending the unseeded helper is decoded.
 
-## Completed Endpoint-Fringe Proof Shape
+## Completed Local Decoder Proof Shape
 
-The endpoint-fringe migration used this equivalence-first path:
+The endpoint-fringe and same-block migrations use this equivalence-first path:
 
 1. The proof-facing window now agrees with the charged reads. The local slice
    used by `localBPWindowBits` is exactly the flattened consecutive chunk reads
@@ -95,7 +108,21 @@ The endpoint-fringe migration used this equivalence-first path:
    localBPSeedFromRankFalse_eq_localBPSeedExcess
    ```
 
-3. `ConcreteCompactBPCloseLCADirectory.crossBlockCloseCosted` now uses a
+   In the compact close module this is presently modeled by
+   `localBPSeedFromRankFalseCosted`. The final-stack cleanup should replace or
+   wrap it with a sibling helper that consumes a payload-backed
+   `rankCloseCosted : Nat -> Costed Nat`.
+
+3. Flattened local-word bit reads are exposed by:
+
+   ```lean
+   theorem localBPBlockWordsRead_get?_eq_bpCode_get? :
+       (SuccinctSpace.flattenPayloadWords
+           (localBPBlockWordsRead shape blockSize close))[...]? =
+         shape.bpCode[globalPos]? := ...
+   ```
+
+4. `ConcreteCompactBPCloseLCADirectory.crossBlockCloseCosted` now uses a
    seed-bearing version that calls:
 
    ```lean
@@ -110,7 +137,22 @@ The endpoint-fringe migration used this equivalence-first path:
    localBPRightFringeCandidateSeededCosted_eq_semantic
    ```
 
-4. The existing profile theorem is reproved by rewriting through the seeded
+5. The same-block positive block-size branch now calls:
+
+   ```lean
+   localBPSameBlockCloseDecodedCosted
+   localBPSameBlockCloseDecodedCosted_eq_semantic
+   localBPSameBlockCloseDecodedCosted_exact_of_query_same_block
+   ```
+
+   `localBPSameBlockCloseSeededCosted_eq_semantic` rewrites the flattened
+   charged window back through
+   `localBPWindowBits_eq_flatten_localBPBlockWordsRead` and the seeded
+   prefix-range decoder lemmas.  The exactness theorem then uses
+   `answerClose_prefix_leftmost_min_excess_of_query` to show the decoded
+   prefix-range candidate is the representative-query answer close.
+
+6. The existing profile theorem is reproved by rewriting through the seeded
    equivalence lemmas:
 
    ```lean
@@ -165,23 +207,21 @@ The remaining hard arithmetic is expected to be:
 - translating global close positions to offsets in the local window;
 - handling partial final machine words by proving lookup equality only on
   covered in-range positions;
-- showing the endpoint-fringe slices lie inside the four-word window under the
-  canonical block-size regime already used by
+- showing the endpoint-fringe and same-block slices lie inside the four-word
+  window under the positive canonical block-size regime already used by
   `ConcreteCompactBPCloseLCADirectory`;
-- proving the `localBPWindowBits` view is read from the charged
-  `localBPBlockWordsRead` payload words, not just from an uncharged direct
-  `shape.bpCode.drop`;
-- threading the seed read through the directory without hiding an uncharged
-  `bpExcessAt`/`rankPrefix` computation;
 - preserving the existing constant cost and machine-word read bounds.
 
 ## Stop Conditions
 
 A worker should not stop after only adding decoder definitions, coverage lemmas,
 or a seed-field/interface hook if the next directory migration theorem is still
-obvious and inside its ownership.  For the endpoint-fringe slice, the bridge and
-directory migration are now closed; future local-decoder work should target the
-same-block helper or a payload-only encoding presentation.
+obvious and inside its ownership.  For the endpoint-fringe and positive
+block-size same-block slices, the bridge and directory migration are now closed;
+future local-decoder work should target the inactive zero-block fallback only if
+the all-input small-regime presentation matters. The main integration cleanup is
+rank-seed routing through the final payload-backed rank path, plus optionally a
+payload-only encoding presentation.
 
 A valid positive stop closes one of these named outcomes:
 
@@ -190,6 +230,9 @@ A valid positive stop closes one of these named outcomes:
 - `ConcreteCompactBPCloseLCADirectory` is migrated to seed-bearing fringe
   helpers with
   `concreteCompactBPCloseLCADirectory_profile` still proved; or
+- `ConcreteCompactBPCloseLCADirectory` consumes
+  `localBPSameBlockCloseDecodedCosted` for positive block-size same-block
+  queries with `concreteCompactBPCloseLCADirectory_profile` still proved; or
 - the final BP-native capstone theorem reverified after the migration.
 
 A valid negative stop requires a formal obstruction theorem showing that the
