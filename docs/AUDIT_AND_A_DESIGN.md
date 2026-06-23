@@ -421,3 +421,37 @@ construct a concrete two-level payload-live stored-word rank/select family over
 all bitvectors from the canonical two-level rank/select builders, discharge the
 word-size, sample-width, positivity, and little-o side conditions, then apply
 the final BP-native join theorem with no abstract family parameter remaining.
+
+## 2026-06-21 - Rectangular built close-access audit: exact and constant, but linear
+
+The latest `codex/c1-rectangular-built-close-access` worker branch made real
+construction progress but did not close C1. It landed the span-packing theorem
+`SuccinctSelectProposal.builtRelativeSplitFalseSelectShortSuperLocalSpanSum_le_bpCode_length`
+and the unconditional repaired sparse-exception relative-table budget
+`SuccinctSelectProposal.builtRelativeSplitFalseSelectSparseExceptionRelativeTable_payload_le_overhead`.
+Those are load-bearing: the narrow sparse-exception payload no longer depends
+on an unproved semantic span hypothesis.
+
+The branch also built an exact, constant-query false-close/select route through
+`SuccinctSelectProposal.builtTwoLevelFalseSelectCloseData_profile` and consumed
+it in `SuccinctFinal.builtTwoLevelFalseSelectBPCloseAccessDirectory_profile`.
+This is a useful compatibility witness, but it is not a succinct witness. The
+same branch proves
+`SuccinctSelectProposal.builtTwoLevelFalseSelectBlockOverhead_ge_bpCode_length_succ`,
+so the block select payload is at least `shape.bpCode.length + 1`, hence
+linear in the BP payload length. Any final path that rests on
+`builtTwoLevelFalseSelectCloseData` or the full-width
+`TwoLevelPayloadLiveStoredWordSelectData` block table is therefore a known
+linear baseline, not the `o(n)` C1 component.
+
+The rectangular routing idea itself is still sound. The failure is assembly:
+the exact witness keeps falling back to the full-width two-level select table
+instead of assembling the already-budgeted narrow relative-split components.
+The next theorem-shaped target is therefore not another linear exact baseline
+and not another padding obstruction. It is a concrete
+`RelativeSplitSparseExceptionFalseSelectCloseData` builder from `shape.bpCode`,
+using the narrow relative-table payload, sparse flag/rank side structure,
+relative long/sparse exception offsets, and dense two-word fallback, followed
+by consumption in the close-access/final RMQ path. The branch should prove the
+payload bound against a genuine `LittleOLinear` overhead function and should
+not leave branch exactness as free structure fields.

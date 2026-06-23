@@ -464,15 +464,32 @@ obligations, not final proof-only fields. `builtLongExplicitFalseSelectBranch`
 is retained only as a generated long-explicit sanity/reference branch; it stores
 all false positions and cannot witness `o(n)` auxiliary space.
 
-The next C1 closure target should therefore be the repaired rectangular profile,
-not another attempt to instantiate absolute local/dense pointers:
+The latest rectangular-built worker branch clarified this target. A route
+through `builtTwoLevelFalseSelectCloseData` / the full-width
+`TwoLevelPayloadLiveStoredWordSelectData` table can be exact and constant-time,
+but `builtTwoLevelFalseSelectBlockOverhead_ge_bpCode_length_succ` shows that
+its block payload is linear. That route is a compatibility baseline, not a
+valid C1 close.
+
+The next C1 closure target should therefore be the repaired relative-split
+sparse-exception profile built from the narrow components, not another attempt
+to instantiate absolute local/dense pointers or the linear two-level select
+table:
 
 ```lean
-theorem rectangularSparseDenseFalseSelectCloseData_profile
+def builtRelativeSplitSparseExceptionFalseSelectCloseData
     (shape : Cartesian.CartesianShape) :
-    let data := rectangularSparseDenseFalseSelectCloseData shape
+    RelativeSplitSparseExceptionFalseSelectCloseData shape
+      (rankSuperOverhead shape.size)
+      (rankBlockOverhead shape.size)
+
+theorem builtRelativeSplitSparseExceptionFalseSelectCloseData_profile
+    (shape : Cartesian.CartesianShape) :
+    let data := builtRelativeSplitSparseExceptionFalseSelectCloseData shape
     data.payload.length <=
-        canonicalSparseDenseFalseSelectOverhead shape.size /\
+        canonicalRelativeSplitSparseExceptionFalseSelectOverhead shape.size /\
+      SuccinctSpace.LittleOLinear
+        canonicalRelativeSplitSparseExceptionFalseSelectOverhead /\
       (forall idx,
         (data.selectCloseCosted idx).cost <=
           sparseDenseFalseSelectQueryCost) /\
@@ -483,8 +500,13 @@ theorem rectangularSparseDenseFalseSelectCloseData_profile
 ```
 
 The exact names may differ, but the theorem must consume the deterministic
-local-slot routing or charged side locators and must not leave the branch
-exactness facts as free fields.
+local-slot routing or charged side locators, the repaired sparse-exception
+relative table, and the dense two-word payload facts. It must not leave the
+branch exactness facts as free fields. After this builder/profile lands, the
+same loop should consume it in `SuccinctFinal` as the close-access witness that
+feeds the BP-native final theorem. A verified adapter around
+`builtTwoLevelFalseSelectCloseData` is not a valid stop, because its own
+overhead theorem exposes the linear payload.
 
 ## Component 2: Concrete Macro/Micro BP Close-LCA
 
@@ -877,7 +899,7 @@ the worker report or scratch notes:
 
 ```text
 Overall goal:   final concrete BP-native succinct RMQ profile
-Current gap:    concrete read-backed false-select close access, then the unconditional join
+Current gap:    concrete relative-split sparse-exception false-select close access, then the unconditional join
 Hard part:      routing idx to the selected BP payload word with charged o(n) locator payload
 This iteration: the largest coherent proof/construction step toward it
 Not doing:      adjacent helper/docs/blocker work that would leave it untouched
@@ -930,6 +952,12 @@ Invalid stop points for this final path:
   `SparseDenseFalseSelectBPCloseAccessFamily.constant_query_profile` while the
   super/local/exception tables are not constructed from `shape.bpCode` and the
   branch-exactness fields are still supplied as assumptions.
+- proving `builtTwoLevelFalseSelectCloseData_profile`,
+  `builtTwoLevelFalseSelectBPCloseAccessDirectory_profile`, or an equivalent
+  adapter over the full-width two-level select block table as a final C1
+  checkpoint. That path is exact and useful as a baseline, but its
+  `builtTwoLevelFalseSelectBlockOverhead_ge_bpCode_length_succ` theorem makes
+  the payload linear.
 - repairing the dense/local route by storing one full-width row per
   high-frequency local interval, unless the same theorem proves that the row
   count and field widths fit the named little-o C1 overhead. Splitting an

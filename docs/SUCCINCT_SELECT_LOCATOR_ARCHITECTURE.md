@@ -321,5 +321,8 @@ These are known traps, not milestones:
 - Another impossibility theorem for the dense locator unless it also proves the
   sparse/dense target above is misspecified.
 
-The named positive target is the concrete sparse/dense false-select profile and
-its consumption by the final BP-native RMQ theorem.
+The named positive target is the concrete relative-split sparse-exception
+false-select profile, built from the narrow relative-table and charged
+flag/rank/dense two-word components, and its consumption by the final BP-native
+RMQ theorem. A linear adapter over `builtTwoLevelFalseSelectCloseData` is useful
+baseline evidence, not C1 closure.
