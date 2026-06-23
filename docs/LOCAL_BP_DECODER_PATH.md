@@ -23,8 +23,12 @@ ConcreteCompactBPCloseLCADirectory.lcaCloseCosted
 
 but the local helpers still compute some values with semantic BP functions over
 `shape`, while charging the constant local word budget.  The endpoint-fringe
-side now has a positive seeded decoder; the remaining target is to tie that
-decoder to the charged word reads and pass/read the required seed.
+side now has a seeded decoder tied to the charged word reads by
+`localBPWindowBits_eq_flatten_localBPBlockWordsRead`; the compact directory
+passes explicit rank-false seeds through
+`localBPSeedFromRankFalseCosted_eq_localBPSeedExcess` and consumes the seeded
+left/right fringe helpers.  The remaining local caveat is the same-block helper,
+not the cross-block endpoint-fringe path.
 
 ## Goal
 
@@ -69,15 +73,13 @@ Combined with `localBPWindowBits_alone_does_not_determine_base_excess`, this is
 the formal reason the directory migration should wait for a seed-bearing read
 surface instead of pretending the unseeded helper is decoded.
 
-## Remaining Proof Shape
+## Completed Endpoint-Fringe Proof Shape
 
-Use an equivalence-first migration from the seeded helpers already present:
+The endpoint-fringe migration used this equivalence-first path:
 
-1. Prove that the proof-facing window agrees with the charged reads. The
-   intended theorem should say that the local slice used by
-   `localBPWindowBits` is exactly the flattened consecutive chunk reads from
-   `localBPBlockWordsRead`, or at least that every bit consumed by
-   `localBPWindowGet?` is available through those charged words.
+1. The proof-facing window now agrees with the charged reads. The local slice
+   used by `localBPWindowBits` is exactly the flattened consecutive chunk reads
+   from `localBPBlockWordsRead`.
 
    ```lean
    theorem localBPWindowBits_eq_flatten_localBPBlockWordsRead :
@@ -86,20 +88,14 @@ Use an equivalence-first migration from the seeded helpers already present:
            (localBPBlockWordsRead shape blockSize close) := ...
    ```
 
-   If the exact equality needs padding/tail hypotheses, state the smallest
-   in-range theorem that is strong enough for the seeded fringe equivalence.
-
-2. Add a seed-bearing read surface. The preferred seed is a charged rank-false
-   read at `localBPWindowBase`, converted by:
+2. The seed-bearing read surface is a charged rank-false read at
+   `localBPWindowBase`, converted by:
 
    ```lean
    localBPSeedFromRankFalse_eq_localBPSeedExcess
    ```
 
-   A direct stored base-excess seed is acceptable only if its payload overhead
-   is shown to remain within the existing `o(n)` budget.
-
-3. Replace `ConcreteCompactBPCloseLCADirectory.crossBlockCloseCosted` with a
+3. `ConcreteCompactBPCloseLCADirectory.crossBlockCloseCosted` now uses a
    seed-bearing version that calls:
 
    ```lean
@@ -114,7 +110,7 @@ Use an equivalence-first migration from the seeded helpers already present:
    localBPRightFringeCandidateSeededCosted_eq_semantic
    ```
 
-4. Reprove the existing profile theorem by rewriting through the seeded
+4. The existing profile theorem is reproved by rewriting through the seeded
    equivalence lemmas:
 
    ```lean
@@ -183,7 +179,9 @@ The remaining hard arithmetic is expected to be:
 
 A worker should not stop after only adding decoder definitions, coverage lemmas,
 or a seed-field/interface hook if the next directory migration theorem is still
-obvious and inside its ownership.
+obvious and inside its ownership.  For the endpoint-fringe slice, the bridge and
+directory migration are now closed; future local-decoder work should target the
+same-block helper or a payload-only encoding presentation.
 
 A valid positive stop closes one of these named outcomes:
 
