@@ -21717,6 +21717,640 @@ def localBPBlockWordsRead
       bpCodeWordReadsAt shape (firstWord + 2) ++
         bpCodeWordReadsAt shape (firstWord + 3)
 
+/-- First global BP bit position covered by the local four-word window. -/
+def localBPWindowBase
+    (shape : Cartesian.CartesianShape)
+    (blockSize close : Nat) : Nat :=
+  let wordSize := SuccinctRankProposal.machineWordBits shape.bpCode.length
+  let firstWord :=
+    blockStartOf blockSize (blockOfClose blockSize close) / wordSize
+  firstWord * wordSize
+
+/--
+Contiguous bit view of the local BP window.
+
+The query still charges the four payload words listed by `localBPBlockWordsRead`;
+this proof-facing view exposes the covered slice so the seeded decoder can be
+stated without calling the semantic local helpers.
+-/
+def localBPWindowBits
+    (shape : Cartesian.CartesianShape)
+    (blockSize close : Nat) : List Bool :=
+  let wordSize := SuccinctRankProposal.machineWordBits shape.bpCode.length
+  let base := localBPWindowBase shape blockSize close
+  (shape.bpCode.drop base).take (4 * wordSize)
+
+/-- Read a global BP bit through the local window when it falls in range. -/
+def localBPWindowGet?
+    (shape : Cartesian.CartesianShape)
+    (blockSize close globalPos : Nat) : Option Bool :=
+  let base := localBPWindowBase shape blockSize close
+  if base <= globalPos then
+    (localBPWindowBits shape blockSize close)[globalPos - base]?
+  else
+    none
+
+theorem localBPWindowBits_length_le
+    (shape : Cartesian.CartesianShape)
+    (blockSize close : Nat) :
+    (localBPWindowBits shape blockSize close).length <=
+      4 * SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  simp [localBPWindowBits, List.length_take]
+  exact Nat.min_le_left _ _
+
+theorem localBPWindowGet?_eq_bpCode_get?
+    {shape : Cartesian.CartesianShape}
+    {blockSize close globalPos : Nat}
+    (hcovered :
+      localBPWindowBase shape blockSize close <= globalPos /\
+        globalPos <
+          localBPWindowBase shape blockSize close +
+            4 * SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+    localBPWindowGet? shape blockSize close globalPos =
+      shape.bpCode[globalPos]? := by
+  unfold localBPWindowGet? localBPWindowBits
+  simp only [hcovered.1, ↓reduceIte]
+  have hoff :
+      globalPos - localBPWindowBase shape blockSize close <
+        4 * SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+    omega
+  rw [List.getElem?_take]
+  simp [hoff]
+  have hpos :
+      localBPWindowBase shape blockSize close +
+          (globalPos - localBPWindowBase shape blockSize close) =
+        globalPos := by
+    omega
+  rw [hpos]
+
+theorem localBPWindowBits_end_le_bpCode_length
+    (shape : Cartesian.CartesianShape)
+    (blockSize close : Nat)
+    (hbase :
+      localBPWindowBase shape blockSize close <= shape.bpCode.length) :
+    localBPWindowBase shape blockSize close +
+        (localBPWindowBits shape blockSize close).length <=
+      shape.bpCode.length := by
+  simp [localBPWindowBits, List.length_take, List.length_drop]
+  omega
+
+/-- Absolute BP excess at the base of the local window. -/
+def localBPSeedExcess
+    (shape : Cartesian.CartesianShape)
+    (blockSize close : Nat) : Nat :=
+  bpExcessAt shape (localBPWindowBase shape blockSize close)
+
+/--
+Recover the base excess from a stored close-rank seed at the same prefix
+position.  When the base is in range and the seed is the false-rank at the
+base, this is equal to `localBPSeedExcess`.
+-/
+def localBPSeedFromRankFalse
+    (base falseRankAtBase : Nat) : Nat :=
+  base - 2 * falseRankAtBase
+
+theorem rankPrefix_true_add_false_eq_of_le_length
+    {bits : List Bool} {limit : Nat}
+    (hlimit : limit <= bits.length) :
+    Succinct.rankPrefix true bits limit +
+        Succinct.rankPrefix false bits limit =
+      limit := by
+  induction bits generalizing limit with
+  | nil =>
+      have hzero : limit = 0 := by
+        simpa using hlimit
+      subst limit
+      simp [Succinct.rankPrefix]
+  | cons bit rest ih =>
+      cases limit with
+      | zero =>
+          simp [Succinct.rankPrefix]
+      | succ limit =>
+          have htail : limit <= rest.length := by
+            simp at hlimit
+            omega
+          have hrec := ih htail
+          cases bit <;> simp [Succinct.rankPrefix] <;> omega
+
+theorem localBPSeedFromRankFalse_eq_localBPSeedExcess
+    (shape : Cartesian.CartesianShape)
+    (blockSize close : Nat)
+    (hbase :
+      localBPWindowBase shape blockSize close <= shape.bpCode.length) :
+    localBPSeedFromRankFalse
+        (localBPWindowBase shape blockSize close)
+        (Succinct.rankPrefix false shape.bpCode
+          (localBPWindowBase shape blockSize close)) =
+      localBPSeedExcess shape blockSize close := by
+  unfold localBPSeedFromRankFalse localBPSeedExcess bpExcessAt
+  have hsum :=
+    rankPrefix_true_add_false_eq_of_le_length
+      (bits := shape.bpCode)
+      (limit := localBPWindowBase shape blockSize close) hbase
+  have hnonneg := bpExcessAt_prefix_nonnegative shape hbase
+  omega
+
+/--
+The local BP bits alone do not determine the absolute BP-excess seed at the
+window base.
+
+The fringe helpers return absolute `(excess, prefixPos)` candidates so that
+they can be merged with the interior candidate. Two identical local windows can
+have different prefix excess before the window, hence a decoder that is given
+only `localBPWindowBits` still needs a charged/stored seed such as base excess
+or equivalent rank metadata.
+-/
+theorem localBPWindowBits_alone_does_not_determine_base_excess :
+    exists prefixA prefixB window : List Bool,
+      List.take window.length
+          (List.drop prefixA.length (prefixA ++ window)) =
+        List.take window.length
+          (List.drop prefixB.length (prefixB ++ window)) /\
+      (Succinct.rankPrefix true (prefixA ++ window) prefixA.length -
+          Succinct.rankPrefix false (prefixA ++ window) prefixA.length) ≠
+        (Succinct.rankPrefix true (prefixB ++ window) prefixB.length -
+          Succinct.rankPrefix false (prefixB ++ window) prefixB.length) := by
+  refine ⟨[], [true], [false], ?_, ?_⟩
+  · decide
+  · decide
+
+def localBPSeededExcessAt
+    (window : List Bool) (seed base globalPos : Nat) : Nat :=
+  let sample := Nat.min globalPos (base + window.length)
+  seed +
+      Succinct.rankPrefix true window (sample - base) -
+    Succinct.rankPrefix false window (sample - base)
+
+theorem localBPSeededExcessAt_eq_bpExcessAt
+    {shape : Cartesian.CartesianShape}
+    {blockSize close globalPos : Nat}
+    (hbase :
+      localBPWindowBase shape blockSize close <= shape.bpCode.length)
+    (hpos :
+      localBPWindowBase shape blockSize close <= globalPos)
+    (hcovered :
+      globalPos <=
+        localBPWindowBase shape blockSize close +
+          (localBPWindowBits shape blockSize close).length) :
+    localBPSeededExcessAt
+        (localBPWindowBits shape blockSize close)
+        (localBPSeedExcess shape blockSize close)
+        (localBPWindowBase shape blockSize close)
+        globalPos =
+      bpExcessAt shape globalPos := by
+  let base := localBPWindowBase shape blockSize close
+  let width := 4 * SuccinctRankProposal.machineWordBits shape.bpCode.length
+  have hend :
+      base + (localBPWindowBits shape blockSize close).length <=
+        shape.bpCode.length := by
+    simpa [base] using
+      localBPWindowBits_end_le_bpCode_length shape blockSize close hbase
+  have hposLen : globalPos <= shape.bpCode.length := by
+    omega
+  have hsample :
+      Nat.min globalPos
+          (base + (localBPWindowBits shape blockSize close).length) =
+        globalPos := by
+    exact Nat.min_eq_left (by simpa [base] using hcovered)
+  have hsample' :
+      Nat.min globalPos
+          (localBPWindowBase shape blockSize close +
+            (localBPWindowBits shape blockSize close).length) =
+        globalPos := by
+    simpa [base] using hsample
+  have hoffWindow :
+      globalPos - base <=
+        (localBPWindowBits shape blockSize close).length := by
+    omega
+  have htrueLocal :
+      Succinct.rankPrefix true
+          (localBPWindowBits shape blockSize close)
+          (globalPos - base) =
+        Succinct.rankPrefix true shape.bpCode globalPos -
+          Succinct.rankPrefix true shape.bpCode base := by
+    have htake :
+        Succinct.rankPrefix true
+            ((shape.bpCode.drop base).take width)
+            (globalPos - base) =
+          Succinct.rankPrefix true (shape.bpCode.drop base)
+            (globalPos - base) := by
+      apply Succinct.rankPrefix_take_eq_of_le
+      simpa [localBPWindowBits, base, width] using hoffWindow
+    have hdrop :=
+      Succinct.rankPrefix_drop_eq_sub_of_le
+        true shape.bpCode hpos hposLen
+    simpa [localBPWindowBits, base, width] using htake.trans hdrop
+  have hfalseLocal :
+      Succinct.rankPrefix false
+          (localBPWindowBits shape blockSize close)
+          (globalPos - base) =
+        Succinct.rankPrefix false shape.bpCode globalPos -
+          Succinct.rankPrefix false shape.bpCode base := by
+    have htake :
+        Succinct.rankPrefix false
+            ((shape.bpCode.drop base).take width)
+            (globalPos - base) =
+          Succinct.rankPrefix false (shape.bpCode.drop base)
+            (globalPos - base) := by
+      apply Succinct.rankPrefix_take_eq_of_le
+      simpa [localBPWindowBits, base, width] using hoffWindow
+    have hdrop :=
+      Succinct.rankPrefix_drop_eq_sub_of_le
+        false shape.bpCode hpos hposLen
+    simpa [localBPWindowBits, base, width] using htake.trans hdrop
+  have hbaseNonneg := bpExcessAt_prefix_nonnegative shape hbase
+  have hposNonneg := bpExcessAt_prefix_nonnegative shape hposLen
+  have htrueMono :
+      Succinct.rankPrefix true shape.bpCode base <=
+        Succinct.rankPrefix true shape.bpCode globalPos :=
+    Succinct.rankPrefix_mono_limit true shape.bpCode hpos
+  have hfalseMono :
+      Succinct.rankPrefix false shape.bpCode base <=
+        Succinct.rankPrefix false shape.bpCode globalPos :=
+    Succinct.rankPrefix_mono_limit false shape.bpCode hpos
+  have hbaseNonneg' :
+      Succinct.rankPrefix false shape.bpCode base <=
+        Succinct.rankPrefix true shape.bpCode base := by
+    simpa [base] using hbaseNonneg
+  have hseed :
+      localBPSeedExcess shape blockSize close =
+        Succinct.rankPrefix true shape.bpCode base -
+          Succinct.rankPrefix false shape.bpCode base := by
+    simp [localBPSeedExcess, bpExcessAt, base]
+  unfold localBPSeededExcessAt bpExcessAt
+  simp [hsample', base, hseed, htrueLocal, hfalseLocal]
+  change
+    (Succinct.rankPrefix true shape.bpCode base -
+          Succinct.rankPrefix false shape.bpCode base) +
+        (Succinct.rankPrefix true shape.bpCode globalPos -
+          Succinct.rankPrefix true shape.bpCode base) -
+      (Succinct.rankPrefix false shape.bpCode globalPos -
+        Succinct.rankPrefix false shape.bpCode base) =
+    Succinct.rankPrefix true shape.bpCode globalPos -
+      Succinct.rankPrefix false shape.bpCode globalPos
+  omega
+
+def localBPSeededBetterPrefixPos
+    (window : List Bool) (seed base left right : Nat) : Nat :=
+  if localBPSeededExcessAt window seed base right <
+      localBPSeededExcessAt window seed base left then
+    right
+  else
+    left
+
+theorem localBPSeededBetterPrefixPos_bounds
+    {window : List Bool} {seed base left right : Nat}
+    (hleftBase : base <= left)
+    (hleftCovered : left <= base + window.length)
+    (hrightBase : base <= right)
+    (hrightCovered : right <= base + window.length) :
+    base <= localBPSeededBetterPrefixPos window seed base left right /\
+      localBPSeededBetterPrefixPos window seed base left right <=
+        base + window.length := by
+  unfold localBPSeededBetterPrefixPos
+  by_cases hlt :
+      localBPSeededExcessAt window seed base right <
+        localBPSeededExcessAt window seed base left
+  · simp [hlt, hrightBase, hrightCovered]
+  · simp [hlt, hleftBase, hleftCovered]
+
+theorem localBPSeededBetterPrefixPos_eq_bpBetterArgMinPrefixPos
+    {shape : Cartesian.CartesianShape}
+    {blockSize close left right : Nat}
+    (hbase :
+      localBPWindowBase shape blockSize close <= shape.bpCode.length)
+    (hleftBase :
+      localBPWindowBase shape blockSize close <= left)
+    (hleftCovered :
+      left <=
+        localBPWindowBase shape blockSize close +
+          (localBPWindowBits shape blockSize close).length)
+    (hrightBase :
+      localBPWindowBase shape blockSize close <= right)
+    (hrightCovered :
+      right <=
+        localBPWindowBase shape blockSize close +
+          (localBPWindowBits shape blockSize close).length) :
+    localBPSeededBetterPrefixPos
+        (localBPWindowBits shape blockSize close)
+        (localBPSeedExcess shape blockSize close)
+        (localBPWindowBase shape blockSize close)
+        left right =
+      bpBetterArgMinPrefixPos shape left right := by
+  have hleft :=
+    localBPSeededExcessAt_eq_bpExcessAt
+      (shape := shape) (blockSize := blockSize) (close := close)
+      (globalPos := left) hbase hleftBase hleftCovered
+  have hright :=
+    localBPSeededExcessAt_eq_bpExcessAt
+      (shape := shape) (blockSize := blockSize) (close := close)
+      (globalPos := right) hbase hrightBase hrightCovered
+  unfold localBPSeededBetterPrefixPos bpBetterArgMinPrefixPos
+  rw [hleft, hright]
+
+def localBPSeededPrefixRangeArgMinPrefixPosFrom
+    (window : List Bool) (seed base : Nat) :
+    Nat -> Nat -> Nat -> Nat
+  | _pos, 0, best => best
+  | pos, steps + 1, best =>
+      let sample := Nat.min pos (base + window.length)
+      let best' := localBPSeededBetterPrefixPos window seed base best sample
+      localBPSeededPrefixRangeArgMinPrefixPosFrom window seed base
+        (pos + 1) steps best'
+
+theorem localBPSeededPrefixRangeArgMinPrefixPosFrom_bounds
+    {window : List Bool} {seed base pos steps best : Nat}
+    (hposBase : base <= pos)
+    (hcovered : pos + steps <= base + window.length + 1)
+    (hbestBase : base <= best)
+    (hbestCovered : best <= base + window.length) :
+    base <=
+        localBPSeededPrefixRangeArgMinPrefixPosFrom window seed base
+          pos steps best /\
+      localBPSeededPrefixRangeArgMinPrefixPosFrom window seed base
+          pos steps best <=
+        base + window.length := by
+  induction steps generalizing pos best with
+  | zero =>
+      simp [localBPSeededPrefixRangeArgMinPrefixPosFrom,
+        hbestBase, hbestCovered]
+  | succ steps ih =>
+      have hposCovered : pos <= base + window.length := by
+        omega
+      have hsample :
+          Nat.min pos (base + window.length) = pos := by
+        exact Nat.min_eq_left hposCovered
+      have hbetterBounds :=
+        localBPSeededBetterPrefixPos_bounds
+          (window := window) (seed := seed) (base := base)
+          (left := best) (right := pos)
+          hbestBase hbestCovered hposBase hposCovered
+      have htail :
+          pos + 1 + steps <= base + window.length + 1 := by
+        omega
+      simpa [localBPSeededPrefixRangeArgMinPrefixPosFrom, hsample] using
+        ih (pos := pos + 1)
+          (best := localBPSeededBetterPrefixPos window seed base best pos)
+          (by omega) htail hbetterBounds.1 hbetterBounds.2
+
+theorem localBPSeededPrefixRangeArgMinPrefixPosFrom_eq_bpPrefixRangeArgMinPrefixPosFrom
+    {shape : Cartesian.CartesianShape}
+    {blockSize close pos steps best : Nat}
+    (hbase :
+      localBPWindowBase shape blockSize close <= shape.bpCode.length)
+    (hposBase :
+      localBPWindowBase shape blockSize close <= pos)
+    (hcovered :
+      pos + steps <=
+        localBPWindowBase shape blockSize close +
+          (localBPWindowBits shape blockSize close).length + 1)
+    (hbestBase :
+      localBPWindowBase shape blockSize close <= best)
+    (hbestCovered :
+      best <=
+        localBPWindowBase shape blockSize close +
+          (localBPWindowBits shape blockSize close).length) :
+    localBPSeededPrefixRangeArgMinPrefixPosFrom
+        (localBPWindowBits shape blockSize close)
+        (localBPSeedExcess shape blockSize close)
+        (localBPWindowBase shape blockSize close)
+        pos steps best =
+      bpPrefixRangeArgMinPrefixPosFrom shape pos steps best := by
+  induction steps generalizing pos best with
+  | zero =>
+      simp [localBPSeededPrefixRangeArgMinPrefixPosFrom,
+        bpPrefixRangeArgMinPrefixPosFrom]
+  | succ steps ih =>
+      let base := localBPWindowBase shape blockSize close
+      let window := localBPWindowBits shape blockSize close
+      have hend :
+          base + window.length <= shape.bpCode.length := by
+        simpa [base, window] using
+          localBPWindowBits_end_le_bpCode_length shape blockSize close hbase
+      have hcoveredLocal :
+          pos + (steps + 1) <= base + window.length + 1 := by
+        simpa [base, window, Nat.add_assoc] using hcovered
+      have hbestBaseLocal : base <= best := by
+        simpa [base] using hbestBase
+      have hbestCoveredLocal : best <= base + window.length := by
+        simpa [base, window] using hbestCovered
+      have hposCovered : pos <= base + window.length := by
+        omega
+      have hposLen : pos <= shape.bpCode.length := by
+        omega
+      have hsampleLocal :
+          Nat.min pos (base + window.length) = pos :=
+        Nat.min_eq_left hposCovered
+      have hsampleSemantic :
+          Nat.min pos shape.bpCode.length = pos :=
+        Nat.min_eq_left hposLen
+      have hbetter :=
+        localBPSeededBetterPrefixPos_eq_bpBetterArgMinPrefixPos
+          (shape := shape) (blockSize := blockSize) (close := close)
+          (left := best) (right := pos)
+          hbase hbestBase hbestCovered
+          (by simpa [base] using hposBase)
+          (by simpa [base, window] using hposCovered)
+      have hbest'Base :
+          base <= bpBetterArgMinPrefixPos shape best pos := by
+        unfold bpBetterArgMinPrefixPos
+        by_cases hlt : bpExcessAt shape pos < bpExcessAt shape best
+        · simp [hlt]
+          exact hposBase
+        · simp [hlt]
+          exact hbestBaseLocal
+      have hbest'Covered :
+          bpBetterArgMinPrefixPos shape best pos <= base + window.length := by
+        unfold bpBetterArgMinPrefixPos
+        by_cases hlt : bpExcessAt shape pos < bpExcessAt shape best
+        · simp [hlt, hposCovered]
+        · simp [hlt]
+          exact hbestCoveredLocal
+      have htail :
+          pos + 1 + steps <= base + window.length + 1 := by
+        omega
+      have hrec :=
+        ih (pos := pos + 1)
+          (best := bpBetterArgMinPrefixPos shape best pos)
+          (by simpa [base] using (show base <= pos + 1 by omega))
+          (by simpa [base, window] using htail)
+          (by simpa [base] using hbest'Base)
+          (by simpa [base, window] using hbest'Covered)
+      simp [localBPSeededPrefixRangeArgMinPrefixPosFrom,
+        bpPrefixRangeArgMinPrefixPosFrom, base, window, hsampleLocal,
+        hsampleSemantic, hbetter, hrec]
+
+def localBPSeededPrefixRangeArgMinPrefixPos
+    (window : List Bool) (seed base start count : Nat) : Nat :=
+  match count with
+  | 0 => Nat.min start (base + window.length)
+  | steps + 1 =>
+      localBPSeededPrefixRangeArgMinPrefixPosFrom window seed base
+        (start + 1) steps (Nat.min start (base + window.length))
+
+def localBPSeededPrefixRangeMinExcess
+    (window : List Bool) (seed base start count : Nat) : Nat :=
+  localBPSeededExcessAt window seed base
+    (localBPSeededPrefixRangeArgMinPrefixPos window seed base start count)
+
+theorem localBPSeededPrefixRangeArgMinPrefixPos_bounds_of_pos
+    {window : List Bool} {seed base start count : Nat}
+    (hcount : 0 < count)
+    (hstartBase : base <= start)
+    (hcovered : start + count <= base + window.length + 1) :
+    base <=
+        localBPSeededPrefixRangeArgMinPrefixPos window seed base
+          start count /\
+      localBPSeededPrefixRangeArgMinPrefixPos window seed base
+          start count <=
+        base + window.length := by
+  cases count with
+  | zero =>
+      omega
+  | succ steps =>
+      have hstartCovered : start <= base + window.length := by
+        omega
+      have hsampleLocal :
+          Nat.min start (base + window.length) = start :=
+        Nat.min_eq_left hstartCovered
+      have htail :
+          start + 1 + steps <= base + window.length + 1 := by
+        omega
+      simpa [localBPSeededPrefixRangeArgMinPrefixPos, hsampleLocal] using
+        localBPSeededPrefixRangeArgMinPrefixPosFrom_bounds
+          (window := window) (seed := seed) (base := base)
+          (pos := start + 1) (steps := steps) (best := start)
+          (by omega) htail hstartBase hstartCovered
+
+theorem localBPSeededPrefixRangeArgMinPrefixPos_eq_bpPrefixRangeArgMinPrefixPos_of_pos
+    {shape : Cartesian.CartesianShape}
+    {blockSize close start count : Nat}
+    (hcount : 0 < count)
+    (hbase :
+      localBPWindowBase shape blockSize close <= shape.bpCode.length)
+    (hstartBase :
+      localBPWindowBase shape blockSize close <= start)
+    (hcovered :
+      start + count <=
+        localBPWindowBase shape blockSize close +
+          (localBPWindowBits shape blockSize close).length + 1) :
+    localBPSeededPrefixRangeArgMinPrefixPos
+        (localBPWindowBits shape blockSize close)
+        (localBPSeedExcess shape blockSize close)
+        (localBPWindowBase shape blockSize close)
+        start count =
+      bpPrefixRangeArgMinPrefixPos shape start count := by
+  cases count with
+  | zero =>
+      omega
+  | succ steps =>
+      let base := localBPWindowBase shape blockSize close
+      let window := localBPWindowBits shape blockSize close
+      have hend :
+          base + window.length <= shape.bpCode.length := by
+        simpa [base, window] using
+          localBPWindowBits_end_le_bpCode_length shape blockSize close hbase
+      have hcoveredLocal :
+          start + (steps + 1) <= base + window.length + 1 := by
+        simpa [base, window, Nat.add_assoc] using hcovered
+      have hstartCovered : start <= base + window.length := by
+        omega
+      have hstartLen : start <= shape.bpCode.length := by
+        omega
+      have hsampleLocal :
+          Nat.min start (base + window.length) = start :=
+        Nat.min_eq_left hstartCovered
+      have hsampleSemantic :
+          Nat.min start shape.bpCode.length = start :=
+        Nat.min_eq_left hstartLen
+      have htail :
+          start + 1 + steps <= base + window.length + 1 := by
+        omega
+      have hfrom :=
+        localBPSeededPrefixRangeArgMinPrefixPosFrom_eq_bpPrefixRangeArgMinPrefixPosFrom
+          (shape := shape) (blockSize := blockSize) (close := close)
+          (pos := start + 1) (steps := steps) (best := start)
+          hbase
+          (by simpa [base] using (show base <= start + 1 by omega))
+          (by simpa [base, window] using htail)
+          hstartBase
+          (by simpa [base, window] using hstartCovered)
+      simp [localBPSeededPrefixRangeArgMinPrefixPos,
+        bpPrefixRangeArgMinPrefixPos, base, window, hsampleLocal,
+        hsampleSemantic, hfrom]
+
+theorem localBPSeededPrefixRangeMinExcess_eq_bpPrefixRangeMinExcess_of_pos
+    {shape : Cartesian.CartesianShape}
+    {blockSize close start count : Nat}
+    (hcount : 0 < count)
+    (hbase :
+      localBPWindowBase shape blockSize close <= shape.bpCode.length)
+    (hstartBase :
+      localBPWindowBase shape blockSize close <= start)
+    (hcovered :
+      start + count <=
+        localBPWindowBase shape blockSize close +
+          (localBPWindowBits shape blockSize close).length + 1) :
+    localBPSeededPrefixRangeMinExcess
+        (localBPWindowBits shape blockSize close)
+        (localBPSeedExcess shape blockSize close)
+        (localBPWindowBase shape blockSize close)
+        start count =
+      bpPrefixRangeMinExcess shape start count := by
+  have harg :=
+    localBPSeededPrefixRangeArgMinPrefixPos_eq_bpPrefixRangeArgMinPrefixPos_of_pos
+      (shape := shape) (blockSize := blockSize) (close := close)
+      (start := start) (count := count)
+      hcount hbase hstartBase hcovered
+  have hbounds :=
+    localBPSeededPrefixRangeArgMinPrefixPos_bounds_of_pos
+      (window := localBPWindowBits shape blockSize close)
+      (seed := localBPSeedExcess shape blockSize close)
+      (base := localBPWindowBase shape blockSize close)
+      (start := start) (count := count)
+      hcount hstartBase hcovered
+  have hexcess :=
+    localBPSeededExcessAt_eq_bpExcessAt
+      (shape := shape) (blockSize := blockSize) (close := close)
+      (globalPos :=
+        localBPSeededPrefixRangeArgMinPrefixPos
+          (localBPWindowBits shape blockSize close)
+          (localBPSeedExcess shape blockSize close)
+          (localBPWindowBase shape blockSize close)
+          start count)
+      hbase hbounds.1 hbounds.2
+  simpa [localBPSeededPrefixRangeMinExcess, bpPrefixRangeMinExcess,
+    harg] using hexcess
+
+def localBPLeftFringeCandidateSeededCosted
+    (shape : Cartesian.CartesianShape)
+    (blockSize leftClose seed : Nat) : Costed (Option (Nat × Nat)) :=
+  let window := localBPWindowBits shape blockSize leftClose
+  let base := localBPWindowBase shape blockSize leftClose
+  let count :=
+    blockStartOf blockSize (blockOfClose blockSize leftClose) +
+      blockSize - leftClose
+  { value :=
+      some
+        (localBPSeededPrefixRangeMinExcess window seed base
+          (leftClose + 1) count,
+          localBPSeededPrefixRangeArgMinPrefixPos window seed base
+            (leftClose + 1) count)
+    cost := 4 }
+
+def localBPRightFringeCandidateSeededCosted
+    (shape : Cartesian.CartesianShape)
+    (blockSize rightClose seed : Nat) : Costed (Option (Nat × Nat)) :=
+  let window := localBPWindowBits shape blockSize rightClose
+  let base := localBPWindowBase shape blockSize rightClose
+  let start := blockStartOf blockSize (blockOfClose blockSize rightClose)
+  let count := rightClose - start + 2
+  { value :=
+      some
+        (localBPSeededPrefixRangeMinExcess window seed base start count,
+          localBPSeededPrefixRangeArgMinPrefixPos window seed base start count)
+    cost := 4 }
+
 theorem localBPBlockWordsRead_length_le_machine
     (shape : Cartesian.CartesianShape)
     (blockSize close : Nat)
@@ -21822,6 +22456,92 @@ def localBPRightFringeCandidateCosted
                 blockStartOf blockSize (blockOfClose blockSize rightClose) +
               2))
     cost := 4 }
+
+theorem localBPLeftFringeCandidateSeededCosted_eq_semantic
+    {shape : Cartesian.CartesianShape}
+    {blockSize leftClose : Nat}
+    (hbase :
+      localBPWindowBase shape blockSize leftClose <= shape.bpCode.length)
+    (hstartBase :
+      localBPWindowBase shape blockSize leftClose <= leftClose + 1)
+    (hendCovered :
+      blockStartOf blockSize (blockOfClose blockSize leftClose) +
+          blockSize <=
+        localBPWindowBase shape blockSize leftClose +
+          (localBPWindowBits shape blockSize leftClose).length)
+    (hleftInside :
+      leftClose <
+        blockStartOf blockSize (blockOfClose blockSize leftClose) +
+          blockSize) :
+    (localBPLeftFringeCandidateSeededCosted shape blockSize leftClose
+        (localBPSeedExcess shape blockSize leftClose)).erase =
+      (localBPLeftFringeCandidateCosted shape blockSize leftClose).erase := by
+  let start := leftClose + 1
+  let count :=
+    blockStartOf blockSize (blockOfClose blockSize leftClose) +
+      blockSize - leftClose
+  have hcount : 0 < count := by
+    simp [count]
+    omega
+  have hcovered :
+      start + count <=
+        localBPWindowBase shape blockSize leftClose +
+          (localBPWindowBits shape blockSize leftClose).length + 1 := by
+    simp [start, count]
+    omega
+  have hmin :=
+    localBPSeededPrefixRangeMinExcess_eq_bpPrefixRangeMinExcess_of_pos
+      (shape := shape) (blockSize := blockSize) (close := leftClose)
+      (start := start) (count := count)
+      hcount hbase (by simpa [start] using hstartBase) hcovered
+  have harg :=
+    localBPSeededPrefixRangeArgMinPrefixPos_eq_bpPrefixRangeArgMinPrefixPos_of_pos
+      (shape := shape) (blockSize := blockSize) (close := leftClose)
+      (start := start) (count := count)
+      hcount hbase (by simpa [start] using hstartBase) hcovered
+  simp [localBPLeftFringeCandidateSeededCosted,
+    localBPLeftFringeCandidateCosted, start, count, hmin, harg]
+
+theorem localBPRightFringeCandidateSeededCosted_eq_semantic
+    {shape : Cartesian.CartesianShape}
+    {blockSize rightClose : Nat}
+    (hbase :
+      localBPWindowBase shape blockSize rightClose <= shape.bpCode.length)
+    (hstartBase :
+      localBPWindowBase shape blockSize rightClose <=
+        blockStartOf blockSize (blockOfClose blockSize rightClose))
+    (hrightInside :
+      blockStartOf blockSize (blockOfClose blockSize rightClose) <=
+        rightClose)
+    (hendCovered :
+      rightClose + 1 <=
+        localBPWindowBase shape blockSize rightClose +
+          (localBPWindowBits shape blockSize rightClose).length) :
+    (localBPRightFringeCandidateSeededCosted shape blockSize rightClose
+        (localBPSeedExcess shape blockSize rightClose)).erase =
+      (localBPRightFringeCandidateCosted shape blockSize rightClose).erase := by
+  let start := blockStartOf blockSize (blockOfClose blockSize rightClose)
+  let count := rightClose - start + 2
+  have hcount : 0 < count := by
+    simp [count]
+  have hcovered :
+      start + count <=
+        localBPWindowBase shape blockSize rightClose +
+          (localBPWindowBits shape blockSize rightClose).length + 1 := by
+    simp [start, count]
+    omega
+  have hmin :=
+    localBPSeededPrefixRangeMinExcess_eq_bpPrefixRangeMinExcess_of_pos
+      (shape := shape) (blockSize := blockSize) (close := rightClose)
+      (start := start) (count := count)
+      hcount hbase (by simpa [start] using hstartBase) hcovered
+  have harg :=
+    localBPSeededPrefixRangeArgMinPrefixPos_eq_bpPrefixRangeArgMinPrefixPos_of_pos
+      (shape := shape) (blockSize := blockSize) (close := rightClose)
+      (start := start) (count := count)
+      hcount hbase (by simpa [start] using hstartBase) hcovered
+  simp [localBPRightFringeCandidateSeededCosted,
+    localBPRightFringeCandidateCosted, start, count, hmin, harg]
 
 theorem localBPLeftFringeCandidateCosted_cost_le
     (shape : Cartesian.CartesianShape)
