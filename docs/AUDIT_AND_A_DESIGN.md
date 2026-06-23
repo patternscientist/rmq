@@ -1512,3 +1512,50 @@ succinct RMQ paired with the `2n − O(log n)` lower bound. This is the project'
 headline target. Immediate next step is **commit + merge + gate**, then (optional)
 discharge the bounded-local-BP bit-level decoder caveat. Do not let the win sit
 uncommitted in a worktree.
+
+## 2026-06-21 (seeded local BP decoder) — endpoint-fringe caveat DISCHARGED; capstone preserved sorry-free; only same-block helper remains
+
+`codex/local-bp-seeded-decoder-work` hardens the cost-model caveat from the
+previous round (the bounded-local-BP primitive's bit-level decoding). Build green;
+hygiene + native scans clean.
+
+**Endpoint-fringe (cross-block) caveat genuinely discharged.** The compact close
+directory's `crossBlockCloseCosted` now computes the endpoint-fringe candidates by
+**decoding the charged BP window words + a charged seed**, not by calling the old
+semantic helpers:
+- `localBPWindowBits_eq_flatten_localBPBlockWordsRead` — the decoded window is
+  exactly the flattened *charged* `localBPBlockWordsRead` payload words (not an
+  uncharged `bpCode.drop`);
+- `localBPSeedFromRankFalseCosted_eq_localBPSeedExcess` — the "seed" is the base
+  excess recovered from a **charged `rankPrefix false`** read;
+- `localBPSeededExcessAt_eq_bpExcessAt`,
+  `localBP{Left,Right}FringeCandidateSeededCosted_eq_semantic` — the decoded
+  excess/candidates **equal** the semantic ones;
+- `localBPWindowBits_alone_does_not_determine_base_excess` — an honesty/obstruction
+  theorem that *justifies* the seed (window bits alone cannot fix the absolute
+  excess), so "seeded" is necessary, not an answer-as-premise. The seed is the
+  charged base excess, not the answer.
+
+**Capstone preserved.** `builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
+is reproved through the seeded equivalence, still **hypothesis-free**, and
+`#print axioms` (transitive) = `[propext, Classical.choice, Quot.sound]` — the
+migration introduced no `sorry` and did not weaken the theorem.
+
+**Remaining caveat, honestly narrowed: the same-block helper.** The same-block
+close helper still computes some values via semantic BP functions over `shape`
+while charging the constant word budget (a bounded, charged value/trace
+decoupling). The endpoint-fringe path no longer has this; the same-block path is
+the last cost-model fidelity item. This is a modeling caveat, not a soundness gap
+(the proof is complete and sorry-free).
+
+**Adversarial verdict:** exemplary incremental work — real bit-level decoder, the
+seed is charged and obstruction-justified (not an oracle), decoded = semantic is
+proven, and the capstone is preserved sorry-free. No regression, no fakery.
+
+**Process risk (re-flag, now firmer):** the capstone (previous round, in
+`c1-compact-long-super-exception`) **and** this hardening (`local-bp-seeded-decoder`)
+are BOTH uncommitted in separate worktrees, not merged to the coordinator. A
+sorry-free `2n+o(n)/O(1)` headline result and its hardening are sitting un-gated
+across two worktrees. **Commit + merge + run the gate is overdue** and is the
+single highest-priority action. Next proof step (optional polish): the same-block
+seeded decoder (same pattern) to fully eliminate the cost-model caveat.
