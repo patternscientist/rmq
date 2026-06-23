@@ -61,10 +61,11 @@ The RMQ proof-of-concept is done when A + B + C + one of D are done. This is the
 bounded finish line: A/B/C re-found the current RMQ results on reusable hub
 infrastructure, and D lands the extra research headline.
 
-Current status: the proof-of-concept finish line is landed with D-LCA as the
-chosen D target. The remaining roadmap items are post-POC hardening: a full
-first-order RAM interpreter, further CSLib-style extraction, and the optional
-D-Space succinct upper-bound story.
+Current status: the proof-of-concept finish line is landed. D-LCA is the
+dense-label LCA cost headline, and D-Space is now also landed as the BP-native
+succinct RMQ capstone. The remaining roadmap items are post-POC hardening: a
+full first-order RAM interpreter, further CSLib-style extraction, and an
+optional flatter encoded/payload-only presentation of the succinct theorem.
 
 Dependency order: A -> B -> (C, D). C can progress in parallel with A/B when it
 is pure extraction/generalization. D-LCA depends on the A/B cost/refinement
@@ -316,9 +317,10 @@ algorithm. It may not assume `_of_firstOccurrences`-style inputs for free.
 
 Alternative target.
 
-Status: first fixed-length sandwich landed; BP-native packed-query theorem
-shape and close-navigation adapter landed; concrete sampled navigation
-directory still future.
+Status: landed. The first fixed-length sandwich, BP-native theorem shape,
+concrete relative-split false-close/select access family, compact BP
+close/LCA directory, and final `2*n + o(n), O(1)` BP-native RMQ capstone all
+typecheck.
 
 Intent: pair C's lower bound with a concrete `<= 2n + o(n)` encoder whose query
 procedure is proved exact, giving a two-sided `2n +/- Theta(log n)` space story.
@@ -342,18 +344,23 @@ queries, not a bare existential. The current fixed-length `2*n` witnesses are
 valid exact upper bounds, but they are not yet a packed constant-time succinct
 RMQ query structure.
 
-Next refinement: instantiate the BP-native close-navigation primitive with a
-concrete sampled rank/select/excess directory carrying compressed auxiliary
-payload accounting and exact queries.
+Next refinement: package an even flatter encoded/payload-only view of the same
+BP-native capstone, or move to a stronger first-order RAM interpreter if a
+future target needs that level of anti-vacuity.
 
 ## E - Post-POC Next Phase
 
 ### E1 - Tight RMQ Space Sandwich
 
-Status: tight fixed-length payload-space capstone landed; packed
-`2n + o(n)` query structure has a BP-native theorem shape and verified
-close-navigation adapter, with the concrete sampled navigation directory still
-open.
+Status: tight fixed-length payload-space capstone landed, and the packed
+`2n + o(n)` query structure now has a concrete BP-native theorem through the
+relative-split false-close/select access family and compact close/LCA
+directory.
+
+The detailed bullets below retain the construction history. Any older phrasing
+about open sampled navigation, descriptor, or compact-interior checkpoints is
+superseded by the final capstone theorem unless it is explicitly marked as
+future presentation or model-strengthening work.
 
 The first-stage theorem
 `EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound` packages
@@ -722,8 +729,9 @@ bounds through reusable hub APIs.
 - No new RMQ backend just for breadth.
 - No formalizing every RMQ variant in the literature.
 - No probability layer inside the RMQ proof-of-concept.
-- D-Space is optional future work; D-LCA is the chosen proof-of-concept
-  research headline.
+- D-Space is no longer optional future work for RMQ; the BP-native succinct
+  capstone is landed. Future work here is presentation and model strengthening,
+  not another hidden RMQ finish-line obligation.
 - No new `_value/_erase/_cost/_run` wrapper families unless the active
   refinement target actually needs them.
 - A green build is necessary but not sufficient. Each round must close a target

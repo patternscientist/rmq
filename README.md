@@ -1,7 +1,7 @@
 # RMQ
 
 A standalone Lean 4 formalization project for reusable range-minimum query
-correctness results.
+correctness, cost, reduction, lower-bound, and succinct-space results.
 
 This repository started as a small extraction from a VeriBench-oriented RMQ
 development. The code here is intentionally library-shaped rather than
@@ -11,6 +11,37 @@ contracts, and correctness lemmas that can support multiple RMQ algorithms.
 For a family-level theorem inventory, dependency DAG, correctness/cost matrix,
 and consolidated modeling notes, see
 [`docs/FAMILY_SUMMARY.md`](docs/FAMILY_SUMMARY.md).
+For a demo-facing story and theorem map, see
+[`docs/DEMO_GUIDE.md`](docs/DEMO_GUIDE.md).
+
+## What This Is, And Why Care
+
+Range-minimum query (RMQ) asks for the leftmost index of the minimum value in a
+subarray. That sounds small, but it is the engine behind Cartesian trees,
+constant-time lowest-common-ancestor queries, Fischer-Heun preprocessing, and
+succinct tree navigation.
+
+This repo formalizes RMQ as a connected algorithm family, not as one isolated
+implementation. In Lean 4, without Mathlib or custom axioms, it proves:
+
+- one shared half-open, leftmost-minimum contract for many RMQ backends;
+- the RMQ/LCA reductions in both directions, including Cartesian trees and
+  Euler-tour depth traces;
+- Fischer-Heun-style linear preprocessing and constant supplied-query bounds
+  under an explicit RAM/indexed-access model;
+- a no-premise information-theoretic RMQ lower bound
+  `2*n - O(log n)` from Cartesian-shape counting; and
+- a payload-accounted BP-native succinct RMQ capstone:
+  `2*n + o(n)` payload bits with constant modeled query cost.
+
+The significance is the combination. The project checks the semantic theorem
+that the data structures answer the right query, the reduction theorem that RMQ
+and LCA are interderivable in the standard ways, the lower-bound theorem that
+the shape information really costs almost `2*n` bits, and a matching succinct
+upper-bound profile under named model assumptions. That is the honest pitch:
+not "Lean's lists are magically constant-time," but a proof-auditable RMQ stack
+where correctness, payload bits, and cost-model claims are separated and
+connected.
 
 ## Current Status
 
@@ -26,6 +57,13 @@ It proves a common half-open, leftmost-argmin contract for:
   middle summaries,
 - a certified raw microtable backend over Cartesian shapes, and
 - value-level Fischer-Heun backends, including an exact all-input wrapper.
+
+The headline succinct theorem is
+`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`:
+for Cartesian-shape RMQ, the stored payload is the exact balanced-parentheses
+shape code plus `o(n)` auxiliary bits, and the query is exact with constant
+modeled cost through the concrete false-close/select access family and compact
+BP close/LCA directory.
 
 The hybrid proof is already factored through a generic three-piece combinator:
 an exact nonempty left boundary, an optional middle interval, and an optional
@@ -100,9 +138,10 @@ about Lean's executable `List` runtime.
   components, BP-native Cartesian shape payloads of exact length `2*n`, and a
   proved close-navigation RMQ adapter. `RMQ/Core/SuccinctFinal.lean` now
   consumes the concrete compact false-close/select witness and compact BP close
-  directory in a payload-accounted `2*n + o(n), O(1)` BP-native theorem; the
-  remaining succinct work is hardening the bounded-local-BP primitive and, if
-  desired, giving an even flatter encoded/payload-only presentation.
+  directory in a payload-accounted `2*n + o(n), O(1)` BP-native theorem. The
+  local BP decoder seeds on the final path are routed through the payload-backed
+  rank-close access callback; remaining succinct work is presentation polish,
+  such as an even flatter encoded/payload-only view of the same capstone.
 - `RMQ/Core/SuccinctReduction.lean`: reduction-facing adapter from
   plus-minus-one RMQ backends over generated Euler-tour parentheses to the
   ordinary RMQ/LCA backend interfaces.
@@ -192,48 +231,13 @@ rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncompu
 
 ## Next Direction
 
-The forward LCA side is structural: a label-unique generated Euler trace plus
-any exact RMQ backend over its depths induces an exact LCA backend. The reverse
-side now has a concrete Cartesian tree proof: endpoint LCAs in the built
-Cartesian tree are exactly leftmost RMQ witnesses, yielding
-`Cartesian.certifiedReduction`.
+The RMQ proof-of-concept is now past the main capstone. Natural follow-ups are
+polish and export rather than another hidden blocker:
 
-The lower-bound frontier has moved past the Catalan count: the project now
-proves the quadratic bound and the resulting fixed-length exact-RMQ
-log-slack bit lower bound. The plus-minus-one and succinct layers now provide
-verified hooks for normalized delta signatures, packed rank/select queries,
-and generated balanced Euler-tour parentheses whose depth trace agrees with
-the generated rose-tree Euler depths. The recursive canonical
-representative-array theorem is now proved in `Core.Shape`: every Cartesian
-shape has a canonical list witness of the right length whose computed shape is
-exactly the original shape. A baseline canonical representative state encoder
-now instantiates the lower-bound interface, and `Impl.FischerHeun` adds a
-one-block Fischer-Heun-shaped encoder with a payload/proof-only split. The
-shared `Core.TableModel` layer now names the indexed-read and payload-accounting
-model those encoders and succinct adapters can refine through. `Impl.LCACost`
-now instantiates that model for first-occurrence tables, Euler node/depth
-arrays, and the supplied RMQ query composition. `Core.SuccinctReduction` now
-adds the plus-minus-one/Euler-parentheses semantic bridge, and `Impl.LCACost`
-can run the indexed query model through that bridge. `Impl.LCAFischerHeun`
-now instantiates the same indexed query model with concrete canonical and
-all-input Fischer-Heun RMQ backends. The next LCA targets are preprocessing
-and storage accounting for the first-occurrence/node/depth tables, and a real
-packed plus-minus-one RMQ query backend over Euler parentheses.
-
-The recursive-hybrid build recurrence is now solved with an explicit linear
-bound, and the Fischer-Heun shape-table count is now bounded by the
-square-root budget under the base-2 condition `4*b <= log2 n`. The canonical
-Fischer-Heun theorem now chooses `b = log2 n / 4` and proves the remaining
-microtable and summary-log budgets automatically once `16 <= b`.
-
-The current hard-target roadmap starts by grounding costs in a derived
-primitive trace rather than handwritten unit-cost formulas. The first landing
-point is `RMQ/Impl/SparseTableInstrumented.lean`, which replays sparse-table
-cell construction, counted row pushes, memoized log-row building, and query
-through Array operations and integer comparisons, and exposes a `StoredTable`
-adapter for Array-backed tables refining List reference tables. It proves
-`sparseRowArrayBuild_value_toList`, `sparseRowArrayBuild_steps_le`,
-`query_refines_and_steps_le_seven`, and the memoized-build/query theorems
-`memoBuild_refine_with_steps`, `memoBuild_and_query_refine_with_steps`, and
-`memoQueryWithTracedBuild_refine_with_steps`; Fischer-Heun now consumes that
-adapter for its stored summary table.
+- make an even flatter encoded/payload-only presentation of the BP-native
+  succinct theorem;
+- turn the shallow `RAM.Exec` trace model into a first-order interpreter if the
+  next research target needs interpreter-level anti-vacuity;
+- extract the reusable cost/refinement/lower-bound hub toward a CSLib-style
+  library surface; and
+- start the next advanced data-structure spoke using the same pattern.
