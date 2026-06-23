@@ -1601,3 +1601,63 @@ lower bound. The last residue is a documented inactive zero-block branch. Option
 polish: prove `canonicalBlockSize > 0` to make that branch provably unreachable (or
 decode it), then merge `bcf25df`. This is, for practical purposes, the finished
 headline theorem.
+
+## 2026-06-23 (MAIN branch, maximal-adversarial / "assume it's a demon's reward-hacked slop") — verdict: GENUINE. No trick found.
+
+Audited `main` = `origin/main` = `6c71751 "Expose total succinct RMQ profile"`
+(1 ahead of the coordinator). Clean detached worktree, **full build from scratch:
+exit 0.** Tried every reward-hack vector; found none.
+
+**Trust base — definitive.** `#print axioms` (transitive over the whole chain) for
+**both** headline theorems
+(`builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
+and its `_total_` alias) = **`[propext, Classical.choice, Quot.sound]`** — standard
+axioms only. `#print axioms` lists *all* axioms, so a hidden `axiom`/`sorry`/
+`native_decide` would appear; none does. `axiom_check.lean` lists both (lines
+373/374) and passes 0 bad-axiom, so the gate guards them. Contraband scan over
+`RMQ/`: **zero** `sorry|admit|axiom|native_decide|opaque|partial|extern|
+implemented_by|noncomputable|import Mathlib` (only hits are the guardrail scripts
+themselves).
+
+**The load-bearing definitions are genuine, not rigged to make the theorem vacuous:**
+- `LittleOLinear f := ∀ scale>0, ∃ threshold, ∀ n≥threshold, scale*f n ≤ n` — real
+  little-o of n (not `True`).
+- `scanWindow` folds `betterIndex` (reads array values, `compareLtInt`, leftmost
+  tie) — genuine leftmost-argmin RMQ reference.
+- `Costed`: `erase = value`, `bind` accumulates `cost`, `tickValue` adds — real
+  cost model (cost is not hard-wired to 0).
+- `shapesOfSize n` is non-empty (right-spine ∈ it) and is the Catalan set the lower
+  bound counts — the `∀ shape ∈ shapesOfSize n` is not vacuous.
+- `logSlackLower n = 2n − (2·log₂(2n+1)+2)` — the real `2n − O(log n)` bound, not 0.
+- `sparseDenseFalseSelectQueryCost := 16` (literal); query cost bound =
+  `3*16 + concreteCompactBPCloseQueryCostWithRankSeed 16` = a fixed constant — real
+  O(1), not `n`-dependent.
+- `overhead n = closeAccessOverhead n + compactBPCloseOverhead n` — a genuine
+  n-function sum, the *same* one proven `LittleOLinear` **and** used in
+  `payload.length = 2n + overhead n`. Not a `fun _ => const` decoupling.
+
+**The query is value-coupled, not decoupled.** `concreteBPNativeSuccinctRMQQueryCosted`
+is a monadic chain of **charged** family reads — `selectClose left` → `selectClose
+(right-1)` → `lcaClose` → `rankClose` — and the returned value is computed *from*
+those reads (`closeRank - 1`), not a separately-computed `scanWindow` with a dummy
+read charged. The theorem instantiates the (generic) query with the **concrete
+built** `…BPCloseAccessFamily.toWeakFamily`, so reads hit the real built directory
+payload (no proof-only oracle). The theorem is hypothesis-free; payload =
+`bpCode ++ aux`, `payload.length = 2n + overhead n` (exact), `erase = scanWindow`
+(exact RMQ for all valid windows), `cost ≤ const`.
+
+**Honest caveats (modeling, not soundness; not reward-hacks):**
+1. "O(1)" is in the project's charged word-RAM model (charged primitive reads:
+   `readArray?`, `compareLtInt`, word `rank/selectBoolWord`, bounded-local-BP
+   reads). Conventional for succinct DS; a Θ(log n)-bit word op is charged 1. It
+   means O(1) charged primitive ops, not O(1) Lean runtime.
+2. The inactive `canonicalBlockSize = 0` dead branch keeps a semantic fallback
+   (unreachable in the canonical construction; proven sorry-free regardless).
+3. The `_total_` theorem is an `exact` alias of the capstone (identical statement,
+   re-exposed) — same conjuncts, no strengthening; the name is the only nit.
+
+**Verdict:** despite a maximally hostile audit, `main` holds a genuine, concrete,
+hypothesis-free, sorry-free, standard-axioms-only `2n + o(n)`-bit / O(1)-query /
+exact succinct RMQ theorem, with genuine definitions, a real charged cost model, a
+value-coupled query, a clean-from-scratch build, and gate guarding — paired with
+the genuine `2n − O(log n)` lower bound. It is not slop.
