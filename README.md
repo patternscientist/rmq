@@ -98,9 +98,11 @@ about Lean's executable `List` runtime.
 - `RMQ/Core/SuccinctSpace.lean`: broadword/succinct-space theorem interfaces:
   Mathlib-free `o(n)` overhead accounting, payload-backed rank/select
   components, BP-native Cartesian shape payloads of exact length `2*n`, and a
-  proved close-navigation RMQ adapter. The remaining succinct upper-bound work
-  is to instantiate the abstract BP LCA-close/navigation primitive with a
-  concrete sampled directory.
+  proved close-navigation RMQ adapter. `RMQ/Core/SuccinctFinal.lean` now
+  consumes the concrete compact false-close/select witness and compact BP close
+  directory in a payload-accounted `2*n + o(n), O(1)` BP-native theorem; the
+  remaining succinct work is hardening the bounded-local-BP primitive and, if
+  desired, giving an even flatter encoded/payload-only presentation.
 - `RMQ/Core/SuccinctReduction.lean`: reduction-facing adapter from
   plus-minus-one RMQ backends over generated Euler-tour parentheses to the
   ordinary RMQ/LCA backend interfaces.

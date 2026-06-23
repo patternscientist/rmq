@@ -1,108 +1,47 @@
 # Succinct RMQ Final Path Spec
 
-This is the worker-visible spec for the remaining path to a genuine
-`2*n + o(n), O(1)` BP-native succinct RMQ theorem.
+This document is now the status, caveat, and hardening tracker for the
+payload-accounted BP-native succinct RMQ path. The concrete
+`2*n + o(n), O(1)` theorem has landed; the remaining work is no longer the C1
+false-close/select witness or the C2 compact close-directory join.
 
-The goal is not another conditional wrapper. The final path must be witnessed by
-payload that the query actually reads, machine-word-bounded word primitives, and
-compiled exactness/cost/profile theorems.
+The post-capstone goal is to keep the result honest: payload that the query
+actually reads, machine-word-bounded word primitives, compiled
+exactness/cost/profile theorems, and clear separation between proof-only fields
+and charged payload bits.
 
 ## Current Capstone Status
 
-`SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
-has landed as the BP-native join over the concrete compact close directory. It
-is a real composition theorem: the payload is `shape.bpCode ++ aux`, the
-auxiliary payload is padded to the stated overhead, query cost is bounded, and
-valid representative windows erase to `scanWindow`.
-
-That theorem is deliberately weak as a final worker target. Its argument is a
-`SuccinctFinal.PayloadLiveBPCloseAccessFamily`, whose `selectCloseCosted` and
-`rankCloseCosted` operations are still fields. A proof-routed inhabitant can
-compute the semantic close/rank value in pure Lean and charge an unrelated read.
-Such an inhabitant is useful as an interface caveat, but treating it as the
-final `2*n + o(n), O(1)` result is an invalid stop.
-
-The hardened target is
-`SuccinctFinal.readBackedBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`.
-It consumes `SuccinctFinal.ReadBackedBPCloseAccessFamily`, whose close-select
-and rank-close operations are derived from stored-word rank/select data rather
-than supplied as arbitrary functions. This does not remove every future proof
-obligation, but it makes the worker scorecard a concrete read-backed family,
-not a free costed-function bundle.
-
-The final RMQ query uses only false-target BP operations:
-
-- `select false shape.bpCode idx`, transported through
-  `SuccinctSpace.select_false_bpCode_eq_bpCloseOfInorder?`;
-- `rank false shape.bpCode (answerClose + 1)`, transported through
-  `SuccinctSpace.bpCloseOfInorder?_rankFalse_succ`; and
-- the already concrete compact close/LCA directory.
-
-The next required target is therefore concrete and non-negotiable: produce a
-read-backed false-only access family, then consume it in the read-backed final
-join.
-
-The select locator design is now pinned in
-`docs/SUCCINCT_SELECT_LOCATOR_ARCHITECTURE.md`.  The intended construction is a
-Clark/RRR-style sparse/dense inventory for false occurrences in `shape.bpCode`:
-super samples, explicit long-super exceptions, local samples inside short
-super intervals, explicit sparse-local exceptions, and a dense local path that
-reads at most two aligned payload words before calling `RAM.selectBoolWord`.
-This is the architecture workers should implement unless they prove the named
-sparse/dense target itself is misspecified.
+The main capstone is now:
 
 ```lean
-structure ReadBackedBPCloseAccessFamily
-    (rankSuperOverhead rankBlockOverhead
-      selectSuperOverhead selectBlockOverhead
-      overhead : Nat -> Nat)
-    (queryCost : Nat) where
-  directory :
-    forall shape : Cartesian.CartesianShape,
-      ReadBackedBPCloseAccessDirectory shape
-        (rankSuperOverhead shape.size)
-        (rankBlockOverhead shape.size)
-        (selectSuperOverhead shape.size)
-        (selectBlockOverhead shape.size)
-        (overhead shape.size)
-        queryCost
-  overhead_littleO : SuccinctSpace.LittleOLinear overhead
-
-theorem concreteReadBackedBPCloseAccessFamily_profile :
-    SuccinctSpace.LittleOLinear closeAccessOverhead /\
-      forall shape,
-        let access := concreteReadBackedBPCloseAccessFamily.directory shape
-        access.payload.length <= closeAccessOverhead shape.size /\
-          (forall idx,
-            (access.selectCloseCosted idx).cost <= closeAccessQueryCost) /\
-          (forall pos,
-            (access.rankCloseCosted pos).cost <= closeAccessQueryCost) /\
-          (forall idx,
-            (access.selectCloseCosted idx).erase =
-              SuccinctSpace.bpCloseOfInorder? shape idx) /\
-          (forall pos,
-            (access.rankCloseCosted pos).erase =
-              Succinct.rankPrefix false shape.bpCode pos) /\
-          access.read_words_length_le_machine := ...
-
-theorem concreteBPNativeSuccinctRMQ_two_n_plus_o_constant_query_profile :
-    -- the same payload length, LittleOLinear overhead, constant query, and
-    -- exact valid-window erasure conclusions as the read-backed join, with no
-    -- abstract weak close-access parameter
-    ... := ...
+theorem SuccinctFinal
+    .builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile :
+    ...
 ```
 
-The close-access witness should assemble the existing stored-word rank-false
-machinery, the new compact false-select locator, and the concrete close/LCA
-directory. It should not hide behind an arbitrary `selectCloseCosted` field.
-Worker success is a concrete read-backed access witness plus its consumption in
-the read-backed final theorem.
+It composes the repaired C1 false-close/select witness
+`SuccinctSelectProposal.builtRelativeSplitSparseExceptionFalseSelectCloseData_profile`
+with the concrete C2 close directory
+`SuccinctCloseProposal.concreteCompactBPCloseLCADirectory_profile`. The final
+payload is `shape.bpCode ++ aux`, the auxiliary payload is padded to the stated
+`o(n)` overhead, the query cost is bounded by a constant, and valid
+representative-array windows erase to the exact `scanWindow` RMQ answer.
 
-The final interface must not accept a vacuous fixed-shape space proof such as
-`LittleOLinear (fun _ => data.auxPayload.length)`. A valid close-access witness
-needs an overhead function of `n`, a proof of `LittleOLinear overhead`, and the
-explicit payload bound `payload.length <= overhead shape.size`. The final join
-pads payloads up to the reserved overhead and consumes that bound directly.
+The false-close/select path now uses the concrete relative-split sparse/dense
+inventory pinned in `docs/SUCCINCT_SELECT_LOCATOR_ARCHITECTURE.md`: super
+samples, explicit long-super exceptions, local samples inside short super
+intervals, explicit sparse-local exceptions, and a dense local path that reads
+at most two aligned payload words before calling `RAM.selectBoolWord`.
+
+The important remaining caveat is C2-local fidelity. The compact close/LCA
+directory uses charged bounded-local-BP primitives for local windows; the next
+research-hardening target is to derive those primitives from explicit local
+decoder payload words, or to present an even flatter encoded/payload-only
+version of the final theorem. The older worker scorecards and anti-pattern
+catalog below are retained as historical guardrails. Treat any later sentence
+that describes the C1 sparse/dense locator, compact close directory, or final
+join as "remaining" as superseded by this status section.
 
 ## Current Inputs
 
@@ -846,10 +785,10 @@ This final join consumes the read-backed false-only close-access surface and the
 C2 concrete compact close directory. The current theorem is a built-payload
 join, not an arbitrary encoded-function wrapper: its payload is
 `shape.bpCode ++ aux`, with aux padded to the exact reserved overhead, and its
-query erases to the exact representative-array RMQ result. The remaining C1
-task is now the concrete compact instantiation of the sparse/dense
-close-select surface; do not claim that the weak conditional access theorem or
-the new sparse/dense family socket retires the compact locator caveat by itself.
+query erases to the exact representative-array RMQ result. This was the staging
+surface that the repaired relative-split compact false-close/select witness now
+instantiates; future work should focus on local BP-decoder hardening or an
+encoded/payload-only presentation, not on reopening the retired C1 caveat.
 
 ## Concrete Close Contract
 
