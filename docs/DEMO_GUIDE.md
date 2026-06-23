@@ -47,9 +47,10 @@ performance.
    - `RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound`
 
 5. The succinct upper bound:
-   - `RMQ.SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
+   - `RMQ.SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile`
    - `RMQ.SuccinctFinal.builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily_profile`
    - `RMQ.SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_profile`
+     (large-regime interior component)
    - `RMQ.SuccinctCloseProposal.ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_exact_of_query`
 
 6. The trust-base and hygiene story:

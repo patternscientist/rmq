@@ -59,11 +59,11 @@ It proves a common half-open, leftmost-argmin contract for:
 - value-level Fischer-Heun backends, including an exact all-input wrapper.
 
 The headline succinct theorem is
-`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`:
+`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile`:
 for Cartesian-shape RMQ, the stored payload is the exact balanced-parentheses
-shape code plus `o(n)` auxiliary bits, and the query is exact with constant
-modeled cost through the concrete false-close/select access family and compact
-BP close/LCA directory.
+shape code plus `o(n)` auxiliary bits, and every valid half-open query is exact
+with a uniform constant modeled cost through the concrete false-close/select
+access family and compact BP close/LCA directory.
 
 The hybrid proof is already factored through a generic three-piece combinator:
 an exact nonempty left boundary, an optional middle interval, and an optional

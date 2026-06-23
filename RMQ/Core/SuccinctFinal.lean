@@ -2063,5 +2063,53 @@ theorem builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_
     concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
       builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.toWeakFamily
 
+/--
+Total public capstone for the built relative-split sparse-exception BP-native
+succinct RMQ family.
+
+This is intentionally a thin wrapper around
+`builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`:
+the underlying theorem is already total over all `n`, all shapes/queries for
+the cost bound, and all valid half-open queries for exactness.  The name makes
+that no-threshold surface explicit for researcher-facing inventories.
+-/
+theorem builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile :
+    let accessFamily :=
+      builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.toWeakFamily
+    SuccinctSpace.LittleOLinear
+        (concreteBPNativeSuccinctRMQOverhead
+          relativeSplitSparseExceptionBPCloseAccessOverhead) /\
+      forall n : Nat,
+        EncodingLowerBound.logSlackLower n <=
+          2 * n +
+            concreteBPNativeSuccinctRMQOverhead
+              relativeSplitSparseExceptionBPCloseAccessOverhead n /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            (accessFamily.directory shape).payload.length <=
+              relativeSplitSparseExceptionBPCloseAccessOverhead n) /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            (concreteBPNativeSuccinctRMQPayload
+              accessFamily shape).length =
+              2 * n +
+                concreteBPNativeSuccinctRMQOverhead
+                  relativeSplitSparseExceptionBPCloseAccessOverhead n) /\
+        (forall shape left right,
+          (concreteBPNativeSuccinctRMQQueryCosted
+            accessFamily shape left right).cost <=
+              concreteBPNativeSuccinctRMQQueryCost
+                SuccinctSelectProposal.sparseDenseFalseSelectQueryCost) /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            forall {left len : Nat},
+              0 < len ->
+                left + len <= n ->
+                  (concreteBPNativeSuccinctRMQQueryCosted
+                    accessFamily shape left (left + len)).erase =
+                    some (scanWindow shape.representative left len)) := by
+  exact
+    builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
+
 end SuccinctFinal
 end RMQ

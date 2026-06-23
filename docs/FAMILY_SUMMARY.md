@@ -230,8 +230,11 @@ The local BP seed-routing hardening item is now closed for the final BP-native
 path. The main remaining succinct work is optional presentation polish,
 especially packaging an encoded/payload-only view of the same final theorem. The positive
 block-size same-block decoder has been routed through the charged
-bounded-local-BP primitive. The all-input zero-block semantic fallback is now
-separated from the asymptotic final path: `SuccinctCloseProposal.canonicalBPRelativeSummaryBlockSize_pos_of_size_ge`
+bounded-local-BP primitive. The final asymptotic profile remains total:
+`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile`
+has no large-regime premise. The all-input zero-block semantic fallback remains
+present for tiny/inactive cases; the large-regime normalization lemmas
+`SuccinctCloseProposal.canonicalBPRelativeSummaryBlockSize_pos_of_size_ge`
 and
 `SuccinctCloseProposal.ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_eq_positive_dispatch_of_size_ge`
 prove that the large/canonical regime dispatches through the positive-block
@@ -266,10 +269,11 @@ block-code, select API-shape, built-query close-navigation, dense/sparse
 select-descriptor, concrete macro-directory, or same-block local-decoder
 blocker. The final BP-native stack now consumes the sibling
 `SuccinctCloseProposal.ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_exact_of_query`,
-with the large-regime branch-normalized wrapper
-`SuccinctCloseProposal.ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_exact_of_query_of_size_ge`,
 which routes local decoder seeds through the final payload-backed
-`rankCloseCosted` access path. The theorem-shaped local-decoder path is recorded in
+`rankCloseCosted` access path. The large-regime wrapper
+`SuccinctCloseProposal.ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_exact_of_query_of_size_ge`
+is a branch-normal-form corollary, not a premise of the total final profile.
+The theorem-shaped local-decoder path is recorded in
 `docs/LOCAL_BP_DECODER_PATH.md`.
 Succinct C1 sparse/dense codec update: `SuccinctSpace` now supplies
 `littleOLinear_id_div_logLog_succ`, `idDivLogLogOverhead_littleO`, and
@@ -619,6 +623,10 @@ is indexed by exception rank plus local occurrence. `SuccinctFinal` consumes it
 through `RelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily` and the
 concrete theorem
 `SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`.
+The public total capstone wrapper
+`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile`
+states the same all-`n` payload, exactness, and uniform constant-query profile
+without any large-regime hypothesis.
 The repaired query path now guards validity with `idx < shape.size`; the
 full false-count identity for `shape.bpCode` is used only in exactness proofs.
 The older `SparseDenseFalseSelectCloseData` adapter remains as a compatibility
@@ -1857,7 +1865,8 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`,
   `SuccinctFinal.readBackedBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile_of_rankSelectFamily`,
-  `SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`.
+  `SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`,
+  `SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile`.
 - `RMQ/Core/SuccinctReduction.lean` (7):
   `Succinct.rmqBackendOfEulerParensBackend_queryBuilt`,
   `Succinct.lcaCandidateOfEulerParensBackend_eq_queryBuilt`,
