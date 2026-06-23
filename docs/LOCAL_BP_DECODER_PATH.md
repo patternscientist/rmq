@@ -36,6 +36,37 @@ Do not reopen the C1 false-close/select architecture, the compact interior
 rmM navigator, or the final BP-native join unless the local-decoder target is
 formally shown to be misspecified.
 
+## Worker B Seeded Fringe Result
+
+Worker B keeps the local decoder target positive but changes the interface from
+"four BP words alone" to "four BP words plus an explicit base-excess seed":
+
+```lean
+localBPWindowBase
+localBPWindowBits
+localBPWindowGet?_eq_bpCode_get?
+localBPSeedExcess
+localBPSeedFromRankFalse
+localBPSeedFromRankFalse_eq_localBPSeedExcess
+localBPSeededExcessAt_eq_bpExcessAt
+localBPLeftFringeCandidateSeededCosted_eq_semantic
+localBPRightFringeCandidateSeededCosted_eq_semantic
+```
+
+The two seeded fringe helpers compute their candidates from the local window
+bits and a seed, not by calling the old semantic helpers.  The equivalence
+theorems require explicit coverage hypotheses for the endpoint fringe interval.
+The minimal directory-interface delta is therefore: a compact close query must
+also pass/read `localBPSeedExcess` at the window base, or equivalently pass/read
+`Succinct.rankPrefix false shape.bpCode (localBPWindowBase ...)` and recover the
+seed using `localBPSeedFromRankFalse`.
+
+The current `ConcreteCompactBPCloseLCADirectory` interface still lists only
+`localBPBlockWordsRead` for endpoint BP windows; it has no charged seed read.
+Combined with `localBPWindowBits_alone_does_not_determine_base_excess`, this is
+the formal reason the directory migration should wait for a seed-bearing read
+surface instead of pretending the unseeded helper is decoded.
+
 ## Preferred Proof Shape
 
 Use an equivalence-first migration:
