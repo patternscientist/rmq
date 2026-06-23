@@ -1661,3 +1661,69 @@ hypothesis-free, sorry-free, standard-axioms-only `2n + o(n)`-bit / O(1)-query /
 exact succinct RMQ theorem, with genuine definitions, a real charged cost model, a
 value-coupled query, a clean-from-scratch build, and gate guarding — paired with
 the genuine `2n − O(log n)` lower bound. It is not slop.
+
+## 2026-06-23 (prior-art / novelty-demolition round) — tried hard to prove "this already exists"; the core novelty survives, heavily caveated
+
+Adversarial assumption: the proof is real (verified), but the *novelty/gap-filling*
+claim is the fraud — it's classical work or other repos repackaged. I searched to
+disprove novelty and mostly failed; here is the honest minimized picture.
+
+**Zero mathematical novelty (state this loudly).** Every result is classical:
+Fischer–Heun `2n+o(n)`/O(1) RMQ (2011), Bender–Farach-Colton ±1-RMQ/LCA (2000),
+Cartesian-tree↔RMQ↔LCA (Gabow/Demaine et al.), Navarro–Sadakane range-min-max tree
+(2014), and the `2n` encoding lower bound / Liu–Yu succinct-RMQ lower bounds
+(arXiv 2004.05738, 2111.02318). The repo contributes **no new algorithm and no new
+bound** — only mechanization. (Its own AGENTS.md framing is honest: "pair the
+*existing* lower-bound framework with a payload-accounted construction.")
+
+**The succinct-DS *substrate* is already formalized — in Coq, years ago.**
+`affeldt-aist/succinct` (Affeldt–Garrigue–Tanaka, ITP 2019) formalizes rank/select,
+Jacobson rank, LOUDS succinct trees, pred/succ, and dynamic bit vectors. So
+"formalizing succinct data structures / rank-select / succinct trees in a proof
+assistant" is **not** new. Crucially, that library has **no RMQ, no Cartesian
+tree, no LCA, no Fischer–Heun, and no lower bound** (confirmed from its module
+list). So it does not pre-empt the RMQ-specific or lower-bound claims, but it does
+mean the repo's rank/select/BP parts are re-treading known ground (in a different
+prover).
+
+**No formalized RMQ found in ANY proof assistant.** GitHub `"range minimum query"`
+= 0 repos in Lean, Coq, and Isabelle; 0 for "succinct range minimum verified" /
+"Fischer-Heun verified". The only Cartesian-tree-in-Coq hit
+(`pedroqueiroga/cartesian-tree`) is a one-file treap/priority-queue, not RMQ.
+Isabelle AFP: no segment-tree/Cartesian-tree/RMQ/LCA entry surfaced; AFP code
+search for "range minimum" empty. CSLib (the official Lean CS library, arXiv
+2602.04846, Feb 2026) names only mergesort concretely — RMQ/succinct/rank-select
+are an explicit *future* (end-2026) goal, not current content. Mathlib: none.
+
+**Surviving novelty (narrow, and on negative evidence):** plausibly the **first
+mechanized RMQ at all**, the first **succinct (`2n+o(n)`/O(1)) RMQ**, the first
+**formalized RMQ encoding lower bound**, and the first to **pair** a formalized
+succinct upper bound with a formalized matching lower bound — and the first of any
+of this **in Lean**. These are "first" only as far as public, indexed,
+English-language search reaches; an obscure/unpublished formalization cannot be
+excluded.
+
+**Further minimizers (intellectual honesty):**
+- It is a *verification/library* contribution, not a discovery: known theorems,
+  re-proved in a prover.
+- "O(1)" is relative to a *charged word-RAM cost model* (a modeling choice a critic
+  can contest), and carries the documented inactive-zero-block fidelity caveat.
+- The lower-bound *math* is the standard Catalan/encoding argument; only its
+  mechanization is new.
+
+**Verdict:** I could not debunk the core novelty — no prior formalized RMQ
+(succinct or otherwise) or formalized RMQ lower bound exists in any system I could
+find; CSLib/Mathlib/AFP/Coq all lack it, and the closest prior art (Affeldt's Coq
+succinct trees) deliberately omits RMQ and lower bounds. But the claim must be
+stated minimally: **a first-of-kind *formalization* (notably in Lean) of classical
+succinct-RMQ results plus a classical lower bound, on a substrate whose succinct-DS
+parts Coq already had** — not a mathematical advance, and "first" rests on absence
+of evidence.
+
+Sources: [Affeldt et al. ITP 2019](https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ITP.2019.5)
+/ [affeldt-aist/succinct](https://github.com/affeldt-aist/succinct);
+[CSLib arXiv:2602.04846](https://arxiv.org/html/2602.04846v1);
+[Fischer–Heun SIAM 2011](https://www.semanticscholar.org/paper/d093047cb47f7f48ff633ac0ad61e3ca3564a9be);
+[Liu–Yu lower bound arXiv:2004.05738](https://arxiv.org/abs/2004.05738),
+[arXiv:2111.02318](https://arxiv.org/abs/2111.02318);
+[Navarro–Sadakane arXiv:0905.0768](https://arxiv.org/abs/0905.0768).
