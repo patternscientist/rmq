@@ -43,6 +43,10 @@ catalog below are retained as historical guardrails. Treat any later sentence
 that describes the C1 sparse/dense locator, compact close directory, or final
 join as "remaining" as superseded by this status section.
 
+The local-decoder hardening plan is pinned in
+`docs/LOCAL_BP_DECODER_PATH.md`. Workers should use that theorem chain before
+editing `RMQ/Core/SuccinctCloseProposal.lean`.
+
 ## Current Inputs
 
 The current merged surface provides useful partial surface:

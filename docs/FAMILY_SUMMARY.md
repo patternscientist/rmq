@@ -232,7 +232,8 @@ the charged bounded-local-BP primitive and, optionally, an encoded/payload-only
 presentation of the same final theorem. They are no longer rank endpoint, rank
 local-width, proof-only block-code, select API-shape, built-query
 close-navigation, dense/sparse select-descriptor, or concrete macro-directory
-blockers.
+blockers. The theorem-shaped local-decoder path is recorded in
+`docs/LOCAL_BP_DECODER_PATH.md`.
 Succinct C1 sparse/dense codec update: `SuccinctSpace` now supplies
 `littleOLinear_id_div_logLog_succ`, `idDivLogLogOverhead_littleO`, and
 `logLogCubedSampledDirectoryOverhead_littleO`, covering the explicit
