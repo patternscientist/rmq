@@ -1559,3 +1559,45 @@ sorry-free `2n+o(n)/O(1)` headline result and its hardening are sitting un-gated
 across two worktrees. **Commit + merge + run the gate is overdue** and is the
 single highest-priority action. Next proof step (optional polish): the same-block
 seeded decoder (same pattern) to fully eliminate the cost-model caveat.
+
+## 2026-06-23 (seeds via final rank access) — caveat discharged for all reachable cases; capstone merged into coordinator + preserved sorry-free; only an inactive zero-block branch remains
+
+`codex/local-bp-seeded-decoder-work` rebased on coordinator `bd7d4c0`. Build green;
+full `axiom_check` 0 bad-axiom; hygiene + native scans clean.
+
+**The overdue-merge flag is addressed.** Coordinator `bd7d4c0` now contains the
+merged capstone + endpoint-fringe decoder + the **same-block decoder migration**
+(`02d19c2 Migrate same-block local BP decoder`, `bd7d4c0 Merge local BP seeded
+decoder hardening`). The headline result is no longer stranded in a worktree.
+
+**This round (`bcf25df`) closes the cost-model caveat for the active construction.**
+The seed is now sourced from the final payload-backed `rankCloseCosted` callback
+(`localBPSeedFromRankCloseCosted_eq_localBPSeedExcess`), and the final BP-native
+stack consumes `ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed`
+(`…_exact_of_query`). So both branches are now decoded from charged reads:
+- endpoint-fringe: seeded decoder over flattened charged `localBPBlockWordsRead`;
+- positive-block same-block: `localBPSameBlockCloseDecodedCosted` (same seed +
+  charged window);
+- the seed itself: a charged, payload-backed rank-close read, proven `= base
+  excess`. No answer-as-premise, no oracle.
+
+**Capstone preserved.** `builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
+remains hypothesis-free, and `#print axioms` (transitive, through the rank-seeded
+close path) = `[propext, Classical.choice, Quot.sound]`. The rewire introduced no
+`sorry` and did not weaken the theorem.
+
+**Only residue: an inactive dead branch.** The sole remaining semantic fallback is
+the **zero-block branch** (`canonicalBlockSize = 0`), which the canonical
+construction never takes; `zeroBlockSameBlock_does_not_imply_localBPWindowCoverage`
+documents why a four-word window cannot cover the right endpoint in that degenerate
+case. This is a totality fallback in unreachable code, not a fidelity gap in the
+active query.
+
+**Verdict:** the `2n + o(n)` / O(1) exact succinct RMQ is now concrete,
+hypothesis-free, sorry-free, standard-axioms-only, **merged into the coordinator**,
+and **bit-level cost-faithful for every reachable case** (close/LCA answers decoded
+from charged BP-word reads + a charged rank seed), paired with the `2n − O(log n)`
+lower bound. The last residue is a documented inactive zero-block branch. Optional
+polish: prove `canonicalBlockSize > 0` to make that branch provably unreachable (or
+decode it), then merge `bcf25df`. This is, for practical purposes, the finished
+headline theorem.
