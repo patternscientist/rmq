@@ -555,14 +555,23 @@ kept only as an adapter via
 `SuccinctFinal.concreteBPNativeCloseAccessFamilyOfRankSelectFamily` and the
 compatibility corollary
 `SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile_of_rankSelectFamily`.
-The theorem remains conditional: the repository now has a sparse/dense
-false-select close-access adapter, but it still needs the concrete
-`shape.bpCode` builder proving the `SparseDenseFalseSelectCloseData` branch
-obligations from constructed super/local/exception tables before the
-unconditional BP-native `2*n + o(n), O(1)` theorem is closed.
+The repaired relative-split C1 path now has a concrete compact close-select
+witness. `SuccinctSelectProposal.builtRelativeSplitSparseExceptionFalseSelectCloseData_profile`
+builds the compact long-super branch from constructed tables: long-super flags
+are ranked with a separate charged rank directory and the compact relative table
+is indexed by exception rank plus local occurrence. `SuccinctFinal` consumes it
+through `RelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily` and the
+concrete theorem
+`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`.
+The repaired query path now guards validity with `idx < shape.size`; the
+full false-count identity for `shape.bpCode` is used only in exactness proofs.
+The older `SparseDenseFalseSelectCloseData` adapter remains as a compatibility
+surface for the earlier packed sparse/dense route, not the final compact C1
+witness.
 `scripts/succinct_cost_lint.ps1` is wired into `scripts/gate.ps1` and now flags
 the audited anti-pattern
-`LittleOLinear (fun _ => ...)` in succinct proposal/final source files.
+`LittleOLinear (fun _ => ...)` and the old uncharged full false-rank guard
+shape in succinct proposal/final source files.
 `docs/SUCCINCT_SELECT_LOCATOR_ARCHITECTURE.md` pins the C1 path to a
 Clark/RRR-style sparse/dense false-select inventory: super samples, explicit
 long-super exceptions, local samples, explicit sparse-local exceptions, and a
@@ -1754,7 +1763,7 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.queryBuiltCosted_cost_le`,
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.queryBuiltCosted_exact`,
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.two_n_plus_o_built_query_profile`.
-- `RMQ/Core/SuccinctFinal.lean` (32):
+- `RMQ/Core/SuccinctFinal.lean` (37):
   `SuccinctFinal.PayloadLiveBPCloseAccessFamily.constant_query_profile`,
   `SuccinctFinal.ReadBackedBPCloseAccessDirectory.payload_length_le_overhead`,
   `SuccinctFinal.ReadBackedBPCloseAccessDirectory.selectCloseCosted_cost_le`,
@@ -1772,6 +1781,10 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctFinal.SparseDenseFalseSelectBPCloseAccessDirectory.select_read_words_length_le_machine`,
   `SuccinctFinal.SparseDenseFalseSelectBPCloseAccessDirectory.profile`,
   `SuccinctFinal.SparseDenseFalseSelectBPCloseAccessFamily.constant_query_profile`,
+  `SuccinctFinal.RelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory.profile`,
+  `SuccinctFinal.RelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.constant_query_profile`,
+  `SuccinctFinal.builtRelativeSplitBPCloseRankData_auxPayload_le_overhead`,
+  `SuccinctFinal.builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily_profile`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQOverhead_littleO`,
   `SuccinctFinal.concreteBPNativeSelectCloseCosted_cost_le`,
   `SuccinctFinal.concreteBPNativeRankCloseCosted_cost_le`,
@@ -1786,7 +1799,8 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctFinal.concreteBPNativeSuccinctRMQQueryCosted_exact`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`,
   `SuccinctFinal.readBackedBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`,
-  `SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile_of_rankSelectFamily`.
+  `SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile_of_rankSelectFamily`,
+  `SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`.
 - `RMQ/Core/SuccinctReduction.lean` (7):
   `Succinct.rmqBackendOfEulerParensBackend_queryBuilt`,
   `Succinct.lcaCandidateOfEulerParensBackend_eq_queryBuilt`,

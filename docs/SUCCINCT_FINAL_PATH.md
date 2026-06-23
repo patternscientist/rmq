@@ -404,9 +404,15 @@ The sibling sparse/dense close-access socket now exists as
 `SuccinctFinal.SparseDenseFalseSelectBPCloseAccessFamily`. It consumes
 `SuccinctSelectProposal.SparseDenseFalseSelectCloseData`, whose query reads the
 packed super/local locator tables, explicit exception tables, and dense BP
-payload words. This is an interface and adapter layer only: a valid C1 stop must
-still construct the tables from `shape.bpCode` and prove the branch-exactness
-fields of `SparseDenseFalseSelectCloseData` from that construction.
+payload words. This older sparse/dense route is an interface and adapter layer
+only. The repaired relative-split compact route is now the concrete C1 witness:
+`SuccinctSelectProposal.builtRelativeSplitSparseExceptionFalseSelectCloseData_profile`
+constructs the super/local, sparse-exception, long-flag-rank, and compact
+long-super relative tables from `shape.bpCode`, and
+`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
+consumes it in the BP-native final join. Its executable close-select query uses
+the cheap validity guard `idx < shape.size`; the full false-count identity
+`rankPrefix false shape.bpCode shape.bpCode.length = shape.size` is proof-only.
 
 The current reconciled C1 socket has two useful but non-final ingredients.
 First, `sparseDenseFalseSelectLocatorEntry_fullMachineField_not_word_bounded`
@@ -471,10 +477,8 @@ but `builtTwoLevelFalseSelectBlockOverhead_ge_bpCode_length_succ` shows that
 its block payload is linear. That route is a compatibility baseline, not a
 valid C1 close.
 
-The next C1 closure target should therefore be the repaired relative-split
-sparse-exception profile built from the narrow components, not another attempt
-to instantiate absolute local/dense pointers or the linear two-level select
-table:
+This C1 target is now closed by the repaired relative-split sparse-exception
+profile built from the narrow components. The concrete witness is:
 
 ```lean
 def builtRelativeSplitSparseExceptionFalseSelectCloseData
@@ -499,14 +503,14 @@ theorem builtRelativeSplitSparseExceptionFalseSelectCloseData_profile
       data.read_words_length_le_machine
 ```
 
-The exact names may differ, but the theorem must consume the deterministic
-local-slot routing or charged side locators, the repaired sparse-exception
-relative table, and the dense two-word payload facts. It must not leave the
-branch exactness facts as free fields. After this builder/profile lands, the
-same loop should consume it in `SuccinctFinal` as the close-access witness that
-feeds the BP-native final theorem. A verified adapter around
-`builtTwoLevelFalseSelectCloseData` is not a valid stop, because its own
-overhead theorem exposes the linear payload.
+The theorem consumes deterministic local-slot routing, charged side locators,
+the repaired sparse-exception relative table, compact long-super exceptions,
+and the dense two-word payload fallback. It is consumed in
+`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`,
+which feeds the concrete close-access witness into the BP-native final theorem.
+A verified adapter around `builtTwoLevelFalseSelectCloseData` remains useful
+baseline evidence only, because its own overhead theorem exposes the linear
+payload.
 
 ## Component 2: Concrete Macro/Micro BP Close-LCA
 
@@ -899,8 +903,8 @@ the worker report or scratch notes:
 
 ```text
 Overall goal:   final concrete BP-native succinct RMQ profile
-Current gap:    concrete relative-split sparse-exception false-select close access, then the unconditional join
-Hard part:      routing idx to the selected BP payload word with charged o(n) locator payload
+Current gap:    the selected concrete C1/C2 component or final integration still not consumed
+Hard part:      routing queries through charged o(n) payloads without answer/proof-only fields
 This iteration: the largest coherent proof/construction step toward it
 Not doing:      adjacent helper/docs/blocker work that would leave it untouched
 ```

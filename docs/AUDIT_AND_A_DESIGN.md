@@ -455,3 +455,22 @@ relative long/sparse exception offsets, and dense two-word fallback, followed
 by consumption in the close-access/final RMQ path. The branch should prove the
 payload bound against a genuine `LittleOLinear` overhead function and should
 not leave branch exactness as free structure fields.
+
+## 2026-06-22 - Compact false-close witness merged
+
+The repaired relative-split C1 target is now implemented in the worker branch
+and reconciled into the coordinator branch. The concrete theorem
+`SuccinctSelectProposal.builtRelativeSplitSparseExceptionFalseSelectCloseData_profile`
+builds the false-close/select data from `shape.bpCode`, including the compact
+long-super side table indexed by charged long-flag rank plus local occurrence.
+The final theorem
+`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
+then consumes that concrete close-access witness in the BP-native RMQ join.
+
+The previous cost-fidelity caveat is also fixed on the concrete C1 query path:
+`RelativeSplitSparseExceptionFalseSelectCloseData.selectCloseCosted` uses the
+cheap executable guard `idx < shape.size`; the full false-count identity
+`rankPrefix false shape.bpCode shape.bpCode.length = shape.size` appears only
+in proof-only exactness reasoning. The remaining caveat is the already
+documented C2 model boundary: the compact close/LCA side uses a charged
+bounded-local-BP primitive whose bit-level local decoder can be hardened later.
