@@ -243,13 +243,16 @@ recovery through
 `SuccinctCloseProposal.localBPBlockWordsRead_get?_eq_bpCode_get?`,
 `SuccinctCloseProposal.localBPSeedFromRankFalse_eq_localBPSeedExcess`,
 `SuccinctCloseProposal.localBPSeedFromRankFalseCosted_eq_localBPSeedExcess`,
+`SuccinctCloseProposal.localBPSeedFromRankCloseCosted_eq_localBPSeedExcess`,
 and `SuccinctCloseProposal.localBPSeededExcessAt_eq_bpExcessAt`, plus seeded
 left/right fringe erasure theorems
 `SuccinctCloseProposal.localBPLeftFringeCandidateSeededCosted_eq_semantic` and
 `SuccinctCloseProposal.localBPRightFringeCandidateSeededCosted_eq_semantic`,
 and same-block theorems
 `SuccinctCloseProposal.localBPSameBlockCloseDecodedCosted_eq_semantic` and
-`SuccinctCloseProposal.localBPSameBlockCloseDecodedCosted_exact_of_query_same_block`.
+`SuccinctCloseProposal.localBPSameBlockCloseDecodedCosted_exact_of_query_same_block`,
+plus the rank-backed sibling
+`SuccinctCloseProposal.localBPSameBlockCloseDecodedCostedWithRankSeed_exact_of_query_same_block`.
 `SuccinctCloseProposal.ConcreteCompactBPCloseLCADirectory.crossBlockCloseCosted`
 now reads the rank-false seed at each endpoint window base and consumes the
 seeded endpoint helpers before reusing the semantic merge theorem, while its
@@ -258,10 +261,10 @@ the answer from `flattenPayloadWords (localBPBlockWordsRead ...)`. This local
 hardening gap is no longer a rank endpoint, rank local-width, proof-only
 block-code, select API-shape, built-query close-navigation, dense/sparse
 select-descriptor, concrete macro-directory, or same-block local-decoder
-blocker. The current seed read is still a local modeled rank-prefix read; the
-next integration hardening step is to route that seed through the final
-payload-backed `rankCloseCosted` access path. The theorem-shaped local-decoder
-path is recorded in
+blocker. The final BP-native stack now consumes the sibling
+`SuccinctCloseProposal.ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_exact_of_query`,
+which routes local decoder seeds through the final payload-backed
+`rankCloseCosted` access path. The theorem-shaped local-decoder path is recorded in
 `docs/LOCAL_BP_DECODER_PATH.md`.
 Succinct C1 sparse/dense codec update: `SuccinctSpace` now supplies
 `littleOLinear_id_div_logLog_succ`, `idDivLogLogOverhead_littleO`, and
@@ -552,11 +555,13 @@ directory.  The formal seed obstruction
 and the recovery theorem
 `SuccinctCloseProposal.localBPSeedFromRankFalse_eq_localBPSeedExcess` show that
 the directory interface must pass/read a base-excess or rank-false seed; the
-current compact directory does so through a local modeled rank-prefix read
-certified by
-`SuccinctCloseProposal.localBPSeedFromRankFalseCosted_eq_localBPSeedExcess`.
-The remaining integration hardening is to route this seed through an existing
-payload-backed `rankCloseCosted` callback in the final BP-native stack.
+legacy compact directory path can do so through a local modeled rank-prefix
+read certified by
+`SuccinctCloseProposal.localBPSeedFromRankFalseCosted_eq_localBPSeedExcess`,
+while the final BP-native path uses
+`SuccinctCloseProposal.localBPSeedFromRankCloseCosted_eq_localBPSeedExcess`
+inside
+`SuccinctCloseProposal.ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_exact_of_query`.
 `SuccinctCloseProposal.payloadLiveBPRelativeRmmInteriorDirectory_profile_allows_proof_only_oracle`
 records the corresponding contract caveat: the generic interior-directory
 record alone can be inhabited by an empty-payload proof-only oracle, so the
@@ -594,9 +599,10 @@ exactly `shape.bpCode` plus padded auxiliary close-access and close-directory
 payloads, the payload length is
 `2*n + concreteBPNativeSuccinctRMQOverhead ... n`, the combined overhead is
 `LittleOLinear`, the query cost is bounded by
-`3 * closeAccessCost + concreteCompactBPCloseQueryCost`, and erasure returns the
-exact representative-array RMQ answer. The old two-level rank/select family is
-kept only as an adapter via
+`3 * closeAccessCost + concreteCompactBPCloseQueryCostWithRankSeed closeAccessCost`,
+the compact LCA-close leg routes its local BP decoder seeds through
+`rankCloseCosted`, and erasure returns the exact representative-array RMQ
+answer. The old two-level rank/select family is kept only as an adapter via
 `SuccinctFinal.concreteBPNativeCloseAccessFamilyOfRankSelectFamily` and the
 compatibility corollary
 `SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile_of_rankSelectFamily`.

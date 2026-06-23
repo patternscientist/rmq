@@ -1,7 +1,6 @@
 # Local BP Decoder Hardening Path
 
-This is the post-capstone hardening plan for the only remaining live succinct
-RMQ model caveat.
+This is the post-capstone hardening record for the local BP decoder caveat.
 
 The concrete BP-native `2*n + o(n), O(1)` theorem is already in place:
 
@@ -30,14 +29,16 @@ passes explicit rank-false seeds through
 left/right fringe helpers.  The positive block-size same-block path now uses
 `localBPSameBlockCloseDecodedCosted`, which reads the same explicit seed and
 computes its candidate from the flattened `localBPBlockWordsRead` window.  The
-only remaining semantic fallback is the inactive zero-block branch, where the
+final BP-native stack now consumes the sibling
+`ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed`, whose seed is
+derived from the final payload-backed `rankCloseCosted` callback via
+`localBPSeedFromRankCloseCosted`. The only remaining semantic fallback is the
+inactive zero-block branch, where the
 canonical block size is zero and every endpoint pair is classified as
 same-block.  The coverage obstruction
 `zeroBlockSameBlock_does_not_imply_localBPWindowCoverage` records that this
 same-block classification alone does not imply a four-word local BP window
-covers the right endpoint. The remaining integration hardening is not another
-local decoder: it is to route the seed through the final payload-backed
-`rankCloseCosted` access path instead of the local modeled rank-prefix helper.
+covers the right endpoint.
 
 ## Goal
 
@@ -76,12 +77,11 @@ also pass/read `localBPSeedExcess` at the window base, or equivalently pass/read
 `Succinct.rankPrefix false shape.bpCode (localBPWindowBase ...)` and recover the
 seed using `localBPSeedFromRankFalse`.
 
-The current `ConcreteCompactBPCloseLCADirectory` interface now threads a
-charged seed read through both endpoint fringes and the positive block-size
-same-block path. This read is currently the local helper
-`localBPSeedFromRankFalseCosted`; the next final-stack hardening step is a
-rank-callback-backed sibling path that obtains the same seed from an existing
-payload-backed `rankCloseCosted`. Combined with
+The current `ConcreteCompactBPCloseLCADirectory` interface now has both the
+local modeled seed path and a rank-callback-backed sibling path. The sibling
+obtains the same seed from an existing payload-backed
+`rankCloseCosted : Nat -> Costed Nat`, proves exactness from the callback's
+rank exactness theorem, and is consumed by `SuccinctFinal`. Combined with
 `localBPWindowBits_alone_does_not_determine_base_excess`, this is the formal
 reason the directory migration uses a seed-bearing read surface instead of
 pretending the unseeded helper is decoded.
@@ -108,9 +108,9 @@ The endpoint-fringe and same-block migrations use this equivalence-first path:
    localBPSeedFromRankFalse_eq_localBPSeedExcess
    ```
 
-   In the compact close module this is presently modeled by
-   `localBPSeedFromRankFalseCosted`. The final-stack cleanup should replace or
-   wrap it with a sibling helper that consumes a payload-backed
+   In the compact close module the legacy local modeled read remains available
+   as `localBPSeedFromRankFalseCosted`. The final-stack cleanup now uses the
+   sibling `localBPSeedFromRankCloseCosted`, which consumes a payload-backed
    `rankCloseCosted : Nat -> Costed Nat`.
 
 3. Flattened local-word bit reads are exposed by:
@@ -152,11 +152,14 @@ The endpoint-fringe and same-block migrations use this equivalence-first path:
    `answerClose_prefix_leftmost_min_excess_of_query` to show the decoded
    prefix-range candidate is the representative-query answer close.
 
-6. The existing profile theorem is reproved by rewriting through the seeded
-   equivalence lemmas:
+6. The existing local profile theorem is reproved by rewriting through the
+   seeded equivalence lemmas, and the final BP-native capstone consumes the
+   rank-backed sibling path:
 
    ```lean
    SuccinctCloseProposal.concreteCompactBPCloseLCADirectory_profile
+   SuccinctCloseProposal
+     .ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_exact_of_query
    SuccinctFinal
      .builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
    ```
@@ -220,8 +223,8 @@ obvious and inside its ownership.  For the endpoint-fringe and positive
 block-size same-block slices, the bridge and directory migration are now closed;
 future local-decoder work should target the inactive zero-block fallback only if
 the all-input small-regime presentation matters. The main integration cleanup is
-rank-seed routing through the final payload-backed rank path, plus optionally a
-payload-only encoding presentation.
+now closed for the final payload-backed rank path; the remaining optional work
+is a payload-only encoded presentation of the same capstone.
 
 A valid positive stop closes one of these named outcomes:
 
@@ -234,6 +237,9 @@ A valid positive stop closes one of these named outcomes:
   `localBPSameBlockCloseDecodedCosted` for positive block-size same-block
   queries with `concreteCompactBPCloseLCADirectory_profile` still proved; or
 - the final BP-native capstone theorem reverified after the migration.
+- the final BP-native capstone theorem consumes
+  `lcaCloseCostedWithRankSeed` with the final access-family
+  `rankCloseCosted` and revalidates the profile.
 
 A valid negative stop requires a formal obstruction theorem showing that the
 charged local word window plus the explicit seed is insufficient as stated, or

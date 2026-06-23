@@ -14,7 +14,8 @@ def concreteBPNativeSuccinctRMQOverhead
 def concreteBPNativeSuccinctRMQQueryCost
     (closeAccessCost : Nat) : Nat :=
   3 * closeAccessCost +
-    SuccinctCloseProposal.concreteCompactBPCloseQueryCost
+    SuccinctCloseProposal.concreteCompactBPCloseQueryCostWithRankSeed
+      closeAccessCost
 
 def concreteBPNativeRankSelectDirectory
     {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
@@ -1553,9 +1554,14 @@ def concreteBPNativeRankCloseCosted
   (accessFamily.directory shape).rankCloseCosted pos
 
 def concreteBPNativeLCACloseCosted
+    {closeAccessOverhead : Nat -> Nat} {closeAccessCost : Nat}
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily
+        closeAccessOverhead closeAccessCost)
     (shape : Cartesian.CartesianShape)
     (leftClose rightClose : Nat) : Costed (Option Nat) :=
-  (concreteBPNativeCloseDirectory shape).lcaCloseCosted
+  (concreteBPNativeCloseDirectory shape).lcaCloseCostedWithRankSeed
+    (concreteBPNativeRankCloseCosted accessFamily shape)
     leftClose rightClose
 
 def concreteBPNativeSuccinctRMQQueryCosted
@@ -1573,7 +1579,8 @@ def concreteBPNativeSuccinctRMQQueryCosted
           match leftClose?, rightClose? with
           | some leftClose, some rightClose =>
               Costed.bind
-                (concreteBPNativeLCACloseCosted shape leftClose rightClose)
+                (concreteBPNativeLCACloseCosted accessFamily shape
+                  leftClose rightClose)
                 fun answerClose? =>
                   match answerClose? with
                   | some answerClose =>
@@ -1615,14 +1622,23 @@ theorem concreteBPNativeRankCloseCosted_cost_le
   exact (accessFamily.directory shape).rankClose_cost_le pos
 
 theorem concreteBPNativeLCACloseCosted_cost_le
+    {closeAccessOverhead : Nat -> Nat} {closeAccessCost : Nat}
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily
+        closeAccessOverhead closeAccessCost)
     (shape : Cartesian.CartesianShape)
     (leftClose rightClose : Nat) :
-    (concreteBPNativeLCACloseCosted shape leftClose rightClose).cost <=
-      SuccinctCloseProposal.concreteCompactBPCloseQueryCost := by
-  have hprofile :=
-    SuccinctCloseProposal.concreteCompactBPCloseLCADirectory_profile shape
-  simpa [concreteBPNativeLCACloseCosted, concreteBPNativeCloseDirectory]
-    using hprofile.2.2.1 leftClose rightClose
+    (concreteBPNativeLCACloseCosted accessFamily shape leftClose
+        rightClose).cost <=
+      SuccinctCloseProposal.concreteCompactBPCloseQueryCostWithRankSeed
+        closeAccessCost := by
+  exact
+    (concreteBPNativeCloseDirectory shape).lcaCloseCostedWithRankSeed_cost_le
+      (concreteBPNativeRankCloseCosted accessFamily shape)
+      leftClose rightClose closeAccessCost
+      (by
+        intro pos
+        exact concreteBPNativeRankCloseCosted_cost_le accessFamily shape pos)
 
 theorem concreteBPNativeSelectCloseCosted_exact
     {closeAccessOverhead : Nat -> Nat} {closeAccessCost : Nat}
@@ -1658,6 +1674,10 @@ theorem concreteBPNativeCloseAccessPayload_length_le_overhead
     (accessFamily.directory shape).payload_length_le_overhead
 
 theorem concreteBPNativeLCACloseCosted_exact
+    {closeAccessOverhead : Nat -> Nat} {closeAccessCost : Nat}
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily
+        closeAccessOverhead closeAccessCost)
     {shape : Cartesian.CartesianShape}
     {left len leftClose rightClose answerClose : Nat}
     (hlen : 0 < len)
@@ -1670,12 +1690,16 @@ theorem concreteBPNativeLCACloseCosted_exact
       SuccinctSpace.bpCloseOfInorder? shape
           (scanWindow shape.representative left len) =
         some answerClose) :
-    (concreteBPNativeLCACloseCosted shape leftClose rightClose).erase =
+    (concreteBPNativeLCACloseCosted accessFamily shape leftClose
+        rightClose).erase =
       some answerClose := by
-  have hprofile :=
-    SuccinctCloseProposal.concreteCompactBPCloseLCADirectory_profile shape
-  simpa [concreteBPNativeLCACloseCosted, concreteBPNativeCloseDirectory]
-    using hprofile.2.2.2.1 hlen hbound hleft hright hanswer
+  exact
+    (concreteBPNativeCloseDirectory shape).lcaCloseCostedWithRankSeed_exact_of_query
+      (concreteBPNativeRankCloseCosted accessFamily shape)
+      (by
+        intro pos
+        exact concreteBPNativeRankCloseCosted_exact accessFamily shape pos)
+      hlen hbound hleft hright hanswer
 
 theorem concreteBPNativeSuccinctRMQAuxPayload_length
     {closeAccessOverhead : Nat -> Nat} {closeAccessCost n : Nat}
@@ -1754,10 +1778,10 @@ theorem concreteBPNativeSuccinctRMQQueryCosted_cost_le
       | some rightClose =>
           have hlca :=
             concreteBPNativeLCACloseCosted_cost_le
-              shape leftClose rightClose
+              accessFamily shape leftClose rightClose
           cases hlcaValue :
               (concreteBPNativeLCACloseCosted
-                shape leftClose rightClose).value with
+                accessFamily shape leftClose rightClose).value with
           | none =>
               simp [Costed.bind, concreteBPNativeSuccinctRMQQueryCost,
                 hleftValue, hrightValue, hlcaValue]
@@ -1824,12 +1848,12 @@ theorem concreteBPNativeSuccinctRMQQueryCosted_exact
     simpa [Costed.erase, hrightClose] using h
   have hlca :
       (concreteBPNativeLCACloseCosted
-          shape leftClose rightClose).value =
+          accessFamily shape leftClose rightClose).value =
         some answerClose := by
     have h :=
       concreteBPNativeLCACloseCosted_exact
-        (shape := shape) hlen hboundShape hleftClose hrightClose
-        hanswerClose
+        accessFamily (shape := shape) hlen hboundShape hleftClose
+        hrightClose hanswerClose
     simpa [Costed.erase] using h
   have hrank :
       (concreteBPNativeRankCloseCosted
