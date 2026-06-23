@@ -227,24 +227,41 @@ with payload length `2*n + o(n)` and query cost `<= 9 + lcaQueryCost`. That
 staging path has now been consumed by the repaired relative-split
 false-close/select witness and the concrete compact BP close directory in
 `SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`.
-The main remaining succinct hardening items are the bit-level decoder behind
-the charged bounded-local-BP primitive and, optionally, an encoded/payload-only
-presentation of the same final theorem. The seeded endpoint-fringe decoder path
-now proves coverage and seed recovery through
+The main remaining succinct hardening items are now routing the local BP seed
+through the payload-backed/access-family rank path and, optionally, packaging
+an encoded/payload-only presentation of the same final theorem. The positive
+block-size same-block decoder has been routed through the charged
+bounded-local-BP primitive, with an explicit semantic fallback only for the
+inactive zero-block branch; the theorem
+`SuccinctCloseProposal.zeroBlockSameBlock_does_not_imply_localBPWindowCoverage`
+records why zero-block same-block classification does not provide four-word
+window coverage. The seeded
+local decoder path now proves coverage, charged-window recovery, and seed
+recovery through
+`SuccinctCloseProposal.localBPWindowBits_eq_flatten_localBPBlockWordsRead`,
 `SuccinctCloseProposal.localBPWindowGet?_eq_bpCode_get?`,
-`SuccinctCloseProposal.localBPSeedFromRankFalse_eq_localBPSeedExcess`, and
-`SuccinctCloseProposal.localBPSeededExcessAt_eq_bpExcessAt`, plus seeded
+`SuccinctCloseProposal.localBPBlockWordsRead_get?_eq_bpCode_get?`,
+`SuccinctCloseProposal.localBPSeedFromRankFalse_eq_localBPSeedExcess`,
+`SuccinctCloseProposal.localBPSeedFromRankFalseCosted_eq_localBPSeedExcess`,
+and `SuccinctCloseProposal.localBPSeededExcessAt_eq_bpExcessAt`, plus seeded
 left/right fringe erasure theorems
 `SuccinctCloseProposal.localBPLeftFringeCandidateSeededCosted_eq_semantic` and
-`SuccinctCloseProposal.localBPRightFringeCandidateSeededCosted_eq_semantic`.
-The remaining local BP migration gap is that the compact close directory must
-pass or read this base-excess/rank-false seed before those helpers can replace
-the current semantic endpoint helpers, and the proof-facing
-`localBPWindowBits` slice must still be tied back to the flattened charged
-`localBPBlockWordsRead` payload words. They are no longer rank endpoint, rank
-local-width, proof-only block-code, select API-shape, built-query
-close-navigation, dense/sparse select-descriptor, or concrete macro-directory
-blockers. The theorem-shaped local-decoder path is recorded in
+`SuccinctCloseProposal.localBPRightFringeCandidateSeededCosted_eq_semantic`,
+and same-block theorems
+`SuccinctCloseProposal.localBPSameBlockCloseDecodedCosted_eq_semantic` and
+`SuccinctCloseProposal.localBPSameBlockCloseDecodedCosted_exact_of_query_same_block`.
+`SuccinctCloseProposal.ConcreteCompactBPCloseLCADirectory.crossBlockCloseCosted`
+now reads the rank-false seed at each endpoint window base and consumes the
+seeded endpoint helpers before reusing the semantic merge theorem, while its
+positive block-size same-block branch reads the left endpoint seed and computes
+the answer from `flattenPayloadWords (localBPBlockWordsRead ...)`. This local
+hardening gap is no longer a rank endpoint, rank local-width, proof-only
+block-code, select API-shape, built-query close-navigation, dense/sparse
+select-descriptor, concrete macro-directory, or same-block local-decoder
+blocker. The current seed read is still a local modeled rank-prefix read; the
+next integration hardening step is to route that seed through the final
+payload-backed `rankCloseCosted` access path. The theorem-shaped local-decoder
+path is recorded in
 `docs/LOCAL_BP_DECODER_PATH.md`.
 Succinct C1 sparse/dense codec update: `SuccinctSpace` now supplies
 `littleOLinear_id_div_logLog_succ`, `idDivLogLogOverhead_littleO`, and
@@ -519,21 +536,27 @@ charged endpoint+interior macro with explicit payload length, constant query
 cost, cross-block exactness, and machine-word bounded reads.  The final compact
 directory no longer uses that identity endpoint classifier as its surface:
 `SuccinctCloseProposal.concreteCompactBPCloseLCADirectory_profile` packages
-same-block dispatch, charged constant-width local BP-code window reads for
-endpoint repair, the concrete relative-rmM interior directory, payload length
-bounded by `SuccinctCloseProposal.compactBPCloseOverhead`, the
+same-block dispatch through the seeded decoded helper in the positive
+block-size regime, charged constant-width local BP-code window reads for
+same-block and endpoint repair, the concrete relative-rmM interior directory,
+payload length bounded by `SuccinctCloseProposal.compactBPCloseOverhead`, the
 `SuccinctCloseProposal.compactBPCloseOverhead_littleO` proof, constant query
 cost, arbitrary representative-query exactness, and machine-word bounds for
 every charged BP/interior word read.  This closes C2 at the bounded-local-BP-
 primitive layer: the same-block and endpoint-fringe local primitives are
 specified by exact local BP semantics and account for a constant BP-word window,
-but only the endpoint-fringe values have now been derived by a seeded local
-window interpreter.  The formal seed obstruction
+and both the positive block-size same-block value and endpoint-fringe values
+are now derived by seeded local window interpreters consumed by the compact
+directory.  The formal seed obstruction
 `SuccinctCloseProposal.localBPWindowBits_alone_does_not_determine_base_excess`
 and the recovery theorem
 `SuccinctCloseProposal.localBPSeedFromRankFalse_eq_localBPSeedExcess` show that
-the directory interface must pass/read a base-excess or rank-false seed to
-consume the seeded helpers.
+the directory interface must pass/read a base-excess or rank-false seed; the
+current compact directory does so through a local modeled rank-prefix read
+certified by
+`SuccinctCloseProposal.localBPSeedFromRankFalseCosted_eq_localBPSeedExcess`.
+The remaining integration hardening is to route this seed through an existing
+payload-backed `rankCloseCosted` callback in the final BP-native stack.
 `SuccinctCloseProposal.payloadLiveBPRelativeRmmInteriorDirectory_profile_allows_proof_only_oracle`
 records the corresponding contract caveat: the generic interior-directory
 record alone can be inhabited by an empty-payload proof-only oracle, so the
