@@ -31,8 +31,8 @@ old "summary envelope is only abstract" gap.
 
 Since that note was written, the concrete compact close/LCA directory, the
 relative-split false-close/select witness, and the BP-native join have landed.
-The public total capstone is
-`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile`.
+The public total two-sided capstone is
+`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`.
 The old full
 `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily` remains
 useful scaffold, but the final capstone consumes the concrete false-only BP
@@ -69,8 +69,10 @@ binding constraint. All three have now been consumed by the final theorem.
    into a concrete family theorem with `LittleOLinear overhead`, exact query
    erasure, bounded query cost, and the lower-bound tie
    `EncodingLowerBound.logSlackLower n <= 2*n + overhead n`. The public
-   lower-bound story is now sharper as well: the doubled Catalan slack API
-   proves `4*n - (3*log2(2*n+1)+3) <= 2*bits`, without introducing a separate
+   two-sided wrapper strengthens this presentation with the doubled Catalan
+   slack
+   `EncodingLowerBound.doubledLogSlackLower n <= 2 * (2*n + overhead n)`,
+   i.e. `4*n - (3*log2(2*n+1)+3) <= 2*bits`, without introducing a separate
    rational-arithmetic theorem.
 
 ## Canonical Constructions

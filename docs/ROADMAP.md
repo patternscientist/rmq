@@ -62,8 +62,8 @@ infrastructure, and D lands the extra research headline.
 
 Current status: the proof-of-concept finish line is landed. D-LCA is the
 dense-label LCA cost headline, and D-Space is now also landed as the BP-native
-succinct RMQ capstone. The total public capstone is
-`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile`.
+succinct RMQ capstone. The total public two-sided capstone is
+`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`.
 The remaining roadmap items are post-POC hardening: a full first-order RAM
 interpreter if a later target needs it, further CSLib-style extraction, an
 optional flatter encoded/payload-only presentation of the succinct theorem, and
@@ -361,10 +361,11 @@ future target needs that level of anti-vacuity.
 
 ### E1 - Tight RMQ Space Sandwich
 
-Status: tight fixed-length payload-space capstone landed, and the packed
-`2n + o(n)` query structure now has a concrete BP-native theorem through the
-relative-split false-close/select access family and compact close/LCA
-directory.
+Status: tight fixed-length payload-space capstone landed, the sharpened
+coefficient-correct doubled Catalan slack is packaged, and the packed
+`2n + o(n)` query structure now has a concrete total two-sided BP-native theorem
+through the relative-split false-close/select access family and compact
+close/LCA directory.
 
 The detailed bullets below retain the construction history. Any older phrasing
 about open sampled navigation, descriptor, or compact-interior checkpoints is
@@ -379,7 +380,10 @@ payload budget satisfies the same lower bound, and the canonical representative
 decoder charges exactly `2*n` bits on every shape. The same lower-bound layer
 now also provides `doubledLogSlackLower n = 4*n - (3*log2(2*n+1)+3)` with
 charged-payload and uniform-budget conclusions of the form
-`doubledLogSlackLower n <= 2 * ...`. The older
+`doubledLogSlackLower n <= 2 * ...`. The public upper/lower join is
+`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`,
+which pairs this doubled lower slack with the total `2*n + o(n)`, constant-query
+BP-native upper structure. The older
 `EncodingLowerBound.exactRMQ_two_sided_log_slack_space_bound` theorem and the
 implementation-shaped companion
 `FischerHeun.exactRMQ_two_sided_log_slack_space_bound_stateEncoding` remain as

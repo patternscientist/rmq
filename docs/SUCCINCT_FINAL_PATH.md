@@ -16,7 +16,7 @@ The main capstone is now:
 
 ```lean
 theorem SuccinctFinal
-    .builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile :
+    .builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile :
     ...
 ```
 
@@ -27,8 +27,10 @@ with the concrete C2 close directory
 payload is `shape.bpCode ++ aux`, the auxiliary payload is padded to the stated
 `o(n)` overhead, the query cost is bounded by a constant, and valid
 representative-array windows erase to the exact `scanWindow` RMQ answer.
-The older non-`total` theorem name remains as the direct proof; the `total`
-wrapper makes explicit that the profile has no large-regime premise.
+The older non-`total` and total upper-bound theorem names remain as direct proof
+steps; the public two-sided wrapper makes explicit that the profile has no
+large-regime premise and pairs the upper structure with the doubled Catalan
+lower slack.
 
 The false-close/select path now uses the concrete relative-split sparse/dense
 inventory pinned in `docs/SUCCINCT_SELECT_LOCATOR_ARCHITECTURE.md`: super
@@ -456,9 +458,10 @@ The theorem consumes deterministic local-slot routing, charged side locators,
 the repaired sparse-exception relative table, compact long-super exceptions,
 and the dense two-word payload fallback. It is consumed in
 `SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`,
-whose public total wrapper
-`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile`
-feeds the concrete close-access witness into the BP-native final theorem.
+whose public total two-sided wrapper
+`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`
+feeds the concrete close-access witness into the BP-native final theorem and
+packages the sharpened lower side.
 A verified adapter around `builtTwoLevelFalseSelectCloseData` remains useful
 baseline evidence only, because its own overhead theorem exposes the linear
 payload.

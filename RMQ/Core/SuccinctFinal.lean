@@ -2111,5 +2111,77 @@ theorem builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_p
   exact
     builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
 
+/--
+Two-sided public capstone for exact RMQ over Cartesian-shape representatives.
+
+The first line after the `o(n)` overhead witness is the sharpened Catalan lower
+side, stated in doubled integer form:
+`doubledLogSlackLower n <= 2 * (2*n + overhead n)`, i.e. the
+coefficient-correct `2n - 1.5 log n - O(1)` slack without rational arithmetic.
+The remaining clauses are the total BP-native upper-bound theorem: exact
+`2*n + o(n)` payload length, constant modeled query cost, and exact answers for
+all valid half-open representative-array queries.
+-/
+theorem builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile :
+    let accessFamily :=
+      builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.toWeakFamily
+    SuccinctSpace.LittleOLinear
+        (concreteBPNativeSuccinctRMQOverhead
+          relativeSplitSparseExceptionBPCloseAccessOverhead) /\
+      forall n : Nat,
+        EncodingLowerBound.doubledLogSlackLower n <=
+          2 *
+            (2 * n +
+              concreteBPNativeSuccinctRMQOverhead
+                relativeSplitSparseExceptionBPCloseAccessOverhead n) /\
+        EncodingLowerBound.logSlackLower n <=
+          2 * n +
+            concreteBPNativeSuccinctRMQOverhead
+              relativeSplitSparseExceptionBPCloseAccessOverhead n /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            (accessFamily.directory shape).payload.length <=
+              relativeSplitSparseExceptionBPCloseAccessOverhead n) /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            (concreteBPNativeSuccinctRMQPayload
+              accessFamily shape).length =
+              2 * n +
+                concreteBPNativeSuccinctRMQOverhead
+                  relativeSplitSparseExceptionBPCloseAccessOverhead n) /\
+        (forall shape left right,
+          (concreteBPNativeSuccinctRMQQueryCosted
+            accessFamily shape left right).cost <=
+              concreteBPNativeSuccinctRMQQueryCost
+                SuccinctSelectProposal.sparseDenseFalseSelectQueryCost) /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            forall {left len : Nat},
+              0 < len ->
+                left + len <= n ->
+                  (concreteBPNativeSuccinctRMQQueryCosted
+                    accessFamily shape left (left + len)).erase =
+                    some (scanWindow shape.representative left len)) := by
+  have htotal :=
+    builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile
+  dsimp only at htotal ⊢
+  constructor
+  · exact htotal.1
+  · intro n
+    constructor
+    · have hcanonical :
+          EncodingLowerBound.doubledLogSlackLower n <= 2 * (2 * n) :=
+        (EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack
+          n).1 (EncodingLowerBound.canonicalRepresentativeStateEncoding n)
+      have hmono :
+          2 * (2 * n) <=
+            2 *
+              (2 * n +
+                concreteBPNativeSuccinctRMQOverhead
+                  relativeSplitSparseExceptionBPCloseAccessOverhead n) := by
+        omega
+      exact Nat.le_trans hcanonical hmono
+    · exact htotal.2 n
+
 end SuccinctFinal
 end RMQ

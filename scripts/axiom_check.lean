@@ -1,6 +1,7 @@
 import RMQ
 import RMQ.Core.EncodingLowerBound
 import RMQ.Core.LowerBound
+import RMQ.Core.SuccinctFinal
 
 /-!
 Curated trust-base check for the acceptance gate.
@@ -383,6 +384,7 @@ claims that matter, not every local arithmetic helper.
 #print axioms RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile_of_rankSelectFamily
 #print axioms RMQ.SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
 #print axioms RMQ.SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile
+#print axioms RMQ.SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile
 #print axioms RMQ.SuccinctSpace.BPBroadwordSuccinctRMQFamily.two_n_plus_o_constant_query_profile
 #print axioms RMQ.SuccinctSpace.ComponentizedBPRMQFamily.two_n_plus_o_constant_query_profile
 #print axioms RMQ.Succinct.lcaCandidateOfEulerParensBackend_isPathLCA_of_labelsUnique

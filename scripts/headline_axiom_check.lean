@@ -1,5 +1,6 @@
 import RMQ
 import RMQ.Core.EncodingLowerBound
+import RMQ.Core.SuccinctFinal
 
 /-!
 Concise trust-base check for the public headline path.
@@ -25,3 +26,4 @@ the BP-native succinct capstone.
 #print axioms RMQ.SuccinctFinal.builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily_profile
 #print axioms RMQ.SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
 #print axioms RMQ.SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile
+#print axioms RMQ.SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile

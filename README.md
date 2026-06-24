@@ -3,8 +3,9 @@
 **TL;DR:** We used Lean to machine-check that range-minimum queries can be
 answered exactly in constant modeled time while storing only `2*n + o(n)` bits
 of Cartesian-shape data, essentially two bits per array element. The same
-development also proves the matching `2*n - O(log n)` information-theoretic
-lower bound, so the leading space term is formally optimal.
+development also proves the matching information-theoretic lower bound with
+the coefficient-correct `2n - 1.5 log n - O(1)` Catalan slack, so the leading
+space term is formally optimal.
 
 A standalone Lean 4 formalization project for reusable range-minimum query
 correctness, cost, reduction, lower-bound, and succinct-space results.
@@ -66,12 +67,15 @@ It proves a common half-open, leftmost-argmin contract for:
 - a certified raw microtable backend over Cartesian shapes, and
 - value-level Fischer-Heun backends, including an exact all-input wrapper.
 
-The headline succinct theorem is
-`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile`:
+The headline succinct theorem is the two-sided capstone
+`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`:
 for Cartesian-shape RMQ, the stored payload is the exact balanced-parentheses
 shape code plus `o(n)` auxiliary bits, and every valid half-open query is exact
 with a uniform constant modeled cost through the concrete false-close/select
-access family and compact BP close/LCA directory.
+access family and compact BP close/LCA directory. The same theorem also exposes
+the sharpened lower side
+`4*n - (3*log2(2*n+1)+3) <= 2*bits`, pairing the concrete upper structure with
+the coefficient-correct Catalan slack in one citeable surface.
 
 The hybrid proof is already factored through a generic three-piece combinator:
 an exact nonempty left boundary, an optional middle interval, and an optional
