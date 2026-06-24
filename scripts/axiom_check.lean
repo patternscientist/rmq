@@ -36,6 +36,7 @@ claims that matter, not every local arithmetic helper.
 #print axioms RMQ.EncodingLowerBound.canonicalRepresentativePayloadSpaceBounds_lower_le_upper
 #print axioms RMQ.EncodingLowerBound.exactRMQ_two_sided_log_slack_space_bound
 #print axioms RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound
+#print axioms RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack
 #print axioms RMQ.LowerBound.domain_length_le_two_pow_of_lossless_encoding
 #print axioms RMQ.LowerBound.count_log_lower_of_quadratic_bound
 #print axioms RMQ.LowerBound.two_mul_bits_lower_of_count_square_lower_bound

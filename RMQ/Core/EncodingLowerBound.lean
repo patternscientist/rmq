@@ -1870,6 +1870,51 @@ theorem exactRMQ_tight_fixed_length_payload_space_bound
         intro shape hshape
         exact canonicalRepresentative_payloadBitCount_eq_two_mul hshape⟩
 
+/--
+Coefficient-correct doubled Catalan-slack payload-space package.
+
+The lower side is stated without rational arithmetic:
+`doubledLogSlackLower n <= 2 * bits`, and the same doubled lower bound applies
+to any uniform charged payload budget. The upper side is the concrete canonical
+representative decoder: it stores exactly `2*n` payload bits for every shape, so
+the doubled counted payload is exactly `2 * (2*n)`.
+-/
+theorem exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack
+    (n : Nat) :
+    (forall {bits : Nat}, ExactRMQStateEncoding n bits ->
+        doubledLogSlackLower n <= 2 * bits) /\
+      (forall {bits budget : Nat}
+          (encoding : ExactRMQStateEncoding n bits)
+          {shape : Cartesian.CartesianShape},
+        List.Mem shape (Cartesian.shapesOfSize n) ->
+          (forall {shape : Cartesian.CartesianShape},
+            List.Mem shape (Cartesian.shapesOfSize n) ->
+              (encoding.payloadView).payloadBitCount
+                (encoding.buildState shape) <= budget) ->
+          doubledLogSlackLower n <= 2 * budget) /\
+      (exists encoding : ExactRMQStateEncoding n (2 * n),
+        forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            (encoding.payloadView).payloadBitCount
+                (encoding.buildState shape) = 2 * n /\
+              2 *
+                (encoding.payloadView).payloadBitCount
+                  (encoding.buildState shape) = 2 * (2 * n)) := by
+  constructor
+  · intro bits encoding
+    simpa [doubledLogSlackLower] using
+      four_mul_sub_three_log_slack_le_two_mul_bits_of_exactRMQStateEncoding_payloadView
+        encoding
+  · constructor
+    · intro bits budget encoding shape hshape hbudget
+      exact doubledLogSlackLower_le_two_mul_budget_of_exactRMQStateEncoding
+        encoding hshape hbudget
+    · exact ⟨canonicalRepresentativeStateEncoding n, by
+        intro shape hshape
+        have hpayload :=
+          canonicalRepresentative_payloadBitCount_eq_two_mul hshape
+        exact ⟨hpayload, by rw [hpayload]⟩⟩
+
 end EncodingLowerBound
 
 end RMQ
