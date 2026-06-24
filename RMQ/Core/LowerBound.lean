@@ -208,6 +208,35 @@ theorem odd_square_le_two_pow_log_slack (n : Nat) :
     omega
   simpa [width, hpow] using hsquare
 
+/--
+The cube of the odd width `2*n+1` fits in a logarithmic power-of-two budget.
+This is the arithmetic slack used by squared Catalan-style lower bounds; the
+coefficient `3` is the doubled-bit form of the `3/2 * log n` Catalan slack.
+-/
+theorem odd_cubic_le_two_pow_log_slack (n : Nat) :
+    (2 * n + 1) * (2 * n + 1) * (2 * n + 1) <=
+      2 ^ (3 * Nat.log2 (2 * n + 1) + 3) := by
+  let width := 2 * n + 1
+  have hlt : width < 2 ^ (Nat.log2 width + 1) :=
+    Nat.lt_log2_self (n := width)
+  have hle : width <= 2 ^ (Nat.log2 width + 1) :=
+    Nat.le_of_lt hlt
+  have hcube :
+      width * width * width <=
+        2 ^ (Nat.log2 width + 1) *
+          2 ^ (Nat.log2 width + 1) *
+            2 ^ (Nat.log2 width + 1) := by
+    exact Nat.mul_le_mul (Nat.mul_le_mul hle hle) hle
+  have hpow :
+      2 ^ (Nat.log2 width + 1) *
+          2 ^ (Nat.log2 width + 1) *
+            2 ^ (Nat.log2 width + 1) =
+        2 ^ (3 * Nat.log2 width + 3) := by
+    rw [<- Nat.pow_add, <- Nat.pow_add]
+    congr 1
+    omega
+  simpa [width, hpow] using hcube
+
 theorem two_pow_sub_le_of_le_mul_pow
     {total slack count : Nat}
     (hbound : 2 ^ total <= 2 ^ slack * count) :
@@ -264,6 +293,74 @@ theorem count_log_lower_of_quadratic_bound
       (slack := slack)
       (count := count)
       hbound
+
+/--
+Squared-count lower-bound bridge.
+
+If `count` objects inject into `bits` bits and a counting proof gives
+`2^total <= poly * count^2`, then any logarithmic upper bound
+`poly <= 2^slack` yields the doubled-bit lower bound
+`total - slack <= 2 * bits`.
+-/
+theorem two_mul_bits_lower_of_count_square_lower_bound
+    {count bits total slack poly : Nat}
+    (hcapacity : count <= 2 ^ bits)
+    (hpoly : poly <= 2 ^ slack)
+    (hcount_square_lower : 2 ^ total <= poly * (count * count)) :
+    total - slack <= 2 * bits := by
+  have hcount_square :
+      count * count <= 2 ^ bits * 2 ^ bits :=
+    Nat.mul_le_mul hcapacity hcapacity
+  have hcount_square_pow :
+      2 ^ bits * 2 ^ bits = 2 ^ (2 * bits) := by
+    rw [<- Nat.pow_add]
+    congr 1
+    omega
+  have hpoly_count :
+      poly * (count * count) <= 2 ^ slack * 2 ^ (2 * bits) := by
+    calc
+      poly * (count * count) <= 2 ^ slack * (count * count) :=
+        Nat.mul_le_mul_right (count * count) hpoly
+      _ <= 2 ^ slack * (2 ^ bits * 2 ^ bits) :=
+        Nat.mul_le_mul_left (2 ^ slack) hcount_square
+      _ = 2 ^ slack * 2 ^ (2 * bits) := by
+        rw [hcount_square_pow]
+  have hpow_mul :
+      2 ^ total <= 2 ^ slack * 2 ^ (2 * bits) :=
+    Nat.le_trans hcount_square_lower hpoly_count
+  have hpow :
+      2 ^ total <= 2 ^ (slack + 2 * bits) := by
+    simpa [Nat.pow_add] using hpow_mul
+  have htotal :
+      total <= slack + 2 * bits :=
+    (Nat.pow_le_pow_iff_right
+      (a := 2) (n := total) (m := slack + 2 * bits) (by omega)).mp hpow
+  omega
+
+/--
+Width-specialized squared Catalan bridge.
+
+This is the no-rational arithmetic form used by RMQ: a cubic-square count
+theorem with width `2*n+1` and the ordinary fixed-length capacity bound imply
+`4*n - (3*log2(2*n+1)+3) <= 2*bits`.
+-/
+theorem two_mul_bits_lower_of_cubic_square_bound
+    {n count bits : Nat}
+    (hcapacity : count <= 2 ^ bits)
+    (hcubic :
+      2 ^ (4 * n) <=
+        ((2 * n + 1) * (2 * n + 1) * (2 * n + 1)) *
+          (count * count)) :
+    4 * n - (3 * Nat.log2 (2 * n + 1) + 3) <= 2 * bits :=
+  two_mul_bits_lower_of_count_square_lower_bound
+    (count := count)
+    (bits := bits)
+    (total := 4 * n)
+    (slack := 3 * Nat.log2 (2 * n + 1) + 3)
+    (poly := (2 * n + 1) * (2 * n + 1) * (2 * n + 1))
+    hcapacity
+    (odd_cubic_le_two_pow_log_slack n)
+    hcubic
 
 end LowerBound
 

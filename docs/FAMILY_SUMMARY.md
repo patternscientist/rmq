@@ -52,8 +52,10 @@ separate appendix.
   payload-budget lower bounds.
 - Lower-bound layer: fixed-length lossless Cartesian-shape capacity theorem,
   exact-RMQ-decoder bridge, Mathlib-free Remy-style proof of
-  `2^(2*n) <= (2*n+1)^2 * shapeCount n`, and the resulting no-premise
-  logarithmic-slack bit lower bound. A canonical representative state encoding
+  `2^(2*n) <= (2*n+1)^2 * shapeCount n`, the resulting no-premise
+  logarithmic-slack bit lower bound, and the squared Catalan bridge
+  `4*n - (3*log2(2*n+1)+3) <= 2*bits` from
+  `shapeCount_cubic_square_lower`. A canonical representative state encoding
   now instantiates the abstract state-encoding adapter, and
   `Impl.FischerHeun` adds a Fischer-Heun-shaped state encoder that separates
   counted payload bits from proof-only built-state fields. The
@@ -186,7 +188,7 @@ flowchart TD
 | Hybrid block | Exact public hybrid backend with boundary scans and sparse middle summaries. | No first-class cost profile yet. | Useful proof predecessor for the recursive and Fischer-Heun schedules. |
 | Recursive hybrid | Exact public recursive backend via `recurseOnSummary`. | Build recurrence solved: `buildCost xs <= 2 * xs.length`; query-step costed erasure and cost formula with supplied summary query. | End-to-end recursive query bound is still not the flagship result; Fischer-Heun now carries the constant-query story. |
 | Shape and microtable core | Shape/RMQ behavior equivalence, exact fixed-size shape signatures, recursive canonical representative arrays, shape universe count, certified raw local microtable, exact in-block backend. | Raw shape lookup cost bounded by `blockSize + 1`; shape count bounded by Catalan envelope `shapeCount b <= 4^b`. | The local theorem is now consumed by `Impl.FischerHeun`; representative arrays now provide concrete shape witnesses for lower-bound interfaces. |
-| Encoding lower-bound scaffold | `Core.LowerBound` factors the generic finite bitstring universe, finite-domain lossless encoding interface, injection/capacity theorem, and logarithmic-slack arithmetic bridge. `Core.PayloadLowerBound` adds the reusable adapter from payload-accounted built states to fixed-length lossless encodings, plus `PayloadSpaceBounds` for two-sided finite-domain payload-space packages. `Core.EncodingLowerBound` instantiates that hub layer for Cartesian shapes: fixed-length lossless shape encodings must have at least `shapeCount n` available bitstrings; exact RMQ query decoders over representative arrays induce such encodings; and a Remy-style insertion/counting proof establishes `2^(2*n) <= (2*n+1)^2 * shapeCount n`, yielding the concrete no-premise `2*n - (2*log2(2*n+1)+2)` bit lower bound. The strengthened theorem `shapeCount_cubic_square_lower` now proves the squared count `2^(4*n) <= (2*n+1)^3 * shapeCount n^2`, the integer-arithmetic form needed to push the Catalan slack toward the exact `1.5*log n` shape once the logarithmic square-root bridge is added. Concrete state encodings adapt through `ExactRMQStateEncoding`, the baseline canonical representative payload instantiates it, and `Impl.FischerHeun.stateEncoding` gives a one-block Fischer-Heun-shaped instance. `ExactRMQSpaceBounds`, `canonicalRepresentativeSpaceBounds`, and `exactRMQ_two_sided_log_slack_space_bound` package the coarse fixed-length lower/upper sandwich; `exactRMQ_tight_fixed_length_payload_space_bound` is the sharper capstone, combining the state-encoding lower bound, uniform charged-payload budget lower bound, and an exact `2*n`-bit canonical upper witness. | No runtime cost model; this is information-theoretic capacity. `PayloadLosslessEncoding.payloadBitCount_ge_bits_of_mem` relates charged payload counts to fixed payload length without identifying them by default, while `lower_le_budget_of_payload_lossless_encoding` and `PayloadSpaceBounds.lower_le_budget` lift count lower bounds to any uniform charged payload budget. | The fixed-length concrete instances store the explicit preorder shape payload of length `2*n`; they are exact, non-vacuous upper witnesses. The BP-native succinct capstone is the stronger constant-query `2*n + o(n)` upper-bound profile under the stated model. |
+| Encoding lower-bound scaffold | `Core.LowerBound` factors the generic finite bitstring universe, finite-domain lossless encoding interface, injection/capacity theorem, logarithmic-slack arithmetic bridge, and squared-count doubled-bit bridge. `Core.PayloadLowerBound` adds the reusable adapter from payload-accounted built states to fixed-length lossless encodings, plus `PayloadSpaceBounds` for two-sided finite-domain payload-space packages. `Core.EncodingLowerBound` instantiates that hub layer for Cartesian shapes: fixed-length lossless shape encodings must have at least `shapeCount n` available bitstrings; exact RMQ query decoders over representative arrays induce such encodings; and a Remy-style insertion/counting proof establishes `2^(2*n) <= (2*n+1)^2 * shapeCount n`, yielding the concrete no-premise `2*n - (2*log2(2*n+1)+2)` bit lower bound. The strengthened theorem `shapeCount_cubic_square_lower` proves the squared count `2^(4*n) <= (2*n+1)^3 * shapeCount n^2`; `four_mul_sub_three_log_slack_le_two_mul_bits_of_exactRMQStateEncoding_payloadView` consumes it with the fixed-length payload capacity theorem to expose the coefficient-correct doubled statement `4*n - (3*log2(2*n+1)+3) <= 2*bits`. Concrete state encodings adapt through `ExactRMQStateEncoding`, the baseline canonical representative payload instantiates it, and `Impl.FischerHeun.stateEncoding` gives a one-block Fischer-Heun-shaped instance. `ExactRMQSpaceBounds`, `canonicalRepresentativeSpaceBounds`, and `exactRMQ_two_sided_log_slack_space_bound` package the coarse fixed-length lower/upper sandwich; `exactRMQ_tight_fixed_length_payload_space_bound` is the sharper capstone, combining the state-encoding lower bound, uniform charged-payload budget lower bound, and an exact `2*n`-bit canonical upper witness. | No runtime cost model; this is information-theoretic capacity. `PayloadLosslessEncoding.payloadBitCount_ge_bits_of_mem` relates charged payload counts to fixed payload length without identifying them by default; `doubledLogSlackLower_le_two_mul_payloadBitCount_of_exactRMQStateEncoding` and `doubledLogSlackLower_le_two_mul_budget_of_exactRMQStateEncoding` provide the analogous doubled-bit charged-payload and uniform-budget forms for the Catalan slack API. | The fixed-length concrete instances store the explicit preorder shape payload of length `2*n`; they are exact, non-vacuous upper witnesses. The BP-native succinct capstone is the stronger constant-query `2*n + o(n)` upper-bound profile under the stated model. |
 | Fischer-Heun value backend | `State` carries block size, raw microtable, block-minimum summary, a List reference summary sparse table, and a `Refine.StoredMatrix` Array representation refining it. `SummaryTableRefines` records when a supplied state carries the canonical memoized sparse table for an input, and `liftedSummaryStoredQuery_refines_recursiveMiddle_with_steps` proves the stored middle leg refines the recursive middle candidate with at most seven traced steps. `StoredMicrotableView` reads a stored block signature and then a shape/query slot; exact-input and padded-input stored views are proved extensionally equal to the supplied state's certified local microtable when the block index is in range. `queryWithState` composes padded local microtable lookups for same-block/boundary windows with the recursive-middle summary query. Exactness, soundness, completeness, invalid rejection, backend wrappers, and an all-input wrapper are proved. | `buildWithBlockSizeCosted` erases to `buildWithBlockSize` and costs exactly `buildCost`; the raw microtable build folds over shape rows and local-query slots; `queryWithStateCosted` now charges stored signature/slot microtable reads, the stored Array-backed summary sparse-table query, and combines; fresh-query and all-input cost/run theorems compose both costs. Positive-block supplied query cost is bounded by `13`; `fischerHeun_refines_with_steps` bundles supplied-query value refinement with the large-regime constant query bound, and `fischerHeun_fresh_refines_with_build_query_steps_of_large` bundles fresh-query value refinement with `buildCost <= 15 * xs.length` and total fresh cost `<= 15 * xs.length + 13`. | The supplied-query budget is an upper bound because the traced sparse-table query may do fewer than seven steps when a candidate is absent. The all-input wrapper is exact and costed, with linear scan outside the large canonical regime. |
 | Fischer-Heun cost profile | Correctness-independent counting/cost assumptions are packaged as theorem premises and canonical corollaries. | `buildCost <= 15 * xs.length`; supplied query budget `<= 13`; canonical theorem discharges budgets when `16 <= canonicalBlockSize xs`. | Cost claims are scoped to the RAM/unit-cost indexed-access model. |
 | LCA from RMQ | Generated Euler trace plus `TracePathAgreement` turns an exact RMQ backend over depths into an exact `LCABackend`; unique labels discharge trace/path agreement structurally. `LabelsBoundedBySize` and `DenseNatLabels` now name the dense/preindexed node-ID regime used by cost headlines without removing arbitrary-label correctness. The generated Euler-parentheses plus-minus-one input has a dedicated LCA adapter, including the concrete packed PM1 backend. `Impl.LCAFischerHeun` instantiates the bridge with canonical and all-input Fischer-Heun RMQ backends. | `Impl.LCACost` gives costed Euler-trace construction, the original abstract supplied-backend query wrapper, an explicit indexed-access LCA-via-RMQ query path, and an Euler-parentheses plus-minus-one wrapper over that path. `queryViaPackedEulerParensRMQIndexedCosted_refines_with_steps_of_labelsUnique` specializes this route to the packed PM1 backend with path-LCA soundness and cost `<= 4`. The detailed path uniformly costs at most two first-occurrence reads, one supplied RMQ query, and one returned-node read; successful first-occurrence lookups give an exact cost equation. The earlier association-list first-occurrence path has been retired; the cost headline uses the direct-address dense first-occurrence table. The dense table has a counted RAM builder with value erasure to the direct rows and step bound `labelsPreorder.length + 1 + 3 * eulerTrace.nodes.length`; Euler node/depth Array views now share the generic `RAM.arrayOfList` builder. `Impl.LCAFischerHeun` proves trace-read, dense built-state, first-occurrence-build-plus-dense-query, full dense component-preprocessing-plus-query path-LCA capstones, and the normalized `denseLCA_linearBuild_constantQuery_profile` with preprocessing cost bounded by `22 * eulerTrace.nodes.length + 3`, large-regime query cost `<= 16`, and combined cost bounded by that linear budget plus `16`. | The association-list cost wrapper and LCA capstones were retired because lookup is linear. The dense preprocessing theorem is an assembled component-budget theorem rather than one monolithic `RAM.Exec` program. The packed PM1 LCA route is still supplied-query/table-model level, not yet a BP-native LCA structure. |
@@ -721,8 +723,10 @@ descriptor fact.
   padded local microtable lookups, so positive-block supplied queries are now
   bounded by a constant.
 - The lower-bound scaffold works at the Cartesian-shape encoding level and now
-  includes the exact-RMQ-decoder bridge, the quadratic Catalan count, and the
-  unconditional fixed-length exact-RMQ `2*n - O(log n)` bit lower bound.
+  includes the exact-RMQ-decoder bridge, the quadratic Catalan count, the
+  unconditional fixed-length exact-RMQ `2*n - O(log n)` bit lower bound, and the
+  doubled-bit cubic-square bridge
+  `4*n - (3*log2(2*n+1)+3) <= 2*bits`.
 - The concrete canonical representative state encoding uses the explicit
   preorder shape payload of length `2*n` and decodes it back to a shape before
   scanning the canonical representative array. It is intentionally a simple
@@ -785,7 +789,9 @@ descriptor fact.
   `LowerBound.LosslessEncoding`,
   `LowerBound.domain_length_le_two_pow_of_lossless_encoding`,
   `LowerBound.lower_le_bits_of_count_lower_bound`,
-  `LowerBound.count_log_lower_of_quadratic_bound`.
+  `LowerBound.count_log_lower_of_quadratic_bound`,
+  `LowerBound.two_mul_bits_lower_of_count_square_lower_bound`,
+  `LowerBound.two_mul_bits_lower_of_cubic_square_bound`.
 - `RMQ/Core/PayloadLowerBound.lean`:
   `LowerBound.PayloadLosslessEncoding`,
   `LowerBound.PayloadLosslessEncoding.toLosslessEncoding`,
@@ -807,7 +813,7 @@ descriptor fact.
 - `RMQ/Core/EncodingLowerBound.lean`: `LosslessShapeEncoding`,
   `ExactRMQShapeEncoding`,
   `ExactRMQStateEncoding`,
-  `ExactRMQSpaceBounds`, `logSlackLower`,
+  `ExactRMQSpaceBounds`, `logSlackLower`, `doubledLogSlackLower`,
   `losslessShapeEncoding_of_exactRMQShapeEncoding`,
   `losslessShapeEncoding_of_exactRMQStateEncoding`,
   `canonicalShapePayload`, `fullCodeOfPayload`, `decodeShapePayload?`,
@@ -1140,13 +1146,16 @@ The names below are grouped by source module. Repeated base names in
   `CartesianShape.fullCode_tail_length_of_shapeOfSize`,
   `shapeCount_le_four_pow`, `shapeRange_shapeOfSize`, `shape_shapeOfSize`,
   `blockSignature_shapeOfSize`.
-- `RMQ/Core/LowerBound.lean` (8): `bitStrings_length`,
+- `RMQ/Core/LowerBound.lean` (11): `bitStrings_length`,
   `mem_bitStrings_of_length`, `length_le_of_nodup_injective_into`,
   `domain_length_le_two_pow_of_lossless_encoding`,
   `lower_le_bits_of_count_lower_bound`,
   `odd_square_le_two_pow_log_slack`,
+  `odd_cubic_le_two_pow_log_slack`,
   `two_pow_sub_le_of_le_mul_pow`,
-  `count_log_lower_of_quadratic_bound`.
+  `count_log_lower_of_quadratic_bound`,
+  `two_mul_bits_lower_of_count_square_lower_bound`,
+  `two_mul_bits_lower_of_cubic_square_bound`.
 - `RMQ/Core/PayloadLowerBound.lean` (20):
   `LowerBound.PayloadLosslessEncoding.ofLosslessEncoding_payloadBits`,
   `LowerBound.PayloadLosslessEncoding.ofLosslessEncoding_payloadBitCount`,
@@ -1168,7 +1177,7 @@ The names below are grouped by source module. Repeated base names in
   `LowerBound.PayloadSpaceBounds.lower_le_budget`,
   `LowerBound.PayloadSpaceBounds.upper_domain_length_le_two_pow`,
   `LowerBound.PayloadSpaceBounds.lower_le_upper`.
-- `RMQ/Core/EncodingLowerBound.lean` (40): `bitStrings_length`,
+- `RMQ/Core/EncodingLowerBound.lean` (50): `bitStrings_length`,
   `mem_bitStrings_of_length`, `length_le_of_nodup_injective_into`,
   `fullCodeOfPayload_canonicalShapePayload`,
   `decodeShapePayload?_canonicalShapePayload`,
@@ -1190,14 +1199,24 @@ The names below are grouped by source module. Repeated base names in
   `two_mul_sub_slack_le_bits_of_exactRMQShapeEncoding`,
   `two_mul_sub_log_slack_le_bits_of_exactRMQShapeEncoding_of_quadratic_bound`,
   `two_mul_sub_log_slack_le_bits_of_exactRMQShapeEncoding`,
+  `four_mul_sub_three_log_slack_le_two_mul_bits_of_losslessShapeEncoding_of_cubic_square_bound`,
+  `four_mul_sub_three_log_slack_le_two_mul_bits_of_losslessShapeEncoding`,
+  `four_mul_sub_three_log_slack_le_two_mul_bits_of_exactRMQShapeEncoding_of_cubic_square_bound`,
+  `four_mul_sub_three_log_slack_le_two_mul_bits_of_exactRMQShapeEncoding`,
   `shapeCount_le_two_pow_of_exactRMQStateEncoding`,
   `shapeCount_le_two_pow_of_exactRMQStateEncoding_payloadView`,
   `two_mul_sub_log_slack_le_bits_of_exactRMQStateEncoding`,
   `two_mul_sub_log_slack_le_bits_of_exactRMQStateEncoding_payloadView`,
   `two_mul_sub_log_slack_le_payloadBits_of_exactRMQStateEncoding`,
+  `four_mul_sub_three_log_slack_le_two_mul_bits_of_exactRMQStateEncoding`,
+  `four_mul_sub_three_log_slack_le_two_mul_bits_of_exactRMQStateEncoding_payloadView`,
+  `four_mul_sub_three_log_slack_le_two_mul_payloadBits_of_exactRMQStateEncoding`,
   `two_mul_sub_log_slack_le_bits_of_canonicalRepresentativeStateEncoding`,
+  `four_mul_sub_three_log_slack_le_two_mul_bits_of_canonicalRepresentativeStateEncoding`,
   `logSlackLower_le_payloadBitCount_of_exactRMQStateEncoding`,
   `logSlackLower_le_budget_of_exactRMQStateEncoding`,
+  `doubledLogSlackLower_le_two_mul_payloadBitCount_of_exactRMQStateEncoding`,
+  `doubledLogSlackLower_le_two_mul_budget_of_exactRMQStateEncoding`,
   `canonicalRepresentative_payloadBitCount_eq_two_mul`,
   `canonicalRepresentativePayloadSpaceBounds_lower_le_bits`,
   `canonicalRepresentativePayloadSpaceBounds_lower_le_budget`,

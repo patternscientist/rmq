@@ -1492,6 +1492,64 @@ theorem two_mul_sub_log_slack_le_bits_of_exactRMQShapeEncoding
     encoding
     (shapeCount_quadratic_lower n)
 
+/--
+Squared-count Catalan slack bridge for lossless Cartesian-shape encodings.
+
+The theorem consumes an external cubic-square count theorem and the ordinary
+capacity bound for the fixed-length shape encoding.  The conclusion is stated
+in doubled bits, avoiding rational arithmetic while exposing the coefficient
+`3` on the logarithmic slack.
+-/
+theorem four_mul_sub_three_log_slack_le_two_mul_bits_of_losslessShapeEncoding_of_cubic_square_bound
+    {n bits : Nat} (encoding : LosslessShapeEncoding n bits)
+    (hcubic :
+      2 ^ (4 * n) <=
+        ((2 * n + 1) * (2 * n + 1) * (2 * n + 1)) *
+          (Cartesian.shapeCount n * Cartesian.shapeCount n)) :
+    4 * n - (3 * Nat.log2 (2 * n + 1) + 3) <= 2 * bits :=
+  LowerBound.two_mul_bits_lower_of_cubic_square_bound
+    (shapeCount_le_two_pow_of_lossless_shape_encoding encoding)
+    hcubic
+
+/--
+No-premise doubled-bit Catalan slack lower bound for lossless Cartesian-shape
+encodings.  This instantiates the squared-count bridge with
+`shapeCount_cubic_square_lower`.
+-/
+theorem four_mul_sub_three_log_slack_le_two_mul_bits_of_losslessShapeEncoding
+    {n bits : Nat} (encoding : LosslessShapeEncoding n bits) :
+    4 * n - (3 * Nat.log2 (2 * n + 1) + 3) <= 2 * bits :=
+  four_mul_sub_three_log_slack_le_two_mul_bits_of_losslessShapeEncoding_of_cubic_square_bound
+    encoding
+    (shapeCount_cubic_square_lower n)
+
+/--
+Squared-count Catalan slack bridge specialized to exact fixed-length RMQ shape
+encodings.
+-/
+theorem four_mul_sub_three_log_slack_le_two_mul_bits_of_exactRMQShapeEncoding_of_cubic_square_bound
+    {n bits : Nat} (encoding : ExactRMQShapeEncoding n bits)
+    (hcubic :
+      2 ^ (4 * n) <=
+        ((2 * n + 1) * (2 * n + 1) * (2 * n + 1)) *
+          (Cartesian.shapeCount n * Cartesian.shapeCount n)) :
+    4 * n - (3 * Nat.log2 (2 * n + 1) + 3) <= 2 * bits :=
+  four_mul_sub_three_log_slack_le_two_mul_bits_of_losslessShapeEncoding_of_cubic_square_bound
+    (losslessShapeEncoding_of_exactRMQShapeEncoding encoding)
+    hcubic
+
+/--
+Coefficient-correct Catalan information-theoretic lower bound for exact
+fixed-length RMQ shape encodings, stated without rational arithmetic:
+`4*n - (3*log2(2*n+1)+3) <= 2*bits`.
+-/
+theorem four_mul_sub_three_log_slack_le_two_mul_bits_of_exactRMQShapeEncoding
+    {n bits : Nat} (encoding : ExactRMQShapeEncoding n bits) :
+    4 * n - (3 * Nat.log2 (2 * n + 1) + 3) <= 2 * bits :=
+  four_mul_sub_three_log_slack_le_two_mul_bits_of_exactRMQShapeEncoding_of_cubic_square_bound
+    encoding
+    (shapeCount_cubic_square_lower n)
+
 theorem shapeCount_le_two_pow_of_exactRMQStateEncoding
     {n bits : Nat} (encoding : ExactRMQStateEncoding n bits) :
     Cartesian.shapeCount n <= 2 ^ bits :=
@@ -1540,10 +1598,43 @@ theorem two_mul_sub_log_slack_le_payloadBits_of_exactRMQStateEncoding
     2 * n - (2 * Nat.log2 (2 * n + 1) + 2) <= bits :=
   two_mul_sub_log_slack_le_bits_of_exactRMQStateEncoding encoding
 
+theorem four_mul_sub_three_log_slack_le_two_mul_bits_of_exactRMQStateEncoding
+    {n bits : Nat} (encoding : ExactRMQStateEncoding n bits) :
+    4 * n - (3 * Nat.log2 (2 * n + 1) + 3) <= 2 * bits :=
+  four_mul_sub_three_log_slack_le_two_mul_bits_of_exactRMQShapeEncoding
+    (exactRMQShapeEncoding_of_stateEncoding encoding)
+
+/--
+Payload-view route for the doubled-bit Catalan slack lower bound.  This keeps
+the RMQ statement connected to the generic payload-accounted finite-domain API.
+-/
+theorem four_mul_sub_three_log_slack_le_two_mul_bits_of_exactRMQStateEncoding_payloadView
+    {n bits : Nat} (encoding : ExactRMQStateEncoding n bits) :
+    4 * n - (3 * Nat.log2 (2 * n + 1) + 3) <= 2 * bits :=
+  LowerBound.two_mul_bits_lower_of_cubic_square_bound
+    (shapeCount_le_two_pow_of_exactRMQStateEncoding_payloadView encoding)
+    (shapeCount_cubic_square_lower n)
+
+/--
+Payload-bit spelling of the doubled-bit Catalan slack lower bound for paper-facing
+fixed-length state-encoding statements.
+-/
+theorem four_mul_sub_three_log_slack_le_two_mul_payloadBits_of_exactRMQStateEncoding
+    {n bits : Nat} (encoding : ExactRMQStateEncoding n bits) :
+    4 * n - (3 * Nat.log2 (2 * n + 1) + 3) <= 2 * bits :=
+  four_mul_sub_three_log_slack_le_two_mul_bits_of_exactRMQStateEncoding
+    encoding
+
 theorem two_mul_sub_log_slack_le_bits_of_canonicalRepresentativeStateEncoding
     (n : Nat) :
     2 * n - (2 * Nat.log2 (2 * n + 1) + 2) <= 2 * n :=
   two_mul_sub_log_slack_le_bits_of_exactRMQStateEncoding
+    (canonicalRepresentativeStateEncoding n)
+
+theorem four_mul_sub_three_log_slack_le_two_mul_bits_of_canonicalRepresentativeStateEncoding
+    (n : Nat) :
+    4 * n - (3 * Nat.log2 (2 * n + 1) + 3) <= 2 * (2 * n) :=
+  four_mul_sub_three_log_slack_le_two_mul_bits_of_exactRMQStateEncoding
     (canonicalRepresentativeStateEncoding n)
 
 /--
@@ -1562,6 +1653,10 @@ structure ExactRMQSpaceBounds (n lower upper : Nat) where
 /-- The logarithmic-slack lower expression from the Catalan/RMQ lower bound. -/
 def logSlackLower (n : Nat) : Nat :=
   2 * n - (2 * Nat.log2 (2 * n + 1) + 2)
+
+/-- The doubled-bit Catalan slack lower expression from the cubic-square count. -/
+def doubledLogSlackLower (n : Nat) : Nat :=
+  4 * n - (3 * Nat.log2 (2 * n + 1) + 3)
 
 /--
 Charged-payload form of the exact RMQ lower bound.
@@ -1603,6 +1698,50 @@ theorem logSlackLower_le_budget_of_exactRMQStateEncoding
     (logSlackLower_le_payloadBitCount_of_exactRMQStateEncoding
       encoding hshape)
     (hbudget hshape)
+
+/--
+Charged-payload form of the coefficient-correct Catalan slack lower bound.
+The conclusion is doubled to avoid rational arithmetic:
+`doubledLogSlackLower n <= 2 * payloadBitCount`.
+-/
+theorem doubledLogSlackLower_le_two_mul_payloadBitCount_of_exactRMQStateEncoding
+    {n bits : Nat} (encoding : ExactRMQStateEncoding n bits)
+    {shape : Cartesian.CartesianShape}
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n)) :
+    doubledLogSlackLower n <=
+      2 *
+        (encoding.payloadView).payloadBitCount
+          (encoding.buildState shape) := by
+  have hlower :
+      doubledLogSlackLower n <= 2 * bits := by
+    simpa [doubledLogSlackLower] using
+      four_mul_sub_three_log_slack_le_two_mul_bits_of_exactRMQStateEncoding_payloadView
+        encoding
+  have hbits :
+      bits <=
+        (encoding.payloadView).payloadBitCount
+          (encoding.buildState shape) :=
+    encoding.payloadBitCount_ge_bits_of_mem hshape
+  exact Nat.le_trans hlower (Nat.mul_le_mul_left 2 hbits)
+
+theorem doubledLogSlackLower_le_two_mul_budget_of_exactRMQStateEncoding
+    {n bits budget : Nat} (encoding : ExactRMQStateEncoding n bits)
+    {shape : Cartesian.CartesianShape}
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n))
+    (hbudget :
+      forall {shape : Cartesian.CartesianShape},
+        List.Mem shape (Cartesian.shapesOfSize n) ->
+          (encoding.payloadView).payloadBitCount
+            (encoding.buildState shape) <= budget) :
+    doubledLogSlackLower n <= 2 * budget := by
+  have hlower :
+      doubledLogSlackLower n <=
+        2 *
+          (encoding.payloadView).payloadBitCount
+            (encoding.buildState shape) :=
+    doubledLogSlackLower_le_two_mul_payloadBitCount_of_exactRMQStateEncoding
+      encoding hshape
+  exact Nat.le_trans hlower (Nat.mul_le_mul_left 2 (hbudget hshape))
 
 theorem canonicalRepresentative_payloadBitCount_eq_two_mul
     {n : Nat} {shape : Cartesian.CartesianShape}
