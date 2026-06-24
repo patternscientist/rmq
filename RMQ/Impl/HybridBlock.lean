@@ -5,8 +5,8 @@ import RMQ.Impl.SparseTable
 /-!
 # Hybrid block RMQ
 
-This module starts the standalone upgrade of the VeriBench hybrid RMQ. It keeps
-the concrete hybrid query structure, but reuses the new library pieces:
+This module defines the concrete hybrid query structure while reusing the
+shared library pieces:
 boundary scans go through `LinearScan.query`, and chunk summaries use the same
 leftmost-index combination style as `SparseTable`.
 -/

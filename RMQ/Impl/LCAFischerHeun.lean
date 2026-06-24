@@ -623,7 +623,7 @@ theorem densePreprocessAndQuery_refines_with_steps_of_denseNatLabels
     hcost, hqueryValue, hquerySteps⟩
 
 /--
-Demo-facing dense/preindexed LCA profile.
+Public-facing dense/preindexed LCA profile.
 
 Under dense natural node labels and the canonical Fischer-Heun large-input
 regime over the generated Euler-depth trace, the assembled preprocessing cost is

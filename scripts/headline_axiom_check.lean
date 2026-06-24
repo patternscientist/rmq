@@ -1,12 +1,12 @@
 import RMQ
 
 /-!
-Concise trust-base check for the demo path.
+Concise trust-base check for the public headline path.
 
 The full `scripts/axiom_check.lean` is the acceptance gate. This smaller file
-prints only the theorem surfaces most likely to appear in a demo: shared
-contract, RMQ/LCA reduction, lower bound, Fischer-Heun/LCA costs, and the
-BP-native succinct capstone.
+prints only the theorem surfaces most likely to appear in a public overview:
+shared contract, RMQ/LCA reduction, lower bound, Fischer-Heun/LCA costs, and
+the BP-native succinct capstone.
 -/
 
 #print axioms RMQ.RMQBackend.queryBuilt_eq

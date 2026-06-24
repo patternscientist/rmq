@@ -285,7 +285,7 @@ Current status:
   existing tick model, counted node/depth stored views, counted dense
   first-occurrence construction, Fischer-Heun RMQ-state build, and the constant
   `<= 16` dense LCA query bound.
-- `denseLCA_linearBuild_constantQuery_profile` is the demo-facing capstone:
+- `denseLCA_linearBuild_constantQuery_profile` is the public-facing capstone:
   under `DenseNatLabels` and canonical large-regime Euler depths, assembled
   dense preprocessing costs at most `22 * eulerTrace.nodes.length + 3`, query
   cost is at most `16`, returned nodes are path-LCA answers, and the combined

@@ -1,18 +1,17 @@
 # RMQ
 
+**TL;DR:** We used Lean to machine-check that range-minimum queries can be
+answered exactly in constant modeled time while storing only `2*n + o(n)` bits
+of Cartesian-shape data, essentially two bits per array element. The same
+development also proves the matching `2*n - O(log n)` information-theoretic
+lower bound, so the leading space term is formally optimal.
+
 A standalone Lean 4 formalization project for reusable range-minimum query
 correctness, cost, reduction, lower-bound, and succinct-space results.
-
-This repository started as a small extraction from a VeriBench-oriented RMQ
-development. The code here is intentionally library-shaped rather than
-benchmark-shaped: the goal is to factor reusable specifications, backend
-contracts, and correctness lemmas that can support multiple RMQ algorithms.
 
 For a family-level theorem inventory, dependency DAG, correctness/cost matrix,
 and consolidated modeling notes, see
 [`docs/FAMILY_SUMMARY.md`](docs/FAMILY_SUMMARY.md).
-For a demo-facing story and theorem map, see
-[`docs/DEMO_GUIDE.md`](docs/DEMO_GUIDE.md).
 For the plan to grow this RMQ proof-of-concept into a larger verified
 data-structures library, see
 [`docs/REPOSITORY_STRATEGY.md`](docs/REPOSITORY_STRATEGY.md).
@@ -23,6 +22,10 @@ Range-minimum query (RMQ) asks for the leftmost index of the minimum value in a
 subarray. That sounds small, but it is the engine behind Cartesian trees,
 constant-time lowest-common-ancestor queries, Fischer-Heun preprocessing, and
 succinct tree navigation.
+
+The surprising fact is that RMQ does not need to store the array values after
+preprocessing: the Cartesian shape determines every answer. This repo verifies
+that story end to end under explicit model assumptions.
 
 This repo formalizes RMQ as a connected algorithm family, not as one isolated
 implementation. In Lean 4, without Mathlib or custom axioms, it proves:
@@ -224,6 +227,12 @@ The project is pinned to Lean `leanprover/lean4:v4.22.0`.
 
 ```powershell
 lake build
+```
+
+Concise public-headline check:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/headline_check.ps1
 ```
 
 Useful proof-hygiene check:

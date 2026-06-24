@@ -39,7 +39,7 @@ imported — no orphan modules). `SparseTableCost.lean` was retired.
 
 Current override: the historical scorecard below predates the latest loop.
 The live roadmap now treats the POC finish line as landed with A/B/C plus
-D-LCA under the hardened-shallow RAM/component-budget model. The demo-facing
+D-LCA under the hardened-shallow RAM/component-budget model. The public-facing
 D-LCA theorem is
 `LCAFischerHeun.denseLCA_linearBuild_constantQuery_profile`; the remaining
 work is post-POC fidelity hardening, especially a first-order RAM interpreter
@@ -50,7 +50,7 @@ and one monolithic executable dense-LCA preprocessing trace.
 | **A** machine-step cost model | POC complete, interpreter future | `Core.RAM` is a hardened shallow trace substrate: raw primitives are sealed, sparse build/query use derived traces, FH stored summary/local reads are charged through counted adapters, and the `xs.toList.length` guard leak was fixed to `Array.size`. It is still a probe/indexed-access trace model, not a first-order machine interpreter. |
 | **B** refinement framework + 2 instances | POC complete | `Core.Refine.StoredMatrix`/`StoredSeq` now support sparse-table queries, FH summary tables, and dense LCA first-occurrence/node/depth stores. FH boundary microtable reads are no longer the old asserted `materializedMicrotableLookupCost := 1` path; the public large-regime supplied-query bound is `<= 13`. |
 | **C** lower-bound framework + RMQ instance | 🟢 done | `Core.LowerBound` is generic (docstring: "does not mention RMQ, Cartesian trees, or shapes"): finite bitstring universe, finite-domain `LosslessEncoding`, injection/capacity counting, log-slack arithmetic. `EncodingLowerBound` re-derives the no-premise `2n − (2log₂(2n+1)+2)` bound *through* it. Reusable, non-vacuous (decoder answers from bits alone). |
-| **D** research headlines | D-LCA and D-Space landed | `denseLCA_linearBuild_constantQuery_profile` is the dense/preindexed LCA cost headline. The later BP-native succinct RMQ capstone is recorded in the live roadmap and `docs/DEMO_GUIDE.md`; older D-Space notes in this historical audit are superseded. |
+| **D** research headlines | D-LCA and D-Space landed | `denseLCA_linearBuild_constantQuery_profile` is the dense/preindexed LCA cost headline. The later BP-native succinct RMQ capstone is recorded in the live roadmap and README; older D-Space notes in this historical audit are superseded. |
 
 **Finish line:** A + B + C + one of D. The POC finish line is now landed under
 the documented hardened-shallow RAM/component-budget model.
@@ -288,7 +288,7 @@ the dense/preindexed node-ID path:
 
 The remaining D-LCA caveat is therefore no longer hidden linear lookup in an
 assoc list. It is the normalization of the assembled component budget into the
-final demo-facing theorem: choose the tree-size measure, state the dense-label
+final public-facing theorem: choose the tree-size measure, state the dense-label
 preprocessing-plus-query profile against it, and keep arbitrary-label LCA
 correctness as the separate semantic layer.
 

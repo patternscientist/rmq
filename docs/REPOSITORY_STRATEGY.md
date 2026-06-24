@@ -12,7 +12,7 @@ Do not rename this repository yet.
 
 Keep `patternscientist/rmq` as the stable, citable RMQ artifact while the next
 spoke starts. The repo already has public theorem names, RMQ-specific docs, a
-large branch history, and a clean demo story. Renaming it now would create churn
+large branch history, and a clean public story. Renaming it now would create churn
 without making reuse materially easier.
 
 Instead, use this staged plan:

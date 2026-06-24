@@ -38,7 +38,7 @@ separate appendix.
   The cost-headline LCA path is the dense-label direct-address built query
   state backed by a counted first-occurrence-table builder. The dense LCA
   profile now also has counted Euler node/depth Array views, an assembled
-  preprocessing-plus-query theorem, and a normalized demo-facing
+  preprocessing-plus-query theorem, and a normalized public-facing
   linear-build/constant-query theorem,
   `denseLCA_linearBuild_constantQuery_profile`.
 - Derived-cost substrate: `Core.RAM` defines a tiny traced primitive-operation
