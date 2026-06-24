@@ -1727,3 +1727,33 @@ Sources: [Affeldt et al. ITP 2019](https://drops.dagstuhl.de/entities/document/1
 [Liu–Yu lower bound arXiv:2004.05738](https://arxiv.org/abs/2004.05738),
 [arXiv:2111.02318](https://arxiv.org/abs/2111.02318);
 [Navarro–Sadakane arXiv:0905.0768](https://arxiv.org/abs/0905.0768).
+
+## 2026-06-24 (doubled Catalan space-bound package) — GENUINE, not a weakening; clean fraction-free two-sided ~2n bound
+
+`codex/catalan-doubled-space-bound-package` (branch HEAD = main; the new work is
+*uncommitted* in the worktree: +45 in `EncodingLowerBound.lean`, +1 axiom entry,
++ headline-axiom-check registration). Build green; `axiom_check` 0 bad-axiom;
+scans clean; capstone present + unchanged.
+
+New theorem `exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack`
+— a two-sided package: (1) any `ExactRMQStateEncoding n bits` ⇒
+`doubledLogSlackLower n ≤ 2*bits`; (2) the same for any uniform budget; (3) a
+concrete `ExactRMQStateEncoding n (2*n)` storing exactly `2n` bits/shape.
+
+**Adversarial check — is "doubled slack" a disguised weakening? No.**
+`doubledLogSlackLower n = 4n − (3·log₂(2n+1)+3)` — a genuine `4n − O(log n)`
+(leading term 4n; not `0`/`n`/`2n`), and in fact *slightly tighter* than
+`2·logSlackLower` (slack `3log+3` < the doubled-original `4log+4`). So
+`doubledLogSlackLower n ≤ 2*bits` ⟺ `bits ≥ 2n − O(log n)` — the identical tight
+Catalan-counting lower bound, restated in **fraction-free integer form** (avoids a
+lossy Nat `/2`). The helper
+`four_mul_sub_three_log_slack_le_two_mul_bits_of_exactRMQStateEncoding_payloadView`
+is the genuine doubled bound; the upper witness is the canonical 2n-bit encoding.
+Purpose: a clean "≈2n bits is necessary and sufficient" two-sided statement in Nat
+arithmetic, pairing the lower bound and the exact 2n-bit encoding without rationals.
+
+**Verdict:** GENUINE polish on the lower-bound side — sorry-free, trust-clean, a
+real (slightly tighter) doubled restatement of the tight ~2n bound paired with the
+concrete 2n-bit encoding; no regression, not vacuous, not weakened. Only note: the
+new theorem is uncommitted in the worktree (the committed cubic-square / doubled
+bridge lemmas are already on main).
