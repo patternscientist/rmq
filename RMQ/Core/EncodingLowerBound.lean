@@ -1258,9 +1258,39 @@ private theorem remyStep_arith (n : Nat) :
   rw [<- hidentity]
   omega
 
+private theorem remyStep_cubic_square_arith (n : Nat) :
+    4 * (2 * n + 1) * (n + 2) * (n + 2) <=
+      (2 * (n + 1) + 1) * (2 * (n + 1) + 1) *
+        (2 * (n + 1) + 1) := by
+  have hidentity :
+      4 * (2 * n + 1) * (n + 2) * (n + 2) + (6 * n + 11) =
+        (2 * (n + 1) + 1) * (2 * (n + 1) + 1) *
+          (2 * (n + 1) + 1) := by
+    have h8 :
+        n * (n * 8) = 2 * (n * (n * 4)) := by
+      rw [show 8 = 2 * 4 by rfl]
+      ac_rfl
+    have h16 :
+        n * (n * 16) = 4 * (n * (n * 4)) := by
+      rw [show 16 = 4 * 4 by rfl]
+      ac_rfl
+    simp [Nat.mul_add, Nat.add_mul, Nat.mul_assoc, Nat.mul_comm,
+      Nat.mul_left_comm, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
+    rw [h8, h16]
+    omega
+  rw [<- hidentity]
+  omega
+
 private theorem two_pow_two_mul_succ (n : Nat) :
     2 ^ (2 * (n + 1)) = 4 * 2 ^ (2 * n) := by
   rw [show 4 = 2 ^ 2 by rfl]
+  rw [<- Nat.pow_add]
+  congr 1
+  omega
+
+private theorem two_pow_four_mul_succ (n : Nat) :
+    2 ^ (4 * (n + 1)) = 16 * 2 ^ (4 * n) := by
+  rw [show 16 = 2 ^ 4 by rfl]
   rw [<- Nat.pow_add]
   congr 1
   omega
@@ -1301,6 +1331,69 @@ private theorem remyStep_count_bound (n : Nat) :
   rw [hreshape]
   exact hstep
 
+private theorem remyStep_cubic_square_count_bound (n : Nat) :
+    16 * (((2 * n + 1) * (2 * n + 1) * (2 * n + 1)) *
+        (Cartesian.shapeCount n * Cartesian.shapeCount n)) <=
+      ((2 * (n + 1) + 1) * (2 * (n + 1) + 1) *
+          (2 * (n + 1) + 1)) *
+        (Cartesian.shapeCount (n + 1) * Cartesian.shapeCount (n + 1)) := by
+  let width := 2 * n + 1
+  let nextWidth := 2 * (n + 1) + 1
+  let count := Cartesian.shapeCount n
+  let nextCount := Cartesian.shapeCount (n + 1)
+  have hratio :
+      2 * width * count <= (n + 2) * nextCount := by
+    simpa [width, count, nextCount, Nat.mul_assoc, Nat.mul_comm,
+      Nat.mul_left_comm] using remyRatio_lower n
+  have hsquareRaw :
+      (2 * width * count) * (2 * width * count) <=
+        ((n + 2) * nextCount) * ((n + 2) * nextCount) :=
+    Nat.mul_le_mul hratio hratio
+  have hsquare :
+      4 * (width * width) * (count * count) <=
+        ((n + 2) * (n + 2)) * (nextCount * nextCount) := by
+    have hleft :
+        (2 * width * count) * (2 * width * count) =
+          4 * (width * width) * (count * count) := by
+      rw [show 4 = 2 * 2 by rfl]
+      ac_rfl
+    have hright :
+        ((n + 2) * nextCount) * ((n + 2) * nextCount) =
+          ((n + 2) * (n + 2)) * (nextCount * nextCount) := by
+      ac_rfl
+    simpa [hleft, hright] using hsquareRaw
+  have hscaledRatio :
+      16 * ((width * width * width) * (count * count)) <=
+        (4 * width * (n + 2) * (n + 2)) *
+          (nextCount * nextCount) := by
+    have hmul := Nat.mul_le_mul_left (4 * width) hsquare
+    have hleft :
+        (4 * width) * (4 * (width * width) * (count * count)) =
+          16 * ((width * width * width) * (count * count)) := by
+      rw [show 16 = 4 * 4 by rfl]
+      ac_rfl
+    have hright :
+        (4 * width) *
+            (((n + 2) * (n + 2)) * (nextCount * nextCount)) =
+          (4 * width * (n + 2) * (n + 2)) *
+            (nextCount * nextCount) := by
+      ac_rfl
+    simpa [hleft, hright] using hmul
+  have harith :
+      4 * width * (n + 2) * (n + 2) <=
+        nextWidth * nextWidth * nextWidth := by
+    simpa [width, nextWidth, Nat.mul_assoc, Nat.mul_comm,
+      Nat.mul_left_comm] using remyStep_cubic_square_arith n
+  have hscaledArith :
+      (4 * width * (n + 2) * (n + 2)) *
+          (nextCount * nextCount) <=
+        (nextWidth * nextWidth * nextWidth) *
+          (nextCount * nextCount) := by
+    exact Nat.mul_le_mul_right (nextCount * nextCount) harith
+  have hstep := Nat.le_trans hscaledRatio hscaledArith
+  simpa [width, nextWidth, count, nextCount, Nat.mul_assoc, Nat.mul_comm,
+    Nat.mul_left_comm] using hstep
+
 /--
 Quadratic-form Catalan lower bound for the explicit Cartesian-shape count.
 
@@ -1319,6 +1412,26 @@ theorem shapeCount_quadratic_lower (n : Nat) :
       exact Nat.le_trans
         (Nat.mul_le_mul_left 4 ih)
         (remyStep_count_bound n)
+
+/--
+Cubic-square Catalan lower bound for the explicit Cartesian-shape count.
+
+This strengthens the quadratic count into the squared form
+`2^(4*n) <= (2*n+1)^3 * shapeCount n^2`, matching the integer-arithmetic
+surrogate for the `3/2 * log n` Catalan slack.
+-/
+theorem shapeCount_cubic_square_lower (n : Nat) :
+    2 ^ (4 * n) <=
+      ((2 * n + 1) * (2 * n + 1) * (2 * n + 1)) *
+        (Cartesian.shapeCount n * Cartesian.shapeCount n) := by
+  induction n with
+  | zero =>
+      simp [Cartesian.shapeCount, Cartesian.shapesOfSize]
+  | succ n ih =>
+      rw [two_pow_four_mul_succ]
+      exact Nat.le_trans
+        (Nat.mul_le_mul_left 16 ih)
+        (remyStep_cubic_square_count_bound n)
 
 /--
 Turn a quadratic Catalan lower-bound target into the logarithmic exponent form

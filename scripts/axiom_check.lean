@@ -17,6 +17,7 @@ claims that matter, not every local arithmetic helper.
 #print axioms RMQ.RMQBackend.queryBuilt_eq
 #print axioms RMQ.Cartesian.shape_eq_of_sameRMQBehavior
 #print axioms RMQ.EncodingLowerBound.shapeCount_quadratic_lower
+#print axioms RMQ.EncodingLowerBound.shapeCount_cubic_square_lower
 #print axioms RMQ.EncodingLowerBound.two_mul_sub_log_slack_le_bits_of_exactRMQShapeEncoding
 #print axioms RMQ.EncodingLowerBound.two_mul_sub_log_slack_le_bits_of_canonicalRepresentativeStateEncoding
 #print axioms RMQ.EncodingLowerBound.shapeCount_le_two_pow_of_exactRMQStateEncoding_payloadView
