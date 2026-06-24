@@ -68,7 +68,10 @@ binding constraint. All three have now been consumed by the final theorem.
    C1 false-select/close access, C2 close/LCA, and the close-navigation join
    into a concrete family theorem with `LittleOLinear overhead`, exact query
    erasure, bounded query cost, and the lower-bound tie
-   `EncodingLowerBound.logSlackLower n <= 2*n + overhead n`.
+   `EncodingLowerBound.logSlackLower n <= 2*n + overhead n`. The public
+   lower-bound story is now sharper as well: the doubled Catalan slack API
+   proves `4*n - (3*log2(2*n+1)+3) <= 2*bits`, without introducing a separate
+   rational-arithmetic theorem.
 
 ## Canonical Constructions
 
@@ -152,6 +155,8 @@ payload.length = 2 * n + overhead n /\
 queryCosted.cost <= queryCost /\
 queryCosted.erase = some (scanWindow shape.representative left len) /\
 EncodingLowerBound.logSlackLower n <= 2 * n + overhead n
+-- Stronger public lower-bound API also available:
+-- EncodingLowerBound.doubledLogSlackLower n <= 2 * (2 * n + overhead n)
 ```
 
 ## Formalization Frontier
