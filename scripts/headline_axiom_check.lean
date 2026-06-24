@@ -1,4 +1,5 @@
 import RMQ
+import RMQ.Core.EncodingLowerBound
 
 /-!
 Concise trust-base check for the public headline path.
