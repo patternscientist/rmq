@@ -1884,3 +1884,50 @@ reads. Feeding it into `toChargedSelectPositionSource` (and the `RankSelectSpec`
 leg) closes generic `o(n)` select. This is a major multi-session construction and a
 genuine design fork (reuse/generalize the BP sparse-exception machinery vs. a fresh
 generic codec) — flagged for a user design decision, not ground out blindly.
+
+## 2026-06-24 (PROOF WORK, not an audit) — generic select refactor: entry/table data layer
+
+Branch `claude/clark-two-level-select-source`. The design fork above was decided
+(**generalize** the BP `RelativeSplitSparseExceptionFalseSelectCloseData` machinery to
+`(bits : List Bool) (target : Bool)`, recovering the capstone later as
+`bits := shape.bpCode, target := false`; scope pinned in
+`docs/GENERIC_SELECT_REFACTOR_SCOPE.md`). Tier 0/1 (target-threaded primitives),
+Tier 3/4 (Clark params + overheads over `bits.length`), and the Tier 2 *counting core*
+(both-level `o(n)` span-sum arguments) landed in prior sessions. **This session built
+the entry/table data layer** — the back half of Tier 2 — bottom-up, gating each cluster
+with `lake build` and the whole project + `axiom_check` at the end.
+
+**Delivered (genuine, verified; commits `ad6e5f9`..`95f09be` + axiom_check):**
+- Entries: `superEntry/superEntries`, `compactLocalEntryIsLive`, `localEntry/localEntries`
+  (faithful `SparseDenseFalseSelectDenseLocalEntry` ports; replaced an early
+  wrong-record `…LocatorEntry` stub), with `length`/`get?` lemmas.
+- Flag vectors: `sparseFlagBits` (+ `longSuperFlagBits`, `sparseExceptionFlagBits` from
+  the counting core) with `length`/`get?`.
+- **Factored** Jacobson flag-rank: BP's three copies (Long/Sparse/SparseException
+  FlagRank*) collapse to ONE generic `flagRank*` family parameterized by the flag-bit
+  list (`flagRankData` + `flagRankData_profile`), to be instantiated three times.
+- Relative-offset tables (all three): `longSuperRelativeEntries/Width/Table`,
+  `sparseRelativeEntries/Table`, `sparseExceptionRelativeEntries/Table`, each with
+  `mem_lt_width`/`payload_length`. Added target-threaded `relativeOffsetsOrZero` +
+  `selectPositions_{length,mem_le_length}` to Primitives.
+- Dense-local fixed-width tables: `superFieldWidth/superTable`,
+  `sparseExceptionRelativeWidth = localFieldWidth`/`localTable`, with the field-bound
+  proofs `super/localEntries_mem_fields_lt_width` (the local one ~250 lines, hinging on
+  the newly-ported `selected_offset_lt_superLongSpan` + `localBaseOccurrence_lt_superBoundary`).
+- o(n) bridge for the long table: `longSuperRelativeTable_payload_mul_ell_le_spanSum`
+  ties the long relative table's payload to the proven `longSuperSpanSum` bound.
+
+**Status:** full `lake build` green; `axiom_check` for all new headliners resolves to
+`{propext, Classical.choice, Quot.sound}` (trust-clean, sorry-free); hygiene clean;
+**capstone untouched** (additive new files only). Method note: the port is mechanical
+(`shape.bpCode → bits`, `false → target`, `falseSelectOccurrenceCount → occurrenceCount`),
+with the one recurring gotcha being local `let`s shadowing generic def names
+(`superBaseOccurrence`, `superLongSpan`) — renamed (`superBaseOcc`, `longSpan`).
+
+**Remaining on the generic path:** (a) per-table `_payload_le_overhead` o(n) lemmas
+(need the generic overhead defs + loglog-cubed alignment; the counting is done); (b)
+Tier 5 sparse directory (`RelativeSplitSparseExceptionSelectDirectory`) + effective
+flag-rank; (c) Tier 6 structure `RelativeSplitSparseExceptionSelectData` + `selectCosted`
++ `_cost_le`/`_exact` + builder profile; (d) Tier 7 BP specialization to recover the
+capstone; (e) the new `ofRelativeSplitSelectData` source + family lift + `RankSelectSpec`
+select leg. Then generic `o(n)` exact select is closed.
