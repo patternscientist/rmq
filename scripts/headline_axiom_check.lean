@@ -14,6 +14,7 @@ the BP-native succinct capstone.
 #print axioms RMQ.EncodingLowerBound.shapeCount_quadratic_lower
 #print axioms RMQ.EncodingLowerBound.two_mul_sub_log_slack_le_bits_of_exactRMQShapeEncoding
 #print axioms RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound
+#print axioms RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack
 #print axioms RMQ.FischerHeun.fischerHeun_refines_with_steps
 #print axioms RMQ.LCAFischerHeun.denseLCA_linearBuild_constantQuery_profile
 #print axioms RMQ.SuccinctCloseProposal.canonicalBPRelativeSummaryBlockSize_pos_of_size_ge

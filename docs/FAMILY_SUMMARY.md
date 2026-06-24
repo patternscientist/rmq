@@ -61,7 +61,10 @@ separate appendix.
   counted payload bits from proof-only built-state fields. The
   `ExactRMQSpaceBounds` wrapper and its canonical/Fischer-Heun-shaped
   instantiations now give a non-vacuous fixed-length `2*n` upper witness paired
-  with the universal logarithmic-slack lower bound.
+  with the universal logarithmic-slack lower bound, while
+  `exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack`
+  packages the coefficient-correct doubled Catalan slack with the same
+  canonical exact-payload witness.
 - Shape sample layer: recursive canonical representative arrays are proved for
   every Cartesian shape, with exact length and computed-shape theorems. These
   witnesses now feed the concrete baseline state-encoding instance.
@@ -726,7 +729,10 @@ descriptor fact.
   includes the exact-RMQ-decoder bridge, the quadratic Catalan count, the
   unconditional fixed-length exact-RMQ `2*n - O(log n)` bit lower bound, and the
   doubled-bit cubic-square bridge
-  `4*n - (3*log2(2*n+1)+3) <= 2*bits`.
+  `4*n - (3*log2(2*n+1)+3) <= 2*bits`, packaged by
+  `exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack`
+  together with the uniform charged-budget form and canonical exact `2*n`
+  payload witness.
 - The concrete canonical representative state encoding uses the explicit
   preorder shape payload of length `2*n` and decodes it back to a shape before
   scanning the canonical representative array. It is intentionally a simple
@@ -1224,7 +1230,8 @@ The names below are grouped by source module. Repeated base names in
   `canonicalRepresentativeSpaceBounds_lower_le_any`,
   `canonicalRepresentativeSpaceBounds_upper_bits`,
   `exactRMQ_two_sided_log_slack_space_bound`,
-  `exactRMQ_tight_fixed_length_payload_space_bound`.
+  `exactRMQ_tight_fixed_length_payload_space_bound`,
+  `exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack`.
 - `RMQ/Core/Microtable.lean` (11): `shapeUniverse_length`,
   `blockSignature_mem_shapeUniverse`, `localScanOffset_bounds`,
   `localScanOffset_add_start`, `localScanOffset_leftmost`,
