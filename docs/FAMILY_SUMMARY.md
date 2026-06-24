@@ -1,14 +1,14 @@
 # RMQ Family Summary
 
-Snapshot: 2026-06-23, after the reusable table/access and payload models,
+Snapshot: 2026-06-24, after the reusable table/access and payload models,
 indexed LCA query-cost layer, Fischer-Heun-backed LCA model, traced sparse-query
 substrate, fixed-length exact-RMQ space sandwich, payload-lower-bound hub
-adapter, packed plus-minus-one RMQ/LCA model layer, uniform charged-budget
-lower-bound theorems, reusable hub import surface layers, and the BP-native
-succinct RMQ capstone. The final succinct path now includes a relative-split
-false-close/select access witness, a concrete compact BP close/LCA directory,
-and rank-backed local BP seed routing through the final payload-live access
-family.
+adapter, the proved coefficient-correct doubled Catalan lower-bound bridge,
+packed plus-minus-one RMQ/LCA model layer, uniform charged-budget lower-bound
+theorems, reusable hub import surface layers, and the BP-native succinct RMQ
+capstone. The final succinct path now includes a relative-split false-close/select
+access witness, a concrete compact BP close/LCA directory, and rank-backed local
+BP seed routing through the final payload-live access family.
 
 This document is the family-level map for the current Lean development. It
 records the module dependency DAG, correctness and cost status by structure,
@@ -53,7 +53,8 @@ separate appendix.
 - Lower-bound layer: fixed-length lossless Cartesian-shape capacity theorem,
   exact-RMQ-decoder bridge, Mathlib-free Remy-style proof of
   `2^(2*n) <= (2*n+1)^2 * shapeCount n`, the resulting no-premise
-  logarithmic-slack bit lower bound, and the squared Catalan bridge
+  logarithmic-slack bit lower bound, and the proved coefficient-correct
+  doubled Catalan bridge
   `4*n - (3*log2(2*n+1)+3) <= 2*bits` from
   `shapeCount_cubic_square_lower`. A canonical representative state encoding
   now instantiates the abstract state-encoding adapter, and
@@ -725,7 +726,7 @@ descriptor fact.
 - The lower-bound scaffold works at the Cartesian-shape encoding level and now
   includes the exact-RMQ-decoder bridge, the quadratic Catalan count, the
   unconditional fixed-length exact-RMQ `2*n - O(log n)` bit lower bound, and the
-  doubled-bit cubic-square bridge
+  coefficient-correct doubled-bit cubic-square bridge
   `4*n - (3*log2(2*n+1)+3) <= 2*bits`.
 - The concrete canonical representative state encoding uses the explicit
   preorder shape payload of length `2*n` and decodes it back to a shape before

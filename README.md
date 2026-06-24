@@ -35,8 +35,10 @@ implementation. In Lean 4, without Mathlib or custom axioms, it proves:
   Euler-tour depth traces;
 - Fischer-Heun-style linear preprocessing and constant supplied-query bounds
   under an explicit RAM/indexed-access model;
-- a no-premise information-theoretic RMQ lower bound
-  `2*n - O(log n)` from Cartesian-shape counting; and
+- a no-premise information-theoretic RMQ lower bound from Cartesian-shape
+  counting, including the proved doubled integer form
+  `4*n - (3*log2(2*n+1)+3) <= 2*bits`, i.e. the coefficient-correct
+  `2n - 1.5 log n - O(1)` Catalan slack without rational arithmetic; and
 - a payload-accounted BP-native succinct RMQ capstone:
   `2*n + o(n)` payload bits with constant modeled query cost.
 
@@ -132,9 +134,13 @@ about Lean's executable `List` runtime.
   decoders over representative arrays induce such lossless shape encodings. A
   Mathlib-free Remy-style counting argument proves the quadratic Catalan bound
   `2^(2*n) <= (2*n+1)^2 * shapeCount n`, yielding the concrete
-  no-premise `2*n - (2*log2(2*n+1)+2)` bit lower bound. A state-encoding
-  adapter lets concrete built-state encoders inherit the same lower bound,
-  and a canonical representative state encoding instantiates that adapter.
+  no-premise `2*n - (2*log2(2*n+1)+2)` bit lower bound. It also proves the
+  squared count `2^(4*n) <= (2*n+1)^3 * shapeCount n^2`, which gives the
+  coefficient-correct doubled slack theorem
+  `4*n - (3*log2(2*n+1)+3) <= 2*bits` for exact RMQ encodings. A
+  state-encoding adapter lets concrete built-state encoders inherit these
+  lower bounds, and a canonical representative state encoding instantiates
+  that adapter.
 - `RMQ/Core/Succinct.lean`: exact list-backed rank/select primitives,
   balanced-parentheses predicates, model-level packed rank/select with
   unit-cost query theorems, and generated Euler-tour parentheses that are

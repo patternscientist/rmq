@@ -215,13 +215,16 @@ that future spokes can instantiate.
 Current status:
 
 - `Core.EncodingLowerBound` proves the no-premise RMQ bit lower bound
-  `2n - (2 * log2 (2n + 1) + 2)` using a verified Remy-style counting argument.
+  `2n - (2 * log2 (2n + 1) + 2)` using a verified Remy-style counting argument,
+  and now also proves the coefficient-correct doubled integer form
+  `4*n - (3*log2(2*n+1)+3) <= 2*bits`.
 - The theorem is non-vacuous: a decoder must answer from the bitstring alone.
 - `Core.LowerBound` now provides the generic finite bitstring universe,
-  finite-domain `LosslessEncoding`, injection/capacity counting theorem, and
-  generic logarithmic-slack arithmetic bridge. `Core.EncodingLowerBound`
-  instantiates that layer for Cartesian shapes and routes the shape-capacity and
-  log-slack lower-bound steps through it.
+  finite-domain `LosslessEncoding`, injection/capacity counting theorem,
+  generic logarithmic-slack arithmetic bridge, and squared-count doubled-bit
+  bridge. `Core.EncodingLowerBound` instantiates that layer for Cartesian
+  shapes and routes the shape-capacity, log-slack, and doubled Catalan
+  lower-bound steps through it.
 
 Gap:
 
@@ -232,8 +235,9 @@ Gap:
 - The Remy/Catalan counting proof remains in `Core.EncodingLowerBound` because
   it is Cartesian-shape-specific.
 
-Done theorem shape: a generic lower-bound API plus an RMQ module that re-derives
-the existing `2n - O(log n)` theorem through that API.
+Done theorem shape: a generic lower-bound API plus an RMQ module that
+re-derives the existing `2n - O(log n)` theorem and the coefficient-correct
+doubled Catalan slack theorem through that API.
 
 Anti-vacuity: the generic layer must be usable by another future problem in
 principle. Do not hide RMQ-specific shape facts in `Core`.
@@ -335,7 +339,10 @@ Current status:
   `exactRMQ_two_sided_log_slack_space_bound` give a non-vacuous fixed-length
   sandwich: every exact payload decoder needs
   `2*n - (2*log2(2*n+1)+2)` bits, and the canonical representative decoder
-  answers RMQ queries exactly from a `2*n`-bit shape payload.
+  answers RMQ queries exactly from a `2*n`-bit shape payload. The lower-bound
+  API also exposes the sharper doubled integer Catalan slack
+  `4*n - (3*log2(2*n+1)+3) <= 2*bits`, without claiming a separate rational
+  theorem.
 - `FischerHeun.stateEncodingSpaceBounds` and
   `exactRMQ_two_sided_log_slack_space_bound_stateEncoding` instantiate the same
   sandwich with a Fischer-Heun-shaped proof-only state and the same charged
@@ -369,7 +376,10 @@ The first-stage theorem
 the fixed-length exact-RMQ payload-space sandwich: every exact state decoder
 needs `logSlackLower n = 2*n - (2*log2(2*n+1)+2)` bits, every uniform charged
 payload budget satisfies the same lower bound, and the canonical representative
-decoder charges exactly `2*n` bits on every shape. The older
+decoder charges exactly `2*n` bits on every shape. The same lower-bound layer
+now also provides `doubledLogSlackLower n = 4*n - (3*log2(2*n+1)+3)` with
+charged-payload and uniform-budget conclusions of the form
+`doubledLogSlackLower n <= 2 * ...`. The older
 `EncodingLowerBound.exactRMQ_two_sided_log_slack_space_bound` theorem and the
 implementation-shaped companion
 `FischerHeun.exactRMQ_two_sided_log_slack_space_bound_stateEncoding` remain as
