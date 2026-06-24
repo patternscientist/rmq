@@ -1837,3 +1837,50 @@ abstract shape with no concrete inhabitant yet, and `FAMILY_SUMMARY`/`RANK_SELEC
 say so. Trust-clean, sorry-free, build green, capstone untouched. Only process note:
 everything is uncommitted in the worktree (and the branch ref itself trails main by 3
 commits) — should be committed and rebased onto current main before merge.
+
+## 2026-06-24 (PROOF WORK, not an audit) — non-oracular two-level Clark select source
+
+Branch `claude/clark-two-level-select-source` (worktree
+`.claude/worktrees/clark-two-level-select-source`), based on a committed snapshot
+(`e303888`) of the rank-select-frontier state. Proof-work commit `9ade3de`. Build
+green; `axiom_check` trust-clean (`propext, Classical.choice, Quot.sound`) for both
+new headline theorems; hygiene + native scans clean; capstone untouched.
+
+**Task:** build a non-oracular generic/two-level Clark select source with o(n) payload,
+using the existing two-level select data rather than the semantic-select shortcut.
+
+**Delivered (genuine, verified):**
+- `ChargedSelectPositionSource.ofTwoLevelSelectData` + `_profile` — backs the source
+  with `data.selectCosted target` (charged super-sample + block-delta + payload-word
+  reads + `RAM.selectBoolWord`), NOT `Costed.pure (Succinct.select …)`. `payload :=
+  data.auxPayload` (real super/block tables), `readWords` = real stored words. The
+  profile records the `selectPositionCosted`/`payload` equalities definitionally, plus
+  exact select, cost ≤ queryCost, machine-word bounded reads. This is the constructive
+  contrast that closes the `chargedSelectPositionSource_allows_empty_select_oracle`
+  escape on the constructive path.
+- `TwoLevelPayloadLiveStoredWordSelectFamily.toChargedSelectPositionSource` + `_profile`
+  — family-level lift. Overhead `twoLevelSelectOverhead super block` is **genuinely**
+  `LittleOLinear` (from the family's `super_littleO`/`block_littleO`), not the
+  constant-function escape available at a single `domainSize`. So this is a real
+  non-oracular `o(n)`-payload two-level Clark select source.
+
+**Honest status — this is a REDUCTION, not closure of the o(n) wall.** The construction
+needs one input: a concrete `TwoLevelPayloadLiveStoredWordSelectFamily` with
+`block_littleO`. The only concrete two-level select data (`canonicalTwoLevelSelectData`)
+uses `blockIndex := fun _ occ => occ` (one delta slot per occurrence) and is provably
+linear (`canonicalSelectBlockTablesFinite_identity_payload_not_littleO`, witnessed by
+`List.replicate n false`). This is **structural**, not a missing optimization: the
+`select_some_exact` contract decodes from a *single* payload-word read, so to be exact
+in the **sparse** regime the block samples must reach every occurrence's word →
+~one-per-occurrence → linear. Genuine `o(n)` exact select needs a richer structure: the
+dense/sparse occurrence-chunk dichotomy (Clark/Munro) — the generic analog of the BP
+capstone's `RelativeSplitSparseExceptionFalseSelectCloseData`.
+
+**Next crisp target:** a NEW concrete compact two-level select family
+(`compactTwoLevelSelectFamily` + `…_block_littleO`, names TBD) whose block table samples
+occurrence-chunks with a dense/sparse split (explicit positions for sparse long chunks,
+relative deltas for dense short chunks), `o(n)` block payload, constant charged word
+reads. Feeding it into `toChargedSelectPositionSource` (and the `RankSelectSpec` select
+leg) closes generic `o(n)` select. This is a major multi-session construction and a
+genuine design fork (reuse/generalize the BP sparse-exception machinery vs. a fresh
+generic codec) — flagged for a user design decision, not ground out blindly.
