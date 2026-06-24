@@ -1757,3 +1757,83 @@ real (slightly tighter) doubled restatement of the tight ~2n bound paired with t
 concrete 2n-bit encoding; no regression, not vacuous, not weakened. Only note: the
 new theorem is uncommitted in the worktree (the committed cubic-square / doubled
 bridge lemmas are already on main).
+
+## 2026-06-24 (rank/select frontier) — GENUINE concrete `n + o(n)` rank half + HONEST select-side obstructions; new standalone spoke
+
+`codex/rank-select-frontier` (branch HEAD `673a632` is an *ancestor* of main; main
+is 3 commits ahead. All the new work is **uncommitted** in the worktree
+`C:/Users/poin/.codex/worktrees/f804/RMQ`: new `RMQ/Core/RankSelectSpec.lean`, new
+`docs/RANK_SELECT_FRONTIER.md`, +365 in `SuccinctRankProposal.lean`, +1337 in
+`SuccinctSelectProposal.lean`, +1 import in `RMQ.lean`, +27 axiom-check entries).
+Build green (exit 0); `axiom_check` 0 bad-axiom (no `sorryAx`/native/reduceBool;
+new theorems carry only `{propext, Classical.choice, Quot.sound}`); hygiene + native
+scans clean on all three touched/new Lean files. RMQ capstone untouched and still
+registered/trust-clean.
+
+**What this branch is:** the first deliberate *spoke split* — carving a reusable,
+plain-bitvector rank/select data-structure track out of the RMQ-only scaffolding,
+landing the genuine **rank half**, and *formally* documenting why the **select
+half's** easy routes don't work yet. Not a capstone touch; a new direction.
+
+**1. Public spec layer (`RankSelectSpec.lean`) — clean, but abstract.**
+`BitVectorRankSelectDirectory` wraps the existing `SuccinctSpace.RankSelectDirectory`
+and adds an explicit stored-bit `access` leg (payload = `bits ++ aux`). The family
+headline `BitVectorRankSelectFamily.n_plus_o_constant_query_profile` proves
+`LittleOLinear overhead ∧ ∀ bits, payload.length = n + overhead n ∧ access/rank/select
+exact at cost ≤ queryCost`. **It depends on `propext` alone — pure structure
+unpacking, parametric over a *supplied* family. No concrete inhabitant of the
+*combined* family exists yet** (needs both rank and a little-o select component).
+The doc says this explicitly (`jacobsonClarkRankSelectFamily_…` / `clarkSelectFamily_…`
+"do not exist yet"). Honest, not vacuous-claimed-as-done.
+
+**2. Rank half — GENUINE concrete result.**
+`jacobsonRankFamily_constant_query_profile` is **hypothesis-free** over a concrete
+`jacobsonRankFamily` and proves, for *every* `bits`:
+- `LittleOLinear jacobsonRankOverhead` (genuine little-o, reduced to the pre-existing
+  `sampledDirectoryOverhead_littleO` + `logLogSampledDirectoryOverhead_littleO` +
+  `machineWordBits_littleO` — leading terms `~2n/log n` superblock and
+  `~n·loglog n/log n` block, both genuinely `o(n)`, NOT `fun _ => const`);
+- `flattenPayloadWords … = bits` (**payload-live**: the stored words flatten back to
+  the real input bits — not a faked oracle);
+- `wordSize ≤ machineWordBits` and every stored word `≤ machineWordBits` (word-bounded);
+- `∀ target pos, rankCosted.cost ≤ 4 ∧ rankCosted.erase = rankPrefix target bits pos`
+  (O(1) charged query + **exact** rank semantics).
+
+Parameters are textbook-faithful Jacobson: word = block-per-super = log n,
+superblock span = log²n. `jacobsonRankData` is built by `cast`-ing the pre-existing
+`canonicalTwoLevelRankDataOfChunksExactLocalBlock`; the cast only rewrites the Nat
+payload-length type-indices to closed-form overhead functions via *proven* length
+equalities — sound, not a semantic cheat. **This is a real, new, standalone succinct
+rank directory: `n + o(n)` bits, O(1), exact.**
+
+**3. Select half — HONEST WIP, explicitly bounded by formal negative results.**
+No concrete `o(n)` select family is claimed. Instead:
+- `clarkSelectChunkBaseSample_cross_word_obstruction`: a single chunk-base sample is
+  exact only when the answer stays in the base's word; crossing a word boundary ⇒
+  `False` (formal impossibility).
+- `clarkSelectTwoWordDescriptorIndexIdentityOverhead_not_littleO`: the naive
+  identity-indexed descriptor table costs `≥ (n+1)·fieldWidth ≥ n+1` ⇒ NOT little-o.
+- `builtTwoLevelFalseSelect_current_finite_block_tables_not_littleO`: the current
+  finite block-table route has overhead `≥ 2n+1` (linear) ⇒ NOT little-o.
+- `chargedSelectPositionSource_allows_empty_select_oracle`: a **self-imposed
+  non-vacuity guard** — proves the `ChargedSelectPositionSource` abstraction can be
+  inhabited with `overhead = fun _ => 0`, `payload = []`, and a free
+  `Costed.pure (Succinct.select …)` oracle. I.e. the project formally flags that this
+  source interface, used alone, *would* be the decoupled zero-payload-oracle
+  anti-pattern. This is the codebase policing its own surfaces — the opposite of
+  reward-hacking.
+
+The relative-split BP-specialized descriptor producer
+(`relativeSplitDescriptorIndexCosted_profile`) is the first charged compact descriptor
+route, but is still BP/false-select specialized, not a generic Clark bitvector
+component — also stated honestly.
+
+**Verdict:** GENUINE and honest. A real concrete `n + o(n)`/O(1)/exact succinct rank
+directory lands (the rank half of a generic bitvector rank/select), cleanly factored
+into a new `RankSelectSpec` spoke; the select half is openly incomplete with its easy
+routes *formally proven* vacuous/linear and a self-imposed oracle warning guarding the
+abstraction. Nothing overclaims: the combined public family theorem is an honest
+abstract shape with no concrete inhabitant yet, and `FAMILY_SUMMARY`/`RANK_SELECT_FRONTIER`
+say so. Trust-clean, sorry-free, build green, capstone untouched. Only process note:
+everything is uncommitted in the worktree (and the branch ref itself trails main by 3
+commits) — should be committed and rebased onto current main before merge.
