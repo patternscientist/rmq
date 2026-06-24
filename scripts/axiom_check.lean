@@ -1,4 +1,6 @@
 import RMQ
+import RMQ.Core.EncodingLowerBound
+import RMQ.Core.LowerBound
 
 /-!
 Curated trust-base check for the acceptance gate.
