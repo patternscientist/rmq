@@ -173,14 +173,14 @@ removed.
 The first physical source prune has now removed the self-contained rectangular
 local/super generated-entry rows, their row-specific obstruction lemmas, the
 `RelativeSplitRectangularFalseSelectCloseData` island, and its padded-local
-no-go theorem. The archive-backed four-field locator surface remains on
-purpose: it still carries cited obstruction witnesses, so deleting it should be
-paired with either a moved archive implementation or a deliberate retirement of
-those witness names.
+no-go theorem. A follow-up prune removed the old four-field
+`SparseDenseFalseSelectCloseData` locator surface itself, retired the
+locator-specific archive aliases, and kept only the smaller shared-locator
+obstruction witnesses in `RMQ/Archive/SelectObstructions.lean`.
 
 Decision: keep the remaining BP-specialized relative-split capstone
 intentionally as an old capstone, not as a public headline. The archive split
-has started: obstruction witnesses now live in
+has started: retained obstruction witnesses now live in
 `RMQ/Archive/SelectObstructions.lean`, the old capstone alias lives in
 `RMQ/Archive/BPSpecializedCapstone.lean`, and
 `RMQ/Archive/SelectCompatibility.lean` is only a compatibility import/alias

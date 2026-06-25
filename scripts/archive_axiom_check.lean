@@ -10,13 +10,11 @@ profiles and intermediate adapters should not be kept alive solely by this
 archive gate.
 -/
 
-/- BP-specialized sparse/dense obstruction witnesses. -/
+/- Select-side obstruction witnesses retained after pruning old locator code. -/
 
-#print axioms RMQ.Archive.SelectObstructions.sparseDense_locator_fullMachineField_not_word_bounded
-#print axioms RMQ.Archive.SelectObstructions.short_super_local_pointer_capacity_obstruction
-#print axioms RMQ.Archive.SelectObstructions.dense_branch_packed_local_pointer_capacity_obstruction
-#print axioms RMQ.Archive.SelectObstructions.super_locator_full_machine_field_impossible
-#print axioms RMQ.Archive.SelectObstructions.local_locator_full_machine_field_impossible
+#print axioms RMQ.Archive.SelectObstructions.shared_aligned_read_word_forces_same_wordIndex
+#print axioms RMQ.Archive.SelectObstructions.shared_local_locator_forces_same_selected_wordIndex
+#print axioms RMQ.Archive.SelectObstructions.shared_local_locator_contradicts_distinct_selected_wordIndex
 
 /- Old BP-specialized relative-split capstone retained for compatibility. -/
 

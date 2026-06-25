@@ -158,8 +158,13 @@ probably too narrow for the final false-select construction.  Its query shape
 reads one local table sample and one aligned payload word.  The sparse/dense
 locator needs branch-specific explicit reads and a dense two-word path.
 
-Therefore the final implementation should introduce a concrete false-select
-surface whose query is defined from its payload fields:
+Historical note: the concrete false-select surface sketched below was the
+four-field locator path that has since been physically pruned from the live
+proposal module. It is retained here only as design context for what not to
+revive; current code should use the generic select surface and the live
+relative-split construction instead.
+
+The retired sketch was:
 
 ```lean
 structure SparseDenseFalseSelectCloseData
@@ -184,17 +189,14 @@ structure SparseDenseFalseSelectCloseData
   -- concrete fixed-width payload decoders, not arbitrary answer fields.
 ```
 
-Checked caveat for the current Lean surface: the implemented
-`SparseDenseFalseSelectLocatorEntry` packs four equal-width fields into one
-charged word. The theorem
-`sparseDenseFalseSelectLocatorEntry_fullMachineField_not_word_bounded` proves
-that four full machine-width fields cannot satisfy the machine-word read bound,
-and the `SparseDenseFalseSelectCloseData.*_full_machine_field_impossible`
-theorems lift this to present super/local locator entries. A concrete
-dense-local builder should not try to store absolute BP base positions in that
-one-word entry. It should use relative fields, split locator fields across a
-bounded number of charged words, or prove that explicit exception payloads cover
-the affected intervals within the named little-o budget.
+Checked caveat for the retired Lean surface: the four-field locator packed too
+much into one charged word. The live tree no longer compiles that island, and
+archive checks retain only the smaller shared-locator obstruction witnesses.
+A concrete dense-local builder should still not try to store absolute BP base
+positions in a high-frequency one-word entry. It should use relative fields,
+split locator fields across a bounded number of charged words, or prove that
+explicit exception payloads cover the affected intervals within the named
+little-o budget.
 
 The stronger invariant for the final C1 construction is:
 
@@ -243,23 +245,11 @@ directory and reads a relative offset, then adds the stored base position. A
 variable-length explicit table is acceptable only if it also supplies a charged
 base-offset directory and proves that directory's payload budget.
 
-Current positive repair surface:
-`FixedWidthSparseDenseFalseSelectDenseLocalEntryTable` splits dense-local fields
-across four independent fixed-width Nat tables and proves payload length,
-unit-cost per-field reads, and machine-word bounds from only
-`fieldWidth <= machineWordBits n`. `SparseDenseFalseSelectCloseData` now
-consumes that table in its dense branch: after the packed local locator marks a
-dense case, `selectCloseCosted` reads
-`denseLocalTable.readCosted loc.pointer` and then runs the two-word BP payload
-fallback from the split dense-local entry. The routing-helper theorem
-`sparseDenseFalseSelectBranchObligations_of_built_entries` has been aligned to
-the same split dense entry route, and
-`sparseDenseFalseSelectBranchObligations_of_built_entries_and_dense_payload_facts`
-replaces the dense answer-certificate premise with aligned-word and rank/local
-occurrence routing facts over that split entry. The generated
-`builtLongExplicitFalseSelectBranch` is useful as a sanity check for
-long-explicit exactness, but it stores every false position and is not the
-compact final construction.
+Current positive repair surface: the live tree now routes the public capstone
+through the generic select implementation and retains the relative-split
+BP-specialized construction as a checked compatibility result. The old
+`SparseDenseFalseSelectCloseData` dense-branch adapter and generated
+`builtLongExplicitFalseSelectBranch` were removed from the live proposal file.
 
 Adversarial audit note: the split dense-local table is a useful representation
 primitive, not by itself the final compact route. If it is populated with one
@@ -270,7 +260,8 @@ is obtained by the rectangular arithmetic or charged side locator above, and
 that the table's field widths and number of rows fit the named
 `canonicalSparseDenseFalseSelectOverhead` budget.
 
-Then define, not store as a field:
+For any future replacement, define the query from payload reads, not as a
+proof-only field:
 
 ```lean
 def SparseDenseFalseSelectCloseData.selectCloseCosted

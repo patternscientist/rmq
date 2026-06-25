@@ -1308,11 +1308,9 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctSelectProposal.canonicalTwoLevelSelectDataOfChunksExact_selectCosted_profile`,
   `SuccinctSelectProposal.fixedWidthSelectSampleTables_payload_length_eq_budget`,
   `SuccinctSelectProposal.fixedWidthSelectSampleTables_payload_length_le_sampled`,
-  `SuccinctSelectProposal.sparseDenseFalseSelectLocatorEntry_fullMachineField_not_word_bounded`,
-  `SuccinctSelectProposal.SparseDenseFalseSelectCloseData.short_super_local_pointer_capacity_obstruction`,
-  `SuccinctSelectProposal.SparseDenseFalseSelectCloseData.dense_branch_packed_local_pointer_capacity_obstruction`,
-  `SuccinctSelectProposal.SparseDenseFalseSelectCloseData.super_locator_full_machine_field_impossible`,
-  `SuccinctSelectProposal.SparseDenseFalseSelectCloseData.local_locator_full_machine_field_impossible`,
+  `Archive.SelectObstructions.shared_aligned_read_word_forces_same_wordIndex`,
+  `Archive.SelectObstructions.shared_local_locator_forces_same_selected_wordIndex`,
+  `Archive.SelectObstructions.shared_local_locator_contradicts_distinct_selected_wordIndex`,
   `SuccinctSelectProposal.twoLevelSelectOverhead_littleO`,
   `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData.selectCosted_cost_le_four`,
   `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData.selected_position_in_read_word_of_sample`,
@@ -1553,15 +1551,14 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile`,
   `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`.
 - `RMQ/Archive/SelectObstructions.lean`:
-  checked aliases for retained sparse/dense BP-specialized obstruction
-  witnesses, including
-  `Archive.SelectObstructions.sparseDense_locator_fullMachineField_not_word_bounded`
-  and the packed-pointer impossibility theorems.
+  checked aliases for retained two-level select obstruction witnesses after
+  the old four-field sparse/dense false-select locator island was physically
+  pruned.
 - `RMQ/Archive/BPSpecializedCapstone.lean`:
   the old relative-split BP-specialized total two-sided capstone alias
   `Archive.BPSpecializedCapstone.total_two_sided_doubled_catalan_slack_profile`.
 - `RMQ/Archive/SelectCompatibility.lean`:
-  thin compatibility aliases for the older archive names.
+  thin compatibility aliases for the retained archive surfaces.
 - `RMQ/Core/RankSelectPublic.lean`:
   neutral public aliases for the standalone rank/select spoke, including
   `RankSelect.jacobsonClarkNPlusOConstantQuery`.

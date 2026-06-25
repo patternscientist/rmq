@@ -398,24 +398,12 @@ not store absolute `0..n` positions at local-entry frequency unless the same
 profile proves the absolute encoding still lies under the named little-o
 overhead.
 
-The current positive repair surface is
-`FixedWidthSparseDenseFalseSelectDenseLocalEntryTable`, which stores
-dense-local fields in four independently bounded fixed-width Nat tables.
-`SparseDenseFalseSelectCloseData.selectCloseCosted` now consumes this split
-table in the dense path by reading `denseLocalTable.readCosted loc.pointer`
-before the two-word BP payload fallback, so dense local exactness no longer
-depends on `loc.basePosition` from the packed local locator. Second,
-`sparseDenseFalseSelectBranchObligations_of_built_entries` derives the five
-`SparseDenseFalseSelectCloseData` branch-exactness fields from concrete
-routing/coverage facts and dense-span certificates along that same split-entry
-route. The strengthened sibling
-`sparseDenseFalseSelectBranchObligations_of_built_entries_and_dense_payload_facts`
-builds the dense-span certificate from aligned BP payload words plus split-entry
-rank/routing facts, so the remaining dense obligation is to instantiate those
-facts from the actual compact builder tables. Those facts are the next builder
-obligations, not final proof-only fields. `builtLongExplicitFalseSelectBranch`
-is retained only as a generated long-explicit sanity/reference branch; it stores
-all false positions and cannot witness `o(n)` auxiliary space.
+The old four-field sparse/dense false-select locator path has now been
+physically pruned from the live proposal module. The useful residue is the
+relative-split construction consumed by the current capstone, plus the retained
+two-level shared-locator obstruction witnesses. New C1 work should not revive
+`SparseDenseFalseSelectCloseData` or the rectangular locator branch; it should
+build on the generic select surface and the live relative-split tables.
 
 The latest rectangular-built worker branch clarified this target. A route
 through `builtTwoLevelFalseSelectCloseData` / the full-width
@@ -901,8 +889,8 @@ Invalid stop points for this final path:
   comes from proof fields such as `descriptor_some_exact`,
   `descriptor_none_exact`, `descriptor_word_choice_exact`, or a free
   `descriptorIndex`, while the compact payload builder remains missing.
-- reviving `SparseDenseFalseSelectCloseData.profile` or a sibling
-  sparse/dense close-access adapter as a final checkpoint while the
+- reviving the pruned `SparseDenseFalseSelectCloseData.profile` route or a
+  sibling sparse/dense close-access adapter as a final checkpoint while the
   super/local/exception tables are not constructed from `shape.bpCode` and the
   branch-exactness fields are still supplied as assumptions.
 - proving `builtTwoLevelFalseSelectCloseData_profile`,

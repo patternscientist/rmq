@@ -5,16 +5,12 @@ import RMQ.Archive.BPSpecializedCapstone
 Compatibility aliases for archived select/access surfaces.
 
 New archive checks should prefer `RMQ.Archive.SelectObstructions` and
-`RMQ.Archive.BPSpecializedCapstone` directly. This file keeps the older stable
-names as a thin compatibility root.
+`RMQ.Archive.BPSpecializedCapstone` directly. This file keeps older stable
+archive import behavior as a thin compatibility root, without retaining the
+physically pruned four-field locator island.
 -/
 
 namespace RMQ.Archive.SelectCompatibility
-
-/- BP-specialized sparse/dense false-select obstruction anchor. -/
-
-abbrev sparseDense_locator_fullMachineField_not_word_bounded :=
-  RMQ.Archive.SelectObstructions.sparseDense_locator_fullMachineField_not_word_bounded
 
 /- Old closed RMQ capstone preserved as a compatibility anchor. -/
 
