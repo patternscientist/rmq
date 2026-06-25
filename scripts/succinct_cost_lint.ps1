@@ -17,6 +17,7 @@ $littleOMatches = rg -n -U $littleOPattern `
   RMQ/Core/SuccinctSelectProposal.lean `
   RMQ/Core/SuccinctSelect `
   RMQ/Core/SuccinctCloseProposal.lean `
+  RMQ/Core/SuccinctClose `
   RMQ/Core/SuccinctFinal.lean
 
 if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 1) {

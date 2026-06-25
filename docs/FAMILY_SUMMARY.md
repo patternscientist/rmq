@@ -288,7 +288,10 @@ local locator reads through an explicit block index, so the reusable
 payload-live/exact/profile layer no longer forces one local table word at every
 occurrence index; the canonical finite constructor remains the old identity
 index witness until a concrete dense/sparse select builder supplies compact
-block indexes. `SuccinctCloseProposal.BlockMicroCodebook.profile` and
+block indexes. The foundational dense block-local close/LCA table and absolute
+BP range summary layers now live under `Core.SuccinctClose.BlockLocal` and
+`Core.SuccinctClose.RangeSummary`, preserving the historical
+`SuccinctCloseProposal` namespace. `SuccinctCloseProposal.BlockMicroCodebook.profile` and
 `SuccinctCloseProposal.MacroMicroBPCloseLCADirectory.profile` add the
 close-LCA micro-codebook/fallback skeleton that the final BP navigation layer
 should instantiate. `SuccinctCloseProposal.BlockCodeTable.profile`,
@@ -1349,7 +1352,10 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctSelectProposal.SampledPayloadLiveStoredWordSelectFamily.bounded_constant_query_profile`,
   `SuccinctSelectProposal.ExactSampledPayloadLiveStoredWordSelectFamily.constant_query_profile`,
   `SuccinctSelectProposal.ExactSampledPayloadLiveStoredWordSelectFamily.bounded_constant_query_profile`.
-- `RMQ/Core/SuccinctCloseProposal.lean`:
+- `RMQ/Core/SuccinctClose/BlockLocal.lean`,
+  `RMQ/Core/SuccinctClose/RangeSummary.lean`, and the remaining
+  `RMQ/Core/SuccinctCloseProposal.lean` root, all preserving the historical
+  `SuccinctCloseProposal` namespace:
   `SuccinctCloseProposal.closeToInorder_eq_of_bpCloseOfInorder?`,
   `SuccinctCloseProposal.densePairSlot_lt`,
   `SuccinctCloseProposal.densePairSlot_div`,
