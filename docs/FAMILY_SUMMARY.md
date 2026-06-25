@@ -12,7 +12,8 @@ compact BP close/LCA directory, rank-backed local BP seed routing through the
 final payload-live access family, and a public generic-select theorem surface
 that packages the `2*n + o(n)` upper structure with the doubled Catalan lower
 slack. The older relative-split capstone is now a checked compatibility
-surface; its trust-base checks live in `scripts/archive_axiom_check.lean`,
+surface; closed/citation anchors live in `RMQ/Archive/SelectCompatibility.lean`,
+and the corresponding trust-base checks live in `scripts/archive_axiom_check.lean`,
 which is run by the gate.
 
 This document is the family-level map for the current Lean development. It
@@ -690,7 +691,8 @@ full false-count identity for `shape.bpCode` is used only in exactness proofs.
 The older `SparseDenseFalseSelectCloseData` adapter remains as a compatibility
 surface for the earlier packed sparse/dense route, not the final compact C1
 witness; its curated theorem checks have also moved to
-`scripts/archive_axiom_check.lean`.
+`scripts/archive_axiom_check.lean`, with stable archive aliases for the closed
+anchors in `RMQ.Archive.SelectCompatibility`.
 `scripts/succinct_cost_lint.ps1` is wired into `scripts/gate.ps1` and now flags
 the audited anti-pattern
 `LittleOLinear (fun _ => ...)` and the old uncharged full false-rank guard
@@ -1954,6 +1956,14 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`,
   `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile`,
   `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`.
+- `RMQ/Archive/SelectCompatibility.lean`:
+  checked aliases for closed/citation anchors from the superseded
+  BP-specialized sparse/dense and relative-split select/access routes, including
+  `Archive.SelectCompatibility.sparseDense_locator_fullMachineField_not_word_bounded`,
+  `Archive.SelectCompatibility.builtRelativeSplit_closeData_profile`,
+  `Archive.SelectCompatibility.builtRelativeSplit_closeAccessFamily_profile`,
+  and
+  `Archive.SelectCompatibility.builtRelativeSplit_bpNative_total_two_sided_doubled_catalan_slack_profile`.
 - `RMQ/Core/SuccinctReduction.lean` (7):
   `Succinct.rmqBackendOfEulerParensBackend_queryBuilt`,
   `Succinct.lcaCandidateOfEulerParensBackend_eq_queryBuilt`,

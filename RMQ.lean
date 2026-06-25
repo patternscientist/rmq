@@ -14,6 +14,7 @@ import RMQ.Core.GenericSelectPrimitives
 import RMQ.Core.GenericSelectBuilder
 import RMQ.Core.SuccinctCloseProposal
 import RMQ.Core.SuccinctFinal
+import RMQ.Archive
 import RMQ.Core.Reduction
 import RMQ.Core.SuccinctReduction
 import RMQ.Core.Cartesian

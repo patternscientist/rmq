@@ -128,14 +128,14 @@ The generic select source is now the concrete source consumed by
 `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`,
 with total and two-sided wrappers. The old relative-split capstone is no
 longer part of the main load-bearing axiom inventory, but it remains checked
-through the archive script until a later source-prune pass.
+through the archive namespace/script until a later source-prune pass.
 
 ## Phase 2: Archive Or Prune Superseded Select Code
 
 After Phase 1, rerun the Phase 0 inventory. Then:
 
 - move proved obstruction/no-go results to an explicit archive module such as
-  `RMQ/Archive/SelectObstructions.lean`;
+  `RMQ/Archive/SelectCompatibility.lean`;
 - keep that archive checked if public docs cite those results;
 - delete genuinely dead self-contained islands only after a green gate;
 - avoid deleting old code merely because it is ugly if it still carries a
@@ -147,10 +147,11 @@ main. Do not trust stale line counts or stale reference counts.
 
 The first archive boundary is now active: old BP-specialized sparse/dense and
 relative-split select/access checks have moved from the main curated axiom
-inventory to `scripts/archive_axiom_check.lean`, and `scripts/gate.ps1` runs
-that archive script. Source declarations are deliberately still present. Treat
-direct deletion or physical `RMQ/Archive/...` source extraction as the next
-pass, after another reference scan confirms that no live generic capstone or
+inventory to `scripts/archive_axiom_check.lean`, and stable closed/citation
+anchors live in `RMQ/Archive/SelectCompatibility.lean`. `scripts/gate.ps1`
+runs the archive check. Source declarations are deliberately still present.
+Treat direct deletion or deeper physical source extraction as the next pass,
+after another reference scan confirms that no live generic capstone or
 rank/select theorem consumes the candidate.
 
 ## Phase 3: Split Mega-Modules

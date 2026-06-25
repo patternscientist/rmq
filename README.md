@@ -171,6 +171,9 @@ about Lean's executable `List` runtime.
   little-o auxiliary payload, constant modeled query cost, and machine-word
   read bounds, plus the public Jacobson/Clark bitvector family theorem
   `GenericSelect.jacobsonClarkRankSelectFamily_n_plus_o_constant_query_profile`.
+- `RMQ/Archive/SelectCompatibility.lean`: checked compatibility aliases for
+  superseded BP-specialized select/access routes that are preserved while the
+  live headline path uses the generic select surface.
 - `RMQRankSelect.lean`: standalone rank/select spoke import root. It exposes
   the public bitvector spec plus the Jacobson/Clark construction without
   importing RMQ windows, Cartesian trees, LCA, Fischer-Heun, or the final RMQ
