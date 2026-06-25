@@ -664,6 +664,13 @@ is indexed by exception rank plus local occurrence. `SuccinctFinal` consumes it
 through `RelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily` and the
 concrete theorem
 `SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`.
+As the first cleanup bridge toward eliminating duplicated select machinery,
+`SuccinctFinal.builtGenericSparseExceptionSelectBPCloseAccessFamily_profile`
+now packages the standalone generic Clark sparse-exception source
+`GenericSelect.sparseExceptionSelectSource shape.bpCode false` directly as a
+BP close-access family, using the existing `select_false_bpCode_eq_bpCloseOfInorder?`
+semantic bridge. The public capstone has not yet been rerouted through this
+generic replacement surface.
 The public total two-sided capstone wrapper
 `SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`
 states the same all-`n` payload, exactness, and uniform constant-query profile
@@ -1914,6 +1921,7 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctFinal.RelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory.profile`,
   `SuccinctFinal.RelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.constant_query_profile`,
   `SuccinctFinal.builtRelativeSplitBPCloseRankData_auxPayload_le_overhead`,
+  `SuccinctFinal.builtGenericSparseExceptionSelectBPCloseAccessFamily_profile`,
   `SuccinctFinal.builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily_profile`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQOverhead_littleO`,
   `SuccinctFinal.concreteBPNativeSelectCloseCosted_cost_le`,

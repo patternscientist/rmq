@@ -1,3 +1,4 @@
+import RMQ.Core.GenericSelectBuilder
 import RMQ.Core.SuccinctSelectProposal
 import RMQ.Core.SuccinctCloseProposal
 
@@ -1338,6 +1339,143 @@ theorem relativeSplitSparseExceptionBPCloseAccessOverhead_littleO :
   exact
     relativeSplitSparseExceptionBPCloseRankOverhead_littleO.add
       SuccinctSelectProposal.canonicalRelativeSplitSparseExceptionFalseSelectOverhead_littleO
+
+def genericSparseExceptionBPCloseAccessOverhead
+    (n : Nat) : Nat :=
+  relativeSplitSparseExceptionBPCloseRankOverhead n +
+    GenericSelect.canonicalSparseExceptionSelectOverhead (2 * n)
+
+theorem genericSparseExceptionBPCloseAccessOverhead_littleO :
+    SuccinctSpace.LittleOLinear
+      genericSparseExceptionBPCloseAccessOverhead := by
+  unfold genericSparseExceptionBPCloseAccessOverhead
+  exact
+    relativeSplitSparseExceptionBPCloseRankOverhead_littleO.add
+      GenericSelect.canonicalSparseExceptionSelectOverhead_littleO.comp_two_mul_arg
+
+def builtGenericSparseExceptionSelectBPCloseAccessDirectory
+    (shape : Cartesian.CartesianShape) :
+    BPCloseAccessDirectory shape
+      (genericSparseExceptionBPCloseAccessOverhead shape.size)
+      SuccinctSelectProposal.sparseDenseFalseSelectQueryCost where
+  payload :=
+    (builtRelativeSplitBPCloseRankData shape).auxPayload ++
+      (GenericSelect.sparseExceptionSelectSource
+        shape.bpCode false).payload
+  payload_length_le_overhead := by
+    have hrank :=
+      builtRelativeSplitBPCloseRankData_auxPayload_le_overhead shape
+    have hselectProfile :=
+      GenericSelect.sparseExceptionSelectSource_profile shape.bpCode false
+    have hselect :
+        (GenericSelect.sparseExceptionSelectSource
+          shape.bpCode false).payload.length <=
+          GenericSelect.canonicalSparseExceptionSelectOverhead
+            shape.bpCode.length := by
+      simpa [GenericSelect.sparseExceptionSelectSource,
+        GenericSelect.SparseExceptionSelectData.toChargedSelectPositionSource]
+        using hselectProfile.1
+    have hbp : shape.bpCode.length = 2 * shape.size := by
+      simpa using Cartesian.CartesianShape.bpCode_length shape
+    have hselectSize :
+        (GenericSelect.sparseExceptionSelectSource
+          shape.bpCode false).payload.length <=
+          GenericSelect.canonicalSparseExceptionSelectOverhead
+            (2 * shape.size) := by
+      simpa [hbp] using hselect
+    simp [genericSparseExceptionBPCloseAccessOverhead,
+      List.length_append]
+    omega
+  selectCloseCosted := fun idx =>
+    (GenericSelect.sparseExceptionSelectSource
+      shape.bpCode false).selectPositionCosted idx
+  rankCloseCosted := fun pos =>
+    (builtRelativeSplitBPCloseRankData shape).rankCosted false pos
+  selectClose_cost_le := by
+    intro idx
+    have hprofile :=
+      GenericSelect.sparseExceptionSelectSource_profile shape.bpCode false
+    exact hprofile.2.2.1 idx
+  rankClose_cost_le := by
+    intro pos
+    exact (builtRelativeSplitBPCloseRankData shape).rankCosted_cost_le
+      false pos
+  selectClose_exact := by
+    intro idx
+    calc
+      ((GenericSelect.sparseExceptionSelectSource
+          shape.bpCode false).selectPositionCosted idx).erase =
+          Succinct.select false shape.bpCode idx := by
+        have hprofile :=
+          GenericSelect.sparseExceptionSelectSource_profile shape.bpCode false
+        exact hprofile.2.2.2.1 idx
+      _ = SuccinctSpace.bpCloseOfInorder? shape idx := by
+        exact SuccinctSpace.select_false_bpCode_eq_bpCloseOfInorder? shape idx
+  rankClose_exact := by
+    intro pos
+    exact (builtRelativeSplitBPCloseRankData shape).rankCosted_exact false pos
+  rankReadWords :=
+    (builtRelativeSplitBPCloseRankData shape).bitWords.store.words.toList
+  selectReadWords :=
+    (GenericSelect.sparseExceptionSelectSource
+      shape.bpCode false).readWords
+  rank_read_words_length_le_machine := by
+    intro word hmem
+    exact (builtRelativeSplitBPCloseRankData shape).payload_word_length_le_machine
+      hmem
+  select_read_words_length_le_machine := by
+    intro word hmem
+    have hprofile :=
+      GenericSelect.sparseExceptionSelectSource_profile shape.bpCode false
+    exact hprofile.2.2.2.2 hmem
+
+def builtGenericSparseExceptionSelectBPCloseAccessFamily :
+    PayloadLiveBPCloseAccessFamily
+      genericSparseExceptionBPCloseAccessOverhead
+      SuccinctSelectProposal.sparseDenseFalseSelectQueryCost where
+  directory shape :=
+    builtGenericSparseExceptionSelectBPCloseAccessDirectory shape
+  overhead_littleO :=
+    genericSparseExceptionBPCloseAccessOverhead_littleO
+
+theorem builtGenericSparseExceptionSelectBPCloseAccessFamily_profile :
+    SuccinctSpace.LittleOLinear
+        genericSparseExceptionBPCloseAccessOverhead /\
+      forall shape : Cartesian.CartesianShape,
+        ((builtGenericSparseExceptionSelectBPCloseAccessFamily.directory
+            shape).payload.length <=
+            genericSparseExceptionBPCloseAccessOverhead shape.size) /\
+          (forall idx,
+            ((builtGenericSparseExceptionSelectBPCloseAccessFamily.directory
+              shape).selectCloseCosted idx).cost <=
+              SuccinctSelectProposal.sparseDenseFalseSelectQueryCost) /\
+          (forall pos,
+            ((builtGenericSparseExceptionSelectBPCloseAccessFamily.directory
+              shape).rankCloseCosted pos).cost <=
+              SuccinctSelectProposal.sparseDenseFalseSelectQueryCost) /\
+          (forall idx,
+            ((builtGenericSparseExceptionSelectBPCloseAccessFamily.directory
+              shape).selectCloseCosted idx).erase =
+              SuccinctSpace.bpCloseOfInorder? shape idx) /\
+          (forall pos,
+            ((builtGenericSparseExceptionSelectBPCloseAccessFamily.directory
+              shape).rankCloseCosted pos).erase =
+              Succinct.rankPrefix false shape.bpCode pos) /\
+          (forall {word : List Bool},
+            List.Mem word
+                (builtGenericSparseExceptionSelectBPCloseAccessFamily.directory
+                  shape).rankReadWords ->
+              word.length <=
+                SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          forall {word : List Bool},
+            List.Mem word
+                (builtGenericSparseExceptionSelectBPCloseAccessFamily.directory
+                  shape).selectReadWords ->
+              word.length <=
+                SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+  exact
+    PayloadLiveBPCloseAccessFamily.constant_query_profile
+      builtGenericSparseExceptionSelectBPCloseAccessFamily
 
 def builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
     (shape : Cartesian.CartesianShape) :
