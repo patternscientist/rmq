@@ -5,6 +5,7 @@ import RMQ.Core.Backend
 import RMQ.Core.LCA
 import RMQ.Core.PlusMinusOne
 import RMQ.Core.Succinct
+import RMQ.Core.SuccinctSelect
 import RMQ.Core.SuccinctRankSelect
 import RMQ.Core.BPCloseNavigation
 import RMQ.Core.SuccinctRMQ

@@ -272,6 +272,14 @@ BP-shaped bridges remain above the plain bitvector core in
 and `SuccinctFinal`. The canonical `RMQ.Core.GenericSelect` root is pure
 plain-bitvector generic; it does not import BP compatibility or legacy aliases.
 
+The select-side proposal layer has started the same dependency-role split.
+`RMQ/Core/SuccinctSelect.lean` is a thin reusable barrel for
+`SuccinctSelect/TwoLevel.lean`, `SuccinctSelect/Obstructions.lean`, and
+`SuccinctSelect/DenseLocalTables.lean`. The historical
+`RMQ.SuccinctSelectProposal` namespace is preserved, while
+`RMQ/Core/SuccinctSelectProposal.lean` now owns the remaining C1-specific
+sparse/dense relative-split false-close construction.
+
 Keep import direction simple:
 
 ```text

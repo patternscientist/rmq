@@ -15,6 +15,7 @@ $littleOPattern = "LittleOLinear\s*\(\s*fun\s+_\s*=>"
 $littleOMatches = rg -n -U $littleOPattern `
   RMQ/Core/SuccinctRankProposal.lean `
   RMQ/Core/SuccinctSelectProposal.lean `
+  RMQ/Core/SuccinctSelect `
   RMQ/Core/SuccinctCloseProposal.lean `
   RMQ/Core/SuccinctFinal.lean
 
@@ -25,6 +26,7 @@ if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 1) {
 $fullRankGuardPattern = "if\s+.*rankPrefix\s+false\s+shape\.bpCode\s+shape\.bpCode\.length\s+then"
 $fullRankGuardMatches = rg -n $fullRankGuardPattern `
   RMQ/Core/SuccinctSelectProposal.lean `
+  RMQ/Core/SuccinctSelect `
   RMQ/Core/SuccinctFinal.lean
 
 if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 1) {

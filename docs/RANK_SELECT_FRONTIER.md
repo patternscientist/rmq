@@ -67,6 +67,10 @@ The reusable public spec is:
 The concrete construction currently lives in:
 
 - `RMQ/Core/SuccinctRankProposal.lean`
+- `RMQ/Core/SuccinctSelect.lean`
+- `RMQ/Core/SuccinctSelect/TwoLevel.lean`
+- `RMQ/Core/SuccinctSelect/Obstructions.lean`
+- `RMQ/Core/SuccinctSelect/DenseLocalTables.lean`
 - `RMQ/Core/SuccinctSelectProposal.lean`
 - `RMQ/Core/GenericSelect/LowLevel.lean`
 - `RMQ/Core/GenericSelect/SelectFacts.lean`
@@ -98,6 +102,7 @@ The intended direction is:
 ```text
 Succinct -> SuccinctSpace -> RankSelectSpec
 Succinct -> SuccinctSpace -> SuccinctRankProposal -> GenericSelect.SelectSource
+SuccinctRankProposal -> SuccinctSelect.{TwoLevel,Obstructions,DenseLocalTables}
 GenericSelect.SelectSource --feeds downstream proposal--> SuccinctSelectProposal
 SuccinctRankProposal -> GenericSelect.{SelectFacts,Arithmetic}
 GenericSelect.SelectFacts -> GenericSelect.Arithmetic
