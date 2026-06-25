@@ -148,6 +148,14 @@ about Lean's executable `List` runtime.
   local BP decoder seeds on the final path are routed through the payload-backed
   rank-close access callback; remaining succinct work is presentation polish,
   such as an even flatter encoded/payload-only view of the same capstone.
+- `RMQ/Core/RankSelectSpec.lean` and `RMQ/Core/GenericSelectBuilder.lean`:
+  standalone rank/select extraction surfaces. `RankSelectSpec` packages exact
+  bitvector access/rank/select over stored bits with an `n + overhead n`
+  payload profile, while `GenericSelectBuilder` now has a target-threaded
+  Clark-style sparse-exception select source with concrete branch exactness,
+  little-o auxiliary payload, constant modeled query cost, and machine-word
+  read bounds, plus the public Jacobson/Clark bitvector family theorem
+  `GenericSelect.jacobsonClarkRankSelectFamily_n_plus_o_constant_query_profile`.
 - `RMQ/Core/SuccinctReduction.lean`: reduction-facing adapter from
   plus-minus-one RMQ backends over generated Euler-tour parentheses to the
   ordinary RMQ/LCA backend interfaces.
@@ -252,7 +260,7 @@ polish, extraction, and the next spoke rather than another hidden RMQ blocker:
   next research target needs interpreter-level anti-vacuity;
 - extract the reusable cost/refinement/lower-bound hub toward a CSLib-style
   library surface;
-- extract standalone succinct rank/select and balanced-parentheses navigation
-  as the first reusable bit-level spoke; and
+- refine the landed standalone Jacobson/Clark rank/select theorem toward
+  compressed/FID space and balanced-parentheses navigation spokes; and
 - start union-find or another CS166-style structure once it can consume the
   hub rather than rebuild it.
