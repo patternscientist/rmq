@@ -2109,3 +2109,53 @@ Checks that it's legitimate curation, not concealment:
 Net: the highest-value roadmap item was executed correctly and honestly. Next concrete move
 is the prune (delete the now-superseded BP select machinery + the dead islands from the
 elegance audit), which is what actually shrinks the tree.
+
+## 2026-06-25 (AUDIT) — `main` @ `88fd2e2` (archive + alias batch)
+
+Three commits since `03f920e`: `ae0a45b` (archive superseded select axiom checks),
+`30c4be6` (archive select compatibility aliases), `88fd2e2` (public headline theorem
+aliases). Machine-checked: full `lake build` green; headline / archive / full axiom checks
+all zero `sorryAx`/`ofReduceBool`.
+
+**INTEGRITY VERDICT: GENUINE, nothing hidden.**
+- **Aliases are honest `abbrev`s and provably can't weaken.** `RMQ/Headlines.lean` gives
+  README-facing names (`succinctRMQTwoNPlusOConstantQuery`, `rankSelectNPlusOConstantQuery`,
+  `exactRMQLowerBoundDoubledCatalanSlack`) as `abbrev`s of the exact audited theorems. An
+  `abbrev` infers its type from the target, so the short name carries the *identical*
+  statement. `#print axioms` on all three resolves to `{propext, Classical.choice,
+  Quot.sound}` — i.e. they carry the genuine heavy axiom profile, not a stub's "no axioms."
+- **Archive is still gated, not a dodge.** `ae0a45b` moved 60 superseded headliners out of
+  `axiom_check.lean` into `scripts/archive_axiom_check.lean` AND added that file to
+  `gate.ps1` with the same `sorryAx`/`ofReduceBool` failure check. All 60 still verified
+  trust-clean. `RMQ/Archive/SelectCompatibility.lean` (`abbrev` anchors to the superseded
+  BP relative-split / locator theorems) is imported by `RMQ.lean`, so still compiled.
+
+**ELEGANCE VERDICT: net neutral-to-negative — this is curation, NOT the prune.**
+- **Zero source pruning.** These commits touched no `RMQ/Core/*.lean`. File sizes are
+  unchanged (`SuccinctSelectProposal` 19837, `GenericSelectBuilder` 6065,
+  `SuccinctCloseProposal` 26285); the 3 superseded structures (Locator + both Rectangular
+  CloseData) are 100% still present. The code-mass problem from the elegance audit is
+  untouched; the tree grew ~360 lines (new archive/alias/script files).
+- **The aliases + archive gating now ENTRENCH the dead code.** By aliasing 18 superseded
+  theorems as "compatibility anchors" and adding 60 of them to a gated check, the batch
+  *increases* coupling to the superseded machinery — the old theorems can no longer be
+  deleted without also tearing out the aliases and archive check. If the intent was the
+  Roadmap §1 final step (delete the superseded BP select), this moved *away* from it,
+  converting "delete-me dead code" into "maintain-forever compatibility surface."
+- **Unflagged strategic fork.** Some archived items are defensible keep-forever anchors
+  (the BP-specialized capstone as a *dual* proof alongside the generic one; the
+  `_not_littleO` obstruction witnesses). But dignifying truly-abandoned scaffolding — e.g.
+  `sparseDense_locatorTable_ofEntries_profile`, an unused codec nothing builds on — as a
+  citeable "compatibility anchor" is dubious. Decide per-item: genuine dual-proof/witness
+  (keep) vs. dead exploration (delete, don't alias).
+
+**Good:** the `Headlines` short names are a real readability/citation win for README/demo.
+**Carried-over, still not done:** `.tmp_rank_select_materials/` lecture PDFs still untracked
+and non-gitignored in the worktree; the 2× false/true select overhead; the file splits.
+
+Bottom line: trustworthy and well-formed, but the last three commits are bookkeeping that
+made the public surface nicer while leaving (and slightly entrenching) the bloat the
+elegance audit called out. The decision to make is explicit: **archive-as-keep vs.
+archive-as-stage-then-delete.** If the goal is a CSLib-caliber tree, the next commit must
+actually *delete* the dead islands (Locator codec first — it has no dual-proof value),
+which now also means removing their fresh compatibility aliases.
