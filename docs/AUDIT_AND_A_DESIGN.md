@@ -1931,3 +1931,74 @@ flag-rank; (c) Tier 6 structure `RelativeSplitSparseExceptionSelectData` + `sele
 + `_cost_le`/`_exact` + builder profile; (d) Tier 7 BP specialization to recover the
 capstone; (e) the new `ofRelativeSplitSelectData` source + family lift + `RankSelectSpec`
 select leg. Then generic `o(n)` exact select is closed.
+
+## 2026-06-24 (AUDIT) — `main` @ `59768bd` "Establish rank-select spoke boundary"
+
+Adversarial audit of `main` (tip `59768bd`, on top of `1a19617` "Add public Jacobson
+Clark rank-select family"). Machine-checked: full `lake build` green; full
+`scripts/axiom_check.lean` = 477 headliners, **zero** `sorryAx`/`ofReduceBool`/errors;
+`rank_select_axiom_check.lean` clean; gate hygiene + native_decide scans clean.
+
+**VERDICT: GENUINE — and it CLOSES the o(n) select wall this audit log flagged open
+twice** (`3b06ee4`, and the `9ade3de` reduction note above). The select half went from
+"abstract family shape, no concrete inhabitant, easy routes *proven* vacuous/linear"
+to a real concrete inhabitant. Headline:
+`RMQ.GenericSelect.jacobsonClarkRankSelectFamily_n_plus_o_constant_query_profile`
+(trust base `{propext, Classical.choice, Quot.sound}`).
+
+What it delivers: for **every** `bits : List Bool` and **both** target bits, a
+bitvector directory storing the `n` input bits + `o(n)` auxiliary bits, answering
+`access`/`rank`/`select` exactly (`= bits[i]?` / `Succinct.rankPrefix` /
+`Succinct.select`) in a uniform constant modeled query cost.
+
+**Adversarial checks that PASSED:**
+1. **Non-oracular.** `SparseExceptionSelectData.selectCosted` (GenericSelectBuilder
+   5228) is a real charged Clark/Munro dispatch: `superTable.readCosted` → (marked:
+   `longFlagRankData.rankCosted` + `relativeOffsetReadCosted longSuperRelativeTable`)
+   else (`localTable.readCosted` → `sparseDirectory.readCosted` or
+   `denseTwoWordSelectCosted bitWords`). No `Costed.pure (Succinct.select …)` anywhere;
+   the only `Costed.pure none` are correct out-of-range / missing-entry cases.
+2. **Inhabited (total builder).** `sparseExceptionSelectData bits target` (5656)
+   constructs the structure for all bits from concrete components
+   (`super/localEntries`, `super/local/longSuperRelative/sparseException` tables,
+   `bitWords := BoundedPayloadWordStore.ofChunks bits`), discharging
+   `payload_length_le_overhead` + 5 exactness fields. `selectCosted_exact` (5371) is a
+   genuine per-branch proof tying each decode branch to `Succinct.select` via
+   `Costed.erase_bind`/`readCosted_erase`.
+3. **Genuine o(n) (not vacuous, not Θ(n)).** `canonicalSparseExceptionSelectOverhead`
+   = sum of `logLogCubedSampledDirectoryOverhead` + `longSuperRelativeTableOverhead` +
+   `canonicalSparseExceptionDirectoryOverhead`, all strictly sublinear; `_littleO`
+   proven against the real predicate `LittleOLinear f := ∀ scale>0, ∃ T, ∀ n≥T,
+   scale*f n ≤ n` (textbook o(n) — `n` and `n/2` both FAIL it).
+4. **No double-count.** Select aux payload excludes `bitWords`; the `n` bits are
+   counted once by `RankSelectSpec` (`payload := bits ++ auxPayload`) and reused for
+   access, rank base, and dense select decode.
+5. **Gate STRENGTHENED, not weakened** (the audit's usual suspicion): `59768bd` added
+   `RMQHub`/`RMQRankSelect` build steps, extended hygiene/native_decide scans to the
+   new roots, and added the rank/select axiom check with `sorryAx`/`ofReduceBool`
+   detection. Capstone untouched and still trust-clean.
+
+**Honest caveats (stated, not deceptions):**
+- The abstract `BitVectorRankSelectFamily.n_plus_o_constant_query_profile` is **vacuous
+  in isolation** — a zero-overhead `Costed.pure (Succinct.select …)` oracle satisfies it
+  (`LittleOLinear 0` holds). `RANK_SELECT_FRONTIER.md` says so verbatim ("not an
+  existence theorem by itself"), and the public headline points to the *concrete*
+  inhabited theorem. Honestly handled.
+- "Constant query cost" is **modeled** (charged word-RAM / indexed-access ticks;
+  in-word rank/select charged O(1) per the standard transdichotomous assumption), not
+  unconditional wall-clock. Docs say "modeled."
+- `jacobsonClarkRankSelectPaddedAuxPayload` pads with `false` up to the clean overhead
+  expression: conservative (inflates the count) and **inert** (queries read the real
+  sources, not the padding); real payload ≤ overhead proven separately. Sound.
+
+**Process / cleanup findings (non-correctness):**
+- Untracked, **non-gitignored** `.tmp_rank_select_materials/{02,03}-…/lec0{2,3}-*.pdf`
+  (course lecture PDFs) sit in the `main` worktree — accidental-commit / repo-bloat
+  risk. Gitignore (`.tmp_*` / `*.pdf`) or remove.
+- The `claude/clark-two-level-select-source` branch (this session's parallel port of the
+  same entry/table + sparse-exception layer) is now **largely redundant** — `main`'s
+  6065-line `GenericSelectBuilder.lean` independently built the same structure and went
+  further (full structure + query + builder + family). Recommend: **abandon it.**
+  Confirmed not even the flag-rank factoring is unique — `main` already has the same
+  factored `flagRankData (flagBits)` generic family (GenericSelectBuilder 1089/1103).
+  Nothing on the clark branch is salvageable over `main`.
