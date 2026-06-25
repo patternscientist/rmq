@@ -38,6 +38,7 @@ The generic select layer lives in:
 The public bitvector extraction layer lives in:
 
 - `RMQ/Core/RankSelectSpec.lean`
+- `RMQ/Core/RankSelectPublic.lean`
 
 `RMQ.lean` imports `RankSelectSpec` before the proposal/generic builder modules,
 and imports the generic select modules before `SuccinctFinal`.
@@ -62,7 +63,13 @@ built sparse/dense query, `payload` is the built auxiliary payload, and
 
 ## Landed Public Rank/Select Theorems
 
-The public Jacobson/Clark plain-bitvector family is now:
+The public Jacobson/Clark plain-bitvector family is exposed as:
+
+```lean
+RMQ.RankSelect.jacobsonClarkNPlusOConstantQuery
+```
+
+The construction-heavy implementation theorems remain:
 
 ```lean
 RMQ.GenericSelect.jacobsonClarkRankSelectDirectory_profile
@@ -95,6 +102,8 @@ Succinct -> SuccinctSpace -> SuccinctRankProposal -> SuccinctSelectProposal
 
 `RankSelectSpec` should stay a small public spec module. Construction modules
 may adapt into it, but it should not import the proposal/generic builders.
+`RankSelectPublic` is deliberately downstream: it imports the construction
+modules and exposes neutral public aliases.
 
 ## Remaining Frontier
 

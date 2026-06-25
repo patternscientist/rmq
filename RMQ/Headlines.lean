@@ -1,5 +1,5 @@
 import RMQ.Core.EncodingLowerBound
-import RMQ.Core.GenericSelectBuilder
+import RMQ.Core.RankSelectPublic
 import RMQ.Core.SuccinctFinal
 
 /-!
@@ -18,7 +18,7 @@ abbrev exactRMQLowerBoundDoubledCatalanSlack :=
 
 /-- Standalone Jacobson/Clark rank/select family: `n + o(n)`, constant query. -/
 abbrev rankSelectNPlusOConstantQuery :=
-  RMQ.GenericSelect.jacobsonClarkRankSelectFamily_n_plus_o_constant_query_profile
+  RMQ.RankSelect.jacobsonClarkNPlusOConstantQuery
 
 /-- BP-native succinct RMQ capstone: exact RMQ, `2*n + o(n)`, constant query. -/
 abbrev succinctRMQTwoNPlusOConstantQuery :=

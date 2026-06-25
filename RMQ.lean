@@ -12,6 +12,7 @@ import RMQ.Core.SuccinctSelectProposal
 import RMQ.Core.GenericSelectParams
 import RMQ.Core.GenericSelectPrimitives
 import RMQ.Core.GenericSelectBuilder
+import RMQ.Core.RankSelectPublic
 import RMQ.Core.SuccinctCloseProposal
 import RMQ.Core.SuccinctFinal
 import RMQ.Archive

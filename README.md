@@ -165,14 +165,15 @@ about Lean's executable `List` runtime.
   path are routed through the payload-backed rank-close access callback;
   remaining succinct work is presentation polish, such as an even flatter
   encoded/payload-only view of the same capstone.
-- `RMQ/Core/RankSelectSpec.lean` and `RMQ/Core/GenericSelectBuilder.lean`:
-  standalone rank/select extraction surfaces. `RankSelectSpec` packages exact
-  bitvector access/rank/select over stored bits with an `n + overhead n`
-  payload profile, while `GenericSelectBuilder` now has a target-threaded
-  Clark-style sparse-exception select source with concrete branch exactness,
-  little-o auxiliary payload, constant modeled query cost, and machine-word
-  read bounds, plus the public Jacobson/Clark bitvector family theorem
-  `GenericSelect.jacobsonClarkRankSelectFamily_n_plus_o_constant_query_profile`.
+- `RMQ/Core/RankSelectSpec.lean`, `RMQ/Core/GenericSelectBuilder.lean`, and
+  `RMQ/Core/RankSelectPublic.lean`: standalone rank/select extraction
+  surfaces. `RankSelectSpec` packages exact bitvector access/rank/select over
+  stored bits with an `n + overhead n` payload profile, while
+  `GenericSelectBuilder` now has a target-threaded Clark-style
+  sparse-exception select source with concrete branch exactness, little-o
+  auxiliary payload, constant modeled query cost, and machine-word read bounds.
+  `RankSelectPublic` exposes the public Jacobson/Clark bitvector family theorem
+  as `RankSelect.jacobsonClarkNPlusOConstantQuery`.
 - `RMQ/Headlines.lean`: short aliases for the main public theorem surfaces,
   including `Headlines.exactRMQLowerBoundDoubledCatalanSlack`,
   `Headlines.rankSelectNPlusOConstantQuery`, and

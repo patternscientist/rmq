@@ -720,7 +720,7 @@ repository should remain the RMQ spoke until that trigger fires; see
 The first extraction spoke is now standalone succinct rank/select. The
 `RMQRankSelect` import root exposes an RMQ-independent spec and the public
 Jacobson/Clark theorem:
-`GenericSelect.jacobsonClarkRankSelectFamily_n_plus_o_constant_query_profile`.
+`RankSelect.jacobsonClarkNPlusOConstantQuery`.
 It proves an `n + o(n)` payload theorem with constant modeled `access`, `rank`,
 and `select` queries. The next rank/select research targets are compressed/FID
 payload bounds, a tighter word-bounded public presentation, and

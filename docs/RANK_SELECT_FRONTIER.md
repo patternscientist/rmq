@@ -1,6 +1,6 @@
 # Rank/Select Spoke
 
-Snapshot: 2026-06-24. This note records the first extracted succinct
+Snapshot: 2026-06-25. This note records the first extracted succinct
 data-structure spoke in the RMQ repository: plain bitvector access/rank/select.
 
 ## Import
@@ -43,10 +43,10 @@ RMQ.RankSelectSpec.BitVectorRankSelectFamily.n_plus_o_constant_query_profile
 This is not an existence theorem by itself: it packages the theorem once a
 family is supplied.
 
-The concrete landed Jacobson/Clark family theorem is:
+The concrete landed Jacobson/Clark family theorem is exposed publicly as:
 
 ```lean
-RMQ.GenericSelect.jacobsonClarkRankSelectFamily_n_plus_o_constant_query_profile
+RMQ.RankSelect.jacobsonClarkNPlusOConstantQuery
 ```
 
 It proves `LittleOLinear` auxiliary overhead and, for every
@@ -59,6 +59,7 @@ access, exact rank, exact select, and one fixed modeled query-cost bound.
 The reusable public spec is:
 
 - `RMQ/Core/RankSelectSpec.lean`
+- `RMQ/Core/RankSelectPublic.lean`
 
 The concrete construction currently lives in:
 
@@ -78,6 +79,8 @@ Succinct -> SuccinctSpace -> SuccinctRankProposal -> SuccinctSelectProposal
 
 `RankSelectSpec` should stay small and upstream. Construction modules may adapt
 into it, but it should not import the proposal/generic builders.
+`RankSelectPublic` is the downstream facade that is allowed to import the
+concrete Jacobson/Clark construction and expose short names.
 
 ## What Landed
 
@@ -100,6 +103,7 @@ The public adapter combines one Jacobson rank directory with two select
 sources, one for `false` and one for `true`:
 
 ```lean
+RMQ.RankSelect.jacobsonClarkNPlusOConstantQuery
 RMQ.GenericSelect.jacobsonClarkRankSelectDirectory_profile
 RMQ.GenericSelect.jacobsonClarkBitVectorRankSelectDirectory_profile
 RMQ.GenericSelect.sparseExceptionSelectSource_rankSelectSpec_adapter_profile
@@ -126,7 +130,9 @@ through the built `GenericSelect.sparseExceptionSelectSource` construction.
 
 Some implementation names still reveal their BP/RMQ ancestry, especially
 `falseSelect*` helpers and a few bridge lemmas used while extracting the generic
-select source. That is polish debt, not a correctness gap.
+select source. The public facade keeps downstream users on neutral
+`RMQ.RankSelect.*` names; the remaining internal names are polish debt, not a
+correctness gap.
 
 ## Remaining Frontier
 

@@ -1,13 +1,15 @@
-# Cleanup Plan And Post-Cleanup Roadmap
+# Cleanup Status And Post-Cleanup Roadmap
 
 This note records the cleanup direction after the public RMQ/rank-select
 milestones on `main`. It imports the useful conclusion from the external
 elegance audits, but it is the current-main plan: do not merge stale audit
 branches wholesale.
 
-The theorem content is the asset. The cleanup goal is to make the code look
-less like a successful proof expedition diary and more like a reusable Lean CS
-library component, while preserving both live headlines.
+The theorem content is the asset. The main public-facing cleanup pass is now
+complete: the live capstones are stable, stale expedition notes have been
+collapsed out of the public summary, archive anchors are separated from the
+headline path, and rank/select has a neutral public facade. The remaining items
+below are future library-shaping work, not blockers for the current RMQ spoke.
 
 ## Live Headlines
 
@@ -22,12 +24,12 @@ Do not break either headline while cleaning.
    surface for the BP-specialized relative-split path.
 
 2. **Rank/select spoke.** The public bitvector headline is
-   `GenericSelect.jacobsonClarkRankSelectFamily_n_plus_o_constant_query_profile`,
+   `RankSelect.jacobsonClarkNPlusOConstantQuery`,
    exported through `RMQRankSelect`: exact access/rank/select with
    `n + o(n)` payload and constant modeled query cost.
 
-The key structural smell is that the sparse-exception select idea exists in
-two forms:
+The key structural smell that motivated cleanup was that the sparse-exception
+select idea exists in two forms:
 
 - a BP-specialized false-close/select implementation still present as a
   checked compatibility/archive surface through `SuccinctSelectProposal` and
@@ -35,10 +37,10 @@ two forms:
 - a generic `List Bool` implementation consumed by the rank/select spoke
   through `GenericSelect`.
 
-The highest-value cleanup pass has now made the RMQ capstone consume the
-generic select implementation over `bits := shape.bpCode` and `target := false`.
-The next cleanup step is a current-main safety inventory before archiving or
-deleting any duplicated BP-specialized select machinery that has become dead.
+The highest-value cleanup pass made the RMQ capstone consume the generic select
+implementation over `bits := shape.bpCode` and `target := false`. The
+BP-specialized relative-split path is now explicitly archived as an old
+capstone, and its obstruction witnesses live under `RMQ.Archive`.
 
 ## Verification Gate
 
@@ -191,23 +193,28 @@ bitvector spec -> generic rank/select builders -> BP navigation -> RMQ capstone
 Generic bitvector code should not depend on Cartesian/RMQ concepts; BP/RMQ
 bridges should live above the generic layer.
 
-## Phase 4: Naming And Proof Idioms
+## Naming And Proof Idioms
 
-Do this after unification and pruning.
+Completed:
 
 - Short public aliases for the main theorem surfaces now live in
   `RMQ/Headlines.lean`; keep adding aliases there when a public-facing name is
   useful, while preserving the original construction-heavy declaration names.
+- `RMQ/Core/RankSelectPublic.lean` exposes neutral `RMQ.RankSelect.*` names for
+  the standalone rank/select spoke.
+- Compatibility aliases for archive-facing old names remain in
+  `RMQ/Archive/SelectCompatibility.lean`.
+
+Future opportunistic work:
+
 - In generic select code, remove `False` from names that are truly
   target-parametric.
-- Add short public theorem aliases for headline results, while preserving
-  compatibility aliases for existing long names.
 - Centralize repeated Nat/Bool/log facts in a small local prelude if the repo
   stays Mathlib-free.
 - Refactor repeated Bool case-split boilerplate and giant arithmetic proof
   fragments opportunistically, not as a broad risky rewrite.
 
-## Phase 5: Dependency Decision
+## Dependency Decision
 
 The project is still Mathlib-free by default. That remains a legitimate choice,
 but the cleanup phase should make the tradeoff explicit:
@@ -224,7 +231,7 @@ No cleanup task should introduce Mathlib without an explicit user decision.
 
 After the select unification and module cleanup, the natural next spokes are:
 
-1. a cleaner public rank/select package with examples and short aliases;
+1. examples and stable user-facing docs for the public rank/select package;
 2. balanced-parentheses navigation over the public rank/select surface;
 3. wavelet trees or range counting as the next CS166-style succinct structure;
 4. compressed/FID-style rank/select space refinements such as

@@ -10,6 +10,7 @@ modeled query cost.
 -/
 
 #print axioms RMQ.RankSelectSpec.BitVectorRankSelectFamily.n_plus_o_constant_query_profile
+#print axioms RMQ.RankSelect.jacobsonClarkNPlusOConstantQuery
 #print axioms RMQ.GenericSelect.sparseExceptionSelectSource_profile
 #print axioms RMQ.GenericSelect.jacobsonClarkRankSelectOverhead_littleO
 #print axioms RMQ.GenericSelect.jacobsonClarkRankSelectFamily_n_plus_o_constant_query_profile

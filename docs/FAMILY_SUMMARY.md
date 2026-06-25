@@ -1,6 +1,6 @@
 # RMQ Family Summary
 
-Snapshot: 2026-06-24, after the reusable table/access and payload models,
+Snapshot: 2026-06-25, after the reusable table/access and payload models,
 indexed LCA query-cost layer, Fischer-Heun-backed LCA model, traced sparse-query
 substrate, fixed-length exact-RMQ space sandwich, payload-lower-bound hub
 adapter, the proved coefficient-correct doubled Catalan lower-bound bridge,
@@ -136,6 +136,8 @@ flowchart TD
   GenericSelectPrimitives --> GenericSelectBuilder
   RankSelectSpec --> GenericSelectBuilder
   SuccinctRankProposal --> GenericSelectBuilder
+  RankSelectSpec --> RankSelectPublic["Core.RankSelectPublic"]
+  GenericSelectBuilder --> RankSelectPublic
   GenericSelectBuilder --> SuccinctFinal["Core.SuccinctFinal"]
   EncodingLowerBound --> SuccinctSpace
   LCA --> Reduction["Core.Reduction"]
@@ -225,7 +227,7 @@ flowchart TD
 ## Consolidated Scope Notes
 
 Rank/select update: the standalone plain-bitvector surface now has a concrete
-Jacobson/Clark instantiation.  `GenericSelect.jacobsonClarkRankSelectFamily_n_plus_o_constant_query_profile`
+Jacobson/Clark instantiation.  `RankSelect.jacobsonClarkNPlusOConstantQuery`
 combines `SuccinctRankProposal.jacobsonRankData` with two
 `GenericSelect.sparseExceptionSelectSource` values behind
 `RankSelectSpec.BitVectorRankSelectFamily`, proving stored-bit access, exact
@@ -1528,6 +1530,9 @@ The names below are grouped by source module. Repeated base names in
   `Archive.BPSpecializedCapstone.total_two_sided_doubled_catalan_slack_profile`.
 - `RMQ/Archive/SelectCompatibility.lean`:
   thin compatibility aliases for the older archive names.
+- `RMQ/Core/RankSelectPublic.lean`:
+  neutral public aliases for the standalone rank/select spoke, including
+  `RankSelect.jacobsonClarkNPlusOConstantQuery`.
 - `RMQ/Headlines.lean`:
   public-facing aliases
   `Headlines.exactRMQLowerBoundDoubledCatalanSlack`,
