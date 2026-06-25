@@ -14,9 +14,12 @@ library component, while preserving both live headlines.
 Do not break either headline while cleaning.
 
 1. **RMQ capstone.** The public succinct RMQ headline is
-   `SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`:
+   `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`:
    exact RMQ, `2*n + o(n)` payload, constant modeled query cost, and the
-   two-sided Catalan lower-bound story.
+   two-sided Catalan lower-bound story. The older
+   `SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`
+   remains checked compatibility for the BP-specialized relative-split path
+   until a later archive/prune pass.
 
 2. **Rank/select spoke.** The public bitvector headline is
    `GenericSelect.jacobsonClarkRankSelectFamily_n_plus_o_constant_query_profile`,
@@ -31,10 +34,10 @@ two forms:
 - a generic `List Bool` implementation consumed by the rank/select spoke
   through `GenericSelect`.
 
-The highest-value cleanup is to make the RMQ capstone consume the generic
-select implementation over `bits := shape.bpCode` and `target := false`, then
-archive or delete the duplicated BP-specialized select machinery that becomes
-dead.
+The highest-value cleanup pass has now made the RMQ capstone consume the
+generic select implementation over `bits := shape.bpCode` and `target := false`.
+The next cleanup step is a current-main safety inventory before archiving or
+deleting any duplicated BP-specialized select machinery that has become dead.
 
 ## Verification Gate
 
@@ -73,8 +76,9 @@ later deletion is fine after the archive import/check policy is explicit.
 
 ## Phase 1: Unify RMQ Select With Generic Select
 
-This is the strategic cleanup target. It should precede broad renaming because
-it shrinks the surface that would otherwise be renamed.
+This strategic cleanup target is present in the theorem surface. Keep this
+section as the checklist for what the new generic-select capstone discharges
+and as the guardrail for follow-up pruning.
 
 The semantic BP bridge facts already exist in `SuccinctSpace`:
 
@@ -99,8 +103,8 @@ theorem genericFalseSelectBPCloseAccessDirectory_profile
     (shape : Cartesian.CartesianShape) :
     ...
 
--- Capstone theorem should retain its public profile and axiom story.
-theorem builtGenericSelectBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile :
+-- Capstone theorem retains the public profile and axiom story.
+theorem builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile :
     ...
 ```
 
@@ -118,9 +122,11 @@ adapter must discharge:
 - theorem consumption: the final RMQ capstone consumes the generic select path,
   not a parallel BP-specialized path.
 
-Do not stop at an adapter theorem whose hypotheses already contain the answer.
-The generic select source must be the concrete source consumed by the capstone
-profile.
+The generic select source is now the concrete source consumed by
+`SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`,
+with total and two-sided wrappers. Do not delete the old relative-split
+capstone in this pass; treat it as compatibility until Phase 2 classifies the
+superseded code on current main.
 
 ## Phase 2: Archive Or Prune Superseded Select Code
 

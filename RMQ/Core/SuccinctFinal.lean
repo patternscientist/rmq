@@ -2321,5 +2321,168 @@ theorem builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_sid
       exact Nat.le_trans hcanonical hmono
     · exact htotal.2 n
 
+/--
+Generic-select public capstone for the built sparse-exception BP-native
+succinct RMQ family.
+
+This consumes `builtGenericSparseExceptionSelectBPCloseAccessFamily`, whose
+select-close leg is the standalone generic sparse-exception select source
+specialized to `shape.bpCode` and `false`, through the same abstract
+BP-native RMQ profile used by the compatibility relative-split capstone.
+-/
+theorem builtGenericSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile :
+    let accessFamily :=
+      builtGenericSparseExceptionSelectBPCloseAccessFamily
+    SuccinctSpace.LittleOLinear
+        (concreteBPNativeSuccinctRMQOverhead
+          genericSparseExceptionBPCloseAccessOverhead) /\
+      forall n : Nat,
+        EncodingLowerBound.logSlackLower n <=
+          2 * n +
+            concreteBPNativeSuccinctRMQOverhead
+              genericSparseExceptionBPCloseAccessOverhead n /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            (accessFamily.directory shape).payload.length <=
+              genericSparseExceptionBPCloseAccessOverhead n) /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            (concreteBPNativeSuccinctRMQPayload
+              accessFamily shape).length =
+              2 * n +
+                concreteBPNativeSuccinctRMQOverhead
+                  genericSparseExceptionBPCloseAccessOverhead n) /\
+        (forall shape left right,
+          (concreteBPNativeSuccinctRMQQueryCosted
+            accessFamily shape left right).cost <=
+              concreteBPNativeSuccinctRMQQueryCost
+                SuccinctSelectProposal.sparseDenseFalseSelectQueryCost) /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            forall {left len : Nat},
+              0 < len ->
+                left + len <= n ->
+                  (concreteBPNativeSuccinctRMQQueryCosted
+                    accessFamily shape left (left + len)).erase =
+                    some (scanWindow shape.representative left len)) := by
+  exact
+    concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
+      builtGenericSparseExceptionSelectBPCloseAccessFamily
+
+/--
+Total public capstone for the built generic-select sparse-exception BP-native
+succinct RMQ family.
+
+The underlying generic-select theorem is already total over all sizes and
+valid half-open representative-array queries; this wrapper gives it the same
+researcher-facing no-threshold surface as the relative-split compatibility
+capstone.
+-/
+theorem builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile :
+    let accessFamily :=
+      builtGenericSparseExceptionSelectBPCloseAccessFamily
+    SuccinctSpace.LittleOLinear
+        (concreteBPNativeSuccinctRMQOverhead
+          genericSparseExceptionBPCloseAccessOverhead) /\
+      forall n : Nat,
+        EncodingLowerBound.logSlackLower n <=
+          2 * n +
+            concreteBPNativeSuccinctRMQOverhead
+              genericSparseExceptionBPCloseAccessOverhead n /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            (accessFamily.directory shape).payload.length <=
+              genericSparseExceptionBPCloseAccessOverhead n) /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            (concreteBPNativeSuccinctRMQPayload
+              accessFamily shape).length =
+              2 * n +
+                concreteBPNativeSuccinctRMQOverhead
+                  genericSparseExceptionBPCloseAccessOverhead n) /\
+        (forall shape left right,
+          (concreteBPNativeSuccinctRMQQueryCosted
+            accessFamily shape left right).cost <=
+              concreteBPNativeSuccinctRMQQueryCost
+                SuccinctSelectProposal.sparseDenseFalseSelectQueryCost) /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            forall {left len : Nat},
+              0 < len ->
+                left + len <= n ->
+                  (concreteBPNativeSuccinctRMQQueryCosted
+                    accessFamily shape left (left + len)).erase =
+                    some (scanWindow shape.representative left len)) := by
+  exact
+    builtGenericSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
+
+/--
+Two-sided public capstone for the generic-select BP-native succinct RMQ path.
+
+The lower side is the same doubled Catalan slack as the relative-split
+compatibility capstone; the upper side routes close-select through the generic
+`GenericSelect.sparseExceptionSelectSource shape.bpCode false` family.
+-/
+theorem builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile :
+    let accessFamily :=
+      builtGenericSparseExceptionSelectBPCloseAccessFamily
+    SuccinctSpace.LittleOLinear
+        (concreteBPNativeSuccinctRMQOverhead
+          genericSparseExceptionBPCloseAccessOverhead) /\
+      forall n : Nat,
+        EncodingLowerBound.doubledLogSlackLower n <=
+          2 *
+            (2 * n +
+              concreteBPNativeSuccinctRMQOverhead
+                genericSparseExceptionBPCloseAccessOverhead n) /\
+        EncodingLowerBound.logSlackLower n <=
+          2 * n +
+            concreteBPNativeSuccinctRMQOverhead
+              genericSparseExceptionBPCloseAccessOverhead n /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            (accessFamily.directory shape).payload.length <=
+              genericSparseExceptionBPCloseAccessOverhead n) /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            (concreteBPNativeSuccinctRMQPayload
+              accessFamily shape).length =
+              2 * n +
+                concreteBPNativeSuccinctRMQOverhead
+                  genericSparseExceptionBPCloseAccessOverhead n) /\
+        (forall shape left right,
+          (concreteBPNativeSuccinctRMQQueryCosted
+            accessFamily shape left right).cost <=
+              concreteBPNativeSuccinctRMQQueryCost
+                SuccinctSelectProposal.sparseDenseFalseSelectQueryCost) /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            forall {left len : Nat},
+              0 < len ->
+                left + len <= n ->
+                  (concreteBPNativeSuccinctRMQQueryCosted
+                    accessFamily shape left (left + len)).erase =
+                    some (scanWindow shape.representative left len)) := by
+  have htotal :=
+    builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile
+  dsimp only at htotal ⊢
+  constructor
+  · exact htotal.1
+  · intro n
+    constructor
+    · have hcanonical :
+          EncodingLowerBound.doubledLogSlackLower n <= 2 * (2 * n) :=
+        (EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack
+          n).1 (EncodingLowerBound.canonicalRepresentativeStateEncoding n)
+      have hmono :
+          2 * (2 * n) <=
+            2 *
+              (2 * n +
+                concreteBPNativeSuccinctRMQOverhead
+                  genericSparseExceptionBPCloseAccessOverhead n) := by
+        omega
+      exact Nat.le_trans hcanonical hmono
+    · exact htotal.2 n
+
 end SuccinctFinal
 end RMQ

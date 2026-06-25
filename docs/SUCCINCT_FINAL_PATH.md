@@ -16,27 +16,26 @@ The main capstone is now:
 
 ```lean
 theorem SuccinctFinal
-    .builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile :
+    .builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile :
     ...
 ```
 
-It composes the repaired C1 false-close/select witness
-`SuccinctSelectProposal.builtRelativeSplitSparseExceptionFalseSelectCloseData_profile`
+It composes the generic sparse-exception false-close/select source
+`GenericSelect.sparseExceptionSelectSource shape.bpCode false`, packaged by
+`SuccinctFinal.builtGenericSparseExceptionSelectBPCloseAccessFamily_profile`,
 with the concrete C2 close directory
 `SuccinctCloseProposal.concreteCompactBPCloseLCADirectory_profile`. The final
 payload is `shape.bpCode ++ aux`, the auxiliary payload is padded to the stated
 `o(n)` overhead, the query cost is bounded by a constant, and valid
 representative-array windows erase to the exact `scanWindow` RMQ answer.
-The older non-`total` and total upper-bound theorem names remain as direct proof
-steps; the public two-sided wrapper makes explicit that the profile has no
-large-regime premise and pairs the upper structure with the doubled Catalan
-lower slack.
+The relative-split theorem trio remains checked compatibility for the
+BP-specialized witness until the archive/prune cleanup pass. The public
+generic two-sided wrapper makes explicit that the profile has no large-regime
+premise and pairs the upper structure with the doubled Catalan lower slack.
 
-The false-close/select path now uses the concrete relative-split sparse/dense
-inventory pinned in `docs/SUCCINCT_SELECT_LOCATOR_ARCHITECTURE.md`: super
-samples, explicit long-super exceptions, local samples inside short super
-intervals, explicit sparse-local exceptions, and a dense local path that reads
-at most two aligned payload words before calling `RAM.selectBoolWord`.
+The false-close/select path now reuses the standalone generic Clark
+sparse-exception select implementation over `List Bool`, specialized to the
+balanced-parentheses code and target `false`.
 
 The C2-local fidelity hardening has also landed on the final path: endpoint
 fringes and positive-block same-block queries route through local BP windows

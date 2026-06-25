@@ -72,12 +72,12 @@ It proves a common half-open, leftmost-argmin contract for:
 - value-level Fischer-Heun backends, including an exact all-input wrapper.
 
 The headline succinct theorem is the two-sided capstone
-`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`:
+`SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`:
 for Cartesian-shape RMQ, the stored payload is the exact balanced-parentheses
 shape code plus `o(n)` auxiliary bits, and every valid half-open query is exact
-with a uniform constant modeled cost through the concrete false-close/select
-access family and compact BP close/LCA directory. The same theorem also exposes
-the sharpened lower side
+with a uniform constant modeled cost through the generic sparse-exception
+false-close/select access family and compact BP close/LCA directory. The same
+theorem also exposes the sharpened lower side
 `4*n - (3*log2(2*n+1)+3) <= 2*bits`, pairing the concrete upper structure with
 the coefficient-correct Catalan slack in one citeable surface.
 
@@ -157,11 +157,12 @@ about Lean's executable `List` runtime.
   Mathlib-free `o(n)` overhead accounting, payload-backed rank/select
   components, BP-native Cartesian shape payloads of exact length `2*n`, and a
   proved close-navigation RMQ adapter. `RMQ/Core/SuccinctFinal.lean` now
-  consumes the concrete compact false-close/select witness and compact BP close
-  directory in a payload-accounted `2*n + o(n), O(1)` BP-native theorem. The
-  local BP decoder seeds on the final path are routed through the payload-backed
-  rank-close access callback; remaining succinct work is presentation polish,
-  such as an even flatter encoded/payload-only view of the same capstone.
+  consumes the generic sparse-exception false-close/select source over
+  `shape.bpCode` and the compact BP close directory in a payload-accounted
+  `2*n + o(n), O(1)` BP-native theorem. The local BP decoder seeds on the final
+  path are routed through the payload-backed rank-close access callback;
+  remaining succinct work is presentation polish, such as an even flatter
+  encoded/payload-only view of the same capstone.
 - `RMQ/Core/RankSelectSpec.lean` and `RMQ/Core/GenericSelectBuilder.lean`:
   standalone rank/select extraction surfaces. `RankSelectSpec` packages exact
   bitvector access/rank/select over stored bits with an `n + overhead n`
