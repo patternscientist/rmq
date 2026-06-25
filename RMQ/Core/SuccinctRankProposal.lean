@@ -455,6 +455,20 @@ theorem canonicalBlockRankSampleTablesOfLocalSpan_payload_eq
     SuccinctSpace.FixedWidthNatTable.ofEntries,
     SuccinctSpace.FixedWidthNatTable.ofEncodedWords]
 
+theorem canonicalSuperRankEntries_length
+    (target : Bool) (bits : List Bool) (wordSize blocksPerSuper : Nat) :
+    (canonicalSuperRankEntries
+        target bits wordSize blocksPerSuper).length =
+      bits.length / wordSize / blocksPerSuper + 1 := by
+  simp [canonicalSuperRankEntries]
+
+theorem canonicalBlockRankEntries_length
+    (target : Bool) (bits : List Bool) (wordSize blocksPerSuper : Nat) :
+    (canonicalBlockRankEntries
+        target bits wordSize blocksPerSuper).length =
+      bits.length / wordSize + 1 := by
+  simp [canonicalBlockRankEntries]
+
 theorem canonicalRankParts_exact_of_word_local
     {target : Bool} {bits word : List Bool}
     {wordSize blocksPerSuper pos super delta : Nat}
@@ -1472,6 +1486,327 @@ theorem canonicalTwoLevelRankDataOfChunksExactLocalBlock_profile
       bits hword hwordMachine hblocks hsuperWidth hblockWidth hquery
       (canonicalRankWordBridgeOfChunksWithSentinel bits hword)
 
+/-- Canonical Jacobson-rank payload-word size for an input of length `n`. -/
+def jacobsonRankWordSize (n : Nat) : Nat :=
+  machineWordBits n
+
+/--
+Canonical Jacobson-rank blocks per superblock.
+
+Using the same scale as the payload word size gives local rank counters over a
+`Theta(log^2 n)` span.
+-/
+def jacobsonRankBlocksPerSuper (n : Nat) : Nat :=
+  machineWordBits n
+
+/-- Width for full superblock counters. -/
+def jacobsonRankSuperWidth (n : Nat) : Nat :=
+  machineWordBits n
+
+/-- Width for local block counters inside one Jacobson superblock. -/
+def jacobsonRankBlockWidth (n : Nat) : Nat :=
+  machineWordBits (jacobsonRankBlocksPerSuper n * jacobsonRankWordSize n)
+
+theorem self_lt_two_pow_machineWordBits (n : Nat) :
+    n < 2 ^ machineWordBits n := by
+  simpa [machineWordBits] using (Nat.lt_log2_self (n := n))
+
+/--
+Concrete side conditions needed by
+`canonicalTwoLevelRankDataOfChunksExactLocalBlock` for Jacobson-style
+parameters chosen only from `bits.length`.
+-/
+theorem jacobsonRankBuilderSideConditions (bits : List Bool) :
+    0 < jacobsonRankWordSize bits.length /\
+      jacobsonRankWordSize bits.length <= machineWordBits bits.length /\
+      0 < jacobsonRankBlocksPerSuper bits.length /\
+      bits.length < 2 ^ jacobsonRankSuperWidth bits.length /\
+      jacobsonRankBlocksPerSuper bits.length *
+          jacobsonRankWordSize bits.length <
+        2 ^ jacobsonRankBlockWidth bits.length /\
+      4 <= 4 := by
+  constructor
+  · exact machineWordBits_pos bits.length
+  · constructor
+    · exact Nat.le_refl _
+    · constructor
+      · exact machineWordBits_pos bits.length
+      · constructor
+        · exact self_lt_two_pow_machineWordBits bits.length
+        · constructor
+          · exact self_lt_two_pow_machineWordBits
+              (jacobsonRankBlocksPerSuper bits.length *
+                jacobsonRankWordSize bits.length)
+          · exact Nat.le_refl _
+
+/-- Exact superblock-table payload length for Jacobson rank parameters. -/
+def jacobsonRankSuperOverhead (n : Nat) : Nat :=
+  (n / jacobsonRankWordSize n / jacobsonRankBlocksPerSuper n + 1) *
+      jacobsonRankSuperWidth n +
+    (n / jacobsonRankWordSize n / jacobsonRankBlocksPerSuper n + 1) *
+      jacobsonRankSuperWidth n
+
+/-- Exact local-block-table payload length for Jacobson rank parameters. -/
+def jacobsonRankBlockOverhead (n : Nat) : Nat :=
+  (n / jacobsonRankWordSize n + 1) * jacobsonRankBlockWidth n +
+    (n / jacobsonRankWordSize n + 1) * jacobsonRankBlockWidth n
+
+theorem canonicalSuperRankSampleTables_payload_length_jacobson
+    (bits : List Bool) :
+    (canonicalSuperRankSampleTables
+        bits (jacobsonRankWordSize bits.length)
+          (jacobsonRankBlocksPerSuper bits.length)
+          (jacobsonRankSuperWidth bits.length)
+          (jacobsonRankBuilderSideConditions bits).2.2.2.1).payload.length =
+      jacobsonRankSuperOverhead bits.length := by
+  rw [canonicalSuperRankSampleTables_payload_length]
+  simp [jacobsonRankSuperOverhead, canonicalSuperRankEntries_length]
+
+theorem canonicalBlockRankSampleTablesOfLocalSpan_payload_length_jacobson
+    (bits : List Bool) :
+    (canonicalBlockRankSampleTablesOfLocalSpan
+        bits (jacobsonRankWordSize bits.length)
+          (jacobsonRankBlocksPerSuper bits.length)
+          (jacobsonRankBlockWidth bits.length)
+          (jacobsonRankBuilderSideConditions bits).2.2.1
+          (jacobsonRankBuilderSideConditions bits).2.2.2.2.1).payload.length =
+      jacobsonRankBlockOverhead bits.length := by
+  rw [canonicalBlockRankSampleTablesOfLocalSpan_payload_length]
+  simp [jacobsonRankBlockOverhead, canonicalBlockRankEntries_length]
+
+theorem machineWordBits_littleO :
+    SuccinctSpace.LittleOLinear machineWordBits := by
+  intro scale _hscale
+  exact SuccinctSpace.eventually_scale_log2_succ_le_self scale
+
+theorem nestedMachineWordBits_le_succ (n : Nat) :
+    machineWordBits (machineWordBits n) <= machineWordBits n + 1 := by
+  unfold machineWordBits
+  exact Nat.succ_le_succ (Nat.log2_le_self (Nat.log2 n + 1))
+
+theorem natLog2_le_log2_of_le
+    {m n : Nat} (hm : m ≠ 0) (hn : n ≠ 0) (hle : m <= n) :
+    Nat.log2 m <= Nat.log2 n := by
+  have hpow : 2 ^ Nat.log2 m <= n :=
+    Nat.le_trans (Nat.log2_self_le hm) hle
+  exact (Nat.le_log2 hn).mpr hpow
+
+theorem machineWordBits_mono_le
+    {m n : Nat} (hle : m <= n) :
+    machineWordBits m <= machineWordBits n := by
+  unfold machineWordBits
+  by_cases hm : m = 0
+  · simp [hm]
+  · have hn : n ≠ 0 := by omega
+    exact Nat.succ_le_succ (natLog2_le_log2_of_le hm hn hle)
+
+theorem nestedMachineWordBits_littleO :
+    SuccinctSpace.LittleOLinear
+      (fun n => machineWordBits (machineWordBits n)) := by
+  exact
+    SuccinctSpace.LittleOLinear.of_le
+      (machineWordBits_littleO.add_const 1)
+      nestedMachineWordBits_le_succ
+
+theorem jacobsonRankSuperOverhead_le_envelope (n : Nat) :
+    jacobsonRankSuperOverhead n <=
+      SuccinctSpace.sampledDirectoryOverhead 2 n +
+        2 * machineWordBits n := by
+  let m := machineWordBits n
+  have hslot : (n / m / m) * m <= n / m := by
+    simpa [Nat.mul_comm] using Nat.div_mul_le_self (n / m) m
+  change
+    (n / m / m + 1) * m + (n / m / m + 1) * m <=
+      2 * (n / m) + 2 * m
+  rw [Nat.add_mul]
+  omega
+
+theorem jacobsonRankSuperPayload_length_le_sampled (bits : List Bool) :
+    (canonicalSuperRankSampleTables
+        bits (jacobsonRankWordSize bits.length)
+          (jacobsonRankBlocksPerSuper bits.length)
+          (jacobsonRankSuperWidth bits.length)
+          (jacobsonRankBuilderSideConditions bits).2.2.2.1).payload.length <=
+      SuccinctSpace.sampledDirectoryOverhead 2 bits.length +
+        2 * machineWordBits bits.length := by
+  rw [canonicalSuperRankSampleTables_payload_length_jacobson]
+  exact jacobsonRankSuperOverhead_le_envelope bits.length
+
+theorem jacobsonRankSuperOverhead_littleO :
+    SuccinctSpace.LittleOLinear jacobsonRankSuperOverhead := by
+  exact
+    SuccinctSpace.LittleOLinear.of_le
+      ((SuccinctSpace.sampledDirectoryOverhead_littleO 2).add
+        (machineWordBits_littleO.mul_left 2))
+      jacobsonRankSuperOverhead_le_envelope
+
+private theorem log2_le_of_lt_pow_succ {n k : Nat}
+    (h : n < 2 ^ (k + 1)) :
+    Nat.log2 n <= k := by
+  by_cases hzero : n = 0
+  · simp [hzero]
+  · by_cases hle : Nat.log2 n <= k
+    · exact hle
+    have hk : k + 1 <= Nat.log2 n := by omega
+    have hmono : 2 ^ (k + 1) <= 2 ^ Nat.log2 n := by
+      exact Nat.pow_le_pow_right (by omega) hk
+    have hself : 2 ^ Nat.log2 n <= n := Nat.log2_self_le hzero
+    have : 2 ^ (k + 1) <= n := Nat.le_trans hmono hself
+    omega
+
+theorem machineWordBits_mul_self_log_bound (m : Nat) :
+    machineWordBits (m * m) <= 2 * machineWordBits m + 1 := by
+  by_cases hm : m = 0
+  · simp [hm, machineWordBits]
+  · let l := Nat.log2 m
+    have hmpos : 0 < m := Nat.pos_of_ne_zero hm
+    have hlt : m < 2 ^ (l + 1) := by
+      simpa [l] using (Nat.lt_log2_self (n := m))
+    have hpow_pos : 0 < 2 ^ (l + 1) := Nat.pow_pos (by omega)
+    have hmul_left : m * m < (2 ^ (l + 1)) * m := by
+      exact Nat.mul_lt_mul_of_pos_right hlt hmpos
+    have hmul_right :
+        (2 ^ (l + 1)) * m <
+          (2 ^ (l + 1)) * (2 ^ (l + 1)) := by
+      exact Nat.mul_lt_mul_of_pos_left hlt hpow_pos
+    have hmul :
+        m * m < (2 ^ (l + 1)) * (2 ^ (l + 1)) :=
+      Nat.lt_trans hmul_left hmul_right
+    have hpows :
+        (2 ^ (l + 1)) * (2 ^ (l + 1)) =
+          2 ^ (2 * (l + 1)) := by
+      rw [← Nat.pow_add]
+      have hsum : l + 1 + (l + 1) = 2 * (l + 1) := by omega
+      rw [hsum]
+    have hltPow : m * m < 2 ^ (2 * (l + 1) + 1) := by
+      have hltBase : m * m < 2 ^ (2 * (l + 1)) := by
+        simpa [hpows] using hmul
+      have hpow_le :
+          2 ^ (2 * (l + 1)) <= 2 ^ (2 * (l + 1) + 1) := by
+        exact Nat.pow_le_pow_right (by omega) (by omega)
+      exact Nat.lt_of_lt_of_le hltBase hpow_le
+    have hlog : Nat.log2 (m * m) <= 2 * (l + 1) :=
+      log2_le_of_lt_pow_succ hltPow
+    unfold machineWordBits
+    omega
+
+theorem machineWordBits_mul_self_littleO :
+    SuccinctSpace.LittleOLinear
+      (fun n => machineWordBits (machineWordBits n * machineWordBits n)) := by
+  exact
+    SuccinctSpace.LittleOLinear.of_le
+      ((nestedMachineWordBits_littleO.mul_left 2).add_const 1)
+      (fun n => machineWordBits_mul_self_log_bound (machineWordBits n))
+
+theorem jacobsonRankBlockOverhead_le_envelope (n : Nat) :
+    jacobsonRankBlockOverhead n <=
+      SuccinctSpace.logLogSampledDirectoryOverhead 6 n +
+        6 * machineWordBits (machineWordBits n * machineWordBits n) := by
+  let m := machineWordBits n
+  let b := machineWordBits (m * m)
+  let l := machineWordBits m
+  have hb : b <= 3 * l := by
+    have hbase : b <= 2 * l + 1 := by
+      simpa [b, l] using machineWordBits_mul_self_log_bound m
+    have hl : 1 <= l := machineWordBits_pos m
+    omega
+  have hentry :
+      (n / m + 1) * b <=
+        3 * ((n / m) * l) + 3 * l := by
+    have hmul := Nat.mul_le_mul_left (n / m + 1) hb
+    have hdist :
+        (n / m + 1) * (3 * l) =
+          3 * ((n / m) * l) + 3 * l := by
+      rw [Nat.add_mul]
+      simp [Nat.mul_left_comm]
+    exact Nat.le_trans hmul (Nat.le_of_eq hdist)
+  change
+    (n / m + 1) * b + (n / m + 1) * b <=
+      6 * ((n / m) * l) + 6 * b
+  have htwice := Nat.add_le_add hentry hentry
+  have htail : 6 * l <= 6 * b := by
+    have hmpos : 0 < m := machineWordBits_pos n
+    have hm_le_square : m <= m * m := by
+      simpa [Nat.mul_comm] using Nat.le_mul_of_pos_left m hmpos
+    have hl_le_b : l <= b := by
+      simpa [l, b] using machineWordBits_mono_le hm_le_square
+    exact Nat.mul_le_mul_left 6 hl_le_b
+  omega
+
+theorem jacobsonRankBlockPayload_length_le_logLogSampled
+    (bits : List Bool) :
+    (canonicalBlockRankSampleTablesOfLocalSpan
+        bits (jacobsonRankWordSize bits.length)
+          (jacobsonRankBlocksPerSuper bits.length)
+          (jacobsonRankBlockWidth bits.length)
+          (jacobsonRankBuilderSideConditions bits).2.2.1
+          (jacobsonRankBuilderSideConditions bits).2.2.2.2.1).payload.length <=
+      SuccinctSpace.logLogSampledDirectoryOverhead 6 bits.length +
+        6 *
+          machineWordBits
+            (machineWordBits bits.length * machineWordBits bits.length) := by
+  rw [canonicalBlockRankSampleTablesOfLocalSpan_payload_length_jacobson]
+  exact jacobsonRankBlockOverhead_le_envelope bits.length
+
+theorem jacobsonRankBlockOverhead_littleO :
+    SuccinctSpace.LittleOLinear jacobsonRankBlockOverhead := by
+  exact
+    SuccinctSpace.LittleOLinear.of_le
+      ((SuccinctSpace.logLogSampledDirectoryOverhead_littleO 6).add
+        (machineWordBits_mul_self_littleO.mul_left 6))
+      jacobsonRankBlockOverhead_le_envelope
+
+def jacobsonRankOverhead : Nat -> Nat :=
+  twoLevelRankOverhead jacobsonRankSuperOverhead jacobsonRankBlockOverhead
+
+theorem jacobsonRankOverhead_littleO :
+    SuccinctSpace.LittleOLinear jacobsonRankOverhead := by
+  exact
+    twoLevelRankOverhead_littleO
+      jacobsonRankSuperOverhead_littleO
+      jacobsonRankBlockOverhead_littleO
+
+/--
+Concrete Jacobson-rank data built from canonical parameters and the exact
+sentinel chunk store.
+
+This is data-level rather than family-level: the auxiliary lengths are exposed
+through the exact Jacobson overhead functions proved above.
+-/
+def jacobsonRankData (bits : List Bool) :
+    TwoLevelPayloadLiveStoredWordRankData bits
+      (jacobsonRankSuperOverhead bits.length)
+      (jacobsonRankBlockOverhead bits.length) 4 :=
+  cast (by
+    rw [← canonicalSuperRankSampleTables_payload_length_jacobson bits,
+      ← canonicalBlockRankSampleTablesOfLocalSpan_payload_length_jacobson bits])
+    (canonicalTwoLevelRankDataOfChunksExactLocalBlock
+      bits
+      (jacobsonRankBuilderSideConditions bits).1
+      (jacobsonRankBuilderSideConditions bits).2.1
+      (jacobsonRankBuilderSideConditions bits).2.2.1
+      (jacobsonRankBuilderSideConditions bits).2.2.2.1
+      (jacobsonRankBuilderSideConditions bits).2.2.2.2.1
+      (jacobsonRankBuilderSideConditions bits).2.2.2.2.2)
+
+theorem jacobsonRankData_profile
+    (bits : List Bool) :
+    let data := jacobsonRankData bits
+    data.auxPayload.length =
+        jacobsonRankSuperOverhead bits.length +
+          jacobsonRankBlockOverhead bits.length /\
+      data.wordSize <= machineWordBits bits.length /\
+      SuccinctSpace.flattenPayloadWords data.bitWords.store.words.toList =
+        bits /\
+      (forall {word : List Bool},
+        List.Mem word data.bitWords.store.words.toList ->
+          word.length <= machineWordBits bits.length) /\
+      forall target pos,
+        (data.rankCosted target pos).cost <= 4 /\
+          (data.rankCosted target pos).erase =
+            RMQ.Succinct.rankPrefix target bits pos := by
+  exact (jacobsonRankData bits).profile
+
 structure TwoLevelPayloadLiveStoredWordRankFamily
     (super block : Nat -> Nat) (queryCost : Nat) where
   component :
@@ -1528,6 +1863,36 @@ theorem constant_query_profile
     exact (family.component bits).profile
 
 end TwoLevelPayloadLiveStoredWordRankFamily
+
+def jacobsonRankFamily :
+    TwoLevelPayloadLiveStoredWordRankFamily
+      jacobsonRankSuperOverhead jacobsonRankBlockOverhead 4 where
+  component := jacobsonRankData
+  super_littleO := jacobsonRankSuperOverhead_littleO
+  block_littleO := jacobsonRankBlockOverhead_littleO
+
+theorem jacobsonRankFamily_constant_query_profile :
+    SuccinctSpace.LittleOLinear jacobsonRankOverhead /\
+      forall bits : List Bool,
+        ((jacobsonRankFamily.component bits).auxPayload.length =
+          jacobsonRankOverhead bits.length) /\
+        ((jacobsonRankFamily.component bits).wordSize <=
+          machineWordBits bits.length) /\
+        SuccinctSpace.flattenPayloadWords
+            (jacobsonRankFamily.component bits).bitWords.store.words.toList =
+          bits /\
+        (forall {word : List Bool},
+          List.Mem word
+              (jacobsonRankFamily.component bits).bitWords.store.words.toList ->
+            word.length <= machineWordBits bits.length) /\
+        forall target pos,
+          ((jacobsonRankFamily.component bits).rankCosted target pos).cost <=
+              4 /\
+            ((jacobsonRankFamily.component bits).rankCosted target pos).erase =
+              RMQ.Succinct.rankPrefix target bits pos := by
+  simpa [jacobsonRankFamily, jacobsonRankOverhead,
+    TwoLevelPayloadLiveStoredWordRankFamily.overhead] using
+    (jacobsonRankFamily.constant_query_profile)
 
 /-- Bit budget occupied by the true/false fixed-width rank sample tables. -/
 def rankSamplePayloadBudget

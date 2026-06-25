@@ -6,8 +6,12 @@ import RMQ.Core.LCA
 import RMQ.Core.PlusMinusOne
 import RMQ.Core.Succinct
 import RMQ.Core.SuccinctSpace
+import RMQ.Core.RankSelectSpec
 import RMQ.Core.SuccinctRankProposal
 import RMQ.Core.SuccinctSelectProposal
+import RMQ.Core.GenericSelectParams
+import RMQ.Core.GenericSelectPrimitives
+import RMQ.Core.GenericSelectBuilder
 import RMQ.Core.SuccinctCloseProposal
 import RMQ.Core.SuccinctFinal
 import RMQ.Core.Reduction
