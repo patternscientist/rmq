@@ -18,6 +18,8 @@ data-structures library, see
 [`docs/REPOSITORY_STRATEGY.md`](docs/REPOSITORY_STRATEGY.md).
 For the first extracted spoke, see
 [`docs/RANK_SELECT_FRONTIER.md`](docs/RANK_SELECT_FRONTIER.md).
+For post-capstone cleanup and library-shaping work, see
+[`docs/CLEANUP_AND_ROADMAP.md`](docs/CLEANUP_AND_ROADMAP.md).
 
 ## What This Is, And Why Care
 
