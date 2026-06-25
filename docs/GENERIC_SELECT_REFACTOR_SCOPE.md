@@ -31,17 +31,42 @@ The model distinction is important:
 
 The generic select layer lives in:
 
-- `RMQ/Core/GenericSelectParams.lean`
-- `RMQ/Core/GenericSelectPrimitives.lean`
-- `RMQ/Core/GenericSelectBuilder.lean`
+- `RMQ/Core/GenericSelect/LowLevel.lean`
+- `RMQ/Core/GenericSelect/SelectFacts.lean`
+- `RMQ/Core/GenericSelect/Arithmetic.lean`
+- `RMQ/Core/GenericSelect/DenseEntryTable.lean`
+- `RMQ/Core/GenericSelect/DenseWord.lean`
+- `RMQ/Core/GenericSelect/RelativeSplit.lean`
+- `RMQ/Core/GenericSelect/LegacyNames.lean`
+- `RMQ/Core/GenericSelect/Params.lean`
+- `RMQ/Core/GenericSelect/Primitives.lean`
+- `RMQ/Core/GenericSelect/PrimitiveLegacyNames.lean`
+- `RMQ/Core/GenericSelect/Slots.lean`
+- `RMQ/Core/GenericSelect/Entries.lean`
+- `RMQ/Core/GenericSelect/FlagRank.lean`
+- `RMQ/Core/GenericSelect/RelativeTables.lean`
+- `RMQ/Core/GenericSelect/Directory.lean`
+- `RMQ/Core/GenericSelect/SelectSource.lean`
+- `RMQ/Core/GenericSelect/Source.lean`
+- `RMQ/Core/GenericSelect/Family.lean`
+- `RMQ/Core/GenericSelect/BPCompat.lean`
+- `RMQ/Core/GenericSelectBPCompat.lean`
+- `RMQ/Core/GenericSelectLegacy.lean`
+
+The old flat files `RMQ/Core/GenericSelectParams.lean` and
+`RMQ/Core/GenericSelectPrimitives.lean`, plus
+`RMQ/Core/GenericSelect/Tables.lean`, are compatibility barrels only.
 
 The public bitvector extraction layer lives in:
 
 - `RMQ/Core/RankSelectSpec.lean`
 - `RMQ/Core/RankSelectPublic.lean`
 
-`RMQ.lean` imports `RankSelectSpec` before the proposal/generic builder modules,
-and imports the generic select modules before `SuccinctFinal`.
+`RMQ.lean` imports the live succinct role barrels; the pure generic select
+barrel re-exports the split plain-bitvector construction modules before
+`SuccinctFinal` consumes the family/source layer. BP-shaped compatibility facts
+are exported by the separate terminal `RMQ/Core/GenericSelectBPCompat.lean`
+root.
 
 ## Landed Generic Select Theorems
 
@@ -96,14 +121,34 @@ Keep the direction:
 
 ```text
 Succinct -> SuccinctSpace -> RankSelectSpec
-Succinct -> SuccinctSpace -> SuccinctRankProposal -> SuccinctSelectProposal
-  -> GenericSelectBuilder -> SuccinctFinal
+Succinct -> SuccinctSpace -> SuccinctRankProposal -> GenericSelect.SelectSource
+GenericSelect.SelectSource --feeds downstream proposal--> SuccinctSelectProposal
+SuccinctRankProposal -> GenericSelect.{SelectFacts,Arithmetic}
+GenericSelect.SelectFacts -> GenericSelect.Arithmetic
+GenericSelect.Arithmetic -> GenericSelect.DenseEntryTable
+GenericSelect.DenseEntryTable -> GenericSelect.DenseWord
+GenericSelect.DenseWord -> GenericSelect.RelativeSplit
+GenericSelect.RelativeSplit -> GenericSelect.LowLevel
+GenericSelect.LowLevel -> GenericSelect.{Params,Primitives}
+GenericSelect.{Params,Primitives}
+  -> GenericSelect.{Slots,Entries,FlagRank,RelativeTables,Directory,Source,
+                    Family} -> SuccinctFinal
+GenericSelect.SelectSource -> GenericSelect.Source
+GenericSelect.Family -> GenericSelect.BPCompat -> GenericSelectBPCompat
+GenericSelect.{LegacyNames,PrimitiveLegacyNames} -> GenericSelectLegacy
 ```
 
 `RankSelectSpec` should stay a small public spec module. Construction modules
 may adapt into it, but it should not import the proposal/generic builders.
-`RankSelectPublic` is deliberately downstream: it imports the construction
-modules and exposes neutral public aliases.
+`RankSelectPublic` is deliberately downstream and terminal: it imports the
+construction family layer and exposes neutral public aliases, while construction
+barrels should not import `RankSelectPublic`.
+
+Dependency-inversion status: the generic-select construction no longer imports
+`SuccinctSelectProposal` for neutral arithmetic, dense-entry tables,
+fixed-width tables, or relative-split helpers. Those live below the generic core
+in `GenericSelect.LowLevel`; legacy false-named aliases and BP-shaped facts
+live above the plain bitvector core in terminal compatibility roots.
 
 ## Remaining Frontier
 

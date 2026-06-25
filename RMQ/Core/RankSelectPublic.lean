@@ -1,5 +1,5 @@
 import RMQ.Core.RankSelectSpec
-import RMQ.Core.GenericSelectBuilder
+import RMQ.Core.GenericSelect.Family
 
 /-!
 Public facade for the standalone rank/select spoke.

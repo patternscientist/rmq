@@ -4,3 +4,4 @@ build/
 .codex/worktrees/
 .worktrees/
 .tmp_rank_select_materials/
+local_archive/

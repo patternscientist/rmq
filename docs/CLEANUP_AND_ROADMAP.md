@@ -40,7 +40,9 @@ select idea exists in two forms:
 The highest-value cleanup pass made the RMQ capstone consume the generic select
 implementation over `bits := shape.bpCode` and `target := false`. The
 BP-specialized relative-split path is now explicitly archived as an old
-capstone, and its obstruction witnesses live under `RMQ.Archive`.
+capstone, and its obstruction witnesses live under `RMQ.Archive`. The archive
+is now an opt-in root: `import RMQ` no longer imports it, while `import
+RMQArchive` / `lake build RMQArchive` keeps those witnesses locally checked.
 
 ## Verification Gate
 
@@ -48,11 +50,14 @@ Every cleanup step must preserve the ordinary gate:
 
 ```powershell
 lake build
+lake build RMQHub
+lake build RMQRankSelect
+lake build RMQArchive
 lake env lean scripts\axiom_check.lean
 lake env lean scripts\archive_axiom_check.lean
 lake env lean scripts\rank_select_axiom_check.lean
-rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ lakefile.toml
-rg -n "native_decide|Lean\.ofReduceBool" RMQ
+rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ RMQHub.lean RMQRankSelect.lean RMQArchive.lean lakefile.toml
+rg -n "native_decide|Lean\.ofReduceBool" RMQ RMQHub.lean RMQRankSelect.lean RMQArchive.lean
 git diff --check
 powershell -ExecutionPolicy Bypass -File scripts\gate.ps1
 ```
@@ -152,17 +157,26 @@ relative-split select/access checks have moved from the main curated axiom
 inventory to `scripts/archive_axiom_check.lean`, with obstruction anchors in
 `RMQ/Archive/SelectObstructions.lean`, the old BP-specialized capstone alias in
 `RMQ/Archive/BPSpecializedCapstone.lean`, and compatibility names in
-`RMQ/Archive/SelectCompatibility.lean`. `scripts/gate.ps1` runs the archive
-check. Source declarations are deliberately still present. Treat direct
-deletion or deeper physical source extraction as a later proof-heavy pass,
-after another reference scan confirms that no live generic capstone or
-rank/select theorem consumes the candidate.
+`RMQ/Archive/SelectCompatibility.lean`. `RMQArchive` is the explicit import root
+for that code, and `scripts/gate.ps1` builds it and runs the archive check.
+Source declarations are deliberately still present. Treat direct deletion or
+deeper physical source extraction as a later proof-heavy pass, after another
+reference scan confirms that no live generic capstone or rank/select theorem
+consumes the candidate.
 
 The first real prune pass narrowed that archive to retained witnesses: the old
 sparse/dense obstruction theorems and the old relative-split total two-sided
 capstone. Intermediate sparse/dense prototype profiles are no longer archive
 anchors, and the dead `SuccinctFinal` sparse/dense close-access adapter was
 removed.
+
+The first physical source prune has now removed the self-contained rectangular
+local/super generated-entry rows, their row-specific obstruction lemmas, the
+`RelativeSplitRectangularFalseSelectCloseData` island, and its padded-local
+no-go theorem. The archive-backed four-field locator surface remains on
+purpose: it still carries cited obstruction witnesses, so deleting it should be
+paired with either a moved archive implementation or a deliberate retirement of
+those witness names.
 
 Decision: keep the remaining BP-specialized relative-split capstone
 intentionally as an old capstone, not as a public headline. The archive split
@@ -184,6 +198,80 @@ concept:
   adapter pieces;
 - archive modules for obstruction results and failed routes.
 
+Read-only comparison against Mathlib/CSLib/AFP/refinement-framework norms points
+to the same priority order: split by dependency role, keep public facades thin
+and citable, and make archive code optional or physically separate once the old
+witnesses no longer need to live inside the main implementation modules.
+
+The first generic-select physical split is active:
+
+- `RMQ/Core/GenericSelect.lean` is the target-parametric select builder root;
+- `RMQ/Core/GenericSelect/LowLevel.lean` is a compatibility barrel over the
+  low-level role modules below;
+- `RMQ/Core/GenericSelect/SelectFacts.lean` owns neutral select/rank facts such
+  as select monotonicity and rank-prefix/select-existence lemmas;
+- `RMQ/Core/GenericSelect/Arithmetic.lean` owns shape-free arithmetic,
+  machine-word growth lemmas, and generic sparse/dense overhead budgets;
+- `RMQ/Core/GenericSelect/DenseEntryTable.lean` owns fixed-width dense-local
+  entry tables and entry-based slot arithmetic;
+- `RMQ/Core/GenericSelect/DenseWord.lean` owns aligned payload-word helpers for
+  dense two-word select;
+- `RMQ/Core/GenericSelect/RelativeSplit.lean` owns relative-split slot and
+  base-position helpers;
+- `RMQ/Core/GenericSelect/LegacyNames.lean` quarantines older false-named
+  aliases for compatibility; new generic code should use neutral names;
+- `RMQ/Core/GenericSelect/Params.lean` owns the Clark-style length parameters
+  and generic overhead budget;
+- `RMQ/Core/GenericSelect/Primitives.lean` owns the target-threaded dense
+  two-word decode primitive and payload-routing certificates;
+- `RMQ/Core/GenericSelect/PrimitiveLegacyNames.lean` quarantines the older
+  false-named primitive wrapper aliases for compatibility;
+- `RMQ/Core/GenericSelect/Slots.lean` owns occurrence counts, slot arithmetic,
+  span classification, and sparse-exception counting;
+- `RMQ/Core/GenericSelect/Entries.lean` owns super/local entry construction and
+  classification flag vectors;
+- `RMQ/Core/GenericSelect/FlagRank.lean` owns the generic two-level flag-rank
+  directory and its payload budget;
+- `RMQ/Core/GenericSelect/RelativeTables.lean` owns relative-offset tables,
+  fixed-width dense-local entry tables, width bounds, and payload bounds;
+- `RMQ/Core/GenericSelect/Tables.lean` is now only a compatibility barrel for
+  the three table-layer modules above;
+- `RMQ/Core/GenericSelect/Directory.lean` owns the payload-live
+  sparse-exception directory and charged directory read profile;
+- `RMQ/Core/GenericSelect/SelectSource.lean` owns the neutral
+  `ChargedSelectPositionSource` interface shared by proposal and generic-select
+  layers;
+- `RMQ/Core/GenericSelect/Source.lean` owns `SparseExceptionSelectData`, exact
+  `selectCosted`, and the `ChargedSelectPositionSource` adapter;
+- `RMQ/Core/GenericSelect/Family.lean` owns the Jacobson/Clark
+  `RankSelectSpec` adapter and public family profile;
+- `RMQ/Core/GenericSelect/BPCompat.lean` and
+  `RMQ/Core/GenericSelectBPCompat.lean` own/export the small `shape.bpCode`,
+  `target := false` bridge facts that should not live in the plain bitvector
+  core;
+- `RMQ/Core/GenericSelectLegacy.lean` is the terminal compatibility root for
+  legacy false-named aliases; the canonical generic root does not import it;
+- `RMQ/Core/SuccinctRankSelect.lean` is the construction-level bitvector
+  rank/select root;
+- `RMQ/Core/BPCloseNavigation.lean` is the compact BP close/LCA navigation root;
+- `RMQ/Core/SuccinctRMQ.lean` is the final succinct-RMQ root.
+
+`RMQ/Core/GenericSelectBuilder.lean`, `RMQ/Core/GenericSelectParams.lean`, and
+`RMQ/Core/GenericSelectPrimitives.lean` remain as compatibility import barrels
+for old downstream imports. New construction imports should prefer
+`RMQ.Core.GenericSelect` or the narrower split modules under
+`RMQ.Core.GenericSelect.*`. Public aliases stay terminal in
+`RMQ.Core.RankSelectPublic` and `RMQRankSelect`.
+
+The generic-select dependency inversion is now active: canonical generic modules
+no longer import `SuccinctSelectProposal` for neutral low-level arithmetic,
+dense-entry, fixed-width-table, or relative-split helpers. Those helpers live
+under the `GenericSelect.LowLevel` barrel and its role modules, while
+BP-shaped bridges remain above the plain bitvector core in
+`GenericSelect.BPCompat`, `GenericSelectBPCompat`, `SuccinctSelectProposal`,
+and `SuccinctFinal`. The canonical `RMQ.Core.GenericSelect` root is pure
+plain-bitvector generic; it does not import BP compatibility or legacy aliases.
+
 Keep import direction simple:
 
 ```text
@@ -191,7 +279,18 @@ bitvector spec -> generic rank/select builders -> BP navigation -> RMQ capstone
 ```
 
 Generic bitvector code should not depend on Cartesian/RMQ concepts; BP/RMQ
-bridges should live above the generic layer.
+bridges should live above the generic core in compatibility modules.
+
+Archive code is an optional import root for downstream users, but it is still
+checked by the full repository gate. In other words, `import RMQ` does not pull
+archive witnesses in, while `scripts/gate.ps1` still builds `RMQArchive` so the
+archived witnesses do not silently rot.
+
+If the archive should be kept locally but removed from a public repository, the
+safe version is: move those files under an ignored local-only directory, remove
+`RMQArchive` and archive axiom checks from the public Lake/gate surface, and
+remove or rephrase public docs that cite archive theorem names. Do not keep
+public docs or gates that depend on ignored local files.
 
 ## Naming And Proof Idioms
 

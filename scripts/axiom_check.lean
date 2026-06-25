@@ -1,5 +1,6 @@
 import RMQ
 import RMQ.Core.EncodingLowerBound
+import RMQ.Core.GenericSelectBPCompat
 import RMQ.Core.LowerBound
 import RMQ.Core.SuccinctFinal
 

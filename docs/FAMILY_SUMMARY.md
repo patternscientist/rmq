@@ -15,9 +15,11 @@ slack. The older relative-split capstone is now an intentionally checked old
 capstone; archived obstruction anchors live in
 `RMQ/Archive/SelectObstructions.lean`, the old capstone alias lives in
 `RMQ/Archive/BPSpecializedCapstone.lean`, and compatibility aliases remain in
-`RMQ/Archive/SelectCompatibility.lean`. The corresponding trust-base checks
-live in `scripts/archive_axiom_check.lean`, which is run by the gate. Short
-public aliases for the main citeable theorem
+`RMQ/Archive/SelectCompatibility.lean`. These archive modules are no longer
+imported by the main `RMQ` root; use the optional `RMQArchive` Lake target/import
+root for local compatibility checks. The corresponding trust-base checks live
+in `scripts/archive_axiom_check.lean`, which is run by the gate. Short public
+aliases for the main citeable theorem
 surfaces now live in `RMQ/Headlines.lean`.
 
 This document is the family-level map for the current Lean development. It
@@ -64,6 +66,14 @@ separate appendix.
   `n + o(n)` payload profile with constant modeled `access`, `rank`, and
   `select`, stated independently from RMQ while reusing the succinct bitvector
   machinery where appropriate.
+- Optional archive root: `RMQArchive` imports the retired compatibility and
+  obstruction surfaces under `RMQ.Archive`, while the main `RMQ` root stays
+  focused on live proof surfaces and public headlines.
+- Succinct role barrels: `RMQ.Core.GenericSelect`,
+  `RMQ.Core.SuccinctRankSelect`, `RMQ.Core.BPCloseNavigation`, and
+  `RMQ.Core.SuccinctRMQ` are thin import roots for the live succinct stack. They
+  keep downstream imports organized by dependency role while the underlying
+  implementation files are split gradually.
 - Lower-bound layer: fixed-length lossless Cartesian-shape capacity theorem,
   exact-RMQ-decoder bridge, Mathlib-free Remy-style proof of
   `2^(2*n) <= (2*n+1)^2 * shapeCount n`, the resulting no-premise
@@ -128,17 +138,37 @@ flowchart TD
   Succinct --> SuccinctSpace["Core.SuccinctSpace"]
   SuccinctSpace --> RankSelectSpec["Core.RankSelectSpec"]
   SuccinctSpace --> SuccinctRankProposal["Core.SuccinctRankProposal"]
+  SuccinctRankProposal --> GenericSelectSelectSource["Core.GenericSelect.SelectSource"]
+  SuccinctRankProposal --> GenericSelectSelectFacts["Core.GenericSelect.SelectFacts"]
   RankSelectSpec --> SuccinctSelectProposal["Core.SuccinctSelectProposal"]
+  GenericSelectSelectSource -->|feeds downstream proposal| SuccinctSelectProposal
   SuccinctRankProposal --> SuccinctSelectProposal
-  SuccinctSelectProposal --> GenericSelectParams["Core.GenericSelectParams"]
-  SuccinctSelectProposal --> GenericSelectPrimitives["Core.GenericSelectPrimitives"]
-  GenericSelectParams --> GenericSelectBuilder["Core.GenericSelectBuilder"]
-  GenericSelectPrimitives --> GenericSelectBuilder
-  RankSelectSpec --> GenericSelectBuilder
-  SuccinctRankProposal --> GenericSelectBuilder
+  GenericSelectSelectFacts --> GenericSelectArithmetic["Core.GenericSelect.Arithmetic"]
+  GenericSelectArithmetic --> GenericSelectDenseEntryTable["Core.GenericSelect.DenseEntryTable"]
+  GenericSelectDenseEntryTable --> GenericSelectDenseWord["Core.GenericSelect.DenseWord"]
+  GenericSelectDenseWord --> GenericSelectRelativeSplit["Core.GenericSelect.RelativeSplit"]
+  GenericSelectRelativeSplit --> GenericSelectLegacyNames["Core.GenericSelect.LegacyNames"]
+  GenericSelectRelativeSplit --> GenericSelectLowLevel["Core.GenericSelect.LowLevel"]
+  GenericSelectLowLevel --> GenericSelectParams["Core.GenericSelect.Params"]
+  GenericSelectLowLevel --> GenericSelectPrimitives["Core.GenericSelect.Primitives"]
+  GenericSelectPrimitives --> GenericSelectPrimitiveLegacyNames["Core.GenericSelect.PrimitiveLegacyNames"]
+  GenericSelectLegacyNames --> GenericSelectLegacyRoot["Core.GenericSelectLegacy"]
+  GenericSelectPrimitiveLegacyNames --> GenericSelectLegacyRoot
+  GenericSelectParams --> GenericSelectSlots["Core.GenericSelect.Slots"]
+  GenericSelectPrimitives --> GenericSelectSlots
+  GenericSelectSlots --> GenericSelectEntries["Core.GenericSelect.Entries"]
+  GenericSelectEntries --> GenericSelectFlagRank["Core.GenericSelect.FlagRank"]
+  GenericSelectFlagRank --> GenericSelectRelativeTables["Core.GenericSelect.RelativeTables"]
+  GenericSelectRelativeTables --> GenericSelectDirectory["Core.GenericSelect.Directory"]
+  GenericSelectDirectory --> GenericSelectSource["Core.GenericSelect.Source"]
+  GenericSelectSelectSource --> GenericSelectSource
+  GenericSelectSource --> GenericSelectFamily["Core.GenericSelect.Family"]
+  GenericSelectFamily --> GenericSelectBPCompat["Core.GenericSelect.BPCompat"]
+  GenericSelectBPCompat --> GenericSelectBPCompatRoot["Core.GenericSelectBPCompat"]
+  RankSelectSpec --> GenericSelectFamily
   RankSelectSpec --> RankSelectPublic["Core.RankSelectPublic"]
-  GenericSelectBuilder --> RankSelectPublic
-  GenericSelectBuilder --> SuccinctFinal["Core.SuccinctFinal"]
+  GenericSelectFamily --> RankSelectPublic
+  GenericSelectFamily --> SuccinctFinal["Core.SuccinctFinal"]
   EncodingLowerBound --> SuccinctSpace
   LCA --> Reduction["Core.Reduction"]
   Succinct --> SuccinctReduction["Core.SuccinctReduction"]
@@ -199,7 +229,9 @@ flowchart TD
   FischerHeun --> Equivalence
 ```
 
-`RMQ.lean` imports the full family root.
+`RMQ.lean` imports the live family root through the succinct role barrels.
+`RMQArchive.lean` imports the archived compatibility and obstruction surfaces
+as an opt-in checked root.
 
 ## Correctness And Cost Status
 
@@ -1533,6 +1565,29 @@ The names below are grouped by source module. Repeated base names in
 - `RMQ/Core/RankSelectPublic.lean`:
   neutral public aliases for the standalone rank/select spoke, including
   `RankSelect.jacobsonClarkNPlusOConstantQuery`.
+- `RMQ/Core/GenericSelect.lean`,
+  `RMQ/Core/SuccinctRankSelect.lean`,
+  `RMQ/Core/BPCloseNavigation.lean`, and
+  `RMQ/Core/SuccinctRMQ.lean`:
+  thin dependency-role barrels for the generic select, construction-level
+  rank/select, BP close-navigation, and final succinct-RMQ layers.
+- `RMQ/Core/GenericSelect/{LowLevel,SelectFacts,Arithmetic,DenseEntryTable,
+  DenseWord,RelativeSplit,LegacyNames,Params,Primitives,PrimitiveLegacyNames,
+  Slots,Entries,FlagRank,
+  RelativeTables,Directory,SelectSource,Source,Family,BPCompat}.lean` and
+  `RMQ/Core/GenericSelectBPCompat.lean`, and
+  `RMQ/Core/GenericSelectLegacy.lean`:
+  physical split of the former generic-select builder into neutral low-level
+  select facts, arithmetic/table helpers, parameter/primitive helpers,
+  slot/span counting, entry construction, flag-rank directories,
+  relative/dense payload tables, sparse-exception directory reads, the neutral
+  charged select-source interface, charged select-source exactness, the
+  Jacobson/Clark rank-select family adapter, and the terminal BP compatibility
+  bridge.
+  `RMQ/Core/GenericSelectBuilder.lean`, `RMQ/Core/GenericSelectParams.lean`,
+  `RMQ/Core/GenericSelectPrimitives.lean`, and
+  `RMQ/Core/GenericSelect/Tables.lean` remain only as compatibility import
+  barrels.
 - `RMQ/Headlines.lean`:
   public-facing aliases
   `Headlines.exactRMQLowerBoundDoubledCatalanSlack`,
@@ -1957,9 +2012,10 @@ completeness.
 
 ## Suggested Next Milestones
 
-1. Extract the reusable succinct bitvector layer: rank/select, balanced
-   parentheses, packed-word primitives, and payload-accounted directory
-   profiles should become a standalone spoke rather than RMQ-only scaffolding.
+1. Deepen the reusable succinct bitvector spoke: the public rank/select layer is
+   landed, and the next frontier is compressed/FID-style payload budgets plus
+   further balanced-parentheses navigation over the same payload-accounted
+   directory interfaces.
 2. Start the first non-succinct spoke, with union-find as the best stress test
    for amortized analysis, representation invariants, and hub reuse.
 3. Keep RMQ presentation polish narrow: an even flatter encoded/payload-only

@@ -10,3 +10,6 @@ name = "RMQHub"
 
 [[lean_lib]]
 name = "RMQRankSelect"
+
+[[lean_lib]]
+name = "RMQArchive"

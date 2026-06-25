@@ -12,8 +12,11 @@ import RMQRankSelect
 ```
 
 `RMQRankSelect` exposes the public bitvector spec plus the concrete
-Jacobson/Clark construction. It does not import RMQ windows, Cartesian trees,
-LCA, Fischer-Heun, or the final succinct RMQ capstone modules.
+Jacobson/Clark construction as a plain-bitvector API. Its proof-support import
+closure currently shares the succinct-space and shape/lower-bound
+infrastructure, so this is not yet a minimal dependency root. It does not
+expose an RMQ/LCA/Fischer-Heun backend or the final succinct RMQ capstone as
+its public API.
 
 Verification:
 
@@ -65,16 +68,50 @@ The concrete construction currently lives in:
 
 - `RMQ/Core/SuccinctRankProposal.lean`
 - `RMQ/Core/SuccinctSelectProposal.lean`
-- `RMQ/Core/GenericSelectParams.lean`
-- `RMQ/Core/GenericSelectPrimitives.lean`
-- `RMQ/Core/GenericSelectBuilder.lean`
+- `RMQ/Core/GenericSelect/LowLevel.lean`
+- `RMQ/Core/GenericSelect/SelectFacts.lean`
+- `RMQ/Core/GenericSelect/Arithmetic.lean`
+- `RMQ/Core/GenericSelect/DenseEntryTable.lean`
+- `RMQ/Core/GenericSelect/DenseWord.lean`
+- `RMQ/Core/GenericSelect/RelativeSplit.lean`
+- `RMQ/Core/GenericSelect/LegacyNames.lean`
+- `RMQ/Core/GenericSelect/Params.lean`
+- `RMQ/Core/GenericSelect/Primitives.lean`
+- `RMQ/Core/GenericSelect/PrimitiveLegacyNames.lean`
+- `RMQ/Core/GenericSelect/Slots.lean`
+- `RMQ/Core/GenericSelect/Entries.lean`
+- `RMQ/Core/GenericSelect/FlagRank.lean`
+- `RMQ/Core/GenericSelect/RelativeTables.lean`
+- `RMQ/Core/GenericSelect/Directory.lean`
+- `RMQ/Core/GenericSelect/SelectSource.lean`
+- `RMQ/Core/GenericSelect/Source.lean`
+- `RMQ/Core/GenericSelect/Family.lean`
+- `RMQ/Core/GenericSelect/BPCompat.lean`
+- `RMQ/Core/GenericSelectLegacy.lean`
+
+The old flat `GenericSelectParams` / `GenericSelectPrimitives` modules and the
+`GenericSelect/Tables` module are compatibility barrels, not canonical homes for
+new work.
 
 The intended direction is:
 
 ```text
 Succinct -> SuccinctSpace -> RankSelectSpec
-Succinct -> SuccinctSpace -> SuccinctRankProposal -> SuccinctSelectProposal
-  -> GenericSelectBuilder -> SuccinctFinal
+Succinct -> SuccinctSpace -> SuccinctRankProposal -> GenericSelect.SelectSource
+GenericSelect.SelectSource --feeds downstream proposal--> SuccinctSelectProposal
+SuccinctRankProposal -> GenericSelect.{SelectFacts,Arithmetic}
+GenericSelect.SelectFacts -> GenericSelect.Arithmetic
+GenericSelect.Arithmetic -> GenericSelect.DenseEntryTable
+GenericSelect.DenseEntryTable -> GenericSelect.DenseWord
+GenericSelect.DenseWord -> GenericSelect.RelativeSplit
+GenericSelect.RelativeSplit -> GenericSelect.LowLevel
+GenericSelect.LowLevel -> GenericSelect.{Params,Primitives}
+GenericSelect.Primitives -> GenericSelect.PrimitiveLegacyNames
+GenericSelect.{LegacyNames,PrimitiveLegacyNames} -> GenericSelectLegacy
+GenericSelect.{Params,Primitives}
+  -> GenericSelect.{Slots,Entries,FlagRank,RelativeTables,Directory,Source,
+                    Family} -> SuccinctFinal
+GenericSelect.SelectSource -> GenericSelect.Source
 ```
 
 `RankSelectSpec` should stay small and upstream. Construction modules may adapt
@@ -128,11 +165,11 @@ non-oracular builder. The theorem
 records the pitfall. The concrete public family avoids that escape by routing
 through the built `GenericSelect.sparseExceptionSelectSource` construction.
 
-Some implementation names still reveal their BP/RMQ ancestry, especially
-`falseSelect*` helpers and a few bridge lemmas used while extracting the generic
-select source. The public facade keeps downstream users on neutral
-`RMQ.RankSelect.*` names; the remaining internal names are polish debt, not a
-correctness gap.
+The generic implementation now uses neutral select helper names internally.
+Older `falseSelect*` spellings are quarantined in
+`RMQ/Core/GenericSelect/LegacyNames.lean` and BP-specific bridge lemmas live in
+the terminal compatibility root. The public facade keeps downstream users on
+neutral `RMQ.RankSelect.*` names.
 
 ## Remaining Frontier
 

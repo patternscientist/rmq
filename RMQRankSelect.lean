@@ -3,9 +3,11 @@ import RMQ.Core.RankSelectPublic
 /-!
 # Standalone rank/select spoke
 
-This import root exposes the plain-bitvector rank/select surface without
-importing RMQ windows, Cartesian trees, Fischer-Heun, LCA, or the final RMQ
-capstone modules.
+This import root exposes the plain-bitvector rank/select API and public
+Jacobson/Clark theorem. It avoids the final RMQ capstone and backend roots, but
+the current proof-support import closure still shares the succinct-space,
+shape/lower-bound infrastructure. The exposed API is plain bitvector
+access/rank/select rather than an RMQ/LCA/Fischer-Heun backend.
 
 The public headline theorem is
 `RMQ.RankSelect.jacobsonClarkNPlusOConstantQuery`.

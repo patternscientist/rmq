@@ -1,4 +1,4 @@
-import RMQ.Core.GenericSelectBuilder
+import RMQ.Core.GenericSelect.Family
 import RMQ.Core.SuccinctSelectProposal
 import RMQ.Core.SuccinctCloseProposal
 

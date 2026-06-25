@@ -22,11 +22,14 @@ if ($LASTEXITCODE -ne 0) { Fail "lake build RMQHub failed" }
 lake build RMQRankSelect
 if ($LASTEXITCODE -ne 0) { Fail "lake build RMQRankSelect failed" }
 
+lake build RMQArchive
+if ($LASTEXITCODE -ne 0) { Fail "lake build RMQArchive failed" }
+
 # 2. Proof-hygiene scan: any hit fails the gate.
-$hygiene = rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ RMQHub.lean RMQRankSelect.lean lakefile.toml
+$hygiene = rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ RMQHub.lean RMQRankSelect.lean RMQArchive.lean lakefile.toml
 if ($hygiene) { Fail "hygiene scan hit:`n$hygiene" }
 
-$nd = rg -n "native_decide|Lean\.ofReduceBool" RMQ RMQHub.lean RMQRankSelect.lean
+$nd = rg -n "native_decide|Lean\.ofReduceBool" RMQ RMQHub.lean RMQRankSelect.lean RMQArchive.lean
 if ($nd) { Fail "native_decide / ofReduceBool present in source:`n$nd" }
 
 # 3. Curated trust-base check: load-bearing theorems use only standard axioms.

@@ -158,22 +158,21 @@ about Lean's executable `List` runtime.
 - `RMQ/Core/SuccinctSpace.lean`: broadword/succinct-space theorem interfaces:
   Mathlib-free `o(n)` overhead accounting, payload-backed rank/select
   components, BP-native Cartesian shape payloads of exact length `2*n`, and a
-  proved close-navigation RMQ adapter. `RMQ/Core/SuccinctFinal.lean` now
-  consumes the generic sparse-exception false-close/select source over
-  `shape.bpCode` and the compact BP close directory in a payload-accounted
-  `2*n + o(n), O(1)` BP-native theorem. The local BP decoder seeds on the final
-  path are routed through the payload-backed rank-close access callback;
-  remaining succinct work is presentation polish, such as an even flatter
-  encoded/payload-only view of the same capstone.
-- `RMQ/Core/RankSelectSpec.lean`, `RMQ/Core/GenericSelectBuilder.lean`, and
-  `RMQ/Core/RankSelectPublic.lean`: standalone rank/select extraction
-  surfaces. `RankSelectSpec` packages exact bitvector access/rank/select over
-  stored bits with an `n + overhead n` payload profile, while
-  `GenericSelectBuilder` now has a target-threaded Clark-style
-  sparse-exception select source with concrete branch exactness, little-o
-  auxiliary payload, constant modeled query cost, and machine-word read bounds.
-  `RankSelectPublic` exposes the public Jacobson/Clark bitvector family theorem
-  as `RankSelect.jacobsonClarkNPlusOConstantQuery`.
+  proved close-navigation RMQ adapter.
+- `RMQ/Core/SuccinctRankSelect.lean`, `RMQ/Core/GenericSelect.lean`,
+  `RMQ/Core/BPCloseNavigation.lean`, and `RMQ/Core/SuccinctRMQ.lean`:
+  role-named barrels for the live succinct stack. `GenericSelect` now exports
+  physically split pure bitvector select modules, including low-level facts,
+  parameter, primitive, slot/span, entry, flag-rank, relative-table, directory,
+  select-source, and family layers; BP compatibility is a separate terminal
+  bridge. The other barrels collect construction-level rank/select, compact BP
+  close navigation, and the final payload-accounted BP-native RMQ capstone.
+- `RMQ/Core/RankSelectSpec.lean` and `RMQ/Core/RankSelectPublic.lean`:
+  standalone rank/select extraction surfaces. `RankSelectSpec` packages exact
+  bitvector access/rank/select over stored bits with an `n + overhead n`
+  payload profile, while `RankSelectPublic` exposes the public Jacobson/Clark
+  bitvector family theorem as
+  `RankSelect.jacobsonClarkNPlusOConstantQuery`.
 - `RMQ/Headlines.lean`: short aliases for the main public theorem surfaces,
   including `Headlines.exactRMQLowerBoundDoubledCatalanSlack`,
   `Headlines.rankSelectNPlusOConstantQuery`, and
@@ -183,11 +182,13 @@ about Lean's executable `List` runtime.
   retained obstruction witnesses and old BP-specialized relative-split
   capstone; `RMQ/Archive/SelectCompatibility.lean` keeps stable compatibility
   aliases, while superseded intermediate prototype surfaces are intentionally
-  not anchored.
+  not anchored. These are opt-in through `RMQArchive.lean`, not imported by the
+  main `RMQ` root.
 - `RMQRankSelect.lean`: standalone rank/select spoke import root. It exposes
-  the public bitvector spec plus the Jacobson/Clark construction without
-  importing RMQ windows, Cartesian trees, LCA, Fischer-Heun, or the final RMQ
-  capstone modules.
+  the public bitvector spec plus the Jacobson/Clark construction as a
+  plain-bitvector API. Its proof-support import closure still shares the
+  succinct-space and shape/lower-bound infrastructure, but it does not expose
+  an RMQ/LCA/Fischer-Heun backend or the final RMQ capstone as its public API.
 - `RMQ/Core/SuccinctReduction.lean`: reduction-facing adapter from
   plus-minus-one RMQ backends over generated Euler-tour parentheses to the
   ordinary RMQ/LCA backend interfaces.
@@ -282,10 +283,17 @@ lake build RMQRankSelect
 lake env lean scripts/rank_select_axiom_check.lean
 ```
 
+Optional archive checks:
+
+```powershell
+lake build RMQArchive
+lake env lean scripts/archive_axiom_check.lean
+```
+
 Useful proof-hygiene check:
 
 ```powershell
-rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ lakefile.toml
+rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ RMQHub.lean RMQRankSelect.lean RMQArchive.lean lakefile.toml
 ```
 
 ## Next Direction
