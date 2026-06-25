@@ -2002,3 +2002,59 @@ bitvector directory storing the `n` input bits + `o(n)` auxiliary bits, answerin
   Confirmed not even the flag-rank factoring is unique — `main` already has the same
   factored `flagRankData (flagBits)` generic family (GenericSelectBuilder 1089/1103).
   Nothing on the clark branch is salvageable over `main`.
+
+## 2026-06-24 (AUDIT — ELEGANCE/TASTE, not correctness) — `main` @ `59768bd`
+
+Question this round: not "is it correct" (it is — see above) but "would a respectable
+Lean-formalization leader (Mathlib/CSLib caliber) have written it this way?" Verdict:
+**No. The math is a real result; the code is research scaffolding that was never cleaned
+up.** It would not pass Mathlib/CSLib review. The algorithm works but the code is a mess
+— over-built and carrying dead history — exactly the "works but messy" framing.
+
+Concrete evidence (all on `main`):
+- **Abstraction accretion: ~50 `*Select*` structures** (`rg "^structure .*Select"` = 50).
+  Many are superseded/parallel dead-ends never pruned: `SparseDenseFalseSelectLocatorEntry`
+  (+Table) vs the live `…DenseLocalEntry` (+Table); 6–8 overlapping "payload-live stored
+  word select data" variants (`PayloadLiveStoredWordSelectData`, `StoredWordSelectData`,
+  `PayloadBackedStoredWordSelectData`, `Sampled…`, `ExactSampled…`, `TwoLevel…` ×3);
+  3 `*CloseData` variants (`RelativeSplitRectangular…`, `RelativeSplitSparseException…`,
+  `RectangularCharged…`) — scope doc Tier 8 already admits the Rectangular ones are
+  superseded/linear. A CSLib-caliber version has ONE select-source interface + ONE
+  concrete builder.
+- **Monolithic files**: SuccinctCloseProposal 26k, SuccinctSelectProposal 20k,
+  GenericSelectBuilder 6k lines. Mathlib/CSLib soft-cap ~1500 and split by concept.
+- **Dead-history naming**: 149 `FalseSelect` identifiers inside the *generic*
+  (target-parametric) builder — the names lie (`relativeSplitFalseSelectEntryIsMarked`
+  ×30, `SparseDenseFalseSelectDenseLocalEntry` ×13). 6-noun pileups up to 58 chars
+  (`sparseDenseFalseSelectDenseLocalEntryMultiwordPayloadBudget`). Leftover from the
+  BP-`false` origin; never renamed when generalized.
+- **Amateur proof idiom**, ~15–37×/file: `by_cases h : b = true` then re-derive the
+  negation via `cases h : b · rfl · contradiction` (e.g. GenericSelectBuilder
+  377–380, 467–470, 937–940, 1844, 2062, 2121, …). `Bool.not_eq_true` appears nowhere.
+  Fix is a zero-library restructure: `cases hb : b` at the split. This is the literal
+  `if (x == true)` equivalent.
+- **No-op abstraction**: `SparseExceptionSelectData.queryOccurrence _data idx := idx`
+  (5219) — identity wrapper threaded through the query.
+- **Boilerplate**: 92 `_profile` theorems that just bundle fields into a conjunction.
+- **Reinvented basics scattered**: `nat_div_sub_div_le_sub`, `one_lt_two_pow_of_pos`,
+  `machineWordBits_le_self_of_pos`, `lt_two_pow_machineWordBits_of_lt` buried at
+  SuccinctSelectProposal 8152–8190 (a *select* file); `nat_succ_le_two_pow` in
+  SuccinctSpace. Consequence of the Mathlib-free constraint, done without a clean
+  `Prelude`/`NatExtra` home or Mathlib naming.
+- **Design**: false/true select built as two fully independent directories ⇒ overhead is
+  `… + canonicalSparseExceptionSelectOverhead n + canonicalSparseExceptionSelectOverhead n`
+  (2× constant) with duplicated `cases target` branches (5899–5942); padded aux payload
+  (`jacobsonClarkRankSelectPaddedAuxPayload`) materializes inert `false` bits just to make
+  the headline overhead a clean closed form.
+
+Genuinely good (fair credit): correct + trust-clean + genuinely o(n); lemmas decomposed
+into small named pieces (good granularity in the small); some names follow Mathlib's
+`conclusion_of_hypothesis` convention; `Costed` charged-cost discipline is principled.
+
+Estimate: a CSLib-caliber rewrite is ~1/3 the size. Prioritized cleanup (high ROI / low
+risk first): (1) prune the ~50 → ~5 structures (delete/Archive unused); (2) global rename
+(drop `False`/`built`, shorten pileups, namespace); (3) split mega-files; (4) script the
+Bool-dance → `cases hb : b`; (5) centralize reinvented basics + decide the Mathlib/CSLib
+dependency question (ties to the deferred CSLib coordination); (6) drop/auto-derive
+`_profile` boilerplate, inline identity wrappers. None of this touches correctness or the
+trust base.
