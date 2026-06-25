@@ -280,11 +280,13 @@ The select-side proposal layer has started the same dependency-role split.
 `RMQ/Core/SuccinctSelectProposal.lean` now owns the remaining C1-specific
 sparse/dense relative-split false-close construction.
 
-The close-navigation proposal has also started a conservative split.
+The close-navigation proposal is also split by role.
 `RMQ/Core/SuccinctClose.lean` is the thin reusable barrel for
-`SuccinctClose/BlockLocal.lean` and `SuccinctClose/RangeSummary.lean`.
-`RMQ/Core/SuccinctCloseProposal.lean` still owns the relative-summary,
-endpoint-fringe, and macro/micro close-navigation spine.
+`SuccinctClose/BlockLocal.lean`, `SuccinctClose/RangeSummary.lean`,
+`SuccinctClose/RelativeSummary.lean`, `SuccinctClose/RangeWitness.lean`,
+`SuccinctClose/EndpointFringe.lean`, and
+`SuccinctClose/RelativeRmmMacro.lean`. `RMQ/Core/SuccinctCloseProposal.lean`
+is now a compatibility import root for the historical proposal name.
 
 Keep import direction simple:
 
