@@ -154,6 +154,14 @@ Treat direct deletion or deeper physical source extraction as the next pass,
 after another reference scan confirms that no live generic capstone or
 rank/select theorem consumes the candidate.
 
+The first real prune pass narrowed that archive to retained witnesses: the old
+sparse/dense obstruction theorems and the old relative-split total two-sided
+capstone. Intermediate sparse/dense prototype profiles are no longer archive
+anchors, and the dead `SuccinctFinal` sparse/dense close-access adapter was
+removed. The remaining BP-specialized relative-split capstone stays checked as
+compatibility until a later source-prune pass either deletes it or intentionally
+keeps it as an old capstone.
+
 ## Phase 3: Split Mega-Modules
 
 Once duplicated select code is reduced, split by concept:

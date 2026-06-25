@@ -349,13 +349,9 @@ charged work. A full general `select target bits occurrence` structure is
 acceptable only if the same branch instantiates the false-target BP
 close-select theorem and proves the payload budget of the actual built tables.
 
-The sibling sparse/dense close-access socket now exists as
-`SuccinctFinal.SparseDenseFalseSelectBPCloseAccessDirectory` and
-`SuccinctFinal.SparseDenseFalseSelectBPCloseAccessFamily`. It consumes
-`SuccinctSelectProposal.SparseDenseFalseSelectCloseData`, whose query reads the
-packed super/local locator tables, explicit exception tables, and dense BP
-payload words. This older sparse/dense route is an interface and adapter layer
-only. The repaired relative-split compact route is now the concrete C1 witness:
+The earlier sibling sparse/dense close-access socket has been pruned rather
+than kept as a parallel adapter layer. The repaired relative-split compact
+route is now the retained BP-specialized C1 witness:
 `SuccinctSelectProposal.builtRelativeSplitSparseExceptionFalseSelectCloseData_profile`
 constructs the super/local, sparse-exception, long-flag-rank, and compact
 long-super relative tables from `shape.bpCode`, and
@@ -904,8 +900,8 @@ Invalid stop points for this final path:
   comes from proof fields such as `descriptor_some_exact`,
   `descriptor_none_exact`, `descriptor_word_choice_exact`, or a free
   `descriptorIndex`, while the compact payload builder remains missing.
-- proving `SparseDenseFalseSelectCloseData.profile` or
-  `SparseDenseFalseSelectBPCloseAccessFamily.constant_query_profile` while the
+- reviving `SparseDenseFalseSelectCloseData.profile` or a sibling
+  sparse/dense close-access adapter as a final checkpoint while the
   super/local/exception tables are not constructed from `shape.bpCode` and the
   branch-exactness fields are still supplied as assumptions.
 - proving `builtTwoLevelFalseSelectCloseData_profile`,

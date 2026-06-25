@@ -3,86 +3,21 @@ import RMQ.Core.SuccinctFinal
 /-!
 Archived select/access compatibility surfaces.
 
-The declarations in this file are aliases for superseded BP-specialized
-false-select and close-access proofs that are useful as stable compatibility
-or citation anchors. Low-level parameterized helper lemmas remain checked by
-their original names in `scripts/archive_axiom_check.lean`; copying all of
-their implicit binder structure here would add more clutter than clarity.
+This module is intentionally small. It keeps only stable citation anchors for
+the superseded BP-specialized route: one negative witness for the old
+sparse/dense locator design and one old relative-split capstone. Intermediate
+prototype table/profile lemmas are no longer anchored here; the live headline
+path now goes through the generic sparse-exception select source.
 -/
 
 namespace RMQ.Archive.SelectCompatibility
 
-/- BP-specialized sparse/dense false-select prototype and obstruction anchors. -/
+/- BP-specialized sparse/dense false-select obstruction anchor. -/
 
 abbrev sparseDense_locator_fullMachineField_not_word_bounded :=
   RMQ.SuccinctSelectProposal.sparseDenseFalseSelectLocatorEntry_fullMachineField_not_word_bounded
 
-abbrev sparseDense_locatorTable_ofEntries_profile :=
-  RMQ.SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectLocatorEntryTable.ofEntries_profile
-
-abbrev sparseDense_denseLocalTable_ofEntries_profile :=
-  RMQ.SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectDenseLocalEntryTable.ofEntries_profile
-
-abbrev longExplicitFalseSelectBranch_exact :=
-  RMQ.SuccinctSelectProposal.builtLongExplicitFalseSelectBranch_long_explicit_exact
-
-abbrev longExplicitFalseSelectBranch_obligation :=
-  RMQ.SuccinctSelectProposal.builtLongExplicitFalseSelectBranch_long_explicit_obligation
-
-abbrev fixedWidthLongSuperExplicitTable_profile :=
-  RMQ.SuccinctSelectProposal.fixedWidthLongSuperExplicitTable_profile
-
-abbrev fixedWidthSparseLocalExplicitTable_profile :=
-  RMQ.SuccinctSelectProposal.fixedWidthSparseLocalExplicitTable_profile
-
-abbrev sparseDense_overhead_littleO :=
-  RMQ.SuccinctSelectProposal.sparseDenseFalseSelectOverhead_littleO
-
-abbrev canonicalSparseDense_overhead_littleO :=
-  RMQ.SuccinctSelectProposal.canonicalSparseDenseFalseSelectOverhead_littleO
-
-/- BP-specialized relative-split false-select compatibility anchors. -/
-
-abbrev relativeSplit_compactLongSuperFlagRank_eq_segmentIndex :=
-  RMQ.SuccinctSelectProposal.compactLongSuperFlagRank_eq_segmentIndex
-
-abbrev relativeSplit_compactLongSuperRelativeTable_lookup_exact :=
-  RMQ.SuccinctSelectProposal.compactLongSuperRelativeTable_lookup_exact
-
-abbrev relativeSplit_longSuperSpanSum_le_bpCode_length :=
-  RMQ.SuccinctSelectProposal.builtRelativeSplitFalseSelectLongSuperSpanSum_le_bpCode_length
-
-abbrev relativeSplit_compactLongSuperRelativeTable_payload_mul_ell_le_spanSum :=
-  RMQ.SuccinctSelectProposal.compactLongSuperRelativeTable_payload_mul_ell_le_spanSum
-
-abbrev relativeSplit_compactLongSuperRelativeTable_payload_le_overhead :=
-  RMQ.SuccinctSelectProposal.compactLongSuperRelativeTable_payload_le_overhead
-
-abbrev relativeSplit_superEntry_marked_eq_long :=
-  RMQ.SuccinctSelectProposal.builtRelativeSplitFalseSelectSuperEntry_marked_eq_long
-
-abbrev relativeSplit_longExplicit_exact :=
-  RMQ.SuccinctSelectProposal.builtRelativeSplitFalseSelectLongExplicit_exact
-
-abbrev relativeSplit_compactLongSuperReadCosted_cost_le_five :=
-  RMQ.SuccinctSelectProposal.builtRelativeSplitCompactLongSuperReadCosted_cost_le_five
-
-abbrev relativeSplit_compactLongSuperReadCosted_lookup_exact :=
-  RMQ.SuccinctSelectProposal.builtRelativeSplitCompactLongSuperReadCosted_lookup_exact
-
-abbrev builtRelativeSplit_closeData_profile :=
-  RMQ.SuccinctSelectProposal.builtRelativeSplitSparseExceptionFalseSelectCloseData_profile
-
-/- Old closed close-access/RMQ capstones preserved as compatibility anchors. -/
-
-abbrev builtRelativeSplit_closeAccessFamily_profile :=
-  RMQ.SuccinctFinal.builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily_profile
-
-abbrev builtRelativeSplit_bpNative_two_n_plus_o_constant_query_profile :=
-  RMQ.SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
-
-abbrev builtRelativeSplit_bpNative_total_two_n_plus_o_constant_query_profile :=
-  RMQ.SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile
+/- Old closed RMQ capstone preserved as a compatibility anchor. -/
 
 abbrev builtRelativeSplit_bpNative_total_two_sided_doubled_catalan_slack_profile :=
   RMQ.SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile

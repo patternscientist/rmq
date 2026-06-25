@@ -380,9 +380,9 @@ payload proof. Sparse-local explicit answers should be stored as relative
 offsets in padded exception blocks, or routed through a charged variable-length
 base directory with its own budget proof; absolute BP positions at local-entry
 frequency are another disguised non-succinct shortcut.
-`SuccinctFinal` exposes the corresponding
-`SparseDenseFalseSelectBPCloseAccessDirectory` and family adapter so that the
-builder has a direct close-access target to inhabit.
+The earlier sparse/dense close-access adapter has been pruned; its remaining
+value is the obstruction evidence showing why the old absolute-pointer
+sparse/dense route was not the final compact target.
 `SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient` pins the first
 macro-design blocker: a macro keyed only by endpoint close-block pairs is false
 even on a four-node right spine, so the concrete macro must store
@@ -689,11 +689,10 @@ without any large-regime hypothesis, while also packaging the
 coefficient-correct doubled Catalan lower slack.
 The repaired query path now guards validity with `idx < shape.size`; the
 full false-count identity for `shape.bpCode` is used only in exactness proofs.
-The older `SparseDenseFalseSelectCloseData` adapter remains as a compatibility
-surface for the earlier packed sparse/dense route, not the final compact C1
-witness; its curated theorem checks have also moved to
-`scripts/archive_axiom_check.lean`, with stable archive aliases for the closed
-anchors in `RMQ.Archive.SelectCompatibility`.
+The older `SparseDenseFalseSelectCloseData` adapter remains only as source for
+negative witnesses about the earlier packed sparse/dense route. The archive
+gate now checks those obstruction theorems plus the old relative-split capstone;
+it no longer anchors intermediate sparse/dense prototype profiles.
 `scripts/succinct_cost_lint.ps1` is wired into `scripts/gate.ps1` and now flags
 the audited anti-pattern
 `LittleOLinear (fun _ => ...)` and the old uncharged full false-rank guard
@@ -1676,40 +1675,10 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctSelectProposal.fixedWidthSelectSampleTables_payload_length_eq_budget`,
   `SuccinctSelectProposal.fixedWidthSelectSampleTables_payload_length_le_sampled`,
   `SuccinctSelectProposal.sparseDenseFalseSelectLocatorEntry_fullMachineField_not_word_bounded`,
-  `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectLocatorEntryTable.ofEncodedWords_profile`,
-  `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectLocatorEntryTable.ofEntries_profile`,
-  `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectLocatorEntryTable.read_word_length_le_machine`,
-  `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectLocatorEntryTable.profile`,
-  `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectDenseLocalEntryTable.ofEntries_profile`,
-  `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectDenseLocalEntryTable.readCosted_cost_le_four`,
-  `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectDenseLocalEntryTable.readCosted_erase`,
-  `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectDenseLocalEntryTable.readWordsLengthLeMachine`,
-  `SuccinctSelectProposal.FixedWidthSparseDenseFalseSelectDenseLocalEntryTable.profile`,
-  `SuccinctSelectProposal.selectPositions_get?_eq_select`,
-  `SuccinctSelectProposal.select_exists_of_lt_rankPrefix`,
-  `SuccinctSelectProposal.builtLongExplicitFalseSelectBranch_long_explicit_exact`,
-  `SuccinctSelectProposal.builtLongExplicitFalseSelectBranch_long_explicit_obligation`,
-  `SuccinctSelectProposal.fixedWidthLongSuperExplicitTable_profile`,
-  `SuccinctSelectProposal.fixedWidthSparseLocalExplicitTable_profile`,
-  `SuccinctSelectProposal.sparseDenseFalseSelectOverhead_littleO`,
-  `SuccinctSelectProposal.canonicalSparseDenseFalseSelectOverhead_littleO`,
-  `SuccinctSelectProposal.denseTwoWordFalseSelectCosted_cost_le_five`,
-  `SuccinctSelectProposal.denseLocalEntryFalseSelectCosted_cost_le_five`,
-  `SuccinctSelectProposal.denseTwoWordFalseSelectCosted_exact_of_local_span`,
-  `SuccinctSelectProposal.falseSelectDenseLocalSpanCertificate_of_payload_routing_facts`,
-  `SuccinctSelectProposal.denseTwoWordFalseSelectCosted_exact_of_payload_routing_facts`,
-  `SuccinctSelectProposal.sparseDenseFalseSelectBranchObligations_of_built_entries`,
-  `SuccinctSelectProposal.sparseDenseFalseSelectBranchObligations_of_built_entries_and_dense_payload_facts`,
-  `SuccinctSelectProposal.SparseDenseFalseSelectCodecTables.payload_length`,
-  `SuccinctSelectProposal.SparseDenseFalseSelectCodecTables.readProfile`,
-  `SuccinctSelectProposal.SparseDenseFalseSelectCodecTables.readWordsLengthLeMachine`,
-  `SuccinctSelectProposal.SparseDenseFalseSelectCodecTables.profile_le_sparseDenseFalseSelectOverhead`,
-  `SuccinctSelectProposal.SparseDenseFalseSelectCloseData.payload_length_le_overhead`,
+  `SuccinctSelectProposal.SparseDenseFalseSelectCloseData.short_super_local_pointer_capacity_obstruction`,
+  `SuccinctSelectProposal.SparseDenseFalseSelectCloseData.dense_branch_packed_local_pointer_capacity_obstruction`,
   `SuccinctSelectProposal.SparseDenseFalseSelectCloseData.super_locator_full_machine_field_impossible`,
   `SuccinctSelectProposal.SparseDenseFalseSelectCloseData.local_locator_full_machine_field_impossible`,
-  `SuccinctSelectProposal.SparseDenseFalseSelectCloseData.selectCloseCosted_cost_le`,
-  `SuccinctSelectProposal.SparseDenseFalseSelectCloseData.selectCloseCosted_exact`,
-  `SuccinctSelectProposal.SparseDenseFalseSelectCloseData.profile`,
   `SuccinctSelectProposal.twoLevelSelectOverhead_littleO`,
   `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData.selectCosted_cost_le_four`,
   `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData.selected_position_in_read_word_of_sample`,
@@ -1913,7 +1882,7 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.queryBuiltCosted_cost_le`,
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.queryBuiltCosted_exact`,
   `SuccinctCloseProposal.PayloadLiveMacroMicroBPCloseNavigationFamily.two_n_plus_o_built_query_profile`.
-- `RMQ/Core/SuccinctFinal.lean` (40):
+- `RMQ/Core/SuccinctFinal.lean`:
   `SuccinctFinal.PayloadLiveBPCloseAccessFamily.constant_query_profile`,
   `SuccinctFinal.ReadBackedBPCloseAccessDirectory.payload_length_le_overhead`,
   `SuccinctFinal.ReadBackedBPCloseAccessDirectory.selectCloseCosted_cost_le`,
@@ -1923,14 +1892,6 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctFinal.ReadBackedBPCloseAccessDirectory.rank_read_words_length_le_machine`,
   `SuccinctFinal.ReadBackedBPCloseAccessDirectory.select_read_words_length_le_machine`,
   `SuccinctFinal.ReadBackedBPCloseAccessFamily.constant_query_profile`,
-  `SuccinctFinal.SparseDenseFalseSelectBPCloseAccessDirectory.payload_length_le_overhead`,
-  `SuccinctFinal.SparseDenseFalseSelectBPCloseAccessDirectory.selectCloseCosted_cost_le`,
-  `SuccinctFinal.SparseDenseFalseSelectBPCloseAccessDirectory.rankCloseCosted_cost_le`,
-  `SuccinctFinal.SparseDenseFalseSelectBPCloseAccessDirectory.selectCloseCosted_exact`,
-  `SuccinctFinal.SparseDenseFalseSelectBPCloseAccessDirectory.rankCloseCosted_exact`,
-  `SuccinctFinal.SparseDenseFalseSelectBPCloseAccessDirectory.select_read_words_length_le_machine`,
-  `SuccinctFinal.SparseDenseFalseSelectBPCloseAccessDirectory.profile`,
-  `SuccinctFinal.SparseDenseFalseSelectBPCloseAccessFamily.constant_query_profile`,
   `SuccinctFinal.RelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory.profile`,
   `SuccinctFinal.RelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.constant_query_profile`,
   `SuccinctFinal.builtRelativeSplitBPCloseRankData_auxPayload_le_overhead`,
@@ -1958,11 +1919,9 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile`,
   `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`.
 - `RMQ/Archive/SelectCompatibility.lean`:
-  checked aliases for closed/citation anchors from the superseded
-  BP-specialized sparse/dense and relative-split select/access routes, including
+  checked aliases for the retained obstruction/capstone anchors from the
+  superseded BP-specialized route, including
   `Archive.SelectCompatibility.sparseDense_locator_fullMachineField_not_word_bounded`,
-  `Archive.SelectCompatibility.builtRelativeSplit_closeData_profile`,
-  `Archive.SelectCompatibility.builtRelativeSplit_closeAccessFamily_profile`,
   and
   `Archive.SelectCompatibility.builtRelativeSplit_bpNative_total_two_sided_doubled_catalan_slack_profile`.
 - `RMQ/Headlines.lean`:
