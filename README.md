@@ -16,6 +16,8 @@ and consolidated modeling notes, see
 For the plan to grow this RMQ proof-of-concept into a larger verified
 data-structures library, see
 [`docs/REPOSITORY_STRATEGY.md`](docs/REPOSITORY_STRATEGY.md).
+For the first extracted spoke, see
+[`docs/RANK_SELECT_FRONTIER.md`](docs/RANK_SELECT_FRONTIER.md).
 
 ## What This Is, And Why Care
 
@@ -166,6 +168,10 @@ about Lean's executable `List` runtime.
   little-o auxiliary payload, constant modeled query cost, and machine-word
   read bounds, plus the public Jacobson/Clark bitvector family theorem
   `GenericSelect.jacobsonClarkRankSelectFamily_n_plus_o_constant_query_profile`.
+- `RMQRankSelect.lean`: standalone rank/select spoke import root. It exposes
+  the public bitvector spec plus the Jacobson/Clark construction without
+  importing RMQ windows, Cartesian trees, LCA, Fischer-Heun, or the final RMQ
+  capstone modules.
 - `RMQ/Core/SuccinctReduction.lean`: reduction-facing adapter from
   plus-minus-one RMQ backends over generated Euler-tour parentheses to the
   ordinary RMQ/LCA backend interfaces.
@@ -251,6 +257,13 @@ Concise public-headline check:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/headline_check.ps1
+```
+
+Standalone rank/select spoke checks:
+
+```powershell
+lake build RMQRankSelect
+lake env lean scripts/rank_select_axiom_check.lean
 ```
 
 Useful proof-hygiene check:

@@ -69,6 +69,8 @@ For now, keep this repository as the RMQ spoke and use `RMQHub` as the in-tree
 hub boundary. Promote the hub into a separate package only after another spoke
 actually imports the same interfaces. See `docs/REPOSITORY_STRATEGY.md`.
 
-The first planned spoke to stress this boundary is standalone succinct
-rank/select: a plain-bitvector `n + o(n)` payload profile with constant modeled
-`access`, `rank`, and `select` queries.
+The first spoke to stress this boundary is now in-tree as `RMQRankSelect`: a
+plain-bitvector `n + o(n)` payload profile with constant modeled `access`,
+`rank`, and `select` queries. It still physically lives in this repository, but
+it has its own import root and focused axiom check so later extraction can be
+measured against a concrete boundary.

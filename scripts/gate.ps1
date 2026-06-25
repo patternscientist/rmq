@@ -16,11 +16,17 @@ function Fail($msg) { Write-Host "GATE FAIL: $msg"; exit 1 }
 lake build
 if ($LASTEXITCODE -ne 0) { Fail "lake build failed" }
 
+lake build RMQHub
+if ($LASTEXITCODE -ne 0) { Fail "lake build RMQHub failed" }
+
+lake build RMQRankSelect
+if ($LASTEXITCODE -ne 0) { Fail "lake build RMQRankSelect failed" }
+
 # 2. Proof-hygiene scan: any hit fails the gate.
-$hygiene = rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ lakefile.toml
+$hygiene = rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ RMQHub.lean RMQRankSelect.lean lakefile.toml
 if ($hygiene) { Fail "hygiene scan hit:`n$hygiene" }
 
-$nd = rg -n "native_decide|Lean\.ofReduceBool" RMQ
+$nd = rg -n "native_decide|Lean\.ofReduceBool" RMQ RMQHub.lean RMQRankSelect.lean
 if ($nd) { Fail "native_decide / ofReduceBool present in source:`n$nd" }
 
 # 3. Curated trust-base check: load-bearing theorems use only standard axioms.
@@ -28,6 +34,12 @@ $ax = lake env lean scripts/axiom_check.lean
 if ($LASTEXITCODE -ne 0) { Fail "axiom_check.lean did not run cleanly" }
 if ($ax | Select-String -Pattern "sorryAx|ofReduceBool") {
   Fail "non-standard axiom in a load-bearing theorem:`n$ax"
+}
+
+$rankSelectAx = lake env lean scripts/rank_select_axiom_check.lean
+if ($LASTEXITCODE -ne 0) { Fail "rank_select_axiom_check.lean did not run cleanly" }
+if ($rankSelectAx | Select-String -Pattern "sorryAx|ofReduceBool") {
+  Fail "non-standard axiom in a rank/select theorem:`n$rankSelectAx"
 }
 
 # 4. Succinct frontier cost/space lints.

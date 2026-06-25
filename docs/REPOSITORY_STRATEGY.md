@@ -19,10 +19,11 @@ Instead, use this staged plan:
 
 1. Keep the current repo as the RMQ spoke and in-tree extraction test.
 2. Continue hardening `RMQ.Core.ModelHub` / `RMQHub` as the reusable boundary.
-3. Use standalone rank/select as the first extraction spoke: its public target
-   is a plain-bitvector `n + o(n)` payload profile with constant modeled
-   `access`, `rank`, and `select`, while its construction can initially live
-   beside the RMQ succinct modules until the API stabilizes.
+3. Use standalone rank/select as the first extraction spoke. This now has an
+   in-tree import root, `RMQRankSelect`, and a public plain-bitvector
+   `n + o(n)` payload profile with constant modeled `access`, `rank`, and
+   `select`. The construction can initially live beside the RMQ succinct
+   modules until the API stabilizes.
 4. Create a new umbrella repo only if the next spoke needs to share code
    immediately. Otherwise, start that spoke in its own repo and copy only the
    stable hub modules it consumes.
@@ -90,7 +91,8 @@ only adding another isolated proof. Good candidates:
 - cuckoo hashing or filters later, once the project is ready for probability
   and hash-family assumptions.
 
-The strongest immediate path is: extract the succinct bitvector/BP layer, then
-start union-find as the first non-succinct spoke. Rank/select should not be
-treated as an RMQ theorem add-on: it should have its own spec surface, theorem
-inventory, and public headline once the builder/profile theorem lands.
+The strongest immediate path is: use `RMQRankSelect` as the first extracted
+succinct spoke, push it toward compressed/FID and balanced-parentheses
+navigation, then start union-find as the first non-succinct spoke. Rank/select
+should not be treated as an RMQ theorem add-on: it now has its own spec surface,
+theorem inventory, public headline, and import/check boundary.

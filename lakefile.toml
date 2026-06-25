@@ -7,3 +7,6 @@ name = "RMQ"
 
 [[lean_lib]]
 name = "RMQHub"
+
+[[lean_lib]]
+name = "RMQRankSelect"

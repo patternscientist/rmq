@@ -51,10 +51,11 @@ separate appendix.
   `Cost`/`RAM`/`Refine`/`TableModel`/`LowerBound`/`PayloadLowerBound` layer;
   `scripts/hub_axiom_check.lean` checks that surface without importing the RMQ
   spoke. The payload layer now includes both pointwise and uniform charged
-  payload-budget lower bounds. The next extraction spoke is standalone
-  rank/select: a plain-bitvector `n + o(n)` payload profile with constant
-  modeled `access`, `rank`, and `select`, stated independently from RMQ while
-  reusing the succinct bitvector machinery where appropriate.
+  payload-budget lower bounds. The first extraction spoke is now standalone
+  rank/select: `RMQRankSelect` builds the public plain-bitvector
+  `n + o(n)` payload profile with constant modeled `access`, `rank`, and
+  `select`, stated independently from RMQ while reusing the succinct bitvector
+  machinery where appropriate.
 - Lower-bound layer: fixed-length lossless Cartesian-shape capacity theorem,
   exact-RMQ-decoder bridge, Mathlib-free Remy-style proof of
   `2^(2*n) <= (2*n+1)^2 * shapeCount n`, the resulting no-premise
@@ -117,8 +118,17 @@ flowchart TD
   LCA --> PlusMinusOneCore["Core.PlusMinusOne"]
   PlusMinusOneCore --> Succinct["Core.Succinct"]
   Succinct --> SuccinctSpace["Core.SuccinctSpace"]
+  SuccinctSpace --> RankSelectSpec["Core.RankSelectSpec"]
   SuccinctSpace --> SuccinctRankProposal["Core.SuccinctRankProposal"]
-  SuccinctSpace --> SuccinctSelectProposal["Core.SuccinctSelectProposal"]
+  RankSelectSpec --> SuccinctSelectProposal["Core.SuccinctSelectProposal"]
+  SuccinctRankProposal --> SuccinctSelectProposal
+  SuccinctSelectProposal --> GenericSelectParams["Core.GenericSelectParams"]
+  SuccinctSelectProposal --> GenericSelectPrimitives["Core.GenericSelectPrimitives"]
+  GenericSelectParams --> GenericSelectBuilder["Core.GenericSelectBuilder"]
+  GenericSelectPrimitives --> GenericSelectBuilder
+  RankSelectSpec --> GenericSelectBuilder
+  SuccinctRankProposal --> GenericSelectBuilder
+  GenericSelectBuilder --> SuccinctFinal["Core.SuccinctFinal"]
   EncodingLowerBound --> SuccinctSpace
   LCA --> Reduction["Core.Reduction"]
   Succinct --> SuccinctReduction["Core.SuccinctReduction"]
@@ -300,6 +310,12 @@ which routes local decoder seeds through the final payload-backed
 is a branch-normal-form corollary, not a premise of the total final profile.
 The theorem-shaped local-decoder path is recorded in
 `docs/LOCAL_BP_DECODER_PATH.md`.
+
+The following C1/C2 paragraphs preserve construction history and stop-audit
+context. Their older "next" wording describes the state at that checkpoint;
+the active RMQ capstone obligations are discharged by
+`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`.
+
 Succinct C1 sparse/dense codec update: `SuccinctSpace` now supplies
 `littleOLinear_id_div_logLog_succ`, `idDivLogLogOverhead_littleO`, and
 `logLogCubedSampledDirectoryOverhead_littleO`, covering the explicit

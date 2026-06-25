@@ -349,9 +349,10 @@ Current status:
   `2*n` payload.
 
 Anti-vacuity: the upper side must remain a concrete encoder with proved exact
-queries, not a bare existential. The current fixed-length `2*n` witnesses are
-valid exact upper bounds, but they are not yet a packed constant-time succinct
-RMQ query structure.
+queries, not a bare existential. Those first-stage fixed-length `2*n` witnesses
+are valid exact upper bounds, but by themselves they were not yet a packed
+constant-time succinct RMQ query structure; the landed BP-native capstone below
+is the packed constant-query upper side.
 
 Next refinement: package an even flatter encoded/payload-only view of the same
 BP-native capstone, or move to a stronger first-order RAM interpreter if a
@@ -389,7 +390,12 @@ implementation-shaped companion
 `FischerHeun.exactRMQ_two_sided_log_slack_space_bound_stateEncoding` remain as
 coarser existential/state-shaped views.
 
-The next model layer now exists:
+The following E1 bullets preserve historical target layering. Active RMQ
+capstone obligations are discharged by the `SuccinctFinal` theorem above; the
+items below explain how the project reached that theorem and which pieces are
+still useful as reusable scaffolding.
+
+Historical model layers:
 
 - `Succinct.PackedPlusMinusOneRMQ` packages counted signature payload bits, a
   packed bitvector view, and a fixed exact signature-table decoder.
@@ -450,8 +456,9 @@ The next model layer now exists:
   returns the inorder node close position.
 - `SuccinctSpace.BalancedParensAccess.ofShapePayloadLiveStoredWordRankSelectData_close_profile`
   uses the payload-live stored-word rank/select component to discharge the
-  close-select and close-rank legs with cost `<= 3`; only the BP LCA-close
-  primitive remains abstract in the close-navigation adapter.
+  close-select and close-rank legs with cost `<= 3`; at this historical layer
+  the BP LCA-close primitive was still abstract in the close-navigation
+  adapter.
 - `SuccinctSpace.BPBroadwordRMQDirectory` is the BP-native counterpart to
   `BroadwordRMQDirectory`: the counted base payload is `shape.bpCode`, not the
   canonical decoder payload.
@@ -605,7 +612,7 @@ Faithful rebuild started:
 - `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily.bp_constant_query_profile`
   combines the two-level rank and select components into the existing generic
   `RankSelectDirectory` and `BalancedParensAccessFamily` contracts. This is
-  the bridge that lets future BP-close/LCA navigation consume the two-level
+  the bridge that lets BP-close/LCA navigation consume the two-level
   rank/select components without a special-purpose BP API.
 - `SuccinctSelectProposal.TwoLevelPayloadLiveBPCloseRMQNavigationFamily.two_n_plus_o_built_query_profile`
   gives the stateful BP close-navigation profile over two-level rank/select
@@ -635,27 +642,26 @@ Faithful rebuild started:
   packages the same faithful rank/excess story for any family whose sampled
   directory overhead is proved `LittleOLinear`.
 
-Remaining E1 work is no longer "make a plausible interface"; it is concrete:
-instantiate the payload-live BP close-navigation codecs inside the sampled
-encoded wrapper using bounded payload words. For rank, the single-level sampled
-target is only a migration scaffold; the final word-RAM path should instantiate
-the two-level rank interface so `wordRank` is applied only to `O(log n)`-bit
-machine words. The two-level rank and select query paths are already forced
-through counted supertable/block-table/payload-word reads, and fixed-width
-encoded-word plus bounded-entry constructors now bridge emitted payload words
-to the counted table contracts. The canonical builder layer has moved past the
-rank/select endpoint blockers: rank has generated super/block sample entries,
-fixed-width sample tables, presence/bound lemmas, local chunk-rank exactness,
-sentinel-backed endpoint presence, `canonicalTwoLevelRankDataOfChunksExact`,
-and its profile theorem. Select has generated coarse/local locator entries,
-fixed-width locator table constructors, bounded-query clamping, slice-local
-word-select exactness, `canonicalTwoLevelSelectDataOfChunksExact`, and its
-profile theorem. The select two-level API now uses an explicit local
-block-index function for block-table reads, so the reusable profile no longer
-forces compact builders to expose one globally addressed local locator word per
-occurrence; the canonical finite constructor remains the identity-index witness
-until the dense/sparse select builder is instantiated. The two sides are
-combined by
+The old E1 interface-building work is closed for RMQ. The payload-live
+BP-close-navigation codecs, bounded payload words, dense/sparse select witness,
+compact BP close/LCA directory, and rank-seeded local decoder are consumed by
+the final BP-native capstone. For rank/select as a reusable spoke, the remaining
+work has moved to compressed/FID payload bounds, a clearer word-bounded public
+presentation, and balanced-parentheses navigation. The historical two-level
+rank and select query paths were forced through counted
+supertable/block-table/payload-word reads, and fixed-width encoded-word plus
+bounded-entry constructors bridged emitted payload words to the counted table
+contracts. The canonical builder layer moved past the rank/select endpoint
+blockers: rank has generated super/block sample entries, fixed-width sample
+tables, presence/bound lemmas, local chunk-rank exactness, sentinel-backed
+endpoint presence, `canonicalTwoLevelRankDataOfChunksExact`, and its profile
+theorem. Select has generated coarse/local locator entries, fixed-width locator
+table constructors, bounded-query clamping, slice-local word-select exactness,
+`canonicalTwoLevelSelectDataOfChunksExact`, and its profile theorem. The select
+two-level API uses an explicit local block-index function for block-table reads,
+so the reusable profile no longer forces compact builders to expose one
+globally addressed local locator word per occurrence. The two sides are combined
+by
 `canonicalTwoLevelRankSelectDirectoryOfChunksExact_profile` and lifted to
 balanced-parentheses access by
 `canonicalTwoLevelBalancedParensAccessOfChunksExact_profile`.
@@ -707,13 +713,14 @@ only after the API stabilizes and the next spoke needs it. The current
 repository should remain the RMQ spoke until that trigger fires; see
 `docs/REPOSITORY_STRATEGY.md`.
 
-The first extraction spoke should be standalone succinct rank/select. Its public
-plain-bitvector target is an `n + o(n)` payload theorem with constant modeled
-`access`, `rank`, and `select` queries. RMQ's current succinct layer already
-contains the reference semantics, payload-live rank/select interfaces,
-word-RAM primitives, and BP-specialized select evidence; the extraction task is
-to expose those through an RMQ-independent spec and a non-oracular concrete
-builder rather than another RMQ capstone wrapper.
+The first extraction spoke is now standalone succinct rank/select. The
+`RMQRankSelect` import root exposes an RMQ-independent spec and the public
+Jacobson/Clark theorem:
+`GenericSelect.jacobsonClarkRankSelectFamily_n_plus_o_constant_query_profile`.
+It proves an `n + o(n)` payload theorem with constant modeled `access`, `rank`,
+and `select` queries. The next rank/select research targets are compressed/FID
+payload bounds, a tighter word-bounded public presentation, and
+balanced-parentheses navigation over the same spec surface.
 
 ## Target Hub Layout
 
