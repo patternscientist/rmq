@@ -18,8 +18,8 @@ Do not break either headline while cleaning.
    exact RMQ, `2*n + o(n)` payload, constant modeled query cost, and the
    two-sided Catalan lower-bound story. The older
    `SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`
-   remains checked compatibility for the BP-specialized relative-split path
-   until a later archive/prune pass.
+   is no longer the headline path; it remains a checked archive compatibility
+   surface for the BP-specialized relative-split path.
 
 2. **Rank/select spoke.** The public bitvector headline is
    `GenericSelect.jacobsonClarkRankSelectFamily_n_plus_o_constant_query_profile`,
@@ -29,8 +29,9 @@ Do not break either headline while cleaning.
 The key structural smell is that the sparse-exception select idea exists in
 two forms:
 
-- a BP-specialized false-close/select implementation consumed by the RMQ
-  capstone through `SuccinctSelectProposal` and `SuccinctFinal`;
+- a BP-specialized false-close/select implementation still present as a
+  checked compatibility/archive surface through `SuccinctSelectProposal` and
+  `SuccinctFinal`;
 - a generic `List Bool` implementation consumed by the rank/select spoke
   through `GenericSelect`.
 
@@ -46,6 +47,7 @@ Every cleanup step must preserve the ordinary gate:
 ```powershell
 lake build
 lake env lean scripts\axiom_check.lean
+lake env lean scripts\archive_axiom_check.lean
 lake env lean scripts\rank_select_axiom_check.lean
 rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ lakefile.toml
 rg -n "native_decide|Lean\.ofReduceBool" RMQ
@@ -124,9 +126,9 @@ adapter must discharge:
 
 The generic select source is now the concrete source consumed by
 `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`,
-with total and two-sided wrappers. Do not delete the old relative-split
-capstone in this pass; treat it as compatibility until Phase 2 classifies the
-superseded code on current main.
+with total and two-sided wrappers. The old relative-split capstone is no
+longer part of the main load-bearing axiom inventory, but it remains checked
+through the archive script until a later source-prune pass.
 
 ## Phase 2: Archive Or Prune Superseded Select Code
 
@@ -143,11 +145,13 @@ This is where candidates such as old locator-entry tables, rectangular select
 experiments, and sampled wrapper variants should be reclassified on current
 main. Do not trust stale line counts or stale reference counts.
 
-The current-main safety inventory found no tracked select/succinct island that
-should be directly deleted before archive. Many ugly-looking pieces are still
-cited by docs, pinned by axiom checks, or part of compatibility theorem
-surfaces. Treat direct deletion as a second pass after generic-select
-consumption and archive-check wiring, not as the first cleanup move.
+The first archive boundary is now active: old BP-specialized sparse/dense and
+relative-split select/access checks have moved from the main curated axiom
+inventory to `scripts/archive_axiom_check.lean`, and `scripts/gate.ps1` runs
+that archive script. Source declarations are deliberately still present. Treat
+direct deletion or physical `RMQ/Archive/...` source extraction as the next
+pass, after another reference scan confirms that no live generic capstone or
+rank/select theorem consumes the candidate.
 
 ## Phase 3: Split Mega-Modules
 

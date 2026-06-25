@@ -11,8 +11,9 @@ sparse-exception select close-access witness over `shape.bpCode`, a concrete
 compact BP close/LCA directory, rank-backed local BP seed routing through the
 final payload-live access family, and a public generic-select theorem surface
 that packages the `2*n + o(n)` upper structure with the doubled Catalan lower
-slack. The older relative-split capstone remains checked compatibility until a
-later archive/prune pass.
+slack. The older relative-split capstone is now a checked compatibility
+surface; its trust-base checks live in `scripts/archive_axiom_check.lean`,
+which is run by the gate.
 
 This document is the family-level map for the current Lean development. It
 records the module dependency DAG, correctness and cost status by structure,
@@ -678,8 +679,8 @@ semantic bridge. The public generic-select capstone
 and its total/two-sided wrappers now consume that replacement surface directly.
 The relative-split capstone wrapper
 `SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`
-remains checked compatibility for the old BP-specialized access witness. The
-public total two-sided generic wrapper
+remains checked archive compatibility for the old BP-specialized access
+witness. The public total two-sided generic wrapper
 `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`
 states the same all-`n` payload, exactness, and uniform constant-query profile
 without any large-regime hypothesis, while also packaging the
@@ -688,7 +689,8 @@ The repaired query path now guards validity with `idx < shape.size`; the
 full false-count identity for `shape.bpCode` is used only in exactness proofs.
 The older `SparseDenseFalseSelectCloseData` adapter remains as a compatibility
 surface for the earlier packed sparse/dense route, not the final compact C1
-witness.
+witness; its curated theorem checks have also moved to
+`scripts/archive_axiom_check.lean`.
 `scripts/succinct_cost_lint.ps1` is wired into `scripts/gate.ps1` and now flags
 the audited anti-pattern
 `LittleOLinear (fun _ => ...)` and the old uncharged full false-rank guard
