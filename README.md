@@ -71,8 +71,10 @@ It proves a common half-open, leftmost-argmin contract for:
 - a certified raw microtable backend over Cartesian shapes, and
 - value-level Fischer-Heun backends, including an exact all-input wrapper.
 
-The headline succinct theorem is the two-sided capstone
-`SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`:
+The headline succinct theorem is the two-sided capstone alias
+`Headlines.succinctRMQTwoNPlusOConstantQuery`
+(for
+`SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`):
 for Cartesian-shape RMQ, the stored payload is the exact balanced-parentheses
 shape code plus `o(n)` auxiliary bits, and every valid half-open query is exact
 with a uniform constant modeled cost through the generic sparse-exception
@@ -171,6 +173,10 @@ about Lean's executable `List` runtime.
   little-o auxiliary payload, constant modeled query cost, and machine-word
   read bounds, plus the public Jacobson/Clark bitvector family theorem
   `GenericSelect.jacobsonClarkRankSelectFamily_n_plus_o_constant_query_profile`.
+- `RMQ/Headlines.lean`: short aliases for the main public theorem surfaces,
+  including `Headlines.exactRMQLowerBoundDoubledCatalanSlack`,
+  `Headlines.rankSelectNPlusOConstantQuery`, and
+  `Headlines.succinctRMQTwoNPlusOConstantQuery`.
 - `RMQ/Archive/SelectCompatibility.lean`: checked compatibility aliases for
   superseded BP-specialized select/access routes that are preserved while the
   live headline path uses the generic select surface.

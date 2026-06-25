@@ -14,7 +14,8 @@ that packages the `2*n + o(n)` upper structure with the doubled Catalan lower
 slack. The older relative-split capstone is now a checked compatibility
 surface; closed/citation anchors live in `RMQ/Archive/SelectCompatibility.lean`,
 and the corresponding trust-base checks live in `scripts/archive_axiom_check.lean`,
-which is run by the gate.
+which is run by the gate. Short public aliases for the main citeable theorem
+surfaces now live in `RMQ/Headlines.lean`.
 
 This document is the family-level map for the current Lean development. It
 records the module dependency DAG, correctness and cost status by structure,
@@ -1964,6 +1965,11 @@ The names below are grouped by source module. Repeated base names in
   `Archive.SelectCompatibility.builtRelativeSplit_closeAccessFamily_profile`,
   and
   `Archive.SelectCompatibility.builtRelativeSplit_bpNative_total_two_sided_doubled_catalan_slack_profile`.
+- `RMQ/Headlines.lean`:
+  public-facing aliases
+  `Headlines.exactRMQLowerBoundDoubledCatalanSlack`,
+  `Headlines.rankSelectNPlusOConstantQuery`, and
+  `Headlines.succinctRMQTwoNPlusOConstantQuery`.
 - `RMQ/Core/SuccinctReduction.lean` (7):
   `Succinct.rmqBackendOfEulerParensBackend_queryBuilt`,
   `Succinct.lcaCandidateOfEulerParensBackend_eq_queryBuilt`,

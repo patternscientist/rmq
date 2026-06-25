@@ -176,6 +176,9 @@ bridges should live above the generic layer.
 
 Do this after unification and pruning.
 
+- Short public aliases for the main theorem surfaces now live in
+  `RMQ/Headlines.lean`; keep adding aliases there when a public-facing name is
+  useful, while preserving the original construction-heavy declaration names.
 - In generic select code, remove `False` from names that are truly
   target-parametric.
 - Add short public theorem aliases for headline results, while preserving

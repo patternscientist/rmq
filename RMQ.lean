@@ -37,3 +37,4 @@ import RMQ.Impl.RecursiveHybridCost
 import RMQ.Impl.LCACost
 import RMQ.Impl.LCAFischerHeun
 import RMQ.Impl.Equivalence
+import RMQ.Headlines

@@ -1,5 +1,6 @@
 import RMQ
 import RMQ.Core.EncodingLowerBound
+import RMQ.Headlines
 import RMQ.Core.SuccinctFinal
 
 /-!
@@ -16,7 +17,7 @@ the BP-native succinct capstone.
 #print axioms RMQ.EncodingLowerBound.shapeCount_quadratic_lower
 #print axioms RMQ.EncodingLowerBound.two_mul_sub_log_slack_le_bits_of_exactRMQShapeEncoding
 #print axioms RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound
-#print axioms RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack
+#print axioms RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack
 #print axioms RMQ.FischerHeun.fischerHeun_refines_with_steps
 #print axioms RMQ.LCAFischerHeun.denseLCA_linearBuild_constantQuery_profile
 #print axioms RMQ.SuccinctCloseProposal.canonicalBPRelativeSummaryBlockSize_pos_of_size_ge
@@ -24,4 +25,5 @@ the BP-native succinct capstone.
 #print axioms RMQ.SuccinctCloseProposal.ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_exact_of_query
 #print axioms RMQ.SuccinctCloseProposal.ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_exact_of_query_of_size_ge
 #print axioms RMQ.SuccinctFinal.builtGenericSparseExceptionSelectBPCloseAccessFamily_profile
-#print axioms RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile
+#print axioms RMQ.Headlines.rankSelectNPlusOConstantQuery
+#print axioms RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery
