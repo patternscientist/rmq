@@ -2159,3 +2159,51 @@ elegance audit called out. The decision to make is explicit: **archive-as-keep v
 archive-as-stage-then-delete.** If the goal is a CSLib-caliber tree, the next commit must
 actually *delete* the dead islands (Locator codec first — it has no dual-proof value),
 which now also means removing their fresh compatibility aliases.
+
+## 2026-06-25 (AUDIT) — `main` @ `5c54625` (the prune)
+
+Two commits since `88fd2e2`: `e5fb54e` (prune superseded select archive anchors),
+`5c54625` (split archive anchors + slim docs). Net **−910 / +165 lines**. The prune I
+asked for landed. Machine-checked: full `lake build` green; headline (15) / archive (6) /
+full (421) / rank-select (4) axiom checks all zero `sorryAx`/`ofReduceBool`; generic
+capstone alias `succinctRMQTwoNPlusOConstantQuery` still `{propext, Classical.choice,
+Quot.sound}`.
+
+**INTEGRITY VERDICT: GENUINE. Clean prune, correct triage, nothing hidden.**
+- The checks shrank *in lockstep with deletions*, not by dodging: archive 60→6, full
+  477→421. Each removed `#print` corresponds to a deleted theorem (confirmed via the
+  `e5fb54e` diff), not a still-present theorem quietly dropped from verification.
+- **Triage exactly matches the recommendation.** `5c54625` split the archive into
+  `SelectObstructions.lean` (5 obstruction witnesses, e.g.
+  `*_full_machine_field_impossible`, `*_capacity_obstruction` — the valuable "this easy
+  route is provably impossible" artifacts) and `BPSpecializedCapstone.lean` (the
+  relative-split BP capstone kept as a *dual* proof of the generic one). Both resolve
+  trust-clean. The genuinely-dead **sparse-dense Locator codec** path got its consumers
+  deleted (`e5fb54e` removed `SparseDenseFalseSelectBPCloseAccessDirectory`/`…Family` +
+  methods from SuccinctFinal, −256) and its archive checks + compat aliases removed.
+- `.gitignore` now covers `.tmp_rank_select_materials/`; the stray PDFs are gone. The
+  worktree is clean. (Carried-over cleanup item: done.)
+- Docs slimmed honestly — `CLEANUP_AND_ROADMAP.md` on `main` *explicitly* states the
+  BP-specialized impl "still present as a checked compatibility/archive surface," so the
+  archive-as-keep decision (the fork I flagged) is now made and documented, not buried.
+  `FAMILY_SUMMARY.md` −452 removed verbose per-theorem inventory; headline theorems remain
+  documented and axiom-enforced. No honest caveat was deleted to look more done.
+
+**ELEGANCE VERDICT: real progress, but the core file is untouched.**
+- First commit-set in this series to actually shrink the tree (−910). Anchor bookkeeping
+  is now clean and well-segregated (obstructions vs. dual-capstone vs. live headline).
+- **`SuccinctSelectProposal.lean` is still 19,837 lines — byte-for-byte unchanged.** The
+  prune removed leaf *consumers* (SuccinctFinal wrappers) and *bookkeeping*, not the core
+  definitions. Consequence: the sparse-dense Locator codec
+  (`SparseDenseFalseSelectLocatorEntry`/`…CloseData`/`…CodecTables`) is now a **dead island
+  inside the 20k file** — compiled (so still proven) but no live consumer and no longer in
+  any axiom check. That's the next physical deletion. The relative-split machinery is also
+  still there, but by deliberate choice (dual proof), not oversight.
+- Pending elegance items unchanged: the 20k/26k/6k file *splits* (Phase 3); the 149
+  `FalseSelect` dead-history names in the generic builder (Phase 2 rename); the 2× false/
+  true select overhead; the Bool case-extraction idiom; the Mathlib/CSLib dependency call.
+
+Bottom line: best commit-set in the series — honest, correctly-triaged pruning that finally
+reduced the tree and resolved the archive-as-keep fork on the record. The remaining elegance
+gap is now concentrated: physically delete the dead sparse-dense Locator island from
+`SuccinctSelectProposal`, then split + rename. None of it touches the trust base.
