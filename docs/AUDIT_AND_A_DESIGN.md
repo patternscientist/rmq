@@ -2252,3 +2252,54 @@ Bottom line: clean, honest, well-scoped commit. The public face is now genuinely
 truthfully described. The deep structural debt remains and is correctly listed as pending;
 the next substantive move is still the physical deletion of the dead Locator/rectangular
 islands, then the proof-module splits.
+
+## 2026-06-25 (AUDIT) — `main` worktree, UNCOMMITTED WIP on top of `6052431` (split + rename)
+
+No new commit; the main worktree has a large **uncommitted** restructure (−7734 lines from
+tracked files + a fleet of new untracked modules). This is the Phase-2 rename + Phase-3
+split finally happening on the generic-select half. Audited as a snapshot. Machine-checked:
+full `lake build` green **mid-reorg**; all four axiom checks resolve with **zero** broken
+references and zero `sorryAx`/`ofReduceBool` — headline 15, archive 6, rank-select 5,
+full 421.
+
+**INTEGRITY VERDICT: CLEAN. The move preserved everything.** That all 421 full-check
+headliners + the 3 curated sets still resolve (no "unknown identifier") proves no
+axiom-checked theorem was lost or stranded by the move; the Legacy/BPCompat shims keep old
+names resolvable. Trust base intact. Gate **strengthened** again (added `lake build
+RMQArchive` + extended hygiene/native_decide scans to `RMQArchive.lean`).
+
+**ELEGANCE VERDICT: best progress of the entire series — the structural cleanup finally
+started, and well.**
+- **Phase 3 split done (generic-select half):** the 6065-line `GenericSelectBuilder`
+  monolith is now a 19-module `RMQ/Core/GenericSelect/` directory (Params/Primitives/Slots/
+  Entries/DenseEntryTable/FlagRank/RelativeTables/Directory/Family/Source/SelectFacts/…),
+  each ~100–1300 lines (max `Source.lean` 2432, vs the old 6065). Old files gutted to
+  import-shims; new clean public roots (`SuccinctRMQ.lean`, `SuccinctRankSelect.lean`)
+  wired into `RMQ.lean`.
+- **Phase 2 rename done (generic-select half):** dead `FalseSelect` names dropped 149 → 30,
+  and all 30 survivors are in deliberate, documented compatibility-alias files
+  (`LegacyNames`/`PrimitiveLegacyNames`/`BPCompat`). The role modules are neutral-named
+  (`sparseDenseSelectQueryCost`, etc.), with a docstring steering new code to them. Textbook
+  rename-with-back-compat.
+- Line count rose ~+1.6k in this area — the *expected, correct* cost of splitting (per-file
+  headers/imports) plus the compat aliases. The win is cohesion/navigability and max-file
+  size, not LoC; not a knock.
+
+**Standing gaps (honest):**
+- **The two biggest files are still monolithic:** `SuccinctSelectProposal.lean` 19,243
+  (−594 only) and `SuccinctCloseProposal.lean` 26,285 (untouched). The split hit the
+  generic-select half, not the BP close/select proposal files.
+- **Dead Locator island still present** (125 refs in `SuccinctSelectProposal`, was 129) —
+  the specifically-flagged deletion still hasn't happened.
+- **Transitional shim cruft** (gutted-to-15-line originals + Legacy/PrimitiveLegacy/BPCompat
+  alias modules) should be removed once downstream migrates to the neutral names, else it
+  becomes permanent indirection.
+- **It's uncommitted WIP** — a snapshot that could still change/break before commit; no
+  commit message to evaluate.
+
+Bottom line: this is the change-in-waiting that actually does the elegance work — a clean,
+trust-preserving modular split + rename of the generic-select half, gate kept in lockstep.
+Incomplete (the 19k/26k proposal files and the dead Locator island remain) and not yet
+committed, but the right move executed to the right standard. Recommend: commit it (green
+and trust-clean), then carry the same split/rename + the Locator deletion into
+`SuccinctSelectProposal`/`SuccinctCloseProposal`, and schedule shim removal.
