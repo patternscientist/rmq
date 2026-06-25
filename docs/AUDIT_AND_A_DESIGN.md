@@ -2207,3 +2207,48 @@ Bottom line: best commit-set in the series — honest, correctly-triaged pruning
 reduced the tree and resolved the archive-as-keep fork on the record. The remaining elegance
 gap is now concentrated: physically delete the dead sparse-dense Locator island from
 `SuccinctSelectProposal`, then split + rename. None of it touches the trust base.
+
+## 2026-06-25 (AUDIT) — `main` @ `6052431` "Finish public cleanup facade"
+
+One commit since `5c54625`. The title ("Finish" + "facade") invited suspicion of a veneer
+/ declaring-victory overclaim; it does not hold up. Machine-checked: full `lake build`
+green; rank-select axiom check clean, with the new facade alias
+`RMQ.RankSelect.jacobsonClarkNPlusOConstantQuery` → `{propext, Classical.choice,
+Quot.sound}` (carries the genuine theorem's profile, not a stub).
+
+**VERDICT: GENUINE and honest; no overclaim. Legitimate facade, not a veneer.**
+- `RMQ/Core/RankSelectPublic.lean` (+45) is clean `abbrev` re-exports into a neutral
+  `RMQ.RankSelect.*` namespace (`Directory`/`Family`/`jacobsonClark*`/
+  `jacobsonClarkNPlusOConstantQuery`). `abbrev` can't weaken the statement; verified
+  trust-clean. This is the facade pattern done right.
+- **The "complete" claim is correctly scoped.** `CLEANUP_AND_ROADMAP.md` retitled
+  "Plan" → "Status" and says "the main **public-facing** cleanup pass is now complete"
+  — true (headline names, facade, archive separation, doc collapse are done). It does
+  NOT claim the whole cleanup is done. `rg` for "cleanup done/complete/finished"
+  overclaims in README/FAMILY_SUMMARY: none.
+- **Structural items retained, not dropped.** "Phase 3: Split Mega-Modules" is still
+  active; the dead-island deletion is still listed with *named* candidates ("old
+  locator-entry tables, rectangular select" close-data, delete "only after a green
+  gate"); rename/idioms/dependency are kept under "future opportunistic." The
+  archive-as-keep decision for the relative-split capstone is explicit and on the record
+  ("keep… intentionally as an old capstone… should not be deleted").
+
+**Standing elegance gap (honestly tracked, not hidden):** across the whole cleanup series
+the *core* files are still untouched — `SuccinctSelectProposal.lean` 19,837,
+`SuccinctCloseProposal.lean` 26,285, `GenericSelectBuilder.lean` 6,065. The dead
+sparse-dense Locator island is still physically present (now dead + unchecked); the 149
+`FalseSelect` names persist; the splits haven't happened. So six commits of cleanup have
+delivered: one real deletion (`e5fb54e`, −910 mostly docs/wrappers/bookkeeping) plus a lot
+of honest public-surface polish (facade, aliases, archive segregation, status docs). The
+substantive code-level cleanup has barely begun — but the docs claim only what was done.
+
+**Note on the size ceiling:** the explicit decision to *keep* both the generic and the
+BP-specialized relative-split implementations (dual proof) means the "CSLib-caliber ~1/3
+size" target is off the table by choice — relative-split will be *relocated*, not deleted.
+Realistic shrinkage is limited to deleting the genuinely-dead Locator/rectangular islands
++ splitting files. Defensible (robustness via dual proofs), but worth stating plainly.
+
+Bottom line: clean, honest, well-scoped commit. The public face is now genuinely tidy and
+truthfully described. The deep structural debt remains and is correctly listed as pending;
+the next substantive move is still the physical deletion of the dead Locator/rectangular
+islands, then the proof-module splits.
