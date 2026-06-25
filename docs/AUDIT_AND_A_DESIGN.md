@@ -2058,3 +2058,54 @@ Bool-dance → `cases hb : b`; (5) centralize reinvented basics + decide the Mat
 dependency question (ties to the deferred CSLib coordination); (6) drop/auto-derive
 `_profile` boilerplate, inline identity wrappers. None of this touches correctness or the
 trust base.
+
+## 2026-06-24 (AUDIT) — `main` @ `03f920e` "Demote relative split capstone from headline check"
+
+Four commits since `59768bd`, all acting on the cleanup roadmap: `e371473` (roadmap doc),
+`dd4702b` (generic-select BP close-access bridge, +138 SuccinctFinal), `52bdf4c` (route
+capstone through generic select, +163 SuccinctFinal), `03f920e` (swap headline check). This
+is **Roadmap §1 / scope-doc Tier 7** — unifying the duplicated sparse-exception select —
+being executed. A "demote from headline check" commit is exactly where hiding a regression
+would happen, so it got the scrutiny.
+
+**VERDICT: GENUINE and honestly executed. No regression hidden.** Machine-checked: full
+`lake build` green; `headline_axiom_check.lean` clean; full `axiom_check.lean` zero
+`sorryAx`/`ofReduceBool`.
+
+What `03f920e` actually did: swapped the *headline* set from 4 `builtRelativeSplitSparseException*`
+theorems to 2 `builtGenericSparseException*` ones, and repointed the public-headline docs.
+Checks that it's legitimate curation, not concealment:
+- **New headline = old headline in strength.** `builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`
+  (SuccinctFinal 2426) is statement-identical to the demoted
+  `builtRelativeSplitSparseException…` one (2263): same `LittleOLinear` o(n) overhead, same
+  doubled-Catalan + log slack lower bounds, same `payload = 2*n + overhead`, the **same**
+  O(1) query-cost constant (`concreteBPNativeSuccinctRMQQueryCost sparseDenseFalseSelectQueryCost`),
+  same exact `= some (scanWindow …)`. Only the overhead-function name differs
+  (`relativeSplit…` → `generic…`), both proven `LittleOLinear`. So `2n+o(n)`/O(1)/exact/
+  two-sided is fully preserved, now routed through the generic select over `shape.bpCode`.
+- **Demoted ≠ deleted ≠ regressed.** The old relative-split total theorem and family profile
+  are still present (SuccinctFinal 2263) and still in the **full** `axiom_check.lean`
+  (lines 468/…), both resolving to `{propext, Classical.choice, Quot.sound}`. They were
+  removed only from the curated *headline* set, not from verification.
+- **No coverage loss.** The kept generic total theorem transitively depends on the generic
+  `…total_two_n_plus_o_constant_query_profile` (proof line 2467), so `#print axioms` on it
+  still certifies the whole 2n+o(n)/O(1)/exact chain trust-clean.
+- New `builtGenericSparseExceptionSelectBPCloseAccessFamily_profile` + the total theorem
+  both trust-clean.
+
+**Honest caveats / not-yet-done (stated in their own docs):**
+- **Duplication not yet pruned — tree temporarily LARGER.** This routed the capstone onto
+  the generic select but *kept* the old BP `RelativeSplitSparseExceptionFalseSelectCloseData`
+  machinery ("remains checked compatibility … until archive/prune cleanup"). So +301 lines
+  now, with two parallel select paths; the elegance win (deleting the superseded BP select)
+  is the *pending* next step. Staging it this way (prove new path, then delete old) is sound;
+  the win is real only once the prune lands. If it stalls here, the net effect is more code.
+- `genericSparseExceptionBPCloseAccessOverhead` may be a looser o(n) constant than the
+  BP-specialized one — still genuine o(n) (LittleOLinear proven), so `2n+o(n)` holds; not a
+  regression, just possibly a bigger lower-order term.
+- `.tmp_rank_select_materials/` (lecture PDFs, untracked, non-gitignored) **still** sits in
+  the `main` worktree — prior cleanup note not yet acted on.
+
+Net: the highest-value roadmap item was executed correctly and honestly. Next concrete move
+is the prune (delete the now-superseded BP select machinery + the dead islands from the
+elegance audit), which is what actually shrinks the tree.
