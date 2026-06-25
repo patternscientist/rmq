@@ -30,9 +30,11 @@ provides a concrete, payload-live, machine-word-bounded, unconditional
 old "summary envelope is only abstract" gap.
 
 Since that note was written, the concrete compact close/LCA directory, the
-relative-split false-close/select witness, and the BP-native join have landed.
-The public total two-sided capstone is
-`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`.
+generic sparse-exception false-close/select witness, and the BP-native join
+have landed. The public total two-sided capstone is
+`SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`.
+The older relative-split theorem remains checked compatibility for the
+BP-specialized witness until archive/prune cleanup.
 The old full
 `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily` remains
 useful scaffold, but the final capstone consumes the concrete false-only BP

@@ -6,8 +6,13 @@ The concrete BP-native `2*n + o(n), O(1)` theorem is already in place:
 
 ```lean
 RMQ.SuccinctFinal
-  .builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile
+  .builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile
 ```
+
+The older relative-split theorem with the same suffix remains checked
+compatibility for the BP-specialized select witness; the headline path now
+routes close-select through the generic sparse-exception select source over
+`shape.bpCode`.
 
 The original caveat was local, not architectural.  The compact close directory
 charges a constant BP-word window through:
