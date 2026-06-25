@@ -5,10 +5,12 @@ indexed LCA query-cost layer, Fischer-Heun-backed LCA model, traced sparse-query
 substrate, fixed-length exact-RMQ space sandwich, payload-lower-bound hub
 adapter, the proved coefficient-correct doubled Catalan lower-bound bridge,
 packed plus-minus-one RMQ/LCA model layer, uniform charged-budget lower-bound
-theorems, reusable hub import surface layers, and the BP-native succinct RMQ
-capstone. The final succinct path now includes a relative-split false-close/select
-access witness, a concrete compact BP close/LCA directory, and rank-backed local
-BP seed routing through the final payload-live access family.
+theorems, reusable hub import surface layers, and the total two-sided BP-native
+succinct RMQ capstone. The final succinct path now includes a relative-split
+false-close/select access witness, a concrete compact BP close/LCA directory,
+rank-backed local BP seed routing through the final payload-live access family,
+and a public theorem surface that packages the `2*n + o(n)` upper structure with
+the doubled Catalan lower slack.
 
 This document is the family-level map for the current Lean development. It
 records the module dependency DAG, correctness and cost status by structure,
@@ -49,7 +51,10 @@ separate appendix.
   `Cost`/`RAM`/`Refine`/`TableModel`/`LowerBound`/`PayloadLowerBound` layer;
   `scripts/hub_axiom_check.lean` checks that surface without importing the RMQ
   spoke. The payload layer now includes both pointwise and uniform charged
-  payload-budget lower bounds.
+  payload-budget lower bounds. The next extraction spoke is standalone
+  rank/select: a plain-bitvector `n + o(n)` payload profile with constant
+  modeled `access`, `rank`, and `select`, stated independently from RMQ while
+  reusing the succinct bitvector machinery where appropriate.
 - Lower-bound layer: fixed-length lossless Cartesian-shape capacity theorem,
   exact-RMQ-decoder bridge, Mathlib-free Remy-style proof of
   `2^(2*n) <= (2*n+1)^2 * shapeCount n`, the resulting no-premise

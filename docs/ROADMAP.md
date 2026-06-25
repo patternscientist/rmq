@@ -707,6 +707,14 @@ only after the API stabilizes and the next spoke needs it. The current
 repository should remain the RMQ spoke until that trigger fires; see
 `docs/REPOSITORY_STRATEGY.md`.
 
+The first extraction spoke should be standalone succinct rank/select. Its public
+plain-bitvector target is an `n + o(n)` payload theorem with constant modeled
+`access`, `rank`, and `select` queries. RMQ's current succinct layer already
+contains the reference semantics, payload-live rank/select interfaces,
+word-RAM primitives, and BP-specialized select evidence; the extraction task is
+to expose those through an RMQ-independent spec and a non-oracular concrete
+builder rather than another RMQ capstone wrapper.
+
 ## Target Hub Layout
 
 ```text

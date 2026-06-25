@@ -19,10 +19,14 @@ Instead, use this staged plan:
 
 1. Keep the current repo as the RMQ spoke and in-tree extraction test.
 2. Continue hardening `RMQ.Core.ModelHub` / `RMQHub` as the reusable boundary.
-3. When the next spoke begins, create a new umbrella repo only if it needs to
-   share code immediately. Otherwise, start the next spoke in its own repo and
-   copy only the stable hub modules it consumes.
-4. Once two spokes consume the same hub modules, split or promote the hub into
+3. Use standalone rank/select as the first extraction spoke: its public target
+   is a plain-bitvector `n + o(n)` payload profile with constant modeled
+   `access`, `rank`, and `select`, while its construction can initially live
+   beside the RMQ succinct modules until the API stabilizes.
+4. Create a new umbrella repo only if the next spoke needs to share code
+   immediately. Otherwise, start that spoke in its own repo and copy only the
+   stable hub modules it consumes.
+5. Once two spokes consume the same hub modules, split or promote the hub into
    a first-class package and let spokes depend on it.
 
 This avoids a premature namespace migration while still keeping the path to a
@@ -87,4 +91,6 @@ only adding another isolated proof. Good candidates:
   and hash-family assumptions.
 
 The strongest immediate path is: extract the succinct bitvector/BP layer, then
-start union-find as the first non-succinct spoke.
+start union-find as the first non-succinct spoke. Rank/select should not be
+treated as an RMQ theorem add-on: it should have its own spec surface, theorem
+inventory, and public headline once the builder/profile theorem lands.

@@ -253,8 +253,9 @@ rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncompu
 
 ## Next Direction
 
-The RMQ proof-of-concept is now past the main capstone. Natural follow-ups are
-polish, extraction, and the next spoke rather than another hidden RMQ blocker:
+The RMQ proof-of-concept is now past the main theorem capstone. Natural
+follow-ups are polish, extraction, and the next spoke rather than another hidden
+RMQ blocker:
 
 - make an even flatter encoded/payload-only presentation of the BP-native
   succinct theorem;
@@ -262,7 +263,10 @@ polish, extraction, and the next spoke rather than another hidden RMQ blocker:
   next research target needs interpreter-level anti-vacuity;
 - extract the reusable cost/refinement/lower-bound hub toward a CSLib-style
   library surface;
-- extract standalone succinct rank/select and balanced-parentheses navigation
-  as the first reusable bit-level spoke; and
+- extract standalone succinct rank/select and balanced-parentheses navigation as
+  the first reusable bit-level spoke. The plain-bitvector target is the standard
+  `n + o(n)` payload profile with constant modeled `access`, `rank`, and
+  `select` queries, using the RMQ succinct layer as construction evidence but
+  exposing an RMQ-independent public spec; and
 - start union-find or another CS166-style structure once it can consume the
   hub rather than rebuild it.

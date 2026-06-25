@@ -68,3 +68,7 @@ move, package split, or CSLib-facing reorganization.
 For now, keep this repository as the RMQ spoke and use `RMQHub` as the in-tree
 hub boundary. Promote the hub into a separate package only after another spoke
 actually imports the same interfaces. See `docs/REPOSITORY_STRATEGY.md`.
+
+The first planned spoke to stress this boundary is standalone succinct
+rank/select: a plain-bitvector `n + o(n)` payload profile with constant modeled
+`access`, `rank`, and `select` queries.
