@@ -147,10 +147,12 @@ main. Do not trust stale line counts or stale reference counts.
 
 The first archive boundary is now active: old BP-specialized sparse/dense and
 relative-split select/access checks have moved from the main curated axiom
-inventory to `scripts/archive_axiom_check.lean`, and stable closed/citation
-anchors live in `RMQ/Archive/SelectCompatibility.lean`. `scripts/gate.ps1`
-runs the archive check. Source declarations are deliberately still present.
-Treat direct deletion or deeper physical source extraction as the next pass,
+inventory to `scripts/archive_axiom_check.lean`, with obstruction anchors in
+`RMQ/Archive/SelectObstructions.lean`, the old BP-specialized capstone alias in
+`RMQ/Archive/BPSpecializedCapstone.lean`, and compatibility names in
+`RMQ/Archive/SelectCompatibility.lean`. `scripts/gate.ps1` runs the archive
+check. Source declarations are deliberately still present. Treat direct
+deletion or deeper physical source extraction as a later proof-heavy pass,
 after another reference scan confirms that no live generic capstone or
 rank/select theorem consumes the candidate.
 
@@ -158,13 +160,22 @@ The first real prune pass narrowed that archive to retained witnesses: the old
 sparse/dense obstruction theorems and the old relative-split total two-sided
 capstone. Intermediate sparse/dense prototype profiles are no longer archive
 anchors, and the dead `SuccinctFinal` sparse/dense close-access adapter was
-removed. The remaining BP-specialized relative-split capstone stays checked as
-compatibility until a later source-prune pass either deletes it or intentionally
-keeps it as an old capstone.
+removed.
+
+Decision: keep the remaining BP-specialized relative-split capstone
+intentionally as an old capstone, not as a public headline. The archive split
+has started: obstruction witnesses now live in
+`RMQ/Archive/SelectObstructions.lean`, the old capstone alias lives in
+`RMQ/Archive/BPSpecializedCapstone.lean`, and
+`RMQ/Archive/SelectCompatibility.lean` is only a compatibility import/alias
+root. A later proof-heavy source split can physically move the old
+relative-split construction out of `SuccinctFinal`; it should not be deleted
+unless the old capstone is deliberately retired.
 
 ## Phase 3: Split Mega-Modules
 
-Once duplicated select code is reduced, split by concept:
+The archive split has begun. The next proof-module splits should proceed by
+concept:
 
 - `GenericSelectBuilder` into entries/tables/flag-rank/directory/family pieces;
 - BP close/navigation code into local, fringe, interior, close/LCA, and RMQ

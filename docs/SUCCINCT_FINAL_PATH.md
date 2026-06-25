@@ -29,9 +29,10 @@ payload is `shape.bpCode ++ aux`, the auxiliary payload is padded to the stated
 `o(n)` overhead, the query cost is bounded by a constant, and valid
 representative-array windows erase to the exact `scanWindow` RMQ answer.
 The relative-split theorem trio remains checked compatibility for the
-BP-specialized witness until the archive/prune cleanup pass. The public
-generic two-sided wrapper makes explicit that the profile has no large-regime
-premise and pairs the upper structure with the doubled Catalan lower slack.
+BP-specialized witness, with its public archive alias in
+`RMQ.Archive.BPSpecializedCapstone`. The public generic two-sided wrapper makes
+explicit that the profile has no large-regime premise and pairs the upper
+structure with the doubled Catalan lower slack.
 
 The false-close/select path now reuses the standalone generic Clark
 sparse-exception select implementation over `List Bool`, specialized to the

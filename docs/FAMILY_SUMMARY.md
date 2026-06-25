@@ -11,10 +11,13 @@ sparse-exception select close-access witness over `shape.bpCode`, a concrete
 compact BP close/LCA directory, rank-backed local BP seed routing through the
 final payload-live access family, and a public generic-select theorem surface
 that packages the `2*n + o(n)` upper structure with the doubled Catalan lower
-slack. The older relative-split capstone is now a checked compatibility
-surface; closed/citation anchors live in `RMQ/Archive/SelectCompatibility.lean`,
-and the corresponding trust-base checks live in `scripts/archive_axiom_check.lean`,
-which is run by the gate. Short public aliases for the main citeable theorem
+slack. The older relative-split capstone is now an intentionally checked old
+capstone; archived obstruction anchors live in
+`RMQ/Archive/SelectObstructions.lean`, the old capstone alias lives in
+`RMQ/Archive/BPSpecializedCapstone.lean`, and compatibility aliases remain in
+`RMQ/Archive/SelectCompatibility.lean`. The corresponding trust-base checks
+live in `scripts/archive_axiom_check.lean`, which is run by the gate. Short
+public aliases for the main citeable theorem
 surfaces now live in `RMQ/Headlines.lean`.
 
 This document is the family-level map for the current Lean development. It
@@ -264,8 +267,8 @@ false-close/select witness and the concrete compact BP close directory in
 `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`,
 then paired with the sharpened Catalan lower side in
 `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`.
-The older relative-split theorem trio remains checked compatibility for the
-BP-specialized witness until a later archive/prune pass.
+The older relative-split theorem trio is intentionally retained as an archived
+old capstone for the BP-specialized witness.
 The local BP seed-routing hardening item is now closed for the final BP-native
 path. The main remaining succinct work is optional presentation polish,
 especially packaging an encoded/payload-only view of the same final theorem. The positive
@@ -318,419 +321,16 @@ is a branch-normal-form corollary, not a premise of the total final profile.
 The theorem-shaped local-decoder path is recorded in
 `docs/LOCAL_BP_DECODER_PATH.md`.
 
-The following C1/C2 paragraphs preserve construction history and stop-audit
-context. Their older "next" wording describes the state at that checkpoint;
-the active RMQ capstone obligations are discharged by
-`SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`.
-
-Succinct C1 sparse/dense codec update: `SuccinctSpace` now supplies
-`littleOLinear_id_div_logLog_succ`, `idDivLogLogOverhead_littleO`, and
-`logLogCubedSampledDirectoryOverhead_littleO`, covering the explicit
-`n / loglog n` exception budget and the
-`n * (loglog n)^3 / log n` local-directory envelope from
-`docs/SUCCINCT_SELECT_LOCATOR_ARCHITECTURE.md`. `SuccinctSelectProposal`
-adds fixed-width payload codecs for sparse/dense super/local locator entries
-and named Nat-table constructors for long-super and sparse-local explicit
-positions. `SparseDenseFalseSelectCodecTables.profile_le_sparseDenseFalseSelectOverhead`
-ties the four table classes to the named total overhead, unit-cost reads,
-exact decoder erasure, and machine-word read bounds without adding selected
-position or answer proof fields. The reconciled close-select surface now adds
-`canonicalSparseDenseFalseSelectOverhead`, `denseTwoWordFalseSelectCosted`, and
-`SparseDenseFalseSelectCloseData.profile`: close-select queries are defined
-from charged super/local locator reads, explicit exception reads, and the dense
-two-word BP payload fallback. This is still a surface theorem, not C1 closure;
-the canonical packed builder must next construct those tables from
-`shape.bpCode` and prove the branch-exactness obligations now carried by
-`SparseDenseFalseSelectCloseData`. The current C1 layer also includes
-`sparseDenseFalseSelectLocatorEntry_fullMachineField_not_word_bounded`, which
-formally rules out the old one-word four-full-field locator layout, and
-`FixedWidthSparseDenseFalseSelectDenseLocalEntryTable`, which repairs the
-dense-local representation by splitting independently bounded fields across a
-constant number of charged payload tables. `SparseDenseFalseSelectCloseData`
-now consumes that split dense table: its dense branch reads
-`denseLocalTable.readCosted loc.pointer` and feeds the resulting dense entry to
-the two-word BP payload fallback, so it no longer uses `loc.basePosition` from
-the packed local locator. `builtLongExplicitFalseSelectBranch` is a generated
-reference/sanity branch proving the long-explicit equation from actual false
-positions in `shape.bpCode`; it is not compact C1 closure because it stores
-every false position. `sparseDenseFalseSelectBranchObligations_of_built_entries`
-is the current routing-helper scaffold: it derives the five close-data
-branch-exactness fields from coverage, explicit-segment, and split dense-span
-certificate facts. The sibling
-`sparseDenseFalseSelectBranchObligations_of_built_entries_and_dense_payload_facts`
-removes the answer-containing dense-span certificate premise: it builds the
-dense certificate from aligned BP payload words, split dense-local fields,
-branch rank bounds, and local occurrence arithmetic. The next valid C1 stop
-must instantiate those coverage/routing facts from compact tables over
-`shape.bpCode`, not merely add another proof-field surface.
-The packed-pointer obstruction is now explicit:
-`SparseDenseFalseSelectCloseData.super_locator_entry_fields_lt` and
-`SparseDenseFalseSelectCloseData.local_locator_entry_fields_lt` show that
-decoded super/local locator fields are bounded by their packed field width,
-while
-`SparseDenseFalseSelectCloseData.dense_branch_packed_local_pointer_capacity_obstruction`
-proves that a dense branch whose `loc.pointer` must address a dense-local
-entry at or beyond `2 ^ localFieldWidth` is contradictory. This does not close
-C1, but it rules out the old absolute-pointer route as the compact positive
-target. The repaired target is a rectangular local inventory: high-frequency
-local descriptors carry only tags, local offsets, local rank deltas, or bounded
-word-index deltas; absolute fields belong only in low-frequency super tables,
-rare explicit payloads, or charged side locators with their own little-o
-payload proof. Sparse-local explicit answers should be stored as relative
-offsets in padded exception blocks, or routed through a charged variable-length
-base directory with its own budget proof; absolute BP positions at local-entry
-frequency are another disguised non-succinct shortcut.
-The earlier sparse/dense close-access adapter has been pruned; its remaining
-value is the obstruction evidence showing why the old absolute-pointer
-sparse/dense route was not the final compact target.
-`SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient` pins the first
-macro-design blocker: a macro keyed only by endpoint close-block pairs is false
-even on a four-node right spine, so the concrete macro must store
-endpoint-sensitive fringe information or use a real BP excess/RMQ macro.
-`SuccinctCloseProposal.denseFallbackPayloadLiveMacroMicroBPCloseLCADirectory_profile`
-then wires the most direct endpoint-sensitive fallback into the payload-live
-macro/micro surface with charged reads and exact answers, while
-`SuccinctCloseProposal.denseAllCloseBPCloseLCAOverhead_not_littleO` proves that
-this dense all-close table is not an `o(n)` auxiliary payload. The remaining
-macro fork is therefore not another wrapper around `macroCosted`, but a real
-succinct BP-excess/RMQ macro with charged endpoint-fringe repair.
-`SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.profile` and
-`SuccinctCloseProposal.concreteBPRangeMinMaxSummaryTable_sampled_profile` now
-land the first positive charged substrate for that fork: each block stores
-fixed-width minimum and maximum BP-excess samples, the query reads those payload
-words with cost `<= 2`, and the sampled-overhead version is tied to a named
-`LittleOLinear` budget.
-`SuccinctCloseProposal.compactBPCloseSummaryPayloadOverhead_littleO` and
-`SuccinctCloseProposal.concreteBPRangeMinMaxSummaryTable_compact_summary_profile`
-package that table under the intended compact close-summary envelope: a
-log-log sampled block-code term plus sampled universal micro, block-summary,
-and superblock-summary terms, with no dense endpoint-pair or interior block-pair
-payload. The absolute-width compact profile is only a warning boundary, not the
-final budget witness. `SuccinctCloseProposal.relativeBPCloseSummaryPayloadOverhead_littleO`
-and
-`SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_relative_payload_profile`
-now add the missing relative/log-log version: sparse absolute superblock
-baselines are stored in a sampled directory, while each block stores shifted
-min/max excess deltas and a local argmin offset in a
-`logLogSampledDirectoryOverhead` payload. The theorem proves the concrete table
-length under those two envelopes directly, rather than assuming a compact
-budget for absolute `Theta(log n)` block summaries.
-`SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_compact_payload_profile`
-then plugs the same concrete relative table into
-`compactBPCloseSummaryPayloadOverhead`, using the log-log term for relative
-block summaries and the sampled term for superblock baselines.
-`SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile`
-is the no-premise canonical checkpoint: it builds the concrete payload-live
-relative table from fixed sampled/log-log slots, proves compact little-o
-payload, finite summary-read exactness, cost `<= 4`, and machine-word bounds
-for every charged baseline/min/max/arg-offset read.
-`SuccinctCloseProposal.canonicalBPRelativeMinMaxArgSummaryTableActive_of_large`
-and
-`SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile_of_large`
-now justify and expose the intended raw-parameter branch under an explicit
-large-regime condition: enough sampled block density for the sparse baseline
-budget, a superblock word width linear in the canonical base, relative
-span/arg-width bounds, and relative entries fitting in a machine word. This is
-still the block-summary layer; the exact answer-close theorem still has to
-connect those relative summaries to endpoint-fringe repair.
-`SuccinctCloseProposal.concreteBPRelativeRmmInteriorOverhead_littleO` names the
-compact overhead envelope for the intended rmM/min-max-tree interior navigator:
-the charged relative summary table, fixed squared-log-log local offset sparse
-tables, fixed log-log global macroblock routing, and fixed sampled top-level
-routing, with no dense interior block-pair payload.
-`SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_large`
-packages the large-regime branch equalities, raw cover and positivity facts,
-relative-entry machine-word bound, relative-summary read exactness/cost, and
-payload bound under that interior envelope so the later concrete interior
-directory profile can consume those side conditions directly.
-`SuccinctCloseProposal.canonicalBPRelativeSummaryLargeRegime_of_size_ge`
-removes that raw regime premise for the canonical option-1 parameters from the
-explicit threshold `2^128 <= shape.size`; the proof discharges base density,
-the superblock machine-word/base comparison, span and block-size width bounds,
-and the relative-width machine-word comparison.  The wrapper
-`SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_size_ge`
-feeds this threshold theorem into the same interior parameter profile, so the
-next concrete directory can consume a size hypothesis instead of a bundled
-`canonicalBPRelativeSummaryLargeRegime` assumption.
-`SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_size_ge`
-adds the two-level budget package A needs next: the concrete relative summary
-payload plus local offset sparse tables, global macroblock sparse table, and top
-routing all fit under the same `LittleOLinear` interior envelope, while local
-offset width, block-count routing capacity, and every charged summary word read
-remain machine-word bounded.
-`SuccinctCloseProposal.bpTwoLevelInteriorCandidateCosted_erase_exact` is the
-payload-backed two-level selector exactness theorem: the query reads local
-offset sparse-table candidates, a global macroblock candidate, and relative
-summary words, then returns the semantic complete-block range witness without
-using `bpRangeArgMinBlock` as an oracle.  The concrete table payload bounds
-`SuccinctCloseProposal.concreteBPRelativeRmmInteriorLocalTable_payload_le_budget_of_size_ge`
-and
-`SuccinctCloseProposal.concreteBPRelativeRmmInteriorGlobalTable_payload_le_budget_of_size_ge`
-connect the built local/global table payloads to the squared-log-log and
-log-log reserves.  Finally
-`SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_profile` packages
-the actual two-level interior directory with `LittleOLinear` payload overhead,
-query cost `<= SuccinctCloseProposal.concreteBPRelativeRmmInteriorQueryCost`,
-semantic range-witness exactness, and machine-word bounds for charged reads
-under `2^128 <= shape.size`.
-`SuccinctCloseProposal.bpExcessAt_prefix_nonnegative` records the
-balanced-prefix invariant needed when interpreting the Nat-subtraction excess,
-and `SuccinctCloseProposal.PayloadLiveBPRangeMinMaxSummaryTable.summary_read_words_length_le_machine`
-exposes the machine-word side condition for the charged summary table reads.
-The positive C2 macro side now also has position-bearing payload reads:
-`SuccinctCloseProposal.PayloadLiveBPRangeMinMaxArgSummaryTable.profile` stores
-and reads a per-block argmin prefix position, while
-`SuccinctCloseProposal.PayloadLiveBPRangeArgMinWitnessTable.profile` and
-`SuccinctCloseProposal.PayloadLiveBPBlockPairRangeWitnessMacro.profile` lift
-that idea to charged block-range witnesses and an `lcaCloseCosted`-shaped
-block-pair macro candidate. These range witnesses return close candidates from
-payload words with cost `<= 2`, expose machine-word read bounds, and have
-sampled-overhead profile theorems. The next positive layer now has charged
-endpoint repair:
-`SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.profile` combines
-left endpoint-fringe prefix witnesses, the existing interior block-range
-witness, and right endpoint-fringe prefix witnesses in one counted
-`lcaCloseCosted` path with cost `<= 6`;
-`SuccinctCloseProposal.concreteBPEndpointFringeRangeMacro_profile` constructs
-that path from fixed-width payload tables; and
-`SuccinctCloseProposal.concreteBPEndpointFringeRangeMacro_read_words_length_le_machine`
-exposes the machine-word bounds for every charged fringe/interior read.
-`SuccinctCloseProposal.bpCloseOfInorder?_le_of_le`,
-`SuccinctCloseProposal.answerClose_between_endpoint_closes`, and
-`SuccinctCloseProposal.answerClose_prefix_between_endpoint_prefixes` start the
-BP semantic bridge by proving endpoint containment of the representative-array
-answer close. The bridge now also exposes executable prefix-range argmin
-correctness via
-`SuccinctCloseProposal.bpPrefixRangeArgMinPrefixPos_excess_le_offset`,
-`SuccinctCloseProposal.bpPrefixRangeArgMinPrefixPos_eq_of_leftmost_min_excess`,
-`SuccinctCloseProposal.bpPrefixRangeWitness_eq_of_leftmost_min_excess`,
-`SuccinctCloseProposal.bpRangeWitness_eq_of_leftmost_block_candidate`, and
-`SuccinctCloseProposal.bpEndpointPrefixRangeMinExcess_le_answerClose`, concrete
-endpoint/interior slot decoding through the `endpoint*Entries_get?` and
-`interiorBlockPairRange*Entries_get?` lemmas,
-root-spanning BP semantic witnesses via
-`SuccinctCloseProposal.endpointPrefixRangeWitness_eq_answerClose_of_spanning_root`,
-the global representative-query semantic theorem
-`SuccinctCloseProposal.answerClose_prefix_leftmost_min_excess_of_query`, and
-charged endpoint-merge bridges including
-`SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_decoded_merged_candidate`,
-`SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_left_fringe_leftmost`,
-`SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_decoded_right_fringe_candidate`,
-`SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_decoded_middle_candidate`,
-`SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_spanning_root_left_fringe`,
-`SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_spanning_root_right_fringe`,
-and
-`SuccinctCloseProposal.PayloadLiveBPEndpointFringeRangeMacro.lcaCloseCosted_exact_of_query_cross_block`.
-The new guarded concrete layer
-`SuccinctCloseProposal.PayloadLiveGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory.profile`
-routes same-block endpoint closes to the charged micro-codebook and cross-block
-endpoint closes to the charged endpoint-fringe/interior macro, proving semantic
-close/LCA exactness with query cost `<= 6`.
-`SuccinctCloseProposal.concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_sampled_profile`
-combines that concrete macro with a supplied payload-live micro budget and a
-sampled `LittleOLinear` endpoint-fringe macro budget. That sampled theorem is
-conditional: its macro-budget premise still has to pay for the dense
-`interiorBlockPairRanges blockCount` payload, so it is not a concrete
-`2*n + o(n)` close-directory witness. The relative-rmM successor surface is
-now explicit:
-`SuccinctCloseProposal.bpRelativeRmmCandidateMerge_exact` proves the pure
-endpoint-fringe/interior/right-fringe merge from the representative-query BP
-semantics, so the merge fact is no longer a proof-only field of the relative
-macro interface.
-`SuccinctCloseProposal.PayloadLiveRelativeRmmBPCloseMacro.lcaCloseCosted_exact_of_query_cross_block`
-builds the cross-block query from charged left-fringe, relative-rmM interior,
-and right-fringe candidate reads, and
-`SuccinctCloseProposal.PayloadLiveRelativeRmmMacroMicroBPCloseLCADirectory.profile`
-routes same-block queries through the charged micro-codebook while routing
-cross-block queries through that relative-rmM macro.
-`SuccinctCloseProposal.relativeRmmMacroMicroBPCloseLCADirectory_profile`
-packages the resulting answer-close exactness, query-cost bound, and
-`LittleOLinear` micro-plus-relative overhead budget without mentioning
-`interiorBlockPairRanges blockCount`. The concrete relative/log-log summary
-builder still has to instantiate the macro's rmM candidate-read interface.
-`SuccinctCloseProposal.PayloadLiveBPRelativeMinMaxArgSummaryTable.rangeScanCosted_erase_exact`
-is the honest charged scan over Worker B's relative summary table: every
-interior block contributes a charged four-word summary read, and the scan
-erases to the exact `(minimum excess, prefix position)` range witness.
-`SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_canonical_interior_scan_not_constant`
-specializes that scan to the canonical compact relative table and proves it has
-no uniform constant query bound for positive block size.  Thus the canonical
-relative table is now consumed by an exact payload-live range path, but that
-path is formally a blocker rather than the final macro.  The positive path is
-the non-scan compact two-level rmM range navigator whose charged query is O(1),
-now packaged by
-`SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_profile` and
-consumed below by the compact close directory.
-`SuccinctCloseProposal.PayloadLiveBPRelativeRmmInteriorDirectory.profile` now
-pins the replacement contract for that navigator, and
-`SuccinctCloseProposal.payloadLiveRelativeRmmBPCloseMacroOfInterior_profile`
-immediately feeds any such interior directory into the charged
-left-fringe/interior/right-fringe relative macro, including machine-word bounds
-for the charged words named by `payloadWordsRead`.  The available concrete
-two-level instance is now
-`SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_profile`, and
-`SuccinctCloseProposal.concretePayloadLiveRelativeRmmBPCloseMacro_profile`
-packages it into a large-regime concrete relative-rmM cross-block macro with
-payload bounded by the concrete endpoint-fringe plus two-level interior budget,
-query cost `<= 4 + concreteBPRelativeRmmInteriorQueryCost`, semantic
-cross-block exactness, and machine-word bounded charged reads.  The remaining
-C2 work is now the final BP-native join with rank/select.
-`SuccinctCloseProposal.PayloadLiveBlockEndpointFringeCodebook.profile` adds the
-compact endpoint-fringe leaf needed to remove dense global
-`endpointLeftFringeRanges`/`endpointRightFringeRanges` payloads from that path:
-the endpoint candidate is read by a charged per-block code lookup followed by
-two charged local min/arg witness reads from a finite per-code table.
-`SuccinctCloseProposal.PayloadLiveCompactEndpointRelativeRmmBPCloseMacro.profile`
-then consumes those local endpoint-fringe candidates together with the
-relative-rmM interior directory, proving cross-block answer-close exactness,
-query cost `<= 6 + middleQueryCost`, compact endpoint/interior payload length,
-and machine-word bounds for the charged endpoint and interior words.  The
-concrete checkpoint
-`SuccinctCloseProposal.concretePayloadLiveBlockEndpointFringeCodebook_profile`
-instantiates that leaf with a payload-backed block-code table and local
-endpoint min/arg tables, while
-`SuccinctCloseProposal.concretePayloadLiveCompactEndpointRelativeRmmBPCloseMacro_profile`
-consumes it with
-`SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_profile` to give a
-charged endpoint+interior macro with explicit payload length, constant query
-cost, cross-block exactness, and machine-word bounded reads.  The final compact
-directory no longer uses that identity endpoint classifier as its surface:
-`SuccinctCloseProposal.concreteCompactBPCloseLCADirectory_profile` packages
-same-block dispatch through the seeded decoded helper in the positive
-block-size regime, charged constant-width local BP-code window reads for
-same-block and endpoint repair, the concrete relative-rmM interior directory,
-payload length bounded by `SuccinctCloseProposal.compactBPCloseOverhead`, the
-`SuccinctCloseProposal.compactBPCloseOverhead_littleO` proof, constant query
-cost, arbitrary representative-query exactness, and machine-word bounds for
-every charged BP/interior word read.  This closes C2 at the bounded-local-BP-
-primitive layer: the same-block and endpoint-fringe local primitives are
-specified by exact local BP semantics and account for a constant BP-word window,
-and both the positive block-size same-block value and endpoint-fringe values
-are now derived by seeded local window interpreters consumed by the compact
-directory.  The formal seed obstruction
-`SuccinctCloseProposal.localBPWindowBits_alone_does_not_determine_base_excess`
-and the recovery theorem
-`SuccinctCloseProposal.localBPSeedFromRankFalse_eq_localBPSeedExcess` show that
-the directory interface must pass/read a base-excess or rank-false seed; the
-legacy compact directory path can do so through a local modeled rank-prefix
-read certified by
-`SuccinctCloseProposal.localBPSeedFromRankFalseCosted_eq_localBPSeedExcess`,
-while the final BP-native path uses
-`SuccinctCloseProposal.localBPSeedFromRankCloseCosted_eq_localBPSeedExcess`
-inside
-`SuccinctCloseProposal.ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_exact_of_query`.
-`SuccinctCloseProposal.payloadLiveBPRelativeRmmInteriorDirectory_profile_allows_proof_only_oracle`
-records the corresponding contract caveat: the generic interior-directory
-record alone can be inhabited by an empty-payload proof-only oracle, so the
-named compact C2 path relies on the concrete
-`SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_profile` rather
-than the generic record.
-The coordinator-selected C2 path is to replace the dense block-pair/interior
-macro payload with the compact rmM/min-max-tree-style interior navigator over
-complete-block minimum candidates, prove its constant charged range-min witness
-and `LittleOLinear` payload profile, and then package that directory into the
-final close-navigation join; this is the path now consumed by
-`SuccinctCloseProposal.concreteCompactBPCloseLCADirectory_profile`.
-`SuccinctFinal.BPCloseAccessDirectory` and
-`SuccinctFinal.PayloadLiveBPCloseAccessFamily.constant_query_profile` now name a
-weak false-only BP close-access adapter: `selectCloseCosted` erases to
-`bpCloseOfInorder?`, `rankCloseCosted` erases to false-prefix rank over
-`shape.bpCode`, and the rank/select payload word reads carry machine-word
-bounds. The adapter requires the non-vacuous space obligation as a field,
-`payload_length_le_overhead : payload.length <= overhead`; the join consumes
-this bound by padding the close-access payload up to the reserved overhead
-instead of relying on an uninspected `LittleOLinear` claim. The adapter is not
-the final worker target, because its costed operations are fields and can hide
-semantic reference computation.
-`SuccinctFinal.concreteBPNativeCloseAccessPayload_length_le_overhead` exposes
-the shape-indexed bound used by the capstone theorem.
-`SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
-is the BP-native built-query join over that weak access family plus the concrete
-compact close/LCA directory. `SuccinctFinal.ReadBackedBPCloseAccessDirectory`
-and `SuccinctFinal.ReadBackedBPCloseAccessFamily.constant_query_profile` are the
-hardened two-level adapter: close-select and rank-close are derived from
-stored-word rank/select data rather than supplied as arbitrary functions.
-`SuccinctFinal.readBackedBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
-is the research-facing final-join corollary for that adapter. Its payload is
-exactly `shape.bpCode` plus padded auxiliary close-access and close-directory
-payloads, the payload length is
-`2*n + concreteBPNativeSuccinctRMQOverhead ... n`, the combined overhead is
-`LittleOLinear`, the query cost is bounded by
-`3 * closeAccessCost + concreteCompactBPCloseQueryCostWithRankSeed closeAccessCost`,
-the compact LCA-close leg routes its local BP decoder seeds through
-`rankCloseCosted`, and erasure returns the exact representative-array RMQ
-answer. The old two-level rank/select family is kept only as an adapter via
-`SuccinctFinal.concreteBPNativeCloseAccessFamilyOfRankSelectFamily` and the
-compatibility corollary
-`SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile_of_rankSelectFamily`.
-The repaired relative-split C1 path now has a concrete compact close-select
-witness. `SuccinctSelectProposal.builtRelativeSplitSparseExceptionFalseSelectCloseData_profile`
-builds the compact long-super branch from constructed tables: long-super flags
-are ranked with a separate charged rank directory and the compact relative table
-is indexed by exception rank plus local occurrence. `SuccinctFinal` consumes it
-through `RelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily` and the
-concrete theorem
-`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`.
-As the first cleanup bridge toward eliminating duplicated select machinery,
-`SuccinctFinal.builtGenericSparseExceptionSelectBPCloseAccessFamily_profile`
-now packages the standalone generic Clark sparse-exception source
-`GenericSelect.sparseExceptionSelectSource shape.bpCode false` directly as a
-BP close-access family, using the existing `select_false_bpCode_eq_bpCloseOfInorder?`
-semantic bridge. The public generic-select capstone
-`SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`
-and its total/two-sided wrappers now consume that replacement surface directly.
-The relative-split capstone wrapper
-`SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`
-remains checked archive compatibility for the old BP-specialized access
-witness. The public total two-sided generic wrapper
-`SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`
-states the same all-`n` payload, exactness, and uniform constant-query profile
-without any large-regime hypothesis, while also packaging the
-coefficient-correct doubled Catalan lower slack.
-The repaired query path now guards validity with `idx < shape.size`; the
-full false-count identity for `shape.bpCode` is used only in exactness proofs.
-The older `SparseDenseFalseSelectCloseData` adapter remains only as source for
-negative witnesses about the earlier packed sparse/dense route. The archive
-gate now checks those obstruction theorems plus the old relative-split capstone;
-it no longer anchors intermediate sparse/dense prototype profiles.
-`scripts/succinct_cost_lint.ps1` is wired into `scripts/gate.ps1` and now flags
-the audited anti-pattern
-`LittleOLinear (fun _ => ...)` and the old uncharged full false-rank guard
-shape in succinct proposal/final source files.
-`docs/SUCCINCT_SELECT_LOCATOR_ARCHITECTURE.md` pins the C1 path to a
-Clark/RRR-style sparse/dense false-select inventory: super samples, explicit
-long-super exceptions, local samples, explicit sparse-local exceptions, and a
-dense local query that reads at most two aligned payload words before invoking
-the counted word-select primitive. This design may require a sibling
-close-access/final-join theorem instead of forcing the final construction
-through the current one-sample/one-word `TwoLevelPayloadLiveStoredWordSelectData`
-shape.
-`SuccinctCloseProposal.endpointSummaryBlockMacroDirectory_not_sufficient`
-sharpens the C2 blocker: a macro keyed only by endpoint block ids plus the
-existing endpoint block min/max summaries still cannot return exact answer
-closes, so the next positive construction needs a position-bearing
-endpoint/fringe or range-min witness.
-`SelectSampleWordExact.selected_position_in_read_word` and
-`TwoLevelPayloadLiveStoredWordSelectData.selected_position_in_read_word_of_sample`,
-together with the aligned-word refinements
-`SelectSampleWordExact.selected_wordIndex_eq_of_aligned_read_word` and
-`TwoLevelPayloadLiveStoredWordSelectData.selected_wordIndex_eq_of_sample`, plus
-the paired blocker
-`TwoLevelPayloadLiveStoredWordSelectData.shared_local_locator_forces_same_selected_wordIndex`,
-make the current select-side design fork explicit: with the present query path,
-two successful occurrences answered through the same shared local locator must
-lie in the single payload word read by that locator; if the read word is an
-aligned machine chunk, both selected positions have the same `pos / wordSize`.
-A compact final builder therefore needs a real descriptor that computes that
-chunk choice through charged payload, or an extended local dense-block query
-path, not just a non-identity `blockIndex`.
-`SuccinctSelectProposal.occurrenceOnlyTwoWordDescriptorRouting_impossible`,
-`occurrencePairTwoWordDescriptorRouting_not_global`, and
-`coarseBaseTwoWordDescriptorRouting_not_global` further rule out the tempting
-bit-blind occurrence-pair and coarse-base routes for consuming the two-word
-descriptor kernel globally; the remaining positive select path needs a
-bitvector-dependent charged routing/predecessor layer rather than another local
-descriptor fact.
+Historical C1/C2 proof-expedition notes have been moved out of the live status
+path. The current succinct RMQ story is: the public capstone consumes the
+generic sparse-exception select source over `shape.bpCode` at target `false`,
+the compact BP close/LCA directory, and rank-backed local BP seed routing. The
+old sparse/dense BP-specialized route is retained only through checked
+obstruction witnesses, while the old relative-split BP-specialized capstone is
+intentionally kept as an archived old capstone rather than a headline. Detailed
+design history and anti-patterns remain in
+`docs/SUCCINCT_FINAL_PATH.md`, `docs/SUCCINCT_SELECT_LOCATOR_ARCHITECTURE.md`,
+and `docs/LOCAL_BP_DECODER_PATH.md`.
 
 - The RMQ contract is half-open: a valid query satisfies `left < right` and
   `right <= xs.length`; invalid or empty ranges return `none`.
@@ -1918,12 +1518,16 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`,
   `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile`,
   `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`.
+- `RMQ/Archive/SelectObstructions.lean`:
+  checked aliases for retained sparse/dense BP-specialized obstruction
+  witnesses, including
+  `Archive.SelectObstructions.sparseDense_locator_fullMachineField_not_word_bounded`
+  and the packed-pointer impossibility theorems.
+- `RMQ/Archive/BPSpecializedCapstone.lean`:
+  the old relative-split BP-specialized total two-sided capstone alias
+  `Archive.BPSpecializedCapstone.total_two_sided_doubled_catalan_slack_profile`.
 - `RMQ/Archive/SelectCompatibility.lean`:
-  checked aliases for the retained obstruction/capstone anchors from the
-  superseded BP-specialized route, including
-  `Archive.SelectCompatibility.sparseDense_locator_fullMachineField_not_word_bounded`,
-  and
-  `Archive.SelectCompatibility.builtRelativeSplit_bpNative_total_two_sided_doubled_catalan_slack_profile`.
+  thin compatibility aliases for the older archive names.
 - `RMQ/Headlines.lean`:
   public-facing aliases
   `Headlines.exactRMQLowerBoundDoubledCatalanSlack`,

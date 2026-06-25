@@ -1,12 +1,13 @@
 # Succinct Select Locator Architecture
 
-This note pins down the final select-side architecture for the concrete
-`2*n + o(n), O(1)` BP-native RMQ target.
+This historical design note records the select-side architecture that led to
+the concrete `2*n + o(n), O(1)` BP-native RMQ target.
 
-The immediate purpose is to prevent more worker loops from satisfying a weak
-interface while missing the word-RAM substance.  The final close-access witness
-needs a concrete false-select locator for `shape.bpCode`, not another abstract
-`selectCosted` field and not a dense occurrence-indexed local table.
+The live public capstone now consumes the generic sparse-exception select
+source over `shape.bpCode` at target `false`. This document remains as design
+history and an anti-pattern catalog: it explains why weak abstract select
+fields, dense occurrence-indexed local tables, and packed absolute-pointer
+layouts were rejected.
 
 ## Research Anchor
 

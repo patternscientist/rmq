@@ -64,8 +64,8 @@ Current status: the proof-of-concept finish line is landed. D-LCA is the
 dense-label LCA cost headline, and D-Space is now also landed as the BP-native
 succinct RMQ capstone. The total public two-sided capstone is
 `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`.
-The older relative-split capstone remains checked compatibility for the
-BP-specialized select witness until the archive/prune cleanup pass.
+The older relative-split capstone is intentionally kept as a checked archived
+old capstone for the BP-specialized select witness.
 The remaining roadmap items are post-POC hardening: a full first-order RAM
 interpreter if a later target needs it, further CSLib-style extraction, an
 optional flatter encoded/payload-only presentation of the succinct theorem, and
@@ -328,7 +328,8 @@ Alternative target.
 Status: landed. The first fixed-length sandwich, BP-native theorem shape,
 generic sparse-exception false-close/select access family, compact BP
 close/LCA directory, and final `2*n + o(n), O(1)` BP-native RMQ capstone all
-typecheck. The older relative-split capstone remains checked compatibility.
+typecheck. The older relative-split capstone is intentionally kept as a checked
+archived old capstone.
 
 Intent: pair C's lower bound with a concrete `<= 2n + o(n)` encoder whose query
 procedure is proved exact, giving a two-sided `2n +/- Theta(log n)` space story.
@@ -386,8 +387,8 @@ charged-payload and uniform-budget conclusions of the form
 `doubledLogSlackLower n <= 2 * ...`. The public upper/lower join is
 `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`,
 which pairs this doubled lower slack with the total `2*n + o(n)`, constant-query
-BP-native upper structure. The relative-split capstone remains checked
-compatibility for the BP-specialized witness. The older
+BP-native upper structure. The relative-split capstone is intentionally kept as
+a checked archived old capstone for the BP-specialized witness. The older
 `EncodingLowerBound.exactRMQ_two_sided_log_slack_space_bound` theorem and the
 implementation-shaped companion
 `FischerHeun.exactRMQ_two_sided_log_slack_space_bound_stateEncoding` remain as

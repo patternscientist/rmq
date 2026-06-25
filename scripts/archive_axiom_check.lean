@@ -1,4 +1,5 @@
-import RMQ.Archive.SelectCompatibility
+import RMQ.Archive.SelectObstructions
+import RMQ.Archive.BPSpecializedCapstone
 
 /-!
 Checked archive trust-base inventory.
@@ -11,12 +12,12 @@ archive gate.
 
 /- BP-specialized sparse/dense obstruction witnesses. -/
 
-#print axioms RMQ.Archive.SelectCompatibility.sparseDense_locator_fullMachineField_not_word_bounded
-#print axioms RMQ.SuccinctSelectProposal.SparseDenseFalseSelectCloseData.short_super_local_pointer_capacity_obstruction
-#print axioms RMQ.SuccinctSelectProposal.SparseDenseFalseSelectCloseData.dense_branch_packed_local_pointer_capacity_obstruction
-#print axioms RMQ.SuccinctSelectProposal.SparseDenseFalseSelectCloseData.super_locator_full_machine_field_impossible
-#print axioms RMQ.SuccinctSelectProposal.SparseDenseFalseSelectCloseData.local_locator_full_machine_field_impossible
+#print axioms RMQ.Archive.SelectObstructions.sparseDense_locator_fullMachineField_not_word_bounded
+#print axioms RMQ.Archive.SelectObstructions.short_super_local_pointer_capacity_obstruction
+#print axioms RMQ.Archive.SelectObstructions.dense_branch_packed_local_pointer_capacity_obstruction
+#print axioms RMQ.Archive.SelectObstructions.super_locator_full_machine_field_impossible
+#print axioms RMQ.Archive.SelectObstructions.local_locator_full_machine_field_impossible
 
 /- Old BP-specialized relative-split capstone retained for compatibility. -/
 
-#print axioms RMQ.Archive.SelectCompatibility.builtRelativeSplit_bpNative_total_two_sided_doubled_catalan_slack_profile
+#print axioms RMQ.Archive.BPSpecializedCapstone.total_two_sided_doubled_catalan_slack_profile

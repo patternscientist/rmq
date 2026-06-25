@@ -177,9 +177,12 @@ about Lean's executable `List` runtime.
   including `Headlines.exactRMQLowerBoundDoubledCatalanSlack`,
   `Headlines.rankSelectNPlusOConstantQuery`, and
   `Headlines.succinctRMQTwoNPlusOConstantQuery`.
-- `RMQ/Archive/SelectCompatibility.lean`: a small checked archive for the
-  retained obstruction witness and old BP-specialized relative-split capstone;
-  superseded intermediate prototype surfaces are intentionally not anchored.
+- `RMQ/Archive/SelectObstructions.lean` and
+  `RMQ/Archive/BPSpecializedCapstone.lean`: small checked archives for the
+  retained obstruction witnesses and old BP-specialized relative-split
+  capstone; `RMQ/Archive/SelectCompatibility.lean` keeps stable compatibility
+  aliases, while superseded intermediate prototype surfaces are intentionally
+  not anchored.
 - `RMQRankSelect.lean`: standalone rank/select spoke import root. It exposes
   the public bitvector spec plus the Jacobson/Clark construction without
   importing RMQ windows, Cartesian trees, LCA, Fischer-Heun, or the final RMQ
