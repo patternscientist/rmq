@@ -2344,3 +2344,66 @@ Bottom line: across this audit series the project went from "correct result, res
 code" to a genuinely modularized, dead-code-pruned, trust-clean tree — and did it without a
 single trust-base regression or hidden weakening at any step. The remaining work is
 fine-grained module splitting and shim retirement, i.e. polish, not debt.
+
+## 2026-06-25 (AUDIT — elegance/structure/norms deep-dive) — `main` @ `96e424a`
+
+One commit since `3fd2f4d`: `96e424a` split the 6785-line `RelativeRmmMacro` into 6
+sub-modules. Build green; headline 15 / full 421 axiom checks resolve, zero
+`sorryAx`/`ofReduceBool`/errors. Integrity remains perfect. This entry focuses on
+research-formalization norms for the *current* tree.
+
+**State of the tree:** 98 `.lean` files, 85,757 lines; **81/98 files <1500 lines**, 11 in
+1500–2999, only 6 ≥3000. Module docstrings ARE present and decent (an earlier "0 docstrings"
+reading was a grep artifact — verified false). Directory hierarchy (`GenericSelect/`,
+`SuccinctClose/`, `SuccinctSelect/`) is sensible. This is a real library shape now.
+
+**Norms gaps (verified), roughly in priority order:**
+1. **Physical split ≠ logical split (top issue).** Directories were created but namespaces
+   stayed flat and historical: 14/17 `SuccinctClose/**` files declare `namespace
+   SuccinctCloseProposal`; 3/3 `SuccinctSelect/**` declare `namespace SuccinctSelectProposal`
+   (a header even states "Public declarations stay in the historical … namespace"). Mathlib/
+   CSLib align namespace to path; here the dir tree is navigational only — logically it is
+   still one ~20–26k-line flat namespace bag for `open`/autocomplete/name-resolution.
+2. **"Proposal" research-diary naming** is baked into both filenames AND namespaces
+   (`SuccinctSelectProposal`, `SuccinctRankProposal`, `SuccinctCloseProposal`). No serious
+   library ships a `FooProposal` public namespace.
+3. **`SuccinctSelectProposal.lean` is still 10,687 lines**, flat (6 structures / 144 defs /
+   242 theorems / 5 namespaces, **no `section` or `/-! ##` substructure**), and still holds a
+   superseded dead-end the roadmap already named for deletion:
+   `RectangularChargedFalseSelectCloseData` (line 10456). One more Locator-style prune + a
+   split is pending here.
+4. **Bool case-extraction anti-pattern persists** (33 `contradiction` + 60 `cases h :`
+   tree-wide): the split relocated proofs without modernizing idioms. Scriptable fix
+   (`cases hb : b`).
+5. **229 mega-simp calls** (`simp`/`simpa` with ≥5 lemmas) — brittle; norm is `simp only`
+   with a curated set.
+6. **No global prelude.** Reinvented Nat/Bool/log basics are scattered (a good subtree-local
+   `GenericSelect/Arithmetic.lean` exists; nothing global).
+7. **Back-compat shims** (gutted originals + Legacy/BPCompat alias modules) remain.
+
+**Follow-ups (suggested), prioritized:**
+- *A1.* **Align namespaces to paths and drop "Proposal":** `SuccinctSelectProposal →
+  SuccinctSelect`, `…CloseProposal → SuccinctClose`, `…RankProposal → SuccinctRank`, and
+  sub-namespace by module (`SuccinctClose.RelativeRmmMacro.*`). Keep `abbrev` compat aliases
+  during transition; script it, one namespace at a time, gate after each. Single biggest
+  "looks like a real library" change.
+- *A2.* **Finish the dead-island prune:** delete `RectangularChargedFalseSelectCloseData` +
+  `RelativeSplitRectangularFalseSelectCloseData` (roadmap's named candidates), preserving any
+  obstruction witnesses in `Archive` (same triage as the Locator).
+- *A3.* **Split `SuccinctSelectProposal` (10.7k)** along its 5 namespaces + add `section`/
+  `/-! ##` structure; consider sectioning `SuccinctSpace.lean` (7557) too.
+- *B4.* Modernize the Bool dance → `cases hb : b` (scripted, removes ~90 sites).
+- *B5.* Tighten mega-simps to `simp only [...]` opportunistically.
+- *B6.* Add `RMQ/Prelude.lean`; consolidate scattered Nat/Bool/log basics; promote the
+  general lemmas out of `GenericSelect/Arithmetic`.
+- *C7.* Retire shims once downstream imports role modules directly.
+- *C8.* Revisit the Mathlib/CSLib dependency — it would make B4–B6 largely evaporate
+  (basics + `omega`/`gcongr`/`simp` automation come for free). This is the deferred
+  CSLib-coordination lever.
+
+Bottom line: structurally this is now a *navigable* library (file sizes, dirs, docstrings
+all good) with perfect integrity, but it is not yet *idiomatic*: the namespaces are still a
+flat historical `*Proposal` bag, one 10.7k grab-bag (with a known dead-end) remains, and the
+proof-idiom polish (Bool dance, mega-simp, prelude) is untouched. None of it is debt that
+threatens the result; all of it is the gap between "successful proof expedition, now tidied"
+and "CSLib-caliber component." A1 (namespace/path alignment) is where I'd start.
