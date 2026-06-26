@@ -1367,7 +1367,13 @@ The names below are grouped by source module. Repeated base names in
   `RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro.lean`,
   `RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro.lean`,
   `RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/MicroCodebook.lean`,
-  `RMQ/Core/SuccinctClose/RelativeRmmMacro.lean`, and the compatibility
+  `RMQ/Core/SuccinctClose/RelativeRmmMacro.lean`,
+  `RMQ/Core/SuccinctClose/RelativeRmmMacro/AbstractMacro.lean`,
+  `RMQ/Core/SuccinctClose/RelativeRmmMacro/EndpointCodebook.lean`,
+  `RMQ/Core/SuccinctClose/RelativeRmmMacro/CompactEndpoint.lean`,
+  `RMQ/Core/SuccinctClose/RelativeRmmMacro/LocalBPDecoder.lean`,
+  `RMQ/Core/SuccinctClose/RelativeRmmMacro/ConcreteDirectory.lean`,
+  `RMQ/Core/SuccinctClose/RelativeRmmMacro/MacroMicroFamily.lean`, and the compatibility
   `RMQ/Core/SuccinctCloseProposal.lean` root, all preserving the historical
   `SuccinctCloseProposal` namespace:
   `SuccinctCloseProposal.closeToInorder_eq_of_bpCloseOfInorder?`,

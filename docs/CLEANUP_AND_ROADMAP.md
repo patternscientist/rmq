@@ -286,9 +286,11 @@ The close-navigation proposal is also split by role.
 `SuccinctClose/RelativeSummary.lean`, `SuccinctClose/RangeWitness.lean`,
 the `SuccinctClose/EndpointFringe/*` prefix-range, interior-candidate, and
 endpoint-macro layers, with the endpoint macro itself split into range-macro
-and micro-codebook layers, and
-`SuccinctClose/RelativeRmmMacro.lean`. `RMQ/Core/SuccinctCloseProposal.lean`
-is now a compatibility import root for the historical proposal name.
+and micro-codebook layers. The relative-rmM macro is likewise split behind
+`SuccinctClose/RelativeRmmMacro.lean` into abstract macro, endpoint codebook,
+compact endpoint, local BP decoder, concrete directory, and macro/micro family
+layers. `RMQ/Core/SuccinctCloseProposal.lean` is now a compatibility import
+root for the historical proposal name.
 
 Keep import direction simple:
 
