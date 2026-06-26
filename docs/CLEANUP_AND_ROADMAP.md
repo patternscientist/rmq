@@ -176,7 +176,10 @@ local/super generated-entry rows, their row-specific obstruction lemmas, the
 no-go theorem. A follow-up prune removed the old four-field
 `SparseDenseFalseSelectCloseData` locator surface itself, retired the
 locator-specific archive aliases, and kept only the smaller shared-locator
-obstruction witnesses in `RMQ/Archive/SelectObstructions.lean`.
+obstruction witnesses in `RMQ/Archive/SelectObstructions.lean`. The later
+cleanup pass also retired the stale `RectangularChargedFalseSelect...`
+compatibility names; the live finite-block-table obstruction route is now named
+only by the clearer `TwoLevelFalseSelect...` surface.
 
 Decision: keep the remaining BP-specialized relative-split capstone
 intentionally as an old capstone, not as a public headline. The archive split

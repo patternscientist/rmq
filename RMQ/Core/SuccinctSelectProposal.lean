@@ -10358,108 +10358,106 @@ It consumes concrete two-level stored-word select tables built from
 supplied externally.
 -/
 
-def builtRectangularChargedFalseSelectWordSize
+def builtTwoLevelFalseSelectWordSize
     (shape : Cartesian.CartesianShape) : Nat :=
   SuccinctRankProposal.machineWordBits shape.bpCode.length
 
-def builtRectangularChargedFalseSelectOccurrencesPerSuper
+def builtTwoLevelFalseSelectOccurrencesPerSuper
     (shape : Cartesian.CartesianShape) : Nat :=
-  builtRectangularChargedFalseSelectWordSize shape
+  builtTwoLevelFalseSelectWordSize shape
 
-theorem builtRectangularChargedFalseSelectWordSize_pos
+theorem builtTwoLevelFalseSelectWordSize_pos
     (shape : Cartesian.CartesianShape) :
-    0 < builtRectangularChargedFalseSelectWordSize shape := by
-  simp [builtRectangularChargedFalseSelectWordSize,
+    0 < builtTwoLevelFalseSelectWordSize shape := by
+  simp [builtTwoLevelFalseSelectWordSize,
     SuccinctRankProposal.machineWordBits_pos]
 
-theorem builtRectangularChargedFalseSelectOccurrencesPerSuper_pos
+theorem builtTwoLevelFalseSelectOccurrencesPerSuper_pos
     (shape : Cartesian.CartesianShape) :
-    0 < builtRectangularChargedFalseSelectOccurrencesPerSuper shape := by
-  simpa [builtRectangularChargedFalseSelectOccurrencesPerSuper] using
-    builtRectangularChargedFalseSelectWordSize_pos shape
+    0 < builtTwoLevelFalseSelectOccurrencesPerSuper shape := by
+  simpa [builtTwoLevelFalseSelectOccurrencesPerSuper] using
+    builtTwoLevelFalseSelectWordSize_pos shape
 
-theorem builtRectangularChargedFalseSelect_bpCode_length_lt_word_pow
+theorem builtTwoLevelFalseSelect_bpCode_length_lt_word_pow
     (shape : Cartesian.CartesianShape) :
     shape.bpCode.length <
-      2 ^ builtRectangularChargedFalseSelectWordSize shape := by
-  simpa [builtRectangularChargedFalseSelectWordSize,
+      2 ^ builtTwoLevelFalseSelectWordSize shape := by
+  simpa [builtTwoLevelFalseSelectWordSize,
     SuccinctRankProposal.machineWordBits] using
     (Nat.lt_log2_self (n := shape.bpCode.length))
 
-def builtRectangularChargedFalseSelectSuperOverhead
+def builtTwoLevelFalseSelectSuperOverhead
     (shape : Cartesian.CartesianShape) : Nat :=
   (canonicalSelectSuperTablesFinite
       shape.bpCode
-      (builtRectangularChargedFalseSelectWordSize shape)
-      (builtRectangularChargedFalseSelectOccurrencesPerSuper shape)
-      (builtRectangularChargedFalseSelectWordSize shape)
-      (builtRectangularChargedFalseSelect_bpCode_length_lt_word_pow
+      (builtTwoLevelFalseSelectWordSize shape)
+      (builtTwoLevelFalseSelectOccurrencesPerSuper shape)
+      (builtTwoLevelFalseSelectWordSize shape)
+      (builtTwoLevelFalseSelect_bpCode_length_lt_word_pow
         shape)).payload.length
 
-def builtRectangularChargedFalseSelectBlockOverhead
+def builtTwoLevelFalseSelectBlockOverhead
     (shape : Cartesian.CartesianShape) : Nat :=
   (canonicalSelectBlockTablesFinite
       shape.bpCode
-      (builtRectangularChargedFalseSelectWordSize shape)
-      (builtRectangularChargedFalseSelectOccurrencesPerSuper shape)
-      (builtRectangularChargedFalseSelectWordSize shape)
-      (builtRectangularChargedFalseSelect_bpCode_length_lt_word_pow
+      (builtTwoLevelFalseSelectWordSize shape)
+      (builtTwoLevelFalseSelectOccurrencesPerSuper shape)
+      (builtTwoLevelFalseSelectWordSize shape)
+      (builtTwoLevelFalseSelect_bpCode_length_lt_word_pow
         shape)).payload.length
 
-theorem builtRectangularChargedFalseSelectBlockOverhead_ge_bpCode_length_succ
+theorem builtTwoLevelFalseSelectBlockOverhead_ge_bpCode_length_succ
     (shape : Cartesian.CartesianShape) :
     shape.bpCode.length + 1 <=
-      builtRectangularChargedFalseSelectBlockOverhead shape := by
+      builtTwoLevelFalseSelectBlockOverhead shape := by
   exact
     canonicalSelectBlockTablesFinite_payload_length_ge_succ
       (bits := shape.bpCode)
-      (wordSize := builtRectangularChargedFalseSelectWordSize shape)
+      (wordSize := builtTwoLevelFalseSelectWordSize shape)
       (occurrencesPerSuper :=
-        builtRectangularChargedFalseSelectOccurrencesPerSuper shape)
-      (fieldWidth := builtRectangularChargedFalseSelectWordSize shape)
-      (builtRectangularChargedFalseSelect_bpCode_length_lt_word_pow shape)
+        builtTwoLevelFalseSelectOccurrencesPerSuper shape)
+      (fieldWidth := builtTwoLevelFalseSelectWordSize shape)
+      (builtTwoLevelFalseSelect_bpCode_length_lt_word_pow shape)
 
-def builtRectangularChargedFalseSelectSelectData
+def builtTwoLevelFalseSelectSelectData
     (shape : Cartesian.CartesianShape) :
     TwoLevelPayloadLiveStoredWordSelectData shape.bpCode
-      (builtRectangularChargedFalseSelectSuperOverhead shape)
-      (builtRectangularChargedFalseSelectBlockOverhead shape)
+      (builtTwoLevelFalseSelectSuperOverhead shape)
+      (builtTwoLevelFalseSelectBlockOverhead shape)
       sparseDenseFalseSelectQueryCost :=
   canonicalTwoLevelSelectDataOfChunksExact
     shape.bpCode
-    (builtRectangularChargedFalseSelectWordSize_pos shape)
+    (builtTwoLevelFalseSelectWordSize_pos shape)
     (by
-      simp [builtRectangularChargedFalseSelectWordSize])
-    (builtRectangularChargedFalseSelectOccurrencesPerSuper_pos shape)
-    (builtRectangularChargedFalseSelect_bpCode_length_lt_word_pow shape)
-    (builtRectangularChargedFalseSelect_bpCode_length_lt_word_pow shape)
+      simp [builtTwoLevelFalseSelectWordSize])
+    (builtTwoLevelFalseSelectOccurrencesPerSuper_pos shape)
+    (builtTwoLevelFalseSelect_bpCode_length_lt_word_pow shape)
+    (builtTwoLevelFalseSelect_bpCode_length_lt_word_pow shape)
     (by
       unfold sparseDenseFalseSelectQueryCost
       omega)
 
 /--
-Historical compatibility name for the generic two-level stored-word
-false-select close accessor below.
+Concrete finite-block-table two-level stored-word false-select close accessor.
 
-Despite the old `RectangularCharged` prefix, this construction is not the
-rectangular sparse/dense local-table scheme.  It uses the canonical two-level
-select tables over `shape.bpCode`; new code and reports should use the
-`TwoLevelFalseSelect...` aliases below when referring to this route.
+This is intentionally retained as the checked full-width obstruction route:
+the data are executable and exact, but the finite block table payload is proven
+too large for the final `o(n)` select witness.
 -/
-structure RectangularChargedFalseSelectCloseData
+structure TwoLevelFalseSelectCloseData
     (shape : Cartesian.CartesianShape)
     (superOverhead blockOverhead queryCost : Nat) where
   selectData :
     TwoLevelPayloadLiveStoredWordSelectData
       shape.bpCode superOverhead blockOverhead queryCost
 
-namespace RectangularChargedFalseSelectCloseData
+namespace TwoLevelFalseSelectCloseData
 
 def payload
     {shape : Cartesian.CartesianShape}
     {superOverhead blockOverhead queryCost : Nat}
     (data :
-      RectangularChargedFalseSelectCloseData
+      TwoLevelFalseSelectCloseData
         shape superOverhead blockOverhead queryCost) : List Bool :=
   data.selectData.auxPayload
 
@@ -10467,7 +10465,7 @@ def locatorReadWords
     {shape : Cartesian.CartesianShape}
     {superOverhead blockOverhead queryCost : Nat}
     (data :
-      RectangularChargedFalseSelectCloseData
+      TwoLevelFalseSelectCloseData
         shape superOverhead blockOverhead queryCost) : List (List Bool) :=
   (((data.selectData.superTables.trueTable.store.words.toList ++
       data.selectData.superTables.falseTable.store.words.toList) ++
@@ -10478,7 +10476,7 @@ def readWords
     {shape : Cartesian.CartesianShape}
     {superOverhead blockOverhead queryCost : Nat}
     (data :
-      RectangularChargedFalseSelectCloseData
+      TwoLevelFalseSelectCloseData
         shape superOverhead blockOverhead queryCost) : List (List Bool) :=
   data.locatorReadWords ++ data.selectData.bitWords.store.words.toList
 
@@ -10486,7 +10484,7 @@ def selectCloseCosted
     {shape : Cartesian.CartesianShape}
     {superOverhead blockOverhead queryCost : Nat}
     (data :
-      RectangularChargedFalseSelectCloseData
+      TwoLevelFalseSelectCloseData
         shape superOverhead blockOverhead queryCost)
     (idx : Nat) : Costed (Option Nat) :=
   data.selectData.selectCosted false idx
@@ -10495,7 +10493,7 @@ theorem payload_length
     {shape : Cartesian.CartesianShape}
     {superOverhead blockOverhead queryCost : Nat}
     (data :
-      RectangularChargedFalseSelectCloseData
+      TwoLevelFalseSelectCloseData
         shape superOverhead blockOverhead queryCost) :
     data.payload.length = superOverhead + blockOverhead := by
   exact data.selectData.auxPayload_length
@@ -10504,7 +10502,7 @@ theorem selectCloseCosted_cost_le
     {shape : Cartesian.CartesianShape}
     {superOverhead blockOverhead queryCost : Nat}
     (data :
-      RectangularChargedFalseSelectCloseData
+      TwoLevelFalseSelectCloseData
         shape superOverhead blockOverhead queryCost)
     (idx : Nat) :
     (data.selectCloseCosted idx).cost <= queryCost := by
@@ -10514,7 +10512,7 @@ theorem selectCloseCosted_exact
     {shape : Cartesian.CartesianShape}
     {superOverhead blockOverhead queryCost : Nat}
     (data :
-      RectangularChargedFalseSelectCloseData
+      TwoLevelFalseSelectCloseData
         shape superOverhead blockOverhead queryCost)
     (idx : Nat) :
     (data.selectCloseCosted idx).erase =
@@ -10531,7 +10529,7 @@ theorem payload_word_length_le_machine
     {shape : Cartesian.CartesianShape}
     {superOverhead blockOverhead queryCost : Nat}
     (data :
-      RectangularChargedFalseSelectCloseData
+      TwoLevelFalseSelectCloseData
         shape superOverhead blockOverhead queryCost)
     {word : List Bool}
     (hmem :
@@ -10544,7 +10542,7 @@ theorem profile
     {shape : Cartesian.CartesianShape}
     {superOverhead blockOverhead queryCost : Nat}
     (data :
-      RectangularChargedFalseSelectCloseData
+      TwoLevelFalseSelectCloseData
         shape superOverhead blockOverhead queryCost) :
     data.payload.length = superOverhead + blockOverhead /\
       (forall idx, (data.selectCloseCosted idx).cost <= queryCost) /\
@@ -10560,22 +10558,22 @@ theorem profile
       data.selectCloseCosted_exact,
       fun {word} hmem => data.payload_word_length_le_machine hmem⟩
 
-end RectangularChargedFalseSelectCloseData
+end TwoLevelFalseSelectCloseData
 
-def builtRectangularChargedFalseSelectCloseData
+def builtTwoLevelFalseSelectCloseData
     (shape : Cartesian.CartesianShape) :
-    RectangularChargedFalseSelectCloseData shape
-      (builtRectangularChargedFalseSelectSuperOverhead shape)
-      (builtRectangularChargedFalseSelectBlockOverhead shape)
+    TwoLevelFalseSelectCloseData shape
+      (builtTwoLevelFalseSelectSuperOverhead shape)
+      (builtTwoLevelFalseSelectBlockOverhead shape)
       sparseDenseFalseSelectQueryCost where
-  selectData := builtRectangularChargedFalseSelectSelectData shape
+  selectData := builtTwoLevelFalseSelectSelectData shape
 
-theorem builtRectangularChargedFalseSelectCloseData_profile
+theorem builtTwoLevelFalseSelectCloseData_profile
     (shape : Cartesian.CartesianShape) :
-    let data := builtRectangularChargedFalseSelectCloseData shape
+    let data := builtTwoLevelFalseSelectCloseData shape
     data.payload.length =
-        builtRectangularChargedFalseSelectSuperOverhead shape +
-          builtRectangularChargedFalseSelectBlockOverhead shape /\
+        builtTwoLevelFalseSelectSuperOverhead shape +
+          builtTwoLevelFalseSelectBlockOverhead shape /\
       (forall idx,
         (data.selectCloseCosted idx).cost <=
           sparseDenseFalseSelectQueryCost) /\
@@ -10587,53 +10585,7 @@ theorem builtRectangularChargedFalseSelectCloseData_profile
             data.selectData.bitWords.store.words.toList ->
           word.length <=
             SuccinctRankProposal.machineWordBits shape.bpCode.length := by
-  exact (builtRectangularChargedFalseSelectCloseData shape).profile
-
-abbrev TwoLevelFalseSelectCloseData
-    (shape : Cartesian.CartesianShape)
-    (superOverhead blockOverhead queryCost : Nat) :=
-  RectangularChargedFalseSelectCloseData
-    shape superOverhead blockOverhead queryCost
-
-def builtTwoLevelFalseSelectWordSize
-    (shape : Cartesian.CartesianShape) : Nat :=
-  builtRectangularChargedFalseSelectWordSize shape
-
-def builtTwoLevelFalseSelectOccurrencesPerSuper
-    (shape : Cartesian.CartesianShape) : Nat :=
-  builtRectangularChargedFalseSelectOccurrencesPerSuper shape
-
-def builtTwoLevelFalseSelectSuperOverhead
-    (shape : Cartesian.CartesianShape) : Nat :=
-  builtRectangularChargedFalseSelectSuperOverhead shape
-
-def builtTwoLevelFalseSelectBlockOverhead
-    (shape : Cartesian.CartesianShape) : Nat :=
-  builtRectangularChargedFalseSelectBlockOverhead shape
-
-def builtTwoLevelFalseSelectSelectData
-    (shape : Cartesian.CartesianShape) :
-    TwoLevelPayloadLiveStoredWordSelectData shape.bpCode
-      (builtTwoLevelFalseSelectSuperOverhead shape)
-      (builtTwoLevelFalseSelectBlockOverhead shape)
-      sparseDenseFalseSelectQueryCost :=
-  builtRectangularChargedFalseSelectSelectData shape
-
-def builtTwoLevelFalseSelectCloseData
-    (shape : Cartesian.CartesianShape) :
-    TwoLevelFalseSelectCloseData shape
-      (builtTwoLevelFalseSelectSuperOverhead shape)
-      (builtTwoLevelFalseSelectBlockOverhead shape)
-      sparseDenseFalseSelectQueryCost :=
-  builtRectangularChargedFalseSelectCloseData shape
-
-theorem builtTwoLevelFalseSelectBlockOverhead_ge_bpCode_length_succ
-    (shape : Cartesian.CartesianShape) :
-    shape.bpCode.length + 1 <=
-      builtTwoLevelFalseSelectBlockOverhead shape := by
-  exact
-    builtRectangularChargedFalseSelectBlockOverhead_ge_bpCode_length_succ
-      shape
+  exact (builtTwoLevelFalseSelectCloseData shape).profile
 
 def builtTwoLevelFalseSelectRightSpineBlockOverhead (n : Nat) : Nat :=
   builtTwoLevelFalseSelectBlockOverhead (falseSelectRightSpine n)
@@ -10663,25 +10615,6 @@ theorem builtTwoLevelFalseSelect_current_finite_block_tables_not_littleO :
     omega
   exact Nat.le_trans hlinear
     (builtTwoLevelFalseSelectRightSpineBlockOverhead_ge_two_n_plus_one n)
-
-theorem builtTwoLevelFalseSelectCloseData_profile
-    (shape : Cartesian.CartesianShape) :
-    let data := builtTwoLevelFalseSelectCloseData shape
-    data.payload.length =
-        builtTwoLevelFalseSelectSuperOverhead shape +
-          builtTwoLevelFalseSelectBlockOverhead shape /\
-      (forall idx,
-        (data.selectCloseCosted idx).cost <=
-          sparseDenseFalseSelectQueryCost) /\
-      (forall idx,
-        (data.selectCloseCosted idx).erase =
-          SuccinctSpace.bpCloseOfInorder? shape idx) /\
-      forall {word : List Bool},
-        List.Mem word
-            data.selectData.bitWords.store.words.toList ->
-          word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
-  exact builtRectangularChargedFalseSelectCloseData_profile shape
 
 end SuccinctSelectProposal
 end RMQ
