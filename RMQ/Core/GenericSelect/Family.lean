@@ -112,13 +112,8 @@ def jacobsonClarkRankSelectDirectory (bits : List Bool) :
   rankCosted := fun _ target pos =>
     (SuccinctRank.jacobsonRankData bits).rankCosted target pos
   selectCosted := fun _ target occurrence =>
-    match target with
-    | false =>
-        (sparseExceptionSelectSource bits false).selectPositionCosted
-          occurrence
-    | true =>
-        (sparseExceptionSelectSource bits true).selectPositionCosted
-          occurrence
+    (sparseExceptionSelectSource bits target).selectPositionCosted
+      occurrence
   aux_length_eq := by
     exact jacobsonClarkRankSelectPaddedAuxPayload_length bits
   rank_cost_le := by
@@ -131,32 +126,21 @@ def jacobsonClarkRankSelectDirectory (bits : List Bool) :
         exact Nat.le_max_left 4 sparseDenseSelectQueryCost)
   select_cost_le := by
     intro target occurrence
-    cases target
-    · let source := sparseExceptionSelectSource bits false
-      exact Nat.le_trans
-        (source.selectPositionCosted_cost_le occurrence)
-        (by
-          unfold jacobsonClarkRankSelectQueryCost
-          exact Nat.le_max_right 4 sparseDenseSelectQueryCost)
-    · let source := sparseExceptionSelectSource bits true
-      exact Nat.le_trans
-        (source.selectPositionCosted_cost_le occurrence)
-        (by
-          unfold jacobsonClarkRankSelectQueryCost
-          exact Nat.le_max_right 4 sparseDenseSelectQueryCost)
+    exact Nat.le_trans
+      ((sparseExceptionSelectSource bits target).selectPositionCosted_cost_le
+        occurrence)
+      (by
+        unfold jacobsonClarkRankSelectQueryCost
+        exact Nat.le_max_right 4 sparseDenseSelectQueryCost)
   rank_exact := by
     intro target pos
     exact (SuccinctRank.jacobsonRankData bits).rankCosted_exact
       target pos
   select_exact := by
     intro target occurrence
-    cases target
-    · exact
-        (sparseExceptionSelectSource bits false).selectPositionCosted_exact
-          occurrence
-    · exact
-        (sparseExceptionSelectSource bits true).selectPositionCosted_exact
-          occurrence
+    exact
+      (sparseExceptionSelectSource bits target).selectPositionCosted_exact
+        occurrence
 
 theorem jacobsonClarkRankSelectDirectory_profile
     (bits : List Bool) :

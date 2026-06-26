@@ -110,7 +110,7 @@ theorem readCosted_cost_le_five
       (relativeSplitSelectSparseCompactSlot
         (directory.rankData.rankCosted true localSlot).value
         localOccurrence directory.localStride)
-  simp [Costed.bind, Costed.map] at *
+  simp [Costed.bind] at *
   omega
 
 theorem readCosted_exact
@@ -140,7 +140,7 @@ theorem readCosted_exact
     simpa [Costed.erase] using
       directory.relativeTable.readCosted_erase slot
   unfold readCosted relativeOffsetReadCosted
-  simp [Costed.bind, Costed.map, Costed.erase, hrank, slot, hread]
+  simp [Costed.bind, Costed.erase, hrank, slot, hread]
 
 theorem read_words_length_le_machine
     {bits : List Bool} {target : Bool}

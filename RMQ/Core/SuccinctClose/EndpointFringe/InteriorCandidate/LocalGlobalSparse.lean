@@ -152,7 +152,7 @@ theorem twoSpanCandidateCosted_erase_sparseLog_exact
   unfold twoSpanCandidateCosted
   rw [Costed.erase_bind]
   simp [hleftExact]
-  simp [Costed.map, hrightErase]
+  simp [hrightErase]
   simpa [span, level, startBlock, rightLocalStart, hrightStart] using hmerge
 
 theorem twoSpanCandidateCosted_erase_rangeWitness_exact
@@ -770,7 +770,7 @@ theorem twoSpanCandidateCosted_erase_sparse_exact
   unfold twoSpanCandidateCosted
   rw [Costed.erase_bind]
   simp [hleftExact]
-  simp [Costed.map, hrightErase]
+  simp [hrightErase]
   simpa [spanMacros, level, rightMacroStart, hrightStart,
     Nat.mul_assoc] using hmerge
 

@@ -163,16 +163,16 @@ theorem tickValue_eq_tick_bind_pure (n : Nat) (x : a) :
     tickValue n x = bind (tick n) (fun _ => pure x) := by
   rfl
 
-theorem map_value (f : a -> b) (x : Costed a) :
+@[simp] theorem map_value (f : a -> b) (x : Costed a) :
     (map f x).value = f x.value := by
   rfl
 
-theorem map_cost (f : a -> b) (x : Costed a) :
+@[simp] theorem map_cost (f : a -> b) (x : Costed a) :
     (map f x).cost = x.cost := by
   cases x
   rfl
 
-theorem erase_map (f : a -> b) (x : Costed a) :
+@[simp] theorem erase_map (f : a -> b) (x : Costed a) :
     erase (map f x) = f (erase x) := by
   rfl
 

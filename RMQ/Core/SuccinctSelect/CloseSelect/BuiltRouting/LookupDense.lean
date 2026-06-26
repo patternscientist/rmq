@@ -161,7 +161,7 @@ theorem builtRelativeSplitCompactLongSuperReadCosted_cost_le_five
             localOccurrence)).cost <= 1 :=
     (builtRelativeSplitFalseSelectLongSuperRelativeTable
       shape).readCosted_cost_le_one _
-  simp [Costed.bind, Costed.map] at *
+  simp [Costed.bind] at *
   omega
 
 theorem builtRelativeSplitCompactLongSuperReadCosted_erase
@@ -200,7 +200,7 @@ theorem builtRelativeSplitCompactLongSuperReadCosted_erase
       (builtRelativeSplitFalseSelectLongSuperRelativeTable
         shape).readCosted_erase slot
   unfold builtRelativeSplitCompactLongSuperReadCosted
-  simp [Costed.bind, Costed.map, Costed.erase, hrank, slot, hread]
+  simp [Costed.bind, Costed.erase, hrank, slot, hread]
 
 theorem compactLongSuperRelativeTable_lookup_exact
     (shape : Cartesian.CartesianShape)

@@ -124,7 +124,7 @@ theorem builtRelativeSplitSparseExceptionReadCosted_cost_le_five
           (sparseDenseFalseSelectLocalStride shape))).cost <= 1 :=
     (builtRelativeSplitFalseSelectSparseRelativeTable shape).readCosted_cost_le_one
       _
-  simp [Costed.bind, Costed.map] at *
+  simp [Costed.bind] at *
   omega
 
 theorem builtRelativeSplitSparseExceptionReadCosted_erase
@@ -165,7 +165,7 @@ theorem builtRelativeSplitSparseExceptionReadCosted_erase
         slot
   unfold builtRelativeSplitSparseExceptionReadCosted
     relativeOffsetReadCosted
-  simp [Costed.bind, Costed.map, Costed.erase, hrank, slot, hread]
+  simp [Costed.bind, Costed.erase, hrank, slot, hread]
 
 theorem builtRelativeSplitSparseExceptionReadCosted_lookup_exact
     (shape : Cartesian.CartesianShape)
