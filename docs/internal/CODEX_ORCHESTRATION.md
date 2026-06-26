@@ -37,7 +37,7 @@ also require a restart if they do not appear immediately.
 - During implementation: use subagents only for independent read-heavy audits
   or disjoint write scopes. Keep the main thread responsible for final
   integration and verification.
-- For multi-chat branches, use `docs/WORKER_INTEGRATION_CHECKLIST.md` as the
+- For multi-chat branches, use `docs/internal/WORKER_INTEGRATION_CHECKLIST.md` as the
   worker report template and coordinator merge gate.
 
 ## Bounded Proof Loop Template

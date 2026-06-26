@@ -118,7 +118,7 @@ driver can be a shell loop around non-interactive Codex runs:
 
 ```text
 while scripts/gate.ps1 ; do
-  codex exec "Advance the next docs/ROADMAP.md target per docs/CODEX_AUTONOMY.md.
+  codex exec "Advance the next docs/ROADMAP.md target per docs/internal/CODEX_AUTONOMY.md.
               Continue across targets while the gate stays green.
               Stop only on a stop condition below."
 done

@@ -30,7 +30,7 @@ future-roadmap items. If a leaf would not be consumed by the current join
 theorem, it is not a parallelization candidate for the loop.
 
 For the active succinct-RMQ finish line, every worker should read
-`docs/SUCCINCT_FINAL_PATH.md` before editing. That file is the current contract
+`docs/internal/SUCCINCT_FINAL_PATH.md` before editing. That file is the current contract
 for the descriptor-select component, concrete macro/micro BP-close component,
 and final `2*n + o(n), O(1)` join.
 
@@ -123,7 +123,7 @@ Loop stop audit:
   another local proof iteration?:
 - If stopping on impossibility, which concrete construction was attempted and
   which minimal theorem proves the target signature must change?:
-- Why stopping is valid under `docs/CODEX_AUTONOMY.md`:
+- Why stopping is valid under `docs/internal/CODEX_AUTONOMY.md`:
 ```
 
 If this audit says the stop is invalid, do not send a final completion report.
@@ -300,7 +300,7 @@ A worker branch is mergeable when all are true:
 2. Its file ownership is narrow enough to review.
 3. The branch does not introduce forbidden terms, Mathlib, or proof-path
    `native_decide`.
-4. Cost/space claims are model-faithful under `docs/CODEX_AUTONOMY.md`.
+4. Cost/space claims are model-faithful under `docs/internal/CODEX_AUTONOMY.md`.
 5. Any public claim drift is patched or explicitly assigned to the coordinator.
 6. The worker report explains how the branch reduces the current distance to
    the active capstone, concrete component profile, or join theorem.
@@ -358,11 +358,11 @@ For the succinct RMQ capstone:
 
 - Worker A owns the integration theorem, not just an interface. Its target is
   `concreteCompactBPCloseLCADirectory_profile` from
-  `docs/SUCCINCT_FINAL_PATH.md`, but the next local checkpoint is now the
+  `docs/internal/SUCCINCT_FINAL_PATH.md`, but the next local checkpoint is now the
   adopted option-1 interior theorem:
   `concreteBPRelativeRmmInteriorDirectory_profile`. A's construction should be
   a compact rmM/min-max-tree-style navigator over complete-block minimum
-  candidates, following `docs/INTERIOR_NAVIGATOR_DESIGN.md`. The current plan is
+  candidates, following `docs/internal/INTERIOR_NAVIGATOR_DESIGN.md`. The current plan is
   a two-level sparse-table-style navigator over the shrunk block-minimum
   sequence: local offset tables, a global macroblock table, and charged
   relative-summary reads for candidate comparison. It may consume B's relative
@@ -378,7 +378,7 @@ For the succinct RMQ capstone:
   remains is an invalid final response.
 - Worker B owns the compact relative-summary budget theorem. Its target is
   `concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile`
-  from `docs/SUCCINCT_FINAL_PATH.md`. This is not closed while premises such as
+  from `docs/internal/SUCCINCT_FINAL_PATH.md`. This is not closed while premises such as
   `hsuperPayload`, `hblockPayload`, a dense `interiorBlockPairRanges`
   envelope, or an unproved machine-word bound remain. If B closes that theorem
   before A has consumed it, B should continue to the arithmetic side of

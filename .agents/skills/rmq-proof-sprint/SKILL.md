@@ -137,7 +137,7 @@ Helper lemmas, proposal docs, adapters, and blocker variants count only when
 they are immediately consumed by one of those targets or prove the target
 signature itself must change.
 
-When `docs/SUCCINCT_FINAL_PATH.md` names a theorem chain for the current
+When `docs/internal/SUCCINCT_FINAL_PATH.md` names a theorem chain for the current
 succinct target, use that chain as the loop stop gate. A worker may stop only
 after closing its assigned named theorem/profile, after proving that named
 statement is impossible as stated, or after an external blocker. A new

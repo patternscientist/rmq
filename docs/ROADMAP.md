@@ -39,10 +39,10 @@ and formalization gaps.
 - "Done" means the stated theorem typechecks `sorry`-free with the standard Lean
   trust base only. The build gate enforces soundness; this file enforces value.
 - For the landed `2*n + o(n), O(1)` succinct RMQ finish line, read
-  `docs/SUCCINCT_FINAL_PATH.md` for current status plus historical stop-audit
+  `docs/internal/SUCCINCT_FINAL_PATH.md` for current status plus historical stop-audit
   guardrails. It is no longer an active missing-component contract.
 - For the research-backed construction choices behind that finish line, read
-  `docs/SUCCINCT_RESEARCH_AND_PLAN.md`. It records the C1/C2/C3 design path
+  `docs/internal/SUCCINCT_RESEARCH_AND_PLAN.md`. It records the C1/C2/C3 design path
   and the false starts that should not be reintroduced.
 - Materialize a target as a compiled theorem only once its supporting
   definitions exist. Until then, keep it as prose plus the intended theorem
@@ -680,7 +680,7 @@ checkpoint is now the landed theorem
 `SuccinctClose.concreteBPRelativeRmmInteriorDirectory_profile`, consumed
 by the final BP-native capstone rather than a remaining blocker.
 
-Current final-path spec: `docs/SUCCINCT_FINAL_PATH.md`. Historically the path
+Current final-path spec: `docs/internal/SUCCINCT_FINAL_PATH.md`. Historically the path
 split into the C2 compact interior navigator, the concrete macro/micro
 BP-close/LCA component that consumes it, and a final join theorem. Select-side
 descriptor work remains relevant only if the final BP-native join exposes a

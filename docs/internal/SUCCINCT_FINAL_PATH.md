@@ -52,7 +52,7 @@ directory, local BP decoder, or final join as "remaining" as superseded by this
 status section.
 
 The local-decoder hardening plan is pinned in
-`docs/LOCAL_BP_DECODER_PATH.md`. Workers should use that theorem chain before
+`docs/internal/LOCAL_BP_DECODER_PATH.md`. Workers should use that theorem chain before
 editing the split `RMQ/Core/SuccinctClose/*` modules; the old
 `RMQ/Core/SuccinctCloseProposal.lean` root is only a compatibility shim.
 
@@ -333,7 +333,7 @@ theorem PayloadLiveBPSelectCloseFamily.constant_query_profile
 ```
 
 The binding implementation strategy is the sparse/dense select inventory in
-`docs/SUCCINCT_SELECT_LOCATOR_ARCHITECTURE.md`.  At a high level:
+`docs/internal/SUCCINCT_SELECT_LOCATOR_ARCHITECTURE.md`.  At a high level:
 
 - sample every `w^2`-ish false occurrence, where
   `w = machineWordBits shape.bpCode.length`;
@@ -654,7 +654,7 @@ middle interval by a constant number of charged reads plus bounded arithmetic.
 It must not be a direct scan over all interior blocks, a sparse-table payload
 with non-little-o space, a dense all-pairs table, or a recursive final RMQ
 claim hidden behind this C2 theorem.
-The current concrete construction plan is `docs/INTERIOR_NAVIGATOR_DESIGN.md`:
+The current concrete construction plan is `docs/internal/INTERIOR_NAVIGATOR_DESIGN.md`:
 a two-level sparse-table-style navigator over the shrunk block-minimum sequence,
 with local offset tables, a global macroblock table, and charged relative-summary
 reads for candidate comparison.
@@ -834,7 +834,7 @@ summaries. It must not rely on:
 
 ## Loop Rules For This Target
 
-Workers must run the stop audit from `docs/CODEX_AUTONOMY.md`.
+Workers must run the stop audit from `docs/internal/CODEX_AUTONOMY.md`.
 
 At the start of every C1/C2/C3 loop iteration, write the capstone reflection in
 the worker report or scratch notes:

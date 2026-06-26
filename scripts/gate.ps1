@@ -6,7 +6,7 @@
 #
 # This gate proves soundness and non-regression. It does NOT prove the round
 # moved the needle -- that is the roadmap / anti-filler contract's job
-# (see docs/CODEX_AUTONOMY.md and docs/ROADMAP.md).
+# (see docs/internal/CODEX_AUTONOMY.md and docs/ROADMAP.md).
 
 $ErrorActionPreference = 'Continue'
 

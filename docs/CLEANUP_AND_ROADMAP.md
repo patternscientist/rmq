@@ -364,6 +364,13 @@ safe version is: move those files under an ignored local-only directory, remove
 remove or rephrase public docs that cite archive theorem names. Do not keep
 public docs or gates that depend on ignored local files.
 
+The public documentation path has also been flattened. Artifact-facing docs now
+live directly under `docs/`, while proof-sprint history, orchestration policy,
+and component audit records live under `docs/internal/` with their own index.
+This keeps the repository readable as a library artifact without deleting the
+design rationale that explains why tempting shortcut constructions were
+rejected.
+
 ## Naming And Proof Idioms
 
 Completed:

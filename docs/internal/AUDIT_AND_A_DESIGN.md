@@ -1,7 +1,7 @@
 # RMQ POC — Audit Snapshot + Cost-Model (Target A) Design
 
 Staging note: this doc was imported from the audit branch as a historical audit
-record. The working-tree `docs/ROADMAP.md` and `docs/CODEX_AUTONOMY.md` are the
+record. The working-tree `docs/ROADMAP.md` and `docs/internal/CODEX_AUTONOMY.md` are the
 **canonical** steering docs. In particular, the current roadmap keeps
 Mathlib-free Lean/Std as the default and refines D-LCA toward a dense
 direct-address node-ID theorem while preserving arbitrary-label correctness.
@@ -312,7 +312,7 @@ an under-keyed macro, a dense non-succinct table, or a shared select locator
 that silently reads the wrong payload word. They are not themselves the
 succinct-RMQ capstone.
 
-The companion note `docs/SUCCINCT_RESEARCH_AND_PLAN.md` records the current
+The companion note `docs/internal/SUCCINCT_RESEARCH_AND_PLAN.md` records the current
 positive plan: C1 descriptor select based on two-level select sampling; C2 a
 Navarro-Sadakane-style BP range-min-max macro with charged endpoint-fringe
 repair and a Four-Russians local micro table; C3 the concrete final join with

@@ -387,7 +387,7 @@ which routes local decoder seeds through the final payload-backed
 `SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_exact_of_query_of_size_ge`
 is a branch-normal-form corollary, not a premise of the total final profile.
 The theorem-shaped local-decoder path is recorded in
-`docs/LOCAL_BP_DECODER_PATH.md`.
+`docs/internal/LOCAL_BP_DECODER_PATH.md`.
 
 Historical C1/C2 proof-expedition notes have been moved out of the live status
 path. The current succinct RMQ story is: the public capstone consumes the
@@ -397,8 +397,8 @@ old sparse/dense BP-specialized route is retained only through checked
 obstruction witnesses, while the old relative-split BP-specialized capstone is
 intentionally kept as an archived old capstone rather than a headline. Detailed
 design history and anti-patterns remain in
-`docs/SUCCINCT_FINAL_PATH.md`, `docs/SUCCINCT_SELECT_LOCATOR_ARCHITECTURE.md`,
-and `docs/LOCAL_BP_DECODER_PATH.md`.
+`docs/internal/SUCCINCT_FINAL_PATH.md`, `docs/internal/SUCCINCT_SELECT_LOCATOR_ARCHITECTURE.md`,
+and `docs/internal/LOCAL_BP_DECODER_PATH.md`.
 
 - The RMQ contract is half-open: a valid query satisfies `left < right` and
   `right <= xs.length`; invalid or empty ranges return `none`.

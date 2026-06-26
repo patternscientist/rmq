@@ -26,18 +26,19 @@ This repository has two kinds of documentation:
 - [`CLEANUP_AND_ROADMAP.md`](CLEANUP_AND_ROADMAP.md): completed cleanup record
   and non-blocking post-cleanup roadmap.
 - [`ROADMAP.md`](ROADMAP.md): detailed research roadmap.
-- [`SUCCINCT_FINAL_PATH.md`](SUCCINCT_FINAL_PATH.md): historical theorem-chain
-  plan for the succinct RMQ capstone.
+- [`internal/SUCCINCT_FINAL_PATH.md`](internal/SUCCINCT_FINAL_PATH.md):
+  historical theorem-chain plan for the succinct RMQ capstone.
 - [`GENERIC_SELECT_REFACTOR_SCOPE.md`](GENERIC_SELECT_REFACTOR_SCOPE.md),
-  [`LOCAL_BP_DECODER_PATH.md`](LOCAL_BP_DECODER_PATH.md),
-  [`INTERIOR_NAVIGATOR_DESIGN.md`](INTERIOR_NAVIGATOR_DESIGN.md), and
-  [`SUCCINCT_SELECT_LOCATOR_ARCHITECTURE.md`](SUCCINCT_SELECT_LOCATOR_ARCHITECTURE.md):
+  [`internal/LOCAL_BP_DECODER_PATH.md`](internal/LOCAL_BP_DECODER_PATH.md),
+  [`internal/INTERIOR_NAVIGATOR_DESIGN.md`](internal/INTERIOR_NAVIGATOR_DESIGN.md), and
+  [`internal/SUCCINCT_SELECT_LOCATOR_ARCHITECTURE.md`](internal/SUCCINCT_SELECT_LOCATOR_ARCHITECTURE.md):
   component-specific design notes.
 - `AUDIT_*.md`, `*_AUDIT.md`, `CODEX_*.md`, and
-  [`WORKER_INTEGRATION_CHECKLIST.md`](WORKER_INTEGRATION_CHECKLIST.md):
+  [`internal/WORKER_INTEGRATION_CHECKLIST.md`](internal/WORKER_INTEGRATION_CHECKLIST.md):
   internal audit and orchestration records. They are useful for preserving the
   reasoning trail, but the public theorem surface is the code plus the artifact
-  docs above.
+  docs above. See [`internal/README.md`](internal/README.md) for the internal
+  index.
 
 ## Verification
 

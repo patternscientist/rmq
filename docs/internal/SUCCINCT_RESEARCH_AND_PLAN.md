@@ -4,7 +4,7 @@ Date: 2026-06-20.
 
 This note records the current research-backed path to a genuine
 `2*n + o(n)`-bit, `O(1)`-query BP-native succinct RMQ theorem. It complements
-the worker contract in `docs/SUCCINCT_FINAL_PATH.md`.
+the worker contract in `docs/internal/SUCCINCT_FINAL_PATH.md`.
 
 ## Current Audit
 
