@@ -1301,6 +1301,9 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctRankProposal.ExactSampledPayloadLiveStoredWordRankFamily.constant_query_profile`,
   `SuccinctRankProposal.ExactSampledPayloadLiveStoredWordRankFamily.bounded_constant_query_profile`.
 - `RMQ/Core/SuccinctSelect/TwoLevel.lean`,
+  the split `RMQ/Core/SuccinctSelect/TwoLevel/*` layers for select samples,
+  word-exactness, Clark-source construction, select data, rank/select
+  adapters, and BP close-navigation wrappers,
   `RMQ/Core/SuccinctSelect/Obstructions.lean`,
   `RMQ/Core/SuccinctSelect/DenseLocalTables.lean`,
   `RMQ/Core/SuccinctSelect/CloseSelect.lean`,
