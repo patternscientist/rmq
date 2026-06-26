@@ -8,7 +8,7 @@ Aligned payload-word helpers for the dense local two-word select path.
 
 namespace RMQ.GenericSelect
 
-open SuccinctSpace SuccinctRankProposal
+open SuccinctSpace SuccinctRank
 
 structure SelectAlignedBitWords
     (bits : List Bool) (wordSize : Nat)

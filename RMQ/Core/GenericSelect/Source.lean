@@ -11,7 +11,7 @@ This module contains the payload bounds, branch exactness lemmas,
 
 namespace RMQ.GenericSelect
 
-open SuccinctSpace SuccinctRankProposal
+open SuccinctSpace SuccinctRank
 /-! ### Long-super relative table is `o(n)` -/
 
 /-- `o(n)` budget for the long-super relative table: `n / loglog n + 1`. Fed the
@@ -50,7 +50,7 @@ theorem longSuperRelativeTable_payload_le_overhead
     Nat.le_of_mul_le_mul_left (Nat.le_of_lt hpayloadStrictLeft) hell_pos
   simpa [payload, overheadLen, longSuperRelativeTableOverhead,
     SuccinctSpace.idDivLogLogOverhead, ellV, n, ell, wordBits,
-    SuccinctRankProposal.machineWordBits] using hpayloadLe
+    SuccinctRank.machineWordBits] using hpayloadLe
 
 theorem superTable_payload_le_overhead
     (bits : List Bool) (target : Bool) :
@@ -345,7 +345,7 @@ theorem longSuperFlagBits_length_le_overhead
         exact Nat.le_trans h hscale)
 
 def longFlagRankWordSize (bits : List Bool) (target : Bool) : Nat :=
-  SuccinctRankProposal.machineWordBits
+  SuccinctRank.machineWordBits
     (longSuperFlagBits bits target).length
 
 def longFlagRankBlocksPerSuper (_bits : List Bool) (_target : Bool) : Nat := 1
@@ -356,14 +356,14 @@ def longFlagRankBlockWidth (bits : List Bool) (target : Bool) : Nat :=
 theorem longFlagRankWordSize_pos
     (bits : List Bool) (target : Bool) :
     0 < longFlagRankWordSize bits target := by
-  simp [longFlagRankWordSize, SuccinctRankProposal.machineWordBits_pos]
+  simp [longFlagRankWordSize, SuccinctRank.machineWordBits_pos]
 
 theorem longFlagRankWordSize_le_machine
     (bits : List Bool) (target : Bool) :
     longFlagRankWordSize bits target <=
-      SuccinctRankProposal.machineWordBits bits.length := by
+      SuccinctRank.machineWordBits bits.length := by
   unfold longFlagRankWordSize
-  exact SuccinctRankProposal.machineWordBits_mono_le
+  exact SuccinctRank.machineWordBits_mono_le
     (longSuperFlagBits_length_le_length bits target)
 
 theorem longFlagRankBlocksPerSuper_pos
@@ -375,7 +375,7 @@ theorem longSuperFlagBits_length_lt_rank_word_pow
     (bits : List Bool) (target : Bool) :
     (longSuperFlagBits bits target).length <
       2 ^ longFlagRankWordSize bits target := by
-  simpa [longFlagRankWordSize, SuccinctRankProposal.machineWordBits] using
+  simpa [longFlagRankWordSize, SuccinctRank.machineWordBits] using
     (Nat.lt_log2_self (n := (longSuperFlagBits bits target).length))
 
 theorem longFlagRankBlockSpan_lt_pow
@@ -392,7 +392,7 @@ theorem longFlagRankBlockSpan_lt_pow
         2 ^ longFlagRankWordSize bits target)
 
 def longFlagRankSuperOverhead (bits : List Bool) (target : Bool) : Nat :=
-  (SuccinctRankProposal.canonicalSuperRankSampleTables
+  (SuccinctRank.canonicalSuperRankSampleTables
     (longSuperFlagBits bits target)
     (longFlagRankWordSize bits target)
     (longFlagRankBlocksPerSuper bits target)
@@ -400,7 +400,7 @@ def longFlagRankSuperOverhead (bits : List Bool) (target : Bool) : Nat :=
     (longSuperFlagBits_length_lt_rank_word_pow bits target)).payload.length
 
 def longFlagRankBlockOverhead (bits : List Bool) (target : Bool) : Nat :=
-  (SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan
+  (SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan
     (longSuperFlagBits bits target)
     (longFlagRankWordSize bits target)
     (longFlagRankBlocksPerSuper bits target)
@@ -409,12 +409,12 @@ def longFlagRankBlockOverhead (bits : List Bool) (target : Bool) : Nat :=
     (longFlagRankBlockSpan_lt_pow bits target)).payload.length
 
 def longFlagRankData (bits : List Bool) (target : Bool) :
-    SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankData
+    SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
       (longSuperFlagBits bits target)
       (longFlagRankSuperOverhead bits target)
       (longFlagRankBlockOverhead bits target)
       4 :=
-  SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExactLocalBlock
+  SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock
     (longSuperFlagBits bits target)
     (longFlagRankWordSize_pos bits target)
     (by simp [longFlagRankWordSize])
@@ -430,14 +430,14 @@ theorem longFlagRankData_profile
         longFlagRankSuperOverhead bits target +
           longFlagRankBlockOverhead bits target /\
       data.wordSize <=
-        SuccinctRankProposal.machineWordBits
+        SuccinctRank.machineWordBits
           (longSuperFlagBits bits target).length /\
       SuccinctSpace.flattenPayloadWords data.bitWords.store.words.toList =
         longSuperFlagBits bits target /\
       (forall {word : List Bool},
         List.Mem word data.bitWords.store.words.toList ->
           word.length <=
-            SuccinctRankProposal.machineWordBits
+            SuccinctRank.machineWordBits
               (longSuperFlagBits bits target).length) /\
       forall rankTarget pos,
         (data.rankCosted rankTarget pos).cost <= 4 /\
@@ -445,7 +445,7 @@ theorem longFlagRankData_profile
             RMQ.Succinct.rankPrefix rankTarget
               (longSuperFlagBits bits target) pos := by
   exact
-    SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExactLocalBlock_profile
+    SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock_profile
       (longSuperFlagBits bits target)
       (longFlagRankWordSize_pos bits target)
       (by simp [longFlagRankWordSize])
@@ -481,25 +481,25 @@ theorem longFlagRankData_auxPayload_le_overhead
       longFlagRankSuperOverhead bits target <=
         2 * (flagLen + rankWord) := by
     unfold longFlagRankSuperOverhead
-    rw [SuccinctRankProposal.canonicalSuperRankSampleTables_payload_length]
+    rw [SuccinctRank.canonicalSuperRankSampleTables_payload_length]
     have hentryLen :
-        (SuccinctRankProposal.canonicalSuperRankEntries true flagBits
+        (SuccinctRank.canonicalSuperRankEntries true flagBits
             rankWord
             (longFlagRankBlocksPerSuper bits target)).length =
           flagLen / rankWord + 1 := by
-      simp [SuccinctRankProposal.canonicalSuperRankEntries, flagBits,
+      simp [SuccinctRank.canonicalSuperRankEntries, flagBits,
         flagLen, rankWord, longFlagRankBlocksPerSuper]
     have hentryLenFalse :
-        (SuccinctRankProposal.canonicalSuperRankEntries false flagBits
+        (SuccinctRank.canonicalSuperRankEntries false flagBits
             rankWord
             (longFlagRankBlocksPerSuper bits target)).length =
           flagLen / rankWord + 1 := by
-      simp [SuccinctRankProposal.canonicalSuperRankEntries, flagBits,
+      simp [SuccinctRank.canonicalSuperRankEntries, flagBits,
         flagLen, rankWord, longFlagRankBlocksPerSuper]
     change
-      (SuccinctRankProposal.canonicalSuperRankEntries true flagBits rankWord
+      (SuccinctRank.canonicalSuperRankEntries true flagBits rankWord
             (longFlagRankBlocksPerSuper bits target)).length * rankWord +
-        (SuccinctRankProposal.canonicalSuperRankEntries false flagBits rankWord
+        (SuccinctRank.canonicalSuperRankEntries false flagBits rankWord
             (longFlagRankBlocksPerSuper bits target)).length * rankWord <=
       2 * (flagLen + rankWord)
     rw [hentryLen, hentryLenFalse]
@@ -520,25 +520,25 @@ theorem longFlagRankData_auxPayload_le_overhead
       longFlagRankBlockOverhead bits target <=
         2 * (flagLen + rankWord) := by
     unfold longFlagRankBlockOverhead
-    rw [SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan_payload_length]
+    rw [SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan_payload_length]
     have hentryLen :
-        (SuccinctRankProposal.canonicalBlockRankEntries true flagBits
+        (SuccinctRank.canonicalBlockRankEntries true flagBits
             rankWord
             (longFlagRankBlocksPerSuper bits target)).length =
           flagLen / rankWord + 1 := by
-      simp [SuccinctRankProposal.canonicalBlockRankEntries, flagBits,
+      simp [SuccinctRank.canonicalBlockRankEntries, flagBits,
         flagLen, rankWord, longFlagRankBlocksPerSuper]
     have hentryLenFalse :
-        (SuccinctRankProposal.canonicalBlockRankEntries false flagBits
+        (SuccinctRank.canonicalBlockRankEntries false flagBits
             rankWord
             (longFlagRankBlocksPerSuper bits target)).length =
           flagLen / rankWord + 1 := by
-      simp [SuccinctRankProposal.canonicalBlockRankEntries, flagBits,
+      simp [SuccinctRank.canonicalBlockRankEntries, flagBits,
         flagLen, rankWord, longFlagRankBlocksPerSuper]
     change
-      (SuccinctRankProposal.canonicalBlockRankEntries true flagBits rankWord
+      (SuccinctRank.canonicalBlockRankEntries true flagBits rankWord
             (longFlagRankBlocksPerSuper bits target)).length * rankWord +
-        (SuccinctRankProposal.canonicalBlockRankEntries false flagBits rankWord
+        (SuccinctRank.canonicalBlockRankEntries false flagBits rankWord
             (longFlagRankBlocksPerSuper bits target)).length * rankWord <=
       2 * (flagLen + rankWord)
     rw [hentryLen, hentryLenFalse]
@@ -568,7 +568,7 @@ theorem longFlagRankData_auxPayload_le_overhead
       have hlen := longSuperFlagBits_length_le_length bits target
       simpa [flagBits, flagLen, n, hnZero] using hlen
     have hw : w = 1 := by
-      simp [w, wordBits, SuccinctRankProposal.machineWordBits, n, hnZero]
+      simp [w, wordBits, SuccinctRank.machineWordBits, n, hnZero]
     have hrankSmall : rankWord <= 1 := by
       simpa [hw] using hrankWordLeW
     have hauxSmall : data.auxPayload.length <= 4 := by
@@ -1696,7 +1696,7 @@ structure SparseExceptionSelectData
   wordSize : Nat
   wordSize_pos : 0 < wordSize
   wordSize_le_machine :
-    wordSize <= SuccinctRankProposal.machineWordBits bits.length
+    wordSize <= SuccinctRank.machineWordBits bits.length
   superStride : Nat
   superStride_pos : 0 < superStride
   localStride : Nat
@@ -1707,17 +1707,17 @@ structure SparseExceptionSelectData
   longFlagRankSuperOverhead : Nat
   longFlagRankBlockOverhead : Nat
   longFlagRankData :
-    SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankData
+    SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
       longFlagBits longFlagRankSuperOverhead longFlagRankBlockOverhead 4
   longFlagRank_wordSize_le_machine :
     longFlagRankData.wordSize <=
-      SuccinctRankProposal.machineWordBits bits.length
+      SuccinctRank.machineWordBits bits.length
   longFlagRank_superWidth_le_machine :
     longFlagRankData.superWidth <=
-      SuccinctRankProposal.machineWordBits bits.length
+      SuccinctRank.machineWordBits bits.length
   longFlagRank_blockWidth_le_machine :
     longFlagRankData.blockWidth <=
-      SuccinctRankProposal.machineWordBits bits.length
+      SuccinctRank.machineWordBits bits.length
   longSuperRelativeEntries : List Nat
   localEntries : List SparseDenseSelectDenseLocalEntry
   superFieldWidth : Nat
@@ -1742,7 +1742,7 @@ structure SparseExceptionSelectData
   long_read_words_length_le_machine :
     forall {i : Nat} {word : List Bool},
       longSuperRelativeTable.store.words[i]? = some word ->
-        word.length <= SuccinctRankProposal.machineWordBits bits.length
+        word.length <= SuccinctRank.machineWordBits bits.length
   local_read_words_length_le_machine :
     FixedWidthSparseDenseSelectDenseLocalEntryTable.ReadWordsLengthLeMachine
       localTable bits.length
@@ -2128,7 +2128,7 @@ theorem longFlagRank_read_word_length_le_machine
     {word : List Bool}
     (hmem : List.Mem word data.longFlagRankReadWords) :
     word.length <=
-      SuccinctRankProposal.machineWordBits bits.length := by
+      SuccinctRank.machineWordBits bits.length := by
   rw [longFlagRankReadWords] at hmem
   cases List.mem_append.mp hmem with
   | inl hsampleMem =>
@@ -2191,7 +2191,7 @@ theorem read_word_length_le_machine
     {word : List Bool}
     (hmem : List.Mem word data.readWords) :
     word.length <=
-      SuccinctRankProposal.machineWordBits bits.length := by
+      SuccinctRank.machineWordBits bits.length := by
   rw [readWords] at hmem
   cases List.mem_append.mp hmem with
   | inl hprefix0 =>
@@ -2242,7 +2242,7 @@ theorem profile
       forall {word : List Bool},
         List.Mem word data.readWords ->
           word.length <=
-            SuccinctRankProposal.machineWordBits bits.length := by
+            SuccinctRank.machineWordBits bits.length := by
   exact
     ⟨data.payload_length_le_canonical,
       canonicalSparseExceptionSelectOverhead_littleO,
@@ -2396,7 +2396,7 @@ theorem sparseExceptionSelectData_profile
       forall {word : List Bool},
         List.Mem word data.readWords ->
           word.length <=
-            SuccinctRankProposal.machineWordBits bits.length := by
+            SuccinctRank.machineWordBits bits.length := by
   intro data
   exact data.profile
 
@@ -2421,7 +2421,7 @@ theorem sparseExceptionSelectSource_profile
       forall {word : List Bool},
         List.Mem word source.readWords ->
           word.length <=
-            SuccinctRankProposal.machineWordBits bits.length := by
+            SuccinctRank.machineWordBits bits.length := by
   intro source
   exact
     ⟨source.payload_length_le, source.overhead_littleO,

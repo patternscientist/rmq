@@ -175,7 +175,7 @@ theorem builtRelativeSplitFalseSelectLongSuperFlagBits_length_le_overhead
 theorem builtRelativeSplitFalseSelectLongFlagRankWordSize_le_machine
     (shape : Cartesian.CartesianShape) :
     builtRelativeSplitFalseSelectLongFlagRankWordSize shape <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   unfold builtRelativeSplitFalseSelectLongFlagRankWordSize
   exact machineWordBits_mono_le
     (builtRelativeSplitFalseSelectLongSuperFlagBits_length_le_bpCode_length
@@ -208,23 +208,23 @@ theorem builtRelativeSplitFalseSelectLongFlagRankData_auxPayload_le_overhead
       builtRelativeSplitFalseSelectLongFlagRankSuperOverhead shape <=
         2 * (flagLen + rankWord) := by
     unfold builtRelativeSplitFalseSelectLongFlagRankSuperOverhead
-    rw [SuccinctRankProposal.canonicalSuperRankSampleTables_payload_length]
+    rw [SuccinctRank.canonicalSuperRankSampleTables_payload_length]
     have hentryLen :
-        (SuccinctRankProposal.canonicalSuperRankEntries true flagBits
+        (SuccinctRank.canonicalSuperRankEntries true flagBits
             rankWord
             (builtRelativeSplitFalseSelectLongFlagRankBlocksPerSuper
               shape)).length =
           flagLen / rankWord + 1 := by
-      simp [SuccinctRankProposal.canonicalSuperRankEntries, flagBits,
+      simp [SuccinctRank.canonicalSuperRankEntries, flagBits,
         flagLen, rankWord,
         builtRelativeSplitFalseSelectLongFlagRankBlocksPerSuper]
     have hentryLenFalse :
-        (SuccinctRankProposal.canonicalSuperRankEntries false flagBits
+        (SuccinctRank.canonicalSuperRankEntries false flagBits
             rankWord
             (builtRelativeSplitFalseSelectLongFlagRankBlocksPerSuper
               shape)).length =
           flagLen / rankWord + 1 := by
-      simp [SuccinctRankProposal.canonicalSuperRankEntries, flagBits,
+      simp [SuccinctRank.canonicalSuperRankEntries, flagBits,
         flagLen, rankWord,
         builtRelativeSplitFalseSelectLongFlagRankBlocksPerSuper]
     rw [hentryLen, hentryLenFalse]
@@ -245,22 +245,22 @@ theorem builtRelativeSplitFalseSelectLongFlagRankData_auxPayload_le_overhead
       builtRelativeSplitFalseSelectLongFlagRankBlockOverhead shape <=
         2 * (flagLen + rankWord) := by
     unfold builtRelativeSplitFalseSelectLongFlagRankBlockOverhead
-    rw [SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan_payload_length]
+    rw [SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan_payload_length]
     have hentryLen :
-        (SuccinctRankProposal.canonicalBlockRankEntries true flagBits
+        (SuccinctRank.canonicalBlockRankEntries true flagBits
             rankWord
             (builtRelativeSplitFalseSelectLongFlagRankBlocksPerSuper
               shape)).length =
           flagLen / rankWord + 1 := by
-      simp [SuccinctRankProposal.canonicalBlockRankEntries, flagBits,
+      simp [SuccinctRank.canonicalBlockRankEntries, flagBits,
         flagLen, rankWord]
     have hentryLenFalse :
-        (SuccinctRankProposal.canonicalBlockRankEntries false flagBits
+        (SuccinctRank.canonicalBlockRankEntries false flagBits
             rankWord
             (builtRelativeSplitFalseSelectLongFlagRankBlocksPerSuper
               shape)).length =
           flagLen / rankWord + 1 := by
-      simp [SuccinctRankProposal.canonicalBlockRankEntries, flagBits,
+      simp [SuccinctRank.canonicalBlockRankEntries, flagBits,
         flagLen, rankWord]
     rw [hentryLen, hentryLenFalse]
     have hdiv : flagLen / rankWord * rankWord <= flagLen :=
@@ -292,7 +292,7 @@ theorem builtRelativeSplitFalseSelectLongFlagRankData_auxPayload_le_overhead
       simpa [flagBits, flagLen, n, hnZero] using hlen
     have hbpWord : bpWord = 1 := by
       simp [bpWord, sparseDenseFalseSelectWordBits,
-        SuccinctRankProposal.machineWordBits, n, hnZero]
+        SuccinctRank.machineWordBits, n, hnZero]
     have hrankSmall : rankWord <= 1 := by
       simpa [hbpWord] using hrankWordLeBp
     have hauxSmall : data.auxPayload.length <= 4 := by
@@ -473,7 +473,7 @@ theorem builtRelativeSplitSparseExceptionFalseSelectCloseData_profile
       forall {word : List Bool},
         List.Mem word data.readWords ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            SuccinctRank.machineWordBits shape.bpCode.length := by
   intro data
   exact data.profile
 

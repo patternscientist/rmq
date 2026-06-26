@@ -467,14 +467,14 @@ theorem summaryCandidateWordsRead_length_le_machine
         overhead)
     (hsuperMachine :
       superWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hrelativeMachine :
       relativeWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     {word : List Bool}
     (hmem : word ∈ table.summaryCandidateWordsRead block) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   have hwords :=
     table.read_words_length_le_machine hsuperMachine hrelativeMachine
   simp [summaryCandidateWordsRead, List.mem_append] at hmem

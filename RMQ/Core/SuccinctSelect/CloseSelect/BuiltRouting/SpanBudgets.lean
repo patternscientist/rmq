@@ -482,7 +482,7 @@ theorem builtRelativeSplitFalseSelectSparseExceptionRelativeTable_payload_le_of_
     simpa [Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hpayloadMul
   have hwordBits : 0 < wordBits := by
     simp [wordBits, sparseDenseFalseSelectWordBits,
-      SuccinctRankProposal.machineWordBits_pos]
+      SuccinctRank.machineWordBits_pos]
   apply
     builtRelativeSplitFalseSelectSparseExceptionRelativeTable_payload_le_of_count_bound
       shape
@@ -598,7 +598,7 @@ theorem builtRelativeSplitFalseSelectSparseExceptionRelativeTable_payload_le_ove
   simpa [payload, overheadLen, sparseExceptionRelativeTableOverhead,
     SuccinctSpace.idDivLogLogOverhead, ell, n, hbp,
     sparseDenseFalseSelectEll, sparseDenseFalseSelectWordBits,
-    SuccinctRankProposal.machineWordBits] using hpayloadLe
+    SuccinctRank.machineWordBits] using hpayloadLe
 
 theorem builtRelativeSplitFalseSelectSparseExceptionRelativeTable_payload_le_overhead
     (shape : Cartesian.CartesianShape) :
@@ -638,7 +638,7 @@ def builtRelativeSplitFalseSelectLongSuperRelativeEntries
 
 def builtRelativeSplitFalseSelectLongSuperRelativeWidth
     (shape : Cartesian.CartesianShape) : Nat :=
-  SuccinctRankProposal.machineWordBits shape.bpCode.length
+  SuccinctRank.machineWordBits shape.bpCode.length
 
 theorem builtRelativeSplitFalseSelectLongSuperFlagBits_get?
     (shape : Cartesian.CartesianShape) {superSlot : Nat}
@@ -1012,7 +1012,7 @@ theorem builtRelativeSplitFalseSelectLongSuperRelativeEntries_mem_lt_width
       exact Nat.lt_trans hentryLen
         (by
           simpa [builtRelativeSplitFalseSelectLongSuperRelativeWidth,
-            SuccinctRankProposal.machineWordBits] using
+            SuccinctRank.machineWordBits] using
             (Nat.lt_log2_self (n := shape.bpCode.length)))
   · have hfalse :
       builtRelativeSplitFalseSelectSuperIsLong shape superSlot = false := by
@@ -1117,7 +1117,7 @@ theorem compactLongSuperRelativeTable_payload_le_overhead_of_spanSum_le_bpCode_l
   simpa [payload, overheadLen, compactLongSuperRelativeTableOverhead,
     SuccinctSpace.idDivLogLogOverhead, ell, n, hbp,
     sparseDenseFalseSelectEll, sparseDenseFalseSelectWordBits,
-    SuccinctRankProposal.machineWordBits] using hpayloadLe
+    SuccinctRank.machineWordBits] using hpayloadLe
 
 theorem compactLongSuperRelativeTable_payload_le_overhead
     (shape : Cartesian.CartesianShape) :

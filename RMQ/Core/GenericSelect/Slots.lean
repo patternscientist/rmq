@@ -16,7 +16,7 @@ length `n` alone.  Only the *count* (`occurrenceCount`/`superSlotCount`) and
 
 namespace RMQ.GenericSelect
 
-open SuccinctSpace SuccinctRankProposal
+open SuccinctSpace SuccinctRank
 
 /-- Number of `target` occurrences in `bits` (the select domain size). -/
 def occurrenceCount (bits : List Bool) (target : Bool) : Nat :=

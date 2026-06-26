@@ -37,7 +37,7 @@ def sparseDenseFalseSelectQueryCost : Nat := 16
 
 def sparseDenseFalseSelectWordBits
     (shape : Cartesian.CartesianShape) : Nat :=
-  SuccinctRankProposal.machineWordBits shape.bpCode.length
+  SuccinctRank.machineWordBits shape.bpCode.length
 
 def sparseDenseFalseSelectEll
     (shape : Cartesian.CartesianShape) : Nat :=

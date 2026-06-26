@@ -1,4 +1,4 @@
-import RMQ.Core.SuccinctRankProposal
+import RMQ.Core.SuccinctRank
 
 /-!
 # Generic charged select-position source
@@ -29,6 +29,6 @@ structure ChargedSelectPositionSource
   read_word_length_le_machine :
     forall {word : List Bool},
       List.Mem word readWords ->
-        word.length <= SuccinctRankProposal.machineWordBits bits.length
+        word.length <= SuccinctRank.machineWordBits bits.length
 
 end RMQ.GenericSelect

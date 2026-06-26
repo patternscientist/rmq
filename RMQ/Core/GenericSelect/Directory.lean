@@ -11,7 +11,7 @@ lemmas.
 
 namespace RMQ.GenericSelect
 
-open SuccinctSpace SuccinctRankProposal
+open SuccinctSpace SuccinctRank
 
 structure SparseExceptionDirectory
     (bits : List Bool) (target : Bool)
@@ -20,7 +20,7 @@ structure SparseExceptionDirectory
   localStride_pos : 0 < localStride
   flagBits : List Bool
   rankData :
-    SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankData
+    SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
       flagBits rankSuperOverhead rankBlockOverhead 4
   relativeEntries : List Nat
   relativeWidth : Nat
@@ -28,16 +28,16 @@ structure SparseExceptionDirectory
     SuccinctSpace.FixedWidthNatTable relativeEntries relativeWidth
   rank_wordSize_le_machine :
     rankData.wordSize <=
-      SuccinctRankProposal.machineWordBits bits.length
+      SuccinctRank.machineWordBits bits.length
   rank_superWidth_le_machine :
     rankData.superWidth <=
-      SuccinctRankProposal.machineWordBits bits.length
+      SuccinctRank.machineWordBits bits.length
   rank_blockWidth_le_machine :
     rankData.blockWidth <=
-      SuccinctRankProposal.machineWordBits bits.length
+      SuccinctRank.machineWordBits bits.length
   relativeWidth_le_machine :
     relativeWidth <=
-      SuccinctRankProposal.machineWordBits bits.length
+      SuccinctRank.machineWordBits bits.length
   payload_length_le_overhead :
     flagBits.length + rankData.auxPayload.length +
         relativeTable.payload.length <=
@@ -151,7 +151,7 @@ theorem read_words_length_le_machine
     {word : List Bool}
     (hmem : List.Mem word directory.readWords) :
     word.length <=
-      SuccinctRankProposal.machineWordBits bits.length := by
+      SuccinctRank.machineWordBits bits.length := by
   rw [readWords] at hmem
   rcases List.mem_append.mp hmem with hprefix0 | hrelative
   · rcases List.mem_append.mp hprefix0 with hprefix1 | hflagWord
@@ -203,7 +203,7 @@ theorem profile
       forall {word : List Bool},
         List.Mem word directory.readWords ->
           word.length <=
-            SuccinctRankProposal.machineWordBits bits.length := by
+            SuccinctRank.machineWordBits bits.length := by
   exact
     ⟨directory.payload_length_le_canonical,
       directory.readCosted_cost_le_five,

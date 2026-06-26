@@ -106,7 +106,7 @@ RMQ.GenericSelect.jacobsonClarkRankSelectFamily_n_plus_o_constant_query_profile
 
 This combines:
 
-- `SuccinctRankProposal.jacobsonRankData` for rank;
+- `SuccinctRank.jacobsonRankData` for rank;
 - `GenericSelect.sparseExceptionSelectSource bits false` for `select false`;
 - `GenericSelect.sparseExceptionSelectSource bits true` for `select true`;
 - stored-bit access from `RankSelectSpec`.
@@ -121,9 +121,9 @@ Keep the direction:
 
 ```text
 Succinct -> SuccinctSpace -> RankSelectSpec
-Succinct -> SuccinctSpace -> SuccinctRankProposal -> GenericSelect.SelectSource
+Succinct -> SuccinctSpace -> SuccinctRank -> GenericSelect.SelectSource
 GenericSelect.SelectSource --feeds downstream proposal--> SuccinctSelectProposal
-SuccinctRankProposal -> GenericSelect.{SelectFacts,Arithmetic}
+SuccinctRank -> GenericSelect.{SelectFacts,Arithmetic}
 GenericSelect.SelectFacts -> GenericSelect.Arithmetic
 GenericSelect.Arithmetic -> GenericSelect.DenseEntryTable
 GenericSelect.DenseEntryTable -> GenericSelect.DenseWord

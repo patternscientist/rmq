@@ -9,7 +9,7 @@ flag lists used by the generic sparse-exception select directory.
 
 namespace RMQ.GenericSelect
 
-open SuccinctSpace SuccinctRankProposal
+open SuccinctSpace SuccinctRank
 
 /-! ## Entry / table data layer (Tier 2 back half)
 

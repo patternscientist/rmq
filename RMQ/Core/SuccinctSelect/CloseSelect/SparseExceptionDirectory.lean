@@ -18,7 +18,7 @@ structure RelativeSplitSparseExceptionDirectory
   localStride_pos : 0 < localStride
   flagBits : List Bool
   rankData :
-    SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankData
+    SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
       flagBits rankSuperOverhead rankBlockOverhead 4
   relativeEntries : List Nat
   relativeWidth : Nat
@@ -26,16 +26,16 @@ structure RelativeSplitSparseExceptionDirectory
     SuccinctSpace.FixedWidthNatTable relativeEntries relativeWidth
   rank_wordSize_le_machine :
     rankData.wordSize <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length
+      SuccinctRank.machineWordBits shape.bpCode.length
   rank_superWidth_le_machine :
     rankData.superWidth <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length
+      SuccinctRank.machineWordBits shape.bpCode.length
   rank_blockWidth_le_machine :
     rankData.blockWidth <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length
+      SuccinctRank.machineWordBits shape.bpCode.length
   relativeWidth_le_machine :
     relativeWidth <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length
+      SuccinctRank.machineWordBits shape.bpCode.length
   payload_length_le_overhead :
     flagBits.length + rankData.auxPayload.length +
         relativeTable.payload.length <=
@@ -149,7 +149,7 @@ theorem read_words_length_le_machine
     {word : List Bool}
     (hmem : List.Mem word directory.readWords) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   rw [readWords] at hmem
   rcases List.mem_append.mp hmem with hprefix0 | hrelative
   · rcases List.mem_append.mp hprefix0 with hprefix1 | hflagWord
@@ -201,7 +201,7 @@ theorem profile
       forall {word : List Bool},
         List.Mem word directory.readWords ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            SuccinctRank.machineWordBits shape.bpCode.length := by
   exact
     ⟨directory.payload_length_le_canonical,
       directory.readCosted_cost_le_five,

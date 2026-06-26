@@ -13,7 +13,7 @@ namespace SuccinctSelectProposal
 
 def builtRelativeSplitFalseSelectLongFlagRankWordSize
     (shape : Cartesian.CartesianShape) : Nat :=
-  SuccinctRankProposal.machineWordBits
+  SuccinctRank.machineWordBits
     (builtRelativeSplitFalseSelectLongSuperFlagBits shape).length
 
 def builtRelativeSplitFalseSelectLongFlagRankBlocksPerSuper
@@ -27,7 +27,7 @@ theorem builtRelativeSplitFalseSelectLongFlagRankWordSize_pos
     (shape : Cartesian.CartesianShape) :
     0 < builtRelativeSplitFalseSelectLongFlagRankWordSize shape := by
   simp [builtRelativeSplitFalseSelectLongFlagRankWordSize,
-    SuccinctRankProposal.machineWordBits_pos]
+    SuccinctRank.machineWordBits_pos]
 
 theorem builtRelativeSplitFalseSelectLongFlagRankBlocksPerSuper_pos
     (shape : Cartesian.CartesianShape) :
@@ -39,7 +39,7 @@ theorem builtRelativeSplitFalseSelectLongSuperFlagBits_length_lt_rank_word_pow
     (builtRelativeSplitFalseSelectLongSuperFlagBits shape).length <
       2 ^ builtRelativeSplitFalseSelectLongFlagRankWordSize shape := by
   simpa [builtRelativeSplitFalseSelectLongFlagRankWordSize,
-    SuccinctRankProposal.machineWordBits] using
+    SuccinctRank.machineWordBits] using
     (Nat.lt_log2_self
       (n := (builtRelativeSplitFalseSelectLongSuperFlagBits shape).length))
 
@@ -59,7 +59,7 @@ theorem builtRelativeSplitFalseSelectLongFlagRankBlockSpan_lt_pow
 
 def builtRelativeSplitFalseSelectLongFlagRankSuperOverhead
     (shape : Cartesian.CartesianShape) : Nat :=
-  (SuccinctRankProposal.canonicalSuperRankSampleTables
+  (SuccinctRank.canonicalSuperRankSampleTables
       (builtRelativeSplitFalseSelectLongSuperFlagBits shape)
       (builtRelativeSplitFalseSelectLongFlagRankWordSize shape)
       (builtRelativeSplitFalseSelectLongFlagRankBlocksPerSuper shape)
@@ -69,7 +69,7 @@ def builtRelativeSplitFalseSelectLongFlagRankSuperOverhead
 
 def builtRelativeSplitFalseSelectLongFlagRankBlockOverhead
     (shape : Cartesian.CartesianShape) : Nat :=
-  (SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan
+  (SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan
       (builtRelativeSplitFalseSelectLongSuperFlagBits shape)
       (builtRelativeSplitFalseSelectLongFlagRankWordSize shape)
       (builtRelativeSplitFalseSelectLongFlagRankBlocksPerSuper shape)
@@ -80,12 +80,12 @@ def builtRelativeSplitFalseSelectLongFlagRankBlockOverhead
 
 def builtRelativeSplitFalseSelectLongFlagRankData
     (shape : Cartesian.CartesianShape) :
-    SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankData
+    SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
       (builtRelativeSplitFalseSelectLongSuperFlagBits shape)
       (builtRelativeSplitFalseSelectLongFlagRankSuperOverhead shape)
       (builtRelativeSplitFalseSelectLongFlagRankBlockOverhead shape)
       4 :=
-  SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExactLocalBlock
+  SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock
     (builtRelativeSplitFalseSelectLongSuperFlagBits shape)
     (builtRelativeSplitFalseSelectLongFlagRankWordSize_pos shape)
     (by simp [builtRelativeSplitFalseSelectLongFlagRankWordSize])
@@ -102,14 +102,14 @@ theorem builtRelativeSplitFalseSelectLongFlagRankData_profile
         builtRelativeSplitFalseSelectLongFlagRankSuperOverhead shape +
           builtRelativeSplitFalseSelectLongFlagRankBlockOverhead shape /\
       data.wordSize <=
-        SuccinctRankProposal.machineWordBits
+        SuccinctRank.machineWordBits
           (builtRelativeSplitFalseSelectLongSuperFlagBits shape).length /\
       SuccinctSpace.flattenPayloadWords data.bitWords.store.words.toList =
         builtRelativeSplitFalseSelectLongSuperFlagBits shape /\
       (forall {word : List Bool},
         List.Mem word data.bitWords.store.words.toList ->
           word.length <=
-            SuccinctRankProposal.machineWordBits
+            SuccinctRank.machineWordBits
               (builtRelativeSplitFalseSelectLongSuperFlagBits
                 shape).length) /\
       forall target pos,
@@ -119,7 +119,7 @@ theorem builtRelativeSplitFalseSelectLongFlagRankData_profile
               (builtRelativeSplitFalseSelectLongSuperFlagBits
                 shape) pos := by
   exact
-    SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExactLocalBlock_profile
+    SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock_profile
       (builtRelativeSplitFalseSelectLongSuperFlagBits shape)
       (builtRelativeSplitFalseSelectLongFlagRankWordSize_pos shape)
       (by simp [builtRelativeSplitFalseSelectLongFlagRankWordSize])
@@ -529,7 +529,7 @@ theorem builtRelativeSplitFalseSelectSparseRelativeEntries_mem_lt_word_pow
     have hlenLt :
         shape.bpCode.length < 2 ^ sparseDenseFalseSelectWordBits shape := by
       simpa [sparseDenseFalseSelectWordBits,
-        SuccinctRankProposal.machineWordBits] using
+        SuccinctRank.machineWordBits] using
         (Nat.lt_log2_self (n := shape.bpCode.length))
     omega
   · simp [hsparse] at hentryMem
@@ -561,7 +561,7 @@ theorem builtRelativeSplitFalseSelectSparseRelativeTable_profile
       forall {word : List Bool},
         List.Mem word table.store.words.toList ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            SuccinctRank.machineWordBits shape.bpCode.length := by
   let table := builtRelativeSplitFalseSelectSparseRelativeTable shape
   constructor
   · exact table.payload_length_eq

@@ -40,7 +40,7 @@ Use a sparse/dense inventory for `select false shape.bpCode idx`.
 Let
 
 ```lean
-w n   := SuccinctRankProposal.machineWordBits n
+w n   := SuccinctRank.machineWordBits n
 ell n := Nat.log2 (w n) + 1
 ```
 
@@ -173,7 +173,7 @@ structure SparseDenseFalseSelectCloseData
   wordSize : Nat
   wordSize_pos : 0 < wordSize
   wordSize_le_machine :
-    wordSize <= SuccinctRankProposal.machineWordBits shape.bpCode.length
+    wordSize <= SuccinctRank.machineWordBits shape.bpCode.length
 
   -- Payload-backed tables for the four entry classes above.
   superPayload : List Bool

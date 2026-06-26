@@ -733,19 +733,19 @@ theorem wordsReadAtBlock_length_le_machine
         codeCount codeWidth codeOverhead fieldWidth tableOverhead)
     (hcodeMachine :
       codeWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hfieldMachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     {slot block : Nat} {word : List Bool}
     (hmem : word ∈ fringe.wordsReadAtBlock slot block) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   have hclass :
       forall {word : List Bool},
         fringe.classifier.table.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            SuccinctRank.machineWordBits shape.bpCode.length := by
     intro word hword
     have hlen := fringe.classifier.table.read_word_length_of_some hword
     omega
@@ -762,7 +762,7 @@ theorem wordsReadAtBlock_length_le_machine
             forall {word : List Bool},
               (fringe.minTable code).store.words[slot]? = some word ->
                 word.length <=
-                  SuccinctRankProposal.machineWordBits
+                  SuccinctRank.machineWordBits
                     shape.bpCode.length := by
             intro word hword
             have hlen := (fringe.minTable code).read_word_length_of_some
@@ -772,7 +772,7 @@ theorem wordsReadAtBlock_length_le_machine
             forall {word : List Bool},
               (fringe.argTable code).store.words[slot]? = some word ->
                 word.length <=
-                  SuccinctRankProposal.machineWordBits
+                  SuccinctRank.machineWordBits
                     shape.bpCode.length := by
             intro word hword
             have hlen := (fringe.argTable code).read_word_length_of_some
@@ -793,14 +793,14 @@ theorem read_words_length_le_machine
         codeCount codeWidth codeOverhead fieldWidth tableOverhead)
     (hcodeMachine :
       codeWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hfieldMachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+        SuccinctRank.machineWordBits shape.bpCode.length) :
     forall {slot block : Nat} {word : List Bool},
       word ∈ fringe.wordsReadAtBlock slot block ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+          SuccinctRank.machineWordBits shape.bpCode.length := by
   intro slot block word hmem
   exact fringe.wordsReadAtBlock_length_le_machine
     hcodeMachine hfieldMachine hmem
@@ -814,14 +814,14 @@ theorem leftWordsReadAtBlock_length_le_machine
         codeCount codeWidth codeOverhead fieldWidth tableOverhead)
     (hcodeMachine :
       codeWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hfieldMachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     {block close : Nat} {word : List Bool}
     (hmem : word ∈ fringe.leftWordsReadAtBlock block close) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   exact fringe.wordsReadAtBlock_length_le_machine
     hcodeMachine hfieldMachine hmem
 
@@ -834,14 +834,14 @@ theorem rightWordsReadAtBlock_length_le_machine
         codeCount codeWidth codeOverhead fieldWidth tableOverhead)
     (hcodeMachine :
       codeWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hfieldMachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     {block close : Nat} {word : List Bool}
     (hmem : word ∈ fringe.rightWordsReadAtBlock block close) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   exact fringe.wordsReadAtBlock_length_le_machine
     hcodeMachine hfieldMachine hmem
 
@@ -1112,7 +1112,7 @@ theorem concretePayloadLiveBlockEndpointFringeCodebook_profile
     (hwidth : shape.bpCode.length < 2 ^ fieldWidth)
     (hmachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+        SuccinctRank.machineWordBits shape.bpCode.length) :
     let fringe :=
       concretePayloadLiveBlockEndpointFringeCodebook
         shape blockSize blockCount fieldWidth hblockCountWidth hwidth
@@ -1157,7 +1157,7 @@ theorem concretePayloadLiveBlockEndpointFringeCodebook_profile
       forall {slot block : Nat} {word : List Bool},
         word ∈ fringe.wordsReadAtBlock slot block ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            SuccinctRank.machineWordBits shape.bpCode.length := by
   let fringe :=
     concretePayloadLiveBlockEndpointFringeCodebook
       shape blockSize blockCount fieldWidth hblockCountWidth hwidth
@@ -1180,18 +1180,18 @@ def concretePayloadLiveBlockEndpointFringeCodebook_canonical
       (canonicalBPRelativeSummaryBlockSize shape)
       (canonicalBPRelativeSummaryBlockCount shape)
       (canonicalBPRelativeSummaryBlockCount shape)
-      (SuccinctRankProposal.machineWordBits shape.bpCode.length)
+      (SuccinctRank.machineWordBits shape.bpCode.length)
       (canonicalBPRelativeSummaryBlockCount shape *
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
-      (SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
+      (SuccinctRank.machineWordBits shape.bpCode.length)
       (concretePayloadLiveBlockEndpointFringeCodebookTableOverhead
         (canonicalBPRelativeSummaryBlockSize shape)
-        (SuccinctRankProposal.machineWordBits shape.bpCode.length)) :=
+        (SuccinctRank.machineWordBits shape.bpCode.length)) :=
   concretePayloadLiveBlockEndpointFringeCodebook
     shape
     (canonicalBPRelativeSummaryBlockSize shape)
     (canonicalBPRelativeSummaryBlockCount shape)
-    (SuccinctRankProposal.machineWordBits shape.bpCode.length)
+    (SuccinctRank.machineWordBits shape.bpCode.length)
     (canonicalBPRelativeSummaryBlockCount_le_bpCode_length shape)
     (by
       simpa [canonicalBPRelativeSummarySuperWidth] using
@@ -1205,7 +1205,7 @@ theorem concretePayloadLiveBlockEndpointFringeCodebook_canonical_profile
         concretePayloadLiveBlockEndpointFringeCodebookPayloadLength
           (canonicalBPRelativeSummaryBlockCount shape)
           (canonicalBPRelativeSummaryBlockSize shape)
-          (SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          (SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall close,
         (fringe.leftFringeCosted close).cost <= 3 /\
           (fringe.rightFringeCosted close).cost <= 3) /\
@@ -1264,13 +1264,13 @@ theorem concretePayloadLiveBlockEndpointFringeCodebook_canonical_profile
       forall {slot block : Nat} {word : List Bool},
         word ∈ fringe.wordsReadAtBlock slot block ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            SuccinctRank.machineWordBits shape.bpCode.length := by
   simpa [concretePayloadLiveBlockEndpointFringeCodebook_canonical] using
     concretePayloadLiveBlockEndpointFringeCodebook_profile
       shape
       (canonicalBPRelativeSummaryBlockSize shape)
       (canonicalBPRelativeSummaryBlockCount shape)
-      (SuccinctRankProposal.machineWordBits shape.bpCode.length)
+      (SuccinctRank.machineWordBits shape.bpCode.length)
       (canonicalBPRelativeSummaryBlockCount_le_bpCode_length shape)
       (by
         simpa [canonicalBPRelativeSummarySuperWidth] using

@@ -336,11 +336,18 @@ Completed:
   useful, while preserving the original construction-heavy declaration names.
 - `RMQ/Core/RankSelectPublic.lean` exposes neutral `RMQ.RankSelect.*` names for
   the standalone rank/select spoke.
+- The rank-side sampled-directory implementation now lives in
+  `RMQ/Core/SuccinctRank.lean` under `RMQ.SuccinctRank`; the historical
+  `RMQ/Core/SuccinctRankProposal.lean` module is only a compatibility import
+  root exporting the old `RMQ.SuccinctRankProposal` names.
 - Compatibility aliases for archive-facing old names remain in
   `RMQ/Archive/SelectCompatibility.lean`.
 
 Future opportunistic work:
 
+- Continue namespace-path alignment one family at a time, with compatibility
+  shims and a full gate after each pass. The select and close proposal
+  namespaces remain intentionally historical for now.
 - In generic select code, remove `False` from names that are truly
   target-parametric.
 - Centralize repeated Nat/Bool/log facts in a small local prelude if the repo

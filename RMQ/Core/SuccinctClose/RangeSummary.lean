@@ -711,11 +711,11 @@ theorem minExcess_read_word_length_le_machine
         fieldWidth overhead)
     (hmachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     {block : Nat} {word : List Bool}
     (hword : table.minTable.store.words[block]? = some word) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   have hlen := table.minTable.read_word_length_of_some hword
   omega
 
@@ -727,11 +727,11 @@ theorem maxExcess_read_word_length_le_machine
         fieldWidth overhead)
     (hmachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     {block : Nat} {word : List Bool}
     (hword : table.maxTable.store.words[block]? = some word) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   have hlen := table.maxTable.read_word_length_of_some hword
   omega
 
@@ -743,15 +743,15 @@ theorem summary_read_words_length_le_machine
         fieldWidth overhead)
     (hmachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+        SuccinctRank.machineWordBits shape.bpCode.length) :
     (forall {block : Nat} {word : List Bool},
       table.minTable.store.words[block]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.maxTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+            SuccinctRank.machineWordBits shape.bpCode.length) := by
   constructor
   · intro block word hword
     exact table.minExcess_read_word_length_le_machine hmachine hword
@@ -929,18 +929,18 @@ theorem concreteBPRangeMinMaxSummaryTable_read_words_length_le_machine
     (hwidth : shape.bpCode.length < 2 ^ fieldWidth)
     (hmachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+        SuccinctRank.machineWordBits shape.bpCode.length) :
     let table :=
       concreteBPRangeMinMaxSummaryTable
         shape blockSize blockCount fieldWidth hwidth
     (forall {block : Nat} {word : List Bool},
       table.minTable.store.words[block]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.maxTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+            SuccinctRank.machineWordBits shape.bpCode.length) := by
   exact
     PayloadLiveBPRangeMinMaxSummaryTable.summary_read_words_length_le_machine
       (concreteBPRangeMinMaxSummaryTable
@@ -982,7 +982,7 @@ theorem concreteBPRangeMinMaxSummaryTable_compact_summary_profile
     (hwidth : shape.bpCode.length < 2 ^ fieldWidth)
     (hmachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hbudget :
       2 * (blockCount * fieldWidth) <=
         compactBPCloseSummaryPayloadOverhead
@@ -999,11 +999,11 @@ theorem concreteBPRangeMinMaxSummaryTable_compact_summary_profile
       (forall {block : Nat} {word : List Bool},
         table.minTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.maxTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       forall block,
         (table.summaryCosted block).cost <= 2 /\
           (table.summaryCosted block).erase =

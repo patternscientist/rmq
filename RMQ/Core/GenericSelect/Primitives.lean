@@ -12,7 +12,7 @@ and are reused directly.
 
 namespace RMQ.GenericSelect
 
-open SuccinctSpace SuccinctRankProposal
+open SuccinctSpace SuccinctRank
 
 /--
 Generic two-word select decode: find the `(q - baseOccurrence)`-th `target` bit

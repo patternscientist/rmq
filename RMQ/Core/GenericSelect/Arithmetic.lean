@@ -8,7 +8,7 @@ Shape-free arithmetic and overhead helpers shared by sparse/dense select.
 
 namespace RMQ.GenericSelect
 
-open SuccinctSpace SuccinctRankProposal
+open SuccinctSpace SuccinctRank
 
 theorem natList_sum_append (xs ys : List Nat) :
     (xs ++ ys).sum = xs.sum + ys.sum := by
@@ -66,8 +66,8 @@ theorem one_lt_two_pow_of_pos {k : Nat} (hk : 0 < k) :
       omega
 
 theorem machineWordBits_le_self_of_pos {n : Nat} (hn : 0 < n) :
-    SuccinctRankProposal.machineWordBits n <= n := by
-  unfold SuccinctRankProposal.machineWordBits
+    SuccinctRank.machineWordBits n <= n := by
+  unfold SuccinctRank.machineWordBits
   by_cases hone : n = 1
   · subst n
     have hpow := Nat.log2_self_le (n := 1) (by omega : 1 ≠ 0)
@@ -87,10 +87,10 @@ theorem machineWordBits_le_self_of_pos {n : Nat} (hn : 0 < n) :
 
 theorem lt_two_pow_machineWordBits_of_lt
     {x n : Nat} (hx : x < n) :
-    x < 2 ^ SuccinctRankProposal.machineWordBits n := by
+    x < 2 ^ SuccinctRank.machineWordBits n := by
   exact Nat.lt_trans hx
     (by
-      simpa [SuccinctRankProposal.machineWordBits] using
+      simpa [SuccinctRank.machineWordBits] using
         (Nat.lt_log2_self (n := n)))
 
 theorem natLog2_succ_le_of_pos_lt_pow
@@ -159,8 +159,8 @@ theorem nat_succ_square_le_four_mul_two_pow (q : Nat) :
 
 theorem machineWordBits_sq_le_four_mul_self_of_pos
     {n : Nat} (hn : 0 < n) :
-    SuccinctRankProposal.machineWordBits n *
-        SuccinctRankProposal.machineWordBits n <=
+    SuccinctRank.machineWordBits n *
+        SuccinctRank.machineWordBits n <=
       4 * n := by
   let q := Nat.log2 n
   have hn_ne : n ≠ 0 := by omega
@@ -172,7 +172,7 @@ theorem machineWordBits_sq_le_four_mul_self_of_pos
   have hscale :
       4 * 2 ^ q <= 4 * n := Nat.mul_le_mul_left 4 hpow
   exact Nat.le_trans (by
-    simpa [q, SuccinctRankProposal.machineWordBits] using hsq) hscale
+    simpa [q, SuccinctRank.machineWordBits] using hsq) hscale
 
 /-- Fixed model cost for one sparse/dense select query. -/
 def sparseDenseSelectQueryCost : Nat := 16

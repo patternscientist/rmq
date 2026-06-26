@@ -625,13 +625,13 @@ theorem crossBlockCloseCosted_exact_of_query
     have hsizePos : 0 < shape.size := by omega
     have hblockSizeLeTwo :
         blockSize <=
-          2 * SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+          2 * SuccinctRank.machineWordBits shape.bpCode.length := by
       simpa [blockSize] using
         canonicalBPRelativeSummaryBlockSize_le_two_machine_of_size_pos
           (shape := shape) hsizePos
     have hblockSizeLeThree :
         blockSize <=
-          3 * SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+          3 * SuccinctRank.machineWordBits shape.bpCode.length := by
       omega
     have hblockCountLen :
         canonicalBPRelativeSummaryBlockCount shape *
@@ -664,7 +664,7 @@ theorem crossBlockCloseCosted_exact_of_query
         blockStartOf blockSize (blockOfClose blockSize leftClose) +
             blockSize <=
           localBPWindowBase shape blockSize leftClose +
-            4 * SuccinctRankProposal.machineWordBits shape.bpCode.length :=
+            4 * SuccinctRank.machineWordBits shape.bpCode.length :=
       localBPWindow_block_end_le_four_words shape blockSize leftClose
         hblockSizeLeThree
     have hleftSuccLeRight :
@@ -739,13 +739,13 @@ theorem crossBlockCloseCosted_exact_of_query
         blockStartOf blockSize (blockOfClose blockSize rightClose) +
             blockSize <=
           localBPWindowBase shape blockSize rightClose +
-            4 * SuccinctRankProposal.machineWordBits shape.bpCode.length :=
+            4 * SuccinctRank.machineWordBits shape.bpCode.length :=
       localBPWindow_block_end_le_four_words shape blockSize rightClose
         hblockSizeLeThree
     have hrightEndWidth :
         rightClose + 1 <=
           localBPWindowBase shape blockSize rightClose +
-            4 * SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            4 * SuccinctRank.machineWordBits shape.bpCode.length := by
       have hrightInsideStrict :
           rightClose <
             blockStartOf blockSize (blockOfClose blockSize rightClose) +
@@ -847,13 +847,13 @@ theorem crossBlockCloseCostedWithRankSeed_exact_of_query
     have hsizePos : 0 < shape.size := by omega
     have hblockSizeLeTwo :
         blockSize <=
-          2 * SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+          2 * SuccinctRank.machineWordBits shape.bpCode.length := by
       simpa [blockSize] using
         canonicalBPRelativeSummaryBlockSize_le_two_machine_of_size_pos
           (shape := shape) hsizePos
     have hblockSizeLeThree :
         blockSize <=
-          3 * SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+          3 * SuccinctRank.machineWordBits shape.bpCode.length := by
       omega
     have hblockCountLen :
         canonicalBPRelativeSummaryBlockCount shape *
@@ -886,7 +886,7 @@ theorem crossBlockCloseCostedWithRankSeed_exact_of_query
         blockStartOf blockSize (blockOfClose blockSize leftClose) +
             blockSize <=
           localBPWindowBase shape blockSize leftClose +
-            4 * SuccinctRankProposal.machineWordBits shape.bpCode.length :=
+            4 * SuccinctRank.machineWordBits shape.bpCode.length :=
       localBPWindow_block_end_le_four_words shape blockSize leftClose
         hblockSizeLeThree
     have hleftSuccLeRight :
@@ -963,13 +963,13 @@ theorem crossBlockCloseCostedWithRankSeed_exact_of_query
         blockStartOf blockSize (blockOfClose blockSize rightClose) +
             blockSize <=
           localBPWindowBase shape blockSize rightClose +
-            4 * SuccinctRankProposal.machineWordBits shape.bpCode.length :=
+            4 * SuccinctRank.machineWordBits shape.bpCode.length :=
       localBPWindow_block_end_le_four_words shape blockSize rightClose
         hblockSizeLeThree
     have hrightEndWidth :
         rightClose + 1 <=
           localBPWindowBase shape blockSize rightClose +
-            4 * SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            4 * SuccinctRank.machineWordBits shape.bpCode.length := by
       have hrightInsideStrict :
           rightClose <
             blockStartOf blockSize (blockOfClose blockSize rightClose) +
@@ -1073,13 +1073,13 @@ theorem lcaCloseCosted_exact_of_query
             canonicalBPRelativeSummaryBlockSizeRaw_pos shape
         have hblockSizeLeTwo :
             canonicalBPRelativeSummaryBlockSize shape <=
-              2 * SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+              2 * SuccinctRank.machineWordBits shape.bpCode.length := by
           exact
             canonicalBPRelativeSummaryBlockSize_le_two_machine_of_size_pos
               (shape := shape) hsizePos
         have hblockSizeLeThree :
             canonicalBPRelativeSummaryBlockSize shape <=
-              3 * SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+              3 * SuccinctRank.machineWordBits shape.bpCode.length := by
           omega
         exact
           localBPSameBlockCloseDecodedCosted_exact_of_query_same_block
@@ -1157,13 +1157,13 @@ theorem lcaCloseCostedWithRankSeed_exact_of_query
             canonicalBPRelativeSummaryBlockSizeRaw_pos shape
         have hblockSizeLeTwo :
             canonicalBPRelativeSummaryBlockSize shape <=
-              2 * SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+              2 * SuccinctRank.machineWordBits shape.bpCode.length := by
           exact
             canonicalBPRelativeSummaryBlockSize_le_two_machine_of_size_pos
               (shape := shape) hsizePos
         have hblockSizeLeThree :
             canonicalBPRelativeSummaryBlockSize shape <=
-              3 * SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+              3 * SuccinctRank.machineWordBits shape.bpCode.length := by
           omega
         exact
           localBPSameBlockCloseDecodedCostedWithRankSeed_exact_of_query_same_block
@@ -1241,7 +1241,7 @@ theorem read_words_length_le_machine
     {leftClose rightClose : Nat} {word : List Bool}
     (hmem : word ∈ directory.payloadWordsRead leftClose rightClose) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   unfold payloadWordsRead at hmem
   simp only [List.mem_append] at hmem
   rcases hmem with hhead | hrightMem
@@ -1299,7 +1299,7 @@ theorem concreteCompactBPCloseLCADirectory_profile_of_size_ge
       forall {leftClose rightClose : Nat} {word : List Bool},
         word ∈ directory.payloadWordsRead leftClose rightClose ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            SuccinctRank.machineWordBits shape.bpCode.length := by
   let directory := concreteCompactBPCloseLCADirectory shape
   have hinterior :=
     concreteBPRelativeRmmInteriorDirectory_profile shape hsize
@@ -1347,7 +1347,7 @@ theorem concreteCompactBPCloseLCADirectory_profile
       forall {leftClose rightClose : Nat} {word : List Bool},
         word ∈ directory.payloadWordsRead leftClose rightClose ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            SuccinctRank.machineWordBits shape.bpCode.length := by
   let directory := concreteCompactBPCloseLCADirectory shape
   have hpayload :
       directory.payload.length <= compactBPCloseOverhead shape.size := by
@@ -1405,7 +1405,7 @@ def payloadLiveRelativeRmmBPCloseMacroOfInterior
     (hblockSize : 0 < blockSize)
     (hmachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+        SuccinctRank.machineWordBits shape.bpCode.length) :
     PayloadLiveRelativeRmmBPCloseMacro shape blockSize blockCount
       (leftOverhead + interiorOverhead + rightOverhead) middleQueryCost where
   payload := leftFringe.payload ++ interior.payload ++ rightFringe.payload
@@ -1535,7 +1535,7 @@ def payloadLiveRelativeRmmBPCloseMacroOfInterior
         forall {startBlock count : Nat} {word : List Bool},
           word ∈ interior.payloadWordsRead startBlock count ->
             word.length <=
-              SuccinctRankProposal.machineWordBits shape.bpCode.length :=
+              SuccinctRank.machineWordBits shape.bpCode.length :=
       interior.read_words_length_le_machine
     dsimp only at hmem
     simp only [List.mem_append] at hmem
@@ -1570,7 +1570,7 @@ theorem payloadLiveRelativeRmmBPCloseMacroOfInterior_profile
     (hblockSize : 0 < blockSize)
     (hmachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+        SuccinctRank.machineWordBits shape.bpCode.length) :
     let component :=
       payloadLiveRelativeRmmBPCloseMacroOfInterior
         leftFringe interior rightFringe hblockSize hmachine
@@ -1598,7 +1598,7 @@ theorem payloadLiveRelativeRmmBPCloseMacroOfInterior_profile
         forall {leftClose rightClose : Nat} {word : List Bool},
           word ∈ component.payloadWordsRead leftClose rightClose ->
             word.length <=
-              SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+              SuccinctRank.machineWordBits shape.bpCode.length := by
   let component :=
     payloadLiveRelativeRmmBPCloseMacroOfInterior
       leftFringe interior rightFringe hblockSize hmachine
@@ -1622,24 +1622,24 @@ def concretePayloadLiveRelativeRmmBPCloseMacroPayloadLength
   2 * ((endpointLeftFringeRanges
           (canonicalBPRelativeSummaryBlockSize shape)
           (canonicalBPRelativeSummaryBlockCount shape)).length *
-        SuccinctRankProposal.machineWordBits shape.bpCode.length) +
+        SuccinctRank.machineWordBits shape.bpCode.length) +
     concreteBPRelativeRmmInteriorDirectoryPayloadLength shape +
       2 * ((endpointRightFringeRanges
           (canonicalBPRelativeSummaryBlockSize shape)
           (canonicalBPRelativeSummaryBlockCount shape)).length *
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
 
 def concretePayloadLiveRelativeRmmBPCloseMacroOverhead
     (shape : Cartesian.CartesianShape) : Nat :=
   2 * ((endpointLeftFringeRanges
           (canonicalBPRelativeSummaryBlockSize shape)
           (canonicalBPRelativeSummaryBlockCount shape)).length *
-        SuccinctRankProposal.machineWordBits shape.bpCode.length) +
+        SuccinctRank.machineWordBits shape.bpCode.length) +
     concreteBPRelativeRmmInteriorOverhead shape.size +
       2 * ((endpointRightFringeRanges
           (canonicalBPRelativeSummaryBlockSize shape)
           (canonicalBPRelativeSummaryBlockCount shape)).length *
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
 
 def concretePayloadLiveRelativeRmmBPCloseMacro
     (shape : Cartesian.CartesianShape)
@@ -1649,7 +1649,7 @@ def concretePayloadLiveRelativeRmmBPCloseMacro
       (canonicalBPRelativeSummaryBlockCount shape)
       (concretePayloadLiveRelativeRmmBPCloseMacroPayloadLength shape)
       concreteBPRelativeRmmInteriorQueryCost := by
-  let fieldWidth := SuccinctRankProposal.machineWordBits shape.bpCode.length
+  let fieldWidth := SuccinctRank.machineWordBits shape.bpCode.length
   let leftFringe :=
     concreteBPPrefixRangeArgMinWitnessTable shape fieldWidth
       (endpointLeftFringeRanges
@@ -1720,8 +1720,8 @@ theorem concretePayloadLiveRelativeRmmBPCloseMacro_profile
         forall {leftClose rightClose : Nat} {word : List Bool},
           word ∈ component.payloadWordsRead leftClose rightClose ->
             word.length <=
-              SuccinctRankProposal.machineWordBits shape.bpCode.length := by
-  let fieldWidth := SuccinctRankProposal.machineWordBits shape.bpCode.length
+              SuccinctRank.machineWordBits shape.bpCode.length := by
+  let fieldWidth := SuccinctRank.machineWordBits shape.bpCode.length
   let leftFringe :=
     concreteBPPrefixRangeArgMinWitnessTable shape fieldWidth
       (endpointLeftFringeRanges

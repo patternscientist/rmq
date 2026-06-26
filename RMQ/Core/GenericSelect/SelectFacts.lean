@@ -8,7 +8,7 @@ Shape-free rank/select facts shared by the generic select construction.
 
 namespace RMQ.GenericSelect
 
-open SuccinctSpace SuccinctRankProposal
+open SuccinctSpace SuccinctRank
 
 /-- Collect target-bit positions, continuing from an absolute base offset. -/
 def allSelectPositionsFrom

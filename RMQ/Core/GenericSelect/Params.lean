@@ -13,10 +13,10 @@ target bit.
 
 namespace RMQ.GenericSelect
 
-open SuccinctSpace SuccinctRankProposal
+open SuccinctSpace SuccinctRank
 
 /-- Generic machine word size for a length-`n` bitvector. -/
-def wordBits (n : Nat) : Nat := SuccinctRankProposal.machineWordBits n
+def wordBits (n : Nat) : Nat := SuccinctRank.machineWordBits n
 
 /-- `log` of the word size plus one (the `ell` scale used for local strides). -/
 def ell (n : Nat) : Nat := Nat.log2 (wordBits n) + 1
@@ -34,7 +34,7 @@ def superLongSpan (n : Nat) : Nat := superStride n * wordBits n * ell n
 def localSparseSpan (n : Nat) : Nat := wordBits n
 
 theorem wordBits_pos (n : Nat) : 0 < wordBits n :=
-  SuccinctRankProposal.machineWordBits_pos n
+  SuccinctRank.machineWordBits_pos n
 
 theorem ell_pos (n : Nat) : 0 < ell n := by
   unfold ell; omega

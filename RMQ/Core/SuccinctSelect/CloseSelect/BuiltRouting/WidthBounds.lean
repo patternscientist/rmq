@@ -20,9 +20,9 @@ theorem natLog2_le_log2_of_le
 
 theorem machineWordBits_mono_le
     {m n : Nat} (hle : m <= n) :
-    SuccinctRankProposal.machineWordBits m <=
-      SuccinctRankProposal.machineWordBits n := by
-  unfold SuccinctRankProposal.machineWordBits
+    SuccinctRank.machineWordBits m <=
+      SuccinctRank.machineWordBits n := by
+  unfold SuccinctRank.machineWordBits
   by_cases hm : m = 0
   · simp [hm]
   · have hn : n ≠ 0 := by omega
@@ -76,8 +76,8 @@ theorem one_lt_two_pow_of_pos {k : Nat} (hk : 0 < k) :
       omega
 
 theorem machineWordBits_le_self_of_pos {n : Nat} (hn : 0 < n) :
-    SuccinctRankProposal.machineWordBits n <= n := by
-  unfold SuccinctRankProposal.machineWordBits
+    SuccinctRank.machineWordBits n <= n := by
+  unfold SuccinctRank.machineWordBits
   by_cases hone : n = 1
   · subst n
     have hpow := Nat.log2_self_le (n := 1) (by omega : 1 ≠ 0)
@@ -98,16 +98,16 @@ theorem machineWordBits_le_self_of_pos {n : Nat} (hn : 0 < n) :
 
 theorem lt_two_pow_machineWordBits_of_lt
     {x n : Nat} (hx : x < n) :
-    x < 2 ^ SuccinctRankProposal.machineWordBits n := by
+    x < 2 ^ SuccinctRank.machineWordBits n := by
   exact Nat.lt_trans hx
     (by
-      simpa [SuccinctRankProposal.machineWordBits] using
+      simpa [SuccinctRank.machineWordBits] using
         (Nat.lt_log2_self (n := n)))
 
 theorem builtRelativeSplitFalseSelectSparseExceptionRelativeWidth_le_machine
     (shape : Cartesian.CartesianShape) :
     builtRelativeSplitFalseSelectSparseExceptionRelativeWidth shape <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   unfold builtRelativeSplitFalseSelectSparseExceptionRelativeWidth
   exact machineWordBits_mono_le
     (Nat.min_le_left shape.bpCode.length
@@ -135,20 +135,20 @@ theorem builtRelativeSplitFalseSelectSparseExceptionRelativeWidth_le_four_ell
   · have hell_pos : 0 < ell := by
       simp [ell, sparseDenseFalseSelectEll]
     simp [builtRelativeSplitFalseSelectSparseExceptionRelativeWidth,
-      SuccinctRankProposal.machineWordBits, m, hm,
+      SuccinctRank.machineWordBits, m, hm,
       sparseDenseFalseSelectEll]
     omega
   · have hmpos : 0 < m := Nat.pos_of_ne_zero hm
     have hword_pos : 0 < wordBits := by
       simp [wordBits, sparseDenseFalseSelectWordBits,
-        SuccinctRankProposal.machineWordBits_pos]
+        SuccinctRank.machineWordBits_pos]
     have hell_pos : 0 < ell := by
       simp [ell, sparseDenseFalseSelectEll]
     have hword_lt_pow :
         wordBits < 2 ^ ell := by
       simpa [wordBits, ell, sparseDenseFalseSelectEll,
         sparseDenseFalseSelectWordBits,
-        SuccinctRankProposal.machineWordBits] using
+        SuccinctRank.machineWordBits] using
         (Nat.lt_log2_self (n := wordBits))
     have hword_le_pow : wordBits <= 2 ^ ell :=
       Nat.le_of_lt hword_lt_pow
@@ -213,7 +213,7 @@ theorem builtRelativeSplitFalseSelectSparseExceptionRelativeWidth_le_four_ell
       exact Nat.lt_of_le_of_lt (Nat.min_le_right _ _) hsuper_lt
     have hlog := natLog2_succ_le_of_pos_lt_pow hmpos hm_lt
     simpa [builtRelativeSplitFalseSelectSparseExceptionRelativeWidth,
-      SuccinctRankProposal.machineWordBits, m, ell] using hlog
+      SuccinctRank.machineWordBits, m, ell] using hlog
 
 theorem nat_succ_square_le_two_pow_of_six_le
     (q : Nat) :
@@ -256,7 +256,7 @@ theorem sparseDenseFalseSelectEll_square_le_sixtyFour_wordBits
   let q := Nat.log2 wordBits
   have hword_pos : 0 < wordBits := by
     simp [wordBits, sparseDenseFalseSelectWordBits,
-      SuccinctRankProposal.machineWordBits_pos]
+      SuccinctRank.machineWordBits_pos]
   by_cases hlarge : 6 <= q
   · have hword_ne : wordBits ≠ 0 := by omega
     have hsq :
@@ -386,8 +386,8 @@ theorem nat_succ_square_le_four_mul_two_pow (q : Nat) :
 
 theorem machineWordBits_sq_le_four_mul_self_of_pos
     {n : Nat} (hn : 0 < n) :
-    SuccinctRankProposal.machineWordBits n *
-        SuccinctRankProposal.machineWordBits n <=
+    SuccinctRank.machineWordBits n *
+        SuccinctRank.machineWordBits n <=
       4 * n := by
   let q := Nat.log2 n
   have hn_ne : n ≠ 0 := by omega
@@ -399,7 +399,7 @@ theorem machineWordBits_sq_le_four_mul_self_of_pos
   have hscale :
       4 * 2 ^ q <= 4 * n := Nat.mul_le_mul_left 4 hpow
   exact Nat.le_trans (by
-    simpa [q, SuccinctRankProposal.machineWordBits] using hsq) hscale
+    simpa [q, SuccinctRank.machineWordBits] using hsq) hscale
 
 theorem sparseDenseFalseSelectWordBits_le_two_mul_localStride_mul_ell_sq
     (shape : Cartesian.CartesianShape) :

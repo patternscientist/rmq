@@ -849,26 +849,26 @@ theorem read_words_length_le_machine
         overhead)
     (hsuperMachine :
       superWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hrelativeMachine :
       relativeWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+        SuccinctRank.machineWordBits shape.bpCode.length) :
     (forall {index : Nat} {word : List Bool},
       table.baselineTable.store.words[index]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.minRelTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.maxRelTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.argOffsetTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+            SuccinctRank.machineWordBits shape.bpCode.length) := by
   constructor
   · intro index word hword
     have hlen := table.baselineTable.read_word_length_of_some hword
@@ -1203,10 +1203,10 @@ theorem concreteBPRelativeMinMaxArgSummaryTable_read_words_length_le_machine
     (hargWidth : blockSize < 2 ^ relativeWidth)
     (hsuperMachine :
       superWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hrelativeMachine :
       relativeWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+        SuccinctRank.machineWordBits shape.bpCode.length) :
     let table :=
       concreteBPRelativeMinMaxArgSummaryTable shape blockSize
         blocksPerSuper blockCount superCount superWidth relativeWidth
@@ -1214,19 +1214,19 @@ theorem concreteBPRelativeMinMaxArgSummaryTable_read_words_length_le_machine
     (forall {index : Nat} {word : List Bool},
       table.baselineTable.store.words[index]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.minRelTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.maxRelTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.argOffsetTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+            SuccinctRank.machineWordBits shape.bpCode.length) := by
   exact
     PayloadLiveBPRelativeMinMaxArgSummaryTable.read_words_length_le_machine
       (concreteBPRelativeMinMaxArgSummaryTable shape blockSize
@@ -1257,7 +1257,7 @@ def canonicalBPRelativeSummarySuperCountRaw
 
 def canonicalBPRelativeSummarySuperWidth
     (shape : Cartesian.CartesianShape) : Nat :=
-  SuccinctRankProposal.machineWordBits shape.bpCode.length
+  SuccinctRank.machineWordBits shape.bpCode.length
 
 def canonicalBPRelativeSummaryRelativeWidthRaw
     (shape : Cartesian.CartesianShape) : Nat :=
@@ -1285,7 +1285,7 @@ def canonicalBPRelativeMinMaxArgSummaryTableActive
       logLogSampledDirectoryOverhead canonicalBPRelativeSummaryBlockSlots
         shape.size /\
     relativeWidth <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length
+      SuccinctRank.machineWordBits shape.bpCode.length
 
 instance canonicalBPRelativeMinMaxArgSummaryTableActive_decidable
     (shape : Cartesian.CartesianShape) :
@@ -1350,7 +1350,7 @@ private theorem canonicalBPRelativeSummary_active_parts
         logLogSampledDirectoryOverhead canonicalBPRelativeSummaryBlockSlots
           shape.size /\
       canonicalBPRelativeSummaryRelativeWidthRaw shape <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+        SuccinctRank.machineWordBits shape.bpCode.length := by
   simpa [canonicalBPRelativeMinMaxArgSummaryTableActive] using hactive
 
 def canonicalBPRelativeSummaryLargeRegime
@@ -1571,7 +1571,7 @@ theorem canonicalBPRelativeSummaryBase_le_superWidth_of_size_pos
   unfold canonicalBPRelativeSummaryBase
   unfold canonicalBPRelativeSummarySuperWidth
   rw [Cartesian.CartesianShape.bpCode_length]
-  unfold SuccinctRankProposal.machineWordBits
+  unfold SuccinctRank.machineWordBits
   have hlen_pos : 0 < 2 * shape.size := by omega
   have hpown : 2 ^ Nat.log2 shape.size <= shape.size := by
     exact Nat.log2_self_le (by omega)
@@ -1586,7 +1586,7 @@ theorem canonicalBPRelativeSummaryBlockSize_le_two_machine_of_size_pos
     {shape : Cartesian.CartesianShape}
     (hsize_pos : 0 < shape.size) :
     canonicalBPRelativeSummaryBlockSize shape <=
-      2 * SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      2 * SuccinctRank.machineWordBits shape.bpCode.length := by
   by_cases hactive : canonicalBPRelativeMinMaxArgSummaryTableActive shape
   · have hbase :=
       canonicalBPRelativeSummaryBase_le_superWidth_of_size_pos
@@ -1604,7 +1604,7 @@ theorem canonicalBPRelativeSummarySuperWidth_le_eight_base_of_size_pos
       8 * canonicalBPRelativeSummaryBase shape := by
   unfold canonicalBPRelativeSummarySuperWidth
   rw [Cartesian.CartesianShape.bpCode_length]
-  unfold SuccinctRankProposal.machineWordBits
+  unfold SuccinctRank.machineWordBits
   let base := canonicalBPRelativeSummaryBase shape
   have hbase_pos : 0 < base := by
     simp [base, canonicalBPRelativeSummaryBase]
@@ -1809,7 +1809,7 @@ theorem canonicalBPRelativeSummary_superWidth_bound
     shape.bpCode.length <
       2 ^ canonicalBPRelativeSummarySuperWidth shape := by
   unfold canonicalBPRelativeSummarySuperWidth
-  unfold SuccinctRankProposal.machineWordBits
+  unfold SuccinctRank.machineWordBits
   exact Nat.lt_log2_self (n := shape.bpCode.length)
 
 theorem canonicalBPRelativeSummary_relativeWidth_bound
@@ -1875,13 +1875,13 @@ theorem canonicalBPRelativeSummary_blockPayload_bound
 theorem canonicalBPRelativeSummary_superWidth_machine
     (shape : Cartesian.CartesianShape) :
     canonicalBPRelativeSummarySuperWidth shape <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   exact Nat.le_refl _
 
 theorem canonicalBPRelativeSummary_relativeWidth_machine
     (shape : Cartesian.CartesianShape) :
     canonicalBPRelativeSummaryRelativeWidth shape <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   by_cases hactive :
       canonicalBPRelativeMinMaxArgSummaryTableActive shape
   · have hparts :=
@@ -1955,19 +1955,19 @@ theorem concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profil
       (forall {index : Nat} {word : List Bool},
         table.baselineTable.store.words[index]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.minRelTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.maxRelTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.argOffsetTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+            SuccinctRank.machineWordBits shape.bpCode.length) := by
   let table := concreteBPRelativeMinMaxArgSummaryTable_canonical shape
   have hprofile :=
     concreteBPRelativeMinMaxArgSummaryTable_compact_payload_profile
@@ -2057,19 +2057,19 @@ theorem concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profil
       (forall {index : Nat} {word : List Bool},
         table.baselineTable.store.words[index]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.minRelTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.maxRelTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.argOffsetTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+            SuccinctRank.machineWordBits shape.bpCode.length) := by
   have hactive :=
     canonicalBPRelativeMinMaxArgSummaryTableActive_of_large
       (shape := shape) hlarge
@@ -2182,7 +2182,7 @@ theorem canonicalBPRelativeSummaryRelativeWidthRaw_machine_of_large
     {shape : Cartesian.CartesianShape}
     (hlarge : canonicalBPRelativeSummaryLargeRegime shape) :
     canonicalBPRelativeSummaryRelativeWidthRaw shape <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   rcases canonicalBPRelativeSummary_large_parts
       (shape := shape) hlarge with
     ⟨_hbase_le_count, _hsuperWidth, _hspan, _harg, hmachine⟩
@@ -2211,7 +2211,7 @@ def concreteBPRelativeRmmInteriorMacroCount
 
 def concreteBPRelativeRmmInteriorOffsetWidth
     (shape : Cartesian.CartesianShape) : Nat :=
-  SuccinctRankProposal.machineWordBits
+  SuccinctRank.machineWordBits
     (concreteBPRelativeRmmInteriorMacroSize shape)
 
 def concreteBPRelativeRmmInteriorLevelCount
@@ -2220,12 +2220,12 @@ def concreteBPRelativeRmmInteriorLevelCount
 
 def concreteBPRelativeRmmInteriorGlobalLevelCount
     (shape : Cartesian.CartesianShape) : Nat :=
-  SuccinctRankProposal.machineWordBits
+  SuccinctRank.machineWordBits
     (concreteBPRelativeRmmInteriorMacroCount shape)
 
 def concreteBPRelativeRmmInteriorBlockWidth
     (shape : Cartesian.CartesianShape) : Nat :=
-  SuccinctRankProposal.machineWordBits
+  SuccinctRank.machineWordBits
     (canonicalBPRelativeSummaryBlockCount shape)
 
 theorem concreteBPRelativeRmmInteriorMacroSize_pos
@@ -2241,7 +2241,7 @@ theorem concreteBPRelativeRmmInteriorOffsetWidth_capacity
     concreteBPRelativeRmmInteriorMacroSize shape <
       2 ^ concreteBPRelativeRmmInteriorOffsetWidth shape := by
   unfold concreteBPRelativeRmmInteriorOffsetWidth
-  unfold SuccinctRankProposal.machineWordBits
+  unfold SuccinctRank.machineWordBits
   exact Nat.lt_log2_self
     (n := concreteBPRelativeRmmInteriorMacroSize shape)
 
@@ -2250,7 +2250,7 @@ theorem concreteBPRelativeRmmInteriorBlockWidth_capacity
     canonicalBPRelativeSummaryBlockCount shape <
       2 ^ concreteBPRelativeRmmInteriorBlockWidth shape := by
   unfold concreteBPRelativeRmmInteriorBlockWidth
-  unfold SuccinctRankProposal.machineWordBits
+  unfold SuccinctRank.machineWordBits
   exact Nat.lt_log2_self
     (n := canonicalBPRelativeSummaryBlockCount shape)
 
@@ -2259,7 +2259,7 @@ theorem concreteBPRelativeRmmInteriorGlobalLevelCount_capacity
     concreteBPRelativeRmmInteriorMacroCount shape <
       2 ^ concreteBPRelativeRmmInteriorGlobalLevelCount shape := by
   unfold concreteBPRelativeRmmInteriorGlobalLevelCount
-  unfold SuccinctRankProposal.machineWordBits
+  unfold SuccinctRank.machineWordBits
   exact Nat.lt_log2_self
     (n := concreteBPRelativeRmmInteriorMacroCount shape)
 
@@ -2597,7 +2597,7 @@ theorem concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_large
       canonicalBPRelativeSummaryBlockCountRaw shape <=
         shape.bpCode.length /\
       canonicalBPRelativeSummaryRelativeWidthRaw shape <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length /\
+        SuccinctRank.machineWordBits shape.bpCode.length /\
       table.payload.length <=
         concreteBPRelativeRmmInteriorOverhead shape.size /\
       (forall block,
@@ -2628,19 +2628,19 @@ theorem concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_large
       (forall {index : Nat} {word : List Bool},
         table.baselineTable.store.words[index]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.minRelTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.maxRelTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.argOffsetTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+            SuccinctRank.machineWordBits shape.bpCode.length) := by
   have hsummary :=
     concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile_of_large
       shape hlarge
@@ -2698,7 +2698,7 @@ theorem concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_size_ge
       canonicalBPRelativeSummaryBlockCountRaw shape <=
         shape.bpCode.length /\
       canonicalBPRelativeSummaryRelativeWidthRaw shape <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length /\
+        SuccinctRank.machineWordBits shape.bpCode.length /\
       table.payload.length <=
         concreteBPRelativeRmmInteriorOverhead shape.size /\
       (forall block,
@@ -2729,19 +2729,19 @@ theorem concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_size_ge
       (forall {index : Nat} {word : List Bool},
         table.baselineTable.store.words[index]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.minRelTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.maxRelTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.argOffsetTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+            SuccinctRank.machineWordBits shape.bpCode.length) := by
   exact
     concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_large
       shape
@@ -2784,9 +2784,9 @@ theorem concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_size_g
       canonicalBPRelativeSummaryBlockSizeRaw shape <
         2 ^ canonicalBPRelativeSummaryRelativeWidthRaw shape /\
       canonicalBPRelativeSummaryRelativeWidthRaw shape <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length /\
+        SuccinctRank.machineWordBits shape.bpCode.length /\
       canonicalBPRelativeSummaryBlockCountRaw shape <
-        2 ^ SuccinctRankProposal.machineWordBits shape.bpCode.length /\
+        2 ^ SuccinctRank.machineWordBits shape.bpCode.length /\
       (forall block,
         (table.summaryCosted block).cost <= 4 /\
           (table.summaryCosted block).erase =
@@ -2815,19 +2815,19 @@ theorem concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_size_g
       (forall {index : Nat} {word : List Bool},
         table.baselineTable.store.words[index]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.minRelTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.maxRelTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.argOffsetTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+            SuccinctRank.machineWordBits shape.bpCode.length) := by
   let table := concreteBPRelativeMinMaxArgSummaryTable_canonical shape
   let relativeSummaryBudget :=
     compactBPCloseSummaryPayloadOverhead
@@ -2863,13 +2863,13 @@ theorem concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_size_g
       (shape := shape) hlarge
   have hblockCountMachine :
       canonicalBPRelativeSummaryBlockCountRaw shape <
-        2 ^ SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+        2 ^ SuccinctRank.machineWordBits shape.bpCode.length := by
     have hcount :=
       canonicalBPRelativeSummaryBlockCountRaw_le_bpCode_length shape
     have hcapacity :
         shape.bpCode.length <
-          2 ^ SuccinctRankProposal.machineWordBits shape.bpCode.length := by
-      unfold SuccinctRankProposal.machineWordBits
+          2 ^ SuccinctRank.machineWordBits shape.bpCode.length := by
+      unfold SuccinctRank.machineWordBits
       exact Nat.lt_log2_self (n := shape.bpCode.length)
     exact Nat.lt_of_le_of_lt hcount hcapacity
   have hbudgetEq :

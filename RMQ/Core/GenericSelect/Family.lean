@@ -11,7 +11,7 @@ family profile.
 
 namespace RMQ.GenericSelect
 
-open SuccinctSpace SuccinctRankProposal
+open SuccinctSpace SuccinctRank
 
 /--
 Uniform modeled query bound for the public Jacobson/Clark bitvector adapter.
@@ -30,14 +30,14 @@ The stored `n` input bits are counted by `RankSelectSpec`; this function counts
 only the auxiliary rank/select directories.
 -/
 def jacobsonClarkRankSelectOverhead (n : Nat) : Nat :=
-  SuccinctRankProposal.jacobsonRankOverhead n +
+  SuccinctRank.jacobsonRankOverhead n +
     canonicalSparseExceptionSelectOverhead n +
       canonicalSparseExceptionSelectOverhead n
 
 theorem jacobsonClarkRankSelectOverhead_littleO :
     SuccinctSpace.LittleOLinear jacobsonClarkRankSelectOverhead := by
   simpa [jacobsonClarkRankSelectOverhead] using
-    (SuccinctRankProposal.jacobsonRankOverhead_littleO.add
+    (SuccinctRank.jacobsonRankOverhead_littleO.add
       canonicalSparseExceptionSelectOverhead_littleO).add
         canonicalSparseExceptionSelectOverhead_littleO
 
@@ -46,7 +46,7 @@ Concrete auxiliary payload prefix read by the public adapter: Jacobson rank
 metadata followed by the two Clark sparse/dense select payloads.
 -/
 def jacobsonClarkRankSelectAuxPayload (bits : List Bool) : List Bool :=
-  (SuccinctRankProposal.jacobsonRankData bits).auxPayload ++
+  (SuccinctRank.jacobsonRankData bits).auxPayload ++
     (sparseExceptionSelectSource bits false).payload ++
       (sparseExceptionSelectSource bits true).payload
 
@@ -55,11 +55,11 @@ theorem jacobsonClarkRankSelectAuxPayload_length_le
     (jacobsonClarkRankSelectAuxPayload bits).length <=
       jacobsonClarkRankSelectOverhead bits.length := by
   have hrankEq :
-      (SuccinctRankProposal.jacobsonRankData bits).auxPayload.length =
-        SuccinctRankProposal.jacobsonRankOverhead bits.length := by
-    have hprofile := SuccinctRankProposal.jacobsonRankData_profile bits
-    simpa [SuccinctRankProposal.jacobsonRankOverhead,
-      SuccinctRankProposal.twoLevelRankOverhead] using hprofile.1
+      (SuccinctRank.jacobsonRankData bits).auxPayload.length =
+        SuccinctRank.jacobsonRankOverhead bits.length := by
+    have hprofile := SuccinctRank.jacobsonRankData_profile bits
+    simpa [SuccinctRank.jacobsonRankOverhead,
+      SuccinctRank.twoLevelRankOverhead] using hprofile.1
   have hfalse :
       (sparseExceptionSelectSource bits false).payload.length <=
         canonicalSparseExceptionSelectOverhead bits.length := by
@@ -110,7 +110,7 @@ def jacobsonClarkRankSelectDirectory (bits : List Bool) :
   buildAux := ()
   encodeAux := fun _ => jacobsonClarkRankSelectPaddedAuxPayload bits
   rankCosted := fun _ target pos =>
-    (SuccinctRankProposal.jacobsonRankData bits).rankCosted target pos
+    (SuccinctRank.jacobsonRankData bits).rankCosted target pos
   selectCosted := fun _ target occurrence =>
     match target with
     | false =>
@@ -124,7 +124,7 @@ def jacobsonClarkRankSelectDirectory (bits : List Bool) :
   rank_cost_le := by
     intro target pos
     exact Nat.le_trans
-      ((SuccinctRankProposal.jacobsonRankData bits).rankCosted_cost_le
+      ((SuccinctRank.jacobsonRankData bits).rankCosted_cost_le
         target pos)
       (by
         unfold jacobsonClarkRankSelectQueryCost
@@ -146,7 +146,7 @@ def jacobsonClarkRankSelectDirectory (bits : List Bool) :
           exact Nat.le_max_right 4 sparseDenseSelectQueryCost)
   rank_exact := by
     intro target pos
-    exact (SuccinctRankProposal.jacobsonRankData bits).rankCosted_exact
+    exact (SuccinctRank.jacobsonRankData bits).rankCosted_exact
       target pos
   select_exact := by
     intro target occurrence

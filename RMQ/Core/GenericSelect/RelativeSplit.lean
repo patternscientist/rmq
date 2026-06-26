@@ -8,7 +8,7 @@ Relative-split slot and base-position helpers for compact select directories.
 
 namespace RMQ.GenericSelect
 
-open SuccinctSpace SuccinctRankProposal
+open SuccinctSpace SuccinctRank
 
 def relativeSplitSelectEntryIsMarked
     (entry : SparseDenseSelectDenseLocalEntry) : Bool :=

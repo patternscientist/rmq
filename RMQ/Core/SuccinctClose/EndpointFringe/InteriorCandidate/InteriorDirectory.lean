@@ -43,7 +43,7 @@ structure PayloadLiveBPRelativeRmmInteriorDirectory
     forall {startBlock count : Nat} {word : List Bool},
       word ∈ payloadWordsRead startBlock count ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length
+          SuccinctRank.machineWordBits shape.bpCode.length
 
 namespace PayloadLiveBPRelativeRmmInteriorDirectory
 
@@ -66,7 +66,7 @@ theorem profile
       forall {startBlock count : Nat} {word : List Bool},
         word ∈ directory.payloadWordsRead startBlock count ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            SuccinctRank.machineWordBits shape.bpCode.length := by
   exact ⟨directory.payload_length_eq, directory.rangeMin_cost_le,
     directory.rangeMin_exact, directory.read_words_length_le_machine⟩
 
@@ -128,7 +128,7 @@ theorem payloadLiveBPRelativeRmmInteriorDirectory_profile_allows_proof_only_orac
       forall {startBlock count : Nat} {word : List Bool},
         word ∈ directory.payloadWordsRead startBlock count ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            SuccinctRank.machineWordBits shape.bpCode.length := by
   exact
     (proofOnlyBPRelativeRmmInteriorDirectory
       shape blockSize blockCount).profile
@@ -265,7 +265,7 @@ theorem scanInteriorDirectory_profile
       forall {startBlock count : Nat} {word : List Bool},
         word ∈ directory.payloadWordsRead startBlock count ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            SuccinctRank.machineWordBits shape.bpCode.length := by
   exact
     (table.scanInteriorDirectory hblocks hcover hsuperCount).profile
 
@@ -632,7 +632,7 @@ def concreteBPRelativeRmmInteriorDirectory
               _hargRead⟩
           have hoffsetMachine :
               concreteBPRelativeRmmInteriorOffsetWidth shape <=
-                SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+                SuccinctRank.machineWordBits shape.bpCode.length := by
             have hlargeRegime :=
               canonicalBPRelativeSummaryLargeRegime_of_size_ge
                 (shape := shape) hlarge
@@ -671,7 +671,7 @@ def concreteBPRelativeRmmInteriorDirectory
                 concreteBPRelativeRmmInteriorOffsetWidth shape <=
                   canonicalBPRelativeSummaryRelativeWidthRaw shape := by
               unfold concreteBPRelativeRmmInteriorOffsetWidth
-              unfold SuccinctRankProposal.machineWordBits
+              unfold SuccinctRank.machineWordBits
               exact
                 natLog2_succ_le_of_pos_lt_pow
                   (concreteBPRelativeRmmInteriorMacroSize_pos shape)
@@ -679,9 +679,9 @@ def concreteBPRelativeRmmInteriorDirectory
             exact Nat.le_trans hoffsetRel hrelativeMachine
           have hblockMachine :
               concreteBPRelativeRmmInteriorBlockWidth shape <=
-                SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+                SuccinctRank.machineWordBits shape.bpCode.length := by
             unfold concreteBPRelativeRmmInteriorBlockWidth
-            unfold SuccinctRankProposal.machineWordBits
+            unfold SuccinctRank.machineWordBits
             exact
               natLog2_succ_le_of_pos_lt_pow
                 (by
@@ -699,7 +699,7 @@ def concreteBPRelativeRmmInteriorDirectory
                   exact hcountPos)
                 (by
                   simpa [concreteBPRelativeRmmInteriorBlockWidth,
-                    SuccinctRankProposal.machineWordBits,
+                    SuccinctRank.machineWordBits,
                     canonicalBPRelativeSummaryBlockCount, _hactive] using
                     hblockCapacity)
           exact
@@ -770,7 +770,7 @@ theorem concreteBPRelativeRmmInteriorDirectory_profile
       forall {startBlock count : Nat} {word : List Bool},
         word ∈ directory.payloadWordsRead startBlock count ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            SuccinctRank.machineWordBits shape.bpCode.length := by
   let directory := concreteBPRelativeRmmInteriorDirectory shape
   let table := concreteBPRelativeMinMaxArgSummaryTable_canonical shape
   let localTable := concreteBPRelativeRmmInteriorLocalTable shape

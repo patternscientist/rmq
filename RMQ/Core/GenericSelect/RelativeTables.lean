@@ -10,7 +10,7 @@ directory.
 
 namespace RMQ.GenericSelect
 
-open SuccinctSpace SuccinctRankProposal
+open SuccinctSpace SuccinctRank
 /-! ### Relative-offset tables for long supers and sparse locals -/
 
 /-- Relative offsets stored explicitly for a single long super (empty for short
@@ -31,7 +31,7 @@ def longSuperRelativeEntries (bits : List Bool) (target : Bool) : List Nat :=
 
 /-- Each relative offset fits in a machine word over `bits.length`. -/
 def longSuperRelativeWidth (bits : List Bool) : Nat :=
-  SuccinctRankProposal.machineWordBits bits.length
+  SuccinctRank.machineWordBits bits.length
 
 theorem longSuperRelativeEntriesForSlot_length
     (bits : List Bool) (target : Bool) (superSlot : Nat) :
@@ -256,7 +256,7 @@ theorem longSuperRelativeEntries_mem_lt_width
       have hentryLen : entry < bits.length := by rw [hentry]; omega
       exact Nat.lt_trans hentryLen
         (by
-          simpa [longSuperRelativeWidth, SuccinctRankProposal.machineWordBits]
+          simpa [longSuperRelativeWidth, SuccinctRank.machineWordBits]
             using (Nat.lt_log2_self (n := bits.length)))
   · have hfalse : superIsLong bits target superSlot = false := by
       cases h : superIsLong bits target superSlot
@@ -336,7 +336,7 @@ theorem sparseRelativeEntries_mem_lt_word_pow
     subst entry
     have hposLe : pos <= bits.length := selectPositions_mem_le_length hposMem
     have hlenLt : bits.length < 2 ^ wordBits bits.length := by
-      simpa [wordBits, SuccinctRankProposal.machineWordBits] using
+      simpa [wordBits, SuccinctRank.machineWordBits] using
         (Nat.lt_log2_self (n := bits.length))
     omega
   · simp [hsparse] at hentryMem
@@ -466,7 +466,7 @@ theorem superEntries_mem_fields_lt_width
   have hbaseLen : baseOccurrence < bits.length :=
     Nat.lt_of_lt_of_le hbaseCount (occurrenceCount_le_length bits target)
   have hlenPow : bits.length < 2 ^ wordSize := by
-    simpa [wordSize, wordBits, SuccinctRankProposal.machineWordBits] using
+    simpa [wordSize, wordBits, SuccinctRank.machineWordBits] using
       (Nat.lt_log2_self (n := bits.length))
   have hbasePow : baseOccurrence < 2 ^ wordSize := Nat.lt_trans hbaseLen hlenPow
   have hpositionLen : basePosition <= bits.length := by
@@ -508,7 +508,7 @@ def superTable (bits : List Bool) (target : Bool) :
 (local entries store values relative to their owning super, so a short-super
 word suffices). -/
 def sparseExceptionRelativeWidth (bits : List Bool) : Nat :=
-  SuccinctRankProposal.machineWordBits
+  SuccinctRank.machineWordBits
     (Nat.min bits.length (superLongSpan bits.length))
 
 def localFieldWidth (bits : List Bool) : Nat := sparseExceptionRelativeWidth bits
@@ -521,7 +521,7 @@ theorem sparseExceptionRelativeWidth_le_four_ell (bits : List Bool) :
   by_cases hm : m = 0
   · have hell_pos : 0 < e := by
       simpa [e] using ell_pos bits.length
-    simp [sparseExceptionRelativeWidth, SuccinctRankProposal.machineWordBits,
+    simp [sparseExceptionRelativeWidth, SuccinctRank.machineWordBits,
       m, hm, ell]
     omega
   · have hmpos : 0 < m := Nat.pos_of_ne_zero hm
@@ -530,7 +530,7 @@ theorem sparseExceptionRelativeWidth_le_four_ell (bits : List Bool) :
     have he_pos : 0 < e := by
       simpa [e] using ell_pos bits.length
     have hw_lt_pow : w < 2 ^ e := by
-      simpa [w, e, ell, wordBits, SuccinctRankProposal.machineWordBits] using
+      simpa [w, e, ell, wordBits, SuccinctRank.machineWordBits] using
         (Nat.lt_log2_self (n := w))
     have hw_le_pow : w <= 2 ^ e := Nat.le_of_lt hw_lt_pow
     have he_le_pow : e <= 2 ^ e := SuccinctSpace.nat_le_two_pow e
@@ -577,7 +577,7 @@ theorem sparseExceptionRelativeWidth_le_four_ell (bits : List Bool) :
       Nat.lt_of_le_of_lt (Nat.min_le_right _ _) hsuper_lt
     have hlog := natLog2_succ_le_of_pos_lt_pow hmpos hm_lt
     simpa [sparseExceptionRelativeWidth,
-      SuccinctRankProposal.machineWordBits, m, e] using hlog
+      SuccinctRank.machineWordBits, m, e] using hlog
 
 theorem ell_square_le_sixtyFour_wordBits (n : Nat) :
     ell n * ell n <= 64 * wordBits n := by
@@ -668,7 +668,7 @@ theorem localEntries_mem_fields_lt_width
   have hellPos : 0 < ell bits.length := ell_pos bits.length
   have hrelPos : 0 < relWidth := by
     simp [relWidth, localFieldWidth, sparseExceptionRelativeWidth,
-      SuccinctRankProposal.machineWordBits_pos]
+      SuccinctRank.machineWordBits_pos]
   have hpowPos : 0 < 2 ^ relWidth := Nat.pow_pos (by omega : 0 < 2)
   have hfield_of_lt_min :
       forall {x : Nat}, x < bits.length -> x < longSpan -> x < 2 ^ relWidth := by
@@ -1106,7 +1106,7 @@ theorem sparseExceptionRelativeEntriesForSlot_mem_lt_width
       exact Nat.lt_trans hentryMin
         (by
           simpa [sparseExceptionRelativeWidth,
-            SuccinctRankProposal.machineWordBits] using
+            SuccinctRank.machineWordBits] using
             (Nat.lt_log2_self
               (n := Nat.min bits.length (superLongSpan bits.length))))
   · have hfalse : localIsSparseException bits target globalLocalSlot = false := by
@@ -1233,7 +1233,7 @@ theorem sparseExceptionRelativeTable_payload_le_overhead_of_spanSum_le_length
     Nat.le_of_mul_le_mul_left (Nat.le_of_lt hpayloadStrictLeft) he_pos
   simpa [payload, overheadLen, sparseExceptionRelativeTableOverhead,
     SuccinctSpace.idDivLogLogOverhead, e, n, ell, wordBits,
-    SuccinctRankProposal.machineWordBits] using hpayloadLe
+    SuccinctRank.machineWordBits] using hpayloadLe
 
 theorem sparseExceptionRelativeTable_payload_le_overhead
     (bits : List Bool) (target : Bool) :
@@ -1266,10 +1266,10 @@ theorem canonicalSparseExceptionDirectoryOverhead_littleO :
 theorem fixedWidthNatTable_word_length_le_of_mem
     {entries : List Nat} {width n : Nat}
     (table : SuccinctSpace.FixedWidthNatTable entries width)
-    (hwidth : width <= SuccinctRankProposal.machineWordBits n)
+    (hwidth : width <= SuccinctRank.machineWordBits n)
     {word : List Bool}
     (hmem : List.Mem word table.store.words.toList) :
-    word.length <= SuccinctRankProposal.machineWordBits n := by
+    word.length <= SuccinctRank.machineWordBits n := by
   rcases (List.mem_iff_getElem?.mp hmem) with ⟨i, hgetList⟩
   have hget : table.store.words[i]? = some word := by
     simpa [Array.getElem?_toList] using hgetList
@@ -1285,9 +1285,9 @@ def relativeOffsetReadCosted
 
 theorem sparseExceptionRelativeWidth_le_machine (bits : List Bool) :
     sparseExceptionRelativeWidth bits <=
-      SuccinctRankProposal.machineWordBits bits.length := by
+      SuccinctRank.machineWordBits bits.length := by
   unfold sparseExceptionRelativeWidth
-  exact SuccinctRankProposal.machineWordBits_mono_le
+  exact SuccinctRank.machineWordBits_mono_le
     (Nat.min_le_left bits.length (superLongSpan bits.length))
 
 

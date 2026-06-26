@@ -66,7 +66,7 @@ The reusable public spec is:
 
 The concrete construction currently lives in:
 
-- `RMQ/Core/SuccinctRankProposal.lean`
+- `RMQ/Core/SuccinctRank.lean`
 - `RMQ/Core/SuccinctSelect.lean`
 - `RMQ/Core/SuccinctSelect/TwoLevel.lean`
 - `RMQ/Core/SuccinctSelect/Obstructions.lean`
@@ -101,10 +101,10 @@ The intended direction is:
 
 ```text
 Succinct -> SuccinctSpace -> RankSelectSpec
-Succinct -> SuccinctSpace -> SuccinctRankProposal -> GenericSelect.SelectSource
-SuccinctRankProposal -> SuccinctSelect.{TwoLevel,Obstructions,DenseLocalTables}
+Succinct -> SuccinctSpace -> SuccinctRank -> GenericSelect.SelectSource
+SuccinctRank -> SuccinctSelect.{TwoLevel,Obstructions,DenseLocalTables}
 GenericSelect.SelectSource --feeds downstream proposal--> SuccinctSelectProposal
-SuccinctRankProposal -> GenericSelect.{SelectFacts,Arithmetic}
+SuccinctRank -> GenericSelect.{SelectFacts,Arithmetic}
 GenericSelect.SelectFacts -> GenericSelect.Arithmetic
 GenericSelect.Arithmetic -> GenericSelect.DenseEntryTable
 GenericSelect.DenseEntryTable -> GenericSelect.DenseWord
@@ -129,8 +129,8 @@ concrete Jacobson/Clark construction and expose short names.
 The rank side uses:
 
 ```lean
-RMQ.SuccinctRankProposal.jacobsonRankData_profile
-RMQ.SuccinctRankProposal.jacobsonRankFamily_constant_query_profile
+RMQ.SuccinctRank.jacobsonRankData_profile
+RMQ.SuccinctRank.jacobsonRankFamily_constant_query_profile
 ```
 
 The select side uses the generic sparse-exception Clark-style source:

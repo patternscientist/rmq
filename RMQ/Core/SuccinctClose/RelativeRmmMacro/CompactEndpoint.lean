@@ -326,14 +326,14 @@ theorem read_words_length_le_machine
         fringeTableOverhead interiorOverhead middleQueryCost)
     (hcodeMachine :
       codeWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hfieldMachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+        SuccinctRank.machineWordBits shape.bpCode.length) :
     forall {leftClose rightClose : Nat} {word : List Bool},
       word ∈ component.payloadWordsRead leftClose rightClose ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+          SuccinctRank.machineWordBits shape.bpCode.length := by
   intro leftClose rightClose word hmem
   have hleft :
       forall {word : List Bool},
@@ -341,7 +341,7 @@ theorem read_words_length_le_machine
             component.endpointFringe.leftWordsReadAtBlock
               (blockOfClose blockSize leftClose) leftClose ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            SuccinctRank.machineWordBits shape.bpCode.length := by
     intro word hword
     exact
       component.endpointFringe.leftWordsReadAtBlock_length_le_machine
@@ -352,7 +352,7 @@ theorem read_words_length_le_machine
             component.endpointFringe.rightWordsReadAtBlock
               (blockOfClose blockSize rightClose) rightClose ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            SuccinctRank.machineWordBits shape.bpCode.length := by
     intro word hword
     exact
       component.endpointFringe.rightWordsReadAtBlock_length_le_machine
@@ -361,7 +361,7 @@ theorem read_words_length_le_machine
       forall {startBlock count : Nat} {word : List Bool},
         word ∈ component.interior.payloadWordsRead startBlock count ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length :=
+            SuccinctRank.machineWordBits shape.bpCode.length :=
     component.interior.read_words_length_le_machine
   unfold payloadWordsRead at hmem
   simp only [List.mem_append] at hmem
@@ -423,7 +423,7 @@ def concretePayloadLiveCompactEndpointRelativeRmmBPCloseMacroPayloadLength
   concretePayloadLiveBlockEndpointFringeCodebookPayloadLength
       (canonicalBPRelativeSummaryBlockCount shape)
       (canonicalBPRelativeSummaryBlockSize shape)
-      (SuccinctRankProposal.machineWordBits shape.bpCode.length) +
+      (SuccinctRank.machineWordBits shape.bpCode.length) +
     concreteBPRelativeRmmInteriorDirectoryPayloadLength shape
 
 def concretePayloadLiveCompactEndpointRelativeRmmBPCloseMacroOverhead
@@ -431,7 +431,7 @@ def concretePayloadLiveCompactEndpointRelativeRmmBPCloseMacroOverhead
   concretePayloadLiveBlockEndpointFringeCodebookPayloadLength
       (canonicalBPRelativeSummaryBlockCount shape)
       (canonicalBPRelativeSummaryBlockSize shape)
-      (SuccinctRankProposal.machineWordBits shape.bpCode.length) +
+      (SuccinctRank.machineWordBits shape.bpCode.length) +
     concreteBPRelativeRmmInteriorOverhead shape.size
 
 def concretePayloadLiveCompactEndpointRelativeRmmBPCloseMacro
@@ -441,13 +441,13 @@ def concretePayloadLiveCompactEndpointRelativeRmmBPCloseMacro
       (canonicalBPRelativeSummaryBlockSize shape)
       (canonicalBPRelativeSummaryBlockCount shape)
       (canonicalBPRelativeSummaryBlockCount shape)
-      (SuccinctRankProposal.machineWordBits shape.bpCode.length)
+      (SuccinctRank.machineWordBits shape.bpCode.length)
       (canonicalBPRelativeSummaryBlockCount shape *
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
-      (SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
+      (SuccinctRank.machineWordBits shape.bpCode.length)
       (concretePayloadLiveBlockEndpointFringeCodebookTableOverhead
         (canonicalBPRelativeSummaryBlockSize shape)
-        (SuccinctRankProposal.machineWordBits shape.bpCode.length))
+        (SuccinctRank.machineWordBits shape.bpCode.length))
       (concreteBPRelativeRmmInteriorDirectoryPayloadLength shape)
       concreteBPRelativeRmmInteriorQueryCost := by
   let endpointFringe :=
@@ -512,7 +512,7 @@ theorem concretePayloadLiveCompactEndpointRelativeRmmBPCloseMacro_profile
       forall {leftClose rightClose : Nat} {word : List Bool},
         word ∈ component.payloadWordsRead leftClose rightClose ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            SuccinctRank.machineWordBits shape.bpCode.length := by
   let component :=
     concretePayloadLiveCompactEndpointRelativeRmmBPCloseMacro shape hsize
   have hcomponentLen := component.payload_length

@@ -2011,31 +2011,31 @@ theorem read_words_length_le_machine
         fieldWidth leftOverhead interiorOverhead rightOverhead)
     (hmachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+        SuccinctRank.machineWordBits shape.bpCode.length) :
     (forall {rangeIndex : Nat} {word : List Bool},
       component.leftFringe.minTable.store.words[rangeIndex]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          SuccinctRank.machineWordBits shape.bpCode.length) /\
     (forall {rangeIndex : Nat} {word : List Bool},
       component.leftFringe.argTable.store.words[rangeIndex]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          SuccinctRank.machineWordBits shape.bpCode.length) /\
     (forall {rangeIndex : Nat} {word : List Bool},
       component.interior.minTable.store.words[rangeIndex]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          SuccinctRank.machineWordBits shape.bpCode.length) /\
     (forall {rangeIndex : Nat} {word : List Bool},
       component.interior.argTable.store.words[rangeIndex]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          SuccinctRank.machineWordBits shape.bpCode.length) /\
     (forall {rangeIndex : Nat} {word : List Bool},
       component.rightFringe.minTable.store.words[rangeIndex]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          SuccinctRank.machineWordBits shape.bpCode.length) /\
     (forall {rangeIndex : Nat} {word : List Bool},
       component.rightFringe.argTable.store.words[rangeIndex]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+          SuccinctRank.machineWordBits shape.bpCode.length) := by
   have hleft := component.leftFringe.read_words_length_le_machine hmachine
   have hmid := component.interior.read_words_length_le_machine hmachine
   have hright := component.rightFringe.read_words_length_le_machine hmachine

@@ -46,7 +46,7 @@ structure TwoLevelPayloadLiveBPCloseRMQNavigationDirectory
       Nat) where
   rankData :
     (shape : Cartesian.CartesianShape) ->
-      SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankData
+      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
         shape.bpCode rankSuper rankBlock queryCost
   selectData :
     (shape : Cartesian.CartesianShape) ->
@@ -499,14 +499,14 @@ theorem two_n_plus_o_built_query_profile
         EncodingLowerBound.canonicalRepresentativePayloadSpaceBounds_lower_le_upper n
       simp [overhead, twoLevelBPCloseNavigationOverhead,
         twoLevelRankSelectOverhead,
-        SuccinctRankProposal.twoLevelRankOverhead,
+        SuccinctRank.twoLevelRankOverhead,
         twoLevelSelectOverhead]
       omega
     · constructor
       · intro shape hshape
         simpa [overhead, twoLevelBPCloseNavigationOverhead,
           twoLevelRankSelectOverhead,
-          SuccinctRankProposal.twoLevelRankOverhead,
+          SuccinctRank.twoLevelRankOverhead,
           twoLevelSelectOverhead,
           TwoLevelPayloadLiveBPCloseRMQNavigationDirectory.overhead]
           using (family.directory n).payload_length hshape

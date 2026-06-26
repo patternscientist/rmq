@@ -68,12 +68,12 @@ structure BPCloseAccessDirectory
     forall {word : List Bool},
       List.Mem word rankReadWords ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length
+          SuccinctRank.machineWordBits shape.bpCode.length
   select_read_words_length_le_machine :
     forall {word : List Bool},
       List.Mem word selectReadWords ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length
+          SuccinctRank.machineWordBits shape.bpCode.length
 
 namespace BPCloseAccessDirectory
 
@@ -111,11 +111,11 @@ theorem constant_query_profile
           (forall {word : List Bool},
             List.Mem word (family.directory shape).rankReadWords ->
               word.length <=
-                SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+                SuccinctRank.machineWordBits shape.bpCode.length) /\
           (forall {word : List Bool},
             List.Mem word (family.directory shape).selectReadWords ->
               word.length <=
-                SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+                SuccinctRank.machineWordBits shape.bpCode.length) := by
   constructor
   · exact family.overhead_littleO
   · intro shape
@@ -155,7 +155,7 @@ structure ReadBackedBPCloseAccessDirectory
       selectSuperOverhead selectBlockOverhead
       overhead queryCost : Nat) where
   rankData :
-    SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankData
+    SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
       shape.bpCode rankSuperOverhead rankBlockOverhead queryCost
   selectData :
     SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData
@@ -292,7 +292,7 @@ theorem rank_read_words_length_le_machine
     {word : List Bool}
     (hmem : List.Mem word directory.rankData.bitWords.store.words.toList) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   exact directory.rankData.payload_word_length_le_machine hmem
 
 theorem select_read_words_length_le_machine
@@ -308,7 +308,7 @@ theorem select_read_words_length_le_machine
     {word : List Bool}
     (hmem : List.Mem word directory.selectData.bitWords.store.words.toList) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   exact directory.selectData.payload_word_length_le_machine hmem
 
 def toWeakDirectory
@@ -407,12 +407,12 @@ theorem constant_query_profile
             List.Mem word
                 (family.directory shape).rankData.bitWords.store.words.toList ->
               word.length <=
-                SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+                SuccinctRank.machineWordBits shape.bpCode.length) /\
           (forall {word : List Bool},
             List.Mem word
                 (family.directory shape).selectData.bitWords.store.words.toList ->
               word.length <=
-                SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+                SuccinctRank.machineWordBits shape.bpCode.length) := by
   constructor
   · exact family.overhead_littleO
   · intro shape
@@ -444,7 +444,7 @@ structure RelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
   rankSuperOverhead : Nat
   rankBlockOverhead : Nat
   rankData :
-    SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankData
+    SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
       shape.bpCode rankSuperOverhead rankBlockOverhead queryCost
   selectRankSuperOverhead : Nat
   selectRankBlockOverhead : Nat
@@ -546,7 +546,7 @@ theorem rank_read_words_length_le_machine
     {word : List Bool}
     (hmem : List.Mem word directory.rankData.bitWords.store.words.toList) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   exact directory.rankData.payload_word_length_le_machine hmem
 
 theorem select_read_words_length_le_machine
@@ -558,7 +558,7 @@ theorem select_read_words_length_le_machine
     {word : List Bool}
     (hmem : List.Mem word directory.selectData.readWords) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   exact directory.selectData.read_word_length_le_machine hmem
 
 def toWeakDirectory
@@ -605,11 +605,11 @@ theorem profile
       (forall {word : List Bool},
         List.Mem word directory.rankData.bitWords.store.words.toList ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       forall {word : List Bool},
         List.Mem word directory.selectData.readWords ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            SuccinctRank.machineWordBits shape.bpCode.length := by
   exact
     ⟨directory.payload_length_le_overhead,
       directory.selectCloseCosted_cost_le,
@@ -665,11 +665,11 @@ theorem constant_query_profile
             List.Mem word
                 (family.directory shape).rankData.bitWords.store.words.toList ->
               word.length <=
-                SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+                SuccinctRank.machineWordBits shape.bpCode.length) /\
           forall {word : List Bool},
             List.Mem word (family.directory shape).selectData.readWords ->
               word.length <=
-                SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+                SuccinctRank.machineWordBits shape.bpCode.length := by
   constructor
   · exact family.overhead_littleO
   · intro shape
@@ -679,7 +679,7 @@ end RelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily
 
 def builtRelativeSplitBPCloseRankWordSize
     (shape : Cartesian.CartesianShape) : Nat :=
-  SuccinctRankProposal.machineWordBits shape.bpCode.length
+  SuccinctRank.machineWordBits shape.bpCode.length
 
 def builtRelativeSplitBPCloseRankBlocksPerSuper
     (shape : Cartesian.CartesianShape) : Nat :=
@@ -687,7 +687,7 @@ def builtRelativeSplitBPCloseRankBlocksPerSuper
 
 def builtRelativeSplitBPCloseRankBlockWidth
     (shape : Cartesian.CartesianShape) : Nat :=
-  SuccinctRankProposal.machineWordBits
+  SuccinctRank.machineWordBits
     (builtRelativeSplitBPCloseRankWordSize shape *
       builtRelativeSplitBPCloseRankWordSize shape)
 
@@ -695,7 +695,7 @@ theorem builtRelativeSplitBPCloseRankWordSize_pos
     (shape : Cartesian.CartesianShape) :
     0 < builtRelativeSplitBPCloseRankWordSize shape := by
   simp [builtRelativeSplitBPCloseRankWordSize,
-    SuccinctRankProposal.machineWordBits_pos]
+    SuccinctRank.machineWordBits_pos]
 
 theorem builtRelativeSplitBPCloseRankBlocksPerSuper_pos
     (shape : Cartesian.CartesianShape) :
@@ -708,7 +708,7 @@ theorem builtRelativeSplitBPCloseRank_bpCode_length_lt_word_pow
     shape.bpCode.length <
       2 ^ builtRelativeSplitBPCloseRankWordSize shape := by
   simpa [builtRelativeSplitBPCloseRankWordSize,
-    SuccinctRankProposal.machineWordBits] using
+    SuccinctRank.machineWordBits] using
     (Nat.lt_log2_self (n := shape.bpCode.length))
 
 theorem builtRelativeSplitBPCloseRankBlockSpan_lt_pow
@@ -718,14 +718,14 @@ theorem builtRelativeSplitBPCloseRankBlockSpan_lt_pow
       2 ^ builtRelativeSplitBPCloseRankBlockWidth shape := by
   simpa [builtRelativeSplitBPCloseRankBlocksPerSuper,
     builtRelativeSplitBPCloseRankBlockWidth,
-    SuccinctRankProposal.machineWordBits] using
+    SuccinctRank.machineWordBits] using
     (Nat.lt_log2_self
       (n := builtRelativeSplitBPCloseRankWordSize shape *
         builtRelativeSplitBPCloseRankWordSize shape))
 
 def builtRelativeSplitBPCloseRankSuperOverhead
     (shape : Cartesian.CartesianShape) : Nat :=
-  (SuccinctRankProposal.canonicalSuperRankSampleTables
+  (SuccinctRank.canonicalSuperRankSampleTables
       shape.bpCode
       (builtRelativeSplitBPCloseRankWordSize shape)
       (builtRelativeSplitBPCloseRankBlocksPerSuper shape)
@@ -734,7 +734,7 @@ def builtRelativeSplitBPCloseRankSuperOverhead
 
 def builtRelativeSplitBPCloseRankBlockOverhead
     (shape : Cartesian.CartesianShape) : Nat :=
-  (SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan
+  (SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan
       shape.bpCode
       (builtRelativeSplitBPCloseRankWordSize shape)
       (builtRelativeSplitBPCloseRankBlocksPerSuper shape)
@@ -744,12 +744,12 @@ def builtRelativeSplitBPCloseRankBlockOverhead
 
 def builtRelativeSplitBPCloseRankData
     (shape : Cartesian.CartesianShape) :
-    SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankData
+    SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
       shape.bpCode
       (builtRelativeSplitBPCloseRankSuperOverhead shape)
       (builtRelativeSplitBPCloseRankBlockOverhead shape)
       SuccinctSelectProposal.sparseDenseFalseSelectQueryCost :=
-  SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExactLocalBlock
+  SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock
     shape.bpCode
     (builtRelativeSplitBPCloseRankWordSize_pos shape)
     (by simp [builtRelativeSplitBPCloseRankWordSize])
@@ -767,20 +767,20 @@ theorem builtRelativeSplitBPCloseRankData_profile
         builtRelativeSplitBPCloseRankSuperOverhead shape +
           builtRelativeSplitBPCloseRankBlockOverhead shape /\
       data.wordSize <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length /\
+        SuccinctRank.machineWordBits shape.bpCode.length /\
       SuccinctSpace.flattenPayloadWords data.bitWords.store.words.toList =
         shape.bpCode /\
       (forall {word : List Bool},
         List.Mem word data.bitWords.store.words.toList ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       forall target pos,
         (data.rankCosted target pos).cost <=
             SuccinctSelectProposal.sparseDenseFalseSelectQueryCost /\
           (data.rankCosted target pos).erase =
             Succinct.rankPrefix target shape.bpCode pos := by
   exact
-    SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExactLocalBlock_profile
+    SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock_profile
       shape.bpCode
       (builtRelativeSplitBPCloseRankWordSize_pos shape)
       (by simp [builtRelativeSplitBPCloseRankWordSize])
@@ -794,18 +794,18 @@ theorem builtRelativeSplitBPCloseRankData_profile
 theorem canonicalSuperRankEntries_length
     (target : Bool) (bits : List Bool)
     (wordSize blocksPerSuper : Nat) :
-    (SuccinctRankProposal.canonicalSuperRankEntries
+    (SuccinctRank.canonicalSuperRankEntries
       target bits wordSize blocksPerSuper).length =
       bits.length / wordSize / blocksPerSuper + 1 := by
-  simp [SuccinctRankProposal.canonicalSuperRankEntries]
+  simp [SuccinctRank.canonicalSuperRankEntries]
 
 theorem canonicalBlockRankEntries_length
     (target : Bool) (bits : List Bool)
     (wordSize blocksPerSuper : Nat) :
-    (SuccinctRankProposal.canonicalBlockRankEntries
+    (SuccinctRank.canonicalBlockRankEntries
       target bits wordSize blocksPerSuper).length =
       bits.length / wordSize + 1 := by
-  simp [SuccinctRankProposal.canonicalBlockRankEntries]
+  simp [SuccinctRank.canonicalBlockRankEntries]
 
 theorem builtRelativeSplitBPCloseRankBlockWidth_le_two_ell
     (shape : Cartesian.CartesianShape) :
@@ -822,7 +822,7 @@ theorem builtRelativeSplitBPCloseRankBlockWidth_le_two_ell
       builtRelativeSplitBPCloseRankWordSize,
       SuccinctSelectProposal.sparseDenseFalseSelectEll,
       SuccinctSelectProposal.sparseDenseFalseSelectWordBits,
-      SuccinctRankProposal.machineWordBits] using
+      SuccinctRank.machineWordBits] using
       (Nat.lt_log2_self (n := wordBits))
   have hellPowPos : 0 < 2 ^ ell := Nat.pow_pos (by omega : 0 < 2)
   have hwwLtMul : wordBits * wordBits < 2 ^ ell * 2 ^ ell := by
@@ -844,7 +844,7 @@ theorem builtRelativeSplitBPCloseRankBlockWidth_le_two_ell
     SuccinctSelectProposal.natLog2_succ_le_of_pos_lt_pow
       (n := wordBits * wordBits) (k := 2 * ell) hwwPos hwwLtPow
   simpa [wordBits, ell, builtRelativeSplitBPCloseRankBlockWidth,
-    SuccinctRankProposal.machineWordBits] using hle
+    SuccinctRank.machineWordBits] using hle
 
 def relativeSplitSparseExceptionBPCloseRankOverhead
     (n : Nat) : Nat :=
@@ -884,21 +884,21 @@ theorem builtRelativeSplitBPCloseRankData_auxPayload_le_overhead
       have hsuper :
           builtRelativeSplitBPCloseRankSuperOverhead shape = 2 := by
         simp [builtRelativeSplitBPCloseRankSuperOverhead,
-          SuccinctRankProposal.canonicalSuperRankSampleTables_payload_length,
+          SuccinctRank.canonicalSuperRankSampleTables_payload_length,
           canonicalSuperRankEntries_length,
           builtRelativeSplitBPCloseRankWordSize,
           builtRelativeSplitBPCloseRankBlocksPerSuper,
-          SuccinctRankProposal.machineWordBits,
+          SuccinctRank.machineWordBits,
           hbpLen]
       have hblock :
           builtRelativeSplitBPCloseRankBlockOverhead shape = 2 := by
         simp [builtRelativeSplitBPCloseRankBlockOverhead,
-          SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan_payload_length,
+          SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan_payload_length,
           canonicalBlockRankEntries_length,
           builtRelativeSplitBPCloseRankWordSize,
           builtRelativeSplitBPCloseRankBlocksPerSuper,
           builtRelativeSplitBPCloseRankBlockWidth,
-          SuccinctRankProposal.machineWordBits,
+          SuccinctRank.machineWordBits,
           hbpLen, hlog1]
       have hpayloadEq :
           payload =
@@ -928,7 +928,7 @@ theorem builtRelativeSplitBPCloseRankData_auxPayload_le_overhead
         builtRelativeSplitBPCloseRankSuperOverhead shape =
           superLen * wordBits + superLen * wordBits := by
       simp [builtRelativeSplitBPCloseRankSuperOverhead,
-        SuccinctRankProposal.canonicalSuperRankSampleTables_payload_length,
+        SuccinctRank.canonicalSuperRankSampleTables_payload_length,
         canonicalSuperRankEntries_length, superLen, wordBits, n,
         builtRelativeSplitBPCloseRankSuperOverhead,
         builtRelativeSplitBPCloseRankWordSize,
@@ -938,7 +938,7 @@ theorem builtRelativeSplitBPCloseRankData_auxPayload_le_overhead
         builtRelativeSplitBPCloseRankBlockOverhead shape =
           blockLen * blockWidth + blockLen * blockWidth := by
       simp [builtRelativeSplitBPCloseRankBlockOverhead,
-        SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan_payload_length,
+        SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan_payload_length,
         canonicalBlockRankEntries_length, blockLen, blockWidth, wordBits, n,
         builtRelativeSplitBPCloseRankWordSize,
         builtRelativeSplitBPCloseRankBlocksPerSuper,
@@ -1210,13 +1210,13 @@ theorem builtGenericSparseExceptionSelectBPCloseAccessFamily_profile :
                 (builtGenericSparseExceptionSelectBPCloseAccessFamily.directory
                   shape).rankReadWords ->
               word.length <=
-                SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+                SuccinctRank.machineWordBits shape.bpCode.length) /\
           forall {word : List Bool},
             List.Mem word
                 (builtGenericSparseExceptionSelectBPCloseAccessFamily.directory
                   shape).selectReadWords ->
               word.length <=
-                SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+                SuccinctRank.machineWordBits shape.bpCode.length := by
   exact
     PayloadLiveBPCloseAccessFamily.constant_query_profile
       builtGenericSparseExceptionSelectBPCloseAccessFamily
@@ -1290,13 +1290,13 @@ theorem builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily_profile 
                 (builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.directory
                   shape).rankData.bitWords.store.words.toList ->
               word.length <=
-                SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+                SuccinctRank.machineWordBits shape.bpCode.length) /\
           forall {word : List Bool},
             List.Mem word
                 (builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.directory
                   shape).selectData.readWords ->
               word.length <=
-                SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+                SuccinctRank.machineWordBits shape.bpCode.length := by
   exact
     RelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.constant_query_profile
       builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily

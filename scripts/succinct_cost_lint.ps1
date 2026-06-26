@@ -13,6 +13,7 @@ if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 1) {
 
 $littleOPattern = "LittleOLinear\s*\(\s*fun\s+_\s*=>"
 $littleOMatches = rg -n -U $littleOPattern `
+  RMQ/Core/SuccinctRank.lean `
   RMQ/Core/SuccinctRankProposal.lean `
   RMQ/Core/SuccinctSelectProposal.lean `
   RMQ/Core/SuccinctSelect `

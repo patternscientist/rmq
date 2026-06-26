@@ -19,13 +19,13 @@ theorem builtRectangularFalseSelectPaddedLocalCapacity_ge_size
   have hsuperStride :
       0 < sparseDenseFalseSelectSuperStride shape := by
     have hword :
-        0 < SuccinctRankProposal.machineWordBits shape.bpCode.length :=
-      SuccinctRankProposal.machineWordBits_pos
+        0 < SuccinctRank.machineWordBits shape.bpCode.length :=
+      SuccinctRank.machineWordBits_pos
       shape.bpCode.length
     have hmul :
         0 <
-          SuccinctRankProposal.machineWordBits shape.bpCode.length *
-            SuccinctRankProposal.machineWordBits shape.bpCode.length :=
+          SuccinctRank.machineWordBits shape.bpCode.length *
+            SuccinctRank.machineWordBits shape.bpCode.length :=
       Nat.mul_pos hword hword
     simpa [sparseDenseFalseSelectSuperStride,
       sparseDenseFalseSelectWordBits] using hmul

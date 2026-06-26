@@ -215,34 +215,34 @@ theorem concreteBPEndpointFringeRangeMacro_read_words_length_le_machine
     (hwidth : shape.bpCode.length < 2 ^ fieldWidth)
     (hmachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+        SuccinctRank.machineWordBits shape.bpCode.length) :
     let component :=
       concreteBPEndpointFringeRangeMacro
         shape blockSize blockCount fieldWidth hwidth
     (forall {rangeIndex : Nat} {word : List Bool},
       component.leftFringe.minTable.store.words[rangeIndex]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          SuccinctRank.machineWordBits shape.bpCode.length) /\
     (forall {rangeIndex : Nat} {word : List Bool},
       component.leftFringe.argTable.store.words[rangeIndex]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          SuccinctRank.machineWordBits shape.bpCode.length) /\
     (forall {rangeIndex : Nat} {word : List Bool},
       component.interior.minTable.store.words[rangeIndex]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          SuccinctRank.machineWordBits shape.bpCode.length) /\
     (forall {rangeIndex : Nat} {word : List Bool},
       component.interior.argTable.store.words[rangeIndex]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          SuccinctRank.machineWordBits shape.bpCode.length) /\
     (forall {rangeIndex : Nat} {word : List Bool},
       component.rightFringe.minTable.store.words[rangeIndex]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          SuccinctRank.machineWordBits shape.bpCode.length) /\
     (forall {rangeIndex : Nat} {word : List Bool},
       component.rightFringe.argTable.store.words[rangeIndex]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+          SuccinctRank.machineWordBits shape.bpCode.length) := by
   exact
     PayloadLiveBPEndpointFringeRangeMacro.read_words_length_le_machine
       (concreteBPEndpointFringeRangeMacro

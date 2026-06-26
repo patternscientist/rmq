@@ -33,13 +33,13 @@ theorem localSparseOffsetWordRead_length_le_machine
         macroSize macroCount levelCount offsetWidth overhead)
     (hmachine :
       offsetWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     {word : List Bool}
     (hmem :
       word ∈
         localSparseOffsetWordRead offsetTable macroIdx localStart level) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   have hsome :=
     PayloadLiveBPRelativeMinMaxArgSummaryTable.mem_optionWordList hmem
   exact offsetTable.read_word_length_le_machine hmachine hsome
@@ -65,12 +65,12 @@ theorem globalSparseBlockWordRead_length_le_machine
         macroSize macroCount levelCount blockWidth overhead)
     (hmachine :
       blockWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     {word : List Bool}
     (hmem :
       word ∈ globalSparseBlockWordRead globalTable macroStart level) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   have hsome :=
     PayloadLiveBPRelativeMinMaxArgSummaryTable.mem_optionWordList hmem
   exact globalTable.read_word_length_le_machine hmachine hsome
@@ -109,20 +109,20 @@ theorem localSpanCandidateWordsRead_length_le_machine
         summaryOverhead)
     (hoffsetMachine :
       offsetWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hsuperMachine :
       superWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hrelativeMachine :
       relativeWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     {word : List Bool}
     (hmem :
       word ∈
         localSpanCandidateWordsRead offsetTable summary macroIdx localStart
           level) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   simp [localSpanCandidateWordsRead, List.mem_append] at hmem
   rcases hmem with hlocal | hsummary
   · exact
@@ -165,19 +165,19 @@ theorem globalSpanCandidateWordsRead_length_le_machine
         summaryOverhead)
     (hblockMachine :
       blockWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hsuperMachine :
       superWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hrelativeMachine :
       relativeWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     {word : List Bool}
     (hmem :
       word ∈ globalSpanCandidateWordsRead globalTable summary macroStart
         level) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   simp [globalSpanCandidateWordsRead, List.mem_append] at hmem
   rcases hmem with hglobal | hsummary
   · exact
@@ -221,20 +221,20 @@ theorem localTwoSpanCandidateWordsRead_length_le_machine
         summaryOverhead)
     (hoffsetMachine :
       offsetWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hsuperMachine :
       superWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hrelativeMachine :
       relativeWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     {word : List Bool}
     (hmem :
       word ∈
         localTwoSpanCandidateWordsRead offsetTable summary macroIdx
           localStart count) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   simp [localTwoSpanCandidateWordsRead, List.mem_append] at hmem
   rcases hmem with hleft | hright
   · exact
@@ -278,20 +278,20 @@ theorem globalTwoSpanCandidateWordsRead_length_le_machine
         summaryOverhead)
     (hblockMachine :
       blockWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hsuperMachine :
       superWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hrelativeMachine :
       relativeWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     {word : List Bool}
     (hmem :
       word ∈
         globalTwoSpanCandidateWordsRead globalTable summary macroStart
           macroSpanCount) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   simp [globalTwoSpanCandidateWordsRead, List.mem_append] at hmem
   rcases hmem with hleft | hright
   · exact
@@ -334,20 +334,20 @@ theorem bpTwoLevelAdjacentMacroCandidateWordsRead_length_le_machine
         summaryOverhead)
     (hoffsetMachine :
       offsetWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hsuperMachine :
       superWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hrelativeMachine :
       relativeWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     {word : List Bool}
     (hmem :
       word ∈
         bpTwoLevelAdjacentMacroCandidateWordsRead localTable summary
           macroStart localStart rightCount) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   simp [bpTwoLevelAdjacentMacroCandidateWordsRead, List.mem_append] at hmem
   rcases hmem with hleft | hright
   · exact
@@ -398,23 +398,23 @@ theorem bpTwoLevelLeftMiddleMacroCandidateWordsRead_length_le_machine
         summaryOverhead)
     (hoffsetMachine :
       offsetWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hblockMachine :
       blockWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hsuperMachine :
       superWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hrelativeMachine :
       relativeWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     {word : List Bool}
     (hmem :
       word ∈
         bpTwoLevelLeftMiddleMacroCandidateWordsRead localTable globalTable
           summary macroStart localStart middleMacroCount) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   simp [bpTwoLevelLeftMiddleMacroCandidateWordsRead, List.mem_append] at hmem
   rcases hmem with hleft | hmiddle
   · exact
@@ -470,23 +470,23 @@ theorem bpTwoLevelCrossMacroCandidateWordsRead_length_le_machine
         summaryOverhead)
     (hoffsetMachine :
       offsetWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hblockMachine :
       blockWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hsuperMachine :
       superWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hrelativeMachine :
       relativeWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     {word : List Bool}
     (hmem :
       word ∈
         bpTwoLevelCrossMacroCandidateWordsRead localTable globalTable
           summary macroStart localStart middleMacroCount rightCount) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   simp [bpTwoLevelCrossMacroCandidateWordsRead, List.mem_append] at hmem
   rcases hmem with hleft | hmiddle | hright
   · exact

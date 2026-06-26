@@ -1019,7 +1019,7 @@ theorem selectSampleAt?_sample_ordered_of_occurrence_le
           (selectWordStart wordSize basePos) <=
         RMQ.Succinct.rankPrefix target bits
           (selectWordStart wordSize exactPos) :=
-    SuccinctRankProposal.rankPrefix_mono_limit target bits hwordStart
+    SuccinctRank.rankPrefix_mono_limit target bits hwordStart
   simp [selectSampleOfSelectedPos, hwordIndex, hwordStart, hrankBefore]
 
 theorem selectSuperSampleEntry?_sample_ordered

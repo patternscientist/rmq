@@ -105,7 +105,7 @@ structure PayloadLiveRelativeRmmBPCloseMacro
     forall {leftClose rightClose : Nat} {word : List Bool},
       word ∈ payloadWordsRead leftClose rightClose ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length
+          SuccinctRank.machineWordBits shape.bpCode.length
 
 namespace PayloadLiveRelativeRmmBPCloseMacro
 

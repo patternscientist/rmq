@@ -60,7 +60,7 @@ theorem sparseDenseFalseSelectWordBits_pos
     (shape : Cartesian.CartesianShape) :
     0 < sparseDenseFalseSelectWordBits shape := by
   simp [sparseDenseFalseSelectWordBits,
-    SuccinctRankProposal.machineWordBits_pos]
+    SuccinctRank.machineWordBits_pos]
 
 theorem sparseDenseFalseSelectSuperStride_pos
     (shape : Cartesian.CartesianShape) :
@@ -510,7 +510,7 @@ def builtRelativeSplitFalseSelectSparseExceptionRelativeEntries
 
 def builtRelativeSplitFalseSelectSparseExceptionRelativeWidth
     (shape : Cartesian.CartesianShape) : Nat :=
-  SuccinctRankProposal.machineWordBits
+  SuccinctRank.machineWordBits
     (Nat.min shape.bpCode.length
       (sparseDenseFalseSelectSuperLongSpan shape))
 

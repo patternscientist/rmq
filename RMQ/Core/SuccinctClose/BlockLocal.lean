@@ -1,4 +1,4 @@
-import RMQ.Core.SuccinctRankProposal
+import RMQ.Core.SuccinctRank
 
 /-!
 # Block-local BP close/LCA tables

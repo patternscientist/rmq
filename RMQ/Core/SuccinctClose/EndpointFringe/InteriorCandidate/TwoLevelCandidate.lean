@@ -166,23 +166,23 @@ theorem bpTwoLevelInteriorCandidateWordsRead_length_le_machine
         summaryOverhead)
     (hoffsetMachine :
       offsetWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hblockMachine :
       blockWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hsuperMachine :
       superWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hrelativeMachine :
       relativeWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     {word : List Bool}
     (hmem :
       word ∈
         bpTwoLevelInteriorCandidateWordsRead localTable globalTable summary
           startBlock count) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   unfold bpTwoLevelInteriorCandidateWordsRead at hmem
   by_cases hcount : count = 0
   · simp [hcount] at hmem
@@ -584,16 +584,16 @@ theorem concreteBPTwoLevelCrossMacroCandidate_profile
     (hblockWidth : blockCount < 2 ^ blockWidth)
     (hoffsetMachine :
       offsetWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hblockMachine :
       blockWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hsuperMachine :
       superWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hrelativeMachine :
       relativeWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     (hblocks : 0 < blocksPerSuper)
     (hcover : blockCount * blockSize <= shape.bpCode.length)
     (hsuperCount :
@@ -647,7 +647,7 @@ theorem concreteBPTwoLevelCrossMacroCandidate_profile
           bpTwoLevelCrossMacroCandidateWordsRead localTable globalTable
             summary macroStart localStart middleMacroCount rightCount ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            SuccinctRank.machineWordBits shape.bpCode.length := by
   intro localTable globalTable
   constructor
   · exact localTable.payload_length

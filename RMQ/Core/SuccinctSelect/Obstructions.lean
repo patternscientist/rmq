@@ -105,22 +105,22 @@ theorem not_littleOLinear_of_self_le
 
 def clarkSelectTwoWordDescriptorIndexIdentityOverhead (n : Nat) : Nat :=
   let bits : List Bool := List.replicate n false
-  let fieldWidth := SuccinctRankProposal.machineWordBits bits.length
+  let fieldWidth := SuccinctRank.machineWordBits bits.length
   (clarkSelectTwoWordDescriptorIndexTable
     false bits 1 1 fieldWidth (bits.length + 1)
     (by omega)
     (by omega)
     (by
-      simpa [fieldWidth, SuccinctRankProposal.machineWordBits] using
+      simpa [fieldWidth, SuccinctRank.machineWordBits] using
         (Nat.lt_log2_self (n := bits.length)))).table.payload.length
 
 theorem clarkSelectTwoWordDescriptorIndexIdentityOverhead_ge_succ
     (n : Nat) :
     n + 1 <= clarkSelectTwoWordDescriptorIndexIdentityOverhead n := by
   let bits : List Bool := List.replicate n false
-  let fieldWidth := SuccinctRankProposal.machineWordBits bits.length
+  let fieldWidth := SuccinctRank.machineWordBits bits.length
   have hbits : bits.length < 2 ^ fieldWidth := by
-    simpa [fieldWidth, SuccinctRankProposal.machineWordBits] using
+    simpa [fieldWidth, SuccinctRank.machineWordBits] using
       (Nat.lt_log2_self (n := bits.length))
   have hpayload :
       clarkSelectTwoWordDescriptorIndexIdentityOverhead n =
@@ -130,7 +130,7 @@ theorem clarkSelectTwoWordDescriptorIndexIdentityOverhead_ge_succ
       clarkSelectTwoWordDescriptorIndexEntries,
       SuccinctSpace.FixedWidthNatTable.payload_length]
   have hfield : 1 <= fieldWidth := by
-    exact SuccinctRankProposal.machineWordBits_pos bits.length
+    exact SuccinctRank.machineWordBits_pos bits.length
   have hmul : bits.length + 1 <= (bits.length + 1) * fieldWidth := by
     simpa using Nat.mul_le_mul_left (bits.length + 1) hfield
   have hlen : bits.length = n := by
@@ -150,11 +150,11 @@ theorem canonicalSelectBlockTablesFinite_identity_payload_not_littleO
       forall bits : List Bool,
         (canonicalSelectBlockTablesFinite
             bits
-            (SuccinctRankProposal.machineWordBits bits.length)
-            (SuccinctRankProposal.machineWordBits bits.length)
-            (SuccinctRankProposal.machineWordBits bits.length)
+            (SuccinctRank.machineWordBits bits.length)
+            (SuccinctRank.machineWordBits bits.length)
+            (SuccinctRank.machineWordBits bits.length)
             (by
-              simpa [SuccinctRankProposal.machineWordBits] using
+              simpa [SuccinctRank.machineWordBits] using
                 (Nat.lt_log2_self (n := bits.length)))).payload.length <=
           overhead bits.length) :
     ¬ SuccinctSpace.LittleOLinear overhead := by
@@ -165,20 +165,20 @@ theorem canonicalSelectBlockTablesFinite_identity_payload_not_littleO
       bits.length + 1 <=
         (canonicalSelectBlockTablesFinite
             bits
-            (SuccinctRankProposal.machineWordBits bits.length)
-            (SuccinctRankProposal.machineWordBits bits.length)
-            (SuccinctRankProposal.machineWordBits bits.length)
+            (SuccinctRank.machineWordBits bits.length)
+            (SuccinctRank.machineWordBits bits.length)
+            (SuccinctRank.machineWordBits bits.length)
             (by
-              simpa [SuccinctRankProposal.machineWordBits] using
+              simpa [SuccinctRank.machineWordBits] using
                 (Nat.lt_log2_self (n := bits.length)))).payload.length :=
     canonicalSelectBlockTablesFinite_payload_length_ge_succ
       (bits := bits)
-      (wordSize := SuccinctRankProposal.machineWordBits bits.length)
+      (wordSize := SuccinctRank.machineWordBits bits.length)
       (occurrencesPerSuper :=
-        SuccinctRankProposal.machineWordBits bits.length)
-      (fieldWidth := SuccinctRankProposal.machineWordBits bits.length)
+        SuccinctRank.machineWordBits bits.length)
+      (fieldWidth := SuccinctRank.machineWordBits bits.length)
       (by
-        simpa [SuccinctRankProposal.machineWordBits] using
+        simpa [SuccinctRank.machineWordBits] using
           (Nat.lt_log2_self (n := bits.length)))
   have hboundBits := hbound bits
   have hlen : bits.length = n := by
@@ -195,11 +195,11 @@ theorem noTwoLevelPayloadLiveStoredWordRankSelectFamily_with_canonical_select_bl
     ¬ (forall bits : List Bool,
         (canonicalSelectBlockTablesFinite
             bits
-            (SuccinctRankProposal.machineWordBits bits.length)
-            (SuccinctRankProposal.machineWordBits bits.length)
-            (SuccinctRankProposal.machineWordBits bits.length)
+            (SuccinctRank.machineWordBits bits.length)
+            (SuccinctRank.machineWordBits bits.length)
+            (SuccinctRank.machineWordBits bits.length)
             (by
-              simpa [SuccinctRankProposal.machineWordBits] using
+              simpa [SuccinctRank.machineWordBits] using
                 (Nat.lt_log2_self (n := bits.length)))).payload.length <=
           selectBlock bits.length) := by
   intro hbound

@@ -1,5 +1,5 @@
 import RMQ.Core.RankSelectSpec
-import RMQ.Core.SuccinctRankProposal
+import RMQ.Core.SuccinctRank
 import RMQ.Core.GenericSelect.SelectSource
 
 /-!

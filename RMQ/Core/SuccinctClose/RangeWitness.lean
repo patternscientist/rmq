@@ -165,11 +165,11 @@ theorem arg_read_word_length_le_machine
         fieldWidth overhead)
     (hmachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     {block : Nat} {word : List Bool}
     (hword : table.argTable.store.words[block]? = some word) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   have hlen := table.argTable.read_word_length_of_some hword
   omega
 
@@ -181,19 +181,19 @@ theorem read_words_length_le_machine
         fieldWidth overhead)
     (hmachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+        SuccinctRank.machineWordBits shape.bpCode.length) :
     (forall {block : Nat} {word : List Bool},
       table.summary.minTable.store.words[block]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.summary.maxTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.argTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+            SuccinctRank.machineWordBits shape.bpCode.length) := by
   have hsummary :=
     table.summary.summary_read_words_length_le_machine hmachine
   exact ⟨hsummary.1, hsummary.2,
@@ -342,22 +342,22 @@ theorem concreteBPRangeMinMaxArgSummaryTable_read_words_length_le_machine
     (hwidth : shape.bpCode.length < 2 ^ fieldWidth)
     (hmachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+        SuccinctRank.machineWordBits shape.bpCode.length) :
     let table :=
       concreteBPRangeMinMaxArgSummaryTable
         shape blockSize blockCount fieldWidth hwidth
     (forall {block : Nat} {word : List Bool},
       table.summary.minTable.store.words[block]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.summary.maxTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
       (forall {block : Nat} {word : List Bool},
         table.argTable.store.words[block]? = some word ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+            SuccinctRank.machineWordBits shape.bpCode.length) := by
   exact
     PayloadLiveBPRangeMinMaxArgSummaryTable.read_words_length_le_machine
       (concreteBPRangeMinMaxArgSummaryTable
@@ -742,11 +742,11 @@ theorem min_read_word_length_le_machine
         overhead ranges)
     (hmachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     {rangeIndex : Nat} {word : List Bool}
     (hword : table.minTable.store.words[rangeIndex]? = some word) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   have hlen := table.minTable.read_word_length_of_some hword
   omega
 
@@ -759,11 +759,11 @@ theorem arg_read_word_length_le_machine
         overhead ranges)
     (hmachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     {rangeIndex : Nat} {word : List Bool}
     (hword : table.argTable.store.words[rangeIndex]? = some word) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   have hlen := table.argTable.read_word_length_of_some hword
   omega
 
@@ -776,15 +776,15 @@ theorem read_words_length_le_machine
         overhead ranges)
     (hmachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+        SuccinctRank.machineWordBits shape.bpCode.length) :
     (forall {rangeIndex : Nat} {word : List Bool},
       table.minTable.store.words[rangeIndex]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          SuccinctRank.machineWordBits shape.bpCode.length) /\
     (forall {rangeIndex : Nat} {word : List Bool},
       table.argTable.store.words[rangeIndex]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+          SuccinctRank.machineWordBits shape.bpCode.length) := by
   constructor
   · intro rangeIndex word hword
     exact table.min_read_word_length_le_machine hmachine hword
@@ -952,18 +952,18 @@ theorem concreteBPRangeArgMinWitnessTable_read_words_length_le_machine
     (hwidth : shape.bpCode.length < 2 ^ fieldWidth)
     (hmachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+        SuccinctRank.machineWordBits shape.bpCode.length) :
     let table :=
       concreteBPRangeArgMinWitnessTable
         shape blockSize fieldWidth ranges hwidth
     (forall {rangeIndex : Nat} {word : List Bool},
       table.minTable.store.words[rangeIndex]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          SuccinctRank.machineWordBits shape.bpCode.length) /\
     (forall {rangeIndex : Nat} {word : List Bool},
       table.argTable.store.words[rangeIndex]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+          SuccinctRank.machineWordBits shape.bpCode.length) := by
   exact
     PayloadLiveBPRangeArgMinWitnessTable.read_words_length_le_machine
       (concreteBPRangeArgMinWitnessTable
@@ -1169,15 +1169,15 @@ theorem read_words_length_le_machine
         fieldWidth overhead)
     (hmachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+        SuccinctRank.machineWordBits shape.bpCode.length) :
     (forall {rangeIndex : Nat} {word : List Bool},
       component.table.minTable.store.words[rangeIndex]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          SuccinctRank.machineWordBits shape.bpCode.length) /\
     (forall {rangeIndex : Nat} {word : List Bool},
       component.table.argTable.store.words[rangeIndex]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+          SuccinctRank.machineWordBits shape.bpCode.length) := by
   exact component.table.read_words_length_le_machine hmachine
 
 theorem profile
@@ -1288,18 +1288,18 @@ theorem concreteBPBlockPairRangeWitnessMacro_read_words_length_le_machine
     (hwidth : shape.bpCode.length < 2 ^ fieldWidth)
     (hmachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+        SuccinctRank.machineWordBits shape.bpCode.length) :
     let component :=
       concreteBPBlockPairRangeWitnessMacro
         shape blockSize blockCount fieldWidth hwidth
     (forall {rangeIndex : Nat} {word : List Bool},
       component.table.minTable.store.words[rangeIndex]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          SuccinctRank.machineWordBits shape.bpCode.length) /\
     (forall {rangeIndex : Nat} {word : List Bool},
       component.table.argTable.store.words[rangeIndex]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+          SuccinctRank.machineWordBits shape.bpCode.length) := by
   exact
     PayloadLiveBPBlockPairRangeWitnessMacro.read_words_length_le_machine
       (concreteBPBlockPairRangeWitnessMacro

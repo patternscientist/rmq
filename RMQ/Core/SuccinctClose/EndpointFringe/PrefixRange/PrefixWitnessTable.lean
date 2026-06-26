@@ -189,11 +189,11 @@ theorem min_read_word_length_le_machine
         ranges)
     (hmachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     {rangeIndex : Nat} {word : List Bool}
     (hword : table.minTable.store.words[rangeIndex]? = some word) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   have hlen := table.minTable.read_word_length_of_some hword
   omega
 
@@ -206,11 +206,11 @@ theorem arg_read_word_length_le_machine
         ranges)
     (hmachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     {rangeIndex : Nat} {word : List Bool}
     (hword : table.argTable.store.words[rangeIndex]? = some word) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   have hlen := table.argTable.read_word_length_of_some hword
   omega
 
@@ -223,15 +223,15 @@ theorem read_words_length_le_machine
         ranges)
     (hmachine :
       fieldWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+        SuccinctRank.machineWordBits shape.bpCode.length) :
     (forall {rangeIndex : Nat} {word : List Bool},
       table.minTable.store.words[rangeIndex]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) /\
+          SuccinctRank.machineWordBits shape.bpCode.length) /\
     (forall {rangeIndex : Nat} {word : List Bool},
       table.argTable.store.words[rangeIndex]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
+          SuccinctRank.machineWordBits shape.bpCode.length) := by
   constructor
   · intro rangeIndex word hword
     exact table.min_read_word_length_le_machine hmachine hword

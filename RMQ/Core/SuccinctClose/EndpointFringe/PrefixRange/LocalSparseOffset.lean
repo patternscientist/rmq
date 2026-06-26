@@ -420,11 +420,11 @@ theorem read_word_length_le_machine
         macroSize macroCount levelCount offsetWidth overhead)
     (hmachine :
       offsetWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     {word : List Bool}
     (hword : offsetTable.table.store.words[index]? = some word) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   have hlen := offsetTable.table.read_word_length_of_some hword
   omega
 

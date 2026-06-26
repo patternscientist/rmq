@@ -9,7 +9,7 @@ route sparse exception slots in the sparse-exception select directory.
 
 namespace RMQ.GenericSelect
 
-open SuccinctSpace SuccinctRankProposal
+open SuccinctSpace SuccinctRank
 /-! ### Jacobson flag-rank directory (generic over the flag-bit list)
 
 The sparse-exception construction needs the same two-level payload-live rank
@@ -19,18 +19,18 @@ shared `flagRank*` family over an arbitrary flag-bit list. -/
 /-- Payload-word size of a flag-rank directory: `machineWordBits` of the flag
 vector's length. -/
 def flagRankWordSize (flagBits : List Bool) : Nat :=
-  SuccinctRankProposal.machineWordBits flagBits.length
+  SuccinctRank.machineWordBits flagBits.length
 
 def flagRankBlocksPerSuper (flagBits : List Bool) : Nat :=
   flagRankWordSize flagBits
 
 def flagRankBlockWidth (flagBits : List Bool) : Nat :=
-  SuccinctRankProposal.machineWordBits
+  SuccinctRank.machineWordBits
     (flagRankBlocksPerSuper flagBits * flagRankWordSize flagBits)
 
 theorem flagRankWordSize_pos (flagBits : List Bool) :
     0 < flagRankWordSize flagBits := by
-  simp [flagRankWordSize, SuccinctRankProposal.machineWordBits_pos]
+  simp [flagRankWordSize, SuccinctRank.machineWordBits_pos]
 
 theorem flagRankBlocksPerSuper_pos (flagBits : List Bool) :
     0 < flagRankBlocksPerSuper flagBits := by
@@ -38,24 +38,24 @@ theorem flagRankBlocksPerSuper_pos (flagBits : List Bool) :
 
 theorem flagBits_length_lt_rank_word_pow (flagBits : List Bool) :
     flagBits.length < 2 ^ flagRankWordSize flagBits := by
-  simpa [flagRankWordSize, SuccinctRankProposal.machineWordBits] using
+  simpa [flagRankWordSize, SuccinctRank.machineWordBits] using
     (Nat.lt_log2_self (n := flagBits.length))
 
 theorem flagRankBlockSpan_lt_pow (flagBits : List Bool) :
     flagRankBlocksPerSuper flagBits * flagRankWordSize flagBits <
       2 ^ flagRankBlockWidth flagBits := by
-  simpa [flagRankBlockWidth, SuccinctRankProposal.machineWordBits] using
+  simpa [flagRankBlockWidth, SuccinctRank.machineWordBits] using
     (Nat.lt_log2_self
       (n := flagRankBlocksPerSuper flagBits * flagRankWordSize flagBits))
 
 def flagRankSuperOverhead (flagBits : List Bool) : Nat :=
-  (SuccinctRankProposal.canonicalSuperRankSampleTables
+  (SuccinctRank.canonicalSuperRankSampleTables
     flagBits (flagRankWordSize flagBits) (flagRankBlocksPerSuper flagBits)
     (flagRankWordSize flagBits)
     (flagBits_length_lt_rank_word_pow flagBits)).payload.length
 
 def flagRankBlockOverhead (flagBits : List Bool) : Nat :=
-  (SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan
+  (SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan
     flagBits (flagRankWordSize flagBits) (flagRankBlocksPerSuper flagBits)
     (flagRankBlockWidth flagBits)
     (flagRankBlocksPerSuper_pos flagBits)
@@ -63,10 +63,10 @@ def flagRankBlockOverhead (flagBits : List Bool) : Nat :=
 
 /-- The two-level payload-live rank directory over `flagBits`. -/
 def flagRankData (flagBits : List Bool) :
-    SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankData
+    SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
       flagBits (flagRankSuperOverhead flagBits)
       (flagRankBlockOverhead flagBits) 4 :=
-  SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExactLocalBlock
+  SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock
     flagBits
     (flagRankWordSize_pos flagBits)
     (by simp [flagRankWordSize])
@@ -80,19 +80,19 @@ theorem flagRankData_profile (flagBits : List Bool) :
     data.auxPayload.length =
         flagRankSuperOverhead flagBits + flagRankBlockOverhead flagBits /\
       data.wordSize <=
-        SuccinctRankProposal.machineWordBits flagBits.length /\
+        SuccinctRank.machineWordBits flagBits.length /\
       SuccinctSpace.flattenPayloadWords data.bitWords.store.words.toList =
         flagBits /\
       (forall {word : List Bool},
         List.Mem word data.bitWords.store.words.toList ->
           word.length <=
-            SuccinctRankProposal.machineWordBits flagBits.length) /\
+            SuccinctRank.machineWordBits flagBits.length) /\
       forall target pos,
         (data.rankCosted target pos).cost <= 4 /\
           (data.rankCosted target pos).erase =
             RMQ.Succinct.rankPrefix target flagBits pos := by
   exact
-    SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExactLocalBlock_profile
+    SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock_profile
       flagBits
       (flagRankWordSize_pos flagBits)
       (by simp [flagRankWordSize])
@@ -207,7 +207,7 @@ theorem sparseExceptionEffectiveFlagBits_prefix_eq
 
 def sparseExceptionEffectiveFlagRankWordSize
     (bits : List Bool) (target : Bool) : Nat :=
-  SuccinctRankProposal.machineWordBits
+  SuccinctRank.machineWordBits
     (sparseExceptionEffectiveFlagBits bits target).length
 
 def sparseExceptionEffectiveFlagRankBlocksPerSuper
@@ -221,14 +221,14 @@ theorem sparseExceptionEffectiveFlagRankWordSize_pos
     (bits : List Bool) (target : Bool) :
     0 < sparseExceptionEffectiveFlagRankWordSize bits target := by
   simp [sparseExceptionEffectiveFlagRankWordSize,
-    SuccinctRankProposal.machineWordBits_pos]
+    SuccinctRank.machineWordBits_pos]
 
 theorem sparseExceptionEffectiveFlagRankWordSize_le_machine
     (bits : List Bool) (target : Bool) :
     sparseExceptionEffectiveFlagRankWordSize bits target <=
-      SuccinctRankProposal.machineWordBits bits.length := by
+      SuccinctRank.machineWordBits bits.length := by
   unfold sparseExceptionEffectiveFlagRankWordSize
-  exact SuccinctRankProposal.machineWordBits_mono_le
+  exact SuccinctRank.machineWordBits_mono_le
     (sparseExceptionEffectiveFlagBits_length_le_length bits target)
 
 theorem sparseExceptionEffectiveFlagRankBlocksPerSuper_pos
@@ -241,7 +241,7 @@ theorem sparseExceptionEffectiveFlagBits_length_lt_rank_word_pow
     (sparseExceptionEffectiveFlagBits bits target).length <
       2 ^ sparseExceptionEffectiveFlagRankWordSize bits target := by
   simpa [sparseExceptionEffectiveFlagRankWordSize,
-    SuccinctRankProposal.machineWordBits] using
+    SuccinctRank.machineWordBits] using
     (Nat.lt_log2_self
       (n := (sparseExceptionEffectiveFlagBits bits target).length))
 
@@ -262,7 +262,7 @@ theorem sparseExceptionEffectiveFlagRankBlockSpan_lt_pow
 
 def sparseExceptionEffectiveFlagRankSuperOverhead
     (bits : List Bool) (target : Bool) : Nat :=
-  (SuccinctRankProposal.canonicalSuperRankSampleTables
+  (SuccinctRank.canonicalSuperRankSampleTables
     (sparseExceptionEffectiveFlagBits bits target)
     (sparseExceptionEffectiveFlagRankWordSize bits target)
     (sparseExceptionEffectiveFlagRankBlocksPerSuper bits target)
@@ -272,7 +272,7 @@ def sparseExceptionEffectiveFlagRankSuperOverhead
 
 def sparseExceptionEffectiveFlagRankBlockOverhead
     (bits : List Bool) (target : Bool) : Nat :=
-  (SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan
+  (SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan
     (sparseExceptionEffectiveFlagBits bits target)
     (sparseExceptionEffectiveFlagRankWordSize bits target)
     (sparseExceptionEffectiveFlagRankBlocksPerSuper bits target)
@@ -282,17 +282,17 @@ def sparseExceptionEffectiveFlagRankBlockOverhead
 
 def sparseExceptionEffectiveFlagRankData
     (bits : List Bool) (target : Bool) :
-    SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankData
+    SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
       (sparseExceptionEffectiveFlagBits bits target)
       (sparseExceptionEffectiveFlagRankSuperOverhead bits target)
       (sparseExceptionEffectiveFlagRankBlockOverhead bits target)
       4 :=
-  SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExactLocalBlock
+  SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock
     (sparseExceptionEffectiveFlagBits bits target)
     (sparseExceptionEffectiveFlagRankWordSize_pos bits target)
     (by
       simp [sparseExceptionEffectiveFlagRankWordSize,
-        SuccinctRankProposal.machineWordBits])
+        SuccinctRank.machineWordBits])
     (sparseExceptionEffectiveFlagRankBlocksPerSuper_pos bits target)
     (sparseExceptionEffectiveFlagBits_length_lt_rank_word_pow bits target)
     (sparseExceptionEffectiveFlagRankBlockSpan_lt_pow bits target)
@@ -304,26 +304,26 @@ theorem sparseExceptionEffectiveFlagRankData_profile
     data.auxPayload.length =
         sparseExceptionEffectiveFlagRankSuperOverhead bits target +
           sparseExceptionEffectiveFlagRankBlockOverhead bits target /\
-      data.wordSize <= SuccinctRankProposal.machineWordBits bits.length /\
-      data.superWidth <= SuccinctRankProposal.machineWordBits bits.length /\
-      data.blockWidth <= SuccinctRankProposal.machineWordBits bits.length /\
+      data.wordSize <= SuccinctRank.machineWordBits bits.length /\
+      data.superWidth <= SuccinctRank.machineWordBits bits.length /\
+      data.blockWidth <= SuccinctRank.machineWordBits bits.length /\
       SuccinctSpace.flattenPayloadWords data.bitWords.store.words.toList =
         sparseExceptionEffectiveFlagBits bits target /\
       (forall {word : List Bool},
         List.Mem word data.bitWords.store.words.toList ->
-          word.length <= SuccinctRankProposal.machineWordBits bits.length) /\
+          word.length <= SuccinctRank.machineWordBits bits.length) /\
       forall rankTarget pos,
         (data.rankCosted rankTarget pos).cost <= 4 /\
           (data.rankCosted rankTarget pos).erase =
             RMQ.Succinct.rankPrefix rankTarget
               (sparseExceptionEffectiveFlagBits bits target) pos := by
   have hprofile :=
-    SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExactLocalBlock_profile
+    SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock_profile
       (sparseExceptionEffectiveFlagBits bits target)
       (sparseExceptionEffectiveFlagRankWordSize_pos bits target)
       (by
         simp [sparseExceptionEffectiveFlagRankWordSize,
-          SuccinctRankProposal.machineWordBits])
+          SuccinctRank.machineWordBits])
       (sparseExceptionEffectiveFlagRankBlocksPerSuper_pos bits target)
       (sparseExceptionEffectiveFlagBits_length_lt_rank_word_pow bits target)
       (sparseExceptionEffectiveFlagRankBlockSpan_lt_pow bits target)
@@ -340,7 +340,7 @@ theorem sparseExceptionEffectiveFlagRankData_profile
   · exact hprofile.2.2.1
   · intro word hmem
     exact Nat.le_trans (hprofile.2.2.2.1 hmem)
-      (SuccinctRankProposal.machineWordBits_mono_le
+      (SuccinctRank.machineWordBits_mono_le
         (sparseExceptionEffectiveFlagBits_length_le_length bits target))
   · exact hprofile.2.2.2.2
 
@@ -527,7 +527,7 @@ theorem payload_le_logLogCubedSampledDirectoryOverhead_of_mul_wordBits_le
       simpa [e3, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using
         hpayloadLe
     simpa [SuccinctSpace.logLogCubedSampledDirectoryOverhead,
-      w, e, q, wordBits, ell, SuccinctRankProposal.machineWordBits,
+      w, e, q, wordBits, ell, SuccinctRank.machineWordBits,
       Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hpayloadLe'
 
 theorem sparseExceptionEffectiveFlagBits_length_mul_wordBits_le
@@ -627,23 +627,23 @@ theorem sparseExceptionEffectiveFlagRankData_auxPayload_le_overhead
       sparseExceptionEffectiveFlagRankSuperOverhead bits target <=
         2 * (flagLen + rankWord) := by
     unfold sparseExceptionEffectiveFlagRankSuperOverhead
-    rw [SuccinctRankProposal.canonicalSuperRankSampleTables_payload_length]
+    rw [SuccinctRank.canonicalSuperRankSampleTables_payload_length]
     have hentryLen :
-        (SuccinctRankProposal.canonicalSuperRankEntries true flagBits
+        (SuccinctRank.canonicalSuperRankEntries true flagBits
             rankWord
             (sparseExceptionEffectiveFlagRankBlocksPerSuper
               bits target)).length =
           flagLen / rankWord + 1 := by
-      simp [SuccinctRankProposal.canonicalSuperRankEntries, flagBits,
+      simp [SuccinctRank.canonicalSuperRankEntries, flagBits,
         flagLen, rankWord,
         sparseExceptionEffectiveFlagRankBlocksPerSuper]
     have hentryLenFalse :
-        (SuccinctRankProposal.canonicalSuperRankEntries false flagBits
+        (SuccinctRank.canonicalSuperRankEntries false flagBits
             rankWord
             (sparseExceptionEffectiveFlagRankBlocksPerSuper
               bits target)).length =
           flagLen / rankWord + 1 := by
-      simp [SuccinctRankProposal.canonicalSuperRankEntries, flagBits,
+      simp [SuccinctRank.canonicalSuperRankEntries, flagBits,
         flagLen, rankWord,
         sparseExceptionEffectiveFlagRankBlocksPerSuper]
     rw [hentryLen, hentryLenFalse]
@@ -664,22 +664,22 @@ theorem sparseExceptionEffectiveFlagRankData_auxPayload_le_overhead
       sparseExceptionEffectiveFlagRankBlockOverhead bits target <=
         2 * (flagLen + rankWord) := by
     unfold sparseExceptionEffectiveFlagRankBlockOverhead
-    rw [SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan_payload_length]
+    rw [SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan_payload_length]
     have hentryLen :
-        (SuccinctRankProposal.canonicalBlockRankEntries true flagBits
+        (SuccinctRank.canonicalBlockRankEntries true flagBits
             rankWord
             (sparseExceptionEffectiveFlagRankBlocksPerSuper
               bits target)).length =
           flagLen / rankWord + 1 := by
-      simp [SuccinctRankProposal.canonicalBlockRankEntries, flagBits,
+      simp [SuccinctRank.canonicalBlockRankEntries, flagBits,
         flagLen, rankWord]
     have hentryLenFalse :
-        (SuccinctRankProposal.canonicalBlockRankEntries false flagBits
+        (SuccinctRank.canonicalBlockRankEntries false flagBits
             rankWord
             (sparseExceptionEffectiveFlagRankBlocksPerSuper
               bits target)).length =
           flagLen / rankWord + 1 := by
-      simp [SuccinctRankProposal.canonicalBlockRankEntries, flagBits,
+      simp [SuccinctRank.canonicalBlockRankEntries, flagBits,
         flagLen, rankWord]
     rw [hentryLen, hentryLenFalse]
     have hdiv : flagLen / rankWord * rankWord <= flagLen :=
@@ -718,7 +718,7 @@ theorem sparseExceptionEffectiveFlagRankData_auxPayload_le_overhead
         simp [hoccZero]
       simpa [flagBits, flagLen, hcountZero] using hlen
     have hw : w = 1 := by
-      simp [w, wordBits, SuccinctRankProposal.machineWordBits, n, hnZero]
+      simp [w, wordBits, SuccinctRank.machineWordBits, n, hnZero]
     have hrankSmall : rankWord <= 1 := by
       simpa [hw] using hrankWordLeW
     have hauxSmall : data.auxPayload.length <= 4 := by

@@ -210,7 +210,7 @@ theorem localBPWindowGet?_eq_bpCode_get?
       localBPWindowBase shape blockSize close <= globalPos /\
         globalPos <
           localBPWindowBase shape blockSize close +
-            4 * SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+            4 * SuccinctRank.machineWordBits shape.bpCode.length) :
     localBPWindowGet? shape blockSize close globalPos =
       shape.bpCode[globalPos]? := ...
 ```

@@ -714,7 +714,7 @@ theorem builtRelativeSplitFalseSelectSparseExceptionRelativeEntriesForSlot_mem_l
       exact Nat.lt_trans hentryMin
         (by
           simpa [builtRelativeSplitFalseSelectSparseExceptionRelativeWidth,
-            SuccinctRankProposal.machineWordBits] using
+            SuccinctRank.machineWordBits] using
             (Nat.lt_log2_self
               (n :=
                 Nat.min shape.bpCode.length
@@ -776,7 +776,7 @@ theorem builtRelativeSplitFalseSelectSparseExceptionRelativeTable_profile
       forall {word : List Bool},
         List.Mem word table.store.words.toList ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            SuccinctRank.machineWordBits shape.bpCode.length := by
   let table :=
     builtRelativeSplitFalseSelectSparseExceptionRelativeTable shape
   constructor

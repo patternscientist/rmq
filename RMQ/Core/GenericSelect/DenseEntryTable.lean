@@ -8,7 +8,7 @@ Fixed-width dense-local entry tables and entry-based slot arithmetic.
 
 namespace RMQ.GenericSelect
 
-open SuccinctSpace SuccinctRankProposal
+open SuccinctSpace SuccinctRank
 
 theorem bitsToNatLE_lt_two_pow_length (bits : List Bool) :
     SuccinctSpace.bitsToNatLE bits < 2 ^ bits.length := by
@@ -391,16 +391,16 @@ def ReadWordsLengthLeMachine
     (n : Nat) : Prop :=
   (forall {i : Nat} {word : List Bool},
     table.baseOccurrenceTable.store.words[i]? = some word ->
-      word.length <= SuccinctRankProposal.machineWordBits n) /\
+      word.length <= SuccinctRank.machineWordBits n) /\
   (forall {i : Nat} {word : List Bool},
     table.baseWordIndexTable.store.words[i]? = some word ->
-      word.length <= SuccinctRankProposal.machineWordBits n) /\
+      word.length <= SuccinctRank.machineWordBits n) /\
   (forall {i : Nat} {word : List Bool},
     table.rankBeforeTable.store.words[i]? = some word ->
-      word.length <= SuccinctRankProposal.machineWordBits n) /\
+      word.length <= SuccinctRank.machineWordBits n) /\
   (forall {i : Nat} {word : List Bool},
     table.firstOffsetTable.store.words[i]? = some word ->
-      word.length <= SuccinctRankProposal.machineWordBits n)
+      word.length <= SuccinctRank.machineWordBits n)
 
 theorem readWordsLengthLeMachine
     {entries : List SparseDenseSelectDenseLocalEntry}
@@ -408,7 +408,7 @@ theorem readWordsLengthLeMachine
     (table :
       FixedWidthSparseDenseSelectDenseLocalEntryTable
         entries fieldWidth)
-    (hfield : fieldWidth <= SuccinctRankProposal.machineWordBits n) :
+    (hfield : fieldWidth <= SuccinctRank.machineWordBits n) :
     table.ReadWordsLengthLeMachine n := by
   constructor
   · intro i word hword
@@ -435,7 +435,7 @@ theorem read_word_length_le_machine
     (hread : table.ReadWordsLengthLeMachine n)
     {word : List Bool}
     (hmem : List.Mem word table.readWords) :
-    word.length <= SuccinctRankProposal.machineWordBits n := by
+    word.length <= SuccinctRank.machineWordBits n := by
   rcases hread with ⟨hbase, hwordIndex, hrank, hoffset⟩
   rw [readWords] at hmem
   rcases List.mem_append.mp hmem with hprefix0 | hoffsetMem

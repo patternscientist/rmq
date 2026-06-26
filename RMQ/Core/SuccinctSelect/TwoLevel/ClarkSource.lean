@@ -353,7 +353,7 @@ theorem descriptorIndexCosted_profile
             occurrencesPerChunk occurrence) /\
       forall {word : List Bool},
         List.Mem word source.readWords ->
-          word.length <= SuccinctRankProposal.machineWordBits bits.length := by
+          word.length <= SuccinctRank.machineWordBits bits.length := by
   exact
     ⟨source.payload_length_le, source.overhead_littleO,
       source.descriptorIndexCosted_cost_le wordSize,

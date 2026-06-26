@@ -137,11 +137,11 @@ flowchart TD
   PlusMinusOneCore --> Succinct["Core.Succinct"]
   Succinct --> SuccinctSpace["Core.SuccinctSpace"]
   SuccinctSpace --> RankSelectSpec["Core.RankSelectSpec"]
-  SuccinctSpace --> SuccinctRankProposal["Core.SuccinctRankProposal"]
-  SuccinctRankProposal --> GenericSelectSelectSource["Core.GenericSelect.SelectSource"]
-  SuccinctRankProposal --> GenericSelectSelectFacts["Core.GenericSelect.SelectFacts"]
+  SuccinctSpace --> SuccinctRank["Core.SuccinctRank"]
+  SuccinctRank --> GenericSelectSelectSource["Core.GenericSelect.SelectSource"]
+  SuccinctRank --> GenericSelectSelectFacts["Core.GenericSelect.SelectFacts"]
   RankSelectSpec --> SuccinctSelectTwoLevel["Core.SuccinctSelect.TwoLevel"]
-  SuccinctRankProposal --> SuccinctSelectTwoLevel
+  SuccinctRank --> SuccinctSelectTwoLevel
   SuccinctSelectTwoLevel --> SuccinctSelectObstructions["Core.SuccinctSelect.Obstructions"]
   SuccinctSelectObstructions --> SuccinctSelectDenseLocal["Core.SuccinctSelect.DenseLocalTables"]
   GenericSelectDenseEntryTable --> SuccinctSelectDenseLocal
@@ -247,7 +247,7 @@ as an opt-in checked root.
 | Refinement and table/access model | `Core.Refine` now owns `StoredSeq` and `StoredMatrix`, reusable Array/List erasure certificates for one-dimensional direct-address tables and list-of-lists tables. `Core.TableModel` keeps generic indexed access, finite indexed sequences, list-backed reference adapters, compatibility aliases for both stored views, unit-cost modeled reads, and payload views with uncharged auxiliary-state extension. | Indexed reads cost `indexedReadCost = 1`; payload views track serialized payload bits and a charged bit budget. | This keeps List tables as reference semantics while letting executable Array-backed representations prove erasure/refinement once at the boundary. Sparse-table stored queries and Fischer-Heun summary tables use `Refine.StoredMatrix`; dense LCA first-occurrence reads now use `Refine.StoredSeq`. |
 | Linear scan | Exact query, soundness, completeness, invalid-range rejection, backend. | Costed scan kernel exists in `Core.CostKernels`; no separate backend-level cost wrapper. | Direct reference backend. |
 | Plus-minus-one RMQ | `Core.PlusMinusOne` packages `AdjacentDepthsDifferByOne` as a first-class RMQ input, adds delta-signature replay, and proves a certified normalized signature-table contract. Euler traces, generated rose-tree Euler depths, and generated Euler-tour parenthesis bits instantiate the invariant directly. | The old raw constant-cost packed PM1 wrapper has been retired; remaining packed PM1 facts are exact value/reference scaffolding, not the final broadword query-cost model. | `Impl.PlusMinusOne` provides both the conservative linear instance and a normalized delta-signature backend, with contract-level equivalence between them. The packed PM1 model uses the fixed exact signature table as a universal decoder; it is not yet a broadword/block-decomposition implementation. |
-| Succinct bit layer | `Core.Succinct` defines exact rank/select over `List Bool`, balanced-parentheses predicates, model-level `PackedBitVector`, `PackedBalancedParens`, `PackedPlusMinusOneRMQ`, and generated Euler-tour parentheses with proofs of balance and depth-trace agreement. `Core.SuccinctReduction` turns a plus-minus-one backend over generated Euler parentheses, including the concrete packed Euler-parentheses backend, into the ordinary RMQ/LCA reduction interface. `Core.SuccinctSpace` adds the certified broadword directory interface and family-level `2*n + o(n)` theorem shape over exact RMQ shape representatives, plus componentized BP-directory overhead accounting, a reusable rank/select directory boundary, payload-live stored-word rank/select components, balanced-parentheses access adapters, and a BP-native Cartesian-shape payload layer. `Core.RankSelectSpec` wraps that directory boundary as a standalone plain-bitvector surface with stored-bit `access`, exact rank/select, payload length `n + overhead n`, and family theorem `RankSelectSpec.BitVectorRankSelectFamily.n_plus_o_constant_query_profile`. The BP bridge proves `bpCode_balanced`, exact `2*n` BP payload length, inorder close-position existence/bounds, full close-rank count, `bpCloseOfInorder?_rankFalse_succ`, and `select_false_bpCode_eq_bpCloseOfInorder?`. `Core.SuccinctRankProposal` and the `Core.SuccinctSelect` helper modules isolate the sampled rank/select builder targets, while `Core.SuccinctSelectProposal` keeps the remaining sparse/dense relative-split false-close construction. | The packed/reference rank/select and packed PM1 wrappers erase to exact List-level semantics and are useful correctness scaffolding, but their old raw constant-cost profiles are retired: they wrapped aggregate reference computations instead of reading from a real o(n)-bit directory. The faithful rebuild now has both word primitives: `RAM.rankBoolWordPrefix` and `RAM.selectBoolWord`. `Succinct.select_min_length_eq` adds the select-side clamping fact needed for finite locator tables. `SuccinctSpace.StoredWordRankData.rankCostedClamped_exact` gives total rank via a valid stored-read path plus clamping; `SuccinctSpace.FixedWidthNatTable.profile`, `SuccinctSpace.FixedWidthRankSampleTables.profile`, and `SuccinctSpace.PayloadLiveStoredWordRankData.profile` add a payload-live fixed-width sample layer for rank, with `ofEncodedWords_profile` and `ofEntries_profile` constructors tying bounded entries or explicit encoded word lists to the charged payload. `SuccinctSpace.StoredWordSelectData.selectCosted_profile` gives select via a locator read, payload-word read, and word-select primitive; `SuccinctSpace.FixedWidthSelectSampleTable.profile`, `SuccinctSpace.FixedWidthSelectSampleTables.profile`, and `SuccinctSpace.PayloadLiveStoredWordSelectData.profile` add the analogous payload-live fixed-width locator layer for select, again with encoded-word and bounded-entry constructors. `SuccinctSpace.RankSelectDirectory.ofPayloadLiveRankSelectData_profile` combines the payload-live rank/select components; `RankSelectSpec.BitVectorRankSelectDirectory.ofPayloadLiveRankSelectData_profile` exposes the same combined component as a full bitvector access/rank/select API; `SuccinctSpace.BalancedParensAccess.ofPayloadLiveStoredWordRankSelectData_profile` and `SuccinctSpace.BalancedParensAccess.ofShapePayloadLiveStoredWordRankSelectData_close_profile` lift them to BP rank/select/excess access and the Cartesian close-select/rank-close legs with cost `<= 3`; `SuccinctSpace.FixedWidthOptionNatTable.profile`, `SuccinctSpace.PayloadLiveBPCloseLCADirectory.profile`, and `SuccinctSpace.PayloadLiveBPCloseLCADirectory.ofEntries_profile` add the payload-live fixed-width optional-close table for BP LCA-close navigation. The older payload-backed stored-word layer remains as compatibility scaffolding for intermediate migration theorems, but the current BP-native path uses payload-live rank/select plus payload-live LCA-close. `SuccinctSpace.BPBroadwordRMQDirectory` is the BP-native `shape.bpCode ++ aux` payload counterpart to the older canonical full-code-tail directory. `BPCloseRMQNavigationDirectory.queryEncodedCosted_exact` proves the abstract select-close, LCA-close, rank-close composition exact; `PayloadLiveBPCloseRMQNavigationDirectory.profile` proves the stateful built-query version exact with cost `<= 10`, `WordBoundedSampledPayloadLiveBPCloseRMQNavigationFamily.two_n_plus_o_bounded_built_query_profile` adds bounded stored-word discipline, and `WordBoundedSampledEncodedPayloadLiveBPCloseRMQNavigationFamily.two_n_plus_o_word_bounded_encoded_query_profile` gives the sampled payload-only theorem target with bounded rank/select payload words. `SuccinctSpace.logLogSampledDirectoryOverhead_littleO` now supplies the Mathlib-free `n/log n * log log n = o(n)` arithmetic needed for local two-level delta tables. `SuccinctSpace.chunkPayloadWords_get?_some_of_mul_lt` proves strict-position chunk presence. `SuccinctRankProposal` now has canonical super/block rank sample entries, fixed-width sample-table constructors, presence/bound lemmas, chunk-local rank exactness for ordinary chunks, `ofChunks_word_present_of_lt`, `CanonicalRankWordBridge`, and `canonicalTwoLevelRankDataOfBridge`/`canonicalTwoLevelRankDataOfChunksPresent`, plus canonical two-level rank overhead lemmas. `Core.SuccinctSelect.TwoLevel`, `Core.SuccinctSelect.Obstructions`, and `Core.SuccinctSelect.DenseLocalTables` factor the two-level select/rank-select/BP-navigation layer, finite-table obstruction facts, and dense-local table codecs out of the proposal root. `Core.SuccinctSelect.CloseSelect` now has the remaining sparse/dense false-close/select locator machinery, relative-split sparse-exception close access, and branch-obligation closure consumed by `SuccinctFinal`; `SuccinctSelectProposal` is a compatibility import root. | The concrete BP-native succinct RMQ capstone now consumes the generic sparse-exception select source through `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`, with a concrete compact close/LCA directory and rank-backed local BP seed routing on the final path. The older relative-split capstone remains compatibility for the BP-specialized witness; the older single-level/table wrappers remain migration scaffolding. Remaining work is presentation polish, especially an optional flatter encoded/payload-only view of the same capstone, plus the compressed/FID and BP-navigation spokes over the standalone `RankSelectSpec` surface. |
+| Succinct bit layer | `Core.Succinct` defines exact rank/select over `List Bool`, balanced-parentheses predicates, model-level `PackedBitVector`, `PackedBalancedParens`, `PackedPlusMinusOneRMQ`, and generated Euler-tour parentheses with proofs of balance and depth-trace agreement. `Core.SuccinctReduction` turns a plus-minus-one backend over generated Euler parentheses, including the concrete packed Euler-parentheses backend, into the ordinary RMQ/LCA reduction interface. `Core.SuccinctSpace` adds the certified broadword directory interface and family-level `2*n + o(n)` theorem shape over exact RMQ shape representatives, plus componentized BP-directory overhead accounting, a reusable rank/select directory boundary, payload-live stored-word rank/select components, balanced-parentheses access adapters, and a BP-native Cartesian-shape payload layer. `Core.RankSelectSpec` wraps that directory boundary as a standalone plain-bitvector surface with stored-bit `access`, exact rank/select, payload length `n + overhead n`, and family theorem `RankSelectSpec.BitVectorRankSelectFamily.n_plus_o_constant_query_profile`. The BP bridge proves `bpCode_balanced`, exact `2*n` BP payload length, inorder close-position existence/bounds, full close-rank count, `bpCloseOfInorder?_rankFalse_succ`, and `select_false_bpCode_eq_bpCloseOfInorder?`. `Core.SuccinctRank` and the `Core.SuccinctSelect` helper modules isolate the sampled rank/select builder targets, while `Core.SuccinctSelectProposal` keeps the remaining sparse/dense relative-split false-close construction. | The packed/reference rank/select and packed PM1 wrappers erase to exact List-level semantics and are useful correctness scaffolding, but their old raw constant-cost profiles are retired: they wrapped aggregate reference computations instead of reading from a real o(n)-bit directory. The faithful rebuild now has both word primitives: `RAM.rankBoolWordPrefix` and `RAM.selectBoolWord`. `Succinct.select_min_length_eq` adds the select-side clamping fact needed for finite locator tables. `SuccinctSpace.StoredWordRankData.rankCostedClamped_exact` gives total rank via a valid stored-read path plus clamping; `SuccinctSpace.FixedWidthNatTable.profile`, `SuccinctSpace.FixedWidthRankSampleTables.profile`, and `SuccinctSpace.PayloadLiveStoredWordRankData.profile` add a payload-live fixed-width sample layer for rank, with `ofEncodedWords_profile` and `ofEntries_profile` constructors tying bounded entries or explicit encoded word lists to the charged payload. `SuccinctSpace.StoredWordSelectData.selectCosted_profile` gives select via a locator read, payload-word read, and word-select primitive; `SuccinctSpace.FixedWidthSelectSampleTable.profile`, `SuccinctSpace.FixedWidthSelectSampleTables.profile`, and `SuccinctSpace.PayloadLiveStoredWordSelectData.profile` add the analogous payload-live fixed-width locator layer for select, again with encoded-word and bounded-entry constructors. `SuccinctSpace.RankSelectDirectory.ofPayloadLiveRankSelectData_profile` combines the payload-live rank/select components; `RankSelectSpec.BitVectorRankSelectDirectory.ofPayloadLiveRankSelectData_profile` exposes the same combined component as a full bitvector access/rank/select API; `SuccinctSpace.BalancedParensAccess.ofPayloadLiveStoredWordRankSelectData_profile` and `SuccinctSpace.BalancedParensAccess.ofShapePayloadLiveStoredWordRankSelectData_close_profile` lift them to BP rank/select/excess access and the Cartesian close-select/rank-close legs with cost `<= 3`; `SuccinctSpace.FixedWidthOptionNatTable.profile`, `SuccinctSpace.PayloadLiveBPCloseLCADirectory.profile`, and `SuccinctSpace.PayloadLiveBPCloseLCADirectory.ofEntries_profile` add the payload-live fixed-width optional-close table for BP LCA-close navigation. The older payload-backed stored-word layer remains as compatibility scaffolding for intermediate migration theorems, but the current BP-native path uses payload-live rank/select plus payload-live LCA-close. `SuccinctSpace.BPBroadwordRMQDirectory` is the BP-native `shape.bpCode ++ aux` payload counterpart to the older canonical full-code-tail directory. `BPCloseRMQNavigationDirectory.queryEncodedCosted_exact` proves the abstract select-close, LCA-close, rank-close composition exact; `PayloadLiveBPCloseRMQNavigationDirectory.profile` proves the stateful built-query version exact with cost `<= 10`, `WordBoundedSampledPayloadLiveBPCloseRMQNavigationFamily.two_n_plus_o_bounded_built_query_profile` adds bounded stored-word discipline, and `WordBoundedSampledEncodedPayloadLiveBPCloseRMQNavigationFamily.two_n_plus_o_word_bounded_encoded_query_profile` gives the sampled payload-only theorem target with bounded rank/select payload words. `SuccinctSpace.logLogSampledDirectoryOverhead_littleO` now supplies the Mathlib-free `n/log n * log log n = o(n)` arithmetic needed for local two-level delta tables. `SuccinctSpace.chunkPayloadWords_get?_some_of_mul_lt` proves strict-position chunk presence. `SuccinctRank` now has canonical super/block rank sample entries, fixed-width sample-table constructors, presence/bound lemmas, chunk-local rank exactness for ordinary chunks, `ofChunks_word_present_of_lt`, `CanonicalRankWordBridge`, and `canonicalTwoLevelRankDataOfBridge`/`canonicalTwoLevelRankDataOfChunksPresent`, plus canonical two-level rank overhead lemmas. `Core.SuccinctSelect.TwoLevel`, `Core.SuccinctSelect.Obstructions`, and `Core.SuccinctSelect.DenseLocalTables` factor the two-level select/rank-select/BP-navigation layer, finite-table obstruction facts, and dense-local table codecs out of the proposal root. `Core.SuccinctSelect.CloseSelect` now has the remaining sparse/dense false-close/select locator machinery, relative-split sparse-exception close access, and branch-obligation closure consumed by `SuccinctFinal`; `SuccinctSelectProposal` is a compatibility import root. | The concrete BP-native succinct RMQ capstone now consumes the generic sparse-exception select source through `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`, with a concrete compact close/LCA directory and rank-backed local BP seed routing on the final path. The older relative-split capstone remains compatibility for the BP-specialized witness; the older single-level/table wrappers remain migration scaffolding. Remaining work is presentation polish, especially an optional flatter encoded/payload-only view of the same capstone, plus the compressed/FID and BP-navigation spokes over the standalone `RankSelectSpec` surface. |
 | Sparse table | Exact materialized sparse table query and backend. `SparseTableInstrumented` replays cell construction, counted array row pushes, memoized log-row building, supplied-table querying, and build-then-query execution through Array-facing primitive traces and refines the verified List definitions. | The obsolete `SparseTableCost` build/fresh-query module has been retired. `SparseTableInstrumented` gives derived trace bounds for cells, rows, the memoized log-row build, stored supplied-table queries, and a build-then-query execution, with headline theorems `memoBuild_refine_with_steps`, `memoBuild_and_query_refine_with_steps`, and `memoQueryWithTracedBuild_refine_with_steps`. | The traced query guard uses `Array.size`, not `List.length`, so the constant-step query statement no longer hides list materialization in the validity check. Generic Array-table/List-table refinement is factored through `Refine.StoredMatrix` row/cell erasure, `queryFromArrayTable_value_of_refines`, and `queryFromStoredTable`. |
 | Memoized sparse table | Memoized build is extensionally equivalent to the verified sparse table, with backend and build-cost theorems for Fischer-Heun summaries. `SparseTableInstrumented.memoBuild_refine_with_steps` and `memoBuild_and_query_refine_with_steps` give the same log-row build a derived primitive-trace implementation over Arrays. | Exact log-row build cost formula, memo row count, a traced Array build bound, and a true build-then-query trace bound of `memoBuildSparseTableArraySteps xs.length + 7`. | This is the cost-faithful sparse-table builder used by Fischer-Heun summaries. The old fresh sparse-table query `Costed` wrapper was retired; Fischer-Heun's summary query now consumes a `Refine.StoredMatrix`/`StoredTable` Array representation. |
 | Hybrid block | Exact public hybrid backend with boundary scans and sparse middle summaries. | No first-class cost profile yet. | Useful proof predecessor for the recursive and Fischer-Heun schedules. |
@@ -264,13 +264,18 @@ as an opt-in checked root.
 
 Rank/select update: the standalone plain-bitvector surface now has a concrete
 Jacobson/Clark instantiation.  `RankSelect.jacobsonClarkNPlusOConstantQuery`
-combines `SuccinctRankProposal.jacobsonRankData` with two
+combines `SuccinctRank.jacobsonRankData` with two
 `GenericSelect.sparseExceptionSelectSource` values behind
 `RankSelectSpec.BitVectorRankSelectFamily`, proving stored-bit access, exact
 rank/select, `n + o(n)` counted payload bits, and one fixed modeled query
 bound.  The remaining standalone rank/select frontier is now compressed/FID
 space or a tighter presentation of the Clark internals, not merely consuming
 the public spec surface.
+
+Namespace cleanup note: `RMQ.Core.SuccinctRank` / `RMQ.SuccinctRank` are now
+the canonical rank-side implementation names. `RMQ.Core.SuccinctRankProposal`
+is retained only as a compatibility import root exporting the historical
+`RMQ.SuccinctRankProposal` namespace.
 
 Succinct E1 update: the concrete two-level rank/select chunk-backed path has
 advanced beyond the older table-row wording above. Rank now has the
@@ -1262,44 +1267,44 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctSpace.BPBroadwordSuccinctRMQFamily.two_n_plus_o_constant_query_profile`,
   `SuccinctSpace.ComponentizedBPRMQFamily.overhead_littleO`,
   `SuccinctSpace.ComponentizedBPRMQFamily.two_n_plus_o_constant_query_profile`.
-- `RMQ/Core/SuccinctRankProposal.lean`:
-  `SuccinctRankProposal.rankSampleEntries_getOpt_exact`,
-  `SuccinctRankProposal.canonicalSuperRankEntries_getOpt_exact`,
-  `SuccinctRankProposal.canonicalBlockRankEntries_getOpt_exact`,
-  `SuccinctRankProposal.chunkPayloadWords_rankPrefix_exact`,
-  `SuccinctRankProposal.ofChunks_rankPrefix_exact`,
-  `SuccinctRankProposal.ofChunks_word_present_of_lt`,
-  `SuccinctRankProposal.ofChunksWithSentinel_word_present`,
-  `SuccinctRankProposal.ofChunksWithSentinel_rankPrefix_exact`,
-  `SuccinctRankProposal.canonicalSuperRankSampleTables_present`,
-  `SuccinctRankProposal.canonicalBlockRankSampleTables_present`,
-  `SuccinctRankProposal.canonicalBlockRankEntries_mem_bound_of_local_span`,
-  `SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan_present`,
-  `SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan_payload_length`,
-  `SuccinctRankProposal.canonicalRankParts_exact_of_word_local`,
-  `SuccinctRankProposal.canonicalTwoLevelRankDataOfBridge`,
-  `SuccinctRankProposal.canonicalTwoLevelRankDataOfBridgeLocalBlock`,
-  `SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksPresent`,
-  `SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksPresentLocalBlock`,
-  `SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExact`,
-  `SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExactLocalBlock`,
-  `SuccinctRankProposal.canonicalTwoLevelRankDataOfBridge_profile`,
-  `SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExact_profile`,
-  `SuccinctRankProposal.canonicalTwoLevelRankDataOfBridgeLocalBlock_profile`,
-  `SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExactLocalBlock_profile`,
-  `SuccinctRankProposal.twoLevelRankOverhead_littleO`,
-  `SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankData.rankCosted_cost_le_four`,
-  `SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankData.profile`,
-  `SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankFamily.constant_query_profile`,
-  `SuccinctRankProposal.canonicalTwoLevelRankSuperOverhead_littleO`,
-  `SuccinctRankProposal.canonicalTwoLevelRankBlockOverhead_littleO`,
-  `SuccinctRankProposal.canonicalTwoLevelRankOverhead_littleO`,
-  `SuccinctRankProposal.fixedWidthRankSampleTables_payload_length_eq_budget`,
-  `SuccinctRankProposal.fixedWidthRankSampleTables_payload_length_le_sampled`,
-  `SuccinctRankProposal.SampledPayloadLiveStoredWordRankData.profile`,
-  `SuccinctRankProposal.SampledPayloadLiveStoredWordRankFamily.bounded_constant_query_profile`,
-  `SuccinctRankProposal.ExactSampledPayloadLiveStoredWordRankFamily.constant_query_profile`,
-  `SuccinctRankProposal.ExactSampledPayloadLiveStoredWordRankFamily.bounded_constant_query_profile`.
+- `RMQ/Core/SuccinctRank.lean`:
+  `SuccinctRank.rankSampleEntries_getOpt_exact`,
+  `SuccinctRank.canonicalSuperRankEntries_getOpt_exact`,
+  `SuccinctRank.canonicalBlockRankEntries_getOpt_exact`,
+  `SuccinctRank.chunkPayloadWords_rankPrefix_exact`,
+  `SuccinctRank.ofChunks_rankPrefix_exact`,
+  `SuccinctRank.ofChunks_word_present_of_lt`,
+  `SuccinctRank.ofChunksWithSentinel_word_present`,
+  `SuccinctRank.ofChunksWithSentinel_rankPrefix_exact`,
+  `SuccinctRank.canonicalSuperRankSampleTables_present`,
+  `SuccinctRank.canonicalBlockRankSampleTables_present`,
+  `SuccinctRank.canonicalBlockRankEntries_mem_bound_of_local_span`,
+  `SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan_present`,
+  `SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan_payload_length`,
+  `SuccinctRank.canonicalRankParts_exact_of_word_local`,
+  `SuccinctRank.canonicalTwoLevelRankDataOfBridge`,
+  `SuccinctRank.canonicalTwoLevelRankDataOfBridgeLocalBlock`,
+  `SuccinctRank.canonicalTwoLevelRankDataOfChunksPresent`,
+  `SuccinctRank.canonicalTwoLevelRankDataOfChunksPresentLocalBlock`,
+  `SuccinctRank.canonicalTwoLevelRankDataOfChunksExact`,
+  `SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock`,
+  `SuccinctRank.canonicalTwoLevelRankDataOfBridge_profile`,
+  `SuccinctRank.canonicalTwoLevelRankDataOfChunksExact_profile`,
+  `SuccinctRank.canonicalTwoLevelRankDataOfBridgeLocalBlock_profile`,
+  `SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock_profile`,
+  `SuccinctRank.twoLevelRankOverhead_littleO`,
+  `SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankCosted_cost_le_four`,
+  `SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.profile`,
+  `SuccinctRank.TwoLevelPayloadLiveStoredWordRankFamily.constant_query_profile`,
+  `SuccinctRank.canonicalTwoLevelRankSuperOverhead_littleO`,
+  `SuccinctRank.canonicalTwoLevelRankBlockOverhead_littleO`,
+  `SuccinctRank.canonicalTwoLevelRankOverhead_littleO`,
+  `SuccinctRank.fixedWidthRankSampleTables_payload_length_eq_budget`,
+  `SuccinctRank.fixedWidthRankSampleTables_payload_length_le_sampled`,
+  `SuccinctRank.SampledPayloadLiveStoredWordRankData.profile`,
+  `SuccinctRank.SampledPayloadLiveStoredWordRankFamily.bounded_constant_query_profile`,
+  `SuccinctRank.ExactSampledPayloadLiveStoredWordRankFamily.constant_query_profile`,
+  `SuccinctRank.ExactSampledPayloadLiveStoredWordRankFamily.bounded_constant_query_profile`.
 - `RMQ/Core/SuccinctSelect/TwoLevel.lean`,
   the split `RMQ/Core/SuccinctSelect/TwoLevel/*` layers for select samples,
   word-exactness, Clark-source construction, select data, rank/select

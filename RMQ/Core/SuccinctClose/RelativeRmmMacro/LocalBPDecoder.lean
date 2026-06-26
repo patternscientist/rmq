@@ -47,7 +47,7 @@ def bpCodeWordReadsAt
     (shape : Cartesian.CartesianShape) (index : Nat) : List (List Bool) :=
   payloadWordReadOfGet?
     (SuccinctSpace.chunkPayloadWords
-      (SuccinctRankProposal.machineWordBits shape.bpCode.length)
+      (SuccinctRank.machineWordBits shape.bpCode.length)
       shape.bpCode).toArray
     index
 
@@ -56,7 +56,7 @@ theorem bpCodeWordReadsAt_length_le_machine
     {word : List Bool}
     (hmem : word ∈ bpCodeWordReadsAt shape index) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   unfold bpCodeWordReadsAt at hmem
   exact payloadWordReadOfGet?_length_le
     (by
@@ -64,16 +64,16 @@ theorem bpCodeWordReadsAt_length_le_machine
       have hmemWords :
           stored ∈
             SuccinctSpace.chunkPayloadWords
-              (SuccinctRankProposal.machineWordBits shape.bpCode.length)
+              (SuccinctRank.machineWordBits shape.bpCode.length)
               shape.bpCode := by
         have hlist :
             (SuccinctSpace.chunkPayloadWords
-              (SuccinctRankProposal.machineWordBits shape.bpCode.length)
+              (SuccinctRank.machineWordBits shape.bpCode.length)
               shape.bpCode)[index]? = some stored := by
           simpa [Array.getElem?_toList] using hget
         exact List.mem_of_getElem? hlist
       exact SuccinctSpace.chunkPayloadWords_word_length_le
-        (SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        (SuccinctRank.machineWordBits shape.bpCode.length)
         hmemWords)
     hmem
 
@@ -94,13 +94,13 @@ theorem flatten_bpCodeWordReadsAt_eq_take_drop
     (shape : Cartesian.CartesianShape) (index : Nat) :
     SuccinctSpace.flattenPayloadWords (bpCodeWordReadsAt shape index) =
       (shape.bpCode.drop
-        (index * SuccinctRankProposal.machineWordBits shape.bpCode.length)).take
-          (SuccinctRankProposal.machineWordBits shape.bpCode.length) := by
-  let wordSize := SuccinctRankProposal.machineWordBits shape.bpCode.length
+        (index * SuccinctRank.machineWordBits shape.bpCode.length)).take
+          (SuccinctRank.machineWordBits shape.bpCode.length) := by
+  let wordSize := SuccinctRank.machineWordBits shape.bpCode.length
   let words := SuccinctSpace.chunkPayloadWords wordSize shape.bpCode
   have hword : 0 < wordSize := by
     simpa [wordSize] using
-      SuccinctRankProposal.machineWordBits_pos shape.bpCode.length
+      SuccinctRank.machineWordBits_pos shape.bpCode.length
   unfold bpCodeWordReadsAt payloadWordReadOfGet?
   cases hget : words.toArray[index]? with
   | some word =>
@@ -139,7 +139,7 @@ model surface; exactness is stated by the local primitive theorems below.
 def localBPBlockWordsRead
     (shape : Cartesian.CartesianShape)
     (blockSize close : Nat) : List (List Bool) :=
-  let wordSize := SuccinctRankProposal.machineWordBits shape.bpCode.length
+  let wordSize := SuccinctRank.machineWordBits shape.bpCode.length
   let firstWord :=
     blockStartOf blockSize (blockOfClose blockSize close) / wordSize
   bpCodeWordReadsAt shape firstWord ++
@@ -151,7 +151,7 @@ def localBPBlockWordsRead
 def localBPWindowBase
     (shape : Cartesian.CartesianShape)
     (blockSize close : Nat) : Nat :=
-  let wordSize := SuccinctRankProposal.machineWordBits shape.bpCode.length
+  let wordSize := SuccinctRank.machineWordBits shape.bpCode.length
   let firstWord :=
     blockStartOf blockSize (blockOfClose blockSize close) / wordSize
   firstWord * wordSize
@@ -166,7 +166,7 @@ stated without calling the semantic local helpers.
 def localBPWindowBits
     (shape : Cartesian.CartesianShape)
     (blockSize close : Nat) : List Bool :=
-  let wordSize := SuccinctRankProposal.machineWordBits shape.bpCode.length
+  let wordSize := SuccinctRank.machineWordBits shape.bpCode.length
   let base := localBPWindowBase shape blockSize close
   (shape.bpCode.drop base).take (4 * wordSize)
 
@@ -177,7 +177,7 @@ theorem localBPWindowBits_eq_flatten_localBPBlockWordsRead
     localBPWindowBits shape blockSize close =
       SuccinctSpace.flattenPayloadWords
         (localBPBlockWordsRead shape blockSize close) := by
-  let wordSize := SuccinctRankProposal.machineWordBits shape.bpCode.length
+  let wordSize := SuccinctRank.machineWordBits shape.bpCode.length
   let firstWord :=
     blockStartOf blockSize (blockOfClose blockSize close) / wordSize
   have h0 := flatten_bpCodeWordReadsAt_eq_take_drop shape firstWord
@@ -266,7 +266,7 @@ theorem localBPWindowBits_length_le
     (shape : Cartesian.CartesianShape)
     (blockSize close : Nat) :
     (localBPWindowBits shape blockSize close).length <=
-      4 * SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      4 * SuccinctRank.machineWordBits shape.bpCode.length := by
   simp [localBPWindowBits, List.length_take]
   exact Nat.min_le_left _ _
 
@@ -279,7 +279,7 @@ theorem zeroBlockSameBlock_does_not_imply_localBPWindowCoverage
     (shape : Cartesian.CartesianShape)
     {rightClose : Nat}
     (hwide :
-      4 * SuccinctRankProposal.machineWordBits shape.bpCode.length <
+      4 * SuccinctRank.machineWordBits shape.bpCode.length <
         rightClose + 1) :
     blockOfClose 0 0 = blockOfClose 0 rightClose /\
       ¬ rightClose + 1 <=
@@ -300,14 +300,14 @@ theorem localBPWindowGet?_eq_bpCode_get?
       localBPWindowBase shape blockSize close <= globalPos /\
         globalPos <
           localBPWindowBase shape blockSize close +
-            4 * SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+            4 * SuccinctRank.machineWordBits shape.bpCode.length) :
     localBPWindowGet? shape blockSize close globalPos =
       shape.bpCode[globalPos]? := by
   unfold localBPWindowGet? localBPWindowBits
   simp only [hcovered.1, ↓reduceIte]
   have hoff :
       globalPos - localBPWindowBase shape blockSize close <
-        4 * SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+        4 * SuccinctRank.machineWordBits shape.bpCode.length := by
     omega
   rw [List.getElem?_take]
   simp [hoff]
@@ -329,7 +329,7 @@ theorem localBPBlockWordsRead_get?_eq_bpCode_get?
       localBPWindowBase shape blockSize close <= globalPos /\
         globalPos <
           localBPWindowBase shape blockSize close +
-            4 * SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+            4 * SuccinctRank.machineWordBits shape.bpCode.length) :
     (SuccinctSpace.flattenPayloadWords
         (localBPBlockWordsRead shape blockSize close))[
           globalPos - localBPWindowBase shape blockSize close]? =
@@ -359,7 +359,7 @@ theorem localBPWindowBase_le_blockStart
     localBPWindowBase shape blockSize close <=
       blockStartOf blockSize (blockOfClose blockSize close) := by
   unfold localBPWindowBase
-  let wordSize := SuccinctRankProposal.machineWordBits shape.bpCode.length
+  let wordSize := SuccinctRank.machineWordBits shape.bpCode.length
   let start := blockStartOf blockSize (blockOfClose blockSize close)
   have hdiv := Nat.div_add_mod start wordSize
   have hcomm : start / wordSize * wordSize =
@@ -373,16 +373,16 @@ theorem localBPWindow_block_end_le_four_words
     (blockSize close : Nat)
     (hblockSize :
       blockSize <=
-        3 * SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+        3 * SuccinctRank.machineWordBits shape.bpCode.length) :
     blockStartOf blockSize (blockOfClose blockSize close) + blockSize <=
       localBPWindowBase shape blockSize close +
-        4 * SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+        4 * SuccinctRank.machineWordBits shape.bpCode.length := by
   unfold localBPWindowBase
-  let wordSize := SuccinctRankProposal.machineWordBits shape.bpCode.length
+  let wordSize := SuccinctRank.machineWordBits shape.bpCode.length
   let start := blockStartOf blockSize (blockOfClose blockSize close)
   have hword : 0 < wordSize := by
     simpa [wordSize] using
-      SuccinctRankProposal.machineWordBits_pos shape.bpCode.length
+      SuccinctRank.machineWordBits_pos shape.bpCode.length
   have hdiv := Nat.div_add_mod start wordSize
   have hmod := Nat.mod_lt start hword
   have hcomm : start / wordSize * wordSize =
@@ -400,12 +400,12 @@ theorem localBPWindowBits_covers_of_le_width
     (hposWidth :
       pos <=
         localBPWindowBase shape blockSize close +
-          4 * SuccinctRankProposal.machineWordBits shape.bpCode.length) :
+          4 * SuccinctRank.machineWordBits shape.bpCode.length) :
     pos <=
       localBPWindowBase shape blockSize close +
         (localBPWindowBits shape blockSize close).length := by
   let base := localBPWindowBase shape blockSize close
-  let width := 4 * SuccinctRankProposal.machineWordBits shape.bpCode.length
+  let width := 4 * SuccinctRank.machineWordBits shape.bpCode.length
   have hbaseLen : base <= shape.bpCode.length := by omega
   have hoffLen : pos - base <= shape.bpCode.length - base := by omega
   have hoffWidth : pos - base <= width := by omega
@@ -591,7 +591,7 @@ theorem localBPSeededExcessAt_eq_bpExcessAt
         globalPos =
       bpExcessAt shape globalPos := by
   let base := localBPWindowBase shape blockSize close
-  let width := 4 * SuccinctRankProposal.machineWordBits shape.bpCode.length
+  let width := 4 * SuccinctRank.machineWordBits shape.bpCode.length
   have hend :
       base + (localBPWindowBits shape blockSize close).length <=
         shape.bpCode.length := by
@@ -1049,7 +1049,7 @@ theorem localBPBlockWordsRead_length_le_machine
     {word : List Bool}
     (hmem : word ∈ localBPBlockWordsRead shape blockSize close) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   simp [localBPBlockWordsRead, List.mem_append] at hmem
   rcases hmem with hmem | hmem | hmem | hmem
   · exact bpCodeWordReadsAt_length_le_machine shape _ hmem
@@ -1428,7 +1428,7 @@ theorem localBPSameBlockCloseDecodedCosted_exact_of_query_same_block
     (hblockSizePos : 0 < blockSize)
     (hblockSizeLeThree :
       blockSize <=
-        3 * SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        3 * SuccinctRank.machineWordBits shape.bpCode.length)
     (hsame :
       blockOfClose blockSize leftClose =
         blockOfClose blockSize rightClose)
@@ -1468,7 +1468,7 @@ theorem localBPSameBlockCloseDecodedCosted_exact_of_query_same_block
       blockStartOf blockSize (blockOfClose blockSize leftClose) +
           blockSize <=
         localBPWindowBase shape blockSize leftClose +
-          4 * SuccinctRankProposal.machineWordBits shape.bpCode.length :=
+          4 * SuccinctRank.machineWordBits shape.bpCode.length :=
     localBPWindow_block_end_le_four_words shape blockSize leftClose
       hblockSizeLeThree
   have hrightInside :
@@ -1480,7 +1480,7 @@ theorem localBPSameBlockCloseDecodedCosted_exact_of_query_same_block
   have hrightEndWidth :
       rightClose + 1 <=
         localBPWindowBase shape blockSize leftClose +
-          4 * SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+          4 * SuccinctRank.machineWordBits shape.bpCode.length := by
     have hrightBlockStart :
         blockStartOf blockSize (blockOfClose blockSize rightClose) =
           blockStartOf blockSize (blockOfClose blockSize leftClose) := by
@@ -1515,7 +1515,7 @@ theorem localBPSameBlockCloseDecodedCostedWithRankSeed_exact_of_query_same_block
     (hblockSizePos : 0 < blockSize)
     (hblockSizeLeThree :
       blockSize <=
-        3 * SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        3 * SuccinctRank.machineWordBits shape.bpCode.length)
     (hsame :
       blockOfClose blockSize leftClose =
         blockOfClose blockSize rightClose)
@@ -1555,7 +1555,7 @@ theorem localBPSameBlockCloseDecodedCostedWithRankSeed_exact_of_query_same_block
       blockStartOf blockSize (blockOfClose blockSize leftClose) +
           blockSize <=
         localBPWindowBase shape blockSize leftClose +
-          4 * SuccinctRankProposal.machineWordBits shape.bpCode.length :=
+          4 * SuccinctRank.machineWordBits shape.bpCode.length :=
     localBPWindow_block_end_le_four_words shape blockSize leftClose
       hblockSizeLeThree
   have hrightInside :
@@ -1567,7 +1567,7 @@ theorem localBPSameBlockCloseDecodedCostedWithRankSeed_exact_of_query_same_block
   have hrightEndWidth :
       rightClose + 1 <=
         localBPWindowBase shape blockSize leftClose +
-          4 * SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+          4 * SuccinctRank.machineWordBits shape.bpCode.length := by
     have hrightBlockStart :
         blockStartOf blockSize (blockOfClose blockSize rightClose) =
           blockStartOf blockSize (blockOfClose blockSize leftClose) := by

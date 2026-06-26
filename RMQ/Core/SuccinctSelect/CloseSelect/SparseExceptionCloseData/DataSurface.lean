@@ -17,7 +17,7 @@ structure RelativeSplitSparseExceptionFalseSelectCloseData
   wordSize : Nat
   wordSize_pos : 0 < wordSize
   wordSize_le_machine :
-    wordSize <= SuccinctRankProposal.machineWordBits shape.bpCode.length
+    wordSize <= SuccinctRank.machineWordBits shape.bpCode.length
   superStride : Nat
   superStride_pos : 0 < superStride
   localStride : Nat
@@ -30,17 +30,17 @@ structure RelativeSplitSparseExceptionFalseSelectCloseData
   longFlagRankSuperOverhead : Nat
   longFlagRankBlockOverhead : Nat
   longFlagRankData :
-    SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankData
+    SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
       longFlagBits longFlagRankSuperOverhead longFlagRankBlockOverhead 4
   longFlagRank_wordSize_le_machine :
     longFlagRankData.wordSize <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length
+      SuccinctRank.machineWordBits shape.bpCode.length
   longFlagRank_superWidth_le_machine :
     longFlagRankData.superWidth <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length
+      SuccinctRank.machineWordBits shape.bpCode.length
   longFlagRank_blockWidth_le_machine :
     longFlagRankData.blockWidth <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length
+      SuccinctRank.machineWordBits shape.bpCode.length
   longSuperRelativeEntries : List Nat
   localEntries : List SparseDenseFalseSelectDenseLocalEntry
   superFieldWidth : Nat
@@ -66,7 +66,7 @@ structure RelativeSplitSparseExceptionFalseSelectCloseData
     forall {i : Nat} {word : List Bool},
       longSuperRelativeTable.store.words[i]? = some word ->
         word.length <=
-          SuccinctRankProposal.machineWordBits shape.bpCode.length
+          SuccinctRank.machineWordBits shape.bpCode.length
   local_read_words_length_le_machine :
     FixedWidthSparseDenseFalseSelectDenseLocalEntryTable.ReadWordsLengthLeMachine
       localTable shape.bpCode.length
@@ -472,7 +472,7 @@ theorem longFlagRank_read_word_length_le_machine
     {word : List Bool}
     (hmem : List.Mem word data.longFlagRankReadWords) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   rw [longFlagRankReadWords] at hmem
   cases List.mem_append.mp hmem with
   | inl hsampleMem =>
@@ -535,7 +535,7 @@ theorem read_word_length_le_machine
     {word : List Bool}
     (hmem : List.Mem word data.readWords) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   rw [readWords] at hmem
   cases List.mem_append.mp hmem with
   | inl hprefix0 =>
@@ -588,7 +588,7 @@ theorem profile
       forall {word : List Bool},
         List.Mem word data.readWords ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            SuccinctRank.machineWordBits shape.bpCode.length := by
   exact
     ⟨data.payload_length_le_canonical,
       canonicalRelativeSplitSparseExceptionFalseSelectOverhead_littleO,
@@ -677,7 +677,7 @@ theorem toChargedSelectPositionSource_descriptorIndexCosted_profile
       forall {word : List Bool},
         List.Mem word source.readWords ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            SuccinctRank.machineWordBits shape.bpCode.length := by
   intro source
   exact
     source.descriptorIndexCosted_profile data.wordSize_pos hchunk
@@ -800,7 +800,7 @@ theorem relativeSplitDescriptorIndexCosted_profile
       forall {word : List Bool},
         List.Mem word data.readWords ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            SuccinctRank.machineWordBits shape.bpCode.length := by
   have hprofile := data.profile
   exact
     ⟨hprofile.1, hprofile.2.1,

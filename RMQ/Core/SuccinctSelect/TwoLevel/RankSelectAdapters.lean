@@ -91,7 +91,7 @@ theorem ChargedSelectPositionSource.ofTwoLevelSelectData_profile
           RMQ.Succinct.select target bits occurrence) /\
       forall {word : List Bool},
         List.Mem word source.readWords ->
-          word.length <= SuccinctRankProposal.machineWordBits bits.length := by
+          word.length <= SuccinctRank.machineWordBits bits.length := by
   refine ⟨rfl, rfl, ?_, hlittleO, ?_, ?_, ?_⟩
   · exact data.auxPayload_length
   · intro occurrence
@@ -146,7 +146,7 @@ theorem TwoLevelPayloadLiveStoredWordSelectFamily.toChargedSelectPositionSource_
           forall {word : List Bool},
             List.Mem word source.readWords ->
               word.length <=
-                SuccinctRankProposal.machineWordBits bits.length := by
+                SuccinctRank.machineWordBits bits.length := by
   refine
     ⟨twoLevelSelectOverhead_littleO family.super_littleO family.block_littleO,
       ?_⟩
@@ -166,7 +166,7 @@ theorem TwoLevelPayloadLiveStoredWordSelectFamily.toChargedSelectPositionSource_
 def twoLevelRankSelectOverhead
     (rankSuper rankBlock selectSuper selectBlock : Nat -> Nat)
     (n : Nat) : Nat :=
-  SuccinctRankProposal.twoLevelRankOverhead rankSuper rankBlock n +
+  SuccinctRank.twoLevelRankOverhead rankSuper rankBlock n +
     twoLevelSelectOverhead selectSuper selectBlock n
 
 theorem twoLevelRankSelectOverhead_littleO
@@ -180,7 +180,7 @@ theorem twoLevelRankSelectOverhead_littleO
         rankSuper rankBlock selectSuper selectBlock) := by
   unfold twoLevelRankSelectOverhead
   exact
-      (SuccinctRankProposal.twoLevelRankOverhead_littleO
+      (SuccinctRank.twoLevelRankOverhead_littleO
       hrankSuper hrankBlock).add
       (twoLevelSelectOverhead_littleO hselectSuper hselectBlock)
 
@@ -189,9 +189,9 @@ def canonicalTwoLevelRankSelectOverhead
     (rankSuperSlots rankBlockSlots selectSuperSlots selectBlockSlots :
       Nat) : Nat -> Nat :=
   twoLevelRankSelectOverhead
-    (SuccinctRankProposal.canonicalTwoLevelRankSuperOverhead
+    (SuccinctRank.canonicalTwoLevelRankSuperOverhead
       rankSuperSlots)
-    (SuccinctRankProposal.canonicalTwoLevelRankBlockOverhead
+    (SuccinctRank.canonicalTwoLevelRankBlockOverhead
       rankBlockSlots)
     (canonicalTwoLevelSelectSuperOverhead selectSuperSlots)
     (canonicalTwoLevelSelectBlockOverhead selectBlockSlots)
@@ -204,9 +204,9 @@ theorem canonicalTwoLevelRankSelectOverhead_littleO
         rankSuperSlots rankBlockSlots selectSuperSlots selectBlockSlots) := by
   exact
     twoLevelRankSelectOverhead_littleO
-      (SuccinctRankProposal.canonicalTwoLevelRankSuperOverhead_littleO
+      (SuccinctRank.canonicalTwoLevelRankSuperOverhead_littleO
         rankSuperSlots)
-      (SuccinctRankProposal.canonicalTwoLevelRankBlockOverhead_littleO
+      (SuccinctRank.canonicalTwoLevelRankBlockOverhead_littleO
         rankBlockSlots)
       (canonicalTwoLevelSelectSuperOverhead_littleO selectSuperSlots)
       (canonicalTwoLevelSelectBlockOverhead_littleO selectBlockSlots)
@@ -215,7 +215,7 @@ def twoLevelRankSelectDirectory
     {bits : List Bool}
     {rankSuper rankBlock selectSuper selectBlock queryCost : Nat}
     (rankData :
-      SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankData
+      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
         bits rankSuper rankBlock queryCost)
     (selectData :
       TwoLevelPayloadLiveStoredWordSelectData
@@ -248,7 +248,7 @@ theorem twoLevelRankSelectDirectory_profile
     {bits : List Bool}
     {rankSuper rankBlock selectSuper selectBlock queryCost : Nat}
     (rankData :
-      SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankData
+      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
         bits rankSuper rankBlock queryCost)
     (selectData :
       TwoLevelPayloadLiveStoredWordSelectData
@@ -287,7 +287,7 @@ def canonicalTwoLevelRankSelectDirectoryOfChunksExact
         Nat}
     (hword : 0 < wordSize)
     (hwordMachine :
-      wordSize <= SuccinctRankProposal.machineWordBits bits.length)
+      wordSize <= SuccinctRank.machineWordBits bits.length)
     (hblocks : 0 < blocksPerSuper)
     (hoccurrences : 0 < occurrencesPerSuper)
     (hrankSuperBits : bits.length < 2 ^ rankSuperWidth)
@@ -296,10 +296,10 @@ def canonicalTwoLevelRankSelectDirectoryOfChunksExact
     (hselectBlockBits : bits.length < 2 ^ selectBlockWidth)
     (hquery : 4 <= queryCost) :
     SuccinctSpace.RankSelectDirectory bits
-      (((SuccinctRankProposal.canonicalSuperRankSampleTables
+      (((SuccinctRank.canonicalSuperRankSampleTables
           bits wordSize blocksPerSuper rankSuperWidth
           hrankSuperBits).payload.length +
-        (SuccinctRankProposal.canonicalBlockRankSampleTables
+        (SuccinctRank.canonicalBlockRankSampleTables
           bits wordSize blocksPerSuper rankBlockWidth
           hrankBlockBits).payload.length) +
         ((canonicalSelectSuperTablesFinite
@@ -310,7 +310,7 @@ def canonicalTwoLevelRankSelectDirectoryOfChunksExact
           hselectBlockBits).payload.length))
       queryCost :=
   twoLevelRankSelectDirectory
-    (SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExact
+    (SuccinctRank.canonicalTwoLevelRankDataOfChunksExact
       bits hword hwordMachine hblocks hrankSuperBits hrankBlockBits hquery)
     (canonicalTwoLevelSelectDataOfChunksExact
       bits hword hwordMachine hoccurrences hselectSuperBits
@@ -323,7 +323,7 @@ theorem canonicalTwoLevelRankSelectDirectoryOfChunksExact_profile
         Nat}
     (hword : 0 < wordSize)
     (hwordMachine :
-      wordSize <= SuccinctRankProposal.machineWordBits bits.length)
+      wordSize <= SuccinctRank.machineWordBits bits.length)
     (hblocks : 0 < blocksPerSuper)
     (hoccurrences : 0 < occurrencesPerSuper)
     (hrankSuperBits : bits.length < 2 ^ rankSuperWidth)
@@ -334,10 +334,10 @@ theorem canonicalTwoLevelRankSelectDirectoryOfChunksExact_profile
     (canonicalTwoLevelRankSelectDirectoryOfChunksExact bits hword
         hwordMachine hblocks hoccurrences hrankSuperBits hrankBlockBits
         hselectSuperBits hselectBlockBits hquery).auxPayload.length =
-        (((SuccinctRankProposal.canonicalSuperRankSampleTables
+        (((SuccinctRank.canonicalSuperRankSampleTables
           bits wordSize blocksPerSuper rankSuperWidth
           hrankSuperBits).payload.length +
-        (SuccinctRankProposal.canonicalBlockRankSampleTables
+        (SuccinctRank.canonicalBlockRankSampleTables
           bits wordSize blocksPerSuper rankBlockWidth
           hrankBlockBits).payload.length) +
         ((canonicalSelectSuperTablesFinite
@@ -368,7 +368,7 @@ theorem canonicalTwoLevelRankSelectDirectoryOfChunksExact_profile
             RMQ.Succinct.select target bits occurrence) := by
   exact
     twoLevelRankSelectDirectory_profile
-      (SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExact
+      (SuccinctRank.canonicalTwoLevelRankDataOfChunksExact
         bits hword hwordMachine hblocks hrankSuperBits hrankBlockBits hquery)
       (canonicalTwoLevelSelectDataOfChunksExact
         bits hword hwordMachine hoccurrences hselectSuperBits
@@ -381,7 +381,7 @@ def canonicalTwoLevelRankSelectDirectoryOfChunksExactLocalRankBlock
         Nat}
     (hword : 0 < wordSize)
     (hwordMachine :
-      wordSize <= SuccinctRankProposal.machineWordBits bits.length)
+      wordSize <= SuccinctRank.machineWordBits bits.length)
     (hblocks : 0 < blocksPerSuper)
     (hoccurrences : 0 < occurrencesPerSuper)
     (hrankSuperBits : bits.length < 2 ^ rankSuperWidth)
@@ -390,10 +390,10 @@ def canonicalTwoLevelRankSelectDirectoryOfChunksExactLocalRankBlock
     (hselectBlockBits : bits.length < 2 ^ selectBlockWidth)
     (hquery : 4 <= queryCost) :
     SuccinctSpace.RankSelectDirectory bits
-      (((SuccinctRankProposal.canonicalSuperRankSampleTables
+      (((SuccinctRank.canonicalSuperRankSampleTables
           bits wordSize blocksPerSuper rankSuperWidth
           hrankSuperBits).payload.length +
-        (SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan
+        (SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan
           bits wordSize blocksPerSuper rankBlockWidth hblocks
           hrankBlockBits).payload.length) +
         ((canonicalSelectSuperTablesFinite
@@ -404,7 +404,7 @@ def canonicalTwoLevelRankSelectDirectoryOfChunksExactLocalRankBlock
           hselectBlockBits).payload.length))
       queryCost :=
   twoLevelRankSelectDirectory
-    (SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExactLocalBlock
+    (SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock
       bits hword hwordMachine hblocks hrankSuperBits hrankBlockBits hquery)
     (canonicalTwoLevelSelectDataOfChunksExact
       bits hword hwordMachine hoccurrences hselectSuperBits
@@ -417,7 +417,7 @@ theorem canonicalTwoLevelRankSelectDirectoryOfChunksExactLocalRankBlock_profile
         Nat}
     (hword : 0 < wordSize)
     (hwordMachine :
-      wordSize <= SuccinctRankProposal.machineWordBits bits.length)
+      wordSize <= SuccinctRank.machineWordBits bits.length)
     (hblocks : 0 < blocksPerSuper)
     (hoccurrences : 0 < occurrencesPerSuper)
     (hrankSuperBits : bits.length < 2 ^ rankSuperWidth)
@@ -428,10 +428,10 @@ theorem canonicalTwoLevelRankSelectDirectoryOfChunksExactLocalRankBlock_profile
     (canonicalTwoLevelRankSelectDirectoryOfChunksExactLocalRankBlock
         bits hword hwordMachine hblocks hoccurrences hrankSuperBits
         hrankBlockBits hselectSuperBits hselectBlockBits hquery).auxPayload.length =
-        (((SuccinctRankProposal.canonicalSuperRankSampleTables
+        (((SuccinctRank.canonicalSuperRankSampleTables
           bits wordSize blocksPerSuper rankSuperWidth
           hrankSuperBits).payload.length +
-        (SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan
+        (SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan
           bits wordSize blocksPerSuper rankBlockWidth hblocks
           hrankBlockBits).payload.length) +
         ((canonicalSelectSuperTablesFinite
@@ -462,7 +462,7 @@ theorem canonicalTwoLevelRankSelectDirectoryOfChunksExactLocalRankBlock_profile
             RMQ.Succinct.select target bits occurrence) := by
   exact
     twoLevelRankSelectDirectory_profile
-      (SuccinctRankProposal.canonicalTwoLevelRankDataOfChunksExactLocalBlock
+      (SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock
         bits hword hwordMachine hblocks hrankSuperBits hrankBlockBits hquery)
       (canonicalTwoLevelSelectDataOfChunksExact
         bits hword hwordMachine hoccurrences hselectSuperBits
@@ -475,7 +475,7 @@ def canonicalTwoLevelBalancedParensAccessOfChunksExact
         Nat}
     (hword : 0 < wordSize)
     (hwordMachine :
-      wordSize <= SuccinctRankProposal.machineWordBits parens.bits.length)
+      wordSize <= SuccinctRank.machineWordBits parens.bits.length)
     (hblocks : 0 < blocksPerSuper)
     (hoccurrences : 0 < occurrencesPerSuper)
     (hrankSuperBits : parens.bits.length < 2 ^ rankSuperWidth)
@@ -484,10 +484,10 @@ def canonicalTwoLevelBalancedParensAccessOfChunksExact
     (hselectBlockBits : parens.bits.length < 2 ^ selectBlockWidth)
     (hquery : 4 <= queryCost) :
     SuccinctSpace.BalancedParensAccess parens
-      (((SuccinctRankProposal.canonicalSuperRankSampleTables
+      (((SuccinctRank.canonicalSuperRankSampleTables
           parens.bits wordSize blocksPerSuper rankSuperWidth
           hrankSuperBits).payload.length +
-        (SuccinctRankProposal.canonicalBlockRankSampleTables
+        (SuccinctRank.canonicalBlockRankSampleTables
           parens.bits wordSize blocksPerSuper rankBlockWidth
           hrankBlockBits).payload.length) +
         ((canonicalSelectSuperTablesFinite
@@ -510,7 +510,7 @@ theorem canonicalTwoLevelBalancedParensAccessOfChunksExact_profile
         Nat}
     (hword : 0 < wordSize)
     (hwordMachine :
-      wordSize <= SuccinctRankProposal.machineWordBits parens.bits.length)
+      wordSize <= SuccinctRank.machineWordBits parens.bits.length)
     (hblocks : 0 < blocksPerSuper)
     (hoccurrences : 0 < occurrencesPerSuper)
     (hrankSuperBits : parens.bits.length < 2 ^ rankSuperWidth)
@@ -523,10 +523,10 @@ theorem canonicalTwoLevelBalancedParensAccessOfChunksExact_profile
         parens hword hwordMachine hblocks hoccurrences hrankSuperBits
         hrankBlockBits hselectSuperBits hselectBlockBits hquery
     access.rankSelect.auxPayload.length =
-        (((SuccinctRankProposal.canonicalSuperRankSampleTables
+        (((SuccinctRank.canonicalSuperRankSampleTables
           parens.bits wordSize blocksPerSuper rankSuperWidth
           hrankSuperBits).payload.length +
-        (SuccinctRankProposal.canonicalBlockRankSampleTables
+        (SuccinctRank.canonicalBlockRankSampleTables
           parens.bits wordSize blocksPerSuper rankBlockWidth
           hrankBlockBits).payload.length) +
         ((canonicalSelectSuperTablesFinite
@@ -606,7 +606,7 @@ def canonicalTwoLevelBalancedParensAccessOfChunksExactLocalRankBlock
         Nat}
     (hword : 0 < wordSize)
     (hwordMachine :
-      wordSize <= SuccinctRankProposal.machineWordBits parens.bits.length)
+      wordSize <= SuccinctRank.machineWordBits parens.bits.length)
     (hblocks : 0 < blocksPerSuper)
     (hoccurrences : 0 < occurrencesPerSuper)
     (hrankSuperBits : parens.bits.length < 2 ^ rankSuperWidth)
@@ -615,10 +615,10 @@ def canonicalTwoLevelBalancedParensAccessOfChunksExactLocalRankBlock
     (hselectBlockBits : parens.bits.length < 2 ^ selectBlockWidth)
     (hquery : 4 <= queryCost) :
     SuccinctSpace.BalancedParensAccess parens
-      (((SuccinctRankProposal.canonicalSuperRankSampleTables
+      (((SuccinctRank.canonicalSuperRankSampleTables
           parens.bits wordSize blocksPerSuper rankSuperWidth
           hrankSuperBits).payload.length +
-        (SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan
+        (SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan
           parens.bits wordSize blocksPerSuper rankBlockWidth hblocks
           hrankBlockBits).payload.length) +
         ((canonicalSelectSuperTablesFinite
@@ -641,7 +641,7 @@ theorem canonicalTwoLevelBalancedParensAccessOfChunksExactLocalRankBlock_profile
         Nat}
     (hword : 0 < wordSize)
     (hwordMachine :
-      wordSize <= SuccinctRankProposal.machineWordBits parens.bits.length)
+      wordSize <= SuccinctRank.machineWordBits parens.bits.length)
     (hblocks : 0 < blocksPerSuper)
     (hoccurrences : 0 < occurrencesPerSuper)
     (hrankSuperBits : parens.bits.length < 2 ^ rankSuperWidth)
@@ -654,10 +654,10 @@ theorem canonicalTwoLevelBalancedParensAccessOfChunksExactLocalRankBlock_profile
         parens hword hwordMachine hblocks hoccurrences hrankSuperBits
         hrankBlockBits hselectSuperBits hselectBlockBits hquery
     access.rankSelect.auxPayload.length =
-        (((SuccinctRankProposal.canonicalSuperRankSampleTables
+        (((SuccinctRank.canonicalSuperRankSampleTables
           parens.bits wordSize blocksPerSuper rankSuperWidth
           hrankSuperBits).payload.length +
-        (SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan
+        (SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan
           parens.bits wordSize blocksPerSuper rankBlockWidth hblocks
           hrankBlockBits).payload.length) +
         ((canonicalSelectSuperTablesFinite
@@ -735,7 +735,7 @@ structure TwoLevelPayloadLiveStoredWordRankSelectFamily
     (queryCost : Nat) where
   rankComponent :
     forall bits : List Bool,
-      SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankData
+      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
         bits (rankSuper bits.length) (rankBlock bits.length) queryCost
   selectComponent :
     forall bits : List Bool,
@@ -878,7 +878,7 @@ theorem word_bounded_constant_query_profile
         ((family.directory bits).auxPayload.length =
           family.overhead bits.length) /\
         ((family.rankComponent bits).wordSize <=
-          SuccinctRankProposal.machineWordBits bits.length) /\
+          SuccinctRank.machineWordBits bits.length) /\
         SuccinctSpace.flattenPayloadWords
             (family.rankComponent bits).bitWords.store.words.toList =
           bits /\
@@ -886,9 +886,9 @@ theorem word_bounded_constant_query_profile
           List.Mem word
               (family.rankComponent bits).bitWords.store.words.toList ->
             word.length <=
-              SuccinctRankProposal.machineWordBits bits.length) /\
+              SuccinctRank.machineWordBits bits.length) /\
         ((family.selectComponent bits).wordSize <=
-          SuccinctRankProposal.machineWordBits bits.length) /\
+          SuccinctRank.machineWordBits bits.length) /\
         SuccinctSpace.flattenPayloadWords
             (family.selectComponent bits).bitWords.store.words.toList =
           bits /\
@@ -896,7 +896,7 @@ theorem word_bounded_constant_query_profile
           List.Mem word
               (family.selectComponent bits).bitWords.store.words.toList ->
             word.length <=
-              SuccinctRankProposal.machineWordBits bits.length) /\
+              SuccinctRank.machineWordBits bits.length) /\
         (forall target pos,
           ((family.directory bits).rankQueryCosted target pos).cost <=
               queryCost /\
@@ -937,7 +937,7 @@ theorem word_bounded_n_plus_o_constant_query_profile
         directory.payload.length =
           bits.length + family.overhead bits.length /\
         ((family.rankComponent bits).wordSize <=
-          SuccinctRankProposal.machineWordBits bits.length) /\
+          SuccinctRank.machineWordBits bits.length) /\
         SuccinctSpace.flattenPayloadWords
             (family.rankComponent bits).bitWords.store.words.toList =
           bits /\
@@ -945,9 +945,9 @@ theorem word_bounded_n_plus_o_constant_query_profile
           List.Mem word
               (family.rankComponent bits).bitWords.store.words.toList ->
             word.length <=
-              SuccinctRankProposal.machineWordBits bits.length) /\
+              SuccinctRank.machineWordBits bits.length) /\
         ((family.selectComponent bits).wordSize <=
-          SuccinctRankProposal.machineWordBits bits.length) /\
+          SuccinctRank.machineWordBits bits.length) /\
         SuccinctSpace.flattenPayloadWords
             (family.selectComponent bits).bitWords.store.words.toList =
           bits /\
@@ -955,7 +955,7 @@ theorem word_bounded_n_plus_o_constant_query_profile
           List.Mem word
               (family.selectComponent bits).bitWords.store.words.toList ->
             word.length <=
-              SuccinctRankProposal.machineWordBits bits.length) /\
+              SuccinctRank.machineWordBits bits.length) /\
         (forall i,
           (directory.accessQueryCosted i).cost <= queryCost /\
             (directory.accessQueryCosted i).erase = bits[i]?) /\

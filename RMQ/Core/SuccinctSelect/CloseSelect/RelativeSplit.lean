@@ -566,7 +566,7 @@ theorem builtRelativeSplitFalseSelectSuperEntries_mem_fields_lt_width
   have hlenPow :
       shape.bpCode.length < 2 ^ wordSize := by
     simpa [wordSize, sparseDenseFalseSelectWordBits,
-      SuccinctRankProposal.machineWordBits] using
+      SuccinctRank.machineWordBits] using
       (Nat.lt_log2_self (n := shape.bpCode.length))
   have hbasePow : baseOccurrence < 2 ^ wordSize :=
     Nat.lt_trans hbaseLen hlenPow
@@ -743,7 +743,7 @@ theorem builtRelativeSplitFalseSelectLocalEntries_mem_fields_lt_width
   have hrelPos : 0 < relWidth := by
     simp [relWidth, builtRelativeSplitFalseSelectLocalFieldWidth,
       builtRelativeSplitFalseSelectSparseExceptionRelativeWidth,
-      SuccinctRankProposal.machineWordBits_pos]
+      SuccinctRank.machineWordBits_pos]
   have hpowPos : 0 < 2 ^ relWidth := Nat.pow_pos (by omega : 0 < 2)
   have hfield_of_lt_min :
       forall {x : Nat},
@@ -1243,23 +1243,23 @@ theorem builtRelativeSplitFalseSelectSparseExceptionEffectiveFlagRankData_auxPay
           shape <=
         2 * (flagLen + rankWord) := by
     unfold builtRelativeSplitFalseSelectSparseExceptionEffectiveFlagRankSuperOverhead
-    rw [SuccinctRankProposal.canonicalSuperRankSampleTables_payload_length]
+    rw [SuccinctRank.canonicalSuperRankSampleTables_payload_length]
     have hentryLen :
-        (SuccinctRankProposal.canonicalSuperRankEntries true flagBits
+        (SuccinctRank.canonicalSuperRankEntries true flagBits
             rankWord
             (builtRelativeSplitFalseSelectSparseExceptionEffectiveFlagRankBlocksPerSuper
               shape)).length =
           flagLen / rankWord + 1 := by
-      simp [SuccinctRankProposal.canonicalSuperRankEntries, flagBits,
+      simp [SuccinctRank.canonicalSuperRankEntries, flagBits,
         flagLen, rankWord,
         builtRelativeSplitFalseSelectSparseExceptionEffectiveFlagRankBlocksPerSuper]
     have hentryLenFalse :
-        (SuccinctRankProposal.canonicalSuperRankEntries false flagBits
+        (SuccinctRank.canonicalSuperRankEntries false flagBits
             rankWord
             (builtRelativeSplitFalseSelectSparseExceptionEffectiveFlagRankBlocksPerSuper
               shape)).length =
           flagLen / rankWord + 1 := by
-      simp [SuccinctRankProposal.canonicalSuperRankEntries, flagBits,
+      simp [SuccinctRank.canonicalSuperRankEntries, flagBits,
         flagLen, rankWord,
         builtRelativeSplitFalseSelectSparseExceptionEffectiveFlagRankBlocksPerSuper]
     rw [hentryLen, hentryLenFalse]
@@ -1281,22 +1281,22 @@ theorem builtRelativeSplitFalseSelectSparseExceptionEffectiveFlagRankData_auxPay
           shape <=
         2 * (flagLen + rankWord) := by
     unfold builtRelativeSplitFalseSelectSparseExceptionEffectiveFlagRankBlockOverhead
-    rw [SuccinctRankProposal.canonicalBlockRankSampleTablesOfLocalSpan_payload_length]
+    rw [SuccinctRank.canonicalBlockRankSampleTablesOfLocalSpan_payload_length]
     have hentryLen :
-        (SuccinctRankProposal.canonicalBlockRankEntries true flagBits
+        (SuccinctRank.canonicalBlockRankEntries true flagBits
             rankWord
             (builtRelativeSplitFalseSelectSparseExceptionEffectiveFlagRankBlocksPerSuper
               shape)).length =
           flagLen / rankWord + 1 := by
-      simp [SuccinctRankProposal.canonicalBlockRankEntries, flagBits,
+      simp [SuccinctRank.canonicalBlockRankEntries, flagBits,
         flagLen, rankWord]
     have hentryLenFalse :
-        (SuccinctRankProposal.canonicalBlockRankEntries false flagBits
+        (SuccinctRank.canonicalBlockRankEntries false flagBits
             rankWord
             (builtRelativeSplitFalseSelectSparseExceptionEffectiveFlagRankBlocksPerSuper
               shape)).length =
           flagLen / rankWord + 1 := by
-      simp [SuccinctRankProposal.canonicalBlockRankEntries, flagBits,
+      simp [SuccinctRank.canonicalBlockRankEntries, flagBits,
         flagLen, rankWord]
     rw [hentryLen, hentryLenFalse]
     have hdiv : flagLen / rankWord * rankWord <= flagLen :=
@@ -1340,7 +1340,7 @@ theorem builtRelativeSplitFalseSelectSparseExceptionEffectiveFlagRankData_auxPay
       simpa [flagBits, flagLen, hcountZero] using hlen
     have hbpWord : bpWord = 1 := by
       simp [bpWord, sparseDenseFalseSelectWordBits,
-        SuccinctRankProposal.machineWordBits, n, hnZero]
+        SuccinctRank.machineWordBits, n, hnZero]
     have hrankSmall : rankWord <= 1 := by
       simpa [hbpWord] using hrankWordLeBp
     have hauxSmall : data.auxPayload.length <= 4 := by
@@ -1455,10 +1455,10 @@ theorem canonicalSparseExceptionDirectoryOverhead_littleO :
 theorem fixedWidthNatTable_word_length_le_of_mem
     {entries : List Nat} {width n : Nat}
     (table : SuccinctSpace.FixedWidthNatTable entries width)
-    (hwidth : width <= SuccinctRankProposal.machineWordBits n)
+    (hwidth : width <= SuccinctRank.machineWordBits n)
     {word : List Bool}
     (hmem : List.Mem word table.store.words.toList) :
-    word.length <= SuccinctRankProposal.machineWordBits n := by
+    word.length <= SuccinctRank.machineWordBits n := by
   rcases (List.mem_iff_getElem?.mp hmem) with ⟨i, hgetList⟩
   have hget : table.store.words[i]? = some word := by
     simpa [Array.getElem?_toList] using hgetList

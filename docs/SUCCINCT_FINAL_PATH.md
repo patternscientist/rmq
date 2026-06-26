@@ -250,7 +250,7 @@ structure PayloadLiveBPSelectCloseData
   wordSize : Nat
   wordSize_pos : 0 < wordSize
   wordSize_le_machine :
-    wordSize <= SuccinctRankProposal.machineWordBits shape.bpCode.length
+    wordSize <= SuccinctRank.machineWordBits shape.bpCode.length
 
   auxPayload : List Bool
   auxPayload_length : auxPayload.length = overhead
@@ -266,7 +266,7 @@ structure PayloadLiveBPSelectCloseData
   payload_word_length_le_machine :
     forall {word : List Bool},
       List.Mem word (payloadWordsReadByQuery idx) ->
-        word.length <= SuccinctRankProposal.machineWordBits shape.bpCode.length
+        word.length <= SuccinctRank.machineWordBits shape.bpCode.length
 
   word_choice_exact :
     forall idx pos,
@@ -300,7 +300,7 @@ theorem compactSelectCloseLocatorData_profile
     (shape : Cartesian.CartesianShape)
     (hword : 0 < wordSize)
     (hmachine :
-      wordSize <= SuccinctRankProposal.machineWordBits shape.bpCode.length)
+      wordSize <= SuccinctRank.machineWordBits shape.bpCode.length)
     ... :
     let data :=
       compactSelectCloseLocatorData shape hword hmachine ...
@@ -527,7 +527,7 @@ summaries in a `ConcreteMacroBPCloseLCADirectory` or equivalent directory whose
 `lcaCloseCosted_exact` proves the returned close is the answer close for the
 RMQ/LCA query. Any fixed-width summary table charged as O(1) must also expose
 the relevant machine-word bound, such as
-`fieldWidth <= SuccinctRankProposal.machineWordBits shape.bpCode.length` or an
+`fieldWidth <= SuccinctRank.machineWordBits shape.bpCode.length` or an
 equivalent theorem over the actual stored words. If the proof interprets BP
 excess via `Nat` subtraction, the construction must state the balanced-prefix
 or nonnegative-excess invariant needed by the answer-close theorem.

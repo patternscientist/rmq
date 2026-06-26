@@ -25,7 +25,7 @@ supplied externally.
 
 def builtTwoLevelFalseSelectWordSize
     (shape : Cartesian.CartesianShape) : Nat :=
-  SuccinctRankProposal.machineWordBits shape.bpCode.length
+  SuccinctRank.machineWordBits shape.bpCode.length
 
 def builtTwoLevelFalseSelectOccurrencesPerSuper
     (shape : Cartesian.CartesianShape) : Nat :=
@@ -35,7 +35,7 @@ theorem builtTwoLevelFalseSelectWordSize_pos
     (shape : Cartesian.CartesianShape) :
     0 < builtTwoLevelFalseSelectWordSize shape := by
   simp [builtTwoLevelFalseSelectWordSize,
-    SuccinctRankProposal.machineWordBits_pos]
+    SuccinctRank.machineWordBits_pos]
 
 theorem builtTwoLevelFalseSelectOccurrencesPerSuper_pos
     (shape : Cartesian.CartesianShape) :
@@ -48,7 +48,7 @@ theorem builtTwoLevelFalseSelect_bpCode_length_lt_word_pow
     shape.bpCode.length <
       2 ^ builtTwoLevelFalseSelectWordSize shape := by
   simpa [builtTwoLevelFalseSelectWordSize,
-    SuccinctRankProposal.machineWordBits] using
+    SuccinctRank.machineWordBits] using
     (Nat.lt_log2_self (n := shape.bpCode.length))
 
 def builtTwoLevelFalseSelectSuperOverhead
@@ -200,7 +200,7 @@ theorem payload_word_length_le_machine
     (hmem :
       List.Mem word data.selectData.bitWords.store.words.toList) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   exact data.selectData.payload_word_length_le_machine hmem
 
 theorem profile
@@ -217,7 +217,7 @@ theorem profile
       forall {word : List Bool},
         List.Mem word data.selectData.bitWords.store.words.toList ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            SuccinctRank.machineWordBits shape.bpCode.length := by
   exact
     ⟨data.payload_length, data.selectCloseCosted_cost_le,
       data.selectCloseCosted_exact,
@@ -249,7 +249,7 @@ theorem builtTwoLevelFalseSelectCloseData_profile
         List.Mem word
             data.selectData.bitWords.store.words.toList ->
           word.length <=
-            SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+            SuccinctRank.machineWordBits shape.bpCode.length := by
   exact (builtTwoLevelFalseSelectCloseData shape).profile
 
 def builtTwoLevelFalseSelectRightSpineBlockOverhead (n : Nat) : Nat :=

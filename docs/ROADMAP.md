@@ -585,12 +585,12 @@ Faithful rebuild started:
   is now the strongest abstract target: sampled `2*n + o(n)` payload-only
   encoded queries together with bounded rank/select payload-word accounting in
   one reusable wrapper.
-- `SuccinctRankProposal.SampledPayloadLiveStoredWordRankFamily.bounded_constant_query_profile`
+- `SuccinctRank.SampledPayloadLiveStoredWordRankFamily.bounded_constant_query_profile`
   isolates the rank-side builder target: produce payload-live rank sample data
   whose auxiliary payload is bounded by the sampled-directory envelope, and the
   existing counted rank path immediately gives cost `<= 3` and exact erasure
   to `Succinct.rankPrefix`.
-- `SuccinctRankProposal.rankSampleEntries_getOpt_exact` starts the concrete
+- `SuccinctRank.rankSampleEntries_getOpt_exact` starts the concrete
   sampled-rank builder side: word-boundary sample lists return exactly the
   corresponding `Succinct.rankPrefix` value.
 - The single-level sampled-rank target is now explicitly caveated: with
@@ -598,7 +598,7 @@ Faithful rebuild started:
   payload block unless the model treats `wordRank` over super-logarithmic words
   as a primitive. The researcher-respectable target is the classic two-level
   directory.
-- `SuccinctRankProposal.TwoLevelPayloadLiveStoredWordRankFamily.constant_query_profile`
+- `SuccinctRank.TwoLevelPayloadLiveStoredWordRankFamily.constant_query_profile`
   adds that target interface: separate superblock/block payload accounting,
   `o(n)` combined overhead, exact rank through counted supertable,
   block-table, payload-word, and word-rank reads, and every payload word

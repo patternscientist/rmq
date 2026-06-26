@@ -27,7 +27,7 @@ structure TwoLevelPayloadLiveStoredWordSelectData
   wordSize : Nat
   wordSize_pos : 0 < wordSize
   wordSize_le_machine :
-    wordSize <= SuccinctRankProposal.machineWordBits bits.length
+    wordSize <= SuccinctRank.machineWordBits bits.length
   occurrencesPerSuper : Nat
   occurrencesPerSuper_pos : 0 < occurrencesPerSuper
   /--
@@ -526,7 +526,7 @@ theorem payload_word_length_le_machine
         bits superOverhead blockOverhead queryCost)
     {word : List Bool}
     (hmem : List.Mem word data.bitWords.store.words.toList) :
-    word.length <= SuccinctRankProposal.machineWordBits bits.length := by
+    word.length <= SuccinctRank.machineWordBits bits.length := by
   exact Nat.le_trans
     (data.bitWords.word_length_le hmem)
     data.wordSize_le_machine
@@ -537,12 +537,12 @@ theorem profile
       TwoLevelPayloadLiveStoredWordSelectData
         bits superOverhead blockOverhead queryCost) :
     data.auxPayload.length = superOverhead + blockOverhead /\
-      data.wordSize <= SuccinctRankProposal.machineWordBits bits.length /\
+      data.wordSize <= SuccinctRank.machineWordBits bits.length /\
       SuccinctSpace.flattenPayloadWords data.bitWords.store.words.toList =
         bits /\
       (forall {word : List Bool},
         List.Mem word data.bitWords.store.words.toList ->
-          word.length <= SuccinctRankProposal.machineWordBits bits.length) /\
+          word.length <= SuccinctRank.machineWordBits bits.length) /\
       forall target occurrence,
         (data.selectCosted target occurrence).cost <= queryCost /\
           (data.selectCosted target occurrence).erase =
@@ -568,7 +568,7 @@ def canonicalTwoLevelSelectData
       queryCost : Nat}
     (hwordSize : 0 < wordSize)
     (hwordMachine :
-      wordSize <= SuccinctRankProposal.machineWordBits bits.length)
+      wordSize <= SuccinctRank.machineWordBits bits.length)
     (hoccurrences : 0 < occurrencesPerSuper)
     (hsuperBits : bits.length < 2 ^ superFieldWidth)
     (hblockBits : bits.length < 2 ^ blockFieldWidth)
@@ -758,7 +758,7 @@ theorem canonicalTwoLevelSelectData_selectCosted_profile
       queryCost : Nat}
     (hwordSize : 0 < wordSize)
     (hwordMachine :
-      wordSize <= SuccinctRankProposal.machineWordBits bits.length)
+      wordSize <= SuccinctRank.machineWordBits bits.length)
     (hoccurrences : 0 < occurrencesPerSuper)
     (hsuperBits : bits.length < 2 ^ superFieldWidth)
     (hblockBits : bits.length < 2 ^ blockFieldWidth)
@@ -787,7 +787,7 @@ def canonicalTwoLevelSelectDataOfLocal
       queryCost : Nat}
     (hwordSize : 0 < wordSize)
     (hwordMachine :
-      wordSize <= SuccinctRankProposal.machineWordBits bits.length)
+      wordSize <= SuccinctRank.machineWordBits bits.length)
     (hoccurrences : 0 < occurrencesPerSuper)
     (hsuperBits : bits.length < 2 ^ superFieldWidth)
     (hblockBits : bits.length < 2 ^ blockFieldWidth)
@@ -825,7 +825,7 @@ theorem canonicalTwoLevelSelectDataOfLocal_selectCosted_profile
       queryCost : Nat}
     (hwordSize : 0 < wordSize)
     (hwordMachine :
-      wordSize <= SuccinctRankProposal.machineWordBits bits.length)
+      wordSize <= SuccinctRank.machineWordBits bits.length)
     (hoccurrences : 0 < occurrencesPerSuper)
     (hsuperBits : bits.length < 2 ^ superFieldWidth)
     (hblockBits : bits.length < 2 ^ blockFieldWidth)
@@ -866,7 +866,7 @@ def canonicalTwoLevelSelectDataOfChunks
       queryCost : Nat}
     (hwordSize : 0 < wordSize)
     (hwordMachine :
-      wordSize <= SuccinctRankProposal.machineWordBits bits.length)
+      wordSize <= SuccinctRank.machineWordBits bits.length)
     (hoccurrences : 0 < occurrencesPerSuper)
     (hsuperBits : bits.length < 2 ^ superFieldWidth)
     (hblockBits : bits.length < 2 ^ blockFieldWidth)
@@ -899,7 +899,7 @@ theorem canonicalTwoLevelSelectDataOfChunks_selectCosted_profile
       queryCost : Nat}
     (hwordSize : 0 < wordSize)
     (hwordMachine :
-      wordSize <= SuccinctRankProposal.machineWordBits bits.length)
+      wordSize <= SuccinctRank.machineWordBits bits.length)
     (hoccurrences : 0 < occurrencesPerSuper)
     (hsuperBits : bits.length < 2 ^ superFieldWidth)
     (hblockBits : bits.length < 2 ^ blockFieldWidth)
@@ -933,7 +933,7 @@ def canonicalTwoLevelSelectDataOfChunksExact
       queryCost : Nat}
     (hwordSize : 0 < wordSize)
     (hwordMachine :
-      wordSize <= SuccinctRankProposal.machineWordBits bits.length)
+      wordSize <= SuccinctRank.machineWordBits bits.length)
     (hoccurrences : 0 < occurrencesPerSuper)
     (hsuperBits : bits.length < 2 ^ superFieldWidth)
     (hblockBits : bits.length < 2 ^ blockFieldWidth)
@@ -958,7 +958,7 @@ theorem canonicalTwoLevelSelectDataOfChunksExact_selectCosted_profile
       queryCost : Nat}
     (hwordSize : 0 < wordSize)
     (hwordMachine :
-      wordSize <= SuccinctRankProposal.machineWordBits bits.length)
+      wordSize <= SuccinctRank.machineWordBits bits.length)
     (hoccurrences : 0 < occurrencesPerSuper)
     (hsuperBits : bits.length < 2 ^ superFieldWidth)
     (hblockBits : bits.length < 2 ^ blockFieldWidth)
@@ -1016,14 +1016,14 @@ theorem constant_query_profile
         ((family.component bits).auxPayload.length =
           family.overhead bits.length) /\
         ((family.component bits).wordSize <=
-          SuccinctRankProposal.machineWordBits bits.length) /\
+          SuccinctRank.machineWordBits bits.length) /\
         SuccinctSpace.flattenPayloadWords
             (family.component bits).bitWords.store.words.toList = bits /\
         (forall {word : List Bool},
           List.Mem word
               (family.component bits).bitWords.store.words.toList ->
             word.length <=
-              SuccinctRankProposal.machineWordBits bits.length) /\
+              SuccinctRank.machineWordBits bits.length) /\
         forall target occurrence,
           ((family.component bits).selectCosted target occurrence).cost <=
               queryCost /\

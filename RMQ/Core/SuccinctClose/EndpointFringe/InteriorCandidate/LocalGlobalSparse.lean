@@ -465,11 +465,11 @@ theorem read_word_length_le_machine
         macroSize macroCount levelCount blockWidth overhead)
     (hmachine :
       blockWidth <=
-        SuccinctRankProposal.machineWordBits shape.bpCode.length)
+        SuccinctRank.machineWordBits shape.bpCode.length)
     {word : List Bool}
     (hword : globalTable.table.store.words[index]? = some word) :
     word.length <=
-      SuccinctRankProposal.machineWordBits shape.bpCode.length := by
+      SuccinctRank.machineWordBits shape.bpCode.length := by
   have hlen := globalTable.table.read_word_length_of_some hword
   omega
 
