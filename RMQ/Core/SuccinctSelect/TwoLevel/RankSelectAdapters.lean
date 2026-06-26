@@ -4,12 +4,12 @@ import RMQ.Core.SuccinctSelect.TwoLevel.SelectData
 # Two-level rank/select adapters
 
 Split implementation layer for two-level select and rank/select helpers.
-Public declarations stay in the historical `RMQ.SuccinctSelectProposal`
-namespace until the namespace-alignment cleanup pass.
+Public declarations stay in the historical `RMQ.SuccinctSelect`
+namespace.
 -/
 
 namespace RMQ
-namespace SuccinctSelectProposal
+namespace SuccinctSelect
 open SuccinctSpace
 
 /-!
@@ -1036,6 +1036,6 @@ theorem bp_constant_query_profile
 
 end TwoLevelPayloadLiveStoredWordRankSelectFamily
 
-end SuccinctSelectProposal
+end SuccinctSelect
 end RMQ
 

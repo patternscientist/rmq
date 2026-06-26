@@ -1,5 +1,5 @@
 import RMQ.Core.GenericSelect.Family
-import RMQ.Core.SuccinctSelectProposal
+import RMQ.Core.SuccinctSelect
 import RMQ.Core.SuccinctCloseProposal
 
 namespace RMQ
@@ -22,7 +22,7 @@ def concreteBPNativeRankSelectDirectory
     {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
     {rankSelectCost : Nat}
     (family :
-      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
+      SuccinctSelect.TwoLevelPayloadLiveStoredWordRankSelectFamily
         rankSuper rankBlock selectSuper selectBlock rankSelectCost)
     (shape : Cartesian.CartesianShape) :
     SuccinctSpace.RankSelectDirectory
@@ -158,7 +158,7 @@ structure ReadBackedBPCloseAccessDirectory
     SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
       shape.bpCode rankSuperOverhead rankBlockOverhead queryCost
   selectData :
-    SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData
+    SuccinctSelect.TwoLevelPayloadLiveStoredWordSelectData
       shape.bpCode selectSuperOverhead selectBlockOverhead queryCost
   payload_le_overhead :
     (rankData.auxPayload ++ selectData.auxPayload).length <= overhead
@@ -449,10 +449,10 @@ structure RelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
   selectRankSuperOverhead : Nat
   selectRankBlockOverhead : Nat
   selectData :
-    SuccinctSelectProposal.RelativeSplitSparseExceptionFalseSelectCloseData
+    SuccinctSelect.RelativeSplitSparseExceptionFalseSelectCloseData
       shape selectRankSuperOverhead selectRankBlockOverhead
   selectCost_le_query :
-    SuccinctSelectProposal.sparseDenseFalseSelectQueryCost <= queryCost
+    SuccinctSelect.sparseDenseFalseSelectQueryCost <= queryCost
   payload_le_overhead :
     (rankData.auxPayload ++ selectData.payload).length <= overhead
 
@@ -748,7 +748,7 @@ def builtRelativeSplitBPCloseRankData
       shape.bpCode
       (builtRelativeSplitBPCloseRankSuperOverhead shape)
       (builtRelativeSplitBPCloseRankBlockOverhead shape)
-      SuccinctSelectProposal.sparseDenseFalseSelectQueryCost :=
+      SuccinctSelect.sparseDenseFalseSelectQueryCost :=
   SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock
     shape.bpCode
     (builtRelativeSplitBPCloseRankWordSize_pos shape)
@@ -757,7 +757,7 @@ def builtRelativeSplitBPCloseRankData
     (builtRelativeSplitBPCloseRank_bpCode_length_lt_word_pow shape)
     (builtRelativeSplitBPCloseRankBlockSpan_lt_pow shape)
     (by
-      unfold SuccinctSelectProposal.sparseDenseFalseSelectQueryCost
+      unfold SuccinctSelect.sparseDenseFalseSelectQueryCost
       omega)
 
 theorem builtRelativeSplitBPCloseRankData_profile
@@ -776,7 +776,7 @@ theorem builtRelativeSplitBPCloseRankData_profile
             SuccinctRank.machineWordBits shape.bpCode.length) /\
       forall target pos,
         (data.rankCosted target pos).cost <=
-            SuccinctSelectProposal.sparseDenseFalseSelectQueryCost /\
+            SuccinctSelect.sparseDenseFalseSelectQueryCost /\
           (data.rankCosted target pos).erase =
             Succinct.rankPrefix target shape.bpCode pos := by
   exact
@@ -788,7 +788,7 @@ theorem builtRelativeSplitBPCloseRankData_profile
       (builtRelativeSplitBPCloseRank_bpCode_length_lt_word_pow shape)
       (builtRelativeSplitBPCloseRankBlockSpan_lt_pow shape)
       (by
-        unfold SuccinctSelectProposal.sparseDenseFalseSelectQueryCost
+        unfold SuccinctSelect.sparseDenseFalseSelectQueryCost
         omega)
 
 theorem canonicalSuperRankEntries_length
@@ -810,9 +810,9 @@ theorem canonicalBlockRankEntries_length
 theorem builtRelativeSplitBPCloseRankBlockWidth_le_two_ell
     (shape : Cartesian.CartesianShape) :
     builtRelativeSplitBPCloseRankBlockWidth shape <=
-      2 * SuccinctSelectProposal.sparseDenseFalseSelectEll shape := by
+      2 * SuccinctSelect.sparseDenseFalseSelectEll shape := by
   let wordBits := builtRelativeSplitBPCloseRankWordSize shape
-  let ell := SuccinctSelectProposal.sparseDenseFalseSelectEll shape
+  let ell := SuccinctSelect.sparseDenseFalseSelectEll shape
   have hwordPos : 0 < wordBits := by
     simpa [wordBits] using builtRelativeSplitBPCloseRankWordSize_pos shape
   have hwwPos : 0 < wordBits * wordBits :=
@@ -820,8 +820,8 @@ theorem builtRelativeSplitBPCloseRankBlockWidth_le_two_ell
   have hwordLt : wordBits < 2 ^ ell := by
     simpa [wordBits, ell,
       builtRelativeSplitBPCloseRankWordSize,
-      SuccinctSelectProposal.sparseDenseFalseSelectEll,
-      SuccinctSelectProposal.sparseDenseFalseSelectWordBits,
+      SuccinctSelect.sparseDenseFalseSelectEll,
+      SuccinctSelect.sparseDenseFalseSelectWordBits,
       SuccinctRank.machineWordBits] using
       (Nat.lt_log2_self (n := wordBits))
   have hellPowPos : 0 < 2 ^ ell := Nat.pow_pos (by omega : 0 < 2)
@@ -841,7 +841,7 @@ theorem builtRelativeSplitBPCloseRankBlockWidth_le_two_ell
           rw [hell]
     simpa [hpowEq] using hwwLtMul
   have hle :=
-    SuccinctSelectProposal.natLog2_succ_le_of_pos_lt_pow
+    SuccinctSelect.natLog2_succ_le_of_pos_lt_pow
       (n := wordBits * wordBits) (k := 2 * ell) hwwPos hwwLtPow
   simpa [wordBits, ell, builtRelativeSplitBPCloseRankBlockWidth,
     SuccinctRank.machineWordBits] using hle
@@ -866,7 +866,7 @@ theorem builtRelativeSplitBPCloseRankData_auxPayload_le_overhead
   let payload := data.auxPayload.length
   let n := shape.bpCode.length
   let wordBits := builtRelativeSplitBPCloseRankWordSize shape
-  let ell := SuccinctSelectProposal.sparseDenseFalseSelectEll shape
+  let ell := SuccinctSelect.sparseDenseFalseSelectEll shape
   let blockWidth := builtRelativeSplitBPCloseRankBlockWidth shape
   have hbp : n = 2 * shape.size := by
     simpa [n] using Cartesian.CartesianShape.bpCode_length shape
@@ -915,13 +915,13 @@ theorem builtRelativeSplitBPCloseRankData_auxPayload_le_overhead
     have hwordPos : 0 < wordBits := by
       simpa [wordBits] using builtRelativeSplitBPCloseRankWordSize_pos shape
     have hellOne : 1 <= ell := by
-      simp [ell, SuccinctSelectProposal.sparseDenseFalseSelectEll]
+      simp [ell, SuccinctSelect.sparseDenseFalseSelectEll]
     have hell3One : 1 <= ell * (ell * ell) := by
       have hmul := Nat.mul_le_mul hellOne (Nat.mul_le_mul hellOne hellOne)
       simpa [Nat.mul_assoc] using hmul
     have hwordLeN : wordBits <= n := by
       simpa [wordBits, builtRelativeSplitBPCloseRankWordSize] using
-        SuccinctSelectProposal.machineWordBits_le_self_of_pos hnPos
+        SuccinctSelect.machineWordBits_le_self_of_pos hnPos
     let superLen := n / wordBits / wordBits + 1
     let blockLen := n / wordBits + 1
     have hsuperPayload :
@@ -965,7 +965,7 @@ theorem builtRelativeSplitBPCloseRankData_auxPayload_le_overhead
             hscaled) hsecond
       have hww : wordBits * wordBits <= 4 * n := by
         simpa [wordBits, builtRelativeSplitBPCloseRankWordSize] using
-          SuccinctSelectProposal.machineWordBits_sq_le_four_mul_self_of_pos
+          SuccinctSelect.machineWordBits_sq_le_four_mul_self_of_pos
             hnPos
       calc
         superLen * (wordBits * wordBits) =
@@ -1057,11 +1057,11 @@ theorem builtRelativeSplitBPCloseRankData_auxPayload_le_overhead
     have hpacked :
         payload <=
           SuccinctSpace.logLogCubedSampledDirectoryOverhead 36 n :=
-      SuccinctSelectProposal.payload_le_logLogCubedSampledDirectoryOverhead_of_mul_wordBits_le
+      SuccinctSelect.payload_le_logLogCubedSampledDirectoryOverhead_of_mul_wordBits_le
         (shape := shape) (payload := payload) (scale := 18)
         (by
           simpa [wordBits, ell, n,
-            SuccinctSelectProposal.sparseDenseFalseSelectWordBits,
+            SuccinctSelect.sparseDenseFalseSelectWordBits,
             Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using
             hpayloadMul)
     have hwithConst :
@@ -1074,7 +1074,7 @@ theorem builtRelativeSplitBPCloseRankData_auxPayload_le_overhead
 def relativeSplitSparseExceptionBPCloseAccessOverhead
     (n : Nat) : Nat :=
   relativeSplitSparseExceptionBPCloseRankOverhead n +
-    SuccinctSelectProposal.canonicalRelativeSplitSparseExceptionFalseSelectOverhead n
+    SuccinctSelect.canonicalRelativeSplitSparseExceptionFalseSelectOverhead n
 
 theorem relativeSplitSparseExceptionBPCloseAccessOverhead_littleO :
     SuccinctSpace.LittleOLinear
@@ -1082,7 +1082,7 @@ theorem relativeSplitSparseExceptionBPCloseAccessOverhead_littleO :
   unfold relativeSplitSparseExceptionBPCloseAccessOverhead
   exact
     relativeSplitSparseExceptionBPCloseRankOverhead_littleO.add
-      SuccinctSelectProposal.canonicalRelativeSplitSparseExceptionFalseSelectOverhead_littleO
+      SuccinctSelect.canonicalRelativeSplitSparseExceptionFalseSelectOverhead_littleO
 
 def genericSparseExceptionBPCloseAccessOverhead
     (n : Nat) : Nat :=
@@ -1101,7 +1101,7 @@ def builtGenericSparseExceptionSelectBPCloseAccessDirectory
     (shape : Cartesian.CartesianShape) :
     BPCloseAccessDirectory shape
       (genericSparseExceptionBPCloseAccessOverhead shape.size)
-      SuccinctSelectProposal.sparseDenseFalseSelectQueryCost where
+      SuccinctSelect.sparseDenseFalseSelectQueryCost where
   payload :=
     (builtRelativeSplitBPCloseRankData shape).auxPayload ++
       (GenericSelect.sparseExceptionSelectSource
@@ -1176,7 +1176,7 @@ def builtGenericSparseExceptionSelectBPCloseAccessDirectory
 def builtGenericSparseExceptionSelectBPCloseAccessFamily :
     PayloadLiveBPCloseAccessFamily
       genericSparseExceptionBPCloseAccessOverhead
-      SuccinctSelectProposal.sparseDenseFalseSelectQueryCost where
+      SuccinctSelect.sparseDenseFalseSelectQueryCost where
   directory shape :=
     builtGenericSparseExceptionSelectBPCloseAccessDirectory shape
   overhead_littleO :=
@@ -1192,11 +1192,11 @@ theorem builtGenericSparseExceptionSelectBPCloseAccessFamily_profile :
           (forall idx,
             ((builtGenericSparseExceptionSelectBPCloseAccessFamily.directory
               shape).selectCloseCosted idx).cost <=
-              SuccinctSelectProposal.sparseDenseFalseSelectQueryCost) /\
+              SuccinctSelect.sparseDenseFalseSelectQueryCost) /\
           (forall pos,
             ((builtGenericSparseExceptionSelectBPCloseAccessFamily.directory
               shape).rankCloseCosted pos).cost <=
-              SuccinctSelectProposal.sparseDenseFalseSelectQueryCost) /\
+              SuccinctSelect.sparseDenseFalseSelectQueryCost) /\
           (forall idx,
             ((builtGenericSparseExceptionSelectBPCloseAccessFamily.directory
               shape).selectCloseCosted idx).erase =
@@ -1226,28 +1226,28 @@ def builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
     RelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
       shape
       (relativeSplitSparseExceptionBPCloseAccessOverhead shape.size)
-      SuccinctSelectProposal.sparseDenseFalseSelectQueryCost where
+      SuccinctSelect.sparseDenseFalseSelectQueryCost where
   rankSuperOverhead := builtRelativeSplitBPCloseRankSuperOverhead shape
   rankBlockOverhead := builtRelativeSplitBPCloseRankBlockOverhead shape
   rankData := builtRelativeSplitBPCloseRankData shape
   selectRankSuperOverhead :=
-    SuccinctSelectProposal.builtRelativeSplitFalseSelectSparseExceptionEffectiveFlagRankSuperOverhead
+    SuccinctSelect.builtRelativeSplitFalseSelectSparseExceptionEffectiveFlagRankSuperOverhead
       shape
   selectRankBlockOverhead :=
-    SuccinctSelectProposal.builtRelativeSplitFalseSelectSparseExceptionEffectiveFlagRankBlockOverhead
+    SuccinctSelect.builtRelativeSplitFalseSelectSparseExceptionEffectiveFlagRankBlockOverhead
       shape
   selectData :=
-    SuccinctSelectProposal.builtRelativeSplitSparseExceptionFalseSelectCloseData shape
+    SuccinctSelect.builtRelativeSplitSparseExceptionFalseSelectCloseData shape
   selectCost_le_query := Nat.le_refl _
   payload_le_overhead := by
     have hrank :=
       builtRelativeSplitBPCloseRankData_auxPayload_le_overhead shape
     have hselect :
-        (SuccinctSelectProposal.builtRelativeSplitSparseExceptionFalseSelectCloseData
+        (SuccinctSelect.builtRelativeSplitSparseExceptionFalseSelectCloseData
           shape).payload.length <=
-          SuccinctSelectProposal.canonicalRelativeSplitSparseExceptionFalseSelectOverhead
+          SuccinctSelect.canonicalRelativeSplitSparseExceptionFalseSelectOverhead
             shape.size :=
-      (SuccinctSelectProposal.builtRelativeSplitSparseExceptionFalseSelectCloseData
+      (SuccinctSelect.builtRelativeSplitSparseExceptionFalseSelectCloseData
           shape).payload_length_le_canonical
     simp [relativeSplitSparseExceptionBPCloseAccessOverhead,
       List.length_append]
@@ -1256,7 +1256,7 @@ def builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory
 def builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily :
     RelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily
       relativeSplitSparseExceptionBPCloseAccessOverhead
-      SuccinctSelectProposal.sparseDenseFalseSelectQueryCost where
+      SuccinctSelect.sparseDenseFalseSelectQueryCost where
   directory shape :=
     builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessDirectory shape
   overhead_littleO :=
@@ -1272,11 +1272,11 @@ theorem builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily_profile 
           (forall idx,
             ((builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.directory
               shape).selectCloseCosted idx).cost <=
-              SuccinctSelectProposal.sparseDenseFalseSelectQueryCost) /\
+              SuccinctSelect.sparseDenseFalseSelectQueryCost) /\
           (forall pos,
             ((builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.directory
               shape).rankCloseCosted pos).cost <=
-              SuccinctSelectProposal.sparseDenseFalseSelectQueryCost) /\
+              SuccinctSelect.sparseDenseFalseSelectQueryCost) /\
           (forall idx,
             ((builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily.directory
               shape).selectCloseCosted idx).erase =
@@ -1305,7 +1305,7 @@ def rankSelectBPCloseAccessOverhead
     {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
     {rankSelectCost : Nat}
     (family :
-      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
+      SuccinctSelect.TwoLevelPayloadLiveStoredWordRankSelectFamily
         rankSuper rankBlock selectSuper selectBlock rankSelectCost) :
     Nat -> Nat :=
   fun n => family.overhead (2 * n)
@@ -1314,7 +1314,7 @@ def concreteBPNativeCloseAccessDirectoryOfRankSelectFamily
     {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
     {rankSelectCost : Nat}
     (family :
-      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
+      SuccinctSelect.TwoLevelPayloadLiveStoredWordRankSelectFamily
         rankSuper rankBlock selectSuper selectBlock rankSelectCost)
     (shape : Cartesian.CartesianShape) :
     BPCloseAccessDirectory shape
@@ -1380,7 +1380,7 @@ def concreteBPNativeCloseAccessFamilyOfRankSelectFamily
     {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
     {rankSelectCost : Nat}
     (family :
-      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
+      SuccinctSelect.TwoLevelPayloadLiveStoredWordRankSelectFamily
         rankSuper rankBlock selectSuper selectBlock rankSelectCost) :
     PayloadLiveBPCloseAccessFamily
       (rankSelectBPCloseAccessOverhead family) rankSelectCost where
@@ -1864,7 +1864,7 @@ theorem concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile_of
     {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
     {rankSelectCost : Nat}
     (family :
-      SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily
+      SuccinctSelect.TwoLevelPayloadLiveStoredWordRankSelectFamily
         rankSuper rankBlock selectSuper selectBlock rankSelectCost) :
     SuccinctSpace.LittleOLinear
         (concreteBPNativeSuccinctRMQOverhead
@@ -1932,7 +1932,7 @@ theorem builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_
           (concreteBPNativeSuccinctRMQQueryCosted
             accessFamily shape left right).cost <=
               concreteBPNativeSuccinctRMQQueryCost
-                SuccinctSelectProposal.sparseDenseFalseSelectQueryCost) /\
+                SuccinctSelect.sparseDenseFalseSelectQueryCost) /\
         (forall {shape : Cartesian.CartesianShape},
           List.Mem shape (Cartesian.shapesOfSize n) ->
             forall {left len : Nat},
@@ -1981,7 +1981,7 @@ theorem builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_p
           (concreteBPNativeSuccinctRMQQueryCosted
             accessFamily shape left right).cost <=
               concreteBPNativeSuccinctRMQQueryCost
-                SuccinctSelectProposal.sparseDenseFalseSelectQueryCost) /\
+                SuccinctSelect.sparseDenseFalseSelectQueryCost) /\
         (forall {shape : Cartesian.CartesianShape},
           List.Mem shape (Cartesian.shapesOfSize n) ->
             forall {left len : Nat},
@@ -2035,7 +2035,7 @@ theorem builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_sid
           (concreteBPNativeSuccinctRMQQueryCosted
             accessFamily shape left right).cost <=
               concreteBPNativeSuccinctRMQQueryCost
-                SuccinctSelectProposal.sparseDenseFalseSelectQueryCost) /\
+                SuccinctSelect.sparseDenseFalseSelectQueryCost) /\
         (forall {shape : Cartesian.CartesianShape},
           List.Mem shape (Cartesian.shapesOfSize n) ->
             forall {left len : Nat},
@@ -2100,7 +2100,7 @@ theorem builtGenericSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_consta
           (concreteBPNativeSuccinctRMQQueryCosted
             accessFamily shape left right).cost <=
               concreteBPNativeSuccinctRMQQueryCost
-                SuccinctSelectProposal.sparseDenseFalseSelectQueryCost) /\
+                SuccinctSelect.sparseDenseFalseSelectQueryCost) /\
         (forall {shape : Cartesian.CartesianShape},
           List.Mem shape (Cartesian.shapesOfSize n) ->
             forall {left len : Nat},
@@ -2148,7 +2148,7 @@ theorem builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_
           (concreteBPNativeSuccinctRMQQueryCosted
             accessFamily shape left right).cost <=
               concreteBPNativeSuccinctRMQQueryCost
-                SuccinctSelectProposal.sparseDenseFalseSelectQueryCost) /\
+                SuccinctSelect.sparseDenseFalseSelectQueryCost) /\
         (forall {shape : Cartesian.CartesianShape},
           List.Mem shape (Cartesian.shapesOfSize n) ->
             forall {left len : Nat},
@@ -2198,7 +2198,7 @@ theorem builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_dou
           (concreteBPNativeSuccinctRMQQueryCosted
             accessFamily shape left right).cost <=
               concreteBPNativeSuccinctRMQQueryCost
-                SuccinctSelectProposal.sparseDenseFalseSelectQueryCost) /\
+                SuccinctSelect.sparseDenseFalseSelectQueryCost) /\
         (forall {shape : Cartesian.CartesianShape},
           List.Mem shape (Cartesian.shapesOfSize n) ->
             forall {left len : Nat},

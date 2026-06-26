@@ -1,6 +1,6 @@
 import RMQ.Core.RankSelectSpec
 import RMQ.Core.SuccinctRank
-import RMQ.Core.SuccinctSelectProposal
+import RMQ.Core.SuccinctSelect
 import RMQ.Core.GenericSelect
 
 /-!

@@ -32,7 +32,7 @@ The key structural smell that motivated cleanup was that the sparse-exception
 select idea exists in two forms:
 
 - a BP-specialized false-close/select implementation still present as a
-  checked compatibility/archive surface through `SuccinctSelectProposal` and
+  checked compatibility/archive surface through `SuccinctSelect` and
   `SuccinctFinal`;
 - a generic `List Bool` implementation consumed by the rank/select spoke
   through `GenericSelect`.
@@ -267,26 +267,26 @@ for old downstream imports. New construction imports should prefer
 `RMQ.Core.RankSelectPublic` and `RMQRankSelect`.
 
 The generic-select dependency inversion is now active: canonical generic modules
-no longer import `SuccinctSelectProposal` for neutral low-level arithmetic,
-dense-entry, fixed-width-table, or relative-split helpers. Those helpers live
-under the `GenericSelect.LowLevel` barrel and its role modules, while
-BP-shaped bridges remain above the plain bitvector core in
-`GenericSelect.BPCompat`, `GenericSelectBPCompat`, `SuccinctSelectProposal`,
-and `SuccinctFinal`. The canonical `RMQ.Core.GenericSelect` root is pure
+no longer import the select construction layer for neutral low-level
+arithmetic, dense-entry, fixed-width-table, or relative-split helpers. Those
+helpers live under the `GenericSelect.LowLevel` barrel and its role modules,
+while BP-shaped bridges remain above the plain bitvector core in
+`GenericSelect.BPCompat`, `GenericSelectBPCompat`, `SuccinctSelect`, and
+`SuccinctFinal`. The canonical `RMQ.Core.GenericSelect` root is pure
 plain-bitvector generic; it does not import BP compatibility or legacy aliases.
 
-The select-side proposal layer has continued the same dependency-role split.
-`RMQ/Core/SuccinctSelect.lean` is a thin reusable barrel for the split
-two-level select/rank-select/BP-navigation family, obstruction facts, and
-dense-local table codecs. The two-level family now lives behind
+The select-side construction layer has continued the same dependency-role
+split. `RMQ/Core/SuccinctSelect.lean` is the canonical reusable barrel for the
+split two-level select/rank-select/BP-navigation family, obstruction facts,
+dense-local table codecs, and the remaining C1-specific sparse/dense
+relative-split false-close construction. The two-level family lives behind
 `SuccinctSelect/TwoLevel.lean`, with role modules for select samples,
 word-exactness, Clark-source construction, select data, rank/select adapters,
-and BP close-navigation wrappers. The C1-specific sparse/dense relative-split
-false-close construction lives behind the `SuccinctSelect/CloseSelect.lean`
-barrel, with its built-routing and sparse-exception layers split further by
-role. The historical `RMQ.Core.SuccinctSelectProposal` file is now only a
-compatibility import root, and the historical `RMQ.SuccinctSelectProposal`
-namespace is preserved until the namespace-alignment pass.
+and BP close-navigation wrappers. The C1-specific close-select code lives
+behind the `SuccinctSelect/CloseSelect.lean` barrel, with its built-routing and
+sparse-exception layers split further by role. The historical
+`RMQ.Core.SuccinctSelectProposal` file is now only a compatibility import root
+exporting the old `RMQ.SuccinctSelectProposal` names.
 
 The close-navigation proposal is also split by role.
 `RMQ/Core/SuccinctClose.lean` is the thin reusable barrel for
@@ -340,6 +340,10 @@ Completed:
   `RMQ/Core/SuccinctRank.lean` under `RMQ.SuccinctRank`; the historical
   `RMQ/Core/SuccinctRankProposal.lean` module is only a compatibility import
   root exporting the old `RMQ.SuccinctRankProposal` names.
+- The select-side sampled-directory and close-select implementation now lives
+  under `RMQ/Core/SuccinctSelect.lean` / `RMQ.SuccinctSelect`; the historical
+  `RMQ/Core/SuccinctSelectProposal.lean` module is only a compatibility import
+  root exporting the old `RMQ.SuccinctSelectProposal` names.
 - Compatibility aliases for archive-facing old names remain in
   `RMQ/Archive/SelectCompatibility.lean`.
 

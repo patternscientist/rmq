@@ -4,12 +4,12 @@ import RMQ.Core.SuccinctSelect.CloseSelect.BuiltRouting
 # Relative-split false-select tables
 
 Split implementation layer for the select-side close-select proposal.
-Public declarations stay in the historical `RMQ.SuccinctSelectProposal`
-namespace until the namespace-alignment cleanup pass.
+Public declarations stay in the historical `RMQ.SuccinctSelect`
+namespace.
 -/
 
 namespace RMQ
-namespace SuccinctSelectProposal
+namespace SuccinctSelect
 
 /-!
 ### Relative/split rectangular false-select close locator
@@ -1466,5 +1466,5 @@ theorem fixedWidthNatTable_word_length_le_of_mem
   exact hwidth
 
 
-end SuccinctSelectProposal
+end SuccinctSelect
 end RMQ

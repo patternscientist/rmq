@@ -6,11 +6,11 @@ import RMQ.Core.GenericSelect.DenseEntryTable
 
 This module contains the split multiword dense-local table codec and sampled
 select wrapper profiles used by the later sparse/dense false-select close
-construction. It keeps the historical `RMQ.SuccinctSelectProposal` namespace.
+construction. It lives in the canonical `RMQ.SuccinctSelect` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctSelectProposal
+namespace SuccinctSelect
 
 /--
 Dense-local false-select locator split across multiple payload words.
@@ -726,5 +726,5 @@ theorem bounded_constant_query_profile
 end ExactSampledPayloadLiveStoredWordSelectFamily
 
 
-end SuccinctSelectProposal
+end SuccinctSelect
 end RMQ

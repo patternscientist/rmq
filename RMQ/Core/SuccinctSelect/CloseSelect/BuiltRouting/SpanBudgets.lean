@@ -4,12 +4,12 @@ import RMQ.Core.SuccinctSelect.CloseSelect.BuiltRouting.FlagRankTables
 # Sparse/dense span and overhead budgets
 
 Split implementation layer for built sparse/dense close-select routing.
-Public declarations stay in the historical `RMQ.SuccinctSelectProposal`
-namespace until the namespace-alignment cleanup pass.
+Public declarations stay in the historical `RMQ.SuccinctSelect`
+namespace.
 -/
 
 namespace RMQ
-namespace SuccinctSelectProposal
+namespace SuccinctSelect
 
 theorem natList_sum_append (xs ys : List Nat) :
     (xs ++ ys).sum = xs.sum + ys.sum := by
@@ -1130,5 +1130,5 @@ theorem compactLongSuperRelativeTable_payload_le_overhead
         shape)
 
 
-end SuccinctSelectProposal
+end SuccinctSelect
 end RMQ

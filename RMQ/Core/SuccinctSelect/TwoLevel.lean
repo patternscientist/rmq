@@ -5,5 +5,5 @@ import RMQ.Core.SuccinctSelect.TwoLevel.BPCloseNavigation
 
 Compatibility import root for the split two-level select, rank/select, and
 BP close-navigation helper layers. Public declarations keep the historical
-`RMQ.SuccinctSelectProposal` namespace.
+`RMQ.SuccinctSelect` namespace.
 -/

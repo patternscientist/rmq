@@ -4,12 +4,12 @@ import RMQ.Core.SuccinctSelect.CloseSelect.SparseExceptionCloseData.DataSurface
 # Built sparse-exception exactness lemmas
 
 Split implementation layer for sparse-exception close-select data.
-Public declarations stay in the historical `RMQ.SuccinctSelectProposal`
-namespace until the namespace-alignment cleanup pass.
+Public declarations stay in the historical `RMQ.SuccinctSelect`
+namespace.
 -/
 
 namespace RMQ
-namespace SuccinctSelectProposal
+namespace SuccinctSelect
 
 theorem builtRelativeSplitFalseSelectLongSuperFlagBits_eq_relativeSplitLongFlagBits
     (shape : Cartesian.CartesianShape) :
@@ -1228,5 +1228,5 @@ theorem builtRelativeSplitFalseSelectDense_exact
       haligned hdenseFacts
 
 
-end SuccinctSelectProposal
+end SuccinctSelect
 end RMQ

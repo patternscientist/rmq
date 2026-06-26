@@ -4,7 +4,7 @@ import RMQ.Core.GenericSelect.LowLevel
 # Generic select directory: Clark parameters and overhead (Tier 3/4)
 
 Generic `n : Nat` analogues of the BP-specialised sparse/dense select
-parameters and overhead budgets in `SuccinctSelectProposal`, retargeted from
+parameters and overhead budgets in `SuccinctSelect`, retargeted from
 `shape.bpCode.length` to a plain bit-length `n`.  These are the leaves of the
 `docs/GENERIC_SELECT_REFACTOR_SCOPE.md` refactor: pure functions of `n` plus
 their positivity / `LittleOLinear` facts.  Nothing here reads payload or fixes a

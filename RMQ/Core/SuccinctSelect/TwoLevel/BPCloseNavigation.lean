@@ -4,12 +4,12 @@ import RMQ.Core.SuccinctSelect.TwoLevel.RankSelectAdapters
 # Two-level BP close-navigation wrappers
 
 Split implementation layer for two-level select and rank/select helpers.
-Public declarations stay in the historical `RMQ.SuccinctSelectProposal`
-namespace until the namespace-alignment cleanup pass.
+Public declarations stay in the historical `RMQ.SuccinctSelect`
+namespace.
 -/
 
 namespace RMQ
-namespace SuccinctSelectProposal
+namespace SuccinctSelect
 open SuccinctSpace
 
 /-!
@@ -730,6 +730,6 @@ theorem two_n_plus_o_encoded_query_profile
 
 end TwoLevelEncodedBPCloseRMQNavigationFamily
 
-end SuccinctSelectProposal
+end SuccinctSelect
 end RMQ
 

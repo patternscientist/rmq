@@ -17,7 +17,7 @@ closes:
   close/LCA macro keyed only by endpoint close-block pair is not exact.
 - `SuccinctCloseProposal.denseAllCloseBPCloseLCAOverhead_not_littleO`: the
   direct all-close endpoint table is exact and charged, but not `o(n)`.
-- `SuccinctSelectProposal.SelectSampleWordExact.shared_aligned_read_word_forces_same_wordIndex`
+- `SuccinctSelect.SelectSampleWordExact.shared_aligned_read_word_forces_same_wordIndex`
   and the two-level `shared_local_locator...` lemmas: a select locator that
   reads one aligned payload word can only serve successful selects in that same
   payload chunk.
@@ -36,7 +36,7 @@ have landed. The public total two-sided capstone is
 The older relative-split theorem is intentionally kept as a checked archived
 old capstone for the BP-specialized witness.
 The old full
-`SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily` remains
+`SuccinctSelect.TwoLevelPayloadLiveStoredWordRankSelectFamily` remains
 useful scaffold, but the final capstone consumes the concrete false-only BP
 close-access witness:
 

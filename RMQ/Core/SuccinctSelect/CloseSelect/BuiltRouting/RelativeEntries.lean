@@ -4,12 +4,12 @@ import RMQ.Core.SuccinctSelect.CloseSelect.BuiltRouting.WidthBounds
 # Sparse exception relative entries
 
 Split implementation layer for built sparse/dense close-select routing.
-Public declarations stay in the historical `RMQ.SuccinctSelectProposal`
-namespace until the namespace-alignment cleanup pass.
+Public declarations stay in the historical `RMQ.SuccinctSelect`
+namespace.
 -/
 
 namespace RMQ
-namespace SuccinctSelectProposal
+namespace SuccinctSelect
 
 theorem falseSelectRelativeOffsetsOrZero_length
     (bits : List Bool) (baseOccurrence count endOccurrence
@@ -794,5 +794,5 @@ theorem builtRelativeSplitFalseSelectSparseExceptionRelativeTable_profile
           shape
 
 
-end SuccinctSelectProposal
+end SuccinctSelect
 end RMQ

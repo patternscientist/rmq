@@ -152,7 +152,7 @@ them only if immediately consumed by the concrete select locator budget.
 ## Interface Correction
 
 The existing
-`SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData` is still useful
+`SuccinctSelect.TwoLevelPayloadLiveStoredWordSelectData` is still useful
 for rank/select scaffolding and for the current read-backed adapter, but it is
 probably too narrow for the final false-select construction.  Its query shape
 reads one local table sample and one aligned payload word.  The sparse/dense

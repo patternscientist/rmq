@@ -5,5 +5,5 @@ import RMQ.Core.SuccinctSelect.CloseSelect.BuiltRouting.LookupDense
 
 Compatibility import root for the split built sparse/dense close-select
 routing layers. Public declarations keep the historical
-`RMQ.SuccinctSelectProposal` namespace.
+`RMQ.SuccinctSelect` namespace.
 -/

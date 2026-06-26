@@ -302,7 +302,7 @@ The latest merged work added design-constraining negative theorems:
 - `SuccinctCloseProposal.denseAllCloseBPCloseLCAOverhead_not_littleO`: the
   direct all-close endpoint fallback is exact and charged, but not an `o(n)`
   auxiliary payload.
-- `SuccinctSelectProposal.SelectSampleWordExact.shared_aligned_read_word_forces_same_wordIndex`
+- `SuccinctSelect.SelectSampleWordExact.shared_aligned_read_word_forces_same_wordIndex`
   and the two-level `shared_local_locator...` lemmas: one shared aligned
   payload word cannot serve successful selects whose answers lie in different
   chunks.
@@ -406,7 +406,7 @@ and BP rank back to representative-array RMQ, with payload length
 valid-window erasure.
 
 But the theorem is still conditional on an abstract
-`SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily`. A repo
+`SuccinctSelect.TwoLevelPayloadLiveStoredWordRankSelectFamily`. A repo
 search confirms that structure has profile theorems and canonical builder
 pieces, but no concrete family witness yet. The headline is therefore not closed
 until such a witness is built and the merged
@@ -428,18 +428,18 @@ the final BP-native join theorem with no abstract family parameter remaining.
 
 The latest `codex/c1-rectangular-built-close-access` worker branch made real
 construction progress but did not close C1. It landed the span-packing theorem
-`SuccinctSelectProposal.builtRelativeSplitFalseSelectShortSuperLocalSpanSum_le_bpCode_length`
+`SuccinctSelect.builtRelativeSplitFalseSelectShortSuperLocalSpanSum_le_bpCode_length`
 and the unconditional repaired sparse-exception relative-table budget
-`SuccinctSelectProposal.builtRelativeSplitFalseSelectSparseExceptionRelativeTable_payload_le_overhead`.
+`SuccinctSelect.builtRelativeSplitFalseSelectSparseExceptionRelativeTable_payload_le_overhead`.
 Those are load-bearing: the narrow sparse-exception payload no longer depends
 on an unproved semantic span hypothesis.
 
 The branch also built an exact, constant-query false-close/select route through
-`SuccinctSelectProposal.builtTwoLevelFalseSelectCloseData_profile` and consumed
+`SuccinctSelect.builtTwoLevelFalseSelectCloseData_profile` and consumed
 it in `SuccinctFinal.builtTwoLevelFalseSelectBPCloseAccessDirectory_profile`.
 This is a useful compatibility witness, but it is not a succinct witness. The
 same branch proves
-`SuccinctSelectProposal.builtTwoLevelFalseSelectBlockOverhead_ge_bpCode_length_succ`,
+`SuccinctSelect.builtTwoLevelFalseSelectBlockOverhead_ge_bpCode_length_succ`,
 so the block select payload is at least `shape.bpCode.length + 1`, hence
 linear in the BP payload length. Any final path that rests on
 `builtTwoLevelFalseSelectCloseData` or the full-width
@@ -462,7 +462,7 @@ not leave branch exactness as free structure fields.
 
 The repaired relative-split C1 target is now implemented in the worker branch
 and reconciled into the coordinator branch. The concrete theorem
-`SuccinctSelectProposal.builtRelativeSplitSparseExceptionFalseSelectCloseData_profile`
+`SuccinctSelect.builtRelativeSplitSparseExceptionFalseSelectCloseData_profile`
 builds the false-close/select data from `shape.bpCode`, including the compact
 long-super side table indexed by charged long-flag rank plus local occurrence.
 The final theorem

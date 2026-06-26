@@ -5,12 +5,12 @@ import RMQ.Core.GenericSelect.DenseEntryTable
 # Basic false-select routing helpers
 
 Split implementation layer for the select-side close-select proposal.
-Public declarations stay in the historical `RMQ.SuccinctSelectProposal`
-namespace until the namespace-alignment cleanup pass.
+Public declarations stay in the historical `RMQ.SuccinctSelect`
+namespace.
 -/
 
 namespace RMQ
-namespace SuccinctSelectProposal
+namespace SuccinctSelect
 
 /-!
 ## Sparse/dense false-select close locator
@@ -262,5 +262,5 @@ theorem denseLocalEntryFalseSelectCosted_cost_le_five
       entry.baseOccurrence q
 
 
-end SuccinctSelectProposal
+end SuccinctSelect
 end RMQ

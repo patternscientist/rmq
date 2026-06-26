@@ -6,12 +6,12 @@ import RMQ.Core.GenericSelect.SelectSource
 # Two-level select samples
 
 Split implementation layer for two-level select and rank/select helpers.
-Public declarations stay in the historical `RMQ.SuccinctSelectProposal`
-namespace until the namespace-alignment cleanup pass.
+Public declarations stay in the historical `RMQ.SuccinctSelect`
+namespace.
 -/
 
 namespace RMQ
-namespace SuccinctSelectProposal
+namespace SuccinctSelect
 open SuccinctSpace
 
 def twoLevelSelectOverhead
@@ -453,6 +453,6 @@ theorem selectBlockDeltaEntry?_add_exact_of_le
   exact addSelectSample_selectSampleDelta_eq
     hwordIndex hwordStart hrankBefore
 
-end SuccinctSelectProposal
+end SuccinctSelect
 end RMQ
 

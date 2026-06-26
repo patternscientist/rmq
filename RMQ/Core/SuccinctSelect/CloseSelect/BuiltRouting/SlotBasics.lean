@@ -4,12 +4,12 @@ import RMQ.Core.SuccinctSelect.CloseSelect.Basic
 # Sparse/dense slot basics
 
 Split implementation layer for built sparse/dense close-select routing.
-Public declarations stay in the historical `RMQ.SuccinctSelectProposal`
-namespace until the namespace-alignment cleanup pass.
+Public declarations stay in the historical `RMQ.SuccinctSelect`
+namespace.
 -/
 
 namespace RMQ
-namespace SuccinctSelectProposal
+namespace SuccinctSelect
 
 /-!
 ### Built sparse/dense false-select routing helpers
@@ -515,5 +515,5 @@ def builtRelativeSplitFalseSelectSparseExceptionRelativeWidth
       (sparseDenseFalseSelectSuperLongSpan shape))
 
 
-end SuccinctSelectProposal
+end SuccinctSelect
 end RMQ

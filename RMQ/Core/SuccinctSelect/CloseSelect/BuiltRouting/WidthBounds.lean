@@ -4,12 +4,12 @@ import RMQ.Core.SuccinctSelect.CloseSelect.BuiltRouting.SlotBasics
 # Sparse/dense width bounds
 
 Split implementation layer for built sparse/dense close-select routing.
-Public declarations stay in the historical `RMQ.SuccinctSelectProposal`
-namespace until the namespace-alignment cleanup pass.
+Public declarations stay in the historical `RMQ.SuccinctSelect`
+namespace.
 -/
 
 namespace RMQ
-namespace SuccinctSelectProposal
+namespace SuccinctSelect
 
 theorem natLog2_le_log2_of_le
     {m n : Nat} (hm : m ≠ 0) (hn : n ≠ 0) (hle : m <= n) :
@@ -619,5 +619,5 @@ theorem builtRectangularFalseSelectLocalSlotCount_mul_localStride_le_const_bpCod
     exact Nat.le_trans hlocalPayload hsuperBudget
 
 
-end SuccinctSelectProposal
+end SuccinctSelect
 end RMQ

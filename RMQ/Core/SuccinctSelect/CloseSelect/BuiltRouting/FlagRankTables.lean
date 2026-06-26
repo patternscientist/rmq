@@ -4,12 +4,12 @@ import RMQ.Core.SuccinctSelect.CloseSelect.BuiltRouting.RelativeEntries
 # Sparse/dense flag-rank tables
 
 Split implementation layer for built sparse/dense close-select routing.
-Public declarations stay in the historical `RMQ.SuccinctSelectProposal`
-namespace until the namespace-alignment cleanup pass.
+Public declarations stay in the historical `RMQ.SuccinctSelect`
+namespace.
 -/
 
 namespace RMQ
-namespace SuccinctSelectProposal
+namespace SuccinctSelect
 
 def builtRelativeSplitFalseSelectSuperEntry
     (shape : Cartesian.CartesianShape) (superSlot : Nat) :
@@ -862,5 +862,5 @@ theorem builtRelativeSplitFalseSelectSparseExceptionRelativeTable_payload_le_of_
   exact hcount
 
 
-end SuccinctSelectProposal
+end SuccinctSelect
 end RMQ

@@ -125,30 +125,30 @@ The current merged surface provides useful partial surface:
 - The select side proves the current query-shape forcing facts:
 
   ```lean
-  theorem RMQ.SuccinctSelectProposal
+  theorem RMQ.SuccinctSelect
       .SelectSampleWordExact.selected_position_in_read_word :
     ...
 
-  theorem RMQ.SuccinctSelectProposal
+  theorem RMQ.SuccinctSelect
       .TwoLevelPayloadLiveStoredWordSelectData
       .selected_position_in_read_word_of_sample :
     ...
 
-  theorem RMQ.SuccinctSelectProposal
+  theorem RMQ.SuccinctSelect
       .SelectSampleWordExact.selected_wordIndex_eq_of_aligned_read_word :
     ...
 
-  theorem RMQ.SuccinctSelectProposal
+  theorem RMQ.SuccinctSelect
       .TwoLevelPayloadLiveStoredWordSelectData
       .selected_wordIndex_eq_of_sample :
     ...
 
-  theorem RMQ.SuccinctSelectProposal
+  theorem RMQ.SuccinctSelect
       .SelectSampleWordExact
       .shared_aligned_read_word_forces_same_wordIndex :
     ...
 
-  theorem RMQ.SuccinctSelectProposal
+  theorem RMQ.SuccinctSelect
       .TwoLevelPayloadLiveStoredWordSelectData
       .shared_local_locator_forces_same_selected_wordIndex :
     ...
@@ -353,7 +353,7 @@ close-select theorem and proves the payload budget of the actual built tables.
 The earlier sibling sparse/dense close-access socket has been pruned rather
 than kept as a parallel adapter layer. The repaired relative-split compact
 route is now the retained BP-specialized C1 witness:
-`SuccinctSelectProposal.builtRelativeSplitSparseExceptionFalseSelectCloseData_profile`
+`SuccinctSelect.builtRelativeSplitSparseExceptionFalseSelectCloseData_profile`
 constructs the super/local, sparse-exception, long-flag-rank, and compact
 long-super relative tables from `shape.bpCode`, and
 `SuccinctFinal.builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile`

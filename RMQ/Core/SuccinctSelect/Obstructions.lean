@@ -5,11 +5,11 @@ import RMQ.Core.SuccinctSelect.TwoLevel
 
 This module contains the finite-table payload budget facts and obstruction
 lemmas that sit above the two-level select layer. It keeps the historical
-`RMQ.SuccinctSelectProposal` namespace so theorem names remain stable.
+`RMQ.SuccinctSelect` namespace so theorem names remain stable.
 -/
 
 namespace RMQ
-namespace SuccinctSelectProposal
+namespace SuccinctSelect
 
 /-- Bit budget occupied by the true/false fixed-width select locator tables. -/
 def selectLocatorPayloadBudget
@@ -208,5 +208,5 @@ theorem noTwoLevelPayloadLiveStoredWordRankSelectFamily_with_canonical_select_bl
       hbound family.selectBlock_littleO
 
 
-end SuccinctSelectProposal
+end SuccinctSelect
 end RMQ

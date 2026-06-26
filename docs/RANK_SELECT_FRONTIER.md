@@ -71,7 +71,7 @@ The concrete construction currently lives in:
 - `RMQ/Core/SuccinctSelect/TwoLevel.lean`
 - `RMQ/Core/SuccinctSelect/Obstructions.lean`
 - `RMQ/Core/SuccinctSelect/DenseLocalTables.lean`
-- `RMQ/Core/SuccinctSelectProposal.lean`
+- `RMQ/Core/SuccinctSelect.lean`
 - `RMQ/Core/GenericSelect/LowLevel.lean`
 - `RMQ/Core/GenericSelect/SelectFacts.lean`
 - `RMQ/Core/GenericSelect/Arithmetic.lean`
@@ -103,7 +103,7 @@ The intended direction is:
 Succinct -> SuccinctSpace -> RankSelectSpec
 Succinct -> SuccinctSpace -> SuccinctRank -> GenericSelect.SelectSource
 SuccinctRank -> SuccinctSelect.{TwoLevel,Obstructions,DenseLocalTables}
-GenericSelect.SelectSource --feeds downstream proposal--> SuccinctSelectProposal
+GenericSelect.SelectSource --feeds downstream proposal--> SuccinctSelect
 SuccinctRank -> GenericSelect.{SelectFacts,Arithmetic}
 GenericSelect.SelectFacts -> GenericSelect.Arithmetic
 GenericSelect.Arithmetic -> GenericSelect.DenseEntryTable
@@ -166,7 +166,7 @@ claim about Lean `List` runtime.
 
 `ChargedSelectPositionSource` remains a contract boundary, not by itself a
 non-oracular builder. The theorem
-`RMQ.SuccinctSelectProposal.chargedSelectPositionSource_allows_empty_select_oracle`
+`RMQ.SuccinctSelect.chargedSelectPositionSource_allows_empty_select_oracle`
 records the pitfall. The concrete public family avoids that escape by routing
 through the built `GenericSelect.sparseExceptionSelectSource` construction.
 

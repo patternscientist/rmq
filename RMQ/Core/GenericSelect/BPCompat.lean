@@ -1,5 +1,5 @@
 import RMQ.Core.GenericSelect.Family
-import RMQ.Core.SuccinctSelectProposal
+import RMQ.Core.SuccinctSelect
 
 /-!
 # BP compatibility facts for generic select
@@ -10,7 +10,7 @@ plain bitvector generic-select core.
 
 namespace RMQ.GenericSelect
 
-open RMQ.SuccinctSelectProposal
+open RMQ.SuccinctSelect
 
 /-- The BP `false`-specialised occurrence count is the `target := false`
 instance over `shape.bpCode`. -/
@@ -23,19 +23,19 @@ theorem denseTwoWordFalseSelectCosted_eq
     {bits : List Bool} {wordSize : Nat}
     (bitWords : SuccinctSpace.BoundedPayloadWordStore bits wordSize)
     (basePosition baseOccurrence q : Nat) :
-    SuccinctSelectProposal.denseTwoWordFalseSelectCosted
+    SuccinctSelect.denseTwoWordFalseSelectCosted
         bitWords basePosition baseOccurrence q =
       denseTwoWordSelectCosted false bitWords basePosition baseOccurrence q :=
   rfl
 
 theorem falseSelectPositions_eq (bits : List Bool) (base count : Nat) :
-    SuccinctSelectProposal.falseSelectPositions bits base count =
+    SuccinctSelect.falseSelectPositions bits base count =
       selectPositions false bits base count :=
   rfl
 
 theorem falseSelectRelativeOffsetsOrZero_eq
     (bits : List Bool) (baseOccurrence count endOccurrence basePosition : Nat) :
-    SuccinctSelectProposal.falseSelectRelativeOffsetsOrZero
+    SuccinctSelect.falseSelectRelativeOffsetsOrZero
         bits baseOccurrence count endOccurrence basePosition =
       relativeOffsetsOrZero false bits baseOccurrence count endOccurrence
         basePosition :=

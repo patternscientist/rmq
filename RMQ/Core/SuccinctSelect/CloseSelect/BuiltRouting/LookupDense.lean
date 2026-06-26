@@ -4,12 +4,12 @@ import RMQ.Core.SuccinctSelect.CloseSelect.BuiltRouting.SpanBudgets
 # Sparse/dense lookup and dense routing facts
 
 Split implementation layer for built sparse/dense close-select routing.
-Public declarations stay in the historical `RMQ.SuccinctSelectProposal`
-namespace until the namespace-alignment cleanup pass.
+Public declarations stay in the historical `RMQ.SuccinctSelect`
+namespace.
 -/
 
 namespace RMQ
-namespace SuccinctSelectProposal
+namespace SuccinctSelect
 
 def builtRelativeSplitFalseSelectLongFlagRankWordSize
     (shape : Cartesian.CartesianShape) : Nat :=
@@ -1629,5 +1629,5 @@ def falseSelectDenseLocalPayloadRoutingFacts_of_selected_span
             q - RMQ.Succinct.rankPrefix false bits secondStart)
 
 
-end SuccinctSelectProposal
+end SuccinctSelect
 end RMQ

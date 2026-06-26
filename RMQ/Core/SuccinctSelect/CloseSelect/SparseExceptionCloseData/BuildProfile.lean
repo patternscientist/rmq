@@ -4,12 +4,12 @@ import RMQ.Core.SuccinctSelect.CloseSelect.SparseExceptionCloseData.BuiltExact
 # Built sparse-exception profile
 
 Split implementation layer for sparse-exception close-select data.
-Public declarations stay in the historical `RMQ.SuccinctSelectProposal`
-namespace until the namespace-alignment cleanup pass.
+Public declarations stay in the historical `RMQ.SuccinctSelect`
+namespace.
 -/
 
 namespace RMQ
-namespace SuccinctSelectProposal
+namespace SuccinctSelect
 
 theorem falseSelectCeilDiv_le_self_of_pos
     {n stride : Nat} (hn : 0 < n) (hstride : 0 < stride) :
@@ -477,5 +477,5 @@ theorem builtRelativeSplitSparseExceptionFalseSelectCloseData_profile
   intro data
   exact data.profile
 
-end SuccinctSelectProposal
+end SuccinctSelect
 end RMQ

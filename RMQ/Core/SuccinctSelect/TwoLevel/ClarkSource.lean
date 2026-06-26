@@ -4,12 +4,12 @@ import RMQ.Core.SuccinctSelect.TwoLevel.WordExact
 # Clark select-position source
 
 Split implementation layer for two-level select and rank/select helpers.
-Public declarations stay in the historical `RMQ.SuccinctSelectProposal`
-namespace until the namespace-alignment cleanup pass.
+Public declarations stay in the historical `RMQ.SuccinctSelect`
+namespace.
 -/
 
 namespace RMQ
-namespace SuccinctSelectProposal
+namespace SuccinctSelect
 open SuccinctSpace
 
 /-!
@@ -951,6 +951,6 @@ theorem clarkSelectChunkBaseSample_cross_word_obstruction
       hwordSize hexact hselect hwordLen)
 
 
-end SuccinctSelectProposal
+end SuccinctSelect
 end RMQ
 

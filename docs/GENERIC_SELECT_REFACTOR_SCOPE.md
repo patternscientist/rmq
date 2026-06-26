@@ -122,7 +122,7 @@ Keep the direction:
 ```text
 Succinct -> SuccinctSpace -> RankSelectSpec
 Succinct -> SuccinctSpace -> SuccinctRank -> GenericSelect.SelectSource
-GenericSelect.SelectSource --feeds downstream proposal--> SuccinctSelectProposal
+GenericSelect.SelectSource --feeds downstream proposal--> SuccinctSelect
 SuccinctRank -> GenericSelect.{SelectFacts,Arithmetic}
 GenericSelect.SelectFacts -> GenericSelect.Arithmetic
 GenericSelect.Arithmetic -> GenericSelect.DenseEntryTable
@@ -145,7 +145,7 @@ construction family layer and exposes neutral public aliases, while construction
 barrels should not import `RankSelectPublic`.
 
 Dependency-inversion status: the generic-select construction no longer imports
-`SuccinctSelectProposal` for neutral arithmetic, dense-entry tables,
+`SuccinctSelect` for neutral arithmetic, dense-entry tables,
 fixed-width tables, or relative-split helpers. Those live below the generic core
 in `GenericSelect.LowLevel`; legacy false-named aliases and BP-shaped facts
 live above the plain bitvector core in terminal compatibility roots.

@@ -4,12 +4,12 @@ import RMQ.Core.SuccinctSelect.CloseSelect.SparseExceptionDirectory
 # Sparse-exception close-select data surface
 
 Split implementation layer for sparse-exception close-select data.
-Public declarations stay in the historical `RMQ.SuccinctSelectProposal`
-namespace until the namespace-alignment cleanup pass.
+Public declarations stay in the historical `RMQ.SuccinctSelect`
+namespace.
 -/
 
 namespace RMQ
-namespace SuccinctSelectProposal
+namespace SuccinctSelect
 
 structure RelativeSplitSparseExceptionFalseSelectCloseData
     (shape : Cartesian.CartesianShape)
@@ -858,5 +858,5 @@ theorem long_explicit_slot_lt_length_of_select
 
 end RelativeSplitSparseExceptionFalseSelectCloseData
 
-end SuccinctSelectProposal
+end SuccinctSelect
 end RMQ

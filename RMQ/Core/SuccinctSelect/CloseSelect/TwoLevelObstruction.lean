@@ -4,12 +4,12 @@ import RMQ.Core.SuccinctSelect.CloseSelect.SparseExceptionCloseData
 # Finite-block-table false-select obstruction
 
 Split implementation layer for the select-side close-select proposal.
-Public declarations stay in the historical `RMQ.SuccinctSelectProposal`
-namespace until the namespace-alignment cleanup pass.
+Public declarations stay in the historical `RMQ.SuccinctSelect`
+namespace.
 -/
 
 namespace RMQ
-namespace SuccinctSelectProposal
+namespace SuccinctSelect
 
 /-!
 ### Concrete charged replacement surface
@@ -282,5 +282,5 @@ theorem builtTwoLevelFalseSelect_current_finite_block_tables_not_littleO :
     (builtTwoLevelFalseSelectRightSpineBlockOverhead_ge_two_n_plus_one n)
 
 
-end SuccinctSelectProposal
+end SuccinctSelect
 end RMQ

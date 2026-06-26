@@ -4,12 +4,12 @@ import RMQ.Core.SuccinctSelect.CloseSelect.RelativeSplit
 # Sparse-exception select directory
 
 Split implementation layer for the select-side close-select proposal.
-Public declarations stay in the historical `RMQ.SuccinctSelectProposal`
-namespace until the namespace-alignment cleanup pass.
+Public declarations stay in the historical `RMQ.SuccinctSelect`
+namespace.
 -/
 
 namespace RMQ
-namespace SuccinctSelectProposal
+namespace SuccinctSelect
 
 structure RelativeSplitSparseExceptionDirectory
     (shape : Cartesian.CartesianShape)
@@ -304,5 +304,5 @@ theorem canonicalRelativeSplitSparseExceptionFalseSelectOverhead_littleO :
       canonicalSparseExceptionDirectoryOverhead_littleO)
 
 
-end SuccinctSelectProposal
+end SuccinctSelect
 end RMQ

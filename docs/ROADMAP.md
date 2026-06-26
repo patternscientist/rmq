@@ -603,26 +603,26 @@ Faithful rebuild started:
   `o(n)` combined overhead, exact rank through counted supertable,
   block-table, payload-word, and word-rank reads, and every payload word
   bounded by the modeled machine word size `Nat.log2 n + 1`.
-- `SuccinctSelectProposal.SampledPayloadLiveStoredWordSelectFamily.bounded_constant_query_profile`
+- `SuccinctSelect.SampledPayloadLiveStoredWordSelectFamily.bounded_constant_query_profile`
   isolates the select-side builder target: produce payload-live select locator
   data whose auxiliary payload is bounded by the sampled-directory envelope,
   and the existing counted select path immediately gives cost `<= 3` and exact
   erasure to `Succinct.select`.
-- `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectFamily.constant_query_profile`
+- `SuccinctSelect.TwoLevelPayloadLiveStoredWordSelectFamily.constant_query_profile`
   adds the select-side two-level target: separate coarse-locator/local-delta
   payload accounting, `o(n)` combined overhead, exact select through counted
   coarse-table, local-table, payload-word, and word-select reads, and every
   payload word bounded by `Nat.log2 n + 1`.
-- `SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordRankSelectFamily.bp_constant_query_profile`
+- `SuccinctSelect.TwoLevelPayloadLiveStoredWordRankSelectFamily.bp_constant_query_profile`
   combines the two-level rank and select components into the existing generic
   `RankSelectDirectory` and `BalancedParensAccessFamily` contracts. This is
   the bridge that lets BP-close/LCA navigation consume the two-level
   rank/select components without a special-purpose BP API.
-- `SuccinctSelectProposal.TwoLevelPayloadLiveBPCloseRMQNavigationFamily.two_n_plus_o_built_query_profile`
+- `SuccinctSelect.TwoLevelPayloadLiveBPCloseRMQNavigationFamily.two_n_plus_o_built_query_profile`
   gives the stateful BP close-navigation profile over two-level rank/select
   plus payload-live LCA-close: payload length `2*n + o(n)`, query cost
   `<= 3 * queryCost + 1`, and exact RMQ answer recovery.
-- `SuccinctSelectProposal.TwoLevelEncodedBPCloseRMQNavigationFamily.two_n_plus_o_encoded_query_profile`
+- `SuccinctSelect.TwoLevelEncodedBPCloseRMQNavigationFamily.two_n_plus_o_encoded_query_profile`
   lifts the same path to payload-only encoded component functions, with
   explicit agreement fields tying encoded select/LCA-close/rank operations to
   the built payloads.
