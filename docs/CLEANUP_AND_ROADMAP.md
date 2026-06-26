@@ -293,7 +293,10 @@ The close-navigation proposal is also split by role.
 `SuccinctClose/BlockLocal.lean`, `SuccinctClose/RangeSummary.lean`,
 `SuccinctClose/RelativeSummary.lean`, `SuccinctClose/RangeWitness.lean`,
 the `SuccinctClose/EndpointFringe/*` prefix-range, interior-candidate, and
-endpoint-macro layers. The interior-candidate layer is split further into
+endpoint-macro layers. The prefix-range layer is split further into prefix
+argmin basics, relative-summary candidates, sparse block argmin witnesses,
+local sparse offsets, answer semantics, and payload witness tables. The
+interior-candidate layer is split further into
 candidate merge basics, local/global sparse tables, relative scans, word-read
 accounting, two-level candidates, and the relative-rmM interior directory; the
 endpoint macro itself is split into range-macro and micro-codebook layers, with
