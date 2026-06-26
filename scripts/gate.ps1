@@ -12,6 +12,22 @@ $ErrorActionPreference = 'Continue'
 
 function Fail($msg) { Write-Host "GATE FAIL: $msg"; exit 1 }
 
+function RunAxiomCheck($script, $label) {
+  $tmp = New-TemporaryFile
+  & lake env lean $script 2>&1 | Tee-Object -FilePath $tmp
+  $code = $LASTEXITCODE
+  if ($code -ne 0) {
+    Remove-Item $tmp -ErrorAction SilentlyContinue
+    Fail "$label did not run cleanly"
+  }
+  if (Select-String -Path $tmp -Pattern "sorryAx|ofReduceBool") {
+    $bad = Get-Content $tmp
+    Remove-Item $tmp -ErrorAction SilentlyContinue
+    Fail "non-standard axiom in ${label}:`n$bad"
+  }
+  Remove-Item $tmp -ErrorAction SilentlyContinue
+}
+
 # 1. Build must be green.
 lake build
 if ($LASTEXITCODE -ne 0) { Fail "lake build failed" }
@@ -36,23 +52,9 @@ $nd = rg -n "native_decide|Lean\.ofReduceBool" RMQ RMQExamples RMQHub.lean RMQRa
 if ($nd) { Fail "native_decide / ofReduceBool present in source:`n$nd" }
 
 # 3. Curated trust-base check: load-bearing theorems use only standard axioms.
-$ax = lake env lean scripts/axiom_check.lean
-if ($LASTEXITCODE -ne 0) { Fail "axiom_check.lean did not run cleanly" }
-if ($ax | Select-String -Pattern "sorryAx|ofReduceBool") {
-  Fail "non-standard axiom in a load-bearing theorem:`n$ax"
-}
-
-$archiveAx = lake env lean scripts/archive_axiom_check.lean
-if ($LASTEXITCODE -ne 0) { Fail "archive_axiom_check.lean did not run cleanly" }
-if ($archiveAx | Select-String -Pattern "sorryAx|ofReduceBool") {
-  Fail "non-standard axiom in an archived compatibility theorem:`n$archiveAx"
-}
-
-$rankSelectAx = lake env lean scripts/rank_select_axiom_check.lean
-if ($LASTEXITCODE -ne 0) { Fail "rank_select_axiom_check.lean did not run cleanly" }
-if ($rankSelectAx | Select-String -Pattern "sorryAx|ofReduceBool") {
-  Fail "non-standard axiom in a rank/select theorem:`n$rankSelectAx"
-}
+RunAxiomCheck "scripts/axiom_check.lean" "axiom_check.lean"
+RunAxiomCheck "scripts/archive_axiom_check.lean" "archive_axiom_check.lean"
+RunAxiomCheck "scripts/rank_select_axiom_check.lean" "rank_select_axiom_check.lean"
 
 # 4. Succinct frontier cost/space lints.
 & "$PSScriptRoot\succinct_cost_lint.ps1"
