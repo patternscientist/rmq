@@ -2303,3 +2303,44 @@ Incomplete (the 19k/26k proposal files and the dead Locator island remain) and n
 committed, but the right move executed to the right standard. Recommend: commit it (green
 and trust-clean), then carry the same split/rename + the Locator deletion into
 `SuccinctSelectProposal`/`SuccinctCloseProposal`, and schedule shim removal.
+
+## 2026-06-25 (AUDIT) — `main` @ `3fd2f4d` (the WIP committed + the big-file splits + Locator prune)
+
+Seven commits since `6052431`, worktree now clean: `bd9cc0c` (split generic select — the
+WIP audited above, committed), `cf88e3f` (**prune retired select locator island**),
+`8de378e` (split succinct select proposal layers), and `c64a3c3`/`276b9b9`/`ea2a86e`/
+`3fd2f4d` (split the 26k succinct-close file into close/navigation/endpoint layers). This is
+the full structural cleanup — every item I flagged. Machine-checked: full `lake build`
+green; all four axiom checks resolve with **zero** broken references and zero
+`sorryAx`/`ofReduceBool` — headline 15, archive 4, rank-select 5, full 421; headline
+capstone + rank/select aliases still `{propext, Classical.choice, Quot.sound}`; hygiene
+scan clean over the new module tree.
+
+**VERDICT: CLEAN and the real work is done. Best result of the series.**
+- **Locator island fully deleted** — `cf88e3f` cut **−2278 lines** from
+  `SuccinctSelectProposal`; **0** `SparseDenseFalseSelectLocatorEntry` refs tree-wide (was
+  129). Its genuinely-valuable obstruction witnesses were *preserved* (`SelectObstructions.lean`
+  +131), and the deleted theorems' archive anchors were correctly removed (archive check
+  6→4). Exactly the keep-obstructions / delete-dead-codec triage, executed.
+- **Both monoliths split:** `SuccinctCloseProposal.lean` 26,285 → **8** (gutted to a shim;
+  content now under `RMQ/Core/SuccinctClose/` — RelativeRmmMacro, EndpointFringe/*, etc.);
+  `SuccinctSelectProposal.lean` 19,243 → **10,687** (Locator prune + content moved to
+  `RMQ/Core/SuccinctSelect/` e.g. `TwoLevel.lean` 5390).
+- **Integrity preserved through ~48k lines of churn** (67 files, +47592/−48099, net −507):
+  that all 421 full-check headliners still resolve with no "unknown identifier" proves the
+  massive move stranded/renamed-away nothing; trust base intact; gate kept current.
+
+**Standing gaps (now minor / refinement-tier):**
+- The split is **coarse**: several modules are still large — `SuccinctSelectProposal` 10,687,
+  `SuccinctSpace` 7,557 (pre-existing, untouched), `SuccinctClose/RelativeRmmMacro` 6,785,
+  `SuccinctSelect/TwoLevel` 5,390. A big improvement over 26k/19k, but not yet
+  CSLib-granular (~1500); finer splitting is opportunistic.
+- Back-compat shims (gutted originals + Legacy/BPCompat alias modules) remain; remove once
+  downstream imports the role modules directly.
+- The 2× false/true select overhead and the Mathlib/CSLib dependency call are unchanged
+  (both were always "research/decision," not bloat).
+
+Bottom line: across this audit series the project went from "correct result, research-diary
+code" to a genuinely modularized, dead-code-pruned, trust-clean tree — and did it without a
+single trust-base regression or hidden weakening at any step. The remaining work is
+fine-grained module splitting and shim retirement, i.e. polish, not debt.
