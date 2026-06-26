@@ -339,7 +339,7 @@ def readCosted
     {entries : List (Option StoredWordSelectSample)} {fieldWidth : Nat}
     (table : FixedWidthSelectSampleTable entries fieldWidth) (i : Nat) :
     (table.readCosted i).cost = 1 := by
-  simp [readCosted, Costed.map_cost]
+  simp [readCosted]
 
 theorem readCosted_cost_le_one
     {entries : List (Option StoredWordSelectSample)} {fieldWidth : Nat}
@@ -351,7 +351,7 @@ theorem readCosted_cost_le_one
     {entries : List (Option StoredWordSelectSample)} {fieldWidth : Nat}
     (table : FixedWidthSelectSampleTable entries fieldWidth) (i : Nat) :
     (table.readCosted i).erase = entries[i]? := by
-  simp [readCosted, Costed.erase_map, table.read_exact i]
+  simp [readCosted, table.read_exact i]
 
 theorem payload_length
     {entries : List (Option StoredWordSelectSample)} {fieldWidth : Nat}

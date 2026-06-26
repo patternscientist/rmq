@@ -468,7 +468,7 @@ theorem blockLocalBPCloseLCA_read_exact
   have hentry :=
     hspec hlen hbound hleft hright hanswer hleftLo hleftHi
       hrightLo hrightHi hanswerLo hanswerHi
-  simp [Costed.erase_map, hentry]
+  simp [hentry]
 
 /--
 Payload-live block-local BP close/LCA table.
@@ -526,7 +526,7 @@ theorem lcaCloseCosted_cost
       BlockLocalBPCloseLCATable shape blockStart blockSize overhead)
     (leftClose rightClose : Nat) :
     (data.lcaCloseCosted leftClose rightClose).cost = 1 := by
-  simp [lcaCloseCosted, Costed.map_cost]
+  simp [lcaCloseCosted]
 
 theorem lcaCloseCosted_cost_le_one
     {shape : Cartesian.CartesianShape}

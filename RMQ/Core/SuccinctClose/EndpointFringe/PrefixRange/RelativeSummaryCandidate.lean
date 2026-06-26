@@ -247,7 +247,7 @@ theorem minCandidateCosted_cost_le_four
         overhead)
     (block : Nat) :
     (table.minCandidateCosted block).cost <= 4 := by
-  simpa [minCandidateCosted, Costed.map_cost] using
+  simpa [minCandidateCosted] using
     table.summaryCosted_cost_le_four block
 
 theorem summaryCosted_cost_eq_four
@@ -276,7 +276,7 @@ theorem minCandidateCosted_cost_eq_four
         overhead)
     (block : Nat) :
     (table.minCandidateCosted block).cost = 4 := by
-  simpa [minCandidateCosted, Costed.map_cost] using
+  simpa [minCandidateCosted] using
     table.summaryCosted_cost_eq_four block
 
 theorem summaryCosted_erase_of_bounds
@@ -347,7 +347,7 @@ theorem minCandidateCosted_erase_of_bounds
       (shape := shape) (blockSize := blockSize) (block := block)
       (by omega)
   unfold minCandidateCosted
-  simp [Costed.erase_map, hsummary, bpRelativeSummaryMinCandidate,
+  simp [hsummary, bpRelativeSummaryMinCandidate,
     hmin', harg]
 
 theorem minCandidateCosted_erase_arg_excess_of_bounds

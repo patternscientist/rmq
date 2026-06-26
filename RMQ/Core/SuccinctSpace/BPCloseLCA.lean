@@ -57,7 +57,7 @@ theorem lcaCloseCosted_cost
     (payload : List Bool) (leftClose rightClose : Nat) :
     (directory.lcaCloseCosted payload leftClose rightClose).cost =
       TableModel.indexedReadCost := by
-  simp [lcaCloseCosted, Costed.map_cost,
+  simp [lcaCloseCosted,
     TableModel.IndexedSeq.getCosted_cost]
 
 theorem lcaCloseCosted_cost_le_one
@@ -182,7 +182,7 @@ theorem lcaCloseCosted_cost
     (directory : PayloadLiveBPCloseLCADirectory n overhead)
     (aux : directory.Aux) (leftClose rightClose : Nat) :
     (directory.lcaCloseCosted aux leftClose rightClose).cost = 1 := by
-  simp [lcaCloseCosted, Costed.map_cost]
+  simp [lcaCloseCosted]
 
 theorem lcaCloseCosted_cost_le_one
     {n overhead : Nat}
@@ -207,7 +207,7 @@ theorem lcaCloseCosted_exact
           (scanWindow shape.representative left len) := by
   have hentry :=
     directory.entry_exact hshape hlen hbound hleftClose hrightClose
-  simp [lcaCloseCosted, Costed.erase_map, hentry]
+  simp [lcaCloseCosted, hentry]
 
 theorem profile
     {n overhead : Nat}

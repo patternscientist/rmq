@@ -220,7 +220,7 @@ def readCosted
         entries fieldWidth)
     (i : Nat) :
     (table.readCosted i).cost = 4 := by
-  simp [readCosted, Costed.map_cost]
+  simp [readCosted]
 
 theorem readCosted_cost_le_four
     {entries : List SparseDenseFalseSelectDenseLocalEntry}
@@ -240,7 +240,7 @@ theorem readCosted_cost_le_four
         entries fieldWidth)
     (i : Nat) :
     (table.readCosted i).erase = entries[i]? := by
-  simpa [readCosted, Costed.erase_bind, Costed.erase_map,
+  simpa [readCosted, Costed.erase_bind,
     SuccinctSpace.FixedWidthNatTable.readCosted_erase]
     using entryOfFields_get? entries i
 

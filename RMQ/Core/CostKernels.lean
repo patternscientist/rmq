@@ -110,7 +110,7 @@ theorem rangeScanCosted_cost
   unfold rangeScanCosted rangeScanCost
   by_cases h : ValidRange xs left right
   · rw [dif_pos h, dif_pos h]
-    simp [Costed.map_cost, scanWindowCosted_cost]
+    simp [scanWindowCosted_cost]
   · rw [dif_neg h, dif_neg h]
     simp
 
@@ -210,7 +210,7 @@ theorem queryOffsetCosted?_cost_le_size_succ
             have hrec :=
               ihRight (left - (leftShape.size + 1))
                 (right - (leftShape.size + 1))
-            simp [hright, Costed.map_cost]
+            simp [hright]
             omega
           case neg =>
             simp [hright]
