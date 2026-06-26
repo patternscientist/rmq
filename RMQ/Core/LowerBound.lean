@@ -1,3 +1,5 @@
+import RMQ.Core.ListLemmas
+
 /-!
 # Generic finite encoding lower-bound helpers
 
@@ -19,10 +21,6 @@ def bitStrings : Nat -> List (List Bool)
   | 0 => [[]]
   | n + 1 => (bitStrings n).flatMap fun bits =>
       [false :: bits, true :: bits]
-
-private theorem sum_map_const_nat {alpha : Type} (xs : List alpha) (n : Nat) :
-    ((xs.map fun _ => n).sum) = xs.length * n := by
-  simp [List.map_const']
 
 theorem bitStrings_length (n : Nat) :
     (bitStrings n).length = 2 ^ n := by

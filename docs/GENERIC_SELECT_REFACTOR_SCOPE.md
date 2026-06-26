@@ -41,6 +41,7 @@ The generic select layer lives in:
 - `RMQ/Core/GenericSelect/Params.lean`
 - `RMQ/Core/GenericSelect/Primitives.lean`
 - `RMQ/Core/GenericSelect/PrimitiveLegacyNames.lean`
+- `RMQ/Core/GenericSelect/SuccinctSelectLegacyNames.lean`
 - `RMQ/Core/GenericSelect/Slots.lean`
 - `RMQ/Core/GenericSelect/Entries.lean`
 - `RMQ/Core/GenericSelect/FlagRank.lean`
@@ -66,7 +67,9 @@ The public bitvector extraction layer lives in:
 barrel re-exports the split plain-bitvector construction modules before
 `SuccinctFinal` consumes the family/source layer. BP-shaped compatibility facts
 are exported by the separate terminal `RMQ/Core/GenericSelectBPCompat.lean`
-root.
+root. Historical false-named generic aliases and SuccinctSelect bridge
+equations are available through `RMQ/Core/GenericSelectLegacy.lean`, not the
+canonical `RMQ.Core.GenericSelect` root.
 
 ## Landed Generic Select Theorems
 
@@ -135,7 +138,8 @@ GenericSelect.{Params,Primitives}
                     Family} -> SuccinctFinal
 GenericSelect.SelectSource -> GenericSelect.Source
 GenericSelect.Family -> GenericSelect.BPCompat -> GenericSelectBPCompat
-GenericSelect.{LegacyNames,PrimitiveLegacyNames} -> GenericSelectLegacy
+GenericSelect.{LegacyNames,PrimitiveLegacyNames,SuccinctSelectLegacyNames}
+  -> GenericSelectLegacy
 ```
 
 `RankSelectSpec` should stay a small public spec module. Construction modules
@@ -148,7 +152,9 @@ Dependency-inversion status: the generic-select construction no longer imports
 `SuccinctSelect` for neutral arithmetic, dense-entry tables,
 fixed-width tables, or relative-split helpers. Those live below the generic core
 in `GenericSelect.LowLevel`; legacy false-named aliases and BP-shaped facts
-live above the plain bitvector core in terminal compatibility roots.
+live above the plain bitvector core in terminal compatibility roots, with
+historical SuccinctSelect bridge equations isolated in
+`GenericSelect.SuccinctSelectLegacyNames`.
 
 ## Remaining Frontier
 

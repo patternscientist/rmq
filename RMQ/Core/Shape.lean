@@ -1,3 +1,4 @@
+import RMQ.Core.ListLemmas
 import RMQ.Core.Cartesian
 
 /-!
@@ -889,10 +890,6 @@ decreasing_by
 /-- The finite shape count; this is the Catalan-count sequence for shapes. -/
 def shapeCount (n : Nat) : Nat :=
   (shapesOfSize n).length
-
-private theorem sum_map_const_nat {α : Type} (xs : List α) (n : Nat) :
-    ((xs.map fun _ => n).sum) = xs.length * n := by
-  simp [List.map_const']
 
 @[simp] theorem shapeCount_zero : shapeCount 0 = 1 := by
   simp [shapeCount, shapesOfSize]

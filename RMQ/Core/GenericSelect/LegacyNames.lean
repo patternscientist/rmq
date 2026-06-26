@@ -115,7 +115,9 @@ abbrev falseSelectDenseLocalFirstStart := selectDenseLocalFirstStart
 abbrev falseSelectDenseLocalSecondStart := selectDenseLocalSecondStart
 abbrev falseSelectDenseLocalSpanEnd := selectDenseLocalSpanEnd
 abbrev falseSelectDenseLocalFirstWord := selectDenseLocalFirstWord
-abbrev falseSelectDenseLocalFirstCount := selectDenseLocalFirstCount
+abbrev falseSelectDenseLocalFirstCount
+    (bits : List Bool) (wordSize baseWordIndex firstOffset : Nat) : Nat :=
+  selectDenseLocalFirstCount false bits wordSize baseWordIndex firstOffset
 abbrev sparseDenseFalseSelectDenseLocalEntryBasePosition :=
   sparseDenseSelectDenseLocalEntryBasePosition
 

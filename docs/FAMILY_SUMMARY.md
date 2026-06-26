@@ -158,8 +158,11 @@ flowchart TD
   GenericSelectLowLevel --> GenericSelectParams["Core.GenericSelect.Params"]
   GenericSelectLowLevel --> GenericSelectPrimitives["Core.GenericSelect.Primitives"]
   GenericSelectPrimitives --> GenericSelectPrimitiveLegacyNames["Core.GenericSelect.PrimitiveLegacyNames"]
+  GenericSelectPrimitives --> GenericSelectSuccinctSelectLegacyNames["Core.GenericSelect.SuccinctSelectLegacyNames"]
+  SuccinctSelect --> GenericSelectSuccinctSelectLegacyNames
   GenericSelectLegacyNames --> GenericSelectLegacyRoot["Core.GenericSelectLegacy"]
   GenericSelectPrimitiveLegacyNames --> GenericSelectLegacyRoot
+  GenericSelectSuccinctSelectLegacyNames --> GenericSelectLegacyRoot
   GenericSelectParams --> GenericSelectSlots["Core.GenericSelect.Slots"]
   GenericSelectPrimitives --> GenericSelectSlots
   GenericSelectSlots --> GenericSelectEntries["Core.GenericSelect.Entries"]
@@ -286,6 +289,9 @@ only as a compatibility import root exporting the historical
 BP close-navigation names. `RMQ.Core.SuccinctCloseProposal` is retained only as
 a compatibility import root exporting the historical
 `RMQ.SuccinctCloseProposal` namespace.
+The current in-repository live roots, scripts, and archive witnesses use the
+canonical rank/select/close roots directly; these proposal files are retained
+only for external compatibility with old namespace-qualified imports.
 
 Succinct E1 update: the concrete two-level rank/select chunk-backed path has
 advanced beyond the older table-row wording above. Rank now has the
@@ -482,6 +488,8 @@ and `docs/LOCAL_BP_DECODER_PATH.md`.
 - `RMQ/Core/Backend.lean`: `RMQBackend`, `RMQBackend.queryBuilt`.
 - `RMQ/Core/ModelHub.lean`: import-only reusable hub barrel for `Cost`, `RAM`,
   `Refine`, `TableModel`, `LowerBound`, and `PayloadLowerBound`.
+- `RMQ/Core/ListLemmas.lean`: tiny Mathlib-free shared List facts, currently
+  including `sum_map_const_nat` for finite-universe counting proofs.
 - `RMQ/Core/Cost.lean`: `Costed`, `Costed.erase`, `Costed.run`,
   `Costed.pure`, `Costed.bind`, `Costed.tick`, `Costed.tickValue`,
   `Costed.map`.
@@ -1640,7 +1648,7 @@ The names below are grouped by source module. Repeated base names in
   rank/select, BP close-navigation, and final succinct-RMQ layers.
 - `RMQ/Core/GenericSelect/{LowLevel,SelectFacts,Arithmetic,DenseEntryTable,
   DenseWord,RelativeSplit,LegacyNames,Params,Primitives,PrimitiveLegacyNames,
-  Slots,Entries,FlagRank,
+  SuccinctSelectLegacyNames,Slots,Entries,FlagRank,
   RelativeTables,Directory,SelectSource,Source,Family,BPCompat}.lean` and
   `RMQ/Core/GenericSelectBPCompat.lean`, and
   `RMQ/Core/GenericSelectLegacy.lean`:
@@ -1649,12 +1657,15 @@ The names below are grouped by source module. Repeated base names in
   slot/span counting, entry construction, flag-rank directories,
   relative/dense payload tables, sparse-exception directory reads, the neutral
   charged select-source interface, charged select-source exactness, the
-  Jacobson/Clark rank-select family adapter, and the terminal BP compatibility
-  bridge.
+  Jacobson/Clark rank-select family adapter, the terminal BP compatibility
+  bridge, and terminal legacy bridge equations for historical SuccinctSelect
+  false-helper names.
   `RMQ/Core/GenericSelectBuilder.lean`, `RMQ/Core/GenericSelectParams.lean`,
   `RMQ/Core/GenericSelectPrimitives.lean`, and
   `RMQ/Core/GenericSelect/Tables.lean` remain only as compatibility import
-  barrels.
+  barrels. The old flat generic-select files are no longer imported by live
+  in-repository roots or scripts; new code should import
+  `RMQ.Core.GenericSelect` or a role module below `RMQ.Core.GenericSelect.*`.
 - `RMQ/Headlines.lean`:
   public-facing aliases
   `Headlines.exactRMQLowerBoundDoubledCatalanSlack`,
@@ -2045,7 +2056,8 @@ These are intentionally non-API helpers, but they are listed here for audit
 completeness.
 
 - `RMQ/Core/Window.lean`: `get?_some_of_lt`.
-- `RMQ/Core/Shape.lean`: `sum_map_const_nat`, `get?_addConst`,
+- `RMQ/Core/ListLemmas.lean`: `sum_map_const_nat`.
+- `RMQ/Core/Shape.lean`: `get?_addConst`,
   `leftmostArgMin_append_zero_of_positive`,
   `scanWindow_append_zero_of_positive`, `fin_succ_inj`, `nodup_ofFn`,
   `finRange_nodup`, `boolLists_length`, `mem_boolLists_of_length`,
@@ -2054,8 +2066,8 @@ completeness.
   `mem_nodeProducts`, `nodup_nodeProducts`,
   `nodup_flatMap_of_nodup_disjoint`, `mem_splitShapeProducts`,
   `splitShapeProducts_nodup`, `fullCode_eq_of_tail_eq_of_pos`.
-- `RMQ/Core/EncodingLowerBound.lean`: `sum_map_const_nat`,
-  `mem_erase_of_ne_of_mem`, `rightSpine`, `rightSpine_shapeOfSize`,
+- `RMQ/Core/EncodingLowerBound.lean`: `mem_erase_of_ne_of_mem`,
+  `rightSpine`, `rightSpine_shapeOfSize`,
   `shapeOfSize_size`, `two_pow_sub_le_of_le_mul_pow`,
   `remyPositions_length`, `remyLeaves_length`, `remyInsert_size`,
   `remyNewLeaf_mem`, `remyRemoveMarkedLeaf_insert`,

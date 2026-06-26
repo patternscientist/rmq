@@ -229,6 +229,8 @@ The first generic-select physical split is active:
   two-word decode primitive and payload-routing certificates;
 - `RMQ/Core/GenericSelect/PrimitiveLegacyNames.lean` quarantines the older
   false-named primitive wrapper aliases for compatibility;
+- `RMQ/Core/GenericSelect/SuccinctSelectLegacyNames.lean` quarantines
+  historical SuccinctSelect false-helper bridge equations for compatibility;
 - `RMQ/Core/GenericSelect/Slots.lean` owns occurrence counts, slot arithmetic,
   span classification, and sparse-exception counting;
 - `RMQ/Core/GenericSelect/Entries.lean` owns super/local entry construction and
@@ -253,7 +255,8 @@ The first generic-select physical split is active:
   `target := false` bridge facts that should not live in the plain bitvector
   core;
 - `RMQ/Core/GenericSelectLegacy.lean` is the terminal compatibility root for
-  legacy false-named aliases; the canonical generic root does not import it;
+  legacy false-named aliases and SuccinctSelect bridge equations; the
+  canonical generic root does not import it;
 - `RMQ/Core/SuccinctRankSelect.lean` is the construction-level bitvector
   rank/select root;
 - `RMQ/Core/BPCloseNavigation.lean` is the compact BP close/LCA navigation root;
@@ -272,8 +275,10 @@ arithmetic, dense-entry, fixed-width-table, or relative-split helpers. Those
 helpers live under the `GenericSelect.LowLevel` barrel and its role modules,
 while BP-shaped bridges remain above the plain bitvector core in
 `GenericSelect.BPCompat`, `GenericSelectBPCompat`, `SuccinctSelect`, and
-`SuccinctFinal`. The canonical `RMQ.Core.GenericSelect` root is pure
-plain-bitvector generic; it does not import BP compatibility or legacy aliases.
+`SuccinctFinal`. Older false-named bridge equations sit behind
+`GenericSelect.SuccinctSelectLegacyNames` and `GenericSelectLegacy`. The
+canonical `RMQ.Core.GenericSelect` root is pure plain-bitvector generic; it does
+not import BP compatibility or legacy aliases.
 
 The select-side construction layer has continued the same dependency-role
 split. `RMQ/Core/SuccinctSelect.lean` is the canonical reusable barrel for the
@@ -306,6 +311,15 @@ and concrete-profile modules. The relative-rmM macro is likewise split behind
 compact endpoint, local BP decoder, concrete directory, and macro/micro family
 layers. `RMQ/Core/SuccinctCloseProposal.lean` is now a compatibility import
 root for the historical proposal name.
+
+Compatibility-shim inventory: current live roots and scripts no longer import
+`RMQ.Core.SuccinctRankProposal`, `RMQ.Core.SuccinctSelectProposal`,
+`RMQ.Core.SuccinctCloseProposal`, `RMQ.Core.GenericSelectBuilder`,
+`RMQ.Core.GenericSelectParams`, or `RMQ.Core.GenericSelectPrimitives`.
+`RMQ/Archive/SelectObstructions.lean` now imports the canonical
+`RMQ.Core.SuccinctSelect` root directly. Keep the proposal and old flat
+generic-select files only as external/downstream compatibility roots, not as
+active implementation modules or lint targets.
 
 The broadword/succinct-space model layer has followed the same barrel pattern.
 `RMQ/Core/SuccinctSpace.lean` is now a thin public import root over:
@@ -376,8 +390,10 @@ Future opportunistic work:
   namespaces.
 - In generic select code, remove `False` from names that are truly
   target-parametric.
-- Centralize repeated Nat/Bool/log facts in a small local prelude if the repo
-  stays Mathlib-free.
+- Continue centralizing repeated Nat/Bool/log/List facts in small local helper
+  modules if the repo stays Mathlib-free. The first such helper is
+  `RMQ/Core/ListLemmas.lean`, which removes the duplicated
+  `sum_map_const_nat` proof from the lower-bound, encoding, and shape layers.
 - Refactor repeated Bool case-split boilerplate and giant arithmetic proof
   fragments opportunistically, not as a broad risky rewrite.
 

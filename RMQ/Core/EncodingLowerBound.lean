@@ -23,10 +23,6 @@ namespace EncodingLowerBound
 abbrev bitStrings : Nat -> List (List Bool) :=
   LowerBound.bitStrings
 
-private theorem sum_map_const_nat {alpha : Type} (xs : List alpha) (n : Nat) :
-    ((xs.map fun _ => n).sum) = xs.length * n := by
-  simp [List.map_const']
-
 theorem bitStrings_length (n : Nat) :
     (bitStrings n).length = 2 ^ n := by
   exact LowerBound.bitStrings_length n

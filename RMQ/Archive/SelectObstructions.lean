@@ -1,4 +1,4 @@
-import RMQ.Core.SuccinctSelectProposal
+import RMQ.Core.SuccinctSelect
 
 /-!
 Archived select-side obstruction witnesses.
@@ -17,23 +17,23 @@ theorem shared_aligned_read_word_forces_same_wordIndex
     {sample : SuccinctSpace.StoredWordSelectSample}
     (hwordSize : 0 < wordSize)
     (hexactA :
-      RMQ.SuccinctSelectProposal.SelectSampleWordExact
+      RMQ.SuccinctSelect.SelectSampleWordExact
         target bits occurrenceA sample word)
     (hexactB :
-      RMQ.SuccinctSelectProposal.SelectSampleWordExact
+      RMQ.SuccinctSelect.SelectSampleWordExact
         target bits occurrenceB sample word)
     (hselectA : RMQ.Succinct.select target bits occurrenceA = some posA)
     (hselectB : RMQ.Succinct.select target bits occurrenceB = some posB)
     (hstart : sample.wordStart = sample.wordIndex * wordSize)
     (hwordLen : word.length <= wordSize) :
     posA / wordSize = posB / wordSize :=
-  RMQ.SuccinctSelectProposal.SelectSampleWordExact.shared_aligned_read_word_forces_same_wordIndex
+  RMQ.SuccinctSelect.SelectSampleWordExact.shared_aligned_read_word_forces_same_wordIndex
     hwordSize hexactA hexactB hselectA hselectB hstart hwordLen
 
 theorem shared_local_locator_forces_same_selected_wordIndex
     {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
     (data :
-      RMQ.SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData
+      RMQ.SuccinctSelect.TwoLevelPayloadLiveStoredWordSelectData
         bits superOverhead blockOverhead queryCost)
     {target : Bool} {occurrenceA occurrenceB posA posB : Nat}
     {super delta : SuccinctSpace.StoredWordSelectSample}
@@ -57,7 +57,7 @@ theorem shared_local_locator_forces_same_selected_wordIndex
           data.blockIndex target occurrenceB]? =
         some (some delta))
     (hword :
-      data.bitWords.store.words[(RMQ.SuccinctSelectProposal.addSelectSample
+      data.bitWords.store.words[(RMQ.SuccinctSelect.addSelectSample
           super delta).wordIndex]? =
         some word)
     (hselectA :
@@ -65,8 +65,8 @@ theorem shared_local_locator_forces_same_selected_wordIndex
     (hselectB :
       RMQ.Succinct.select target bits occurrenceB = some posB)
     (hstart :
-      (RMQ.SuccinctSelectProposal.addSelectSample super delta).wordStart =
-        (RMQ.SuccinctSelectProposal.addSelectSample super delta).wordIndex *
+      (RMQ.SuccinctSelect.addSelectSample super delta).wordStart =
+        (RMQ.SuccinctSelect.addSelectSample super delta).wordIndex *
           data.wordSize) :
     posA / data.wordSize = posB / data.wordSize :=
   data.shared_local_locator_forces_same_selected_wordIndex
@@ -76,7 +76,7 @@ theorem shared_local_locator_forces_same_selected_wordIndex
 theorem shared_local_locator_contradicts_distinct_selected_wordIndex
     {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
     (data :
-      RMQ.SuccinctSelectProposal.TwoLevelPayloadLiveStoredWordSelectData
+      RMQ.SuccinctSelect.TwoLevelPayloadLiveStoredWordSelectData
         bits superOverhead blockOverhead queryCost)
     {target : Bool} {occurrenceA occurrenceB posA posB : Nat}
     {super delta : SuccinctSpace.StoredWordSelectSample}
@@ -100,7 +100,7 @@ theorem shared_local_locator_contradicts_distinct_selected_wordIndex
           data.blockIndex target occurrenceB]? =
         some (some delta))
     (hword :
-      data.bitWords.store.words[(RMQ.SuccinctSelectProposal.addSelectSample
+      data.bitWords.store.words[(RMQ.SuccinctSelect.addSelectSample
           super delta).wordIndex]? =
         some word)
     (hselectA :
@@ -108,8 +108,8 @@ theorem shared_local_locator_contradicts_distinct_selected_wordIndex
     (hselectB :
       RMQ.Succinct.select target bits occurrenceB = some posB)
     (hstart :
-      (RMQ.SuccinctSelectProposal.addSelectSample super delta).wordStart =
-        (RMQ.SuccinctSelectProposal.addSelectSample super delta).wordIndex *
+      (RMQ.SuccinctSelect.addSelectSample super delta).wordStart =
+        (RMQ.SuccinctSelect.addSelectSample super delta).wordIndex *
           data.wordSize)
     (hdistinct :
       posA / data.wordSize = posB / data.wordSize -> False) :

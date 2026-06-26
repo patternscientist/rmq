@@ -65,11 +65,12 @@ def selectDenseLocalFirstWord
     wordSize
 
 def selectDenseLocalFirstCount
-    (bits : List Bool) (wordSize baseWordIndex firstOffset : Nat) : Nat :=
-  RMQ.RAM.boolRankPrefix false
+    (target : Bool) (bits : List Bool)
+    (wordSize baseWordIndex firstOffset : Nat) : Nat :=
+  RMQ.RAM.boolRankPrefix target
       (selectDenseLocalFirstWord bits wordSize baseWordIndex)
       (selectDenseLocalFirstWord bits wordSize baseWordIndex).length -
-    RMQ.RAM.boolRankPrefix false
+    RMQ.RAM.boolRankPrefix target
       (selectDenseLocalFirstWord bits wordSize baseWordIndex)
       firstOffset
 
