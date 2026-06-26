@@ -2474,3 +2474,29 @@ main's permanent history; the stray entry is the only "Round log" commit on main
 just those 35 doc lines so the dev's design doc is clean again. This audit-branch entry
 backfills the gap. Going forward: round-log commits run only from this worktree (no `cd` to
 main).
+
+## 2026-06-26 (AUDIT) — `main` @ `57b6187` "Tighten generic select cleanup boundaries"
+
+One small commit (14 files, +135/−73). B/C-tier polish. Integrity perfect: build green; all
+four axiom checks resolve, zero `sorryAx`/`ofReduceBool`/errors — headline 15, archive 4,
+rank-select 5, full 421.
+
+**VERDICT: CLEAN, genuine polish.**
+- **Real basics consolidation (B6 progress):** new `RMQ/Core/ListLemmas.lean` de-duplicates a
+  `sum_map_const_nat` lemma that had been copy-pasted in *both* `EncodingLowerBound` and
+  `LowerBound`; both now `import RMQ.Core.ListLemmas`. A genuine shared-prelude start, not a
+  filler module.
+- **Compat-layer tightening:** consolidated cross-namespace legacy aliases
+  (`GenericSelect/SuccinctSelectLegacyNames.lean` +40, `BPCompat` trimmed) — narrowing the
+  transitional shim surface.
+- **Lint not weakened (checked):** `succinct_cost_lint.ps1` only updates scan paths from the
+  retired `*Proposal.lean` names to `SuccinctSelect.lean`/`SuccinctClose.lean` — follows the
+  A1 rename, same coverage.
+
+**Remaining (unchanged):** Bool case-extraction dances (~33) and mega-simps (~229) untouched;
+shim retirement ongoing; Mathlib/CSLib dependency decision still open. The `0bd7006`→`main`
+round-log leak (`e296eec`) is being left as-is per user instruction (remedy still available).
+
+Bottom line: incremental, correct boundary/basics cleanup with perfect integrity — the
+codebase keeps inching from "navigable" toward "fully idiomatic" without ever risking the
+result.
