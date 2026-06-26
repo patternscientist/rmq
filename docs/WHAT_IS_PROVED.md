@@ -89,6 +89,15 @@ construction-level word discipline: concrete rank payload words erase to the
 stored bitvector, and concrete rank/select payload-word reads are bounded by the
 repository's machine-word-size function.
 
+The compressed/FID target surface is also formalized:
+`RMQ.RankSelect.fixedWeightBitstringsLength` counts fixed-weight bitvector
+universes by a local binomial recurrence, and
+`RMQ.RankSelect.compressedFixedWeightConstantQueryProfile` states the reusable
+profile with payload
+`log2 (binomialCount n m) + 1 + o(n)` and constant modeled
+access/rank/select. This is a specification/profile layer; the concrete
+enumerative codec that inhabits it is still future work.
+
 ## Balanced-Parentheses Navigation
 
 `RMQBPNavigation` exposes the compact BP close/LCA layer used by the succinct

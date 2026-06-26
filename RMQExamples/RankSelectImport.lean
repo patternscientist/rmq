@@ -14,6 +14,19 @@ abbrev Directory := RMQ.RankSelect.Directory
 
 abbrev Family := RMQ.RankSelect.Family
 
+abbrev CompressedFamily := RMQ.RankSelect.CompressedFamily
+
+abbrev fixedWeightPayloadBudget :=
+  RMQ.RankSelect.fixedWeightPayloadBudget
+
+abbrev fixedWeightBitstringsLength :=
+  RMQ.RankSelect.fixedWeightBitstringsLength
+
+abbrev compressedProfile
+    {overhead : Nat -> Nat} {queryCost : Nat}
+    (family : RMQ.RankSelect.CompressedFamily overhead queryCost) :=
+  RMQ.RankSelect.compressedFixedWeightConstantQueryProfile family
+
 abbrev jacobsonClarkDirectory :=
   RMQ.RankSelect.jacobsonClarkDirectory
 

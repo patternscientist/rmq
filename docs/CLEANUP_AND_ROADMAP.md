@@ -433,10 +433,13 @@ No cleanup task should introduce Mathlib without an explicit user decision.
 
 After the select unification and module cleanup, the natural next spokes are:
 
-1. examples and stable user-facing docs for the public rank/select package;
-2. balanced-parentheses navigation over the public rank/select surface;
+1. a concrete compressed/FID codec behind the public fixed-weight rank/select
+   profile:
+   `log2 (binomialCount n m) + 1 + o(n)`;
+2. fuller balanced-parentheses tree navigation over the public rank/select
+   surface;
 3. wavelet trees or range counting as the next CS166-style succinct structure;
-4. compressed/FID-style rank/select space refinements such as
-   `log2 (Nat.choose U m) + o(U)` under an explicit model;
+4. union-find/amortized-analysis infrastructure as the first non-succinct
+   spoke;
 5. possible CSLib contribution once the API is stable enough to be useful
    outside this repo.

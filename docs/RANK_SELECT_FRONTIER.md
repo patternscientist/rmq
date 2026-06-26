@@ -68,11 +68,37 @@ words erase to the stored bitvector, and every Jacobson-rank or Clark-select
 payload word read by the concrete adapter has length bounded by
 `SuccinctRank.machineWordBits bits.length`.
 
+## Compressed/FID Surface
+
+The first compressed/FID layer is now exposed through:
+
+```lean
+RMQ.RankSelect.fixedWeightBitstrings
+RMQ.RankSelect.fixedWeightBitstringsLength
+RMQ.RankSelect.fixedWeightPayloadBudget
+RMQ.RankSelect.CompressedFamily
+RMQ.RankSelect.compressedFixedWeightConstantQueryProfile
+```
+
+The fixed-weight universe is counted by a Mathlib-free binomial recurrence:
+`fixedWeightBitstringsLength` proves that the number of length-`n` bitvectors
+with exactly `k` true bits is `binomialCount n k`. The compressed profile uses
+payload budget
+
+```lean
+Nat.log2 (binomialCount bits.length (trueCount bits)) + 1 + overhead bits.length
+```
+
+with `LittleOLinear overhead` and constant modeled `access`, `rank`, and
+`select`. This is the target theorem shape for fully indexable dictionaries
+(FID). It is not yet a concrete enumerative codec.
+
 ## Module Boundary
 
 The reusable public spec is:
 
 - `RMQ/Core/RankSelectSpec.lean`
+- `RMQ/Core/RankSelectCompressed.lean`
 - `RMQ/Core/RankSelectPublic.lean`
 
 The concrete construction currently lives in:
@@ -193,9 +219,10 @@ neutral `RMQ.RankSelect.*` names.
 The plain-bitvector `n + o(n), O(1)` milestone is landed. The next research
 targets are:
 
-1. compressed/FID-style payload budgets such as
-   `log2 (Nat.choose U m) + o(U)`, after adding a binomial/entropy counting
-   layer;
+1. a concrete compressed/FID codec behind the landed fixed-weight profile:
+   encode/decode the rank among `binomialCount n m` bitvectors, charge
+   payload reads, and instantiate
+   `compressedFixedWeightConstantQueryProfile`;
 2. deepening the landed `RMQBPNavigation` spoke into a fuller
    balanced-parentheses tree-navigation API over the same public rank/select
    surface;

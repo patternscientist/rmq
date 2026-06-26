@@ -1,4 +1,5 @@
 import RMQ.Core.RankSelectSpec
+import RMQ.Core.RankSelectCompressed
 import RMQ.Core.GenericSelect.Family
 
 /-!
@@ -18,6 +19,42 @@ abbrev Directory :=
 /-- Public bitvector rank/select family shape. -/
 abbrev Family :=
   RMQ.RankSelectSpec.BitVectorRankSelectFamily
+
+/-- Public compressed/FID bitvector rank/select directory shape. -/
+abbrev CompressedDirectory :=
+  RMQ.RankSelectSpec.CompressedBitVectorRankSelectDirectory
+
+/-- Public compressed/FID bitvector rank/select family shape. -/
+abbrev CompressedFamily :=
+  RMQ.RankSelectSpec.CompressedBitVectorRankSelectFamily
+
+/-- Counted fixed-weight bitvector universe used by the compressed/FID budget. -/
+abbrev fixedWeightBitstrings :=
+  RMQ.RankSelectSpec.fixedWeightBitstrings
+
+/-- Mathlib-free binomial-count recurrence for fixed-weight bitvectors. -/
+abbrev binomialCount :=
+  RMQ.RankSelectSpec.binomialCount
+
+/-- Number of true bits in a bitvector. -/
+abbrev trueCount :=
+  RMQ.RankSelectSpec.trueCount
+
+/-- Fixed-weight information-theoretic payload budget for one bitvector. -/
+abbrev fixedWeightPayloadBudget :=
+  RMQ.RankSelectSpec.fixedWeightPayloadBudget
+
+/-- Fixed-weight bitvector universe count. -/
+abbrev fixedWeightBitstringsLength :=
+  RMQ.RankSelectSpec.fixedWeightBitstrings_length
+
+/-- Public compressed/FID family theorem shape. -/
+abbrev compressedFixedWeightConstantQueryProfile
+    {overhead : Nat -> Nat} {queryCost : Nat}
+    (family :
+      CompressedFamily overhead queryCost) :=
+  RMQ.RankSelectSpec.CompressedBitVectorRankSelectFamily.fixed_weight_constant_query_profile
+    family
 
 /-- Auxiliary-overhead budget for the concrete Jacobson/Clark family. -/
 abbrev jacobsonClarkOverhead :=

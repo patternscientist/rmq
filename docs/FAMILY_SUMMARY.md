@@ -65,7 +65,9 @@ separate appendix.
   rank/select: `RMQRankSelect` builds the public plain-bitvector
   `n + o(n)` payload profile with constant modeled `access`, `rank`, and
   `select`, stated independently from RMQ while reusing the succinct bitvector
-  machinery where appropriate. The second extraction spoke is
+  machinery where appropriate; it now also exposes the compressed/FID
+  fixed-weight theorem surface and counted binomial universe. The second
+  extraction spoke is
   `RMQBPNavigation`, exposing the compact balanced-parentheses close/LCA
   navigation facade consumed by succinct RMQ.
 - Optional archive root: `RMQArchive` imports the retired compatibility and
@@ -275,9 +277,13 @@ combines `SuccinctRank.jacobsonRankData` with two
 `GenericSelect.sparseExceptionSelectSource` values behind
 `RankSelectSpec.BitVectorRankSelectFamily`, proving stored-bit access, exact
 rank/select, `n + o(n)` counted payload bits, and one fixed modeled query
-bound.  The remaining standalone rank/select frontier is now compressed/FID
-space or a tighter presentation of the Clark internals, not merely consuming
-the public spec surface.  The strengthened public theorem
+bound.  `RankSelectCompressed` adds the compressed/FID profile shape: a
+Mathlib-free fixed-weight bitvector universe counted by `binomialCount`, and a
+family theorem with payload budget
+`Nat.log2 (binomialCount bits.length (trueCount bits)) + 1 + o(n)`.  The
+remaining standalone rank/select frontier is the concrete enumerative codec or
+a tighter presentation of the Clark internals, not merely consuming the public
+spec surface.  The strengthened public theorem
 `RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery` additionally exposes
 the machine-word discipline from the concrete components: Jacobson rank payload
 words flatten to the stored bitvector, and the concrete rank/select payload
@@ -1645,9 +1651,10 @@ The names below are grouped by source module. Repeated base names in
   `Archive.BPSpecializedCapstone.total_two_sided_doubled_catalan_slack_profile`.
 - `RMQ/Archive/SelectCompatibility.lean`:
   thin compatibility aliases for the retained archive surfaces.
-- `RMQ/Core/RankSelectPublic.lean`:
+- `RMQ/Core/RankSelectCompressed.lean` and `RMQ/Core/RankSelectPublic.lean`:
   neutral public aliases for the standalone rank/select spoke, including
-  `RankSelect.jacobsonClarkNPlusOConstantQuery` and
+  `RankSelect.compressedFixedWeightConstantQueryProfile`,
+  `RankSelect.jacobsonClarkNPlusOConstantQuery`, and
   `RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery`.
 - `RMQ/Core/BPNavigationPublic.lean` and `RMQBPNavigation.lean`:
   neutral public aliases and a standalone import root for compact
@@ -2107,8 +2114,9 @@ completeness.
 
 1. Deepen the reusable succinct bitvector/navigation spokes: public
    rank/select and compact BP close-navigation are landed; the next frontier is
-   compressed/FID-style payload budgets and a fuller balanced-parentheses
-   tree-navigation API over the same payload-accounted directory interfaces.
+   a concrete compressed/FID codec behind the fixed-weight profile and a fuller
+   balanced-parentheses tree-navigation API over the same payload-accounted
+   directory interfaces.
 2. Start the first non-succinct spoke, with union-find as the best stress test
    for amortized analysis, representation invariants, and hub reuse.
 3. Keep RMQ presentation polish narrow: an even flatter encoded/payload-only

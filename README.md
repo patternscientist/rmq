@@ -178,11 +178,15 @@ about Lean's executable `List` runtime.
   select-source, and family layers; BP compatibility is a separate terminal
   bridge. The other barrels collect construction-level rank/select, compact BP
   close navigation, and the final payload-accounted BP-native RMQ capstone.
-- `RMQ/Core/RankSelectSpec.lean` and `RMQ/Core/RankSelectPublic.lean`:
+- `RMQ/Core/RankSelectSpec.lean`,
+  `RMQ/Core/RankSelectCompressed.lean`, and
+  `RMQ/Core/RankSelectPublic.lean`:
   standalone rank/select extraction surfaces. `RankSelectSpec` packages exact
   bitvector access/rank/select over stored bits with an `n + overhead n`
-  payload profile, while `RankSelectPublic` exposes the public Jacobson/Clark
-  bitvector family theorem as
+  payload profile, `RankSelectCompressed` adds the fixed-weight
+  compressed/FID theorem shape with a Mathlib-free binomial-count universe, and
+  `RankSelectPublic` exposes the public Jacobson/Clark bitvector family theorem
+  as
   `RankSelect.jacobsonClarkNPlusOConstantQuery` and its strengthened
   word-bounded profile
   `RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery`.
@@ -346,7 +350,7 @@ RMQ blocker:
 - extract the reusable cost/refinement/lower-bound hub toward a CSLib-style
   library surface;
 - refine the landed standalone Jacobson/Clark rank/select theorem toward
-  compressed/FID space, and deepen the landed BP-navigation spoke into a
-  fuller tree-navigation API; and
+  a concrete compressed/FID codec behind the fixed-weight profile, and deepen
+  the landed BP-navigation spoke into a fuller tree-navigation API; and
 - start union-find or another CS166-style structure once it can consume the
   hub rather than rebuild it.
