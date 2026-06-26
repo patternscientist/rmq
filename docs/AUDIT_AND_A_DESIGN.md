@@ -476,3 +476,38 @@ cheap executable guard `idx < shape.size`; the full false-count identity
 in proof-only exactness reasoning. The remaining caveat is the already
 documented C2 model boundary: the compact close/LCA side uses a charged
 bounded-local-BP primitive whose bit-level local decoder can be hardened later.
+
+## 2026-06-25 (AUDIT) — `main` @ `0bd7006` (A1 executed: namespace alignment)
+
+Three commits since `f7a774e`: `e7715b0`/`38b7d07`/`0bd7006` introduce/align the
+`SuccinctRank` / `SuccinctSelect` / `SuccinctClose` namespaces — the prior audit's top
+item (A1). Integrity perfect: build green; all four axiom checks resolve, zero
+`sorryAx`/`ofReduceBool`/errors — headline 15, archive 4, rank-select 5, full 421;
+headline capstone still `{propext, Classical.choice, Quot.sound}`.
+
+**VERDICT: A1 done, and done the right way.**
+- **"Proposal" dropped from live namespaces.** Files under `SuccinctSelect/`,
+  `SuccinctClose/` declare `namespace SuccinctSelect` / `SuccinctClose` (top-level
+  path-aligned); only 1 file each still declares the old `*Proposal` namespace.
+- **Clean compat-shim layer (as recommended).** The 3 `*Proposal.lean` roots are now thin
+  `export`-based compatibility shims (e.g. `SuccinctSelectProposal.lean` 576 lines, mostly
+  re-exports) with a docstring steering new code to `RMQ.Core.SuccinctSelect` /
+  `RMQ.SuccinctSelect`. ~25 `Proposal` refs remain, all in that transitional layer.
+- **`axiom_check` updated to the new names** (`RMQ.SuccinctSelect.*`), counts unchanged —
+  no theorem lost, no check masked.
+
+**Minor / standing:**
+- Namespace alignment is at the *directory* level (all `SuccinctSelect/**` files share one
+  `SuccinctSelect` namespace, sub-namespaced by structure e.g. `SparseExceptionSelectData`),
+  not per-subdirectory. That's idiomatic Lean (namespace-by-type, not by file path), so it's
+  fine — not a gap.
+- **B-tier idiom polish still pending** (unchanged): 33 Bool case-extraction dances, 229
+  mega-simps (≥5 lemmas), no global prelude.
+- 3 compat shims to retire once downstream migrates; `SuccinctSpace.lean` (7557,
+  foundational) lone large file; Mathlib/CSLib dependency call still open.
+
+Bottom line: the structural + naming cleanup is now essentially complete — navigable file
+sizes, dead-ends pruned, and idiomatic path-aligned namespaces with "Proposal" gone from the
+live API, all with a flawless integrity record. What's left (B-tier proof idioms, shim
+retirement, the dependency decision) is the narrow "navigable → maximally idiomatic" gap,
+none of it debt. The project now reads like a real Lean CS-library component.
