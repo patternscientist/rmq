@@ -2441,3 +2441,36 @@ Bottom line: another clean, recommendation-tracking batch — the structural pru
 is essentially complete (only foundational `SuccinctSpace` is still large). What's left is
 A1 (namespace/path alignment, now the priority) and the B-tier idiom polish; neither is
 debt, both are the "idiomatic vs. merely navigable" gap.
+
+## 2026-06-25 (AUDIT) — `main` @ `a6daba5` (SuccinctSpace split; A1 also landed)
+
+Covers two batches. **`0bd7006`** (commits `e7715b0`/`38b7d07`/`0bd7006`) executed A1 —
+namespace alignment to `SuccinctRank`/`SuccinctSelect`/`SuccinctClose`, "Proposal" dropped
+from the live API, clean `export`-based compat shims in the 3 `*Proposal.lean` roots,
+`axiom_check` updated to the new names. **`a6daba5`** split the last large file,
+`SuccinctSpace.lean` 7557 → 16-line aggregator + a `SuccinctSpace/` role directory
+(Asymptotics/BPAccess/RankSelect/WordStore/Tables/…). Integrity perfect on both: build
+green; all four axiom checks resolve, zero `sorryAx`/`ofReduceBool`/errors — headline 15,
+archive 4, rank-select 5, full 421; headline capstone `{propext, Classical.choice,
+Quot.sound}`.
+
+**VERDICT: CLEAN. The structural cleanup is effectively finished.** File-size distribution
+is now **0 files ≥3000 lines** (largest is `LCA.lean` 2948), 135/148 files <1500. Across the
+whole series: dead-ends pruned, mega-files split into role modules, namespaces path-aligned
+and de-"Proposal"-ed, trust base never regressed once.
+
+**Remaining (all B-tier / strategic, none is debt):** Bool case-extraction dances (33),
+mega-simps ≥5 lemmas (229), no global prelude; retire the compat shims once downstream
+migrates; the Mathlib/CSLib dependency decision (would dissolve most B-tier).
+
+**PROCESS NOTE / SELF-CORRECTION (my error).** The `0bd7006` round-log entry was
+accidentally committed to **`main`**, not this audit branch: commit `e296eec`
+("Round log: AUDIT of main @ 0bd7006 …") appended a 35-line entry to *main's own*
+`docs/AUDIT_AND_A_DESIGN.md` (a different, dev-maintained 514-line file that merely shares
+this path). Cause: I prefixed that turn's append+commit with `cd <main worktree>` for a
+metric, so it ran against main. The dev then built `a6daba5` on top, so `e296eec` is now in
+main's permanent history; the stray entry is the only "Round log" commit on main. Remedy
+(pending user OK, no destructive history rewrite): add a normal commit on main reverting
+just those 35 doc lines so the dev's design doc is clean again. This audit-branch entry
+backfills the gap. Going forward: round-log commits run only from this worktree (no `cd` to
+main).
