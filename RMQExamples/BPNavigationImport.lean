@@ -9,6 +9,33 @@ close/LCA navigation over Cartesian-shape BP encodings.
 
 namespace RMQ.Examples.BPNavigationImport
 
+abbrev BPAccess := RMQ.BPNavigation.BalancedParensAccess
+
+abbrev bpParensOfShape := RMQ.BPNavigation.bpParensOfShape
+
+abbrev closeOfInorder
+    {shape : RMQ.Cartesian.CartesianShape} {overhead queryCost : Nat}
+    (access :
+      RMQ.BPNavigation.BalancedParensAccess
+        (RMQ.BPNavigation.bpParensOfShape shape) overhead queryCost)
+    (idx : Nat) :=
+  RMQ.BPNavigation.closeOfInorderCosted access idx
+
+abbrev inorderOfClose
+    {shape : RMQ.Cartesian.CartesianShape} {overhead queryCost : Nat}
+    (access :
+      RMQ.BPNavigation.BalancedParensAccess
+        (RMQ.BPNavigation.bpParensOfShape shape) overhead queryCost)
+    (close : Nat) :=
+  RMQ.BPNavigation.inorderOfCloseCosted access close
+
+abbrev closeRankProfile
+    {shape : RMQ.Cartesian.CartesianShape} {overhead queryCost : Nat}
+    (access :
+      RMQ.BPNavigation.BalancedParensAccess
+        (RMQ.BPNavigation.bpParensOfShape shape) overhead queryCost) :=
+  RMQ.BPNavigation.shapeAccessCloseRankProfile access
+
 abbrev CompactCloseDirectory :=
   RMQ.BPNavigation.CompactCloseDirectory
 

@@ -1659,7 +1659,12 @@ The names below are grouped by source module. Repeated base names in
 - `RMQ/Core/BPNavigationPublic.lean` and `RMQBPNavigation.lean`:
   neutral public aliases and a standalone import root for compact
   balanced-parentheses close/LCA navigation, including
+  `BPNavigation.shapeAccessCloseRankProfile` and
   `BPNavigation.compactCloseDirectoryProfile`.
+- `RMQ/Core/Amortized.lean`, `RMQ/Core/UnionFind.lean`, and
+  `RMQUnionFind.lean`: reusable potential-method accounting plus the first
+  non-succinct spoke surface, with exact costed reference `find`/`union`
+  operations and `UnionFind.referenceAmortizedBackend_profile`.
 - `RMQ/Core/GenericSelect.lean`,
   `RMQ/Core/SuccinctRankSelect.lean`,
   `RMQ/Core/BPCloseNavigation.lean`, and
@@ -2117,8 +2122,9 @@ completeness.
    a concrete compressed/FID codec behind the fixed-weight profile and a fuller
    balanced-parentheses tree-navigation API over the same payload-accounted
    directory interfaces.
-2. Start the first non-succinct spoke, with union-find as the best stress test
-   for amortized analysis, representation invariants, and hub reuse.
+2. Deepen the landed union-find spoke: add a parent-pointer forest
+   representation, prove it refines `UnionFind.State`, then start
+   union-by-rank and path-compression amortized analysis.
 3. Keep RMQ presentation polish narrow: an even flatter encoded/payload-only
    statement of the BP-native capstone is useful, but it is no longer a hidden
    correctness or complexity blocker.

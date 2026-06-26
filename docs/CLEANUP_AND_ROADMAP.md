@@ -436,10 +436,10 @@ After the select unification and module cleanup, the natural next spokes are:
 1. a concrete compressed/FID codec behind the public fixed-weight rank/select
    profile:
    `log2 (binomialCount n m) + 1 + o(n)`;
-2. fuller balanced-parentheses tree navigation over the public rank/select
-   surface;
+2. fuller balanced-parentheses tree navigation over the landed public
+   close/rank bridge and rank/select surface;
 3. wavelet trees or range counting as the next CS166-style succinct structure;
-4. union-find/amortized-analysis infrastructure as the first non-succinct
-   spoke;
+4. deepen the landed union-find/amortized-analysis scaffold into a
+   parent-pointer forest representation, union-by-rank, and path compression;
 5. possible CSLib contribution once the API is stable enough to be useful
    outside this repo.

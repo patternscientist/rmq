@@ -104,11 +104,28 @@ enumerative codec that inhabits it is still future work.
 RMQ capstone. The public concrete profile is
 `RMQ.BPNavigation.compactCloseDirectoryProfile`.
 
-It proves `o(n)` auxiliary close-navigation payload, constant modeled query
-cost, exact answer-close semantics for Cartesian-shape RMQ queries supplied
-with exact endpoint close positions, and machine-word-bounded payload reads.
-This is not yet a full balanced-parentheses tree-navigation library; it is the
-RMQ-facing close/LCA navigation spoke.
+The public bridge theorem
+`RMQ.BPNavigation.shapeAccessCloseRankProfile` proves the basic charged BP
+tree-navigation legs: false-select maps an inorder node index to its closing
+parenthesis, and false-rank at `close + 1` recovers the inorder index when the
+close position is exact. The compact close profile proves `o(n)` auxiliary
+close-navigation payload, constant modeled query cost, exact answer-close
+semantics for Cartesian-shape RMQ queries supplied with exact endpoint close
+positions, and machine-word-bounded payload reads. This is not yet a full
+balanced-parentheses tree-navigation library; it is the RMQ-facing close/LCA
+navigation spoke plus the first reusable close/rank bridge.
+
+## Union-Find Scaffold
+
+`RMQUnionFind` exposes the first non-succinct spoke. It proves a finite
+partition-state specification, exact costed reference `find` and `union`
+operations, and a reusable potential-method backend interface:
+`RMQ.UnionFind.referenceBackend_profile` and
+`RMQ.UnionFind.referenceAmortizedBackend_profile`.
+
+This is infrastructure for the next structure, not the final theorem: the repo
+does not yet contain a parent-pointer forest implementation, path compression,
+union-by-rank, or the inverse-Ackermann amortized analysis.
 
 ## Cost Model
 

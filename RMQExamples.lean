@@ -1,6 +1,7 @@
 import RMQExamples.RMQHeadlines
 import RMQExamples.RankSelectImport
 import RMQExamples.BPNavigationImport
+import RMQExamples.UnionFindImport
 import RMQExamples.LowerBoundImport
 
 /-!

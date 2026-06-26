@@ -5,10 +5,14 @@ Focused trust-base check for the standalone balanced-parentheses navigation
 spoke.
 
 The full RMQ gate still runs `scripts/axiom_check.lean`. This smaller check is
-for the public BP close/LCA navigation facade: compact close-directory profile,
-large-regime profile, and the generic payload-live macro/micro family profile.
+for the public BP navigation facade: the close/rank bridge, compact
+close-directory profile, large-regime profile, and the generic payload-live
+macro/micro family profile.
 -/
 
+#print axioms RMQ.BPNavigation.closeOfInorderCosted_erase
+#print axioms RMQ.BPNavigation.inorderOfCloseCosted_erase_of_bpCloseOfInorder?
+#print axioms RMQ.BPNavigation.shapeAccessCloseRankProfile
 #print axioms RMQ.BPNavigation.compactCloseDirectoryProfile
 #print axioms RMQ.BPNavigation.compactCloseDirectoryProfileOfSizeGe
 #print axioms RMQ.BPNavigation.macroMicroTwoNPlusOBuiltQueryProfile

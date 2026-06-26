@@ -19,6 +19,7 @@ import RMQ.Core.Microtable
 import RMQ.Core.CostKernels
 import RMQ.Core.Schedule
 import RMQ.Core.Recursion
+import RMQ.Core.UnionFind
 import RMQ.Impl.LinearScan
 import RMQ.Impl.PlusMinusOne
 import RMQ.Impl.SparseTable

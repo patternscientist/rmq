@@ -209,8 +209,14 @@ about Lean's executable `List` runtime.
   an RMQ/LCA/Fischer-Heun backend or the final RMQ capstone as its public API.
 - `RMQBPNavigation.lean`: standalone balanced-parentheses close-navigation
   spoke import root. It exposes the compact close/LCA navigation facade under
-  `RMQ.BPNavigation`; this is the RMQ-facing BP navigation layer, not yet a
-  full tree-navigation library API.
+  `RMQ.BPNavigation`, plus the first rank/select-backed tree-navigation bridge
+  (`closeOfInorderCosted`, `inorderOfCloseCosted`,
+  `shapeAccessCloseRankProfile`). This is still not yet a full
+  tree-navigation library API.
+- `RMQUnionFind.lean`: standalone union-find spoke import root. It exposes the
+  first finite-partition specification, exact costed reference operations, and
+  a reusable potential-method backend interface for future path-compression
+  implementations. It does not yet prove Tarjan's inverse-Ackermann bound.
 - `RMQ/Core/SuccinctReduction.lean`: reduction-facing adapter from
   plus-minus-one RMQ backends over generated Euler-tour parentheses to the
   ordinary RMQ/LCA backend interfaces.
@@ -312,6 +318,13 @@ lake build RMQBPNavigation
 lake env lean scripts/bp_navigation_axiom_check.lean
 ```
 
+Standalone union-find spoke checks:
+
+```powershell
+lake build RMQUnionFind
+lake env lean scripts/union_find_axiom_check.lean
+```
+
 Optional archive checks:
 
 ```powershell
@@ -351,6 +364,7 @@ RMQ blocker:
   library surface;
 - refine the landed standalone Jacobson/Clark rank/select theorem toward
   a concrete compressed/FID codec behind the fixed-weight profile, and deepen
-  the landed BP-navigation spoke into a fuller tree-navigation API; and
-- start union-find or another CS166-style structure once it can consume the
-  hub rather than rebuild it.
+  the landed BP-navigation close/rank bridge into a fuller tree-navigation API;
+  and
+- deepen the new union-find spoke from specification/reference backend to
+  forest refinement, union-by-rank, and path compression.

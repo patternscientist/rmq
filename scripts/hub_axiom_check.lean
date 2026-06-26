@@ -24,6 +24,8 @@ that the hub surface stands on its own without the RMQ spoke. Standard Lean axio
 #print axioms RMQ.RAM.Exec.toCosted_run_eq_value_steps
 #print axioms RMQ.RAM.writeArray?_run
 #print axioms RMQ.RAM.arrayOfList_refines_with_steps
+#print axioms RMQ.Amortized.compose
+#print axioms RMQ.Amortized.costed_bind
 #print axioms RMQ.Refine.StoredMatrix.ofList_erases
 #print axioms RMQ.Refine.StoredMatrix.cell?_eq_absCell?
 #print axioms RMQ.Refine.StoredMatrix.row?_getD_toList_eq_absRow?_getD

@@ -20,6 +20,11 @@ checked compatibility surfaces live in `scripts/archive_axiom_check.lean`.
 
 #print axioms RMQ.scanWindow_leftmost
 #print axioms RMQ.RMQBackend.queryBuilt_eq
+#print axioms RMQ.Amortized.compose
+#print axioms RMQ.Amortized.costed_bind
+#print axioms RMQ.UnionFind.State.unionSpec_same_of_valid
+#print axioms RMQ.UnionFind.referenceBackend_profile
+#print axioms RMQ.UnionFind.referenceAmortizedBackend_profile
 #print axioms RMQ.Cartesian.shape_eq_of_sameRMQBehavior
 #print axioms RMQ.EncodingLowerBound.shapeCount_quadratic_lower
 #print axioms RMQ.EncodingLowerBound.shapeCount_cubic_square_lower
@@ -122,6 +127,9 @@ checked compatibility surfaces live in `scripts/archive_axiom_check.lean`.
 #print axioms RMQ.SuccinctSpace.bpParensOfShape_bits_length_of_shapeOfSize
 #print axioms RMQ.SuccinctSpace.bpCloseOfInorder?_rankFalse_succ
 #print axioms RMQ.SuccinctSpace.select_false_bpCode_eq_bpCloseOfInorder?
+#print axioms RMQ.BPNavigation.closeOfInorderCosted_erase
+#print axioms RMQ.BPNavigation.inorderOfCloseCosted_erase_of_bpCloseOfInorder?
+#print axioms RMQ.BPNavigation.shapeAccessCloseRankProfile
 #print axioms RMQ.SuccinctSpace.FixedWidthNatTable.ofEncodedWords_profile
 #print axioms RMQ.SuccinctSpace.FixedWidthNatTable.ofEntries_profile
 #print axioms RMQ.SuccinctSpace.FixedWidthNatTable.profile
