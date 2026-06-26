@@ -48,6 +48,88 @@ abbrev fixedWeightPayloadBudget :=
 abbrev fixedWeightBitstringsLength :=
   RMQ.RankSelectSpec.fixedWeightBitstrings_length
 
+/-- Fixed-weight bitvector universes contain no duplicate entries. -/
+abbrev fixedWeightBitstringsNodup :=
+  RMQ.RankSelectSpec.fixedWeightBitstrings_nodup
+
+/-- Canonical fixed-weight encoder into the counted universe. -/
+abbrev fixedWeightEncode? :=
+  RMQ.RankSelectSpec.fixedWeightEncode?
+
+/-- Canonical fixed-weight decoder from the counted universe. -/
+abbrev fixedWeightDecode? :=
+  RMQ.RankSelectSpec.fixedWeightDecode?
+
+/-- Total canonical fixed-weight code for a bitvector. -/
+abbrev fixedWeightCode :=
+  RMQ.RankSelectSpec.fixedWeightCode
+
+/-- The total canonical code is produced by `fixedWeightEncode?`. -/
+abbrev fixedWeightEncodeEqSomeFixedWeightCode :=
+  RMQ.RankSelectSpec.fixedWeightEncode?_eq_some_fixedWeightCode
+
+/-- Encode/decode round-trip fact for the canonical fixed-weight codec spine. -/
+abbrev fixedWeightCodecRoundTrip :=
+  RMQ.RankSelectSpec.fixedWeightCodec_roundTrip
+
+/-- Valid decoded entries encode back to their source index. -/
+abbrev fixedWeightEncodeFixedWeightDecode
+    {n k code : Nat} {bits : List Bool}
+    (hdec : fixedWeightDecode? n k code = some bits) :=
+  RMQ.RankSelectSpec.fixedWeightEncode?_fixedWeightDecode? hdec
+
+/-- Two-sided characterization of canonical fixed-weight decode. -/
+abbrev fixedWeightDecodeEqSomeIff
+    {n k code : Nat} {bits : List Bool} :=
+  RMQ.RankSelectSpec.fixedWeightDecode?_eq_some_iff
+    (n := n) (k := k) (code := code) (bits := bits)
+
+/-- Encoded fixed-weight indices are bounded by the binomial-count universe. -/
+abbrev fixedWeightEncodeLtBinomialCount
+    {bits : List Bool} {code : Nat}
+    (henc : fixedWeightEncode? bits = some code) :=
+  RMQ.RankSelectSpec.fixedWeightEncode?_lt_binomialCount henc
+
+/-- The total canonical code is bounded by the binomial-count universe. -/
+abbrev fixedWeightCodeLtBinomialCount :=
+  RMQ.RankSelectSpec.fixedWeightCode_lt_binomialCount
+
+/-- Encoded fixed-weight indices fit in the fixed-weight payload budget. -/
+abbrev fixedWeightEncodeLtPayloadBudgetPow
+    {bits : List Bool} {code : Nat}
+    (henc : fixedWeightEncode? bits = some code) :=
+  RMQ.RankSelectSpec.fixedWeightEncode?_lt_payloadBudgetPow henc
+
+/-- The total canonical code fits in the fixed-weight payload budget. -/
+abbrev fixedWeightCodeLtPayloadBudgetPow :=
+  RMQ.RankSelectSpec.fixedWeightCode_lt_payloadBudgetPow
+
+/-- Concrete fixed-weight packed payload for one bitvector. -/
+abbrev fixedWeightPackedPayload :=
+  RMQ.RankSelectSpec.fixedWeightPackedPayload
+
+/-- The packed fixed-weight payload has exactly the fixed-weight budget length. -/
+abbrev fixedWeightPackedPayloadLength :=
+  RMQ.RankSelectSpec.fixedWeightPackedPayload_length
+
+/-- Decoding the packed payload word as a natural recovers the canonical code. -/
+abbrev fixedWeightPackedPayloadBitsToNatLE :=
+  RMQ.RankSelectSpec.fixedWeightPackedPayload_bitsToNatLE
+
+/-- Decoding the packed payload code recovers the original bitvector. -/
+abbrev fixedWeightDecodePackedPayload :=
+  RMQ.RankSelectSpec.fixedWeightDecode?_packedPayload
+
+/-- Combined fixed-weight packed-payload profile. -/
+abbrev fixedWeightPackedPayloadProfile :=
+  RMQ.RankSelectSpec.fixedWeightPackedPayload_profile
+
+/-- Decoded fixed-weight entries have the requested length and true-count. -/
+abbrev fixedWeightDecodeMemLengthTrueCount
+    {n k code : Nat} {bits : List Bool}
+    (hdec : fixedWeightDecode? n k code = some bits) :=
+  RMQ.RankSelectSpec.fixedWeightDecode?_mem_length_trueCount hdec
+
 /-- Public compressed/FID family theorem shape. -/
 abbrev compressedFixedWeightConstantQueryProfile
     {overhead : Nat -> Nat} {queryCost : Nat}

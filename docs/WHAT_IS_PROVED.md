@@ -92,11 +92,20 @@ repository's machine-word-size function.
 The compressed/FID target surface is also formalized:
 `RMQ.RankSelect.fixedWeightBitstringsLength` counts fixed-weight bitvector
 universes by a local binomial recurrence, and
+`RMQ.RankSelect.fixedWeightCodecRoundTrip` /
+`RMQ.RankSelect.fixedWeightDecodeEqSomeIff` prove the canonical finite-universe
+rank/unrank facts. The total code
+`RMQ.RankSelect.fixedWeightCode` is also proved to fit below
+`2 ^ fixedWeightPayloadBudget bits`, and
+`RMQ.RankSelect.fixedWeightPackedPayloadProfile` proves that the canonical code
+is stored in exactly `fixedWeightPayloadBudget bits`, reads back through
+`bitsToNatLE`, and decodes to the original bitvector. In addition,
 `RMQ.RankSelect.compressedFixedWeightConstantQueryProfile` states the reusable
 profile with payload
 `log2 (binomialCount n m) + 1 + o(n)` and constant modeled
-access/rank/select. This is a specification/profile layer; the concrete
-enumerative codec that inhabits it is still future work.
+access/rank/select. This is not yet the full FID construction: the remaining
+work is a charged query realization that consumes the packed payload without
+delegating access/rank/select to proof-only decoded bits.
 
 ## Balanced-Parentheses Navigation
 

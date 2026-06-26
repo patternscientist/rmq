@@ -75,7 +75,18 @@ The first compressed/FID layer is now exposed through:
 ```lean
 RMQ.RankSelect.fixedWeightBitstrings
 RMQ.RankSelect.fixedWeightBitstringsLength
+RMQ.RankSelect.fixedWeightEncode?
+RMQ.RankSelect.fixedWeightDecode?
+RMQ.RankSelect.fixedWeightCode
+RMQ.RankSelect.fixedWeightCodecRoundTrip
+RMQ.RankSelect.fixedWeightDecodeEqSomeIff
+RMQ.RankSelect.fixedWeightCodeLtPayloadBudgetPow
 RMQ.RankSelect.fixedWeightPayloadBudget
+RMQ.RankSelect.fixedWeightPackedPayload
+RMQ.RankSelect.fixedWeightPackedPayloadLength
+RMQ.RankSelect.fixedWeightPackedPayloadBitsToNatLE
+RMQ.RankSelect.fixedWeightDecodePackedPayload
+RMQ.RankSelect.fixedWeightPackedPayloadProfile
 RMQ.RankSelect.CompressedFamily
 RMQ.RankSelect.compressedFixedWeightConstantQueryProfile
 ```
@@ -91,7 +102,22 @@ Nat.log2 (binomialCount bits.length (trueCount bits)) + 1 + overhead bits.length
 
 with `LittleOLinear overhead` and constant modeled `access`, `rank`, and
 `select`. This is the target theorem shape for fully indexable dictionaries
-(FID). It is not yet a concrete enumerative codec.
+(FID).
+
+The canonical finite-universe codec spine is now also present:
+`fixedWeightEncode?` finds a bitvector's rank in its fixed-weight universe,
+`fixedWeightDecode?` indexes that universe, `fixedWeightDecodeEqSomeIff`
+characterizes the two directions using `fixedWeightBitstringsNodup`, and
+`fixedWeightCodecRoundTrip` gives the total encode/decode round trip. The
+total code `fixedWeightCode` is proved below both
+`binomialCount bits.length (trueCount bits)` and
+`2 ^ fixedWeightPayloadBudget bits`. The packed realization
+`fixedWeightPackedPayload` stores this canonical index with `natToBitsLE`;
+`fixedWeightPackedPayloadProfile` proves the payload has exactly
+`fixedWeightPayloadBudget bits` bits, reads back to `fixedWeightCode` through
+`bitsToNatLE`, and decodes to the original bitvector. The remaining work is a
+charged compressed-family query layer that consumes this payload without using
+proof-only fields as an oracle.
 
 ## Module Boundary
 
@@ -219,10 +245,11 @@ neutral `RMQ.RankSelect.*` names.
 The plain-bitvector `n + o(n), O(1)` milestone is landed. The next research
 targets are:
 
-1. a concrete compressed/FID codec behind the landed fixed-weight profile:
-   encode/decode the rank among `binomialCount n m` bitvectors, charge
-   payload reads, and instantiate
-   `compressedFixedWeightConstantQueryProfile`;
+1. a charged compressed/FID query layer behind the landed packed
+   fixed-weight payload: read the `fixedWeightPackedPayload` representation,
+   refine access/rank/select through charged payload reads, and instantiate
+   `compressedFixedWeightConstantQueryProfile` without delegating queries to
+   proof-only decoded bits;
 2. deepening the landed `RMQBPNavigation` spoke into a fuller
    balanced-parentheses tree-navigation API over the same public rank/select
    surface;
