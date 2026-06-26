@@ -24,6 +24,8 @@ For a compact external-reader scope summary, see
 [`docs/WHAT_IS_PROVED.md`](docs/WHAT_IS_PROVED.md).
 For the trust base and verification commands, see
 [`docs/TRUST_BASE.md`](docs/TRUST_BASE.md).
+For the compact skeptical-review packet for the headline theorem, see
+[`docs/TRUST_AUDIT_PACKET.md`](docs/TRUST_AUDIT_PACKET.md).
 For a documentation map, see [`docs/README.md`](docs/README.md).
 For the completed cleanup record and library-shaping roadmap, see
 [`docs/CLEANUP_AND_ROADMAP.md`](docs/CLEANUP_AND_ROADMAP.md).

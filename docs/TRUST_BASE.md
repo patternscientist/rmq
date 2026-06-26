@@ -2,7 +2,8 @@
 
 This document is the short external-facing trust-base summary for the RMQ
 artifact. It complements the detailed theorem inventory in
-`docs/FAMILY_SUMMARY.md`.
+`docs/FAMILY_SUMMARY.md` and the compact skeptical-review packet in
+`docs/TRUST_AUDIT_PACKET.md`.
 
 ## Build And Gate
 
@@ -17,6 +18,8 @@ That gate runs:
 - `lake build`;
 - `lake build RMQHub`;
 - `lake build RMQRankSelect`;
+- `lake build RMQBPNavigation`;
+- `lake build RMQUnionFind`;
 - `lake build RMQArchive`;
 - `lake build RMQExamples`;
 - `lake build RMQ.Core.GenericSelectBPCompat`, the terminal compatibility
@@ -27,7 +30,9 @@ That gate runs:
 - the curated theorem axiom audits in `scripts/axiom_check.lean`,
   `scripts/hub_axiom_check.lean`,
   `scripts/archive_axiom_check.lean`, and
-  `scripts/rank_select_axiom_check.lean`;
+  `scripts/rank_select_axiom_check.lean`,
+  `scripts/bp_navigation_axiom_check.lean`, and
+  `scripts/union_find_axiom_check.lean`;
 - succinct cost/space anti-vacuity linting; and
 - compatibility-shim import linting.
 
@@ -81,6 +86,20 @@ For the standalone rank/select spoke:
 ```powershell
 lake build RMQRankSelect
 lake env lean scripts\rank_select_axiom_check.lean
+```
+
+For the standalone BP-navigation spoke:
+
+```powershell
+lake build RMQBPNavigation
+lake env lean scripts\bp_navigation_axiom_check.lean
+```
+
+For the standalone union-find scaffold:
+
+```powershell
+lake build RMQUnionFind
+lake env lean scripts\union_find_axiom_check.lean
 ```
 
 The small external import examples are checked by:

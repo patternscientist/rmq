@@ -13,6 +13,9 @@ This repository has two kinds of documentation:
   readers.
 - [`TRUST_BASE.md`](TRUST_BASE.md): build gate, expected axioms, dependency
   policy, and model assumptions.
+- [`TRUST_AUDIT_PACKET.md`](TRUST_AUDIT_PACKET.md): compact reviewer packet for
+  the headline theorem, including alias chain, theorem shape, axiom excerpt,
+  dependency sketch, model glossary, and non-claims.
 - [`FAMILY_SUMMARY.md`](FAMILY_SUMMARY.md): full theorem inventory and
   per-structure status matrix.
 - [`HUB.md`](HUB.md): reusable hub import surface.
