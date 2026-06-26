@@ -296,8 +296,9 @@ the `SuccinctClose/EndpointFringe/*` prefix-range, interior-candidate, and
 endpoint-macro layers. The interior-candidate layer is split further into
 candidate merge basics, local/global sparse tables, relative scans, word-read
 accounting, two-level candidates, and the relative-rmM interior directory; the
-endpoint macro itself is split into range-macro and micro-codebook layers. The
-relative-rmM macro is likewise split behind
+endpoint macro itself is split into range-macro and micro-codebook layers, with
+the range macro split further into range-table, payload-macro, relative-merge,
+and concrete-profile modules. The relative-rmM macro is likewise split behind
 `SuccinctClose/RelativeRmmMacro.lean` into abstract macro, endpoint codebook,
 compact endpoint, local BP decoder, concrete directory, and macro/micro family
 layers. `RMQ/Core/SuccinctCloseProposal.lean` is now a compatibility import

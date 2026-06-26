@@ -1380,6 +1380,9 @@ The names below are grouped by source module. Repeated base names in
   two-level candidates, and the interior directory,
   `RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro.lean`,
   `RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro.lean`,
+  the split `RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro/*`
+  layers for range tables, the payload macro, relative merge exactness, and
+  concrete profiles,
   `RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/MicroCodebook.lean`,
   `RMQ/Core/SuccinctClose/RelativeRmmMacro.lean`,
   `RMQ/Core/SuccinctClose/RelativeRmmMacro/AbstractMacro.lean`,
