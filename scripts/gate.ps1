@@ -44,6 +44,9 @@ if ($LASTEXITCODE -ne 0) { Fail "lake build RMQArchive failed" }
 lake build RMQExamples
 if ($LASTEXITCODE -ne 0) { Fail "lake build RMQExamples failed" }
 
+lake build RMQ.Core.GenericSelectBPCompat
+if ($LASTEXITCODE -ne 0) { Fail "lake build RMQ.Core.GenericSelectBPCompat failed" }
+
 # 2. Proof-hygiene scan: any hit fails the gate.
 $hygiene = rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ RMQExamples RMQHub.lean RMQRankSelect.lean RMQArchive.lean RMQExamples.lean lakefile.toml
 if ($hygiene) { Fail "hygiene scan hit:`n$hygiene" }
