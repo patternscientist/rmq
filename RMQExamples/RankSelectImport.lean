@@ -20,4 +20,7 @@ abbrev jacobsonClarkDirectory :=
 abbrev jacobsonClarkProfile :=
   RMQ.RankSelect.jacobsonClarkNPlusOConstantQuery
 
+abbrev jacobsonClarkWordBoundedProfile :=
+  RMQ.RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery
+
 end RMQ.Examples.RankSelectImport

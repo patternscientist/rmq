@@ -57,6 +57,17 @@ It proves `LittleOLinear` auxiliary overhead and, for every
 `bits.length + jacobsonClarkRankSelectOverhead bits.length`, exact stored-bit
 access, exact rank, exact select, and one fixed modeled query-cost bound.
 
+The strengthened public word-bounded profile is:
+
+```lean
+RMQ.RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery
+```
+
+It exposes the construction-level storage discipline: the Jacobson rank payload
+words erase to the stored bitvector, and every Jacobson-rank or Clark-select
+payload word read by the concrete adapter has length bounded by
+`SuccinctRank.machineWordBits bits.length`.
+
 ## Module Boundary
 
 The reusable public spec is:
@@ -151,6 +162,7 @@ RMQ.GenericSelect.jacobsonClarkBitVectorRankSelectDirectory_profile
 RMQ.GenericSelect.sparseExceptionSelectSource_rankSelectSpec_adapter_profile
 RMQ.GenericSelect.jacobsonClarkRankSelectOverhead_littleO
 RMQ.GenericSelect.jacobsonClarkRankSelectFamily_n_plus_o_constant_query_profile
+RMQ.GenericSelect.jacobsonClarkRankSelectFamily_word_bounded_n_plus_o_constant_query_profile
 ```
 
 The auxiliary payload is padded only to publish a clean exact overhead
@@ -184,10 +196,7 @@ targets are:
 1. compressed/FID-style payload budgets such as
    `log2 (Nat.choose U m) + o(U)`, after adding a binomial/entropy counting
    layer;
-2. a more explicit word-bounded public theorem for the concrete Jacobson/Clark
-   family, exposing the machine-word read bounds already present in component
-   profiles;
-3. balanced-parentheses navigation as its own spoke over the same public
+2. balanced-parentheses navigation as its own spoke over the same public
    rank/select surface;
-4. neutral naming/facade polish if this module is later moved into a broader
+3. neutral naming/facade polish if this module is later moved into a broader
    verified data-structures repository.

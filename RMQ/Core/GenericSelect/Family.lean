@@ -262,4 +262,74 @@ theorem jacobsonClarkRankSelectFamily_n_plus_o_constant_query_profile :
   exact
     jacobsonClarkRankSelectFamily.n_plus_o_constant_query_profile
 
+/--
+Word-bounded public profile for the concrete Jacobson/Clark bitvector family.
+
+This strengthens the plain `n + o(n)`, constant-query theorem with the
+payload-read discipline exposed by the construction components: the Jacobson
+rank payload words erase to the stored bitvector and every rank/select word
+read is bounded by the repository's `machineWordBits bits.length`.
+-/
+theorem jacobsonClarkRankSelectFamily_word_bounded_n_plus_o_constant_query_profile :
+    SuccinctSpace.LittleOLinear jacobsonClarkRankSelectOverhead /\
+      forall bits : List Bool,
+        let directory := jacobsonClarkRankSelectFamily.directory bits
+        directory.payload.length =
+            bits.length + jacobsonClarkRankSelectOverhead bits.length /\
+          (SuccinctRank.jacobsonRankData bits).wordSize <=
+            SuccinctRank.machineWordBits bits.length /\
+          SuccinctSpace.flattenPayloadWords
+              (SuccinctRank.jacobsonRankData bits).bitWords.store.words.toList =
+            bits /\
+          (forall {word : List Bool},
+            List.Mem word
+                (SuccinctRank.jacobsonRankData bits).bitWords.store.words.toList ->
+              word.length <= SuccinctRank.machineWordBits bits.length) /\
+          (forall {word : List Bool},
+            List.Mem word (sparseExceptionSelectSource bits false).readWords ->
+              word.length <= SuccinctRank.machineWordBits bits.length) /\
+          (forall {word : List Bool},
+            List.Mem word (sparseExceptionSelectSource bits true).readWords ->
+              word.length <= SuccinctRank.machineWordBits bits.length) /\
+          (forall i,
+            (directory.accessQueryCosted i).cost <=
+                jacobsonClarkRankSelectQueryCost /\
+              (directory.accessQueryCosted i).erase =
+                bits[i]?) /\
+          (forall target pos,
+            (directory.rankQueryCosted target pos).cost <=
+                jacobsonClarkRankSelectQueryCost /\
+              (directory.rankQueryCosted target pos).erase =
+                RMQ.Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (directory.selectQueryCosted target occurrence).cost <=
+                jacobsonClarkRankSelectQueryCost /\
+              (directory.selectQueryCosted target occurrence).erase =
+                RMQ.Succinct.select target bits occurrence) := by
+  constructor
+  · exact jacobsonClarkRankSelectOverhead_littleO
+  · intro bits
+    rcases (jacobsonClarkRankSelectFamily_n_plus_o_constant_query_profile).2
+        bits with
+      ⟨hpayload, haccess, hrank, hselect⟩
+    rcases SuccinctRank.jacobsonRankData_profile bits with
+      ⟨_hrankPayload, hrankWordSize, hrankErase, hrankWords, _hrankQuery⟩
+    have hfalseWords :
+        forall {word : List Bool},
+          List.Mem word (sparseExceptionSelectSource bits false).readWords ->
+            word.length <= SuccinctRank.machineWordBits bits.length := by
+      intro word hmem
+      exact (sparseExceptionSelectSource bits false).read_word_length_le_machine
+        hmem
+    have htrueWords :
+        forall {word : List Bool},
+          List.Mem word (sparseExceptionSelectSource bits true).readWords ->
+            word.length <= SuccinctRank.machineWordBits bits.length := by
+      intro word hmem
+      exact (sparseExceptionSelectSource bits true).read_word_length_le_machine
+        hmem
+    exact
+      ⟨hpayload, hrankWordSize, hrankErase, hrankWords, hfalseWords,
+        htrueWords, haccess, hrank, hselect⟩
+
 end RMQ.GenericSelect

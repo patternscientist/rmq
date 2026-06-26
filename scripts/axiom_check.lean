@@ -285,6 +285,7 @@ checked compatibility surfaces live in `scripts/archive_axiom_check.lean`.
 #print axioms RMQ.GenericSelect.sparseExceptionSelectSource_rankSelectSpec_adapter_profile
 #print axioms RMQ.GenericSelect.jacobsonClarkRankSelectOverhead_littleO
 #print axioms RMQ.GenericSelect.jacobsonClarkRankSelectFamily_n_plus_o_constant_query_profile
+#print axioms RMQ.GenericSelect.jacobsonClarkRankSelectFamily_word_bounded_n_plus_o_constant_query_profile
 #print axioms RMQ.SuccinctSelect.clarkSelectChunkBaseSample_exact_of_one_word
 #print axioms RMQ.SuccinctSelect.clarkSelectChunkBaseSample_cross_word_obstruction
 #print axioms RMQ.SuccinctSelect.clarkSelectTwoWordDescriptorIndexTable_read_covers

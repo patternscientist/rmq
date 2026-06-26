@@ -12,6 +12,7 @@ The short public theorem aliases live in `RMQ/Headlines.lean`.
 | --- | --- |
 | `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack` | Tight fixed-length RMQ payload lower bound with doubled Catalan slack. |
 | `RMQ.Headlines.rankSelectNPlusOConstantQuery` | Standalone plain-bitvector Jacobson/Clark rank/select family with `n + o(n)` payload and constant modeled query cost. |
+| `RMQ.Headlines.rankSelectWordBoundedNPlusOConstantQuery` | The same public rank/select family, strengthened with machine-word-bounded concrete payload reads. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ capstone with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and the matching lower-bound side. |
 
 The original theorem names remain construction-heavy so that their dependencies
@@ -81,6 +82,12 @@ that charged aggregate reference computations as one step.
 
 The public theorem is
 `RMQ.RankSelect.jacobsonClarkNPlusOConstantQuery`.
+
+The strengthened public profile
+`RMQ.RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery` also exposes the
+construction-level word discipline: concrete rank payload words erase to the
+stored bitvector, and concrete rank/select payload-word reads are bounded by the
+repository's machine-word-size function.
 
 ## Cost Model
 

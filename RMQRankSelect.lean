@@ -10,5 +10,7 @@ shape/lower-bound infrastructure. The exposed API is plain bitvector
 access/rank/select rather than an RMQ/LCA/Fischer-Heun backend.
 
 The public headline theorem is
-`RMQ.RankSelect.jacobsonClarkNPlusOConstantQuery`.
+`RMQ.RankSelect.jacobsonClarkNPlusOConstantQuery`; the strengthened
+word-bounded profile is
+`RMQ.RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery`.
 -/

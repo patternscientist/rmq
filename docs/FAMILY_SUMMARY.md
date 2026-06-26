@@ -275,7 +275,11 @@ combines `SuccinctRank.jacobsonRankData` with two
 rank/select, `n + o(n)` counted payload bits, and one fixed modeled query
 bound.  The remaining standalone rank/select frontier is now compressed/FID
 space or a tighter presentation of the Clark internals, not merely consuming
-the public spec surface.
+the public spec surface.  The strengthened public theorem
+`RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery` additionally exposes
+the machine-word discipline from the concrete components: Jacobson rank payload
+words flatten to the stored bitvector, and the concrete rank/select payload
+word reads are bounded by `SuccinctRank.machineWordBits bits.length`.
 
 Namespace cleanup note: `RMQ.Core.SuccinctRank` / `RMQ.SuccinctRank` are now
 the canonical rank-side implementation names. `RMQ.Core.SuccinctRankProposal`
@@ -1671,7 +1675,8 @@ The names below are grouped by source module. Repeated base names in
 - `RMQ/Headlines.lean`:
   public-facing aliases
   `Headlines.exactRMQLowerBoundDoubledCatalanSlack`,
-  `Headlines.rankSelectNPlusOConstantQuery`, and
+  `Headlines.rankSelectNPlusOConstantQuery`,
+  `Headlines.rankSelectWordBoundedNPlusOConstantQuery`, and
   `Headlines.succinctRMQTwoNPlusOConstantQuery`.
 - `RMQ/Core/SuccinctReduction.lean` (7):
   `Succinct.rmqBackendOfEulerParensBackend_queryBuilt`,

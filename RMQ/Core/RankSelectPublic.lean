@@ -42,4 +42,12 @@ rank/select family.
 abbrev jacobsonClarkNPlusOConstantQuery :=
   RMQ.GenericSelect.jacobsonClarkRankSelectFamily_n_plus_o_constant_query_profile
 
+/--
+Public word-bounded profile for the concrete Jacobson/Clark rank/select
+family, exposing the machine-word read bounds carried by the concrete
+components.
+-/
+abbrev jacobsonClarkWordBoundedNPlusOConstantQuery :=
+  RMQ.GenericSelect.jacobsonClarkRankSelectFamily_word_bounded_n_plus_o_constant_query_profile
+
 end RMQ.RankSelect

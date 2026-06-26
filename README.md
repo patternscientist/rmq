@@ -183,10 +183,13 @@ about Lean's executable `List` runtime.
   bitvector access/rank/select over stored bits with an `n + overhead n`
   payload profile, while `RankSelectPublic` exposes the public Jacobson/Clark
   bitvector family theorem as
-  `RankSelect.jacobsonClarkNPlusOConstantQuery`.
+  `RankSelect.jacobsonClarkNPlusOConstantQuery` and its strengthened
+  word-bounded profile
+  `RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery`.
 - `RMQ/Headlines.lean`: short aliases for the main public theorem surfaces,
   including `Headlines.exactRMQLowerBoundDoubledCatalanSlack`,
-  `Headlines.rankSelectNPlusOConstantQuery`, and
+  `Headlines.rankSelectNPlusOConstantQuery`,
+  `Headlines.rankSelectWordBoundedNPlusOConstantQuery`, and
   `Headlines.succinctRMQTwoNPlusOConstantQuery`.
 - `RMQ/Archive/SelectObstructions.lean` and
   `RMQ/Archive/BPSpecializedCapstone.lean`: small checked archives for the
