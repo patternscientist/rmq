@@ -293,7 +293,8 @@ block indexes. The BP close-navigation proposal is now split under
 BP summaries, position-bearing range witnesses, endpoint-fringe repair, and
 the final relative-rmM macro interface live in separate role modules. The
 endpoint-fringe repair itself is further split into prefix-range witnesses,
-interior candidate machinery, and the endpoint macro directory, while
+interior candidate machinery, endpoint range macro, and micro-codebook
+fallback layers, while
 preserving the historical `SuccinctCloseProposal` namespace.
 `SuccinctCloseProposal.BlockMicroCodebook.profile` and
 `SuccinctCloseProposal.MacroMicroBPCloseLCADirectory.profile` add the
@@ -1364,6 +1365,8 @@ The names below are grouped by source module. Repeated base names in
   `RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange.lean`,
   `RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate.lean`,
   `RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro.lean`,
+  `RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro.lean`,
+  `RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/MicroCodebook.lean`,
   `RMQ/Core/SuccinctClose/RelativeRmmMacro.lean`, and the compatibility
   `RMQ/Core/SuccinctCloseProposal.lean` root, all preserving the historical
   `SuccinctCloseProposal` namespace:
