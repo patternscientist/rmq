@@ -284,7 +284,8 @@ The close-navigation proposal is also split by role.
 `RMQ/Core/SuccinctClose.lean` is the thin reusable barrel for
 `SuccinctClose/BlockLocal.lean`, `SuccinctClose/RangeSummary.lean`,
 `SuccinctClose/RelativeSummary.lean`, `SuccinctClose/RangeWitness.lean`,
-`SuccinctClose/EndpointFringe.lean`, and
+the `SuccinctClose/EndpointFringe/*` prefix-range, interior-candidate, and
+endpoint-macro layers, and
 `SuccinctClose/RelativeRmmMacro.lean`. `RMQ/Core/SuccinctCloseProposal.lean`
 is now a compatibility import root for the historical proposal name.
 
