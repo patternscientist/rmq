@@ -4,11 +4,11 @@ import RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate
 # Endpoint-fringe range macro tables
 
 Split from `RMQ.Core.SuccinctClose.EndpointFringe.EndpointMacro.RangeMacro`.
-Public declarations keep the historical `RMQ.SuccinctCloseProposal` namespace.
+Public declarations keep the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 
@@ -355,5 +355,5 @@ theorem interiorBlockPairRangeArgMinEntries_get?_of_gap_bounds
       (interiorBlockPairRanges_get?_of_gap_bounds
         hleft hright hgap)
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ

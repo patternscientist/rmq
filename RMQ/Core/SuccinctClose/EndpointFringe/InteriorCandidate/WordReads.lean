@@ -4,11 +4,11 @@ import RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.RelativeScan
 # Endpoint-fringe interior candidate word-read accounting
 
 Split from `RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate`.
-Public declarations keep the historical `RMQ.SuccinctCloseProposal` namespace.
+Public declarations keep the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 
@@ -499,5 +499,5 @@ theorem bpTwoLevelCrossMacroCandidateWordsRead_length_le_machine
       localTwoSpanCandidateWordsRead_length_le_machine localTable summary
         hoffsetMachine hsuperMachine hrelativeMachine hright
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ

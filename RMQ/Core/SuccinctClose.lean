@@ -6,9 +6,9 @@ import RMQ.Core.SuccinctClose.EndpointFringe
 import RMQ.Core.SuccinctClose.RelativeRmmMacro
 
 /-!
-# Succinct BP close proposal helpers
+# Succinct BP close navigation
 
-Thin import barrel for the split BP close/LCA proposal layers. The old
-`RMQ.Core.SuccinctCloseProposal` module remains as a compatibility import root
-for downstream users that still import the historical proposal name.
+Thin import barrel for the split BP close/LCA navigation layers. New code should
+import this module and use the canonical `RMQ.SuccinctClose` namespace. The old
+`RMQ.Core.SuccinctCloseProposal` module remains as a compatibility import root.
 -/

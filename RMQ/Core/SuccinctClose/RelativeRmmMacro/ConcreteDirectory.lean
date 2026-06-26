@@ -4,11 +4,11 @@ import RMQ.Core.SuccinctClose.RelativeRmmMacro.LocalBPDecoder
 # Concrete compact BP close/LCA directory
 
 Split implementation layer for the relative-rmM BP close/LCA macro. Public
-declarations stay in the historical RMQ.SuccinctCloseProposal namespace.
+declarations live in the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 
@@ -1795,5 +1795,5 @@ theorem concretePayloadLiveRelativeRmmBPCloseMacro_profile
       (concretePayloadLiveRelativeRmmBPCloseMacro
         shape hsize).read_words_length_le_machine hmem
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ

@@ -4,12 +4,11 @@ import RMQ.Core.SuccinctClose.RelativeSummary
 # Position-bearing BP range witnesses
 
 Payload-live argmin-prefix summaries, range-witness tables, and the first
-block-pair macro candidate layer. The historical `RMQ.SuccinctCloseProposal`
-namespace is preserved.
+block-pair macro candidate layer. Declarations live in the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 
@@ -1306,5 +1305,5 @@ theorem concreteBPBlockPairRangeWitnessMacro_read_words_length_le_machine
         shape blockSize blockCount fieldWidth hwidth) hmachine
 
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ

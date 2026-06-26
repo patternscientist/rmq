@@ -1,6 +1,6 @@
 import RMQ.Core.GenericSelect.Family
 import RMQ.Core.SuccinctSelect
-import RMQ.Core.SuccinctCloseProposal
+import RMQ.Core.SuccinctClose
 
 namespace RMQ
 namespace SuccinctFinal
@@ -10,12 +10,12 @@ open SuccinctSpace
 def concreteBPNativeSuccinctRMQOverhead
     (closeAccessOverhead : Nat -> Nat) (n : Nat) : Nat :=
   closeAccessOverhead n +
-    SuccinctCloseProposal.compactBPCloseOverhead n
+    SuccinctClose.compactBPCloseOverhead n
 
 def concreteBPNativeSuccinctRMQQueryCost
     (closeAccessCost : Nat) : Nat :=
   3 * closeAccessCost +
-    SuccinctCloseProposal.concreteCompactBPCloseQueryCostWithRankSeed
+    SuccinctClose.concreteCompactBPCloseQueryCostWithRankSeed
       closeAccessCost
 
 def concreteBPNativeRankSelectDirectory
@@ -31,8 +31,8 @@ def concreteBPNativeRankSelectDirectory
 
 def concreteBPNativeCloseDirectory
     (shape : Cartesian.CartesianShape) :
-    SuccinctCloseProposal.ConcreteCompactBPCloseLCADirectory shape :=
-  SuccinctCloseProposal.concreteCompactBPCloseLCADirectory shape
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory shape :=
+  SuccinctClose.concreteCompactBPCloseLCADirectory shape
 
 /--
 Weak false-only access to the BP close/rank operations needed by the BP-native
@@ -1403,7 +1403,7 @@ def concreteBPNativeSuccinctRMQAuxPayload
       false ++
     closeDirectory.payload ++
       List.replicate
-        (SuccinctCloseProposal.compactBPCloseOverhead shape.size -
+        (SuccinctClose.compactBPCloseOverhead shape.size -
           closeDirectory.payload.length)
         false
 
@@ -1481,7 +1481,7 @@ theorem concreteBPNativeSuccinctRMQOverhead_littleO
       (concreteBPNativeSuccinctRMQOverhead closeAccessOverhead) := by
   exact
     accessFamily.overhead_littleO.add
-      SuccinctCloseProposal.compactBPCloseOverhead_littleO
+      SuccinctClose.compactBPCloseOverhead_littleO
 
 theorem concreteBPNativeSelectCloseCosted_cost_le
     {closeAccessOverhead : Nat -> Nat} {closeAccessCost : Nat}
@@ -1512,7 +1512,7 @@ theorem concreteBPNativeLCACloseCosted_cost_le
     (leftClose rightClose : Nat) :
     (concreteBPNativeLCACloseCosted accessFamily shape leftClose
         rightClose).cost <=
-      SuccinctCloseProposal.concreteCompactBPCloseQueryCostWithRankSeed
+      SuccinctClose.concreteCompactBPCloseQueryCostWithRankSeed
         closeAccessCost := by
   exact
     (concreteBPNativeCloseDirectory shape).lcaCloseCostedWithRankSeed_cost_le
@@ -1600,9 +1600,9 @@ theorem concreteBPNativeSuccinctRMQAuxPayload_length
       accessFamily hshape
   have hcloseLe :
       (concreteBPNativeCloseDirectory shape).payload.length <=
-        SuccinctCloseProposal.compactBPCloseOverhead n := by
+        SuccinctClose.compactBPCloseOverhead n := by
     have hprofile :=
-      SuccinctCloseProposal.concreteCompactBPCloseLCADirectory_profile shape
+      SuccinctClose.concreteCompactBPCloseLCADirectory_profile shape
     simpa [concreteBPNativeCloseDirectory,
       Cartesian.ShapeOfSize.size_eq hshapeSize] using hprofile.1
   simp [concreteBPNativeSuccinctRMQAuxPayload,

@@ -5,6 +5,5 @@ import RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.PrefixWitnessTable
 
 Compatibility import root for the split prefix-argmin, relative-summary,
 sparse-argmin, local-sparse-offset, answer-semantics, and witness-table
-layers. Public declarations keep the historical `RMQ.SuccinctCloseProposal`
-namespace.
+layers. Public declarations live in the canonical `RMQ.SuccinctClose` namespace.
 -/

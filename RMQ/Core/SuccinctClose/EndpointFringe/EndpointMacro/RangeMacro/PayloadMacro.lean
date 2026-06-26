@@ -4,11 +4,11 @@ import RMQ.Core.SuccinctClose.EndpointFringe.EndpointMacro.RangeMacro.RangeTable
 # Payload-live endpoint-fringe range macro
 
 Split from `RMQ.Core.SuccinctClose.EndpointFringe.EndpointMacro.RangeMacro`.
-Public declarations keep the historical `RMQ.SuccinctCloseProposal` namespace.
+Public declarations keep the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 
@@ -2137,5 +2137,5 @@ theorem profile_cross_block_exact
 
 end PayloadLiveBPEndpointFringeRangeMacro
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ

@@ -4,11 +4,11 @@ import RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.AnswerSemantics
 # Payload-live prefix-range witness table
 
 Split from `RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange`.
-Public declarations keep the historical `RMQ.SuccinctCloseProposal` namespace.
+Public declarations keep the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 
@@ -300,5 +300,5 @@ def concreteBPPrefixRangeArgMinWitnessTable
           (bpPrefixRangeArgMinPrefixPosEntries_mem_bound hwidth)).payload_length
     omega
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ

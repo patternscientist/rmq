@@ -4,12 +4,11 @@ import RMQ.Core.SuccinctClose.RangeSummary
 # Relative BP block summaries
 
 Relative min/max/argmin BP summary tables, canonical parameter arithmetic, and
-interior-directory budget setup. The historical `RMQ.SuccinctCloseProposal`
-namespace is preserved so theorem names remain stable.
+interior-directory budget setup. Declarations live in the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 /-!
@@ -2897,5 +2896,5 @@ theorem concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_size_g
     hargRead⟩
 
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ

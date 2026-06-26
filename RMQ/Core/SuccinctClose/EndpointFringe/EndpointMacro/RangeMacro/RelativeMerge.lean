@@ -4,11 +4,11 @@ import RMQ.Core.SuccinctClose.EndpointFringe.EndpointMacro.RangeMacro.PayloadMac
 # Endpoint-fringe relative-rmM merge exactness
 
 Split from `RMQ.Core.SuccinctClose.EndpointFringe.EndpointMacro.RangeMacro`.
-Public declarations keep the historical `RMQ.SuccinctCloseProposal` namespace.
+Public declarations keep the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 
@@ -1286,5 +1286,5 @@ theorem bpRelativeRmmCandidateMerge_exact
       (hlen := hlen) hleft hright hanswer hblockSize
       hleftBlock hrightBlock hcross hsemantic.1 hsemantic.2
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ

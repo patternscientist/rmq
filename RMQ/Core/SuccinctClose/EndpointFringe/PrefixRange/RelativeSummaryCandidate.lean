@@ -4,11 +4,11 @@ import RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.PrefixArgMin
 # Relative summary prefix-range candidates
 
 Split from `RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange`.
-Public declarations keep the historical `RMQ.SuccinctCloseProposal` namespace.
+Public declarations keep the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 
@@ -616,5 +616,5 @@ theorem bpRangeWitness_eq_of_leftmost_block_candidate
       bpRangeArgMinPrefixPos_eq_of_leftmost_block_candidate
         hblock htarget hmin hleft
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ

@@ -4,11 +4,11 @@ import RMQ.Core.SuccinctClose.RelativeRmmMacro.EndpointCodebook
 # Compact endpoint-fringe relative-rmM macro
 
 Split implementation layer for the relative-rmM BP close/LCA macro. Public
-declarations stay in the historical RMQ.SuccinctCloseProposal namespace.
+declarations live in the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 
@@ -549,5 +549,5 @@ theorem concretePayloadLiveCompactEndpointRelativeRmmBPCloseMacro_profile
     exact component.read_words_length_le_machine
       (Nat.le_refl _) (Nat.le_refl _) hmem
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ

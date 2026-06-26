@@ -288,7 +288,7 @@ sparse-exception layers split further by role. The historical
 `RMQ.Core.SuccinctSelectProposal` file is now only a compatibility import root
 exporting the old `RMQ.SuccinctSelectProposal` names.
 
-The close-navigation proposal is also split by role.
+The close-navigation implementation is also split by role.
 `RMQ/Core/SuccinctClose.lean` is the thin reusable barrel for
 `SuccinctClose/BlockLocal.lean`, `SuccinctClose/RangeSummary.lean`,
 `SuccinctClose/RelativeSummary.lean`, `SuccinctClose/RangeWitness.lean`,
@@ -344,14 +344,19 @@ Completed:
   under `RMQ/Core/SuccinctSelect.lean` / `RMQ.SuccinctSelect`; the historical
   `RMQ/Core/SuccinctSelectProposal.lean` module is only a compatibility import
   root exporting the old `RMQ.SuccinctSelectProposal` names.
+- The BP close-navigation implementation now lives under
+  `RMQ/Core/SuccinctClose.lean` / `RMQ.SuccinctClose`; the historical
+  `RMQ/Core/SuccinctCloseProposal.lean` module is only a compatibility import
+  root exporting the old `RMQ.SuccinctCloseProposal` names.
 - Compatibility aliases for archive-facing old names remain in
   `RMQ/Archive/SelectCompatibility.lean`.
 
 Future opportunistic work:
 
 - Continue namespace-path alignment one family at a time, with compatibility
-  shims and a full gate after each pass. The select and close proposal
-  namespaces remain intentionally historical for now.
+  shims and a full gate after each pass. The rank, select, and close proposal
+  roots are now compatibility shims rather than active implementation
+  namespaces.
 - In generic select code, remove `False` from names that are truly
   target-parametric.
 - Centralize repeated Nat/Bool/log facts in a small local prelude if the repo

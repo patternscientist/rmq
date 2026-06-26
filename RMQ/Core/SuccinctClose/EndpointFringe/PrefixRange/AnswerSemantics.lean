@@ -4,11 +4,11 @@ import RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.LocalSparseOffset
 # Endpoint-fringe answer semantics
 
 Split from `RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange`.
-Public declarations keep the historical `RMQ.SuccinctCloseProposal` namespace.
+Public declarations keep the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 
@@ -883,5 +883,5 @@ theorem endpointPrefixRangeWitness_eq_answerClose_of_spanning_root
         intro pos hlo hhi
         exact hsemantic.2 hlo hhi)
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ

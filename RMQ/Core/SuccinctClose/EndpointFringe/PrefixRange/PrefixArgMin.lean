@@ -4,11 +4,11 @@ import RMQ.Core.SuccinctClose.RangeWitness
 # Endpoint-fringe prefix argmin basics
 
 Split from `RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange`.
-Public declarations keep the historical `RMQ.SuccinctCloseProposal` namespace.
+Public declarations keep the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 
@@ -525,5 +525,5 @@ theorem bpBlockArgMinPrefixPos_mem_range
     (shape := shape) (start := blockStartOf blockSize block)
     (count := blockSize + 1) (by omega) hbound
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ

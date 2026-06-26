@@ -4,12 +4,11 @@ import RMQ.Core.SuccinctRank
 # Block-local BP close/LCA tables
 
 Dense block-local BP close/LCA specifications, concrete tables, and the dense
-all-close obstruction. The historical `RMQ.SuccinctCloseProposal` namespace is
-preserved so theorem names remain stable.
+all-close obstruction. Declarations live in the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 /--
@@ -909,5 +908,5 @@ theorem close_lt_blockStartOf_blockOfClose_add
   omega
 
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ

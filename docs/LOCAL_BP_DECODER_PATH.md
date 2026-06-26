@@ -168,8 +168,8 @@ The endpoint-fringe and same-block migrations use this equivalence-first path:
    rank-backed sibling path:
 
    ```lean
-   SuccinctCloseProposal.concreteCompactBPCloseLCADirectory_profile
-   SuccinctCloseProposal
+   SuccinctClose.concreteCompactBPCloseLCADirectory_profile
+   SuccinctClose
      .ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_exact_of_query
    SuccinctFinal
      .builtRelativeSplitSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile

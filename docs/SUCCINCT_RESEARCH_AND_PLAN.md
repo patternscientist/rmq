@@ -13,9 +13,9 @@ has since landed; the items below are retained as design provenance and
 anti-vacuity guardrails. Earlier proof rounds pruned several cheap false
 closes:
 
-- `SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient`: a BP
+- `SuccinctClose.blockPairMacroDirectory_not_sufficient`: a BP
   close/LCA macro keyed only by endpoint close-block pair is not exact.
-- `SuccinctCloseProposal.denseAllCloseBPCloseLCAOverhead_not_littleO`: the
+- `SuccinctClose.denseAllCloseBPCloseLCAOverhead_not_littleO`: the
   direct all-close endpoint table is exact and charged, but not `o(n)`.
 - `SuccinctSelect.SelectSampleWordExact.shared_aligned_read_word_forces_same_wordIndex`
   and the two-level `shared_local_locator...` lemmas: a select locator that

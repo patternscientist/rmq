@@ -297,9 +297,9 @@ correctness as the separate semantic layer.
 The succinct BP-native RMQ path is now better constrained, but still not closed.
 The latest merged work added design-constraining negative theorems:
 
-- `SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient`: endpoint
+- `SuccinctClose.blockPairMacroDirectory_not_sufficient`: endpoint
   close-block pairs are not enough information for an exact BP close/LCA macro.
-- `SuccinctCloseProposal.denseAllCloseBPCloseLCAOverhead_not_littleO`: the
+- `SuccinctClose.denseAllCloseBPCloseLCAOverhead_not_littleO`: the
   direct all-close endpoint fallback is exact and charged, but not an `o(n)`
   auxiliary payload.
 - `SuccinctSelect.SelectSampleWordExact.shared_aligned_read_word_forces_same_wordIndex`
@@ -332,8 +332,8 @@ The audit branch's latest note was written before the coordinator pinned option
 component is now real, unconditional progress rather than another abstract
 budget envelope.
 
-`SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_canonical` and
-`SuccinctCloseProposal.concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile`
+`SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical` and
+`SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile`
 give the project a concrete BP relative min/max/arg summary table with fixed
 canonical parameters, no budget/satisfiability premise, `LittleOLinear`
 compact-overhead accounting, bounded four-word reads, and machine-word
@@ -372,7 +372,7 @@ succinct RMQ join.
 ## 2026-06-21 - Interior navigator built and merged
 
 The compact relative-rmM interior navigator is now in the coordinator branch.
-`SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_profile` is the
+`SuccinctClose.concreteBPRelativeRmmInteriorDirectory_profile` is the
 positive C2 interior checkpoint the audit had been demanding: under the
 large-regime threshold `2^128 <= shape.size`, it packages a concrete two-level
 directory with `LittleOLinear` payload overhead, payload bounded by the concrete

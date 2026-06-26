@@ -4,11 +4,11 @@ import RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.WordReads
 # Endpoint-fringe two-level interior candidate
 
 Split from `RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate`.
-Public declarations keep the historical `RMQ.SuccinctCloseProposal` namespace.
+Public declarations keep the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 
@@ -676,5 +676,5 @@ theorem concreteBPTwoLevelCrossMacroCandidate_profile
         hsuperMachine hrelativeMachine hmem
 
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ

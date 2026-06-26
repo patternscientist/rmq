@@ -4,11 +4,11 @@ import RMQ.Core.SuccinctClose.EndpointFringe.EndpointMacro.RangeMacro.RelativeMe
 # Concrete endpoint-fringe range macro profiles
 
 Split from `RMQ.Core.SuccinctClose.EndpointFringe.EndpointMacro.RangeMacro`.
-Public declarations keep the historical `RMQ.SuccinctCloseProposal` namespace.
+Public declarations keep the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 
@@ -248,5 +248,5 @@ theorem concreteBPEndpointFringeRangeMacro_read_words_length_le_machine
       (concreteBPEndpointFringeRangeMacro
         shape blockSize blockCount fieldWidth hwidth) hmachine
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ

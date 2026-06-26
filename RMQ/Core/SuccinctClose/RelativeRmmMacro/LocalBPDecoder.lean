@@ -4,11 +4,11 @@ import RMQ.Core.SuccinctClose.RelativeRmmMacro.CompactEndpoint
 # Seeded local BP decoder and query helpers
 
 Split implementation layer for the relative-rmM BP close/LCA macro. Public
-declarations stay in the historical RMQ.SuccinctCloseProposal namespace.
+declarations live in the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 
@@ -1940,5 +1940,5 @@ theorem cartesianShape_shapeOfSize_self
         Cartesian.ShapeOfSize.node ihleft ihright
 
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ

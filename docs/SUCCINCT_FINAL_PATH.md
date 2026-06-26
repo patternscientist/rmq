@@ -24,7 +24,7 @@ It composes the generic sparse-exception false-close/select source
 `GenericSelect.sparseExceptionSelectSource shape.bpCode false`, packaged by
 `SuccinctFinal.builtGenericSparseExceptionSelectBPCloseAccessFamily_profile`,
 with the concrete C2 close directory
-`SuccinctCloseProposal.concreteCompactBPCloseLCADirectory_profile`. The final
+`SuccinctClose.concreteCompactBPCloseLCADirectory_profile`. The final
 payload is `shape.bpCode ++ aux`, the auxiliary payload is padded to the stated
 `o(n)` overhead, the query cost is bounded by a constant, and valid
 representative-array windows erase to the exact `scanWindow` RMQ answer.
@@ -53,7 +53,8 @@ status section.
 
 The local-decoder hardening plan is pinned in
 `docs/LOCAL_BP_DECODER_PATH.md`. Workers should use that theorem chain before
-editing `RMQ/Core/SuccinctCloseProposal.lean`.
+editing the split `RMQ/Core/SuccinctClose/*` modules; the old
+`RMQ/Core/SuccinctCloseProposal.lean` root is only a compatibility shim.
 
 ## Current Inputs
 
@@ -63,7 +64,7 @@ The current merged surface provides useful partial surface:
   Its key capstone is:
 
   ```lean
-  theorem RMQ.SuccinctCloseProposal
+  theorem RMQ.SuccinctClose
       .PayloadLiveMacroMicroBPCloseNavigationFamily
       .two_n_plus_o_built_query_profile :
     ...
@@ -76,7 +77,7 @@ The current merged surface provides useful partial surface:
 - The close/LCA side also has a concrete negative theorem:
 
   ```lean
-  theorem RMQ.SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient :
+  theorem RMQ.SuccinctClose.blockPairMacroDirectory_not_sufficient :
     ...
   ```
 
@@ -88,11 +89,11 @@ The current merged surface provides useful partial surface:
   fallback:
 
   ```lean
-  theorem RMQ.SuccinctCloseProposal
+  theorem RMQ.SuccinctClose
       .denseFallbackPayloadLiveMacroMicroBPCloseLCADirectory_profile :
     ...
 
-  theorem RMQ.SuccinctCloseProposal
+  theorem RMQ.SuccinctClose
       .denseAllCloseBPCloseLCAOverhead_not_littleO :
     ...
   ```
@@ -105,11 +106,11 @@ The current merged surface provides useful partial surface:
 - The close/LCA side now also has a guarded concrete macro/micro layer:
 
   ```lean
-  theorem RMQ.SuccinctCloseProposal
+  theorem RMQ.SuccinctClose
       .concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_profile :
     ...
 
-  theorem RMQ.SuccinctCloseProposal
+  theorem RMQ.SuccinctClose
       .concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_sampled_profile :
     ...
   ```
@@ -456,16 +457,16 @@ The macro side is now concrete in the final path. The notes below are retained
 as guardrails against reopening false designs, not as active worker targets.
 
 Do not use a macro directory keyed only by endpoint close-block pair. The merged
-theorem `SuccinctCloseProposal.blockPairMacroDirectory_not_sufficient` proves
+theorem `SuccinctClose.blockPairMacroDirectory_not_sufficient` proves
 that design false. A viable macro must store enough endpoint-sensitive fringe
 information, include local offsets inside endpoint blocks, or use a real
 BP-excess/RMQ macro over block summaries whose answer is then repaired by
 charged local micro queries.
 
 Do not use the fully dense all-close endpoint fallback as the final space
-witness. `SuccinctCloseProposal.denseFallbackPayloadLiveMacroMicroBPCloseLCADirectory_profile`
+witness. `SuccinctClose.denseFallbackPayloadLiveMacroMicroBPCloseLCADirectory_profile`
 shows it is exact and charged, but
-`SuccinctCloseProposal.denseAllCloseBPCloseLCAOverhead_not_littleO` proves its
+`SuccinctClose.denseAllCloseBPCloseLCAOverhead_not_littleO` proves its
 auxiliary payload is not `o(n)`.
 
 Do not treat the guarded endpoint-fringe/interior macro as the final succinct

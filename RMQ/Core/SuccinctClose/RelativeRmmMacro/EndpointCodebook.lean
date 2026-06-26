@@ -4,11 +4,11 @@ import RMQ.Core.SuccinctClose.RelativeRmmMacro.AbstractMacro
 # Payload-live endpoint-fringe codebook
 
 Split implementation layer for the relative-rmM BP close/LCA macro. Public
-declarations stay in the historical RMQ.SuccinctCloseProposal namespace.
+declarations live in the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 
@@ -1278,5 +1278,5 @@ theorem concretePayloadLiveBlockEndpointFringeCodebook_canonical_profile
       (Nat.le_refl _)
 
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ

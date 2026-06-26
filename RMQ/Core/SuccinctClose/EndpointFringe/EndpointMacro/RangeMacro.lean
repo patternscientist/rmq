@@ -5,5 +5,5 @@ import RMQ.Core.SuccinctClose.EndpointFringe.EndpointMacro.RangeMacro.Concrete
 
 Compatibility import root for the split endpoint-fringe range-table,
 payload-macro, relative-merge, and concrete-profile layers. Public
-declarations keep the historical `RMQ.SuccinctCloseProposal` namespace.
+declarations keep the canonical `RMQ.SuccinctClose` namespace.
 -/

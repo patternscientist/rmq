@@ -4,11 +4,11 @@ import RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange.RelativeSummaryCandidat
 # Sparse block argmin witnesses
 
 Split from `RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange`.
-Public declarations keep the historical `RMQ.SuccinctCloseProposal` namespace.
+Public declarations keep the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 
@@ -652,5 +652,5 @@ theorem bpRangeWitness_eq_of_bpSparseLogSpanArgMinBlock
       (self_le_two_mul_bpSparseLogSpan hcount)
 
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ

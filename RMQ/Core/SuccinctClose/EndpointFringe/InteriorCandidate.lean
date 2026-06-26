@@ -5,5 +5,5 @@ import RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.InteriorDirectory
 
 Compatibility import root for the split candidate-merge, sparse-table,
 relative-scan, word-read, two-level candidate, and interior-directory layers.
-Public declarations keep the historical `RMQ.SuccinctCloseProposal` namespace.
+Public declarations keep the canonical `RMQ.SuccinctClose` namespace.
 -/

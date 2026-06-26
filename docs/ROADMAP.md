@@ -671,13 +671,13 @@ balanced-parentheses access by
 `canonicalTwoLevelBalancedParensAccessOfChunksExact_profile`.
 `PayloadLiveBPCloseLCADirectory.ofEntries` packages supplied BP close/LCA
 entries into the counted optional-Nat payload table, and
-`SuccinctCloseProposal.BlockLocalBPCloseLCATable.ofEntries_profile` records the
+`SuccinctClose.BlockLocalBPCloseLCATable.ofEntries_profile` records the
 local block-table component that the later succinct BP navigation scheme fed
 into. The earlier missing payload-live BP close/LCA construction has now been
 discharged by the compact relative rmM/min-max-tree-style interior navigator,
 the endpoint-fringe repair, and the rank-seeded local decoder path. The live C2
 checkpoint is now the landed theorem
-`SuccinctCloseProposal.concreteBPRelativeRmmInteriorDirectory_profile`, consumed
+`SuccinctClose.concreteBPRelativeRmmInteriorDirectory_profile`, consumed
 by the final BP-native capstone rather than a remaining blocker.
 
 Current final-path spec: `docs/SUCCINCT_FINAL_PATH.md`. Historically the path

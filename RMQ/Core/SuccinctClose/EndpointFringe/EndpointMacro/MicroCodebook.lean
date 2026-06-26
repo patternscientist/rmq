@@ -4,12 +4,11 @@ import RMQ.Core.SuccinctClose.EndpointFringe.EndpointMacro.RangeMacro
 # Endpoint-fringe micro-codebook fallback
 
 Block-code tables, micro-codebook fallback directories, and the guarded
-endpoint-fringe macro/micro close-LCA directory. The historical
-`RMQ.SuccinctCloseProposal` namespace is preserved.
+endpoint-fringe macro/micro close-LCA directory. Declarations live in the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 /--
@@ -1650,5 +1649,5 @@ theorem concreteGuardedBPEndpointFringeMacroMicroBPCloseLCADirectory_sampled_pro
   · exact hprofile.2.2
 
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ

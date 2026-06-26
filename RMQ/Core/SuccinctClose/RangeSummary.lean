@@ -4,12 +4,11 @@ import RMQ.Core.SuccinctClose.BlockLocal
 # BP range min/max summary tables
 
 Absolute BP prefix-excess samples and payload-live min/max summary tables used
-by the later relative-rmM close navigation layers. The historical
-`RMQ.SuccinctCloseProposal` namespace is preserved.
+by the later relative-rmM close navigation layers. Declarations live in the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 /-!
@@ -1038,5 +1037,5 @@ theorem concreteBPRangeMinMaxSummaryTable_compact_summary_profile
     table.summaryCosted_erase block⟩
 
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ

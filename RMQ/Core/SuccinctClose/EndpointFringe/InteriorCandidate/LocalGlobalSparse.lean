@@ -4,11 +4,11 @@ import RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.Candidate
 # Endpoint-fringe local/global sparse candidate tables
 
 Split from `RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate`.
-Public declarations keep the historical `RMQ.SuccinctCloseProposal` namespace.
+Public declarations keep the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 
@@ -1432,5 +1432,5 @@ theorem bpTwoLevelCrossMacroCandidateCosted_erase_exact
   simpa [startBlock, leftCount, middleCount, rightMacroStart, hleftEnd,
     hrightStartEq, Nat.add_assoc] using hmerge
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ

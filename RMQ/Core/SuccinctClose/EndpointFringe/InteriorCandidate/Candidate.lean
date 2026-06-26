@@ -4,11 +4,11 @@ import RMQ.Core.SuccinctClose.EndpointFringe.PrefixRange
 # Endpoint-fringe candidate merge basics
 
 Split from `RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate`.
-Public declarations keep the historical `RMQ.SuccinctCloseProposal` namespace.
+Public declarations keep the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 
@@ -458,5 +458,5 @@ theorem bpCandidateMerge?_bpSparseLogSpanArgMinBlock
       (bpSparseLogSpan blockCount)
       (bpSparseLogSpan_pos blockCount)
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ

@@ -4,11 +4,11 @@ import RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.TwoLevelCandidate
 # Endpoint-fringe relative-rmM interior directory
 
 Split from `RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate`.
-Public declarations keep the historical `RMQ.SuccinctCloseProposal` namespace.
+Public declarations keep the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 
@@ -836,5 +836,5 @@ theorem concreteBPRelativeMinMaxArgSummaryTable_canonical_interior_scan_not_cons
       hblockSize
 
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ

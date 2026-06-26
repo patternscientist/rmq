@@ -4,11 +4,11 @@ import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectory
 # Macro/micro close-navigation families
 
 Split implementation layer for the relative-rmM BP close/LCA macro. Public
-declarations stay in the historical RMQ.SuccinctCloseProposal namespace.
+declarations live in the canonical `RMQ.SuccinctClose` namespace.
 -/
 
 namespace RMQ
-namespace SuccinctCloseProposal
+namespace SuccinctClose
 
 open SuccinctSpace
 
@@ -906,5 +906,5 @@ theorem two_n_plus_o_built_query_profile
 
 end PayloadLiveMacroMicroBPCloseNavigationFamily
 
-end SuccinctCloseProposal
+end SuccinctClose
 end RMQ
