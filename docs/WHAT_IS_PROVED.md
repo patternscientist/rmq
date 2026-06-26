@@ -89,6 +89,18 @@ construction-level word discipline: concrete rank payload words erase to the
 stored bitvector, and concrete rank/select payload-word reads are bounded by the
 repository's machine-word-size function.
 
+## Balanced-Parentheses Navigation
+
+`RMQBPNavigation` exposes the compact BP close/LCA layer used by the succinct
+RMQ capstone. The public concrete profile is
+`RMQ.BPNavigation.compactCloseDirectoryProfile`.
+
+It proves `o(n)` auxiliary close-navigation payload, constant modeled query
+cost, exact answer-close semantics for Cartesian-shape RMQ queries supplied
+with exact endpoint close positions, and machine-word-bounded payload reads.
+This is not yet a full balanced-parentheses tree-navigation library; it is the
+RMQ-facing close/LCA navigation spoke.
+
 ## Cost Model
 
 The complexity claims are not claims about Lean's native execution time.

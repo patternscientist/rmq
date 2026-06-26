@@ -12,6 +12,9 @@ name = "RMQHub"
 name = "RMQRankSelect"
 
 [[lean_lib]]
+name = "RMQBPNavigation"
+
+[[lean_lib]]
 name = "RMQArchive"
 
 [[lean_lib]]

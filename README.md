@@ -203,6 +203,10 @@ about Lean's executable `List` runtime.
   plain-bitvector API. Its proof-support import closure still shares the
   succinct-space and shape/lower-bound infrastructure, but it does not expose
   an RMQ/LCA/Fischer-Heun backend or the final RMQ capstone as its public API.
+- `RMQBPNavigation.lean`: standalone balanced-parentheses close-navigation
+  spoke import root. It exposes the compact close/LCA navigation facade under
+  `RMQ.BPNavigation`; this is the RMQ-facing BP navigation layer, not yet a
+  full tree-navigation library API.
 - `RMQ/Core/SuccinctReduction.lean`: reduction-facing adapter from
   plus-minus-one RMQ backends over generated Euler-tour parentheses to the
   ordinary RMQ/LCA backend interfaces.
@@ -297,6 +301,13 @@ lake build RMQRankSelect
 lake env lean scripts/rank_select_axiom_check.lean
 ```
 
+Standalone BP-navigation spoke checks:
+
+```powershell
+lake build RMQBPNavigation
+lake env lean scripts/bp_navigation_axiom_check.lean
+```
+
 Optional archive checks:
 
 ```powershell
@@ -335,6 +346,7 @@ RMQ blocker:
 - extract the reusable cost/refinement/lower-bound hub toward a CSLib-style
   library surface;
 - refine the landed standalone Jacobson/Clark rank/select theorem toward
-  compressed/FID space and balanced-parentheses navigation spokes; and
+  compressed/FID space, and deepen the landed BP-navigation spoke into a
+  fuller tree-navigation API; and
 - start union-find or another CS166-style structure once it can consume the
   hub rather than rebuild it.

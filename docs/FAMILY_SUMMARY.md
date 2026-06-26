@@ -65,7 +65,9 @@ separate appendix.
   rank/select: `RMQRankSelect` builds the public plain-bitvector
   `n + o(n)` payload profile with constant modeled `access`, `rank`, and
   `select`, stated independently from RMQ while reusing the succinct bitvector
-  machinery where appropriate.
+  machinery where appropriate. The second extraction spoke is
+  `RMQBPNavigation`, exposing the compact balanced-parentheses close/LCA
+  navigation facade consumed by succinct RMQ.
 - Optional archive root: `RMQArchive` imports the retired compatibility and
   obstruction surfaces under `RMQ.Archive`, while the main `RMQ` root stays
   focused on live proof surfaces and public headlines.
@@ -1645,7 +1647,12 @@ The names below are grouped by source module. Repeated base names in
   thin compatibility aliases for the retained archive surfaces.
 - `RMQ/Core/RankSelectPublic.lean`:
   neutral public aliases for the standalone rank/select spoke, including
-  `RankSelect.jacobsonClarkNPlusOConstantQuery`.
+  `RankSelect.jacobsonClarkNPlusOConstantQuery` and
+  `RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery`.
+- `RMQ/Core/BPNavigationPublic.lean` and `RMQBPNavigation.lean`:
+  neutral public aliases and a standalone import root for compact
+  balanced-parentheses close/LCA navigation, including
+  `BPNavigation.compactCloseDirectoryProfile`.
 - `RMQ/Core/GenericSelect.lean`,
   `RMQ/Core/SuccinctRankSelect.lean`,
   `RMQ/Core/BPCloseNavigation.lean`, and
@@ -2098,10 +2105,10 @@ completeness.
 
 ## Suggested Next Milestones
 
-1. Deepen the reusable succinct bitvector spoke: the public rank/select layer is
-   landed, and the next frontier is compressed/FID-style payload budgets plus
-   further balanced-parentheses navigation over the same payload-accounted
-   directory interfaces.
+1. Deepen the reusable succinct bitvector/navigation spokes: public
+   rank/select and compact BP close-navigation are landed; the next frontier is
+   compressed/FID-style payload budgets and a fuller balanced-parentheses
+   tree-navigation API over the same payload-accounted directory interfaces.
 2. Start the first non-succinct spoke, with union-find as the best stress test
    for amortized analysis, representation invariants, and hub reuse.
 3. Keep RMQ presentation polish narrow: an even flatter encoded/payload-only

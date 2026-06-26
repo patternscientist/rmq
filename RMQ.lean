@@ -9,6 +9,7 @@ import RMQ.Core.SuccinctSelect
 import RMQ.Core.SuccinctClose
 import RMQ.Core.SuccinctRankSelect
 import RMQ.Core.BPCloseNavigation
+import RMQ.Core.BPNavigationPublic
 import RMQ.Core.SuccinctRMQ
 import RMQ.Core.Reduction
 import RMQ.Core.Cartesian

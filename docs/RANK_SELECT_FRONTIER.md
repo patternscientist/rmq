@@ -196,7 +196,8 @@ targets are:
 1. compressed/FID-style payload budgets such as
    `log2 (Nat.choose U m) + o(U)`, after adding a binomial/entropy counting
    layer;
-2. balanced-parentheses navigation as its own spoke over the same public
-   rank/select surface;
+2. deepening the landed `RMQBPNavigation` spoke into a fuller
+   balanced-parentheses tree-navigation API over the same public rank/select
+   surface;
 3. neutral naming/facade polish if this module is later moved into a broader
    verified data-structures repository.
