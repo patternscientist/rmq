@@ -2407,3 +2407,37 @@ flat historical `*Proposal` bag, one 10.7k grab-bag (with a known dead-end) rema
 proof-idiom polish (Bool dance, mega-simp, prelude) is untouched. None of it is debt that
 threatens the result; all of it is the gap between "successful proof expedition, now tidied"
 and "CSLib-caliber component." A1 (namespace/path alignment) is where I'd start.
+
+## 2026-06-25 (AUDIT) — `main` @ `f7a774e` (A2 + A3 executed)
+
+Six commits since `96e424a`, executing exactly the prior audit's A2 + A3: `c35f91d`
+(retire rectangular false-select — A2), and five "Split … layers" commits (`be4a42e`
+close-select proposal, `33ea5b9` two-level select, `1455422` interior candidate,
+`6324472` endpoint range macro, `f7a774e` prefix range — A3). Integrity perfect: build
+green; all four axiom checks resolve, zero `sorryAx`/`ofReduceBool`/errors — headline 15,
+archive 4, rank-select 5, full 421.
+
+**VERDICT: CLEAN; A2 + A3 done well.**
+- **A2 (dead-end prune):** `RectangularChargedFalseSelectCloseData` /
+  `RelativeSplitRectangularFalseSelectCloseData` now have **0 refs tree-wide** — gone.
+- **A3 (split big files):** size distribution went from 6 files ≥3000 to **1**
+  (`SuccinctSpace.lean` 7557, the foundational module — not a `*Proposal` grab-bag). The
+  10,687-line `SuccinctSelectProposal` is split out and no longer in the top 8; **123/137
+  files now <1500** (was 81/98). Total 86,265 lines (+~500 split boilerplate).
+
+**Standing items (unchanged this batch):**
+- **A1 — still the headline gap, and growing.** Namespaces remain flat & historical: 22
+  files declare `namespace SuccinctSelectProposal`, 27 declare `namespace
+  SuccinctCloseProposal`; 3 `*Proposal.lean` roots remain. Continued file-splitting *adds*
+  files to these flat namespaces, so the physical-vs-logical split gap widens as A1 is
+  deferred. Path-aligned namespaces + dropping "Proposal" is now the single biggest
+  remaining "research-level library" move.
+- **B-tier idioms untouched** (as expected — splits relocate, don't rewrite): 33 Bool
+  case-extraction dances, 229 mega-simps (≥5 lemmas), no global prelude.
+- `SuccinctSpace.lean` (7557) is the lone remaining ≥3000 file — foundational, a fair
+  sectioning/split candidate.
+
+Bottom line: another clean, recommendation-tracking batch — the structural prune+split work
+is essentially complete (only foundational `SuccinctSpace` is still large). What's left is
+A1 (namespace/path alignment, now the priority) and the B-tier idiom polish; neither is
+debt, both are the "idiomatic vs. merely navigable" gap.
