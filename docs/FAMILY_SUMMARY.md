@@ -1375,6 +1375,9 @@ The names below are grouped by source module. Repeated base names in
   `RMQ/Core/SuccinctClose/EndpointFringe.lean`,
   `RMQ/Core/SuccinctClose/EndpointFringe/PrefixRange.lean`,
   `RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate.lean`,
+  the split `RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/*`
+  layers for candidate merging, sparse tables, relative scans, word reads,
+  two-level candidates, and the interior directory,
   `RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro.lean`,
   `RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/RangeMacro.lean`,
   `RMQ/Core/SuccinctClose/EndpointFringe/EndpointMacro/MicroCodebook.lean`,
