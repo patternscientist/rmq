@@ -15,6 +15,8 @@ $scanRoots = @(
   "RMQHub.lean",
   "RMQRankSelect.lean",
   "RMQArchive.lean",
+  "RMQExamples.lean",
+  "RMQExamples",
   "scripts",
   "docs"
 )

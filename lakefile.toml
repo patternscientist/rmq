@@ -13,3 +13,6 @@ name = "RMQRankSelect"
 
 [[lean_lib]]
 name = "RMQArchive"
+
+[[lean_lib]]
+name = "RMQExamples"

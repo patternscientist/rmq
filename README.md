@@ -1,5 +1,7 @@
 # RMQ
 
+[![CI](https://github.com/patternscientist/rmq/actions/workflows/ci.yml/badge.svg)](https://github.com/patternscientist/rmq/actions/workflows/ci.yml)
+
 **TL;DR:** We used Lean to machine-check that range-minimum queries can be
 answered exactly in constant modeled time while storing only `2*n + o(n)` bits
 of Cartesian-shape data, essentially two bits per array element. The same
@@ -18,8 +20,14 @@ data-structures library, see
 [`docs/REPOSITORY_STRATEGY.md`](docs/REPOSITORY_STRATEGY.md).
 For the first extracted spoke, see
 [`docs/RANK_SELECT_FRONTIER.md`](docs/RANK_SELECT_FRONTIER.md).
+For a compact external-reader scope summary, see
+[`docs/WHAT_IS_PROVED.md`](docs/WHAT_IS_PROVED.md).
+For the trust base and verification commands, see
+[`docs/TRUST_BASE.md`](docs/TRUST_BASE.md).
 For post-capstone cleanup and library-shaping work, see
 [`docs/CLEANUP_AND_ROADMAP.md`](docs/CLEANUP_AND_ROADMAP.md).
+
+License: Apache-2.0; see [`LICENSE`](LICENSE).
 
 ## What This Is, And Why Care
 
@@ -290,6 +298,18 @@ Optional archive checks:
 ```powershell
 lake build RMQArchive
 lake env lean scripts/archive_axiom_check.lean
+```
+
+Checked external import examples:
+
+```powershell
+lake build RMQExamples
+```
+
+Full repository gate, matching the GitHub Actions CI job:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/gate.ps1
 ```
 
 Useful proof-hygiene check:
