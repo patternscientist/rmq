@@ -291,7 +291,9 @@ a compatibility import root exporting the historical
 `RMQ.SuccinctCloseProposal` namespace.
 The current in-repository live roots, scripts, and archive witnesses use the
 canonical rank/select/close roots directly; these proposal files are retained
-only for external compatibility with old namespace-qualified imports.
+only for external compatibility with old namespace-qualified imports. The
+repository gate runs `scripts/shim_lint.ps1` to keep those compatibility roots
+out of live imports and namespace opens.
 
 Succinct E1 update: the concrete two-level rank/select chunk-backed path has
 advanced beyond the older table-row wording above. Rank now has the

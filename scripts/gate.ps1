@@ -55,7 +55,11 @@ if ($rankSelectAx | Select-String -Pattern "sorryAx|ofReduceBool") {
 & "$PSScriptRoot\succinct_cost_lint.ps1"
 if ($LASTEXITCODE -ne 0) { Fail "succinct_cost_lint.ps1 found issues" }
 
-# 5. Whitespace / leftover merge markers.
+# 5. Compatibility-shim import boundary.
+& "$PSScriptRoot\shim_lint.ps1"
+if ($LASTEXITCODE -ne 0) { Fail "shim_lint.ps1 found issues" }
+
+# 6. Whitespace / leftover merge markers.
 git diff --check
 if ($LASTEXITCODE -ne 0) { Fail "git diff --check found issues" }
 

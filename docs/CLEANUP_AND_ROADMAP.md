@@ -319,7 +319,8 @@ Compatibility-shim inventory: current live roots and scripts no longer import
 `RMQ/Archive/SelectObstructions.lean` now imports the canonical
 `RMQ.Core.SuccinctSelect` root directly. Keep the proposal and old flat
 generic-select files only as external/downstream compatibility roots, not as
-active implementation modules or lint targets.
+active implementation modules. This boundary is now checked by
+`scripts/shim_lint.ps1`, which is part of `scripts/gate.ps1`.
 
 The broadword/succinct-space model layer has followed the same barrel pattern.
 `RMQ/Core/SuccinctSpace.lean` is now a thin public import root over:
@@ -387,7 +388,8 @@ Future opportunistic work:
 - Continue namespace-path alignment one family at a time, with compatibility
   shims and a full gate after each pass. The rank, select, and close proposal
   roots are now compatibility shims rather than active implementation
-  namespaces.
+  namespaces, and `scripts/shim_lint.ps1` rejects live imports or namespace
+  opens that move implementation code back behind those shims.
 - In generic select code, remove `False` from names that are truly
   target-parametric.
 - Continue centralizing repeated Nat/Bool/log/List facts in small local helper
@@ -395,7 +397,12 @@ Future opportunistic work:
   `RMQ/Core/ListLemmas.lean`, which removes the duplicated
   `sum_map_const_nat` proof from the lower-bound, encoding, and shape layers.
 - Refactor repeated Bool case-split boilerplate and giant arithmetic proof
-  fragments opportunistically, not as a broad risky rewrite.
+  fragments opportunistically, not as a broad risky rewrite. Some Bool splits
+  are representation artifacts of paired true/false tables; clean them up only
+  when a small interface lemma or neutral table abstraction removes repetition
+  without obscuring the stored-table refinement. Treat large `simp` blocks the
+  same way: factor recurring local normal forms, but do not replace explicit
+  cost/read proofs with fragile global simp attributes.
 
 ## Dependency Decision
 
