@@ -155,10 +155,12 @@ about Lean's executable `List` runtime.
   balanced-parentheses predicates, model-level packed rank/select with
   unit-cost query theorems, and generated Euler-tour parentheses that are
   proved balanced and erase to the generated plus-minus-one depth trace.
-- `RMQ/Core/SuccinctSpace.lean`: broadword/succinct-space theorem interfaces:
-  Mathlib-free `o(n)` overhead accounting, payload-backed rank/select
-  components, BP-native Cartesian shape payloads of exact length `2*n`, and a
-  proved close-navigation RMQ adapter.
+- `RMQ/Core/SuccinctSpace.lean`: public barrel for the role-split
+  broadword/succinct-space theorem interfaces. The split modules below it own
+  Mathlib-free `o(n)` overhead accounting, payload-word/table encodings,
+  payload-backed rank/select components, BP-native Cartesian shape payloads of
+  exact length `2*n`, broadword RMQ profiles, and the proved close-navigation
+  RMQ adapter.
 - `RMQ/Core/SuccinctRankSelect.lean`, `RMQ/Core/GenericSelect.lean`,
   `RMQ/Core/BPCloseNavigation.lean`, and `RMQ/Core/SuccinctRMQ.lean`:
   role-named barrels for the live succinct stack. `GenericSelect` now exports

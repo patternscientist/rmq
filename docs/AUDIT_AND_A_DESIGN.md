@@ -503,8 +503,9 @@ headline capstone still `{propext, Classical.choice, Quot.sound}`.
   fine — not a gap.
 - **B-tier idiom polish still pending** (unchanged): 33 Bool case-extraction dances, 229
   mega-simps (≥5 lemmas), no global prelude.
-- 3 compat shims to retire once downstream migrates; `SuccinctSpace.lean` (7557,
-  foundational) lone large file; Mathlib/CSLib dependency call still open.
+- 3 compat shims to retire once downstream migrates; `SuccinctSpace.lean` has
+  since been split into role modules under `RMQ/Core/SuccinctSpace/` with the
+  old file kept as a thin barrel; Mathlib/CSLib dependency call still open.
 
 Bottom line: the structural + naming cleanup is now essentially complete — navigable file
 sizes, dead-ends pruned, and idiomatic path-aligned namespaces with "Proposal" gone from the

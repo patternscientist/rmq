@@ -307,6 +307,23 @@ compact endpoint, local BP decoder, concrete directory, and macro/micro family
 layers. `RMQ/Core/SuccinctCloseProposal.lean` is now a compatibility import
 root for the historical proposal name.
 
+The broadword/succinct-space model layer has followed the same barrel pattern.
+`RMQ/Core/SuccinctSpace.lean` is now a thin public import root over:
+
+- `SuccinctSpace/Asymptotics.lean` for Mathlib-free `LittleOLinear` arithmetic
+  and sampled-overhead lemmas;
+- `SuccinctSpace/WordStore.lean` for bit codecs and payload-word stores;
+- `SuccinctSpace/Tables.lean` and `SuccinctSpace/SelectSamples.lean` for
+  fixed-width Nat/Option/sample tables;
+- `SuccinctSpace/BPShape.lean` for Cartesian-shape balanced-parentheses bridge
+  facts such as `bpCloseOfInorder?`;
+- `SuccinctSpace/RankSelect.lean` and `SuccinctSpace/BPAccess.lean` for
+  payload-live stored-word rank/select and BP access adapters;
+- `SuccinctSpace/BroadwordRMQ.lean` for broadword RMQ/profile interfaces; and
+- `SuccinctSpace/BPCloseLCA.lean` plus
+  `SuccinctSpace/BPCloseRMQNavigation.lean` for the close-LCA/navigation
+  profile consumed by the succinct RMQ capstone.
+
 Keep import direction simple:
 
 ```text
