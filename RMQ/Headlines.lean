@@ -6,7 +6,7 @@ import RMQ.Core.SuccinctFinal
 Short public aliases for the main citeable theorem surfaces.
 
 The original declarations keep their precise construction-heavy names. This
-module gives README/demo-facing names to the same checked objects without
+module gives README/public-facing names to the same checked objects without
 changing theorem statements or proof dependencies.
 -/
 

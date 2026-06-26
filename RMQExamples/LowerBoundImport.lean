@@ -1,7 +1,7 @@
 import RMQ.Core.EncodingLowerBound
 
 /-!
-# Minimal lower-bound import demo
+# Minimal lower-bound import example
 
 This imports only the RMQ encoding lower-bound layer and names the tight
 fixed-length payload-space theorem with doubled Catalan slack.

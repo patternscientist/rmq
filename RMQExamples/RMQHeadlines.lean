@@ -1,7 +1,7 @@
 import RMQ.Headlines
 
 /-!
-# Minimal headline import demo
+# Minimal headline import example
 
 This file shows the short public theorem aliases intended for talks, READMEs,
 and external reuse. The aliases point at the full construction-heavy theorem

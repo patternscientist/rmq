@@ -1,7 +1,7 @@
 import RMQRankSelect
 
 /-!
-# Minimal rank/select import demo
+# Minimal rank/select import example
 
 This is the small reusable spoke surface for plain bitvectors. It avoids the
 final RMQ capstone import root while exposing the public Jacobson/Clark

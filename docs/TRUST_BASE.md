@@ -19,10 +19,13 @@ That gate runs:
 - `lake build RMQRankSelect`;
 - `lake build RMQArchive`;
 - `lake build RMQExamples`;
+- `lake build RMQ.Core.GenericSelectBPCompat`, the terminal compatibility
+  bridge checked by the curated axiom script;
 - hygiene scans for `sorry`, `admit`, custom `axiom`, `unsafe`, `opaque`,
   `implemented_by`, `partial`, `extern`, `noncomputable`, and `import Mathlib`;
 - a scan rejecting `native_decide` and `Lean.ofReduceBool` in checked source;
 - the curated theorem axiom audits in `scripts/axiom_check.lean`,
+  `scripts/hub_axiom_check.lean`,
   `scripts/archive_axiom_check.lean`, and
   `scripts/rank_select_axiom_check.lean`;
 - succinct cost/space anti-vacuity linting; and

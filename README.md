@@ -24,7 +24,8 @@ For a compact external-reader scope summary, see
 [`docs/WHAT_IS_PROVED.md`](docs/WHAT_IS_PROVED.md).
 For the trust base and verification commands, see
 [`docs/TRUST_BASE.md`](docs/TRUST_BASE.md).
-For post-capstone cleanup and library-shaping work, see
+For a documentation map, see [`docs/README.md`](docs/README.md).
+For the completed cleanup record and library-shaping roadmap, see
 [`docs/CLEANUP_AND_ROADMAP.md`](docs/CLEANUP_AND_ROADMAP.md).
 
 License: Apache-2.0; see [`LICENSE`](LICENSE).
@@ -315,7 +316,7 @@ powershell -ExecutionPolicy Bypass -File scripts/gate.ps1
 Useful proof-hygiene check:
 
 ```powershell
-rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ RMQHub.lean RMQRankSelect.lean RMQArchive.lean lakefile.toml
+rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ RMQExamples RMQHub.lean RMQRankSelect.lean RMQArchive.lean RMQExamples.lean lakefile.toml
 ```
 
 ## Next Direction

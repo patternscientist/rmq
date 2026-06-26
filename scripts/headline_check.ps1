@@ -14,6 +14,9 @@ Write-Host "== Build =="
 lake build
 if ($LASTEXITCODE -ne 0) { Fail "lake build failed" }
 
+lake build RMQExamples
+if ($LASTEXITCODE -ne 0) { Fail "lake build RMQExamples failed" }
+
 Write-Host "== Headline theorem axioms =="
 $ax = lake env lean scripts/headline_axiom_check.lean
 if ($LASTEXITCODE -ne 0) { Fail "headline_axiom_check.lean did not run cleanly" }
@@ -23,10 +26,10 @@ if ($ax | Select-String -Pattern "sorryAx|Lean\.ofReduceBool|ofReduceBool") {
 }
 
 Write-Host "== Hygiene =="
-$hygiene = rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ lakefile.toml
+$hygiene = rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ RMQExamples RMQExamples.lean lakefile.toml
 if ($hygiene) { Fail "hygiene scan hit:`n$hygiene" }
 
-$nd = rg -n "native_decide|Lean\.ofReduceBool" RMQ
+$nd = rg -n "native_decide|Lean\.ofReduceBool" RMQ RMQExamples RMQExamples.lean
 if ($nd) { Fail "native_decide / ofReduceBool present in source:`n$nd" }
 
 git diff --check

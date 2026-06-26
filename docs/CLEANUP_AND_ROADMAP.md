@@ -5,11 +5,13 @@ milestones on `main`. It imports the useful conclusion from the external
 elegance audits, but it is the current-main plan: do not merge stale audit
 branches wholesale.
 
-The theorem content is the asset. The main public-facing cleanup pass is now
-complete: the live capstones are stable, stale expedition notes have been
+The theorem content is the asset. The required pre-development cleanup pass is
+now complete: the live capstones are stable, stale expedition notes have been
 collapsed out of the public summary, archive anchors are separated from the
-headline path, and rank/select has a neutral public facade. The remaining items
-below are future library-shaping work, not blockers for the current RMQ spoke.
+headline path, rank/select has a neutral public facade, and the public CI gate
+checks the hub, archive, examples, compatibility bridge, and headline theorem
+surfaces. The remaining items below are future library-shaping work, not
+blockers for the current RMQ spoke.
 
 ## Live Headlines
 
@@ -53,11 +55,14 @@ lake build
 lake build RMQHub
 lake build RMQRankSelect
 lake build RMQArchive
+lake build RMQExamples
+lake build RMQ.Core.GenericSelectBPCompat
+lake env lean scripts\hub_axiom_check.lean
 lake env lean scripts\axiom_check.lean
 lake env lean scripts\archive_axiom_check.lean
 lake env lean scripts\rank_select_axiom_check.lean
-rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ RMQHub.lean RMQRankSelect.lean RMQArchive.lean lakefile.toml
-rg -n "native_decide|Lean\.ofReduceBool" RMQ RMQHub.lean RMQRankSelect.lean RMQArchive.lean
+rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ RMQExamples RMQHub.lean RMQRankSelect.lean RMQArchive.lean RMQExamples.lean lakefile.toml
+rg -n "native_decide|Lean\.ofReduceBool" RMQ RMQExamples RMQHub.lean RMQRankSelect.lean RMQArchive.lean RMQExamples.lean
 git diff --check
 powershell -ExecutionPolicy Bypass -File scripts\gate.ps1
 ```
