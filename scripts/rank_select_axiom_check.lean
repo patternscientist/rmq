@@ -4,9 +4,10 @@ import RMQRankSelect
 Focused trust-base check for the standalone rank/select spoke.
 
 The full RMQ gate still runs `scripts/axiom_check.lean`.  This smaller check is
-for the reusable plain-bitvector surface: stored-bit access, Jacobson rank,
-Clark-style sparse-exception select, `n + o(n)` auxiliary payload, and constant
-modeled query cost.
+for the reusable rank/select spoke: stored-bit access, Jacobson rank,
+Clark-style sparse-exception select, `n + o(n)` auxiliary payload, the
+fixed-weight compressed/FID codec spine, the compressed directory/family theorem
+shape, and the charged local table/RAM block scaffolding.
 -/
 
 #print axioms RMQ.RankSelectSpec.BitVectorRankSelectFamily.n_plus_o_constant_query_profile
@@ -28,6 +29,26 @@ modeled query cost.
 #print axioms RMQ.RankSelectSpec.fixedWeightPackedReadbackDirectory_profile
 #print axioms RMQ.RankSelectSpec.FixedWeightPackedReadbackData.profile
 #print axioms RMQ.RankSelectSpec.FixedWeightPackedReadbackData.ofChunks_profile
+#print axioms RMQ.RankSelectSpec.boundedPayloadWordReadsCosted_cost
+#print axioms RMQ.RankSelectSpec.boundedPayloadWordReadsCosted_erase
+#print axioms RMQ.RankSelect.fixedWeightAuxiliaryWordReadsCostedCost
+#print axioms RMQ.RankSelect.fixedWeightAuxiliaryWordReadsCostedErase
+#print axioms RMQ.RankSelectSpec.FixedWeightCompressedAuxiliaryData.directory_profile
+#print axioms RMQ.RankSelectSpec.FixedWeightCompressedAuxiliaryFamily.constant_query_profile
+#print axioms RMQ.RankSelectSpec.FixedWeightCompressedAuxiliaryFamily.toCompressedFamily_fixed_weight_constant_query_profile
+#print axioms RMQ.RankSelect.compressedDirectoryProfile
+#print axioms RMQ.RankSelect.fixedWeightCompressedAuxiliaryConstantQueryProfile
+#print axioms RMQ.RankSelect.fixedWeightCompressedAuxiliaryToCompressedFamilyProfile
+#print axioms RMQ.RankSelectSpec.FixedWeightTableBackedFIDData.directory_profile
+#print axioms RMQ.RankSelect.fixedWeightTableBackedFIDDataProfile
+#print axioms RMQ.RankSelectSpec.fixedWeightDecodedWordTablePayload_length
+#print axioms RMQ.RankSelectSpec.fixedWeightDecodedWordBoundedStore_get?_of_decode
+#print axioms RMQ.RankSelectSpec.fixedWeightDecodedWordBoundedStore_get?_fixedWeightCode
+#print axioms RMQ.RankSelect.fixedWeightDecodedWordBoundedStoreGetFixedWeightCode
+#print axioms RMQ.RankSelectSpec.fixedWeightPackedCodeBoundedStore_get?_zero
+#print axioms RMQ.RankSelect.fixedWeightPackedCodeBoundedStoreGetZero
+#print axioms RMQ.RankSelectSpec.FixedWeightTableRAMBlockData.directory_profile
+#print axioms RMQ.RankSelect.fixedWeightTableRAMBlockDataProfile
 #print axioms RMQ.RankSelectSpec.fixedWeightEncode?_fixedWeightDecode?
 #print axioms RMQ.RankSelectSpec.fixedWeightDecode?_eq_some_iff
 #print axioms RMQ.RankSelectSpec.fixedWeightDecode?_mem_length_trueCount

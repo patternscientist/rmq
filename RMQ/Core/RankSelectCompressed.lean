@@ -5,8 +5,8 @@ import RMQ.Core.RankSelectSpec
 
 This module adds the fixed-weight bitvector counting layer and the public
 compressed rank/select theorem shape.  It is deliberately a spec/profile layer:
-the concrete enumerative codec that realizes the `fixedWeightPayloadBudget`
-will live below this interface.
+the fixed-weight codec and packed-payload spine live here, while the full
+compressed/FID construction remains below this interface.
 -/
 
 namespace RMQ
@@ -1041,6 +1041,341 @@ theorem ofChunks_profile
 end FixedWeightPackedReadbackData
 
 /--
+Read a bounded payload-word store at a fixed list of word indices.
+
+This is the small RAM-model kernel used by the compressed/FID auxiliary layer
+below: one modeled read is charged per requested word, and the erased result is
+exactly the list of words returned by the counted store.
+-/
+def boundedPayloadWordReadValues
+    {payload : List Bool} {wordSize : Nat}
+    (store : SuccinctSpace.BoundedPayloadWordStore payload wordSize)
+    (indices : List Nat) : List (Option (List Bool)) :=
+  indices.map fun i => store.store.words[i]?
+
+def boundedPayloadWordReadsCosted
+    {payload : List Bool} {wordSize : Nat}
+    (store : SuccinctSpace.BoundedPayloadWordStore payload wordSize) :
+    List Nat -> Costed (List (Option (List Bool)))
+  | [] => Costed.pure []
+  | i :: rest =>
+      Costed.bind (store.store.readWordCosted i) fun word? =>
+        Costed.bind (boundedPayloadWordReadsCosted store rest) fun words =>
+          Costed.pure (word? :: words)
+
+@[simp] theorem boundedPayloadWordReadsCosted_cost
+    {payload : List Bool} {wordSize : Nat}
+    (store : SuccinctSpace.BoundedPayloadWordStore payload wordSize)
+    (indices : List Nat) :
+    (boundedPayloadWordReadsCosted store indices).cost = indices.length := by
+  induction indices with
+  | nil =>
+      simp [boundedPayloadWordReadsCosted]
+  | cons i rest ih =>
+      simp [boundedPayloadWordReadsCosted, ih, Nat.add_comm]
+
+@[simp] theorem boundedPayloadWordReadsCosted_erase
+    {payload : List Bool} {wordSize : Nat}
+    (store : SuccinctSpace.BoundedPayloadWordStore payload wordSize)
+    (indices : List Nat) :
+    (boundedPayloadWordReadsCosted store indices).erase =
+      boundedPayloadWordReadValues store indices := by
+  induction indices with
+  | nil =>
+      simp [boundedPayloadWordReadsCosted, boundedPayloadWordReadValues]
+  | cons i rest ih =>
+      simp [boundedPayloadWordReadsCosted, boundedPayloadWordReadValues, ih]
+
+/--
+Compressed fixed-weight auxiliary data with constant-bounded word reads.
+
+The counted payload is the canonical fixed-weight packed code plus an auxiliary
+payload of `overhead` bits. Each operation supplies a finite read schedule for
+the packed store and the auxiliary store, and the cost is the number of
+requested words. A constant-query family must bound those schedules uniformly.
+The evaluator fields are the abstract local RAM kernel; the exactness fields
+state that those kernels answer the public access/rank/select semantics from
+the charged read values. Concrete non-oracular instances must ensure those
+evaluators are fixed code over the read values, not proof-only access to the
+decoded bitvector.
+-/
+structure FixedWeightCompressedAuxiliaryData
+    (bits : List Bool) (overhead wordSize queryCost : Nat) where
+  wordSize_pos : 0 < wordSize
+  packedStore :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightPackedPayload bits) wordSize
+  auxPayload : List Bool
+  auxStore :
+    SuccinctSpace.BoundedPayloadWordStore auxPayload wordSize
+  aux_length_eq : auxPayload.length = overhead
+  accessPackedReads : Nat -> List Nat
+  accessAuxReads : Nat -> List Nat
+  rankPackedReads : Bool -> Nat -> List Nat
+  rankAuxReads : Bool -> Nat -> List Nat
+  selectPackedReads : Bool -> Nat -> List Nat
+  selectAuxReads : Bool -> Nat -> List Nat
+  accessEval :
+    Nat -> List (Option (List Bool)) -> List (Option (List Bool)) ->
+      Option Bool
+  rankEval :
+    Bool -> Nat -> List (Option (List Bool)) ->
+      List (Option (List Bool)) -> Nat
+  selectEval :
+    Bool -> Nat -> List (Option (List Bool)) ->
+      List (Option (List Bool)) -> Option Nat
+  access_read_count_le :
+    forall i,
+      (accessPackedReads i).length + (accessAuxReads i).length <= queryCost
+  rank_read_count_le :
+    forall target pos,
+      (rankPackedReads target pos).length +
+          (rankAuxReads target pos).length <= queryCost
+  select_read_count_le :
+    forall target occurrence,
+      (selectPackedReads target occurrence).length +
+          (selectAuxReads target occurrence).length <= queryCost
+  access_eval_exact :
+    forall i,
+      accessEval i
+          (boundedPayloadWordReadValues packedStore (accessPackedReads i))
+          (boundedPayloadWordReadValues auxStore (accessAuxReads i)) =
+        bits[i]?
+  rank_eval_exact :
+    forall target pos,
+      rankEval target pos
+          (boundedPayloadWordReadValues packedStore
+            (rankPackedReads target pos))
+          (boundedPayloadWordReadValues auxStore
+            (rankAuxReads target pos)) =
+        Succinct.rankPrefix target bits pos
+  select_eval_exact :
+    forall target occurrence,
+      selectEval target occurrence
+          (boundedPayloadWordReadValues packedStore
+            (selectPackedReads target occurrence))
+          (boundedPayloadWordReadValues auxStore
+            (selectAuxReads target occurrence)) =
+        Succinct.select target bits occurrence
+
+namespace FixedWeightCompressedAuxiliaryData
+
+def payload
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost) :
+    List Bool :=
+  fixedWeightPackedPayload bits ++ data.auxPayload
+
+@[simp] theorem payload_length
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost) :
+    data.payload.length = fixedWeightPayloadBudget bits + overhead := by
+  simp [payload, fixedWeightPackedPayload_length, data.aux_length_eq]
+
+def accessCosted
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (i : Nat) : Costed (Option Bool) :=
+  Costed.bind
+      (boundedPayloadWordReadsCosted data.packedStore
+        (data.accessPackedReads i)) fun packedWords =>
+    Costed.bind
+        (boundedPayloadWordReadsCosted data.auxStore
+          (data.accessAuxReads i)) fun auxWords =>
+      Costed.pure (data.accessEval i packedWords auxWords)
+
+@[simp] theorem accessCosted_cost
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (i : Nat) :
+    (data.accessCosted i).cost =
+      (data.accessPackedReads i).length +
+        (data.accessAuxReads i).length := by
+  simp [accessCosted]
+
+theorem accessCosted_cost_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (i : Nat) :
+    (data.accessCosted i).cost <= queryCost := by
+  simpa using data.access_read_count_le i
+
+@[simp] theorem accessCosted_erase
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (i : Nat) :
+    (data.accessCosted i).erase = bits[i]? := by
+  simp [accessCosted, data.access_eval_exact]
+
+def rankCosted
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) : Costed Nat :=
+  Costed.bind
+      (boundedPayloadWordReadsCosted data.packedStore
+        (data.rankPackedReads target pos)) fun packedWords =>
+    Costed.bind
+        (boundedPayloadWordReadsCosted data.auxStore
+          (data.rankAuxReads target pos)) fun auxWords =>
+      Costed.pure (data.rankEval target pos packedWords auxWords)
+
+@[simp] theorem rankCosted_cost
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).cost =
+      (data.rankPackedReads target pos).length +
+        (data.rankAuxReads target pos).length := by
+  simp [rankCosted]
+
+theorem rankCosted_cost_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).cost <= queryCost := by
+  simpa using data.rank_read_count_le target pos
+
+@[simp] theorem rankCosted_erase
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).erase =
+      Succinct.rankPrefix target bits pos := by
+  simp [rankCosted, data.rank_eval_exact]
+
+def selectCosted
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) : Costed (Option Nat) :=
+  Costed.bind
+      (boundedPayloadWordReadsCosted data.packedStore
+        (data.selectPackedReads target occurrence)) fun packedWords =>
+    Costed.bind
+        (boundedPayloadWordReadsCosted data.auxStore
+          (data.selectAuxReads target occurrence)) fun auxWords =>
+      Costed.pure
+        (data.selectEval target occurrence packedWords auxWords)
+
+@[simp] theorem selectCosted_cost
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).cost =
+      (data.selectPackedReads target occurrence).length +
+        (data.selectAuxReads target occurrence).length := by
+  simp [selectCosted]
+
+theorem selectCosted_cost_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).cost <= queryCost := by
+  simpa using data.select_read_count_le target occurrence
+
+@[simp] theorem selectCosted_erase
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).erase =
+      Succinct.select target bits occurrence := by
+  simp [selectCosted, data.select_eval_exact]
+
+def toCompressedDirectory
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost) :
+    CompressedBitVectorRankSelectDirectory bits overhead queryCost where
+  payload := data.payload
+  payload_length_le := by
+    simp
+  accessCosted := data.accessCosted
+  rankCosted := data.rankCosted
+  selectCosted := data.selectCosted
+  access_cost_le := data.accessCosted_cost_le
+  rank_cost_le := data.rankCosted_cost_le
+  select_cost_le := data.selectCosted_cost_le
+  access_exact := data.accessCosted_erase
+  rank_exact := data.rankCosted_erase
+  select_exact := data.selectCosted_erase
+
+theorem directory_profile
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost) :
+    (data.toCompressedDirectory).payload = data.payload /\
+      (data.toCompressedDirectory).payload.length =
+        fixedWeightPayloadBudget bits + overhead /\
+      SuccinctSpace.flattenPayloadWords
+          data.packedStore.store.words.toList =
+        fixedWeightPackedPayload bits /\
+      SuccinctSpace.flattenPayloadWords data.auxStore.store.words.toList =
+        data.auxPayload /\
+      (forall {word : List Bool},
+        List.Mem word data.packedStore.store.words.toList ->
+          word.length <= wordSize) /\
+      (forall {word : List Bool},
+        List.Mem word data.auxStore.store.words.toList ->
+          word.length <= wordSize) /\
+      (forall i,
+        ((data.toCompressedDirectory).accessQueryCosted i).cost <=
+            queryCost /\
+          ((data.toCompressedDirectory).accessQueryCosted i).erase =
+            bits[i]?) /\
+      (forall target pos,
+        ((data.toCompressedDirectory).rankQueryCosted target pos).cost <=
+            queryCost /\
+          ((data.toCompressedDirectory).rankQueryCosted target pos).erase =
+            Succinct.rankPrefix target bits pos) /\
+      (forall target occurrence,
+        ((data.toCompressedDirectory).selectQueryCosted
+            target occurrence).cost <= queryCost /\
+          ((data.toCompressedDirectory).selectQueryCosted
+            target occurrence).erase =
+            Succinct.select target bits occurrence) := by
+  constructor
+  · rfl
+  constructor
+  · exact data.payload_length
+  constructor
+  · exact data.packedStore.erases
+  constructor
+  · exact data.auxStore.erases
+  constructor
+  · intro word hmem
+    exact data.packedStore.word_length_le_of_mem hmem
+  constructor
+  · intro word hmem
+    exact data.auxStore.word_length_le_of_mem hmem
+  constructor
+  · intro i
+    exact ⟨data.accessCosted_cost_le i, data.accessCosted_erase i⟩
+  constructor
+  · intro target pos
+    exact
+      ⟨data.rankCosted_cost_le target pos,
+        data.rankCosted_erase target pos⟩
+  · intro target occurrence
+    exact
+      ⟨data.selectCosted_cost_le target occurrence,
+        data.selectCosted_erase target occurrence⟩
+
+end FixedWeightCompressedAuxiliaryData
+
+/--
 Family-level compressed/FID rank-select theorem surface.
 
 The target profile is
@@ -1086,6 +1421,882 @@ theorem fixed_weight_constant_query_profile
     exact (family.directory bits).profile
 
 end CompressedBitVectorRankSelectFamily
+
+/--
+Family of compressed fixed-weight auxiliary directories.
+
+This is the generic constant-query FID join layer: a concrete future
+construction must supply the components, read schedules, and local evaluators;
+this adapter then accounts for the fixed-weight packed payload plus `o(n)`
+auxiliary bits and feeds the public compressed family theorem.
+-/
+structure FixedWeightCompressedAuxiliaryFamily
+    (overhead : Nat -> Nat) (wordSize queryCost : Nat) where
+  component :
+    forall bits : List Bool,
+      FixedWeightCompressedAuxiliaryData
+        bits (overhead bits.length) wordSize queryCost
+  overhead_littleO : SuccinctSpace.LittleOLinear overhead
+
+namespace FixedWeightCompressedAuxiliaryFamily
+
+def toCompressedFamily
+    {overhead : Nat -> Nat} {wordSize queryCost : Nat}
+    (family :
+      FixedWeightCompressedAuxiliaryFamily overhead wordSize queryCost) :
+    CompressedBitVectorRankSelectFamily overhead queryCost where
+  directory bits := (family.component bits).toCompressedDirectory
+  overhead_littleO := family.overhead_littleO
+
+theorem constant_query_profile
+    {overhead : Nat -> Nat} {wordSize queryCost : Nat}
+    (family :
+      FixedWeightCompressedAuxiliaryFamily overhead wordSize queryCost) :
+    SuccinctSpace.LittleOLinear overhead /\
+      forall bits : List Bool,
+        (((family.toCompressedFamily).directory bits).payload.length <=
+          fixedWeightPayloadBudget bits + overhead bits.length) /\
+          (forall i,
+            (((family.toCompressedFamily).directory bits).accessQueryCosted
+                i).cost <= queryCost /\
+              (((family.toCompressedFamily).directory bits).accessQueryCosted
+                i).erase = bits[i]?) /\
+          (forall target pos,
+            (((family.toCompressedFamily).directory bits).rankQueryCosted
+                target pos).cost <= queryCost /\
+              (((family.toCompressedFamily).directory bits).rankQueryCosted
+                target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (((family.toCompressedFamily).directory bits).selectQueryCosted
+                target occurrence).cost <= queryCost /\
+              (((family.toCompressedFamily).directory bits).selectQueryCosted
+                target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact family.toCompressedFamily.fixed_weight_constant_query_profile
+
+theorem toCompressedFamily_fixed_weight_constant_query_profile
+    {overhead : Nat -> Nat} {wordSize queryCost : Nat}
+    (family :
+      FixedWeightCompressedAuxiliaryFamily overhead wordSize queryCost) :
+    SuccinctSpace.LittleOLinear overhead /\
+      forall bits : List Bool,
+        (((family.toCompressedFamily).directory bits).payload.length <=
+          fixedWeightPayloadBudget bits + overhead bits.length) /\
+          (forall i,
+            (((family.toCompressedFamily).directory bits).accessQueryCosted
+                i).cost <= queryCost /\
+              (((family.toCompressedFamily).directory bits).accessQueryCosted
+                i).erase = bits[i]?) /\
+          (forall target pos,
+            (((family.toCompressedFamily).directory bits).rankQueryCosted
+                target pos).cost <= queryCost /\
+              (((family.toCompressedFamily).directory bits).rankQueryCosted
+                target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (((family.toCompressedFamily).directory bits).selectQueryCosted
+                target occurrence).cost <= queryCost /\
+              (((family.toCompressedFamily).directory bits).selectQueryCosted
+                target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact family.constant_query_profile
+
+end FixedWeightCompressedAuxiliaryFamily
+
+/-- Decode an optional one-bit table entry as bitvector access. -/
+def tableBackedAccessAnswer : Option (Option Nat) -> Option Bool
+  | some (some 0) => some false
+  | some (some (_ + 1)) => some true
+  | _ => none
+
+/-- Decode a rank table miss as the default zero answer. -/
+def tableBackedRankAnswer : Option Nat -> Nat
+  | some rank => rank
+  | none => 0
+
+/-- Decode an optional select table read. -/
+def tableBackedSelectAnswer : Option (Option Nat) -> Option Nat
+  | some answer => answer
+  | none => none
+
+/--
+Pointwise table-backed fixed-weight FID data.
+
+Unlike `FixedWeightCompressedAuxiliaryData`, the query procedures here are not
+abstract evaluator fields. Access, rank, and select are fixed-width table reads
+from counted auxiliary payload, followed by small decoders. This is a concrete
+payload-live query layer; its auxiliary tables may still be too large for an
+`o(n)` family until a real RRR/FID table construction replaces the dense
+entries.
+-/
+structure FixedWeightTableBackedFIDData
+    (bits : List Bool) (overhead wordSize queryCost : Nat) where
+  wordSize_pos : 0 < wordSize
+  wordSize_le_machine : wordSize <= Nat.log2 bits.length + 1
+  packedStore :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightPackedPayload bits) wordSize
+  accessWidth : Nat
+  accessEntries : List (Option Nat)
+  accessTable :
+    SuccinctSpace.FixedWidthOptionNatTable accessEntries accessWidth
+  rankWidth : Nat
+  trueRankEntries : List Nat
+  falseRankEntries : List Nat
+  rankTables :
+    SuccinctSpace.FixedWidthRankSampleTables
+      trueRankEntries falseRankEntries rankWidth
+  selectWidth : Nat
+  trueSelectEntries : List (Option Nat)
+  falseSelectEntries : List (Option Nat)
+  trueSelectTable :
+    SuccinctSpace.FixedWidthOptionNatTable trueSelectEntries selectWidth
+  falseSelectTable :
+    SuccinctSpace.FixedWidthOptionNatTable falseSelectEntries selectWidth
+  access_word_width_le :
+    SuccinctSpace.optionNatWordWidth accessWidth <= wordSize
+  rank_word_width_le : rankWidth <= wordSize
+  select_word_width_le :
+    SuccinctSpace.optionNatWordWidth selectWidth <= wordSize
+  aux_length_eq :
+    accessTable.payload.length + rankTables.payload.length +
+        trueSelectTable.payload.length + falseSelectTable.payload.length =
+      overhead
+  queryCost_ge_one : 1 <= queryCost
+  access_exact :
+    forall i : Nat,
+      tableBackedAccessAnswer (accessEntries[i]?) = bits[i]?
+  rank_exact :
+    forall (target : Bool) (pos : Nat),
+      tableBackedRankAnswer ((rankTables.entries target)[pos]?) =
+        Succinct.rankPrefix target bits pos
+  select_exact :
+    forall (target : Bool) (occurrence : Nat),
+      tableBackedSelectAnswer
+          (match target with
+          | true => trueSelectEntries[occurrence]?
+          | false => falseSelectEntries[occurrence]?) =
+        Succinct.select target bits occurrence
+
+namespace FixedWeightTableBackedFIDData
+
+def auxPayload
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost) :
+    List Bool :=
+  data.accessTable.payload ++ data.rankTables.payload ++
+    data.trueSelectTable.payload ++ data.falseSelectTable.payload
+
+def payload
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost) :
+    List Bool :=
+  fixedWeightPackedPayload bits ++ data.auxPayload
+
+@[simp] theorem auxPayload_length
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost) :
+    data.auxPayload.length = overhead := by
+  have haux :
+      data.accessTable.payload.length + data.rankTables.payload.length +
+          data.trueSelectTable.payload.length +
+            data.falseSelectTable.payload.length =
+        overhead := data.aux_length_eq
+  unfold auxPayload
+  simp only [List.length_append]
+  omega
+
+@[simp] theorem payload_length
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost) :
+    data.payload.length = fixedWeightPayloadBudget bits + overhead := by
+  unfold payload
+  simp [fixedWeightPackedPayload_length, data.auxPayload_length]
+
+def selectEntries
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) : List (Option Nat) :=
+  match target with
+  | true => data.trueSelectEntries
+  | false => data.falseSelectEntries
+
+def selectTableReadCosted
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    Costed (Option (Option Nat)) :=
+  match target with
+  | true => data.trueSelectTable.readCosted occurrence
+  | false => data.falseSelectTable.readCosted occurrence
+
+@[simp] theorem selectTableReadCosted_cost
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectTableReadCosted target occurrence).cost = 1 := by
+  cases target <;> simp [selectTableReadCosted]
+
+@[simp] theorem selectTableReadCosted_erase
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectTableReadCosted target occurrence).erase =
+      (data.selectEntries target)[occurrence]? := by
+  cases target <;> simp [selectTableReadCosted, selectEntries]
+
+def accessCosted
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (i : Nat) : Costed (Option Bool) :=
+  Costed.map tableBackedAccessAnswer (data.accessTable.readCosted i)
+
+@[simp] theorem accessCosted_cost
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (i : Nat) :
+    (data.accessCosted i).cost = 1 := by
+  simp [accessCosted]
+
+theorem accessCosted_cost_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (i : Nat) :
+    (data.accessCosted i).cost <= queryCost := by
+  simp [data.queryCost_ge_one]
+
+@[simp] theorem accessCosted_erase
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (i : Nat) :
+    (data.accessCosted i).erase = bits[i]? := by
+  simp [accessCosted, data.access_exact]
+
+def rankCosted
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) : Costed Nat :=
+  Costed.map tableBackedRankAnswer
+    (data.rankTables.sampleCosted target pos)
+
+@[simp] theorem rankCosted_cost
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).cost = 1 := by
+  simp [rankCosted]
+
+theorem rankCosted_cost_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).cost <= queryCost := by
+  simp [data.queryCost_ge_one]
+
+@[simp] theorem rankCosted_erase
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).erase =
+      Succinct.rankPrefix target bits pos := by
+  simp [rankCosted, data.rank_exact]
+
+def selectCosted
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) : Costed (Option Nat) :=
+  Costed.map tableBackedSelectAnswer
+    (data.selectTableReadCosted target occurrence)
+
+@[simp] theorem selectCosted_cost
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).cost = 1 := by
+  simp [selectCosted]
+
+theorem selectCosted_cost_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).cost <= queryCost := by
+  simp [data.queryCost_ge_one]
+
+@[simp] theorem selectCosted_erase
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).erase =
+      Succinct.select target bits occurrence := by
+  cases target
+  · simpa [selectCosted, selectTableReadCosted, selectEntries]
+      using data.select_exact false occurrence
+  · simpa [selectCosted, selectTableReadCosted, selectEntries]
+      using data.select_exact true occurrence
+
+def toCompressedDirectory
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost) :
+    CompressedBitVectorRankSelectDirectory bits overhead queryCost where
+  payload := data.payload
+  payload_length_le := by
+    simp
+  accessCosted := data.accessCosted
+  rankCosted := data.rankCosted
+  selectCosted := data.selectCosted
+  access_cost_le := data.accessCosted_cost_le
+  rank_cost_le := data.rankCosted_cost_le
+  select_cost_le := data.selectCosted_cost_le
+  access_exact := data.accessCosted_erase
+  rank_exact := data.rankCosted_erase
+  select_exact := data.selectCosted_erase
+
+theorem access_table_word_length_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    {i : Nat} {word : List Bool}
+    (hword : data.accessTable.store.words[i]? = some word) :
+    word.length <= wordSize := by
+  have hlen := data.accessTable.word_length_of_get? hword
+  have hwidth := data.access_word_width_le
+  omega
+
+theorem rank_true_table_word_length_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    {i : Nat} {word : List Bool}
+    (hword : data.rankTables.trueTable.store.words[i]? = some word) :
+    word.length <= wordSize := by
+  have hlen := data.rankTables.trueTable.word_length_of_get? hword
+  have hwidth := data.rank_word_width_le
+  omega
+
+theorem rank_false_table_word_length_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    {i : Nat} {word : List Bool}
+    (hword : data.rankTables.falseTable.store.words[i]? = some word) :
+    word.length <= wordSize := by
+  have hlen := data.rankTables.falseTable.word_length_of_get? hword
+  have hwidth := data.rank_word_width_le
+  omega
+
+theorem select_true_table_word_length_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    {i : Nat} {word : List Bool}
+    (hword : data.trueSelectTable.store.words[i]? = some word) :
+    word.length <= wordSize := by
+  have hlen := data.trueSelectTable.word_length_of_get? hword
+  have hwidth := data.select_word_width_le
+  omega
+
+theorem select_false_table_word_length_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    {i : Nat} {word : List Bool}
+    (hword : data.falseSelectTable.store.words[i]? = some word) :
+    word.length <= wordSize := by
+  have hlen := data.falseSelectTable.word_length_of_get? hword
+  have hwidth := data.select_word_width_le
+  omega
+
+theorem directory_profile
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost) :
+    (data.toCompressedDirectory).payload = data.payload /\
+      (data.toCompressedDirectory).payload.length =
+        fixedWeightPayloadBudget bits + overhead /\
+      SuccinctSpace.flattenPayloadWords
+          data.packedStore.store.words.toList =
+        fixedWeightPackedPayload bits /\
+      data.auxPayload.length = overhead /\
+      SuccinctSpace.flattenPayloadWords
+          data.accessTable.store.words.toList =
+        data.accessTable.payload /\
+      SuccinctSpace.flattenPayloadWords
+          data.rankTables.trueTable.store.words.toList =
+        data.rankTables.trueTable.payload /\
+      SuccinctSpace.flattenPayloadWords
+          data.rankTables.falseTable.store.words.toList =
+        data.rankTables.falseTable.payload /\
+      SuccinctSpace.flattenPayloadWords
+          data.trueSelectTable.store.words.toList =
+        data.trueSelectTable.payload /\
+      SuccinctSpace.flattenPayloadWords
+          data.falseSelectTable.store.words.toList =
+        data.falseSelectTable.payload /\
+      (forall (i : Nat) (word : List Bool),
+        data.accessTable.store.words[i]? = some word ->
+          word.length <= wordSize) /\
+      (forall (i : Nat) (word : List Bool),
+        data.rankTables.trueTable.store.words[i]? = some word ->
+          word.length <= wordSize) /\
+      (forall (i : Nat) (word : List Bool),
+        data.rankTables.falseTable.store.words[i]? = some word ->
+          word.length <= wordSize) /\
+      (forall (i : Nat) (word : List Bool),
+        data.trueSelectTable.store.words[i]? = some word ->
+          word.length <= wordSize) /\
+      (forall (i : Nat) (word : List Bool),
+        data.falseSelectTable.store.words[i]? = some word ->
+          word.length <= wordSize) /\
+      wordSize <= Nat.log2 bits.length + 1 /\
+      (forall i,
+        ((data.toCompressedDirectory).accessQueryCosted i).cost <=
+            queryCost /\
+          ((data.toCompressedDirectory).accessQueryCosted i).erase =
+            bits[i]?) /\
+      (forall target pos,
+        ((data.toCompressedDirectory).rankQueryCosted target pos).cost <=
+            queryCost /\
+          ((data.toCompressedDirectory).rankQueryCosted target pos).erase =
+            Succinct.rankPrefix target bits pos) /\
+      (forall target occurrence,
+        ((data.toCompressedDirectory).selectQueryCosted
+            target occurrence).cost <= queryCost /\
+          ((data.toCompressedDirectory).selectQueryCosted
+            target occurrence).erase =
+            Succinct.select target bits occurrence) := by
+  constructor
+  · rfl
+  constructor
+  · exact data.payload_length
+  constructor
+  · exact data.packedStore.erases
+  constructor
+  · exact data.auxPayload_length
+  constructor
+  · exact data.accessTable.store.payload_eq_words_join
+  constructor
+  · exact data.rankTables.trueTable.store.payload_eq_words_join
+  constructor
+  · exact data.rankTables.falseTable.store.payload_eq_words_join
+  constructor
+  · exact data.trueSelectTable.store.payload_eq_words_join
+  constructor
+  · exact data.falseSelectTable.store.payload_eq_words_join
+  constructor
+  · intro i word hword
+    exact data.access_table_word_length_le hword
+  constructor
+  · intro i word hword
+    exact data.rank_true_table_word_length_le hword
+  constructor
+  · intro i word hword
+    exact data.rank_false_table_word_length_le hword
+  constructor
+  · intro i word hword
+    exact data.select_true_table_word_length_le hword
+  constructor
+  · intro i word hword
+    exact data.select_false_table_word_length_le hword
+  constructor
+  · exact data.wordSize_le_machine
+  constructor
+  · intro i
+    exact ⟨data.accessCosted_cost_le i, data.accessCosted_erase i⟩
+  constructor
+  · intro target pos
+    exact
+      ⟨data.rankCosted_cost_le target pos,
+        data.rankCosted_erase target pos⟩
+  · intro target occurrence
+    exact
+      ⟨data.selectCosted_cost_le target occurrence,
+        data.selectCosted_erase target occurrence⟩
+
+end FixedWeightTableBackedFIDData
+
+/-- Payload of the universal fixed-weight decoded-word table. -/
+def fixedWeightDecodedWordTablePayload (n k : Nat) : List Bool :=
+  SuccinctSpace.flattenPayloadWords (fixedWeightBitstrings n k)
+
+/-- Bit cost of the universal fixed-weight decoded-word table. -/
+def fixedWeightDecodedWordTableOverhead (n k : Nat) : Nat :=
+  binomialCount n k * n
+
+@[simp] theorem fixedWeightDecodedWordTablePayload_length
+    (n k : Nat) :
+    (fixedWeightDecodedWordTablePayload n k).length =
+      fixedWeightDecodedWordTableOverhead n k := by
+  unfold fixedWeightDecodedWordTablePayload
+  unfold fixedWeightDecodedWordTableOverhead
+  calc
+    (SuccinctSpace.flattenPayloadWords (fixedWeightBitstrings n k)).length =
+        (fixedWeightBitstrings n k).length * n := by
+      exact SuccinctSpace.flattenPayloadWords_length_of_forall_length
+        (by
+          intro word hmem
+          exact (fixedWeightBitstrings_mem_length_trueCount hmem).1)
+    _ = binomialCount n k * n := by
+      rw [fixedWeightBitstrings_length]
+
+/-- Canonical payload store for the universal fixed-weight decoded-word table. -/
+def fixedWeightDecodedWordStore (n k : Nat) :
+    SuccinctSpace.PayloadWordStore
+      (fixedWeightDecodedWordTablePayload n k) where
+  words := (fixedWeightBitstrings n k).toArray
+  erases := by
+    simp [fixedWeightDecodedWordTablePayload]
+
+/--
+Canonical bounded payload store for the universal fixed-weight decoded-word
+table.
+-/
+def fixedWeightDecodedWordBoundedStore
+    (n k wordSize : Nat) (hn : n <= wordSize) :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightDecodedWordTablePayload n k) wordSize where
+  store := fixedWeightDecodedWordStore n k
+  word_length_le := by
+    intro word hmem
+    have hlist : List.Mem word (fixedWeightBitstrings n k) := by
+      simpa [fixedWeightDecodedWordStore] using hmem
+    have hlen := (fixedWeightBitstrings_mem_length_trueCount hlist).1
+    omega
+
+theorem fixedWeightDecodedWordBoundedStore_get?_of_decode
+    {n k code : Nat} {word : List Bool} {wordSize : Nat}
+    (hn : n <= wordSize)
+    (hdec : fixedWeightDecode? n k code = some word) :
+    (fixedWeightDecodedWordBoundedStore n k wordSize hn).store.words[code]? =
+      some word := by
+  simpa [fixedWeightDecodedWordBoundedStore, fixedWeightDecodedWordStore,
+    fixedWeightDecode?] using hdec
+
+theorem fixedWeightDecodedWordBoundedStore_get?_fixedWeightCode
+    (bits : List Bool) {wordSize : Nat}
+    (hn : bits.length <= wordSize) :
+    (fixedWeightDecodedWordBoundedStore
+        bits.length (trueCount bits) wordSize hn).store.words[fixedWeightCode bits]? =
+      some bits := by
+  have hdec :
+      fixedWeightDecode? bits.length (trueCount bits)
+          (fixedWeightCode bits) = some bits := by
+    simpa [fixedWeightPackedPayload_bitsToNatLE] using
+      fixedWeightDecode?_packedPayload bits
+  exact
+    fixedWeightDecodedWordBoundedStore_get?_of_decode hn hdec
+
+/-- Canonical one-word store for the packed fixed-weight code. -/
+def fixedWeightPackedCodeBoundedStore
+    (bits : List Bool) (wordSize : Nat)
+    (hcode : fixedWeightPayloadBudget bits <= wordSize) :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightPackedPayload bits) wordSize where
+  store :=
+    { words := #[fixedWeightPackedPayload bits]
+      erases := by
+        simp [SuccinctSpace.flattenPayloadWords] }
+  word_length_le := by
+    intro word hmem
+    have hword : word = fixedWeightPackedPayload bits := by
+      change List.Mem word (#[fixedWeightPackedPayload bits].toList) at hmem
+      cases hmem with
+      | head => rfl
+      | tail _ htail => cases htail
+    rw [hword, fixedWeightPackedPayload_length]
+    exact hcode
+
+theorem fixedWeightPackedCodeBoundedStore_get?_zero
+    (bits : List Bool) {wordSize : Nat}
+    (hcode : fixedWeightPayloadBudget bits <= wordSize) :
+    (fixedWeightPackedCodeBoundedStore bits wordSize hcode).store.words[0]? =
+      some (fixedWeightPackedPayload bits) := by
+  simp [fixedWeightPackedCodeBoundedStore]
+
+/--
+Local RRR-style fixed-weight block data.
+
+The query path is concrete and dependent-read: read the packed fixed-weight
+code, use it as an address into the counted universal decode table for this
+block length and weight, then run a RAM word primitive on the decoded block.
+The decode table is dense and therefore not an `o(n)` family construction by
+itself; it is the non-oracular local block kernel the later compressed/FID
+directory should use under a smaller table/routing scheme.
+-/
+structure FixedWeightTableRAMBlockData
+    (bits : List Bool) (wordSize : Nat) where
+  wordSize_pos : 0 < wordSize
+  wordSize_le_machine : wordSize <= Nat.log2 bits.length + 1
+  codeWidth_le_wordSize : fixedWeightPayloadBudget bits <= wordSize
+  blockWidth_le_wordSize : bits.length <= wordSize
+
+namespace FixedWeightTableRAMBlockData
+
+def decodedTableOverhead
+    {bits : List Bool} {wordSize : Nat}
+    (_data : FixedWeightTableRAMBlockData bits wordSize) : Nat :=
+  fixedWeightDecodedWordTableOverhead bits.length (trueCount bits)
+
+def packedStore
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightPackedPayload bits) wordSize :=
+  fixedWeightPackedCodeBoundedStore bits wordSize
+    data.codeWidth_le_wordSize
+
+def decodedStore
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightDecodedWordTablePayload bits.length (trueCount bits))
+      wordSize :=
+  fixedWeightDecodedWordBoundedStore bits.length (trueCount bits) wordSize
+    data.blockWidth_le_wordSize
+
+def payload
+    {bits : List Bool} {wordSize : Nat}
+    (_data : FixedWeightTableRAMBlockData bits wordSize) : List Bool :=
+  fixedWeightPackedPayload bits ++
+    fixedWeightDecodedWordTablePayload bits.length (trueCount bits)
+
+@[simp] theorem payload_length
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) :
+    data.payload.length =
+      fixedWeightPayloadBudget bits + data.decodedTableOverhead := by
+  simp [payload, decodedTableOverhead, fixedWeightPackedPayload_length]
+
+def readCodeCosted
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) : Costed Nat :=
+  Costed.bind (data.packedStore.store.readWordCosted 0) fun word? =>
+    Costed.pure
+      (match word? with
+      | some word => SuccinctSpace.bitsToNatLE word
+      | none => 0)
+
+@[simp] theorem readCodeCosted_cost
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) :
+    data.readCodeCosted.cost = 1 := by
+  simp [readCodeCosted]
+
+@[simp] theorem readCodeCosted_erase
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) :
+    data.readCodeCosted.erase = fixedWeightCode bits := by
+  simp [readCodeCosted, packedStore, fixedWeightPackedCodeBoundedStore,
+    fixedWeightPackedPayload_bitsToNatLE]
+
+def decodedWordCosted
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) :
+    Costed (List Bool) :=
+  Costed.bind data.readCodeCosted fun code =>
+    Costed.bind (data.decodedStore.store.readWordCosted code) fun word? =>
+      Costed.pure (word?.getD [])
+
+@[simp] theorem decodedWordCosted_cost
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) :
+    data.decodedWordCosted.cost = 2 := by
+  simp [decodedWordCosted]
+
+@[simp] theorem decodedWordCosted_erase
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) :
+    data.decodedWordCosted.erase = bits := by
+  have hdec :
+      fixedWeightDecode? bits.length (trueCount bits)
+          (fixedWeightCode bits) = some bits :=
+    fixedWeightDecode?_fixedWeightEncode?
+      (fixedWeightEncode?_eq_some_fixedWeightCode bits)
+  have hget :
+      data.decodedStore.store.words[fixedWeightCode bits]? = some bits :=
+    fixedWeightDecodedWordBoundedStore_get?_of_decode
+      data.blockWidth_le_wordSize hdec
+  simp [decodedWordCosted, hget]
+
+def accessCosted
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize)
+    (i : Nat) : Costed (Option Bool) :=
+  Costed.map (fun word => word[i]?) data.decodedWordCosted
+
+@[simp] theorem accessCosted_cost
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize)
+    (i : Nat) :
+    (data.accessCosted i).cost = 2 := by
+  simp [accessCosted]
+
+@[simp] theorem accessCosted_erase
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize)
+    (i : Nat) :
+    (data.accessCosted i).erase = bits[i]? := by
+  simp [accessCosted]
+
+def rankCosted
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize)
+    (target : Bool) (pos : Nat) : Costed Nat :=
+  Costed.bind data.decodedWordCosted fun word =>
+    (RAM.rankBoolWordPrefix target word pos).toCosted
+
+@[simp] theorem rankCosted_cost
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).cost = 3 := by
+  simp [rankCosted]
+
+@[simp] theorem rankCosted_erase
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).erase =
+      Succinct.rankPrefix target bits pos := by
+  unfold rankCosted
+  simp only [Costed.erase_bind, decodedWordCosted_erase]
+  change (RAM.rankBoolWordPrefix target bits pos).toCosted.value =
+    Succinct.rankPrefix target bits pos
+  have hrun := Succinct.rankBoolWordPrefix_toCosted_run target bits pos
+  simpa [Costed.run] using congrArg Prod.fst hrun
+
+def selectCosted
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize)
+    (target : Bool) (occurrence : Nat) : Costed (Option Nat) :=
+  Costed.bind data.decodedWordCosted fun word =>
+    (RAM.selectBoolWord target word occurrence).toCosted
+
+@[simp] theorem selectCosted_cost
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).cost = 3 := by
+  simp [selectCosted]
+
+@[simp] theorem selectCosted_erase
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).erase =
+      Succinct.select target bits occurrence := by
+  unfold selectCosted
+  simp only [Costed.erase_bind, decodedWordCosted_erase]
+  change (RAM.selectBoolWord target bits occurrence).toCosted.value =
+    Succinct.select target bits occurrence
+  have hrun := Succinct.selectBoolWord_toCosted_run target bits occurrence
+  simpa [Costed.run] using congrArg Prod.fst hrun
+
+def toCompressedDirectory
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) :
+    CompressedBitVectorRankSelectDirectory
+      bits data.decodedTableOverhead 3 where
+  payload := data.payload
+  payload_length_le := by
+    simp
+  accessCosted := data.accessCosted
+  rankCosted := data.rankCosted
+  selectCosted := data.selectCosted
+  access_cost_le := by
+    intro i
+    rw [data.accessCosted_cost i]
+    omega
+  rank_cost_le := by
+    intro target pos
+    simp
+  select_cost_le := by
+    intro target occurrence
+    simp
+  access_exact := data.accessCosted_erase
+  rank_exact := data.rankCosted_erase
+  select_exact := data.selectCosted_erase
+
+theorem directory_profile
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) :
+    (data.toCompressedDirectory).payload = data.payload /\
+      (data.toCompressedDirectory).payload.length =
+        fixedWeightPayloadBudget bits + data.decodedTableOverhead /\
+      SuccinctSpace.flattenPayloadWords
+          data.packedStore.store.words.toList =
+        fixedWeightPackedPayload bits /\
+      SuccinctSpace.flattenPayloadWords
+          data.decodedStore.store.words.toList =
+        fixedWeightDecodedWordTablePayload bits.length (trueCount bits) /\
+      wordSize <= Nat.log2 bits.length + 1 /\
+      (forall i,
+        ((data.toCompressedDirectory).accessQueryCosted i).cost <= 3 /\
+          ((data.toCompressedDirectory).accessQueryCosted i).erase =
+            bits[i]?) /\
+      (forall target pos,
+        ((data.toCompressedDirectory).rankQueryCosted target pos).cost <=
+            3 /\
+          ((data.toCompressedDirectory).rankQueryCosted target pos).erase =
+            Succinct.rankPrefix target bits pos) /\
+      (forall target occurrence,
+        ((data.toCompressedDirectory).selectQueryCosted
+            target occurrence).cost <= 3 /\
+          ((data.toCompressedDirectory).selectQueryCosted
+            target occurrence).erase =
+            Succinct.select target bits occurrence) := by
+  constructor
+  · rfl
+  constructor
+  · exact data.payload_length
+  constructor
+  · exact data.packedStore.erases
+  constructor
+  · exact data.decodedStore.erases
+  constructor
+  · exact data.wordSize_le_machine
+  constructor
+  · intro i
+    change (data.accessCosted i).cost <= 3 /\
+      (data.accessCosted i).erase = bits[i]?
+    exact ⟨by rw [data.accessCosted_cost i]; omega,
+      data.accessCosted_erase i⟩
+  constructor
+  · intro target pos
+    change (data.rankCosted target pos).cost <= 3 /\
+      (data.rankCosted target pos).erase =
+        Succinct.rankPrefix target bits pos
+    exact ⟨by rw [data.rankCosted_cost target pos]; omega,
+      data.rankCosted_erase target pos⟩
+  · intro target occurrence
+    change (data.selectCosted target occurrence).cost <= 3 /\
+      (data.selectCosted target occurrence).erase =
+        Succinct.select target bits occurrence
+    exact ⟨by rw [data.selectCosted_cost target occurrence]; omega,
+      data.selectCosted_erase target occurrence⟩
+
+end FixedWeightTableRAMBlockData
 
 end RankSelectSpec
 

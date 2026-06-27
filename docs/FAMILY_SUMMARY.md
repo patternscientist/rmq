@@ -292,11 +292,35 @@ adds the first charged non-oracular query consumer: each query reads back the
 full packed payload, decodes it, and answers access/rank/select against the
 decoded reference bitvector.  `RankSelect.fixedWeightPackedReadbackDataOfChunksProfile`
 adds the bounded-word version, charging one modeled read per stored packed word
-and preserving the word-size bound.  Its family theorem uses payload budget
-`Nat.log2 (binomialCount bits.length (trueCount bits)) + 1 + o(n)`.  The
-remaining standalone rank/select frontier is constant-query compressed/FID
-query refinement over this packed payload, or a tighter presentation of the
-Clark internals, not merely consuming the public spec surface.  The
+and preserving the word-size bound.  `RankSelect.FixedWeightCompressedAuxiliaryData`
+is now the constant-read compressed/FID join layer: it stores
+`fixedWeightPackedPayload bits` and an auxiliary payload in bounded word stores,
+uses explicit packed/auxiliary read schedules, and proves the resulting
+directory profile via `RankSelect.fixedWeightCompressedAuxiliaryDataProfile`.
+At the family level, `RankSelect.fixedWeightCompressedAuxiliaryConstantQueryProfile`
+feeds the public compressed theorem shape with payload budget
+`Nat.log2 (binomialCount bits.length (trueCount bits)) + 1 + o(n)`.  This is
+an adapter surface, not yet the final RRR/Clark-style construction: a concrete
+FID instantiation must still replace abstract local evaluators with table/RAM
+code whose exactness follows from the charged read values.
+`RankSelect.FixedWeightTableBackedFIDData` is the first stricter pointwise
+query scaffold: access/rank/select are fixed one-read payload-table queries
+with counted table payloads and machine-word-sized entries, exposed by
+`RankSelect.fixedWeightTableBackedFIDDataProfile`.  It deliberately remains a
+pointwise/non-asymptotic layer because dense answer tables may be linear; the
+next local kernel,
+`RankSelect.FixedWeightTableRAMBlockData`, removes the arbitrary-evaluator
+escape hatch for one fixed-weight block: it reads the packed code, uses the
+charged code value to read the universal decoded-word table, then uses direct
+decoded-word access plus the repository RAM word primitives for rank/select.
+Its public profile
+`RankSelect.fixedWeightTableRAMBlockDataProfile` accounts for both the packed
+code payload and the dense decoded-word-table payload and proves query cost
+`<= 3`.  This is still a local/dense block theorem, not the finished FID
+family; the remaining standalone rank/select frontier is composing this kind
+of table/RAM kernel behind charged global routing with `o(n)` auxiliary
+payload, or a tighter presentation of the Clark internals, not merely
+consuming the public spec surface.  The
 strengthened public theorem
 `RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery` additionally exposes
 the machine-word discipline from the concrete components: Jacobson rank payload
@@ -1670,6 +1694,15 @@ The names below are grouped by source module. Repeated base names in
   `RankSelect.fixedWeightPackedPayloadProfile`,
   `RankSelect.fixedWeightPackedReadbackDirectoryProfile`,
   `RankSelect.fixedWeightPackedReadbackDataOfChunksProfile`,
+  `RankSelect.compressedDirectoryProfile`,
+  `RankSelect.fixedWeightCompressedAuxiliaryDataProfile`,
+  `RankSelect.fixedWeightCompressedAuxiliaryConstantQueryProfile`,
+  `RankSelect.fixedWeightCompressedAuxiliaryToCompressedFamilyProfile`,
+  `RankSelect.fixedWeightTableBackedFIDDataProfile`,
+  `RankSelect.fixedWeightDecodedWordTablePayloadLength`,
+  `RankSelect.fixedWeightDecodedWordBoundedStoreGetFixedWeightCode`,
+  `RankSelect.fixedWeightPackedCodeBoundedStoreGetZero`,
+  `RankSelect.fixedWeightTableRAMBlockDataProfile`,
   `RankSelect.compressedFixedWeightConstantQueryProfile`,
   `RankSelect.jacobsonClarkNPlusOConstantQuery`, and
   `RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery`.

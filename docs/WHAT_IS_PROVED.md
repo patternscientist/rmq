@@ -110,9 +110,13 @@ word, and proves word-size-bounded readback. In addition,
 `RMQ.RankSelect.compressedFixedWeightConstantQueryProfile` states the reusable
 profile with payload
 `log2 (binomialCount n m) + 1 + o(n)` and constant modeled
-access/rank/select. This is not yet the full FID construction: the remaining
-work is a constant-query auxiliary layer that avoids the full-payload readback
-cost while still consuming charged payload rather than proof-only decoded bits.
+access/rank/select, while
+`RMQ.RankSelect.fixedWeightCompressedAuxiliaryToCompressedFamilyProfile` is the
+public adapter theorem for any future auxiliary family that supplies `o(n)`
+overhead and constant bounded reads. This is not yet the full FID construction:
+the remaining work is a concrete global auxiliary layer that avoids the
+full-payload readback cost while still consuming charged payload rather than
+proof-only decoded bits.
 
 ## Balanced-Parentheses Navigation
 

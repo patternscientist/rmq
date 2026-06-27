@@ -99,6 +99,24 @@ RMQ.RankSelect.FixedWeightPackedReadbackData
 RMQ.RankSelect.fixedWeightPackedReadbackDataOfChunks
 RMQ.RankSelect.fixedWeightPackedReadbackDataProfile
 RMQ.RankSelect.fixedWeightPackedReadbackDataOfChunksProfile
+RMQ.RankSelect.fixedWeightAuxiliaryWordReadsCostedCost
+RMQ.RankSelect.fixedWeightAuxiliaryWordReadsCostedErase
+RMQ.RankSelect.compressedDirectoryProfile
+RMQ.RankSelect.FixedWeightCompressedAuxiliaryData
+RMQ.RankSelect.fixedWeightCompressedAuxiliaryDataProfile
+RMQ.RankSelect.FixedWeightCompressedAuxiliaryFamily
+RMQ.RankSelect.fixedWeightCompressedAuxiliaryToCompressedFamily
+RMQ.RankSelect.fixedWeightCompressedAuxiliaryConstantQueryProfile
+RMQ.RankSelect.fixedWeightCompressedAuxiliaryToCompressedFamilyProfile
+RMQ.RankSelect.FixedWeightTableBackedFIDData
+RMQ.RankSelect.fixedWeightTableBackedFIDDataProfile
+RMQ.RankSelect.fixedWeightDecodedWordTablePayload
+RMQ.RankSelect.fixedWeightDecodedWordTableOverhead
+RMQ.RankSelect.fixedWeightDecodedWordTablePayloadLength
+RMQ.RankSelect.fixedWeightDecodedWordBoundedStoreGetFixedWeightCode
+RMQ.RankSelect.fixedWeightPackedCodeBoundedStoreGetZero
+RMQ.RankSelect.FixedWeightTableRAMBlockData
+RMQ.RankSelect.fixedWeightTableRAMBlockDataProfile
 RMQ.RankSelect.CompressedFamily
 RMQ.RankSelect.compressedFixedWeightConstantQueryProfile
 ```
@@ -143,8 +161,55 @@ same packed payload in a `BoundedPayloadWordStore`, proves every readback word
 is bounded by the chosen `wordSize`, charges one modeled read per stored word,
 and exposes `fixedWeightPackedReadbackDataOfChunksProfile` for the canonical
 chunking constructor. This still reads the whole packed representation per
-query; the next FID step is to replace that readback with true auxiliary
-rank/select/access directories.
+query.
+
+The current constant-query join layer is
+`FixedWeightCompressedAuxiliaryData`: it stores the canonical
+`fixedWeightPackedPayload bits` in one bounded word store, stores an auxiliary
+payload of exactly `overhead` bits in a second bounded word store, and gives
+each query an explicit packed-store and auxiliary-store read schedule. The
+query cost is proved from the length of those schedules, and
+`fixedWeightCompressedAuxiliaryDataProfile` converts the data into a
+`CompressedDirectory`. At the family level,
+`fixedWeightCompressedAuxiliaryConstantQueryProfile` feeds
+`compressedFixedWeightConstantQueryProfile` whenever the auxiliary overhead is
+`o(n)`. The named adapter theorem
+`fixedWeightCompressedAuxiliaryToCompressedFamilyProfile` is the public
+citation point for the generic theorem shape: once a future construction
+supplies a `FixedWeightCompressedAuxiliaryFamily`, converting it to
+`CompressedFamily` immediately gives the fixed-weight payload budget,
+`LittleOLinear` auxiliary overhead, and constant modeled query profile.
+
+This is the generic FID join surface, not yet the finished RRR/Clark
+construction. A concrete non-oracular instantiation still has to provide local
+evaluators whose exactness follows from the charged read values, rather than
+from proof-only access to the decoded bitvector. In particular, the old
+readback baseline remains useful as a reference consumer, but it is not the
+constant-query compressed theorem path.
+
+The first stricter pointwise refinement is `FixedWeightTableBackedFIDData`.
+Its query code is fixed: access, rank, and select are one charged
+fixed-width payload-table read plus a small decoder. The table payloads are
+counted inside the auxiliary payload, every table word is bounded by the
+chosen `wordSize`, and the data requires `wordSize <= Nat.log2 bits.length + 1`
+to avoid a one-huge-word interpretation. The profile
+`fixedWeightTableBackedFIDDataProfile` is therefore stronger than the generic
+auxiliary adapter because it has no arbitrary evaluator fields. It is still
+pointwise scaffolding: dense answer tables can be too large, so the next
+construction must replace those entries with true RRR/FID local tables and
+charged routing while preserving the same fixed query shape.
+
+The first concrete local RRR-style kernel is `FixedWeightTableRAMBlockData`.
+It reads the packed fixed-weight code from the counted payload, uses that
+charged read value as the address into the universal decoded-word table for
+the block length and weight, then runs the repository's RAM word primitives for
+rank and select. Its profile is exposed as
+`fixedWeightTableRAMBlockDataProfile`, with query cost `<= 3` and with both
+the packed-code payload and dense decoded-word-table payload accounted for.
+This removes the arbitrary-evaluator escape hatch at the block level. It is
+not the finished compressed/FID family because the universal decoded-word table
+is dense; the remaining work is to place this kind of fixed table/RAM kernel
+behind a global block directory whose counted auxiliary payload is `o(n)`.
 
 ## Module Boundary
 
@@ -272,11 +337,10 @@ neutral `RMQ.RankSelect.*` names.
 The plain-bitvector `n + o(n), O(1)` milestone is landed. The next research
 targets are:
 
-1. a constant-query compressed/FID auxiliary layer behind the landed packed
-   fixed-weight readback baseline: replace the full-payload readback query
-   cost with charged rank/select/access directories and instantiate
-   `compressedFixedWeightConstantQueryProfile` without delegating queries to
-   proof-only decoded bits;
+1. a concrete compressed/FID instantiation that composes
+   `FixedWeightTableRAMBlockData`-style local kernels across blocks with
+   charged global routing and `o(n)` counted auxiliary payload, then feeds the
+   resulting family through `fixedWeightCompressedAuxiliaryConstantQueryProfile`;
 2. deepening the landed `RMQBPNavigation` spoke into a fuller
    balanced-parentheses tree-navigation API over the same public rank/select
    surface;

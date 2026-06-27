@@ -24,9 +24,120 @@ abbrev Family :=
 abbrev CompressedDirectory :=
   RMQ.RankSelectSpec.CompressedBitVectorRankSelectDirectory
 
+/-- Public compressed/FID directory profile theorem. -/
+theorem compressedDirectoryProfile
+    {bits : List Bool} {overhead queryCost : Nat}
+    (directory : CompressedDirectory bits overhead queryCost) :
+    directory.payload.length <=
+        RMQ.RankSelectSpec.fixedWeightPayloadBudget bits + overhead /\
+      (forall i,
+        (directory.accessQueryCosted i).cost <= queryCost /\
+          (directory.accessQueryCosted i).erase = bits[i]?) /\
+      (forall target pos,
+        (directory.rankQueryCosted target pos).cost <= queryCost /\
+          (directory.rankQueryCosted target pos).erase =
+            Succinct.rankPrefix target bits pos) /\
+      (forall target occurrence,
+        (directory.selectQueryCosted target occurrence).cost <= queryCost /\
+          (directory.selectQueryCosted target occurrence).erase =
+            Succinct.select target bits occurrence) := by
+  exact
+    RMQ.RankSelectSpec.CompressedBitVectorRankSelectDirectory.profile directory
+
 /-- Public compressed/FID bitvector rank/select family shape. -/
 abbrev CompressedFamily :=
   RMQ.RankSelectSpec.CompressedBitVectorRankSelectFamily
+
+/-- Costed bounded-word read sequence used by compressed/FID auxiliary kernels. -/
+abbrev fixedWeightAuxiliaryWordReadsCosted
+    {payload : List Bool} {wordSize : Nat}
+    (store :
+      SuccinctSpace.BoundedPayloadWordStore payload wordSize) :=
+  RMQ.RankSelectSpec.boundedPayloadWordReadsCosted store
+
+/-- Cost of a bounded-word read sequence. -/
+theorem fixedWeightAuxiliaryWordReadsCostedCost
+    {payload : List Bool} {wordSize : Nat}
+    (store :
+      SuccinctSpace.BoundedPayloadWordStore payload wordSize)
+    (indices : List Nat) :
+    (fixedWeightAuxiliaryWordReadsCosted store indices).cost =
+      indices.length := by
+  exact RMQ.RankSelectSpec.boundedPayloadWordReadsCosted_cost store indices
+
+/-- Erased bounded-word read sequence used by compressed/FID auxiliary kernels. -/
+abbrev fixedWeightAuxiliaryWordReadValues
+    {payload : List Bool} {wordSize : Nat}
+    (store :
+      SuccinctSpace.BoundedPayloadWordStore payload wordSize) :=
+  RMQ.RankSelectSpec.boundedPayloadWordReadValues store
+
+/-- Erasure of a bounded-word read sequence. -/
+theorem fixedWeightAuxiliaryWordReadsCostedErase
+    {payload : List Bool} {wordSize : Nat}
+    (store :
+      SuccinctSpace.BoundedPayloadWordStore payload wordSize)
+    (indices : List Nat) :
+    (fixedWeightAuxiliaryWordReadsCosted store indices).erase =
+      fixedWeightAuxiliaryWordReadValues store indices := by
+  exact RMQ.RankSelectSpec.boundedPayloadWordReadsCosted_erase store indices
+
+/-- Constant-bounded compressed/FID auxiliary data over a fixed-weight code. -/
+abbrev FixedWeightCompressedAuxiliaryData :=
+  RMQ.RankSelectSpec.FixedWeightCompressedAuxiliaryData
+
+/-- Family of constant-bounded compressed/FID auxiliary data. -/
+abbrev FixedWeightCompressedAuxiliaryFamily :=
+  RMQ.RankSelectSpec.FixedWeightCompressedAuxiliaryFamily
+
+/-- Pointwise table-backed FID data with fixed charged table-read queries. -/
+abbrev FixedWeightTableBackedFIDData :=
+  RMQ.RankSelectSpec.FixedWeightTableBackedFIDData
+
+/-- Universal fixed-weight decoded-word table payload. -/
+abbrev fixedWeightDecodedWordTablePayload :=
+  RMQ.RankSelectSpec.fixedWeightDecodedWordTablePayload
+
+/-- Bit cost of the universal fixed-weight decoded-word table. -/
+abbrev fixedWeightDecodedWordTableOverhead :=
+  RMQ.RankSelectSpec.fixedWeightDecodedWordTableOverhead
+
+/-- Length of the universal fixed-weight decoded-word table payload. -/
+abbrev fixedWeightDecodedWordTablePayloadLength :=
+  RMQ.RankSelectSpec.fixedWeightDecodedWordTablePayload_length
+
+/-- Canonical payload store for the universal fixed-weight decoded-word table. -/
+abbrev fixedWeightDecodedWordStore :=
+  RMQ.RankSelectSpec.fixedWeightDecodedWordStore
+
+/-- Canonical bounded store for the universal fixed-weight decoded-word table. -/
+abbrev fixedWeightDecodedWordBoundedStore :=
+  RMQ.RankSelectSpec.fixedWeightDecodedWordBoundedStore
+
+/-- Decoded fixed-weight entries are present in the bounded decoded-word store. -/
+abbrev fixedWeightDecodedWordBoundedStoreGetOfDecode
+    {n k code : Nat} {word : List Bool} {wordSize : Nat}
+    (hn : n <= wordSize)
+    (hdec :
+      RMQ.RankSelectSpec.fixedWeightDecode? n k code = some word) :=
+  RMQ.RankSelectSpec.fixedWeightDecodedWordBoundedStore_get?_of_decode
+    hn hdec
+
+/-- The decoded-word store returns the source bitvector at its canonical code. -/
+abbrev fixedWeightDecodedWordBoundedStoreGetFixedWeightCode :=
+  RMQ.RankSelectSpec.fixedWeightDecodedWordBoundedStore_get?_fixedWeightCode
+
+/-- Canonical one-word bounded store for the packed fixed-weight code. -/
+abbrev fixedWeightPackedCodeBoundedStore :=
+  RMQ.RankSelectSpec.fixedWeightPackedCodeBoundedStore
+
+/-- The packed-code store returns the packed fixed-weight payload at slot zero. -/
+abbrev fixedWeightPackedCodeBoundedStoreGetZero :=
+  RMQ.RankSelectSpec.fixedWeightPackedCodeBoundedStore_get?_zero
+
+/-- Local table/RAM fixed-weight block kernel with fixed charged queries. -/
+abbrev FixedWeightTableRAMBlockData :=
+  RMQ.RankSelectSpec.FixedWeightTableRAMBlockData
 
 /-- Counted fixed-weight bitvector universe used by the compressed/FID budget. -/
 abbrev fixedWeightBitstrings :=
@@ -176,6 +287,64 @@ abbrev fixedWeightPackedReadbackDataOfChunksProfile
   RMQ.RankSelectSpec.FixedWeightPackedReadbackData.ofChunks_profile
     bits hword
 
+/-- Profile for constant-bounded compressed/FID auxiliary data. -/
+abbrev fixedWeightCompressedAuxiliaryDataProfile
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData
+        bits overhead wordSize queryCost) :=
+  RMQ.RankSelectSpec.FixedWeightCompressedAuxiliaryData.directory_profile data
+
+/-- Convert a compressed/FID auxiliary family into the public family shape. -/
+abbrev fixedWeightCompressedAuxiliaryToCompressedFamily
+    {overhead : Nat -> Nat} {wordSize queryCost : Nat}
+    (family :
+      FixedWeightCompressedAuxiliaryFamily overhead wordSize queryCost) :=
+  RMQ.RankSelectSpec.FixedWeightCompressedAuxiliaryFamily.toCompressedFamily
+    family
+
+/-- Constant-query profile for compressed/FID auxiliary families. -/
+theorem fixedWeightCompressedAuxiliaryConstantQueryProfile
+    {overhead : Nat -> Nat} {wordSize queryCost : Nat}
+    (family :
+      FixedWeightCompressedAuxiliaryFamily overhead wordSize queryCost) :
+    SuccinctSpace.LittleOLinear overhead /\
+      forall bits : List Bool,
+        (((family.toCompressedFamily).directory bits).payload.length <=
+          fixedWeightPayloadBudget bits + overhead bits.length) /\
+          (forall i,
+            (((family.toCompressedFamily).directory bits).accessQueryCosted
+                i).cost <= queryCost /\
+              (((family.toCompressedFamily).directory bits).accessQueryCosted
+                i).erase = bits[i]?) /\
+          (forall target pos,
+            (((family.toCompressedFamily).directory bits).rankQueryCosted
+                target pos).cost <= queryCost /\
+              (((family.toCompressedFamily).directory bits).rankQueryCosted
+                target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (((family.toCompressedFamily).directory bits).selectQueryCosted
+                target occurrence).cost <= queryCost /\
+              (((family.toCompressedFamily).directory bits).selectQueryCosted
+                target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact RMQ.RankSelectSpec.FixedWeightCompressedAuxiliaryFamily.constant_query_profile
+    family
+
+/-- Profile for pointwise table-backed fixed-weight FID data. -/
+abbrev fixedWeightTableBackedFIDDataProfile
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost) :=
+  RMQ.RankSelectSpec.FixedWeightTableBackedFIDData.directory_profile data
+
+/-- Profile for local table/RAM fixed-weight block data. -/
+abbrev fixedWeightTableRAMBlockDataProfile
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) :=
+  RMQ.RankSelectSpec.FixedWeightTableRAMBlockData.directory_profile data
+
 /-- Decoded fixed-weight entries have the requested length and true-count. -/
 abbrev fixedWeightDecodeMemLengthTrueCount
     {n k code : Nat} {bits : List Bool}
@@ -183,12 +352,67 @@ abbrev fixedWeightDecodeMemLengthTrueCount
   RMQ.RankSelectSpec.fixedWeightDecode?_mem_length_trueCount hdec
 
 /-- Public compressed/FID family theorem shape. -/
-abbrev compressedFixedWeightConstantQueryProfile
+theorem compressedFixedWeightConstantQueryProfile
     {overhead : Nat -> Nat} {queryCost : Nat}
     (family :
-      CompressedFamily overhead queryCost) :=
-  RMQ.RankSelectSpec.CompressedBitVectorRankSelectFamily.fixed_weight_constant_query_profile
+      CompressedFamily overhead queryCost) :
+    SuccinctSpace.LittleOLinear overhead /\
+      forall bits : List Bool,
+        ((family.directory bits).payload.length <=
+          fixedWeightPayloadBudget bits + overhead bits.length) /\
+          (forall i,
+            ((family.directory bits).accessQueryCosted i).cost <=
+                queryCost /\
+              ((family.directory bits).accessQueryCosted i).erase =
+                bits[i]?) /\
+          (forall target pos,
+            ((family.directory bits).rankQueryCosted target pos).cost <=
+                queryCost /\
+              ((family.directory bits).rankQueryCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            ((family.directory bits).selectQueryCosted
+                target occurrence).cost <= queryCost /\
+              ((family.directory bits).selectQueryCosted
+                target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact
+    RMQ.RankSelectSpec.CompressedBitVectorRankSelectFamily.fixed_weight_constant_query_profile
     family
+
+/--
+Public adapter theorem: a fixed-weight auxiliary family converted to the
+generic compressed/FID family satisfies the generic fixed-weight
+constant-query profile.
+-/
+theorem fixedWeightCompressedAuxiliaryToCompressedFamilyProfile
+    {overhead : Nat -> Nat} {wordSize queryCost : Nat}
+    (family :
+      FixedWeightCompressedAuxiliaryFamily overhead wordSize queryCost) :
+    SuccinctSpace.LittleOLinear overhead /\
+      forall bits : List Bool,
+        (((fixedWeightCompressedAuxiliaryToCompressedFamily family).directory bits).payload.length <=
+          fixedWeightPayloadBudget bits + overhead bits.length) /\
+          (forall i,
+            (((fixedWeightCompressedAuxiliaryToCompressedFamily family).directory bits).accessQueryCosted i).cost <=
+                queryCost /\
+              (((fixedWeightCompressedAuxiliaryToCompressedFamily family).directory bits).accessQueryCosted i).erase =
+                bits[i]?) /\
+          (forall target pos,
+            (((fixedWeightCompressedAuxiliaryToCompressedFamily family).directory bits).rankQueryCosted target pos).cost <=
+                queryCost /\
+              (((fixedWeightCompressedAuxiliaryToCompressedFamily family).directory bits).rankQueryCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (((fixedWeightCompressedAuxiliaryToCompressedFamily family).directory bits).selectQueryCosted
+                target occurrence).cost <=
+                queryCost /\
+              (((fixedWeightCompressedAuxiliaryToCompressedFamily family).directory bits).selectQueryCosted
+                  target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightCompressedAuxiliaryFamily.toCompressedFamily_fixed_weight_constant_query_profile
+      family
 
 /-- Auxiliary-overhead budget for the concrete Jacobson/Clark family. -/
 abbrev jacobsonClarkOverhead :=
