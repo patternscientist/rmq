@@ -202,6 +202,10 @@ abbrev fixedWeightPackedCodeBoundedStoreGetZero :=
 abbrev FixedWeightTableRAMBlockData :=
   RMQ.RankSelectSpec.FixedWeightTableRAMBlockData
 
+/-- Local computed fixed-weight/RRR block kernel over the packed code only. -/
+abbrev FixedWeightComputedRRRBlockData :=
+  RMQ.RankSelectSpec.FixedWeightComputedRRRBlockData
+
 /-- Counted fixed-weight bitvector universe used by the compressed/FID budget. -/
 abbrev fixedWeightBitstrings :=
   RMQ.RankSelectSpec.fixedWeightBitstrings
@@ -660,6 +664,73 @@ abbrev fixedWeightTableRAMBlockDataProfile
     {bits : List Bool} {wordSize : Nat}
     (data : FixedWeightTableRAMBlockData bits wordSize) :=
   RMQ.RankSelectSpec.FixedWeightTableRAMBlockData.directory_profile data
+
+/-- Explicit decode budget for the computed local fixed-weight/RRR kernel. -/
+abbrev fixedWeightComputedRRRDecodeTicks :=
+  RMQ.RankSelectSpec.fixedWeightComputedRRRDecodeTicks
+
+/-- Uniform local query cap for the computed fixed-weight/RRR kernel. -/
+abbrev fixedWeightComputedRRRQueryCost :=
+  RMQ.RankSelectSpec.fixedWeightComputedRRRQueryCost
+
+/-- Decode a fixed-weight code for the class determined by the source block. -/
+abbrev fixedWeightDecodedWordFromCode :=
+  RMQ.RankSelectSpec.fixedWeightDecodedWordFromCode
+
+/-- The canonical fixed-weight code decodes back to its source block. -/
+abbrev fixedWeightDecodedWordFromCodeFixedWeightCode :=
+  RMQ.RankSelectSpec.fixedWeightDecodedWordFromCode_fixedWeightCode
+
+/-- Computed decode from charged packed-code read values. -/
+abbrev fixedWeightComputedRRRDecodeFromReadValuesCosted :=
+  RMQ.RankSelectSpec.fixedWeightComputedRRRDecodeFromReadValuesCosted
+
+/-- Charged packed-code readback decodes to the source block. -/
+abbrev fixedWeightComputedRRRDecodeFromReadValuesCostedEraseSingleton :=
+  RMQ.RankSelectSpec.fixedWeightComputedRRRDecodeFromReadValuesCosted_erase_singleton
+
+/-- Profile for local computed fixed-weight/RRR block data. -/
+abbrev FixedWeightComputedRRRBlockKernelProfile
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) : Prop :=
+  RMQ.RankSelectSpec.FixedWeightComputedRRRBlockData.KernelProfile data
+
+/--
+The local computed fixed-weight/RRR kernel reads only the packed fixed-weight
+code word and then spends its explicit decode budget before answering
+access/rank/select exactly.
+-/
+theorem fixedWeightComputedRRRBlockKernelProfile
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    FixedWeightComputedRRRBlockKernelProfile data := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightComputedRRRBlockData.computed_rrr_block_kernel_profile
+      data
+
+/-- Adapt a computed local RRR block kernel to the dependent auxiliary scaffold. -/
+abbrev fixedWeightComputedRRRBlockToDependentAuxiliaryData
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :=
+  RMQ.RankSelectSpec.FixedWeightComputedRRRBlockData.toDependentAuxiliaryData
+    data
+
+/--
+The computed local RRR block kernel is a generic dependent-read
+compressed/FID directory with zero auxiliary payload.
+-/
+theorem fixedWeightComputedRRRBlockDependentAuxiliaryDataProfile
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    FixedWeightDependentAuxiliaryDirectoryProfile
+      (fixedWeightComputedRRRBlockToDependentAuxiliaryData data) := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightComputedRRRBlockData.dependent_auxiliary_data_profile
+      data
 
 /-- Adapt a local table/RAM block kernel to the dependent auxiliary scaffold. -/
 abbrev fixedWeightTableRAMBlockToDependentAuxiliaryData

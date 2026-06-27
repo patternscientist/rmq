@@ -119,6 +119,17 @@ RMQ.RankSelect.fixedWeightDecodedWordTableOverhead
 RMQ.RankSelect.fixedWeightDecodedWordTablePayloadLength
 RMQ.RankSelect.fixedWeightDecodedWordBoundedStoreGetFixedWeightCode
 RMQ.RankSelect.fixedWeightPackedCodeBoundedStoreGetZero
+RMQ.RankSelect.FixedWeightComputedRRRBlockData
+RMQ.RankSelect.fixedWeightComputedRRRDecodeTicks
+RMQ.RankSelect.fixedWeightComputedRRRQueryCost
+RMQ.RankSelect.fixedWeightDecodedWordFromCode
+RMQ.RankSelect.fixedWeightDecodedWordFromCodeFixedWeightCode
+RMQ.RankSelect.fixedWeightComputedRRRDecodeFromReadValuesCosted
+RMQ.RankSelect.fixedWeightComputedRRRDecodeFromReadValuesCostedEraseSingleton
+RMQ.RankSelect.FixedWeightComputedRRRBlockKernelProfile
+RMQ.RankSelect.fixedWeightComputedRRRBlockKernelProfile
+RMQ.RankSelect.fixedWeightComputedRRRBlockToDependentAuxiliaryData
+RMQ.RankSelect.fixedWeightComputedRRRBlockDependentAuxiliaryDataProfile
 RMQ.RankSelect.FixedWeightTableRAMBlockData
 RMQ.RankSelect.fixedWeightTableRAMBlockDataProfile
 RMQ.RankSelect.fixedWeightTableRAMBlockToDependentAuxiliaryData
@@ -238,11 +249,11 @@ pointwise scaffolding: dense answer tables can be too large, so the next
 construction must replace those entries with true RRR/FID local tables and
 charged routing while preserving the same fixed query shape.
 
-The first concrete local RRR-style kernel is `FixedWeightTableRAMBlockData`.
-It reads the packed fixed-weight code from the counted payload, uses that
-charged read value as the address into the universal decoded-word table for
-the block length and weight, then runs the repository's RAM word primitives for
-rank and select. Its profile is exposed as
+The first table-backed local RRR-style checkpoint is
+`FixedWeightTableRAMBlockData`. It reads the packed fixed-weight code from the
+counted payload, uses that charged read value as the address into the universal
+decoded-word table for the block length and weight, then runs the repository's
+RAM word primitives for rank and select. Its profile is exposed as
 `fixedWeightTableRAMBlockDataProfile`, with query cost `<= 3` and with both
 the packed-code payload and dense decoded-word-table payload accounted for.
 The stronger `fixedWeightTableRAMBlockDependentReadProfile` exposes the actual
@@ -254,10 +265,23 @@ kernel as an instance of the generic dependent auxiliary scaffold, and
 `fixedWeightTableRAMBlockDependentAuxiliaryBridgeProfile` proves that the
 scaffold-backed directory agrees with the direct local block directory on
 payload, query costs, and erased answers. The combined public citation point is
-`fixedWeightTableRAMBlockDependentAuxiliaryFullProfile`. This removes the
-arbitrary-evaluator escape hatch at the block level. It is not the finished
-compressed/FID family because the universal decoded-word table is dense and
-the word-size discipline is still local to the block length.
+`fixedWeightTableRAMBlockDependentAuxiliaryFullProfile`.
+
+The stricter packed-code-only local checkpoint is now
+`FixedWeightComputedRRRBlockData`. Its counted payload is exactly
+`fixedWeightPackedPayload bits`, with no dense
+`fixedWeightDecodedWordTablePayload`. Queries read the packed code word, spend
+the explicit `fixedWeightComputedRRRDecodeTicks bits` evaluator budget to
+compute the decoded local word, and then answer access/rank/select with fixed
+code and RAM word primitives. `fixedWeightComputedRRRBlockKernelProfile`
+records the direct local directory facts, while
+`fixedWeightComputedRRRBlockDependentAuxiliaryDataProfile` packages the same
+kernel through the generic dependent-read scaffold with zero auxiliary payload.
+This removes the local dense-table payload and arbitrary-evaluator escape hatch
+simultaneously. It is still not the finished constant-time compressed/FID
+family: the decode cost is explicit rather than globally O(1), and global
+composition must still provide charged class/routing metadata or a bounded
+primitive/table model for the local decoder.
 
 The ambient/global block-composition predecessor is now present. It stores one
 canonical fixed-weight code word per block through

@@ -69,6 +69,12 @@ shape, and the charged local table/RAM block scaffolding.
 #print axioms RMQ.RankSelect.fixedWeightDecodedWordBoundedStoreGetFixedWeightCode
 #print axioms RMQ.RankSelectSpec.fixedWeightPackedCodeBoundedStore_get?_zero
 #print axioms RMQ.RankSelect.fixedWeightPackedCodeBoundedStoreGetZero
+#print axioms RMQ.RankSelectSpec.fixedWeightDecodedWordFromCode_fixedWeightCode
+#print axioms RMQ.RankSelectSpec.fixedWeightComputedRRRDecodeFromReadValuesCosted_erase_singleton
+#print axioms RMQ.RankSelectSpec.FixedWeightComputedRRRBlockData.dependent_auxiliary_data_profile
+#print axioms RMQ.RankSelectSpec.FixedWeightComputedRRRBlockData.computed_rrr_block_kernel_profile
+#print axioms RMQ.RankSelect.fixedWeightComputedRRRBlockKernelProfile
+#print axioms RMQ.RankSelect.fixedWeightComputedRRRBlockDependentAuxiliaryDataProfile
 #print axioms RMQ.RankSelectSpec.FixedWeightTableRAMBlockData.decodedTableOverhead_eq
 #print axioms RMQ.RankSelectSpec.FixedWeightTableRAMBlockData.directory_profile
 #print axioms RMQ.RankSelect.fixedWeightTableRAMBlockDataProfile

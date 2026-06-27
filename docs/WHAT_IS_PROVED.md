@@ -131,6 +131,14 @@ packages the same local kernel through the generic dependent-read scaffold.
 that scaffold profile with the stronger local dependent-read facts and a bridge
 showing the scaffold-backed directory agrees with the direct local block
 directory on payload, costs, and erased answers.
+`RMQ.RankSelect.fixedWeightComputedRRRBlockKernelProfile` is the stricter
+packed-code-only local RRR checkpoint: it stores only the fixed-weight code
+payload, spends an explicit computed-decoder budget, and then uses direct
+access plus fixed RAM rank/select primitives.
+`RMQ.RankSelect.fixedWeightComputedRRRBlockDependentAuxiliaryDataProfile`
+packages that same kernel through the generic dependent-read scaffold with
+zero auxiliary payload. This removes the local dense decoded-table payload, but
+the decoder is still charged explicitly rather than proved globally O(1).
 The ambient/global fixed-weight block predecessor is also formalized:
 `RMQ.RankSelect.fixedWeightAmbientBlockCompositionFamilyWordBoundedProfile`
 proves an `o(n)` counted auxiliary envelope for block-composed fixed-weight

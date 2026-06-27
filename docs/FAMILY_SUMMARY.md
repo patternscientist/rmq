@@ -334,6 +334,19 @@ is the combined citation point for the generic scaffold profile, the stronger
 local dependent-read facts, and the bridge.  This is still a local/dense block
 theorem, not the finished FID family: the decoded table is dense and the
 current word-size bound is local to the block length.
+`RankSelect.FixedWeightComputedRRRBlockData` is the stricter packed-code-only
+local checkpoint.  It stores only `RankSelect.fixedWeightPackedPayload bits`,
+decodes the charged packed code through
+`RankSelect.fixedWeightComputedRRRDecodeFromReadValuesCosted`, and spends the
+explicit budget `RankSelect.fixedWeightComputedRRRDecodeTicks bits` before
+using direct access or the RAM rank/select primitives.  The direct profile is
+`RankSelect.fixedWeightComputedRRRBlockKernelProfile`, and
+`RankSelect.fixedWeightComputedRRRBlockDependentAuxiliaryDataProfile` packages
+the same kernel through the generic dependent-read scaffold with zero
+auxiliary payload.  This removes the dense decoded-table payload at the local
+kernel level, but it is not yet the global O(1) FID theorem: the local decode
+budget is explicit, and global composition still needs charged class/routing
+metadata or a bounded primitive/table model.
 `RankSelect.FixedWeightAmbientBlockCompositionData` is now the ambient/global
 predecessor surface: it counts one packed fixed-weight code word per block via
 `RankSelect.fixedWeightBlockCodePayload`, counts the remaining directory bits
@@ -1737,6 +1750,11 @@ The names below are grouped by source module. Repeated base names in
   `RankSelect.fixedWeightDecodedWordTablePayloadLength`,
   `RankSelect.fixedWeightDecodedWordBoundedStoreGetFixedWeightCode`,
   `RankSelect.fixedWeightPackedCodeBoundedStoreGetZero`,
+  `RankSelect.fixedWeightDecodedWordFromCodeFixedWeightCode`,
+  `RankSelect.fixedWeightComputedRRRDecodeFromReadValuesCostedEraseSingleton`,
+  `RankSelect.fixedWeightComputedRRRBlockKernelProfile`,
+  `RankSelect.fixedWeightComputedRRRBlockToDependentAuxiliaryData`,
+  `RankSelect.fixedWeightComputedRRRBlockDependentAuxiliaryDataProfile`,
   `RankSelect.fixedWeightTableRAMBlockDataProfile`,
   `RankSelect.fixedWeightTableRAMBlockToDependentAuxiliaryData`,
   `RankSelect.fixedWeightTableRAMBlockDependentAuxiliaryDataProfile`,
