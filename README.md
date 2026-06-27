@@ -190,8 +190,9 @@ about Lean's executable `List` runtime.
   a packed-code-only local RRR block kernel consumed by an ambient fixed-weight
   block-composition scaffold, a route/class metadata table envelope with
   `o(n)` counted auxiliary payload, decoded route-field profiles over charged
-  metadata reads, and conditional bounded-regime bridges for the local decoder,
-  ambient route tables, and ambient primary-budget join, and
+  metadata reads, packed fixed-width route-word readback profiles, and
+  conditional bounded-regime bridges for the local decoder, ambient route
+  tables, and ambient primary-budget join, and
   `RankSelectPublic` exposes the public Jacobson/Clark
   bitvector family theorem as
   `RankSelect.jacobsonClarkNPlusOConstantQuery` and its strengthened
@@ -371,9 +372,9 @@ RMQ blocker:
   library surface;
 - refine the landed standalone Jacobson/Clark rank/select theorem toward
   concrete global routing over the ambient fixed-weight block-composition
-  scaffold, build concrete route/class metadata encoders and local
-  block-class decoders from charged words, finish the remaining compressed/FID
-  primary-budget bridge, and deepen
+  scaffold, build concrete route/class metadata field-table constructors and
+  local block-class decoders from charged words, finish the remaining
+  compressed/FID primary-budget bridge, and deepen
   the landed BP-navigation close/rank bridge into a fuller tree-navigation API;
   and
 - deepen the new union-find spoke from specification/reference backend to

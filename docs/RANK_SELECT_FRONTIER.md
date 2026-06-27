@@ -167,6 +167,16 @@ RMQ.RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableFamilyDirectory
 RMQ.RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableFamilyProfile
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableWordBoundedCompressedProfileOfPrimaryBudget
 RMQ.RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableWordBoundedCompressedProfileOfPrimaryBudget
+RMQ.RankSelect.FixedWeightAmbientComputedRRRPackedRouteTableData
+RMQ.RankSelect.FixedWeightAmbientComputedRRRPackedRouteTableFamily
+RMQ.RankSelect.fixedWeightAmbientComputedRRRPackedAccessMetadataReadValuesEq
+RMQ.RankSelect.fixedWeightAmbientComputedRRRPackedRankMetadataReadValuesEq
+RMQ.RankSelect.fixedWeightAmbientComputedRRRPackedSelectMetadataReadValuesEq
+RMQ.RankSelect.FixedWeightAmbientComputedRRRPackedRouteTableProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableFamilyDirectory
+RMQ.RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableFamilyProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableWordBoundedCompressedProfileOfPrimaryBudget
 RMQ.RankSelect.FixedWeightTableRAMBlockData
 RMQ.RankSelect.fixedWeightTableRAMBlockDataProfile
 RMQ.RankSelect.fixedWeightTableRAMBlockToDependentAuxiliaryData
@@ -372,10 +382,16 @@ offset/base-rank/local-limit, or local occurrence/block-start fields consumed
 by the ambient evaluator.  `fixedWeightAmbientComputedRRRDecodedRouteTableProfile`
 and `fixedWeightAmbientComputedRRRDecodedRouteTableFamilyProfile` package those
 facts with the existing route-table and `o(n)` route-payload envelope. This is
-still not a concrete global FID builder: the decoder correctness is supplied
-as a component field, not yet derived from a particular packed arithmetic
-route table, and the local block class/length and constant decoder regime
-remain to be instantiated.
+refined by `FixedWeightAmbientComputedRRRPackedRouteTableData`, whose public
+readback lemmas show that access metadata reads return two fixed-width
+`natToBitsLE` route words and rank/select metadata reads return three such
+words.  `fixedWeightAmbientComputedRRRPackedRouteTableProfile` and
+`fixedWeightAmbientComputedRRRPackedRouteTableFamilyProfile` carry this
+fixed-width route-word discipline through the same ambient query profile and
+`o(n)` route-payload envelope. This is still not a concrete global FID builder:
+the packed record assumes per-slot word equations rather than constructing a
+particular field-table layout, and the local block class/length and constant
+decoder regime remain to be instantiated.
 
 The ambient/global block-composition predecessor is now present. It stores one
 canonical fixed-weight code word per block through
@@ -408,8 +424,11 @@ families by
 `fixedWeightAmbientComputedRRRRouteTableWordBoundedCompressedProfileOfPrimaryBudget`
 and for decoded route-table families by
 `fixedWeightAmbientComputedRRRDecodedRouteTableWordBoundedCompressedProfileOfPrimaryBudget`.
+The packed route-word refinement is exposed by
+`fixedWeightAmbientComputedRRRPackedRouteTableWordBoundedCompressedProfileOfPrimaryBudget`.
 These are generic compressed/FID public theorem shapes for the ambient
-computed-RRR route layers, still conditional on the primary block-code budget.
+computed-RRR route layers, still conditional on the primary block-code budget
+and on a later constructor that generates the fixed-width route table words.
 
 ## Module Boundary
 

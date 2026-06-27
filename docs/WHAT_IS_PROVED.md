@@ -167,9 +167,18 @@ charged route-store reads recover the route fields consumed by the ambient
 computed-RRR evaluator.  The decoded route-table profiles
 `RMQ.RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableProfile` and
 `RMQ.RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableFamilyProfile`
-package this with the same counted route-payload envelope. The concrete
-route-table encoders/builders, local block class/length decoding, and uniform
-constant local decoder regime remain future work.
+package this with the same counted route-payload envelope.
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRPackedAccessMetadataReadValuesEq`,
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRPackedRankMetadataReadValuesEq`,
+and
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRPackedSelectMetadataReadValuesEq`
+strengthen the route metadata checkpoint by showing that the charged route
+reads return fixed-width `natToBitsLE` words for the route fields.
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableProfile` and
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableFamilyProfile`
+carry that packed readback discipline through the same counted route-payload
+envelope. The concrete route-table encoders/builders, local block class/length
+decoding, and uniform constant local decoder regime remain future work.
 The ambient/global fixed-weight block predecessor is also formalized:
 `RMQ.RankSelect.fixedWeightAmbientBlockCompositionFamilyWordBoundedProfile`
 proves an `o(n)` counted auxiliary envelope for block-composed fixed-weight
@@ -187,7 +196,10 @@ ambient computed-RRR route layers by
 `RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableWordBoundedCompressedProfileOfPrimaryBudget`
 and
 `RMQ.RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableWordBoundedCompressedProfileOfPrimaryBudget`;
-both remain conditional on the primary block-code budget theorem.
+the packed fixed-width route-word bridge is
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableWordBoundedCompressedProfileOfPrimaryBudget`.
+These remain conditional on the primary block-code budget theorem and on a
+later route field-table constructor.
 
 ## Balanced-Parentheses Navigation
 

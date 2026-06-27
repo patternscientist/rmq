@@ -391,11 +391,19 @@ block/local-occurrence/block-start fields used by the ambient evaluator.
 `RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableProfile` and
 `RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableFamilyProfile`
 package this with the route-table profile and `o(n)` route-payload envelope.
-This is still not the finished non-oracular FID construction: decoder
-correctness is supplied by the decoded component rather than built from a
-particular packed arithmetic table, the local block class/length discipline is
-not yet decoded from metadata words, and the intended block-size regime still
-has to turn the local computed decoder into a constant-cost primitive.
+`RankSelect.FixedWeightAmbientComputedRRRPackedRouteTableData` strengthens the
+checkpoint by requiring the route fields to be stored as fixed-width payload
+words: access metadata reads return the two packed words for block/offset, and
+rank/select metadata reads return the three packed words for their routed
+fields.  `RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableProfile` and
+`RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableFamilyProfile` carry
+that packed readback discipline through the ambient query profile and the same
+`o(n)` route-payload envelope.  This is still not the finished non-oracular FID
+construction: the packed layer assumes per-slot word equations rather than
+constructing the route field-table layout, the local block class/length
+discipline is not yet decoded from metadata words, and the intended block-size
+regime still has to turn the local computed decoder into a constant-cost
+primitive.
 `RankSelect.FixedWeightAmbientBlockCompositionData` is now the ambient/global
 predecessor surface: it counts one packed fixed-weight code word per block via
 `RankSelect.fixedWeightBlockCodePayload`, counts the remaining directory bits
@@ -425,7 +433,11 @@ computed-RRR route layers:
 does this for the base route-table family, while
 `RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableWordBoundedCompressedProfileOfPrimaryBudget`
 carries the decoded metadata-read discipline through the same compressed/FID
-shape. Both remain conditional on the primary block-code budget theorem.
+shape, and
+`RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableWordBoundedCompressedProfileOfPrimaryBudget`
+adds the fixed-width route-word discipline to that conditional bridge. All
+remain conditional on the primary block-code budget theorem and the later
+field-table constructor for route metadata words.
 The remaining standalone rank/select frontier is therefore concrete global
 routing/table builders, local block class/length decoding, a uniform constant
 local decoder regime, and discharging this primary-budget premise, not merely
@@ -1830,6 +1842,12 @@ The names below are grouped by source module. Repeated base names in
   `RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableFamilyProfile`,
   `RankSelect.fixedWeightAmbientComputedRRRRouteTableWordBoundedCompressedProfileOfPrimaryBudget`,
   `RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableWordBoundedCompressedProfileOfPrimaryBudget`,
+  `RankSelect.fixedWeightAmbientComputedRRRPackedAccessMetadataReadValuesEq`,
+  `RankSelect.fixedWeightAmbientComputedRRRPackedRankMetadataReadValuesEq`,
+  `RankSelect.fixedWeightAmbientComputedRRRPackedSelectMetadataReadValuesEq`,
+  `RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableProfile`,
+  `RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableFamilyProfile`,
+  `RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableWordBoundedCompressedProfileOfPrimaryBudget`,
   `RankSelect.fixedWeightAmbientBlockCompositionWordBoundedCompressedProfileOfPrimaryBudget`,
   `RankSelect.fixedWeightTableRAMBlockDataProfile`,
   `RankSelect.fixedWeightTableRAMBlockToDependentAuxiliaryData`,
