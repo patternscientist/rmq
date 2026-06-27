@@ -14,6 +14,16 @@ modeled query cost.
 #print axioms RMQ.RankSelectSpec.fixedWeightBitstrings_mem_length_trueCount
 #print axioms RMQ.RankSelectSpec.fixedWeightBitstrings_mem_of_length_trueCount
 #print axioms RMQ.RankSelectSpec.fixedWeightBitstrings_mem_iff
+#print axioms RMQ.RankSelectSpec.fixedWeightBitstrings_nodup
+#print axioms RMQ.RankSelectSpec.fixedWeightCodec_roundTrip
+#print axioms RMQ.RankSelectSpec.fixedWeightEncode?_lt_binomialCount
+#print axioms RMQ.RankSelectSpec.fixedWeightEncode?_eq_some_fixedWeightCode
+#print axioms RMQ.RankSelectSpec.fixedWeightCode_lt_binomialCount
+#print axioms RMQ.RankSelectSpec.fixedWeightEncode?_lt_payloadBudgetPow
+#print axioms RMQ.RankSelectSpec.fixedWeightCode_lt_payloadBudgetPow
+#print axioms RMQ.RankSelectSpec.fixedWeightEncode?_fixedWeightDecode?
+#print axioms RMQ.RankSelectSpec.fixedWeightDecode?_eq_some_iff
+#print axioms RMQ.RankSelectSpec.fixedWeightDecode?_mem_length_trueCount
 #print axioms RMQ.RankSelectSpec.CompressedBitVectorRankSelectDirectory.profile
 #print axioms RMQ.RankSelectSpec.CompressedBitVectorRankSelectFamily.fixed_weight_constant_query_profile
 #print axioms RMQ.RankSelect.compressedFixedWeightConstantQueryProfile

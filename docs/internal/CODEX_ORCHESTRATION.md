@@ -20,13 +20,18 @@ also require a restart if they do not appear immediately.
 ## Recommended Use
 
 - Normal theorem implementation: use the main thread plus the
-  `rmq-proof-sprint` skill.
+  `rmq-proof-sprint` skill. For any substantial target, first do a quick
+  parallelization check: identify the join theorem or concrete profile, the
+  independent leaves, and whether agents will actually shorten the critical
+  path.
 - Bounded proof loops: use the main thread as coordinator, with an ambitious
   owned target chosen adaptively at each checkpoint. A loop should try to close
   that target overall. Substantial proof steps are iteration results inside the
   loop, not automatic loop endpoints.
-- Before a large milestone: explicitly ask to spawn read-only subagents, for
-  example:
+- Before or during a large milestone: proactively spawn subagents when their
+  outputs feed the current target. Use read-only scouts for independent risk
+  checks and write workers only for disjoint file/theorem ownership. Example
+  scout split:
 
   ```text
   Spawn two read-only subagents: rmq-proof-auditor checks current theorem
@@ -34,9 +39,10 @@ also require a restart if they do not appear immediately.
   three proof milestones. Wait for both and synthesize.
   ```
 
-- During implementation: use subagents only for independent read-heavy audits
-  or disjoint write scopes. Keep the main thread responsible for final
-  integration and verification.
+- During implementation: keep the main thread responsible for the blocking
+  local step, final integration, and verification. While agents run, continue
+  non-overlapping work, check in periodically when useful, and steer agents away
+  from premature loop breaks or side quests.
 - For multi-chat branches, use `docs/internal/WORKER_INTEGRATION_CHECKLIST.md` as the
   worker report template and coordinator merge gate.
 
@@ -51,9 +57,10 @@ also require a restart if they do not appear immediately.
    - Hard part: the proof/construction most tempting to postpone.
    - This iteration: the largest coherent step toward that hard part.
    - Not doing: adjacent outputs that would look useful but leave the gap.
-3. Spawn two or three read-only scouts for independent risks: API inventory,
-   proof/off-by-one risks, and cost/model/documentation consistency.
-4. Implement the smallest coherent slice locally while scouts run.
+3. Spawn the agents that materially help this target: usually two or three
+   read-only scouts for independent risks, or a small number of write workers
+   when the leaves have disjoint ownership and pinned signatures.
+4. Implement the smallest coherent blocking slice locally while agents run.
 5. Integrate scout findings without broadening the milestone.
 6. Iterate on `lake env lean <touched module>` failures. A single tactic or
    proof-shape retry can have a small cap, but an obvious repaired statement,
@@ -99,5 +106,6 @@ impossibility theorem for the target statement can replace that threshold.
   A repo skill is simpler while the workflow is still evolving.
 - `codex exec`: useful for CI-style scripted audits, but interactive proof work
   is still better in the app/thread until the checks stabilize.
-- External autonomous agents such as Manus: unnecessary for the current Lean
-  proof workflow and not the best free/default choice.
+- External autonomous agents such as Manus: use only for broad research or
+  artifact-style work where their output can be audited before it touches the
+  proof tree. Codex subagents remain the default for repo-local proof work.

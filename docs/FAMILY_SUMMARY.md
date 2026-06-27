@@ -278,12 +278,19 @@ combines `SuccinctRank.jacobsonRankData` with two
 `RankSelectSpec.BitVectorRankSelectFamily`, proving stored-bit access, exact
 rank/select, `n + o(n)` counted payload bits, and one fixed modeled query
 bound.  `RankSelectCompressed` adds the compressed/FID profile shape: a
-Mathlib-free fixed-weight bitvector universe counted by `binomialCount`, and a
-family theorem with payload budget
+Mathlib-free fixed-weight bitvector universe counted by `binomialCount`,
+canonical finite-universe encode/decode functions
+`RankSelect.fixedWeightEncode?` / `RankSelect.fixedWeightDecode?`, and the
+two-sided codec theorems `RankSelect.fixedWeightCodecRoundTrip` and
+`RankSelect.fixedWeightDecodeEqSomeIff`.  The total code
+`RankSelect.fixedWeightCode` is proved below
+`2 ^ fixedWeightPayloadBudget bits`, giving the finite-universe width bridge
+for a later packed realization.  Its family theorem uses payload budget
 `Nat.log2 (binomialCount bits.length (trueCount bits)) + 1 + o(n)`.  The
-remaining standalone rank/select frontier is the concrete enumerative codec or
-a tighter presentation of the Clark internals, not merely consuming the public
-spec surface.  The strengthened public theorem
+remaining standalone rank/select frontier is the packed enumerative payload
+realization and charged query refinement, or a tighter presentation of the
+Clark internals, not merely consuming the public spec surface.  The
+strengthened public theorem
 `RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery` additionally exposes
 the machine-word discipline from the concrete components: Jacobson rank payload
 words flatten to the stored bitvector, and the concrete rank/select payload

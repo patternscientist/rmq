@@ -152,6 +152,276 @@ theorem fixedWeightBitstrings_mem_iff
   · intro h
     exact fixedWeightBitstrings_mem_of_length_trueCount h.1 h.2
 
+private theorem nodup_map_cons_bool
+    (head : Bool) {xs : List (List Bool)}
+    (hxs : xs.Nodup) :
+    (xs.map (fun bits => head :: bits)).Nodup := by
+  induction xs with
+  | nil =>
+      simp
+  | cons x xs ih =>
+      rw [List.nodup_cons] at hxs
+      change ((head :: x) :: xs.map (fun bits => head :: bits)).Nodup
+      rw [List.nodup_cons]
+      constructor
+      · intro hmem
+        rw [List.mem_map] at hmem
+        rcases hmem with ⟨tail, htail, htailEq⟩
+        exact hxs.1 (by
+          cases htailEq
+          exact htail)
+      · exact ih hxs.2
+
+/-- The fixed-weight bitvector universe has no duplicate entries. -/
+theorem fixedWeightBitstrings_nodup
+    (n k : Nat) :
+    (fixedWeightBitstrings n k).Nodup := by
+  induction n generalizing k with
+  | zero =>
+      cases k <;> simp [fixedWeightBitstrings]
+  | succ n ih =>
+      cases k with
+      | zero =>
+          exact nodup_map_cons_bool false (ih 0)
+      | succ k =>
+          rw [fixedWeightBitstrings]
+          rw [List.nodup_append]
+          constructor
+          · exact nodup_map_cons_bool false (ih (k + 1))
+          · constructor
+            · exact nodup_map_cons_bool true (ih k)
+            · intro a ha b hb hab
+              rw [List.mem_map] at ha
+              rw [List.mem_map] at hb
+              rcases ha with ⟨tailA, htailA, haEq⟩
+              rcases hb with ⟨tailB, htailB, hbEq⟩
+              subst a
+              subst b
+              cases haEq
+
+/--
+First index of a value in a list, local to the compressed rank/select codec
+spine. This keeps the codec proofs independent of heavier downstream modules.
+-/
+def listIndexOf? {alpha : Type u} [DecidableEq alpha]
+    (target : alpha) : List alpha -> Option Nat
+  | [] => none
+  | x :: xs =>
+      if x = target then
+        some 0
+      else
+        match listIndexOf? target xs with
+        | none => none
+        | some idx => some (idx + 1)
+
+theorem listIndexOf?_lt_length
+    {alpha : Type u} [DecidableEq alpha] {target : alpha} :
+    forall {xs : List alpha} {idx : Nat},
+      listIndexOf? target xs = some idx -> idx < xs.length
+  | [], _, h => by
+      simp [listIndexOf?] at h
+  | x :: xs, idx, h => by
+      unfold listIndexOf? at h
+      by_cases hx : x = target
+      · simp [hx] at h
+        cases h
+        simp
+      · simp [hx] at h
+        cases htail : listIndexOf? target xs with
+        | none =>
+            simp [htail] at h
+        | some tailIdx =>
+            simp [htail] at h
+            have htail_lt :
+                tailIdx < xs.length :=
+              listIndexOf?_lt_length (target := target) htail
+            cases h
+            simp
+            omega
+
+theorem listIndexOf?_get?
+    {alpha : Type u} [DecidableEq alpha] {target : alpha} :
+    forall {xs : List alpha} {idx : Nat},
+      listIndexOf? target xs = some idx -> xs[idx]? = some target
+  | [], _, h => by
+      simp [listIndexOf?] at h
+  | x :: xs, idx, h => by
+      unfold listIndexOf? at h
+      by_cases hx : x = target
+      · simp [hx] at h
+        cases h
+        simp [hx]
+      · simp [hx] at h
+        cases htail : listIndexOf? target xs with
+        | none =>
+            simp [htail] at h
+        | some tailIdx =>
+            simp [htail] at h
+            cases h
+            have hget :
+                xs[tailIdx]? = some target :=
+              listIndexOf?_get? (target := target) htail
+            simpa using hget
+
+theorem listIndexOf?_mem
+    {alpha : Type u} [DecidableEq alpha] {target : alpha}
+    {xs : List alpha} {idx : Nat}
+    (h : listIndexOf? target xs = some idx) :
+    target ∈ xs := by
+  exact List.mem_of_getElem? (listIndexOf?_get? h)
+
+theorem listIndexOf?_exists_of_mem
+    {alpha : Type u} [DecidableEq alpha] {target : alpha} :
+    forall {xs : List alpha},
+      target ∈ xs -> exists idx, listIndexOf? target xs = some idx
+  | [], hmem => by
+      simp at hmem
+  | x :: xs, hmem => by
+      unfold listIndexOf?
+      by_cases hx : x = target
+      · exact ⟨0, by simp [hx]⟩
+      · have htarget_x : target ≠ x := by
+          intro htarget_x
+          exact hx htarget_x.symm
+        simp [hx, htarget_x] at hmem ⊢
+        rcases listIndexOf?_exists_of_mem (target := target) hmem with
+          ⟨idx, hidx⟩
+        exact ⟨idx + 1, by simp [hidx]⟩
+
+theorem listIndexOf?_eq_of_get?_nodup
+    {alpha : Type u} [DecidableEq alpha] {target : alpha}
+    {xs : List alpha} {idx : Nat}
+    (hnodup : xs.Nodup)
+    (hget : xs[idx]? = some target) :
+    listIndexOf? target xs = some idx := by
+  induction xs generalizing idx with
+  | nil =>
+      simp at hget
+  | cons x xs ih =>
+      unfold listIndexOf?
+      by_cases hx : x = target
+      · simp [hx]
+        rw [List.nodup_cons] at hnodup
+        cases idx with
+        | zero =>
+            rfl
+        | succ idx =>
+            simp [hx] at hget
+            have hmemTarget : target ∈ xs :=
+              List.mem_of_getElem? hget
+            have hmemX : x ∈ xs := by
+              simpa [hx] using hmemTarget
+            exact False.elim (hnodup.1 hmemX)
+      · simp [hx]
+        cases idx with
+        | zero =>
+            simp [hx] at hget
+        | succ idx =>
+            rw [List.nodup_cons] at hnodup
+            have htail :
+                listIndexOf? target xs = some idx :=
+              ih hnodup.2 (by simpa using hget)
+            simp [htail]
+
+/--
+Canonical fixed-weight encoder: the first index of `bits` in the finite
+fixed-weight universe for its own length and true-count.
+-/
+def fixedWeightEncode? (bits : List Bool) : Option Nat :=
+  listIndexOf? bits (fixedWeightBitstrings bits.length (trueCount bits))
+
+/-- Canonical fixed-weight decoder by indexing the counted universe. -/
+def fixedWeightDecode? (n k code : Nat) : Option (List Bool) :=
+  (fixedWeightBitstrings n k)[code]?
+
+theorem fixedWeightEncode?_exists (bits : List Bool) :
+    exists code, fixedWeightEncode? bits = some code := by
+  unfold fixedWeightEncode?
+  exact
+    listIndexOf?_exists_of_mem
+      (target := bits)
+      (fixedWeightBitstrings_mem_of_length_trueCount rfl rfl)
+
+theorem fixedWeightEncode?_lt_binomialCount
+    {bits : List Bool} {code : Nat}
+    (henc : fixedWeightEncode? bits = some code) :
+    code < binomialCount bits.length (trueCount bits) := by
+  have hlt :
+      code <
+        (fixedWeightBitstrings bits.length (trueCount bits)).length := by
+    exact listIndexOf?_lt_length henc
+  simpa [fixedWeightBitstrings_length] using hlt
+
+/-- Total canonical code for a bitvector in its own fixed-weight universe. -/
+def fixedWeightCode (bits : List Bool) : Nat :=
+  (fixedWeightEncode? bits).getD 0
+
+theorem fixedWeightEncode?_eq_some_fixedWeightCode
+    (bits : List Bool) :
+    fixedWeightEncode? bits = some (fixedWeightCode bits) := by
+  rcases fixedWeightEncode?_exists bits with ⟨code, hcode⟩
+  simp [fixedWeightCode, hcode]
+
+theorem fixedWeightCode_lt_binomialCount
+    (bits : List Bool) :
+    fixedWeightCode bits <
+      binomialCount bits.length (trueCount bits) := by
+  exact fixedWeightEncode?_lt_binomialCount
+    (fixedWeightEncode?_eq_some_fixedWeightCode bits)
+
+theorem fixedWeightDecode?_fixedWeightEncode?
+    {bits : List Bool} {code : Nat}
+    (henc : fixedWeightEncode? bits = some code) :
+    fixedWeightDecode? bits.length (trueCount bits) code = some bits := by
+  exact listIndexOf?_get? henc
+
+theorem fixedWeightDecode?_mem_length_trueCount
+    {n k code : Nat} {bits : List Bool}
+    (hdec : fixedWeightDecode? n k code = some bits) :
+    bits.length = n /\ trueCount bits = k := by
+  unfold fixedWeightDecode? at hdec
+  have hmem : List.Mem bits (fixedWeightBitstrings n k) :=
+    List.mem_of_getElem? hdec
+  exact fixedWeightBitstrings_mem_length_trueCount hmem
+
+theorem fixedWeightEncode?_fixedWeightDecode?
+    {n k code : Nat} {bits : List Bool}
+    (hdec : fixedWeightDecode? n k code = some bits) :
+    fixedWeightEncode? bits = some code := by
+  unfold fixedWeightDecode? at hdec
+  have hfacts := fixedWeightBitstrings_mem_length_trueCount
+    (List.mem_of_getElem? hdec)
+  unfold fixedWeightEncode?
+  rw [hfacts.1, hfacts.2]
+  exact listIndexOf?_eq_of_get?_nodup
+    (fixedWeightBitstrings_nodup n k) hdec
+
+theorem fixedWeightDecode?_eq_some_iff
+    {n k code : Nat} {bits : List Bool} :
+    fixedWeightDecode? n k code = some bits <->
+      bits.length = n /\ trueCount bits = k /\
+        fixedWeightEncode? bits = some code := by
+  constructor
+  · intro hdec
+    have hfacts := fixedWeightDecode?_mem_length_trueCount hdec
+    exact ⟨hfacts.1, hfacts.2,
+      fixedWeightEncode?_fixedWeightDecode? hdec⟩
+  · intro h
+    have hdec :=
+      fixedWeightDecode?_fixedWeightEncode? h.2.2
+    simpa [h.1, h.2.1] using hdec
+
+theorem fixedWeightCodec_roundTrip
+    (bits : List Bool) :
+    exists code,
+      fixedWeightEncode? bits = some code /\
+        fixedWeightDecode? bits.length (trueCount bits) code = some bits /\
+        code < binomialCount bits.length (trueCount bits) := by
+  rcases fixedWeightEncode?_exists bits with ⟨code, henc⟩
+  exact
+    ⟨code, henc, fixedWeightDecode?_fixedWeightEncode? henc,
+      fixedWeightEncode?_lt_binomialCount henc⟩
+
 /--
 The information-theoretic fixed-weight payload budget used by the compressed
 rank/select profile.  The `+ 1` is the usual whole-number ceiling slack for a
@@ -159,6 +429,25 @@ binary code over `binomialCount n m` states.
 -/
 def fixedWeightPayloadBudget (bits : List Bool) : Nat :=
   Nat.log2 (binomialCount bits.length (trueCount bits)) + 1
+
+theorem fixedWeightEncode?_lt_payloadBudgetPow
+    {bits : List Bool} {code : Nat}
+    (henc : fixedWeightEncode? bits = some code) :
+    code < 2 ^ fixedWeightPayloadBudget bits := by
+  have hcode :
+      code < binomialCount bits.length (trueCount bits) :=
+    fixedWeightEncode?_lt_binomialCount henc
+  have hcount :
+      binomialCount bits.length (trueCount bits) <
+        2 ^ (Nat.log2 (binomialCount bits.length (trueCount bits)) + 1) :=
+    Nat.lt_log2_self
+  exact Nat.lt_trans hcode (by simpa [fixedWeightPayloadBudget] using hcount)
+
+theorem fixedWeightCode_lt_payloadBudgetPow
+    (bits : List Bool) :
+    fixedWeightCode bits < 2 ^ fixedWeightPayloadBudget bits := by
+  exact fixedWeightEncode?_lt_payloadBudgetPow
+    (fixedWeightEncode?_eq_some_fixedWeightCode bits)
 
 /--
 Compressed rank/select directory profile for one bitvector.
