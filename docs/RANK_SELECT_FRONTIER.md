@@ -177,6 +177,20 @@ RMQ.RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableProfile
 RMQ.RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableFamilyDirectory
 RMQ.RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableFamilyProfile
 RMQ.RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableWordBoundedCompressedProfileOfPrimaryBudget
+RMQ.RankSelect.FixedWeightAmbientComputedRRRRouteFieldTablesData
+RMQ.RankSelect.FixedWeightAmbientComputedRRRRouteFieldTablesFamily
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTablesToPackedRouteTableData
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTablesPackedProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTablesFamilyDirectory
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTablesFamilyProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTablesWordBoundedCompressedProfileOfPrimaryBudget
+RMQ.RankSelect.FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+RMQ.RankSelect.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutToPackedRouteTableData
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutPackedProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyDirectory
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutWordBoundedCompressedProfileOfPrimaryBudget
 RMQ.RankSelect.FixedWeightTableRAMBlockData
 RMQ.RankSelect.fixedWeightTableRAMBlockDataProfile
 RMQ.RankSelect.fixedWeightTableRAMBlockToDependentAuxiliaryData
@@ -389,9 +403,14 @@ words.  `fixedWeightAmbientComputedRRRPackedRouteTableProfile` and
 `fixedWeightAmbientComputedRRRPackedRouteTableFamilyProfile` carry this
 fixed-width route-word discipline through the same ambient query profile and
 `o(n)` route-payload envelope. This is still not a concrete global FID builder:
-the packed record assumes per-slot word equations rather than constructing a
-particular field-table layout, and the local block class/length and constant
-decoder regime remain to be instantiated.
+the packed record itself assumes per-slot word equations, but the new
+`FixedWeightAmbientComputedRRRRouteFieldTablesData` constructor derives those
+equations from a canonical `FixedWidthNatTable.ofEntries` route-field table.
+The stronger `FixedWeightAmbientComputedRRRRouteFieldTableLayoutData` layer
+splits the route fields into eight canonical fixed-width tables, concatenates
+their words in route-store order, and proves the packed route profile from
+local table slots.  The local block class/length and constant decoder regime
+remain to be instantiated.
 
 The ambient/global block-composition predecessor is now present. It stores one
 canonical fixed-weight code word per block through
@@ -426,9 +445,13 @@ and for decoded route-table families by
 `fixedWeightAmbientComputedRRRDecodedRouteTableWordBoundedCompressedProfileOfPrimaryBudget`.
 The packed route-word refinement is exposed by
 `fixedWeightAmbientComputedRRRPackedRouteTableWordBoundedCompressedProfileOfPrimaryBudget`.
+The canonical field-table constructors expose the same conditional bridge
+through
+`fixedWeightAmbientComputedRRRRouteFieldTablesWordBoundedCompressedProfileOfPrimaryBudget`
+and
+`fixedWeightAmbientComputedRRRRouteFieldTableLayoutWordBoundedCompressedProfileOfPrimaryBudget`.
 These are generic compressed/FID public theorem shapes for the ambient
-computed-RRR route layers, still conditional on the primary block-code budget
-and on a later constructor that generates the fixed-width route table words.
+computed-RRR route layers, still conditional on the primary block-code budget.
 
 ## Module Boundary
 

@@ -177,8 +177,14 @@ reads return fixed-width `natToBitsLE` words for the route fields.
 `RMQ.RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableProfile` and
 `RMQ.RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableFamilyProfile`
 carry that packed readback discipline through the same counted route-payload
-envelope. The concrete route-table encoders/builders, local block class/length
-decoding, and uniform constant local decoder regime remain future work.
+envelope.
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTablesPackedProfile`
+derives the same packed profile from a canonical fixed-width route-field table,
+and
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutPackedProfile`
+does so from eight concatenated canonical fixed-width field tables. Local block
+class/length decoding and the uniform constant local decoder regime remain
+future work.
 The ambient/global fixed-weight block predecessor is also formalized:
 `RMQ.RankSelect.fixedWeightAmbientBlockCompositionFamilyWordBoundedProfile`
 proves an `o(n)` counted auxiliary envelope for block-composed fixed-weight
@@ -198,8 +204,11 @@ and
 `RMQ.RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableWordBoundedCompressedProfileOfPrimaryBudget`;
 the packed fixed-width route-word bridge is
 `RMQ.RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableWordBoundedCompressedProfileOfPrimaryBudget`.
-These remain conditional on the primary block-code budget theorem and on a
-later route field-table constructor.
+The field-table constructor bridges are
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTablesWordBoundedCompressedProfileOfPrimaryBudget`
+and
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutWordBoundedCompressedProfileOfPrimaryBudget`.
+These remain conditional on the primary block-code budget theorem.
 
 ## Balanced-Parentheses Navigation
 

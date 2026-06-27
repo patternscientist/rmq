@@ -190,9 +190,9 @@ about Lean's executable `List` runtime.
   a packed-code-only local RRR block kernel consumed by an ambient fixed-weight
   block-composition scaffold, a route/class metadata table envelope with
   `o(n)` counted auxiliary payload, decoded route-field profiles over charged
-  metadata reads, packed fixed-width route-word readback profiles, and
-  conditional bounded-regime bridges for the local decoder, ambient route
-  tables, and ambient primary-budget join, and
+  metadata reads, packed fixed-width route-word readback profiles, canonical
+  route field-table constructors, and conditional bounded-regime bridges for
+  the local decoder, ambient route tables, and ambient primary-budget join, and
   `RankSelectPublic` exposes the public Jacobson/Clark
   bitvector family theorem as
   `RankSelect.jacobsonClarkNPlusOConstantQuery` and its strengthened

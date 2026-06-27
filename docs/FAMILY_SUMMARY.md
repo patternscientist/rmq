@@ -399,8 +399,13 @@ fields.  `RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableProfile` and
 `RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableFamilyProfile` carry
 that packed readback discipline through the ambient query profile and the same
 `o(n)` route-payload envelope.  This is still not the finished non-oracular FID
-construction: the packed layer assumes per-slot word equations rather than
-constructing the route field-table layout, the local block class/length
+construction, but the route field-table constructor gap is now closed:
+`RankSelect.FixedWeightAmbientComputedRRRRouteFieldTablesData` derives the
+packed route-table profile from a canonical `FixedWidthNatTable.ofEntries`
+route-field table aligned with the route store, while
+`RankSelect.FixedWeightAmbientComputedRRRRouteFieldTableLayoutData` splits the
+fields into eight canonical fixed-width tables and proves the packed profile
+from the concatenated table-word layout.  The local block class/length
 discipline is not yet decoded from metadata words, and the intended block-size
 regime still has to turn the local computed decoder into a constant-cost
 primitive.
@@ -435,9 +440,13 @@ does this for the base route-table family, while
 carries the decoded metadata-read discipline through the same compressed/FID
 shape, and
 `RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableWordBoundedCompressedProfileOfPrimaryBudget`
-adds the fixed-width route-word discipline to that conditional bridge. All
-remain conditional on the primary block-code budget theorem and the later
-field-table constructor for route metadata words.
+adds the fixed-width route-word discipline to that conditional bridge.
+`RankSelect.fixedWeightAmbientComputedRRRRouteFieldTablesWordBoundedCompressedProfileOfPrimaryBudget`
+and
+`RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutWordBoundedCompressedProfileOfPrimaryBudget`
+carry the canonical field-table and eight-table layout constructors through
+the same bridge. All remain conditional on the primary block-code budget
+theorem.
 The remaining standalone rank/select frontier is therefore concrete global
 routing/table builders, local block class/length decoding, a uniform constant
 local decoder regime, and discharging this primary-budget premise, not merely
@@ -1848,6 +1857,12 @@ The names below are grouped by source module. Repeated base names in
   `RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableProfile`,
   `RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableFamilyProfile`,
   `RankSelect.fixedWeightAmbientComputedRRRPackedRouteTableWordBoundedCompressedProfileOfPrimaryBudget`,
+  `RankSelect.fixedWeightAmbientComputedRRRRouteFieldTablesPackedProfile`,
+  `RankSelect.fixedWeightAmbientComputedRRRRouteFieldTablesFamilyProfile`,
+  `RankSelect.fixedWeightAmbientComputedRRRRouteFieldTablesWordBoundedCompressedProfileOfPrimaryBudget`,
+  `RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutPackedProfile`,
+  `RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyProfile`,
+  `RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutWordBoundedCompressedProfileOfPrimaryBudget`,
   `RankSelect.fixedWeightAmbientBlockCompositionWordBoundedCompressedProfileOfPrimaryBudget`,
   `RankSelect.fixedWeightTableRAMBlockDataProfile`,
   `RankSelect.fixedWeightTableRAMBlockToDependentAuxiliaryData`,

@@ -5811,6 +5811,1284 @@ theorem word_bounded_compressed_profile_of_primary_budget
 
 end FixedWeightAmbientComputedRRRPackedRouteTableFamily
 
+theorem fixedWidthNatTableOfEntries_words_toList
+    (entries : List Nat) (width : Nat)
+    (hbound :
+      forall {entry : Nat}, List.Mem entry entries -> entry < 2 ^ width) :
+    (SuccinctSpace.FixedWidthNatTable.ofEntries
+        entries width hbound).store.words.toList =
+      entries.map (SuccinctSpace.natToBitsLE width) := by
+  rfl
+
+/--
+Canonical fixed-width route-field table constructor for ambient computed-RRR.
+
+The previous packed route layer assumed per-slot word equations. This layer
+derives those equations from one canonical `FixedWidthNatTable.ofEntries`
+payload table aligned with the route store.
+-/
+structure FixedWeightAmbientComputedRRRRouteFieldTablesData
+    (bits : List Bool) (blocks : List (List Bool))
+    (overhead wordSize routeCost localQueryCost queryCost : Nat) where
+  routeData :
+    FixedWeightAmbientComputedRRRRouteTableData
+      bits blocks overhead wordSize routeCost localQueryCost queryCost
+  fieldWidth : Nat
+  fieldWidth_le_wordSize : fieldWidth <= wordSize
+  routeFieldEntries : List Nat
+  routeFieldEntries_bound :
+    forall {entry : Nat}, List.Mem entry routeFieldEntries ->
+      entry < 2 ^ fieldWidth
+  routeStore_words_eq :
+    routeData.routeStore.store.words.toList =
+      (SuccinctSpace.FixedWidthNatTable.ofEntries
+        routeFieldEntries fieldWidth routeFieldEntries_bound).store.words.toList
+  accessBlockSlot : Nat -> Nat
+  accessOffsetSlot : Nat -> Nat
+  rankBlockSlot : Bool -> Nat -> Nat
+  rankLocalLimitSlot : Bool -> Nat -> Nat
+  rankBaseRankSlot : Bool -> Nat -> Nat
+  selectBlockSlot : Bool -> Nat -> Nat
+  selectLocalOccurrenceSlot : Bool -> Nat -> Nat
+  selectBlockStartSlot : Bool -> Nat -> Nat
+  access_metadata_reads_eq :
+    forall i,
+      (routeData.accessRoute i).metadataReads =
+        [accessBlockSlot i, accessOffsetSlot i]
+  rank_metadata_reads_eq :
+    forall target pos,
+      (routeData.rankRoute target pos).metadataReads =
+        [rankBlockSlot target pos,
+          rankLocalLimitSlot target pos,
+          rankBaseRankSlot target pos]
+  select_metadata_reads_eq :
+    forall target occurrence,
+      (routeData.selectRoute target occurrence).metadataReads =
+        [selectBlockSlot target occurrence,
+          selectLocalOccurrenceSlot target occurrence,
+          selectBlockStartSlot target occurrence]
+  access_block_entry_eq :
+    forall i,
+      routeFieldEntries[accessBlockSlot i]? =
+        some (routeData.accessRoute i).blockIndex
+  access_offset_entry_eq :
+    forall i,
+      routeFieldEntries[accessOffsetSlot i]? =
+        some (routeData.accessRoute i).offset
+  rank_block_entry_eq :
+    forall target pos,
+      routeFieldEntries[rankBlockSlot target pos]? =
+        some (routeData.rankRoute target pos).blockIndex
+  rank_localLimit_entry_eq :
+    forall target pos,
+      routeFieldEntries[rankLocalLimitSlot target pos]? =
+        some (routeData.rankRoute target pos).localLimit
+  rank_baseRank_entry_eq :
+    forall target pos,
+      routeFieldEntries[rankBaseRankSlot target pos]? =
+        some (routeData.rankRoute target pos).baseRank
+  select_block_entry_eq :
+    forall target occurrence,
+      routeFieldEntries[selectBlockSlot target occurrence]? =
+        some (routeData.selectRoute target occurrence).blockIndex
+  select_localOccurrence_entry_eq :
+    forall target occurrence,
+      routeFieldEntries[selectLocalOccurrenceSlot target occurrence]? =
+        some (routeData.selectRoute target occurrence).localOccurrence
+  select_blockStart_entry_eq :
+    forall target occurrence,
+      routeFieldEntries[selectBlockStartSlot target occurrence]? =
+        some (routeData.selectRoute target occurrence).blockStart
+
+namespace FixedWeightAmbientComputedRRRRouteFieldTablesData
+
+def routeFieldTable
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTablesData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    SuccinctSpace.FixedWidthNatTable
+      data.routeFieldEntries data.fieldWidth :=
+  SuccinctSpace.FixedWidthNatTable.ofEntries
+    data.routeFieldEntries data.fieldWidth data.routeFieldEntries_bound
+
+theorem routeFieldTable_words_toList
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTablesData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    data.routeFieldTable.store.words.toList =
+      data.routeFieldEntries.map
+        (SuccinctSpace.natToBitsLE data.fieldWidth) := by
+  exact fixedWidthNatTableOfEntries_words_toList
+    data.routeFieldEntries data.fieldWidth data.routeFieldEntries_bound
+
+theorem routeFieldEntry_lt_of_get?
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTablesData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    {slot value : Nat}
+    (hget : data.routeFieldEntries[slot]? = some value) :
+    value < 2 ^ data.fieldWidth := by
+  exact data.routeFieldEntries_bound (List.mem_of_getElem? hget)
+
+theorem routeStore_word_eq_of_entry_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTablesData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    {slot value : Nat}
+    (hget : data.routeFieldEntries[slot]? = some value) :
+    data.routeData.routeStore.store.words[slot]? =
+      some (SuccinctSpace.natToBitsLE data.fieldWidth value) := by
+  have hlist :
+      data.routeData.routeStore.store.words.toList[slot]? =
+        some (SuccinctSpace.natToBitsLE data.fieldWidth value) := by
+    rw [data.routeStore_words_eq,
+      fixedWidthNatTableOfEntries_words_toList
+        data.routeFieldEntries data.fieldWidth
+        data.routeFieldEntries_bound]
+    simp [List.getElem?_map, hget]
+  simpa [Array.getElem?_toList] using hlist
+
+def toPackedRouteTableData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTablesData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientComputedRRRPackedRouteTableData
+      bits blocks overhead wordSize routeCost localQueryCost queryCost where
+  routeData := data.routeData
+  fieldWidth := data.fieldWidth
+  fieldWidth_le_wordSize := data.fieldWidth_le_wordSize
+  accessBlockSlot := data.accessBlockSlot
+  accessOffsetSlot := data.accessOffsetSlot
+  rankBlockSlot := data.rankBlockSlot
+  rankLocalLimitSlot := data.rankLocalLimitSlot
+  rankBaseRankSlot := data.rankBaseRankSlot
+  selectBlockSlot := data.selectBlockSlot
+  selectLocalOccurrenceSlot := data.selectLocalOccurrenceSlot
+  selectBlockStartSlot := data.selectBlockStartSlot
+  access_metadata_reads_eq := data.access_metadata_reads_eq
+  rank_metadata_reads_eq := data.rank_metadata_reads_eq
+  select_metadata_reads_eq := data.select_metadata_reads_eq
+  access_block_lt := fun i =>
+    data.routeFieldEntry_lt_of_get? (data.access_block_entry_eq i)
+  access_offset_lt := fun i =>
+    data.routeFieldEntry_lt_of_get? (data.access_offset_entry_eq i)
+  rank_block_lt := fun target pos =>
+    data.routeFieldEntry_lt_of_get?
+      (data.rank_block_entry_eq target pos)
+  rank_localLimit_lt := fun target pos =>
+    data.routeFieldEntry_lt_of_get?
+      (data.rank_localLimit_entry_eq target pos)
+  rank_baseRank_lt := fun target pos =>
+    data.routeFieldEntry_lt_of_get?
+      (data.rank_baseRank_entry_eq target pos)
+  select_block_lt := fun target occurrence =>
+    data.routeFieldEntry_lt_of_get?
+      (data.select_block_entry_eq target occurrence)
+  select_localOccurrence_lt := fun target occurrence =>
+    data.routeFieldEntry_lt_of_get?
+      (data.select_localOccurrence_entry_eq target occurrence)
+  select_blockStart_lt := fun target occurrence =>
+    data.routeFieldEntry_lt_of_get?
+      (data.select_blockStart_entry_eq target occurrence)
+  access_block_word_eq := fun i =>
+    data.routeStore_word_eq_of_entry_eq
+      (data.access_block_entry_eq i)
+  access_offset_word_eq := fun i =>
+    data.routeStore_word_eq_of_entry_eq
+      (data.access_offset_entry_eq i)
+  rank_block_word_eq := fun target pos =>
+    data.routeStore_word_eq_of_entry_eq
+      (data.rank_block_entry_eq target pos)
+  rank_localLimit_word_eq := fun target pos =>
+    data.routeStore_word_eq_of_entry_eq
+      (data.rank_localLimit_entry_eq target pos)
+  rank_baseRank_word_eq := fun target pos =>
+    data.routeStore_word_eq_of_entry_eq
+      (data.rank_baseRank_entry_eq target pos)
+  select_block_word_eq := fun target occurrence =>
+    data.routeStore_word_eq_of_entry_eq
+      (data.select_block_entry_eq target occurrence)
+  select_localOccurrence_word_eq := fun target occurrence =>
+    data.routeStore_word_eq_of_entry_eq
+      (data.select_localOccurrence_entry_eq target occurrence)
+  select_blockStart_word_eq := fun target occurrence =>
+    data.routeStore_word_eq_of_entry_eq
+      (data.select_blockStart_entry_eq target occurrence)
+
+def toAmbientBlockCompositionData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTablesData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientBlockCompositionData
+      bits blocks overhead wordSize queryCost :=
+  data.toPackedRouteTableData.toAmbientBlockCompositionData
+
+def RouteFieldTablesProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTablesData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    Prop :=
+  data.toPackedRouteTableData.PackedRouteTableProfile /\
+    data.routeFieldTable.payload.length =
+      data.routeFieldEntries.length * data.fieldWidth /\
+    SuccinctSpace.flattenPayloadWords
+        data.routeFieldTable.store.words.toList =
+      data.routeFieldTable.payload /\
+    data.routeData.routeStore.store.words.toList =
+      data.routeFieldTable.store.words.toList
+
+theorem route_field_tables_profile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTablesData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    data.RouteFieldTablesProfile := by
+  exact
+    ⟨data.toPackedRouteTableData.packed_route_table_profile,
+      data.routeFieldTable.payload_length,
+      data.routeFieldTable.store.payload_eq_words_join,
+      data.routeStore_words_eq⟩
+
+theorem route_field_tables_packed_profile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTablesData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    data.RouteFieldTablesProfile := by
+  exact data.route_field_tables_profile
+
+end FixedWeightAmbientComputedRRRRouteFieldTablesData
+
+/-- Family of canonical fixed-width route-field table constructors. -/
+structure FixedWeightAmbientComputedRRRRouteFieldTablesFamily
+    (slots routeCost localQueryCost queryCost : Nat) where
+  wordSize : Nat -> Nat
+  blocks : List Bool -> List (List Bool)
+  component :
+    forall bits : List Bool,
+      FixedWeightAmbientComputedRRRRouteFieldTablesData
+        bits (blocks bits)
+        (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+        (wordSize bits.length) routeCost localQueryCost queryCost
+
+namespace FixedWeightAmbientComputedRRRRouteFieldTablesFamily
+
+def overhead (slots : Nat) : Nat -> Nat :=
+  fixedWeightAmbientBlockAuxiliaryOverhead slots
+
+def compressedOverhead (slots : Nat) (primaryOverhead : Nat -> Nat) :
+    Nat -> Nat :=
+  FixedWeightAmbientBlockCompositionFamily.compressedOverhead
+    slots primaryOverhead
+
+def componentData
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTablesFamily
+        slots routeCost localQueryCost queryCost)
+    (bits : List Bool) :
+    FixedWeightAmbientComputedRRRRouteFieldTablesData
+      bits (family.blocks bits)
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+      (family.wordSize bits.length) routeCost localQueryCost queryCost :=
+  family.component bits
+
+def toPackedRouteTableFamily
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTablesFamily
+        slots routeCost localQueryCost queryCost) :
+    FixedWeightAmbientComputedRRRPackedRouteTableFamily
+      slots routeCost localQueryCost queryCost where
+  wordSize := family.wordSize
+  blocks := family.blocks
+  component bits := (family.componentData bits).toPackedRouteTableData
+
+def directory
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTablesFamily
+        slots routeCost localQueryCost queryCost)
+    (bits : List Bool) :
+    FixedWeightAmbientBlockCompositionData
+      bits (family.blocks bits)
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+      (family.wordSize bits.length) queryCost :=
+  (family.componentData bits).toAmbientBlockCompositionData
+
+theorem route_field_tables_family_profile
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTablesFamily
+        slots routeCost localQueryCost queryCost) :
+    SuccinctSpace.LittleOLinear (overhead slots) /\
+      forall bits : List Bool,
+        let data := family.componentData bits
+        data.RouteFieldTablesProfile /\
+          data.routeData.routePayload.length =
+            fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          ((family.directory bits).payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length) /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall i,
+            ((family.directory bits).accessCosted i).cost <=
+              queryCost) /\
+          (forall target pos,
+            ((family.directory bits).rankCosted target pos).cost <=
+              queryCost) /\
+          (forall target occurrence,
+            ((family.directory bits).selectCosted target occurrence).cost <=
+              queryCost) := by
+  constructor
+  · exact fixedWeightAmbientBlockAuxiliaryOverhead_littleO slots
+  · intro bits
+    let data := family.componentData bits
+    exact
+      ⟨data.route_field_tables_profile,
+        data.routeData.routePayload_length_eq,
+        (family.directory bits).payload_length,
+        data.routeData.blocks_flatten,
+        (fun i => (family.directory bits).accessCosted_cost_le i),
+        (fun target pos =>
+          (family.directory bits).rankCosted_cost_le target pos),
+        (fun target occurrence =>
+          (family.directory bits).selectCosted_cost_le
+            target occurrence)⟩
+
+theorem word_bounded_compressed_profile_of_primary_budget
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTablesFamily
+        slots routeCost localQueryCost queryCost)
+    (primaryOverhead : Nat -> Nat)
+    (hprimaryO : SuccinctSpace.LittleOLinear primaryOverhead)
+    (hprimary :
+      forall bits : List Bool,
+        fixedWeightBlockPayloadBudget (family.blocks bits) <=
+          fixedWeightPayloadBudget bits + primaryOverhead bits.length) :
+    SuccinctSpace.LittleOLinear
+        (compressedOverhead slots primaryOverhead) /\
+      forall bits : List Bool,
+        (family.componentData bits).RouteFieldTablesProfile /\
+          let data := family.directory bits
+          data.DirectoryProfile /\
+            data.payload.length =
+              fixedWeightBlockPayloadBudget (family.blocks bits) +
+                fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+            data.payload.length <=
+              fixedWeightPayloadBudget bits +
+                compressedOverhead slots primaryOverhead bits.length /\
+            data.auxPayload.length =
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+            SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+            (forall {word : List Bool},
+              List.Mem word data.codeStore.store.words.toList ->
+                word.length <= Nat.log2 bits.length + 1) /\
+            (forall {word : List Bool},
+              List.Mem word data.auxStore.store.words.toList ->
+                word.length <= Nat.log2 bits.length + 1) /\
+            (forall i,
+              (data.accessCosted i).cost <= queryCost /\
+                (data.accessCosted i).erase = bits[i]?) /\
+            (forall target pos,
+              (data.rankCosted target pos).cost <= queryCost /\
+                (data.rankCosted target pos).erase =
+                  Succinct.rankPrefix target bits pos) /\
+            (forall target occurrence,
+              (data.selectCosted target occurrence).cost <= queryCost /\
+                (data.selectCosted target occurrence).erase =
+                  Succinct.select target bits occurrence) := by
+  have hcompressed :=
+    FixedWeightAmbientComputedRRRPackedRouteTableFamily.word_bounded_compressed_profile_of_primary_budget
+      family.toPackedRouteTableFamily primaryOverhead hprimaryO
+      (by
+        intro bits
+        exact hprimary bits)
+  constructor
+  · simpa [compressedOverhead,
+      FixedWeightAmbientComputedRRRPackedRouteTableFamily.compressedOverhead]
+      using hcompressed.1
+  · intro bits
+    constructor
+    · exact (family.componentData bits).route_field_tables_profile
+    · simpa [directory, toPackedRouteTableFamily, componentData,
+        FixedWeightAmbientComputedRRRPackedRouteTableFamily.directory,
+        FixedWeightAmbientComputedRRRPackedRouteTableFamily.componentData,
+        FixedWeightAmbientComputedRRRPackedRouteTableFamily.compressedOverhead,
+        compressedOverhead]
+        using (hcompressed.2 bits).2
+
+end FixedWeightAmbientComputedRRRRouteFieldTablesFamily
+
+theorem list_getElem?_append_middle_of_get?
+    {α : Type} (pre mid post : List α) {i : Nat} {x : α}
+    (hget : mid[i]? = some x) :
+    (pre ++ mid ++ post)[pre.length + i]? = some x := by
+  have hi : i < mid.length := (List.getElem?_eq_some_iff.mp hget).1
+  have hpreMid : pre.length + i < (pre ++ mid).length := by
+    simp [List.length_append]
+    omega
+  rw [List.getElem?_append_left hpreMid]
+  rw [List.getElem?_append_right (by omega)]
+  have hsub : pre.length + i - pre.length = i := by omega
+  rw [hsub]
+  exact hget
+
+theorem boundedPayloadWordStore_get?_of_words_append_middle
+    {payload : List Bool} {wordSize : Nat}
+    (store : SuccinctSpace.BoundedPayloadWordStore payload wordSize)
+    {pre mid post : List (List Bool)} {localSlot : Nat}
+    {word : List Bool}
+    (hwords : store.store.words.toList = pre ++ mid ++ post)
+    (hlocal : mid[localSlot]? = some word) :
+    store.store.words[pre.length + localSlot]? = some word := by
+  have hlist :
+      store.store.words.toList[pre.length + localSlot]? =
+        some word := by
+    rw [hwords]
+    exact list_getElem?_append_middle_of_get? pre mid post hlocal
+  simpa [Array.getElem?_toList] using hlist
+
+def fixedWeightRouteFieldTableWords
+    (fieldWidth : Nat) (entries : List Nat) : List (List Bool) :=
+  entries.map (SuccinctSpace.natToBitsLE fieldWidth)
+
+theorem fixedWeightRouteFieldTableWords_eq_ofEntries
+    (fieldWidth : Nat) (entries : List Nat)
+    (hbound :
+      forall {entry : Nat}, List.Mem entry entries ->
+        entry < 2 ^ fieldWidth) :
+    fixedWeightRouteFieldTableWords fieldWidth entries =
+      (SuccinctSpace.FixedWidthNatTable.ofEntries
+        entries fieldWidth hbound).store.words.toList := by
+  rw [fixedWidthNatTableOfEntries_words_toList]
+  rfl
+
+def fixedWeightRouteFieldTableLayoutWords
+    (fieldWidth : Nat)
+    (accessBlockEntries accessOffsetEntries
+      rankBlockEntries rankLocalLimitEntries rankBaseRankEntries
+      selectBlockEntries selectLocalOccurrenceEntries
+      selectBlockStartEntries : List Nat) : List (List Bool) :=
+  fixedWeightRouteFieldTableWords fieldWidth accessBlockEntries ++
+    fixedWeightRouteFieldTableWords fieldWidth accessOffsetEntries ++
+      fixedWeightRouteFieldTableWords fieldWidth rankBlockEntries ++
+        fixedWeightRouteFieldTableWords fieldWidth rankLocalLimitEntries ++
+          fixedWeightRouteFieldTableWords fieldWidth rankBaseRankEntries ++
+            fixedWeightRouteFieldTableWords fieldWidth selectBlockEntries ++
+              fixedWeightRouteFieldTableWords fieldWidth
+                selectLocalOccurrenceEntries ++
+                fixedWeightRouteFieldTableWords fieldWidth
+                  selectBlockStartEntries
+
+/--
+Eight-table fixed-width route-field layout for ambient computed-RRR metadata.
+
+Each route field is stored in its own canonical fixed-width word table, and
+the route store is aligned to the concatenation of those table words.  This is
+the concrete layout layer that derives packed route metadata words from local
+table slots.
+-/
+structure FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+    (bits : List Bool) (blocks : List (List Bool))
+    (overhead wordSize routeCost localQueryCost queryCost : Nat) where
+  routeData :
+    FixedWeightAmbientComputedRRRRouteTableData
+      bits blocks overhead wordSize routeCost localQueryCost queryCost
+  fieldWidth : Nat
+  fieldWidth_le_wordSize : fieldWidth <= wordSize
+  accessBlockEntries : List Nat
+  accessOffsetEntries : List Nat
+  rankBlockEntries : List Nat
+  rankLocalLimitEntries : List Nat
+  rankBaseRankEntries : List Nat
+  selectBlockEntries : List Nat
+  selectLocalOccurrenceEntries : List Nat
+  selectBlockStartEntries : List Nat
+  accessBlockEntries_bound :
+    forall {entry : Nat}, List.Mem entry accessBlockEntries ->
+      entry < 2 ^ fieldWidth
+  accessOffsetEntries_bound :
+    forall {entry : Nat}, List.Mem entry accessOffsetEntries ->
+      entry < 2 ^ fieldWidth
+  rankBlockEntries_bound :
+    forall {entry : Nat}, List.Mem entry rankBlockEntries ->
+      entry < 2 ^ fieldWidth
+  rankLocalLimitEntries_bound :
+    forall {entry : Nat}, List.Mem entry rankLocalLimitEntries ->
+      entry < 2 ^ fieldWidth
+  rankBaseRankEntries_bound :
+    forall {entry : Nat}, List.Mem entry rankBaseRankEntries ->
+      entry < 2 ^ fieldWidth
+  selectBlockEntries_bound :
+    forall {entry : Nat}, List.Mem entry selectBlockEntries ->
+      entry < 2 ^ fieldWidth
+  selectLocalOccurrenceEntries_bound :
+    forall {entry : Nat}, List.Mem entry selectLocalOccurrenceEntries ->
+      entry < 2 ^ fieldWidth
+  selectBlockStartEntries_bound :
+    forall {entry : Nat}, List.Mem entry selectBlockStartEntries ->
+      entry < 2 ^ fieldWidth
+  routeStore_words_eq :
+    routeData.routeStore.store.words.toList =
+      fixedWeightRouteFieldTableLayoutWords fieldWidth
+        accessBlockEntries accessOffsetEntries
+        rankBlockEntries rankLocalLimitEntries rankBaseRankEntries
+        selectBlockEntries selectLocalOccurrenceEntries
+        selectBlockStartEntries
+  accessBlockLocalSlot : Nat -> Nat
+  accessOffsetLocalSlot : Nat -> Nat
+  rankBlockLocalSlot : Bool -> Nat -> Nat
+  rankLocalLimitLocalSlot : Bool -> Nat -> Nat
+  rankBaseRankLocalSlot : Bool -> Nat -> Nat
+  selectBlockLocalSlot : Bool -> Nat -> Nat
+  selectLocalOccurrenceLocalSlot : Bool -> Nat -> Nat
+  selectBlockStartLocalSlot : Bool -> Nat -> Nat
+  access_metadata_reads_eq :
+    forall i,
+      (routeData.accessRoute i).metadataReads =
+        [accessBlockLocalSlot i,
+          accessBlockEntries.length + accessOffsetLocalSlot i]
+  rank_metadata_reads_eq :
+    forall target pos,
+      (routeData.rankRoute target pos).metadataReads =
+        [accessBlockEntries.length + accessOffsetEntries.length +
+            rankBlockLocalSlot target pos,
+          accessBlockEntries.length + accessOffsetEntries.length +
+            rankBlockEntries.length + rankLocalLimitLocalSlot target pos,
+          accessBlockEntries.length + accessOffsetEntries.length +
+            rankBlockEntries.length + rankLocalLimitEntries.length +
+            rankBaseRankLocalSlot target pos]
+  select_metadata_reads_eq :
+    forall target occurrence,
+      (routeData.selectRoute target occurrence).metadataReads =
+        [accessBlockEntries.length + accessOffsetEntries.length +
+            rankBlockEntries.length + rankLocalLimitEntries.length +
+            rankBaseRankEntries.length + selectBlockLocalSlot target occurrence,
+          accessBlockEntries.length + accessOffsetEntries.length +
+            rankBlockEntries.length + rankLocalLimitEntries.length +
+            rankBaseRankEntries.length + selectBlockEntries.length +
+            selectLocalOccurrenceLocalSlot target occurrence,
+          accessBlockEntries.length + accessOffsetEntries.length +
+            rankBlockEntries.length + rankLocalLimitEntries.length +
+            rankBaseRankEntries.length + selectBlockEntries.length +
+            selectLocalOccurrenceEntries.length +
+            selectBlockStartLocalSlot target occurrence]
+  access_block_entry_eq :
+    forall i,
+      accessBlockEntries[accessBlockLocalSlot i]? =
+        some (routeData.accessRoute i).blockIndex
+  access_offset_entry_eq :
+    forall i,
+      accessOffsetEntries[accessOffsetLocalSlot i]? =
+        some (routeData.accessRoute i).offset
+  rank_block_entry_eq :
+    forall target pos,
+      rankBlockEntries[rankBlockLocalSlot target pos]? =
+        some (routeData.rankRoute target pos).blockIndex
+  rank_localLimit_entry_eq :
+    forall target pos,
+      rankLocalLimitEntries[rankLocalLimitLocalSlot target pos]? =
+        some (routeData.rankRoute target pos).localLimit
+  rank_baseRank_entry_eq :
+    forall target pos,
+      rankBaseRankEntries[rankBaseRankLocalSlot target pos]? =
+        some (routeData.rankRoute target pos).baseRank
+  select_block_entry_eq :
+    forall target occurrence,
+      selectBlockEntries[selectBlockLocalSlot target occurrence]? =
+        some (routeData.selectRoute target occurrence).blockIndex
+  select_localOccurrence_entry_eq :
+    forall target occurrence,
+      selectLocalOccurrenceEntries[
+          selectLocalOccurrenceLocalSlot target occurrence]? =
+        some (routeData.selectRoute target occurrence).localOccurrence
+  select_blockStart_entry_eq :
+    forall target occurrence,
+      selectBlockStartEntries[
+          selectBlockStartLocalSlot target occurrence]? =
+        some (routeData.selectRoute target occurrence).blockStart
+
+namespace FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+
+def accessBlockWords
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    List (List Bool) :=
+  fixedWeightRouteFieldTableWords data.fieldWidth data.accessBlockEntries
+
+def accessOffsetWords
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    List (List Bool) :=
+  fixedWeightRouteFieldTableWords data.fieldWidth data.accessOffsetEntries
+
+def rankBlockWords
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    List (List Bool) :=
+  fixedWeightRouteFieldTableWords data.fieldWidth data.rankBlockEntries
+
+def rankLocalLimitWords
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    List (List Bool) :=
+  fixedWeightRouteFieldTableWords data.fieldWidth data.rankLocalLimitEntries
+
+def rankBaseRankWords
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    List (List Bool) :=
+  fixedWeightRouteFieldTableWords data.fieldWidth data.rankBaseRankEntries
+
+def selectBlockWords
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    List (List Bool) :=
+  fixedWeightRouteFieldTableWords data.fieldWidth data.selectBlockEntries
+
+def selectLocalOccurrenceWords
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    List (List Bool) :=
+  fixedWeightRouteFieldTableWords
+    data.fieldWidth data.selectLocalOccurrenceEntries
+
+def selectBlockStartWords
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    List (List Bool) :=
+  fixedWeightRouteFieldTableWords
+    data.fieldWidth data.selectBlockStartEntries
+
+def layoutWords
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    List (List Bool) :=
+  fixedWeightRouteFieldTableLayoutWords data.fieldWidth
+    data.accessBlockEntries data.accessOffsetEntries
+    data.rankBlockEntries data.rankLocalLimitEntries
+    data.rankBaseRankEntries data.selectBlockEntries
+    data.selectLocalOccurrenceEntries data.selectBlockStartEntries
+
+theorem routeStore_words_eq_layoutWords
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    data.routeData.routeStore.store.words.toList =
+      data.layoutWords := data.routeStore_words_eq
+
+theorem routeFieldEntry_lt
+    {entries : List Nat} {fieldWidth : Nat}
+    (hbound :
+      forall {entry : Nat}, List.Mem entry entries ->
+        entry < 2 ^ fieldWidth)
+    {slot value : Nat}
+    (hget : entries[slot]? = some value) :
+    value < 2 ^ fieldWidth :=
+  hbound (List.mem_of_getElem? hget)
+
+theorem localWord_get?
+    {fieldWidth : Nat} {entries : List Nat} {slot value : Nat}
+    (hget : entries[slot]? = some value) :
+    (fixedWeightRouteFieldTableWords fieldWidth entries)[slot]? =
+      some (SuccinctSpace.natToBitsLE fieldWidth value) := by
+  simp [fixedWeightRouteFieldTableWords, List.getElem?_map, hget]
+
+theorem access_block_word_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (i : Nat) :
+    data.routeData.routeStore.store.words[data.accessBlockLocalSlot i]? =
+      some (SuccinctSpace.natToBitsLE data.fieldWidth
+        (data.routeData.accessRoute i).blockIndex) := by
+  have hlocal := localWord_get?
+    (fieldWidth := data.fieldWidth)
+    (hget := data.access_block_entry_eq i)
+  have hword :=
+    boundedPayloadWordStore_get?_of_words_append_middle
+      data.routeData.routeStore
+      (pre := [])
+      (mid := data.accessBlockWords)
+      (post := data.accessOffsetWords ++ data.rankBlockWords ++
+        data.rankLocalLimitWords ++ data.rankBaseRankWords ++
+        data.selectBlockWords ++ data.selectLocalOccurrenceWords ++
+        data.selectBlockStartWords)
+      (by
+        simpa [layoutWords, accessBlockWords, accessOffsetWords,
+          rankBlockWords, rankLocalLimitWords, rankBaseRankWords,
+          selectBlockWords, selectLocalOccurrenceWords,
+          selectBlockStartWords, fixedWeightRouteFieldTableLayoutWords,
+          List.append_assoc] using data.routeStore_words_eq_layoutWords)
+      hlocal
+  simpa [accessBlockWords] using hword
+
+theorem access_offset_word_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (i : Nat) :
+    data.routeData.routeStore.store.words[
+        data.accessBlockEntries.length + data.accessOffsetLocalSlot i]? =
+      some (SuccinctSpace.natToBitsLE data.fieldWidth
+        (data.routeData.accessRoute i).offset) := by
+  have hlocal := localWord_get?
+    (fieldWidth := data.fieldWidth)
+    (hget := data.access_offset_entry_eq i)
+  have hword :=
+    boundedPayloadWordStore_get?_of_words_append_middle
+      data.routeData.routeStore
+      (pre := data.accessBlockWords)
+      (mid := data.accessOffsetWords)
+      (post := data.rankBlockWords ++ data.rankLocalLimitWords ++
+        data.rankBaseRankWords ++ data.selectBlockWords ++
+        data.selectLocalOccurrenceWords ++ data.selectBlockStartWords)
+      (by
+        simpa [layoutWords, accessBlockWords, accessOffsetWords,
+          rankBlockWords, rankLocalLimitWords, rankBaseRankWords,
+          selectBlockWords, selectLocalOccurrenceWords,
+          selectBlockStartWords, fixedWeightRouteFieldTableLayoutWords,
+          List.append_assoc] using data.routeStore_words_eq_layoutWords)
+      hlocal
+  simpa [accessBlockWords, accessOffsetWords,
+    fixedWeightRouteFieldTableWords] using hword
+
+theorem rank_block_word_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (pos : Nat) :
+    data.routeData.routeStore.store.words[
+        data.accessBlockEntries.length + data.accessOffsetEntries.length +
+          data.rankBlockLocalSlot target pos]? =
+      some (SuccinctSpace.natToBitsLE data.fieldWidth
+        (data.routeData.rankRoute target pos).blockIndex) := by
+  have hlocal := localWord_get?
+    (fieldWidth := data.fieldWidth)
+    (hget := data.rank_block_entry_eq target pos)
+  have hword :=
+    boundedPayloadWordStore_get?_of_words_append_middle
+      data.routeData.routeStore
+      (pre := data.accessBlockWords ++ data.accessOffsetWords)
+      (mid := data.rankBlockWords)
+      (post := data.rankLocalLimitWords ++ data.rankBaseRankWords ++
+        data.selectBlockWords ++ data.selectLocalOccurrenceWords ++
+        data.selectBlockStartWords)
+      (by
+        simpa [layoutWords, accessBlockWords, accessOffsetWords,
+          rankBlockWords, rankLocalLimitWords, rankBaseRankWords,
+          selectBlockWords, selectLocalOccurrenceWords,
+          selectBlockStartWords, fixedWeightRouteFieldTableLayoutWords,
+          List.append_assoc] using data.routeStore_words_eq_layoutWords)
+      hlocal
+  simpa [accessBlockWords, accessOffsetWords, rankBlockWords,
+    fixedWeightRouteFieldTableWords, Nat.add_assoc] using hword
+
+theorem rank_localLimit_word_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (pos : Nat) :
+    data.routeData.routeStore.store.words[
+        data.accessBlockEntries.length + data.accessOffsetEntries.length +
+          data.rankBlockEntries.length +
+          data.rankLocalLimitLocalSlot target pos]? =
+      some (SuccinctSpace.natToBitsLE data.fieldWidth
+        (data.routeData.rankRoute target pos).localLimit) := by
+  have hlocal := localWord_get?
+    (fieldWidth := data.fieldWidth)
+    (hget := data.rank_localLimit_entry_eq target pos)
+  have hword :=
+    boundedPayloadWordStore_get?_of_words_append_middle
+      data.routeData.routeStore
+      (pre := data.accessBlockWords ++ data.accessOffsetWords ++
+        data.rankBlockWords)
+      (mid := data.rankLocalLimitWords)
+      (post := data.rankBaseRankWords ++ data.selectBlockWords ++
+        data.selectLocalOccurrenceWords ++ data.selectBlockStartWords)
+      (by
+        simpa [layoutWords, accessBlockWords, accessOffsetWords,
+          rankBlockWords, rankLocalLimitWords, rankBaseRankWords,
+          selectBlockWords, selectLocalOccurrenceWords,
+          selectBlockStartWords, fixedWeightRouteFieldTableLayoutWords,
+          List.append_assoc] using data.routeStore_words_eq_layoutWords)
+      hlocal
+  simpa [accessBlockWords, accessOffsetWords, rankBlockWords,
+    rankLocalLimitWords, fixedWeightRouteFieldTableWords,
+    Nat.add_assoc] using hword
+
+theorem rank_baseRank_word_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (pos : Nat) :
+    data.routeData.routeStore.store.words[
+        data.accessBlockEntries.length + data.accessOffsetEntries.length +
+          data.rankBlockEntries.length + data.rankLocalLimitEntries.length +
+          data.rankBaseRankLocalSlot target pos]? =
+      some (SuccinctSpace.natToBitsLE data.fieldWidth
+        (data.routeData.rankRoute target pos).baseRank) := by
+  have hlocal := localWord_get?
+    (fieldWidth := data.fieldWidth)
+    (hget := data.rank_baseRank_entry_eq target pos)
+  have hword :=
+    boundedPayloadWordStore_get?_of_words_append_middle
+      data.routeData.routeStore
+      (pre := data.accessBlockWords ++ data.accessOffsetWords ++
+        data.rankBlockWords ++ data.rankLocalLimitWords)
+      (mid := data.rankBaseRankWords)
+      (post := data.selectBlockWords ++ data.selectLocalOccurrenceWords ++
+        data.selectBlockStartWords)
+      (by
+        simpa [layoutWords, accessBlockWords, accessOffsetWords,
+          rankBlockWords, rankLocalLimitWords, rankBaseRankWords,
+          selectBlockWords, selectLocalOccurrenceWords,
+          selectBlockStartWords, fixedWeightRouteFieldTableLayoutWords,
+          List.append_assoc] using data.routeStore_words_eq_layoutWords)
+      hlocal
+  simpa [accessBlockWords, accessOffsetWords, rankBlockWords,
+    rankLocalLimitWords, rankBaseRankWords,
+    fixedWeightRouteFieldTableWords, Nat.add_assoc] using hword
+
+theorem select_block_word_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (occurrence : Nat) :
+    data.routeData.routeStore.store.words[
+        data.accessBlockEntries.length + data.accessOffsetEntries.length +
+          data.rankBlockEntries.length + data.rankLocalLimitEntries.length +
+          data.rankBaseRankEntries.length +
+          data.selectBlockLocalSlot target occurrence]? =
+      some (SuccinctSpace.natToBitsLE data.fieldWidth
+        (data.routeData.selectRoute target occurrence).blockIndex) := by
+  have hlocal := localWord_get?
+    (fieldWidth := data.fieldWidth)
+    (hget := data.select_block_entry_eq target occurrence)
+  have hword :=
+    boundedPayloadWordStore_get?_of_words_append_middle
+      data.routeData.routeStore
+      (pre := data.accessBlockWords ++ data.accessOffsetWords ++
+        data.rankBlockWords ++ data.rankLocalLimitWords ++
+        data.rankBaseRankWords)
+      (mid := data.selectBlockWords)
+      (post := data.selectLocalOccurrenceWords ++
+        data.selectBlockStartWords)
+      (by
+        simpa [layoutWords, accessBlockWords, accessOffsetWords,
+          rankBlockWords, rankLocalLimitWords, rankBaseRankWords,
+          selectBlockWords, selectLocalOccurrenceWords,
+          selectBlockStartWords, fixedWeightRouteFieldTableLayoutWords,
+          List.append_assoc] using data.routeStore_words_eq_layoutWords)
+      hlocal
+  simpa [accessBlockWords, accessOffsetWords, rankBlockWords,
+    rankLocalLimitWords, rankBaseRankWords, selectBlockWords,
+    fixedWeightRouteFieldTableWords, Nat.add_assoc] using hword
+
+theorem select_localOccurrence_word_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (occurrence : Nat) :
+    data.routeData.routeStore.store.words[
+        data.accessBlockEntries.length + data.accessOffsetEntries.length +
+          data.rankBlockEntries.length + data.rankLocalLimitEntries.length +
+          data.rankBaseRankEntries.length + data.selectBlockEntries.length +
+          data.selectLocalOccurrenceLocalSlot target occurrence]? =
+      some (SuccinctSpace.natToBitsLE data.fieldWidth
+        (data.routeData.selectRoute target occurrence).localOccurrence) := by
+  have hlocal := localWord_get?
+    (fieldWidth := data.fieldWidth)
+    (hget := data.select_localOccurrence_entry_eq target occurrence)
+  have hword :=
+    boundedPayloadWordStore_get?_of_words_append_middle
+      data.routeData.routeStore
+      (pre := data.accessBlockWords ++ data.accessOffsetWords ++
+        data.rankBlockWords ++ data.rankLocalLimitWords ++
+        data.rankBaseRankWords ++ data.selectBlockWords)
+      (mid := data.selectLocalOccurrenceWords)
+      (post := data.selectBlockStartWords)
+      (by
+        simpa [layoutWords, accessBlockWords, accessOffsetWords,
+          rankBlockWords, rankLocalLimitWords, rankBaseRankWords,
+          selectBlockWords, selectLocalOccurrenceWords,
+          selectBlockStartWords, fixedWeightRouteFieldTableLayoutWords,
+          List.append_assoc] using data.routeStore_words_eq_layoutWords)
+      hlocal
+  simpa [accessBlockWords, accessOffsetWords, rankBlockWords,
+    rankLocalLimitWords, rankBaseRankWords, selectBlockWords,
+    selectLocalOccurrenceWords, fixedWeightRouteFieldTableWords,
+    Nat.add_assoc] using hword
+
+theorem select_blockStart_word_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (occurrence : Nat) :
+    data.routeData.routeStore.store.words[
+        data.accessBlockEntries.length + data.accessOffsetEntries.length +
+          data.rankBlockEntries.length + data.rankLocalLimitEntries.length +
+          data.rankBaseRankEntries.length + data.selectBlockEntries.length +
+          data.selectLocalOccurrenceEntries.length +
+          data.selectBlockStartLocalSlot target occurrence]? =
+      some (SuccinctSpace.natToBitsLE data.fieldWidth
+        (data.routeData.selectRoute target occurrence).blockStart) := by
+  have hlocal := localWord_get?
+    (fieldWidth := data.fieldWidth)
+    (hget := data.select_blockStart_entry_eq target occurrence)
+  have hword :=
+    boundedPayloadWordStore_get?_of_words_append_middle
+      data.routeData.routeStore
+      (pre := data.accessBlockWords ++ data.accessOffsetWords ++
+        data.rankBlockWords ++ data.rankLocalLimitWords ++
+        data.rankBaseRankWords ++ data.selectBlockWords ++
+        data.selectLocalOccurrenceWords)
+      (mid := data.selectBlockStartWords)
+      (post := [])
+      (by
+        simpa [layoutWords, accessBlockWords, accessOffsetWords,
+          rankBlockWords, rankLocalLimitWords, rankBaseRankWords,
+          selectBlockWords, selectLocalOccurrenceWords,
+          selectBlockStartWords, fixedWeightRouteFieldTableLayoutWords,
+          List.append_assoc] using data.routeStore_words_eq_layoutWords)
+      hlocal
+  simpa [accessBlockWords, accessOffsetWords, rankBlockWords,
+    rankLocalLimitWords, rankBaseRankWords, selectBlockWords,
+    selectLocalOccurrenceWords, selectBlockStartWords,
+    fixedWeightRouteFieldTableWords, Nat.add_assoc] using hword
+
+def toPackedRouteTableData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientComputedRRRPackedRouteTableData
+      bits blocks overhead wordSize routeCost localQueryCost queryCost where
+  routeData := data.routeData
+  fieldWidth := data.fieldWidth
+  fieldWidth_le_wordSize := data.fieldWidth_le_wordSize
+  accessBlockSlot := data.accessBlockLocalSlot
+  accessOffsetSlot := fun i =>
+    data.accessBlockEntries.length + data.accessOffsetLocalSlot i
+  rankBlockSlot := fun target pos =>
+    data.accessBlockEntries.length + data.accessOffsetEntries.length +
+      data.rankBlockLocalSlot target pos
+  rankLocalLimitSlot := fun target pos =>
+    data.accessBlockEntries.length + data.accessOffsetEntries.length +
+      data.rankBlockEntries.length +
+      data.rankLocalLimitLocalSlot target pos
+  rankBaseRankSlot := fun target pos =>
+    data.accessBlockEntries.length + data.accessOffsetEntries.length +
+      data.rankBlockEntries.length + data.rankLocalLimitEntries.length +
+      data.rankBaseRankLocalSlot target pos
+  selectBlockSlot := fun target occurrence =>
+    data.accessBlockEntries.length + data.accessOffsetEntries.length +
+      data.rankBlockEntries.length + data.rankLocalLimitEntries.length +
+      data.rankBaseRankEntries.length +
+      data.selectBlockLocalSlot target occurrence
+  selectLocalOccurrenceSlot := fun target occurrence =>
+    data.accessBlockEntries.length + data.accessOffsetEntries.length +
+      data.rankBlockEntries.length + data.rankLocalLimitEntries.length +
+      data.rankBaseRankEntries.length + data.selectBlockEntries.length +
+      data.selectLocalOccurrenceLocalSlot target occurrence
+  selectBlockStartSlot := fun target occurrence =>
+    data.accessBlockEntries.length + data.accessOffsetEntries.length +
+      data.rankBlockEntries.length + data.rankLocalLimitEntries.length +
+      data.rankBaseRankEntries.length + data.selectBlockEntries.length +
+      data.selectLocalOccurrenceEntries.length +
+      data.selectBlockStartLocalSlot target occurrence
+  access_metadata_reads_eq := data.access_metadata_reads_eq
+  rank_metadata_reads_eq := data.rank_metadata_reads_eq
+  select_metadata_reads_eq := data.select_metadata_reads_eq
+  access_block_lt := fun i =>
+    routeFieldEntry_lt data.accessBlockEntries_bound
+      (data.access_block_entry_eq i)
+  access_offset_lt := fun i =>
+    routeFieldEntry_lt data.accessOffsetEntries_bound
+      (data.access_offset_entry_eq i)
+  rank_block_lt := fun target pos =>
+    routeFieldEntry_lt data.rankBlockEntries_bound
+      (data.rank_block_entry_eq target pos)
+  rank_localLimit_lt := fun target pos =>
+    routeFieldEntry_lt data.rankLocalLimitEntries_bound
+      (data.rank_localLimit_entry_eq target pos)
+  rank_baseRank_lt := fun target pos =>
+    routeFieldEntry_lt data.rankBaseRankEntries_bound
+      (data.rank_baseRank_entry_eq target pos)
+  select_block_lt := fun target occurrence =>
+    routeFieldEntry_lt data.selectBlockEntries_bound
+      (data.select_block_entry_eq target occurrence)
+  select_localOccurrence_lt := fun target occurrence =>
+    routeFieldEntry_lt data.selectLocalOccurrenceEntries_bound
+      (data.select_localOccurrence_entry_eq target occurrence)
+  select_blockStart_lt := fun target occurrence =>
+    routeFieldEntry_lt data.selectBlockStartEntries_bound
+      (data.select_blockStart_entry_eq target occurrence)
+  access_block_word_eq := data.access_block_word_eq
+  access_offset_word_eq := data.access_offset_word_eq
+  rank_block_word_eq := data.rank_block_word_eq
+  rank_localLimit_word_eq := data.rank_localLimit_word_eq
+  rank_baseRank_word_eq := data.rank_baseRank_word_eq
+  select_block_word_eq := data.select_block_word_eq
+  select_localOccurrence_word_eq := data.select_localOccurrence_word_eq
+  select_blockStart_word_eq := data.select_blockStart_word_eq
+
+def LayoutPackedProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    Prop :=
+  data.toPackedRouteTableData.PackedRouteTableProfile /\
+    data.routeData.routeStore.store.words.toList =
+      data.layoutWords /\
+    SuccinctSpace.flattenPayloadWords data.layoutWords =
+      data.routeData.routePayload
+
+theorem route_field_table_layout_packed_profile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    data.LayoutPackedProfile := by
+  refine
+    ⟨data.toPackedRouteTableData.packed_route_table_profile,
+      data.routeStore_words_eq_layoutWords,
+      ?_⟩
+  rw [<- data.routeStore_words_eq_layoutWords]
+  exact data.routeData.routeStore.erases
+
+end FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+
+/-- Family of eight-table fixed-width route-field layouts. -/
+structure FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+    (slots routeCost localQueryCost queryCost : Nat) where
+  wordSize : Nat -> Nat
+  blocks : List Bool -> List (List Bool)
+  component :
+    forall bits : List Bool,
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits (blocks bits)
+        (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+        (wordSize bits.length) routeCost localQueryCost queryCost
+
+namespace FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+
+def overhead (slots : Nat) : Nat -> Nat :=
+  fixedWeightAmbientBlockAuxiliaryOverhead slots
+
+def compressedOverhead (slots : Nat) (primaryOverhead : Nat -> Nat) :
+    Nat -> Nat :=
+  FixedWeightAmbientBlockCompositionFamily.compressedOverhead
+    slots primaryOverhead
+
+def componentData
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+        slots routeCost localQueryCost queryCost)
+    (bits : List Bool) :
+    FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+      bits (family.blocks bits)
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+      (family.wordSize bits.length) routeCost localQueryCost queryCost :=
+  family.component bits
+
+def toPackedRouteTableFamily
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+        slots routeCost localQueryCost queryCost) :
+    FixedWeightAmbientComputedRRRPackedRouteTableFamily
+      slots routeCost localQueryCost queryCost where
+  wordSize := family.wordSize
+  blocks := family.blocks
+  component bits := (family.componentData bits).toPackedRouteTableData
+
+def directory
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+        slots routeCost localQueryCost queryCost)
+    (bits : List Bool) :
+    FixedWeightAmbientBlockCompositionData
+      bits (family.blocks bits)
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+      (family.wordSize bits.length) queryCost :=
+  FixedWeightAmbientComputedRRRPackedRouteTableFamily.directory
+    family.toPackedRouteTableFamily bits
+
+theorem route_field_table_layout_family_profile
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+        slots routeCost localQueryCost queryCost) :
+    SuccinctSpace.LittleOLinear (overhead slots) /\
+      forall bits : List Bool,
+        let data := family.componentData bits
+        data.LayoutPackedProfile /\
+          data.routeData.routePayload.length =
+            fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          ((family.directory bits).payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length) /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall i,
+            ((family.directory bits).accessCosted i).cost <=
+              queryCost) /\
+          (forall target pos,
+            ((family.directory bits).rankCosted target pos).cost <=
+              queryCost) /\
+          (forall target occurrence,
+            ((family.directory bits).selectCosted target occurrence).cost <=
+              queryCost) := by
+  constructor
+  · exact fixedWeightAmbientBlockAuxiliaryOverhead_littleO slots
+  · intro bits
+    let data := family.componentData bits
+    exact
+      ⟨data.route_field_table_layout_packed_profile,
+        data.routeData.routePayload_length_eq,
+        (family.directory bits).payload_length,
+        data.routeData.blocks_flatten,
+        (fun i => (family.directory bits).accessCosted_cost_le i),
+        (fun target pos =>
+          (family.directory bits).rankCosted_cost_le target pos),
+        (fun target occurrence =>
+          (family.directory bits).selectCosted_cost_le
+            target occurrence)⟩
+
+theorem word_bounded_compressed_profile_of_primary_budget
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+        slots routeCost localQueryCost queryCost)
+    (primaryOverhead : Nat -> Nat)
+    (hprimaryO : SuccinctSpace.LittleOLinear primaryOverhead)
+    (hprimary :
+      forall bits : List Bool,
+        fixedWeightBlockPayloadBudget (family.blocks bits) <=
+          fixedWeightPayloadBudget bits + primaryOverhead bits.length) :
+    SuccinctSpace.LittleOLinear
+        (compressedOverhead slots primaryOverhead) /\
+      forall bits : List Bool,
+        (family.componentData bits).LayoutPackedProfile /\
+          let data := family.directory bits
+          data.DirectoryProfile /\
+            data.payload.length =
+              fixedWeightBlockPayloadBudget (family.blocks bits) +
+                fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+            data.payload.length <=
+              fixedWeightPayloadBudget bits +
+                compressedOverhead slots primaryOverhead bits.length /\
+            data.auxPayload.length =
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+            SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+            (forall {word : List Bool},
+              List.Mem word data.codeStore.store.words.toList ->
+                word.length <= Nat.log2 bits.length + 1) /\
+            (forall {word : List Bool},
+              List.Mem word data.auxStore.store.words.toList ->
+                word.length <= Nat.log2 bits.length + 1) /\
+            (forall i,
+              (data.accessCosted i).cost <= queryCost /\
+                (data.accessCosted i).erase = bits[i]?) /\
+            (forall target pos,
+              (data.rankCosted target pos).cost <= queryCost /\
+                (data.rankCosted target pos).erase =
+                  Succinct.rankPrefix target bits pos) /\
+            (forall target occurrence,
+              (data.selectCosted target occurrence).cost <= queryCost /\
+                (data.selectCosted target occurrence).erase =
+                  Succinct.select target bits occurrence) := by
+  have hcompressed :=
+    FixedWeightAmbientComputedRRRPackedRouteTableFamily.word_bounded_compressed_profile_of_primary_budget
+      family.toPackedRouteTableFamily primaryOverhead hprimaryO
+      (by
+        intro bits
+        exact hprimary bits)
+  constructor
+  · simpa [compressedOverhead,
+      FixedWeightAmbientComputedRRRPackedRouteTableFamily.compressedOverhead]
+      using hcompressed.1
+  · intro bits
+    constructor
+    · exact (family.componentData bits).route_field_table_layout_packed_profile
+    · simpa [directory, toPackedRouteTableFamily, componentData,
+        FixedWeightAmbientComputedRRRPackedRouteTableFamily.directory,
+        FixedWeightAmbientComputedRRRPackedRouteTableFamily.componentData,
+        FixedWeightAmbientComputedRRRPackedRouteTableFamily.compressedOverhead,
+        compressedOverhead]
+        using (hcompressed.2 bits).2
+
+end FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+
 /-- Decode the first charged decoded-table word as a local bit block. -/
 def decodedWordFromReadValues :
     List (Option (List Bool)) -> List Bool
