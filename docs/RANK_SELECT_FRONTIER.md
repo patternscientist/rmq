@@ -101,9 +101,13 @@ RMQ.RankSelect.fixedWeightPackedReadbackDataProfile
 RMQ.RankSelect.fixedWeightPackedReadbackDataOfChunksProfile
 RMQ.RankSelect.fixedWeightAuxiliaryWordReadsCostedCost
 RMQ.RankSelect.fixedWeightAuxiliaryWordReadsCostedErase
+RMQ.RankSelect.fixedWeightDependentAuxiliaryWordReadsCostedCost
+RMQ.RankSelect.fixedWeightDependentAuxiliaryWordReadsCostedErase
 RMQ.RankSelect.compressedDirectoryProfile
 RMQ.RankSelect.FixedWeightCompressedAuxiliaryData
 RMQ.RankSelect.fixedWeightCompressedAuxiliaryDataProfile
+RMQ.RankSelect.FixedWeightDependentAuxiliaryData
+RMQ.RankSelect.fixedWeightDependentAuxiliaryDataProfile
 RMQ.RankSelect.FixedWeightCompressedAuxiliaryFamily
 RMQ.RankSelect.fixedWeightCompressedAuxiliaryToCompressedFamily
 RMQ.RankSelect.fixedWeightCompressedAuxiliaryConstantQueryProfile
@@ -117,6 +121,12 @@ RMQ.RankSelect.fixedWeightDecodedWordBoundedStoreGetFixedWeightCode
 RMQ.RankSelect.fixedWeightPackedCodeBoundedStoreGetZero
 RMQ.RankSelect.FixedWeightTableRAMBlockData
 RMQ.RankSelect.fixedWeightTableRAMBlockDataProfile
+RMQ.RankSelect.fixedWeightTableRAMBlockToDependentAuxiliaryData
+RMQ.RankSelect.fixedWeightTableRAMBlockDependentAuxiliaryDataProfile
+RMQ.RankSelect.fixedWeightTableRAMBlockDependentAuxiliaryBridgeProfile
+RMQ.RankSelect.fixedWeightTableRAMBlockDependentAuxiliaryFullProfile
+RMQ.RankSelect.FixedWeightTableRAMBlockDependentReadProfile
+RMQ.RankSelect.fixedWeightTableRAMBlockDependentReadProfile
 RMQ.RankSelect.CompressedFamily
 RMQ.RankSelect.compressedFixedWeightConstantQueryProfile
 ```
@@ -187,6 +197,18 @@ from proof-only access to the decoded bitvector. In particular, the old
 readback baseline remains useful as a reference consumer, but it is not the
 constant-query compressed theorem path.
 
+The dependent-read variant is `FixedWeightDependentAuxiliaryData`, backed by
+`fixedWeightDependentAuxiliaryWordReadsCostedCost` and
+`fixedWeightDependentAuxiliaryWordReadsCostedErase`. It generalizes the
+static auxiliary schedules above by letting the auxiliary read schedule depend
+on the charged packed-store read values. This is the missing scaffold for
+RRR-style local blocks: a code/class read can choose the next table address
+without forcing a static schedule. Its public profile
+`fixedWeightDependentAuxiliaryDataProfile` still remains pointwise and still
+has abstract evaluator fields; concrete non-oracular instances must expose
+fixed code over the charged reads, and a family proof needs an `o(n)`
+auxiliary payload construction.
+
 The first stricter pointwise refinement is `FixedWeightTableBackedFIDData`.
 Its query code is fixed: access, rank, and select are one charged
 fixed-width payload-table read plus a small decoder. The table payloads are
@@ -206,10 +228,21 @@ the block length and weight, then runs the repository's RAM word primitives for
 rank and select. Its profile is exposed as
 `fixedWeightTableRAMBlockDataProfile`, with query cost `<= 3` and with both
 the packed-code payload and dense decoded-word-table payload accounted for.
-This removes the arbitrary-evaluator escape hatch at the block level. It is
-not the finished compressed/FID family because the universal decoded-word table
-is dense; the remaining work is to place this kind of fixed table/RAM kernel
-behind a global block directory whose counted auxiliary payload is `o(n)`.
+The stronger `fixedWeightTableRAMBlockDependentReadProfile` exposes the actual
+dependent-read spine: slot-zero packed-code read, decoded-word table read at
+the erased code, direct decoded-word access, and fixed RAM primitives for
+rank/select. The adapter
+`fixedWeightTableRAMBlockDependentAuxiliaryDataProfile` also packages the same
+kernel as an instance of the generic dependent auxiliary scaffold, and
+`fixedWeightTableRAMBlockDependentAuxiliaryBridgeProfile` proves that the
+scaffold-backed directory agrees with the direct local block directory on
+payload, query costs, and erased answers. The combined public citation point is
+`fixedWeightTableRAMBlockDependentAuxiliaryFullProfile`. This removes the
+arbitrary-evaluator escape hatch at the block level. It is not the finished
+compressed/FID family because the universal decoded-word table is dense and
+the current word-size discipline is local to the block length; the remaining
+work is an ambient/global block directory whose counted auxiliary payload is
+`o(n)` and whose machine-word bound is stated against the ambient universe.
 
 ## Module Boundary
 

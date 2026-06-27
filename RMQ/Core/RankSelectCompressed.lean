@@ -1086,6 +1086,88 @@ def boundedPayloadWordReadsCosted
   | cons i rest ih =>
       simp [boundedPayloadWordReadsCosted, boundedPayloadWordReadValues, ih]
 
+@[simp] theorem boundedPayloadWordReadsCosted_value
+    {payload : List Bool} {wordSize : Nat}
+    (store : SuccinctSpace.BoundedPayloadWordStore payload wordSize)
+    (indices : List Nat) :
+    (boundedPayloadWordReadsCosted store indices).value =
+      boundedPayloadWordReadValues store indices := by
+  simpa [Costed.erase] using
+    boundedPayloadWordReadsCosted_erase store indices
+
+/--
+Read a primary bounded payload-word store, then choose the auxiliary read
+schedule from the charged primary read values.
+
+This is the generic RAM-model kernel needed by RRR-style local blocks: the
+second table address can depend on the packed class/code read without becoming
+a proof-only oracle.
+-/
+def dependentPayloadWordReadsCosted
+    {primaryPayload auxPayload : List Bool} {wordSize : Nat}
+    (primaryStore :
+      SuccinctSpace.BoundedPayloadWordStore primaryPayload wordSize)
+    (auxStore :
+      SuccinctSpace.BoundedPayloadWordStore auxPayload wordSize)
+    (primaryReads : List Nat)
+    (auxReads : List (Option (List Bool)) -> List Nat) :
+    Costed (List (Option (List Bool)) × List (Option (List Bool))) :=
+  Costed.bind (boundedPayloadWordReadsCosted primaryStore primaryReads)
+    fun primaryWords =>
+      Costed.bind
+          (boundedPayloadWordReadsCosted auxStore (auxReads primaryWords))
+        fun auxWords =>
+          Costed.pure (primaryWords, auxWords)
+
+@[simp] theorem dependentPayloadWordReadsCosted_cost
+    {primaryPayload auxPayload : List Bool} {wordSize : Nat}
+    (primaryStore :
+      SuccinctSpace.BoundedPayloadWordStore primaryPayload wordSize)
+    (auxStore :
+      SuccinctSpace.BoundedPayloadWordStore auxPayload wordSize)
+    (primaryReads : List Nat)
+    (auxReads : List (Option (List Bool)) -> List Nat) :
+    (dependentPayloadWordReadsCosted primaryStore auxStore primaryReads
+        auxReads).cost =
+      primaryReads.length +
+        (auxReads
+          (boundedPayloadWordReadValues primaryStore primaryReads)).length := by
+  simp [dependentPayloadWordReadsCosted]
+
+@[simp] theorem dependentPayloadWordReadsCosted_erase
+    {primaryPayload auxPayload : List Bool} {wordSize : Nat}
+    (primaryStore :
+      SuccinctSpace.BoundedPayloadWordStore primaryPayload wordSize)
+    (auxStore :
+      SuccinctSpace.BoundedPayloadWordStore auxPayload wordSize)
+    (primaryReads : List Nat)
+    (auxReads : List (Option (List Bool)) -> List Nat) :
+    (dependentPayloadWordReadsCosted primaryStore auxStore primaryReads
+        auxReads).erase =
+      (boundedPayloadWordReadValues primaryStore primaryReads,
+        boundedPayloadWordReadValues auxStore
+          (auxReads
+            (boundedPayloadWordReadValues primaryStore primaryReads))) := by
+  simp [dependentPayloadWordReadsCosted]
+
+@[simp] theorem dependentPayloadWordReadsCosted_value
+    {primaryPayload auxPayload : List Bool} {wordSize : Nat}
+    (primaryStore :
+      SuccinctSpace.BoundedPayloadWordStore primaryPayload wordSize)
+    (auxStore :
+      SuccinctSpace.BoundedPayloadWordStore auxPayload wordSize)
+    (primaryReads : List Nat)
+    (auxReads : List (Option (List Bool)) -> List Nat) :
+    (dependentPayloadWordReadsCosted primaryStore auxStore primaryReads
+        auxReads).value =
+      (boundedPayloadWordReadValues primaryStore primaryReads,
+        boundedPayloadWordReadValues auxStore
+          (auxReads
+            (boundedPayloadWordReadValues primaryStore primaryReads))) := by
+  simpa [Costed.erase] using
+    dependentPayloadWordReadsCosted_erase primaryStore auxStore primaryReads
+      auxReads
+
 /--
 Compressed fixed-weight auxiliary data with constant-bounded word reads.
 
@@ -1374,6 +1456,359 @@ theorem directory_profile
         data.selectCosted_erase target occurrence⟩
 
 end FixedWeightCompressedAuxiliaryData
+
+/--
+Compressed fixed-weight auxiliary data with dependent auxiliary reads.
+
+The payload is still the packed fixed-weight code plus counted auxiliary bits,
+but the auxiliary read schedule may depend on the charged packed-store read
+values. This is a generic scaffold for local RRR-style blocks, where the
+packed code determines the decoded-word table address. The evaluator fields
+are still abstract; concrete non-oracular instances must expose fixed code over
+the charged read values.
+-/
+structure FixedWeightDependentAuxiliaryData
+    (bits : List Bool) (overhead wordSize queryCost : Nat) where
+  wordSize_pos : 0 < wordSize
+  packedStore :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightPackedPayload bits) wordSize
+  auxPayload : List Bool
+  auxStore :
+    SuccinctSpace.BoundedPayloadWordStore auxPayload wordSize
+  aux_length_eq : auxPayload.length = overhead
+  accessPackedReads : Nat -> List Nat
+  accessAuxReads : Nat -> List (Option (List Bool)) -> List Nat
+  rankPackedReads : Bool -> Nat -> List Nat
+  rankAuxReads : Bool -> Nat -> List (Option (List Bool)) -> List Nat
+  selectPackedReads : Bool -> Nat -> List Nat
+  selectAuxReads : Bool -> Nat -> List (Option (List Bool)) -> List Nat
+  accessEvalCosted :
+    Nat -> List (Option (List Bool)) -> List (Option (List Bool)) ->
+      Costed (Option Bool)
+  rankEvalCosted :
+    Bool -> Nat -> List (Option (List Bool)) ->
+      List (Option (List Bool)) -> Costed Nat
+  selectEvalCosted :
+    Bool -> Nat -> List (Option (List Bool)) ->
+      List (Option (List Bool)) -> Costed (Option Nat)
+  access_query_cost_le :
+    forall i,
+      (accessPackedReads i).length +
+          (accessAuxReads i
+            (boundedPayloadWordReadValues packedStore
+              (accessPackedReads i))).length +
+          (accessEvalCosted i
+            (boundedPayloadWordReadValues packedStore
+              (accessPackedReads i))
+            (boundedPayloadWordReadValues auxStore
+              (accessAuxReads i
+                (boundedPayloadWordReadValues packedStore
+                  (accessPackedReads i))))).cost <=
+        queryCost
+  rank_query_cost_le :
+    forall target pos,
+      (rankPackedReads target pos).length +
+          (rankAuxReads target pos
+            (boundedPayloadWordReadValues packedStore
+              (rankPackedReads target pos))).length +
+          (rankEvalCosted target pos
+            (boundedPayloadWordReadValues packedStore
+              (rankPackedReads target pos))
+            (boundedPayloadWordReadValues auxStore
+              (rankAuxReads target pos
+                (boundedPayloadWordReadValues packedStore
+                  (rankPackedReads target pos))))).cost <=
+        queryCost
+  select_query_cost_le :
+    forall target occurrence,
+      (selectPackedReads target occurrence).length +
+          (selectAuxReads target occurrence
+            (boundedPayloadWordReadValues packedStore
+              (selectPackedReads target occurrence))).length +
+          (selectEvalCosted target occurrence
+            (boundedPayloadWordReadValues packedStore
+              (selectPackedReads target occurrence))
+            (boundedPayloadWordReadValues auxStore
+              (selectAuxReads target occurrence
+                (boundedPayloadWordReadValues packedStore
+                  (selectPackedReads target occurrence))))).cost <=
+        queryCost
+  access_eval_exact :
+    forall i,
+      (accessEvalCosted i
+          (boundedPayloadWordReadValues packedStore (accessPackedReads i))
+          (boundedPayloadWordReadValues auxStore
+            (accessAuxReads i
+              (boundedPayloadWordReadValues packedStore
+                (accessPackedReads i))))).erase =
+        bits[i]?
+  rank_eval_exact :
+    forall target pos,
+      (rankEvalCosted target pos
+          (boundedPayloadWordReadValues packedStore
+            (rankPackedReads target pos))
+          (boundedPayloadWordReadValues auxStore
+            (rankAuxReads target pos
+              (boundedPayloadWordReadValues packedStore
+                (rankPackedReads target pos))))).erase =
+        Succinct.rankPrefix target bits pos
+  select_eval_exact :
+    forall target occurrence,
+      (selectEvalCosted target occurrence
+          (boundedPayloadWordReadValues packedStore
+            (selectPackedReads target occurrence))
+          (boundedPayloadWordReadValues auxStore
+            (selectAuxReads target occurrence
+              (boundedPayloadWordReadValues packedStore
+                (selectPackedReads target occurrence))))).erase =
+        Succinct.select target bits occurrence
+
+namespace FixedWeightDependentAuxiliaryData
+
+def payload
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost) :
+    List Bool :=
+  fixedWeightPackedPayload bits ++ data.auxPayload
+
+@[simp] theorem payload_length
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost) :
+    data.payload.length = fixedWeightPayloadBudget bits + overhead := by
+  simp [payload, fixedWeightPackedPayload_length, data.aux_length_eq]
+
+def accessCosted
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (i : Nat) : Costed (Option Bool) :=
+  Costed.bind
+      (dependentPayloadWordReadsCosted data.packedStore data.auxStore
+        (data.accessPackedReads i) (data.accessAuxReads i)) fun readWords =>
+    data.accessEvalCosted i readWords.1 readWords.2
+
+@[simp] theorem accessCosted_cost
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (i : Nat) :
+    (data.accessCosted i).cost =
+      (data.accessPackedReads i).length +
+        (data.accessAuxReads i
+          (boundedPayloadWordReadValues data.packedStore
+            (data.accessPackedReads i))).length +
+        (data.accessEvalCosted i
+          (boundedPayloadWordReadValues data.packedStore
+            (data.accessPackedReads i))
+          (boundedPayloadWordReadValues data.auxStore
+            (data.accessAuxReads i
+              (boundedPayloadWordReadValues data.packedStore
+                (data.accessPackedReads i))))).cost := by
+  simp [accessCosted, Nat.add_assoc]
+
+theorem accessCosted_cost_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (i : Nat) :
+    (data.accessCosted i).cost <= queryCost := by
+  rw [data.accessCosted_cost i]
+  exact data.access_query_cost_le i
+
+@[simp] theorem accessCosted_erase
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (i : Nat) :
+    (data.accessCosted i).erase = bits[i]? := by
+  simp [accessCosted, data.access_eval_exact]
+
+def rankCosted
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) : Costed Nat :=
+  Costed.bind
+      (dependentPayloadWordReadsCosted data.packedStore data.auxStore
+        (data.rankPackedReads target pos)
+        (data.rankAuxReads target pos)) fun readWords =>
+    data.rankEvalCosted target pos readWords.1 readWords.2
+
+@[simp] theorem rankCosted_cost
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).cost =
+      (data.rankPackedReads target pos).length +
+        (data.rankAuxReads target pos
+          (boundedPayloadWordReadValues data.packedStore
+            (data.rankPackedReads target pos))).length +
+        (data.rankEvalCosted target pos
+          (boundedPayloadWordReadValues data.packedStore
+            (data.rankPackedReads target pos))
+          (boundedPayloadWordReadValues data.auxStore
+            (data.rankAuxReads target pos
+              (boundedPayloadWordReadValues data.packedStore
+                (data.rankPackedReads target pos))))).cost := by
+  simp [rankCosted, Nat.add_assoc]
+
+theorem rankCosted_cost_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).cost <= queryCost := by
+  rw [data.rankCosted_cost target pos]
+  exact data.rank_query_cost_le target pos
+
+@[simp] theorem rankCosted_erase
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).erase =
+      Succinct.rankPrefix target bits pos := by
+  simp [rankCosted, data.rank_eval_exact]
+
+def selectCosted
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) : Costed (Option Nat) :=
+  Costed.bind
+      (dependentPayloadWordReadsCosted data.packedStore data.auxStore
+        (data.selectPackedReads target occurrence)
+        (data.selectAuxReads target occurrence)) fun readWords =>
+    data.selectEvalCosted target occurrence readWords.1 readWords.2
+
+@[simp] theorem selectCosted_cost
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).cost =
+      (data.selectPackedReads target occurrence).length +
+        (data.selectAuxReads target occurrence
+          (boundedPayloadWordReadValues data.packedStore
+            (data.selectPackedReads target occurrence))).length +
+        (data.selectEvalCosted target occurrence
+          (boundedPayloadWordReadValues data.packedStore
+            (data.selectPackedReads target occurrence))
+          (boundedPayloadWordReadValues data.auxStore
+            (data.selectAuxReads target occurrence
+              (boundedPayloadWordReadValues data.packedStore
+                (data.selectPackedReads target occurrence))))).cost := by
+  simp [selectCosted, Nat.add_assoc]
+
+theorem selectCosted_cost_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).cost <= queryCost := by
+  rw [data.selectCosted_cost target occurrence]
+  exact data.select_query_cost_le target occurrence
+
+@[simp] theorem selectCosted_erase
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).erase =
+      Succinct.select target bits occurrence := by
+  simp [selectCosted, data.select_eval_exact]
+
+def toCompressedDirectory
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost) :
+    CompressedBitVectorRankSelectDirectory bits overhead queryCost where
+  payload := data.payload
+  payload_length_le := by
+    simp
+  accessCosted := data.accessCosted
+  rankCosted := data.rankCosted
+  selectCosted := data.selectCosted
+  access_cost_le := data.accessCosted_cost_le
+  rank_cost_le := data.rankCosted_cost_le
+  select_cost_le := data.selectCosted_cost_le
+  access_exact := data.accessCosted_erase
+  rank_exact := data.rankCosted_erase
+  select_exact := data.selectCosted_erase
+
+def DirectoryProfile
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost) :
+    Prop :=
+  (data.toCompressedDirectory).payload = data.payload /\
+    (data.toCompressedDirectory).payload.length =
+      fixedWeightPayloadBudget bits + overhead /\
+    SuccinctSpace.flattenPayloadWords
+        data.packedStore.store.words.toList =
+      fixedWeightPackedPayload bits /\
+    SuccinctSpace.flattenPayloadWords data.auxStore.store.words.toList =
+      data.auxPayload /\
+    (forall {word : List Bool},
+      List.Mem word data.packedStore.store.words.toList ->
+        word.length <= wordSize) /\
+    (forall {word : List Bool},
+      List.Mem word data.auxStore.store.words.toList ->
+        word.length <= wordSize) /\
+    (forall i,
+      ((data.toCompressedDirectory).accessQueryCosted i).cost <=
+          queryCost /\
+        ((data.toCompressedDirectory).accessQueryCosted i).erase =
+          bits[i]?) /\
+    (forall target pos,
+      ((data.toCompressedDirectory).rankQueryCosted target pos).cost <=
+          queryCost /\
+        ((data.toCompressedDirectory).rankQueryCosted target pos).erase =
+          Succinct.rankPrefix target bits pos) /\
+    (forall target occurrence,
+      ((data.toCompressedDirectory).selectQueryCosted
+          target occurrence).cost <= queryCost /\
+        ((data.toCompressedDirectory).selectQueryCosted
+          target occurrence).erase =
+          Succinct.select target bits occurrence)
+
+theorem directory_profile
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost) :
+    data.DirectoryProfile := by
+  constructor
+  · rfl
+  constructor
+  · exact data.payload_length
+  constructor
+  · exact data.packedStore.erases
+  constructor
+  · exact data.auxStore.erases
+  constructor
+  · intro word hmem
+    exact data.packedStore.word_length_le_of_mem hmem
+  constructor
+  · intro word hmem
+    exact data.auxStore.word_length_le_of_mem hmem
+  constructor
+  · intro i
+    exact ⟨data.accessCosted_cost_le i, data.accessCosted_erase i⟩
+  constructor
+  · intro target pos
+    exact
+      ⟨data.rankCosted_cost_le target pos,
+        data.rankCosted_erase target pos⟩
+  · intro target occurrence
+    exact
+      ⟨data.selectCosted_cost_le target occurrence,
+        data.selectCosted_erase target occurrence⟩
+
+end FixedWeightDependentAuxiliaryData
 
 /--
 Family-level compressed/FID rank-select theorem surface.
@@ -2034,6 +2469,29 @@ theorem fixedWeightPackedCodeBoundedStore_get?_zero
       some (fixedWeightPackedPayload bits) := by
   simp [fixedWeightPackedCodeBoundedStore]
 
+/-- Decode the first charged packed-code word as a fixed-weight code. -/
+def fixedWeightCodeFromReadValues :
+    List (Option (List Bool)) -> Nat
+  | some word :: _ => SuccinctSpace.bitsToNatLE word
+  | _ => 0
+
+@[simp] theorem fixedWeightCodeFromReadValues_singleton
+    (bits : List Bool) :
+    fixedWeightCodeFromReadValues [some (fixedWeightPackedPayload bits)] =
+      fixedWeightCode bits := by
+  simp [fixedWeightCodeFromReadValues, fixedWeightPackedPayload_bitsToNatLE]
+
+/-- Decode the first charged decoded-table word as a local bit block. -/
+def decodedWordFromReadValues :
+    List (Option (List Bool)) -> List Bool
+  | some word :: _ => word
+  | _ => []
+
+@[simp] theorem decodedWordFromReadValues_singleton
+    (bits : List Bool) :
+    decodedWordFromReadValues [some bits] = bits := by
+  simp [decodedWordFromReadValues]
+
 /--
 Local RRR-style fixed-weight block data.
 
@@ -2058,6 +2516,13 @@ def decodedTableOverhead
     (_data : FixedWeightTableRAMBlockData bits wordSize) : Nat :=
   fixedWeightDecodedWordTableOverhead bits.length (trueCount bits)
 
+@[simp] theorem decodedTableOverhead_eq
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) :
+    data.decodedTableOverhead =
+      fixedWeightDecodedWordTableOverhead bits.length (trueCount bits) := by
+  rfl
+
 def packedStore
     {bits : List Bool} {wordSize : Nat}
     (data : FixedWeightTableRAMBlockData bits wordSize) :
@@ -2074,6 +2539,31 @@ def decodedStore
       wordSize :=
   fixedWeightDecodedWordBoundedStore bits.length (trueCount bits) wordSize
     data.blockWidth_le_wordSize
+
+theorem packed_read_values_zero
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) :
+    boundedPayloadWordReadValues data.packedStore [0] =
+      [some (fixedWeightPackedPayload bits)] := by
+  have hpacked :
+      data.packedStore.store.words[0]? =
+        some (fixedWeightPackedPayload bits) := by
+    simpa [packedStore] using
+      fixedWeightPackedCodeBoundedStore_get?_zero bits
+        data.codeWidth_le_wordSize
+  simp [boundedPayloadWordReadValues, hpacked]
+
+theorem decoded_read_values_code
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) :
+    boundedPayloadWordReadValues data.decodedStore [fixedWeightCode bits] =
+      [some bits] := by
+  have hdecoded :
+      data.decodedStore.store.words[fixedWeightCode bits]? = some bits := by
+    simpa [decodedStore] using
+      fixedWeightDecodedWordBoundedStore_get?_fixedWeightCode bits
+        data.blockWidth_le_wordSize
+  simp [boundedPayloadWordReadValues, hdecoded]
 
 def payload
     {bits : List Bool} {wordSize : Nat}
@@ -2213,6 +2703,71 @@ def selectCosted
   have hrun := Succinct.selectBoolWord_toCosted_run target bits occurrence
   simpa [Costed.run] using congrArg Prod.fst hrun
 
+def toDependentAuxiliaryData
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) :
+    FixedWeightDependentAuxiliaryData
+      bits data.decodedTableOverhead wordSize 3 := by
+  refine
+    { wordSize_pos := data.wordSize_pos
+      packedStore := data.packedStore
+      auxPayload :=
+        fixedWeightDecodedWordTablePayload bits.length (trueCount bits)
+      auxStore := data.decodedStore
+      aux_length_eq := ?_
+      accessPackedReads := fun _ => [0]
+      accessAuxReads := fun _ packedWords =>
+        [fixedWeightCodeFromReadValues packedWords]
+      rankPackedReads := fun _ _ => [0]
+      rankAuxReads := fun _ _ packedWords =>
+        [fixedWeightCodeFromReadValues packedWords]
+      selectPackedReads := fun _ _ => [0]
+      selectAuxReads := fun _ _ packedWords =>
+        [fixedWeightCodeFromReadValues packedWords]
+      accessEvalCosted := fun i _ auxWords =>
+        Costed.pure ((decodedWordFromReadValues auxWords)[i]?)
+      rankEvalCosted := fun target pos _ auxWords =>
+        (RAM.rankBoolWordPrefix target
+          (decodedWordFromReadValues auxWords) pos).toCosted
+      selectEvalCosted := fun target occurrence _ auxWords =>
+        (RAM.selectBoolWord target
+          (decodedWordFromReadValues auxWords) occurrence).toCosted
+      access_query_cost_le := ?_
+      rank_query_cost_le := ?_
+      select_query_cost_le := ?_
+      access_eval_exact := ?_
+      rank_eval_exact := ?_
+      select_eval_exact := ?_ }
+  · simp [decodedTableOverhead]
+  · intro i
+    have hpackedValues := data.packed_read_values_zero
+    simp [hpackedValues]
+  · intro target pos
+    have hpackedValues := data.packed_read_values_zero
+    have hdecodedValues := data.decoded_read_values_code
+    simp [hpackedValues, hdecodedValues]
+  · intro target occurrence
+    have hpackedValues := data.packed_read_values_zero
+    have hdecodedValues := data.decoded_read_values_code
+    simp [hpackedValues, hdecodedValues]
+  · intro i
+    have hpackedValues := data.packed_read_values_zero
+    have hdecodedValues := data.decoded_read_values_code
+    simp [hpackedValues, hdecodedValues]
+  · intro target pos
+    have hpackedValues := data.packed_read_values_zero
+    have hdecodedValues := data.decoded_read_values_code
+    have hrun := Succinct.rankBoolWordPrefix_toCosted_run target bits pos
+    simpa [Costed.erase, Costed.run, hpackedValues, hdecodedValues]
+      using congrArg Prod.fst hrun
+  · intro target occurrence
+    have hpackedValues := data.packed_read_values_zero
+    have hdecodedValues := data.decoded_read_values_code
+    have hrun := Succinct.selectBoolWord_toCosted_run
+      target bits occurrence
+    simpa [Costed.erase, Costed.run, hpackedValues, hdecodedValues]
+      using congrArg Prod.fst hrun
+
 def toCompressedDirectory
     {bits : List Bool} {wordSize : Nat}
     (data : FixedWeightTableRAMBlockData bits wordSize) :
@@ -2237,6 +2792,90 @@ def toCompressedDirectory
   access_exact := data.accessCosted_erase
   rank_exact := data.rankCosted_erase
   select_exact := data.selectCosted_erase
+
+/--
+The direct local table/RAM directory and the generic dependent-auxiliary
+adapter expose the same charged query behavior.
+-/
+def DependentAuxiliaryBridgeProfile
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) : Prop :=
+  ((data.toDependentAuxiliaryData).toCompressedDirectory).payload =
+      (data.toCompressedDirectory).payload /\
+    (forall i,
+      (((data.toDependentAuxiliaryData).toCompressedDirectory).accessQueryCosted
+          i).cost =
+          ((data.toCompressedDirectory).accessQueryCosted i).cost /\
+        (((data.toDependentAuxiliaryData).toCompressedDirectory).accessQueryCosted
+          i).erase =
+          ((data.toCompressedDirectory).accessQueryCosted i).erase) /\
+    (forall target pos,
+      (((data.toDependentAuxiliaryData).toCompressedDirectory).rankQueryCosted
+          target pos).cost =
+          ((data.toCompressedDirectory).rankQueryCosted target pos).cost /\
+        (((data.toDependentAuxiliaryData).toCompressedDirectory).rankQueryCosted
+          target pos).erase =
+          ((data.toCompressedDirectory).rankQueryCosted target pos).erase) /\
+    (forall target occurrence,
+      (((data.toDependentAuxiliaryData).toCompressedDirectory).selectQueryCosted
+          target occurrence).cost =
+          ((data.toCompressedDirectory).selectQueryCosted
+            target occurrence).cost /\
+        (((data.toDependentAuxiliaryData).toCompressedDirectory).selectQueryCosted
+          target occurrence).erase =
+          ((data.toCompressedDirectory).selectQueryCosted
+            target occurrence).erase)
+
+theorem dependent_auxiliary_bridge_profile
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) :
+    data.DependentAuxiliaryBridgeProfile := by
+  constructor
+  · rfl
+  constructor
+  · intro i
+    constructor
+    · change ((data.toDependentAuxiliaryData).accessCosted i).cost =
+        (data.accessCosted i).cost
+      have hleft :
+          ((data.toDependentAuxiliaryData).accessCosted i).cost = 2 := by
+        simp [toDependentAuxiliaryData, FixedWeightDependentAuxiliaryData.accessCosted,
+          data.packed_read_values_zero, data.decoded_read_values_code]
+      rw [hleft, data.accessCosted_cost i]
+    · change ((data.toDependentAuxiliaryData).accessCosted i).erase =
+        (data.accessCosted i).erase
+      simp
+  constructor
+  · intro target pos
+    constructor
+    · change ((data.toDependentAuxiliaryData).rankCosted target pos).cost =
+        (data.rankCosted target pos).cost
+      have hleft :
+          ((data.toDependentAuxiliaryData).rankCosted target pos).cost =
+            3 := by
+        simp [toDependentAuxiliaryData, FixedWeightDependentAuxiliaryData.rankCosted,
+          data.packed_read_values_zero, data.decoded_read_values_code]
+      rw [hleft, data.rankCosted_cost target pos]
+    · change ((data.toDependentAuxiliaryData).rankCosted target pos).erase =
+        (data.rankCosted target pos).erase
+      simp
+  · intro target occurrence
+    constructor
+    · change
+        ((data.toDependentAuxiliaryData).selectCosted
+          target occurrence).cost =
+        (data.selectCosted target occurrence).cost
+      have hleft :
+          ((data.toDependentAuxiliaryData).selectCosted
+              target occurrence).cost = 3 := by
+        simp [toDependentAuxiliaryData, FixedWeightDependentAuxiliaryData.selectCosted,
+          data.packed_read_values_zero, data.decoded_read_values_code]
+      rw [hleft, data.selectCosted_cost target occurrence]
+    · change
+        ((data.toDependentAuxiliaryData).selectCosted
+          target occurrence).erase =
+        (data.selectCosted target occurrence).erase
+      simp
 
 theorem directory_profile
     {bits : List Bool} {wordSize : Nat}
@@ -2295,6 +2934,95 @@ theorem directory_profile
         Succinct.select target bits occurrence
     exact ⟨by rw [data.selectCosted_cost target occurrence]; omega,
       data.selectCosted_erase target occurrence⟩
+
+/--
+Detailed dependent-read profile for the local fixed-weight table/RAM kernel.
+
+This exposes the non-oracular route that the directory profile abstracts over:
+the packed code is read from slot zero, the erased code chooses the decoded-word
+table address, and rank/select then run fixed RAM word primitives on that
+decoded word.  The decoded table is dense, so this is a local block profile
+rather than a global `o(n)` FID family theorem.
+-/
+def DependentReadProfile
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) : Prop :=
+  data.payload.length =
+      fixedWeightPayloadBudget bits + data.decodedTableOverhead /\
+    data.decodedTableOverhead =
+      fixedWeightDecodedWordTableOverhead bits.length (trueCount bits) /\
+    SuccinctSpace.flattenPayloadWords
+        data.packedStore.store.words.toList =
+      fixedWeightPackedPayload bits /\
+    data.packedStore.store.words[0]? =
+      some (fixedWeightPackedPayload bits) /\
+    fixedWeightPayloadBudget bits <= wordSize /\
+    data.readCodeCosted.cost = 1 /\
+    data.readCodeCosted.erase = fixedWeightCode bits /\
+    SuccinctSpace.flattenPayloadWords
+        data.decodedStore.store.words.toList =
+      fixedWeightDecodedWordTablePayload bits.length (trueCount bits) /\
+    data.decodedStore.store.words[fixedWeightCode bits]? = some bits /\
+    bits.length <= wordSize /\
+    (forall {word : List Bool},
+      List.Mem word data.packedStore.store.words.toList ->
+        word.length <= wordSize) /\
+    (forall {word : List Bool},
+      List.Mem word data.decodedStore.store.words.toList ->
+        word.length <= wordSize) /\
+    data.decodedWordCosted.cost = 2 /\
+    data.decodedWordCosted.erase = bits /\
+    wordSize <= Nat.log2 bits.length + 1 /\
+    (forall i,
+      (data.accessCosted i).cost = 2 /\
+        (data.accessCosted i).erase = bits[i]?) /\
+    (forall target pos,
+      (data.rankCosted target pos).cost = 3 /\
+        (data.rankCosted target pos).erase =
+          Succinct.rankPrefix target bits pos) /\
+    (forall target occurrence,
+      (data.selectCosted target occurrence).cost = 3 /\
+        (data.selectCosted target occurrence).erase =
+          Succinct.select target bits occurrence)
+
+theorem dependent_read_profile
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) :
+    data.DependentReadProfile := by
+  have hpacked :
+      data.packedStore.store.words[0]? =
+        some (fixedWeightPackedPayload bits) := by
+    simpa [packedStore] using
+      fixedWeightPackedCodeBoundedStore_get?_zero bits
+        data.codeWidth_le_wordSize
+  have hdecoded :
+      data.decodedStore.store.words[fixedWeightCode bits]? = some bits := by
+    simpa [decodedStore] using
+      fixedWeightDecodedWordBoundedStore_get?_fixedWeightCode bits
+        data.blockWidth_le_wordSize
+  exact
+    ⟨data.payload_length,
+      data.decodedTableOverhead_eq,
+      data.packedStore.erases,
+      hpacked,
+      data.codeWidth_le_wordSize,
+      data.readCodeCosted_cost,
+      data.readCodeCosted_erase,
+      data.decodedStore.erases,
+      hdecoded,
+      data.blockWidth_le_wordSize,
+      (fun hmem => data.packedStore.word_length_le_of_mem hmem),
+      (fun hmem => data.decodedStore.word_length_le_of_mem hmem),
+      data.decodedWordCosted_cost,
+      data.decodedWordCosted_erase,
+      data.wordSize_le_machine,
+      (fun i => ⟨data.accessCosted_cost i, data.accessCosted_erase i⟩),
+      (fun target pos =>
+        ⟨data.rankCosted_cost target pos,
+          data.rankCosted_erase target pos⟩),
+      (fun target occurrence =>
+        ⟨data.selectCosted_cost target occurrence,
+          data.selectCosted_erase target occurrence⟩)⟩
 
 end FixedWeightTableRAMBlockData
 

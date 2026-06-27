@@ -297,6 +297,12 @@ is now the constant-read compressed/FID join layer: it stores
 `fixedWeightPackedPayload bits` and an auxiliary payload in bounded word stores,
 uses explicit packed/auxiliary read schedules, and proves the resulting
 directory profile via `RankSelect.fixedWeightCompressedAuxiliaryDataProfile`.
+`RankSelect.FixedWeightDependentAuxiliaryData` is the dependent-read companion:
+its auxiliary read schedule may depend on the charged packed read values, with
+`RankSelect.fixedWeightDependentAuxiliaryDataProfile` exporting the same
+compressed-directory shape for pointwise kernels.  This scaffold still has
+abstract evaluator fields; concrete non-oracular instances must expose fixed
+code over the charged reads.
 At the family level, `RankSelect.fixedWeightCompressedAuxiliaryConstantQueryProfile`
 feeds the public compressed theorem shape with payload budget
 `Nat.log2 (binomialCount bits.length (trueCount bits)) + 1 + o(n)`.  This is
@@ -316,11 +322,22 @@ decoded-word access plus the repository RAM word primitives for rank/select.
 Its public profile
 `RankSelect.fixedWeightTableRAMBlockDataProfile` accounts for both the packed
 code payload and the dense decoded-word-table payload and proves query cost
-`<= 3`.  This is still a local/dense block theorem, not the finished FID
-family; the remaining standalone rank/select frontier is composing this kind
-of table/RAM kernel behind charged global routing with `o(n)` auxiliary
-payload, or a tighter presentation of the Clark internals, not merely
-consuming the public spec surface.  The
+`<= 3`.  `RankSelect.fixedWeightTableRAMBlockDependentReadProfile` exposes the
+lower-level spine needed for later global composition: slot-zero packed-code
+read, decoded-table read at the erased code, decoded-word access, and fixed
+RAM rank/select primitives.  `RankSelect.fixedWeightTableRAMBlockDependentAuxiliaryDataProfile`
+packages that same kernel through the generic dependent-read auxiliary
+scaffold, while `RankSelect.fixedWeightTableRAMBlockDependentAuxiliaryBridgeProfile`
+proves agreement between the scaffold-backed directory and the direct local
+block directory.  `RankSelect.fixedWeightTableRAMBlockDependentAuxiliaryFullProfile`
+is the combined citation point for the generic scaffold profile, the stronger
+local dependent-read facts, and the bridge.  This is still a local/dense block
+theorem, not the finished FID family: the decoded table is dense and the
+current word-size bound is local to the block length, so the remaining
+standalone rank/select frontier is composing this kind of table/RAM kernel
+behind ambient charged global routing with `o(n)` auxiliary payload, or a
+tighter presentation of the Clark internals, not merely consuming the public
+spec surface.  The
 strengthened public theorem
 `RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery` additionally exposes
 the machine-word discipline from the concrete components: Jacobson rank payload
@@ -1696,6 +1713,7 @@ The names below are grouped by source module. Repeated base names in
   `RankSelect.fixedWeightPackedReadbackDataOfChunksProfile`,
   `RankSelect.compressedDirectoryProfile`,
   `RankSelect.fixedWeightCompressedAuxiliaryDataProfile`,
+  `RankSelect.fixedWeightDependentAuxiliaryDataProfile`,
   `RankSelect.fixedWeightCompressedAuxiliaryConstantQueryProfile`,
   `RankSelect.fixedWeightCompressedAuxiliaryToCompressedFamilyProfile`,
   `RankSelect.fixedWeightTableBackedFIDDataProfile`,
@@ -1703,6 +1721,11 @@ The names below are grouped by source module. Repeated base names in
   `RankSelect.fixedWeightDecodedWordBoundedStoreGetFixedWeightCode`,
   `RankSelect.fixedWeightPackedCodeBoundedStoreGetZero`,
   `RankSelect.fixedWeightTableRAMBlockDataProfile`,
+  `RankSelect.fixedWeightTableRAMBlockToDependentAuxiliaryData`,
+  `RankSelect.fixedWeightTableRAMBlockDependentAuxiliaryDataProfile`,
+  `RankSelect.fixedWeightTableRAMBlockDependentAuxiliaryBridgeProfile`,
+  `RankSelect.fixedWeightTableRAMBlockDependentAuxiliaryFullProfile`,
+  `RankSelect.fixedWeightTableRAMBlockDependentReadProfile`,
   `RankSelect.compressedFixedWeightConstantQueryProfile`,
   `RankSelect.jacobsonClarkNPlusOConstantQuery`, and
   `RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery`.

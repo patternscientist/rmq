@@ -82,9 +82,64 @@ theorem fixedWeightAuxiliaryWordReadsCostedErase
       fixedWeightAuxiliaryWordReadValues store indices := by
   exact RMQ.RankSelectSpec.boundedPayloadWordReadsCosted_erase store indices
 
+/-- Dependent charged word reads used by RRR-style local block kernels. -/
+abbrev fixedWeightDependentAuxiliaryWordReadsCosted
+    {primaryPayload auxPayload : List Bool} {wordSize : Nat}
+    (primaryStore :
+      SuccinctSpace.BoundedPayloadWordStore primaryPayload wordSize)
+    (auxStore :
+      SuccinctSpace.BoundedPayloadWordStore auxPayload wordSize)
+    (primaryReads : List Nat)
+    (auxReads : List (Option (List Bool)) -> List Nat) :=
+  RMQ.RankSelectSpec.dependentPayloadWordReadsCosted
+    primaryStore auxStore primaryReads auxReads
+
+/-- Cost of dependent charged word reads. -/
+theorem fixedWeightDependentAuxiliaryWordReadsCostedCost
+    {primaryPayload auxPayload : List Bool} {wordSize : Nat}
+    (primaryStore :
+      SuccinctSpace.BoundedPayloadWordStore primaryPayload wordSize)
+    (auxStore :
+      SuccinctSpace.BoundedPayloadWordStore auxPayload wordSize)
+    (primaryReads : List Nat)
+    (auxReads : List (Option (List Bool)) -> List Nat) :
+    (fixedWeightDependentAuxiliaryWordReadsCosted primaryStore auxStore
+        primaryReads auxReads).cost =
+      primaryReads.length +
+        (auxReads
+          (fixedWeightAuxiliaryWordReadValues primaryStore
+            primaryReads)).length := by
+  exact
+    RMQ.RankSelectSpec.dependentPayloadWordReadsCosted_cost
+      primaryStore auxStore primaryReads auxReads
+
+/-- Erasure of dependent charged word reads. -/
+theorem fixedWeightDependentAuxiliaryWordReadsCostedErase
+    {primaryPayload auxPayload : List Bool} {wordSize : Nat}
+    (primaryStore :
+      SuccinctSpace.BoundedPayloadWordStore primaryPayload wordSize)
+    (auxStore :
+      SuccinctSpace.BoundedPayloadWordStore auxPayload wordSize)
+    (primaryReads : List Nat)
+    (auxReads : List (Option (List Bool)) -> List Nat) :
+    (fixedWeightDependentAuxiliaryWordReadsCosted primaryStore auxStore
+        primaryReads auxReads).erase =
+      (fixedWeightAuxiliaryWordReadValues primaryStore primaryReads,
+        fixedWeightAuxiliaryWordReadValues auxStore
+          (auxReads
+            (fixedWeightAuxiliaryWordReadValues primaryStore
+              primaryReads))) := by
+  exact
+    RMQ.RankSelectSpec.dependentPayloadWordReadsCosted_erase
+      primaryStore auxStore primaryReads auxReads
+
 /-- Constant-bounded compressed/FID auxiliary data over a fixed-weight code. -/
 abbrev FixedWeightCompressedAuxiliaryData :=
   RMQ.RankSelectSpec.FixedWeightCompressedAuxiliaryData
+
+/-- Pointwise compressed/FID auxiliary data with dependent auxiliary reads. -/
+abbrev FixedWeightDependentAuxiliaryData :=
+  RMQ.RankSelectSpec.FixedWeightDependentAuxiliaryData
 
 /-- Family of constant-bounded compressed/FID auxiliary data. -/
 abbrev FixedWeightCompressedAuxiliaryFamily :=
@@ -295,6 +350,24 @@ abbrev fixedWeightCompressedAuxiliaryDataProfile
         bits overhead wordSize queryCost) :=
   RMQ.RankSelectSpec.FixedWeightCompressedAuxiliaryData.directory_profile data
 
+/-- Directory profile for pointwise dependent-read compressed/FID data. -/
+abbrev FixedWeightDependentAuxiliaryDirectoryProfile
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost) :
+    Prop :=
+  RMQ.RankSelectSpec.FixedWeightDependentAuxiliaryData.DirectoryProfile data
+
+/-- Profile for pointwise dependent-read compressed/FID data. -/
+theorem fixedWeightDependentAuxiliaryDataProfile
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost) :
+    FixedWeightDependentAuxiliaryDirectoryProfile data := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightDependentAuxiliaryData.directory_profile
+      data
+
 /-- Convert a compressed/FID auxiliary family into the public family shape. -/
 abbrev fixedWeightCompressedAuxiliaryToCompressedFamily
     {overhead : Nat -> Nat} {wordSize queryCost : Nat}
@@ -344,6 +417,85 @@ abbrev fixedWeightTableRAMBlockDataProfile
     {bits : List Bool} {wordSize : Nat}
     (data : FixedWeightTableRAMBlockData bits wordSize) :=
   RMQ.RankSelectSpec.FixedWeightTableRAMBlockData.directory_profile data
+
+/-- Adapt a local table/RAM block kernel to the dependent auxiliary scaffold. -/
+abbrev fixedWeightTableRAMBlockToDependentAuxiliaryData
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) :=
+  RMQ.RankSelectSpec.FixedWeightTableRAMBlockData.toDependentAuxiliaryData
+    data
+
+/--
+The local table/RAM fixed-weight block kernel is an instance of the generic
+dependent-read compressed/FID scaffold.
+-/
+theorem fixedWeightTableRAMBlockDependentAuxiliaryDataProfile
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) :
+    FixedWeightDependentAuxiliaryDirectoryProfile
+      (fixedWeightTableRAMBlockToDependentAuxiliaryData data) := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightDependentAuxiliaryData.directory_profile
+      (RMQ.RankSelectSpec.FixedWeightTableRAMBlockData.toDependentAuxiliaryData
+        data)
+
+/-- Detailed dependent-read profile for local table/RAM fixed-weight block data. -/
+abbrev FixedWeightTableRAMBlockDependentReadProfile
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) : Prop :=
+  RMQ.RankSelectSpec.FixedWeightTableRAMBlockData.DependentReadProfile data
+
+/--
+The local table/RAM fixed-weight block kernel reads the packed code, uses that
+charged value to address the decoded-word table, and then answers with fixed
+access/rank/select code.
+-/
+theorem fixedWeightTableRAMBlockDependentReadProfile
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) :
+    FixedWeightTableRAMBlockDependentReadProfile data := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightTableRAMBlockData.dependent_read_profile
+      data
+
+/--
+Bridge profile equating the direct local block directory and the
+dependent-auxiliary scaffold-backed directory.
+-/
+abbrev FixedWeightTableRAMBlockDependentAuxiliaryBridgeProfile
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) : Prop :=
+  RMQ.RankSelectSpec.FixedWeightTableRAMBlockData.DependentAuxiliaryBridgeProfile
+    data
+
+/--
+The dependent-auxiliary adapter has the same payload and charged query
+behavior as the direct local table/RAM block directory.
+-/
+theorem fixedWeightTableRAMBlockDependentAuxiliaryBridgeProfile
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) :
+    FixedWeightTableRAMBlockDependentAuxiliaryBridgeProfile data := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightTableRAMBlockData.dependent_auxiliary_bridge_profile
+      data
+
+/--
+Full local table/RAM block package: generic dependent-auxiliary directory
+profile, stronger local dependent-read facts, and equivalence with the direct
+block directory.
+-/
+theorem fixedWeightTableRAMBlockDependentAuxiliaryFullProfile
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightTableRAMBlockData bits wordSize) :
+    FixedWeightDependentAuxiliaryDirectoryProfile
+        (fixedWeightTableRAMBlockToDependentAuxiliaryData data) /\
+      FixedWeightTableRAMBlockDependentReadProfile data /\
+      FixedWeightTableRAMBlockDependentAuxiliaryBridgeProfile data := by
+  exact
+    ⟨fixedWeightTableRAMBlockDependentAuxiliaryDataProfile data,
+      fixedWeightTableRAMBlockDependentReadProfile data,
+      fixedWeightTableRAMBlockDependentAuxiliaryBridgeProfile data⟩
 
 /-- Decoded fixed-weight entries have the requested length and true-count. -/
 abbrev fixedWeightDecodeMemLengthTrueCount

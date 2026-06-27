@@ -117,6 +117,20 @@ overhead and constant bounded reads. This is not yet the full FID construction:
 the remaining work is a concrete global auxiliary layer that avoids the
 full-payload readback cost while still consuming charged payload rather than
 proof-only decoded bits.
+The pointwise `RMQ.RankSelect.fixedWeightDependentAuxiliaryDataProfile`
+extends that surface to dependent auxiliary reads: the second read schedule may
+depend on the charged packed-code read values, which is the shape needed by
+RRR-style local block kernels.
+The local `RMQ.RankSelect.fixedWeightTableRAMBlockDependentReadProfile`
+checkpoint proves the block-level non-oracular spine: a charged packed-code
+read, a decoded-word table read at that erased code, direct decoded access, and
+fixed RAM rank/select primitives with constant modeled cost.
+`RMQ.RankSelect.fixedWeightTableRAMBlockDependentAuxiliaryDataProfile`
+packages the same local kernel through the generic dependent-read scaffold.
+`RMQ.RankSelect.fixedWeightTableRAMBlockDependentAuxiliaryFullProfile` combines
+that scaffold profile with the stronger local dependent-read facts and a bridge
+showing the scaffold-backed directory agrees with the direct local block
+directory on payload, costs, and erased answers.
 
 ## Balanced-Parentheses Navigation
 
