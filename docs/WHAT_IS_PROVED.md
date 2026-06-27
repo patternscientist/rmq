@@ -161,9 +161,15 @@ directory profile under an explicit route-plus-local query-cost discipline.
 counted route/class metadata table envelope: a concrete auxiliary payload and
 bounded word store, charged metadata reads whose erased values are the store
 reads at each route schedule, an `o(n)` family overhead, and ambient query-cost
-bounds.  The route fields and local block class are still semantic route
-record data; decoding them from the charged metadata words is the next
-non-oracular FID step.
+bounds.  `RMQ.RankSelect.fixedWeightAmbientComputedRRRDecodedMetadataReadProfile`
+is the stricter decoded-metadata checkpoint: fixed decoders mapped over the
+charged route-store reads recover the route fields consumed by the ambient
+computed-RRR evaluator.  The decoded route-table profiles
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableProfile` and
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableFamilyProfile`
+package this with the same counted route-payload envelope. The concrete
+route-table encoders/builders, local block class/length decoding, and uniform
+constant local decoder regime remain future work.
 The ambient/global fixed-weight block predecessor is also formalized:
 `RMQ.RankSelect.fixedWeightAmbientBlockCompositionFamilyWordBoundedProfile`
 proves an `o(n)` counted auxiliary envelope for block-composed fixed-weight
@@ -176,6 +182,12 @@ fixed-weight payload budget plus an `o(n)` slack.
 `RMQ.RankSelect.fixedWeightAmbientBlockCompositionWordBoundedCompressedProfileOfPrimaryBudget`
 is the strengthened version carrying the directory profile and ambient
 machine-word bounds into that conditional compressed/FID shape.
+The same conditional compressed/FID shape is exposed directly for the
+ambient computed-RRR route layers by
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableWordBoundedCompressedProfileOfPrimaryBudget`
+and
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableWordBoundedCompressedProfileOfPrimaryBudget`;
+both remain conditional on the primary block-code budget theorem.
 
 ## Balanced-Parentheses Navigation
 

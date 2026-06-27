@@ -154,6 +154,19 @@ RMQ.RankSelect.FixedWeightAmbientComputedRRRRouteTableProfile
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableProfile
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableFamilyDirectory
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableFamilyProfile
+RMQ.RankSelect.FixedWeightAmbientComputedRRRDecodedAccessRoute
+RMQ.RankSelect.FixedWeightAmbientComputedRRRDecodedRankRoute
+RMQ.RankSelect.FixedWeightAmbientComputedRRRDecodedSelectRoute
+RMQ.RankSelect.FixedWeightAmbientComputedRRRDecodedRouteTableData
+RMQ.RankSelect.FixedWeightAmbientComputedRRRDecodedRouteTableFamily
+RMQ.RankSelect.FixedWeightAmbientComputedRRRDecodedMetadataReadProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRDecodedMetadataReadProfile
+RMQ.RankSelect.FixedWeightAmbientComputedRRRDecodedRouteTableProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableFamilyDirectory
+RMQ.RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableFamilyProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableWordBoundedCompressedProfileOfPrimaryBudget
+RMQ.RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableWordBoundedCompressedProfileOfPrimaryBudget
 RMQ.RankSelect.FixedWeightTableRAMBlockData
 RMQ.RankSelect.fixedWeightTableRAMBlockDataProfile
 RMQ.RankSelect.fixedWeightTableRAMBlockToDependentAuxiliaryData
@@ -345,11 +358,24 @@ metadata-read kernels
 `fixedWeightAmbientComputedRRRRouteTableSelectMetadataReadsCosted`, proves the
 erased read values are exactly the bounded-store reads at each route schedule,
 and packages the auxiliary payload under the existing
-`fixedWeightAmbientBlockAuxiliaryOverhead` little-o envelope. The route records
-still carry the semantic block/start/rank/select facts; the next non-oracular
-step is to decode those route fields, and the local block class/length, from
-the charged metadata values rather than passing them as proof-level data. The
-final constant local decode bound also remains future work.
+`fixedWeightAmbientBlockAuxiliaryOverhead` little-o envelope. This base layer
+still carries semantic route fields directly; the stricter decoded layer below
+adds the charged-read decoder discipline while leaving concrete route-table
+builders and the final constant local decode bound as future work.
+
+That route/class envelope now has a stricter decoded-metadata checkpoint:
+`FixedWeightAmbientComputedRRRDecodedRouteTableData` adds explicit metadata
+read schedules and fixed decoders for the access/rank/select route fields.
+`fixedWeightAmbientComputedRRRDecodedMetadataReadProfile` proves that mapping
+those decoders over the charged route-store reads recovers the block index,
+offset/base-rank/local-limit, or local occurrence/block-start fields consumed
+by the ambient evaluator.  `fixedWeightAmbientComputedRRRDecodedRouteTableProfile`
+and `fixedWeightAmbientComputedRRRDecodedRouteTableFamilyProfile` package those
+facts with the existing route-table and `o(n)` route-payload envelope. This is
+still not a concrete global FID builder: the decoder correctness is supplied
+as a component field, not yet derived from a particular packed arithmetic
+route table, and the local block class/length and constant decoder regime
+remain to be instantiated.
 
 The ambient/global block-composition predecessor is now present. It stores one
 canonical fixed-weight code word per block through
@@ -377,6 +403,13 @@ isolate the remaining primary-budget theorem: for every `bits`,
 with `primaryOverhead = o(n)`. The word-bounded bridge additionally carries
 the directory profile and ambient word-size discipline into the
 `fixedWeightPayloadBudget bits + o(n)` compressed/FID shape.
+The same conditional compressed bridge is now exposed directly for route-table
+families by
+`fixedWeightAmbientComputedRRRRouteTableWordBoundedCompressedProfileOfPrimaryBudget`
+and for decoded route-table families by
+`fixedWeightAmbientComputedRRRDecodedRouteTableWordBoundedCompressedProfileOfPrimaryBudget`.
+These are generic compressed/FID public theorem shapes for the ambient
+computed-RRR route layers, still conditional on the primary block-code budget.
 
 ## Module Boundary
 

@@ -232,6 +232,26 @@ abbrev FixedWeightAmbientComputedRRRRouteTableData :=
 abbrev FixedWeightAmbientComputedRRRRouteTableFamily :=
   RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteTableFamily
 
+/-- Decoded access route metadata recovered from charged table reads. -/
+abbrev FixedWeightAmbientComputedRRRDecodedAccessRoute :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRDecodedAccessRoute
+
+/-- Decoded rank route metadata recovered from charged table reads. -/
+abbrev FixedWeightAmbientComputedRRRDecodedRankRoute :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRDecodedRankRoute
+
+/-- Decoded select route metadata recovered from charged table reads. -/
+abbrev FixedWeightAmbientComputedRRRDecodedSelectRoute :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRDecodedSelectRoute
+
+/-- Route/class table data with decoded route fields from charged reads. -/
+abbrev FixedWeightAmbientComputedRRRDecodedRouteTableData :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRDecodedRouteTableData
+
+/-- Family of decoded route/class metadata tables. -/
+abbrev FixedWeightAmbientComputedRRRDecodedRouteTableFamily :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRDecodedRouteTableFamily
+
 /-- Counted fixed-weight bitvector universe used by the compressed/FID budget. -/
 abbrev fixedWeightBitstrings :=
   RMQ.RankSelectSpec.fixedWeightBitstrings
@@ -1184,6 +1204,228 @@ theorem fixedWeightTableRAMBlockDependentAuxiliaryFullProfile
     ⟨fixedWeightTableRAMBlockDependentAuxiliaryDataProfile data,
       fixedWeightTableRAMBlockDependentReadProfile data,
       fixedWeightTableRAMBlockDependentAuxiliaryBridgeProfile data⟩
+
+/-- Public decoded route/class metadata read profile. -/
+abbrev FixedWeightAmbientComputedRRRDecodedMetadataReadProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRDecodedRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    Prop :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRDecodedRouteTableData.DecodedMetadataReadProfile
+    data
+
+/--
+Decoded route/class metadata reads are charged bounded-store reads, and the
+route decoders recover the route fields consumed by the ambient computed-RRR
+query layer.
+-/
+theorem fixedWeightAmbientComputedRRRDecodedMetadataReadProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRDecodedRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientComputedRRRDecodedMetadataReadProfile data := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRDecodedRouteTableData.decoded_metadata_read_profile
+      data
+
+/-- Public profile for decoded route/class table data. -/
+abbrev FixedWeightAmbientComputedRRRDecodedRouteTableProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRDecodedRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    Prop :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRDecodedRouteTableData.DecodedRouteTableProfile
+    data
+
+/--
+Decoded route/class tables instantiate the route-table and ambient composition
+profiles while proving that decoded route fields come from charged metadata
+read values.
+-/
+theorem fixedWeightAmbientComputedRRRDecodedRouteTableProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRDecodedRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientComputedRRRDecodedRouteTableProfile data := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRDecodedRouteTableData.decoded_route_table_profile
+      data
+
+/-- The ambient directory produced by a decoded route/class table family. -/
+abbrev fixedWeightAmbientComputedRRRDecodedRouteTableFamilyDirectory
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRDecodedRouteTableFamily
+        slots routeCost localQueryCost queryCost)
+    (bits : List Bool) :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRDecodedRouteTableFamily.directory
+    family bits
+
+/--
+Family-level decoded route/class table profile: route metadata payload is
+`o(n)`, queries are bounded by `queryCost`, and route fields are decoded from
+charged metadata reads before being consumed by the ambient computed-RRR layer.
+-/
+theorem fixedWeightAmbientComputedRRRDecodedRouteTableFamilyProfile
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRDecodedRouteTableFamily
+        slots routeCost localQueryCost queryCost) :
+    SuccinctSpace.LittleOLinear
+        (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRDecodedRouteTableFamily.overhead
+          slots) /\
+      forall bits : List Bool,
+        let data :=
+          RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRDecodedRouteTableFamily.componentData
+            family bits
+        FixedWeightAmbientComputedRRRDecodedRouteTableProfile data /\
+          data.routePayload.length =
+            fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          ((fixedWeightAmbientComputedRRRDecodedRouteTableFamilyDirectory
+                family bits).payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length) /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall i,
+            ((fixedWeightAmbientComputedRRRDecodedRouteTableFamilyDirectory
+                family bits).accessCosted i).cost <= queryCost) /\
+          (forall target pos,
+            ((fixedWeightAmbientComputedRRRDecodedRouteTableFamilyDirectory
+                family bits).rankCosted target pos).cost <= queryCost) /\
+          (forall target occurrence,
+            ((fixedWeightAmbientComputedRRRDecodedRouteTableFamilyDirectory
+                family bits).selectCosted target occurrence).cost <=
+              queryCost) := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRDecodedRouteTableFamily.decoded_route_table_family_profile
+      family
+
+/--
+Conditional compressed/FID bridge for the existing route/class table family.
+
+Once the primary block-code budget is bounded by the global fixed-weight budget
+plus `primaryOverhead`, the route-table family has the public compressed/FID
+payload shape with word-bounded stores and exact constant-cost queries.
+-/
+theorem fixedWeightAmbientComputedRRRRouteTableWordBoundedCompressedProfileOfPrimaryBudget
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteTableFamily
+        slots routeCost localQueryCost queryCost)
+    (primaryOverhead : Nat -> Nat)
+    (hprimaryO : SuccinctSpace.LittleOLinear primaryOverhead)
+    (hprimary :
+      forall bits : List Bool,
+        fixedWeightBlockPayloadBudget (family.blocks bits) <=
+          fixedWeightPayloadBudget bits + primaryOverhead bits.length) :
+    SuccinctSpace.LittleOLinear
+        (fixedWeightAmbientBlockCompositionCompressedOverhead
+          slots primaryOverhead) /\
+      forall bits : List Bool,
+        let routeData :=
+          RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteTableFamily.componentData
+            family bits
+        let data := fixedWeightAmbientComputedRRRRouteTableFamilyDirectory
+          family bits
+        FixedWeightAmbientComputedRRRRouteTableProfile routeData /\
+          data.DirectoryProfile /\
+          data.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          data.payload.length <=
+            fixedWeightPayloadBudget bits +
+              fixedWeightAmbientBlockCompositionCompressedOverhead
+                slots primaryOverhead bits.length /\
+          data.auxPayload.length =
+            fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word data.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word data.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (data.accessCosted i).cost <= queryCost /\
+              (data.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (data.rankCosted target pos).cost <= queryCost /\
+              (data.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (data.selectCosted target occurrence).cost <= queryCost /\
+              (data.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteTableFamily.word_bounded_compressed_profile_of_primary_budget
+      family primaryOverhead hprimaryO hprimary
+
+/--
+Conditional compressed/FID bridge for decoded route/class metadata tables.
+
+Compared with the route-table bridge above, this profile also carries the
+decoded metadata-read proof that route fields are outputs of charged route
+payload reads.
+-/
+theorem fixedWeightAmbientComputedRRRDecodedRouteTableWordBoundedCompressedProfileOfPrimaryBudget
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRDecodedRouteTableFamily
+        slots routeCost localQueryCost queryCost)
+    (primaryOverhead : Nat -> Nat)
+    (hprimaryO : SuccinctSpace.LittleOLinear primaryOverhead)
+    (hprimary :
+      forall bits : List Bool,
+        fixedWeightBlockPayloadBudget (family.blocks bits) <=
+          fixedWeightPayloadBudget bits + primaryOverhead bits.length) :
+    SuccinctSpace.LittleOLinear
+        (fixedWeightAmbientBlockCompositionCompressedOverhead
+          slots primaryOverhead) /\
+      forall bits : List Bool,
+        (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRDecodedRouteTableFamily.componentData
+          family bits).DecodedRouteTableProfile /\
+          let data :=
+            fixedWeightAmbientComputedRRRDecodedRouteTableFamilyDirectory
+              family bits
+          data.DirectoryProfile /\
+            data.payload.length =
+              fixedWeightBlockPayloadBudget (family.blocks bits) +
+                fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+            data.payload.length <=
+              fixedWeightPayloadBudget bits +
+                fixedWeightAmbientBlockCompositionCompressedOverhead
+                  slots primaryOverhead bits.length /\
+            data.auxPayload.length =
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+            SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+            (forall {word : List Bool},
+              List.Mem word data.codeStore.store.words.toList ->
+                word.length <= Nat.log2 bits.length + 1) /\
+            (forall {word : List Bool},
+              List.Mem word data.auxStore.store.words.toList ->
+                word.length <= Nat.log2 bits.length + 1) /\
+            (forall i,
+              (data.accessCosted i).cost <= queryCost /\
+                (data.accessCosted i).erase = bits[i]?) /\
+            (forall target pos,
+              (data.rankCosted target pos).cost <= queryCost /\
+                (data.rankCosted target pos).erase =
+                  Succinct.rankPrefix target bits pos) /\
+            (forall target occurrence,
+              (data.selectCosted target occurrence).cost <= queryCost /\
+                (data.selectCosted target occurrence).erase =
+                  Succinct.select target bits occurrence) := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRDecodedRouteTableFamily.word_bounded_compressed_profile_of_primary_budget
+      family primaryOverhead hprimaryO hprimary
 
 /-- Decoded fixed-weight entries have the requested length and true-count. -/
 abbrev fixedWeightDecodeMemLengthTrueCount
