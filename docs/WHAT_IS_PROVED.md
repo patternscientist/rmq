@@ -155,6 +155,8 @@ local class/length-read RRR checkpoint: two charged fixed-width metadata words
 recover the block length and class, a charged packed-code word supplies the
 fixed-weight code, and access/rank/select are exact through direct decoded
 access plus the RAM word primitives.
+`RMQ.RankSelect.fixedWeightComputedRRRClassLengthBlockDependentAuxiliaryDataProfile`
+packages that same local kernel through the dependent-read scaffold.
 `RMQ.RankSelect.fixedWeightAmbientComputedRRRBlockCompositionProfile` consumes
 that local adapter in the ambient block-composition layer: routed queries read
 the charged block-code word, charge route/class metadata reads, invoke the
@@ -188,12 +190,47 @@ derives the same packed profile from a canonical fixed-width route-field table,
 and
 `RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutPackedProfile`
 does so from eight concatenated canonical fixed-width field tables.
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRClassLengthTableProfile` adds the
+analogous concrete per-block length/class table: two fixed-width table
+segments, a counted payload length
+`RMQ.RankSelect.fixedWeightBlockClassLengthTablePayloadLength`, charged
+readback for length/class words at a block index, and a local dependent-RRR
+bridge for each addressed block.
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeProfile`
+pairs the eight-table route layout with that class/length table, concatenates
+both into one charged auxiliary store, and feeds the class/length read prefix
+to the ambient class/length RRR evaluator through
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteClassLengthEnvelopeToClassLengthAmbientBlockCompositionData`.
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutToRouteClassLengthTableEnvelopeProfile`
+builds that envelope from an eight-table route layout under block-size and
+local-cost side conditions.
+`RMQ.RankSelect.fixedWeightRouteFieldTableLayoutPayloadLength`,
+`RMQ.RankSelect.fixedWeightRouteFieldTableLayoutBoundedStoreWordsToList`, and
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutOfCanonicalFixedWidthTables`
+make the route layout store itself canonical rather than assuming the layout
+word equation.
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamilyProfile`
+adds the family-level combined route plus class/length `o(n)` accounting under
+a supplied class/length-overhead budget, and
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeWordBoundedCompressedProfileOfPrimaryBudget`
+carries that combined auxiliary budget into the conditional compressed/FID
+primary-budget bridge.
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToRouteClassLengthTableEnvelopeFamilyProfile`
+promotes an eight-table layout family to that combined envelope family, while
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToRouteClassLengthTableEnvelopeWordBoundedCompressedProfileOfPrimaryBudget`
+pushes the promoted family through the conditional compressed/FID bridge.
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFixedBlockSizeRouteClassLengthTableEnvelopeFamilyProfile`
+specializes that promotion to a uniform `blockSize`/`fieldWidth` family and
+the class/length block-size query-cost budget.
 `RMQ.RankSelect.fixedWeightAmbientComputedRRRBlockSizeRouteTableFamilyProfile`
 adds the ambient block-size route-table refinement: the local computed-RRR cost
 premise is derived from a uniform block-length cap rather than assumed
-per-block. The remaining global constructor task is to add charged per-block
-length/class metadata tables to the route layout and feed them into the local
-class/length kernel.
+per-block. The remaining global constructor task is to instantiate a concrete
+block decomposition/routing family that proves the class/length metadata
+payload is `o(n)` (with
+`RMQ.RankSelect.fixedWeightBlockClassLengthTableOverheadLeOfBounds` as the
+first arithmetic bridge) and derives the semantic route exactness fields from
+charged routing tables.
 The ambient/global fixed-weight block predecessor is also formalized:
 `RMQ.RankSelect.fixedWeightAmbientBlockCompositionFamilyWordBoundedProfile`
 proves an `o(n)` counted auxiliary envelope for block-composed fixed-weight

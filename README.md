@@ -189,10 +189,11 @@ about Lean's executable `List` runtime.
   compressed/FID theorem shape with a Mathlib-free binomial-count universe plus
   a packed-code-only local RRR block kernel consumed by an ambient fixed-weight
   block-composition scaffold, a charged class/length-read local kernel,
-  block-size route-table cost discipline, a route/class metadata table envelope
-  with `o(n)` counted auxiliary payload, decoded route-field profiles over
+  block-size route-table cost discipline, decoded route-field profiles over
   charged metadata reads, packed fixed-width route-word readback profiles,
-  canonical route field-table constructors, and conditional bounded-regime
+  canonical route field-table constructors, a single-store route/class-length
+  envelope whose ambient evaluator consumes charged class/length reads, a
+  family-level combined-metadata `o(n)` bridge, and conditional bounded-regime
   bridges for the local decoder, ambient route tables, and ambient
   primary-budget join, and
   `RankSelectPublic` exposes the public Jacobson/Clark
@@ -374,9 +375,11 @@ RMQ blocker:
   library surface;
 - refine the landed standalone Jacobson/Clark rank/select theorem toward
   concrete global routing over the ambient fixed-weight block-composition
-  scaffold, build concrete route/class metadata field-table constructors and
-  local block-class decoders from charged words, finish the remaining
-  compressed/FID primary-budget bridge, and deepen
+  scaffold, consume the canonical eight-table route-layout constructor and
+  route/class-length family promotion in a block decomposition/routing family,
+  prove the class/length metadata and primary block-code budgets are `o(n)`,
+  discharge the remaining semantic route exactness fields from charged routing
+  tables, and deepen
   the landed BP-navigation close/rank bridge into a fuller tree-navigation API;
   and
 - deepen the new union-find spoke from specification/reference backend to

@@ -210,6 +210,10 @@ abbrev FixedWeightComputedRRRBlockData :=
 abbrev FixedWeightComputedRRRClassLengthBlockData :=
   RMQ.RankSelectSpec.FixedWeightComputedRRRClassLengthBlockData
 
+/-- Global fixed-width table of per-block length/class metadata. -/
+abbrev FixedWeightAmbientComputedRRRClassLengthTableData :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRClassLengthTableData
+
 /-- Ambient access route metadata for computed fixed-weight/RRR blocks. -/
 abbrev FixedWeightAmbientComputedRRRAccessRoute :=
   RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRAccessRoute
@@ -287,6 +291,14 @@ abbrev FixedWeightAmbientComputedRRRRouteFieldTableLayoutData :=
 /-- Family of eight-table fixed-width route field layouts. -/
 abbrev FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily :=
   RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+
+/-- Route-field layout paired with concrete per-block length/class tables. -/
+abbrev FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+
+/-- Family of route-field layouts paired with concrete class/length tables. -/
+abbrev FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily
 
 /-- Counted fixed-weight bitvector universe used by the compressed/FID budget. -/
 abbrev fixedWeightBitstrings :=
@@ -440,9 +452,41 @@ abbrev fixedWeightPackedReadbackDataOfChunksProfile
 abbrev fixedWeightBlockCodeWords :=
   RMQ.RankSelectSpec.fixedWeightBlockCodeWords
 
+/-- Per-block source lengths for the ambient class/length metadata table. -/
+abbrev fixedWeightBlockLengthEntries :=
+  RMQ.RankSelectSpec.fixedWeightBlockLengthEntries
+
+/-- Per-block source classes for the ambient class/length metadata table. -/
+abbrev fixedWeightBlockClassEntries :=
+  RMQ.RankSelectSpec.fixedWeightBlockClassEntries
+
 /-- Counted primary payload for block-coded fixed-weight blocks. -/
 abbrev fixedWeightBlockCodePayload :=
   RMQ.RankSelectSpec.fixedWeightBlockCodePayload
+
+/-- Fixed-width payload words for the per-block class/length metadata table. -/
+abbrev fixedWeightBlockClassLengthTableWords :=
+  RMQ.RankSelectSpec.fixedWeightBlockClassLengthTableWords
+
+/-- Counted payload for the per-block class/length metadata table. -/
+abbrev fixedWeightBlockClassLengthTablePayload :=
+  RMQ.RankSelectSpec.fixedWeightBlockClassLengthTablePayload
+
+/-- Counted bit overhead of the per-block class/length metadata table. -/
+abbrev fixedWeightBlockClassLengthTableOverhead :=
+  RMQ.RankSelectSpec.fixedWeightBlockClassLengthTableOverhead
+
+/-- Bound the class/length metadata overhead from block-count and field-width caps. -/
+theorem fixedWeightBlockClassLengthTableOverheadLeOfBounds
+    {fieldWidth fieldWidthBound blockCountBound : Nat}
+    {blocks : List (List Bool)}
+    (hblocks : blocks.length <= blockCountBound)
+    (hfield : fieldWidth <= fieldWidthBound) :
+    fixedWeightBlockClassLengthTableOverhead fieldWidth blocks <=
+      (blockCountBound + blockCountBound) * fieldWidthBound := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightBlockClassLengthTableOverhead_le_of_bounds
+      hblocks hfield
 
 /-- Sum of per-block fixed-weight code budgets. -/
 abbrev fixedWeightBlockPayloadBudget :=
@@ -451,6 +495,10 @@ abbrev fixedWeightBlockPayloadBudget :=
 /-- Length of the block-coded primary fixed-weight payload. -/
 abbrev fixedWeightBlockCodePayloadLength :=
   RMQ.RankSelectSpec.fixedWeightBlockCodePayload_length
+
+/-- Length of the per-block class/length metadata payload. -/
+abbrev fixedWeightBlockClassLengthTablePayloadLength :=
+  RMQ.RankSelectSpec.fixedWeightBlockClassLengthTablePayload_length
 
 /-- Bounded word store for per-block fixed-weight code words. -/
 abbrev fixedWeightBlockCodeBoundedStore :=
@@ -921,6 +969,41 @@ theorem fixedWeightComputedRRRClassLengthBlockKernelProfile
     FixedWeightComputedRRRClassLengthBlockKernelProfile data := by
   exact
     RMQ.RankSelectSpec.FixedWeightComputedRRRClassLengthBlockData.class_length_kernel_profile
+      data
+
+/-- The class/length-read local kernel instantiates the dependent-read scaffold. -/
+theorem fixedWeightComputedRRRClassLengthBlockDependentAuxiliaryDataProfile
+    {ambientLength : Nat} {bits : List Bool}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightComputedRRRClassLengthBlockData
+        ambientLength bits wordSize fieldWidth) :
+    (RMQ.RankSelectSpec.FixedWeightComputedRRRClassLengthBlockData.toDependentAuxiliaryData
+      data).DirectoryProfile := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightComputedRRRClassLengthBlockData.dependent_auxiliary_data_profile
+      data
+
+/-- Profile for the global per-block length/class metadata table. -/
+abbrev FixedWeightAmbientComputedRRRClassLengthTableProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRClassLengthTableData
+        bits blocks wordSize fieldWidth) : Prop :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRClassLengthTableData.ClassLengthTableProfile
+    data
+
+/-- Concrete fixed-width tables supply charged block length/class reads. -/
+theorem fixedWeightAmbientComputedRRRClassLengthTableProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRClassLengthTableData
+        bits blocks wordSize fieldWidth) :
+    FixedWeightAmbientComputedRRRClassLengthTableProfile data := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRClassLengthTableData.class_length_table_profile
       data
 
 /-- Widen the local computed RRR block to any caller-supplied query budget. -/
@@ -2030,6 +2113,29 @@ theorem fixedWeightAmbientComputedRRRRouteFieldTablesWordBoundedCompressedProfil
     RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTablesFamily.word_bounded_compressed_profile_of_primary_budget
       family primaryOverhead hprimaryO hprimary
 
+/-- Counted payload for the concatenated eight-table route field layout. -/
+abbrev fixedWeightRouteFieldTableLayoutPayload :=
+  RMQ.RankSelectSpec.fixedWeightRouteFieldTableLayoutPayload
+
+/-- Length of the concatenated eight-table route field payload. -/
+abbrev fixedWeightRouteFieldTableLayoutPayloadLength :=
+  RMQ.RankSelectSpec.fixedWeightRouteFieldTableLayoutPayload_length
+
+/-- Canonical bounded store for the concatenated eight-table route field layout. -/
+abbrev fixedWeightRouteFieldTableLayoutBoundedStore :=
+  RMQ.RankSelectSpec.fixedWeightRouteFieldTableLayoutBoundedStore
+
+/-- The canonical eight-table route field store is aligned to the layout words. -/
+abbrev fixedWeightRouteFieldTableLayoutBoundedStoreWordsToList :=
+  RMQ.RankSelectSpec.fixedWeightRouteFieldTableLayoutBoundedStore_words_toList
+
+/--
+Build an eight-table route field layout with the route store manufactured from
+the concatenated fixed-width table words.
+-/
+abbrev fixedWeightAmbientComputedRRRRouteFieldTableLayoutOfCanonicalFixedWidthTables :=
+  @RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutData.ofCanonicalFixedWidthTables
+
 /-- Convert an eight-table route field layout to packed route-table data. -/
 abbrev fixedWeightAmbientComputedRRRRouteFieldTableLayoutToPackedRouteTableData
     {bits : List Bool} {blocks : List (List Bool)}
@@ -2068,6 +2174,236 @@ theorem fixedWeightAmbientComputedRRRRouteFieldTableLayoutPackedProfile
   exact
     RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutData.route_field_table_layout_packed_profile
       data
+
+/--
+Build a route/class-length envelope from an eight-table route layout under
+block-size side conditions.
+-/
+abbrev fixedWeightAmbientComputedRRRRouteFieldTableLayoutToRouteClassLengthTableEnvelopeData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (hblockSize_lt_fieldWidthPow :
+      data.routeData.blockSize < 2 ^ data.fieldWidth)
+    (hlocalCost :
+      fixedWeightComputedRRRClassLengthBlockSizeQueryCost
+        data.routeData.blockSize <= localQueryCost) :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutData.toRouteClassLengthTableEnvelopeData
+    data hblockSize_lt_fieldWidthPow hlocalCost
+
+theorem fixedWeightAmbientComputedRRRRouteFieldTableLayoutToRouteClassLengthTableEnvelopeProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (hblockSize_lt_fieldWidthPow :
+      data.routeData.blockSize < 2 ^ data.fieldWidth)
+    (hlocalCost :
+      fixedWeightComputedRRRClassLengthBlockSizeQueryCost
+        data.routeData.blockSize <= localQueryCost) :
+    (fixedWeightAmbientComputedRRRRouteFieldTableLayoutToRouteClassLengthTableEnvelopeData
+      data hblockSize_lt_fieldWidthPow hlocalCost).RouteClassLengthEnvelopeProfile := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutData.route_field_table_layout_to_route_class_length_table_envelope_profile
+      data hblockSize_lt_fieldWidthPow hlocalCost
+
+/-- Profile for the route-field layout plus counted block class/length tables. -/
+abbrev FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    Prop :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData.RouteClassLengthEnvelopeProfile
+    data
+
+/-- Convert the route/class envelope to a packed route table over one combined store. -/
+abbrev fixedWeightAmbientComputedRRRRouteClassLengthEnvelopeToCombinedPackedRouteTableData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData.toCombinedPackedRouteTableData
+    data
+
+/--
+Convert the route/class envelope to the ambient block-composition directory
+whose local evaluator consumes the charged class/length prefix.
+-/
+abbrev fixedWeightAmbientComputedRRRRouteClassLengthEnvelopeToClassLengthAmbientBlockCompositionData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData.toClassLengthAmbientBlockCompositionData
+    data
+
+/--
+The route/class envelope exposes both the packed route-field layout and the
+counted per-block length/class metadata table in one combined auxiliary store,
+then feeds that store to the class/length-consuming ambient evaluator.
+-/
+theorem fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeProfile data := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData.route_class_length_table_envelope_profile
+      data
+
+/-- Combined route plus class/length auxiliary overhead. -/
+abbrev fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverhead
+    (slots : Nat) (classLengthOverhead : Nat -> Nat) : Nat -> Nat :=
+  RMQ.RankSelectSpec.fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverhead
+    slots classLengthOverhead
+
+theorem fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverheadLittleO
+    (slots : Nat) {classLengthOverhead : Nat -> Nat}
+    (hclassLength :
+      SuccinctSpace.LittleOLinear classLengthOverhead) :
+    SuccinctSpace.LittleOLinear
+      (fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverhead
+        slots classLengthOverhead) := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverhead_littleO
+      slots hclassLength
+
+/-- The ambient directory produced by a route/class-length envelope family. -/
+abbrev fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamilyDirectory
+    {slots routeCost localQueryCost queryCost : Nat}
+    {classLengthOverhead : Nat -> Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily
+        slots routeCost localQueryCost queryCost classLengthOverhead)
+    (bits : List Bool) :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.directory
+    family bits
+
+/--
+Family-level profile for route/class-length envelopes with a separate `o(n)`
+budget for the concrete class/length metadata.
+-/
+theorem fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamilyProfile
+    {slots routeCost localQueryCost queryCost : Nat}
+    {classLengthOverhead : Nat -> Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily
+        slots routeCost localQueryCost queryCost classLengthOverhead) :
+    SuccinctSpace.LittleOLinear
+        (fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverhead
+          slots classLengthOverhead) /\
+      forall bits : List Bool,
+        let data :=
+          RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.componentData
+            family bits
+        let directory :=
+          fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamilyDirectory
+            family bits
+        FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeProfile
+            data /\
+          directory.DirectoryProfile /\
+          directory.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              data.totalMetadataOverhead /\
+          directory.payload.length <=
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverhead
+                slots classLengthOverhead bits.length /\
+          directory.auxPayload.length = data.totalMetadataOverhead /\
+          directory.auxPayload.length <=
+            fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverhead
+              slots classLengthOverhead bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word directory.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word directory.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (directory.accessCosted i).cost <= queryCost /\
+              (directory.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (directory.rankCosted target pos).cost <= queryCost /\
+              (directory.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (directory.selectCosted target occurrence).cost <= queryCost /\
+              (directory.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.route_class_length_table_envelope_family_profile
+      family
+
+/--
+Conditional compressed/FID bridge for route/class-length envelope families.
+-/
+theorem fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeWordBoundedCompressedProfileOfPrimaryBudget
+    {slots routeCost localQueryCost queryCost : Nat}
+    {classLengthOverhead : Nat -> Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily
+        slots routeCost localQueryCost queryCost classLengthOverhead)
+    (primaryOverhead : Nat -> Nat)
+    (hprimaryO : SuccinctSpace.LittleOLinear primaryOverhead)
+    (hprimary :
+      forall bits : List Bool,
+        fixedWeightBlockPayloadBudget (family.blocks bits) <=
+          fixedWeightPayloadBudget bits + primaryOverhead bits.length) :
+    SuccinctSpace.LittleOLinear
+        (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.compressedOverhead
+          slots classLengthOverhead primaryOverhead) /\
+      forall bits : List Bool,
+        let data :=
+          RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.componentData
+            family bits
+        let directory :=
+          fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamilyDirectory
+            family bits
+        FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeProfile
+            data /\
+          directory.DirectoryProfile /\
+          directory.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              data.totalMetadataOverhead /\
+          directory.payload.length <=
+            fixedWeightPayloadBudget bits +
+              RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.compressedOverhead
+                slots classLengthOverhead primaryOverhead bits.length /\
+          directory.auxPayload.length = data.totalMetadataOverhead /\
+          directory.auxPayload.length <=
+            fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverhead
+              slots classLengthOverhead bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word directory.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word directory.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (directory.accessCosted i).cost <= queryCost /\
+              (directory.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (directory.rankCosted target pos).cost <= queryCost /\
+              (directory.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (directory.selectCosted target occurrence).cost <= queryCost /\
+              (directory.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.word_bounded_compressed_profile_of_primary_budget
+      family primaryOverhead hprimaryO hprimary
 
 /-- The ambient directory produced by an eight-table route field-layout family. -/
 abbrev fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyDirectory
@@ -2116,6 +2452,139 @@ theorem fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyProfile
   exact
     RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.route_field_table_layout_family_profile
       family
+
+/--
+Promote an eight-table route field-layout family to the combined
+route/class-length envelope family, under the explicit block-size and counted
+class/length-overhead side conditions.
+-/
+abbrev fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToRouteClassLengthTableEnvelopeFamily
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+        slots routeCost localQueryCost queryCost)
+    (classLengthOverhead : Nat -> Nat)
+    (hclassLengthO :
+      SuccinctSpace.LittleOLinear classLengthOverhead)
+    (hclassLength_le :
+      forall bits : List Bool,
+        fixedWeightBlockClassLengthTableOverhead
+            (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.componentData
+              family bits).fieldWidth
+            (family.blocks bits) <=
+          classLengthOverhead bits.length)
+    (hblockSize_lt_fieldWidthPow :
+      forall bits : List Bool,
+        (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.componentData
+          family bits).routeData.blockSize <
+          2 ^
+            (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.componentData
+              family bits).fieldWidth)
+    (hlocalCost :
+      forall bits : List Bool,
+        fixedWeightComputedRRRClassLengthBlockSizeQueryCost
+            (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.componentData
+              family bits).routeData.blockSize <=
+          localQueryCost) :
+    FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily
+      slots routeCost localQueryCost queryCost classLengthOverhead :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.toRouteClassLengthTableEnvelopeFamily
+    family classLengthOverhead hclassLengthO hclassLength_le
+    hblockSize_lt_fieldWidthPow hlocalCost
+
+theorem fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToRouteClassLengthTableEnvelopeFamilyProfile
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+        slots routeCost localQueryCost queryCost)
+    (classLengthOverhead : Nat -> Nat)
+    (hclassLengthO :
+      SuccinctSpace.LittleOLinear classLengthOverhead)
+    (hclassLength_le :
+      forall bits : List Bool,
+        fixedWeightBlockClassLengthTableOverhead
+            (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.componentData
+              family bits).fieldWidth
+            (family.blocks bits) <=
+          classLengthOverhead bits.length)
+    (hblockSize_lt_fieldWidthPow :
+      forall bits : List Bool,
+        (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.componentData
+          family bits).routeData.blockSize <
+          2 ^
+            (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.componentData
+              family bits).fieldWidth)
+    (hlocalCost :
+      forall bits : List Bool,
+        fixedWeightComputedRRRClassLengthBlockSizeQueryCost
+            (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.componentData
+              family bits).routeData.blockSize <=
+          localQueryCost) :
+    SuccinctSpace.LittleOLinear
+        (fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverhead
+          slots classLengthOverhead) /\
+      forall bits : List Bool,
+        let envelopeFamily :=
+          fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToRouteClassLengthTableEnvelopeFamily
+            family classLengthOverhead hclassLengthO hclassLength_le
+            hblockSize_lt_fieldWidthPow hlocalCost
+        let data :=
+          RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.componentData
+            envelopeFamily bits
+        let directory :=
+          fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamilyDirectory
+            envelopeFamily bits
+        FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeProfile
+            data /\
+          directory.DirectoryProfile /\
+          directory.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              data.totalMetadataOverhead /\
+          directory.payload.length <=
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverhead
+                slots classLengthOverhead bits.length /\
+          directory.auxPayload.length = data.totalMetadataOverhead /\
+          directory.auxPayload.length <=
+            fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverhead
+              slots classLengthOverhead bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word directory.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word directory.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (directory.accessCosted i).cost <= queryCost /\
+              (directory.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (directory.rankCosted target pos).cost <= queryCost /\
+              (directory.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (directory.selectCosted target occurrence).cost <= queryCost /\
+              (directory.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact
+    fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamilyProfile
+      (fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToRouteClassLengthTableEnvelopeFamily
+        family classLengthOverhead hclassLengthO hclassLength_le
+        hblockSize_lt_fieldWidthPow hlocalCost)
+
+/--
+Fixed block-size/field-width constructor from a route field-layout family to
+the combined route/class-length envelope family.
+-/
+abbrev fixedWeightAmbientComputedRRRRouteFieldTableLayoutFixedBlockSizeRouteClassLengthTableEnvelopeFamily :=
+  @RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.toFixedBlockSizeRouteClassLengthTableEnvelopeFamily
+
+/--
+Profile theorem for the fixed block-size/field-width route-layout family
+constructor.
+-/
+abbrev fixedWeightAmbientComputedRRRRouteFieldTableLayoutFixedBlockSizeRouteClassLengthTableEnvelopeFamilyProfile :=
+  @RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.fixed_block_size_route_class_length_table_envelope_family_profile
 
 /--
 Conditional compressed/FID bridge for eight-table route field-layout families.
@@ -2171,6 +2640,97 @@ theorem fixedWeightAmbientComputedRRRRouteFieldTableLayoutWordBoundedCompressedP
   exact
     RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.word_bounded_compressed_profile_of_primary_budget
       family primaryOverhead hprimaryO hprimary
+
+/--
+Compressed/FID bridge after promoting an eight-table route field-layout family
+to the combined route/class-length envelope family.
+-/
+theorem fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToRouteClassLengthTableEnvelopeWordBoundedCompressedProfileOfPrimaryBudget
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+        slots routeCost localQueryCost queryCost)
+    (classLengthOverhead : Nat -> Nat)
+    (hclassLengthO :
+      SuccinctSpace.LittleOLinear classLengthOverhead)
+    (hclassLength_le :
+      forall bits : List Bool,
+        fixedWeightBlockClassLengthTableOverhead
+            (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.componentData
+              family bits).fieldWidth
+            (family.blocks bits) <=
+          classLengthOverhead bits.length)
+    (hblockSize_lt_fieldWidthPow :
+      forall bits : List Bool,
+        (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.componentData
+          family bits).routeData.blockSize <
+          2 ^
+            (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.componentData
+              family bits).fieldWidth)
+    (hlocalCost :
+      forall bits : List Bool,
+        fixedWeightComputedRRRClassLengthBlockSizeQueryCost
+            (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.componentData
+              family bits).routeData.blockSize <=
+          localQueryCost)
+    (primaryOverhead : Nat -> Nat)
+    (hprimaryO : SuccinctSpace.LittleOLinear primaryOverhead)
+    (hprimary :
+      forall bits : List Bool,
+        fixedWeightBlockPayloadBudget (family.blocks bits) <=
+          fixedWeightPayloadBudget bits + primaryOverhead bits.length) :
+    SuccinctSpace.LittleOLinear
+        (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.compressedOverhead
+          slots classLengthOverhead primaryOverhead) /\
+      forall bits : List Bool,
+        let envelopeFamily :=
+          fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToRouteClassLengthTableEnvelopeFamily
+            family classLengthOverhead hclassLengthO hclassLength_le
+            hblockSize_lt_fieldWidthPow hlocalCost
+        let data :=
+          RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.componentData
+            envelopeFamily bits
+        let directory :=
+          fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamilyDirectory
+            envelopeFamily bits
+        FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeProfile
+            data /\
+          directory.DirectoryProfile /\
+          directory.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              data.totalMetadataOverhead /\
+          directory.payload.length <=
+            fixedWeightPayloadBudget bits +
+              RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.compressedOverhead
+                slots classLengthOverhead primaryOverhead bits.length /\
+          directory.auxPayload.length = data.totalMetadataOverhead /\
+          directory.auxPayload.length <=
+            fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverhead
+              slots classLengthOverhead bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word directory.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word directory.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (directory.accessCosted i).cost <= queryCost /\
+              (directory.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (directory.rankCosted target pos).cost <= queryCost /\
+              (directory.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (directory.selectCosted target occurrence).cost <= queryCost /\
+              (directory.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact
+    fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeWordBoundedCompressedProfileOfPrimaryBudget
+      (fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToRouteClassLengthTableEnvelopeFamily
+        family classLengthOverhead hclassLengthO hclassLength_le
+        hblockSize_lt_fieldWidthPow hlocalCost)
+      primaryOverhead hprimaryO hprimary
 
 /-- Decoded fixed-weight entries have the requested length and true-count. -/
 abbrev fixedWeightDecodeMemLengthTrueCount

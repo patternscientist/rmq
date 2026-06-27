@@ -133,6 +133,16 @@ RMQ.RankSelect.fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted
 RMQ.RankSelect.fixedWeightComputedRRRDecodeFromClassLengthReadValuesCostedEraseSingleton
 RMQ.RankSelect.FixedWeightComputedRRRClassLengthBlockKernelProfile
 RMQ.RankSelect.fixedWeightComputedRRRClassLengthBlockKernelProfile
+RMQ.RankSelect.fixedWeightComputedRRRClassLengthBlockDependentAuxiliaryDataProfile
+RMQ.RankSelect.fixedWeightBlockLengthEntries
+RMQ.RankSelect.fixedWeightBlockClassEntries
+RMQ.RankSelect.fixedWeightBlockClassLengthTableWords
+RMQ.RankSelect.fixedWeightBlockClassLengthTablePayload
+RMQ.RankSelect.fixedWeightBlockClassLengthTableOverhead
+RMQ.RankSelect.fixedWeightBlockClassLengthTablePayloadLength
+RMQ.RankSelect.FixedWeightAmbientComputedRRRClassLengthTableData
+RMQ.RankSelect.FixedWeightAmbientComputedRRRClassLengthTableProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRClassLengthTableProfile
 RMQ.RankSelect.FixedWeightComputedRRRBlockKernelProfile
 RMQ.RankSelect.fixedWeightComputedRRRBlockKernelProfile
 RMQ.RankSelect.fixedWeightComputedRRRBlockToBoundedCompressedDirectory
@@ -201,9 +211,28 @@ RMQ.RankSelect.FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
 RMQ.RankSelect.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutToPackedRouteTableData
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutPackedProfile
+RMQ.RankSelect.fixedWeightRouteFieldTableLayoutPayloadLength
+RMQ.RankSelect.fixedWeightRouteFieldTableLayoutBoundedStoreWordsToList
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutOfCanonicalFixedWidthTables
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutToRouteClassLengthTableEnvelopeData
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutToRouteClassLengthTableEnvelopeProfile
+RMQ.RankSelect.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+RMQ.RankSelect.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteClassLengthEnvelopeToClassLengthAmbientBlockCompositionData
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverhead
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverheadLittleO
+RMQ.RankSelect.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamilyDirectory
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamilyProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeWordBoundedCompressedProfileOfPrimaryBudget
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyDirectory
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToRouteClassLengthTableEnvelopeFamilyProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFixedBlockSizeRouteClassLengthTableEnvelopeFamilyProfile
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutWordBoundedCompressedProfileOfPrimaryBudget
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToRouteClassLengthTableEnvelopeWordBoundedCompressedProfileOfPrimaryBudget
+RMQ.RankSelect.fixedWeightBlockClassLengthTableOverheadLeOfBounds
 RMQ.RankSelect.FixedWeightTableRAMBlockData
 RMQ.RankSelect.fixedWeightTableRAMBlockDataProfile
 RMQ.RankSelect.fixedWeightTableRAMBlockToDependentAuxiliaryData
@@ -378,9 +407,12 @@ read value, and
 `fixedWeightComputedRRRDecodeFromClassLengthReadValuesCostedEraseSingleton`
 proves exact readback for the canonical words. The profile
 `fixedWeightComputedRRRClassLengthBlockKernelProfile` records the concrete
-payload/read equations, word bounds, and access/rank/select exactness. This
-closes the local class/length readback gap for a single block; the ambient route
-composition still has to route those class/length words from global metadata.
+payload/read equations, word bounds, and access/rank/select exactness, and
+`fixedWeightComputedRRRClassLengthBlockDependentAuxiliaryDataProfile` packages
+the same kernel through the generic dependent-read scaffold with auxiliary
+reads `[0, 1]`. This closes the local class/length readback gap for a single
+block; the route/class-length envelope below now feeds those same reads from a
+global charged metadata store.
 
 That local checkpoint is now consumed by
 `FixedWeightAmbientComputedRRRBlockData`. It produces a
@@ -443,9 +475,49 @@ equations from a canonical `FixedWidthNatTable.ofEntries` route-field table.
 The stronger `FixedWeightAmbientComputedRRRRouteFieldTableLayoutData` layer
 splits the route fields into eight canonical fixed-width tables, concatenates
 their words in route-store order, and proves the packed route profile from
-local table slots. The remaining global constructor task is to add analogous
-per-block length/class tables to that ambient layout and feed them into the
-class/length-read local kernel, while preserving the `o(n)` auxiliary envelope.
+local table slots. The analogous per-block length/class table substrate is now
+present: `FixedWeightAmbientComputedRRRClassLengthTableData` stores
+`fixedWeightBlockLengthEntries` and `fixedWeightBlockClassEntries` as two
+fixed-width table segments, proves the counted payload length
+`fixedWeightBlockClassLengthTablePayloadLength`, proves charged readback in
+`fixedWeightAmbientComputedRRRClassLengthTableProfile`, and
+`FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData` pairs that
+table with the eight-table route layout in
+`fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeProfile`. That
+profile now concatenates route and class/length stores into one charged
+ambient auxiliary store and exposes
+`fixedWeightAmbientComputedRRRRouteClassLengthEnvelopeToClassLengthAmbientBlockCompositionData`,
+whose ambient evaluator consumes the class/length prefix before running the
+local RRR kernel. The adapter
+`fixedWeightAmbientComputedRRRRouteFieldTableLayoutToRouteClassLengthTableEnvelopeProfile`
+builds the envelope from an eight-table route layout under block-size and
+local-cost side conditions. The family surface
+`fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamilyProfile`
+adds the combined route plus class/length `o(n)` accounting under a supplied
+class/length-overhead budget, and
+`fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeWordBoundedCompressedProfileOfPrimaryBudget`
+carries that through the conditional compressed/FID bridge. The route layout
+also has a canonical constructor spine:
+`fixedWeightRouteFieldTableLayoutPayloadLength` accounts for the eight
+concatenated fixed-width route tables,
+`fixedWeightRouteFieldTableLayoutBoundedStoreWordsToList` proves the canonical
+store alignment, and
+`fixedWeightAmbientComputedRRRRouteFieldTableLayoutOfCanonicalFixedWidthTables`
+builds the route layout without assuming `routeStore_words_eq`. At the family
+level,
+`fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToRouteClassLengthTableEnvelopeFamilyProfile`
+promotes an eight-table layout family to the combined class/length envelope,
+and
+`fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToRouteClassLengthTableEnvelopeWordBoundedCompressedProfileOfPrimaryBudget`
+carries that constructor through the conditional compressed/FID bridge. The
+fixed block-size specialization
+`fixedWeightAmbientComputedRRRRouteFieldTableLayoutFixedBlockSizeRouteClassLengthTableEnvelopeFamilyProfile`
+packages the uniform `blockSize`/`fieldWidth` case and fixes the local budget to
+the class/length block-size query cost. The
+remaining global constructor task is now a block decomposition/routing family
+that proves the class/length metadata overhead bound, for example via
+`fixedWeightBlockClassLengthTableOverheadLeOfBounds`, and discharges the
+semantic route exactness fields from charged routing tables.
 
 The ambient/global block-composition predecessor is now present. It stores one
 canonical fixed-weight code word per block through
@@ -617,10 +689,10 @@ The plain-bitvector `n + o(n), O(1)` milestone is landed. The next research
 targets are:
 
 1. a concrete compressed/FID instantiation that composes
-   `FixedWeightTableRAMBlockData`-style local kernels across the ambient
-   `FixedWeightAmbientBlockCompositionFamily` scaffold, replaces the abstract
-   evaluators with charged table/RAM code, and proves the remaining
-   block-primary budget bridge into the global fixed-weight payload;
+   the class/length-read computed RRR kernel across the ambient
+   block-composition scaffold, instantiates the route/class-length envelope
+   family with a concrete `o(n)` class/length metadata budget, and proves the
+   remaining block-primary budget bridge into the global fixed-weight payload;
 2. deepening the landed `RMQBPNavigation` spoke into a fuller
    balanced-parentheses tree-navigation API over the same public rank/select
    surface;
