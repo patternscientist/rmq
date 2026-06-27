@@ -25,6 +25,9 @@ modeled query cost.
 #print axioms RMQ.RankSelectSpec.fixedWeightPackedPayload_bitsToNatLE
 #print axioms RMQ.RankSelectSpec.fixedWeightDecode?_packedPayload
 #print axioms RMQ.RankSelectSpec.fixedWeightPackedPayload_profile
+#print axioms RMQ.RankSelectSpec.fixedWeightPackedReadbackDirectory_profile
+#print axioms RMQ.RankSelectSpec.FixedWeightPackedReadbackData.profile
+#print axioms RMQ.RankSelectSpec.FixedWeightPackedReadbackData.ofChunks_profile
 #print axioms RMQ.RankSelectSpec.fixedWeightEncode?_fixedWeightDecode?
 #print axioms RMQ.RankSelectSpec.fixedWeightDecode?_eq_some_iff
 #print axioms RMQ.RankSelectSpec.fixedWeightDecode?_mem_length_trueCount

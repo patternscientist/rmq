@@ -87,6 +87,18 @@ RMQ.RankSelect.fixedWeightPackedPayloadLength
 RMQ.RankSelect.fixedWeightPackedPayloadBitsToNatLE
 RMQ.RankSelect.fixedWeightDecodePackedPayload
 RMQ.RankSelect.fixedWeightPackedPayloadProfile
+RMQ.RankSelect.fixedWeightPackedReadbackPayloadCosted
+RMQ.RankSelect.fixedWeightPackedReadbackDecodeCosted
+RMQ.RankSelect.fixedWeightPackedReadbackAccessCosted
+RMQ.RankSelect.fixedWeightPackedReadbackRankCosted
+RMQ.RankSelect.fixedWeightPackedReadbackSelectCosted
+RMQ.RankSelect.fixedWeightPackedReadbackDirectory
+RMQ.RankSelect.fixedWeightPackedReadbackDirectoryProfile
+RMQ.RankSelect.fixedWeightPackedReadbackWordCount
+RMQ.RankSelect.FixedWeightPackedReadbackData
+RMQ.RankSelect.fixedWeightPackedReadbackDataOfChunks
+RMQ.RankSelect.fixedWeightPackedReadbackDataProfile
+RMQ.RankSelect.fixedWeightPackedReadbackDataOfChunksProfile
 RMQ.RankSelect.CompressedFamily
 RMQ.RankSelect.compressedFixedWeightConstantQueryProfile
 ```
@@ -115,9 +127,24 @@ total code `fixedWeightCode` is proved below both
 `fixedWeightPackedPayload` stores this canonical index with `natToBitsLE`;
 `fixedWeightPackedPayloadProfile` proves the payload has exactly
 `fixedWeightPayloadBudget bits` bits, reads back to `fixedWeightCode` through
-`bitsToNatLE`, and decodes to the original bitvector. The remaining work is a
-charged compressed-family query layer that consumes this payload without using
-proof-only fields as an oracle.
+`bitsToNatLE`, and decodes to the original bitvector.
+
+The first charged query consumer is
+`fixedWeightPackedReadbackDirectory`: it stores exactly
+`fixedWeightPackedPayload bits`, charges each access/rank/select query the full
+`fixedWeightPayloadBudget bits` readback cost, decodes through
+`bitsToNatLE`/`fixedWeightDecode?`, and then answers against the decoded
+reference bitvector. This is deliberately not the final constant-query FID; it
+is the non-oracular readback baseline that proves queries depend on the packed
+payload rather than proof-only fields.
+
+The sharper readback scaffold is `FixedWeightPackedReadbackData`: it stores the
+same packed payload in a `BoundedPayloadWordStore`, proves every readback word
+is bounded by the chosen `wordSize`, charges one modeled read per stored word,
+and exposes `fixedWeightPackedReadbackDataOfChunksProfile` for the canonical
+chunking constructor. This still reads the whole packed representation per
+query; the next FID step is to replace that readback with true auxiliary
+rank/select/access directories.
 
 ## Module Boundary
 
@@ -245,9 +272,9 @@ neutral `RMQ.RankSelect.*` names.
 The plain-bitvector `n + o(n), O(1)` milestone is landed. The next research
 targets are:
 
-1. a charged compressed/FID query layer behind the landed packed
-   fixed-weight payload: read the `fixedWeightPackedPayload` representation,
-   refine access/rank/select through charged payload reads, and instantiate
+1. a constant-query compressed/FID auxiliary layer behind the landed packed
+   fixed-weight readback baseline: replace the full-payload readback query
+   cost with charged rank/select/access directories and instantiate
    `compressedFixedWeightConstantQueryProfile` without delegating queries to
    proof-only decoded bits;
 2. deepening the landed `RMQBPNavigation` spoke into a fuller

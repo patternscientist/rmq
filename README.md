@@ -365,8 +365,8 @@ RMQ blocker:
 - extract the reusable cost/refinement/lower-bound hub toward a CSLib-style
   library surface;
 - refine the landed standalone Jacobson/Clark rank/select theorem toward
-  a charged compressed/FID query realization behind the packed fixed-weight
-  payload, and deepen the landed BP-navigation close/rank bridge into a fuller
+  a constant-query compressed/FID layer behind the packed fixed-weight readback
+  baseline, and deepen the landed BP-navigation close/rank bridge into a fuller
   tree-navigation API;
   and
 - deepen the new union-find spoke from specification/reference backend to

@@ -124,6 +124,58 @@ abbrev fixedWeightDecodePackedPayload :=
 abbrev fixedWeightPackedPayloadProfile :=
   RMQ.RankSelectSpec.fixedWeightPackedPayload_profile
 
+/-- Charged full-payload readback of the concrete fixed-weight packed payload. -/
+abbrev fixedWeightPackedReadbackPayloadCosted :=
+  RMQ.RankSelectSpec.fixedWeightPackedReadbackPayloadCosted
+
+/-- Charged full-payload decode of the concrete fixed-weight packed payload. -/
+abbrev fixedWeightPackedReadbackDecodeCosted :=
+  RMQ.RankSelectSpec.fixedWeightPackedReadbackDecodeCosted
+
+/-- Access through the charged fixed-weight packed readback decoder. -/
+abbrev fixedWeightPackedReadbackAccessCosted :=
+  RMQ.RankSelectSpec.fixedWeightPackedReadbackAccessCosted
+
+/-- Rank through the charged fixed-weight packed readback decoder. -/
+abbrev fixedWeightPackedReadbackRankCosted :=
+  RMQ.RankSelectSpec.fixedWeightPackedReadbackRankCosted
+
+/-- Select through the charged fixed-weight packed readback decoder. -/
+abbrev fixedWeightPackedReadbackSelectCosted :=
+  RMQ.RankSelectSpec.fixedWeightPackedReadbackSelectCosted
+
+/-- Concrete charged packed-payload readback directory for one bitvector. -/
+abbrev fixedWeightPackedReadbackDirectory :=
+  RMQ.RankSelectSpec.fixedWeightPackedReadbackDirectory
+
+/-- Profile for the charged packed-payload readback directory. -/
+abbrev fixedWeightPackedReadbackDirectoryProfile :=
+  RMQ.RankSelectSpec.fixedWeightPackedReadbackDirectory_profile
+
+/-- Number of bounded payload words in the chunked packed readback view. -/
+abbrev fixedWeightPackedReadbackWordCount :=
+  RMQ.RankSelectSpec.fixedWeightPackedReadbackWordCount
+
+/-- Chunked bounded-word readback data for the packed fixed-weight payload. -/
+abbrev FixedWeightPackedReadbackData :=
+  RMQ.RankSelectSpec.FixedWeightPackedReadbackData
+
+/-- Canonical chunked bounded-word readback data. -/
+abbrev fixedWeightPackedReadbackDataOfChunks :=
+  RMQ.RankSelectSpec.FixedWeightPackedReadbackData.ofChunks
+
+/-- Profile for chunked bounded-word packed readback data. -/
+abbrev fixedWeightPackedReadbackDataProfile
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightPackedReadbackData bits wordSize) :=
+  RMQ.RankSelectSpec.FixedWeightPackedReadbackData.profile data
+
+/-- Profile for canonical chunked bounded-word packed readback data. -/
+abbrev fixedWeightPackedReadbackDataOfChunksProfile
+    (bits : List Bool) {wordSize : Nat} (hword : 0 < wordSize) :=
+  RMQ.RankSelectSpec.FixedWeightPackedReadbackData.ofChunks_profile
+    bits hword
+
 /-- Decoded fixed-weight entries have the requested length and true-count. -/
 abbrev fixedWeightDecodeMemLengthTrueCount
     {n k code : Nat} {bits : List Bool}

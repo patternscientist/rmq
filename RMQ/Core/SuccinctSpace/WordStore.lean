@@ -352,6 +352,35 @@ theorem payload_eq_words_join
     flattenPayloadWords store.words.toList = payload :=
   store.erases
 
+/--
+Read the full payload word array, charging one modeled read per stored word.
+
+This is a reference readback primitive for proofs that must demonstrate payload
+dependence without pretending the whole payload is one machine word.
+-/
+def readAllWordsCosted
+    {payload : List Bool}
+    (store : PayloadWordStore payload) : Costed (List (List Bool)) :=
+  Costed.tickValue store.words.size store.words.toList
+
+@[simp] theorem readAllWordsCosted_cost
+    {payload : List Bool}
+    (store : PayloadWordStore payload) :
+    store.readAllWordsCosted.cost = store.words.size := by
+  simp [readAllWordsCosted]
+
+@[simp] theorem readAllWordsCosted_erase
+    {payload : List Bool}
+    (store : PayloadWordStore payload) :
+    store.readAllWordsCosted.erase = store.words.toList := by
+  simp [readAllWordsCosted]
+
+theorem readAllWordsCosted_flatten_erase
+    {payload : List Bool}
+    (store : PayloadWordStore payload) :
+    flattenPayloadWords store.readAllWordsCosted.erase = payload := by
+  simpa using store.erases
+
 end PayloadWordStore
 
 /--

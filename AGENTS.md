@@ -45,9 +45,20 @@
 
 ## Subagent Policy
 
-- Use subagents only when the user explicitly asks for parallel agents,
-  delegation, or subagent work.
+- For substantial proof/development work, default to a quick parallelization
+  check before editing: identify the join theorem or concrete target, the
+  independent leaves that feed it, and the work the lead thread will do while
+  agents run.
+- Use subagents when they materially shorten the path to the current target.
+  Avoid ceremonial parallelism: if there is no independent leaf with a clear
+  consumer, proceed single-threaded and say why.
 - Prefer read-only subagents for independent proof audits, theorem inventory
   checks, literature/source comparisons, and risk reviews.
-- Use worker subagents only for disjoint write scopes, and tell them not to
-  revert or overwrite changes made by the main thread or other agents.
+- Use worker subagents for disjoint write scopes with pinned theorem
+  signatures or construction contracts. Tell them they are not alone in the
+  codebase, must not revert or overwrite other changes, and should continue
+  through their loop until the assigned target closes or a real stop condition
+  is met.
+- The lead thread remains responsible for periodic check-ins, steering agents
+  away from premature loop breaks or side quests, integrating accepted work, and
+  running the final gate.

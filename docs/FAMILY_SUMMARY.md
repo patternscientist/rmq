@@ -287,11 +287,16 @@ two-sided codec theorems `RankSelect.fixedWeightCodecRoundTrip` and
 `2 ^ fixedWeightPayloadBudget bits`; `RankSelect.fixedWeightPackedPayload`
 stores that code in the budgeted little-endian bit payload, and
 `RankSelect.fixedWeightPackedPayloadProfile` proves its length, readback, and
-decode-to-original facts.  Its family theorem uses payload budget
+decode-to-original facts.  `RankSelect.fixedWeightPackedReadbackDirectoryProfile`
+adds the first charged non-oracular query consumer: each query reads back the
+full packed payload, decodes it, and answers access/rank/select against the
+decoded reference bitvector.  `RankSelect.fixedWeightPackedReadbackDataOfChunksProfile`
+adds the bounded-word version, charging one modeled read per stored packed word
+and preserving the word-size bound.  Its family theorem uses payload budget
 `Nat.log2 (binomialCount bits.length (trueCount bits)) + 1 + o(n)`.  The
-remaining standalone rank/select frontier is charged compressed/FID query
-refinement over this packed payload, or a tighter presentation of the Clark
-internals, not merely consuming the public spec surface.  The
+remaining standalone rank/select frontier is constant-query compressed/FID
+query refinement over this packed payload, or a tighter presentation of the
+Clark internals, not merely consuming the public spec surface.  The
 strengthened public theorem
 `RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery` additionally exposes
 the machine-word discipline from the concrete components: Jacobson rank payload
@@ -1663,6 +1668,8 @@ The names below are grouped by source module. Repeated base names in
 - `RMQ/Core/RankSelectCompressed.lean` and `RMQ/Core/RankSelectPublic.lean`:
   neutral public aliases for the standalone rank/select spoke, including
   `RankSelect.fixedWeightPackedPayloadProfile`,
+  `RankSelect.fixedWeightPackedReadbackDirectoryProfile`,
+  `RankSelect.fixedWeightPackedReadbackDataOfChunksProfile`,
   `RankSelect.compressedFixedWeightConstantQueryProfile`,
   `RankSelect.jacobsonClarkNPlusOConstantQuery`, and
   `RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery`.
@@ -2129,9 +2136,9 @@ completeness.
 
 1. Deepen the reusable succinct bitvector/navigation spokes: public
    rank/select and compact BP close-navigation are landed; the next frontier is
-   a charged compressed/FID query realization behind the packed fixed-weight
-   payload and a fuller balanced-parentheses tree-navigation API over the same
-   payload-accounted directory interfaces.
+   a constant-query compressed/FID layer behind the packed fixed-weight
+   readback baseline and a fuller balanced-parentheses tree-navigation API over
+   the same payload-accounted directory interfaces.
 2. Deepen the landed union-find spoke: add a parent-pointer forest
    representation, prove it refines `UnionFind.State`, then start
    union-by-rank and path-compression amortized analysis.

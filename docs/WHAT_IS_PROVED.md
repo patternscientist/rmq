@@ -99,13 +99,20 @@ rank/unrank facts. The total code
 `2 ^ fixedWeightPayloadBudget bits`, and
 `RMQ.RankSelect.fixedWeightPackedPayloadProfile` proves that the canonical code
 is stored in exactly `fixedWeightPayloadBudget bits`, reads back through
-`bitsToNatLE`, and decodes to the original bitvector. In addition,
+`bitsToNatLE`, and decodes to the original bitvector.
+`RMQ.RankSelect.fixedWeightPackedReadbackDirectoryProfile` is the first
+charged non-oracular query consumer: it stores exactly that packed payload,
+charges access/rank/select the full packed-payload readback cost, decodes, and
+answers against the decoded reference bitvector. The bounded-word refinement
+`RMQ.RankSelect.fixedWeightPackedReadbackDataOfChunksProfile` stores the same
+payload in a `BoundedPayloadWordStore`, charges one modeled read per stored
+word, and proves word-size-bounded readback. In addition,
 `RMQ.RankSelect.compressedFixedWeightConstantQueryProfile` states the reusable
 profile with payload
 `log2 (binomialCount n m) + 1 + o(n)` and constant modeled
 access/rank/select. This is not yet the full FID construction: the remaining
-work is a charged query realization that consumes the packed payload without
-delegating access/rank/select to proof-only decoded bits.
+work is a constant-query auxiliary layer that avoids the full-payload readback
+cost while still consuming charged payload rather than proof-only decoded bits.
 
 ## Balanced-Parentheses Navigation
 

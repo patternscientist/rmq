@@ -499,6 +499,112 @@ theorem fixedWeightPackedPayload_profile
       fixedWeightDecode?_packedPayload bits⟩
 
 /--
+Charged read of the fixed-weight packed payload.
+
+The cost is the packed payload length, so this is an honest readback scaffold,
+not the final constant-time FID query layer.
+-/
+def fixedWeightPackedReadbackPayloadCosted
+    (bits : List Bool) : Costed (List Bool) :=
+  Costed.tickValue (fixedWeightPayloadBudget bits)
+    (fixedWeightPackedPayload bits)
+
+@[simp] theorem fixedWeightPackedReadbackPayloadCosted_cost
+    (bits : List Bool) :
+    (fixedWeightPackedReadbackPayloadCosted bits).cost =
+      fixedWeightPayloadBudget bits := by
+  simp [fixedWeightPackedReadbackPayloadCosted]
+
+@[simp] theorem fixedWeightPackedReadbackPayloadCosted_erase
+    (bits : List Bool) :
+    (fixedWeightPackedReadbackPayloadCosted bits).erase =
+      fixedWeightPackedPayload bits := by
+  simp [fixedWeightPackedReadbackPayloadCosted]
+
+/-- Charged readback decode through `bitsToNatLE` and `fixedWeightDecode?`. -/
+def fixedWeightPackedReadbackDecodeCosted
+    (bits : List Bool) : Costed (Option (List Bool)) :=
+  Costed.bind (fixedWeightPackedReadbackPayloadCosted bits) fun payload =>
+    Costed.pure
+      (fixedWeightDecode? bits.length (trueCount bits)
+        (SuccinctSpace.bitsToNatLE payload))
+
+@[simp] theorem fixedWeightPackedReadbackDecodeCosted_cost
+    (bits : List Bool) :
+    (fixedWeightPackedReadbackDecodeCosted bits).cost =
+      fixedWeightPayloadBudget bits := by
+  simp [fixedWeightPackedReadbackDecodeCosted]
+
+@[simp] theorem fixedWeightPackedReadbackDecodeCosted_erase
+    (bits : List Bool) :
+    (fixedWeightPackedReadbackDecodeCosted bits).erase = some bits := by
+  simp [fixedWeightPackedReadbackDecodeCosted,
+    fixedWeightDecode?_packedPayload]
+
+/-- Access through the charged fixed-weight packed readback decoder. -/
+def fixedWeightPackedReadbackAccessCosted
+    (bits : List Bool) (i : Nat) : Costed (Option Bool) :=
+  Costed.bind (fixedWeightPackedReadbackDecodeCosted bits) fun decoded =>
+    Costed.pure
+      (match decoded with
+      | some bits => bits[i]?
+      | none => none)
+
+@[simp] theorem fixedWeightPackedReadbackAccessCosted_cost
+    (bits : List Bool) (i : Nat) :
+    (fixedWeightPackedReadbackAccessCosted bits i).cost =
+      fixedWeightPayloadBudget bits := by
+  simp [fixedWeightPackedReadbackAccessCosted]
+
+@[simp] theorem fixedWeightPackedReadbackAccessCosted_erase
+    (bits : List Bool) (i : Nat) :
+    (fixedWeightPackedReadbackAccessCosted bits i).erase = bits[i]? := by
+  simp [fixedWeightPackedReadbackAccessCosted]
+
+/-- Rank through the charged fixed-weight packed readback decoder. -/
+def fixedWeightPackedReadbackRankCosted
+    (bits : List Bool) (target : Bool) (pos : Nat) : Costed Nat :=
+  Costed.bind (fixedWeightPackedReadbackDecodeCosted bits) fun decoded =>
+    Costed.pure
+      (match decoded with
+      | some bits => Succinct.rankPrefix target bits pos
+      | none => 0)
+
+@[simp] theorem fixedWeightPackedReadbackRankCosted_cost
+    (bits : List Bool) (target : Bool) (pos : Nat) :
+    (fixedWeightPackedReadbackRankCosted bits target pos).cost =
+      fixedWeightPayloadBudget bits := by
+  simp [fixedWeightPackedReadbackRankCosted]
+
+@[simp] theorem fixedWeightPackedReadbackRankCosted_erase
+    (bits : List Bool) (target : Bool) (pos : Nat) :
+    (fixedWeightPackedReadbackRankCosted bits target pos).erase =
+      Succinct.rankPrefix target bits pos := by
+  simp [fixedWeightPackedReadbackRankCosted]
+
+/-- Select through the charged fixed-weight packed readback decoder. -/
+def fixedWeightPackedReadbackSelectCosted
+    (bits : List Bool) (target : Bool)
+    (occurrence : Nat) : Costed (Option Nat) :=
+  Costed.bind (fixedWeightPackedReadbackDecodeCosted bits) fun decoded =>
+    Costed.pure
+      (match decoded with
+      | some bits => Succinct.select target bits occurrence
+      | none => none)
+
+@[simp] theorem fixedWeightPackedReadbackSelectCosted_cost
+    (bits : List Bool) (target : Bool) (occurrence : Nat) :
+    (fixedWeightPackedReadbackSelectCosted bits target occurrence).cost =
+      fixedWeightPayloadBudget bits := by
+  simp [fixedWeightPackedReadbackSelectCosted]
+
+@[simp] theorem fixedWeightPackedReadbackSelectCosted_erase
+    (bits : List Bool) (target : Bool) (occurrence : Nat) :
+    (fixedWeightPackedReadbackSelectCosted bits target occurrence).erase =
+      Succinct.select target bits occurrence := by
+  simp [fixedWeightPackedReadbackSelectCosted]
+
+/--
 Compressed rank/select directory profile for one bitvector.
 
 Unlike `BitVectorRankSelectDirectory`, this surface does not charge the raw
@@ -585,6 +691,354 @@ theorem profile
             directory.select_exact target occurrence⟩
 
 end CompressedBitVectorRankSelectDirectory
+
+/--
+Concrete packed fixed-weight readback directory for one bitvector.
+
+This consumes the packed payload through the charged readback decoder above.
+Its query budget is the packed payload budget for this bitvector, so it is a
+non-oracular readback construction rather than the final constant-query FID
+family.
+-/
+def fixedWeightPackedReadbackDirectory
+    (bits : List Bool) :
+    CompressedBitVectorRankSelectDirectory
+      bits 0 (fixedWeightPayloadBudget bits) where
+  payload := fixedWeightPackedPayload bits
+  payload_length_le := by
+    simp [fixedWeightPackedPayload_length]
+  accessCosted := fixedWeightPackedReadbackAccessCosted bits
+  rankCosted := fixedWeightPackedReadbackRankCosted bits
+  selectCosted := fixedWeightPackedReadbackSelectCosted bits
+  access_cost_le := by
+    intro i
+    simp
+  rank_cost_le := by
+    intro target pos
+    simp
+  select_cost_le := by
+    intro target occurrence
+    simp
+  access_exact := by
+    intro i
+    simp
+  rank_exact := by
+    intro target pos
+    simp
+  select_exact := by
+    intro target occurrence
+    simp
+
+theorem fixedWeightPackedReadbackDirectory_profile
+    (bits : List Bool) :
+    (fixedWeightPackedReadbackDirectory bits).payload =
+        fixedWeightPackedPayload bits /\
+      (fixedWeightPackedReadbackDirectory bits).payload.length =
+        fixedWeightPayloadBudget bits /\
+      (forall i,
+        ((fixedWeightPackedReadbackDirectory bits).accessQueryCosted i).cost =
+            fixedWeightPayloadBudget bits /\
+          ((fixedWeightPackedReadbackDirectory bits).accessQueryCosted i).erase =
+            bits[i]?) /\
+      (forall target pos,
+        ((fixedWeightPackedReadbackDirectory bits).rankQueryCosted
+            target pos).cost = fixedWeightPayloadBudget bits /\
+          ((fixedWeightPackedReadbackDirectory bits).rankQueryCosted
+            target pos).erase =
+            Succinct.rankPrefix target bits pos) /\
+      (forall target occurrence,
+        ((fixedWeightPackedReadbackDirectory bits).selectQueryCosted
+            target occurrence).cost =
+            fixedWeightPayloadBudget bits /\
+          ((fixedWeightPackedReadbackDirectory bits).selectQueryCosted
+            target occurrence).erase =
+            Succinct.select target bits occurrence) := by
+  constructor
+  · rfl
+  · constructor
+    · exact fixedWeightPackedPayload_length bits
+    · constructor
+      · intro i
+        exact
+          ⟨fixedWeightPackedReadbackAccessCosted_cost bits i,
+            fixedWeightPackedReadbackAccessCosted_erase bits i⟩
+      · constructor
+        · intro target pos
+          exact
+            ⟨fixedWeightPackedReadbackRankCosted_cost bits target pos,
+              fixedWeightPackedReadbackRankCosted_erase bits target pos⟩
+        · intro target occurrence
+          exact
+            ⟨fixedWeightPackedReadbackSelectCosted_cost bits target occurrence,
+              fixedWeightPackedReadbackSelectCosted_erase
+                bits target occurrence⟩
+
+/-- Number of bounded payload words in the chunked fixed-weight readback view. -/
+def fixedWeightPackedReadbackWordCount
+    (bits : List Bool) (wordSize : Nat) : Nat :=
+  (SuccinctSpace.chunkPayloadWords wordSize
+    (fixedWeightPackedPayload bits)).length
+
+/--
+Chunked readback data for the fixed-weight packed payload.
+
+The store is tied to `fixedWeightPackedPayload bits`, and every stored word is
+bounded by `wordSize`.
+-/
+structure FixedWeightPackedReadbackData
+    (bits : List Bool) (wordSize : Nat) where
+  wordSize_pos : 0 < wordSize
+  wordStore :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightPackedPayload bits) wordSize
+
+namespace FixedWeightPackedReadbackData
+
+/-- Canonical chunked readback data for one bitvector and positive word size. -/
+def ofChunks
+    (bits : List Bool) {wordSize : Nat} (hword : 0 < wordSize) :
+    FixedWeightPackedReadbackData bits wordSize where
+  wordSize_pos := hword
+  wordStore :=
+    SuccinctSpace.BoundedPayloadWordStore.ofChunks
+      (fixedWeightPackedPayload bits) hword
+
+/-- Read and flatten all payload words, charging one read per stored word. -/
+def readCosted
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightPackedReadbackData bits wordSize) :
+    Costed (List Bool) :=
+  Costed.map SuccinctSpace.flattenPayloadWords
+    data.wordStore.store.readAllWordsCosted
+
+@[simp] theorem readCosted_cost
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightPackedReadbackData bits wordSize) :
+    data.readCosted.cost = data.wordStore.store.words.size := by
+  simp [readCosted]
+
+@[simp] theorem readCosted_erase
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightPackedReadbackData bits wordSize) :
+    data.readCosted.erase = fixedWeightPackedPayload bits := by
+  simpa [readCosted] using
+    data.wordStore.store.readAllWordsCosted_flatten_erase
+
+/-- Decode the charged chunked payload readback. -/
+def decodeCosted
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightPackedReadbackData bits wordSize) :
+    Costed (Option (List Bool)) :=
+  Costed.bind data.readCosted fun payload =>
+    Costed.pure
+      (fixedWeightDecode? bits.length (trueCount bits)
+        (SuccinctSpace.bitsToNatLE payload))
+
+@[simp] theorem decodeCosted_cost
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightPackedReadbackData bits wordSize) :
+    data.decodeCosted.cost = data.wordStore.store.words.size := by
+  simp [decodeCosted]
+
+@[simp] theorem decodeCosted_erase
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightPackedReadbackData bits wordSize) :
+    data.decodeCosted.erase = some bits := by
+  simp [decodeCosted, fixedWeightDecode?_packedPayload]
+
+/-- Access through chunked packed-payload readback. -/
+def accessCosted
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightPackedReadbackData bits wordSize)
+    (i : Nat) : Costed (Option Bool) :=
+  Costed.bind data.decodeCosted fun decoded =>
+    Costed.pure
+      (match decoded with
+      | some bits => bits[i]?
+      | none => none)
+
+@[simp] theorem accessCosted_cost
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightPackedReadbackData bits wordSize)
+    (i : Nat) :
+    (data.accessCosted i).cost = data.wordStore.store.words.size := by
+  simp [accessCosted]
+
+@[simp] theorem accessCosted_erase
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightPackedReadbackData bits wordSize)
+    (i : Nat) :
+    (data.accessCosted i).erase = bits[i]? := by
+  simp [accessCosted]
+
+/-- Rank through chunked packed-payload readback. -/
+def rankCosted
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightPackedReadbackData bits wordSize)
+    (target : Bool) (pos : Nat) : Costed Nat :=
+  Costed.bind data.decodeCosted fun decoded =>
+    Costed.pure
+      (match decoded with
+      | some bits => Succinct.rankPrefix target bits pos
+      | none => 0)
+
+@[simp] theorem rankCosted_cost
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightPackedReadbackData bits wordSize)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).cost =
+      data.wordStore.store.words.size := by
+  simp [rankCosted]
+
+@[simp] theorem rankCosted_erase
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightPackedReadbackData bits wordSize)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).erase =
+      Succinct.rankPrefix target bits pos := by
+  simp [rankCosted]
+
+/-- Select through chunked packed-payload readback. -/
+def selectCosted
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightPackedReadbackData bits wordSize)
+    (target : Bool) (occurrence : Nat) : Costed (Option Nat) :=
+  Costed.bind data.decodeCosted fun decoded =>
+    Costed.pure
+      (match decoded with
+      | some bits => Succinct.select target bits occurrence
+      | none => none)
+
+@[simp] theorem selectCosted_cost
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightPackedReadbackData bits wordSize)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).cost =
+      data.wordStore.store.words.size := by
+  simp [selectCosted]
+
+@[simp] theorem selectCosted_erase
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightPackedReadbackData bits wordSize)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).erase =
+      Succinct.select target bits occurrence := by
+  simp [selectCosted]
+
+theorem read_words_length_le
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightPackedReadbackData bits wordSize)
+    {word : List Bool}
+    (hmem : List.Mem word data.wordStore.store.words.toList) :
+    word.length <= wordSize :=
+  data.wordStore.word_length_le_of_mem hmem
+
+/-- Chunked readback data as a compressed directory with word-count query cost. -/
+def toCompressedDirectory
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightPackedReadbackData bits wordSize) :
+    CompressedBitVectorRankSelectDirectory
+      bits 0 data.wordStore.store.words.size where
+  payload := fixedWeightPackedPayload bits
+  payload_length_le := by
+    simp [fixedWeightPackedPayload_length]
+  accessCosted := data.accessCosted
+  rankCosted := data.rankCosted
+  selectCosted := data.selectCosted
+  access_cost_le := by
+    intro i
+    simp
+  rank_cost_le := by
+    intro target pos
+    simp
+  select_cost_le := by
+    intro target occurrence
+    simp
+  access_exact := by
+    intro i
+    simp
+  rank_exact := by
+    intro target pos
+    simp
+  select_exact := by
+    intro target occurrence
+    simp
+
+theorem profile
+    {bits : List Bool} {wordSize : Nat}
+    (data : FixedWeightPackedReadbackData bits wordSize) :
+    (data.toCompressedDirectory).payload =
+        fixedWeightPackedPayload bits /\
+      (data.toCompressedDirectory).payload.length =
+        fixedWeightPayloadBudget bits /\
+      (forall i,
+        ((data.toCompressedDirectory).accessQueryCosted i).cost =
+            data.wordStore.store.words.size /\
+          ((data.toCompressedDirectory).accessQueryCosted i).erase =
+            bits[i]?) /\
+      (forall target pos,
+        ((data.toCompressedDirectory).rankQueryCosted target pos).cost =
+            data.wordStore.store.words.size /\
+          ((data.toCompressedDirectory).rankQueryCosted target pos).erase =
+            Succinct.rankPrefix target bits pos) /\
+      (forall target occurrence,
+        ((data.toCompressedDirectory).selectQueryCosted
+            target occurrence).cost =
+            data.wordStore.store.words.size /\
+          ((data.toCompressedDirectory).selectQueryCosted
+            target occurrence).erase =
+            Succinct.select target bits occurrence) := by
+  exact
+    And.intro rfl
+      (And.intro (fixedWeightPackedPayload_length bits)
+        (And.intro
+          (fun i =>
+            And.intro (data.accessCosted_cost i)
+              (data.accessCosted_erase i))
+          (And.intro
+            (fun target pos =>
+              And.intro (data.rankCosted_cost target pos)
+                (data.rankCosted_erase target pos))
+            (fun target occurrence =>
+              And.intro (data.selectCosted_cost target occurrence)
+                (data.selectCosted_erase target occurrence)))))
+
+theorem ofChunks_word_count
+    (bits : List Bool) {wordSize : Nat} (hword : 0 < wordSize) :
+    ((ofChunks bits hword).wordStore.store.words.size) =
+      fixedWeightPackedReadbackWordCount bits wordSize := by
+  simp [ofChunks, fixedWeightPackedReadbackWordCount,
+    SuccinctSpace.BoundedPayloadWordStore.ofChunks]
+
+theorem ofChunks_profile
+    (bits : List Bool) {wordSize : Nat} (hword : 0 < wordSize) :
+    let data := ofChunks bits hword
+    (data.toCompressedDirectory).payload =
+        fixedWeightPackedPayload bits /\
+      (data.toCompressedDirectory).payload.length =
+        fixedWeightPayloadBudget bits /\
+      (forall i,
+        ((data.toCompressedDirectory).accessQueryCosted i).cost =
+            fixedWeightPackedReadbackWordCount bits wordSize /\
+          ((data.toCompressedDirectory).accessQueryCosted i).erase =
+            bits[i]?) /\
+      (forall target pos,
+        ((data.toCompressedDirectory).rankQueryCosted target pos).cost =
+            fixedWeightPackedReadbackWordCount bits wordSize /\
+          ((data.toCompressedDirectory).rankQueryCosted target pos).erase =
+            Succinct.rankPrefix target bits pos) /\
+      (forall target occurrence,
+        ((data.toCompressedDirectory).selectQueryCosted
+            target occurrence).cost =
+            fixedWeightPackedReadbackWordCount bits wordSize /\
+          ((data.toCompressedDirectory).selectQueryCosted
+            target occurrence).erase =
+            Succinct.select target bits occurrence) := by
+  dsimp
+  simpa [ofChunks_word_count bits hword] using
+    profile (ofChunks bits hword)
+
+end FixedWeightPackedReadbackData
 
 /--
 Family-level compressed/FID rank-select theorem surface.

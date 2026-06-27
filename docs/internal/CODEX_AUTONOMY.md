@@ -344,14 +344,15 @@ future data structure. That is parallel, but not goal-directed.
 
 ## Proof Workers
 
-In an explicitly approved loop, proof workers are first-class, not only
-read-only scouts. The lead should proactively spawn parallel write workers when
-the active target decomposes into at least two independent leaves with pinned
+Proof workers are first-class, not only read-only scouts. For substantial
+targets, the lead should proactively look for parallel write workers when the
+active target decomposes into at least two independent leaves with pinned
 contracts.
 
-This loop-mode policy overrides the conservative "read-only unless asked"
-default in ordinary single-prompt work. It does not override the need for
-disjoint ownership, a clean join theorem, and gate verification.
+This default does not override the need for disjoint ownership, a clean join
+theorem, and gate verification. If the target has no genuinely independent
+leaf, the lead should keep the work local instead of manufacturing parallel
+side quests.
 
 Protocol:
 
@@ -362,7 +363,11 @@ Protocol:
    disjoint file ownership, ideally one module or one small module family.
 3. Join centrally. The lead merges or ports the leaves into the main worktree,
    proves the join theorem, and runs the gate.
-4. Stop on forkiness. If a leaf turns into a taste-sensitive API choice or a
+4. Check in and steer. While workers run, the lead should periodically inspect
+   whether they are still attacking the owned target, and steer them away from
+   premature loop stops, abstract hooks, or technically substantial side work
+   that does not feed the join.
+5. Stop on forkiness. If a leaf turns into a taste-sensitive API choice or a
    public-contract change, stop and surface it rather than dispatching it.
 
 Read-only scouts may be many and cheap. Write/proof workers should be few,

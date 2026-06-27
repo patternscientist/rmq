@@ -34,12 +34,18 @@ Use this workflow for nontrivial work in the RMQ Lean repository.
 
 ## Orchestration
 
-- Do not spawn subagents unless the user explicitly asks for parallel agents,
-  delegation, or subagent work.
-- Once the user has explicitly approved an unattended loop with parallelization,
-  treat that approval as active for the loop target: look for independent proof
-  leaves before starting each substantial iteration, and use a small number of
-  DAG-bound workers when their outputs feed the same named join theorem.
+- For substantial RMQ proof/development work, default to a parallelization
+  check before editing. Name the join theorem or concrete target, the
+  independent leaves that feed it, the work the lead thread will do locally,
+  and whether agents will materially shorten the critical path.
+- Use subagents when they can attack genuinely independent leaves that feed the
+  current target. Do not invent parallel side quests for throughput. If the
+  target is tightly coupled or the immediate blocker must be solved locally,
+  proceed single-threaded and say why.
+- In unattended or longer attended loops, treat parallelization as an active
+  tool by default: look for independent proof leaves before starting each
+  substantial iteration, and use a small number of DAG-bound workers when their
+  outputs feed the same named join theorem.
 - Good read-only subagent splits:
   - theorem inventory and trust-base audit,
   - proof-gap scan for a target milestone,
@@ -50,6 +56,9 @@ Use this workflow for nontrivial work in the RMQ Lean repository.
 - Good proof-worker splits require pinned theorem signatures or construction
   contracts up front. If the leaf contract is not stable enough to hand to a
   worker, keep it in the lead loop rather than spawning exploratory churn.
+- While agents run, the lead thread should keep doing non-overlapping work,
+  check in periodically when useful, steer agents away from premature loop
+  breaks or tertiary outputs, and integrate accepted results centrally.
 - If there are no independent leaves, state that briefly in the goal reflection
   and proceed single-threaded; do not invent parallel side quests.
 
