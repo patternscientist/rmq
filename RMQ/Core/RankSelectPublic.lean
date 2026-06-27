@@ -641,6 +641,65 @@ theorem fixedWeightAmbientBlockCompositionCompressedProfileOfPrimaryBudget
     RMQ.RankSelectSpec.FixedWeightAmbientBlockCompositionFamily.compressed_profile_of_primary_budget
       family primaryOverhead hprimaryO hprimary
 
+/-- Total overhead for the ambient block-composition compressed bridge. -/
+abbrev fixedWeightAmbientBlockCompositionCompressedOverhead
+    (slots : Nat) (primaryOverhead : Nat -> Nat) : Nat -> Nat :=
+  RMQ.RankSelectSpec.FixedWeightAmbientBlockCompositionFamily.compressedOverhead
+    slots primaryOverhead
+
+/--
+Word-bounded ambient block-composition bridge to the public compressed/FID
+payload shape, assuming the remaining primary block-code budget theorem.
+-/
+theorem fixedWeightAmbientBlockCompositionWordBoundedCompressedProfileOfPrimaryBudget
+    {slots queryCost : Nat}
+    (family :
+      FixedWeightAmbientBlockCompositionFamily slots queryCost)
+    (primaryOverhead : Nat -> Nat)
+    (hprimaryO : SuccinctSpace.LittleOLinear primaryOverhead)
+    (hprimary :
+      forall bits : List Bool,
+        fixedWeightBlockPayloadBudget (family.blocks bits) <=
+          fixedWeightPayloadBudget bits + primaryOverhead bits.length) :
+    SuccinctSpace.LittleOLinear
+        (fixedWeightAmbientBlockCompositionCompressedOverhead
+          slots primaryOverhead) /\
+      forall bits : List Bool,
+        let data :=
+          RMQ.RankSelectSpec.FixedWeightAmbientBlockCompositionFamily.directory
+            family bits
+        FixedWeightAmbientBlockCompositionDirectoryProfile data /\
+          data.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          data.payload.length <=
+            fixedWeightPayloadBudget bits +
+              fixedWeightAmbientBlockCompositionCompressedOverhead
+                slots primaryOverhead bits.length /\
+          data.auxPayload.length =
+            fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word data.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word data.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (data.accessCosted i).cost <= queryCost /\
+              (data.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (data.rankCosted target pos).cost <= queryCost /\
+              (data.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (data.selectCosted target occurrence).cost <= queryCost /\
+              (data.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientBlockCompositionFamily.word_bounded_compressed_profile_of_primary_budget
+      family primaryOverhead hprimaryO hprimary
+
 /-- Convert a compressed/FID auxiliary family into the public family shape. -/
 abbrev fixedWeightCompressedAuxiliaryToCompressedFamily
     {overhead : Nat -> Nat} {wordSize queryCost : Nat}
@@ -736,6 +795,79 @@ theorem fixedWeightComputedRRRBlockKernelProfile
     RMQ.RankSelectSpec.FixedWeightComputedRRRBlockData.computed_rrr_block_kernel_profile
       data
 
+/-- Widen the local computed RRR block to any caller-supplied query budget. -/
+abbrev fixedWeightComputedRRRBlockToBoundedCompressedDirectory
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize)
+    {queryCost : Nat}
+    (hquery : fixedWeightComputedRRRQueryCost bits <= queryCost) :=
+  RMQ.RankSelectSpec.FixedWeightComputedRRRBlockData.toBoundedCompressedDirectory
+    data hquery
+
+/--
+If the explicit local computed-RRR budget fits a caller-supplied constant,
+the packed-code-only local kernel is a compressed/FID directory with zero
+auxiliary payload and all queries bounded by that constant.
+-/
+theorem fixedWeightComputedRRRBlockBoundedCompressedDirectoryProfile
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize)
+    {queryCost : Nat}
+    (hquery : fixedWeightComputedRRRQueryCost bits <= queryCost) :
+    let directory :=
+      fixedWeightComputedRRRBlockToBoundedCompressedDirectory data hquery
+    directory.payload = fixedWeightPackedPayload bits /\
+      directory.payload.length = fixedWeightPayloadBudget bits /\
+      directory.payload.length <= fixedWeightPayloadBudget bits + 0 /\
+      data.readCodeCosted.cost = 1 /\
+      data.readCodeCosted.erase = RMQ.RankSelectSpec.fixedWeightCode bits /\
+      data.decodedWordCosted.cost =
+        fixedWeightComputedRRRDecodeTicks bits + 1 /\
+      data.decodedWordCosted.erase = bits /\
+      fixedWeightComputedRRRQueryCost bits <= queryCost /\
+      (forall i,
+        (directory.accessQueryCosted i).cost <= queryCost /\
+          (directory.accessQueryCosted i).erase = bits[i]?) /\
+      (forall target pos,
+        (directory.rankQueryCosted target pos).cost <= queryCost /\
+          (directory.rankQueryCosted target pos).erase =
+            Succinct.rankPrefix target bits pos) /\
+      (forall target occurrence,
+        (directory.selectQueryCosted target occurrence).cost <=
+            queryCost /\
+          (directory.selectQueryCosted target occurrence).erase =
+            Succinct.select target bits occurrence) := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightComputedRRRBlockData.bounded_compressed_directory_profile
+      data hquery
+
+/--
+Bridge profile equating the direct computed-RRR local directory and the
+dependent-auxiliary scaffold-backed directory.
+-/
+abbrev FixedWeightComputedRRRBlockDependentAuxiliaryBridgeProfile
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    Prop :=
+  RMQ.RankSelectSpec.FixedWeightComputedRRRBlockData.DependentAuxiliaryBridgeProfile
+    data
+
+/--
+The dependent-auxiliary adapter has the same payload and charged query
+behavior as the direct packed-code-only computed-RRR block directory.
+-/
+theorem fixedWeightComputedRRRBlockDependentAuxiliaryBridgeProfile
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    FixedWeightComputedRRRBlockDependentAuxiliaryBridgeProfile data := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightComputedRRRBlockData.dependent_auxiliary_bridge_profile
+      data
+
 /-- Adapt a computed local RRR block kernel to the dependent auxiliary scaffold. -/
 abbrev fixedWeightComputedRRRBlockToDependentAuxiliaryData
     {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
@@ -757,6 +889,24 @@ theorem fixedWeightComputedRRRBlockDependentAuxiliaryDataProfile
   exact
     RMQ.RankSelectSpec.FixedWeightComputedRRRBlockData.dependent_auxiliary_data_profile
       data
+
+/--
+Full local computed-RRR block package: direct packed-code kernel profile,
+generic dependent-auxiliary directory profile, and equivalence with the direct
+block directory.
+-/
+theorem fixedWeightComputedRRRBlockDependentAuxiliaryFullProfile
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    FixedWeightComputedRRRBlockKernelProfile data /\
+      FixedWeightDependentAuxiliaryDirectoryProfile
+        (fixedWeightComputedRRRBlockToDependentAuxiliaryData data) /\
+      FixedWeightComputedRRRBlockDependentAuxiliaryBridgeProfile data := by
+  exact
+    ⟨fixedWeightComputedRRRBlockKernelProfile data,
+      fixedWeightComputedRRRBlockDependentAuxiliaryDataProfile data,
+      fixedWeightComputedRRRBlockDependentAuxiliaryBridgeProfile data⟩
 
 /--
 Convert ambient computed-RRR block data to the generic ambient block-composition

@@ -128,8 +128,12 @@ RMQ.RankSelect.fixedWeightComputedRRRDecodeFromReadValuesCosted
 RMQ.RankSelect.fixedWeightComputedRRRDecodeFromReadValuesCostedEraseSingleton
 RMQ.RankSelect.FixedWeightComputedRRRBlockKernelProfile
 RMQ.RankSelect.fixedWeightComputedRRRBlockKernelProfile
+RMQ.RankSelect.fixedWeightComputedRRRBlockToBoundedCompressedDirectory
+RMQ.RankSelect.fixedWeightComputedRRRBlockBoundedCompressedDirectoryProfile
 RMQ.RankSelect.fixedWeightComputedRRRBlockToDependentAuxiliaryData
 RMQ.RankSelect.fixedWeightComputedRRRBlockDependentAuxiliaryDataProfile
+RMQ.RankSelect.fixedWeightComputedRRRBlockDependentAuxiliaryBridgeProfile
+RMQ.RankSelect.fixedWeightComputedRRRBlockDependentAuxiliaryFullProfile
 RMQ.RankSelect.FixedWeightAmbientComputedRRRAccessRoute
 RMQ.RankSelect.FixedWeightAmbientComputedRRRRankRoute
 RMQ.RankSelect.FixedWeightAmbientComputedRRRSelectRoute
@@ -175,6 +179,8 @@ RMQ.RankSelect.FixedWeightAmbientBlockCompositionFamily
 RMQ.RankSelect.fixedWeightAmbientBlockCompositionFamilyProfile
 RMQ.RankSelect.fixedWeightAmbientBlockCompositionFamilyWordBoundedProfile
 RMQ.RankSelect.fixedWeightAmbientBlockCompositionCompressedProfileOfPrimaryBudget
+RMQ.RankSelect.fixedWeightAmbientBlockCompositionCompressedOverhead
+RMQ.RankSelect.fixedWeightAmbientBlockCompositionWordBoundedCompressedProfileOfPrimaryBudget
 RMQ.RankSelect.CompressedFamily
 RMQ.RankSelect.compressedFixedWeightConstantQueryProfile
 ```
@@ -297,11 +303,21 @@ code and RAM word primitives. `fixedWeightComputedRRRBlockKernelProfile`
 records the direct local directory facts, while
 `fixedWeightComputedRRRBlockDependentAuxiliaryDataProfile` packages the same
 kernel through the generic dependent-read scaffold with zero auxiliary payload.
+`fixedWeightComputedRRRBlockBoundedCompressedDirectoryProfile` is the bounded
+local-regime finisher: if the caller supplies
+`fixedWeightComputedRRRQueryCost bits <= queryCost`, then the same packed-code
+kernel is a public compressed/FID directory with zero auxiliary payload and
+all access/rank/select costs bounded by `queryCost`.
+`fixedWeightComputedRRRBlockDependentAuxiliaryBridgeProfile` proves the generic
+dependent-auxiliary adapter exposes the same payload, costs, and erased answers
+as the direct local computed-RRR directory, and
+`fixedWeightComputedRRRBlockDependentAuxiliaryFullProfile` packages that bridge
+with the direct kernel profile and dependent-auxiliary directory profile.
 This removes the local dense-table payload and arbitrary-evaluator escape hatch
 simultaneously. It is still not the finished constant-time compressed/FID
-family: the decode cost is explicit rather than globally O(1), and global
-composition must still provide charged class/routing metadata or a bounded
-primitive/table model for the local decoder.
+family: the theorem isolates the local constant-bound premise, and global
+composition must still discharge it from a concrete block-size primitive/table
+model while also providing charged class/routing metadata.
 
 That local checkpoint is now consumed by
 `FixedWeightAmbientComputedRRRBlockData`. It produces a
@@ -351,14 +367,16 @@ alignment facts
 `fixedWeightBlockCodeBoundedStoreGetOfBlock` are the narrow bridge needed by a
 later global router to read block `b`'s packed code word.
 
-The ambient family theorem currently proves payload
-`fixedWeightBlockPayloadBudget (blocks bits) + o(n)`, not yet the full
-`fixedWeightPayloadBudget bits + o(n)` compressed/FID headline. The conditional
-bridge
-`fixedWeightAmbientBlockCompositionCompressedProfileOfPrimaryBudget` isolates
-the remaining primary-budget theorem: for every `bits`,
+The ambient family theorem proves payload
+`fixedWeightBlockPayloadBudget (blocks bits) + o(n)` with bounded payload
+stores. The conditional bridges
+`fixedWeightAmbientBlockCompositionCompressedProfileOfPrimaryBudget` and
+`fixedWeightAmbientBlockCompositionWordBoundedCompressedProfileOfPrimaryBudget`
+isolate the remaining primary-budget theorem: for every `bits`,
 `fixedWeightBlockPayloadBudget (blocks bits) <= fixedWeightPayloadBudget bits + primaryOverhead bits.length`
-with `primaryOverhead = o(n)`.
+with `primaryOverhead = o(n)`. The word-bounded bridge additionally carries
+the directory profile and ambient word-size discipline into the
+`fixedWeightPayloadBudget bits + o(n)` compressed/FID shape.
 
 ## Module Boundary
 

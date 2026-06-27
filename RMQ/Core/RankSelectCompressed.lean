@@ -2372,6 +2372,10 @@ namespace FixedWeightAmbientBlockCompositionFamily
 def overhead (slots : Nat) : Nat -> Nat :=
   fixedWeightAmbientBlockAuxiliaryOverhead slots
 
+def compressedOverhead (slots : Nat) (primaryOverhead : Nat -> Nat) :
+    Nat -> Nat :=
+  fun n => primaryOverhead n + fixedWeightAmbientBlockAuxiliaryOverhead slots n
+
 def directory
     {slots queryCost : Nat}
     (family : FixedWeightAmbientBlockCompositionFamily slots queryCost)
@@ -2527,6 +2531,73 @@ theorem compressed_profile_of_primary_budget
     · intro target occurrence
       exact ⟨data.selectCosted_cost_le target occurrence,
         data.selectCosted_erase target occurrence⟩
+
+theorem word_bounded_compressed_profile_of_primary_budget
+    {slots queryCost : Nat}
+    (family : FixedWeightAmbientBlockCompositionFamily slots queryCost)
+    (primaryOverhead : Nat -> Nat)
+    (hprimaryO : SuccinctSpace.LittleOLinear primaryOverhead)
+    (hprimary :
+      forall bits : List Bool,
+        fixedWeightBlockPayloadBudget (family.blocks bits) <=
+          fixedWeightPayloadBudget bits + primaryOverhead bits.length) :
+    SuccinctSpace.LittleOLinear
+        (compressedOverhead slots primaryOverhead) /\
+      forall bits : List Bool,
+        let data := family.directory bits
+        data.DirectoryProfile /\
+          data.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          data.payload.length <=
+            fixedWeightPayloadBudget bits +
+              compressedOverhead slots primaryOverhead bits.length /\
+          data.auxPayload.length =
+            fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word data.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word data.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (data.accessCosted i).cost <= queryCost /\
+              (data.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (data.rankCosted target pos).cost <= queryCost /\
+              (data.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (data.selectCosted target occurrence).cost <= queryCost /\
+              (data.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  constructor
+  · simpa [compressedOverhead] using
+      hprimaryO.add
+        (fixedWeightAmbientBlockAuxiliaryOverhead_littleO slots)
+  · intro bits
+    let data := family.directory bits
+    have hbounded := data.word_bounded_directory_profile
+    have hbudget := hprimary bits
+    exact
+      ⟨data.directory_profile,
+        data.payload_length,
+        by
+          rw [data.payload_length]
+          dsimp [compressedOverhead]
+          omega,
+        data.aux_length_eq,
+        data.blocks_flatten,
+        hbounded.2.1,
+        hbounded.2.2,
+        (fun i => ⟨data.accessCosted_cost_le i,
+          data.accessCosted_erase i⟩),
+        (fun target pos => ⟨data.rankCosted_cost_le target pos,
+          data.rankCosted_erase target pos⟩),
+        (fun target occurrence =>
+          ⟨data.selectCosted_cost_le target occurrence,
+            data.selectCosted_erase target occurrence⟩)⟩
 
 end FixedWeightAmbientBlockCompositionFamily
 
@@ -3550,6 +3621,36 @@ def toCompressedDirectory
   rank_exact := data.rankCosted_erase
   select_exact := data.selectCosted_erase
 
+def toBoundedCompressedDirectory
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize)
+    {queryCost : Nat}
+    (hquery : fixedWeightComputedRRRQueryCost bits <= queryCost) :
+    CompressedBitVectorRankSelectDirectory bits 0 queryCost where
+  payload := data.payload
+  payload_length_le := by
+    simp
+  accessCosted := data.accessCosted
+  rankCosted := data.rankCosted
+  selectCosted := data.selectCosted
+  access_cost_le := by
+    intro i
+    rw [data.accessCosted_cost i]
+    unfold fixedWeightComputedRRRQueryCost at hquery
+    omega
+  rank_cost_le := by
+    intro target pos
+    rw [data.rankCosted_cost target pos]
+    exact hquery
+  select_cost_le := by
+    intro target occurrence
+    rw [data.selectCosted_cost target occurrence]
+    exact hquery
+  access_exact := data.accessCosted_erase
+  rank_exact := data.rankCosted_erase
+  select_exact := data.selectCosted_erase
+
 /--
 Profile for the computed local fixed-weight/RRR block kernel.
 
@@ -3612,6 +3713,142 @@ theorem dependent_auxiliary_data_profile
   exact
     FixedWeightDependentAuxiliaryData.directory_profile
       data.toDependentAuxiliaryData
+
+theorem bounded_compressed_directory_profile
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize)
+    {queryCost : Nat}
+    (hquery : fixedWeightComputedRRRQueryCost bits <= queryCost) :
+    let directory := data.toBoundedCompressedDirectory hquery
+    directory.payload = fixedWeightPackedPayload bits /\
+      directory.payload.length = fixedWeightPayloadBudget bits /\
+      directory.payload.length <= fixedWeightPayloadBudget bits + 0 /\
+      data.readCodeCosted.cost = 1 /\
+      data.readCodeCosted.erase = fixedWeightCode bits /\
+      data.decodedWordCosted.cost =
+        fixedWeightComputedRRRDecodeTicks bits + 1 /\
+      data.decodedWordCosted.erase = bits /\
+      fixedWeightComputedRRRQueryCost bits <= queryCost /\
+      (forall i,
+        (directory.accessQueryCosted i).cost <= queryCost /\
+          (directory.accessQueryCosted i).erase = bits[i]?) /\
+      (forall target pos,
+        (directory.rankQueryCosted target pos).cost <= queryCost /\
+          (directory.rankQueryCosted target pos).erase =
+            Succinct.rankPrefix target bits pos) /\
+      (forall target occurrence,
+        (directory.selectQueryCosted target occurrence).cost <=
+            queryCost /\
+          (directory.selectQueryCosted target occurrence).erase =
+            Succinct.select target bits occurrence) := by
+  let directory := data.toBoundedCompressedDirectory hquery
+  have hprofile := directory.profile
+  exact
+    ⟨rfl,
+      by
+        change data.payload.length = fixedWeightPayloadBudget bits
+        exact data.payload_length,
+      hprofile.1,
+      data.readCodeCosted_cost,
+      data.readCodeCosted_erase,
+      data.decodedWordCosted_cost,
+      data.decodedWordCosted_erase,
+      hquery,
+      hprofile.2.1,
+      hprofile.2.2.1,
+      hprofile.2.2.2⟩
+
+/--
+The direct computed-RRR local directory and the generic dependent-auxiliary
+adapter expose the same packed payload and charged query behavior.
+-/
+def DependentAuxiliaryBridgeProfile
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    Prop :=
+  ((data.toDependentAuxiliaryData).toCompressedDirectory).payload =
+      (data.toCompressedDirectory).payload /\
+    (forall i,
+      (((data.toDependentAuxiliaryData).toCompressedDirectory).accessQueryCosted
+          i).cost =
+          ((data.toCompressedDirectory).accessQueryCosted i).cost /\
+        (((data.toDependentAuxiliaryData).toCompressedDirectory).accessQueryCosted
+          i).erase =
+          ((data.toCompressedDirectory).accessQueryCosted i).erase) /\
+    (forall target pos,
+      (((data.toDependentAuxiliaryData).toCompressedDirectory).rankQueryCosted
+          target pos).cost =
+          ((data.toCompressedDirectory).rankQueryCosted target pos).cost /\
+        (((data.toDependentAuxiliaryData).toCompressedDirectory).rankQueryCosted
+          target pos).erase =
+          ((data.toCompressedDirectory).rankQueryCosted target pos).erase) /\
+    (forall target occurrence,
+      (((data.toDependentAuxiliaryData).toCompressedDirectory).selectQueryCosted
+          target occurrence).cost =
+          ((data.toCompressedDirectory).selectQueryCosted
+            target occurrence).cost /\
+        (((data.toDependentAuxiliaryData).toCompressedDirectory).selectQueryCosted
+          target occurrence).erase =
+          ((data.toCompressedDirectory).selectQueryCosted
+            target occurrence).erase)
+
+theorem dependent_auxiliary_bridge_profile
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    data.DependentAuxiliaryBridgeProfile := by
+  constructor
+  · change (data.toDependentAuxiliaryData).payload = data.payload
+    simp [toDependentAuxiliaryData,
+      FixedWeightDependentAuxiliaryData.payload, payload]
+  constructor
+  · intro i
+    constructor
+    · change ((data.toDependentAuxiliaryData).accessCosted i).cost =
+        (data.accessCosted i).cost
+      simp [toDependentAuxiliaryData,
+        FixedWeightDependentAuxiliaryData.accessCosted,
+        data.packed_read_values_zero,
+        fixedWeightComputedRRRQueryCost]
+      omega
+    · change ((data.toDependentAuxiliaryData).accessCosted i).erase =
+        (data.accessCosted i).erase
+      rw [(data.toDependentAuxiliaryData).accessCosted_erase i,
+        data.accessCosted_erase i]
+  constructor
+  · intro target pos
+    constructor
+    · change ((data.toDependentAuxiliaryData).rankCosted target pos).cost =
+        (data.rankCosted target pos).cost
+      simp [toDependentAuxiliaryData,
+        FixedWeightDependentAuxiliaryData.rankCosted,
+        data.packed_read_values_zero,
+        fixedWeightComputedRRRQueryCost]
+      omega
+    · change ((data.toDependentAuxiliaryData).rankCosted target pos).erase =
+        (data.rankCosted target pos).erase
+      rw [(data.toDependentAuxiliaryData).rankCosted_erase target pos,
+        data.rankCosted_erase target pos]
+  · intro target occurrence
+    constructor
+    · change
+        ((data.toDependentAuxiliaryData).selectCosted
+          target occurrence).cost =
+        (data.selectCosted target occurrence).cost
+      simp [toDependentAuxiliaryData,
+        FixedWeightDependentAuxiliaryData.selectCosted,
+        data.packed_read_values_zero,
+        fixedWeightComputedRRRQueryCost]
+      omega
+    · change
+        ((data.toDependentAuxiliaryData).selectCosted
+          target occurrence).erase =
+        (data.selectCosted target occurrence).erase
+      rw [(data.toDependentAuxiliaryData).selectCosted_erase
+          target occurrence,
+        data.selectCosted_erase target occurrence]
 
 theorem computed_rrr_block_kernel_profile
     {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}

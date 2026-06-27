@@ -139,6 +139,17 @@ access plus fixed RAM rank/select primitives.
 packages that same kernel through the generic dependent-read scaffold with
 zero auxiliary payload. This removes the local dense decoded-table payload, but
 the decoder is still charged explicitly rather than proved globally O(1).
+`RMQ.RankSelect.fixedWeightComputedRRRBlockBoundedCompressedDirectoryProfile`
+is the local bounded-regime theorem: under the premise
+`fixedWeightComputedRRRQueryCost bits <= queryCost`, the packed-code-only
+kernel is a zero-auxiliary compressed/FID directory whose access/rank/select
+costs are all bounded by `queryCost`.
+`RMQ.RankSelect.fixedWeightComputedRRRBlockDependentAuxiliaryBridgeProfile`
+and
+`RMQ.RankSelect.fixedWeightComputedRRRBlockDependentAuxiliaryFullProfile`
+show that the same local kernel is faithfully exposed through the generic
+dependent-auxiliary scaffold: same payload, same query costs, and same erased
+answers as the direct computed-RRR directory.
 `RMQ.RankSelect.fixedWeightAmbientComputedRRRBlockCompositionProfile` consumes
 that local adapter in the ambient block-composition layer: routed queries read
 the charged block-code word, charge route/class metadata reads, invoke the
@@ -162,6 +173,9 @@ codes, with code and auxiliary payload words bounded by the ambient
 isolates the remaining compressed/FID primary-budget theorem: the sum of
 per-block fixed-weight code budgets must be bounded by the global
 fixed-weight payload budget plus an `o(n)` slack.
+`RMQ.RankSelect.fixedWeightAmbientBlockCompositionWordBoundedCompressedProfileOfPrimaryBudget`
+is the strengthened version carrying the directory profile and ambient
+machine-word bounds into that conditional compressed/FID shape.
 
 ## Balanced-Parentheses Navigation
 

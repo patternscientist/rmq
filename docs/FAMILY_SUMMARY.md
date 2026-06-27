@@ -343,10 +343,20 @@ using direct access or the RAM rank/select primitives.  The direct profile is
 `RankSelect.fixedWeightComputedRRRBlockKernelProfile`, and
 `RankSelect.fixedWeightComputedRRRBlockDependentAuxiliaryDataProfile` packages
 the same kernel through the generic dependent-read scaffold with zero
-auxiliary payload.  This removes the dense decoded-table payload at the local
-kernel level, but it is not yet the global O(1) FID theorem: the local decode
-budget is explicit, and global composition still needs charged class/routing
-metadata or a bounded primitive/table model.
+auxiliary payload.  `RankSelect.fixedWeightComputedRRRBlockBoundedCompressedDirectoryProfile`
+is the bounded local-regime theorem: once a caller proves
+`fixedWeightComputedRRRQueryCost bits <= queryCost`, the packed-code-only
+kernel becomes a zero-auxiliary compressed/FID directory with all
+access/rank/select costs bounded by `queryCost`.
+`RankSelect.fixedWeightComputedRRRBlockDependentAuxiliaryBridgeProfile` proves
+that the generic dependent-auxiliary adapter exposes the same payload, costs,
+and erased query answers as the direct local computed-RRR directory, and
+`RankSelect.fixedWeightComputedRRRBlockDependentAuxiliaryFullProfile` packages
+that bridge with the direct kernel profile and dependent-auxiliary directory
+profile.  This removes the dense decoded-table payload at the local kernel
+level.  It is not yet the global O(1) FID theorem because the chosen
+block-size/table model still has to discharge that local constant-bound
+premise, and global composition still needs charged class/routing metadata.
 `RankSelect.FixedWeightAmbientComputedRRRBlockData` is the first ambient
 consumer of that local kernel.  It converts to
 `RankSelect.FixedWeightAmbientBlockCompositionData`, but the generated query
@@ -394,9 +404,15 @@ router a formal path from block index to charged packed-code word.
 isolates the remaining primary-budget theorem needed to reach the public
 compressed/FID shape: prove the sum of block fixed-weight code budgets is at
 most the global `fixedWeightPayloadBudget bits` plus `o(n)`, then the ambient
-auxiliary envelope composes with it.  The remaining standalone rank/select
-frontier is therefore concrete global routing plus this primary-budget bridge,
-not merely consuming the public spec surface.  The
+auxiliary envelope composes with it.
+`RankSelect.fixedWeightAmbientBlockCompositionWordBoundedCompressedProfileOfPrimaryBudget`
+is the stronger predecessor citation: under the same primary-budget premise,
+it keeps the directory profile and the ambient word-size bounds while exposing
+the public `fixedWeightPayloadBudget bits + o(n)` compressed/FID payload shape.
+The remaining standalone rank/select frontier is therefore concrete global
+routing, decoding route/class fields from charged metadata words, and
+discharging this primary-budget premise, not merely consuming the public spec
+surface.  The
 strengthened public theorem
 `RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery` additionally exposes
 the machine-word discipline from the concrete components: Jacobson rank payload
@@ -1782,13 +1798,17 @@ The names below are grouped by source module. Repeated base names in
   `RankSelect.fixedWeightDecodedWordFromCodeFixedWeightCode`,
   `RankSelect.fixedWeightComputedRRRDecodeFromReadValuesCostedEraseSingleton`,
   `RankSelect.fixedWeightComputedRRRBlockKernelProfile`,
+  `RankSelect.fixedWeightComputedRRRBlockBoundedCompressedDirectoryProfile`,
   `RankSelect.fixedWeightComputedRRRBlockToDependentAuxiliaryData`,
   `RankSelect.fixedWeightComputedRRRBlockDependentAuxiliaryDataProfile`,
+  `RankSelect.fixedWeightComputedRRRBlockDependentAuxiliaryBridgeProfile`,
+  `RankSelect.fixedWeightComputedRRRBlockDependentAuxiliaryFullProfile`,
   `RankSelect.fixedWeightAmbientComputedRRRBlockToCompositionData`,
   `RankSelect.fixedWeightAmbientComputedRRRBlockCompositionProfile`,
   `RankSelect.fixedWeightAmbientComputedRRRRouteTableReadProfile`,
   `RankSelect.fixedWeightAmbientComputedRRRRouteTableProfile`,
   `RankSelect.fixedWeightAmbientComputedRRRRouteTableFamilyProfile`,
+  `RankSelect.fixedWeightAmbientBlockCompositionWordBoundedCompressedProfileOfPrimaryBudget`,
   `RankSelect.fixedWeightTableRAMBlockDataProfile`,
   `RankSelect.fixedWeightTableRAMBlockToDependentAuxiliaryData`,
   `RankSelect.fixedWeightTableRAMBlockDependentAuxiliaryDataProfile`,
