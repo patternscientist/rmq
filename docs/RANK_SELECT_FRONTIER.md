@@ -126,6 +126,13 @@ RMQ.RankSelect.fixedWeightDecodedWordFromCode
 RMQ.RankSelect.fixedWeightDecodedWordFromCodeFixedWeightCode
 RMQ.RankSelect.fixedWeightComputedRRRDecodeFromReadValuesCosted
 RMQ.RankSelect.fixedWeightComputedRRRDecodeFromReadValuesCostedEraseSingleton
+RMQ.RankSelect.FixedWeightComputedRRRClassLengthBlockData
+RMQ.RankSelect.fixedWeightComputedRRRClassLengthQueryCost
+RMQ.RankSelect.fixedWeightComputedRRRClassLengthBlockSizeQueryCost
+RMQ.RankSelect.fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted
+RMQ.RankSelect.fixedWeightComputedRRRDecodeFromClassLengthReadValuesCostedEraseSingleton
+RMQ.RankSelect.FixedWeightComputedRRRClassLengthBlockKernelProfile
+RMQ.RankSelect.fixedWeightComputedRRRClassLengthBlockKernelProfile
 RMQ.RankSelect.FixedWeightComputedRRRBlockKernelProfile
 RMQ.RankSelect.fixedWeightComputedRRRBlockKernelProfile
 RMQ.RankSelect.fixedWeightComputedRRRBlockToBoundedCompressedDirectory
@@ -143,6 +150,8 @@ RMQ.RankSelect.FixedWeightAmbientComputedRRRBlockCompositionProfile
 RMQ.RankSelect.fixedWeightAmbientComputedRRRBlockCompositionProfile
 RMQ.RankSelect.FixedWeightAmbientComputedRRRRouteTableData
 RMQ.RankSelect.FixedWeightAmbientComputedRRRRouteTableFamily
+RMQ.RankSelect.FixedWeightAmbientComputedRRRBlockSizeRouteTableData
+RMQ.RankSelect.FixedWeightAmbientComputedRRRBlockSizeRouteTableFamily
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableAccessMetadataReadsCosted
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableRankMetadataReadsCosted
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableSelectMetadataReadsCosted
@@ -154,6 +163,9 @@ RMQ.RankSelect.FixedWeightAmbientComputedRRRRouteTableProfile
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableProfile
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableFamilyDirectory
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableFamilyProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRBlockSizeRouteTableFamilyDirectory
+RMQ.RankSelect.fixedWeightAmbientComputedRRRBlockSizeRouteTableProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRBlockSizeRouteTableFamilyProfile
 RMQ.RankSelect.FixedWeightAmbientComputedRRRDecodedAccessRoute
 RMQ.RankSelect.FixedWeightAmbientComputedRRRDecodedRankRoute
 RMQ.RankSelect.FixedWeightAmbientComputedRRRDecodedSelectRoute
@@ -166,6 +178,7 @@ RMQ.RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableProfile
 RMQ.RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableFamilyDirectory
 RMQ.RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableFamilyProfile
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableWordBoundedCompressedProfileOfPrimaryBudget
+RMQ.RankSelect.fixedWeightAmbientComputedRRRBlockSizeRouteTableWordBoundedCompressedProfileOfPrimaryBudget
 RMQ.RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableWordBoundedCompressedProfileOfPrimaryBudget
 RMQ.RankSelect.FixedWeightAmbientComputedRRRPackedRouteTableData
 RMQ.RankSelect.FixedWeightAmbientComputedRRRPackedRouteTableFamily
@@ -356,6 +369,19 @@ family: the theorem isolates the local constant-bound premise, and global
 composition must still discharge it from a concrete block-size primitive/table
 model while also providing charged class/routing metadata.
 
+The class/length-read local checkpoint is
+`FixedWeightComputedRRRClassLengthBlockData`. It stores the packed fixed-weight
+code plus two fixed-width metadata words for the local block length and class
+(`trueCount`). `fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted`
+decodes only from charged class/length read values plus the charged packed-code
+read value, and
+`fixedWeightComputedRRRDecodeFromClassLengthReadValuesCostedEraseSingleton`
+proves exact readback for the canonical words. The profile
+`fixedWeightComputedRRRClassLengthBlockKernelProfile` records the concrete
+payload/read equations, word bounds, and access/rank/select exactness. This
+closes the local class/length readback gap for a single block; the ambient route
+composition still has to route those class/length words from global metadata.
+
 That local checkpoint is now consumed by
 `FixedWeightAmbientComputedRRRBlockData`. It produces a
 `FixedWeightAmbientBlockCompositionData` whose query evaluators are fixed code:
@@ -368,9 +394,17 @@ for every route, local dependent-auxiliary profiles for the routed blocks, and
 the discipline
 `metadataReads.length <= routeCost`,
 `fixedWeightComputedRRRQueryCost block <= localQueryCost`, and
-`routeCost + localQueryCost <= queryCost`. This is the first ambient/global
-surface where the local decoded-table payload is gone and the local kernel is
-actually consumed.
+`routeCost + localQueryCost <= queryCost`. The block-size refinement
+`FixedWeightAmbientComputedRRRBlockSizeRouteTableData` derives that local-cost
+premise from the uniform bound
+`fixedWeightComputedRRRBlockSizeQueryCost blockSize = 2 ^ blockSize + blockSize + 2`
+and the proved block-length discipline. Its family/profile theorems
+`fixedWeightAmbientComputedRRRBlockSizeRouteTableFamilyProfile` and
+`fixedWeightAmbientComputedRRRBlockSizeRouteTableWordBoundedCompressedProfileOfPrimaryBudget`
+carry the derived local-cost cap through the ambient route-table layer. This is
+the first ambient/global surface where the local decoded-table payload is gone
+and the local kernel is actually consumed with a non-oracular block-size cost
+discipline.
 
 The route/class metadata has a counted table envelope in
 `FixedWeightAmbientComputedRRRRouteTableData` and the family profile
@@ -409,8 +443,9 @@ equations from a canonical `FixedWidthNatTable.ofEntries` route-field table.
 The stronger `FixedWeightAmbientComputedRRRRouteFieldTableLayoutData` layer
 splits the route fields into eight canonical fixed-width tables, concatenates
 their words in route-store order, and proves the packed route profile from
-local table slots.  The local block class/length and constant decoder regime
-remain to be instantiated.
+local table slots. The remaining global constructor task is to add analogous
+per-block length/class tables to that ambient layout and feed them into the
+class/length-read local kernel, while preserving the `o(n)` auxiliary envelope.
 
 The ambient/global block-composition predecessor is now present. It stores one
 canonical fixed-weight code word per block through
@@ -441,6 +476,8 @@ the directory profile and ambient word-size discipline into the
 The same conditional compressed bridge is now exposed directly for route-table
 families by
 `fixedWeightAmbientComputedRRRRouteTableWordBoundedCompressedProfileOfPrimaryBudget`
+and
+`fixedWeightAmbientComputedRRRBlockSizeRouteTableWordBoundedCompressedProfileOfPrimaryBudget`
 and for decoded route-table families by
 `fixedWeightAmbientComputedRRRDecodedRouteTableWordBoundedCompressedProfileOfPrimaryBudget`.
 The packed route-word refinement is exposed by

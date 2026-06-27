@@ -150,6 +150,11 @@ and
 show that the same local kernel is faithfully exposed through the generic
 dependent-auxiliary scaffold: same payload, same query costs, and same erased
 answers as the direct computed-RRR directory.
+`RMQ.RankSelect.fixedWeightComputedRRRClassLengthBlockKernelProfile` proves the
+local class/length-read RRR checkpoint: two charged fixed-width metadata words
+recover the block length and class, a charged packed-code word supplies the
+fixed-weight code, and access/rank/select are exact through direct decoded
+access plus the RAM word primitives.
 `RMQ.RankSelect.fixedWeightAmbientComputedRRRBlockCompositionProfile` consumes
 that local adapter in the ambient block-composition layer: routed queries read
 the charged block-code word, charge route/class metadata reads, invoke the
@@ -182,9 +187,13 @@ envelope.
 derives the same packed profile from a canonical fixed-width route-field table,
 and
 `RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutPackedProfile`
-does so from eight concatenated canonical fixed-width field tables. Local block
-class/length decoding and the uniform constant local decoder regime remain
-future work.
+does so from eight concatenated canonical fixed-width field tables.
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRBlockSizeRouteTableFamilyProfile`
+adds the ambient block-size route-table refinement: the local computed-RRR cost
+premise is derived from a uniform block-length cap rather than assumed
+per-block. The remaining global constructor task is to add charged per-block
+length/class metadata tables to the route layout and feed them into the local
+class/length kernel.
 The ambient/global fixed-weight block predecessor is also formalized:
 `RMQ.RankSelect.fixedWeightAmbientBlockCompositionFamilyWordBoundedProfile`
 proves an `o(n)` counted auxiliary envelope for block-composed fixed-weight
@@ -200,6 +209,8 @@ machine-word bounds into that conditional compressed/FID shape.
 The same conditional compressed/FID shape is exposed directly for the
 ambient computed-RRR route layers by
 `RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableWordBoundedCompressedProfileOfPrimaryBudget`
+and
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRBlockSizeRouteTableWordBoundedCompressedProfileOfPrimaryBudget`
 and
 `RMQ.RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableWordBoundedCompressedProfileOfPrimaryBudget`;
 the packed fixed-width route-word bridge is

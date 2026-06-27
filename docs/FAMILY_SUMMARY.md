@@ -357,6 +357,15 @@ profile.  This removes the dense decoded-table payload at the local kernel
 level.  It is not yet the global O(1) FID theorem because the chosen
 block-size/table model still has to discharge that local constant-bound
 premise, and global composition still needs charged class/routing metadata.
+`RankSelect.FixedWeightComputedRRRClassLengthBlockData` is the charged
+class/length-read local kernel: it stores two fixed-width metadata words for
+the block length and class, decodes through
+`RankSelect.fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted`, and
+proves exact access/rank/select behavior in
+`RankSelect.fixedWeightComputedRRRClassLengthBlockKernelProfile`.  Its
+block-size cap is exposed by
+`RankSelect.fixedWeightComputedRRRClassLengthBlockSizeQueryCost`; the remaining
+global task is to route those length/class words from ambient metadata.
 `RankSelect.FixedWeightAmbientComputedRRRBlockData` is the first ambient
 consumer of that local kernel.  It converts to
 `RankSelect.FixedWeightAmbientBlockCompositionData`, but the generated query
@@ -405,10 +414,15 @@ packed route-table profile from a canonical `FixedWidthNatTable.ofEntries`
 route-field table aligned with the route store, while
 `RankSelect.FixedWeightAmbientComputedRRRRouteFieldTableLayoutData` splits the
 fields into eight canonical fixed-width tables and proves the packed profile
-from the concatenated table-word layout.  The local block class/length
-discipline is not yet decoded from metadata words, and the intended block-size
-regime still has to turn the local computed decoder into a constant-cost
-primitive.
+from the concatenated table-word layout.  The block-size route-table refinement
+`RankSelect.FixedWeightAmbientComputedRRRBlockSizeRouteTableData` now derives
+the ambient local-cost hypothesis from the uniform block-length cap, and the
+family surfaces
+`RankSelect.fixedWeightAmbientComputedRRRBlockSizeRouteTableFamilyProfile` and
+`RankSelect.fixedWeightAmbientComputedRRRBlockSizeRouteTableWordBoundedCompressedProfileOfPrimaryBudget`
+carry that discipline through the route-table profile.  The remaining
+constructor gap is to add analogous per-block length/class table segments to
+the ambient layout and feed them into the class/length-read local kernel.
 `RankSelect.FixedWeightAmbientBlockCompositionData` is now the ambient/global
 predecessor surface: it counts one packed fixed-weight code word per block via
 `RankSelect.fixedWeightBlockCodePayload`, counts the remaining directory bits
@@ -435,7 +449,9 @@ the public `fixedWeightPayloadBudget bits + o(n)` compressed/FID payload shape.
 The conditional compressed bridge is now also specialized to ambient
 computed-RRR route layers:
 `RankSelect.fixedWeightAmbientComputedRRRRouteTableWordBoundedCompressedProfileOfPrimaryBudget`
-does this for the base route-table family, while
+does this for the base route-table family,
+`RankSelect.fixedWeightAmbientComputedRRRBlockSizeRouteTableWordBoundedCompressedProfileOfPrimaryBudget`
+adds the derived block-size local-cost discipline, while
 `RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableWordBoundedCompressedProfileOfPrimaryBudget`
 carries the decoded metadata-read discipline through the same compressed/FID
 shape, and
@@ -448,9 +464,9 @@ carry the canonical field-table and eight-table layout constructors through
 the same bridge. All remain conditional on the primary block-code budget
 theorem.
 The remaining standalone rank/select frontier is therefore concrete global
-routing/table builders, local block class/length decoding, a uniform constant
-local decoder regime, and discharging this primary-budget premise, not merely
-consuming the public spec surface.  The
+routing/table builders for block length/class metadata, a true uniform constant
+local decoder primitive/table regime, and discharging this primary-budget
+premise, not merely consuming the public spec surface.  The
 strengthened public theorem
 `RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery` additionally exposes
 the machine-word discipline from the concrete components: Jacobson rank payload
@@ -1835,7 +1851,9 @@ The names below are grouped by source module. Repeated base names in
   `RankSelect.fixedWeightPackedCodeBoundedStoreGetZero`,
   `RankSelect.fixedWeightDecodedWordFromCodeFixedWeightCode`,
   `RankSelect.fixedWeightComputedRRRDecodeFromReadValuesCostedEraseSingleton`,
+  `RankSelect.fixedWeightComputedRRRDecodeFromClassLengthReadValuesCostedEraseSingleton`,
   `RankSelect.fixedWeightComputedRRRBlockKernelProfile`,
+  `RankSelect.fixedWeightComputedRRRClassLengthBlockKernelProfile`,
   `RankSelect.fixedWeightComputedRRRBlockBoundedCompressedDirectoryProfile`,
   `RankSelect.fixedWeightComputedRRRBlockToDependentAuxiliaryData`,
   `RankSelect.fixedWeightComputedRRRBlockDependentAuxiliaryDataProfile`,
@@ -1846,10 +1864,13 @@ The names below are grouped by source module. Repeated base names in
   `RankSelect.fixedWeightAmbientComputedRRRRouteTableReadProfile`,
   `RankSelect.fixedWeightAmbientComputedRRRRouteTableProfile`,
   `RankSelect.fixedWeightAmbientComputedRRRRouteTableFamilyProfile`,
+  `RankSelect.fixedWeightAmbientComputedRRRBlockSizeRouteTableProfile`,
+  `RankSelect.fixedWeightAmbientComputedRRRBlockSizeRouteTableFamilyProfile`,
   `RankSelect.fixedWeightAmbientComputedRRRDecodedMetadataReadProfile`,
   `RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableProfile`,
   `RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableFamilyProfile`,
   `RankSelect.fixedWeightAmbientComputedRRRRouteTableWordBoundedCompressedProfileOfPrimaryBudget`,
+  `RankSelect.fixedWeightAmbientComputedRRRBlockSizeRouteTableWordBoundedCompressedProfileOfPrimaryBudget`,
   `RankSelect.fixedWeightAmbientComputedRRRDecodedRouteTableWordBoundedCompressedProfileOfPrimaryBudget`,
   `RankSelect.fixedWeightAmbientComputedRRRPackedAccessMetadataReadValuesEq`,
   `RankSelect.fixedWeightAmbientComputedRRRPackedRankMetadataReadValuesEq`,
