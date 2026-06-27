@@ -139,6 +139,11 @@ access plus fixed RAM rank/select primitives.
 packages that same kernel through the generic dependent-read scaffold with
 zero auxiliary payload. This removes the local dense decoded-table payload, but
 the decoder is still charged explicitly rather than proved globally O(1).
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRBlockCompositionProfile` consumes
+that local adapter in the ambient block-composition layer: routed queries read
+the charged block-code word, charge route/class metadata reads, invoke the
+computed local RRR dependent-auxiliary evaluator, and satisfy the ambient
+directory profile under an explicit route-plus-local query-cost discipline.
 The ambient/global fixed-weight block predecessor is also formalized:
 `RMQ.RankSelect.fixedWeightAmbientBlockCompositionFamilyWordBoundedProfile`
 proves an `o(n)` counted auxiliary envelope for block-composed fixed-weight

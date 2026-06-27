@@ -130,6 +130,13 @@ RMQ.RankSelect.FixedWeightComputedRRRBlockKernelProfile
 RMQ.RankSelect.fixedWeightComputedRRRBlockKernelProfile
 RMQ.RankSelect.fixedWeightComputedRRRBlockToDependentAuxiliaryData
 RMQ.RankSelect.fixedWeightComputedRRRBlockDependentAuxiliaryDataProfile
+RMQ.RankSelect.FixedWeightAmbientComputedRRRAccessRoute
+RMQ.RankSelect.FixedWeightAmbientComputedRRRRankRoute
+RMQ.RankSelect.FixedWeightAmbientComputedRRRSelectRoute
+RMQ.RankSelect.FixedWeightAmbientComputedRRRBlockData
+RMQ.RankSelect.fixedWeightAmbientComputedRRRBlockToCompositionData
+RMQ.RankSelect.FixedWeightAmbientComputedRRRBlockCompositionProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRBlockCompositionProfile
 RMQ.RankSelect.FixedWeightTableRAMBlockData
 RMQ.RankSelect.fixedWeightTableRAMBlockDataProfile
 RMQ.RankSelect.fixedWeightTableRAMBlockToDependentAuxiliaryData
@@ -282,6 +289,23 @@ simultaneously. It is still not the finished constant-time compressed/FID
 family: the decode cost is explicit rather than globally O(1), and global
 composition must still provide charged class/routing metadata or a bounded
 primitive/table model for the local decoder.
+
+That local checkpoint is now consumed by
+`FixedWeightAmbientComputedRRRBlockData`. It produces a
+`FixedWeightAmbientBlockCompositionData` whose query evaluators are fixed code:
+read the routed packed block-code word, charge the route/class metadata reads
+from the auxiliary store, run the computed local RRR decoder through
+`toDependentAuxiliaryData`, and combine the local answer with the route
+metadata. `fixedWeightAmbientComputedRRRBlockCompositionProfile` records the
+ambient directory profile, code-store alignment, singleton charged code reads
+for every route, local dependent-auxiliary profiles for the routed blocks, and
+the discipline
+`metadataReads.length <= routeCost`,
+`fixedWeightComputedRRRQueryCost block <= localQueryCost`, and
+`routeCost + localQueryCost <= queryCost`. This is the first ambient/global
+surface where the local decoded-table payload is gone and the local kernel is
+actually consumed. It still leaves the construction of the route/class metadata
+tables and the final constant local decode bound as explicit future work.
 
 The ambient/global block-composition predecessor is now present. It stores one
 canonical fixed-weight code word per block through

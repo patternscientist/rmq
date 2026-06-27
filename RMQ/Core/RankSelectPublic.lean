@@ -206,6 +206,24 @@ abbrev FixedWeightTableRAMBlockData :=
 abbrev FixedWeightComputedRRRBlockData :=
   RMQ.RankSelectSpec.FixedWeightComputedRRRBlockData
 
+/-- Ambient access route metadata for computed fixed-weight/RRR blocks. -/
+abbrev FixedWeightAmbientComputedRRRAccessRoute :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRAccessRoute
+
+/-- Ambient rank route metadata for computed fixed-weight/RRR blocks. -/
+abbrev FixedWeightAmbientComputedRRRRankRoute :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRankRoute
+
+/-- Ambient select route metadata for computed fixed-weight/RRR blocks. -/
+abbrev FixedWeightAmbientComputedRRRSelectRoute :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRSelectRoute
+
+/--
+Ambient/global block composition data backed by the computed local RRR kernel.
+-/
+abbrev FixedWeightAmbientComputedRRRBlockData :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRBlockData
+
 /-- Counted fixed-weight bitvector universe used by the compressed/FID budget. -/
 abbrev fixedWeightBitstrings :=
   RMQ.RankSelectSpec.fixedWeightBitstrings
@@ -730,6 +748,45 @@ theorem fixedWeightComputedRRRBlockDependentAuxiliaryDataProfile
       (fixedWeightComputedRRRBlockToDependentAuxiliaryData data) := by
   exact
     RMQ.RankSelectSpec.FixedWeightComputedRRRBlockData.dependent_auxiliary_data_profile
+      data
+
+/--
+Convert ambient computed-RRR block data to the generic ambient block-composition
+surface.
+-/
+abbrev fixedWeightAmbientComputedRRRBlockToCompositionData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRBlockData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRBlockData.toAmbientBlockCompositionData
+    data
+
+/-- Profile for ambient computed-RRR block-composition data. -/
+abbrev FixedWeightAmbientComputedRRRBlockCompositionProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRBlockData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    Prop :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRBlockData.CompositionProfile
+    data
+
+/--
+The ambient computed-RRR layer consumes the packed-code-only local block
+adapter inside the ambient/global block-composition profile.
+-/
+theorem fixedWeightAmbientComputedRRRBlockCompositionProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRBlockData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientComputedRRRBlockCompositionProfile data := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRBlockData.computed_rrr_block_composition_profile
       data
 
 /-- Adapt a local table/RAM block kernel to the dependent auxiliary scaffold. -/

@@ -347,6 +347,21 @@ auxiliary payload.  This removes the dense decoded-table payload at the local
 kernel level, but it is not yet the global O(1) FID theorem: the local decode
 budget is explicit, and global composition still needs charged class/routing
 metadata or a bounded primitive/table model.
+`RankSelect.FixedWeightAmbientComputedRRRBlockData` is the first ambient
+consumer of that local kernel.  It converts to
+`RankSelect.FixedWeightAmbientBlockCompositionData`, but the generated query
+evaluators are fixed: they read a routed packed block-code word, charge
+route/class metadata reads through the auxiliary store, invoke the local
+computed block's `toDependentAuxiliaryData`, and combine the local result with
+the supplied route metadata.  Its public profile
+`RankSelect.fixedWeightAmbientComputedRRRBlockCompositionProfile` records the
+ambient composition profile, code-store alignment, singleton charged code
+reads for each routed block, local dependent-auxiliary profiles for those
+blocks, and the uniform discipline bounding metadata reads plus local decoder
+cost under the ambient `queryCost`.  This consumes the packed-code-only local
+kernel inside the global block-composition layer; the remaining FID work is to
+build the route/class metadata tables and prove the chosen local decoder bound
+is constant in the intended block-size regime.
 `RankSelect.FixedWeightAmbientBlockCompositionData` is now the ambient/global
 predecessor surface: it counts one packed fixed-weight code word per block via
 `RankSelect.fixedWeightBlockCodePayload`, counts the remaining directory bits
@@ -1755,6 +1770,8 @@ The names below are grouped by source module. Repeated base names in
   `RankSelect.fixedWeightComputedRRRBlockKernelProfile`,
   `RankSelect.fixedWeightComputedRRRBlockToDependentAuxiliaryData`,
   `RankSelect.fixedWeightComputedRRRBlockDependentAuxiliaryDataProfile`,
+  `RankSelect.fixedWeightAmbientComputedRRRBlockToCompositionData`,
+  `RankSelect.fixedWeightAmbientComputedRRRBlockCompositionProfile`,
   `RankSelect.fixedWeightTableRAMBlockDataProfile`,
   `RankSelect.fixedWeightTableRAMBlockToDependentAuxiliaryData`,
   `RankSelect.fixedWeightTableRAMBlockDependentAuxiliaryDataProfile`,

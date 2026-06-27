@@ -214,6 +214,8 @@ checked compatibility surfaces live in `scripts/archive_axiom_check.lean`.
 #print axioms RMQ.RankSelectSpec.FixedWeightComputedRRRBlockData.computed_rrr_block_kernel_profile
 #print axioms RMQ.RankSelect.fixedWeightComputedRRRBlockKernelProfile
 #print axioms RMQ.RankSelect.fixedWeightComputedRRRBlockDependentAuxiliaryDataProfile
+#print axioms RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRBlockData.computed_rrr_block_composition_profile
+#print axioms RMQ.RankSelect.fixedWeightAmbientComputedRRRBlockCompositionProfile
 #print axioms RMQ.RankSelectSpec.FixedWeightTableRAMBlockData.decodedTableOverhead_eq
 #print axioms RMQ.RankSelectSpec.FixedWeightTableRAMBlockData.directory_profile
 #print axioms RMQ.RankSelect.fixedWeightTableRAMBlockDataProfile
