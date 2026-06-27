@@ -131,6 +131,15 @@ packages the same local kernel through the generic dependent-read scaffold.
 that scaffold profile with the stronger local dependent-read facts and a bridge
 showing the scaffold-backed directory agrees with the direct local block
 directory on payload, costs, and erased answers.
+The ambient/global fixed-weight block predecessor is also formalized:
+`RMQ.RankSelect.fixedWeightAmbientBlockCompositionFamilyWordBoundedProfile`
+proves an `o(n)` counted auxiliary envelope for block-composed fixed-weight
+codes, with code and auxiliary payload words bounded by the ambient
+`Nat.log2 bits.length + 1` word size. The bridge
+`RMQ.RankSelect.fixedWeightAmbientBlockCompositionCompressedProfileOfPrimaryBudget`
+isolates the remaining compressed/FID primary-budget theorem: the sum of
+per-block fixed-weight code budgets must be bounded by the global
+fixed-weight payload budget plus an `o(n)` slack.
 
 ## Balanced-Parentheses Navigation
 

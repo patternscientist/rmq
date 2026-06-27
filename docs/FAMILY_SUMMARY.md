@@ -333,11 +333,28 @@ block directory.  `RankSelect.fixedWeightTableRAMBlockDependentAuxiliaryFullProf
 is the combined citation point for the generic scaffold profile, the stronger
 local dependent-read facts, and the bridge.  This is still a local/dense block
 theorem, not the finished FID family: the decoded table is dense and the
-current word-size bound is local to the block length, so the remaining
-standalone rank/select frontier is composing this kind of table/RAM kernel
-behind ambient charged global routing with `o(n)` auxiliary payload, or a
-tighter presentation of the Clark internals, not merely consuming the public
-spec surface.  The
+current word-size bound is local to the block length.
+`RankSelect.FixedWeightAmbientBlockCompositionData` is now the ambient/global
+predecessor surface: it counts one packed fixed-weight code word per block via
+`RankSelect.fixedWeightBlockCodePayload`, counts the remaining directory bits
+under `RankSelect.fixedWeightAmbientBlockAuxiliaryOverhead`, proves that
+auxiliary envelope is `o(n)`, and exposes explicit bounded payload reads
+through `RankSelect.fixedWeightAmbientBlockCompositionWordBoundedDataProfile`.
+At the family level,
+`RankSelect.fixedWeightAmbientBlockCompositionFamilyWordBoundedProfile` proves
+payload `fixedWeightBlockPayloadBudget (blocks bits) + o(n)` with code and
+auxiliary words bounded by `Nat.log2 bits.length + 1`.  The alignment facts
+`RankSelect.fixedWeightBlockCodeBoundedStoreWordsToList`,
+`RankSelect.fixedWeightAmbientBlockCodeStoreGetOfAligned`, and
+`RankSelect.fixedWeightBlockCodeBoundedStoreGetOfBlock` give the future global
+router a formal path from block index to charged packed-code word.
+`RankSelect.fixedWeightAmbientBlockCompositionCompressedProfileOfPrimaryBudget`
+isolates the remaining primary-budget theorem needed to reach the public
+compressed/FID shape: prove the sum of block fixed-weight code budgets is at
+most the global `fixedWeightPayloadBudget bits` plus `o(n)`, then the ambient
+auxiliary envelope composes with it.  The remaining standalone rank/select
+frontier is therefore concrete global routing plus this primary-budget bridge,
+not merely consuming the public spec surface.  The
 strengthened public theorem
 `RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery` additionally exposes
 the machine-word discipline from the concrete components: Jacobson rank payload
@@ -1726,6 +1743,16 @@ The names below are grouped by source module. Repeated base names in
   `RankSelect.fixedWeightTableRAMBlockDependentAuxiliaryBridgeProfile`,
   `RankSelect.fixedWeightTableRAMBlockDependentAuxiliaryFullProfile`,
   `RankSelect.fixedWeightTableRAMBlockDependentReadProfile`,
+  `RankSelect.fixedWeightBlockCodePayloadLength`,
+  `RankSelect.fixedWeightBlockCodeBoundedStoreWordsToList`,
+  `RankSelect.fixedWeightAmbientBlockCodeStoreGetOfAligned`,
+  `RankSelect.fixedWeightBlockCodeBoundedStoreGetOfBlock`,
+  `RankSelect.fixedWeightAmbientBlockAuxiliaryOverheadLittleO`,
+  `RankSelect.fixedWeightAmbientBlockCompositionDataProfile`,
+  `RankSelect.fixedWeightAmbientBlockCompositionWordBoundedDataProfile`,
+  `RankSelect.fixedWeightAmbientBlockCompositionFamilyProfile`,
+  `RankSelect.fixedWeightAmbientBlockCompositionFamilyWordBoundedProfile`,
+  `RankSelect.fixedWeightAmbientBlockCompositionCompressedProfileOfPrimaryBudget`,
   `RankSelect.compressedFixedWeightConstantQueryProfile`,
   `RankSelect.jacobsonClarkNPlusOConstantQuery`, and
   `RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery`.

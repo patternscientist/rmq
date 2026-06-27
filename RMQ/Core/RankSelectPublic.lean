@@ -141,6 +141,14 @@ abbrev FixedWeightCompressedAuxiliaryData :=
 abbrev FixedWeightDependentAuxiliaryData :=
   RMQ.RankSelectSpec.FixedWeightDependentAuxiliaryData
 
+/-- Ambient/global block-composed fixed-weight data. -/
+abbrev FixedWeightAmbientBlockCompositionData :=
+  RMQ.RankSelectSpec.FixedWeightAmbientBlockCompositionData
+
+/-- Family of ambient/global block-composed fixed-weight data. -/
+abbrev FixedWeightAmbientBlockCompositionFamily :=
+  RMQ.RankSelectSpec.FixedWeightAmbientBlockCompositionFamily
+
 /-- Family of constant-bounded compressed/FID auxiliary data. -/
 abbrev FixedWeightCompressedAuxiliaryFamily :=
   RMQ.RankSelectSpec.FixedWeightCompressedAuxiliaryFamily
@@ -342,6 +350,80 @@ abbrev fixedWeightPackedReadbackDataOfChunksProfile
   RMQ.RankSelectSpec.FixedWeightPackedReadbackData.ofChunks_profile
     bits hword
 
+/-- Packed fixed-weight words for each block in a block decomposition. -/
+abbrev fixedWeightBlockCodeWords :=
+  RMQ.RankSelectSpec.fixedWeightBlockCodeWords
+
+/-- Counted primary payload for block-coded fixed-weight blocks. -/
+abbrev fixedWeightBlockCodePayload :=
+  RMQ.RankSelectSpec.fixedWeightBlockCodePayload
+
+/-- Sum of per-block fixed-weight code budgets. -/
+abbrev fixedWeightBlockPayloadBudget :=
+  RMQ.RankSelectSpec.fixedWeightBlockPayloadBudget
+
+/-- Length of the block-coded primary fixed-weight payload. -/
+abbrev fixedWeightBlockCodePayloadLength :=
+  RMQ.RankSelectSpec.fixedWeightBlockCodePayload_length
+
+/-- Bounded word store for per-block fixed-weight code words. -/
+abbrev fixedWeightBlockCodeBoundedStore :=
+  RMQ.RankSelectSpec.fixedWeightBlockCodeBoundedStore
+
+/-- The canonical block-code store is word-aligned with the block-code list. -/
+theorem fixedWeightBlockCodeBoundedStoreWordsToList
+    (blocks : List (List Bool)) {wordSize : Nat}
+    (hcode :
+      forall {block : List Bool}, List.Mem block blocks ->
+        fixedWeightPayloadBudget block <= wordSize) :
+    (fixedWeightBlockCodeBoundedStore blocks hcode).store.words.toList =
+      fixedWeightBlockCodeWords blocks := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightBlockCodeBoundedStore_words_toList
+      blocks hcode
+
+/-- Any aligned block-code store reads the packed code for the addressed block. -/
+theorem fixedWeightAmbientBlockCodeStoreGetOfAligned
+    {blocks : List (List Bool)} {wordSize : Nat}
+    {store :
+      SuccinctSpace.BoundedPayloadWordStore
+        (fixedWeightBlockCodePayload blocks) wordSize}
+    (halign : store.store.words.toList = fixedWeightBlockCodeWords blocks)
+    {blockIndex : Nat} {block : List Bool}
+    (hblock : blocks[blockIndex]? = some block) :
+    store.store.words[blockIndex]? =
+      some (fixedWeightPackedPayload block) := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightAmbientBlockCodeStore_get?_of_aligned
+      halign hblock
+
+/-- The canonical block-code store reads the packed code for the addressed block. -/
+theorem fixedWeightBlockCodeBoundedStoreGetOfBlock
+    (blocks : List (List Bool)) {wordSize : Nat}
+    (hcode :
+      forall {block : List Bool}, List.Mem block blocks ->
+        fixedWeightPayloadBudget block <= wordSize)
+    {blockIndex : Nat} {block : List Bool}
+    (hblock : blocks[blockIndex]? = some block) :
+    (fixedWeightBlockCodeBoundedStore blocks hcode).store.words[blockIndex]? =
+      some (fixedWeightPackedPayload block) := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightBlockCodeBoundedStore_get?_of_block
+      blocks hcode hblock
+
+/-- Ambient `o(n)` auxiliary envelope for block-composed fixed-weight data. -/
+abbrev fixedWeightAmbientBlockAuxiliaryOverhead :=
+  RMQ.RankSelectSpec.fixedWeightAmbientBlockAuxiliaryOverhead
+
+/-- The ambient block-composition auxiliary envelope is `o(n)`. -/
+theorem fixedWeightAmbientBlockAuxiliaryOverheadLittleO
+    (slots : Nat) :
+    SuccinctSpace.LittleOLinear
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots) := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightAmbientBlockAuxiliaryOverhead_littleO
+      slots
+
 /-- Profile for constant-bounded compressed/FID auxiliary data. -/
 abbrev fixedWeightCompressedAuxiliaryDataProfile
     {bits : List Bool} {overhead wordSize queryCost : Nat}
@@ -367,6 +449,167 @@ theorem fixedWeightDependentAuxiliaryDataProfile
   exact
     RMQ.RankSelectSpec.FixedWeightDependentAuxiliaryData.directory_profile
       data
+
+/-- Directory profile for ambient/global block-composed fixed-weight data. -/
+abbrev FixedWeightAmbientBlockCompositionDirectoryProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightAmbientBlockCompositionData
+        bits blocks overhead wordSize queryCost) : Prop :=
+  RMQ.RankSelectSpec.FixedWeightAmbientBlockCompositionData.DirectoryProfile
+    data
+
+/-- Profile for ambient/global block-composed fixed-weight data. -/
+theorem fixedWeightAmbientBlockCompositionDataProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightAmbientBlockCompositionData
+        bits blocks overhead wordSize queryCost) :
+    FixedWeightAmbientBlockCompositionDirectoryProfile data := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientBlockCompositionData.directory_profile
+      data
+
+/--
+Ambient block-composition profile with explicit ambient machine-word bounds
+for code and auxiliary payload reads.
+-/
+theorem fixedWeightAmbientBlockCompositionWordBoundedDataProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightAmbientBlockCompositionData
+        bits blocks overhead wordSize queryCost) :
+    FixedWeightAmbientBlockCompositionDirectoryProfile data /\
+      (forall {word : List Bool},
+        List.Mem word data.codeStore.store.words.toList ->
+          word.length <= Nat.log2 bits.length + 1) /\
+      (forall {word : List Bool},
+        List.Mem word data.auxStore.store.words.toList ->
+          word.length <= Nat.log2 bits.length + 1) := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientBlockCompositionData.word_bounded_directory_profile
+      data
+
+/--
+Family-level profile for ambient/global block-composed fixed-weight data with
+`o(n)` counted auxiliary payload.
+-/
+theorem fixedWeightAmbientBlockCompositionFamilyProfile
+    {slots queryCost : Nat}
+    (family :
+      FixedWeightAmbientBlockCompositionFamily slots queryCost) :
+    SuccinctSpace.LittleOLinear
+        (fixedWeightAmbientBlockAuxiliaryOverhead slots) /\
+      forall bits : List Bool,
+        let data :=
+          RMQ.RankSelectSpec.FixedWeightAmbientBlockCompositionFamily.directory
+            family bits
+        data.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          data.auxPayload.length =
+            fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (family.wordSize bits.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (data.accessCosted i).cost <= queryCost /\
+              (data.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (data.rankCosted target pos).cost <= queryCost /\
+              (data.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (data.selectCosted target occurrence).cost <= queryCost /\
+              (data.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientBlockCompositionFamily.ambient_block_composition_profile
+      family
+
+/--
+Family-level ambient block-composition profile with explicit ambient
+machine-word bounds for code and auxiliary payload reads.
+-/
+theorem fixedWeightAmbientBlockCompositionFamilyWordBoundedProfile
+    {slots queryCost : Nat}
+    (family :
+      FixedWeightAmbientBlockCompositionFamily slots queryCost) :
+    SuccinctSpace.LittleOLinear
+        (fixedWeightAmbientBlockAuxiliaryOverhead slots) /\
+      forall bits : List Bool,
+        let data :=
+          RMQ.RankSelectSpec.FixedWeightAmbientBlockCompositionFamily.directory
+            family bits
+        data.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          data.auxPayload.length =
+            fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word data.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word data.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (data.accessCosted i).cost <= queryCost /\
+              (data.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (data.rankCosted target pos).cost <= queryCost /\
+              (data.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (data.selectCosted target occurrence).cost <= queryCost /\
+              (data.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientBlockCompositionFamily.word_bounded_profile
+      family
+
+/--
+Conditional bridge from ambient block composition to the public compressed/FID
+payload shape, isolating the remaining primary block-code budget theorem.
+-/
+theorem fixedWeightAmbientBlockCompositionCompressedProfileOfPrimaryBudget
+    {slots queryCost : Nat}
+    (family :
+      FixedWeightAmbientBlockCompositionFamily slots queryCost)
+    (primaryOverhead : Nat -> Nat)
+    (hprimaryO : SuccinctSpace.LittleOLinear primaryOverhead)
+    (hprimary :
+      forall bits : List Bool,
+        fixedWeightBlockPayloadBudget (family.blocks bits) <=
+          fixedWeightPayloadBudget bits + primaryOverhead bits.length) :
+    SuccinctSpace.LittleOLinear
+        (fun n =>
+          primaryOverhead n +
+            fixedWeightAmbientBlockAuxiliaryOverhead slots n) /\
+      forall bits : List Bool,
+        let data :=
+          RMQ.RankSelectSpec.FixedWeightAmbientBlockCompositionFamily.directory
+            family bits
+        data.payload.length <=
+            fixedWeightPayloadBudget bits +
+              (primaryOverhead bits.length +
+                fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length) /\
+          (forall i,
+            (data.accessCosted i).cost <= queryCost /\
+              (data.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (data.rankCosted target pos).cost <= queryCost /\
+              (data.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (data.selectCosted target occurrence).cost <= queryCost /\
+              (data.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientBlockCompositionFamily.compressed_profile_of_primary_budget
+      family primaryOverhead hprimaryO hprimary
 
 /-- Convert a compressed/FID auxiliary family into the public family shape. -/
 abbrev fixedWeightCompressedAuxiliaryToCompressedFamily

@@ -1,6 +1,6 @@
 # Rank/Select Spoke
 
-Snapshot: 2026-06-25. This note records the first extracted succinct
+Snapshot: 2026-06-27. This note records the first extracted succinct
 data-structure spoke in the RMQ repository: plain bitvector access/rank/select.
 
 ## Import
@@ -127,6 +127,23 @@ RMQ.RankSelect.fixedWeightTableRAMBlockDependentAuxiliaryBridgeProfile
 RMQ.RankSelect.fixedWeightTableRAMBlockDependentAuxiliaryFullProfile
 RMQ.RankSelect.FixedWeightTableRAMBlockDependentReadProfile
 RMQ.RankSelect.fixedWeightTableRAMBlockDependentReadProfile
+RMQ.RankSelect.fixedWeightBlockCodeWords
+RMQ.RankSelect.fixedWeightBlockCodePayload
+RMQ.RankSelect.fixedWeightBlockPayloadBudget
+RMQ.RankSelect.fixedWeightBlockCodePayloadLength
+RMQ.RankSelect.fixedWeightBlockCodeBoundedStore
+RMQ.RankSelect.fixedWeightBlockCodeBoundedStoreWordsToList
+RMQ.RankSelect.fixedWeightAmbientBlockCodeStoreGetOfAligned
+RMQ.RankSelect.fixedWeightBlockCodeBoundedStoreGetOfBlock
+RMQ.RankSelect.fixedWeightAmbientBlockAuxiliaryOverhead
+RMQ.RankSelect.fixedWeightAmbientBlockAuxiliaryOverheadLittleO
+RMQ.RankSelect.FixedWeightAmbientBlockCompositionData
+RMQ.RankSelect.fixedWeightAmbientBlockCompositionDataProfile
+RMQ.RankSelect.fixedWeightAmbientBlockCompositionWordBoundedDataProfile
+RMQ.RankSelect.FixedWeightAmbientBlockCompositionFamily
+RMQ.RankSelect.fixedWeightAmbientBlockCompositionFamilyProfile
+RMQ.RankSelect.fixedWeightAmbientBlockCompositionFamilyWordBoundedProfile
+RMQ.RankSelect.fixedWeightAmbientBlockCompositionCompressedProfileOfPrimaryBudget
 RMQ.RankSelect.CompressedFamily
 RMQ.RankSelect.compressedFixedWeightConstantQueryProfile
 ```
@@ -240,9 +257,32 @@ payload, query costs, and erased answers. The combined public citation point is
 `fixedWeightTableRAMBlockDependentAuxiliaryFullProfile`. This removes the
 arbitrary-evaluator escape hatch at the block level. It is not the finished
 compressed/FID family because the universal decoded-word table is dense and
-the current word-size discipline is local to the block length; the remaining
-work is an ambient/global block directory whose counted auxiliary payload is
-`o(n)` and whose machine-word bound is stated against the ambient universe.
+the word-size discipline is still local to the block length.
+
+The ambient/global block-composition predecessor is now present. It stores one
+canonical fixed-weight code word per block through
+`fixedWeightBlockCodePayload`, keeps the remaining directory bits in the
+separate `fixedWeightAmbientBlockAuxiliaryOverhead` envelope, and proves that
+this auxiliary envelope is `o(n)` by reusing the existing
+`logLogSampledDirectoryOverhead` arithmetic. `FixedWeightAmbientBlockCompositionData`
+packages the charged code-store and auxiliary-store reads, while
+`fixedWeightAmbientBlockCompositionWordBoundedDataProfile` and
+`fixedWeightAmbientBlockCompositionFamilyWordBoundedProfile` expose the ambient
+machine-word bound against `Nat.log2 bits.length + 1` for both stores. The
+alignment facts
+`fixedWeightBlockCodeBoundedStoreWordsToList`,
+`fixedWeightAmbientBlockCodeStoreGetOfAligned`, and
+`fixedWeightBlockCodeBoundedStoreGetOfBlock` are the narrow bridge needed by a
+later global router to read block `b`'s packed code word.
+
+The ambient family theorem currently proves payload
+`fixedWeightBlockPayloadBudget (blocks bits) + o(n)`, not yet the full
+`fixedWeightPayloadBudget bits + o(n)` compressed/FID headline. The conditional
+bridge
+`fixedWeightAmbientBlockCompositionCompressedProfileOfPrimaryBudget` isolates
+the remaining primary-budget theorem: for every `bits`,
+`fixedWeightBlockPayloadBudget (blocks bits) <= fixedWeightPayloadBudget bits + primaryOverhead bits.length`
+with `primaryOverhead = o(n)`.
 
 ## Module Boundary
 
@@ -371,9 +411,10 @@ The plain-bitvector `n + o(n), O(1)` milestone is landed. The next research
 targets are:
 
 1. a concrete compressed/FID instantiation that composes
-   `FixedWeightTableRAMBlockData`-style local kernels across blocks with
-   charged global routing and `o(n)` counted auxiliary payload, then feeds the
-   resulting family through `fixedWeightCompressedAuxiliaryConstantQueryProfile`;
+   `FixedWeightTableRAMBlockData`-style local kernels across the ambient
+   `FixedWeightAmbientBlockCompositionFamily` scaffold, replaces the abstract
+   evaluators with charged table/RAM code, and proves the remaining
+   block-primary budget bridge into the global fixed-weight payload;
 2. deepening the landed `RMQBPNavigation` spoke into a fuller
    balanced-parentheses tree-navigation API over the same public rank/select
    surface;

@@ -186,9 +186,10 @@ about Lean's executable `List` runtime.
   standalone rank/select extraction surfaces. `RankSelectSpec` packages exact
   bitvector access/rank/select over stored bits with an `n + overhead n`
   payload profile, `RankSelectCompressed` adds the fixed-weight
-  compressed/FID theorem shape with a Mathlib-free binomial-count universe, and
-  `RankSelectPublic` exposes the public Jacobson/Clark bitvector family theorem
-  as
+  compressed/FID theorem shape with a Mathlib-free binomial-count universe plus
+  an ambient fixed-weight block-composition scaffold with `o(n)` counted
+  auxiliary payload, and `RankSelectPublic` exposes the public Jacobson/Clark
+  bitvector family theorem as
   `RankSelect.jacobsonClarkNPlusOConstantQuery` and its strengthened
   word-bounded profile
   `RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery`.
@@ -365,9 +366,9 @@ RMQ blocker:
 - extract the reusable cost/refinement/lower-bound hub toward a CSLib-style
   library surface;
 - refine the landed standalone Jacobson/Clark rank/select theorem toward
-  a constant-query compressed/FID layer behind the packed fixed-weight readback
-  baseline, and deepen the landed BP-navigation close/rank bridge into a fuller
-  tree-navigation API;
+  concrete global routing over the ambient fixed-weight block-composition
+  scaffold and the remaining compressed/FID primary-budget bridge, and deepen
+  the landed BP-navigation close/rank bridge into a fuller tree-navigation API;
   and
 - deepen the new union-find spoke from specification/reference backend to
   forest refinement, union-by-rank, and path compression.
