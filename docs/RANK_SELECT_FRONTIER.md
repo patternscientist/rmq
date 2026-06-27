@@ -137,6 +137,19 @@ RMQ.RankSelect.FixedWeightAmbientComputedRRRBlockData
 RMQ.RankSelect.fixedWeightAmbientComputedRRRBlockToCompositionData
 RMQ.RankSelect.FixedWeightAmbientComputedRRRBlockCompositionProfile
 RMQ.RankSelect.fixedWeightAmbientComputedRRRBlockCompositionProfile
+RMQ.RankSelect.FixedWeightAmbientComputedRRRRouteTableData
+RMQ.RankSelect.FixedWeightAmbientComputedRRRRouteTableFamily
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableAccessMetadataReadsCosted
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableRankMetadataReadsCosted
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableSelectMetadataReadsCosted
+RMQ.RankSelect.FixedWeightAmbientComputedRRRRouteTableReadProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableReadProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableToComputedRRRBlockData
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableToCompositionData
+RMQ.RankSelect.FixedWeightAmbientComputedRRRRouteTableProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableProfile
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableFamilyDirectory
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableFamilyProfile
 RMQ.RankSelect.FixedWeightTableRAMBlockData
 RMQ.RankSelect.fixedWeightTableRAMBlockDataProfile
 RMQ.RankSelect.fixedWeightTableRAMBlockToDependentAuxiliaryData
@@ -304,8 +317,23 @@ the discipline
 `fixedWeightComputedRRRQueryCost block <= localQueryCost`, and
 `routeCost + localQueryCost <= queryCost`. This is the first ambient/global
 surface where the local decoded-table payload is gone and the local kernel is
-actually consumed. It still leaves the construction of the route/class metadata
-tables and the final constant local decode bound as explicit future work.
+actually consumed.
+
+The route/class metadata has a counted table envelope in
+`FixedWeightAmbientComputedRRRRouteTableData` and the family profile
+`fixedWeightAmbientComputedRRRRouteTableFamilyProfile`. This layer owns a
+concrete `routePayload` plus bounded `routeStore`, exposes the charged
+metadata-read kernels
+`fixedWeightAmbientComputedRRRRouteTableAccessMetadataReadsCosted`,
+`fixedWeightAmbientComputedRRRRouteTableRankMetadataReadsCosted`, and
+`fixedWeightAmbientComputedRRRRouteTableSelectMetadataReadsCosted`, proves the
+erased read values are exactly the bounded-store reads at each route schedule,
+and packages the auxiliary payload under the existing
+`fixedWeightAmbientBlockAuxiliaryOverhead` little-o envelope. The route records
+still carry the semantic block/start/rank/select facts; the next non-oracular
+step is to decode those route fields, and the local block class/length, from
+the charged metadata values rather than passing them as proof-level data. The
+final constant local decode bound also remains future work.
 
 The ambient/global block-composition predecessor is now present. It stores one
 canonical fixed-weight code word per block through

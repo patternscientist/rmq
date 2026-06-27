@@ -224,6 +224,14 @@ Ambient/global block composition data backed by the computed local RRR kernel.
 abbrev FixedWeightAmbientComputedRRRBlockData :=
   RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRBlockData
 
+/-- Payload-backed route/class metadata table layer for ambient computed RRR. -/
+abbrev FixedWeightAmbientComputedRRRRouteTableData :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteTableData
+
+/-- Family of payload-backed route/class metadata tables. -/
+abbrev FixedWeightAmbientComputedRRRRouteTableFamily :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteTableFamily
+
 /-- Counted fixed-weight bitvector universe used by the compressed/FID budget. -/
 abbrev fixedWeightBitstrings :=
   RMQ.RankSelectSpec.fixedWeightBitstrings
@@ -788,6 +796,165 @@ theorem fixedWeightAmbientComputedRRRBlockCompositionProfile
   exact
     RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRBlockData.computed_rrr_block_composition_profile
       data
+
+/-- Convert route/class table data to the underlying ambient computed-RRR layer. -/
+abbrev fixedWeightAmbientComputedRRRRouteTableToComputedRRRBlockData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteTableData.toComputedRRRBlockData
+    data
+
+/-- Convert route/class table data to the generic ambient block-composition layer. -/
+abbrev fixedWeightAmbientComputedRRRRouteTableToCompositionData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteTableData.toAmbientBlockCompositionData
+    data
+
+/-- Charged auxiliary metadata reads for an access route. -/
+abbrev fixedWeightAmbientComputedRRRRouteTableAccessMetadataReadsCosted
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (i : Nat) :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteTableData.accessMetadataReadsCosted
+    data i
+
+/-- Charged auxiliary metadata reads for a rank route. -/
+abbrev fixedWeightAmbientComputedRRRRouteTableRankMetadataReadsCosted
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (pos : Nat) :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteTableData.rankMetadataReadsCosted
+    data target pos
+
+/-- Charged auxiliary metadata reads for a select route. -/
+abbrev fixedWeightAmbientComputedRRRRouteTableSelectMetadataReadsCosted
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (occurrence : Nat) :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteTableData.selectMetadataReadsCosted
+    data target occurrence
+
+/-- Public profile for the charged route/class metadata reads. -/
+abbrev FixedWeightAmbientComputedRRRRouteTableReadProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    Prop :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteTableData.RouteTableReadProfile
+    data
+
+/--
+The route/class metadata reads are concrete bounded-store reads: their modeled
+cost is bounded by `routeCost`, and their erased values are the store words at
+the route's metadata schedule.
+-/
+theorem fixedWeightAmbientComputedRRRRouteTableReadProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientComputedRRRRouteTableReadProfile data := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteTableData.route_table_read_profile
+      data
+
+/-- Public profile for payload-backed route/class table data. -/
+abbrev FixedWeightAmbientComputedRRRRouteTableProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    Prop :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteTableData.RouteTableProfile
+    data
+
+/--
+Payload-backed route/class tables instantiate the ambient computed-RRR
+composition profile, with bounded auxiliary-store read values and schedules.
+-/
+theorem fixedWeightAmbientComputedRRRRouteTableProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientComputedRRRRouteTableProfile data := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteTableData.route_table_profile
+      data
+
+/-- The ambient directory produced by a route/class table family. -/
+abbrev fixedWeightAmbientComputedRRRRouteTableFamilyDirectory
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteTableFamily
+        slots routeCost localQueryCost queryCost)
+    (bits : List Bool) :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteTableFamily.directory
+    family bits
+
+/--
+Family-level route/class table profile: the auxiliary route payload is
+`o(n)`, the composed payload is code bits plus that auxiliary envelope, and all
+ambient access/rank/select queries have cost bounded by `queryCost`.
+-/
+theorem fixedWeightAmbientComputedRRRRouteTableFamilyProfile
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteTableFamily
+        slots routeCost localQueryCost queryCost) :
+    RMQ.SuccinctSpace.LittleOLinear
+        (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteTableFamily.overhead
+          slots) /\
+      forall bits : List Bool,
+        let data :=
+          RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteTableFamily.componentData
+            family bits
+        FixedWeightAmbientComputedRRRRouteTableProfile data /\
+          data.routePayload.length =
+            RMQ.RankSelectSpec.fixedWeightAmbientBlockAuxiliaryOverhead
+              slots bits.length /\
+          ((fixedWeightAmbientComputedRRRRouteTableFamilyDirectory
+                family bits).payload.length =
+            RMQ.RankSelectSpec.fixedWeightBlockPayloadBudget
+              (family.blocks bits) +
+                RMQ.RankSelectSpec.fixedWeightAmbientBlockAuxiliaryOverhead
+                  slots bits.length) /\
+          RMQ.SuccinctSpace.flattenPayloadWords
+            (family.blocks bits) = bits /\
+          (forall i,
+            ((fixedWeightAmbientComputedRRRRouteTableFamilyDirectory
+                family bits).accessCosted i).cost <= queryCost) /\
+          (forall target pos,
+            ((fixedWeightAmbientComputedRRRRouteTableFamilyDirectory
+                family bits).rankCosted target pos).cost <= queryCost) /\
+          (forall target occurrence,
+            ((fixedWeightAmbientComputedRRRRouteTableFamilyDirectory
+                family bits).selectCosted target occurrence).cost <=
+              queryCost) := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteTableFamily.route_table_family_profile
+      family
 
 /-- Adapt a local table/RAM block kernel to the dependent auxiliary scaffold. -/
 abbrev fixedWeightTableRAMBlockToDependentAuxiliaryData

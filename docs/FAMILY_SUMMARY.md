@@ -359,9 +359,23 @@ ambient composition profile, code-store alignment, singleton charged code
 reads for each routed block, local dependent-auxiliary profiles for those
 blocks, and the uniform discipline bounding metadata reads plus local decoder
 cost under the ambient `queryCost`.  This consumes the packed-code-only local
-kernel inside the global block-composition layer; the remaining FID work is to
-build the route/class metadata tables and prove the chosen local decoder bound
-is constant in the intended block-size regime.
+kernel inside the global block-composition layer.
+`RankSelect.FixedWeightAmbientComputedRRRRouteTableData` is the next
+route/class table envelope.  It owns a counted `routePayload` and bounded
+`routeStore`, exposes the charged access/rank/select metadata-read kernels,
+and proves through
+`RankSelect.fixedWeightAmbientComputedRRRRouteTableReadProfile` that these
+reads erase to the route store values with cost bounded by `routeCost`.
+`RankSelect.fixedWeightAmbientComputedRRRRouteTableFamilyProfile` lifts this to
+a family whose route/class auxiliary payload is the existing
+`RankSelect.fixedWeightAmbientBlockAuxiliaryOverhead`, hence `o(n)`, while the
+composed ambient directory keeps payload
+`fixedWeightBlockPayloadBudget (blocks bits) + o(n)` and query cost bounded by
+`queryCost`.  This is still a route-table accounting theorem, not the finished
+non-oracular FID construction: the route fields and local block class/length
+are still carried by semantic route records rather than decoded from the
+charged metadata values, and the intended block-size regime still has to turn
+the local computed decoder into a constant-cost primitive.
 `RankSelect.FixedWeightAmbientBlockCompositionData` is now the ambient/global
 predecessor surface: it counts one packed fixed-weight code word per block via
 `RankSelect.fixedWeightBlockCodePayload`, counts the remaining directory bits
@@ -1772,6 +1786,9 @@ The names below are grouped by source module. Repeated base names in
   `RankSelect.fixedWeightComputedRRRBlockDependentAuxiliaryDataProfile`,
   `RankSelect.fixedWeightAmbientComputedRRRBlockToCompositionData`,
   `RankSelect.fixedWeightAmbientComputedRRRBlockCompositionProfile`,
+  `RankSelect.fixedWeightAmbientComputedRRRRouteTableReadProfile`,
+  `RankSelect.fixedWeightAmbientComputedRRRRouteTableProfile`,
+  `RankSelect.fixedWeightAmbientComputedRRRRouteTableFamilyProfile`,
   `RankSelect.fixedWeightTableRAMBlockDataProfile`,
   `RankSelect.fixedWeightTableRAMBlockToDependentAuxiliaryData`,
   `RankSelect.fixedWeightTableRAMBlockDependentAuxiliaryDataProfile`,

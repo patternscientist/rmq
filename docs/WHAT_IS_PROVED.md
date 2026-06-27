@@ -144,6 +144,15 @@ that local adapter in the ambient block-composition layer: routed queries read
 the charged block-code word, charge route/class metadata reads, invoke the
 computed local RRR dependent-auxiliary evaluator, and satisfy the ambient
 directory profile under an explicit route-plus-local query-cost discipline.
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableReadProfile`,
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableProfile`, and
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableFamilyProfile` add the
+counted route/class metadata table envelope: a concrete auxiliary payload and
+bounded word store, charged metadata reads whose erased values are the store
+reads at each route schedule, an `o(n)` family overhead, and ambient query-cost
+bounds.  The route fields and local block class are still semantic route
+record data; decoding them from the charged metadata words is the next
+non-oracular FID step.
 The ambient/global fixed-weight block predecessor is also formalized:
 `RMQ.RankSelect.fixedWeightAmbientBlockCompositionFamilyWordBoundedProfile`
 proves an `o(n)` counted auxiliary envelope for block-composed fixed-weight

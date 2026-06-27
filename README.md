@@ -188,7 +188,8 @@ about Lean's executable `List` runtime.
   payload profile, `RankSelectCompressed` adds the fixed-weight
   compressed/FID theorem shape with a Mathlib-free binomial-count universe plus
   a packed-code-only local RRR block kernel consumed by an ambient fixed-weight
-  block-composition scaffold with `o(n)` counted auxiliary payload, and
+  block-composition scaffold and route/class metadata table envelope with
+  `o(n)` counted auxiliary payload, and
   `RankSelectPublic` exposes the public Jacobson/Clark
   bitvector family theorem as
   `RankSelect.jacobsonClarkNPlusOConstantQuery` and its strengthened
@@ -368,7 +369,8 @@ RMQ blocker:
   library surface;
 - refine the landed standalone Jacobson/Clark rank/select theorem toward
   concrete global routing over the ambient fixed-weight block-composition
-  scaffold and the remaining compressed/FID primary-budget bridge, and deepen
+  scaffold, decode route/class fields from charged metadata words, finish the
+  remaining compressed/FID primary-budget bridge, and deepen
   the landed BP-navigation close/rank bridge into a fuller tree-navigation API;
   and
 - deepen the new union-find spoke from specification/reference backend to

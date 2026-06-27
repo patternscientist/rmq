@@ -4073,6 +4073,340 @@ theorem computed_rrr_block_composition_profile
 
 end FixedWeightAmbientComputedRRRBlockData
 
+/--
+Payload-backed route/class metadata tables for ambient computed-RRR blocks.
+
+This layer owns the auxiliary route payload and bounded route store, then
+instantiates `FixedWeightAmbientComputedRRRBlockData`. The route records still
+carry the semantic facts needed to identify the chosen block and local query;
+the important extra discipline here is that every such route is backed by a
+counted metadata read schedule over this concrete payload store.
+-/
+structure FixedWeightAmbientComputedRRRRouteTableData
+    (bits : List Bool) (blocks : List (List Bool))
+    (overhead wordSize routeCost localQueryCost queryCost : Nat) where
+  wordSize_pos : 0 < wordSize
+  wordSize_le_ambient : wordSize <= Nat.log2 bits.length + 1
+  blockSize : Nat
+  blockSize_pos : 0 < blockSize
+  blocks_flatten : SuccinctSpace.flattenPayloadWords blocks = bits
+  block_length_le :
+    forall {block : List Bool}, List.Mem block blocks ->
+      block.length <= blockSize
+  blockSize_le_wordSize : blockSize <= wordSize
+  block_code_width_le :
+    forall {block : List Bool}, List.Mem block blocks ->
+      fixedWeightPayloadBudget block <= wordSize
+  codeStore :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightBlockCodePayload blocks) wordSize
+  codeStore_aligned :
+    codeStore.store.words.toList = fixedWeightBlockCodeWords blocks
+  routePayload : List Bool
+  routeStore :
+    SuccinctSpace.BoundedPayloadWordStore routePayload wordSize
+  routePayload_length_eq : routePayload.length = overhead
+  accessRoute :
+    forall i,
+      FixedWeightAmbientComputedRRRAccessRoute bits blocks i
+  rankRoute :
+    forall target pos,
+      FixedWeightAmbientComputedRRRRankRoute bits blocks target pos
+  selectRoute :
+    forall target occurrence,
+      FixedWeightAmbientComputedRRRSelectRoute
+        bits blocks target occurrence
+  access_metadata_reads_le :
+    forall i, (accessRoute i).metadataReads.length <= routeCost
+  rank_metadata_reads_le :
+    forall target pos,
+      (rankRoute target pos).metadataReads.length <= routeCost
+  select_metadata_reads_le :
+    forall target occurrence,
+      (selectRoute target occurrence).metadataReads.length <= routeCost
+  local_query_cost_le :
+    forall {block : List Bool}, List.Mem block blocks ->
+      fixedWeightComputedRRRQueryCost block <= localQueryCost
+  route_plus_local_le : routeCost + localQueryCost <= queryCost
+
+namespace FixedWeightAmbientComputedRRRRouteTableData
+
+def toComputedRRRBlockData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientComputedRRRBlockData
+      bits blocks overhead wordSize routeCost localQueryCost queryCost where
+  wordSize_pos := data.wordSize_pos
+  wordSize_le_ambient := data.wordSize_le_ambient
+  blockSize := data.blockSize
+  blockSize_pos := data.blockSize_pos
+  blocks_flatten := data.blocks_flatten
+  block_length_le := data.block_length_le
+  blockSize_le_wordSize := data.blockSize_le_wordSize
+  block_code_width_le := data.block_code_width_le
+  codeStore := data.codeStore
+  codeStore_aligned := data.codeStore_aligned
+  auxPayload := data.routePayload
+  auxStore := data.routeStore
+  aux_length_eq := data.routePayload_length_eq
+  accessRoute := data.accessRoute
+  rankRoute := data.rankRoute
+  selectRoute := data.selectRoute
+  access_metadata_reads_le := data.access_metadata_reads_le
+  rank_metadata_reads_le := data.rank_metadata_reads_le
+  select_metadata_reads_le := data.select_metadata_reads_le
+  local_query_cost_le := data.local_query_cost_le
+  route_plus_local_le := data.route_plus_local_le
+
+def toAmbientBlockCompositionData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientBlockCompositionData
+      bits blocks overhead wordSize queryCost :=
+  data.toComputedRRRBlockData.toAmbientBlockCompositionData
+
+def accessMetadataReadsCosted
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (i : Nat) : Costed (List (Option (List Bool))) :=
+  boundedPayloadWordReadsCosted data.routeStore
+    (data.accessRoute i).metadataReads
+
+def rankMetadataReadsCosted
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (pos : Nat) : Costed (List (Option (List Bool))) :=
+  boundedPayloadWordReadsCosted data.routeStore
+    (data.rankRoute target pos).metadataReads
+
+def selectMetadataReadsCosted
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (occurrence : Nat) :
+    Costed (List (Option (List Bool))) :=
+  boundedPayloadWordReadsCosted data.routeStore
+    (data.selectRoute target occurrence).metadataReads
+
+def RouteTableReadProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    Prop :=
+  (forall i,
+    (data.accessMetadataReadsCosted i).cost <= routeCost /\
+      (data.accessMetadataReadsCosted i).erase =
+        boundedPayloadWordReadValues data.routeStore
+          (data.accessRoute i).metadataReads) /\
+    (forall target pos,
+      (data.rankMetadataReadsCosted target pos).cost <= routeCost /\
+        (data.rankMetadataReadsCosted target pos).erase =
+          boundedPayloadWordReadValues data.routeStore
+            (data.rankRoute target pos).metadataReads) /\
+    (forall target occurrence,
+      (data.selectMetadataReadsCosted target occurrence).cost <=
+          routeCost /\
+        (data.selectMetadataReadsCosted target occurrence).erase =
+          boundedPayloadWordReadValues data.routeStore
+            (data.selectRoute target occurrence).metadataReads)
+
+theorem route_table_read_profile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    data.RouteTableReadProfile := by
+  exact
+    ⟨(fun i => by
+        constructor
+        · dsimp [accessMetadataReadsCosted]
+          simpa using data.access_metadata_reads_le i
+        · simp [accessMetadataReadsCosted]),
+      (fun target pos => by
+        constructor
+        · dsimp [rankMetadataReadsCosted]
+          simpa using data.rank_metadata_reads_le target pos
+        · simp [rankMetadataReadsCosted]),
+      (fun target occurrence => by
+        constructor
+        · dsimp [selectMetadataReadsCosted]
+          simpa using data.select_metadata_reads_le target occurrence
+        · simp [selectMetadataReadsCosted])⟩
+
+def RouteTableProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    Prop :=
+  data.toComputedRRRBlockData.CompositionProfile /\
+    data.RouteTableReadProfile /\
+    data.routePayload.length = overhead /\
+    SuccinctSpace.flattenPayloadWords data.routeStore.store.words.toList =
+      data.routePayload /\
+    (forall {word : List Bool},
+      List.Mem word data.routeStore.store.words.toList ->
+        word.length <= wordSize) /\
+    (forall i,
+      let route := data.accessRoute i
+      (boundedPayloadWordReadValues
+          data.routeStore route.metadataReads).length <= routeCost) /\
+    (forall target pos,
+      let route := data.rankRoute target pos
+      (boundedPayloadWordReadValues
+          data.routeStore route.metadataReads).length <= routeCost) /\
+    (forall target occurrence,
+      let route := data.selectRoute target occurrence
+      (boundedPayloadWordReadValues
+          data.routeStore route.metadataReads).length <= routeCost) /\
+    (forall i, (data.accessRoute i).metadataReads.length <= routeCost) /\
+    (forall target pos,
+      (data.rankRoute target pos).metadataReads.length <= routeCost) /\
+    (forall target occurrence,
+      (data.selectRoute target occurrence).metadataReads.length <=
+        routeCost) /\
+    (forall {block : List Bool}, List.Mem block blocks ->
+      fixedWeightComputedRRRQueryCost block <= localQueryCost) /\
+    routeCost + localQueryCost <= queryCost
+
+theorem route_table_profile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    data.RouteTableProfile := by
+  exact
+    ⟨data.toComputedRRRBlockData.computed_rrr_block_composition_profile,
+      data.route_table_read_profile,
+      data.routePayload_length_eq,
+      data.routeStore.erases,
+      (fun hmem => data.routeStore.word_length_le_of_mem hmem),
+      (fun i => by
+        dsimp [boundedPayloadWordReadValues]
+        simpa using data.access_metadata_reads_le i),
+      (fun target pos => by
+        dsimp [boundedPayloadWordReadValues]
+        simpa using data.rank_metadata_reads_le target pos),
+      (fun target occurrence => by
+        dsimp [boundedPayloadWordReadValues]
+        simpa using data.select_metadata_reads_le target occurrence),
+      data.access_metadata_reads_le,
+      data.rank_metadata_reads_le,
+      data.select_metadata_reads_le,
+      data.local_query_cost_le,
+      data.route_plus_local_le⟩
+
+end FixedWeightAmbientComputedRRRRouteTableData
+
+/--
+Family of ambient computed-RRR route/class metadata tables.
+
+The family-level overhead is the ambient `o(n)` envelope; each pointwise
+component stores the concrete route/class metadata payload in a bounded store
+and consumes it through `FixedWeightAmbientComputedRRRBlockData`.
+-/
+structure FixedWeightAmbientComputedRRRRouteTableFamily
+    (slots routeCost localQueryCost queryCost : Nat) where
+  wordSize : Nat -> Nat
+  blocks : List Bool -> List (List Bool)
+  component :
+    forall bits : List Bool,
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits (blocks bits)
+        (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+        (wordSize bits.length) routeCost localQueryCost queryCost
+
+namespace FixedWeightAmbientComputedRRRRouteTableFamily
+
+def overhead (slots : Nat) : Nat -> Nat :=
+  fixedWeightAmbientBlockAuxiliaryOverhead slots
+
+def componentData
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteTableFamily
+        slots routeCost localQueryCost queryCost)
+    (bits : List Bool) :
+    FixedWeightAmbientComputedRRRRouteTableData
+      bits (family.blocks bits)
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+      (family.wordSize bits.length) routeCost localQueryCost queryCost :=
+  family.component bits
+
+def directory
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteTableFamily
+        slots routeCost localQueryCost queryCost)
+    (bits : List Bool) :
+    FixedWeightAmbientBlockCompositionData
+      bits (family.blocks bits)
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+      (family.wordSize bits.length) queryCost :=
+  (family.componentData bits).toAmbientBlockCompositionData
+
+theorem route_table_family_profile
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteTableFamily
+        slots routeCost localQueryCost queryCost) :
+    SuccinctSpace.LittleOLinear (overhead slots) /\
+      forall bits : List Bool,
+        let data := family.componentData bits
+        data.RouteTableProfile /\
+          data.routePayload.length =
+            fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          ((family.directory bits).payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length) /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall i,
+            ((family.directory bits).accessCosted i).cost <=
+              queryCost) /\
+          (forall target pos,
+            ((family.directory bits).rankCosted target pos).cost <=
+              queryCost) /\
+          (forall target occurrence,
+            ((family.directory bits).selectCosted target occurrence).cost <=
+              queryCost) := by
+  constructor
+  · exact fixedWeightAmbientBlockAuxiliaryOverhead_littleO slots
+  · intro bits
+    let data := family.componentData bits
+    have hprofile := data.route_table_profile
+    exact
+      ⟨hprofile,
+        data.routePayload_length_eq,
+        (family.directory bits).payload_length,
+        data.blocks_flatten,
+        (fun i => (family.directory bits).accessCosted_cost_le i),
+        (fun target pos =>
+          (family.directory bits).rankCosted_cost_le target pos),
+        (fun target occurrence =>
+          (family.directory bits).selectCosted_cost_le
+            target occurrence)⟩
+
+end FixedWeightAmbientComputedRRRRouteTableFamily
+
 /-- Decode the first charged decoded-table word as a local bit block. -/
 def decodedWordFromReadValues :
     List (Option (List Bool)) -> List Bool
