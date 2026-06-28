@@ -459,7 +459,28 @@ premises.  The fixed block-size specialization
 packages the common case where `blockSize`, `fieldWidth`, and the class/length
 local query budget are uniform across the family.  The helper
 `RankSelect.fixedWeightBlockClassLengthTableOverheadLeOfBounds` gives the
-first block-count/field-width arithmetic bridge for that overhead premise.
+first block-count/field-width arithmetic bridge for that overhead premise, and
+`RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFixedBlockSizeWordBoundedCompressedProfileOfBlockBounds`
+is the global compressed/FID budget bridge: it packages
+`RankSelect.fixedWeightBlockClassLengthTableOverheadBudget` from block-count
+and field-width bound functions, consumes
+`RankSelect.fixedWeightBlockClassLengthTableOverheadLeBudget`, and returns the
+word-bounded compressed profile for the promoted fixed-block route/class-length
+envelope.  The concrete chunk-block side is now present:
+`RankSelect.fixedWeightChunkBlocks` uses `SuccinctSpace.chunkPayloadWords`,
+`RankSelect.fixedWeightChunkBlocksLengthLe` proves the
+`bits.length / blockSize + 1` block-count bound, and
+`RankSelect.fixedWeightBlockClassLengthTableOverheadLeChunkBudget` feeds that
+bound into the class/length metadata budget bridge.  The route-total variant
+`RankSelect.fixedWeightChunkBlocksWithSentinel` appends one empty fallback
+block, preserves flattening, proves the
+`bits.length / blockSize + 2` count bound through
+`RankSelect.fixedWeightChunkBlocksWithSentinelLengthLe`, and exposes
+`RankSelect.fixedWeightChunkBlocksWithSentinelGetSentinel` for invalid-query
+routes.  The access route exactness leg is now constructive through
+`RankSelect.fixedWeightChunkAccessRouteWithSentinel`, backed by
+`RankSelect.fixedWeightChunkBlocksGetAccessExact`: in-range accesses route to
+the computed chunk and invalid accesses route to the empty sentinel block.
 The block-size route-table refinement
 `RankSelect.FixedWeightAmbientComputedRRRBlockSizeRouteTableData` now derives
 the ambient local-cost hypothesis from the uniform block-length cap, and the
@@ -468,10 +489,10 @@ family surfaces
 `RankSelect.fixedWeightAmbientComputedRRRBlockSizeRouteTableWordBoundedCompressedProfileOfPrimaryBudget`
 carry that discipline through the route-table profile.  The remaining
 constructor gap is no longer the combined store; it is a concrete block
-decomposition and route-directory family that proves the needed block-count
-bound, supplies the `o(n)` class/length metadata budget, and discharges the
-semantic `access_exact`/`rank_exact`/`select_exact` route fields from charged
-routing tables.
+route-directory family over the chunk blocks that supplies the primary
+block-code budget and discharges the semantic
+`access_exact`/`rank_exact`/`select_exact` route fields from charged routing
+tables.
 `RankSelect.FixedWeightAmbientBlockCompositionData` is now the ambient/global
 predecessor surface: it counts one packed fixed-weight code word per block via
 `RankSelect.fixedWeightBlockCodePayload`, counts the remaining directory bits
@@ -1951,7 +1972,16 @@ The names below are grouped by source module. Repeated base names in
   `RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFixedBlockSizeRouteClassLengthTableEnvelopeFamilyProfile`,
   `RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutWordBoundedCompressedProfileOfPrimaryBudget`,
   `RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToRouteClassLengthTableEnvelopeWordBoundedCompressedProfileOfPrimaryBudget`,
+  `RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFixedBlockSizeWordBoundedCompressedProfileOfBlockBounds`,
   `RankSelect.fixedWeightBlockClassLengthTableOverheadLeOfBounds`,
+  `RankSelect.fixedWeightBlockClassLengthTableOverheadLeBudget`,
+  `RankSelect.fixedWeightChunkBlocksLengthLe`,
+  `RankSelect.fixedWeightBlockClassLengthTableOverheadLeChunkBudget`,
+  `RankSelect.fixedWeightChunkBlocksWithSentinelLengthLe`,
+  `RankSelect.fixedWeightChunkBlocksWithSentinelGetSentinel`,
+  `RankSelect.fixedWeightChunkBlocksGetAccessExact`,
+  `RankSelect.fixedWeightChunkAccessRouteWithSentinel`,
+  `RankSelect.fixedWeightBlockClassLengthTableOverheadLeChunkSentinelBudget`,
   `RankSelect.fixedWeightAmbientBlockCompositionWordBoundedCompressedProfileOfPrimaryBudget`,
   `RankSelect.fixedWeightTableRAMBlockDataProfile`,
   `RankSelect.fixedWeightTableRAMBlockToDependentAuxiliaryData`,

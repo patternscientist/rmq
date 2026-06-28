@@ -222,15 +222,33 @@ pushes the promoted family through the conditional compressed/FID bridge.
 `RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFixedBlockSizeRouteClassLengthTableEnvelopeFamilyProfile`
 specializes that promotion to a uniform `blockSize`/`fieldWidth` family and
 the class/length block-size query-cost budget.
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFixedBlockSizeWordBoundedCompressedProfileOfBlockBounds`
+is the global compressed/FID budget bridge for that specialization: from a
+block-count bound, a field-width bound, and a primary block-code budget, it
+feeds `RMQ.RankSelect.fixedWeightBlockClassLengthTableOverheadLeBudget` and
+returns the word-bounded compressed profile for the promoted route/class-length
+envelope. `RMQ.RankSelect.fixedWeightChunkBlocksLengthLe` supplies the
+concrete fixed-size chunk block-count bound
+`blocks.length <= bits.length / blockSize + 1`, and
+`RMQ.RankSelect.fixedWeightBlockClassLengthTableOverheadLeChunkBudget` feeds
+that chunk bound into the class/length metadata budget. The route-total
+sentinel variant
+`RMQ.RankSelect.fixedWeightChunkBlocksWithSentinelLengthLe` proves the
+`bits.length / blockSize + 2` bound after appending one empty fallback block,
+and `RMQ.RankSelect.fixedWeightChunkBlocksWithSentinelGetSentinel` identifies
+that fallback block for invalid-query routing.
+`RMQ.RankSelect.fixedWeightChunkAccessRouteWithSentinel` closes the access
+route-exactness leg for sentinel chunks: in-range accesses route to the
+computed chunk, invalid accesses route to the sentinel, and
+`RMQ.RankSelect.fixedWeightChunkBlocksGetAccessExact` proves the local
+chunk-offset bit equation.
 `RMQ.RankSelect.fixedWeightAmbientComputedRRRBlockSizeRouteTableFamilyProfile`
 adds the ambient block-size route-table refinement: the local computed-RRR cost
 premise is derived from a uniform block-length cap rather than assumed
 per-block. The remaining global constructor task is to instantiate a concrete
-block decomposition/routing family that proves the class/length metadata
-payload is `o(n)` (with
-`RMQ.RankSelect.fixedWeightBlockClassLengthTableOverheadLeOfBounds` as the
-first arithmetic bridge) and derives the semantic route exactness fields from
-charged routing tables.
+charged route-directory family over the chunk blocks that proves the primary
+block-code budget and derives the rank/select semantic route exactness fields
+from charged routing tables.
 The ambient/global fixed-weight block predecessor is also formalized:
 `RMQ.RankSelect.fixedWeightAmbientBlockCompositionFamilyWordBoundedProfile`
 proves an `o(n)` counted auxiliary envelope for block-composed fixed-weight

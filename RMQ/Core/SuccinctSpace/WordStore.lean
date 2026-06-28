@@ -308,6 +308,63 @@ theorem chunkPayloadWords_get?_some_of_mul_lt
   unfold chunkPayloadWords
   exact chunkPayloadWordsFuel_get?_some_of_mul_lt hword (by omega) hi
 
+theorem chunkPayloadWordsFuel_get?_none_of_length_le_mul
+    {wordSize fuel : Nat} :
+    forall {payload : List Bool} {i : Nat},
+      payload.length <= i * wordSize ->
+        (chunkPayloadWordsFuel wordSize fuel payload)[i]? = none := by
+  induction fuel with
+  | zero =>
+      intro payload i hlen
+      simp [chunkPayloadWordsFuel]
+  | succ fuel ih =>
+      intro payload i hlen
+      cases payload with
+      | nil =>
+          simp [chunkPayloadWordsFuel]
+      | cons bit rest =>
+          cases i with
+          | zero =>
+              simp at hlen
+          | succ i =>
+              have hdropLen :
+                  ((bit :: rest).drop wordSize).length <=
+                    i * wordSize := by
+                rw [List.length_drop]
+                have hmul :
+                    (i + 1) * wordSize = i * wordSize + wordSize := by
+                  simp [Nat.succ_mul]
+                omega
+              have htail := ih hdropLen
+              simpa [chunkPayloadWordsFuel] using htail
+
+theorem chunkPayloadWords_get?_none_of_length_le_mul
+    {wordSize : Nat}
+    {payload : List Bool} {i : Nat}
+    (hi : payload.length <= i * wordSize) :
+    (chunkPayloadWords wordSize payload)[i]? = none := by
+  unfold chunkPayloadWords
+  exact chunkPayloadWordsFuel_get?_none_of_length_le_mul hi
+
+theorem chunkPayloadWords_length_le_div_add_one
+    {wordSize : Nat} (hword : 0 < wordSize)
+    (payload : List Bool) :
+    (chunkPayloadWords wordSize payload).length <=
+      payload.length / wordSize + 1 := by
+  have hcovered :
+      payload.length <=
+        (payload.length / wordSize + 1) * wordSize := by
+    have hlt : payload.length <
+        payload.length / wordSize * wordSize + wordSize :=
+      Nat.lt_div_mul_add hword (a := payload.length)
+    simpa [Nat.add_mul, Nat.one_mul] using Nat.le_of_lt hlt
+  have hnone :
+      (chunkPayloadWords wordSize payload)[
+          payload.length / wordSize + 1]? = none :=
+    chunkPayloadWords_get?_none_of_length_le_mul hcovered
+  rw [List.getElem?_eq_none_iff] at hnone
+  exact hnone
+
 /--
 A stored word array whose flattened word contents are exactly the counted
 payload bits.

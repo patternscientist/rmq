@@ -193,9 +193,12 @@ about Lean's executable `List` runtime.
   charged metadata reads, packed fixed-width route-word readback profiles,
   canonical route field-table constructors, a single-store route/class-length
   envelope whose ambient evaluator consumes charged class/length reads, a
-  family-level combined-metadata `o(n)` bridge, and conditional bounded-regime
-  bridges for the local decoder, ambient route tables, and ambient
-  primary-budget join, and
+  family-level combined-metadata `o(n)` bridge, a global block-count/field-width
+  budget bridge for fixed-block route/class-length families, fixed-size chunk
+  decomposition bounds plus a sentinel chunk variant for route-total
+  class/length metadata budgets, a constructive sentinel-chunk access route,
+  and conditional bounded-regime bridges for the local decoder, ambient route
+  tables, and ambient primary-budget join, and
   `RankSelectPublic` exposes the public Jacobson/Clark
   bitvector family theorem as
   `RankSelect.jacobsonClarkNPlusOConstantQuery` and its strengthened
@@ -377,9 +380,9 @@ RMQ blocker:
   concrete global routing over the ambient fixed-weight block-composition
   scaffold, consume the canonical eight-table route-layout constructor and
   route/class-length family promotion in a block decomposition/routing family,
-  prove the class/length metadata and primary block-code budgets are `o(n)`,
-  discharge the remaining semantic route exactness fields from charged routing
-  tables, and deepen
+  feed the fixed-size sentinel chunk class/length metadata budget bridge, prove
+  the primary block-code budget is `o(n)`, discharge the remaining semantic
+  rank/select route exactness fields from charged routing tables, and deepen
   the landed BP-navigation close/rank bridge into a fuller tree-navigation API;
   and
 - deepen the new union-find spoke from specification/reference backend to

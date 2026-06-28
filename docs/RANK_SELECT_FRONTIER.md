@@ -139,6 +139,21 @@ RMQ.RankSelect.fixedWeightBlockClassEntries
 RMQ.RankSelect.fixedWeightBlockClassLengthTableWords
 RMQ.RankSelect.fixedWeightBlockClassLengthTablePayload
 RMQ.RankSelect.fixedWeightBlockClassLengthTableOverhead
+RMQ.RankSelect.fixedWeightBlockClassLengthTableOverheadBudget
+RMQ.RankSelect.fixedWeightChunkBlocks
+RMQ.RankSelect.fixedWeightChunkBlockCountBound
+RMQ.RankSelect.fixedWeightChunkBlocksWithSentinel
+RMQ.RankSelect.fixedWeightChunkBlockCountBoundWithSentinel
+RMQ.RankSelect.fixedWeightChunkBlocksFlatten
+RMQ.RankSelect.fixedWeightChunkBlocksLengthLe
+RMQ.RankSelect.fixedWeightChunkBlocksBlockLengthLe
+RMQ.RankSelect.fixedWeightChunkBlocksWithSentinelFlatten
+RMQ.RankSelect.fixedWeightChunkBlocksWithSentinelLengthLe
+RMQ.RankSelect.fixedWeightChunkBlocksWithSentinelBlockLengthLe
+RMQ.RankSelect.fixedWeightChunkBlocksWithSentinelGetSentinel
+RMQ.RankSelect.fixedWeightChunkBlocksWithSentinelGetChunk
+RMQ.RankSelect.fixedWeightChunkBlocksGetAccessExact
+RMQ.RankSelect.fixedWeightChunkAccessRouteWithSentinel
 RMQ.RankSelect.fixedWeightBlockClassLengthTablePayloadLength
 RMQ.RankSelect.FixedWeightAmbientComputedRRRClassLengthTableData
 RMQ.RankSelect.FixedWeightAmbientComputedRRRClassLengthTableProfile
@@ -232,7 +247,11 @@ RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToRouteCl
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFixedBlockSizeRouteClassLengthTableEnvelopeFamilyProfile
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutWordBoundedCompressedProfileOfPrimaryBudget
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToRouteClassLengthTableEnvelopeWordBoundedCompressedProfileOfPrimaryBudget
+RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFixedBlockSizeWordBoundedCompressedProfileOfBlockBounds
 RMQ.RankSelect.fixedWeightBlockClassLengthTableOverheadLeOfBounds
+RMQ.RankSelect.fixedWeightBlockClassLengthTableOverheadLeBudget
+RMQ.RankSelect.fixedWeightBlockClassLengthTableOverheadLeChunkBudget
+RMQ.RankSelect.fixedWeightBlockClassLengthTableOverheadLeChunkSentinelBudget
 RMQ.RankSelect.FixedWeightTableRAMBlockData
 RMQ.RankSelect.fixedWeightTableRAMBlockDataProfile
 RMQ.RankSelect.fixedWeightTableRAMBlockToDependentAuxiliaryData
@@ -513,11 +532,32 @@ carries that constructor through the conditional compressed/FID bridge. The
 fixed block-size specialization
 `fixedWeightAmbientComputedRRRRouteFieldTableLayoutFixedBlockSizeRouteClassLengthTableEnvelopeFamilyProfile`
 packages the uniform `blockSize`/`fieldWidth` case and fixes the local budget to
-the class/length block-size query cost. The
-remaining global constructor task is now a block decomposition/routing family
-that proves the class/length metadata overhead bound, for example via
-`fixedWeightBlockClassLengthTableOverheadLeOfBounds`, and discharges the
-semantic route exactness fields from charged routing tables.
+the class/length block-size query cost. The global compressed/FID budget bridge
+is
+`fixedWeightAmbientComputedRRRRouteFieldTableLayoutFixedBlockSizeWordBoundedCompressedProfileOfBlockBounds`:
+it takes `blocks.length <= blockCountBound bits.length` and
+`fieldWidth <= fieldWidthBound bits.length`, packages the class/length
+metadata budget as `fixedWeightBlockClassLengthTableOverheadBudget`, feeds
+`fixedWeightBlockClassLengthTableOverheadLeBudget`, and returns the
+word-bounded compressed/FID profile for the promoted route/class-length
+envelope. The fixed-size chunk decomposition side is now concrete:
+`fixedWeightChunkBlocks` wraps `SuccinctSpace.chunkPayloadWords`,
+`fixedWeightChunkBlocksLengthLe` proves the useful
+`blocks.length <= bits.length / blockSize + 1` bound, and
+`fixedWeightBlockClassLengthTableOverheadLeChunkBudget` feeds that bound
+directly into the class/length metadata budget. For total query routes,
+`fixedWeightChunkBlocksWithSentinel` appends one empty sentinel block without
+changing the flattened bits; `fixedWeightChunkBlocksWithSentinelLengthLe`
+proves the routing-friendly `bits.length / blockSize + 2` bound, and
+`fixedWeightChunkBlocksWithSentinelGetSentinel` identifies the fallback block
+for invalid access/select cases. The access leg of route exactness is now
+constructive:
+`fixedWeightChunkAccessRouteWithSentinel` routes in-range positions to the
+computed chunk and invalid positions to the sentinel, with
+`fixedWeightChunkBlocksGetAccessExact` proving the stored-bit equation. The
+remaining global constructor task is now a charged route-directory family over
+these chunk blocks that proves the primary block-code budget and discharges
+the rank/select route exactness fields from charged routing tables.
 
 The ambient/global block-composition predecessor is now present. It stores one
 canonical fixed-weight code word per block through

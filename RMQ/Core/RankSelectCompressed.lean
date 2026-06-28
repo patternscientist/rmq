@@ -7463,6 +7463,137 @@ def fixedWeightBlockClassLengthTableOverhead
     (fieldWidth : Nat) (blocks : List (List Bool)) : Nat :=
   (blocks.length + blocks.length) * fieldWidth
 
+def fixedWeightBlockClassLengthTableOverheadBudget
+    (blockCountBound fieldWidthBound : Nat -> Nat) : Nat -> Nat :=
+  fun n => (blockCountBound n + blockCountBound n) * fieldWidthBound n
+
+def fixedWeightChunkBlocks (blockSize : Nat) (bits : List Bool) :
+    List (List Bool) :=
+  SuccinctSpace.chunkPayloadWords blockSize bits
+
+def fixedWeightChunkBlockCountBound (blockSize : Nat) : Nat -> Nat :=
+  fun n => n / blockSize + 1
+
+def fixedWeightChunkBlocksWithSentinel
+    (blockSize : Nat) (bits : List Bool) : List (List Bool) :=
+  fixedWeightChunkBlocks blockSize bits ++ [[]]
+
+def fixedWeightChunkBlockCountBoundWithSentinel
+    (blockSize : Nat) : Nat -> Nat :=
+  fun n => n / blockSize + 2
+
+theorem fixedWeightChunkBlocks_flatten
+    {blockSize : Nat} (hblockSize : 0 < blockSize)
+    (bits : List Bool) :
+    SuccinctSpace.flattenPayloadWords
+        (fixedWeightChunkBlocks blockSize bits) = bits := by
+  simpa [fixedWeightChunkBlocks] using
+    SuccinctSpace.flattenPayloadWords_chunkPayloadWords hblockSize bits
+
+theorem fixedWeightChunkBlocks_length_le
+    {blockSize : Nat} (hblockSize : 0 < blockSize)
+    (bits : List Bool) :
+    (fixedWeightChunkBlocks blockSize bits).length <=
+      fixedWeightChunkBlockCountBound blockSize bits.length := by
+  simpa [fixedWeightChunkBlocks, fixedWeightChunkBlockCountBound] using
+    SuccinctSpace.chunkPayloadWords_length_le_div_add_one
+      hblockSize bits
+
+theorem fixedWeightChunkBlocks_block_length_le
+    {blockSize : Nat} {bits block : List Bool}
+    (hmem : List.Mem block (fixedWeightChunkBlocks blockSize bits)) :
+    block.length <= blockSize := by
+  simpa [fixedWeightChunkBlocks] using
+    SuccinctSpace.chunkPayloadWords_word_length_le
+      blockSize (payload := bits) hmem
+
+theorem fixedWeightChunkBlocksWithSentinel_flatten
+    {blockSize : Nat} (hblockSize : 0 < blockSize)
+    (bits : List Bool) :
+    SuccinctSpace.flattenPayloadWords
+        (fixedWeightChunkBlocksWithSentinel blockSize bits) = bits := by
+  have hsentinel :
+      SuccinctSpace.flattenPayloadWords ([[]] : List (List Bool)) = [] := by
+    simp [SuccinctSpace.flattenPayloadWords]
+  simp [fixedWeightChunkBlocksWithSentinel,
+    SuccinctSpace.flattenPayloadWords_append, hsentinel,
+    fixedWeightChunkBlocks_flatten hblockSize bits]
+
+theorem fixedWeightChunkBlocksWithSentinel_length_le
+    {blockSize : Nat} (hblockSize : 0 < blockSize)
+    (bits : List Bool) :
+    (fixedWeightChunkBlocksWithSentinel blockSize bits).length <=
+      fixedWeightChunkBlockCountBoundWithSentinel
+        blockSize bits.length := by
+  have hlen := fixedWeightChunkBlocks_length_le hblockSize bits
+  simp [fixedWeightChunkBlocksWithSentinel,
+    fixedWeightChunkBlockCountBoundWithSentinel,
+    fixedWeightChunkBlockCountBound] at *
+  omega
+
+theorem fixedWeightChunkBlocksWithSentinel_block_length_le
+    {blockSize : Nat} {bits block : List Bool}
+    (hmem :
+      List.Mem block (fixedWeightChunkBlocksWithSentinel blockSize bits)) :
+    block.length <= blockSize := by
+  rw [fixedWeightChunkBlocksWithSentinel] at hmem
+  rcases List.mem_append.mp hmem with hchunk | hsentinel
+  · exact fixedWeightChunkBlocks_block_length_le hchunk
+  · cases hsentinel with
+    | head =>
+        simp
+    | tail _ htail =>
+        cases htail
+
+theorem fixedWeightChunkBlocksWithSentinel_get_sentinel
+    (blockSize : Nat) (bits : List Bool) :
+    (fixedWeightChunkBlocksWithSentinel blockSize bits)[
+        (fixedWeightChunkBlocks blockSize bits).length]? = some [] := by
+  simp [fixedWeightChunkBlocksWithSentinel]
+
+theorem fixedWeightChunkBlocksWithSentinel_get_chunk
+    {blockSize : Nat} {bits block : List Bool} {blockIndex : Nat}
+    (hget :
+      (fixedWeightChunkBlocks blockSize bits)[blockIndex]? =
+        some block) :
+    (fixedWeightChunkBlocksWithSentinel blockSize bits)[blockIndex]? =
+      some block := by
+  have hidx :
+      blockIndex < (fixedWeightChunkBlocks blockSize bits).length :=
+    (List.getElem?_eq_some_iff.mp hget).1
+  simpa [fixedWeightChunkBlocksWithSentinel, List.getElem?_append,
+    hidx] using hget
+
+theorem fixedWeightChunkBlocks_get?_access_exact
+    {blockSize : Nat} (hblockSize : 0 < blockSize)
+    {bits block : List Bool} {i : Nat}
+    (hget :
+      (fixedWeightChunkBlocks blockSize bits)[i / blockSize]? =
+        some block) :
+    block[i - (i / blockSize) * blockSize]? = bits[i]? := by
+  let start := (i / blockSize) * blockSize
+  let offset := i - start
+  have hwordEq :
+      block = (bits.drop start).take blockSize := by
+    have hchunk :
+        (SuccinctSpace.chunkPayloadWords blockSize bits)[
+            i / blockSize]? = some block := by
+      simpa [fixedWeightChunkBlocks] using hget
+    simpa [start] using
+      SuccinctSpace.chunkPayloadWords_get?_eq_take_drop hchunk
+  have hstart_le : start <= i := by
+    simpa [start] using Nat.div_mul_le_self i blockSize
+  have hoffset_lt : offset < blockSize := by
+    have hlt := Nat.lt_div_mul_add hblockSize (a := i)
+    simp [offset, start]
+    omega
+  have hpos : start + offset = i := by
+    simp [offset]
+    omega
+  rw [hwordEq]
+  rw [List.getElem?_take]
+  simp [offset, start, hoffset_lt, hpos]
+
 theorem fixedWeightBlockClassLengthTableOverhead_le_of_bounds
     {fieldWidth fieldWidthBound blockCountBound : Nat}
     {blocks : List (List Bool)}
@@ -7472,6 +7603,110 @@ theorem fixedWeightBlockClassLengthTableOverhead_le_of_bounds
       (blockCountBound + blockCountBound) * fieldWidthBound := by
   unfold fixedWeightBlockClassLengthTableOverhead
   exact Nat.mul_le_mul (by omega) hfield
+
+theorem fixedWeightBlockClassLengthTableOverhead_le_budget
+    {fieldWidth : Nat} {blockCountBound fieldWidthBound : Nat -> Nat}
+    {blocks : List (List Bool)} {n : Nat}
+    (hblocks : blocks.length <= blockCountBound n)
+    (hfield : fieldWidth <= fieldWidthBound n) :
+    fixedWeightBlockClassLengthTableOverhead fieldWidth blocks <=
+      fixedWeightBlockClassLengthTableOverheadBudget
+        blockCountBound fieldWidthBound n := by
+  exact fixedWeightBlockClassLengthTableOverhead_le_of_bounds
+    hblocks hfield
+
+theorem fixedWeightBlockClassLengthTableOverhead_le_chunk_budget
+    {blockSize fieldWidth : Nat} {fieldWidthBound : Nat -> Nat}
+    {bits : List Bool} {blocks : List (List Bool)}
+    (hblockSize : 0 < blockSize)
+    (hblocks :
+      blocks = fixedWeightChunkBlocks blockSize bits)
+    (hfield : fieldWidth <= fieldWidthBound bits.length) :
+    fixedWeightBlockClassLengthTableOverhead fieldWidth blocks <=
+      fixedWeightBlockClassLengthTableOverheadBudget
+        (fixedWeightChunkBlockCountBound blockSize)
+        fieldWidthBound bits.length := by
+  have hcount :
+      blocks.length <=
+        fixedWeightChunkBlockCountBound blockSize bits.length := by
+    rw [hblocks]
+    exact fixedWeightChunkBlocks_length_le hblockSize bits
+  exact fixedWeightBlockClassLengthTableOverhead_le_budget
+    hcount hfield
+
+theorem fixedWeightBlockClassLengthTableOverhead_le_chunk_sentinel_budget
+    {blockSize fieldWidth : Nat} {fieldWidthBound : Nat -> Nat}
+    {bits : List Bool} {blocks : List (List Bool)}
+    (hblockSize : 0 < blockSize)
+    (hblocks :
+      blocks = fixedWeightChunkBlocksWithSentinel blockSize bits)
+    (hfield : fieldWidth <= fieldWidthBound bits.length) :
+    fixedWeightBlockClassLengthTableOverhead fieldWidth blocks <=
+      fixedWeightBlockClassLengthTableOverheadBudget
+        (fixedWeightChunkBlockCountBoundWithSentinel blockSize)
+        fieldWidthBound bits.length := by
+  have hcount :
+      blocks.length <=
+        fixedWeightChunkBlockCountBoundWithSentinel
+          blockSize bits.length := by
+    rw [hblocks]
+    exact fixedWeightChunkBlocksWithSentinel_length_le hblockSize bits
+  exact fixedWeightBlockClassLengthTableOverhead_le_budget
+    hcount hfield
+
+def fixedWeightChunkAccessRouteWithSentinel
+    {blockSize : Nat} (hblockSize : 0 < blockSize)
+    (bits : List Bool) (i : Nat) :
+    FixedWeightAmbientComputedRRRAccessRoute bits
+      (fixedWeightChunkBlocksWithSentinel blockSize bits) i := by
+  by_cases hi : i < bits.length
+  · have hstart_lt :
+        (i / blockSize) * blockSize < bits.length := by
+      have hstart_le : (i / blockSize) * blockSize <= i :=
+        Nat.div_mul_le_self i blockSize
+      omega
+    cases hgetOpt :
+        (fixedWeightChunkBlocks blockSize bits)[i / blockSize]? with
+    | none =>
+        exfalso
+        have hsome :
+            ∃ block,
+              (fixedWeightChunkBlocks blockSize bits)[i / blockSize]? =
+                some block := by
+          rcases
+              SuccinctSpace.chunkPayloadWords_get?_some_of_mul_lt
+                (wordSize := blockSize) hblockSize
+                (payload := bits) (i := i / blockSize) hstart_lt with
+            ⟨block, hchunk⟩
+          exact ⟨block, by
+            simpa [fixedWeightChunkBlocks] using hchunk⟩
+        rcases hsome with ⟨block, hget⟩
+        simp [hgetOpt] at hget
+    | some block =>
+        have hget :
+            (fixedWeightChunkBlocks blockSize bits)[i / blockSize]? =
+              some block := hgetOpt
+        refine
+          { blockIndex := i / blockSize
+            block := block
+            block_get :=
+              fixedWeightChunkBlocksWithSentinel_get_chunk hget
+            offset := i - (i / blockSize) * blockSize
+            metadataReads := []
+            access_exact := ?_ }
+        exact fixedWeightChunkBlocks_get?_access_exact hblockSize hget
+  · refine
+      { blockIndex := (fixedWeightChunkBlocks blockSize bits).length
+        block := []
+        block_get :=
+          fixedWeightChunkBlocksWithSentinel_get_sentinel blockSize bits
+        offset := 0
+        metadataReads := []
+        access_exact := ?_ }
+    have hnone : bits[i]? = none := by
+      rw [List.getElem?_eq_none_iff]
+      omega
+    simp [hnone]
 
 theorem fixedWeightBlockClassLengthTablePayload_length
     (fieldWidth : Nat) (blocks : List (List Bool)) :
@@ -10425,6 +10660,115 @@ theorem fixed_block_size_route_class_length_table_envelope_family_profile
       (family.toFixedBlockSizeRouteClassLengthTableEnvelopeFamily
         classLengthOverhead hclassLengthO hclassLength_le
         hfield hblockSize hfit)
+
+/--
+Global block-count/field-width bridge for the fixed block-size route layout.
+
+This is the family-level budget handoff: a concrete route-field layout only has
+to prove a useful block-count cap and field-width cap.  Those two facts feed the
+class/length table overhead lemma, producing the promoted route/class-length
+envelope and the word-bounded compressed/FID profile under the usual primary
+fixed-weight payload budget.
+-/
+theorem fixed_block_size_word_bounded_compressed_profile_of_block_bounds
+    {slots blockSize fieldWidth routeCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+        slots routeCost
+        (fixedWeightComputedRRRClassLengthBlockSizeQueryCost blockSize)
+        queryCost)
+    (blockCountBound fieldWidthBound primaryOverhead : Nat -> Nat)
+    (hclassLengthO :
+      SuccinctSpace.LittleOLinear
+        (fixedWeightBlockClassLengthTableOverheadBudget
+          blockCountBound fieldWidthBound))
+    (hprimaryO : SuccinctSpace.LittleOLinear primaryOverhead)
+    (hblocks :
+      forall bits : List Bool,
+        (family.blocks bits).length <= blockCountBound bits.length)
+    (hfieldBound :
+      forall bits : List Bool,
+        fieldWidth <= fieldWidthBound bits.length)
+    (hfield :
+      forall bits : List Bool,
+        (family.componentData bits).fieldWidth = fieldWidth)
+    (hblockSize :
+      forall bits : List Bool,
+        (family.componentData bits).routeData.blockSize = blockSize)
+    (hfit : blockSize < 2 ^ fieldWidth)
+    (hprimary :
+      forall bits : List Bool,
+        fixedWeightBlockPayloadBudget (family.blocks bits) <=
+          fixedWeightPayloadBudget bits + primaryOverhead bits.length) :
+    SuccinctSpace.LittleOLinear
+        (FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.compressedOverhead
+          slots
+          (fixedWeightBlockClassLengthTableOverheadBudget
+            blockCountBound fieldWidthBound)
+          primaryOverhead) /\
+      forall bits : List Bool,
+        let envelopeFamily :=
+          family.toFixedBlockSizeRouteClassLengthTableEnvelopeFamily
+            (fixedWeightBlockClassLengthTableOverheadBudget
+              blockCountBound fieldWidthBound)
+            hclassLengthO
+            (by
+              intro bits
+              exact fixedWeightBlockClassLengthTableOverhead_le_budget
+                (hblocks bits) (hfieldBound bits))
+            hfield hblockSize hfit
+        let data := envelopeFamily.componentData bits
+        let directory := envelopeFamily.directory bits
+        data.RouteClassLengthEnvelopeProfile /\
+          directory.DirectoryProfile /\
+          directory.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              data.totalMetadataOverhead /\
+          directory.payload.length <=
+            fixedWeightPayloadBudget bits +
+              FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.compressedOverhead
+                slots
+                (fixedWeightBlockClassLengthTableOverheadBudget
+                  blockCountBound fieldWidthBound)
+                primaryOverhead bits.length /\
+          directory.auxPayload.length = data.totalMetadataOverhead /\
+          directory.auxPayload.length <=
+            FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.overhead
+              slots
+              (fixedWeightBlockClassLengthTableOverheadBudget
+                blockCountBound fieldWidthBound)
+              bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word directory.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word directory.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (directory.accessCosted i).cost <= queryCost /\
+              (directory.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (directory.rankCosted target pos).cost <= queryCost /\
+              (directory.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (directory.selectCosted target occurrence).cost <=
+                queryCost /\
+              (directory.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact
+    FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.word_bounded_compressed_profile_of_primary_budget
+      (family.toFixedBlockSizeRouteClassLengthTableEnvelopeFamily
+        (fixedWeightBlockClassLengthTableOverheadBudget
+          blockCountBound fieldWidthBound)
+        hclassLengthO
+        (by
+          intro bits
+          exact fixedWeightBlockClassLengthTableOverhead_le_budget
+            (hblocks bits) (hfieldBound bits))
+        hfield hblockSize hfit)
+      primaryOverhead hprimaryO hprimary
 
 end FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
 
