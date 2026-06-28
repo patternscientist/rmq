@@ -3679,6 +3679,17 @@ def fullCompressFindTrace
     List Nat :=
   backend.compressPathFindFuelTrace backend.state.forest.maxSearchFuel x
 
+theorem compressPathFindFuelTrace_eq_singleton_of_root
+    (backend : NoCompressionRankedMassBackendState) :
+    forall (fuel : Nat) {root : Nat},
+      backend.state.forest.IsRoot root ->
+        backend.compressPathFindFuelTrace fuel root = [root]
+  | 0, root, _hroot => by
+      simp [compressPathFindFuelTrace]
+  | fuel + 1, root, hroot => by
+      have hparent : backend.state.forest.parent? root = some root := hroot
+      simp [compressPathFindFuelTrace, hparent]
+
 def unionResult
     (backend : NoCompressionRankedMassBackendState) (x y : Nat) :
     NoCompressionRankedMassBackendState where
@@ -3931,6 +3942,17 @@ theorem compressFindCosted_forest_size_eq
       simp [compressFindCosted,
         compressedStateOrSelf, hfind, compressedStateOfRoot]
 
+theorem compressFindCosted_rank_eq
+    (backend : NoCompressionRankedMassBackendState) (x : Nat) :
+    ((backend.compressFindCosted x).erase.1).state.rank =
+      backend.state.rank := by
+  cases hfind : backend.state.forest.findRoot? x with
+  | none =>
+      simp [compressFindCosted, backend.compressFindResult_none x hfind]
+  | some root =>
+      simp [compressFindCosted,
+        compressedStateOrSelf, hfind, compressedStateOfRoot]
+
 theorem compressPathFindFuelCosted_findRoot?_eq
     (backend : NoCompressionRankedMassBackendState) :
     forall (fuel x i : Nat),
@@ -3961,6 +3983,37 @@ theorem compressPathFindFuelCosted_findRoot?_eq
                     i =
                   tail.state.forest.findRoot? i :=
               tail.compressFindCosted_findRoot?_eq x i
+            simpa [compressPathFindFuelCosted, hparent, hsame, tail] using
+              hstep.trans htail
+
+theorem compressPathFindFuelCosted_rank_eq
+    (backend : NoCompressionRankedMassBackendState) :
+    forall (fuel x : Nat),
+      ((backend.compressPathFindFuelCosted fuel x).erase.1).state.rank =
+        backend.state.rank
+  | 0, x => by
+      simpa [compressPathFindFuelCosted] using
+        backend.compressFindCosted_rank_eq x
+  | fuel + 1, x => by
+      cases hparent : backend.state.forest.parent? x with
+      | none =>
+          simpa [compressPathFindFuelCosted, hparent] using
+            backend.compressFindCosted_rank_eq x
+      | some parent =>
+          by_cases hsame : parent = x
+          · simpa [compressPathFindFuelCosted, hparent, hsame] using
+              backend.compressFindCosted_rank_eq x
+          · let tail :=
+              (backend.compressPathFindFuelCosted fuel parent).erase.1
+            have htail :
+                tail.state.rank = backend.state.rank := by
+              simpa [tail] using
+                compressPathFindFuelCosted_rank_eq
+                  backend fuel parent
+            have hstep :
+                ((tail.compressFindCosted x).erase.1).state.rank =
+                  tail.state.rank :=
+              tail.compressFindCosted_rank_eq x
             simpa [compressPathFindFuelCosted, hparent, hsame, tail] using
               hstep.trans htail
 
@@ -4009,6 +4062,14 @@ theorem fullCompressFindCosted_forest_size_eq
       backend.state.forest.size := by
   simpa [fullCompressFindCosted] using
     backend.compressPathFindFuelCosted_forest_size_eq
+      backend.state.forest.maxSearchFuel x
+
+theorem fullCompressFindCosted_rank_eq
+    (backend : NoCompressionRankedMassBackendState) (x : Nat) :
+    ((backend.fullCompressFindCosted x).erase.1).state.rank =
+      backend.state.rank := by
+  simpa [fullCompressFindCosted] using
+    backend.compressPathFindFuelCosted_rank_eq
       backend.state.forest.maxSearchFuel x
 
 theorem compressFindCosted_refinement_profile
@@ -4412,6 +4473,119 @@ theorem fullCompressFindCosted_trace_parent?_eq_root_of_findRoot?
     backend.compressPathFindFuelCosted_trace_parent?_eq_root_of_findRoot?
       backend.state.forest.maxSearchFuel hfind hmem
 
+theorem compressPathFindFuelTrace_mem_findRoot?_eq_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState) :
+    forall (fuel : Nat) {x root y : Nat},
+      backend.state.forest.findRoot? x = some root ->
+      y ∈ backend.compressPathFindFuelTrace fuel x ->
+      backend.state.forest.findRoot? y = some root
+  | 0, x, root, y, hfind, hmem => by
+      have hyx : y = x := by
+        simpa [compressPathFindFuelTrace] using hmem
+      subst y
+      exact hfind
+  | fuel + 1, x, root, y, hfind, hmem => by
+      cases hparent : backend.state.forest.parent? x with
+      | none =>
+          have hyx : y = x := by
+            simpa [compressPathFindFuelTrace, hparent] using hmem
+          subst y
+          exact hfind
+      | some parent =>
+          by_cases hsame : parent = x
+          · have hyx : y = x := by
+              simpa [compressPathFindFuelTrace, hparent, hsame] using hmem
+            subst y
+            exact hfind
+          · have hmemCases :
+                y = x ∨
+                  y ∈ backend.compressPathFindFuelTrace fuel parent := by
+              simpa [compressPathFindFuelTrace, hparent, hsame] using hmem
+            rcases hmemCases with hyx | htailMem
+            · subst y
+              exact hfind
+            · have hparentFind :
+                  backend.state.forest.findRoot? parent = some root :=
+                backend.findRoot?_parent_eq_of_parent?_ne
+                  hparent hsame hfind
+              exact
+                compressPathFindFuelTrace_mem_findRoot?_eq_of_findRoot?
+                  backend fuel hparentFind htailMem
+
+theorem fullCompressFindTrace_mem_findRoot?_eq_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState)
+    {x root y : Nat}
+    (hfind : backend.state.forest.findRoot? x = some root)
+    (hmem : y ∈ backend.fullCompressFindTrace x) :
+    backend.state.forest.findRoot? y = some root := by
+  simpa [fullCompressFindTrace] using
+    backend.compressPathFindFuelTrace_mem_findRoot?_eq_of_findRoot?
+      backend.state.forest.maxSearchFuel hfind hmem
+
+theorem compressPathFindFuelCosted_parent?_eq_old_of_not_mem_trace
+    (backend : NoCompressionRankedMassBackendState) :
+    forall (fuel : Nat) {x y parent : Nat},
+      y ∉ backend.compressPathFindFuelTrace fuel x ->
+      backend.state.forest.parent? y = some parent ->
+      ((backend.compressPathFindFuelCosted fuel x).erase.1).state.forest.parent?
+        y =
+        some parent
+  | 0, x, y, parent, hnot, hparent => by
+      have hyx : y ≠ x := by
+        intro hyx
+        exact hnot (by simp [compressPathFindFuelTrace, hyx])
+      simpa [compressPathFindFuelCosted] using
+        backend.compressFindCosted_parent?_eq_old_of_ne hyx hparent
+  | fuel + 1, x, y, parent, hnot, hparent => by
+      cases hxparent : backend.state.forest.parent? x with
+      | none =>
+          have hyx : y ≠ x := by
+            intro hyx
+            exact hnot (by simp [compressPathFindFuelTrace, hxparent, hyx])
+          simpa [compressPathFindFuelCosted, hxparent] using
+            backend.compressFindCosted_parent?_eq_old_of_ne hyx hparent
+      | some xparent =>
+          by_cases hsame : xparent = x
+          · have hyx : y ≠ x := by
+              intro hyx
+              exact hnot (by
+                simp [compressPathFindFuelTrace, hxparent, hsame, hyx])
+            simpa [compressPathFindFuelCosted, hxparent, hsame] using
+              backend.compressFindCosted_parent?_eq_old_of_ne hyx hparent
+          · have hyx : y ≠ x := by
+              intro hyx
+              exact hnot (by
+                simp [compressPathFindFuelTrace, hxparent, hsame, hyx])
+            have hnotTail :
+                y ∉ backend.compressPathFindFuelTrace fuel xparent := by
+              intro htail
+              exact hnot (by
+                simp [compressPathFindFuelTrace, hxparent, hsame, htail])
+            let tail :=
+              (backend.compressPathFindFuelCosted fuel xparent).erase.1
+            have htailParent :
+                tail.state.forest.parent? y = some parent := by
+              simpa [tail] using
+                compressPathFindFuelCosted_parent?_eq_old_of_not_mem_trace
+                  backend fuel hnotTail hparent
+            have hstep :
+                ((tail.compressFindCosted x).erase.1).state.forest.parent? y =
+                  some parent :=
+              tail.compressFindCosted_parent?_eq_old_of_ne hyx htailParent
+            simpa [compressPathFindFuelCosted, hxparent, hsame, tail] using
+              hstep
+
+theorem fullCompressFindCosted_parent?_eq_old_of_not_mem_trace
+    (backend : NoCompressionRankedMassBackendState)
+    {x y parent : Nat}
+    (hnot : y ∉ backend.fullCompressFindTrace x)
+    (hparent : backend.state.forest.parent? y = some parent) :
+    ((backend.fullCompressFindCosted x).erase.1).state.forest.parent? y =
+      some parent := by
+  simpa [fullCompressFindCosted, fullCompressFindTrace] using
+    backend.compressPathFindFuelCosted_parent?_eq_old_of_not_mem_trace
+      backend.state.forest.maxSearchFuel hnot hparent
+
 theorem fullCompressFindCosted_refinement_profile
     (backend : NoCompressionRankedMassBackendState) (x : Nat) :
     (backend.fullCompressFindCosted x).cost <=
@@ -4582,6 +4756,26 @@ def logRankFindCredit
   | none => backend.state.forest.maxSearchFuel + 1
   | some _root => Nat.log2 backend.state.forest.size + 1
 
+/--
+Coarse rank bucket used by the first Tarjan-facing accounting checkpoint.
+
+Bucket `b` contains ranks whose successor has binary logarithm `b`; equivalently
+the bucket widths grow geometrically. This is not the inverse-Ackermann level
+function yet, but it is the first explicit rank-bucket interface above the
+plain log-rank bound.
+-/
+def rankBucket (rank : Nat) : Nat :=
+  Nat.log2 (rank + 1)
+
+def rankBucketWidth (bucket : Nat) : Nat :=
+  2 ^ (bucket + 1)
+
+def rankBucketFindCredit
+    (backend : NoCompressionRankedMassBackendState) (x : Nat) : Nat :=
+  match backend.state.forest.findRoot? x with
+  | none => backend.state.forest.maxSearchFuel + 1
+  | some root => rankBucketWidth (rankBucket (backend.state.rank root))
+
 def unionByRankCredit
     (_backend : NoCompressionRankedMassBackendState) (_x _y : Nat) : Nat :=
   1
@@ -4589,6 +4783,516 @@ def unionByRankCredit
 def rankSizePotential
     (backend : NoCompressionRankedMassBackendState) : Nat :=
   backend.state.forest.size
+
+def rankBucketPotential
+    (backend : NoCompressionRankedMassBackendState) : Nat :=
+  backend.state.forest.size * (Nat.log2 backend.state.forest.size + 1)
+
+def nodeRootParentRankSlack
+    (backend : NoCompressionRankedMassBackendState)
+    (root x : Nat) : Nat :=
+  match backend.state.forest.parent? x with
+  | none => 0
+  | some parent => backend.state.rank root - backend.state.rank parent
+
+def traceRootParentRankSlack
+    (backend : NoCompressionRankedMassBackendState) (root : Nat) :
+    List Nat -> Nat
+  | [] => 0
+  | x :: xs =>
+      backend.nodeRootParentRankSlack root x +
+        backend.traceRootParentRankSlack root xs
+
+def nodeFindRootParentRankSlack
+    (backend : NoCompressionRankedMassBackendState) (x : Nat) : Nat :=
+  match backend.state.forest.findRoot? x with
+  | none => 0
+  | some root => backend.nodeRootParentRankSlack root x
+
+def rankSlackPotentialOver
+    (backend : NoCompressionRankedMassBackendState) : List Nat -> Nat
+  | [] => 0
+  | x :: xs =>
+      backend.nodeFindRootParentRankSlack x +
+        backend.rankSlackPotentialOver xs
+
+def rankSlackPotential
+    (backend : NoCompressionRankedMassBackendState) : Nat :=
+  backend.rankSlackPotentialOver (List.range backend.state.forest.size)
+
+def rankSlackFindCredit
+    (backend : NoCompressionRankedMassBackendState) (x : Nat) : Nat :=
+  match backend.state.forest.findRoot? x with
+  | none => backend.state.forest.maxSearchFuel + 1
+  | some _root => 2
+
+def rankSlackUnionCredit
+    (backend : NoCompressionRankedMassBackendState) (x y : Nat) : Nat :=
+  rankSlackPotential ((backend.unionCosted x y).erase) -
+    rankSlackPotential backend + 1
+
+def rankSlackSizeUnionCredit
+    (backend : NoCompressionRankedMassBackendState) (_x _y : Nat) : Nat :=
+  rankBucketPotential backend + 1
+
+theorem rankSlackPotentialOver_le_of_forall_mem
+    (left right : NoCompressionRankedMassBackendState) :
+    forall (xs : List Nat),
+      (forall x, x ∈ xs ->
+        left.nodeFindRootParentRankSlack x <=
+          right.nodeFindRootParentRankSlack x) ->
+      left.rankSlackPotentialOver xs <= right.rankSlackPotentialOver xs
+  | [], _hle => by
+      simp [rankSlackPotentialOver]
+  | x :: xs, hle => by
+      have hx :
+          left.nodeFindRootParentRankSlack x <=
+            right.nodeFindRootParentRankSlack x :=
+        hle x (by simp)
+      have hxs :
+          forall y, y ∈ xs ->
+            left.nodeFindRootParentRankSlack y <=
+              right.nodeFindRootParentRankSlack y := by
+        intro y hy
+        exact hle y (by simp [hy])
+      have htail :=
+        rankSlackPotentialOver_le_of_forall_mem left right xs hxs
+      simp [rankSlackPotentialOver]
+      omega
+
+theorem rankSlackPotentialOver_le_length_mul
+    (backend : NoCompressionRankedMassBackendState) :
+    forall (xs : List Nat) (bound : Nat),
+      (forall x, x ∈ xs ->
+        backend.nodeFindRootParentRankSlack x <= bound) ->
+      backend.rankSlackPotentialOver xs <= xs.length * bound
+  | [], bound, _hle => by
+      simp [rankSlackPotentialOver]
+  | x :: xs, bound, hle => by
+      have hx :
+          backend.nodeFindRootParentRankSlack x <= bound :=
+        hle x (by simp)
+      have hxs :
+          forall y, y ∈ xs ->
+            backend.nodeFindRootParentRankSlack y <= bound := by
+        intro y hy
+        exact hle y (by simp [hy])
+      have htail :=
+        rankSlackPotentialOver_le_length_mul backend xs bound hxs
+      have hmul :
+          (xs.length + 1) * bound = xs.length * bound + bound := by
+        simpa [Nat.succ_eq_add_one] using Nat.succ_mul xs.length bound
+      simp [rankSlackPotentialOver]
+      calc
+        backend.nodeFindRootParentRankSlack x +
+            backend.rankSlackPotentialOver xs
+            <= bound + xs.length * bound := Nat.add_le_add hx htail
+        _ = xs.length * bound + bound := Nat.add_comm _ _
+        _ = (xs.length + 1) * bound := hmul.symm
+
+theorem rankSlackPotentialOver_add_single_le_of_forall_mem
+    (left right : NoCompressionRankedMassBackendState) :
+    forall (xs : List Nat) {x d : Nat},
+      xs.Nodup ->
+      x ∈ xs ->
+      left.nodeFindRootParentRankSlack x + d <=
+        right.nodeFindRootParentRankSlack x ->
+      (forall y, y ∈ xs -> y ≠ x ->
+        left.nodeFindRootParentRankSlack y <=
+          right.nodeFindRootParentRankSlack y) ->
+      left.rankSlackPotentialOver xs + d <= right.rankSlackPotentialOver xs
+  | [], x, d, _hnodup, hmem, _hdrop, _hle => by
+      simp at hmem
+  | y :: ys, x, d, hnodup, hmem, hdrop, hle => by
+      have hnodupCons := hnodup
+      simp at hnodupCons
+      rcases hnodupCons with ⟨hyNotMem, hnodupTail⟩
+      by_cases hyx : y = x
+      · subst x
+        have htailLe :
+            left.rankSlackPotentialOver ys <=
+              right.rankSlackPotentialOver ys := by
+          apply rankSlackPotentialOver_le_of_forall_mem
+          intro z hz
+          have hzy : z ≠ y := by
+            intro hzx
+            exact hyNotMem (by simpa [hzx] using hz)
+          exact hle z (by simp [hz]) hzy
+        simp [rankSlackPotentialOver]
+        omega
+      · have hxTail : x ∈ ys := by
+          have hcases : x = y ∨ x ∈ ys := by
+            simpa using hmem
+          cases hcases with
+          | inl hxy =>
+              exact False.elim (hyx hxy.symm)
+          | inr htail =>
+              exact htail
+        have hhead :
+            left.nodeFindRootParentRankSlack y <=
+              right.nodeFindRootParentRankSlack y :=
+          hle y (by simp) hyx
+        have htail :
+            left.rankSlackPotentialOver ys + d <=
+              right.rankSlackPotentialOver ys :=
+          rankSlackPotentialOver_add_single_le_of_forall_mem
+            left right ys hnodupTail hxTail hdrop (by
+              intro z hz hzx
+              exact hle z (by simp [hz]) hzx)
+        simp [rankSlackPotentialOver]
+        omega
+
+theorem rankSlackPotential_le_rankBucketPotential
+    (backend : NoCompressionRankedMassBackendState) :
+    rankSlackPotential backend <= rankBucketPotential backend := by
+  unfold rankSlackPotential rankBucketPotential
+  have hnode :
+      forall x, x ∈ List.range backend.state.forest.size ->
+        backend.nodeFindRootParentRankSlack x <=
+          Nat.log2 backend.state.forest.size + 1 := by
+    intro x _hx
+    cases hfind : backend.state.forest.findRoot? x with
+    | none =>
+        simp [nodeFindRootParentRankSlack, hfind]
+    | some root =>
+        have hrootRank :
+            backend.state.rank root <= Nat.log2 backend.state.forest.size :=
+          backend.findRoot?_root_rank_le_log2_size hfind
+        cases hparent : backend.state.forest.parent? x with
+        | none =>
+            simp [nodeFindRootParentRankSlack, nodeRootParentRankSlack,
+              hfind, hparent]
+        | some parent =>
+            have hsub :
+                backend.state.rank root - backend.state.rank parent <=
+                  backend.state.rank root := Nat.sub_le _ _
+            simp [nodeFindRootParentRankSlack, nodeRootParentRankSlack,
+              hfind, hparent]
+            omega
+  have hsum :=
+    backend.rankSlackPotentialOver_le_length_mul
+      (List.range backend.state.forest.size)
+      (Nat.log2 backend.state.forest.size + 1) hnode
+  simpa using hsum
+
+theorem compressFindCosted_nodeFindRootParentRankSlack_eq_zero_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState)
+    {x root : Nat}
+    (hfind : backend.state.forest.findRoot? x = some root) :
+    ((backend.compressFindCosted x).erase.1).nodeFindRootParentRankSlack x =
+      0 := by
+  have hfindEq :
+      ((backend.compressFindCosted x).erase.1).state.forest.findRoot? x =
+        some root := by
+    rw [backend.compressFindCosted_findRoot?_eq x x]
+    exact hfind
+  have hparent :
+      ((backend.compressFindCosted x).erase.1).state.forest.parent? x =
+        some root :=
+    backend.compressFindCosted_parent?_eq_root_of_findRoot? hfind
+  have hrankEq :
+      ((backend.compressFindCosted x).erase.1).state.rank =
+        backend.state.rank :=
+    backend.compressFindCosted_rank_eq x
+  simp [nodeFindRootParentRankSlack, nodeRootParentRankSlack, hfindEq,
+    hparent]
+
+theorem compressFindCosted_nodeFindRootParentRankSlack_le_of_ne
+    (backend : NoCompressionRankedMassBackendState)
+    {x y : Nat}
+    (hne : y ≠ x) :
+    ((backend.compressFindCosted x).erase.1).nodeFindRootParentRankSlack y <=
+      backend.nodeFindRootParentRankSlack y := by
+  cases hyfind : backend.state.forest.findRoot? y with
+  | none =>
+      have hfindEq :
+          ((backend.compressFindCosted x).erase.1).state.forest.findRoot? y =
+            none := by
+        rw [backend.compressFindCosted_findRoot?_eq x y]
+        exact hyfind
+      simp [nodeFindRootParentRankSlack, hfindEq, hyfind]
+  | some yroot =>
+      have hfindEq :
+          ((backend.compressFindCosted x).erase.1).state.forest.findRoot? y =
+            some yroot := by
+        rw [backend.compressFindCosted_findRoot?_eq x y]
+        exact hyfind
+      have hrankEq :
+          ((backend.compressFindCosted x).erase.1).state.rank =
+            backend.state.rank :=
+        backend.compressFindCosted_rank_eq x
+      cases hparent : backend.state.forest.parent? y with
+      | none =>
+          have hyvalid :
+              backend.state.forest.valid y :=
+            backend.state.forest.valid_of_findRoot?_eq_some hyfind
+          rcases backend.state.forest.exists_parent?_of_valid hyvalid with
+            ⟨parent, hparentSome⟩
+          rw [hparent] at hparentSome
+          cases hparentSome
+      | some parent =>
+          have hparentNew :
+              ((backend.compressFindCosted x).erase.1).state.forest.parent? y =
+                some parent :=
+            backend.compressFindCosted_parent?_eq_old_of_ne hne hparent
+          have hparentRankLe :
+              backend.state.rank parent <= backend.state.rank yroot := by
+            by_cases hparentY : parent = y
+            · subst hparentY
+              exact backend.rank_le_root_rank_of_findRoot? hyfind
+            · have hparentFind :
+                  backend.state.forest.findRoot? parent = some yroot :=
+                backend.findRoot?_parent_eq_of_parent?_ne
+                  hparent hparentY hyfind
+              exact backend.rank_le_root_rank_of_findRoot? hparentFind
+          simp [nodeFindRootParentRankSlack, nodeRootParentRankSlack,
+            hfindEq, hyfind, hparent, hparentNew]
+          rw [hrankEq]
+          omega
+
+theorem rankSlackPotential_compressFindCosted_add_nodeRootParentRankSlack_le_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState)
+    {x root : Nat}
+    (hfind : backend.state.forest.findRoot? x = some root) :
+    rankSlackPotential ((backend.compressFindCosted x).erase.1) +
+        backend.nodeRootParentRankSlack root x <=
+      rankSlackPotential backend := by
+  let final := (backend.compressFindCosted x).erase.1
+  unfold rankSlackPotential
+  have hsize : final.state.forest.size = backend.state.forest.size := by
+    simpa [final] using backend.compressFindCosted_forest_size_eq x
+  rw [hsize]
+  apply rankSlackPotentialOver_add_single_le_of_forall_mem
+  · exact List.nodup_range
+  · exact List.mem_range.mpr
+      (backend.state.forest.valid_of_findRoot?_eq_some hfind)
+  · change final.nodeFindRootParentRankSlack x +
+        backend.nodeRootParentRankSlack root x <=
+        backend.nodeFindRootParentRankSlack x
+    have hzero :
+        final.nodeFindRootParentRankSlack x = 0 := by
+      simpa [final] using
+        backend.compressFindCosted_nodeFindRootParentRankSlack_eq_zero_of_findRoot?
+          hfind
+    rw [hzero]
+    simp [nodeFindRootParentRankSlack, hfind]
+  · intro y _hymem hyx
+    change final.nodeFindRootParentRankSlack y <=
+      backend.nodeFindRootParentRankSlack y
+    simpa [final] using
+      backend.compressFindCosted_nodeFindRootParentRankSlack_le_of_ne hyx
+
+theorem compressPathFindFuelTrace_rank_le_of_mem_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState) :
+    forall (fuel : Nat) {x root y : Nat},
+      backend.state.forest.findRoot? x = some root ->
+      y ∈ backend.compressPathFindFuelTrace fuel x ->
+      backend.state.rank x <= backend.state.rank y
+  | 0, x, root, y, _hfind, hmem => by
+      have hyx : y = x := by
+        simpa [compressPathFindFuelTrace] using hmem
+      subst y
+      omega
+  | fuel + 1, x, root, y, hfind, hmem => by
+      cases hparent : backend.state.forest.parent? x with
+      | none =>
+          have hyx : y = x := by
+            simpa [compressPathFindFuelTrace, hparent] using hmem
+          subst y
+          omega
+      | some parent =>
+          by_cases hsame : parent = x
+          · have hyx : y = x := by
+              simpa [compressPathFindFuelTrace, hparent, hsame] using hmem
+            subst y
+            omega
+          · have hmemCases :
+                y = x ∨
+                  y ∈ backend.compressPathFindFuelTrace fuel parent := by
+              simpa [compressPathFindFuelTrace, hparent, hsame] using hmem
+            rcases hmemCases with hyx | htailMem
+            · subst y
+              omega
+            · have hparentFind :
+                  backend.state.forest.findRoot? parent = some root :=
+                backend.findRoot?_parent_eq_of_parent?_ne
+                  hparent hsame hfind
+              have htailRank :
+                  backend.state.rank parent <= backend.state.rank y :=
+                compressPathFindFuelTrace_rank_le_of_mem_of_findRoot?
+                  backend fuel hparentFind htailMem
+              have hparentRank :
+                  backend.state.rank x < backend.state.rank parent :=
+                backend.inv.toRankInvariant.parent_rank_lt hparent hsame
+              omega
+
+theorem not_mem_parent_compressPathFindFuelTrace_of_parent?_ne
+    (backend : NoCompressionRankedMassBackendState)
+    (fuel : Nat) {x parent root : Nat}
+    (hparent : backend.state.forest.parent? x = some parent)
+    (hne : parent ≠ x)
+    (hparentFind : backend.state.forest.findRoot? parent = some root) :
+    x ∉ backend.compressPathFindFuelTrace fuel parent := by
+  intro hmem
+  have htailRank :
+      backend.state.rank parent <= backend.state.rank x :=
+    backend.compressPathFindFuelTrace_rank_le_of_mem_of_findRoot?
+      fuel hparentFind hmem
+  have hparentRank :
+      backend.state.rank x < backend.state.rank parent :=
+    backend.inv.toRankInvariant.parent_rank_lt hparent hne
+  omega
+
+theorem compressPathFindFuelCosted_nodeRootParentRankSlack_eq_old_of_not_mem_trace
+    (backend : NoCompressionRankedMassBackendState)
+    (fuel : Nat) {x y parent root : Nat}
+    (hnot : y ∉ backend.compressPathFindFuelTrace fuel x)
+    (hparent : backend.state.forest.parent? y = some parent) :
+    ((backend.compressPathFindFuelCosted fuel x).erase.1).nodeRootParentRankSlack
+      root y =
+      backend.nodeRootParentRankSlack root y := by
+  have hparentNew :
+      ((backend.compressPathFindFuelCosted fuel x).erase.1).state.forest.parent?
+        y =
+        some parent :=
+    backend.compressPathFindFuelCosted_parent?_eq_old_of_not_mem_trace
+      fuel hnot hparent
+  have hrankEq :
+      ((backend.compressPathFindFuelCosted fuel x).erase.1).state.rank =
+        backend.state.rank :=
+    backend.compressPathFindFuelCosted_rank_eq fuel x
+  simp [nodeRootParentRankSlack, hparentNew, hparent]
+  rw [hrankEq]
+
+theorem compressPathFindFuelCosted_rankSlackPotential_add_traceRootParentRankSlack_le_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState) :
+    forall (fuel : Nat) {x root : Nat},
+      backend.state.forest.findRoot? x = some root ->
+      rankSlackPotential ((backend.compressPathFindFuelCosted fuel x).erase.1) +
+          backend.traceRootParentRankSlack root
+            (backend.compressPathFindFuelTrace fuel x) <=
+        rankSlackPotential backend
+  | 0, x, root, hfind => by
+      simpa [compressPathFindFuelCosted, compressPathFindFuelTrace,
+        traceRootParentRankSlack] using
+        backend.rankSlackPotential_compressFindCosted_add_nodeRootParentRankSlack_le_of_findRoot?
+          hfind
+  | fuel + 1, x, root, hfind => by
+      cases hparent : backend.state.forest.parent? x with
+      | none =>
+          simpa [compressPathFindFuelCosted, compressPathFindFuelTrace,
+            traceRootParentRankSlack, hparent] using
+            backend.rankSlackPotential_compressFindCosted_add_nodeRootParentRankSlack_le_of_findRoot?
+              hfind
+      | some parent =>
+          by_cases hsame : parent = x
+          · simpa [compressPathFindFuelCosted, compressPathFindFuelTrace,
+              traceRootParentRankSlack, hparent, hsame] using
+              backend.rankSlackPotential_compressFindCosted_add_nodeRootParentRankSlack_le_of_findRoot?
+                hfind
+          · have hparentFind :
+                backend.state.forest.findRoot? parent = some root :=
+              backend.findRoot?_parent_eq_of_parent?_ne
+                hparent hsame hfind
+            let tail :=
+              (backend.compressPathFindFuelCosted fuel parent).erase.1
+            have htailDrop :
+                rankSlackPotential tail +
+                    backend.traceRootParentRankSlack root
+                      (backend.compressPathFindFuelTrace fuel parent) <=
+                  rankSlackPotential backend := by
+              simpa [tail] using
+                compressPathFindFuelCosted_rankSlackPotential_add_traceRootParentRankSlack_le_of_findRoot?
+                  backend fuel hparentFind
+            have htailFindX :
+                tail.state.forest.findRoot? x = some root := by
+              rw [show tail.state.forest.findRoot? x =
+                    backend.state.forest.findRoot? x by
+                simpa [tail] using
+                  backend.compressPathFindFuelCosted_findRoot?_eq
+                    fuel parent x]
+              exact hfind
+            have hxNotTail :
+                x ∉ backend.compressPathFindFuelTrace fuel parent :=
+              backend.not_mem_parent_compressPathFindFuelTrace_of_parent?_ne
+                fuel hparent hsame hparentFind
+            have hxSlack :
+                tail.nodeRootParentRankSlack root x =
+                  backend.nodeRootParentRankSlack root x := by
+              simpa [tail] using
+                backend.compressPathFindFuelCosted_nodeRootParentRankSlack_eq_old_of_not_mem_trace
+                  fuel hxNotTail hparent
+            have hstep :
+                rankSlackPotential ((tail.compressFindCosted x).erase.1) +
+                    tail.nodeRootParentRankSlack root x <=
+                  rankSlackPotential tail :=
+              tail.rankSlackPotential_compressFindCosted_add_nodeRootParentRankSlack_le_of_findRoot?
+                htailFindX
+            rw [hxSlack] at hstep
+            have hcombine :
+                rankSlackPotential ((tail.compressFindCosted x).erase.1) +
+                    backend.nodeRootParentRankSlack root x +
+                    backend.traceRootParentRankSlack root
+                      (backend.compressPathFindFuelTrace fuel parent) <=
+                  rankSlackPotential backend := by
+              omega
+            simpa [compressPathFindFuelCosted, compressPathFindFuelTrace,
+              traceRootParentRankSlack, hparent, hsame, tail, Nat.add_assoc,
+              Nat.add_comm, Nat.add_left_comm] using hcombine
+
+theorem rankSlackPotential_fullCompressFindCosted_add_traceRootParentRankSlack_le_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState)
+    {x root : Nat}
+    (hfind : backend.state.forest.findRoot? x = some root) :
+    rankSlackPotential ((backend.fullCompressFindCosted x).erase.1) +
+        backend.traceRootParentRankSlack root (backend.fullCompressFindTrace x) <=
+      rankSlackPotential backend := by
+  simpa [fullCompressFindCosted, fullCompressFindTrace] using
+    backend.compressPathFindFuelCosted_rankSlackPotential_add_traceRootParentRankSlack_le_of_findRoot?
+      backend.state.forest.maxSearchFuel hfind
+
+theorem fullCompressFindCosted_eq_self_of_findRoot?_none
+    (backend : NoCompressionRankedMassBackendState)
+    {x : Nat}
+    (hfind : backend.state.forest.findRoot? x = none) :
+    (backend.fullCompressFindCosted x).erase.1 = backend := by
+  have hinvalid :
+      ¬ backend.state.forest.valid x :=
+    backend.state.forest.invalid_of_findRoot?_eq_none
+      backend.inv.toInvariant hfind
+  have hparent : backend.state.forest.parent? x = none := by
+    cases hparent : backend.state.forest.parent? x with
+    | none => rfl
+    | some parent =>
+        have hx : backend.state.forest.valid x :=
+          backend.state.forest.valid_of_parent?_eq_some hparent
+        exact False.elim (hinvalid hx)
+  cases hfuel : backend.state.forest.maxSearchFuel with
+  | zero =>
+      unfold fullCompressFindCosted
+      rw [hfuel]
+      simp [compressPathFindFuelCosted,
+        compressFindCosted, backend.compressFindResult_none x hfind]
+  | succ fuel =>
+      unfold fullCompressFindCosted
+      rw [hfuel]
+      simp [compressPathFindFuelCosted, hparent,
+        compressFindCosted, backend.compressFindResult_none x hfind]
+
+theorem rankSlackPotential_fullCompressFindCosted_eq_of_findRoot?_none
+    (backend : NoCompressionRankedMassBackendState)
+    {x : Nat}
+    (hfind : backend.state.forest.findRoot? x = none) :
+    rankSlackPotential ((backend.fullCompressFindCosted x).erase.1) =
+      rankSlackPotential backend := by
+  rw [backend.fullCompressFindCosted_eq_self_of_findRoot?_none hfind]
+
+theorem rank_succ_le_rankBucketWidth (rank : Nat) :
+    rank + 1 <= rankBucketWidth (rankBucket rank) := by
+  have hlt : rank + 1 < 2 ^ (Nat.log2 (rank + 1) + 1) :=
+    Nat.lt_log2_self (n := rank + 1)
+  exact Nat.le_of_lt (by
+    simpa [rankBucket, rankBucketWidth] using hlt)
 
 theorem fullCompressFindCosted_cost_le_rankGapFindCredit
     (backend : NoCompressionRankedMassBackendState) (x : Nat) :
@@ -4628,6 +5332,326 @@ theorem fullCompressFindCosted_cost_le_logRankFindCredit
     (backend.fullCompressFindCosted_cost_le_rankGapFindCredit x)
     (backend.rankGapFindCredit_le_logRankFindCredit x)
 
+theorem rankGapFindCredit_le_rankBucketFindCredit
+    (backend : NoCompressionRankedMassBackendState) (x : Nat) :
+    backend.rankGapFindCredit x <= backend.rankBucketFindCredit x := by
+  cases hfind : backend.state.forest.findRoot? x with
+  | none =>
+      simp [rankGapFindCredit, rankBucketFindCredit, hfind]
+  | some root =>
+      have hbucket :=
+        rank_succ_le_rankBucketWidth (backend.state.rank root)
+      have hsub :
+          backend.state.rank root - backend.state.rank x <=
+            backend.state.rank root := Nat.sub_le _ _
+      simp [rankGapFindCredit, rankBucketFindCredit, hfind]
+      omega
+
+theorem fullCompressFindTrace_length_le_rankBucketWidth_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState)
+    {x root : Nat}
+    (hfind : backend.state.forest.findRoot? x = some root) :
+    (backend.fullCompressFindTrace x).length <=
+      rankBucketWidth (rankBucket (backend.state.rank root)) := by
+  have hgap :=
+    backend.fullCompressFindTrace_length_le_rank_gap_of_findRoot? hfind
+  have hbucket :=
+    rank_succ_le_rankBucketWidth (backend.state.rank root)
+  have hsub :
+      backend.state.rank root - backend.state.rank x <=
+        backend.state.rank root := Nat.sub_le _ _
+  omega
+
+theorem compressPathFindFuelTrace_length_le_traceRootParentRankSlack_add_two_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState) :
+    forall (fuel : Nat) {x root : Nat},
+      backend.state.forest.findRoot? x = some root ->
+      (backend.compressPathFindFuelTrace fuel x).length <=
+        backend.traceRootParentRankSlack root
+          (backend.compressPathFindFuelTrace fuel x) + 2
+  | 0, x, root, _hfind => by
+      simp [compressPathFindFuelTrace, traceRootParentRankSlack]
+  | fuel + 1, x, root, hfind => by
+      cases hparent : backend.state.forest.parent? x with
+      | none =>
+          simp [compressPathFindFuelTrace, traceRootParentRankSlack, hparent]
+      | some parent =>
+          by_cases hsame : parent = x
+          · simp [compressPathFindFuelTrace, traceRootParentRankSlack,
+              nodeRootParentRankSlack, hparent, hsame]
+          · have hparentFind :
+                backend.state.forest.findRoot? parent = some root :=
+              backend.findRoot?_parent_eq_of_parent?_ne hparent hsame hfind
+            by_cases hparentRoot : parent = root
+            · have hroot :
+                  backend.state.forest.IsRoot root :=
+                backend.state.forest.findRoot?_some_root
+                  backend.inv.toInvariant hfind
+              have htail :
+                  backend.compressPathFindFuelTrace fuel root = [root] :=
+                backend.compressPathFindFuelTrace_eq_singleton_of_root
+                  fuel hroot
+              have hrootNeX : root ≠ x := by
+                intro hrootX
+                exact hsame (hparentRoot.trans hrootX)
+              simp [compressPathFindFuelTrace, traceRootParentRankSlack,
+                nodeRootParentRankSlack, hparent, hparentRoot, htail,
+                hrootNeX]
+            · have htail :=
+                compressPathFindFuelTrace_length_le_traceRootParentRankSlack_add_two_of_findRoot?
+                  backend fuel hparentFind
+              have hparentRank :
+                  backend.state.rank parent < backend.state.rank root :=
+                backend.state.forest.findRoot?_rank_lt_of_ne
+                  backend.state.rank backend.inv.toRankInvariant
+                  hparentFind hparentRoot
+              have hslack :
+                  1 <= backend.nodeRootParentRankSlack root x := by
+                simp [nodeRootParentRankSlack, hparent]
+                omega
+              simp [compressPathFindFuelTrace, traceRootParentRankSlack,
+                hparent, hsame]
+              omega
+
+theorem fullCompressFindTrace_length_le_traceRootParentRankSlack_add_two_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState)
+    {x root : Nat}
+    (hfind : backend.state.forest.findRoot? x = some root) :
+    (backend.fullCompressFindTrace x).length <=
+      backend.traceRootParentRankSlack root
+        (backend.fullCompressFindTrace x) + 2 := by
+  simpa [fullCompressFindTrace] using
+    backend.compressPathFindFuelTrace_length_le_traceRootParentRankSlack_add_two_of_findRoot?
+      backend.state.forest.maxSearchFuel hfind
+
+theorem fullCompressFindCosted_nodeRootParentRankSlack_eq_zero_of_trace_mem
+    (backend : NoCompressionRankedMassBackendState)
+    {x root y : Nat}
+    (hfind : backend.state.forest.findRoot? x = some root)
+    (hmem : y ∈ backend.fullCompressFindTrace x) :
+    ((backend.fullCompressFindCosted x).erase.1).nodeRootParentRankSlack
+      root y = 0 := by
+  have hparent :=
+    backend.fullCompressFindCosted_trace_parent?_eq_root_of_findRoot?
+      hfind hmem
+  simp [nodeRootParentRankSlack, hparent]
+
+theorem traceRootParentRankSlack_eq_zero_of_forall
+    (backend : NoCompressionRankedMassBackendState) (root : Nat) :
+    forall (trace : List Nat),
+      (forall y, y ∈ trace -> backend.nodeRootParentRankSlack root y = 0) ->
+        backend.traceRootParentRankSlack root trace = 0
+  | [], _h => by
+      simp [traceRootParentRankSlack]
+  | y :: ys, h => by
+      have hy : backend.nodeRootParentRankSlack root y = 0 := by
+        exact h y (by simp)
+      have hys :
+          forall z, z ∈ ys ->
+            backend.nodeRootParentRankSlack root z = 0 := by
+        intro z hz
+        exact h z (by simp [hz])
+      have htail :=
+        traceRootParentRankSlack_eq_zero_of_forall backend root ys hys
+      simp [traceRootParentRankSlack, hy, htail]
+
+theorem fullCompressFindCosted_traceRootParentRankSlack_eq_zero_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState)
+    {x root : Nat}
+    (hfind : backend.state.forest.findRoot? x = some root) :
+    ((backend.fullCompressFindCosted x).erase.1).traceRootParentRankSlack
+      root (backend.fullCompressFindTrace x) = 0 := by
+  apply traceRootParentRankSlack_eq_zero_of_forall
+  intro y hmem
+  exact
+    backend.fullCompressFindCosted_nodeRootParentRankSlack_eq_zero_of_trace_mem
+      hfind hmem
+
+theorem fullCompressFindCosted_cost_add_traceRootParentRankSlack_le_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState)
+    {x root : Nat}
+    (hfind : backend.state.forest.findRoot? x = some root) :
+    (backend.fullCompressFindCosted x).cost +
+        ((backend.fullCompressFindCosted x).erase.1).traceRootParentRankSlack
+          root (backend.fullCompressFindTrace x) <=
+      2 + backend.traceRootParentRankSlack root
+        (backend.fullCompressFindTrace x) := by
+  have hcost := backend.fullCompressFindCosted_cost_eq_trace_length x
+  have hlen :=
+    backend.fullCompressFindTrace_length_le_traceRootParentRankSlack_add_two_of_findRoot?
+      hfind
+  have hzero :=
+    backend.fullCompressFindCosted_traceRootParentRankSlack_eq_zero_of_findRoot?
+      hfind
+  rw [hcost, hzero]
+  omega
+
+theorem fullCompressFindCosted_cost_add_rankSlackPotential_le_two_add_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState)
+    {x root : Nat}
+    (hfind : backend.state.forest.findRoot? x = some root) :
+    (backend.fullCompressFindCosted x).cost +
+        rankSlackPotential ((backend.fullCompressFindCosted x).erase.1) <=
+      2 + rankSlackPotential backend := by
+  have hlocal :=
+    backend.fullCompressFindCosted_cost_add_traceRootParentRankSlack_le_of_findRoot?
+      hfind
+  have hdrop :=
+    backend.rankSlackPotential_fullCompressFindCosted_add_traceRootParentRankSlack_le_of_findRoot?
+      hfind
+  omega
+
+theorem fullCompressFindCosted_cost_add_rankSlackPotential_le_rankSlackFindCredit
+    (backend : NoCompressionRankedMassBackendState) (x : Nat) :
+    (backend.fullCompressFindCosted x).cost +
+        rankSlackPotential ((backend.fullCompressFindCosted x).erase.1) <=
+      backend.rankSlackFindCredit x + rankSlackPotential backend := by
+  cases hfind : backend.state.forest.findRoot? x with
+  | none =>
+      have hcost := backend.fullCompressFindCosted_cost_le x
+      have hpot :=
+        backend.rankSlackPotential_fullCompressFindCosted_eq_of_findRoot?_none
+          hfind
+      simp [rankSlackFindCredit, hfind]
+      rw [hpot]
+      omega
+  | some root =>
+      have hbound :=
+        backend.fullCompressFindCosted_cost_add_rankSlackPotential_le_two_add_of_findRoot?
+          hfind
+      simpa [rankSlackFindCredit, hfind] using hbound
+
+theorem fullCompressFindCosted_nodeFindRootParentRankSlack_le_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState)
+    {x root y : Nat}
+    (hfind : backend.state.forest.findRoot? x = some root)
+    (hy : backend.state.forest.valid y) :
+    ((backend.fullCompressFindCosted x).erase.1).nodeFindRootParentRankSlack
+      y <= backend.nodeFindRootParentRankSlack y := by
+  let final := (backend.fullCompressFindCosted x).erase.1
+  have hfindEq :
+      final.state.forest.findRoot? y =
+      backend.state.forest.findRoot? y := by
+    simpa [final] using backend.fullCompressFindCosted_findRoot?_eq x y
+  have hrankEq : final.state.rank = backend.state.rank := by
+    simpa [final] using backend.fullCompressFindCosted_rank_eq x
+  change final.nodeFindRootParentRankSlack y <=
+    backend.nodeFindRootParentRankSlack y
+  by_cases hmem : y ∈ backend.fullCompressFindTrace x
+  · have hyFind :
+        backend.state.forest.findRoot? y = some root :=
+      backend.fullCompressFindTrace_mem_findRoot?_eq_of_findRoot?
+        hfind hmem
+    have hzero :
+        final.nodeRootParentRankSlack root y = 0 := by
+      simpa [final] using
+        backend.fullCompressFindCosted_nodeRootParentRankSlack_eq_zero_of_trace_mem
+          hfind hmem
+    simp [nodeFindRootParentRankSlack, hfindEq, hyFind, hzero]
+  · rcases backend.state.forest.exists_parent?_of_valid hy with
+      ⟨parent, hparent⟩
+    have hparentFinal :
+        final.state.forest.parent? y = some parent := by
+      simpa [final] using
+        backend.fullCompressFindCosted_parent?_eq_old_of_not_mem_trace
+          hmem hparent
+    cases hyFind : backend.state.forest.findRoot? y with
+    | none =>
+        simp [nodeFindRootParentRankSlack, hfindEq, hyFind]
+    | some yroot =>
+        have hparentRankLe :
+            backend.state.rank parent <= backend.state.rank yroot := by
+          by_cases hparentY : parent = y
+          · subst hparentY
+            exact backend.rank_le_root_rank_of_findRoot? hyFind
+          · have hparentFind :
+                backend.state.forest.findRoot? parent = some yroot :=
+              backend.findRoot?_parent_eq_of_parent?_ne
+                hparent hparentY hyFind
+            exact backend.rank_le_root_rank_of_findRoot? hparentFind
+        simp [nodeFindRootParentRankSlack, nodeRootParentRankSlack,
+          hfindEq, hyFind, hparent, hparentFinal]
+        rw [hrankEq]
+        omega
+
+theorem rankSlackPotential_fullCompressFindCosted_le_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState)
+    {x root : Nat}
+    (hfind : backend.state.forest.findRoot? x = some root) :
+    rankSlackPotential ((backend.fullCompressFindCosted x).erase.1) <=
+      rankSlackPotential backend := by
+  let final := (backend.fullCompressFindCosted x).erase.1
+  unfold rankSlackPotential
+  have hsize : final.state.forest.size = backend.state.forest.size := by
+    simpa [final] using backend.fullCompressFindCosted_forest_size_eq x
+  rw [hsize]
+  apply rankSlackPotentialOver_le_of_forall_mem
+  intro y hyMem
+  have hy : backend.state.forest.valid y := by
+    exact List.mem_range.mp hyMem
+  simpa [final] using
+    backend.fullCompressFindCosted_nodeFindRootParentRankSlack_le_of_findRoot?
+      hfind hy
+
+theorem fullCompressionRankSlackCheckpoint_profile :
+    (forall (backend : NoCompressionRankedMassBackendState) (x : Nat),
+      ((backend.fullCompressFindCosted x).erase.1).state.rank =
+        backend.state.rank) /\
+      (forall (backend : NoCompressionRankedMassBackendState)
+        {x root : Nat},
+        backend.state.forest.findRoot? x = some root ->
+        (backend.fullCompressFindTrace x).length <=
+          backend.traceRootParentRankSlack root
+            (backend.fullCompressFindTrace x) + 2) /\
+      (forall (backend : NoCompressionRankedMassBackendState)
+        {x root : Nat},
+        backend.state.forest.findRoot? x = some root ->
+        ((backend.fullCompressFindCosted x).erase.1).traceRootParentRankSlack
+          root (backend.fullCompressFindTrace x) = 0) /\
+      (forall (backend : NoCompressionRankedMassBackendState)
+        {x root : Nat},
+        backend.state.forest.findRoot? x = some root ->
+        (backend.fullCompressFindCosted x).cost +
+            ((backend.fullCompressFindCosted x).erase.1).traceRootParentRankSlack
+              root (backend.fullCompressFindTrace x) <=
+          2 + backend.traceRootParentRankSlack root
+            (backend.fullCompressFindTrace x)) /\
+      (forall (backend : NoCompressionRankedMassBackendState)
+        {x root : Nat},
+        backend.state.forest.findRoot? x = some root ->
+        rankSlackPotential ((backend.fullCompressFindCosted x).erase.1) <=
+          rankSlackPotential backend) := by
+  constructor
+  · intro backend x
+    exact backend.fullCompressFindCosted_rank_eq x
+  · constructor
+    · intro backend x root hfind
+      exact
+        backend.fullCompressFindTrace_length_le_traceRootParentRankSlack_add_two_of_findRoot?
+          hfind
+    · constructor
+      · intro backend x root hfind
+        exact
+          backend.fullCompressFindCosted_traceRootParentRankSlack_eq_zero_of_findRoot?
+            hfind
+      · constructor
+        · intro backend x root hfind
+          exact
+            backend.fullCompressFindCosted_cost_add_traceRootParentRankSlack_le_of_findRoot?
+              hfind
+        · intro backend x root hfind
+          exact
+            backend.rankSlackPotential_fullCompressFindCosted_le_of_findRoot?
+              hfind
+
+theorem fullCompressFindCosted_cost_le_rankBucketFindCredit
+    (backend : NoCompressionRankedMassBackendState) (x : Nat) :
+    (backend.fullCompressFindCosted x).cost <=
+      backend.rankBucketFindCredit x := by
+  exact Nat.le_trans
+    (backend.fullCompressFindCosted_cost_le_rankGapFindCredit x)
+    (backend.rankGapFindCredit_le_rankBucketFindCredit x)
+
 theorem rankSizePotential_fullCompressFindCosted_eq
     (backend : NoCompressionRankedMassBackendState) (x : Nat) :
     rankSizePotential ((backend.fullCompressFindCosted x).erase.1) =
@@ -4641,6 +5665,41 @@ theorem rankSizePotential_unionCosted_eq
       rankSizePotential backend := by
   simp [rankSizePotential, unionCosted, unionResult,
     NoCompressionRankedMassForest.unionCosted]
+
+theorem rankBucketPotential_fullCompressFindCosted_eq
+    (backend : NoCompressionRankedMassBackendState) (x : Nat) :
+    rankBucketPotential ((backend.fullCompressFindCosted x).erase.1) =
+      rankBucketPotential backend := by
+  unfold rankBucketPotential
+  rw [backend.fullCompressFindCosted_forest_size_eq x]
+
+theorem rankBucketPotential_unionCosted_eq
+    (backend : NoCompressionRankedMassBackendState) (x y : Nat) :
+    rankBucketPotential ((backend.unionCosted x y).erase) =
+      rankBucketPotential backend := by
+  simp [rankBucketPotential, unionCosted, unionResult,
+    NoCompressionRankedMassForest.unionCosted]
+
+theorem rankSlackPotential_unionCosted_le_rankBucketPotential
+    (backend : NoCompressionRankedMassBackendState) (x y : Nat) :
+    rankSlackPotential ((backend.unionCosted x y).erase) <=
+      rankBucketPotential backend := by
+  have hle :=
+    rankSlackPotential_le_rankBucketPotential ((backend.unionCosted x y).erase)
+  have hbucket := backend.rankBucketPotential_unionCosted_eq x y
+  rwa [hbucket] at hle
+
+theorem unionCosted_cost_add_rankSlackPotential_le_rankSlackSizeUnionCredit
+    (backend : NoCompressionRankedMassBackendState) (x y : Nat) :
+    (backend.unionCosted x y).cost +
+        rankSlackPotential ((backend.unionCosted x y).erase) <=
+      backend.rankSlackSizeUnionCredit x y + rankSlackPotential backend := by
+  have hcost : (backend.unionCosted x y).cost = 1 := by
+    rfl
+  have hpot := backend.rankSlackPotential_unionCosted_le_rankBucketPotential x y
+  rw [hcost]
+  unfold rankSlackSizeUnionCredit
+  omega
 
 /--
 Potential-method scaffold for the current representation backend.
@@ -4792,6 +5851,179 @@ theorem fullCompressionLogRankAmortizedBackend_profile :
   constructor
   · exact fullCompressionLogRankAmortizedBackend.find_amortized
   · exact fullCompressionLogRankAmortizedBackend.union_amortized
+
+/--
+First explicit rank-bucket amortized checkpoint for full compression.
+
+The successful-find credit is the geometric width of the returned root's rank
+bucket. This is coarser than the log-rank checkpoint and still not Tarjan's
+inverse-Ackermann analysis, but it exposes the bucket schedule and proves that
+bucket width can pay the existing rank-gap trace bound.
+-/
+def fullCompressionRankBucketAmortizedBackend :
+    RepresentationAmortizedBackend NoCompressionRankedMassBackendState
+      rankBucketPotential
+      rankBucketFindCredit
+      unionByRankCredit where
+  toRepresentationBackend := fullCompressionRepresentationBackend
+  find_amortized := by
+    intro backend x
+    unfold Amortized.CostedBound Amortized.Bound
+    have hcost := backend.fullCompressFindCosted_cost_le_rankBucketFindCredit x
+    have hpot := backend.rankBucketPotential_fullCompressFindCosted_eq x
+    change (backend.fullCompressFindCosted x).cost +
+        rankBucketPotential ((backend.fullCompressFindCosted x).erase.1) <=
+      backend.rankBucketFindCredit x + rankBucketPotential backend
+    rw [hpot]
+    omega
+  union_amortized := by
+    intro backend x y
+    unfold Amortized.CostedBound Amortized.Bound
+    have hpot := backend.rankBucketPotential_unionCosted_eq x y
+    change (backend.unionCosted x y).cost +
+        rankBucketPotential ((backend.unionCosted x y).erase) <=
+      backend.unionByRankCredit x y + rankBucketPotential backend
+    rw [hpot]
+    simp [unionByRankCredit]
+
+theorem fullCompressionRankBucketAmortizedBackend_profile :
+    (forall (backend : NoCompressionRankedMassBackendState) (x : Nat),
+      Amortized.CostedBound
+        (fullCompressionRankBucketAmortizedBackend.findCosted backend x)
+        (rankBucketPotential backend)
+        (rankBucketPotential
+          ((fullCompressionRankBucketAmortizedBackend.findCosted backend x).erase.1))
+        (rankBucketFindCredit backend x)) /\
+      (forall (backend : NoCompressionRankedMassBackendState) (x y : Nat),
+        Amortized.CostedBound
+          (fullCompressionRankBucketAmortizedBackend.unionCosted backend x y)
+          (rankBucketPotential backend)
+          (rankBucketPotential
+            (fullCompressionRankBucketAmortizedBackend.unionCosted backend x y).erase)
+          (unionByRankCredit backend x y)) := by
+  constructor
+  · exact fullCompressionRankBucketAmortizedBackend.find_amortized
+  · exact fullCompressionRankBucketAmortizedBackend.union_amortized
+
+/--
+Rank-slack potential checkpoint for full compression.
+
+Successful finds are paid with constant credit `2`: the aggregate
+`rankSlackPotential` drops by enough to cover the trace-root parent slack, and
+the local trace theorem converts that slack into the actual trace cost. Invalid
+queries retain the fuel fallback. Union uses an explicit potential-delta credit
+because this checkpoint is about compression paying for find, not yet about a
+Tarjan-tight union/find combined schedule.
+-/
+def fullCompressionRankSlackAmortizedBackend :
+    RepresentationAmortizedBackend NoCompressionRankedMassBackendState
+      rankSlackPotential
+      rankSlackFindCredit
+      rankSlackUnionCredit where
+  toRepresentationBackend := fullCompressionRepresentationBackend
+  find_amortized := by
+    intro backend x
+    unfold Amortized.CostedBound Amortized.Bound
+    change (backend.fullCompressFindCosted x).cost +
+        rankSlackPotential ((backend.fullCompressFindCosted x).erase.1) <=
+      backend.rankSlackFindCredit x + rankSlackPotential backend
+    exact backend.fullCompressFindCosted_cost_add_rankSlackPotential_le_rankSlackFindCredit x
+  union_amortized := by
+    intro backend x y
+    unfold Amortized.CostedBound Amortized.Bound
+    let before := rankSlackPotential backend
+    let after := rankSlackPotential ((backend.unionCosted x y).erase)
+    change (backend.unionCosted x y).cost + after <=
+      backend.rankSlackUnionCredit x y + before
+    have hcost : (backend.unionCosted x y).cost = 1 := by
+      rfl
+    rw [hcost]
+    unfold rankSlackUnionCredit
+    change 1 + after <= (after - before + 1) + before
+    by_cases hle : before <= after
+    · have hcancel : after - before + before = after :=
+        Nat.sub_add_cancel hle
+      omega
+    · have hle' : after <= before := by
+        omega
+      have hzero : after - before = 0 :=
+        Nat.sub_eq_zero_of_le hle'
+      omega
+
+theorem fullCompressionRankSlackAmortizedBackend_profile :
+    (forall (backend : NoCompressionRankedMassBackendState) (x : Nat),
+      Amortized.CostedBound
+        (fullCompressionRankSlackAmortizedBackend.findCosted backend x)
+        (rankSlackPotential backend)
+        (rankSlackPotential
+          ((fullCompressionRankSlackAmortizedBackend.findCosted backend x).erase.1))
+        (rankSlackFindCredit backend x)) /\
+      (forall (backend : NoCompressionRankedMassBackendState) (x y : Nat),
+        Amortized.CostedBound
+          (fullCompressionRankSlackAmortizedBackend.unionCosted backend x y)
+          (rankSlackPotential backend)
+          (rankSlackPotential
+            (fullCompressionRankSlackAmortizedBackend.unionCosted backend x y).erase)
+          (rankSlackUnionCredit backend x y)) := by
+  constructor
+  · exact fullCompressionRankSlackAmortizedBackend.find_amortized
+  · exact fullCompressionRankSlackAmortizedBackend.union_amortized
+
+/--
+Rank-slack checkpoint with a non-delta union credit.
+
+This keeps the constant successful-find credit from
+`fullCompressionRankSlackAmortizedBackend`, but replaces the union credit
+`potential_after - potential_before + 1` with the explicit size-log bound
+`rankBucketPotential backend + 1`.  The bound is intentionally coarse; its job
+is to remove the answer-shaped delta credit before the later Tarjan potential is
+designed.
+-/
+def fullCompressionRankSlackSizeUnionAmortizedBackend :
+    RepresentationAmortizedBackend NoCompressionRankedMassBackendState
+      rankSlackPotential
+      rankSlackFindCredit
+      rankSlackSizeUnionCredit where
+  toRepresentationBackend := fullCompressionRepresentationBackend
+  find_amortized := by
+    intro backend x
+    unfold Amortized.CostedBound Amortized.Bound
+    change (backend.fullCompressFindCosted x).cost +
+        rankSlackPotential ((backend.fullCompressFindCosted x).erase.1) <=
+      backend.rankSlackFindCredit x + rankSlackPotential backend
+    exact
+      backend.fullCompressFindCosted_cost_add_rankSlackPotential_le_rankSlackFindCredit x
+  union_amortized := by
+    intro backend x y
+    unfold Amortized.CostedBound Amortized.Bound
+    change (backend.unionCosted x y).cost +
+        rankSlackPotential ((backend.unionCosted x y).erase) <=
+      backend.rankSlackSizeUnionCredit x y + rankSlackPotential backend
+    exact
+      backend.unionCosted_cost_add_rankSlackPotential_le_rankSlackSizeUnionCredit
+        x y
+
+theorem fullCompressionRankSlackSizeUnionAmortizedBackend_profile :
+    (forall (backend : NoCompressionRankedMassBackendState) (x : Nat),
+      Amortized.CostedBound
+        (fullCompressionRankSlackSizeUnionAmortizedBackend.findCosted backend x)
+        (rankSlackPotential backend)
+        (rankSlackPotential
+          ((fullCompressionRankSlackSizeUnionAmortizedBackend.findCosted
+            backend x).erase.1))
+        (rankSlackFindCredit backend x)) /\
+      (forall (backend : NoCompressionRankedMassBackendState) (x y : Nat),
+        Amortized.CostedBound
+          (fullCompressionRankSlackSizeUnionAmortizedBackend.unionCosted
+            backend x y)
+          (rankSlackPotential backend)
+          (rankSlackPotential
+            (fullCompressionRankSlackSizeUnionAmortizedBackend.unionCosted
+              backend x y).erase)
+          (rankSlackSizeUnionCredit backend x y)) := by
+  constructor
+  · exact fullCompressionRankSlackSizeUnionAmortizedBackend.find_amortized
+  · exact fullCompressionRankSlackSizeUnionAmortizedBackend.union_amortized
 
 theorem profile :
     (forall (backend : NoCompressionRankedMassBackendState) (x : Nat),
