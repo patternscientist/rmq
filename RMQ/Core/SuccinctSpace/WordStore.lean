@@ -308,6 +308,63 @@ theorem chunkPayloadWords_get?_some_of_mul_lt
   unfold chunkPayloadWords
   exact chunkPayloadWordsFuel_get?_some_of_mul_lt hword (by omega) hi
 
+theorem chunkPayloadWordsFuel_get?_none_of_length_le_mul
+    {wordSize fuel : Nat} :
+    forall {payload : List Bool} {i : Nat},
+      payload.length <= i * wordSize ->
+        (chunkPayloadWordsFuel wordSize fuel payload)[i]? = none := by
+  induction fuel with
+  | zero =>
+      intro payload i hlen
+      simp [chunkPayloadWordsFuel]
+  | succ fuel ih =>
+      intro payload i hlen
+      cases payload with
+      | nil =>
+          simp [chunkPayloadWordsFuel]
+      | cons bit rest =>
+          cases i with
+          | zero =>
+              simp at hlen
+          | succ i =>
+              have hdropLen :
+                  ((bit :: rest).drop wordSize).length <=
+                    i * wordSize := by
+                rw [List.length_drop]
+                have hmul :
+                    (i + 1) * wordSize = i * wordSize + wordSize := by
+                  simp [Nat.succ_mul]
+                omega
+              have htail := ih hdropLen
+              simpa [chunkPayloadWordsFuel] using htail
+
+theorem chunkPayloadWords_get?_none_of_length_le_mul
+    {wordSize : Nat}
+    {payload : List Bool} {i : Nat}
+    (hi : payload.length <= i * wordSize) :
+    (chunkPayloadWords wordSize payload)[i]? = none := by
+  unfold chunkPayloadWords
+  exact chunkPayloadWordsFuel_get?_none_of_length_le_mul hi
+
+theorem chunkPayloadWords_length_le_div_add_one
+    {wordSize : Nat} (hword : 0 < wordSize)
+    (payload : List Bool) :
+    (chunkPayloadWords wordSize payload).length <=
+      payload.length / wordSize + 1 := by
+  have hcovered :
+      payload.length <=
+        (payload.length / wordSize + 1) * wordSize := by
+    have hlt : payload.length <
+        payload.length / wordSize * wordSize + wordSize :=
+      Nat.lt_div_mul_add hword (a := payload.length)
+    simpa [Nat.add_mul, Nat.one_mul] using Nat.le_of_lt hlt
+  have hnone :
+      (chunkPayloadWords wordSize payload)[
+          payload.length / wordSize + 1]? = none :=
+    chunkPayloadWords_get?_none_of_length_le_mul hcovered
+  rw [List.getElem?_eq_none_iff] at hnone
+  exact hnone
+
 /--
 A stored word array whose flattened word contents are exactly the counted
 payload bits.
@@ -351,6 +408,35 @@ theorem payload_eq_words_join
     (store : PayloadWordStore payload) :
     flattenPayloadWords store.words.toList = payload :=
   store.erases
+
+/--
+Read the full payload word array, charging one modeled read per stored word.
+
+This is a reference readback primitive for proofs that must demonstrate payload
+dependence without pretending the whole payload is one machine word.
+-/
+def readAllWordsCosted
+    {payload : List Bool}
+    (store : PayloadWordStore payload) : Costed (List (List Bool)) :=
+  Costed.tickValue store.words.size store.words.toList
+
+@[simp] theorem readAllWordsCosted_cost
+    {payload : List Bool}
+    (store : PayloadWordStore payload) :
+    store.readAllWordsCosted.cost = store.words.size := by
+  simp [readAllWordsCosted]
+
+@[simp] theorem readAllWordsCosted_erase
+    {payload : List Bool}
+    (store : PayloadWordStore payload) :
+    store.readAllWordsCosted.erase = store.words.toList := by
+  simp [readAllWordsCosted]
+
+theorem readAllWordsCosted_flatten_erase
+    {payload : List Bool}
+    (store : PayloadWordStore payload) :
+    flattenPayloadWords store.readAllWordsCosted.erase = payload := by
+  simpa using store.erases
 
 end PayloadWordStore
 

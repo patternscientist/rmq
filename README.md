@@ -186,9 +186,21 @@ about Lean's executable `List` runtime.
   standalone rank/select extraction surfaces. `RankSelectSpec` packages exact
   bitvector access/rank/select over stored bits with an `n + overhead n`
   payload profile, `RankSelectCompressed` adds the fixed-weight
-  compressed/FID theorem shape with a Mathlib-free binomial-count universe, and
-  `RankSelectPublic` exposes the public Jacobson/Clark bitvector family theorem
-  as
+  compressed/FID theorem shape with a Mathlib-free binomial-count universe plus
+  a packed-code-only local RRR block kernel consumed by an ambient fixed-weight
+  block-composition scaffold, a charged class/length-read local kernel,
+  block-size route-table cost discipline, decoded route-field profiles over
+  charged metadata reads, packed fixed-width route-word readback profiles,
+  canonical route field-table constructors, a single-store route/class-length
+  envelope whose ambient evaluator consumes charged class/length reads, a
+  family-level combined-metadata `o(n)` bridge, a global block-count/field-width
+  budget bridge for fixed-block route/class-length families, fixed-size chunk
+  decomposition bounds plus a sentinel chunk variant for route-total
+  class/length metadata budgets, a constructive sentinel-chunk access route,
+  and conditional bounded-regime bridges for the local decoder, ambient route
+  tables, and ambient primary-budget join, and
+  `RankSelectPublic` exposes the public Jacobson/Clark
+  bitvector family theorem as
   `RankSelect.jacobsonClarkNPlusOConstantQuery` and its strengthened
   word-bounded profile
   `RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery`.
@@ -216,9 +228,14 @@ about Lean's executable `List` runtime.
   `shapeAccessCloseRankProfile`). This is still not yet a full
   tree-navigation library API.
 - `RMQUnionFind.lean`: standalone union-find spoke import root. It exposes the
-  first finite-partition specification, exact costed reference operations, and
-  a reusable potential-method backend interface for future path-compression
-  implementations. It does not yet prove Tarjan's inverse-Ackermann bound.
+  finite-partition specification, exact costed reference operations,
+  parent-pointer forest refinement, union-by-rank/root-mass/rank-power
+  checkpoints, full-compression find refinement, and a log-rank amortized
+  checkpoint. It does not yet prove Tarjan's inverse-Ackermann bound.
+- `VerifiedDS.lean`: thin neutral aggregate facade over the active public roots
+  (`RMQ`, `RMQHub`, `RMQRankSelect`, `RMQBPNavigation`, and `RMQUnionFind`).
+  This signals the broader verified-data-structures direction without renaming
+  modules or changing citable RMQ theorem names.
 - `RMQ/Core/SuccinctReduction.lean`: reduction-facing adapter from
   plus-minus-one RMQ backends over generated Euler-tour parentheses to the
   ordinary RMQ/LCA backend interfaces.
@@ -365,7 +382,12 @@ RMQ blocker:
 - extract the reusable cost/refinement/lower-bound hub toward a CSLib-style
   library surface;
 - refine the landed standalone Jacobson/Clark rank/select theorem toward
-  a concrete compressed/FID codec behind the fixed-weight profile, and deepen
+  concrete global routing over the ambient fixed-weight block-composition
+  scaffold, consume the canonical eight-table route-layout constructor and
+  route/class-length family promotion in a block decomposition/routing family,
+  feed the fixed-size sentinel chunk class/length metadata budget bridge, prove
+  the primary block-code budget is `o(n)`, discharge the remaining semantic
+  rank/select route exactness fields from charged routing tables, and deepen
   the landed BP-navigation close/rank bridge into a fuller tree-navigation API;
   and
 - deepen the new union-find spoke from specification/reference backend to

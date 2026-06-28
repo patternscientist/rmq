@@ -433,8 +433,8 @@ No cleanup task should introduce Mathlib without an explicit user decision.
 
 After the select unification and module cleanup, the natural next spokes are:
 
-1. a concrete compressed/FID codec behind the public fixed-weight rank/select
-   profile:
+1. a constant-query compressed/FID layer behind the public packed fixed-weight
+   readback baseline:
    `log2 (binomialCount n m) + 1 + o(n)`;
 2. fuller balanced-parentheses tree navigation over the landed public
    close/rank bridge and rank/select surface;

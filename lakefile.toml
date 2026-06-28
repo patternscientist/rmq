@@ -22,3 +22,6 @@ name = "RMQArchive"
 
 [[lean_lib]]
 name = "RMQExamples"
+
+[[lean_lib]]
+name = "VerifiedDS"
