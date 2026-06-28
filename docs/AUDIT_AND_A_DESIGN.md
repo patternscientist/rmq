@@ -2500,3 +2500,51 @@ round-log leak (`e296eec`) is being left as-is per user instruction (remedy stil
 Bottom line: incremental, correct boundary/basics cleanup with perfect integrity — the
 codebase keeps inching from "navigable" toward "fully idiomatic" without ever risking the
 result.
+
+## 2026-06-26 (AUDIT) — `main` @ `c92c8af` (BIG batch: two new spokes + compression)
+
+~40 commits since `57b6187` (+27,530/−212, 81 files), incl. merges of "rank-select FID
+frontier" and "union-find amortization frontier". This is the first batch in the series
+that is mostly NEW research, not cleanup — so it got the genuine-vs-vacuous lens, not just
+integrity. Machine-checked: build green; hygiene clean (no `sorry`/`admit`/`native_decide`);
+**all seven** axiom checks resolve, zero `sorryAx`/`ofReduceBool`/errors — headline 16,
+full 653, rank-select 230, union-find 114, hub 23, bp-navigation 7, archive 4.
+
+**VERDICT: GENUINE and scrupulously honest. No overclaim, no trust regression.**
+- **Compressed/FID rank-select is real compression, honestly scoped.**
+  `fixedWeightPayloadBudget bits := Nat.log2 (binomialCount n (trueCount bits)) + 1`, and
+  `binomialCount` is the *actual* binomial coefficient (Pascal's recurrence verbatim) — so
+  the budget is `⌈log₂ C(n,k)⌉`, the information-theoretic entropy (sub-`n` for skewed `k`),
+  NOT a relabeled `n`. `compressedDirectoryProfile` bounds payload by that entropy + overhead
+  with exact charged access/rank/select. Crucially the docs state it is a *local kernel /
+  adapter scaffold*, "not yet the final RRR/Clark-style construction" and "not yet the global
+  O(1) FID theorem" — accurate; the global FID is openly still frontier.
+- **Union-find is genuine union-by-rank + path-compression amortization, explicitly
+  pre-Tarjan.** A graduated potential-method series (zero / rank-gap / log-rank / rank-bucket
+  / rank-slack credits) anchored to the *real* invariant `2^rank ≤ mass` ⇒ `rank ≤ log₂ size`
+  and to *exact* bridges (`fullCompressFindCosted_cost_eq_trace_length`,
+  `trace_length_le_{rootMass,rank_gap}`). Cost is tied to actual trace length bounded by real
+  structural quantities — not a fudge potential. The root docstring says "not yet Tarjan,"
+  "explicitly pre-inverse-Ackermann," "still not a Tarjan or inverse-Ackermann theorem."
+- **Honest maturity labeling throughout.** The new "artifact maturity layer" /
+  `FAMILY_SUMMARY` table states exact per-component maturity, saturated with correct caveats
+  ("scaffold," "not yet a broadword implementation," "compatibility scaffolding," "remaining
+  frontier"). This is self-policing, the opposite of reward-hacking. They also added their own
+  trust tooling (`trust audit packet`, per-spoke axiom-check scripts, `proof digestion
+  protocol`).
+- **Clean spoke separation.** New spokes are additive roots (`RMQUnionFind`, `RMQBPNavigation`,
+  `RMQRankSelect` compressed extension, `RMQExamples`), each with its own gated axiom check; the
+  headline RMQ capstone (16 headliners) is unchanged and not entangled with the frontier code.
+- Cleanup continued in parallel (B-tier): `Tighten/Prune Costed map proof idioms`,
+  `Enforce compatibility shim boundaries`, gate streaming + compat-build-in-gate.
+
+**Watch (honestly stated by them, not hidden):** both new spokes are *frontiers* — compressed
+FID has the entropy SPACE bound but a one-read query scaffold, not the global O(1) FID; union
+-find is pre-inverse-Ackermann. These are real, non-vacuous waypoints, correctly labeled as
+incomplete. Standing B-tier idiom items (Bool dance, mega-simp) persist but are now partly
+being chipped at.
+
+Bottom line: the project resumed active research (genuine entropy-compressed FID kernel +
+genuine amortized union-find) on top of the now-clean library, with a flawless integrity
+record and unusually honest frontier labeling. Nothing here overclaims; the "frontier" tags
+are accurate. This is what good research-level formalization looks like mid-stream.
