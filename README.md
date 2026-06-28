@@ -16,7 +16,7 @@ answer. This repository verifies that story end to end, including correctness,
 modeled query cost, payload-bit accounting, and the matching
 information-theoretic lower bound.
 
-For a stress-tested Lean-club explanation aimed at mathematically mature
+For a further explanation aimed at mathematically mature
 readers with little data-structures background, see
 [`docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md`](docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md).
 
