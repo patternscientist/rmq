@@ -2548,3 +2548,39 @@ Bottom line: the project resumed active research (genuine entropy-compressed FID
 genuine amortized union-find) on top of the now-clean library, with a flawless integrity
 record and unusually honest frontier labeling. Nothing here overclaims; the "frontier" tags
 are accurate. This is what good research-level formalization looks like mid-stream.
+
+## 2026-06-26 (AUDIT) — `main` @ `457ac44` (Tarjan-level union-find + FID route profiles)
+
+Six commits since `c92c8af`: `33336d3` (Tarjan-level union-find amortization scaffold +1551
+lines in Forest), `1ce4466` (compressed FID route directory profiles, +4522 incl. new
+`RankSelectCompressedSplit.lean`), plus digestion/state updates and "Polish public-facing
+docs". Build green; hygiene clean; all seven axiom checks resolve, zero
+`sorryAx`/`ofReduceBool`/errors — headline 16, full 708, rank-select 280, union-find 137,
+bp-nav 7, hub 23, archive 4.
+
+**VERDICT: GENUINE progress, scrupulously honest. The "Tarjan-level" naming does NOT
+overclaim inverse-Ackermann.**
+- **Tarjan-level union-find = real potential-method scaffolding toward α, explicitly not
+  α-tight.** `tarjanLevelIter` is the iterated-log level schedule
+  (`tarjanRankLevel = tarjanLevelIter 2`); the new proven `_profile` checkpoints
+  (`fullCompressionTarjanLevel…`, `…CleanCredit…`, `…PhaseCount…`, `…LevelIndex…`) pay
+  cross-level rank gaps via a level potential and charge only residual within-level slack +
+  constant `2` for find. Non-vacuous (credit is level-based/small; cost still tied to real
+  trace length via the prior exact bridges) and the profiles are trust-clean. In-code and
+  docs are blunt: "not the inverse-Ackermann level," "far from the inverse-Ackermann
+  schedule," "**alpha-shaped but still not alpha-tight**," "still not a Tarjan or
+  inverse-Ackermann theorem."
+- **No overclaim — strengthened self-documentation.** New `docs/WHAT_IS_PROVED.md` states
+  outright "the repo **does not yet prove** the inverse-Ackermann amortized bound";
+  `UNION_FIND_FRONTIER.md`, README, and REPOSITORY_STRATEGY all phrase it as "scaffolding
+  toward" Tarjan. A `DIGESTION_LOG.md` tracks state. This is more honest self-policing, not
+  less.
+- **Compressed FID route profiles** extend the previously-verified-genuine entropy base
+  (`fixedWeightPayloadBudget = log₂ C(n,k)`, `binomialCount` = real binomial); still the
+  local/route kernel layer, openly not the global O(1) FID.
+
+Bottom line: another genuine, honestly-scoped research increment — union-find now carries the
+multilevel (iterated-log) machinery Tarjan's analysis is built on, correctly labeled as
+α-shaped-but-not-α-tight, with perfect integrity. The series' streak holds: every "X-level"/
+"frontier" name is backed by a real, non-vacuous, trust-clean construction and an accurate
+not-yet caveat.
