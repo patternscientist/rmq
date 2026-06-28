@@ -10,14 +10,15 @@ trees, and hashing structures.
 
 Do not rename this repository yet.
 
-Keep `patternscientist/rmq` as the stable, citable RMQ artifact while the next
-spoke starts. The repo already has public theorem names, RMQ-specific docs, a
-large branch history, and a clean public story. Renaming it now would create churn
-without making reuse materially easier.
+Keep `patternscientist/rmq` as the stable, citable RMQ artifact while the new
+rank/select, balanced-parentheses, and union-find spokes stabilize. The repo
+already has public theorem names, RMQ-specific docs, a large branch history,
+and a clean public story. Renaming it now would create churn without making
+reuse materially easier.
 
 Instead, use this staged plan:
 
-1. Keep the current repo as the RMQ spoke and in-tree extraction test.
+1. Keep the current repo as the RMQ spoke and in-tree extraction testbed.
 2. Continue hardening `RMQ.Core.ModelHub` / `RMQHub` as the reusable boundary.
 3. Use `VerifiedDS` as a thin neutral facade over the active public roots,
    without moving namespaces or changing citable theorem names.
@@ -30,14 +31,14 @@ Instead, use this staged plan:
    parent-pointer forest refinement, union-by-rank/root-mass/rank-power
    checkpoints, full-compression find refinement, and a log-rank amortized
    checkpoint, but not Tarjan's inverse-Ackermann theorem.
-6. Create a new umbrella repo only if the next spoke needs to share code
-   immediately. Otherwise, start that spoke in its own repo and copy only the
-   stable hub modules it consumes.
-7. Once two spokes consume the same hub modules, split or promote the hub into
-   a first-class package and let spokes depend on it.
+6. Keep the current `VerifiedDS` facade thin until at least two spokes consume
+   the same hub APIs in a way that clearly justifies a package boundary.
+7. Create a new umbrella repo or promote the hub into a first-class package
+   only when that boundary is demanded by concrete reuse rather than naming
+   ambition.
 
-This avoids a premature namespace migration while still keeping the path to a
-larger library open.
+This avoids a premature namespace migration while still making the current
+repository legible as an emerging verified data-structures library.
 
 ## Target Shape
 
@@ -79,10 +80,10 @@ change before the second spoke proves which hub APIs are actually stable. The
 current module names are RMQ-shaped, the docs are RMQ-shaped, and the theorem
 inventory is a useful standalone artifact.
 
-A new umbrella repo is cleaner once there are multiple spokes, but starting it
-too early risks creating empty architecture. The better trigger is concrete:
-when a second data-structure formalization imports or needs at least two hub
-modules from `RMQ.Core.ModelHub`, promote those modules.
+A new umbrella repo is cleaner once there are multiple stable spokes, but
+starting it too early risks creating empty architecture. The better trigger is
+concrete reuse: when a second data-structure formalization imports or needs at
+least two hub modules from `RMQ.Core.ModelHub`, promote those modules.
 
 ## Next Spoke Criteria
 

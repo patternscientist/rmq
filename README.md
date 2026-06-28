@@ -9,8 +9,10 @@ development also proves the matching information-theoretic lower bound with
 the coefficient-correct `2n - 1.5 log n - O(1)` Catalan slack, so the leading
 space term is formally optimal.
 
-A standalone Lean 4 formalization project for reusable range-minimum query
-correctness, cost, reduction, lower-bound, and succinct-space results.
+A Lean 4 formalization project for range-minimum query and the reusable
+advanced-data-structure spokes growing out of it. The RMQ theorem stack remains
+the citable center; the repository now also exposes standalone rank/select,
+balanced-parentheses navigation, union-find, and shared model-hub import roots.
 
 For a family-level theorem inventory, dependency DAG, correctness/cost matrix,
 and consolidated modeling notes, see
@@ -18,8 +20,10 @@ and consolidated modeling notes, see
 For the plan to grow this RMQ proof-of-concept into a larger verified
 data-structures library, see
 [`docs/REPOSITORY_STRATEGY.md`](docs/REPOSITORY_STRATEGY.md).
-For the first extracted spoke, see
+For the standalone rank/select spoke, see
 [`docs/RANK_SELECT_FRONTIER.md`](docs/RANK_SELECT_FRONTIER.md).
+For the union-find spoke, see
+[`docs/UNION_FIND_FRONTIER.md`](docs/UNION_FIND_FRONTIER.md).
 For a compact external-reader scope summary, see
 [`docs/WHAT_IS_PROVED.md`](docs/WHAT_IS_PROVED.md).
 For the trust base and verification commands, see
@@ -31,6 +35,24 @@ For the completed cleanup record and library-shaping roadmap, see
 [`docs/CLEANUP_AND_ROADMAP.md`](docs/CLEANUP_AND_ROADMAP.md).
 
 License: Apache-2.0; see [`LICENSE`](LICENSE).
+
+## Public Import Roots
+
+The current public roots are:
+
+```lean
+import RMQ              -- RMQ/LCA family and succinct RMQ capstone
+import RMQHub           -- reusable cost/RAM/refinement/table/lower-bound hub
+import RMQRankSelect    -- standalone rank/select spoke
+import RMQBPNavigation  -- balanced-parentheses navigation spoke
+import RMQUnionFind     -- union-find specification and forest-refinement spoke
+import VerifiedDS       -- thin aggregate facade over the active public roots
+```
+
+`RMQ` remains the stable artifact name for the existing theorem inventory.
+`VerifiedDS` is intentionally only a facade for now: it tests the broader
+library shape without forcing a namespace or repository migration before the
+spoke APIs settle.
 
 ## What This Is, And Why Care
 

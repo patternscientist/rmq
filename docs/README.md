@@ -21,8 +21,12 @@ This repository has two kinds of documentation:
 - [`HUB.md`](HUB.md): reusable hub import surface.
 - [`RANK_SELECT_FRONTIER.md`](RANK_SELECT_FRONTIER.md): standalone
   rank/select spoke status and next frontier.
+- [`UNION_FIND_FRONTIER.md`](UNION_FIND_FRONTIER.md): union-find spoke status,
+  forest-refinement surface, and amortized-analysis frontier.
 - [`REPOSITORY_STRATEGY.md`](REPOSITORY_STRATEGY.md): how this RMQ spoke can
   grow into a broader verified data-structures effort.
+- [`DIGESTION_LOG.md`](DIGESTION_LOG.md): standing proof-explanation protocol
+  for turning verified milestones into auditable, teachable summaries.
 
 ## Engineering Notes
 

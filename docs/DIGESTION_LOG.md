@@ -33,7 +33,7 @@ read-only reviewers to attack the explanation from distinct perspectives:
 - data-structures researcher;
 - Lean/library maintainer;
 - cost-model skeptic;
-- public-demo/audience explainer.
+- public-facing/audience explainer.
 
 An explanation is considered digested only when the reviewers can identify the
 main idea, the theorem's actual scope, and the remaining nonclaims without
@@ -66,6 +66,6 @@ spokes:
 3. Turn the union-find spoke into a sequence of ordinary data-structure
    invariants: parent forest, representative refinement, rank discipline,
    root-mass accounting, path compression, and the gap to Tarjan.
-4. Maintain a short "assumptions ledger" that can be read aloud before a demo:
-   what is model-level, what is executable, what is proof-only, and what is not
-   claimed.
+4. Maintain a short "assumptions ledger" that can be read aloud before a talk,
+   review, or onboarding session: what is model-level, what is executable, what
+   is proof-only, and what is not claimed.
