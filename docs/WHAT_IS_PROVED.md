@@ -375,10 +375,19 @@ parent-pointer forest layer:
 
 The forest spoke now includes executable root search, union-by-rank refinement
 checkpoints, root-mass and rank-power invariants, full path-compression find
-refinement, and a logarithmic-rank amortized checkpoint
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionLogRankAmortizedBackend_profile`.
-It is still not the final Tarjan theorem: the repo does not yet prove the
-inverse-Ackermann amortized bound or a mutable-array implementation refinement.
+refinement, logarithmic-rank and rank-bucket amortized checkpoints, and a
+rank-slack compression-drop kernel. The current frontier profiles are
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankBucketAmortizedBackend_profile`,
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankSlackCheckpoint_profile`,
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankSlackAmortizedBackend_profile`,
+and
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankSlackSizeUnionAmortizedBackend_profile`.
+Successful full-compression find is paid by rank-slack potential drop up to
+constant credit, while the cleaned union checkpoint still uses the coarse
+credit `rankBucketPotential backend + 1`. It is still not the final Tarjan
+theorem: the repo does not yet prove the inverse-Ackermann amortized bound, a
+small uniform union credit under this potential, or a mutable-array
+implementation refinement.
 
 ## Cost Model
 

@@ -71,11 +71,16 @@ spokes:
   a parent-pointer forest refinement, union-by-rank/root-mass/rank-power
   invariants, full-compression find refinement, rank-gap/log-rank amortized
   checkpoints, explicit rank-bucket-width accounting, and a local/global
-  rank-slack compression-drop kernel. The Tarjan inverse-Ackermann theorem
-  remains open.
+  rank-slack compression-drop kernel, and merged Tarjan-level, phase-count, and
+  level-index potential checkpoints. These still leave residual/large-credit
+  structure explicit; the Tarjan inverse-Ackermann theorem remains open.
 
 ## Current Digests
 
+- [`digests/PROJECT_STATE_2026_06_28.md`](digests/PROJECT_STATE_2026_06_28.md):
+  current project-wide digest, including the merged rank/select log-chunk
+  primary-budget/split-width route-directory work and the merged union-find
+  Tarjan-level scaffold.
 - [`digests/RMQ_PROOF_MAP.md`](digests/RMQ_PROOF_MAP.md): index and shared
   assumptions ledger for the digest layer.
 - [`digests/COORDINATOR_COMPLETION_LOG.md`](digests/COORDINATOR_COMPLETION_LOG.md):
@@ -83,14 +88,15 @@ spokes:
 - [`digests/RMQ_CAPSTONE.md`](digests/RMQ_CAPSTONE.md): classroom proof map
   for the stable RMQ capstone.
 - [`digests/RANK_SELECT_FID_FRONTIER.md`](digests/RANK_SELECT_FID_FRONTIER.md):
-  rank/select FID frontier after the chunk-route milestone.
+  rank/select FID frontier after the access/rank/select chunk-route, narrow
+  metadata, log-chunk primary-budget, and split-width table/RAM milestones.
 - [`digests/UNION_FIND_AMORTIZATION_FRONTIER.md`](digests/UNION_FIND_AMORTIZATION_FRONTIER.md):
-  union-find amortization frontier around rank-gap, rank-bucket, and
-  rank-slack potential checkpoints.
+  union-find amortization frontier around rank-gap, rank-bucket, rank-slack,
+  Tarjan-level, phase-count, and level-index potential checkpoints.
 
 ## Current Rank/Select Note
 
-The fixed-weight compressed/FID spoke now separates three issues that were easy
+The fixed-weight compressed/FID spoke now separates four issues that were easy
 to conflate. First, log-sized sentinel chunk decompositions have an `o(n)` block
 count. Second, class/length metadata for those chunks is small only when stored
 at a narrow `log log n`-style width; padding it to route width is formally
@@ -178,11 +184,13 @@ indexed residual counter, not `rankSlack - levelGap`.
 1. Turn the RMQ capstone into a two-page lecture-style proof map:
    lower bound, upper bound, payload model, query model, and nonclaims.
 2. Turn the rank/select frontier into a glossary of fixed-weight codes, RRR/FID
-   local blocks, route tables, charged reads, and the remaining primary-budget
-   theorem.
+   local blocks, route tables, charged reads, the proved log-chunk primary
+   budget, split-width table/RAM profile, and the remaining concrete family
+   instantiation.
 3. Turn the union-find spoke into a sequence of ordinary data-structure
    invariants: parent forest, representative refinement, rank discipline,
-   root-mass accounting, path compression, and the gap to Tarjan.
+   root-mass accounting, path compression, Tarjan-level potentials, and the
+   remaining residual/large-credit gap to Tarjan.
 4. Maintain a short "assumptions ledger" that can be read aloud before a talk,
    review, or onboarding session: what is model-level, what is executable, what
    is proof-only, and what is not claimed.
