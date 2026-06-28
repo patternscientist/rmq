@@ -2584,3 +2584,55 @@ multilevel (iterated-log) machinery Tarjan's analysis is built on, correctly lab
 α-shaped-but-not-α-tight, with perfect integrity. The series' streak holds: every "X-level"/
 "frontier" name is backed by a real, non-vacuous, trust-clean construction and an accurate
 not-yet caveat.
+
+## 2026-06-28 (AUDIT — proof-digestion lens, per Tao "Future of Math" talk) — `main` @ `da19fb3`
+
+One docs-only commit since `457ac44`: `da19fb3 "Add deep project digestion guide"`
+(`docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md`, 651 lines + README/log pointers). Code
+integrity unchanged from the `457ac44` audit (docs-only; build green, 708 headliners
+trust-clean still hold). The user asked for an audit through Tao's *proof digestion* frame:
+not "is it verified" (stages 1–2) but does the explanation achieve stage 3 — distinguish
+genuine-from-routine, cite standard results, not bury the new part, keep model assumptions
+visible, and let a math PhD "give a talk and take questions" — while avoiding the AI failure
+modes Tao names (decoupled/hallucinated exposition, overclaim, reward-hacked self-grading).
+
+**VERDICT: exemplary stage-3 digestion, and verifiably FAITHFUL.**
+- **Faithful, not hallucinated.** Spot-checked 10/10 cited theorem handles — all exist in
+  the stated files (`Forest.lean`, `RankSelectPublic.lean`, `SuccinctFinal.lean`,
+  `Headlines.lean`). Critically, the load-bearing *self-diagnostic*
+  `tarjanLevelIndexPotential_eq_rankSlackPotential_of_forall_gap_le` (Forest.lean:5303) says
+  exactly what the digest claims: under the natural gap condition the multilevel level-index
+  potential *equals* plain `rankSlackPotential` — i.e. the current Tarjan design provably
+  collapses to rank slack. The digest correctly surfaces this as why inverse-Ackermann is
+  NOT yet reachable. Decoding a real "our own approach is insufficient" theorem is the gold
+  standard of coupled (non-decoupled) exposition.
+- **No overclaim; gaps foregrounded.** Explicit "Not claimed" list; the FID section states
+  the *primary entropy budget* (`log₂ binomialCount n k`) is proved but the *positive
+  constructor* is open, and cites two negative/obstruction results
+  (`noFixedWeightLogChunkDenseDecoderLittleO`, `noFixedWeight…RouteWidthClassLength`) so the
+  gap can't be mistaken for routine engineering — directly answering Tao's "the new part gets
+  buried" complaint, in reverse.
+- **Names standard results** (Cartesian tree, LCA, Catalan ⇒ `2n − 1.5 log n`, Jacobson/
+  Clark, Tarjan) rather than presenting them as novel — the "name Merton's theorem" test.
+- **Model assumptions visible** — modeled-cost-vs-runtime split, the word-RAM one-step
+  assumption, and the payload-bits-vs-proof-only-fields anti-oracle distinction (the exact
+  reward-hack this whole audit series has policed). Assumptions ledger + skeptical-Q&A make
+  it talk-ready.
+
+**Caveats (so I don't rubber-stamp an AI artifact — Tao's warning applies to the grader
+too):**
+- The "Stress-Test Rounds (Round 1/2/Fixedpoint)" section is *self-reported* by the authoring
+  model and unverifiable as process; its worth is only the checkable output, which I verified
+  independently. Treat that section as narrative, not evidence.
+- Literature attribution is technique/person level via theorem names, but **paper-level
+  citations are absent** (no Bender–Farach-Colton, Fischer–Heun, Raman–Raman–Rao/RRR,
+  Sadakane). For a mathematically-mature audience that's the one real digestion gap — naming
+  the canonical papers would better serve Tao's "connect to past literature" implicit goal.
+- It is a dated snapshot (mitigated by `DIGESTION_LOG.md`); it will drift as the FID/Tarjan
+  frontiers advance.
+
+Meta: this is the AI-grader-as-additional-filter pattern Tao describes — and the grader
+earned its keep precisely by checking handle existence + the collapse theorem's *meaning*
+(what a rubber stamp skips), not by re-reading prose. Net: the repo's proof-digestion layer
+is itself genuine and honest, consistent with the whole series; the only additive suggestion
+is paper-level citations.
