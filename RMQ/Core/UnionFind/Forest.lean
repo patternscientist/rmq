@@ -4835,6 +4835,713 @@ def rankSlackSizeUnionCredit
     (backend : NoCompressionRankedMassBackendState) (_x _y : Nat) : Nat :=
   rankBucketPotential backend + 1
 
+theorem log2_mono {a b : Nat} (h : a <= b) :
+    Nat.log2 a <= Nat.log2 b := by
+  by_cases ha : a = 0
+  · subst a
+    simp [Nat.log2_zero]
+  · have hb : b ≠ 0 := by
+      intro hb
+      subst b
+      exact ha (Nat.eq_zero_of_le_zero h)
+    exact
+      (Nat.le_log2 hb).2
+        (Nat.le_trans (Nat.log2_self_le ha) h)
+
+/--
+Iterated logarithmic rank schedule.
+
+`tarjanLevelIter 0 rank` is the raw rank. Each successor phase applies
+`log2 (_ + 1)`. The concrete checkpoint below uses phase `2`, which is still
+far from the inverse-Ackermann schedule but is a reusable multilevel interface:
+future phases can increase the fuel without changing the node/trace potential
+shape.
+-/
+def tarjanLevelIter : Nat -> Nat -> Nat
+  | 0, rank => rank
+  | phase + 1, rank => Nat.log2 (tarjanLevelIter phase rank + 1)
+
+theorem tarjanLevelIter_mono (phase : Nat) {a b : Nat} (h : a <= b) :
+    tarjanLevelIter phase a <= tarjanLevelIter phase b := by
+  induction phase generalizing a b with
+  | zero =>
+      simpa [tarjanLevelIter] using h
+  | succ phase ih =>
+      have hinner : tarjanLevelIter phase a <= tarjanLevelIter phase b :=
+        ih h
+      have hsucc :
+          tarjanLevelIter phase a + 1 <=
+            tarjanLevelIter phase b + 1 := Nat.succ_le_succ hinner
+      simpa [tarjanLevelIter] using log2_mono hsucc
+
+def tarjanRankLevel (rank : Nat) : Nat :=
+  tarjanLevelIter 2 rank
+
+theorem tarjanRankLevel_mono {a b : Nat} (h : a <= b) :
+    tarjanRankLevel a <= tarjanRankLevel b := by
+  simpa [tarjanRankLevel] using tarjanLevelIter_mono 2 h
+
+def nodeRootParentTarjanLevelGap
+    (backend : NoCompressionRankedMassBackendState)
+    (root x : Nat) : Nat :=
+  match backend.state.forest.parent? x with
+  | none => 0
+  | some parent =>
+      tarjanRankLevel (backend.state.rank root) -
+        tarjanRankLevel (backend.state.rank parent)
+
+def nodeRootParentTarjanResidualSlack
+    (backend : NoCompressionRankedMassBackendState)
+    (root x : Nat) : Nat :=
+  backend.nodeRootParentRankSlack root x -
+    backend.nodeRootParentTarjanLevelGap root x
+
+def traceRootParentTarjanLevelGap
+    (backend : NoCompressionRankedMassBackendState) (root : Nat) :
+    List Nat -> Nat
+  | [] => 0
+  | x :: xs =>
+      backend.nodeRootParentTarjanLevelGap root x +
+        backend.traceRootParentTarjanLevelGap root xs
+
+def traceRootParentTarjanResidualSlack
+    (backend : NoCompressionRankedMassBackendState) (root : Nat) :
+    List Nat -> Nat
+  | [] => 0
+  | x :: xs =>
+      backend.nodeRootParentTarjanResidualSlack root x +
+        backend.traceRootParentTarjanResidualSlack root xs
+
+def nodeFindRootTarjanLevelGap
+    (backend : NoCompressionRankedMassBackendState) (x : Nat) : Nat :=
+  match backend.state.forest.findRoot? x with
+  | none => 0
+  | some root => backend.nodeRootParentTarjanLevelGap root x
+
+def nodeFindRootTarjanResidualSlack
+    (backend : NoCompressionRankedMassBackendState) (x : Nat) : Nat :=
+  match backend.state.forest.findRoot? x with
+  | none => 0
+  | some root => backend.nodeRootParentTarjanResidualSlack root x
+
+def tarjanLevelPotentialOver
+    (backend : NoCompressionRankedMassBackendState) : List Nat -> Nat
+  | [] => 0
+  | x :: xs =>
+      backend.nodeFindRootTarjanLevelGap x +
+        backend.tarjanLevelPotentialOver xs
+
+def tarjanLevelPotential
+    (backend : NoCompressionRankedMassBackendState) : Nat :=
+  backend.tarjanLevelPotentialOver (List.range backend.state.forest.size)
+
+def tarjanResidualPotentialOver
+    (backend : NoCompressionRankedMassBackendState) : List Nat -> Nat
+  | [] => 0
+  | x :: xs =>
+      backend.nodeFindRootTarjanResidualSlack x +
+        backend.tarjanResidualPotentialOver xs
+
+def tarjanResidualPotential
+    (backend : NoCompressionRankedMassBackendState) : Nat :=
+  backend.tarjanResidualPotentialOver (List.range backend.state.forest.size)
+
+def tarjanLevelIndexPotential
+    (backend : NoCompressionRankedMassBackendState) : Nat :=
+  tarjanLevelPotential backend + tarjanResidualPotential backend
+
+def tarjanLevelPotentialBound
+    (backend : NoCompressionRankedMassBackendState) : Nat :=
+  backend.state.forest.size *
+    (tarjanRankLevel (Nat.log2 backend.state.forest.size) + 1)
+
+def tarjanLevelFindCredit
+    (backend : NoCompressionRankedMassBackendState) (x : Nat) : Nat :=
+  match backend.state.forest.findRoot? x with
+  | none => backend.state.forest.maxSearchFuel + 1
+  | some root =>
+      backend.traceRootParentTarjanResidualSlack root
+        (backend.fullCompressFindTrace x) + 2
+
+def tarjanLevelUnionCredit
+    (backend : NoCompressionRankedMassBackendState) (_x _y : Nat) : Nat :=
+  tarjanLevelPotentialBound backend + 1
+
+def tarjanLevelRootRankFindCredit
+    (backend : NoCompressionRankedMassBackendState) (x : Nat) : Nat :=
+  match backend.state.forest.findRoot? x with
+  | none => backend.state.forest.maxSearchFuel + 1
+  | some root => backend.state.rank root + 1
+
+def tarjanLevelDeltaUnionCredit
+    (backend : NoCompressionRankedMassBackendState) (x y : Nat) : Nat :=
+  tarjanLevelPotential ((backend.unionCosted x y).erase) -
+    tarjanLevelPotential backend + 1
+
+def tarjanRankPhaseCountFuel : Nat -> Nat -> Nat
+  | 0, _rank => 0
+  | fuel + 1, rank =>
+      if rank <= 1 then
+        0
+      else
+        1 + tarjanRankPhaseCountFuel fuel (Nat.log2 (rank + 1))
+
+def tarjanRankPhaseCount (rank : Nat) : Nat :=
+  tarjanRankPhaseCountFuel (rank + 1) rank
+
+def tarjanPhaseCountBound
+    (backend : NoCompressionRankedMassBackendState) : Nat :=
+  tarjanRankPhaseCount (Nat.log2 backend.state.forest.size)
+
+def tarjanPhaseCountPotential
+    (backend : NoCompressionRankedMassBackendState) : Nat :=
+  rankSlackPotential backend + tarjanLevelPotential backend
+
+def tarjanPhaseCountFindCredit
+    (backend : NoCompressionRankedMassBackendState) (x : Nat) : Nat :=
+  match backend.state.forest.findRoot? x with
+  | none => backend.state.forest.maxSearchFuel + 1
+  | some _root => backend.tarjanPhaseCountBound + 2
+
+def tarjanPhaseCountDeltaUnionCredit
+    (backend : NoCompressionRankedMassBackendState) (x y : Nat) : Nat :=
+  tarjanPhaseCountPotential ((backend.unionCosted x y).erase) -
+    tarjanPhaseCountPotential backend + 1
+
+def tarjanLevelIndexFindCredit
+    (backend : NoCompressionRankedMassBackendState) (x : Nat) : Nat :=
+  match backend.state.forest.findRoot? x with
+  | none => backend.state.forest.maxSearchFuel + 1
+  | some _root => backend.tarjanPhaseCountBound + 2
+
+def tarjanLevelIndexDeltaUnionCredit
+    (backend : NoCompressionRankedMassBackendState) (x y : Nat) : Nat :=
+  tarjanLevelIndexPotential ((backend.unionCosted x y).erase) -
+    tarjanLevelIndexPotential backend + 1
+
+theorem nodeRootParentRankSlack_le_tarjanLevelGap_add_residual
+    (backend : NoCompressionRankedMassBackendState) (root x : Nat) :
+    backend.nodeRootParentRankSlack root x <=
+      backend.nodeRootParentTarjanLevelGap root x +
+        backend.nodeRootParentTarjanResidualSlack root x := by
+  unfold nodeRootParentTarjanResidualSlack
+  by_cases hle :
+      backend.nodeRootParentTarjanLevelGap root x <=
+        backend.nodeRootParentRankSlack root x
+  · have hcancel :
+        backend.nodeRootParentTarjanLevelGap root x +
+            (backend.nodeRootParentRankSlack root x -
+              backend.nodeRootParentTarjanLevelGap root x) =
+          backend.nodeRootParentRankSlack root x := by
+        exact Nat.add_sub_of_le hle
+    omega
+  · omega
+
+theorem traceRootParentRankSlack_le_tarjanLevelGap_add_residual
+    (backend : NoCompressionRankedMassBackendState) (root : Nat) :
+    forall trace : List Nat,
+      backend.traceRootParentRankSlack root trace <=
+        backend.traceRootParentTarjanLevelGap root trace +
+          backend.traceRootParentTarjanResidualSlack root trace
+  | [] => by
+      simp [traceRootParentRankSlack, traceRootParentTarjanLevelGap,
+        traceRootParentTarjanResidualSlack]
+  | x :: xs => by
+      have hx :=
+        backend.nodeRootParentRankSlack_le_tarjanLevelGap_add_residual
+          root x
+      have htail :=
+        traceRootParentRankSlack_le_tarjanLevelGap_add_residual
+          backend root xs
+      simp [traceRootParentRankSlack, traceRootParentTarjanLevelGap,
+        traceRootParentTarjanResidualSlack]
+      omega
+
+theorem tarjanLevelPotentialOver_le_of_forall_mem
+    (left right : NoCompressionRankedMassBackendState) :
+    forall (xs : List Nat),
+      (forall x, x ∈ xs ->
+        left.nodeFindRootTarjanLevelGap x <=
+          right.nodeFindRootTarjanLevelGap x) ->
+      left.tarjanLevelPotentialOver xs <= right.tarjanLevelPotentialOver xs
+  | [], _hle => by
+      simp [tarjanLevelPotentialOver]
+  | x :: xs, hle => by
+      have hx :
+          left.nodeFindRootTarjanLevelGap x <=
+            right.nodeFindRootTarjanLevelGap x :=
+        hle x (by simp)
+      have hxs :
+          forall y, y ∈ xs ->
+            left.nodeFindRootTarjanLevelGap y <=
+              right.nodeFindRootTarjanLevelGap y := by
+        intro y hy
+        exact hle y (by simp [hy])
+      have htail :=
+        tarjanLevelPotentialOver_le_of_forall_mem left right xs hxs
+      simp [tarjanLevelPotentialOver]
+      omega
+
+theorem tarjanLevelPotentialOver_le_length_mul
+    (backend : NoCompressionRankedMassBackendState) :
+    forall (xs : List Nat) (bound : Nat),
+      (forall x, x ∈ xs ->
+        backend.nodeFindRootTarjanLevelGap x <= bound) ->
+      backend.tarjanLevelPotentialOver xs <= xs.length * bound
+  | [], bound, _hle => by
+      simp [tarjanLevelPotentialOver]
+  | x :: xs, bound, hle => by
+      have hx :
+          backend.nodeFindRootTarjanLevelGap x <= bound :=
+        hle x (by simp)
+      have hxs :
+          forall y, y ∈ xs ->
+            backend.nodeFindRootTarjanLevelGap y <= bound := by
+        intro y hy
+        exact hle y (by simp [hy])
+      have htail :=
+        tarjanLevelPotentialOver_le_length_mul backend xs bound hxs
+      have hmul :
+          (xs.length + 1) * bound = xs.length * bound + bound := by
+        simpa [Nat.succ_eq_add_one] using Nat.succ_mul xs.length bound
+      simp [tarjanLevelPotentialOver]
+      calc
+        backend.nodeFindRootTarjanLevelGap x +
+            backend.tarjanLevelPotentialOver xs
+            <= bound + xs.length * bound := Nat.add_le_add hx htail
+        _ = xs.length * bound + bound := Nat.add_comm _ _
+        _ = (xs.length + 1) * bound := hmul.symm
+
+theorem tarjanLevelPotentialOver_add_single_le_of_forall_mem
+    (left right : NoCompressionRankedMassBackendState) :
+    forall (xs : List Nat) {x d : Nat},
+      xs.Nodup ->
+      x ∈ xs ->
+      left.nodeFindRootTarjanLevelGap x + d <=
+        right.nodeFindRootTarjanLevelGap x ->
+      (forall y, y ∈ xs -> y ≠ x ->
+        left.nodeFindRootTarjanLevelGap y <=
+          right.nodeFindRootTarjanLevelGap y) ->
+      left.tarjanLevelPotentialOver xs + d <=
+        right.tarjanLevelPotentialOver xs
+  | [], x, d, _hnodup, hmem, _hdrop, _hle => by
+      simp at hmem
+  | y :: ys, x, d, hnodup, hmem, hdrop, hle => by
+      have hnodupCons := hnodup
+      simp at hnodupCons
+      rcases hnodupCons with ⟨hyNotMem, hnodupTail⟩
+      by_cases hyx : y = x
+      · subst x
+        have htailLe :
+            left.tarjanLevelPotentialOver ys <=
+              right.tarjanLevelPotentialOver ys := by
+          apply tarjanLevelPotentialOver_le_of_forall_mem
+          intro z hz
+          have hzy : z ≠ y := by
+            intro hzx
+            exact hyNotMem (by simpa [hzx] using hz)
+          exact hle z (by simp [hz]) hzy
+        simp [tarjanLevelPotentialOver]
+        omega
+      · have hxTail : x ∈ ys := by
+          have hcases : x = y ∨ x ∈ ys := by
+            simpa using hmem
+          cases hcases with
+          | inl hxy =>
+              exact False.elim (hyx hxy.symm)
+          | inr htail =>
+              exact htail
+        have hhead :
+            left.nodeFindRootTarjanLevelGap y <=
+              right.nodeFindRootTarjanLevelGap y :=
+          hle y (by simp) hyx
+        have htail :
+            left.tarjanLevelPotentialOver ys + d <=
+              right.tarjanLevelPotentialOver ys :=
+          tarjanLevelPotentialOver_add_single_le_of_forall_mem
+            left right ys hnodupTail hxTail hdrop (by
+              intro z hz hzx
+              exact hle z (by simp [hz]) hzx)
+        simp [tarjanLevelPotentialOver]
+        omega
+
+theorem tarjanResidualPotentialOver_le_of_forall_mem
+    (left right : NoCompressionRankedMassBackendState) :
+    forall (xs : List Nat),
+      (forall x, x ∈ xs ->
+        left.nodeFindRootTarjanResidualSlack x <=
+          right.nodeFindRootTarjanResidualSlack x) ->
+      left.tarjanResidualPotentialOver xs <=
+        right.tarjanResidualPotentialOver xs
+  | [], _hle => by
+      simp [tarjanResidualPotentialOver]
+  | x :: xs, hle => by
+      have hx :
+          left.nodeFindRootTarjanResidualSlack x <=
+            right.nodeFindRootTarjanResidualSlack x :=
+        hle x (by simp)
+      have hxs :
+          forall y, y ∈ xs ->
+            left.nodeFindRootTarjanResidualSlack y <=
+              right.nodeFindRootTarjanResidualSlack y := by
+        intro y hy
+        exact hle y (by simp [hy])
+      have htail :=
+        tarjanResidualPotentialOver_le_of_forall_mem left right xs hxs
+      simp [tarjanResidualPotentialOver]
+      omega
+
+theorem tarjanResidualPotentialOver_add_single_le_of_forall_mem
+    (left right : NoCompressionRankedMassBackendState) :
+    forall (xs : List Nat) {x d : Nat},
+      xs.Nodup ->
+      x ∈ xs ->
+      left.nodeFindRootTarjanResidualSlack x + d <=
+        right.nodeFindRootTarjanResidualSlack x ->
+      (forall y, y ∈ xs -> y ≠ x ->
+        left.nodeFindRootTarjanResidualSlack y <=
+          right.nodeFindRootTarjanResidualSlack y) ->
+      left.tarjanResidualPotentialOver xs + d <=
+        right.tarjanResidualPotentialOver xs
+  | [], _x, _d, _hnodup, hmem, _hdrop, _hle => by
+      simp at hmem
+  | y :: ys, x, d, hnodup, hmem, hdrop, hle => by
+      have hnodupCons := hnodup
+      simp at hnodupCons
+      rcases hnodupCons with ⟨hyNotMem, hnodupTail⟩
+      by_cases hyx : y = x
+      · subst x
+        have htailLe :
+            left.tarjanResidualPotentialOver ys <=
+              right.tarjanResidualPotentialOver ys := by
+          apply tarjanResidualPotentialOver_le_of_forall_mem
+          intro z hz
+          have hzy : z ≠ y := by
+            intro hzx
+            exact hyNotMem (by simpa [hzx] using hz)
+          exact hle z (by simp [hz]) hzy
+        simp [tarjanResidualPotentialOver]
+        omega
+      · have hxTail : x ∈ ys := by
+          have hcases : x = y ∨ x ∈ ys := by
+            simpa using hmem
+          cases hcases with
+          | inl hxy =>
+              exact False.elim (hyx hxy.symm)
+          | inr htail =>
+              exact htail
+        have hhead :
+            left.nodeFindRootTarjanResidualSlack y <=
+              right.nodeFindRootTarjanResidualSlack y :=
+          hle y (by simp) hyx
+        have htail :
+            left.tarjanResidualPotentialOver ys + d <=
+              right.tarjanResidualPotentialOver ys :=
+          tarjanResidualPotentialOver_add_single_le_of_forall_mem
+            left right ys hnodupTail hxTail hdrop (by
+              intro z hz hzx
+              exact hle z (by simp [hz]) hzx)
+        simp [tarjanResidualPotentialOver]
+        omega
+
+theorem nodeFindRootTarjanLevelGap_add_residual_eq_rankSlack_of_gap_le
+    (backend : NoCompressionRankedMassBackendState) (x : Nat)
+    (hle :
+      backend.nodeFindRootTarjanLevelGap x <=
+        backend.nodeFindRootParentRankSlack x) :
+    backend.nodeFindRootTarjanLevelGap x +
+        backend.nodeFindRootTarjanResidualSlack x =
+      backend.nodeFindRootParentRankSlack x := by
+  cases hfind : backend.state.forest.findRoot? x with
+  | none =>
+      simp [nodeFindRootTarjanLevelGap, nodeFindRootTarjanResidualSlack,
+        nodeFindRootParentRankSlack, hfind]
+  | some root =>
+      have hleRoot :
+          backend.nodeRootParentTarjanLevelGap root x <=
+            backend.nodeRootParentRankSlack root x := by
+        simpa [nodeFindRootTarjanLevelGap, nodeFindRootParentRankSlack,
+          hfind] using hle
+      simpa [nodeFindRootTarjanLevelGap, nodeFindRootTarjanResidualSlack,
+        nodeFindRootParentRankSlack, nodeRootParentTarjanResidualSlack,
+        hfind] using
+        Nat.add_sub_of_le hleRoot
+
+theorem tarjanLevelResidualPotentialOver_eq_rankSlackPotentialOver_of_forall_gap_le
+    (backend : NoCompressionRankedMassBackendState) :
+    forall (xs : List Nat),
+      (forall x, x ∈ xs ->
+        backend.nodeFindRootTarjanLevelGap x <=
+          backend.nodeFindRootParentRankSlack x) ->
+      backend.tarjanLevelPotentialOver xs +
+          backend.tarjanResidualPotentialOver xs =
+        backend.rankSlackPotentialOver xs
+  | [], _hle => by
+      simp [tarjanLevelPotentialOver, tarjanResidualPotentialOver,
+        rankSlackPotentialOver]
+  | x :: xs, hle => by
+      have hx :
+          backend.nodeFindRootTarjanLevelGap x <=
+            backend.nodeFindRootParentRankSlack x :=
+        hle x (by simp)
+      have hxs :
+          forall y, y ∈ xs ->
+            backend.nodeFindRootTarjanLevelGap y <=
+              backend.nodeFindRootParentRankSlack y := by
+        intro y hy
+        exact hle y (by simp [hy])
+      have hhead :=
+        backend.nodeFindRootTarjanLevelGap_add_residual_eq_rankSlack_of_gap_le
+          x hx
+      have htail :=
+        tarjanLevelResidualPotentialOver_eq_rankSlackPotentialOver_of_forall_gap_le
+          backend xs hxs
+      simp [tarjanLevelPotentialOver, tarjanResidualPotentialOver,
+        rankSlackPotentialOver]
+      omega
+
+theorem tarjanLevelIndexPotential_eq_rankSlackPotential_of_forall_gap_le
+    (backend : NoCompressionRankedMassBackendState)
+    (hle :
+      forall x, x ∈ List.range backend.state.forest.size ->
+        backend.nodeFindRootTarjanLevelGap x <=
+          backend.nodeFindRootParentRankSlack x) :
+    tarjanLevelIndexPotential backend = rankSlackPotential backend := by
+  unfold tarjanLevelIndexPotential tarjanLevelPotential
+    tarjanResidualPotential rankSlackPotential
+  exact
+    backend.tarjanLevelResidualPotentialOver_eq_rankSlackPotentialOver_of_forall_gap_le
+      (List.range backend.state.forest.size) hle
+
+theorem compressFindCosted_nodeFindRootTarjanLevelGap_eq_zero_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState)
+    {x root : Nat}
+    (hfind : backend.state.forest.findRoot? x = some root) :
+    ((backend.compressFindCosted x).erase.1).nodeFindRootTarjanLevelGap x =
+      0 := by
+  have hfindEq :
+      ((backend.compressFindCosted x).erase.1).state.forest.findRoot? x =
+        some root := by
+    rw [backend.compressFindCosted_findRoot?_eq x x]
+    exact hfind
+  have hparent :
+      ((backend.compressFindCosted x).erase.1).state.forest.parent? x =
+        some root :=
+    backend.compressFindCosted_parent?_eq_root_of_findRoot? hfind
+  simp [nodeFindRootTarjanLevelGap, nodeRootParentTarjanLevelGap,
+    hfindEq, hparent]
+
+theorem compressFindCosted_nodeFindRootTarjanLevelGap_le_of_ne
+    (backend : NoCompressionRankedMassBackendState)
+    {x y : Nat}
+    (hne : y ≠ x) :
+    ((backend.compressFindCosted x).erase.1).nodeFindRootTarjanLevelGap y <=
+      backend.nodeFindRootTarjanLevelGap y := by
+  cases hyfind : backend.state.forest.findRoot? y with
+  | none =>
+      have hfindEq :
+          ((backend.compressFindCosted x).erase.1).state.forest.findRoot? y =
+            none := by
+        rw [backend.compressFindCosted_findRoot?_eq x y]
+        exact hyfind
+      simp [nodeFindRootTarjanLevelGap, hfindEq, hyfind]
+  | some yroot =>
+      have hfindEq :
+          ((backend.compressFindCosted x).erase.1).state.forest.findRoot? y =
+            some yroot := by
+        rw [backend.compressFindCosted_findRoot?_eq x y]
+        exact hyfind
+      have hrankEq :
+          ((backend.compressFindCosted x).erase.1).state.rank =
+            backend.state.rank :=
+        backend.compressFindCosted_rank_eq x
+      cases hparent : backend.state.forest.parent? y with
+      | none =>
+          have hyvalid :
+              backend.state.forest.valid y :=
+            backend.state.forest.valid_of_findRoot?_eq_some hyfind
+          rcases backend.state.forest.exists_parent?_of_valid hyvalid with
+            ⟨parent, hparentSome⟩
+          rw [hparent] at hparentSome
+          cases hparentSome
+      | some parent =>
+          have hparentNew :
+              ((backend.compressFindCosted x).erase.1).state.forest.parent? y =
+                some parent :=
+            backend.compressFindCosted_parent?_eq_old_of_ne hne hparent
+          have hparentRankLe :
+              backend.state.rank parent <= backend.state.rank yroot := by
+            by_cases hparentY : parent = y
+            · subst hparentY
+              exact backend.rank_le_root_rank_of_findRoot? hyfind
+            · have hparentFind :
+                  backend.state.forest.findRoot? parent = some yroot :=
+                backend.findRoot?_parent_eq_of_parent?_ne
+                  hparent hparentY hyfind
+              exact backend.rank_le_root_rank_of_findRoot? hparentFind
+          have hparentLevelLe :
+              tarjanRankLevel (backend.state.rank parent) <=
+                tarjanRankLevel (backend.state.rank yroot) :=
+            tarjanRankLevel_mono hparentRankLe
+          simp [nodeFindRootTarjanLevelGap, nodeRootParentTarjanLevelGap,
+            hfindEq, hyfind, hparent, hparentNew]
+          rw [hrankEq]
+          omega
+
+theorem tarjanLevelPotential_compressFindCosted_add_nodeRootParentGap_le_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState)
+    {x root : Nat}
+    (hfind : backend.state.forest.findRoot? x = some root) :
+    tarjanLevelPotential ((backend.compressFindCosted x).erase.1) +
+        backend.nodeRootParentTarjanLevelGap root x <=
+      tarjanLevelPotential backend := by
+  let final := (backend.compressFindCosted x).erase.1
+  unfold tarjanLevelPotential
+  have hsize : final.state.forest.size = backend.state.forest.size := by
+    simpa [final] using backend.compressFindCosted_forest_size_eq x
+  rw [hsize]
+  apply tarjanLevelPotentialOver_add_single_le_of_forall_mem
+  · exact List.nodup_range
+  · exact List.mem_range.mpr
+      (backend.state.forest.valid_of_findRoot?_eq_some hfind)
+  · change final.nodeFindRootTarjanLevelGap x +
+        backend.nodeRootParentTarjanLevelGap root x <=
+        backend.nodeFindRootTarjanLevelGap x
+    have hzero :
+        final.nodeFindRootTarjanLevelGap x = 0 := by
+      simpa [final] using
+        backend.compressFindCosted_nodeFindRootTarjanLevelGap_eq_zero_of_findRoot?
+          hfind
+    rw [hzero]
+    simp [nodeFindRootTarjanLevelGap, hfind]
+  · intro y _hymem hyx
+    change final.nodeFindRootTarjanLevelGap y <=
+      backend.nodeFindRootTarjanLevelGap y
+    simpa [final] using
+      backend.compressFindCosted_nodeFindRootTarjanLevelGap_le_of_ne hyx
+
+theorem compressFindCosted_nodeFindRootTarjanResidualSlack_eq_zero_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState)
+    {x root : Nat}
+    (hfind : backend.state.forest.findRoot? x = some root) :
+    ((backend.compressFindCosted x).erase.1).nodeFindRootTarjanResidualSlack x =
+      0 := by
+  have hfindEq :
+      ((backend.compressFindCosted x).erase.1).state.forest.findRoot? x =
+        some root := by
+    rw [backend.compressFindCosted_findRoot?_eq x x]
+    exact hfind
+  have hparent :
+      ((backend.compressFindCosted x).erase.1).state.forest.parent? x =
+        some root :=
+    backend.compressFindCosted_parent?_eq_root_of_findRoot? hfind
+  simp [nodeFindRootTarjanResidualSlack,
+    nodeRootParentTarjanResidualSlack, nodeRootParentRankSlack,
+    nodeRootParentTarjanLevelGap, hfindEq, hparent]
+
+theorem compressFindCosted_nodeFindRootTarjanResidualSlack_le_of_ne
+    (backend : NoCompressionRankedMassBackendState)
+    {x y : Nat}
+    (hne : y ≠ x) :
+    ((backend.compressFindCosted x).erase.1).nodeFindRootTarjanResidualSlack y <=
+      backend.nodeFindRootTarjanResidualSlack y := by
+  cases hyfind : backend.state.forest.findRoot? y with
+  | none =>
+      have hfindEq :
+          ((backend.compressFindCosted x).erase.1).state.forest.findRoot? y =
+            none := by
+        rw [backend.compressFindCosted_findRoot?_eq x y]
+        exact hyfind
+      simp [nodeFindRootTarjanResidualSlack, hfindEq, hyfind]
+  | some yroot =>
+      have hfindEq :
+          ((backend.compressFindCosted x).erase.1).state.forest.findRoot? y =
+            some yroot := by
+        rw [backend.compressFindCosted_findRoot?_eq x y]
+        exact hyfind
+      have hrankEq :
+          ((backend.compressFindCosted x).erase.1).state.rank =
+            backend.state.rank :=
+        backend.compressFindCosted_rank_eq x
+      cases hparent : backend.state.forest.parent? y with
+      | none =>
+          have hyvalid :
+              backend.state.forest.valid y :=
+            backend.state.forest.valid_of_findRoot?_eq_some hyfind
+          rcases backend.state.forest.exists_parent?_of_valid hyvalid with
+            ⟨parent, hparentSome⟩
+          rw [hparent] at hparentSome
+          cases hparentSome
+      | some parent =>
+          have hparentNew :
+              ((backend.compressFindCosted x).erase.1).state.forest.parent? y =
+                some parent :=
+            backend.compressFindCosted_parent?_eq_old_of_ne hne hparent
+          simp [nodeFindRootTarjanResidualSlack,
+            nodeRootParentTarjanResidualSlack, nodeRootParentRankSlack,
+            nodeRootParentTarjanLevelGap, hfindEq, hyfind, hparent,
+            hparentNew]
+          rw [hrankEq]
+          have hsplit :=
+            backend.nodeRootParentRankSlack_le_tarjanLevelGap_add_residual
+              yroot y
+          simp [nodeRootParentRankSlack, nodeRootParentTarjanLevelGap,
+            nodeRootParentTarjanResidualSlack, hparent] at hsplit
+          omega
+
+theorem tarjanResidualPotential_compressFindCosted_add_nodeRootParentResidualSlack_le_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState)
+    {x root : Nat}
+    (hfind : backend.state.forest.findRoot? x = some root) :
+    tarjanResidualPotential ((backend.compressFindCosted x).erase.1) +
+        backend.nodeRootParentTarjanResidualSlack root x <=
+      tarjanResidualPotential backend := by
+  let final := (backend.compressFindCosted x).erase.1
+  unfold tarjanResidualPotential
+  have hsize : final.state.forest.size = backend.state.forest.size := by
+    simpa [final] using backend.compressFindCosted_forest_size_eq x
+  rw [hsize]
+  apply tarjanResidualPotentialOver_add_single_le_of_forall_mem
+  · exact List.nodup_range
+  · exact List.mem_range.mpr
+      (backend.state.forest.valid_of_findRoot?_eq_some hfind)
+  · change final.nodeFindRootTarjanResidualSlack x +
+        backend.nodeRootParentTarjanResidualSlack root x <=
+        backend.nodeFindRootTarjanResidualSlack x
+    have hzero :
+        final.nodeFindRootTarjanResidualSlack x = 0 := by
+      simpa [final] using
+        backend.compressFindCosted_nodeFindRootTarjanResidualSlack_eq_zero_of_findRoot?
+          hfind
+    rw [hzero]
+    simp [nodeFindRootTarjanResidualSlack, hfind]
+  · intro y _hymem hyx
+    change final.nodeFindRootTarjanResidualSlack y <=
+      backend.nodeFindRootTarjanResidualSlack y
+    simpa [final] using
+      backend.compressFindCosted_nodeFindRootTarjanResidualSlack_le_of_ne hyx
+
+theorem compressPathFindFuelCosted_nodeRootParentTarjanLevelGap_eq_old_of_not_mem_trace
+    (backend : NoCompressionRankedMassBackendState)
+    (fuel : Nat) {x y parent root : Nat}
+    (hnot : y ∉ backend.compressPathFindFuelTrace fuel x)
+    (hparent : backend.state.forest.parent? y = some parent) :
+    ((backend.compressPathFindFuelCosted fuel x).erase.1).nodeRootParentTarjanLevelGap
+      root y =
+      backend.nodeRootParentTarjanLevelGap root y := by
+  have hparentNew :
+      ((backend.compressPathFindFuelCosted fuel x).erase.1).state.forest.parent?
+        y =
+        some parent :=
+    backend.compressPathFindFuelCosted_parent?_eq_old_of_not_mem_trace
+      fuel hnot hparent
+  have hrankEq :
+      ((backend.compressPathFindFuelCosted fuel x).erase.1).state.rank =
+        backend.state.rank :=
+    backend.compressPathFindFuelCosted_rank_eq fuel x
+  simp [nodeRootParentTarjanLevelGap, hparentNew, hparent]
+  rw [hrankEq]
+
 theorem rankSlackPotentialOver_le_of_forall_mem
     (left right : NoCompressionRankedMassBackendState) :
     forall (xs : List Nat),
@@ -5143,6 +5850,94 @@ theorem not_mem_parent_compressPathFindFuelTrace_of_parent?_ne
     backend.inv.toRankInvariant.parent_rank_lt hparent hne
   omega
 
+theorem compressPathFindFuelCosted_tarjanLevelPotential_add_traceLevelGap_le_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState) :
+    forall (fuel : Nat) {x root : Nat},
+      backend.state.forest.findRoot? x = some root ->
+      tarjanLevelPotential ((backend.compressPathFindFuelCosted fuel x).erase.1) +
+          backend.traceRootParentTarjanLevelGap root
+            (backend.compressPathFindFuelTrace fuel x) <=
+        tarjanLevelPotential backend
+  | 0, x, root, hfind => by
+      simpa [compressPathFindFuelCosted, compressPathFindFuelTrace,
+        traceRootParentTarjanLevelGap] using
+        backend.tarjanLevelPotential_compressFindCosted_add_nodeRootParentGap_le_of_findRoot?
+          hfind
+  | fuel + 1, x, root, hfind => by
+      cases hparent : backend.state.forest.parent? x with
+      | none =>
+          simpa [compressPathFindFuelCosted, compressPathFindFuelTrace,
+            traceRootParentTarjanLevelGap, hparent] using
+            backend.tarjanLevelPotential_compressFindCosted_add_nodeRootParentGap_le_of_findRoot?
+              hfind
+      | some parent =>
+          by_cases hsame : parent = x
+          · simpa [compressPathFindFuelCosted, compressPathFindFuelTrace,
+              traceRootParentTarjanLevelGap, hparent, hsame] using
+              backend.tarjanLevelPotential_compressFindCosted_add_nodeRootParentGap_le_of_findRoot?
+                hfind
+          · have hparentFind :
+                backend.state.forest.findRoot? parent = some root :=
+              backend.findRoot?_parent_eq_of_parent?_ne
+                hparent hsame hfind
+            let tail :=
+              (backend.compressPathFindFuelCosted fuel parent).erase.1
+            have htailDrop :
+                tarjanLevelPotential tail +
+                    backend.traceRootParentTarjanLevelGap root
+                      (backend.compressPathFindFuelTrace fuel parent) <=
+                  tarjanLevelPotential backend := by
+              simpa [tail] using
+                compressPathFindFuelCosted_tarjanLevelPotential_add_traceLevelGap_le_of_findRoot?
+                  backend fuel hparentFind
+            have htailFindX :
+                tail.state.forest.findRoot? x = some root := by
+              rw [show tail.state.forest.findRoot? x =
+                    backend.state.forest.findRoot? x by
+                simpa [tail] using
+                  backend.compressPathFindFuelCosted_findRoot?_eq
+                    fuel parent x]
+              exact hfind
+            have hxNotTail :
+                x ∉ backend.compressPathFindFuelTrace fuel parent :=
+              backend.not_mem_parent_compressPathFindFuelTrace_of_parent?_ne
+                fuel hparent hsame hparentFind
+            have hxGap :
+                tail.nodeRootParentTarjanLevelGap root x =
+                  backend.nodeRootParentTarjanLevelGap root x := by
+              simpa [tail] using
+                backend.compressPathFindFuelCosted_nodeRootParentTarjanLevelGap_eq_old_of_not_mem_trace
+                  fuel hxNotTail hparent
+            have hstep :
+                tarjanLevelPotential ((tail.compressFindCosted x).erase.1) +
+                    tail.nodeRootParentTarjanLevelGap root x <=
+                  tarjanLevelPotential tail :=
+              tail.tarjanLevelPotential_compressFindCosted_add_nodeRootParentGap_le_of_findRoot?
+                htailFindX
+            rw [hxGap] at hstep
+            have hcombine :
+                tarjanLevelPotential ((tail.compressFindCosted x).erase.1) +
+                    backend.nodeRootParentTarjanLevelGap root x +
+                    backend.traceRootParentTarjanLevelGap root
+                      (backend.compressPathFindFuelTrace fuel parent) <=
+                  tarjanLevelPotential backend := by
+              omega
+            simpa [compressPathFindFuelCosted, compressPathFindFuelTrace,
+              traceRootParentTarjanLevelGap, hparent, hsame, tail,
+              Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using hcombine
+
+theorem tarjanLevelPotential_fullCompressFindCosted_add_traceLevelGap_le_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState)
+    {x root : Nat}
+    (hfind : backend.state.forest.findRoot? x = some root) :
+    tarjanLevelPotential ((backend.fullCompressFindCosted x).erase.1) +
+        backend.traceRootParentTarjanLevelGap root
+          (backend.fullCompressFindTrace x) <=
+      tarjanLevelPotential backend := by
+  simpa [fullCompressFindCosted, fullCompressFindTrace] using
+    backend.compressPathFindFuelCosted_tarjanLevelPotential_add_traceLevelGap_le_of_findRoot?
+      backend.state.forest.maxSearchFuel hfind
+
 theorem compressPathFindFuelCosted_nodeRootParentRankSlack_eq_old_of_not_mem_trace
     (backend : NoCompressionRankedMassBackendState)
     (fuel : Nat) {x y parent root : Nat}
@@ -5163,6 +5958,29 @@ theorem compressPathFindFuelCosted_nodeRootParentRankSlack_eq_old_of_not_mem_tra
     backend.compressPathFindFuelCosted_rank_eq fuel x
   simp [nodeRootParentRankSlack, hparentNew, hparent]
   rw [hrankEq]
+
+theorem compressPathFindFuelCosted_nodeRootParentTarjanResidualSlack_eq_old_of_not_mem_trace
+    (backend : NoCompressionRankedMassBackendState)
+    (fuel : Nat) {x y parent root : Nat}
+    (hnot : y ∉ backend.compressPathFindFuelTrace fuel x)
+    (hparent : backend.state.forest.parent? y = some parent) :
+    ((backend.compressPathFindFuelCosted fuel x).erase.1).nodeRootParentTarjanResidualSlack
+      root y =
+      backend.nodeRootParentTarjanResidualSlack root y := by
+  have hslack :
+      ((backend.compressPathFindFuelCosted fuel x).erase.1).nodeRootParentRankSlack
+        root y =
+        backend.nodeRootParentRankSlack root y :=
+    backend.compressPathFindFuelCosted_nodeRootParentRankSlack_eq_old_of_not_mem_trace
+      fuel hnot hparent
+  have hgap :
+      ((backend.compressPathFindFuelCosted fuel x).erase.1).nodeRootParentTarjanLevelGap
+        root y =
+        backend.nodeRootParentTarjanLevelGap root y :=
+    backend.compressPathFindFuelCosted_nodeRootParentTarjanLevelGap_eq_old_of_not_mem_trace
+      fuel hnot hparent
+  unfold nodeRootParentTarjanResidualSlack
+  rw [hslack, hgap]
 
 theorem compressPathFindFuelCosted_rankSlackPotential_add_traceRootParentRankSlack_le_of_findRoot?
     (backend : NoCompressionRankedMassBackendState) :
@@ -5240,6 +6058,82 @@ theorem compressPathFindFuelCosted_rankSlackPotential_add_traceRootParentRankSla
               traceRootParentRankSlack, hparent, hsame, tail, Nat.add_assoc,
               Nat.add_comm, Nat.add_left_comm] using hcombine
 
+theorem compressPathFindFuelCosted_tarjanResidualPotential_add_traceResidualSlack_le_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState) :
+    forall (fuel : Nat) {x root : Nat},
+      backend.state.forest.findRoot? x = some root ->
+      tarjanResidualPotential ((backend.compressPathFindFuelCosted fuel x).erase.1) +
+          backend.traceRootParentTarjanResidualSlack root
+            (backend.compressPathFindFuelTrace fuel x) <=
+        tarjanResidualPotential backend
+  | 0, x, root, hfind => by
+      simpa [compressPathFindFuelCosted, compressPathFindFuelTrace,
+        traceRootParentTarjanResidualSlack] using
+        backend.tarjanResidualPotential_compressFindCosted_add_nodeRootParentResidualSlack_le_of_findRoot?
+          hfind
+  | fuel + 1, x, root, hfind => by
+      cases hparent : backend.state.forest.parent? x with
+      | none =>
+          simpa [compressPathFindFuelCosted, compressPathFindFuelTrace,
+            traceRootParentTarjanResidualSlack, hparent] using
+            backend.tarjanResidualPotential_compressFindCosted_add_nodeRootParentResidualSlack_le_of_findRoot?
+              hfind
+      | some parent =>
+          by_cases hsame : parent = x
+          · simpa [compressPathFindFuelCosted, compressPathFindFuelTrace,
+              traceRootParentTarjanResidualSlack, hparent, hsame] using
+              backend.tarjanResidualPotential_compressFindCosted_add_nodeRootParentResidualSlack_le_of_findRoot?
+                hfind
+          · have hparentFind :
+                backend.state.forest.findRoot? parent = some root :=
+              backend.findRoot?_parent_eq_of_parent?_ne
+                hparent hsame hfind
+            let tail :=
+              (backend.compressPathFindFuelCosted fuel parent).erase.1
+            have htailDrop :
+                tarjanResidualPotential tail +
+                    backend.traceRootParentTarjanResidualSlack root
+                      (backend.compressPathFindFuelTrace fuel parent) <=
+                  tarjanResidualPotential backend := by
+              simpa [tail] using
+                compressPathFindFuelCosted_tarjanResidualPotential_add_traceResidualSlack_le_of_findRoot?
+                  backend fuel hparentFind
+            have htailFindX :
+                tail.state.forest.findRoot? x = some root := by
+              rw [show tail.state.forest.findRoot? x =
+                    backend.state.forest.findRoot? x by
+                simpa [tail] using
+                  backend.compressPathFindFuelCosted_findRoot?_eq
+                    fuel parent x]
+              exact hfind
+            have hxNotTail :
+                x ∉ backend.compressPathFindFuelTrace fuel parent :=
+              backend.not_mem_parent_compressPathFindFuelTrace_of_parent?_ne
+                fuel hparent hsame hparentFind
+            have hxResidual :
+                tail.nodeRootParentTarjanResidualSlack root x =
+                  backend.nodeRootParentTarjanResidualSlack root x := by
+              simpa [tail] using
+                backend.compressPathFindFuelCosted_nodeRootParentTarjanResidualSlack_eq_old_of_not_mem_trace
+                  fuel hxNotTail hparent
+            have hstep :
+                tarjanResidualPotential ((tail.compressFindCosted x).erase.1) +
+                    tail.nodeRootParentTarjanResidualSlack root x <=
+                  tarjanResidualPotential tail :=
+              tail.tarjanResidualPotential_compressFindCosted_add_nodeRootParentResidualSlack_le_of_findRoot?
+                htailFindX
+            rw [hxResidual] at hstep
+            have hcombine :
+                tarjanResidualPotential ((tail.compressFindCosted x).erase.1) +
+                    backend.nodeRootParentTarjanResidualSlack root x +
+                    backend.traceRootParentTarjanResidualSlack root
+                      (backend.compressPathFindFuelTrace fuel parent) <=
+                  tarjanResidualPotential backend := by
+              omega
+            simpa [compressPathFindFuelCosted, compressPathFindFuelTrace,
+              traceRootParentTarjanResidualSlack, hparent, hsame, tail,
+              Nat.add_assoc, Nat.add_comm, Nat.add_left_comm] using hcombine
+
 theorem rankSlackPotential_fullCompressFindCosted_add_traceRootParentRankSlack_le_of_findRoot?
     (backend : NoCompressionRankedMassBackendState)
     {x root : Nat}
@@ -5249,6 +6143,18 @@ theorem rankSlackPotential_fullCompressFindCosted_add_traceRootParentRankSlack_l
       rankSlackPotential backend := by
   simpa [fullCompressFindCosted, fullCompressFindTrace] using
     backend.compressPathFindFuelCosted_rankSlackPotential_add_traceRootParentRankSlack_le_of_findRoot?
+      backend.state.forest.maxSearchFuel hfind
+
+theorem tarjanResidualPotential_fullCompressFindCosted_add_traceResidualSlack_le_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState)
+    {x root : Nat}
+    (hfind : backend.state.forest.findRoot? x = some root) :
+    tarjanResidualPotential ((backend.fullCompressFindCosted x).erase.1) +
+        backend.traceRootParentTarjanResidualSlack root
+          (backend.fullCompressFindTrace x) <=
+      tarjanResidualPotential backend := by
+  simpa [fullCompressFindCosted, fullCompressFindTrace] using
+    backend.compressPathFindFuelCosted_tarjanResidualPotential_add_traceResidualSlack_le_of_findRoot?
       backend.state.forest.maxSearchFuel hfind
 
 theorem fullCompressFindCosted_eq_self_of_findRoot?_none
@@ -5287,6 +6193,14 @@ theorem rankSlackPotential_fullCompressFindCosted_eq_of_findRoot?_none
       rankSlackPotential backend := by
   rw [backend.fullCompressFindCosted_eq_self_of_findRoot?_none hfind]
 
+theorem tarjanResidualPotential_fullCompressFindCosted_eq_of_findRoot?_none
+    (backend : NoCompressionRankedMassBackendState)
+    {x : Nat}
+    (hfind : backend.state.forest.findRoot? x = none) :
+    tarjanResidualPotential ((backend.fullCompressFindCosted x).erase.1) =
+      tarjanResidualPotential backend := by
+  rw [backend.fullCompressFindCosted_eq_self_of_findRoot?_none hfind]
+
 theorem rank_succ_le_rankBucketWidth (rank : Nat) :
     rank + 1 <= rankBucketWidth (rankBucket rank) := by
   have hlt : rank + 1 < 2 ^ (Nat.log2 (rank + 1) + 1) :=
@@ -5308,6 +6222,24 @@ theorem fullCompressFindCosted_cost_le_rankGapFindCredit
         backend.fullCompressFindTrace_length_le_rank_gap_of_findRoot? hfind
       rw [hcostEq]
       simpa [rankGapFindCredit, hfind] using htrace
+
+theorem rankGapFindCredit_le_tarjanLevelRootRankFindCredit
+    (backend : NoCompressionRankedMassBackendState) (x : Nat) :
+    backend.rankGapFindCredit x <=
+      backend.tarjanLevelRootRankFindCredit x := by
+  cases hfind : backend.state.forest.findRoot? x with
+  | none =>
+      simp [rankGapFindCredit, tarjanLevelRootRankFindCredit, hfind]
+  | some root =>
+      simp [rankGapFindCredit, tarjanLevelRootRankFindCredit, hfind]
+
+theorem fullCompressFindCosted_cost_le_tarjanLevelRootRankFindCredit
+    (backend : NoCompressionRankedMassBackendState) (x : Nat) :
+    (backend.fullCompressFindCosted x).cost <=
+      backend.tarjanLevelRootRankFindCredit x :=
+  Nat.le_trans
+    (backend.fullCompressFindCosted_cost_le_rankGapFindCredit x)
+    (backend.rankGapFindCredit_le_tarjanLevelRootRankFindCredit x)
 
 theorem rankGapFindCredit_le_logRankFindCredit
     (backend : NoCompressionRankedMassBackendState) (x : Nat) :
@@ -5680,6 +6612,60 @@ theorem rankBucketPotential_unionCosted_eq
   simp [rankBucketPotential, unionCosted, unionResult,
     NoCompressionRankedMassForest.unionCosted]
 
+theorem tarjanLevelPotential_le_bound
+    (backend : NoCompressionRankedMassBackendState) :
+    tarjanLevelPotential backend <= tarjanLevelPotentialBound backend := by
+  unfold tarjanLevelPotential tarjanLevelPotentialBound
+  have hnode :
+      forall x, x ∈ List.range backend.state.forest.size ->
+        backend.nodeFindRootTarjanLevelGap x <=
+          tarjanRankLevel (Nat.log2 backend.state.forest.size) + 1 := by
+    intro x _hx
+    cases hfind : backend.state.forest.findRoot? x with
+    | none =>
+        simp [nodeFindRootTarjanLevelGap, hfind]
+    | some root =>
+        have hrootRank :
+            backend.state.rank root <= Nat.log2 backend.state.forest.size :=
+          backend.findRoot?_root_rank_le_log2_size hfind
+        have hrootLevel :
+            tarjanRankLevel (backend.state.rank root) <=
+              tarjanRankLevel (Nat.log2 backend.state.forest.size) :=
+          tarjanRankLevel_mono hrootRank
+        cases hparent : backend.state.forest.parent? x with
+        | none =>
+            simp [nodeFindRootTarjanLevelGap, nodeRootParentTarjanLevelGap,
+              hfind, hparent]
+        | some parent =>
+            have hgap :
+                tarjanRankLevel (backend.state.rank root) -
+                    tarjanRankLevel (backend.state.rank parent) <=
+                  tarjanRankLevel (backend.state.rank root) := Nat.sub_le _ _
+            simp [nodeFindRootTarjanLevelGap, nodeRootParentTarjanLevelGap,
+              hfind, hparent]
+            omega
+  have hsum :=
+    backend.tarjanLevelPotentialOver_le_length_mul
+      (List.range backend.state.forest.size)
+      (tarjanRankLevel (Nat.log2 backend.state.forest.size) + 1) hnode
+  simpa using hsum
+
+theorem tarjanLevelPotentialBound_unionCosted_eq
+    (backend : NoCompressionRankedMassBackendState) (x y : Nat) :
+    tarjanLevelPotentialBound ((backend.unionCosted x y).erase) =
+      tarjanLevelPotentialBound backend := by
+  simp [tarjanLevelPotentialBound, unionCosted, unionResult,
+    NoCompressionRankedMassForest.unionCosted]
+
+theorem tarjanLevelPotential_unionCosted_le_bound
+    (backend : NoCompressionRankedMassBackendState) (x y : Nat) :
+    tarjanLevelPotential ((backend.unionCosted x y).erase) <=
+      tarjanLevelPotentialBound backend := by
+  have hle :=
+    tarjanLevelPotential_le_bound ((backend.unionCosted x y).erase)
+  have hbound := backend.tarjanLevelPotentialBound_unionCosted_eq x y
+  rwa [hbound] at hle
+
 theorem rankSlackPotential_unionCosted_le_rankBucketPotential
     (backend : NoCompressionRankedMassBackendState) (x y : Nat) :
     rankSlackPotential ((backend.unionCosted x y).erase) <=
@@ -5700,6 +6686,279 @@ theorem unionCosted_cost_add_rankSlackPotential_le_rankSlackSizeUnionCredit
   rw [hcost]
   unfold rankSlackSizeUnionCredit
   omega
+
+theorem tarjanLevelPotential_fullCompressFindCosted_eq_of_findRoot?_none
+    (backend : NoCompressionRankedMassBackendState)
+    {x : Nat}
+    (hfind : backend.state.forest.findRoot? x = none) :
+    tarjanLevelPotential ((backend.fullCompressFindCosted x).erase.1) =
+      tarjanLevelPotential backend := by
+  rw [backend.fullCompressFindCosted_eq_self_of_findRoot?_none hfind]
+
+theorem fullCompressFindCosted_cost_add_tarjanLevelPotential_le_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState)
+    {x root : Nat}
+    (hfind : backend.state.forest.findRoot? x = some root) :
+    (backend.fullCompressFindCosted x).cost +
+        tarjanLevelPotential ((backend.fullCompressFindCosted x).erase.1) <=
+      backend.traceRootParentTarjanResidualSlack root
+          (backend.fullCompressFindTrace x) + 2 +
+        tarjanLevelPotential backend := by
+  have hcostEq := backend.fullCompressFindCosted_cost_eq_trace_length x
+  have hlen :=
+    backend.fullCompressFindTrace_length_le_traceRootParentRankSlack_add_two_of_findRoot?
+      hfind
+  have hsplit :=
+    backend.traceRootParentRankSlack_le_tarjanLevelGap_add_residual
+      root (backend.fullCompressFindTrace x)
+  have hdrop :=
+    backend.tarjanLevelPotential_fullCompressFindCosted_add_traceLevelGap_le_of_findRoot?
+      hfind
+  rw [hcostEq]
+  omega
+
+theorem fullCompressFindCosted_cost_add_tarjanLevelPotential_le_tarjanLevelFindCredit
+    (backend : NoCompressionRankedMassBackendState) (x : Nat) :
+    (backend.fullCompressFindCosted x).cost +
+        tarjanLevelPotential ((backend.fullCompressFindCosted x).erase.1) <=
+      backend.tarjanLevelFindCredit x + tarjanLevelPotential backend := by
+  cases hfind : backend.state.forest.findRoot? x with
+  | none =>
+      have hcost := backend.fullCompressFindCosted_cost_le x
+      have hpot :=
+        backend.tarjanLevelPotential_fullCompressFindCosted_eq_of_findRoot?_none
+          hfind
+      simp [tarjanLevelFindCredit, hfind]
+      rw [hpot]
+      omega
+  | some root =>
+      have hbound :=
+        backend.fullCompressFindCosted_cost_add_tarjanLevelPotential_le_of_findRoot?
+          hfind
+      simpa [tarjanLevelFindCredit, hfind, Nat.add_assoc,
+        Nat.add_comm, Nat.add_left_comm] using hbound
+
+theorem unionCosted_cost_add_tarjanLevelPotential_le_tarjanLevelUnionCredit
+    (backend : NoCompressionRankedMassBackendState) (x y : Nat) :
+    (backend.unionCosted x y).cost +
+        tarjanLevelPotential ((backend.unionCosted x y).erase) <=
+      backend.tarjanLevelUnionCredit x y + tarjanLevelPotential backend := by
+  have hcost : (backend.unionCosted x y).cost = 1 := by
+    rfl
+  have hpot := backend.tarjanLevelPotential_unionCosted_le_bound x y
+  rw [hcost]
+  unfold tarjanLevelUnionCredit
+  omega
+
+theorem tarjanLevelPotential_fullCompressFindCosted_le
+    (backend : NoCompressionRankedMassBackendState) (x : Nat) :
+    tarjanLevelPotential ((backend.fullCompressFindCosted x).erase.1) <=
+      tarjanLevelPotential backend := by
+  cases hfind : backend.state.forest.findRoot? x with
+  | none =>
+      have hpot :=
+        backend.tarjanLevelPotential_fullCompressFindCosted_eq_of_findRoot?_none
+          hfind
+      omega
+  | some root =>
+      have hdrop :=
+        backend.tarjanLevelPotential_fullCompressFindCosted_add_traceLevelGap_le_of_findRoot?
+          hfind
+      omega
+
+theorem fullCompressFindCosted_cost_add_tarjanLevelPotential_le_tarjanLevelRootRankFindCredit
+    (backend : NoCompressionRankedMassBackendState) (x : Nat) :
+    (backend.fullCompressFindCosted x).cost +
+        tarjanLevelPotential ((backend.fullCompressFindCosted x).erase.1) <=
+      backend.tarjanLevelRootRankFindCredit x + tarjanLevelPotential backend := by
+  have hcost :=
+    backend.fullCompressFindCosted_cost_le_tarjanLevelRootRankFindCredit x
+  have hpot := backend.tarjanLevelPotential_fullCompressFindCosted_le x
+  omega
+
+theorem unionCosted_cost_add_tarjanLevelPotential_le_tarjanLevelDeltaUnionCredit
+    (backend : NoCompressionRankedMassBackendState) (x y : Nat) :
+    (backend.unionCosted x y).cost +
+        tarjanLevelPotential ((backend.unionCosted x y).erase) <=
+      backend.tarjanLevelDeltaUnionCredit x y +
+        tarjanLevelPotential backend := by
+  have hcost : (backend.unionCosted x y).cost = 1 := by
+    rfl
+  let before := tarjanLevelPotential backend
+  let after := tarjanLevelPotential ((backend.unionCosted x y).erase)
+  change (backend.unionCosted x y).cost + after <=
+    backend.tarjanLevelDeltaUnionCredit x y + before
+  rw [hcost]
+  unfold tarjanLevelDeltaUnionCredit
+  change 1 + after <= (after - before + 1) + before
+  by_cases hle : before <= after
+  · have hcancel : after - before + before = after :=
+      Nat.sub_add_cancel hle
+    omega
+  · have hle' : after <= before := by
+      omega
+    have hzero : after - before = 0 :=
+      Nat.sub_eq_zero_of_le hle'
+    omega
+
+theorem tarjanLevelDeltaUnionCredit_le_tarjanLevelUnionCredit
+    (backend : NoCompressionRankedMassBackendState) (x y : Nat) :
+    backend.tarjanLevelDeltaUnionCredit x y <=
+      backend.tarjanLevelUnionCredit x y := by
+  have hpot := backend.tarjanLevelPotential_unionCosted_le_bound x y
+  unfold tarjanLevelDeltaUnionCredit tarjanLevelUnionCredit
+  omega
+
+theorem fullCompressFindCosted_cost_add_tarjanPhaseCountPotential_le_tarjanPhaseCountFindCredit
+    (backend : NoCompressionRankedMassBackendState) (x : Nat) :
+    (backend.fullCompressFindCosted x).cost +
+        tarjanPhaseCountPotential
+          ((backend.fullCompressFindCosted x).erase.1) <=
+      backend.tarjanPhaseCountFindCredit x +
+        tarjanPhaseCountPotential backend := by
+  cases hfind : backend.state.forest.findRoot? x with
+  | none =>
+      have hcost := backend.fullCompressFindCosted_cost_le x
+      have hrank :=
+        backend.rankSlackPotential_fullCompressFindCosted_eq_of_findRoot?_none
+          hfind
+      have hlevel :=
+        backend.tarjanLevelPotential_fullCompressFindCosted_eq_of_findRoot?_none
+          hfind
+      simp [tarjanPhaseCountFindCredit, hfind, tarjanPhaseCountPotential]
+      rw [hrank, hlevel]
+      omega
+  | some root =>
+      have hrank :
+          (backend.fullCompressFindCosted x).cost +
+              rankSlackPotential
+                ((backend.fullCompressFindCosted x).erase.1) <=
+            2 + rankSlackPotential backend := by
+        have h :=
+          backend.fullCompressFindCosted_cost_add_rankSlackPotential_le_rankSlackFindCredit
+            x
+        simpa [rankSlackFindCredit, hfind] using h
+      have hlevel := backend.tarjanLevelPotential_fullCompressFindCosted_le x
+      simp [tarjanPhaseCountFindCredit, hfind, tarjanPhaseCountPotential]
+      omega
+
+theorem unionCosted_cost_add_tarjanPhaseCountPotential_le_tarjanPhaseCountDeltaUnionCredit
+    (backend : NoCompressionRankedMassBackendState) (x y : Nat) :
+    (backend.unionCosted x y).cost +
+        tarjanPhaseCountPotential ((backend.unionCosted x y).erase) <=
+      backend.tarjanPhaseCountDeltaUnionCredit x y +
+        tarjanPhaseCountPotential backend := by
+  have hcost : (backend.unionCosted x y).cost = 1 := by
+    rfl
+  let before := tarjanPhaseCountPotential backend
+  let after := tarjanPhaseCountPotential ((backend.unionCosted x y).erase)
+  change (backend.unionCosted x y).cost + after <=
+    backend.tarjanPhaseCountDeltaUnionCredit x y + before
+  rw [hcost]
+  unfold tarjanPhaseCountDeltaUnionCredit
+  change 1 + after <= (after - before + 1) + before
+  by_cases hle : before <= after
+  · have hcancel : after - before + before = after :=
+      Nat.sub_add_cancel hle
+    omega
+  · have hle' : after <= before := by
+      omega
+    have hzero : after - before = 0 :=
+      Nat.sub_eq_zero_of_le hle'
+    omega
+
+theorem tarjanLevelIndexPotential_fullCompressFindCosted_add_traceRootParentRankSlack_le_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState)
+    {x root : Nat}
+    (hfind : backend.state.forest.findRoot? x = some root) :
+    tarjanLevelIndexPotential ((backend.fullCompressFindCosted x).erase.1) +
+        backend.traceRootParentRankSlack root (backend.fullCompressFindTrace x) <=
+      tarjanLevelIndexPotential backend := by
+  have hlevel :=
+    backend.tarjanLevelPotential_fullCompressFindCosted_add_traceLevelGap_le_of_findRoot?
+      hfind
+  have hresidual :=
+    backend.tarjanResidualPotential_fullCompressFindCosted_add_traceResidualSlack_le_of_findRoot?
+      hfind
+  have hsplit :=
+    backend.traceRootParentRankSlack_le_tarjanLevelGap_add_residual
+      root (backend.fullCompressFindTrace x)
+  unfold tarjanLevelIndexPotential
+  omega
+
+theorem fullCompressFindCosted_cost_add_tarjanLevelIndexPotential_le_two_add_of_findRoot?
+    (backend : NoCompressionRankedMassBackendState)
+    {x root : Nat}
+    (hfind : backend.state.forest.findRoot? x = some root) :
+    (backend.fullCompressFindCosted x).cost +
+        tarjanLevelIndexPotential ((backend.fullCompressFindCosted x).erase.1) <=
+      2 + tarjanLevelIndexPotential backend := by
+  have hcostEq := backend.fullCompressFindCosted_cost_eq_trace_length x
+  have hlen :=
+    backend.fullCompressFindTrace_length_le_traceRootParentRankSlack_add_two_of_findRoot?
+      hfind
+  have hdrop :=
+    backend.tarjanLevelIndexPotential_fullCompressFindCosted_add_traceRootParentRankSlack_le_of_findRoot?
+      hfind
+  rw [hcostEq]
+  omega
+
+theorem tarjanLevelIndexPotential_fullCompressFindCosted_eq_of_findRoot?_none
+    (backend : NoCompressionRankedMassBackendState)
+    {x : Nat}
+    (hfind : backend.state.forest.findRoot? x = none) :
+    tarjanLevelIndexPotential ((backend.fullCompressFindCosted x).erase.1) =
+      tarjanLevelIndexPotential backend := by
+  unfold tarjanLevelIndexPotential
+  rw [backend.tarjanLevelPotential_fullCompressFindCosted_eq_of_findRoot?_none hfind,
+    backend.tarjanResidualPotential_fullCompressFindCosted_eq_of_findRoot?_none hfind]
+
+theorem fullCompressFindCosted_cost_add_tarjanLevelIndexPotential_le_tarjanLevelIndexFindCredit
+    (backend : NoCompressionRankedMassBackendState) (x : Nat) :
+    (backend.fullCompressFindCosted x).cost +
+        tarjanLevelIndexPotential ((backend.fullCompressFindCosted x).erase.1) <=
+      backend.tarjanLevelIndexFindCredit x +
+        tarjanLevelIndexPotential backend := by
+  cases hfind : backend.state.forest.findRoot? x with
+  | none =>
+      have hcost := backend.fullCompressFindCosted_cost_le x
+      have hpot :=
+        backend.tarjanLevelIndexPotential_fullCompressFindCosted_eq_of_findRoot?_none
+          hfind
+      simp [tarjanLevelIndexFindCredit, hfind]
+      rw [hpot]
+      omega
+  | some root =>
+      have hbound :=
+        backend.fullCompressFindCosted_cost_add_tarjanLevelIndexPotential_le_two_add_of_findRoot?
+          hfind
+      simp [tarjanLevelIndexFindCredit, hfind]
+      omega
+
+theorem unionCosted_cost_add_tarjanLevelIndexPotential_le_tarjanLevelIndexDeltaUnionCredit
+    (backend : NoCompressionRankedMassBackendState) (x y : Nat) :
+    (backend.unionCosted x y).cost +
+        tarjanLevelIndexPotential ((backend.unionCosted x y).erase) <=
+      backend.tarjanLevelIndexDeltaUnionCredit x y +
+        tarjanLevelIndexPotential backend := by
+  have hcost : (backend.unionCosted x y).cost = 1 := by
+    rfl
+  let before := tarjanLevelIndexPotential backend
+  let after := tarjanLevelIndexPotential ((backend.unionCosted x y).erase)
+  change (backend.unionCosted x y).cost + after <=
+    backend.tarjanLevelIndexDeltaUnionCredit x y + before
+  rw [hcost]
+  unfold tarjanLevelIndexDeltaUnionCredit
+  change 1 + after <= (after - before + 1) + before
+  by_cases hle : before <= after
+  · have hcancel : after - before + before = after :=
+      Nat.sub_add_cancel hle
+    omega
+  · have hle' : after <= before := by
+      omega
+    have hzero : after - before = 0 :=
+      Nat.sub_eq_zero_of_le hle'
+    omega
 
 /--
 Potential-method scaffold for the current representation backend.
@@ -6024,6 +7283,266 @@ theorem fullCompressionRankSlackSizeUnionAmortizedBackend_profile :
   constructor
   · exact fullCompressionRankSlackSizeUnionAmortizedBackend.find_amortized
   · exact fullCompressionRankSlackSizeUnionAmortizedBackend.union_amortized
+
+/--
+First multilevel Tarjan-style amortized checkpoint.
+
+The potential sums only the cross-level part of each node's parent-to-root rank
+gap, where levels are produced by the executable `tarjanLevelIter` schedule.
+Successful finds charge the residual rank slack that remains within the current
+level, plus constant `2`; the aggregate level potential pays the cross-level
+part of the compression trace. Union uses the level-specific global bound
+`tarjanLevelPotentialBound`, not the previous full rank-slack bound.
+
+This is still not the inverse-Ackermann theorem. It is the first backend-shaped
+interface where the accounting separates level jumps from within-level debt,
+which is the reusable boundary a later Tarjan analysis can refine by increasing
+the phase schedule and shrinking the residual credit.
+-/
+def fullCompressionTarjanLevelAmortizedBackend :
+    RepresentationAmortizedBackend NoCompressionRankedMassBackendState
+      tarjanLevelPotential
+      tarjanLevelFindCredit
+      tarjanLevelUnionCredit where
+  toRepresentationBackend := fullCompressionRepresentationBackend
+  find_amortized := by
+    intro backend x
+    unfold Amortized.CostedBound Amortized.Bound
+    change (backend.fullCompressFindCosted x).cost +
+        tarjanLevelPotential ((backend.fullCompressFindCosted x).erase.1) <=
+      backend.tarjanLevelFindCredit x + tarjanLevelPotential backend
+    exact
+      backend.fullCompressFindCosted_cost_add_tarjanLevelPotential_le_tarjanLevelFindCredit
+        x
+  union_amortized := by
+    intro backend x y
+    unfold Amortized.CostedBound Amortized.Bound
+    change (backend.unionCosted x y).cost +
+        tarjanLevelPotential ((backend.unionCosted x y).erase) <=
+      backend.tarjanLevelUnionCredit x y + tarjanLevelPotential backend
+    exact
+      backend.unionCosted_cost_add_tarjanLevelPotential_le_tarjanLevelUnionCredit
+        x y
+
+theorem fullCompressionTarjanLevelAmortizedBackend_profile :
+    (forall (backend : NoCompressionRankedMassBackendState) (x : Nat),
+      Amortized.CostedBound
+        (fullCompressionTarjanLevelAmortizedBackend.findCosted backend x)
+        (tarjanLevelPotential backend)
+        (tarjanLevelPotential
+          ((fullCompressionTarjanLevelAmortizedBackend.findCosted
+            backend x).erase.1))
+        (tarjanLevelFindCredit backend x)) /\
+      (forall (backend : NoCompressionRankedMassBackendState) (x y : Nat),
+        Amortized.CostedBound
+          (fullCompressionTarjanLevelAmortizedBackend.unionCosted backend x y)
+          (tarjanLevelPotential backend)
+          (tarjanLevelPotential
+            (fullCompressionTarjanLevelAmortizedBackend.unionCosted
+              backend x y).erase)
+          (tarjanLevelUnionCredit backend x y)) := by
+  constructor
+  · exact fullCompressionTarjanLevelAmortizedBackend.find_amortized
+  · exact fullCompressionTarjanLevelAmortizedBackend.union_amortized
+
+/--
+Trace-free Tarjan-level clean-credit checkpoint.
+
+This keeps the multilevel `tarjanLevelPotential`, but replaces the successful
+find credit from `tarjanLevelFindCredit` with the returned root's rank plus one
+and replaces the whole-forest union credit with the local potential delta plus
+one.  The find credit is therefore independent of `fullCompressFindTrace`, and
+the union credit is no larger than `tarjanLevelUnionCredit`.
+
+This is cleaner accounting around the current Tarjan-level scaffold, not the
+inverse-Ackermann theorem: the successful-find credit is still a rank-count
+bound, not an alpha-style phase count.
+-/
+def fullCompressionTarjanLevelCleanCreditAmortizedBackend :
+    RepresentationAmortizedBackend NoCompressionRankedMassBackendState
+      tarjanLevelPotential
+      tarjanLevelRootRankFindCredit
+      tarjanLevelDeltaUnionCredit where
+  toRepresentationBackend := fullCompressionRepresentationBackend
+  find_amortized := by
+    intro backend x
+    unfold Amortized.CostedBound Amortized.Bound
+    change (backend.fullCompressFindCosted x).cost +
+        tarjanLevelPotential ((backend.fullCompressFindCosted x).erase.1) <=
+      backend.tarjanLevelRootRankFindCredit x +
+        tarjanLevelPotential backend
+    exact
+      backend.fullCompressFindCosted_cost_add_tarjanLevelPotential_le_tarjanLevelRootRankFindCredit
+        x
+  union_amortized := by
+    intro backend x y
+    unfold Amortized.CostedBound Amortized.Bound
+    change (backend.unionCosted x y).cost +
+        tarjanLevelPotential ((backend.unionCosted x y).erase) <=
+      backend.tarjanLevelDeltaUnionCredit x y +
+        tarjanLevelPotential backend
+    exact
+      backend.unionCosted_cost_add_tarjanLevelPotential_le_tarjanLevelDeltaUnionCredit
+        x y
+
+theorem fullCompressionTarjanLevelCleanCreditAmortizedBackend_profile :
+    (forall (backend : NoCompressionRankedMassBackendState) (x : Nat),
+      Amortized.CostedBound
+        (fullCompressionTarjanLevelCleanCreditAmortizedBackend.findCosted
+          backend x)
+        (tarjanLevelPotential backend)
+        (tarjanLevelPotential
+          ((fullCompressionTarjanLevelCleanCreditAmortizedBackend.findCosted
+            backend x).erase.1))
+        (tarjanLevelRootRankFindCredit backend x)) /\
+      (forall (backend : NoCompressionRankedMassBackendState) (x y : Nat),
+        Amortized.CostedBound
+          (fullCompressionTarjanLevelCleanCreditAmortizedBackend.unionCosted
+            backend x y)
+          (tarjanLevelPotential backend)
+          (tarjanLevelPotential
+            (fullCompressionTarjanLevelCleanCreditAmortizedBackend.unionCosted
+              backend x y).erase)
+          (tarjanLevelDeltaUnionCredit backend x y)) /\
+      (forall (backend : NoCompressionRankedMassBackendState) (x y : Nat),
+        backend.tarjanLevelDeltaUnionCredit x y <=
+          backend.tarjanLevelUnionCredit x y) := by
+  constructor
+  · exact fullCompressionTarjanLevelCleanCreditAmortizedBackend.find_amortized
+  · constructor
+    · exact
+        fullCompressionTarjanLevelCleanCreditAmortizedBackend.union_amortized
+    · intro backend x y
+      exact backend.tarjanLevelDeltaUnionCredit_le_tarjanLevelUnionCredit x y
+
+/--
+Phase-count Tarjan-level checkpoint with residual slack absorbed into potential.
+
+The potential is the sum of the aggregate rank-slack potential and the
+Tarjan-level cross-gap potential.  This absorbs the residual slack that the
+first Tarjan-level profile exposed in `tarjanLevelFindCredit`, so successful
+finds are charged only the global iterated-log phase count
+`tarjanPhaseCountBound backend + 2`.
+
+This is an alpha-shaped interface checkpoint, not the inverse-Ackermann theorem:
+the phase count is still derived from a fixed iterated-log collapse of
+`log2 forest.size`, and the potential still includes the full rank-slack layer.
+-/
+def fullCompressionTarjanPhaseCountAmortizedBackend :
+    RepresentationAmortizedBackend NoCompressionRankedMassBackendState
+      tarjanPhaseCountPotential
+      tarjanPhaseCountFindCredit
+      tarjanPhaseCountDeltaUnionCredit where
+  toRepresentationBackend := fullCompressionRepresentationBackend
+  find_amortized := by
+    intro backend x
+    unfold Amortized.CostedBound Amortized.Bound
+    change (backend.fullCompressFindCosted x).cost +
+        tarjanPhaseCountPotential
+          ((backend.fullCompressFindCosted x).erase.1) <=
+      backend.tarjanPhaseCountFindCredit x +
+        tarjanPhaseCountPotential backend
+    exact
+      backend.fullCompressFindCosted_cost_add_tarjanPhaseCountPotential_le_tarjanPhaseCountFindCredit
+        x
+  union_amortized := by
+    intro backend x y
+    unfold Amortized.CostedBound Amortized.Bound
+    change (backend.unionCosted x y).cost +
+        tarjanPhaseCountPotential ((backend.unionCosted x y).erase) <=
+      backend.tarjanPhaseCountDeltaUnionCredit x y +
+        tarjanPhaseCountPotential backend
+    exact
+      backend.unionCosted_cost_add_tarjanPhaseCountPotential_le_tarjanPhaseCountDeltaUnionCredit
+        x y
+
+theorem fullCompressionTarjanPhaseCountAmortizedBackend_profile :
+    (forall (backend : NoCompressionRankedMassBackendState) (x : Nat),
+      Amortized.CostedBound
+        (fullCompressionTarjanPhaseCountAmortizedBackend.findCosted
+          backend x)
+        (tarjanPhaseCountPotential backend)
+        (tarjanPhaseCountPotential
+          ((fullCompressionTarjanPhaseCountAmortizedBackend.findCosted
+            backend x).erase.1))
+        (tarjanPhaseCountFindCredit backend x)) /\
+      (forall (backend : NoCompressionRankedMassBackendState) (x y : Nat),
+        Amortized.CostedBound
+          (fullCompressionTarjanPhaseCountAmortizedBackend.unionCosted
+            backend x y)
+          (tarjanPhaseCountPotential backend)
+          (tarjanPhaseCountPotential
+            (fullCompressionTarjanPhaseCountAmortizedBackend.unionCosted
+              backend x y).erase)
+          (tarjanPhaseCountDeltaUnionCredit backend x y)) := by
+  constructor
+  · exact fullCompressionTarjanPhaseCountAmortizedBackend.find_amortized
+  · exact fullCompressionTarjanPhaseCountAmortizedBackend.union_amortized
+
+/--
+Level-index Tarjan checkpoint with the rank slack split made explicit.
+
+The previous phase-count profile hid the full `rankSlackPotential` inside
+`tarjanPhaseCountPotential`.  This profile uses the aggregate cross-level
+potential plus an explicit residual-index potential instead. Successful finds
+retain the phase-count-shaped credit `tarjanPhaseCountBound + 2`, while the
+proof shows that the level gap and residual index together drop enough to pay
+the trace-root parent rank slack.
+
+This is still below the full inverse-Ackermann theorem: the residual index is
+raw within-level rank slack rather than a recursively bucketed Ackermann index.
+It is the backend boundary the next step must shrink.
+-/
+def fullCompressionTarjanLevelIndexAmortizedBackend :
+    RepresentationAmortizedBackend NoCompressionRankedMassBackendState
+      tarjanLevelIndexPotential
+      tarjanLevelIndexFindCredit
+      tarjanLevelIndexDeltaUnionCredit where
+  toRepresentationBackend := fullCompressionRepresentationBackend
+  find_amortized := by
+    intro backend x
+    unfold Amortized.CostedBound Amortized.Bound
+    change (backend.fullCompressFindCosted x).cost +
+        tarjanLevelIndexPotential
+          ((backend.fullCompressFindCosted x).erase.1) <=
+      backend.tarjanLevelIndexFindCredit x +
+        tarjanLevelIndexPotential backend
+    exact
+      backend.fullCompressFindCosted_cost_add_tarjanLevelIndexPotential_le_tarjanLevelIndexFindCredit
+        x
+  union_amortized := by
+    intro backend x y
+    unfold Amortized.CostedBound Amortized.Bound
+    change (backend.unionCosted x y).cost +
+        tarjanLevelIndexPotential ((backend.unionCosted x y).erase) <=
+      backend.tarjanLevelIndexDeltaUnionCredit x y +
+        tarjanLevelIndexPotential backend
+    exact
+      backend.unionCosted_cost_add_tarjanLevelIndexPotential_le_tarjanLevelIndexDeltaUnionCredit
+        x y
+
+theorem fullCompressionTarjanLevelIndexAmortizedBackend_profile :
+    (forall (backend : NoCompressionRankedMassBackendState) (x : Nat),
+      Amortized.CostedBound
+        (fullCompressionTarjanLevelIndexAmortizedBackend.findCosted
+          backend x)
+        (tarjanLevelIndexPotential backend)
+        (tarjanLevelIndexPotential
+          ((fullCompressionTarjanLevelIndexAmortizedBackend.findCosted
+            backend x).erase.1))
+        (tarjanLevelIndexFindCredit backend x)) /\
+      (forall (backend : NoCompressionRankedMassBackendState) (x y : Nat),
+        Amortized.CostedBound
+          (fullCompressionTarjanLevelIndexAmortizedBackend.unionCosted
+            backend x y)
+          (tarjanLevelIndexPotential backend)
+          (tarjanLevelIndexPotential
+            (fullCompressionTarjanLevelIndexAmortizedBackend.unionCosted
+              backend x y).erase)
+          (tarjanLevelIndexDeltaUnionCredit backend x y)) := by
+  constructor
+  · exact fullCompressionTarjanLevelIndexAmortizedBackend.find_amortized
+  · exact fullCompressionTarjanLevelIndexAmortizedBackend.union_amortized
 
 theorem profile :
     (forall (backend : NoCompressionRankedMassBackendState) (x : Nat),

@@ -93,6 +93,36 @@ uses explicit potential-delta credit. The follow-up
 `fullCompressionRankSlackSizeUnionAmortizedBackend_profile` keeps the same
 find credit but replaces that delta with the coarse non-oracular union credit
 `rankBucketPotential backend + 1`, using
-`rankSlackPotential_unionCosted_le_rankBucketPotential`. This is still not a
-Tarjan or inverse-Ackermann theorem.
+`rankSlackPotential_unionCosted_le_rankBucketPotential`. The multilevel
+follow-up
+`fullCompressionTarjanLevelAmortizedBackend_profile` introduces the executable
+iterated-log schedule `tarjanLevelIter`, the concrete rank level
+`tarjanRankLevel`, and a level potential that pays cross-level parent-to-root
+rank gaps while `tarjanLevelFindCredit` charges only the residual rank slack
+left within the current level plus constant `2`. Its union credit is bounded by
+`tarjanLevelPotentialBound`, a level-specific whole-forest bound. This is still
+not a Tarjan or inverse-Ackermann theorem. The clean-credit follow-up
+`fullCompressionTarjanLevelCleanCreditAmortizedBackend_profile` keeps the same
+level potential but replaces the trace-dependent successful-find credit with
+`tarjanLevelRootRankFindCredit` and replaces the whole-forest union credit with
+the local delta `tarjanLevelDeltaUnionCredit`, proved no larger than
+`tarjanLevelUnionCredit`.
+`fullCompressionTarjanPhaseCountAmortizedBackend_profile` then absorbs the
+residual rank-slack layer into `tarjanPhaseCountPotential`, allowing
+successful finds to use the trace-free phase-count credit
+`tarjanPhaseCountFindCredit`. This is alpha-shaped but still not alpha-tight:
+the potential includes full rank slack, and the phase schedule is a fixed
+iterated-log collapse of the rank universe. The sharper
+`fullCompressionTarjanLevelIndexAmortizedBackend_profile` replaces that hidden
+full-rank-slack layer with the explicit sum `tarjanLevelIndexPotential =
+tarjanLevelPotential + tarjanResidualPotential`; the new drop theorem
+`tarjanLevelIndexPotential_fullCompressFindCosted_add_traceRootParentRankSlack_le_of_findRoot?`
+shows successful full compression releases enough level-plus-index potential
+to pay the original trace rank slack. This is closer to the Tarjan proof path,
+but the index is still raw within-level rank slack, not an Ackermann-indexed
+potential or final inverse-Ackermann theorem. The obstruction theorem
+`tarjanLevelIndexPotential_eq_rankSlackPotential_of_forall_gap_le` explains
+why this exact residual definition cannot be the final answer: when the level
+gap is a true sub-gap, adding `levelGap` and `rankSlack - levelGap` collapses
+back to ordinary rank slack.
 -/

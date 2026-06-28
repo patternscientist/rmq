@@ -170,6 +170,28 @@ RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankSlackP
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankSlackFindCredit
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankSlackUnionCredit
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankSlackSizeUnionCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelIter
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanRankLevel
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.nodeRootParentTarjanLevelGap
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.nodeRootParentTarjanResidualSlack
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.traceRootParentTarjanLevelGap
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.traceRootParentTarjanResidualSlack
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelPotential
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanResidualPotential
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelIndexPotential
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelPotentialBound
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelFindCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelUnionCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelRootRankFindCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelDeltaUnionCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanRankPhaseCountFuel
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanRankPhaseCount
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanPhaseCountBound
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanPhaseCountPotential
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanPhaseCountFindCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanPhaseCountDeltaUnionCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelIndexFindCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelIndexDeltaUnionCredit
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_cost_le_rankGapFindCredit
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankGapFindCredit_le_logRankFindCredit
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_cost_le_logRankFindCredit
@@ -190,9 +212,28 @@ RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.compressPa
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankSlackPotential_fullCompressFindCosted_add_traceRootParentRankSlack_le_of_findRoot?
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankSlackPotential_le_rankBucketPotential
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankSlackPotential_unionCosted_le_rankBucketPotential
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelIter_mono
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanRankLevel_mono
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.traceRootParentRankSlack_le_tarjanLevelGap_add_residual
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelPotential_fullCompressFindCosted_add_traceLevelGap_le_of_findRoot?
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelPotential_le_bound
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelPotential_unionCosted_le_bound
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankGapFindCredit_le_tarjanLevelRootRankFindCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelPotential_fullCompressFindCosted_le
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_cost_add_rankSlackPotential_le_two_add_of_findRoot?
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_cost_add_rankSlackPotential_le_rankSlackFindCredit
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.unionCosted_cost_add_rankSlackPotential_le_rankSlackSizeUnionCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_cost_add_tarjanLevelPotential_le_tarjanLevelFindCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.unionCosted_cost_add_tarjanLevelPotential_le_tarjanLevelUnionCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_cost_add_tarjanLevelPotential_le_tarjanLevelRootRankFindCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.unionCosted_cost_add_tarjanLevelPotential_le_tarjanLevelDeltaUnionCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelDeltaUnionCredit_le_tarjanLevelUnionCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_cost_add_tarjanPhaseCountPotential_le_tarjanPhaseCountFindCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.unionCosted_cost_add_tarjanPhaseCountPotential_le_tarjanPhaseCountDeltaUnionCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanResidualPotential_fullCompressFindCosted_add_traceResidualSlack_le_of_findRoot?
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelIndexPotential_fullCompressFindCosted_add_traceRootParentRankSlack_le_of_findRoot?
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_cost_add_tarjanLevelIndexPotential_le_tarjanLevelIndexFindCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelIndexPotential_eq_rankSlackPotential_of_forall_gap_le
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankSlackCheckpoint_profile
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_cost_le_rankBucketFindCredit
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankSizePotential_fullCompressFindCosted_eq
@@ -209,6 +250,14 @@ RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompre
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankSlackAmortizedBackend_profile
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankSlackSizeUnionAmortizedBackend
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankSlackSizeUnionAmortizedBackend_profile
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanLevelAmortizedBackend
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanLevelAmortizedBackend_profile
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanLevelCleanCreditAmortizedBackend
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanLevelCleanCreditAmortizedBackend_profile
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanPhaseCountAmortizedBackend
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanPhaseCountAmortizedBackend_profile
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanLevelIndexAmortizedBackend
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanLevelIndexAmortizedBackend_profile
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.profile
 ```
 
@@ -440,6 +489,85 @@ rank-slack is at most the logarithmic root-rank bound, and union preserves the
 size-log `rankBucketPotential`. This is coarse and not Tarjan-tight, but it is
 now a non-delta representation-amortized union boundary.
 
+The first multilevel Tarjan-style checkpoint is
+`fullCompressionTarjanLevelAmortizedBackend_profile`. It defines an executable
+phase schedule `tarjanLevelIter`, with the current concrete rank level
+`tarjanRankLevel rank = tarjanLevelIter 2 rank`. The accounting splits each
+parent-to-root rank gap into `nodeRootParentTarjanLevelGap`, the cross-level
+part paid by aggregate `tarjanLevelPotential`, and
+`nodeRootParentTarjanResidualSlack`, the within-level residual left as find
+credit. The drop theorem
+`tarjanLevelPotential_fullCompressFindCosted_add_traceLevelGap_le_of_findRoot?`
+proves successful full compression decreases aggregate level potential by at
+least the original cross-level trace gap. The bridge
+`fullCompressFindCosted_cost_add_tarjanLevelPotential_le_tarjanLevelFindCredit`
+combines that drop with
+`traceRootParentRankSlack_le_tarjanLevelGap_add_residual`: successful finds
+charge only residual within-level slack plus constant `2`. Union uses
+`tarjanLevelPotentialBound`, discharged by
+`tarjanLevelPotential_unionCosted_le_bound`, rather than the old rank-slack
+whole-forest bound. This is still a pre-inverse-Ackermann interface, but it is
+the first reusable multilevel potential boundary.
+
+The clean-credit refinement is
+`fullCompressionTarjanLevelCleanCreditAmortizedBackend_profile`. It keeps the
+same `tarjanLevelPotential`, but replaces the successful-find credit
+`tarjanLevelFindCredit`, which mentions `fullCompressFindTrace`, with the
+trace-free `tarjanLevelRootRankFindCredit`. The proof uses
+`rankGapFindCredit_le_tarjanLevelRootRankFindCredit` and
+`tarjanLevelPotential_fullCompressFindCosted_le`, so successful finds are paid
+by a root-rank count bound plus nonincreasing level potential rather than an
+explicit residual trace sum. Union uses `tarjanLevelDeltaUnionCredit`, the
+local post-union level-potential delta plus one, and
+`tarjanLevelDeltaUnionCredit_le_tarjanLevelUnionCredit` proves this local
+credit is no larger than the previous whole-forest level bound. This is cleaner
+than the first Tarjan-level scaffold, but still not alpha-tight: the find
+credit is a rank-count bound, not an inverse-Ackermann phase count.
+
+The phase-count checkpoint is
+`fullCompressionTarjanPhaseCountAmortizedBackend_profile`. It strengthens the
+potential to `tarjanPhaseCountPotential`, the sum of the full rank-slack
+potential and the Tarjan-level cross-gap potential. That extra residual layer
+lets the successful-find credit become `tarjanPhaseCountFindCredit`: invalid
+queries keep the fuel fallback, while successful queries pay only the global
+iterated-log `tarjanPhaseCountBound backend + 2`. Union remains local through
+`tarjanPhaseCountDeltaUnionCredit`. This is the first consumed backend profile
+whose successful-find credit has phase-count shape rather than trace length,
+residual trace slack, or root rank. It is still a coarse checkpoint because the
+potential absorbs the full rank-slack layer instead of proving a Tarjan index
+potential that would make the phase count itself do the real amortized work.
+
+The level-index checkpoint is
+`fullCompressionTarjanLevelIndexAmortizedBackend_profile`. It keeps the same
+phase-count-shaped public find credit, but replaces the hidden full-rank-slack
+payload in `tarjanPhaseCountPotential` with the explicit
+`tarjanLevelIndexPotential = tarjanLevelPotential + tarjanResidualPotential`.
+The residual component is no longer an unnamed full slack layer: it is the
+sum of `nodeRootParentTarjanResidualSlack` over the current finite forest.
+The new aggregate drop theorem
+`tarjanResidualPotential_fullCompressFindCosted_add_traceResidualSlack_le_of_findRoot?`
+pays the residual trace debt, and
+`tarjanLevelIndexPotential_fullCompressFindCosted_add_traceRootParentRankSlack_le_of_findRoot?`
+combines it with the existing level-potential drop to pay the original
+trace-root parent rank slack. The backend theorem
+`fullCompressFindCosted_cost_add_tarjanLevelIndexPotential_le_tarjanLevelIndexFindCredit`
+then consumes this in a `RepresentationAmortizedBackend`. This moves closer to
+the classical Tarjan proof shape because the potential is now a level plus
+within-level index split, but it is still not the inverse-Ackermann theorem:
+the index is raw residual rank slack, not a recursively bucketed
+Ackermann-indexed counter.
+
+The formal obstruction to closing Tarjan with this exact residual definition is
+`tarjanLevelIndexPotential_eq_rankSlackPotential_of_forall_gap_le`. It proves
+that, for any rank schedule whose level gap is a genuine sub-gap of
+parent-to-root rank slack on every valid node, the additive
+`tarjanLevelPotential + tarjanResidualPotential` design is extensionally just
+the old `rankSlackPotential`. In other words, defining the residual as
+`rankSlack - levelGap` exposes the debt split but does not shrink the
+potential. A true Tarjan theorem needs a different residual index whose units
+are recursively bucketed/Ackermann-indexed rather than the remaining raw rank
+slack.
+
 ## What Is Not Claimed Yet
 
 This is not yet Tarjan union-find, inverse-Ackermann analysis, mutable arrays,
@@ -455,8 +583,9 @@ the representation-backed adapter. It also has trace-cost equality,
 rank/root-mass/log-rank/bucket-width trace bounds, the aggregate rank-slack
 compression-drop checkpoint, the stronger
 `2 ^ rank <= mass` invariant, and nonzero-potential rank-gap/log-rank/bucket
-amortized checkpoints. The current amortized theorems still do not prove a
-uniform inverse-Ackermann-style credit.
+amortized checkpoints, plus a level-index Tarjan-facing potential that pays
+successful full-compression finds with phase-count-shaped credit. The current
+amortized theorems still do not prove a uniform inverse-Ackermann-style credit.
 The singleton identity forest now instantiates the root-mass invariant, the
 mass-carrying no-compression layer has a concrete base state plus a finite
 repeated-union carrier that refines the abstract folded union specification,
@@ -473,13 +602,19 @@ rank-gap, log-rank, rank-bucket, and rank-slack nonzero-potential checkpoints ar
 `fullCompressionLogRankAmortizedBackend` and
 `fullCompressionRankBucketAmortizedBackend` and
 `fullCompressionRankSlackAmortizedBackend` and
-`fullCompressionRankSlackSizeUnionAmortizedBackend`.
+`fullCompressionRankSlackSizeUnionAmortizedBackend` and
+`fullCompressionTarjanLevelAmortizedBackend` and
+`fullCompressionTarjanLevelCleanCreditAmortizedBackend` and
+`fullCompressionTarjanPhaseCountAmortizedBackend` and
+`fullCompressionTarjanLevelIndexAmortizedBackend`.
 
 ## Next Theorem Targets
 
-1. Refine `rankSlackSizeUnionCredit` into a sharper rank/mass-local union
-   credit, or prove an obstruction showing the current rank-slack potential
-   cannot support small uniform union credit.
+1. Replace the raw residual component of `tarjanLevelIndexPotential` with a
+   recursively bucketed/Ackermann-indexed residual counter, so the index itself
+   shrinks toward an alpha-style bound rather than carrying within-level rank
+   slack verbatim. The new counter must avoid the collapse captured by
+   `tarjanLevelIndexPotential_eq_rankSlackPotential_of_forall_gap_le`.
 2. Split the current invariant-carrying backend state into executable payload
    fields versus proof-only certificates, so a future array-backed backend can
    share the same `RepresentationBackend` theorem shape.
