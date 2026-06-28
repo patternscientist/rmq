@@ -218,9 +218,13 @@ about Lean's executable `List` runtime.
   family-level combined-metadata `o(n)` bridge, a global block-count/field-width
   budget bridge for fixed-block route/class-length families, fixed-size chunk
   decomposition bounds plus a sentinel chunk variant for route-total
-  class/length metadata budgets, a constructive sentinel-chunk access route,
-  and conditional bounded-regime bridges for the local decoder, ambient route
-  tables, and ambient primary-budget join, and
+  class/length metadata budgets, log-sized chunk-count budgets with `o(n)`
+  block counts, a narrow log-log class/length metadata budget for sentinel
+  log chunks, a formal obstruction showing route-width-padded class/length
+  metadata is already linear, constructive sentinel-chunk access/rank/select
+  routes, a conservative raw `n + o(n)` block-primary bound, and conditional
+  bounded-regime bridges for the local decoder, ambient route tables, and
+  ambient compressed primary-budget join, and
   `RankSelectPublic` exposes the public Jacobson/Clark
   bitvector family theorem as
   `RankSelect.jacobsonClarkNPlusOConstantQuery` and its strengthened
@@ -407,9 +411,11 @@ RMQ blocker:
   concrete global routing over the ambient fixed-weight block-composition
   scaffold, consume the canonical eight-table route-layout constructor and
   route/class-length family promotion in a block decomposition/routing family,
-  feed the fixed-size sentinel chunk class/length metadata budget bridge, prove
-  the primary block-code budget is `o(n)`, discharge the remaining semantic
-  rank/select route exactness fields from charged routing tables, and deepen
+  feed the log-sized sentinel chunk block-count budget into a concrete charged
+  route-table family, replace the conservative raw-length primary bridge by
+  the fixed-weight `log binomial + o(n)` primary block-code budget, discharge
+  the route fields from charged routing tables rather than proof-only routes,
+  and deepen
   the landed BP-navigation close/rank bridge into a fuller tree-navigation API;
   and
 - deepen the new union-find spoke from specification/reference backend to

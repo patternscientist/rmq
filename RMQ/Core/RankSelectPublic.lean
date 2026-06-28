@@ -316,6 +316,12 @@ abbrev trueCount :=
 abbrev fixedWeightPayloadBudget :=
   RMQ.RankSelectSpec.fixedWeightPayloadBudget
 
+/-- A fixed-weight code never needs more than raw length plus one bit. -/
+theorem fixedWeightPayloadBudgetLeLengthAddOne
+    (bits : List Bool) :
+    fixedWeightPayloadBudget bits <= bits.length + 1 := by
+  exact RMQ.RankSelectSpec.fixedWeightPayloadBudget_le_length_add_one bits
+
 /-- Fixed-weight bitvector universe count. -/
 abbrev fixedWeightBitstringsLength :=
   RMQ.RankSelectSpec.fixedWeightBitstrings_length
@@ -464,6 +470,19 @@ abbrev fixedWeightBlockClassEntries :=
 abbrev fixedWeightBlockCodePayload :=
   RMQ.RankSelectSpec.fixedWeightBlockCodePayload
 
+/-- Sum of per-block fixed-weight code budgets. -/
+abbrev fixedWeightBlockPayloadBudget :=
+  RMQ.RankSelectSpec.fixedWeightBlockPayloadBudget
+
+/-- Block-coded fixed-weight primary payload is at most raw length plus blocks. -/
+theorem fixedWeightBlockPayloadBudgetLeFlattenLengthAddBlocks
+    (blocks : List (List Bool)) :
+    fixedWeightBlockPayloadBudget blocks <=
+      (SuccinctSpace.flattenPayloadWords blocks).length + blocks.length := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightBlockPayloadBudget_le_flatten_length_add_blocks
+      blocks
+
 /-- Fixed-width payload words for the per-block class/length metadata table. -/
 abbrev fixedWeightBlockClassLengthTableWords :=
   RMQ.RankSelectSpec.fixedWeightBlockClassLengthTableWords
@@ -495,6 +514,85 @@ abbrev fixedWeightChunkBlocksWithSentinel :=
 /-- Block-count budget for fixed-size chunk decompositions with a sentinel. -/
 abbrev fixedWeightChunkBlockCountBoundWithSentinel :=
   RMQ.RankSelectSpec.fixedWeightChunkBlockCountBoundWithSentinel
+
+/-- Log-sized chunk width used by the compressed/FID block-count budget track. -/
+abbrev fixedWeightLogChunkBlockSize :=
+  RMQ.RankSelectSpec.fixedWeightLogChunkBlockSize
+
+/-- Log-sized chunk decomposition used by the compressed/FID budget track. -/
+abbrev fixedWeightLogChunkBlocks :=
+  RMQ.RankSelectSpec.fixedWeightLogChunkBlocks
+
+/-- Block-count budget for log-sized chunk decompositions. -/
+abbrev fixedWeightLogChunkBlockCountBound :=
+  RMQ.RankSelectSpec.fixedWeightLogChunkBlockCountBound
+
+/-- Log-sized chunk decomposition with one empty sentinel block. -/
+abbrev fixedWeightLogChunkBlocksWithSentinel :=
+  RMQ.RankSelectSpec.fixedWeightLogChunkBlocksWithSentinel
+
+/-- Block-count budget for log-sized chunk decompositions with a sentinel. -/
+abbrev fixedWeightLogChunkBlockCountBoundWithSentinel :=
+  RMQ.RankSelectSpec.fixedWeightLogChunkBlockCountBoundWithSentinel
+
+/-- Narrow field width for log-chunk block length/class metadata. -/
+abbrev fixedWeightLogChunkClassLengthFieldWidthBound :=
+  RMQ.RankSelectSpec.fixedWeightLogChunkClassLengthFieldWidthBound
+
+/-- Narrow `o(n)` class/length metadata budget for sentinel log chunks. -/
+abbrev fixedWeightLogChunkClassLengthOverhead :=
+  RMQ.RankSelectSpec.fixedWeightLogChunkClassLengthOverhead
+
+/-- Route-width-padded class/length overhead over sentinel log chunks. -/
+abbrev fixedWeightLogChunkRouteWidthClassLengthOverhead :=
+  RMQ.RankSelectSpec.fixedWeightLogChunkRouteWidthClassLengthOverhead
+
+/-- The log-sized chunk width is positive. -/
+theorem fixedWeightLogChunkBlockSizePos (n : Nat) :
+    0 < fixedWeightLogChunkBlockSize n := by
+  exact RMQ.RankSelectSpec.fixedWeightLogChunkBlockSize_pos n
+
+/-- The narrow class/length field width is positive. -/
+theorem fixedWeightLogChunkClassLengthFieldWidthBoundPos (n : Nat) :
+    0 < fixedWeightLogChunkClassLengthFieldWidthBound n := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightLogChunkClassLengthFieldWidthBound_pos n
+
+/-- Log-sized chunk width fits in its narrow class/length field width. -/
+theorem fixedWeightLogChunkBlockSizeLtClassLengthFieldWidthPow
+    (n : Nat) :
+    fixedWeightLogChunkBlockSize n <
+      2 ^ fixedWeightLogChunkClassLengthFieldWidthBound n := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightLogChunkBlockSize_lt_classLengthFieldWidthPow n
+
+/-- Log-sized chunk decompositions have `o(n)` block-count budget. -/
+theorem fixedWeightLogChunkBlockCountBoundLittleO :
+    SuccinctSpace.LittleOLinear
+      fixedWeightLogChunkBlockCountBound := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightLogChunkBlockCountBound_littleO
+
+/-- Sentinel log-sized chunk decompositions have `o(n)` block-count budget. -/
+theorem fixedWeightLogChunkBlockCountBoundWithSentinelLittleO :
+    SuccinctSpace.LittleOLinear
+      fixedWeightLogChunkBlockCountBoundWithSentinel := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightLogChunkBlockCountBoundWithSentinel_littleO
+
+/-- The narrow class/length field width is itself `o(n)`. -/
+theorem fixedWeightLogChunkClassLengthFieldWidthBoundLittleO :
+    SuccinctSpace.LittleOLinear
+      fixedWeightLogChunkClassLengthFieldWidthBound := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightLogChunkClassLengthFieldWidthBound_littleO
+
+/-- Sentinel log-chunk class/length metadata has a narrow `o(n)` budget. -/
+theorem fixedWeightLogChunkClassLengthOverheadLittleO :
+    SuccinctSpace.LittleOLinear
+      fixedWeightLogChunkClassLengthOverhead := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightLogChunkClassLengthOverhead_littleO
 
 /-- Fixed-size chunk blocks flatten back to the original bitvector. -/
 theorem fixedWeightChunkBlocksFlatten
@@ -556,6 +654,149 @@ theorem fixedWeightChunkBlocksWithSentinelBlockLengthLe
     RMQ.RankSelectSpec.fixedWeightChunkBlocksWithSentinel_block_length_le
       hmem
 
+/-- Log-sized chunk blocks flatten back to the original bitvector. -/
+theorem fixedWeightLogChunkBlocksFlatten
+    (bits : List Bool) :
+    SuccinctSpace.flattenPayloadWords
+        (fixedWeightLogChunkBlocks bits) = bits := by
+  exact RMQ.RankSelectSpec.fixedWeightLogChunkBlocks_flatten bits
+
+/-- Log-sized chunk decompositions use at most `n / (log n + 1) + 1` blocks. -/
+theorem fixedWeightLogChunkBlocksLengthLe
+    (bits : List Bool) :
+    (fixedWeightLogChunkBlocks bits).length <=
+      fixedWeightLogChunkBlockCountBound bits.length := by
+  exact RMQ.RankSelectSpec.fixedWeightLogChunkBlocks_length_le bits
+
+/-- Every log-sized chunk block has length at most `log n + 1`. -/
+theorem fixedWeightLogChunkBlocksBlockLengthLe
+    {bits block : List Bool}
+    (hmem : List.Mem block (fixedWeightLogChunkBlocks bits)) :
+    block.length <= fixedWeightLogChunkBlockSize bits.length := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightLogChunkBlocks_block_length_le hmem
+
+/-- Sentinel log-sized chunk blocks flatten back to the original bitvector. -/
+theorem fixedWeightLogChunkBlocksWithSentinelFlatten
+    (bits : List Bool) :
+    SuccinctSpace.flattenPayloadWords
+        (fixedWeightLogChunkBlocksWithSentinel bits) = bits := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightLogChunkBlocksWithSentinel_flatten bits
+
+/--
+Sentinel log-sized chunk decompositions use at most
+`n / (log n + 1) + 2` blocks.
+-/
+theorem fixedWeightLogChunkBlocksWithSentinelLengthLe
+    (bits : List Bool) :
+    (fixedWeightLogChunkBlocksWithSentinel bits).length <=
+      fixedWeightLogChunkBlockCountBoundWithSentinel bits.length := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightLogChunkBlocksWithSentinel_length_le bits
+
+/-- Every sentinel log-sized chunk block has length at most `log n + 1`. -/
+theorem fixedWeightLogChunkBlocksWithSentinelBlockLengthLe
+    {bits block : List Bool}
+    (hmem :
+      List.Mem block (fixedWeightLogChunkBlocksWithSentinel bits)) :
+    block.length <= fixedWeightLogChunkBlockSize bits.length := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightLogChunkBlocksWithSentinel_block_length_le
+      hmem
+
+/-- Every sentinel log-sized chunk block fits in the narrow class/length width. -/
+theorem fixedWeightLogChunkBlocksWithSentinelBlockLengthLtClassLengthFieldWidthPow
+    {bits block : List Bool}
+    (hmem :
+      List.Mem block (fixedWeightLogChunkBlocksWithSentinel bits)) :
+    block.length <
+      2 ^ fixedWeightLogChunkClassLengthFieldWidthBound bits.length := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightLogChunkBlocksWithSentinel_block_length_lt_classLengthFieldWidthPow
+      hmem
+
+/-- Every sentinel log-sized chunk class fits in the narrow class/length width. -/
+theorem fixedWeightLogChunkBlocksWithSentinelBlockClassLtClassLengthFieldWidthPow
+    {bits block : List Bool}
+    (hmem :
+      List.Mem block (fixedWeightLogChunkBlocksWithSentinel bits)) :
+    trueCount block <
+      2 ^ fixedWeightLogChunkClassLengthFieldWidthBound bits.length := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightLogChunkBlocksWithSentinel_block_class_lt_classLengthFieldWidthPow
+      hmem
+
+/--
+Log-chunk block coding is bounded by the raw bit length plus the concrete
+sentinel block count.
+-/
+theorem fixedWeightLogChunkBlockPayloadBudgetLeLengthAddBlockCount
+    (bits : List Bool) :
+    fixedWeightBlockPayloadBudget
+        (fixedWeightLogChunkBlocksWithSentinel bits) <=
+      bits.length +
+        (fixedWeightLogChunkBlocksWithSentinel bits).length := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightLogChunkBlockPayloadBudget_le_length_add_blockCount
+      bits
+
+/--
+Log-chunk block coding is bounded by raw bit length plus the `o(n)` block-count
+budget. This is the conservative `n + o(n)` primary bridge, not yet the
+fixed-weight `log binomial + o(n)` bridge.
+-/
+theorem fixedWeightLogChunkBlockPayloadBudgetLeLengthAddBound
+    (bits : List Bool) :
+    fixedWeightBlockPayloadBudget
+        (fixedWeightLogChunkBlocksWithSentinel bits) <=
+      bits.length +
+        fixedWeightLogChunkBlockCountBoundWithSentinel bits.length := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightLogChunkBlockPayloadBudget_le_length_add_bound
+      bits
+
+/-- The concrete sentinel log-chunk class/length table fits the narrow budget. -/
+theorem fixedWeightLogChunkBlockClassLengthTableOverheadLe
+    (bits : List Bool) :
+    fixedWeightBlockClassLengthTableOverhead
+        (fixedWeightLogChunkClassLengthFieldWidthBound bits.length)
+        (fixedWeightLogChunkBlocksWithSentinel bits) <=
+      fixedWeightLogChunkClassLengthOverhead bits.length := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightLogChunkBlockClassLengthTableOverhead_le bits
+
+/-- Sentinel log chunks cover the source length when multiplied by chunk size. -/
+theorem fixedWeightLogChunkBlocksWithSentinelLengthMulBlockSizeGe
+    (bits : List Bool) :
+    bits.length <=
+      (fixedWeightLogChunkBlocksWithSentinel bits).length *
+        fixedWeightLogChunkBlockSize bits.length := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightLogChunkBlocksWithSentinel_length_mul_blockSize_ge
+      bits
+
+/--
+Using route-width fields for class/length metadata over sentinel log chunks
+already costs at least the source length.
+-/
+theorem fixedWeightLogChunkRouteWidthClassLengthTableOverheadGeLength
+    (bits : List Bool) :
+    bits.length <=
+      fixedWeightBlockClassLengthTableOverhead
+        (fixedWeightLogChunkBlockSize bits.length)
+        (fixedWeightLogChunkBlocksWithSentinel bits) := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightLogChunkRouteWidthClassLengthTableOverhead_ge_length
+      bits
+
+/-- Route-width-padded class/length metadata is not an `o(n)` overhead. -/
+theorem fixedWeightLogChunkRouteWidthClassLengthOverheadNotLittleO :
+    ¬ SuccinctSpace.LittleOLinear
+      fixedWeightLogChunkRouteWidthClassLengthOverhead := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightLogChunkRouteWidthClassLengthOverhead_not_littleO
+
 /-- The appended sentinel block is readable at the chunk-list length. -/
 theorem fixedWeightChunkBlocksWithSentinelGetSentinel
     (blockSize : Nat) (bits : List Bool) :
@@ -590,11 +831,67 @@ theorem fixedWeightChunkBlocksGetAccessExact
       hblockSize hget
 
 /--
+A chunk block read at `pos / blockSize` has the local rank needed to recover
+the global rank prefix at `pos`.
+-/
+theorem fixedWeightChunkBlocksGetRankPrefixAddExact
+    {blockSize : Nat} (hblockSize : 0 < blockSize)
+    {bits block : List Bool} {target : Bool} {pos : Nat}
+    (hpos : pos <= bits.length)
+    (hget :
+      (fixedWeightChunkBlocks blockSize bits)[pos / blockSize]? =
+        some block) :
+    Succinct.rankPrefix target bits ((pos / blockSize) * blockSize) +
+        Succinct.rankPrefix target block
+          (pos - (pos / blockSize) * blockSize) =
+      Succinct.rankPrefix target bits pos := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightChunkBlocks_get?_rankPrefix_add_exact
+      hblockSize hpos hget
+
+/--
+A chunk block containing a global selected bit gives the matching local select
+offset, shifted back by the block start.
+-/
+theorem fixedWeightChunkBlocksGetSelectExactOfGlobalSelect
+    {blockSize : Nat} (hblockSize : 0 < blockSize)
+    {bits block : List Bool} {target : Bool}
+    {occurrence idx : Nat}
+    (hselect : Succinct.select target bits occurrence = some idx)
+    (hget :
+      (fixedWeightChunkBlocks blockSize bits)[idx / blockSize]? =
+        some block) :
+    (Succinct.select target block
+        (occurrence -
+          Succinct.rankPrefix target bits
+            ((idx / blockSize) * blockSize))).map
+        (fun offset => (idx / blockSize) * blockSize + offset) =
+      some idx := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightChunkBlocks_get?_select_exact_of_global_select
+      hblockSize hselect hget
+
+/--
 Concrete access route for sentinel chunk blocks. In-range accesses route to
 the computed chunk; invalid accesses route to the empty sentinel block.
 -/
 abbrev fixedWeightChunkAccessRouteWithSentinel :=
   @RMQ.RankSelectSpec.fixedWeightChunkAccessRouteWithSentinel
+
+/--
+Concrete rank route for sentinel chunk blocks. In-range rank queries route to
+the containing chunk; boundary/out-of-range queries route to the empty sentinel
+with full-prefix base rank.
+-/
+abbrev fixedWeightChunkRankRouteWithSentinel :=
+  @RMQ.RankSelectSpec.fixedWeightChunkRankRouteWithSentinel
+
+/--
+Concrete select route for sentinel chunk blocks. Successful selects route to
+the selected bit's chunk; missing selects route to the empty sentinel.
+-/
+abbrev fixedWeightChunkSelectRouteWithSentinel :=
+  @RMQ.RankSelectSpec.fixedWeightChunkSelectRouteWithSentinel
 
 /-- Bound the class/length metadata overhead from block-count and field-width caps. -/
 theorem fixedWeightBlockClassLengthTableOverheadLeOfBounds
@@ -652,10 +949,6 @@ theorem fixedWeightBlockClassLengthTableOverheadLeChunkSentinelBudget
   exact
     RMQ.RankSelectSpec.fixedWeightBlockClassLengthTableOverhead_le_chunk_sentinel_budget
       hblockSize hblocks hfield
-
-/-- Sum of per-block fixed-weight code budgets. -/
-abbrev fixedWeightBlockPayloadBudget :=
-  RMQ.RankSelectSpec.fixedWeightBlockPayloadBudget
 
 /-- Length of the block-coded primary fixed-weight payload. -/
 abbrev fixedWeightBlockCodePayloadLength :=

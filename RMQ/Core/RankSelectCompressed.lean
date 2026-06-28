@@ -1,4 +1,5 @@
 import RMQ.Core.RankSelectSpec
+import RMQ.Core.SuccinctSpace.WordStore
 
 /-!
 # Compressed/FID rank-select specification surface
@@ -479,6 +480,43 @@ binary code over `binomialCount n m` states.
 -/
 def fixedWeightPayloadBudget (bits : List Bool) : Nat :=
   Nat.log2 (binomialCount bits.length (trueCount bits)) + 1
+
+private theorem log2_le_of_lt_pow_succ {n k : Nat}
+    (hlt : n < 2 ^ (k + 1)) :
+    Nat.log2 n <= k := by
+  by_cases hzero : n = 0
+  · simp [hzero]
+  · by_cases hle : Nat.log2 n <= k
+    · exact hle
+    · have hk : k + 1 <= Nat.log2 n := by omega
+      have hmono : 2 ^ (k + 1) <= 2 ^ Nat.log2 n :=
+        Nat.pow_le_pow_right (by omega : 0 < 2) hk
+      have hself : 2 ^ Nat.log2 n <= n := Nat.log2_self_le hzero
+      exact False.elim
+        (Nat.not_lt_of_ge (Nat.le_trans hmono hself) hlt)
+
+theorem fixedWeightPayloadBudget_le_length_add_one
+    (bits : List Bool) :
+    fixedWeightPayloadBudget bits <= bits.length + 1 := by
+  unfold fixedWeightPayloadBudget
+  have hbin :
+      binomialCount bits.length (trueCount bits) <=
+        2 ^ bits.length :=
+    binomialCount_le_two_pow bits.length (trueCount bits)
+  have hpow_lt : 2 ^ bits.length < 2 ^ (bits.length + 1) := by
+    rw [Nat.pow_succ]
+    have hpos : 0 < 2 ^ bits.length :=
+      Nat.pow_pos (by omega : 0 < 2)
+    omega
+  have hcount_lt :
+      binomialCount bits.length (trueCount bits) <
+        2 ^ (bits.length + 1) :=
+    Nat.lt_of_le_of_lt hbin hpow_lt
+  have hlog :
+      Nat.log2 (binomialCount bits.length (trueCount bits)) <=
+        bits.length :=
+    log2_le_of_lt_pow_succ hcount_lt
+  omega
 
 theorem fixedWeightEncode?_lt_payloadBudgetPow
     {bits : List Bool} {code : Nat}
@@ -1915,6 +1953,23 @@ def fixedWeightBlockCodePayload (blocks : List (List Bool)) : List Bool :=
 /-- Sum of the fixed-weight code widths of all blocks. -/
 def fixedWeightBlockPayloadBudget (blocks : List (List Bool)) : Nat :=
   (blocks.map fixedWeightPayloadBudget).sum
+
+theorem fixedWeightBlockPayloadBudget_le_flatten_length_add_blocks
+    (blocks : List (List Bool)) :
+    fixedWeightBlockPayloadBudget blocks <=
+      (SuccinctSpace.flattenPayloadWords blocks).length + blocks.length := by
+  induction blocks with
+  | nil =>
+      simp [fixedWeightBlockPayloadBudget, SuccinctSpace.flattenPayloadWords]
+  | cons block rest ih =>
+      have hblock := fixedWeightPayloadBudget_le_length_add_one block
+      have hrest :
+          (rest.map fixedWeightPayloadBudget).sum <=
+            (SuccinctSpace.flattenPayloadWords rest).length +
+              rest.length := by
+        simpa [fixedWeightBlockPayloadBudget] using ih
+      simp [fixedWeightBlockPayloadBudget, SuccinctSpace.flattenPayloadWords]
+      omega
 
 @[simp] theorem fixedWeightBlockCodeWords_length
     (blocks : List (List Bool)) :
@@ -7482,6 +7537,115 @@ def fixedWeightChunkBlockCountBoundWithSentinel
     (blockSize : Nat) : Nat -> Nat :=
   fun n => n / blockSize + 2
 
+def fixedWeightLogChunkBlockSize (n : Nat) : Nat :=
+  Nat.log2 n + 1
+
+def fixedWeightLogChunkBlocks (bits : List Bool) : List (List Bool) :=
+  fixedWeightChunkBlocks (fixedWeightLogChunkBlockSize bits.length) bits
+
+def fixedWeightLogChunkBlockCountBound : Nat -> Nat :=
+  fun n => n / fixedWeightLogChunkBlockSize n + 1
+
+def fixedWeightLogChunkBlocksWithSentinel
+    (bits : List Bool) : List (List Bool) :=
+  fixedWeightChunkBlocksWithSentinel
+    (fixedWeightLogChunkBlockSize bits.length) bits
+
+def fixedWeightLogChunkBlockCountBoundWithSentinel : Nat -> Nat :=
+  fun n => n / fixedWeightLogChunkBlockSize n + 2
+
+def fixedWeightLogChunkClassLengthFieldWidthBound (n : Nat) : Nat :=
+  Nat.log2 (fixedWeightLogChunkBlockSize n) + 1
+
+def fixedWeightLogChunkClassLengthOverhead : Nat -> Nat :=
+  fun n =>
+    fixedWeightBlockClassLengthTableOverheadBudget
+      fixedWeightLogChunkBlockCountBoundWithSentinel
+      fixedWeightLogChunkClassLengthFieldWidthBound n +
+        4 * fixedWeightLogChunkClassLengthFieldWidthBound n
+
+theorem fixedWeightLogChunkBlockSize_pos (n : Nat) :
+    0 < fixedWeightLogChunkBlockSize n := by
+  simp [fixedWeightLogChunkBlockSize]
+
+theorem fixedWeightLogChunkClassLengthFieldWidthBound_pos (n : Nat) :
+    0 < fixedWeightLogChunkClassLengthFieldWidthBound n := by
+  simp [fixedWeightLogChunkClassLengthFieldWidthBound]
+
+theorem fixedWeightLogChunkBlockSize_lt_classLengthFieldWidthPow
+    (n : Nat) :
+    fixedWeightLogChunkBlockSize n <
+      2 ^ fixedWeightLogChunkClassLengthFieldWidthBound n := by
+  simpa [fixedWeightLogChunkClassLengthFieldWidthBound] using
+    (Nat.lt_log2_self (n := fixedWeightLogChunkBlockSize n))
+
+theorem fixedWeightLogChunkBlockCountBound_littleO :
+    SuccinctSpace.LittleOLinear
+      fixedWeightLogChunkBlockCountBound := by
+  unfold fixedWeightLogChunkBlockCountBound fixedWeightLogChunkBlockSize
+  simpa using
+    SuccinctSpace.littleOLinear_id_div_log2_succ.add_const 1
+
+theorem fixedWeightLogChunkBlockCountBoundWithSentinel_littleO :
+    SuccinctSpace.LittleOLinear
+      fixedWeightLogChunkBlockCountBoundWithSentinel := by
+  unfold fixedWeightLogChunkBlockCountBoundWithSentinel
+    fixedWeightLogChunkBlockSize
+  simpa using
+    SuccinctSpace.littleOLinear_id_div_log2_succ.add_const 2
+
+theorem fixedWeightLogChunkClassLengthFieldWidthBound_littleO :
+    SuccinctSpace.LittleOLinear
+      fixedWeightLogChunkClassLengthFieldWidthBound := by
+  intro scale hscale
+  rcases
+      SuccinctSpace.eventually_scale_logLog_succ_le_log_succ scale with
+    ⟨threshold, hthreshold⟩
+  exact ⟨threshold + 1, by
+    intro n hn
+    have hn_pos : n ≠ 0 := by omega
+    have hlog :
+        scale * (Nat.log2 (Nat.log2 n + 1) + 1) <=
+          Nat.log2 n + 1 :=
+      hthreshold n (by omega)
+    have hlog_le_self : Nat.log2 n + 1 <= n := by
+      have hpow : Nat.log2 n + 1 <= 2 ^ Nat.log2 n := by
+        exact SuccinctSpace.nat_succ_le_two_pow (Nat.log2 n)
+      exact Nat.le_trans hpow (Nat.log2_self_le hn_pos)
+    exact Nat.le_trans (by
+      simpa [fixedWeightLogChunkClassLengthFieldWidthBound,
+        fixedWeightLogChunkBlockSize] using hlog) hlog_le_self⟩
+
+theorem fixedWeightLogChunkClassLengthOverhead_littleO :
+    SuccinctSpace.LittleOLinear
+      fixedWeightLogChunkClassLengthOverhead := by
+  have hsample :
+      SuccinctSpace.LittleOLinear
+        (SuccinctSpace.logLogSampledDirectoryOverhead 2) :=
+    SuccinctSpace.logLogSampledDirectoryOverhead_littleO 2
+  have htail :
+      SuccinctSpace.LittleOLinear
+        (fun n =>
+          8 * fixedWeightLogChunkClassLengthFieldWidthBound n) :=
+    fixedWeightLogChunkClassLengthFieldWidthBound_littleO.mul_left 8
+  apply SuccinctSpace.LittleOLinear.of_le (hsample.add htail)
+  intro n
+  unfold fixedWeightLogChunkClassLengthOverhead
+    fixedWeightBlockClassLengthTableOverheadBudget
+    fixedWeightLogChunkBlockCountBoundWithSentinel
+    fixedWeightLogChunkClassLengthFieldWidthBound
+    fixedWeightLogChunkBlockSize
+    SuccinctSpace.logLogSampledDirectoryOverhead
+  let q := n / (Nat.log2 n + 1)
+  let w := Nat.log2 (Nat.log2 n + 1) + 1
+  change ((q + 2 + (q + 2)) * w + 4 * w) <=
+    2 * (q * w) + 8 * w
+  have hsum : q + 2 + (q + 2) = 2 * q + 4 := by omega
+  rw [hsum]
+  rw [Nat.add_mul]
+  rw [Nat.mul_assoc]
+  omega
+
 theorem fixedWeightChunkBlocks_flatten
     {blockSize : Nat} (hblockSize : 0 < blockSize)
     (bits : List Bool) :
@@ -7545,6 +7709,187 @@ theorem fixedWeightChunkBlocksWithSentinel_block_length_le
     | tail _ htail =>
         cases htail
 
+theorem fixedWeightLogChunkBlocks_flatten
+    (bits : List Bool) :
+    SuccinctSpace.flattenPayloadWords
+        (fixedWeightLogChunkBlocks bits) = bits := by
+  exact
+    fixedWeightChunkBlocks_flatten
+      (fixedWeightLogChunkBlockSize_pos bits.length) bits
+
+theorem fixedWeightLogChunkBlocks_length_le
+    (bits : List Bool) :
+    (fixedWeightLogChunkBlocks bits).length <=
+      fixedWeightLogChunkBlockCountBound bits.length := by
+  exact
+    fixedWeightChunkBlocks_length_le
+      (fixedWeightLogChunkBlockSize_pos bits.length) bits
+
+theorem fixedWeightLogChunkBlocks_block_length_le
+    {bits block : List Bool}
+    (hmem : List.Mem block (fixedWeightLogChunkBlocks bits)) :
+    block.length <= fixedWeightLogChunkBlockSize bits.length := by
+  exact fixedWeightChunkBlocks_block_length_le hmem
+
+theorem fixedWeightLogChunkBlocksWithSentinel_flatten
+    (bits : List Bool) :
+    SuccinctSpace.flattenPayloadWords
+        (fixedWeightLogChunkBlocksWithSentinel bits) = bits := by
+  exact
+    fixedWeightChunkBlocksWithSentinel_flatten
+      (fixedWeightLogChunkBlockSize_pos bits.length) bits
+
+theorem fixedWeightLogChunkBlocksWithSentinel_length_le
+    (bits : List Bool) :
+    (fixedWeightLogChunkBlocksWithSentinel bits).length <=
+      fixedWeightLogChunkBlockCountBoundWithSentinel bits.length := by
+  exact
+    fixedWeightChunkBlocksWithSentinel_length_le
+      (fixedWeightLogChunkBlockSize_pos bits.length) bits
+
+theorem fixedWeightLogChunkBlocksWithSentinel_block_length_le
+    {bits block : List Bool}
+    (hmem :
+      List.Mem block (fixedWeightLogChunkBlocksWithSentinel bits)) :
+    block.length <= fixedWeightLogChunkBlockSize bits.length := by
+  exact fixedWeightChunkBlocksWithSentinel_block_length_le hmem
+
+theorem fixedWeightLogChunkBlocksWithSentinel_block_length_lt_classLengthFieldWidthPow
+    {bits block : List Bool}
+    (hmem :
+      List.Mem block (fixedWeightLogChunkBlocksWithSentinel bits)) :
+    block.length <
+      2 ^ fixedWeightLogChunkClassLengthFieldWidthBound bits.length := by
+  exact Nat.lt_of_le_of_lt
+    (fixedWeightLogChunkBlocksWithSentinel_block_length_le hmem)
+    (fixedWeightLogChunkBlockSize_lt_classLengthFieldWidthPow bits.length)
+
+theorem fixedWeightLogChunkBlocksWithSentinel_block_class_lt_classLengthFieldWidthPow
+    {bits block : List Bool}
+    (hmem :
+      List.Mem block (fixedWeightLogChunkBlocksWithSentinel bits)) :
+    trueCount block <
+      2 ^ fixedWeightLogChunkClassLengthFieldWidthBound bits.length := by
+  exact trueCount_lt_of_length_lt
+    (fixedWeightLogChunkBlocksWithSentinel_block_length_lt_classLengthFieldWidthPow
+      hmem)
+
+theorem fixedWeightLogChunkBlockPayloadBudget_le_length_add_blockCount
+    (bits : List Bool) :
+    fixedWeightBlockPayloadBudget
+        (fixedWeightLogChunkBlocksWithSentinel bits) <=
+      bits.length +
+        (fixedWeightLogChunkBlocksWithSentinel bits).length := by
+  have hprimary :=
+    fixedWeightBlockPayloadBudget_le_flatten_length_add_blocks
+      (fixedWeightLogChunkBlocksWithSentinel bits)
+  simpa [fixedWeightLogChunkBlocksWithSentinel_flatten bits] using hprimary
+
+theorem fixedWeightLogChunkBlockPayloadBudget_le_length_add_bound
+    (bits : List Bool) :
+    fixedWeightBlockPayloadBudget
+        (fixedWeightLogChunkBlocksWithSentinel bits) <=
+      bits.length +
+        fixedWeightLogChunkBlockCountBoundWithSentinel bits.length := by
+  have hprimary :=
+    fixedWeightLogChunkBlockPayloadBudget_le_length_add_blockCount bits
+  have hblocks := fixedWeightLogChunkBlocksWithSentinel_length_le bits
+  omega
+
+theorem fixedWeightLogChunkBlockClassLengthTableOverhead_le
+    (bits : List Bool) :
+    fixedWeightBlockClassLengthTableOverhead
+        (fixedWeightLogChunkClassLengthFieldWidthBound bits.length)
+        (fixedWeightLogChunkBlocksWithSentinel bits) <=
+      fixedWeightLogChunkClassLengthOverhead bits.length := by
+  let width := fixedWeightLogChunkClassLengthFieldWidthBound bits.length
+  let bound := fixedWeightLogChunkBlockCountBoundWithSentinel bits.length
+  have hblocks :
+      (fixedWeightLogChunkBlocksWithSentinel bits).length <= bound := by
+    simpa [bound] using
+      fixedWeightLogChunkBlocksWithSentinel_length_le bits
+  have htwice :
+      (fixedWeightLogChunkBlocksWithSentinel bits).length +
+          (fixedWeightLogChunkBlocksWithSentinel bits).length <=
+        bound + bound := by omega
+  have hmul :
+      ((fixedWeightLogChunkBlocksWithSentinel bits).length +
+          (fixedWeightLogChunkBlocksWithSentinel bits).length) * width <=
+        (bound + bound) * width :=
+    Nat.mul_le_mul_right width htwice
+  have hbudget :
+      fixedWeightBlockClassLengthTableOverhead
+          (fixedWeightLogChunkClassLengthFieldWidthBound bits.length)
+          (fixedWeightLogChunkBlocksWithSentinel bits) <=
+        fixedWeightBlockClassLengthTableOverheadBudget
+          fixedWeightLogChunkBlockCountBoundWithSentinel
+          fixedWeightLogChunkClassLengthFieldWidthBound bits.length := by
+    simpa [fixedWeightBlockClassLengthTableOverhead,
+      fixedWeightBlockClassLengthTableOverheadBudget, width, bound]
+      using hmul
+  unfold fixedWeightLogChunkClassLengthOverhead
+  omega
+
+theorem fixedWeightLogChunkBlocksWithSentinel_length_mul_blockSize_ge
+    (bits : List Bool) :
+    bits.length <=
+      (fixedWeightLogChunkBlocksWithSentinel bits).length *
+        fixedWeightLogChunkBlockSize bits.length := by
+  have hflatten := fixedWeightLogChunkBlocksWithSentinel_flatten bits
+  have hle :
+      (SuccinctSpace.flattenPayloadWords
+          (fixedWeightLogChunkBlocksWithSentinel bits)).length <=
+        (fixedWeightLogChunkBlocksWithSentinel bits).length *
+          fixedWeightLogChunkBlockSize bits.length :=
+    SuccinctSpace.flattenPayloadWords_length_le_of_forall_length_le
+      (by
+        intro word hmem
+        exact fixedWeightLogChunkBlocksWithSentinel_block_length_le hmem)
+  simpa [hflatten] using hle
+
+theorem fixedWeightLogChunkRouteWidthClassLengthTableOverhead_ge_length
+    (bits : List Bool) :
+    bits.length <=
+      fixedWeightBlockClassLengthTableOverhead
+        (fixedWeightLogChunkBlockSize bits.length)
+        (fixedWeightLogChunkBlocksWithSentinel bits) := by
+  have hcover :=
+    fixedWeightLogChunkBlocksWithSentinel_length_mul_blockSize_ge bits
+  unfold fixedWeightBlockClassLengthTableOverhead
+  exact Nat.le_trans hcover
+    (Nat.mul_le_mul_right
+      (fixedWeightLogChunkBlockSize bits.length) (by omega))
+
+theorem fixedWeight_notLittleOLinear_of_self_le
+    {overhead : Nat -> Nat}
+    (hle : forall n, n <= overhead n) :
+    ¬ SuccinctSpace.LittleOLinear overhead := by
+  intro hoverhead
+  rcases hoverhead 2 (by omega) with ⟨threshold, hthreshold⟩
+  let n := threshold + 1
+  have hn : threshold <= n := by omega
+  have hscaled : 2 * overhead n <= n := hthreshold n hn
+  have hself : n <= overhead n := hle n
+  have htwice : 2 * n <= 2 * overhead n :=
+    Nat.mul_le_mul_left 2 hself
+  omega
+
+def fixedWeightLogChunkRouteWidthClassLengthOverhead : Nat -> Nat :=
+  fun n =>
+    fixedWeightBlockClassLengthTableOverhead
+      (fixedWeightLogChunkBlockSize n)
+      (fixedWeightLogChunkBlocksWithSentinel
+        (List.replicate n false))
+
+theorem fixedWeightLogChunkRouteWidthClassLengthOverhead_not_littleO :
+    ¬ SuccinctSpace.LittleOLinear
+      fixedWeightLogChunkRouteWidthClassLengthOverhead := by
+  apply fixedWeight_notLittleOLinear_of_self_le
+  intro n
+  simpa [fixedWeightLogChunkRouteWidthClassLengthOverhead] using
+    fixedWeightLogChunkRouteWidthClassLengthTableOverhead_ge_length
+      (List.replicate n false)
+
 theorem fixedWeightChunkBlocksWithSentinel_get_sentinel
     (blockSize : Nat) (bits : List Bool) :
     (fixedWeightChunkBlocksWithSentinel blockSize bits)[
@@ -7593,6 +7938,135 @@ theorem fixedWeightChunkBlocks_get?_access_exact
   rw [hwordEq]
   rw [List.getElem?_take]
   simp [offset, start, hoffset_lt, hpos]
+
+theorem fixedWeightChunkBlocks_get?_rankPrefix_add_exact
+    {blockSize : Nat} (hblockSize : 0 < blockSize)
+    {bits block : List Bool} {target : Bool} {pos : Nat}
+    (hpos : pos <= bits.length)
+    (hget :
+      (fixedWeightChunkBlocks blockSize bits)[pos / blockSize]? =
+        some block) :
+    Succinct.rankPrefix target bits ((pos / blockSize) * blockSize) +
+        Succinct.rankPrefix target block
+          (pos - (pos / blockSize) * blockSize) =
+      Succinct.rankPrefix target bits pos := by
+  let start := (pos / blockSize) * blockSize
+  let offset := pos - start
+  have hwordEq :
+      block = (bits.drop start).take blockSize := by
+    have hchunk :
+        (SuccinctSpace.chunkPayloadWords blockSize bits)[
+            pos / blockSize]? = some block := by
+      simpa [fixedWeightChunkBlocks] using hget
+    simpa [start] using
+      SuccinctSpace.chunkPayloadWords_get?_eq_take_drop hchunk
+  have hstart_le_pos : start <= pos := by
+    simpa [start] using Nat.div_mul_le_self pos blockSize
+  have hoffset_lt_blockSize : offset < blockSize := by
+    have hlt := Nat.lt_div_mul_add hblockSize (a := pos)
+    simp [offset, start]
+    omega
+  have hoffset_le_drop_length :
+      offset <= (bits.drop start).length := by
+    rw [List.length_drop]
+    omega
+  have hoffset_le_take_length :
+      offset <= ((bits.drop start).take blockSize).length := by
+    rw [List.length_take]
+    exact Nat.le_min.mpr
+      ⟨Nat.le_of_lt hoffset_lt_blockSize, hoffset_le_drop_length⟩
+  have htake :
+      Succinct.rankPrefix target ((bits.drop start).take blockSize)
+          offset =
+        Succinct.rankPrefix target (bits.drop start) offset :=
+    Succinct.rankPrefix_take_eq_of_le
+      target (bits.drop start) (n := blockSize)
+      (limit := offset) hoffset_le_take_length
+  have hdrop :
+      Succinct.rankPrefix target (bits.drop start) offset =
+        Succinct.rankPrefix target bits pos -
+          Succinct.rankPrefix target bits start := by
+    simpa [offset] using
+      Succinct.rankPrefix_drop_eq_sub_of_le
+        target bits hstart_le_pos hpos
+  have hprefix_le :
+      Succinct.rankPrefix target bits start <=
+        Succinct.rankPrefix target bits pos :=
+    Succinct.rankPrefix_mono_limit target bits hstart_le_pos
+  calc
+    Succinct.rankPrefix target bits ((pos / blockSize) * blockSize) +
+        Succinct.rankPrefix target block
+          (pos - (pos / blockSize) * blockSize) =
+      Succinct.rankPrefix target bits start +
+        Succinct.rankPrefix target block offset := by rfl
+    _ = Succinct.rankPrefix target bits start +
+        Succinct.rankPrefix target ((bits.drop start).take blockSize)
+          offset := by
+          rw [hwordEq]
+    _ = Succinct.rankPrefix target bits start +
+        Succinct.rankPrefix target (bits.drop start) offset := by
+          rw [htake]
+    _ = Succinct.rankPrefix target bits start +
+        (Succinct.rankPrefix target bits pos -
+          Succinct.rankPrefix target bits start) := by
+          rw [hdrop]
+    _ = Succinct.rankPrefix target bits pos := by omega
+
+theorem fixedWeightChunkBlocks_get?_select_exact_of_global_select
+    {blockSize : Nat} (hblockSize : 0 < blockSize)
+    {bits block : List Bool} {target : Bool}
+    {occurrence idx : Nat}
+    (hselect : Succinct.select target bits occurrence = some idx)
+    (hget :
+      (fixedWeightChunkBlocks blockSize bits)[idx / blockSize]? =
+        some block) :
+    (Succinct.select target block
+        (occurrence -
+          Succinct.rankPrefix target bits
+            ((idx / blockSize) * blockSize))).map
+        (fun offset => (idx / blockSize) * blockSize + offset) =
+      some idx := by
+  let start := (idx / blockSize) * blockSize
+  let localOccurrence :=
+    occurrence - Succinct.rankPrefix target bits start
+  have hidx_lt : idx < bits.length :=
+    Succinct.select_bounds hselect
+  have hstart_le_idx : start <= idx := by
+    simpa [start] using Nat.div_mul_le_self idx blockSize
+  have hstart_le_len : start <= bits.length :=
+    Nat.le_trans hstart_le_idx (Nat.le_of_lt hidx_lt)
+  have hlocal_lt : idx - start < blockSize := by
+    have hlt := Nat.lt_div_mul_add hblockSize (a := idx)
+    simp [start]
+    omega
+  have hwordEq :
+      block = (bits.drop start).take blockSize := by
+    have hchunk :
+        (SuccinctSpace.chunkPayloadWords blockSize bits)[
+            idx / blockSize]? = some block := by
+      simpa [fixedWeightChunkBlocks] using hget
+    simpa [start] using
+      SuccinctSpace.chunkPayloadWords_get?_eq_take_drop hchunk
+  have hrank_le :
+      Succinct.rankPrefix target bits start <= occurrence :=
+    Succinct.rankPrefix_le_occurrence_of_le_select
+      hselect hstart_le_idx
+  have hdrop :
+      Succinct.select target (bits.drop start) localOccurrence =
+        some (idx - start) := by
+    simpa [localOccurrence] using
+      Succinct.select_drop_eq_sub_of_select
+        hselect hstart_le_idx hstart_le_len hrank_le
+  have htake :
+      Succinct.select target ((bits.drop start).take blockSize)
+          localOccurrence =
+        some (idx - start) :=
+    Succinct.select_take_of_select_lt hdrop hlocal_lt
+  rw [hwordEq]
+  rw [htake]
+  change some (start + (idx - start)) = some idx
+  have hsum : start + (idx - start) = idx := by omega
+  rw [hsum]
 
 theorem fixedWeightBlockClassLengthTableOverhead_le_of_bounds
     {fieldWidth fieldWidthBound blockCountBound : Nat}
@@ -7707,6 +8181,133 @@ def fixedWeightChunkAccessRouteWithSentinel
       rw [List.getElem?_eq_none_iff]
       omega
     simp [hnone]
+
+def fixedWeightChunkRankRouteWithSentinel
+    {blockSize : Nat} (hblockSize : 0 < blockSize)
+    (bits : List Bool) (target : Bool) (pos : Nat) :
+    FixedWeightAmbientComputedRRRRankRoute bits
+      (fixedWeightChunkBlocksWithSentinel blockSize bits) target pos := by
+  by_cases hpos : pos < bits.length
+  · have hstart_lt :
+        (pos / blockSize) * blockSize < bits.length := by
+      have hstart_le : (pos / blockSize) * blockSize <= pos :=
+        Nat.div_mul_le_self pos blockSize
+      omega
+    cases hgetOpt :
+        (fixedWeightChunkBlocks blockSize bits)[pos / blockSize]? with
+    | none =>
+        exfalso
+        have hsome :
+            ∃ block,
+              (fixedWeightChunkBlocks blockSize bits)[pos / blockSize]? =
+                some block := by
+          rcases
+              SuccinctSpace.chunkPayloadWords_get?_some_of_mul_lt
+                (wordSize := blockSize) hblockSize
+                (payload := bits) (i := pos / blockSize) hstart_lt with
+            ⟨block, hchunk⟩
+          exact ⟨block, by
+            simpa [fixedWeightChunkBlocks] using hchunk⟩
+        rcases hsome with ⟨block, hget⟩
+        simp [hgetOpt] at hget
+    | some block =>
+        have hget :
+            (fixedWeightChunkBlocks blockSize bits)[pos / blockSize]? =
+              some block := hgetOpt
+        refine
+          { blockIndex := pos / blockSize
+            block := block
+            block_get :=
+              fixedWeightChunkBlocksWithSentinel_get_chunk hget
+            localLimit := pos - (pos / blockSize) * blockSize
+            baseRank :=
+              Succinct.rankPrefix target bits
+                ((pos / blockSize) * blockSize)
+            metadataReads := []
+            rank_exact := ?_ }
+        exact
+          fixedWeightChunkBlocks_get?_rankPrefix_add_exact
+            hblockSize (Nat.le_of_lt hpos) hget
+  · refine
+      { blockIndex := (fixedWeightChunkBlocks blockSize bits).length
+        block := []
+        block_get :=
+          fixedWeightChunkBlocksWithSentinel_get_sentinel blockSize bits
+        localLimit := 0
+        baseRank := Succinct.rankPrefix target bits bits.length
+        metadataReads := []
+        rank_exact := ?_ }
+    have hlen : bits.length <= pos := Nat.le_of_not_gt hpos
+    have hrank :=
+      Succinct.rankPrefix_eq_rankPrefix_length_of_length_le
+        target bits hlen
+    simp [hrank, Succinct.rankPrefix]
+
+def fixedWeightChunkSelectRouteWithSentinel
+    {blockSize : Nat} (hblockSize : 0 < blockSize)
+    (bits : List Bool) (target : Bool) (occurrence : Nat) :
+    FixedWeightAmbientComputedRRRSelectRoute bits
+      (fixedWeightChunkBlocksWithSentinel blockSize bits)
+      target occurrence := by
+  cases hselectOpt : Succinct.select target bits occurrence with
+  | none =>
+      refine
+        { blockIndex := (fixedWeightChunkBlocks blockSize bits).length
+          block := []
+          block_get :=
+            fixedWeightChunkBlocksWithSentinel_get_sentinel blockSize bits
+          localOccurrence := 0
+          blockStart := 0
+          metadataReads := []
+          select_exact := ?_ }
+      simpa [Succinct.select, Succinct.selectFrom] using hselectOpt.symm
+  | some idx =>
+      have hselect :
+          Succinct.select target bits occurrence = some idx := hselectOpt
+      have hidx_lt : idx < bits.length :=
+        Succinct.select_bounds hselect
+      have hstart_lt :
+          (idx / blockSize) * blockSize < bits.length := by
+        have hstart_le : (idx / blockSize) * blockSize <= idx :=
+          Nat.div_mul_le_self idx blockSize
+        omega
+      cases hgetOpt :
+          (fixedWeightChunkBlocks blockSize bits)[idx / blockSize]? with
+      | none =>
+          exfalso
+          have hsome :
+              ∃ block,
+                (fixedWeightChunkBlocks blockSize bits)[idx / blockSize]? =
+                  some block := by
+            rcases
+                SuccinctSpace.chunkPayloadWords_get?_some_of_mul_lt
+                  (wordSize := blockSize) hblockSize
+                  (payload := bits) (i := idx / blockSize) hstart_lt with
+              ⟨block, hchunk⟩
+            exact ⟨block, by
+              simpa [fixedWeightChunkBlocks] using hchunk⟩
+          rcases hsome with ⟨block, hget⟩
+          simp [hgetOpt] at hget
+      | some block =>
+          have hget :
+              (fixedWeightChunkBlocks blockSize bits)[idx / blockSize]? =
+                some block := hgetOpt
+          refine
+            { blockIndex := idx / blockSize
+              block := block
+              block_get :=
+                fixedWeightChunkBlocksWithSentinel_get_chunk hget
+              localOccurrence :=
+                occurrence -
+                  Succinct.rankPrefix target bits
+                    ((idx / blockSize) * blockSize)
+              blockStart := (idx / blockSize) * blockSize
+              metadataReads := []
+              select_exact := ?_ }
+          rw [hselect]
+          exact
+            fixedWeightChunkBlocks_get?_select_exact_of_global_select
+              hblockSize hselect hget
 
 theorem fixedWeightBlockClassLengthTablePayload_length
     (fieldWidth : Nat) (blocks : List (List Bool)) :

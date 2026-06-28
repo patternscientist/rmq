@@ -77,6 +77,20 @@ spokes:
   union-find amortization frontier after the rank-gap/log-rank checkpoint and
   before a bucketed Tarjan-style potential.
 
+## Current Rank/Select Note
+
+The fixed-weight compressed/FID spoke now separates three issues that were easy
+to conflate. First, log-sized sentinel chunk decompositions have an `o(n)` block
+count. Second, class/length metadata for those chunks is small only when stored
+at a narrow `log log n`-style width; padding it to route width is formally
+linear, so it cannot be hidden in the auxiliary term. Third, the per-block
+fixed-weight primary codes are bounded by the raw bit length plus `o(n)`, which
+is a useful accounting sanity check but not the compressed/FID
+`log binomial + o(n)` theorem. The live mathematical question is the
+enumerative bridge from a product of per-block fixed-weight universes back to
+the global fixed-weight universe, plus the charged route-directory construction
+that consumes the already-proved sentinel access/rank/select route equations.
+
 ## Digestion Tasks
 
 1. Turn the RMQ capstone into a two-page lecture-style proof map:
