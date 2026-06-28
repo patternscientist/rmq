@@ -12,4 +12,7 @@ scope-note fix would solve the issue.
 For every finding, cite concrete files and line numbers when possible. Separate
 load-bearing issues from documentation polish. Preserve the repository policy:
 Mathlib-free Lean/Std plus omega unless the user explicitly changes it.
+When auditing a worker or milestone report, also flag missing proof-digestion
+content: conceptual change, plain-English meaning, live assumptions, and the
+skeptical-grad-student question.
 """

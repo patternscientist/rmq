@@ -56,6 +56,13 @@ Goal reflection:
 New theorem/def surface:
 - <name> : <one-line purpose>
 
+Proof digestion:
+- What changed conceptually:
+- What the work just done now means in plain English:
+- What assumptions are live:
+- What a skeptical grad student would ask:
+- Digestion docs updated, or why no update was needed:
+
 Commands run:
 - lake build <module or whole repo>
 - lake env lean scripts\axiom_check.lean       <if run>
@@ -243,6 +250,9 @@ Must report:
 - stale claims found and fixed;
 - claims intentionally left unchanged, with theorem references;
 - any public theorem names mentioned in docs;
+- whether the explanation answers the proof-digestion questions: what changed
+  conceptually, what it means in plain English, what assumptions are live, and
+  what a skeptical grad student would ask;
 - whether those public theorem names are covered by `scripts/axiom_check.lean`,
   or why they are intentionally local-helper names;
 - whether proof files were untouched.

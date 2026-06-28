@@ -53,6 +53,11 @@ Use this workflow for nontrivial work in the RMQ Lean repository.
   - cost/space model consistency review.
 - Good worker splits require disjoint write ownership, such as one module per
   worker. Tell workers not to revert other changes.
+- Every worker completion report should include a proof-digestion section:
+  what changed conceptually, what the work just done now means in plain
+  English, what assumptions are live, and what a skeptical grad student would
+  ask next. This is required even for proof-heavy branches; the point is to
+  make verified progress explainable without reading the Lean diff.
 - Good proof-worker splits require pinned theorem signatures or construction
   contracts up front. If the leaf contract is not stable enough to hand to a
   worker, keep it in the lead loop rather than spawning exploratory churn.
@@ -353,6 +358,11 @@ Summarize:
 - the goal reflection: overall goal, current gap, hard part, and how the branch
   reduced the distance to the capstone,
 - changed modules and theorem names,
+- what changed conceptually,
+- what the work just done now means in plain English,
+- what assumptions are live,
+- what a skeptical grad student would ask next,
 - verification commands and outcomes,
 - any remaining model caveats,
+- digestion docs updated, or why no public digestion update was needed,
 - the next crisp theorem target.

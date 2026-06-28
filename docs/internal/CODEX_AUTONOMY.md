@@ -314,6 +314,11 @@ through rather than surfaced immediately.
 23. Worker audits always include loop-stop validity and prompt/spec delta.
     Every audit should explicitly say whether the worker should have stopped,
     and whether the next prompts or loop specs need tightening.
+24. Worker reports always include proof digestion. A completion report must
+    state what changed conceptually, what the work just done now means in plain
+    English, what assumptions are live, and what a skeptical grad student would
+    ask. A branch that cannot explain itself at this level may be correct Lean
+    but is not ready to be treated as library-facing progress.
 
 Useful debt metrics:
 
@@ -383,6 +388,7 @@ Headline:      <the citable theorem this produced>
 Debt delta:    asserted-cost count A -> B ; gated-hypothesis count C -> D
 Gate:          PASS/FAIL (build / hygiene / axioms / diff)
 Parallelism:   <leaves spawned and the join they fed, or "none">
+Digestion:     <conceptual delta / plain-English meaning / live assumptions / skeptical question>
 Next:          <next roadmap target, or stop condition hit>
 Stop audit:    <target retired? next obvious? abstract hook left? why stop is valid>
 ```

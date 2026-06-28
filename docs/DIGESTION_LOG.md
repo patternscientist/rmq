@@ -15,15 +15,18 @@ project's local cost-model vocabulary.
 ## Running Protocol
 
 After a spoke milestone lands, the spoke coordinator should add or update a
-short explanation note containing:
+short explanation note containing the following required worker-report
+questions:
 
 - the theorem or construction that changed;
+- what changed conceptually;
+- what the work just done now means in plain English;
+- what assumptions are live, especially payload bits, proof-only fields,
+  charged reads, and Lean runtime nonclaims;
+- what a skeptical grad student would ask next;
 - the informal mathematical statement;
 - the proof idea in ordinary language;
-- the exact model assumptions, especially payload bits, proof-only fields,
-  charged reads, and Lean runtime nonclaims;
 - the dependency path to the previous public surface;
-- the most natural skeptical questions;
 - the live frontier after the milestone.
 
 The main coordinator periodically folds those notes into this log and asks
@@ -49,12 +52,30 @@ spokes:
   RAM/indexed-access model, and matching Catalan-style lower-bound machinery.
 - Rank/select: a standalone bitvector spec and public Jacobson/Clark
   `n + o(n)` constant-query profile, plus an active compressed/FID fixed-weight
-  route/class-length construction path. The global compressed/FID constructor
-  remains open.
+  route/class-length construction path. The latest digested chunk-route layer
+  gives concrete fixed-size chunks, a sentinel fallback block, access-route
+  exactness, and class/length metadata budget bridges. The global compressed
+  FID constructor remains open on route exactness for rank/select and the
+  primary block-code budget.
 - Union-find: a finite partition specification, costed reference operations,
   a parent-pointer forest refinement, union-by-rank/root-mass/rank-power
-  invariants, full-compression find refinement, and a log-rank amortized
-  checkpoint. The Tarjan inverse-Ackermann theorem remains open.
+  invariants, full-compression find refinement, and rank-gap/log-rank
+  amortized checkpoints. The bucketed Tarjan-style potential and
+  inverse-Ackermann theorem remain open.
+
+## Current Digests
+
+- [`digests/RMQ_PROOF_MAP.md`](digests/RMQ_PROOF_MAP.md): index and shared
+  assumptions ledger for the digest layer.
+- [`digests/COORDINATOR_COMPLETION_LOG.md`](digests/COORDINATOR_COMPLETION_LOG.md):
+  time-stamped coordinator completion reports in the proof-digestion format.
+- [`digests/RMQ_CAPSTONE.md`](digests/RMQ_CAPSTONE.md): classroom proof map
+  for the stable RMQ capstone.
+- [`digests/RANK_SELECT_FID_FRONTIER.md`](digests/RANK_SELECT_FID_FRONTIER.md):
+  rank/select FID frontier after the chunk-route milestone.
+- [`digests/UNION_FIND_AMORTIZATION_FRONTIER.md`](digests/UNION_FIND_AMORTIZATION_FRONTIER.md):
+  union-find amortization frontier after the rank-gap/log-rank checkpoint and
+  before a bucketed Tarjan-style potential.
 
 ## Digestion Tasks
 

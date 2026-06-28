@@ -11,4 +11,7 @@ locations, dependency order, and risk notes. Do not edit files.
 Keep the main research direction in view: close the succinct upper-bound parity
 gap and exploit the novelty of pairing payload-accounted upper bounds with the
 existing information-theoretic lower-bound framework.
+When proposing milestones, include the proof-digestion angle: what would change
+conceptually, how to say it in plain English, which assumptions stay live, and
+what a skeptical grad student would ask if the milestone landed.
 """

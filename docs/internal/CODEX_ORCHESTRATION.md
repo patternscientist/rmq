@@ -45,6 +45,11 @@ also require a restart if they do not appear immediately.
   from premature loop breaks or side quests.
 - For multi-chat branches, use `docs/internal/WORKER_INTEGRATION_CHECKLIST.md` as the
   worker report template and coordinator merge gate.
+- For every worker or loop completion report, require a proof-digestion block:
+  what changed conceptually, what the work just done now means in plain
+  English, what assumptions are live, and what a skeptical grad student would
+  ask. Public milestones should update `docs/DIGESTION_LOG.md` or a focused
+  digest, not only the theorem inventory.
 
 ## Bounded Proof Loop Template
 
@@ -76,7 +81,9 @@ also require a restart if they do not appear immediately.
 8. Run a checkpoint: touched-module checks, then `lake build`, the trust-base
    scan, the `native_decide` scan when relevant, and `git diff --check`.
 9. Update `docs/FAMILY_SUMMARY.md`.
-10. If the checkpoint is clean and no strict stop condition fired, choose the
+10. Add or refresh the proof-digestion note when the milestone changes a public
+    theorem surface, model assumption, or frontier explanation.
+11. If the checkpoint is clean and no strict stop condition fired, choose the
    next iteration adaptively and repeat the loop against the same owned target.
    Otherwise report the checkpoint and the exact stop condition.
 

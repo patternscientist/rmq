@@ -59,6 +59,11 @@
   codebase, must not revert or overwrite other changes, and should continue
   through their loop until the assigned target closes or a real stop condition
   is met.
+- Every worker completion report must include a short proof-digestion section:
+  what changed conceptually, what the work just done now means in plain
+  English, what assumptions are live, and what a skeptical grad student would
+  ask next.
 - The lead thread remains responsible for periodic check-ins, steering agents
   away from premature loop breaks or side quests, integrating accepted work, and
-  running the final gate.
+  running the final gate. For public-facing milestones, it should also fold
+  the worker's digestion note into `docs/DIGESTION_LOG.md` or a focused digest.
