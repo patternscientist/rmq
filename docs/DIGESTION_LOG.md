@@ -77,6 +77,11 @@ spokes:
 
 ## Current Digests
 
+- [`digests/DEEP_PROJECT_DIGESTION_2026_06_28.md`](digests/DEEP_PROJECT_DIGESTION_2026_06_28.md):
+  deep Lean-club-facing project digestion for current `main`, with first-contact
+  definitions of RMQ, Cartesian shape, rank/select, balanced parentheses,
+  modeled cost, payload accounting, compressed/FID, and union-find; includes a
+  recorded adversarial classroom fixedpoint loop.
 - [`digests/PROJECT_STATE_2026_06_28.md`](digests/PROJECT_STATE_2026_06_28.md):
   current project-wide digest, including the merged rank/select log-chunk
   primary-budget/split-width route-directory work and the merged union-find

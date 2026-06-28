@@ -16,6 +16,10 @@ answer. This repository verifies that story end to end, including correctness,
 modeled query cost, payload-bit accounting, and the matching
 information-theoretic lower bound.
 
+For a stress-tested Lean-club explanation aimed at mathematically mature
+readers with little data-structures background, see
+[`docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md`](docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md).
+
 ## Why Care
 
 RMQ is a small-looking problem that sits under several core data-structure
@@ -150,6 +154,8 @@ rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncompu
 
 ## Documentation Map
 
+- [`docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md`](docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md):
+  stress-tested Lean-club explanation of the current project state.
 - [`docs/WHAT_IS_PROVED.md`](docs/WHAT_IS_PROVED.md): compact scope summary.
 - [`docs/TRUST_AUDIT_PACKET.md`](docs/TRUST_AUDIT_PACKET.md): skeptical-review
   packet for the headline theorem.

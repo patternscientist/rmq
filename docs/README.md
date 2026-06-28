@@ -9,6 +9,9 @@ This repository has two kinds of documentation:
 
 ## Public Artifact Docs
 
+- [`digests/DEEP_PROJECT_DIGESTION_2026_06_28.md`](digests/DEEP_PROJECT_DIGESTION_2026_06_28.md):
+  stress-tested first-contact explanation for a Lean club or mathematically
+  mature audience without data-structures background.
 - [`WHAT_IS_PROVED.md`](WHAT_IS_PROVED.md): compact scope summary for external
   readers.
 - [`TRUST_BASE.md`](TRUST_BASE.md): build gate, expected axioms, dependency
