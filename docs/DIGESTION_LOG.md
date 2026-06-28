@@ -54,9 +54,19 @@ spokes:
   `n + o(n)` constant-query profile, plus an active compressed/FID fixed-weight
   route/class-length construction path. The latest digested chunk-route layer
   gives concrete fixed-size chunks, a sentinel fallback block, access-route
-  exactness, and class/length metadata budget bridges. The global compressed
-  FID constructor remains open on route exactness for rank/select and the
-  primary block-code budget.
+  exactness, class/length metadata budget bridges, the log-chunk primary
+  block-code budget, and a specialized log-chunk route/class-length envelope
+  profile together with a no-inhabitant theorem for that computed-RRR envelope
+  under fixed local query cost. The replacement shared-table table/RAM
+  route-directory envelope now exists, has a conditional compressed/FID public
+  bridge, and has a log-chunk specialization that consumes the primary
+  block-code budget. A route-field-table adapter feeds the existing
+  payload-backed route tables into that envelope. The split-width table/RAM
+  repair now separates global route-field width from local class/length width
+  and has its own log-chunk profile consuming the primary budget. The global
+  constructor remains open because dense log-chunk decoder tables are formally
+  not `o(n)`; the old single-width route/class metadata design is also formally
+  ruled out when class/length fields are padded to route width.
 - Union-find: a finite partition specification, costed reference operations,
   a parent-pointer forest refinement, union-by-rank/root-mass/rank-power
   invariants, full-compression find refinement, rank-gap/log-rank amortized
@@ -85,12 +95,17 @@ to conflate. First, log-sized sentinel chunk decompositions have an `o(n)` block
 count. Second, class/length metadata for those chunks is small only when stored
 at a narrow `log log n`-style width; padding it to route width is formally
 linear, so it cannot be hidden in the auxiliary term. Third, the per-block
-fixed-weight primary codes are bounded by the raw bit length plus `o(n)`, which
-is a useful accounting sanity check but not the compressed/FID
-`log binomial + o(n)` theorem. The live mathematical question is the
-enumerative bridge from a product of per-block fixed-weight universes back to
-the global fixed-weight universe, plus the charged route-directory construction
-that consumes the already-proved sentinel access/rank/select route equations.
+fixed-weight primary codes now have the real enumerative bridge for sentinel
+log chunks: the product of per-block fixed-weight universes fits under the
+global fixed-weight universe, with one slack bit per block, and the log-chunk
+block count is `o(n)`. The replacement charged route-directory/local-decoder
+family now exists as a table/RAM envelope with a counted shared decoded-word
+table read, and the log-chunk version consumes that primary budget. The live
+construction question is therefore not a dense log-chunk decoder: that is ruled
+out by `noFixedWeightLogChunkDenseDecoderLittleO`. The split-width table/RAM
+profile now provides the needed route-vs-class/length width separation, so the
+next positive design must instantiate that family with concrete route payloads
+and a genuinely sublinear shared decoder payload.
 
 ## Current Union-Find Digestion Note
 

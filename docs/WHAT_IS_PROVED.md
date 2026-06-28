@@ -268,8 +268,8 @@ auxiliary budget.
 adds the ambient block-size route-table refinement: the local computed-RRR cost
 premise is derived from a uniform block-length cap rather than assumed
 per-block. The remaining global constructor task is to instantiate a concrete
-charged route-directory family over the chunk blocks, prove the primary
-block-code budget, and derive the route fields from charged routing tables.
+charged route-directory family over the chunk blocks and derive the route
+fields from charged routing tables.
 The current combined route/class-length envelope also uses the route field
 width for class/length metadata; the narrow budget theorem above proves the
 right class/length accounting, but a fully compressed constructor still needs
@@ -280,17 +280,26 @@ proves an `o(n)` counted auxiliary envelope for block-composed fixed-weight
 codes, with code and auxiliary payload words bounded by the ambient
 `Nat.log2 bits.length + 1` word size. The bridge
 `RMQ.RankSelect.fixedWeightAmbientBlockCompositionCompressedProfileOfPrimaryBudget`
-isolates the remaining compressed/FID primary-budget theorem: the sum of
+isolates the generic compressed/FID primary-budget theorem: the sum of
 per-block fixed-weight code budgets must be bounded by the global
 fixed-weight payload budget plus an `o(n)` slack.
-The current conservative primary theorem is
+For sentinel log chunks, that budget is now proved:
+`RMQ.RankSelect.fixedWeightBlockPayloadBudgetLePayloadBudgetFlattenAddBlocks`
+gives the generic fixed-weight product/counting bridge from per-block code
+budgets to the global fixed-weight payload budget plus one slack bit per
+block, and
+`RMQ.RankSelect.fixedWeightLogChunkBlockPayloadBudgetLePayloadBudgetAddBound`
+specializes it to the `o(n)` sentinel log-chunk block-count overhead.
+The older conservative primary theorem is
 `RMQ.RankSelect.fixedWeightLogChunkBlockPayloadBudgetLeLengthAddBound`: for
 sentinel log chunks, the per-block primary codes are bounded by raw `n` plus an
-`o(n)` block-count term. This is not yet the compressed/FID
-`log binomial(n,m) + o(n)` primary bridge.
+`o(n)` block-count term.
 `RMQ.RankSelect.fixedWeightAmbientBlockCompositionWordBoundedCompressedProfileOfPrimaryBudget`
 is the strengthened version carrying the directory profile and ambient
 machine-word bounds into that conditional compressed/FID shape.
+`RMQ.RankSelect.fixedWeightAmbientBlockCompositionWordBoundedCompressedProfileOfLogChunkBlocks`
+consumes the sentinel log-chunk primary budget and removes the explicit
+`primaryOverhead`/`hprimary` premise.
 The same conditional compressed/FID shape is exposed directly for the
 ambient computed-RRR route layers by
 `RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteTableWordBoundedCompressedProfileOfPrimaryBudget`
@@ -304,7 +313,38 @@ The field-table constructor bridges are
 `RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTablesWordBoundedCompressedProfileOfPrimaryBudget`
 and
 `RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutWordBoundedCompressedProfileOfPrimaryBudget`.
-These remain conditional on the primary block-code budget theorem.
+For route/class-length envelope families whose blocks are sentinel log chunks,
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeWordBoundedCompressedProfileOfLogChunkBlocks`
+removes the primary-budget premise. The specialized public theorem
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeWordBoundedCompressedProfile`
+also fixes the block decomposition and class/length metadata overhead in the
+theorem statement itself. The obstruction theorem
+`RMQ.RankSelect.noFixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily`
+proves this exact specialized computed-RRR envelope cannot be inhabited with a
+fixed modeled local query cost. The replacement envelope is now
+`RMQ.RankSelect.FixedWeightAmbientTableRAMRouteDirectoryFamily`, with public
+profile
+`RMQ.RankSelect.fixedWeightAmbientTableRAMRouteDirectoryFamilyWordBoundedCompressedProfileOfPrimaryBudget`.
+It charges route/class metadata reads and a shared decoded-word table read
+before fixed RAM word primitives. The log-chunk specialization
+`RMQ.RankSelect.fixedWeightAmbientTableRAMLogChunkRouteDirectoryFamilyWordBoundedCompressedProfile`
+now consumes the primary block-code budget in the theorem statement, and
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToTableRAMRouteDirectoryFamily`
+feeds the existing fixed-width route tables into the table/RAM envelope. Two
+tempting completions are ruled out: the dense log-chunk decoder is not an
+`o(n)` counted payload
+(`RMQ.RankSelect.noFixedWeightLogChunkDenseDecoderLittleO`), and route-width
+class/length metadata is not `o(n)`. More directly,
+`RMQ.RankSelect.noFixedWeightAmbientTableRAMLogChunkRouteDirectoryFamilyRouteWidthClassLength`
+rules out the old single-width log-chunk table/RAM family when class/length
+fields use route width. The replacement split-width surface is now proved:
+`RMQ.RankSelect.fixedWeightAmbientTableRAMLogChunkSplitWidthRouteDirectoryFamilyWordBoundedCompressedProfile`
+consumes the log-chunk primary budget while separating route width from
+class/length width, and
+`RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToSplitWidthTableRAMRouteDirectoryFamily`
+feeds the existing route tables into that split-width envelope. The remaining
+positive gap is a concrete constructor for route-directory payloads and a
+sublinear shared decoder payload.
 
 ## Balanced-Parentheses Navigation
 

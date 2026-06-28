@@ -259,6 +259,12 @@ RMQ.RankSelect.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamilyDirectory
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamilyProfile
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeWordBoundedCompressedProfileOfPrimaryBudget
+RMQ.RankSelect.FixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily
+RMQ.RankSelect.fixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamilyDirectory
+RMQ.RankSelect.fixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeWordBoundedCompressedProfile
+RMQ.RankSelect.noFixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily
+RMQ.RankSelect.noFixedWeightComputedRRRClassLengthLogChunkBlockSizeUniformCost
+RMQ.RankSelect.noFixedWeightLogChunkRouteFieldTableLayoutFamilyToEnvelopeUniformCost
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyDirectory
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyProfile
 RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToRouteClassLengthTableEnvelopeFamilyProfile
@@ -408,6 +414,49 @@ kernel as an instance of the generic dependent auxiliary scaffold, and
 scaffold-backed directory agrees with the direct local block directory on
 payload, query costs, and erased answers. The combined public citation point is
 `fixedWeightTableRAMBlockDependentAuxiliaryFullProfile`.
+
+The replacement ambient table/RAM envelope is now present:
+`FixedWeightAmbientTableRAMRouteDirectoryData` stores primary block
+fixed-weight codes, a charged route store, a charged class/length store, and a
+charged shared decoded-word table. Its access/rank/select queries read the
+routed code word, read class/length plus route metadata, compute the shared
+decode-table slot from those charged values, perform one charged decoded-word
+read, and then use fixed RAM word primitives. The pointwise profile
+`fixedWeightAmbientTableRAMRouteDirectoryProfile` records the payload split,
+route-read equations for access/rank/select route fields, ambient word bounds,
+and exact constant-modeled query behavior. The family theorem
+`fixedWeightAmbientTableRAMRouteDirectoryFamilyWordBoundedCompressedProfileOfPrimaryBudget`
+adds the public compressed/FID shape: if route overhead, class/length overhead,
+decoder overhead, and the primary block-code slack are all `o(n)`, the resulting
+compressed fixed-weight directory has payload
+`fixedWeightPayloadBudget bits + o(n)` and constant modeled queries. This is a
+positive replacement for the obstructed computed-RRR envelope, but it is still
+conditional on a concrete counted shared decoder payload construction and the
+microblock/slot arithmetic proving that decoder overhead is actually `o(n)`.
+The log-chunk specialization
+`fixedWeightAmbientTableRAMLogChunkRouteDirectoryFamilyWordBoundedCompressedProfile`
+now consumes the existing primary block-code budget and narrow log-chunk
+class/length overhead, so the primary-budget premise is no longer part of that
+public table/RAM profile. The route-field-table adapter
+`fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToTableRAMRouteDirectoryFamily`
+also feeds the existing payload-backed fixed-width route tables into this
+envelope. The repaired split-width envelope
+`fixedWeightAmbientTableRAMSplitWidthRouteDirectoryFamilyWordBoundedCompressedProfileOfPrimaryBudget`
+and its log-chunk specialization
+`fixedWeightAmbientTableRAMLogChunkSplitWidthRouteDirectoryFamilyWordBoundedCompressedProfile`
+keep route-field width independent from class/length-field width; the adapter
+`fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToSplitWidthTableRAMRouteDirectoryFamily`
+feeds the existing charged route tables into that split-width family. Two
+capstone shortcuts are now formally ruled out: a dense all-code
+decoder at log-chunk size is not `o(n)`
+(`noFixedWeightLogChunkDenseDecoderLittleO`), and padding class/length metadata
+to route-width fields is not `o(n)`
+(`fixedWeightLogChunkRouteWidthClassLengthOverheadNotLittleO`). More directly,
+`noFixedWeightAmbientTableRAMLogChunkRouteDirectoryFamilyRouteWidthClassLength`
+rules out the old single-width log-chunk table/RAM family when its class/length
+field width is the route width. The remaining positive path must instantiate
+the split-width envelope with concrete route-directory payloads and a genuinely
+sublinear shared decoder discipline.
 
 The stricter packed-code-only local checkpoint is now
 `FixedWeightComputedRRRBlockData`. Its counted payload is exactly
@@ -597,8 +646,10 @@ queries to the sentinel with full-prefix base rank.
 global select to its selected chunk, and routes missing selects to the
 sentinel. The remaining global constructor task is now a charged route-table
 family over these chunk blocks that reads the route fields from payload, proves
-the primary block-code budget, and resolves the metadata-width/local-decoder
-discipline needed for a full compressed/FID theorem.
+rank/select route exactness, and resolves the metadata-width/local-decoder
+discipline needed for a full compressed/FID theorem. The primary block-code
+budget for these sentinel log chunks is now proved separately and consumed by
+the log-chunk profile theorems.
 
 The ambient/global block-composition predecessor is now present. It stores one
 canonical fixed-weight code word per block through
@@ -621,7 +672,7 @@ The ambient family theorem proves payload
 stores. The conditional bridges
 `fixedWeightAmbientBlockCompositionCompressedProfileOfPrimaryBudget` and
 `fixedWeightAmbientBlockCompositionWordBoundedCompressedProfileOfPrimaryBudget`
-isolate the remaining primary-budget theorem: for every `bits`,
+isolate the generic primary-budget theorem: for every `bits`,
 `fixedWeightBlockPayloadBudget (blocks bits) <= fixedWeightPayloadBudget bits + primaryOverhead bits.length`
 with `primaryOverhead = o(n)`. The word-bounded bridge additionally carries
 the directory profile and ambient word-size discipline into the
@@ -640,19 +691,63 @@ through
 `fixedWeightAmbientComputedRRRRouteFieldTablesWordBoundedCompressedProfileOfPrimaryBudget`
 and
 `fixedWeightAmbientComputedRRRRouteFieldTableLayoutWordBoundedCompressedProfileOfPrimaryBudget`.
-These are generic compressed/FID public theorem shapes for the ambient
-computed-RRR route layers, still conditional on the primary block-code budget.
-For the log-sized chunk decomposition, the block-count side of that budget is
-now formalized as `o(n)`, and
-`fixedWeightLogChunkBlockPayloadBudgetLeLengthAddBound` proves the conservative
-raw upper bound
+These are generic compressed/FID public theorem shapes for arbitrary ambient
+computed-RRR route layers, still conditional on a primary block-code budget.
+For the log-sized sentinel chunk decomposition, that primary-budget premise is
+now discharged. The generic bridge
+`fixedWeightBlockPayloadBudgetLePayloadBudgetFlattenAddBlocks` proves that the
+sum of per-block fixed-weight code widths is at most the global fixed-weight
+payload budget for the flattened bitvector plus one slack bit per block. It is
+based on `binomialCountMulLeAdd`, the Mathlib-free product/counting inequality
+for concatenated fixed-weight universes. Specializing to sentinel log chunks,
+`fixedWeightLogChunkBlockPayloadBudgetLePayloadBudgetAddBound` proves
+```
+fixedWeightBlockPayloadBudget (fixedWeightLogChunkBlocksWithSentinel bits)
+  <= fixedWeightPayloadBudget bits
+       + fixedWeightLogChunkBlockCountBoundWithSentinel bits.length
+```
+and the block-count overhead is already `o(n)`.
+The consumed profiles
+`fixedWeightAmbientBlockCompositionWordBoundedCompressedProfileOfLogChunkBlocks`
+and
+`fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeWordBoundedCompressedProfileOfLogChunkBlocks`
+therefore remove the explicit `primaryOverhead`/`hprimary` premise for families
+whose block decomposition is `fixedWeightLogChunkBlocksWithSentinel`.
+The specialized public surface
+`fixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeWordBoundedCompressedProfile`
+goes one step further: the theorem statement itself fixes the blocks to
+`fixedWeightLogChunkBlocksWithSentinel` and fixes the class/length metadata
+budget to `fixedWeightLogChunkClassLengthOverhead`, so there is no separate
+`hblocks` argument or arbitrary class-length overhead to instantiate.
+This surface is now known to be the wrong final constructor target:
+`noFixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily`
+proves that it cannot be inhabited with a fixed modeled local query cost,
+because the component type still uses the current computed-RRR class/length
+local decoder. The smaller obstruction
+`noFixedWeightComputedRRRClassLengthLogChunkBlockSizeUniformCost` isolates the
+unbounded local-cost function, and
+`noFixedWeightLogChunkRouteFieldTableLayoutFamilyToEnvelopeUniformCost`
+blocks the route-field-layout promotion path under exact log-chunk block-size
+discipline.
+The older theorem `fixedWeightLogChunkBlockPayloadBudgetLeLengthAddBound`
+remains as a conservative raw upper bound
 `fixedWeightBlockPayloadBudget (fixedWeightLogChunkBlocksWithSentinel bits)
   <= bits.length + o(n)`.
-This is useful as a sanity check on the block-code accounting, but it is not
-the compressed/FID primary theorem. The missing primary theorem is still the
-true enumerative bridge
-`fixedWeightBlockPayloadBudget (blocks bits) <= fixedWeightPayloadBudget bits + o(n)`,
-not a mere linear code-size bound.
+The remaining compressed/FID capstone gap is no longer this primary bridge for
+log chunks, nor the abstract replacement envelope: the new
+`FixedWeightAmbientTableRAMRouteDirectoryFamily` supplies the charged
+route-directory/local-decoder family shape, and
+`FixedWeightAmbientTableRAMLogChunkRouteDirectoryFamily` consumes the primary
+block-code budget for sentinel log chunks. The new
+`FixedWeightAmbientTableRAMSplitWidthRouteDirectoryFamily` and
+`FixedWeightAmbientTableRAMLogChunkSplitWidthRouteDirectoryFamily` retire the
+single-width metadata collision by separating route and class/length widths.
+The live gap is now the positive concrete constructor: supply concrete
+route-directory payloads and a genuinely sublinear shared decoder payload for
+that split-width family, then connect the existing chunk-route exactness to
+charged directory reads. A dense all-code decoder for log chunks is ruled out by
+`noFixedWeightLogChunkDenseDecoderLittleO`, and route-width-padded
+class/length metadata is already known not to be `o(n)`.
 
 ## Module Boundary
 
@@ -660,6 +755,7 @@ The reusable public spec is:
 
 - `RMQ/Core/RankSelectSpec.lean`
 - `RMQ/Core/RankSelectCompressed.lean`
+- `RMQ/Core/RankSelectCompressedSplit.lean`
 - `RMQ/Core/RankSelectPublic.lean`
 
 The concrete construction currently lives in:

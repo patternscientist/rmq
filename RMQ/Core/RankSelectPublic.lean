@@ -1,5 +1,6 @@
 import RMQ.Core.RankSelectSpec
 import RMQ.Core.RankSelectCompressed
+import RMQ.Core.RankSelectCompressedSplit
 import RMQ.Core.GenericSelect.Family
 
 /-!
@@ -202,6 +203,40 @@ abbrev fixedWeightPackedCodeBoundedStoreGetZero :=
 abbrev FixedWeightTableRAMBlockData :=
   RMQ.RankSelectSpec.FixedWeightTableRAMBlockData
 
+/-- Shared decode-table slot for the ambient table/RAM local decoder. -/
+abbrev fixedWeightSharedDecodeSlot :=
+  RMQ.RankSelectSpec.fixedWeightSharedDecodeSlot
+
+/-- Decode a shared table slot from charged class/length and code reads. -/
+abbrev fixedWeightSharedDecodeSlotFromReadValues :=
+  RMQ.RankSelectSpec.fixedWeightSharedDecodeSlotFromReadValues
+
+/-- Ambient charged route directory with a shared table/RAM local decoder. -/
+abbrev FixedWeightAmbientTableRAMRouteDirectoryData :=
+  RMQ.RankSelectSpec.FixedWeightAmbientTableRAMRouteDirectoryData
+
+/-- Family of ambient route directories with counted shared decoder payload. -/
+abbrev FixedWeightAmbientTableRAMRouteDirectoryFamily :=
+  RMQ.RankSelectSpec.FixedWeightAmbientTableRAMRouteDirectoryFamily
+
+/-- Log-chunk shared-table route-directory family for compressed/FID rank/select. -/
+abbrev FixedWeightAmbientTableRAMLogChunkRouteDirectoryFamily :=
+  RMQ.RankSelectSpec.FixedWeightAmbientTableRAMLogChunkRouteDirectoryFamily
+
+/-- Split-width charged route directory with a shared table/RAM local decoder. -/
+abbrev FixedWeightAmbientTableRAMSplitWidthRouteDirectoryData :=
+  RMQ.RankSelectSpec.FixedWeightAmbientTableRAMSplitWidthRouteDirectoryData
+
+/-- Split-width family of route directories with counted shared decoder payload. -/
+abbrev FixedWeightAmbientTableRAMSplitWidthRouteDirectoryFamily :=
+  RMQ.RankSelectSpec.FixedWeightAmbientTableRAMSplitWidthRouteDirectoryFamily
+
+/--
+Log-chunk split-width route-directory family for compressed/FID rank/select.
+-/
+abbrev FixedWeightAmbientTableRAMLogChunkSplitWidthRouteDirectoryFamily :=
+  RMQ.RankSelectSpec.FixedWeightAmbientTableRAMLogChunkSplitWidthRouteDirectoryFamily
+
 /-- Local computed fixed-weight/RRR block kernel over the packed code only. -/
 abbrev FixedWeightComputedRRRBlockData :=
   RMQ.RankSelectSpec.FixedWeightComputedRRRBlockData
@@ -300,6 +335,10 @@ abbrev FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData :=
 abbrev FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily :=
   RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily
 
+/-- Log-chunk route/class-length envelope family with narrow metadata budget. -/
+abbrev FixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily
+
 /-- Counted fixed-weight bitvector universe used by the compressed/FID budget. -/
 abbrev fixedWeightBitstrings :=
   RMQ.RankSelectSpec.fixedWeightBitstrings
@@ -311,6 +350,32 @@ abbrev binomialCount :=
 /-- Number of true bits in a bitvector. -/
 abbrev trueCount :=
   RMQ.RankSelectSpec.trueCount
+
+/-- Appending bitvectors adds their true-bit counts. -/
+theorem trueCountAppend (xs ys : List Bool) :
+    trueCount (xs ++ ys) = trueCount xs + trueCount ys := by
+  exact RMQ.RankSelectSpec.trueCount_append xs ys
+
+/-- `binomialCount n 0 = 1` for the local fixed-weight recurrence. -/
+theorem binomialCountZeroRight (n : Nat) :
+    binomialCount n 0 = 1 := by
+  exact RMQ.RankSelectSpec.binomialCount_zero_right n
+
+/-- Adding ambient positions cannot shrink the fixed-weight universe count. -/
+theorem binomialCountLeAddLeft (extra n k : Nat) :
+    binomialCount n k <= binomialCount (extra + n) k := by
+  exact RMQ.RankSelectSpec.binomialCount_le_add_left extra n k
+
+/-- Product of two fixed-weight choices injects into the concatenated universe. -/
+theorem binomialCountMulLeAdd (n1 k1 n2 k2 : Nat) :
+    binomialCount n1 k1 * binomialCount n2 k2 <=
+      binomialCount (n1 + n2) (k1 + k2) := by
+  exact RMQ.RankSelectSpec.binomialCount_mul_le_add n1 k1 n2 k2
+
+/-- The local fixed-weight universe is nonempty when the class is in range. -/
+theorem binomialCountPosOfLe {n k : Nat}
+    (hk : k <= n) : 0 < binomialCount n k := by
+  exact RMQ.RankSelectSpec.binomialCount_pos_of_le hk
 
 /-- Fixed-weight information-theoretic payload budget for one bitvector. -/
 abbrev fixedWeightPayloadBudget :=
@@ -483,6 +548,19 @@ theorem fixedWeightBlockPayloadBudgetLeFlattenLengthAddBlocks
     RMQ.RankSelectSpec.fixedWeightBlockPayloadBudget_le_flatten_length_add_blocks
       blocks
 
+/--
+Block-coded fixed-weight primary payload is at most the global fixed-weight
+payload budget for the flattened bits plus one slack bit per block.
+-/
+theorem fixedWeightBlockPayloadBudgetLePayloadBudgetFlattenAddBlocks
+    (blocks : List (List Bool)) :
+    fixedWeightBlockPayloadBudget blocks <=
+      fixedWeightPayloadBudget (SuccinctSpace.flattenPayloadWords blocks) +
+        blocks.length := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightBlockPayloadBudget_le_payloadBudget_flatten_add_blocks
+      blocks
+
 /-- Fixed-width payload words for the per-block class/length metadata table. -/
 abbrev fixedWeightBlockClassLengthTableWords :=
   RMQ.RankSelectSpec.fixedWeightBlockClassLengthTableWords
@@ -546,6 +624,10 @@ abbrev fixedWeightLogChunkClassLengthOverhead :=
 /-- Route-width-padded class/length overhead over sentinel log chunks. -/
 abbrev fixedWeightLogChunkRouteWidthClassLengthOverhead :=
   RMQ.RankSelectSpec.fixedWeightLogChunkRouteWidthClassLengthOverhead
+
+/-- Dense decoder lower bound for log-sized fixed-weight chunks. -/
+abbrev fixedWeightLogChunkDenseDecoderLowerBound :=
+  RMQ.RankSelectSpec.fixedWeightLogChunkDenseDecoderLowerBound
 
 /-- The log-sized chunk width is positive. -/
 theorem fixedWeightLogChunkBlockSizePos (n : Nat) :
@@ -756,6 +838,80 @@ theorem fixedWeightLogChunkBlockPayloadBudgetLeLengthAddBound
     RMQ.RankSelectSpec.fixedWeightLogChunkBlockPayloadBudget_le_length_add_bound
       bits
 
+/--
+Sentinel log-chunk block coding is bounded by the global fixed-weight payload
+budget plus the concrete sentinel block count.
+-/
+theorem fixedWeightLogChunkBlockPayloadBudgetLePayloadBudgetAddBlockCount
+    (bits : List Bool) :
+    fixedWeightBlockPayloadBudget
+        (fixedWeightLogChunkBlocksWithSentinel bits) <=
+      fixedWeightPayloadBudget bits +
+        (fixedWeightLogChunkBlocksWithSentinel bits).length := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightLogChunkBlockPayloadBudget_le_payloadBudget_add_blockCount
+      bits
+
+/--
+Sentinel log-chunk block coding discharges the primary fixed-weight budget with
+the `o(n)` sentinel block-count overhead.
+-/
+theorem fixedWeightLogChunkBlockPayloadBudgetLePayloadBudgetAddBound
+    (bits : List Bool) :
+    fixedWeightBlockPayloadBudget
+        (fixedWeightLogChunkBlocksWithSentinel bits) <=
+      fixedWeightPayloadBudget bits +
+        fixedWeightLogChunkBlockCountBoundWithSentinel bits.length := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightLogChunkBlockPayloadBudget_le_payloadBudget_add_bound
+      bits
+
+/--
+For the current computed-RRR class/length local decoder, log-sized chunks
+eventually exceed any fixed local query budget.
+-/
+theorem fixedWeightComputedRRRClassLengthLogChunkBlockSizeQueryCostGt
+    (localQueryCost : Nat) :
+    localQueryCost <
+      RMQ.RankSelectSpec.fixedWeightComputedRRRClassLengthBlockSizeQueryCost
+        (fixedWeightLogChunkBlockSize (2 ^ localQueryCost)) := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightComputedRRRClassLengthLogChunkBlockSizeQueryCost_gt
+      localQueryCost
+
+/--
+No single modeled constant can bound the current computed-RRR class/length
+decoder over all sentinel log-chunk block sizes.
+-/
+theorem noFixedWeightComputedRRRClassLengthLogChunkBlockSizeUniformCost
+    (localQueryCost : Nat) :
+    ¬ (forall n : Nat,
+        RMQ.RankSelectSpec.fixedWeightComputedRRRClassLengthBlockSizeQueryCost
+            (fixedWeightLogChunkBlockSize n) <=
+          localQueryCost) := by
+  exact
+    RMQ.RankSelectSpec.no_fixedWeightComputedRRRClassLengthLogChunkBlockSizeUniformCost
+      localQueryCost
+
+/-- All-false bitvectors have true-count zero. -/
+theorem trueCountReplicateFalse (n : Nat) :
+    trueCount (List.replicate n false) = 0 := by
+  exact RMQ.RankSelectSpec.trueCount_replicate_false n
+
+/--
+The current computed-RRR class/length decoder costs `n + 5` on an all-false
+block of length `n`, so even this easy class is not uniformly constant over
+log-sized blocks.
+-/
+theorem fixedWeightComputedRRRClassLengthQueryCostReplicateFalse
+    (n : Nat) :
+    RMQ.RankSelectSpec.fixedWeightComputedRRRClassLengthQueryCost
+        (List.replicate n false) =
+      n + 5 := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightComputedRRRClassLengthQueryCost_replicate_false
+      n
+
 /-- The concrete sentinel log-chunk class/length table fits the narrow budget. -/
 theorem fixedWeightLogChunkBlockClassLengthTableOverheadLe
     (bits : List Bool) :
@@ -796,6 +952,42 @@ theorem fixedWeightLogChunkRouteWidthClassLengthOverheadNotLittleO :
       fixedWeightLogChunkRouteWidthClassLengthOverhead := by
   exact
     RMQ.RankSelectSpec.fixedWeightLogChunkRouteWidthClassLengthOverhead_not_littleO
+
+/--
+Dense all-code decoder tables at the log-chunk block size cannot be counted as
+`o(n)` auxiliary payload.
+-/
+theorem noFixedWeightLogChunkDenseDecoderLittleO
+    {decoderOverhead : Nat -> Nat}
+    (hdense :
+      forall n,
+        fixedWeightLogChunkDenseDecoderLowerBound n <=
+          decoderOverhead n) :
+    ¬ SuccinctSpace.LittleOLinear decoderOverhead := by
+  exact
+    RMQ.RankSelectSpec.no_fixedWeightLogChunk_dense_decoder_littleO
+      hdense
+
+/--
+The single-width table/RAM log-chunk family cannot set its class/length table
+width to the global route width and still satisfy the narrow log-chunk
+class/length `o(n)` budget.
+-/
+theorem noFixedWeightAmbientTableRAMLogChunkRouteDirectoryFamilyRouteWidthClassLength
+    {routeOverhead decoderOverhead : Nat -> Nat}
+    {routeCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientTableRAMLogChunkRouteDirectoryFamily
+        routeOverhead decoderOverhead routeCost queryCost)
+    (hfield :
+      forall bits : List Bool,
+        (RMQ.RankSelectSpec.FixedWeightAmbientTableRAMLogChunkRouteDirectoryFamily.componentData
+          family bits).fieldWidth =
+          fixedWeightLogChunkBlockSize bits.length) :
+    False := by
+  exact
+    RMQ.RankSelectSpec.no_fixedWeightAmbientTableRAMLogChunkRouteDirectoryFamily_routeWidthClassLength
+      family hfield
 
 /-- The appended sentinel block is readable at the chunk-list length. -/
 theorem fixedWeightChunkBlocksWithSentinelGetSentinel
@@ -1261,6 +1453,58 @@ theorem fixedWeightAmbientBlockCompositionWordBoundedCompressedProfileOfPrimaryB
   exact
     RMQ.RankSelectSpec.FixedWeightAmbientBlockCompositionFamily.word_bounded_compressed_profile_of_primary_budget
       family primaryOverhead hprimaryO hprimary
+
+/--
+Word-bounded ambient block-composition bridge for sentinel log-chunk block
+families. This consumes the primary block-code budget using the proved
+fixed-weight block-product bridge and the `o(n)` log-chunk block count.
+-/
+theorem fixedWeightAmbientBlockCompositionWordBoundedCompressedProfileOfLogChunkBlocks
+    {slots queryCost : Nat}
+    (family :
+      FixedWeightAmbientBlockCompositionFamily slots queryCost)
+    (hblocks :
+      forall bits : List Bool,
+        family.blocks bits = fixedWeightLogChunkBlocksWithSentinel bits) :
+    SuccinctSpace.LittleOLinear
+        (fixedWeightAmbientBlockCompositionCompressedOverhead
+          slots fixedWeightLogChunkBlockCountBoundWithSentinel) /\
+      forall bits : List Bool,
+        let data :=
+          RMQ.RankSelectSpec.FixedWeightAmbientBlockCompositionFamily.directory
+            family bits
+        FixedWeightAmbientBlockCompositionDirectoryProfile data /\
+          data.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          data.payload.length <=
+            fixedWeightPayloadBudget bits +
+              fixedWeightAmbientBlockCompositionCompressedOverhead
+                slots fixedWeightLogChunkBlockCountBoundWithSentinel
+                bits.length /\
+          data.auxPayload.length =
+            fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word data.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word data.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (data.accessCosted i).cost <= queryCost /\
+              (data.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (data.rankCosted target pos).cost <= queryCost /\
+              (data.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (data.selectCosted target occurrence).cost <= queryCost /\
+              (data.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientBlockCompositionFamily.word_bounded_compressed_profile_of_log_chunk_blocks
+      family hblocks
 
 /-- Convert a compressed/FID auxiliary family into the public family shape. -/
 abbrev fixedWeightCompressedAuxiliaryToCompressedFamily
@@ -1940,6 +2184,130 @@ theorem fixedWeightTableRAMBlockDependentAuxiliaryFullProfile
     ⟨fixedWeightTableRAMBlockDependentAuxiliaryDataProfile data,
       fixedWeightTableRAMBlockDependentReadProfile data,
       fixedWeightTableRAMBlockDependentAuxiliaryBridgeProfile data⟩
+
+/-- Pointwise profile for the ambient shared-table table/RAM route directory. -/
+abbrev FixedWeightAmbientTableRAMRouteDirectoryProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {routeOverhead decoderOverhead wordSize routeCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientTableRAMRouteDirectoryData
+        bits blocks routeOverhead decoderOverhead wordSize routeCost
+        queryCost) : Prop :=
+  RMQ.RankSelectSpec.FixedWeightAmbientTableRAMRouteDirectoryData.TableRAMRouteDirectoryProfile
+    data
+
+theorem fixedWeightAmbientTableRAMRouteDirectoryProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {routeOverhead decoderOverhead wordSize routeCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientTableRAMRouteDirectoryData
+        bits blocks routeOverhead decoderOverhead wordSize routeCost
+        queryCost) :
+    FixedWeightAmbientTableRAMRouteDirectoryProfile data := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientTableRAMRouteDirectoryData.tableRAM_route_directory_profile
+      data
+
+/-- Pointwise profile for the split-width shared-table table/RAM route directory. -/
+abbrev FixedWeightAmbientTableRAMSplitWidthRouteDirectoryProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {routeOverhead decoderOverhead wordSize routeCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientTableRAMSplitWidthRouteDirectoryData
+        bits blocks routeOverhead decoderOverhead wordSize routeCost
+        queryCost) : Prop :=
+  RMQ.RankSelectSpec.FixedWeightAmbientTableRAMSplitWidthRouteDirectoryData.SplitWidthTableRAMRouteDirectoryProfile
+    data
+
+theorem fixedWeightAmbientTableRAMSplitWidthRouteDirectoryProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {routeOverhead decoderOverhead wordSize routeCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientTableRAMSplitWidthRouteDirectoryData
+        bits blocks routeOverhead decoderOverhead wordSize routeCost
+        queryCost) :
+    FixedWeightAmbientTableRAMSplitWidthRouteDirectoryProfile data := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientTableRAMSplitWidthRouteDirectoryData.splitWidth_tableRAM_route_directory_profile
+      data
+
+/-- Combined `o(n)` overhead for the shared-table route-directory family. -/
+abbrev fixedWeightAmbientTableRAMRouteDirectoryFamilyOverhead :=
+  RMQ.RankSelectSpec.FixedWeightAmbientTableRAMRouteDirectoryFamily.overhead
+
+/-- Compressed/FID overhead for the shared-table route-directory family. -/
+abbrev fixedWeightAmbientTableRAMRouteDirectoryFamilyCompressedOverhead :=
+  RMQ.RankSelectSpec.FixedWeightAmbientTableRAMRouteDirectoryFamily.compressedOverhead
+
+/--
+Public compressed/FID profile for the shared-table table/RAM route-directory
+family, conditional on the primary block-code budget.
+-/
+abbrev fixedWeightAmbientTableRAMRouteDirectoryFamilyWordBoundedCompressedProfileOfPrimaryBudget :=
+  @RMQ.RankSelectSpec.FixedWeightAmbientTableRAMRouteDirectoryFamily.word_bounded_compressed_profile_of_primary_budget
+
+/-- Combined overhead for the split-width shared-table route-directory family. -/
+abbrev fixedWeightAmbientTableRAMSplitWidthRouteDirectoryFamilyOverhead :=
+  RMQ.RankSelectSpec.FixedWeightAmbientTableRAMSplitWidthRouteDirectoryFamily.overhead
+
+/-- Compressed/FID overhead for the split-width shared-table route-directory family. -/
+abbrev fixedWeightAmbientTableRAMSplitWidthRouteDirectoryFamilyCompressedOverhead :=
+  RMQ.RankSelectSpec.FixedWeightAmbientTableRAMSplitWidthRouteDirectoryFamily.compressedOverhead
+
+/--
+Public compressed/FID profile for the split-width shared-table table/RAM
+route-directory family, conditional on the primary block-code budget.
+-/
+abbrev fixedWeightAmbientTableRAMSplitWidthRouteDirectoryFamilyWordBoundedCompressedProfileOfPrimaryBudget :=
+  @RMQ.RankSelectSpec.FixedWeightAmbientTableRAMSplitWidthRouteDirectoryFamily.word_bounded_compressed_profile_of_primary_budget
+
+/-- Combined `o(n)` overhead for the log-chunk shared-table route-directory family. -/
+abbrev fixedWeightAmbientTableRAMLogChunkRouteDirectoryFamilyOverhead :=
+  RMQ.RankSelectSpec.FixedWeightAmbientTableRAMLogChunkRouteDirectoryFamily.overhead
+
+/--
+Compressed/FID overhead for the log-chunk shared-table route-directory family.
+-/
+abbrev fixedWeightAmbientTableRAMLogChunkRouteDirectoryFamilyCompressedOverhead :=
+  RMQ.RankSelectSpec.FixedWeightAmbientTableRAMLogChunkRouteDirectoryFamily.compressedOverhead
+
+/--
+Public compressed/FID profile for the log-chunk shared-table route-directory
+family.  This consumes the log-chunk primary block-code budget and the narrow
+class/length metadata overhead; the remaining assumptions live in the concrete
+family component itself.
+-/
+abbrev fixedWeightAmbientTableRAMLogChunkRouteDirectoryFamilyWordBoundedCompressedProfile :=
+  @RMQ.RankSelectSpec.FixedWeightAmbientTableRAMLogChunkRouteDirectoryFamily.word_bounded_compressed_profile
+
+/--
+Combined `o(n)` overhead for the log-chunk split-width shared-table
+route-directory family.
+-/
+abbrev fixedWeightAmbientTableRAMLogChunkSplitWidthRouteDirectoryFamilyOverhead :=
+  RMQ.RankSelectSpec.FixedWeightAmbientTableRAMLogChunkSplitWidthRouteDirectoryFamily.overhead
+
+/--
+Compressed/FID overhead for the log-chunk split-width shared-table
+route-directory family.
+-/
+abbrev fixedWeightAmbientTableRAMLogChunkSplitWidthRouteDirectoryFamilyCompressedOverhead :=
+  RMQ.RankSelectSpec.FixedWeightAmbientTableRAMLogChunkSplitWidthRouteDirectoryFamily.compressedOverhead
+
+/--
+Public compressed/FID profile for the log-chunk split-width shared-table
+route-directory family. This consumes the log-chunk primary block-code budget
+and keeps route metadata width independent from class/length metadata width.
+-/
+abbrev fixedWeightAmbientTableRAMLogChunkSplitWidthRouteDirectoryFamilyWordBoundedCompressedProfile :=
+  @RMQ.RankSelectSpec.FixedWeightAmbientTableRAMLogChunkSplitWidthRouteDirectoryFamily.word_bounded_compressed_profile
+
+/--
+Adapter from the concrete route-field table layout into the split-width
+table/RAM route-directory family.
+-/
+abbrev fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToSplitWidthTableRAMRouteDirectoryFamily :=
+  @RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.toSplitWidthTableRAMRouteDirectoryFamily
 
 /-- Public decoded route/class metadata read profile. -/
 abbrev FixedWeightAmbientComputedRRRDecodedMetadataReadProfile
@@ -2863,6 +3231,153 @@ theorem fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeWordBoundedCom
     RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.word_bounded_compressed_profile_of_primary_budget
       family primaryOverhead hprimaryO hprimary
 
+/--
+Compressed/FID bridge for route/class-length envelope families over sentinel
+log chunks. This consumes the primary block-code budget, leaving the concrete
+envelope family and its class/length overhead as the remaining construction
+surface.
+-/
+theorem fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeWordBoundedCompressedProfileOfLogChunkBlocks
+    {slots routeCost localQueryCost queryCost : Nat}
+    {classLengthOverhead : Nat -> Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily
+        slots routeCost localQueryCost queryCost classLengthOverhead)
+    (hblocks :
+      forall bits : List Bool,
+        family.blocks bits = fixedWeightLogChunkBlocksWithSentinel bits) :
+    SuccinctSpace.LittleOLinear
+        (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.compressedOverhead
+          slots classLengthOverhead fixedWeightLogChunkBlockCountBoundWithSentinel) /\
+      forall bits : List Bool,
+        let data :=
+          RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.componentData
+            family bits
+        let directory :=
+          fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamilyDirectory
+            family bits
+        FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeProfile
+            data /\
+          directory.DirectoryProfile /\
+          directory.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              data.totalMetadataOverhead /\
+          directory.payload.length <=
+            fixedWeightPayloadBudget bits +
+              RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.compressedOverhead
+                slots classLengthOverhead
+                fixedWeightLogChunkBlockCountBoundWithSentinel bits.length /\
+          directory.auxPayload.length = data.totalMetadataOverhead /\
+          directory.auxPayload.length <=
+            fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverhead
+              slots classLengthOverhead bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word directory.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word directory.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (directory.accessCosted i).cost <= queryCost /\
+              (directory.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (directory.rankCosted target pos).cost <= queryCost /\
+              (directory.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (directory.selectCosted target occurrence).cost <= queryCost /\
+              (directory.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.word_bounded_compressed_profile_of_log_chunk_blocks
+      family hblocks
+
+/-- The ambient directory produced by a log-chunk route/class envelope family. -/
+abbrev fixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamilyDirectory
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily
+        slots routeCost localQueryCost queryCost)
+    (bits : List Bool) :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily.directory
+    family bits
+
+/--
+Compressed/FID bridge for charged route/class-length envelopes over sentinel
+log chunks with the narrow class/length metadata budget.
+
+This public surface consumes the log-chunk primary block-code budget and fixes
+the block decomposition and class/length overhead in the theorem statement.
+-/
+theorem fixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeWordBoundedCompressedProfile
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily
+        slots routeCost localQueryCost queryCost) :
+    SuccinctSpace.LittleOLinear
+        (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily.compressedOverhead
+          slots) /\
+      forall bits : List Bool,
+        let data :=
+          RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily.componentData
+            family bits
+        let directory :=
+          fixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamilyDirectory
+            family bits
+        FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeProfile
+            data /\
+          directory.DirectoryProfile /\
+          directory.payload.length =
+            fixedWeightBlockPayloadBudget
+                (fixedWeightLogChunkBlocksWithSentinel bits) +
+              data.totalMetadataOverhead /\
+          directory.payload.length <=
+            fixedWeightPayloadBudget bits +
+              RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily.compressedOverhead
+                slots bits.length /\
+          directory.auxPayload.length = data.totalMetadataOverhead /\
+          directory.auxPayload.length <=
+            fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverhead
+              slots fixedWeightLogChunkClassLengthOverhead bits.length /\
+          SuccinctSpace.flattenPayloadWords
+              (fixedWeightLogChunkBlocksWithSentinel bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word directory.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word directory.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (directory.accessCosted i).cost <= queryCost /\
+              (directory.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (directory.rankCosted target pos).cost <= queryCost /\
+              (directory.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (directory.selectCosted target occurrence).cost <= queryCost /\
+              (directory.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact
+    RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily.word_bounded_compressed_profile
+      family
+
+/--
+The current log-chunk route/class-length envelope family is not inhabitable
+with a fixed modeled local query cost, because its component type still uses
+the computed-RRR class/length local decoder.
+-/
+theorem noFixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily
+        slots routeCost localQueryCost queryCost) :
+    False := by
+  exact
+    RMQ.RankSelectSpec.no_fixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily
+      family
+
 /-- The ambient directory produced by an eight-table route field-layout family. -/
 abbrev fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyDirectory
     {slots routeCost localQueryCost queryCost : Nat}
@@ -2949,6 +3464,60 @@ abbrev fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToRouteClassLengt
   RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.toRouteClassLengthTableEnvelopeFamily
     family classLengthOverhead hclassLengthO hclassLength_le
     hblockSize_lt_fieldWidthPow hlocalCost
+
+/--
+Promote an eight-table route field-layout family to the shared-table
+table/RAM route-directory family.  Route readback is supplied by the concrete
+fixed-width payload tables; the remaining supplied payload is the shared
+decoder table.
+-/
+abbrev fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToTableRAMRouteDirectoryFamily
+    {slots routeCost localQueryCost queryCost : Nat}
+    {classLengthOverhead decoderOverhead : Nat -> Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+        slots routeCost localQueryCost queryCost)
+    (hclassLengthO :
+      SuccinctSpace.LittleOLinear classLengthOverhead)
+    (hdecoderO :
+      SuccinctSpace.LittleOLinear decoderOverhead)
+    (hblockSize_lt_fieldWidthPow :
+      forall bits : List Bool,
+        (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.componentData
+          family bits).routeData.blockSize <
+          2 ^
+            (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.componentData
+              family bits).fieldWidth)
+    (decodePayload : forall _bits : List Bool, List Bool)
+    (decodeStore :
+      forall bits : List Bool,
+        SuccinctSpace.BoundedPayloadWordStore
+          (decodePayload bits) (family.wordSize bits.length))
+    (hdecodePayload_length_eq :
+      forall bits : List Bool,
+        (decodePayload bits).length = decoderOverhead bits.length)
+    (hdecode_word_eq :
+      forall bits : List Bool,
+        forall {blockIndex : Nat} {block : List Bool},
+          (family.blocks bits)[blockIndex]? = some block ->
+            (decodeStore bits).store.words[
+                fixedWeightSharedDecodeSlot block.length (trueCount block)
+                  (fixedWeightCode block)]? = some block)
+    (hclassLengthOverhead_bound :
+      forall bits : List Bool,
+        fixedWeightBlockClassLengthTableOverhead
+            (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.componentData
+              family bits).fieldWidth
+            (family.blocks bits) <=
+          classLengthOverhead bits.length)
+    (hroutePlusTable : routeCost + 5 <= queryCost) :
+    FixedWeightAmbientTableRAMRouteDirectoryFamily
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots)
+      classLengthOverhead decoderOverhead routeCost queryCost :=
+  RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.toTableRAMRouteDirectoryFamily
+    family hclassLengthO hdecoderO hblockSize_lt_fieldWidthPow
+    decodePayload decodeStore hdecodePayload_length_eq hdecode_word_eq
+    hclassLengthOverhead_bound hroutePlusTable
 
 theorem fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToRouteClassLengthTableEnvelopeFamilyProfile
     {slots routeCost localQueryCost queryCost : Nat}
@@ -3196,6 +3765,32 @@ theorem fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToRouteClassLeng
         family classLengthOverhead hclassLengthO hclassLength_le
         hblockSize_lt_fieldWidthPow hlocalCost)
       primaryOverhead hprimaryO hprimary
+
+/--
+The current computed-RRR route-field-layout-to-envelope path cannot be a
+uniform constant-query log-chunk constructor when its block-size discipline is
+exactly the sentinel log-chunk size.
+-/
+theorem noFixedWeightLogChunkRouteFieldTableLayoutFamilyToEnvelopeUniformCost
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+        slots routeCost localQueryCost queryCost)
+    (hblockSize :
+      forall bits : List Bool,
+        (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.componentData
+          family bits).routeData.blockSize =
+          fixedWeightLogChunkBlockSize bits.length)
+    (hlocalCost :
+      forall bits : List Bool,
+        fixedWeightComputedRRRClassLengthBlockSizeQueryCost
+            (RMQ.RankSelectSpec.FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily.componentData
+              family bits).routeData.blockSize <=
+          localQueryCost) :
+    False := by
+  exact
+    RMQ.RankSelectSpec.no_fixedWeightLogChunkRouteFieldTableLayoutFamilyToEnvelopeUniformCost
+      family hblockSize hlocalCost
 
 /-- Decoded fixed-weight entries have the requested length and true-count. -/
 abbrev fixedWeightDecodeMemLengthTrueCount

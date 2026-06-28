@@ -222,9 +222,31 @@ about Lean's executable `List` runtime.
   block counts, a narrow log-log class/length metadata budget for sentinel
   log chunks, a formal obstruction showing route-width-padded class/length
   metadata is already linear, constructive sentinel-chunk access/rank/select
-  routes, a conservative raw `n + o(n)` block-primary bound, and conditional
-  bounded-regime bridges for the local decoder, ambient route tables, and
-  ambient compressed primary-budget join, and
+  routes, a conservative raw `n + o(n)` block-primary bound, a fixed-weight
+  product/counting bridge that discharges the log-chunk primary payload budget
+  as `fixedWeightPayloadBudget bits + o(n)`, a specialized log-chunk
+  route/class-length envelope profile with the narrow metadata overhead baked
+  into the public theorem, obstruction theorems showing that this computed-RRR
+  envelope cannot be inhabited with a fixed local query cost, a replacement
+  `FixedWeightAmbientTableRAMRouteDirectoryFamily` envelope whose charged query
+  path reads route/class metadata plus a shared decoded-word table and whose
+  public bridge is
+  `fixedWeightAmbientTableRAMRouteDirectoryFamilyWordBoundedCompressedProfileOfPrimaryBudget`,
+  a log-chunk table/RAM profile
+  `fixedWeightAmbientTableRAMLogChunkRouteDirectoryFamilyWordBoundedCompressedProfile`
+  that consumes the primary block-code budget, a split-width table/RAM profile
+  `fixedWeightAmbientTableRAMLogChunkSplitWidthRouteDirectoryFamilyWordBoundedCompressedProfile`
+  that separates global route-field width from narrow class/length width, a
+  route-field-table adapter into the split-width table/RAM envelope, and a
+  dense-decoder obstruction
+  `noFixedWeightLogChunkDenseDecoderLittleO` showing that log-chunk dense
+  all-code decoder tables cannot be the counted `o(n)` auxiliary payload,
+  plus
+  `noFixedWeightAmbientTableRAMLogChunkRouteDirectoryFamilyRouteWidthClassLength`
+  showing that the old single-width table/RAM log-chunk envelope cannot use
+  route-width fields for class/length metadata under the narrow `o(n)` budget,
+  and conditional bounded-regime bridges for the local decoder, ambient route
+  tables, and ambient compressed joins, and
   `RankSelectPublic` exposes the public Jacobson/Clark
   bitvector family theorem as
   `RankSelect.jacobsonClarkNPlusOConstantQuery` and its strengthened
@@ -414,13 +436,10 @@ RMQ blocker:
   library surface;
 - refine the landed standalone Jacobson/Clark rank/select theorem toward
   concrete global routing over the ambient fixed-weight block-composition
-  scaffold, consume the canonical eight-table route-layout constructor and
-  route/class-length family promotion in a block decomposition/routing family,
-  feed the log-sized sentinel chunk block-count budget into a concrete charged
-  route-table family, replace the conservative raw-length primary bridge by
-  the fixed-weight `log binomial + o(n)` primary block-code budget, discharge
-  the route fields from charged routing tables rather than proof-only routes,
-  and deepen
+  scaffold, consume the log-chunk table/RAM profile already exposed for the
+  shared decoder envelope, instantiate the new split-width route/local metadata
+  envelope with concrete route tables and a concrete counted shared decoder
+  payload with `o(n)` overhead, and deepen
   the landed BP-navigation close/rank bridge into a fuller tree-navigation API;
   and
 - deepen the new union-find spoke from specification/reference backend to
