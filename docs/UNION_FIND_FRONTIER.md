@@ -157,16 +157,58 @@ RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompre
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRepresentationAmortizedBackend_profile
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankGapFindCredit
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.logRankFindCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankBucket
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankBucketWidth
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankBucketFindCredit
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankSizePotential
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankBucketPotential
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.nodeRootParentRankSlack
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.traceRootParentRankSlack
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.nodeFindRootParentRankSlack
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankSlackPotentialOver
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankSlackPotential
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankSlackFindCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankSlackUnionCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankSlackSizeUnionCredit
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_cost_le_rankGapFindCredit
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankGapFindCredit_le_logRankFindCredit
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_cost_le_logRankFindCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rank_succ_le_rankBucketWidth
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankGapFindCredit_le_rankBucketFindCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindTrace_length_le_rankBucketWidth_of_findRoot?
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_rank_eq
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindTrace_mem_findRoot?_eq_of_findRoot?
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_parent?_eq_old_of_not_mem_trace
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindTrace_length_le_traceRootParentRankSlack_add_two_of_findRoot?
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_nodeRootParentRankSlack_eq_zero_of_trace_mem
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_traceRootParentRankSlack_eq_zero_of_findRoot?
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_cost_add_traceRootParentRankSlack_le_of_findRoot?
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_nodeFindRootParentRankSlack_le_of_findRoot?
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankSlackPotential_fullCompressFindCosted_le_of_findRoot?
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankSlackPotential_compressFindCosted_add_nodeRootParentRankSlack_le_of_findRoot?
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.compressPathFindFuelCosted_rankSlackPotential_add_traceRootParentRankSlack_le_of_findRoot?
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankSlackPotential_fullCompressFindCosted_add_traceRootParentRankSlack_le_of_findRoot?
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankSlackPotential_le_rankBucketPotential
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankSlackPotential_unionCosted_le_rankBucketPotential
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_cost_add_rankSlackPotential_le_two_add_of_findRoot?
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_cost_add_rankSlackPotential_le_rankSlackFindCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.unionCosted_cost_add_rankSlackPotential_le_rankSlackSizeUnionCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankSlackCheckpoint_profile
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_cost_le_rankBucketFindCredit
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankSizePotential_fullCompressFindCosted_eq
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankSizePotential_unionCosted_eq
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankBucketPotential_fullCompressFindCosted_eq
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankBucketPotential_unionCosted_eq
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankGapAmortizedBackend
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankGapAmortizedBackend_profile
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionLogRankAmortizedBackend
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionLogRankAmortizedBackend_profile
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankBucketAmortizedBackend
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankBucketAmortizedBackend_profile
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankSlackAmortizedBackend
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankSlackAmortizedBackend_profile
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankSlackSizeUnionAmortizedBackend
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankSlackSizeUnionAmortizedBackend_profile
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.profile
 ```
 
@@ -342,6 +384,62 @@ fallback. The bridge theorem is
 `fullCompressFindCosted_cost_le_logRankFindCredit`, with the intermediate
 `rankGapFindCredit_le_logRankFindCredit`.
 
+The first explicit rank-bucket checkpoint is
+`fullCompressionRankBucketAmortizedBackend_profile`. It defines
+`rankBucket rank = Nat.log2 (rank + 1)` and geometric bucket width
+`rankBucketWidth bucket = 2 ^ (bucket + 1)`. A successful full-compression
+find is paid by `rankBucketFindCredit`, the width of the returned root's rank
+bucket; invalid queries keep the same fuel fallback. The key bridge theorem is
+`fullCompressFindCosted_cost_le_rankBucketFindCredit`, derived from
+`rankGapFindCredit_le_rankBucketFindCredit` and the arithmetic lemma
+`rank_succ_le_rankBucketWidth`. The companion `rankBucketPotential` is still
+size-preserving through compression and union; this checkpoint exposes the
+bucket schedule but does not yet prove a decreasing Tarjan potential.
+
+The first path-compression-aware potential kernel is
+`fullCompressionRankSlackCheckpoint_profile`. It adds executable
+`nodeRootParentRankSlack`, `traceRootParentRankSlack`, and the global
+`rankSlackPotential`, proves that full compression preserves the rank map
+(`fullCompressFindCosted_rank_eq`), bounds a successful trace by the sum of
+the original parent-rank slack plus two
+(`fullCompressFindTrace_length_le_traceRootParentRankSlack_add_two_of_findRoot?`),
+and proves the final compressed state zeroes that slack for every node in the
+visited trace
+(`fullCompressFindCosted_traceRootParentRankSlack_eq_zero_of_findRoot?`). The
+local potential-method algebra is already packaged as
+`fullCompressFindCosted_cost_add_traceRootParentRankSlack_le_of_findRoot?`,
+which pays the full-compression trace cost by original trace slack plus
+constant credit `2`. The
+supporting global theorem
+`rankSlackPotential_fullCompressFindCosted_le_of_findRoot?` proves successful
+full compression does not increase the sum of node slacks over all valid
+indices.
+
+The aggregate drop theorem is now
+`rankSlackPotential_fullCompressFindCosted_add_traceRootParentRankSlack_le_of_findRoot?`:
+for a successful full-compression find, the final `rankSlackPotential` plus
+the original trace slack is bounded by the initial `rankSlackPotential`. The
+find-credit bridge
+`fullCompressFindCosted_cost_add_rankSlackPotential_le_two_add_of_findRoot?`
+uses that drop plus the local trace-cost inequality to pay a successful find
+with constant credit `2`. The backend checkpoint
+`fullCompressionRankSlackAmortizedBackend_profile` packages this as a literal
+`RepresentationAmortizedBackend` with `rankSlackFindCredit`; invalid queries
+retain a fuel fallback, and union uses explicit potential-delta credit
+`rankSlackUnionCredit`. This is still not an inverse-Ackermann analysis and
+does not claim constant union credit under this potential.
+
+The cleaned union-bound checkpoint is
+`fullCompressionRankSlackSizeUnionAmortizedBackend_profile`. It keeps the same
+constant successful-find credit but replaces the answer-shaped union delta with
+`rankSlackSizeUnionCredit backend x y = rankBucketPotential backend + 1`. The
+bound is discharged by
+`rankSlackPotential_le_rankBucketPotential` and
+`rankSlackPotential_unionCosted_le_rankBucketPotential`: every node's
+rank-slack is at most the logarithmic root-rank bound, and union preserves the
+size-log `rankBucketPotential`. This is coarse and not Tarjan-tight, but it is
+now a non-delta representation-amortized union boundary.
+
 ## What Is Not Claimed Yet
 
 This is not yet Tarjan union-find, inverse-Ackermann analysis, mutable arrays,
@@ -354,9 +452,10 @@ fact that discharges the equal-rank bump premise, an executable root-mass
 accounting layer that preserves the stronger invariant across no-compression
 union-by-rank steps, plus one-node and full-parent-chain compression finds on
 the representation-backed adapter. It also has trace-cost equality,
-rank/root-mass/log-rank trace bounds, the stronger `2 ^ rank <= mass`
-invariant, and nonzero-potential rank-gap/log-rank amortized checkpoints. The
-current amortized theorems still have rank-gap or log-rank credit rather than a
+rank/root-mass/log-rank/bucket-width trace bounds, the aggregate rank-slack
+compression-drop checkpoint, the stronger
+`2 ^ rank <= mass` invariant, and nonzero-potential rank-gap/log-rank/bucket
+amortized checkpoints. The current amortized theorems still do not prove a
 uniform inverse-Ackermann-style credit.
 The singleton identity forest now instantiates the root-mass invariant, the
 mass-carrying no-compression layer has a concrete base state plus a finite
@@ -369,14 +468,18 @@ invariants. It is now a literal `RepresentationBackend` instance through
 `fullCompressionRepresentationBackend` and a literal
 `RepresentationAmortizedBackend` instance through
 `fullCompressionRepresentationAmortizedBackend`; the stronger
-rank-gap and log-rank nonzero-potential checkpoints are
+rank-gap, log-rank, rank-bucket, and rank-slack nonzero-potential checkpoints are
 `fullCompressionRankGapAmortizedBackend` and
-`fullCompressionLogRankAmortizedBackend`.
+`fullCompressionLogRankAmortizedBackend` and
+`fullCompressionRankBucketAmortizedBackend` and
+`fullCompressionRankSlackAmortizedBackend` and
+`fullCompressionRankSlackSizeUnionAmortizedBackend`.
 
 ## Next Theorem Targets
 
-1. Replace log-rank find credit with the first bucketed/Tarjan-style potential
-   over the `RepresentationAmortizedBackend` boundary.
+1. Refine `rankSlackSizeUnionCredit` into a sharper rank/mass-local union
+   credit, or prove an obstruction showing the current rank-slack potential
+   cannot support small uniform union credit.
 2. Split the current invariant-carrying backend state into executable payload
    fields versus proof-only certificates, so a future array-backed backend can
    share the same `RepresentationBackend` theorem shape.

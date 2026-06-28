@@ -73,4 +73,26 @@ and
 `RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionLogRankAmortizedBackend_profile`,
 which replaces successful-find rank-gap credit with a global
 `log2 forest.size + 1` credit while retaining the invalid-query fuel fallback.
+The first explicit bucketed checkpoint is
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankBucketAmortizedBackend_profile`:
+it defines logarithmic rank buckets, pays successful full-compression finds by
+the returned root bucket's geometric width, and keeps the statement explicitly
+pre-inverse-Ackermann. The local path-compression drop kernel is
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankSlackCheckpoint_profile`:
+it preserves ranks through full compression, bounds a successful trace by
+original parent-rank slack plus two, and proves the compressed final state
+zeroes that slack on the visited trace. The theorem
+`fullCompressFindCosted_cost_add_traceRootParentRankSlack_le_of_findRoot?`
+packages the local potential-method inequality with constant credit `2`. The
+checkpoint also exposes `rankSlackPotential`, proves successful full
+compression drops that aggregate enough to pay the original trace slack via
+`rankSlackPotential_fullCompressFindCosted_add_traceRootParentRankSlack_le_of_findRoot?`,
+and packages the resulting constant-successful-find credit in
+`fullCompressionRankSlackAmortizedBackend_profile`. Union in that checkpoint
+uses explicit potential-delta credit. The follow-up
+`fullCompressionRankSlackSizeUnionAmortizedBackend_profile` keeps the same
+find credit but replaces that delta with the coarse non-oracular union credit
+`rankBucketPotential backend + 1`, using
+`rankSlackPotential_unionCosted_le_rankBucketPotential`. This is still not a
+Tarjan or inverse-Ackermann theorem.
 -/

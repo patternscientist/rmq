@@ -256,8 +256,13 @@ about Lean's executable `List` runtime.
 - `RMQUnionFind.lean`: standalone union-find spoke import root. It exposes the
   finite-partition specification, exact costed reference operations,
   parent-pointer forest refinement, union-by-rank/root-mass/rank-power
-  checkpoints, full-compression find refinement, and a log-rank amortized
-  checkpoint. It does not yet prove Tarjan's inverse-Ackermann bound.
+  checkpoints, full-compression find refinement, log-rank amortized checkpoint,
+  first rank-bucket-width accounting checkpoint, and rank-slack compression
+  kernel whose aggregate potential drop pays successful full-compression find
+  slack up to constant credit. A follow-up checkpoint replaces the
+  answer-shaped union delta with a coarse size-log union credit. It does not
+  yet prove Tarjan's inverse-Ackermann bound or a small uniform union credit
+  under that potential.
 - `VerifiedDS.lean`: thin neutral aggregate facade over the active public roots
   (`RMQ`, `RMQHub`, `RMQRankSelect`, `RMQBPNavigation`, and `RMQUnionFind`).
   This signals the broader verified-data-structures direction without renaming
