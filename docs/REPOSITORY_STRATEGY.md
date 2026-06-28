@@ -29,8 +29,9 @@ Instead, use this staged plan:
    modules until the API stabilizes.
 5. Use `RMQUnionFind` as the first non-succinct spoke. It now has a
    parent-pointer forest refinement, union-by-rank/root-mass/rank-power
-   checkpoints, full-compression find refinement, and a log-rank amortized
-   checkpoint, but not Tarjan's inverse-Ackermann theorem.
+   checkpoints, full-compression find refinement, log-rank and rank-bucket
+   amortized checkpoints, and first Tarjan-level potential scaffolding, but
+   not Tarjan's inverse-Ackermann theorem.
 6. Keep the current `VerifiedDS` facade thin until at least two spokes consume
    the same hub APIs in a way that clearly justifies a package boundary.
 7. Create a new umbrella repo or promote the hub into a first-class package
@@ -100,7 +101,7 @@ only adding another isolated proof. Good candidates:
 
 The strongest immediate path is: push `RMQRankSelect` toward the concrete
 compressed/FID constructor and balanced-parentheses navigation, then deepen
-`RMQUnionFind` from the log-rank checkpoint toward Tarjan-style amortized
-analysis. Rank/select and union-find should not be treated as RMQ theorem
-add-ons: they now have their own spec surfaces, theorem inventories, public
-headlines, and import/check boundaries.
+`RMQUnionFind` from the current Tarjan-level scaffolding toward the true
+inverse-Ackermann amortized theorem. Rank/select and union-find should not be
+treated as RMQ theorem add-ons: they now have their own spec surfaces, theorem
+inventories, public headlines, and import/check boundaries.

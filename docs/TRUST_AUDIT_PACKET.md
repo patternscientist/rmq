@@ -1,6 +1,6 @@
 # Trust Audit Packet
 
-Snapshot: 2026-06-26. This is the compact packet to hand to a skeptical
+Snapshot: 2026-06-28. This is the compact packet to hand to a skeptical
 Lean/formalization reviewer before asking for a broader library-readiness
 review. It focuses on the public succinct RMQ headline theorem, its alias
 chain, its cost/space model, and the main anti-oracle checks.
