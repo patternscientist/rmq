@@ -1668,10 +1668,134 @@ The names below are grouped by source module. Repeated base names in
   balanced-parentheses close/LCA navigation, including
   `BPNavigation.shapeAccessCloseRankProfile` and
   `BPNavigation.compactCloseDirectoryProfile`.
-- `RMQ/Core/Amortized.lean`, `RMQ/Core/UnionFind.lean`, and
-  `RMQUnionFind.lean`: reusable potential-method accounting plus the first
-  non-succinct spoke surface, with exact costed reference `find`/`union`
-  operations and `UnionFind.referenceAmortizedBackend_profile`.
+- `RMQ/Core/Amortized.lean`, `RMQ/Core/UnionFind.lean`,
+  `RMQ/Core/UnionFind/Forest.lean`, and `RMQUnionFind.lean`: reusable
+  potential-method accounting plus the first non-succinct spoke surface, with
+  exact costed reference `find`/`union` operations and the parent-pointer forest
+  refinement checkpoints `UnionFind.Forest.parentForestRefinement_profile` and
+  `UnionFind.Forest.ParentForest.identity_profile`, plus the direct-parent
+  concrete union checkpoint `UnionFind.Forest.ParentForest.union_profile` and
+  the distinct-root one-pointer link checkpoint
+  `UnionFind.Forest.ParentForest.rootLink_refinement_profile`. The forest spoke
+  now also exposes the proof-only rank certificate
+  `UnionFind.Forest.ParentForest.RankInvariant`, derives
+  `LinkableInvariant` from rank-increasing parent edges, and proves the
+  rank-guided root-link checkpoints
+  `UnionFind.Forest.ParentForest.rootLink_rank_lt_refinement_profile` and
+  `UnionFind.Forest.ParentForest.rootLink_rank_eq_bump_refinement_profile`.
+  The orientation conflict with fixed representatives is now isolated by
+  `UnionFind.State.SamePartition` and
+  `UnionFind.State.unionSpec_samePartition_comm`; the forest layer exposes
+  `UnionFind.Forest.ParentForest.rankedRootLink_refinement_profile` and
+  `UnionFind.Forest.ParentForest.unionByRank_refinement_profile`, which let the
+  implementation choose the rank-compatible root while refining abstract union
+  at the induced-partition boundary. The public union-by-rank profiles now
+  consume `UnionFind.Forest.ParentForest.RankSizeInvariant`, a theorem-shaped
+  component-size/rank-size checkpoint that automatically discharges the
+  equal-rank bump bound. The next preservation layer exposes
+  `UnionFind.Forest.ParentForest.RankComponentInvariant`,
+  `UnionFind.Forest.ParentForest.rankedRootLink_rankSizeInvariant_profile`,
+  and `UnionFind.Forest.ParentForest.unionByRank_rankSizeInvariant_profile`,
+  which preserve `RankSizeInvariant` across a concrete rank-guided link/union
+  step from a local component-cardinality accounting premise. The theorem
+  `UnionFind.Forest.ParentForest.rootLink_rankComponentInvariant_equal_bump_boundary_obstruction`
+  records why this three-root checkpoint is not self-preserving at the
+  equal-bump boundary. The stronger executable accounting layer is
+  `UnionFind.Forest.ParentForest.RootMassInvariant`, with
+  `UnionFind.Forest.ParentForest.RootMassInvariant.toRankSizeInvariant` and
+  `UnionFind.Forest.ParentForest.RootMassInvariant.toRankComponentInvariant`
+  recovering the older proof-only checkpoints from a root-mass map plus a
+  duplicate-free finite-list root budget. The reusable lemma
+  `UnionFind.Forest.ParentForest.nodup_length_le_of_forall_lt` proves the
+  bounded-cardinality fact needed by the concrete singleton base theorem
+  `UnionFind.Forest.ParentForest.identity_rootMassInvariant`. The profiles
+  `UnionFind.Forest.ParentForest.rankedRootLink_rootMassInvariant_profile` and
+  `UnionFind.Forest.ParentForest.unionByRank_rootMassInvariant_profile`
+  preserve that executable rank/mass accounting across concrete no-compression
+  union-by-rank steps. In addition,
+  `UnionFind.Forest.ParentForest.NoCompressionRankedForest.profile` plus
+  `UnionFind.Forest.ParentForest.NoCompressionRankedForest.unionCosted_rankSizeInvariant_profile`
+  package a costed no-compression forest/rank surface around the verified
+  one-step preservation theorem, while
+  `UnionFind.Forest.ParentForest.NoCompressionRankedMassForest.identity_profile`,
+  `UnionFind.Forest.ParentForest.NoCompressionRankedMassForest.unionCosted_rootMassInvariant_profile`,
+  and
+  `UnionFind.Forest.ParentForest.NoCompressionRankedMassForest.identity_unionManyCosted_profile`
+  thread the executable mass map from the concrete singleton base through a
+  finite list of no-compression union requests with exact model cost equal to
+  the list length. The abstract fold
+  `UnionFind.State.unionSpecMany` and the profile
+  `UnionFind.Forest.ParentForest.NoCompressionRankedMassForest.identity_unionManyCosted_refinement_profile`
+  give the first finite-sequence representation-refinement boundary, proving
+  the final forest state matches the folded abstract union specification up to
+  `SamePartition`. The representation-backed adapter surface
+  `UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState` now
+  carries the rank-power/root-mass certificate inside the executable state
+  while exposing an induced abstract `State`. The generic
+  `UnionFind.RepresentationBackend` boundary now captures that pattern for
+  non-`State` executable backends, and
+  `UnionFind.RepresentationAmortizedBackend` adds the corresponding
+  potential-method obligation surface with representation-dependent credits.
+  The adapter's
+  `findCosted_refinement_profile`, `compressFindCosted_refinement_profile`,
+  `fullCompressFindCosted_refinement_profile`,
+  `unionCosted_refinement_profile`, and `unionManyCosted_refinement_profile`
+  provide the backend-style modeled-cost boundary for exact finds, one-node
+  compressing finds, full parent-chain compressing finds, single
+  union-by-rank steps, and finite union sequences.
+  The concrete rewrite theorem
+  `UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.compressFindCosted_parent?_eq_root_of_findRoot?`
+  records that a successful compressed find updates the queried node's parent
+  pointer to the returned root while preserving the abstract partition. The
+  full-chain theorem
+  `UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_findRoot?_eq`
+  proves exact executable representative preservation, and
+  `UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_parent?_eq_root_of_findRoot?`
+  records the queried-node rewrite for the full parent-chain find. The
+  executable trace `fullCompressFindTrace` and theorem
+  `UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_trace_parent?_eq_root_of_findRoot?`
+  strengthen that anti-vacuity checkpoint to every visited parent-chain node;
+  `UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_cost_eq_trace_length`
+  identifies the modeled cost with that executable trace length. The
+  rank/height/cardinality bridge
+  `UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindTrace_length_le_rank_gap_of_findRoot?`
+  bounds successful full-compression traces by the rank gap to the root, and
+  `UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindTrace_length_le_rootMass_of_findRoot?`
+  turns that into an executable root-mass bound.
+  `UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRepresentationBackend_profile`
+  instantiates the new `RepresentationBackend` surface with full compression
+  for `find` and rank/mass union-by-rank for `union`.
+  `UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRepresentationAmortizedBackend_profile`
+  is the first potential-method checkpoint over that representation boundary:
+  zero potential, exact trace-length credit for compressed find, and unit
+  credit for union-by-rank.
+  The stronger root-mass layer
+  `UnionFind.Forest.ParentForest.RankPowerMassInvariant` records the
+  exponential component-size floor `2 ^ rank root <= mass root` for every
+  valid root. Its singleton base and union-by-rank preservation are exposed by
+  `UnionFind.Forest.ParentForest.identity_rankPowerMassInvariant`,
+  `UnionFind.Forest.ParentForest.rankedRootLink_rankPowerMassInvariant_profile`,
+  `UnionFind.Forest.ParentForest.unionByRank_rankPowerMassInvariant_profile`,
+  and the repeated-operation profile
+  `UnionFind.Forest.ParentForest.NoCompressionRankedMassForest.identity_unionManyCosted_rankPowerMass_profile`.
+  The logarithmic bridge
+  `UnionFind.Forest.ParentForest.RankPowerMassInvariant.rank_le_log2_mass` and
+  `UnionFind.Forest.ParentForest.RankPowerMassInvariant.rank_le_log2_size`
+  turns those exponential lower bounds into explicit root-rank bounds, while
+  `UnionFind.Forest.ParentForest.compressNode_rankPowerMassInvariant` keeps
+  the strengthened certificate stable under compression.
+  The backend-level checkpoint
+  `UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankGapAmortizedBackend_profile`
+  introduces the finite-size `rankSizePotential` and replaces trace-length find
+  credit with the rank-gap credit `rankGapFindCredit`, discharged by
+  `fullCompressFindCosted_cost_le_rankGapFindCredit` while preserving the
+  potential across both compression and union. This is still a pre-Tarjan
+  scaffold: it is the first nonzero potential boundary, not an
+  inverse-Ackermann analysis. The follow-up
+  `UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionLogRankAmortizedBackend_profile`
+  consumes the logarithmic rank bound, replacing successful-find rank-gap
+  credit with `logRankFindCredit`, bounded by `Nat.log2 forest.size + 1`
+  while retaining the invalid-query fuel fallback.
 - `RMQ/Core/GenericSelect.lean`,
   `RMQ/Core/SuccinctRankSelect.lean`,
   `RMQ/Core/BPCloseNavigation.lean`, and
@@ -2129,9 +2253,16 @@ completeness.
    a concrete compressed/FID codec behind the fixed-weight profile and a fuller
    balanced-parentheses tree-navigation API over the same payload-accounted
    directory interfaces.
-2. Deepen the landed union-find spoke: add a parent-pointer forest
-   representation, prove it refines `UnionFind.State`, then start
-   union-by-rank and path-compression amortized analysis.
+2. Deepen the landed union-find spoke: executable root-mass accounting now has
+   a concrete singleton base, finite repeated-union refinement for
+   no-compression union-by-rank, the `RankPowerMassInvariant` exponential
+   root-size floor, and explicit logarithmic root-rank bounds. Full compression
+   now has trace anti-vacuity, exact trace-cost accounting, a
+   `RepresentationBackend` adapter, the original zero-potential
+   `RepresentationAmortizedBackend` checkpoint, the nonzero rank-size/rank-gap
+   amortized checkpoint, and a log-rank credit checkpoint. Next replace the
+   log-rank credit with a bucketed Tarjan-style accounting surface before
+   starting inverse-Ackermann claims.
 3. Keep RMQ presentation polish narrow: an even flatter encoded/payload-only
    statement of the BP-native capstone is useful, but it is no longer a hidden
    correctness or complexity blocker.

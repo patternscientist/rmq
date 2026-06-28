@@ -5,11 +5,94 @@ Focused trust-base check for the standalone union-find spoke.
 
 The current surface is a specification/accounting layer: finite partition
 states, exact costed reference operations, a backend interface for future
-path-compression implementations, and potential-method profile theorems.
+path-compression implementations, a parent-pointer forest refinement layer,
+and potential-method profile theorems.
 -/
 
 #print axioms RMQ.Amortized.compose
 #print axioms RMQ.Amortized.costed_bind
 #print axioms RMQ.UnionFind.State.unionSpec_same_of_valid
+#print axioms RMQ.UnionFind.State.unionSpec_samePartition_comm
+#print axioms RMQ.UnionFind.State.samePartition_unionSpec
+#print axioms RMQ.UnionFind.State.samePartition_unionSpecMany
 #print axioms RMQ.UnionFind.referenceBackend_profile
 #print axioms RMQ.UnionFind.referenceAmortizedBackend_profile
+#print axioms RMQ.UnionFind.Forest.parentForestRefinement_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.identity_rankSizeInvariant
+#print axioms RMQ.UnionFind.Forest.ParentForest.identity_rankComponentInvariant
+#print axioms RMQ.UnionFind.Forest.ParentForest.rootMassSum_one_eq_length
+#print axioms RMQ.UnionFind.Forest.ParentForest.nodup_length_le_of_forall_lt
+#print axioms RMQ.UnionFind.Forest.ParentForest.identity_rootMassInvariant
+#print axioms RMQ.UnionFind.Forest.ParentForest.identity_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.union_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.rootLink_refinement_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.rootLink_rank_lt_refinement_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.rootLink_rank_eq_bump_refinement_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.rankedRootLink_refinement_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.unionByRank_refinement_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.rankedRootLink_rankSizeInvariant_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.unionByRank_rankSizeInvariant_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.RootMassInvariant.toRankSizeInvariant
+#print axioms RMQ.UnionFind.Forest.ParentForest.RootMassInvariant.toRankComponentInvariant
+#print axioms RMQ.UnionFind.Forest.ParentForest.RootMassInvariant.root_mass_le_size
+#print axioms RMQ.UnionFind.Forest.ParentForest.rankedRootLink_rootMassInvariant_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.unionByRank_rootMassInvariant_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.RankPowerMassInvariant.rank_power_le_size
+#print axioms RMQ.UnionFind.Forest.ParentForest.RankPowerMassInvariant.rank_le_log2_mass
+#print axioms RMQ.UnionFind.Forest.ParentForest.RankPowerMassInvariant.rank_le_log2_size
+#print axioms RMQ.UnionFind.Forest.ParentForest.identity_rankPowerMassInvariant
+#print axioms RMQ.UnionFind.Forest.ParentForest.rankedRootLink_rankPowerMassInvariant_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.unionByRank_rankPowerMassInvariant_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.findRoot?_rank_lt_of_ne
+#print axioms RMQ.UnionFind.Forest.ParentForest.compressNode_rankPowerMassInvariant
+#print axioms RMQ.UnionFind.Forest.ParentForest.compressNode_rootMassInvariant_refinement_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.rootLink_rankComponentInvariant_equal_bump_boundary_obstruction
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedForest.profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedForest.unionCosted_rankSizeInvariant_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassForest.profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassForest.identity_rootMassInvariant
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassForest.identity_rankPowerMassInvariant
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassForest.identity_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassForest.unionCosted_rootMassInvariant_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassForest.unionCosted_rankPowerMassInvariant_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassForest.unionManyCosted_cost
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassForest.unionManyCosted_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassForest.unionManyCosted_rankPowerMass_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassForest.identity_unionManyCosted_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassForest.identity_unionManyCosted_rankPowerMass_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassForest.unionManyCosted_samePartition_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassForest.unionManyCosted_refinement_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassForest.identity_unionManyCosted_refinement_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.findCosted_refinement_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.compressFindCosted_parent?_eq_root_of_findRoot?
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.compressFindCosted_parent?_eq_old_of_ne
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.compressFindCosted_findRoot?_eq
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.compressFindCosted_refinement_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_cost_le
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindTrace_length_le
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_cost_eq_trace_length
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_findRoot?_eq
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_parent?_eq_root_of_findRoot?
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_trace_parent?_eq_root_of_findRoot?
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rank_le_root_rank_of_findRoot?
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindTrace_length_le_rank_gap_of_findRoot?
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.findRoot?_rank_lt_rootMass
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.findRoot?_root_rank_le_log2_mass
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.findRoot?_root_rank_le_log2_size
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindTrace_length_le_rootMass_of_findRoot?
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindTrace_length_le_log2_size_of_findRoot?
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_refinement_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.unionCosted_refinement_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.unionManyCosted_refinement_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.identity_unionManyCosted_refinement_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRepresentationBackend_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRepresentationAmortizedBackend_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_forest_size_eq
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_cost_le_rankGapFindCredit
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankGapFindCredit_le_logRankFindCredit
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_cost_le_logRankFindCredit
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankSizePotential_fullCompressFindCosted_eq
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.rankSizePotential_unionCosted_eq
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankGapAmortizedBackend_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionLogRankAmortizedBackend_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.profile
