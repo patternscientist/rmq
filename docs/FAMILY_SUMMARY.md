@@ -481,6 +481,29 @@ routes.  The access route exactness leg is now constructive through
 `RankSelect.fixedWeightChunkAccessRouteWithSentinel`, backed by
 `RankSelect.fixedWeightChunkBlocksGetAccessExact`: in-range accesses route to
 the computed chunk and invalid accesses route to the empty sentinel block.
+The route-exactness side is now constructive for all three bitvector queries:
+`RankSelect.fixedWeightChunkBlocksGetRankPrefixAddExact` and
+`RankSelect.fixedWeightChunkRankRouteWithSentinel` prove the additive
+chunk-prefix rank route, while
+`RankSelect.fixedWeightChunkBlocksGetSelectExactOfGlobalSelect` and
+`RankSelect.fixedWeightChunkSelectRouteWithSentinel` localize a successful
+global select to the selected chunk and route missing selects to the sentinel.
+The log-sized block-count side is also formalized:
+`RankSelect.fixedWeightLogChunkBlockCountBoundLittleO` and
+`RankSelect.fixedWeightLogChunkBlockCountBoundWithSentinelLittleO` prove
+`n / (log n + 1) + O(1) = o(n)`, with
+`RankSelect.fixedWeightLogChunkBlocksLengthLe` and
+`RankSelect.fixedWeightLogChunkBlocksWithSentinelLengthLe` supplying the
+corresponding decomposition bounds.  The class/length metadata width has now
+been separated from route-width padding:
+`RankSelect.fixedWeightLogChunkClassLengthFieldWidthBoundLittleO` and
+`RankSelect.fixedWeightLogChunkClassLengthOverheadLittleO` prove the narrow
+log-log field-width budget is `o(n)`, while
+`RankSelect.fixedWeightLogChunkBlockClassLengthTableOverheadLe` shows the
+sentinel log-chunk class/length table fits that budget.  The obstruction
+`RankSelect.fixedWeightLogChunkRouteWidthClassLengthOverheadNotLittleO` records
+the old trap: if class/length metadata is padded to the log-sized route width,
+the overhead is already not `o(n)`.
 The block-size route-table refinement
 `RankSelect.FixedWeightAmbientComputedRRRBlockSizeRouteTableData` now derives
 the ambient local-cost hypothesis from the uniform block-length cap, and the
@@ -491,8 +514,12 @@ carry that discipline through the route-table profile.  The remaining
 constructor gap is no longer the combined store; it is a concrete block
 route-directory family over the chunk blocks that supplies the primary
 block-code budget and discharges the semantic
-`access_exact`/`rank_exact`/`select_exact` route fields from charged routing
-tables.
+route fields from charged routing tables.  The class/length width caveat is now
+formalized and narrowed: the narrow class/length budget is proved, but the
+current combined route/class-length envelope still uses one route-layout
+`fieldWidth`, so the next constructor must either split that width in the
+charged envelope or route class/length reads through an equivalent narrow
+layout.
 `RankSelect.FixedWeightAmbientBlockCompositionData` is now the ambient/global
 predecessor surface: it counts one packed fixed-weight code word per block via
 `RankSelect.fixedWeightBlockCodePayload`, counts the remaining directory bits
@@ -538,9 +565,18 @@ remain conditional on the primary block-code budget
 theorem.
 The remaining standalone rank/select frontier is therefore concrete global
 routing/table families that discharge the concrete class/length metadata
-budget, a true uniform constant local decoder primitive/table regime, and
-discharging this primary-budget premise, not merely consuming the public spec
-surface.  The
+budget with the proved narrow width, a true uniform constant local decoder
+primitive/table regime, and discharging the fixed-weight primary-budget premise,
+not
+merely consuming the public spec surface.  The
+conservative theorem
+`RankSelect.fixedWeightLogChunkBlockPayloadBudgetLeLengthAddBound` shows the
+current block-code payload is at most raw `n` plus the `o(n)` log-chunk block
+count; this is useful, but it is not the compressed/FID
+`fixedWeightPayloadBudget bits + o(n)` theorem.  The missing bridge remains the
+enumerative/log-product inequality that relates the product of per-block
+fixed-weight universes to the single global fixed-weight universe.
+The
 strengthened public theorem
 `RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery` additionally exposes
 the machine-word discipline from the concrete components: Jacobson rank payload
@@ -1978,9 +2014,17 @@ The names below are grouped by source module. Repeated base names in
   `RankSelect.fixedWeightChunkBlocksLengthLe`,
   `RankSelect.fixedWeightBlockClassLengthTableOverheadLeChunkBudget`,
   `RankSelect.fixedWeightChunkBlocksWithSentinelLengthLe`,
+  `RankSelect.fixedWeightLogChunkBlockCountBoundLittleO`,
+  `RankSelect.fixedWeightLogChunkBlockCountBoundWithSentinelLittleO`,
+  `RankSelect.fixedWeightLogChunkBlocksLengthLe`,
+  `RankSelect.fixedWeightLogChunkBlocksWithSentinelLengthLe`,
   `RankSelect.fixedWeightChunkBlocksWithSentinelGetSentinel`,
   `RankSelect.fixedWeightChunkBlocksGetAccessExact`,
+  `RankSelect.fixedWeightChunkBlocksGetRankPrefixAddExact`,
+  `RankSelect.fixedWeightChunkBlocksGetSelectExactOfGlobalSelect`,
   `RankSelect.fixedWeightChunkAccessRouteWithSentinel`,
+  `RankSelect.fixedWeightChunkRankRouteWithSentinel`,
+  `RankSelect.fixedWeightChunkSelectRouteWithSentinel`,
   `RankSelect.fixedWeightBlockClassLengthTableOverheadLeChunkSentinelBudget`,
   `RankSelect.fixedWeightAmbientBlockCompositionWordBoundedCompressedProfileOfPrimaryBudget`,
   `RankSelect.fixedWeightTableRAMBlockDataProfile`,

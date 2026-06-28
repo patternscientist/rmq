@@ -242,13 +242,38 @@ route-exactness leg for sentinel chunks: in-range accesses route to the
 computed chunk, invalid accesses route to the sentinel, and
 `RMQ.RankSelect.fixedWeightChunkBlocksGetAccessExact` proves the local
 chunk-offset bit equation.
+The sentinel chunk route-exactness layer now covers rank and select as well:
+`RMQ.RankSelect.fixedWeightChunkBlocksGetRankPrefixAddExact` proves the
+additive rank-prefix equation for the routed chunk, and
+`RMQ.RankSelect.fixedWeightChunkRankRouteWithSentinel` packages the total rank
+route.  `RMQ.RankSelect.fixedWeightChunkBlocksGetSelectExactOfGlobalSelect`
+localizes a successful global select to the selected chunk, and
+`RMQ.RankSelect.fixedWeightChunkSelectRouteWithSentinel` packages the total
+select route, sending missing selects to the empty sentinel.
+The log-sized chunk-count budget is also formalized:
+`RMQ.RankSelect.fixedWeightLogChunkBlockCountBoundLittleO` and
+`RMQ.RankSelect.fixedWeightLogChunkBlockCountBoundWithSentinelLittleO` prove
+the `o(n)` block-count side for `n / (log n + 1) + O(1)` chunks, with matching
+length bounds from `RMQ.RankSelect.fixedWeightLogChunkBlocksLengthLe` and
+`RMQ.RankSelect.fixedWeightLogChunkBlocksWithSentinelLengthLe`. The narrow
+class/length side is now proved too:
+`RMQ.RankSelect.fixedWeightLogChunkClassLengthOverheadLittleO` is an `o(n)`
+budget, and
+`RMQ.RankSelect.fixedWeightLogChunkBlockClassLengthTableOverheadLe` places the
+sentinel log-chunk class/length table under it. Conversely,
+`RMQ.RankSelect.fixedWeightLogChunkRouteWidthClassLengthOverheadNotLittleO`
+formalizes that route-width-padded class/length fields are not a compressed
+auxiliary budget.
 `RMQ.RankSelect.fixedWeightAmbientComputedRRRBlockSizeRouteTableFamilyProfile`
 adds the ambient block-size route-table refinement: the local computed-RRR cost
 premise is derived from a uniform block-length cap rather than assumed
 per-block. The remaining global constructor task is to instantiate a concrete
-charged route-directory family over the chunk blocks that proves the primary
-block-code budget and derives the rank/select semantic route exactness fields
-from charged routing tables.
+charged route-directory family over the chunk blocks, prove the primary
+block-code budget, and derive the route fields from charged routing tables.
+The current combined route/class-length envelope also uses the route field
+width for class/length metadata; the narrow budget theorem above proves the
+right class/length accounting, but a fully compressed constructor still needs
+the charged envelope to use that narrow width or an equivalent replacement.
 The ambient/global fixed-weight block predecessor is also formalized:
 `RMQ.RankSelect.fixedWeightAmbientBlockCompositionFamilyWordBoundedProfile`
 proves an `o(n)` counted auxiliary envelope for block-composed fixed-weight
@@ -258,6 +283,11 @@ codes, with code and auxiliary payload words bounded by the ambient
 isolates the remaining compressed/FID primary-budget theorem: the sum of
 per-block fixed-weight code budgets must be bounded by the global
 fixed-weight payload budget plus an `o(n)` slack.
+The current conservative primary theorem is
+`RMQ.RankSelect.fixedWeightLogChunkBlockPayloadBudgetLeLengthAddBound`: for
+sentinel log chunks, the per-block primary codes are bounded by raw `n` plus an
+`o(n)` block-count term. This is not yet the compressed/FID
+`log binomial(n,m) + o(n)` primary bridge.
 `RMQ.RankSelect.fixedWeightAmbientBlockCompositionWordBoundedCompressedProfileOfPrimaryBudget`
 is the strengthened version carrying the directory profile and ambient
 machine-word bounds into that conditional compressed/FID shape.

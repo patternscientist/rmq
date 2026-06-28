@@ -114,6 +114,26 @@ theorem flattenPayloadWords_length_of_forall_length
       simp [flattenPayloadWords, hword, ih hrest, Nat.succ_mul,
         Nat.add_comm]
 
+theorem flattenPayloadWords_length_le_of_forall_length_le
+    {words : List (List Bool)} {width : Nat}
+    (hwidth :
+      forall {word : List Bool}, List.Mem word words -> word.length <= width) :
+    (flattenPayloadWords words).length <= words.length * width := by
+  induction words with
+  | nil =>
+      simp [flattenPayloadWords]
+  | cons word rest ih =>
+      have hword : word.length <= width :=
+        hwidth List.mem_cons_self
+      have hrest :
+          forall {tailWord : List Bool},
+            List.Mem tailWord rest -> tailWord.length <= width := by
+        intro tailWord hmem
+        exact hwidth (List.mem_cons_of_mem word hmem)
+      have htail := ih hrest
+      simp [flattenPayloadWords, Nat.succ_mul]
+      omega
+
 /--
 Fuelled fixed-size payload chunker.
 
