@@ -1,4 +1,5 @@
 import RMQ
+import RMQUnionFind
 import RMQ.Core.EncodingLowerBound
 import RMQ.Core.GenericSelectBPCompat
 import RMQ.Core.LowerBound
@@ -25,6 +26,11 @@ checked compatibility surfaces live in `scripts/archive_axiom_check.lean`.
 #print axioms RMQ.UnionFind.State.unionSpec_same_of_valid
 #print axioms RMQ.UnionFind.referenceBackend_profile
 #print axioms RMQ.UnionFind.referenceAmortizedBackend_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanLevelAmortizedBackend_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanLevelCleanCreditAmortizedBackend_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanPhaseCountAmortizedBackend_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanLevelIndexAmortizedBackend_profile
+#print axioms RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelIndexPotential_eq_rankSlackPotential_of_forall_gap_le
 #print axioms RMQ.Cartesian.shape_eq_of_sameRMQBehavior
 #print axioms RMQ.EncodingLowerBound.shapeCount_quadratic_lower
 #print axioms RMQ.EncodingLowerBound.shapeCount_cubic_square_lower

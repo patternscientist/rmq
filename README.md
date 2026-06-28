@@ -260,9 +260,21 @@ about Lean's executable `List` runtime.
   first rank-bucket-width accounting checkpoint, and rank-slack compression
   kernel whose aggregate potential drop pays successful full-compression find
   slack up to constant credit. A follow-up checkpoint replaces the
-  answer-shaped union delta with a coarse size-log union credit. It does not
-  yet prove Tarjan's inverse-Ackermann bound or a small uniform union credit
-  under that potential.
+  answer-shaped union delta with a coarse size-log union credit. The first
+  multilevel Tarjan-style checkpoint separates cross-level rank gaps from
+  within-level residual slack under an iterated-log rank schedule; the
+  clean-credit follow-up removes the trace-dependent successful-find credit and
+  replaces the whole-forest union credit with a local level-potential delta. It
+  is followed by a phase-count profile whose successful-find credit depends on
+  a global iterated-log phase count after residual rank slack is absorbed into
+  the potential. The sharper level-index profile replaces that hidden full
+  rank-slack layer with explicit `tarjanLevelPotential + tarjanResidualPotential`
+  accounting and proves that the combined drop pays the original trace rank
+  slack. A follow-up obstruction theorem shows this exact residual-as-difference
+  design collapses back to rank slack under the natural sub-gap condition, so
+  the true Tarjan step still needs a different recursively indexed residual. It
+  does not yet prove Tarjan's inverse-Ackermann bound or a small uniform union
+  credit.
 - `VerifiedDS.lean`: thin neutral aggregate facade over the active public roots
   (`RMQ`, `RMQHub`, `RMQRankSelect`, `RMQBPNavigation`, and `RMQUnionFind`).
   This signals the broader verified-data-structures direction without renaming

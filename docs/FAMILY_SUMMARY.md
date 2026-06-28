@@ -2214,6 +2214,46 @@ The names below are grouped by source module. Repeated base names in
   `rankSlackPotential_unionCosted_le_rankBucketPotential`. This is the first
   aggregate cost-paying rank-slack potential checkpoint with a non-delta union
   boundary, not an alpha-style or inverse-Ackermann theorem.
+  The first multilevel Tarjan-style checkpoint is
+  `UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanLevelAmortizedBackend_profile`.
+  It introduces `tarjanLevelIter`, `tarjanRankLevel`,
+  `nodeRootParentTarjanLevelGap`, `traceRootParentTarjanResidualSlack`, and
+  `tarjanLevelPotential`: cross-level parent-to-root rank gaps are paid by the
+  aggregate potential, while successful finds charge only the residual
+  within-level rank slack plus constant `2` through `tarjanLevelFindCredit`.
+  The key drop theorem is
+  `tarjanLevelPotential_fullCompressFindCosted_add_traceLevelGap_le_of_findRoot?`,
+  and union uses the level-specific bound
+  `tarjanLevelPotentialBound`/`tarjanLevelUnionCredit`. This is a reusable
+  multilevel potential interface, not an inverse-Ackermann theorem. The
+  clean-credit follow-up
+  `UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanLevelCleanCreditAmortizedBackend_profile`
+  keeps `tarjanLevelPotential` but removes the trace-dependent successful-find
+  credit via `tarjanLevelRootRankFindCredit` and uses the local union delta
+  `tarjanLevelDeltaUnionCredit`, with
+  `tarjanLevelDeltaUnionCredit_le_tarjanLevelUnionCredit` showing it is no
+  larger than the previous whole-forest bound. The phase-count follow-up
+  `UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanPhaseCountAmortizedBackend_profile`
+  absorbs the residual rank-slack layer into `tarjanPhaseCountPotential` and
+  exposes `tarjanPhaseCountFindCredit`, a successful-find credit depending only
+  on a global iterated-log phase count plus constant overhead. This is a
+  checkpoint toward alpha-shaped accounting, not the inverse-Ackermann theorem,
+  because the potential still includes full rank slack. The sharper
+  `UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanLevelIndexAmortizedBackend_profile`
+  replaces that hidden full-rank-slack layer with explicit
+  `tarjanLevelPotential + tarjanResidualPotential` accounting. Its bridge
+  theorem
+  `tarjanLevelIndexPotential_fullCompressFindCosted_add_traceRootParentRankSlack_le_of_findRoot?`
+  proves the combined level-plus-index drop pays the original trace rank slack,
+  and
+  `fullCompressFindCosted_cost_add_tarjanLevelIndexPotential_le_tarjanLevelIndexFindCredit`
+  consumes that drop in the representation-amortized profile. This is closer to
+  the Tarjan proof shape, but the residual index is still raw within-level rank
+  slack rather than an Ackermann-indexed counter. The obstruction theorem
+  `tarjanLevelIndexPotential_eq_rankSlackPotential_of_forall_gap_le` makes the
+  design caveat formal: under the natural condition that the level gap is a
+  sub-gap of parent-to-root rank slack, this additive level-index potential is
+  equal to ordinary `rankSlackPotential`.
 - `RMQ/Core/GenericSelect.lean`,
   `RMQ/Core/SuccinctRankSelect.lean`,
   `RMQ/Core/BPCloseNavigation.lean`, and
@@ -2682,8 +2722,9 @@ completeness.
    rank-bucket-width checkpoint plus a local rank-slack compression-drop
    kernel whose aggregate potential drop pays successful full-compression find
    slack with constant credit, now with a coarse size-log non-delta union
-   credit checkpoint. Next refine that union credit or the potential itself
-   before starting inverse-Ackermann claims.
+   credit checkpoint and a multilevel Tarjan-style level/residual checkpoint.
+   Next refine the level schedule and residual credit toward a genuine
+   inverse-Ackermann statement.
 3. Keep RMQ presentation polish narrow: an even flatter encoded/payload-only
    statement of the BP-native capstone is useful, but it is no longer a hidden
    correctness or complexity blocker.

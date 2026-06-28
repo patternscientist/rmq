@@ -120,6 +120,44 @@ backend replaces that answer-shaped union credit with the coarse size-log bound
 `rankSlackPotential_unionCosted_le_rankBucketPotential`. It still does not
 derive Tarjan's inverse-Ackermann bound or a small uniform union credit.
 
+The Tarjan-level checkpoint is the first multilevel version of this accounting.
+It defines an executable iterated-log level schedule over ranks, splits every
+parent-to-root rank gap into a cross-level part and a residual within-level
+part, and proves full compression drops the aggregate cross-level potential
+enough to pay the cross-level part of the visited trace. The backend profile
+`fullCompressionTarjanLevelAmortizedBackend_profile` charges successful finds
+only for the residual within-level slack plus constant `2`; union is bounded by
+a level-specific whole-forest potential bound. This is a reusable
+Tarjan-style interface, not the inverse-Ackermann theorem.
+The clean-credit refinement
+`fullCompressionTarjanLevelCleanCreditAmortizedBackend_profile` keeps the same
+level potential but removes the explicit trace residual from successful-find
+credit, replacing it with the returned root's rank plus one, and replaces the
+whole-forest union credit with a local potential delta. This cleans up the
+profile shape without claiming alpha-style amortization.
+The next phase-count checkpoint
+`fullCompressionTarjanPhaseCountAmortizedBackend_profile` absorbs the residual
+rank slack into `tarjanPhaseCountPotential`, so successful-find credit is the
+global iterated-log `tarjanPhaseCountBound + 2` rather than a trace or root-rank
+quantity. This moves the public credit shape toward inverse-Ackermann analyses,
+but the underlying potential is still too coarse because it contains the full
+rank-slack layer.
+The sharper level-index checkpoint
+`fullCompressionTarjanLevelIndexAmortizedBackend_profile` replaces that hidden
+full-rank-slack layer with
+`tarjanLevelIndexPotential = tarjanLevelPotential + tarjanResidualPotential`.
+Its aggregate drop theorem pays the original trace-root parent rank slack from
+the combined cross-level and residual-index drops, while retaining the
+phase-count-shaped public find credit. This is closer to the Tarjan proof path,
+but still not the inverse-Ackermann theorem: the residual index is raw
+within-level rank slack, not a recursively bucketed Ackermann counter.
+The obstruction theorem
+`tarjanLevelIndexPotential_eq_rankSlackPotential_of_forall_gap_le` records why
+this exact design cannot simply be pushed to the true Tarjan theorem: whenever
+the level gap is a real sub-gap, the additive level-plus-residual potential is
+extensionally the old rank-slack potential. The next proof needs a genuinely
+indexed residual counter, not `rankSlack - levelGap`.
+
 ## Digestion Tasks
 
 1. Turn the RMQ capstone into a two-page lecture-style proof map:
