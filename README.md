@@ -29,13 +29,16 @@ indexing. A formally checked RMQ stack is therefore a good stress test for
 verified data-structure infrastructure.
 
 The main contribution here is not new paper mathematics. It is that the known
-theory is connected in Lean:
+theory is connected in Lean *with its modeling assumptions made explicit and
+audited* -- what counts as one stored bit, and what counts as one step, are Lean
+objects that are checked, not informal promises. Concretely:
 
 - many RMQ implementations satisfy one shared leftmost-minimum contract;
 - RMQ and LCA are reduced to each other through verified tree/Euler/Cartesian
   machinery;
 - the succinct upper bound has explicit payload accounting and constant modeled
-  query cost; and
+  query cost, with payload bits separated from proof-only fields so no answer can
+  be hidden in a free-to-read certificate; and
 - the lower bound proves that the leading `2*n` payload term is optimal.
 
 All of this is Mathlib-free: the project is pinned to Lean/Std plus `omega`,
@@ -151,6 +154,25 @@ Useful proof-hygiene scan:
 ```powershell
 rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ RMQExamples RMQHub.lean RMQRankSelect.lean RMQArchive.lean RMQExamples.lean lakefile.toml
 ```
+
+## Background And References
+
+The mathematics is classical; the contribution is the audited Lean connection.
+Classical sources behind each piece (the Lean code re-derives, rather than
+imports, this material):
+
+- **RMQ <-> LCA, constant-time RMQ:** Gabow-Bentley-Tarjan (1984); Bender &
+  Farach-Colton, *The LCA problem revisited* (2000).
+- **Cartesian trees:** Vuillemin (1980).
+- **Succinct trees / balanced parentheses:** Jacobson (1989); Munro & Raman
+  (2001).
+- **rank/select in `o(n)` extra bits:** Jacobson (1989); Clark (1996); Munro
+  (1996).
+- **Compressed bitvectors / FID:** Raman, Raman & Rao, "RRR" (2002) -- the
+  `log2 C(n,k) + o(n)` entropy bound behind the compressed rank/select frontier.
+- **Fischer-Heun RMQ:** Fischer & Heun (2011).
+- **Union-find / inverse Ackermann:** Tarjan (1975) -- the `O(alpha(n))` amortized
+  bound the union-find spoke is scaffolding toward.
 
 ## Documentation Map
 

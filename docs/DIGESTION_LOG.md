@@ -20,7 +20,7 @@ questions:
 
 - the theorem or construction that changed;
 - what changed conceptually;
-- what the work just done now means in plain English;
+- what the completed work now means in plain English;
 - what assumptions are live, especially payload bits, proof-only fields,
   charged reads, and Lean runtime nonclaims;
 - what a skeptical grad student would ask next;
@@ -81,7 +81,13 @@ spokes:
   deep Lean-club-facing project digestion for current `main`, with first-contact
   definitions of RMQ, Cartesian shape, rank/select, balanced parentheses,
   modeled cost, payload accounting, compressed/FID, and union-find; includes a
-  recorded adversarial classroom fixedpoint loop.
+  recorded adversarial classroom fixedpoint loop. Revised 2026-06-28 (Part I-IV
+  structure): groundings now quote the primitives directly (`Spec.LeftmostArgMin`,
+  `Costed`, the private-constructor `RAM.Exec` anti-cheat, the `RMQBackend`
+  contract, `binomialCount` as Pascal's recurrence, the union-find
+  `tarjanLevelIndexPotential` collapse self-diagnostic), and a literature map
+  (Bender-Farach-Colton, Jacobson, Munro-Raman, RRR, Fischer-Heun, Tarjan) was
+  added so the routine/classical steps are recognizable as known results.
 - [`digests/PROJECT_STATE_2026_06_28.md`](digests/PROJECT_STATE_2026_06_28.md):
   current project-wide digest, including the merged rank/select log-chunk
   primary-budget/split-width route-directory work and the merged union-find
