@@ -53,19 +53,27 @@ spokes:
 - Rank/select: a standalone bitvector spec and public Jacobson/Clark
   `n + o(n)` constant-query profile, plus an active compressed/FID fixed-weight
   route/class-length construction path. The latest digested chunk-route layer
-  gives concrete fixed-size chunks, a sentinel fallback block, access-route
-  exactness, and class/length metadata budget bridges. The global compressed
-  FID constructor remains open on route exactness for rank/select and the
-  primary block-code budget.
+  gives concrete fixed-size chunks, a sentinel fallback block, access/rank/select
+  route equations, log-sized chunk-count budgets, narrow class/length metadata
+  accounting, and a formal obstruction to route-width-padded class/length
+  fields. The global compressed FID constructor remains open on charged
+  route-directory consumption. In the latest rank/select proof worktree, the
+  sentinel log-chunk primary block-code budget bridge is now proved; until that
+  branch merges, treat this as branch-relative.
 - Union-find: a finite partition specification, costed reference operations,
   a parent-pointer forest refinement, union-by-rank/root-mass/rank-power
   invariants, full-compression find refinement, rank-gap/log-rank amortized
   checkpoints, explicit rank-bucket-width accounting, and a local/global
-  rank-slack compression-drop kernel. The Tarjan inverse-Ackermann theorem
-  remains open.
+  rank-slack compression-drop kernel. In the latest union-find proof worktree,
+  the first Tarjan-level potential scaffold exists; it still leaves residual
+  find slack and whole-forest union credit explicit. The Tarjan
+  inverse-Ackermann theorem remains open.
 
 ## Current Digests
 
+- [`digests/PROJECT_STATE_2026_06_28.md`](digests/PROJECT_STATE_2026_06_28.md):
+  current project-wide digest, with branch-relative notes for the rank/select
+  log-chunk primary-budget bridge and union-find Tarjan-level scaffold.
 - [`digests/RMQ_PROOF_MAP.md`](digests/RMQ_PROOF_MAP.md): index and shared
   assumptions ledger for the digest layer.
 - [`digests/COORDINATOR_COMPLETION_LOG.md`](digests/COORDINATOR_COMPLETION_LOG.md):
@@ -73,24 +81,29 @@ spokes:
 - [`digests/RMQ_CAPSTONE.md`](digests/RMQ_CAPSTONE.md): classroom proof map
   for the stable RMQ capstone.
 - [`digests/RANK_SELECT_FID_FRONTIER.md`](digests/RANK_SELECT_FID_FRONTIER.md):
-  rank/select FID frontier after the chunk-route milestone.
+  rank/select FID frontier after the access/rank/select chunk-route, narrow
+  metadata, and branch-relative log-chunk primary-budget milestones.
 - [`digests/UNION_FIND_AMORTIZATION_FRONTIER.md`](digests/UNION_FIND_AMORTIZATION_FRONTIER.md):
-  union-find amortization frontier around rank-gap, rank-bucket, and
-  rank-slack potential checkpoints.
+  union-find amortization frontier around rank-gap, rank-bucket, rank-slack,
+  and branch-relative Tarjan-level potential checkpoints.
 
 ## Current Rank/Select Note
 
-The fixed-weight compressed/FID spoke now separates three issues that were easy
+The fixed-weight compressed/FID spoke now separates four issues that were easy
 to conflate. First, log-sized sentinel chunk decompositions have an `o(n)` block
 count. Second, class/length metadata for those chunks is small only when stored
 at a narrow `log log n`-style width; padding it to route width is formally
-linear, so it cannot be hidden in the auxiliary term. Third, the per-block
-fixed-weight primary codes are bounded by the raw bit length plus `o(n)`, which
-is a useful accounting sanity check but not the compressed/FID
-`log binomial + o(n)` theorem. The live mathematical question is the
-enumerative bridge from a product of per-block fixed-weight universes back to
-the global fixed-weight universe, plus the charged route-directory construction
-that consumes the already-proved sentinel access/rank/select route equations.
+linear, so it cannot be hidden in the auxiliary term. Third, access/rank/select
+route equations exist for sentinel chunks, but route equations become
+non-oracular only when a concrete directory reads route fields from counted
+payload. Fourth, in the latest rank/select proof worktree, the per-block
+fixed-weight primary codes for sentinel log chunks have the real enumerative
+bridge:
+`fixedWeightLogChunkBlockPayloadBudgetLePayloadBudgetAddBound`, consumed by
+`fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeWordBoundedCompressedProfileOfLogChunkBlocks`.
+That branch-relative update corrects the older "primary budget remains open"
+digest line. The live construction question is now the charged
+route-directory/local-decoder family, not the log-chunk primary budget.
 
 ## Current Union-Find Digestion Note
 
@@ -120,16 +133,28 @@ backend replaces that answer-shaped union credit with the coarse size-log bound
 `rankSlackPotential_unionCosted_le_rankBucketPotential`. It still does not
 derive Tarjan's inverse-Ackermann bound or a small uniform union credit.
 
+The latest union-find proof worktree adds a Tarjan-level checkpoint. It defines
+`tarjanLevelIter`, fixes the current level as
+`tarjanRankLevel rank = tarjanLevelIter 2 rank`, splits parent-to-root rank
+slack into cross-level gap plus residual within-level slack, and proves
+`tarjanLevelPotential_fullCompressFindCosted_add_traceLevelGap_le_of_findRoot?`.
+The backend profile
+`fullCompressionTarjanLevelAmortizedBackend_profile` is a reusable multilevel
+potential scaffold, not the classical theorem: `tarjanLevelFindCredit` still
+contains residual trace slack, and `tarjanLevelUnionCredit` is still a
+whole-forest bound `tarjanLevelPotentialBound backend + 1`.
+
 ## Digestion Tasks
 
 1. Turn the RMQ capstone into a two-page lecture-style proof map:
    lower bound, upper bound, payload model, query model, and nonclaims.
 2. Turn the rank/select frontier into a glossary of fixed-weight codes, RRR/FID
-   local blocks, route tables, charged reads, and the remaining primary-budget
-   theorem.
+   local blocks, route tables, charged reads, the proved branch-relative
+   log-chunk primary budget, and the remaining concrete family instantiation.
 3. Turn the union-find spoke into a sequence of ordinary data-structure
    invariants: parent forest, representative refinement, rank discipline,
-   root-mass accounting, path compression, and the gap to Tarjan.
+   root-mass accounting, path compression, Tarjan-level potentials, and the
+   remaining residual/large-credit gap to Tarjan.
 4. Maintain a short "assumptions ledger" that can be read aloud before a talk,
    review, or onboarding session: what is model-level, what is executable, what
    is proof-only, and what is not claimed.

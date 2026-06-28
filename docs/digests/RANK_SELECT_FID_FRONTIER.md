@@ -1,8 +1,13 @@
 # Rank/Select FID Frontier Digest
 
-Snapshot: 2026-06-28. This note digests the rank/select spoke after the
-chunk-route milestone. It is written for a reader who knows what rank and
-select are, but not the local Lean naming scheme.
+Snapshot: 2026-06-28. Stable base is `main` at `c92c8af`. The log-chunk
+primary-budget statements in this note are branch-relative to the latest
+rank/select proof worktree until that branch merges.
+
+This note is for a reader who may not know rank/select. For a bitvector,
+`access i` asks for the bit at position `i`; `rank b i` counts how many bits
+equal to `b` appear before position `i`; `select b k` asks where the `k`th
+bit equal to `b` occurs.
 
 ## What Changed Conceptually
 
@@ -13,103 +18,91 @@ The plain-bitvector Jacobson/Clark theorem is already landed:
 #check RMQ.RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery
 ```
 
-The moving frontier is compressed/FID rank/select. The goal is to store a
-fixed-weight bitvector using about
-`log2 (binomialCount n m) + o(n)` bits, while still supporting access, rank,
-and select in constant modeled time. The recent chunk-route milestone does not
-finish that theorem. It gives the global router a concrete set of blocks and a
-sentinel fallback, so later route tables can point to real charged block-code
-words rather than to an implicit decoded bitvector.
+The moving frontier is compressed/FID rank/select. A fixed-weight bitvector
+has exactly `m` one-bits among `n` positions. The compressed target is to store
+the bitvector near the information-theoretic count
+`log2 (binomialCount n m)`, not by storing all `n` bits, while still answering
+access/rank/select in constant modeled time.
+
+The branch-relative update is that sentinel log chunks now have the primary
+fixed-weight budget bridge. Previously the digest could only say that the
+per-block codes fit under raw `n + o(n)`. The new proof says the per-block
+fixed-weight codes fit under the global fixed-weight payload budget plus
+`o(n)`.
 
 ## Plain English Story
 
-A fixed-weight bitvector has exactly `m` ones among `n` positions. Instead of
-storing all `n` bits, the compressed representation can store the index of that
-bitvector among all bitvectors with the same weight. This is the enumerative
-code. The project has already checked the finite universe, the encode/decode
-round trip, and a packed readback baseline.
+RRR/FID decomposes the bitvector into blocks. Each block stores its own length,
+its number of ones, and a code saying which fixed-weight pattern it contains.
+A query should read a small route record, jump to the addressed block, read
+that block's code and metadata, and answer locally.
 
-The first baseline is deliberately slow: read the whole packed code, decode the
-entire bitvector, then answer access/rank/select. That proves non-oracularity
-but not constant query time.
+The already-merged chunk-route layer gives:
 
-The RRR/FID direction is to split the bitvector into chunks. Each chunk carries
-a fixed-weight code. Query routing should read a small number of route words,
-find the addressed chunk, read that chunk's packed code and class/length
-metadata, and run a local decoder. The chunk-route milestone makes that
-addressing story concrete:
+- `RMQ.RankSelect.fixedWeightChunkAccessRouteWithSentinel`;
+- `RMQ.RankSelect.fixedWeightChunkRankRouteWithSentinel`;
+- `RMQ.RankSelect.fixedWeightChunkSelectRouteWithSentinel`;
+- `RMQ.RankSelect.fixedWeightLogChunkBlockClassLengthTableOverheadLe`;
+- `RMQ.RankSelect.fixedWeightLogChunkRouteWidthClassLengthOverheadNotLittleO`.
 
-- `RMQ.RankSelect.fixedWeightChunkBlocksLengthLe` bounds ordinary chunk count
-  by `bits.length / blockSize + 1`.
-- `RMQ.RankSelect.fixedWeightChunkBlocksWithSentinelLengthLe` adds one empty
-  sentinel block and bounds total routeable blocks by
-  `bits.length / blockSize + 2`.
-- `RMQ.RankSelect.fixedWeightChunkBlocksWithSentinelGetSentinel` identifies
-  the fallback block for invalid routes.
-- `RMQ.RankSelect.fixedWeightChunkAccessRouteWithSentinel` gives a concrete
-  access route: in-range queries go to the computed chunk; invalid queries go
-  to the sentinel.
-- `RMQ.RankSelect.fixedWeightChunkBlocksGetAccessExact` proves the local
-  chunk-offset bit agrees with the original bitvector.
-- `RMQ.RankSelect.fixedWeightBlockClassLengthTableOverheadLeChunkBudget` and
-  `RMQ.RankSelect.fixedWeightBlockClassLengthTableOverheadLeChunkSentinelBudget`
-  feed the chunk-count bounds into the class/length metadata budget.
+In words: the project knows how to cut the bitvector into log-sized chunks,
+add an empty sentinel chunk for total routing, prove access/rank/select route
+equations, prove narrow class/length metadata is `o(n)`, and prove one
+tempting padded metadata layout is too large.
 
-In plain English: the project now has a verified way to cut the bitvector into
-addressable pieces, add a harmless fallback piece, and prove that the access
-route lands on the right local bit. That is a routing milestone, not a finished
-compressed dictionary.
+The branch-local primary-budget bridge adds:
+
+- `RMQ.RankSelect.binomialCountMulLeAdd`;
+- `RMQ.RankSelect.fixedWeightBlockPayloadBudgetLePayloadBudgetFlattenAddBlocks`;
+- `RMQ.RankSelect.fixedWeightLogChunkBlockPayloadBudgetLePayloadBudgetAddBound`;
+- `RMQ.RankSelect.fixedWeightAmbientBlockCompositionWordBoundedCompressedProfileOfLogChunkBlocks`;
+- `RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeWordBoundedCompressedProfileOfLogChunkBlocks`.
+
+In words: choosing one fixed-weight pattern per block is no more expensive
+than choosing the whole fixed-weight bitvector at once, except for one slack
+bit per block. Since log chunks give `o(n)` blocks, that slack is an auxiliary
+`o(n)` term.
 
 ## Live Assumptions
 
-- The query cost is modeled. Reads from bounded stores and fixed-width tables
-  are charged under the repository's RAM/indexed-access convention.
-- Local computed-RRR decoding still has an explicit local cost discipline.
-  The global constant-time theorem needs a uniform bounded-regime story.
-- Several profiles are conditional on the primary block-code budget:
-  the sum of per-block fixed-weight code budgets must be at most the global
-  fixed-weight payload budget plus an `o(n)` overhead.
-- Route exactness must come from charged route/class-length tables, not from
-  proof-only access to a decoded bitvector.
-
-## Theorem Anchors
-
-The public adapter shape is
-`RMQ.RankSelect.fixedWeightCompressedAuxiliaryToCompressedFamilyProfile`.
-
-The local and ambient construction anchors are:
-
-- `RMQ.RankSelect.fixedWeightComputedRRRBlockKernelProfile`;
-- `RMQ.RankSelect.fixedWeightComputedRRRClassLengthBlockKernelProfile`;
-- `RMQ.RankSelect.fixedWeightAmbientComputedRRRBlockCompositionProfile`;
-- `RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeProfile`;
-- `RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFixedBlockSizeWordBoundedCompressedProfileOfBlockBounds`;
-- `RMQ.RankSelect.fixedWeightAmbientBlockCompositionWordBoundedCompressedProfileOfPrimaryBudget`.
+- This is still a modeled RAM/indexed-access theorem. Charged table and word
+  reads are mathematical cost events, not Lean runtime measurements.
+- The log-chunk primary budget is branch-relative until the proof branch
+  merges.
+- Generic non-log-chunk profile shapes can still be conditional on their own
+  primary block-code budgets.
+- The full compressed/FID construction still needs a concrete charged
+  route-directory/local-decoder family. Route facts by themselves are not
+  executable payload.
+- Local computed-RRR decoding still needs a uniform constant-time regime in
+  the final family.
 
 ## Skeptical Grad Student Questions
 
 **Did this close compressed/FID rank/select?**
 
-No. It closed a route-and-chunk layer needed by the global constructor. The
-remaining public compressed/FID theorem still needs the primary block-code
-budget and route exactness for rank/select from concrete charged tables.
+No. It removed the log-chunk primary-budget blocker. The remaining theorem is
+the concrete family: route fields and class/length data must be read from
+counted payload, and the local decoder must fit the constant modeled query
+budget.
 
-**Why add a sentinel chunk?**
+**Why was the primary budget hard?**
 
-It makes total query routing uniform. Invalid or out-of-range cases can route
-to an empty fallback block without changing the flattened represented bits.
-This helps total functions stay simple while preserving the semantics.
+A block decomposition can accidentally lose compression if each block pays its
+own rounded-up code length. The new theorem uses a finite counting/product
+argument to show the product of block universes fits inside the global
+fixed-weight universe plus one slack bit per block.
 
-**What is the difference between the packed readback baseline and the FID
-target?**
+**What is still possibly oracle-like?**
 
-The readback baseline proves the answers depend on payload by reading and
-decoding the whole packed representation. The FID target must read only a
-constant-size route/local payload slice per query.
+Any profile that assumes route fields or exact local answers as proof data
+rather than deriving them from charged payload reads. The next family must
+consume the route equations through a concrete store.
 
-**What should the next proof worker actually build?**
+**What should the next proof worker build?**
 
-A concrete charged route-directory family over the chunk blocks, plus the
-primary block-code budget. The worker should avoid route fields whose exactness
-is supplied by proof-only decoded bits.
-
+A concrete charged route-directory/local-decoder family over
+`fixedWeightLogChunkBlocksWithSentinel`, consuming
+`fixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeWordBoundedCompressedProfileOfLogChunkBlocks`.
+The stop condition should be a public compressed/FID profile with no
+proof-only route fields and a uniform constant modeled query bound.

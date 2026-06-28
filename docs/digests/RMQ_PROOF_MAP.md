@@ -11,16 +11,22 @@ questions remain.
 
 ## Reading Order
 
+- [`PROJECT_STATE_2026_06_28.md`](PROJECT_STATE_2026_06_28.md): current
+  project-wide digest after the rank/select route-metadata and union-find
+  rank-slack milestones, with branch-relative notes for the latest
+  rank/select primary-budget and union-find Tarjan-level proof worktrees.
 - [`RMQ_CAPSTONE.md`](RMQ_CAPSTONE.md): the stable RMQ theorem story, including
   Cartesian shape, the Catalan lower bound, BP payload, modeled query cost, and
   the anti-oracle checks on the final query path.
 - [`RANK_SELECT_FID_FRONTIER.md`](RANK_SELECT_FID_FRONTIER.md): the rank/select
   spoke after the chunk-route milestone, including fixed-weight codes,
-  sentinel chunks, route/class-length metadata, charged reads, and the still
-  open primary block-code budget.
+  sentinel chunks, access/rank/select routes, route/class-length metadata,
+  charged reads, narrow metadata accounting, and the branch-relative
+  log-chunk primary block-code budget bridge.
 - [`UNION_FIND_AMORTIZATION_FRONTIER.md`](UNION_FIND_AMORTIZATION_FRONTIER.md):
-  the union-find spoke after the rank-gap/log-rank amortization milestone, and
-  why the next bucketed/Tarjan-style potential is still open.
+  the union-find spoke after the rank-bucket, rank-slack, and branch-relative
+  Tarjan-level scaffold milestones, and why inverse-Ackermann accounting is
+  still open.
 
 ## Public Entry Points
 
