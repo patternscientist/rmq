@@ -1,5 +1,6 @@
 import RMQ.Core.Spec
 import RMQ.Core.ModelHub
+import RMQ.Core.SampledLayoutBudget
 import RMQ.Core.Window
 import RMQ.Core.Backend
 import RMQ.Core.LCA

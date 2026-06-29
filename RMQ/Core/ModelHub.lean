@@ -1,5 +1,6 @@
 import RMQ.Core.Cost
 import RMQ.Core.Amortized
+import RMQ.Core.AmortizedSequence
 import RMQ.Core.RAM
 import RMQ.Core.Refine
 import RMQ.Core.TableModel

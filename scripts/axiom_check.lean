@@ -727,3 +727,12 @@ checked compatibility surfaces live in `scripts/archive_axiom_check.lean`.
 #print axioms RMQ.LCAFischerHeun.densePreprocessAndQuery_refines_with_steps_of_denseNatLabels
 #print axioms RMQ.LCAFischerHeun.densePreprocessBuildCost_le_linearBudget
 #print axioms RMQ.LCAFischerHeun.denseLCA_linearBuild_constantQuery_profile
+
+-- Frontier harnesses (docs/DESIGN_FRONTIER_OBSTRUCTIONS.md): reusable amortized
+-- sequence telescoping and two-level / sub-log layout-budget accounting.
+#print axioms RMQ.Amortized.runBound
+#print axioms RMQ.Amortized.totalActual_le
+#print axioms RMQ.Amortized.totalActual_le_length_mul
+#print axioms RMQ.SuccinctSpace.twoLevelLayoutOverhead_littleO
+#print axioms RMQ.SuccinctSpace.two_pow_subLogBlockSize_sq_le
+#print axioms RMQ.SuccinctSpace.subLogBlockTableRows_littleO
