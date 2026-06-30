@@ -1,4 +1,4 @@
-import RMQ.Core.UnionFind.Forest
+import RMQ.Core.UnionFind.TarjanEvents
 
 /-!
 # Standalone union-find spoke
@@ -8,8 +8,9 @@ accounting surface plus the first parent-pointer forest refinement layer. It is
 not yet Tarjan union-find or a mutable-array implementation: the public API
 gives a finite partition state, exact costed reference `find`/`union`
 operations, a backend interface where `find` may return an updated state, a
-list-backed parent forest with bounded root search, and representation-backed
-compression/rank-mass checkpoints future implementations can consume.
+list-backed parent forest with bounded root search, representation-backed
+compression/rank-mass checkpoints, and the first mixed-operation sequence
+surface and compression-event scorecard future Tarjan analyses can consume.
 
 The current public profile theorems are
 `RMQ.UnionFind.referenceBackend_profile`,
@@ -124,5 +125,55 @@ potential or final inverse-Ackermann theorem. The obstruction theorem
 `tarjanLevelIndexPotential_eq_rankSlackPotential_of_forall_gap_le` explains
 why this exact residual definition cannot be the final answer: when the level
 gap is a true sub-gap, adding `levelGap` and `rankSlack - levelGap` collapses
-back to ordinary rank slack.
+back to ordinary rank slack. The sequence-level boundary is exposed by
+`RMQ.UnionFind.UFOp`, `RMQ.UnionFind.State.runOpsSpec`,
+`RMQ.UnionFind.RepresentationBackend.runOpsCosted`,
+`RMQ.UnionFind.RepresentationBackend.runOpsCosted_refinement_profile`,
+`RMQ.UnionFind.RepresentationAmortizedBackend.runOpsCosted_amortized`, and
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runFullCompressionTarjanLevelIndexAmortized_profile`.
+The companion
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.chargedUnionCosted`
+surface models public union as two full-compression finds followed by the
+rank-guided link, with
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionOpsCosted_refinement_profile`
+exposing the honest mixed-operation refinement boundary. The charged public
+operation sequence is also consumed by
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionTarjanLevelIndexAmortized_profile`.
+The first Tarjan-event scorecard is
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionEventCost_profile`;
+it decomposes modeled public-operation cost into compression-trace events plus
+rank-link events. The scheduled-event checkpoint
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionScheduledEventCost_profile`
+splits compression events into terminal, cross-level, and same-level residual
+events for a `RankSchedule`. Under valid-node operation sequences,
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionCost_le_scheduledResiduals_add_three_mul_length_of_valid`
+reduces modeled cost to scheduled cross/residual events plus a linear
+operation-count term. For the current iterated-log schedule,
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindIteratedLogScheduleCrossCount_le_traceLevelGap_of_findRoot?`
+shows cross-level events are paid by the existing level-gap potential. The
+root-edge-aware strict checkpoint
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionStrictScheduledEventCost_profile`
+then separates root/root-edge events from strict cross-level and strict
+same-level residual events. Under valid-node operation sequences,
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionCost_le_strictScheduledResiduals_add_five_mul_length_of_valid`
+reduces modeled cost to strict cross/residual events plus linear overhead, and
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindScheduleStrictResidualCount_le_traceRootParentRankSlack_of_findRoot?`
+records that strict residual events have positive rank slack, while
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_strictResidual_parent_rank_progress_of_trace_mem`
+shows each strict residual trace event rewrites that node to a strictly
+higher-rank parent.
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionScheduleStrictResidualNodes_length`
+packages the strict residual counter as a whole-run event-node stream.
+The event-record follow-up
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionScheduleStrictResidualEvents_length`
+and
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionScheduleStrictResidualEvents_rankProgress`
+upgrade that stream to rank snapshots, while
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindScheduleStrictResidualEvents_parent?_eq_root_of_mem`
+records that each full-find event's node is rewired to the event root.
+The sequence hook
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionOpsCosted_rank_le`
+records that charged runs never decrease ranks. The
+remaining true-Tarjan gap is bounding strict same-level residual event nodes by
+a recursively bucketed Ackermann/alpha counter over the whole sequence.
 -/

@@ -101,27 +101,29 @@ spokes:
 - [`digests/RANK_SELECT_FID_FRONTIER.md`](digests/RANK_SELECT_FID_FRONTIER.md):
   rank/select FID frontier after the access/rank/select chunk-route, narrow
   metadata, log-chunk primary-budget, and split-width table/RAM milestones.
+- [`digests/RANK_SELECT_COMPRESSED_FID_2026_06_29.md`](digests/RANK_SELECT_COMPRESSED_FID_2026_06_29.md):
+  first-contact explanation of the fixed-weight compressed/FID family capstone.
 - [`digests/UNION_FIND_AMORTIZATION_FRONTIER.md`](digests/UNION_FIND_AMORTIZATION_FRONTIER.md):
   union-find amortization frontier around rank-gap, rank-bucket, rank-slack,
   Tarjan-level, phase-count, and level-index potential checkpoints.
+- [`digests/UNION_FIND_TARJAN_ARCHITECTURE.md`](digests/UNION_FIND_TARJAN_ARCHITECTURE.md):
+  sequence/event architecture plan for the remaining Tarjan amortization gap.
 
 ## Current Rank/Select Note
 
 2026-06-29 update: the fixed-weight compressed/FID spoke now has a public
-concrete capstone surface.  `RMQ.RankSelect.compressedFIDFixedWeightConstantQueryProfile`
-states, for each bitvector `bits`, that the enumerative fixed-weight primary
-payload plus the concrete sub-log/Packed-Clark auxiliary payload fits
-`fixedWeightPayloadBudget bits + o(n)` and supports exact access/rank/select
-with one modeled constant query bound.  Plain English: the rank/select spoke
-now has its own compressed analogue of the succinct-RMQ story, scoped to
-fixed-weight/FID payload accounting.  Live assumptions: this is still the
-project's modeled RAM/indexed-read cost layer, not Lean runtime; the next
-cleanup target is a smoother reusable family theorem and eventually a
-first-order Word-RAM interpreter refinement.  A skeptical grad student should
-ask whether the capstone theorem's pointwise profile is packaged cleanly enough
-to reuse outside RMQ, and whether every charged read in that profile can later
-be replayed by an interpreter rather than just trusted as a shallow `Costed`
-computation.
+concrete capstone family surface.  `RMQ.RankSelect.compressedFIDFixedWeightFamily`
+packages the concrete sub-log/Packed-Clark directory for every bitvector, and
+`RMQ.RankSelect.compressedFIDFixedWeightFamilyProfile` states that the
+enumerative fixed-weight primary payload plus the concrete auxiliary payload
+fits `fixedWeightPayloadBudget bits + o(n)` and supports exact
+access/rank/select with one modeled constant query bound.  Plain English: the
+rank/select spoke now has its own compressed analogue of the succinct-RMQ
+family story, scoped to fixed-weight/FID payload accounting.  Live assumptions:
+this is still the project's modeled RAM/indexed-read cost layer, not Lean
+runtime.  A skeptical grad student should now ask whether every charged read in
+that profile can later be replayed by a first-order Word-RAM interpreter rather
+than just trusted as a shallow `Costed` computation.
 
 The fixed-weight compressed/FID spoke now separates four issues that were easy
 to conflate. First, log-sized sentinel chunk decompositions have an `o(n)` block
@@ -205,6 +207,41 @@ this exact design cannot simply be pushed to the true Tarjan theorem: whenever
 the level gap is a real sub-gap, the additive level-plus-residual potential is
 extensionally the old rank-slack potential. The next proof needs a genuinely
 indexed residual counter, not `rankSlack - levelGap`.
+
+The next residual-counter obstruction generalizes that caveat. The theorem
+`subtractiveResidualIndexPotential_collapse_obstruction` says that any
+node-local index bounded by rank slack collapses if the potential simply adds
+the index to its complement `rankSlack - index` over the current finite node
+universe. Conceptually, this rules out a broad family of "better split point"
+designs: they may rename or refine the local index, but if the residual is
+defined as the remaining rank slack, the sum is still exactly
+`rankSlackPotential`. Plain English: to move toward Tarjan, the counter must
+remember sequence/event/bucket structure, not just repartition each node's
+current slack. The live assumption is that this obstruction applies to local
+additive-complement potentials on one forest state; it does not rule out
+ordered event streams, operation-count-indexed phases, or Ackermann buckets.
+A skeptical grad student should ask for the next theorem that proves repeated
+same-node residual events start above the previous event's target rank and can
+therefore be packed by the new schedule.
+
+The follow-up architecture pass is recorded in
+`docs/digests/UNION_FIND_TARJAN_ARCHITECTURE.md`. The code has now moved the
+Tarjan target from isolated one-step backend wrappers to mixed operation
+sequences and event accounting. `RMQ.UnionFind.UFOp`,
+`RMQ.UnionFind.RepresentationBackend.runOpsCosted_refinement_profile`, and
+`RMQ.UnionFind.RepresentationAmortizedBackend.runOpsCosted_amortized` provide a
+generic `find`/`union` run surface and telescope one-step credits over a run.
+`chargedUnionCosted` models public union as two full-compression finds followed
+by a rank-guided link, and the strict event scorecard reduces valid-run cost to
+strict cross-level and strict same-level residual events plus linear overhead.
+The event-record layer records old-parent/root rank snapshots, proves
+`oldParentRank < rootRank`, connects full-find records to the concrete parent
+rewrite, and proves charged operation runs never decrease ranks. In plain
+English: the project can now talk about the exact residual compression events
+Tarjan's proof must count, rather than only aggregate rank slack on one forest
+state. The skeptical question is now sharper: can the same node's later
+residual events be ordered by the previous event's root rank and packed by a
+Mathlib-free Ackermann/alpha schedule?
 
 ## Digestion Tasks
 

@@ -21,9 +21,9 @@ root for local compatibility checks. The corresponding trust-base checks live
 in `scripts/archive_axiom_check.lean`, which is run by the gate. Short public
 aliases for the main citeable theorem
 surfaces now live in `RMQ/Headlines.lean`.  The standalone rank/select spoke
-now also exposes the concrete fixed-weight compressed/FID capstone
-`RankSelect.compressedFIDFixedWeightConstantQueryProfile`, with headline alias
-`Headlines.rankSelectCompressedFIDFixedWeightConstantQuery`.
+now also exposes the concrete fixed-weight compressed/FID capstone family
+`RankSelect.compressedFIDFixedWeightFamilyProfile`, with headline alias
+`Headlines.rankSelectCompressedFIDFixedWeightFamilyProfile`.
 
 This document is the family-level map for the current Lean development. It
 records the module dependency DAG, correctness and cost status by structure,
@@ -255,7 +255,7 @@ as an opt-in checked root.
 | --- | --- | --- | --- |
 | Core RMQ spec and backend contract | `LeftmostArgMin`, `CandidateExact`, `RMQBackend`, and contract-level backend equality are proved. | No cost model here. | All public RMQ backends target the same half-open leftmost-argmin contract. |
 | Traced RAM substrate | `Core.RAM` defines primitive operation traces, derived `steps`, and a `toCosted` bridge whose cost is definitionally the trace length. The raw primitive constructor is internal; clients build programs through typed primitives such as branches, reads, writes, comparisons, allocations, and array pushes. | Primitive branches, Array reads/writes, integer comparisons, Array allocations, and Array pushes each contribute one trace operation. | This is a hardened shallow trace substrate, not yet a full first-order interpreter. It is currently used by the sparse-table query and memoized-build bridge, and now by the dense LCA first-occurrence builder. |
-| Reusable model hub | `RMQ.Core.ModelHub` imports exactly the RMQ-free model layer: `Cost`, `RAM`, `Refine`, `TableModel`, `LowerBound`, and `PayloadLowerBound`. The standalone `RMQHub` Lake target imports the same barrel. | No algorithmic cost claim by itself; the hub exposes the cost, trace, refinement, table, payload, capacity, payload-accounted finite-encoding APIs, and uniform charged-budget lower-bound theorems used by the spoke. | This is the first extraction test: the hub builds and has a hub-only axiom gate without importing RMQ specs, Cartesian shapes, LCA, or implementations. |
+| Reusable model hub | `RMQ.Core.ModelHub` imports exactly the RMQ-free model layer: `Cost`, `Amortized`, `AmortizedSequence`, `RAM`, `Refine`, `TableModel`, `LowerBound`, and `PayloadLowerBound`. The standalone `RMQHub` Lake target imports the same barrel. | No algorithmic cost claim by itself; the hub exposes the cost, potential-method, sequence-telescope, trace, refinement, table, payload, capacity, payload-accounted finite-encoding APIs, and uniform charged-budget lower-bound theorems used by the spokes. | This is the first extraction test: the hub builds and has a hub-only axiom gate without importing RMQ specs, Cartesian shapes, LCA, or implementations. |
 | Refinement and table/access model | `Core.Refine` now owns `StoredSeq` and `StoredMatrix`, reusable Array/List erasure certificates for one-dimensional direct-address tables and list-of-lists tables. `Core.TableModel` keeps generic indexed access, finite indexed sequences, list-backed reference adapters, compatibility aliases for both stored views, unit-cost modeled reads, and payload views with uncharged auxiliary-state extension. | Indexed reads cost `indexedReadCost = 1`; payload views track serialized payload bits and a charged bit budget. | This keeps List tables as reference semantics while letting executable Array-backed representations prove erasure/refinement once at the boundary. Sparse-table stored queries and Fischer-Heun summary tables use `Refine.StoredMatrix`; dense LCA first-occurrence reads now use `Refine.StoredSeq`. |
 | Linear scan | Exact query, soundness, completeness, invalid-range rejection, backend. | Costed scan kernel exists in `Core.CostKernels`; no separate backend-level cost wrapper. | Direct reference backend. |
 | Plus-minus-one RMQ | `Core.PlusMinusOne` packages `AdjacentDepthsDifferByOne` as a first-class RMQ input, adds delta-signature replay, and proves a certified normalized signature-table contract. Euler traces, generated rose-tree Euler depths, and generated Euler-tour parenthesis bits instantiate the invariant directly. | The old raw constant-cost packed PM1 wrapper has been retired; remaining packed PM1 facts are exact value/reference scaffolding, not the final broadword query-cost model. | `Impl.PlusMinusOne` provides both the conservative linear instance and a normalized delta-signature backend, with contract-level equivalence between them. The packed PM1 model uses the fixed exact signature table as a universal decoder; it is not yet a broadword/block-decomposition implementation. |
@@ -312,14 +312,16 @@ feeds the public compressed theorem shape with payload budget
 concrete sub-log/Packed-Clark path now consumes that shape:
 `RankSelect.compressedFIDFixedWeightOverheadLittleO` proves the auxiliary
 overhead is `o(n)`, and
-`RankSelect.compressedFIDFixedWeightConstantQueryProfile` proves, for every
-`bits : List Bool`, payload length
+`RankSelect.compressedFIDFixedWeightFamily` packages the concrete directory for
+every `bits : List Bool`.  The reusable theorem
+`RankSelect.compressedFIDFixedWeightFamilyProfile` proves payload length
 `fixedWeightPayloadBudget bits + compressedFIDFixedWeightOverhead bits.length`
 and exact access/rank/select under one uniform modeled constant query bound.
 The remaining rank/select development target is no longer "find a positive
-compressed/FID constructor"; it is to package this pointwise capstone behind
-the cleanest reusable family theorem surface and make the same read discipline
-ready for a future first-order Word-RAM interpreter.
+compressed/FID constructor" or "package the pointwise capstone"; it is to make
+the same read discipline ready for a future first-order Word-RAM interpreter.
+The pointwise theorem `RankSelect.compressedFIDFixedWeightConstantQueryProfile`
+remains as the one-bitvector component.
 `RankSelect.FixedWeightTableBackedFIDData` is the first stricter pointwise
 query scaffold: access/rank/select are fixed one-read payload-table queries
 with counted table payloads and machine-word-sized entries, exposed by
@@ -2131,6 +2133,9 @@ The names below are grouped by source module. Repeated base names in
 - `RMQ/Core/Amortized.lean`, `RMQ/Core/UnionFind.lean`,
   `RMQ/Core/UnionFind/Forest.lean`, and `RMQUnionFind.lean`: reusable
   potential-method accounting plus the first non-succinct spoke surface, with
+  `Amortized.deltaCredit` and `Amortized.costed_deltaCredit` explicitly
+  marking exact potential-delta credit as valid scaffolding rather than a
+  uniform amortized bound,
   exact costed reference `find`/`union` operations and the parent-pointer forest
   refinement checkpoints `UnionFind.Forest.parentForestRefinement_profile` and
   `UnionFind.Forest.ParentForest.identity_profile`, plus the direct-parent
@@ -2330,7 +2335,43 @@ The names below are grouped by source module. Repeated base names in
   `tarjanLevelIndexPotential_eq_rankSlackPotential_of_forall_gap_le` makes the
   design caveat formal: under the natural condition that the level gap is a
   sub-gap of parent-to-root rank slack, this additive level-index potential is
-  equal to ordinary `rankSlackPotential`.
+  equal to ordinary `rankSlackPotential`. The generalized obstruction
+  `subtractiveResidualIndexPotential_collapse_obstruction` rules out the
+  broader local additive-complement pattern: any node-local index bounded by
+  rank slack collapses if the residual is defined as `rankSlack - index` and
+  both pieces are summed over the finite node universe. A true Tarjan counter
+  therefore has to add sequence/event/bucket structure, not just choose a
+  different local split of rank slack. The architecture digest
+  `docs/digests/UNION_FIND_TARJAN_ARCHITECTURE.md` records the next pivot. The
+  first piece is now checked in `RMQ/Core/UnionFind/Sequence.lean`:
+  `UnionFind.UFOp`, `UnionFind.State.runOpsSpec`,
+  `UnionFind.RepresentationBackend.runOpsCosted_refinement_profile`, and
+  `UnionFind.RepresentationAmortizedBackend.runOpsCosted_amortized` give a
+  mixed `find`/`union` runner plus a sequence telescope theorem. The concrete
+  level-index sequence checkpoint
+  `UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runFullCompressionTarjanLevelIndexAmortized_profile`
+  consumes the existing one-step backend over a run-level credit sum. The next
+  public-union boundary is no longer implicit:
+  `UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.chargedUnionCosted`
+  charges two full-compression finds before the rank-guided link, and
+  `runChargedFullCompressionOpsCosted_refinement_profile` lifts that honest
+  operation model to mixed sequences. `RMQ/Core/UnionFind/TarjanEvents.lean`
+  adds the checked event scorecard:
+  `runChargedFullCompressionEventCost_profile` decomposes modeled public-run
+  cost into compression-trace events plus rank-link events, while
+  `runChargedFullCompressionStrictScheduledEventCost_profile` refines the
+  schedule into root-edge, strict cross-level, strict same-level residual, and
+  link events. For valid-node operation sequences,
+  `runChargedFullCompressionCost_le_strictScheduledResiduals_add_five_mul_length_of_valid`
+  reduces cost to strict cross/residual events plus linear overhead. The rank
+  progress hooks
+  `runChargedFullCompressionScheduleStrictResidualEvents_rankProgress`,
+  `fullCompressFindScheduleStrictResidualEvents_parent?_eq_root_of_mem`, and
+  `runChargedFullCompressionOpsCosted_rank_le` give the next proof an ordered
+  event stream with old-parent/root rank snapshots and monotone ranks. The
+  remaining Tarjan work is a non-collapsing recursively bucketed residual bound
+  for strict same-level event nodes, plus a Mathlib-free Ackermann/alpha
+  schedule.
 - `RMQ/Core/GenericSelect.lean`,
   `RMQ/Core/SuccinctRankSelect.lean`,
   `RMQ/Core/BPCloseNavigation.lean`, and

@@ -16,6 +16,12 @@ abbrev lowerBound :=
 abbrev rankSelect :=
   RMQ.Headlines.rankSelectNPlusOConstantQuery
 
+abbrev rankSelectWordBounded :=
+  RMQ.Headlines.rankSelectWordBoundedNPlusOConstantQuery
+
+abbrev rankSelectCompressedFID :=
+  RMQ.Headlines.rankSelectCompressedFIDFixedWeightFamilyProfile
+
 abbrev succinctRMQ :=
   RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery
 

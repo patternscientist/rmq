@@ -55,7 +55,7 @@ Short public aliases live in [`RMQ/Headlines.lean`](RMQ/Headlines.lean).
 | `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack` | Coefficient-correct Catalan lower-bound slack, stated in doubled integer form. |
 | `RMQ.Headlines.rankSelectNPlusOConstantQuery` | Standalone Jacobson/Clark-style plain-bitvector rank/select with `n + o(n)` payload and constant modeled query cost. |
 | `RMQ.Headlines.rankSelectWordBoundedNPlusOConstantQuery` | The rank/select profile strengthened with machine-word-bounded concrete payload reads. |
-| `RMQ.Headlines.rankSelectCompressedFIDFixedWeightConstantQuery` | Fixed-weight compressed/FID rank/select profile with fixed-weight primary payload plus `o(n)` auxiliary payload and constant modeled access/rank/select. |
+| `RMQ.Headlines.rankSelectCompressedFIDFixedWeightFamilyProfile` | Fixed-weight compressed/FID rank/select family with fixed-weight primary payload plus `o(n)` auxiliary payload and constant modeled access/rank/select. |
 
 The construction-level theorem names are intentionally verbose, so that the
 model assumptions and dependency path remain inspectable. See
@@ -66,7 +66,7 @@ the theorem shape, and curated `#print axioms` checks.
 
 ```lean
 import RMQ              -- RMQ/LCA family and succinct RMQ capstone
-import RMQHub           -- reusable cost/RAM/refinement/table/lower-bound hub
+import RMQHub           -- reusable cost/RAM/refinement/amortized/lower-bound hub
 import RMQRankSelect    -- standalone rank/select spoke
 import RMQBPNavigation  -- balanced-parentheses navigation spoke
 import RMQUnionFind     -- union-find specification and forest-refinement spoke
@@ -96,7 +96,7 @@ At a high level, the repository currently includes:
 - a payload-accounted BP-native succinct RMQ upper bound with `2*n + o(n)`
   payload and constant modeled query cost;
 - a standalone rank/select spoke with public Jacobson/Clark-style profiles and
-  a concrete fixed-weight compressed/FID capstone surface; and
+  a concrete fixed-weight compressed/FID capstone family surface; and
 - a union-find spoke with finite-partition specs, parent-pointer forest
   refinement, union-by-rank invariants, full-compression refinement, and early
   amortized-analysis checkpoints on the path toward Tarjan-style bounds.
@@ -200,11 +200,11 @@ imports, this material):
 The RMQ capstone is in place. The next development frontier is to reuse and
 stress-test the infrastructure:
 
-1. package the standalone rank/select compressed/FID capstone as the cleanest
-   reusable family surface and prepare it for Word-RAM interpreter refinement;
+1. harden the standalone rank/select compressed/FID family by replaying its
+   charged reads through the future Word-RAM interpreter refinement;
 2. deepen balanced-parentheses navigation into a fuller tree-navigation API;
-3. push the union-find spoke from the current Tarjan-level scaffolding toward a
-   true inverse-Ackermann amortized theorem; and
+3. push the union-find spoke from the current sequence/event scorecard toward a
+   true inverse-Ackermann amortized theorem over strict residual events; and
 4. promote shared cost, refinement, lower-bound, and amortized-analysis pieces
    into a more neutral library surface only when concrete reuse demands it.
 

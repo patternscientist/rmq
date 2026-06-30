@@ -30,6 +30,10 @@ This repository has two kinds of documentation:
   grow into a broader verified data-structures effort.
 - [`DIGESTION_LOG.md`](DIGESTION_LOG.md): standing proof-explanation protocol
   for turning verified milestones into auditable, teachable summaries.
+- [`digests/RANK_SELECT_COMPRESSED_FID_2026_06_29.md`](digests/RANK_SELECT_COMPRESSED_FID_2026_06_29.md):
+  first-contact explanation of the compressed/FID rank/select family theorem.
+- [`digests/UNION_FIND_TARJAN_ARCHITECTURE.md`](digests/UNION_FIND_TARJAN_ARCHITECTURE.md):
+  architecture note for the sequence/event path toward Tarjan amortization.
 
 ## Engineering Notes
 

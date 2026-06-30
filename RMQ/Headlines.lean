@@ -27,9 +27,13 @@ constant-query profile plus machine-word-bounded concrete payload reads.
 abbrev rankSelectWordBoundedNPlusOConstantQuery :=
   RMQ.RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery
 
-/-- Fixed-weight compressed/FID rank/select: compressed payload plus `o(n)`, constant query. -/
+/-- Fixed-weight compressed/FID rank/select, pointwise form. -/
 abbrev rankSelectCompressedFIDFixedWeightConstantQuery :=
   RMQ.RankSelect.compressedFIDFixedWeightConstantQueryProfile
+
+/-- Fixed-weight compressed/FID rank/select family: compressed payload plus `o(n)`, constant query. -/
+abbrev rankSelectCompressedFIDFixedWeightFamilyProfile :=
+  RMQ.RankSelect.compressedFIDFixedWeightFamilyProfile
 
 /-- BP-native succinct RMQ capstone: exact RMQ, `2*n + o(n)`, constant query. -/
 abbrev succinctRMQTwoNPlusOConstantQuery :=

@@ -14,10 +14,12 @@ The public plain-bitvector headline theorem is
 word-bounded profile is
 `RMQ.RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery`.
 
-The fixed-weight compressed/FID capstone surface is
-`RMQ.RankSelect.compressedFIDFixedWeightConstantQueryProfile`.  It proves a
+The fixed-weight compressed/FID capstone family surface is
+`RMQ.RankSelect.compressedFIDFixedWeightFamilyProfile`, with headline alias
+`RMQ.Headlines.rankSelectCompressedFIDFixedWeightFamilyProfile`.  It proves a
 concrete compressed payload budget
 `fixedWeightPayloadBudget bits + o(n)` with uniform constant modeled access,
-rank, and select queries for each `bits : List Bool`.  This is still a
-word-RAM/indexed-read model theorem, not a Lean runtime claim.
+rank, and select queries for every `bits : List Bool`.  The pointwise theorem
+`RMQ.RankSelect.compressedFIDFixedWeightConstantQueryProfile` remains available.
+Both are word-RAM/indexed-read model theorems, not Lean runtime claims.
 -/

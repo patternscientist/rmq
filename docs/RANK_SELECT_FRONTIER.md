@@ -71,18 +71,23 @@ payload word read by the concrete adapter has length bounded by
 The concrete fixed-weight compressed/FID capstone is now also public:
 
 ```lean
+RMQ.RankSelect.compressedFIDFixedWeightFamily
+RMQ.RankSelect.compressedFIDFixedWeightFamilyProfile
+RMQ.Headlines.rankSelectCompressedFIDFixedWeightFamilyProfile
 RMQ.RankSelect.compressedFIDFixedWeightConstantQueryProfile
 RMQ.Headlines.rankSelectCompressedFIDFixedWeightConstantQuery
 ```
 
-For each `bits : List Bool`, it stores the fixed-weight primary payload
-`fixedWeightPayloadBudget bits` plus the concrete sub-log/Packed-Clark
-auxiliary payload, proves that auxiliary overhead is `o(n)`, and proves exact
-access, rank, and select with one uniform modeled constant query bound. This is
-the current reusable theorem surface to cite for the compressed/FID spoke. The
-next cleanup/proof target is to package this pointwise theorem into the
-cleanest family-style API and align it with the future Word-RAM interpreter
-refinement layer.
+The family theorem stores, for every `bits : List Bool`, the fixed-weight
+primary payload `fixedWeightPayloadBudget bits` plus the concrete
+sub-log/Packed-Clark auxiliary payload, proves that auxiliary overhead is
+`o(n)`, and proves exact access, rank, and select with one uniform modeled
+constant query bound. `compressedFIDFixedWeightConstantQueryProfile` is the
+pointwise component theorem; `compressedFIDFixedWeightFamilyProfile` is the
+reusable theorem surface to cite for the compressed/FID spoke. The next
+refinement target is not another family wrapper, but the future Word-RAM
+interpreter layer that explains these charged reads as execution of a small
+payload-memory program.
 
 ## Compressed/FID Surface
 
@@ -660,12 +665,13 @@ queries to the sentinel with full-prefix base rank.
 `fixedWeightChunkSelectRouteWithSentinel` uses
 `fixedWeightChunkBlocksGetSelectExactOfGlobalSelect` to localize a successful
 global select to its selected chunk, and routes missing selects to the
-sentinel. The remaining global constructor task is now a charged route-table
-family over these chunk blocks that reads the route fields from payload, proves
-rank/select route exactness, and resolves the metadata-width/local-decoder
-discipline needed for a full compressed/FID theorem. The primary block-code
-budget for these sentinel log chunks is now proved separately and consumed by
-the log-chunk profile theorems.
+sentinel. This made the then-remaining global constructor task precise: build a
+charged route-table family over these chunk blocks, read route fields from
+payload, prove rank/select route exactness, and resolve metadata-width and
+local-decoder discipline. The later sub-log/Packed-Clark path closes the public
+compressed/FID family surface; the primary block-code budget for these sentinel
+log chunks remains a reusable component consumed by the log-chunk profile
+theorems.
 
 The ambient/global block-composition predecessor is now present. It stores one
 canonical fixed-weight code word per block through
@@ -754,9 +760,10 @@ path. The new `RankSelectCompressedSubLog*` modules build the concrete
 sub-log chunk decomposition, class/length payload, shared decoder payload,
 rank route, select route, bounded dense-window Clark locator, and final
 Packed-Clark select route. Their public capstone is
-`RMQ.RankSelect.compressedFIDFixedWeightConstantQueryProfile`, which exposes
-the fixed-weight primary payload plus concrete `o(n)` auxiliary payload and
-constant modeled exact access/rank/select. The dense-log-chunk decoder and
+`RMQ.RankSelect.compressedFIDFixedWeightFamilyProfile`, which exposes the
+fixed-weight primary payload plus concrete `o(n)` auxiliary payload and
+constant modeled exact access/rank/select for the concrete family. The
+dense-log-chunk decoder and
 single-width route/class-length designs remain useful archived warnings:
 `noFixedWeightLogChunkDenseDecoderLittleO` and
 `noFixedWeightLogChunkRouteWidthClassLengthOverheadNotLittleO` explain why the

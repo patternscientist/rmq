@@ -114,6 +114,8 @@ Current excerpt for the public headline path:
   [propext, Classical.choice, Quot.sound]
 'RMQ.Headlines.rankSelectWordBoundedNPlusOConstantQuery' depends on axioms:
   [propext, Classical.choice, Quot.sound]
+'RMQ.Headlines.rankSelectCompressedFIDFixedWeightFamilyProfile' depends on axioms:
+  [propext, Classical.choice, Quot.sound]
 'RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery' depends on axioms:
   [propext, Classical.choice, Quot.sound]
 ```
@@ -209,8 +211,8 @@ This packet does not claim:
 - Lean's native execution of lists or structures has the modeled runtime;
 - the final theorem is a production-ready serialized packed implementation;
 - all BP tree-navigation operations are already available;
-- the compressed/FID rank/select profile is already inhabited by a concrete
-  enumerative codec; or
+- the compressed/FID rank/select family has already been replayed through a
+  first-order Word-RAM interpreter; or
 - the repo is CSLib-ready as-is.
 
 The claim is narrower and stronger in the formalization sense: the repo gives

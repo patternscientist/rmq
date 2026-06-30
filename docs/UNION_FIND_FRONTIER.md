@@ -26,10 +26,20 @@ first concrete parent-pointer forest refinement checkpoint:
 ```lean
 RMQ.Amortized.Bound
 RMQ.Amortized.compose
+RMQ.Amortized.costed_map
+RMQ.Amortized.deltaCredit
+RMQ.Amortized.costed_deltaCredit
+RMQ.UnionFind.UFOp
 RMQ.UnionFind.State
+RMQ.UnionFind.State.runOpsSpec
+RMQ.UnionFind.State.runOpsSpec_samePartition
 RMQ.UnionFind.Backend
 RMQ.UnionFind.RepresentationBackend
+RMQ.UnionFind.RepresentationBackend.runOpsCosted
+RMQ.UnionFind.RepresentationBackend.runOpsCosted_refinement_profile
 RMQ.UnionFind.RepresentationAmortizedBackend
+RMQ.UnionFind.RepresentationAmortizedBackend.runOpsCredit
+RMQ.UnionFind.RepresentationAmortizedBackend.runOpsCosted_amortized
 RMQ.UnionFind.AmortizedBackend
 RMQ.UnionFind.State.SamePartition
 RMQ.UnionFind.State.unionSpec_samePartition_comm
@@ -258,6 +268,43 @@ RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompre
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanPhaseCountAmortizedBackend_profile
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanLevelIndexAmortizedBackend
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanLevelIndexAmortizedBackend_profile
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runFullCompressionOpsCosted
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runFullCompressionOpsCosted_refinement_profile
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanLevelIndexRunCredit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runFullCompressionTarjanLevelIndexAmortized_profile
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.chargedUnionCosted
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.chargedUnionCosted_cost
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.chargedUnionCosted_refinement_profile
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.chargedUnionCosted_rank_le
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.chargedUnionCosted_cost_add_tarjanLevelIndexPotential_le_credit
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.chargedFullCompressionRepresentationBackend
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionOpsCosted
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionOpsCosted_refinement_profile
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionOpsCosted_rank_le
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.chargedFullCompressionTarjanLevelIndexAmortizedBackend
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionTarjanLevelIndexAmortized_profile
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.RankSchedule
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.iteratedLogRankSchedule
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionEventCost_profile
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionScheduledEventCost_profile
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionFixedUniverse_profile
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionCost_le_scheduledResiduals_add_three_mul_length_of_valid
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionStrictScheduledEventCost_profile
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionCost_le_strictScheduledResiduals_add_five_mul_length_of_valid
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindScheduleRootEdgeCount_le_two_of_findRoot?
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindScheduleStrictResidualCount_le_traceRootParentRankSlack_of_findRoot?
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_strictResidual_parent_rank_progress_of_trace_mem
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindScheduleStrictResidualNodes_length
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_strictResidual_parent_rank_progress_of_residual_node_mem
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionScheduleStrictResidualNodes_length
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindScheduleStrictResidualEvents_length
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindScheduleStrictResidualEvents_rankProgress
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindScheduleStrictResidualEvents_parent?_eq_root_of_mem
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindScheduleStrictResidualEvents_rootRank_eq_after_rank_of_mem
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionScheduleStrictResidualEvents_length
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionScheduleStrictResidualEvents_rankProgress
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindIteratedLogScheduleCrossCount_le_traceLevelGap_of_findRoot?
+RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindStrictIteratedLogScheduleCrossCount_le_traceLevelGap_of_findRoot?
 RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.profile
 ```
 
@@ -283,7 +330,23 @@ and states find/union refinement through `State.SamePartition`.
 representation boundary with credits that may depend on the current
 representation state and operation arguments. `AmortizedBackend` remains the
 constant-credit potential surface for backends already expressed over
-`UnionFind.State`.
+`UnionFind.State`. `RMQ.Amortized.deltaCredit` and
+`RMQ.Amortized.costed_deltaCredit` explicitly mark exact post-minus-pre
+potential-delta credits as valid local scaffolding, not uniform amortized
+bounds.
+
+`UFOp`, `State.runOpsSpec`, and
+`RepresentationBackend.runOpsCosted` are the first mixed-operation sequence
+surface. `RepresentationBackend.runOpsCosted_refinement_profile` proves that a
+representation-backed mixed run preserves the final partition up to
+`SamePartition` and returns one aligned output slot per operation. It
+intentionally does not claim raw representative-name equality against
+`State.runOpsSpec`, because union-by-rank may choose different representatives
+from the fixed `State.unionSpec` orientation. The generic telescope theorem
+`RepresentationAmortizedBackend.runOpsCosted_amortized` proves that one-step
+amortized bounds compose over a mixed run to the sum of supplied credits; a
+future Tarjan proof must still bound that credit sum by an alpha-shaped
+expression.
 
 `Forest.ParentForest` is a finite list-backed parent-pointer representation.
 Roots are self-parent pointers, and `ParentForest.findRoot?` follows parent
@@ -566,7 +629,77 @@ the old `rankSlackPotential`. In other words, defining the residual as
 `rankSlack - levelGap` exposes the debt split but does not shrink the
 potential. A true Tarjan theorem needs a different residual index whose units
 are recursively bucketed/Ackermann-indexed rather than the remaining raw rank
-slack.
+slack. The architecture pass in
+`docs/digests/UNION_FIND_TARJAN_ARCHITECTURE.md` sharpens the next step: build
+the recursively indexed residual against the mixed-operation sequence and
+compression-event interface, not as another isolated one-step backend wrapper.
+The first sequence checkpoint is now landed as
+`runFullCompressionOpsCosted_refinement_profile` and
+`runFullCompressionTarjanLevelIndexAmortized_profile`; it still uses the
+existing level-index credit sum, so it is a scorecard for future Tarjan
+accounting rather than the inverse-Ackermann theorem. The companion
+`chargedUnionCosted` and
+`runChargedFullCompressionOpsCosted_refinement_profile` retire the root-link
+API caveat for public operation sequences: they model a union operation as two
+full-compression finds followed by the rank-guided link. The charged public
+operation is now consumed by
+`runChargedFullCompressionTarjanLevelIndexAmortized_profile`, whose union
+credit explicitly telescopes the two compressed finds plus the final rank link.
+
+The first event-accounting layer is now checked in
+`RMQ/Core/UnionFind/TarjanEvents.lean`.
+`runChargedFullCompressionEventCost_profile` proves that the modeled cost of a
+charged mixed public-operation run is exactly compression-trace events plus
+rank-link events. `RankSchedule` and
+`runChargedFullCompressionScheduledEventCost_profile` split those compression
+events into terminal, cross-level, and same-level residual events. The
+fixed-universe theorem `runChargedFullCompressionFixedUniverse_profile` proves
+the charged runner preserves the initial forest size, and
+`runChargedFullCompressionCost_le_scheduledResiduals_add_three_mul_length_of_valid`
+shows that, for valid-node operation sequences, terminal events and link
+events are only linear overhead: the remaining non-linear work is scheduled
+cross/residual compression events. For the current iterated-log schedule,
+`fullCompressFindIteratedLogScheduleCrossCount_le_traceLevelGap_of_findRoot?`
+shows cross-level events are paid by the existing level-gap potential. This is
+the event scorecard a future Ackermann residual counter must consume; it is not
+itself the inverse-Ackermann theorem.
+
+The stricter Tarjan event split now also counts the edge directly into a root
+as cheap per-find overhead. The profile
+`runChargedFullCompressionStrictScheduledEventCost_profile` decomposes a run
+into root-edge, strict cross-level, strict same-level residual, and link
+events. Under valid-node operation sequences,
+`runChargedFullCompressionCost_le_strictScheduledResiduals_add_five_mul_length_of_valid`
+reduces cost to strict cross/residual events plus linear overhead. The local
+lemmas `fullCompressFindScheduleRootEdgeCount_le_two_of_findRoot?`,
+`fullCompressFindScheduleStrictResidualCount_le_traceRootParentRankSlack_of_findRoot?`,
+`fullCompressFindCosted_strictResidual_parent_rank_progress_of_trace_mem`,
+`fullCompressFindCosted_strictResidual_parent_rank_progress_of_residual_node_mem`,
+`runChargedFullCompressionScheduleStrictResidualNodes_length`, and
+`fullCompressFindStrictIteratedLogScheduleCrossCount_le_traceLevelGap_of_findRoot?`
+record the refined Tarjan bookkeeping boundary: root/root-edge events are
+constant per successful find, strict residual events have positive rank slack,
+strict residual traversals strictly raise that node's parent rank after full
+compression, the strict residual counter is represented by an explicit event
+node list over the whole run, and strict iterated-log cross events are still
+paid by the existing level-gap potential. The still-open theorem is to bound
+those strict same-level residual event nodes by a recursively indexed
+Ackermann/alpha counter over the whole operation sequence.
+
+The strict residual stream now also has a data-carrying event-record layer.
+`runChargedFullCompressionScheduleStrictResidualEvents_length` proves that the
+whole-run event-record list has exactly the strict residual count, and
+`runChargedFullCompressionScheduleStrictResidualEvents_rankProgress` proves
+every event records `oldParentRank < rootRank`. The full-find bridges
+`fullCompressFindScheduleStrictResidualEvents_parent?_eq_root_of_mem` and
+`fullCompressFindScheduleStrictResidualEvents_rootRank_eq_after_rank_of_mem`
+connect each event record back to the concrete parent rewrite and post-find
+rank snapshot. The rank-update hooks `rank_le_rankAfterUnionByRank`,
+`chargedUnionCosted_rank_le`, and
+`runChargedFullCompressionOpsCosted_rank_le` record that union-by-rank and the
+charged mixed-operation runner never decrease ranks. These are still support
+lemmas for the future Tarjan packing theorem, not the packing theorem itself:
+the missing step is an ordered same-node residual-event bound over this stream.
 
 ## What Is Not Claimed Yet
 
@@ -611,13 +744,20 @@ rank-gap, log-rank, rank-bucket, and rank-slack nonzero-potential checkpoints ar
 ## Next Theorem Targets
 
 1. Replace the raw residual component of `tarjanLevelIndexPotential` with a
-   recursively bucketed/Ackermann-indexed residual counter, so the index itself
-   shrinks toward an alpha-style bound rather than carrying within-level rank
-   slack verbatim. The new counter must avoid the collapse captured by
+   recursively bucketed/Ackermann-indexed residual counter over the strict
+   root-edge-aware sequence/event interface. The new counter must avoid the
+   collapse captured by
    `tarjanLevelIndexPotential_eq_rankSlackPotential_of_forall_gap_le`.
-2. Split the current invariant-carrying backend state into executable payload
+2. Prove the same-level residual-event bound for valid operation sequences:
+   this is the missing theorem between
+   `runChargedFullCompressionCost_le_strictScheduledResiduals_add_five_mul_length_of_valid`
+   and a true `m * alpha(m,n) + O(m)` Tarjan statement.
+3. Add an executable bounded alpha/Ackermann schedule and connect it to the
+   residual-event counter, rather than using the current fixed iterated-log
+   `iteratedLogRankSchedule`.
+4. Split the current invariant-carrying backend state into executable payload
    fields versus proof-only certificates, so a future array-backed backend can
    share the same `RepresentationBackend` theorem shape.
-3. Promote the log-rank and bucketed checkpoints from size-preserving potential
+5. Promote the log-rank and bucketed checkpoints from size-preserving potential
    scaffolds to a path-compression-aware potential that can decrease on
    compression rather than merely pay from a bounded credit term.

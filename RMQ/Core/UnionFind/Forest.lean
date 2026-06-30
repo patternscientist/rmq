@@ -815,6 +815,40 @@ def rootMassAfterUnionByRank
         rootMassAfterRootLinkByRank rank mass rootX rootY
   | _, _ => mass
 
+theorem rank_le_bumpRank (rank : Nat -> Nat) (root i : Nat) :
+    rank i <= bumpRank rank root i := by
+  unfold bumpRank
+  by_cases hi : i = root
+  · simp [hi]
+  · simp [hi]
+
+theorem rank_le_rankAfterRootLinkByRank
+    (rank : Nat -> Nat) (rootX rootY i : Nat) :
+    rank i <= rankAfterRootLinkByRank rank rootX rootY i := by
+  unfold rankAfterRootLinkByRank
+  by_cases hxy : rank rootX < rank rootY
+  · simp [hxy]
+  · by_cases hyx : rank rootY < rank rootX
+    · simp [hxy, hyx]
+    · simpa [hxy, hyx] using rank_le_bumpRank rank rootX i
+
+theorem rank_le_rankAfterUnionByRank
+    (forest : ParentForest) (rank : Nat -> Nat) (x y i : Nat) :
+    rank i <= forest.rankAfterUnionByRank rank x y i := by
+  unfold rankAfterUnionByRank
+  cases hx : forest.findRoot? x with
+  | none =>
+      simp
+  | some rootX =>
+      cases hy : forest.findRoot? y with
+      | none =>
+          simp
+      | some rootY =>
+          by_cases hsame : rootY = rootX
+          · simp [hsame]
+          · simpa [hsame] using
+              rank_le_rankAfterRootLinkByRank rank rootX rootY i
+
 @[simp] theorem rootLink_size
     (forest : ParentForest) (fromRoot toRoot : Nat) :
     (forest.rootLink fromRoot toRoot).size = forest.size := by
@@ -3805,6 +3839,16 @@ theorem fullCompressFindCosted_cost_eq_trace_length
     (backend.unionCosted x y).cost = 1 := by
   rfl
 
+theorem unionCosted_rank_le
+    (backend : NoCompressionRankedMassBackendState) (x y i : Nat) :
+    backend.state.rank i <=
+      ((backend.unionCosted x y).erase).state.rank i := by
+  unfold unionCosted unionResult
+  simp [NoCompressionRankedMassForest.unionCosted]
+  exact
+    backend.state.forest.rank_le_rankAfterUnionByRank
+      backend.state.rank x y i
+
 @[simp] theorem unionManyCosted_nil
     (backend : NoCompressionRankedMassBackendState) :
     backend.unionManyCosted [] = Costed.pure backend := by
@@ -5312,6 +5356,85 @@ theorem tarjanLevelIndexPotential_eq_rankSlackPotential_of_forall_gap_le
   exact
     backend.tarjanLevelResidualPotentialOver_eq_rankSlackPotentialOver_of_forall_gap_le
       (List.range backend.state.forest.size) hle
+
+/--
+Sum an arbitrary node index over a finite node list.
+
+This is the abstract form of the tempting "make the residual smaller by
+choosing a better local index" design.  The collapse theorem below explains
+why the additive complement of such an index is not enough by itself.
+-/
+def subtractiveIndexPotentialOver (index : Nat -> Nat) : List Nat -> Nat
+  | [] => 0
+  | x :: xs => index x + subtractiveIndexPotentialOver index xs
+
+/--
+Residual complement of an arbitrary node index under the existing rank-slack
+counter.
+-/
+def subtractiveResidualPotentialOver
+    (backend : NoCompressionRankedMassBackendState)
+    (index : Nat -> Nat) : List Nat -> Nat
+  | [] => 0
+  | x :: xs =>
+      (backend.nodeFindRootParentRankSlack x - index x) +
+        backend.subtractiveResidualPotentialOver index xs
+
+def subtractiveResidualIndexPotential
+    (backend : NoCompressionRankedMassBackendState)
+    (index : Nat -> Nat) : Nat :=
+  subtractiveIndexPotentialOver index (List.range backend.state.forest.size) +
+    backend.subtractiveResidualPotentialOver index
+      (List.range backend.state.forest.size)
+
+theorem subtractiveResidualIndexPotentialOver_eq_rankSlackPotentialOver_of_forall_index_le
+    (backend : NoCompressionRankedMassBackendState)
+    (index : Nat -> Nat) :
+    forall (xs : List Nat),
+      (forall x, x ∈ xs -> index x <= backend.nodeFindRootParentRankSlack x) ->
+      subtractiveIndexPotentialOver index xs +
+          backend.subtractiveResidualPotentialOver index xs =
+        backend.rankSlackPotentialOver xs
+  | [], _hle => by
+      simp [subtractiveIndexPotentialOver, subtractiveResidualPotentialOver,
+        rankSlackPotentialOver]
+  | x :: xs, hle => by
+      have hx :
+          index x <= backend.nodeFindRootParentRankSlack x :=
+        hle x (by simp)
+      have hxs :
+          forall y, y ∈ xs ->
+            index y <= backend.nodeFindRootParentRankSlack y := by
+        intro y hy
+        exact hle y (by simp [hy])
+      have htail :=
+        subtractiveResidualIndexPotentialOver_eq_rankSlackPotentialOver_of_forall_index_le
+          backend index xs hxs
+      simp [subtractiveIndexPotentialOver, subtractiveResidualPotentialOver,
+        rankSlackPotentialOver]
+      omega
+
+/--
+Formal obstruction for additive residual-counter refinements.
+
+Any design that chooses a node-local index bounded by rank slack and then adds
+that index to its complement `rankSlack - index` is extensionally the existing
+`rankSlackPotential`.  A true Tarjan residual counter therefore cannot be just
+another additive split of the same local rank-slack units; it must count
+events/indices with additional sequence or bucket structure.
+-/
+theorem subtractiveResidualIndexPotential_collapse_obstruction
+    (backend : NoCompressionRankedMassBackendState)
+    (index : Nat -> Nat)
+    (hle :
+      forall x, x ∈ List.range backend.state.forest.size ->
+        index x <= backend.nodeFindRootParentRankSlack x) :
+    backend.subtractiveResidualIndexPotential index =
+      rankSlackPotential backend := by
+  unfold subtractiveResidualIndexPotential rankSlackPotential
+  exact
+    backend.subtractiveResidualIndexPotentialOver_eq_rankSlackPotentialOver_of_forall_index_le
+      index (List.range backend.state.forest.size) hle
 
 theorem compressFindCosted_nodeFindRootTarjanLevelGap_eq_zero_of_findRoot?
     (backend : NoCompressionRankedMassBackendState)

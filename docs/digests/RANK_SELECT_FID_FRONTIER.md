@@ -4,6 +4,13 @@ Snapshot: 2026-06-28. This note digests the rank/select compressed/FID spoke
 after the log-chunk primary-budget bridge, the table/RAM route-directory
 envelope, and the split-width route-vs-class/length repair merged to `main`.
 
+Superseded frontier note: the concrete fixed-weight compressed/FID family
+surface has since landed as
+`RMQ.RankSelect.compressedFIDFixedWeightFamilyProfile`; see
+`docs/digests/RANK_SELECT_COMPRESSED_FID_2026_06_29.md`. The open items below
+should now be read as historical route-constructor gaps that informed the
+sub-log/Packed-Clark capstone, not as current blockers.
+
 This note is for a reader who may not know rank/select. For a bitvector,
 `access i` asks for the bit at position `i`; `rank b i` counts how many bits
 equal to `b` appear before position `i`; `select b k` asks where the `k`th
@@ -116,20 +123,20 @@ The local and ambient construction anchors are:
 
 ## Skeptical Grad Student Questions
 
-**Did this close compressed/FID rank/select?**
+**Did this snapshot close compressed/FID rank/select?**
 
-No. It closed a route-and-chunk layer needed by the global constructor, proved
+At the time, no. It closed a route-and-chunk layer needed by the global constructor, proved
 that the specialized computed-RRR log-chunk envelope cannot itself be the final
 constructor target with fixed local query cost, and then added the replacement
 charged table/RAM route-directory envelope. The latest step consumes the
 log-chunk primary block-code budget in that table/RAM profile, proves that the
 old single-width route/class-length design is itself obstructed, and adds the
 split-width table/RAM profile that separates route fields from local
-class/length fields. The remaining public compressed/FID theorem needs a
-concrete instantiation of that split-width family with payload-backed route
-directories and a counted shared decoder payload. The dense log-chunk decoder
-and route-width class/length shortcuts are now formal dead ends, not missing
-lemmas.
+class/length fields. This historical open item has since been superseded by
+`RMQ.RankSelect.compressedFIDFixedWeightFamilyProfile`, which closes the public
+fixed-weight compressed/FID family surface through the sub-log/Packed-Clark
+path. The dense log-chunk decoder and route-width class/length shortcuts remain
+formal dead ends, not missing lemmas.
 
 **Why was the primary budget hard?**
 

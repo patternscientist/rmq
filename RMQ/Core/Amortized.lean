@@ -50,6 +50,18 @@ theorem compose
   unfold Bound at h1 h2 ⊢
   omega
 
+/--
+A deliberately weak but useful accounting sanity check: if the charged credit is
+allowed to include the exact post-minus-pre potential delta, the local
+potential-method obligation is automatic.  Backends using this shape are valid
+scaffolding, but the delta credit itself is not a uniform amortized bound.
+-/
+theorem deltaCredit
+    (actual before after : Nat) :
+    Bound actual before after (actual + after - before) := by
+  unfold Bound
+  omega
+
 /-- Costed form of `Bound`. -/
 def CostedBound (x : Costed α) (before after credit : Nat) : Prop :=
   Bound x.cost before after credit
@@ -80,6 +92,18 @@ theorem costed_bind
       potential0 potential2 (credit1 + credit2) := by
   unfold CostedBound
   simpa [Costed.cost_bind] using compose h1 h2
+
+theorem costed_map
+    (f : α -> β) {x : Costed α} {before after credit : Nat}
+    (h : CostedBound x before after credit) :
+    CostedBound (Costed.map f x) before after credit := by
+  unfold CostedBound at h ⊢
+  simpa using h
+
+theorem costed_deltaCredit
+    (x : Costed α) (before after : Nat) :
+    CostedBound x before after (x.cost + after - before) :=
+  deltaCredit x.cost before after
 
 end Amortized
 

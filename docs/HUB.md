@@ -19,6 +19,8 @@ import RMQ.Core.ModelHub
 These import only:
 
 - `RMQ.Core.Cost`
+- `RMQ.Core.Amortized`
+- `RMQ.Core.AmortizedSequence`
 - `RMQ.Core.RAM`
 - `RMQ.Core.Refine`
 - `RMQ.Core.TableModel`
@@ -31,6 +33,10 @@ tours, or backend implementations.
 ## Interfaces
 
 - `Costed` is the lightweight value-plus-cost carrier.
+- `Amortized` provides the potential-method local inequality, costed
+  composition lemmas, and explicit delta-credit scaffolding.
+- `AmortizedSequence` provides the reusable sequence telescope interface:
+  local cost/potential bounds compose over a finite operation run.
 - `RAM.Exec` is the hardened shallow primitive-trace substrate. Clients build
   traces through typed primitives such as `readArray?`, `writeArray?`,
   `pushArray`, `branch`, and comparisons.

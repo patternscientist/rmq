@@ -7,17 +7,12 @@ explicit level-index potential checkpoint. The checked code now has a reusable
 level/residual potential interface, but does not yet prove an
 inverse-Ackermann bound.
 
-This note assumes no prior union-find background. Union-find maintains a
-partition of elements. `find x` returns the representative of `x`'s set.
-`union x y` merges two sets. A parent-pointer forest implements this by making
-each node point upward toward a root representative. Path compression rewrites
-the parent pointers seen during `find` so future finds are shorter.
-
 ## What Changed Conceptually
 
-The stable union-find spoke already has a concrete parent-pointer forest,
-union-by-rank invariants, executable root-mass accounting, full path
-compression, and representation-level amortized backends.
+The union-find spoke has moved past a pure specification. It now has a concrete
+parent-pointer forest representation, union-by-rank invariants, executable
+root-mass accounting, full path compression, and representation-level
+amortized backends.
 
 The current amortization story has nine rungs:
 
@@ -54,47 +49,34 @@ multilevel drop boundary.
 
 ## Plain English Story
 
-The semantic boundary is `RMQ.UnionFind.State.SamePartition`: two concrete
-forests may choose different representatives, but they are equivalent if they
-induce the same partition on valid nodes. The forest refinement theorem
-`RMQ.UnionFind.Forest.parentForestRefinement_profile` says executable
-`ParentForest.findRoot?` agrees with abstract `State.find?`.
+Union-find maintains a partition of elements. The reference state is
+`RMQ.UnionFind.State`; `State.find?` returns a representative, and
+`State.unionSpec` merges two components. Concrete forests are allowed to choose
+different representatives as long as they induce the same partition, so the
+semantic boundary is `RMQ.UnionFind.State.SamePartition`.
 
-The stable compression theorem
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRepresentationBackend_profile`
-checks that full compression follows the original parent chain, rewrites every
-visited node to the returned root, and preserves the represented partition.
+The concrete representation is `RMQ.UnionFind.Forest.ParentForest`. A valid
+forest has in-bounds parent pointers and a root reachable from every valid
+node. The theorem `RMQ.UnionFind.Forest.parentForestRefinement_profile` says
+the executable root search `ParentForest.findRoot?` agrees with the abstract
+`State.find?`.
 
-The stable rank-slack backend
-`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRankSlackSizeUnionAmortizedBackend_profile`
-pays successful full-compression find by a potential drop plus constant `2`.
-Its union credit is still coarse:
-`rankBucketPotential backend + 1`.
+Union-by-rank needs more than parent pointers. The forest carries rank and
+mass facts. `RankPowerMassInvariant` proves the classical size floor
+`2 ^ rank root <= mass root`. That gives logarithmic rank bounds:
+`RankPowerMassInvariant.rank_le_log2_mass` and
+`RankPowerMassInvariant.rank_le_log2_size`.
 
-The Tarjan-level and level-index scaffold adds these handles:
-
-- `RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelIter`;
-- `RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanRankLevel`;
-- `RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.nodeRootParentTarjanLevelGap`;
-- `RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.nodeRootParentTarjanResidualSlack`;
-- `RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelPotential`;
-- `RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.traceRootParentRankSlack_le_tarjanLevelGap_add_residual`;
-- `RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelPotential_fullCompressFindCosted_add_traceLevelGap_le_of_findRoot?`;
-- `RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_cost_add_tarjanLevelPotential_le_tarjanLevelFindCredit`;
-- `RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.unionCosted_cost_add_tarjanLevelPotential_le_tarjanLevelUnionCredit`;
-- `RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanLevelAmortizedBackend_profile`.
-
-In words: the proof defines levels of ranks by repeatedly taking logarithms.
-For now the concrete level is fixed as
-`tarjanRankLevel rank = tarjanLevelIter 2 rank`. A find trace may contain
-edges that jump across these levels and edges that stay within a level. The
-potential pays the cross-level jumps. The residual within-level part is still
-charged explicitly.
+Full compression is checked as a concrete operation. It follows the original
+parent chain, rewrites every node in the discovered trace to the returned
+root, and preserves the represented partition. The key representation theorem
+is
+`RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionRepresentationBackend_profile`.
 
 ## Live Assumptions
 
 - Costs are modeled with `Costed`, not measured Lean runtime.
-- The forest is list-backed and proof-friendly, not a mutable-array
+- The forest is list-backed and proof-friendly. It is not a mutable-array
   implementation.
 - Invariants such as `RootMassInvariant` and `RankPowerMassInvariant` are proof
   certificates unless a later representation split counts them as executable
@@ -117,6 +99,25 @@ charged explicitly.
 - `tarjanRankLevel` is currently the fixed phase `tarjanLevelIter 2`; the
   inverse-Ackermann theorem will need a phase schedule tied to operation counts
   or rank universe parameters.
+- The architecture pass in `UNION_FIND_TARJAN_ARCHITECTURE.md` now makes the
+  next boundary sequence-level. The first part has landed: `UFOp`,
+  `State.runOpsSpec`, `RepresentationBackend.runOpsCosted`,
+  `RepresentationBackend.runOpsCosted_refinement_profile`, and
+  `RepresentationAmortizedBackend.runOpsCosted_amortized` provide the mixed
+  operation runner and telescope theorem. Trace-event extraction has landed in
+  `TarjanEvents.lean`, including a root-edge-aware strict classifier. The
+  root-link/public-union caveat is now split explicitly by `chargedUnionCosted`,
+  which charges two full-compression finds before the final rank-guided link.
+  The event-record follow-up now carries old-parent/root rank snapshots for
+  strict residual events, proves every record has strict rank progress, ties
+  full-find records to the concrete parent rewrite, and exposes rank
+  monotonicity across charged operation runs.
+  A Mathlib-free Ackermann schedule and a sequence theorem bounding strict
+  same-level residual events still need to land before the residual is consumed
+  in an alpha-style profile.
+- Delta credits are explicitly marked as scaffolding by the checked shared
+  lemmas `RMQ.Amortized.deltaCredit` and
+  `RMQ.Amortized.costed_deltaCredit`.
 
 ## Theorem Anchors
 
@@ -132,6 +133,33 @@ charged explicitly.
 #check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanLevelCleanCreditAmortizedBackend_profile
 #check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanPhaseCountAmortizedBackend_profile
 #check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressionTarjanLevelIndexAmortizedBackend_profile
+#check RMQ.UnionFind.RepresentationBackend.runOpsCosted_refinement_profile
+#check RMQ.UnionFind.RepresentationAmortizedBackend.runOpsCosted_amortized
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runFullCompressionOpsCosted_refinement_profile
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runFullCompressionTarjanLevelIndexAmortized_profile
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.chargedUnionCosted_refinement_profile
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.chargedUnionCosted_rank_le
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionOpsCosted_refinement_profile
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionOpsCosted_rank_le
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionTarjanLevelIndexAmortized_profile
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionEventCost_profile
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionScheduledEventCost_profile
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionStrictScheduledEventCost_profile
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionFixedUniverse_profile
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionCost_le_strictScheduledResiduals_add_five_mul_length_of_valid
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindScheduleRootEdgeCount_le_two_of_findRoot?
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindScheduleStrictResidualCount_le_traceRootParentRankSlack_of_findRoot?
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_strictResidual_parent_rank_progress_of_trace_mem
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindScheduleStrictResidualNodes_length
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_strictResidual_parent_rank_progress_of_residual_node_mem
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionScheduleStrictResidualNodes_length
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindScheduleStrictResidualEvents_length
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindScheduleStrictResidualEvents_rankProgress
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindScheduleStrictResidualEvents_parent?_eq_root_of_mem
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindScheduleStrictResidualEvents_rootRank_eq_after_rank_of_mem
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionScheduleStrictResidualEvents_length
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionScheduleStrictResidualEvents_rankProgress
+#check RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindStrictIteratedLogScheduleCrossCount_le_traceLevelGap_of_findRoot?
 ```
 
 The cost/drop bridges behind the amortized checkpoints include:
@@ -152,16 +180,27 @@ The cost/drop bridges behind the amortized checkpoints include:
 - `RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelIndexPotential_fullCompressFindCosted_add_traceRootParentRankSlack_le_of_findRoot?`;
 - `RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_cost_add_tarjanLevelIndexPotential_le_tarjanLevelIndexFindCredit`.
 - `RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.tarjanLevelIndexPotential_eq_rankSlackPotential_of_forall_gap_le`.
+- `RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionStrictScheduledEventCost_profile`;
+- `RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionCost_le_strictScheduledResiduals_add_five_mul_length_of_valid`;
+- `RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindScheduleRootEdgeCount_le_two_of_findRoot?`;
+- `RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindScheduleStrictResidualCount_le_traceRootParentRankSlack_of_findRoot?`;
+- `RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_strictResidual_parent_rank_progress_of_trace_mem`;
+- `RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindScheduleStrictResidualNodes_length`;
+- `RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindCosted_strictResidual_parent_rank_progress_of_residual_node_mem`;
+- `RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.runChargedFullCompressionScheduleStrictResidualNodes_length`;
+- `RMQ.UnionFind.Forest.ParentForest.NoCompressionRankedMassBackendState.fullCompressFindStrictIteratedLogScheduleCrossCount_le_traceLevelGap_of_findRoot?`.
 
 ## Skeptical Grad Student Questions
 
 **Is this Tarjan's inverse-Ackermann theorem?**
 
-No. It is a Tarjan-shaped potential interface. The proof separates cross-level
-work from residual work, but it does not yet prove that the residual and union
-credits are bounded by an inverse-Ackermann function over operation sequences.
+No. The current strongest theorem is a charged sequence/event checkpoint with a
+root-edge-aware strict classifier. It proves that valid-node run cost reduces
+to strict cross-level plus strict same-level residual events, with root-edge
+and link work absorbed into linear overhead. It does not yet prove the
+Ackermann/alpha bound on those strict residual events.
 
-**What did the scaffold buy?**
+**What does "bucket/slack frontier" mean here?**
 
 It means the code has enough rank/mass/log-rank structure to define checked
 rank levels and split each parent-to-root rank gap. The level potential pays
@@ -178,21 +217,20 @@ bucketed/Ackermann-indexed counter. The obstruction theorem now explains why:
 the current residual-as-difference counter is algebraically rank slack again
 under the natural sub-gap condition.
 
-**Where are the remaining large credits hiding?**
+**Why not call the proof done after log-rank credit?**
 
-In `traceRootParentTarjanResidualSlack`, which is part of
-`tarjanLevelFindCredit`, and in `tarjanLevelPotentialBound`, which defines
-`tarjanLevelUnionCredit`. Those are explicit, not hidden; they are just not
-yet the small classical credits.
+Because log-rank is still too large for the classical union-find theorem. The
+Tarjan result needs a subtler accounting where path compression spends and
+releases credits across rank buckets.
 
 **What should the next proof worker actually build?**
 
 Replace the raw residual component of `tarjanLevelIndexPotential` with a
-recursively bucketed/Ackermann-indexed residual counter. The target should keep
-the phase-count successful-find credit while making the residual index itself
-alpha-shaped instead of carrying within-level rank slack verbatim, and should
-avoid the collapse theorem for residual-as-difference accounting.
-
-Generalize `tarjanRankLevel = tarjanLevelIter 2` to a phase schedule controlled
-by operation count or rank universe, then prove residual find credit and union
-credit bounds that assemble into an inverse-Ackermann-style amortized theorem.
+recursively bucketed/Ackermann-indexed residual counter, but do it over the
+root-edge-aware mixed-operation sequence/event interface rather than as another
+isolated one-step backend wrapper. The immediate consumer is
+`runChargedFullCompressionCost_le_strictScheduledResiduals_add_five_mul_length_of_valid`:
+bound the event-node list tracked by
+`runChargedFullCompressionScheduleStrictResidualNodes_length` by an alpha-shaped
+operation-sequence budget while avoiding the collapse theorem for
+residual-as-difference accounting.

@@ -3917,6 +3917,104 @@ theorem compressedFIDFixedWeightConstantQueryProfile
   exact
     RMQ.RankSelectSpec.fixedWeightSubLogConcretePackedClarkProfile bits
 
+/--
+Concrete compressed/FID directory for one fixed-weight bitvector instance.
+
+The payload is the sub-log packed-Clark construction.  The fields expose the
+actual charged access/rank/select queries; proofs and modeled cost bounds stay
+in the theorem fields and are not counted as payload bits.
+-/
+def compressedFIDFixedWeightDirectory
+    (bits : List Bool) :
+    CompressedDirectory bits
+      (compressedFIDFixedWeightOverhead bits.length)
+      compressedFIDFixedWeightQueryCost where
+  payload := compressedFIDFixedWeightPayload bits
+  payload_length_le :=
+    (compressedFIDFixedWeightConstantQueryProfile bits).1
+  accessCosted := RMQ.RankSelectSpec.subLogAccessCosted bits
+  rankCosted := RMQ.RankSelectSpec.subLogRankCosted bits
+  selectCosted :=
+    RMQ.RankSelectSpec.subLogSelectFromPackedClarkRouteCosted bits
+  access_cost_le := by
+    intro i
+    exact
+      ((compressedFIDFixedWeightConstantQueryProfile bits).2.2.1 i).1
+  rank_cost_le := by
+    intro target pos
+    exact
+      ((compressedFIDFixedWeightConstantQueryProfile bits).2.2.2.1
+        target pos).1
+  select_cost_le := by
+    intro target occurrence
+    exact
+      ((compressedFIDFixedWeightConstantQueryProfile bits).2.2.2.2
+        target occurrence).1
+  access_exact := by
+    intro i
+    exact
+      ((compressedFIDFixedWeightConstantQueryProfile bits).2.2.1 i).2
+  rank_exact := by
+    intro target pos
+    exact
+      ((compressedFIDFixedWeightConstantQueryProfile bits).2.2.2.1
+        target pos).2
+  select_exact := by
+    intro target occurrence
+    exact
+      ((compressedFIDFixedWeightConstantQueryProfile bits).2.2.2.2
+        target occurrence).2
+
+/--
+Concrete fixed-weight compressed/FID family.
+
+This is the reusable family object behind the pointwise packed-Clark theorem:
+for every stored bitvector it supplies the same construction, the same
+modeled query-cost bound, and an `o(n)` auxiliary-overhead function.
+-/
+def compressedFIDFixedWeightFamily :
+    CompressedFamily
+      compressedFIDFixedWeightOverhead
+      compressedFIDFixedWeightQueryCost where
+  directory := compressedFIDFixedWeightDirectory
+  overhead_littleO := compressedFIDFixedWeightOverheadLittleO
+
+/--
+Reusable compressed/FID family theorem for the concrete fixed-weight
+packed-Clark construction.
+
+The statement is the public family shape: a `LittleOLinear` overhead function
+and, for every bitvector, a payload bounded by
+`fixedWeightPayloadBudget bits + o(n)` with exact constant-modeled access,
+rank, and select.  It is still a payload-backed word-RAM/indexed-read model
+statement, not a Lean-runtime claim.
+-/
+theorem compressedFIDFixedWeightFamilyProfile :
+    SuccinctSpace.LittleOLinear compressedFIDFixedWeightOverhead /\
+      forall bits : List Bool,
+        ((compressedFIDFixedWeightFamily.directory bits).payload.length <=
+          fixedWeightPayloadBudget bits +
+            compressedFIDFixedWeightOverhead bits.length) /\
+          (forall i,
+            ((compressedFIDFixedWeightFamily.directory bits).accessQueryCosted
+                i).cost <= compressedFIDFixedWeightQueryCost /\
+              ((compressedFIDFixedWeightFamily.directory bits).accessQueryCosted
+                i).erase = bits[i]?) /\
+          (forall target pos,
+            ((compressedFIDFixedWeightFamily.directory bits).rankQueryCosted
+                target pos).cost <= compressedFIDFixedWeightQueryCost /\
+              ((compressedFIDFixedWeightFamily.directory bits).rankQueryCosted
+                target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            ((compressedFIDFixedWeightFamily.directory bits).selectQueryCosted
+                target occurrence).cost <=
+                compressedFIDFixedWeightQueryCost /\
+              ((compressedFIDFixedWeightFamily.directory bits).selectQueryCosted
+                target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact compressedFixedWeightConstantQueryProfile compressedFIDFixedWeightFamily
+
 /-- Auxiliary-overhead budget for the concrete Jacobson/Clark family. -/
 abbrev jacobsonClarkOverhead :=
   RMQ.GenericSelect.jacobsonClarkRankSelectOverhead

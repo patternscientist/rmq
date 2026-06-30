@@ -44,6 +44,9 @@ if ($LASTEXITCODE -ne 0) { Fail "lake build RMQBPNavigation failed" }
 lake build RMQUnionFind
 if ($LASTEXITCODE -ne 0) { Fail "lake build RMQUnionFind failed" }
 
+lake build VerifiedDS
+if ($LASTEXITCODE -ne 0) { Fail "lake build VerifiedDS failed" }
+
 lake build RMQArchive
 if ($LASTEXITCODE -ne 0) { Fail "lake build RMQArchive failed" }
 
@@ -54,10 +57,10 @@ lake build RMQ.Core.GenericSelectBPCompat
 if ($LASTEXITCODE -ne 0) { Fail "lake build RMQ.Core.GenericSelectBPCompat failed" }
 
 # 2. Proof-hygiene scan: any hit fails the gate.
-$hygiene = rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ RMQExamples RMQHub.lean RMQRankSelect.lean RMQBPNavigation.lean RMQUnionFind.lean RMQArchive.lean RMQExamples.lean lakefile.toml
+$hygiene = rg -n "\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib" RMQ RMQExamples RMQHub.lean RMQRankSelect.lean RMQBPNavigation.lean RMQUnionFind.lean VerifiedDS.lean RMQArchive.lean RMQExamples.lean lakefile.toml
 if ($hygiene) { Fail "hygiene scan hit:`n$hygiene" }
 
-$nd = rg -n "native_decide|Lean\.ofReduceBool" RMQ RMQExamples RMQHub.lean RMQRankSelect.lean RMQBPNavigation.lean RMQUnionFind.lean RMQArchive.lean RMQExamples.lean
+$nd = rg -n "native_decide|Lean\.ofReduceBool" RMQ RMQExamples RMQHub.lean RMQRankSelect.lean RMQBPNavigation.lean RMQUnionFind.lean VerifiedDS.lean RMQArchive.lean RMQExamples.lean
 if ($nd) { Fail "native_decide / ofReduceBool present in source:`n$nd" }
 
 # 3. Curated trust-base check: load-bearing theorems use only standard axioms.
