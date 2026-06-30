@@ -284,6 +284,8 @@ shape, and the charged local table/RAM block scaffolding.
 #print axioms RMQ.RankSelectSpec.CompressedBitVectorRankSelectDirectory.profile
 #print axioms RMQ.RankSelectSpec.CompressedBitVectorRankSelectFamily.fixed_weight_constant_query_profile
 #print axioms RMQ.RankSelect.compressedFixedWeightConstantQueryProfile
+#print axioms RMQ.RankSelectSpec.fixedWeightSubLogConcretePackedClarkProfile
+#print axioms RMQ.RankSelect.compressedFIDFixedWeightConstantQueryProfile
 #print axioms RMQ.RankSelect.jacobsonClarkNPlusOConstantQuery
 #print axioms RMQ.RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery
 #print axioms RMQ.GenericSelect.sparseExceptionSelectSource_profile

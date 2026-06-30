@@ -736,3 +736,9 @@ checked compatibility surfaces live in `scripts/archive_axiom_check.lean`.
 #print axioms RMQ.SuccinctSpace.twoLevelLayoutOverhead_littleO
 #print axioms RMQ.SuccinctSpace.two_pow_subLogBlockSize_sq_le
 #print axioms RMQ.SuccinctSpace.subLogBlockTableRows_littleO
+
+-- Standalone rank/select spoke, including the concrete fixed-weight
+-- compressed/FID capstone surface.
+#print axioms RMQ.RankSelectSpec.fixedWeightSubLogConcretePackedClarkProfile
+#print axioms RMQ.RankSelect.compressedFIDFixedWeightConstantQueryProfile
+#print axioms RMQ.Headlines.rankSelectCompressedFIDFixedWeightConstantQuery

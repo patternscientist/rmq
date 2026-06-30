@@ -27,4 +27,5 @@ the BP-native succinct capstone.
 #print axioms RMQ.SuccinctFinal.builtGenericSparseExceptionSelectBPCloseAccessFamily_profile
 #print axioms RMQ.Headlines.rankSelectNPlusOConstantQuery
 #print axioms RMQ.Headlines.rankSelectWordBoundedNPlusOConstantQuery
+#print axioms RMQ.Headlines.rankSelectCompressedFIDFixedWeightConstantQuery
 #print axioms RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery

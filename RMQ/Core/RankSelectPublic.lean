@@ -1,6 +1,10 @@
 import RMQ.Core.RankSelectSpec
 import RMQ.Core.RankSelectCompressed
 import RMQ.Core.RankSelectCompressedSplit
+import RMQ.Core.RankSelectCompressedSubLog
+import RMQ.Core.RankSelectCompressedSubLogDirectory
+import RMQ.Core.RankSelectCompressedSubLogRankRoute
+import RMQ.Core.RankSelectCompressedSubLogPackedClark
 import RMQ.Core.GenericSelect.Family
 
 /-!
@@ -3860,6 +3864,58 @@ theorem fixedWeightCompressedAuxiliaryToCompressedFamilyProfile
   exact
     RMQ.RankSelectSpec.FixedWeightCompressedAuxiliaryFamily.toCompressedFamily_fixed_weight_constant_query_profile
       family
+
+/-! ### Concrete fixed-weight compressed/FID capstone -/
+
+/-- Public alias for the concrete compressed/FID auxiliary overhead. -/
+abbrev compressedFIDFixedWeightOverhead :=
+  RMQ.RankSelectSpec.fixedWeightSubLogConcretePackedClarkOverhead
+
+/-- Public alias for the concrete compressed/FID modeled query cost. -/
+abbrev compressedFIDFixedWeightQueryCost :=
+  RMQ.RankSelectSpec.fixedWeightSubLogConcretePackedClarkQueryCost
+
+/-- Public alias for the concrete compressed/FID payload. -/
+abbrev compressedFIDFixedWeightPayload :=
+  RMQ.RankSelectSpec.fixedWeightSubLogConcretePackedClarkPayload
+
+theorem compressedFIDFixedWeightOverheadLittleO :
+    SuccinctSpace.LittleOLinear compressedFIDFixedWeightOverhead := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightSubLogConcretePackedClarkOverhead_littleO
+
+/--
+Concrete fixed-weight compressed/FID profile.
+
+For each bitvector `bits`, this profile stores the fixed-weight primary payload
+plus `o(n)` auxiliary bits and supports exact access, rank, and select with one
+uniform modeled constant query bound.  The cost model is the repository's
+payload-backed word-RAM/indexed-read model, not Lean list runtime.
+-/
+theorem compressedFIDFixedWeightConstantQueryProfile
+    (bits : List Bool) :
+    (compressedFIDFixedWeightPayload bits).length <=
+        fixedWeightPayloadBudget bits +
+          compressedFIDFixedWeightOverhead bits.length /\
+      SuccinctSpace.LittleOLinear compressedFIDFixedWeightOverhead /\
+      (forall i,
+        (RMQ.RankSelectSpec.subLogAccessCosted bits i).cost <=
+            compressedFIDFixedWeightQueryCost /\
+          (RMQ.RankSelectSpec.subLogAccessCosted bits i).erase = bits[i]?) /\
+      (forall target pos,
+        (RMQ.RankSelectSpec.subLogRankCosted bits target pos).cost <=
+            compressedFIDFixedWeightQueryCost /\
+          (RMQ.RankSelectSpec.subLogRankCosted bits target pos).erase =
+            Succinct.rankPrefix target bits pos) /\
+      forall target occurrence,
+        (RMQ.RankSelectSpec.subLogSelectFromPackedClarkRouteCosted
+          bits target occurrence).cost <=
+            compressedFIDFixedWeightQueryCost /\
+          (RMQ.RankSelectSpec.subLogSelectFromPackedClarkRouteCosted
+            bits target occurrence).erase =
+            Succinct.select target bits occurrence := by
+  exact
+    RMQ.RankSelectSpec.fixedWeightSubLogConcretePackedClarkProfile bits
 
 /-- Auxiliary-overhead budget for the concrete Jacobson/Clark family. -/
 abbrev jacobsonClarkOverhead :=

@@ -1,6 +1,6 @@
 # Rank/Select Spoke
 
-Snapshot: 2026-06-27. This note records the first extracted succinct
+Snapshot: 2026-06-29. This note records the first extracted succinct
 data-structure spoke in the RMQ repository: plain bitvector access/rank/select.
 
 ## Import
@@ -67,6 +67,22 @@ It exposes the construction-level storage discipline: the Jacobson rank payload
 words erase to the stored bitvector, and every Jacobson-rank or Clark-select
 payload word read by the concrete adapter has length bounded by
 `SuccinctRank.machineWordBits bits.length`.
+
+The concrete fixed-weight compressed/FID capstone is now also public:
+
+```lean
+RMQ.RankSelect.compressedFIDFixedWeightConstantQueryProfile
+RMQ.Headlines.rankSelectCompressedFIDFixedWeightConstantQuery
+```
+
+For each `bits : List Bool`, it stores the fixed-weight primary payload
+`fixedWeightPayloadBudget bits` plus the concrete sub-log/Packed-Clark
+auxiliary payload, proves that auxiliary overhead is `o(n)`, and proves exact
+access, rank, and select with one uniform modeled constant query bound. This is
+the current reusable theorem surface to cite for the compressed/FID spoke. The
+next cleanup/proof target is to package this pointwise theorem into the
+cleanest family-style API and align it with the future Word-RAM interpreter
+refinement layer.
 
 ## Compressed/FID Surface
 
@@ -733,21 +749,18 @@ The older theorem `fixedWeightLogChunkBlockPayloadBudgetLeLengthAddBound`
 remains as a conservative raw upper bound
 `fixedWeightBlockPayloadBudget (fixedWeightLogChunkBlocksWithSentinel bits)
   <= bits.length + o(n)`.
-The remaining compressed/FID capstone gap is no longer this primary bridge for
-log chunks, nor the abstract replacement envelope: the new
-`FixedWeightAmbientTableRAMRouteDirectoryFamily` supplies the charged
-route-directory/local-decoder family shape, and
-`FixedWeightAmbientTableRAMLogChunkRouteDirectoryFamily` consumes the primary
-block-code budget for sentinel log chunks. The new
-`FixedWeightAmbientTableRAMSplitWidthRouteDirectoryFamily` and
-`FixedWeightAmbientTableRAMLogChunkSplitWidthRouteDirectoryFamily` retire the
-single-width metadata collision by separating route and class/length widths.
-The live gap is now the positive concrete constructor: supply concrete
-route-directory payloads and a genuinely sublinear shared decoder payload for
-that split-width family, then connect the existing chunk-route exactness to
-charged directory reads. A dense all-code decoder for log chunks is ruled out by
-`noFixedWeightLogChunkDenseDecoderLittleO`, and route-width-padded
-class/length metadata is already known not to be `o(n)`.
+That former split-width constructor gap is now closed by the sub-log/Packed-Clark
+path. The new `RankSelectCompressedSubLog*` modules build the concrete
+sub-log chunk decomposition, class/length payload, shared decoder payload,
+rank route, select route, bounded dense-window Clark locator, and final
+Packed-Clark select route. Their public capstone is
+`RMQ.RankSelect.compressedFIDFixedWeightConstantQueryProfile`, which exposes
+the fixed-weight primary payload plus concrete `o(n)` auxiliary payload and
+constant modeled exact access/rank/select. The dense-log-chunk decoder and
+single-width route/class-length designs remain useful archived warnings:
+`noFixedWeightLogChunkDenseDecoderLittleO` and
+`noFixedWeightLogChunkRouteWidthClassLengthOverheadNotLittleO` explain why the
+landed path needed the sub-log/shared-decoder repair.
 
 ## Module Boundary
 

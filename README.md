@@ -55,6 +55,7 @@ Short public aliases live in [`RMQ/Headlines.lean`](RMQ/Headlines.lean).
 | `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack` | Coefficient-correct Catalan lower-bound slack, stated in doubled integer form. |
 | `RMQ.Headlines.rankSelectNPlusOConstantQuery` | Standalone Jacobson/Clark-style plain-bitvector rank/select with `n + o(n)` payload and constant modeled query cost. |
 | `RMQ.Headlines.rankSelectWordBoundedNPlusOConstantQuery` | The rank/select profile strengthened with machine-word-bounded concrete payload reads. |
+| `RMQ.Headlines.rankSelectCompressedFIDFixedWeightConstantQuery` | Fixed-weight compressed/FID rank/select profile with fixed-weight primary payload plus `o(n)` auxiliary payload and constant modeled access/rank/select. |
 
 The construction-level theorem names are intentionally verbose, so that the
 model assumptions and dependency path remain inspectable. See
@@ -95,7 +96,7 @@ At a high level, the repository currently includes:
 - a payload-accounted BP-native succinct RMQ upper bound with `2*n + o(n)`
   payload and constant modeled query cost;
 - a standalone rank/select spoke with public Jacobson/Clark-style profiles and
-  an active compressed/FID frontier; and
+  a concrete fixed-weight compressed/FID capstone surface; and
 - a union-find spoke with finite-partition specs, parent-pointer forest
   refinement, union-by-rank invariants, full-compression refinement, and early
   amortized-analysis checkpoints on the path toward Tarjan-style bounds.
@@ -199,8 +200,8 @@ imports, this material):
 The RMQ capstone is in place. The next development frontier is to reuse and
 stress-test the infrastructure:
 
-1. sharpen the standalone rank/select spoke toward a concrete compressed/FID
-   construction with charged global routing;
+1. package the standalone rank/select compressed/FID capstone as the cleanest
+   reusable family surface and prepare it for Word-RAM interpreter refinement;
 2. deepen balanced-parentheses navigation into a fuller tree-navigation API;
 3. push the union-find spoke from the current Tarjan-level scaffolding toward a
    true inverse-Ackermann amortized theorem; and

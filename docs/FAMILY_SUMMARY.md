@@ -20,7 +20,10 @@ imported by the main `RMQ` root; use the optional `RMQArchive` Lake target/impor
 root for local compatibility checks. The corresponding trust-base checks live
 in `scripts/archive_axiom_check.lean`, which is run by the gate. Short public
 aliases for the main citeable theorem
-surfaces now live in `RMQ/Headlines.lean`.
+surfaces now live in `RMQ/Headlines.lean`.  The standalone rank/select spoke
+now also exposes the concrete fixed-weight compressed/FID capstone
+`RankSelect.compressedFIDFixedWeightConstantQueryProfile`, with headline alias
+`Headlines.rankSelectCompressedFIDFixedWeightConstantQuery`.
 
 This document is the family-level map for the current Lean development. It
 records the module dependency DAG, correctness and cost status by structure,
@@ -305,10 +308,18 @@ abstract evaluator fields; concrete non-oracular instances must expose fixed
 code over the charged reads.
 At the family level, `RankSelect.fixedWeightCompressedAuxiliaryConstantQueryProfile`
 feeds the public compressed theorem shape with payload budget
-`Nat.log2 (binomialCount bits.length (trueCount bits)) + 1 + o(n)`.  This is
-an adapter surface, not yet the final RRR/Clark-style construction: a concrete
-FID instantiation must still replace abstract local evaluators with table/RAM
-code whose exactness follows from the charged read values.
+`Nat.log2 (binomialCount bits.length (trueCount bits)) + 1 + o(n)`.  The
+concrete sub-log/Packed-Clark path now consumes that shape:
+`RankSelect.compressedFIDFixedWeightOverheadLittleO` proves the auxiliary
+overhead is `o(n)`, and
+`RankSelect.compressedFIDFixedWeightConstantQueryProfile` proves, for every
+`bits : List Bool`, payload length
+`fixedWeightPayloadBudget bits + compressedFIDFixedWeightOverhead bits.length`
+and exact access/rank/select under one uniform modeled constant query bound.
+The remaining rank/select development target is no longer "find a positive
+compressed/FID constructor"; it is to package this pointwise capstone behind
+the cleanest reusable family theorem surface and make the same read discipline
+ready for a future first-order Word-RAM interpreter.
 `RankSelect.FixedWeightTableBackedFIDData` is the first stricter pointwise
 query scaffold: access/rank/select are fixed one-read payload-table queries
 with counted table payloads and machine-word-sized entries, exposed by

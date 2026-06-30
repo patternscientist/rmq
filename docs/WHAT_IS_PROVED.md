@@ -13,6 +13,7 @@ The short public theorem aliases live in `RMQ/Headlines.lean`.
 | `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack` | Tight fixed-length RMQ payload lower bound with doubled Catalan slack. |
 | `RMQ.Headlines.rankSelectNPlusOConstantQuery` | Standalone plain-bitvector Jacobson/Clark rank/select family with `n + o(n)` payload and constant modeled query cost. |
 | `RMQ.Headlines.rankSelectWordBoundedNPlusOConstantQuery` | The same public rank/select family, strengthened with machine-word-bounded concrete payload reads. |
+| `RMQ.Headlines.rankSelectCompressedFIDFixedWeightConstantQuery` | Fixed-weight compressed/FID rank/select profile: fixed-weight primary payload plus `o(n)` auxiliary payload, exact access/rank/select, and one constant modeled query bound. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ capstone with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and the matching lower-bound side. |
 
 The original theorem names remain construction-heavy so that their dependencies
@@ -89,6 +90,14 @@ construction-level word discipline: concrete rank payload words erase to the
 stored bitvector, and concrete rank/select payload-word reads are bounded by the
 repository's machine-word-size function.
 
+The fixed-weight compressed/FID capstone is now exposed as
+`RMQ.RankSelect.compressedFIDFixedWeightConstantQueryProfile`, with headline
+alias `RMQ.Headlines.rankSelectCompressedFIDFixedWeightConstantQuery`. For every
+`bits : List Bool`, it counts the enumerative fixed-weight primary payload plus
+`o(n)` auxiliary payload and proves exact access, rank, and select under one
+uniform modeled constant query bound. This is still a model-level theorem, not
+a claim about Lean's runtime representation.
+
 The compressed/FID target surface is also formalized:
 `RMQ.RankSelect.fixedWeightBitstringsLength` counts fixed-weight bitvector
 universes by a local binomial recurrence, and
@@ -114,9 +123,9 @@ access/rank/select, while
 `RMQ.RankSelect.fixedWeightCompressedAuxiliaryToCompressedFamilyProfile` is the
 public adapter theorem for any future auxiliary family that supplies `o(n)`
 overhead and constant bounded reads. This is not yet the full FID construction:
-the remaining work is a concrete global auxiliary layer that avoids the
-full-payload readback cost while still consuming charged payload rather than
-proof-only decoded bits.
+the next presentation step is to package the concrete sub-log/Packed-Clark
+profile behind the cleanest reusable family theorem surface and prepare the
+same construction for a future first-order Word-RAM interpreter refinement.
 The pointwise `RMQ.RankSelect.fixedWeightDependentAuxiliaryDataProfile`
 extends that surface to dependent auxiliary reads: the second read schedule may
 depend on the charged packed-code read values, which is the shape needed by

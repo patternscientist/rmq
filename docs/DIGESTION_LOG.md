@@ -107,6 +107,22 @@ spokes:
 
 ## Current Rank/Select Note
 
+2026-06-29 update: the fixed-weight compressed/FID spoke now has a public
+concrete capstone surface.  `RMQ.RankSelect.compressedFIDFixedWeightConstantQueryProfile`
+states, for each bitvector `bits`, that the enumerative fixed-weight primary
+payload plus the concrete sub-log/Packed-Clark auxiliary payload fits
+`fixedWeightPayloadBudget bits + o(n)` and supports exact access/rank/select
+with one modeled constant query bound.  Plain English: the rank/select spoke
+now has its own compressed analogue of the succinct-RMQ story, scoped to
+fixed-weight/FID payload accounting.  Live assumptions: this is still the
+project's modeled RAM/indexed-read cost layer, not Lean runtime; the next
+cleanup target is a smoother reusable family theorem and eventually a
+first-order Word-RAM interpreter refinement.  A skeptical grad student should
+ask whether the capstone theorem's pointwise profile is packaged cleanly enough
+to reuse outside RMQ, and whether every charged read in that profile can later
+be replayed by an interpreter rather than just trusted as a shallow `Costed`
+computation.
+
 The fixed-weight compressed/FID spoke now separates four issues that were easy
 to conflate. First, log-sized sentinel chunk decompositions have an `o(n)` block
 count. Second, class/length metadata for those chunks is small only when stored
