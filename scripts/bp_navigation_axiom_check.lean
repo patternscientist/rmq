@@ -7,8 +7,8 @@ spoke.
 The full RMQ gate still runs `scripts/axiom_check.lean`. This smaller check is
 for the public BP navigation facade: the close/rank bridge, compact
 close-directory profile, subtree interval navigation profiles, dense concrete
-matching-open/enclose profiles, large-regime profile, and the generic
-payload-live macro/micro family profile.
+matching-open/enclose/matching-close profiles, large-regime profile, and the
+generic payload-live macro/micro family profile.
 -/
 
 #print axioms RMQ.BPNavigation.closeOfInorderCosted_erase
@@ -27,17 +27,22 @@ payload-live macro/micro family profile.
 #print axioms RMQ.BPNavigation.subtreeIntervalOfInorderFastCosted_cost_le
 #print axioms RMQ.BPNavigation.encloseOpenOfInorderFastCosted_erase
 #print axioms RMQ.BPNavigation.encloseOpenOfInorderFastCosted_cost_le
+#print axioms RMQ.BPNavigation.parentOfInorderFastCosted_erase
+#print axioms RMQ.BPNavigation.parentOfInorderFastCosted_cost_le
 #print axioms RMQ.BPNavigation.singletonLcaCloseSemantics_not_matchingOpen_counterexample
 #print axioms RMQ.BPNavigation.shapeAccessCloseRankProfile
 #print axioms RMQ.BPNavigation.shapeAccessCloseRankExcessProfile
 #print axioms RMQ.BPNavigation.shapeAccessSubtreeIntervalProfile
 #print axioms RMQ.BPNavigation.shapeAccessFastSubtreeIntervalProfile
 #print axioms RMQ.BPNavigation.shapeAccessEncloseOpenProfile
+#print axioms RMQ.BPNavigation.shapeAccessParentProfile
 #print axioms RMQ.BPNavigation.ConcreteMatchingOpenEncloseDirectory.profile
 #print axioms RMQ.BPNavigation.ConcreteMatchingOpenEncloseDirectory.matchingOpenCosted_erase_of_lt
 #print axioms RMQ.BPNavigation.ConcreteMatchingOpenEncloseDirectory.encloseOpenCosted_erase_of_lt
+#print axioms RMQ.BPNavigation.ConcreteMatchingOpenEncloseDirectory.matchingCloseCosted_erase_of_lt
 #print axioms RMQ.BPNavigation.concreteShapeAccessFastSubtreeIntervalProfile
 #print axioms RMQ.BPNavigation.concreteShapeAccessEncloseOpenProfile
+#print axioms RMQ.BPNavigation.concreteShapeAccessParentProfile
 #print axioms RMQ.BPNavigation.compactCloseDirectoryProfile
 #print axioms RMQ.BPNavigation.compactCloseDirectoryProfileOfSizeGe
 #print axioms RMQ.BPNavigation.macroMicroTwoNPlusOBuiltQueryProfile

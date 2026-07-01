@@ -783,12 +783,86 @@ def encloseOpenOfInorder?
       | none => none
       | some openPos => encloseOpenOfOpen? shape openPos
 
+/-- Scan prefix positions for the first close matching a given open position. -/
+def matchingCloseSearchRef
+    (shape : RMQ.Cartesian.CartesianShape)
+    (openPos : Nat) : Nat -> Option Nat
+  | 0 => none
+  | fuel + 1 =>
+      match matchingCloseSearchRef shape openPos fuel with
+      | some close => some close
+      | none =>
+          if matchingOpenOfClose? shape fuel = some openPos then
+            some fuel
+          else
+            none
+
+/-- Reference matching-close query for an opening parenthesis position. -/
+def matchingCloseOfOpen?
+    (shape : RMQ.Cartesian.CartesianShape)
+    (openPos : Nat) : Option Nat :=
+  matchingCloseSearchRef shape openPos shape.bpCode.length
+
+/-- Reference parent query returning an inorder parent index. -/
+def parentOfInorder?
+    (shape : RMQ.Cartesian.CartesianShape)
+    (idx : Nat) : Option Nat :=
+  match encloseOpenOfInorder? shape idx with
+  | none => none
+  | some parentOpen =>
+      match matchingCloseOfOpen? shape parentOpen with
+      | none => none
+      | some parentClose =>
+          some
+            (RMQ.Succinct.rankPrefix false shape.bpCode (parentClose + 1) -
+              1)
+
+/-- Enclose-open results lie to the left of the queried open position. -/
+theorem encloseOpenOfOpen?_some_le
+    {shape : RMQ.Cartesian.CartesianShape}
+    {openPos parentOpen : Nat}
+    (hparent : encloseOpenOfOpen? shape openPos = some parentOpen) :
+    parentOpen <= openPos - 1 := by
+  unfold encloseOpenOfOpen? at hparent
+  by_cases hzero : bpPrefixExcess shape openPos = 0
+  · simp [hzero] at hparent
+  · simp [hzero] at hparent
+    exact (matchingOpenSearchRef_some_nearest hparent).1
+
+/-- Enclose-open results for inorder nodes are in-bounds BP positions. -/
+theorem encloseOpenOfInorder?_some_bound
+    {shape : RMQ.Cartesian.CartesianShape}
+    {idx parentOpen : Nat}
+    (hparent : encloseOpenOfInorder? shape idx = some parentOpen) :
+    parentOpen < shape.bpCode.length := by
+  unfold encloseOpenOfInorder? at hparent
+  cases hclose : RMQ.SuccinctSpace.bpCloseOfInorder? shape idx with
+  | none =>
+      simp [hclose] at hparent
+  | some close =>
+      cases hopen : matchingOpenOfClose? shape close with
+      | none =>
+          simp [hclose, hopen] at hparent
+      | some openPos =>
+          simp [hclose, hopen] at hparent
+          have hcloseBound :=
+            RMQ.SuccinctSpace.bpCloseOfInorder?_bounds shape hclose
+          have hopenNearest :=
+            matchingOpenOfClose?_nearest_equal_excess_of_bpCloseOfInorder?
+              hclose hopen
+          have hopenBound : openPos < shape.bpCode.length := by
+            omega
+          have hparentLe :=
+            encloseOpenOfOpen?_some_le hparent
+          omega
+
 /--
 Public tree-navigation component for fast BP navigation.
 
-This packages matching-open and enclose-open queries together. `payloadBits`
-accounts for modeled stored payload, the exactness fields are proof-only, and
-`queryCost` is the model charge for either tree-navigation query.
+This packages matching-open, enclose-open, and matching-close queries together.
+`payloadBits` accounts for modeled stored payload, the exactness fields are
+proof-only, and `queryCost` is the model charge for any one tree-navigation
+query.
 -/
 structure BalancedParensTreeNavigationAccess
     (shape : RMQ.Cartesian.CartesianShape)
@@ -797,10 +871,13 @@ structure BalancedParensTreeNavigationAccess
   payloadBits_le_overhead : payloadBits <= overhead
   matchingOpenCosted : Nat -> Costed (Option Nat)
   encloseOpenCosted : Nat -> Costed (Option Nat)
+  matchingCloseCosted : Nat -> Costed (Option Nat)
   matchingOpen_cost_le :
     forall close, (matchingOpenCosted close).cost <= queryCost
   encloseOpen_cost_le :
     forall openPos, (encloseOpenCosted openPos).cost <= queryCost
+  matchingClose_cost_le :
+    forall openPos, (matchingCloseCosted openPos).cost <= queryCost
   matchingOpen_erase_of_lt :
     forall {close}, close < shape.bpCode.length ->
       (matchingOpenCosted close).erase =
@@ -809,6 +886,10 @@ structure BalancedParensTreeNavigationAccess
     forall {openPos}, openPos < shape.bpCode.length ->
       (encloseOpenCosted openPos).erase =
         encloseOpenOfOpen? shape openPos
+  matchingClose_erase_of_lt :
+    forall {openPos}, openPos < shape.bpCode.length ->
+      (matchingCloseCosted openPos).erase =
+        matchingCloseOfOpen? shape openPos
 
 def BalancedParensTreeNavigationAccess.toMatchingOpenAccess
     {shape : RMQ.Cartesian.CartesianShape}
@@ -917,6 +998,112 @@ theorem shapeAccessEncloseOpenProfile
   exact ⟨encloseOpenOfInorderFastCosted_cost_le access treeAccess idx,
     encloseOpenOfInorderFastCosted_erase access treeAccess idx⟩
 
+/-- Fast public parent query for the node at an inorder index. -/
+def parentOfInorderFastCosted
+    {shape : RMQ.Cartesian.CartesianShape}
+    {overhead queryCost treeOverhead treeQueryCost : Nat}
+    (access :
+      BalancedParensAccess (bpParensOfShape shape) overhead queryCost)
+    (treeAccess :
+      BalancedParensTreeNavigationAccess shape treeOverhead treeQueryCost)
+    (idx : Nat) : Costed (Option Nat) :=
+  Costed.bind (encloseOpenOfInorderFastCosted access treeAccess idx)
+    fun parentOpen? =>
+      match parentOpen? with
+      | none => Costed.pure none
+      | some parentOpen =>
+          Costed.bind (treeAccess.matchingCloseCosted parentOpen)
+            fun parentClose? =>
+              match parentClose? with
+              | none => Costed.pure none
+              | some parentClose =>
+                  Costed.map (fun parentRank => some (parentRank - 1))
+                    (access.rankCosted false (parentClose + 1))
+
+theorem parentOfInorderFastCosted_cost_le
+    {shape : RMQ.Cartesian.CartesianShape}
+    {overhead queryCost treeOverhead treeQueryCost : Nat}
+    (access :
+      BalancedParensAccess (bpParensOfShape shape) overhead queryCost)
+    (treeAccess :
+      BalancedParensTreeNavigationAccess shape treeOverhead treeQueryCost)
+    (idx : Nat) :
+    (parentOfInorderFastCosted access treeAccess idx).cost <=
+      queryCost + treeQueryCost + treeQueryCost + treeQueryCost +
+        queryCost := by
+  unfold parentOfInorderFastCosted
+  have hencloseCost :=
+    encloseOpenOfInorderFastCosted_cost_le access treeAccess idx
+  cases hparentOpenVal :
+      (encloseOpenOfInorderFastCosted access treeAccess idx).value with
+  | none =>
+      simp [Costed.bind, Costed.pure, hparentOpenVal]
+      omega
+  | some parentOpen =>
+      have hmatchingCloseCost :=
+        treeAccess.matchingClose_cost_le parentOpen
+      cases hparentCloseVal :
+          (treeAccess.matchingCloseCosted parentOpen).value with
+      | none =>
+          simp [Costed.bind, hparentOpenVal, hparentCloseVal]
+          omega
+      | some parentClose =>
+          have hrankCost :=
+            RMQ.SuccinctSpace.BalancedParensAccess.rankCosted_cost_le
+              access false (parentClose + 1)
+          simp [Costed.bind, Costed.map, Costed.pure, hparentOpenVal,
+            hparentCloseVal]
+          omega
+
+theorem parentOfInorderFastCosted_erase
+    {shape : RMQ.Cartesian.CartesianShape}
+    {overhead queryCost treeOverhead treeQueryCost : Nat}
+    (access :
+      BalancedParensAccess (bpParensOfShape shape) overhead queryCost)
+    (treeAccess :
+      BalancedParensTreeNavigationAccess shape treeOverhead treeQueryCost)
+    (idx : Nat) :
+    (parentOfInorderFastCosted access treeAccess idx).erase =
+      parentOfInorder? shape idx := by
+  unfold parentOfInorderFastCosted parentOfInorder?
+  rw [Costed.erase_bind]
+  rw [encloseOpenOfInorderFastCosted_erase access treeAccess idx]
+  cases hparentOpen : encloseOpenOfInorder? shape idx with
+  | none =>
+      simp
+  | some parentOpen =>
+      have hparentOpenBound :=
+        encloseOpenOfInorder?_some_bound hparentOpen
+      simp only
+      rw [Costed.erase_bind]
+      rw [treeAccess.matchingClose_erase_of_lt hparentOpenBound]
+      cases hparentClose : matchingCloseOfOpen? shape parentOpen with
+      | none =>
+          simp
+      | some parentClose =>
+          simp only
+          rw [Costed.erase_map]
+          rw [RMQ.SuccinctSpace.BalancedParensAccess.rankCosted_erase
+            access false (parentClose + 1)]
+          simp [RMQ.SuccinctSpace.bpParensOfShape_bits]
+
+theorem shapeAccessParentProfile
+    {shape : RMQ.Cartesian.CartesianShape}
+    {overhead queryCost treeOverhead treeQueryCost : Nat}
+    (access :
+      BalancedParensAccess (bpParensOfShape shape) overhead queryCost)
+    (treeAccess :
+      BalancedParensTreeNavigationAccess shape treeOverhead treeQueryCost) :
+    forall idx,
+      (parentOfInorderFastCosted access treeAccess idx).cost <=
+          queryCost + treeQueryCost + treeQueryCost + treeQueryCost +
+            queryCost /\
+        (parentOfInorderFastCosted access treeAccess idx).erase =
+          parentOfInorder? shape idx := by
+  intro idx
+  exact ⟨parentOfInorderFastCosted_cost_le access treeAccess idx,
+    parentOfInorderFastCosted_erase access treeAccess idx⟩
+
 /-- Lookup an optional value from a dense optional table. -/
 def optionTableLookup (table : List (Option Nat)) (idx : Nat) : Option Nat :=
   match table[idx]? with
@@ -935,6 +1122,7 @@ structure ConcreteMatchingOpenEncloseDirectory
     (shape : RMQ.Cartesian.CartesianShape) where
   matchingOpenTable : List (Option Nat)
   encloseOpenTable : List (Option Nat)
+  matchingCloseTable : List (Option Nat)
   matchingOpenTable_eq :
     matchingOpenTable =
       (List.range shape.bpCode.length).map
@@ -943,13 +1131,17 @@ structure ConcreteMatchingOpenEncloseDirectory
     encloseOpenTable =
       (List.range shape.bpCode.length).map
         (fun openPos => encloseOpenOfOpen? shape openPos)
+  matchingCloseTable_eq :
+    matchingCloseTable =
+      (List.range shape.bpCode.length).map
+        (fun openPos => matchingCloseOfOpen? shape openPos)
 
-/-- Dense payload budget for the concrete matching-open/enclose table. -/
+/-- Dense payload budget for the concrete matching-open/enclose/close table. -/
 def concreteMatchingOpenEncloseOverhead
     (shape : RMQ.Cartesian.CartesianShape) : Nat :=
-  2 * shape.bpCode.length
+  3 * shape.bpCode.length
 
-/-- Modeled query cost for one dense matching-open/enclose table read. -/
+/-- Modeled query cost for one dense matching-open/enclose/close table read. -/
 def concreteMatchingOpenEncloseQueryCost : Nat := 1
 
 def concreteMatchingOpenEncloseDirectory
@@ -961,22 +1153,28 @@ def concreteMatchingOpenEncloseDirectory
   encloseOpenTable :=
     (List.range shape.bpCode.length).map
       (fun openPos => encloseOpenOfOpen? shape openPos)
+  matchingCloseTable :=
+    (List.range shape.bpCode.length).map
+      (fun openPos => matchingCloseOfOpen? shape openPos)
   matchingOpenTable_eq := rfl
   encloseOpenTable_eq := rfl
+  matchingCloseTable_eq := rfl
 
 namespace ConcreteMatchingOpenEncloseDirectory
 
 def payloadBits
     {shape : RMQ.Cartesian.CartesianShape}
     (directory : ConcreteMatchingOpenEncloseDirectory shape) : Nat :=
-  directory.matchingOpenTable.length + directory.encloseOpenTable.length
+  directory.matchingOpenTable.length + directory.encloseOpenTable.length +
+    directory.matchingCloseTable.length
 
 theorem payloadBits_le_overhead
     {shape : RMQ.Cartesian.CartesianShape}
     (directory : ConcreteMatchingOpenEncloseDirectory shape) :
     directory.payloadBits <= concreteMatchingOpenEncloseOverhead shape := by
   unfold payloadBits concreteMatchingOpenEncloseOverhead
-  rw [directory.matchingOpenTable_eq, directory.encloseOpenTable_eq]
+  rw [directory.matchingOpenTable_eq, directory.encloseOpenTable_eq,
+    directory.matchingCloseTable_eq]
   simp
   omega
 
@@ -994,6 +1192,13 @@ def encloseOpenCosted
   Costed.tickValue concreteMatchingOpenEncloseQueryCost
     (optionTableLookup directory.encloseOpenTable openPos)
 
+def matchingCloseCosted
+    {shape : RMQ.Cartesian.CartesianShape}
+    (directory : ConcreteMatchingOpenEncloseDirectory shape)
+    (openPos : Nat) : Costed (Option Nat) :=
+  Costed.tickValue concreteMatchingOpenEncloseQueryCost
+    (optionTableLookup directory.matchingCloseTable openPos)
+
 theorem matchingOpenCosted_cost_le
     {shape : RMQ.Cartesian.CartesianShape}
     (directory : ConcreteMatchingOpenEncloseDirectory shape)
@@ -1009,6 +1214,14 @@ theorem encloseOpenCosted_cost_le
     (directory.encloseOpenCosted openPos).cost <=
       concreteMatchingOpenEncloseQueryCost := by
   simp [encloseOpenCosted]
+
+theorem matchingCloseCosted_cost_le
+    {shape : RMQ.Cartesian.CartesianShape}
+    (directory : ConcreteMatchingOpenEncloseDirectory shape)
+    (openPos : Nat) :
+    (directory.matchingCloseCosted openPos).cost <=
+      concreteMatchingOpenEncloseQueryCost := by
+  simp [matchingCloseCosted]
 
 theorem matchingOpenCosted_erase_of_lt
     {shape : RMQ.Cartesian.CartesianShape}
@@ -1036,6 +1249,19 @@ theorem encloseOpenCosted_erase_of_lt
   exact optionTableLookup_map_range_of_lt
     (fun openPos => encloseOpenOfOpen? shape openPos) hopen
 
+theorem matchingCloseCosted_erase_of_lt
+    {shape : RMQ.Cartesian.CartesianShape}
+    (directory : ConcreteMatchingOpenEncloseDirectory shape)
+    {openPos : Nat}
+    (hopen : openPos < shape.bpCode.length) :
+    (directory.matchingCloseCosted openPos).erase =
+      matchingCloseOfOpen? shape openPos := by
+  unfold matchingCloseCosted
+  simp [Costed.erase]
+  rw [directory.matchingCloseTable_eq]
+  exact optionTableLookup_map_range_of_lt
+    (fun openPos => matchingCloseOfOpen? shape openPos) hopen
+
 def treeNavigationAccess
     {shape : RMQ.Cartesian.CartesianShape}
     (directory : ConcreteMatchingOpenEncloseDirectory shape) :
@@ -1046,10 +1272,13 @@ def treeNavigationAccess
   payloadBits_le_overhead := directory.payloadBits_le_overhead
   matchingOpenCosted := directory.matchingOpenCosted
   encloseOpenCosted := directory.encloseOpenCosted
+  matchingCloseCosted := directory.matchingCloseCosted
   matchingOpen_cost_le := directory.matchingOpenCosted_cost_le
   encloseOpen_cost_le := directory.encloseOpenCosted_cost_le
+  matchingClose_cost_le := directory.matchingCloseCosted_cost_le
   matchingOpen_erase_of_lt := directory.matchingOpenCosted_erase_of_lt
   encloseOpen_erase_of_lt := directory.encloseOpenCosted_erase_of_lt
+  matchingClose_erase_of_lt := directory.matchingCloseCosted_erase_of_lt
 
 theorem profile
     {shape : RMQ.Cartesian.CartesianShape}
@@ -1061,6 +1290,9 @@ theorem profile
       (forall openPos,
         (directory.encloseOpenCosted openPos).cost <=
           concreteMatchingOpenEncloseQueryCost) /\
+      (forall openPos,
+        (directory.matchingCloseCosted openPos).cost <=
+          concreteMatchingOpenEncloseQueryCost) /\
       (forall {close : Nat},
         close < shape.bpCode.length ->
           (directory.matchingOpenCosted close).erase =
@@ -1068,14 +1300,21 @@ theorem profile
       (forall {openPos : Nat},
         openPos < shape.bpCode.length ->
           (directory.encloseOpenCosted openPos).erase =
-            encloseOpenOfOpen? shape openPos) := by
+            encloseOpenOfOpen? shape openPos) /\
+      (forall {openPos : Nat},
+        openPos < shape.bpCode.length ->
+          (directory.matchingCloseCosted openPos).erase =
+            matchingCloseOfOpen? shape openPos) := by
   exact ⟨directory.payloadBits_le_overhead,
     directory.matchingOpenCosted_cost_le,
     directory.encloseOpenCosted_cost_le,
+    directory.matchingCloseCosted_cost_le,
     by intro close hclose
        exact directory.matchingOpenCosted_erase_of_lt hclose,
     by intro openPos hopen
-       exact directory.encloseOpenCosted_erase_of_lt hopen⟩
+       exact directory.encloseOpenCosted_erase_of_lt hopen,
+    by intro openPos hopen
+       exact directory.matchingCloseCosted_erase_of_lt hopen⟩
 
 end ConcreteMatchingOpenEncloseDirectory
 
@@ -1121,6 +1360,26 @@ theorem concreteShapeAccessEncloseOpenProfile
           encloseOpenOfInorder? shape idx := by
   exact
     shapeAccessEncloseOpenProfile access
+      (concreteMatchingOpenEncloseDirectory shape).treeNavigationAccess
+
+theorem concreteShapeAccessParentProfile
+    {shape : RMQ.Cartesian.CartesianShape}
+    {overhead queryCost : Nat}
+    (access :
+      BalancedParensAccess (bpParensOfShape shape) overhead queryCost) :
+    forall idx,
+      (parentOfInorderFastCosted access
+          (concreteMatchingOpenEncloseDirectory shape).treeNavigationAccess
+          idx).cost <=
+          queryCost + concreteMatchingOpenEncloseQueryCost +
+            concreteMatchingOpenEncloseQueryCost +
+            concreteMatchingOpenEncloseQueryCost + queryCost /\
+        (parentOfInorderFastCosted access
+          (concreteMatchingOpenEncloseDirectory shape).treeNavigationAccess
+          idx).erase =
+          parentOfInorder? shape idx := by
+  exact
+    shapeAccessParentProfile access
       (concreteMatchingOpenEncloseDirectory shape).treeNavigationAccess
 
 /--

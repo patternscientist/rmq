@@ -81,8 +81,9 @@ separate appendix.
   excess, inorder-close-plus-excess bridge, and first charged subtree-interval
   tree-navigation operation, plus a conditional fast subtree theorem over a
   matching-open boundary, a dense concrete matching-open/enclose directory with
-  constant-query parent-open/enclose profiles, and a formal counterexample
-  blocking simple reuse of the existing close/LCA query as that boundary.
+  constant-query parent-open/enclose and parent-index profiles, and a formal
+  counterexample blocking simple reuse of the existing close/LCA query as that
+  boundary.
 - Optional archive root: `RMQArchive` imports the retired compatibility and
   obstruction surfaces under `RMQ.Archive`, while the main `RMQ` root stays
   focused on live proof surfaces and public headlines.
@@ -2210,10 +2211,13 @@ The names below are grouped by source module. Repeated base names in
   `BPNavigation.subtreeIntervalOfInorderFastCosted`,
   `BPNavigation.BalancedParensTreeNavigationAccess`,
   `BPNavigation.encloseOpenOfInorderFastCosted`,
+  `BPNavigation.parentOfInorderFastCosted`,
   `BPNavigation.shapeAccessEncloseOpenProfile`,
+  `BPNavigation.shapeAccessParentProfile`,
   `BPNavigation.ConcreteMatchingOpenEncloseDirectory.profile`,
   `BPNavigation.concreteShapeAccessFastSubtreeIntervalProfile`,
   `BPNavigation.concreteShapeAccessEncloseOpenProfile`,
+  `BPNavigation.concreteShapeAccessParentProfile`,
   `BPNavigation.closeRankPrefix_le_openRankPrefix_of_le`,
   `BPNavigation.shapeAccessCloseRankProfile`,
   `BPNavigation.shapeAccessCloseRankExcessProfile`,
