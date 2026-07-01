@@ -14,9 +14,9 @@ import RMQBPNavigation
 ```
 
 `RMQBPNavigation` exposes neutral names under `RMQ.BPNavigation`. It is still a
-narrow spoke, but it now exposes the basic charged BP-navigation legs and the
-first public subtree-interval operation over Cartesian-shape
-balanced-parentheses encodings:
+narrow spoke, but it now exposes the basic charged BP-navigation legs, the first
+public subtree-interval operation, and a dense concrete matching-open/enclose
+directory over Cartesian-shape balanced-parentheses encodings:
 
 - `closeOfInorderCosted`: inorder node index to closing parenthesis, routed
   through false-select;
@@ -33,8 +33,14 @@ balanced-parentheses encodings:
 - `subtreeIntervalOfInorderFastCosted`: the same subtree interval, but routed
   through a supplied constant-query matching-open component instead of the
   linear excess scan.
+- `encloseOpenOfInorderFastCosted`: inorder node index to the enclosing
+  parent open position, routed through charged close-select plus a supplied
+  constant-query matching-open/enclose component.
+- `ConcreteMatchingOpenEncloseDirectory`: a dense concrete table-backed
+  component instantiating the matching-open/enclose boundary with constant
+  modeled query cost.
 
-It is not yet a complete tree-navigation library.
+It is not yet a complete succinct tree-navigation library.
 
 Verification:
 
@@ -64,6 +70,17 @@ RMQ.BPNavigation.subtreeIntervalOfInorder?
 RMQ.BPNavigation.subtreeIntervalOfInorderCosted
 RMQ.BPNavigation.BalancedParensMatchingOpenAccess
 RMQ.BPNavigation.subtreeIntervalOfInorderFastCosted
+RMQ.BPNavigation.encloseOpenOfOpen?
+RMQ.BPNavigation.encloseOpenOfInorder?
+RMQ.BPNavigation.BalancedParensTreeNavigationAccess
+RMQ.BPNavigation.encloseOpenOfInorderFastCosted
+RMQ.BPNavigation.shapeAccessEncloseOpenProfile
+RMQ.BPNavigation.ConcreteMatchingOpenEncloseDirectory
+RMQ.BPNavigation.concreteMatchingOpenEncloseDirectory
+RMQ.BPNavigation.concreteMatchingOpenAccess
+RMQ.BPNavigation.ConcreteMatchingOpenEncloseDirectory.profile
+RMQ.BPNavigation.concreteShapeAccessFastSubtreeIntervalProfile
+RMQ.BPNavigation.concreteShapeAccessEncloseOpenProfile
 RMQ.BPNavigation.singletonLcaCloseSemantics_not_matchingOpen_counterexample
 RMQ.BPNavigation.shapeAccessCloseRankProfile
 RMQ.BPNavigation.shapeAccessCloseRankExcessProfile
@@ -104,8 +121,29 @@ consumes that boundary immediately and proves exact agreement with
 `subtreeIntervalOfInorder?`, with modeled cost independent of
 `shape.bpCode.length`: one close-select, one matching-open query, and two
 close-rank queries. The access record separates `payloadBits`, proof-only
-exactness, and model query cost. It is not yet instantiated by the compact
-relative-rmM close/LCA directory.
+exactness, and model query cost.
+
+The next public tree-navigation layer is `BalancedParensTreeNavigationAccess`.
+It packages matching-open and enclose-open queries together, with proof-only
+exactness fields and a model charge for each tree-navigation query.
+`encloseOpenOfInorderFastCosted` consumes that interface immediately: for an
+inorder node it finds the node close, asks for the matching open, then asks for
+the enclosing open. `shapeAccessEncloseOpenProfile` proves exact agreement with
+`encloseOpenOfInorder?` and a cost bound of one close-select plus two
+tree-navigation queries.
+
+`ConcreteMatchingOpenEncloseDirectory` is the first concrete instantiation of
+that interface. It stores dense `matchingOpenTable` and `encloseOpenTable`
+payloads over all BP positions, charges one model tick per table read, and
+proves exactness for in-bounds reads in
+`ConcreteMatchingOpenEncloseDirectory.profile`. The concrete profiles
+`concreteShapeAccessFastSubtreeIntervalProfile` and
+`concreteShapeAccessEncloseOpenProfile` consume this directory, so the fast
+subtree interval and parent-open/enclose query now have a real constant-query
+public component behind them. This is deliberately not a succinct bound:
+`concreteMatchingOpenEncloseOverhead shape = 2 * shape.bpCode.length` counts
+dense modeled table entries, not an `o(n)` auxiliary payload and not Lean
+runtime.
 
 The focused obstruction is
 `singletonLcaCloseSemantics_not_matchingOpen_counterexample`: on the one-node
@@ -146,14 +184,17 @@ close-navigation families.
 The BP navigation spoke is landed as the compact close/LCA layer consumed by
 succinct RMQ, plus the close/rank/excess bridge and the first charged public
 subtree-interval operation. It also has a conditional fast subtree theorem over
-a public matching-open boundary, together with a counterexample showing the
-current concrete close/LCA query is not that boundary. The useful next deepening
-steps are:
+a public matching-open boundary, a dense concrete matching-open/enclose
+directory, a constant-query parent-open/enclose profile consuming that
+directory, and a counterexample showing the current concrete close/LCA query is
+not itself the matching-open boundary. The useful next deepening steps are:
 
-1. build the next fuller tree-navigation operations over balanced parentheses
-   (`parent`/`enclose`, `firstChild`, `nextSibling`, and LCA);
-2. replace the linear charged matching-open scan with a reusable constant-query
-   enclose/matching-open directory and instantiate `BalancedParensMatchingOpenAccess`
-   through the public rank/select/BP boundary;
-3. keep the existing compact close/LCA profile as the RMQ-facing specialization
+1. replace the dense matching-open/enclose table with a payload-live succinct
+   directory backed by compact range-min/max or fwd/bwd-search machinery;
+2. decide whether public `parent` should return the enclosing open position or
+   an inorder parent index, and add the matching-close/select ingredient if the
+   latter is required;
+3. build the next fuller tree-navigation operations over balanced parentheses
+   (`firstChild`, `nextSibling`, and LCA);
+4. keep the existing compact close/LCA profile as the RMQ-facing specialization
    rather than forcing every tree-navigation operation through RMQ internals.

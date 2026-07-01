@@ -189,11 +189,17 @@ checked compatibility surfaces live in `scripts/archive_axiom_check.lean`.
 #print axioms RMQ.BPNavigation.subtreeIntervalOfInorderCosted_cost_le
 #print axioms RMQ.BPNavigation.subtreeIntervalOfInorderFastCosted_erase
 #print axioms RMQ.BPNavigation.subtreeIntervalOfInorderFastCosted_cost_le
+#print axioms RMQ.BPNavigation.encloseOpenOfInorderFastCosted_erase
+#print axioms RMQ.BPNavigation.encloseOpenOfInorderFastCosted_cost_le
 #print axioms RMQ.BPNavigation.singletonLcaCloseSemantics_not_matchingOpen_counterexample
 #print axioms RMQ.BPNavigation.shapeAccessCloseRankProfile
 #print axioms RMQ.BPNavigation.shapeAccessCloseRankExcessProfile
 #print axioms RMQ.BPNavigation.shapeAccessSubtreeIntervalProfile
 #print axioms RMQ.BPNavigation.shapeAccessFastSubtreeIntervalProfile
+#print axioms RMQ.BPNavigation.shapeAccessEncloseOpenProfile
+#print axioms RMQ.BPNavigation.ConcreteMatchingOpenEncloseDirectory.profile
+#print axioms RMQ.BPNavigation.concreteShapeAccessFastSubtreeIntervalProfile
+#print axioms RMQ.BPNavigation.concreteShapeAccessEncloseOpenProfile
 #print axioms RMQ.SuccinctSpace.FixedWidthNatTable.ofEncodedWords_profile
 #print axioms RMQ.SuccinctSpace.FixedWidthNatTable.ofEntries_profile
 #print axioms RMQ.SuccinctSpace.FixedWidthNatTable.profile
