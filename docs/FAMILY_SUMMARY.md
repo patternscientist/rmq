@@ -262,6 +262,14 @@ as an opt-in checked root.
 
 ## Correctness And Cost Status
 
+Word-RAM status note: `SuccinctFinalRAM` now has a unified
+`WordRAM.TraceEvent` stream capstone for the final RMQ query. Close-select,
+answer-rank, and compact-close rank-seed reads are structural
+payload/register traces. When the table below still mentions a remaining
+payload-store trace, it means the stricter payload-read-complete replay that
+replaces the bounded local BP decoder, endpoint-fringe decoder, and
+relative-rmM interior-query leaves with structural payload reads.
+
 | Structure | Correctness status | Cost status | Notes |
 | --- | --- | --- | --- |
 | Core RMQ spec and backend contract | `LeftmostArgMin`, `CandidateExact`, `RMQBackend`, and contract-level backend equality are proved. | No cost model here. | All public RMQ backends target the same half-open leftmost-argmin contract. |
@@ -2074,7 +2082,15 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_refines_queryInterpretedCosted`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_cost_le`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_exact`,
-  `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_interpreted_profile`.
+  `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_interpreted_profile`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryLeafTraceCosted_refines_wholeQueryInterpretedCosted`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryLeafTraceCosted_cost_le`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryLeafTraceCosted_exact`, and
+  `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_leaf_trace_profile`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryWordTraceCosted_refines_wholeQueryInterpretedCosted`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryWordTraceCosted_cost_le`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryWordTraceCosted_exact`, and
+  `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_profile`.
 - `RMQ/Archive/SelectObstructions.lean`:
   checked aliases for retained two-level select obstruction witnesses after
   the old four-field sparse/dense false-select locator island was physically
@@ -2508,6 +2524,8 @@ The names below are grouped by source module. Repeated base names in
   `Headlines.rankSelectWordBoundedNPlusOConstantQuery`, and
   `Headlines.succinctRMQTwoNPlusOConstantQuery`,
   `Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted`,
+  `Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace`,
+  `Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace`,
   `Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery`.
 - `RMQ/Core/SuccinctReduction.lean` (7):
   `Succinct.rmqBackendOfEulerParensBackend_queryBuilt`,

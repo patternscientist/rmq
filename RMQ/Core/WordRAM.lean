@@ -100,6 +100,12 @@ def wordLengthBounded (bound : Nat) : TraceEvent -> Prop
   | wordRank _ _ _ => True
   | wordSelect _ _ _ => True
 
+/-- Whether a trace event is an actual payload-memory word read. -/
+def isReadWord : TraceEvent -> Prop
+  | readWord _ _ _ => True
+  | wordRank _ _ _ => False
+  | wordSelect _ _ _ => False
+
 end TraceEvent
 
 /-- Interpreter result: erased value plus the trace used to compute it. -/
@@ -131,6 +137,163 @@ theorem toCosted_run_eq_value_trace_length (result : Result ty) :
   rfl
 
 end Result
+
+/--
+Polymorphic interpreted result for larger components whose values are not part
+of the small first-order `Ty` universe, but whose operational evidence is still
+a plain `WordRAM.TraceEvent` stream.
+-/
+structure TraceResult (α : Type u) where
+  value : α
+  trace : List TraceEvent
+
+namespace TraceResult
+
+/-- Operational step count, derived from the trace. -/
+def steps (result : TraceResult α) : Nat := result.trace.length
+
+/-- Project an interpreted trace result into the theorem-facing cost carrier. -/
+def toCosted (result : TraceResult α) : Costed α where
+  value := result.value
+  cost := result.steps
+
+/-- Lift a typed first-order result into the polymorphic trace carrier. -/
+def ofResult {ty : Ty} (result : Result ty) :
+    TraceResult ty.denote where
+  value := result.value
+  trace := result.trace
+
+/-- Zero-step trace result. -/
+def pure (value : α) : TraceResult α where
+  value := value
+  trace := []
+
+/-- Sequential composition concatenates traces. -/
+def bind (result : TraceResult α) (f : α -> TraceResult β) :
+    TraceResult β :=
+  let next := f result.value
+  { value := next.value, trace := result.trace ++ next.trace }
+
+/-- Pure map over an interpreted trace result. -/
+def map (f : α -> β) (result : TraceResult α) : TraceResult β :=
+  bind result (fun value => pure (f value))
+
+/--
+Canonical cost-only trace used when an older `Costed` component has not yet
+been replayed through a first-order payload program.  The events are word
+primitive events, not payload reads; theorem names using this constructor should
+not claim payload-read completeness.
+-/
+def costOnlyTrace : Nat -> List TraceEvent
+  | 0 => []
+  | n + 1 => TraceEvent.wordRank false 0 0 :: costOnlyTrace n
+
+@[simp] theorem costOnlyTrace_length (n : Nat) :
+    (costOnlyTrace n).length = n := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+      simp [costOnlyTrace, ih]
+
+/--
+Synthetic `Costed` adapter traces contain only word-primitive events, never
+payload-memory reads.
+-/
+theorem costOnlyTrace_no_readWord (n : Nat) :
+    forall event : TraceEvent,
+      event ∈ costOnlyTrace n -> ¬ event.isReadWord := by
+  induction n with
+  | zero =>
+      intro event hmem
+      simp [costOnlyTrace] at hmem
+  | succ n ih =>
+      intro event hmem
+      simp [costOnlyTrace] at hmem
+      rcases hmem with hmem | hmem
+      · subst event
+        simp [TraceEvent.isReadWord]
+      · exact ih event hmem
+
+/-- Lift an existing `Costed` result to a trace result using `costOnlyTrace`. -/
+def ofCosted (result : Costed α) : TraceResult α where
+  value := result.value
+  trace := costOnlyTrace result.cost
+
+@[simp] theorem pure_value (value : α) :
+    (pure value : TraceResult α).value = value := by
+  rfl
+
+@[simp] theorem pure_trace (value : α) :
+    (pure value : TraceResult α).trace = [] := by
+  rfl
+
+@[simp] theorem bind_value (result : TraceResult α)
+    (f : α -> TraceResult β) :
+    (bind result f).value = (f result.value).value := by
+  rfl
+
+@[simp] theorem bind_trace (result : TraceResult α)
+    (f : α -> TraceResult β) :
+    (bind result f).trace = result.trace ++ (f result.value).trace := by
+  rfl
+
+@[simp] theorem map_value (f : α -> β) (result : TraceResult α) :
+    (map f result).value = f result.value := by
+  rfl
+
+@[simp] theorem map_trace (f : α -> β) (result : TraceResult α) :
+    (map f result).trace = result.trace := by
+  simp [map, bind, pure]
+
+@[simp] theorem ofResult_value {ty : Ty} (result : Result ty) :
+    (ofResult result).value = result.value := by
+  rfl
+
+@[simp] theorem ofResult_trace {ty : Ty} (result : Result ty) :
+    (ofResult result).trace = result.trace := by
+  rfl
+
+@[simp] theorem ofCosted_toCosted (result : Costed α) :
+    (ofCosted result).toCosted = result := by
+  apply Costed.ext <;>
+    simp [ofCosted, toCosted, steps]
+
+theorem ofCosted_trace_no_readWord (result : Costed α) :
+    forall event : TraceEvent,
+      event ∈ (ofCosted result).trace -> ¬ event.isReadWord := by
+  intro event hmem
+  exact costOnlyTrace_no_readWord result.cost event hmem
+
+@[simp] theorem toCosted_value (result : TraceResult α) :
+    result.toCosted.value = result.value := by
+  rfl
+
+@[simp] theorem toCosted_cost_eq_trace_length (result : TraceResult α) :
+    result.toCosted.cost = result.trace.length := by
+  rfl
+
+@[simp] theorem ofResult_toCosted {ty : Ty} (result : Result ty) :
+    (ofResult result).toCosted = result.toCosted := by
+  rfl
+
+@[simp] theorem pure_toCosted (value : α) :
+    (pure value).toCosted = Costed.pure value := by
+  rfl
+
+@[simp] theorem bind_toCosted (result : TraceResult α)
+    (f : α -> TraceResult β) :
+    (bind result f).toCosted =
+      Costed.bind result.toCosted (fun value => (f value).toCosted) := by
+  apply Costed.ext <;>
+    simp [bind, toCosted, steps, Costed.bind, List.length_append]
+
+@[simp] theorem map_toCosted (f : α -> β) (result : TraceResult α) :
+    (map f result).toCosted =
+      Costed.map f result.toCosted := by
+  rw [map, bind_toCosted]
+  rfl
+
+end TraceResult
 
 /--
 Small first-order program syntax.

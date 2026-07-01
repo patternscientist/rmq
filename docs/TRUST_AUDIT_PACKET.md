@@ -59,6 +59,33 @@ capstone, but the query clause uses
 closed first-order whole-query controller whose leaves are interpreted
 close-select, compact close/LCA, and register-backed answer-rank operations.
 
+The next flattening checkpoint is:
+
+```lean
+abbrev succinctRMQTwoNPlusOConstantQueryLeafTrace :=
+  RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_leaf_trace_profile
+```
+
+It keeps the same theorem shape but has the closed controller evaluate to an
+explicit domain-leaf trace before projection back to `Costed`.  This is still
+not one unified payload-store trace: the trace records interpreted leaf calls
+for close-select, compact close/LCA, and answer-rank.
+
+The current strongest flattening checkpoint is:
+
+```lean
+abbrev succinctRMQTwoNPlusOConstantQueryWordTrace :=
+  RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_profile
+```
+
+It keeps the same theorem shape and has the closed controller emit one
+`WordRAM.TraceEvent` stream. The close-select leg, answer-rank leg, and the
+rank-seed reads inside compact close/LCA contribute structural
+payload/register traces. The bounded local BP decoders, endpoint-fringe
+decoders, and relative-rmM interior query remain explicit charged decoder
+leaves, so this is a unified event stream but not yet a fully inlined
+payload-read execution of every leaf.
+
 ## Theorem Statement
 
 The construction-heavy theorem name is intentionally verbose because it exposes

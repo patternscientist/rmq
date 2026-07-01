@@ -74,8 +74,16 @@ RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two
 RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_refines_queryInterpretedCosted
 RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_exact
 RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_interpreted_profile
+RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryLeafTraceCosted_refines_wholeQueryInterpretedCosted
+RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryLeafTraceCosted_exact
+RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_leaf_trace_profile
+RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryWordTraceCosted_refines_wholeQueryInterpretedCosted
+RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryWordTraceCosted_exact
+RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_profile
 RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile
 RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted
+RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace
+RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace
 ```
 
 ## Reproduction Commands
@@ -158,10 +166,13 @@ The final `answerClose + 1` rank query is now routed through
 `SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterInterpretedCosted`,
 which refines the earlier interpreted rank query while computing the super
 sample, block sample, and bit-word addresses from a register expression.  The
-remaining frontier is no longer the outer query controller. It is a still
-flatter unified payload-store trace where the component leaves and the
-whole-query controller share one lower-level interpreter state, rather than a
-closed controller that invokes already interpreted leaf costed functions.
+current word-trace theorem flattens the outer query controller to one
+`WordRAM.TraceEvent` stream. Its close-select leg, answer-rank leg, and
+compact-close rank-seed reads are structural payload/register traces. The
+bounded local BP decoders, endpoint-fringe decoders, and relative-rmM interior
+query still enter as explicit charged decoder leaves, so the next frontier is
+to replace those leaves with structural payload-read traces and then prove the
+combined event stream agrees with one concrete payload store.
 
 ## Large-File Cleanup Note
 

@@ -17,6 +17,8 @@ The short public theorem aliases live in `RMQ/Headlines.lean`.
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile` | Interpreter-backed replay of that compressed/FID rank/select family: same payload/profile shape, with access/rank/select reads routed through first-order `WordRAM` bridges. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ capstone with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and the matching lower-bound side. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Whole-query-interpreted variant of the final BP-native succinct RMQ capstone: same theorem shape, with the final query control represented by a closed first-order program whose leaves are interpreted close-select, compact close/LCA, and register-backed answer-rank operations. |
+| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace` | Leaf-trace-preserving variant of the same capstone: the closed controller now evaluates to an explicit domain-leaf trace before projection back to `Costed`; the leaves are still interpreted component queries, not one unified store trace. |
+| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace` | Unified-`WordRAM.TraceEvent` variant of the same capstone: the final query emits one trace stream; close-select, answer-rank, and compact-close rank-seed reads are structural payload/register traces, while bounded local/fringe/interior close-navigation leaves remain charged decoder boundaries pending full payload-read replay. |
 | `RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery` | Component-level interpreter-backed BP close-navigation profile. |
 
 The original theorem names remain construction-heavy so that their dependencies
@@ -75,16 +77,19 @@ rank/select and close-navigation components rather than retired raw wrappers
 that charged aggregate reference computations as one step.
 
 The strongest interpreter-backed query surface is now
-`RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted`, an additive
-variant of the final BP-native succinct RMQ capstone. It keeps the same
-two-sided lower/upper theorem shape as
+`RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace`, an additive variant
+of the final BP-native succinct RMQ capstone. It keeps the same two-sided
+lower/upper theorem shape as
 `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery`, while routing the final query
-control through a closed instruction list over optional/natural registers.  The
-program still calls interpreted component leaves for sparse-exception
-close-select, compact close/LCA, and answer-rank. The answer-rank leaf is
-register-backed: once the dynamic `answerClose + 1` position is supplied in a
-register, the super-sample, block-sample, and bit-word addresses are computed
-inside first-order syntax.
+control through a closed instruction list over optional/natural registers and
+preserving one `WordRAM.TraceEvent` stream. The answer-rank leaf is a concrete
+register-program trace: once the dynamic `answerClose + 1` position is supplied
+in a register, the super-sample, block-sample, and bit-word addresses are
+computed inside first-order syntax. The sparse-exception close-select leg is
+structural too, and the compact close/LCA leg now exposes its rank-seed reads
+structurally. The remaining refinement target is to replay the bounded local
+BP decoders, endpoint-fringe decoders, and relative-rmM interior query as
+structural payload-read traces.
 The component-level
 `RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery` remains
 available as the reusable BP close-navigation profile.

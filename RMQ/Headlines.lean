@@ -60,6 +60,24 @@ abbrev succinctRMQTwoNPlusOConstantQueryInterpreted :=
   RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_interpreted_profile
 
 /--
+Leaf-trace-preserving BP-native succinct RMQ capstone: the same theorem shape
+as the whole-query-interpreted headline, with the closed controller evaluating
+to an explicit domain-leaf trace before projection back to `Costed`.
+-/
+abbrev succinctRMQTwoNPlusOConstantQueryLeafTrace :=
+  RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_leaf_trace_profile
+
+/--
+Unified-`WordRAM.TraceEvent` BP-native succinct RMQ capstone. The final query
+control now emits one `TraceEvent` stream. Select-close, answer-rank, and
+compact-close rank-seed reads are structural payload/register traces; bounded
+local/fringe/interior close-navigation leaves remain explicit charged decoder
+boundaries pending full payload-read replay.
+-/
+abbrev succinctRMQTwoNPlusOConstantQueryWordTrace :=
+  RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_profile
+
+/--
 Interpreter-backed BP close-navigation profile: `2*n + o(n)`, constant query,
 with rank/select/LCA leaves routed through the first-order `WordRAM` bridges.
 

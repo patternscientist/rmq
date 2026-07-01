@@ -274,6 +274,36 @@ same bridge layer. A skeptical grad student should next ask whether later flat
 whole-query program presentations, for RMQ or rank/select, would buy clarity
 without changing the theorem's mathematical content.
 
+2026-07-01 update: the RMQ whole-query controller now has a leaf-trace
+checkpoint,
+`RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace`. Conceptually, the
+closed controller no longer immediately erases its operational story to the
+plain `Costed` carrier. It evaluates to an explicit domain-leaf trace recording
+the select-close, compact close/LCA, and answer-rank leaves it called, together
+with their modeled costs, and then proves that projecting this trace result
+back to `Costed` is exactly the existing whole-query interpreted capstone.
+
+Plain English: this is one rung closer to a flat machine account of the query.
+We can now point to the whole-query control program, its leaf trace, and the
+same `2*n + o(n)`, constant-query theorem in one theorem chain. The live
+assumption is that the trace events are still domain leaves, not one shared
+payload-store `WordRAM.TraceEvent` stream. A skeptical grad student should next
+ask which of those leaf events should be inlined first into a unified store
+trace, and whether that inlining changes any public theorem beyond making the
+execution model flatter.
+
+2026-07-01 update: the next rung has landed as
+`RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace`. Conceptually, the
+final closed query controller now emits one `WordRAM.TraceEvent` stream. The
+close-select part, answer-rank part, and compact-close rank-seed reads are real
+payload/register traces. The bounded local BP decoders, endpoint-fringe
+decoders, and relative-rmM interior query are still explicit charged decoder
+leaves. Plain English: the public RMQ capstone now has one machine-shaped trace
+carrier for the whole query, and more of that stream is payload-derived than
+before, but close navigation is not yet fully replayed from payload tables. A
+skeptical grad student should now ask for the exact theorem that replaces each
+remaining decoder leaf by payload-read events.
+
 ## Digestion Tasks
 
 1. Turn the RMQ capstone into a two-page lecture-style proof map:

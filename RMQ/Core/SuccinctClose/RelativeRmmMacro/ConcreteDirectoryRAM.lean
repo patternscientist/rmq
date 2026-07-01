@@ -100,6 +100,198 @@ theorem registerRankCloseCosted_exact
   exact interpretedRankCloseCosted_exact
     (rankData := rankData) (pos := pos)
 
+/-- Register-program trace for the false-rank callback used by close seeds. -/
+def registerRankCloseTraceResult
+    {shape : Cartesian.CartesianShape} {rankOverhead : Nat}
+    (rankData : PayloadLiveStoredWordRankData shape.bpCode rankOverhead)
+    (pos : Nat) : WordRAM.TraceResult Nat :=
+  WordRAM.TraceResult.ofResult
+    (((rankData.rankRegProgram false (NatExpr.reg 0)).eval
+      (rankData.rankWordRAMStore false)
+      (RegFile.withNat1 pos)))
+
+theorem registerRankCloseTraceResult_refines_registerRankCloseCosted
+    {shape : Cartesian.CartesianShape} {rankOverhead : Nat}
+    (rankData : PayloadLiveStoredWordRankData shape.bpCode rankOverhead)
+    (pos : Nat) :
+    (registerRankCloseTraceResult rankData pos).toCosted =
+      registerRankCloseCosted rankData pos := by
+  rfl
+
+/-- Trace-preserving version of `localBPSeedFromRankCloseCosted`. -/
+def localBPSeedFromRankCloseTraceResult
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (blockSize close : Nat) : WordRAM.TraceResult Nat :=
+  let base := localBPWindowBase shape blockSize close
+  WordRAM.TraceResult.map
+    (fun rankFalse => localBPSeedFromRankFalse base rankFalse)
+    (rankCloseTrace base)
+
+theorem localBPSeedFromRankCloseTraceResult_refines
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (rankCloseCosted : Nat -> Costed Nat)
+    (blockSize close : Nat)
+    (hrank :
+      forall pos, (rankCloseTrace pos).toCosted = rankCloseCosted pos) :
+    (localBPSeedFromRankCloseTraceResult
+      shape rankCloseTrace blockSize close).toCosted =
+      localBPSeedFromRankCloseCosted
+        shape rankCloseCosted blockSize close := by
+  simp [localBPSeedFromRankCloseTraceResult,
+    localBPSeedFromRankCloseCosted, hrank]
+
+/--
+Trace-preserving same-block close decoder.
+
+The rank seed is replayed structurally; the bounded local BP decoder remains the
+existing charged decoder leaf.
+-/
+def localBPSameBlockCloseDecodedTraceResultWithRankSeed
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (blockSize leftClose rightClose : Nat) :
+    WordRAM.TraceResult (Option Nat) :=
+  WordRAM.TraceResult.bind
+    (localBPSeedFromRankCloseTraceResult
+      shape rankCloseTrace blockSize leftClose)
+    fun seed =>
+      WordRAM.TraceResult.ofCosted
+        (localBPSameBlockCloseSeededCosted shape blockSize leftClose
+          rightClose seed)
+
+theorem localBPSameBlockCloseDecodedTraceResultWithRankSeed_refines
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (rankCloseCosted : Nat -> Costed Nat)
+    (blockSize leftClose rightClose : Nat)
+    (hrank :
+      forall pos, (rankCloseTrace pos).toCosted = rankCloseCosted pos) :
+    (localBPSameBlockCloseDecodedTraceResultWithRankSeed
+      shape rankCloseTrace blockSize leftClose rightClose).toCosted =
+      localBPSameBlockCloseDecodedCostedWithRankSeed
+        shape rankCloseCosted blockSize leftClose rightClose := by
+  simp [localBPSameBlockCloseDecodedTraceResultWithRankSeed,
+    localBPSameBlockCloseDecodedCostedWithRankSeed,
+    localBPSeedFromRankCloseTraceResult_refines, hrank]
+
+/--
+Trace-preserving cross-block close decoder.
+
+The two endpoint seed rank reads are structural traces; the endpoint-fringe
+and interior relative-rmM query leaves remain the existing charged decoders.
+-/
+def crossBlockCloseTraceResultWithRankSeed
+    {shape : Cartesian.CartesianShape}
+    (directory : ConcreteCompactBPCloseLCADirectory shape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (leftClose rightClose : Nat) : WordRAM.TraceResult (Option Nat) :=
+  let blockSize := canonicalBPRelativeSummaryBlockSize shape
+  let leftBlock := blockOfClose blockSize leftClose
+  let rightBlock := blockOfClose blockSize rightClose
+  WordRAM.TraceResult.bind
+    (localBPSeedFromRankCloseTraceResult
+      shape rankCloseTrace blockSize leftClose)
+    fun leftSeed =>
+      WordRAM.TraceResult.bind
+        (WordRAM.TraceResult.ofCosted
+          (localBPLeftFringeCandidateSeededCosted shape blockSize leftClose
+            leftSeed))
+        fun left? =>
+          WordRAM.TraceResult.bind
+            (if leftBlock + 1 < rightBlock then
+              WordRAM.TraceResult.ofCosted
+                (directory.interior.rangeMinCosted (leftBlock + 1)
+                  (rightBlock - leftBlock - 1))
+            else
+              WordRAM.TraceResult.pure none)
+            fun middle? =>
+              WordRAM.TraceResult.bind
+                (localBPSeedFromRankCloseTraceResult
+                  shape rankCloseTrace blockSize rightClose)
+                fun rightSeed =>
+                  WordRAM.TraceResult.map
+                    (fun right? =>
+                      bpCandidateClose?
+                        (bpCandidateMerge3? left? middle? right?))
+                    (WordRAM.TraceResult.ofCosted
+                      (localBPRightFringeCandidateSeededCosted shape
+                        blockSize rightClose rightSeed))
+
+theorem crossBlockCloseTraceResultWithRankSeed_refines
+    {shape : Cartesian.CartesianShape}
+    (directory : ConcreteCompactBPCloseLCADirectory shape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (rankCloseCosted : Nat -> Costed Nat)
+    (leftClose rightClose : Nat)
+    (hrank :
+      forall pos, (rankCloseTrace pos).toCosted = rankCloseCosted pos) :
+    (directory.crossBlockCloseTraceResultWithRankSeed
+      rankCloseTrace leftClose rightClose).toCosted =
+      directory.crossBlockCloseCostedWithRankSeed
+        rankCloseCosted leftClose rightClose := by
+  unfold crossBlockCloseTraceResultWithRankSeed
+  unfold crossBlockCloseCostedWithRankSeed
+  let blockSize := canonicalBPRelativeSummaryBlockSize shape
+  by_cases hmiddle :
+      blockOfClose blockSize leftClose + 1 <
+        blockOfClose blockSize rightClose
+  · simp [localBPSeedFromRankCloseTraceResult_refines, hrank,
+      blockSize, hmiddle]
+  · simp [localBPSeedFromRankCloseTraceResult_refines, hrank,
+      blockSize, hmiddle]
+
+/--
+Trace-preserving compact close/LCA query.
+
+The rank-seed reads are structural Word-RAM traces. The zero-block fallback,
+bounded same-block local decoder, endpoint-fringe decoders, and relative-rmM
+interior query are still charged decoder leaves.
+-/
+def lcaCloseTraceResultWithRankSeed
+    {shape : Cartesian.CartesianShape}
+    (directory : ConcreteCompactBPCloseLCADirectory shape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (leftClose rightClose : Nat) : WordRAM.TraceResult (Option Nat) :=
+  let blockSize := canonicalBPRelativeSummaryBlockSize shape
+  if blockSize = 0 then
+    WordRAM.TraceResult.ofCosted
+      (localBPSameBlockCloseCosted shape leftClose rightClose)
+  else if blockOfClose blockSize leftClose =
+      blockOfClose blockSize rightClose then
+    localBPSameBlockCloseDecodedTraceResultWithRankSeed
+      shape rankCloseTrace blockSize leftClose rightClose
+  else
+    directory.crossBlockCloseTraceResultWithRankSeed
+      rankCloseTrace leftClose rightClose
+
+theorem lcaCloseTraceResultWithRankSeed_refines
+    {shape : Cartesian.CartesianShape}
+    (directory : ConcreteCompactBPCloseLCADirectory shape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (rankCloseCosted : Nat -> Costed Nat)
+    (leftClose rightClose : Nat)
+    (hrank :
+      forall pos, (rankCloseTrace pos).toCosted = rankCloseCosted pos) :
+    (directory.lcaCloseTraceResultWithRankSeed
+      rankCloseTrace leftClose rightClose).toCosted =
+      directory.lcaCloseCostedWithRankSeed
+        rankCloseCosted leftClose rightClose := by
+  by_cases hzero : canonicalBPRelativeSummaryBlockSize shape = 0
+  · simp [lcaCloseTraceResultWithRankSeed, lcaCloseCostedWithRankSeed,
+      hzero]
+  · by_cases hsame :
+      blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose =
+        blockOfClose (canonicalBPRelativeSummaryBlockSize shape) rightClose
+    · simp [lcaCloseTraceResultWithRankSeed, lcaCloseCostedWithRankSeed,
+        hzero, hsame,
+        localBPSameBlockCloseDecodedTraceResultWithRankSeed_refines,
+        hrank]
+    · simp [lcaCloseTraceResultWithRankSeed, lcaCloseCostedWithRankSeed,
+        hzero, hsame, crossBlockCloseTraceResultWithRankSeed_refines,
+        hrank]
+
 /-- Compact close/LCA query using the interpreted false-rank seed callback. -/
 def lcaCloseCostedWithInterpretedRankSeed
     {shape : Cartesian.CartesianShape}

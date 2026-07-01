@@ -53,6 +53,7 @@ Short public aliases live in [`RMQ/Headlines.lean`](RMQ/Headlines.lean).
 | --- | --- |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and the matching lower-bound side. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Whole-query-interpreted variant of the final BP-native succinct RMQ capstone: same theorem shape, with the final query control represented by a closed first-order program whose leaves are interpreted close-select, compact close/LCA, and register-backed answer-rank operations. |
+| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace` | Unified-`WordRAM.TraceEvent` variant of the same capstone: the final query emits one trace stream; close-select, answer-rank, and compact-close rank-seed reads are structural payload/register traces, while bounded local/fringe/interior close-navigation leaves remain charged decoder boundaries pending full payload-read replay. |
 | `RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery` | Component-level interpreter-backed BP close-navigation profile. |
 | `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack` | Coefficient-correct Catalan lower-bound slack, stated in doubled integer form. |
 | `RMQ.Headlines.rankSelectNPlusOConstantQuery` | Standalone Jacobson/Clark-style plain-bitvector rank/select with `n + o(n)` payload and constant modeled query cost. |
@@ -99,8 +100,9 @@ At a high level, the repository currently includes:
 - a payload-accounted BP-native succinct RMQ upper bound with `2*n + o(n)`
   payload and constant modeled query cost;
 - an interpreter-backed final succinct RMQ query surface whose close-select,
-  compact close/LCA, and answer-rank leaves run through first-order
-  payload-memory `WordRAM` bridges;
+  answer-rank, and compact-close rank-seed reads run through first-order
+  payload-memory `WordRAM` bridges, with remaining close-navigation decoder
+  leaves explicitly named;
 - a standalone rank/select spoke with public Jacobson/Clark-style profiles, a
   concrete fixed-weight compressed/FID capstone family surface, and an
   interpreter-backed replay of that compressed/FID query path; and
