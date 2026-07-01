@@ -78,7 +78,8 @@ separate appendix.
   extraction spoke is
   `RMQBPNavigation`, exposing the compact balanced-parentheses close/LCA
   navigation facade consumed by succinct RMQ, now with the public rank-backed
-  excess and inorder-close-plus-excess bridge.
+  excess, inorder-close-plus-excess bridge, and first charged subtree-interval
+  tree-navigation operation.
 - Optional archive root: `RMQArchive` imports the retired compatibility and
   obstruction surfaces under `RMQ.Archive`, while the main `RMQ` root stays
   focused on live proof surfaces and public headlines.
@@ -2200,9 +2201,12 @@ The names below are grouped by source module. Repeated base names in
   neutral public aliases and a standalone import root for compact
   balanced-parentheses close/LCA navigation, including
   `BPNavigation.excessAtCosted`, `BPNavigation.closeExcessOfInorderCosted`,
+  `BPNavigation.subtreeIntervalOfInorder?`,
+  `BPNavigation.subtreeIntervalOfInorderCosted`,
   `BPNavigation.closeRankPrefix_le_openRankPrefix_of_le`,
   `BPNavigation.shapeAccessCloseRankProfile`,
-  `BPNavigation.shapeAccessCloseRankExcessProfile`, and
+  `BPNavigation.shapeAccessCloseRankExcessProfile`,
+  `BPNavigation.shapeAccessSubtreeIntervalProfile`, and
   `BPNavigation.compactCloseDirectoryProfile`.
 - `RMQ/Core/Amortized.lean`, `RMQ/Core/UnionFind.lean`,
   `RMQ/Core/UnionFind/Forest.lean`, and `RMQUnionFind.lean`: reusable
