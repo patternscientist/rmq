@@ -79,7 +79,9 @@ separate appendix.
   `RMQBPNavigation`, exposing the compact balanced-parentheses close/LCA
   navigation facade consumed by succinct RMQ, now with the public rank-backed
   excess, inorder-close-plus-excess bridge, and first charged subtree-interval
-  tree-navigation operation.
+  tree-navigation operation, plus a conditional fast subtree theorem over a
+  matching-open boundary and a formal counterexample blocking simple reuse of
+  the existing close/LCA query as that boundary.
 - Optional archive root: `RMQArchive` imports the retired compatibility and
   obstruction surfaces under `RMQ.Archive`, while the main `RMQ` root stays
   focused on live proof surfaces and public headlines.
@@ -2203,10 +2205,15 @@ The names below are grouped by source module. Repeated base names in
   `BPNavigation.excessAtCosted`, `BPNavigation.closeExcessOfInorderCosted`,
   `BPNavigation.subtreeIntervalOfInorder?`,
   `BPNavigation.subtreeIntervalOfInorderCosted`,
+  `BPNavigation.BalancedParensMatchingOpenAccess`,
+  `BPNavigation.subtreeIntervalOfInorderFastCosted`,
   `BPNavigation.closeRankPrefix_le_openRankPrefix_of_le`,
   `BPNavigation.shapeAccessCloseRankProfile`,
   `BPNavigation.shapeAccessCloseRankExcessProfile`,
   `BPNavigation.shapeAccessSubtreeIntervalProfile`, and
+  `BPNavigation.shapeAccessFastSubtreeIntervalProfile`, plus
+  `BPNavigation.singletonLcaCloseSemantics_not_matchingOpen_counterexample`.
+  The compact close/LCA profile remains exposed as
   `BPNavigation.compactCloseDirectoryProfile`.
 - `RMQ/Core/Amortized.lean`, `RMQ/Core/UnionFind.lean`,
   `RMQ/Core/UnionFind/Forest.lean`, and `RMQUnionFind.lean`: reusable

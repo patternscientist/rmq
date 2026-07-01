@@ -30,6 +30,9 @@ balanced-parentheses encodings:
 - `subtreeIntervalOfInorderCosted`: inorder node index to a half-open inorder
   subtree interval, routed through charged close-select, a charged excess scan
   for the matching open, and two charged close-rank queries.
+- `subtreeIntervalOfInorderFastCosted`: the same subtree interval, but routed
+  through a supplied constant-query matching-open component instead of the
+  linear excess scan.
 
 It is not yet a complete tree-navigation library.
 
@@ -51,14 +54,21 @@ RMQ.BPNavigation.closeOfInorderCosted
 RMQ.BPNavigation.inorderOfCloseCosted
 RMQ.BPNavigation.excessAtCosted
 RMQ.BPNavigation.closeExcessOfInorderCosted
+RMQ.BPNavigation.bpPrefixExcess
 RMQ.BPNavigation.matchingOpenSearchRef
 RMQ.BPNavigation.matchingOpenSearchCosted
+RMQ.BPNavigation.matchingOpenSearchRef_some_nearest
 RMQ.BPNavigation.matchingOpenOfClose?
+RMQ.BPNavigation.matchingOpenOfClose?_nearest_equal_excess_of_bpCloseOfInorder?
 RMQ.BPNavigation.subtreeIntervalOfInorder?
 RMQ.BPNavigation.subtreeIntervalOfInorderCosted
+RMQ.BPNavigation.BalancedParensMatchingOpenAccess
+RMQ.BPNavigation.subtreeIntervalOfInorderFastCosted
+RMQ.BPNavigation.singletonLcaCloseSemantics_not_matchingOpen_counterexample
 RMQ.BPNavigation.shapeAccessCloseRankProfile
 RMQ.BPNavigation.shapeAccessCloseRankExcessProfile
 RMQ.BPNavigation.shapeAccessSubtreeIntervalProfile
+RMQ.BPNavigation.shapeAccessFastSubtreeIntervalProfile
 ```
 
 The first bridge profile proves one-query modeled cost for both close/rank
@@ -81,6 +91,28 @@ close-rank queries. `subtreeIntervalQueryCost` is a coarse model-level budget:
 one close select, one post-close excess query, at most one excess query per BP
 position in the scan window, and two close-rank queries. It is not a payload-bit
 bound and not a Lean evaluator runtime claim.
+
+`matchingOpenSearchRef_some_nearest` and
+`matchingOpenOfClose?_nearest_equal_excess_of_bpCloseOfInorder?` make the scan
+semantics explicit: for a close produced by `bpCloseOfInorder?`, the returned
+position is the nearest prefix at or before the close with the post-close
+excess, not an arbitrary equal-excess prefix.
+
+The fast subtree profile introduces `BalancedParensMatchingOpenAccess`, a
+public constant-query matching-open boundary. `subtreeIntervalOfInorderFastCosted`
+consumes that boundary immediately and proves exact agreement with
+`subtreeIntervalOfInorder?`, with modeled cost independent of
+`shape.bpCode.length`: one close-select, one matching-open query, and two
+close-rank queries. The access record separates `payloadBits`, proof-only
+exactness, and model query cost. It is not yet instantiated by the compact
+relative-rmM close/LCA directory.
+
+The focused obstruction is
+`singletonLcaCloseSemantics_not_matchingOpen_counterexample`: on the one-node
+Cartesian shape, singleton LCA-close semantics return the node close, while
+matching-open semantics return the opening prefix position. This rules out the
+simple reuse of the existing concrete close/LCA query as a matching-open
+component.
 
 The concrete compact close/LCA directory is exposed as:
 
@@ -113,12 +145,15 @@ close-navigation families.
 
 The BP navigation spoke is landed as the compact close/LCA layer consumed by
 succinct RMQ, plus the close/rank/excess bridge and the first charged public
-subtree-interval operation. The useful next deepening steps are:
+subtree-interval operation. It also has a conditional fast subtree theorem over
+a public matching-open boundary, together with a counterexample showing the
+current concrete close/LCA query is not that boundary. The useful next deepening
+steps are:
 
 1. build the next fuller tree-navigation operations over balanced parentheses
    (`parent`/`enclose`, `firstChild`, `nextSibling`, and LCA);
 2. replace the linear charged matching-open scan with a reusable constant-query
-   enclose/matching-open directory when that directory is exposed through the
-   public rank/select/BP boundary;
+   enclose/matching-open directory and instantiate `BalancedParensMatchingOpenAccess`
+   through the public rank/select/BP boundary;
 3. keep the existing compact close/LCA profile as the RMQ-facing specialization
    rather than forcing every tree-navigation operation through RMQ internals.

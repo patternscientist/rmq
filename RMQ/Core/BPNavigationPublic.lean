@@ -258,6 +258,13 @@ theorem closeExcessOfInorderCosted_erase_of_bpCloseOfInorder?
   rw [closeExcessOfInorderCosted_erase]
   simp [hclose]
 
+/-- Public reference prefix excess for a Cartesian-shape BP code. -/
+def bpPrefixExcess
+    (shape : RMQ.Cartesian.CartesianShape)
+    (pos : Nat) : Nat :=
+  RMQ.Succinct.rankPrefix true shape.bpCode pos -
+    RMQ.Succinct.rankPrefix false shape.bpCode pos
+
 /--
 Reference matching-open search for a closing parenthesis.
 
@@ -270,14 +277,12 @@ def matchingOpenSearchRef
     (shape : RMQ.Cartesian.CartesianShape)
     (target : Nat) : Nat -> Option Nat
   | 0 =>
-      if RMQ.Succinct.rankPrefix true shape.bpCode 0 -
-          RMQ.Succinct.rankPrefix false shape.bpCode 0 = target then
+      if bpPrefixExcess shape 0 = target then
         some 0
       else
         none
   | pos + 1 =>
-      if RMQ.Succinct.rankPrefix true shape.bpCode (pos + 1) -
-          RMQ.Succinct.rankPrefix false shape.bpCode (pos + 1) = target then
+      if bpPrefixExcess shape (pos + 1) = target then
         some (pos + 1)
       else
         matchingOpenSearchRef shape target pos
@@ -360,12 +365,10 @@ theorem matchingOpenSearchCosted_erase
   | zero =>
       have hexcess :
           (excessAtCosted access 0).value =
-            RMQ.Succinct.rankPrefix true shape.bpCode 0 -
-              RMQ.Succinct.rankPrefix false shape.bpCode 0 := by
-        simpa [Costed.erase] using excessAtCosted_erase access 0
-      by_cases htarget :
-          RMQ.Succinct.rankPrefix true shape.bpCode 0 -
-            RMQ.Succinct.rankPrefix false shape.bpCode 0 = target
+            bpPrefixExcess shape 0 := by
+        simpa [Costed.erase, bpPrefixExcess] using
+          excessAtCosted_erase access 0
+      by_cases htarget : bpPrefixExcess shape 0 = target
       · have hvalue : (excessAtCosted access 0).value = target := by
           rw [hexcess, htarget]
         simp [matchingOpenSearchCosted, matchingOpenSearchRef,
@@ -378,13 +381,10 @@ theorem matchingOpenSearchCosted_erase
   | succ fuel ih =>
       have hexcess :
           (excessAtCosted access (fuel + 1)).value =
-            RMQ.Succinct.rankPrefix true shape.bpCode (fuel + 1) -
-              RMQ.Succinct.rankPrefix false shape.bpCode (fuel + 1) := by
-        simpa [Costed.erase] using excessAtCosted_erase access (fuel + 1)
-      by_cases htarget :
-          RMQ.Succinct.rankPrefix true shape.bpCode (fuel + 1) -
-            RMQ.Succinct.rankPrefix false shape.bpCode (fuel + 1) =
-              target
+            bpPrefixExcess shape (fuel + 1) := by
+        simpa [Costed.erase, bpPrefixExcess] using
+          excessAtCosted_erase access (fuel + 1)
+      by_cases htarget : bpPrefixExcess shape (fuel + 1) = target
       · have hvalue :
             (excessAtCosted access (fuel + 1)).value = target := by
           rw [hexcess, htarget]
@@ -398,6 +398,53 @@ theorem matchingOpenSearchCosted_erase
           Costed.bind, Costed.erase, htarget, hvalue]
         simpa [Costed.erase] using ih
 
+theorem matchingOpenSearchRef_some_nearest
+    {shape : RMQ.Cartesian.CartesianShape}
+    {target fuel openPos : Nat}
+    (hopen :
+      matchingOpenSearchRef shape target fuel = some openPos) :
+    openPos <= fuel /\
+      bpPrefixExcess shape openPos = target /\
+      forall {pos : Nat},
+        openPos < pos ->
+          pos <= fuel ->
+            Not (bpPrefixExcess shape pos = target) := by
+  induction fuel generalizing openPos with
+  | zero =>
+      by_cases htarget : bpPrefixExcess shape 0 = target
+      · simp [matchingOpenSearchRef, htarget] at hopen
+        subst openPos
+        constructor
+        · omega
+        constructor
+        · exact htarget
+        · intro pos hgt hle
+          omega
+      · simp [matchingOpenSearchRef, htarget] at hopen
+  | succ fuel ih =>
+      by_cases htarget : bpPrefixExcess shape (fuel + 1) = target
+      · simp [matchingOpenSearchRef, htarget] at hopen
+        subst openPos
+        constructor
+        · omega
+        constructor
+        · exact htarget
+        · intro pos hgt hle
+          omega
+      · simp [matchingOpenSearchRef, htarget] at hopen
+        rcases ih hopen with ⟨hleOpen, htargetOpen, hnearest⟩
+        constructor
+        · omega
+        constructor
+        · exact htargetOpen
+        · intro pos hgt hle
+          by_cases hpos : pos = fuel + 1
+          · subst pos
+            exact htarget
+          · have hposLe : pos <= fuel := by
+              omega
+            exact hnearest hgt hposLe
+
 /-- Reference matching open for a closing position, derived from public excess. -/
 def matchingOpenOfClose?
     (shape : RMQ.Cartesian.CartesianShape)
@@ -406,6 +453,24 @@ def matchingOpenOfClose?
     RMQ.Succinct.rankPrefix true shape.bpCode (close + 1) -
       RMQ.Succinct.rankPrefix false shape.bpCode (close + 1)
   matchingOpenSearchRef shape target close
+
+theorem matchingOpenOfClose?_nearest_equal_excess_of_bpCloseOfInorder?
+    {shape : RMQ.Cartesian.CartesianShape}
+    {idx close openPos : Nat}
+    (_hclose :
+      RMQ.SuccinctSpace.bpCloseOfInorder? shape idx = some close)
+    (hopen : matchingOpenOfClose? shape close = some openPos) :
+    openPos <= close /\
+      bpPrefixExcess shape openPos = bpPrefixExcess shape (close + 1) /\
+      forall {pos : Nat},
+        openPos < pos ->
+          pos <= close ->
+            Not
+              (bpPrefixExcess shape pos =
+                bpPrefixExcess shape (close + 1)) := by
+  unfold matchingOpenOfClose? at hopen
+  simpa [bpPrefixExcess] using
+    matchingOpenSearchRef_some_nearest (shape := shape) (hopen := hopen)
 
 /--
 Reference subtree interval for an inorder node.
@@ -569,6 +634,156 @@ theorem shapeAccessSubtreeIntervalProfile
   intro idx
   exact ⟨subtreeIntervalOfInorderCosted_cost_le access idx,
     subtreeIntervalOfInorderCosted_erase access idx⟩
+
+/--
+Public matching-open component for fast BP tree navigation.
+
+`payloadBits` is only the component's payload accounting field. The exactness
+field is proof-only, and `queryCost` is the model-level charge for one
+matching-open query.
+-/
+structure BalancedParensMatchingOpenAccess
+    (shape : RMQ.Cartesian.CartesianShape)
+    (overhead queryCost : Nat) where
+  payloadBits : Nat
+  payloadBits_le_overhead : payloadBits <= overhead
+  matchingOpenCosted : Nat -> Costed (Option Nat)
+  matchingOpen_cost_le :
+    forall close, (matchingOpenCosted close).cost <= queryCost
+  matchingOpen_erase :
+    forall close, (matchingOpenCosted close).erase =
+      matchingOpenOfClose? shape close
+
+/--
+Fast public subtree interval for an inorder node, assuming a constant-query
+matching-open component.
+-/
+def subtreeIntervalOfInorderFastCosted
+    {shape : RMQ.Cartesian.CartesianShape}
+    {overhead queryCost openOverhead openQueryCost : Nat}
+    (access :
+      BalancedParensAccess (bpParensOfShape shape) overhead queryCost)
+    (openAccess :
+      BalancedParensMatchingOpenAccess shape openOverhead openQueryCost)
+    (idx : Nat) : Costed (Option (Prod Nat Nat)) :=
+  Costed.bind (closeOfInorderCosted access idx) fun close? =>
+    match close? with
+    | none => Costed.pure none
+    | some close =>
+        Costed.bind (openAccess.matchingOpenCosted close) fun open? =>
+          match open? with
+          | none => Costed.pure none
+          | some openPos =>
+              Costed.bind (access.rankCosted false openPos) fun lo =>
+                Costed.map (fun hi => some (lo, hi))
+                  (access.rankCosted false (close + 1))
+
+theorem subtreeIntervalOfInorderFastCosted_cost_le
+    {shape : RMQ.Cartesian.CartesianShape}
+    {overhead queryCost openOverhead openQueryCost : Nat}
+    (access :
+      BalancedParensAccess (bpParensOfShape shape) overhead queryCost)
+    (openAccess :
+      BalancedParensMatchingOpenAccess shape openOverhead openQueryCost)
+    (idx : Nat) :
+    (subtreeIntervalOfInorderFastCosted access openAccess idx).cost <=
+      queryCost + openQueryCost + 2 * queryCost := by
+  unfold subtreeIntervalOfInorderFastCosted
+  have hcloseCost := closeOfInorderCosted_cost_le access idx
+  cases hcloseVal : (closeOfInorderCosted access idx).value with
+  | none =>
+      simp [Costed.bind, Costed.pure, hcloseVal]
+      omega
+  | some close =>
+      have hopenCost := openAccess.matchingOpen_cost_le close
+      cases hopenVal : (openAccess.matchingOpenCosted close).value with
+      | none =>
+          simp [Costed.bind, Costed.pure, hcloseVal, hopenVal]
+          omega
+      | some openPos =>
+          have hloCost :=
+            RMQ.SuccinctSpace.BalancedParensAccess.rankCosted_cost_le
+              access false openPos
+          have hhiCost :=
+            RMQ.SuccinctSpace.BalancedParensAccess.rankCosted_cost_le
+              access false (close + 1)
+          simp [Costed.bind, Costed.map, Costed.pure, hcloseVal, hopenVal]
+          omega
+
+theorem subtreeIntervalOfInorderFastCosted_erase
+    {shape : RMQ.Cartesian.CartesianShape}
+    {overhead queryCost openOverhead openQueryCost : Nat}
+    (access :
+      BalancedParensAccess (bpParensOfShape shape) overhead queryCost)
+    (openAccess :
+      BalancedParensMatchingOpenAccess shape openOverhead openQueryCost)
+    (idx : Nat) :
+    (subtreeIntervalOfInorderFastCosted access openAccess idx).erase =
+      subtreeIntervalOfInorder? shape idx := by
+  unfold subtreeIntervalOfInorderFastCosted subtreeIntervalOfInorder?
+  rw [Costed.erase_bind]
+  rw [closeOfInorderCosted_erase access idx]
+  cases hclose : RMQ.SuccinctSpace.bpCloseOfInorder? shape idx with
+  | none =>
+      simp
+  | some close =>
+      simp only
+      rw [Costed.erase_bind]
+      rw [openAccess.matchingOpen_erase close]
+      cases hopen : matchingOpenOfClose? shape close with
+      | none =>
+          simp
+      | some openPos =>
+          simp only
+          rw [Costed.erase_bind]
+          rw [RMQ.SuccinctSpace.BalancedParensAccess.rankCosted_erase
+            access false openPos]
+          rw [Costed.erase_map]
+          rw [RMQ.SuccinctSpace.BalancedParensAccess.rankCosted_erase
+            access false (close + 1)]
+          simp [RMQ.SuccinctSpace.bpParensOfShape_bits]
+
+theorem shapeAccessFastSubtreeIntervalProfile
+    {shape : RMQ.Cartesian.CartesianShape}
+    {overhead queryCost openOverhead openQueryCost : Nat}
+    (access :
+      BalancedParensAccess (bpParensOfShape shape) overhead queryCost)
+    (openAccess :
+      BalancedParensMatchingOpenAccess shape openOverhead openQueryCost) :
+    forall idx,
+      (subtreeIntervalOfInorderFastCosted access openAccess idx).cost <=
+          queryCost + openQueryCost + 2 * queryCost /\
+        (subtreeIntervalOfInorderFastCosted access openAccess idx).erase =
+          subtreeIntervalOfInorder? shape idx := by
+  intro idx
+  exact ⟨subtreeIntervalOfInorderFastCosted_cost_le access openAccess idx,
+    subtreeIntervalOfInorderFastCosted_erase access openAccess idx⟩
+
+/--
+The current compact close/LCA component returns close positions, not matching
+opens. On the one-node Cartesian shape, singleton LCA-close semantics return
+the node close, while matching-open semantics return the opening prefix
+position. This blocks reusing the existing close/LCA query as the fast
+matching-open component.
+-/
+theorem singletonLcaCloseSemantics_not_matchingOpen_counterexample :
+    exists (shape : RMQ.Cartesian.CartesianShape) (idx close : Nat),
+      RMQ.SuccinctSpace.bpCloseOfInorder? shape idx = some close /\
+        RMQ.SuccinctSpace.bpCloseOfInorder? shape
+            (RMQ.scanWindow shape.representative idx 1) =
+          some close /\
+        Not (matchingOpenOfClose? shape close = some close) := by
+  refine ⟨RMQ.Cartesian.CartesianShape.node
+      RMQ.Cartesian.CartesianShape.empty
+      RMQ.Cartesian.CartesianShape.empty, 0, 1, ?_, ?_, ?_⟩
+  · simp [RMQ.SuccinctSpace.bpCloseOfInorder?,
+      RMQ.Cartesian.CartesianShape.size,
+      RMQ.Cartesian.CartesianShape.bpCode]
+  · simp [RMQ.SuccinctSpace.bpCloseOfInorder?, RMQ.scanWindow,
+      RMQ.Cartesian.CartesianShape.size,
+      RMQ.Cartesian.CartesianShape.bpCode]
+  · simp [matchingOpenOfClose?, matchingOpenSearchRef, bpPrefixExcess,
+      RMQ.Cartesian.CartesianShape.bpCode, RMQ.Succinct.rankPrefix]
 
 /--
 One theorem packaging the public close/rank bridge for Cartesian-shape BP
