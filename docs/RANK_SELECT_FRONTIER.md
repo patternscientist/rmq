@@ -780,9 +780,16 @@ landed path needed the sub-log/shared-decoder repair.
 The reusable public spec is:
 
 - `RMQ/Core/RankSelectSpec.lean`
-- `RMQ/Core/RankSelectCompressed.lean`
+- `RMQ/Core/RankSelectCompressed.lean`, now a stable barrel over:
+  - `RMQ/Core/RankSelectCompressed/FixedWeightCodec.lean`;
+  - `RMQ/Core/RankSelectCompressed/Readback.lean`;
+  - `RMQ/Core/RankSelectCompressed/Base.lean`; and
+  - `RMQ/Core/RankSelectCompressed/TableRAM.lean`
 - `RMQ/Core/RankSelectCompressedSplit.lean`
-- `RMQ/Core/RankSelectPublic.lean`
+- `RMQ/Core/RankSelectPublic.lean`, now a stable public facade barrel over:
+  - `RMQ/Core/RankSelectPublic/FixedWeight.lean`;
+  - `RMQ/Core/RankSelectPublic/Profiles.lean`; and
+  - `RMQ/Core/RankSelectPublic/Capstones.lean`
 
 The concrete construction currently lives in:
 

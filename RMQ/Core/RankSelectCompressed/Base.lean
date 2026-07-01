@@ -1,0 +1,10630 @@
+import RMQ.Core.RankSelectCompressed.Readback
+
+namespace RMQ
+
+namespace RankSelectSpec
+
+/--
+Compressed fixed-weight auxiliary data with constant-bounded word reads.
+
+The counted payload is the canonical fixed-weight packed code plus an auxiliary
+payload of `overhead` bits. Each operation supplies a finite read schedule for
+the packed store and the auxiliary store, and the cost is the number of
+requested words. A constant-query family must bound those schedules uniformly.
+The evaluator fields are the abstract local RAM kernel; the exactness fields
+state that those kernels answer the public access/rank/select semantics from
+the charged read values. Concrete non-oracular instances must ensure those
+evaluators are fixed code over the read values, not proof-only access to the
+decoded bitvector.
+-/
+structure FixedWeightCompressedAuxiliaryData
+    (bits : List Bool) (overhead wordSize queryCost : Nat) where
+  wordSize_pos : 0 < wordSize
+  packedStore :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightPackedPayload bits) wordSize
+  auxPayload : List Bool
+  auxStore :
+    SuccinctSpace.BoundedPayloadWordStore auxPayload wordSize
+  aux_length_eq : auxPayload.length = overhead
+  accessPackedReads : Nat -> List Nat
+  accessAuxReads : Nat -> List Nat
+  rankPackedReads : Bool -> Nat -> List Nat
+  rankAuxReads : Bool -> Nat -> List Nat
+  selectPackedReads : Bool -> Nat -> List Nat
+  selectAuxReads : Bool -> Nat -> List Nat
+  accessEval :
+    Nat -> List (Option (List Bool)) -> List (Option (List Bool)) ->
+      Option Bool
+  rankEval :
+    Bool -> Nat -> List (Option (List Bool)) ->
+      List (Option (List Bool)) -> Nat
+  selectEval :
+    Bool -> Nat -> List (Option (List Bool)) ->
+      List (Option (List Bool)) -> Option Nat
+  access_read_count_le :
+    forall i,
+      (accessPackedReads i).length + (accessAuxReads i).length <= queryCost
+  rank_read_count_le :
+    forall target pos,
+      (rankPackedReads target pos).length +
+          (rankAuxReads target pos).length <= queryCost
+  select_read_count_le :
+    forall target occurrence,
+      (selectPackedReads target occurrence).length +
+          (selectAuxReads target occurrence).length <= queryCost
+  access_eval_exact :
+    forall i,
+      accessEval i
+          (boundedPayloadWordReadValues packedStore (accessPackedReads i))
+          (boundedPayloadWordReadValues auxStore (accessAuxReads i)) =
+        bits[i]?
+  rank_eval_exact :
+    forall target pos,
+      rankEval target pos
+          (boundedPayloadWordReadValues packedStore
+            (rankPackedReads target pos))
+          (boundedPayloadWordReadValues auxStore
+            (rankAuxReads target pos)) =
+        Succinct.rankPrefix target bits pos
+  select_eval_exact :
+    forall target occurrence,
+      selectEval target occurrence
+          (boundedPayloadWordReadValues packedStore
+            (selectPackedReads target occurrence))
+          (boundedPayloadWordReadValues auxStore
+            (selectAuxReads target occurrence)) =
+        Succinct.select target bits occurrence
+
+namespace FixedWeightCompressedAuxiliaryData
+
+def payload
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost) :
+    List Bool :=
+  fixedWeightPackedPayload bits ++ data.auxPayload
+
+@[simp] theorem payload_length
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost) :
+    data.payload.length = fixedWeightPayloadBudget bits + overhead := by
+  simp [payload, fixedWeightPackedPayload_length, data.aux_length_eq]
+
+def accessCosted
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (i : Nat) : Costed (Option Bool) :=
+  Costed.bind
+      (boundedPayloadWordReadsCosted data.packedStore
+        (data.accessPackedReads i)) fun packedWords =>
+    Costed.bind
+        (boundedPayloadWordReadsCosted data.auxStore
+          (data.accessAuxReads i)) fun auxWords =>
+      Costed.pure (data.accessEval i packedWords auxWords)
+
+@[simp] theorem accessCosted_cost
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (i : Nat) :
+    (data.accessCosted i).cost =
+      (data.accessPackedReads i).length +
+        (data.accessAuxReads i).length := by
+  simp [accessCosted]
+
+theorem accessCosted_cost_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (i : Nat) :
+    (data.accessCosted i).cost <= queryCost := by
+  simpa using data.access_read_count_le i
+
+@[simp] theorem accessCosted_erase
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (i : Nat) :
+    (data.accessCosted i).erase = bits[i]? := by
+  simp [accessCosted, data.access_eval_exact]
+
+def rankCosted
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) : Costed Nat :=
+  Costed.bind
+      (boundedPayloadWordReadsCosted data.packedStore
+        (data.rankPackedReads target pos)) fun packedWords =>
+    Costed.bind
+        (boundedPayloadWordReadsCosted data.auxStore
+          (data.rankAuxReads target pos)) fun auxWords =>
+      Costed.pure (data.rankEval target pos packedWords auxWords)
+
+@[simp] theorem rankCosted_cost
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).cost =
+      (data.rankPackedReads target pos).length +
+        (data.rankAuxReads target pos).length := by
+  simp [rankCosted]
+
+theorem rankCosted_cost_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).cost <= queryCost := by
+  simpa using data.rank_read_count_le target pos
+
+@[simp] theorem rankCosted_erase
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).erase =
+      Succinct.rankPrefix target bits pos := by
+  simp [rankCosted, data.rank_eval_exact]
+
+def selectCosted
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) : Costed (Option Nat) :=
+  Costed.bind
+      (boundedPayloadWordReadsCosted data.packedStore
+        (data.selectPackedReads target occurrence)) fun packedWords =>
+    Costed.bind
+        (boundedPayloadWordReadsCosted data.auxStore
+          (data.selectAuxReads target occurrence)) fun auxWords =>
+      Costed.pure
+        (data.selectEval target occurrence packedWords auxWords)
+
+@[simp] theorem selectCosted_cost
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).cost =
+      (data.selectPackedReads target occurrence).length +
+        (data.selectAuxReads target occurrence).length := by
+  simp [selectCosted]
+
+theorem selectCosted_cost_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).cost <= queryCost := by
+  simpa using data.select_read_count_le target occurrence
+
+@[simp] theorem selectCosted_erase
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).erase =
+      Succinct.select target bits occurrence := by
+  simp [selectCosted, data.select_eval_exact]
+
+def toCompressedDirectory
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost) :
+    CompressedBitVectorRankSelectDirectory bits overhead queryCost where
+  payload := data.payload
+  payload_length_le := by
+    simp
+  accessCosted := data.accessCosted
+  rankCosted := data.rankCosted
+  selectCosted := data.selectCosted
+  access_cost_le := data.accessCosted_cost_le
+  rank_cost_le := data.rankCosted_cost_le
+  select_cost_le := data.selectCosted_cost_le
+  access_exact := data.accessCosted_erase
+  rank_exact := data.rankCosted_erase
+  select_exact := data.selectCosted_erase
+
+theorem directory_profile
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightCompressedAuxiliaryData bits overhead wordSize queryCost) :
+    (data.toCompressedDirectory).payload = data.payload /\
+      (data.toCompressedDirectory).payload.length =
+        fixedWeightPayloadBudget bits + overhead /\
+      SuccinctSpace.flattenPayloadWords
+          data.packedStore.store.words.toList =
+        fixedWeightPackedPayload bits /\
+      SuccinctSpace.flattenPayloadWords data.auxStore.store.words.toList =
+        data.auxPayload /\
+      (forall {word : List Bool},
+        List.Mem word data.packedStore.store.words.toList ->
+          word.length <= wordSize) /\
+      (forall {word : List Bool},
+        List.Mem word data.auxStore.store.words.toList ->
+          word.length <= wordSize) /\
+      (forall i,
+        ((data.toCompressedDirectory).accessQueryCosted i).cost <=
+            queryCost /\
+          ((data.toCompressedDirectory).accessQueryCosted i).erase =
+            bits[i]?) /\
+      (forall target pos,
+        ((data.toCompressedDirectory).rankQueryCosted target pos).cost <=
+            queryCost /\
+          ((data.toCompressedDirectory).rankQueryCosted target pos).erase =
+            Succinct.rankPrefix target bits pos) /\
+      (forall target occurrence,
+        ((data.toCompressedDirectory).selectQueryCosted
+            target occurrence).cost <= queryCost /\
+          ((data.toCompressedDirectory).selectQueryCosted
+            target occurrence).erase =
+            Succinct.select target bits occurrence) := by
+  constructor
+  · rfl
+  constructor
+  · exact data.payload_length
+  constructor
+  · exact data.packedStore.erases
+  constructor
+  · exact data.auxStore.erases
+  constructor
+  · intro word hmem
+    exact data.packedStore.word_length_le_of_mem hmem
+  constructor
+  · intro word hmem
+    exact data.auxStore.word_length_le_of_mem hmem
+  constructor
+  · intro i
+    exact ⟨data.accessCosted_cost_le i, data.accessCosted_erase i⟩
+  constructor
+  · intro target pos
+    exact
+      ⟨data.rankCosted_cost_le target pos,
+        data.rankCosted_erase target pos⟩
+  · intro target occurrence
+    exact
+      ⟨data.selectCosted_cost_le target occurrence,
+        data.selectCosted_erase target occurrence⟩
+
+end FixedWeightCompressedAuxiliaryData
+
+/--
+Compressed fixed-weight auxiliary data with dependent auxiliary reads.
+
+The payload is still the packed fixed-weight code plus counted auxiliary bits,
+but the auxiliary read schedule may depend on the charged packed-store read
+values. This is a generic scaffold for local RRR-style blocks, where the
+packed code determines the decoded-word table address. The evaluator fields
+are still abstract; concrete non-oracular instances must expose fixed code over
+the charged read values.
+-/
+structure FixedWeightDependentAuxiliaryData
+    (bits : List Bool) (overhead wordSize queryCost : Nat) where
+  wordSize_pos : 0 < wordSize
+  packedStore :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightPackedPayload bits) wordSize
+  auxPayload : List Bool
+  auxStore :
+    SuccinctSpace.BoundedPayloadWordStore auxPayload wordSize
+  aux_length_eq : auxPayload.length = overhead
+  accessPackedReads : Nat -> List Nat
+  accessAuxReads : Nat -> List (Option (List Bool)) -> List Nat
+  rankPackedReads : Bool -> Nat -> List Nat
+  rankAuxReads : Bool -> Nat -> List (Option (List Bool)) -> List Nat
+  selectPackedReads : Bool -> Nat -> List Nat
+  selectAuxReads : Bool -> Nat -> List (Option (List Bool)) -> List Nat
+  accessEvalCosted :
+    Nat -> List (Option (List Bool)) -> List (Option (List Bool)) ->
+      Costed (Option Bool)
+  rankEvalCosted :
+    Bool -> Nat -> List (Option (List Bool)) ->
+      List (Option (List Bool)) -> Costed Nat
+  selectEvalCosted :
+    Bool -> Nat -> List (Option (List Bool)) ->
+      List (Option (List Bool)) -> Costed (Option Nat)
+  access_query_cost_le :
+    forall i,
+      (accessPackedReads i).length +
+          (accessAuxReads i
+            (boundedPayloadWordReadValues packedStore
+              (accessPackedReads i))).length +
+          (accessEvalCosted i
+            (boundedPayloadWordReadValues packedStore
+              (accessPackedReads i))
+            (boundedPayloadWordReadValues auxStore
+              (accessAuxReads i
+                (boundedPayloadWordReadValues packedStore
+                  (accessPackedReads i))))).cost <=
+        queryCost
+  rank_query_cost_le :
+    forall target pos,
+      (rankPackedReads target pos).length +
+          (rankAuxReads target pos
+            (boundedPayloadWordReadValues packedStore
+              (rankPackedReads target pos))).length +
+          (rankEvalCosted target pos
+            (boundedPayloadWordReadValues packedStore
+              (rankPackedReads target pos))
+            (boundedPayloadWordReadValues auxStore
+              (rankAuxReads target pos
+                (boundedPayloadWordReadValues packedStore
+                  (rankPackedReads target pos))))).cost <=
+        queryCost
+  select_query_cost_le :
+    forall target occurrence,
+      (selectPackedReads target occurrence).length +
+          (selectAuxReads target occurrence
+            (boundedPayloadWordReadValues packedStore
+              (selectPackedReads target occurrence))).length +
+          (selectEvalCosted target occurrence
+            (boundedPayloadWordReadValues packedStore
+              (selectPackedReads target occurrence))
+            (boundedPayloadWordReadValues auxStore
+              (selectAuxReads target occurrence
+                (boundedPayloadWordReadValues packedStore
+                  (selectPackedReads target occurrence))))).cost <=
+        queryCost
+  access_eval_exact :
+    forall i,
+      (accessEvalCosted i
+          (boundedPayloadWordReadValues packedStore (accessPackedReads i))
+          (boundedPayloadWordReadValues auxStore
+            (accessAuxReads i
+              (boundedPayloadWordReadValues packedStore
+                (accessPackedReads i))))).erase =
+        bits[i]?
+  rank_eval_exact :
+    forall target pos,
+      (rankEvalCosted target pos
+          (boundedPayloadWordReadValues packedStore
+            (rankPackedReads target pos))
+          (boundedPayloadWordReadValues auxStore
+            (rankAuxReads target pos
+              (boundedPayloadWordReadValues packedStore
+                (rankPackedReads target pos))))).erase =
+        Succinct.rankPrefix target bits pos
+  select_eval_exact :
+    forall target occurrence,
+      (selectEvalCosted target occurrence
+          (boundedPayloadWordReadValues packedStore
+            (selectPackedReads target occurrence))
+          (boundedPayloadWordReadValues auxStore
+            (selectAuxReads target occurrence
+              (boundedPayloadWordReadValues packedStore
+                (selectPackedReads target occurrence))))).erase =
+        Succinct.select target bits occurrence
+
+namespace FixedWeightDependentAuxiliaryData
+
+def payload
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost) :
+    List Bool :=
+  fixedWeightPackedPayload bits ++ data.auxPayload
+
+@[simp] theorem payload_length
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost) :
+    data.payload.length = fixedWeightPayloadBudget bits + overhead := by
+  simp [payload, fixedWeightPackedPayload_length, data.aux_length_eq]
+
+def accessCosted
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (i : Nat) : Costed (Option Bool) :=
+  Costed.bind
+      (dependentPayloadWordReadsCosted data.packedStore data.auxStore
+        (data.accessPackedReads i) (data.accessAuxReads i)) fun readWords =>
+    data.accessEvalCosted i readWords.1 readWords.2
+
+@[simp] theorem accessCosted_cost
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (i : Nat) :
+    (data.accessCosted i).cost =
+      (data.accessPackedReads i).length +
+        (data.accessAuxReads i
+          (boundedPayloadWordReadValues data.packedStore
+            (data.accessPackedReads i))).length +
+        (data.accessEvalCosted i
+          (boundedPayloadWordReadValues data.packedStore
+            (data.accessPackedReads i))
+          (boundedPayloadWordReadValues data.auxStore
+            (data.accessAuxReads i
+              (boundedPayloadWordReadValues data.packedStore
+                (data.accessPackedReads i))))).cost := by
+  simp [accessCosted, Nat.add_assoc]
+
+theorem accessCosted_cost_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (i : Nat) :
+    (data.accessCosted i).cost <= queryCost := by
+  rw [data.accessCosted_cost i]
+  exact data.access_query_cost_le i
+
+@[simp] theorem accessCosted_erase
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (i : Nat) :
+    (data.accessCosted i).erase = bits[i]? := by
+  simp [accessCosted, data.access_eval_exact]
+
+def rankCosted
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) : Costed Nat :=
+  Costed.bind
+      (dependentPayloadWordReadsCosted data.packedStore data.auxStore
+        (data.rankPackedReads target pos)
+        (data.rankAuxReads target pos)) fun readWords =>
+    data.rankEvalCosted target pos readWords.1 readWords.2
+
+@[simp] theorem rankCosted_cost
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).cost =
+      (data.rankPackedReads target pos).length +
+        (data.rankAuxReads target pos
+          (boundedPayloadWordReadValues data.packedStore
+            (data.rankPackedReads target pos))).length +
+        (data.rankEvalCosted target pos
+          (boundedPayloadWordReadValues data.packedStore
+            (data.rankPackedReads target pos))
+          (boundedPayloadWordReadValues data.auxStore
+            (data.rankAuxReads target pos
+              (boundedPayloadWordReadValues data.packedStore
+                (data.rankPackedReads target pos))))).cost := by
+  simp [rankCosted, Nat.add_assoc]
+
+theorem rankCosted_cost_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).cost <= queryCost := by
+  rw [data.rankCosted_cost target pos]
+  exact data.rank_query_cost_le target pos
+
+@[simp] theorem rankCosted_erase
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).erase =
+      Succinct.rankPrefix target bits pos := by
+  simp [rankCosted, data.rank_eval_exact]
+
+def selectCosted
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) : Costed (Option Nat) :=
+  Costed.bind
+      (dependentPayloadWordReadsCosted data.packedStore data.auxStore
+        (data.selectPackedReads target occurrence)
+        (data.selectAuxReads target occurrence)) fun readWords =>
+    data.selectEvalCosted target occurrence readWords.1 readWords.2
+
+@[simp] theorem selectCosted_cost
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).cost =
+      (data.selectPackedReads target occurrence).length +
+        (data.selectAuxReads target occurrence
+          (boundedPayloadWordReadValues data.packedStore
+            (data.selectPackedReads target occurrence))).length +
+        (data.selectEvalCosted target occurrence
+          (boundedPayloadWordReadValues data.packedStore
+            (data.selectPackedReads target occurrence))
+          (boundedPayloadWordReadValues data.auxStore
+            (data.selectAuxReads target occurrence
+              (boundedPayloadWordReadValues data.packedStore
+                (data.selectPackedReads target occurrence))))).cost := by
+  simp [selectCosted, Nat.add_assoc]
+
+theorem selectCosted_cost_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).cost <= queryCost := by
+  rw [data.selectCosted_cost target occurrence]
+  exact data.select_query_cost_le target occurrence
+
+@[simp] theorem selectCosted_erase
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).erase =
+      Succinct.select target bits occurrence := by
+  simp [selectCosted, data.select_eval_exact]
+
+def toCompressedDirectory
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost) :
+    CompressedBitVectorRankSelectDirectory bits overhead queryCost where
+  payload := data.payload
+  payload_length_le := by
+    simp
+  accessCosted := data.accessCosted
+  rankCosted := data.rankCosted
+  selectCosted := data.selectCosted
+  access_cost_le := data.accessCosted_cost_le
+  rank_cost_le := data.rankCosted_cost_le
+  select_cost_le := data.selectCosted_cost_le
+  access_exact := data.accessCosted_erase
+  rank_exact := data.rankCosted_erase
+  select_exact := data.selectCosted_erase
+
+def DirectoryProfile
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost) :
+    Prop :=
+  (data.toCompressedDirectory).payload = data.payload /\
+    (data.toCompressedDirectory).payload.length =
+      fixedWeightPayloadBudget bits + overhead /\
+    SuccinctSpace.flattenPayloadWords
+        data.packedStore.store.words.toList =
+      fixedWeightPackedPayload bits /\
+    SuccinctSpace.flattenPayloadWords data.auxStore.store.words.toList =
+      data.auxPayload /\
+    (forall {word : List Bool},
+      List.Mem word data.packedStore.store.words.toList ->
+        word.length <= wordSize) /\
+    (forall {word : List Bool},
+      List.Mem word data.auxStore.store.words.toList ->
+        word.length <= wordSize) /\
+    (forall i,
+      ((data.toCompressedDirectory).accessQueryCosted i).cost <=
+          queryCost /\
+        ((data.toCompressedDirectory).accessQueryCosted i).erase =
+          bits[i]?) /\
+    (forall target pos,
+      ((data.toCompressedDirectory).rankQueryCosted target pos).cost <=
+          queryCost /\
+        ((data.toCompressedDirectory).rankQueryCosted target pos).erase =
+          Succinct.rankPrefix target bits pos) /\
+    (forall target occurrence,
+      ((data.toCompressedDirectory).selectQueryCosted
+          target occurrence).cost <= queryCost /\
+        ((data.toCompressedDirectory).selectQueryCosted
+          target occurrence).erase =
+          Succinct.select target bits occurrence)
+
+theorem directory_profile
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightDependentAuxiliaryData bits overhead wordSize queryCost) :
+    data.DirectoryProfile := by
+  constructor
+  · rfl
+  constructor
+  · exact data.payload_length
+  constructor
+  · exact data.packedStore.erases
+  constructor
+  · exact data.auxStore.erases
+  constructor
+  · intro word hmem
+    exact data.packedStore.word_length_le_of_mem hmem
+  constructor
+  · intro word hmem
+    exact data.auxStore.word_length_le_of_mem hmem
+  constructor
+  · intro i
+    exact ⟨data.accessCosted_cost_le i, data.accessCosted_erase i⟩
+  constructor
+  · intro target pos
+    exact
+      ⟨data.rankCosted_cost_le target pos,
+        data.rankCosted_erase target pos⟩
+  · intro target occurrence
+    exact
+      ⟨data.selectCosted_cost_le target occurrence,
+        data.selectCosted_erase target occurrence⟩
+
+end FixedWeightDependentAuxiliaryData
+
+/-- Packed fixed-weight code word for each block in a block decomposition. -/
+def fixedWeightBlockCodeWords (blocks : List (List Bool)) :
+    List (List Bool) :=
+  blocks.map fixedWeightPackedPayload
+
+/-- Per-block length entries for the ambient RRR class/length tables. -/
+def fixedWeightBlockLengthEntries (blocks : List (List Bool)) :
+    List Nat :=
+  blocks.map List.length
+
+/-- Per-block class entries (`trueCount`) for the ambient RRR class table. -/
+def fixedWeightBlockClassEntries (blocks : List (List Bool)) :
+    List Nat :=
+  blocks.map trueCount
+
+@[simp] theorem fixedWeightBlockLengthEntries_length
+    (blocks : List (List Bool)) :
+    (fixedWeightBlockLengthEntries blocks).length = blocks.length := by
+  simp [fixedWeightBlockLengthEntries]
+
+@[simp] theorem fixedWeightBlockClassEntries_length
+    (blocks : List (List Bool)) :
+    (fixedWeightBlockClassEntries blocks).length = blocks.length := by
+  simp [fixedWeightBlockClassEntries]
+
+theorem fixedWeightBlockLengthEntries_get?
+    {blocks : List (List Bool)} {blockIndex : Nat} {block : List Bool}
+    (hblock : blocks[blockIndex]? = some block) :
+    (fixedWeightBlockLengthEntries blocks)[blockIndex]? =
+      some block.length := by
+  simp [fixedWeightBlockLengthEntries, List.getElem?_map, hblock]
+
+theorem fixedWeightBlockClassEntries_get?
+    {blocks : List (List Bool)} {blockIndex : Nat} {block : List Bool}
+    (hblock : blocks[blockIndex]? = some block) :
+    (fixedWeightBlockClassEntries blocks)[blockIndex]? =
+      some (trueCount block) := by
+  simp [fixedWeightBlockClassEntries, List.getElem?_map, hblock]
+
+/-- Counted primary payload for a block-coded fixed-weight bitvector. -/
+def fixedWeightBlockCodePayload (blocks : List (List Bool)) : List Bool :=
+  SuccinctSpace.flattenPayloadWords (fixedWeightBlockCodeWords blocks)
+
+/-- Sum of the fixed-weight code widths of all blocks. -/
+def fixedWeightBlockPayloadBudget (blocks : List (List Bool)) : Nat :=
+  (blocks.map fixedWeightPayloadBudget).sum
+
+theorem fixedWeightBlockPayloadBudget_le_flatten_length_add_blocks
+    (blocks : List (List Bool)) :
+    fixedWeightBlockPayloadBudget blocks <=
+      (SuccinctSpace.flattenPayloadWords blocks).length + blocks.length := by
+  induction blocks with
+  | nil =>
+      simp [fixedWeightBlockPayloadBudget, SuccinctSpace.flattenPayloadWords]
+  | cons block rest ih =>
+      have hblock := fixedWeightPayloadBudget_le_length_add_one block
+      have hrest :
+          (rest.map fixedWeightPayloadBudget).sum <=
+            (SuccinctSpace.flattenPayloadWords rest).length +
+              rest.length := by
+        simpa [fixedWeightBlockPayloadBudget] using ih
+      simp [fixedWeightBlockPayloadBudget, SuccinctSpace.flattenPayloadWords]
+      omega
+
+theorem fixedWeightBlockPayloadBudget_le_payloadBudget_flatten_add_blocks
+    (blocks : List (List Bool)) :
+    fixedWeightBlockPayloadBudget blocks <=
+      fixedWeightPayloadBudget (SuccinctSpace.flattenPayloadWords blocks) +
+        blocks.length := by
+  induction blocks with
+  | nil =>
+      simp [fixedWeightBlockPayloadBudget, SuccinctSpace.flattenPayloadWords,
+        fixedWeightPayloadBudget]
+  | cons block rest ih =>
+      let flatRest := SuccinctSpace.flattenPayloadWords rest
+      have hcountBlock : trueCount block <= block.length :=
+        trueCount_le_length block
+      have hcountRest : trueCount flatRest <= flatRest.length :=
+        trueCount_le_length flatRest
+      have hposBlock :
+          0 < binomialCount block.length (trueCount block) :=
+        binomialCount_pos_of_le hcountBlock
+      have hposRest :
+          0 < binomialCount flatRest.length (trueCount flatRest) :=
+        binomialCount_pos_of_le hcountRest
+      have hmul :
+          binomialCount block.length (trueCount block) *
+              binomialCount flatRest.length (trueCount flatRest) <=
+            binomialCount (block.length + flatRest.length)
+              (trueCount block + trueCount flatRest) :=
+        binomialCount_mul_le_add _ _ _ _
+      have hlog :
+          Nat.log2 (binomialCount block.length (trueCount block)) +
+              Nat.log2 (binomialCount flatRest.length (trueCount flatRest)) <=
+            Nat.log2
+              (binomialCount (block.length + flatRest.length)
+                (trueCount block + trueCount flatRest)) :=
+        log2_add_le_log2_mul_le hposBlock hposRest hmul
+      have ih' :
+          (rest.map fixedWeightPayloadBudget).sum <=
+            Nat.log2 (binomialCount flatRest.length (trueCount flatRest)) + 1 +
+              rest.length := by
+        simpa [fixedWeightBlockPayloadBudget, fixedWeightPayloadBudget,
+          flatRest] using ih
+      dsimp [flatRest] at hlog ih'
+      simp [fixedWeightBlockPayloadBudget, SuccinctSpace.flattenPayloadWords,
+        fixedWeightPayloadBudget, trueCount_append]
+      omega
+
+@[simp] theorem fixedWeightBlockCodeWords_length
+    (blocks : List (List Bool)) :
+    (fixedWeightBlockCodeWords blocks).length = blocks.length := by
+  simp [fixedWeightBlockCodeWords]
+
+theorem fixedWeightBlockCodePayload_length
+    (blocks : List (List Bool)) :
+    (fixedWeightBlockCodePayload blocks).length =
+      fixedWeightBlockPayloadBudget blocks := by
+  induction blocks with
+  | nil =>
+      simp [fixedWeightBlockCodePayload, fixedWeightBlockCodeWords,
+        fixedWeightBlockPayloadBudget, SuccinctSpace.flattenPayloadWords]
+  | cons block rest ih =>
+      simp [fixedWeightBlockCodePayload, fixedWeightBlockCodeWords,
+        fixedWeightBlockPayloadBudget, SuccinctSpace.flattenPayloadWords,
+        fixedWeightPackedPayload_length]
+      simpa [fixedWeightBlockCodePayload, fixedWeightBlockCodeWords,
+        fixedWeightBlockPayloadBudget] using ih
+
+/-- Bounded word store for the per-block fixed-weight code payload. -/
+def fixedWeightBlockCodeBoundedStore
+    (blocks : List (List Bool)) {wordSize : Nat}
+    (hcode :
+      forall {block : List Bool}, List.Mem block blocks ->
+        fixedWeightPayloadBudget block <= wordSize) :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightBlockCodePayload blocks) wordSize where
+  store :=
+    { words := (fixedWeightBlockCodeWords blocks).toArray
+      erases := by
+        simp [fixedWeightBlockCodePayload] }
+  word_length_le := by
+    intro word hmem
+    have hlist :
+        List.Mem word (fixedWeightBlockCodeWords blocks) := by
+      simpa using hmem
+    have hmap :
+        List.Mem word (blocks.map fixedWeightPackedPayload) := by
+      simpa [fixedWeightBlockCodeWords] using hlist
+    rcases List.mem_map.mp hmap with ⟨block, hblock, rfl⟩
+    rw [fixedWeightPackedPayload_length]
+    exact hcode hblock
+
+theorem fixedWeightBlockCodeBoundedStore_words_toList
+    (blocks : List (List Bool)) {wordSize : Nat}
+    (hcode :
+      forall {block : List Bool}, List.Mem block blocks ->
+        fixedWeightPayloadBudget block <= wordSize) :
+    (fixedWeightBlockCodeBoundedStore blocks hcode).store.words.toList =
+      fixedWeightBlockCodeWords blocks := by
+  simp [fixedWeightBlockCodeBoundedStore]
+
+theorem fixedWeightAmbientBlockCodeStore_get?_of_aligned
+    {blocks : List (List Bool)} {wordSize : Nat}
+    {store :
+      SuccinctSpace.BoundedPayloadWordStore
+        (fixedWeightBlockCodePayload blocks) wordSize}
+    (halign : store.store.words.toList = fixedWeightBlockCodeWords blocks)
+    {blockIndex : Nat} {block : List Bool}
+    (hblock : blocks[blockIndex]? = some block) :
+    store.store.words[blockIndex]? =
+      some (fixedWeightPackedPayload block) := by
+  have hlist :
+      store.store.words.toList[blockIndex]? =
+        some (fixedWeightPackedPayload block) := by
+    rw [halign]
+    simp [fixedWeightBlockCodeWords, List.getElem?_map, hblock]
+  simpa [Array.getElem?_toList] using hlist
+
+theorem fixedWeightBlockCodeBoundedStore_get?_of_block
+    (blocks : List (List Bool)) {wordSize : Nat}
+    (hcode :
+      forall {block : List Bool}, List.Mem block blocks ->
+        fixedWeightPayloadBudget block <= wordSize)
+    {blockIndex : Nat} {block : List Bool}
+    (hblock : blocks[blockIndex]? = some block) :
+    (fixedWeightBlockCodeBoundedStore blocks hcode).store.words[blockIndex]? =
+      some (fixedWeightPackedPayload block) := by
+  exact
+    fixedWeightAmbientBlockCodeStore_get?_of_aligned
+      (fixedWeightBlockCodeBoundedStore_words_toList blocks hcode)
+      hblock
+
+/--
+Ambient auxiliary envelope for block-composed fixed-weight dictionaries.
+
+This is the counted global directory budget, separate from the primary
+per-block fixed-weight codes. It deliberately does not include the local dense
+decoded-word table from `FixedWeightTableRAMBlockData`.
+-/
+def fixedWeightAmbientBlockAuxiliaryOverhead (slots n : Nat) : Nat :=
+  SuccinctSpace.logLogSampledDirectoryOverhead slots n
+
+theorem fixedWeightAmbientBlockAuxiliaryOverhead_littleO
+    (slots : Nat) :
+    SuccinctSpace.LittleOLinear
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots) := by
+  unfold fixedWeightAmbientBlockAuxiliaryOverhead
+  exact SuccinctSpace.logLogSampledDirectoryOverhead_littleO slots
+
+/--
+Ambient/global block composition data for fixed-weight blocks.
+
+The primary payload is the concatenation of each block's canonical
+fixed-weight code. The auxiliary payload is counted separately and can be
+budgeted by an `o(n)` family. Query code may make dependent reads from the
+block-code payload into the auxiliary payload, but exactness is still supplied
+as a field; concrete non-oracular instances must instantiate these evaluators
+from fixed table/RAM code over the charged reads.
+-/
+structure FixedWeightAmbientBlockCompositionData
+    (bits : List Bool) (blocks : List (List Bool))
+    (overhead wordSize queryCost : Nat) where
+  wordSize_pos : 0 < wordSize
+  wordSize_le_ambient : wordSize <= Nat.log2 bits.length + 1
+  blockSize : Nat
+  blockSize_pos : 0 < blockSize
+  blocks_flatten : SuccinctSpace.flattenPayloadWords blocks = bits
+  block_length_le :
+    forall {block : List Bool}, List.Mem block blocks ->
+      block.length <= blockSize
+  blockSize_le_wordSize : blockSize <= wordSize
+  block_code_width_le :
+    forall {block : List Bool}, List.Mem block blocks ->
+      fixedWeightPayloadBudget block <= wordSize
+  codeStore :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightBlockCodePayload blocks) wordSize
+  auxPayload : List Bool
+  auxStore :
+    SuccinctSpace.BoundedPayloadWordStore auxPayload wordSize
+  aux_length_eq : auxPayload.length = overhead
+  accessCodeReads : Nat -> List Nat
+  accessAuxReads : Nat -> List (Option (List Bool)) -> List Nat
+  rankCodeReads : Bool -> Nat -> List Nat
+  rankAuxReads : Bool -> Nat -> List (Option (List Bool)) -> List Nat
+  selectCodeReads : Bool -> Nat -> List Nat
+  selectAuxReads : Bool -> Nat -> List (Option (List Bool)) -> List Nat
+  accessEvalCosted :
+    Nat -> List (Option (List Bool)) -> List (Option (List Bool)) ->
+      Costed (Option Bool)
+  rankEvalCosted :
+    Bool -> Nat -> List (Option (List Bool)) ->
+      List (Option (List Bool)) -> Costed Nat
+  selectEvalCosted :
+    Bool -> Nat -> List (Option (List Bool)) ->
+      List (Option (List Bool)) -> Costed (Option Nat)
+  access_query_cost_le :
+    forall i,
+      (accessCodeReads i).length +
+          (accessAuxReads i
+            (boundedPayloadWordReadValues codeStore
+              (accessCodeReads i))).length +
+          (accessEvalCosted i
+            (boundedPayloadWordReadValues codeStore
+              (accessCodeReads i))
+            (boundedPayloadWordReadValues auxStore
+              (accessAuxReads i
+                (boundedPayloadWordReadValues codeStore
+                  (accessCodeReads i))))).cost <=
+        queryCost
+  rank_query_cost_le :
+    forall target pos,
+      (rankCodeReads target pos).length +
+          (rankAuxReads target pos
+            (boundedPayloadWordReadValues codeStore
+              (rankCodeReads target pos))).length +
+          (rankEvalCosted target pos
+            (boundedPayloadWordReadValues codeStore
+              (rankCodeReads target pos))
+            (boundedPayloadWordReadValues auxStore
+              (rankAuxReads target pos
+                (boundedPayloadWordReadValues codeStore
+                  (rankCodeReads target pos))))).cost <=
+        queryCost
+  select_query_cost_le :
+    forall target occurrence,
+      (selectCodeReads target occurrence).length +
+          (selectAuxReads target occurrence
+            (boundedPayloadWordReadValues codeStore
+              (selectCodeReads target occurrence))).length +
+          (selectEvalCosted target occurrence
+            (boundedPayloadWordReadValues codeStore
+              (selectCodeReads target occurrence))
+            (boundedPayloadWordReadValues auxStore
+              (selectAuxReads target occurrence
+                (boundedPayloadWordReadValues codeStore
+                  (selectCodeReads target occurrence))))).cost <=
+        queryCost
+  access_eval_exact :
+    forall i,
+      (accessEvalCosted i
+          (boundedPayloadWordReadValues codeStore (accessCodeReads i))
+          (boundedPayloadWordReadValues auxStore
+            (accessAuxReads i
+              (boundedPayloadWordReadValues codeStore
+                (accessCodeReads i))))).erase =
+        bits[i]?
+  rank_eval_exact :
+    forall target pos,
+      (rankEvalCosted target pos
+          (boundedPayloadWordReadValues codeStore
+            (rankCodeReads target pos))
+          (boundedPayloadWordReadValues auxStore
+            (rankAuxReads target pos
+              (boundedPayloadWordReadValues codeStore
+                (rankCodeReads target pos))))).erase =
+        Succinct.rankPrefix target bits pos
+  select_eval_exact :
+    forall target occurrence,
+      (selectEvalCosted target occurrence
+          (boundedPayloadWordReadValues codeStore
+            (selectCodeReads target occurrence))
+          (boundedPayloadWordReadValues auxStore
+            (selectAuxReads target occurrence
+              (boundedPayloadWordReadValues codeStore
+                (selectCodeReads target occurrence))))).erase =
+        Succinct.select target bits occurrence
+
+namespace FixedWeightAmbientBlockCompositionData
+
+def payload
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightAmbientBlockCompositionData
+        bits blocks overhead wordSize queryCost) :
+    List Bool :=
+  fixedWeightBlockCodePayload blocks ++ data.auxPayload
+
+@[simp] theorem payload_length
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightAmbientBlockCompositionData
+        bits blocks overhead wordSize queryCost) :
+    data.payload.length =
+      fixedWeightBlockPayloadBudget blocks + overhead := by
+  simp [payload, fixedWeightBlockCodePayload_length, data.aux_length_eq]
+
+def accessCosted
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightAmbientBlockCompositionData
+        bits blocks overhead wordSize queryCost)
+    (i : Nat) : Costed (Option Bool) :=
+  Costed.bind
+      (dependentPayloadWordReadsCosted data.codeStore data.auxStore
+        (data.accessCodeReads i) (data.accessAuxReads i)) fun readWords =>
+    data.accessEvalCosted i readWords.1 readWords.2
+
+@[simp] theorem accessCosted_cost
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightAmbientBlockCompositionData
+        bits blocks overhead wordSize queryCost)
+    (i : Nat) :
+    (data.accessCosted i).cost =
+      (data.accessCodeReads i).length +
+        (data.accessAuxReads i
+          (boundedPayloadWordReadValues data.codeStore
+            (data.accessCodeReads i))).length +
+        (data.accessEvalCosted i
+          (boundedPayloadWordReadValues data.codeStore
+            (data.accessCodeReads i))
+          (boundedPayloadWordReadValues data.auxStore
+            (data.accessAuxReads i
+              (boundedPayloadWordReadValues data.codeStore
+                (data.accessCodeReads i))))).cost := by
+  simp [accessCosted, Nat.add_assoc]
+
+theorem accessCosted_cost_le
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightAmbientBlockCompositionData
+        bits blocks overhead wordSize queryCost)
+    (i : Nat) :
+    (data.accessCosted i).cost <= queryCost := by
+  rw [data.accessCosted_cost i]
+  exact data.access_query_cost_le i
+
+@[simp] theorem accessCosted_erase
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightAmbientBlockCompositionData
+        bits blocks overhead wordSize queryCost)
+    (i : Nat) :
+    (data.accessCosted i).erase = bits[i]? := by
+  simp [accessCosted, data.access_eval_exact]
+
+def rankCosted
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightAmbientBlockCompositionData
+        bits blocks overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) : Costed Nat :=
+  Costed.bind
+      (dependentPayloadWordReadsCosted data.codeStore data.auxStore
+        (data.rankCodeReads target pos)
+        (data.rankAuxReads target pos)) fun readWords =>
+    data.rankEvalCosted target pos readWords.1 readWords.2
+
+@[simp] theorem rankCosted_cost
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightAmbientBlockCompositionData
+        bits blocks overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).cost =
+      (data.rankCodeReads target pos).length +
+        (data.rankAuxReads target pos
+          (boundedPayloadWordReadValues data.codeStore
+            (data.rankCodeReads target pos))).length +
+        (data.rankEvalCosted target pos
+          (boundedPayloadWordReadValues data.codeStore
+            (data.rankCodeReads target pos))
+          (boundedPayloadWordReadValues data.auxStore
+            (data.rankAuxReads target pos
+              (boundedPayloadWordReadValues data.codeStore
+                (data.rankCodeReads target pos))))).cost := by
+  simp [rankCosted, Nat.add_assoc]
+
+theorem rankCosted_cost_le
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightAmbientBlockCompositionData
+        bits blocks overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).cost <= queryCost := by
+  rw [data.rankCosted_cost target pos]
+  exact data.rank_query_cost_le target pos
+
+@[simp] theorem rankCosted_erase
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightAmbientBlockCompositionData
+        bits blocks overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).erase =
+      Succinct.rankPrefix target bits pos := by
+  simp [rankCosted, data.rank_eval_exact]
+
+def selectCosted
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightAmbientBlockCompositionData
+        bits blocks overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) : Costed (Option Nat) :=
+  Costed.bind
+      (dependentPayloadWordReadsCosted data.codeStore data.auxStore
+        (data.selectCodeReads target occurrence)
+        (data.selectAuxReads target occurrence)) fun readWords =>
+    data.selectEvalCosted target occurrence readWords.1 readWords.2
+
+@[simp] theorem selectCosted_cost
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightAmbientBlockCompositionData
+        bits blocks overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).cost =
+      (data.selectCodeReads target occurrence).length +
+        (data.selectAuxReads target occurrence
+          (boundedPayloadWordReadValues data.codeStore
+            (data.selectCodeReads target occurrence))).length +
+        (data.selectEvalCosted target occurrence
+          (boundedPayloadWordReadValues data.codeStore
+            (data.selectCodeReads target occurrence))
+          (boundedPayloadWordReadValues data.auxStore
+            (data.selectAuxReads target occurrence
+              (boundedPayloadWordReadValues data.codeStore
+                (data.selectCodeReads target occurrence))))).cost := by
+  simp [selectCosted, Nat.add_assoc]
+
+theorem selectCosted_cost_le
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightAmbientBlockCompositionData
+        bits blocks overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).cost <= queryCost := by
+  rw [data.selectCosted_cost target occurrence]
+  exact data.select_query_cost_le target occurrence
+
+@[simp] theorem selectCosted_erase
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightAmbientBlockCompositionData
+        bits blocks overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).erase =
+      Succinct.select target bits occurrence := by
+  simp [selectCosted, data.select_eval_exact]
+
+def DirectoryProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightAmbientBlockCompositionData
+        bits blocks overhead wordSize queryCost) : Prop :=
+  data.payload.length =
+      fixedWeightBlockPayloadBudget blocks + overhead /\
+    fixedWeightBlockCodePayload blocks =
+      SuccinctSpace.flattenPayloadWords
+        (fixedWeightBlockCodeWords blocks) /\
+    (fixedWeightBlockCodePayload blocks).length =
+      fixedWeightBlockPayloadBudget blocks /\
+    SuccinctSpace.flattenPayloadWords blocks = bits /\
+    SuccinctSpace.flattenPayloadWords data.codeStore.store.words.toList =
+      fixedWeightBlockCodePayload blocks /\
+    SuccinctSpace.flattenPayloadWords data.auxStore.store.words.toList =
+      data.auxPayload /\
+    data.auxPayload.length = overhead /\
+    (forall {word : List Bool},
+      List.Mem word data.codeStore.store.words.toList ->
+        word.length <= wordSize) /\
+    (forall {word : List Bool},
+      List.Mem word data.auxStore.store.words.toList ->
+        word.length <= wordSize) /\
+    wordSize <= Nat.log2 bits.length + 1 /\
+    data.blockSize <= wordSize /\
+    (forall {block : List Bool}, List.Mem block blocks ->
+      block.length <= data.blockSize /\
+        fixedWeightPayloadBudget block <= wordSize) /\
+    (forall i,
+      (data.accessCosted i).cost <= queryCost /\
+        (data.accessCosted i).erase = bits[i]?) /\
+    (forall target pos,
+      (data.rankCosted target pos).cost <= queryCost /\
+        (data.rankCosted target pos).erase =
+          Succinct.rankPrefix target bits pos) /\
+    (forall target occurrence,
+      (data.selectCosted target occurrence).cost <= queryCost /\
+        (data.selectCosted target occurrence).erase =
+          Succinct.select target bits occurrence)
+
+theorem directory_profile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightAmbientBlockCompositionData
+        bits blocks overhead wordSize queryCost) :
+    data.DirectoryProfile := by
+  constructor
+  · exact data.payload_length
+  constructor
+  · rfl
+  constructor
+  · exact fixedWeightBlockCodePayload_length blocks
+  constructor
+  · exact data.blocks_flatten
+  constructor
+  · exact data.codeStore.erases
+  constructor
+  · exact data.auxStore.erases
+  constructor
+  · exact data.aux_length_eq
+  constructor
+  · intro word hmem
+    exact data.codeStore.word_length_le_of_mem hmem
+  constructor
+  · intro word hmem
+    exact data.auxStore.word_length_le_of_mem hmem
+  constructor
+  · exact data.wordSize_le_ambient
+  constructor
+  · exact data.blockSize_le_wordSize
+  constructor
+  · intro block hmem
+    exact ⟨data.block_length_le hmem, data.block_code_width_le hmem⟩
+  constructor
+  · intro i
+    exact ⟨data.accessCosted_cost_le i, data.accessCosted_erase i⟩
+  constructor
+  · intro target pos
+    exact ⟨data.rankCosted_cost_le target pos,
+      data.rankCosted_erase target pos⟩
+  · intro target occurrence
+    exact ⟨data.selectCosted_cost_le target occurrence,
+      data.selectCosted_erase target occurrence⟩
+
+/--
+Ambient profile strengthened with explicit machine-word bounds for both the
+block-code payload store and the auxiliary store.
+-/
+theorem word_bounded_directory_profile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightAmbientBlockCompositionData
+        bits blocks overhead wordSize queryCost) :
+    data.DirectoryProfile /\
+      (forall {word : List Bool},
+        List.Mem word data.codeStore.store.words.toList ->
+          word.length <= Nat.log2 bits.length + 1) /\
+      (forall {word : List Bool},
+        List.Mem word data.auxStore.store.words.toList ->
+          word.length <= Nat.log2 bits.length + 1) := by
+  exact
+    ⟨data.directory_profile,
+      (fun hmem =>
+        Nat.le_trans
+          (data.codeStore.word_length_le_of_mem hmem)
+          data.wordSize_le_ambient),
+      (fun hmem =>
+        Nat.le_trans
+          (data.auxStore.word_length_le_of_mem hmem)
+          data.wordSize_le_ambient)⟩
+
+end FixedWeightAmbientBlockCompositionData
+
+/--
+Family of ambient/global block-composed fixed-weight dictionaries.
+
+This is a predecessor surface for RRR/FID: it proves that the counted
+auxiliary payload can follow an `o(n)` ambient budget, while the primary
+payload is the sum of per-block fixed-weight code widths. The later FID step
+is to relate that block-code primary payload to the global
+`log binomial(n,m)` budget.
+-/
+structure FixedWeightAmbientBlockCompositionFamily
+    (slots queryCost : Nat) where
+  wordSize : Nat -> Nat
+  blocks : List Bool -> List (List Bool)
+  component :
+    forall bits : List Bool,
+      FixedWeightAmbientBlockCompositionData
+        bits (blocks bits)
+        (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+        (wordSize bits.length) queryCost
+
+namespace FixedWeightAmbientBlockCompositionFamily
+
+def overhead (slots : Nat) : Nat -> Nat :=
+  fixedWeightAmbientBlockAuxiliaryOverhead slots
+
+def compressedOverhead (slots : Nat) (primaryOverhead : Nat -> Nat) :
+    Nat -> Nat :=
+  fun n => primaryOverhead n + fixedWeightAmbientBlockAuxiliaryOverhead slots n
+
+def directory
+    {slots queryCost : Nat}
+    (family : FixedWeightAmbientBlockCompositionFamily slots queryCost)
+    (bits : List Bool) :
+    FixedWeightAmbientBlockCompositionData
+      bits (family.blocks bits)
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+      (family.wordSize bits.length) queryCost :=
+  family.component bits
+
+theorem ambient_block_composition_profile
+    {slots queryCost : Nat}
+    (family : FixedWeightAmbientBlockCompositionFamily slots queryCost) :
+    SuccinctSpace.LittleOLinear (overhead slots) /\
+      forall bits : List Bool,
+        let data := family.directory bits
+        data.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          data.auxPayload.length =
+            fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (family.wordSize bits.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (data.accessCosted i).cost <= queryCost /\
+              (data.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (data.rankCosted target pos).cost <= queryCost /\
+              (data.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (data.selectCosted target occurrence).cost <= queryCost /\
+              (data.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  constructor
+  · exact fixedWeightAmbientBlockAuxiliaryOverhead_littleO slots
+  · intro bits
+    let data := family.directory bits
+    have hprofile := data.directory_profile
+    exact
+      ⟨data.payload_length,
+        data.aux_length_eq,
+        data.blocks_flatten,
+        data.wordSize_le_ambient,
+        (fun i => ⟨data.accessCosted_cost_le i,
+          data.accessCosted_erase i⟩),
+        (fun target pos => ⟨data.rankCosted_cost_le target pos,
+          data.rankCosted_erase target pos⟩),
+        (fun target occurrence =>
+          ⟨data.selectCosted_cost_le target occurrence,
+            data.selectCosted_erase target occurrence⟩)⟩
+
+/-- Family profile with explicit ambient machine-word bounds for read stores. -/
+theorem word_bounded_profile
+    {slots queryCost : Nat}
+    (family : FixedWeightAmbientBlockCompositionFamily slots queryCost) :
+    SuccinctSpace.LittleOLinear (overhead slots) /\
+      forall bits : List Bool,
+        let data := family.directory bits
+        data.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          data.auxPayload.length =
+            fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word data.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word data.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (data.accessCosted i).cost <= queryCost /\
+              (data.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (data.rankCosted target pos).cost <= queryCost /\
+              (data.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (data.selectCosted target occurrence).cost <= queryCost /\
+              (data.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  constructor
+  · exact fixedWeightAmbientBlockAuxiliaryOverhead_littleO slots
+  · intro bits
+    let data := family.directory bits
+    have hbounded := data.word_bounded_directory_profile
+    exact
+      ⟨data.payload_length,
+        data.aux_length_eq,
+        data.blocks_flatten,
+        hbounded.2.1,
+        hbounded.2.2,
+        (fun i => ⟨data.accessCosted_cost_le i,
+          data.accessCosted_erase i⟩),
+        (fun target pos => ⟨data.rankCosted_cost_le target pos,
+          data.rankCosted_erase target pos⟩),
+        (fun target occurrence =>
+          ⟨data.selectCosted_cost_le target occurrence,
+            data.selectCosted_erase target occurrence⟩)⟩
+
+/--
+Conditional bridge from ambient block composition to the public compressed/FID
+payload shape. The remaining primary theorem is isolated as `hprimary`.
+-/
+theorem compressed_profile_of_primary_budget
+    {slots queryCost : Nat}
+    (family : FixedWeightAmbientBlockCompositionFamily slots queryCost)
+    (primaryOverhead : Nat -> Nat)
+    (hprimaryO : SuccinctSpace.LittleOLinear primaryOverhead)
+    (hprimary :
+      forall bits : List Bool,
+        fixedWeightBlockPayloadBudget (family.blocks bits) <=
+          fixedWeightPayloadBudget bits + primaryOverhead bits.length) :
+    SuccinctSpace.LittleOLinear
+        (fun n =>
+          primaryOverhead n +
+            fixedWeightAmbientBlockAuxiliaryOverhead slots n) /\
+      forall bits : List Bool,
+        let data := family.directory bits
+        data.payload.length <=
+            fixedWeightPayloadBudget bits +
+              (primaryOverhead bits.length +
+                fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length) /\
+          (forall i,
+            (data.accessCosted i).cost <= queryCost /\
+              (data.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (data.rankCosted target pos).cost <= queryCost /\
+              (data.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (data.selectCosted target occurrence).cost <= queryCost /\
+              (data.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  constructor
+  · exact hprimaryO.add
+      (fixedWeightAmbientBlockAuxiliaryOverhead_littleO slots)
+  · intro bits
+    let data := family.directory bits
+    have hlen := data.payload_length
+    have hbudget := hprimary bits
+    constructor
+    · rw [hlen]
+      omega
+    constructor
+    · intro i
+      exact ⟨data.accessCosted_cost_le i, data.accessCosted_erase i⟩
+    constructor
+    · intro target pos
+      exact ⟨data.rankCosted_cost_le target pos,
+        data.rankCosted_erase target pos⟩
+    · intro target occurrence
+      exact ⟨data.selectCosted_cost_le target occurrence,
+        data.selectCosted_erase target occurrence⟩
+
+theorem word_bounded_compressed_profile_of_primary_budget
+    {slots queryCost : Nat}
+    (family : FixedWeightAmbientBlockCompositionFamily slots queryCost)
+    (primaryOverhead : Nat -> Nat)
+    (hprimaryO : SuccinctSpace.LittleOLinear primaryOverhead)
+    (hprimary :
+      forall bits : List Bool,
+        fixedWeightBlockPayloadBudget (family.blocks bits) <=
+          fixedWeightPayloadBudget bits + primaryOverhead bits.length) :
+    SuccinctSpace.LittleOLinear
+        (compressedOverhead slots primaryOverhead) /\
+      forall bits : List Bool,
+        let data := family.directory bits
+        data.DirectoryProfile /\
+          data.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          data.payload.length <=
+            fixedWeightPayloadBudget bits +
+              compressedOverhead slots primaryOverhead bits.length /\
+          data.auxPayload.length =
+            fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word data.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word data.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (data.accessCosted i).cost <= queryCost /\
+              (data.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (data.rankCosted target pos).cost <= queryCost /\
+              (data.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (data.selectCosted target occurrence).cost <= queryCost /\
+              (data.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  constructor
+  · simpa [compressedOverhead] using
+      hprimaryO.add
+        (fixedWeightAmbientBlockAuxiliaryOverhead_littleO slots)
+  · intro bits
+    let data := family.directory bits
+    have hbounded := data.word_bounded_directory_profile
+    have hbudget := hprimary bits
+    exact
+      ⟨data.directory_profile,
+        data.payload_length,
+        by
+          rw [data.payload_length]
+          dsimp [compressedOverhead]
+          omega,
+        data.aux_length_eq,
+        data.blocks_flatten,
+        hbounded.2.1,
+        hbounded.2.2,
+        (fun i => ⟨data.accessCosted_cost_le i,
+          data.accessCosted_erase i⟩),
+        (fun target pos => ⟨data.rankCosted_cost_le target pos,
+          data.rankCosted_erase target pos⟩),
+        (fun target occurrence =>
+          ⟨data.selectCosted_cost_le target occurrence,
+            data.selectCosted_erase target occurrence⟩)⟩
+
+end FixedWeightAmbientBlockCompositionFamily
+
+/--
+Family-level compressed/FID rank-select theorem surface.
+
+The target profile is
+`log2 (binomialCount n m) + 1 + o(n)` payload bits, where
+`m = trueCount bits`, and constant modeled `access`, `rank`, and `select`.
+-/
+structure CompressedBitVectorRankSelectFamily
+    (overhead : Nat -> Nat) (queryCost : Nat) where
+  directory :
+    forall bits : List Bool,
+      CompressedBitVectorRankSelectDirectory
+        bits (overhead bits.length) queryCost
+  overhead_littleO : SuccinctSpace.LittleOLinear overhead
+
+namespace CompressedBitVectorRankSelectFamily
+
+theorem fixed_weight_constant_query_profile
+    {overhead : Nat -> Nat} {queryCost : Nat}
+    (family : CompressedBitVectorRankSelectFamily overhead queryCost) :
+    SuccinctSpace.LittleOLinear overhead /\
+      forall bits : List Bool,
+        ((family.directory bits).payload.length <=
+          fixedWeightPayloadBudget bits + overhead bits.length) /\
+          (forall i,
+            ((family.directory bits).accessQueryCosted i).cost <=
+                queryCost /\
+              ((family.directory bits).accessQueryCosted i).erase =
+                bits[i]?) /\
+          (forall target pos,
+            ((family.directory bits).rankQueryCosted target pos).cost <=
+                queryCost /\
+              ((family.directory bits).rankQueryCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            ((family.directory bits).selectQueryCosted
+                target occurrence).cost <= queryCost /\
+              ((family.directory bits).selectQueryCosted
+                target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  constructor
+  · exact family.overhead_littleO
+  · intro bits
+    exact (family.directory bits).profile
+
+end CompressedBitVectorRankSelectFamily
+
+/--
+Family of compressed fixed-weight auxiliary directories.
+
+This is the generic constant-query FID join layer: a concrete future
+construction must supply the components, read schedules, and local evaluators;
+this adapter then accounts for the fixed-weight packed payload plus `o(n)`
+auxiliary bits and feeds the public compressed family theorem.
+-/
+structure FixedWeightCompressedAuxiliaryFamily
+    (overhead : Nat -> Nat) (wordSize queryCost : Nat) where
+  component :
+    forall bits : List Bool,
+      FixedWeightCompressedAuxiliaryData
+        bits (overhead bits.length) wordSize queryCost
+  overhead_littleO : SuccinctSpace.LittleOLinear overhead
+
+namespace FixedWeightCompressedAuxiliaryFamily
+
+def toCompressedFamily
+    {overhead : Nat -> Nat} {wordSize queryCost : Nat}
+    (family :
+      FixedWeightCompressedAuxiliaryFamily overhead wordSize queryCost) :
+    CompressedBitVectorRankSelectFamily overhead queryCost where
+  directory bits := (family.component bits).toCompressedDirectory
+  overhead_littleO := family.overhead_littleO
+
+theorem constant_query_profile
+    {overhead : Nat -> Nat} {wordSize queryCost : Nat}
+    (family :
+      FixedWeightCompressedAuxiliaryFamily overhead wordSize queryCost) :
+    SuccinctSpace.LittleOLinear overhead /\
+      forall bits : List Bool,
+        (((family.toCompressedFamily).directory bits).payload.length <=
+          fixedWeightPayloadBudget bits + overhead bits.length) /\
+          (forall i,
+            (((family.toCompressedFamily).directory bits).accessQueryCosted
+                i).cost <= queryCost /\
+              (((family.toCompressedFamily).directory bits).accessQueryCosted
+                i).erase = bits[i]?) /\
+          (forall target pos,
+            (((family.toCompressedFamily).directory bits).rankQueryCosted
+                target pos).cost <= queryCost /\
+              (((family.toCompressedFamily).directory bits).rankQueryCosted
+                target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (((family.toCompressedFamily).directory bits).selectQueryCosted
+                target occurrence).cost <= queryCost /\
+              (((family.toCompressedFamily).directory bits).selectQueryCosted
+                target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact family.toCompressedFamily.fixed_weight_constant_query_profile
+
+theorem toCompressedFamily_fixed_weight_constant_query_profile
+    {overhead : Nat -> Nat} {wordSize queryCost : Nat}
+    (family :
+      FixedWeightCompressedAuxiliaryFamily overhead wordSize queryCost) :
+    SuccinctSpace.LittleOLinear overhead /\
+      forall bits : List Bool,
+        (((family.toCompressedFamily).directory bits).payload.length <=
+          fixedWeightPayloadBudget bits + overhead bits.length) /\
+          (forall i,
+            (((family.toCompressedFamily).directory bits).accessQueryCosted
+                i).cost <= queryCost /\
+              (((family.toCompressedFamily).directory bits).accessQueryCosted
+                i).erase = bits[i]?) /\
+          (forall target pos,
+            (((family.toCompressedFamily).directory bits).rankQueryCosted
+                target pos).cost <= queryCost /\
+              (((family.toCompressedFamily).directory bits).rankQueryCosted
+                target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (((family.toCompressedFamily).directory bits).selectQueryCosted
+                target occurrence).cost <= queryCost /\
+              (((family.toCompressedFamily).directory bits).selectQueryCosted
+                target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact family.constant_query_profile
+
+end FixedWeightCompressedAuxiliaryFamily
+
+/-- Decode an optional one-bit table entry as bitvector access. -/
+def tableBackedAccessAnswer : Option (Option Nat) -> Option Bool
+  | some (some 0) => some false
+  | some (some (_ + 1)) => some true
+  | _ => none
+
+/-- Decode a rank table miss as the default zero answer. -/
+def tableBackedRankAnswer : Option Nat -> Nat
+  | some rank => rank
+  | none => 0
+
+/-- Decode an optional select table read. -/
+def tableBackedSelectAnswer : Option (Option Nat) -> Option Nat
+  | some answer => answer
+  | none => none
+
+/--
+Pointwise table-backed fixed-weight FID data.
+
+Unlike `FixedWeightCompressedAuxiliaryData`, the query procedures here are not
+abstract evaluator fields. Access, rank, and select are fixed-width table reads
+from counted auxiliary payload, followed by small decoders. This is a concrete
+payload-live query layer; its auxiliary tables may still be too large for an
+`o(n)` family until a real RRR/FID table construction replaces the dense
+entries.
+-/
+structure FixedWeightTableBackedFIDData
+    (bits : List Bool) (overhead wordSize queryCost : Nat) where
+  wordSize_pos : 0 < wordSize
+  wordSize_le_machine : wordSize <= Nat.log2 bits.length + 1
+  packedStore :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightPackedPayload bits) wordSize
+  accessWidth : Nat
+  accessEntries : List (Option Nat)
+  accessTable :
+    SuccinctSpace.FixedWidthOptionNatTable accessEntries accessWidth
+  rankWidth : Nat
+  trueRankEntries : List Nat
+  falseRankEntries : List Nat
+  rankTables :
+    SuccinctSpace.FixedWidthRankSampleTables
+      trueRankEntries falseRankEntries rankWidth
+  selectWidth : Nat
+  trueSelectEntries : List (Option Nat)
+  falseSelectEntries : List (Option Nat)
+  trueSelectTable :
+    SuccinctSpace.FixedWidthOptionNatTable trueSelectEntries selectWidth
+  falseSelectTable :
+    SuccinctSpace.FixedWidthOptionNatTable falseSelectEntries selectWidth
+  access_word_width_le :
+    SuccinctSpace.optionNatWordWidth accessWidth <= wordSize
+  rank_word_width_le : rankWidth <= wordSize
+  select_word_width_le :
+    SuccinctSpace.optionNatWordWidth selectWidth <= wordSize
+  aux_length_eq :
+    accessTable.payload.length + rankTables.payload.length +
+        trueSelectTable.payload.length + falseSelectTable.payload.length =
+      overhead
+  queryCost_ge_one : 1 <= queryCost
+  access_exact :
+    forall i : Nat,
+      tableBackedAccessAnswer (accessEntries[i]?) = bits[i]?
+  rank_exact :
+    forall (target : Bool) (pos : Nat),
+      tableBackedRankAnswer ((rankTables.entries target)[pos]?) =
+        Succinct.rankPrefix target bits pos
+  select_exact :
+    forall (target : Bool) (occurrence : Nat),
+      tableBackedSelectAnswer
+          (match target with
+          | true => trueSelectEntries[occurrence]?
+          | false => falseSelectEntries[occurrence]?) =
+        Succinct.select target bits occurrence
+
+namespace FixedWeightTableBackedFIDData
+
+def auxPayload
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost) :
+    List Bool :=
+  data.accessTable.payload ++ data.rankTables.payload ++
+    data.trueSelectTable.payload ++ data.falseSelectTable.payload
+
+def payload
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost) :
+    List Bool :=
+  fixedWeightPackedPayload bits ++ data.auxPayload
+
+@[simp] theorem auxPayload_length
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost) :
+    data.auxPayload.length = overhead := by
+  have haux :
+      data.accessTable.payload.length + data.rankTables.payload.length +
+          data.trueSelectTable.payload.length +
+            data.falseSelectTable.payload.length =
+        overhead := data.aux_length_eq
+  unfold auxPayload
+  simp only [List.length_append]
+  omega
+
+@[simp] theorem payload_length
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost) :
+    data.payload.length = fixedWeightPayloadBudget bits + overhead := by
+  unfold payload
+  simp [fixedWeightPackedPayload_length, data.auxPayload_length]
+
+def selectEntries
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) : List (Option Nat) :=
+  match target with
+  | true => data.trueSelectEntries
+  | false => data.falseSelectEntries
+
+def selectTableReadCosted
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    Costed (Option (Option Nat)) :=
+  match target with
+  | true => data.trueSelectTable.readCosted occurrence
+  | false => data.falseSelectTable.readCosted occurrence
+
+@[simp] theorem selectTableReadCosted_cost
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectTableReadCosted target occurrence).cost = 1 := by
+  cases target <;> simp [selectTableReadCosted]
+
+@[simp] theorem selectTableReadCosted_erase
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectTableReadCosted target occurrence).erase =
+      (data.selectEntries target)[occurrence]? := by
+  cases target <;> simp [selectTableReadCosted, selectEntries]
+
+def accessCosted
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (i : Nat) : Costed (Option Bool) :=
+  Costed.map tableBackedAccessAnswer (data.accessTable.readCosted i)
+
+@[simp] theorem accessCosted_cost
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (i : Nat) :
+    (data.accessCosted i).cost = 1 := by
+  simp [accessCosted]
+
+theorem accessCosted_cost_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (i : Nat) :
+    (data.accessCosted i).cost <= queryCost := by
+  simp [data.queryCost_ge_one]
+
+@[simp] theorem accessCosted_erase
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (i : Nat) :
+    (data.accessCosted i).erase = bits[i]? := by
+  simp [accessCosted, data.access_exact]
+
+def rankCosted
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) : Costed Nat :=
+  Costed.map tableBackedRankAnswer
+    (data.rankTables.sampleCosted target pos)
+
+@[simp] theorem rankCosted_cost
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).cost = 1 := by
+  simp [rankCosted]
+
+theorem rankCosted_cost_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).cost <= queryCost := by
+  simp [data.queryCost_ge_one]
+
+@[simp] theorem rankCosted_erase
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).erase =
+      Succinct.rankPrefix target bits pos := by
+  simp [rankCosted, data.rank_exact]
+
+def selectCosted
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) : Costed (Option Nat) :=
+  Costed.map tableBackedSelectAnswer
+    (data.selectTableReadCosted target occurrence)
+
+@[simp] theorem selectCosted_cost
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).cost = 1 := by
+  simp [selectCosted]
+
+theorem selectCosted_cost_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).cost <= queryCost := by
+  simp [data.queryCost_ge_one]
+
+@[simp] theorem selectCosted_erase
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).erase =
+      Succinct.select target bits occurrence := by
+  cases target
+  · simpa [selectCosted, selectTableReadCosted, selectEntries]
+      using data.select_exact false occurrence
+  · simpa [selectCosted, selectTableReadCosted, selectEntries]
+      using data.select_exact true occurrence
+
+def toCompressedDirectory
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost) :
+    CompressedBitVectorRankSelectDirectory bits overhead queryCost where
+  payload := data.payload
+  payload_length_le := by
+    simp
+  accessCosted := data.accessCosted
+  rankCosted := data.rankCosted
+  selectCosted := data.selectCosted
+  access_cost_le := data.accessCosted_cost_le
+  rank_cost_le := data.rankCosted_cost_le
+  select_cost_le := data.selectCosted_cost_le
+  access_exact := data.accessCosted_erase
+  rank_exact := data.rankCosted_erase
+  select_exact := data.selectCosted_erase
+
+theorem access_table_word_length_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    {i : Nat} {word : List Bool}
+    (hword : data.accessTable.store.words[i]? = some word) :
+    word.length <= wordSize := by
+  have hlen := data.accessTable.word_length_of_get? hword
+  have hwidth := data.access_word_width_le
+  omega
+
+theorem rank_true_table_word_length_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    {i : Nat} {word : List Bool}
+    (hword : data.rankTables.trueTable.store.words[i]? = some word) :
+    word.length <= wordSize := by
+  have hlen := data.rankTables.trueTable.word_length_of_get? hword
+  have hwidth := data.rank_word_width_le
+  omega
+
+theorem rank_false_table_word_length_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    {i : Nat} {word : List Bool}
+    (hword : data.rankTables.falseTable.store.words[i]? = some word) :
+    word.length <= wordSize := by
+  have hlen := data.rankTables.falseTable.word_length_of_get? hword
+  have hwidth := data.rank_word_width_le
+  omega
+
+theorem select_true_table_word_length_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    {i : Nat} {word : List Bool}
+    (hword : data.trueSelectTable.store.words[i]? = some word) :
+    word.length <= wordSize := by
+  have hlen := data.trueSelectTable.word_length_of_get? hword
+  have hwidth := data.select_word_width_le
+  omega
+
+theorem select_false_table_word_length_le
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost)
+    {i : Nat} {word : List Bool}
+    (hword : data.falseSelectTable.store.words[i]? = some word) :
+    word.length <= wordSize := by
+  have hlen := data.falseSelectTable.word_length_of_get? hword
+  have hwidth := data.select_word_width_le
+  omega
+
+theorem directory_profile
+    {bits : List Bool} {overhead wordSize queryCost : Nat}
+    (data :
+      FixedWeightTableBackedFIDData bits overhead wordSize queryCost) :
+    (data.toCompressedDirectory).payload = data.payload /\
+      (data.toCompressedDirectory).payload.length =
+        fixedWeightPayloadBudget bits + overhead /\
+      SuccinctSpace.flattenPayloadWords
+          data.packedStore.store.words.toList =
+        fixedWeightPackedPayload bits /\
+      data.auxPayload.length = overhead /\
+      SuccinctSpace.flattenPayloadWords
+          data.accessTable.store.words.toList =
+        data.accessTable.payload /\
+      SuccinctSpace.flattenPayloadWords
+          data.rankTables.trueTable.store.words.toList =
+        data.rankTables.trueTable.payload /\
+      SuccinctSpace.flattenPayloadWords
+          data.rankTables.falseTable.store.words.toList =
+        data.rankTables.falseTable.payload /\
+      SuccinctSpace.flattenPayloadWords
+          data.trueSelectTable.store.words.toList =
+        data.trueSelectTable.payload /\
+      SuccinctSpace.flattenPayloadWords
+          data.falseSelectTable.store.words.toList =
+        data.falseSelectTable.payload /\
+      (forall (i : Nat) (word : List Bool),
+        data.accessTable.store.words[i]? = some word ->
+          word.length <= wordSize) /\
+      (forall (i : Nat) (word : List Bool),
+        data.rankTables.trueTable.store.words[i]? = some word ->
+          word.length <= wordSize) /\
+      (forall (i : Nat) (word : List Bool),
+        data.rankTables.falseTable.store.words[i]? = some word ->
+          word.length <= wordSize) /\
+      (forall (i : Nat) (word : List Bool),
+        data.trueSelectTable.store.words[i]? = some word ->
+          word.length <= wordSize) /\
+      (forall (i : Nat) (word : List Bool),
+        data.falseSelectTable.store.words[i]? = some word ->
+          word.length <= wordSize) /\
+      wordSize <= Nat.log2 bits.length + 1 /\
+      (forall i,
+        ((data.toCompressedDirectory).accessQueryCosted i).cost <=
+            queryCost /\
+          ((data.toCompressedDirectory).accessQueryCosted i).erase =
+            bits[i]?) /\
+      (forall target pos,
+        ((data.toCompressedDirectory).rankQueryCosted target pos).cost <=
+            queryCost /\
+          ((data.toCompressedDirectory).rankQueryCosted target pos).erase =
+            Succinct.rankPrefix target bits pos) /\
+      (forall target occurrence,
+        ((data.toCompressedDirectory).selectQueryCosted
+            target occurrence).cost <= queryCost /\
+          ((data.toCompressedDirectory).selectQueryCosted
+            target occurrence).erase =
+            Succinct.select target bits occurrence) := by
+  constructor
+  · rfl
+  constructor
+  · exact data.payload_length
+  constructor
+  · exact data.packedStore.erases
+  constructor
+  · exact data.auxPayload_length
+  constructor
+  · exact data.accessTable.store.payload_eq_words_join
+  constructor
+  · exact data.rankTables.trueTable.store.payload_eq_words_join
+  constructor
+  · exact data.rankTables.falseTable.store.payload_eq_words_join
+  constructor
+  · exact data.trueSelectTable.store.payload_eq_words_join
+  constructor
+  · exact data.falseSelectTable.store.payload_eq_words_join
+  constructor
+  · intro i word hword
+    exact data.access_table_word_length_le hword
+  constructor
+  · intro i word hword
+    exact data.rank_true_table_word_length_le hword
+  constructor
+  · intro i word hword
+    exact data.rank_false_table_word_length_le hword
+  constructor
+  · intro i word hword
+    exact data.select_true_table_word_length_le hword
+  constructor
+  · intro i word hword
+    exact data.select_false_table_word_length_le hword
+  constructor
+  · exact data.wordSize_le_machine
+  constructor
+  · intro i
+    exact ⟨data.accessCosted_cost_le i, data.accessCosted_erase i⟩
+  constructor
+  · intro target pos
+    exact
+      ⟨data.rankCosted_cost_le target pos,
+        data.rankCosted_erase target pos⟩
+  · intro target occurrence
+    exact
+      ⟨data.selectCosted_cost_le target occurrence,
+        data.selectCosted_erase target occurrence⟩
+
+end FixedWeightTableBackedFIDData
+
+/-- Payload of the universal fixed-weight decoded-word table. -/
+def fixedWeightDecodedWordTablePayload (n k : Nat) : List Bool :=
+  SuccinctSpace.flattenPayloadWords (fixedWeightBitstrings n k)
+
+/-- Bit cost of the universal fixed-weight decoded-word table. -/
+def fixedWeightDecodedWordTableOverhead (n k : Nat) : Nat :=
+  binomialCount n k * n
+
+@[simp] theorem fixedWeightDecodedWordTablePayload_length
+    (n k : Nat) :
+    (fixedWeightDecodedWordTablePayload n k).length =
+      fixedWeightDecodedWordTableOverhead n k := by
+  unfold fixedWeightDecodedWordTablePayload
+  unfold fixedWeightDecodedWordTableOverhead
+  calc
+    (SuccinctSpace.flattenPayloadWords (fixedWeightBitstrings n k)).length =
+        (fixedWeightBitstrings n k).length * n := by
+      exact SuccinctSpace.flattenPayloadWords_length_of_forall_length
+        (by
+          intro word hmem
+          exact (fixedWeightBitstrings_mem_length_trueCount hmem).1)
+    _ = binomialCount n k * n := by
+      rw [fixedWeightBitstrings_length]
+
+/-- Canonical payload store for the universal fixed-weight decoded-word table. -/
+def fixedWeightDecodedWordStore (n k : Nat) :
+    SuccinctSpace.PayloadWordStore
+      (fixedWeightDecodedWordTablePayload n k) where
+  words := (fixedWeightBitstrings n k).toArray
+  erases := by
+    simp [fixedWeightDecodedWordTablePayload]
+
+/--
+Canonical bounded payload store for the universal fixed-weight decoded-word
+table.
+-/
+def fixedWeightDecodedWordBoundedStore
+    (n k wordSize : Nat) (hn : n <= wordSize) :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightDecodedWordTablePayload n k) wordSize where
+  store := fixedWeightDecodedWordStore n k
+  word_length_le := by
+    intro word hmem
+    have hlist : List.Mem word (fixedWeightBitstrings n k) := by
+      simpa [fixedWeightDecodedWordStore] using hmem
+    have hlen := (fixedWeightBitstrings_mem_length_trueCount hlist).1
+    omega
+
+theorem fixedWeightDecodedWordBoundedStore_get?_of_decode
+    {n k code : Nat} {word : List Bool} {wordSize : Nat}
+    (hn : n <= wordSize)
+    (hdec : fixedWeightDecode? n k code = some word) :
+    (fixedWeightDecodedWordBoundedStore n k wordSize hn).store.words[code]? =
+      some word := by
+  simpa [fixedWeightDecodedWordBoundedStore, fixedWeightDecodedWordStore,
+    fixedWeightDecode?] using hdec
+
+theorem fixedWeightDecodedWordBoundedStore_get?_fixedWeightCode
+    (bits : List Bool) {wordSize : Nat}
+    (hn : bits.length <= wordSize) :
+    (fixedWeightDecodedWordBoundedStore
+        bits.length (trueCount bits) wordSize hn).store.words[fixedWeightCode bits]? =
+      some bits := by
+  have hdec :
+      fixedWeightDecode? bits.length (trueCount bits)
+          (fixedWeightCode bits) = some bits := by
+    simpa [fixedWeightPackedPayload_bitsToNatLE] using
+      fixedWeightDecode?_packedPayload bits
+  exact
+    fixedWeightDecodedWordBoundedStore_get?_of_decode hn hdec
+
+/-- Canonical one-word store for the packed fixed-weight code. -/
+def fixedWeightPackedCodeBoundedStore
+    (bits : List Bool) (wordSize : Nat)
+    (hcode : fixedWeightPayloadBudget bits <= wordSize) :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightPackedPayload bits) wordSize where
+  store :=
+    { words := #[fixedWeightPackedPayload bits]
+      erases := by
+        simp [SuccinctSpace.flattenPayloadWords] }
+  word_length_le := by
+    intro word hmem
+    have hword : word = fixedWeightPackedPayload bits := by
+      change List.Mem word (#[fixedWeightPackedPayload bits].toList) at hmem
+      cases hmem with
+      | head => rfl
+      | tail _ htail => cases htail
+    rw [hword, fixedWeightPackedPayload_length]
+    exact hcode
+
+theorem fixedWeightPackedCodeBoundedStore_get?_zero
+    (bits : List Bool) {wordSize : Nat}
+    (hcode : fixedWeightPayloadBudget bits <= wordSize) :
+    (fixedWeightPackedCodeBoundedStore bits wordSize hcode).store.words[0]? =
+      some (fixedWeightPackedPayload bits) := by
+  simp [fixedWeightPackedCodeBoundedStore]
+
+/-- Decode the first charged packed-code word as a fixed-weight code. -/
+def fixedWeightCodeFromReadValues :
+    List (Option (List Bool)) -> Nat
+  | some word :: _ => SuccinctSpace.bitsToNatLE word
+  | _ => 0
+
+@[simp] theorem fixedWeightCodeFromReadValues_singleton
+    (bits : List Bool) :
+    fixedWeightCodeFromReadValues [some (fixedWeightPackedPayload bits)] =
+      fixedWeightCode bits := by
+  simp [fixedWeightCodeFromReadValues, fixedWeightPackedPayload_bitsToNatLE]
+
+/-- Decode one fixed-width class/length metadata word. -/
+def fixedWeightClassLengthNatFromReadValue : Option (List Bool) -> Nat
+  | some word => SuccinctSpace.bitsToNatLE word
+  | none => 0
+
+/--
+Decode local block length and class from two charged metadata words.
+
+The first word is the block length, and the second word is the block class
+(`trueCount`). Missing reads conservatively decode to zero.
+-/
+def fixedWeightClassLengthFromReadValues
+    (readWords : List (Option (List Bool))) : Nat × Nat :=
+  match readWords with
+  | length? :: class? :: _ =>
+      (fixedWeightClassLengthNatFromReadValue length?,
+        fixedWeightClassLengthNatFromReadValue class?)
+  | _ => (0, 0)
+
+@[simp] theorem fixedWeightClassLengthNatFromReadValue_encoded
+    {fieldWidth value : Nat} (hvalue : value < 2 ^ fieldWidth) :
+    fixedWeightClassLengthNatFromReadValue
+        (some (SuccinctSpace.natToBitsLE fieldWidth value)) =
+      value := by
+  simp [fixedWeightClassLengthNatFromReadValue,
+    SuccinctSpace.bitsToNatLE_natToBitsLE_of_lt hvalue]
+
+theorem fixedWeightClassLengthFromReadValues_encoded
+    {fieldWidth : Nat} {block : List Bool}
+    (hlen : block.length < 2 ^ fieldWidth)
+    (hclass : trueCount block < 2 ^ fieldWidth) :
+    fixedWeightClassLengthFromReadValues
+        [some (SuccinctSpace.natToBitsLE fieldWidth block.length),
+         some (SuccinctSpace.natToBitsLE fieldWidth (trueCount block))] =
+      (block.length, trueCount block) := by
+  simp [fixedWeightClassLengthFromReadValues,
+    fixedWeightClassLengthNatFromReadValue_encoded hlen,
+    fixedWeightClassLengthNatFromReadValue_encoded hclass]
+
+@[simp] theorem fixedWeightClassLengthFromReadValues_encoded_prefix
+    {fieldWidth : Nat} {block : List Bool}
+    (rest : List (Option (List Bool)))
+    (hlen : block.length < 2 ^ fieldWidth)
+    (hclass : trueCount block < 2 ^ fieldWidth) :
+    fixedWeightClassLengthFromReadValues
+        (some (SuccinctSpace.natToBitsLE fieldWidth block.length) ::
+          some (SuccinctSpace.natToBitsLE fieldWidth (trueCount block)) ::
+          rest) =
+      (block.length, trueCount block) := by
+  simp [fixedWeightClassLengthFromReadValues,
+    fixedWeightClassLengthNatFromReadValue_encoded hlen,
+    fixedWeightClassLengthNatFromReadValue_encoded hclass]
+
+/-- Decode a fixed-weight code after length and class have been read. -/
+def fixedWeightDecodedWordFromClassLengthCode
+    (n k code : Nat) : List Bool :=
+  (fixedWeightDecode? n k code).getD []
+
+@[simp] theorem fixedWeightDecodedWordFromClassLengthCode_fixedWeightCode
+    (bits : List Bool) :
+    fixedWeightDecodedWordFromClassLengthCode
+        bits.length (trueCount bits) (fixedWeightCode bits) =
+      bits := by
+  have hdec :
+      fixedWeightDecode? bits.length (trueCount bits)
+          (fixedWeightCode bits) = some bits := by
+    exact
+      fixedWeightDecode?_fixedWeightEncode?
+        (fixedWeightEncode?_eq_some_fixedWeightCode bits)
+  simp [fixedWeightDecodedWordFromClassLengthCode, hdec]
+
+/--
+Decode a local fixed-weight block from charged class/length words and a charged
+packed-code word.
+-/
+def fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted
+    (classLengthWords packedWords : List (Option (List Bool))) :
+    Costed (List Bool) :=
+  let classLength := fixedWeightClassLengthFromReadValues classLengthWords
+  Costed.tickValue (binomialCount classLength.1 classLength.2 + classLength.1)
+    (fixedWeightDecodedWordFromClassLengthCode
+      classLength.1 classLength.2
+      (fixedWeightCodeFromReadValues packedWords))
+
+@[simp] theorem fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted_cost
+    (classLengthWords packedWords : List (Option (List Bool))) :
+    (fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted
+        classLengthWords packedWords).cost =
+      let classLength := fixedWeightClassLengthFromReadValues classLengthWords
+      binomialCount classLength.1 classLength.2 + classLength.1 := by
+  simp [fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted]
+
+@[simp] theorem fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted_erase_singleton
+    {fieldWidth : Nat} {block : List Bool}
+    (hlen : block.length < 2 ^ fieldWidth)
+    (hclass : trueCount block < 2 ^ fieldWidth) :
+    (fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted
+        [some (SuccinctSpace.natToBitsLE fieldWidth block.length),
+         some (SuccinctSpace.natToBitsLE fieldWidth (trueCount block))]
+        [some (fixedWeightPackedPayload block)]).erase =
+      block := by
+  simp [fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted,
+    fixedWeightClassLengthFromReadValues_encoded hlen hclass]
+
+@[simp] theorem fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted_erase_prefix
+    {fieldWidth : Nat} {block : List Bool}
+    (rest : List (Option (List Bool)))
+    (hlen : block.length < 2 ^ fieldWidth)
+    (hclass : trueCount block < 2 ^ fieldWidth) :
+    (fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted
+        ([some (SuccinctSpace.natToBitsLE fieldWidth block.length),
+          some (SuccinctSpace.natToBitsLE fieldWidth (trueCount block))] ++
+          rest)
+        [some (fixedWeightPackedPayload block)]).erase =
+      block := by
+  simp [fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted,
+    fixedWeightClassLengthFromReadValues,
+    fixedWeightClassLengthNatFromReadValue_encoded hlen,
+    fixedWeightClassLengthNatFromReadValue_encoded hclass]
+
+/--
+Explicit evaluator budget for computing one fixed-weight/RRR local block from
+its packed code.
+
+This is intentionally not a succinct-family budget. It records that the local
+kernel is doing real finite-universe decoding work instead of reading a dense
+decoded-word table or using proof-only decoded bits.
+-/
+def fixedWeightComputedRRRDecodeTicks (bits : List Bool) : Nat :=
+  binomialCount bits.length (trueCount bits) + bits.length
+
+@[simp] theorem fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted_cost_prefix
+    {fieldWidth : Nat} {block : List Bool}
+    (rest : List (Option (List Bool)))
+    (hlen : block.length < 2 ^ fieldWidth)
+    (hclass : trueCount block < 2 ^ fieldWidth) :
+    (fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted
+        ([some (SuccinctSpace.natToBitsLE fieldWidth block.length),
+          some (SuccinctSpace.natToBitsLE fieldWidth (trueCount block))] ++
+          rest)
+        [some (fixedWeightPackedPayload block)]).cost =
+      fixedWeightComputedRRRDecodeTicks block := by
+  simp [fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted,
+    fixedWeightComputedRRRDecodeTicks,
+    fixedWeightClassLengthFromReadValues,
+    fixedWeightClassLengthNatFromReadValue_encoded hlen,
+    fixedWeightClassLengthNatFromReadValue_encoded hclass]
+
+/-- Uniform query cap for the computed local RRR block kernel. -/
+def fixedWeightComputedRRRQueryCost (bits : List Bool) : Nat :=
+  fixedWeightComputedRRRDecodeTicks bits + 2
+
+/-- Query cap for the local RRR kernel that reads class/length metadata. -/
+def fixedWeightComputedRRRClassLengthQueryCost
+    (bits : List Bool) : Nat :=
+  fixedWeightComputedRRRDecodeTicks bits + 4
+
+/--
+Uniform query cap for all computed-RRR blocks whose source length is at most
+`blockSize`.
+-/
+def fixedWeightComputedRRRBlockSizeQueryCost (blockSize : Nat) : Nat :=
+  2 ^ blockSize + blockSize + 2
+
+/-- Block-size cap for the class/length local RRR kernel. -/
+def fixedWeightComputedRRRClassLengthBlockSizeQueryCost
+    (blockSize : Nat) : Nat :=
+  2 ^ blockSize + blockSize + 4
+
+theorem fixedWeightComputedRRRDecodeTicks_le_of_length_le
+    {bits : List Bool} {blockSize : Nat}
+    (hlen : bits.length <= blockSize) :
+    fixedWeightComputedRRRDecodeTicks bits <=
+      2 ^ blockSize + blockSize := by
+  unfold fixedWeightComputedRRRDecodeTicks
+  have hbin :
+      binomialCount bits.length (trueCount bits) <=
+        2 ^ bits.length :=
+    binomialCount_le_two_pow bits.length (trueCount bits)
+  have hpow :
+      2 ^ bits.length <= 2 ^ blockSize :=
+    Nat.pow_le_pow_right (by omega : 0 < 2) hlen
+  omega
+
+theorem fixedWeightComputedRRRQueryCost_le_blockSize
+    {bits : List Bool} {blockSize : Nat}
+    (hlen : bits.length <= blockSize) :
+    fixedWeightComputedRRRQueryCost bits <=
+      fixedWeightComputedRRRBlockSizeQueryCost blockSize := by
+  unfold fixedWeightComputedRRRQueryCost
+    fixedWeightComputedRRRBlockSizeQueryCost
+  have hticks :=
+    fixedWeightComputedRRRDecodeTicks_le_of_length_le
+      (bits := bits) hlen
+  omega
+
+theorem fixedWeightComputedRRRQueryCost_le_of_block_length_le
+    {block : List Bool} {blockSize localQueryCost : Nat}
+    (hblock : block.length <= blockSize)
+    (hquery :
+      fixedWeightComputedRRRBlockSizeQueryCost blockSize <=
+        localQueryCost) :
+    fixedWeightComputedRRRQueryCost block <= localQueryCost := by
+  exact Nat.le_trans
+    (fixedWeightComputedRRRQueryCost_le_blockSize
+      (bits := block) hblock)
+    hquery
+
+theorem fixedWeightComputedRRRClassLengthQueryCost_le_blockSize
+    {bits : List Bool} {blockSize : Nat}
+    (hlen : bits.length <= blockSize) :
+    fixedWeightComputedRRRClassLengthQueryCost bits <=
+      fixedWeightComputedRRRClassLengthBlockSizeQueryCost blockSize := by
+  unfold fixedWeightComputedRRRClassLengthQueryCost
+    fixedWeightComputedRRRClassLengthBlockSizeQueryCost
+  have hticks :=
+    fixedWeightComputedRRRDecodeTicks_le_of_length_le
+      (bits := bits) hlen
+  omega
+
+theorem fixedWeightComputedRRRClassLengthQueryCost_le_of_block_length_le
+    {block : List Bool} {blockSize localQueryCost : Nat}
+    (hblock : block.length <= blockSize)
+    (hquery :
+      fixedWeightComputedRRRClassLengthBlockSizeQueryCost blockSize <=
+        localQueryCost) :
+    fixedWeightComputedRRRClassLengthQueryCost block <= localQueryCost := by
+  exact Nat.le_trans
+    (fixedWeightComputedRRRClassLengthQueryCost_le_blockSize
+      (bits := block) hblock)
+    hquery
+
+theorem fixedWeightComputedRRRLocalQueryCost_le_of_blocks_bound
+    {blocks : List (List Bool)} {blockSize localQueryCost : Nat}
+    (hblocks :
+      forall {block : List Bool}, List.Mem block blocks ->
+        block.length <= blockSize)
+    (hquery :
+      fixedWeightComputedRRRBlockSizeQueryCost blockSize <=
+        localQueryCost) :
+    forall {block : List Bool}, List.Mem block blocks ->
+      fixedWeightComputedRRRQueryCost block <= localQueryCost := by
+  intro block hmem
+  exact
+    fixedWeightComputedRRRQueryCost_le_of_block_length_le
+      (hblocks hmem) hquery
+
+theorem fixedWeightComputedRRRClassLengthLocalQueryCost_le_of_blocks_bound
+    {blocks : List (List Bool)} {blockSize localQueryCost : Nat}
+    (hblocks :
+      forall {block : List Bool}, List.Mem block blocks ->
+        block.length <= blockSize)
+    (hquery :
+      fixedWeightComputedRRRClassLengthBlockSizeQueryCost blockSize <=
+        localQueryCost) :
+    forall {block : List Bool}, List.Mem block blocks ->
+      fixedWeightComputedRRRClassLengthQueryCost block <= localQueryCost := by
+  intro block hmem
+  exact
+    fixedWeightComputedRRRClassLengthQueryCost_le_of_block_length_le
+      (hblocks hmem) hquery
+
+/-- Decode a fixed-weight code for the block class determined by `bits`. -/
+def fixedWeightDecodedWordFromCode (bits : List Bool) (code : Nat) :
+    List Bool :=
+  (fixedWeightDecode? bits.length (trueCount bits) code).getD []
+
+@[simp] theorem fixedWeightDecodedWordFromCode_fixedWeightCode
+    (bits : List Bool) :
+    fixedWeightDecodedWordFromCode bits (fixedWeightCode bits) = bits := by
+  have hdec :
+      fixedWeightDecode? bits.length (trueCount bits)
+          (fixedWeightCode bits) = some bits := by
+    exact
+      fixedWeightDecode?_fixedWeightEncode?
+        (fixedWeightEncode?_eq_some_fixedWeightCode bits)
+  simp [fixedWeightDecodedWordFromCode, hdec]
+
+/--
+Fixed computation over charged packed-code read values.
+
+The only input is the word value returned by the counted packed payload read;
+there is no auxiliary decoded-word table and no proof-only access to the block.
+-/
+def fixedWeightComputedRRRDecodeFromReadValuesCosted
+    (bits : List Bool) (packedWords : List (Option (List Bool))) :
+    Costed (List Bool) :=
+  Costed.tickValue (fixedWeightComputedRRRDecodeTicks bits)
+    (fixedWeightDecodedWordFromCode bits
+      (fixedWeightCodeFromReadValues packedWords))
+
+@[simp] theorem fixedWeightComputedRRRDecodeFromReadValuesCosted_cost
+    (bits : List Bool) (packedWords : List (Option (List Bool))) :
+    (fixedWeightComputedRRRDecodeFromReadValuesCosted bits
+        packedWords).cost =
+      fixedWeightComputedRRRDecodeTicks bits := by
+  simp [fixedWeightComputedRRRDecodeFromReadValuesCosted]
+
+@[simp] theorem fixedWeightComputedRRRDecodeFromReadValuesCosted_erase_singleton
+    (bits : List Bool) :
+    (fixedWeightComputedRRRDecodeFromReadValuesCosted bits
+        [some (fixedWeightPackedPayload bits)]).erase =
+      bits := by
+  simp [fixedWeightComputedRRRDecodeFromReadValuesCosted]
+
+/--
+Local fixed-weight/RRR block kernel computed from the packed code only.
+
+The counted payload is just `fixedWeightPackedPayload bits`. Queries read that
+code word, spend the explicit `fixedWeightComputedRRRDecodeTicks bits`
+evaluator budget to reconstruct the local block, and then use fixed code for
+access/rank/select. This avoids the dense
+`fixedWeightDecodedWordTablePayload` auxiliary table used by
+`FixedWeightTableRAMBlockData`.
+-/
+structure FixedWeightComputedRRRBlockData
+    (ambientLength : Nat) (bits : List Bool) (wordSize : Nat) where
+  wordSize_pos : 0 < wordSize
+  wordSize_le_ambient : wordSize <= Nat.log2 ambientLength + 1
+  codeWidth_le_wordSize : fixedWeightPayloadBudget bits <= wordSize
+  blockWidth_le_wordSize : bits.length <= wordSize
+
+namespace FixedWeightComputedRRRBlockData
+
+def packedStore
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightPackedPayload bits) wordSize :=
+  fixedWeightPackedCodeBoundedStore bits wordSize
+    data.codeWidth_le_wordSize
+
+def payload
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (_data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    List Bool :=
+  fixedWeightPackedPayload bits
+
+@[simp] theorem payload_length
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    data.payload.length = fixedWeightPayloadBudget bits := by
+  simp [payload, fixedWeightPackedPayload_length]
+
+theorem packed_read_values_zero
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    boundedPayloadWordReadValues data.packedStore [0] =
+      [some (fixedWeightPackedPayload bits)] := by
+  have hpacked :
+      data.packedStore.store.words[0]? =
+        some (fixedWeightPackedPayload bits) := by
+    simpa [packedStore] using
+      fixedWeightPackedCodeBoundedStore_get?_zero bits
+        data.codeWidth_le_wordSize
+  simp [boundedPayloadWordReadValues, hpacked]
+
+def readCodeCosted
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    Costed Nat :=
+  Costed.bind (data.packedStore.store.readWordCosted 0) fun word? =>
+    Costed.pure
+      (match word? with
+      | some word => SuccinctSpace.bitsToNatLE word
+      | none => 0)
+
+@[simp] theorem readCodeCosted_cost
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    data.readCodeCosted.cost = 1 := by
+  simp [readCodeCosted]
+
+@[simp] theorem readCodeCosted_erase
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    data.readCodeCosted.erase = fixedWeightCode bits := by
+  simp [readCodeCosted, packedStore, fixedWeightPackedCodeBoundedStore,
+    fixedWeightPackedPayload_bitsToNatLE]
+
+def decodedWordCosted
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    Costed (List Bool) :=
+  Costed.bind data.readCodeCosted fun code =>
+    Costed.tickValue (fixedWeightComputedRRRDecodeTicks bits)
+      (fixedWeightDecodedWordFromCode bits code)
+
+@[simp] theorem decodedWordCosted_cost
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    data.decodedWordCosted.cost =
+      fixedWeightComputedRRRDecodeTicks bits + 1 := by
+  simp [decodedWordCosted, Nat.add_comm]
+
+@[simp] theorem decodedWordCosted_erase
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    data.decodedWordCosted.erase = bits := by
+  simp [decodedWordCosted]
+
+def accessCosted
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize)
+    (i : Nat) : Costed (Option Bool) :=
+  Costed.map (fun word => word[i]?) data.decodedWordCosted
+
+@[simp] theorem accessCosted_cost
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize)
+    (i : Nat) :
+    (data.accessCosted i).cost =
+      fixedWeightComputedRRRDecodeTicks bits + 1 := by
+  simp [accessCosted]
+
+@[simp] theorem accessCosted_erase
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize)
+    (i : Nat) :
+    (data.accessCosted i).erase = bits[i]? := by
+  simp [accessCosted]
+
+def rankCosted
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize)
+    (target : Bool) (pos : Nat) : Costed Nat :=
+  Costed.bind data.decodedWordCosted fun word =>
+    (RAM.rankBoolWordPrefix target word pos).toCosted
+
+@[simp] theorem rankCosted_cost
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).cost =
+      fixedWeightComputedRRRQueryCost bits := by
+  simp [rankCosted, fixedWeightComputedRRRQueryCost]
+
+@[simp] theorem rankCosted_erase
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).erase =
+      Succinct.rankPrefix target bits pos := by
+  unfold rankCosted
+  simp only [Costed.erase_bind, decodedWordCosted_erase]
+  change (RAM.rankBoolWordPrefix target bits pos).toCosted.value =
+    Succinct.rankPrefix target bits pos
+  have hrun := Succinct.rankBoolWordPrefix_toCosted_run target bits pos
+  simpa [Costed.run] using congrArg Prod.fst hrun
+
+def selectCosted
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize)
+    (target : Bool) (occurrence : Nat) : Costed (Option Nat) :=
+  Costed.bind data.decodedWordCosted fun word =>
+    (RAM.selectBoolWord target word occurrence).toCosted
+
+@[simp] theorem selectCosted_cost
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).cost =
+      fixedWeightComputedRRRQueryCost bits := by
+  simp [selectCosted, fixedWeightComputedRRRQueryCost]
+
+@[simp] theorem selectCosted_erase
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).erase =
+      Succinct.select target bits occurrence := by
+  unfold selectCosted
+  simp only [Costed.erase_bind, decodedWordCosted_erase]
+  change (RAM.selectBoolWord target bits occurrence).toCosted.value =
+    Succinct.select target bits occurrence
+  have hrun := Succinct.selectBoolWord_toCosted_run target bits occurrence
+  simpa [Costed.run] using congrArg Prod.fst hrun
+
+def toDependentAuxiliaryData
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    FixedWeightDependentAuxiliaryData
+      bits 0 wordSize (fixedWeightComputedRRRQueryCost bits) := by
+  refine
+    { wordSize_pos := data.wordSize_pos
+      packedStore := data.packedStore
+      auxPayload := []
+      auxStore :=
+        SuccinctSpace.BoundedPayloadWordStore.ofChunks []
+          data.wordSize_pos
+      aux_length_eq := ?_
+      accessPackedReads := fun _ => [0]
+      accessAuxReads := fun _ _ => []
+      rankPackedReads := fun _ _ => [0]
+      rankAuxReads := fun _ _ _ => []
+      selectPackedReads := fun _ _ => [0]
+      selectAuxReads := fun _ _ _ => []
+      accessEvalCosted := fun i packedWords _ =>
+        Costed.map (fun word => word[i]?)
+          (fixedWeightComputedRRRDecodeFromReadValuesCosted bits
+            packedWords)
+      rankEvalCosted := fun target pos packedWords _ =>
+        Costed.bind
+          (fixedWeightComputedRRRDecodeFromReadValuesCosted bits
+            packedWords) fun word =>
+          (RAM.rankBoolWordPrefix target word pos).toCosted
+      selectEvalCosted := fun target occurrence packedWords _ =>
+        Costed.bind
+          (fixedWeightComputedRRRDecodeFromReadValuesCosted bits
+            packedWords) fun word =>
+          (RAM.selectBoolWord target word occurrence).toCosted
+      access_query_cost_le := ?_
+      rank_query_cost_le := ?_
+      select_query_cost_le := ?_
+      access_eval_exact := ?_
+      rank_eval_exact := ?_
+      select_eval_exact := ?_ }
+  · simp
+  · intro i
+    simp [data.packed_read_values_zero, fixedWeightComputedRRRQueryCost]
+    omega
+  · intro target pos
+    simp [data.packed_read_values_zero, fixedWeightComputedRRRQueryCost]
+    omega
+  · intro target occurrence
+    simp [data.packed_read_values_zero, fixedWeightComputedRRRQueryCost]
+    omega
+  · intro i
+    simp [data.packed_read_values_zero]
+  · intro target pos
+    have hdecode :=
+      fixedWeightComputedRRRDecodeFromReadValuesCosted_erase_singleton bits
+    have hrun := Succinct.rankBoolWordPrefix_toCosted_run target bits pos
+    simp only [data.packed_read_values_zero, Costed.erase_bind]
+    rw [hdecode]
+    change (RAM.rankBoolWordPrefix target bits pos).toCosted.value =
+      Succinct.rankPrefix target bits pos
+    simpa [Costed.run] using congrArg Prod.fst hrun
+  · intro target occurrence
+    have hdecode :=
+      fixedWeightComputedRRRDecodeFromReadValuesCosted_erase_singleton bits
+    have hrun := Succinct.selectBoolWord_toCosted_run
+      target bits occurrence
+    simp only [data.packed_read_values_zero, Costed.erase_bind]
+    rw [hdecode]
+    change (RAM.selectBoolWord target bits occurrence).toCosted.value =
+      Succinct.select target bits occurrence
+    simpa [Costed.run] using congrArg Prod.fst hrun
+
+def toCompressedDirectory
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    CompressedBitVectorRankSelectDirectory
+      bits 0 (fixedWeightComputedRRRQueryCost bits) where
+  payload := data.payload
+  payload_length_le := by
+    simp
+  accessCosted := data.accessCosted
+  rankCosted := data.rankCosted
+  selectCosted := data.selectCosted
+  access_cost_le := by
+    intro i
+    rw [data.accessCosted_cost i]
+    unfold fixedWeightComputedRRRQueryCost
+    omega
+  rank_cost_le := by
+    intro target pos
+    simp
+  select_cost_le := by
+    intro target occurrence
+    simp
+  access_exact := data.accessCosted_erase
+  rank_exact := data.rankCosted_erase
+  select_exact := data.selectCosted_erase
+
+def toBoundedCompressedDirectory
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize)
+    {queryCost : Nat}
+    (hquery : fixedWeightComputedRRRQueryCost bits <= queryCost) :
+    CompressedBitVectorRankSelectDirectory bits 0 queryCost where
+  payload := data.payload
+  payload_length_le := by
+    simp
+  accessCosted := data.accessCosted
+  rankCosted := data.rankCosted
+  selectCosted := data.selectCosted
+  access_cost_le := by
+    intro i
+    rw [data.accessCosted_cost i]
+    unfold fixedWeightComputedRRRQueryCost at hquery
+    omega
+  rank_cost_le := by
+    intro target pos
+    rw [data.rankCosted_cost target pos]
+    exact hquery
+  select_cost_le := by
+    intro target occurrence
+    rw [data.selectCosted_cost target occurrence]
+    exact hquery
+  access_exact := data.accessCosted_erase
+  rank_exact := data.rankCosted_erase
+  select_exact := data.selectCosted_erase
+
+/--
+Profile for the computed local fixed-weight/RRR block kernel.
+
+There is no decoded auxiliary payload: all exactness comes from a charged read
+of the packed fixed-weight code plus the explicit decode tick budget.
+-/
+def KernelProfile
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    Prop :=
+  (data.toCompressedDirectory).payload = fixedWeightPackedPayload bits /\
+    (data.toCompressedDirectory).payload.length =
+      fixedWeightPayloadBudget bits /\
+    (data.toCompressedDirectory).payload.length =
+      fixedWeightPayloadBudget bits + 0 /\
+    SuccinctSpace.flattenPayloadWords
+        data.packedStore.store.words.toList =
+      fixedWeightPackedPayload bits /\
+    data.packedStore.store.words[0]? =
+      some (fixedWeightPackedPayload bits) /\
+    fixedWeightPayloadBudget bits <= wordSize /\
+    bits.length <= wordSize /\
+    wordSize <= Nat.log2 ambientLength + 1 /\
+    data.readCodeCosted.cost = 1 /\
+    data.readCodeCosted.erase = fixedWeightCode bits /\
+    data.decodedWordCosted.cost =
+      fixedWeightComputedRRRDecodeTicks bits + 1 /\
+    data.decodedWordCosted.erase = bits /\
+    (forall {word : List Bool},
+      List.Mem word data.packedStore.store.words.toList ->
+        word.length <= wordSize) /\
+    (forall i,
+      ((data.toCompressedDirectory).accessQueryCosted i).cost <=
+          fixedWeightComputedRRRQueryCost bits /\
+        ((data.toCompressedDirectory).accessQueryCosted i).erase =
+          bits[i]?) /\
+    (forall target pos,
+      ((data.toCompressedDirectory).rankQueryCosted target pos).cost =
+          fixedWeightComputedRRRQueryCost bits /\
+        ((data.toCompressedDirectory).rankQueryCosted target pos).erase =
+          Succinct.rankPrefix target bits pos) /\
+    (forall target occurrence,
+        ((data.toCompressedDirectory).selectQueryCosted
+          target occurrence).cost =
+          fixedWeightComputedRRRQueryCost bits /\
+        ((data.toCompressedDirectory).selectQueryCosted
+          target occurrence).erase =
+          Succinct.select target bits occurrence)
+
+/--
+The computed local fixed-weight/RRR kernel is an instance of the generic
+dependent-read compressed/FID scaffold with zero auxiliary payload.
+-/
+theorem dependent_auxiliary_data_profile
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    (data.toDependentAuxiliaryData).DirectoryProfile := by
+  exact
+    FixedWeightDependentAuxiliaryData.directory_profile
+      data.toDependentAuxiliaryData
+
+theorem bounded_compressed_directory_profile
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize)
+    {queryCost : Nat}
+    (hquery : fixedWeightComputedRRRQueryCost bits <= queryCost) :
+    let directory := data.toBoundedCompressedDirectory hquery
+    directory.payload = fixedWeightPackedPayload bits /\
+      directory.payload.length = fixedWeightPayloadBudget bits /\
+      directory.payload.length <= fixedWeightPayloadBudget bits + 0 /\
+      data.readCodeCosted.cost = 1 /\
+      data.readCodeCosted.erase = fixedWeightCode bits /\
+      data.decodedWordCosted.cost =
+        fixedWeightComputedRRRDecodeTicks bits + 1 /\
+      data.decodedWordCosted.erase = bits /\
+      fixedWeightComputedRRRQueryCost bits <= queryCost /\
+      (forall i,
+        (directory.accessQueryCosted i).cost <= queryCost /\
+          (directory.accessQueryCosted i).erase = bits[i]?) /\
+      (forall target pos,
+        (directory.rankQueryCosted target pos).cost <= queryCost /\
+          (directory.rankQueryCosted target pos).erase =
+            Succinct.rankPrefix target bits pos) /\
+      (forall target occurrence,
+        (directory.selectQueryCosted target occurrence).cost <=
+            queryCost /\
+          (directory.selectQueryCosted target occurrence).erase =
+            Succinct.select target bits occurrence) := by
+  let directory := data.toBoundedCompressedDirectory hquery
+  have hprofile := directory.profile
+  exact
+    ⟨rfl,
+      by
+        change data.payload.length = fixedWeightPayloadBudget bits
+        exact data.payload_length,
+      hprofile.1,
+      data.readCodeCosted_cost,
+      data.readCodeCosted_erase,
+      data.decodedWordCosted_cost,
+      data.decodedWordCosted_erase,
+      hquery,
+      hprofile.2.1,
+      hprofile.2.2.1,
+      hprofile.2.2.2⟩
+
+/--
+The direct computed-RRR local directory and the generic dependent-auxiliary
+adapter expose the same packed payload and charged query behavior.
+-/
+def DependentAuxiliaryBridgeProfile
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    Prop :=
+  ((data.toDependentAuxiliaryData).toCompressedDirectory).payload =
+      (data.toCompressedDirectory).payload /\
+    (forall i,
+      (((data.toDependentAuxiliaryData).toCompressedDirectory).accessQueryCosted
+          i).cost =
+          ((data.toCompressedDirectory).accessQueryCosted i).cost /\
+        (((data.toDependentAuxiliaryData).toCompressedDirectory).accessQueryCosted
+          i).erase =
+          ((data.toCompressedDirectory).accessQueryCosted i).erase) /\
+    (forall target pos,
+      (((data.toDependentAuxiliaryData).toCompressedDirectory).rankQueryCosted
+          target pos).cost =
+          ((data.toCompressedDirectory).rankQueryCosted target pos).cost /\
+        (((data.toDependentAuxiliaryData).toCompressedDirectory).rankQueryCosted
+          target pos).erase =
+          ((data.toCompressedDirectory).rankQueryCosted target pos).erase) /\
+    (forall target occurrence,
+      (((data.toDependentAuxiliaryData).toCompressedDirectory).selectQueryCosted
+          target occurrence).cost =
+          ((data.toCompressedDirectory).selectQueryCosted
+            target occurrence).cost /\
+        (((data.toDependentAuxiliaryData).toCompressedDirectory).selectQueryCosted
+          target occurrence).erase =
+          ((data.toCompressedDirectory).selectQueryCosted
+            target occurrence).erase)
+
+theorem dependent_auxiliary_bridge_profile
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    data.DependentAuxiliaryBridgeProfile := by
+  constructor
+  · change (data.toDependentAuxiliaryData).payload = data.payload
+    simp [toDependentAuxiliaryData,
+      FixedWeightDependentAuxiliaryData.payload, payload]
+  constructor
+  · intro i
+    constructor
+    · change ((data.toDependentAuxiliaryData).accessCosted i).cost =
+        (data.accessCosted i).cost
+      simp [toDependentAuxiliaryData,
+        FixedWeightDependentAuxiliaryData.accessCosted,
+        data.packed_read_values_zero,
+        fixedWeightComputedRRRQueryCost]
+      omega
+    · change ((data.toDependentAuxiliaryData).accessCosted i).erase =
+        (data.accessCosted i).erase
+      rw [(data.toDependentAuxiliaryData).accessCosted_erase i,
+        data.accessCosted_erase i]
+  constructor
+  · intro target pos
+    constructor
+    · change ((data.toDependentAuxiliaryData).rankCosted target pos).cost =
+        (data.rankCosted target pos).cost
+      simp [toDependentAuxiliaryData,
+        FixedWeightDependentAuxiliaryData.rankCosted,
+        data.packed_read_values_zero,
+        fixedWeightComputedRRRQueryCost]
+      omega
+    · change ((data.toDependentAuxiliaryData).rankCosted target pos).erase =
+        (data.rankCosted target pos).erase
+      rw [(data.toDependentAuxiliaryData).rankCosted_erase target pos,
+        data.rankCosted_erase target pos]
+  · intro target occurrence
+    constructor
+    · change
+        ((data.toDependentAuxiliaryData).selectCosted
+          target occurrence).cost =
+        (data.selectCosted target occurrence).cost
+      simp [toDependentAuxiliaryData,
+        FixedWeightDependentAuxiliaryData.selectCosted,
+        data.packed_read_values_zero,
+        fixedWeightComputedRRRQueryCost]
+      omega
+    · change
+        ((data.toDependentAuxiliaryData).selectCosted
+          target occurrence).erase =
+        (data.selectCosted target occurrence).erase
+      rw [(data.toDependentAuxiliaryData).selectCosted_erase
+          target occurrence,
+        data.selectCosted_erase target occurrence]
+
+theorem computed_rrr_block_kernel_profile
+    {ambientLength : Nat} {bits : List Bool} {wordSize : Nat}
+    (data :
+      FixedWeightComputedRRRBlockData ambientLength bits wordSize) :
+    data.KernelProfile := by
+  have hpacked :
+      data.packedStore.store.words[0]? =
+        some (fixedWeightPackedPayload bits) := by
+    simpa [packedStore] using
+      fixedWeightPackedCodeBoundedStore_get?_zero bits
+        data.codeWidth_le_wordSize
+  refine
+    ⟨rfl,
+      by
+        change data.payload.length = fixedWeightPayloadBudget bits
+        exact data.payload_length,
+      by
+        change data.payload.length = fixedWeightPayloadBudget bits + 0
+        simp,
+      data.packedStore.erases,
+      hpacked,
+      data.codeWidth_le_wordSize,
+      data.blockWidth_le_wordSize,
+      data.wordSize_le_ambient,
+      data.readCodeCosted_cost,
+      data.readCodeCosted_erase,
+      data.decodedWordCosted_cost,
+      data.decodedWordCosted_erase,
+      (fun hmem => data.packedStore.word_length_le_of_mem hmem),
+      ?_,
+      ?_,
+      ?_⟩
+  · intro i
+    exact
+      ⟨by
+        change (data.accessCosted i).cost <=
+          fixedWeightComputedRRRQueryCost bits
+        rw [data.accessCosted_cost i]
+        unfold fixedWeightComputedRRRQueryCost
+        omega,
+        data.accessCosted_erase i⟩
+  · intro target pos
+    exact
+      ⟨by
+        change (data.rankCosted target pos).cost =
+          fixedWeightComputedRRRQueryCost bits
+        exact data.rankCosted_cost target pos,
+        data.rankCosted_erase target pos⟩
+  · intro target occurrence
+    exact
+      ⟨by
+        change (data.selectCosted target occurrence).cost =
+          fixedWeightComputedRRRQueryCost bits
+        exact data.selectCosted_cost target occurrence,
+        data.selectCosted_erase target occurrence⟩
+
+end FixedWeightComputedRRRBlockData
+
+/-- Two fixed-width metadata words for a local block: length, then class. -/
+def fixedWeightClassLengthPayload
+    (fieldWidth : Nat) (bits : List Bool) : List Bool :=
+  SuccinctSpace.natToBitsLE fieldWidth bits.length ++
+    SuccinctSpace.natToBitsLE fieldWidth (trueCount bits)
+
+@[simp] theorem fixedWeightClassLengthPayload_length
+    (fieldWidth : Nat) (bits : List Bool) :
+    (fixedWeightClassLengthPayload fieldWidth bits).length =
+      fieldWidth + fieldWidth := by
+  simp [fixedWeightClassLengthPayload,
+    SuccinctSpace.natToBitsLE_length]
+
+/--
+Local RRR block kernel that reads block length and class from charged
+metadata words before decoding the packed fixed-weight code.
+-/
+structure FixedWeightComputedRRRClassLengthBlockData
+    (ambientLength : Nat) (bits : List Bool)
+    (wordSize fieldWidth : Nat) where
+  wordSize_pos : 0 < wordSize
+  wordSize_le_ambient : wordSize <= Nat.log2 ambientLength + 1
+  fieldWidth_le_wordSize : fieldWidth <= wordSize
+  codeWidth_le_wordSize : fixedWeightPayloadBudget bits <= wordSize
+  blockLength_lt_fieldWidthPow : bits.length < 2 ^ fieldWidth
+  blockClass_lt_fieldWidthPow : trueCount bits < 2 ^ fieldWidth
+
+namespace FixedWeightComputedRRRClassLengthBlockData
+
+def packedStore
+    {ambientLength : Nat} {bits : List Bool}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightComputedRRRClassLengthBlockData
+        ambientLength bits wordSize fieldWidth) :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightPackedPayload bits) wordSize :=
+  fixedWeightPackedCodeBoundedStore bits wordSize
+    data.codeWidth_le_wordSize
+
+def classLengthStore
+    {ambientLength : Nat} {bits : List Bool}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightComputedRRRClassLengthBlockData
+        ambientLength bits wordSize fieldWidth) :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightClassLengthPayload fieldWidth bits) wordSize where
+  store :=
+    { words :=
+        #[
+          SuccinctSpace.natToBitsLE fieldWidth bits.length,
+          SuccinctSpace.natToBitsLE fieldWidth (trueCount bits)]
+      erases := by
+        simp [fixedWeightClassLengthPayload,
+          SuccinctSpace.flattenPayloadWords] }
+  word_length_le := by
+    intro word hmem
+    change
+      List.Mem word
+        ([
+          SuccinctSpace.natToBitsLE fieldWidth bits.length,
+          SuccinctSpace.natToBitsLE fieldWidth (trueCount bits)] :
+          List (List Bool)) at hmem
+    cases hmem with
+    | head =>
+        simpa [SuccinctSpace.natToBitsLE_length] using
+          data.fieldWidth_le_wordSize
+    | tail _ htail =>
+        cases htail with
+        | head =>
+            simpa [SuccinctSpace.natToBitsLE_length] using
+              data.fieldWidth_le_wordSize
+        | tail _ hnil =>
+            cases hnil
+
+def payload
+    {ambientLength : Nat} {bits : List Bool}
+    {wordSize fieldWidth : Nat}
+    (_data :
+      FixedWeightComputedRRRClassLengthBlockData
+        ambientLength bits wordSize fieldWidth) :
+    List Bool :=
+  fixedWeightPackedPayload bits ++
+    fixedWeightClassLengthPayload fieldWidth bits
+
+@[simp] theorem payload_length
+    {ambientLength : Nat} {bits : List Bool}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightComputedRRRClassLengthBlockData
+        ambientLength bits wordSize fieldWidth) :
+    data.payload.length =
+      fixedWeightPayloadBudget bits + (fieldWidth + fieldWidth) := by
+  simp [payload, fixedWeightPackedPayload_length]
+
+theorem packed_read_values_zero
+    {ambientLength : Nat} {bits : List Bool}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightComputedRRRClassLengthBlockData
+        ambientLength bits wordSize fieldWidth) :
+    boundedPayloadWordReadValues data.packedStore [0] =
+      [some (fixedWeightPackedPayload bits)] := by
+  have hpacked :
+      data.packedStore.store.words[0]? =
+        some (fixedWeightPackedPayload bits) := by
+    simpa [packedStore] using
+      fixedWeightPackedCodeBoundedStore_get?_zero bits
+        data.codeWidth_le_wordSize
+  simp [boundedPayloadWordReadValues, hpacked]
+
+theorem classLength_read_values
+    {ambientLength : Nat} {bits : List Bool}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightComputedRRRClassLengthBlockData
+        ambientLength bits wordSize fieldWidth) :
+    boundedPayloadWordReadValues data.classLengthStore [0, 1] =
+      [some (SuccinctSpace.natToBitsLE fieldWidth bits.length),
+       some (SuccinctSpace.natToBitsLE fieldWidth (trueCount bits))] := by
+  simp [boundedPayloadWordReadValues, classLengthStore]
+
+def decodedWordCosted
+    {ambientLength : Nat} {bits : List Bool}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightComputedRRRClassLengthBlockData
+        ambientLength bits wordSize fieldWidth) :
+    Costed (List Bool) :=
+  Costed.bind
+      (boundedPayloadWordReadsCosted data.classLengthStore [0, 1])
+      fun classLengthWords =>
+    Costed.bind
+        (boundedPayloadWordReadsCosted data.packedStore [0])
+        fun packedWords =>
+      fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted
+        classLengthWords packedWords
+
+@[simp] theorem decodedWordCosted_cost
+    {ambientLength : Nat} {bits : List Bool}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightComputedRRRClassLengthBlockData
+        ambientLength bits wordSize fieldWidth) :
+    data.decodedWordCosted.cost =
+      fixedWeightComputedRRRDecodeTicks bits + 3 := by
+  have hclassLength :=
+    fixedWeightClassLengthFromReadValues_encoded
+      data.blockLength_lt_fieldWidthPow
+      data.blockClass_lt_fieldWidthPow
+  simp [decodedWordCosted, data.classLength_read_values,
+    data.packed_read_values_zero, fixedWeightComputedRRRDecodeTicks,
+    fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted,
+    hclassLength]
+  omega
+
+@[simp] theorem decodedWordCosted_erase
+    {ambientLength : Nat} {bits : List Bool}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightComputedRRRClassLengthBlockData
+        ambientLength bits wordSize fieldWidth) :
+    data.decodedWordCosted.erase = bits := by
+  simp [decodedWordCosted, data.classLength_read_values,
+    data.packed_read_values_zero,
+    fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted_erase_singleton
+      data.blockLength_lt_fieldWidthPow
+      data.blockClass_lt_fieldWidthPow]
+
+def accessCosted
+    {ambientLength : Nat} {bits : List Bool}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightComputedRRRClassLengthBlockData
+        ambientLength bits wordSize fieldWidth)
+    (i : Nat) : Costed (Option Bool) :=
+  Costed.map (fun word => word[i]?) data.decodedWordCosted
+
+@[simp] theorem accessCosted_cost
+    {ambientLength : Nat} {bits : List Bool}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightComputedRRRClassLengthBlockData
+        ambientLength bits wordSize fieldWidth)
+    (i : Nat) :
+    (data.accessCosted i).cost =
+      fixedWeightComputedRRRDecodeTicks bits + 3 := by
+  simp [accessCosted]
+
+@[simp] theorem accessCosted_erase
+    {ambientLength : Nat} {bits : List Bool}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightComputedRRRClassLengthBlockData
+        ambientLength bits wordSize fieldWidth)
+    (i : Nat) :
+    (data.accessCosted i).erase = bits[i]? := by
+  simp [accessCosted]
+
+def rankCosted
+    {ambientLength : Nat} {bits : List Bool}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightComputedRRRClassLengthBlockData
+        ambientLength bits wordSize fieldWidth)
+    (target : Bool) (pos : Nat) : Costed Nat :=
+  Costed.bind data.decodedWordCosted fun word =>
+    (RAM.rankBoolWordPrefix target word pos).toCosted
+
+@[simp] theorem rankCosted_cost
+    {ambientLength : Nat} {bits : List Bool}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightComputedRRRClassLengthBlockData
+        ambientLength bits wordSize fieldWidth)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).cost =
+      fixedWeightComputedRRRClassLengthQueryCost bits := by
+  simp [rankCosted, fixedWeightComputedRRRClassLengthQueryCost,
+    fixedWeightComputedRRRDecodeTicks]
+
+@[simp] theorem rankCosted_erase
+    {ambientLength : Nat} {bits : List Bool}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightComputedRRRClassLengthBlockData
+        ambientLength bits wordSize fieldWidth)
+    (target : Bool) (pos : Nat) :
+    (data.rankCosted target pos).erase =
+      Succinct.rankPrefix target bits pos := by
+  unfold rankCosted
+  simp only [Costed.erase_bind, decodedWordCosted_erase]
+  change (RAM.rankBoolWordPrefix target bits pos).toCosted.value =
+    Succinct.rankPrefix target bits pos
+  have hrun := Succinct.rankBoolWordPrefix_toCosted_run target bits pos
+  simpa [Costed.run] using congrArg Prod.fst hrun
+
+def selectCosted
+    {ambientLength : Nat} {bits : List Bool}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightComputedRRRClassLengthBlockData
+        ambientLength bits wordSize fieldWidth)
+    (target : Bool) (occurrence : Nat) : Costed (Option Nat) :=
+  Costed.bind data.decodedWordCosted fun word =>
+    (RAM.selectBoolWord target word occurrence).toCosted
+
+@[simp] theorem selectCosted_cost
+    {ambientLength : Nat} {bits : List Bool}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightComputedRRRClassLengthBlockData
+        ambientLength bits wordSize fieldWidth)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).cost =
+      fixedWeightComputedRRRClassLengthQueryCost bits := by
+  simp [selectCosted, fixedWeightComputedRRRClassLengthQueryCost,
+    fixedWeightComputedRRRDecodeTicks]
+
+@[simp] theorem selectCosted_erase
+    {ambientLength : Nat} {bits : List Bool}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightComputedRRRClassLengthBlockData
+        ambientLength bits wordSize fieldWidth)
+    (target : Bool) (occurrence : Nat) :
+    (data.selectCosted target occurrence).erase =
+      Succinct.select target bits occurrence := by
+  unfold selectCosted
+  simp only [Costed.erase_bind, decodedWordCosted_erase]
+  change (RAM.selectBoolWord target bits occurrence).toCosted.value =
+    Succinct.select target bits occurrence
+  have hrun := Succinct.selectBoolWord_toCosted_run
+    target bits occurrence
+  simpa [Costed.run] using congrArg Prod.fst hrun
+
+def ClassLengthKernelProfile
+    {ambientLength : Nat} {bits : List Bool}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightComputedRRRClassLengthBlockData
+        ambientLength bits wordSize fieldWidth) :
+    Prop :=
+  data.payload.length =
+      fixedWeightPayloadBudget bits + (fieldWidth + fieldWidth) /\
+    SuccinctSpace.flattenPayloadWords
+        data.packedStore.store.words.toList =
+      fixedWeightPackedPayload bits /\
+    SuccinctSpace.flattenPayloadWords
+        data.classLengthStore.store.words.toList =
+      fixedWeightClassLengthPayload fieldWidth bits /\
+    boundedPayloadWordReadValues data.packedStore [0] =
+      [some (fixedWeightPackedPayload bits)] /\
+    boundedPayloadWordReadValues data.classLengthStore [0, 1] =
+      [some (SuccinctSpace.natToBitsLE fieldWidth bits.length),
+       some (SuccinctSpace.natToBitsLE fieldWidth (trueCount bits))] /\
+    data.decodedWordCosted.cost =
+      fixedWeightComputedRRRDecodeTicks bits + 3 /\
+    data.decodedWordCosted.erase = bits /\
+    (forall {word : List Bool},
+      List.Mem word data.packedStore.store.words.toList ->
+        word.length <= wordSize) /\
+    (forall {word : List Bool},
+      List.Mem word data.classLengthStore.store.words.toList ->
+        word.length <= wordSize) /\
+    (forall i,
+      (data.accessCosted i).cost <=
+          fixedWeightComputedRRRClassLengthQueryCost bits /\
+        (data.accessCosted i).erase = bits[i]?) /\
+    (forall target pos,
+      (data.rankCosted target pos).cost =
+          fixedWeightComputedRRRClassLengthQueryCost bits /\
+        (data.rankCosted target pos).erase =
+          Succinct.rankPrefix target bits pos) /\
+    (forall target occurrence,
+      (data.selectCosted target occurrence).cost =
+          fixedWeightComputedRRRClassLengthQueryCost bits /\
+        (data.selectCosted target occurrence).erase =
+          Succinct.select target bits occurrence)
+
+theorem class_length_kernel_profile
+    {ambientLength : Nat} {bits : List Bool}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightComputedRRRClassLengthBlockData
+        ambientLength bits wordSize fieldWidth) :
+    data.ClassLengthKernelProfile := by
+  exact
+    ⟨data.payload_length,
+      data.packedStore.erases,
+      data.classLengthStore.erases,
+      data.packed_read_values_zero,
+      data.classLength_read_values,
+      data.decodedWordCosted_cost,
+      data.decodedWordCosted_erase,
+      (fun hmem => data.packedStore.word_length_le_of_mem hmem),
+      (fun hmem => data.classLengthStore.word_length_le_of_mem hmem),
+      (fun i =>
+        ⟨by
+          rw [data.accessCosted_cost i]
+          unfold fixedWeightComputedRRRClassLengthQueryCost
+          omega,
+          data.accessCosted_erase i⟩),
+      (fun target pos =>
+        ⟨data.rankCosted_cost target pos,
+          data.rankCosted_erase target pos⟩),
+      (fun target occurrence =>
+        ⟨data.selectCosted_cost target occurrence,
+          data.selectCosted_erase target occurrence⟩)⟩
+
+def toDependentAuxiliaryData
+    {ambientLength : Nat} {bits : List Bool}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightComputedRRRClassLengthBlockData
+        ambientLength bits wordSize fieldWidth) :
+    FixedWeightDependentAuxiliaryData
+      bits (fieldWidth + fieldWidth) wordSize
+      (fixedWeightComputedRRRClassLengthQueryCost bits) := by
+  refine
+    { wordSize_pos := data.wordSize_pos
+      packedStore := data.packedStore
+      auxPayload := fixedWeightClassLengthPayload fieldWidth bits
+      auxStore := data.classLengthStore
+      aux_length_eq := by
+        simp [fixedWeightClassLengthPayload_length]
+      accessPackedReads := fun _ => [0]
+      accessAuxReads := fun _ _ => [0, 1]
+      rankPackedReads := fun _ _ => [0]
+      rankAuxReads := fun _ _ _ => [0, 1]
+      selectPackedReads := fun _ _ => [0]
+      selectAuxReads := fun _ _ _ => [0, 1]
+      accessEvalCosted := fun i packedWords auxWords =>
+        Costed.map (fun word => word[i]?)
+          (fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted
+            auxWords packedWords)
+      rankEvalCosted := fun target pos packedWords auxWords =>
+        Costed.bind
+          (fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted
+            auxWords packedWords) fun word =>
+          (RAM.rankBoolWordPrefix target word pos).toCosted
+      selectEvalCosted := fun target occurrence packedWords auxWords =>
+        Costed.bind
+          (fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted
+            auxWords packedWords) fun word =>
+          (RAM.selectBoolWord target word occurrence).toCosted
+      access_query_cost_le := ?_
+      rank_query_cost_le := ?_
+      select_query_cost_le := ?_
+      access_eval_exact := ?_
+      rank_eval_exact := ?_
+      select_eval_exact := ?_ }
+  · intro i
+    have hclassLength :=
+      fixedWeightClassLengthFromReadValues_encoded
+        data.blockLength_lt_fieldWidthPow
+        data.blockClass_lt_fieldWidthPow
+    simp [data.packed_read_values_zero, data.classLength_read_values,
+      fixedWeightComputedRRRClassLengthQueryCost,
+      fixedWeightComputedRRRDecodeTicks, hclassLength]
+    omega
+  · intro target pos
+    have hclassLength :=
+      fixedWeightClassLengthFromReadValues_encoded
+        data.blockLength_lt_fieldWidthPow
+        data.blockClass_lt_fieldWidthPow
+    simp [data.packed_read_values_zero, data.classLength_read_values,
+      fixedWeightComputedRRRClassLengthQueryCost,
+      fixedWeightComputedRRRDecodeTicks, hclassLength]
+    omega
+  · intro target occurrence
+    have hclassLength :=
+      fixedWeightClassLengthFromReadValues_encoded
+        data.blockLength_lt_fieldWidthPow
+        data.blockClass_lt_fieldWidthPow
+    simp [data.packed_read_values_zero, data.classLength_read_values,
+      fixedWeightComputedRRRClassLengthQueryCost,
+      fixedWeightComputedRRRDecodeTicks, hclassLength]
+    omega
+  · intro i
+    simp [data.packed_read_values_zero, data.classLength_read_values,
+      fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted_erase_singleton
+        data.blockLength_lt_fieldWidthPow
+        data.blockClass_lt_fieldWidthPow]
+  · intro target pos
+    have hdecode :=
+      fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted_erase_singleton
+        (fieldWidth := fieldWidth)
+        data.blockLength_lt_fieldWidthPow
+        data.blockClass_lt_fieldWidthPow
+    have hrun := Succinct.rankBoolWordPrefix_toCosted_run target bits pos
+    simp only [data.packed_read_values_zero, data.classLength_read_values,
+      Costed.erase_bind]
+    rw [hdecode]
+    change (RAM.rankBoolWordPrefix target bits pos).toCosted.value =
+      Succinct.rankPrefix target bits pos
+    simpa [Costed.run] using congrArg Prod.fst hrun
+  · intro target occurrence
+    have hdecode :=
+      fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted_erase_singleton
+        (fieldWidth := fieldWidth)
+        data.blockLength_lt_fieldWidthPow
+        data.blockClass_lt_fieldWidthPow
+    have hrun := Succinct.selectBoolWord_toCosted_run
+      target bits occurrence
+    simp only [data.packed_read_values_zero, data.classLength_read_values,
+      Costed.erase_bind]
+    rw [hdecode]
+    change (RAM.selectBoolWord target bits occurrence).toCosted.value =
+      Succinct.select target bits occurrence
+    simpa [Costed.run] using congrArg Prod.fst hrun
+
+theorem dependent_auxiliary_data_profile
+    {ambientLength : Nat} {bits : List Bool}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightComputedRRRClassLengthBlockData
+        ambientLength bits wordSize fieldWidth) :
+    (data.toDependentAuxiliaryData).DirectoryProfile := by
+  exact
+    FixedWeightDependentAuxiliaryData.directory_profile
+      data.toDependentAuxiliaryData
+
+end FixedWeightComputedRRRClassLengthBlockData
+
+/--
+Access routing metadata for the ambient computed-RRR predecessor.
+
+The metadata read list is charged through the ambient auxiliary store. The
+semantic fields identify the routed block/offset; a later fully built FID
+construction should derive these fields from concrete payload tables.
+-/
+structure FixedWeightAmbientComputedRRRAccessRoute
+    (bits : List Bool) (blocks : List (List Bool)) (i : Nat) where
+  blockIndex : Nat
+  block : List Bool
+  block_get : blocks[blockIndex]? = some block
+  offset : Nat
+  metadataReads : List Nat
+  access_exact : block[offset]? = bits[i]?
+
+/-- Rank routing metadata for the ambient computed-RRR predecessor. -/
+structure FixedWeightAmbientComputedRRRRankRoute
+    (bits : List Bool) (blocks : List (List Bool))
+    (target : Bool) (pos : Nat) where
+  blockIndex : Nat
+  block : List Bool
+  block_get : blocks[blockIndex]? = some block
+  localLimit : Nat
+  baseRank : Nat
+  metadataReads : List Nat
+  rank_exact :
+    baseRank + Succinct.rankPrefix target block localLimit =
+      Succinct.rankPrefix target bits pos
+
+/-- Select routing metadata for the ambient computed-RRR predecessor. -/
+structure FixedWeightAmbientComputedRRRSelectRoute
+    (bits : List Bool) (blocks : List (List Bool))
+    (target : Bool) (occurrence : Nat) where
+  blockIndex : Nat
+  block : List Bool
+  block_get : blocks[blockIndex]? = some block
+  localOccurrence : Nat
+  blockStart : Nat
+  metadataReads : List Nat
+  select_exact :
+    (Succinct.select target block localOccurrence).map
+        (fun offset => blockStart + offset) =
+      Succinct.select target bits occurrence
+
+/--
+Ambient/global block-composition data whose local block backend is the
+computed packed-code-only fixed-weight/RRR kernel.
+
+The primary payload is still `fixedWeightBlockCodePayload blocks`. Routing and
+class metadata are charged by `metadataReads` through the auxiliary store; the
+local block decoder is governed by the uniform `localQueryCost` bound. This is
+the concrete predecessor needed before proving that a particular routing/class
+table construction has `o(n)` payload and truly constant local decode cost.
+-/
+structure FixedWeightAmbientComputedRRRBlockData
+    (bits : List Bool) (blocks : List (List Bool))
+    (overhead wordSize routeCost localQueryCost queryCost : Nat) where
+  wordSize_pos : 0 < wordSize
+  wordSize_le_ambient : wordSize <= Nat.log2 bits.length + 1
+  blockSize : Nat
+  blockSize_pos : 0 < blockSize
+  blocks_flatten : SuccinctSpace.flattenPayloadWords blocks = bits
+  block_length_le :
+    forall {block : List Bool}, List.Mem block blocks ->
+      block.length <= blockSize
+  blockSize_le_wordSize : blockSize <= wordSize
+  block_code_width_le :
+    forall {block : List Bool}, List.Mem block blocks ->
+      fixedWeightPayloadBudget block <= wordSize
+  codeStore :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightBlockCodePayload blocks) wordSize
+  codeStore_aligned :
+    codeStore.store.words.toList = fixedWeightBlockCodeWords blocks
+  auxPayload : List Bool
+  auxStore :
+    SuccinctSpace.BoundedPayloadWordStore auxPayload wordSize
+  aux_length_eq : auxPayload.length = overhead
+  accessRoute :
+    forall i,
+      FixedWeightAmbientComputedRRRAccessRoute bits blocks i
+  rankRoute :
+    forall target pos,
+      FixedWeightAmbientComputedRRRRankRoute bits blocks target pos
+  selectRoute :
+    forall target occurrence,
+      FixedWeightAmbientComputedRRRSelectRoute
+        bits blocks target occurrence
+  access_metadata_reads_le :
+    forall i, (accessRoute i).metadataReads.length <= routeCost
+  rank_metadata_reads_le :
+    forall target pos,
+      (rankRoute target pos).metadataReads.length <= routeCost
+  select_metadata_reads_le :
+    forall target occurrence,
+      (selectRoute target occurrence).metadataReads.length <= routeCost
+  local_query_cost_le :
+    forall {block : List Bool}, List.Mem block blocks ->
+      fixedWeightComputedRRRQueryCost block <= localQueryCost
+  route_plus_local_le : routeCost + localQueryCost <= queryCost
+
+namespace FixedWeightAmbientComputedRRRBlockData
+
+def localBlockData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRBlockData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    {blockIndex : Nat} {block : List Bool}
+    (hblock : blocks[blockIndex]? = some block) :
+    FixedWeightComputedRRRBlockData bits.length block wordSize where
+  wordSize_pos := data.wordSize_pos
+  wordSize_le_ambient := data.wordSize_le_ambient
+  codeWidth_le_wordSize :=
+    data.block_code_width_le (List.mem_of_getElem? hblock)
+  blockWidth_le_wordSize :=
+    Nat.le_trans
+      (data.block_length_le (List.mem_of_getElem? hblock))
+      data.blockSize_le_wordSize
+
+theorem code_read_values_singleton
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRBlockData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    {blockIndex : Nat} {block : List Bool}
+    (hblock : blocks[blockIndex]? = some block) :
+    boundedPayloadWordReadValues data.codeStore [blockIndex] =
+      [some (fixedWeightPackedPayload block)] := by
+  have hget :
+      data.codeStore.store.words[blockIndex]? =
+        some (fixedWeightPackedPayload block) :=
+    fixedWeightAmbientBlockCodeStore_get?_of_aligned
+      data.codeStore_aligned hblock
+  simp [boundedPayloadWordReadValues, hget]
+
+def accessEvalCosted
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRBlockData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (i : Nat) (codeWords auxWords : List (Option (List Bool))) :
+    Costed (Option Bool) :=
+  let route := data.accessRoute i
+  ((data.localBlockData route.block_get).toDependentAuxiliaryData).accessEvalCosted
+    route.offset codeWords auxWords
+
+def rankEvalCosted
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRBlockData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (pos : Nat)
+    (codeWords auxWords : List (Option (List Bool))) :
+    Costed Nat :=
+  let route := data.rankRoute target pos
+  Costed.map (fun localRank => route.baseRank + localRank)
+    (((data.localBlockData route.block_get).toDependentAuxiliaryData).rankEvalCosted
+      target route.localLimit codeWords auxWords)
+
+def selectEvalCosted
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRBlockData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (occurrence : Nat)
+    (codeWords auxWords : List (Option (List Bool))) :
+    Costed (Option Nat) :=
+  let route := data.selectRoute target occurrence
+  Costed.map (fun local? =>
+      local?.map (fun offset => route.blockStart + offset))
+    (((data.localBlockData route.block_get).toDependentAuxiliaryData).selectEvalCosted
+      target route.localOccurrence codeWords auxWords)
+
+def toAmbientBlockCompositionData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRBlockData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientBlockCompositionData
+      bits blocks overhead wordSize queryCost := by
+  refine
+    { wordSize_pos := data.wordSize_pos
+      wordSize_le_ambient := data.wordSize_le_ambient
+      blockSize := data.blockSize
+      blockSize_pos := data.blockSize_pos
+      blocks_flatten := data.blocks_flatten
+      block_length_le := data.block_length_le
+      blockSize_le_wordSize := data.blockSize_le_wordSize
+      block_code_width_le := data.block_code_width_le
+      codeStore := data.codeStore
+      auxPayload := data.auxPayload
+      auxStore := data.auxStore
+      aux_length_eq := data.aux_length_eq
+      accessCodeReads := fun i => [(data.accessRoute i).blockIndex]
+      accessAuxReads := fun i _ => (data.accessRoute i).metadataReads
+      rankCodeReads := fun target pos =>
+        [(data.rankRoute target pos).blockIndex]
+      rankAuxReads := fun target pos _ =>
+        (data.rankRoute target pos).metadataReads
+      selectCodeReads := fun target occurrence =>
+        [(data.selectRoute target occurrence).blockIndex]
+      selectAuxReads := fun target occurrence _ =>
+        (data.selectRoute target occurrence).metadataReads
+      accessEvalCosted := data.accessEvalCosted
+      rankEvalCosted := data.rankEvalCosted
+      selectEvalCosted := data.selectEvalCosted
+      access_query_cost_le := ?_
+      rank_query_cost_le := ?_
+      select_query_cost_le := ?_
+      access_eval_exact := ?_
+      rank_eval_exact := ?_
+      select_eval_exact := ?_ }
+  · intro i
+    let route := data.accessRoute i
+    have hmem : List.Mem route.block blocks :=
+      List.mem_of_getElem? route.block_get
+    have hroute := data.access_metadata_reads_le i
+    have hlocal := data.local_query_cost_le hmem
+    have htotal := data.route_plus_local_le
+    simp [accessEvalCosted, route,
+      FixedWeightComputedRRRBlockData.toDependentAuxiliaryData,
+      fixedWeightComputedRRRDecodeFromReadValuesCosted,
+      fixedWeightComputedRRRQueryCost] at *
+    omega
+  · intro target pos
+    let route := data.rankRoute target pos
+    have hmem : List.Mem route.block blocks :=
+      List.mem_of_getElem? route.block_get
+    have hroute := data.rank_metadata_reads_le target pos
+    have hlocal := data.local_query_cost_le hmem
+    have htotal := data.route_plus_local_le
+    simp [rankEvalCosted, route,
+      FixedWeightComputedRRRBlockData.toDependentAuxiliaryData,
+      fixedWeightComputedRRRDecodeFromReadValuesCosted,
+      fixedWeightComputedRRRQueryCost] at *
+    omega
+  · intro target occurrence
+    let route := data.selectRoute target occurrence
+    have hmem : List.Mem route.block blocks :=
+      List.mem_of_getElem? route.block_get
+    have hroute := data.select_metadata_reads_le target occurrence
+    have hlocal := data.local_query_cost_le hmem
+    have htotal := data.route_plus_local_le
+    simp [selectEvalCosted, route,
+      FixedWeightComputedRRRBlockData.toDependentAuxiliaryData,
+      fixedWeightComputedRRRDecodeFromReadValuesCosted,
+      fixedWeightComputedRRRQueryCost] at *
+    omega
+  · intro i
+    let route := data.accessRoute i
+    have hread := data.code_read_values_singleton route.block_get
+    have hdecode :=
+      fixedWeightComputedRRRDecodeFromReadValuesCosted_erase_singleton
+        route.block
+    simp [accessEvalCosted, route,
+      FixedWeightComputedRRRBlockData.toDependentAuxiliaryData, hread,
+      hdecode, route.access_exact]
+  · intro target pos
+    let route := data.rankRoute target pos
+    have hread := data.code_read_values_singleton route.block_get
+    have hdecode :=
+      fixedWeightComputedRRRDecodeFromReadValuesCosted_erase_singleton
+        route.block
+    have hrun :=
+      Succinct.rankBoolWordPrefix_toCosted_run
+        target route.block route.localLimit
+    simp only [rankEvalCosted, Costed.erase_map,
+      FixedWeightComputedRRRBlockData.toDependentAuxiliaryData,
+      Costed.erase_bind]
+    change
+      route.baseRank +
+          (RAM.rankBoolWordPrefix target
+              (fixedWeightComputedRRRDecodeFromReadValuesCosted
+                route.block
+                (boundedPayloadWordReadValues data.codeStore
+                  [route.blockIndex])).erase
+              route.localLimit).toCosted.erase =
+        Succinct.rankPrefix target bits pos
+    rw [hread]
+    rw [hdecode]
+    change
+      route.baseRank +
+          (RAM.rankBoolWordPrefix target route.block route.localLimit).toCosted.value =
+        Succinct.rankPrefix target bits pos
+    have hram :
+        (RAM.rankBoolWordPrefix target route.block route.localLimit).toCosted.value =
+          Succinct.rankPrefix target route.block route.localLimit := by
+      simpa [Costed.run] using congrArg Prod.fst hrun
+    rw [hram]
+    exact route.rank_exact
+  · intro target occurrence
+    let route := data.selectRoute target occurrence
+    have hread := data.code_read_values_singleton route.block_get
+    have hdecode :=
+      fixedWeightComputedRRRDecodeFromReadValuesCosted_erase_singleton
+        route.block
+    have hrun :=
+      Succinct.selectBoolWord_toCosted_run
+        target route.block route.localOccurrence
+    simp only [selectEvalCosted, Costed.erase_map,
+      FixedWeightComputedRRRBlockData.toDependentAuxiliaryData,
+      Costed.erase_bind]
+    change
+      ((RAM.selectBoolWord target
+              (fixedWeightComputedRRRDecodeFromReadValuesCosted
+                route.block
+                (boundedPayloadWordReadValues data.codeStore
+                  [route.blockIndex])).erase
+              route.localOccurrence).toCosted.erase).map
+          (fun offset => route.blockStart + offset) =
+        Succinct.select target bits occurrence
+    rw [hread]
+    rw [hdecode]
+    change
+      ((RAM.selectBoolWord target route.block route.localOccurrence).toCosted.value).map
+          (fun offset => route.blockStart + offset) =
+        Succinct.select target bits occurrence
+    have hselect :
+        (RAM.selectBoolWord target route.block route.localOccurrence).toCosted.value =
+          Succinct.select target route.block route.localOccurrence := by
+      simpa [Costed.run] using congrArg Prod.fst hrun
+    rw [hselect]
+    exact route.select_exact
+
+def CompositionProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRBlockData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    Prop :=
+  (data.toAmbientBlockCompositionData).DirectoryProfile /\
+    data.codeStore.store.words.toList = fixedWeightBlockCodeWords blocks /\
+    (forall i,
+      let route := data.accessRoute i
+      boundedPayloadWordReadValues data.codeStore [route.blockIndex] =
+          [some (fixedWeightPackedPayload route.block)] /\
+        ((data.localBlockData route.block_get).toDependentAuxiliaryData).DirectoryProfile /\
+        route.metadataReads.length <= routeCost) /\
+    (forall target pos,
+      let route := data.rankRoute target pos
+      boundedPayloadWordReadValues data.codeStore [route.blockIndex] =
+          [some (fixedWeightPackedPayload route.block)] /\
+        ((data.localBlockData route.block_get).toDependentAuxiliaryData).DirectoryProfile /\
+        route.metadataReads.length <= routeCost) /\
+    (forall target occurrence,
+      let route := data.selectRoute target occurrence
+      boundedPayloadWordReadValues data.codeStore [route.blockIndex] =
+          [some (fixedWeightPackedPayload route.block)] /\
+        ((data.localBlockData route.block_get).toDependentAuxiliaryData).DirectoryProfile /\
+        route.metadataReads.length <= routeCost) /\
+    (forall {block : List Bool}, List.Mem block blocks ->
+      fixedWeightComputedRRRQueryCost block <= localQueryCost) /\
+    routeCost + localQueryCost <= queryCost
+
+theorem computed_rrr_block_composition_profile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRBlockData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    data.CompositionProfile := by
+  refine
+    ⟨data.toAmbientBlockCompositionData.directory_profile,
+      data.codeStore_aligned,
+      ?_,
+      ?_,
+      ?_,
+      data.local_query_cost_le,
+      data.route_plus_local_le⟩
+  · intro i
+    exact
+      ⟨data.code_read_values_singleton (data.accessRoute i).block_get,
+        FixedWeightComputedRRRBlockData.dependent_auxiliary_data_profile
+          (data.localBlockData (data.accessRoute i).block_get),
+        data.access_metadata_reads_le i⟩
+  · intro target pos
+    exact
+      ⟨data.code_read_values_singleton
+          (data.rankRoute target pos).block_get,
+        FixedWeightComputedRRRBlockData.dependent_auxiliary_data_profile
+          (data.localBlockData (data.rankRoute target pos).block_get),
+        data.rank_metadata_reads_le target pos⟩
+  · intro target occurrence
+    exact
+      ⟨data.code_read_values_singleton
+          (data.selectRoute target occurrence).block_get,
+        FixedWeightComputedRRRBlockData.dependent_auxiliary_data_profile
+          (data.localBlockData
+            (data.selectRoute target occurrence).block_get),
+        data.select_metadata_reads_le target occurrence⟩
+
+end FixedWeightAmbientComputedRRRBlockData
+
+/--
+Payload-backed route/class metadata tables for ambient computed-RRR blocks.
+
+This layer owns the auxiliary route payload and bounded route store, then
+instantiates `FixedWeightAmbientComputedRRRBlockData`. The route records still
+carry the semantic facts needed to identify the chosen block and local query;
+the important extra discipline here is that every such route is backed by a
+counted metadata read schedule over this concrete payload store.
+-/
+structure FixedWeightAmbientComputedRRRRouteTableData
+    (bits : List Bool) (blocks : List (List Bool))
+    (overhead wordSize routeCost localQueryCost queryCost : Nat) where
+  wordSize_pos : 0 < wordSize
+  wordSize_le_ambient : wordSize <= Nat.log2 bits.length + 1
+  blockSize : Nat
+  blockSize_pos : 0 < blockSize
+  blocks_flatten : SuccinctSpace.flattenPayloadWords blocks = bits
+  block_length_le :
+    forall {block : List Bool}, List.Mem block blocks ->
+      block.length <= blockSize
+  blockSize_le_wordSize : blockSize <= wordSize
+  block_code_width_le :
+    forall {block : List Bool}, List.Mem block blocks ->
+      fixedWeightPayloadBudget block <= wordSize
+  codeStore :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightBlockCodePayload blocks) wordSize
+  codeStore_aligned :
+    codeStore.store.words.toList = fixedWeightBlockCodeWords blocks
+  routePayload : List Bool
+  routeStore :
+    SuccinctSpace.BoundedPayloadWordStore routePayload wordSize
+  routePayload_length_eq : routePayload.length = overhead
+  accessRoute :
+    forall i,
+      FixedWeightAmbientComputedRRRAccessRoute bits blocks i
+  rankRoute :
+    forall target pos,
+      FixedWeightAmbientComputedRRRRankRoute bits blocks target pos
+  selectRoute :
+    forall target occurrence,
+      FixedWeightAmbientComputedRRRSelectRoute
+        bits blocks target occurrence
+  access_metadata_reads_le :
+    forall i, (accessRoute i).metadataReads.length <= routeCost
+  rank_metadata_reads_le :
+    forall target pos,
+      (rankRoute target pos).metadataReads.length <= routeCost
+  select_metadata_reads_le :
+    forall target occurrence,
+      (selectRoute target occurrence).metadataReads.length <= routeCost
+  local_query_cost_le :
+    forall {block : List Bool}, List.Mem block blocks ->
+      fixedWeightComputedRRRQueryCost block <= localQueryCost
+  route_plus_local_le : routeCost + localQueryCost <= queryCost
+
+namespace FixedWeightAmbientComputedRRRRouteTableData
+
+def toComputedRRRBlockData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientComputedRRRBlockData
+      bits blocks overhead wordSize routeCost localQueryCost queryCost where
+  wordSize_pos := data.wordSize_pos
+  wordSize_le_ambient := data.wordSize_le_ambient
+  blockSize := data.blockSize
+  blockSize_pos := data.blockSize_pos
+  blocks_flatten := data.blocks_flatten
+  block_length_le := data.block_length_le
+  blockSize_le_wordSize := data.blockSize_le_wordSize
+  block_code_width_le := data.block_code_width_le
+  codeStore := data.codeStore
+  codeStore_aligned := data.codeStore_aligned
+  auxPayload := data.routePayload
+  auxStore := data.routeStore
+  aux_length_eq := data.routePayload_length_eq
+  accessRoute := data.accessRoute
+  rankRoute := data.rankRoute
+  selectRoute := data.selectRoute
+  access_metadata_reads_le := data.access_metadata_reads_le
+  rank_metadata_reads_le := data.rank_metadata_reads_le
+  select_metadata_reads_le := data.select_metadata_reads_le
+  local_query_cost_le := data.local_query_cost_le
+  route_plus_local_le := data.route_plus_local_le
+
+def toAmbientBlockCompositionData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientBlockCompositionData
+      bits blocks overhead wordSize queryCost :=
+  data.toComputedRRRBlockData.toAmbientBlockCompositionData
+
+def accessMetadataReadsCosted
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (i : Nat) : Costed (List (Option (List Bool))) :=
+  boundedPayloadWordReadsCosted data.routeStore
+    (data.accessRoute i).metadataReads
+
+def rankMetadataReadsCosted
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (pos : Nat) : Costed (List (Option (List Bool))) :=
+  boundedPayloadWordReadsCosted data.routeStore
+    (data.rankRoute target pos).metadataReads
+
+def selectMetadataReadsCosted
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (occurrence : Nat) :
+    Costed (List (Option (List Bool))) :=
+  boundedPayloadWordReadsCosted data.routeStore
+    (data.selectRoute target occurrence).metadataReads
+
+def RouteTableReadProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    Prop :=
+  (forall i,
+    (data.accessMetadataReadsCosted i).cost <= routeCost /\
+      (data.accessMetadataReadsCosted i).erase =
+        boundedPayloadWordReadValues data.routeStore
+          (data.accessRoute i).metadataReads) /\
+    (forall target pos,
+      (data.rankMetadataReadsCosted target pos).cost <= routeCost /\
+        (data.rankMetadataReadsCosted target pos).erase =
+          boundedPayloadWordReadValues data.routeStore
+            (data.rankRoute target pos).metadataReads) /\
+    (forall target occurrence,
+      (data.selectMetadataReadsCosted target occurrence).cost <=
+          routeCost /\
+        (data.selectMetadataReadsCosted target occurrence).erase =
+          boundedPayloadWordReadValues data.routeStore
+            (data.selectRoute target occurrence).metadataReads)
+
+theorem route_table_read_profile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    data.RouteTableReadProfile := by
+  exact
+    ⟨(fun i => by
+        constructor
+        · dsimp [accessMetadataReadsCosted]
+          simpa using data.access_metadata_reads_le i
+        · simp [accessMetadataReadsCosted]),
+      (fun target pos => by
+        constructor
+        · dsimp [rankMetadataReadsCosted]
+          simpa using data.rank_metadata_reads_le target pos
+        · simp [rankMetadataReadsCosted]),
+      (fun target occurrence => by
+        constructor
+        · dsimp [selectMetadataReadsCosted]
+          simpa using data.select_metadata_reads_le target occurrence
+        · simp [selectMetadataReadsCosted])⟩
+
+def RouteTableProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    Prop :=
+  data.toComputedRRRBlockData.CompositionProfile /\
+    data.RouteTableReadProfile /\
+    data.routePayload.length = overhead /\
+    SuccinctSpace.flattenPayloadWords data.routeStore.store.words.toList =
+      data.routePayload /\
+    (forall {word : List Bool},
+      List.Mem word data.routeStore.store.words.toList ->
+        word.length <= wordSize) /\
+    (forall i,
+      let route := data.accessRoute i
+      (boundedPayloadWordReadValues
+          data.routeStore route.metadataReads).length <= routeCost) /\
+    (forall target pos,
+      let route := data.rankRoute target pos
+      (boundedPayloadWordReadValues
+          data.routeStore route.metadataReads).length <= routeCost) /\
+    (forall target occurrence,
+      let route := data.selectRoute target occurrence
+      (boundedPayloadWordReadValues
+          data.routeStore route.metadataReads).length <= routeCost) /\
+    (forall i, (data.accessRoute i).metadataReads.length <= routeCost) /\
+    (forall target pos,
+      (data.rankRoute target pos).metadataReads.length <= routeCost) /\
+    (forall target occurrence,
+      (data.selectRoute target occurrence).metadataReads.length <=
+        routeCost) /\
+    (forall {block : List Bool}, List.Mem block blocks ->
+      fixedWeightComputedRRRQueryCost block <= localQueryCost) /\
+    routeCost + localQueryCost <= queryCost
+
+theorem route_table_profile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    data.RouteTableProfile := by
+  exact
+    ⟨data.toComputedRRRBlockData.computed_rrr_block_composition_profile,
+      data.route_table_read_profile,
+      data.routePayload_length_eq,
+      data.routeStore.erases,
+      (fun hmem => data.routeStore.word_length_le_of_mem hmem),
+      (fun i => by
+        dsimp [boundedPayloadWordReadValues]
+        simpa using data.access_metadata_reads_le i),
+      (fun target pos => by
+        dsimp [boundedPayloadWordReadValues]
+        simpa using data.rank_metadata_reads_le target pos),
+      (fun target occurrence => by
+        dsimp [boundedPayloadWordReadValues]
+        simpa using data.select_metadata_reads_le target occurrence),
+      data.access_metadata_reads_le,
+      data.rank_metadata_reads_le,
+      data.select_metadata_reads_le,
+      data.local_query_cost_le,
+      data.route_plus_local_le⟩
+
+end FixedWeightAmbientComputedRRRRouteTableData
+
+/--
+Payload-backed route/class metadata tables whose local computed-RRR query cost
+is derived from a uniform block-size bound.
+
+This is the non-oracular constructor-oriented variant of
+`FixedWeightAmbientComputedRRRRouteTableData`: the caller supplies concrete
+route metadata and a proof that every block has length at most `blockSize`, and
+the local query-cost premise is generated from
+`fixedWeightComputedRRRQueryCost_le_blockSize`.
+-/
+structure FixedWeightAmbientComputedRRRBlockSizeRouteTableData
+    (bits : List Bool) (blocks : List (List Bool))
+    (overhead wordSize blockSize routeCost queryCost : Nat) where
+  wordSize_pos : 0 < wordSize
+  wordSize_le_ambient : wordSize <= Nat.log2 bits.length + 1
+  blockSize_pos : 0 < blockSize
+  blocks_flatten : SuccinctSpace.flattenPayloadWords blocks = bits
+  block_length_le :
+    forall {block : List Bool}, List.Mem block blocks ->
+      block.length <= blockSize
+  blockSize_le_wordSize : blockSize <= wordSize
+  block_code_width_le :
+    forall {block : List Bool}, List.Mem block blocks ->
+      fixedWeightPayloadBudget block <= wordSize
+  codeStore :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightBlockCodePayload blocks) wordSize
+  codeStore_aligned :
+    codeStore.store.words.toList = fixedWeightBlockCodeWords blocks
+  routePayload : List Bool
+  routeStore :
+    SuccinctSpace.BoundedPayloadWordStore routePayload wordSize
+  routePayload_length_eq : routePayload.length = overhead
+  accessRoute :
+    forall i,
+      FixedWeightAmbientComputedRRRAccessRoute bits blocks i
+  rankRoute :
+    forall target pos,
+      FixedWeightAmbientComputedRRRRankRoute bits blocks target pos
+  selectRoute :
+    forall target occurrence,
+      FixedWeightAmbientComputedRRRSelectRoute
+        bits blocks target occurrence
+  access_metadata_reads_le :
+    forall i, (accessRoute i).metadataReads.length <= routeCost
+  rank_metadata_reads_le :
+    forall target pos,
+      (rankRoute target pos).metadataReads.length <= routeCost
+  select_metadata_reads_le :
+    forall target occurrence,
+      (selectRoute target occurrence).metadataReads.length <= routeCost
+  route_plus_local_le :
+    routeCost + fixedWeightComputedRRRBlockSizeQueryCost blockSize <=
+      queryCost
+
+namespace FixedWeightAmbientComputedRRRBlockSizeRouteTableData
+
+def localQueryCost (blockSize : Nat) : Nat :=
+  fixedWeightComputedRRRBlockSizeQueryCost blockSize
+
+def toRouteTableData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize blockSize routeCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRBlockSizeRouteTableData
+        bits blocks overhead wordSize blockSize routeCost queryCost) :
+    FixedWeightAmbientComputedRRRRouteTableData
+      bits blocks overhead wordSize routeCost
+        (localQueryCost blockSize) queryCost where
+  wordSize_pos := data.wordSize_pos
+  wordSize_le_ambient := data.wordSize_le_ambient
+  blockSize := blockSize
+  blockSize_pos := data.blockSize_pos
+  blocks_flatten := data.blocks_flatten
+  block_length_le := data.block_length_le
+  blockSize_le_wordSize := data.blockSize_le_wordSize
+  block_code_width_le := data.block_code_width_le
+  codeStore := data.codeStore
+  codeStore_aligned := data.codeStore_aligned
+  routePayload := data.routePayload
+  routeStore := data.routeStore
+  routePayload_length_eq := data.routePayload_length_eq
+  accessRoute := data.accessRoute
+  rankRoute := data.rankRoute
+  selectRoute := data.selectRoute
+  access_metadata_reads_le := data.access_metadata_reads_le
+  rank_metadata_reads_le := data.rank_metadata_reads_le
+  select_metadata_reads_le := data.select_metadata_reads_le
+  local_query_cost_le := by
+    intro block hmem
+    exact
+      fixedWeightComputedRRRQueryCost_le_blockSize
+        (bits := block) (data.block_length_le hmem)
+  route_plus_local_le := data.route_plus_local_le
+
+def toAmbientBlockCompositionData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize blockSize routeCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRBlockSizeRouteTableData
+        bits blocks overhead wordSize blockSize routeCost queryCost) :
+    FixedWeightAmbientBlockCompositionData
+      bits blocks overhead wordSize queryCost :=
+  data.toRouteTableData.toAmbientBlockCompositionData
+
+def BlockSizeRouteTableProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize blockSize routeCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRBlockSizeRouteTableData
+        bits blocks overhead wordSize blockSize routeCost queryCost) :
+    Prop :=
+  data.toRouteTableData.RouteTableProfile /\
+    data.routePayload.length = overhead /\
+    (data.toAmbientBlockCompositionData).payload.length =
+      fixedWeightBlockPayloadBudget blocks + overhead /\
+    SuccinctSpace.flattenPayloadWords blocks = bits /\
+    (forall {block : List Bool}, List.Mem block blocks ->
+      fixedWeightComputedRRRQueryCost block <=
+        fixedWeightComputedRRRBlockSizeQueryCost blockSize) /\
+    routeCost + fixedWeightComputedRRRBlockSizeQueryCost blockSize <=
+      queryCost
+
+theorem block_size_route_table_profile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize blockSize routeCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRBlockSizeRouteTableData
+        bits blocks overhead wordSize blockSize routeCost queryCost) :
+    data.BlockSizeRouteTableProfile := by
+  exact
+    ⟨data.toRouteTableData.route_table_profile,
+      data.routePayload_length_eq,
+      data.toAmbientBlockCompositionData.payload_length,
+      data.blocks_flatten,
+      (fun hmem =>
+        fixedWeightComputedRRRQueryCost_le_blockSize
+          (bits := _) (data.block_length_le hmem)),
+      data.route_plus_local_le⟩
+
+end FixedWeightAmbientComputedRRRBlockSizeRouteTableData
+
+/--
+Family of ambient computed-RRR route/class metadata tables.
+
+The family-level overhead is the ambient `o(n)` envelope; each pointwise
+component stores the concrete route/class metadata payload in a bounded store
+and consumes it through `FixedWeightAmbientComputedRRRBlockData`.
+-/
+structure FixedWeightAmbientComputedRRRRouteTableFamily
+    (slots routeCost localQueryCost queryCost : Nat) where
+  wordSize : Nat -> Nat
+  blocks : List Bool -> List (List Bool)
+  component :
+    forall bits : List Bool,
+      FixedWeightAmbientComputedRRRRouteTableData
+        bits (blocks bits)
+        (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+        (wordSize bits.length) routeCost localQueryCost queryCost
+
+namespace FixedWeightAmbientComputedRRRRouteTableFamily
+
+def overhead (slots : Nat) : Nat -> Nat :=
+  fixedWeightAmbientBlockAuxiliaryOverhead slots
+
+def compressedOverhead (slots : Nat) (primaryOverhead : Nat -> Nat) :
+    Nat -> Nat :=
+  FixedWeightAmbientBlockCompositionFamily.compressedOverhead
+    slots primaryOverhead
+
+def componentData
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteTableFamily
+        slots routeCost localQueryCost queryCost)
+    (bits : List Bool) :
+    FixedWeightAmbientComputedRRRRouteTableData
+      bits (family.blocks bits)
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+      (family.wordSize bits.length) routeCost localQueryCost queryCost :=
+  family.component bits
+
+def directory
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteTableFamily
+        slots routeCost localQueryCost queryCost)
+    (bits : List Bool) :
+    FixedWeightAmbientBlockCompositionData
+      bits (family.blocks bits)
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+      (family.wordSize bits.length) queryCost :=
+  (family.componentData bits).toAmbientBlockCompositionData
+
+def toAmbientBlockCompositionFamily
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteTableFamily
+        slots routeCost localQueryCost queryCost) :
+    FixedWeightAmbientBlockCompositionFamily slots queryCost where
+  wordSize := family.wordSize
+  blocks := family.blocks
+  component bits := family.directory bits
+
+theorem route_table_family_profile
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteTableFamily
+        slots routeCost localQueryCost queryCost) :
+    SuccinctSpace.LittleOLinear (overhead slots) /\
+      forall bits : List Bool,
+        let data := family.componentData bits
+        data.RouteTableProfile /\
+          data.routePayload.length =
+            fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          ((family.directory bits).payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length) /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall i,
+            ((family.directory bits).accessCosted i).cost <=
+              queryCost) /\
+          (forall target pos,
+            ((family.directory bits).rankCosted target pos).cost <=
+              queryCost) /\
+          (forall target occurrence,
+            ((family.directory bits).selectCosted target occurrence).cost <=
+              queryCost) := by
+  constructor
+  · exact fixedWeightAmbientBlockAuxiliaryOverhead_littleO slots
+  · intro bits
+    let data := family.componentData bits
+    have hprofile := data.route_table_profile
+    exact
+      ⟨hprofile,
+        data.routePayload_length_eq,
+        (family.directory bits).payload_length,
+        data.blocks_flatten,
+        (fun i => (family.directory bits).accessCosted_cost_le i),
+        (fun target pos =>
+          (family.directory bits).rankCosted_cost_le target pos),
+        (fun target occurrence =>
+          (family.directory bits).selectCosted_cost_le
+            target occurrence)⟩
+
+theorem word_bounded_compressed_profile_of_primary_budget
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteTableFamily
+        slots routeCost localQueryCost queryCost)
+    (primaryOverhead : Nat -> Nat)
+    (hprimaryO : SuccinctSpace.LittleOLinear primaryOverhead)
+    (hprimary :
+      forall bits : List Bool,
+        fixedWeightBlockPayloadBudget (family.blocks bits) <=
+          fixedWeightPayloadBudget bits + primaryOverhead bits.length) :
+    SuccinctSpace.LittleOLinear
+        (compressedOverhead slots primaryOverhead) /\
+      forall bits : List Bool,
+        let routeData := family.componentData bits
+        let data := family.directory bits
+        routeData.RouteTableProfile /\
+          data.DirectoryProfile /\
+          data.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          data.payload.length <=
+            fixedWeightPayloadBudget bits +
+              compressedOverhead slots primaryOverhead bits.length /\
+          data.auxPayload.length =
+            fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word data.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word data.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (data.accessCosted i).cost <= queryCost /\
+              (data.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (data.rankCosted target pos).cost <= queryCost /\
+              (data.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (data.selectCosted target occurrence).cost <= queryCost /\
+              (data.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  have hcompressed :=
+    FixedWeightAmbientBlockCompositionFamily.word_bounded_compressed_profile_of_primary_budget
+      family.toAmbientBlockCompositionFamily primaryOverhead hprimaryO
+      (by
+        intro bits
+        exact hprimary bits)
+  constructor
+  · simpa [compressedOverhead] using hcompressed.1
+  · intro bits
+    constructor
+    · exact (family.componentData bits).route_table_profile
+    · simpa [directory, toAmbientBlockCompositionFamily, componentData,
+        compressedOverhead] using hcompressed.2 bits
+
+end FixedWeightAmbientComputedRRRRouteTableFamily
+
+/--
+Family of route/class metadata tables with a fixed ambient block-size cap.
+
+The local computed-RRR query bound is the explicit constant
+`2 ^ blockSize + blockSize + 2`; every pointwise component proves the block
+length discipline needed to discharge that bound.
+-/
+structure FixedWeightAmbientComputedRRRBlockSizeRouteTableFamily
+    (slots blockSize routeCost queryCost : Nat) where
+  wordSize : Nat -> Nat
+  blocks : List Bool -> List (List Bool)
+  component :
+    forall bits : List Bool,
+      FixedWeightAmbientComputedRRRBlockSizeRouteTableData
+        bits (blocks bits)
+        (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+        (wordSize bits.length) blockSize routeCost queryCost
+
+namespace FixedWeightAmbientComputedRRRBlockSizeRouteTableFamily
+
+def overhead (slots : Nat) : Nat -> Nat :=
+  fixedWeightAmbientBlockAuxiliaryOverhead slots
+
+def localQueryCost (blockSize : Nat) : Nat :=
+  fixedWeightComputedRRRBlockSizeQueryCost blockSize
+
+def compressedOverhead (slots : Nat) (primaryOverhead : Nat -> Nat) :
+    Nat -> Nat :=
+  FixedWeightAmbientComputedRRRRouteTableFamily.compressedOverhead
+    slots primaryOverhead
+
+def componentData
+    {slots blockSize routeCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRBlockSizeRouteTableFamily
+        slots blockSize routeCost queryCost)
+    (bits : List Bool) :
+    FixedWeightAmbientComputedRRRBlockSizeRouteTableData
+      bits (family.blocks bits)
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+      (family.wordSize bits.length) blockSize routeCost queryCost :=
+  family.component bits
+
+def toRouteTableFamily
+    {slots blockSize routeCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRBlockSizeRouteTableFamily
+        slots blockSize routeCost queryCost) :
+    FixedWeightAmbientComputedRRRRouteTableFamily
+      slots routeCost (localQueryCost blockSize) queryCost where
+  wordSize := family.wordSize
+  blocks := family.blocks
+  component bits := (family.componentData bits).toRouteTableData
+
+def directory
+    {slots blockSize routeCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRBlockSizeRouteTableFamily
+        slots blockSize routeCost queryCost)
+    (bits : List Bool) :
+    FixedWeightAmbientBlockCompositionData
+      bits (family.blocks bits)
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+      (family.wordSize bits.length) queryCost :=
+  FixedWeightAmbientComputedRRRRouteTableFamily.directory
+    family.toRouteTableFamily bits
+
+theorem block_size_route_table_family_profile
+    {slots blockSize routeCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRBlockSizeRouteTableFamily
+        slots blockSize routeCost queryCost) :
+    SuccinctSpace.LittleOLinear (overhead slots) /\
+      forall bits : List Bool,
+        let data := family.componentData bits
+        data.BlockSizeRouteTableProfile /\
+          ((family.directory bits).payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length) /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall {block : List Bool},
+            List.Mem block (family.blocks bits) ->
+              fixedWeightComputedRRRQueryCost block <=
+                localQueryCost blockSize) /\
+          (forall i,
+            ((family.directory bits).accessCosted i).cost <=
+              queryCost /\
+            ((family.directory bits).accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            ((family.directory bits).rankCosted target pos).cost <=
+              queryCost /\
+            ((family.directory bits).rankCosted target pos).erase =
+              Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            ((family.directory bits).selectCosted target occurrence).cost <=
+              queryCost /\
+            ((family.directory bits).selectCosted target occurrence).erase =
+              Succinct.select target bits occurrence) := by
+  constructor
+  · exact fixedWeightAmbientBlockAuxiliaryOverhead_littleO slots
+  · intro bits
+    let data := family.componentData bits
+    have hprofile := data.block_size_route_table_profile
+    exact
+      ⟨hprofile,
+        (family.directory bits).payload_length,
+        data.blocks_flatten,
+        (fun hmem =>
+          fixedWeightComputedRRRQueryCost_le_blockSize
+            (bits := _) (data.block_length_le hmem)),
+        (fun i =>
+          ⟨(family.directory bits).accessCosted_cost_le i,
+            (family.directory bits).accessCosted_erase i⟩),
+        (fun target pos =>
+          ⟨(family.directory bits).rankCosted_cost_le target pos,
+            (family.directory bits).rankCosted_erase target pos⟩),
+        (fun target occurrence =>
+          ⟨(family.directory bits).selectCosted_cost_le target occurrence,
+            (family.directory bits).selectCosted_erase
+              target occurrence⟩)⟩
+
+theorem word_bounded_compressed_profile_of_primary_budget
+    {slots blockSize routeCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRBlockSizeRouteTableFamily
+        slots blockSize routeCost queryCost)
+    (primaryOverhead : Nat -> Nat)
+    (hprimaryO : SuccinctSpace.LittleOLinear primaryOverhead)
+    (hprimary :
+      forall bits : List Bool,
+        fixedWeightBlockPayloadBudget (family.blocks bits) <=
+          fixedWeightPayloadBudget bits + primaryOverhead bits.length) :
+    SuccinctSpace.LittleOLinear
+        (compressedOverhead slots primaryOverhead) /\
+      forall bits : List Bool,
+        let blockSizeData := family.componentData bits
+        let routeData := blockSizeData.toRouteTableData
+        let data := family.directory bits
+        blockSizeData.BlockSizeRouteTableProfile /\
+          routeData.RouteTableProfile /\
+          data.DirectoryProfile /\
+          data.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          data.payload.length <=
+            fixedWeightPayloadBudget bits +
+              compressedOverhead slots primaryOverhead bits.length /\
+          data.auxPayload.length =
+            fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word data.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word data.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (data.accessCosted i).cost <= queryCost /\
+              (data.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (data.rankCosted target pos).cost <= queryCost /\
+              (data.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (data.selectCosted target occurrence).cost <= queryCost /\
+              (data.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  have hcompressed :=
+    FixedWeightAmbientComputedRRRRouteTableFamily.word_bounded_compressed_profile_of_primary_budget
+      family.toRouteTableFamily primaryOverhead hprimaryO
+      (by
+        intro bits
+        exact hprimary bits)
+  constructor
+  · simpa [compressedOverhead] using hcompressed.1
+  · intro bits
+    let blockSizeData := family.componentData bits
+    have hblock := blockSizeData.block_size_route_table_profile
+    have hroute := hcompressed.2 bits
+    exact
+      ⟨hblock,
+        by
+          simpa [toRouteTableFamily, componentData] using hroute.1,
+        by
+          simpa [directory, toRouteTableFamily, componentData,
+            compressedOverhead] using hroute.2⟩
+
+end FixedWeightAmbientComputedRRRBlockSizeRouteTableFamily
+
+/--
+Decoded access route fields recovered from charged route metadata.
+
+The semantic block witness remains in
+`FixedWeightAmbientComputedRRRAccessRoute`; this record names the runtime route
+fields that a concrete table decoder must produce from payload reads.
+-/
+structure FixedWeightAmbientComputedRRRDecodedAccessRoute where
+  blockIndex : Nat
+  offset : Nat
+
+/-- Decoded rank route fields recovered from charged route metadata. -/
+structure FixedWeightAmbientComputedRRRDecodedRankRoute where
+  blockIndex : Nat
+  localLimit : Nat
+  baseRank : Nat
+
+/-- Decoded select route fields recovered from charged route metadata. -/
+structure FixedWeightAmbientComputedRRRDecodedSelectRoute where
+  blockIndex : Nat
+  localOccurrence : Nat
+  blockStart : Nat
+
+def fixedWeightAmbientComputedRRRAccessRouteDecoded
+    {bits : List Bool} {blocks : List (List Bool)} {i : Nat}
+    (route : FixedWeightAmbientComputedRRRAccessRoute bits blocks i) :
+    FixedWeightAmbientComputedRRRDecodedAccessRoute where
+  blockIndex := route.blockIndex
+  offset := route.offset
+
+def fixedWeightAmbientComputedRRRRankRouteDecoded
+    {bits : List Bool} {blocks : List (List Bool)}
+    {target : Bool} {pos : Nat}
+    (route :
+      FixedWeightAmbientComputedRRRRankRoute bits blocks target pos) :
+    FixedWeightAmbientComputedRRRDecodedRankRoute where
+  blockIndex := route.blockIndex
+  localLimit := route.localLimit
+  baseRank := route.baseRank
+
+def fixedWeightAmbientComputedRRRSelectRouteDecoded
+    {bits : List Bool} {blocks : List (List Bool)}
+    {target : Bool} {occurrence : Nat}
+    (route :
+      FixedWeightAmbientComputedRRRSelectRoute
+        bits blocks target occurrence) :
+    FixedWeightAmbientComputedRRRDecodedSelectRoute where
+  blockIndex := route.blockIndex
+  localOccurrence := route.localOccurrence
+  blockStart := route.blockStart
+
+/--
+Route/class table data whose runtime route fields are decoded from charged
+metadata reads.
+
+This strengthens `FixedWeightAmbientComputedRRRRouteTableData` without changing
+its ambient consumer: the read schedules are explicit functions of the query,
+the charged route-store words are read through bounded-store kernels, and the
+decoder exactness fields connect those read values to the block index and
+local route parameters consumed by the ambient computed-RRR evaluator.
+-/
+structure FixedWeightAmbientComputedRRRDecodedRouteTableData
+    (bits : List Bool) (blocks : List (List Bool))
+    (overhead wordSize routeCost localQueryCost queryCost : Nat) where
+  wordSize_pos : 0 < wordSize
+  wordSize_le_ambient : wordSize <= Nat.log2 bits.length + 1
+  blockSize : Nat
+  blockSize_pos : 0 < blockSize
+  blocks_flatten : SuccinctSpace.flattenPayloadWords blocks = bits
+  block_length_le :
+    forall {block : List Bool}, List.Mem block blocks ->
+      block.length <= blockSize
+  blockSize_le_wordSize : blockSize <= wordSize
+  block_code_width_le :
+    forall {block : List Bool}, List.Mem block blocks ->
+      fixedWeightPayloadBudget block <= wordSize
+  codeStore :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightBlockCodePayload blocks) wordSize
+  codeStore_aligned :
+    codeStore.store.words.toList = fixedWeightBlockCodeWords blocks
+  routePayload : List Bool
+  routeStore :
+    SuccinctSpace.BoundedPayloadWordStore routePayload wordSize
+  routePayload_length_eq : routePayload.length = overhead
+  accessMetadataReads : Nat -> List Nat
+  rankMetadataReads : Bool -> Nat -> List Nat
+  selectMetadataReads : Bool -> Nat -> List Nat
+  accessRouteDecoder :
+    Nat -> List (Option (List Bool)) ->
+      FixedWeightAmbientComputedRRRDecodedAccessRoute
+  rankRouteDecoder :
+    Bool -> Nat -> List (Option (List Bool)) ->
+      FixedWeightAmbientComputedRRRDecodedRankRoute
+  selectRouteDecoder :
+    Bool -> Nat -> List (Option (List Bool)) ->
+      FixedWeightAmbientComputedRRRDecodedSelectRoute
+  accessRoute :
+    forall i,
+      FixedWeightAmbientComputedRRRAccessRoute bits blocks i
+  rankRoute :
+    forall target pos,
+      FixedWeightAmbientComputedRRRRankRoute bits blocks target pos
+  selectRoute :
+    forall target occurrence,
+      FixedWeightAmbientComputedRRRSelectRoute
+        bits blocks target occurrence
+  access_metadata_reads_le :
+    forall i, (accessMetadataReads i).length <= routeCost
+  rank_metadata_reads_le :
+    forall target pos,
+      (rankMetadataReads target pos).length <= routeCost
+  select_metadata_reads_le :
+    forall target occurrence,
+      (selectMetadataReads target occurrence).length <= routeCost
+  access_route_metadata_reads_eq :
+    forall i, (accessRoute i).metadataReads = accessMetadataReads i
+  rank_route_metadata_reads_eq :
+    forall target pos,
+      (rankRoute target pos).metadataReads = rankMetadataReads target pos
+  select_route_metadata_reads_eq :
+    forall target occurrence,
+      (selectRoute target occurrence).metadataReads =
+        selectMetadataReads target occurrence
+  access_route_decode_exact :
+    forall i,
+      accessRouteDecoder i
+          (boundedPayloadWordReadValues routeStore
+            (accessMetadataReads i)) =
+        fixedWeightAmbientComputedRRRAccessRouteDecoded (accessRoute i)
+  rank_route_decode_exact :
+    forall target pos,
+      rankRouteDecoder target pos
+          (boundedPayloadWordReadValues routeStore
+            (rankMetadataReads target pos)) =
+        fixedWeightAmbientComputedRRRRankRouteDecoded
+          (rankRoute target pos)
+  select_route_decode_exact :
+    forall target occurrence,
+      selectRouteDecoder target occurrence
+          (boundedPayloadWordReadValues routeStore
+            (selectMetadataReads target occurrence)) =
+        fixedWeightAmbientComputedRRRSelectRouteDecoded
+          (selectRoute target occurrence)
+  local_query_cost_le :
+    forall {block : List Bool}, List.Mem block blocks ->
+      fixedWeightComputedRRRQueryCost block <= localQueryCost
+  route_plus_local_le : routeCost + localQueryCost <= queryCost
+
+namespace FixedWeightAmbientComputedRRRDecodedRouteTableData
+
+def toRouteTableData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRDecodedRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientComputedRRRRouteTableData
+      bits blocks overhead wordSize routeCost localQueryCost queryCost where
+  wordSize_pos := data.wordSize_pos
+  wordSize_le_ambient := data.wordSize_le_ambient
+  blockSize := data.blockSize
+  blockSize_pos := data.blockSize_pos
+  blocks_flatten := data.blocks_flatten
+  block_length_le := data.block_length_le
+  blockSize_le_wordSize := data.blockSize_le_wordSize
+  block_code_width_le := data.block_code_width_le
+  codeStore := data.codeStore
+  codeStore_aligned := data.codeStore_aligned
+  routePayload := data.routePayload
+  routeStore := data.routeStore
+  routePayload_length_eq := data.routePayload_length_eq
+  accessRoute := data.accessRoute
+  rankRoute := data.rankRoute
+  selectRoute := data.selectRoute
+  access_metadata_reads_le := by
+    intro i
+    rw [data.access_route_metadata_reads_eq i]
+    exact data.access_metadata_reads_le i
+  rank_metadata_reads_le := by
+    intro target pos
+    rw [data.rank_route_metadata_reads_eq target pos]
+    exact data.rank_metadata_reads_le target pos
+  select_metadata_reads_le := by
+    intro target occurrence
+    rw [data.select_route_metadata_reads_eq target occurrence]
+    exact data.select_metadata_reads_le target occurrence
+  local_query_cost_le := data.local_query_cost_le
+  route_plus_local_le := data.route_plus_local_le
+
+def toAmbientBlockCompositionData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRDecodedRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientBlockCompositionData
+      bits blocks overhead wordSize queryCost :=
+  data.toRouteTableData.toAmbientBlockCompositionData
+
+def accessMetadataReadsCosted
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRDecodedRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (i : Nat) : Costed (List (Option (List Bool))) :=
+  boundedPayloadWordReadsCosted data.routeStore
+    (data.accessMetadataReads i)
+
+def rankMetadataReadsCosted
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRDecodedRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (pos : Nat) : Costed (List (Option (List Bool))) :=
+  boundedPayloadWordReadsCosted data.routeStore
+    (data.rankMetadataReads target pos)
+
+def selectMetadataReadsCosted
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRDecodedRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (occurrence : Nat) :
+    Costed (List (Option (List Bool))) :=
+  boundedPayloadWordReadsCosted data.routeStore
+    (data.selectMetadataReads target occurrence)
+
+def DecodedRouteTableProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRDecodedRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    Prop :=
+  data.toRouteTableData.RouteTableProfile /\
+    data.routePayload.length = overhead /\
+    SuccinctSpace.flattenPayloadWords data.routeStore.store.words.toList =
+      data.routePayload /\
+    (forall {word : List Bool},
+      List.Mem word data.routeStore.store.words.toList ->
+        word.length <= wordSize) /\
+    (forall i,
+      (data.accessMetadataReadsCosted i).cost <= routeCost /\
+        (data.accessMetadataReadsCosted i).erase =
+          boundedPayloadWordReadValues data.routeStore
+            (data.accessMetadataReads i) /\
+        data.accessRouteDecoder i
+            (data.accessMetadataReadsCosted i).erase =
+          fixedWeightAmbientComputedRRRAccessRouteDecoded
+            (data.accessRoute i) /\
+        (data.accessRoute i).metadataReads =
+          data.accessMetadataReads i) /\
+    (forall target pos,
+      (data.rankMetadataReadsCosted target pos).cost <= routeCost /\
+        (data.rankMetadataReadsCosted target pos).erase =
+          boundedPayloadWordReadValues data.routeStore
+            (data.rankMetadataReads target pos) /\
+        data.rankRouteDecoder target pos
+            (data.rankMetadataReadsCosted target pos).erase =
+          fixedWeightAmbientComputedRRRRankRouteDecoded
+            (data.rankRoute target pos) /\
+        (data.rankRoute target pos).metadataReads =
+          data.rankMetadataReads target pos) /\
+    (forall target occurrence,
+      (data.selectMetadataReadsCosted target occurrence).cost <=
+          routeCost /\
+        (data.selectMetadataReadsCosted target occurrence).erase =
+          boundedPayloadWordReadValues data.routeStore
+            (data.selectMetadataReads target occurrence) /\
+        data.selectRouteDecoder target occurrence
+            (data.selectMetadataReadsCosted target occurrence).erase =
+          fixedWeightAmbientComputedRRRSelectRouteDecoded
+            (data.selectRoute target occurrence) /\
+        (data.selectRoute target occurrence).metadataReads =
+          data.selectMetadataReads target occurrence) /\
+    (forall {block : List Bool}, List.Mem block blocks ->
+      fixedWeightComputedRRRQueryCost block <= localQueryCost) /\
+    routeCost + localQueryCost <= queryCost
+
+def DecodedMetadataReadProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRDecodedRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    Prop :=
+  (forall i,
+    (Costed.map (data.accessRouteDecoder i)
+        (data.accessMetadataReadsCosted i)).cost <= routeCost /\
+      (Costed.map (data.accessRouteDecoder i)
+        (data.accessMetadataReadsCosted i)).erase =
+        fixedWeightAmbientComputedRRRAccessRouteDecoded
+          (data.accessRoute i)) /\
+    (forall target pos,
+      (Costed.map (data.rankRouteDecoder target pos)
+          (data.rankMetadataReadsCosted target pos)).cost <=
+          routeCost /\
+        (Costed.map (data.rankRouteDecoder target pos)
+          (data.rankMetadataReadsCosted target pos)).erase =
+          fixedWeightAmbientComputedRRRRankRouteDecoded
+            (data.rankRoute target pos)) /\
+    (forall target occurrence,
+      (Costed.map (data.selectRouteDecoder target occurrence)
+          (data.selectMetadataReadsCosted target occurrence)).cost <=
+          routeCost /\
+        (Costed.map (data.selectRouteDecoder target occurrence)
+          (data.selectMetadataReadsCosted target occurrence)).erase =
+          fixedWeightAmbientComputedRRRSelectRouteDecoded
+            (data.selectRoute target occurrence))
+
+theorem decoded_metadata_read_profile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRDecodedRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    data.DecodedMetadataReadProfile := by
+  exact
+    ⟨(fun i => by
+        constructor
+        · dsimp [accessMetadataReadsCosted]
+          simpa using data.access_metadata_reads_le i
+        · simp [accessMetadataReadsCosted,
+            data.access_route_decode_exact i]),
+      (fun target pos => by
+        constructor
+        · dsimp [rankMetadataReadsCosted]
+          simpa using data.rank_metadata_reads_le target pos
+        · simp [rankMetadataReadsCosted,
+            data.rank_route_decode_exact target pos]),
+      (fun target occurrence => by
+        constructor
+        · dsimp [selectMetadataReadsCosted]
+          simpa using data.select_metadata_reads_le target occurrence
+        · simp [selectMetadataReadsCosted,
+            data.select_route_decode_exact target occurrence])⟩
+
+theorem decoded_route_table_profile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRDecodedRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    data.DecodedRouteTableProfile := by
+  exact
+    ⟨data.toRouteTableData.route_table_profile,
+      data.routePayload_length_eq,
+      data.routeStore.erases,
+      (fun hmem => data.routeStore.word_length_le_of_mem hmem),
+      (fun i => by
+        exact
+          ⟨by
+            dsimp [accessMetadataReadsCosted]
+            simpa using data.access_metadata_reads_le i,
+            by simp [accessMetadataReadsCosted],
+            by
+              simpa [accessMetadataReadsCosted] using
+                data.access_route_decode_exact i,
+            data.access_route_metadata_reads_eq i⟩),
+      (fun target pos => by
+        exact
+          ⟨by
+            dsimp [rankMetadataReadsCosted]
+            simpa using data.rank_metadata_reads_le target pos,
+            by simp [rankMetadataReadsCosted],
+            by
+              simpa [rankMetadataReadsCosted] using
+                data.rank_route_decode_exact target pos,
+            data.rank_route_metadata_reads_eq target pos⟩),
+      (fun target occurrence => by
+        exact
+          ⟨by
+            dsimp [selectMetadataReadsCosted]
+            simpa using data.select_metadata_reads_le
+              target occurrence,
+            by simp [selectMetadataReadsCosted],
+            by
+              simpa [selectMetadataReadsCosted] using
+                data.select_route_decode_exact target occurrence,
+            data.select_route_metadata_reads_eq target occurrence⟩),
+      data.local_query_cost_le,
+      data.route_plus_local_le⟩
+
+end FixedWeightAmbientComputedRRRDecodedRouteTableData
+
+/--
+Family of decoded route/class metadata tables for ambient computed-RRR blocks.
+
+This is the stricter route-table predecessor: it retains the same ambient
+block-composition directory but additionally proves that route fields are
+outputs of fixed decoders over charged metadata words.
+-/
+structure FixedWeightAmbientComputedRRRDecodedRouteTableFamily
+    (slots routeCost localQueryCost queryCost : Nat) where
+  wordSize : Nat -> Nat
+  blocks : List Bool -> List (List Bool)
+  component :
+    forall bits : List Bool,
+      FixedWeightAmbientComputedRRRDecodedRouteTableData
+        bits (blocks bits)
+        (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+        (wordSize bits.length) routeCost localQueryCost queryCost
+
+namespace FixedWeightAmbientComputedRRRDecodedRouteTableFamily
+
+def overhead (slots : Nat) : Nat -> Nat :=
+  fixedWeightAmbientBlockAuxiliaryOverhead slots
+
+def compressedOverhead (slots : Nat) (primaryOverhead : Nat -> Nat) :
+    Nat -> Nat :=
+  FixedWeightAmbientBlockCompositionFamily.compressedOverhead
+    slots primaryOverhead
+
+def componentData
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRDecodedRouteTableFamily
+        slots routeCost localQueryCost queryCost)
+    (bits : List Bool) :
+    FixedWeightAmbientComputedRRRDecodedRouteTableData
+      bits (family.blocks bits)
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+      (family.wordSize bits.length) routeCost localQueryCost queryCost :=
+  family.component bits
+
+def directory
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRDecodedRouteTableFamily
+        slots routeCost localQueryCost queryCost)
+    (bits : List Bool) :
+    FixedWeightAmbientBlockCompositionData
+      bits (family.blocks bits)
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+      (family.wordSize bits.length) queryCost :=
+  (family.componentData bits).toAmbientBlockCompositionData
+
+def toAmbientBlockCompositionFamily
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRDecodedRouteTableFamily
+        slots routeCost localQueryCost queryCost) :
+    FixedWeightAmbientBlockCompositionFamily slots queryCost where
+  wordSize := family.wordSize
+  blocks := family.blocks
+  component bits := family.directory bits
+
+theorem decoded_route_table_family_profile
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRDecodedRouteTableFamily
+        slots routeCost localQueryCost queryCost) :
+    SuccinctSpace.LittleOLinear (overhead slots) /\
+      forall bits : List Bool,
+        let data := family.componentData bits
+        data.DecodedRouteTableProfile /\
+          data.routePayload.length =
+            fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          ((family.directory bits).payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length) /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall i,
+            ((family.directory bits).accessCosted i).cost <=
+              queryCost) /\
+          (forall target pos,
+            ((family.directory bits).rankCosted target pos).cost <=
+              queryCost) /\
+          (forall target occurrence,
+            ((family.directory bits).selectCosted target occurrence).cost <=
+              queryCost) := by
+  constructor
+  · exact fixedWeightAmbientBlockAuxiliaryOverhead_littleO slots
+  · intro bits
+    let data := family.componentData bits
+    exact
+      ⟨data.decoded_route_table_profile,
+        data.routePayload_length_eq,
+        (family.directory bits).payload_length,
+        data.blocks_flatten,
+        (fun i => (family.directory bits).accessCosted_cost_le i),
+        (fun target pos =>
+          (family.directory bits).rankCosted_cost_le target pos),
+        (fun target occurrence =>
+          (family.directory bits).selectCosted_cost_le
+            target occurrence)⟩
+
+theorem word_bounded_compressed_profile_of_primary_budget
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRDecodedRouteTableFamily
+        slots routeCost localQueryCost queryCost)
+    (primaryOverhead : Nat -> Nat)
+    (hprimaryO : SuccinctSpace.LittleOLinear primaryOverhead)
+    (hprimary :
+      forall bits : List Bool,
+        fixedWeightBlockPayloadBudget (family.blocks bits) <=
+          fixedWeightPayloadBudget bits + primaryOverhead bits.length) :
+    SuccinctSpace.LittleOLinear
+        (compressedOverhead slots primaryOverhead) /\
+      forall bits : List Bool,
+        (family.componentData bits).DecodedRouteTableProfile /\
+          let data := family.directory bits
+          data.DirectoryProfile /\
+            data.payload.length =
+              fixedWeightBlockPayloadBudget (family.blocks bits) +
+                fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+            data.payload.length <=
+              fixedWeightPayloadBudget bits +
+                compressedOverhead slots primaryOverhead bits.length /\
+            data.auxPayload.length =
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+            SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+            (forall {word : List Bool},
+              List.Mem word data.codeStore.store.words.toList ->
+                word.length <= Nat.log2 bits.length + 1) /\
+            (forall {word : List Bool},
+              List.Mem word data.auxStore.store.words.toList ->
+                word.length <= Nat.log2 bits.length + 1) /\
+            (forall i,
+              (data.accessCosted i).cost <= queryCost /\
+                (data.accessCosted i).erase = bits[i]?) /\
+            (forall target pos,
+              (data.rankCosted target pos).cost <= queryCost /\
+                (data.rankCosted target pos).erase =
+                  Succinct.rankPrefix target bits pos) /\
+            (forall target occurrence,
+              (data.selectCosted target occurrence).cost <= queryCost /\
+                (data.selectCosted target occurrence).erase =
+                  Succinct.select target bits occurrence) := by
+  have hcompressed :=
+    FixedWeightAmbientBlockCompositionFamily.word_bounded_compressed_profile_of_primary_budget
+      family.toAmbientBlockCompositionFamily primaryOverhead hprimaryO
+      (by
+        intro bits
+        exact hprimary bits)
+  constructor
+  · simpa [compressedOverhead] using hcompressed.1
+  · intro bits
+    constructor
+    · exact (family.componentData bits).decoded_route_table_profile
+    · simpa [directory, toAmbientBlockCompositionFamily, componentData,
+        compressedOverhead] using hcompressed.2 bits
+
+end FixedWeightAmbientComputedRRRDecodedRouteTableFamily
+
+/-- Decode one fixed-width route metadata word read. -/
+def fixedWeightRouteNatFromReadValue : Option (List Bool) -> Nat
+  | some word => SuccinctSpace.bitsToNatLE word
+  | none => 0
+
+/-- Access-route decoder over two charged metadata words. -/
+def fixedWeightPackedRouteAccessDecoder
+    (readWords : List (Option (List Bool))) :
+    FixedWeightAmbientComputedRRRDecodedAccessRoute :=
+  match readWords with
+  | block? :: offset? :: _ =>
+      { blockIndex := fixedWeightRouteNatFromReadValue block?
+        offset := fixedWeightRouteNatFromReadValue offset? }
+  | _ => { blockIndex := 0, offset := 0 }
+
+/-- Rank-route decoder over three charged metadata words. -/
+def fixedWeightPackedRouteRankDecoder
+    (readWords : List (Option (List Bool))) :
+    FixedWeightAmbientComputedRRRDecodedRankRoute :=
+  match readWords with
+  | block? :: localLimit? :: baseRank? :: _ =>
+      { blockIndex := fixedWeightRouteNatFromReadValue block?
+        localLimit := fixedWeightRouteNatFromReadValue localLimit?
+        baseRank := fixedWeightRouteNatFromReadValue baseRank? }
+  | _ =>
+      { blockIndex := 0, localLimit := 0, baseRank := 0 }
+
+/-- Select-route decoder over three charged metadata words. -/
+def fixedWeightPackedRouteSelectDecoder
+    (readWords : List (Option (List Bool))) :
+    FixedWeightAmbientComputedRRRDecodedSelectRoute :=
+  match readWords with
+  | block? :: localOccurrence? :: blockStart? :: _ =>
+      { blockIndex := fixedWeightRouteNatFromReadValue block?
+        localOccurrence :=
+          fixedWeightRouteNatFromReadValue localOccurrence?
+        blockStart := fixedWeightRouteNatFromReadValue blockStart? }
+  | _ =>
+      { blockIndex := 0, localOccurrence := 0, blockStart := 0 }
+
+@[simp] theorem fixedWeightRouteNatFromReadValue_encoded
+    {fieldWidth value : Nat} (hvalue : value < 2 ^ fieldWidth) :
+    fixedWeightRouteNatFromReadValue
+        (some (SuccinctSpace.natToBitsLE fieldWidth value)) =
+      value := by
+  simp [fixedWeightRouteNatFromReadValue,
+    SuccinctSpace.bitsToNatLE_natToBitsLE_of_lt hvalue]
+
+/--
+Packed fixed-width route metadata words for ambient computed-RRR blocks.
+
+This is a concrete route/class metadata envelope: the route-store words read
+by each query are fixed-width encodings of the route fields, and the decoder is
+fixed code over the charged read values. It still relies on the semantic route
+records for correctness of the chosen route, but not for recovering the route
+fields from metadata reads.
+-/
+structure FixedWeightAmbientComputedRRRPackedRouteTableData
+    (bits : List Bool) (blocks : List (List Bool))
+    (overhead wordSize routeCost localQueryCost queryCost : Nat) where
+  routeData :
+    FixedWeightAmbientComputedRRRRouteTableData
+      bits blocks overhead wordSize routeCost localQueryCost queryCost
+  fieldWidth : Nat
+  fieldWidth_le_wordSize : fieldWidth <= wordSize
+  accessBlockSlot : Nat -> Nat
+  accessOffsetSlot : Nat -> Nat
+  rankBlockSlot : Bool -> Nat -> Nat
+  rankLocalLimitSlot : Bool -> Nat -> Nat
+  rankBaseRankSlot : Bool -> Nat -> Nat
+  selectBlockSlot : Bool -> Nat -> Nat
+  selectLocalOccurrenceSlot : Bool -> Nat -> Nat
+  selectBlockStartSlot : Bool -> Nat -> Nat
+  access_metadata_reads_eq :
+    forall i,
+      (routeData.accessRoute i).metadataReads =
+        [accessBlockSlot i, accessOffsetSlot i]
+  rank_metadata_reads_eq :
+    forall target pos,
+      (routeData.rankRoute target pos).metadataReads =
+        [rankBlockSlot target pos,
+          rankLocalLimitSlot target pos,
+          rankBaseRankSlot target pos]
+  select_metadata_reads_eq :
+    forall target occurrence,
+      (routeData.selectRoute target occurrence).metadataReads =
+        [selectBlockSlot target occurrence,
+          selectLocalOccurrenceSlot target occurrence,
+          selectBlockStartSlot target occurrence]
+  access_block_lt :
+    forall i, (routeData.accessRoute i).blockIndex < 2 ^ fieldWidth
+  access_offset_lt :
+    forall i, (routeData.accessRoute i).offset < 2 ^ fieldWidth
+  rank_block_lt :
+    forall target pos,
+      (routeData.rankRoute target pos).blockIndex < 2 ^ fieldWidth
+  rank_localLimit_lt :
+    forall target pos,
+      (routeData.rankRoute target pos).localLimit < 2 ^ fieldWidth
+  rank_baseRank_lt :
+    forall target pos,
+      (routeData.rankRoute target pos).baseRank < 2 ^ fieldWidth
+  select_block_lt :
+    forall target occurrence,
+      (routeData.selectRoute target occurrence).blockIndex < 2 ^ fieldWidth
+  select_localOccurrence_lt :
+    forall target occurrence,
+      (routeData.selectRoute target occurrence).localOccurrence <
+        2 ^ fieldWidth
+  select_blockStart_lt :
+    forall target occurrence,
+      (routeData.selectRoute target occurrence).blockStart < 2 ^ fieldWidth
+  access_block_word_eq :
+    forall i,
+      routeData.routeStore.store.words[accessBlockSlot i]? =
+        some (SuccinctSpace.natToBitsLE fieldWidth
+          (routeData.accessRoute i).blockIndex)
+  access_offset_word_eq :
+    forall i,
+      routeData.routeStore.store.words[accessOffsetSlot i]? =
+        some (SuccinctSpace.natToBitsLE fieldWidth
+          (routeData.accessRoute i).offset)
+  rank_block_word_eq :
+    forall target pos,
+      routeData.routeStore.store.words[rankBlockSlot target pos]? =
+        some (SuccinctSpace.natToBitsLE fieldWidth
+          (routeData.rankRoute target pos).blockIndex)
+  rank_localLimit_word_eq :
+    forall target pos,
+      routeData.routeStore.store.words[rankLocalLimitSlot target pos]? =
+        some (SuccinctSpace.natToBitsLE fieldWidth
+          (routeData.rankRoute target pos).localLimit)
+  rank_baseRank_word_eq :
+    forall target pos,
+      routeData.routeStore.store.words[rankBaseRankSlot target pos]? =
+        some (SuccinctSpace.natToBitsLE fieldWidth
+          (routeData.rankRoute target pos).baseRank)
+  select_block_word_eq :
+    forall target occurrence,
+      routeData.routeStore.store.words[selectBlockSlot target occurrence]? =
+        some (SuccinctSpace.natToBitsLE fieldWidth
+          (routeData.selectRoute target occurrence).blockIndex)
+  select_localOccurrence_word_eq :
+    forall target occurrence,
+      routeData.routeStore.store.words[
+          selectLocalOccurrenceSlot target occurrence]? =
+        some (SuccinctSpace.natToBitsLE fieldWidth
+          (routeData.selectRoute target occurrence).localOccurrence)
+  select_blockStart_word_eq :
+    forall target occurrence,
+      routeData.routeStore.store.words[
+          selectBlockStartSlot target occurrence]? =
+        some (SuccinctSpace.natToBitsLE fieldWidth
+          (routeData.selectRoute target occurrence).blockStart)
+
+namespace FixedWeightAmbientComputedRRRPackedRouteTableData
+
+def toDecodedRouteTableData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRPackedRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientComputedRRRDecodedRouteTableData
+      bits blocks overhead wordSize routeCost localQueryCost queryCost where
+  wordSize_pos := data.routeData.wordSize_pos
+  wordSize_le_ambient := data.routeData.wordSize_le_ambient
+  blockSize := data.routeData.blockSize
+  blockSize_pos := data.routeData.blockSize_pos
+  blocks_flatten := data.routeData.blocks_flatten
+  block_length_le := data.routeData.block_length_le
+  blockSize_le_wordSize := data.routeData.blockSize_le_wordSize
+  block_code_width_le := data.routeData.block_code_width_le
+  codeStore := data.routeData.codeStore
+  codeStore_aligned := data.routeData.codeStore_aligned
+  routePayload := data.routeData.routePayload
+  routeStore := data.routeData.routeStore
+  routePayload_length_eq := data.routeData.routePayload_length_eq
+  accessMetadataReads := fun i =>
+    (data.routeData.accessRoute i).metadataReads
+  rankMetadataReads := fun target pos =>
+    (data.routeData.rankRoute target pos).metadataReads
+  selectMetadataReads := fun target occurrence =>
+    (data.routeData.selectRoute target occurrence).metadataReads
+  accessRouteDecoder := fun _ readWords =>
+    fixedWeightPackedRouteAccessDecoder readWords
+  rankRouteDecoder := fun _ _ readWords =>
+    fixedWeightPackedRouteRankDecoder readWords
+  selectRouteDecoder := fun _ _ readWords =>
+    fixedWeightPackedRouteSelectDecoder readWords
+  accessRoute := data.routeData.accessRoute
+  rankRoute := data.routeData.rankRoute
+  selectRoute := data.routeData.selectRoute
+  access_metadata_reads_le := data.routeData.access_metadata_reads_le
+  rank_metadata_reads_le := data.routeData.rank_metadata_reads_le
+  select_metadata_reads_le := data.routeData.select_metadata_reads_le
+  access_route_metadata_reads_eq := by intro i; rfl
+  rank_route_metadata_reads_eq := by intro target pos; rfl
+  select_route_metadata_reads_eq := by intro target occurrence; rfl
+  access_route_decode_exact := by
+    intro i
+    simp [fixedWeightPackedRouteAccessDecoder,
+      boundedPayloadWordReadValues,
+      data.access_metadata_reads_eq i,
+      data.access_block_word_eq i,
+      data.access_offset_word_eq i,
+      data.access_block_lt i,
+      data.access_offset_lt i,
+      fixedWeightAmbientComputedRRRAccessRouteDecoded]
+  rank_route_decode_exact := by
+    intro target pos
+    simp [fixedWeightPackedRouteRankDecoder,
+      boundedPayloadWordReadValues,
+      data.rank_metadata_reads_eq target pos,
+      data.rank_block_word_eq target pos,
+      data.rank_localLimit_word_eq target pos,
+      data.rank_baseRank_word_eq target pos,
+      data.rank_block_lt target pos,
+      data.rank_localLimit_lt target pos,
+      data.rank_baseRank_lt target pos,
+      fixedWeightAmbientComputedRRRRankRouteDecoded]
+  select_route_decode_exact := by
+    intro target occurrence
+    simp [fixedWeightPackedRouteSelectDecoder,
+      boundedPayloadWordReadValues,
+      data.select_metadata_reads_eq target occurrence,
+      data.select_block_word_eq target occurrence,
+      data.select_localOccurrence_word_eq target occurrence,
+      data.select_blockStart_word_eq target occurrence,
+      data.select_block_lt target occurrence,
+      data.select_localOccurrence_lt target occurrence,
+      data.select_blockStart_lt target occurrence,
+      fixedWeightAmbientComputedRRRSelectRouteDecoded]
+  local_query_cost_le := data.routeData.local_query_cost_le
+  route_plus_local_le := data.routeData.route_plus_local_le
+
+def toAmbientBlockCompositionData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRPackedRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientBlockCompositionData
+      bits blocks overhead wordSize queryCost :=
+  data.toDecodedRouteTableData.toAmbientBlockCompositionData
+
+theorem access_packed_metadata_read_values_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRPackedRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (i : Nat) :
+    boundedPayloadWordReadValues data.routeData.routeStore
+        (data.routeData.accessRoute i).metadataReads =
+      [some (SuccinctSpace.natToBitsLE data.fieldWidth
+          (data.routeData.accessRoute i).blockIndex),
+       some (SuccinctSpace.natToBitsLE data.fieldWidth
+          (data.routeData.accessRoute i).offset)] := by
+  simp [boundedPayloadWordReadValues,
+    data.access_metadata_reads_eq i,
+    data.access_block_word_eq i,
+    data.access_offset_word_eq i]
+
+theorem rank_packed_metadata_read_values_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRPackedRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (pos : Nat) :
+    boundedPayloadWordReadValues data.routeData.routeStore
+        (data.routeData.rankRoute target pos).metadataReads =
+      [some (SuccinctSpace.natToBitsLE data.fieldWidth
+          (data.routeData.rankRoute target pos).blockIndex),
+       some (SuccinctSpace.natToBitsLE data.fieldWidth
+          (data.routeData.rankRoute target pos).localLimit),
+       some (SuccinctSpace.natToBitsLE data.fieldWidth
+          (data.routeData.rankRoute target pos).baseRank)] := by
+  simp [boundedPayloadWordReadValues,
+    data.rank_metadata_reads_eq target pos,
+    data.rank_block_word_eq target pos,
+    data.rank_localLimit_word_eq target pos,
+    data.rank_baseRank_word_eq target pos]
+
+theorem select_packed_metadata_read_values_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRPackedRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (occurrence : Nat) :
+    boundedPayloadWordReadValues data.routeData.routeStore
+        (data.routeData.selectRoute target occurrence).metadataReads =
+      [some (SuccinctSpace.natToBitsLE data.fieldWidth
+          (data.routeData.selectRoute target occurrence).blockIndex),
+       some (SuccinctSpace.natToBitsLE data.fieldWidth
+          (data.routeData.selectRoute target occurrence).localOccurrence),
+       some (SuccinctSpace.natToBitsLE data.fieldWidth
+          (data.routeData.selectRoute target occurrence).blockStart)] := by
+  simp [boundedPayloadWordReadValues,
+    data.select_metadata_reads_eq target occurrence,
+    data.select_block_word_eq target occurrence,
+    data.select_localOccurrence_word_eq target occurrence,
+    data.select_blockStart_word_eq target occurrence]
+
+def PackedRouteTableProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRPackedRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    Prop :=
+  data.toDecodedRouteTableData.DecodedRouteTableProfile /\
+    data.toDecodedRouteTableData.DecodedMetadataReadProfile /\
+    data.fieldWidth <= wordSize /\
+    (forall i,
+      (data.toDecodedRouteTableData.accessMetadataReadsCosted i).cost = 2 /\
+        (Costed.map (fun words =>
+            fixedWeightPackedRouteAccessDecoder words)
+          (data.toDecodedRouteTableData.accessMetadataReadsCosted i)).erase =
+          fixedWeightAmbientComputedRRRAccessRouteDecoded
+            (data.routeData.accessRoute i)) /\
+    (forall target pos,
+      (data.toDecodedRouteTableData.rankMetadataReadsCosted
+          target pos).cost = 3 /\
+        (Costed.map (fun words =>
+            fixedWeightPackedRouteRankDecoder words)
+          (data.toDecodedRouteTableData.rankMetadataReadsCosted
+            target pos)).erase =
+          fixedWeightAmbientComputedRRRRankRouteDecoded
+            (data.routeData.rankRoute target pos)) /\
+    (forall target occurrence,
+      (data.toDecodedRouteTableData.selectMetadataReadsCosted
+          target occurrence).cost = 3 /\
+        (Costed.map (fun words =>
+            fixedWeightPackedRouteSelectDecoder words)
+          (data.toDecodedRouteTableData.selectMetadataReadsCosted
+            target occurrence)).erase =
+          fixedWeightAmbientComputedRRRSelectRouteDecoded
+            (data.routeData.selectRoute target occurrence))
+
+theorem packed_route_table_profile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRPackedRouteTableData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    data.PackedRouteTableProfile := by
+  refine
+    ⟨data.toDecodedRouteTableData.decoded_route_table_profile,
+      data.toDecodedRouteTableData.decoded_metadata_read_profile,
+      data.fieldWidth_le_wordSize,
+      ?_,
+      ?_,
+      ?_⟩
+  · intro i
+    constructor
+    · simp [toDecodedRouteTableData,
+        FixedWeightAmbientComputedRRRDecodedRouteTableData.accessMetadataReadsCosted,
+        data.access_metadata_reads_eq i]
+    · simpa [toDecodedRouteTableData] using
+        (data.toDecodedRouteTableData.decoded_metadata_read_profile.1 i).2
+  · intro target pos
+    constructor
+    · simp [toDecodedRouteTableData,
+        FixedWeightAmbientComputedRRRDecodedRouteTableData.rankMetadataReadsCosted,
+        data.rank_metadata_reads_eq target pos]
+    · simpa [toDecodedRouteTableData] using
+        (data.toDecodedRouteTableData.decoded_metadata_read_profile.2.1
+          target pos).2
+  · intro target occurrence
+    constructor
+    · simp [toDecodedRouteTableData,
+        FixedWeightAmbientComputedRRRDecodedRouteTableData.selectMetadataReadsCosted,
+        data.select_metadata_reads_eq target occurrence]
+    · simpa [toDecodedRouteTableData] using
+        (data.toDecodedRouteTableData.decoded_metadata_read_profile.2.2
+          target occurrence).2
+
+end FixedWeightAmbientComputedRRRPackedRouteTableData
+
+/-- Family of packed fixed-width route/class metadata tables. -/
+structure FixedWeightAmbientComputedRRRPackedRouteTableFamily
+    (slots routeCost localQueryCost queryCost : Nat) where
+  wordSize : Nat -> Nat
+  blocks : List Bool -> List (List Bool)
+  component :
+    forall bits : List Bool,
+      FixedWeightAmbientComputedRRRPackedRouteTableData
+        bits (blocks bits)
+        (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+        (wordSize bits.length) routeCost localQueryCost queryCost
+
+namespace FixedWeightAmbientComputedRRRPackedRouteTableFamily
+
+def overhead (slots : Nat) : Nat -> Nat :=
+  fixedWeightAmbientBlockAuxiliaryOverhead slots
+
+def compressedOverhead (slots : Nat) (primaryOverhead : Nat -> Nat) :
+    Nat -> Nat :=
+  FixedWeightAmbientBlockCompositionFamily.compressedOverhead
+    slots primaryOverhead
+
+def componentData
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRPackedRouteTableFamily
+        slots routeCost localQueryCost queryCost)
+    (bits : List Bool) :
+    FixedWeightAmbientComputedRRRPackedRouteTableData
+      bits (family.blocks bits)
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+      (family.wordSize bits.length) routeCost localQueryCost queryCost :=
+  family.component bits
+
+def toDecodedRouteTableFamily
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRPackedRouteTableFamily
+        slots routeCost localQueryCost queryCost) :
+    FixedWeightAmbientComputedRRRDecodedRouteTableFamily
+      slots routeCost localQueryCost queryCost where
+  wordSize := family.wordSize
+  blocks := family.blocks
+  component bits := (family.componentData bits).toDecodedRouteTableData
+
+def directory
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRPackedRouteTableFamily
+        slots routeCost localQueryCost queryCost)
+    (bits : List Bool) :
+    FixedWeightAmbientBlockCompositionData
+      bits (family.blocks bits)
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+      (family.wordSize bits.length) queryCost :=
+  (family.componentData bits).toAmbientBlockCompositionData
+
+theorem packed_route_table_family_profile
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRPackedRouteTableFamily
+        slots routeCost localQueryCost queryCost) :
+    SuccinctSpace.LittleOLinear (overhead slots) /\
+      forall bits : List Bool,
+        let data := family.componentData bits
+        data.PackedRouteTableProfile /\
+          data.routeData.routePayload.length =
+            fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          ((family.directory bits).payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length) /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall i,
+            ((family.directory bits).accessCosted i).cost <=
+              queryCost) /\
+          (forall target pos,
+            ((family.directory bits).rankCosted target pos).cost <=
+              queryCost) /\
+          (forall target occurrence,
+            ((family.directory bits).selectCosted target occurrence).cost <=
+              queryCost) := by
+  constructor
+  · exact fixedWeightAmbientBlockAuxiliaryOverhead_littleO slots
+  · intro bits
+    let data := family.componentData bits
+    exact
+      ⟨data.packed_route_table_profile,
+        data.routeData.routePayload_length_eq,
+        (family.directory bits).payload_length,
+        data.routeData.blocks_flatten,
+        (fun i => (family.directory bits).accessCosted_cost_le i),
+        (fun target pos =>
+          (family.directory bits).rankCosted_cost_le target pos),
+        (fun target occurrence =>
+          (family.directory bits).selectCosted_cost_le
+            target occurrence)⟩
+
+theorem word_bounded_compressed_profile_of_primary_budget
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRPackedRouteTableFamily
+        slots routeCost localQueryCost queryCost)
+    (primaryOverhead : Nat -> Nat)
+    (hprimaryO : SuccinctSpace.LittleOLinear primaryOverhead)
+    (hprimary :
+      forall bits : List Bool,
+        fixedWeightBlockPayloadBudget (family.blocks bits) <=
+          fixedWeightPayloadBudget bits + primaryOverhead bits.length) :
+    SuccinctSpace.LittleOLinear
+        (compressedOverhead slots primaryOverhead) /\
+      forall bits : List Bool,
+        (family.componentData bits).PackedRouteTableProfile /\
+          let data := family.directory bits
+          data.DirectoryProfile /\
+            data.payload.length =
+              fixedWeightBlockPayloadBudget (family.blocks bits) +
+                fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+            data.payload.length <=
+              fixedWeightPayloadBudget bits +
+                compressedOverhead slots primaryOverhead bits.length /\
+            data.auxPayload.length =
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+            SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+            (forall {word : List Bool},
+              List.Mem word data.codeStore.store.words.toList ->
+                word.length <= Nat.log2 bits.length + 1) /\
+            (forall {word : List Bool},
+              List.Mem word data.auxStore.store.words.toList ->
+                word.length <= Nat.log2 bits.length + 1) /\
+            (forall i,
+              (data.accessCosted i).cost <= queryCost /\
+                (data.accessCosted i).erase = bits[i]?) /\
+            (forall target pos,
+              (data.rankCosted target pos).cost <= queryCost /\
+                (data.rankCosted target pos).erase =
+                  Succinct.rankPrefix target bits pos) /\
+            (forall target occurrence,
+              (data.selectCosted target occurrence).cost <= queryCost /\
+                (data.selectCosted target occurrence).erase =
+                  Succinct.select target bits occurrence) := by
+  have hcompressed :=
+    FixedWeightAmbientComputedRRRDecodedRouteTableFamily.word_bounded_compressed_profile_of_primary_budget
+      family.toDecodedRouteTableFamily primaryOverhead hprimaryO
+      (by
+        intro bits
+        exact hprimary bits)
+  constructor
+  · simpa [compressedOverhead,
+      FixedWeightAmbientComputedRRRDecodedRouteTableFamily.compressedOverhead]
+      using hcompressed.1
+  · intro bits
+    constructor
+    · exact (family.componentData bits).packed_route_table_profile
+    · simpa [directory, toDecodedRouteTableFamily, componentData,
+        FixedWeightAmbientComputedRRRDecodedRouteTableFamily.directory,
+        FixedWeightAmbientComputedRRRDecodedRouteTableFamily.componentData,
+        FixedWeightAmbientComputedRRRDecodedRouteTableFamily.compressedOverhead,
+        compressedOverhead]
+        using (hcompressed.2 bits).2
+
+end FixedWeightAmbientComputedRRRPackedRouteTableFamily
+
+theorem fixedWidthNatTableOfEntries_words_toList
+    (entries : List Nat) (width : Nat)
+    (hbound :
+      forall {entry : Nat}, List.Mem entry entries -> entry < 2 ^ width) :
+    (SuccinctSpace.FixedWidthNatTable.ofEntries
+        entries width hbound).store.words.toList =
+      entries.map (SuccinctSpace.natToBitsLE width) := by
+  rfl
+
+/--
+Canonical fixed-width route-field table constructor for ambient computed-RRR.
+
+The previous packed route layer assumed per-slot word equations. This layer
+derives those equations from one canonical `FixedWidthNatTable.ofEntries`
+payload table aligned with the route store.
+-/
+structure FixedWeightAmbientComputedRRRRouteFieldTablesData
+    (bits : List Bool) (blocks : List (List Bool))
+    (overhead wordSize routeCost localQueryCost queryCost : Nat) where
+  routeData :
+    FixedWeightAmbientComputedRRRRouteTableData
+      bits blocks overhead wordSize routeCost localQueryCost queryCost
+  fieldWidth : Nat
+  fieldWidth_le_wordSize : fieldWidth <= wordSize
+  routeFieldEntries : List Nat
+  routeFieldEntries_bound :
+    forall {entry : Nat}, List.Mem entry routeFieldEntries ->
+      entry < 2 ^ fieldWidth
+  routeStore_words_eq :
+    routeData.routeStore.store.words.toList =
+      (SuccinctSpace.FixedWidthNatTable.ofEntries
+        routeFieldEntries fieldWidth routeFieldEntries_bound).store.words.toList
+  accessBlockSlot : Nat -> Nat
+  accessOffsetSlot : Nat -> Nat
+  rankBlockSlot : Bool -> Nat -> Nat
+  rankLocalLimitSlot : Bool -> Nat -> Nat
+  rankBaseRankSlot : Bool -> Nat -> Nat
+  selectBlockSlot : Bool -> Nat -> Nat
+  selectLocalOccurrenceSlot : Bool -> Nat -> Nat
+  selectBlockStartSlot : Bool -> Nat -> Nat
+  access_metadata_reads_eq :
+    forall i,
+      (routeData.accessRoute i).metadataReads =
+        [accessBlockSlot i, accessOffsetSlot i]
+  rank_metadata_reads_eq :
+    forall target pos,
+      (routeData.rankRoute target pos).metadataReads =
+        [rankBlockSlot target pos,
+          rankLocalLimitSlot target pos,
+          rankBaseRankSlot target pos]
+  select_metadata_reads_eq :
+    forall target occurrence,
+      (routeData.selectRoute target occurrence).metadataReads =
+        [selectBlockSlot target occurrence,
+          selectLocalOccurrenceSlot target occurrence,
+          selectBlockStartSlot target occurrence]
+  access_block_entry_eq :
+    forall i,
+      routeFieldEntries[accessBlockSlot i]? =
+        some (routeData.accessRoute i).blockIndex
+  access_offset_entry_eq :
+    forall i,
+      routeFieldEntries[accessOffsetSlot i]? =
+        some (routeData.accessRoute i).offset
+  rank_block_entry_eq :
+    forall target pos,
+      routeFieldEntries[rankBlockSlot target pos]? =
+        some (routeData.rankRoute target pos).blockIndex
+  rank_localLimit_entry_eq :
+    forall target pos,
+      routeFieldEntries[rankLocalLimitSlot target pos]? =
+        some (routeData.rankRoute target pos).localLimit
+  rank_baseRank_entry_eq :
+    forall target pos,
+      routeFieldEntries[rankBaseRankSlot target pos]? =
+        some (routeData.rankRoute target pos).baseRank
+  select_block_entry_eq :
+    forall target occurrence,
+      routeFieldEntries[selectBlockSlot target occurrence]? =
+        some (routeData.selectRoute target occurrence).blockIndex
+  select_localOccurrence_entry_eq :
+    forall target occurrence,
+      routeFieldEntries[selectLocalOccurrenceSlot target occurrence]? =
+        some (routeData.selectRoute target occurrence).localOccurrence
+  select_blockStart_entry_eq :
+    forall target occurrence,
+      routeFieldEntries[selectBlockStartSlot target occurrence]? =
+        some (routeData.selectRoute target occurrence).blockStart
+
+namespace FixedWeightAmbientComputedRRRRouteFieldTablesData
+
+def routeFieldTable
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTablesData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    SuccinctSpace.FixedWidthNatTable
+      data.routeFieldEntries data.fieldWidth :=
+  SuccinctSpace.FixedWidthNatTable.ofEntries
+    data.routeFieldEntries data.fieldWidth data.routeFieldEntries_bound
+
+theorem routeFieldTable_words_toList
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTablesData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    data.routeFieldTable.store.words.toList =
+      data.routeFieldEntries.map
+        (SuccinctSpace.natToBitsLE data.fieldWidth) := by
+  exact fixedWidthNatTableOfEntries_words_toList
+    data.routeFieldEntries data.fieldWidth data.routeFieldEntries_bound
+
+theorem routeFieldEntry_lt_of_get?
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTablesData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    {slot value : Nat}
+    (hget : data.routeFieldEntries[slot]? = some value) :
+    value < 2 ^ data.fieldWidth := by
+  exact data.routeFieldEntries_bound (List.mem_of_getElem? hget)
+
+theorem routeStore_word_eq_of_entry_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTablesData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    {slot value : Nat}
+    (hget : data.routeFieldEntries[slot]? = some value) :
+    data.routeData.routeStore.store.words[slot]? =
+      some (SuccinctSpace.natToBitsLE data.fieldWidth value) := by
+  have hlist :
+      data.routeData.routeStore.store.words.toList[slot]? =
+        some (SuccinctSpace.natToBitsLE data.fieldWidth value) := by
+    rw [data.routeStore_words_eq,
+      fixedWidthNatTableOfEntries_words_toList
+        data.routeFieldEntries data.fieldWidth
+        data.routeFieldEntries_bound]
+    simp [List.getElem?_map, hget]
+  simpa [Array.getElem?_toList] using hlist
+
+def toPackedRouteTableData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTablesData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientComputedRRRPackedRouteTableData
+      bits blocks overhead wordSize routeCost localQueryCost queryCost where
+  routeData := data.routeData
+  fieldWidth := data.fieldWidth
+  fieldWidth_le_wordSize := data.fieldWidth_le_wordSize
+  accessBlockSlot := data.accessBlockSlot
+  accessOffsetSlot := data.accessOffsetSlot
+  rankBlockSlot := data.rankBlockSlot
+  rankLocalLimitSlot := data.rankLocalLimitSlot
+  rankBaseRankSlot := data.rankBaseRankSlot
+  selectBlockSlot := data.selectBlockSlot
+  selectLocalOccurrenceSlot := data.selectLocalOccurrenceSlot
+  selectBlockStartSlot := data.selectBlockStartSlot
+  access_metadata_reads_eq := data.access_metadata_reads_eq
+  rank_metadata_reads_eq := data.rank_metadata_reads_eq
+  select_metadata_reads_eq := data.select_metadata_reads_eq
+  access_block_lt := fun i =>
+    data.routeFieldEntry_lt_of_get? (data.access_block_entry_eq i)
+  access_offset_lt := fun i =>
+    data.routeFieldEntry_lt_of_get? (data.access_offset_entry_eq i)
+  rank_block_lt := fun target pos =>
+    data.routeFieldEntry_lt_of_get?
+      (data.rank_block_entry_eq target pos)
+  rank_localLimit_lt := fun target pos =>
+    data.routeFieldEntry_lt_of_get?
+      (data.rank_localLimit_entry_eq target pos)
+  rank_baseRank_lt := fun target pos =>
+    data.routeFieldEntry_lt_of_get?
+      (data.rank_baseRank_entry_eq target pos)
+  select_block_lt := fun target occurrence =>
+    data.routeFieldEntry_lt_of_get?
+      (data.select_block_entry_eq target occurrence)
+  select_localOccurrence_lt := fun target occurrence =>
+    data.routeFieldEntry_lt_of_get?
+      (data.select_localOccurrence_entry_eq target occurrence)
+  select_blockStart_lt := fun target occurrence =>
+    data.routeFieldEntry_lt_of_get?
+      (data.select_blockStart_entry_eq target occurrence)
+  access_block_word_eq := fun i =>
+    data.routeStore_word_eq_of_entry_eq
+      (data.access_block_entry_eq i)
+  access_offset_word_eq := fun i =>
+    data.routeStore_word_eq_of_entry_eq
+      (data.access_offset_entry_eq i)
+  rank_block_word_eq := fun target pos =>
+    data.routeStore_word_eq_of_entry_eq
+      (data.rank_block_entry_eq target pos)
+  rank_localLimit_word_eq := fun target pos =>
+    data.routeStore_word_eq_of_entry_eq
+      (data.rank_localLimit_entry_eq target pos)
+  rank_baseRank_word_eq := fun target pos =>
+    data.routeStore_word_eq_of_entry_eq
+      (data.rank_baseRank_entry_eq target pos)
+  select_block_word_eq := fun target occurrence =>
+    data.routeStore_word_eq_of_entry_eq
+      (data.select_block_entry_eq target occurrence)
+  select_localOccurrence_word_eq := fun target occurrence =>
+    data.routeStore_word_eq_of_entry_eq
+      (data.select_localOccurrence_entry_eq target occurrence)
+  select_blockStart_word_eq := fun target occurrence =>
+    data.routeStore_word_eq_of_entry_eq
+      (data.select_blockStart_entry_eq target occurrence)
+
+def toAmbientBlockCompositionData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTablesData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientBlockCompositionData
+      bits blocks overhead wordSize queryCost :=
+  data.toPackedRouteTableData.toAmbientBlockCompositionData
+
+def RouteFieldTablesProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTablesData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    Prop :=
+  data.toPackedRouteTableData.PackedRouteTableProfile /\
+    data.routeFieldTable.payload.length =
+      data.routeFieldEntries.length * data.fieldWidth /\
+    SuccinctSpace.flattenPayloadWords
+        data.routeFieldTable.store.words.toList =
+      data.routeFieldTable.payload /\
+    data.routeData.routeStore.store.words.toList =
+      data.routeFieldTable.store.words.toList
+
+theorem route_field_tables_profile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTablesData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    data.RouteFieldTablesProfile := by
+  exact
+    ⟨data.toPackedRouteTableData.packed_route_table_profile,
+      data.routeFieldTable.payload_length,
+      data.routeFieldTable.store.payload_eq_words_join,
+      data.routeStore_words_eq⟩
+
+theorem route_field_tables_packed_profile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTablesData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    data.RouteFieldTablesProfile := by
+  exact data.route_field_tables_profile
+
+end FixedWeightAmbientComputedRRRRouteFieldTablesData
+
+/-- Family of canonical fixed-width route-field table constructors. -/
+structure FixedWeightAmbientComputedRRRRouteFieldTablesFamily
+    (slots routeCost localQueryCost queryCost : Nat) where
+  wordSize : Nat -> Nat
+  blocks : List Bool -> List (List Bool)
+  component :
+    forall bits : List Bool,
+      FixedWeightAmbientComputedRRRRouteFieldTablesData
+        bits (blocks bits)
+        (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+        (wordSize bits.length) routeCost localQueryCost queryCost
+
+namespace FixedWeightAmbientComputedRRRRouteFieldTablesFamily
+
+def overhead (slots : Nat) : Nat -> Nat :=
+  fixedWeightAmbientBlockAuxiliaryOverhead slots
+
+def compressedOverhead (slots : Nat) (primaryOverhead : Nat -> Nat) :
+    Nat -> Nat :=
+  FixedWeightAmbientBlockCompositionFamily.compressedOverhead
+    slots primaryOverhead
+
+def componentData
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTablesFamily
+        slots routeCost localQueryCost queryCost)
+    (bits : List Bool) :
+    FixedWeightAmbientComputedRRRRouteFieldTablesData
+      bits (family.blocks bits)
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+      (family.wordSize bits.length) routeCost localQueryCost queryCost :=
+  family.component bits
+
+def toPackedRouteTableFamily
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTablesFamily
+        slots routeCost localQueryCost queryCost) :
+    FixedWeightAmbientComputedRRRPackedRouteTableFamily
+      slots routeCost localQueryCost queryCost where
+  wordSize := family.wordSize
+  blocks := family.blocks
+  component bits := (family.componentData bits).toPackedRouteTableData
+
+def directory
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTablesFamily
+        slots routeCost localQueryCost queryCost)
+    (bits : List Bool) :
+    FixedWeightAmbientBlockCompositionData
+      bits (family.blocks bits)
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+      (family.wordSize bits.length) queryCost :=
+  (family.componentData bits).toAmbientBlockCompositionData
+
+theorem route_field_tables_family_profile
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTablesFamily
+        slots routeCost localQueryCost queryCost) :
+    SuccinctSpace.LittleOLinear (overhead slots) /\
+      forall bits : List Bool,
+        let data := family.componentData bits
+        data.RouteFieldTablesProfile /\
+          data.routeData.routePayload.length =
+            fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          ((family.directory bits).payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length) /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall i,
+            ((family.directory bits).accessCosted i).cost <=
+              queryCost) /\
+          (forall target pos,
+            ((family.directory bits).rankCosted target pos).cost <=
+              queryCost) /\
+          (forall target occurrence,
+            ((family.directory bits).selectCosted target occurrence).cost <=
+              queryCost) := by
+  constructor
+  · exact fixedWeightAmbientBlockAuxiliaryOverhead_littleO slots
+  · intro bits
+    let data := family.componentData bits
+    exact
+      ⟨data.route_field_tables_profile,
+        data.routeData.routePayload_length_eq,
+        (family.directory bits).payload_length,
+        data.routeData.blocks_flatten,
+        (fun i => (family.directory bits).accessCosted_cost_le i),
+        (fun target pos =>
+          (family.directory bits).rankCosted_cost_le target pos),
+        (fun target occurrence =>
+          (family.directory bits).selectCosted_cost_le
+            target occurrence)⟩
+
+theorem word_bounded_compressed_profile_of_primary_budget
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTablesFamily
+        slots routeCost localQueryCost queryCost)
+    (primaryOverhead : Nat -> Nat)
+    (hprimaryO : SuccinctSpace.LittleOLinear primaryOverhead)
+    (hprimary :
+      forall bits : List Bool,
+        fixedWeightBlockPayloadBudget (family.blocks bits) <=
+          fixedWeightPayloadBudget bits + primaryOverhead bits.length) :
+    SuccinctSpace.LittleOLinear
+        (compressedOverhead slots primaryOverhead) /\
+      forall bits : List Bool,
+        (family.componentData bits).RouteFieldTablesProfile /\
+          let data := family.directory bits
+          data.DirectoryProfile /\
+            data.payload.length =
+              fixedWeightBlockPayloadBudget (family.blocks bits) +
+                fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+            data.payload.length <=
+              fixedWeightPayloadBudget bits +
+                compressedOverhead slots primaryOverhead bits.length /\
+            data.auxPayload.length =
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+            SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+            (forall {word : List Bool},
+              List.Mem word data.codeStore.store.words.toList ->
+                word.length <= Nat.log2 bits.length + 1) /\
+            (forall {word : List Bool},
+              List.Mem word data.auxStore.store.words.toList ->
+                word.length <= Nat.log2 bits.length + 1) /\
+            (forall i,
+              (data.accessCosted i).cost <= queryCost /\
+                (data.accessCosted i).erase = bits[i]?) /\
+            (forall target pos,
+              (data.rankCosted target pos).cost <= queryCost /\
+                (data.rankCosted target pos).erase =
+                  Succinct.rankPrefix target bits pos) /\
+            (forall target occurrence,
+              (data.selectCosted target occurrence).cost <= queryCost /\
+                (data.selectCosted target occurrence).erase =
+                  Succinct.select target bits occurrence) := by
+  have hcompressed :=
+    FixedWeightAmbientComputedRRRPackedRouteTableFamily.word_bounded_compressed_profile_of_primary_budget
+      family.toPackedRouteTableFamily primaryOverhead hprimaryO
+      (by
+        intro bits
+        exact hprimary bits)
+  constructor
+  · simpa [compressedOverhead,
+      FixedWeightAmbientComputedRRRPackedRouteTableFamily.compressedOverhead]
+      using hcompressed.1
+  · intro bits
+    constructor
+    · exact (family.componentData bits).route_field_tables_profile
+    · simpa [directory, toPackedRouteTableFamily, componentData,
+        FixedWeightAmbientComputedRRRPackedRouteTableFamily.directory,
+        FixedWeightAmbientComputedRRRPackedRouteTableFamily.componentData,
+        FixedWeightAmbientComputedRRRPackedRouteTableFamily.compressedOverhead,
+        compressedOverhead]
+        using (hcompressed.2 bits).2
+
+end FixedWeightAmbientComputedRRRRouteFieldTablesFamily
+
+theorem list_getElem?_append_middle_of_get?
+    {α : Type} (pre mid post : List α) {i : Nat} {x : α}
+    (hget : mid[i]? = some x) :
+    (pre ++ mid ++ post)[pre.length + i]? = some x := by
+  have hi : i < mid.length := (List.getElem?_eq_some_iff.mp hget).1
+  have hpreMid : pre.length + i < (pre ++ mid).length := by
+    simp [List.length_append]
+    omega
+  rw [List.getElem?_append_left hpreMid]
+  rw [List.getElem?_append_right (by omega)]
+  have hsub : pre.length + i - pre.length = i := by omega
+  rw [hsub]
+  exact hget
+
+theorem boundedPayloadWordStore_get?_of_words_append_middle
+    {payload : List Bool} {wordSize : Nat}
+    (store : SuccinctSpace.BoundedPayloadWordStore payload wordSize)
+    {pre mid post : List (List Bool)} {localSlot : Nat}
+    {word : List Bool}
+    (hwords : store.store.words.toList = pre ++ mid ++ post)
+    (hlocal : mid[localSlot]? = some word) :
+    store.store.words[pre.length + localSlot]? = some word := by
+  have hlist :
+      store.store.words.toList[pre.length + localSlot]? =
+        some word := by
+    rw [hwords]
+    exact list_getElem?_append_middle_of_get? pre mid post hlocal
+  simpa [Array.getElem?_toList] using hlist
+
+def fixedWeightRouteFieldTableWords
+    (fieldWidth : Nat) (entries : List Nat) : List (List Bool) :=
+  entries.map (SuccinctSpace.natToBitsLE fieldWidth)
+
+theorem fixedWeightRouteFieldTableWords_get?
+    {fieldWidth : Nat} {entries : List Nat} {slot value : Nat}
+    (hget : entries[slot]? = some value) :
+    (fixedWeightRouteFieldTableWords fieldWidth entries)[slot]? =
+      some (SuccinctSpace.natToBitsLE fieldWidth value) := by
+  simp [fixedWeightRouteFieldTableWords, List.getElem?_map, hget]
+
+theorem fixedWeightRouteFieldTableWords_eq_ofEntries
+    (fieldWidth : Nat) (entries : List Nat)
+    (hbound :
+      forall {entry : Nat}, List.Mem entry entries ->
+        entry < 2 ^ fieldWidth) :
+    fixedWeightRouteFieldTableWords fieldWidth entries =
+      (SuccinctSpace.FixedWidthNatTable.ofEntries
+        entries fieldWidth hbound).store.words.toList := by
+  rw [fixedWidthNatTableOfEntries_words_toList]
+  rfl
+
+theorem fixedWeightRouteFieldTablePayload_length
+    (fieldWidth : Nat) (entries : List Nat) :
+    (SuccinctSpace.flattenPayloadWords
+        (fixedWeightRouteFieldTableWords fieldWidth entries)).length =
+      entries.length * fieldWidth := by
+  have hlength :
+      (SuccinctSpace.flattenPayloadWords
+          (fixedWeightRouteFieldTableWords fieldWidth entries)).length =
+        (fixedWeightRouteFieldTableWords fieldWidth entries).length *
+          fieldWidth := by
+    apply SuccinctSpace.flattenPayloadWords_length_of_forall_length
+    intro word hmem
+    have hmap :
+        List.Mem word
+          (entries.map (SuccinctSpace.natToBitsLE fieldWidth)) := by
+      simpa [fixedWeightRouteFieldTableWords] using hmem
+    rcases List.mem_map.mp hmap with ⟨entry, _hentry, hword⟩
+    rw [<- hword]
+    exact SuccinctSpace.natToBitsLE_length fieldWidth entry
+  simpa [fixedWeightRouteFieldTableWords] using hlength
+
+def fixedWeightBlockClassLengthTableWords
+    (fieldWidth : Nat) (blocks : List (List Bool)) :
+    List (List Bool) :=
+  fixedWeightRouteFieldTableWords fieldWidth
+      (fixedWeightBlockLengthEntries blocks) ++
+    fixedWeightRouteFieldTableWords fieldWidth
+      (fixedWeightBlockClassEntries blocks)
+
+def fixedWeightBlockClassLengthTablePayload
+    (fieldWidth : Nat) (blocks : List (List Bool)) : List Bool :=
+  SuccinctSpace.flattenPayloadWords
+    (fixedWeightBlockClassLengthTableWords fieldWidth blocks)
+
+def fixedWeightBlockClassLengthTableOverhead
+    (fieldWidth : Nat) (blocks : List (List Bool)) : Nat :=
+  (blocks.length + blocks.length) * fieldWidth
+
+def fixedWeightBlockClassLengthTableOverheadBudget
+    (blockCountBound fieldWidthBound : Nat -> Nat) : Nat -> Nat :=
+  fun n => (blockCountBound n + blockCountBound n) * fieldWidthBound n
+
+def fixedWeightChunkBlocks (blockSize : Nat) (bits : List Bool) :
+    List (List Bool) :=
+  SuccinctSpace.chunkPayloadWords blockSize bits
+
+def fixedWeightChunkBlockCountBound (blockSize : Nat) : Nat -> Nat :=
+  fun n => n / blockSize + 1
+
+def fixedWeightChunkBlocksWithSentinel
+    (blockSize : Nat) (bits : List Bool) : List (List Bool) :=
+  fixedWeightChunkBlocks blockSize bits ++ [[]]
+
+def fixedWeightChunkBlockCountBoundWithSentinel
+    (blockSize : Nat) : Nat -> Nat :=
+  fun n => n / blockSize + 2
+
+def fixedWeightLogChunkBlockSize (n : Nat) : Nat :=
+  Nat.log2 n + 1
+
+def fixedWeightLogChunkBlocks (bits : List Bool) : List (List Bool) :=
+  fixedWeightChunkBlocks (fixedWeightLogChunkBlockSize bits.length) bits
+
+def fixedWeightLogChunkBlockCountBound : Nat -> Nat :=
+  fun n => n / fixedWeightLogChunkBlockSize n + 1
+
+def fixedWeightLogChunkBlocksWithSentinel
+    (bits : List Bool) : List (List Bool) :=
+  fixedWeightChunkBlocksWithSentinel
+    (fixedWeightLogChunkBlockSize bits.length) bits
+
+def fixedWeightLogChunkBlockCountBoundWithSentinel : Nat -> Nat :=
+  fun n => n / fixedWeightLogChunkBlockSize n + 2
+
+def fixedWeightLogChunkClassLengthFieldWidthBound (n : Nat) : Nat :=
+  Nat.log2 (fixedWeightLogChunkBlockSize n) + 1
+
+def fixedWeightLogChunkClassLengthOverhead : Nat -> Nat :=
+  fun n =>
+    fixedWeightBlockClassLengthTableOverheadBudget
+      fixedWeightLogChunkBlockCountBoundWithSentinel
+      fixedWeightLogChunkClassLengthFieldWidthBound n +
+        4 * fixedWeightLogChunkClassLengthFieldWidthBound n
+
+theorem fixedWeightLogChunkBlockSize_pos (n : Nat) :
+    0 < fixedWeightLogChunkBlockSize n := by
+  simp [fixedWeightLogChunkBlockSize]
+
+theorem fixedWeightLogChunkClassLengthFieldWidthBound_pos (n : Nat) :
+    0 < fixedWeightLogChunkClassLengthFieldWidthBound n := by
+  simp [fixedWeightLogChunkClassLengthFieldWidthBound]
+
+theorem fixedWeightLogChunkBlockSize_lt_classLengthFieldWidthPow
+    (n : Nat) :
+    fixedWeightLogChunkBlockSize n <
+      2 ^ fixedWeightLogChunkClassLengthFieldWidthBound n := by
+  simpa [fixedWeightLogChunkClassLengthFieldWidthBound] using
+    (Nat.lt_log2_self (n := fixedWeightLogChunkBlockSize n))
+
+theorem fixedWeightLogChunkBlockCountBound_littleO :
+    SuccinctSpace.LittleOLinear
+      fixedWeightLogChunkBlockCountBound := by
+  unfold fixedWeightLogChunkBlockCountBound fixedWeightLogChunkBlockSize
+  simpa using
+    SuccinctSpace.littleOLinear_id_div_log2_succ.add_const 1
+
+theorem fixedWeightLogChunkBlockCountBoundWithSentinel_littleO :
+    SuccinctSpace.LittleOLinear
+      fixedWeightLogChunkBlockCountBoundWithSentinel := by
+  unfold fixedWeightLogChunkBlockCountBoundWithSentinel
+    fixedWeightLogChunkBlockSize
+  simpa using
+    SuccinctSpace.littleOLinear_id_div_log2_succ.add_const 2
+
+theorem fixedWeightLogChunkClassLengthFieldWidthBound_littleO :
+    SuccinctSpace.LittleOLinear
+      fixedWeightLogChunkClassLengthFieldWidthBound := by
+  intro scale hscale
+  rcases
+      SuccinctSpace.eventually_scale_logLog_succ_le_log_succ scale with
+    ⟨threshold, hthreshold⟩
+  exact ⟨threshold + 1, by
+    intro n hn
+    have hn_pos : n ≠ 0 := by omega
+    have hlog :
+        scale * (Nat.log2 (Nat.log2 n + 1) + 1) <=
+          Nat.log2 n + 1 :=
+      hthreshold n (by omega)
+    have hlog_le_self : Nat.log2 n + 1 <= n := by
+      have hpow : Nat.log2 n + 1 <= 2 ^ Nat.log2 n := by
+        exact SuccinctSpace.nat_succ_le_two_pow (Nat.log2 n)
+      exact Nat.le_trans hpow (Nat.log2_self_le hn_pos)
+    exact Nat.le_trans (by
+      simpa [fixedWeightLogChunkClassLengthFieldWidthBound,
+        fixedWeightLogChunkBlockSize] using hlog) hlog_le_self⟩
+
+theorem fixedWeightLogChunkClassLengthOverhead_littleO :
+    SuccinctSpace.LittleOLinear
+      fixedWeightLogChunkClassLengthOverhead := by
+  have hsample :
+      SuccinctSpace.LittleOLinear
+        (SuccinctSpace.logLogSampledDirectoryOverhead 2) :=
+    SuccinctSpace.logLogSampledDirectoryOverhead_littleO 2
+  have htail :
+      SuccinctSpace.LittleOLinear
+        (fun n =>
+          8 * fixedWeightLogChunkClassLengthFieldWidthBound n) :=
+    fixedWeightLogChunkClassLengthFieldWidthBound_littleO.mul_left 8
+  apply SuccinctSpace.LittleOLinear.of_le (hsample.add htail)
+  intro n
+  unfold fixedWeightLogChunkClassLengthOverhead
+    fixedWeightBlockClassLengthTableOverheadBudget
+    fixedWeightLogChunkBlockCountBoundWithSentinel
+    fixedWeightLogChunkClassLengthFieldWidthBound
+    fixedWeightLogChunkBlockSize
+    SuccinctSpace.logLogSampledDirectoryOverhead
+  let q := n / (Nat.log2 n + 1)
+  let w := Nat.log2 (Nat.log2 n + 1) + 1
+  change ((q + 2 + (q + 2)) * w + 4 * w) <=
+    2 * (q * w) + 8 * w
+  have hsum : q + 2 + (q + 2) = 2 * q + 4 := by omega
+  rw [hsum]
+  rw [Nat.add_mul]
+  rw [Nat.mul_assoc]
+  omega
+
+theorem fixedWeightChunkBlocks_flatten
+    {blockSize : Nat} (hblockSize : 0 < blockSize)
+    (bits : List Bool) :
+    SuccinctSpace.flattenPayloadWords
+        (fixedWeightChunkBlocks blockSize bits) = bits := by
+  simpa [fixedWeightChunkBlocks] using
+    SuccinctSpace.flattenPayloadWords_chunkPayloadWords hblockSize bits
+
+theorem fixedWeightChunkBlocks_length_le
+    {blockSize : Nat} (hblockSize : 0 < blockSize)
+    (bits : List Bool) :
+    (fixedWeightChunkBlocks blockSize bits).length <=
+      fixedWeightChunkBlockCountBound blockSize bits.length := by
+  simpa [fixedWeightChunkBlocks, fixedWeightChunkBlockCountBound] using
+    SuccinctSpace.chunkPayloadWords_length_le_div_add_one
+      hblockSize bits
+
+theorem fixedWeightChunkBlocks_block_length_le
+    {blockSize : Nat} {bits block : List Bool}
+    (hmem : List.Mem block (fixedWeightChunkBlocks blockSize bits)) :
+    block.length <= blockSize := by
+  simpa [fixedWeightChunkBlocks] using
+    SuccinctSpace.chunkPayloadWords_word_length_le
+      blockSize (payload := bits) hmem
+
+theorem fixedWeightChunkBlocksWithSentinel_flatten
+    {blockSize : Nat} (hblockSize : 0 < blockSize)
+    (bits : List Bool) :
+    SuccinctSpace.flattenPayloadWords
+        (fixedWeightChunkBlocksWithSentinel blockSize bits) = bits := by
+  have hsentinel :
+      SuccinctSpace.flattenPayloadWords ([[]] : List (List Bool)) = [] := by
+    simp [SuccinctSpace.flattenPayloadWords]
+  simp [fixedWeightChunkBlocksWithSentinel,
+    SuccinctSpace.flattenPayloadWords_append, hsentinel,
+    fixedWeightChunkBlocks_flatten hblockSize bits]
+
+theorem fixedWeightChunkBlocksWithSentinel_length_le
+    {blockSize : Nat} (hblockSize : 0 < blockSize)
+    (bits : List Bool) :
+    (fixedWeightChunkBlocksWithSentinel blockSize bits).length <=
+      fixedWeightChunkBlockCountBoundWithSentinel
+        blockSize bits.length := by
+  have hlen := fixedWeightChunkBlocks_length_le hblockSize bits
+  simp [fixedWeightChunkBlocksWithSentinel,
+    fixedWeightChunkBlockCountBoundWithSentinel,
+    fixedWeightChunkBlockCountBound] at *
+  omega
+
+theorem fixedWeightChunkBlocksWithSentinel_block_length_le
+    {blockSize : Nat} {bits block : List Bool}
+    (hmem :
+      List.Mem block (fixedWeightChunkBlocksWithSentinel blockSize bits)) :
+    block.length <= blockSize := by
+  rw [fixedWeightChunkBlocksWithSentinel] at hmem
+  rcases List.mem_append.mp hmem with hchunk | hsentinel
+  · exact fixedWeightChunkBlocks_block_length_le hchunk
+  · cases hsentinel with
+    | head =>
+        simp
+    | tail _ htail =>
+        cases htail
+
+theorem fixedWeightLogChunkBlocks_flatten
+    (bits : List Bool) :
+    SuccinctSpace.flattenPayloadWords
+        (fixedWeightLogChunkBlocks bits) = bits := by
+  exact
+    fixedWeightChunkBlocks_flatten
+      (fixedWeightLogChunkBlockSize_pos bits.length) bits
+
+theorem fixedWeightLogChunkBlocks_length_le
+    (bits : List Bool) :
+    (fixedWeightLogChunkBlocks bits).length <=
+      fixedWeightLogChunkBlockCountBound bits.length := by
+  exact
+    fixedWeightChunkBlocks_length_le
+      (fixedWeightLogChunkBlockSize_pos bits.length) bits
+
+theorem fixedWeightLogChunkBlocks_block_length_le
+    {bits block : List Bool}
+    (hmem : List.Mem block (fixedWeightLogChunkBlocks bits)) :
+    block.length <= fixedWeightLogChunkBlockSize bits.length := by
+  exact fixedWeightChunkBlocks_block_length_le hmem
+
+theorem fixedWeightLogChunkBlocksWithSentinel_flatten
+    (bits : List Bool) :
+    SuccinctSpace.flattenPayloadWords
+        (fixedWeightLogChunkBlocksWithSentinel bits) = bits := by
+  exact
+    fixedWeightChunkBlocksWithSentinel_flatten
+      (fixedWeightLogChunkBlockSize_pos bits.length) bits
+
+theorem fixedWeightLogChunkBlocksWithSentinel_length_le
+    (bits : List Bool) :
+    (fixedWeightLogChunkBlocksWithSentinel bits).length <=
+      fixedWeightLogChunkBlockCountBoundWithSentinel bits.length := by
+  exact
+    fixedWeightChunkBlocksWithSentinel_length_le
+      (fixedWeightLogChunkBlockSize_pos bits.length) bits
+
+theorem fixedWeightLogChunkBlocksWithSentinel_block_length_le
+    {bits block : List Bool}
+    (hmem :
+      List.Mem block (fixedWeightLogChunkBlocksWithSentinel bits)) :
+    block.length <= fixedWeightLogChunkBlockSize bits.length := by
+  exact fixedWeightChunkBlocksWithSentinel_block_length_le hmem
+
+theorem fixedWeightLogChunkBlocksWithSentinel_block_length_lt_classLengthFieldWidthPow
+    {bits block : List Bool}
+    (hmem :
+      List.Mem block (fixedWeightLogChunkBlocksWithSentinel bits)) :
+    block.length <
+      2 ^ fixedWeightLogChunkClassLengthFieldWidthBound bits.length := by
+  exact Nat.lt_of_le_of_lt
+    (fixedWeightLogChunkBlocksWithSentinel_block_length_le hmem)
+    (fixedWeightLogChunkBlockSize_lt_classLengthFieldWidthPow bits.length)
+
+theorem fixedWeightLogChunkBlocksWithSentinel_block_class_lt_classLengthFieldWidthPow
+    {bits block : List Bool}
+    (hmem :
+      List.Mem block (fixedWeightLogChunkBlocksWithSentinel bits)) :
+    trueCount block <
+      2 ^ fixedWeightLogChunkClassLengthFieldWidthBound bits.length := by
+  exact trueCount_lt_of_length_lt
+    (fixedWeightLogChunkBlocksWithSentinel_block_length_lt_classLengthFieldWidthPow
+      hmem)
+
+theorem fixedWeightLogChunkBlockPayloadBudget_le_length_add_blockCount
+    (bits : List Bool) :
+    fixedWeightBlockPayloadBudget
+        (fixedWeightLogChunkBlocksWithSentinel bits) <=
+      bits.length +
+        (fixedWeightLogChunkBlocksWithSentinel bits).length := by
+  have hprimary :=
+    fixedWeightBlockPayloadBudget_le_flatten_length_add_blocks
+      (fixedWeightLogChunkBlocksWithSentinel bits)
+  simpa [fixedWeightLogChunkBlocksWithSentinel_flatten bits] using hprimary
+
+theorem fixedWeightLogChunkBlockPayloadBudget_le_length_add_bound
+    (bits : List Bool) :
+    fixedWeightBlockPayloadBudget
+        (fixedWeightLogChunkBlocksWithSentinel bits) <=
+      bits.length +
+        fixedWeightLogChunkBlockCountBoundWithSentinel bits.length := by
+  have hprimary :=
+    fixedWeightLogChunkBlockPayloadBudget_le_length_add_blockCount bits
+  have hblocks := fixedWeightLogChunkBlocksWithSentinel_length_le bits
+  omega
+
+theorem fixedWeightLogChunkBlockPayloadBudget_le_payloadBudget_add_blockCount
+    (bits : List Bool) :
+    fixedWeightBlockPayloadBudget
+        (fixedWeightLogChunkBlocksWithSentinel bits) <=
+      fixedWeightPayloadBudget bits +
+        (fixedWeightLogChunkBlocksWithSentinel bits).length := by
+  have hprimary :=
+    fixedWeightBlockPayloadBudget_le_payloadBudget_flatten_add_blocks
+      (fixedWeightLogChunkBlocksWithSentinel bits)
+  simpa [fixedWeightLogChunkBlocksWithSentinel_flatten bits] using hprimary
+
+theorem fixedWeightLogChunkBlockPayloadBudget_le_payloadBudget_add_bound
+    (bits : List Bool) :
+    fixedWeightBlockPayloadBudget
+        (fixedWeightLogChunkBlocksWithSentinel bits) <=
+      fixedWeightPayloadBudget bits +
+        fixedWeightLogChunkBlockCountBoundWithSentinel bits.length := by
+  have hprimary :=
+    fixedWeightLogChunkBlockPayloadBudget_le_payloadBudget_add_blockCount bits
+  have hblocks := fixedWeightLogChunkBlocksWithSentinel_length_le bits
+  omega
+
+theorem fixedWeightComputedRRRClassLengthLogChunkBlockSizeQueryCost_gt
+    (localQueryCost : Nat) :
+    localQueryCost <
+      fixedWeightComputedRRRClassLengthBlockSizeQueryCost
+        (fixedWeightLogChunkBlockSize (2 ^ localQueryCost)) := by
+  unfold fixedWeightComputedRRRClassLengthBlockSizeQueryCost
+    fixedWeightLogChunkBlockSize
+  have hpow_nonzero : 2 ^ localQueryCost ≠ 0 := by
+    exact Nat.ne_of_gt (Nat.pow_pos (by omega : 0 < 2))
+  have hlog : localQueryCost <= Nat.log2 (2 ^ localQueryCost) := by
+    exact (Nat.le_log2 hpow_nonzero).2 (Nat.le_refl _)
+  have hsucc : localQueryCost + 1 <= 2 ^ localQueryCost :=
+    SuccinctSpace.nat_succ_le_two_pow localQueryCost
+  have hpow :
+      2 ^ localQueryCost <=
+        2 ^ (Nat.log2 (2 ^ localQueryCost) + 1) := by
+    exact Nat.pow_le_pow_right (by omega : 0 < 2) (by omega)
+  omega
+
+theorem no_fixedWeightComputedRRRClassLengthLogChunkBlockSizeUniformCost
+    (localQueryCost : Nat) :
+    ¬ (forall n : Nat,
+        fixedWeightComputedRRRClassLengthBlockSizeQueryCost
+            (fixedWeightLogChunkBlockSize n) <=
+          localQueryCost) := by
+  intro hcost
+  have hle := hcost (2 ^ localQueryCost)
+  have hgt :=
+    fixedWeightComputedRRRClassLengthLogChunkBlockSizeQueryCost_gt
+      localQueryCost
+  omega
+
+theorem rankPrefix_true_replicate_false (n limit : Nat) :
+    Succinct.rankPrefix true (List.replicate n false) limit = 0 := by
+  induction n generalizing limit with
+  | zero =>
+      simpa using Succinct.rankPrefix_nil true limit
+  | succ n ih =>
+      cases limit with
+      | zero =>
+          simp [Succinct.rankPrefix]
+      | succ limit =>
+          simp [List.replicate, Succinct.rankPrefix, ih]
+
+theorem trueCount_replicate_false (n : Nat) :
+    trueCount (List.replicate n false) = 0 := by
+  simp [trueCount, rankPrefix_true_replicate_false]
+
+theorem fixedWeightComputedRRRClassLengthQueryCost_replicate_false
+    (n : Nat) :
+    fixedWeightComputedRRRClassLengthQueryCost
+        (List.replicate n false) =
+      n + 5 := by
+  simp [fixedWeightComputedRRRClassLengthQueryCost,
+    fixedWeightComputedRRRDecodeTicks, trueCount_replicate_false,
+    binomialCount_zero_right]
+  omega
+
+namespace FixedWeightAmbientBlockCompositionFamily
+
+theorem word_bounded_compressed_profile_of_log_chunk_blocks
+    {slots queryCost : Nat}
+    (family : FixedWeightAmbientBlockCompositionFamily slots queryCost)
+    (hblocks :
+      forall bits : List Bool,
+        family.blocks bits = fixedWeightLogChunkBlocksWithSentinel bits) :
+    SuccinctSpace.LittleOLinear
+        (compressedOverhead slots fixedWeightLogChunkBlockCountBoundWithSentinel) /\
+      forall bits : List Bool,
+        let data := family.directory bits
+        data.DirectoryProfile /\
+          data.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          data.payload.length <=
+            fixedWeightPayloadBudget bits +
+              compressedOverhead slots
+                fixedWeightLogChunkBlockCountBoundWithSentinel bits.length /\
+          data.auxPayload.length =
+            fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word data.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word data.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (data.accessCosted i).cost <= queryCost /\
+              (data.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (data.rankCosted target pos).cost <= queryCost /\
+              (data.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (data.selectCosted target occurrence).cost <= queryCost /\
+              (data.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact
+    word_bounded_compressed_profile_of_primary_budget
+      family fixedWeightLogChunkBlockCountBoundWithSentinel
+      fixedWeightLogChunkBlockCountBoundWithSentinel_littleO
+      (by
+        intro bits
+        simpa [hblocks bits] using
+          fixedWeightLogChunkBlockPayloadBudget_le_payloadBudget_add_bound bits)
+
+end FixedWeightAmbientBlockCompositionFamily
+
+theorem fixedWeightLogChunkBlockClassLengthTableOverhead_le
+    (bits : List Bool) :
+    fixedWeightBlockClassLengthTableOverhead
+        (fixedWeightLogChunkClassLengthFieldWidthBound bits.length)
+        (fixedWeightLogChunkBlocksWithSentinel bits) <=
+      fixedWeightLogChunkClassLengthOverhead bits.length := by
+  let width := fixedWeightLogChunkClassLengthFieldWidthBound bits.length
+  let bound := fixedWeightLogChunkBlockCountBoundWithSentinel bits.length
+  have hblocks :
+      (fixedWeightLogChunkBlocksWithSentinel bits).length <= bound := by
+    simpa [bound] using
+      fixedWeightLogChunkBlocksWithSentinel_length_le bits
+  have htwice :
+      (fixedWeightLogChunkBlocksWithSentinel bits).length +
+          (fixedWeightLogChunkBlocksWithSentinel bits).length <=
+        bound + bound := by omega
+  have hmul :
+      ((fixedWeightLogChunkBlocksWithSentinel bits).length +
+          (fixedWeightLogChunkBlocksWithSentinel bits).length) * width <=
+        (bound + bound) * width :=
+    Nat.mul_le_mul_right width htwice
+  have hbudget :
+      fixedWeightBlockClassLengthTableOverhead
+          (fixedWeightLogChunkClassLengthFieldWidthBound bits.length)
+          (fixedWeightLogChunkBlocksWithSentinel bits) <=
+        fixedWeightBlockClassLengthTableOverheadBudget
+          fixedWeightLogChunkBlockCountBoundWithSentinel
+          fixedWeightLogChunkClassLengthFieldWidthBound bits.length := by
+    simpa [fixedWeightBlockClassLengthTableOverhead,
+      fixedWeightBlockClassLengthTableOverheadBudget, width, bound]
+      using hmul
+  unfold fixedWeightLogChunkClassLengthOverhead
+  omega
+
+theorem fixedWeightLogChunkBlocksWithSentinel_length_mul_blockSize_ge
+    (bits : List Bool) :
+    bits.length <=
+      (fixedWeightLogChunkBlocksWithSentinel bits).length *
+        fixedWeightLogChunkBlockSize bits.length := by
+  have hflatten := fixedWeightLogChunkBlocksWithSentinel_flatten bits
+  have hle :
+      (SuccinctSpace.flattenPayloadWords
+          (fixedWeightLogChunkBlocksWithSentinel bits)).length <=
+        (fixedWeightLogChunkBlocksWithSentinel bits).length *
+          fixedWeightLogChunkBlockSize bits.length :=
+    SuccinctSpace.flattenPayloadWords_length_le_of_forall_length_le
+      (by
+        intro word hmem
+        exact fixedWeightLogChunkBlocksWithSentinel_block_length_le hmem)
+  simpa [hflatten] using hle
+
+theorem fixedWeightLogChunkRouteWidthClassLengthTableOverhead_ge_length
+    (bits : List Bool) :
+    bits.length <=
+      fixedWeightBlockClassLengthTableOverhead
+        (fixedWeightLogChunkBlockSize bits.length)
+        (fixedWeightLogChunkBlocksWithSentinel bits) := by
+  have hcover :=
+    fixedWeightLogChunkBlocksWithSentinel_length_mul_blockSize_ge bits
+  unfold fixedWeightBlockClassLengthTableOverhead
+  exact Nat.le_trans hcover
+    (Nat.mul_le_mul_right
+      (fixedWeightLogChunkBlockSize bits.length) (by omega))
+
+theorem fixedWeight_notLittleOLinear_of_self_le
+    {overhead : Nat -> Nat}
+    (hle : forall n, n <= overhead n) :
+    ¬ SuccinctSpace.LittleOLinear overhead := by
+  intro hoverhead
+  rcases hoverhead 2 (by omega) with ⟨threshold, hthreshold⟩
+  let n := threshold + 1
+  have hn : threshold <= n := by omega
+  have hscaled : 2 * overhead n <= n := hthreshold n hn
+  have hself : n <= overhead n := hle n
+  have htwice : 2 * n <= 2 * overhead n :=
+    Nat.mul_le_mul_left 2 hself
+  omega
+
+def fixedWeightLogChunkRouteWidthClassLengthOverhead : Nat -> Nat :=
+  fun n =>
+    fixedWeightBlockClassLengthTableOverhead
+      (fixedWeightLogChunkBlockSize n)
+      (fixedWeightLogChunkBlocksWithSentinel
+        (List.replicate n false))
+
+theorem fixedWeightLogChunkRouteWidthClassLengthOverhead_not_littleO :
+    ¬ SuccinctSpace.LittleOLinear
+      fixedWeightLogChunkRouteWidthClassLengthOverhead := by
+  apply fixedWeight_notLittleOLinear_of_self_le
+  intro n
+  simpa [fixedWeightLogChunkRouteWidthClassLengthOverhead] using
+    fixedWeightLogChunkRouteWidthClassLengthTableOverhead_ge_length
+      (List.replicate n false)
+
+/--
+Dense decoded-table lower bound for log-sized fixed-weight chunks.
+
+This is the size scale of a counted table that has one `blockSize`-bit decoded
+word for every possible local code at the log-chunk block size.  It is a
+deliberately coarse lower bound for dense all-class decoders; it is already
+linear, so such a table cannot serve as the `o(n)` decoder payload in the
+compressed/FID capstone.
+-/
+def fixedWeightLogChunkDenseDecoderLowerBound : Nat -> Nat :=
+  fun n =>
+    2 ^ fixedWeightLogChunkBlockSize n *
+      fixedWeightLogChunkBlockSize n
+
+theorem fixedWeightLogChunkDenseDecoderLowerBound_ge_length
+    (n : Nat) :
+    n <= fixedWeightLogChunkDenseDecoderLowerBound n := by
+  have hpow :
+      n <= 2 ^ fixedWeightLogChunkBlockSize n := by
+    exact Nat.le_of_lt (by
+      simpa [fixedWeightLogChunkBlockSize] using
+        (Nat.lt_log2_self (n := n)))
+  have hblock : 1 <= fixedWeightLogChunkBlockSize n := by
+    exact fixedWeightLogChunkBlockSize_pos n
+  have hmul :
+      2 ^ fixedWeightLogChunkBlockSize n <=
+        2 ^ fixedWeightLogChunkBlockSize n *
+          fixedWeightLogChunkBlockSize n := by
+    have h :=
+      Nat.mul_le_mul_left (2 ^ fixedWeightLogChunkBlockSize n)
+        hblock
+    simpa [Nat.mul_comm, Nat.mul_left_comm, Nat.mul_assoc] using h
+  exact Nat.le_trans hpow hmul
+
+theorem no_fixedWeightLogChunk_dense_decoder_littleO
+    {decoderOverhead : Nat -> Nat}
+    (hdense :
+      forall n,
+        fixedWeightLogChunkDenseDecoderLowerBound n <=
+          decoderOverhead n) :
+    ¬ SuccinctSpace.LittleOLinear decoderOverhead := by
+  apply fixedWeight_notLittleOLinear_of_self_le
+  intro n
+  exact Nat.le_trans
+    (fixedWeightLogChunkDenseDecoderLowerBound_ge_length n)
+    (hdense n)
+
+theorem fixedWeightChunkBlocksWithSentinel_get_sentinel
+    (blockSize : Nat) (bits : List Bool) :
+    (fixedWeightChunkBlocksWithSentinel blockSize bits)[
+        (fixedWeightChunkBlocks blockSize bits).length]? = some [] := by
+  simp [fixedWeightChunkBlocksWithSentinel]
+
+theorem fixedWeightChunkBlocksWithSentinel_get_chunk
+    {blockSize : Nat} {bits block : List Bool} {blockIndex : Nat}
+    (hget :
+      (fixedWeightChunkBlocks blockSize bits)[blockIndex]? =
+        some block) :
+    (fixedWeightChunkBlocksWithSentinel blockSize bits)[blockIndex]? =
+      some block := by
+  have hidx :
+      blockIndex < (fixedWeightChunkBlocks blockSize bits).length :=
+    (List.getElem?_eq_some_iff.mp hget).1
+  simpa [fixedWeightChunkBlocksWithSentinel, List.getElem?_append,
+    hidx] using hget
+
+theorem fixedWeightChunkBlocks_get?_access_exact
+    {blockSize : Nat} (hblockSize : 0 < blockSize)
+    {bits block : List Bool} {i : Nat}
+    (hget :
+      (fixedWeightChunkBlocks blockSize bits)[i / blockSize]? =
+        some block) :
+    block[i - (i / blockSize) * blockSize]? = bits[i]? := by
+  let start := (i / blockSize) * blockSize
+  let offset := i - start
+  have hwordEq :
+      block = (bits.drop start).take blockSize := by
+    have hchunk :
+        (SuccinctSpace.chunkPayloadWords blockSize bits)[
+            i / blockSize]? = some block := by
+      simpa [fixedWeightChunkBlocks] using hget
+    simpa [start] using
+      SuccinctSpace.chunkPayloadWords_get?_eq_take_drop hchunk
+  have hstart_le : start <= i := by
+    simpa [start] using Nat.div_mul_le_self i blockSize
+  have hoffset_lt : offset < blockSize := by
+    have hlt := Nat.lt_div_mul_add hblockSize (a := i)
+    simp [offset, start]
+    omega
+  have hpos : start + offset = i := by
+    simp [offset]
+    omega
+  rw [hwordEq]
+  rw [List.getElem?_take]
+  simp [offset, start, hoffset_lt, hpos]
+
+theorem fixedWeightChunkBlocks_get?_rankPrefix_add_exact
+    {blockSize : Nat} (hblockSize : 0 < blockSize)
+    {bits block : List Bool} {target : Bool} {pos : Nat}
+    (hpos : pos <= bits.length)
+    (hget :
+      (fixedWeightChunkBlocks blockSize bits)[pos / blockSize]? =
+        some block) :
+    Succinct.rankPrefix target bits ((pos / blockSize) * blockSize) +
+        Succinct.rankPrefix target block
+          (pos - (pos / blockSize) * blockSize) =
+      Succinct.rankPrefix target bits pos := by
+  let start := (pos / blockSize) * blockSize
+  let offset := pos - start
+  have hwordEq :
+      block = (bits.drop start).take blockSize := by
+    have hchunk :
+        (SuccinctSpace.chunkPayloadWords blockSize bits)[
+            pos / blockSize]? = some block := by
+      simpa [fixedWeightChunkBlocks] using hget
+    simpa [start] using
+      SuccinctSpace.chunkPayloadWords_get?_eq_take_drop hchunk
+  have hstart_le_pos : start <= pos := by
+    simpa [start] using Nat.div_mul_le_self pos blockSize
+  have hoffset_lt_blockSize : offset < blockSize := by
+    have hlt := Nat.lt_div_mul_add hblockSize (a := pos)
+    simp [offset, start]
+    omega
+  have hoffset_le_drop_length :
+      offset <= (bits.drop start).length := by
+    rw [List.length_drop]
+    omega
+  have hoffset_le_take_length :
+      offset <= ((bits.drop start).take blockSize).length := by
+    rw [List.length_take]
+    exact Nat.le_min.mpr
+      ⟨Nat.le_of_lt hoffset_lt_blockSize, hoffset_le_drop_length⟩
+  have htake :
+      Succinct.rankPrefix target ((bits.drop start).take blockSize)
+          offset =
+        Succinct.rankPrefix target (bits.drop start) offset :=
+    Succinct.rankPrefix_take_eq_of_le
+      target (bits.drop start) (n := blockSize)
+      (limit := offset) hoffset_le_take_length
+  have hdrop :
+      Succinct.rankPrefix target (bits.drop start) offset =
+        Succinct.rankPrefix target bits pos -
+          Succinct.rankPrefix target bits start := by
+    simpa [offset] using
+      Succinct.rankPrefix_drop_eq_sub_of_le
+        target bits hstart_le_pos hpos
+  have hprefix_le :
+      Succinct.rankPrefix target bits start <=
+        Succinct.rankPrefix target bits pos :=
+    Succinct.rankPrefix_mono_limit target bits hstart_le_pos
+  calc
+    Succinct.rankPrefix target bits ((pos / blockSize) * blockSize) +
+        Succinct.rankPrefix target block
+          (pos - (pos / blockSize) * blockSize) =
+      Succinct.rankPrefix target bits start +
+        Succinct.rankPrefix target block offset := by rfl
+    _ = Succinct.rankPrefix target bits start +
+        Succinct.rankPrefix target ((bits.drop start).take blockSize)
+          offset := by
+          rw [hwordEq]
+    _ = Succinct.rankPrefix target bits start +
+        Succinct.rankPrefix target (bits.drop start) offset := by
+          rw [htake]
+    _ = Succinct.rankPrefix target bits start +
+        (Succinct.rankPrefix target bits pos -
+          Succinct.rankPrefix target bits start) := by
+          rw [hdrop]
+    _ = Succinct.rankPrefix target bits pos := by omega
+
+theorem fixedWeightChunkBlocks_get?_select_exact_of_global_select
+    {blockSize : Nat} (hblockSize : 0 < blockSize)
+    {bits block : List Bool} {target : Bool}
+    {occurrence idx : Nat}
+    (hselect : Succinct.select target bits occurrence = some idx)
+    (hget :
+      (fixedWeightChunkBlocks blockSize bits)[idx / blockSize]? =
+        some block) :
+    (Succinct.select target block
+        (occurrence -
+          Succinct.rankPrefix target bits
+            ((idx / blockSize) * blockSize))).map
+        (fun offset => (idx / blockSize) * blockSize + offset) =
+      some idx := by
+  let start := (idx / blockSize) * blockSize
+  let localOccurrence :=
+    occurrence - Succinct.rankPrefix target bits start
+  have hidx_lt : idx < bits.length :=
+    Succinct.select_bounds hselect
+  have hstart_le_idx : start <= idx := by
+    simpa [start] using Nat.div_mul_le_self idx blockSize
+  have hstart_le_len : start <= bits.length :=
+    Nat.le_trans hstart_le_idx (Nat.le_of_lt hidx_lt)
+  have hlocal_lt : idx - start < blockSize := by
+    have hlt := Nat.lt_div_mul_add hblockSize (a := idx)
+    simp [start]
+    omega
+  have hwordEq :
+      block = (bits.drop start).take blockSize := by
+    have hchunk :
+        (SuccinctSpace.chunkPayloadWords blockSize bits)[
+            idx / blockSize]? = some block := by
+      simpa [fixedWeightChunkBlocks] using hget
+    simpa [start] using
+      SuccinctSpace.chunkPayloadWords_get?_eq_take_drop hchunk
+  have hrank_le :
+      Succinct.rankPrefix target bits start <= occurrence :=
+    Succinct.rankPrefix_le_occurrence_of_le_select
+      hselect hstart_le_idx
+  have hdrop :
+      Succinct.select target (bits.drop start) localOccurrence =
+        some (idx - start) := by
+    simpa [localOccurrence] using
+      Succinct.select_drop_eq_sub_of_select
+        hselect hstart_le_idx hstart_le_len hrank_le
+  have htake :
+      Succinct.select target ((bits.drop start).take blockSize)
+          localOccurrence =
+        some (idx - start) :=
+    Succinct.select_take_of_select_lt hdrop hlocal_lt
+  rw [hwordEq]
+  rw [htake]
+  change some (start + (idx - start)) = some idx
+  have hsum : start + (idx - start) = idx := by omega
+  rw [hsum]
+
+theorem fixedWeightBlockClassLengthTableOverhead_le_of_bounds
+    {fieldWidth fieldWidthBound blockCountBound : Nat}
+    {blocks : List (List Bool)}
+    (hblocks : blocks.length <= blockCountBound)
+    (hfield : fieldWidth <= fieldWidthBound) :
+    fixedWeightBlockClassLengthTableOverhead fieldWidth blocks <=
+      (blockCountBound + blockCountBound) * fieldWidthBound := by
+  unfold fixedWeightBlockClassLengthTableOverhead
+  exact Nat.mul_le_mul (by omega) hfield
+
+theorem fixedWeightBlockClassLengthTableOverhead_le_budget
+    {fieldWidth : Nat} {blockCountBound fieldWidthBound : Nat -> Nat}
+    {blocks : List (List Bool)} {n : Nat}
+    (hblocks : blocks.length <= blockCountBound n)
+    (hfield : fieldWidth <= fieldWidthBound n) :
+    fixedWeightBlockClassLengthTableOverhead fieldWidth blocks <=
+      fixedWeightBlockClassLengthTableOverheadBudget
+        blockCountBound fieldWidthBound n := by
+  exact fixedWeightBlockClassLengthTableOverhead_le_of_bounds
+    hblocks hfield
+
+theorem fixedWeightBlockClassLengthTableOverhead_le_chunk_budget
+    {blockSize fieldWidth : Nat} {fieldWidthBound : Nat -> Nat}
+    {bits : List Bool} {blocks : List (List Bool)}
+    (hblockSize : 0 < blockSize)
+    (hblocks :
+      blocks = fixedWeightChunkBlocks blockSize bits)
+    (hfield : fieldWidth <= fieldWidthBound bits.length) :
+    fixedWeightBlockClassLengthTableOverhead fieldWidth blocks <=
+      fixedWeightBlockClassLengthTableOverheadBudget
+        (fixedWeightChunkBlockCountBound blockSize)
+        fieldWidthBound bits.length := by
+  have hcount :
+      blocks.length <=
+        fixedWeightChunkBlockCountBound blockSize bits.length := by
+    rw [hblocks]
+    exact fixedWeightChunkBlocks_length_le hblockSize bits
+  exact fixedWeightBlockClassLengthTableOverhead_le_budget
+    hcount hfield
+
+theorem fixedWeightBlockClassLengthTableOverhead_le_chunk_sentinel_budget
+    {blockSize fieldWidth : Nat} {fieldWidthBound : Nat -> Nat}
+    {bits : List Bool} {blocks : List (List Bool)}
+    (hblockSize : 0 < blockSize)
+    (hblocks :
+      blocks = fixedWeightChunkBlocksWithSentinel blockSize bits)
+    (hfield : fieldWidth <= fieldWidthBound bits.length) :
+    fixedWeightBlockClassLengthTableOverhead fieldWidth blocks <=
+      fixedWeightBlockClassLengthTableOverheadBudget
+        (fixedWeightChunkBlockCountBoundWithSentinel blockSize)
+        fieldWidthBound bits.length := by
+  have hcount :
+      blocks.length <=
+        fixedWeightChunkBlockCountBoundWithSentinel
+          blockSize bits.length := by
+    rw [hblocks]
+    exact fixedWeightChunkBlocksWithSentinel_length_le hblockSize bits
+  exact fixedWeightBlockClassLengthTableOverhead_le_budget
+    hcount hfield
+
+def fixedWeightChunkAccessRouteWithSentinel
+    {blockSize : Nat} (hblockSize : 0 < blockSize)
+    (bits : List Bool) (i : Nat) :
+    FixedWeightAmbientComputedRRRAccessRoute bits
+      (fixedWeightChunkBlocksWithSentinel blockSize bits) i := by
+  by_cases hi : i < bits.length
+  · have hstart_lt :
+        (i / blockSize) * blockSize < bits.length := by
+      have hstart_le : (i / blockSize) * blockSize <= i :=
+        Nat.div_mul_le_self i blockSize
+      omega
+    cases hgetOpt :
+        (fixedWeightChunkBlocks blockSize bits)[i / blockSize]? with
+    | none =>
+        exfalso
+        have hsome :
+            ∃ block,
+              (fixedWeightChunkBlocks blockSize bits)[i / blockSize]? =
+                some block := by
+          rcases
+              SuccinctSpace.chunkPayloadWords_get?_some_of_mul_lt
+                (wordSize := blockSize) hblockSize
+                (payload := bits) (i := i / blockSize) hstart_lt with
+            ⟨block, hchunk⟩
+          exact ⟨block, by
+            simpa [fixedWeightChunkBlocks] using hchunk⟩
+        rcases hsome with ⟨block, hget⟩
+        simp [hgetOpt] at hget
+    | some block =>
+        have hget :
+            (fixedWeightChunkBlocks blockSize bits)[i / blockSize]? =
+              some block := hgetOpt
+        refine
+          { blockIndex := i / blockSize
+            block := block
+            block_get :=
+              fixedWeightChunkBlocksWithSentinel_get_chunk hget
+            offset := i - (i / blockSize) * blockSize
+            metadataReads := []
+            access_exact := ?_ }
+        exact fixedWeightChunkBlocks_get?_access_exact hblockSize hget
+  · refine
+      { blockIndex := (fixedWeightChunkBlocks blockSize bits).length
+        block := []
+        block_get :=
+          fixedWeightChunkBlocksWithSentinel_get_sentinel blockSize bits
+        offset := 0
+        metadataReads := []
+        access_exact := ?_ }
+    have hnone : bits[i]? = none := by
+      rw [List.getElem?_eq_none_iff]
+      omega
+    simp [hnone]
+
+def fixedWeightChunkRankRouteWithSentinel
+    {blockSize : Nat} (hblockSize : 0 < blockSize)
+    (bits : List Bool) (target : Bool) (pos : Nat) :
+    FixedWeightAmbientComputedRRRRankRoute bits
+      (fixedWeightChunkBlocksWithSentinel blockSize bits) target pos := by
+  by_cases hpos : pos < bits.length
+  · have hstart_lt :
+        (pos / blockSize) * blockSize < bits.length := by
+      have hstart_le : (pos / blockSize) * blockSize <= pos :=
+        Nat.div_mul_le_self pos blockSize
+      omega
+    cases hgetOpt :
+        (fixedWeightChunkBlocks blockSize bits)[pos / blockSize]? with
+    | none =>
+        exfalso
+        have hsome :
+            ∃ block,
+              (fixedWeightChunkBlocks blockSize bits)[pos / blockSize]? =
+                some block := by
+          rcases
+              SuccinctSpace.chunkPayloadWords_get?_some_of_mul_lt
+                (wordSize := blockSize) hblockSize
+                (payload := bits) (i := pos / blockSize) hstart_lt with
+            ⟨block, hchunk⟩
+          exact ⟨block, by
+            simpa [fixedWeightChunkBlocks] using hchunk⟩
+        rcases hsome with ⟨block, hget⟩
+        simp [hgetOpt] at hget
+    | some block =>
+        have hget :
+            (fixedWeightChunkBlocks blockSize bits)[pos / blockSize]? =
+              some block := hgetOpt
+        refine
+          { blockIndex := pos / blockSize
+            block := block
+            block_get :=
+              fixedWeightChunkBlocksWithSentinel_get_chunk hget
+            localLimit := pos - (pos / blockSize) * blockSize
+            baseRank :=
+              Succinct.rankPrefix target bits
+                ((pos / blockSize) * blockSize)
+            metadataReads := []
+            rank_exact := ?_ }
+        exact
+          fixedWeightChunkBlocks_get?_rankPrefix_add_exact
+            hblockSize (Nat.le_of_lt hpos) hget
+  · refine
+      { blockIndex := (fixedWeightChunkBlocks blockSize bits).length
+        block := []
+        block_get :=
+          fixedWeightChunkBlocksWithSentinel_get_sentinel blockSize bits
+        localLimit := 0
+        baseRank := Succinct.rankPrefix target bits bits.length
+        metadataReads := []
+        rank_exact := ?_ }
+    have hlen : bits.length <= pos := Nat.le_of_not_gt hpos
+    have hrank :=
+      Succinct.rankPrefix_eq_rankPrefix_length_of_length_le
+        target bits hlen
+    simp [hrank, Succinct.rankPrefix]
+
+def fixedWeightChunkSelectRouteWithSentinel
+    {blockSize : Nat} (hblockSize : 0 < blockSize)
+    (bits : List Bool) (target : Bool) (occurrence : Nat) :
+    FixedWeightAmbientComputedRRRSelectRoute bits
+      (fixedWeightChunkBlocksWithSentinel blockSize bits)
+      target occurrence := by
+  cases hselectOpt : Succinct.select target bits occurrence with
+  | none =>
+      refine
+        { blockIndex := (fixedWeightChunkBlocks blockSize bits).length
+          block := []
+          block_get :=
+            fixedWeightChunkBlocksWithSentinel_get_sentinel blockSize bits
+          localOccurrence := 0
+          blockStart := 0
+          metadataReads := []
+          select_exact := ?_ }
+      simpa [Succinct.select, Succinct.selectFrom] using hselectOpt.symm
+  | some idx =>
+      have hselect :
+          Succinct.select target bits occurrence = some idx := hselectOpt
+      have hidx_lt : idx < bits.length :=
+        Succinct.select_bounds hselect
+      have hstart_lt :
+          (idx / blockSize) * blockSize < bits.length := by
+        have hstart_le : (idx / blockSize) * blockSize <= idx :=
+          Nat.div_mul_le_self idx blockSize
+        omega
+      cases hgetOpt :
+          (fixedWeightChunkBlocks blockSize bits)[idx / blockSize]? with
+      | none =>
+          exfalso
+          have hsome :
+              ∃ block,
+                (fixedWeightChunkBlocks blockSize bits)[idx / blockSize]? =
+                  some block := by
+            rcases
+                SuccinctSpace.chunkPayloadWords_get?_some_of_mul_lt
+                  (wordSize := blockSize) hblockSize
+                  (payload := bits) (i := idx / blockSize) hstart_lt with
+              ⟨block, hchunk⟩
+            exact ⟨block, by
+              simpa [fixedWeightChunkBlocks] using hchunk⟩
+          rcases hsome with ⟨block, hget⟩
+          simp [hgetOpt] at hget
+      | some block =>
+          have hget :
+              (fixedWeightChunkBlocks blockSize bits)[idx / blockSize]? =
+                some block := hgetOpt
+          refine
+            { blockIndex := idx / blockSize
+              block := block
+              block_get :=
+                fixedWeightChunkBlocksWithSentinel_get_chunk hget
+              localOccurrence :=
+                occurrence -
+                  Succinct.rankPrefix target bits
+                    ((idx / blockSize) * blockSize)
+              blockStart := (idx / blockSize) * blockSize
+              metadataReads := []
+              select_exact := ?_ }
+          rw [hselect]
+          exact
+            fixedWeightChunkBlocks_get?_select_exact_of_global_select
+              hblockSize hselect hget
+
+theorem fixedWeightBlockClassLengthTablePayload_length
+    (fieldWidth : Nat) (blocks : List (List Bool)) :
+    (fixedWeightBlockClassLengthTablePayload fieldWidth blocks).length =
+      fixedWeightBlockClassLengthTableOverhead fieldWidth blocks := by
+  simp [fixedWeightBlockClassLengthTablePayload,
+    fixedWeightBlockClassLengthTableWords,
+    fixedWeightBlockClassLengthTableOverhead,
+    SuccinctSpace.flattenPayloadWords_append,
+    fixedWeightRouteFieldTablePayload_length,
+    Nat.add_mul]
+
+def fixedWeightBlockClassLengthBoundedStore
+    (blocks : List (List Bool)) {wordSize fieldWidth : Nat}
+    (hfield : fieldWidth <= wordSize) :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightBlockClassLengthTablePayload fieldWidth blocks)
+      wordSize where
+  store :=
+    { words :=
+        (fixedWeightBlockClassLengthTableWords fieldWidth blocks).toArray
+      erases := by
+        simp [fixedWeightBlockClassLengthTablePayload] }
+  word_length_le := by
+    intro word hmem
+    have hlist :
+        List.Mem word
+          (fixedWeightBlockClassLengthTableWords fieldWidth blocks) := by
+      simpa using hmem
+    rw [fixedWeightBlockClassLengthTableWords] at hlist
+    rcases List.mem_append.mp hlist with hlength | hclass
+    · have hmap :
+          ∃ entry, List.Mem entry (fixedWeightBlockLengthEntries blocks) ∧
+            SuccinctSpace.natToBitsLE fieldWidth entry = word := by
+        simpa [fixedWeightRouteFieldTableWords] using hlength
+      rcases hmap with ⟨entry, _hentry, hword⟩
+      rw [<- hword]
+      simpa [SuccinctSpace.natToBitsLE_length] using hfield
+    · have hmap :
+          ∃ entry, List.Mem entry (fixedWeightBlockClassEntries blocks) ∧
+            SuccinctSpace.natToBitsLE fieldWidth entry = word := by
+        simpa [fixedWeightRouteFieldTableWords] using hclass
+      rcases hmap with ⟨entry, _hentry, hword⟩
+      rw [<- hword]
+      simpa [SuccinctSpace.natToBitsLE_length] using hfield
+
+theorem fixedWeightBlockClassLengthBoundedStore_words_toList
+    (blocks : List (List Bool)) {wordSize fieldWidth : Nat}
+    (hfield : fieldWidth <= wordSize) :
+    (fixedWeightBlockClassLengthBoundedStore
+        blocks (wordSize := wordSize) hfield).store.words.toList =
+      fixedWeightBlockClassLengthTableWords fieldWidth blocks := by
+  rfl
+
+/--
+Canonical global block length/class table for ambient computed-RRR blocks.
+
+The two metadata tables are stored as fixed-width payload words indexed by
+block number: the first segment stores block lengths, and the second segment
+stores block classes (`trueCount`).  This is the charged metadata substrate
+needed by the class/length local RRR kernel.
+-/
+structure FixedWeightAmbientComputedRRRClassLengthTableData
+    (bits : List Bool) (blocks : List (List Bool))
+    (wordSize fieldWidth : Nat) where
+  wordSize_pos : 0 < wordSize
+  wordSize_le_ambient : wordSize <= Nat.log2 bits.length + 1
+  fieldWidth_le_wordSize : fieldWidth <= wordSize
+  blocks_flatten : SuccinctSpace.flattenPayloadWords blocks = bits
+  block_code_width_le :
+    forall {block : List Bool}, List.Mem block blocks ->
+      fixedWeightPayloadBudget block <= wordSize
+  block_length_lt_fieldWidthPow :
+    forall {block : List Bool}, List.Mem block blocks ->
+      block.length < 2 ^ fieldWidth
+
+namespace FixedWeightAmbientComputedRRRClassLengthTableData
+
+def lengthWords
+    {bits : List Bool} {blocks : List (List Bool)}
+    {wordSize fieldWidth : Nat}
+    (_data :
+      FixedWeightAmbientComputedRRRClassLengthTableData
+        bits blocks wordSize fieldWidth) :
+    List (List Bool) :=
+  fixedWeightRouteFieldTableWords fieldWidth
+    (fixedWeightBlockLengthEntries blocks)
+
+def classWords
+    {bits : List Bool} {blocks : List (List Bool)}
+    {wordSize fieldWidth : Nat}
+    (_data :
+      FixedWeightAmbientComputedRRRClassLengthTableData
+        bits blocks wordSize fieldWidth) :
+    List (List Bool) :=
+  fixedWeightRouteFieldTableWords fieldWidth
+    (fixedWeightBlockClassEntries blocks)
+
+def classLengthStore
+    {bits : List Bool} {blocks : List (List Bool)}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRClassLengthTableData
+        bits blocks wordSize fieldWidth) :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightBlockClassLengthTablePayload fieldWidth blocks)
+      wordSize :=
+  fixedWeightBlockClassLengthBoundedStore blocks
+    data.fieldWidth_le_wordSize
+
+def lengthSlot
+    {bits : List Bool} {blocks : List (List Bool)}
+    {wordSize fieldWidth : Nat}
+    (_data :
+      FixedWeightAmbientComputedRRRClassLengthTableData
+        bits blocks wordSize fieldWidth)
+    (blockIndex : Nat) : Nat :=
+  blockIndex
+
+def classSlot
+    {bits : List Bool} {blocks : List (List Bool)}
+    {wordSize fieldWidth : Nat}
+    (_data :
+      FixedWeightAmbientComputedRRRClassLengthTableData
+        bits blocks wordSize fieldWidth)
+    (blockIndex : Nat) : Nat :=
+  blocks.length + blockIndex
+
+theorem classLengthStore_words_toList
+    {bits : List Bool} {blocks : List (List Bool)}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRClassLengthTableData
+        bits blocks wordSize fieldWidth) :
+    data.classLengthStore.store.words.toList =
+      fixedWeightBlockClassLengthTableWords fieldWidth blocks := by
+  exact
+    fixedWeightBlockClassLengthBoundedStore_words_toList
+      blocks data.fieldWidth_le_wordSize
+
+theorem length_word_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRClassLengthTableData
+        bits blocks wordSize fieldWidth)
+    {blockIndex : Nat} {block : List Bool}
+    (hblock : blocks[blockIndex]? = some block) :
+    data.classLengthStore.store.words[data.lengthSlot blockIndex]? =
+      some (SuccinctSpace.natToBitsLE fieldWidth block.length) := by
+  have hlocal :
+      (data.lengthWords)[blockIndex]? =
+        some (SuccinctSpace.natToBitsLE fieldWidth block.length) :=
+    fixedWeightRouteFieldTableWords_get?
+      (fieldWidth := fieldWidth)
+      (hget := fixedWeightBlockLengthEntries_get? hblock)
+  have hlist :
+      (fixedWeightBlockClassLengthTableWords fieldWidth blocks)[
+          blockIndex]? =
+        some (SuccinctSpace.natToBitsLE fieldWidth block.length) := by
+    have hmiddle :
+        ([] ++ data.lengthWords ++ data.classWords)[0 + blockIndex]? =
+          some (SuccinctSpace.natToBitsLE fieldWidth block.length) :=
+      list_getElem?_append_middle_of_get?
+        [] data.lengthWords data.classWords hlocal
+    simpa [fixedWeightBlockClassLengthTableWords, lengthWords, classWords]
+      using hmiddle
+  have hstore :
+      data.classLengthStore.store.words.toList[blockIndex]? =
+        some (SuccinctSpace.natToBitsLE fieldWidth block.length) := by
+    rw [data.classLengthStore_words_toList]
+    exact hlist
+  simpa [lengthSlot, Array.getElem?_toList] using hstore
+
+theorem class_word_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRClassLengthTableData
+        bits blocks wordSize fieldWidth)
+    {blockIndex : Nat} {block : List Bool}
+    (hblock : blocks[blockIndex]? = some block) :
+    data.classLengthStore.store.words[data.classSlot blockIndex]? =
+      some (SuccinctSpace.natToBitsLE fieldWidth (trueCount block)) := by
+  have hlocal :
+      (data.classWords)[blockIndex]? =
+        some (SuccinctSpace.natToBitsLE fieldWidth (trueCount block)) :=
+    fixedWeightRouteFieldTableWords_get?
+      (fieldWidth := fieldWidth)
+      (hget := fixedWeightBlockClassEntries_get? hblock)
+  have hmiddle :
+      (data.lengthWords ++ data.classWords ++ [])[data.lengthWords.length +
+          blockIndex]? =
+        some (SuccinctSpace.natToBitsLE fieldWidth (trueCount block)) :=
+    list_getElem?_append_middle_of_get?
+      data.lengthWords data.classWords [] hlocal
+  have hlist :
+      (fixedWeightBlockClassLengthTableWords fieldWidth blocks)[
+          blocks.length + blockIndex]? =
+        some (SuccinctSpace.natToBitsLE fieldWidth (trueCount block)) := by
+    simpa [fixedWeightBlockClassLengthTableWords, lengthWords, classWords,
+      fixedWeightRouteFieldTableWords, fixedWeightBlockLengthEntries,
+      Nat.add_assoc] using hmiddle
+  have hstore :
+      data.classLengthStore.store.words.toList[
+          blocks.length + blockIndex]? =
+        some (SuccinctSpace.natToBitsLE fieldWidth (trueCount block)) := by
+    rw [data.classLengthStore_words_toList]
+    exact hlist
+  simpa [classSlot, Array.getElem?_toList] using hstore
+
+theorem classLength_read_values_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRClassLengthTableData
+        bits blocks wordSize fieldWidth)
+    {blockIndex : Nat} {block : List Bool}
+    (hblock : blocks[blockIndex]? = some block) :
+    boundedPayloadWordReadValues data.classLengthStore
+        [data.lengthSlot blockIndex, data.classSlot blockIndex] =
+      [some (SuccinctSpace.natToBitsLE fieldWidth block.length),
+       some (SuccinctSpace.natToBitsLE fieldWidth (trueCount block))] := by
+  simp [boundedPayloadWordReadValues,
+    data.length_word_eq hblock, data.class_word_eq hblock]
+
+def classLengthReadsCosted
+    {bits : List Bool} {blocks : List (List Bool)}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRClassLengthTableData
+        bits blocks wordSize fieldWidth)
+    (blockIndex : Nat) : Costed (List (Option (List Bool))) :=
+  boundedPayloadWordReadsCosted data.classLengthStore
+    [data.lengthSlot blockIndex, data.classSlot blockIndex]
+
+@[simp] theorem classLengthReadsCosted_cost
+    {bits : List Bool} {blocks : List (List Bool)}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRClassLengthTableData
+        bits blocks wordSize fieldWidth)
+    (blockIndex : Nat) :
+    (data.classLengthReadsCosted blockIndex).cost = 2 := by
+  simp [classLengthReadsCosted]
+
+theorem classLengthReadsCosted_erase
+    {bits : List Bool} {blocks : List (List Bool)}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRClassLengthTableData
+        bits blocks wordSize fieldWidth)
+    {blockIndex : Nat} {block : List Bool}
+    (hblock : blocks[blockIndex]? = some block) :
+    (data.classLengthReadsCosted blockIndex).erase =
+      [some (SuccinctSpace.natToBitsLE fieldWidth block.length),
+       some (SuccinctSpace.natToBitsLE fieldWidth (trueCount block))] := by
+  simp [classLengthReadsCosted, data.classLength_read_values_eq hblock]
+
+def localClassLengthBlockData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRClassLengthTableData
+        bits blocks wordSize fieldWidth)
+    {blockIndex : Nat} {block : List Bool}
+    (hblock : blocks[blockIndex]? = some block) :
+    FixedWeightComputedRRRClassLengthBlockData
+      bits.length block wordSize fieldWidth where
+  wordSize_pos := data.wordSize_pos
+  wordSize_le_ambient := data.wordSize_le_ambient
+  fieldWidth_le_wordSize := data.fieldWidth_le_wordSize
+  codeWidth_le_wordSize :=
+    data.block_code_width_le (List.mem_of_getElem? hblock)
+  blockLength_lt_fieldWidthPow :=
+    data.block_length_lt_fieldWidthPow (List.mem_of_getElem? hblock)
+  blockClass_lt_fieldWidthPow :=
+    trueCount_lt_of_length_lt
+      (data.block_length_lt_fieldWidthPow (List.mem_of_getElem? hblock))
+
+def ClassLengthTableProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRClassLengthTableData
+        bits blocks wordSize fieldWidth) :
+    Prop :=
+  data.classLengthStore.store.words.toList =
+      fixedWeightBlockClassLengthTableWords fieldWidth blocks /\
+    SuccinctSpace.flattenPayloadWords
+        data.classLengthStore.store.words.toList =
+      fixedWeightBlockClassLengthTablePayload fieldWidth blocks /\
+    (forall {word : List Bool},
+      List.Mem word data.classLengthStore.store.words.toList ->
+        word.length <= wordSize) /\
+    (forall {blockIndex : Nat} {block : List Bool},
+      blocks[blockIndex]? = some block ->
+        boundedPayloadWordReadValues data.classLengthStore
+          [data.lengthSlot blockIndex, data.classSlot blockIndex] =
+        [some (SuccinctSpace.natToBitsLE fieldWidth block.length),
+         some (SuccinctSpace.natToBitsLE fieldWidth (trueCount block))]) /\
+    (forall {blockIndex : Nat} {block : List Bool},
+      (hblock : blocks[blockIndex]? = some block) ->
+        ((data.localClassLengthBlockData hblock).toDependentAuxiliaryData).DirectoryProfile)
+
+theorem class_length_table_profile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {wordSize fieldWidth : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRClassLengthTableData
+        bits blocks wordSize fieldWidth) :
+    data.ClassLengthTableProfile := by
+  refine
+    ⟨data.classLengthStore_words_toList,
+      data.classLengthStore.erases,
+      (fun hmem => data.classLengthStore.word_length_le_of_mem hmem),
+      ?_,
+      ?_⟩
+  · intro blockIndex block hblock
+    exact data.classLength_read_values_eq hblock
+  · intro blockIndex block hblock
+    exact
+      FixedWeightComputedRRRClassLengthBlockData.dependent_auxiliary_data_profile
+        (data.localClassLengthBlockData hblock)
+
+end FixedWeightAmbientComputedRRRClassLengthTableData
+
+def fixedWeightRouteFieldTableLayoutWords
+    (fieldWidth : Nat)
+    (accessBlockEntries accessOffsetEntries
+      rankBlockEntries rankLocalLimitEntries rankBaseRankEntries
+      selectBlockEntries selectLocalOccurrenceEntries
+      selectBlockStartEntries : List Nat) : List (List Bool) :=
+  fixedWeightRouteFieldTableWords fieldWidth accessBlockEntries ++
+    fixedWeightRouteFieldTableWords fieldWidth accessOffsetEntries ++
+      fixedWeightRouteFieldTableWords fieldWidth rankBlockEntries ++
+        fixedWeightRouteFieldTableWords fieldWidth rankLocalLimitEntries ++
+          fixedWeightRouteFieldTableWords fieldWidth rankBaseRankEntries ++
+            fixedWeightRouteFieldTableWords fieldWidth selectBlockEntries ++
+              fixedWeightRouteFieldTableWords fieldWidth
+                selectLocalOccurrenceEntries ++
+                fixedWeightRouteFieldTableWords fieldWidth
+                  selectBlockStartEntries
+
+def fixedWeightRouteFieldTableLayoutPayload
+    (fieldWidth : Nat)
+    (accessBlockEntries accessOffsetEntries
+      rankBlockEntries rankLocalLimitEntries rankBaseRankEntries
+      selectBlockEntries selectLocalOccurrenceEntries
+      selectBlockStartEntries : List Nat) : List Bool :=
+  SuccinctSpace.flattenPayloadWords
+    (fixedWeightRouteFieldTableLayoutWords fieldWidth
+      accessBlockEntries accessOffsetEntries rankBlockEntries
+      rankLocalLimitEntries rankBaseRankEntries selectBlockEntries
+      selectLocalOccurrenceEntries selectBlockStartEntries)
+
+theorem fixedWeightRouteFieldTableWords_word_length
+    {fieldWidth : Nat} {entries : List Nat} {word : List Bool}
+    (hmem :
+      List.Mem word (fixedWeightRouteFieldTableWords fieldWidth entries)) :
+    word.length = fieldWidth := by
+  have hmap :
+      List.Mem word
+        (entries.map (SuccinctSpace.natToBitsLE fieldWidth)) := by
+    simpa [fixedWeightRouteFieldTableWords] using hmem
+  rcases List.mem_map.mp hmap with ⟨entry, _hentry, hword⟩
+  rw [<- hword]
+  exact SuccinctSpace.natToBitsLE_length fieldWidth entry
+
+theorem fixedWeightRouteFieldTableLayoutWords_word_length
+    {fieldWidth : Nat}
+    {accessBlockEntries accessOffsetEntries
+      rankBlockEntries rankLocalLimitEntries rankBaseRankEntries
+      selectBlockEntries selectLocalOccurrenceEntries
+      selectBlockStartEntries : List Nat}
+    {word : List Bool}
+    (hmem :
+      List.Mem word
+        (fixedWeightRouteFieldTableLayoutWords fieldWidth
+          accessBlockEntries accessOffsetEntries rankBlockEntries
+          rankLocalLimitEntries rankBaseRankEntries selectBlockEntries
+          selectLocalOccurrenceEntries selectBlockStartEntries)) :
+    word.length = fieldWidth := by
+  rw [fixedWeightRouteFieldTableLayoutWords] at hmem
+  rcases List.mem_append.mp hmem with hpre | hlast
+  · rcases List.mem_append.mp hpre with hpre | hselectLocal
+    · rcases List.mem_append.mp hpre with hpre | hselectBlock
+      · rcases List.mem_append.mp hpre with hpre | hrankBase
+        · rcases List.mem_append.mp hpre with hpre | hrankLimit
+          · rcases List.mem_append.mp hpre with hpre | hrankBlock
+            · rcases List.mem_append.mp hpre with haccessBlock | haccessOffset
+              · exact fixedWeightRouteFieldTableWords_word_length haccessBlock
+              · exact fixedWeightRouteFieldTableWords_word_length haccessOffset
+            · exact fixedWeightRouteFieldTableWords_word_length hrankBlock
+          · exact fixedWeightRouteFieldTableWords_word_length hrankLimit
+        · exact fixedWeightRouteFieldTableWords_word_length hrankBase
+      · exact fixedWeightRouteFieldTableWords_word_length hselectBlock
+    · exact fixedWeightRouteFieldTableWords_word_length hselectLocal
+  · exact fixedWeightRouteFieldTableWords_word_length hlast
+
+theorem fixedWeightRouteFieldTableLayoutPayload_length
+    (fieldWidth : Nat)
+    (accessBlockEntries accessOffsetEntries
+      rankBlockEntries rankLocalLimitEntries rankBaseRankEntries
+      selectBlockEntries selectLocalOccurrenceEntries
+      selectBlockStartEntries : List Nat) :
+    (fixedWeightRouteFieldTableLayoutPayload fieldWidth
+        accessBlockEntries accessOffsetEntries rankBlockEntries
+        rankLocalLimitEntries rankBaseRankEntries selectBlockEntries
+        selectLocalOccurrenceEntries selectBlockStartEntries).length =
+      (accessBlockEntries.length + accessOffsetEntries.length +
+        rankBlockEntries.length + rankLocalLimitEntries.length +
+        rankBaseRankEntries.length + selectBlockEntries.length +
+        selectLocalOccurrenceEntries.length +
+        selectBlockStartEntries.length) * fieldWidth := by
+  simp [fixedWeightRouteFieldTableLayoutPayload,
+    fixedWeightRouteFieldTableLayoutWords,
+    SuccinctSpace.flattenPayloadWords_append,
+    fixedWeightRouteFieldTablePayload_length,
+    Nat.add_mul, Nat.add_assoc]
+
+def fixedWeightRouteFieldTableLayoutBoundedStore
+    (fieldWidth : Nat)
+    (accessBlockEntries accessOffsetEntries
+      rankBlockEntries rankLocalLimitEntries rankBaseRankEntries
+      selectBlockEntries selectLocalOccurrenceEntries
+      selectBlockStartEntries : List Nat)
+    {wordSize : Nat} (hfield : fieldWidth <= wordSize) :
+    SuccinctSpace.BoundedPayloadWordStore
+      (fixedWeightRouteFieldTableLayoutPayload fieldWidth
+        accessBlockEntries accessOffsetEntries rankBlockEntries
+        rankLocalLimitEntries rankBaseRankEntries selectBlockEntries
+        selectLocalOccurrenceEntries selectBlockStartEntries)
+      wordSize where
+  store :=
+    { words :=
+        (fixedWeightRouteFieldTableLayoutWords fieldWidth
+          accessBlockEntries accessOffsetEntries rankBlockEntries
+          rankLocalLimitEntries rankBaseRankEntries selectBlockEntries
+          selectLocalOccurrenceEntries selectBlockStartEntries).toArray
+      erases := by
+        simp [fixedWeightRouteFieldTableLayoutPayload] }
+  word_length_le := by
+    intro word hmem
+    have hlist :
+        List.Mem word
+          (fixedWeightRouteFieldTableLayoutWords fieldWidth
+            accessBlockEntries accessOffsetEntries rankBlockEntries
+            rankLocalLimitEntries rankBaseRankEntries selectBlockEntries
+            selectLocalOccurrenceEntries selectBlockStartEntries) := by
+      simpa using hmem
+    have hlen :=
+      fixedWeightRouteFieldTableLayoutWords_word_length hlist
+    omega
+
+theorem fixedWeightRouteFieldTableLayoutBoundedStore_words_toList
+    (fieldWidth : Nat)
+    (accessBlockEntries accessOffsetEntries
+      rankBlockEntries rankLocalLimitEntries rankBaseRankEntries
+      selectBlockEntries selectLocalOccurrenceEntries
+      selectBlockStartEntries : List Nat)
+    {wordSize : Nat} (hfield : fieldWidth <= wordSize) :
+    (fixedWeightRouteFieldTableLayoutBoundedStore fieldWidth
+        accessBlockEntries accessOffsetEntries rankBlockEntries
+        rankLocalLimitEntries rankBaseRankEntries selectBlockEntries
+        selectLocalOccurrenceEntries selectBlockStartEntries hfield).store.words.toList =
+      fixedWeightRouteFieldTableLayoutWords fieldWidth
+        accessBlockEntries accessOffsetEntries rankBlockEntries
+        rankLocalLimitEntries rankBaseRankEntries selectBlockEntries
+        selectLocalOccurrenceEntries selectBlockStartEntries := by
+  rfl
+
+/--
+Eight-table fixed-width route-field layout for ambient computed-RRR metadata.
+
+Each route field is stored in its own canonical fixed-width word table, and
+the route store is aligned to the concatenation of those table words.  This is
+the concrete layout layer that derives packed route metadata words from local
+table slots.
+-/
+structure FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+    (bits : List Bool) (blocks : List (List Bool))
+    (overhead wordSize routeCost localQueryCost queryCost : Nat) where
+  routeData :
+    FixedWeightAmbientComputedRRRRouteTableData
+      bits blocks overhead wordSize routeCost localQueryCost queryCost
+  fieldWidth : Nat
+  fieldWidth_le_wordSize : fieldWidth <= wordSize
+  accessBlockEntries : List Nat
+  accessOffsetEntries : List Nat
+  rankBlockEntries : List Nat
+  rankLocalLimitEntries : List Nat
+  rankBaseRankEntries : List Nat
+  selectBlockEntries : List Nat
+  selectLocalOccurrenceEntries : List Nat
+  selectBlockStartEntries : List Nat
+  accessBlockEntries_bound :
+    forall {entry : Nat}, List.Mem entry accessBlockEntries ->
+      entry < 2 ^ fieldWidth
+  accessOffsetEntries_bound :
+    forall {entry : Nat}, List.Mem entry accessOffsetEntries ->
+      entry < 2 ^ fieldWidth
+  rankBlockEntries_bound :
+    forall {entry : Nat}, List.Mem entry rankBlockEntries ->
+      entry < 2 ^ fieldWidth
+  rankLocalLimitEntries_bound :
+    forall {entry : Nat}, List.Mem entry rankLocalLimitEntries ->
+      entry < 2 ^ fieldWidth
+  rankBaseRankEntries_bound :
+    forall {entry : Nat}, List.Mem entry rankBaseRankEntries ->
+      entry < 2 ^ fieldWidth
+  selectBlockEntries_bound :
+    forall {entry : Nat}, List.Mem entry selectBlockEntries ->
+      entry < 2 ^ fieldWidth
+  selectLocalOccurrenceEntries_bound :
+    forall {entry : Nat}, List.Mem entry selectLocalOccurrenceEntries ->
+      entry < 2 ^ fieldWidth
+  selectBlockStartEntries_bound :
+    forall {entry : Nat}, List.Mem entry selectBlockStartEntries ->
+      entry < 2 ^ fieldWidth
+  routeStore_words_eq :
+    routeData.routeStore.store.words.toList =
+      fixedWeightRouteFieldTableLayoutWords fieldWidth
+        accessBlockEntries accessOffsetEntries
+        rankBlockEntries rankLocalLimitEntries rankBaseRankEntries
+        selectBlockEntries selectLocalOccurrenceEntries
+        selectBlockStartEntries
+  accessBlockLocalSlot : Nat -> Nat
+  accessOffsetLocalSlot : Nat -> Nat
+  rankBlockLocalSlot : Bool -> Nat -> Nat
+  rankLocalLimitLocalSlot : Bool -> Nat -> Nat
+  rankBaseRankLocalSlot : Bool -> Nat -> Nat
+  selectBlockLocalSlot : Bool -> Nat -> Nat
+  selectLocalOccurrenceLocalSlot : Bool -> Nat -> Nat
+  selectBlockStartLocalSlot : Bool -> Nat -> Nat
+  access_metadata_reads_eq :
+    forall i,
+      (routeData.accessRoute i).metadataReads =
+        [accessBlockLocalSlot i,
+          accessBlockEntries.length + accessOffsetLocalSlot i]
+  rank_metadata_reads_eq :
+    forall target pos,
+      (routeData.rankRoute target pos).metadataReads =
+        [accessBlockEntries.length + accessOffsetEntries.length +
+            rankBlockLocalSlot target pos,
+          accessBlockEntries.length + accessOffsetEntries.length +
+            rankBlockEntries.length + rankLocalLimitLocalSlot target pos,
+          accessBlockEntries.length + accessOffsetEntries.length +
+            rankBlockEntries.length + rankLocalLimitEntries.length +
+            rankBaseRankLocalSlot target pos]
+  select_metadata_reads_eq :
+    forall target occurrence,
+      (routeData.selectRoute target occurrence).metadataReads =
+        [accessBlockEntries.length + accessOffsetEntries.length +
+            rankBlockEntries.length + rankLocalLimitEntries.length +
+            rankBaseRankEntries.length + selectBlockLocalSlot target occurrence,
+          accessBlockEntries.length + accessOffsetEntries.length +
+            rankBlockEntries.length + rankLocalLimitEntries.length +
+            rankBaseRankEntries.length + selectBlockEntries.length +
+            selectLocalOccurrenceLocalSlot target occurrence,
+          accessBlockEntries.length + accessOffsetEntries.length +
+            rankBlockEntries.length + rankLocalLimitEntries.length +
+            rankBaseRankEntries.length + selectBlockEntries.length +
+            selectLocalOccurrenceEntries.length +
+            selectBlockStartLocalSlot target occurrence]
+  access_block_entry_eq :
+    forall i,
+      accessBlockEntries[accessBlockLocalSlot i]? =
+        some (routeData.accessRoute i).blockIndex
+  access_offset_entry_eq :
+    forall i,
+      accessOffsetEntries[accessOffsetLocalSlot i]? =
+        some (routeData.accessRoute i).offset
+  rank_block_entry_eq :
+    forall target pos,
+      rankBlockEntries[rankBlockLocalSlot target pos]? =
+        some (routeData.rankRoute target pos).blockIndex
+  rank_localLimit_entry_eq :
+    forall target pos,
+      rankLocalLimitEntries[rankLocalLimitLocalSlot target pos]? =
+        some (routeData.rankRoute target pos).localLimit
+  rank_baseRank_entry_eq :
+    forall target pos,
+      rankBaseRankEntries[rankBaseRankLocalSlot target pos]? =
+        some (routeData.rankRoute target pos).baseRank
+  select_block_entry_eq :
+    forall target occurrence,
+      selectBlockEntries[selectBlockLocalSlot target occurrence]? =
+        some (routeData.selectRoute target occurrence).blockIndex
+  select_localOccurrence_entry_eq :
+    forall target occurrence,
+      selectLocalOccurrenceEntries[
+          selectLocalOccurrenceLocalSlot target occurrence]? =
+        some (routeData.selectRoute target occurrence).localOccurrence
+  select_blockStart_entry_eq :
+    forall target occurrence,
+      selectBlockStartEntries[
+          selectBlockStartLocalSlot target occurrence]? =
+        some (routeData.selectRoute target occurrence).blockStart
+
+namespace FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+
+def ofCanonicalFixedWidthTables
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    {blockSize fieldWidth : Nat}
+    (wordSize_pos : 0 < wordSize)
+    (wordSize_le_ambient : wordSize <= Nat.log2 bits.length + 1)
+    (blockSize_pos : 0 < blockSize)
+    (blocks_flatten : SuccinctSpace.flattenPayloadWords blocks = bits)
+    (block_length_le :
+      forall {block : List Bool}, List.Mem block blocks ->
+        block.length <= blockSize)
+    (blockSize_le_wordSize : blockSize <= wordSize)
+    (block_code_width_le :
+      forall {block : List Bool}, List.Mem block blocks ->
+        fixedWeightPayloadBudget block <= wordSize)
+    (codeStore :
+      SuccinctSpace.BoundedPayloadWordStore
+        (fixedWeightBlockCodePayload blocks) wordSize)
+    (codeStore_aligned :
+      codeStore.store.words.toList = fixedWeightBlockCodeWords blocks)
+    (fieldWidth_le_wordSize : fieldWidth <= wordSize)
+    (accessBlockEntries accessOffsetEntries
+      rankBlockEntries rankLocalLimitEntries rankBaseRankEntries
+      selectBlockEntries selectLocalOccurrenceEntries
+      selectBlockStartEntries : List Nat)
+    (accessBlockEntries_bound :
+      forall {entry : Nat}, List.Mem entry accessBlockEntries ->
+        entry < 2 ^ fieldWidth)
+    (accessOffsetEntries_bound :
+      forall {entry : Nat}, List.Mem entry accessOffsetEntries ->
+        entry < 2 ^ fieldWidth)
+    (rankBlockEntries_bound :
+      forall {entry : Nat}, List.Mem entry rankBlockEntries ->
+        entry < 2 ^ fieldWidth)
+    (rankLocalLimitEntries_bound :
+      forall {entry : Nat}, List.Mem entry rankLocalLimitEntries ->
+        entry < 2 ^ fieldWidth)
+    (rankBaseRankEntries_bound :
+      forall {entry : Nat}, List.Mem entry rankBaseRankEntries ->
+        entry < 2 ^ fieldWidth)
+    (selectBlockEntries_bound :
+      forall {entry : Nat}, List.Mem entry selectBlockEntries ->
+        entry < 2 ^ fieldWidth)
+    (selectLocalOccurrenceEntries_bound :
+      forall {entry : Nat}, List.Mem entry selectLocalOccurrenceEntries ->
+        entry < 2 ^ fieldWidth)
+    (selectBlockStartEntries_bound :
+      forall {entry : Nat}, List.Mem entry selectBlockStartEntries ->
+        entry < 2 ^ fieldWidth)
+    (routePayload_length_eq :
+      (fixedWeightRouteFieldTableLayoutPayload fieldWidth
+          accessBlockEntries accessOffsetEntries rankBlockEntries
+          rankLocalLimitEntries rankBaseRankEntries selectBlockEntries
+          selectLocalOccurrenceEntries selectBlockStartEntries).length =
+        overhead)
+    (accessRoute :
+      forall i,
+        FixedWeightAmbientComputedRRRAccessRoute bits blocks i)
+    (rankRoute :
+      forall target pos,
+        FixedWeightAmbientComputedRRRRankRoute bits blocks target pos)
+    (selectRoute :
+      forall target occurrence,
+        FixedWeightAmbientComputedRRRSelectRoute
+          bits blocks target occurrence)
+    (access_metadata_reads_le :
+      forall i, (accessRoute i).metadataReads.length <= routeCost)
+    (rank_metadata_reads_le :
+      forall target pos,
+        (rankRoute target pos).metadataReads.length <= routeCost)
+    (select_metadata_reads_le :
+      forall target occurrence,
+        (selectRoute target occurrence).metadataReads.length <= routeCost)
+    (local_query_cost_le :
+      forall {block : List Bool}, List.Mem block blocks ->
+        fixedWeightComputedRRRQueryCost block <= localQueryCost)
+    (route_plus_local_le : routeCost + localQueryCost <= queryCost)
+    (accessBlockLocalSlot : Nat -> Nat)
+    (accessOffsetLocalSlot : Nat -> Nat)
+    (rankBlockLocalSlot : Bool -> Nat -> Nat)
+    (rankLocalLimitLocalSlot : Bool -> Nat -> Nat)
+    (rankBaseRankLocalSlot : Bool -> Nat -> Nat)
+    (selectBlockLocalSlot : Bool -> Nat -> Nat)
+    (selectLocalOccurrenceLocalSlot : Bool -> Nat -> Nat)
+    (selectBlockStartLocalSlot : Bool -> Nat -> Nat)
+    (access_metadata_reads_eq :
+      forall i,
+        (accessRoute i).metadataReads =
+          [accessBlockLocalSlot i,
+            accessBlockEntries.length + accessOffsetLocalSlot i])
+    (rank_metadata_reads_eq :
+      forall target pos,
+        (rankRoute target pos).metadataReads =
+          [accessBlockEntries.length + accessOffsetEntries.length +
+              rankBlockLocalSlot target pos,
+            accessBlockEntries.length + accessOffsetEntries.length +
+              rankBlockEntries.length + rankLocalLimitLocalSlot target pos,
+            accessBlockEntries.length + accessOffsetEntries.length +
+              rankBlockEntries.length + rankLocalLimitEntries.length +
+              rankBaseRankLocalSlot target pos])
+    (select_metadata_reads_eq :
+      forall target occurrence,
+        (selectRoute target occurrence).metadataReads =
+          [accessBlockEntries.length + accessOffsetEntries.length +
+              rankBlockEntries.length + rankLocalLimitEntries.length +
+              rankBaseRankEntries.length +
+              selectBlockLocalSlot target occurrence,
+            accessBlockEntries.length + accessOffsetEntries.length +
+              rankBlockEntries.length + rankLocalLimitEntries.length +
+              rankBaseRankEntries.length + selectBlockEntries.length +
+              selectLocalOccurrenceLocalSlot target occurrence,
+            accessBlockEntries.length + accessOffsetEntries.length +
+              rankBlockEntries.length + rankLocalLimitEntries.length +
+              rankBaseRankEntries.length + selectBlockEntries.length +
+              selectLocalOccurrenceEntries.length +
+              selectBlockStartLocalSlot target occurrence])
+    (access_block_entry_eq :
+      forall i,
+        accessBlockEntries[accessBlockLocalSlot i]? =
+          some (accessRoute i).blockIndex)
+    (access_offset_entry_eq :
+      forall i,
+        accessOffsetEntries[accessOffsetLocalSlot i]? =
+          some (accessRoute i).offset)
+    (rank_block_entry_eq :
+      forall target pos,
+        rankBlockEntries[rankBlockLocalSlot target pos]? =
+          some (rankRoute target pos).blockIndex)
+    (rank_localLimit_entry_eq :
+      forall target pos,
+        rankLocalLimitEntries[rankLocalLimitLocalSlot target pos]? =
+          some (rankRoute target pos).localLimit)
+    (rank_baseRank_entry_eq :
+      forall target pos,
+        rankBaseRankEntries[rankBaseRankLocalSlot target pos]? =
+          some (rankRoute target pos).baseRank)
+    (select_block_entry_eq :
+      forall target occurrence,
+        selectBlockEntries[selectBlockLocalSlot target occurrence]? =
+          some (selectRoute target occurrence).blockIndex)
+    (select_localOccurrence_entry_eq :
+      forall target occurrence,
+        selectLocalOccurrenceEntries[
+            selectLocalOccurrenceLocalSlot target occurrence]? =
+          some (selectRoute target occurrence).localOccurrence)
+    (select_blockStart_entry_eq :
+      forall target occurrence,
+        selectBlockStartEntries[
+            selectBlockStartLocalSlot target occurrence]? =
+          some (selectRoute target occurrence).blockStart) :
+    FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+      bits blocks overhead wordSize routeCost localQueryCost queryCost where
+  routeData :=
+    { wordSize_pos := wordSize_pos
+      wordSize_le_ambient := wordSize_le_ambient
+      blockSize := blockSize
+      blockSize_pos := blockSize_pos
+      blocks_flatten := blocks_flatten
+      block_length_le := block_length_le
+      blockSize_le_wordSize := blockSize_le_wordSize
+      block_code_width_le := block_code_width_le
+      codeStore := codeStore
+      codeStore_aligned := codeStore_aligned
+      routePayload :=
+        fixedWeightRouteFieldTableLayoutPayload fieldWidth
+          accessBlockEntries accessOffsetEntries rankBlockEntries
+          rankLocalLimitEntries rankBaseRankEntries selectBlockEntries
+          selectLocalOccurrenceEntries selectBlockStartEntries
+      routeStore :=
+        fixedWeightRouteFieldTableLayoutBoundedStore fieldWidth
+          accessBlockEntries accessOffsetEntries rankBlockEntries
+          rankLocalLimitEntries rankBaseRankEntries selectBlockEntries
+          selectLocalOccurrenceEntries selectBlockStartEntries
+          fieldWidth_le_wordSize
+      routePayload_length_eq := routePayload_length_eq
+      accessRoute := accessRoute
+      rankRoute := rankRoute
+      selectRoute := selectRoute
+      access_metadata_reads_le := access_metadata_reads_le
+      rank_metadata_reads_le := rank_metadata_reads_le
+      select_metadata_reads_le := select_metadata_reads_le
+      local_query_cost_le := local_query_cost_le
+      route_plus_local_le := route_plus_local_le }
+  fieldWidth := fieldWidth
+  fieldWidth_le_wordSize := fieldWidth_le_wordSize
+  accessBlockEntries := accessBlockEntries
+  accessOffsetEntries := accessOffsetEntries
+  rankBlockEntries := rankBlockEntries
+  rankLocalLimitEntries := rankLocalLimitEntries
+  rankBaseRankEntries := rankBaseRankEntries
+  selectBlockEntries := selectBlockEntries
+  selectLocalOccurrenceEntries := selectLocalOccurrenceEntries
+  selectBlockStartEntries := selectBlockStartEntries
+  accessBlockEntries_bound := accessBlockEntries_bound
+  accessOffsetEntries_bound := accessOffsetEntries_bound
+  rankBlockEntries_bound := rankBlockEntries_bound
+  rankLocalLimitEntries_bound := rankLocalLimitEntries_bound
+  rankBaseRankEntries_bound := rankBaseRankEntries_bound
+  selectBlockEntries_bound := selectBlockEntries_bound
+  selectLocalOccurrenceEntries_bound :=
+    selectLocalOccurrenceEntries_bound
+  selectBlockStartEntries_bound := selectBlockStartEntries_bound
+  routeStore_words_eq := by
+    exact
+      fixedWeightRouteFieldTableLayoutBoundedStore_words_toList
+        fieldWidth accessBlockEntries accessOffsetEntries rankBlockEntries
+        rankLocalLimitEntries rankBaseRankEntries selectBlockEntries
+        selectLocalOccurrenceEntries selectBlockStartEntries
+        fieldWidth_le_wordSize
+  accessBlockLocalSlot := accessBlockLocalSlot
+  accessOffsetLocalSlot := accessOffsetLocalSlot
+  rankBlockLocalSlot := rankBlockLocalSlot
+  rankLocalLimitLocalSlot := rankLocalLimitLocalSlot
+  rankBaseRankLocalSlot := rankBaseRankLocalSlot
+  selectBlockLocalSlot := selectBlockLocalSlot
+  selectLocalOccurrenceLocalSlot := selectLocalOccurrenceLocalSlot
+  selectBlockStartLocalSlot := selectBlockStartLocalSlot
+  access_metadata_reads_eq := access_metadata_reads_eq
+  rank_metadata_reads_eq := rank_metadata_reads_eq
+  select_metadata_reads_eq := select_metadata_reads_eq
+  access_block_entry_eq := access_block_entry_eq
+  access_offset_entry_eq := access_offset_entry_eq
+  rank_block_entry_eq := rank_block_entry_eq
+  rank_localLimit_entry_eq := rank_localLimit_entry_eq
+  rank_baseRank_entry_eq := rank_baseRank_entry_eq
+  select_block_entry_eq := select_block_entry_eq
+  select_localOccurrence_entry_eq := select_localOccurrence_entry_eq
+  select_blockStart_entry_eq := select_blockStart_entry_eq
+
+def accessBlockWords
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    List (List Bool) :=
+  fixedWeightRouteFieldTableWords data.fieldWidth data.accessBlockEntries
+
+def accessOffsetWords
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    List (List Bool) :=
+  fixedWeightRouteFieldTableWords data.fieldWidth data.accessOffsetEntries
+
+def rankBlockWords
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    List (List Bool) :=
+  fixedWeightRouteFieldTableWords data.fieldWidth data.rankBlockEntries
+
+def rankLocalLimitWords
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    List (List Bool) :=
+  fixedWeightRouteFieldTableWords data.fieldWidth data.rankLocalLimitEntries
+
+def rankBaseRankWords
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    List (List Bool) :=
+  fixedWeightRouteFieldTableWords data.fieldWidth data.rankBaseRankEntries
+
+def selectBlockWords
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    List (List Bool) :=
+  fixedWeightRouteFieldTableWords data.fieldWidth data.selectBlockEntries
+
+def selectLocalOccurrenceWords
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    List (List Bool) :=
+  fixedWeightRouteFieldTableWords
+    data.fieldWidth data.selectLocalOccurrenceEntries
+
+def selectBlockStartWords
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    List (List Bool) :=
+  fixedWeightRouteFieldTableWords
+    data.fieldWidth data.selectBlockStartEntries
+
+def layoutWords
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    List (List Bool) :=
+  fixedWeightRouteFieldTableLayoutWords data.fieldWidth
+    data.accessBlockEntries data.accessOffsetEntries
+    data.rankBlockEntries data.rankLocalLimitEntries
+    data.rankBaseRankEntries data.selectBlockEntries
+    data.selectLocalOccurrenceEntries data.selectBlockStartEntries
+
+theorem routeStore_words_eq_layoutWords
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    data.routeData.routeStore.store.words.toList =
+      data.layoutWords := data.routeStore_words_eq
+
+theorem routeFieldEntry_lt
+    {entries : List Nat} {fieldWidth : Nat}
+    (hbound :
+      forall {entry : Nat}, List.Mem entry entries ->
+        entry < 2 ^ fieldWidth)
+    {slot value : Nat}
+    (hget : entries[slot]? = some value) :
+    value < 2 ^ fieldWidth :=
+  hbound (List.mem_of_getElem? hget)
+
+theorem localWord_get?
+    {fieldWidth : Nat} {entries : List Nat} {slot value : Nat}
+    (hget : entries[slot]? = some value) :
+    (fixedWeightRouteFieldTableWords fieldWidth entries)[slot]? =
+      some (SuccinctSpace.natToBitsLE fieldWidth value) := by
+  simp [fixedWeightRouteFieldTableWords, List.getElem?_map, hget]
+
+theorem access_block_word_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (i : Nat) :
+    data.routeData.routeStore.store.words[data.accessBlockLocalSlot i]? =
+      some (SuccinctSpace.natToBitsLE data.fieldWidth
+        (data.routeData.accessRoute i).blockIndex) := by
+  have hlocal := localWord_get?
+    (fieldWidth := data.fieldWidth)
+    (hget := data.access_block_entry_eq i)
+  have hword :=
+    boundedPayloadWordStore_get?_of_words_append_middle
+      data.routeData.routeStore
+      (pre := [])
+      (mid := data.accessBlockWords)
+      (post := data.accessOffsetWords ++ data.rankBlockWords ++
+        data.rankLocalLimitWords ++ data.rankBaseRankWords ++
+        data.selectBlockWords ++ data.selectLocalOccurrenceWords ++
+        data.selectBlockStartWords)
+      (by
+        simpa [layoutWords, accessBlockWords, accessOffsetWords,
+          rankBlockWords, rankLocalLimitWords, rankBaseRankWords,
+          selectBlockWords, selectLocalOccurrenceWords,
+          selectBlockStartWords, fixedWeightRouteFieldTableLayoutWords,
+          List.append_assoc] using data.routeStore_words_eq_layoutWords)
+      hlocal
+  simpa [accessBlockWords] using hword
+
+theorem access_offset_word_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (i : Nat) :
+    data.routeData.routeStore.store.words[
+        data.accessBlockEntries.length + data.accessOffsetLocalSlot i]? =
+      some (SuccinctSpace.natToBitsLE data.fieldWidth
+        (data.routeData.accessRoute i).offset) := by
+  have hlocal := localWord_get?
+    (fieldWidth := data.fieldWidth)
+    (hget := data.access_offset_entry_eq i)
+  have hword :=
+    boundedPayloadWordStore_get?_of_words_append_middle
+      data.routeData.routeStore
+      (pre := data.accessBlockWords)
+      (mid := data.accessOffsetWords)
+      (post := data.rankBlockWords ++ data.rankLocalLimitWords ++
+        data.rankBaseRankWords ++ data.selectBlockWords ++
+        data.selectLocalOccurrenceWords ++ data.selectBlockStartWords)
+      (by
+        simpa [layoutWords, accessBlockWords, accessOffsetWords,
+          rankBlockWords, rankLocalLimitWords, rankBaseRankWords,
+          selectBlockWords, selectLocalOccurrenceWords,
+          selectBlockStartWords, fixedWeightRouteFieldTableLayoutWords,
+          List.append_assoc] using data.routeStore_words_eq_layoutWords)
+      hlocal
+  simpa [accessBlockWords, accessOffsetWords,
+    fixedWeightRouteFieldTableWords] using hword
+
+theorem rank_block_word_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (pos : Nat) :
+    data.routeData.routeStore.store.words[
+        data.accessBlockEntries.length + data.accessOffsetEntries.length +
+          data.rankBlockLocalSlot target pos]? =
+      some (SuccinctSpace.natToBitsLE data.fieldWidth
+        (data.routeData.rankRoute target pos).blockIndex) := by
+  have hlocal := localWord_get?
+    (fieldWidth := data.fieldWidth)
+    (hget := data.rank_block_entry_eq target pos)
+  have hword :=
+    boundedPayloadWordStore_get?_of_words_append_middle
+      data.routeData.routeStore
+      (pre := data.accessBlockWords ++ data.accessOffsetWords)
+      (mid := data.rankBlockWords)
+      (post := data.rankLocalLimitWords ++ data.rankBaseRankWords ++
+        data.selectBlockWords ++ data.selectLocalOccurrenceWords ++
+        data.selectBlockStartWords)
+      (by
+        simpa [layoutWords, accessBlockWords, accessOffsetWords,
+          rankBlockWords, rankLocalLimitWords, rankBaseRankWords,
+          selectBlockWords, selectLocalOccurrenceWords,
+          selectBlockStartWords, fixedWeightRouteFieldTableLayoutWords,
+          List.append_assoc] using data.routeStore_words_eq_layoutWords)
+      hlocal
+  simpa [accessBlockWords, accessOffsetWords, rankBlockWords,
+    fixedWeightRouteFieldTableWords, Nat.add_assoc] using hword
+
+theorem rank_localLimit_word_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (pos : Nat) :
+    data.routeData.routeStore.store.words[
+        data.accessBlockEntries.length + data.accessOffsetEntries.length +
+          data.rankBlockEntries.length +
+          data.rankLocalLimitLocalSlot target pos]? =
+      some (SuccinctSpace.natToBitsLE data.fieldWidth
+        (data.routeData.rankRoute target pos).localLimit) := by
+  have hlocal := localWord_get?
+    (fieldWidth := data.fieldWidth)
+    (hget := data.rank_localLimit_entry_eq target pos)
+  have hword :=
+    boundedPayloadWordStore_get?_of_words_append_middle
+      data.routeData.routeStore
+      (pre := data.accessBlockWords ++ data.accessOffsetWords ++
+        data.rankBlockWords)
+      (mid := data.rankLocalLimitWords)
+      (post := data.rankBaseRankWords ++ data.selectBlockWords ++
+        data.selectLocalOccurrenceWords ++ data.selectBlockStartWords)
+      (by
+        simpa [layoutWords, accessBlockWords, accessOffsetWords,
+          rankBlockWords, rankLocalLimitWords, rankBaseRankWords,
+          selectBlockWords, selectLocalOccurrenceWords,
+          selectBlockStartWords, fixedWeightRouteFieldTableLayoutWords,
+          List.append_assoc] using data.routeStore_words_eq_layoutWords)
+      hlocal
+  simpa [accessBlockWords, accessOffsetWords, rankBlockWords,
+    rankLocalLimitWords, fixedWeightRouteFieldTableWords,
+    Nat.add_assoc] using hword
+
+theorem rank_baseRank_word_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (pos : Nat) :
+    data.routeData.routeStore.store.words[
+        data.accessBlockEntries.length + data.accessOffsetEntries.length +
+          data.rankBlockEntries.length + data.rankLocalLimitEntries.length +
+          data.rankBaseRankLocalSlot target pos]? =
+      some (SuccinctSpace.natToBitsLE data.fieldWidth
+        (data.routeData.rankRoute target pos).baseRank) := by
+  have hlocal := localWord_get?
+    (fieldWidth := data.fieldWidth)
+    (hget := data.rank_baseRank_entry_eq target pos)
+  have hword :=
+    boundedPayloadWordStore_get?_of_words_append_middle
+      data.routeData.routeStore
+      (pre := data.accessBlockWords ++ data.accessOffsetWords ++
+        data.rankBlockWords ++ data.rankLocalLimitWords)
+      (mid := data.rankBaseRankWords)
+      (post := data.selectBlockWords ++ data.selectLocalOccurrenceWords ++
+        data.selectBlockStartWords)
+      (by
+        simpa [layoutWords, accessBlockWords, accessOffsetWords,
+          rankBlockWords, rankLocalLimitWords, rankBaseRankWords,
+          selectBlockWords, selectLocalOccurrenceWords,
+          selectBlockStartWords, fixedWeightRouteFieldTableLayoutWords,
+          List.append_assoc] using data.routeStore_words_eq_layoutWords)
+      hlocal
+  simpa [accessBlockWords, accessOffsetWords, rankBlockWords,
+    rankLocalLimitWords, rankBaseRankWords,
+    fixedWeightRouteFieldTableWords, Nat.add_assoc] using hword
+
+theorem select_block_word_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (occurrence : Nat) :
+    data.routeData.routeStore.store.words[
+        data.accessBlockEntries.length + data.accessOffsetEntries.length +
+          data.rankBlockEntries.length + data.rankLocalLimitEntries.length +
+          data.rankBaseRankEntries.length +
+          data.selectBlockLocalSlot target occurrence]? =
+      some (SuccinctSpace.natToBitsLE data.fieldWidth
+        (data.routeData.selectRoute target occurrence).blockIndex) := by
+  have hlocal := localWord_get?
+    (fieldWidth := data.fieldWidth)
+    (hget := data.select_block_entry_eq target occurrence)
+  have hword :=
+    boundedPayloadWordStore_get?_of_words_append_middle
+      data.routeData.routeStore
+      (pre := data.accessBlockWords ++ data.accessOffsetWords ++
+        data.rankBlockWords ++ data.rankLocalLimitWords ++
+        data.rankBaseRankWords)
+      (mid := data.selectBlockWords)
+      (post := data.selectLocalOccurrenceWords ++
+        data.selectBlockStartWords)
+      (by
+        simpa [layoutWords, accessBlockWords, accessOffsetWords,
+          rankBlockWords, rankLocalLimitWords, rankBaseRankWords,
+          selectBlockWords, selectLocalOccurrenceWords,
+          selectBlockStartWords, fixedWeightRouteFieldTableLayoutWords,
+          List.append_assoc] using data.routeStore_words_eq_layoutWords)
+      hlocal
+  simpa [accessBlockWords, accessOffsetWords, rankBlockWords,
+    rankLocalLimitWords, rankBaseRankWords, selectBlockWords,
+    fixedWeightRouteFieldTableWords, Nat.add_assoc] using hword
+
+theorem select_localOccurrence_word_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (occurrence : Nat) :
+    data.routeData.routeStore.store.words[
+        data.accessBlockEntries.length + data.accessOffsetEntries.length +
+          data.rankBlockEntries.length + data.rankLocalLimitEntries.length +
+          data.rankBaseRankEntries.length + data.selectBlockEntries.length +
+          data.selectLocalOccurrenceLocalSlot target occurrence]? =
+      some (SuccinctSpace.natToBitsLE data.fieldWidth
+        (data.routeData.selectRoute target occurrence).localOccurrence) := by
+  have hlocal := localWord_get?
+    (fieldWidth := data.fieldWidth)
+    (hget := data.select_localOccurrence_entry_eq target occurrence)
+  have hword :=
+    boundedPayloadWordStore_get?_of_words_append_middle
+      data.routeData.routeStore
+      (pre := data.accessBlockWords ++ data.accessOffsetWords ++
+        data.rankBlockWords ++ data.rankLocalLimitWords ++
+        data.rankBaseRankWords ++ data.selectBlockWords)
+      (mid := data.selectLocalOccurrenceWords)
+      (post := data.selectBlockStartWords)
+      (by
+        simpa [layoutWords, accessBlockWords, accessOffsetWords,
+          rankBlockWords, rankLocalLimitWords, rankBaseRankWords,
+          selectBlockWords, selectLocalOccurrenceWords,
+          selectBlockStartWords, fixedWeightRouteFieldTableLayoutWords,
+          List.append_assoc] using data.routeStore_words_eq_layoutWords)
+      hlocal
+  simpa [accessBlockWords, accessOffsetWords, rankBlockWords,
+    rankLocalLimitWords, rankBaseRankWords, selectBlockWords,
+    selectLocalOccurrenceWords, fixedWeightRouteFieldTableWords,
+    Nat.add_assoc] using hword
+
+theorem select_blockStart_word_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (occurrence : Nat) :
+    data.routeData.routeStore.store.words[
+        data.accessBlockEntries.length + data.accessOffsetEntries.length +
+          data.rankBlockEntries.length + data.rankLocalLimitEntries.length +
+          data.rankBaseRankEntries.length + data.selectBlockEntries.length +
+          data.selectLocalOccurrenceEntries.length +
+          data.selectBlockStartLocalSlot target occurrence]? =
+      some (SuccinctSpace.natToBitsLE data.fieldWidth
+        (data.routeData.selectRoute target occurrence).blockStart) := by
+  have hlocal := localWord_get?
+    (fieldWidth := data.fieldWidth)
+    (hget := data.select_blockStart_entry_eq target occurrence)
+  have hword :=
+    boundedPayloadWordStore_get?_of_words_append_middle
+      data.routeData.routeStore
+      (pre := data.accessBlockWords ++ data.accessOffsetWords ++
+        data.rankBlockWords ++ data.rankLocalLimitWords ++
+        data.rankBaseRankWords ++ data.selectBlockWords ++
+        data.selectLocalOccurrenceWords)
+      (mid := data.selectBlockStartWords)
+      (post := [])
+      (by
+        simpa [layoutWords, accessBlockWords, accessOffsetWords,
+          rankBlockWords, rankLocalLimitWords, rankBaseRankWords,
+          selectBlockWords, selectLocalOccurrenceWords,
+          selectBlockStartWords, fixedWeightRouteFieldTableLayoutWords,
+          List.append_assoc] using data.routeStore_words_eq_layoutWords)
+      hlocal
+  simpa [accessBlockWords, accessOffsetWords, rankBlockWords,
+    rankLocalLimitWords, rankBaseRankWords, selectBlockWords,
+    selectLocalOccurrenceWords, selectBlockStartWords,
+    fixedWeightRouteFieldTableWords, Nat.add_assoc] using hword
+
+def toPackedRouteTableData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientComputedRRRPackedRouteTableData
+      bits blocks overhead wordSize routeCost localQueryCost queryCost where
+  routeData := data.routeData
+  fieldWidth := data.fieldWidth
+  fieldWidth_le_wordSize := data.fieldWidth_le_wordSize
+  accessBlockSlot := data.accessBlockLocalSlot
+  accessOffsetSlot := fun i =>
+    data.accessBlockEntries.length + data.accessOffsetLocalSlot i
+  rankBlockSlot := fun target pos =>
+    data.accessBlockEntries.length + data.accessOffsetEntries.length +
+      data.rankBlockLocalSlot target pos
+  rankLocalLimitSlot := fun target pos =>
+    data.accessBlockEntries.length + data.accessOffsetEntries.length +
+      data.rankBlockEntries.length +
+      data.rankLocalLimitLocalSlot target pos
+  rankBaseRankSlot := fun target pos =>
+    data.accessBlockEntries.length + data.accessOffsetEntries.length +
+      data.rankBlockEntries.length + data.rankLocalLimitEntries.length +
+      data.rankBaseRankLocalSlot target pos
+  selectBlockSlot := fun target occurrence =>
+    data.accessBlockEntries.length + data.accessOffsetEntries.length +
+      data.rankBlockEntries.length + data.rankLocalLimitEntries.length +
+      data.rankBaseRankEntries.length +
+      data.selectBlockLocalSlot target occurrence
+  selectLocalOccurrenceSlot := fun target occurrence =>
+    data.accessBlockEntries.length + data.accessOffsetEntries.length +
+      data.rankBlockEntries.length + data.rankLocalLimitEntries.length +
+      data.rankBaseRankEntries.length + data.selectBlockEntries.length +
+      data.selectLocalOccurrenceLocalSlot target occurrence
+  selectBlockStartSlot := fun target occurrence =>
+    data.accessBlockEntries.length + data.accessOffsetEntries.length +
+      data.rankBlockEntries.length + data.rankLocalLimitEntries.length +
+      data.rankBaseRankEntries.length + data.selectBlockEntries.length +
+      data.selectLocalOccurrenceEntries.length +
+      data.selectBlockStartLocalSlot target occurrence
+  access_metadata_reads_eq := data.access_metadata_reads_eq
+  rank_metadata_reads_eq := data.rank_metadata_reads_eq
+  select_metadata_reads_eq := data.select_metadata_reads_eq
+  access_block_lt := fun i =>
+    routeFieldEntry_lt data.accessBlockEntries_bound
+      (data.access_block_entry_eq i)
+  access_offset_lt := fun i =>
+    routeFieldEntry_lt data.accessOffsetEntries_bound
+      (data.access_offset_entry_eq i)
+  rank_block_lt := fun target pos =>
+    routeFieldEntry_lt data.rankBlockEntries_bound
+      (data.rank_block_entry_eq target pos)
+  rank_localLimit_lt := fun target pos =>
+    routeFieldEntry_lt data.rankLocalLimitEntries_bound
+      (data.rank_localLimit_entry_eq target pos)
+  rank_baseRank_lt := fun target pos =>
+    routeFieldEntry_lt data.rankBaseRankEntries_bound
+      (data.rank_baseRank_entry_eq target pos)
+  select_block_lt := fun target occurrence =>
+    routeFieldEntry_lt data.selectBlockEntries_bound
+      (data.select_block_entry_eq target occurrence)
+  select_localOccurrence_lt := fun target occurrence =>
+    routeFieldEntry_lt data.selectLocalOccurrenceEntries_bound
+      (data.select_localOccurrence_entry_eq target occurrence)
+  select_blockStart_lt := fun target occurrence =>
+    routeFieldEntry_lt data.selectBlockStartEntries_bound
+      (data.select_blockStart_entry_eq target occurrence)
+  access_block_word_eq := data.access_block_word_eq
+  access_offset_word_eq := data.access_offset_word_eq
+  rank_block_word_eq := data.rank_block_word_eq
+  rank_localLimit_word_eq := data.rank_localLimit_word_eq
+  rank_baseRank_word_eq := data.rank_baseRank_word_eq
+  select_block_word_eq := data.select_block_word_eq
+  select_localOccurrence_word_eq := data.select_localOccurrence_word_eq
+  select_blockStart_word_eq := data.select_blockStart_word_eq
+
+def LayoutPackedProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    Prop :=
+  data.toPackedRouteTableData.PackedRouteTableProfile /\
+    data.routeData.routeStore.store.words.toList =
+      data.layoutWords /\
+    SuccinctSpace.flattenPayloadWords data.layoutWords =
+      data.routeData.routePayload
+
+theorem route_field_table_layout_packed_profile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    data.LayoutPackedProfile := by
+  refine
+    ⟨data.toPackedRouteTableData.packed_route_table_profile,
+      data.routeStore_words_eq_layoutWords,
+      ?_⟩
+  rw [<- data.routeStore_words_eq_layoutWords]
+  exact data.routeData.routeStore.erases
+
+end FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+
+def boundedPayloadWordStoreAppend
+    {payload1 payload2 : List Bool} {wordSize : Nat}
+    (left : SuccinctSpace.BoundedPayloadWordStore payload1 wordSize)
+    (right : SuccinctSpace.BoundedPayloadWordStore payload2 wordSize) :
+    SuccinctSpace.BoundedPayloadWordStore (payload1 ++ payload2) wordSize where
+  store :=
+    { words := (left.store.words.toList ++ right.store.words.toList).toArray
+      erases := by
+        rw [SuccinctSpace.flattenPayloadWords_append,
+          left.store.erases, right.store.erases] }
+  word_length_le := by
+    intro word hmem
+    have hlist :
+        List.Mem word
+          (left.store.words.toList ++ right.store.words.toList) := by
+      simpa using hmem
+    rcases List.mem_append.mp hlist with hleft | hright
+    · exact left.word_length_le hleft
+    · exact right.word_length_le hright
+
+@[simp] theorem boundedPayloadWordStoreAppend_words_toList
+    {payload1 payload2 : List Bool} {wordSize : Nat}
+    (left : SuccinctSpace.BoundedPayloadWordStore payload1 wordSize)
+    (right : SuccinctSpace.BoundedPayloadWordStore payload2 wordSize) :
+    (boundedPayloadWordStoreAppend left right).store.words.toList =
+      left.store.words.toList ++ right.store.words.toList := by
+  rfl
+
+/--
+Envelope combining the concrete eight-field route layout with the concrete
+per-block length/class tables.
+
+The route and class/length words are concatenated into one charged ambient
+auxiliary store.  The profile below keeps the route-field readback, the
+class/length readback, and the class/length-consuming ambient evaluator visible
+as separate obligations.
+-/
+structure FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+    (bits : List Bool) (blocks : List (List Bool))
+    (overhead wordSize routeCost localQueryCost queryCost : Nat) where
+  routeLayout :
+    FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+      bits blocks overhead wordSize routeCost localQueryCost queryCost
+  classLengthTable :
+    FixedWeightAmbientComputedRRRClassLengthTableData
+      bits blocks wordSize routeLayout.fieldWidth
+  class_length_local_query_cost_le :
+    forall {block : List Bool}, List.Mem block blocks ->
+      fixedWeightComputedRRRClassLengthQueryCost block <= localQueryCost
+
+namespace FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+
+def classLengthOverhead
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    Nat :=
+  fixedWeightBlockClassLengthTableOverhead
+    data.routeLayout.fieldWidth blocks
+
+def totalMetadataOverhead
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    Nat :=
+  overhead + data.classLengthOverhead
+
+def combinedAuxPayload
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    List Bool :=
+  data.routeLayout.routeData.routePayload ++
+    fixedWeightBlockClassLengthTablePayload
+      data.routeLayout.fieldWidth blocks
+
+def combinedAuxStore
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    SuccinctSpace.BoundedPayloadWordStore data.combinedAuxPayload wordSize :=
+  boundedPayloadWordStoreAppend data.routeLayout.routeData.routeStore
+    data.classLengthTable.classLengthStore
+
+def routeWordCount
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    Nat :=
+  data.routeLayout.routeData.routeStore.store.words.toList.length
+
+def combinedLengthSlot
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (blockIndex : Nat) : Nat :=
+  data.routeWordCount + data.classLengthTable.lengthSlot blockIndex
+
+def combinedClassSlot
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (blockIndex : Nat) : Nat :=
+  data.routeWordCount + data.classLengthTable.classSlot blockIndex
+
+theorem combinedAuxStore_words_toList
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    data.combinedAuxStore.store.words.toList =
+      data.routeLayout.routeData.routeStore.store.words.toList ++
+        data.classLengthTable.classLengthStore.store.words.toList := by
+  rfl
+
+theorem combined_route_word_eq_of
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    {slot : Nat} {word : List Bool}
+    (hword :
+      data.routeLayout.routeData.routeStore.store.words[slot]? =
+        some word) :
+    data.combinedAuxStore.store.words[slot]? = some word := by
+  have hlocal :
+      data.routeLayout.routeData.routeStore.store.words.toList[slot]? =
+        some word := by
+    simpa [Array.getElem?_toList] using hword
+  have hcombined :=
+    boundedPayloadWordStore_get?_of_words_append_middle
+      data.combinedAuxStore
+      (pre := [])
+      (mid := data.routeLayout.routeData.routeStore.store.words.toList)
+      (post := data.classLengthTable.classLengthStore.store.words.toList)
+      (by simp [combinedAuxStore, boundedPayloadWordStoreAppend])
+      hlocal
+  simpa using hcombined
+
+theorem combined_length_word_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    {blockIndex : Nat} {block : List Bool}
+    (hblock : blocks[blockIndex]? = some block) :
+    data.combinedAuxStore.store.words[data.combinedLengthSlot blockIndex]? =
+      some (SuccinctSpace.natToBitsLE
+        data.routeLayout.fieldWidth block.length) := by
+  have hlocal :
+      data.classLengthTable.classLengthStore.store.words[
+          data.classLengthTable.lengthSlot blockIndex]? =
+        some (SuccinctSpace.natToBitsLE
+          data.routeLayout.fieldWidth block.length) :=
+    data.classLengthTable.length_word_eq hblock
+  have hlocalList :
+      data.classLengthTable.classLengthStore.store.words.toList[
+          data.classLengthTable.lengthSlot blockIndex]? =
+        some (SuccinctSpace.natToBitsLE
+          data.routeLayout.fieldWidth block.length) := by
+    simpa [Array.getElem?_toList] using hlocal
+  have hcombined :=
+    boundedPayloadWordStore_get?_of_words_append_middle
+      data.combinedAuxStore
+      (pre := data.routeLayout.routeData.routeStore.store.words.toList)
+      (mid := data.classLengthTable.classLengthStore.store.words.toList)
+      (post := [])
+      (by simp [combinedAuxStore, boundedPayloadWordStoreAppend])
+      hlocalList
+  simpa [combinedLengthSlot, routeWordCount] using hcombined
+
+theorem combined_class_word_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    {blockIndex : Nat} {block : List Bool}
+    (hblock : blocks[blockIndex]? = some block) :
+    data.combinedAuxStore.store.words[data.combinedClassSlot blockIndex]? =
+      some (SuccinctSpace.natToBitsLE
+        data.routeLayout.fieldWidth (trueCount block)) := by
+  have hlocal :
+      data.classLengthTable.classLengthStore.store.words[
+          data.classLengthTable.classSlot blockIndex]? =
+        some (SuccinctSpace.natToBitsLE
+          data.routeLayout.fieldWidth (trueCount block)) :=
+    data.classLengthTable.class_word_eq hblock
+  have hlocalList :
+      data.classLengthTable.classLengthStore.store.words.toList[
+          data.classLengthTable.classSlot blockIndex]? =
+        some (SuccinctSpace.natToBitsLE
+          data.routeLayout.fieldWidth (trueCount block)) := by
+    simpa [Array.getElem?_toList] using hlocal
+  have hcombined :=
+    boundedPayloadWordStore_get?_of_words_append_middle
+      data.combinedAuxStore
+      (pre := data.routeLayout.routeData.routeStore.store.words.toList)
+      (mid := data.classLengthTable.classLengthStore.store.words.toList)
+      (post := [])
+      (by simp [combinedAuxStore, boundedPayloadWordStoreAppend])
+      hlocalList
+  simpa [combinedClassSlot, routeWordCount] using hcombined
+
+theorem combined_classLength_read_values_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    {blockIndex : Nat} {block : List Bool}
+    (hblock : blocks[blockIndex]? = some block) :
+    boundedPayloadWordReadValues data.combinedAuxStore
+        [data.combinedLengthSlot blockIndex,
+         data.combinedClassSlot blockIndex] =
+      [some (SuccinctSpace.natToBitsLE
+          data.routeLayout.fieldWidth block.length),
+       some (SuccinctSpace.natToBitsLE
+          data.routeLayout.fieldWidth (trueCount block))] := by
+  simp [boundedPayloadWordReadValues,
+    data.combined_length_word_eq hblock,
+    data.combined_class_word_eq hblock]
+
+def classLengthMetadataReads
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    {blockIndex : Nat} {block : List Bool}
+    (_hblock : blocks[blockIndex]? = some block) : List Nat :=
+  [data.combinedLengthSlot blockIndex, data.combinedClassSlot blockIndex]
+
+@[simp] theorem classLengthMetadataReads_length
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    {blockIndex : Nat} {block : List Bool}
+    (hblock : blocks[blockIndex]? = some block) :
+    (data.classLengthMetadataReads hblock).length = 2 := by
+  simp [classLengthMetadataReads]
+
+theorem classLengthMetadataReadValues_eq
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    {blockIndex : Nat} {block : List Bool}
+    (hblock : blocks[blockIndex]? = some block) :
+    boundedPayloadWordReadValues data.combinedAuxStore
+        (data.classLengthMetadataReads hblock) =
+      [some (SuccinctSpace.natToBitsLE
+          data.routeLayout.fieldWidth block.length),
+       some (SuccinctSpace.natToBitsLE
+          data.routeLayout.fieldWidth (trueCount block))] := by
+  simpa [classLengthMetadataReads] using
+    data.combined_classLength_read_values_eq hblock
+
+theorem classLengthMetadataReadValues_append
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    {blockIndex : Nat} {block : List Bool}
+    (hblock : blocks[blockIndex]? = some block)
+    (routeReads : List Nat) :
+    boundedPayloadWordReadValues data.combinedAuxStore
+        (data.classLengthMetadataReads hblock ++ routeReads) =
+      [some (SuccinctSpace.natToBitsLE
+          data.routeLayout.fieldWidth block.length),
+       some (SuccinctSpace.natToBitsLE
+          data.routeLayout.fieldWidth (trueCount block))] ++
+        boundedPayloadWordReadValues data.combinedAuxStore routeReads := by
+  simp [data.classLengthMetadataReadValues_eq hblock]
+
+theorem code_read_values_singleton
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    {blockIndex : Nat} {block : List Bool}
+    (hblock : blocks[blockIndex]? = some block) :
+    boundedPayloadWordReadValues data.routeLayout.routeData.codeStore
+        [blockIndex] =
+      [some (fixedWeightPackedPayload block)] := by
+  have hget :
+      data.routeLayout.routeData.codeStore.store.words[blockIndex]? =
+        some (fixedWeightPackedPayload block) :=
+    fixedWeightAmbientBlockCodeStore_get?_of_aligned
+      data.routeLayout.routeData.codeStore_aligned hblock
+  simp [boundedPayloadWordReadValues, hget]
+
+def accessAuxReads
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (i : Nat) (_codeWords : List (Option (List Bool))) : List Nat :=
+  let route := data.routeLayout.routeData.accessRoute i
+  data.classLengthMetadataReads route.block_get ++ route.metadataReads
+
+def rankAuxReads
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (pos : Nat)
+    (_codeWords : List (Option (List Bool))) : List Nat :=
+  let route := data.routeLayout.routeData.rankRoute target pos
+  data.classLengthMetadataReads route.block_get ++ route.metadataReads
+
+def selectAuxReads
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (occurrence : Nat)
+    (_codeWords : List (Option (List Bool))) : List Nat :=
+  let route := data.routeLayout.routeData.selectRoute target occurrence
+  data.classLengthMetadataReads route.block_get ++ route.metadataReads
+
+def accessEvalCosted
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (i : Nat) (codeWords auxWords : List (Option (List Bool))) :
+    Costed (Option Bool) :=
+  let route := data.routeLayout.routeData.accessRoute i
+  Costed.map (fun word => word[route.offset]?)
+    (fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted
+      auxWords codeWords)
+
+def rankEvalCosted
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (pos : Nat)
+    (codeWords auxWords : List (Option (List Bool))) :
+    Costed Nat :=
+  let route := data.routeLayout.routeData.rankRoute target pos
+  Costed.map (fun localRank => route.baseRank + localRank)
+    (Costed.bind
+      (fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted
+        auxWords codeWords) fun word =>
+      (RAM.rankBoolWordPrefix target word route.localLimit).toCosted)
+
+def selectEvalCosted
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (target : Bool) (occurrence : Nat)
+    (codeWords auxWords : List (Option (List Bool))) :
+    Costed (Option Nat) :=
+  let route := data.routeLayout.routeData.selectRoute target occurrence
+  Costed.map (fun local? =>
+      local?.map (fun offset => route.blockStart + offset))
+    (Costed.bind
+      (fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted
+        auxWords codeWords) fun word =>
+      (RAM.selectBoolWord target word route.localOccurrence).toCosted)
+
+def toCombinedRouteTableData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientComputedRRRRouteTableData
+      bits blocks data.totalMetadataOverhead wordSize
+      routeCost localQueryCost queryCost where
+  wordSize_pos := data.routeLayout.routeData.wordSize_pos
+  wordSize_le_ambient := data.routeLayout.routeData.wordSize_le_ambient
+  blockSize := data.routeLayout.routeData.blockSize
+  blockSize_pos := data.routeLayout.routeData.blockSize_pos
+  blocks_flatten := data.routeLayout.routeData.blocks_flatten
+  block_length_le := data.routeLayout.routeData.block_length_le
+  blockSize_le_wordSize := data.routeLayout.routeData.blockSize_le_wordSize
+  block_code_width_le := data.routeLayout.routeData.block_code_width_le
+  codeStore := data.routeLayout.routeData.codeStore
+  codeStore_aligned := data.routeLayout.routeData.codeStore_aligned
+  routePayload := data.combinedAuxPayload
+  routeStore := data.combinedAuxStore
+  routePayload_length_eq := by
+    simp [combinedAuxPayload, totalMetadataOverhead, classLengthOverhead,
+      fixedWeightBlockClassLengthTablePayload_length,
+      data.routeLayout.routeData.routePayload_length_eq]
+  accessRoute := data.routeLayout.routeData.accessRoute
+  rankRoute := data.routeLayout.routeData.rankRoute
+  selectRoute := data.routeLayout.routeData.selectRoute
+  access_metadata_reads_le := data.routeLayout.routeData.access_metadata_reads_le
+  rank_metadata_reads_le := data.routeLayout.routeData.rank_metadata_reads_le
+  select_metadata_reads_le := data.routeLayout.routeData.select_metadata_reads_le
+  local_query_cost_le := data.routeLayout.routeData.local_query_cost_le
+  route_plus_local_le := data.routeLayout.routeData.route_plus_local_le
+
+def toCombinedPackedRouteTableData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientComputedRRRPackedRouteTableData
+      bits blocks data.totalMetadataOverhead wordSize
+      routeCost localQueryCost queryCost where
+  routeData := data.toCombinedRouteTableData
+  fieldWidth := data.routeLayout.fieldWidth
+  fieldWidth_le_wordSize := data.routeLayout.fieldWidth_le_wordSize
+  accessBlockSlot := data.routeLayout.toPackedRouteTableData.accessBlockSlot
+  accessOffsetSlot := data.routeLayout.toPackedRouteTableData.accessOffsetSlot
+  rankBlockSlot := data.routeLayout.toPackedRouteTableData.rankBlockSlot
+  rankLocalLimitSlot :=
+    data.routeLayout.toPackedRouteTableData.rankLocalLimitSlot
+  rankBaseRankSlot :=
+    data.routeLayout.toPackedRouteTableData.rankBaseRankSlot
+  selectBlockSlot := data.routeLayout.toPackedRouteTableData.selectBlockSlot
+  selectLocalOccurrenceSlot :=
+    data.routeLayout.toPackedRouteTableData.selectLocalOccurrenceSlot
+  selectBlockStartSlot :=
+    data.routeLayout.toPackedRouteTableData.selectBlockStartSlot
+  access_metadata_reads_eq := data.routeLayout.access_metadata_reads_eq
+  rank_metadata_reads_eq := data.routeLayout.rank_metadata_reads_eq
+  select_metadata_reads_eq := data.routeLayout.select_metadata_reads_eq
+  access_block_lt := data.routeLayout.toPackedRouteTableData.access_block_lt
+  access_offset_lt := data.routeLayout.toPackedRouteTableData.access_offset_lt
+  rank_block_lt := data.routeLayout.toPackedRouteTableData.rank_block_lt
+  rank_localLimit_lt :=
+    data.routeLayout.toPackedRouteTableData.rank_localLimit_lt
+  rank_baseRank_lt := data.routeLayout.toPackedRouteTableData.rank_baseRank_lt
+  select_block_lt := data.routeLayout.toPackedRouteTableData.select_block_lt
+  select_localOccurrence_lt :=
+    data.routeLayout.toPackedRouteTableData.select_localOccurrence_lt
+  select_blockStart_lt :=
+    data.routeLayout.toPackedRouteTableData.select_blockStart_lt
+  access_block_word_eq := fun i =>
+    data.combined_route_word_eq_of
+      (data.routeLayout.access_block_word_eq i)
+  access_offset_word_eq := fun i =>
+    data.combined_route_word_eq_of
+      (data.routeLayout.access_offset_word_eq i)
+  rank_block_word_eq := fun target pos =>
+    data.combined_route_word_eq_of
+      (data.routeLayout.rank_block_word_eq target pos)
+  rank_localLimit_word_eq := fun target pos =>
+    data.combined_route_word_eq_of
+      (data.routeLayout.rank_localLimit_word_eq target pos)
+  rank_baseRank_word_eq := fun target pos =>
+    data.combined_route_word_eq_of
+      (data.routeLayout.rank_baseRank_word_eq target pos)
+  select_block_word_eq := fun target occurrence =>
+    data.combined_route_word_eq_of
+      (data.routeLayout.select_block_word_eq target occurrence)
+  select_localOccurrence_word_eq := fun target occurrence =>
+    data.combined_route_word_eq_of
+      (data.routeLayout.select_localOccurrence_word_eq
+        target occurrence)
+  select_blockStart_word_eq := fun target occurrence =>
+    data.combined_route_word_eq_of
+      (data.routeLayout.select_blockStart_word_eq target occurrence)
+
+def toClassLengthAmbientBlockCompositionData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    FixedWeightAmbientBlockCompositionData
+      bits blocks data.totalMetadataOverhead wordSize queryCost := by
+  refine
+    { wordSize_pos := data.routeLayout.routeData.wordSize_pos
+      wordSize_le_ambient := data.routeLayout.routeData.wordSize_le_ambient
+      blockSize := data.routeLayout.routeData.blockSize
+      blockSize_pos := data.routeLayout.routeData.blockSize_pos
+      blocks_flatten := data.routeLayout.routeData.blocks_flatten
+      block_length_le := data.routeLayout.routeData.block_length_le
+      blockSize_le_wordSize :=
+        data.routeLayout.routeData.blockSize_le_wordSize
+      block_code_width_le :=
+        data.routeLayout.routeData.block_code_width_le
+      codeStore := data.routeLayout.routeData.codeStore
+      auxPayload := data.combinedAuxPayload
+      auxStore := data.combinedAuxStore
+      aux_length_eq := data.toCombinedRouteTableData.routePayload_length_eq
+      accessCodeReads := fun i =>
+        [(data.routeLayout.routeData.accessRoute i).blockIndex]
+      accessAuxReads := data.accessAuxReads
+      rankCodeReads := fun target pos =>
+        [(data.routeLayout.routeData.rankRoute target pos).blockIndex]
+      rankAuxReads := data.rankAuxReads
+      selectCodeReads := fun target occurrence =>
+        [(data.routeLayout.routeData.selectRoute
+          target occurrence).blockIndex]
+      selectAuxReads := data.selectAuxReads
+      accessEvalCosted := data.accessEvalCosted
+      rankEvalCosted := data.rankEvalCosted
+      selectEvalCosted := data.selectEvalCosted
+      access_query_cost_le := ?_
+      rank_query_cost_le := ?_
+      select_query_cost_le := ?_
+      access_eval_exact := ?_
+      rank_eval_exact := ?_
+      select_eval_exact := ?_ }
+  · intro i
+    let route := data.routeLayout.routeData.accessRoute i
+    have hroute := data.routeLayout.routeData.access_metadata_reads_le i
+    have hmem : List.Mem route.block blocks :=
+      List.mem_of_getElem? route.block_get
+    have hlocal := data.class_length_local_query_cost_le hmem
+    have htotal := data.routeLayout.routeData.route_plus_local_le
+    have hcode := data.code_read_values_singleton route.block_get
+    have haux :=
+      data.classLengthMetadataReadValues_append
+        route.block_get route.metadataReads
+    have hlen :=
+      data.classLengthTable.block_length_lt_fieldWidthPow hmem
+    have hclass := trueCount_lt_of_length_lt hlen
+    have hclassLength :
+        fixedWeightClassLengthFromReadValues
+            (some (SuccinctSpace.natToBitsLE data.routeLayout.fieldWidth
+                route.block.length) ::
+              some (SuccinctSpace.natToBitsLE data.routeLayout.fieldWidth
+                (trueCount route.block)) ::
+              boundedPayloadWordReadValues data.combinedAuxStore
+                route.metadataReads) =
+          (route.block.length, trueCount route.block) :=
+      fixedWeightClassLengthFromReadValues_encoded_prefix
+        (boundedPayloadWordReadValues data.combinedAuxStore
+          route.metadataReads) hlen hclass
+    simp [accessEvalCosted, accessAuxReads, route, hcode, haux,
+      fixedWeightComputedRRRClassLengthQueryCost,
+      fixedWeightComputedRRRDecodeTicks, hclassLength] at *
+    omega
+  · intro target pos
+    let route := data.routeLayout.routeData.rankRoute target pos
+    have hroute :=
+      data.routeLayout.routeData.rank_metadata_reads_le target pos
+    have hmem : List.Mem route.block blocks :=
+      List.mem_of_getElem? route.block_get
+    have hlocal := data.class_length_local_query_cost_le hmem
+    have htotal := data.routeLayout.routeData.route_plus_local_le
+    have hcode := data.code_read_values_singleton route.block_get
+    have haux :=
+      data.classLengthMetadataReadValues_append
+        route.block_get route.metadataReads
+    have hlen :=
+      data.classLengthTable.block_length_lt_fieldWidthPow hmem
+    have hclass := trueCount_lt_of_length_lt hlen
+    have hclassLength :
+        fixedWeightClassLengthFromReadValues
+            (some (SuccinctSpace.natToBitsLE data.routeLayout.fieldWidth
+                route.block.length) ::
+              some (SuccinctSpace.natToBitsLE data.routeLayout.fieldWidth
+                (trueCount route.block)) ::
+              boundedPayloadWordReadValues data.combinedAuxStore
+                route.metadataReads) =
+          (route.block.length, trueCount route.block) :=
+      fixedWeightClassLengthFromReadValues_encoded_prefix
+        (boundedPayloadWordReadValues data.combinedAuxStore
+          route.metadataReads) hlen hclass
+    simp [rankEvalCosted, rankAuxReads, route, hcode, haux,
+      fixedWeightComputedRRRClassLengthQueryCost,
+      fixedWeightComputedRRRDecodeTicks, hclassLength] at *
+    omega
+  · intro target occurrence
+    let route :=
+      data.routeLayout.routeData.selectRoute target occurrence
+    have hroute :=
+      data.routeLayout.routeData.select_metadata_reads_le
+        target occurrence
+    have hmem : List.Mem route.block blocks :=
+      List.mem_of_getElem? route.block_get
+    have hlocal := data.class_length_local_query_cost_le hmem
+    have htotal := data.routeLayout.routeData.route_plus_local_le
+    have hcode := data.code_read_values_singleton route.block_get
+    have haux :=
+      data.classLengthMetadataReadValues_append
+        route.block_get route.metadataReads
+    have hlen :=
+      data.classLengthTable.block_length_lt_fieldWidthPow hmem
+    have hclass := trueCount_lt_of_length_lt hlen
+    have hclassLength :
+        fixedWeightClassLengthFromReadValues
+            (some (SuccinctSpace.natToBitsLE data.routeLayout.fieldWidth
+                route.block.length) ::
+              some (SuccinctSpace.natToBitsLE data.routeLayout.fieldWidth
+                (trueCount route.block)) ::
+              boundedPayloadWordReadValues data.combinedAuxStore
+                route.metadataReads) =
+          (route.block.length, trueCount route.block) :=
+      fixedWeightClassLengthFromReadValues_encoded_prefix
+        (boundedPayloadWordReadValues data.combinedAuxStore
+          route.metadataReads) hlen hclass
+    simp [selectEvalCosted, selectAuxReads, route, hcode, haux,
+      fixedWeightComputedRRRClassLengthQueryCost,
+      fixedWeightComputedRRRDecodeTicks, hclassLength] at *
+    omega
+  · intro i
+    let route := data.routeLayout.routeData.accessRoute i
+    have hmem : List.Mem route.block blocks :=
+      List.mem_of_getElem? route.block_get
+    have hcode := data.code_read_values_singleton route.block_get
+    have haux :=
+      data.classLengthMetadataReadValues_append
+        route.block_get route.metadataReads
+    have hlen :=
+      data.classLengthTable.block_length_lt_fieldWidthPow hmem
+    have hclass := trueCount_lt_of_length_lt hlen
+    simp only [accessEvalCosted, accessAuxReads, Costed.erase_map]
+    change
+      (fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted
+          (boundedPayloadWordReadValues data.combinedAuxStore
+            (data.classLengthMetadataReads route.block_get ++
+              route.metadataReads))
+          (boundedPayloadWordReadValues
+            data.routeLayout.routeData.codeStore
+            [route.blockIndex])).erase[route.offset]? =
+        bits[i]?
+    rw [hcode]
+    rw [haux]
+    rw [fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted_erase_prefix
+      (boundedPayloadWordReadValues data.combinedAuxStore
+        route.metadataReads) hlen hclass]
+    exact route.access_exact
+  · intro target pos
+    let route := data.routeLayout.routeData.rankRoute target pos
+    have hmem : List.Mem route.block blocks :=
+      List.mem_of_getElem? route.block_get
+    have hcode := data.code_read_values_singleton route.block_get
+    have haux :=
+      data.classLengthMetadataReadValues_append
+        route.block_get route.metadataReads
+    have hlen :=
+      data.classLengthTable.block_length_lt_fieldWidthPow hmem
+    have hclass := trueCount_lt_of_length_lt hlen
+    have hrun :=
+      Succinct.rankBoolWordPrefix_toCosted_run
+        target route.block route.localLimit
+    simp only [rankEvalCosted, rankAuxReads, Costed.erase_map,
+      Costed.erase_bind]
+    change
+      route.baseRank +
+          (RAM.rankBoolWordPrefix target
+              (fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted
+                (boundedPayloadWordReadValues data.combinedAuxStore
+                  (data.classLengthMetadataReads route.block_get ++
+                    route.metadataReads))
+                (boundedPayloadWordReadValues
+                  data.routeLayout.routeData.codeStore
+                  [route.blockIndex])).erase
+              route.localLimit).toCosted.value =
+        Succinct.rankPrefix target bits pos
+    rw [hcode]
+    rw [haux]
+    rw [fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted_erase_prefix
+      (boundedPayloadWordReadValues data.combinedAuxStore
+        route.metadataReads) hlen hclass]
+    change
+      route.baseRank +
+          (RAM.rankBoolWordPrefix target route.block route.localLimit).toCosted.value =
+        Succinct.rankPrefix target bits pos
+    have hram :
+        (RAM.rankBoolWordPrefix target route.block route.localLimit).toCosted.value =
+          Succinct.rankPrefix target route.block route.localLimit := by
+      simpa [Costed.run] using congrArg Prod.fst hrun
+    rw [hram]
+    exact route.rank_exact
+  · intro target occurrence
+    let route :=
+      data.routeLayout.routeData.selectRoute target occurrence
+    have hmem : List.Mem route.block blocks :=
+      List.mem_of_getElem? route.block_get
+    have hcode := data.code_read_values_singleton route.block_get
+    have haux :=
+      data.classLengthMetadataReadValues_append
+        route.block_get route.metadataReads
+    have hlen :=
+      data.classLengthTable.block_length_lt_fieldWidthPow hmem
+    have hclass := trueCount_lt_of_length_lt hlen
+    have hrun :=
+      Succinct.selectBoolWord_toCosted_run
+        target route.block route.localOccurrence
+    simp only [selectEvalCosted, selectAuxReads, Costed.erase_map,
+      Costed.erase_bind]
+    change
+      ((RAM.selectBoolWord target
+              (fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted
+                (boundedPayloadWordReadValues data.combinedAuxStore
+                  (data.classLengthMetadataReads route.block_get ++
+                    route.metadataReads))
+                (boundedPayloadWordReadValues
+                  data.routeLayout.routeData.codeStore
+                  [route.blockIndex])).erase
+              route.localOccurrence).toCosted.value).map
+          (fun offset => route.blockStart + offset) =
+        Succinct.select target bits occurrence
+    rw [hcode]
+    rw [haux]
+    rw [fixedWeightComputedRRRDecodeFromClassLengthReadValuesCosted_erase_prefix
+      (boundedPayloadWordReadValues data.combinedAuxStore
+        route.metadataReads) hlen hclass]
+    change
+      ((RAM.selectBoolWord target route.block
+              route.localOccurrence).toCosted.value).map
+          (fun offset => route.blockStart + offset) =
+        Succinct.select target bits occurrence
+    have hselect :
+        (RAM.selectBoolWord target route.block
+            route.localOccurrence).toCosted.value =
+          Succinct.select target route.block route.localOccurrence := by
+      simpa [Costed.run] using congrArg Prod.fst hrun
+    rw [hselect]
+    exact route.select_exact
+
+def RouteClassLengthEnvelopeProfile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    Prop :=
+  data.routeLayout.LayoutPackedProfile /\
+    data.classLengthTable.ClassLengthTableProfile /\
+    data.toCombinedPackedRouteTableData.PackedRouteTableProfile /\
+    data.toClassLengthAmbientBlockCompositionData.DirectoryProfile /\
+    data.routeLayout.routeData.routePayload.length = overhead /\
+    (fixedWeightBlockClassLengthTablePayload
+        data.routeLayout.fieldWidth blocks).length =
+      data.classLengthOverhead /\
+    data.toCombinedRouteTableData.routePayload.length =
+      data.totalMetadataOverhead /\
+    SuccinctSpace.flattenPayloadWords
+        data.combinedAuxStore.store.words.toList =
+      data.combinedAuxPayload /\
+    data.totalMetadataOverhead =
+      overhead + data.classLengthOverhead /\
+    (forall {blockIndex : Nat} {block : List Bool},
+      blocks[blockIndex]? = some block ->
+        boundedPayloadWordReadValues
+            data.classLengthTable.classLengthStore
+            [data.classLengthTable.lengthSlot blockIndex,
+             data.classLengthTable.classSlot blockIndex] =
+         [some (SuccinctSpace.natToBitsLE
+              data.routeLayout.fieldWidth block.length),
+           some (SuccinctSpace.natToBitsLE
+              data.routeLayout.fieldWidth (trueCount block))]) /\
+    (forall {blockIndex : Nat} {block : List Bool},
+      blocks[blockIndex]? = some block ->
+        boundedPayloadWordReadValues
+            data.combinedAuxStore
+            [data.combinedLengthSlot blockIndex,
+             data.combinedClassSlot blockIndex] =
+          [some (SuccinctSpace.natToBitsLE
+              data.routeLayout.fieldWidth block.length),
+           some (SuccinctSpace.natToBitsLE
+              data.routeLayout.fieldWidth (trueCount block))]) /\
+    (forall {blockIndex : Nat} {block : List Bool},
+      (hblock : blocks[blockIndex]? = some block) ->
+        ((data.classLengthTable.localClassLengthBlockData hblock).toDependentAuxiliaryData).DirectoryProfile) /\
+    (forall i,
+      let route := data.routeLayout.routeData.accessRoute i
+      (data.toClassLengthAmbientBlockCompositionData.accessCosted i).cost <=
+          queryCost /\
+        boundedPayloadWordReadValues data.combinedAuxStore
+            (data.classLengthMetadataReads route.block_get ++
+              route.metadataReads) =
+          [some (SuccinctSpace.natToBitsLE
+              data.routeLayout.fieldWidth route.block.length),
+           some (SuccinctSpace.natToBitsLE
+              data.routeLayout.fieldWidth (trueCount route.block))] ++
+            boundedPayloadWordReadValues data.combinedAuxStore
+              route.metadataReads) /\
+    (forall target pos,
+      let route := data.routeLayout.routeData.rankRoute target pos
+      (data.toClassLengthAmbientBlockCompositionData.rankCosted
+          target pos).cost <= queryCost /\
+        boundedPayloadWordReadValues data.combinedAuxStore
+            (data.classLengthMetadataReads route.block_get ++
+              route.metadataReads) =
+          [some (SuccinctSpace.natToBitsLE
+              data.routeLayout.fieldWidth route.block.length),
+           some (SuccinctSpace.natToBitsLE
+              data.routeLayout.fieldWidth (trueCount route.block))] ++
+            boundedPayloadWordReadValues data.combinedAuxStore
+              route.metadataReads) /\
+    (forall target occurrence,
+      let route :=
+        data.routeLayout.routeData.selectRoute target occurrence
+      (data.toClassLengthAmbientBlockCompositionData.selectCosted
+          target occurrence).cost <= queryCost /\
+        boundedPayloadWordReadValues data.combinedAuxStore
+            (data.classLengthMetadataReads route.block_get ++
+              route.metadataReads) =
+          [some (SuccinctSpace.natToBitsLE
+              data.routeLayout.fieldWidth route.block.length),
+           some (SuccinctSpace.natToBitsLE
+              data.routeLayout.fieldWidth (trueCount route.block))] ++
+            boundedPayloadWordReadValues data.combinedAuxStore
+              route.metadataReads)
+
+theorem route_class_length_table_envelope_profile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost) :
+    data.RouteClassLengthEnvelopeProfile := by
+  refine
+    ⟨data.routeLayout.route_field_table_layout_packed_profile,
+      data.classLengthTable.class_length_table_profile,
+      data.toCombinedPackedRouteTableData.packed_route_table_profile,
+      data.toClassLengthAmbientBlockCompositionData.directory_profile,
+      data.routeLayout.routeData.routePayload_length_eq,
+      ?_,
+      data.toCombinedRouteTableData.routePayload_length_eq,
+      data.combinedAuxStore.erases,
+      rfl,
+      ?_,
+      ?_,
+      ?_,
+      ?_,
+      ?_,
+      ?_⟩
+  · exact
+      fixedWeightBlockClassLengthTablePayload_length
+        data.routeLayout.fieldWidth blocks
+  · intro blockIndex block hblock
+    exact data.classLengthTable.classLength_read_values_eq hblock
+  · intro blockIndex block hblock
+    exact data.combined_classLength_read_values_eq hblock
+  · intro blockIndex block hblock
+    exact
+      FixedWeightComputedRRRClassLengthBlockData.dependent_auxiliary_data_profile
+        (data.classLengthTable.localClassLengthBlockData hblock)
+  · intro i
+    exact
+      ⟨data.toClassLengthAmbientBlockCompositionData.accessCosted_cost_le i,
+        data.classLengthMetadataReadValues_append
+          (data.routeLayout.routeData.accessRoute i).block_get
+          (data.routeLayout.routeData.accessRoute i).metadataReads⟩
+  · intro target pos
+    exact
+      ⟨data.toClassLengthAmbientBlockCompositionData.rankCosted_cost_le
+          target pos,
+        data.classLengthMetadataReadValues_append
+          (data.routeLayout.routeData.rankRoute target pos).block_get
+          (data.routeLayout.routeData.rankRoute target pos).metadataReads⟩
+  · intro target occurrence
+    exact
+      ⟨data.toClassLengthAmbientBlockCompositionData.selectCosted_cost_le
+          target occurrence,
+        data.classLengthMetadataReadValues_append
+          (data.routeLayout.routeData.selectRoute
+            target occurrence).block_get
+          (data.routeLayout.routeData.selectRoute
+            target occurrence).metadataReads⟩
+
+end FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+
+/-- Combined auxiliary budget for route metadata plus class/length metadata. -/
+def fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverhead
+    (slots : Nat) (classLengthOverhead : Nat -> Nat) : Nat -> Nat :=
+  fun n =>
+    fixedWeightAmbientBlockAuxiliaryOverhead slots n +
+      classLengthOverhead n
+
+theorem fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverhead_littleO
+    (slots : Nat) {classLengthOverhead : Nat -> Nat}
+    (hclassLength :
+      SuccinctSpace.LittleOLinear classLengthOverhead) :
+    SuccinctSpace.LittleOLinear
+      (fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverhead
+        slots classLengthOverhead) := by
+  exact
+    (fixedWeightAmbientBlockAuxiliaryOverhead_littleO slots).add
+      hclassLength
+
+/--
+Family of route-field layouts paired with concrete class/length tables.
+
+The route payload keeps the existing sampled-directory budget.  The concrete
+class/length table payload is accounted for by the separate
+`classLengthOverhead` function so a later block-size construction can prove the
+usual `o(n)` condition without weakening the pointwise readback theorem.
+-/
+structure FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily
+    (slots routeCost localQueryCost queryCost : Nat)
+    (classLengthOverhead : Nat -> Nat) where
+  wordSize : Nat -> Nat
+  blocks : List Bool -> List (List Bool)
+  classLengthOverhead_littleO :
+    SuccinctSpace.LittleOLinear classLengthOverhead
+  component :
+    forall bits : List Bool,
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits (blocks bits)
+        (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+        (wordSize bits.length) routeCost localQueryCost queryCost
+  classLengthOverhead_le :
+    forall bits : List Bool,
+      ((component bits).classLengthOverhead <=
+        classLengthOverhead bits.length)
+
+namespace FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily
+
+def overhead (slots : Nat) (classLengthOverhead : Nat -> Nat) :
+    Nat -> Nat :=
+  fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverhead
+    slots classLengthOverhead
+
+def compressedOverhead
+    (slots : Nat) (classLengthOverhead primaryOverhead : Nat -> Nat) :
+    Nat -> Nat :=
+  fun n =>
+    primaryOverhead n + overhead slots classLengthOverhead n
+
+def componentData
+    {slots routeCost localQueryCost queryCost : Nat}
+    {classLengthOverhead : Nat -> Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily
+        slots routeCost localQueryCost queryCost classLengthOverhead)
+    (bits : List Bool) :
+    FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+      bits (family.blocks bits)
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+      (family.wordSize bits.length) routeCost localQueryCost queryCost :=
+  family.component bits
+
+def directory
+    {slots routeCost localQueryCost queryCost : Nat}
+    {classLengthOverhead : Nat -> Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily
+        slots routeCost localQueryCost queryCost classLengthOverhead)
+    (bits : List Bool) :
+    FixedWeightAmbientBlockCompositionData
+      bits (family.blocks bits)
+      ((family.componentData bits).totalMetadataOverhead)
+      (family.wordSize bits.length) queryCost :=
+  (family.componentData bits).toClassLengthAmbientBlockCompositionData
+
+theorem route_class_length_table_envelope_family_profile
+    {slots routeCost localQueryCost queryCost : Nat}
+    {classLengthOverhead : Nat -> Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily
+        slots routeCost localQueryCost queryCost classLengthOverhead) :
+    SuccinctSpace.LittleOLinear
+        (overhead slots classLengthOverhead) /\
+      forall bits : List Bool,
+        let data := family.componentData bits
+        let directory := family.directory bits
+        data.RouteClassLengthEnvelopeProfile /\
+          directory.DirectoryProfile /\
+          directory.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              data.totalMetadataOverhead /\
+          directory.payload.length <=
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              overhead slots classLengthOverhead bits.length /\
+          directory.auxPayload.length = data.totalMetadataOverhead /\
+          directory.auxPayload.length <=
+            overhead slots classLengthOverhead bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word directory.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word directory.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (directory.accessCosted i).cost <= queryCost /\
+              (directory.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (directory.rankCosted target pos).cost <= queryCost /\
+              (directory.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (directory.selectCosted target occurrence).cost <=
+                queryCost /\
+              (directory.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  constructor
+  · exact
+      fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverhead_littleO
+        slots family.classLengthOverhead_littleO
+  · intro bits
+    let data := family.componentData bits
+    let directory := family.directory bits
+    have hbounded := directory.word_bounded_directory_profile
+    have hclass :
+        data.classLengthOverhead <= classLengthOverhead bits.length := by
+      simpa [data, componentData] using
+        family.classLengthOverhead_le bits
+    have haux_le :
+        data.totalMetadataOverhead <=
+          overhead slots classLengthOverhead bits.length := by
+      simp [overhead,
+        fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverhead,
+        FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData.totalMetadataOverhead]
+      omega
+    have haux_le_component :
+        (family.componentData bits).totalMetadataOverhead <=
+          overhead slots classLengthOverhead bits.length := by
+      simpa [data] using haux_le
+    exact
+      ⟨data.route_class_length_table_envelope_profile,
+        directory.directory_profile,
+        directory.payload_length,
+        by
+          rw [directory.payload_length]
+          have haux := haux_le_component
+          omega,
+        directory.aux_length_eq,
+        by
+          rw [directory.aux_length_eq]
+          exact haux_le,
+        data.routeLayout.routeData.blocks_flatten,
+        hbounded.2.1,
+        hbounded.2.2,
+        (fun i =>
+          ⟨directory.accessCosted_cost_le i,
+            directory.accessCosted_erase i⟩),
+        (fun target pos =>
+          ⟨directory.rankCosted_cost_le target pos,
+            directory.rankCosted_erase target pos⟩),
+        (fun target occurrence =>
+          ⟨directory.selectCosted_cost_le target occurrence,
+            directory.selectCosted_erase target occurrence⟩)⟩
+
+theorem word_bounded_compressed_profile_of_primary_budget
+    {slots routeCost localQueryCost queryCost : Nat}
+    {classLengthOverhead : Nat -> Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily
+        slots routeCost localQueryCost queryCost classLengthOverhead)
+    (primaryOverhead : Nat -> Nat)
+    (hprimaryO : SuccinctSpace.LittleOLinear primaryOverhead)
+    (hprimary :
+      forall bits : List Bool,
+        fixedWeightBlockPayloadBudget (family.blocks bits) <=
+          fixedWeightPayloadBudget bits + primaryOverhead bits.length) :
+    SuccinctSpace.LittleOLinear
+        (compressedOverhead slots classLengthOverhead primaryOverhead) /\
+      forall bits : List Bool,
+        let data := family.componentData bits
+        let directory := family.directory bits
+        data.RouteClassLengthEnvelopeProfile /\
+          directory.DirectoryProfile /\
+          directory.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              data.totalMetadataOverhead /\
+          directory.payload.length <=
+            fixedWeightPayloadBudget bits +
+              compressedOverhead
+                slots classLengthOverhead primaryOverhead bits.length /\
+          directory.auxPayload.length = data.totalMetadataOverhead /\
+          directory.auxPayload.length <=
+            overhead slots classLengthOverhead bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word directory.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word directory.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (directory.accessCosted i).cost <= queryCost /\
+              (directory.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (directory.rankCosted target pos).cost <= queryCost /\
+              (directory.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (directory.selectCosted target occurrence).cost <=
+                queryCost /\
+              (directory.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  constructor
+  · exact
+      hprimaryO.add
+        (fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverhead_littleO
+          slots family.classLengthOverhead_littleO)
+  · intro bits
+    let data := family.componentData bits
+    let directory := family.directory bits
+    have hbounded := directory.word_bounded_directory_profile
+    have hclass :
+        data.classLengthOverhead <= classLengthOverhead bits.length := by
+      simpa [data, componentData] using
+        family.classLengthOverhead_le bits
+    have haux_le :
+        data.totalMetadataOverhead <=
+          overhead slots classLengthOverhead bits.length := by
+      simp [overhead,
+        fixedWeightAmbientComputedRRRRouteClassLengthCombinedOverhead,
+        FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData.totalMetadataOverhead]
+      omega
+    have haux_le_component :
+        (family.componentData bits).totalMetadataOverhead <=
+          overhead slots classLengthOverhead bits.length := by
+      simpa [data] using haux_le
+    have hprimaryBits := hprimary bits
+    exact
+      ⟨data.route_class_length_table_envelope_profile,
+        directory.directory_profile,
+        directory.payload_length,
+        by
+          rw [directory.payload_length]
+          simp [compressedOverhead]
+          have haux := haux_le_component
+          omega,
+        directory.aux_length_eq,
+        by
+          rw [directory.aux_length_eq]
+          exact haux_le,
+        data.routeLayout.routeData.blocks_flatten,
+        hbounded.2.1,
+        hbounded.2.2,
+        (fun i =>
+          ⟨directory.accessCosted_cost_le i,
+            directory.accessCosted_erase i⟩),
+        (fun target pos =>
+          ⟨directory.rankCosted_cost_le target pos,
+            directory.rankCosted_erase target pos⟩),
+        (fun target occurrence =>
+          ⟨directory.selectCosted_cost_le target occurrence,
+            directory.selectCosted_erase target occurrence⟩)⟩
+
+theorem word_bounded_compressed_profile_of_log_chunk_blocks
+    {slots routeCost localQueryCost queryCost : Nat}
+    {classLengthOverhead : Nat -> Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily
+        slots routeCost localQueryCost queryCost classLengthOverhead)
+    (hblocks :
+      forall bits : List Bool,
+        family.blocks bits = fixedWeightLogChunkBlocksWithSentinel bits) :
+    SuccinctSpace.LittleOLinear
+        (compressedOverhead
+          slots classLengthOverhead
+          fixedWeightLogChunkBlockCountBoundWithSentinel) /\
+      forall bits : List Bool,
+        let data := family.componentData bits
+        let directory := family.directory bits
+        data.RouteClassLengthEnvelopeProfile /\
+          directory.DirectoryProfile /\
+          directory.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              data.totalMetadataOverhead /\
+          directory.payload.length <=
+            fixedWeightPayloadBudget bits +
+              compressedOverhead
+                slots classLengthOverhead
+                fixedWeightLogChunkBlockCountBoundWithSentinel bits.length /\
+          directory.auxPayload.length = data.totalMetadataOverhead /\
+          directory.auxPayload.length <=
+            overhead slots classLengthOverhead bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word directory.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word directory.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (directory.accessCosted i).cost <= queryCost /\
+              (directory.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (directory.rankCosted target pos).cost <= queryCost /\
+              (directory.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (directory.selectCosted target occurrence).cost <=
+                queryCost /\
+              (directory.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact
+    word_bounded_compressed_profile_of_primary_budget
+      family fixedWeightLogChunkBlockCountBoundWithSentinel
+      fixedWeightLogChunkBlockCountBoundWithSentinel_littleO
+      (by
+        intro bits
+        simpa [hblocks bits] using
+          fixedWeightLogChunkBlockPayloadBudget_le_payloadBudget_add_bound bits)
+
+end FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily
+
+/--
+Log-chunk specialization of the route/class-length envelope family.
+
+This fixes the block decomposition to sentinel log chunks and fixes the
+class/length metadata budget to the narrow `log log n` field-width budget.
+The remaining family component is still the charged route/class-length
+envelope data; no proof-only decoded bit wrapper is introduced here.
+-/
+structure FixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily
+    (slots routeCost localQueryCost queryCost : Nat) where
+  wordSize : Nat -> Nat
+  component :
+    forall bits : List Bool,
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+        bits (fixedWeightLogChunkBlocksWithSentinel bits)
+        (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+        (wordSize bits.length) routeCost localQueryCost queryCost
+  classLengthOverhead_le :
+    forall bits : List Bool,
+      ((component bits).classLengthOverhead <=
+        fixedWeightLogChunkClassLengthOverhead bits.length)
+
+namespace FixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily
+
+def overhead (slots : Nat) : Nat -> Nat :=
+  FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.overhead
+    slots fixedWeightLogChunkClassLengthOverhead
+
+def compressedOverhead (slots : Nat) : Nat -> Nat :=
+  FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.compressedOverhead
+    slots fixedWeightLogChunkClassLengthOverhead
+    fixedWeightLogChunkBlockCountBoundWithSentinel
+
+def componentData
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily
+        slots routeCost localQueryCost queryCost)
+    (bits : List Bool) :
+    FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+      bits (fixedWeightLogChunkBlocksWithSentinel bits)
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+      (family.wordSize bits.length) routeCost localQueryCost queryCost :=
+  family.component bits
+
+def directory
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily
+        slots routeCost localQueryCost queryCost)
+    (bits : List Bool) :
+    FixedWeightAmbientBlockCompositionData
+      bits (fixedWeightLogChunkBlocksWithSentinel bits)
+      ((family.componentData bits).totalMetadataOverhead)
+      (family.wordSize bits.length) queryCost :=
+  (family.componentData bits).toClassLengthAmbientBlockCompositionData
+
+def toRouteClassLengthTableEnvelopeFamily
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily
+        slots routeCost localQueryCost queryCost) :
+    FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily
+      slots routeCost localQueryCost queryCost
+      fixedWeightLogChunkClassLengthOverhead where
+  wordSize := family.wordSize
+  blocks := fixedWeightLogChunkBlocksWithSentinel
+  classLengthOverhead_littleO :=
+    fixedWeightLogChunkClassLengthOverhead_littleO
+  component bits := family.componentData bits
+  classLengthOverhead_le := by
+    intro bits
+    simpa [componentData] using family.classLengthOverhead_le bits
+
+/--
+Concrete log-chunk compressed/FID bridge for charged route/class-length
+envelopes.
+
+The theorem consumes the log-chunk primary block-code budget and the narrow
+class/length metadata overhead.  The final statement has no arbitrary block
+family, no `hblocks` premise, and no separate primary-budget hypothesis.
+-/
+theorem word_bounded_compressed_profile
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily
+        slots routeCost localQueryCost queryCost) :
+    SuccinctSpace.LittleOLinear (compressedOverhead slots) /\
+      forall bits : List Bool,
+        let data := family.componentData bits
+        let directory := family.directory bits
+        data.RouteClassLengthEnvelopeProfile /\
+          directory.DirectoryProfile /\
+          directory.payload.length =
+            fixedWeightBlockPayloadBudget
+                (fixedWeightLogChunkBlocksWithSentinel bits) +
+              data.totalMetadataOverhead /\
+          directory.payload.length <=
+            fixedWeightPayloadBudget bits +
+              compressedOverhead slots bits.length /\
+          directory.auxPayload.length = data.totalMetadataOverhead /\
+          directory.auxPayload.length <= overhead slots bits.length /\
+          SuccinctSpace.flattenPayloadWords
+              (fixedWeightLogChunkBlocksWithSentinel bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word directory.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word directory.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (directory.accessCosted i).cost <= queryCost /\
+              (directory.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (directory.rankCosted target pos).cost <= queryCost /\
+              (directory.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (directory.selectCosted target occurrence).cost <=
+                queryCost /\
+              (directory.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  have hprofile :=
+    FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.word_bounded_compressed_profile_of_log_chunk_blocks
+      family.toRouteClassLengthTableEnvelopeFamily
+      (by
+        intro bits
+        rfl)
+  simpa [compressedOverhead, overhead, componentData, directory,
+    toRouteClassLengthTableEnvelopeFamily,
+    FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.componentData,
+    FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.directory]
+    using hprofile
+
+end FixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily
+
+theorem no_fixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRLogChunkRouteClassLengthTableEnvelopeFamily
+        slots routeCost localQueryCost queryCost) :
+    False := by
+  let n := 2 ^ localQueryCost
+  let bits := List.replicate n false
+  let blockSize := fixedWeightLogChunkBlockSize bits.length
+  have hn_pos : 0 < n := by
+    exact Nat.pow_pos (by omega : 0 < 2)
+  have hbits_len : bits.length = n := by
+    simp [bits]
+  have hblockSize_pos : 0 < blockSize := by
+    simp [blockSize, fixedWeightLogChunkBlockSize]
+  have hblockSize_le_len : blockSize <= bits.length := by
+    have hbits_pos : 0 < bits.length := by
+      simpa [bits, n] using hn_pos
+    have hnonzero : bits.length ≠ 0 := Nat.ne_of_gt hbits_pos
+    have hpow :
+        Nat.log2 bits.length + 1 <= 2 ^ Nat.log2 bits.length :=
+      SuccinctSpace.nat_succ_le_two_pow (Nat.log2 bits.length)
+    exact Nat.le_trans (by
+      simpa [blockSize, fixedWeightLogChunkBlockSize] using hpow)
+      (Nat.log2_self_le hnonzero)
+  have hstart : 0 * blockSize < bits.length := by
+    simpa [bits, n] using hn_pos
+  rcases
+      SuccinctSpace.chunkPayloadWords_get?_some_of_mul_lt
+        (wordSize := blockSize) hblockSize_pos
+        (payload := bits) (i := 0) hstart with
+    ⟨block, hchunk⟩
+  have hchunkFixed :
+      (fixedWeightChunkBlocks blockSize bits)[0]? = some block := by
+    simpa [fixedWeightChunkBlocks] using hchunk
+  have hblock_get :
+      (fixedWeightLogChunkBlocksWithSentinel bits)[0]? = some block := by
+    simpa [fixedWeightLogChunkBlocksWithSentinel, blockSize] using
+      fixedWeightChunkBlocksWithSentinel_get_chunk hchunkFixed
+  have hmem :
+      List.Mem block (fixedWeightLogChunkBlocksWithSentinel bits) :=
+    List.mem_of_getElem? hblock_get
+  have hchunk_eq :=
+    SuccinctSpace.chunkPayloadWords_get?_eq_take_drop hchunk
+  have hblock_le_n : blockSize <= n := by
+    simpa [bits] using hblockSize_le_len
+  have hblock_eq : block = List.replicate blockSize false := by
+    simpa [bits, hblock_le_n] using hchunk_eq
+  have hcost_le :
+      fixedWeightComputedRRRClassLengthQueryCost block <=
+        localQueryCost :=
+    (family.componentData bits).class_length_local_query_cost_le hmem
+  have hcost_eq :
+      fixedWeightComputedRRRClassLengthQueryCost block =
+        blockSize + 5 := by
+    rw [hblock_eq]
+    exact fixedWeightComputedRRRClassLengthQueryCost_replicate_false blockSize
+  have hlog : localQueryCost <= Nat.log2 (2 ^ localQueryCost) := by
+    have hnonzero : 2 ^ localQueryCost ≠ 0 :=
+      Nat.ne_of_gt (Nat.pow_pos (by omega : 0 < 2))
+    exact (Nat.le_log2 hnonzero).2 (Nat.le_refl _)
+  have hgt : localQueryCost < blockSize + 5 := by
+    have hblock_def :
+        blockSize = Nat.log2 (2 ^ localQueryCost) + 1 := by
+      simp [blockSize, fixedWeightLogChunkBlockSize, bits, n]
+    omega
+  omega
+
+namespace FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+
+/--
+Build the route/class-length envelope from an eight-table route layout.
+
+The side conditions are the concrete block-size discipline needed by the local
+class/length RRR kernel: the layout field width can encode every block length,
+and the family-level local query cap covers the class/length decoder for any
+block below the route layout's block-size bound.
+-/
+def toRouteClassLengthTableEnvelopeData
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (hblockSize_lt_fieldWidthPow :
+      data.routeData.blockSize < 2 ^ data.fieldWidth)
+    (hlocalCost :
+      fixedWeightComputedRRRClassLengthBlockSizeQueryCost
+        data.routeData.blockSize <= localQueryCost) :
+    FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData
+      bits blocks overhead wordSize routeCost localQueryCost queryCost where
+  routeLayout := data
+  classLengthTable :=
+    { wordSize_pos := data.routeData.wordSize_pos
+      wordSize_le_ambient := data.routeData.wordSize_le_ambient
+      fieldWidth_le_wordSize := data.fieldWidth_le_wordSize
+      blocks_flatten := data.routeData.blocks_flatten
+      block_code_width_le := data.routeData.block_code_width_le
+      block_length_lt_fieldWidthPow := by
+        intro block hmem
+        have hle := data.routeData.block_length_le hmem
+        omega }
+  class_length_local_query_cost_le := by
+    intro block hmem
+    exact
+      fixedWeightComputedRRRClassLengthQueryCost_le_of_block_length_le
+        (blockSize := data.routeData.blockSize)
+        (data.routeData.block_length_le hmem)
+        hlocalCost
+
+theorem route_field_table_layout_to_route_class_length_table_envelope_profile
+    {bits : List Bool} {blocks : List (List Bool)}
+    {overhead wordSize routeCost localQueryCost queryCost : Nat}
+    (data :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits blocks overhead wordSize routeCost localQueryCost queryCost)
+    (hblockSize_lt_fieldWidthPow :
+      data.routeData.blockSize < 2 ^ data.fieldWidth)
+    (hlocalCost :
+      fixedWeightComputedRRRClassLengthBlockSizeQueryCost
+        data.routeData.blockSize <= localQueryCost) :
+    (data.toRouteClassLengthTableEnvelopeData
+      hblockSize_lt_fieldWidthPow hlocalCost).RouteClassLengthEnvelopeProfile := by
+  exact
+    FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData.route_class_length_table_envelope_profile
+      (data.toRouteClassLengthTableEnvelopeData
+        hblockSize_lt_fieldWidthPow hlocalCost)
+
+end FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+
+/-- Family of eight-table fixed-width route-field layouts. -/
+structure FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+    (slots routeCost localQueryCost queryCost : Nat) where
+  wordSize : Nat -> Nat
+  blocks : List Bool -> List (List Bool)
+  component :
+    forall bits : List Bool,
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+        bits (blocks bits)
+        (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+        (wordSize bits.length) routeCost localQueryCost queryCost
+
+namespace FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+
+def overhead (slots : Nat) : Nat -> Nat :=
+  fixedWeightAmbientBlockAuxiliaryOverhead slots
+
+def compressedOverhead (slots : Nat) (primaryOverhead : Nat -> Nat) :
+    Nat -> Nat :=
+  FixedWeightAmbientBlockCompositionFamily.compressedOverhead
+    slots primaryOverhead
+
+def componentData
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+        slots routeCost localQueryCost queryCost)
+    (bits : List Bool) :
+    FixedWeightAmbientComputedRRRRouteFieldTableLayoutData
+      bits (family.blocks bits)
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+      (family.wordSize bits.length) routeCost localQueryCost queryCost :=
+  family.component bits
+
+def toPackedRouteTableFamily
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+        slots routeCost localQueryCost queryCost) :
+    FixedWeightAmbientComputedRRRPackedRouteTableFamily
+      slots routeCost localQueryCost queryCost where
+  wordSize := family.wordSize
+  blocks := family.blocks
+  component bits := (family.componentData bits).toPackedRouteTableData
+
+def directory
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+        slots routeCost localQueryCost queryCost)
+    (bits : List Bool) :
+    FixedWeightAmbientBlockCompositionData
+      bits (family.blocks bits)
+      (fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length)
+      (family.wordSize bits.length) queryCost :=
+  FixedWeightAmbientComputedRRRPackedRouteTableFamily.directory
+    family.toPackedRouteTableFamily bits
+
+theorem route_field_table_layout_family_profile
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+        slots routeCost localQueryCost queryCost) :
+    SuccinctSpace.LittleOLinear (overhead slots) /\
+      forall bits : List Bool,
+        let data := family.componentData bits
+        data.LayoutPackedProfile /\
+          data.routeData.routePayload.length =
+            fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+          ((family.directory bits).payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length) /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall i,
+            ((family.directory bits).accessCosted i).cost <=
+              queryCost) /\
+          (forall target pos,
+            ((family.directory bits).rankCosted target pos).cost <=
+              queryCost) /\
+          (forall target occurrence,
+            ((family.directory bits).selectCosted target occurrence).cost <=
+              queryCost) := by
+  constructor
+  · exact fixedWeightAmbientBlockAuxiliaryOverhead_littleO slots
+  · intro bits
+    let data := family.componentData bits
+    exact
+      ⟨data.route_field_table_layout_packed_profile,
+        data.routeData.routePayload_length_eq,
+        (family.directory bits).payload_length,
+        data.routeData.blocks_flatten,
+        (fun i => (family.directory bits).accessCosted_cost_le i),
+        (fun target pos =>
+          (family.directory bits).rankCosted_cost_le target pos),
+        (fun target occurrence =>
+          (family.directory bits).selectCosted_cost_le
+            target occurrence)⟩
+
+theorem word_bounded_compressed_profile_of_primary_budget
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+        slots routeCost localQueryCost queryCost)
+    (primaryOverhead : Nat -> Nat)
+    (hprimaryO : SuccinctSpace.LittleOLinear primaryOverhead)
+    (hprimary :
+      forall bits : List Bool,
+        fixedWeightBlockPayloadBudget (family.blocks bits) <=
+          fixedWeightPayloadBudget bits + primaryOverhead bits.length) :
+    SuccinctSpace.LittleOLinear
+        (compressedOverhead slots primaryOverhead) /\
+      forall bits : List Bool,
+        (family.componentData bits).LayoutPackedProfile /\
+          let data := family.directory bits
+          data.DirectoryProfile /\
+            data.payload.length =
+              fixedWeightBlockPayloadBudget (family.blocks bits) +
+                fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+            data.payload.length <=
+              fixedWeightPayloadBudget bits +
+                compressedOverhead slots primaryOverhead bits.length /\
+            data.auxPayload.length =
+              fixedWeightAmbientBlockAuxiliaryOverhead slots bits.length /\
+            SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+            (forall {word : List Bool},
+              List.Mem word data.codeStore.store.words.toList ->
+                word.length <= Nat.log2 bits.length + 1) /\
+            (forall {word : List Bool},
+              List.Mem word data.auxStore.store.words.toList ->
+                word.length <= Nat.log2 bits.length + 1) /\
+            (forall i,
+              (data.accessCosted i).cost <= queryCost /\
+                (data.accessCosted i).erase = bits[i]?) /\
+            (forall target pos,
+              (data.rankCosted target pos).cost <= queryCost /\
+                (data.rankCosted target pos).erase =
+                  Succinct.rankPrefix target bits pos) /\
+            (forall target occurrence,
+              (data.selectCosted target occurrence).cost <= queryCost /\
+                (data.selectCosted target occurrence).erase =
+                  Succinct.select target bits occurrence) := by
+  have hcompressed :=
+    FixedWeightAmbientComputedRRRPackedRouteTableFamily.word_bounded_compressed_profile_of_primary_budget
+      family.toPackedRouteTableFamily primaryOverhead hprimaryO
+      (by
+        intro bits
+        exact hprimary bits)
+  constructor
+  · simpa [compressedOverhead,
+      FixedWeightAmbientComputedRRRPackedRouteTableFamily.compressedOverhead]
+      using hcompressed.1
+  · intro bits
+    constructor
+    · exact (family.componentData bits).route_field_table_layout_packed_profile
+    · simpa [directory, toPackedRouteTableFamily, componentData,
+        FixedWeightAmbientComputedRRRPackedRouteTableFamily.directory,
+        FixedWeightAmbientComputedRRRPackedRouteTableFamily.componentData,
+        FixedWeightAmbientComputedRRRPackedRouteTableFamily.compressedOverhead,
+        compressedOverhead]
+        using (hcompressed.2 bits).2
+
+/--
+Promote an eight-table route-field layout family to the combined
+route/class-length envelope family.
+
+The extra side conditions are exactly the block-size discipline needed by the
+class/length local RRR kernel, plus a counted `o(n)` budget for the concrete
+per-block length/class tables.  The pointwise component is the canonical
+`toRouteClassLengthTableEnvelopeData` constructor, so the resulting family uses
+the charged combined auxiliary store rather than a proof-only decoded block.
+-/
+def toRouteClassLengthTableEnvelopeFamily
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+        slots routeCost localQueryCost queryCost)
+    (classLengthOverhead : Nat -> Nat)
+    (hclassLengthO :
+      SuccinctSpace.LittleOLinear classLengthOverhead)
+    (hclassLength_le :
+      forall bits : List Bool,
+        fixedWeightBlockClassLengthTableOverhead
+            (family.componentData bits).fieldWidth
+            (family.blocks bits) <=
+          classLengthOverhead bits.length)
+    (hblockSize_lt_fieldWidthPow :
+      forall bits : List Bool,
+        (family.componentData bits).routeData.blockSize <
+          2 ^ (family.componentData bits).fieldWidth)
+    (hlocalCost :
+      forall bits : List Bool,
+        fixedWeightComputedRRRClassLengthBlockSizeQueryCost
+            (family.componentData bits).routeData.blockSize <=
+          localQueryCost) :
+    FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily
+      slots routeCost localQueryCost queryCost classLengthOverhead where
+  wordSize := family.wordSize
+  blocks := family.blocks
+  classLengthOverhead_littleO := hclassLengthO
+  component bits :=
+    (family.componentData bits).toRouteClassLengthTableEnvelopeData
+      (hblockSize_lt_fieldWidthPow bits) (hlocalCost bits)
+  classLengthOverhead_le := by
+    intro bits
+    simpa [
+      FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeData.classLengthOverhead,
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutData.toRouteClassLengthTableEnvelopeData,
+      componentData]
+      using hclassLength_le bits
+
+theorem route_field_table_layout_family_to_route_class_length_table_envelope_family_profile
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+        slots routeCost localQueryCost queryCost)
+    (classLengthOverhead : Nat -> Nat)
+    (hclassLengthO :
+      SuccinctSpace.LittleOLinear classLengthOverhead)
+    (hclassLength_le :
+      forall bits : List Bool,
+        fixedWeightBlockClassLengthTableOverhead
+            (family.componentData bits).fieldWidth
+            (family.blocks bits) <=
+          classLengthOverhead bits.length)
+    (hblockSize_lt_fieldWidthPow :
+      forall bits : List Bool,
+        (family.componentData bits).routeData.blockSize <
+          2 ^ (family.componentData bits).fieldWidth)
+    (hlocalCost :
+      forall bits : List Bool,
+        fixedWeightComputedRRRClassLengthBlockSizeQueryCost
+            (family.componentData bits).routeData.blockSize <=
+          localQueryCost) :
+    SuccinctSpace.LittleOLinear
+        (FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.overhead
+          slots classLengthOverhead) /\
+      forall bits : List Bool,
+        let data :=
+          (family.toRouteClassLengthTableEnvelopeFamily
+            classLengthOverhead hclassLengthO hclassLength_le
+            hblockSize_lt_fieldWidthPow hlocalCost).componentData bits
+        let directory :=
+          (family.toRouteClassLengthTableEnvelopeFamily
+            classLengthOverhead hclassLengthO hclassLength_le
+            hblockSize_lt_fieldWidthPow hlocalCost).directory bits
+        data.RouteClassLengthEnvelopeProfile /\
+          directory.DirectoryProfile /\
+          directory.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              data.totalMetadataOverhead /\
+          directory.payload.length <=
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.overhead
+                slots classLengthOverhead bits.length /\
+          directory.auxPayload.length = data.totalMetadataOverhead /\
+          directory.auxPayload.length <=
+            FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.overhead
+              slots classLengthOverhead bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word directory.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word directory.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (directory.accessCosted i).cost <= queryCost /\
+              (directory.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (directory.rankCosted target pos).cost <= queryCost /\
+              (directory.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (directory.selectCosted target occurrence).cost <=
+                queryCost /\
+              (directory.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact
+    FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.route_class_length_table_envelope_family_profile
+      (family.toRouteClassLengthTableEnvelopeFamily
+        classLengthOverhead hclassLengthO hclassLength_le
+        hblockSize_lt_fieldWidthPow hlocalCost)
+
+/--
+Fixed block-size/field-width specialization of the route-layout-to-envelope
+family constructor.
+
+This is the common constant-query use case: every component uses the same
+ambient block-size cap and field width, the local query budget is the
+class/length block-size cost for that cap, and a single `blockSize < 2^fieldWidth`
+fact supplies the metadata encoding discipline.
+-/
+def toFixedBlockSizeRouteClassLengthTableEnvelopeFamily
+    {slots blockSize fieldWidth routeCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+        slots routeCost
+        (fixedWeightComputedRRRClassLengthBlockSizeQueryCost blockSize)
+        queryCost)
+    (classLengthOverhead : Nat -> Nat)
+    (hclassLengthO :
+      SuccinctSpace.LittleOLinear classLengthOverhead)
+    (hclassLength_le :
+      forall bits : List Bool,
+        fixedWeightBlockClassLengthTableOverhead fieldWidth
+            (family.blocks bits) <=
+          classLengthOverhead bits.length)
+    (hfield :
+      forall bits : List Bool,
+        (family.componentData bits).fieldWidth = fieldWidth)
+    (hblockSize :
+      forall bits : List Bool,
+        (family.componentData bits).routeData.blockSize = blockSize)
+    (hfit : blockSize < 2 ^ fieldWidth) :
+    FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily
+      slots routeCost
+      (fixedWeightComputedRRRClassLengthBlockSizeQueryCost blockSize)
+      queryCost classLengthOverhead :=
+  family.toRouteClassLengthTableEnvelopeFamily
+    classLengthOverhead hclassLengthO
+    (by
+      intro bits
+      simpa [hfield bits] using hclassLength_le bits)
+    (by
+      intro bits
+      simpa [hfield bits, hblockSize bits] using hfit)
+    (by
+      intro bits
+      simp [hblockSize bits])
+
+theorem fixed_block_size_route_class_length_table_envelope_family_profile
+    {slots blockSize fieldWidth routeCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+        slots routeCost
+        (fixedWeightComputedRRRClassLengthBlockSizeQueryCost blockSize)
+        queryCost)
+    (classLengthOverhead : Nat -> Nat)
+    (hclassLengthO :
+      SuccinctSpace.LittleOLinear classLengthOverhead)
+    (hclassLength_le :
+      forall bits : List Bool,
+        fixedWeightBlockClassLengthTableOverhead fieldWidth
+            (family.blocks bits) <=
+          classLengthOverhead bits.length)
+    (hfield :
+      forall bits : List Bool,
+        (family.componentData bits).fieldWidth = fieldWidth)
+    (hblockSize :
+      forall bits : List Bool,
+        (family.componentData bits).routeData.blockSize = blockSize)
+    (hfit : blockSize < 2 ^ fieldWidth) :
+    SuccinctSpace.LittleOLinear
+        (FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.overhead
+          slots classLengthOverhead) /\
+      forall bits : List Bool,
+        let data :=
+          (family.toFixedBlockSizeRouteClassLengthTableEnvelopeFamily
+            classLengthOverhead hclassLengthO hclassLength_le
+            hfield hblockSize hfit).componentData bits
+        let directory :=
+          (family.toFixedBlockSizeRouteClassLengthTableEnvelopeFamily
+            classLengthOverhead hclassLengthO hclassLength_le
+            hfield hblockSize hfit).directory bits
+        data.RouteClassLengthEnvelopeProfile /\
+          directory.DirectoryProfile /\
+          directory.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              data.totalMetadataOverhead /\
+          directory.payload.length <=
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.overhead
+                slots classLengthOverhead bits.length /\
+          directory.auxPayload.length = data.totalMetadataOverhead /\
+          directory.auxPayload.length <=
+            FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.overhead
+              slots classLengthOverhead bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word directory.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word directory.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (directory.accessCosted i).cost <= queryCost /\
+              (directory.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (directory.rankCosted target pos).cost <= queryCost /\
+              (directory.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (directory.selectCosted target occurrence).cost <=
+                queryCost /\
+              (directory.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact
+    FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.route_class_length_table_envelope_family_profile
+      (family.toFixedBlockSizeRouteClassLengthTableEnvelopeFamily
+        classLengthOverhead hclassLengthO hclassLength_le
+        hfield hblockSize hfit)
+
+/--
+Global block-count/field-width bridge for the fixed block-size route layout.
+
+This is the family-level budget handoff: a concrete route-field layout only has
+to prove a useful block-count cap and field-width cap.  Those two facts feed the
+class/length table overhead lemma, producing the promoted route/class-length
+envelope and the word-bounded compressed/FID profile under the usual primary
+fixed-weight payload budget.
+-/
+theorem fixed_block_size_word_bounded_compressed_profile_of_block_bounds
+    {slots blockSize fieldWidth routeCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+        slots routeCost
+        (fixedWeightComputedRRRClassLengthBlockSizeQueryCost blockSize)
+        queryCost)
+    (blockCountBound fieldWidthBound primaryOverhead : Nat -> Nat)
+    (hclassLengthO :
+      SuccinctSpace.LittleOLinear
+        (fixedWeightBlockClassLengthTableOverheadBudget
+          blockCountBound fieldWidthBound))
+    (hprimaryO : SuccinctSpace.LittleOLinear primaryOverhead)
+    (hblocks :
+      forall bits : List Bool,
+        (family.blocks bits).length <= blockCountBound bits.length)
+    (hfieldBound :
+      forall bits : List Bool,
+        fieldWidth <= fieldWidthBound bits.length)
+    (hfield :
+      forall bits : List Bool,
+        (family.componentData bits).fieldWidth = fieldWidth)
+    (hblockSize :
+      forall bits : List Bool,
+        (family.componentData bits).routeData.blockSize = blockSize)
+    (hfit : blockSize < 2 ^ fieldWidth)
+    (hprimary :
+      forall bits : List Bool,
+        fixedWeightBlockPayloadBudget (family.blocks bits) <=
+          fixedWeightPayloadBudget bits + primaryOverhead bits.length) :
+    SuccinctSpace.LittleOLinear
+        (FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.compressedOverhead
+          slots
+          (fixedWeightBlockClassLengthTableOverheadBudget
+            blockCountBound fieldWidthBound)
+          primaryOverhead) /\
+      forall bits : List Bool,
+        let envelopeFamily :=
+          family.toFixedBlockSizeRouteClassLengthTableEnvelopeFamily
+            (fixedWeightBlockClassLengthTableOverheadBudget
+              blockCountBound fieldWidthBound)
+            hclassLengthO
+            (by
+              intro bits
+              exact fixedWeightBlockClassLengthTableOverhead_le_budget
+                (hblocks bits) (hfieldBound bits))
+            hfield hblockSize hfit
+        let data := envelopeFamily.componentData bits
+        let directory := envelopeFamily.directory bits
+        data.RouteClassLengthEnvelopeProfile /\
+          directory.DirectoryProfile /\
+          directory.payload.length =
+            fixedWeightBlockPayloadBudget (family.blocks bits) +
+              data.totalMetadataOverhead /\
+          directory.payload.length <=
+            fixedWeightPayloadBudget bits +
+              FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.compressedOverhead
+                slots
+                (fixedWeightBlockClassLengthTableOverheadBudget
+                  blockCountBound fieldWidthBound)
+                primaryOverhead bits.length /\
+          directory.auxPayload.length = data.totalMetadataOverhead /\
+          directory.auxPayload.length <=
+            FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.overhead
+              slots
+              (fixedWeightBlockClassLengthTableOverheadBudget
+                blockCountBound fieldWidthBound)
+              bits.length /\
+          SuccinctSpace.flattenPayloadWords (family.blocks bits) = bits /\
+          (forall {word : List Bool},
+            List.Mem word directory.codeStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall {word : List Bool},
+            List.Mem word directory.auxStore.store.words.toList ->
+              word.length <= Nat.log2 bits.length + 1) /\
+          (forall i,
+            (directory.accessCosted i).cost <= queryCost /\
+              (directory.accessCosted i).erase = bits[i]?) /\
+          (forall target pos,
+            (directory.rankCosted target pos).cost <= queryCost /\
+              (directory.rankCosted target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            (directory.selectCosted target occurrence).cost <=
+                queryCost /\
+              (directory.selectCosted target occurrence).erase =
+                Succinct.select target bits occurrence) := by
+  exact
+    FixedWeightAmbientComputedRRRRouteClassLengthTableEnvelopeFamily.word_bounded_compressed_profile_of_primary_budget
+      (family.toFixedBlockSizeRouteClassLengthTableEnvelopeFamily
+        (fixedWeightBlockClassLengthTableOverheadBudget
+          blockCountBound fieldWidthBound)
+        hclassLengthO
+        (by
+          intro bits
+          exact fixedWeightBlockClassLengthTableOverhead_le_budget
+            (hblocks bits) (hfieldBound bits))
+        hfield hblockSize hfit)
+      primaryOverhead hprimaryO hprimary
+
+end FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+
+theorem no_fixedWeightLogChunkRouteFieldTableLayoutFamilyToEnvelopeUniformCost
+    {slots routeCost localQueryCost queryCost : Nat}
+    (family :
+      FixedWeightAmbientComputedRRRRouteFieldTableLayoutFamily
+        slots routeCost localQueryCost queryCost)
+    (hblockSize :
+      forall bits : List Bool,
+        (family.componentData bits).routeData.blockSize =
+          fixedWeightLogChunkBlockSize bits.length)
+    (hlocalCost :
+      forall bits : List Bool,
+        fixedWeightComputedRRRClassLengthBlockSizeQueryCost
+            (family.componentData bits).routeData.blockSize <=
+          localQueryCost) :
+    False := by
+  let bits := List.replicate (2 ^ localQueryCost) false
+  have hle :
+      fixedWeightComputedRRRClassLengthBlockSizeQueryCost
+          (fixedWeightLogChunkBlockSize (2 ^ localQueryCost)) <=
+        localQueryCost := by
+    have hcost := hlocalCost bits
+    have hblock := hblockSize bits
+    simpa [bits, hblock] using hcost
+  have hgt :=
+    fixedWeightComputedRRRClassLengthLogChunkBlockSizeQueryCost_gt
+      localQueryCost
+  omega
+
+
+end RankSelectSpec
+
+end RMQ

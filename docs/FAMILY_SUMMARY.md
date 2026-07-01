@@ -77,7 +77,8 @@ separate appendix.
   binomial universe. The second
   extraction spoke is
   `RMQBPNavigation`, exposing the compact balanced-parentheses close/LCA
-  navigation facade consumed by succinct RMQ.
+  navigation facade consumed by succinct RMQ, now with the public rank-backed
+  excess and inorder-close-plus-excess bridge.
 - Optional archive root: `RMQArchive` imports the retired compatibility and
   obstruction surfaces under `RMQ.Archive`, while the main `RMQ` root stays
   focused on live proof surfaces and public headlines.
@@ -2071,8 +2072,17 @@ The names below are grouped by source module. Repeated base names in
   `Archive.BPSpecializedCapstone.total_two_sided_doubled_catalan_slack_profile`.
 - `RMQ/Archive/SelectCompatibility.lean`:
   thin compatibility aliases for the retained archive surfaces.
-- `RMQ/Core/RankSelectCompressed.lean` and `RMQ/Core/RankSelectPublic.lean`:
-  neutral public aliases for the standalone rank/select spoke, including
+- `RMQ/Core/RankSelectCompressed.lean`,
+  `RMQ/Core/RankSelectCompressed/FixedWeightCodec.lean`,
+  `RMQ/Core/RankSelectCompressed/Readback.lean`,
+  `RMQ/Core/RankSelectCompressed/Base.lean`,
+  `RMQ/Core/RankSelectCompressed/TableRAM.lean`, and
+  `RMQ/Core/RankSelectPublic.lean` with its
+  `RankSelectPublic/FixedWeight.lean`, `RankSelectPublic/Profiles.lean`, and
+  `RankSelectPublic/Capstones.lean` role modules: the compressed/FID
+  rank-select barrel, fixed-weight codec, charged readback kernels, base
+  compressed/FID construction layers, explicit TableRAM route-directory suffix,
+  and neutral public aliases for the standalone rank/select spoke, including
   `RankSelect.fixedWeightPackedPayloadProfile`,
   `RankSelect.fixedWeightPackedReadbackDirectoryProfile`,
   `RankSelect.fixedWeightPackedReadbackDataOfChunksProfile`,
@@ -2189,7 +2199,9 @@ The names below are grouped by source module. Repeated base names in
 - `RMQ/Core/BPNavigationPublic.lean` and `RMQBPNavigation.lean`:
   neutral public aliases and a standalone import root for compact
   balanced-parentheses close/LCA navigation, including
-  `BPNavigation.shapeAccessCloseRankProfile` and
+  `BPNavigation.excessAtCosted`, `BPNavigation.closeExcessOfInorderCosted`,
+  `BPNavigation.shapeAccessCloseRankProfile`,
+  `BPNavigation.shapeAccessCloseRankExcessProfile`, and
   `BPNavigation.compactCloseDirectoryProfile`.
 - `RMQ/Core/Amortized.lean`, `RMQ/Core/UnionFind.lean`,
   `RMQ/Core/UnionFind/Forest.lean`, and `RMQUnionFind.lean`: reusable

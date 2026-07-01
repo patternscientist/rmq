@@ -119,6 +119,129 @@ theorem inorderOfCloseCosted_erase_of_bpCloseOfInorder?
   omega
 
 /--
+Costed balanced-parentheses prefix excess at `pos`, routed through the public
+rank/select BP access layer.
+-/
+def excessAtCosted
+    {shape : RMQ.Cartesian.CartesianShape}
+    {overhead queryCost : Nat}
+    (access :
+      BalancedParensAccess (bpParensOfShape shape) overhead queryCost)
+    (pos : Nat) : Costed Nat :=
+  access.excessCosted pos
+
+theorem excessAtCosted_cost_le
+    {shape : RMQ.Cartesian.CartesianShape}
+    {overhead queryCost : Nat}
+    (access :
+      BalancedParensAccess (bpParensOfShape shape) overhead queryCost)
+    (pos : Nat) :
+    (excessAtCosted access pos).cost <= 2 * queryCost := by
+  exact
+    RMQ.SuccinctSpace.BalancedParensAccess.excessCosted_cost_le
+      access pos
+
+theorem excessAtCosted_erase
+    {shape : RMQ.Cartesian.CartesianShape}
+    {overhead queryCost : Nat}
+    (access :
+      BalancedParensAccess (bpParensOfShape shape) overhead queryCost)
+    (pos : Nat) :
+    (excessAtCosted access pos).erase =
+      RMQ.Succinct.rankPrefix true shape.bpCode pos -
+        RMQ.Succinct.rankPrefix false shape.bpCode pos := by
+  exact
+    RMQ.SuccinctSpace.BalancedParensAccess.excessCosted_erase
+      access pos
+
+theorem closeRank_le_openRank_of_le
+    {shape : RMQ.Cartesian.CartesianShape}
+    {overhead queryCost : Nat}
+    (access :
+      BalancedParensAccess (bpParensOfShape shape) overhead queryCost)
+    {pos : Nat} (hpos : pos <= shape.bpCode.length) :
+    (access.rankCosted false pos).erase <=
+      (access.rankCosted true pos).erase := by
+  exact
+    RMQ.SuccinctSpace.BalancedParensAccess.close_rank_le_open_rank
+      access hpos
+
+/--
+Costed lookup of a node's closing parenthesis together with the prefix excess
+immediately after that close. This is the first public composition of the
+inorder-to-close select leg with the rank-backed excess leg.
+-/
+def closeExcessOfInorderCosted
+    {shape : RMQ.Cartesian.CartesianShape}
+    {overhead queryCost : Nat}
+    (access :
+      BalancedParensAccess (bpParensOfShape shape) overhead queryCost)
+    (idx : Nat) : Costed (Option (Nat × Nat)) :=
+  Costed.bind (closeOfInorderCosted access idx) fun
+    | none => Costed.pure none
+    | some close =>
+        Costed.map (fun excess => some (close, excess))
+          (excessAtCosted access (close + 1))
+
+theorem closeExcessOfInorderCosted_cost_le
+    {shape : RMQ.Cartesian.CartesianShape}
+    {overhead queryCost : Nat}
+    (access :
+      BalancedParensAccess (bpParensOfShape shape) overhead queryCost)
+    (idx : Nat) :
+    (closeExcessOfInorderCosted access idx).cost <= 3 * queryCost := by
+  unfold closeExcessOfInorderCosted
+  rw [Costed.cost_bind]
+  cases hclose : (closeOfInorderCosted access idx).value with
+  | none =>
+      simp
+      have hselect := closeOfInorderCosted_cost_le access idx
+      omega
+  | some close =>
+      simp
+      have hselect := closeOfInorderCosted_cost_le access idx
+      have hexcess := excessAtCosted_cost_le access (close + 1)
+      omega
+
+theorem closeExcessOfInorderCosted_erase
+    {shape : RMQ.Cartesian.CartesianShape}
+    {overhead queryCost : Nat}
+    (access :
+      BalancedParensAccess (bpParensOfShape shape) overhead queryCost)
+    (idx : Nat) :
+    (closeExcessOfInorderCosted access idx).erase =
+      Option.map
+        (fun close =>
+          (close,
+            RMQ.Succinct.rankPrefix true shape.bpCode (close + 1) -
+              RMQ.Succinct.rankPrefix false shape.bpCode (close + 1)))
+        (RMQ.SuccinctSpace.bpCloseOfInorder? shape idx) := by
+  unfold closeExcessOfInorderCosted
+  rw [Costed.erase_bind]
+  rw [closeOfInorderCosted_erase access idx]
+  cases hclose : RMQ.SuccinctSpace.bpCloseOfInorder? shape idx with
+  | none =>
+      simp
+  | some close =>
+      simp [excessAtCosted_erase]
+
+theorem closeExcessOfInorderCosted_erase_of_bpCloseOfInorder?
+    {shape : RMQ.Cartesian.CartesianShape}
+    {overhead queryCost : Nat}
+    (access :
+      BalancedParensAccess (bpParensOfShape shape) overhead queryCost)
+    {idx close : Nat}
+    (hclose :
+      RMQ.SuccinctSpace.bpCloseOfInorder? shape idx = some close) :
+    (closeExcessOfInorderCosted access idx).erase =
+      some
+        (close,
+          RMQ.Succinct.rankPrefix true shape.bpCode (close + 1) -
+            RMQ.Succinct.rankPrefix false shape.bpCode (close + 1)) := by
+  rw [closeExcessOfInorderCosted_erase]
+  simp [hclose]
+
+/--
 One theorem packaging the public close/rank bridge for Cartesian-shape BP
 navigation. It exposes the two charged legs needed by downstream BP tree
 navigation: inorder-to-close by select, and close-to-inorder by rank.
@@ -149,6 +272,73 @@ theorem shapeAccessCloseRankProfile
         inorderOfCloseCosted_erase access close⟩
     · intro idx close hclose
       exact inorderOfCloseCosted_erase_of_bpCloseOfInorder? access hclose
+
+/--
+Stronger public bridge profile adding rank-backed prefix excess and the
+composed inorder-to-close-plus-excess query.
+-/
+theorem shapeAccessCloseRankExcessProfile
+    {shape : RMQ.Cartesian.CartesianShape}
+    {overhead queryCost : Nat}
+    (access :
+      BalancedParensAccess (bpParensOfShape shape) overhead queryCost) :
+    (forall idx,
+      (closeOfInorderCosted access idx).cost <= queryCost /\
+        (closeOfInorderCosted access idx).erase =
+          RMQ.SuccinctSpace.bpCloseOfInorder? shape idx) /\
+      (forall close,
+        (inorderOfCloseCosted access close).cost <= queryCost /\
+          (inorderOfCloseCosted access close).erase =
+            RMQ.Succinct.rankPrefix false shape.bpCode (close + 1) - 1) /\
+      (forall pos,
+        (excessAtCosted access pos).cost <= 2 * queryCost /\
+          (excessAtCosted access pos).erase =
+            RMQ.Succinct.rankPrefix true shape.bpCode pos -
+              RMQ.Succinct.rankPrefix false shape.bpCode pos) /\
+      (forall idx,
+        (closeExcessOfInorderCosted access idx).cost <=
+            3 * queryCost /\
+          (closeExcessOfInorderCosted access idx).erase =
+            Option.map
+              (fun close =>
+                (close,
+                  RMQ.Succinct.rankPrefix true shape.bpCode (close + 1) -
+                    RMQ.Succinct.rankPrefix false shape.bpCode (close + 1)))
+              (RMQ.SuccinctSpace.bpCloseOfInorder? shape idx)) /\
+      (forall {idx close : Nat},
+        RMQ.SuccinctSpace.bpCloseOfInorder? shape idx = some close ->
+          (closeExcessOfInorderCosted access idx).erase =
+            some
+              (close,
+                RMQ.Succinct.rankPrefix true shape.bpCode (close + 1) -
+                  RMQ.Succinct.rankPrefix false shape.bpCode (close + 1))) /\
+      (forall {pos : Nat},
+        pos <= shape.bpCode.length ->
+          (access.rankCosted false pos).erase <=
+            (access.rankCosted true pos).erase) := by
+  constructor
+  · intro idx
+    exact ⟨closeOfInorderCosted_cost_le access idx,
+      closeOfInorderCosted_erase access idx⟩
+  · constructor
+    · intro close
+      exact ⟨inorderOfCloseCosted_cost_le access close,
+        inorderOfCloseCosted_erase access close⟩
+    · constructor
+      · intro pos
+        exact ⟨excessAtCosted_cost_le access pos,
+          excessAtCosted_erase access pos⟩
+      · constructor
+        · intro idx
+          exact ⟨closeExcessOfInorderCosted_cost_le access idx,
+            closeExcessOfInorderCosted_erase access idx⟩
+        · constructor
+          · intro idx close hclose
+            exact
+              closeExcessOfInorderCosted_erase_of_bpCloseOfInorder?
+                access hclose
+          · intro pos hpos
+            exact closeRank_le_openRank_of_le access hpos
 
 /-- Compact BP close/LCA directory shape for one Cartesian shape. -/
 abbrev CompactCloseDirectory :=

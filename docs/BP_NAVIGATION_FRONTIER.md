@@ -1,6 +1,6 @@
 # Balanced-Parentheses Navigation Spoke
 
-Snapshot: 2026-06-26. This note records the extracted public surface for the
+Snapshot: 2026-07-01. This note records the extracted public surface for the
 compact balanced-parentheses close/LCA navigation layer used by the succinct
 RMQ capstone, plus the first public tree-navigation bridge over BP
 rank/select.
@@ -21,6 +21,11 @@ Cartesian-shape balanced-parentheses encodings:
   through false-select;
 - `inorderOfCloseCosted`: closing parenthesis to inorder node index, routed
   through false-rank at `close + 1`.
+- `excessAtCosted`: prefix excess routed through charged open/close rank
+  queries; and
+- `closeExcessOfInorderCosted`: inorder node index to
+  `(close position, excess after close)`, routed through the public close leg
+  plus `excessAtCosted`.
 
 It is not yet a complete tree-navigation library.
 
@@ -39,13 +44,19 @@ The rank/select-backed tree-navigation bridge is exposed as:
 RMQ.BPNavigation.BalancedParensAccess
 RMQ.BPNavigation.closeOfInorderCosted
 RMQ.BPNavigation.inorderOfCloseCosted
+RMQ.BPNavigation.excessAtCosted
+RMQ.BPNavigation.closeExcessOfInorderCosted
 RMQ.BPNavigation.shapeAccessCloseRankProfile
+RMQ.BPNavigation.shapeAccessCloseRankExcessProfile
 ```
 
-The bridge profile proves one-query modeled cost for both directions, exact
-agreement with `SuccinctSpace.bpCloseOfInorder?`, and exact recovery of the
-inorder index when the supplied close position comes from
-`bpCloseOfInorder?`.
+The first bridge profile proves one-query modeled cost for both close/rank
+directions, exact agreement with `SuccinctSpace.bpCloseOfInorder?`, and exact
+recovery of the inorder index when the supplied close position comes from
+`bpCloseOfInorder?`. The stronger excess profile adds charged prefix-excess
+queries, the balanced-parentheses close-rank/open-rank invariant, and exact
+close-plus-post-close-excess recovery for an inorder node with cost bounded by
+one close select plus two rank queries.
 
 The concrete compact close/LCA directory is exposed as:
 
@@ -83,6 +94,6 @@ are:
 1. build a fuller tree-navigation facade over balanced parentheses
    (`parent`, `firstChild`, `nextSibling`, subtree intervals, and LCA);
 2. route that facade through the public rank/select spoke where possible,
-   using `shapeAccessCloseRankProfile` as the first bridge theorem;
+   using `shapeAccessCloseRankExcessProfile` as the first bridge theorem;
 3. keep the existing compact close/LCA profile as the RMQ-facing specialization
    rather than forcing every tree-navigation operation through RMQ internals.

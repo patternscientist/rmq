@@ -397,14 +397,19 @@ Completed:
 
 Future opportunistic work:
 
-- A current line-count audit leaves the largest remaining implementation
-  spines as `RMQ/Core/RankSelectCompressed.lean`,
-  `RMQ/Core/UnionFind/Forest.lean`, `RMQ/Core/RankSelectPublic.lean`, and a
-  few close-navigation role modules under `RMQ/Core/SuccinctClose/`. Treat
-  these as deliberate cleanup milestones with stable barrels and a gate after
-  each split. The Word-RAM interpreter itself is already role-local, so the
-  immediate Word-RAM hardening pass should add review checks and theorem
-  safeguards rather than physically splitting unrelated large files.
+- The first compressed/FID rank-select physical split is active:
+  `RMQ/Core/RankSelectCompressed.lean` is now a stable barrel over
+  `RankSelectCompressed/FixedWeightCodec.lean`,
+  `RankSelectCompressed/Readback.lean`,
+  `RankSelectCompressed/Base.lean`, and
+  `RankSelectCompressed/TableRAM.lean`. `RMQ/Core/RankSelectPublic.lean` is
+  also a stable barrel over `RankSelectPublic/FixedWeight.lean`,
+  `RankSelectPublic/Profiles.lean`, and `RankSelectPublic/Capstones.lean`.
+  The largest remaining implementation spines are now
+  `RankSelectCompressed/Base.lean`, `RMQ/Core/UnionFind/Forest.lean`,
+  `RankSelectPublic/Profiles.lean`, and a few close-navigation role modules
+  under `RMQ/Core/SuccinctClose/`. Treat further splits as deliberate cleanup
+  milestones with stable barrels and a gate after each split.
 - Continue namespace-path alignment one family at a time, with compatibility
   shims and a full gate after each pass. The rank, select, and close proposal
   roots are now compatibility shims rather than active implementation
