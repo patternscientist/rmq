@@ -65,6 +65,7 @@ if ($nd) { Fail "native_decide / ofReduceBool present in source:`n$nd" }
 
 # 3. Curated trust-base check: load-bearing theorems use only standard axioms.
 RunAxiomCheck "scripts/hub_axiom_check.lean" "hub_axiom_check.lean"
+RunAxiomCheck "scripts/wordram_axiom_check.lean" "wordram_axiom_check.lean"
 RunAxiomCheck "scripts/axiom_check.lean" "axiom_check.lean"
 RunAxiomCheck "scripts/archive_axiom_check.lean" "archive_axiom_check.lean"
 RunAxiomCheck "scripts/rank_select_axiom_check.lean" "rank_select_axiom_check.lean"

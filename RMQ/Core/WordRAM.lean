@@ -386,6 +386,21 @@ theorem eval_reads_subset_payload
           · subst event
             trivial
 
+/--
+Every word-read trace event reports exactly the word returned by the payload
+store. This is the reviewer-facing specialization of
+`eval_reads_subset_payload` for the only trace event that reads stored data.
+-/
+theorem eval_readWord_event_eq_store
+    (program : Program ty) (store : Store)
+    {segment index : Nat} {word? : Option Word}
+    (hmem :
+      TraceEvent.readWord segment index word? ∈
+        (eval program store).trace) :
+    store.readWord? segment index = word? := by
+  exact eval_reads_subset_payload program store
+    (TraceEvent.readWord segment index word?) hmem
+
 /-- If the store is word-bounded, every word returned by the trace is bounded. -/
 theorem eval_word_reads_length_le_machine
     (program : Program ty) (store : Store) {bound : Nat}
@@ -406,6 +421,43 @@ theorem eval_word_reads_length_le_machine
       simp [TraceEvent.wordLengthBounded]
   | wordSelect target occurrence result =>
       simp [TraceEvent.wordLengthBounded]
+
+/--
+Program evaluation is extensional in the payload-read interface. If two stores
+return the same word for every segment/index read, then the interpreted value
+and trace are identical. This is the main small anti-oracle lemma: a program can
+depend on the store only through `Store.readWord?`.
+-/
+theorem eval_eq_of_readWord_eq
+    (program : Program ty) {storeA storeB : Store}
+    (hread :
+      forall segment index,
+        storeA.readWord? segment index = storeB.readWord? segment index) :
+    eval program storeA = eval program storeB := by
+  induction program with
+  | pure value =>
+      rfl
+  | readWord segment index =>
+      simp [eval, hread segment index]
+  | mapOptWordNat program ih =>
+      simp [eval, ih]
+  | mapOptWordOptionNat width program ih =>
+      simp [eval, ih]
+  | joinOptOptNat program ih =>
+      simp [eval, ih]
+  | sampledRank target offset sample word sampleIH wordIH =>
+      simp [eval, sampleIH, wordIH]
+  | wordSelectFromOpt target occurrence word wordIH =>
+      simp [eval, wordIH]
+
+/-- The `Costed` projection of a program is also extensional in payload reads. -/
+theorem eval_toCosted_eq_of_readWord_eq
+    (program : Program ty) {storeA storeB : Store}
+    (hread :
+      forall segment index,
+        storeA.readWord? segment index = storeB.readWord? segment index) :
+    (eval program storeA).toCosted = (eval program storeB).toCosted := by
+  rw [eval_eq_of_readWord_eq program hread]
 
 end Program
 

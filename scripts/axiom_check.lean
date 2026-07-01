@@ -117,7 +117,10 @@ checked compatibility surfaces live in `scripts/archive_axiom_check.lean`.
 #print axioms RMQ.RAM.arrayOfList_refines_with_steps
 #print axioms RMQ.WordRAM.Program.eval_toCosted_cost_eq_trace_length
 #print axioms RMQ.WordRAM.Program.eval_reads_subset_payload
+#print axioms RMQ.WordRAM.Program.eval_readWord_event_eq_store
 #print axioms RMQ.WordRAM.Program.eval_word_reads_length_le_machine
+#print axioms RMQ.WordRAM.Program.eval_eq_of_readWord_eq
+#print axioms RMQ.WordRAM.Program.eval_toCosted_eq_of_readWord_eq
 #print axioms RMQ.WordRAM.Program.eval_sampledRank_value
 #print axioms RMQ.WordRAM.Program.eval_wordSelectFromOpt_value
 #print axioms RMQ.SparseTable.Instrumented.queryFromStoredTable_value

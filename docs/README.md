@@ -19,6 +19,9 @@ This repository has two kinds of documentation:
 - [`TRUST_AUDIT_PACKET.md`](TRUST_AUDIT_PACKET.md): compact reviewer packet for
   the headline theorem, including alias chain, theorem shape, axiom excerpt,
   dependency sketch, model glossary, and non-claims.
+- [`WORD_RAM_REVIEW_PACKET.md`](WORD_RAM_REVIEW_PACKET.md): focused
+  anti-oracle review packet for the first-order Word-RAM interpreter boundary
+  and interpreted RMQ/rank-select theorem surfaces.
 - [`FAMILY_SUMMARY.md`](FAMILY_SUMMARY.md): full theorem inventory and
   per-structure status matrix.
 - [`HUB.md`](HUB.md): reusable hub import surface.

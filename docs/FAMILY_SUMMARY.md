@@ -1217,7 +1217,10 @@ The names below are grouped by source module. Repeated base names in
 - `RMQ/Core/WordRAM.lean`: `WordRAM.Result.toCosted_run_eq_value_trace_length`,
   `WordRAM.Program.eval_toCosted_cost_eq_trace_length`,
   `WordRAM.Program.eval_reads_subset_payload`,
+  `WordRAM.Program.eval_readWord_event_eq_store`,
   `WordRAM.Program.eval_word_reads_length_le_machine`,
+  `WordRAM.Program.eval_eq_of_readWord_eq`,
+  `WordRAM.Program.eval_toCosted_eq_of_readWord_eq`,
   `WordRAM.Program.eval_sampledRank_value`,
   `WordRAM.Program.eval_wordSelectFromOpt_value`.
 - `RMQ/Core/TableModel.lean` (23):

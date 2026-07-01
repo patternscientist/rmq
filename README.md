@@ -189,6 +189,8 @@ imports, this material):
 - [`docs/WHAT_IS_PROVED.md`](docs/WHAT_IS_PROVED.md): compact scope summary.
 - [`docs/TRUST_AUDIT_PACKET.md`](docs/TRUST_AUDIT_PACKET.md): skeptical-review
   packet for the headline theorem.
+- [`docs/WORD_RAM_REVIEW_PACKET.md`](docs/WORD_RAM_REVIEW_PACKET.md): focused
+  review packet for the first-order Word-RAM anti-oracle boundary.
 - [`docs/TRUST_BASE.md`](docs/TRUST_BASE.md): dependency policy, model
   glossary, and verification commands.
 - [`docs/FAMILY_SUMMARY.md`](docs/FAMILY_SUMMARY.md): full theorem inventory,

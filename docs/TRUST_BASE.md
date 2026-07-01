@@ -29,6 +29,7 @@ That gate runs:
 - a scan rejecting `native_decide` and `Lean.ofReduceBool` in checked source;
 - the curated theorem axiom audits in `scripts/axiom_check.lean`,
   `scripts/hub_axiom_check.lean`,
+  `scripts/wordram_axiom_check.lean`,
   `scripts/archive_axiom_check.lean`, and
   `scripts/rank_select_axiom_check.lean`,
   `scripts/bp_navigation_axiom_check.lean`, and
@@ -100,6 +101,13 @@ For the standalone union-find scaffold:
 ```powershell
 lake build RMQUnionFind
 lake env lean scripts\union_find_axiom_check.lean
+```
+
+For the focused first-order Word-RAM interpreter boundary:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\review_wordram.ps1
+lake env lean scripts\wordram_axiom_check.lean
 ```
 
 The small external import examples are checked by:

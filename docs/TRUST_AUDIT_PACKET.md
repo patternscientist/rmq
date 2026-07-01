@@ -18,6 +18,14 @@ The full gate builds the public roots, checks hygiene, runs curated axiom
 scripts, runs succinct cost/space lints, runs compatibility-shim lints, and
 finishes with `git diff --check`.
 
+For the focused first-order Word-RAM anti-oracle boundary used by the
+interpreted RMQ and rank/select capstones, also see
+`docs/WORD_RAM_REVIEW_PACKET.md` and run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\review_wordram.ps1
+```
+
 ## Public Headline Alias
 
 The public name lives in `RMQ/Headlines.lean`:
