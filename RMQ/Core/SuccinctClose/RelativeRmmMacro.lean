@@ -1,4 +1,5 @@
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.MacroMicroFamily
+import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAM
 
 /-!
 # Relative rmM-style BP close macro interface

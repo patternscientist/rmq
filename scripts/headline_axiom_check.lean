@@ -29,4 +29,7 @@ the BP-native succinct capstone.
 #print axioms RMQ.Headlines.rankSelectWordBoundedNPlusOConstantQuery
 #print axioms RMQ.Headlines.rankSelectCompressedFIDFixedWeightConstantQuery
 #print axioms RMQ.Headlines.rankSelectCompressedFIDFixedWeightFamilyProfile
+#print axioms RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile
 #print axioms RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery
+#print axioms RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted
+#print axioms RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery

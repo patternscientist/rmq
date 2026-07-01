@@ -52,10 +52,13 @@ Short public aliases live in [`RMQ/Headlines.lean`](RMQ/Headlines.lean).
 | Alias | Meaning |
 | --- | --- |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and the matching lower-bound side. |
+| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Interpreter-backed variant of the final BP-native succinct RMQ capstone: same theorem shape, with close-select, compact close/LCA, and answer-rank leaves routed through `WordRAM` bridges. |
+| `RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery` | Component-level interpreter-backed BP close-navigation profile. |
 | `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack` | Coefficient-correct Catalan lower-bound slack, stated in doubled integer form. |
 | `RMQ.Headlines.rankSelectNPlusOConstantQuery` | Standalone Jacobson/Clark-style plain-bitvector rank/select with `n + o(n)` payload and constant modeled query cost. |
 | `RMQ.Headlines.rankSelectWordBoundedNPlusOConstantQuery` | The rank/select profile strengthened with machine-word-bounded concrete payload reads. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightFamilyProfile` | Fixed-weight compressed/FID rank/select family with fixed-weight primary payload plus `o(n)` auxiliary payload and constant modeled access/rank/select. |
+| `RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile` | Interpreter-backed replay of the fixed-weight compressed/FID rank/select family: same payload/profile shape, with access/rank/select reads routed through `WordRAM` bridges. |
 
 The construction-level theorem names are intentionally verbose, so that the
 model assumptions and dependency path remain inspectable. See
@@ -95,8 +98,12 @@ At a high level, the repository currently includes:
   Catalan slack equivalent to `2n - 1.5 log n - O(1)`;
 - a payload-accounted BP-native succinct RMQ upper bound with `2*n + o(n)`
   payload and constant modeled query cost;
-- a standalone rank/select spoke with public Jacobson/Clark-style profiles and
-  a concrete fixed-weight compressed/FID capstone family surface; and
+- an interpreter-backed final succinct RMQ query surface whose close-select,
+  compact close/LCA, and answer-rank leaves run through first-order
+  payload-memory `WordRAM` bridges;
+- a standalone rank/select spoke with public Jacobson/Clark-style profiles, a
+  concrete fixed-weight compressed/FID capstone family surface, and an
+  interpreter-backed replay of that compressed/FID query path; and
 - a union-find spoke with finite-partition specs, parent-pointer forest
   refinement, union-by-rank invariants, full-compression refinement, and early
   amortized-analysis checkpoints on the path toward Tarjan-style bounds.
@@ -200,12 +207,12 @@ imports, this material):
 The RMQ capstone is in place. The next development frontier is to reuse and
 stress-test the infrastructure:
 
-1. harden the standalone rank/select compressed/FID family by replaying its
-   charged reads through the future Word-RAM interpreter refinement;
-2. deepen balanced-parentheses navigation into a fuller tree-navigation API;
-3. push the union-find spoke from the current sequence/event scorecard toward a
+1. deepen balanced-parentheses navigation into a fuller tree-navigation API and
+   keep flattening whole-query `WordRAM` presentations where they clarify the
+   existing theorem surfaces;
+2. push the union-find spoke from the current sequence/event scorecard toward a
    true inverse-Ackermann amortized theorem over strict residual events; and
-4. promote shared cost, refinement, lower-bound, and amortized-analysis pieces
+3. promote shared cost, refinement, lower-bound, and amortized-analysis pieces
    into a more neutral library surface only when concrete reuse demands it.
 
 License: Apache-2.0; see [`LICENSE`](LICENSE).

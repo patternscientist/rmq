@@ -119,11 +119,15 @@ enumerative fixed-weight primary payload plus the concrete auxiliary payload
 fits `fixedWeightPayloadBudget bits + o(n)` and supports exact
 access/rank/select with one modeled constant query bound.  Plain English: the
 rank/select spoke now has its own compressed analogue of the succinct-RMQ
-family story, scoped to fixed-weight/FID payload accounting.  Live assumptions:
-this is still the project's modeled RAM/indexed-read cost layer, not Lean
-runtime.  A skeptical grad student should now ask whether every charged read in
-that profile can later be replayed by a first-order Word-RAM interpreter rather
-than just trusted as a shallow `Costed` computation.
+family story, scoped to fixed-weight/FID payload accounting.  The follow-up
+interpreted theorem
+`RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile` now replays
+that same access/rank/select surface through the first-order `WordRAM` bridge
+layer.  Live assumptions: this is still the project's modeled
+RAM/indexed-read cost layer, not Lean runtime, and it is not a single closed
+machine program for every public branch.  A skeptical grad student should now
+ask whether a flatter whole-query program presentation would improve the audit
+story enough to justify the extra proof surface.
 
 The fixed-weight compressed/FID spoke now separates four issues that were easy
 to conflate. First, log-sized sentinel chunk decompositions have an `o(n)` block
@@ -242,6 +246,33 @@ Tarjan's proof must count, rather than only aggregate rank slack on one forest
 state. The skeptical question is now sharper: can the same node's later
 residual events be ordered by the previous event's root rank and packed by a
 Mathlib-free Ackermann/alpha schedule?
+
+## Current RMQ Word-RAM Note
+
+2026-06-30 update: the succinct RMQ capstone now has an additive interpreted
+headline,
+`RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted`. Conceptually,
+the public `2*n + o(n)`, constant-query RMQ theorem is no longer only a
+composition of disciplined `Costed` callbacks: the final query is replayed
+through Word-RAM bridge layers for the generic sparse-exception close-select
+leaf, the compact close/LCA seed path, and the final answer-rank leaf, and is
+proved equal to the existing final costed query.
+
+Plain English: the theorem still says the same thing about RMQ answers, payload
+space, and modeled query cost, but the path that computes the answer now has a
+checked first-order read/word-operation layer underneath its critical payload
+reads. This separates the counted payload from proof-only certificates more
+sharply and removes the main oracle-shaped concern from the public succinct RMQ
+surface.
+
+Live assumptions remain model assumptions, not Lean runtime claims. The theorem
+uses the standard word-RAM interpretation of charged payload reads and word
+operations; it is not a statement about Lean's compiled `List` performance, and
+it is not yet a single closed AST for every branch in the final query. The
+standalone compressed/FID rank-select spoke has now been replayed through the
+same bridge layer. A skeptical grad student should next ask whether later flat
+whole-query program presentations, for RMQ or rank/select, would buy clarity
+without changing the theorem's mathematical content.
 
 ## Digestion Tasks
 

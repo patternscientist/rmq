@@ -1,4 +1,5 @@
 import RMQ.Core.RankSelectPublic
+import RMQ.Core.RankSelectPublicRAM
 
 /-!
 # Standalone rank/select spoke
@@ -21,5 +22,9 @@ concrete compressed payload budget
 `fixedWeightPayloadBudget bits + o(n)` with uniform constant modeled access,
 rank, and select queries for every `bits : List Bool`.  The pointwise theorem
 `RMQ.RankSelect.compressedFIDFixedWeightConstantQueryProfile` remains available.
-Both are word-RAM/indexed-read model theorems, not Lean runtime claims.
+The interpreted replay surface
+`RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile` strengthens
+the same theorem shape by routing access/rank/select reads through `WordRAM`
+bridges.  These are word-RAM/indexed-read model theorems, not Lean runtime
+claims.
 -/

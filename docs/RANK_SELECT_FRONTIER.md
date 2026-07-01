@@ -74,6 +74,9 @@ The concrete fixed-weight compressed/FID capstone is now also public:
 RMQ.RankSelect.compressedFIDFixedWeightFamily
 RMQ.RankSelect.compressedFIDFixedWeightFamilyProfile
 RMQ.Headlines.rankSelectCompressedFIDFixedWeightFamilyProfile
+RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamily
+RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile
+RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile
 RMQ.RankSelect.compressedFIDFixedWeightConstantQueryProfile
 RMQ.Headlines.rankSelectCompressedFIDFixedWeightConstantQuery
 ```
@@ -84,10 +87,13 @@ sub-log/Packed-Clark auxiliary payload, proves that auxiliary overhead is
 `o(n)`, and proves exact access, rank, and select with one uniform modeled
 constant query bound. `compressedFIDFixedWeightConstantQueryProfile` is the
 pointwise component theorem; `compressedFIDFixedWeightFamilyProfile` is the
-reusable theorem surface to cite for the compressed/FID spoke. The next
-refinement target is not another family wrapper, but the future Word-RAM
-interpreter layer that explains these charged reads as execution of a small
-payload-memory program.
+reusable theorem surface to cite for the compressed/FID spoke.
+`compressedFIDFixedWeightInterpretedFamilyProfile` is the additive Word-RAM
+replay surface: it keeps the same payload and constant-query theorem shape
+while routing access, rank, and select reads through the first-order
+`WordRAM` bridge layer. The remaining refinement target is not another family
+wrapper, but an optional flatter whole-query program presentation if that buys
+clarity for reviewers.
 
 ## Compressed/FID Surface
 

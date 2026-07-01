@@ -18,6 +18,18 @@ deriving Repr, DecidableEq
 
 namespace Costed
 
+theorem ext {x y : Costed a}
+    (hvalue : x.value = y.value) (hcost : x.cost = y.cost) :
+    x = y := by
+  cases x with
+  | mk xv xc =>
+      cases y with
+      | mk yv yc =>
+          simp at hvalue hcost
+          subst yv
+          subst yc
+          rfl
+
 /-- Forget the cost annotation. -/
 def erase (x : Costed a) : a :=
   x.value

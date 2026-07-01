@@ -22,6 +22,7 @@ These import only:
 - `RMQ.Core.Amortized`
 - `RMQ.Core.AmortizedSequence`
 - `RMQ.Core.RAM`
+- `RMQ.Core.WordRAM`
 - `RMQ.Core.Refine`
 - `RMQ.Core.TableModel`
 - `RMQ.Core.LowerBound`
@@ -40,6 +41,12 @@ tours, or backend implementations.
 - `RAM.Exec` is the hardened shallow primitive-trace substrate. Clients build
   traces through typed primitives such as `readArray?`, `writeArray?`,
   `pushArray`, `branch`, and comparisons.
+- `WordRAM` is the first-order payload-memory interpreter layer. Programs
+  evaluate against payload-only stores, compute their value and trace together,
+  and project one-way into `Costed`.  The hub layer contains the generic
+  interpreter only; RMQ/succinct consumers such as payload table reads,
+  rank/select leaves, and BP close/LCA table reads live under
+  `RMQ.Core.SuccinctSpace.*RAM`.
 - `Refine.StoredSeq` and `Refine.StoredMatrix` connect executable `Array`
   representations to List-level reference semantics.
 - `TableModel` names unit-cost indexed reads and payload-bit accounting views.

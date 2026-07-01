@@ -14,7 +14,10 @@ The short public theorem aliases live in `RMQ/Headlines.lean`.
 | `RMQ.Headlines.rankSelectNPlusOConstantQuery` | Standalone plain-bitvector Jacobson/Clark rank/select family with `n + o(n)` payload and constant modeled query cost. |
 | `RMQ.Headlines.rankSelectWordBoundedNPlusOConstantQuery` | The same public rank/select family, strengthened with machine-word-bounded concrete payload reads. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightFamilyProfile` | Fixed-weight compressed/FID rank/select family: fixed-weight primary payload plus `o(n)` auxiliary payload, exact access/rank/select, and one constant modeled query bound. |
+| `RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile` | Interpreter-backed replay of that compressed/FID rank/select family: same payload/profile shape, with access/rank/select reads routed through first-order `WordRAM` bridges. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ capstone with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and the matching lower-bound side. |
+| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Interpreter-backed variant of the final BP-native succinct RMQ capstone: same theorem shape, with close-select, compact close/LCA, and answer-rank leaves routed through first-order `WordRAM` bridges. |
+| `RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery` | Component-level interpreter-backed BP close-navigation profile. |
 
 The original theorem names remain construction-heavy so that their dependencies
 and modeling choices are explicit. `RMQ.Headlines` only gives stable public
@@ -71,6 +74,16 @@ proof-only fields and certificates. The final path routes through payload-live
 rank/select and close-navigation components rather than retired raw wrappers
 that charged aggregate reference computations as one step.
 
+The strongest interpreter-backed query surface is now
+`RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted`, an additive
+variant of the final BP-native succinct RMQ capstone. It keeps the same
+two-sided lower/upper theorem shape as
+`RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery`, while routing the final query
+through interpreted sparse-exception close-select, compact close/LCA rank-seed,
+and answer-rank leaves. The component-level
+`RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery` remains
+available as the reusable BP close-navigation profile.
+
 ## Standalone Rank/Select
 
 `RMQRankSelect` exposes a reusable plain-bitvector rank/select spoke:
@@ -100,6 +113,16 @@ under one uniform modeled constant query bound. The pointwise theorem
 for the individual directory. This is still a model-level theorem, not a claim
 about Lean's runtime representation.
 
+The additive interpreted replay theorem
+`RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile`, with
+headline alias
+`RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile`,
+keeps the same compressed payload and constant-query theorem shape but routes
+the access, rank, and select reads through the repository's first-order
+`WordRAM` bridge layer. This sharpens the non-oracle story for the standalone
+rank/select spoke; it is still a word-RAM model theorem, not a Lean runtime
+claim or a single closed machine-code program.
+
 The compressed/FID target surface is also formalized:
 `RMQ.RankSelect.fixedWeightBitstringsLength` counts fixed-weight bitvector
 universes by a local binomial recurrence, and
@@ -126,9 +149,10 @@ access/rank/select, while
 public adapter theorem for any auxiliary family that supplies `o(n)` overhead
 and constant bounded reads. This scaffold is now consumed by the concrete
 sub-log/Packed-Clark family theorem
-`RMQ.RankSelect.compressedFIDFixedWeightFamilyProfile`; the remaining
-refinement target is to replay the same charged reads through a future
-first-order Word-RAM interpreter.
+`RMQ.RankSelect.compressedFIDFixedWeightFamilyProfile`; the interpreted replay
+surface `RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile` now
+routes those concrete access/rank/select reads through the first-order
+Word-RAM bridge layer.
 The pointwise `RMQ.RankSelect.fixedWeightDependentAuxiliaryDataProfile`
 extends that surface to dependent auxiliary reads: the second read schedule may
 depend on the charged packed-code read values, which is the shape needed by
@@ -351,9 +375,9 @@ consumes the log-chunk primary budget while separating route width from
 class/length width, and
 `RMQ.RankSelect.fixedWeightAmbientComputedRRRRouteFieldTableLayoutFamilyToSplitWidthTableRAMRouteDirectoryFamily`
 feeds the existing route tables into that split-width envelope. The subsequent
-sub-log/Packed-Clark modules close the concrete public compressed/FID family;
-the remaining positive gap is no longer a route-directory constructor, but the
-future interpreter-backed explanation of the charged reads.
+sub-log/Packed-Clark modules close the concrete public compressed/FID family,
+and the follow-up interpreted replay of the charged reads is now landed as
+`RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile`.
 
 ## Balanced-Parentheses Navigation
 

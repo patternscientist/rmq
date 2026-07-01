@@ -1,10 +1,12 @@
 # Word-RAM Interpreter Refinement Plan
 
-Snapshot: 2026-06-29.
+Snapshot: 2026-06-30.
 
 This note records the current fixedpoint plan for adding a first-order
-Word-RAM interpreter to the repository.  It is a planning document, not a
-claim that the interpreter layer already exists.
+Word-RAM interpreter to the repository.  Phases 0-3 now have an initial
+checked implementation: the core interpreter, payload table reads,
+interpreter-backed rank/select leaves, and a BP close/LCA table-read skeleton.
+The remaining frontier is the whole final succinct RMQ query program.
 
 The goal is to harden the existing succinct RMQ and rank/select cost story:
 move selected headline query paths from "a `Costed` function has the right
@@ -251,16 +253,24 @@ RMQ/Core/GenericSelect/RAM.lean
 Targets:
 
 ```lean
-theorem StoredWordRankData.rankProgram_refines_rankCosted ...
 theorem PayloadLiveStoredWordRankData.rankProgram_profile ...
-theorem GenericSelect.sparseExceptionSelectProgram_refines_selectCosted ...
-theorem GenericSelect.sparseExceptionSelectProgram_profile ...
+theorem PayloadLiveStoredWordSelectData.selectInterpreted_profile ...
 ```
 
-This is the best first useful slice because the current code already uses
-payload word reads and the word-local `RAM.selectBoolWord` primitive.  The
-missing hardening is occurrence-to-word routing and table reads as first-order
-code.
+Status: initial leaf bridge landed in
+`RMQ/Core/SuccinctSpace/RankSelectRAM.lean`, with the select-locator table
+bridge in `RMQ/Core/SuccinctSpace/SelectSamplesRAM.lean`.
+
+Rank is a genuine first-order `WordRAM.Program`: it reads the sampled rank word
+and the packed bitvector word from a payload-only store, then applies the
+word-local rank primitive.  Select keeps the domain-specific sample decoder
+outside the generic interpreter, but every sample and payload word it consumes
+is now read through interpreted payload memory and then proved to refine the
+existing costed surface.
+
+Remaining Phase-2 hardening: push the same pattern through the deeper generic
+select/sparse-exception directories and expose a public rank/select spoke
+variant whose query functions route through the interpreted leaves.
 
 ### Phase 3: BP close/LCA query skeleton
 
@@ -274,13 +284,21 @@ RMQ/Core/SuccinctSelect/TwoLevel/BPCloseNavigationRAM.lean
 Targets:
 
 ```lean
-theorem ConcreteCompactBPCloseLCADirectory.lcaCloseProgram_refines_costed ...
-theorem ConcreteCompactBPCloseLCADirectory.lcaCloseProgram_profile_of_large ...
+theorem PayloadLiveBPCloseLCADirectory.lcaCloseProgram_profile ...
 ```
 
-Large-regime first is acceptable.  Small-regime semantic fallbacks should be
-handled later by explicit finite payload tables or excluded from this first
-interpreter theorem with a clear premise.
+Status: initial table-read skeleton landed in
+`RMQ/Core/SuccinctSpace/BPCloseLCARAM.lean`.
+
+The current theorem interprets the payload-live optional-close table read and
+proves it refines the existing BP close/LCA costed surface.  This is the right
+Phase-3 bottom layer, not the final BP navigation interpreter: endpoint
+select-close, rank-close, seeded local BP windows, and final RMQ join still
+need to be sequenced as a whole query program.
+
+Large-regime first remains acceptable for the final query capstone.  Small-
+regime semantic fallbacks should be handled later by explicit finite payload
+tables or excluded from the first interpreter theorem with a clear premise.
 
 ### Phase 4: Final succinct RMQ query program
 
@@ -310,9 +328,28 @@ The final program should execute:
 It must consume the concrete built access family, not an arbitrary
 `BPCloseAccessDirectory` inhabitant.
 
+Status: the first whole-query interpreted consumer has landed at the BP
+close-navigation layer in
+`RMQ/Core/SuccinctSpace/BPCloseRMQNavigationRAM.lean`:
+
+```lean
+theorem PayloadLiveBPCloseRMQNavigationDirectory
+  .queryBuiltInterpretedCosted_refines_queryBuiltCosted ...
+theorem PayloadLiveBPCloseRMQNavigationDirectory.interpreted_profile ...
+theorem WordBoundedSampledEncodedPayloadLiveBPCloseRMQNavigationFamily
+  .two_n_plus_o_interpreted_word_bounded_query_profile ...
+```
+
+This closes the nontrivial sequencing step for select-close, select-close,
+LCA-close, rank-close, and answer reconstruction over the payload-live
+close-navigation family.  It does not yet retarget the final
+`SuccinctFinal` capstone, whose current query still runs through the newer
+compact close-access surface and a rank callback into
+`lcaCloseCostedWithRankSeed`.
+
 ### Phase 5: Broader rebasing
 
-Only after the query capstone is interpreter-backed:
+After an interpreted query layer exists:
 
 - expose public headline aliases with an interpreter-backed variant;
 - port the public rank/select spoke;
@@ -356,11 +393,11 @@ Guard: every milestone must end in a named refinement theorem consumed by the
 next layer.  Syntax-only interpreters, wrapper records, and unconsumed exactness
 lemmas do not count as closure.
 
-## Parallel Work Plan
+## Parallel Work Plan And Status
 
 The work can be parallelized, but only along real leaves.
 
-### Worker A: interpreter core and provenance
+### Phase 0 landed: interpreter core and provenance
 
 Owned files:
 
@@ -381,7 +418,10 @@ Stop condition: only stop when the core theorem surfaces exist and build, or a
 formal obstruction shows the proposed syntax cannot express the first rank-read
 program without adding a forbidden primitive.
 
-### Worker B: payload table/read compilation
+Status: landed in `RMQ/Core/WordRAM.lean`, including word-local rank/select
+program constructors and the core provenance lemmas.
+
+### Phase 1 landed: payload table/read compilation
 
 Owned files:
 
@@ -402,45 +442,113 @@ FixedWidthOptionNatTable.readProgram_exact
 Stop condition: do not stop at an adapter around `getCosted`; the read must go
 through the interpreter's store.
 
-### Worker C: rank/select compiled leaves
+Status: landed in `RMQ/Core/SuccinctSpace/WordStoreRAM.lean`,
+`RMQ/Core/SuccinctSpace/TablesRAM.lean`, and
+`RMQ/Core/SuccinctSpace/SelectSamplesRAM.lean`.
 
-Owned files after A/B land:
+### Phase 2 landed: rank/select interpreted leaves
+
+Owned files:
 
 ```text
 RMQ/Core/SuccinctSpace/RankSelectRAM.lean
-RMQ/Core/GenericSelect/RAM.lean
 ```
 
 Targets:
 
 ```lean
-StoredWordRankData.rankProgram_refines_rankCosted
 PayloadLiveStoredWordRankData.rankProgram_profile
-GenericSelect.sparseExceptionSelectProgram_refines_selectCosted
+PayloadLiveStoredWordSelectData.selectInterpreted_profile
 ```
 
-Stop condition: the result must be consumed by a concrete payload-live family,
-not merely exposed as a generic callback interface.
+Status: landed for the core payload-live stored-word rank/select leaves.
+Generic select and sparse-exception select directories remain later consumers.
 
-### Worker D: final BP/RMQ integration
+### Phase 3 initial skeleton landed: BP close/LCA interpreted table read
 
-Owned files after C lands:
+Owned files:
 
 ```text
-RMQ/Core/SuccinctClose/RAM.lean
+RMQ/Core/SuccinctSpace/BPCloseLCARAM.lean
+```
+
+Targets:
+
+```lean
+PayloadLiveBPCloseLCADirectory.lcaCloseProgram_profile
+```
+
+Status: landed for the payload-live optional-close table read.
+
+### Phase 4 landed: interpreted BP close-navigation query
+
+Owned files:
+
+```text
+RMQ/Core/SuccinctSpace/BPCloseRMQNavigationRAM.lean
+```
+
+Targets:
+
+```lean
+PayloadLiveBPCloseRMQNavigationDirectory.queryBuiltInterpretedCosted_refines_queryBuiltCosted
+PayloadLiveBPCloseRMQNavigationDirectory.interpreted_profile
+WordBoundedSampledEncodedPayloadLiveBPCloseRMQNavigationFamily.two_n_plus_o_interpreted_word_bounded_query_profile
+```
+
+Status: landed for the payload-live BP close-navigation family.  This is a
+whole-query consumer of the interpreted rank/select and LCA table-read leaves.
+
+### Phase 5 landed: public interpreted headlines
+
+Owned files:
+
+```text
+RMQ/Headlines.lean
+scripts/headline_axiom_check.lean
+```
+
+Targets:
+
+```lean
+RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted
+RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery
+```
+
+Status: landed.  The BP close-navigation alias remains a component-level
+checkpoint, while `succinctRMQTwoNPlusOConstantQueryInterpreted` exposes the
+additive final BP-native succinct RMQ capstone whose close-select, compact
+close/LCA, and final answer-rank leaves route through the current `WordRAM`
+bridge layer.
+
+### Phase 6 landed: final `SuccinctFinal` integration
+
+Owned files:
+
+```text
 RMQ/Core/SuccinctFinalRAM.lean
 ```
 
 Targets:
 
 ```lean
-ConcreteCompactBPCloseLCADirectory.lcaCloseProgram_refines_costed
-concreteBPNativeSuccinctRMQQueryProgram_refines_costed
-builtGenericSparseExceptionBPNativeSuccinctRMQFamily_queryProgram_profile
+SuccinctFinal.concreteBPNativeSuccinctRMQQueryInterpretedCosted_refines_queryCosted
+SuccinctFinal.concreteBPNativeSuccinctRMQQueryInterpretedCosted_cost_le
+SuccinctFinal.concreteBPNativeSuccinctRMQQueryInterpretedCosted_exact
+SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_interpreted_profile
 ```
 
-Stop condition: the final theorem must route through the concrete built access
-family and interpreted select/rank leaves.
+Status: landed as an additive final-capstone theorem.  The compact
+close-access layer has the narrow bridge
+`RMQ/Core/SuccinctClose/RelativeRmmMacro/ConcreteDirectoryRAM.lean`, where
+`ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithInterpretedRankSeed`
+builds the false-rank seed callback from
+`PayloadLiveStoredWordRankData.rankProgramClamped` and
+`rankWordRAMStore false`, then proves equality with the existing rank-seeded
+close/LCA wrapper.  `SuccinctFinalRAM` then sequences the interpreted
+generic sparse-exception close-select leaf, the compact LCA leg, and the final
+answer-rank leaf into the built generic BP-native final query and proves it
+refines the existing costed query.
 
 ## What This Would Mean In Plain English
 
@@ -448,24 +556,137 @@ Today the headline theorem says, honestly: under an explicit word-RAM-style
 cost model, this concrete payload-accounted construction has exact RMQ answers,
 constant modeled query cost, and `2n + o(n)` payload bits.
 
-After the interpreter capstone, the stronger statement would be: the query
-answer is not merely supplied by a costed Lean function.  It is produced by
-running a fixed first-order program that can only read the counted payload and
-perform counted word operations.  That is the difference between a disciplined
-model and an executable-model refinement.
+After the current interpreter capstone, the stronger statement is: the final
+query path is replayed through component bridges whose payload-word reads,
+rank/select word operations, and fixed-width table reads are interpreted and
+proved equal to the existing costed query.  This closes the main oracle-shaped
+gap in the public succinct RMQ theorem without changing the reference
+semantics, payload accounting, or public cost bound.
+
+The remaining stronger target is a single closed first-order program for the
+whole final branch structure.  That would be a compiler/interpreter
+presentation polish, not a prerequisite for the current payload-live
+interpreter-backed capstone.
 
 ## Fixedpoint Conclusion
 
-The architecture does not need a broad redesign.  It needs one new layer:
+The architecture did not need a broad redesign.  It needed one new layer:
 first-order payload-memory execution, connected to the existing construction by
-component refinement theorems.
+component refinement theorems.  That layer now exists for the public succinct
+RMQ query path.
 
-The best order is:
+The best order from here is:
 
-1. interpreter core;
-2. payload word/table reads;
-3. rank/select leaves;
-4. BP close/LCA query path;
-5. final succinct RMQ query program; and
-6. only then broader rebasing or compiler-style targets.
+1. replay the standalone compressed/FID rank-select spoke through the same
+   `WordRAM` layer;
+2. continue BP/tree-navigation APIs over the reusable rank/select surface; and
+3. only then consider the flatter whole-query AST or compiler-style target.
 
+## 2026-06-30 Stress-Test Fixedpoint
+
+Two read-only audits of the current repository converged on the same
+architecture: keep the current theorem-facing `Costed` and profile surfaces,
+but do not treat them as the final trust boundary. The interpreter layer should
+be a one-way refinement:
+
+```lean
+Program -> eval -> Result -> Costed
+```
+
+There should be no general adapter in the other direction. A theorem saying a
+`Costed` query can be represented by some program would recreate the oracle
+gap; the point is that the value and trace are computed together from a fixed
+syntax tree and payload-only store.
+
+### Public Surfaces To Preserve
+
+The migration should add interpreter-backed variants underneath existing names
+and re-alias only after equivalent statements exist. Preserve:
+
+- `ValidRange`, `LeftmostArgMin`, `CandidateExact`, `RMQBackend`, and
+  `RMQBackend.queryBuilt_eq`;
+- the headline aliases in `RMQ.Headlines`, especially
+  `rankSelectWordBoundedNPlusOConstantQuery`,
+  `rankSelectCompressedFIDFixedWeightFamilyProfile`, and
+  `succinctRMQTwoNPlusOConstantQuery`;
+- `ExactRMQStateEncoding`, `PayloadLosslessEncoding`, and
+  `PayloadSpaceBounds`;
+- `RankSelectSpec.BitVectorRankSelectDirectory` and
+  `BitVectorRankSelectFamily.n_plus_o_constant_query_profile`;
+- the public BP navigation surfaces in `RMQBPNavigation`; and
+- the reusable hub boundary exposed by `RMQHub` and `VerifiedDS`.
+
+Interpreter-backed theorem names should be additive at first, for example
+`succinctRMQTwoNPlusOConstantQuery_interpreted` or a similarly explicit alias,
+not an in-place semantic strengthening hidden behind the old name.
+
+### Stress-Test Risks
+
+The current code is disciplined but still has five migration risks:
+
+1. `Costed.tickValue`, `TableModel.IndexedAccess.getCosted`, and similar
+   surfaces can attach a cost to a value without execution.
+2. Abstract profile records such as rank/select directories, broadword-RMQ
+   directories, close-access directories, and select-source records are useful
+   theorem interfaces but are too weak to be the interpreter trust boundary.
+3. Proof-only routing facts, certificates, and exactness fields are legitimate
+   proof artifacts, but the interpreter must not be able to read them as
+   memory.
+4. Static payload-provenance fields such as `payload`, `readWords`, and
+   word-bound proofs do not by themselves prove that every dynamic read came
+   from payload memory.
+5. Small-regime fallbacks and compatibility branches can accidentally re-route
+   through semantic helpers unless the first interpreted theorem either
+   excludes them with an explicit large-regime premise or implements them as
+   payload-backed/interpreted programs too.
+
+### Non-Negotiable Gates
+
+An interpreter milestone is not closed by syntax alone. It must close a named
+consumer theorem. In particular:
+
+- no instruction may compute `scanWindow`, whole-bitvector rank/select, rmM,
+  Cartesian-shape RMQ, or BP LCA directly;
+- every table/routing value used by a query must be simple arithmetic or
+  decoded from charged payload reads;
+- every dynamic word read must have a payload membership theorem and a
+  machine-word-bound theorem;
+- final RMQ interpreter theorems must consume the concrete built access family,
+  not an arbitrary inhabitant of an abstract directory record;
+- proof-only fields may appear in theorem statements and correctness proofs,
+  but not in `Store`;
+- the first capstone may be large-regime, but the statement must say so; and
+- a public headline alias should change only after the interpreted theorem has
+  the same user-facing correctness/cost/space content as the current alias.
+
+### Landed First Milestone Shape
+
+The first implementation loop should be deliberately small but theorem-shaped.
+The target is a core `RMQ.Core.WordRAM` module with a payload-only store,
+first-order programs, deterministic evaluation, and these theorem surfaces:
+
+```lean
+theorem WordRAM.eval_toCosted_cost_eq_trace_length ...
+theorem WordRAM.eval_reads_subset_payload ...
+theorem WordRAM.eval_word_reads_length_le_machine ...
+```
+
+That is the smallest layer that changes the trust story. A syntax tree without
+read-provenance and word-bound theorems is only scaffolding.
+
+That first loop has landed.  The next layer also interpreted the existing
+payload primitives:
+
+```lean
+theorem PayloadWordStore.readProgram_refines_readWordCosted ...
+theorem BoundedPayloadWordStore.readProgram_word_length_le ...
+theorem FixedWidthNatTable.readProgram_exact ...
+theorem FixedWidthOptionNatTable.readProgram_exact ...
+```
+
+Rank/select leaves and the BP close/LCA table-read skeleton have also landed.
+The next fixedpoint loop should therefore attack the first whole-query
+consumer, not more syntax or table wrappers.  This preserves the same
+refinement style used in mature formalization projects: keep the abstract
+reference semantics, prove a representation/execution layer implements it,
+and compose the refinements one consumer at a time.

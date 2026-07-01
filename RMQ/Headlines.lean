@@ -1,6 +1,9 @@
 import RMQ.Core.EncodingLowerBound
 import RMQ.Core.RankSelectPublic
+import RMQ.Core.RankSelectPublicRAM
+import RMQ.Core.SuccinctSpace.BPCloseRMQNavigationRAM
 import RMQ.Core.SuccinctFinal
+import RMQ.Core.SuccinctFinalRAM
 
 /-!
 Short public aliases for the main citeable theorem surfaces.
@@ -35,8 +38,39 @@ abbrev rankSelectCompressedFIDFixedWeightConstantQuery :=
 abbrev rankSelectCompressedFIDFixedWeightFamilyProfile :=
   RMQ.RankSelect.compressedFIDFixedWeightFamilyProfile
 
+/--
+Interpreted fixed-weight compressed/FID rank/select family: same compressed
+payload and constant-query theorem shape, with access/rank/select reads routed
+through `WordRAM` bridges.
+-/
+abbrev rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile :=
+  RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile
+
 /-- BP-native succinct RMQ capstone: exact RMQ, `2*n + o(n)`, constant query. -/
 abbrev succinctRMQTwoNPlusOConstantQuery :=
   RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile
+
+/--
+Interpreter-backed BP-native succinct RMQ capstone: the same two-sided
+`2*n + o(n)`, constant-query theorem shape, with the final query routed through
+interpreted close-select, compact close/LCA, and answer-rank leaves.
+-/
+abbrev succinctRMQTwoNPlusOConstantQueryInterpreted :=
+  RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_interpreted_profile
+
+/--
+Interpreter-backed BP close-navigation profile: `2*n + o(n)`, constant query,
+with rank/select/LCA leaves routed through the first-order `WordRAM` bridges.
+
+This is a component-level profile; the final BP-native RMQ capstone also has an
+interpreter-backed headline above.
+-/
+abbrev bpCloseNavigationInterpretedTwoNPlusOConstantQuery
+    {rankSlots selectSlots lcaSlots : Nat}
+    (family :
+      RMQ.SuccinctSpace.WordBoundedSampledEncodedPayloadLiveBPCloseRMQNavigationFamily
+        rankSlots selectSlots lcaSlots) :=
+  RMQ.SuccinctSpace.WordBoundedSampledEncodedPayloadLiveBPCloseRMQNavigationFamily.two_n_plus_o_interpreted_word_bounded_query_profile
+    family
 
 end RMQ.Headlines

@@ -1,4 +1,9 @@
 import RMQ.Core.SuccinctSpace.BPCloseRMQNavigation
+import RMQ.Core.SuccinctSpace.TablesRAM
+import RMQ.Core.SuccinctSpace.SelectSamplesRAM
+import RMQ.Core.SuccinctSpace.RankSelectRAM
+import RMQ.Core.SuccinctSpace.BPCloseLCARAM
+import RMQ.Core.SuccinctSpace.BPCloseRMQNavigationRAM
 
 /-!
 # Succinct RMQ space/profile interface
