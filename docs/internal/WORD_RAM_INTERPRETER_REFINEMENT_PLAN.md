@@ -577,10 +577,13 @@ RMQ query path.
 
 The best order from here is:
 
-1. replay the standalone compressed/FID rank-select spoke through the same
-   `WordRAM` layer;
-2. continue BP/tree-navigation APIs over the reusable rank/select surface; and
-3. only then consider the flatter whole-query AST or compiler-style target.
+1. continue BP/tree-navigation APIs over the reusable rank/select surface; and
+2. design the flatter whole-query AST or compiler-style target only after the
+   public BP operations identify which dynamic-address patterns are actually
+   needed.
+
+The standalone compressed/FID rank-select spoke has now been replayed through
+the same `WordRAM` layer.
 
 ## 2026-06-30 Stress-Test Fixedpoint
 
@@ -690,3 +693,40 @@ consumer, not more syntax or table wrappers.  This preserves the same
 refinement style used in mature formalization projects: keep the abstract
 reference semantics, prove a representation/execution layer implements it,
 and compose the refinements one consumer at a time.
+
+### 2026-07-01 whole-query flattening assessment
+
+The first whole-query consumer has landed, but it is intentionally
+leaf-interpreted rather than one closed first-order program:
+
+```lean
+SuccinctFinal.concreteBPNativeSuccinctRMQQueryInterpretedCosted_refines_queryCosted
+SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_interpreted_profile
+```
+
+The current `WordRAM.Program` syntax is adequate for payload table reads,
+sampled rank, and word-local select.  It is not yet adequate for the whole
+final RMQ branch structure, because the query uses interpreted values as later
+addresses:
+
+1. select-close on the left endpoint produces `leftClose`;
+2. select-close on the right endpoint produces `rightClose`;
+3. `(leftClose, rightClose)` address the compact close/LCA table;
+4. `answerClose + 1` addresses the final rank-close query.
+
+A single closed program therefore needs a first-order register/branch layer:
+registers for `Nat`/`Option Nat`, fixed arithmetic on registers, option tests,
+and payload-read instructions whose segment/index arguments are register
+expressions.  The design should not add a higher-order continuation
+`bind : Program Nat -> (Nat -> Program ty) -> Program ty`, because such a
+constructor stores an arbitrary Lean function inside the program and would
+weaken the anti-oracle story.
+
+The next interpreter-hardening milestone should be a small register-machine
+extension plus one consumed theorem on a narrow component, not a direct rewrite
+of the final capstone.  A good first target is the compact close/LCA wrapper:
+prove that a register-program reading endpoint close registers, consulting the
+optional-close table, and returning the answer close refines the current
+`lcaCloseInterpretedCosted` path.  After that, the final RMQ query can be
+flattened by composing the already interpreted close-select and rank leaves
+through the same register layer.

@@ -1,6 +1,6 @@
 # Word-RAM Review Packet
 
-Snapshot: 2026-06-30. This packet is a focused reviewer note for the
+Snapshot: 2026-07-01. This packet is a focused reviewer note for the
 first-order Word-RAM refinement boundary used by the interpreted RMQ and
 rank/select theorem surfaces.
 
@@ -116,15 +116,37 @@ rank/select/close leaves through first-order `WordRAM.Program` bridge layers,
 and the checked interpreter lemmas make the payload-read and trace-cost
 provenance explicit.
 
+## Whole-Query Program Frontier
+
+The interpreted RMQ capstone is currently leaf-interpreted: close-select,
+rank-close, and compact close/LCA table reads are each routed through
+`WordRAM.Program`, then the final query shape is sequenced by Lean-level
+`Costed.bind`.
+
+Flattening this further into one closed first-order program is useful, but it
+is a separate compiler-style milestone. The final query is not straight-line:
+the two close-select results determine the compact close/LCA lookup, and that
+answer-close result determines the final rank query. A respectable one-program
+version therefore needs a first-order register/branch layer whose computed
+addresses are values produced by earlier instructions.
+
+The tempting shortcut to avoid is a generic higher-order continuation such as
+`bind : Program Nat -> (Nat -> Program ty) -> Program ty`. In Lean that stores
+an arbitrary function inside the syntax tree, which reopens the oracle-shaped
+gap this layer was built to close. The next stronger design should keep the
+syntax first-order: registers, fixed arithmetic/address instructions, option
+tests, and payload-read operations, with the same read-provenance and
+machine-word-bound theorems as the current `Program.eval` boundary.
+
 ## Large-File Cleanup Note
 
-This pass did not physically split the remaining large implementation files.
-That would be a separate cleanup milestone with broader import churn. A current
-line-count audit points to these largest follow-up candidates:
+The initial rank/select facade split has landed. `RMQ/Core/RankSelectCompressed.lean`
+and `RMQ/Core/RankSelectPublic.lean` are now stable barrels over role modules.
+A current line-count audit points to these largest follow-up candidates:
 
-- `RMQ/Core/RankSelectCompressed.lean`;
+- `RMQ/Core/RankSelectCompressed/Base.lean`;
+- `RMQ/Core/RankSelectPublic/Profiles.lean`;
 - `RMQ/Core/UnionFind/Forest.lean`;
-- `RMQ/Core/RankSelectPublic.lean`; and
 - larger close-navigation role files under `RMQ/Core/SuccinctClose/`.
 
 The Word-RAM layer itself is already small and role-local. The right next
