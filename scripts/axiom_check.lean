@@ -179,7 +179,13 @@ checked compatibility surfaces live in `scripts/archive_axiom_check.lean`.
 #print axioms RMQ.SuccinctSpace.select_false_bpCode_eq_bpCloseOfInorder?
 #print axioms RMQ.BPNavigation.closeOfInorderCosted_erase
 #print axioms RMQ.BPNavigation.inorderOfCloseCosted_erase_of_bpCloseOfInorder?
+#print axioms RMQ.BPNavigation.excessAtCosted_erase
+#print axioms RMQ.BPNavigation.closeRank_le_openRank_of_le
+#print axioms RMQ.BPNavigation.closeRankPrefix_le_openRankPrefix_of_le
+#print axioms RMQ.BPNavigation.closeExcessOfInorderCosted_erase
+#print axioms RMQ.BPNavigation.closeExcessOfInorderCosted_erase_of_bpCloseOfInorder?
 #print axioms RMQ.BPNavigation.shapeAccessCloseRankProfile
+#print axioms RMQ.BPNavigation.shapeAccessCloseRankExcessProfile
 #print axioms RMQ.SuccinctSpace.FixedWidthNatTable.ofEncodedWords_profile
 #print axioms RMQ.SuccinctSpace.FixedWidthNatTable.ofEntries_profile
 #print axioms RMQ.SuccinctSpace.FixedWidthNatTable.profile

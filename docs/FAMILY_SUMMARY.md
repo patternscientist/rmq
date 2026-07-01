@@ -2200,6 +2200,7 @@ The names below are grouped by source module. Repeated base names in
   neutral public aliases and a standalone import root for compact
   balanced-parentheses close/LCA navigation, including
   `BPNavigation.excessAtCosted`, `BPNavigation.closeExcessOfInorderCosted`,
+  `BPNavigation.closeRankPrefix_le_openRankPrefix_of_le`,
   `BPNavigation.shapeAccessCloseRankProfile`,
   `BPNavigation.shapeAccessCloseRankExcessProfile`, and
   `BPNavigation.compactCloseDirectoryProfile`.

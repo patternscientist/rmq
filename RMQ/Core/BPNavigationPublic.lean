@@ -167,6 +167,23 @@ theorem closeRank_le_openRank_of_le
       access hpos
 
 /--
+Semantic close-rank/open-rank invariant for Cartesian-shape BP prefixes. This
+is the erased `rankPrefix` form of `closeRank_le_openRank_of_le`.
+-/
+theorem closeRankPrefix_le_openRankPrefix_of_le
+    {shape : RMQ.Cartesian.CartesianShape}
+    {overhead queryCost : Nat}
+    (access :
+      BalancedParensAccess (bpParensOfShape shape) overhead queryCost)
+    {pos : Nat} (hpos : pos <= shape.bpCode.length) :
+    RMQ.Succinct.rankPrefix false shape.bpCode pos <=
+      RMQ.Succinct.rankPrefix true shape.bpCode pos := by
+  have h := closeRank_le_openRank_of_le access hpos
+  rw [RMQ.SuccinctSpace.BalancedParensAccess.rankCosted_erase access false pos,
+    RMQ.SuccinctSpace.BalancedParensAccess.rankCosted_erase access true pos] at h
+  simpa [RMQ.SuccinctSpace.bpParensOfShape_bits] using h
+
+/--
 Costed lookup of a node's closing parenthesis together with the prefix excess
 immediately after that close. This is the first public composition of the
 inorder-to-close select leg with the rank-backed excess leg.

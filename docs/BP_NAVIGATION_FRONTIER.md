@@ -56,7 +56,9 @@ recovery of the inorder index when the supplied close position comes from
 `bpCloseOfInorder?`. The stronger excess profile adds charged prefix-excess
 queries, the balanced-parentheses close-rank/open-rank invariant, and exact
 close-plus-post-close-excess recovery for an inorder node with cost bounded by
-one close select plus two rank queries.
+one close select plus two rank queries. The erased theorem
+`RMQ.BPNavigation.closeRankPrefix_le_openRankPrefix_of_le` exposes that same
+balanced-prefix fact directly over `rankPrefix`.
 
 The concrete compact close/LCA directory is exposed as:
 
