@@ -22,7 +22,20 @@ abbrev rankSelectWordBounded :=
 abbrev rankSelectCompressedFID :=
   RMQ.Headlines.rankSelectCompressedFIDFixedWeightFamilyProfile
 
+abbrev rankSelectCompressedFIDInterpreted :=
+  RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile
+
 abbrev succinctRMQ :=
   RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery
+
+abbrev succinctRMQInterpreted :=
+  RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted
+
+abbrev bpCloseNavigationInterpreted
+    {rankSlots selectSlots lcaSlots : Nat}
+    (family :
+      RMQ.SuccinctSpace.WordBoundedSampledEncodedPayloadLiveBPCloseRMQNavigationFamily
+        rankSlots selectSlots lcaSlots) :=
+  RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery family
 
 end RMQ.Examples.RMQHeadlines
