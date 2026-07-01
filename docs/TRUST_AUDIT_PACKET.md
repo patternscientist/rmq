@@ -1,6 +1,6 @@
 # Trust Audit Packet
 
-Snapshot: 2026-06-28. This is the compact packet to hand to a skeptical
+Snapshot: 2026-07-01. This is the compact packet to hand to a skeptical
 Lean/formalization reviewer before asking for a broader library-readiness
 review. It focuses on the public succinct RMQ headline theorem, its alias
 chain, its cost/space model, and the main anti-oracle checks.
@@ -28,7 +28,7 @@ powershell -ExecutionPolicy Bypass -File scripts\review_wordram.ps1
 
 ## Public Headline Alias
 
-The public name lives in `RMQ/Headlines.lean`:
+The main public RMQ name lives in `RMQ/Headlines.lean`:
 
 ```lean
 abbrev succinctRMQTwoNPlusOConstantQuery :=
@@ -45,6 +45,19 @@ RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery
     -> concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
          builtGenericSparseExceptionSelectBPCloseAccessFamily
 ```
+
+The additive interpreted public alias is:
+
+```lean
+abbrev succinctRMQTwoNPlusOConstantQueryInterpreted :=
+  RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_interpreted_profile
+```
+
+It has the same payload/lower-bound/cost/exactness theorem shape as the main
+capstone, but the query clause uses
+`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted`: a
+closed first-order whole-query controller whose leaves are interpreted
+close-select, compact close/LCA, and register-backed answer-rank operations.
 
 ## Theorem Statement
 

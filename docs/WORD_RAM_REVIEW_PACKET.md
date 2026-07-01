@@ -71,6 +71,9 @@ RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile
 RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQQueryInterpretedCosted_refines_queryCosted
 RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQQueryInterpretedCosted_exact
 RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_interpreted_profile
+RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_refines_queryInterpretedCosted
+RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_exact
+RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_interpreted_profile
 RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile
 RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted
 ```
@@ -114,21 +117,34 @@ This packet does not claim:
 The current claim is more precise: the public interpreted capstones route their
 rank/select/close leaves through first-order `WordRAM.Program` bridge layers,
 and the checked interpreter lemmas make the payload-read and trace-cost
-provenance explicit.
+provenance explicit.  The RMQ capstone now goes one rung further: the outer
+query is a closed whole-query control program that stores intermediate
+close-select and LCA-close answers in registers before invoking the two-level
+register-backed rank leaf.
 
 ## Whole-Query Program Frontier
 
-The interpreted RMQ capstone is currently leaf-interpreted: close-select,
-rank-close, and compact close/LCA table reads are each routed through
-`WordRAM.Program`, then the final query shape is sequenced by Lean-level
-`Costed.bind`.
+The interpreted RMQ capstone now has two layers:
 
-Flattening this further into one closed first-order program is useful, but it
-is a separate compiler-style milestone. The final query is not straight-line:
-the two close-select results determine the compact close/LCA lookup, and that
-answer-close result determines the final rank query. A respectable one-program
-version therefore needs a first-order register/branch layer whose computed
-addresses are values produced by earlier instructions.
+- the older leaf-interpreted theorem, where close-select, rank-close, and
+  compact close/LCA table reads are each routed through `WordRAM.Program`, then
+  sequenced by Lean-level `Costed.bind`; and
+- the newer whole-query theorem, where that sequencing is represented by the
+  closed `SuccinctFinal.WholeQueryProgram` instruction list.
+
+The first register/control-flow rung now exists in
+`RMQ/Core/WordRAM/Register.lean`, with a consumed dynamic-address theorem in
+`RMQ/Core/SuccinctSpace/BPCloseLCARegisterRAM.lean`.  That theorem replaces the
+small handoff from optional endpoint-close registers to a BP close/LCA table
+read by a first-order register program.  The same register module also now has
+natural-valued programs for dynamic stored-word rank, including the two-level
+sampled-rank case used by the final BP-native RMQ capstone.
+
+The whole-query theorem is the first closed one-program statement for the final
+RMQ query. The final query is not straight-line: the two close-select results
+determine the compact close/LCA lookup, and that answer-close result determines
+the final rank query. The `WholeQueryProgram` layer records that control flow
+with first-order instructions and explicit optional/natural registers.
 
 The tempting shortcut to avoid is a generic higher-order continuation such as
 `bind : Program Nat -> (Nat -> Program ty) -> Program ty`. In Lean that stores
@@ -137,6 +153,15 @@ gap this layer was built to close. The next stronger design should keep the
 syntax first-order: registers, fixed arithmetic/address instructions, option
 tests, and payload-read operations, with the same read-provenance and
 machine-word-bound theorems as the current `Program.eval` boundary.
+
+The final `answerClose + 1` rank query is now routed through
+`SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterInterpretedCosted`,
+which refines the earlier interpreted rank query while computing the super
+sample, block sample, and bit-word addresses from a register expression.  The
+remaining frontier is no longer the outer query controller. It is a still
+flatter unified payload-store trace where the component leaves and the
+whole-query controller share one lower-level interpreter state, rather than a
+closed controller that invokes already interpreted leaf costed functions.
 
 ## Large-File Cleanup Note
 

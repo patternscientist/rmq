@@ -3,10 +3,12 @@
 Snapshot: 2026-06-30.
 
 This note records the current fixedpoint plan for adding a first-order
-Word-RAM interpreter to the repository.  Phases 0-3 now have an initial
-checked implementation: the core interpreter, payload table reads,
-interpreter-backed rank/select leaves, and a BP close/LCA table-read skeleton.
-The remaining frontier is the whole final succinct RMQ query program.
+Word-RAM interpreter to the repository.  The core interpreter, payload table
+reads, interpreter-backed rank/select leaves, a BP close/LCA table-read
+skeleton, register-computed rank addresses, and the first closed whole-query
+succinct RMQ controller now have checked implementations.  The remaining
+frontier is a unified lower-level payload-store trace for the whole final
+query path, not another Lean-side query wrapper.
 
 The goal is to harden the existing succinct RMQ and rank/select cost story:
 move selected headline query paths from "a `Costed` function has the right
@@ -563,10 +565,11 @@ proved equal to the existing costed query.  This closes the main oracle-shaped
 gap in the public succinct RMQ theorem without changing the reference
 semantics, payload accounting, or public cost bound.
 
-The remaining stronger target is a single closed first-order program for the
-whole final branch structure.  That would be a compiler/interpreter
-presentation polish, not a prerequisite for the current payload-live
-interpreter-backed capstone.
+The remaining stronger target is a unified lower-level payload-store trace for
+the whole final branch structure.  The closed outer controller has now landed;
+the next hardening step would inline or compile the interpreted component
+leaves into the same machine state rather than invoking them as already
+interpreted leaf costed functions.
 
 ## Fixedpoint Conclusion
 
@@ -578,9 +581,9 @@ RMQ query path.
 The best order from here is:
 
 1. continue BP/tree-navigation APIs over the reusable rank/select surface; and
-2. design the flatter whole-query AST or compiler-style target only after the
-   public BP operations identify which dynamic-address patterns are actually
-   needed.
+2. design the unified payload-store trace or compiler-style target only after
+   the public BP operations identify which dynamic-address patterns are
+   actually needed.
 
 The standalone compressed/FID rank-select spoke has now been replayed through
 the same `WordRAM` layer.
@@ -687,37 +690,46 @@ theorem FixedWidthNatTable.readProgram_exact ...
 theorem FixedWidthOptionNatTable.readProgram_exact ...
 ```
 
-Rank/select leaves and the BP close/LCA table-read skeleton have also landed.
-The next fixedpoint loop should therefore attack the first whole-query
-consumer, not more syntax or table wrappers.  This preserves the same
+Rank/select leaves, the BP close/LCA table-read skeleton, register-computed
+rank addresses, and the first closed whole-query succinct RMQ controller have
+also landed.  The next fixedpoint loop should therefore attack a unified
+payload-store trace for the final query path, not more syntax or table
+wrappers.  This preserves the same
 refinement style used in mature formalization projects: keep the abstract
 reference semantics, prove a representation/execution layer implements it,
 and compose the refinements one consumer at a time.
 
 ### 2026-07-01 whole-query flattening assessment
 
-The first whole-query consumer has landed, but it is intentionally
-leaf-interpreted rather than one closed first-order program:
+The first whole-query consumer has landed, first in a leaf-interpreted form:
 
 ```lean
 SuccinctFinal.concreteBPNativeSuccinctRMQQueryInterpretedCosted_refines_queryCosted
 SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_interpreted_profile
 ```
 
+and now in a closed outer-control form:
+
+```lean
+SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_refines_queryInterpretedCosted
+SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_interpreted_profile
+```
+
 The current `WordRAM.Program` syntax is adequate for payload table reads,
 sampled rank, and word-local select.  It is not yet adequate for the whole
-final RMQ branch structure, because the query uses interpreted values as later
-addresses:
+final RMQ trace as one shared low-level machine state, because the closed
+controller still calls already interpreted component leaves:
 
 1. select-close on the left endpoint produces `leftClose`;
 2. select-close on the right endpoint produces `rightClose`;
 3. `(leftClose, rightClose)` address the compact close/LCA table;
 4. `answerClose + 1` addresses the final rank-close query.
 
-A single closed program therefore needs a first-order register/branch layer:
-registers for `Nat`/`Option Nat`, fixed arithmetic on registers, option tests,
-and payload-read instructions whose segment/index arguments are register
-expressions.  The design should not add a higher-order continuation
+A single lower-level program therefore needs to inline or compile the
+component leaves into the same payload-store/register trace: registers for
+`Nat`/`Option Nat`, fixed arithmetic on registers, option tests, payload-read
+instructions whose segment/index arguments are register expressions, and
+domain-specific word primitives.  The design should not add a higher-order continuation
 `bind : Program Nat -> (Nat -> Program ty) -> Program ty`, because such a
 constructor stores an arbitrary Lean function inside the program and would
 weaken the anti-oracle story.

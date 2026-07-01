@@ -15,6 +15,7 @@ namespace RMQ
 namespace SuccinctClose
 
 open SuccinctSpace
+open RMQ.WordRAM.Register
 
 namespace ConcreteCompactBPCloseLCADirectory
 
@@ -52,6 +53,52 @@ theorem interpretedRankCloseCosted_exact
   rw [interpretedRankCloseCosted_refines_rankCostedClamped
     (rankData := rankData) (pos := pos)]
   exact rankData.rankCostedClamped_exact false pos
+
+/--
+Register-interpreted false-rank callback for the BP close seed.
+
+Unlike `interpretedRankCloseCosted`, the queried position is read from a
+natural register before the sample and bit-word addresses are computed.
+-/
+def registerRankCloseCosted
+    {shape : Cartesian.CartesianShape} {rankOverhead : Nat}
+    (rankData : PayloadLiveStoredWordRankData shape.bpCode rankOverhead)
+    (pos : Nat) : Costed Nat :=
+  (((rankData.rankRegProgram false (NatExpr.reg 0)).eval
+    (rankData.rankWordRAMStore false)
+    (RegFile.withNat1 pos)).toCosted)
+
+theorem registerRankCloseCosted_refines_interpretedRankCloseCosted
+    {shape : Cartesian.CartesianShape} {rankOverhead : Nat}
+    (rankData : PayloadLiveStoredWordRankData shape.bpCode rankOverhead)
+    (pos : Nat) :
+    registerRankCloseCosted rankData pos =
+      interpretedRankCloseCosted rankData pos := by
+  unfold registerRankCloseCosted interpretedRankCloseCosted
+  exact
+    rankData.rankRegProgram_refines_rankProgramClamped false
+      (NatExpr.reg 0) (RegFile.withNat1 pos)
+
+theorem registerRankCloseCosted_cost_le_three
+    {shape : Cartesian.CartesianShape} {rankOverhead : Nat}
+    (rankData : PayloadLiveStoredWordRankData shape.bpCode rankOverhead)
+    (pos : Nat) :
+    (registerRankCloseCosted rankData pos).cost <= 3 := by
+  rw [registerRankCloseCosted_refines_interpretedRankCloseCosted
+    (rankData := rankData) (pos := pos)]
+  exact interpretedRankCloseCosted_cost_le_three
+    (rankData := rankData) (pos := pos)
+
+theorem registerRankCloseCosted_exact
+    {shape : Cartesian.CartesianShape} {rankOverhead : Nat}
+    (rankData : PayloadLiveStoredWordRankData shape.bpCode rankOverhead)
+    (pos : Nat) :
+    (registerRankCloseCosted rankData pos).erase =
+      Succinct.rankPrefix false shape.bpCode pos := by
+  rw [registerRankCloseCosted_refines_interpretedRankCloseCosted
+    (rankData := rankData) (pos := pos)]
+  exact interpretedRankCloseCosted_exact
+    (rankData := rankData) (pos := pos)
 
 /-- Compact close/LCA query using the interpreted false-rank seed callback. -/
 def lcaCloseCostedWithInterpretedRankSeed

@@ -16,7 +16,7 @@ The short public theorem aliases live in `RMQ/Headlines.lean`.
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightFamilyProfile` | Fixed-weight compressed/FID rank/select family: fixed-weight primary payload plus `o(n)` auxiliary payload, exact access/rank/select, and one constant modeled query bound. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile` | Interpreter-backed replay of that compressed/FID rank/select family: same payload/profile shape, with access/rank/select reads routed through first-order `WordRAM` bridges. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ capstone with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and the matching lower-bound side. |
-| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Interpreter-backed variant of the final BP-native succinct RMQ capstone: same theorem shape, with close-select, compact close/LCA, and answer-rank leaves routed through first-order `WordRAM` bridges. |
+| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Whole-query-interpreted variant of the final BP-native succinct RMQ capstone: same theorem shape, with the final query control represented by a closed first-order program whose leaves are interpreted close-select, compact close/LCA, and register-backed answer-rank operations. |
 | `RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery` | Component-level interpreter-backed BP close-navigation profile. |
 
 The original theorem names remain construction-heavy so that their dependencies
@@ -79,8 +79,13 @@ The strongest interpreter-backed query surface is now
 variant of the final BP-native succinct RMQ capstone. It keeps the same
 two-sided lower/upper theorem shape as
 `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery`, while routing the final query
-through interpreted sparse-exception close-select, compact close/LCA rank-seed,
-and answer-rank leaves. The component-level
+control through a closed instruction list over optional/natural registers.  The
+program still calls interpreted component leaves for sparse-exception
+close-select, compact close/LCA, and answer-rank. The answer-rank leaf is
+register-backed: once the dynamic `answerClose + 1` position is supplied in a
+register, the super-sample, block-sample, and bit-word addresses are computed
+inside first-order syntax.
+The component-level
 `RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery` remains
 available as the reusable BP close-navigation profile.
 

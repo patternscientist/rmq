@@ -51,12 +51,13 @@ abbrev succinctRMQTwoNPlusOConstantQuery :=
   RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile
 
 /--
-Interpreter-backed BP-native succinct RMQ capstone: the same two-sided
-`2*n + o(n)`, constant-query theorem shape, with the final query routed through
-interpreted close-select, compact close/LCA, and answer-rank leaves.
+Whole-query-interpreted BP-native succinct RMQ capstone: the same two-sided
+`2*n + o(n)`, constant-query theorem shape, with the final query control routed
+through a closed first-order query program whose leaves are the interpreted
+close-select, compact close/LCA, and answer-rank operations.
 -/
 abbrev succinctRMQTwoNPlusOConstantQueryInterpreted :=
-  RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_interpreted_profile
+  RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_interpreted_profile
 
 /--
 Interpreter-backed BP close-navigation profile: `2*n + o(n)`, constant query,

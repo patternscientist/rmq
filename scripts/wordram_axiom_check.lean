@@ -1,4 +1,5 @@
 import RMQ.Headlines
+import RMQ.Core.SuccinctSpace.BPCloseLCARegisterRAM
 
 /-!
 Focused trust-base check for the Word-RAM refinement boundary.
@@ -15,6 +16,32 @@ that consume the Word-RAM bridge layer.
 #print axioms RMQ.WordRAM.Program.eval_eq_of_readWord_eq
 #print axioms RMQ.WordRAM.Program.eval_toCosted_eq_of_readWord_eq
 
+#print axioms RMQ.WordRAM.Register.RegProgram.eval_toCosted_cost_eq_trace_length
+#print axioms RMQ.WordRAM.Register.RegProgram.eval_reads_subset_payload
+#print axioms RMQ.WordRAM.Register.RegProgram.eval_readWord_event_eq_store
+#print axioms RMQ.WordRAM.Register.RegProgram.eval_word_reads_length_le_machine
+#print axioms RMQ.WordRAM.Register.RegProgram.eval_eq_of_readWord_eq
+#print axioms RMQ.WordRAM.Register.RegProgram.eval_toCosted_eq_of_readWord_eq
+#print axioms RMQ.WordRAM.Register.RegProgram.eval_trace_length_le_readCount
+
+#print axioms RMQ.WordRAM.Register.NatProgram.eval_toCosted_cost_eq_trace_length
+#print axioms RMQ.WordRAM.Register.NatProgram.eval_reads_subset_payload
+#print axioms RMQ.WordRAM.Register.NatProgram.eval_readWord_event_eq_store
+#print axioms RMQ.WordRAM.Register.NatProgram.eval_word_reads_length_le_machine
+#print axioms RMQ.WordRAM.Register.NatProgram.eval_eq_of_readWord_eq
+#print axioms RMQ.WordRAM.Register.NatProgram.eval_toCosted_eq_of_readWord_eq
+#print axioms RMQ.WordRAM.Register.NatProgram.eval_trace_length_le_stepCount
+
+#print axioms RMQ.SuccinctSpace.PayloadLiveBPCloseLCADirectory.lcaCloseFromEndpointRegsProgram_refines_lcaCloseProgram_glue
+#print axioms RMQ.SuccinctSpace.PayloadLiveBPCloseLCADirectory.lcaCloseFromEndpointRegsProgram_cost_le_one
+#print axioms RMQ.SuccinctSpace.PayloadLiveBPCloseLCADirectory.lcaCloseFromEndpointRegsProgram_reads_subset_payload
+
+#print axioms RMQ.SuccinctSpace.PayloadLiveStoredWordRankData.rankRegProgram_refines_rankCostedClamped
+#print axioms RMQ.SuccinctSpace.PayloadLiveStoredWordRankData.rankRegProgram_exact
+#print axioms RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterProgram_refines_rankInterpretedCosted
+#print axioms RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterInterpretedCosted_refines_rankInterpretedCosted
+#print axioms RMQ.SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterInterpretedCosted_exact
+
 #print axioms RMQ.RankSelectSpec.subLogAccessInterpretedCosted_refines_subLogAccessCosted
 #print axioms RMQ.RankSelectSpec.subLogRankInterpretedCosted_refines_subLogRankCosted
 #print axioms RMQ.RankSelectSpec.subLogSelectFromPackedClarkRouteInterpretedCosted_refines
@@ -23,6 +50,9 @@ that consume the Word-RAM bridge layer.
 #print axioms RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQQueryInterpretedCosted_refines_queryCosted
 #print axioms RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQQueryInterpretedCosted_exact
 #print axioms RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_interpreted_profile
+#print axioms RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_refines_queryInterpretedCosted
+#print axioms RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_exact
+#print axioms RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_interpreted_profile
 
 #print axioms RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile
 #print axioms RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted

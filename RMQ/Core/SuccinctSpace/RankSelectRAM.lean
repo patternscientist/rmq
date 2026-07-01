@@ -1,6 +1,7 @@
 import RMQ.Core.SuccinctSpace.RankSelect
 import RMQ.Core.SuccinctSpace.TablesRAM
 import RMQ.Core.SuccinctSpace.SelectSamplesRAM
+import RMQ.Core.WordRAM.Register
 
 /-!
 # Word-RAM interpretation for stored-word rank/select leaves
@@ -213,6 +214,125 @@ theorem rankProgram_profile
     · intro target pos
       exact ⟨data.rankProgramClamped_cost_le_three target pos,
         data.rankProgramClamped_exact target pos⟩
+
+/-- Register expression for the clamped rank position. -/
+def rankClampedPosExpr
+    {bits : List Bool} {_overhead : Nat}
+    (_data : PayloadLiveStoredWordRankData bits _overhead)
+    (pos : RMQ.WordRAM.Register.NatExpr) :
+    RMQ.WordRAM.Register.NatExpr :=
+  RMQ.WordRAM.Register.NatExpr.min pos
+    (RMQ.WordRAM.Register.NatExpr.const bits.length)
+
+/-- Register expression for the packed word index of a rank position. -/
+def rankWordIndexExpr
+    {bits : List Bool} {overhead : Nat}
+    (data : PayloadLiveStoredWordRankData bits overhead)
+    (pos : RMQ.WordRAM.Register.NatExpr) :
+    RMQ.WordRAM.Register.NatExpr :=
+  RMQ.WordRAM.Register.NatExpr.div
+    (data.rankClampedPosExpr pos)
+    (RMQ.WordRAM.Register.NatExpr.const data.wordSize)
+
+/-- Register expression for the in-word rank offset. -/
+def rankWordOffsetExpr
+    {bits : List Bool} {overhead : Nat}
+    (data : PayloadLiveStoredWordRankData bits overhead)
+    (pos : RMQ.WordRAM.Register.NatExpr) :
+    RMQ.WordRAM.Register.NatExpr :=
+  let clamped := data.rankClampedPosExpr pos
+  let wordIndex := data.rankWordIndexExpr pos
+  RMQ.WordRAM.Register.NatExpr.sub clamped
+    (RMQ.WordRAM.Register.NatExpr.mul wordIndex
+      (RMQ.WordRAM.Register.NatExpr.const data.wordSize))
+
+/--
+Register-level stored-word rank program.
+
+The queried position is a first-order expression.  The clamped position,
+sample/bit-word index, and in-word offset are all computed inside the register
+syntax before the payload reads and word-rank primitive run.
+-/
+def rankRegProgram
+    {bits : List Bool} {overhead : Nat}
+    (data : PayloadLiveStoredWordRankData bits overhead)
+    (target : Bool) (pos : RMQ.WordRAM.Register.NatExpr) :
+    RMQ.WordRAM.Register.NatProgram :=
+  RMQ.WordRAM.Register.NatProgram.sampledRank target
+    (data.rankWordOffsetExpr pos)
+    0 (data.rankWordIndexExpr pos)
+    1 (data.rankWordIndexExpr pos)
+
+theorem rankRegProgram_refines_rankProgramClamped
+    {bits : List Bool} {overhead : Nat}
+    (data : PayloadLiveStoredWordRankData bits overhead)
+    (target : Bool) (pos : RMQ.WordRAM.Register.NatExpr)
+    (regs : RMQ.WordRAM.Register.RegFile) :
+    ((data.rankRegProgram target pos).eval
+        (data.rankWordRAMStore target) regs).toCosted =
+      ((data.rankProgramClamped target (pos.eval regs)).eval
+        (data.rankWordRAMStore target)).toCosted := by
+  unfold rankRegProgram rankProgramClamped rankProgram rankWordOffsetExpr
+    rankWordIndexExpr rankClampedPosExpr wordOffset wordStart wordIndex
+  cases target
+  · simp [RMQ.WordRAM.Register.NatProgram.eval,
+      RMQ.WordRAM.Register.NatExpr.eval, RMQ.WordRAM.Program.eval,
+      FixedWidthRankSampleTables.sampleProgram, FixedWidthNatTable.readProgram,
+      PayloadWordStore.readProgram, sampleWords]
+    rfl
+  · simp [RMQ.WordRAM.Register.NatProgram.eval,
+      RMQ.WordRAM.Register.NatExpr.eval, RMQ.WordRAM.Program.eval,
+      FixedWidthRankSampleTables.sampleProgram, FixedWidthNatTable.readProgram,
+      PayloadWordStore.readProgram, sampleWords]
+    rfl
+
+theorem rankRegProgram_refines_rankCostedClamped
+    {bits : List Bool} {overhead : Nat}
+    (data : PayloadLiveStoredWordRankData bits overhead)
+    (target : Bool) (pos : RMQ.WordRAM.Register.NatExpr)
+    (regs : RMQ.WordRAM.Register.RegFile) :
+    ((data.rankRegProgram target pos).eval
+        (data.rankWordRAMStore target) regs).toCosted =
+      data.rankCostedClamped target (pos.eval regs) := by
+  rw [data.rankRegProgram_refines_rankProgramClamped target pos regs]
+  exact data.rankProgramClamped_refines_rankCostedClamped target
+    (pos.eval regs)
+
+theorem rankRegProgram_cost_le_three
+    {bits : List Bool} {overhead : Nat}
+    (data : PayloadLiveStoredWordRankData bits overhead)
+    (target : Bool) (pos : RMQ.WordRAM.Register.NatExpr)
+    (regs : RMQ.WordRAM.Register.RegFile) :
+    ((data.rankRegProgram target pos).eval
+        (data.rankWordRAMStore target) regs).toCosted.cost <= 3 := by
+  rw [data.rankRegProgram_refines_rankCostedClamped target pos regs]
+  exact data.rankCostedClamped_cost_le_three target (pos.eval regs)
+
+theorem rankRegProgram_exact
+    {bits : List Bool} {overhead : Nat}
+    (data : PayloadLiveStoredWordRankData bits overhead)
+    (target : Bool) (pos : RMQ.WordRAM.Register.NatExpr)
+    (regs : RMQ.WordRAM.Register.RegFile) :
+    ((data.rankRegProgram target pos).eval
+        (data.rankWordRAMStore target) regs).toCosted.erase =
+      Succinct.rankPrefix target bits (pos.eval regs) := by
+  rw [data.rankRegProgram_refines_rankCostedClamped target pos regs]
+  exact data.rankCostedClamped_exact target (pos.eval regs)
+
+theorem rankRegProgram_reads_subset_payload
+    {bits : List Bool} {overhead : Nat}
+    (data : PayloadLiveStoredWordRankData bits overhead)
+    (target : Bool) (pos : RMQ.WordRAM.Register.NatExpr)
+    (regs : RMQ.WordRAM.Register.RegFile) :
+    forall event : RMQ.WordRAM.TraceEvent,
+      event ∈
+          ((data.rankRegProgram target pos).eval
+            (data.rankWordRAMStore target) regs).trace ->
+        event.matchesStore (data.rankWordRAMStore target) := by
+  exact
+    RMQ.WordRAM.Register.NatProgram.eval_reads_subset_payload
+      (data.rankRegProgram target pos)
+      (data.rankWordRAMStore target) regs
 
 end PayloadLiveStoredWordRankData
 

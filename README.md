@@ -52,7 +52,7 @@ Short public aliases live in [`RMQ/Headlines.lean`](RMQ/Headlines.lean).
 | Alias | Meaning |
 | --- | --- |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and the matching lower-bound side. |
-| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Interpreter-backed variant of the final BP-native succinct RMQ capstone: same theorem shape, with close-select, compact close/LCA, and answer-rank leaves routed through `WordRAM` bridges. |
+| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Whole-query-interpreted variant of the final BP-native succinct RMQ capstone: same theorem shape, with the final query control represented by a closed first-order program whose leaves are interpreted close-select, compact close/LCA, and register-backed answer-rank operations. |
 | `RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery` | Component-level interpreter-backed BP close-navigation profile. |
 | `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack` | Coefficient-correct Catalan lower-bound slack, stated in doubled integer form. |
 | `RMQ.Headlines.rankSelectNPlusOConstantQuery` | Standalone Jacobson/Clark-style plain-bitvector rank/select with `n + o(n)` payload and constant modeled query cost. |
@@ -210,8 +210,8 @@ The RMQ capstone is in place. The next development frontier is to reuse and
 stress-test the infrastructure:
 
 1. deepen balanced-parentheses navigation into a fuller tree-navigation API and
-   keep flattening whole-query `WordRAM` presentations where they clarify the
-   existing theorem surfaces;
+   keep flattening `WordRAM` presentations toward a unified payload-store trace
+   where that materially clarifies the existing theorem surfaces;
 2. push the union-find spoke from the current sequence/event scorecard toward a
    true inverse-Ackermann amortized theorem over strict residual events; and
 3. promote shared cost, refinement, lower-bound, and amortized-analysis pieces

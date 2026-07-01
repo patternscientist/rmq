@@ -17,6 +17,8 @@ namespace SuccinctRank
 
 namespace TwoLevelPayloadLiveStoredWordRankData
 
+open RMQ.WordRAM.Register
+
 /-- Word-RAM-backed word-rank primitive for a word already obtained by a read. -/
 def wordRankInterpretedCosted
     (target : Bool) (word : List Bool) (limit : Nat) : Costed Nat :=
@@ -118,6 +120,197 @@ theorem rankInterpretedCosted_exact
       RMQ.Succinct.rankPrefix target bits pos := by
   rw [data.rankInterpretedCosted_refines_rankCosted target pos]
   exact data.rankCosted_exact target pos
+
+/-- Payload words for the selected super-level rank samples. -/
+def superSampleWords
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data :
+      TwoLevelPayloadLiveStoredWordRankData
+        bits superOverhead blockOverhead queryCost)
+    (target : Bool) : Array (List Bool) :=
+  match target with
+  | true => data.superTables.trueTable.store.words
+  | false => data.superTables.falseTable.store.words
+
+/-- Payload words for the selected block-level rank samples. -/
+def blockSampleWords
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data :
+      TwoLevelPayloadLiveStoredWordRankData
+        bits superOverhead blockOverhead queryCost)
+    (target : Bool) : Array (List Bool) :=
+  match target with
+  | true => data.blockTables.trueTable.store.words
+  | false => data.blockTables.falseTable.store.words
+
+/--
+Combined payload store for the register-interpreted two-level rank query.
+
+Segment `0` is the selected super-sample table, segment `1` is the selected
+block-sample table, and segment `2` is the packed bit-word store.
+-/
+def rankRegisterWordRAMStore
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data :
+      TwoLevelPayloadLiveStoredWordRankData
+        bits superOverhead blockOverhead queryCost)
+    (target : Bool) : RMQ.WordRAM.Store where
+  wordSegments :=
+    #[data.superSampleWords target, data.blockSampleWords target,
+      data.bitWords.store.words]
+
+/-- Register expression for the clamped two-level rank position. -/
+def queryPosExpr
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (_data :
+      TwoLevelPayloadLiveStoredWordRankData
+        bits superOverhead blockOverhead queryCost)
+    (pos : NatExpr) : NatExpr :=
+  NatExpr.min pos (NatExpr.const bits.length)
+
+/-- Register expression for the packed word index. -/
+def wordIndexExpr
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data :
+      TwoLevelPayloadLiveStoredWordRankData
+        bits superOverhead blockOverhead queryCost)
+    (pos : NatExpr) : NatExpr :=
+  NatExpr.div (data.queryPosExpr pos) (NatExpr.const data.wordSize)
+
+/-- Register expression for the super-block sample index. -/
+def superIndexExpr
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data :
+      TwoLevelPayloadLiveStoredWordRankData
+        bits superOverhead blockOverhead queryCost)
+    (pos : NatExpr) : NatExpr :=
+  NatExpr.div (data.wordIndexExpr pos) (NatExpr.const data.blocksPerSuper)
+
+/-- Register expression for the in-word rank offset. -/
+def wordOffsetExpr
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data :
+      TwoLevelPayloadLiveStoredWordRankData
+        bits superOverhead blockOverhead queryCost)
+    (pos : NatExpr) : NatExpr :=
+  let q := data.queryPosExpr pos
+  let wi := data.wordIndexExpr pos
+  NatExpr.sub q (NatExpr.mul wi (NatExpr.const data.wordSize))
+
+/-- First-order register program for the two-level stored-word rank query. -/
+def rankRegisterProgram
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data :
+      TwoLevelPayloadLiveStoredWordRankData
+        bits superOverhead blockOverhead queryCost)
+    (target : Bool) (pos : NatExpr) : NatProgram :=
+  NatProgram.twoLevelSampledRank target
+    (data.wordOffsetExpr pos)
+    0 (data.superIndexExpr pos)
+    1 (data.wordIndexExpr pos)
+    2 (data.wordIndexExpr pos)
+
+theorem rankRegisterProgram_refines_rankInterpretedCosted
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data :
+      TwoLevelPayloadLiveStoredWordRankData
+        bits superOverhead blockOverhead queryCost)
+    (target : Bool) (pos : NatExpr) (regs : RegFile) :
+    ((data.rankRegisterProgram target pos).eval
+        (data.rankRegisterWordRAMStore target) regs).toCosted =
+      data.rankInterpretedCosted target (pos.eval regs) := by
+  unfold rankRegisterProgram rankRegisterWordRAMStore rankInterpretedCosted
+    wordOffsetExpr superIndexExpr wordIndexExpr queryPosExpr wordOffset
+    superIndex wordIndex queryPos
+  cases target
+  · simp [NatProgram.eval, NatExpr.eval,
+      SuccinctSpace.FixedWidthRankSampleTables.sampleProgram,
+      SuccinctSpace.FixedWidthRankSampleTables.sampleWordRAMStore,
+      SuccinctSpace.FixedWidthNatTable.readProgram,
+      SuccinctSpace.PayloadWordStore.readProgram,
+      blockSampleWords, superSampleWords, wordRankInterpretedCosted,
+      RMQ.WordRAM.Program.eval]
+    cases hsuper :
+        data.superTables.falseTable.store.words[((pos.eval regs).min bits.length /
+          data.wordSize / data.blocksPerSuper)]? <;>
+      cases hblock :
+        data.blockTables.falseTable.store.words[((pos.eval regs).min bits.length /
+          data.wordSize)]? <;>
+      cases hword :
+        data.bitWords.store.words[((pos.eval regs).min bits.length /
+          data.wordSize)]? <;>
+      simp [RMQ.WordRAM.Store.readWord?, hsuper, hblock, hword,
+        SuccinctSpace.FixedWidthNatTable.wordRAMStore,
+        SuccinctSpace.PayloadWordStore.wordRAMStore,
+        Costed.bind, Costed.map, Costed.pure, RMQ.WordRAM.Result.toCosted,
+        RMQ.WordRAM.Result.steps]
+  · simp [NatProgram.eval, NatExpr.eval,
+      SuccinctSpace.FixedWidthRankSampleTables.sampleProgram,
+      SuccinctSpace.FixedWidthRankSampleTables.sampleWordRAMStore,
+      SuccinctSpace.FixedWidthNatTable.readProgram,
+      SuccinctSpace.PayloadWordStore.readProgram,
+      blockSampleWords, superSampleWords, wordRankInterpretedCosted,
+      RMQ.WordRAM.Program.eval]
+    cases hsuper :
+        data.superTables.trueTable.store.words[((pos.eval regs).min bits.length /
+          data.wordSize / data.blocksPerSuper)]? <;>
+      cases hblock :
+        data.blockTables.trueTable.store.words[((pos.eval regs).min bits.length /
+          data.wordSize)]? <;>
+      cases hword :
+        data.bitWords.store.words[((pos.eval regs).min bits.length /
+          data.wordSize)]? <;>
+      simp [RMQ.WordRAM.Store.readWord?, hsuper, hblock, hword,
+        SuccinctSpace.FixedWidthNatTable.wordRAMStore,
+        SuccinctSpace.PayloadWordStore.wordRAMStore,
+        Costed.bind, Costed.map, Costed.pure, RMQ.WordRAM.Result.toCosted,
+        RMQ.WordRAM.Result.steps]
+
+/-- Two-level rank query whose position is supplied through a natural register. -/
+def rankRegisterInterpretedCosted
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data :
+      TwoLevelPayloadLiveStoredWordRankData
+        bits superOverhead blockOverhead queryCost)
+    (target : Bool) (pos : Nat) : Costed Nat :=
+  ((data.rankRegisterProgram target (NatExpr.reg 0)).eval
+      (data.rankRegisterWordRAMStore target)
+      (RegFile.withNat1 pos)).toCosted
+
+theorem rankRegisterInterpretedCosted_refines_rankInterpretedCosted
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data :
+      TwoLevelPayloadLiveStoredWordRankData
+        bits superOverhead blockOverhead queryCost)
+    (target : Bool) (pos : Nat) :
+    data.rankRegisterInterpretedCosted target pos =
+      data.rankInterpretedCosted target pos := by
+  simpa [rankRegisterInterpretedCosted] using
+    data.rankRegisterProgram_refines_rankInterpretedCosted target
+      (NatExpr.reg 0) (RegFile.withNat1 pos)
+
+theorem rankRegisterInterpretedCosted_cost_le
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data :
+      TwoLevelPayloadLiveStoredWordRankData
+        bits superOverhead blockOverhead queryCost)
+    (target : Bool) (pos : Nat) :
+    (data.rankRegisterInterpretedCosted target pos).cost <= queryCost := by
+  rw [data.rankRegisterInterpretedCosted_refines_rankInterpretedCosted
+    target pos]
+  exact data.rankInterpretedCosted_cost_le target pos
+
+theorem rankRegisterInterpretedCosted_exact
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data :
+      TwoLevelPayloadLiveStoredWordRankData
+        bits superOverhead blockOverhead queryCost)
+    (target : Bool) (pos : Nat) :
+    (data.rankRegisterInterpretedCosted target pos).erase =
+      RMQ.Succinct.rankPrefix target bits pos := by
+  rw [data.rankRegisterInterpretedCosted_refines_rankInterpretedCosted
+    target pos]
+  exact data.rankInterpretedCosted_exact target pos
 
 end TwoLevelPayloadLiveStoredWordRankData
 
