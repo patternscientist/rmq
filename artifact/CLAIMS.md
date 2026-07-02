@@ -23,6 +23,9 @@ claims, what it does not claim, and which command checks the relevant surface.
 | The same RMQ family emits an explicit domain-leaf trace before projection back to `Costed`. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_leaf_trace_profile` | `lake env lean scripts/wordram_axiom_check.lean` |
 | The same RMQ family emits a unified `WordRAM.TraceEvent` stream for the final query. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_profile` | `lake env lean scripts/wordram_axiom_check.lean` |
 | In the large regime, the WordRAM final query routes the compact close/LCA leg through structural local/fringe/interior trace replay rather than the all-size fallback. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_large_regime_profile` | `lake env lean scripts/headline_axiom_check.lean` and `lake env lean scripts/wordram_axiom_check.lean` |
+| The final all-size RMQ query has one globally segmented payload-store execution story: every event is a payload read or word primitive, and every payload read agrees with the concrete global store. | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story` | `lake env lean scripts/wordram_axiom_check.lean` |
+| The same global execution story has a finite trace-local bit width bounding every payload-read address and every natural operand/result exposed by word primitives. | `RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_bounded_execution_story` | `lake env lean scripts/wordram_axiom_check.lean` |
+| The large-regime global-store execution story also has the same bounded-address and bounded-primitive-operand packet under the explicit size premise. | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_bounded_execution_story` | `lake env lean scripts/wordram_axiom_check.lean` |
 
 ## Rank/Select And BP Claims
 
@@ -37,19 +40,24 @@ claims, what it does not claim, and which command checks the relevant surface.
 ## Non-Claims
 
 - The `WordRAM` model is not a proof about Lean's compiled runtime.
-- The current final RMQ trace is not yet a single globally laid-out payload
-  store theorem. Component traces currently use local segment numbering.
-- The current large-regime WordRAM theorem does not remove the explicit size
-  premise; the all-input wrapper remains total for correctness.
+- The all-size final RMQ query now has a single global payload-store execution
+  theorem, but tiny/inactive close-navigation fallback work is represented as
+  explicit synthetic word-primitive events rather than structural payload reads.
+- The large-regime WordRAM theorem still carries the explicit size premise
+  needed to replay the positive local/fringe/interior close path structurally;
+  the all-input theorem is total and store-backed but includes the fallback
+  primitive boundary.
+- The bounded execution-story theorem supplies a trace-local finite bit width
+  for exposed addresses and primitive operands. It is not yet a tight
+  asymptotic machine-word side-condition for every component.
 - Proof-only fields and certificates are not counted as payload bits.
 - Register arithmetic and branching are model-control operations, not charged
   machine instructions in the current model.
 
 ## Current Provenance Frontier
 
-The live hardening target is a global payload-store provenance theorem for the
-final RMQ trace. The first honest intermediate theorem is component-local:
-every event in the large-regime final stream is either a non-read primitive or
-comes from one of the concrete select-close, compact close/LCA, or answer-rank
-component traces. A stronger single-store theorem needs a segment relabeling
-layer and one global payload layout.
+The global payload-store theorem is landed. The live hardening frontier is now
+tighter rather than existential: replace the remaining tiny/inactive synthetic
+fallback primitive boundary with structural replay where possible, and push the
+trace-local event-width theorem toward component-level machine-word side
+conditions consumed by the public capstone.

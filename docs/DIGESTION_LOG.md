@@ -383,6 +383,25 @@ skeptical grad student should next ask for these bounded-address side
 conditions to be consumed by the public whole-query RMQ and standalone
 rank/select execution-story theorems, not merely available as local lemmas.
 
+2026-07-02 bounded final-trace update: the public all-size RMQ execution story
+now consumes a bounded event-width theorem, not just the global store theorem.
+`RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory` is backed by
+`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_bounded_execution_story`.
+It packages the existing global-store result together with a finite
+trace-local bit width and proves that every payload-read address and every
+natural operand/result exposed by word primitives fits that width. The
+large-regime companion has the same bounded packet under its explicit size
+premise. Separately, `WordRAM.TraceResult.costOnlyTrace_syntheticCostOnlyPrimitive`
+names the exact fallback marker used when an old `Costed` component is lifted
+to a trace. Plain English: fallback work is no longer just "some primitive
+events"; it is a fixed payload-free marker, and the final trace now says its
+visible addresses and word-primitive data are finite-width. Live assumptions:
+the bound is trace-local and conservative, not a tight asymptotic word-size
+claim for every component; replacing fallback markers with structural replay is
+still the next stronger hardening target. A skeptical grad student should ask
+whether the trace-local width can be pushed down to component-level
+machine-word side conditions and then reused by rank/select and BP navigation.
+
 ## Digestion Tasks
 
 1. Turn the RMQ capstone into a two-page lecture-style proof map:

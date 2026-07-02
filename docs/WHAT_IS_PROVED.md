@@ -22,7 +22,9 @@ The short public theorem aliases live in `RMQ/Headlines.lean`.
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace` | Unified-`WordRAM.TraceEvent` variant of the same capstone: the final query emits one trace stream; close-select, answer-rank, and compact-close rank-seed reads are structural payload/register traces, with conservative charged fallback leaves retained for tiny/inactive all-size close-navigation cases. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime` | Large-regime WordRAM variant: the same two-sided theorem shape with an explicit size premise that lets the compact close/LCA query replay local/fringe/interior close navigation structurally instead of using the all-size fallback. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` | All-size final-query execution story: the public costed query refines one globally segmented `WordRAM.TraceEvent` stream, every event is a payload read or bounded word primitive, and every read agrees with one concrete payload store. |
+| `RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory` | Bounded all-size execution story: the global trace also has a finite trace-local bit width bounding every payload-read address and every natural operand/result exposed by word primitives. |
 | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory` | Large-regime companion to the all-size execution story: under `2^128 <= shape.size`, the compact close/LCA leg uses the positive-block structural replay rather than the all-size fallback. |
+| `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory` | Bounded large-regime companion to the global-store execution story. |
 | `RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery` | Component-level interpreter-backed BP close-navigation profile. |
 
 The original theorem names remain construction-heavy so that their dependencies

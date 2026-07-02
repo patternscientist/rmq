@@ -199,12 +199,17 @@ all-size execution-story theorem
 `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` adds the global
 store/provenance layer for that stream: each event is a payload read or bounded
 word primitive, and each read agrees with one concrete global payload store.
-Tiny/inactive close-navigation fallback work is represented as synthetic
-word-primitive events rather than payload reads. The large-regime companion adds
-the explicit `2^128 <= shape.size` premise and routes the compact close/LCA leg
-through structural local/fringe/interior trace replay. Remaining hardening is
-broader packaging and reuse of the same style across rank/select, BP
-navigation, and future machine-model surfaces.
+`RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory` adds the
+current finite-width hardening: every payload-read address and every natural
+operand/result exposed by word-local primitives fits a trace-local bit width.
+Tiny/inactive close-navigation fallback work is represented as the fixed
+synthetic `TraceResult.costOnlyTrace` primitive marker rather than payload
+reads. The large-regime companion adds the explicit `2^128 <= shape.size`
+premise and routes the compact close/LCA leg through structural
+local/fringe/interior trace replay. Remaining hardening is tighter
+component-level machine-word side conditions, structural replacement of
+fallback markers where possible, and reuse of the same style across
+rank/select, BP navigation, and future machine-model surfaces.
 
 ## Large-File Cleanup Note
 

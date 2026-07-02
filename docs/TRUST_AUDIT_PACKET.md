@@ -113,19 +113,28 @@ The strongest all-size execution-story theorem is the global-store companion:
 ```lean
 abbrev succinctRMQGlobalPayloadStoreExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story
+
+abbrev succinctRMQGlobalPayloadStoreBoundedExecutionStory :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_bounded_execution_story
 ```
 
 It says the public costed query refines the unified `WordRAM.TraceEvent` stream,
 every event is either a payload read or an explicitly counted word primitive,
 and every payload read agrees with one concrete global store built from the
 final succinct RMQ payload components. Tiny/inactive close-navigation fallback
-work appears only as synthetic word-primitive events, not as payload reads.
+work appears only as synthetic word-primitive events, not as payload reads. The
+bounded companion adds a concrete trace-local finite bit width and proves that
+every payload-read address and every natural operand/result exposed by
+word-local primitive events fits that width.
 
 The large-regime positive-replay companion is:
 
 ```lean
 abbrev succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_execution_story
+
+abbrev succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_bounded_execution_story
 ```
 
 It adds the explicit premise `2^128 <= shape.size` and uses the structural

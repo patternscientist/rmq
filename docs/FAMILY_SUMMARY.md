@@ -282,7 +282,12 @@ interior tables take explicit global segment bases while proving the same
 alias `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` now consumes
 the all-size layout: every final query event is either a payload read or a
 bounded word primitive, and every read is checked against one concrete global
-payload store.
+payload store. The companion
+`RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory` adds a
+trace-local finite bit width proving that final payload-read addresses and
+word-primitive natural operands/results are bounded. Tiny/inactive fallback
+events are also marked by the fixed synthetic `TraceResult.costOnlyTrace`
+primitive contract, so the fallback boundary is explicit rather than hidden.
 
 | Structure | Correctness status | Cost status | Notes |
 | --- | --- | --- | --- |
@@ -2131,11 +2136,15 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_refines_wholeQueryInterpretedCosted`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_matchesReadStore`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_bounds`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_bounded_execution_story`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe_refines_wholeQueryInterpretedCosted`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe_cost_le`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe_exact`, and
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultOfSizeGe_event_bounds`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_bounded_execution_story`, and
   `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_large_regime_profile`.
 - `RMQ/Archive/SelectObstructions.lean`:
   checked aliases for retained two-level select obstruction witnesses after

@@ -119,12 +119,28 @@ abbrev succinctRMQGlobalPayloadStoreExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story
 
 /--
+Bounded execution-story theorem for the final all-size succinct RMQ query. This
+extends `succinctRMQGlobalPayloadStoreExecutionStory` with a concrete finite
+trace-local bit width bounding every payload-read address and every natural
+operand/result exposed by word-local primitive events.
+-/
+abbrev succinctRMQGlobalPayloadStoreBoundedExecutionStory :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_bounded_execution_story
+
+/--
 Large-regime companion to `succinctRMQGlobalPayloadStoreExecutionStory`; this
 uses the positive-block local/fringe/interior close-navigation replay under the
 explicit `2^128 <= shape.size` premise.
 -/
 abbrev succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_execution_story
+
+/--
+Large-regime bounded companion to
+`succinctRMQGlobalPayloadStoreBoundedExecutionStory`.
+-/
+abbrev succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_bounded_execution_story
 
 /--
 Interpreter-backed BP close-navigation profile: `2*n + o(n)`, constant query,

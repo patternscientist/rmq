@@ -1,6 +1,7 @@
 import RMQ.Core.SuccinctFinal
 import RMQ.Core.GenericSelect.RAM
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAM
+import RMQ.Core.WordRAM.Register
 
 /-!
 # Word-RAM bridge for the final BP-native succinct RMQ query
@@ -1916,6 +1917,168 @@ def concreteBPNativeLargeRegimeTraceEventAdmissible
           shape (answerClose + 1)).trace) \/
     Not event.isReadWord
 
+/--
+Small numeric envelope for the natural data carried by one `WordRAM` trace
+event.  It is intentionally syntactic: payload reads contribute their segment
+and index; word-local primitives contribute the natural operands and result
+positions they expose in the trace.
+-/
+def concreteBPNativeTraceEventNatEnvelope :
+    WordRAM.TraceEvent -> Nat
+  | WordRAM.TraceEvent.readWord segment index _ => Nat.max segment index
+  | WordRAM.TraceEvent.wordRank _ limit result => Nat.max limit result
+  | WordRAM.TraceEvent.wordSelect _ occurrence none => occurrence
+  | WordRAM.TraceEvent.wordSelect _ occurrence (some result) =>
+      Nat.max occurrence result
+
+/-- Maximum natural envelope over a trace. -/
+def concreteBPNativeTraceNatEnvelope :
+    List WordRAM.TraceEvent -> Nat
+  | [] => 0
+  | event :: rest =>
+      Nat.max (concreteBPNativeTraceEventNatEnvelope event)
+        (concreteBPNativeTraceNatEnvelope rest)
+
+/--
+Declared bit width large enough for every natural datum exposed by this trace.
+This is a trace-local bound, not an asymptotic machine-word theorem.
+-/
+def concreteBPNativeTraceEventBitWidth
+    (trace : List WordRAM.TraceEvent) : Nat :=
+  Nat.log2 (concreteBPNativeTraceNatEnvelope trace) + 1
+
+/-- Read addresses exposed by an event fit in the declared bit width. -/
+def concreteBPNativeTraceEventReadAddressFitsInBits
+    (bits : Nat) : WordRAM.TraceEvent -> Prop
+  | WordRAM.TraceEvent.readWord segment index _ =>
+      WordRAM.Register.AddressFitsInBits bits segment index
+  | WordRAM.TraceEvent.wordRank _ _ _ => True
+  | WordRAM.TraceEvent.wordSelect _ _ _ => True
+
+/-- Word-primitive natural operands/results exposed by an event fit in bits. -/
+def concreteBPNativeTraceEventPrimitiveOperandsFitInBits
+    (bits : Nat) : WordRAM.TraceEvent -> Prop
+  | WordRAM.TraceEvent.readWord _ _ _ => True
+  | WordRAM.TraceEvent.wordRank _ limit result =>
+      WordRAM.Register.FitsInBits bits limit /\
+        WordRAM.Register.FitsInBits bits result
+  | WordRAM.TraceEvent.wordSelect _ occurrence result =>
+      WordRAM.Register.FitsInBits bits occurrence /\
+        forall value, result = some value ->
+          WordRAM.Register.FitsInBits bits value
+
+theorem concreteBPNativeTraceEventNatEnvelope_le_traceNatEnvelope_of_mem
+    {trace : List WordRAM.TraceEvent} {event : WordRAM.TraceEvent}
+    (hmem : List.Mem event trace) :
+    concreteBPNativeTraceEventNatEnvelope event <=
+      concreteBPNativeTraceNatEnvelope trace := by
+  induction trace with
+  | nil =>
+      cases hmem
+  | cons head tail ih =>
+      cases hmem with
+      | head =>
+          exact Nat.le_max_left _ _
+      | tail _ htail =>
+          exact Nat.le_trans (ih htail) (Nat.le_max_right _ _)
+
+theorem concreteBPNativeTraceEventNatEnvelope_lt_two_pow_bitWidth_of_mem
+    {trace : List WordRAM.TraceEvent} {event : WordRAM.TraceEvent}
+    (hmem : List.Mem event trace) :
+    concreteBPNativeTraceEventNatEnvelope event <
+      2 ^ concreteBPNativeTraceEventBitWidth trace := by
+  have hle :=
+    concreteBPNativeTraceEventNatEnvelope_le_traceNatEnvelope_of_mem
+      (trace := trace) (event := event) hmem
+  have hlt :
+      concreteBPNativeTraceNatEnvelope trace <
+        2 ^ concreteBPNativeTraceEventBitWidth trace := by
+    unfold concreteBPNativeTraceEventBitWidth
+    exact Nat.lt_log2_self
+  exact Nat.lt_of_le_of_lt hle hlt
+
+theorem concreteBPNativeTraceEventReadAddressFitsInBits_of_mem
+    {trace : List WordRAM.TraceEvent} {event : WordRAM.TraceEvent}
+    (hmem : List.Mem event trace) :
+    concreteBPNativeTraceEventReadAddressFitsInBits
+      (concreteBPNativeTraceEventBitWidth trace) event := by
+  have hlt :=
+    concreteBPNativeTraceEventNatEnvelope_lt_two_pow_bitWidth_of_mem
+      (trace := trace) (event := event) hmem
+  cases event with
+  | readWord segment index word? =>
+      have hmax :
+          Nat.max segment index <
+            2 ^ concreteBPNativeTraceEventBitWidth trace := by
+        simpa [concreteBPNativeTraceEventNatEnvelope] using hlt
+      constructor
+      · exact Nat.lt_of_le_of_lt (Nat.le_max_left segment index) hmax
+      · exact Nat.lt_of_le_of_lt (Nat.le_max_right segment index) hmax
+  | wordRank target limit result =>
+      trivial
+  | wordSelect target occurrence result =>
+      trivial
+
+theorem concreteBPNativeTraceEventPrimitiveOperandsFitInBits_of_mem
+    {trace : List WordRAM.TraceEvent} {event : WordRAM.TraceEvent}
+    (hmem : List.Mem event trace) :
+    concreteBPNativeTraceEventPrimitiveOperandsFitInBits
+      (concreteBPNativeTraceEventBitWidth trace) event := by
+  have hlt :=
+    concreteBPNativeTraceEventNatEnvelope_lt_two_pow_bitWidth_of_mem
+      (trace := trace) (event := event) hmem
+  cases event with
+  | readWord segment index word? =>
+      trivial
+  | wordRank target limit result =>
+      have hmax :
+          Nat.max limit result <
+            2 ^ concreteBPNativeTraceEventBitWidth trace := by
+        simpa [concreteBPNativeTraceEventNatEnvelope] using hlt
+      constructor
+      · exact Nat.lt_of_le_of_lt (Nat.le_max_left limit result) hmax
+      · exact Nat.lt_of_le_of_lt (Nat.le_max_right limit result) hmax
+  | wordSelect target occurrence result =>
+      cases result with
+      | none =>
+          constructor
+          · simpa [WordRAM.Register.FitsInBits,
+              concreteBPNativeTraceEventNatEnvelope] using hlt
+          · intro value hvalue
+            cases hvalue
+      | some result =>
+          have hmax :
+              Nat.max occurrence result <
+                2 ^ concreteBPNativeTraceEventBitWidth trace := by
+            simpa [concreteBPNativeTraceEventNatEnvelope] using hlt
+          constructor
+          · exact Nat.lt_of_le_of_lt
+              (Nat.le_max_left occurrence result) hmax
+          · intro value hvalue
+            cases hvalue
+            exact Nat.lt_of_le_of_lt
+              (Nat.le_max_right occurrence result) hmax
+
+/--
+Trace-local bit width for the final all-size global payload-store trace.  It is
+the finite bound consumed by the bounded execution-story theorem below.
+-/
+def concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceEventBits
+    (shape : Cartesian.CartesianShape)
+    (left right : Nat) : Nat :=
+  concreteBPNativeTraceEventBitWidth
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+      shape left right).trace
+
+/-- Large-regime companion trace-local bit width. -/
+def concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceEventBitsOfSizeGe
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size)
+    (left right : Nat) : Nat :=
+  concreteBPNativeTraceEventBitWidth
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultOfSizeGe
+      shape hsize left right).trace
+
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_eq_traceResult_toCosted
     (shape : Cartesian.CartesianShape)
     (left right : Nat) :
@@ -2009,6 +2172,88 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story
   · exact
       concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_matchesReadStore
         shape left right
+
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_bounds
+    (shape : Cartesian.CartesianShape)
+    (left right : Nat) :
+    forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        concreteBPNativeTraceEventReadAddressFitsInBits
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceEventBits
+            shape left right) event /\
+        concreteBPNativeTraceEventPrimitiveOperandsFitInBits
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceEventBits
+            shape left right) event := by
+  intro event hmem
+  constructor
+  · exact
+      concreteBPNativeTraceEventReadAddressFitsInBits_of_mem
+        (trace :=
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+            shape left right).trace)
+        (event := event) hmem
+  · exact
+      concreteBPNativeTraceEventPrimitiveOperandsFitInBits_of_mem
+        (trace :=
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+            shape left right).trace)
+        (event := event) hmem
+
+/--
+Bounded all-size execution-story packet for the globally segmented final RMQ
+trace.  It extends the store-backed execution story with a concrete finite
+event width: every payload-read address and every word-primitive natural
+operand/result appearing in the final trace fits that width.
+-/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_bounded_execution_story
+    (shape : Cartesian.CartesianShape)
+    (left right : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+      shape left right =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).toCosted /\
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+      shape left right =
+      concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted shape left right /\
+    (forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        event.isReadWord \/ event.isWordPrimitive) /\
+    (forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        event.matchesReadStore
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape)) /\
+    (forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        concreteBPNativeTraceEventReadAddressFitsInBits
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceEventBits
+            shape left right) event) /\
+    (forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        concreteBPNativeTraceEventPrimitiveOperandsFitInBits
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceEventBits
+            shape left right) event) := by
+  rcases
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story
+      shape left right with
+    ⟨hcost, hrefine, hclass, hstore⟩
+  exact
+    ⟨hcost, hrefine, hclass, hstore,
+      (fun event hmem =>
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_bounds
+          shape left right event hmem).1),
+      (fun event hmem =>
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_bounds
+          shape left right event hmem).2)⟩
 
 theorem concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe_eq_traceResult_toCosted
     (shape : Cartesian.CartesianShape)
@@ -2115,6 +2360,87 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_execution_s
         shape hsize left right,
       concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultOfSizeGe_matchesReadStore
         shape hsize left right⟩
+
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultOfSizeGe_event_bounds
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size)
+    (left right : Nat) :
+    forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultOfSizeGe
+          shape hsize left right).trace ->
+        concreteBPNativeTraceEventReadAddressFitsInBits
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceEventBitsOfSizeGe
+            shape hsize left right) event /\
+        concreteBPNativeTraceEventPrimitiveOperandsFitInBits
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceEventBitsOfSizeGe
+            shape hsize left right) event := by
+  intro event hmem
+  constructor
+  · exact
+      concreteBPNativeTraceEventReadAddressFitsInBits_of_mem
+        (trace :=
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultOfSizeGe
+            shape hsize left right).trace)
+        (event := event) hmem
+  · exact
+      concreteBPNativeTraceEventPrimitiveOperandsFitInBits_of_mem
+        (trace :=
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultOfSizeGe
+            shape hsize left right).trace)
+        (event := event) hmem
+
+/--
+Bounded large-regime companion to the all-size global execution story.
+-/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_bounded_execution_story
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size)
+    (left right : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedOfSizeGe
+      shape hsize left right =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultOfSizeGe
+        shape hsize left right).toCosted /\
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedOfSizeGe
+      shape hsize left right =
+      concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted shape left right /\
+    (forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultOfSizeGe
+          shape hsize left right).trace ->
+        event.isReadWord \/ event.isWordPrimitive) /\
+    (forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultOfSizeGe
+          shape hsize left right).trace ->
+        event.matchesReadStore
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape)) /\
+    (forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultOfSizeGe
+          shape hsize left right).trace ->
+        concreteBPNativeTraceEventReadAddressFitsInBits
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceEventBitsOfSizeGe
+            shape hsize left right) event) /\
+    (forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultOfSizeGe
+          shape hsize left right).trace ->
+        concreteBPNativeTraceEventPrimitiveOperandsFitInBits
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceEventBitsOfSizeGe
+            shape hsize left right) event) := by
+  rcases
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_execution_story
+      shape hsize left right with
+    ⟨hcost, hrefine, hclass, hstore⟩
+  exact
+    ⟨hcost, hrefine, hclass, hstore,
+      (fun event hmem =>
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultOfSizeGe_event_bounds
+          shape hsize left right event hmem).1),
+      (fun event hmem =>
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultOfSizeGe_event_bounds
+          shape hsize left right event hmem).2)⟩
 
 theorem concreteBPNativeSuccinctRMQWholeQueryWordTraceResultOfSizeGe_event_admissible
     (shape : Cartesian.CartesianShape)

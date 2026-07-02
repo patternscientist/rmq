@@ -140,6 +140,14 @@ def isWordPrimitive : TraceEvent -> Prop
   | wordSelect _ _ _ => True
 
 /--
+Marker for synthetic cost-only fallback events introduced by
+`TraceResult.ofCosted`.  The marker is deliberately fixed and payload-free:
+it is a word-primitive event, not a memory read and not a domain oracle.
+-/
+def isSyntheticCostOnlyPrimitive (event : TraceEvent) : Prop :=
+  event = TraceEvent.wordRank false 0 0
+
+/--
 Zero-cost control is deliberately not represented as a trace event. Branching,
 register lookup, and expression evaluation may affect which later events occur,
 but they do not themselves appear in the charged trace.
@@ -228,6 +236,22 @@ theorem isReadWord_or_isWordPrimitive (event : TraceEvent) :
 theorem not_readWord_and_wordPrimitive (event : TraceEvent) :
     ¬ (event.isReadWord /\ event.isWordPrimitive) := by
   cases event <;> simp [isReadWord, isWordPrimitive]
+
+theorem syntheticCostOnlyPrimitive_isWordPrimitive
+    {event : TraceEvent}
+    (h : event.isSyntheticCostOnlyPrimitive) :
+    event.isWordPrimitive := by
+  unfold isSyntheticCostOnlyPrimitive at h
+  rw [h]
+  simp [isWordPrimitive]
+
+theorem syntheticCostOnlyPrimitive_not_readWord
+    {event : TraceEvent}
+    (h : event.isSyntheticCostOnlyPrimitive) :
+    ¬ event.isReadWord := by
+  unfold isSyntheticCostOnlyPrimitive at h
+  rw [h]
+  simp [isReadWord]
 
 theorem not_zeroCostControl (event : TraceEvent) :
     ¬ event.isZeroCostControl := by
@@ -419,6 +443,27 @@ theorem costOnlyTrace_no_readWord (n : Nat) :
         simp [TraceEvent.isReadWord]
       · exact ih event hmem
 
+/--
+The synthetic adapter trace is exactly the fixed cost-only primitive marker at
+every event.  This is the formal contract for tiny/inactive fallback work that
+has not been replayed through a payload program.
+-/
+theorem costOnlyTrace_syntheticCostOnlyPrimitive (n : Nat) :
+    forall event : TraceEvent,
+      event ∈ costOnlyTrace n ->
+        event.isSyntheticCostOnlyPrimitive := by
+  induction n with
+  | zero =>
+      intro event hmem
+      simp [costOnlyTrace] at hmem
+  | succ n ih =>
+      intro event hmem
+      simp [costOnlyTrace] at hmem
+      rcases hmem with hmem | hmem
+      · subst event
+        simp [TraceEvent.isSyntheticCostOnlyPrimitive]
+      · exact ih event hmem
+
 /-- Lift an existing `Costed` result to a trace result using `costOnlyTrace`. -/
 def ofCosted (result : Costed α) : TraceResult α where
   value := result.value
@@ -493,6 +538,13 @@ theorem ofCosted_trace_no_readWord (result : Costed α) :
       event ∈ (ofCosted result).trace -> ¬ event.isReadWord := by
   intro event hmem
   exact costOnlyTrace_no_readWord result.cost event hmem
+
+theorem ofCosted_trace_syntheticCostOnlyPrimitive (result : Costed α) :
+    forall event : TraceEvent,
+      event ∈ (ofCosted result).trace ->
+        event.isSyntheticCostOnlyPrimitive := by
+  intro event hmem
+  exact costOnlyTrace_syntheticCostOnlyPrimitive result.cost event hmem
 
 theorem ofCosted_matchesReadStore (result : Costed α) (store : ReadStore) :
     forall event : TraceEvent,
