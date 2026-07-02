@@ -51,6 +51,7 @@ Short public aliases live in [`RMQ/Headlines.lean`](RMQ/Headlines.lean).
 
 | Alias | Meaning |
 | --- | --- |
+| `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | Reader-facing theorem over ordinary `xs : List Int`: build a payload of length `2*n + o(n)` bits and answer valid half-open RMQ queries exactly, with leftmost ties, within constant modeled query cost. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and the matching lower-bound side. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Whole-query-interpreted variant of the final BP-native succinct RMQ capstone: same theorem shape, with the final query control represented by a closed first-order program whose leaves are interpreted close-select, compact close/LCA, and register-backed answer-rank operations. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace` | Unified-`WordRAM.TraceEvent` variant of the same capstone: the final query emits one trace stream, with close-select, answer-rank, and compact-close rank-seed reads replayed as structural payload/register traces. |
@@ -95,7 +96,8 @@ At a high level, the repository currently includes:
 
 - exact RMQ backends: linear scan, plus-minus-one RMQ, sparse table, hybrid
   block RMQ, recursive hybrid RMQ, certified microtables, Fischer-Heun-style
-  structures, and the final succinct Cartesian-shape RMQ profile;
+  structures, and the final succinct Cartesian-shape RMQ profile, now with a
+  direct public theorem over ordinary `List Int` inputs;
 - RMQ/LCA reductions over rose trees, Euler tours, Cartesian trees, and
   balanced-parentheses representations;
 - an information-theoretic RMQ lower-bound framework, including the sharpened

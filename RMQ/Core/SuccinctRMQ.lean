@@ -2,6 +2,7 @@ import RMQ.Core.SuccinctRankSelect
 import RMQ.Core.BPCloseNavigation
 import RMQ.Core.SuccinctReduction
 import RMQ.Core.SuccinctFinal
+import RMQ.Core.SuccinctRMQClassic
 
 /-!
 # Succinct RMQ barrel

@@ -15,6 +15,7 @@ The short public theorem aliases live in `RMQ/Headlines.lean`.
 | `RMQ.Headlines.rankSelectWordBoundedNPlusOConstantQuery` | The same public rank/select family, strengthened with machine-word-bounded concrete payload reads. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightFamilyProfile` | Fixed-weight compressed/FID rank/select family: fixed-weight primary payload plus `o(n)` auxiliary payload, exact access/rank/select, and one constant modeled query bound. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile` | Interpreter-backed replay of that compressed/FID rank/select family: same payload/profile shape, with access/rank/select reads routed through first-order `WordRAM` bridges. |
+| `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | Classic list-facing succinct RMQ theorem: for every ordinary `xs : List Int`, the built payload has length `2*n + o(n)` and valid half-open queries return the exact leftmost RMQ answer within constant modeled query cost. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ capstone with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and the matching lower-bound side. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Whole-query-interpreted variant of the final BP-native succinct RMQ capstone: same theorem shape, with the final query control represented by a closed first-order program whose leaves are interpreted close-select, compact close/LCA, and register-backed answer-rank operations. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace` | Leaf-trace-preserving variant of the same capstone: the closed controller now evaluates to an explicit domain-leaf trace before projection back to `Costed`; the leaves are still interpreted component queries, not one unified store trace. |
@@ -66,8 +67,14 @@ relevant Cartesian shapes.
 
 ## Succinct Upper Bound
 
-The succinct capstone proves a modeled upper-bound profile for Cartesian-shape
-RMQ:
+The succinct capstone now has both a construction-facing Cartesian-shape theorem
+and a reader-facing ordinary-list theorem.  The list-facing surface is
+`RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery`: for every
+`xs : List Int`, it builds a counted payload of length
+`2 * xs.length + overhead xs.length`, proves `overhead = o(n)`, and answers
+valid half-open queries with the exact leftmost RMQ index of `xs` under a fixed
+modeled query-cost bound.  The construction-facing theorem proves the same
+profile over Cartesian-shape representatives:
 
 - the base payload is the balanced-parentheses shape code of length `2*n`;
 - auxiliary rank/select and BP close-navigation payload is `o(n)`;

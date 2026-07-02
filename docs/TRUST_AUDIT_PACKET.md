@@ -1,6 +1,6 @@
 # Trust Audit Packet
 
-Snapshot: 2026-07-01. This is the compact packet to hand to a skeptical
+Snapshot: 2026-07-02. This is the compact packet to hand to a skeptical
 Lean/formalization reviewer before asking for a broader library-readiness
 review. It focuses on the public succinct RMQ headline theorem, its alias
 chain, its cost/space model, and the main anti-oracle checks.
@@ -28,7 +28,20 @@ powershell -ExecutionPolicy Bypass -File scripts\review_wordram.ps1
 
 ## Public Headline Alias
 
-The main public RMQ name lives in `RMQ/Headlines.lean`:
+The most reader-facing public RMQ name lives in `RMQ/Headlines.lean`:
+
+```lean
+abbrev succinctRMQListIntTwoNPlusOConstantQuery :=
+  RMQ.SuccinctClassic.listInt_two_n_plus_o_constant_query_profile
+```
+
+This theorem is stated over ordinary `xs : List Int`: it exposes
+`SuccinctClassic.buildPayload xs`, proves its length is
+`2 * xs.length + overhead xs.length` with `overhead = o(n)`, and proves that
+`SuccinctClassic.queryCosted xs` answers valid half-open RMQ queries with
+leftmost ties under one constant modeled query bound.
+
+The construction-facing RMQ name is:
 
 ```lean
 abbrev succinctRMQTwoNPlusOConstantQuery :=

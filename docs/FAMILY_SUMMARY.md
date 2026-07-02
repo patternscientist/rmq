@@ -38,7 +38,11 @@ separate appendix.
 ## Status At A Glance
 
 - Core contract: half-open RMQ ranges `[left, right)` over `List Int`, returning
-  the leftmost minimum index when `left < right` and `right <= xs.length`.
+  the leftmost minimum index when `left < right` and `right <= xs.length`.  The
+  succinct RMQ capstone now has a direct ordinary-list public surface,
+  `Headlines.succinctRMQListIntTwoNPlusOConstantQuery`, whose query result is
+  proved against this contract rather than only against canonical
+  representative arrays.
 - Exact public RMQ backends: linear scan, plus-minus-one linear instance,
   sparse table, memoized sparse table, hybrid block, recursive hybrid, raw
   whole-list microtable, and value-level Fischer-Heun.
@@ -2536,11 +2540,21 @@ The names below are grouped by source module. Repeated base names in
   barrels. The old flat generic-select files are no longer imported by live
   in-repository roots or scripts; new code should import
   `RMQ.Core.GenericSelect` or a role module below `RMQ.Core.GenericSelect.*`.
+- `RMQ/Core/SuccinctRMQClassic.lean` (8):
+  `SuccinctClassic.shape_queryOffset?_eq_scanWindow`,
+  `SuccinctClassic.scanWindow_cartesianShape_representative_eq`,
+  `SuccinctClassic.overhead_littleO`,
+  `SuccinctClassic.buildPayload_length`,
+  `SuccinctClassic.queryCosted_cost_le`,
+  `SuccinctClassic.queryCosted_exact`,
+  `SuccinctClassic.queryCosted_leftmost`, and
+  `SuccinctClassic.listInt_two_n_plus_o_constant_query_profile`.
 - `RMQ/Headlines.lean`:
   public-facing aliases
   `Headlines.exactRMQLowerBoundDoubledCatalanSlack`,
   `Headlines.rankSelectNPlusOConstantQuery`,
   `Headlines.rankSelectWordBoundedNPlusOConstantQuery`, and
+  `Headlines.succinctRMQListIntTwoNPlusOConstantQuery`,
   `Headlines.succinctRMQTwoNPlusOConstantQuery`,
   `Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted`,
   `Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace`,

@@ -350,6 +350,22 @@ grad student should now ask whether those fallback primitives should be
 replaced by a small-table structural replay too, or whether the current
 explicit primitive boundary is the right public model boundary.
 
+2026-07-02 follow-up: the succinct RMQ capstone now has a direct ordinary-list
+front door,
+`RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery`, backed by
+`SuccinctClassic.listInt_two_n_plus_o_constant_query_profile`. Conceptually,
+the construction-heavy theorem still lives over Cartesian shapes, but the
+public theorem now starts with `xs : List Int`: build the counted BP-native
+payload for `Cartesian.shape xs`, prove its length is `2 * xs.length + o(n)`,
+and prove valid half-open queries return the same leftmost-minimum index that a
+direct scan of `xs` returns. The key bridge is not handwaving: the
+shape-only local query `CartesianShape.queryOffset?` is exact both for `xs` and
+for the canonical representative of `Cartesian.shape xs`, so the representative
+answer is transported back to the original list. A skeptical grad student
+should now ask whether future public theorem surfaces should lead with the
+ordinary object-level API first and put the shape/encoding universe theorem as
+the proof engine behind it.
+
 ## Digestion Tasks
 
 1. Turn the RMQ capstone into a two-page lecture-style proof map:

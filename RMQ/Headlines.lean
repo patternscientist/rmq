@@ -4,6 +4,7 @@ import RMQ.Core.RankSelectPublicRAM
 import RMQ.Core.SuccinctSpace.BPCloseRMQNavigationRAM
 import RMQ.Core.SuccinctFinal
 import RMQ.Core.SuccinctFinalRAM
+import RMQ.Core.SuccinctRMQClassic
 
 /-!
 Short public aliases for the main citeable theorem surfaces.
@@ -49,6 +50,14 @@ abbrev rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile :=
 /-- BP-native succinct RMQ capstone: exact RMQ, `2*n + o(n)`, constant query. -/
 abbrev succinctRMQTwoNPlusOConstantQuery :=
   RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile
+
+/--
+Classic list-facing succinct RMQ theorem: for every ordinary `xs : List Int`,
+the built payload has length `2*n + o(n)` and valid half-open queries return
+the exact leftmost RMQ answer within constant modeled query cost.
+-/
+abbrev succinctRMQListIntTwoNPlusOConstantQuery :=
+  RMQ.SuccinctClassic.listInt_two_n_plus_o_constant_query_profile
 
 /--
 Whole-query-interpreted BP-native succinct RMQ capstone: the same two-sided

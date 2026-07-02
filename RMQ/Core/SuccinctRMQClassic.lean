@@ -1,0 +1,217 @@
+import RMQ.Core.Microtable
+import RMQ.Core.SuccinctFinalRAM
+
+/-!
+# Classic list-facing succinct RMQ theorem
+
+The construction-heavy succinct RMQ capstone is naturally stated over
+Cartesian-shape representatives, because that is the finite universe used by
+the lower-bound and BP encoding layers.  This module gives the same result the
+front door that readers expect for RMQ: an ordinary `List Int` input, half-open
+queries, and leftmost ties.
+-/
+
+namespace RMQ
+
+namespace SuccinctClassic
+
+/-- The concrete shape stored by the succinct RMQ construction for `xs`. -/
+def cartesianShape (xs : List Int) : Cartesian.CartesianShape :=
+  Cartesian.shape xs
+
+/-- The auxiliary `o(n)` term used by the public BP-native construction. -/
+abbrev overhead : Nat -> Nat :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQOverhead
+    SuccinctFinal.genericSparseExceptionBPCloseAccessOverhead
+
+/-- Constant modeled query budget of the public BP-native construction. -/
+abbrev queryCost : Nat :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQQueryCost
+    SuccinctSelect.sparseDenseFalseSelectQueryCost
+
+/--
+The counted payload built from an ordinary input list: the `2*n` BP shape code
+plus the compact auxiliary payload used by the final BP-native construction.
+-/
+def buildPayload (xs : List Int) : List Bool :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQPayload
+    SuccinctFinal.builtGenericSparseExceptionSelectBPCloseAccessFamily
+    (cartesianShape xs)
+
+/--
+The all-size, global-word-trace query of the public BP-native construction,
+specialized to the Cartesian shape of an ordinary input list.
+-/
+def queryCosted (xs : List Int) (left right : Nat) :
+    Costed (Option Nat) :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+    (cartesianShape xs) left right
+
+/--
+Shape-only local queries over `Cartesian.shape xs` return the same leftmost
+RMQ answer as scanning the original list.
+-/
+theorem shape_queryOffset?_eq_scanWindow
+    (xs : List Int) {left len : Nat}
+    (hlen : 0 < len) (hbound : left + len <= xs.length) :
+    (cartesianShape xs).queryOffset? left (left + len) =
+      some (scanWindow xs left len) := by
+  have hvalid :
+      Cartesian.LocalValid xs.length left (left + len) := by
+    unfold Cartesian.LocalValid
+    omega
+  have hquery :=
+    Cartesian.queryOffset?_blockSignature
+      (xs := xs) (start := 0) (blockSize := xs.length)
+      (left := left) (right := left + len) (by simp)
+  rw [dif_pos hvalid] at hquery
+  have hlocal :=
+    Cartesian.localScanOffset_add_start
+      (xs := xs) (start := 0) (blockSize := xs.length)
+      (left := left) (right := left + len) hvalid
+  have hlocalEq :
+      Cartesian.localScanOffset xs 0 left (left + len) =
+        scanWindow xs left len := by
+    simpa using hlocal
+  simpa [cartesianShape, Cartesian.blockSignature, Cartesian.shape, hlocalEq]
+    using hquery
+
+/--
+The canonical representative of `Cartesian.shape xs` has the same RMQ answers
+as `xs`; the proof compares the shared shape-only local query.
+-/
+theorem scanWindow_cartesianShape_representative_eq
+    (xs : List Int) {left len : Nat}
+    (hlen : 0 < len) (hbound : left + len <= xs.length) :
+    scanWindow (cartesianShape xs).representative left len =
+      scanWindow xs left len := by
+  let shape := cartesianShape xs
+  have hshapeOfSize : Cartesian.ShapeOfSize xs.length shape := by
+    simpa [shape, cartesianShape] using Cartesian.shape_shapeOfSize xs
+  have hrepLen : shape.representative.length = xs.length := by
+    rw [Cartesian.CartesianShape.representative_length,
+      Cartesian.ShapeOfSize.size_eq hshapeOfSize]
+  have hrepBound : left + len <= shape.representative.length := by
+    omega
+  have hrepQuery :=
+    shape_queryOffset?_eq_scanWindow shape.representative
+      hlen hrepBound
+  have hxsQuery :=
+    shape_queryOffset?_eq_scanWindow xs hlen hbound
+  have hrepShape : cartesianShape shape.representative = shape := by
+    simpa [cartesianShape] using
+      Cartesian.CartesianShape.shape_representative shape
+  have hrepQuery' :
+      shape.queryOffset? left (left + len) =
+        some (scanWindow shape.representative left len) := by
+    simpa [hrepShape] using hrepQuery
+  have hxsQuery' :
+      shape.queryOffset? left (left + len) =
+        some (scanWindow xs left len) := by
+    simpa [shape] using hxsQuery
+  have hsome :
+      some (scanWindow shape.representative left len) =
+        some (scanWindow xs left len) := by
+    rw [← hrepQuery', hxsQuery']
+  exact Option.some.inj hsome
+
+/-- The auxiliary payload overhead is `o(n)`. -/
+theorem overhead_littleO :
+    SuccinctSpace.LittleOLinear overhead := by
+  exact
+    SuccinctFinal.concreteBPNativeSuccinctRMQOverhead_littleO
+      SuccinctFinal.builtGenericSparseExceptionSelectBPCloseAccessFamily
+
+/-- The built payload has exactly `2*n + overhead n` bits. -/
+theorem buildPayload_length (xs : List Int) :
+    (buildPayload xs).length =
+      2 * xs.length + overhead xs.length := by
+  have hshape :
+      List.Mem (cartesianShape xs)
+        (Cartesian.shapesOfSize xs.length) := by
+    exact
+      Cartesian.shapeOfSize_mem_shapesOfSize
+        (by simpa [cartesianShape] using Cartesian.shape_shapeOfSize xs)
+  simpa [buildPayload, overhead] using
+    SuccinctFinal.concreteBPNativeSuccinctRMQPayload_length
+      SuccinctFinal.builtGenericSparseExceptionSelectBPCloseAccessFamily
+      hshape
+
+/-- Every query has the constant modeled cost of the final construction. -/
+theorem queryCosted_cost_le
+    (xs : List Int) (left right : Nat) :
+    (queryCosted xs left right).cost <= queryCost := by
+  simpa [queryCosted, queryCost] using
+    SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le
+      (cartesianShape xs) left right
+
+/-- Valid half-open queries return the exact leftmost-minimum index of `xs`. -/
+theorem queryCosted_exact
+    (xs : List Int) {left len : Nat}
+    (hlen : 0 < len) (hbound : left + len <= xs.length) :
+    (queryCosted xs left (left + len)).erase =
+      some (scanWindow xs left len) := by
+  have hshape :
+      List.Mem (cartesianShape xs)
+        (Cartesian.shapesOfSize xs.length) := by
+    exact
+      Cartesian.shapeOfSize_mem_shapesOfSize
+        (by simpa [cartesianShape] using Cartesian.shape_shapeOfSize xs)
+  calc
+    (queryCosted xs left (left + len)).erase =
+        some (scanWindow (cartesianShape xs).representative left len) := by
+          simpa [queryCosted] using
+            SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact
+              (n := xs.length) (shape := cartesianShape xs)
+              hshape hlen hbound
+    _ = some (scanWindow xs left len) := by
+          rw [scanWindow_cartesianShape_representative_eq xs hlen hbound]
+
+/-- Valid half-open queries return an index satisfying the core leftmost-tie spec. -/
+theorem queryCosted_leftmost
+    (xs : List Int) {left len idx : Nat}
+    (hlen : 0 < len) (hbound : left + len <= xs.length)
+    (hquery : (queryCosted xs left (left + len)).erase = some idx) :
+    LeftmostArgMin xs left (left + len) idx := by
+  have hexact := queryCosted_exact xs hlen hbound
+  have hidx : idx = scanWindow xs left len := by
+    exact (Option.some.inj (by rw [← hquery, hexact])).symm
+  simpa [hidx] using scanWindow_leftmost xs left len hlen hbound
+
+/--
+Classic public theorem over ordinary lists.
+
+For every `xs : List Int`, `buildPayload xs` has length
+`2 * xs.length + overhead xs.length` with `overhead = o(n)`, and
+`queryCosted xs` answers valid half-open RMQ queries exactly with leftmost ties
+within the constant modeled query budget `queryCost`.
+-/
+theorem listInt_two_n_plus_o_constant_query_profile :
+    SuccinctSpace.LittleOLinear overhead /\
+      forall xs : List Int,
+        (buildPayload xs).length =
+          2 * xs.length + overhead xs.length /\
+        (forall left right,
+          (queryCosted xs left right).cost <= queryCost) /\
+        (forall {left len : Nat},
+          0 < len ->
+            left + len <= xs.length ->
+              (queryCosted xs left (left + len)).erase =
+                some (scanWindow xs left len)) /\
+        (forall {left len idx : Nat},
+          0 < len ->
+            left + len <= xs.length ->
+              (queryCosted xs left (left + len)).erase = some idx ->
+                LeftmostArgMin xs left (left + len) idx) := by
+  refine ⟨overhead_littleO, ?_⟩
+  intro xs
+  exact
+    ⟨buildPayload_length xs,
+      queryCosted_cost_le xs,
+      (fun hlen hbound => queryCosted_exact xs hlen hbound),
+      (fun hlen hbound hquery =>
+        queryCosted_leftmost xs hlen hbound hquery)⟩
+
+end SuccinctClassic
+
+end RMQ
