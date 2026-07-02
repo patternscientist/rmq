@@ -781,6 +781,111 @@ def concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe
       concreteBPNativeSuccinctRMQWholeQueryProgram
       WholeQueryState.empty).toCosted)
 
+/--
+Large-regime final BP-native RMQ query as a trace result, before projection to
+`Costed`.
+
+The trace is one list of `WordRAM.TraceEvent`s. Its component traces still use
+local segment numbering, so this is not yet a proof that all reads target one
+globally laid-out payload store.
+-/
+def concreteBPNativeSuccinctRMQWholeQueryWordTraceResultOfSizeGe
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size)
+    (left right : Nat) : WordRAM.TraceResult (Option Nat) :=
+  WordRAM.TraceResult.map WholeQueryState.output?
+    (WholeQueryProgram.evalWordTraceOfSizeGe shape hsize left right
+      concreteBPNativeSuccinctRMQWholeQueryProgram
+      WholeQueryState.empty)
+
+/--
+Component-local provenance for large-regime final RMQ trace events.
+
+This predicate is intentionally weaker than a global-store theorem: it records
+that each event in the assembled stream comes from one of the concrete
+close-select, compact close/LCA, or answer-rank component traces. A future
+global-store theorem should add segment relabeling and prove the same reads
+agree with one combined payload layout.
+-/
+def concreteBPNativeLargeRegimeTraceEventAdmissible
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size)
+    (left right : Nat)
+    (event : WordRAM.TraceEvent) : Prop :=
+  List.Mem event
+      (concreteBPNativeSelectCloseWordTraceResult shape left).trace \/
+    List.Mem event
+      (concreteBPNativeSelectCloseWordTraceResult shape (right - 1)).trace \/
+    (exists leftClose rightClose,
+      List.Mem event
+        (concreteBPNativeLCACloseWordTraceResultOfSizeGe
+          shape hsize leftClose rightClose).trace) \/
+    (exists answerClose,
+      List.Mem event
+        (concreteBPNativeRankCloseWordTraceResult
+          shape (answerClose + 1)).trace) \/
+    Not event.isReadWord
+
+theorem concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe_eq_traceResult_toCosted
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size)
+    (left right : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe
+      shape hsize left right =
+      (concreteBPNativeSuccinctRMQWholeQueryWordTraceResultOfSizeGe
+        shape hsize left right).toCosted := by
+  simp [concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe,
+    concreteBPNativeSuccinctRMQWholeQueryWordTraceResultOfSizeGe,
+    Costed.map]
+
+theorem concreteBPNativeSuccinctRMQWholeQueryWordTraceResultOfSizeGe_event_admissible
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size)
+    (left right : Nat) :
+    forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryWordTraceResultOfSizeGe
+          shape hsize left right).trace ->
+        concreteBPNativeLargeRegimeTraceEventAdmissible
+          shape hsize left right event := by
+  intro event hmem
+  unfold concreteBPNativeSuccinctRMQWholeQueryWordTraceResultOfSizeGe at hmem
+  unfold concreteBPNativeLargeRegimeTraceEventAdmissible
+  simp [concreteBPNativeSuccinctRMQWholeQueryProgram,
+    WholeQueryProgram.evalWordTraceOfSizeGe,
+    WholeQueryInstr.evalWordTraceOfSizeGe,
+    WholeQueryNatExpr.eval, WholeQueryState.empty, WholeQueryState.opt,
+    WholeQueryState.setOpt, WordRAM.TraceResult.bind,
+    WordRAM.TraceResult.map, WordRAM.TraceResult.pure] at hmem ⊢
+  rcases List.mem_append.mp hmem with hleftMem | hmem
+  · exact Or.inl hleftMem
+  rcases List.mem_append.mp hmem with hrightMem | hmem
+  · exact Or.inr (Or.inl hrightMem)
+  cases hleftVal :
+      (concreteBPNativeSelectCloseWordTraceResult shape left).value with
+  | none =>
+      simp [hleftVal] at hmem
+  | some leftClose =>
+      cases hrightVal :
+          (concreteBPNativeSelectCloseWordTraceResult shape (right - 1)).value with
+      | none =>
+          simp [hleftVal, hrightVal] at hmem
+      | some rightClose =>
+          simp [hleftVal, hrightVal, List.mem_append] at hmem
+          rcases hmem with hlcaMem | hmem
+          · exact Or.inr (Or.inr (Or.inl
+              (Exists.intro leftClose
+                (Exists.intro rightClose hlcaMem))))
+          cases hanswerVal :
+              (concreteBPNativeLCACloseWordTraceResultOfSizeGe
+                shape hsize leftClose rightClose).value with
+          | none =>
+              simp [hanswerVal] at hmem
+          | some answerClose =>
+              simp [hanswerVal, WholeQueryState.setNat] at hmem
+              exact Or.inr (Or.inr (Or.inr (Or.inl
+                (Exists.intro answerClose hmem))))
+
 theorem concreteBPNativeSuccinctRMQWholeQueryLeafTraceCosted_refines_wholeQueryInterpretedCosted
     (shape : Cartesian.CartesianShape) (left right : Nat) :
     concreteBPNativeSuccinctRMQWholeQueryLeafTraceCosted shape left right =

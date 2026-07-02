@@ -565,11 +565,11 @@ proved equal to the existing costed query.  This closes the main oracle-shaped
 gap in the public succinct RMQ theorem without changing the reference
 semantics, payload accounting, or public cost bound.
 
-The remaining stronger target is a unified lower-level payload-store trace for
-the whole final branch structure.  The closed outer controller has now landed;
-the next hardening step would inline or compile the interpreted component
-leaves into the same machine state rather than invoking them as already
-interpreted leaf costed functions.
+The remaining stronger target is a global payload-store provenance theorem for
+the unified lower-level event stream.  The closed outer controller and the
+large-regime `WordRAM.TraceEvent` stream have now landed; the next hardening
+step is segment relabeling plus one combined payload layout, so component
+traces no longer rely on local segment numbering.
 
 ## Fixedpoint Conclusion
 
@@ -581,9 +581,8 @@ RMQ query path.
 The best order from here is:
 
 1. continue BP/tree-navigation APIs over the reusable rank/select surface; and
-2. design the unified payload-store trace or compiler-style target only after
-   the public BP operations identify which dynamic-address patterns are
-   actually needed.
+2. design the global store relabeling/provenance layer only after the public BP
+   operations identify which dynamic-address patterns are actually needed.
 
 The standalone compressed/FID rank-select spoke has now been replayed through
 the same `WordRAM` layer.
