@@ -366,6 +366,23 @@ should now ask whether future public theorem surfaces should lead with the
 ordinary object-level API first and put the shape/encoding universe theorem as
 the proof engine behind it.
 
+2026-07-02 WordRAM hardening update: the first-order WordRAM/register layer now
+separates three things that were previously mostly documented as modeling
+discipline. Payload reads have address-provenance theorems: a read event's
+segment/index pair comes from the first-order program syntax under the current
+register file, not from a proof callback. Register and address values have an
+explicit `FitsInBits`/`AddressFitsInBits` vocabulary, and `NatExpr.NoOverflow`
+states the policy for arithmetic: expressions evaluate as mathematical `Nat`,
+with machine-word safety proved as a side condition rather than silently
+wrapping. Finally, trace events are classified as payload reads or word-local
+primitives, while register lookup, arithmetic, and branching are zero-cost
+control and do not appear as information-bearing events. Plain English: the
+model still is not a full CPU, but it is now much harder to hide an unbounded
+address computation or an uncharged proof-driven read inside the query trace. A
+skeptical grad student should next ask for these bounded-address side
+conditions to be consumed by the public whole-query RMQ and standalone
+rank/select execution-story theorems, not merely available as local lemmas.
+
 ## Digestion Tasks
 
 1. Turn the RMQ capstone into a two-page lecture-style proof map:

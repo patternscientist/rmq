@@ -16,6 +16,19 @@ namespace WordRAM
 
 namespace Register
 
+/-- A natural value fits in `bits` machine bits. -/
+def FitsInBits (bits value : Nat) : Prop :=
+  value < 2 ^ bits
+
+/-- A payload address fits in `bits` machine bits. -/
+def AddressFitsInBits (bits segment index : Nat) : Prop :=
+  FitsInBits bits segment /\ FitsInBits bits index
+
+theorem zero_fitsInBits (bits : Nat) :
+    FitsInBits bits 0 := by
+  unfold FitsInBits
+  exact Nat.pow_pos (by decide : 0 < 2)
+
 /-- Small register file used by the first dynamic-address layer. -/
 structure RegFile where
   natRegs : Array Nat := #[]
@@ -35,6 +48,19 @@ def bool (regs : RegFile) (idx : Nat) : Bool :=
 /-- Missing optional-natural registers default to `none`. -/
 def optNat (regs : RegFile) (idx : Nat) : Option Nat :=
   regs.optNatRegs[idx]?.getD none
+
+/-- All natural register reads fit in the declared machine-bit bound. -/
+def NatValuesFitInBits (regs : RegFile) (bits : Nat) : Prop :=
+  forall idx, FitsInBits bits (regs.nat idx)
+
+/-- All present optional-natural register reads fit in the declared bound. -/
+def OptNatValuesFitInBits (regs : RegFile) (bits : Nat) : Prop :=
+  forall {idx value : Nat}, regs.optNat idx = some value ->
+    FitsInBits bits value
+
+/-- Combined bounded-register policy for the current register file. -/
+def ValuesFitInBits (regs : RegFile) (bits : Nat) : Prop :=
+  regs.NatValuesFitInBits bits /\ regs.OptNatValuesFitInBits bits
 
 /-- Initial register file with two optional natural inputs. -/
 def withOptNat2 (left right : Option Nat) : RegFile where
@@ -59,6 +85,40 @@ def withNat1 (pos : Nat) : RegFile where
 @[simp] theorem withOptNat2_optNat_one (left right : Option Nat) :
     (withOptNat2 left right).optNat 1 = right := by
   cases left <;> cases right <;> rfl
+
+theorem withNat1_valuesFitInBits
+    {pos bits : Nat} (hpos : FitsInBits bits pos) :
+    (withNat1 pos).ValuesFitInBits bits := by
+  constructor
+  · intro idx
+    cases idx with
+    | zero =>
+        simpa using hpos
+    | succ idx =>
+        simp [nat, withNat1, zero_fitsInBits]
+  · intro idx value hvalue
+    cases hvalue
+
+theorem withOptNat2_valuesFitInBits
+    {left right : Option Nat} {bits : Nat}
+    (hleft :
+      forall value, left = some value -> FitsInBits bits value)
+    (hright :
+      forall value, right = some value -> FitsInBits bits value) :
+    (withOptNat2 left right).ValuesFitInBits bits := by
+  constructor
+  · intro idx
+    simp [nat, withOptNat2, zero_fitsInBits]
+  · intro idx value hvalue
+    cases idx with
+    | zero =>
+        exact hleft value (by simpa using hvalue)
+    | succ idx =>
+        cases idx with
+        | zero =>
+            exact hright value (by simpa using hvalue)
+        | succ idx =>
+            simp [optNat, withOptNat2] at hvalue
 
 end RegFile
 
@@ -107,6 +167,78 @@ def eval : NatExpr -> RegFile -> Nat
       right.getD fallback := by
   cases left <;> cases right <;> rfl
 
+/--
+No-overflow policy for natural expressions: evaluation is mathematical `Nat`
+arithmetic, and consumers prove this side condition when the result must fit in
+a machine word. There is no implicit wraparound.
+-/
+def NoOverflow (expr : NatExpr) (regs : RegFile) (bits : Nat) : Prop :=
+  FitsInBits bits (expr.eval regs)
+
+theorem eval_fitsInBits_of_noOverflow
+    {expr : NatExpr} {regs : RegFile} {bits : Nat}
+    (h : expr.NoOverflow regs bits) :
+    FitsInBits bits (expr.eval regs) := h
+
+theorem const_noOverflow
+    {value bits : Nat} {regs : RegFile}
+    (hvalue : FitsInBits bits value) :
+    (const value).NoOverflow regs bits := by
+  simpa [NoOverflow]
+
+theorem reg_noOverflow_of_regFile
+    {idx bits : Nat} {regs : RegFile}
+    (hregs : regs.NatValuesFitInBits bits) :
+    (reg idx).NoOverflow regs bits := by
+  simpa [NoOverflow] using hregs idx
+
+theorem optNatD_noOverflow
+    {idx fallback bits : Nat} {regs : RegFile}
+    (hregs : regs.OptNatValuesFitInBits bits)
+    (hfallback : FitsInBits bits fallback) :
+    (optNatD idx fallback).NoOverflow regs bits := by
+  unfold NoOverflow
+  cases hopt : regs.optNat idx with
+  | none =>
+      simpa [eval, hopt] using hfallback
+  | some value =>
+      simpa [eval, hopt] using hregs hopt
+
+theorem add_noOverflow_of_eval
+    {left right : NatExpr} {regs : RegFile} {bits : Nat}
+    (h :
+      FitsInBits bits (left.eval regs + right.eval regs)) :
+    (add left right).NoOverflow regs bits := by
+  simpa [NoOverflow, eval] using h
+
+theorem mul_noOverflow_of_eval
+    {left right : NatExpr} {regs : RegFile} {bits : Nat}
+    (h :
+      FitsInBits bits (left.eval regs * right.eval regs)) :
+    (mul left right).NoOverflow regs bits := by
+  simpa [NoOverflow, eval] using h
+
+theorem sub_noOverflow_of_left
+    {left right : NatExpr} {regs : RegFile} {bits : Nat}
+    (hleft : left.NoOverflow regs bits) :
+    (sub left right).NoOverflow regs bits := by
+  unfold NoOverflow FitsInBits at *
+  exact Nat.lt_of_le_of_lt (Nat.sub_le _ _) hleft
+
+theorem div_noOverflow_of_left
+    {left right : NatExpr} {regs : RegFile} {bits : Nat}
+    (hleft : left.NoOverflow regs bits) :
+    (div left right).NoOverflow regs bits := by
+  unfold NoOverflow FitsInBits at *
+  exact Nat.lt_of_le_of_lt (Nat.div_le_self _ _) hleft
+
+theorem min_noOverflow_left
+    {left right : NatExpr} {regs : RegFile} {bits : Nat}
+    (hleft : left.NoOverflow regs bits) :
+    (min left right).NoOverflow regs bits := by
+  unfold NoOverflow FitsInBits at *
+  exact Nat.lt_of_le_of_lt (Nat.min_le_left _ _) hleft
+
 end NatExpr
 
 /-- First-order optional-natural expressions over registers and constants. -/
@@ -149,6 +281,23 @@ def readCount : RegProgram -> Nat
   | readJoinedOptionNat _ _ _ => 1
   | ifSomeNat _ thenProgram elseProgram =>
       Nat.max thenProgram.readCount elseProgram.readCount
+
+/-- Payload-read addresses selected by first-order control for these registers. -/
+def readAddresses : RegProgram -> RegFile -> List (Nat × Nat)
+  | pureOpt _, _regs => []
+  | readJoinedOptionNat segment _ index, regs =>
+      [(segment, index.eval regs)]
+  | ifSomeNat reg thenProgram elseProgram, regs =>
+      match regs.optNat reg with
+      | some _ => thenProgram.readAddresses regs
+      | none => elseProgram.readAddresses regs
+
+/-- All selected payload-read addresses fit in the declared machine-bit bound. -/
+def ReadAddressesFitInBits
+    (program : RegProgram) (regs : RegFile) (bits : Nat) : Prop :=
+  forall {segment index : Nat},
+    (segment, index) ∈ program.readAddresses regs ->
+      AddressFitsInBits bits segment index
 
 /-- Deterministic evaluation of a register program. -/
 def eval : RegProgram -> Store -> RegFile -> Result .optNat
@@ -219,6 +368,93 @@ theorem eval_reads_subset_payload
           exact elseIH event (by simpa [eval, hreg] using hmem)
       | some value =>
           exact thenIH event (by simpa [eval, hreg] using hmem)
+
+/--
+Every read event in a register-program trace uses the address obtained by
+evaluating a syntactic first-order address expression under the current
+register file.
+-/
+theorem eval_readWord_address_mem
+    (program : RegProgram) (store : Store) (regs : RegFile)
+    {segment index : Nat} {word? : Option Word}
+    (hmem :
+      TraceEvent.readWord segment index word? ∈
+        (eval program store regs).trace) :
+    (segment, index) ∈ program.readAddresses regs := by
+  induction program with
+  | pureOpt value =>
+      simp [eval] at hmem
+  | readJoinedOptionNat segment' width indexExpr =>
+      simp [eval] at hmem
+      rcases hmem with ⟨hsegment, hindex, _hword⟩
+      subst segment
+      subst index
+      simp [readAddresses]
+  | ifSomeNat reg thenProgram elseProgram thenIH elseIH =>
+      cases hreg : regs.optNat reg with
+      | none =>
+          have hmemElse :
+              TraceEvent.readWord segment index word? ∈
+                (eval elseProgram store regs).trace := by
+            simpa [eval, hreg] using hmem
+          simpa [eval, readAddresses, hreg] using
+            elseIH hmemElse
+      | some value =>
+          have hmemThen :
+              TraceEvent.readWord segment index word? ∈
+                (eval thenProgram store regs).trace := by
+            simpa [eval, hreg] using hmem
+          simpa [eval, readAddresses, hreg] using
+            thenIH hmemThen
+
+/-- Read-address boundedness transfers to every read event in the trace. -/
+theorem eval_readWord_address_fitsInBits
+    (program : RegProgram) (store : Store) (regs : RegFile) {bits : Nat}
+    (hfit : program.ReadAddressesFitInBits regs bits)
+    {segment index : Nat} {word? : Option Word}
+    (hmem :
+      TraceEvent.readWord segment index word? ∈
+        (eval program store regs).trace) :
+    AddressFitsInBits bits segment index :=
+  hfit (eval_readWord_address_mem program store regs hmem)
+
+/-- Every read event in the trace uses a bounded first-order address. -/
+theorem eval_event_address_fitsInBits
+    (program : RegProgram) (store : Store) (regs : RegFile) {bits : Nat}
+    (hfit : program.ReadAddressesFitInBits regs bits) :
+    forall event : TraceEvent,
+      event ∈ (eval program store regs).trace ->
+        match event with
+        | TraceEvent.readWord segment index _ =>
+            AddressFitsInBits bits segment index
+        | TraceEvent.wordRank _ _ _ => True
+        | TraceEvent.wordSelect _ _ _ => True := by
+  intro event hmem
+  cases event with
+  | readWord segment index word? =>
+      exact eval_readWord_address_fitsInBits program store regs hfit hmem
+  | wordRank target limit result =>
+      trivial
+  | wordSelect target occurrence result =>
+      trivial
+
+/-- All register-program trace events are payload reads or word primitives. -/
+theorem eval_event_read_or_primitive
+    (program : RegProgram) (store : Store) (regs : RegFile) :
+    forall event : TraceEvent,
+      event ∈ (eval program store regs).trace ->
+        event.isReadWord \/ event.isWordPrimitive := by
+  intro event _hmem
+  exact TraceEvent.isReadWord_or_isWordPrimitive event
+
+/-- Zero-cost register control never appears as a trace event. -/
+theorem eval_no_zero_cost_control
+    (program : RegProgram) (store : Store) (regs : RegFile) :
+    forall event : TraceEvent,
+      event ∈ (eval program store regs).trace ->
+        ¬ event.isZeroCostControl := by
+  intro event _hmem
+  exact TraceEvent.not_zeroCostControl event
 
 /-- Concrete read events report exactly the store value. -/
 theorem eval_readWord_event_eq_store
@@ -332,6 +568,25 @@ def stepCount : NatProgram -> Nat
   | pureNat _ => 0
   | sampledRank _ _ _ _ _ _ => 3
   | twoLevelSampledRank _ _ _ _ _ _ _ _ => 4
+
+/-- Payload-read addresses selected by first-order natural-register programs. -/
+def readAddresses : NatProgram -> RegFile -> List (Nat × Nat)
+  | pureNat _, _regs => []
+  | sampledRank _ _ sampleSegment sampleIndex wordSegment wordIndex, regs =>
+      [(sampleSegment, sampleIndex.eval regs),
+        (wordSegment, wordIndex.eval regs)]
+  | twoLevelSampledRank _ _ superSegment superIndex
+      blockSegment blockIndex wordSegment wordIndex, regs =>
+      [(superSegment, superIndex.eval regs),
+        (blockSegment, blockIndex.eval regs),
+        (wordSegment, wordIndex.eval regs)]
+
+/-- All selected payload-read addresses fit in the declared machine-bit bound. -/
+def ReadAddressesFitInBits
+    (program : NatProgram) (regs : RegFile) (bits : Nat) : Prop :=
+  forall {segment index : Nat},
+    (segment, index) ∈ program.readAddresses regs ->
+      AddressFitsInBits bits segment index
 
 /-- Deterministic evaluation of a natural-valued register program. -/
 def eval : NatProgram -> Store -> RegFile -> Result .nat
@@ -513,6 +768,116 @@ theorem eval_reads_subset_payload
                         exact hword
                       · subst event
                         trivial
+
+/--
+Every read event in a natural-register program trace uses an address computed
+from first-order syntax and the current register file.
+-/
+theorem eval_readWord_address_mem
+    (program : NatProgram) (store : Store) (regs : RegFile)
+    {segment index : Nat} {word? : Option Word}
+    (hmem :
+      TraceEvent.readWord segment index word? ∈
+        (eval program store regs).trace) :
+    (segment, index) ∈ program.readAddresses regs := by
+  cases program with
+  | pureNat value =>
+      simp [eval] at hmem
+  | sampledRank target offset sampleSegment sampleIndex
+      wordSegment wordIndex =>
+      cases hsample :
+          (store.readWord? sampleSegment (sampleIndex.eval regs)).map
+            bitsToNatLE <;>
+        cases hword :
+          store.readWord? wordSegment (wordIndex.eval regs) <;>
+        simp [eval, readAddresses, hsample, hword] at hmem ⊢ <;>
+        (rcases hmem with h | htail
+         · rcases h with ⟨hsegment, hindex, _hword⟩
+           subst segment
+           subst index
+           simp
+         · first
+           | rcases htail with ⟨hsegment, hindex, _hword⟩
+             subst segment
+             subst index
+             simp
+           | simp at htail)
+  | twoLevelSampledRank target offset superSegment superIndex
+      blockSegment blockIndex wordSegment wordIndex =>
+      cases hsuper :
+          (store.readWord? superSegment (superIndex.eval regs)).map
+            bitsToNatLE <;>
+        cases hblock :
+          (store.readWord? blockSegment (blockIndex.eval regs)).map
+            bitsToNatLE <;>
+        cases hword :
+          store.readWord? wordSegment (wordIndex.eval regs) <;>
+        simp [eval, readAddresses, hsuper, hblock, hword] at hmem ⊢ <;>
+        (rcases hmem with h | htail
+         · rcases h with ⟨hsegment, hindex, _hword⟩
+           subst segment
+           subst index
+           simp
+         · rcases htail with h | htail
+           · rcases h with ⟨hsegment, hindex, _hword⟩
+             subst segment
+             subst index
+             simp
+           · first
+             | rcases htail with ⟨hsegment, hindex, _hword⟩
+               subst segment
+               subst index
+               simp
+             | simp at htail)
+
+/-- Read-address boundedness transfers to every read event in the trace. -/
+theorem eval_readWord_address_fitsInBits
+    (program : NatProgram) (store : Store) (regs : RegFile) {bits : Nat}
+    (hfit : program.ReadAddressesFitInBits regs bits)
+    {segment index : Nat} {word? : Option Word}
+    (hmem :
+      TraceEvent.readWord segment index word? ∈
+        (eval program store regs).trace) :
+    AddressFitsInBits bits segment index :=
+  hfit (eval_readWord_address_mem program store regs hmem)
+
+/-- Every read event in the trace uses a bounded first-order address. -/
+theorem eval_event_address_fitsInBits
+    (program : NatProgram) (store : Store) (regs : RegFile) {bits : Nat}
+    (hfit : program.ReadAddressesFitInBits regs bits) :
+    forall event : TraceEvent,
+      event ∈ (eval program store regs).trace ->
+        match event with
+        | TraceEvent.readWord segment index _ =>
+            AddressFitsInBits bits segment index
+        | TraceEvent.wordRank _ _ _ => True
+        | TraceEvent.wordSelect _ _ _ => True := by
+  intro event hmem
+  cases event with
+  | readWord segment index word? =>
+      exact eval_readWord_address_fitsInBits program store regs hfit hmem
+  | wordRank target limit result =>
+      trivial
+  | wordSelect target occurrence result =>
+      trivial
+
+/-- All natural-register program trace events are reads or word primitives. -/
+theorem eval_event_read_or_primitive
+    (program : NatProgram) (store : Store) (regs : RegFile) :
+    forall event : TraceEvent,
+      event ∈ (eval program store regs).trace ->
+        event.isReadWord \/ event.isWordPrimitive := by
+  intro event _hmem
+  exact TraceEvent.isReadWord_or_isWordPrimitive event
+
+/-- Zero-cost natural-register control never appears as a trace event. -/
+theorem eval_no_zero_cost_control
+    (program : NatProgram) (store : Store) (regs : RegFile) :
+    forall event : TraceEvent,
+      event ∈ (eval program store regs).trace ->
+        ¬ event.isZeroCostControl := by
+  intro event _hmem
+  exact TraceEvent.not_zeroCostControl event
 
 /-- Concrete read events report exactly the store value. -/
 theorem eval_readWord_event_eq_store

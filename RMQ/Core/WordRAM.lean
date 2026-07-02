@@ -139,6 +139,13 @@ def isWordPrimitive : TraceEvent -> Prop
   | wordRank _ _ _ => True
   | wordSelect _ _ _ => True
 
+/--
+Zero-cost control is deliberately not represented as a trace event. Branching,
+register lookup, and expression evaluation may affect which later events occur,
+but they do not themselves appear in the charged trace.
+-/
+def isZeroCostControl (_event : TraceEvent) : Prop := False
+
 @[simp] theorem matchesReadStore_ofStore
     (store : Store) (event : TraceEvent) :
     event.matchesReadStore (ReadStore.ofStore store) =
@@ -217,6 +224,14 @@ def tripleSegmentMap (base dead : Nat) : Nat -> Nat
 theorem isReadWord_or_isWordPrimitive (event : TraceEvent) :
     event.isReadWord \/ event.isWordPrimitive := by
   cases event <;> simp [isReadWord, isWordPrimitive]
+
+theorem not_readWord_and_wordPrimitive (event : TraceEvent) :
+    ¬ (event.isReadWord /\ event.isWordPrimitive) := by
+  cases event <;> simp [isReadWord, isWordPrimitive]
+
+theorem not_zeroCostControl (event : TraceEvent) :
+    ¬ event.isZeroCostControl := by
+  simp [isZeroCostControl]
 
 @[simp] theorem relabelReadSegment_wordLengthBounded
     (offset bound : Nat) (event : TraceEvent) :
@@ -632,6 +647,17 @@ inductive Program : Ty -> Type where
 
 namespace Program
 
+/-- Static payload-read addresses syntactically mentioned by a first-order program. -/
+def readAddresses : Program ty -> List (Nat × Nat)
+  | pure _ => []
+  | readWord segment index => [(segment, index)]
+  | mapOptWordNat program => program.readAddresses
+  | mapOptWordOptionNat _ program => program.readAddresses
+  | joinOptOptNat program => program.readAddresses
+  | sampledRank _ _ sample word =>
+      sample.readAddresses ++ word.readAddresses
+  | wordSelectFromOpt _ _ word => word.readAddresses
+
 /-- Deterministic program evaluation against a payload-only store. -/
 def eval : Program ty -> Store -> Result ty
   | pure value, _store => { value := value, trace := [] }
@@ -884,6 +910,102 @@ theorem eval_reads_subset_readStore
   intro event hmem
   simpa [TraceEvent.matchesReadStore_ofStore] using
     eval_reads_subset_payload program store event hmem
+
+/--
+Every read event in a first-order program trace uses an address that occurs in
+the program syntax. This is the static-address anti-oracle theorem for
+`Program`.
+-/
+theorem eval_readWord_address_mem
+    (program : Program ty) (store : Store)
+    {segment index : Nat} {word? : Option Word}
+    (hmem :
+      TraceEvent.readWord segment index word? ∈
+        (eval program store).trace) :
+    (segment, index) ∈ program.readAddresses := by
+  induction program with
+  | pure value =>
+      simp [eval] at hmem
+  | readWord segment' index' =>
+      simp [eval] at hmem
+      rcases hmem with ⟨hsegment, hindex, _hword⟩
+      subst segment
+      subst index
+      simp [readAddresses]
+  | mapOptWordNat program ih =>
+      exact ih hmem
+  | mapOptWordOptionNat width program ih =>
+      exact ih hmem
+  | joinOptOptNat program ih =>
+      exact ih hmem
+  | sampledRank target offset sample word sampleIH wordIH =>
+      cases hsample : (eval sample store).value with
+      | none =>
+          cases hword : (eval word store).value with
+          | none =>
+              simp [eval, readAddresses, hsample, hword] at hmem ⊢
+              rcases hmem with hmem | hmem
+              · exact Or.inl (sampleIH hmem)
+              · exact Or.inr (wordIH hmem)
+          | some wordValue =>
+              simp [eval, readAddresses, hsample, hword] at hmem ⊢
+              rcases hmem with hmem | hmem
+              · exact Or.inl (sampleIH hmem)
+              · exact Or.inr (wordIH hmem)
+      | some sampleValue =>
+          cases hword : (eval word store).value with
+          | none =>
+              simp [eval, readAddresses, hsample, hword] at hmem ⊢
+              rcases hmem with hmem | hmem
+              · exact Or.inl (sampleIH hmem)
+              · exact Or.inr (wordIH hmem)
+          | some wordValue =>
+              have htrace :
+                  TraceEvent.readWord segment index word? ∈
+                    (eval sample store).trace ++ (eval word store).trace ++
+                      [TraceEvent.wordRank target offset
+                        (RAM.boolRankPrefix target wordValue offset)] := by
+                simpa [eval, hsample, hword] using hmem
+              have hsplit := List.mem_append.mp htrace
+              rcases hsplit with hhead | hprimitive
+              · have hsplitHead := List.mem_append.mp hhead
+                rcases hsplitHead with hsampleMem | hwordMem
+                · exact List.mem_append.mpr (Or.inl (sampleIH hsampleMem))
+                · exact List.mem_append.mpr (Or.inr (wordIH hwordMem))
+              · simp at hprimitive
+  | wordSelectFromOpt target occurrence word wordIH =>
+      cases hword : (eval word store).value with
+      | none =>
+          exact wordIH (by simpa [eval, hword] using hmem)
+      | some wordValue =>
+          have htrace :
+              TraceEvent.readWord segment index word? ∈
+                (eval word store).trace ++
+                  [TraceEvent.wordSelect target occurrence
+                    (RAM.boolSelectInWord target wordValue occurrence)] := by
+            simpa [eval, hword] using hmem
+          have hsplit := List.mem_append.mp htrace
+          rcases hsplit with hwordMem | hprimitive
+          · exact wordIH hwordMem
+          · simp at hprimitive
+
+/-- All events in a first-order program are payload reads or word primitives. -/
+theorem eval_event_read_or_primitive
+    (program : Program ty) (store : Store) :
+    forall event : TraceEvent,
+      event ∈ (eval program store).trace ->
+        event.isReadWord \/ event.isWordPrimitive := by
+  intro event _hmem
+  exact TraceEvent.isReadWord_or_isWordPrimitive event
+
+/-- Zero-cost control never appears as a trace event. -/
+theorem eval_no_zero_cost_control
+    (program : Program ty) (store : Store) :
+    forall event : TraceEvent,
+      event ∈ (eval program store).trace ->
+        ¬ event.isZeroCostControl := by
+  intro event _hmem
+  exact TraceEvent.not_zeroCostControl event
 
 /-- If the store is word-bounded, every word returned by the trace is bounded. -/
 theorem eval_word_reads_length_le_machine

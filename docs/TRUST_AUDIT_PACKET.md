@@ -299,6 +299,17 @@ callbacks.
   Lean `List` runtime.
 - Machine-word bound: theorems such as read-word-length bounds show that the
   queried words fit under the repository's `machineWordBits` function.
+- Bounded register/address value: `WordRAM.Register.FitsInBits` and
+  `AddressFitsInBits` state that computed natural register values and payload
+  addresses fit a declared machine-bit width.
+- No-overflow side condition: `WordRAM.Register.NatExpr.NoOverflow` treats
+  address arithmetic as mathematical `Nat` arithmetic, then requires proofs
+  that the evaluated result still fits the declared width. The current model
+  does not silently wrap on overflow.
+- Zero-cost control: register lookup, arithmetic expression evaluation, and
+  branching choose later events but do not themselves appear in the trace.
+  The event classifiers prove every trace event is a payload read or a
+  word-local primitive; zero-cost control is not an information-bearing event.
 
 ## Non-Claims
 
@@ -310,6 +321,9 @@ This packet does not claim:
 - all BP tree-navigation operations are already available;
 - the compressed/FID rank/select replay is a single closed machine-code
   program rather than a bridge-backed word-RAM model theorem; or
+- the current first-order WordRAM layer is a complete CPU semantics with
+  built-in bounded machine integers and wraparound behavior; boundedness and
+  no-overflow are explicit theorem hypotheses/proofs; or
 - the repo is CSLib-ready as-is.
 
 The claim is narrower and stronger in the formalization sense: the repo gives

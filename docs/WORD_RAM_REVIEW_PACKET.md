@@ -44,9 +44,15 @@ The following theorems are the reviewer-facing checks for the boundary.
 RMQ.WordRAM.Program.eval_toCosted_cost_eq_trace_length
 RMQ.WordRAM.Program.eval_reads_subset_payload
 RMQ.WordRAM.Program.eval_readWord_event_eq_store
+RMQ.WordRAM.Program.eval_readWord_address_mem
+RMQ.WordRAM.Program.eval_event_read_or_primitive
+RMQ.WordRAM.Program.eval_no_zero_cost_control
 RMQ.WordRAM.Program.eval_word_reads_length_le_machine
 RMQ.WordRAM.Program.eval_eq_of_readWord_eq
 RMQ.WordRAM.Program.eval_toCosted_eq_of_readWord_eq
+RMQ.WordRAM.Register.NatExpr.eval_fitsInBits_of_noOverflow
+RMQ.WordRAM.Register.RegProgram.eval_event_address_fitsInBits
+RMQ.WordRAM.Register.NatProgram.eval_event_address_fitsInBits
 ```
 
 Read in plain English:
@@ -57,12 +63,23 @@ Read in plain English:
   payload store.
 - `eval_readWord_event_eq_store`: a concrete read event reports exactly
   `store.readWord? segment index`.
+- `eval_readWord_address_mem`: a read event's address occurs in the
+  first-order program syntax; it is not supplied by a proof callback.
+- `eval_event_read_or_primitive` and `eval_no_zero_cost_control`: every trace
+  event is either a payload read or a word-local primitive, and zero-cost
+  control never appears as a charged trace event.
 - `eval_word_reads_length_le_machine`: if the store is word-bounded, every
   returned word in the trace is machine-word-bounded.
 - `eval_eq_of_readWord_eq`: a program cannot distinguish two stores with the
   same read interface.
 - `eval_toCosted_eq_of_readWord_eq`: the same extensionality holds after
   projecting to `Costed`.
+- `Register.NatExpr.NoOverflow` and its helper theorems: arithmetic is
+  interpreted as mathematical `Nat`; machine-word safety is an explicit
+  side condition, not implicit wraparound.
+- `Register.{RegProgram,NatProgram}.eval_event_address_fitsInBits`: when the
+  selected first-order read addresses fit the declared machine-bit bound, every
+  read event in the interpreted trace has a bounded segment and index.
 
 The interpreted public theorem surfaces checked by the focused script include:
 
@@ -146,7 +163,12 @@ The first register/control-flow rung now exists in
 small handoff from optional endpoint-close registers to a BP close/LCA table
 read by a first-order register program.  The same register module also now has
 natural-valued programs for dynamic stored-word rank, including the two-level
-sampled-rank case used by the final BP-native RMQ capstone.
+sampled-rank case used by the final BP-native RMQ capstone. It also carries the
+bounded-register/address vocabulary: values fit a declared bit width via
+`FitsInBits`, expressions advertise `NoOverflow`, and selected read addresses
+prove `AddressFitsInBits` before the event-level theorem transfers that fact to
+the interpreted trace. There is no silent modular arithmetic policy in this
+layer; overflow safety is a proof obligation.
 
 The whole-query theorem is the first closed one-program statement for the final
 RMQ query. The final query is not straight-line: the two close-select results
@@ -160,7 +182,11 @@ an arbitrary function inside the syntax tree, which reopens the oracle-shaped
 gap this layer was built to close. The next stronger design should keep the
 syntax first-order: registers, fixed arithmetic/address instructions, option
 tests, and payload-read operations, with the same read-provenance and
-machine-word-bound theorems as the current `Program.eval` boundary.
+machine-word-bound theorems as the current `Program.eval` boundary. The current
+core/register interpreters already prove the first part of this discipline:
+every read address comes from syntax under the current register file, while
+branching and register arithmetic remain zero-cost control and never appear as
+information-bearing trace events.
 
 The final `answerClose + 1` rank query is now routed through
 `SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterInterpretedCosted`,

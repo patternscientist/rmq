@@ -288,7 +288,7 @@ payload store.
 | --- | --- | --- | --- |
 | Core RMQ spec and backend contract | `LeftmostArgMin`, `CandidateExact`, `RMQBackend`, and contract-level backend equality are proved. | No cost model here. | All public RMQ backends target the same half-open leftmost-argmin contract. |
 | Traced RAM substrate | `Core.RAM` defines primitive operation traces, derived `steps`, and a `toCosted` bridge whose cost is definitionally the trace length. The raw primitive constructor is internal; clients build programs through typed primitives such as branches, reads, writes, comparisons, allocations, and array pushes. | Primitive branches, Array reads/writes, integer comparisons, Array allocations, and Array pushes each contribute one trace operation. | This is a hardened shallow trace substrate, not yet a full first-order interpreter. It is currently used by the sparse-table query and memoized-build bridge, and now by the dense LCA first-occurrence builder. |
-| Word-RAM interpreter | `Core.WordRAM` adds a first-order payload-memory query language whose evaluator computes value and trace together, then projects one-way into `Costed`. `Core.WordRAM.Register` adds the first register/control layer for dynamic addresses, including optional-close table reads and natural-valued sampled-rank programs. The core provenance theorems prove trace reads agree with the payload store and dynamically read words respect the chosen machine-word bound. Segment-relabeling lemmas preserve `toCosted`, word-boundedness, and read-store matching when component-local payload segments are embedded into a global layout. | Payload word reads each contribute one trace event; word-local rank/select primitives are counted trace events when their input word is present. Register arithmetic and branching remain zero-cost model operations. | This is an anti-oracle refinement layer for query paths, not a Lean-runtime claim and not a compiler. `Core.SuccinctSpace.*RAM` and `Core.GenericSelect.RAM` currently consume it for fixed-width table reads, stored-word rank/select leaves, a payload-live BP close/LCA table-read skeleton, the final RMQ capstone's two-level answer-rank leg, relabeled close/LCA large-regime adapters, and the closed whole-query control program in `SuccinctFinalRAM`. |
+| Word-RAM interpreter | `Core.WordRAM` adds a first-order payload-memory query language whose evaluator computes value and trace together, then projects one-way into `Costed`. `Core.WordRAM.Register` adds the first register/control layer for dynamic addresses, including optional-close table reads and natural-valued sampled-rank programs. The core provenance theorems prove trace reads agree with the payload store, read addresses come from first-order syntax, dynamically read words respect the chosen machine-word bound, and register-program read addresses fit a declared bit width when the selected address expressions satisfy the explicit no-overflow side conditions. Segment-relabeling lemmas preserve `toCosted`, word-boundedness, and read-store matching when component-local payload segments are embedded into a global layout. | Payload word reads each contribute one trace event; word-local rank/select primitives are counted trace events when their input word is present. Register arithmetic and branching remain zero-cost model operations and never appear as trace events. | This is an anti-oracle refinement layer for query paths, not a Lean-runtime claim, not a compiler, and not a complete bounded-integer CPU. Register arithmetic is mathematical `Nat` arithmetic with explicit `NoOverflow`/`FitsInBits` proofs rather than silent wraparound. `Core.SuccinctSpace.*RAM` and `Core.GenericSelect.RAM` currently consume it for fixed-width table reads, stored-word rank/select leaves, a payload-live BP close/LCA table-read skeleton, the final RMQ capstone's two-level answer-rank leg, relabeled close/LCA large-regime adapters, and the closed whole-query control program in `SuccinctFinalRAM`. |
 | Reusable model hub | `RMQ.Core.ModelHub` imports exactly the RMQ-free model layer: `Cost`, `Amortized`, `AmortizedSequence`, `RAM`, `Refine`, `TableModel`, `LowerBound`, and `PayloadLowerBound`. The standalone `RMQHub` Lake target imports the same barrel. | No algorithmic cost claim by itself; the hub exposes the cost, potential-method, sequence-telescope, trace, refinement, table, payload, capacity, payload-accounted finite-encoding APIs, and uniform charged-budget lower-bound theorems used by the spokes. | This is the first extraction test: the hub builds and has a hub-only axiom gate without importing RMQ specs, Cartesian shapes, LCA, or implementations. |
 | Refinement and table/access model | `Core.Refine` now owns `StoredSeq` and `StoredMatrix`, reusable Array/List erasure certificates for one-dimensional direct-address tables and list-of-lists tables. `Core.TableModel` keeps generic indexed access, finite indexed sequences, list-backed reference adapters, compatibility aliases for both stored views, unit-cost modeled reads, and payload views with uncharged auxiliary-state extension. | Indexed reads cost `indexedReadCost = 1`; payload views track serialized payload bits and a charged bit budget. | This keeps List tables as reference semantics while letting executable Array-backed representations prove erasure/refinement once at the boundary. Sparse-table stored queries and Fischer-Heun summary tables use `Refine.StoredMatrix`; dense LCA first-occurrence reads now use `Refine.StoredSeq`. |
 | Linear scan | Exact query, soundness, completeness, invalid-range rejection, backend. | Costed scan kernel exists in `Core.CostKernels`; no separate backend-level cost wrapper. | Direct reference backend. |
@@ -1249,11 +1249,34 @@ The names below are grouped by source module. Repeated base names in
   `WordRAM.Program.eval_toCosted_cost_eq_trace_length`,
   `WordRAM.Program.eval_reads_subset_payload`,
   `WordRAM.Program.eval_readWord_event_eq_store`,
+  `WordRAM.Program.eval_readWord_address_mem`,
+  `WordRAM.Program.eval_event_read_or_primitive`,
+  `WordRAM.Program.eval_no_zero_cost_control`,
   `WordRAM.Program.eval_word_reads_length_le_machine`,
   `WordRAM.Program.eval_eq_of_readWord_eq`,
   `WordRAM.Program.eval_toCosted_eq_of_readWord_eq`,
   `WordRAM.Program.eval_sampledRank_value`,
-  `WordRAM.Program.eval_wordSelectFromOpt_value`.
+  `WordRAM.Program.eval_wordSelectFromOpt_value`,
+  `WordRAM.TraceEvent.not_readWord_and_wordPrimitive`,
+  `WordRAM.TraceEvent.not_zeroCostControl`.
+- `RMQ/Core/WordRAM/Register.lean`:
+  `WordRAM.Register.FitsInBits`,
+  `WordRAM.Register.AddressFitsInBits`,
+  `WordRAM.Register.NatExpr.NoOverflow`,
+  `WordRAM.Register.NatExpr.eval_fitsInBits_of_noOverflow`,
+  `WordRAM.Register.NatExpr.mul_noOverflow_of_eval`,
+  `WordRAM.Register.NatExpr.sub_noOverflow_of_left`,
+  `WordRAM.Register.NatExpr.div_noOverflow_of_left`,
+  `WordRAM.Register.RegProgram.eval_readWord_address_mem`,
+  `WordRAM.Register.RegProgram.eval_readWord_address_fitsInBits`,
+  `WordRAM.Register.RegProgram.eval_event_address_fitsInBits`,
+  `WordRAM.Register.RegProgram.eval_event_read_or_primitive`,
+  `WordRAM.Register.RegProgram.eval_no_zero_cost_control`,
+  `WordRAM.Register.NatProgram.eval_readWord_address_mem`,
+  `WordRAM.Register.NatProgram.eval_readWord_address_fitsInBits`,
+  `WordRAM.Register.NatProgram.eval_event_address_fitsInBits`,
+  `WordRAM.Register.NatProgram.eval_event_read_or_primitive`,
+  `WordRAM.Register.NatProgram.eval_no_zero_cost_control`.
 - `RMQ/Core/TableModel.lean` (23):
   `TableModel.IndexedAccess.getCosted_value`,
   `TableModel.IndexedAccess.getCosted_erase`,

@@ -95,7 +95,10 @@ control through a closed instruction list over optional/natural registers and
 preserving one `WordRAM.TraceEvent` stream. The answer-rank leaf is a concrete
 register-program trace: once the dynamic `answerClose + 1` position is supplied
 in a register, the super-sample, block-sample, and bit-word addresses are
-computed inside first-order syntax. The sparse-exception close-select leg is
+computed inside first-order syntax. The WordRAM/register layer now also exposes
+bounded-address and no-overflow predicates: arithmetic is mathematical `Nat`,
+and machine-word address safety is an explicit proof obligation rather than a
+silent wraparound policy. The sparse-exception close-select leg is
 structural too, and the compact close/LCA leg now exposes its rank-seed reads
 structurally. The remaining refinement target is to replay the bounded local
 BP decoders, endpoint-fringe decoders, and relative-rmM interior query as
