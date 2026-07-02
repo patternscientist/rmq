@@ -169,11 +169,16 @@ sample, block sample, and bit-word addresses from a register expression. The
 current all-size word-trace theorem flattens the outer query controller to one
 `WordRAM.TraceEvent` stream. Its close-select leg, answer-rank leg, and
 compact-close rank-seed reads are structural payload/register traces. The
-large-regime companion theorem adds the explicit `2^128 <= shape.size` premise
-and routes the compact close/LCA leg through structural local/fringe/interior
-trace replay. The next frontier is the global store/provenance layer for the
-combined event stream, plus any desired fully total version of the same trace
-story outside the large regime.
+all-size execution-story theorem
+`RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` adds the global
+store/provenance layer for that stream: each event is a payload read or bounded
+word primitive, and each read agrees with one concrete global payload store.
+Tiny/inactive close-navigation fallback work is represented as synthetic
+word-primitive events rather than payload reads. The large-regime companion adds
+the explicit `2^128 <= shape.size` premise and routes the compact close/LCA leg
+through structural local/fringe/interior trace replay. Remaining hardening is
+broader packaging and reuse of the same style across rank/select, BP
+navigation, and future machine-model surfaces.
 
 ## Large-File Cleanup Note
 

@@ -320,6 +320,36 @@ large-regime theorem is not the all-input fallback theorem. A skeptical grad
 student should next ask for the global store/provenance theorem tying all
 events in the combined stream to one concrete payload store.
 
+2026-07-01 follow-up: that global store/provenance theorem has landed as
+`RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory`, backed by
+`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_execution_story`.
+Conceptually, the large-regime final succinct RMQ query is now answered from
+one globally segmented payload store: the query cost is the projection of a
+single `WordRAM.TraceEvent` stream, every event is either a payload read or a
+bounded word primitive, and every payload read is checked against the concrete
+store assembled from the BP code, select/rank payloads, and compact close/LCA
+tables. Plain English: the trace is no longer merely a list of plausible
+component calls; in the large regime, each information-bearing read has an
+address in the declared payload. Live assumptions remain the word-RAM model,
+the explicit `2^128 <= shape.size` premise for this strongest theorem, and the
+separation between model cost and Lean runtime. A skeptical grad student should
+now ask how much of this store-backed execution-story pattern can be reused for
+rank/select, BP tree navigation, and eventually a more general machine model.
+
+2026-07-02 update: the store-backed execution story is now total, not just
+large-regime. The public alias
+`RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` now points to
+`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story`,
+which has no `2^128 <= shape.size` premise. The large-regime theorem is kept as
+`RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory`.
+Conceptually, every actual payload read in the final query is checked against
+one concrete global store for all input sizes. Tiny/inactive close-navigation
+fallback work is still present, but it is represented as explicitly counted
+word-primitive trace events rather than as hidden payload reads. A skeptical
+grad student should now ask whether those fallback primitives should be
+replaced by a small-table structural replay too, or whether the current
+explicit primitive boundary is the right public model boundary.
+
 ## Digestion Tasks
 
 1. Turn the RMQ capstone into a two-page lecture-style proof map:

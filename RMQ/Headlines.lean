@@ -71,8 +71,9 @@ abbrev succinctRMQTwoNPlusOConstantQueryLeafTrace :=
 Unified-`WordRAM.TraceEvent` BP-native succinct RMQ capstone. The final query
 control now emits one `TraceEvent` stream. Select-close, answer-rank, and
 compact-close rank-seed reads are structural payload/register traces; bounded
-local/fringe/interior close-navigation leaves remain explicit charged decoder
-boundaries pending full payload-read replay.
+local/fringe/interior close-navigation leaves remain explicit charged fallback
+boundaries in tiny/inactive all-size cases. The large-regime execution-story
+alias below is the stronger global payload-store provenance theorem.
 -/
 abbrev succinctRMQTwoNPlusOConstantQueryWordTrace :=
   RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_profile
@@ -86,6 +87,35 @@ all-size fallback.
 -/
 abbrev succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime :=
   RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_large_regime_profile
+
+/--
+Large-regime globally segmented `WordRAM.TraceEvent` BP-native succinct RMQ
+capstone. This strengthens the large-regime word-trace headline by relabeling
+the final query's select, rank, and compact close/LCA payload reads into one
+shared segment convention. The matching execution-story theorem below proves
+those events agree with one concrete payload store.
+-/
+abbrev succinctRMQTwoNPlusOConstantQueryGlobalWordTraceLargeRegime :=
+  RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_global_word_trace_large_regime_profile
+
+/--
+Public execution-story theorem for the final all-size succinct RMQ query: the
+query is the `Costed` projection of one globally segmented `WordRAM` trace,
+refines the whole-query interpreter, every event is a payload read or bounded
+word primitive, and every payload read agrees with the single concrete global
+read store. Tiny/inactive close-navigation fallback work appears only as
+synthetic word-primitive events, not as payload reads.
+-/
+abbrev succinctRMQGlobalPayloadStoreExecutionStory :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story
+
+/--
+Large-regime companion to `succinctRMQGlobalPayloadStoreExecutionStory`; this
+uses the positive-block local/fringe/interior close-navigation replay under the
+explicit `2^128 <= shape.size` premise.
+-/
+abbrev succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_execution_story
 
 /--
 Interpreter-backed BP close-navigation profile: `2*n + o(n)`, constant query,

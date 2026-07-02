@@ -78,6 +78,27 @@ def WordsBounded (store : Store) (bound : Nat) : Prop :=
 
 end Store
 
+/--
+A read-only payload-store interface for theorem surfaces that need to describe
+one concrete store layout without committing to the array representation used
+by the executable interpreter.
+-/
+structure ReadStore where
+  readWord? : Nat -> Nat -> Option Word
+
+namespace ReadStore
+
+/-- Promote the executable array-backed store to the read-only interface. -/
+def ofStore (store : Store) : ReadStore where
+  readWord? := store.readWord?
+
+/-- All dynamically readable words in the read-only store fit within `bound`. -/
+def WordsBounded (store : ReadStore) (bound : Nat) : Prop :=
+  forall {segment index : Nat} {word : Word},
+    store.readWord? segment index = some word -> word.length <= bound
+
+end ReadStore
+
 /-- Trace events produced by the interpreter. -/
 inductive TraceEvent where
   | readWord (segment index : Nat) (word? : Option Word)
@@ -89,6 +110,12 @@ namespace TraceEvent
 
 /-- A trace event agrees with the store it claims to read. -/
 def matchesStore (store : Store) : TraceEvent -> Prop
+  | readWord segment index word? => store.readWord? segment index = word?
+  | wordRank _ _ _ => True
+  | wordSelect _ _ _ => True
+
+/-- A trace event agrees with a read-only payload store view. -/
+def matchesReadStore (store : ReadStore) : TraceEvent -> Prop
   | readWord segment index word? => store.readWord? segment index = word?
   | wordRank _ _ _ => True
   | wordSelect _ _ _ => True
@@ -106,7 +133,154 @@ def isReadWord : TraceEvent -> Prop
   | wordRank _ _ _ => False
   | wordSelect _ _ _ => False
 
+/-- Whether a trace event is a bounded-cost word primitive rather than a read. -/
+def isWordPrimitive : TraceEvent -> Prop
+  | readWord _ _ _ => False
+  | wordRank _ _ _ => True
+  | wordSelect _ _ _ => True
+
+@[simp] theorem matchesReadStore_ofStore
+    (store : Store) (event : TraceEvent) :
+    event.matchesReadStore (ReadStore.ofStore store) =
+      event.matchesStore store := by
+  cases event <;> rfl
+
+/--
+Shift payload-read segment identifiers by a fixed offset.
+
+Word-local primitive events are left unchanged. This is the basic operation
+needed to assemble component-local traces into one global payload-store trace.
+-/
+def relabelReadSegment (offset : Nat) : TraceEvent -> TraceEvent
+  | readWord segment index word? => readWord (offset + segment) index word?
+  | wordRank target limit result => wordRank target limit result
+  | wordSelect target occurrence result =>
+      wordSelect target occurrence result
+
+/--
+Relabel payload-read segment identifiers through an arbitrary segment map.
+
+This is the finite-layout version of `relabelReadSegment`: one-segment tables,
+three-segment rank structures, and shared BP-code stores can each map their
+small local segment set into a global layout without giving the component an
+infinite offset range.
+-/
+def relabelReadSegmentWith (segmentMap : Nat -> Nat) :
+    TraceEvent -> TraceEvent
+  | readWord segment index word? => readWord (segmentMap segment) index word?
+  | wordRank target limit result => wordRank target limit result
+  | wordSelect target occurrence result =>
+      wordSelect target occurrence result
+
+/-- Map a one-segment local store into a global segment, sending unused local
+segments to a designated dead segment. -/
+def singletonSegmentMap (base dead : Nat) : Nat -> Nat
+  | 0 => base
+  | _ + 1 => dead
+
+/-- Map a two-segment local store into adjacent global segments. -/
+def pairSegmentMap (base dead : Nat) : Nat -> Nat
+  | 0 => base
+  | 1 => base + 1
+  | _ + 2 => dead
+
+/-- Map a three-segment local store into adjacent global segments. -/
+def tripleSegmentMap (base dead : Nat) : Nat -> Nat
+  | 0 => base
+  | 1 => base + 1
+  | 2 => base + 2
+  | _ + 3 => dead
+
+@[simp] theorem relabelReadSegment_isReadWord
+    (offset : Nat) (event : TraceEvent) :
+    (event.relabelReadSegment offset).isReadWord = event.isReadWord := by
+  cases event <;> simp [relabelReadSegment, isReadWord]
+
+@[simp] theorem relabelReadSegment_isWordPrimitive
+    (offset : Nat) (event : TraceEvent) :
+    (event.relabelReadSegment offset).isWordPrimitive =
+      event.isWordPrimitive := by
+  cases event <;> simp [relabelReadSegment, isWordPrimitive]
+
+@[simp] theorem relabelReadSegmentWith_isReadWord
+    (segmentMap : Nat -> Nat) (event : TraceEvent) :
+    (event.relabelReadSegmentWith segmentMap).isReadWord =
+      event.isReadWord := by
+  cases event <;> simp [relabelReadSegmentWith, isReadWord]
+
+@[simp] theorem relabelReadSegmentWith_isWordPrimitive
+    (segmentMap : Nat -> Nat) (event : TraceEvent) :
+    (event.relabelReadSegmentWith segmentMap).isWordPrimitive =
+      event.isWordPrimitive := by
+  cases event <;> simp [relabelReadSegmentWith, isWordPrimitive]
+
+theorem isReadWord_or_isWordPrimitive (event : TraceEvent) :
+    event.isReadWord \/ event.isWordPrimitive := by
+  cases event <;> simp [isReadWord, isWordPrimitive]
+
+@[simp] theorem relabelReadSegment_wordLengthBounded
+    (offset bound : Nat) (event : TraceEvent) :
+    (event.relabelReadSegment offset).wordLengthBounded bound ↔
+      event.wordLengthBounded bound := by
+  cases event with
+  | readWord segment index word? =>
+      cases word? <;> simp [relabelReadSegment, wordLengthBounded]
+  | wordRank target limit result =>
+      simp [relabelReadSegment, wordLengthBounded]
+  | wordSelect target occurrence result =>
+      simp [relabelReadSegment, wordLengthBounded]
+
+theorem relabelReadSegment_matchesReadStore
+    (localStore globalStore : ReadStore) (offset : Nat)
+    (hread :
+      forall segment index,
+        globalStore.readWord? (offset + segment) index =
+          localStore.readWord? segment index)
+    (event : TraceEvent)
+    (hmatch : event.matchesReadStore localStore) :
+    (event.relabelReadSegment offset).matchesReadStore globalStore := by
+  cases event with
+  | readWord segment index word? =>
+      simp [relabelReadSegment, matchesReadStore, hread segment index]
+      exact hmatch
+  | wordRank target limit result =>
+      simp [relabelReadSegment, matchesReadStore]
+  | wordSelect target occurrence result =>
+      simp [relabelReadSegment, matchesReadStore]
+
+theorem relabelReadSegmentWith_matchesReadStore
+    (localStore globalStore : ReadStore) (segmentMap : Nat -> Nat)
+    (hread :
+      forall segment index,
+        globalStore.readWord? (segmentMap segment) index =
+          localStore.readWord? segment index)
+    (event : TraceEvent)
+    (hmatch : event.matchesReadStore localStore) :
+    (event.relabelReadSegmentWith segmentMap).matchesReadStore
+      globalStore := by
+  cases event with
+  | readWord segment index word? =>
+      simp [relabelReadSegmentWith, matchesReadStore, hread segment index]
+      exact hmatch
+  | wordRank target limit result =>
+      simp [relabelReadSegmentWith, matchesReadStore]
+  | wordSelect target occurrence result =>
+      simp [relabelReadSegmentWith, matchesReadStore]
+
 end TraceEvent
+
+/-- Map a one-segment local store into a global segment, sending unused local
+segments to a designated dead segment. -/
+def singletonSegmentMap (base dead : Nat) : Nat -> Nat :=
+  TraceEvent.singletonSegmentMap base dead
+
+/-- Map a two-segment local store into adjacent global segments. -/
+def pairSegmentMap (base dead : Nat) : Nat -> Nat :=
+  TraceEvent.pairSegmentMap base dead
+
+/-- Map a three-segment local store into adjacent global segments. -/
+def tripleSegmentMap (base dead : Nat) : Nat -> Nat :=
+  TraceEvent.tripleSegmentMap base dead
 
 /-- Interpreter result: erased value plus the trace used to compute it. -/
 structure Result (ty : Ty) where
@@ -179,6 +353,22 @@ def map (f : α -> β) (result : TraceResult α) : TraceResult β :=
   bind result (fun value => pure (f value))
 
 /--
+Shift all payload-read segments in a trace result by a fixed offset, preserving
+the erased value and trace length.
+-/
+def relabelReadSegments {alpha : Type u} (offset : Nat)
+    (result : TraceResult alpha) : TraceResult alpha where
+  value := result.value
+  trace := result.trace.map (fun event => event.relabelReadSegment offset)
+
+/-- Relabel all payload-read segments in a trace result through a segment map. -/
+def relabelReadSegmentsWith {alpha : Type u} (segmentMap : Nat -> Nat)
+    (result : TraceResult alpha) : TraceResult alpha where
+  value := result.value
+  trace := result.trace.map (fun event =>
+    event.relabelReadSegmentWith segmentMap)
+
+/--
 Canonical cost-only trace used when an older `Costed` component has not yet
 been replayed through a first-order payload program.  The events are word
 primitive events, not payload reads; theorem names using this constructor should
@@ -245,6 +435,31 @@ def ofCosted (result : Costed α) : TraceResult α where
     (map f result).trace = result.trace := by
   simp [map, bind, pure]
 
+@[simp] theorem relabelReadSegments_value
+    {alpha : Type u} (offset : Nat) (result : TraceResult alpha) :
+    (relabelReadSegments offset result).value = result.value := by
+  rfl
+
+@[simp] theorem relabelReadSegments_trace
+    {alpha : Type u} (offset : Nat) (result : TraceResult alpha) :
+    (relabelReadSegments offset result).trace =
+      result.trace.map (fun event => event.relabelReadSegment offset) := by
+  rfl
+
+@[simp] theorem relabelReadSegmentsWith_value
+    {alpha : Type u} (segmentMap : Nat -> Nat)
+    (result : TraceResult alpha) :
+    (relabelReadSegmentsWith segmentMap result).value = result.value := by
+  rfl
+
+@[simp] theorem relabelReadSegmentsWith_trace
+    {alpha : Type u} (segmentMap : Nat -> Nat)
+    (result : TraceResult alpha) :
+    (relabelReadSegmentsWith segmentMap result).trace =
+      result.trace.map (fun event =>
+        event.relabelReadSegmentWith segmentMap) := by
+  rfl
+
 @[simp] theorem ofResult_value {ty : Ty} (result : Result ty) :
     (ofResult result).value = result.value := by
   rfl
@@ -263,6 +478,13 @@ theorem ofCosted_trace_no_readWord (result : Costed α) :
       event ∈ (ofCosted result).trace -> ¬ event.isReadWord := by
   intro event hmem
   exact costOnlyTrace_no_readWord result.cost event hmem
+
+theorem ofCosted_matchesReadStore (result : Costed α) (store : ReadStore) :
+    forall event : TraceEvent,
+      event ∈ (ofCosted result).trace -> event.matchesReadStore store := by
+  intro event hmem
+  have hnotRead := ofCosted_trace_no_readWord result event hmem
+  cases event <;> simp [TraceEvent.matchesReadStore, TraceEvent.isReadWord] at hnotRead ⊢
 
 @[simp] theorem toCosted_value (result : TraceResult α) :
     result.toCosted.value = result.value := by
@@ -292,6 +514,96 @@ theorem ofCosted_trace_no_readWord (result : Costed α) :
       Costed.map f result.toCosted := by
   rw [map, bind_toCosted]
   rfl
+
+@[simp] theorem relabelReadSegments_toCosted
+    {alpha : Type u} (offset : Nat) (result : TraceResult alpha) :
+    (relabelReadSegments offset result).toCosted = result.toCosted := by
+  apply Costed.ext <;>
+    simp [relabelReadSegments, toCosted, steps]
+
+@[simp] theorem relabelReadSegmentsWith_toCosted
+    {alpha : Type u} (segmentMap : Nat -> Nat)
+    (result : TraceResult alpha) :
+    (relabelReadSegmentsWith segmentMap result).toCosted =
+      result.toCosted := by
+  apply Costed.ext <;>
+    simp [relabelReadSegmentsWith, toCosted, steps]
+
+/-- Zero-step trace results satisfy any event invariant. -/
+theorem pure_trace_forall
+    (P : TraceEvent -> Prop) (value : alpha) :
+    forall event,
+      event ∈ (pure value : TraceResult alpha).trace -> P event := by
+  intro event hmem
+  simp at hmem
+
+/-- Sequential traces preserve event invariants componentwise. -/
+theorem bind_trace_forall
+    (P : TraceEvent -> Prop)
+    (result : TraceResult alpha) (f : alpha -> TraceResult beta)
+    (hresult :
+      forall event, event ∈ result.trace -> P event)
+    (hnext :
+      forall event, event ∈ (f result.value).trace -> P event) :
+    forall event,
+      event ∈ (bind result f).trace -> P event := by
+  intro event hmem
+  simp [bind] at hmem
+  rcases hmem with hmem | hmem
+  · exact hresult event hmem
+  · exact hnext event hmem
+
+/-- Pure maps do not change the event invariant of a trace. -/
+theorem map_trace_forall
+    (P : TraceEvent -> Prop) (f : alpha -> beta)
+    (result : TraceResult alpha)
+    (hresult :
+      forall event, event ∈ result.trace -> P event) :
+    forall event,
+      event ∈ (map f result).trace -> P event := by
+  intro event hmem
+  simp [map] at hmem
+  exact hresult event hmem
+
+/-- Fixed-offset relabeling preserves read-store agreement. -/
+theorem relabelReadSegments_matchesReadStore
+    {alpha : Type u} (result : TraceResult alpha)
+    (localStore globalStore : ReadStore) (offset : Nat)
+    (hread :
+      forall segment index,
+        globalStore.readWord? (offset + segment) index =
+          localStore.readWord? segment index)
+    (hresult :
+      forall event,
+        event ∈ result.trace -> event.matchesReadStore localStore) :
+    forall event,
+      event ∈ (relabelReadSegments offset result).trace ->
+        event.matchesReadStore globalStore := by
+  intro event hmem
+  rcases List.mem_map.mp hmem with ⟨localEvent, hlocal, rfl⟩
+  exact TraceEvent.relabelReadSegment_matchesReadStore
+    localStore globalStore offset hread localEvent
+    (hresult localEvent hlocal)
+
+/-- Segment-map relabeling preserves read-store agreement. -/
+theorem relabelReadSegmentsWith_matchesReadStore
+    {alpha : Type u} (result : TraceResult alpha)
+    (localStore globalStore : ReadStore) (segmentMap : Nat -> Nat)
+    (hread :
+      forall segment index,
+        globalStore.readWord? (segmentMap segment) index =
+          localStore.readWord? segment index)
+    (hresult :
+      forall event,
+        event ∈ result.trace -> event.matchesReadStore localStore) :
+    forall event,
+      event ∈ (relabelReadSegmentsWith segmentMap result).trace ->
+        event.matchesReadStore globalStore := by
+  intro event hmem
+  rcases List.mem_map.mp hmem with ⟨localEvent, hlocal, rfl⟩
+  exact TraceEvent.relabelReadSegmentWith_matchesReadStore
+    localStore globalStore segmentMap hread localEvent
+    (hresult localEvent hlocal)
 
 end TraceResult
 
@@ -563,6 +875,15 @@ theorem eval_readWord_event_eq_store
     store.readWord? segment index = word? := by
   exact eval_reads_subset_payload program store
     (TraceEvent.readWord segment index word?) hmem
+
+theorem eval_reads_subset_readStore
+    (program : Program ty) (store : Store) :
+    forall event : TraceEvent,
+      event ∈ (eval program store).trace ->
+        event.matchesReadStore (ReadStore.ofStore store) := by
+  intro event hmem
+  simpa [TraceEvent.matchesReadStore_ofStore] using
+    eval_reads_subset_payload program store event hmem
 
 /-- If the store is word-bounded, every word returned by the trace is bounded. -/
 theorem eval_word_reads_length_le_machine

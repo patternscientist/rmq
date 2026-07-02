@@ -53,8 +53,10 @@ Short public aliases live in [`RMQ/Headlines.lean`](RMQ/Headlines.lean).
 | --- | --- |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and the matching lower-bound side. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Whole-query-interpreted variant of the final BP-native succinct RMQ capstone: same theorem shape, with the final query control represented by a closed first-order program whose leaves are interpreted close-select, compact close/LCA, and register-backed answer-rank operations. |
-| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace` | Unified-`WordRAM.TraceEvent` variant of the same capstone: the final query emits one trace stream; close-select, answer-rank, and compact-close rank-seed reads are structural payload/register traces, while bounded local/fringe/interior close-navigation leaves remain charged decoder boundaries pending full payload-read replay. |
+| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace` | Unified-`WordRAM.TraceEvent` variant of the same capstone: the final query emits one trace stream, with close-select, answer-rank, and compact-close rank-seed reads replayed as structural payload/register traces. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime` | Large-regime WordRAM variant: same two-sided theorem shape, with an explicit size premise that routes the compact close/LCA leg through structural local/fringe/interior trace replay rather than the all-size fallback. |
+| `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` | All-size execution-story theorem for the final succinct RMQ query: the costed query refines one globally segmented trace, every event is either a payload read or bounded word primitive, and every read agrees with one concrete global payload store. |
+| `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory` | Large-regime companion: under the explicit size premise, the compact close/LCA leg uses the positive-block local/fringe/interior structural replay rather than the all-size fallback. |
 | `RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery` | Component-level interpreter-backed BP close-navigation profile. |
 | `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack` | Coefficient-correct Catalan lower-bound slack, stated in doubled integer form. |
 | `RMQ.Headlines.rankSelectNPlusOConstantQuery` | Standalone Jacobson/Clark-style plain-bitvector rank/select with `n + o(n)` payload and constant modeled query cost. |
@@ -100,10 +102,10 @@ At a high level, the repository currently includes:
   Catalan slack equivalent to `2n - 1.5 log n - O(1)`;
 - a payload-accounted BP-native succinct RMQ upper bound with `2*n + o(n)`
   payload and constant modeled query cost;
-- an interpreter-backed final succinct RMQ query surface whose close-select,
-  answer-rank, and compact-close rank-seed reads run through first-order
-  payload-memory `WordRAM` bridges, with remaining close-navigation decoder
-  leaves explicitly named;
+- an interpreter-backed final succinct RMQ query surface whose all-size
+  execution story emits one global `WordRAM.TraceEvent` stream; every event is
+  either a payload read or a bounded word primitive, and every read is checked
+  against one concrete payload store;
 - a standalone rank/select spoke with public Jacobson/Clark-style profiles, a
   concrete fixed-weight compressed/FID capstone family surface, and an
   interpreter-backed replay of that compressed/FID query path; and
@@ -213,8 +215,8 @@ The RMQ capstone is in place. The next development frontier is to reuse and
 stress-test the infrastructure:
 
 1. deepen balanced-parentheses navigation into a fuller tree-navigation API and
-   keep flattening `WordRAM` presentations toward a unified payload-store trace
-   where that materially clarifies the existing theorem surfaces;
+   continue turning useful component traces into public store-backed execution
+   stories where that materially clarifies theorem surfaces;
 2. push the union-find spoke from the current sequence/event scorecard toward a
    true inverse-Ackermann amortized theorem over strict residual events; and
 3. promote shared cost, refinement, lower-bound, and amortized-analysis pieces

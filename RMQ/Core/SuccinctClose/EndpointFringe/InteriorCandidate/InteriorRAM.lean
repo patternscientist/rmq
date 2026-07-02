@@ -28,6 +28,28 @@ theorem readTraceResult_refines_readCosted
     (table.readTraceResult i).toCosted = table.readCosted i := by
   exact FixedWidthNatTable.readProgram_refines_readCosted table i
 
+/--
+Read a fixed-width table while shifting its local segment numbering into a
+caller-supplied global segment.  The erased value and modeled cost are exactly
+the original interpreted table read.
+-/
+def readTraceResultAtSegment
+    {entries : List Nat} {width : Nat}
+    (table : FixedWidthNatTable entries width)
+    (segmentBase deadSegment i : Nat) :
+    WordRAM.TraceResult (Option Nat) :=
+  WordRAM.TraceResult.relabelReadSegmentsWith
+    (WordRAM.singletonSegmentMap segmentBase deadSegment)
+    (table.readTraceResult i)
+
+theorem readTraceResultAtSegment_refines_readCosted
+    {entries : List Nat} {width : Nat}
+    (table : FixedWidthNatTable entries width)
+    (segmentBase deadSegment i : Nat) :
+    (table.readTraceResultAtSegment segmentBase deadSegment i).toCosted =
+      table.readCosted i := by
+  simp [readTraceResultAtSegment, readTraceResult_refines_readCosted]
+
 end FixedWidthNatTable
 
 end SuccinctSpace
@@ -35,6 +57,21 @@ end SuccinctSpace
 namespace SuccinctClose
 
 open SuccinctSpace
+
+/-- Global segment bases for the four tables in one relative summary row. -/
+structure BPRelativeSummaryTraceSegments where
+  baseline : Nat
+  minRel : Nat
+  maxRel : Nat
+  argOffset : Nat
+  deadSegment : Nat
+
+/-- Global segment bases for the concrete relative-rmM interior candidate. -/
+structure BPRelativeRmmInteriorTraceSegments where
+  summary : BPRelativeSummaryTraceSegments
+  localOffset : Nat
+  globalBlock : Nat
+  deadSegment : Nat
 
 namespace PayloadLiveBPRelativeMinMaxArgSummaryTable
 
@@ -79,9 +116,70 @@ theorem summaryTraceResult_refines_summaryCosted
       FixedWidthNatTable.readTraceResult_refines_readCosted,
       WordRAM.TraceResult.bind_toCosted, WordRAM.TraceResult.map_toCosted,
       Costed.bind, Costed.map]
-    rfl
+    cases (table.baselineTable.readCosted (block / blocksPerSuper)).value <;>
+      cases (table.minRelTable.readCosted block).value <;>
+      cases (table.maxRelTable.readCosted block).value <;>
+      cases (table.argOffsetTable.readCosted block).value <;> rfl
   · simp [summaryTraceResult, summaryCosted,
       FixedWidthNatTable.readTraceResult_refines_readCosted,
+      WordRAM.TraceResult.bind_toCosted, WordRAM.TraceResult.map_toCosted,
+      Costed.bind, Costed.map]
+
+/-- Segment-relabeled structural trace for one relative summary read. -/
+def summaryTraceResultAtSegments
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (segments : BPRelativeSummaryTraceSegments)
+    (block : Nat) : WordRAM.TraceResult (Option (Nat × Nat × Nat × Nat)) :=
+  WordRAM.TraceResult.bind
+    (table.baselineTable.readTraceResultAtSegment
+      segments.baseline segments.deadSegment (block / blocksPerSuper))
+    fun baseline? =>
+      WordRAM.TraceResult.bind
+        (table.minRelTable.readTraceResultAtSegment
+          segments.minRel segments.deadSegment block)
+        fun minRel? =>
+          WordRAM.TraceResult.bind
+            (table.maxRelTable.readTraceResultAtSegment
+              segments.maxRel segments.deadSegment block)
+            fun maxRel? =>
+              WordRAM.TraceResult.map
+                (fun argOffset? =>
+                  match baseline?, minRel?, maxRel?, argOffset? with
+                  | some baseline, some minRel, some maxRel, some argOffset =>
+                      some (baseline, minRel, maxRel, argOffset)
+                  | _, _, _, _ => none)
+                (table.argOffsetTable.readTraceResultAtSegment
+                  segments.argOffset segments.deadSegment block)
+
+theorem summaryTraceResultAtSegments_refines_summaryCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (segments : BPRelativeSummaryTraceSegments)
+    (block : Nat) :
+    (table.summaryTraceResultAtSegments segments block).toCosted =
+      table.summaryCosted block := by
+  apply Costed.ext
+  · simp [summaryTraceResultAtSegments, summaryCosted,
+      FixedWidthNatTable.readTraceResultAtSegment_refines_readCosted,
+      WordRAM.TraceResult.bind_toCosted, WordRAM.TraceResult.map_toCosted,
+      Costed.bind, Costed.map]
+    cases (table.baselineTable.readCosted (block / blocksPerSuper)).value <;>
+      cases (table.minRelTable.readCosted block).value <;>
+      cases (table.maxRelTable.readCosted block).value <;>
+      cases (table.argOffsetTable.readCosted block).value <;> rfl
+  · simp [summaryTraceResultAtSegments, summaryCosted,
+      FixedWidthNatTable.readTraceResultAtSegment_refines_readCosted,
       WordRAM.TraceResult.bind_toCosted, WordRAM.TraceResult.map_toCosted,
       Costed.bind, Costed.map]
 
@@ -116,6 +214,39 @@ theorem minCandidateTraceResult_refines_minCandidateCosted
     summaryTraceResult_refines_summaryCosted,
     WordRAM.TraceResult.map_toCosted, Costed.map]
 
+/-- Segment-relabeled structural trace for one summary-row minimum candidate. -/
+def minCandidateTraceResultAtSegments
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (segments : BPRelativeSummaryTraceSegments)
+    (block : Nat) : WordRAM.TraceResult (Option (Nat × Nat)) :=
+  WordRAM.TraceResult.map
+    (fun summary? =>
+      summary?.map
+        (bpRelativeSummaryMinCandidate blockSize blocksPerSuper block))
+    (table.summaryTraceResultAtSegments segments block)
+
+theorem minCandidateTraceResultAtSegments_refines_minCandidateCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (segments : BPRelativeSummaryTraceSegments)
+    (block : Nat) :
+    (table.minCandidateTraceResultAtSegments segments block).toCosted =
+      table.minCandidateCosted block := by
+  simp [minCandidateTraceResultAtSegments, minCandidateCosted,
+    summaryTraceResultAtSegments_refines_summaryCosted,
+    WordRAM.TraceResult.map_toCosted, Costed.map]
+
 end PayloadLiveBPRelativeMinMaxArgSummaryTable
 
 namespace PayloadLiveBPLocalSparseOffsetTable
@@ -144,6 +275,33 @@ theorem readOffsetTraceResult_refines_readOffsetCosted
       offsetTable.readOffsetCosted macroIdx localStart level := by
   simp [readOffsetTraceResult, readOffsetCosted,
     FixedWidthNatTable.readTraceResult_refines_readCosted]
+
+/-- Segment-relabeled structural trace for one local sparse-offset table read. -/
+def readOffsetTraceResultAtSegment
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth overhead : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth overhead)
+    (segmentBase deadSegment macroIdx localStart level : Nat) :
+    WordRAM.TraceResult (Option Nat) :=
+  offsetTable.table.readTraceResultAtSegment segmentBase deadSegment
+    (bpLocalSparseCellSlot macroSize levelCount macroIdx localStart level)
+
+theorem readOffsetTraceResultAtSegment_refines_readOffsetCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth overhead : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth overhead)
+    (segmentBase deadSegment macroIdx localStart level : Nat) :
+    (offsetTable.readOffsetTraceResultAtSegment segmentBase deadSegment macroIdx
+        localStart level).toCosted =
+      offsetTable.readOffsetCosted macroIdx localStart level := by
+  simp [readOffsetTraceResultAtSegment, readOffsetCosted,
+    FixedWidthNatTable.readTraceResultAtSegment_refines_readCosted]
 
 /-- Structural trace for one local sparse span candidate. -/
 def spanCandidateTraceResult
@@ -193,6 +351,58 @@ theorem spanCandidateTraceResult_refines_spanCandidateCosted
     PayloadLiveBPRelativeMinMaxArgSummaryTable.minCandidateTraceResult_refines_minCandidateCosted,
     Costed.bind, Costed.pure]
 
+/-- Segment-relabeled structural trace for one local sparse span candidate. -/
+def spanCandidateTraceResultAtSegments
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth localOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (macroIdx localStart level : Nat) :
+    WordRAM.TraceResult (Option (Nat × Nat)) :=
+  WordRAM.TraceResult.bind
+    (offsetTable.readOffsetTraceResultAtSegment segments.localOffset
+      segments.deadSegment macroIdx localStart level)
+    fun offset? =>
+      match offset? with
+      | some offset =>
+          summary.minCandidateTraceResultAtSegments segments.summary
+            (macroIdx * macroSize + offset)
+      | none => WordRAM.TraceResult.pure none
+
+theorem spanCandidateTraceResultAtSegments_refines_spanCandidateCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth localOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (macroIdx localStart level : Nat) :
+    (offsetTable.spanCandidateTraceResultAtSegments summary segments macroIdx
+        localStart level).toCosted =
+      offsetTable.spanCandidateCosted summary macroIdx localStart level := by
+  unfold spanCandidateTraceResultAtSegments spanCandidateCosted
+  rw [WordRAM.TraceResult.bind_toCosted]
+  rw [readOffsetTraceResultAtSegment_refines_readOffsetCosted]
+  cases hoff :
+      (offsetTable.readOffsetCosted macroIdx localStart level).value
+  <;> simp [hoff,
+    PayloadLiveBPRelativeMinMaxArgSummaryTable.minCandidateTraceResultAtSegments_refines_minCandidateCosted,
+    Costed.bind, Costed.pure]
+
 /-- Structural trace for the two local sparse spans covering a local range. -/
 def twoSpanCandidateTraceResult
     {shape : Cartesian.CartesianShape}
@@ -240,6 +450,56 @@ theorem twoSpanCandidateTraceResult_refines_twoSpanCandidateCosted
     WordRAM.TraceResult.bind_toCosted, WordRAM.TraceResult.map_toCosted,
     Costed.bind, Costed.map]
 
+/-- Segment-relabeled structural trace for the two local sparse spans. -/
+def twoSpanCandidateTraceResultAtSegments
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth localOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (macroIdx localStart count : Nat) :
+    WordRAM.TraceResult (Option (Nat × Nat)) :=
+  let level := Nat.log2 count
+  let span := bpSparseLogSpan count
+  let rightLocalStart := localStart + count - span
+  WordRAM.TraceResult.bind
+    (offsetTable.spanCandidateTraceResultAtSegments summary segments
+      macroIdx localStart level)
+    fun left? =>
+      WordRAM.TraceResult.map
+        (fun right? => bpCandidateMerge? left? right?)
+        (offsetTable.spanCandidateTraceResultAtSegments summary segments
+          macroIdx rightLocalStart level)
+
+theorem twoSpanCandidateTraceResultAtSegments_refines_twoSpanCandidateCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth localOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (macroIdx localStart count : Nat) :
+    (offsetTable.twoSpanCandidateTraceResultAtSegments summary segments
+        macroIdx localStart count).toCosted =
+      offsetTable.twoSpanCandidateCosted summary macroIdx localStart count := by
+  simp [twoSpanCandidateTraceResultAtSegments, twoSpanCandidateCosted,
+    spanCandidateTraceResultAtSegments_refines_spanCandidateCosted,
+    WordRAM.TraceResult.bind_toCosted, WordRAM.TraceResult.map_toCosted,
+    Costed.bind, Costed.map]
+
 end PayloadLiveBPLocalSparseOffsetTable
 
 namespace PayloadLiveBPGlobalSparseBlockTable
@@ -268,6 +528,33 @@ theorem readBlockTraceResult_refines_readBlockCosted
       globalTable.readBlockCosted macroStart level := by
   simp [readBlockTraceResult, readBlockCosted,
     FixedWidthNatTable.readTraceResult_refines_readCosted]
+
+/-- Segment-relabeled structural trace for one global sparse-block table read. -/
+def readBlockTraceResultAtSegment
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth overhead : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth overhead)
+    (segmentBase deadSegment macroStart level : Nat) :
+    WordRAM.TraceResult (Option Nat) :=
+  globalTable.table.readTraceResultAtSegment segmentBase deadSegment
+    (bpGlobalSparseCellSlot macroCount macroStart level)
+
+theorem readBlockTraceResultAtSegment_refines_readBlockCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth overhead : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth overhead)
+    (segmentBase deadSegment macroStart level : Nat) :
+    (globalTable.readBlockTraceResultAtSegment segmentBase deadSegment macroStart
+        level).toCosted =
+      globalTable.readBlockCosted macroStart level := by
+  simp [readBlockTraceResultAtSegment, readBlockCosted,
+    FixedWidthNatTable.readTraceResultAtSegment_refines_readCosted]
 
 /-- Structural trace for one global sparse span candidate. -/
 def spanCandidateTraceResult
@@ -311,6 +598,55 @@ theorem spanCandidateTraceResult_refines_spanCandidateCosted
       (globalTable.readBlockCosted macroStart level).value
   <;> simp [hblock,
     PayloadLiveBPRelativeMinMaxArgSummaryTable.minCandidateTraceResult_refines_minCandidateCosted,
+    Costed.bind, Costed.pure]
+
+/-- Segment-relabeled structural trace for one global sparse span candidate. -/
+def spanCandidateTraceResultAtSegments
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth globalOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (macroStart level : Nat) : WordRAM.TraceResult (Option (Nat × Nat)) :=
+  WordRAM.TraceResult.bind
+    (globalTable.readBlockTraceResultAtSegment segments.globalBlock
+      segments.deadSegment macroStart level) fun block? =>
+      match block? with
+      | some block =>
+          summary.minCandidateTraceResultAtSegments segments.summary block
+      | none => WordRAM.TraceResult.pure none
+
+theorem spanCandidateTraceResultAtSegments_refines_spanCandidateCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth globalOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (macroStart level : Nat) :
+    (globalTable.spanCandidateTraceResultAtSegments summary segments
+        macroStart level).toCosted =
+      globalTable.spanCandidateCosted summary macroStart level := by
+  unfold spanCandidateTraceResultAtSegments spanCandidateCosted
+  rw [WordRAM.TraceResult.bind_toCosted]
+  rw [readBlockTraceResultAtSegment_refines_readBlockCosted]
+  cases hblock :
+      (globalTable.readBlockCosted macroStart level).value
+  <;> simp [hblock,
+    PayloadLiveBPRelativeMinMaxArgSummaryTable.minCandidateTraceResultAtSegments_refines_minCandidateCosted,
     Costed.bind, Costed.pure]
 
 /-- Structural trace for the two global sparse spans covering a macro range. -/
@@ -357,6 +693,57 @@ theorem twoSpanCandidateTraceResult_refines_twoSpanCandidateCosted
         macroSpanCount := by
   simp [twoSpanCandidateTraceResult, twoSpanCandidateCosted,
     spanCandidateTraceResult_refines_spanCandidateCosted,
+    WordRAM.TraceResult.bind_toCosted, WordRAM.TraceResult.map_toCosted,
+    Costed.bind, Costed.map]
+
+/-- Segment-relabeled structural trace for the two global sparse spans. -/
+def twoSpanCandidateTraceResultAtSegments
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth globalOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (macroStart macroSpanCount : Nat) :
+    WordRAM.TraceResult (Option (Nat × Nat)) :=
+  let level := Nat.log2 macroSpanCount
+  let spanMacros := bpSparseLogSpan macroSpanCount
+  let rightMacroStart := macroStart + macroSpanCount - spanMacros
+  WordRAM.TraceResult.bind
+    (globalTable.spanCandidateTraceResultAtSegments summary segments
+      macroStart level)
+    fun left? =>
+      WordRAM.TraceResult.map
+        (fun right? => bpCandidateMerge? left? right?)
+        (globalTable.spanCandidateTraceResultAtSegments summary segments
+          rightMacroStart level)
+
+theorem twoSpanCandidateTraceResultAtSegments_refines_twoSpanCandidateCosted
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth globalOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (macroStart macroSpanCount : Nat) :
+    (globalTable.twoSpanCandidateTraceResultAtSegments summary segments
+        macroStart macroSpanCount).toCosted =
+      globalTable.twoSpanCandidateCosted summary macroStart
+        macroSpanCount := by
+  simp [twoSpanCandidateTraceResultAtSegments, twoSpanCandidateCosted,
+    spanCandidateTraceResultAtSegments_refines_spanCandidateCosted,
     WordRAM.TraceResult.bind_toCosted, WordRAM.TraceResult.map_toCosted,
     Costed.bind, Costed.map]
 
@@ -533,6 +920,183 @@ theorem bpTwoLevelCrossMacroCandidateTraceResult_refines
     WordRAM.TraceResult.bind_toCosted, WordRAM.TraceResult.map_toCosted,
     Costed.bind, Costed.map]
 
+/-- Segment-relabeled trace for the adjacent-macro interior candidate case. -/
+def bpTwoLevelAdjacentMacroCandidateTraceResultAtSegments
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead blocksPerSuper superCount superWidth
+      relativeWidth summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (macroStart localStart rightCount : Nat) :
+    WordRAM.TraceResult (Option (Nat × Nat)) :=
+  let leftCount := macroSize - localStart
+  WordRAM.TraceResult.bind
+    (localTable.twoSpanCandidateTraceResultAtSegments summary segments
+      macroStart localStart leftCount)
+    fun left? =>
+      WordRAM.TraceResult.map
+        (fun right? => bpCandidateMerge? left? right?)
+        (localTable.twoSpanCandidateTraceResultAtSegments summary segments
+          (macroStart + 1) 0 rightCount)
+
+theorem bpTwoLevelAdjacentMacroCandidateTraceResultAtSegments_refines
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead blocksPerSuper superCount superWidth
+      relativeWidth summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (macroStart localStart rightCount : Nat) :
+    (bpTwoLevelAdjacentMacroCandidateTraceResultAtSegments
+      localTable summary segments macroStart localStart rightCount).toCosted =
+      bpTwoLevelAdjacentMacroCandidateCosted
+        localTable summary macroStart localStart rightCount := by
+  simp [bpTwoLevelAdjacentMacroCandidateTraceResultAtSegments,
+    bpTwoLevelAdjacentMacroCandidateCosted,
+    PayloadLiveBPLocalSparseOffsetTable.twoSpanCandidateTraceResultAtSegments_refines_twoSpanCandidateCosted,
+    WordRAM.TraceResult.bind_toCosted, WordRAM.TraceResult.map_toCosted,
+    Costed.bind, Costed.map]
+
+/-- Segment-relabeled trace for the left-plus-middle macro candidate case. -/
+def bpTwoLevelLeftMiddleMacroCandidateTraceResultAtSegments
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (macroStart localStart middleMacroCount : Nat) :
+    WordRAM.TraceResult (Option (Nat × Nat)) :=
+  let leftCount := macroSize - localStart
+  WordRAM.TraceResult.bind
+    (localTable.twoSpanCandidateTraceResultAtSegments summary segments
+      macroStart localStart leftCount)
+    fun left? =>
+      WordRAM.TraceResult.map
+        (fun middle? => bpCandidateMerge? left? middle?)
+        (globalTable.twoSpanCandidateTraceResultAtSegments summary segments
+          (macroStart + 1) middleMacroCount)
+
+theorem bpTwoLevelLeftMiddleMacroCandidateTraceResultAtSegments_refines
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (macroStart localStart middleMacroCount : Nat) :
+    (bpTwoLevelLeftMiddleMacroCandidateTraceResultAtSegments
+      localTable globalTable summary segments macroStart localStart
+        middleMacroCount).toCosted =
+      bpTwoLevelLeftMiddleMacroCandidateCosted
+        localTable globalTable summary macroStart localStart
+        middleMacroCount := by
+  simp [bpTwoLevelLeftMiddleMacroCandidateTraceResultAtSegments,
+    bpTwoLevelLeftMiddleMacroCandidateCosted,
+    PayloadLiveBPLocalSparseOffsetTable.twoSpanCandidateTraceResultAtSegments_refines_twoSpanCandidateCosted,
+    PayloadLiveBPGlobalSparseBlockTable.twoSpanCandidateTraceResultAtSegments_refines_twoSpanCandidateCosted,
+    WordRAM.TraceResult.bind_toCosted, WordRAM.TraceResult.map_toCosted,
+    Costed.bind, Costed.map]
+
+/-- Segment-relabeled trace for the left-middle-right macro candidate case. -/
+def bpTwoLevelCrossMacroCandidateTraceResultAtSegments
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (macroStart localStart middleMacroCount rightCount : Nat) :
+    WordRAM.TraceResult (Option (Nat × Nat)) :=
+  let leftCount := macroSize - localStart
+  let rightMacroStart := macroStart + 1 + middleMacroCount
+  WordRAM.TraceResult.bind
+    (localTable.twoSpanCandidateTraceResultAtSegments summary segments
+      macroStart localStart leftCount)
+    fun left? =>
+      WordRAM.TraceResult.bind
+        (globalTable.twoSpanCandidateTraceResultAtSegments summary segments
+          (macroStart + 1) middleMacroCount)
+        fun middle? =>
+          WordRAM.TraceResult.map
+            (fun right? => bpCandidateMerge3? left? middle? right?)
+            (localTable.twoSpanCandidateTraceResultAtSegments summary
+              segments rightMacroStart 0 rightCount)
+
+theorem bpTwoLevelCrossMacroCandidateTraceResultAtSegments_refines
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (macroStart localStart middleMacroCount rightCount : Nat) :
+    (bpTwoLevelCrossMacroCandidateTraceResultAtSegments
+      localTable globalTable summary segments macroStart localStart
+        middleMacroCount rightCount).toCosted =
+      bpTwoLevelCrossMacroCandidateCosted
+        localTable globalTable summary macroStart localStart middleMacroCount
+        rightCount := by
+  simp [bpTwoLevelCrossMacroCandidateTraceResultAtSegments,
+    bpTwoLevelCrossMacroCandidateCosted,
+    PayloadLiveBPLocalSparseOffsetTable.twoSpanCandidateTraceResultAtSegments_refines_twoSpanCandidateCosted,
+    PayloadLiveBPGlobalSparseBlockTable.twoSpanCandidateTraceResultAtSegments_refines_twoSpanCandidateCosted,
+    WordRAM.TraceResult.bind_toCosted, WordRAM.TraceResult.map_toCosted,
+    Costed.bind, Costed.map]
+
 /-- Structural trace mirror for the concrete two-level interior candidate. -/
 def bpTwoLevelInteriorCandidateTraceResult
     {shape : Cartesian.CartesianShape}
@@ -613,6 +1177,758 @@ theorem bpTwoLevelInteriorCandidateTraceResult_refines
             bpTwoLevelLeftMiddleMacroCandidateTraceResult_refines]
         · simp [hright,
             bpTwoLevelCrossMacroCandidateTraceResult_refines]
+
+/-- Segment-relabeled structural mirror for the two-level interior candidate. -/
+def bpTwoLevelInteriorCandidateTraceResultAtSegments
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (startBlock count : Nat) : WordRAM.TraceResult (Option (Nat × Nat)) :=
+  let macroStart := startBlock / macroSize
+  let localStart := startBlock % macroSize
+  if count = 0 then
+    WordRAM.TraceResult.pure none
+  else if count <= macroSize - localStart then
+    localTable.twoSpanCandidateTraceResultAtSegments summary segments
+      macroStart localStart count
+  else
+    let leftCount := macroSize - localStart
+    let remaining := count - leftCount
+    let middleMacroCount := remaining / macroSize
+    let rightCount := remaining % macroSize
+    if middleMacroCount = 0 then
+      bpTwoLevelAdjacentMacroCandidateTraceResultAtSegments localTable
+        summary segments macroStart localStart rightCount
+    else if rightCount = 0 then
+      bpTwoLevelLeftMiddleMacroCandidateTraceResultAtSegments localTable
+        globalTable summary segments macroStart localStart middleMacroCount
+    else
+      bpTwoLevelCrossMacroCandidateTraceResultAtSegments localTable globalTable
+        summary segments macroStart localStart middleMacroCount rightCount
+
+theorem bpTwoLevelInteriorCandidateTraceResultAtSegments_refines
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (startBlock count : Nat) :
+    (bpTwoLevelInteriorCandidateTraceResultAtSegments
+      localTable globalTable summary segments startBlock count).toCosted =
+      bpTwoLevelInteriorCandidateCosted
+        localTable globalTable summary startBlock count := by
+  unfold bpTwoLevelInteriorCandidateTraceResultAtSegments
+    bpTwoLevelInteriorCandidateCosted
+  by_cases hcount : count = 0
+  · simp [hcount, WordRAM.TraceResult.pure_toCosted, Costed.pure]
+  · simp [hcount]
+    by_cases hwithin : count <= macroSize - startBlock % macroSize
+    · simp [hwithin,
+        PayloadLiveBPLocalSparseOffsetTable.twoSpanCandidateTraceResultAtSegments_refines_twoSpanCandidateCosted]
+    · simp only [hwithin, if_false]
+      by_cases hmiddle :
+          macroSize = 0 ∨
+            count - (macroSize - startBlock % macroSize) < macroSize
+      · simp [hmiddle,
+          bpTwoLevelAdjacentMacroCandidateTraceResultAtSegments_refines]
+      · simp [hmiddle]
+        by_cases hright :
+            (count - (macroSize - startBlock % macroSize)) % macroSize = 0
+        · simp [hright,
+            bpTwoLevelLeftMiddleMacroCandidateTraceResultAtSegments_refines]
+        · simp [hright,
+            bpTwoLevelCrossMacroCandidateTraceResultAtSegments_refines]
+
+theorem fixedWidthNatTable_readTraceResultAtSegment_matchesReadStore
+    {entries : List Nat} {width : Nat}
+    (table : FixedWidthNatTable entries width)
+    (segmentBase deadSegment i : Nat)
+    (store : WordRAM.ReadStore)
+    (hread :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap segmentBase deadSegment segment)
+            index =
+          table.wordRAMStore.readWord? segment index) :
+    forall event,
+      List.Mem event
+          (table.readTraceResultAtSegment segmentBase deadSegment i).trace ->
+        event.matchesReadStore store := by
+  unfold FixedWidthNatTable.readTraceResultAtSegment
+    FixedWidthNatTable.readTraceResult
+  exact
+    WordRAM.TraceResult.relabelReadSegmentsWith_matchesReadStore
+      (WordRAM.TraceResult.ofResult
+        ((table.readProgram i).eval table.wordRAMStore))
+      (WordRAM.ReadStore.ofStore table.wordRAMStore)
+      store
+      (WordRAM.singletonSegmentMap segmentBase deadSegment)
+      hread
+      (by
+        intro event hmem
+        simpa [WordRAM.TraceResult.ofResult_trace,
+          WordRAM.TraceEvent.matchesReadStore_ofStore] using
+          WordRAM.Program.eval_reads_subset_payload
+            (table.readProgram i) table.wordRAMStore event hmem)
+
+theorem PayloadLiveBPRelativeMinMaxArgSummaryTable.summaryTraceResultAtSegments_matchesReadStore
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (segments : BPRelativeSummaryTraceSegments)
+    (store : WordRAM.ReadStore)
+    (hbaseline :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.baseline segments.deadSegment segment) index =
+          table.baselineTable.wordRAMStore.readWord? segment index)
+    (hminRel :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.minRel segments.deadSegment segment) index =
+          table.minRelTable.wordRAMStore.readWord? segment index)
+    (hmaxRel :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.maxRel segments.deadSegment segment) index =
+          table.maxRelTable.wordRAMStore.readWord? segment index)
+    (hargOffset :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.argOffset segments.deadSegment segment) index =
+          table.argOffsetTable.wordRAMStore.readWord? segment index)
+    (block : Nat) :
+    forall event,
+      List.Mem event
+          (table.summaryTraceResultAtSegments segments block).trace ->
+        event.matchesReadStore store := by
+  unfold PayloadLiveBPRelativeMinMaxArgSummaryTable.summaryTraceResultAtSegments
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      fixedWidthNatTable_readTraceResultAtSegment_matchesReadStore
+        table.baselineTable segments.baseline segments.deadSegment
+        (block / blocksPerSuper) store hbaseline
+  · apply WordRAM.TraceResult.bind_trace_forall
+    · exact
+        fixedWidthNatTable_readTraceResultAtSegment_matchesReadStore
+          table.minRelTable segments.minRel segments.deadSegment block
+          store hminRel
+    · apply WordRAM.TraceResult.bind_trace_forall
+      · exact
+          fixedWidthNatTable_readTraceResultAtSegment_matchesReadStore
+            table.maxRelTable segments.maxRel segments.deadSegment block
+            store hmaxRel
+      · apply WordRAM.TraceResult.map_trace_forall
+        exact
+          fixedWidthNatTable_readTraceResultAtSegment_matchesReadStore
+            table.argOffsetTable segments.argOffset segments.deadSegment
+            block store hargOffset
+
+theorem PayloadLiveBPRelativeMinMaxArgSummaryTable.minCandidateTraceResultAtSegments_matchesReadStore
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (segments : BPRelativeSummaryTraceSegments)
+    (store : WordRAM.ReadStore)
+    (hbaseline :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.baseline segments.deadSegment segment) index =
+          table.baselineTable.wordRAMStore.readWord? segment index)
+    (hminRel :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.minRel segments.deadSegment segment) index =
+          table.minRelTable.wordRAMStore.readWord? segment index)
+    (hmaxRel :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.maxRel segments.deadSegment segment) index =
+          table.maxRelTable.wordRAMStore.readWord? segment index)
+    (hargOffset :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.argOffset segments.deadSegment segment) index =
+          table.argOffsetTable.wordRAMStore.readWord? segment index)
+    (block : Nat) :
+    forall event,
+      List.Mem event
+          (table.minCandidateTraceResultAtSegments segments block).trace ->
+        event.matchesReadStore store := by
+  unfold PayloadLiveBPRelativeMinMaxArgSummaryTable.minCandidateTraceResultAtSegments
+  apply WordRAM.TraceResult.map_trace_forall
+  exact
+    table.summaryTraceResultAtSegments_matchesReadStore segments store
+      hbaseline hminRel hmaxRel hargOffset block
+
+theorem PayloadLiveBPLocalSparseOffsetTable.readOffsetTraceResultAtSegment_matchesReadStore
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth overhead : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth overhead)
+    (segmentBase deadSegment : Nat)
+    (store : WordRAM.ReadStore)
+    (hread :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap segmentBase deadSegment segment)
+            index =
+          offsetTable.table.wordRAMStore.readWord? segment index)
+    (macroIdx localStart level : Nat) :
+    forall event,
+      List.Mem event
+          (offsetTable.readOffsetTraceResultAtSegment segmentBase deadSegment
+            macroIdx localStart level).trace ->
+        event.matchesReadStore store := by
+  unfold PayloadLiveBPLocalSparseOffsetTable.readOffsetTraceResultAtSegment
+  exact
+    fixedWidthNatTable_readTraceResultAtSegment_matchesReadStore
+      offsetTable.table segmentBase deadSegment
+      (bpLocalSparseCellSlot macroSize levelCount macroIdx localStart level)
+      store hread
+
+theorem PayloadLiveBPLocalSparseOffsetTable.spanCandidateTraceResultAtSegments_matchesReadStore
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth localOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (store : WordRAM.ReadStore)
+    (hlocal :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.localOffset segments.deadSegment segment) index =
+          offsetTable.table.wordRAMStore.readWord? segment index)
+    (hbaseline :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.summary.baseline segments.summary.deadSegment segment)
+            index =
+          summary.baselineTable.wordRAMStore.readWord? segment index)
+    (hminRel :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.summary.minRel segments.summary.deadSegment segment)
+            index =
+          summary.minRelTable.wordRAMStore.readWord? segment index)
+    (hmaxRel :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.summary.maxRel segments.summary.deadSegment segment)
+            index =
+          summary.maxRelTable.wordRAMStore.readWord? segment index)
+    (hargOffset :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.summary.argOffset segments.summary.deadSegment
+              segment) index =
+          summary.argOffsetTable.wordRAMStore.readWord? segment index)
+    (macroIdx localStart level : Nat) :
+    forall event,
+      List.Mem event
+          (offsetTable.spanCandidateTraceResultAtSegments summary segments
+            macroIdx localStart level).trace ->
+        event.matchesReadStore store := by
+  unfold PayloadLiveBPLocalSparseOffsetTable.spanCandidateTraceResultAtSegments
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      offsetTable.readOffsetTraceResultAtSegment_matchesReadStore
+        segments.localOffset segments.deadSegment store hlocal
+        macroIdx localStart level
+  · cases hoff :
+      (offsetTable.readOffsetTraceResultAtSegment segments.localOffset
+        segments.deadSegment macroIdx localStart level).value with
+    | none =>
+        exact WordRAM.TraceResult.pure_trace_forall _ none
+    | some offset =>
+        exact
+          summary.minCandidateTraceResultAtSegments_matchesReadStore
+            segments.summary store hbaseline hminRel hmaxRel hargOffset
+            (macroIdx * macroSize + offset)
+
+theorem PayloadLiveBPLocalSparseOffsetTable.twoSpanCandidateTraceResultAtSegments_matchesReadStore
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth localOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (store : WordRAM.ReadStore)
+    (hlocal :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.localOffset segments.deadSegment segment) index =
+          offsetTable.table.wordRAMStore.readWord? segment index)
+    (hbaseline :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.summary.baseline segments.summary.deadSegment segment)
+            index =
+          summary.baselineTable.wordRAMStore.readWord? segment index)
+    (hminRel :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.summary.minRel segments.summary.deadSegment segment)
+            index =
+          summary.minRelTable.wordRAMStore.readWord? segment index)
+    (hmaxRel :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.summary.maxRel segments.summary.deadSegment segment)
+            index =
+          summary.maxRelTable.wordRAMStore.readWord? segment index)
+    (hargOffset :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.summary.argOffset segments.summary.deadSegment
+              segment) index =
+          summary.argOffsetTable.wordRAMStore.readWord? segment index)
+    (macroIdx localStart count : Nat) :
+    forall event,
+      List.Mem event
+          (offsetTable.twoSpanCandidateTraceResultAtSegments summary
+            segments macroIdx localStart count).trace ->
+        event.matchesReadStore store := by
+  unfold PayloadLiveBPLocalSparseOffsetTable.twoSpanCandidateTraceResultAtSegments
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      offsetTable.spanCandidateTraceResultAtSegments_matchesReadStore
+        summary segments store hlocal hbaseline hminRel hmaxRel hargOffset
+        macroIdx localStart (Nat.log2 count)
+  · apply WordRAM.TraceResult.map_trace_forall
+    exact
+      offsetTable.spanCandidateTraceResultAtSegments_matchesReadStore
+        summary segments store hlocal hbaseline hminRel hmaxRel hargOffset
+        macroIdx (localStart + count - bpSparseLogSpan count)
+        (Nat.log2 count)
+
+theorem PayloadLiveBPGlobalSparseBlockTable.readBlockTraceResultAtSegment_matchesReadStore
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth overhead : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth overhead)
+    (segmentBase deadSegment : Nat)
+    (store : WordRAM.ReadStore)
+    (hread :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap segmentBase deadSegment segment)
+            index =
+          globalTable.table.wordRAMStore.readWord? segment index)
+    (macroStart level : Nat) :
+    forall event,
+      List.Mem event
+          (globalTable.readBlockTraceResultAtSegment segmentBase deadSegment
+            macroStart level).trace ->
+        event.matchesReadStore store := by
+  unfold PayloadLiveBPGlobalSparseBlockTable.readBlockTraceResultAtSegment
+  exact
+    fixedWidthNatTable_readTraceResultAtSegment_matchesReadStore
+      globalTable.table segmentBase deadSegment
+      (bpGlobalSparseCellSlot macroCount macroStart level) store hread
+
+theorem PayloadLiveBPGlobalSparseBlockTable.spanCandidateTraceResultAtSegments_matchesReadStore
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth globalOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (store : WordRAM.ReadStore)
+    (hglobal :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.globalBlock segments.deadSegment segment) index =
+          globalTable.table.wordRAMStore.readWord? segment index)
+    (hbaseline :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.summary.baseline segments.summary.deadSegment segment)
+            index =
+          summary.baselineTable.wordRAMStore.readWord? segment index)
+    (hminRel :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.summary.minRel segments.summary.deadSegment segment)
+            index =
+          summary.minRelTable.wordRAMStore.readWord? segment index)
+    (hmaxRel :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.summary.maxRel segments.summary.deadSegment segment)
+            index =
+          summary.maxRelTable.wordRAMStore.readWord? segment index)
+    (hargOffset :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.summary.argOffset segments.summary.deadSegment
+              segment) index =
+          summary.argOffsetTable.wordRAMStore.readWord? segment index)
+    (macroStart level : Nat) :
+    forall event,
+      List.Mem event
+          (globalTable.spanCandidateTraceResultAtSegments summary segments
+            macroStart level).trace ->
+        event.matchesReadStore store := by
+  unfold PayloadLiveBPGlobalSparseBlockTable.spanCandidateTraceResultAtSegments
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      globalTable.readBlockTraceResultAtSegment_matchesReadStore
+        segments.globalBlock segments.deadSegment store hglobal
+        macroStart level
+  · cases hblock :
+      (globalTable.readBlockTraceResultAtSegment segments.globalBlock
+        segments.deadSegment macroStart level).value with
+    | none =>
+        exact WordRAM.TraceResult.pure_trace_forall _ none
+    | some block =>
+        exact
+          summary.minCandidateTraceResultAtSegments_matchesReadStore
+            segments.summary store hbaseline hminRel hmaxRel hargOffset
+            block
+
+theorem PayloadLiveBPGlobalSparseBlockTable.twoSpanCandidateTraceResultAtSegments_matchesReadStore
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth globalOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (store : WordRAM.ReadStore)
+    (hglobal :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.globalBlock segments.deadSegment segment) index =
+          globalTable.table.wordRAMStore.readWord? segment index)
+    (hbaseline :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.summary.baseline segments.summary.deadSegment segment)
+            index =
+          summary.baselineTable.wordRAMStore.readWord? segment index)
+    (hminRel :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.summary.minRel segments.summary.deadSegment segment)
+            index =
+          summary.minRelTable.wordRAMStore.readWord? segment index)
+    (hmaxRel :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.summary.maxRel segments.summary.deadSegment segment)
+            index =
+          summary.maxRelTable.wordRAMStore.readWord? segment index)
+    (hargOffset :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.summary.argOffset segments.summary.deadSegment
+              segment) index =
+          summary.argOffsetTable.wordRAMStore.readWord? segment index)
+    (macroStart macroSpanCount : Nat) :
+    forall event,
+      List.Mem event
+          (globalTable.twoSpanCandidateTraceResultAtSegments summary
+            segments macroStart macroSpanCount).trace ->
+        event.matchesReadStore store := by
+  unfold PayloadLiveBPGlobalSparseBlockTable.twoSpanCandidateTraceResultAtSegments
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      globalTable.spanCandidateTraceResultAtSegments_matchesReadStore
+        summary segments store hglobal hbaseline hminRel hmaxRel hargOffset
+        macroStart (Nat.log2 macroSpanCount)
+  · apply WordRAM.TraceResult.map_trace_forall
+    exact
+      globalTable.spanCandidateTraceResultAtSegments_matchesReadStore
+        summary segments store hglobal hbaseline hminRel hmaxRel hargOffset
+        (macroStart + macroSpanCount - bpSparseLogSpan macroSpanCount)
+        (Nat.log2 macroSpanCount)
+
+theorem bpTwoLevelAdjacentMacroCandidateTraceResultAtSegments_matchesReadStore
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead blocksPerSuper superCount superWidth
+      relativeWidth summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (store : WordRAM.ReadStore)
+    (hlocalSpan :
+      forall macroIdx localStart count event,
+        List.Mem event
+          (localTable.twoSpanCandidateTraceResultAtSegments summary
+            segments macroIdx localStart count).trace ->
+          event.matchesReadStore store)
+    (macroStart localStart rightCount : Nat) :
+    forall event,
+      List.Mem event
+          (bpTwoLevelAdjacentMacroCandidateTraceResultAtSegments
+            localTable summary segments macroStart localStart rightCount).trace ->
+        event.matchesReadStore store := by
+  unfold bpTwoLevelAdjacentMacroCandidateTraceResultAtSegments
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact hlocalSpan macroStart localStart (macroSize - localStart)
+  · apply WordRAM.TraceResult.map_trace_forall
+    exact hlocalSpan (macroStart + 1) 0 rightCount
+
+theorem bpTwoLevelLeftMiddleMacroCandidateTraceResultAtSegments_matchesReadStore
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (store : WordRAM.ReadStore)
+    (hlocalSpan :
+      forall macroIdx localStart count event,
+        List.Mem event
+          (localTable.twoSpanCandidateTraceResultAtSegments summary
+            segments macroIdx localStart count).trace ->
+          event.matchesReadStore store)
+    (hglobalSpan :
+      forall macroStart macroSpanCount event,
+        List.Mem event
+          (globalTable.twoSpanCandidateTraceResultAtSegments summary
+            segments macroStart macroSpanCount).trace ->
+          event.matchesReadStore store)
+    (macroStart localStart middleMacroCount : Nat) :
+    forall event,
+      List.Mem event
+          (bpTwoLevelLeftMiddleMacroCandidateTraceResultAtSegments
+            localTable globalTable summary segments macroStart localStart
+            middleMacroCount).trace ->
+        event.matchesReadStore store := by
+  unfold bpTwoLevelLeftMiddleMacroCandidateTraceResultAtSegments
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact hlocalSpan macroStart localStart (macroSize - localStart)
+  · apply WordRAM.TraceResult.map_trace_forall
+    exact hglobalSpan (macroStart + 1) middleMacroCount
+
+theorem bpTwoLevelCrossMacroCandidateTraceResultAtSegments_matchesReadStore
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (store : WordRAM.ReadStore)
+    (hlocalSpan :
+      forall macroIdx localStart count event,
+        List.Mem event
+          (localTable.twoSpanCandidateTraceResultAtSegments summary
+            segments macroIdx localStart count).trace ->
+          event.matchesReadStore store)
+    (hglobalSpan :
+      forall macroStart macroSpanCount event,
+        List.Mem event
+          (globalTable.twoSpanCandidateTraceResultAtSegments summary
+            segments macroStart macroSpanCount).trace ->
+          event.matchesReadStore store)
+    (macroStart localStart middleMacroCount rightCount : Nat) :
+    forall event,
+      List.Mem event
+          (bpTwoLevelCrossMacroCandidateTraceResultAtSegments
+            localTable globalTable summary segments macroStart localStart
+            middleMacroCount rightCount).trace ->
+        event.matchesReadStore store := by
+  unfold bpTwoLevelCrossMacroCandidateTraceResultAtSegments
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact hlocalSpan macroStart localStart (macroSize - localStart)
+  · apply WordRAM.TraceResult.bind_trace_forall
+    · exact hglobalSpan (macroStart + 1) middleMacroCount
+    · apply WordRAM.TraceResult.map_trace_forall
+      exact hlocalSpan (macroStart + 1 + middleMacroCount) 0 rightCount
+
+theorem bpTwoLevelInteriorCandidateTraceResultAtSegments_matchesReadStore
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (store : WordRAM.ReadStore)
+    (hlocalSpan :
+      forall macroIdx localStart count event,
+        List.Mem event
+          (localTable.twoSpanCandidateTraceResultAtSegments summary
+            segments macroIdx localStart count).trace ->
+          event.matchesReadStore store)
+    (hglobalSpan :
+      forall macroStart macroSpanCount event,
+        List.Mem event
+          (globalTable.twoSpanCandidateTraceResultAtSegments summary
+            segments macroStart macroSpanCount).trace ->
+          event.matchesReadStore store)
+    (startBlock count : Nat) :
+    forall event,
+      List.Mem event
+          (bpTwoLevelInteriorCandidateTraceResultAtSegments localTable
+            globalTable summary segments startBlock count).trace ->
+        event.matchesReadStore store := by
+  unfold bpTwoLevelInteriorCandidateTraceResultAtSegments
+  by_cases hcount : count = 0
+  · simp [hcount]
+    exact
+      WordRAM.TraceResult.pure_trace_forall
+        (fun event => event.matchesReadStore store)
+        (none : Option (Nat × Nat))
+  · simp [hcount]
+    by_cases hwithin : count <= macroSize - startBlock % macroSize
+    · simp [hwithin]
+      exact hlocalSpan (startBlock / macroSize)
+        (startBlock % macroSize) count
+    · simp [hwithin]
+      by_cases hmiddle :
+          macroSize = 0 ∨
+            count - (macroSize - startBlock % macroSize) < macroSize
+      · simp [hmiddle]
+        exact
+          bpTwoLevelAdjacentMacroCandidateTraceResultAtSegments_matchesReadStore
+            localTable summary segments store hlocalSpan
+            (startBlock / macroSize) (startBlock % macroSize)
+            ((count - (macroSize - startBlock % macroSize)) % macroSize)
+      · simp [hmiddle]
+        by_cases hright :
+            (count - (macroSize - startBlock % macroSize)) %
+                macroSize = 0
+        · simp [hright]
+          exact
+            bpTwoLevelLeftMiddleMacroCandidateTraceResultAtSegments_matchesReadStore
+              localTable globalTable summary segments store
+              hlocalSpan hglobalSpan (startBlock / macroSize)
+              (startBlock % macroSize)
+              ((count - (macroSize - startBlock % macroSize)) / macroSize)
+        · simp [hright]
+          exact
+            bpTwoLevelCrossMacroCandidateTraceResultAtSegments_matchesReadStore
+              localTable globalTable summary segments store
+              hlocalSpan hglobalSpan (startBlock / macroSize)
+              (startBlock % macroSize)
+              ((count - (macroSize - startBlock % macroSize)) / macroSize)
+              ((count - (macroSize - startBlock % macroSize)) % macroSize)
 
 end SuccinctClose
 end RMQ

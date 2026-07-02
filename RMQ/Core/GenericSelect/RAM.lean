@@ -43,6 +43,17 @@ theorem wordRankTraceResult_refines_interpretedCosted
       wordRankInterpretedCosted target word limit := by
   rfl
 
+theorem wordRankTraceResult_matchesReadStore
+    (target : Bool) (word : List Bool) (limit : Nat)
+    (store : WordRAM.ReadStore) :
+    forall event,
+      event ∈ (wordRankTraceResult target word limit).trace ->
+        event.matchesReadStore store := by
+  intro event hmem
+  simp [wordRankTraceResult, WordRAM.Program.eval] at hmem ⊢
+  subst event
+  simp [WordRAM.TraceEvent.matchesReadStore]
+
 theorem wordRankInterpretedCosted_refines_rankBoolWordPrefix
     (target : Bool) (word : List Bool) (limit : Nat) :
     wordRankInterpretedCosted target word limit =
@@ -329,6 +340,25 @@ theorem rankTraceResult_refines_rankInterpretedCosted
     data.rankRegisterInterpretedCosted_refines_rankInterpretedCosted
       target pos
 
+theorem rankTraceResult_matchesReadStore
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data :
+      TwoLevelPayloadLiveStoredWordRankData
+        bits superOverhead blockOverhead queryCost)
+    (target : Bool) (pos : Nat) :
+    forall event,
+      event ∈ (data.rankTraceResult target pos).trace ->
+        event.matchesReadStore
+          (WordRAM.ReadStore.ofStore
+            (data.rankRegisterWordRAMStore target)) := by
+  intro event hmem
+  simpa [rankTraceResult, WordRAM.TraceResult.ofResult_trace,
+    WordRAM.TraceEvent.matchesReadStore_ofStore] using
+    WordRAM.Register.NatProgram.eval_reads_subset_payload
+      (data.rankRegisterProgram target (NatExpr.reg 0))
+      (data.rankRegisterWordRAMStore target)
+      (RegFile.withNat1 pos) event hmem
+
 theorem rankRegisterInterpretedCosted_cost_le
     {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
     (data :
@@ -359,6 +389,33 @@ end SuccinctRank
 namespace GenericSelect
 
 open SuccinctSpace SuccinctRank
+
+/-- Segment bases for the four one-word tables of a sparse/dense entry table. -/
+structure SparseDenseEntryTableTraceSegmentBases where
+  baseOccurrence : Nat
+  baseWordIndex : Nat
+  rankBefore : Nat
+  firstOffset : Nat
+  deadSegment : Nat
+deriving Repr
+
+/-- Segment bases for the compact sparse-exception directory trace. -/
+structure SparseExceptionDirectoryTraceSegmentBases where
+  rankBase : Nat
+  relativeBase : Nat
+  deadSegment : Nat
+deriving Repr
+
+/-- Segment bases for a full sparse-exception select trace. -/
+structure SparseExceptionSelectTraceSegmentLayout where
+  superTable : SparseDenseEntryTableTraceSegmentBases
+  localTable : SparseDenseEntryTableTraceSegmentBases
+  longFlagRankBase : Nat
+  longRelativeBase : Nat
+  sparseDirectory : SparseExceptionDirectoryTraceSegmentBases
+  bitWordBase : Nat
+  deadSegment : Nat
+deriving Repr
 
 namespace FixedWidthSparseDenseSelectDenseLocalEntryTable
 
@@ -422,6 +479,51 @@ def readTraceResult
                   ((table.firstOffsetTable.readProgram i).eval
                     table.firstOffsetTable.wordRAMStore))
 
+/--
+Trace-preserving read of the four-field entry table with each field table
+shifted into a caller-supplied global segment range.
+-/
+def readTraceResultRelabeled
+    {entries : List SparseDenseSelectDenseLocalEntry}
+    {fieldWidth : Nat}
+    (table :
+      FixedWidthSparseDenseSelectDenseLocalEntryTable
+        entries fieldWidth)
+    (layout : SparseDenseEntryTableTraceSegmentBases)
+    (i : Nat) :
+    WordRAM.TraceResult (Option SparseDenseSelectDenseLocalEntry) :=
+  WordRAM.TraceResult.bind
+    (WordRAM.TraceResult.relabelReadSegmentsWith
+      (WordRAM.singletonSegmentMap layout.baseOccurrence layout.deadSegment)
+      (WordRAM.TraceResult.ofResult
+        ((table.baseOccurrenceTable.readProgram i).eval
+          table.baseOccurrenceTable.wordRAMStore)))
+    fun baseOccurrence? =>
+      WordRAM.TraceResult.bind
+        (WordRAM.TraceResult.relabelReadSegmentsWith
+          (WordRAM.singletonSegmentMap layout.baseWordIndex layout.deadSegment)
+          (WordRAM.TraceResult.ofResult
+            ((table.baseWordIndexTable.readProgram i).eval
+              table.baseWordIndexTable.wordRAMStore)))
+        fun baseWordIndex? =>
+          WordRAM.TraceResult.bind
+            (WordRAM.TraceResult.relabelReadSegmentsWith
+              (WordRAM.singletonSegmentMap layout.rankBefore layout.deadSegment)
+              (WordRAM.TraceResult.ofResult
+                ((table.rankBeforeTable.readProgram i).eval
+                  table.rankBeforeTable.wordRAMStore)))
+            fun rankBefore? =>
+              WordRAM.TraceResult.map
+                (fun firstOffset? =>
+                  entryOfFields baseOccurrence? baseWordIndex?
+                    rankBefore? firstOffset?)
+                (WordRAM.TraceResult.relabelReadSegmentsWith
+                  (WordRAM.singletonSegmentMap
+                    layout.firstOffset layout.deadSegment)
+                  (WordRAM.TraceResult.ofResult
+                    ((table.firstOffsetTable.readProgram i).eval
+                      table.firstOffsetTable.wordRAMStore)))
+
 theorem readTraceResult_refines_interpretedCosted
     {entries : List SparseDenseSelectDenseLocalEntry}
     {fieldWidth : Nat}
@@ -432,6 +534,136 @@ theorem readTraceResult_refines_interpretedCosted
     (table.readTraceResult i).toCosted =
       table.readInterpretedCosted i := by
   rfl
+
+theorem readTraceResultRelabeled_refines_interpretedCosted
+    {entries : List SparseDenseSelectDenseLocalEntry}
+    {fieldWidth : Nat}
+    (table :
+      FixedWidthSparseDenseSelectDenseLocalEntryTable
+        entries fieldWidth)
+    (layout : SparseDenseEntryTableTraceSegmentBases)
+    (i : Nat) :
+    (table.readTraceResultRelabeled layout i).toCosted =
+      table.readInterpretedCosted i := by
+  simp [readTraceResultRelabeled, readInterpretedCosted,
+    WordRAM.TraceResult.bind_toCosted, WordRAM.TraceResult.map_toCosted,
+    WordRAM.TraceResult.ofResult_toCosted,
+    WordRAM.TraceResult.relabelReadSegmentsWith_toCosted, Costed.bind,
+    Costed.map]
+
+theorem readTraceResultRelabeled_matchesReadStore
+    {entries : List SparseDenseSelectDenseLocalEntry}
+    {fieldWidth : Nat}
+    (table :
+      FixedWidthSparseDenseSelectDenseLocalEntryTable
+        entries fieldWidth)
+    (layout : SparseDenseEntryTableTraceSegmentBases)
+    (store : WordRAM.ReadStore)
+    (hbaseOccurrence :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              layout.baseOccurrence layout.deadSegment segment) index =
+          table.baseOccurrenceTable.wordRAMStore.readWord? segment index)
+    (hbaseWordIndex :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              layout.baseWordIndex layout.deadSegment segment) index =
+          table.baseWordIndexTable.wordRAMStore.readWord? segment index)
+    (hrankBefore :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              layout.rankBefore layout.deadSegment segment) index =
+          table.rankBeforeTable.wordRAMStore.readWord? segment index)
+    (hfirstOffset :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              layout.firstOffset layout.deadSegment segment) index =
+          table.firstOffsetTable.wordRAMStore.readWord? segment index)
+    (i : Nat) :
+    forall event,
+      event ∈ (table.readTraceResultRelabeled layout i).trace ->
+        event.matchesReadStore store := by
+  unfold readTraceResultRelabeled
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      WordRAM.TraceResult.relabelReadSegmentsWith_matchesReadStore
+        (WordRAM.TraceResult.ofResult
+          ((table.baseOccurrenceTable.readProgram i).eval
+            table.baseOccurrenceTable.wordRAMStore))
+        (WordRAM.ReadStore.ofStore
+          table.baseOccurrenceTable.wordRAMStore)
+        store
+        (WordRAM.singletonSegmentMap
+          layout.baseOccurrence layout.deadSegment)
+        hbaseOccurrence
+        (by
+          intro event hmem
+          simpa [WordRAM.TraceResult.ofResult_trace,
+            WordRAM.TraceEvent.matchesReadStore_ofStore] using
+            WordRAM.Program.eval_reads_subset_payload
+              (table.baseOccurrenceTable.readProgram i)
+              table.baseOccurrenceTable.wordRAMStore event hmem)
+  · apply WordRAM.TraceResult.bind_trace_forall
+    · exact
+        WordRAM.TraceResult.relabelReadSegmentsWith_matchesReadStore
+          (WordRAM.TraceResult.ofResult
+            ((table.baseWordIndexTable.readProgram i).eval
+              table.baseWordIndexTable.wordRAMStore))
+          (WordRAM.ReadStore.ofStore
+            table.baseWordIndexTable.wordRAMStore)
+          store
+          (WordRAM.singletonSegmentMap
+            layout.baseWordIndex layout.deadSegment)
+          hbaseWordIndex
+          (by
+            intro event hmem
+            simpa [WordRAM.TraceResult.ofResult_trace,
+              WordRAM.TraceEvent.matchesReadStore_ofStore] using
+              WordRAM.Program.eval_reads_subset_payload
+                (table.baseWordIndexTable.readProgram i)
+                table.baseWordIndexTable.wordRAMStore event hmem)
+    · apply WordRAM.TraceResult.bind_trace_forall
+      · exact
+          WordRAM.TraceResult.relabelReadSegmentsWith_matchesReadStore
+            (WordRAM.TraceResult.ofResult
+              ((table.rankBeforeTable.readProgram i).eval
+                table.rankBeforeTable.wordRAMStore))
+            (WordRAM.ReadStore.ofStore
+              table.rankBeforeTable.wordRAMStore)
+            store
+            (WordRAM.singletonSegmentMap
+              layout.rankBefore layout.deadSegment)
+            hrankBefore
+            (by
+              intro event hmem
+              simpa [WordRAM.TraceResult.ofResult_trace,
+                WordRAM.TraceEvent.matchesReadStore_ofStore] using
+                WordRAM.Program.eval_reads_subset_payload
+                  (table.rankBeforeTable.readProgram i)
+                  table.rankBeforeTable.wordRAMStore event hmem)
+      · apply WordRAM.TraceResult.map_trace_forall
+        exact
+          WordRAM.TraceResult.relabelReadSegmentsWith_matchesReadStore
+            (WordRAM.TraceResult.ofResult
+              ((table.firstOffsetTable.readProgram i).eval
+                table.firstOffsetTable.wordRAMStore))
+            (WordRAM.ReadStore.ofStore
+              table.firstOffsetTable.wordRAMStore)
+            store
+            (WordRAM.singletonSegmentMap
+              layout.firstOffset layout.deadSegment)
+            hfirstOffset
+            (by
+              intro event hmem
+              simpa [WordRAM.TraceResult.ofResult_trace,
+                WordRAM.TraceEvent.matchesReadStore_ofStore] using
+                WordRAM.Program.eval_reads_subset_payload
+                  (table.firstOffsetTable.readProgram i)
+                  table.firstOffsetTable.wordRAMStore event hmem)
 
 theorem readInterpretedCosted_refines_readCosted
     {entries : List SparseDenseSelectDenseLocalEntry}
@@ -490,6 +722,19 @@ def relativeOffsetReadTraceResult
     (WordRAM.TraceResult.ofResult
       ((table.readProgram slot).eval table.wordRAMStore))
 
+/-- Trace-preserving relative-offset read with payload reads shifted. -/
+def relativeOffsetReadTraceResultRelabeled
+    {entries : List Nat} {width : Nat}
+    (segmentBase deadSegment : Nat)
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (base slot : Nat) : WordRAM.TraceResult (Option Nat) :=
+  WordRAM.TraceResult.map
+    (fun offset? => offset?.map (fun offset => base + offset))
+    (WordRAM.TraceResult.relabelReadSegmentsWith
+      (WordRAM.singletonSegmentMap segmentBase deadSegment)
+      (WordRAM.TraceResult.ofResult
+        ((table.readProgram slot).eval table.wordRAMStore)))
+
 theorem relativeOffsetReadTraceResult_refines_interpretedCosted
     {entries : List Nat} {width : Nat}
     (table : SuccinctSpace.FixedWidthNatTable entries width)
@@ -497,6 +742,54 @@ theorem relativeOffsetReadTraceResult_refines_interpretedCosted
     (relativeOffsetReadTraceResult table base slot).toCosted =
       relativeOffsetReadInterpretedCosted table base slot := by
   rfl
+
+theorem relativeOffsetReadTraceResultRelabeled_refines_interpretedCosted
+    {entries : List Nat} {width : Nat}
+    (segmentBase deadSegment : Nat)
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (base slot : Nat) :
+    (relativeOffsetReadTraceResultRelabeled
+      segmentBase deadSegment table base slot).toCosted =
+      relativeOffsetReadInterpretedCosted table base slot := by
+  simp [relativeOffsetReadTraceResultRelabeled,
+    relativeOffsetReadInterpretedCosted,
+    WordRAM.TraceResult.map_toCosted,
+    WordRAM.TraceResult.ofResult_toCosted,
+    WordRAM.TraceResult.relabelReadSegmentsWith_toCosted]
+
+theorem relativeOffsetReadTraceResultRelabeled_matchesReadStore
+    {entries : List Nat} {width : Nat}
+    (segmentBase deadSegment : Nat)
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (store : WordRAM.ReadStore)
+    (hread :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap segmentBase deadSegment segment)
+            index =
+          table.wordRAMStore.readWord? segment index)
+    (base slot : Nat) :
+    forall event,
+      event ∈
+          (relativeOffsetReadTraceResultRelabeled
+            segmentBase deadSegment table base slot).trace ->
+        event.matchesReadStore store := by
+  unfold relativeOffsetReadTraceResultRelabeled
+  apply WordRAM.TraceResult.map_trace_forall
+  exact
+    WordRAM.TraceResult.relabelReadSegmentsWith_matchesReadStore
+      (WordRAM.TraceResult.ofResult
+        ((table.readProgram slot).eval table.wordRAMStore))
+      (WordRAM.ReadStore.ofStore table.wordRAMStore)
+      store
+      (WordRAM.singletonSegmentMap segmentBase deadSegment)
+      hread
+      (by
+        intro event hmem
+        simpa [WordRAM.TraceResult.ofResult_trace,
+          WordRAM.TraceEvent.matchesReadStore_ofStore] using
+          WordRAM.Program.eval_reads_subset_payload
+            (table.readProgram slot) table.wordRAMStore event hmem)
 
 theorem relativeOffsetReadInterpretedCosted_refines
     {entries : List Nat} {width : Nat}
@@ -530,6 +823,17 @@ theorem wordSelectTraceResult_refines_interpretedCosted
     (wordSelectTraceResult target word occurrence).toCosted =
       wordSelectInterpretedCosted target word occurrence := by
   rfl
+
+theorem wordSelectTraceResult_matchesReadStore
+    (target : Bool) (word : List Bool) (occurrence : Nat)
+    (store : WordRAM.ReadStore) :
+    forall event,
+      event ∈ (wordSelectTraceResult target word occurrence).trace ->
+        event.matchesReadStore store := by
+  intro event hmem
+  simp [wordSelectTraceResult, WordRAM.Program.eval] at hmem ⊢
+  subst event
+  simp [WordRAM.TraceEvent.matchesReadStore]
 
 theorem wordSelectInterpretedCosted_refines_selectBoolWord
     (target : Bool) (word : List Bool) (occurrence : Nat) :
@@ -649,6 +953,21 @@ def denseTwoWordSelectTraceResult
                               (wordSelectTraceResult target secondWord
                                 (localOccurrence - firstCount))
 
+/--
+Trace-preserving dense two-word select branch with packed BP-code word reads
+shifted into a caller-supplied segment range.
+-/
+def denseTwoWordSelectTraceResultRelabeled
+    (bitWordSegmentBase deadSegment : Nat)
+    (target : Bool) {bits : List Bool} {wordSize : Nat}
+    (bitWords : SuccinctSpace.BoundedPayloadWordStore bits wordSize)
+    (basePosition baseOccurrence q : Nat) :
+    WordRAM.TraceResult (Option Nat) :=
+  WordRAM.TraceResult.relabelReadSegmentsWith
+    (WordRAM.singletonSegmentMap bitWordSegmentBase deadSegment)
+    (denseTwoWordSelectTraceResult
+      target bitWords basePosition baseOccurrence q)
+
 theorem denseTwoWordSelectTraceResult_refines_interpretedCosted
     (target : Bool) {bits : List Bool} {wordSize : Nat}
     (bitWords : SuccinctSpace.BoundedPayloadWordStore bits wordSize)
@@ -758,6 +1077,159 @@ theorem denseTwoWordSelectTraceResult_refines_interpretedCosted
                   WordRAM.TraceResult.steps] using congrArg Costed.cost hsel
               rw [hcost, Nat.add_comm]
 
+theorem denseTwoWordSelectTraceResultRelabeled_refines_interpretedCosted
+    (bitWordSegmentBase deadSegment : Nat)
+    (target : Bool) {bits : List Bool} {wordSize : Nat}
+    (bitWords : SuccinctSpace.BoundedPayloadWordStore bits wordSize)
+    (basePosition baseOccurrence q : Nat) :
+    (denseTwoWordSelectTraceResultRelabeled bitWordSegmentBase deadSegment
+      target bitWords basePosition baseOccurrence q).toCosted =
+      denseTwoWordSelectInterpretedCosted
+        target bitWords basePosition baseOccurrence q := by
+  simp [denseTwoWordSelectTraceResultRelabeled,
+    denseTwoWordSelectTraceResult_refines_interpretedCosted]
+
+theorem denseTwoWordSelectTraceResult_matchesReadStore
+    (target : Bool) {bits : List Bool} {wordSize : Nat}
+    (bitWords : SuccinctSpace.BoundedPayloadWordStore bits wordSize)
+    (basePosition baseOccurrence q : Nat) :
+    forall event,
+      event ∈
+          (denseTwoWordSelectTraceResult
+            target bitWords basePosition baseOccurrence q).trace ->
+        event.matchesReadStore
+          (WordRAM.ReadStore.ofStore bitWords.store.wordRAMStore) := by
+  unfold denseTwoWordSelectTraceResult
+  apply WordRAM.TraceResult.bind_trace_forall
+  · intro event hmem
+    simpa [WordRAM.TraceResult.ofResult_trace,
+      WordRAM.TraceEvent.matchesReadStore_ofStore] using
+      WordRAM.Program.eval_reads_subset_payload
+        (bitWords.store.readProgram (basePosition / wordSize))
+        bitWords.store.wordRAMStore event hmem
+  · cases hfirst :
+      (WordRAM.TraceResult.ofResult
+        ((bitWords.store.readProgram (basePosition / wordSize)).eval
+          bitWords.store.wordRAMStore)).value with
+    | none =>
+        exact WordRAM.TraceResult.pure_trace_forall _ none
+    | some firstWord =>
+        apply WordRAM.TraceResult.bind_trace_forall
+        · exact
+            SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordRankTraceResult_matchesReadStore
+              target firstWord
+              (basePosition - basePosition / wordSize * wordSize)
+              (WordRAM.ReadStore.ofStore bitWords.store.wordRAMStore)
+        · apply WordRAM.TraceResult.bind_trace_forall
+          · exact
+              SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordRankTraceResult_matchesReadStore
+                target firstWord firstWord.length
+                (WordRAM.ReadStore.ofStore bitWords.store.wordRAMStore)
+          · by_cases hlt :
+                q - baseOccurrence <
+                  (SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordRankTraceResult
+                    target firstWord firstWord.length).value -
+                    (SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordRankTraceResult
+                      target firstWord
+                      (basePosition - basePosition / wordSize * wordSize)).value
+            · intro event hmem
+              simp [hlt] at hmem
+              exact
+                (WordRAM.TraceResult.map_trace_forall
+                  (fun event =>
+                    event.matchesReadStore
+                      (WordRAM.ReadStore.ofStore
+                        bitWords.store.wordRAMStore))
+                  (fun local? =>
+                    local?.map fun offset =>
+                      basePosition / wordSize * wordSize + offset)
+                  (wordSelectTraceResult target firstWord
+                    ((SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordRankTraceResult
+                      target firstWord
+                      (basePosition - basePosition / wordSize * wordSize)).value +
+                      (q - baseOccurrence)))
+                  (wordSelectTraceResult_matchesReadStore target firstWord
+                    ((SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordRankTraceResult
+                      target firstWord
+                      (basePosition - basePosition / wordSize * wordSize)).value +
+                      (q - baseOccurrence))
+                    (WordRAM.ReadStore.ofStore
+                      bitWords.store.wordRAMStore))) event hmem
+            · intro event hmem
+              simp [hlt] at hmem
+              rcases hmem with hmem | hmem
+              · subst event
+                simp [WordRAM.TraceEvent.matchesReadStore,
+                  WordRAM.ReadStore.ofStore,
+                  SuccinctSpace.PayloadWordStore.wordRAMStore,
+                  WordRAM.Store.readWord?]
+              · cases hsecond :
+                    bitWords.store.words[basePosition / wordSize + 1]? with
+                | none =>
+                    simp [hsecond] at hmem
+                | some secondWord =>
+                    simp [hsecond] at hmem
+                    exact
+                      (WordRAM.TraceResult.map_trace_forall
+                        (fun event =>
+                          event.matchesReadStore
+                            (WordRAM.ReadStore.ofStore
+                              bitWords.store.wordRAMStore))
+                        (fun local? =>
+                          local?.map fun offset =>
+                            (basePosition / wordSize + 1) *
+                                wordSize + offset)
+                        (wordSelectTraceResult target secondWord
+                          (q - baseOccurrence -
+                            ((SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordRankTraceResult
+                              target firstWord firstWord.length).value -
+                              (SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordRankTraceResult
+                                target firstWord
+                                (basePosition -
+                                  basePosition / wordSize *
+                                    wordSize)).value)))
+                        (wordSelectTraceResult_matchesReadStore target
+                          secondWord
+                          (q - baseOccurrence -
+                            ((SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordRankTraceResult
+                              target firstWord firstWord.length).value -
+                              (SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordRankTraceResult
+                                target firstWord
+                                (basePosition -
+                                  basePosition / wordSize *
+                                    wordSize)).value))
+                          (WordRAM.ReadStore.ofStore
+                            bitWords.store.wordRAMStore))) event hmem
+
+theorem denseTwoWordSelectTraceResultRelabeled_matchesReadStore
+    (bitWordSegmentBase deadSegment : Nat)
+    (target : Bool) {bits : List Bool} {wordSize : Nat}
+    (bitWords : SuccinctSpace.BoundedPayloadWordStore bits wordSize)
+    (store : WordRAM.ReadStore)
+    (hread :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              bitWordSegmentBase deadSegment segment) index =
+          bitWords.store.wordRAMStore.readWord? segment index)
+    (basePosition baseOccurrence q : Nat) :
+    forall event,
+      event ∈
+          (denseTwoWordSelectTraceResultRelabeled
+            bitWordSegmentBase deadSegment target bitWords
+            basePosition baseOccurrence q).trace ->
+        event.matchesReadStore store := by
+  exact
+    WordRAM.TraceResult.relabelReadSegmentsWith_matchesReadStore
+      (denseTwoWordSelectTraceResult
+        target bitWords basePosition baseOccurrence q)
+      (WordRAM.ReadStore.ofStore bitWords.store.wordRAMStore)
+      store
+      (WordRAM.singletonSegmentMap bitWordSegmentBase deadSegment)
+      hread
+      (denseTwoWordSelectTraceResult_matchesReadStore
+        target bitWords basePosition baseOccurrence q)
+
 theorem denseTwoWordSelectInterpretedCosted_refines
     (target : Bool) {bits : List Bool} {wordSize : Nat}
     (bitWords : SuccinctSpace.BoundedPayloadWordStore bits wordSize)
@@ -825,6 +1297,27 @@ def readTraceResult
         (relativeSplitSelectSparseCompactSlot
           exceptionRank localOccurrence directory.localStride)
 
+/-- Trace-preserving sparse-exception directory read with shifted rank/table reads. -/
+def readTraceResultRelabeled
+    {bits : List Bool} {target : Bool}
+    {rankSuperOverhead rankBlockOverhead : Nat}
+    (directory :
+      SparseExceptionDirectory
+        bits target rankSuperOverhead rankBlockOverhead)
+    (layout : SparseExceptionDirectoryTraceSegmentBases)
+    (base localSlot localOccurrence : Nat) :
+    WordRAM.TraceResult (Option Nat) :=
+  WordRAM.TraceResult.bind
+    (WordRAM.TraceResult.relabelReadSegmentsWith
+      (WordRAM.tripleSegmentMap layout.rankBase layout.deadSegment)
+      (directory.rankData.rankTraceResult true localSlot))
+    fun exceptionRank =>
+      relativeOffsetReadTraceResultRelabeled layout.relativeBase
+        layout.deadSegment
+        directory.relativeTable base
+        (relativeSplitSelectSparseCompactSlot
+          exceptionRank localOccurrence directory.localStride)
+
 theorem readTraceResult_refines_interpretedCosted
     {bits : List Bool} {target : Bool}
     {rankSuperOverhead rankBlockOverhead : Nat}
@@ -837,6 +1330,69 @@ theorem readTraceResult_refines_interpretedCosted
   simp [readTraceResult, readInterpretedCosted,
     SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankTraceResult_refines_rankInterpretedCosted,
     relativeOffsetReadTraceResult_refines_interpretedCosted]
+
+theorem readTraceResultRelabeled_refines_interpretedCosted
+    {bits : List Bool} {target : Bool}
+    {rankSuperOverhead rankBlockOverhead : Nat}
+    (directory :
+      SparseExceptionDirectory
+        bits target rankSuperOverhead rankBlockOverhead)
+    (layout : SparseExceptionDirectoryTraceSegmentBases)
+    (base localSlot localOccurrence : Nat) :
+    (directory.readTraceResultRelabeled
+      layout base localSlot localOccurrence).toCosted =
+      directory.readInterpretedCosted base localSlot localOccurrence := by
+  simp [readTraceResultRelabeled, readInterpretedCosted,
+    WordRAM.TraceResult.bind_toCosted,
+    WordRAM.TraceResult.relabelReadSegmentsWith_toCosted,
+    SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankTraceResult_refines_rankInterpretedCosted,
+    relativeOffsetReadTraceResultRelabeled_refines_interpretedCosted]
+
+theorem readTraceResultRelabeled_matchesReadStore
+    {bits : List Bool} {target : Bool}
+    {rankSuperOverhead rankBlockOverhead : Nat}
+    (directory :
+      SparseExceptionDirectory
+        bits target rankSuperOverhead rankBlockOverhead)
+    (layout : SparseExceptionDirectoryTraceSegmentBases)
+    (store : WordRAM.ReadStore)
+    (hrank :
+      forall segment index,
+        store.readWord?
+            (WordRAM.tripleSegmentMap layout.rankBase
+              layout.deadSegment segment) index =
+          (directory.rankData.rankRegisterWordRAMStore true).readWord?
+            segment index)
+    (hrelative :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              layout.relativeBase layout.deadSegment segment) index =
+          directory.relativeTable.wordRAMStore.readWord? segment index)
+    (base localSlot localOccurrence : Nat) :
+    forall event,
+      event ∈
+          (directory.readTraceResultRelabeled
+            layout base localSlot localOccurrence).trace ->
+        event.matchesReadStore store := by
+  unfold readTraceResultRelabeled
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      WordRAM.TraceResult.relabelReadSegmentsWith_matchesReadStore
+        (directory.rankData.rankTraceResult true localSlot)
+        (WordRAM.ReadStore.ofStore
+          (directory.rankData.rankRegisterWordRAMStore true))
+        store
+        (WordRAM.tripleSegmentMap layout.rankBase layout.deadSegment)
+        hrank
+        (directory.rankData.rankTraceResult_matchesReadStore true localSlot)
+  · exact
+      relativeOffsetReadTraceResultRelabeled_matchesReadStore
+        layout.relativeBase layout.deadSegment
+        directory.relativeTable store hrelative base
+        (relativeSplitSelectSparseCompactSlot
+          (directory.rankData.rankTraceResult true localSlot).value
+          localOccurrence directory.localStride)
 
 theorem readInterpretedCosted_refines_readCosted
     {bits : List Bool} {target : Bool}
@@ -993,6 +1549,319 @@ def selectTraceResult
                         super loc) q
   else
     WordRAM.TraceResult.pure none
+
+/--
+Trace-preserving sparse-exception select query with payload reads shifted into a
+caller-supplied global segment layout.
+-/
+def selectTraceResultRelabeled
+    {bits : List Bool} {target : Bool}
+    {rankSuperOverhead rankBlockOverhead : Nat}
+    (data :
+      SparseExceptionSelectData
+        bits target rankSuperOverhead rankBlockOverhead)
+    (layout : SparseExceptionSelectTraceSegmentLayout)
+    (idx : Nat) : WordRAM.TraceResult (Option Nat) :=
+  let q := data.queryOccurrence idx
+  if idx < occurrenceCount bits target then
+    WordRAM.TraceResult.bind
+      (data.superTable.readTraceResultRelabeled
+        layout.superTable
+        (selectSuperSlot q data.superStride)) fun super? =>
+      match super? with
+      | none => WordRAM.TraceResult.pure none
+      | some super =>
+          if relativeSplitSelectEntryIsMarked super then
+            WordRAM.TraceResult.bind
+              (WordRAM.TraceResult.relabelReadSegmentsWith
+                (WordRAM.tripleSegmentMap
+                  layout.longFlagRankBase layout.deadSegment)
+                (data.longFlagRankData.rankTraceResult true
+                  (selectSuperSlot q data.superStride)))
+              fun exceptionRank =>
+                relativeOffsetReadTraceResultRelabeled
+                  layout.longRelativeBase layout.deadSegment
+                  data.longSuperRelativeTable
+                  (relativeSplitSelectEntryBasePosition
+                    data.wordSize super)
+                  (relativeSplitSelectLongCompactSlot
+                    exceptionRank (q - super.baseOccurrence)
+                    data.superStride)
+          else
+            let localSlot :=
+              relativeSplitSelectLocalSlot q data.superStride
+                data.localSlotsPerSuper data.localStride super
+            WordRAM.TraceResult.bind
+              (data.localTable.readTraceResultRelabeled
+                layout.localTable localSlot) fun loc? =>
+              match loc? with
+              | none => WordRAM.TraceResult.pure none
+              | some loc =>
+                  if relativeSplitSelectEntryIsMarked loc then
+                    data.sparseDirectory.readTraceResultRelabeled
+                      layout.sparseDirectory
+                      (relativeSplitSelectLocalBasePosition
+                        data.wordSize super loc)
+                      localSlot
+                      (q -
+                        relativeSplitSelectLocalBaseOccurrence
+                          super loc)
+                  else
+                    denseTwoWordSelectTraceResultRelabeled
+                      layout.bitWordBase layout.deadSegment
+                      target data.bitWords
+                      (relativeSplitSelectLocalBasePosition
+                        data.wordSize super loc)
+                      (relativeSplitSelectLocalBaseOccurrence
+                        super loc) q
+  else
+    WordRAM.TraceResult.pure none
+
+theorem selectTraceResultRelabeled_trace_forall
+    {bits : List Bool} {target : Bool}
+    {rankSuperOverhead rankBlockOverhead : Nat}
+    (data :
+      SparseExceptionSelectData
+        bits target rankSuperOverhead rankBlockOverhead)
+    (layout : SparseExceptionSelectTraceSegmentLayout)
+    (idx : Nat)
+    (P : WordRAM.TraceEvent -> Prop)
+    (hsuper :
+      forall slot event,
+        event ∈
+          (data.superTable.readTraceResultRelabeled
+            layout.superTable slot).trace ->
+          P event)
+    (hlongRank :
+      forall slot event,
+        event ∈
+          (WordRAM.TraceResult.relabelReadSegmentsWith
+            (WordRAM.tripleSegmentMap
+              layout.longFlagRankBase layout.deadSegment)
+            (data.longFlagRankData.rankTraceResult true slot)).trace ->
+          P event)
+    (hlongRelative :
+      forall base slot event,
+        event ∈
+          (relativeOffsetReadTraceResultRelabeled
+            layout.longRelativeBase layout.deadSegment
+            data.longSuperRelativeTable base slot).trace ->
+          P event)
+    (hlocal :
+      forall slot event,
+        event ∈
+          (data.localTable.readTraceResultRelabeled
+            layout.localTable slot).trace ->
+          P event)
+    (hsparse :
+      forall base localSlot localOccurrence event,
+        event ∈
+          (data.sparseDirectory.readTraceResultRelabeled
+            layout.sparseDirectory base localSlot localOccurrence).trace ->
+          P event)
+    (hdense :
+      forall basePosition baseOccurrence q event,
+        event ∈
+          (denseTwoWordSelectTraceResultRelabeled
+            layout.bitWordBase layout.deadSegment
+            target data.bitWords basePosition baseOccurrence q).trace ->
+          P event) :
+    forall event,
+      event ∈ (data.selectTraceResultRelabeled layout idx).trace ->
+        P event := by
+  unfold selectTraceResultRelabeled
+  by_cases hvalid : idx < occurrenceCount bits target
+  · intro event hmem
+    simp [hvalid, WordRAM.TraceResult.bind] at hmem
+    rcases hmem with hmem | hmem
+    · exact hsuper
+        (selectSuperSlot (data.queryOccurrence idx) data.superStride)
+        event hmem
+    · cases hsuperValue :
+        (data.superTable.readTraceResultRelabeled layout.superTable
+          (selectSuperSlot (data.queryOccurrence idx)
+            data.superStride)).value with
+      | none =>
+          simp [hsuperValue] at hmem
+      | some super =>
+          by_cases hlong :
+              relativeSplitSelectEntryIsMarked super = true
+          · simp [hsuperValue, hlong] at hmem
+            rcases hmem with hmem | hmem
+            · have hmemRelabeled :
+                  event ∈
+                    (WordRAM.TraceResult.relabelReadSegmentsWith
+                      (WordRAM.tripleSegmentMap
+                        layout.longFlagRankBase layout.deadSegment)
+                      (data.longFlagRankData.rankTraceResult true
+                        (selectSuperSlot (data.queryOccurrence idx)
+                          data.superStride))).trace := by
+                simpa [WordRAM.TraceResult.relabelReadSegmentsWith] using
+                  (List.mem_map.mpr hmem)
+              exact hlongRank
+                (selectSuperSlot (data.queryOccurrence idx)
+                  data.superStride)
+                event hmemRelabeled
+            · exact hlongRelative
+                (relativeSplitSelectEntryBasePosition
+                  data.wordSize super)
+                (relativeSplitSelectLongCompactSlot
+                  (data.longFlagRankData.rankTraceResult true
+                    (selectSuperSlot (data.queryOccurrence idx)
+                      data.superStride)).value
+                  (data.queryOccurrence idx - super.baseOccurrence)
+                  data.superStride)
+                event hmem
+          · simp [hsuperValue, hlong] at hmem
+            let localSlot :=
+              relativeSplitSelectLocalSlot (data.queryOccurrence idx)
+                data.superStride data.localSlotsPerSuper
+                data.localStride super
+            rcases hmem with hmem | hmem
+            · exact hlocal localSlot event hmem
+            · cases hlocalValue :
+                (data.localTable.readTraceResultRelabeled
+                  layout.localTable localSlot).value with
+              | none =>
+                  simp [hlocalValue, localSlot] at hmem
+              | some loc =>
+                  by_cases hsparseBranch :
+                      relativeSplitSelectEntryIsMarked loc = true
+                  · exact hsparse
+                      (relativeSplitSelectLocalBasePosition
+                        data.wordSize super loc)
+                      localSlot
+                      (data.queryOccurrence idx -
+                        relativeSplitSelectLocalBaseOccurrence
+                          super loc)
+                      event
+                      (by
+                        simpa [hlocalValue, hsparseBranch, localSlot] using
+                          hmem)
+                  · exact hdense
+                      (relativeSplitSelectLocalBasePosition
+                        data.wordSize super loc)
+                      (relativeSplitSelectLocalBaseOccurrence
+                        super loc)
+                      (data.queryOccurrence idx)
+                      event
+                      (by
+                        simpa [hlocalValue, hsparseBranch, localSlot] using
+                          hmem)
+  · intro event hmem
+    simp [hvalid] at hmem
+
+set_option linter.unusedSimpArgs false in
+theorem selectTraceResultRelabeled_refines_interpretedCosted
+    {bits : List Bool} {target : Bool}
+    {rankSuperOverhead rankBlockOverhead : Nat}
+    (data :
+      SparseExceptionSelectData
+        bits target rankSuperOverhead rankBlockOverhead)
+    (layout : SparseExceptionSelectTraceSegmentLayout)
+    (idx : Nat) :
+    (data.selectTraceResultRelabeled layout idx).toCosted =
+      data.selectInterpretedCosted idx := by
+  unfold selectTraceResultRelabeled selectInterpretedCosted
+  by_cases hvalid : idx < occurrenceCount bits target
+  · simp [hvalid, WordRAM.TraceResult.bind_toCosted,
+      data.superTable.readTraceResultRelabeled_refines_interpretedCosted
+        layout.superTable
+        (selectSuperSlot (data.queryOccurrence idx) data.superStride)]
+    cases hsuper :
+        (data.superTable.readInterpretedCosted
+          (selectSuperSlot (data.queryOccurrence idx)
+            data.superStride)).value with
+    | none =>
+        simp [Costed.bind, Costed.pure, hsuper]
+    | some super =>
+        by_cases hlong :
+            relativeSplitSelectEntryIsMarked super = true
+        · simp [Costed.bind, hsuper, hlong,
+            WordRAM.TraceResult.bind_toCosted,
+            WordRAM.TraceResult.relabelReadSegmentsWith_toCosted,
+            data.longFlagRankData.rankTraceResult_refines_rankInterpretedCosted,
+            relativeOffsetReadTraceResultRelabeled_refines_interpretedCosted]
+        · let localSlot :=
+            relativeSplitSelectLocalSlot (data.queryOccurrence idx)
+              data.superStride data.localSlotsPerSuper data.localStride super
+          simp [Costed.bind, hsuper, hlong,
+            WordRAM.TraceResult.bind_toCosted,
+            localSlot,
+            data.localTable.readTraceResultRelabeled_refines_interpretedCosted
+              layout.localTable localSlot]
+          cases hlocal :
+              (data.localTable.readInterpretedCosted localSlot).value with
+          | none =>
+              have hlocalTrace :=
+                data.localTable.readTraceResultRelabeled_refines_interpretedCosted
+                  layout.localTable localSlot
+              have hlocalTraceValue :
+                  (data.localTable.readTraceResultRelabeled
+                    layout.localTable localSlot).value = none := by
+                have hv := congrArg Costed.value hlocalTrace
+                simpa [WordRAM.TraceResult.toCosted, hlocal] using hv
+              have hlocalTraceCost :
+                  (data.localTable.readTraceResultRelabeled
+                    layout.localTable localSlot).trace.length =
+                    (data.localTable.readInterpretedCosted localSlot).cost := by
+                simpa [WordRAM.TraceResult.toCosted,
+                  WordRAM.TraceResult.steps] using
+                  congrArg Costed.cost hlocalTrace
+              simp [Costed.pure]
+          | some loc =>
+              have hlocalTrace :=
+                data.localTable.readTraceResultRelabeled_refines_interpretedCosted
+                  layout.localTable localSlot
+              have hlocalTraceValue :
+                  (data.localTable.readTraceResultRelabeled
+                    layout.localTable localSlot).value =
+                    some loc := by
+                have hv := congrArg Costed.value hlocalTrace
+                simpa [WordRAM.TraceResult.toCosted, hlocal] using hv
+              have hlocalTraceCost :
+                  (data.localTable.readTraceResultRelabeled
+                    layout.localTable localSlot).trace.length =
+                    (data.localTable.readInterpretedCosted localSlot).cost := by
+                simpa [WordRAM.TraceResult.toCosted,
+                  WordRAM.TraceResult.steps] using
+                  congrArg Costed.cost hlocalTrace
+              by_cases hsparse :
+                  relativeSplitSelectEntryIsMarked loc = true
+              · simp [Costed.bind, hlocal, hsparse, localSlot,
+                  hlocalTraceValue, hlocalTraceCost]
+                have hchild :=
+                  data.sparseDirectory.readTraceResultRelabeled_refines_interpretedCosted
+                    layout.sparseDirectory
+                    (relativeSplitSelectLocalBasePosition
+                      data.wordSize super loc)
+                    (relativeSplitSelectLocalSlot (data.queryOccurrence idx)
+                      data.superStride data.localSlotsPerSuper
+                      data.localStride super)
+                    (data.queryOccurrence idx -
+                      relativeSplitSelectLocalBaseOccurrence super loc)
+                constructor
+                · simpa [WordRAM.TraceResult.toCosted] using
+                    congrArg Costed.value hchild
+                · simpa [WordRAM.TraceResult.toCosted,
+                    WordRAM.TraceResult.steps] using
+                    congrArg Costed.cost hchild
+              · simp [Costed.bind, hlocal, hsparse, localSlot,
+                  hlocalTraceValue, hlocalTraceCost]
+                have hdense :=
+                  denseTwoWordSelectTraceResultRelabeled_refines_interpretedCosted
+                    layout.bitWordBase layout.deadSegment target data.bitWords
+                    (relativeSplitSelectLocalBasePosition
+                      data.wordSize super loc)
+                    (relativeSplitSelectLocalBaseOccurrence super loc)
+                    (data.queryOccurrence idx)
+                constructor
+                · simpa [WordRAM.TraceResult.toCosted] using
+                    congrArg Costed.value hdense
+                · simpa [WordRAM.TraceResult.toCosted,
+                    WordRAM.TraceResult.steps] using
+                    congrArg Costed.cost hdense
+  · simp [hvalid, Costed.pure]
 
 set_option linter.unusedSimpArgs false in
 theorem selectTraceResult_refines_interpretedCosted

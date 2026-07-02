@@ -93,9 +93,32 @@ abbrev succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime :=
 Its query clauses include the explicit hypothesis `2^128 <= shape.size`; under
 that premise the compact close/LCA leg routes through the positive-block
 local/fringe/interior structural trace replay rather than the all-size
-fallback. The remaining hardening frontier is a global store/provenance theorem
-for the combined event stream, not another uncharged local/fringe/interior
-decoder boundary on that large-regime path.
+fallback.
+
+The strongest all-size execution-story theorem is the global-store companion:
+
+```lean
+abbrev succinctRMQGlobalPayloadStoreExecutionStory :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story
+```
+
+It says the public costed query refines the unified `WordRAM.TraceEvent` stream,
+every event is either a payload read or an explicitly counted word primitive,
+and every payload read agrees with one concrete global store built from the
+final succinct RMQ payload components. Tiny/inactive close-navigation fallback
+work appears only as synthetic word-primitive events, not as payload reads.
+
+The large-regime positive-replay companion is:
+
+```lean
+abbrev succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_execution_story
+```
+
+It adds the explicit premise `2^128 <= shape.size` and uses the structural
+local/fringe/interior close-navigation replay on the compact close/LCA leg. As
+before, these are word-RAM model statements; they are not Lean-runtime claims
+and not a general CPU semantics.
 
 ## Theorem Statement
 

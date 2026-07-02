@@ -565,11 +565,14 @@ proved equal to the existing costed query.  This closes the main oracle-shaped
 gap in the public succinct RMQ theorem without changing the reference
 semantics, payload accounting, or public cost bound.
 
-The remaining stronger target is a global payload-store provenance theorem for
-the unified lower-level event stream.  The closed outer controller and the
-large-regime `WordRAM.TraceEvent` stream have now landed; the next hardening
-step is segment relabeling plus one combined payload layout, so component
-traces no longer rely on local segment numbering.
+Update: the global payload-store provenance theorem for the final RMQ stream is
+now total.  `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` points
+to the all-size theorem with no `2^128 <= shape.size` premise, while
+`RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory` names
+the positive-block structural replay companion.  The segment relabeling layer
+and combined payload layout are in place for both theorem surfaces, so the
+remaining work is broader reuse and packaging of this execution-story style
+rather than this specific final-query provenance gap.
 
 ## Fixedpoint Conclusion
 
