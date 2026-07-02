@@ -304,6 +304,22 @@ before, but close navigation is not yet fully replayed from payload tables. A
 skeptical grad student should now ask for the exact theorem that replaces each
 remaining decoder leaf by payload-read events.
 
+2026-07-01 update: the large-regime companion has landed as
+`RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime`.
+Conceptually, this does not change the `2*n + o(n)`, constant-query theorem
+shape; it strengthens the execution story under the explicit size premise
+`2^128 <= shape.size`. In that regime, the compact close/LCA part of the final
+query no longer treats local BP decoding, endpoint fringes, or the relative-rmM
+interior query as the same all-size charged fallback boundary. Those pieces are
+replayed through structural `WordRAM.TraceEvent` traces and consumed by the
+final BP-native RMQ profile. Plain English: for the large canonical regime, the
+query trace is now much closer to "read these payload words and run these word
+operations" instead of "call this trusted close-navigation black box." The live
+assumption is still the word-RAM model itself, plus the fact that the current
+large-regime theorem is not the all-input fallback theorem. A skeptical grad
+student should next ask for the global store/provenance theorem tying all
+events in the combined stream to one concrete payload store.
+
 ## Digestion Tasks
 
 1. Turn the RMQ capstone into a two-page lecture-style proof map:

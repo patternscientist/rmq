@@ -165,14 +165,15 @@ machine-word-bound theorems as the current `Program.eval` boundary.
 The final `answerClose + 1` rank query is now routed through
 `SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterInterpretedCosted`,
 which refines the earlier interpreted rank query while computing the super
-sample, block sample, and bit-word addresses from a register expression.  The
-current word-trace theorem flattens the outer query controller to one
+sample, block sample, and bit-word addresses from a register expression. The
+current all-size word-trace theorem flattens the outer query controller to one
 `WordRAM.TraceEvent` stream. Its close-select leg, answer-rank leg, and
 compact-close rank-seed reads are structural payload/register traces. The
-bounded local BP decoders, endpoint-fringe decoders, and relative-rmM interior
-query still enter as explicit charged decoder leaves, so the next frontier is
-to replace those leaves with structural payload-read traces and then prove the
-combined event stream agrees with one concrete payload store.
+large-regime companion theorem adds the explicit `2^128 <= shape.size` premise
+and routes the compact close/LCA leg through structural local/fringe/interior
+trace replay. The next frontier is the global store/provenance layer for the
+combined event stream, plus any desired fully total version of the same trace
+story outside the large regime.
 
 ## Large-File Cleanup Note
 

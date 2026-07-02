@@ -78,6 +78,16 @@ abbrev succinctRMQTwoNPlusOConstantQueryWordTrace :=
   RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_profile
 
 /--
+Large-regime unified-`WordRAM.TraceEvent` BP-native succinct RMQ capstone. This
+has the same two-sided `2*n + o(n)`, constant-query theorem shape, but the query
+clauses carry the explicit size hypothesis that lets the compact close/LCA leg
+expand through the structural local/fringe/interior trace replay instead of the
+all-size fallback.
+-/
+abbrev succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime :=
+  RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_large_regime_profile
+
+/--
 Interpreter-backed BP close-navigation profile: `2*n + o(n)`, constant query,
 with rank/select/LCA leaves routed through the first-order `WordRAM` bridges.
 

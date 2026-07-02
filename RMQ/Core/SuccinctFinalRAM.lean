@@ -100,6 +100,34 @@ theorem concreteBPNativeLCACloseWordTraceResult_refines_interpretedCosted
     concreteBPNativeRankCloseWordTraceResult_refines_interpretedCosted]
 
 /--
+Large-regime structural replay for the compact LCA-close leg.
+
+The size hypothesis lets the close directory dispatch through the positive
+summary-block path, so the zero-block semantic fallback is absent and the
+cross-block interior relative-rmM leg uses its concrete trace replay.
+-/
+def concreteBPNativeLCACloseWordTraceResultOfSizeGe
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size)
+    (leftClose rightClose : Nat) : WordRAM.TraceResult (Option Nat) :=
+  SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedOfSizeGe
+    shape (concreteBPNativeRankCloseWordTraceResult shape)
+    hsize leftClose rightClose
+
+theorem concreteBPNativeLCACloseWordTraceResultOfSizeGe_refines_interpretedCosted
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size)
+    (leftClose rightClose : Nat) :
+    (concreteBPNativeLCACloseWordTraceResultOfSizeGe
+      shape hsize leftClose rightClose).toCosted =
+      concreteBPNativeLCACloseInterpretedCosted shape leftClose rightClose := by
+  simp [concreteBPNativeLCACloseWordTraceResultOfSizeGe,
+    concreteBPNativeLCACloseInterpretedCosted,
+    concreteBPNativeCloseDirectory,
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedOfSizeGe_refines,
+    concreteBPNativeRankCloseWordTraceResult_refines_interpretedCosted]
+
+/--
 Final BP-native RMQ query with interpreted close-select, compact close/LCA, and
 answer-rank leaves.
 -/
@@ -549,6 +577,75 @@ theorem evalWordTrace_refines_eval
         simp [evalWordTrace, eval, hguard,
           WordRAM.TraceResult.pure_toCosted, Costed.pure]
 
+/--
+Execute one instruction in the large-regime replay.
+
+Only the compact close/LCA instruction differs from `evalWordTrace`: it uses the
+large-regime LCA-close trace, which expands the positive-block interior path
+instead of retaining the all-size semantic fallback.
+-/
+def evalWordTraceOfSizeGe (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size) (left right : Nat)
+    (instr : WholeQueryInstr) (state : WholeQueryState) :
+    WordRAM.TraceResult WholeQueryState :=
+  match instr with
+  | .selectClose dst idx =>
+      WordRAM.TraceResult.map
+        (fun close? => state.setOpt dst close?)
+        (concreteBPNativeSelectCloseWordTraceResult shape
+          (idx.eval left right state))
+  | .lcaClose dst leftReg rightReg =>
+      match state.opt leftReg, state.opt rightReg with
+      | some leftClose, some rightClose =>
+          WordRAM.TraceResult.map
+            (fun answer? => state.setOpt dst answer?)
+            (concreteBPNativeLCACloseWordTraceResultOfSizeGe shape hsize
+              leftClose rightClose)
+      | _, _ => WordRAM.TraceResult.pure (state.setOpt dst none)
+  | .rankCloseIfSome dst guard pos =>
+      match state.opt guard with
+      | some _ =>
+          WordRAM.TraceResult.map
+            (fun closeRank => state.setNat dst closeRank)
+            (concreteBPNativeRankCloseWordTraceResult shape
+              (pos.eval left right state))
+      | none => WordRAM.TraceResult.pure state
+  | .outputPredIfSome dst guard src =>
+      match state.opt guard with
+      | some _ =>
+          WordRAM.TraceResult.pure
+            (state.setOpt dst (some (state.nat src - 1)))
+      | none =>
+          WordRAM.TraceResult.pure (state.setOpt dst none)
+
+theorem evalWordTraceOfSizeGe_refines_eval
+    (shape : Cartesian.CartesianShape) (hsize : 2 ^ 128 <= shape.size)
+    (left right : Nat) (instr : WholeQueryInstr) (state : WholeQueryState) :
+    (instr.evalWordTraceOfSizeGe shape hsize left right state).toCosted =
+      instr.eval shape left right state := by
+  cases instr with
+  | selectClose dst idx =>
+      simp [evalWordTraceOfSizeGe, eval,
+        concreteBPNativeSelectCloseWordTraceResult_refines_interpretedCosted,
+        WordRAM.TraceResult.map_toCosted, Costed.map]
+  | lcaClose dst leftReg rightReg =>
+      cases hleft : state.opt leftReg <;>
+        cases hright : state.opt rightReg <;>
+          simp [evalWordTraceOfSizeGe, eval, hleft, hright,
+            concreteBPNativeLCACloseWordTraceResultOfSizeGe_refines_interpretedCosted,
+            WordRAM.TraceResult.map_toCosted,
+            WordRAM.TraceResult.pure_toCosted, Costed.map, Costed.pure]
+  | rankCloseIfSome dst guard pos =>
+      cases hguard : state.opt guard <;>
+        simp [evalWordTraceOfSizeGe, eval, hguard,
+          concreteBPNativeRankCloseWordTraceResult_refines_interpretedCosted,
+          WordRAM.TraceResult.map_toCosted,
+          WordRAM.TraceResult.pure_toCosted, Costed.map, Costed.pure]
+  | outputPredIfSome dst guard src =>
+      cases hguard : state.opt guard <;>
+        simp [evalWordTraceOfSizeGe, eval, hguard,
+          WordRAM.TraceResult.pure_toCosted, Costed.pure]
+
 end WholeQueryInstr
 
 namespace WholeQueryProgram
@@ -574,6 +671,36 @@ theorem evalWordTrace_refines_eval
   | cons instr rest ih =>
       simp [evalWordTrace, eval, WordRAM.TraceResult.bind_toCosted,
         WholeQueryInstr.evalWordTrace_refines_eval, ih, Costed.bind]
+
+/--
+Execute a whole-query program in the large-regime replay.
+
+This preserves one `WordRAM.TraceEvent` stream while using the size-indexed
+compact close/LCA replay for the LCA instruction.
+-/
+def evalWordTraceOfSizeGe (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size) (left right : Nat) :
+    WholeQueryProgram -> WholeQueryState -> WordRAM.TraceResult WholeQueryState
+  | [], state => WordRAM.TraceResult.pure state
+  | instr :: rest, state =>
+      WordRAM.TraceResult.bind
+        (instr.evalWordTraceOfSizeGe shape hsize left right state)
+        fun state' =>
+          evalWordTraceOfSizeGe shape hsize left right rest state'
+
+theorem evalWordTraceOfSizeGe_refines_eval
+    (shape : Cartesian.CartesianShape) (hsize : 2 ^ 128 <= shape.size)
+    (left right : Nat)
+    (program : WholeQueryProgram) (state : WholeQueryState) :
+    (evalWordTraceOfSizeGe shape hsize left right program state).toCosted =
+      eval shape left right program state := by
+  induction program generalizing state with
+  | nil =>
+      simp [evalWordTraceOfSizeGe, eval, WordRAM.TraceResult.pure_toCosted,
+        Costed.pure]
+  | cons instr rest ih =>
+      simp [evalWordTraceOfSizeGe, eval, WordRAM.TraceResult.bind_toCosted,
+        WholeQueryInstr.evalWordTraceOfSizeGe_refines_eval, ih, Costed.bind]
 
 end WholeQueryProgram
 
@@ -636,6 +763,24 @@ def concreteBPNativeSuccinctRMQWholeQueryWordTraceCosted
       concreteBPNativeSuccinctRMQWholeQueryProgram
       WholeQueryState.empty).toCosted)
 
+/--
+Large-regime final BP-native RMQ query with one unified `WordRAM.TraceEvent`
+stream.
+
+Compared with `concreteBPNativeSuccinctRMQWholeQueryWordTraceCosted`, the
+compact close/LCA instruction now uses the large-regime structural replay, so
+the positive-block local/fringe/interior path is represented by trace events
+instead of the all-size semantic fallback.
+-/
+def concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size)
+    (left right : Nat) : Costed (Option Nat) :=
+  Costed.map WholeQueryState.output?
+    ((WholeQueryProgram.evalWordTraceOfSizeGe shape hsize left right
+      concreteBPNativeSuccinctRMQWholeQueryProgram
+      WholeQueryState.empty).toCosted)
+
 theorem concreteBPNativeSuccinctRMQWholeQueryLeafTraceCosted_refines_wholeQueryInterpretedCosted
     (shape : Cartesian.CartesianShape) (left right : Nat) :
     concreteBPNativeSuccinctRMQWholeQueryLeafTraceCosted shape left right =
@@ -656,6 +801,20 @@ theorem concreteBPNativeSuccinctRMQWholeQueryWordTraceCosted_refines_wholeQueryI
   rw [
     WholeQueryProgram.evalWordTrace_refines_eval
       shape left right concreteBPNativeSuccinctRMQWholeQueryProgram
+      WholeQueryState.empty]
+
+theorem concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe_refines_wholeQueryInterpretedCosted
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size)
+    (left right : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe
+      shape hsize left right =
+      concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted shape left right := by
+  unfold concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe
+    concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted
+  rw [
+    WholeQueryProgram.evalWordTraceOfSizeGe_refines_eval
+      shape hsize left right concreteBPNativeSuccinctRMQWholeQueryProgram
       WholeQueryState.empty]
 
 theorem concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_refines_queryInterpretedCosted
@@ -892,6 +1051,34 @@ theorem concreteBPNativeSuccinctRMQWholeQueryWordTraceCosted_exact
         some (scanWindow shape.representative left len) := by
   rw [
     concreteBPNativeSuccinctRMQWholeQueryWordTraceCosted_refines_wholeQueryInterpretedCosted]
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_exact
+      hshape hlen hbound
+
+theorem concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe_cost_le
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size)
+    (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe
+      shape hsize left right).cost <=
+        concreteBPNativeSuccinctRMQQueryCost
+          SuccinctSelect.sparseDenseFalseSelectQueryCost := by
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe_refines_wholeQueryInterpretedCosted]
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_cost_le
+      shape left right
+
+theorem concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe_exact
+    {n : Nat} {shape : Cartesian.CartesianShape}
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n))
+    (hsize : 2 ^ 128 <= shape.size)
+    {left len : Nat} (hlen : 0 < len) (hbound : left + len <= n) :
+    (concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe
+      shape hsize left (left + len)).erase =
+        some (scanWindow shape.representative left len) := by
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe_refines_wholeQueryInterpretedCosted]
   exact
     concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_exact
       hshape hlen hbound
@@ -1172,6 +1359,78 @@ theorem builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_dou
           exact
             concreteBPNativeSuccinctRMQWholeQueryWordTraceCosted_exact
               hshape hlen hbound)⟩
+
+/--
+Large-regime unified-`WordRAM.TraceEvent` two-sided capstone for the built
+generic-select BP-native succinct RMQ path.
+
+This is the structural close-navigation strengthening of
+`..._whole_query_word_trace_profile`: in the query clauses, the size hypothesis
+routes the compact close/LCA leg through the positive-block local/fringe and
+relative-rmM interior trace replay rather than through the all-size fallback.
+-/
+theorem builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_large_regime_profile :
+    SuccinctSpace.LittleOLinear
+        (concreteBPNativeSuccinctRMQOverhead
+          genericSparseExceptionBPCloseAccessOverhead) /\
+      forall n : Nat,
+        EncodingLowerBound.doubledLogSlackLower n <=
+          2 *
+            (2 * n +
+              concreteBPNativeSuccinctRMQOverhead
+                genericSparseExceptionBPCloseAccessOverhead n) /\
+        EncodingLowerBound.logSlackLower n <=
+          2 * n +
+            concreteBPNativeSuccinctRMQOverhead
+              genericSparseExceptionBPCloseAccessOverhead n /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            (builtGenericSparseExceptionSelectBPCloseAccessFamily
+              |>.directory shape).payload.length <=
+              genericSparseExceptionBPCloseAccessOverhead n) /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            (concreteBPNativeSuccinctRMQPayload
+              builtGenericSparseExceptionSelectBPCloseAccessFamily
+              shape).length =
+              2 * n +
+                concreteBPNativeSuccinctRMQOverhead
+                  genericSparseExceptionBPCloseAccessOverhead n) /\
+        (forall (shape : Cartesian.CartesianShape),
+          (hsize : 2 ^ 128 <= shape.size) ->
+            forall left right,
+              (concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe
+                shape hsize left right).cost <=
+                  concreteBPNativeSuccinctRMQQueryCost
+                    SuccinctSelect.sparseDenseFalseSelectQueryCost) /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            (hsize : 2 ^ 128 <= shape.size) ->
+              forall {left len : Nat},
+                0 < len ->
+                  left + len <= n ->
+                    (concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe
+                      shape hsize left (left + len)).erase =
+                      some (scanWindow shape.representative left len)) := by
+  have h :=
+    builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_interpreted_profile
+  constructor
+  · exact h.1
+  · intro n
+    rcases h.2 n with
+      ⟨hdoubled, hlog, hpayloadLe, hpayloadLen, _hcost, _hexact⟩
+    exact
+      ⟨hdoubled, hlog, hpayloadLe, hpayloadLen,
+        (by
+          intro shape hsize left right
+          exact
+            concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe_cost_le
+              shape hsize left right),
+        (by
+          intro shape hshape hsize left len hlen hbound
+          exact
+            concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe_exact
+              hshape hsize hlen hbound)⟩
 
 end SuccinctFinal
 end RMQ

@@ -59,6 +59,10 @@
   codebase, must not revert or overwrite other changes, and should continue
   through their loop until the assigned target closes or a real stop condition
   is met.
+- Do not treat "avoid overclaiming" as a stop condition. Every report must be
+  honest, but if the assigned target is not yet true and the next local
+  proof/construction step is available, keep working instead of stopping at a
+  clean partial checkpoint.
 - Every worker completion report must include a short proof-digestion section:
   what changed conceptually, what the work just done now means in plain
   English, what assumptions are live, and what a skeptical grad student would

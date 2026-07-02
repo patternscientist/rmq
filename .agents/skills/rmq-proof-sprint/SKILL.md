@@ -123,6 +123,12 @@ partial profile, local kernel, or first successful construction step is an
 iteration result. After reporting it in the scratch notes, continue toward the
 owned target unless one of the strict break criteria above applies.
 
+"Avoiding overclaim" is also not a strict break criterion. It is an invariant
+of every report and theorem name. If the owned target is not yet true, state
+the live caveat in scratch notes and keep working until the target becomes true
+or a valid stop condition fires. Do not stop merely because a checkpoint can be
+reported honestly without overclaiming.
+
 Closing the latest audit caveat is also not a loop endpoint unless the prompt's
 owned target was exactly "patch these audit caveats." If the loop target is a
 C1/C2/C3 component or the final succinct theorem, a caveat repair on a helper
@@ -279,6 +285,9 @@ Invalid stop reasons:
   owned target still has an obvious next construction/proof step.
 - the worker hit hard proof errors, no matter how annoying, without continuing
   through the natural repaired statements or nearby construction variants.
+- the worker is worried that claiming target closure would overstate the
+  theorem. The correct action is not to overclaim and then continue proving the
+  missing obligations, not to stop at the honest partial checkpoint.
 
 Before stopping, run this loop-stop audit:
 

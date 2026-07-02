@@ -263,6 +263,12 @@ through rather than surfaced immediately.
     branch proves a useful local kernel, sample table, range summary, adapter,
     or helper exactness theorem, the next action is to consume it in the owned
     concrete profile unless that is blocked by a documented design-level wall.
+13a. Never use "avoid overclaiming" as a stop condition. Not overclaiming is a
+     standing obligation for every theorem name, doc note, and report. If the
+     owned target is not yet true, say so in scratch notes and keep working
+     until it is true or a valid stop condition fires. A clean honest partial
+     checkpoint is still unfinished work when the prompt asked for the stronger
+     theorem.
 14. Conditional-local exactness is not component exactness. A theorem whose
     hypotheses already assume the answer lies in a chosen local block, run, or
     descriptor range must be followed by the global routing theorem that proves
@@ -311,6 +317,10 @@ through rather than surfaced immediately.
     the loop stop is invalid, it must continue the loop immediately instead of
     sending a final completion report. A final report that admits invalidity
     without further implementation is a protocol failure.
+22a. An honest caveat is not a stopping certificate. A report may and must
+     avoid overclaiming, but if it says the target is only partially reached and
+     the next proof/construction is local and obvious, the loop must continue in
+     the same turn.
 23. Worker audits always include loop-stop validity and prompt/spec delta.
     Every audit should explicitly say whether the worker should have stopped,
     and whether the next prompts or loop specs need tightening.

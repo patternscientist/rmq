@@ -71,7 +71,7 @@ explicit domain-leaf trace before projection back to `Costed`.  This is still
 not one unified payload-store trace: the trace records interpreted leaf calls
 for close-select, compact close/LCA, and answer-rank.
 
-The current strongest flattening checkpoint is:
+The current strongest all-size flattening checkpoint is:
 
 ```lean
 abbrev succinctRMQTwoNPlusOConstantQueryWordTrace :=
@@ -81,10 +81,21 @@ abbrev succinctRMQTwoNPlusOConstantQueryWordTrace :=
 It keeps the same theorem shape and has the closed controller emit one
 `WordRAM.TraceEvent` stream. The close-select leg, answer-rank leg, and the
 rank-seed reads inside compact close/LCA contribute structural
-payload/register traces. The bounded local BP decoders, endpoint-fringe
-decoders, and relative-rmM interior query remain explicit charged decoder
-leaves, so this is a unified event stream but not yet a fully inlined
-payload-read execution of every leaf.
+payload/register traces.
+
+There is also a large-regime companion:
+
+```lean
+abbrev succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime :=
+  RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_large_regime_profile
+```
+
+Its query clauses include the explicit hypothesis `2^128 <= shape.size`; under
+that premise the compact close/LCA leg routes through the positive-block
+local/fringe/interior structural trace replay rather than the all-size
+fallback. The remaining hardening frontier is a global store/provenance theorem
+for the combined event stream, not another uncharged local/fringe/interior
+decoder boundary on that large-regime path.
 
 ## Theorem Statement
 

@@ -78,6 +78,9 @@ also require a restart if they do not appear immediately.
    target is mis-specified, or an extreme dossier records at least fifty serious
    attempts failing for the same design-level reason. Repeating a known blocker
    or landing one useful partial theorem is not itself a loop endpoint.
+   Likewise, "we can honestly report this without overclaiming" is not a stop
+   condition. Honesty is mandatory, but if the owned target remains stronger
+   than the checkpoint, the next loop iteration starts immediately.
 8. Run a checkpoint: touched-module checks, then `lake build`, the trust-base
    scan, the `native_decide` scan when relevant, and `git diff --check`.
 9. Update `docs/FAMILY_SUMMARY.md`.

@@ -262,13 +262,13 @@ as an opt-in checked root.
 
 ## Correctness And Cost Status
 
-Word-RAM status note: `SuccinctFinalRAM` now has a unified
-`WordRAM.TraceEvent` stream capstone for the final RMQ query. Close-select,
-answer-rank, and compact-close rank-seed reads are structural
-payload/register traces. When the table below still mentions a remaining
-payload-store trace, it means the stricter payload-read-complete replay that
-replaces the bounded local BP decoder, endpoint-fringe decoder, and
-relative-rmM interior-query leaves with structural payload reads.
+Word-RAM status note: `SuccinctFinalRAM` now has both an all-size unified
+`WordRAM.TraceEvent` stream capstone for the final RMQ query and a stronger
+large-regime companion theorem. The all-size theorem keeps conservative charged
+fallback leaves for tiny/inactive close-navigation cases. The large-regime
+theorem carries an explicit `2^128 <= shape.size` premise and replays the
+positive-block local BP, endpoint-fringe, and relative-rmM interior close path
+through structural trace events.
 
 | Structure | Correctness status | Cost status | Notes |
 | --- | --- | --- | --- |
@@ -2090,7 +2090,11 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryWordTraceCosted_refines_wholeQueryInterpretedCosted`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryWordTraceCosted_cost_le`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryWordTraceCosted_exact`, and
-  `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_profile`.
+  `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_profile`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe_refines_wholeQueryInterpretedCosted`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe_cost_le`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe_exact`, and
+  `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_large_regime_profile`.
 - `RMQ/Archive/SelectObstructions.lean`:
   checked aliases for retained two-level select obstruction witnesses after
   the old four-field sparse/dense false-select locator island was physically
