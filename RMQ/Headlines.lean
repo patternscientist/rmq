@@ -48,6 +48,23 @@ abbrev rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile :=
   RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile
 
 /--
+Target-independent global payload-store execution story for fixed-weight
+compressed/FID rank/select. For each fixed `bits`, access, rank false/true,
+and select false/true traces all read from one concrete global read store.
+-/
+abbrev rankSelectCompressedFIDFixedWeightGlobalPayloadStoreExecutionStory :=
+  RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStore_execution_story
+
+/--
+Bounded target-independent global payload-store execution story for
+fixed-weight compressed/FID rank/select. It extends the shared access/rank
+false/true/select false/true store packet with trace-local bit widths for
+payload-read addresses and word-primitive operands/results.
+-/
+abbrev rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory :=
+  RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStore_bounded_execution_story
+
+/--
 Target-indexed global payload-store execution story for fixed-weight
 compressed/FID rank/select. For each fixed `bits` and `target`, access, rank,
 and select traces are relabeled into one concrete read store.

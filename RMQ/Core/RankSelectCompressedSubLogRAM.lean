@@ -2526,8 +2526,10 @@ One target-indexed global store for the compressed/FID trace packets.
 
 The access, rank, and select trace packets are relabeled into disjoint segment
 ranges of this store.  The store is target-indexed because the current rank and
-Clark-select routing payloads are target-specific; a target-independent packet
-can be obtained later by duplicating the true/false target ranges.
+Clark-select routing payloads are target-specific.  The target-independent
+global packet below keeps access shared and duplicates the true/false target
+ranges in one store; this target-indexed packet remains useful as a lower-level
+component theorem.
 -/
 def subLogCompressedFIDTargetGlobalTraceReadStore
     (bits : List Bool) (target : Bool) : WordRAM.ReadStore where
@@ -2851,6 +2853,468 @@ theorem subLogCompressedFIDTargetGlobalPayloadStore_execution_story
           subLogCompressedFIDGlobalSelectSegmentMap
           (subLogCompressedFIDTargetGlobalTraceReadStore_select_read
             bits target)
+          (subLogSelectFromPackedClarkRouteTraceResult_matchesReadStore
+            bits target occurrence)
+
+def subLogCompressedFIDAllTargetsGlobalRankSegmentMap
+    (target : Bool) : Nat -> Nat :=
+  match target with
+  | false =>
+      fun
+        | 0 => 32
+        | 1 => 33
+        | 2 => 34
+        | 3 => 35
+        | 4 => 36
+        | 5 => 37
+        | _ + 6 => 63
+  | true =>
+      fun
+        | 0 => 64
+        | 1 => 65
+        | 2 => 66
+        | 3 => 67
+        | 4 => 68
+        | 5 => 69
+        | _ + 6 => 95
+
+def subLogCompressedFIDAllTargetsGlobalSelectSegmentMap
+    (target : Bool) : Nat -> Nat :=
+  match target with
+  | false =>
+      fun
+        | 0 => 96
+        | 1 => 97
+        | 2 => 98
+        | 3 => 99
+        | 4 => 100
+        | 5 => 101
+        | 6 => 102
+        | 7 => 103
+        | 8 => 104
+        | 9 => 105
+        | 10 => 106
+        | 11 => 107
+        | 12 => 108
+        | 13 => 109
+        | 14 => 110
+        | 15 => 111
+        | 16 => 112
+        | 17 => 113
+        | 18 => 114
+        | 19 => 115
+        | _ + 20 => 127
+  | true =>
+      fun
+        | 0 => 128
+        | 1 => 129
+        | 2 => 130
+        | 3 => 131
+        | 4 => 132
+        | 5 => 133
+        | 6 => 134
+        | 7 => 135
+        | 8 => 136
+        | 9 => 137
+        | 10 => 138
+        | 11 => 139
+        | 12 => 140
+        | 13 => 141
+        | 14 => 142
+        | 15 => 143
+        | 16 => 144
+        | 17 => 145
+        | 18 => 146
+        | 19 => 147
+        | _ + 20 => 159
+
+/--
+One target-independent global store for compressed/FID access/rank/select
+trace packets.
+
+The access payload range is shared once. Rank and select use disjoint
+false/true target ranges, so one read store supports access, rank false,
+rank true, select false, and select true simultaneously.
+-/
+def subLogCompressedFIDGlobalTraceReadStore
+    (bits : List Bool) : WordRAM.ReadStore where
+  readWord? segment index :=
+    match segment with
+    | 0 => (subLogAccessTraceReadStore bits).readWord? 0 index
+    | 1 => (subLogAccessTraceReadStore bits).readWord? 1 index
+    | 2 => (subLogAccessTraceReadStore bits).readWord? 2 index
+    | 3 => (subLogAccessTraceReadStore bits).readWord? 3 index
+    | 31 => none
+    | 32 => (subLogRankTraceReadStore bits false).readWord? 0 index
+    | 33 => (subLogRankTraceReadStore bits false).readWord? 1 index
+    | 34 => (subLogRankTraceReadStore bits false).readWord? 2 index
+    | 35 => (subLogRankTraceReadStore bits false).readWord? 3 index
+    | 36 => (subLogRankTraceReadStore bits false).readWord? 4 index
+    | 37 => (subLogRankTraceReadStore bits false).readWord? 5 index
+    | 63 => none
+    | 64 => (subLogRankTraceReadStore bits true).readWord? 0 index
+    | 65 => (subLogRankTraceReadStore bits true).readWord? 1 index
+    | 66 => (subLogRankTraceReadStore bits true).readWord? 2 index
+    | 67 => (subLogRankTraceReadStore bits true).readWord? 3 index
+    | 68 => (subLogRankTraceReadStore bits true).readWord? 4 index
+    | 69 => (subLogRankTraceReadStore bits true).readWord? 5 index
+    | 95 => none
+    | 96 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits false).readWord? 0 index
+    | 97 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits false).readWord? 1 index
+    | 98 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits false).readWord? 2 index
+    | 99 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits false).readWord? 3 index
+    | 100 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits false).readWord? 4 index
+    | 101 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits false).readWord? 5 index
+    | 102 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits false).readWord? 6 index
+    | 103 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits false).readWord? 7 index
+    | 104 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits false).readWord? 8 index
+    | 105 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits false).readWord? 9 index
+    | 106 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits false).readWord? 10 index
+    | 107 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits false).readWord? 11 index
+    | 108 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits false).readWord? 12 index
+    | 109 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits false).readWord? 13 index
+    | 110 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits false).readWord? 14 index
+    | 111 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits false).readWord? 15 index
+    | 112 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits false).readWord? 16 index
+    | 113 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits false).readWord? 17 index
+    | 114 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits false).readWord? 18 index
+    | 115 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits false).readWord? 19 index
+    | 127 => none
+    | 128 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits true).readWord? 0 index
+    | 129 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits true).readWord? 1 index
+    | 130 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits true).readWord? 2 index
+    | 131 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits true).readWord? 3 index
+    | 132 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits true).readWord? 4 index
+    | 133 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits true).readWord? 5 index
+    | 134 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits true).readWord? 6 index
+    | 135 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits true).readWord? 7 index
+    | 136 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits true).readWord? 8 index
+    | 137 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits true).readWord? 9 index
+    | 138 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits true).readWord? 10 index
+    | 139 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits true).readWord? 11 index
+    | 140 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits true).readWord? 12 index
+    | 141 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits true).readWord? 13 index
+    | 142 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits true).readWord? 14 index
+    | 143 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits true).readWord? 15 index
+    | 144 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits true).readWord? 16 index
+    | 145 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits true).readWord? 17 index
+    | 146 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits true).readWord? 18 index
+    | 147 =>
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits true).readWord? 19 index
+    | 159 => none
+    | _ => none
+
+private theorem subLogCompressedFIDGlobalTraceReadStore_access_read
+    (bits : List Bool) :
+    forall segment index,
+      (subLogCompressedFIDGlobalTraceReadStore bits).readWord?
+          (subLogCompressedFIDGlobalAccessSegmentMap segment) index =
+        (subLogAccessTraceReadStore bits).readWord? segment index := by
+  intro segment index
+  match segment with
+  | 0 =>
+      rfl
+  | 1 =>
+      rfl
+  | 2 =>
+      rfl
+  | 3 =>
+      rfl
+  | _ + 4 =>
+      rfl
+
+private theorem subLogCompressedFIDGlobalTraceReadStore_rank_read
+    (bits : List Bool) (target : Bool) :
+    forall segment index,
+      (subLogCompressedFIDGlobalTraceReadStore bits).readWord?
+          (subLogCompressedFIDAllTargetsGlobalRankSegmentMap
+            target segment) index =
+        (subLogRankTraceReadStore bits target).readWord? segment index := by
+  cases target <;> intro segment index
+  · match segment with
+    | 0 => rfl
+    | 1 => rfl
+    | 2 => rfl
+    | 3 => rfl
+    | 4 => rfl
+    | 5 => rfl
+    | _ + 6 => rfl
+  · match segment with
+    | 0 => rfl
+    | 1 => rfl
+    | 2 => rfl
+    | 3 => rfl
+    | 4 => rfl
+    | 5 => rfl
+    | _ + 6 => rfl
+
+private theorem subLogCompressedFIDGlobalTraceReadStore_select_read
+    (bits : List Bool) (target : Bool) :
+    forall segment index,
+      (subLogCompressedFIDGlobalTraceReadStore bits).readWord?
+          (subLogCompressedFIDAllTargetsGlobalSelectSegmentMap
+            target segment) index =
+        (subLogSelectFromPackedClarkRouteTraceReadStore
+          bits target).readWord? segment index := by
+  cases target <;> intro segment index
+  · match segment with
+    | 0 => rfl
+    | 1 => rfl
+    | 2 => rfl
+    | 3 => rfl
+    | 4 => rfl
+    | 5 => rfl
+    | 6 => rfl
+    | 7 => rfl
+    | 8 => rfl
+    | 9 => rfl
+    | 10 => rfl
+    | 11 => rfl
+    | 12 => rfl
+    | 13 => rfl
+    | 14 => rfl
+    | 15 => rfl
+    | 16 => rfl
+    | 17 => rfl
+    | 18 => rfl
+    | 19 => rfl
+    | _ + 20 => rfl
+  · match segment with
+    | 0 => rfl
+    | 1 => rfl
+    | 2 => rfl
+    | 3 => rfl
+    | 4 => rfl
+    | 5 => rfl
+    | 6 => rfl
+    | 7 => rfl
+    | 8 => rfl
+    | 9 => rfl
+    | 10 => rfl
+    | 11 => rfl
+    | 12 => rfl
+    | 13 => rfl
+    | 14 => rfl
+    | 15 => rfl
+    | 16 => rfl
+    | 17 => rfl
+    | 18 => rfl
+    | 19 => rfl
+    | _ + 20 => rfl
+
+def subLogCompressedFIDAllTargetsGlobalAccessTraceResult
+    (bits : List Bool) (i : Nat) : WordRAM.TraceResult (Option Bool) :=
+  subLogCompressedFIDGlobalAccessTraceResult bits i
+
+def subLogCompressedFIDAllTargetsGlobalRankTraceResult
+    (bits : List Bool) (target : Bool) (pos : Nat) :
+    WordRAM.TraceResult Nat :=
+  WordRAM.TraceResult.relabelReadSegmentsWith
+    (subLogCompressedFIDAllTargetsGlobalRankSegmentMap target)
+    (subLogRankTraceResult bits target pos)
+
+def subLogCompressedFIDAllTargetsGlobalSelectTraceResult
+    (bits : List Bool) (target : Bool) (occurrence : Nat) :
+    WordRAM.TraceResult (Option Nat) :=
+  WordRAM.TraceResult.relabelReadSegmentsWith
+    (subLogCompressedFIDAllTargetsGlobalSelectSegmentMap target)
+    (subLogSelectFromPackedClarkRouteTraceResult bits target occurrence)
+
+theorem subLogCompressedFIDGlobalPayloadStore_execution_story
+    (bits : List Bool) :
+    (forall i,
+      (subLogCompressedFIDAllTargetsGlobalAccessTraceResult bits i).toCosted =
+          subLogAccessInterpretedCosted bits i /\
+        (subLogCompressedFIDAllTargetsGlobalAccessTraceResult bits i).toCosted =
+          subLogAccessCosted bits i /\
+        (forall event,
+          event ∈
+              (subLogCompressedFIDAllTargetsGlobalAccessTraceResult
+                bits i).trace ->
+            event.isReadWord \/ event.isWordPrimitive) /\
+        (forall event,
+          event ∈
+              (subLogCompressedFIDAllTargetsGlobalAccessTraceResult
+                bits i).trace ->
+            event.matchesReadStore
+              (subLogCompressedFIDGlobalTraceReadStore bits))) /\
+      (forall target pos,
+        (subLogCompressedFIDAllTargetsGlobalRankTraceResult
+          bits target pos).toCosted =
+            subLogRankInterpretedCosted bits target pos /\
+          (subLogCompressedFIDAllTargetsGlobalRankTraceResult
+            bits target pos).toCosted =
+            subLogRankCosted bits target pos /\
+          (forall event,
+            event ∈
+                (subLogCompressedFIDAllTargetsGlobalRankTraceResult
+                  bits target pos).trace ->
+              event.isReadWord \/ event.isWordPrimitive) /\
+          (forall event,
+            event ∈
+                (subLogCompressedFIDAllTargetsGlobalRankTraceResult
+                  bits target pos).trace ->
+              event.matchesReadStore
+                (subLogCompressedFIDGlobalTraceReadStore bits))) /\
+      forall target occurrence,
+        (subLogCompressedFIDAllTargetsGlobalSelectTraceResult
+          bits target occurrence).toCosted =
+            subLogSelectFromPackedClarkRouteInterpretedCosted
+              bits target occurrence /\
+          (subLogCompressedFIDAllTargetsGlobalSelectTraceResult
+            bits target occurrence).toCosted =
+            subLogSelectFromPackedClarkRouteCosted bits target occurrence /\
+          (forall event,
+            event ∈
+                (subLogCompressedFIDAllTargetsGlobalSelectTraceResult
+                  bits target occurrence).trace ->
+              event.isReadWord \/ event.isWordPrimitive) /\
+          (forall event,
+            event ∈
+                (subLogCompressedFIDAllTargetsGlobalSelectTraceResult
+                  bits target occurrence).trace ->
+              event.matchesReadStore
+                (subLogCompressedFIDGlobalTraceReadStore bits)) := by
+  constructor
+  · intro i
+    constructor
+    · simp [subLogCompressedFIDAllTargetsGlobalAccessTraceResult,
+        subLogCompressedFIDGlobalAccessTraceResult,
+        subLogAccessTraceResult_refines_interpretedCosted]
+    constructor
+    · simp [subLogCompressedFIDAllTargetsGlobalAccessTraceResult,
+        subLogCompressedFIDGlobalAccessTraceResult,
+        subLogAccessTraceResult_refines_interpretedCosted,
+        subLogAccessInterpretedCosted_refines_subLogAccessCosted]
+    constructor
+    · intro event _hmem
+      exact WordRAM.TraceEvent.isReadWord_or_isWordPrimitive event
+    · exact
+        WordRAM.TraceResult.relabelReadSegmentsWith_matchesReadStore
+          (subLogAccessTraceResult bits i)
+          (subLogAccessTraceReadStore bits)
+          (subLogCompressedFIDGlobalTraceReadStore bits)
+          subLogCompressedFIDGlobalAccessSegmentMap
+          (subLogCompressedFIDGlobalTraceReadStore_access_read bits)
+          (subLogAccessTraceResult_matchesReadStore bits i)
+  constructor
+  · intro target pos
+    constructor
+    · simp [subLogCompressedFIDAllTargetsGlobalRankTraceResult,
+        subLogRankTraceResult_refines_interpretedCosted]
+    constructor
+    · simp [subLogCompressedFIDAllTargetsGlobalRankTraceResult,
+        subLogRankTraceResult_refines_interpretedCosted,
+        subLogRankInterpretedCosted_refines_subLogRankCosted]
+    constructor
+    · intro event _hmem
+      exact WordRAM.TraceEvent.isReadWord_or_isWordPrimitive event
+    · exact
+        WordRAM.TraceResult.relabelReadSegmentsWith_matchesReadStore
+          (subLogRankTraceResult bits target pos)
+          (subLogRankTraceReadStore bits target)
+          (subLogCompressedFIDGlobalTraceReadStore bits)
+          (subLogCompressedFIDAllTargetsGlobalRankSegmentMap target)
+          (subLogCompressedFIDGlobalTraceReadStore_rank_read bits target)
+          (subLogRankTraceResult_matchesReadStore bits target pos)
+  · intro target occurrence
+    constructor
+    · simp [subLogCompressedFIDAllTargetsGlobalSelectTraceResult,
+        subLogSelectFromPackedClarkRouteTraceResult_refines_interpretedCosted]
+    constructor
+    · simp [subLogCompressedFIDAllTargetsGlobalSelectTraceResult,
+        subLogSelectFromPackedClarkRouteTraceResult_refines_interpretedCosted,
+        subLogSelectFromPackedClarkRouteInterpretedCosted_refines]
+    constructor
+    · intro event _hmem
+      exact WordRAM.TraceEvent.isReadWord_or_isWordPrimitive event
+    · exact
+        WordRAM.TraceResult.relabelReadSegmentsWith_matchesReadStore
+          (subLogSelectFromPackedClarkRouteTraceResult
+            bits target occurrence)
+          (subLogSelectFromPackedClarkRouteTraceReadStore bits target)
+          (subLogCompressedFIDGlobalTraceReadStore bits)
+          (subLogCompressedFIDAllTargetsGlobalSelectSegmentMap target)
+          (subLogCompressedFIDGlobalTraceReadStore_select_read bits target)
           (subLogSelectFromPackedClarkRouteTraceResult_matchesReadStore
             bits target occurrence)
 
@@ -3221,6 +3685,247 @@ theorem subLogCompressedFIDTargetGlobalPayloadStore_bounded_execution_story
             bits target occurrence event hmem).1),
         (fun event hmem =>
           (subLogCompressedFIDGlobalSelectTraceResult_event_bounds
+            bits target occurrence event hmem).2)⟩
+
+/-- Trace-local bit width for the all-target global access trace. -/
+def subLogCompressedFIDAllTargetsGlobalAccessTraceEventBits
+    (bits : List Bool) (i : Nat) : Nat :=
+  subLogCompressedFIDTraceEventBitWidth
+    (subLogCompressedFIDAllTargetsGlobalAccessTraceResult bits i).trace
+
+/-- Trace-local bit width for the all-target global rank trace. -/
+def subLogCompressedFIDAllTargetsGlobalRankTraceEventBits
+    (bits : List Bool) (target : Bool) (pos : Nat) : Nat :=
+  subLogCompressedFIDTraceEventBitWidth
+    (subLogCompressedFIDAllTargetsGlobalRankTraceResult bits target pos).trace
+
+/-- Trace-local bit width for the all-target global select trace. -/
+def subLogCompressedFIDAllTargetsGlobalSelectTraceEventBits
+    (bits : List Bool) (target : Bool) (occurrence : Nat) : Nat :=
+  subLogCompressedFIDTraceEventBitWidth
+    (subLogCompressedFIDAllTargetsGlobalSelectTraceResult
+      bits target occurrence).trace
+
+theorem subLogCompressedFIDAllTargetsGlobalAccessTraceResult_event_bounds
+    (bits : List Bool) (i : Nat) :
+    forall event,
+      List.Mem event
+        (subLogCompressedFIDAllTargetsGlobalAccessTraceResult bits i).trace ->
+        subLogCompressedFIDTraceEventReadAddressFitsInBits
+          (subLogCompressedFIDAllTargetsGlobalAccessTraceEventBits
+            bits i) event /\
+        subLogCompressedFIDTraceEventPrimitiveOperandsFitInBits
+          (subLogCompressedFIDAllTargetsGlobalAccessTraceEventBits
+            bits i) event := by
+  intro event hmem
+  constructor
+  · exact
+      subLogCompressedFIDTraceEventReadAddressFitsInBits_of_mem
+        (trace :=
+          (subLogCompressedFIDAllTargetsGlobalAccessTraceResult
+            bits i).trace)
+        (event := event) hmem
+  · exact
+      subLogCompressedFIDTraceEventPrimitiveOperandsFitInBits_of_mem
+        (trace :=
+          (subLogCompressedFIDAllTargetsGlobalAccessTraceResult
+            bits i).trace)
+        (event := event) hmem
+
+theorem subLogCompressedFIDAllTargetsGlobalRankTraceResult_event_bounds
+    (bits : List Bool) (target : Bool) (pos : Nat) :
+    forall event,
+      List.Mem event
+        (subLogCompressedFIDAllTargetsGlobalRankTraceResult
+          bits target pos).trace ->
+        subLogCompressedFIDTraceEventReadAddressFitsInBits
+          (subLogCompressedFIDAllTargetsGlobalRankTraceEventBits
+            bits target pos) event /\
+        subLogCompressedFIDTraceEventPrimitiveOperandsFitInBits
+          (subLogCompressedFIDAllTargetsGlobalRankTraceEventBits
+            bits target pos) event := by
+  intro event hmem
+  constructor
+  · exact
+      subLogCompressedFIDTraceEventReadAddressFitsInBits_of_mem
+        (trace :=
+          (subLogCompressedFIDAllTargetsGlobalRankTraceResult
+            bits target pos).trace)
+        (event := event) hmem
+  · exact
+      subLogCompressedFIDTraceEventPrimitiveOperandsFitInBits_of_mem
+        (trace :=
+          (subLogCompressedFIDAllTargetsGlobalRankTraceResult
+            bits target pos).trace)
+        (event := event) hmem
+
+theorem subLogCompressedFIDAllTargetsGlobalSelectTraceResult_event_bounds
+    (bits : List Bool) (target : Bool) (occurrence : Nat) :
+    forall event,
+      List.Mem event
+        (subLogCompressedFIDAllTargetsGlobalSelectTraceResult
+          bits target occurrence).trace ->
+        subLogCompressedFIDTraceEventReadAddressFitsInBits
+          (subLogCompressedFIDAllTargetsGlobalSelectTraceEventBits
+            bits target occurrence) event /\
+        subLogCompressedFIDTraceEventPrimitiveOperandsFitInBits
+          (subLogCompressedFIDAllTargetsGlobalSelectTraceEventBits
+            bits target occurrence) event := by
+  intro event hmem
+  constructor
+  · exact
+      subLogCompressedFIDTraceEventReadAddressFitsInBits_of_mem
+        (trace :=
+          (subLogCompressedFIDAllTargetsGlobalSelectTraceResult
+            bits target occurrence).trace)
+        (event := event) hmem
+  · exact
+      subLogCompressedFIDTraceEventPrimitiveOperandsFitInBits_of_mem
+        (trace :=
+          (subLogCompressedFIDAllTargetsGlobalSelectTraceResult
+            bits target occurrence).trace)
+        (event := event) hmem
+
+/--
+Bounded target-independent global execution story for compressed/FID
+rank/select.
+
+This is the all-target analogue of the RMQ global payload-store packet: one
+concrete read store supports access, rank/select for both `false` and `true`,
+and every trace event has a finite trace-local width bounding payload-read
+addresses and word-primitive natural operands/results.
+-/
+theorem subLogCompressedFIDGlobalPayloadStore_bounded_execution_story
+    (bits : List Bool) :
+    (forall i,
+      (subLogCompressedFIDAllTargetsGlobalAccessTraceResult bits i).toCosted =
+          subLogAccessInterpretedCosted bits i /\
+        (subLogCompressedFIDAllTargetsGlobalAccessTraceResult bits i).toCosted =
+          subLogAccessCosted bits i /\
+        (forall event,
+          event ∈
+              (subLogCompressedFIDAllTargetsGlobalAccessTraceResult
+                bits i).trace ->
+            event.isReadWord \/ event.isWordPrimitive) /\
+        (forall event,
+          event ∈
+              (subLogCompressedFIDAllTargetsGlobalAccessTraceResult
+                bits i).trace ->
+            event.matchesReadStore
+              (subLogCompressedFIDGlobalTraceReadStore bits)) /\
+        (forall event,
+          event ∈
+              (subLogCompressedFIDAllTargetsGlobalAccessTraceResult
+                bits i).trace ->
+            subLogCompressedFIDTraceEventReadAddressFitsInBits
+              (subLogCompressedFIDAllTargetsGlobalAccessTraceEventBits
+                bits i) event) /\
+        (forall event,
+          event ∈
+              (subLogCompressedFIDAllTargetsGlobalAccessTraceResult
+                bits i).trace ->
+            subLogCompressedFIDTraceEventPrimitiveOperandsFitInBits
+              (subLogCompressedFIDAllTargetsGlobalAccessTraceEventBits
+                bits i) event)) /\
+      (forall target pos,
+        (subLogCompressedFIDAllTargetsGlobalRankTraceResult
+          bits target pos).toCosted =
+            subLogRankInterpretedCosted bits target pos /\
+          (subLogCompressedFIDAllTargetsGlobalRankTraceResult
+            bits target pos).toCosted =
+            subLogRankCosted bits target pos /\
+          (forall event,
+            event ∈
+                (subLogCompressedFIDAllTargetsGlobalRankTraceResult
+                  bits target pos).trace ->
+              event.isReadWord \/ event.isWordPrimitive) /\
+          (forall event,
+            event ∈
+                (subLogCompressedFIDAllTargetsGlobalRankTraceResult
+                  bits target pos).trace ->
+              event.matchesReadStore
+                (subLogCompressedFIDGlobalTraceReadStore bits)) /\
+          (forall event,
+            event ∈
+                (subLogCompressedFIDAllTargetsGlobalRankTraceResult
+                  bits target pos).trace ->
+              subLogCompressedFIDTraceEventReadAddressFitsInBits
+                (subLogCompressedFIDAllTargetsGlobalRankTraceEventBits
+                  bits target pos) event) /\
+          (forall event,
+            event ∈
+                (subLogCompressedFIDAllTargetsGlobalRankTraceResult
+                  bits target pos).trace ->
+              subLogCompressedFIDTraceEventPrimitiveOperandsFitInBits
+                (subLogCompressedFIDAllTargetsGlobalRankTraceEventBits
+                  bits target pos) event)) /\
+      forall target occurrence,
+        (subLogCompressedFIDAllTargetsGlobalSelectTraceResult
+          bits target occurrence).toCosted =
+            subLogSelectFromPackedClarkRouteInterpretedCosted
+              bits target occurrence /\
+          (subLogCompressedFIDAllTargetsGlobalSelectTraceResult
+            bits target occurrence).toCosted =
+            subLogSelectFromPackedClarkRouteCosted bits target occurrence /\
+          (forall event,
+            event ∈
+                (subLogCompressedFIDAllTargetsGlobalSelectTraceResult
+                  bits target occurrence).trace ->
+              event.isReadWord \/ event.isWordPrimitive) /\
+          (forall event,
+            event ∈
+                (subLogCompressedFIDAllTargetsGlobalSelectTraceResult
+                  bits target occurrence).trace ->
+              event.matchesReadStore
+                (subLogCompressedFIDGlobalTraceReadStore bits)) /\
+          (forall event,
+            event ∈
+                (subLogCompressedFIDAllTargetsGlobalSelectTraceResult
+                  bits target occurrence).trace ->
+              subLogCompressedFIDTraceEventReadAddressFitsInBits
+                (subLogCompressedFIDAllTargetsGlobalSelectTraceEventBits
+                  bits target occurrence) event) /\
+          (forall event,
+            event ∈
+                (subLogCompressedFIDAllTargetsGlobalSelectTraceResult
+                  bits target occurrence).trace ->
+              subLogCompressedFIDTraceEventPrimitiveOperandsFitInBits
+                (subLogCompressedFIDAllTargetsGlobalSelectTraceEventBits
+                  bits target occurrence) event) := by
+  rcases subLogCompressedFIDGlobalPayloadStore_execution_story bits with
+    ⟨haccess, hrank, hselect⟩
+  constructor
+  · intro i
+    rcases haccess i with ⟨hinterp, hcost, hclass, hstore⟩
+    exact
+      ⟨hinterp, hcost, hclass, hstore,
+        (fun event hmem =>
+          (subLogCompressedFIDAllTargetsGlobalAccessTraceResult_event_bounds
+            bits i event hmem).1),
+        (fun event hmem =>
+          (subLogCompressedFIDAllTargetsGlobalAccessTraceResult_event_bounds
+            bits i event hmem).2)⟩
+  constructor
+  · intro target pos
+    rcases hrank target pos with ⟨hinterp, hcost, hclass, hstore⟩
+    exact
+      ⟨hinterp, hcost, hclass, hstore,
+        (fun event hmem =>
+          (subLogCompressedFIDAllTargetsGlobalRankTraceResult_event_bounds
+            bits target pos event hmem).1),
+        (fun event hmem =>
+          (subLogCompressedFIDAllTargetsGlobalRankTraceResult_event_bounds
+            bits target pos event hmem).2)⟩
+  · intro target occurrence
+    rcases hselect target occurrence with
+      ⟨hinterp, hcost, hclass, hstore⟩
+    exact
+      ⟨hinterp, hcost, hclass, hstore,
+        (fun event hmem =>
+          (subLogCompressedFIDAllTargetsGlobalSelectTraceResult_event_bounds
+            bits target occurrence event hmem).1),
+        (fun event hmem =>
+          (subLogCompressedFIDAllTargetsGlobalSelectTraceResult_event_bounds
             bits target occurrence event hmem).2)⟩
 
 theorem subLogSelectFromPackedClarkRouteInterpretedCosted_cost_le

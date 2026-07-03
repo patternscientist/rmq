@@ -28,10 +28,10 @@ interpreter-backed replay
 `RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile`, with headline
 alias
 `Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile`, plus the
-target-indexed global payload-store execution story
-`Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreExecutionStory`,
+target-independent global payload-store execution story
+`Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreExecutionStory`,
 and its bounded trace-local event-width companion
-`Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreBoundedExecutionStory`.
+`Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory`.
 
 This document is the family-level map for the current Lean development. It
 records the module dependency DAG, correctness and cost status by structure,
@@ -370,15 +370,17 @@ family through the Word-RAM bridge layer": the interpreted replay theorem
 store-backed trace packets for the access, rank, and select legs, proving that each
 trace projects to the interpreted query, refines the costed query, uses only
 Word-RAM read/word-primitive events, and agrees with a concrete segmented
-payload store.  `RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_execution_story`
-then relabels all three packets into one concrete target-indexed payload store.
+payload store.  `RankSelect.compressedFIDFixedWeightGlobalPayloadStore_execution_story`
+then relabels shared access plus rank false/true and select false/true packets
+into one concrete target-independent payload store.
 The bounded companion
-`RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_bounded_execution_story`
+`RankSelect.compressedFIDFixedWeightGlobalPayloadStore_bounded_execution_story`
 adds the RMQ-style finite trace-local event-width packet for the same combined
 store: payload-read addresses and word-primitive natural operands/results fit
-the declared trace-local width.  The next refinement target is the
-target-independent true/false global store plus a stronger machine-word or
-asymptotic width theorem, rather than only the trace-local bound.
+the declared trace-local width.  The earlier target-indexed global store
+remains as a lower-level compatibility packet. The next refinement target is a
+stronger machine-word or asymptotic width theorem, rather than only the
+trace-local bound.
 The pointwise theorem `RankSelect.compressedFIDFixedWeightConstantQueryProfile`
 remains as the one-bitvector component.
 `RankSelect.FixedWeightTableBackedFIDData` is the first stricter pointwise
@@ -2297,11 +2299,15 @@ The names below are grouped by source module. Repeated base names in
   `RankSelectSpec.subLogSelectFromPackedClarkRouteTraceResult_execution_story`,
   `RankSelectSpec.subLogCompressedFIDTargetGlobalPayloadStore_execution_story`,
   `RankSelectSpec.subLogCompressedFIDTargetGlobalPayloadStore_bounded_execution_story`,
+  `RankSelectSpec.subLogCompressedFIDGlobalPayloadStore_execution_story`,
+  `RankSelectSpec.subLogCompressedFIDGlobalPayloadStore_bounded_execution_story`,
   `RankSelect.compressedFIDFixedWeightAccessTraceResult_execution_story`,
   `RankSelect.compressedFIDFixedWeightRankTraceResult_execution_story`,
   `RankSelect.compressedFIDFixedWeightSelectTraceResult_execution_story`,
   `RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_execution_story`,
   `RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_bounded_execution_story`,
+  `RankSelect.compressedFIDFixedWeightGlobalPayloadStore_execution_story`,
+  `RankSelect.compressedFIDFixedWeightGlobalPayloadStore_bounded_execution_story`,
   `RankSelectSpec.fixedWeightSubLogConcretePackedClarkInterpretedProfile`,
   `RankSelect.compressedFIDFixedWeightInterpretedConstantQueryProfile`,
   `RankSelect.compressedFIDFixedWeightInterpretedFamily`, and

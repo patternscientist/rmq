@@ -34,8 +34,11 @@ trace packets:
 For each fixed `bits` and `target`, the relabeled access/rank/select packets
 are combined under one concrete target-indexed payload store by
 `RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_execution_story`.
-The bounded companion
-`RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_bounded_execution_story`
+The stronger public global-store theorem
+`RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStore_execution_story`
+uses one target-independent store for shared access plus rank false/true and
+select false/true.  Its bounded companion
+`RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStore_bounded_execution_story`
 adds trace-local finite-width bounds for every payload-read address and every
 natural operand/result exposed by word-local rank/select primitives.
 -/

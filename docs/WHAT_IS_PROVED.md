@@ -15,8 +15,10 @@ The short public theorem aliases live in `RMQ/Headlines.lean`.
 | `RMQ.Headlines.rankSelectWordBoundedNPlusOConstantQuery` | The same public rank/select family, strengthened with machine-word-bounded concrete payload reads. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightFamilyProfile` | Fixed-weight compressed/FID rank/select family: fixed-weight primary payload plus `o(n)` auxiliary payload, exact access/rank/select, and one constant modeled query bound. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile` | Interpreter-backed replay of that compressed/FID rank/select family: same payload/profile shape, with access/rank/select reads routed through first-order `WordRAM` bridges. |
-| `RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreExecutionStory` | Target-indexed global-store execution story for compressed/FID rank/select: for fixed `bits` and `target`, relabeled access/rank/select traces all read from one concrete payload store. |
-| `RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreBoundedExecutionStory` | Bounded target-indexed global-store execution story for compressed/FID rank/select: the combined traces also have finite trace-local widths bounding every payload-read address and word-primitive natural operand/result. |
+| `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreExecutionStory` | Target-independent global-store execution story for compressed/FID rank/select: for fixed `bits`, shared access plus rank false/true and select false/true traces all read from one concrete payload store. |
+| `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory` | Bounded target-independent global-store execution story for compressed/FID rank/select: the combined traces also have finite trace-local widths bounding every payload-read address and word-primitive natural operand/result. |
+| `RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreExecutionStory` | Lower-level target-indexed global-store execution packet for one fixed rank/select target. |
+| `RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreBoundedExecutionStory` | Lower-level bounded target-indexed global-store packet for one fixed rank/select target. |
 | `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | Classic list-facing succinct RMQ theorem: for every ordinary `xs : List Int`, the built payload has length `2*n + o(n)` and valid half-open queries return the exact leftmost RMQ answer within constant modeled query cost. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ capstone with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and the matching lower-bound side. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Whole-query-interpreted variant of the final BP-native succinct RMQ capstone: same theorem shape, with the final query control represented by a closed first-order program whose leaves are interpreted close-select, compact close/LCA, and register-backed answer-rank operations. |
@@ -157,14 +159,16 @@ The trace-level surface now includes
 These prove that each query trace projects to the interpreted query, refines
 the costed query, contains only payload-read or word-primitive events, and
 matches a concrete segmented read store.  The combined theorem
-`RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_execution_story`
-relabels those packets into one target-indexed global store for each fixed
-`bits` and `target`.  The bounded companion
-`RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_bounded_execution_story`
+`RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStore_execution_story`
+relabels shared access plus rank false/true and select false/true packets into
+one target-independent global store for each fixed `bits`.  The bounded
+companion
+`RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStore_bounded_execution_story`
 adds the RMQ-style finite trace-local bit-width theorem for payload-read
-addresses and word-local primitive operands/results.  It is not yet the
-target-independent true/false combined store, and the width is trace-local
-rather than a uniform asymptotic machine-word theorem.
+addresses and word-local primitive operands/results.  The earlier
+target-indexed store theorem remains available as a lower-level packet, while
+the remaining width story is trace-local rather than a uniform asymptotic
+machine-word theorem.
 
 The compressed/FID target surface is also formalized:
 `RMQ.RankSelect.fixedWeightBitstringsLength` counts fixed-weight bitvector

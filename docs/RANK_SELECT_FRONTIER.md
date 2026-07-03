@@ -78,10 +78,10 @@ RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamily
 RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile
 RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile
 RMQ.RankSelect.compressedFIDFixedWeightSelectTraceResult_execution_story
-RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_execution_story
-RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreExecutionStory
-RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_bounded_execution_story
-RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreBoundedExecutionStory
+RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStore_execution_story
+RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreExecutionStory
+RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStore_bounded_execution_story
+RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory
 RMQ.RankSelect.compressedFIDFixedWeightConstantQueryProfile
 RMQ.Headlines.rankSelectCompressedFIDFixedWeightConstantQuery
 ```
@@ -108,17 +108,17 @@ RMQ.RankSelect.compressedFIDFixedWeightSelectTraceResult_execution_story
 These theorems say the access/rank/select trace results project to the interpreted
 queries, refine the costed queries, use only Word-RAM read/word-primitive
 events, and every read agrees with a concrete segmented payload store. The
-target-indexed global-store theorem
-`RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_execution_story`
-then relabels all three packets into one concrete store for each fixed `bits`
-and `target`.  Its bounded companion
-`RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_bounded_execution_story`
+target-independent global-store theorem
+`RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStore_execution_story`
+then relabels access, rank false/true, and select false/true into one concrete
+store for each fixed `bits`.  Its bounded companion
+`RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStore_bounded_execution_story`
 adds the RMQ-style finite trace-local event width: every payload-read segment
 and index, plus every natural operand/result exposed by a word-local
-rank/select primitive, fits that trace-local width. The remaining RMQ-level
-refinements are a target-independent true/false combined store and a stronger
-machine-word/asymptotic width story rather than a trace-local bound chosen from
-the finished trace.
+rank/select primitive, fits that trace-local width. The earlier target-indexed
+store theorem remains as a lower-level compatibility packet. The remaining
+RMQ-level refinement is now a stronger machine-word/asymptotic width story
+rather than a trace-local bound chosen from the finished trace.
 
 ## Compressed/FID Surface
 

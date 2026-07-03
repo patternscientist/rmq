@@ -53,11 +53,11 @@ spokes:
 - Rank/select: a standalone bitvector spec and public Jacobson/Clark
   `n + o(n)` constant-query profile, plus a compressed/FID fixed-weight family
   surface. The concrete sub-log/Packed-Clark constructor now has interpreted
-  access/rank/select replays, store-backed trace packets, a target-indexed
-  global payload-store execution story, and an RMQ-style bounded trace-local
-  event-width companion. The remaining RMQ-level gap is target-independent
-  true/false storage plus stronger uniform machine-word/asymptotic width
-  bounds.
+  access/rank/select replays, store-backed trace packets, a target-independent
+  global payload-store execution story for shared access plus rank false/true
+  and select false/true, and an RMQ-style bounded trace-local event-width
+  companion. The remaining RMQ-level gap is stronger uniform
+  machine-word/asymptotic width bounds.
 - Union-find: a finite partition specification, costed reference operations,
   a parent-pointer forest refinement, union-by-rank/root-mass/rank-power
   invariants, full-compression find refinement, rank-gap/log-rank amortized
@@ -123,20 +123,21 @@ builds the analogous rank trace result with a six-segment rank payload store.
 now adds the select packet: it reads the charged packed-Clark route directory
 and then performs the constant local fixed-weight block decode through
 code/length/class/shared-decoder payload reads.  The combined theorem
-`RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_execution_story`
-relabels access, rank, and select into one concrete payload store for each
-fixed `bits` and `target`.  The bounded companion
-`RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_bounded_execution_story`
+`RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStore_execution_story`
+relabels shared access plus rank false/true and select false/true into one
+concrete payload store for each fixed `bits`.  The bounded companion
+`RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStore_bounded_execution_story`
 now adds the same style of finite trace-local event-width packet used by the
 final RMQ bounded trace theorem: every payload-read segment/index and every
 natural operand/result exposed by word-local rank/select primitives fits the
 declared trace-local width.  Live assumptions: this is still the project's
-modeled RAM/indexed-read cost layer, not Lean runtime, the global store is
-target-indexed rather than a single true/false combined store, and the width is
+modeled RAM/indexed-read cost layer, not Lean runtime, the earlier
+target-indexed theorem remains as lower-level compatibility, and the width is
 trace-local rather than an asymptotic machine-word-size theorem.  A skeptical
-grad student should now ask whether the target-indexed store can be doubled
-into a target-independent store and whether the trace-local width can be
-replaced or complemented by uniform machine-word side conditions.
+grad student should now ask whether the trace-local width can be replaced or
+complemented by uniform machine-word side conditions, and whether the
+rank/select global packet should be folded into an even larger RMQ-style trace
+with a single closed controller.
 
 The fixed-weight compressed/FID spoke now separates four issues that were easy
 to conflate. First, log-sized sentinel chunk decompositions have an `o(n)` block
