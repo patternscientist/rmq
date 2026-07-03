@@ -32,6 +32,8 @@ target-independent global payload-store execution story
 `Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreExecutionStory`,
 and its bounded trace-local event-width companion
 `Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory`.
+These layers are now packaged by the fused public capstone
+`Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreFusedProfile`.
 
 This document is the family-level map for the current Lean development. It
 records the module dependency DAG, correctness and cost status by structure,
@@ -381,6 +383,11 @@ the declared trace-local width.  The earlier target-indexed global store
 remains as a lower-level compatibility packet. The next refinement target is a
 stronger machine-word or asymptotic width theorem, rather than only the
 trace-local bound.
+The public one-line capstone for the current compressed/FID stack is
+`RankSelect.compressedFIDFixedWeightGlobalPayloadStoreFusedProfile`: it conjoins
+the compressed family profile, the interpreted replay profile, the
+target-independent global-store execution story, and the bounded trace-local
+event-width story.
 The pointwise theorem `RankSelect.compressedFIDFixedWeightConstantQueryProfile`
 remains as the one-bitvector component.
 `RankSelect.FixedWeightTableBackedFIDData` is the first stricter pointwise
@@ -2311,7 +2318,8 @@ The names below are grouped by source module. Repeated base names in
   `RankSelectSpec.fixedWeightSubLogConcretePackedClarkInterpretedProfile`,
   `RankSelect.compressedFIDFixedWeightInterpretedConstantQueryProfile`,
   `RankSelect.compressedFIDFixedWeightInterpretedFamily`, and
-  `RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile`.
+  `RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile`, and
+  `RankSelect.compressedFIDFixedWeightGlobalPayloadStoreFusedProfile`.
 - `RMQ/Core/BPNavigationPublic.lean` and `RMQBPNavigation.lean`:
   neutral public aliases and a standalone import root for compact
   balanced-parentheses close/LCA navigation, including

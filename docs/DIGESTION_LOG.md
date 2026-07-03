@@ -56,8 +56,9 @@ spokes:
   access/rank/select replays, store-backed trace packets, a target-independent
   global payload-store execution story for shared access plus rank false/true
   and select false/true, and an RMQ-style bounded trace-local event-width
-  companion. The remaining RMQ-level gap is stronger uniform
-  machine-word/asymptotic width bounds.
+  companion, now fused into one public compressed/FID capstone theorem. The
+  remaining RMQ-level gap is stronger uniform machine-word/asymptotic width
+  bounds.
 - Union-find: a finite partition specification, costed reference operations,
   a parent-pointer forest refinement, union-by-rank/root-mass/rank-power
   invariants, full-compression find refinement, rank-gap/log-rank amortized
@@ -138,6 +139,15 @@ grad student should now ask whether the trace-local width can be replaced or
 complemented by uniform machine-word side conditions, and whether the
 rank/select global packet should be folded into an even larger RMQ-style trace
 with a single closed controller.
+The latest fused capstone
+`RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStoreFusedProfile` packages
+the compressed family theorem, interpreted replay theorem, target-independent
+global-store theorem, and bounded global-store theorem into one public surface.
+Plain English: the fixed-weight compressed/FID rank/select spoke now has a
+single theorem to cite for payload budget, exact constant modeled queries,
+WordRAM replay, one shared read store, and trace-local bounded events. The
+remaining question is not whether the pieces coexist, but whether the
+trace-local bound can be strengthened into a uniform machine-word discipline.
 
 The fixed-weight compressed/FID spoke now separates four issues that were easy
 to conflate. First, log-sized sentinel chunk decompositions have an `o(n)` block

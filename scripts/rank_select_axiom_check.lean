@@ -303,6 +303,7 @@ shape, and the charged local table/RAM block scaffolding.
 #print axioms RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStore_execution_story
 #print axioms RMQ.RankSelectSpec.subLogCompressedFIDGlobalPayloadStore_bounded_execution_story
 #print axioms RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStore_bounded_execution_story
+#print axioms RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStoreFusedProfile
 #print axioms RMQ.RankSelect.jacobsonClarkNPlusOConstantQuery
 #print axioms RMQ.RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery
 #print axioms RMQ.GenericSelect.sparseExceptionSelectSource_profile

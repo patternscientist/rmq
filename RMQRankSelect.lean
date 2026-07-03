@@ -22,6 +22,12 @@ concrete compressed payload budget
 `fixedWeightPayloadBudget bits + o(n)` with uniform constant modeled access,
 rank, and select queries for every `bits : List Bool`.  The pointwise theorem
 `RMQ.RankSelect.compressedFIDFixedWeightConstantQueryProfile` remains available.
+The single public fused capstone is
+`RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStoreFusedProfile`, with
+headline alias
+`RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreFusedProfile`.
+It packages the compressed family profile, interpreted replay, target-independent
+global payload store, and bounded trace-local event-width story in one theorem.
 The interpreted replay surface
 `RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile` strengthens
 the same theorem shape by routing access/rank/select reads through `WordRAM`

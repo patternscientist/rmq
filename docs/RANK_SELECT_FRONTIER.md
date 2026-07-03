@@ -77,6 +77,8 @@ RMQ.Headlines.rankSelectCompressedFIDFixedWeightFamilyProfile
 RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamily
 RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile
 RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile
+RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStoreFusedProfile
+RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreFusedProfile
 RMQ.RankSelect.compressedFIDFixedWeightSelectTraceResult_execution_story
 RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStore_execution_story
 RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreExecutionStory
@@ -92,7 +94,10 @@ sub-log/Packed-Clark auxiliary payload, proves that auxiliary overhead is
 `o(n)`, and proves exact access, rank, and select with one uniform modeled
 constant query bound. `compressedFIDFixedWeightConstantQueryProfile` is the
 pointwise component theorem; `compressedFIDFixedWeightFamilyProfile` is the
-reusable theorem surface to cite for the compressed/FID spoke.
+reusable family component. The primary public capstone to cite is now
+`compressedFIDFixedWeightGlobalPayloadStoreFusedProfile`: it packages that
+family component together with interpreted replay, one target-independent
+global payload store, and bounded trace-local event widths.
 `compressedFIDFixedWeightInterpretedFamilyProfile` is the additive Word-RAM
 replay surface: it keeps the same payload and constant-query theorem shape
 while routing access, rank, and select reads through the first-order

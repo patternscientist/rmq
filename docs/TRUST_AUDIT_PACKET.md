@@ -142,8 +142,17 @@ local/fringe/interior close-navigation replay on the compact close/LCA leg. As
 before, these are word-RAM model statements; they are not Lean-runtime claims
 and not a general CPU semantics.
 
-The rank/select spoke now has the analogous bounded target-independent global
-payload-store theorem:
+The rank/select spoke now has a fused compressed/FID capstone alias:
+
+```lean
+abbrev rankSelectCompressedFIDFixedWeightGlobalPayloadStoreFusedProfile :=
+  RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStoreFusedProfile
+```
+
+It packages the compressed fixed-weight family profile, interpreted replay,
+target-independent global store, and bounded trace-local event-width story in
+one cited theorem. The bounded target-independent global payload-store
+component is:
 
 ```lean
 abbrev rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory :=
@@ -155,8 +164,8 @@ and select false/true traces under one target-independent read store and adds a
 finite trace-local width proving that every payload-read address and every
 natural operand/result exposed by word-local rank/select primitives fits that
 width. The lower-level target-indexed theorem remains available for component
-audits; the public endpoint is now the shared true/false store. The width is
-still trace-local rather than a uniform asymptotic machine-word theorem.
+audits; the public endpoint is now the fused theorem. The width is still
+trace-local rather than a uniform asymptotic machine-word theorem.
 
 ## Theorem Statement
 
@@ -237,6 +246,8 @@ Current excerpt for the public headline path:
 'RMQ.Headlines.rankSelectCompressedFIDFixedWeightFamilyProfile' depends on axioms:
   [propext, Classical.choice, Quot.sound]
 'RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile' depends on axioms:
+  [propext, Classical.choice, Quot.sound]
+'RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreFusedProfile' depends on axioms:
   [propext, Classical.choice, Quot.sound]
 'RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory' depends on axioms:
   [propext, Classical.choice, Quot.sound]

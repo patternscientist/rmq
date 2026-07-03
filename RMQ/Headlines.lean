@@ -48,6 +48,14 @@ abbrev rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile :=
   RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile
 
 /--
+Fused fixed-weight compressed/FID rank/select capstone: compressed payload plus
+`o(n)`, constant exact access/rank/select, interpreted WordRAM replay, one
+target-independent global payload store, and bounded trace-local event widths.
+-/
+abbrev rankSelectCompressedFIDFixedWeightGlobalPayloadStoreFusedProfile :=
+  RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStoreFusedProfile
+
+/--
 Target-independent global payload-store execution story for fixed-weight
 compressed/FID rank/select. For each fixed `bits`, access, rank false/true,
 and select false/true traces all read from one concrete global read store.

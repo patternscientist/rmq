@@ -98,6 +98,7 @@ RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryWordTraceCosted_refines_w
 RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryWordTraceCosted_exact
 RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_profile
 RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile
+RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreFusedProfile
 RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory
 RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted
 RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace
@@ -212,10 +213,11 @@ component-level machine-word side conditions, structural replacement of
 fallback markers where possible, plus stronger uniform word-width packaging for
 rank/select. The rank/select compressed/FID spoke now reuses the same
 bounded-event style through
-`RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory`:
-one shared compressed/FID payload store supports access, rank false/true, and
-select false/true. That theorem is still trace-local rather than a uniform
-asymptotic machine-word theorem.
+`RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreFusedProfile`:
+the compressed payload theorem, interpreted replay, one shared compressed/FID
+payload store for access/rank false/true/select false/true, and bounded
+trace-local event widths are now packaged together. The bounded part is still
+trace-local rather than a uniform asymptotic machine-word theorem.
 
 ## Large-File Cleanup Note
 
