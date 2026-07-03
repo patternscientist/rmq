@@ -94,7 +94,11 @@ abbrev succinctRMQTwoNPlusOConstantQueryWordTrace :=
 It keeps the same theorem shape and has the closed controller emit one
 `WordRAM.TraceEvent` stream. The close-select leg, answer-rank leg, and the
 rank-seed reads inside compact close/LCA contribute structural
-payload/register traces.
+payload/register traces. The all-size compact close/LCA leg now also consumes
+`SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural`,
+which replaces the former zero-block same-block fallback and cross-block
+interior `TraceResult.ofCosted` leaves with payload-backed finite-small or
+two-level structural traces.
 
 There is also a large-regime companion:
 
@@ -119,15 +123,34 @@ abbrev succinctRMQGlobalPayloadStoreExtensionalExecutionStory :=
 
 abbrev succinctRMQGlobalPayloadStoreBoundedExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_bounded_execution_story
+
+abbrev succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_noSynthetic_execution_story
 ```
 
 It says the public costed query refines the unified `WordRAM.TraceEvent` stream,
 every event is either a payload read or an explicitly counted word primitive,
 and every payload read agrees with one concrete global store built from the
-final succinct RMQ payload components. Tiny/inactive close-navigation fallback
-work appears only as synthetic word-primitive events, not as payload reads. The
-bounded companion adds a concrete trace-local finite bit width and proves that
-every payload-read address and every natural operand/result exposed by
+final succinct RMQ payload components. The all-size structural companion is:
+
+```lean
+RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_allSizeStructural_execution_story
+```
+
+with public alias:
+
+```lean
+RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory
+```
+
+It packages the same store-backed and bounded execution story after replacing
+the two known close-navigation `TraceResult.ofCosted` fallback leaves by
+payload-backed traces. The no-synthetic companion additionally proves that no
+event in the final all-size global trace is
+`TraceEvent.syntheticCostOnlyPrimitive`. That marker is now a dedicated
+constructor used by `TraceResult.ofCosted`, not an overloaded `wordRank` event.
+The bounded companion adds a concrete trace-local finite bit width and proves
+that every payload-read address and every natural operand/result exposed by
 word-local primitive events fits that width.
 The extensional companion says that any read store agreeing with the concrete
 global store on the read events emitted by the final trace validates that same

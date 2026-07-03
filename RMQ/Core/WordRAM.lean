@@ -104,6 +104,7 @@ inductive TraceEvent where
   | readWord (segment index : Nat) (word? : Option Word)
   | wordRank (target : Bool) (limit result : Nat)
   | wordSelect (target : Bool) (occurrence : Nat) (result : Option Nat)
+  | syntheticCostOnlyPrimitive
 deriving Repr, DecidableEq
 
 namespace TraceEvent
@@ -113,12 +114,14 @@ def matchesStore (store : Store) : TraceEvent -> Prop
   | readWord segment index word? => store.readWord? segment index = word?
   | wordRank _ _ _ => True
   | wordSelect _ _ _ => True
+  | syntheticCostOnlyPrimitive => True
 
 /-- A trace event agrees with a read-only payload store view. -/
 def matchesReadStore (store : ReadStore) : TraceEvent -> Prop
   | readWord segment index word? => store.readWord? segment index = word?
   | wordRank _ _ _ => True
   | wordSelect _ _ _ => True
+  | syntheticCostOnlyPrimitive => True
 
 /-- Any word returned by this event fits in `bound`. -/
 def wordLengthBounded (bound : Nat) : TraceEvent -> Prop
@@ -126,26 +129,31 @@ def wordLengthBounded (bound : Nat) : TraceEvent -> Prop
   | readWord _ _ (some word) => word.length <= bound
   | wordRank _ _ _ => True
   | wordSelect _ _ _ => True
+  | syntheticCostOnlyPrimitive => True
 
 /-- Whether a trace event is an actual payload-memory word read. -/
 def isReadWord : TraceEvent -> Prop
   | readWord _ _ _ => True
   | wordRank _ _ _ => False
   | wordSelect _ _ _ => False
+  | syntheticCostOnlyPrimitive => False
 
 /-- Whether a trace event is a bounded-cost word primitive rather than a read. -/
 def isWordPrimitive : TraceEvent -> Prop
   | readWord _ _ _ => False
   | wordRank _ _ _ => True
   | wordSelect _ _ _ => True
+  | syntheticCostOnlyPrimitive => True
 
 /--
 Marker for synthetic cost-only fallback events introduced by
-`TraceResult.ofCosted`.  The marker is deliberately fixed and payload-free:
-it is a word-primitive event, not a memory read and not a domain oracle.
+`TraceResult.ofCosted`. The marker is deliberately disjoint from real
+word-local primitives: it is payload-free, not a memory read, and not a domain
+oracle.
 -/
-def isSyntheticCostOnlyPrimitive (event : TraceEvent) : Prop :=
-  event = TraceEvent.wordRank false 0 0
+def isSyntheticCostOnlyPrimitive : TraceEvent -> Prop
+  | syntheticCostOnlyPrimitive => True
+  | _ => False
 
 /--
 Zero-cost control is deliberately not represented as a trace event. Branching,
@@ -171,6 +179,7 @@ def relabelReadSegment (offset : Nat) : TraceEvent -> TraceEvent
   | wordRank target limit result => wordRank target limit result
   | wordSelect target occurrence result =>
       wordSelect target occurrence result
+  | syntheticCostOnlyPrimitive => syntheticCostOnlyPrimitive
 
 /--
 Relabel payload-read segment identifiers through an arbitrary segment map.
@@ -186,6 +195,7 @@ def relabelReadSegmentWith (segmentMap : Nat -> Nat) :
   | wordRank target limit result => wordRank target limit result
   | wordSelect target occurrence result =>
       wordSelect target occurrence result
+  | syntheticCostOnlyPrimitive => syntheticCostOnlyPrimitive
 
 /-- Map a one-segment local store into a global segment, sending unused local
 segments to a designated dead segment. -/
@@ -229,6 +239,18 @@ def tripleSegmentMap (base dead : Nat) : Nat -> Nat
       event.isWordPrimitive := by
   cases event <;> simp [relabelReadSegmentWith, isWordPrimitive]
 
+@[simp] theorem relabelReadSegment_isSyntheticCostOnlyPrimitive
+    (offset : Nat) (event : TraceEvent) :
+    (event.relabelReadSegment offset).isSyntheticCostOnlyPrimitive =
+      event.isSyntheticCostOnlyPrimitive := by
+  cases event <;> simp [relabelReadSegment, isSyntheticCostOnlyPrimitive]
+
+@[simp] theorem relabelReadSegmentWith_isSyntheticCostOnlyPrimitive
+    (segmentMap : Nat -> Nat) (event : TraceEvent) :
+    (event.relabelReadSegmentWith segmentMap).isSyntheticCostOnlyPrimitive =
+      event.isSyntheticCostOnlyPrimitive := by
+  cases event <;> simp [relabelReadSegmentWith, isSyntheticCostOnlyPrimitive]
+
 theorem isReadWord_or_isWordPrimitive (event : TraceEvent) :
     event.isReadWord \/ event.isWordPrimitive := by
   cases event <;> simp [isReadWord, isWordPrimitive]
@@ -241,17 +263,28 @@ theorem syntheticCostOnlyPrimitive_isWordPrimitive
     {event : TraceEvent}
     (h : event.isSyntheticCostOnlyPrimitive) :
     event.isWordPrimitive := by
-  unfold isSyntheticCostOnlyPrimitive at h
-  rw [h]
-  simp [isWordPrimitive]
+  cases event <;> simp [isSyntheticCostOnlyPrimitive, isWordPrimitive] at h ⊢
 
 theorem syntheticCostOnlyPrimitive_not_readWord
     {event : TraceEvent}
     (h : event.isSyntheticCostOnlyPrimitive) :
     ¬ event.isReadWord := by
-  unfold isSyntheticCostOnlyPrimitive at h
-  rw [h]
-  simp [isReadWord]
+  cases event <;> simp [isSyntheticCostOnlyPrimitive, isReadWord] at h ⊢
+
+@[simp] theorem wordRank_not_syntheticCostOnlyPrimitive
+    (target : Bool) (limit result : Nat) :
+    ¬ (TraceEvent.wordRank target limit result).isSyntheticCostOnlyPrimitive := by
+  simp [isSyntheticCostOnlyPrimitive]
+
+@[simp] theorem wordSelect_not_syntheticCostOnlyPrimitive
+    (target : Bool) (occurrence : Nat) (result : Option Nat) :
+    ¬ (TraceEvent.wordSelect target occurrence result).isSyntheticCostOnlyPrimitive := by
+  simp [isSyntheticCostOnlyPrimitive]
+
+@[simp] theorem readWord_not_syntheticCostOnlyPrimitive
+    (segment index : Nat) (word? : Option Word) :
+    ¬ (TraceEvent.readWord segment index word?).isSyntheticCostOnlyPrimitive := by
+  simp [isSyntheticCostOnlyPrimitive]
 
 theorem not_zeroCostControl (event : TraceEvent) :
     ¬ event.isZeroCostControl := by
@@ -267,6 +300,8 @@ theorem not_zeroCostControl (event : TraceEvent) :
   | wordRank target limit result =>
       simp [relabelReadSegment, wordLengthBounded]
   | wordSelect target occurrence result =>
+      simp [relabelReadSegment, wordLengthBounded]
+  | syntheticCostOnlyPrimitive =>
       simp [relabelReadSegment, wordLengthBounded]
 
 theorem relabelReadSegment_matchesReadStore
@@ -286,6 +321,8 @@ theorem relabelReadSegment_matchesReadStore
       simp [relabelReadSegment, matchesReadStore]
   | wordSelect target occurrence result =>
       simp [relabelReadSegment, matchesReadStore]
+  | syntheticCostOnlyPrimitive =>
+      simp [relabelReadSegment, matchesReadStore]
 
 theorem relabelReadSegmentWith_matchesReadStore
     (localStore globalStore : ReadStore) (segmentMap : Nat -> Nat)
@@ -304,6 +341,8 @@ theorem relabelReadSegmentWith_matchesReadStore
   | wordRank target limit result =>
       simp [relabelReadSegmentWith, matchesReadStore]
   | wordSelect target occurrence result =>
+      simp [relabelReadSegmentWith, matchesReadStore]
+  | syntheticCostOnlyPrimitive =>
       simp [relabelReadSegmentWith, matchesReadStore]
 
 end TraceEvent
@@ -415,7 +454,7 @@ not claim payload-read completeness.
 -/
 def costOnlyTrace : Nat -> List TraceEvent
   | 0 => []
-  | n + 1 => TraceEvent.wordRank false 0 0 :: costOnlyTrace n
+  | n + 1 => TraceEvent.syntheticCostOnlyPrimitive :: costOnlyTrace n
 
 @[simp] theorem costOnlyTrace_length (n : Nat) :
     (costOnlyTrace n).length = n := by
@@ -671,6 +710,21 @@ theorem relabelReadSegmentsWith_matchesReadStore
   exact TraceEvent.relabelReadSegmentWith_matchesReadStore
     localStore globalStore segmentMap hread localEvent
     (hresult localEvent hlocal)
+
+theorem relabelReadSegmentsWith_no_syntheticCostOnlyPrimitive
+    {alpha : Type u} (segmentMap : Nat -> Nat)
+    (result : TraceResult alpha)
+    (hresult :
+      forall event,
+        event ∈ result.trace -> ¬ event.isSyntheticCostOnlyPrimitive) :
+    forall event,
+      event ∈ (relabelReadSegmentsWith segmentMap result).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  intro event hmem hsynth
+  rcases List.mem_map.mp hmem with ⟨localEvent, hlocal, hrelabeled⟩
+  subst event
+  exact hresult localEvent hlocal
+    (by simpa using hsynth)
 
 end TraceResult
 
@@ -1059,6 +1113,60 @@ theorem eval_no_zero_cost_control
   intro event _hmem
   exact TraceEvent.not_zeroCostControl event
 
+theorem eval_no_syntheticCostOnlyPrimitive
+    (program : Program ty) (store : Store) :
+    forall event : TraceEvent,
+      event ∈ (eval program store).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  induction program with
+  | pure value =>
+      intro event hmem
+      simp [eval] at hmem
+  | readWord segment index =>
+      intro event hmem
+      simp [eval] at hmem
+      subst event
+      simp [TraceEvent.isSyntheticCostOnlyPrimitive]
+  | mapOptWordNat program ih =>
+      intro event hmem
+      exact ih event hmem
+  | mapOptWordOptionNat width program ih =>
+      intro event hmem
+      exact ih event hmem
+  | joinOptOptNat program ih =>
+      intro event hmem
+      exact ih event hmem
+  | sampledRank target offset sample word sampleIH wordIH =>
+      intro event hmem
+      cases hsample : (eval sample store).value <;>
+        cases hword : (eval word store).value <;>
+          simp [eval, hsample, hword,
+            TraceEvent.isSyntheticCostOnlyPrimitive] at hmem ⊢
+      · rcases hmem with hmem | hmem
+        · exact sampleIH event hmem
+        · exact wordIH event hmem
+      · rcases hmem with hmem | hmem
+        · exact sampleIH event hmem
+        · exact wordIH event hmem
+      · rcases hmem with hmem | hmem
+        · exact sampleIH event hmem
+        · exact wordIH event hmem
+      · rcases hmem with hmem | htail
+        · exact sampleIH event hmem
+        · rcases htail with hmem | hmem
+          · exact wordIH event hmem
+          · subst event
+            simp
+  | wordSelectFromOpt target occurrence word wordIH =>
+      intro event hmem
+      cases hword : (eval word store).value <;>
+        simp [eval, hword, TraceEvent.isSyntheticCostOnlyPrimitive] at hmem ⊢
+      · exact wordIH event hmem
+      · rcases hmem with hmem | hmem
+        · exact wordIH event hmem
+        · subst event
+          simp
+
 /-- If the store is word-bounded, every word returned by the trace is bounded. -/
 theorem eval_word_reads_length_le_machine
     (program : Program ty) (store : Store) {bound : Nat}
@@ -1078,6 +1186,8 @@ theorem eval_word_reads_length_le_machine
   | wordRank target limit result =>
       simp [TraceEvent.wordLengthBounded]
   | wordSelect target occurrence result =>
+      simp [TraceEvent.wordLengthBounded]
+  | syntheticCostOnlyPrimitive =>
       simp [TraceEvent.wordLengthBounded]
 
 /--

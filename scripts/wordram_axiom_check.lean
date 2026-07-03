@@ -15,6 +15,7 @@ that consume the Word-RAM bridge layer.
 #print axioms RMQ.WordRAM.Program.eval_readWord_address_mem
 #print axioms RMQ.WordRAM.Program.eval_event_read_or_primitive
 #print axioms RMQ.WordRAM.Program.eval_no_zero_cost_control
+#print axioms RMQ.WordRAM.Program.eval_no_syntheticCostOnlyPrimitive
 #print axioms RMQ.WordRAM.Program.eval_word_reads_length_le_machine
 #print axioms RMQ.WordRAM.Program.eval_eq_of_readWord_eq
 #print axioms RMQ.WordRAM.Program.eval_toCosted_eq_of_readWord_eq
@@ -53,6 +54,7 @@ that consume the Word-RAM bridge layer.
 #print axioms RMQ.WordRAM.Register.NatProgram.eval_event_address_fitsInBits
 #print axioms RMQ.WordRAM.Register.NatProgram.eval_event_read_or_primitive
 #print axioms RMQ.WordRAM.Register.NatProgram.eval_no_zero_cost_control
+#print axioms RMQ.WordRAM.Register.NatProgram.eval_no_syntheticCostOnlyPrimitive
 #print axioms RMQ.WordRAM.Register.NatProgram.eval_word_reads_length_le_machine
 #print axioms RMQ.WordRAM.Register.NatProgram.eval_eq_of_readWord_eq
 #print axioms RMQ.WordRAM.Register.NatProgram.eval_toCosted_eq_of_readWord_eq
@@ -113,6 +115,7 @@ that consume the Word-RAM bridge layer.
 #print axioms RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_store_extensional_execution_story
 #print axioms RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_bounds
 #print axioms RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_bounded_execution_story
+#print axioms RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_noSynthetic_execution_story
 #print axioms RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact
 #print axioms RMQ.SuccinctClassic.listInt_two_n_plus_o_constant_query_profile
 #print axioms RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe_refines_wholeQueryInterpretedCosted
@@ -142,5 +145,6 @@ that consume the Word-RAM bridge layer.
 #print axioms RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory
 #print axioms RMQ.Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory
 #print axioms RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory
+#print axioms RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory
 #print axioms RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory
 #print axioms RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory

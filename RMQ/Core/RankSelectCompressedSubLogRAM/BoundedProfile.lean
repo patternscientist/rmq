@@ -19,6 +19,7 @@ def subLogCompressedFIDTraceEventNatEnvelope :
   | WordRAM.TraceEvent.wordSelect _ occurrence none => occurrence
   | WordRAM.TraceEvent.wordSelect _ occurrence (some result) =>
       Nat.max occurrence result
+  | WordRAM.TraceEvent.syntheticCostOnlyPrimitive => 0
 
 /-- Maximum natural envelope over a rank/select trace. -/
 def subLogCompressedFIDTraceNatEnvelope :
@@ -45,6 +46,7 @@ def subLogCompressedFIDTraceEventReadAddressFitsInBits
       WordRAM.Register.AddressFitsInBits bits segment index
   | WordRAM.TraceEvent.wordRank _ _ _ => True
   | WordRAM.TraceEvent.wordSelect _ _ _ => True
+  | WordRAM.TraceEvent.syntheticCostOnlyPrimitive => True
 
 /-- Word-primitive natural operands/results exposed by an event fit in bits. -/
 def subLogCompressedFIDTraceEventPrimitiveOperandsFitInBits
@@ -57,6 +59,7 @@ def subLogCompressedFIDTraceEventPrimitiveOperandsFitInBits
       WordRAM.Register.FitsInBits bits occurrence /\
         forall value, result = some value ->
           WordRAM.Register.FitsInBits bits value
+  | WordRAM.TraceEvent.syntheticCostOnlyPrimitive => True
 
 theorem subLogCompressedFIDTraceEventNatEnvelope_le_traceNatEnvelope_of_mem
     {trace : List WordRAM.TraceEvent} {event : WordRAM.TraceEvent}
@@ -109,6 +112,8 @@ theorem subLogCompressedFIDTraceEventReadAddressFitsInBits_of_mem
       trivial
   | wordSelect target occurrence result =>
       trivial
+  | syntheticCostOnlyPrimitive =>
+      trivial
 
 theorem subLogCompressedFIDTraceEventPrimitiveOperandsFitInBits_of_mem
     {trace : List WordRAM.TraceEvent} {event : WordRAM.TraceEvent}
@@ -149,6 +154,8 @@ theorem subLogCompressedFIDTraceEventPrimitiveOperandsFitInBits_of_mem
             cases hvalue
             exact Nat.lt_of_le_of_lt
               (Nat.le_max_right occurrence result) hmax
+  | syntheticCostOnlyPrimitive =>
+      trivial
 
 /-- Trace-local bit width for the global access trace. -/
 def subLogCompressedFIDGlobalAccessTraceEventBits

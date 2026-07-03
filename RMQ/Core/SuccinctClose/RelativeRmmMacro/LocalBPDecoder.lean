@@ -1654,6 +1654,206 @@ theorem localBPSameBlockCloseCosted_exact
   rw [hlenEq']
   exact hanswer
 
+def finiteSmallSameBlockCloseKey
+    (shape : Cartesian.CartesianShape) (close : Nat) : Nat :=
+  Nat.min close shape.bpCode.length
+
+theorem closeToInorder_min_bpCode_length_eq
+    (shape : Cartesian.CartesianShape) (close : Nat) :
+    closeToInorder shape (finiteSmallSameBlockCloseKey shape close) =
+      closeToInorder shape close := by
+  by_cases hclose : close < shape.bpCode.length
+  · simp [finiteSmallSameBlockCloseKey, Nat.min_eq_left (Nat.le_of_lt hclose)]
+  · have hlen : shape.bpCode.length <= close := Nat.le_of_not_gt hclose
+    have hleft :
+        Succinct.rankPrefix false shape.bpCode
+            (finiteSmallSameBlockCloseKey shape close + 1) =
+          Succinct.rankPrefix false shape.bpCode shape.bpCode.length := by
+      have hlimit :
+          shape.bpCode.length <= finiteSmallSameBlockCloseKey shape close + 1 := by
+        simp [finiteSmallSameBlockCloseKey, Nat.min_eq_right hlen]
+      exact Succinct.rankPrefix_eq_rankPrefix_length_of_length_le
+        false shape.bpCode hlimit
+    have hright :
+        Succinct.rankPrefix false shape.bpCode (close + 1) =
+          Succinct.rankPrefix false shape.bpCode shape.bpCode.length := by
+      exact Succinct.rankPrefix_eq_rankPrefix_length_of_length_le
+        false shape.bpCode (by omega)
+    unfold closeToInorder
+    rw [hleft, hright]
+
+def finiteSmallSameBlockCloseEntry?
+    (shape : Cartesian.CartesianShape)
+    (leftKey rightKey : Nat) : Option Nat :=
+  let left := closeToInorder shape leftKey
+  let right := closeToInorder shape rightKey
+  if left <= right then
+    bpCloseOfInorder? shape
+      (scanWindow shape.representative left (right - left + 1))
+  else
+    none
+
+def finiteSmallSameBlockCloseEntries
+    (shape : Cartesian.CartesianShape) : List (Option Nat) :=
+  let width := shape.bpCode.length + 1
+  (List.range (width * width)).map fun slot =>
+    finiteSmallSameBlockCloseEntry? shape (slot / width) (slot % width)
+
+def finiteSmallSameBlockCloseSlot
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) : Nat :=
+  let width := shape.bpCode.length + 1
+  densePairSlot width
+    (finiteSmallSameBlockCloseKey shape leftClose)
+    (finiteSmallSameBlockCloseKey shape rightClose)
+
+theorem finiteSmallSameBlockCloseEntries_get?
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) :
+    (finiteSmallSameBlockCloseEntries shape)[
+        finiteSmallSameBlockCloseSlot shape leftClose rightClose]? =
+      some
+        (finiteSmallSameBlockCloseEntry? shape
+          (finiteSmallSameBlockCloseKey shape leftClose)
+          (finiteSmallSameBlockCloseKey shape rightClose)) := by
+  let width := shape.bpCode.length + 1
+  have hleft :
+      finiteSmallSameBlockCloseKey shape leftClose < width := by
+    unfold finiteSmallSameBlockCloseKey width
+    exact Nat.lt_succ_of_le (Nat.min_le_right _ _)
+  have hright :
+      finiteSmallSameBlockCloseKey shape rightClose < width := by
+    unfold finiteSmallSameBlockCloseKey width
+    exact Nat.lt_succ_of_le (Nat.min_le_right _ _)
+  have hslot :
+      densePairSlot width
+          (finiteSmallSameBlockCloseKey shape leftClose)
+          (finiteSmallSameBlockCloseKey shape rightClose) <
+        width * width :=
+    densePairSlot_lt hleft hright
+  have hslotGet :
+      (List.range (width * width))[
+          densePairSlot width
+            (finiteSmallSameBlockCloseKey shape leftClose)
+            (finiteSmallSameBlockCloseKey shape rightClose)]? =
+        some
+          (densePairSlot width
+            (finiteSmallSameBlockCloseKey shape leftClose)
+            (finiteSmallSameBlockCloseKey shape rightClose)) := by
+    exact List.getElem?_range hslot
+  have hdiv :
+      densePairSlot width
+          (finiteSmallSameBlockCloseKey shape leftClose)
+          (finiteSmallSameBlockCloseKey shape rightClose) / width =
+        finiteSmallSameBlockCloseKey shape leftClose :=
+    densePairSlot_div hright
+  have hmod :
+      densePairSlot width
+          (finiteSmallSameBlockCloseKey shape leftClose)
+          (finiteSmallSameBlockCloseKey shape rightClose) % width =
+        finiteSmallSameBlockCloseKey shape rightClose :=
+    densePairSlot_mod hright
+  simp [finiteSmallSameBlockCloseEntries, finiteSmallSameBlockCloseSlot,
+    width, List.getElem?_map, hslotGet, hdiv, hmod]
+
+theorem finiteSmallSameBlockCloseEntries_mem_bound
+    {shape : Cartesian.CartesianShape} {fieldWidth : Nat}
+    {entry : Option Nat} {value : Nat}
+    (hwidth : shape.bpCode.length < 2 ^ fieldWidth)
+    (hmem : List.Mem entry (finiteSmallSameBlockCloseEntries shape))
+    (hentry : entry = some value) :
+    value < 2 ^ fieldWidth := by
+  unfold finiteSmallSameBlockCloseEntries at hmem
+  rcases List.mem_map.mp hmem with ⟨slot, _hslot, hslotEntry⟩
+  rw [← hslotEntry] at hentry
+  dsimp [finiteSmallSameBlockCloseEntry?] at hentry
+  by_cases hle :
+      closeToInorder shape
+          (slot / (shape.bpCode.length + 1)) <=
+        closeToInorder shape
+          (slot % (shape.bpCode.length + 1))
+  · simp [hle] at hentry
+    exact Nat.lt_trans (bpCloseOfInorder?_bounds shape hentry) hwidth
+  · simp [hle] at hentry
+
+def concreteBPFiniteSmallSameBlockCloseTable
+    (shape : Cartesian.CartesianShape) :
+    FixedWidthOptionNatTable
+      (finiteSmallSameBlockCloseEntries shape)
+      (SuccinctRank.machineWordBits shape.bpCode.length) :=
+  FixedWidthOptionNatTable.ofEntries
+    (finiteSmallSameBlockCloseEntries shape)
+    (SuccinctRank.machineWordBits shape.bpCode.length)
+    (finiteSmallSameBlockCloseEntries_mem_bound
+      (by
+        simpa [SuccinctRank.machineWordBits] using
+          (Nat.lt_log2_self (n := shape.bpCode.length))))
+
+def finiteSmallSameBlockCloseReadCosted
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) : Costed (Option Nat) :=
+  Costed.map (fun entry? => entry?.join)
+    ((concreteBPFiniteSmallSameBlockCloseTable shape).readCosted
+      (finiteSmallSameBlockCloseSlot shape leftClose rightClose))
+
+def finiteSmallSameBlockCloseCosted
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) : Costed (Option Nat) :=
+  Costed.bind
+    (finiteSmallSameBlockCloseReadCosted shape leftClose rightClose)
+    fun answer? =>
+      Costed.bind
+        (finiteSmallSameBlockCloseReadCosted shape leftClose rightClose)
+        fun _ =>
+          Costed.bind
+            (finiteSmallSameBlockCloseReadCosted shape leftClose rightClose)
+            fun _ =>
+              Costed.map (fun _ => answer?)
+                (finiteSmallSameBlockCloseReadCosted shape leftClose rightClose)
+
+theorem finiteSmallSameBlockCloseReadCosted_erase
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) :
+    (finiteSmallSameBlockCloseReadCosted
+      shape leftClose rightClose).erase =
+      (finiteSmallSameBlockCloseEntry? shape
+        (finiteSmallSameBlockCloseKey shape leftClose)
+        (finiteSmallSameBlockCloseKey shape rightClose)) := by
+  unfold finiteSmallSameBlockCloseReadCosted
+  have hread :=
+    (concreteBPFiniteSmallSameBlockCloseTable shape).readCosted_erase
+      (finiteSmallSameBlockCloseSlot shape leftClose rightClose)
+  rw [finiteSmallSameBlockCloseEntries_get?] at hread
+  simp [Costed.erase_map, hread]
+
+theorem finiteSmallSameBlockCloseReadCosted_refines_local
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) :
+    (finiteSmallSameBlockCloseReadCosted
+      shape leftClose rightClose).erase =
+      (localBPSameBlockCloseCosted shape leftClose rightClose).erase := by
+  rw [finiteSmallSameBlockCloseReadCosted_erase]
+  unfold localBPSameBlockCloseCosted finiteSmallSameBlockCloseEntry?
+  rw [closeToInorder_min_bpCode_length_eq shape leftClose]
+  rw [closeToInorder_min_bpCode_length_eq shape rightClose]
+  simp [Costed.erase]
+
+theorem finiteSmallSameBlockCloseCosted_refines_local
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) :
+  finiteSmallSameBlockCloseCosted shape leftClose rightClose =
+      localBPSameBlockCloseCosted shape leftClose rightClose := by
+  apply Costed.ext
+  · change
+      (finiteSmallSameBlockCloseCosted shape leftClose rightClose).erase =
+        (localBPSameBlockCloseCosted shape leftClose rightClose).erase
+    unfold finiteSmallSameBlockCloseCosted
+    simp [Costed.erase_bind, Costed.erase_map,
+      finiteSmallSameBlockCloseReadCosted_refines_local]
+  · unfold finiteSmallSameBlockCloseCosted
+      finiteSmallSameBlockCloseReadCosted localBPSameBlockCloseCosted
+    simp [Costed.bind, Costed.map]
+
 def localBPLeftFringeCandidateCosted
     (shape : Cartesian.CartesianShape)
     (blockSize leftClose : Nat) : Costed (Option (Nat × Nat)) :=

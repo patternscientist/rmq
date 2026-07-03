@@ -121,10 +121,10 @@ abbrev succinctRMQTwoNPlusOConstantQueryLeafTrace :=
 /--
 Unified-`WordRAM.TraceEvent` BP-native succinct RMQ capstone. The final query
 control now emits one `TraceEvent` stream. Select-close, answer-rank, and
-compact-close rank-seed reads are structural payload/register traces; bounded
-local/fringe/interior close-navigation leaves remain explicit charged fallback
-boundaries in tiny/inactive all-size cases. The large-regime execution-story
-alias below is the stronger global payload-store provenance theorem.
+compact-close rank-seed reads are structural payload/register traces; the
+all-size global execution story below additionally replaces the former
+close-navigation fallback leaves with payload-backed finite-small/structural
+traces.
 -/
 abbrev succinctRMQTwoNPlusOConstantQueryWordTrace :=
   RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_profile
@@ -154,8 +154,9 @@ Public execution-story theorem for the final all-size succinct RMQ query: the
 query is the `Costed` projection of one globally segmented `WordRAM` trace,
 refines the whole-query interpreter, every event is a payload read or bounded
 word primitive, and every payload read agrees with the single concrete global
-read store. Tiny/inactive close-navigation fallback work appears only as
-synthetic word-primitive events, not as payload reads.
+read store. The final all-size global trace consumes the structural compact
+close/LCA path, so the former close-navigation `TraceResult.ofCosted` fallback
+leaves are no longer on this path.
 -/
 abbrev succinctRMQGlobalPayloadStoreExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story
@@ -176,6 +177,23 @@ operand/result exposed by word-local primitive events.
 -/
 abbrev succinctRMQGlobalPayloadStoreBoundedExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_bounded_execution_story
+
+/--
+All-size structural execution-story theorem for the final all-size succinct
+RMQ query. This is the citation anchor for the globally segmented trace after
+the zero-block same-block and cross-block interior close-navigation fallback
+leaves have been replaced by payload-backed structural traces.
+-/
+abbrev succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_allSizeStructural_execution_story
+
+/--
+No-synthetic all-size execution-story theorem for the final succinct RMQ query.
+This strengthens the structural story by proving that the globally segmented
+trace contains no dedicated `TraceEvent.syntheticCostOnlyPrimitive` events.
+-/
+abbrev succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_noSynthetic_execution_story
 
 /--
 Large-regime companion to `succinctRMQGlobalPayloadStoreExecutionStory`; this

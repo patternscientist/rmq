@@ -34,6 +34,14 @@ and its bounded trace-local event-width companion
 `Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory`.
 These layers are now packaged by the fused public capstone
 `Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreFusedProfile`.
+The final RMQ global-store surface also has the all-size structural alias
+`Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory`,
+which cites the final global trace after the two former close-navigation
+`TraceResult.ofCosted` fallback leaves are replaced by payload-backed
+structural traces, and the stronger
+`Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory`, which also
+proves that the all-size global trace contains no dedicated synthetic
+cost-only marker event.
 
 This document is the family-level map for the current Lean development. It
 records the module dependency DAG, correctness and cost status by structure,
@@ -274,12 +282,16 @@ as an opt-in checked root.
 
 Word-RAM status note: `SuccinctFinalRAM` now has both an all-size unified
 `WordRAM.TraceEvent` stream capstone for the final RMQ query and a stronger
-large-regime companion theorem. The all-size theorem keeps conservative
-fallback work for tiny/inactive close-navigation cases, but those events are
-explicit word primitives rather than payload reads. The large-regime theorem
-carries an explicit `2^128 <= shape.size` premise and replays the positive-block
-local BP, endpoint-fringe, and relative-rmM interior close path through
-structural trace events. `Core.WordRAM` exposes segment-relabeling and
+large-regime companion theorem. The all-size theorem now consumes
+`SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural`:
+the former zero-block same-block fallback is replayed by a finite-small
+payload-backed same-block close table, and the former cross-block interior
+fallback is replayed by either the existing large-regime two-level structural
+trace or a finite-small payload-backed range-min witness table. The
+large-regime theorem carries an explicit `2^128 <= shape.size` premise and
+replays the positive-block local BP, endpoint-fringe, and relative-rmM interior
+close path through structural trace events. `Core.WordRAM` exposes
+segment-relabeling and
 `ReadStore` provenance helpers, and the close/LCA RAM layer has relabeled
 adapters: rank-seed reads can be shifted by a caller-supplied base, BP-code
 reads stay on the shared BP-code segment 0, and large-regime relative-rmM
@@ -291,9 +303,16 @@ bounded word primitive, and every read is checked against one concrete global
 payload store. The companion
 `RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory` adds a
 trace-local finite bit width proving that final payload-read addresses and
-word-primitive natural operands/results are bounded. Tiny/inactive fallback
-events are also marked by the fixed synthetic `TraceResult.costOnlyTrace`
-primitive contract, so the fallback boundary is explicit rather than hidden.
+word-primitive natural operands/results are bounded. The additional theorem
+`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_allSizeStructural_execution_story`
+packages the same final store-backed story after consuming the all-size
+structural close/LCA leaf, and
+`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_noSynthetic_execution_story`
+adds the global absence theorem for synthetic cost-only events.
+`TraceResult.ofCosted` now uses a dedicated
+`TraceEvent.syntheticCostOnlyPrimitive` constructor, so legitimate
+`wordRank false 0 0` primitives are no longer confused with the synthetic
+fallback marker.
 
 | Structure | Correctness status | Cost status | Notes |
 | --- | --- | --- | --- |
@@ -2164,6 +2183,7 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_bounds`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_bounded_execution_story`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_allSizeStructural_execution_story`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe_refines_wholeQueryInterpretedCosted`,
