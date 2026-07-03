@@ -50,7 +50,7 @@ Concrete global segment layout for the generic sparse-exception close-select
 trace. Segment `0` is reserved for the shared BP-code word store; auxiliary
 tables start at segment `1`.
 -/
-def concreteBPNativeDeadTraceSegment : Nat := 26
+def concreteBPNativeDeadTraceSegment : Nat := 29
 
 def concreteBPNativeSelectCloseTraceSegmentLayout :
     GenericSelect.SparseExceptionSelectTraceSegmentLayout where
@@ -89,7 +89,12 @@ def concreteBPNativeInteriorTraceSegments :
       deadSegment := concreteBPNativeDeadTraceSegment }
   localOffset := 24
   globalBlock := 25
+  finiteSmallMin := 26
+  finiteSmallArg := 27
   deadSegment := concreteBPNativeDeadTraceSegment
+
+/-- Segment base for the finite-small same-block close table. -/
+def concreteBPNativeFiniteSmallSameBlockCloseTraceSegment : Nat := 28
 
 /--
 The concrete read-only payload store for the globally segmented final RMQ
@@ -100,6 +105,8 @@ Segments are assigned as follows:
 * `1..16`: close-select auxiliary tables.
 * `17..19`: final false-rank samples and packed BP-code words.
 * `20..25`: compact close/LCA relative-rmM interior tables.
+* `26..27`: finite-small interior range-min witness tables.
+* `28`: finite-small same-block close table.
 
 Word-primitive events such as in-word rank/select are not payload reads and
 therefore do not consult this store.
@@ -117,6 +124,10 @@ def concreteBPNativeSuccinctRMQGlobalReadStore
       SuccinctClose.concreteBPRelativeRmmInteriorLocalTable shape
     let globalTable :=
       SuccinctClose.concreteBPRelativeRmmInteriorGlobalTable shape
+    let smallInterior :=
+      SuccinctClose.concreteBPFiniteSmallInteriorRangeMinTable shape
+    let smallSameBlock :=
+      SuccinctClose.concreteBPFiniteSmallSameBlockCloseTable shape
     if segment = 0 then
       selectData.bitWords.store.wordRAMStore.readWord? 0 index
     else if segment = 1 then
@@ -169,6 +180,12 @@ def concreteBPNativeSuccinctRMQGlobalReadStore
       localTable.table.wordRAMStore.readWord? 0 index
     else if segment = 25 then
       globalTable.table.wordRAMStore.readWord? 0 index
+    else if segment = 26 then
+      smallInterior.minTable.wordRAMStore.readWord? 0 index
+    else if segment = 27 then
+      smallInterior.argTable.wordRAMStore.readWord? 0 index
+    else if segment = 28 then
+      smallSameBlock.wordRAMStore.readWord? 0 index
     else
       none
 
@@ -456,6 +473,60 @@ theorem concreteBPNativeSelectCloseGlobalWordTraceResult_matchesReadStore
               WordRAM.Store.readWord?])
         basePosition baseOccurrence q event hmem
 
+theorem concreteBPNativeSelectCloseGlobalWordTraceResult_no_syntheticCostOnlyPrimitive
+    (shape : Cartesian.CartesianShape) (idx : Nat) :
+    forall event,
+      event ∈
+          (concreteBPNativeSelectCloseGlobalWordTraceResult shape idx).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  let data := GenericSelect.sparseExceptionSelectData shape.bpCode false
+  change forall event,
+      event ∈
+          (data.selectTraceResultRelabeled
+            concreteBPNativeSelectCloseTraceSegmentLayout idx).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive
+  apply
+    GenericSelect.SparseExceptionSelectData.selectTraceResultRelabeled_trace_forall
+      data concreteBPNativeSelectCloseTraceSegmentLayout idx
+      (fun event => ¬ event.isSyntheticCostOnlyPrimitive)
+  · intro slot event hmem
+    exact
+      data.superTable.readTraceResultRelabeled_no_syntheticCostOnlyPrimitive
+        concreteBPNativeSelectCloseTraceSegmentLayout.superTable slot
+        event hmem
+  · intro slot event hmem
+    exact
+      WordRAM.TraceResult.relabelReadSegmentsWith_no_syntheticCostOnlyPrimitive
+        (WordRAM.tripleSegmentMap
+          concreteBPNativeSelectCloseTraceSegmentLayout.longFlagRankBase
+          concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment)
+        (data.longFlagRankData.rankTraceResult true slot)
+        (data.longFlagRankData.rankTraceResult_no_syntheticCostOnlyPrimitive
+          true slot)
+        event hmem
+  · intro base slot event hmem
+    exact
+      GenericSelect.relativeOffsetReadTraceResultRelabeled_no_syntheticCostOnlyPrimitive
+        concreteBPNativeSelectCloseTraceSegmentLayout.longRelativeBase
+        concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment
+        data.longSuperRelativeTable base slot event hmem
+  · intro slot event hmem
+    exact
+      data.localTable.readTraceResultRelabeled_no_syntheticCostOnlyPrimitive
+        concreteBPNativeSelectCloseTraceSegmentLayout.localTable slot
+        event hmem
+  · intro base localSlot localOccurrence event hmem
+    exact
+      data.sparseDirectory.readTraceResultRelabeled_no_syntheticCostOnlyPrimitive
+        concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory
+        base localSlot localOccurrence event hmem
+  · intro basePosition baseOccurrence q event hmem
+    exact
+      GenericSelect.denseTwoWordSelectTraceResultRelabeled_no_syntheticCostOnlyPrimitive
+        concreteBPNativeSelectCloseTraceSegmentLayout.bitWordBase
+        concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment
+        false data.bitWords basePosition baseOccurrence q event hmem
+
 /-- Real register-program trace for the final false-rank leg. -/
 def concreteBPNativeRankCloseWordTraceResult
     (shape : Cartesian.CartesianShape)
@@ -552,6 +623,31 @@ theorem concreteBPNativeRankCloseGlobalWordTraceResult_matchesReadStore
           |>.rankRegisterWordRAMStore false)
         (WordRAM.Register.RegFile.withNat1 pos)
         event hmem
+
+theorem concreteBPNativeRankCloseGlobalWordTraceResult_no_syntheticCostOnlyPrimitive
+    (shape : Cartesian.CartesianShape) (pos : Nat) :
+    forall event,
+      event ∈
+          (concreteBPNativeRankCloseWordTraceResultAtSegment
+            shape concreteBPNativeRankCloseTraceSegmentBase pos).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  unfold concreteBPNativeRankCloseWordTraceResultAtSegment
+  exact
+    WordRAM.TraceResult.relabelReadSegmentsWith_no_syntheticCostOnlyPrimitive
+      (WordRAM.tripleSegmentMap concreteBPNativeRankCloseTraceSegmentBase
+        concreteBPNativeDeadTraceSegment)
+      (concreteBPNativeRankCloseWordTraceResult shape pos)
+      (by
+        intro event hmem
+        simpa [concreteBPNativeRankCloseWordTraceResult,
+          WordRAM.TraceResult.ofResult_trace] using
+          WordRAM.Register.NatProgram.eval_no_syntheticCostOnlyPrimitive
+            ((builtRelativeSplitBPCloseRankData shape)
+              |>.rankRegisterProgram false (WordRAM.Register.NatExpr.reg 0))
+            ((builtRelativeSplitBPCloseRankData shape)
+              |>.rankRegisterWordRAMStore false)
+            (WordRAM.Register.RegFile.withNat1 pos)
+            event hmem)
 
 /--
 Interpreted compact LCA-close leg.
@@ -677,6 +773,34 @@ theorem concreteBPNativeLCACloseGlobalWordTraceResult_refines_interpretedCosted
     SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeed_refines,
     concreteBPNativeRankCloseWordTraceResultAtSegment_refines_interpretedCosted]
 
+/--
+All-size structural compact LCA-close trace under the final global segment
+layout.  Unlike `concreteBPNativeLCACloseGlobalWordTraceResult`, this path
+replaces both old `TraceResult.ofCosted` boundaries with payload-table traces.
+-/
+def concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) : WordRAM.TraceResult (Option Nat) :=
+  SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural
+    shape
+    (concreteBPNativeRankCloseWordTraceResultAtSegment
+      shape concreteBPNativeRankCloseTraceSegmentBase)
+    concreteBPNativeInteriorTraceSegments
+    concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
+    leftClose rightClose
+
+theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_refines_interpretedCosted
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) :
+    (concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
+      shape leftClose rightClose).toCosted =
+      concreteBPNativeLCACloseInterpretedCosted shape leftClose rightClose := by
+  simp [concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural,
+    concreteBPNativeLCACloseInterpretedCosted,
+    concreteBPNativeCloseDirectory,
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural_refines,
+    concreteBPNativeRankCloseWordTraceResultAtSegment_refines_interpretedCosted]
+
 theorem concreteBPNativeLCACloseGlobalWordTraceResult_matchesReadStore_total
     (shape : Cartesian.CartesianShape)
     (leftClose rightClose : Nat) :
@@ -784,6 +908,172 @@ theorem concreteBPNativeInteriorGlobalWordTraceResult_matchesReadStore
             SuccinctSpace.PayloadWordStore.wordRAMStore,
             WordRAM.Store.readWord?])
       startBlock count
+
+theorem concreteBPNativeInteriorGlobalWordTraceResultAllSizeStructural_matchesReadStore
+    (shape : Cartesian.CartesianShape)
+    (startBlock count : Nat) :
+    forall event,
+      List.Mem event
+          (SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+            shape concreteBPNativeInteriorTraceSegments
+            startBlock count).trace ->
+        event.matchesReadStore
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape) := by
+  exact
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural_matchesReadStore
+      shape concreteBPNativeInteriorTraceSegments
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (by
+        intro segment index
+        cases segment <;>
+          simp [concreteBPNativeSuccinctRMQGlobalReadStore,
+            concreteBPNativeInteriorTraceSegments,
+            concreteBPNativeDeadTraceSegment,
+            WordRAM.singletonSegmentMap,
+            WordRAM.TraceEvent.singletonSegmentMap,
+            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
+            SuccinctSpace.PayloadWordStore.wordRAMStore,
+            WordRAM.Store.readWord?])
+      (by
+        intro segment index
+        cases segment <;>
+          simp [concreteBPNativeSuccinctRMQGlobalReadStore,
+            concreteBPNativeInteriorTraceSegments,
+            concreteBPNativeDeadTraceSegment,
+            WordRAM.singletonSegmentMap,
+            WordRAM.TraceEvent.singletonSegmentMap,
+            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
+            SuccinctSpace.PayloadWordStore.wordRAMStore,
+            WordRAM.Store.readWord?])
+      (by
+        intro segment index
+        cases segment <;>
+          simp [concreteBPNativeSuccinctRMQGlobalReadStore,
+            concreteBPNativeInteriorTraceSegments,
+            concreteBPNativeDeadTraceSegment,
+            WordRAM.singletonSegmentMap,
+            WordRAM.TraceEvent.singletonSegmentMap,
+            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
+            SuccinctSpace.PayloadWordStore.wordRAMStore,
+            WordRAM.Store.readWord?])
+      (by
+        intro segment index
+        cases segment <;>
+          simp [concreteBPNativeSuccinctRMQGlobalReadStore,
+            concreteBPNativeInteriorTraceSegments,
+            concreteBPNativeDeadTraceSegment,
+            WordRAM.singletonSegmentMap,
+            WordRAM.TraceEvent.singletonSegmentMap,
+            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
+            SuccinctSpace.PayloadWordStore.wordRAMStore,
+            WordRAM.Store.readWord?])
+      (by
+        intro segment index
+        cases segment <;>
+          simp [concreteBPNativeSuccinctRMQGlobalReadStore,
+            concreteBPNativeInteriorTraceSegments,
+            concreteBPNativeDeadTraceSegment,
+            WordRAM.singletonSegmentMap,
+            WordRAM.TraceEvent.singletonSegmentMap,
+            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
+            SuccinctSpace.PayloadWordStore.wordRAMStore,
+            WordRAM.Store.readWord?])
+      (by
+        intro segment index
+        cases segment <;>
+          simp [concreteBPNativeSuccinctRMQGlobalReadStore,
+            concreteBPNativeInteriorTraceSegments,
+            concreteBPNativeDeadTraceSegment,
+            WordRAM.singletonSegmentMap,
+            WordRAM.TraceEvent.singletonSegmentMap,
+            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
+            SuccinctSpace.PayloadWordStore.wordRAMStore,
+            WordRAM.Store.readWord?])
+      (by
+        intro segment index
+        cases segment <;>
+          simp [concreteBPNativeSuccinctRMQGlobalReadStore,
+            concreteBPNativeInteriorTraceSegments,
+            concreteBPNativeDeadTraceSegment,
+            WordRAM.singletonSegmentMap,
+            WordRAM.TraceEvent.singletonSegmentMap,
+            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
+            SuccinctSpace.PayloadWordStore.wordRAMStore,
+            WordRAM.Store.readWord?])
+      (by
+        intro segment index
+        cases segment <;>
+          simp [concreteBPNativeSuccinctRMQGlobalReadStore,
+            concreteBPNativeInteriorTraceSegments,
+            concreteBPNativeDeadTraceSegment,
+            WordRAM.singletonSegmentMap,
+            WordRAM.TraceEvent.singletonSegmentMap,
+            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
+            SuccinctSpace.PayloadWordStore.wordRAMStore,
+            WordRAM.Store.readWord?])
+      startBlock count
+
+theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_matchesReadStore
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) :
+    forall event,
+      List.Mem event
+          (concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
+            shape leftClose rightClose).trace ->
+        event.matchesReadStore
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape) := by
+  exact
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural_matchesReadStore
+      shape
+      (concreteBPNativeRankCloseWordTraceResultAtSegment
+        shape concreteBPNativeRankCloseTraceSegmentBase)
+      concreteBPNativeInteriorTraceSegments
+      concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
+      leftClose rightClose
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (fun pos =>
+        concreteBPNativeRankCloseGlobalWordTraceResult_matchesReadStore
+          shape pos)
+      (concreteBPNativeSuccinctRMQGlobalReadStore_bpCode shape)
+      (SuccinctClose.ConcreteCompactBPCloseLCADirectory.finiteSmallSameBlockCloseTraceResultAtSegment_matchesReadStore
+        shape concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
+        concreteBPNativeInteriorTraceSegments.deadSegment leftClose rightClose
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (by
+          intro segment index
+          cases segment <;>
+            simp [concreteBPNativeSuccinctRMQGlobalReadStore,
+              concreteBPNativeInteriorTraceSegments,
+              concreteBPNativeFiniteSmallSameBlockCloseTraceSegment,
+              concreteBPNativeDeadTraceSegment,
+              WordRAM.singletonSegmentMap,
+              WordRAM.TraceEvent.singletonSegmentMap,
+              SuccinctSpace.FixedWidthOptionNatTable.wordRAMStore,
+              SuccinctSpace.PayloadWordStore.wordRAMStore,
+              WordRAM.Store.readWord?]))
+      (fun startBlock count =>
+        concreteBPNativeInteriorGlobalWordTraceResultAllSizeStructural_matchesReadStore
+          shape startBlock count)
+
+theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_no_syntheticCostOnlyPrimitive
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) :
+    forall event,
+      List.Mem event
+          (concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
+            shape leftClose rightClose).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  exact
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural_no_syntheticCostOnlyPrimitive
+      shape
+      (concreteBPNativeRankCloseWordTraceResultAtSegment
+        shape concreteBPNativeRankCloseTraceSegmentBase)
+      concreteBPNativeInteriorTraceSegments
+      concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
+      leftClose rightClose
+      (fun pos =>
+        concreteBPNativeRankCloseGlobalWordTraceResult_no_syntheticCostOnlyPrimitive
+          shape pos)
 
 theorem concreteBPNativeLCACloseGlobalWordTraceResult_matchesReadStore
     (shape : Cartesian.CartesianShape)
@@ -1266,9 +1556,9 @@ theorem evalWordTrace_refines_eval
 Execute one instruction in the all-size global-segment replay.
 
 This uses the same global segment convention as the large-regime replay, but
-the compact close/LCA instruction follows the total all-size close trace. Tiny
-or inactive close-navigation fallback work is represented by synthetic
-word-primitive events rather than payload reads.
+the compact close/LCA instruction follows the total all-size structural close
+trace. The old tiny/zero fallback work is replayed through payload-backed
+finite-small tables rather than synthetic cost-only events.
 -/
 def evalGlobalWordTrace (shape : Cartesian.CartesianShape)
     (left right : Nat) (instr : WholeQueryInstr)
@@ -1284,7 +1574,7 @@ def evalGlobalWordTrace (shape : Cartesian.CartesianShape)
       | some leftClose, some rightClose =>
           WordRAM.TraceResult.map
             (fun answer? => state.setOpt dst answer?)
-            (concreteBPNativeLCACloseGlobalWordTraceResult
+            (concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
               shape leftClose rightClose)
       | _, _ => WordRAM.TraceResult.pure (state.setOpt dst none)
   | .rankCloseIfSome dst guard pos =>
@@ -1319,7 +1609,7 @@ theorem evalGlobalWordTrace_refines_eval
       cases hleft : state.opt leftReg <;>
         cases hright : state.opt rightReg <;>
           simp [evalGlobalWordTrace, eval, hleft, hright,
-            concreteBPNativeLCACloseGlobalWordTraceResult_refines_interpretedCosted,
+            concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_refines_interpretedCosted,
             WordRAM.TraceResult.map_toCosted,
             WordRAM.TraceResult.pure_toCosted, Costed.map, Costed.pure]
   | rankCloseIfSome dst guard pos =>
@@ -1363,7 +1653,7 @@ theorem evalGlobalWordTrace_matchesReadStore
           | some rightClose =>
               simp [evalGlobalWordTrace, hleft, hright]
               exact
-                concreteBPNativeLCACloseGlobalWordTraceResult_matchesReadStore_total
+                concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_matchesReadStore
                   shape leftClose rightClose
   | rankCloseIfSome dst guard pos =>
       cases hguard : state.opt guard with
@@ -1375,6 +1665,53 @@ theorem evalGlobalWordTrace_matchesReadStore
         simp [evalGlobalWordTrace, hguard]
         exact
           concreteBPNativeRankCloseGlobalWordTraceResult_matchesReadStore
+            shape (pos.eval left right state)
+  | outputPredIfSome dst guard src =>
+      cases hguard : state.opt guard <;>
+        simp [evalGlobalWordTrace, hguard] <;>
+        intro event hmem <;> cases hmem
+
+theorem evalGlobalWordTrace_no_syntheticCostOnlyPrimitive
+    (shape : Cartesian.CartesianShape)
+    (left right : Nat) (instr : WholeQueryInstr)
+    (state : WholeQueryState) :
+    forall event,
+      List.Mem event
+          (instr.evalGlobalWordTrace shape left right state).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  cases instr with
+  | selectClose dst idx =>
+      simp [evalGlobalWordTrace]
+      exact
+        concreteBPNativeSelectCloseGlobalWordTraceResult_no_syntheticCostOnlyPrimitive
+          shape (idx.eval left right state)
+  | lcaClose dst leftReg rightReg =>
+      cases hleft : state.opt leftReg with
+      | none =>
+          cases hright : state.opt rightReg <;>
+            simp [evalGlobalWordTrace, hleft, hright] <;>
+            intro event hmem <;> cases hmem
+      | some leftClose =>
+          cases hright : state.opt rightReg with
+          | none =>
+              simp [evalGlobalWordTrace, hleft, hright]
+              intro event hmem
+              cases hmem
+          | some rightClose =>
+              simp [evalGlobalWordTrace, hleft, hright]
+              exact
+                concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_no_syntheticCostOnlyPrimitive
+                  shape leftClose rightClose
+  | rankCloseIfSome dst guard pos =>
+      cases hguard : state.opt guard with
+      | none =>
+          simp [evalGlobalWordTrace, hguard]
+          intro event hmem
+          cases hmem
+      | some _ =>
+        simp [evalGlobalWordTrace, hguard]
+        exact
+          concreteBPNativeRankCloseGlobalWordTraceResult_no_syntheticCostOnlyPrimitive
             shape (pos.eval left right state)
   | outputPredIfSome dst guard src =>
       cases hguard : state.opt guard <;>
@@ -1650,6 +1987,28 @@ theorem evalGlobalWordTrace_matchesReadStore
       apply WordRAM.TraceResult.bind_trace_forall
       · exact
           WholeQueryInstr.evalGlobalWordTrace_matchesReadStore
+            shape left right instr state
+      · exact ih
+          (instr.evalGlobalWordTrace shape left right state).value
+
+theorem evalGlobalWordTrace_no_syntheticCostOnlyPrimitive
+    (shape : Cartesian.CartesianShape)
+    (left right : Nat)
+    (program : WholeQueryProgram) (state : WholeQueryState) :
+    forall event,
+      List.Mem event
+          (evalGlobalWordTrace
+            shape left right program state).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  induction program generalizing state with
+  | nil =>
+      simp [evalGlobalWordTrace]
+      exact WordRAM.TraceResult.pure_trace_forall _ state
+  | cons instr rest ih =>
+      unfold evalGlobalWordTrace
+      apply WordRAM.TraceResult.bind_trace_forall
+      · exact
+          WholeQueryInstr.evalGlobalWordTrace_no_syntheticCostOnlyPrimitive
             shape left right instr state
       · exact ih
           (instr.evalGlobalWordTrace shape left right state).value
@@ -1930,6 +2289,7 @@ def concreteBPNativeTraceEventNatEnvelope :
   | WordRAM.TraceEvent.wordSelect _ occurrence none => occurrence
   | WordRAM.TraceEvent.wordSelect _ occurrence (some result) =>
       Nat.max occurrence result
+  | WordRAM.TraceEvent.syntheticCostOnlyPrimitive => 0
 
 /-- Maximum natural envelope over a trace. -/
 def concreteBPNativeTraceNatEnvelope :
@@ -1954,6 +2314,7 @@ def concreteBPNativeTraceEventReadAddressFitsInBits
       WordRAM.Register.AddressFitsInBits bits segment index
   | WordRAM.TraceEvent.wordRank _ _ _ => True
   | WordRAM.TraceEvent.wordSelect _ _ _ => True
+  | WordRAM.TraceEvent.syntheticCostOnlyPrimitive => True
 
 /-- Word-primitive natural operands/results exposed by an event fit in bits. -/
 def concreteBPNativeTraceEventPrimitiveOperandsFitInBits
@@ -1966,6 +2327,7 @@ def concreteBPNativeTraceEventPrimitiveOperandsFitInBits
       WordRAM.Register.FitsInBits bits occurrence /\
         forall value, result = some value ->
           WordRAM.Register.FitsInBits bits value
+  | WordRAM.TraceEvent.syntheticCostOnlyPrimitive => True
 
 theorem concreteBPNativeTraceEventNatEnvelope_le_traceNatEnvelope_of_mem
     {trace : List WordRAM.TraceEvent} {event : WordRAM.TraceEvent}
@@ -2018,6 +2380,8 @@ theorem concreteBPNativeTraceEventReadAddressFitsInBits_of_mem
       trivial
   | wordSelect target occurrence result =>
       trivial
+  | syntheticCostOnlyPrimitive =>
+      trivial
 
 theorem concreteBPNativeTraceEventPrimitiveOperandsFitInBits_of_mem
     {trace : List WordRAM.TraceEvent} {event : WordRAM.TraceEvent}
@@ -2058,6 +2422,8 @@ theorem concreteBPNativeTraceEventPrimitiveOperandsFitInBits_of_mem
             cases hvalue
             exact Nat.lt_of_le_of_lt
               (Nat.le_max_right occurrence result) hmax
+  | syntheticCostOnlyPrimitive =>
+      trivial
 
 /--
 Trace-local bit width for the final all-size global payload-store trace.  It is
@@ -2127,6 +2493,21 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_matchesReadSt
   apply WordRAM.TraceResult.map_trace_forall
   exact
     WholeQueryProgram.evalGlobalWordTrace_matchesReadStore
+      shape left right concreteBPNativeSuccinctRMQWholeQueryProgram
+      WholeQueryState.empty
+
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_no_syntheticCostOnlyPrimitive
+    (shape : Cartesian.CartesianShape)
+    (left right : Nat) :
+    forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  unfold concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+  apply WordRAM.TraceResult.map_trace_forall
+  exact
+    WholeQueryProgram.evalGlobalWordTrace_no_syntheticCostOnlyPrimitive
       shape left right concreteBPNativeSuccinctRMQWholeQueryProgram
       WholeQueryState.empty
 
@@ -2254,6 +2635,113 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_bounded_execution_s
       (fun event hmem =>
         (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_bounds
           shape left right event hmem).2)⟩
+
+/--
+All-size structural execution-story packet for the final globally segmented
+RMQ trace.
+
+The all-size global interpreter now consumes
+`concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural`, so the two
+former close-navigation `TraceResult.ofCosted` fallback leaves are replaced by
+payload-backed finite-small or two-level table traces.
+-/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_allSizeStructural_execution_story
+    (shape : Cartesian.CartesianShape)
+    (left right : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+      shape left right =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).toCosted /\
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+      shape left right =
+      concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted shape left right /\
+    (forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        event.isReadWord \/ event.isWordPrimitive) /\
+    (forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        event.matchesReadStore
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape)) /\
+    (forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        concreteBPNativeTraceEventReadAddressFitsInBits
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceEventBits
+            shape left right) event) /\
+    (forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        concreteBPNativeTraceEventPrimitiveOperandsFitInBits
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceEventBits
+            shape left right) event) := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_bounded_execution_story
+      shape left right
+
+/--
+All-size no-synthetic execution-story packet for the final globally segmented
+RMQ trace.
+
+This is the public close of the former `TraceResult.ofCosted` fallback boundary:
+the final all-size trace refines the interpreted query, reads from the concrete
+global payload store, has bounded read/primitive operands, and contains no
+dedicated synthetic cost-only marker events.
+-/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_noSynthetic_execution_story
+    (shape : Cartesian.CartesianShape)
+    (left right : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+      shape left right =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).toCosted /\
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+      shape left right =
+      concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted shape left right /\
+    (forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        event.isReadWord \/ event.isWordPrimitive) /\
+    (forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        event.matchesReadStore
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape)) /\
+    (forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive) /\
+    (forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        concreteBPNativeTraceEventReadAddressFitsInBits
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceEventBits
+            shape left right) event) /\
+    (forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        concreteBPNativeTraceEventPrimitiveOperandsFitInBits
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceEventBits
+            shape left right) event) := by
+  rcases
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_bounded_execution_story
+      shape left right with
+    ⟨hcost, hrefine, hclass, hstore, hreadBits, hprimitiveBits⟩
+  exact
+    ⟨hcost, hrefine, hclass, hstore,
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_no_syntheticCostOnlyPrimitive
+        shape left right,
+      hreadBits, hprimitiveBits⟩
 
 theorem concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe_eq_traceResult_toCosted
     (shape : Cartesian.CartesianShape)

@@ -12,6 +12,31 @@ namespace SuccinctClose
 
 open SuccinctSpace
 
+private def interiorPayloadWordReadOfGet?
+    (words : Array (List Bool)) (index : Nat) : List (List Bool) :=
+  match words[index]? with
+  | some word => [word]
+  | none => []
+
+private theorem interiorPayloadWordReadOfGet?_length_le
+    {n : Nat}
+    {words : Array (List Bool)}
+    (hwords :
+      forall {index : Nat} {word : List Bool},
+        words[index]? = some word ->
+          word.length <= SuccinctRank.machineWordBits n)
+    {index : Nat} {word : List Bool}
+    (hmem : word ∈ interiorPayloadWordReadOfGet? words index) :
+    word.length <= SuccinctRank.machineWordBits n := by
+  unfold interiorPayloadWordReadOfGet? at hmem
+  cases hget : words[index]? with
+  | none =>
+      simp [hget] at hmem
+  | some stored =>
+      simp [hget] at hmem
+      subst word
+      exact hwords hget
+
 /--
 Interior full-block range-minimum directory for the relative-rmM close layer.
 
@@ -517,11 +542,121 @@ theorem concreteBPRelativeRmmInteriorGlobalTable_payload_le_budget_of_size_ge
         canonicalBPRelativeSummaryBase, blockCount, base, logBase, hactive,
         Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hbudgetNorm)
 
+def finiteSmallInteriorRangeSlot
+    (blockCount startBlock count : Nat) : Nat :=
+  if 0 < count /\ startBlock + count <= blockCount then
+    densePairSlot (blockCount + 1) startBlock count
+  else
+    (blockCount + 1) * (blockCount + 1)
+
+def finiteSmallInteriorRanges (blockCount : Nat) : List (Nat × Nat) :=
+  (List.range ((blockCount + 1) * (blockCount + 1))).map fun slot =>
+    (slot / (blockCount + 1), slot % (blockCount + 1))
+
+theorem finiteSmallInteriorRanges_get?_of_valid
+    {blockCount startBlock count : Nat}
+    (hcount : 0 < count)
+    (hbound : startBlock + count <= blockCount) :
+    (finiteSmallInteriorRanges blockCount)[
+        finiteSmallInteriorRangeSlot blockCount startBlock count]? =
+      some (startBlock, count) := by
+  have hstart : startBlock < blockCount + 1 := by omega
+  have hcountLt : count < blockCount + 1 := by omega
+  have hslot :
+      densePairSlot (blockCount + 1) startBlock count <
+        (blockCount + 1) * (blockCount + 1) :=
+    densePairSlot_lt hstart hcountLt
+  have hslotGet :
+      (List.range ((blockCount + 1) * (blockCount + 1)))[
+          densePairSlot (blockCount + 1) startBlock count]? =
+        some (densePairSlot (blockCount + 1) startBlock count) := by
+    exact List.getElem?_range hslot
+  have hdiv :
+      densePairSlot (blockCount + 1) startBlock count /
+          (blockCount + 1) =
+        startBlock :=
+    densePairSlot_div hcountLt
+  have hmod :
+      densePairSlot (blockCount + 1) startBlock count %
+          (blockCount + 1) =
+        count :=
+    densePairSlot_mod hcountLt
+  have hcond :
+      0 < count /\ startBlock + count <= blockCount := ⟨hcount, hbound⟩
+  simp [finiteSmallInteriorRanges, finiteSmallInteriorRangeSlot, hcond,
+    List.getElem?_map, hslotGet, hdiv, hmod]
+
+def concreteBPFiniteSmallInteriorRangeMinTable
+    (shape : Cartesian.CartesianShape) :
+    PayloadLiveBPRangeArgMinWitnessTable shape
+      (canonicalBPRelativeSummaryBlockSize shape)
+      (SuccinctRank.machineWordBits shape.bpCode.length)
+      (2 *
+        ((finiteSmallInteriorRanges
+            (canonicalBPRelativeSummaryBlockCount shape)).length *
+          SuccinctRank.machineWordBits shape.bpCode.length))
+      (finiteSmallInteriorRanges
+        (canonicalBPRelativeSummaryBlockCount shape)) :=
+  concreteBPRangeArgMinWitnessTable shape
+    (canonicalBPRelativeSummaryBlockSize shape)
+    (SuccinctRank.machineWordBits shape.bpCode.length)
+    (finiteSmallInteriorRanges
+      (canonicalBPRelativeSummaryBlockCount shape))
+    (by
+      simpa [SuccinctRank.machineWordBits] using
+        (Nat.lt_log2_self (n := shape.bpCode.length)))
+
+theorem concreteBPFiniteSmallInteriorRangeMinTable_exact
+    (shape : Cartesian.CartesianShape)
+    {startBlock count : Nat}
+    (hcount : 0 < count)
+    (hbound :
+      startBlock + count <=
+        canonicalBPRelativeSummaryBlockCount shape) :
+    ((concreteBPFiniteSmallInteriorRangeMinTable shape).rangeWitnessCosted
+        (finiteSmallInteriorRangeSlot
+          (canonicalBPRelativeSummaryBlockCount shape)
+          startBlock count)).erase =
+      some
+        (bpRangeMinExcess shape
+          (canonicalBPRelativeSummaryBlockSize shape) startBlock count,
+          bpRangeArgMinPrefixPos shape
+            (canonicalBPRelativeSummaryBlockSize shape) startBlock count) := by
+  let blockCount := canonicalBPRelativeSummaryBlockCount shape
+  let blockSize := canonicalBPRelativeSummaryBlockSize shape
+  let slot := finiteSmallInteriorRangeSlot blockCount startBlock count
+  let ranges := finiteSmallInteriorRanges blockCount
+  have hget :
+      ranges[slot]? = some (startBlock, count) := by
+    simpa [blockCount, slot, ranges] using
+      finiteSmallInteriorRanges_get?_of_valid
+        (blockCount := blockCount) (startBlock := startBlock)
+        (count := count) hcount (by simpa [blockCount] using hbound)
+  have hmin :
+      (bpRangeMinExcessEntries shape blockSize ranges)[slot]? =
+        some (bpRangeMinExcess shape blockSize startBlock count) := by
+    exact bpRangeMinExcessEntries_get?_of_ranges_get?
+      (shape := shape) (blockSize := blockSize) hget
+  have harg :
+      (bpRangeArgMinPrefixPosEntries shape blockSize ranges)[slot]? =
+        some (bpRangeArgMinPrefixPos shape blockSize startBlock count) := by
+    exact bpRangeArgMinPrefixPosEntries_get?_of_ranges_get?
+      (shape := shape) (blockSize := blockSize) hget
+  simpa [concreteBPFiniteSmallInteriorRangeMinTable, blockCount, blockSize,
+    slot, ranges, hmin, harg] using
+    (concreteBPFiniteSmallInteriorRangeMinTable shape).rangeWitnessCosted_erase
+      slot
+
 def concreteBPRelativeRmmInteriorDirectoryPayloadLength
     (shape : Cartesian.CartesianShape) : Nat :=
-  (concreteBPRelativeMinMaxArgSummaryTable_canonical shape).payload.length +
-    (concreteBPRelativeRmmInteriorLocalTable shape).payload.length +
-      (concreteBPRelativeRmmInteriorGlobalTable shape).payload.length
+  let base :=
+    (concreteBPRelativeMinMaxArgSummaryTable_canonical shape).payload.length +
+      (concreteBPRelativeRmmInteriorLocalTable shape).payload.length +
+        (concreteBPRelativeRmmInteriorGlobalTable shape).payload.length
+  if shape.size < 2 ^ 128 then
+    base + (concreteBPFiniteSmallInteriorRangeMinTable shape).payload.length
+  else
+    base
 
 /--
 Canonical payload-live relative interior directory backed by B's charged
@@ -538,12 +673,14 @@ def concreteBPRelativeRmmInteriorDirectory
   let table := concreteBPRelativeMinMaxArgSummaryTable_canonical shape
   let localTable := concreteBPRelativeRmmInteriorLocalTable shape
   let globalTable := concreteBPRelativeRmmInteriorGlobalTable shape
+  let smallTable := concreteBPFiniteSmallInteriorRangeMinTable shape
   by_cases hlarge : 2 ^ 128 <= shape.size
   · exact
       { payload := table.payload ++ localTable.payload ++ globalTable.payload
         payload_length_eq := by
+          have hnotSmall : ¬ shape.size < 2 ^ 128 := by omega
           simp [concreteBPRelativeRmmInteriorDirectoryPayloadLength,
-            localTable, globalTable, table, Nat.add_assoc]
+            localTable, globalTable, table, hnotSmall, Nat.add_assoc]
         payloadWordsRead := fun startBlock count =>
           bpTwoLevelInteriorCandidateWordsRead localTable globalTable table
             startBlock count
@@ -709,41 +846,57 @@ def concreteBPRelativeRmmInteriorDirectory
               (canonicalBPRelativeSummary_relativeWidth_machine shape)
               hmem }
   · exact
-      { payload := table.payload ++ localTable.payload ++ globalTable.payload
+      { payload :=
+          table.payload ++ localTable.payload ++ globalTable.payload ++
+            smallTable.payload
         payload_length_eq := by
+          have hsmall : shape.size < 2 ^ 128 := Nat.lt_of_not_ge hlarge
           simp [concreteBPRelativeRmmInteriorDirectoryPayloadLength,
-            localTable, globalTable, table, Nat.add_assoc]
-        payloadWordsRead := fun _ _ => []
+            localTable, globalTable, table, smallTable, hsmall,
+            Nat.add_assoc]
+        payloadWordsRead := fun startBlock count =>
+          let slot :=
+            finiteSmallInteriorRangeSlot
+              (canonicalBPRelativeSummaryBlockCount shape)
+              startBlock count
+          interiorPayloadWordReadOfGet? smallTable.minTable.store.words slot ++
+            interiorPayloadWordReadOfGet? smallTable.argTable.store.words slot
         rangeMinCosted := fun startBlock count =>
-          { value :=
-              if 0 < count ∧
-                  startBlock + count <=
-                    canonicalBPRelativeSummaryBlockCount shape then
-                some
-                  (bpRangeMinExcess shape
-                    (canonicalBPRelativeSummaryBlockSize shape)
-                    startBlock count,
-                    bpRangeArgMinPrefixPos shape
-                      (canonicalBPRelativeSummaryBlockSize shape)
-                      startBlock count)
-              else
-                none
-            cost := 1 }
+          let slot :=
+            finiteSmallInteriorRangeSlot
+              (canonicalBPRelativeSummaryBlockCount shape)
+              startBlock count
+          smallTable.rangeWitnessCosted slot
         rangeMin_cost_le := by
           intro startBlock count
-          unfold concreteBPRelativeRmmInteriorQueryCost
-          simp
+          have hcost :=
+            smallTable.rangeWitnessCosted_cost_le_two
+              (finiteSmallInteriorRangeSlot
+                (canonicalBPRelativeSummaryBlockCount shape)
+                startBlock count)
+          exact Nat.le_trans (by simpa using hcost)
+            (by unfold concreteBPRelativeRmmInteriorQueryCost; omega)
         rangeMin_exact := by
           intro startBlock count hcount hbound
-          have hcond :
-              0 < count ∧
-                startBlock + count <=
-                  canonicalBPRelativeSummaryBlockCount shape :=
-            ⟨hcount, hbound⟩
-          simp [hcond]
+          simpa [smallTable] using
+            concreteBPFiniteSmallInteriorRangeMinTable_exact
+              shape hcount hbound
         read_words_length_le_machine := by
           intro startBlock count word hmem
-          cases hmem }
+          simp only [List.mem_append] at hmem
+          have hreads :=
+            concreteBPRangeArgMinWitnessTable_read_words_length_le_machine
+              shape (canonicalBPRelativeSummaryBlockSize shape)
+              (SuccinctRank.machineWordBits shape.bpCode.length)
+              (finiteSmallInteriorRanges
+                (canonicalBPRelativeSummaryBlockCount shape))
+              (by
+                simpa [SuccinctRank.machineWordBits] using
+                  (Nat.lt_log2_self (n := shape.bpCode.length)))
+              (by omega)
+          rcases hmem with hmin | harg
+          · exact interiorPayloadWordReadOfGet?_length_le hreads.1 hmin
+          · exact interiorPayloadWordReadOfGet?_length_le hreads.2 harg }
 
 theorem concreteBPRelativeRmmInteriorDirectory_profile
     (shape : Cartesian.CartesianShape)
@@ -811,8 +964,10 @@ theorem concreteBPRelativeRmmInteriorDirectory_profile
       omega
     exact Nat.le_trans
       (by
+        have hnotSmall : ¬ shape.size < 2 ^ 128 := by omega
         simpa [concreteBPRelativeRmmInteriorDirectoryPayloadLength,
-          table, localTable, globalTable, Nat.add_assoc] using hsum)
+          table, localTable, globalTable, hnotSmall, Nat.add_assoc] using
+          hsum)
       hpayloadReserve
   have hdir := directory.profile
   exact

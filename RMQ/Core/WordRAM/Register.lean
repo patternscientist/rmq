@@ -428,7 +428,8 @@ theorem eval_event_address_fitsInBits
         | TraceEvent.readWord segment index _ =>
             AddressFitsInBits bits segment index
         | TraceEvent.wordRank _ _ _ => True
-        | TraceEvent.wordSelect _ _ _ => True := by
+        | TraceEvent.wordSelect _ _ _ => True
+        | TraceEvent.syntheticCostOnlyPrimitive => True := by
   intro event hmem
   cases event with
   | readWord segment index word? =>
@@ -436,6 +437,8 @@ theorem eval_event_address_fitsInBits
   | wordRank target limit result =>
       trivial
   | wordSelect target occurrence result =>
+      trivial
+  | syntheticCostOnlyPrimitive =>
       trivial
 
 /-- All register-program trace events are payload reads or word primitives. -/
@@ -486,6 +489,8 @@ theorem eval_word_reads_length_le_machine
   | wordRank target limit result =>
       simp [TraceEvent.wordLengthBounded]
   | wordSelect target occurrence result =>
+      simp [TraceEvent.wordLengthBounded]
+  | syntheticCostOnlyPrimitive =>
       simp [TraceEvent.wordLengthBounded]
 
 /--
@@ -851,7 +856,8 @@ theorem eval_event_address_fitsInBits
         | TraceEvent.readWord segment index _ =>
             AddressFitsInBits bits segment index
         | TraceEvent.wordRank _ _ _ => True
-        | TraceEvent.wordSelect _ _ _ => True := by
+        | TraceEvent.wordSelect _ _ _ => True
+        | TraceEvent.syntheticCostOnlyPrimitive => True := by
   intro event hmem
   cases event with
   | readWord segment index word? =>
@@ -859,6 +865,8 @@ theorem eval_event_address_fitsInBits
   | wordRank target limit result =>
       trivial
   | wordSelect target occurrence result =>
+      trivial
+  | syntheticCostOnlyPrimitive =>
       trivial
 
 /-- All natural-register program trace events are reads or word primitives. -/
@@ -878,6 +886,45 @@ theorem eval_no_zero_cost_control
         ¬ event.isZeroCostControl := by
   intro event _hmem
   exact TraceEvent.not_zeroCostControl event
+
+theorem eval_no_syntheticCostOnlyPrimitive
+    (program : NatProgram) (store : Store) (regs : RegFile) :
+    forall event : TraceEvent,
+      event ∈ (eval program store regs).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  cases program with
+  | pureNat value =>
+      intro event hmem
+      simp [eval] at hmem
+  | sampledRank target offset sampleSegment sampleIndex
+      wordSegment wordIndex =>
+      intro event hmem
+      cases hsample :
+          (store.readWord? sampleSegment (sampleIndex.eval regs)).map
+            bitsToNatLE <;>
+        cases hword :
+          store.readWord? wordSegment (wordIndex.eval regs) <;>
+        simp [eval, hsample, hword] at hmem
+      all_goals
+        intro hsynth
+        cases event <;>
+          simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hmem hsynth
+  | twoLevelSampledRank target offset superSegment superIndex
+      blockSegment blockIndex wordSegment wordIndex =>
+      intro event hmem
+      cases hsuper :
+          (store.readWord? superSegment (superIndex.eval regs)).map
+            bitsToNatLE <;>
+        cases hblock :
+          (store.readWord? blockSegment (blockIndex.eval regs)).map
+            bitsToNatLE <;>
+        cases hword :
+          store.readWord? wordSegment (wordIndex.eval regs) <;>
+        simp [eval, hsuper, hblock, hword] at hmem
+      all_goals
+        intro hsynth
+        cases event <;>
+          simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hmem hsynth
 
 /-- Concrete read events report exactly the store value. -/
 theorem eval_readWord_event_eq_store
@@ -909,6 +956,8 @@ theorem eval_word_reads_length_le_machine
   | wordRank target limit result =>
       simp [TraceEvent.wordLengthBounded]
   | wordSelect target occurrence result =>
+      simp [TraceEvent.wordLengthBounded]
+  | syntheticCostOnlyPrimitive =>
       simp [TraceEvent.wordLengthBounded]
 
 /-- Evaluation is extensional in payload reads. -/
