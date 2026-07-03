@@ -84,12 +84,17 @@ import RMQRankSelect    -- standalone rank/select spoke
 import RMQBPNavigation  -- balanced-parentheses navigation spoke
 import RMQUnionFind     -- union-find specification and forest-refinement spoke
 import VerifiedDS       -- thin aggregate facade over the active public roots
+import VerifiedDS.Hub
+import VerifiedDS.RMQ
+import VerifiedDS.RankSelect
+import VerifiedDS.BPNavigation
+import VerifiedDS.UnionFind
 ```
 
 `RMQ` remains the stable artifact name for the current theorem inventory.
-`VerifiedDS` is deliberately only a facade for now: it signals the broader
-library direction without forcing a namespace or repository migration before
-the spoke APIs settle.
+`VerifiedDS` and its role modules are deliberately only facades for now: they
+signal the broader library direction without forcing a namespace or repository
+migration before the spoke APIs settle.
 
 ## What Is Proved
 

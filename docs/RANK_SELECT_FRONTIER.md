@@ -813,8 +813,11 @@ The reusable public spec is:
 - `RMQ/Core/RankSelectCompressed.lean`, now a stable barrel over:
   - `RMQ/Core/RankSelectCompressed/FixedWeightCodec.lean`;
   - `RMQ/Core/RankSelectCompressed/Readback.lean`;
-  - `RMQ/Core/RankSelectCompressed/Base.lean`; and
+  - `RMQ/Core/RankSelectCompressed/Base.lean`, itself a stable barrel over
+    role-split base modules; and
   - `RMQ/Core/RankSelectCompressed/TableRAM.lean`
+- `RMQ/Core/RankSelectCompressedSubLogRAM.lean`, now a stable barrel over
+  access/rank, select, global-store, and bounded-profile replay modules
 - `RMQ/Core/RankSelectCompressedSplit.lean`
 - `RMQ/Core/RankSelectPublic.lean`, now a stable public facade barrel over:
   - `RMQ/Core/RankSelectPublic/FixedWeight.lean`;

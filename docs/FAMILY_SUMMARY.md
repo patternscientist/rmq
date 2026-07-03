@@ -2190,7 +2190,8 @@ The names below are grouped by source module. Repeated base names in
   `RankSelectPublic/FixedWeight.lean`, `RankSelectPublic/Profiles.lean`, and
   `RankSelectPublic/Capstones.lean` role modules: the compressed/FID
   rank-select barrel, fixed-weight codec, charged readback kernels, base
-  compressed/FID construction layers, explicit TableRAM route-directory suffix,
+  compressed/FID construction layers (now themselves role-split behind the
+  `RankSelectCompressed/Base.lean` barrel), explicit TableRAM route-directory suffix,
   and neutral public aliases for the standalone rank/select spoke, including
   `RankSelect.fixedWeightPackedPayloadProfile`,
   `RankSelect.fixedWeightPackedReadbackDirectoryProfile`,
@@ -2347,7 +2348,9 @@ The names below are grouped by source module. Repeated base names in
   `BPNavigation.compactCloseDirectoryProfile`.
 - `RMQ/Core/Amortized.lean`, `RMQ/Core/UnionFind.lean`,
   `RMQ/Core/UnionFind/Forest.lean`, and `RMQUnionFind.lean`: reusable
-  potential-method accounting plus the first non-succinct spoke surface, with
+  potential-method accounting plus the first non-succinct spoke surface
+  (with `UnionFind/Forest.lean` now a stable barrel over base, backend,
+  potential, amortized, and reference role modules), with
   `Amortized.deltaCredit` and `Amortized.costed_deltaCredit` explicitly
   marking exact potential-delta credit as valid scaffolding rather than a
   uniform amortized bound,

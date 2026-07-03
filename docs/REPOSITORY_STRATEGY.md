@@ -20,7 +20,9 @@ Instead, use this staged plan:
 
 1. Keep the current repo as the RMQ spoke and in-tree extraction testbed.
 2. Continue hardening `RMQ.Core.ModelHub` / `RMQHub` as the reusable boundary.
-3. Use `VerifiedDS` as a thin neutral facade over the active public roots,
+3. Use `VerifiedDS` and its thin role modules (`VerifiedDS.Hub`,
+   `VerifiedDS.RMQ`, `VerifiedDS.RankSelect`, `VerifiedDS.BPNavigation`, and
+   `VerifiedDS.UnionFind`) as neutral facades over the active public roots,
    without moving namespaces or changing citable theorem names.
 4. Use standalone rank/select as the first extraction spoke. This now has an
    in-tree import root, `RMQRankSelect`, and a public plain-bitvector
@@ -32,7 +34,7 @@ Instead, use this staged plan:
    checkpoints, full-compression find refinement, log-rank and rank-bucket
    amortized checkpoints, and first Tarjan-level potential scaffolding, but
    not Tarjan's inverse-Ackermann theorem.
-6. Keep the current `VerifiedDS` facade thin until at least two spokes consume
+6. Keep the current `VerifiedDS` facades thin until at least two spokes consume
    the same hub APIs in a way that clearly justifies a package boundary.
 7. Create a new umbrella repo or promote the hub into a first-class package
    only when that boundary is demanded by concrete reuse rather than naming
@@ -71,7 +73,8 @@ VerifiedDS/
 ```
 
 The exact namespace should be chosen when the spoke APIs settle. Until then,
-the in-tree `VerifiedDS` facade and `RMQHub` target are the compatibility tests.
+the in-tree `VerifiedDS.*` facades and `RMQHub` target are the compatibility
+tests.
 
 ## Why Not Rename Now?
 

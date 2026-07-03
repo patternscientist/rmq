@@ -397,19 +397,21 @@ Completed:
 
 Future opportunistic work:
 
-- The first compressed/FID rank-select physical split is active:
-  `RMQ/Core/RankSelectCompressed.lean` is now a stable barrel over
-  `RankSelectCompressed/FixedWeightCodec.lean`,
-  `RankSelectCompressed/Readback.lean`,
-  `RankSelectCompressed/Base.lean`, and
-  `RankSelectCompressed/TableRAM.lean`. `RMQ/Core/RankSelectPublic.lean` is
-  also a stable barrel over `RankSelectPublic/FixedWeight.lean`,
+- The compressed/FID rank-select physical split now has stable barrels at
+  `RMQ/Core/RankSelectCompressed.lean`, `RankSelectCompressed/Base.lean`, and
+  `RMQ/Core/RankSelectCompressedSubLogRAM.lean`, with implementation details
+  split by role under matching subdirectories. `RMQ/Core/RankSelectPublic.lean`
+  is also a stable barrel over `RankSelectPublic/FixedWeight.lean`,
   `RankSelectPublic/Profiles.lean`, and `RankSelectPublic/Capstones.lean`.
-  The largest remaining implementation spines are now
-  `RankSelectCompressed/Base.lean`, `RMQ/Core/UnionFind/Forest.lean`,
-  `RankSelectPublic/Profiles.lean`, and a few close-navigation role modules
-  under `RMQ/Core/SuccinctClose/`. Treat further splits as deliberate cleanup
-  milestones with stable barrels and a gate after each split.
+- The union-find forest spoke now has a stable barrel at
+  `RMQ/Core/UnionFind/Forest.lean`, with base invariants, no-compression
+  reference operations, backend operations, potentials, proof layers, and
+  amortized checkpoints factored under `RMQ/Core/UnionFind/Forest/`.
+- Treat further splits as deliberate cleanup milestones with stable barrels
+  and a gate after each split. The remaining candidates are role-local files
+  such as `RankSelectPublic/Profiles.lean`, close-navigation modules under
+  `RMQ/Core/SuccinctClose/`, and future public-spoke polishing, not broad
+  namespace migration.
 - Continue namespace-path alignment one family at a time, with compatibility
   shims and a full gate after each pass. The rank, select, and close proposal
   roots are now compatibility shims rather than active implementation

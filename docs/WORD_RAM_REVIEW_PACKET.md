@@ -221,15 +221,16 @@ trace-local rather than a uniform asymptotic machine-word theorem.
 
 ## Large-File Cleanup Note
 
-The initial rank/select facade split has landed. `RMQ/Core/RankSelectCompressed.lean`
-and `RMQ/Core/RankSelectPublic.lean` are now stable barrels over role modules.
-A current line-count audit points to these largest follow-up candidates:
-
-- `RMQ/Core/RankSelectCompressed/Base.lean`;
-- `RMQ/Core/RankSelectPublic/Profiles.lean`;
-- `RMQ/Core/UnionFind/Forest.lean`;
-- larger close-navigation role files under `RMQ/Core/SuccinctClose/`.
+The rank/select and union-find cleanup now uses stable barrels over role
+modules. `RMQ/Core/RankSelectCompressed.lean`,
+`RMQ/Core/RankSelectCompressed/Base.lean`,
+`RMQ/Core/RankSelectCompressedSubLogRAM.lean`, and
+`RMQ/Core/UnionFind/Forest.lean` are compatibility import roots; their active
+implementation layers live in same-named subdirectories. `VerifiedDS` also has
+thin role facades over the public roots.
 
 The Word-RAM layer itself is already small and role-local. The right next
 module-split cleanup is therefore not to split `WordRAM`, but to continue
-extracting rank/select and union-find role modules behind stable public barrels.
+extracting large public-spoke files only when a stable role boundary is clear,
+for example `RankSelectPublic/Profiles.lean` or remaining close-navigation
+modules under `RMQ/Core/SuccinctClose/`.
