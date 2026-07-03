@@ -2131,6 +2131,47 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_matchesReadSt
       WholeQueryState.empty
 
 /--
+Store-extensional variant of the all-size global trace store theorem. If a
+candidate read store agrees with the concrete global store at every read event
+that the final query trace actually emits, then the same trace is validated by
+that candidate store too.
+-/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_matchesReadStore_of_trace_read_agreement
+    (shape : Cartesian.CartesianShape)
+    (left right : Nat)
+    (store : WordRAM.ReadStore)
+    (hagree :
+      forall segment index word?,
+        List.Mem (WordRAM.TraceEvent.readWord segment index word?)
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+            shape left right).trace ->
+          store.readWord? segment index =
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+              segment index) :
+    forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        event.matchesReadStore store := by
+  intro event hmem
+  cases event with
+  | readWord segment index word? =>
+      have hconcrete :=
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_matchesReadStore
+          shape left right
+          (WordRAM.TraceEvent.readWord segment index word?) hmem
+      have hagree' := hagree segment index word? hmem
+      have hconcrete' :
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+            segment index = word? := by
+        simpa [WordRAM.TraceEvent.matchesReadStore] using hconcrete
+      exact Eq.trans hagree' hconcrete'
+  | wordRank target limit result =>
+      simp [WordRAM.TraceEvent.matchesReadStore]
+  | wordSelect target occurrence result =>
+      simp [WordRAM.TraceEvent.matchesReadStore]
+
+/--
 Public all-size execution-story packet for the globally segmented final RMQ
 trace. It removes the large-regime premise from the store-backed story: every
 actual payload read in the final query agrees with the concrete global read
@@ -2172,6 +2213,63 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story
   · exact
       concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_matchesReadStore
         shape left right
+
+/--
+Store-extensional all-size execution-story packet. Besides the ordinary
+global-store theorem shape, this version may be instantiated with any read store
+that agrees with the concrete global store on the payload-read events present in
+the emitted final-query trace.
+-/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_store_extensional_execution_story
+    (shape : Cartesian.CartesianShape)
+    (left right : Nat)
+    (store : WordRAM.ReadStore)
+    (hagree :
+      forall segment index word?,
+        List.Mem (WordRAM.TraceEvent.readWord segment index word?)
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+            shape left right).trace ->
+          store.readWord? segment index =
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+              segment index) :
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+      shape left right =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).toCosted /\
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+      shape left right =
+      concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted shape left right /\
+    (forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        event.isReadWord \/ event.isWordPrimitive) /\
+    (forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        event.matchesReadStore store) := by
+  constructor
+  case left =>
+    exact
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_eq_traceResult_toCosted
+        shape left right
+  case right =>
+    constructor
+    case left =>
+      exact
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_refines_wholeQueryInterpretedCosted
+          shape left right
+    case right =>
+      constructor
+      case left =>
+        exact
+          concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_read_or_primitive
+            shape left right
+      case right =>
+        exact
+          concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_matchesReadStore_of_trace_read_agreement
+            shape left right store hagree
 
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_bounds
     (shape : Cartesian.CartesianShape)

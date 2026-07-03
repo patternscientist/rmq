@@ -5,16 +5,17 @@
 **TL;DR:** This project uses Lean to machine-check a classic optimal RMQ
 story: after preprocessing an array, exact range-minimum queries can be answered
 in constant modeled time from a Cartesian-shape payload of `2*n + o(n)` bits,
-and any exact representation needs `2n - 1.5 log n - O(1)` bits. The same code
-base is now growing into a verified advanced-data-structures testbed, with
-standalone rank/select, balanced-parentheses navigation, and union-find spokes.
+and any fixed-length payload-only exact RMQ encoding needs
+`2n - 1.5 log n - O(1)` bits. The same code base is now growing into a
+verified advanced-data-structures testbed, with standalone rank/select,
+balanced-parentheses navigation, and union-find spokes.
 
 Range-minimum query (RMQ) asks for the leftmost position of the smallest value
 in a subarray. The surprising theorem is not that RMQ can be solved, but that
 the array values can be discarded: the Cartesian shape alone determines every
 answer. This repository verifies that story end to end, including correctness,
-modeled query cost, payload-bit accounting, and the matching
-information-theoretic lower bound.
+modeled query cost, payload-bit accounting, and a separately proved
+encoding-quantified information-theoretic lower bound.
 
 For a further explanation aimed at mathematically mature
 readers with little data-structures background, see
@@ -52,15 +53,16 @@ Short public aliases live in [`RMQ/Headlines.lean`](RMQ/Headlines.lean).
 | Alias | Meaning |
 | --- | --- |
 | `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | Reader-facing theorem over ordinary `xs : List Int`: build a payload of length `2*n + o(n)` bits and answer valid half-open RMQ queries exactly, with leftmost ties, within constant modeled query cost. |
-| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and the matching lower-bound side. |
+| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, paired with the separately proved encoding-quantified lower bound. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Whole-query-interpreted variant of the final BP-native succinct RMQ capstone: same theorem shape, with the final query control represented by a closed first-order program whose leaves are interpreted close-select, compact close/LCA, and register-backed answer-rank operations. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace` | Unified-`WordRAM.TraceEvent` variant of the same capstone: the final query emits one trace stream, with close-select, answer-rank, and compact-close rank-seed reads replayed as structural payload/register traces. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime` | Large-regime WordRAM variant: same two-sided theorem shape, with an explicit size premise that routes the compact close/LCA leg through structural local/fringe/interior trace replay rather than the all-size fallback. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` | All-size execution-story theorem for the final succinct RMQ query: the costed query refines one globally segmented trace, every event is either a payload read or bounded word primitive, and every read agrees with one concrete global payload store. |
+| `RMQ.Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory` | Store-extensional all-size execution story: any read store agreeing with the concrete global store on the emitted payload-read events validates the same final-query trace. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory` | Bounded all-size execution story: the global trace also carries a finite trace-local bit width bounding every payload-read address and every natural operand/result exposed by word primitives. |
 | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory` | Large-regime companion: under the explicit size premise, the compact close/LCA leg uses the positive-block local/fringe/interior structural replay rather than the all-size fallback. |
 | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory` | Bounded large-regime companion to the global-store execution story. |
-| `RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery` | Component-level interpreter-backed BP close-navigation profile. |
+| `RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery` | Conditional component-level interpreter-backed BP close-navigation profile, parameterized by a supplied word-bounded sampled encoded close-navigation family. |
 | `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack` | Coefficient-correct Catalan lower-bound slack, stated in doubled integer form. |
 | `RMQ.Headlines.rankSelectNPlusOConstantQuery` | Standalone Jacobson/Clark-style plain-bitvector rank/select with `n + o(n)` payload and constant modeled query cost. |
 | `RMQ.Headlines.rankSelectWordBoundedNPlusOConstantQuery` | The rank/select profile strengthened with machine-word-bounded concrete payload reads. |
@@ -101,6 +103,8 @@ migration before the spoke APIs settle.
 For external readers, start with [`docs/WHAT_IS_PROVED.md`](docs/WHAT_IS_PROVED.md).
 For the full theorem inventory and dependency map, see
 [`docs/FAMILY_SUMMARY.md`](docs/FAMILY_SUMMARY.md).
+For tiny checked examples of the public surfaces, see
+[`RMQExamples/Concrete.lean`](RMQExamples/Concrete.lean).
 
 At a high level, the repository currently includes:
 

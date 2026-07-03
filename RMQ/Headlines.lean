@@ -161,6 +161,14 @@ abbrev succinctRMQGlobalPayloadStoreExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story
 
 /--
+Store-extensional execution-story theorem for the final all-size succinct RMQ
+query. Any read store that agrees with the concrete global store on the
+payload-read events emitted by the query validates the same trace.
+-/
+abbrev succinctRMQGlobalPayloadStoreExtensionalExecutionStory :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_store_extensional_execution_story
+
+/--
 Bounded execution-story theorem for the final all-size succinct RMQ query. This
 extends `succinctRMQGlobalPayloadStoreExecutionStory` with a concrete finite
 trace-local bit width bounding every payload-read address and every natural
@@ -188,8 +196,9 @@ abbrev succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory :=
 Interpreter-backed BP close-navigation profile: `2*n + o(n)`, constant query,
 with rank/select/LCA leaves routed through the first-order `WordRAM` bridges.
 
-This is a component-level profile; the final BP-native RMQ capstone also has an
-interpreter-backed headline above.
+This is a conditional component-level profile: it requires a supplied
+word-bounded sampled encoded close-navigation family. The final BP-native RMQ
+capstone has its own constructed interpreter-backed headlines above.
 -/
 abbrev bpCloseNavigationInterpretedTwoNPlusOConstantQuery
     {rankSlots selectSlots lcaSlots : Nat}

@@ -41,6 +41,7 @@ the BP-native succinct capstone.
 #print axioms RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace
 #print axioms RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime
 #print axioms RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory
+#print axioms RMQ.Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory
 #print axioms RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory
 #print axioms RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory
 #print axioms RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory

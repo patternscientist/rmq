@@ -24,6 +24,7 @@ claims, what it does not claim, and which command checks the relevant surface.
 | The same RMQ family emits a unified `WordRAM.TraceEvent` stream for the final query. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_profile` | `lake env lean scripts/wordram_axiom_check.lean` |
 | In the large regime, the WordRAM final query routes the compact close/LCA leg through structural local/fringe/interior trace replay rather than the all-size fallback. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_large_regime_profile` | `lake env lean scripts/headline_axiom_check.lean` and `lake env lean scripts/wordram_axiom_check.lean` |
 | The final all-size RMQ query has one globally segmented payload-store execution story: every event is a payload read or word primitive, and every payload read agrees with the concrete global store. | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story` | `lake env lean scripts/wordram_axiom_check.lean` |
+| The same all-size global trace is store-extensional: any read store agreeing with the concrete global store on emitted payload-read events validates the same trace. | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_store_extensional_execution_story` | `lake env lean scripts/wordram_axiom_check.lean` |
 | The same global execution story has a finite trace-local bit width bounding every payload-read address and every natural operand/result exposed by word primitives. | `RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_bounded_execution_story` | `lake env lean scripts/wordram_axiom_check.lean` |
 | The large-regime global-store execution story also has the same bounded-address and bounded-primitive-operand packet under the explicit size premise. | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_bounded_execution_story` | `lake env lean scripts/wordram_axiom_check.lean` |
 
@@ -35,7 +36,7 @@ claims, what it does not claim, and which command checks the relevant surface.
 | The word-bounded Jacobson/Clark surface keeps the same family profile with bounded concrete payload words. | `RMQ.Headlines.rankSelectWordBoundedNPlusOConstantQuery` | `RMQ.RankSelect.jacobsonClarkWordBoundedNPlusOConstantQuery` | `lake env lean scripts/headline_axiom_check.lean` |
 | Fixed-weight compressed/FID rank/select has a family theorem with compressed payload plus `o(n)` overhead and constant modeled query cost. | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightFamilyProfile` | `RMQ.RankSelect.compressedFIDFixedWeightFamilyProfile` | `lake env lean scripts/headline_axiom_check.lean` |
 | The compressed/FID family has an interpreted WordRAM bridge. | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile` | `RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile` | `lake env lean scripts/wordram_axiom_check.lean` |
-| BP close-navigation has an interpreted component-level `2*n + o(n)`, constant-query profile. | `RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery` | `RMQ.SuccinctSpace.WordBoundedSampledEncodedPayloadLiveBPCloseRMQNavigationFamily.two_n_plus_o_interpreted_word_bounded_query_profile` | `lake env lean scripts/headline_axiom_check.lean` |
+| BP close-navigation has a conditional interpreted component-level `2*n + o(n)`, constant-query profile, assuming a supplied word-bounded sampled encoded close-navigation family. | `RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery` | `RMQ.SuccinctSpace.WordBoundedSampledEncodedPayloadLiveBPCloseRMQNavigationFamily.two_n_plus_o_interpreted_word_bounded_query_profile` | `lake env lean scripts/headline_axiom_check.lean` |
 
 ## Non-Claims
 
@@ -53,6 +54,9 @@ claims, what it does not claim, and which command checks the relevant surface.
 - Proof-only fields and certificates are not counted as payload bits.
 - Register arithmetic and branching are model-control operations, not charged
   machine instructions in the current model.
+- The BP close-navigation headline is a conditional component theorem; the repo
+  does not yet expose a concrete witness inhabiting
+  `WordBoundedSampledEncodedPayloadLiveBPCloseRMQNavigationFamily`.
 
 ## Current Provenance Frontier
 

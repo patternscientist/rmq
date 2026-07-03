@@ -114,6 +114,9 @@ The strongest all-size execution-story theorem is the global-store companion:
 abbrev succinctRMQGlobalPayloadStoreExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story
 
+abbrev succinctRMQGlobalPayloadStoreExtensionalExecutionStory :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_store_extensional_execution_story
+
 abbrev succinctRMQGlobalPayloadStoreBoundedExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_bounded_execution_story
 ```
@@ -126,6 +129,9 @@ work appears only as synthetic word-primitive events, not as payload reads. The
 bounded companion adds a concrete trace-local finite bit width and proves that
 every payload-read address and every natural operand/result exposed by
 word-local primitive events fits that width.
+The extensional companion says that any read store agreeing with the concrete
+global store on the read events emitted by the final trace validates that same
+trace.
 
 The large-regime positive-replay companion is:
 

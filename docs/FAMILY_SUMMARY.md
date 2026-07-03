@@ -2635,6 +2635,10 @@ The names below are grouped by source module. Repeated base names in
   `Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted`,
   `Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace`,
   `Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace`,
+  `Headlines.succinctRMQGlobalPayloadStoreExecutionStory`,
+  `Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory`,
+  `Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory`, and
+  the conditional component profile
   `Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery`.
 - `RMQ/Core/SuccinctReduction.lean` (7):
   `Succinct.rmqBackendOfEulerParensBackend_queryBuilt`,
