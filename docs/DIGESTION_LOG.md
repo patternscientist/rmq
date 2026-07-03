@@ -51,22 +51,13 @@ spokes:
   layers, a BP-native `2*n + o(n)` constant-query profile under the documented
   RAM/indexed-access model, and matching Catalan-style lower-bound machinery.
 - Rank/select: a standalone bitvector spec and public Jacobson/Clark
-  `n + o(n)` constant-query profile, plus an active compressed/FID fixed-weight
-  route/class-length construction path. The latest digested chunk-route layer
-  gives concrete fixed-size chunks, a sentinel fallback block, access-route
-  exactness, class/length metadata budget bridges, the log-chunk primary
-  block-code budget, and a specialized log-chunk route/class-length envelope
-  profile together with a no-inhabitant theorem for that computed-RRR envelope
-  under fixed local query cost. The replacement shared-table table/RAM
-  route-directory envelope now exists, has a conditional compressed/FID public
-  bridge, and has a log-chunk specialization that consumes the primary
-  block-code budget. A route-field-table adapter feeds the existing
-  payload-backed route tables into that envelope. The split-width table/RAM
-  repair now separates global route-field width from local class/length width
-  and has its own log-chunk profile consuming the primary budget. The global
-  constructor remains open because dense log-chunk decoder tables are formally
-  not `o(n)`; the old single-width route/class metadata design is also formally
-  ruled out when class/length fields are padded to route width.
+  `n + o(n)` constant-query profile, plus a compressed/FID fixed-weight family
+  surface. The concrete sub-log/Packed-Clark constructor now has interpreted
+  access/rank/select replays, store-backed trace packets, a target-indexed
+  global payload-store execution story, and an RMQ-style bounded trace-local
+  event-width companion. The remaining RMQ-level gap is target-independent
+  true/false storage plus stronger uniform machine-word/asymptotic width
+  bounds.
 - Union-find: a finite partition specification, costed reference operations,
   a parent-pointer forest refinement, union-by-rank/root-mass/rank-power
   invariants, full-compression find refinement, rank-gap/log-rank amortized
@@ -123,11 +114,29 @@ family story, scoped to fixed-weight/FID payload accounting.  The follow-up
 interpreted theorem
 `RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile` now replays
 that same access/rank/select surface through the first-order `WordRAM` bridge
-layer.  Live assumptions: this is still the project's modeled
-RAM/indexed-read cost layer, not Lean runtime, and it is not a single closed
-machine program for every public branch.  A skeptical grad student should now
-ask whether a flatter whole-query program presentation would improve the audit
-story enough to justify the extra proof surface.
+layer.  The first trace-level execution packets are now also present:
+`RMQ.RankSelect.compressedFIDFixedWeightAccessTraceResult_execution_story`
+builds a concrete access trace result with a four-segment access payload store,
+and `RMQ.RankSelect.compressedFIDFixedWeightRankTraceResult_execution_story`
+builds the analogous rank trace result with a six-segment rank payload store.
+`RMQ.RankSelect.compressedFIDFixedWeightSelectTraceResult_execution_story`
+now adds the select packet: it reads the charged packed-Clark route directory
+and then performs the constant local fixed-weight block decode through
+code/length/class/shared-decoder payload reads.  The combined theorem
+`RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_execution_story`
+relabels access, rank, and select into one concrete payload store for each
+fixed `bits` and `target`.  The bounded companion
+`RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_bounded_execution_story`
+now adds the same style of finite trace-local event-width packet used by the
+final RMQ bounded trace theorem: every payload-read segment/index and every
+natural operand/result exposed by word-local rank/select primitives fits the
+declared trace-local width.  Live assumptions: this is still the project's
+modeled RAM/indexed-read cost layer, not Lean runtime, the global store is
+target-indexed rather than a single true/false combined store, and the width is
+trace-local rather than an asymptotic machine-word-size theorem.  A skeptical
+grad student should now ask whether the target-indexed store can be doubled
+into a target-independent store and whether the trace-local width can be
+replaced or complemented by uniform machine-word side conditions.
 
 The fixed-weight compressed/FID spoke now separates four issues that were easy
 to conflate. First, log-sized sentinel chunk decompositions have an `o(n)` block

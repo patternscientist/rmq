@@ -142,6 +142,21 @@ local/fringe/interior close-navigation replay on the compact close/LCA leg. As
 before, these are word-RAM model statements; they are not Lean-runtime claims
 and not a general CPU semantics.
 
+The rank/select spoke now has the analogous bounded target-indexed global
+payload-store theorem:
+
+```lean
+abbrev rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreBoundedExecutionStory :=
+  RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_bounded_execution_story
+```
+
+For each fixed `bits` and `target`, it packages the compressed/FID access,
+rank, and select traces under one target-indexed read store and adds a finite
+trace-local width proving that every payload-read address and every natural
+operand/result exposed by word-local rank/select primitives fits that width.
+This is not yet a target-independent true/false store, and the width is
+trace-local rather than a uniform asymptotic machine-word theorem.
+
 ## Theorem Statement
 
 The construction-heavy theorem name is intentionally verbose because it exposes
@@ -221,6 +236,8 @@ Current excerpt for the public headline path:
 'RMQ.Headlines.rankSelectCompressedFIDFixedWeightFamilyProfile' depends on axioms:
   [propext, Classical.choice, Quot.sound]
 'RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile' depends on axioms:
+  [propext, Classical.choice, Quot.sound]
+'RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreBoundedExecutionStory' depends on axioms:
   [propext, Classical.choice, Quot.sound]
 'RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery' depends on axioms:
   [propext, Classical.choice, Quot.sound]

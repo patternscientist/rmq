@@ -15,6 +15,8 @@ The short public theorem aliases live in `RMQ/Headlines.lean`.
 | `RMQ.Headlines.rankSelectWordBoundedNPlusOConstantQuery` | The same public rank/select family, strengthened with machine-word-bounded concrete payload reads. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightFamilyProfile` | Fixed-weight compressed/FID rank/select family: fixed-weight primary payload plus `o(n)` auxiliary payload, exact access/rank/select, and one constant modeled query bound. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile` | Interpreter-backed replay of that compressed/FID rank/select family: same payload/profile shape, with access/rank/select reads routed through first-order `WordRAM` bridges. |
+| `RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreExecutionStory` | Target-indexed global-store execution story for compressed/FID rank/select: for fixed `bits` and `target`, relabeled access/rank/select traces all read from one concrete payload store. |
+| `RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreBoundedExecutionStory` | Bounded target-indexed global-store execution story for compressed/FID rank/select: the combined traces also have finite trace-local widths bounding every payload-read address and word-primitive natural operand/result. |
 | `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | Classic list-facing succinct RMQ theorem: for every ordinary `xs : List Int`, the built payload has length `2*n + o(n)` and valid half-open queries return the exact leftmost RMQ answer within constant modeled query cost. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ capstone with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and the matching lower-bound side. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Whole-query-interpreted variant of the final BP-native succinct RMQ capstone: same theorem shape, with the final query control represented by a closed first-order program whose leaves are interpreted close-select, compact close/LCA, and register-backed answer-rank operations. |
@@ -147,6 +149,22 @@ the access, rank, and select reads through the repository's first-order
 `WordRAM` bridge layer. This sharpens the non-oracle story for the standalone
 rank/select spoke; it is still a word-RAM model theorem, not a Lean runtime
 claim or a single closed machine-code program.
+
+The trace-level surface now includes
+`RMQ.RankSelect.compressedFIDFixedWeightAccessTraceResult_execution_story`,
+`RMQ.RankSelect.compressedFIDFixedWeightRankTraceResult_execution_story`, and
+`RMQ.RankSelect.compressedFIDFixedWeightSelectTraceResult_execution_story`.
+These prove that each query trace projects to the interpreted query, refines
+the costed query, contains only payload-read or word-primitive events, and
+matches a concrete segmented read store.  The combined theorem
+`RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_execution_story`
+relabels those packets into one target-indexed global store for each fixed
+`bits` and `target`.  The bounded companion
+`RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_bounded_execution_story`
+adds the RMQ-style finite trace-local bit-width theorem for payload-read
+addresses and word-local primitive operands/results.  It is not yet the
+target-independent true/false combined store, and the width is trace-local
+rather than a uniform asymptotic machine-word theorem.
 
 The compressed/FID target surface is also formalized:
 `RMQ.RankSelect.fixedWeightBitstringsLength` counts fixed-weight bitvector

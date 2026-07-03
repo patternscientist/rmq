@@ -26,5 +26,16 @@ The interpreted replay surface
 `RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile` strengthens
 the same theorem shape by routing access/rank/select reads through `WordRAM`
 bridges.  These are word-RAM/indexed-read model theorems, not Lean runtime
-claims.
+claims.  The access, rank, and select legs additionally expose store-backed
+trace packets:
+`RMQ.RankSelect.compressedFIDFixedWeightAccessTraceResult_execution_story` and
+`RMQ.RankSelect.compressedFIDFixedWeightRankTraceResult_execution_story`, and
+`RMQ.RankSelect.compressedFIDFixedWeightSelectTraceResult_execution_story`.
+For each fixed `bits` and `target`, the relabeled access/rank/select packets
+are combined under one concrete target-indexed payload store by
+`RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_execution_story`.
+The bounded companion
+`RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_bounded_execution_story`
+adds trace-local finite-width bounds for every payload-read address and every
+natural operand/result exposed by word-local rank/select primitives.
 -/

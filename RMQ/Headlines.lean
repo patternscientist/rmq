@@ -47,6 +47,23 @@ through `WordRAM` bridges.
 abbrev rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile :=
   RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile
 
+/--
+Target-indexed global payload-store execution story for fixed-weight
+compressed/FID rank/select. For each fixed `bits` and `target`, access, rank,
+and select traces are relabeled into one concrete read store.
+-/
+abbrev rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreExecutionStory :=
+  RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_execution_story
+
+/--
+Bounded target-indexed global payload-store execution story for fixed-weight
+compressed/FID rank/select. It extends the combined access/rank/select global
+store packet with trace-local bit widths for payload-read addresses and
+word-primitive operands/results.
+-/
+abbrev rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreBoundedExecutionStory :=
+  RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_bounded_execution_story
+
 /-- BP-native succinct RMQ capstone: exact RMQ, `2*n + o(n)`, constant query. -/
 abbrev succinctRMQTwoNPlusOConstantQuery :=
   RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile

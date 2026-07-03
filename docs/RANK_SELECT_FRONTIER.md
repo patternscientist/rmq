@@ -1,6 +1,6 @@
 # Rank/Select Spoke
 
-Snapshot: 2026-06-29. This note records the first extracted succinct
+Snapshot: 2026-07-03. This note records the first extracted succinct
 data-structure spoke in the RMQ repository: plain bitvector access/rank/select.
 
 ## Import
@@ -77,6 +77,11 @@ RMQ.Headlines.rankSelectCompressedFIDFixedWeightFamilyProfile
 RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamily
 RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile
 RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile
+RMQ.RankSelect.compressedFIDFixedWeightSelectTraceResult_execution_story
+RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_execution_story
+RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreExecutionStory
+RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_bounded_execution_story
+RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreBoundedExecutionStory
 RMQ.RankSelect.compressedFIDFixedWeightConstantQueryProfile
 RMQ.Headlines.rankSelectCompressedFIDFixedWeightConstantQuery
 ```
@@ -91,9 +96,29 @@ reusable theorem surface to cite for the compressed/FID spoke.
 `compressedFIDFixedWeightInterpretedFamilyProfile` is the additive Word-RAM
 replay surface: it keeps the same payload and constant-query theorem shape
 while routing access, rank, and select reads through the first-order
-`WordRAM` bridge layer. The remaining refinement target is not another family
-wrapper, but an optional flatter whole-query program presentation if that buys
-clarity for reviewers.
+`WordRAM` bridge layer. The access, rank, and select legs now also have concrete
+trace/read-store packets:
+
+```lean
+RMQ.RankSelect.compressedFIDFixedWeightAccessTraceResult_execution_story
+RMQ.RankSelect.compressedFIDFixedWeightRankTraceResult_execution_story
+RMQ.RankSelect.compressedFIDFixedWeightSelectTraceResult_execution_story
+```
+
+These theorems say the access/rank/select trace results project to the interpreted
+queries, refine the costed queries, use only Word-RAM read/word-primitive
+events, and every read agrees with a concrete segmented payload store. The
+target-indexed global-store theorem
+`RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_execution_story`
+then relabels all three packets into one concrete store for each fixed `bits`
+and `target`.  Its bounded companion
+`RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_bounded_execution_story`
+adds the RMQ-style finite trace-local event width: every payload-read segment
+and index, plus every natural operand/result exposed by a word-local
+rank/select primitive, fits that trace-local width. The remaining RMQ-level
+refinements are a target-independent true/false combined store and a stronger
+machine-word/asymptotic width story rather than a trace-local bound chosen from
+the finished trace.
 
 ## Compressed/FID Surface
 

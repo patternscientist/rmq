@@ -19,16 +19,113 @@ abbrev compressedFIDFixedWeightAccessInterpretedCosted
     (bits : List Bool) (i : Nat) : Costed (Option Bool) :=
   RMQ.RankSelectSpec.subLogAccessInterpretedCosted bits i
 
+/-- Four-segment read-only store for the compressed/FID access trace replay. -/
+abbrev compressedFIDFixedWeightAccessTraceReadStore
+    (bits : List Bool) : WordRAM.ReadStore :=
+  RMQ.RankSelectSpec.subLogAccessTraceReadStore bits
+
+/-- Trace-result replay for the concrete fixed-weight compressed/FID access query. -/
+abbrev compressedFIDFixedWeightAccessTraceResult
+    (bits : List Bool) (i : Nat) : WordRAM.TraceResult (Option Bool) :=
+  RMQ.RankSelectSpec.subLogAccessTraceResult bits i
+
 /-- Interpreted rank query for the concrete fixed-weight compressed/FID family. -/
 abbrev compressedFIDFixedWeightRankInterpretedCosted
     (bits : List Bool) (target : Bool) (pos : Nat) : Costed Nat :=
   RMQ.RankSelectSpec.subLogRankInterpretedCosted bits target pos
+
+/-- Six-segment read-only store for the compressed/FID rank trace replay. -/
+abbrev compressedFIDFixedWeightRankTraceReadStore
+    (bits : List Bool) (target : Bool) : WordRAM.ReadStore :=
+  RMQ.RankSelectSpec.subLogRankTraceReadStore bits target
+
+/-- Trace-result replay for the concrete fixed-weight compressed/FID rank query. -/
+abbrev compressedFIDFixedWeightRankTraceResult
+    (bits : List Bool) (target : Bool) (pos : Nat) :
+    WordRAM.TraceResult Nat :=
+  RMQ.RankSelectSpec.subLogRankTraceResult bits target pos
 
 /-- Interpreted select query for the concrete fixed-weight compressed/FID family. -/
 abbrev compressedFIDFixedWeightSelectInterpretedCosted
     (bits : List Bool) (target : Bool) (occurrence : Nat) :
     Costed (Option Nat) :=
   RMQ.RankSelectSpec.subLogSelectFromPackedClarkRouteInterpretedCosted
+    bits target occurrence
+
+/-- Target-specific read-only store for the compressed/FID select trace replay. -/
+abbrev compressedFIDFixedWeightSelectTraceReadStore
+    (bits : List Bool) (target : Bool) : WordRAM.ReadStore :=
+  RMQ.RankSelectSpec.subLogSelectFromPackedClarkRouteTraceReadStore
+    bits target
+
+/-- Trace-result replay for the concrete fixed-weight compressed/FID select query. -/
+abbrev compressedFIDFixedWeightSelectTraceResult
+    (bits : List Bool) (target : Bool) (occurrence : Nat) :
+    WordRAM.TraceResult (Option Nat) :=
+  RMQ.RankSelectSpec.subLogSelectFromPackedClarkRouteTraceResult
+    bits target occurrence
+
+/--
+Target-indexed global store for the access/rank/select trace packets.
+
+The store is target-indexed because the current rank and Clark-select routing
+payloads are target-specific.  The access, rank, and select traces are relabeled
+into disjoint segment ranges of this one store.
+-/
+abbrev compressedFIDFixedWeightTargetGlobalTraceReadStore
+    (bits : List Bool) (target : Bool) : WordRAM.ReadStore :=
+  RMQ.RankSelectSpec.subLogCompressedFIDTargetGlobalTraceReadStore
+    bits target
+
+/-- Access trace relabeled into the target-indexed global compressed/FID store. -/
+abbrev compressedFIDFixedWeightGlobalAccessTraceResult
+    (bits : List Bool) (i : Nat) : WordRAM.TraceResult (Option Bool) :=
+  RMQ.RankSelectSpec.subLogCompressedFIDGlobalAccessTraceResult bits i
+
+/-- Rank trace relabeled into the target-indexed global compressed/FID store. -/
+abbrev compressedFIDFixedWeightGlobalRankTraceResult
+    (bits : List Bool) (target : Bool) (pos : Nat) :
+    WordRAM.TraceResult Nat :=
+  RMQ.RankSelectSpec.subLogCompressedFIDGlobalRankTraceResult
+    bits target pos
+
+/-- Select trace relabeled into the target-indexed global compressed/FID store. -/
+abbrev compressedFIDFixedWeightGlobalSelectTraceResult
+    (bits : List Bool) (target : Bool) (occurrence : Nat) :
+    WordRAM.TraceResult (Option Nat) :=
+  RMQ.RankSelectSpec.subLogCompressedFIDGlobalSelectTraceResult
+    bits target occurrence
+
+/-- Read-address width predicate for compressed/FID rank/select trace events. -/
+abbrev compressedFIDFixedWeightTraceEventReadAddressFitsInBits
+    (bits : Nat) (event : WordRAM.TraceEvent) : Prop :=
+  RMQ.RankSelectSpec.subLogCompressedFIDTraceEventReadAddressFitsInBits
+    bits event
+
+/--
+Word-primitive operand/result width predicate for compressed/FID rank/select
+trace events.
+-/
+abbrev compressedFIDFixedWeightTraceEventPrimitiveOperandsFitInBits
+    (bits : Nat) (event : WordRAM.TraceEvent) : Prop :=
+  RMQ.RankSelectSpec.subLogCompressedFIDTraceEventPrimitiveOperandsFitInBits
+    bits event
+
+/-- Trace-local event bit width for a global access trace. -/
+abbrev compressedFIDFixedWeightGlobalAccessTraceEventBits
+    (bits : List Bool) (i : Nat) : Nat :=
+  RMQ.RankSelectSpec.subLogCompressedFIDGlobalAccessTraceEventBits bits i
+
+/-- Trace-local event bit width for a global rank trace. -/
+abbrev compressedFIDFixedWeightGlobalRankTraceEventBits
+    (bits : List Bool) (target : Bool) (pos : Nat) : Nat :=
+  RMQ.RankSelectSpec.subLogCompressedFIDGlobalRankTraceEventBits
+    bits target pos
+
+/-- Trace-local event bit width for a global select trace. -/
+abbrev compressedFIDFixedWeightGlobalSelectTraceEventBits
+    (bits : List Bool) (target : Bool) (occurrence : Nat) : Nat :=
+  RMQ.RankSelectSpec.subLogCompressedFIDGlobalSelectTraceEventBits
     bits target occurrence
 
 theorem compressedFIDFixedWeightAccessInterpretedCosted_refines_accessCosted
@@ -39,6 +136,30 @@ theorem compressedFIDFixedWeightAccessInterpretedCosted_refines_accessCosted
     RMQ.RankSelectSpec.subLogAccessInterpretedCosted_refines_subLogAccessCosted
       bits i
 
+/--
+Execution-story packet for the access leg of the concrete fixed-weight
+compressed/FID family.
+
+The trace result projects to the interpreted access query, refines the existing
+costed access query, contains only Word-RAM read/word-primitive events, and all
+reads agree with the concrete four-segment access payload store.
+-/
+theorem compressedFIDFixedWeightAccessTraceResult_execution_story
+    (bits : List Bool) (i : Nat) :
+    (compressedFIDFixedWeightAccessTraceResult bits i).toCosted =
+        compressedFIDFixedWeightAccessInterpretedCosted bits i /\
+      (compressedFIDFixedWeightAccessTraceResult bits i).toCosted =
+        RMQ.RankSelectSpec.subLogAccessCosted bits i /\
+      (forall event,
+        event ∈ (compressedFIDFixedWeightAccessTraceResult bits i).trace ->
+          event.isReadWord \/ event.isWordPrimitive) /\
+      (forall event,
+        event ∈ (compressedFIDFixedWeightAccessTraceResult bits i).trace ->
+          event.matchesReadStore
+            (compressedFIDFixedWeightAccessTraceReadStore bits)) := by
+  exact
+    RMQ.RankSelectSpec.subLogAccessTraceResult_execution_story bits i
+
 theorem compressedFIDFixedWeightRankInterpretedCosted_refines_rankCosted
     (bits : List Bool) (target : Bool) (pos : Nat) :
     compressedFIDFixedWeightRankInterpretedCosted bits target pos =
@@ -46,6 +167,34 @@ theorem compressedFIDFixedWeightRankInterpretedCosted_refines_rankCosted
   exact
     RMQ.RankSelectSpec.subLogRankInterpretedCosted_refines_subLogRankCosted
       bits target pos
+
+/--
+Execution-story packet for the rank leg of the concrete fixed-weight
+compressed/FID family.
+
+The trace result projects to the interpreted rank query, refines the existing
+costed rank query, contains only Word-RAM read/word-primitive events, and all
+reads agree with the concrete six-segment rank payload store.
+-/
+theorem compressedFIDFixedWeightRankTraceResult_execution_story
+    (bits : List Bool) (target : Bool) (pos : Nat) :
+    (compressedFIDFixedWeightRankTraceResult bits target pos).toCosted =
+        compressedFIDFixedWeightRankInterpretedCosted bits target pos /\
+      (compressedFIDFixedWeightRankTraceResult bits target pos).toCosted =
+        RMQ.RankSelectSpec.subLogRankCosted bits target pos /\
+      (forall event,
+        event ∈
+            (compressedFIDFixedWeightRankTraceResult
+              bits target pos).trace ->
+          event.isReadWord \/ event.isWordPrimitive) /\
+      (forall event,
+        event ∈
+            (compressedFIDFixedWeightRankTraceResult
+              bits target pos).trace ->
+          event.matchesReadStore
+            (compressedFIDFixedWeightRankTraceReadStore bits target)) := by
+  exact
+    RMQ.RankSelectSpec.subLogRankTraceResult_execution_story bits target pos
 
 theorem compressedFIDFixedWeightSelectInterpretedCosted_refines_selectCosted
     (bits : List Bool) (target : Bool) (occurrence : Nat) :
@@ -55,6 +204,222 @@ theorem compressedFIDFixedWeightSelectInterpretedCosted_refines_selectCosted
   exact
     RMQ.RankSelectSpec.subLogSelectFromPackedClarkRouteInterpretedCosted_refines
       bits target occurrence
+
+/--
+Execution-story packet for the select leg of the concrete fixed-weight
+compressed/FID family.
+
+The trace first reads the charged packed-Clark route directory, then performs
+the constant local fixed-weight block decode through code/length/class/shared
+decoder payload reads.
+-/
+theorem compressedFIDFixedWeightSelectTraceResult_execution_story
+    (bits : List Bool) (target : Bool) (occurrence : Nat) :
+    (compressedFIDFixedWeightSelectTraceResult
+      bits target occurrence).toCosted =
+        compressedFIDFixedWeightSelectInterpretedCosted
+          bits target occurrence /\
+      (compressedFIDFixedWeightSelectTraceResult
+        bits target occurrence).toCosted =
+        RMQ.RankSelectSpec.subLogSelectFromPackedClarkRouteCosted
+          bits target occurrence /\
+      (forall event,
+        event ∈
+            (compressedFIDFixedWeightSelectTraceResult
+              bits target occurrence).trace ->
+          event.isReadWord \/ event.isWordPrimitive) /\
+      (forall event,
+        event ∈
+            (compressedFIDFixedWeightSelectTraceResult
+              bits target occurrence).trace ->
+          event.matchesReadStore
+            (compressedFIDFixedWeightSelectTraceReadStore bits target)) := by
+  exact
+    RMQ.RankSelectSpec.subLogSelectFromPackedClarkRouteTraceResult_execution_story
+      bits target occurrence
+
+/--
+One target-indexed global payload-store execution theorem for the concrete
+fixed-weight compressed/FID family.
+
+For a fixed `bits` and `target`, the access, rank, and select trace packets are
+relabeled into disjoint segment ranges of one concrete read store, while still
+projecting to the interpreted queries and the existing costed query semantics.
+-/
+theorem compressedFIDFixedWeightTargetGlobalPayloadStore_execution_story
+    (bits : List Bool) (target : Bool) :
+    (forall i,
+      (compressedFIDFixedWeightGlobalAccessTraceResult bits i).toCosted =
+          compressedFIDFixedWeightAccessInterpretedCosted bits i /\
+        (compressedFIDFixedWeightGlobalAccessTraceResult bits i).toCosted =
+          RMQ.RankSelectSpec.subLogAccessCosted bits i /\
+        (forall event,
+          event ∈
+              (compressedFIDFixedWeightGlobalAccessTraceResult
+                bits i).trace ->
+            event.isReadWord \/ event.isWordPrimitive) /\
+        (forall event,
+          event ∈
+              (compressedFIDFixedWeightGlobalAccessTraceResult
+                bits i).trace ->
+            event.matchesReadStore
+              (compressedFIDFixedWeightTargetGlobalTraceReadStore
+                bits target))) /\
+      (forall pos,
+        (compressedFIDFixedWeightGlobalRankTraceResult
+          bits target pos).toCosted =
+            compressedFIDFixedWeightRankInterpretedCosted
+              bits target pos /\
+          (compressedFIDFixedWeightGlobalRankTraceResult
+            bits target pos).toCosted =
+            RMQ.RankSelectSpec.subLogRankCosted bits target pos /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalRankTraceResult
+                  bits target pos).trace ->
+              event.isReadWord \/ event.isWordPrimitive) /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalRankTraceResult
+                  bits target pos).trace ->
+              event.matchesReadStore
+                (compressedFIDFixedWeightTargetGlobalTraceReadStore
+                  bits target))) /\
+      forall occurrence,
+        (compressedFIDFixedWeightGlobalSelectTraceResult
+          bits target occurrence).toCosted =
+            compressedFIDFixedWeightSelectInterpretedCosted
+              bits target occurrence /\
+          (compressedFIDFixedWeightGlobalSelectTraceResult
+            bits target occurrence).toCosted =
+            RMQ.RankSelectSpec.subLogSelectFromPackedClarkRouteCosted
+              bits target occurrence /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalSelectTraceResult
+                  bits target occurrence).trace ->
+              event.isReadWord \/ event.isWordPrimitive) /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalSelectTraceResult
+                  bits target occurrence).trace ->
+              event.matchesReadStore
+                (compressedFIDFixedWeightTargetGlobalTraceReadStore
+                  bits target)) := by
+  exact
+    RMQ.RankSelectSpec.subLogCompressedFIDTargetGlobalPayloadStore_execution_story
+      bits target
+
+/--
+Bounded target-indexed global payload-store execution theorem for the concrete
+fixed-weight compressed/FID family.
+
+This is the rank/select analogue of RMQ's bounded global trace packet: for
+fixed `bits` and `target`, access/rank/select global traces are backed by one
+target-indexed read store, and every trace event has a finite trace-local width
+bounding payload-read addresses and word-primitive natural operands/results.
+-/
+theorem compressedFIDFixedWeightTargetGlobalPayloadStore_bounded_execution_story
+    (bits : List Bool) (target : Bool) :
+    (forall i,
+      (compressedFIDFixedWeightGlobalAccessTraceResult bits i).toCosted =
+          compressedFIDFixedWeightAccessInterpretedCosted bits i /\
+        (compressedFIDFixedWeightGlobalAccessTraceResult bits i).toCosted =
+          RMQ.RankSelectSpec.subLogAccessCosted bits i /\
+        (forall event,
+          event ∈
+              (compressedFIDFixedWeightGlobalAccessTraceResult bits i).trace ->
+            event.isReadWord \/ event.isWordPrimitive) /\
+        (forall event,
+          event ∈
+              (compressedFIDFixedWeightGlobalAccessTraceResult bits i).trace ->
+            event.matchesReadStore
+              (compressedFIDFixedWeightTargetGlobalTraceReadStore
+                bits target)) /\
+        (forall event,
+          event ∈
+              (compressedFIDFixedWeightGlobalAccessTraceResult bits i).trace ->
+            compressedFIDFixedWeightTraceEventReadAddressFitsInBits
+              (compressedFIDFixedWeightGlobalAccessTraceEventBits
+                bits i) event) /\
+        (forall event,
+          event ∈
+              (compressedFIDFixedWeightGlobalAccessTraceResult bits i).trace ->
+            compressedFIDFixedWeightTraceEventPrimitiveOperandsFitInBits
+              (compressedFIDFixedWeightGlobalAccessTraceEventBits
+                bits i) event)) /\
+      (forall pos,
+        (compressedFIDFixedWeightGlobalRankTraceResult
+          bits target pos).toCosted =
+            compressedFIDFixedWeightRankInterpretedCosted
+              bits target pos /\
+          (compressedFIDFixedWeightGlobalRankTraceResult
+            bits target pos).toCosted =
+            RMQ.RankSelectSpec.subLogRankCosted bits target pos /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalRankTraceResult
+                  bits target pos).trace ->
+              event.isReadWord \/ event.isWordPrimitive) /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalRankTraceResult
+                  bits target pos).trace ->
+              event.matchesReadStore
+                (compressedFIDFixedWeightTargetGlobalTraceReadStore
+                  bits target)) /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalRankTraceResult
+                  bits target pos).trace ->
+              compressedFIDFixedWeightTraceEventReadAddressFitsInBits
+                (compressedFIDFixedWeightGlobalRankTraceEventBits
+                  bits target pos) event) /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalRankTraceResult
+                  bits target pos).trace ->
+              compressedFIDFixedWeightTraceEventPrimitiveOperandsFitInBits
+                (compressedFIDFixedWeightGlobalRankTraceEventBits
+                  bits target pos) event)) /\
+      forall occurrence,
+        (compressedFIDFixedWeightGlobalSelectTraceResult
+          bits target occurrence).toCosted =
+            compressedFIDFixedWeightSelectInterpretedCosted
+              bits target occurrence /\
+          (compressedFIDFixedWeightGlobalSelectTraceResult
+            bits target occurrence).toCosted =
+            RMQ.RankSelectSpec.subLogSelectFromPackedClarkRouteCosted
+              bits target occurrence /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalSelectTraceResult
+                  bits target occurrence).trace ->
+              event.isReadWord \/ event.isWordPrimitive) /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalSelectTraceResult
+                  bits target occurrence).trace ->
+              event.matchesReadStore
+                (compressedFIDFixedWeightTargetGlobalTraceReadStore
+                  bits target)) /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalSelectTraceResult
+                  bits target occurrence).trace ->
+              compressedFIDFixedWeightTraceEventReadAddressFitsInBits
+                (compressedFIDFixedWeightGlobalSelectTraceEventBits
+                  bits target occurrence) event) /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalSelectTraceResult
+                  bits target occurrence).trace ->
+              compressedFIDFixedWeightTraceEventPrimitiveOperandsFitInBits
+                (compressedFIDFixedWeightGlobalSelectTraceEventBits
+                  bits target occurrence) event) := by
+  exact
+    RMQ.RankSelectSpec.subLogCompressedFIDTargetGlobalPayloadStore_bounded_execution_story
+      bits target
 
 /--
 Pointwise interpreted compressed/FID profile.

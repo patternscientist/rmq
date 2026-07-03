@@ -98,6 +98,7 @@ RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryWordTraceCosted_refines_w
 RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryWordTraceCosted_exact
 RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_profile
 RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile
+RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreBoundedExecutionStory
 RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted
 RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace
 RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace
@@ -208,8 +209,11 @@ reads. The large-regime companion adds the explicit `2^128 <= shape.size`
 premise and routes the compact close/LCA leg through structural
 local/fringe/interior trace replay. Remaining hardening is tighter
 component-level machine-word side conditions, structural replacement of
-fallback markers where possible, and reuse of the same style across
-rank/select, BP navigation, and future machine-model surfaces.
+fallback markers where possible, and target-independent true/false store
+packaging for rank/select. The rank/select compressed/FID spoke now reuses the
+same bounded-event style through
+`RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreBoundedExecutionStory`,
+but that theorem is still trace-local and target-indexed.
 
 ## Large-File Cleanup Note
 
