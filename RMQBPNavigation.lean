@@ -1,4 +1,5 @@
 import RMQ.Core.BPNavigationPublic
+import RMQ.Core.BPNavigationRAM
 
 /-!
 # Balanced-parentheses navigation spoke
@@ -25,5 +26,9 @@ profiles `RMQ.BPNavigation.ConcreteMatchingOpenEncloseDirectory.profile`,
 `RMQ.BPNavigation.concreteShapeAccessFastSubtreeIntervalProfile`, and
 `RMQ.BPNavigation.concreteShapeAccessEncloseOpenProfile`,
 `RMQ.BPNavigation.concreteShapeAccessParentProfile`, plus
-`RMQ.BPNavigation.compactCloseDirectoryProfile`.
+`RMQ.BPNavigation.compactCloseDirectoryProfile` and the concrete
+WordRAM execution stories
+`RMQ.BPNavigation.concreteBPCloseNavigationGlobalTrace_execution_story`
+and
+`RMQ.BPNavigation.concreteBPCloseNavigationGlobalTrace_bounded_execution_story`.
 -/

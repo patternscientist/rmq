@@ -1,5 +1,6 @@
 import RMQ.Core.EncodingLowerBound
 import RMQ.Core.BPNavigationPublic
+import RMQ.Core.BPNavigationRAM
 import RMQ.Core.RankSelectPublic
 import RMQ.Core.RankSelectPublicRAM
 import RMQ.Core.SuccinctSpace.BPCloseRMQNavigationRAM
@@ -241,6 +242,23 @@ answer semantics, and machine-word-bounded component payload reads.
 -/
 abbrev concreteBPCloseNavigationProfile :=
   RMQ.BPNavigation.concreteBPCloseNavigationFamily_profile
+
+/--
+Concrete BP close-navigation global payload-store execution story. This
+consumes `concreteBPCloseNavigationFamily_profile`'s concrete query surface and
+proves the costed query is the `toCosted` projection of a globally segmented
+`WordRAM.TraceResult` whose payload reads match one concrete store.
+-/
+abbrev concreteBPCloseNavigationGlobalPayloadStoreExecutionStory :=
+  RMQ.BPNavigation.concreteBPCloseNavigationGlobalTrace_execution_story
+
+/--
+Bounded concrete BP close-navigation global payload-store execution story. This
+adds a finite trace-local bit width bounding payload-read addresses and
+word-primitive operands/results for the same concrete global trace.
+-/
+abbrev concreteBPCloseNavigationGlobalPayloadStoreBoundedExecutionStory :=
+  RMQ.BPNavigation.concreteBPCloseNavigationGlobalTrace_bounded_execution_story
 
 /--
 Interpreter-backed BP close-navigation profile: `2*n + o(n)`, constant query,

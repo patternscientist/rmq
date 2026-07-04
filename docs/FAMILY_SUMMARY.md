@@ -52,6 +52,13 @@ constant-query story. The BP-navigation spoke now also has the concrete
 payload-backed profile `Headlines.concreteBPCloseNavigationProfile`, which
 fixes the relative-split false-select/rank-close layer and compact relative-rmM
 close/LCA directory instead of relying on the older sampled conditional family.
+Its execution companion
+`Headlines.concreteBPCloseNavigationGlobalPayloadStoreExecutionStory`, plus the
+bounded alias
+`Headlines.concreteBPCloseNavigationGlobalPayloadStoreBoundedExecutionStory`,
+proves the same concrete BP close-navigation query is backed by a globally
+segmented `WordRAM.TraceResult`, one concrete payload read store, backed
+successful component reads, and finite trace-local event widths.
 
 This document is the family-level map for the current Lean development. It
 records the module dependency DAG, correctness and cost status by structure,
@@ -2681,8 +2688,10 @@ The names below are grouped by source module. Repeated base names in
   `Headlines.succinctRMQGlobalPayloadStoreExecutionStory`,
   `Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory`,
   `Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory`,
-  `Headlines.concreteBPCloseNavigationProfile`, and the conditional legacy
-  component profile
+  `Headlines.concreteBPCloseNavigationProfile`,
+  `Headlines.concreteBPCloseNavigationGlobalPayloadStoreExecutionStory`,
+  `Headlines.concreteBPCloseNavigationGlobalPayloadStoreBoundedExecutionStory`,
+  and the conditional legacy component profile
   `Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery`.
 - `RMQ/Core/SuccinctReduction.lean` (7):
   `Succinct.rmqBackendOfEulerParensBackend_queryBuilt`,

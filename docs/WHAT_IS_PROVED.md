@@ -36,6 +36,8 @@ The short public theorem aliases live in `RMQ/Headlines.lean`.
 | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory` | Large-regime companion to the all-size execution story: under `2^128 <= shape.size`, the compact close/LCA leg uses the positive-block structural replay rather than the all-size fallback. |
 | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory` | Bounded large-regime companion to the global-store execution story. |
 | `RMQ.Headlines.concreteBPCloseNavigationProfile` | Concrete payload-backed BP close-navigation profile: the current relative-split false-select/rank-close layer plus compact relative-rmM close/LCA layer give `2*n + o(n)` payload, constant modeled query cost, exact Cartesian-shape RMQ answer semantics, and machine-word-bounded component payload reads. |
+| `RMQ.Headlines.concreteBPCloseNavigationGlobalPayloadStoreExecutionStory` | Concrete BP close-navigation trace/store execution story: the same concrete query is the `toCosted` projection of a globally segmented `WordRAM.TraceResult`, its reads match one concrete payload store, and successful reads are backed by the counted component stores. |
+| `RMQ.Headlines.concreteBPCloseNavigationGlobalPayloadStoreBoundedExecutionStory` | Bounded concrete BP close-navigation execution story: the same trace/store packet also carries a finite trace-local bit width for payload-read addresses and word-primitive operands/results. |
 | `RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery` | Conditional component-level interpreter-backed BP close-navigation profile, parameterized by a supplied word-bounded sampled encoded close-navigation family. |
 
 The original theorem names remain construction-heavy so that their dependencies
@@ -140,12 +142,17 @@ are the concrete theorem anchors. `TraceResult.ofCosted` now emits a dedicated
 `wordRank`/`wordSelect` primitives, and the no-synthetic final theorem proves
 that constructor is absent from the all-size global query trace.
 The preferred component-level BP close-navigation citation is now
-`RMQ.Headlines.concreteBPCloseNavigationProfile`, which fixes the concrete
-relative-split close-access layer and compact close/LCA directory. The older
+`RMQ.Headlines.concreteBPCloseNavigationProfile`, with the stronger execution
+surface
+`RMQ.Headlines.concreteBPCloseNavigationGlobalPayloadStoreExecutionStory` when a
+trace/store claim is needed. These fix the concrete relative-split close-access
+layer and compact close/LCA directory. The older
 `RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery` remains
 available as a legacy sampled-interface profile, but it is conditional: the
 theorem consumes a supplied word-bounded sampled encoded close-navigation
 family rather than constructing that family in the public BP-navigation spoke.
+This is still the RMQ-facing BP close-navigation operation, not a full balanced
+parentheses tree-navigation library.
 
 ## Standalone Rank/Select
 
