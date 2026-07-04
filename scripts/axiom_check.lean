@@ -240,6 +240,7 @@ checked compatibility surfaces live in `scripts/archive_axiom_check.lean`.
 #print axioms RMQ.BPNavigation.parentOfInorderFastCosted_erase
 #print axioms RMQ.BPNavigation.parentOfInorderFastCosted_cost_le
 #print axioms RMQ.BPNavigation.singletonLcaCloseSemantics_not_matchingOpen_counterexample
+#print axioms RMQ.BPNavigation.concreteSuccinctTreeNavigationGlobalPayloadStoreBoundedExecutionStory_currentCloseStore_obstruction
 #print axioms RMQ.BPNavigation.shapeAccessCloseRankProfile
 #print axioms RMQ.BPNavigation.shapeAccessCloseRankExcessProfile
 #print axioms RMQ.BPNavigation.shapeAccessSubtreeIntervalProfile

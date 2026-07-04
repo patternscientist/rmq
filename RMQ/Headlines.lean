@@ -271,6 +271,15 @@ abbrev concreteBPCloseNavigationGlobalPayloadStoreBoundedExecutionStory :=
   RMQ.BPNavigation.concreteBPCloseNavigationGlobalTrace_bounded_execution_story
 
 /--
+Checked obstruction for the current close/LCA-store adapter route toward a
+fuller succinct BP tree-navigation execution story. The existing concrete
+close/LCA WordRAM trace cannot be reused as the matching-open leg required by
+public parent/enclose/subtree navigation.
+-/
+abbrev concreteSuccinctBPTreeNavigationGlobalPayloadStoreBoundedExecutionStory_currentCloseStoreObstruction :=
+  RMQ.BPNavigation.concreteSuccinctTreeNavigationGlobalPayloadStoreBoundedExecutionStory_currentCloseStore_obstruction
+
+/--
 Interpreter-backed BP close-navigation profile: `2*n + o(n)`, constant query,
 with rank/select/LCA leaves routed through the first-order `WordRAM` bridges.
 

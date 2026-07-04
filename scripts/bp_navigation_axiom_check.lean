@@ -52,3 +52,4 @@ generic payload-live macro/micro family profile.
 #print axioms RMQ.BPNavigation.concreteBPCloseNavigationFamily_profile
 #print axioms RMQ.BPNavigation.concreteBPCloseNavigationGlobalTrace_execution_story
 #print axioms RMQ.BPNavigation.concreteBPCloseNavigationGlobalTrace_bounded_execution_story
+#print axioms RMQ.BPNavigation.concreteSuccinctTreeNavigationGlobalPayloadStoreBoundedExecutionStory_currentCloseStore_obstruction

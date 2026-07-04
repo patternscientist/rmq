@@ -2362,6 +2362,81 @@ theorem concreteBPCloseNavigationGlobalTrace_bounded_execution_story
         (concreteBPCloseNavigationGlobalTraceResult_event_bounds
           shape left right event hmem).2)⟩
 
+/--
+The tempting current-store adapter route for a succinct tree-navigation
+capstone: try to obtain the matching-open leg by asking the concrete
+close/LCA WordRAM trace for the singleton close/close query.
+
+This is a necessary condition for reusing the existing concrete close/LCA
+payload store as the whole matching-open component of public parent/enclose
+tree navigation.
+-/
+def ConcreteSuccinctTreeNavigationFromCloseLCATraceTarget : Prop :=
+  forall (shape : Cartesian.CartesianShape) (idx close : Nat),
+    SuccinctSpace.bpCloseOfInorder? shape idx = some close ->
+      (SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
+        shape close close).toCosted.erase =
+        matchingOpenOfClose? shape close
+
+/--
+Formal obstruction for the current close/LCA-store adapter route toward a
+succinct BP tree-navigation capstone.
+
+On the one-node Cartesian shape, the all-size structural close/LCA trace for a
+singleton close/close query returns the closing position. Public matching-open
+semantics return the opening position. Therefore the existing payload-backed
+close/LCA WordRAM trace cannot be relabeled into the matching-open leg needed
+by `encloseOpenOfInorderFastCosted`, `parentOfInorderFastCosted`, or the fast
+subtree-interval operation.
+
+This does not rule out a real succinct tree-navigation directory. It only rules
+out this adapter path, so the next positive target is a dedicated succinct
+matching-open/enclose/matching-close directory.
+-/
+theorem concreteSuccinctTreeNavigationGlobalPayloadStoreBoundedExecutionStory_currentCloseStore_obstruction :
+    ¬ ConcreteSuccinctTreeNavigationFromCloseLCATraceTarget := by
+  intro htarget
+  let shape :=
+    Cartesian.CartesianShape.node Cartesian.CartesianShape.empty
+      Cartesian.CartesianShape.empty
+  have hclose :
+      SuccinctSpace.bpCloseOfInorder? shape 0 = some 1 := by
+    simp [shape, SuccinctSpace.bpCloseOfInorder?,
+      Cartesian.CartesianShape.size, Cartesian.CartesianShape.bpCode]
+  have hanswer :
+      SuccinctSpace.bpCloseOfInorder?
+          shape (scanWindow shape.representative 0 1) =
+        some 1 := by
+    simp [shape, SuccinctSpace.bpCloseOfInorder?, scanWindow,
+      Cartesian.CartesianShape.size, Cartesian.CartesianShape.bpCode]
+  have hlcaCosted :
+      (SuccinctFinal.concreteBPNativeLCACloseCosted
+          concreteBPCloseNavigationAccessFamily shape 1 1).erase =
+        some 1 := by
+    exact
+      SuccinctFinal.concreteBPNativeLCACloseCosted_exact
+        concreteBPCloseNavigationAccessFamily
+        (shape := shape) (left := 0) (len := 1)
+        (leftClose := 1) (rightClose := 1) (answerClose := 1)
+        (by omega)
+        (by
+          simp [shape, Cartesian.CartesianShape.size])
+        hclose hclose hanswer
+  have hlcaTrace :
+      (SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
+          shape 1 1).toCosted.erase =
+        some 1 := by
+    rw [concreteBPCloseNavigationLCACloseGlobalTraceResult_refines]
+    exact hlcaCosted
+  have hclaimed := htarget shape 0 1 hclose
+  rw [hlcaTrace] at hclaimed
+  have hnotMatchingOpen :
+      ¬ matchingOpenOfClose? shape 1 = some 1 := by
+    simp [shape, matchingOpenOfClose?, matchingOpenSearchRef,
+      bpPrefixExcess, Cartesian.CartesianShape.bpCode,
+      Succinct.rankPrefix]
+  exact hnotMatchingOpen hclaimed.symm
+
 end BPNavigation
 
 end RMQ

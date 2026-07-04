@@ -223,6 +223,9 @@ RMQ.BPNavigation.concreteBPCloseNavigationGlobalTrace_execution_story
 RMQ.BPNavigation.concreteBPCloseNavigationGlobalTrace_bounded_execution_story
 RMQ.Headlines.concreteBPCloseNavigationGlobalPayloadStoreExecutionStory
 RMQ.Headlines.concreteBPCloseNavigationGlobalPayloadStoreBoundedExecutionStory
+RMQ.BPNavigation.ConcreteSuccinctTreeNavigationFromCloseLCATraceTarget
+RMQ.BPNavigation.concreteSuccinctTreeNavigationGlobalPayloadStoreBoundedExecutionStory_currentCloseStore_obstruction
+RMQ.Headlines.concreteSuccinctBPTreeNavigationGlobalPayloadStoreBoundedExecutionStory_currentCloseStoreObstruction
 ```
 
 These theorems consume the same concrete close-navigation query surface as the
@@ -238,6 +241,21 @@ It is not the old sampled conditional interface. The mismatch is recorded by
 container hard-wires the LCA leg as a one-read slot, while the concrete seeded
 compact close/LCA leg has a larger fixed modeled budget.
 
+The checked current-store obstruction is exposed as:
+
+```lean
+RMQ.BPNavigation.ConcreteSuccinctTreeNavigationFromCloseLCATraceTarget
+RMQ.BPNavigation.concreteSuccinctTreeNavigationGlobalPayloadStoreBoundedExecutionStory_currentCloseStore_obstruction
+RMQ.Headlines.concreteSuccinctBPTreeNavigationGlobalPayloadStoreBoundedExecutionStory_currentCloseStoreObstruction
+```
+
+It proves that the concrete close/LCA WordRAM trace cannot simply be reused as
+the matching-open leg for fuller BP tree navigation: on the one-node shape,
+singleton close/LCA returns the closing parenthesis, while matching-open
+semantics return the opening parenthesis. This is only an adapter obstruction.
+The positive next target is a dedicated succinct
+matching-open/enclose/matching-close directory with its own payload-store trace.
+
 ## Remaining Frontier
 
 The BP navigation spoke is landed as the compact close/LCA layer consumed by
@@ -248,9 +266,9 @@ directory, a constant-query parent-open/enclose profile consuming that
 directory, a constant-query parent-index profile consuming matching-close plus
 close-rank, a concrete payload-backed BP close-navigation profile for the RMQ
 close/LCA specialization, a trace/store execution story for that concrete
-close-navigation query, and a counterexample showing the current concrete
-close/LCA query is not itself the matching-open boundary. The useful next
-deepening steps are:
+close-navigation query, and a checked obstruction showing the current concrete
+close/LCA trace cannot be relabeled into the matching-open store needed by
+public tree navigation. The useful next deepening steps are:
 
 1. replace the dense matching-open/enclose/matching-close table with a
    payload-live succinct directory backed by compact range-min/max or

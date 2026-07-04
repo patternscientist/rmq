@@ -62,7 +62,11 @@ bounded alias
 `Headlines.concreteBPCloseNavigationGlobalPayloadStoreBoundedExecutionStory`,
 proves the same concrete BP close-navigation query is backed by a globally
 segmented `WordRAM.TraceResult`, one concrete payload read store, backed
-successful component reads, and finite trace-local event widths.
+successful component reads, and finite trace-local event widths. The checked
+obstruction
+`Headlines.concreteSuccinctBPTreeNavigationGlobalPayloadStoreBoundedExecutionStory_currentCloseStoreObstruction`
+records that this current close/LCA trace cannot simply be relabeled into the
+matching-open leg needed by fuller BP tree navigation.
 
 This document is the family-level map for the current Lean development. It
 records the module dependency DAG, correctness and cost status by structure,
@@ -2402,7 +2406,9 @@ The names below are grouped by source module. Repeated base names in
   close-navigation replacement surface is exposed as
   `BPNavigation.concreteBPCloseNavigationFamily_profile`, with mismatch lemmas
   `BPNavigation.sampledCloseNavigationInterface_lcaSlot_unitCost` and
-  `BPNavigation.concreteCompactCloseNavigationSeededLCABudget_not_unit`.
+  `BPNavigation.concreteCompactCloseNavigationSeededLCABudget_not_unit`, plus
+  the current-adapter obstruction
+  `BPNavigation.concreteSuccinctTreeNavigationGlobalPayloadStoreBoundedExecutionStory_currentCloseStore_obstruction`.
 - `RMQ/Core/Amortized.lean`, `RMQ/Core/UnionFind.lean`,
   `RMQ/Core/UnionFind/Forest.lean`, and `RMQUnionFind.lean`: reusable
   potential-method accounting plus the first non-succinct spoke surface
@@ -2701,6 +2707,7 @@ The names below are grouped by source module. Repeated base names in
   `Headlines.concreteBPCloseNavigationProfile`,
   `Headlines.concreteBPCloseNavigationGlobalPayloadStoreExecutionStory`,
   `Headlines.concreteBPCloseNavigationGlobalPayloadStoreBoundedExecutionStory`,
+  `Headlines.concreteSuccinctBPTreeNavigationGlobalPayloadStoreBoundedExecutionStory_currentCloseStoreObstruction`,
   and the conditional legacy component profile
   `Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery`.
 - `RMQ/Core/SuccinctReduction.lean` (7):

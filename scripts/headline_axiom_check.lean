@@ -53,4 +53,5 @@ the BP-native succinct capstone.
 #print axioms RMQ.Headlines.concreteBPCloseNavigationProfile
 #print axioms RMQ.Headlines.concreteBPCloseNavigationGlobalPayloadStoreExecutionStory
 #print axioms RMQ.Headlines.concreteBPCloseNavigationGlobalPayloadStoreBoundedExecutionStory
+#print axioms RMQ.Headlines.concreteSuccinctBPTreeNavigationGlobalPayloadStoreBoundedExecutionStory_currentCloseStoreObstruction
 #print axioms RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery

@@ -31,4 +31,8 @@ WordRAM execution stories
 `RMQ.BPNavigation.concreteBPCloseNavigationGlobalTrace_execution_story`
 and
 `RMQ.BPNavigation.concreteBPCloseNavigationGlobalTrace_bounded_execution_story`.
+The checked obstruction
+`RMQ.BPNavigation.concreteSuccinctTreeNavigationGlobalPayloadStoreBoundedExecutionStory_currentCloseStore_obstruction`
+records why the current concrete close/LCA store cannot be reused as the
+matching-open leg for a fuller succinct tree-navigation execution story.
 -/
