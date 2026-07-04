@@ -609,6 +609,46 @@ def subLogCompressedFIDGlobalTraceReadStore
     | 159 => none
     | _ => none
 
+inductive SubLogCompressedFIDGlobalPayloadComponent where
+  | access
+  | rank (target : Bool)
+  | select (target : Bool)
+
+namespace SubLogCompressedFIDGlobalPayloadComponent
+
+def readStore
+    (bits : List Bool) :
+    SubLogCompressedFIDGlobalPayloadComponent -> WordRAM.ReadStore
+  | access => subLogAccessTraceReadStore bits
+  | rank target => subLogRankTraceReadStore bits target
+  | select target => subLogSelectFromPackedClarkRouteTraceReadStore bits target
+
+def segmentMap :
+    SubLogCompressedFIDGlobalPayloadComponent -> Nat -> Nat
+  | access => subLogCompressedFIDGlobalAccessSegmentMap
+  | rank target => subLogCompressedFIDAllTargetsGlobalRankSegmentMap target
+  | select target => subLogCompressedFIDAllTargetsGlobalSelectSegmentMap target
+
+end SubLogCompressedFIDGlobalPayloadComponent
+
+/--
+Successful read events in the all-target global trace are backed by a concrete
+component store and local segment.  Non-read events and failed reads are inert
+for this predicate; it deliberately does not claim that padding is read.
+-/
+def subLogCompressedFIDGlobalTraceEventSuccessfulReadBacked
+    (bits : List Bool) : WordRAM.TraceEvent -> Prop
+  | WordRAM.TraceEvent.readWord segment index (some word) =>
+      exists component localSegment,
+        SubLogCompressedFIDGlobalPayloadComponent.segmentMap component
+            localSegment = segment /\
+          (SubLogCompressedFIDGlobalPayloadComponent.readStore bits
+            component).readWord? localSegment index = some word
+  | WordRAM.TraceEvent.readWord _ _ none => True
+  | WordRAM.TraceEvent.wordRank _ _ _ => True
+  | WordRAM.TraceEvent.wordSelect _ _ _ => True
+  | WordRAM.TraceEvent.syntheticCostOnlyPrimitive => True
+
 private theorem subLogCompressedFIDGlobalTraceReadStore_access_read
     (bits : List Bool) :
     forall segment index,
@@ -724,6 +764,116 @@ def subLogCompressedFIDAllTargetsGlobalSelectTraceResult
   WordRAM.TraceResult.relabelReadSegmentsWith
     (subLogCompressedFIDAllTargetsGlobalSelectSegmentMap target)
     (subLogSelectFromPackedClarkRouteTraceResult bits target occurrence)
+
+theorem subLogCompressedFIDGlobalAccessTraceResult_successful_reads_backed
+    (bits : List Bool) (i : Nat) :
+    forall event,
+      event ∈
+          (subLogCompressedFIDAllTargetsGlobalAccessTraceResult
+            bits i).trace ->
+        subLogCompressedFIDGlobalTraceEventSuccessfulReadBacked bits event := by
+  unfold subLogCompressedFIDAllTargetsGlobalAccessTraceResult
+    subLogCompressedFIDGlobalAccessTraceResult
+  intro event hmem
+  rcases List.mem_map.mp hmem with ⟨localEvent, hlocal, rfl⟩
+  cases localEvent with
+  | readWord localSegment index word? =>
+      cases word? with
+      | none =>
+          simp [subLogCompressedFIDGlobalTraceEventSuccessfulReadBacked,
+            WordRAM.TraceEvent.relabelReadSegmentWith]
+      | some word =>
+          refine
+            ⟨SubLogCompressedFIDGlobalPayloadComponent.access,
+              localSegment, rfl, ?_⟩
+          have hmatch :=
+            subLogAccessTraceResult_matchesReadStore bits i
+              (WordRAM.TraceEvent.readWord
+                localSegment index (some word)) hlocal
+          simpa [SubLogCompressedFIDGlobalPayloadComponent.readStore,
+            WordRAM.TraceEvent.matchesReadStore] using hmatch
+  | wordRank target limit result =>
+      simp [subLogCompressedFIDGlobalTraceEventSuccessfulReadBacked,
+        WordRAM.TraceEvent.relabelReadSegmentWith]
+  | wordSelect target occurrence result =>
+      simp [subLogCompressedFIDGlobalTraceEventSuccessfulReadBacked,
+        WordRAM.TraceEvent.relabelReadSegmentWith]
+  | syntheticCostOnlyPrimitive =>
+      simp [subLogCompressedFIDGlobalTraceEventSuccessfulReadBacked,
+        WordRAM.TraceEvent.relabelReadSegmentWith]
+
+theorem subLogCompressedFIDGlobalRankTraceResult_successful_reads_backed
+    (bits : List Bool) (target : Bool) (pos : Nat) :
+    forall event,
+      event ∈
+          (subLogCompressedFIDAllTargetsGlobalRankTraceResult
+            bits target pos).trace ->
+        subLogCompressedFIDGlobalTraceEventSuccessfulReadBacked bits event := by
+  unfold subLogCompressedFIDAllTargetsGlobalRankTraceResult
+  intro event hmem
+  rcases List.mem_map.mp hmem with ⟨localEvent, hlocal, rfl⟩
+  cases localEvent with
+  | readWord localSegment index word? =>
+      cases word? with
+      | none =>
+          simp [subLogCompressedFIDGlobalTraceEventSuccessfulReadBacked,
+            WordRAM.TraceEvent.relabelReadSegmentWith]
+      | some word =>
+          refine
+            ⟨SubLogCompressedFIDGlobalPayloadComponent.rank target,
+              localSegment, rfl, ?_⟩
+          have hmatch :=
+            subLogRankTraceResult_matchesReadStore bits target pos
+              (WordRAM.TraceEvent.readWord
+                localSegment index (some word)) hlocal
+          simpa [SubLogCompressedFIDGlobalPayloadComponent.readStore,
+            WordRAM.TraceEvent.matchesReadStore] using hmatch
+  | wordRank rankTarget limit result =>
+      simp [subLogCompressedFIDGlobalTraceEventSuccessfulReadBacked,
+        WordRAM.TraceEvent.relabelReadSegmentWith]
+  | wordSelect selectTarget occurrence result =>
+      simp [subLogCompressedFIDGlobalTraceEventSuccessfulReadBacked,
+        WordRAM.TraceEvent.relabelReadSegmentWith]
+  | syntheticCostOnlyPrimitive =>
+      simp [subLogCompressedFIDGlobalTraceEventSuccessfulReadBacked,
+        WordRAM.TraceEvent.relabelReadSegmentWith]
+
+theorem subLogCompressedFIDGlobalSelectTraceResult_successful_reads_backed
+    (bits : List Bool) (target : Bool) (occurrence : Nat) :
+    forall event,
+      event ∈
+          (subLogCompressedFIDAllTargetsGlobalSelectTraceResult
+            bits target occurrence).trace ->
+        subLogCompressedFIDGlobalTraceEventSuccessfulReadBacked bits event := by
+  unfold subLogCompressedFIDAllTargetsGlobalSelectTraceResult
+  intro event hmem
+  rcases List.mem_map.mp hmem with ⟨localEvent, hlocal, rfl⟩
+  cases localEvent with
+  | readWord localSegment index word? =>
+      cases word? with
+      | none =>
+          simp [subLogCompressedFIDGlobalTraceEventSuccessfulReadBacked,
+            WordRAM.TraceEvent.relabelReadSegmentWith]
+      | some word =>
+          refine
+            ⟨SubLogCompressedFIDGlobalPayloadComponent.select target,
+              localSegment, rfl, ?_⟩
+          have hmatch :=
+            subLogSelectFromPackedClarkRouteTraceResult_matchesReadStore
+              bits target occurrence
+              (WordRAM.TraceEvent.readWord
+                localSegment index (some word)) hlocal
+          simpa [SubLogCompressedFIDGlobalPayloadComponent.readStore,
+            WordRAM.TraceEvent.matchesReadStore] using hmatch
+  | wordRank rankTarget limit result =>
+      simp [subLogCompressedFIDGlobalTraceEventSuccessfulReadBacked,
+        WordRAM.TraceEvent.relabelReadSegmentWith]
+  | wordSelect selectTarget occurrence result =>
+      simp [subLogCompressedFIDGlobalTraceEventSuccessfulReadBacked,
+        WordRAM.TraceEvent.relabelReadSegmentWith]
+  | syntheticCostOnlyPrimitive =>
+      simp [subLogCompressedFIDGlobalTraceEventSuccessfulReadBacked,
+        WordRAM.TraceEvent.relabelReadSegmentWith]
 
 theorem subLogCompressedFIDGlobalPayloadStore_execution_story
     (bits : List Bool) :
@@ -843,6 +993,84 @@ theorem subLogCompressedFIDGlobalPayloadStore_execution_story
           (subLogCompressedFIDGlobalTraceReadStore_select_read bits target)
           (subLogSelectFromPackedClarkRouteTraceResult_matchesReadStore
             bits target occurrence)
+
+theorem subLogCompressedFIDGlobalPayloadStore_noSynthetic_execution_story
+    (bits : List Bool) :
+    (forall i,
+      (forall event,
+        event ∈
+            (subLogCompressedFIDAllTargetsGlobalAccessTraceResult
+              bits i).trace ->
+          ¬ event.isSyntheticCostOnlyPrimitive) /\
+        (forall event,
+          event ∈
+              (subLogCompressedFIDAllTargetsGlobalAccessTraceResult
+                bits i).trace ->
+            subLogCompressedFIDGlobalTraceEventSuccessfulReadBacked
+              bits event)) /\
+      (forall target pos,
+        (forall event,
+          event ∈
+              (subLogCompressedFIDAllTargetsGlobalRankTraceResult
+                bits target pos).trace ->
+            ¬ event.isSyntheticCostOnlyPrimitive) /\
+          (forall event,
+            event ∈
+                (subLogCompressedFIDAllTargetsGlobalRankTraceResult
+                  bits target pos).trace ->
+              subLogCompressedFIDGlobalTraceEventSuccessfulReadBacked
+                bits event)) /\
+      forall target occurrence,
+        (forall event,
+          event ∈
+              (subLogCompressedFIDAllTargetsGlobalSelectTraceResult
+                bits target occurrence).trace ->
+            ¬ event.isSyntheticCostOnlyPrimitive) /\
+          (forall event,
+            event ∈
+                (subLogCompressedFIDAllTargetsGlobalSelectTraceResult
+                  bits target occurrence).trace ->
+              subLogCompressedFIDGlobalTraceEventSuccessfulReadBacked
+                bits event) := by
+  constructor
+  · intro i
+    constructor
+    · unfold subLogCompressedFIDAllTargetsGlobalAccessTraceResult
+        subLogCompressedFIDGlobalAccessTraceResult
+      exact
+        WordRAM.TraceResult.relabelReadSegmentsWith_no_syntheticCostOnlyPrimitive
+          subLogCompressedFIDGlobalAccessSegmentMap
+          (subLogAccessTraceResult bits i)
+          (subLogAccessTraceResult_no_syntheticCostOnlyPrimitive bits i)
+    · exact
+        subLogCompressedFIDGlobalAccessTraceResult_successful_reads_backed
+          bits i
+  constructor
+  · intro target pos
+    constructor
+    · unfold subLogCompressedFIDAllTargetsGlobalRankTraceResult
+      exact
+        WordRAM.TraceResult.relabelReadSegmentsWith_no_syntheticCostOnlyPrimitive
+          (subLogCompressedFIDAllTargetsGlobalRankSegmentMap target)
+          (subLogRankTraceResult bits target pos)
+          (subLogRankTraceResult_no_syntheticCostOnlyPrimitive
+            bits target pos)
+    · exact
+        subLogCompressedFIDGlobalRankTraceResult_successful_reads_backed
+          bits target pos
+  · intro target occurrence
+    constructor
+    · unfold subLogCompressedFIDAllTargetsGlobalSelectTraceResult
+      exact
+        WordRAM.TraceResult.relabelReadSegmentsWith_no_syntheticCostOnlyPrimitive
+          (subLogCompressedFIDAllTargetsGlobalSelectSegmentMap target)
+          (subLogSelectFromPackedClarkRouteTraceResult
+            bits target occurrence)
+          (subLogSelectFromPackedClarkRouteTraceResult_no_syntheticCostOnlyPrimitive
+            bits target occurrence)
+    · exact
+        subLogCompressedFIDGlobalSelectTraceResult_successful_reads_backed
+          bits target occurrence
 
 
 end RankSelectSpec

@@ -441,6 +441,26 @@ new counted copy. A skeptical grad student should next ask whether the
 trace-local width can be pushed down to component-level machine-word
 side-conditions and then reused by rank/select and BP navigation.
 
+2026-07-03 rank/select no-synthetic global-store update: the standalone
+compressed/FID rank/select spoke now has
+`RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreNoSyntheticFusedProfile`,
+backed by
+`RankSelect.compressedFIDFixedWeightGlobalPayloadStoreNoSyntheticFusedProfile`.
+The theorem keeps the compressed `n + o(n)` family profile, interpreted replay,
+one target-independent global payload store, read-store agreement, and
+trace-local bounds, and adds that successful trace reads are certified against
+the concrete access, rank-target, or select-target component store they came
+from. It also proves no synthetic cost-only trace events occur on the
+compressed/FID access/rank/select traces. Plain English: the rank/select spoke
+now meets the same execution-story hygiene bar as the RMQ capstone: the trace
+reads real relabeled payload components and does not hide work in cost-only
+markers. Live assumptions: the width theorem is still trace-local, the backing
+certificate is at the trace-event/component-store boundary rather than a new
+flat byte-offset layout, and word-rank/word-select remain explicit primitive
+events. A skeptical grad student should next ask whether this component-backed
+global store can be flattened into one counted offset manifest and whether the
+trace-local bounds can be replaced by uniform machine-word side conditions.
+
 ## Digestion Tasks
 
 1. Turn the RMQ capstone into a two-page lecture-style proof map:

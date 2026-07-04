@@ -16,6 +16,7 @@ The short public theorem aliases live in `RMQ/Headlines.lean`.
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightFamilyProfile` | Fixed-weight compressed/FID rank/select family: fixed-weight primary payload plus `o(n)` auxiliary payload, exact access/rank/select, and one constant modeled query bound. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile` | Interpreter-backed replay of that compressed/FID rank/select family: same payload/profile shape, with access/rank/select reads routed through first-order `WordRAM` bridges. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreFusedProfile` | Fused fixed-weight compressed/FID rank/select capstone: compressed payload plus `o(n)`, exact constant-query access/rank/select, interpreted replay, one target-independent global payload store, and bounded trace-local event widths. |
+| `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreNoSyntheticFusedProfile` | Strengthened fused compressed/FID capstone: the same global-store story also proves successful read events have component-store backing and the traces contain no synthetic cost-only events. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreExecutionStory` | Target-independent global-store execution story for compressed/FID rank/select: for fixed `bits`, shared access plus rank false/true and select false/true traces all read from one concrete payload store. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory` | Bounded target-independent global-store execution story for compressed/FID rank/select: the combined traces also have finite trace-local widths bounding every payload-read address and word-primitive natural operand/result. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreExecutionStory` | Lower-level target-indexed global-store execution packet for one fixed rank/select target. |
@@ -218,6 +219,13 @@ headline alias
 It conjoins the family payload/cost/exactness theorem, the interpreted replay
 theorem, the target-independent global payload-store theorem, and the bounded
 trace-local event-width theorem in one public surface.
+The stronger public citation
+`RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStoreNoSyntheticFusedProfile`,
+with headline alias
+`RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreNoSyntheticFusedProfile`,
+adds that every successful trace read is backed by the concrete access,
+rank-target, or select-target component store it was relabeled from, and that
+no synthetic cost-only events occur in the access/rank/select traces.
 
 The compressed/FID target surface is also formalized:
 `RMQ.RankSelect.fixedWeightBitstringsLength` counts fixed-weight bitvector

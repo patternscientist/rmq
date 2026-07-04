@@ -212,6 +212,11 @@ natural operand/result exposed by word-local rank/select primitives fits that
 width. The lower-level target-indexed theorem remains available for component
 audits; the public endpoint is now the fused theorem. The width is still
 trace-local rather than a uniform asymptotic machine-word theorem.
+The stronger headline alias
+`rankSelectCompressedFIDFixedWeightGlobalPayloadStoreNoSyntheticFusedProfile`
+keeps that public surface and additionally checks that successful trace reads
+are backed by the relabeled component stores and that no synthetic cost-only
+events occur in the compressed/FID access/rank/select traces.
 
 ## Theorem Statement
 
@@ -294,6 +299,8 @@ Current excerpt for the public headline path:
 'RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile' depends on axioms:
   [propext, Classical.choice, Quot.sound]
 'RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreFusedProfile' depends on axioms:
+  [propext, Classical.choice, Quot.sound]
+'RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreNoSyntheticFusedProfile' depends on axioms:
   [propext, Classical.choice, Quot.sound]
 'RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory' depends on axioms:
   [propext, Classical.choice, Quot.sound]

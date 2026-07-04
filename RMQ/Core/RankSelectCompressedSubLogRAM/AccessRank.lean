@@ -181,6 +181,28 @@ theorem boundedWordReadTraceResultAtSegment_matchesReadStore
           WordRAM.Program.eval_reads_subset_readStore
             (store.store.readProgram i) store.wordRAMStore event hmem)
 
+theorem boundedWordReadTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+    {payload : List Bool} {wordSize : Nat}
+    (segment deadSegment : Nat)
+    (store : SuccinctSpace.BoundedPayloadWordStore payload wordSize)
+    (i : Nat) :
+    forall event,
+      event ∈
+          (boundedWordReadTraceResultAtSegment
+            segment deadSegment store i).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  unfold boundedWordReadTraceResultAtSegment
+  exact
+    WordRAM.TraceResult.relabelReadSegmentsWith_no_syntheticCostOnlyPrimitive
+      (WordRAM.singletonSegmentMap segment deadSegment)
+      (WordRAM.TraceResult.ofResult
+        ((store.store.readProgram i).eval store.wordRAMStore))
+      (by
+        intro event hmem
+        simpa [WordRAM.TraceResult.ofResult_trace] using
+          WordRAM.Program.eval_no_syntheticCostOnlyPrimitive
+            (store.store.readProgram i) store.wordRAMStore event hmem)
+
 def subLogAccessCodeSegment : Nat := 0
 def subLogAccessLengthSegment : Nat := 1
 def subLogAccessClassSegment : Nat := 2
@@ -352,6 +374,36 @@ theorem subLogAccessTraceResult_matchesReadStore
         · exact WordRAM.TraceResult.pure_trace_forall
             (fun event =>
               event.matchesReadStore (subLogAccessTraceReadStore bits)) _
+
+theorem subLogAccessTraceResult_no_syntheticCostOnlyPrimitive
+    (bits : List Bool) (i : Nat) :
+    forall event,
+      event ∈ (subLogAccessTraceResult bits i).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  unfold subLogAccessTraceResult
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      boundedWordReadTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+        subLogAccessCodeSegment subLogAccessDeadSegment
+        (subLogCodeStore bits) (subLogChunkAccessRoute bits i).blockIndex
+  · apply WordRAM.TraceResult.bind_trace_forall
+    · exact
+        boundedWordReadTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+          subLogAccessLengthSegment subLogAccessDeadSegment
+          (subLogLenStore bits) (subLogChunkAccessRoute bits i).blockIndex
+    · apply WordRAM.TraceResult.bind_trace_forall
+      · exact
+          boundedWordReadTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+            subLogAccessClassSegment subLogAccessDeadSegment
+            (subLogClassStore bits) (subLogChunkAccessRoute bits i).blockIndex
+      · apply WordRAM.TraceResult.bind_trace_forall
+        · exact
+            boundedWordReadTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+              subLogAccessDecoderSegment subLogAccessDeadSegment
+              (fixedWeightSubLogSharedDecoderStore bits)
+              (fixedWeightSharedDecodeSlotFromReadValues [_, _] [_])
+        · exact WordRAM.TraceResult.pure_trace_forall
+            (fun event => ¬ event.isSyntheticCostOnlyPrimitive) _
 
 theorem subLogAccessTraceResult_event_read_or_primitive
     (bits : List Bool) (i : Nat) :
@@ -654,6 +706,26 @@ theorem subLogRankBaseTraceResult_matchesReadStore
         (fun event =>
           event.matchesReadStore (subLogRankTraceReadStore bits target)) _
 
+theorem subLogRankBaseTraceResult_no_syntheticCostOnlyPrimitive
+    (bits : List Bool) (target : Bool) (blockIndex : Nat) :
+    forall event,
+      event ∈ (subLogRankBaseTraceResult bits target blockIndex).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  unfold subLogRankBaseTraceResult
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      boundedWordReadTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+        subLogRankSuperSegment subLogRankDeadSegment
+        (subLogRankSuperStore bits target)
+        (blockIndex / subLogRankSuperblockSpan bits)
+  · apply WordRAM.TraceResult.bind_trace_forall
+    · exact
+        boundedWordReadTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+          subLogRankRelativeSegment subLogRankDeadSegment
+          (subLogRankRelativeStore bits target) blockIndex
+    · exact WordRAM.TraceResult.pure_trace_forall
+        (fun event => ¬ event.isSyntheticCostOnlyPrimitive) _
+
 /-- Trace-result version of the concrete sub-log compressed/FID rank query. -/
 def subLogRankTraceResult
     (bits : List Bool) (target : Bool) (pos : Nat) :
@@ -746,6 +818,43 @@ theorem subLogRankTraceResult_matchesReadStore
               (fun event =>
                 event.matchesReadStore
                   (subLogRankTraceReadStore bits target)) _
+
+theorem subLogRankTraceResult_no_syntheticCostOnlyPrimitive
+    (bits : List Bool) (target : Bool) (pos : Nat) :
+    forall event,
+      event ∈ (subLogRankTraceResult bits target pos).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  unfold subLogRankTraceResult
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      subLogRankBaseTraceResult_no_syntheticCostOnlyPrimitive bits target
+        (subLogRankBlockIndex bits pos)
+  · apply WordRAM.TraceResult.bind_trace_forall
+    · exact
+        boundedWordReadTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+          subLogRankCodeSegment subLogRankDeadSegment
+          (subLogCodeStore bits)
+          (subLogRankBlockIndex bits pos)
+    · apply WordRAM.TraceResult.bind_trace_forall
+      · exact
+          boundedWordReadTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+            subLogRankLengthSegment subLogRankDeadSegment
+            (subLogLenStore bits)
+            (subLogRankBlockIndex bits pos)
+      · apply WordRAM.TraceResult.bind_trace_forall
+        · exact
+            boundedWordReadTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+              subLogRankClassSegment subLogRankDeadSegment
+              (subLogClassStore bits)
+              (subLogRankBlockIndex bits pos)
+        · apply WordRAM.TraceResult.bind_trace_forall
+          · exact
+              boundedWordReadTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+                subLogRankDecoderSegment subLogRankDeadSegment
+                (fixedWeightSubLogSharedDecoderStore bits)
+                (fixedWeightSharedDecodeSlotFromReadValues [_, _] [_])
+          · exact WordRAM.TraceResult.pure_trace_forall
+              (fun event => ¬ event.isSyntheticCostOnlyPrimitive) _
 
 theorem subLogRankTraceResult_event_read_or_primitive
     (bits : List Bool) (target : Bool) (pos : Nat) :

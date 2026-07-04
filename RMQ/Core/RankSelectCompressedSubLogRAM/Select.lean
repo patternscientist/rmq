@@ -649,6 +649,38 @@ theorem subLogDecodeBlockByIndexTraceResult_matchesReadStore
                 (subLogSelectFromPackedClarkRouteTraceReadStore bits target))
             _
 
+theorem subLogDecodeBlockByIndexTraceResult_no_syntheticCostOnlyPrimitive
+    (bits : List Bool) (target : Bool) (blockIndex : Nat) :
+    forall event,
+      event ∈
+          (subLogDecodeBlockByIndexTraceResult
+            bits target blockIndex).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  unfold subLogDecodeBlockByIndexTraceResult
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      boundedWordReadTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+        subLogSelectCodeSegment subLogSelectDeadSegment
+        (subLogCodeStore bits) blockIndex
+  · apply WordRAM.TraceResult.bind_trace_forall
+    · exact
+        boundedWordReadTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+          subLogSelectLengthSegment subLogSelectDeadSegment
+          (subLogLenStore bits) blockIndex
+    · apply WordRAM.TraceResult.bind_trace_forall
+      · exact
+          boundedWordReadTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+            subLogSelectClassSegment subLogSelectDeadSegment
+            (subLogClassStore bits) blockIndex
+      · apply WordRAM.TraceResult.bind_trace_forall
+        · exact
+            boundedWordReadTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+              subLogSelectDecoderSegment subLogSelectDeadSegment
+              (fixedWeightSubLogSharedDecoderStore bits)
+              (fixedWeightSharedDecodeSlotFromReadValues [_, _] [_])
+        · exact WordRAM.TraceResult.pure_trace_forall
+            (fun event => ¬ event.isSyntheticCostOnlyPrimitive) _
+
 /-- Trace-result decode of a constant-size sub-log block window. -/
 def subLogDecodeBlockWindowTraceResult
     (bits : List Bool) (target : Bool) (startBlock count : Nat) :
@@ -702,6 +734,25 @@ theorem subLogDecodeBlockWindowTraceResult_matchesReadStore
       · apply WordRAM.TraceResult.map_trace_forall
         exact ih (startBlock + 1)
 
+theorem subLogDecodeBlockWindowTraceResult_no_syntheticCostOnlyPrimitive
+    (bits : List Bool) (target : Bool) (startBlock count : Nat) :
+    forall event,
+      event ∈
+          (subLogDecodeBlockWindowTraceResult
+            bits target startBlock count).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  induction count generalizing startBlock with
+  | zero =>
+      exact WordRAM.TraceResult.pure_trace_forall
+        (fun event => ¬ event.isSyntheticCostOnlyPrimitive) []
+  | succ count ih =>
+      unfold subLogDecodeBlockWindowTraceResult
+      apply WordRAM.TraceResult.bind_trace_forall
+      · exact subLogDecodeBlockByIndexTraceResult_no_syntheticCostOnlyPrimitive
+          bits target startBlock
+      · apply WordRAM.TraceResult.map_trace_forall
+        exact ih (startBlock + 1)
+
 /-- Trace-result reconstruction of one machine word from sub-log blocks. -/
 def subLogMachineWordReadTraceResult
     (bits : List Bool) (target : Bool) (wordIndex : Nat) :
@@ -743,6 +794,21 @@ theorem subLogMachineWordReadTraceResult_matchesReadStore
       (fun event =>
         event.matchesReadStore
           (subLogSelectFromPackedClarkRouteTraceReadStore bits target)) _
+
+theorem subLogMachineWordReadTraceResult_no_syntheticCostOnlyPrimitive
+    (bits : List Bool) (target : Bool) (wordIndex : Nat) :
+    forall event,
+      event ∈ (subLogMachineWordReadTraceResult bits target wordIndex).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  unfold subLogMachineWordReadTraceResult
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact subLogDecodeBlockWindowTraceResult_no_syntheticCostOnlyPrimitive
+      bits target
+      ((wordIndex * SuccinctRank.machineWordBits bits.length) /
+        fixedWeightSubLogChunkBlockSize bits.length)
+      fixedWeightSubLogDenseWindowBlockCount
+  · exact WordRAM.TraceResult.pure_trace_forall
+      (fun event => ¬ event.isSyntheticCostOnlyPrimitive) _
 
 def subLogDenseTwoWordSelectTailTraceResult
     (target : Bool) (bits : List Bool)
@@ -837,6 +903,51 @@ theorem subLogDenseTwoWordSelectTailTraceResult_matchesReadStore
           (subLogSelectFromPackedClarkRouteTraceReadStore bits target)
           event hmem
 
+theorem subLogDenseTwoWordSelectTailTraceResult_no_syntheticCostOnlyPrimitive
+    (target : Bool) (bits : List Bool)
+    (wordSize firstWordIndex firstWordStart localOccurrence : Nat)
+    (firstWord : List Bool) (beforeFirst uptoFirst : Nat) :
+    forall event,
+      event ∈
+          (subLogDenseTwoWordSelectTailTraceResult
+            target bits wordSize firstWordIndex firstWordStart
+            localOccurrence firstWord beforeFirst uptoFirst).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  unfold subLogDenseTwoWordSelectTailTraceResult
+  by_cases hlocal : localOccurrence < uptoFirst - beforeFirst
+  · intro event hmem
+    exact
+      (WordRAM.TraceResult.map_trace_forall
+        (fun event => ¬ event.isSyntheticCostOnlyPrimitive)
+        (fun local? => local?.map fun offset => firstWordStart + offset)
+        (GenericSelect.wordSelectTraceResult target firstWord
+          (beforeFirst + localOccurrence))
+        (GenericSelect.wordSelectTraceResult_no_syntheticCostOnlyPrimitive
+          target firstWord (beforeFirst + localOccurrence)))
+        event
+        (by simpa [hlocal] using hmem)
+  · intro event hmem
+    simp [hlocal, WordRAM.TraceResult.bind] at hmem
+    rcases hmem with hmem | hmem
+    · exact subLogMachineWordReadTraceResult_no_syntheticCostOnlyPrimitive
+        bits target (firstWordIndex + 1) event hmem
+    · exact
+        (WordRAM.TraceResult.map_trace_forall
+          (fun event => ¬ event.isSyntheticCostOnlyPrimitive)
+          (fun local? =>
+            local?.map fun offset =>
+              (firstWordIndex + 1) * wordSize + offset)
+          (GenericSelect.wordSelectTraceResult target
+            (subLogMachineWordReadTraceResult bits target
+              (firstWordIndex + 1)).value
+            (localOccurrence - (uptoFirst - beforeFirst)))
+          (GenericSelect.wordSelectTraceResult_no_syntheticCostOnlyPrimitive
+            target
+            (subLogMachineWordReadTraceResult bits target
+              (firstWordIndex + 1)).value
+            (localOccurrence - (uptoFirst - beforeFirst))))
+          event hmem
+
 /-- Trace-result dense two-word select branch over sub-log decoded windows. -/
 def subLogDenseTwoWordSelectTraceResult
     (target : Bool) (bits : List Bool)
@@ -900,6 +1011,54 @@ theorem subLogDenseTwoWordSelectTraceResult_matchesReadStore
             (subLogSelectFromPackedClarkRouteTraceReadStore bits target)
       · exact
           subLogDenseTwoWordSelectTailTraceResult_matchesReadStore
+            target bits (SuccinctRank.machineWordBits bits.length)
+            (basePosition / SuccinctRank.machineWordBits bits.length)
+            ((basePosition / SuccinctRank.machineWordBits bits.length) *
+              SuccinctRank.machineWordBits bits.length)
+            (q - baseOccurrence)
+            (subLogMachineWordReadTraceResult bits target
+              (basePosition /
+                SuccinctRank.machineWordBits bits.length)).value
+            (SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordRankTraceResult
+              target
+              (subLogMachineWordReadTraceResult bits target
+                (basePosition /
+                  SuccinctRank.machineWordBits bits.length)).value
+              (basePosition -
+                (basePosition /
+                    SuccinctRank.machineWordBits bits.length) *
+                  SuccinctRank.machineWordBits bits.length)).value
+            (SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordRankTraceResult
+              target
+              (subLogMachineWordReadTraceResult bits target
+                (basePosition /
+                  SuccinctRank.machineWordBits bits.length)).value
+              (subLogMachineWordReadTraceResult bits target
+                (basePosition /
+                  SuccinctRank.machineWordBits bits.length)).value.length).value
+
+theorem subLogDenseTwoWordSelectTraceResult_no_syntheticCostOnlyPrimitive
+    (target : Bool) (bits : List Bool)
+    (basePosition baseOccurrence q : Nat) :
+    forall event,
+      event ∈
+          (subLogDenseTwoWordSelectTraceResult
+            target bits basePosition baseOccurrence q).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  unfold subLogDenseTwoWordSelectTraceResult
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact subLogMachineWordReadTraceResult_no_syntheticCostOnlyPrimitive
+      bits target (basePosition / SuccinctRank.machineWordBits bits.length)
+  · apply WordRAM.TraceResult.bind_trace_forall
+    · exact
+        SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordRankTraceResult_no_syntheticCostOnlyPrimitive
+          target _ _
+    · apply WordRAM.TraceResult.bind_trace_forall
+      · exact
+          SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordRankTraceResult_no_syntheticCostOnlyPrimitive
+            target _ _
+      · exact
+          subLogDenseTwoWordSelectTailTraceResult_no_syntheticCostOnlyPrimitive
             target bits (SuccinctRank.machineWordBits bits.length)
             (basePosition / SuccinctRank.machineWordBits bits.length)
             ((basePosition / SuccinctRank.machineWordBits bits.length) *
@@ -1047,6 +1206,37 @@ theorem subLogSelectWithFieldsTraceResult_matchesReadStore
               event.matchesReadStore
                 (subLogSelectFromPackedClarkRouteTraceReadStore bits target))
             _
+
+theorem subLogSelectWithFieldsTraceResult_no_syntheticCostOnlyPrimitive
+    (bits : List Bool) (target : Bool)
+    (fields : FixedWeightSubLogClarkSelectRouteFields) :
+    forall event,
+      event ∈ (subLogSelectWithFieldsTraceResult bits target fields).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  unfold subLogSelectWithFieldsTraceResult
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      boundedWordReadTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+        subLogSelectCodeSegment subLogSelectDeadSegment
+        (subLogCodeStore bits) fields.blockIndex
+  · apply WordRAM.TraceResult.bind_trace_forall
+    · exact
+        boundedWordReadTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+          subLogSelectLengthSegment subLogSelectDeadSegment
+          (subLogLenStore bits) fields.blockIndex
+    · apply WordRAM.TraceResult.bind_trace_forall
+      · exact
+          boundedWordReadTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+            subLogSelectClassSegment subLogSelectDeadSegment
+            (subLogClassStore bits) fields.blockIndex
+      · apply WordRAM.TraceResult.bind_trace_forall
+        · exact
+            boundedWordReadTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+              subLogSelectDecoderSegment subLogSelectDeadSegment
+              (fixedWeightSubLogSharedDecoderStore bits)
+              (fixedWeightSharedDecodeSlotFromReadValues [_, _] [_])
+        · exact WordRAM.TraceResult.pure_trace_forall
+            (fun event => ¬ event.isSyntheticCostOnlyPrimitive) _
 
 /--
 Interpreted packed-Clark select source.
@@ -1501,6 +1691,115 @@ theorem subLogPackedClarkSelectTraceResult_matchesReadStore
   · intro event hmem
     simp [hvalid] at hmem
 
+theorem subLogPackedClarkSelectTraceResult_no_syntheticCostOnlyPrimitive
+    (bits : List Bool) (target : Bool) (idx : Nat) :
+    forall event,
+      event ∈ (subLogPackedClarkSelectTraceResult bits target idx).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  unfold subLogPackedClarkSelectTraceResult
+  let data := GenericSelect.sparseExceptionSelectData bits target
+  by_cases hvalid : idx < GenericSelect.occurrenceCount bits target
+  · intro event hmem
+    simp [hvalid, WordRAM.TraceResult.bind] at hmem
+    rcases hmem with hmem | hmem
+    · exact
+        data.superTable.readTraceResultRelabeled_no_syntheticCostOnlyPrimitive
+          subLogSelectSuperTableTraceSegments
+          (GenericSelect.selectSuperSlot idx data.superStride)
+          event hmem
+    · cases hsuperValue :
+        (data.superTable.readTraceResultRelabeled
+          subLogSelectSuperTableTraceSegments
+          (GenericSelect.selectSuperSlot idx data.superStride)).value with
+      | none =>
+          simp [data, hsuperValue] at hmem
+      | some super =>
+          by_cases hlong :
+              GenericSelect.relativeSplitSelectEntryIsMarked super = true
+          · simp [data, hsuperValue, hlong] at hmem
+            rcases hmem with hmem | hmem
+            · have hmemRelabeled :
+                  event ∈
+                    (WordRAM.TraceResult.relabelReadSegmentsWith
+                      (WordRAM.tripleSegmentMap
+                        subLogSelectLongFlagRankBase
+                        subLogSelectDeadSegment)
+                      (data.longFlagRankData.rankTraceResult true
+                        (GenericSelect.selectSuperSlot idx
+                          data.superStride))).trace := by
+                simpa [WordRAM.TraceResult.relabelReadSegmentsWith] using
+                  (List.mem_map.mpr hmem)
+              exact
+                WordRAM.TraceResult.relabelReadSegmentsWith_no_syntheticCostOnlyPrimitive
+                  (WordRAM.tripleSegmentMap
+                    subLogSelectLongFlagRankBase
+                    subLogSelectDeadSegment)
+                  (data.longFlagRankData.rankTraceResult true
+                    (GenericSelect.selectSuperSlot idx data.superStride))
+                  (data.longFlagRankData.rankTraceResult_no_syntheticCostOnlyPrimitive
+                    true
+                    (GenericSelect.selectSuperSlot idx data.superStride))
+                  event hmemRelabeled
+            · exact
+                GenericSelect.relativeOffsetReadTraceResultRelabeled_no_syntheticCostOnlyPrimitive
+                  subLogSelectLongRelativeSegment
+                  subLogSelectDeadSegment
+                  data.longSuperRelativeTable
+                  (GenericSelect.relativeSplitSelectEntryBasePosition
+                    data.wordSize super)
+                  (GenericSelect.relativeSplitSelectLongCompactSlot
+                    (data.longFlagRankData.rankTraceResult true
+                      (GenericSelect.selectSuperSlot idx
+                        data.superStride)).value
+                    (idx - super.baseOccurrence)
+                    data.superStride)
+                  event hmem
+          · simp [data, hsuperValue, hlong] at hmem
+            let localSlot :=
+              GenericSelect.relativeSplitSelectLocalSlot idx
+                data.superStride data.localSlotsPerSuper
+                data.localStride super
+            rcases hmem with hmem | hmem
+            · exact
+                data.localTable.readTraceResultRelabeled_no_syntheticCostOnlyPrimitive
+                  subLogSelectLocalTableTraceSegments
+                  localSlot event hmem
+            · cases hlocalValue :
+                (data.localTable.readTraceResultRelabeled
+                  subLogSelectLocalTableTraceSegments localSlot).value with
+              | none =>
+                  simp [data, hlocalValue, localSlot] at hmem
+              | some loc =>
+                  by_cases hsparse :
+                      GenericSelect.relativeSplitSelectEntryIsMarked loc =
+                        true
+                  · exact
+                      data.sparseDirectory.readTraceResultRelabeled_no_syntheticCostOnlyPrimitive
+                        subLogSelectSparseDirectoryTraceSegments
+                        (GenericSelect.relativeSplitSelectLocalBasePosition
+                          data.wordSize super loc)
+                        localSlot
+                        (idx -
+                          GenericSelect.relativeSplitSelectLocalBaseOccurrence
+                            super loc)
+                        event
+                        (by
+                          simpa [data, hlocalValue, hsparse, localSlot]
+                            using hmem)
+                  · exact
+                      subLogDenseTwoWordSelectTraceResult_no_syntheticCostOnlyPrimitive
+                        target bits
+                        (GenericSelect.relativeSplitSelectLocalBasePosition
+                          data.wordSize super loc)
+                        (GenericSelect.relativeSplitSelectLocalBaseOccurrence
+                          super loc)
+                        idx event
+                        (by
+                          simpa [data, hlocalValue, hsparse, localSlot]
+                            using hmem)
+  · intro event hmem
+    simp [hvalid] at hmem
+
 /-- Interpreted packed-Clark route-field read. -/
 def fixedWeightSubLogPackedClarkSelectRouteFieldsInterpretedCosted
     (bits : List Bool) (target : Bool) (occurrence : Nat) :
@@ -1555,6 +1854,18 @@ theorem fixedWeightSubLogPackedClarkSelectRouteFieldsTraceResult_matchesReadStor
   unfold fixedWeightSubLogPackedClarkSelectRouteFieldsTraceResult
   apply WordRAM.TraceResult.map_trace_forall
   exact subLogPackedClarkSelectTraceResult_matchesReadStore
+    bits target occurrence
+
+theorem fixedWeightSubLogPackedClarkSelectRouteFieldsTraceResult_no_syntheticCostOnlyPrimitive
+    (bits : List Bool) (target : Bool) (occurrence : Nat) :
+    forall event,
+      event ∈
+          (fixedWeightSubLogPackedClarkSelectRouteFieldsTraceResult
+            bits target occurrence).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  unfold fixedWeightSubLogPackedClarkSelectRouteFieldsTraceResult
+  apply WordRAM.TraceResult.map_trace_forall
+  exact subLogPackedClarkSelectTraceResult_no_syntheticCostOnlyPrimitive
     bits target occurrence
 
 /-- Interpreted select query for the public packed-Clark compressed/FID path. -/
@@ -1649,6 +1960,28 @@ theorem subLogSelectFromPackedClarkRouteTraceResult_matchesReadStore
     | some fields =>
         simpa [hfields] using
           subLogSelectWithFieldsTraceResult_matchesReadStore
+            bits target fields
+
+theorem subLogSelectFromPackedClarkRouteTraceResult_no_syntheticCostOnlyPrimitive
+    (bits : List Bool) (target : Bool) (occurrence : Nat) :
+    forall event,
+      event ∈
+          (subLogSelectFromPackedClarkRouteTraceResult
+            bits target occurrence).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  unfold subLogSelectFromPackedClarkRouteTraceResult
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      fixedWeightSubLogPackedClarkSelectRouteFieldsTraceResult_no_syntheticCostOnlyPrimitive
+        bits target occurrence
+  · cases hfields :
+      (fixedWeightSubLogPackedClarkSelectRouteFieldsTraceResult
+        bits target occurrence).value with
+    | none =>
+        simp
+    | some fields =>
+        simpa [hfields] using
+          subLogSelectWithFieldsTraceResult_no_syntheticCostOnlyPrimitive
             bits target fields
 
 theorem subLogSelectFromPackedClarkRouteTraceResult_event_read_or_primitive
