@@ -79,6 +79,8 @@ RMQ.RankSelect.compressedFIDFixedWeightInterpretedFamilyProfile
 RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile
 RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStoreFusedProfile
 RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreFusedProfile
+RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStoreNoSyntheticFusedProfile
+RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreNoSyntheticFusedProfile
 RMQ.RankSelect.compressedFIDFixedWeightSelectTraceResult_execution_story
 RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStore_execution_story
 RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreExecutionStory
@@ -98,6 +100,10 @@ reusable family component. The primary public capstone to cite is now
 `compressedFIDFixedWeightGlobalPayloadStoreFusedProfile`: it packages that
 family component together with interpreted replay, one target-independent
 global payload store, and bounded trace-local event widths.
+The stronger no-synthetic capstone
+`compressedFIDFixedWeightGlobalPayloadStoreNoSyntheticFusedProfile` adds
+component-store backing for every successful trace read and proves the global
+access/rank/select traces contain no synthetic cost-only events.
 `compressedFIDFixedWeightInterpretedFamilyProfile` is the additive Word-RAM
 replay surface: it keeps the same payload and constant-query theorem shape
 while routing access, rank, and select reads through the first-order

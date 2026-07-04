@@ -33,7 +33,11 @@ target-independent global payload-store execution story
 and its bounded trace-local event-width companion
 `Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory`.
 These layers are now packaged by the fused public capstone
-`Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreFusedProfile`.
+`Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreFusedProfile`;
+the stronger
+`Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreNoSyntheticFusedProfile`
+also proves successful-read component backing and excludes synthetic cost-only
+trace events.
 The final RMQ global-store surface also has the all-size structural alias
 `Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory`,
 which cites the final global trace after the two former close-navigation
@@ -430,6 +434,12 @@ The public one-line capstone for the current compressed/FID stack is
 the compressed family profile, the interpreted replay profile, the
 target-independent global-store execution story, and the bounded trace-local
 event-width story.
+The strengthened capstone
+`RankSelect.compressedFIDFixedWeightGlobalPayloadStoreNoSyntheticFusedProfile`
+keeps those clauses and adds the global-store no-synthetic story: every
+successful read event is certified against the access, rank-target, or
+select-target component store it came from, and no synthetic cost-only trace
+events are permitted.
 The pointwise theorem `RankSelect.compressedFIDFixedWeightConstantQueryProfile`
 remains as the one-bitvector component.
 `RankSelect.FixedWeightTableBackedFIDData` is the first stricter pointwise

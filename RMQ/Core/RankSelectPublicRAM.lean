@@ -90,6 +90,12 @@ abbrev compressedFIDFixedWeightGlobalTraceReadStore
     (bits : List Bool) : WordRAM.ReadStore :=
   RMQ.RankSelectSpec.subLogCompressedFIDGlobalTraceReadStore bits
 
+/-- Successful read-event backing predicate for the global compressed/FID trace. -/
+abbrev compressedFIDFixedWeightGlobalTraceEventSuccessfulReadBacked
+    (bits : List Bool) (event : WordRAM.TraceEvent) : Prop :=
+  RMQ.RankSelectSpec.subLogCompressedFIDGlobalTraceEventSuccessfulReadBacked
+    bits event
+
 /-- Access trace relabeled into the target-indexed global compressed/FID store. -/
 abbrev compressedFIDFixedWeightGlobalAccessTraceResult
     (bits : List Bool) (i : Nat) : WordRAM.TraceResult (Option Bool) :=
@@ -659,6 +665,228 @@ theorem compressedFIDFixedWeightGlobalPayloadStore_bounded_execution_story
       bits
 
 /--
+No-synthetic companion for the target-independent global compressed/FID store.
+
+Every access/rank/select trace is free of synthetic cost-only events, and every
+successful read event is backed by the concrete component store and local
+segment from which the global trace was relabeled.
+-/
+theorem compressedFIDFixedWeightGlobalPayloadStore_noSynthetic_execution_story
+    (bits : List Bool) :
+    (forall i,
+      (forall event,
+        event ∈
+            (compressedFIDFixedWeightGlobalPayloadStoreAccessTraceResult
+              bits i).trace ->
+          ¬ event.isSyntheticCostOnlyPrimitive) /\
+        (forall event,
+          event ∈
+              (compressedFIDFixedWeightGlobalPayloadStoreAccessTraceResult
+                bits i).trace ->
+            compressedFIDFixedWeightGlobalTraceEventSuccessfulReadBacked
+              bits event)) /\
+      (forall target pos,
+        (forall event,
+          event ∈
+              (compressedFIDFixedWeightGlobalPayloadStoreRankTraceResult
+                bits target pos).trace ->
+            ¬ event.isSyntheticCostOnlyPrimitive) /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalPayloadStoreRankTraceResult
+                  bits target pos).trace ->
+              compressedFIDFixedWeightGlobalTraceEventSuccessfulReadBacked
+                bits event)) /\
+      forall target occurrence,
+        (forall event,
+          event ∈
+              (compressedFIDFixedWeightGlobalPayloadStoreSelectTraceResult
+                bits target occurrence).trace ->
+            ¬ event.isSyntheticCostOnlyPrimitive) /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalPayloadStoreSelectTraceResult
+                  bits target occurrence).trace ->
+              compressedFIDFixedWeightGlobalTraceEventSuccessfulReadBacked
+                bits event) := by
+  exact
+    RMQ.RankSelectSpec.subLogCompressedFIDGlobalPayloadStore_noSynthetic_execution_story
+      bits
+
+/--
+Bounded no-synthetic global payload-store execution story.
+
+This fuses the existing interpreted/global-store/bounded replay packet with the
+new no-synthetic and successful-read backing packet for a fixed input bitvector.
+-/
+def CompressedFIDFixedWeightGlobalPayloadStoreNoSyntheticExecutionStory
+    (bits : List Bool) : Prop :=
+    (forall i,
+      (compressedFIDFixedWeightGlobalPayloadStoreAccessTraceResult
+        bits i).toCosted =
+          compressedFIDFixedWeightAccessInterpretedCosted bits i /\
+        (compressedFIDFixedWeightGlobalPayloadStoreAccessTraceResult
+          bits i).toCosted =
+          RMQ.RankSelectSpec.subLogAccessCosted bits i /\
+        (forall event,
+          event ∈
+              (compressedFIDFixedWeightGlobalPayloadStoreAccessTraceResult
+                bits i).trace ->
+            event.isReadWord \/ event.isWordPrimitive) /\
+        (forall event,
+          event ∈
+              (compressedFIDFixedWeightGlobalPayloadStoreAccessTraceResult
+                bits i).trace ->
+            event.matchesReadStore
+              (compressedFIDFixedWeightGlobalTraceReadStore bits)) /\
+        (forall event,
+          event ∈
+              (compressedFIDFixedWeightGlobalPayloadStoreAccessTraceResult
+                bits i).trace ->
+            compressedFIDFixedWeightTraceEventReadAddressFitsInBits
+              (compressedFIDFixedWeightGlobalPayloadStoreAccessTraceEventBits
+                bits i) event) /\
+        (forall event,
+          event ∈
+              (compressedFIDFixedWeightGlobalPayloadStoreAccessTraceResult
+                bits i).trace ->
+            compressedFIDFixedWeightTraceEventPrimitiveOperandsFitInBits
+              (compressedFIDFixedWeightGlobalPayloadStoreAccessTraceEventBits
+                bits i) event) /\
+        (forall event,
+          event ∈
+              (compressedFIDFixedWeightGlobalPayloadStoreAccessTraceResult
+                bits i).trace ->
+            ¬ event.isSyntheticCostOnlyPrimitive) /\
+        (forall event,
+          event ∈
+              (compressedFIDFixedWeightGlobalPayloadStoreAccessTraceResult
+                bits i).trace ->
+            compressedFIDFixedWeightGlobalTraceEventSuccessfulReadBacked
+              bits event)) /\
+      (forall target pos,
+        (compressedFIDFixedWeightGlobalPayloadStoreRankTraceResult
+          bits target pos).toCosted =
+            compressedFIDFixedWeightRankInterpretedCosted
+              bits target pos /\
+          (compressedFIDFixedWeightGlobalPayloadStoreRankTraceResult
+            bits target pos).toCosted =
+            RMQ.RankSelectSpec.subLogRankCosted bits target pos /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalPayloadStoreRankTraceResult
+                  bits target pos).trace ->
+              event.isReadWord \/ event.isWordPrimitive) /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalPayloadStoreRankTraceResult
+                  bits target pos).trace ->
+              event.matchesReadStore
+                (compressedFIDFixedWeightGlobalTraceReadStore bits)) /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalPayloadStoreRankTraceResult
+                  bits target pos).trace ->
+              compressedFIDFixedWeightTraceEventReadAddressFitsInBits
+                (compressedFIDFixedWeightGlobalPayloadStoreRankTraceEventBits
+                  bits target pos) event) /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalPayloadStoreRankTraceResult
+                  bits target pos).trace ->
+              compressedFIDFixedWeightTraceEventPrimitiveOperandsFitInBits
+                (compressedFIDFixedWeightGlobalPayloadStoreRankTraceEventBits
+                  bits target pos) event) /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalPayloadStoreRankTraceResult
+                  bits target pos).trace ->
+              ¬ event.isSyntheticCostOnlyPrimitive) /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalPayloadStoreRankTraceResult
+                  bits target pos).trace ->
+              compressedFIDFixedWeightGlobalTraceEventSuccessfulReadBacked
+                bits event)) /\
+      forall target occurrence,
+        (compressedFIDFixedWeightGlobalPayloadStoreSelectTraceResult
+          bits target occurrence).toCosted =
+            compressedFIDFixedWeightSelectInterpretedCosted
+              bits target occurrence /\
+          (compressedFIDFixedWeightGlobalPayloadStoreSelectTraceResult
+            bits target occurrence).toCosted =
+            RMQ.RankSelectSpec.subLogSelectFromPackedClarkRouteCosted
+              bits target occurrence /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalPayloadStoreSelectTraceResult
+                  bits target occurrence).trace ->
+              event.isReadWord \/ event.isWordPrimitive) /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalPayloadStoreSelectTraceResult
+                  bits target occurrence).trace ->
+              event.matchesReadStore
+                (compressedFIDFixedWeightGlobalTraceReadStore bits)) /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalPayloadStoreSelectTraceResult
+                  bits target occurrence).trace ->
+              compressedFIDFixedWeightTraceEventReadAddressFitsInBits
+                (compressedFIDFixedWeightGlobalPayloadStoreSelectTraceEventBits
+                  bits target occurrence) event) /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalPayloadStoreSelectTraceResult
+                  bits target occurrence).trace ->
+              compressedFIDFixedWeightTraceEventPrimitiveOperandsFitInBits
+                (compressedFIDFixedWeightGlobalPayloadStoreSelectTraceEventBits
+                  bits target occurrence) event) /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalPayloadStoreSelectTraceResult
+                  bits target occurrence).trace ->
+              ¬ event.isSyntheticCostOnlyPrimitive) /\
+          (forall event,
+            event ∈
+                (compressedFIDFixedWeightGlobalPayloadStoreSelectTraceResult
+                  bits target occurrence).trace ->
+              compressedFIDFixedWeightGlobalTraceEventSuccessfulReadBacked
+                bits event)
+
+theorem compressedFIDFixedWeightGlobalPayloadStoreNoSynthetic_execution_story
+    (bits : List Bool) :
+    CompressedFIDFixedWeightGlobalPayloadStoreNoSyntheticExecutionStory
+      bits := by
+  rcases compressedFIDFixedWeightGlobalPayloadStore_bounded_execution_story
+    bits with ⟨haccess, hrank, hselect⟩
+  rcases compressedFIDFixedWeightGlobalPayloadStore_noSynthetic_execution_story
+    bits with ⟨haccessNoSynth, hrankNoSynth, hselectNoSynth⟩
+  constructor
+  · intro i
+    rcases haccess i with
+      ⟨hinterp, hcosted, hreadOrPrim, hmatches, hreadBound, hprimBound⟩
+    rcases haccessNoSynth i with ⟨hnoSynth, hbacked⟩
+    exact
+      ⟨hinterp, hcosted, hreadOrPrim, hmatches, hreadBound, hprimBound,
+        hnoSynth, hbacked⟩
+  constructor
+  · intro target pos
+    rcases hrank target pos with
+      ⟨hinterp, hcosted, hreadOrPrim, hmatches, hreadBound, hprimBound⟩
+    rcases hrankNoSynth target pos with ⟨hnoSynth, hbacked⟩
+    exact
+      ⟨hinterp, hcosted, hreadOrPrim, hmatches, hreadBound, hprimBound,
+        hnoSynth, hbacked⟩
+  · intro target occurrence
+    rcases hselect target occurrence with
+      ⟨hinterp, hcosted, hreadOrPrim, hmatches, hreadBound, hprimBound⟩
+    rcases hselectNoSynth target occurrence with ⟨hnoSynth, hbacked⟩
+    exact
+      ⟨hinterp, hcosted, hreadOrPrim, hmatches, hreadBound, hprimBound,
+        hnoSynth, hbacked⟩
+
+/--
 Pointwise interpreted compressed/FID profile.
 
 The payload bound and asymptotic overhead are identical to the existing
@@ -997,6 +1225,73 @@ theorem compressedFIDFixedWeightGlobalPayloadStoreFusedProfile :
       compressedFIDFixedWeightInterpretedFamilyProfile,
       compressedFIDFixedWeightGlobalPayloadStore_execution_story,
       compressedFIDFixedWeightGlobalPayloadStore_bounded_execution_story⟩
+
+/--
+No-synthetic public capstone for the fixed-weight compressed/FID rank/select
+spoke.
+
+This is the reader-facing theorem that fuses the compressed `n + o(n)` payload
+family profile, interpreted constant-query replay, one target-independent
+global payload store, read-store agreement, bounded read addresses and word
+primitive operands/results, successful-read component backing, and absence of
+synthetic cost-only events.
+-/
+theorem compressedFIDFixedWeightGlobalPayloadStoreNoSyntheticFusedProfile :
+    (SuccinctSpace.LittleOLinear compressedFIDFixedWeightOverhead /\
+      forall bits : List Bool,
+        ((compressedFIDFixedWeightFamily.directory bits).payload.length <=
+          fixedWeightPayloadBudget bits +
+            compressedFIDFixedWeightOverhead bits.length) /\
+          (forall i,
+            ((compressedFIDFixedWeightFamily.directory bits).accessQueryCosted
+                i).cost <= compressedFIDFixedWeightQueryCost /\
+              ((compressedFIDFixedWeightFamily.directory bits).accessQueryCosted
+                i).erase = bits[i]?) /\
+          (forall target pos,
+            ((compressedFIDFixedWeightFamily.directory bits).rankQueryCosted
+                target pos).cost <= compressedFIDFixedWeightQueryCost /\
+              ((compressedFIDFixedWeightFamily.directory bits).rankQueryCosted
+                target pos).erase =
+                Succinct.rankPrefix target bits pos) /\
+          (forall target occurrence,
+            ((compressedFIDFixedWeightFamily.directory bits).selectQueryCosted
+                target occurrence).cost <=
+                compressedFIDFixedWeightQueryCost /\
+              ((compressedFIDFixedWeightFamily.directory bits).selectQueryCosted
+                target occurrence).erase =
+                Succinct.select target bits occurrence)) /\
+      (SuccinctSpace.LittleOLinear compressedFIDFixedWeightOverhead /\
+        forall bits : List Bool,
+          ((compressedFIDFixedWeightInterpretedFamily.directory bits).payload.length <=
+            fixedWeightPayloadBudget bits +
+              compressedFIDFixedWeightOverhead bits.length) /\
+            (forall i,
+              ((compressedFIDFixedWeightInterpretedFamily.directory bits).accessQueryCosted
+                  i).cost <=
+                  compressedFIDFixedWeightQueryCost /\
+                ((compressedFIDFixedWeightInterpretedFamily.directory bits).accessQueryCosted
+                  i).erase = bits[i]?) /\
+            (forall target pos,
+              ((compressedFIDFixedWeightInterpretedFamily.directory bits).rankQueryCosted
+                  target pos).cost <=
+                  compressedFIDFixedWeightQueryCost /\
+                ((compressedFIDFixedWeightInterpretedFamily.directory bits).rankQueryCosted
+                  target pos).erase =
+                  Succinct.rankPrefix target bits pos) /\
+            (forall target occurrence,
+              ((compressedFIDFixedWeightInterpretedFamily.directory bits).selectQueryCosted
+                  target occurrence).cost <=
+                  compressedFIDFixedWeightQueryCost /\
+                ((compressedFIDFixedWeightInterpretedFamily.directory bits).selectQueryCosted
+                  target occurrence).erase =
+                  Succinct.select target bits occurrence)) /\
+        (forall bits : List Bool,
+          CompressedFIDFixedWeightGlobalPayloadStoreNoSyntheticExecutionStory
+            bits) := by
+  exact
+    ⟨compressedFIDFixedWeightFamilyProfile,
+      compressedFIDFixedWeightInterpretedFamilyProfile,
+      compressedFIDFixedWeightGlobalPayloadStoreNoSynthetic_execution_story⟩
 
 end RankSelect
 
