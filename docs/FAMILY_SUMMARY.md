@@ -48,7 +48,10 @@ source/component/offset backing evidence for successful reads.
 `Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` lifts
 that execution packet to the ordinary `List Int` public surface while keeping
 the classic half-open leftmost RMQ contract and existing modeled
-constant-query story.
+constant-query story. The BP-navigation spoke now also has the concrete
+payload-backed profile `Headlines.concreteBPCloseNavigationProfile`, which
+fixes the relative-split false-select/rank-close layer and compact relative-rmM
+close/LCA directory instead of relying on the older sampled conditional family.
 
 This document is the family-level map for the current Lean development. It
 records the module dependency DAG, correctness and cost status by structure,
@@ -2378,7 +2381,11 @@ The names below are grouped by source module. Repeated base names in
   `BPNavigation.shapeAccessFastSubtreeIntervalProfile`, plus
   `BPNavigation.singletonLcaCloseSemantics_not_matchingOpen_counterexample`.
   The compact close/LCA profile remains exposed as
-  `BPNavigation.compactCloseDirectoryProfile`.
+  `BPNavigation.compactCloseDirectoryProfile`; the concrete BP
+  close-navigation replacement surface is exposed as
+  `BPNavigation.concreteBPCloseNavigationFamily_profile`, with mismatch lemmas
+  `BPNavigation.sampledCloseNavigationInterface_lcaSlot_unitCost` and
+  `BPNavigation.concreteCompactCloseNavigationSeededLCABudget_not_unit`.
 - `RMQ/Core/Amortized.lean`, `RMQ/Core/UnionFind.lean`,
   `RMQ/Core/UnionFind/Forest.lean`, and `RMQUnionFind.lean`: reusable
   potential-method accounting plus the first non-succinct spoke surface
@@ -2673,8 +2680,9 @@ The names below are grouped by source module. Repeated base names in
   `Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace`,
   `Headlines.succinctRMQGlobalPayloadStoreExecutionStory`,
   `Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory`,
-  `Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory`, and
-  the conditional component profile
+  `Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory`,
+  `Headlines.concreteBPCloseNavigationProfile`, and the conditional legacy
+  component profile
   `Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery`.
 - `RMQ/Core/SuccinctReduction.lean` (7):
   `Succinct.rmqBackendOfEulerParensBackend_queryBuilt`,

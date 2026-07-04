@@ -1,5 +1,6 @@
 import RMQ.Core.BPCloseNavigation
 import RMQ.Core.SuccinctSpace.BPAccess
+import RMQ.Core.SuccinctFinal
 
 /-!
 Public facade for the balanced-parentheses close-navigation spoke.
@@ -1560,5 +1561,177 @@ abbrev macroMicroTwoNPlusOBuiltQueryProfile
         microTableOverhead macroOverhead lcaQueryCost) :=
   RMQ.SuccinctClose.PayloadLiveMacroMicroBPCloseNavigationFamily.two_n_plus_o_built_query_profile
     family
+
+/-!
+## Concrete close-navigation replacement surface
+
+The older sampled/interpreted BP close-navigation interface packages the LCA
+leg as a `PayloadLiveBPCloseLCADirectory`, whose public contract is a unit-cost
+payload read. The current concrete construction is different: false-select and
+rank-close are the relative-split sparse-exception close-access family, and the
+close/LCA leg is the compact relative-rmM macro directory with rank seeds. The
+theorem below exposes that concrete construction directly instead of forcing it
+through the stale sampled container.
+-/
+
+/-- Concrete close-access overhead used by the BP-native close-navigation query. -/
+abbrev concreteBPCloseNavigationAccessOverhead : Nat -> Nat :=
+  RMQ.SuccinctFinal.relativeSplitSparseExceptionBPCloseAccessOverhead
+
+/-- Concrete auxiliary overhead for the payload-backed BP close-navigation query. -/
+abbrev concreteBPCloseNavigationOverhead : Nat -> Nat :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQOverhead
+    concreteBPCloseNavigationAccessOverhead
+
+/-- Strong concrete close-access family: relative-split false-select plus rank-close. -/
+abbrev concreteBPCloseNavigationRelativeSplitAccessFamily :=
+  RMQ.SuccinctFinal.builtRelativeSplitSparseExceptionFalseSelectBPCloseAccessFamily
+
+/-- Weak close-access projection consumed by the final BP-native query combinator. -/
+abbrev concreteBPCloseNavigationAccessFamily :=
+  concreteBPCloseNavigationRelativeSplitAccessFamily.toWeakFamily
+
+/-- Constant modeled cost for the concrete BP close-navigation query. -/
+abbrev concreteBPCloseNavigationQueryCost : Nat :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQQueryCost
+    RMQ.SuccinctSelect.sparseDenseFalseSelectQueryCost
+
+/-- Payload stored by the concrete BP close-navigation query for one shape. -/
+abbrev concreteBPCloseNavigationPayload
+    (shape : Cartesian.CartesianShape) : List Bool :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQPayload
+    concreteBPCloseNavigationAccessFamily shape
+
+/-- Concrete payload-backed BP close-navigation query. -/
+abbrev concreteBPCloseNavigationCosted
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    Costed (Option Nat) :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQQueryCosted
+    concreteBPCloseNavigationAccessFamily shape left right
+
+/-- Rank-close payload words read by the concrete close-navigation access layer. -/
+abbrev concreteBPCloseNavigationRankReadWords
+    (shape : Cartesian.CartesianShape) : List (List Bool) :=
+  (concreteBPCloseNavigationAccessFamily.directory shape).rankReadWords
+
+/-- Select-close payload words read by the concrete close-navigation access layer. -/
+abbrev concreteBPCloseNavigationSelectReadWords
+    (shape : Cartesian.CartesianShape) : List (List Bool) :=
+  (concreteBPCloseNavigationAccessFamily.directory shape).selectReadWords
+
+/-- Compact close/LCA payload words read by the concrete close-navigation layer. -/
+abbrev concreteBPCloseNavigationLCAReadWords
+    (shape : Cartesian.CartesianShape) (leftClose rightClose : Nat) :
+    List (List Bool) :=
+  (RMQ.SuccinctFinal.concreteBPNativeCloseDirectory shape).payloadWordsRead
+    leftClose rightClose
+
+/--
+The historical sampled close-navigation directory hard-wires the LCA leg to a
+unit-cost `PayloadLiveBPCloseLCADirectory` slot.
+-/
+theorem sampledCloseNavigationInterface_lcaSlot_unitCost
+    {n rankOverhead selectOverhead lcaOverhead : Nat}
+    (directory :
+      RMQ.SuccinctSpace.PayloadLiveBPCloseRMQNavigationDirectory
+        n rankOverhead selectOverhead lcaOverhead)
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) :
+    (directory.lcaCloseCosted shape leftClose rightClose).cost <= 1 := by
+  exact directory.lcaCloseCosted_cost_le_one shape leftClose rightClose
+
+/--
+The concrete compact close/LCA leg has a larger fixed seeded budget. This is
+the formal mismatch behind replacing the sampled public endpoint instead of
+pretending the macro/micro directory is a one-read LCA table.
+-/
+theorem concreteCompactCloseNavigationSeededLCABudget_not_unit
+    (rankCost : Nat) :
+    1 <
+      RMQ.SuccinctClose.concreteCompactBPCloseQueryCostWithRankSeed
+        rankCost := by
+  unfold RMQ.SuccinctClose.concreteCompactBPCloseQueryCostWithRankSeed
+  omega
+
+/--
+Concrete BP close-navigation profile over the current payload-backed
+construction.
+
+The payload is the Cartesian BP code plus concrete auxiliary payload for
+relative-split close access and compact relative-rmM close/LCA navigation.
+Queries select the endpoint closes, compute their BP LCA/answer close, and rank
+that close back to the inorder/RMQ index. All component payload words exposed
+by the query are bounded by the machine word size for the BP code.
+-/
+theorem concreteBPCloseNavigationFamily_profile :
+    RMQ.SuccinctSpace.LittleOLinear concreteBPCloseNavigationOverhead /\
+      forall n : Nat,
+        RMQ.EncodingLowerBound.logSlackLower n <=
+          2 * n + concreteBPCloseNavigationOverhead n /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            (concreteBPCloseNavigationPayload shape).length =
+              2 * n + concreteBPCloseNavigationOverhead n) /\
+        (forall shape left right,
+          (concreteBPCloseNavigationCosted shape left right).cost <=
+            concreteBPCloseNavigationQueryCost) /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            forall {left len : Nat},
+              0 < len ->
+                left + len <= n ->
+                  (concreteBPCloseNavigationCosted
+                    shape left (left + len)).erase =
+                    some (scanWindow shape.representative left len)) /\
+        (forall shape {word : List Bool},
+          List.Mem word (concreteBPCloseNavigationRankReadWords shape) ->
+            word.length <=
+              RMQ.SuccinctRank.machineWordBits shape.bpCode.length) /\
+        (forall shape {word : List Bool},
+          List.Mem word (concreteBPCloseNavigationSelectReadWords shape) ->
+            word.length <=
+              RMQ.SuccinctRank.machineWordBits shape.bpCode.length) /\
+        (forall shape leftClose rightClose {word : List Bool},
+          List.Mem word
+              (concreteBPCloseNavigationLCAReadWords
+                shape leftClose rightClose) ->
+            word.length <=
+              RMQ.SuccinctRank.machineWordBits shape.bpCode.length) := by
+  have hprofile :=
+    RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
+      concreteBPCloseNavigationAccessFamily
+  constructor
+  · simpa [concreteBPCloseNavigationOverhead] using hprofile.1
+  intro n
+  rcases hprofile.2 n with
+    ⟨hlower, _haccessPayload, hpayload, hcost, hexact⟩
+  constructor
+  · simpa [concreteBPCloseNavigationOverhead] using hlower
+  constructor
+  · intro shape hshape
+    simpa [concreteBPCloseNavigationPayload,
+      concreteBPCloseNavigationOverhead] using hpayload hshape
+  constructor
+  · intro shape left right
+    simpa [concreteBPCloseNavigationCosted,
+      concreteBPCloseNavigationQueryCost] using hcost shape left right
+  constructor
+  · intro shape hshape left len hlen hbound
+    simpa [concreteBPCloseNavigationCosted] using
+      hexact hshape hlen hbound
+  constructor
+  · intro shape word hmem
+    exact
+      (concreteBPCloseNavigationAccessFamily.directory
+        shape).rank_read_words_length_le_machine hmem
+  constructor
+  · intro shape word hmem
+    exact
+      (concreteBPCloseNavigationAccessFamily.directory
+        shape).select_read_words_length_le_machine hmem
+  intro shape leftClose rightClose word hmem
+  have hcompact :=
+    RMQ.SuccinctClose.concreteCompactBPCloseLCADirectory_profile shape
+  exact hcompact.2.2.2.2 hmem
 
 end RMQ.BPNavigation

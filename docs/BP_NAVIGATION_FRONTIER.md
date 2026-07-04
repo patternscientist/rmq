@@ -16,7 +16,9 @@ import RMQBPNavigation
 `RMQBPNavigation` exposes neutral names under `RMQ.BPNavigation`. It is still a
 narrow spoke, but it now exposes the basic charged BP-navigation legs, the first
 public subtree-interval operation, and a dense concrete matching-open/enclose
-directory over Cartesian-shape balanced-parentheses encodings:
+directory over Cartesian-shape balanced-parentheses encodings. It also exposes
+the concrete payload-backed BP close-navigation profile used by the succinct
+RMQ capstone:
 
 - `closeOfInorderCosted`: inorder node index to closing parenthesis, routed
   through false-select;
@@ -93,6 +95,12 @@ RMQ.BPNavigation.shapeAccessCloseRankProfile
 RMQ.BPNavigation.shapeAccessCloseRankExcessProfile
 RMQ.BPNavigation.shapeAccessSubtreeIntervalProfile
 RMQ.BPNavigation.shapeAccessFastSubtreeIntervalProfile
+RMQ.BPNavigation.concreteBPCloseNavigationAccessFamily
+RMQ.BPNavigation.concreteBPCloseNavigationPayload
+RMQ.BPNavigation.concreteBPCloseNavigationCosted
+RMQ.BPNavigation.sampledCloseNavigationInterface_lcaSlot_unitCost
+RMQ.BPNavigation.concreteCompactCloseNavigationSeededLCABudget_not_unit
+RMQ.BPNavigation.concreteBPCloseNavigationFamily_profile
 ```
 
 The first bridge profile proves one-query modeled cost for both close/rank
@@ -196,6 +204,23 @@ RMQ.BPNavigation.macroMicroTwoNPlusOBuiltQueryProfile
 It packages the `2*n + o(n)`, constant-query shape for payload-live BP
 close-navigation families.
 
+The current concrete BP close-navigation profile is exposed as:
+
+```lean
+RMQ.BPNavigation.concreteBPCloseNavigationFamily_profile
+RMQ.Headlines.concreteBPCloseNavigationProfile
+```
+
+It fixes the relative-split false-select/rank-close access family and the
+compact relative-rmM close/LCA directory. The theorem proves `2*n + o(n)`
+payload, constant modeled query cost, exact Cartesian-shape RMQ answer
+semantics, and machine-word-bounded rank/select/LCA component payload reads.
+It is not the old sampled conditional interface. The mismatch is recorded by
+`sampledCloseNavigationInterface_lcaSlot_unitCost` and
+`concreteCompactCloseNavigationSeededLCABudget_not_unit`: the older sampled
+container hard-wires the LCA leg as a one-read slot, while the concrete seeded
+compact close/LCA leg has a larger fixed modeled budget.
+
 ## Remaining Frontier
 
 The BP navigation spoke is landed as the compact close/LCA layer consumed by
@@ -204,8 +229,10 @@ subtree-interval operation. It also has a conditional fast subtree theorem over
 a public matching-open boundary, a dense concrete matching-open/enclose
 directory, a constant-query parent-open/enclose profile consuming that
 directory, a constant-query parent-index profile consuming matching-close plus
-close-rank, and a counterexample showing the current concrete close/LCA query
-is not itself the matching-open boundary. The useful next deepening steps are:
+close-rank, a concrete payload-backed BP close-navigation profile for the RMQ
+close/LCA specialization, and a counterexample showing the current concrete
+close/LCA query is not itself the matching-open boundary. The useful next
+deepening steps are:
 
 1. replace the dense matching-open/enclose/matching-close table with a
    payload-live succinct directory backed by compact range-min/max or

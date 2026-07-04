@@ -820,6 +820,9 @@ checked compatibility surfaces live in `scripts/archive_axiom_check.lean`.
 #print axioms RMQ.SuccinctClose.concretePayloadLiveRelativeRmmBPCloseMacro_profile
 #print axioms RMQ.SuccinctClose.PayloadLiveMacroMicroBPCloseLCAFamily.profile
 #print axioms RMQ.SuccinctClose.PayloadLiveMacroMicroBPCloseNavigationFamily.two_n_plus_o_built_query_profile
+#print axioms RMQ.BPNavigation.sampledCloseNavigationInterface_lcaSlot_unitCost
+#print axioms RMQ.BPNavigation.concreteCompactCloseNavigationSeededLCABudget_not_unit
+#print axioms RMQ.BPNavigation.concreteBPCloseNavigationFamily_profile
 #print axioms RMQ.SuccinctFinal.PayloadLiveBPCloseAccessFamily.constant_query_profile
 #print axioms RMQ.SuccinctFinal.ReadBackedBPCloseAccessDirectory.selectCloseCosted_exact
 #print axioms RMQ.SuccinctFinal.ReadBackedBPCloseAccessDirectory.rankCloseCosted_exact

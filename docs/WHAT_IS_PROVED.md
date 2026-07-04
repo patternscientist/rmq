@@ -35,6 +35,7 @@ The short public theorem aliases live in `RMQ/Headlines.lean`.
 | `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Flat-payload no-synthetic execution story: the final trace reads from one query-independent flat payload layout, successful reads have component/offset backing evidence, addresses and word-primitive operands are bounded, and no synthetic cost-only event occurs. |
 | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory` | Large-regime companion to the all-size execution story: under `2^128 <= shape.size`, the compact close/LCA leg uses the positive-block structural replay rather than the all-size fallback. |
 | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory` | Bounded large-regime companion to the global-store execution story. |
+| `RMQ.Headlines.concreteBPCloseNavigationProfile` | Concrete payload-backed BP close-navigation profile: the current relative-split false-select/rank-close layer plus compact relative-rmM close/LCA layer give `2*n + o(n)` payload, constant modeled query cost, exact Cartesian-shape RMQ answer semantics, and machine-word-bounded component payload reads. |
 | `RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery` | Conditional component-level interpreter-backed BP close-navigation profile, parameterized by a supplied word-bounded sampled encoded close-navigation family. |
 
 The original theorem names remain construction-heavy so that their dependencies
@@ -138,10 +139,12 @@ are the concrete theorem anchors. `TraceResult.ofCosted` now emits a dedicated
 `TraceEvent.syntheticCostOnlyPrimitive` constructor, separate from real
 `wordRank`/`wordSelect` primitives, and the no-synthetic final theorem proves
 that constructor is absent from the all-size global query trace.
-The component-level
+The preferred component-level BP close-navigation citation is now
+`RMQ.Headlines.concreteBPCloseNavigationProfile`, which fixes the concrete
+relative-split close-access layer and compact close/LCA directory. The older
 `RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery` remains
-available as the reusable BP close-navigation profile, but it is conditional:
-the theorem consumes a supplied word-bounded sampled encoded close-navigation
+available as a legacy sampled-interface profile, but it is conditional: the
+theorem consumes a supplied word-bounded sampled encoded close-navigation
 family rather than constructing that family in the public BP-navigation spoke.
 
 ## Standalone Rank/Select

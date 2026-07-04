@@ -61,6 +61,11 @@ Use this workflow for nontrivial work in the RMQ Lean repository.
 - Good proof-worker splits require pinned theorem signatures or construction
   contracts up front. If the leaf contract is not stable enough to hand to a
   worker, keep it in the lead loop rather than spawning exploratory churn.
+- For ambitious worker prompts, name the actual theorem/profile that must land.
+  Do not present a weaker adjacent theorem, wrapper, or "if hard, do this
+  instead" route as an acceptable completion path. The only valid replacement
+  target is one forced by a precise formal obstruction showing the original
+  target is impossible or mis-specified.
 - While agents run, the lead thread should keep doing non-overlapping work,
   check in periodically when useful, steer agents away from premature loop
   breaks or tertiary outputs, and integrate accepted results centrally.

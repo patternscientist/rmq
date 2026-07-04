@@ -59,6 +59,10 @@
   codebase, must not revert or overwrite other changes, and should continue
   through their loop until the assigned target closes or a real stop condition
   is met.
+- Worker prompts for ambitious proof targets should name the actual target that
+  must close. Do not offer an easier alternate endpoint as a valid completion
+  route. A fallback target is acceptable only after the worker proves the
+  original target impossible or mis-specified by a precise formal obstruction.
 - Do not treat "avoid overclaiming" as a stop condition. Every report must be
   honest, but if the assigned target is not yet true and the next local
   proof/construction step is available, keep working instead of stopping at a

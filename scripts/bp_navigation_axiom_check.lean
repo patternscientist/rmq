@@ -47,3 +47,6 @@ generic payload-live macro/micro family profile.
 #print axioms RMQ.BPNavigation.compactCloseDirectoryProfileOfSizeGe
 #print axioms RMQ.BPNavigation.macroMicroTwoNPlusOBuiltQueryProfile
 #print axioms RMQ.SuccinctClose.PayloadLiveMacroMicroBPCloseNavigationFamily.two_n_plus_o_built_query_profile
+#print axioms RMQ.BPNavigation.sampledCloseNavigationInterface_lcaSlot_unitCost
+#print axioms RMQ.BPNavigation.concreteCompactCloseNavigationSeededLCABudget_not_unit
+#print axioms RMQ.BPNavigation.concreteBPCloseNavigationFamily_profile

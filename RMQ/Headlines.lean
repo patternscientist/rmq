@@ -1,4 +1,5 @@
 import RMQ.Core.EncodingLowerBound
+import RMQ.Core.BPNavigationPublic
 import RMQ.Core.RankSelectPublic
 import RMQ.Core.RankSelectPublicRAM
 import RMQ.Core.SuccinctSpace.BPCloseRMQNavigationRAM
@@ -230,6 +231,16 @@ Large-regime bounded companion to
 -/
 abbrev succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_bounded_execution_story
+
+/--
+Concrete payload-backed BP close-navigation profile. This is the preferred
+current BP-close navigation citation: it fixes the concrete relative-split
+close-access family and compact relative-rmM close/LCA directory, proving
+`2*n + o(n)` payload, constant modeled query cost, exact Cartesian-shape RMQ
+answer semantics, and machine-word-bounded component payload reads.
+-/
+abbrev concreteBPCloseNavigationProfile :=
+  RMQ.BPNavigation.concreteBPCloseNavigationFamily_profile
 
 /--
 Interpreter-backed BP close-navigation profile: `2*n + o(n)`, constant query,
