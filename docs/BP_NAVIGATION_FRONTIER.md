@@ -215,6 +215,23 @@ It fixes the relative-split false-select/rank-close access family and the
 compact relative-rmM close/LCA directory. The theorem proves `2*n + o(n)`
 payload, constant modeled query cost, exact Cartesian-shape RMQ answer
 semantics, and machine-word-bounded rank/select/LCA component payload reads.
+
+The concrete WordRAM execution story is exposed as:
+
+```lean
+RMQ.BPNavigation.concreteBPCloseNavigationGlobalTrace_execution_story
+RMQ.BPNavigation.concreteBPCloseNavigationGlobalTrace_bounded_execution_story
+RMQ.Headlines.concreteBPCloseNavigationGlobalPayloadStoreExecutionStory
+RMQ.Headlines.concreteBPCloseNavigationGlobalPayloadStoreBoundedExecutionStory
+```
+
+These theorems consume the same concrete close-navigation query surface as the
+profile. They provide a globally segmented `WordRAM.TraceResult`, prove
+`concreteBPCloseNavigationCosted shape left right = trace.toCosted`, preserve
+the exact Cartesian-shape RMQ/close-navigation semantics, match payload-read
+events against one concrete read store, prove successful reads are backed by
+the concrete payload component stores, and add a finite trace-local width for
+read addresses and word-primitive operands/results.
 It is not the old sampled conditional interface. The mismatch is recorded by
 `sampledCloseNavigationInterface_lcaSlot_unitCost` and
 `concreteCompactCloseNavigationSeededLCABudget_not_unit`: the older sampled
@@ -230,7 +247,8 @@ a public matching-open boundary, a dense concrete matching-open/enclose
 directory, a constant-query parent-open/enclose profile consuming that
 directory, a constant-query parent-index profile consuming matching-close plus
 close-rank, a concrete payload-backed BP close-navigation profile for the RMQ
-close/LCA specialization, and a counterexample showing the current concrete
+close/LCA specialization, a trace/store execution story for that concrete
+close-navigation query, and a counterexample showing the current concrete
 close/LCA query is not itself the matching-open boundary. The useful next
 deepening steps are:
 

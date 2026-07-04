@@ -50,3 +50,5 @@ generic payload-live macro/micro family profile.
 #print axioms RMQ.BPNavigation.sampledCloseNavigationInterface_lcaSlot_unitCost
 #print axioms RMQ.BPNavigation.concreteCompactCloseNavigationSeededLCABudget_not_unit
 #print axioms RMQ.BPNavigation.concreteBPCloseNavigationFamily_profile
+#print axioms RMQ.BPNavigation.concreteBPCloseNavigationGlobalTrace_execution_story
+#print axioms RMQ.BPNavigation.concreteBPCloseNavigationGlobalTrace_bounded_execution_story
