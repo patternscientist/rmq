@@ -208,6 +208,9 @@ The all-size structural/no-synthetic companion proves that the final RMQ trace
 contains no dedicated synthetic cost-only marker events. The large-regime
 companion adds the explicit `2^128 <= shape.size` premise and routes the
 compact close/LCA leg through structural local/fringe/interior trace replay.
+The all-size finite-small interior path is no longer justified by a
+`2^128` finite prefix; it is theorem-confined below
+`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15`.
 Remaining hardening is tighter component-level machine-word side conditions
 plus stronger uniform word-width packaging for rank/select. The rank/select
 compressed/FID spoke now reuses the same

@@ -112,7 +112,7 @@ def lcaCloseCosted
     (leftClose rightClose : Nat) : Costed (Option Nat) :=
   let blockSize := canonicalBPRelativeSummaryBlockSize shape
   if blockSize = 0 then
-    localBPSameBlockCloseCosted shape leftClose rightClose
+    finiteSmallSameBlockCloseCosted shape leftClose rightClose
   else if blockOfClose blockSize leftClose =
       blockOfClose blockSize rightClose then
     localBPSameBlockCloseDecodedCosted shape blockSize leftClose rightClose
@@ -126,7 +126,7 @@ def lcaCloseCostedWithRankSeed
     (leftClose rightClose : Nat) : Costed (Option Nat) :=
   let blockSize := canonicalBPRelativeSummaryBlockSize shape
   if blockSize = 0 then
-    localBPSameBlockCloseCosted shape leftClose rightClose
+    finiteSmallSameBlockCloseCosted shape leftClose rightClose
   else if blockOfClose blockSize leftClose =
       blockOfClose blockSize rightClose then
     localBPSameBlockCloseDecodedCostedWithRankSeed shape rankCloseCosted
@@ -169,10 +169,34 @@ theorem lcaCloseCostedWithRankSeed_eq_positive_dispatch_of_size_ge
           (canonicalBPRelativeSummaryBlockSize shape) leftClose rightClose
       else
         directory.crossBlockCloseCostedWithRankSeed rankCloseCosted leftClose
+          rightClose := by
+  have hready := concreteBPRelativeRmmInteriorReady_of_size_ge shape hsize
+  exact
+    directory.lcaCloseCostedWithRankSeed_eq_positive_dispatch
+      rankCloseCosted leftClose rightClose
+      (canonicalBPRelativeSummaryBlockSize_pos_of_active
+        (concreteBPRelativeRmmInteriorReady_active hready))
+
+theorem lcaCloseCostedWithRankSeed_eq_positive_dispatch_of_ready
+    {shape : Cartesian.CartesianShape}
+    (directory : ConcreteCompactBPCloseLCADirectory shape)
+    (rankCloseCosted : Nat -> Costed Nat)
+    (leftClose rightClose : Nat)
+    (hready : concreteBPRelativeRmmInteriorReady shape) :
+    directory.lcaCloseCostedWithRankSeed rankCloseCosted leftClose
+        rightClose =
+      if blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose =
+          blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+            rightClose then
+        localBPSameBlockCloseDecodedCostedWithRankSeed shape rankCloseCosted
+          (canonicalBPRelativeSummaryBlockSize shape) leftClose rightClose
+      else
+        directory.crossBlockCloseCostedWithRankSeed rankCloseCosted leftClose
           rightClose :=
   directory.lcaCloseCostedWithRankSeed_eq_positive_dispatch
     rankCloseCosted leftClose rightClose
-    (canonicalBPRelativeSummaryBlockSize_pos_of_size_ge hsize)
+    (canonicalBPRelativeSummaryBlockSize_pos_of_active
+      (concreteBPRelativeRmmInteriorReady_active hready))
 
 theorem crossBlockCloseCosted_cost_le
     {shape : Cartesian.CartesianShape}
@@ -300,7 +324,7 @@ theorem lcaCloseCosted_cost_le
   by_cases hzero : canonicalBPRelativeSummaryBlockSize shape = 0
   · simp [hzero]
     have hlocal :=
-      localBPSameBlockCloseCosted_cost_le shape leftClose rightClose
+      finiteSmallSameBlockCloseCosted_cost_le_one shape leftClose rightClose
     unfold concreteCompactBPCloseQueryCost
     omega
   · simp [hzero]
@@ -329,7 +353,7 @@ theorem lcaCloseCostedWithRankSeed_cost_le
   by_cases hzero : canonicalBPRelativeSummaryBlockSize shape = 0
   · simp [hzero]
     have hlocal :=
-      localBPSameBlockCloseCosted_cost_le shape leftClose rightClose
+      finiteSmallSameBlockCloseCosted_cost_le_one shape leftClose rightClose
     unfold concreteCompactBPCloseQueryCostWithRankSeed
     omega
   · simp [hzero]
@@ -1057,7 +1081,7 @@ theorem lcaCloseCosted_exact_of_query
   by_cases hzero : canonicalBPRelativeSummaryBlockSize shape = 0
   · simp [hzero]
     exact
-      localBPSameBlockCloseCosted_exact hlen hbound hleft hright hanswer
+      finiteSmallSameBlockCloseCosted_exact hlen hbound hleft hright hanswer
   · simp [hzero]
     by_cases hsame :
         blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose =
@@ -1141,7 +1165,7 @@ theorem lcaCloseCostedWithRankSeed_exact_of_query
   by_cases hzero : canonicalBPRelativeSummaryBlockSize shape = 0
   · simp [hzero]
     exact
-      localBPSameBlockCloseCosted_exact hlen hbound hleft hright hanswer
+      finiteSmallSameBlockCloseCosted_exact hlen hbound hleft hright hanswer
   · simp [hzero]
     by_cases hsame :
         blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose =
@@ -1276,6 +1300,61 @@ def concreteCompactBPCloseLCADirectory
   payload := (concreteBPRelativeRmmInteriorDirectory shape).payload
   payload_eq_interior := rfl
 
+theorem concreteCompactBPCloseLCADirectory_profile_of_ready
+    (shape : Cartesian.CartesianShape)
+    (hready : concreteBPRelativeRmmInteriorReady shape) :
+    let directory := concreteCompactBPCloseLCADirectory shape
+    directory.payload.length <= compactBPCloseOverhead shape.size /\
+      SuccinctSpace.LittleOLinear compactBPCloseOverhead /\
+      (forall leftClose rightClose,
+        (directory.lcaCloseCosted leftClose rightClose).cost <=
+          concreteCompactBPCloseQueryCost) /\
+      (forall {left len leftClose rightClose answerClose : Nat},
+        0 < len ->
+          left + len <= shape.size ->
+            bpCloseOfInorder? shape left = some leftClose ->
+              bpCloseOfInorder? shape (left + len - 1) =
+                  some rightClose ->
+                bpCloseOfInorder? shape
+                    (scanWindow shape.representative left len) =
+                  some answerClose ->
+                  (directory.lcaCloseCosted leftClose rightClose).erase =
+                    some answerClose) /\
+      forall {leftClose rightClose : Nat} {word : List Bool},
+        word ∈ directory.payloadWordsRead leftClose rightClose ->
+          word.length <=
+            SuccinctRank.machineWordBits shape.bpCode.length := by
+  let directory := concreteCompactBPCloseLCADirectory shape
+  have hinterior :=
+    concreteBPRelativeRmmInteriorDirectory_profile_of_ready shape hready
+  rcases hinterior with
+    ⟨_hlittleInterior, hpayloadInterior, _hcostInterior,
+      _hexactInterior, _hreadInterior⟩
+  have hpayload :
+      directory.payload.length <= compactBPCloseOverhead shape.size := by
+    have hdirPayload :
+        directory.payload.length <=
+          concreteBPRelativeRmmInteriorOverhead shape.size := by
+      simpa [directory, concreteCompactBPCloseLCADirectory] using
+        hpayloadInterior
+    unfold compactBPCloseOverhead
+    omega
+  exact
+    ⟨hpayload,
+    compactBPCloseOverhead_littleO,
+    by
+      intro leftClose rightClose
+      exact directory.lcaCloseCosted_cost_le leftClose rightClose,
+    by
+      intro left len leftClose rightClose answerClose hlen hbound
+        hleft hright hanswer
+      exact
+        directory.lcaCloseCosted_exact_of_query hlen hbound
+          hleft hright hanswer,
+    by
+      intro leftClose rightClose word hmem
+      exact directory.read_words_length_le_machine hmem⟩
+
 theorem concreteCompactBPCloseLCADirectory_profile_of_size_ge
     (shape : Cartesian.CartesianShape)
     (hsize : 2 ^ 128 <= shape.size) :
@@ -1300,30 +1379,9 @@ theorem concreteCompactBPCloseLCADirectory_profile_of_size_ge
         word ∈ directory.payloadWordsRead leftClose rightClose ->
           word.length <=
             SuccinctRank.machineWordBits shape.bpCode.length := by
-  let directory := concreteCompactBPCloseLCADirectory shape
-  have hinterior :=
-    concreteBPRelativeRmmInteriorDirectory_profile shape hsize
-  rcases hinterior with
-    ⟨_hlittleInterior, hpayloadInterior, _hcostInterior,
-      _hexactInterior, _hreadInterior⟩
-  have hnotSmall : ¬ shape.size < 2 ^ 128 := by omega
   exact
-    ⟨by
-      simpa [directory, concreteCompactBPCloseLCADirectory,
-        compactBPCloseOverhead, hnotSmall] using hpayloadInterior,
-    compactBPCloseOverhead_littleO,
-    by
-      intro leftClose rightClose
-      exact directory.lcaCloseCosted_cost_le leftClose rightClose,
-    by
-      intro left len leftClose rightClose answerClose hlen hbound
-        hleft hright hanswer
-      exact
-        directory.lcaCloseCosted_exact_of_query hlen hbound
-          hleft hright hanswer,
-    by
-      intro leftClose rightClose word hmem
-      exact directory.read_words_length_le_machine hmem⟩
+    concreteCompactBPCloseLCADirectory_profile_of_ready
+      shape (concreteBPRelativeRmmInteriorReady_of_size_ge shape hsize)
 
 theorem concreteCompactBPCloseLCADirectory_profile
     (shape : Cartesian.CartesianShape) :
@@ -1351,12 +1409,11 @@ theorem concreteCompactBPCloseLCADirectory_profile
   let directory := concreteCompactBPCloseLCADirectory shape
   have hpayload :
       directory.payload.length <= compactBPCloseOverhead shape.size := by
-    by_cases hsize : 2 ^ 128 <= shape.size
+    by_cases hready : concreteBPRelativeRmmInteriorReady shape
     · exact
-        (concreteCompactBPCloseLCADirectory_profile_of_size_ge
-          shape hsize).1
-    · have hsmall : shape.size < 2 ^ 128 := Nat.lt_of_not_ge hsize
-      have hpayloadEq :
+        (concreteCompactBPCloseLCADirectory_profile_of_ready
+          shape hready).1
+    · have hpayloadEq :
           directory.payload.length =
             concreteBPRelativeRmmInteriorDirectoryPayloadLength shape := by
         simp [directory, concreteCompactBPCloseLCADirectory,
@@ -1366,13 +1423,20 @@ theorem concreteCompactBPCloseLCADirectory_profile
         Cartesian.shapeOfSize_mem_shapesOfSize
           (cartesianShape_shapeOfSize_self shape)
       have hpayloadMem :
-          concreteBPRelativeRmmInteriorDirectoryPayloadLength shape ∈
+          compactBPCloseFiniteSmallFallbackPayloadLength shape ∈
             (Cartesian.shapesOfSize shape.size).map
               (fun shape =>
-                concreteBPRelativeRmmInteriorDirectoryPayloadLength shape) :=
+                compactBPCloseFiniteSmallFallbackPayloadLength shape) :=
         List.mem_map.mpr ⟨shape, hshape, rfl⟩
       have hmax := le_natListMax_of_mem hpayloadMem
-      simpa [compactBPCloseOverhead, hsmall, hpayloadEq] using hmax
+      have hfallback :
+          compactBPCloseFiniteSmallFallbackPayloadLength shape =
+            concreteBPRelativeRmmInteriorDirectoryPayloadLength shape :=
+        compactBPCloseFiniteSmallFallbackPayloadLength_eq_directory_of_not_ready
+          hready
+      unfold compactBPCloseOverhead
+      unfold compactBPCloseFiniteSmallFallbackOverhead
+      omega
   exact
     ⟨hpayload,
     compactBPCloseOverhead_littleO,
@@ -1641,9 +1705,9 @@ def concretePayloadLiveRelativeRmmBPCloseMacroOverhead
           (canonicalBPRelativeSummaryBlockCount shape)).length *
         SuccinctRank.machineWordBits shape.bpCode.length)
 
-def concretePayloadLiveRelativeRmmBPCloseMacro
+def concretePayloadLiveRelativeRmmBPCloseMacro_of_ready
     (shape : Cartesian.CartesianShape)
-    (hsize : 2 ^ 128 <= shape.size) :
+    (hready : concreteBPRelativeRmmInteriorReady shape) :
     PayloadLiveRelativeRmmBPCloseMacro shape
       (canonicalBPRelativeSummaryBlockSize shape)
       (canonicalBPRelativeSummaryBlockCount shape)
@@ -1668,8 +1732,8 @@ def concretePayloadLiveRelativeRmmBPCloseMacro
           canonicalBPRelativeSummary_superWidth_bound shape)
   let interior := concreteBPRelativeRmmInteriorDirectory shape
   have hparams :=
-    concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_size_ge
-      shape hsize
+    concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_ready
+      shape hready
   rcases hparams with
     ⟨hblockSizeEq, _hblocksPerSuperEq, _hblockCountEq,
       _hsuperCountEq, _hrelativeWidthEq, _hlittleO, _hactive,
@@ -1685,10 +1749,22 @@ def concretePayloadLiveRelativeRmmBPCloseMacro
     payloadLiveRelativeRmmBPCloseMacroOfInterior
       leftFringe interior rightFringe hblockSize (Nat.le_refl fieldWidth)
 
-theorem concretePayloadLiveRelativeRmmBPCloseMacro_profile
+def concretePayloadLiveRelativeRmmBPCloseMacro
     (shape : Cartesian.CartesianShape)
     (hsize : 2 ^ 128 <= shape.size) :
-    let component := concretePayloadLiveRelativeRmmBPCloseMacro shape hsize
+    PayloadLiveRelativeRmmBPCloseMacro shape
+      (canonicalBPRelativeSummaryBlockSize shape)
+      (canonicalBPRelativeSummaryBlockCount shape)
+      (concretePayloadLiveRelativeRmmBPCloseMacroPayloadLength shape)
+      concreteBPRelativeRmmInteriorQueryCost :=
+  concretePayloadLiveRelativeRmmBPCloseMacro_of_ready shape
+    (concreteBPRelativeRmmInteriorReady_of_size_ge shape hsize)
+
+theorem concretePayloadLiveRelativeRmmBPCloseMacro_profile_of_ready
+    (shape : Cartesian.CartesianShape)
+    (hready : concreteBPRelativeRmmInteriorReady shape) :
+    let component := concretePayloadLiveRelativeRmmBPCloseMacro_of_ready
+      shape hready
     component.payload.length <=
         concretePayloadLiveRelativeRmmBPCloseMacroOverhead shape /\
       (forall leftClose rightClose,
@@ -1740,8 +1816,8 @@ theorem concretePayloadLiveRelativeRmmBPCloseMacro_profile
           canonicalBPRelativeSummary_superWidth_bound shape)
   let interior := concreteBPRelativeRmmInteriorDirectory shape
   have hparams :=
-    concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_size_ge
-      shape hsize
+    concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_ready
+      shape hready
   rcases hparams with
     ⟨hblockSizeEq, _hblocksPerSuperEq, _hblockCountEq,
       _hsuperCountEq, _hrelativeWidthEq, _hlittleO, _hactive,
@@ -1758,8 +1834,9 @@ theorem concretePayloadLiveRelativeRmmBPCloseMacro_profile
       leftFringe interior rightFringe hblockSize
       (Nat.le_refl fieldWidth)
   have hinteriorProfile :=
-    concreteBPRelativeRmmInteriorDirectory_profile shape hsize
-  let component := concretePayloadLiveRelativeRmmBPCloseMacro shape hsize
+    concreteBPRelativeRmmInteriorDirectory_profile_of_ready shape hready
+  let component := concretePayloadLiveRelativeRmmBPCloseMacro_of_ready
+    shape hready
   rcases hcomponentProfile with
     ⟨_hpayload, _hcost, _hexact, _hread⟩
   rcases hinteriorProfile with
@@ -1772,28 +1849,68 @@ theorem concretePayloadLiveRelativeRmmBPCloseMacro_profile
     rw [(concreteBPRelativeRmmInteriorDirectory shape).payload_length_eq] at hp
     exact hp
   constructor
-  · rw [(concretePayloadLiveRelativeRmmBPCloseMacro
-        shape hsize).payload_length]
+  · rw [(concretePayloadLiveRelativeRmmBPCloseMacro_of_ready
+        shape hready).payload_length]
     unfold concretePayloadLiveRelativeRmmBPCloseMacroOverhead
       concretePayloadLiveRelativeRmmBPCloseMacroPayloadLength
     omega
   constructor
   · intro leftClose rightClose
     exact
-      (concretePayloadLiveRelativeRmmBPCloseMacro
-        shape hsize).lcaCloseCosted_cost_le leftClose rightClose
+      (concretePayloadLiveRelativeRmmBPCloseMacro_of_ready
+        shape hready).lcaCloseCosted_cost_le leftClose rightClose
   constructor
   · intro left len leftClose rightClose answerClose hlen hbound hleft
       hright hanswer hleftBlock hrightBlock hcross
     exact
-      (concretePayloadLiveRelativeRmmBPCloseMacro
-        shape hsize).lcaCloseCosted_exact_of_query_cross_block
+      (concretePayloadLiveRelativeRmmBPCloseMacro_of_ready
+        shape hready).lcaCloseCosted_exact_of_query_cross_block
           hlen hbound hleft hright hanswer hblockSize hleftBlock
           hrightBlock hcross
   · intro leftClose rightClose word hmem
     exact
-      (concretePayloadLiveRelativeRmmBPCloseMacro
-        shape hsize).read_words_length_le_machine hmem
+      (concretePayloadLiveRelativeRmmBPCloseMacro_of_ready
+        shape hready).read_words_length_le_machine hmem
+
+theorem concretePayloadLiveRelativeRmmBPCloseMacro_profile
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size) :
+    let component := concretePayloadLiveRelativeRmmBPCloseMacro shape hsize
+    component.payload.length <=
+        concretePayloadLiveRelativeRmmBPCloseMacroOverhead shape /\
+      (forall leftClose rightClose,
+        (component.lcaCloseCosted leftClose rightClose).cost <=
+          4 + concreteBPRelativeRmmInteriorQueryCost) /\
+      (forall {left len leftClose rightClose answerClose : Nat},
+        0 < len ->
+          left + len <= shape.size ->
+            bpCloseOfInorder? shape left = some leftClose ->
+              bpCloseOfInorder? shape (left + len - 1) =
+                  some rightClose ->
+                bpCloseOfInorder? shape
+                    (scanWindow shape.representative left len) =
+                  some answerClose ->
+                  blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+                      leftClose <
+                    canonicalBPRelativeSummaryBlockCount shape ->
+                    blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+                        rightClose <
+                      canonicalBPRelativeSummaryBlockCount shape ->
+                      blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+                          leftClose <
+                        blockOfClose
+                          (canonicalBPRelativeSummaryBlockSize shape)
+                          rightClose ->
+                        (component.lcaCloseCosted
+                          leftClose rightClose).erase =
+                          some answerClose) /\
+        forall {leftClose rightClose : Nat} {word : List Bool},
+          word ∈ component.payloadWordsRead leftClose rightClose ->
+            word.length <=
+              SuccinctRank.machineWordBits shape.bpCode.length := by
+  exact
+    concretePayloadLiveRelativeRmmBPCloseMacro_profile_of_ready
+      shape (concreteBPRelativeRmmInteriorReady_of_size_ge shape hsize)
 
 end SuccinctClose
 end RMQ

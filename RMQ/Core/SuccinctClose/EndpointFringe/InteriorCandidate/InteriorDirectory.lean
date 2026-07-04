@@ -363,9 +363,9 @@ def concreteBPRelativeRmmInteriorGlobalTable
     (concreteBPRelativeRmmInteriorMacroSize_pos shape)
     (concreteBPRelativeRmmInteriorBlockWidth_capacity shape)
 
-theorem concreteBPRelativeRmmInteriorLocalTable_payload_le_budget_of_size_ge
+theorem concreteBPRelativeRmmInteriorLocalTable_payload_le_budget_of_ready
     (shape : Cartesian.CartesianShape)
-    (hsize : 2 ^ 128 <= shape.size) :
+    (hready : concreteBPRelativeRmmInteriorReady shape) :
     (concreteBPRelativeRmmInteriorLocalTable shape).payload.length <=
       logLogSquaredSampledDirectoryOverhead
         concreteBPRelativeRmmInteriorLocalOffsetSlots shape.size := by
@@ -376,17 +376,13 @@ theorem concreteBPRelativeRmmInteriorLocalTable_payload_le_budget_of_size_ge
   let macroSize := concreteBPRelativeRmmInteriorMacroSize shape
   let levelCount := concreteBPRelativeRmmInteriorLevelCount shape
   let offsetWidth := concreteBPRelativeRmmInteriorOffsetWidth shape
-  have hlarge :=
-    canonicalBPRelativeSummaryLargeRegime_of_size_ge
-      (shape := shape) hsize
   have hactive :=
-    canonicalBPRelativeMinMaxArgSummaryTableActive_of_large
-      (shape := shape) hlarge
+    concreteBPRelativeRmmInteriorReady_active hready
   have hmacroCells :
       macroCount * macroSize <= 2 * blockCount := by
     simpa [macroCount, macroSize, blockCount] using
-      concreteBPRelativeRmmInteriorMacroCover_le_two_blockCount_of_size_ge
-        shape hsize
+      concreteBPRelativeRmmInteriorMacroCover_le_two_blockCount_of_ready
+        hready
   have hoffset :
       offsetWidth <= 5 * logBase := by
     simpa [offsetWidth, logBase] using
@@ -433,9 +429,19 @@ theorem concreteBPRelativeRmmInteriorLocalTable_payload_le_budget_of_size_ge
         canonicalBPRelativeSummaryBase, blockCount, base, logBase, hactive,
         Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hbudgetNorm)
 
-theorem concreteBPRelativeRmmInteriorGlobalTable_payload_le_budget_of_size_ge
+theorem concreteBPRelativeRmmInteriorLocalTable_payload_le_budget_of_size_ge
     (shape : Cartesian.CartesianShape)
     (hsize : 2 ^ 128 <= shape.size) :
+    (concreteBPRelativeRmmInteriorLocalTable shape).payload.length <=
+      logLogSquaredSampledDirectoryOverhead
+        concreteBPRelativeRmmInteriorLocalOffsetSlots shape.size := by
+  exact
+    concreteBPRelativeRmmInteriorLocalTable_payload_le_budget_of_ready
+      shape (concreteBPRelativeRmmInteriorReady_of_size_ge shape hsize)
+
+theorem concreteBPRelativeRmmInteriorGlobalTable_payload_le_budget_of_ready
+    (shape : Cartesian.CartesianShape)
+    (hready : concreteBPRelativeRmmInteriorReady shape) :
     (concreteBPRelativeRmmInteriorGlobalTable shape).payload.length <=
       logLogSampledDirectoryOverhead
         concreteBPRelativeRmmInteriorGlobalMacroSlots shape.size := by
@@ -446,12 +452,8 @@ theorem concreteBPRelativeRmmInteriorGlobalTable_payload_le_budget_of_size_ge
   let macroSize := concreteBPRelativeRmmInteriorMacroSize shape
   let levelCount := concreteBPRelativeRmmInteriorGlobalLevelCount shape
   let blockWidth := concreteBPRelativeRmmInteriorBlockWidth shape
-  have hlarge :=
-    canonicalBPRelativeSummaryLargeRegime_of_size_ge
-      (shape := shape) hsize
   have hactive :=
-    canonicalBPRelativeMinMaxArgSummaryTableActive_of_large
-      (shape := shape) hlarge
+    concreteBPRelativeRmmInteriorReady_active hready
   have hbasePos : 0 < base := by
     simp [base, canonicalBPRelativeSummaryBase]
   have hlogPos : 1 <= logBase := by
@@ -459,8 +461,8 @@ theorem concreteBPRelativeRmmInteriorGlobalTable_payload_le_budget_of_size_ge
   have hmacroCells :
       macroCount * macroSize <= 2 * blockCount := by
     simpa [macroCount, macroSize, blockCount] using
-      concreteBPRelativeRmmInteriorMacroCover_le_two_blockCount_of_size_ge
-        shape hsize
+      concreteBPRelativeRmmInteriorMacroCover_le_two_blockCount_of_ready
+        hready
   have hmacroCellsBase :
       macroCount * (base * base) <= 2 * blockCount := by
     simpa [macroCount, macroSize, blockCount,
@@ -470,12 +472,12 @@ theorem concreteBPRelativeRmmInteriorGlobalTable_payload_le_budget_of_size_ge
   have hlevel :
       levelCount <= base + 1 := by
     simpa [levelCount, base] using
-      concreteBPRelativeRmmInteriorGlobalLevelCount_le_base_succ_of_size_ge
-        shape hsize
+      concreteBPRelativeRmmInteriorGlobalLevelCount_le_base_succ_of_ready
+        hready
   have hwidth :
       blockWidth <= base := by
     simpa [blockWidth, base] using
-      concreteBPRelativeRmmInteriorBlockWidth_le_base_of_size_ge shape hsize
+      concreteBPRelativeRmmInteriorBlockWidth_le_base_of_ready hready
   have hlevelWidth :
       levelCount * blockWidth <= (base + 1) * base :=
     Nat.mul_le_mul hlevel hwidth
@@ -541,6 +543,16 @@ theorem concreteBPRelativeRmmInteriorGlobalTable_payload_le_budget_of_size_ge
         canonicalBPRelativeSummaryBlockCountRaw,
         canonicalBPRelativeSummaryBase, blockCount, base, logBase, hactive,
         Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hbudgetNorm)
+
+theorem concreteBPRelativeRmmInteriorGlobalTable_payload_le_budget_of_size_ge
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size) :
+    (concreteBPRelativeRmmInteriorGlobalTable shape).payload.length <=
+      logLogSampledDirectoryOverhead
+        concreteBPRelativeRmmInteriorGlobalMacroSlots shape.size := by
+  exact
+    concreteBPRelativeRmmInteriorGlobalTable_payload_le_budget_of_ready
+      shape (concreteBPRelativeRmmInteriorReady_of_size_ge shape hsize)
 
 def finiteSmallInteriorRangeSlot
     (blockCount startBlock count : Nat) : Nat :=
@@ -647,16 +659,45 @@ theorem concreteBPFiniteSmallInteriorRangeMinTable_exact
     (concreteBPFiniteSmallInteriorRangeMinTable shape).rangeWitnessCosted_erase
       slot
 
+theorem concreteBPRelativeRmmInterior_size_lt_readyThreshold_of_not_ready
+    {shape : Cartesian.CartesianShape}
+    (hnotReady : ¬ concreteBPRelativeRmmInteriorReady shape) :
+    shape.size < concreteBPRelativeRmmInteriorReadyThreshold := by
+  exact Nat.lt_of_not_ge (by
+    intro hsize
+    exact hnotReady
+      (concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold
+        shape hsize))
+
+theorem concreteBPRelativeRmmInterior_size_lt_of_not_ready
+    {shape : Cartesian.CartesianShape}
+    (hnotReady : ¬ concreteBPRelativeRmmInteriorReady shape) :
+    shape.size < 2 ^ 128 := by
+  have hsmall :=
+    concreteBPRelativeRmmInterior_size_lt_readyThreshold_of_not_ready
+      hnotReady
+  have hthreshold : concreteBPRelativeRmmInteriorReadyThreshold <= 2 ^ 128 := by
+    unfold concreteBPRelativeRmmInteriorReadyThreshold
+    exact Nat.pow_le_pow_right (by omega : 0 < 2) (by omega)
+  exact Nat.lt_of_lt_of_le hsmall hthreshold
+
 def concreteBPRelativeRmmInteriorDirectoryPayloadLength
     (shape : Cartesian.CartesianShape) : Nat :=
   let base :=
     (concreteBPRelativeMinMaxArgSummaryTable_canonical shape).payload.length +
       (concreteBPRelativeRmmInteriorLocalTable shape).payload.length +
         (concreteBPRelativeRmmInteriorGlobalTable shape).payload.length
-  if shape.size < 2 ^ 128 then
-    base + (concreteBPFiniteSmallInteriorRangeMinTable shape).payload.length
-  else
+  if concreteBPRelativeRmmInteriorReady shape then
     base
+  else
+    (concreteBPFiniteSmallInteriorRangeMinTable shape).payload.length
+
+theorem concreteBPRelativeRmmInteriorDirectoryPayloadLength_eq_finiteSmall_of_not_ready
+    {shape : Cartesian.CartesianShape}
+    (hnotReady : ¬ concreteBPRelativeRmmInteriorReady shape) :
+    concreteBPRelativeRmmInteriorDirectoryPayloadLength shape =
+      (concreteBPFiniteSmallInteriorRangeMinTable shape).payload.length := by
+  simp [concreteBPRelativeRmmInteriorDirectoryPayloadLength, hnotReady]
 
 /--
 Canonical payload-live relative interior directory backed by B's charged
@@ -674,13 +715,12 @@ def concreteBPRelativeRmmInteriorDirectory
   let localTable := concreteBPRelativeRmmInteriorLocalTable shape
   let globalTable := concreteBPRelativeRmmInteriorGlobalTable shape
   let smallTable := concreteBPFiniteSmallInteriorRangeMinTable shape
-  by_cases hlarge : 2 ^ 128 <= shape.size
+  by_cases hready : concreteBPRelativeRmmInteriorReady shape
   · exact
       { payload := table.payload ++ localTable.payload ++ globalTable.payload
         payload_length_eq := by
-          have hnotSmall : ¬ shape.size < 2 ^ 128 := by omega
           simp [concreteBPRelativeRmmInteriorDirectoryPayloadLength,
-            localTable, globalTable, table, hnotSmall, Nat.add_assoc]
+            localTable, globalTable, table, hready, Nat.add_assoc]
         payloadWordsRead := fun startBlock count =>
           bpTwoLevelInteriorCandidateWordsRead localTable globalTable table
             startBlock count
@@ -760,8 +800,8 @@ def concreteBPRelativeRmmInteriorDirectory
         read_words_length_le_machine := by
           intro startBlock count word hmem
           have hbudget :=
-            concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_size_ge
-              shape hlarge
+            concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_ready
+              shape hready
           rcases hbudget with
             ⟨_hlittle, _hbudgetEq, _hpayloadBudget, _hactive,
               _hoffsetCapacity, hrelativeMachine, hblockCapacity,
@@ -770,13 +810,17 @@ def concreteBPRelativeRmmInteriorDirectory
           have hoffsetMachine :
               concreteBPRelativeRmmInteriorOffsetWidth shape <=
                 SuccinctRank.machineWordBits shape.bpCode.length := by
-            have hlargeRegime :=
-              canonicalBPRelativeSummaryLargeRegime_of_size_ge
-                (shape := shape) hlarge
-            rcases canonicalBPRelativeSummary_large_parts
-                (shape := shape) hlargeRegime with
-              ⟨_hbaseLe, _hsuperWidth, hspan, _hblockWidth,
-                _hrelativeLeSuper⟩
+            have hactive :=
+              concreteBPRelativeRmmInteriorReady_active hready
+            have hspan :
+                2 * bpSuperblockSpan
+                    (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                    (canonicalBPRelativeSummaryBlocksPerSuperRaw shape) <
+                  2 ^ canonicalBPRelativeSummaryRelativeWidthRaw shape := by
+              simpa [canonicalBPRelativeSummaryBlockSize,
+                canonicalBPRelativeSummaryBlocksPerSuper,
+                canonicalBPRelativeSummaryRelativeWidth, hactive] using
+                canonicalBPRelativeSummary_relativeWidth_bound shape
             let base := canonicalBPRelativeSummaryBase shape
             have hbasePos : 0 < base := by
               simp [base, canonicalBPRelativeSummaryBase]
@@ -824,15 +868,9 @@ def concreteBPRelativeRmmInteriorDirectory
                 (by
                   have hcountPos :
                       0 < canonicalBPRelativeSummaryBlockCount shape := by
-                    have hparams :=
-                      concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_size_ge
-                        shape hlarge
-                    rcases hparams with
-                      ⟨_hb, _hps, _hc, _hs, _hr, _hl, _ha, _hbs,
-                        _hbps, hcountPos, _hcover, _hcountLe,
-                        _hmachine, _hp, _he, _hr1, _hr2, _hr3, _hr4⟩
-                    simpa [canonicalBPRelativeSummaryBlockCount, _ha] using
-                      hcountPos
+                    exact
+                      canonicalBPRelativeSummaryBlockCount_pos_of_ready
+                        hready
                   exact hcountPos)
                 (by
                   simpa [concreteBPRelativeRmmInteriorBlockWidth,
@@ -846,14 +884,10 @@ def concreteBPRelativeRmmInteriorDirectory
               (canonicalBPRelativeSummary_relativeWidth_machine shape)
               hmem }
   · exact
-      { payload :=
-          table.payload ++ localTable.payload ++ globalTable.payload ++
-            smallTable.payload
+      { payload := smallTable.payload
         payload_length_eq := by
-          have hsmall : shape.size < 2 ^ 128 := Nat.lt_of_not_ge hlarge
           simp [concreteBPRelativeRmmInteriorDirectoryPayloadLength,
-            localTable, globalTable, table, smallTable, hsmall,
-            Nat.add_assoc]
+            smallTable, hready]
         payloadWordsRead := fun startBlock count =>
           let slot :=
             finiteSmallInteriorRangeSlot
@@ -898,9 +932,9 @@ def concreteBPRelativeRmmInteriorDirectory
           · exact interiorPayloadWordReadOfGet?_length_le hreads.1 hmin
           · exact interiorPayloadWordReadOfGet?_length_le hreads.2 harg }
 
-theorem concreteBPRelativeRmmInteriorDirectory_profile
+theorem concreteBPRelativeRmmInteriorDirectory_profile_of_ready
     (shape : Cartesian.CartesianShape)
-    (hsize : 2 ^ 128 <= shape.size) :
+    (hready : concreteBPRelativeRmmInteriorReady shape) :
     let directory := concreteBPRelativeRmmInteriorDirectory shape
     LittleOLinear concreteBPRelativeRmmInteriorOverhead /\
       directory.payload.length <=
@@ -937,8 +971,8 @@ theorem concreteBPRelativeRmmInteriorDirectory_profile
   let topRoutingBudget :=
     sampledDirectoryOverhead concreteBPRelativeRmmInteriorTopSlots shape.size
   have hbudget :=
-    concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_size_ge
-      shape hsize
+    concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_ready
+      shape hready
   rcases hbudget with
     ⟨hlittle, _hbudgetEq, hpayloadReserve, _hactive, _hoffsetCapacity,
       _hrelativeMachine, _hblockCapacity, _hsummaryExact, _hbaselineRead,
@@ -946,13 +980,13 @@ theorem concreteBPRelativeRmmInteriorDirectory_profile
   have hlocalPayload :
       localTable.payload.length <= localOffsetBudget := by
     simpa [localTable, localOffsetBudget] using
-      concreteBPRelativeRmmInteriorLocalTable_payload_le_budget_of_size_ge
-        shape hsize
+      concreteBPRelativeRmmInteriorLocalTable_payload_le_budget_of_ready
+        shape hready
   have hglobalPayload :
       globalTable.payload.length <= globalMacroBudget := by
     simpa [globalTable, globalMacroBudget] using
-      concreteBPRelativeRmmInteriorGlobalTable_payload_le_budget_of_size_ge
-        shape hsize
+      concreteBPRelativeRmmInteriorGlobalTable_payload_le_budget_of_ready
+        shape hready
   have hpayload :
       concreteBPRelativeRmmInteriorDirectoryPayloadLength shape <=
         concreteBPRelativeRmmInteriorOverhead shape.size := by
@@ -964,9 +998,8 @@ theorem concreteBPRelativeRmmInteriorDirectory_profile
       omega
     exact Nat.le_trans
       (by
-        have hnotSmall : ¬ shape.size < 2 ^ 128 := by omega
         simpa [concreteBPRelativeRmmInteriorDirectoryPayloadLength,
-          table, localTable, globalTable, hnotSmall, Nat.add_assoc] using
+          table, localTable, globalTable, hready, Nat.add_assoc] using
           hsum)
       hpayloadReserve
   have hdir := directory.profile
@@ -976,6 +1009,64 @@ theorem concreteBPRelativeRmmInteriorDirectory_profile
         rw [hdir.1]
         exact hpayload,
       hdir.2.1, hdir.2.2.1, hdir.2.2.2⟩
+
+theorem concreteBPRelativeRmmInteriorDirectory_profile_of_size_ge
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size) :
+    let directory := concreteBPRelativeRmmInteriorDirectory shape
+    LittleOLinear concreteBPRelativeRmmInteriorOverhead /\
+      directory.payload.length <=
+        concreteBPRelativeRmmInteriorOverhead shape.size /\
+      (forall startBlock count,
+        (directory.rangeMinCosted startBlock count).cost <=
+          concreteBPRelativeRmmInteriorQueryCost) /\
+      (forall {startBlock count : Nat},
+        0 < count ->
+          startBlock + count <=
+            canonicalBPRelativeSummaryBlockCount shape ->
+            (directory.rangeMinCosted startBlock count).erase =
+              some
+                (bpRangeMinExcess shape
+                  (canonicalBPRelativeSummaryBlockSize shape)
+                  startBlock count,
+                  bpRangeArgMinPrefixPos shape
+                    (canonicalBPRelativeSummaryBlockSize shape)
+                    startBlock count)) /\
+      forall {startBlock count : Nat} {word : List Bool},
+        word ∈ directory.payloadWordsRead startBlock count ->
+          word.length <=
+            SuccinctRank.machineWordBits shape.bpCode.length := by
+  exact
+    concreteBPRelativeRmmInteriorDirectory_profile_of_ready
+      shape (concreteBPRelativeRmmInteriorReady_of_size_ge shape hsize)
+
+theorem concreteBPRelativeRmmInteriorDirectory_profile
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size) :
+    let directory := concreteBPRelativeRmmInteriorDirectory shape
+    LittleOLinear concreteBPRelativeRmmInteriorOverhead /\
+      directory.payload.length <=
+        concreteBPRelativeRmmInteriorOverhead shape.size /\
+      (forall startBlock count,
+        (directory.rangeMinCosted startBlock count).cost <=
+          concreteBPRelativeRmmInteriorQueryCost) /\
+      (forall {startBlock count : Nat},
+        0 < count ->
+          startBlock + count <=
+            canonicalBPRelativeSummaryBlockCount shape ->
+            (directory.rangeMinCosted startBlock count).erase =
+              some
+                (bpRangeMinExcess shape
+                  (canonicalBPRelativeSummaryBlockSize shape)
+                  startBlock count,
+                  bpRangeArgMinPrefixPos shape
+                    (canonicalBPRelativeSummaryBlockSize shape)
+                    startBlock count)) /\
+      forall {startBlock count : Nat} {word : List Bool},
+        word ∈ directory.payloadWordsRead startBlock count ->
+          word.length <=
+            SuccinctRank.machineWordBits shape.bpCode.length := by
+  exact concreteBPRelativeRmmInteriorDirectory_profile_of_size_ge shape hsize
 
 theorem concreteBPRelativeMinMaxArgSummaryTable_canonical_interior_scan_not_constant
     (shape : Cartesian.CartesianShape)

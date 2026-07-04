@@ -841,6 +841,251 @@ theorem twoSpanCandidateTraceResultAtSegments_refines_twoSpanCandidateCosted
 
 end PayloadLiveBPGlobalSparseBlockTable
 
+theorem PayloadLiveBPRelativeMinMaxArgSummaryTable.summaryTraceResultAtSegments_trace_forall
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (segments : BPRelativeSummaryTraceSegments)
+    (block : Nat)
+    (P : WordRAM.TraceEvent -> Prop)
+    (hbaseline :
+      forall event,
+        List.Mem event
+          (table.baselineTable.readTraceResultAtSegment
+            segments.baseline segments.deadSegment
+            (block / blocksPerSuper)).trace -> P event)
+    (hminRel :
+      forall event,
+        List.Mem event
+          (table.minRelTable.readTraceResultAtSegment
+            segments.minRel segments.deadSegment block).trace -> P event)
+    (hmaxRel :
+      forall event,
+        List.Mem event
+          (table.maxRelTable.readTraceResultAtSegment
+            segments.maxRel segments.deadSegment block).trace -> P event)
+    (hargOffset :
+      forall event,
+        List.Mem event
+          (table.argOffsetTable.readTraceResultAtSegment
+            segments.argOffset segments.deadSegment block).trace -> P event) :
+    forall event,
+      List.Mem event
+          (table.summaryTraceResultAtSegments segments block).trace ->
+        P event := by
+  unfold PayloadLiveBPRelativeMinMaxArgSummaryTable.summaryTraceResultAtSegments
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact hbaseline
+  · apply WordRAM.TraceResult.bind_trace_forall
+    · exact hminRel
+    · apply WordRAM.TraceResult.bind_trace_forall
+      · exact hmaxRel
+      · apply WordRAM.TraceResult.map_trace_forall
+        exact hargOffset
+
+theorem PayloadLiveBPRelativeMinMaxArgSummaryTable.minCandidateTraceResultAtSegments_trace_forall
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (segments : BPRelativeSummaryTraceSegments)
+    (block : Nat)
+    (P : WordRAM.TraceEvent -> Prop)
+    (hsummary :
+      forall event,
+        List.Mem event
+          (table.summaryTraceResultAtSegments segments block).trace ->
+        P event) :
+    forall event,
+      List.Mem event
+          (table.minCandidateTraceResultAtSegments segments block).trace ->
+        P event := by
+  unfold PayloadLiveBPRelativeMinMaxArgSummaryTable.minCandidateTraceResultAtSegments
+  exact WordRAM.TraceResult.map_trace_forall P _ _ hsummary
+
+theorem PayloadLiveBPLocalSparseOffsetTable.spanCandidateTraceResultAtSegments_trace_forall
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth localOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (macroIdx localStart level : Nat)
+    (P : WordRAM.TraceEvent -> Prop)
+    (hread :
+      forall event,
+        List.Mem event
+          (offsetTable.readOffsetTraceResultAtSegment
+            segments.localOffset segments.deadSegment macroIdx localStart
+            level).trace -> P event)
+    (hsummary :
+      forall block event,
+        List.Mem event
+          (summary.minCandidateTraceResultAtSegments
+            segments.summary block).trace -> P event) :
+    forall event,
+      List.Mem event
+          (offsetTable.spanCandidateTraceResultAtSegments summary segments
+            macroIdx localStart level).trace -> P event := by
+  unfold PayloadLiveBPLocalSparseOffsetTable.spanCandidateTraceResultAtSegments
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact hread
+  · cases hoff :
+      (offsetTable.readOffsetTraceResultAtSegment segments.localOffset
+        segments.deadSegment macroIdx localStart level).value with
+    | none =>
+        exact
+          WordRAM.TraceResult.pure_trace_forall P
+            (none : Option (Nat × Nat))
+    | some offset =>
+        exact hsummary (macroIdx * macroSize + offset)
+
+theorem PayloadLiveBPLocalSparseOffsetTable.twoSpanCandidateTraceResultAtSegments_trace_forall
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      offsetWidth localOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (offsetTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount levelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (macroIdx localStart count : Nat)
+    (P : WordRAM.TraceEvent -> Prop)
+    (hread :
+      forall macroIdx localStart level event,
+        List.Mem event
+          (offsetTable.readOffsetTraceResultAtSegment
+            segments.localOffset segments.deadSegment macroIdx localStart
+            level).trace -> P event)
+    (hsummary :
+      forall block event,
+        List.Mem event
+          (summary.minCandidateTraceResultAtSegments
+            segments.summary block).trace -> P event) :
+    forall event,
+      List.Mem event
+          (offsetTable.twoSpanCandidateTraceResultAtSegments summary
+            segments macroIdx localStart count).trace -> P event := by
+  unfold PayloadLiveBPLocalSparseOffsetTable.twoSpanCandidateTraceResultAtSegments
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      offsetTable.spanCandidateTraceResultAtSegments_trace_forall
+        summary segments macroIdx localStart (Nat.log2 count) P
+        (hread macroIdx localStart (Nat.log2 count)) hsummary
+  · apply WordRAM.TraceResult.map_trace_forall
+    exact
+      offsetTable.spanCandidateTraceResultAtSegments_trace_forall
+        summary segments macroIdx (localStart + count - bpSparseLogSpan count)
+        (Nat.log2 count) P
+        (hread macroIdx (localStart + count - bpSparseLogSpan count)
+          (Nat.log2 count)) hsummary
+
+theorem PayloadLiveBPGlobalSparseBlockTable.spanCandidateTraceResultAtSegments_trace_forall
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth globalOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (macroStart level : Nat)
+    (P : WordRAM.TraceEvent -> Prop)
+    (hread :
+      forall event,
+        List.Mem event
+          (globalTable.readBlockTraceResultAtSegment
+            segments.globalBlock segments.deadSegment macroStart level).trace ->
+        P event)
+    (hsummary :
+      forall block event,
+        List.Mem event
+          (summary.minCandidateTraceResultAtSegments
+            segments.summary block).trace -> P event) :
+    forall event,
+      List.Mem event
+          (globalTable.spanCandidateTraceResultAtSegments summary segments
+            macroStart level).trace -> P event := by
+  unfold PayloadLiveBPGlobalSparseBlockTable.spanCandidateTraceResultAtSegments
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact hread
+  · cases hblock :
+      (globalTable.readBlockTraceResultAtSegment segments.globalBlock
+        segments.deadSegment macroStart level).value with
+    | none =>
+        exact
+          WordRAM.TraceResult.pure_trace_forall P
+            (none : Option (Nat × Nat))
+    | some block =>
+        exact hsummary block
+
+theorem PayloadLiveBPGlobalSparseBlockTable.twoSpanCandidateTraceResultAtSegments_trace_forall
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount levelCount
+      blockWidth globalOverhead blocksPerSuper superCount
+      superWidth relativeWidth summaryOverhead : Nat}
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount levelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (macroStart macroSpanCount : Nat)
+    (P : WordRAM.TraceEvent -> Prop)
+    (hread :
+      forall macroStart level event,
+        List.Mem event
+          (globalTable.readBlockTraceResultAtSegment
+            segments.globalBlock segments.deadSegment macroStart level).trace ->
+        P event)
+    (hsummary :
+      forall block event,
+        List.Mem event
+          (summary.minCandidateTraceResultAtSegments
+            segments.summary block).trace -> P event) :
+    forall event,
+      List.Mem event
+          (globalTable.twoSpanCandidateTraceResultAtSegments summary
+            segments macroStart macroSpanCount).trace -> P event := by
+  unfold PayloadLiveBPGlobalSparseBlockTable.twoSpanCandidateTraceResultAtSegments
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      globalTable.spanCandidateTraceResultAtSegments_trace_forall
+        summary segments macroStart (Nat.log2 macroSpanCount) P
+        (hread macroStart (Nat.log2 macroSpanCount)) hsummary
+  · apply WordRAM.TraceResult.map_trace_forall
+    exact
+      globalTable.spanCandidateTraceResultAtSegments_trace_forall
+        summary segments
+        (macroStart + macroSpanCount - bpSparseLogSpan macroSpanCount)
+        (Nat.log2 macroSpanCount) P
+        (hread
+          (macroStart + macroSpanCount - bpSparseLogSpan macroSpanCount)
+          (Nat.log2 macroSpanCount)) hsummary
+
 /-- Structural trace for the adjacent-macro interior candidate case. -/
 def bpTwoLevelAdjacentMacroCandidateTraceResult
     {shape : Cartesian.CartesianShape}
@@ -1354,6 +1599,195 @@ theorem bpTwoLevelInteriorCandidateTraceResultAtSegments_refines
             bpTwoLevelLeftMiddleMacroCandidateTraceResultAtSegments_refines]
         · simp [hright,
             bpTwoLevelCrossMacroCandidateTraceResultAtSegments_refines]
+
+theorem bpTwoLevelAdjacentMacroCandidateTraceResultAtSegments_trace_forall
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead blocksPerSuper superCount superWidth
+      relativeWidth summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (macroStart localStart rightCount : Nat)
+    (P : WordRAM.TraceEvent -> Prop)
+    (hlocalSpan :
+      forall macroIdx localStart count event,
+        List.Mem event
+          (localTable.twoSpanCandidateTraceResultAtSegments summary
+            segments macroIdx localStart count).trace -> P event) :
+    forall event,
+      List.Mem event
+          (bpTwoLevelAdjacentMacroCandidateTraceResultAtSegments
+            localTable summary segments macroStart localStart rightCount).trace ->
+        P event := by
+  unfold bpTwoLevelAdjacentMacroCandidateTraceResultAtSegments
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact hlocalSpan macroStart localStart (macroSize - localStart)
+  · apply WordRAM.TraceResult.map_trace_forall
+    exact hlocalSpan (macroStart + 1) 0 rightCount
+
+theorem bpTwoLevelLeftMiddleMacroCandidateTraceResultAtSegments_trace_forall
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (macroStart localStart middleMacroCount : Nat)
+    (P : WordRAM.TraceEvent -> Prop)
+    (hlocalSpan :
+      forall macroIdx localStart count event,
+        List.Mem event
+          (localTable.twoSpanCandidateTraceResultAtSegments summary
+            segments macroIdx localStart count).trace -> P event)
+    (hglobalSpan :
+      forall macroStart macroSpanCount event,
+        List.Mem event
+          (globalTable.twoSpanCandidateTraceResultAtSegments summary
+            segments macroStart macroSpanCount).trace -> P event) :
+    forall event,
+      List.Mem event
+          (bpTwoLevelLeftMiddleMacroCandidateTraceResultAtSegments
+            localTable globalTable summary segments macroStart localStart
+            middleMacroCount).trace -> P event := by
+  unfold bpTwoLevelLeftMiddleMacroCandidateTraceResultAtSegments
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact hlocalSpan macroStart localStart (macroSize - localStart)
+  · apply WordRAM.TraceResult.map_trace_forall
+    exact hglobalSpan (macroStart + 1) middleMacroCount
+
+theorem bpTwoLevelCrossMacroCandidateTraceResultAtSegments_trace_forall
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (macroStart localStart middleMacroCount rightCount : Nat)
+    (P : WordRAM.TraceEvent -> Prop)
+    (hlocalSpan :
+      forall macroIdx localStart count event,
+        List.Mem event
+          (localTable.twoSpanCandidateTraceResultAtSegments summary
+            segments macroIdx localStart count).trace -> P event)
+    (hglobalSpan :
+      forall macroStart macroSpanCount event,
+        List.Mem event
+          (globalTable.twoSpanCandidateTraceResultAtSegments summary
+            segments macroStart macroSpanCount).trace -> P event) :
+    forall event,
+      List.Mem event
+          (bpTwoLevelCrossMacroCandidateTraceResultAtSegments
+            localTable globalTable summary segments macroStart localStart
+            middleMacroCount rightCount).trace -> P event := by
+  unfold bpTwoLevelCrossMacroCandidateTraceResultAtSegments
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact hlocalSpan macroStart localStart (macroSize - localStart)
+  · apply WordRAM.TraceResult.bind_trace_forall
+    · exact hglobalSpan (macroStart + 1) middleMacroCount
+    · apply WordRAM.TraceResult.map_trace_forall
+      exact hlocalSpan (macroStart + 1 + middleMacroCount) 0 rightCount
+
+theorem bpTwoLevelInteriorCandidateTraceResultAtSegments_trace_forall
+    {shape : Cartesian.CartesianShape}
+    {blockSize blockCount macroSize macroCount localLevelCount
+      offsetWidth localOverhead globalLevelCount blockWidth globalOverhead
+      blocksPerSuper superCount superWidth relativeWidth
+      summaryOverhead : Nat}
+    (localTable :
+      PayloadLiveBPLocalSparseOffsetTable shape blockSize blockCount
+        macroSize macroCount localLevelCount offsetWidth localOverhead)
+    (globalTable :
+      PayloadLiveBPGlobalSparseBlockTable shape blockSize blockCount
+        macroSize macroCount globalLevelCount blockWidth globalOverhead)
+    (summary :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        summaryOverhead)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (startBlock count : Nat)
+    (P : WordRAM.TraceEvent -> Prop)
+    (hlocalSpan :
+      forall macroIdx localStart count event,
+        List.Mem event
+          (localTable.twoSpanCandidateTraceResultAtSegments summary
+            segments macroIdx localStart count).trace -> P event)
+    (hglobalSpan :
+      forall macroStart macroSpanCount event,
+        List.Mem event
+          (globalTable.twoSpanCandidateTraceResultAtSegments summary
+            segments macroStart macroSpanCount).trace -> P event) :
+    forall event,
+      List.Mem event
+          (bpTwoLevelInteriorCandidateTraceResultAtSegments
+            localTable globalTable summary segments startBlock count).trace ->
+        P event := by
+  unfold bpTwoLevelInteriorCandidateTraceResultAtSegments
+  by_cases hcount : count = 0
+  · simp [hcount]
+    exact
+      WordRAM.TraceResult.pure_trace_forall P
+        (none : Option (Nat × Nat))
+  · simp [hcount]
+    by_cases hwithin : count <= macroSize - startBlock % macroSize
+    · simp [hwithin]
+      exact hlocalSpan (startBlock / macroSize)
+        (startBlock % macroSize) count
+    · simp [hwithin]
+      by_cases hmiddle :
+          macroSize = 0 ∨
+            count - (macroSize - startBlock % macroSize) < macroSize
+      · simp [hmiddle]
+        exact
+          bpTwoLevelAdjacentMacroCandidateTraceResultAtSegments_trace_forall
+            localTable summary segments
+            (startBlock / macroSize) (startBlock % macroSize)
+            ((count - (macroSize - startBlock % macroSize)) % macroSize)
+            P hlocalSpan
+      · simp [hmiddle]
+        by_cases hright :
+            (count - (macroSize - startBlock % macroSize)) %
+                macroSize = 0
+        · simp [hright]
+          exact
+            bpTwoLevelLeftMiddleMacroCandidateTraceResultAtSegments_trace_forall
+              localTable globalTable summary segments
+              (startBlock / macroSize) (startBlock % macroSize)
+              ((count - (macroSize - startBlock % macroSize)) / macroSize)
+              P hlocalSpan hglobalSpan
+        · simp [hright]
+          exact
+            bpTwoLevelCrossMacroCandidateTraceResultAtSegments_trace_forall
+              localTable globalTable summary segments
+              (startBlock / macroSize) (startBlock % macroSize)
+              ((count - (macroSize - startBlock % macroSize)) / macroSize)
+              ((count - (macroSize - startBlock % macroSize)) % macroSize)
+              P hlocalSpan hglobalSpan
 
 theorem fixedWidthNatTable_readTraceResultAtSegment_matchesReadStore
     {entries : List Nat} {width : Nat}

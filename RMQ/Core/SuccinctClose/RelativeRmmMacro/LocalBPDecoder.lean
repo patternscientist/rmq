@@ -16,25 +16,84 @@ open SuccinctSpace
 
 The local endpoint and same-block work below is charged as bounded BP-word
 primitive work over the base BP payload, so the auxiliary close overhead is the
-compact two-level interior navigator payload.
+compact two-level interior navigator payload plus the finite-small fallback
+payload used exactly on non-ready shapes.
 -/
-def compactBPCloseOverhead (n : Nat) : Nat :=
-  if n < 2 ^ 128 then
-    natListMax
-      ((Cartesian.shapesOfSize n).map fun shape =>
-        concreteBPRelativeRmmInteriorDirectoryPayloadLength shape)
+def compactBPCloseFiniteSmallFallbackPayloadLength
+    (shape : Cartesian.CartesianShape) : Nat :=
+  if concreteBPRelativeRmmInteriorReady shape then
+    0
   else
-    concreteBPRelativeRmmInteriorOverhead n
+    concreteBPRelativeRmmInteriorDirectoryPayloadLength shape
+
+def compactBPCloseFiniteSmallFallbackOverhead (n : Nat) : Nat :=
+  natListMax
+    ((Cartesian.shapesOfSize n).map fun shape =>
+      compactBPCloseFiniteSmallFallbackPayloadLength shape)
+
+def compactBPCloseOverhead (n : Nat) : Nat :=
+  concreteBPRelativeRmmInteriorOverhead n +
+    compactBPCloseFiniteSmallFallbackOverhead n
+
+theorem compactBPCloseFiniteSmallFallbackPayloadLength_eq_zero_of_ready
+    {shape : Cartesian.CartesianShape}
+    (hready : concreteBPRelativeRmmInteriorReady shape) :
+    compactBPCloseFiniteSmallFallbackPayloadLength shape = 0 := by
+  simp [compactBPCloseFiniteSmallFallbackPayloadLength, hready]
+
+theorem compactBPCloseFiniteSmallFallbackPayloadLength_eq_directory_of_not_ready
+    {shape : Cartesian.CartesianShape}
+    (hnotReady : ¬ concreteBPRelativeRmmInteriorReady shape) :
+    compactBPCloseFiniteSmallFallbackPayloadLength shape =
+      concreteBPRelativeRmmInteriorDirectoryPayloadLength shape := by
+  simp [compactBPCloseFiniteSmallFallbackPayloadLength, hnotReady]
+
+theorem compactBPCloseFiniteSmallFallbackOverhead_zero_of_size_ge_readyThreshold
+    {n : Nat} (hn : concreteBPRelativeRmmInteriorReadyThreshold <= n) :
+    compactBPCloseFiniteSmallFallbackOverhead n = 0 := by
+  have hle :
+      compactBPCloseFiniteSmallFallbackOverhead n <= 0 := by
+    unfold compactBPCloseFiniteSmallFallbackOverhead
+    apply natListMax_le_of_forall_mem
+    intro value hmem
+    rcases List.mem_map.mp hmem with ⟨shape, hshape, rfl⟩
+    have hshapeSize := Cartesian.mem_shapesOfSize_shapeOfSize hshape
+    have hsize :
+        concreteBPRelativeRmmInteriorReadyThreshold <= shape.size := by
+      rw [hshapeSize.size_eq]
+      exact hn
+    have hready :=
+      concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold
+        shape hsize
+    simp [compactBPCloseFiniteSmallFallbackPayloadLength, hready]
+  omega
+
+theorem compactBPCloseFiniteSmallFallbackOverhead_zero_of_size_ge
+    {n : Nat} (hn : 2 ^ 128 <= n) :
+    compactBPCloseFiniteSmallFallbackOverhead n = 0 := by
+  exact
+    compactBPCloseFiniteSmallFallbackOverhead_zero_of_size_ge_readyThreshold
+      (by
+        unfold concreteBPRelativeRmmInteriorReadyThreshold
+        exact Nat.le_trans
+          (Nat.pow_le_pow_right (by omega : 0 < 2) (by omega))
+          hn)
+
+theorem compactBPCloseFiniteSmallFallbackOverhead_littleO :
+    LittleOLinear compactBPCloseFiniteSmallFallbackOverhead := by
+  exact
+    LittleOLinear.of_eventually_le
+      (littleOLinear_const 0)
+      ⟨concreteBPRelativeRmmInteriorReadyThreshold, by
+        intro n hn
+        rw [compactBPCloseFiniteSmallFallbackOverhead_zero_of_size_ge_readyThreshold hn]
+        exact Nat.le_refl 0⟩
 
 theorem compactBPCloseOverhead_littleO :
     LittleOLinear compactBPCloseOverhead := by
-  exact
-    LittleOLinear.of_eventually_le
-      concreteBPRelativeRmmInteriorOverhead_littleO
-      ⟨2 ^ 128, by
-        intro n hn
-        have hnot : ¬ n < 2 ^ 128 := by omega
-        simp [compactBPCloseOverhead, hnot]⟩
+  unfold compactBPCloseOverhead
+  exact concreteBPRelativeRmmInteriorOverhead_littleO.add
+    compactBPCloseFiniteSmallFallbackOverhead_littleO
 
 def concreteCompactBPCloseQueryCost : Nat :=
   10 + concreteBPRelativeRmmInteriorQueryCost
@@ -1799,17 +1858,14 @@ def finiteSmallSameBlockCloseReadCosted
 def finiteSmallSameBlockCloseCosted
     (shape : Cartesian.CartesianShape)
     (leftClose rightClose : Nat) : Costed (Option Nat) :=
-  Costed.bind
-    (finiteSmallSameBlockCloseReadCosted shape leftClose rightClose)
-    fun answer? =>
-      Costed.bind
-        (finiteSmallSameBlockCloseReadCosted shape leftClose rightClose)
-        fun _ =>
-          Costed.bind
-            (finiteSmallSameBlockCloseReadCosted shape leftClose rightClose)
-            fun _ =>
-              Costed.map (fun _ => answer?)
-                (finiteSmallSameBlockCloseReadCosted shape leftClose rightClose)
+  finiteSmallSameBlockCloseReadCosted shape leftClose rightClose
+
+theorem finiteSmallSameBlockCloseCosted_cost_le_one
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) :
+    (finiteSmallSameBlockCloseCosted shape leftClose rightClose).cost <= 1 := by
+  unfold finiteSmallSameBlockCloseCosted finiteSmallSameBlockCloseReadCosted
+  simp [Costed.map]
 
 theorem finiteSmallSameBlockCloseReadCosted_erase
     (shape : Cartesian.CartesianShape)
@@ -1841,18 +1897,29 @@ theorem finiteSmallSameBlockCloseReadCosted_refines_local
 theorem finiteSmallSameBlockCloseCosted_refines_local
     (shape : Cartesian.CartesianShape)
     (leftClose rightClose : Nat) :
-  finiteSmallSameBlockCloseCosted shape leftClose rightClose =
-      localBPSameBlockCloseCosted shape leftClose rightClose := by
-  apply Costed.ext
-  · change
-      (finiteSmallSameBlockCloseCosted shape leftClose rightClose).erase =
-        (localBPSameBlockCloseCosted shape leftClose rightClose).erase
-    unfold finiteSmallSameBlockCloseCosted
-    simp [Costed.erase_bind, Costed.erase_map,
-      finiteSmallSameBlockCloseReadCosted_refines_local]
-  · unfold finiteSmallSameBlockCloseCosted
-      finiteSmallSameBlockCloseReadCosted localBPSameBlockCloseCosted
-    simp [Costed.bind, Costed.map]
+    (finiteSmallSameBlockCloseCosted shape leftClose rightClose).erase =
+      (localBPSameBlockCloseCosted shape leftClose rightClose).erase := by
+  unfold finiteSmallSameBlockCloseCosted
+  exact finiteSmallSameBlockCloseReadCosted_refines_local
+    shape leftClose rightClose
+
+theorem finiteSmallSameBlockCloseCosted_exact
+    {shape : Cartesian.CartesianShape}
+    {left len leftClose rightClose answerClose : Nat}
+    (hlen : 0 < len)
+    (hbound : left + len <= shape.size)
+    (hleft : bpCloseOfInorder? shape left = some leftClose)
+    (hright :
+      bpCloseOfInorder? shape (left + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder? shape
+          (scanWindow shape.representative left len) =
+        some answerClose) :
+    (finiteSmallSameBlockCloseCosted shape leftClose rightClose).erase =
+      some answerClose := by
+  rw [finiteSmallSameBlockCloseCosted_refines_local]
+  exact localBPSameBlockCloseCosted_exact
+    hlen hbound hleft hright hanswer
 
 def localBPLeftFringeCandidateCosted
     (shape : Cartesian.CartesianShape)

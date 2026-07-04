@@ -117,9 +117,9 @@ abbrev succinctRMQListIntTwoNPlusOConstantQuery :=
 List-facing flat-payload no-synthetic execution story: for every ordinary
 `xs : List Int`, the same final query keeps the classic half-open/leftmost
 RMQ contract and constant modeled query story while its global WordRAM trace is
-backed by one query-independent flat payload layout/read store with
-component/offset backing, bounded event data, and no synthetic cost-only
-events.
+backed by one query-independent counted flat payload layout/read store: every
+actual successful read has source/component/offset evidence, event data are
+bounded, and no synthetic cost-only events occur.
 -/
 abbrev listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory :=
   RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_execution_story
@@ -221,9 +221,12 @@ abbrev succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory :=
 /--
 Flat-payload no-synthetic execution story for the final succinct RMQ query.
 This is the strongest current execution-model citation: the final query reads
-from one query-independent flat payload layout, every successful payload read
-has a component/offset backing witness, all events are reads or bounded
-word-local primitives, and no event is the synthetic cost-only marker.
+from one query-independent counted flat payload layout, every actual successful
+payload read has a source/component/offset backing witness on both Ready and
+non-Ready interior branches, all events are reads or bounded word-local
+primitives, and no event is the synthetic cost-only marker. The non-Ready
+interior branch is theorem-confined below
+`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15`.
 -/
 abbrev succinctRMQFlatPayloadStoreNoSyntheticExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execution_story
@@ -231,7 +234,9 @@ abbrev succinctRMQFlatPayloadStoreNoSyntheticExecutionStory :=
 /--
 Large-regime companion to `succinctRMQGlobalPayloadStoreExecutionStory`; this
 uses the positive-block local/fringe/interior close-navigation replay under the
-explicit `2^128 <= shape.size` premise.
+explicit `2^128 <= shape.size` compatibility premise. It is no longer the
+theorem used to justify a giant finite-prefix dense fallback in the all-size
+payload story.
 -/
 abbrev succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_execution_story

@@ -48,7 +48,14 @@ proves that the all-size global trace contains no dedicated synthetic
 cost-only marker event. The combined flat-payload companion
 `Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` ties that
 bounded no-synthetic trace to a query-independent flat layout with
-source/component/offset backing evidence for successful reads.
+source/component/offset backing evidence for every actual successful read,
+using the compact interior on Ready shapes and the finite-small interior
+payload only on non-Ready shapes below the named
+`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15`. The theorem
+`SuccinctClose.concreteBPRelativeRmmInteriorReady_not_all` records the exact
+empty-shape obstruction to making the current Ready predicate universal, while
+`SuccinctClose.concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold`
+replaces the former `2^128` finite-prefix escape hatch for the fallback budget.
 `Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` lifts
 that execution packet to the ordinary `List Int` public surface while keeping
 the classic half-open leftmost RMQ contract and existing modeled
@@ -310,13 +317,17 @@ as an opt-in checked root.
 
 Word-RAM status note: `SuccinctFinalRAM` now has both an all-size unified
 `WordRAM.TraceEvent` stream capstone for the final RMQ query and a stronger
-large-regime companion theorem. The all-size theorem now consumes
+large-regime compatibility companion theorem. The all-size theorem now consumes
 `SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural`:
 the former zero-block same-block fallback is replayed by a finite-small
 payload-backed same-block close table, and the former cross-block interior
 fallback is replayed by either the existing large-regime two-level structural
-trace or a finite-small payload-backed range-min witness table. The
-large-regime theorem carries an explicit `2^128 <= shape.size` premise and
+trace or a finite-small payload-backed range-min witness table. The interior
+finite-small range-min table is now theorem-confined to shapes below
+`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15`, by
+`SuccinctClose.concreteBPRelativeRmmInterior_size_lt_readyThreshold_of_not_ready`;
+the large-regime theorem still carries an explicit `2^128 <= shape.size`
+premise as a compatibility companion and
 replays the positive-block local BP, endpoint-fringe, and relative-rmM interior
 close path through structural trace events. `Core.WordRAM` exposes
 segment-relabeling and
@@ -342,8 +353,9 @@ adds the global absence theorem for synthetic cost-only events.
 `wordRank false 0 0` primitives are no longer confused with the synthetic
 fallback marker. The combined theorem
 `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execution_story`
-adds the flat payload layout and source/component/offset backing evidence to
-that same bounded no-synthetic execution story.
+adds the flat payload layout and source/component/offset backing evidence for
+every actual successful final-query read to that same bounded no-synthetic
+execution story.
 
 | Structure | Correctness status | Cost status | Notes |
 | --- | --- | --- | --- |
@@ -2044,7 +2056,12 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile`,
   `SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive_of_large`,
   `SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile_of_large`,
+  `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold`,
+  `SuccinctClose.canonicalBPRelativeSummaryLargeRegime_of_size_ge_readyThreshold`,
   `SuccinctClose.canonicalBPRelativeSummaryLargeRegime_of_size_ge`,
+  `SuccinctClose.concreteBPRelativeRmmInteriorReady_empty_obstruction`,
+  `SuccinctClose.concreteBPRelativeRmmInteriorReady_not_all`,
+  `SuccinctClose.concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold`,
   `SuccinctClose.canonicalBPRelativeSummaryRelativeWidthRaw_machine_of_large`,
   `SuccinctClose.concreteBPRelativeRmmInteriorOverhead_littleO`,
   `SuccinctClose.concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_large`,
@@ -2053,6 +2070,7 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctClose.bpTwoLevelInteriorCandidateCosted_erase_exact`,
   `SuccinctClose.concreteBPRelativeRmmInteriorLocalTable_payload_le_budget_of_size_ge`,
   `SuccinctClose.concreteBPRelativeRmmInteriorGlobalTable_payload_le_budget_of_size_ge`,
+  `SuccinctClose.concreteBPRelativeRmmInterior_size_lt_readyThreshold_of_not_ready`,
   `SuccinctClose.concreteBPRelativeRmmInteriorDirectory_profile`,
   `SuccinctClose.PayloadLiveBPRangeMinMaxArgSummaryTable.profile`,
   `SuccinctClose.concreteBPRangeMinMaxArgSummaryTable_sampled_profile`,

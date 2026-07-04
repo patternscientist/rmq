@@ -309,6 +309,28 @@ def ConcreteBPNativeSuccinctRMQFlatPayloadLayout.componentPayload
   | .closePayload => layout.closePayload
   | .finiteSmallSameBlockPayload => layout.finiteSmallSameBlockPayload
 
+def concreteBPNativeSuccinctRMQFlatPayloadComponentPayload
+    (shape : Cartesian.CartesianShape) :
+    ConcreteBPNativeSuccinctRMQFlatPayloadComponent -> List Bool
+  | .bpCode => shape.bpCode
+  | .accessRankPayload =>
+      (builtRelativeSplitBPCloseRankData shape).auxPayload
+  | .selectPayload =>
+      (GenericSelect.sparseExceptionSelectSource shape.bpCode false).payload
+  | .closePayload =>
+      (concreteBPNativeCloseDirectory shape).payload
+  | .finiteSmallSameBlockPayload =>
+      (SuccinctClose.concreteBPFiniteSmallSameBlockCloseTable shape).payload
+
+@[simp] theorem concreteBPNativeSuccinctRMQFlatPayloadLayout_componentPayload_eq
+    (shape : Cartesian.CartesianShape)
+    (component : ConcreteBPNativeSuccinctRMQFlatPayloadComponent) :
+    (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).componentPayload
+        component =
+      concreteBPNativeSuccinctRMQFlatPayloadComponentPayload
+        shape component := by
+  cases component <;> rfl
+
 def ConcreteBPNativeSuccinctRMQFlatPayloadLayout.componentFlatOffset
     {shape : Cartesian.CartesianShape}
     (layout : ConcreteBPNativeSuccinctRMQFlatPayloadLayout shape) :
@@ -348,6 +370,83 @@ theorem concreteBPNativeSuccinctRMQFlatPayloadLayout_payload_components
     builtGenericSparseExceptionSelectBPCloseAccessFamily,
     builtGenericSparseExceptionSelectBPCloseAccessDirectory,
     List.append_assoc]
+
+@[simp] private theorem list_drop_append_length
+    {α : Type} (xs ys : List α) :
+    (xs ++ ys).drop xs.length = ys := by
+  simp
+
+@[simp] private theorem list_take_append_length
+    {α : Type} (xs ys : List α) :
+    (xs ++ ys).take xs.length = xs := by
+  simp
+
+@[simp] private theorem list_drop_append_length_add
+    {α : Type} (xs ys : List α) (n : Nat) :
+    (xs ++ ys).drop (xs.length + n) = ys.drop n := by
+  induction xs with
+  | nil =>
+      simp
+  | cons x xs ih =>
+      simp [Nat.succ_add, ih]
+
+@[simp] private theorem list_drop_prefix_take_self
+    {α : Type} (pref middle suffix : List α) :
+    ((pref ++ middle ++ suffix).drop pref.length).take
+        middle.length = middle := by
+  simp [List.append_assoc]
+
+private theorem list_slice_trans
+    {α : Type} (payload component source : List α)
+    (base offset : Nat)
+    (hcomponent :
+      (payload.drop base).take component.length = component)
+    (hsource :
+      (component.drop offset).take source.length = source) :
+    (payload.drop (base + offset)).take source.length = source := by
+  by_cases hzero : source.length = 0
+  · have hnil : source = [] := List.length_eq_zero_iff.mp hzero
+    simp [hnil]
+  · have hlen := congrArg List.length hsource
+    simp [List.length_take, List.length_drop] at hlen
+    have hle : source.length <= component.length - offset := by
+      omega
+    have htake :
+        (((payload.drop base).take component.length).drop offset).take
+            source.length =
+          ((payload.drop base).drop offset).take source.length := by
+      rw [List.drop_take, List.take_take]
+      simp [Nat.min_eq_left hle]
+    calc
+      (payload.drop (base + offset)).take source.length =
+          ((payload.drop base).drop offset).take source.length := by
+            rw [← List.drop_drop]
+      _ =
+          (((payload.drop base).take component.length).drop offset).take
+              source.length := htake.symm
+      _ = (component.drop offset).take source.length := by
+            rw [hcomponent]
+      _ = source := hsource
+
+theorem concreteBPNativeSuccinctRMQFlatPayloadLayout_component_slice
+    (shape : Cartesian.CartesianShape)
+    (component : ConcreteBPNativeSuccinctRMQFlatPayloadComponent) :
+    let layout := concreteBPNativeSuccinctRMQFlatPayloadLayout shape
+    (layout.payload.drop (layout.componentFlatOffset component)).take
+        (layout.componentPayload component).length =
+      layout.componentPayload component := by
+  intro layout
+  have hcomponents :=
+    concreteBPNativeSuccinctRMQFlatPayloadLayout_payload_components shape
+  change
+      (layout.payload.drop (layout.componentFlatOffset component)).take
+          (layout.componentPayload component).length =
+        layout.componentPayload component
+  cases component <;>
+    simp [layout,
+      ConcreteBPNativeSuccinctRMQFlatPayloadLayout.componentPayload,
+      ConcreteBPNativeSuccinctRMQFlatPayloadLayout.componentFlatOffset,
+      hcomponents, List.append_assoc, Nat.add_assoc]
 
 def concreteBPNativeSuccinctRMQFlatPayloadSegmentSource? :
     Nat -> Option ConcreteBPNativeSuccinctRMQFlatPayloadSource
@@ -419,6 +518,68 @@ def concreteBPNativeSuccinctRMQFlatPayloadSourceAliasesCountedPayload :
     ConcreteBPNativeSuccinctRMQFlatPayloadSource -> Bool
   | .finalRankBPCodeAlias => true
   | _ => false
+
+def concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat
+    (shape : Cartesian.CartesianShape) :
+    ConcreteBPNativeSuccinctRMQFlatPayloadSource -> Prop
+  | .closeSummaryBaseline =>
+      SuccinctClose.concreteBPRelativeRmmInteriorReady shape
+  | .closeSummaryMinRel =>
+      SuccinctClose.concreteBPRelativeRmmInteriorReady shape
+  | .closeSummaryMaxRel =>
+      SuccinctClose.concreteBPRelativeRmmInteriorReady shape
+  | .closeSummaryArgOffset =>
+      SuccinctClose.concreteBPRelativeRmmInteriorReady shape
+  | .closeInteriorLocal =>
+      SuccinctClose.concreteBPRelativeRmmInteriorReady shape
+  | .closeInteriorGlobal =>
+      SuccinctClose.concreteBPRelativeRmmInteriorReady shape
+  | .closeFiniteSmallInteriorMin =>
+      ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape
+  | .closeFiniteSmallInteriorArg =>
+      ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape
+  | _ => True
+
+def concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+    (shape : Cartesian.CartesianShape) (segment : Nat) : Prop :=
+  match concreteBPNativeSuccinctRMQFlatPayloadSegmentSource? segment with
+  | some source =>
+      concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat shape source
+  | none => False
+
+def concreteBPNativeSuccinctRMQFlatPayloadSourceLargeReadyCounted :
+    ConcreteBPNativeSuccinctRMQFlatPayloadSource -> Prop
+  | .closeFiniteSmallInteriorMin => False
+  | .closeFiniteSmallInteriorArg => False
+  | .closeFiniteSmallSameBlock => False
+  | _ => True
+
+theorem concreteBPNativeSuccinctRMQFlatPayloadFiniteSmallSegmentStatus
+    (shape : Cartesian.CartesianShape) :
+    concreteBPNativeSuccinctRMQFlatPayloadSegmentSource? 26 =
+        some .closeFiniteSmallInteriorMin /\
+      concreteBPNativeSuccinctRMQFlatPayloadSegmentSource? 27 =
+        some .closeFiniteSmallInteriorArg /\
+      concreteBPNativeSuccinctRMQFlatPayloadSegmentSource? 28 =
+        some .closeFiniteSmallSameBlock /\
+      (concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+          shape 26 ↔
+        ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape) /\
+      (concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+          shape 27 ↔
+        ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape) /\
+      concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+        shape 28 /\
+      ¬ concreteBPNativeSuccinctRMQFlatPayloadSourceLargeReadyCounted
+        .closeFiniteSmallInteriorMin /\
+      ¬ concreteBPNativeSuccinctRMQFlatPayloadSourceLargeReadyCounted
+        .closeFiniteSmallInteriorArg /\
+      ¬ concreteBPNativeSuccinctRMQFlatPayloadSourceLargeReadyCounted
+        .closeFiniteSmallSameBlock := by
+  simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+    concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+    concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat,
+    concreteBPNativeSuccinctRMQFlatPayloadSourceLargeReadyCounted]
 
 def concreteBPNativeSuccinctRMQFlatPayloadSourceComponentOffset
     (shape : Cartesian.CartesianShape) :
@@ -532,11 +693,17 @@ def concreteBPNativeSuccinctRMQFlatPayloadSourceComponentOffset
   | .closeInteriorGlobal =>
       summary.payload.length + localTable.payload.length
   | .closeFiniteSmallInteriorMin =>
-      summary.payload.length + localTable.payload.length +
-        globalTable.payload.length
+      if SuccinctClose.concreteBPRelativeRmmInteriorReady shape then
+        summary.payload.length + localTable.payload.length +
+          globalTable.payload.length
+      else
+        0
   | .closeFiniteSmallInteriorArg =>
-      summary.payload.length + localTable.payload.length +
-        globalTable.payload.length + smallInterior.minTable.payload.length
+      if SuccinctClose.concreteBPRelativeRmmInteriorReady shape then
+        summary.payload.length + localTable.payload.length +
+          globalTable.payload.length + smallInterior.minTable.payload.length
+      else
+        smallInterior.minTable.payload.length
   | .closeFiniteSmallSameBlock => 0
 
 def concreteBPNativeSuccinctRMQFlatPayloadSourceWords
@@ -688,6 +855,78 @@ def concreteBPNativeSuccinctRMQFlatPayloadSourcePayload
   | .closeFiniteSmallSameBlock =>
       smallSameBlock.payload
 
+theorem concreteBPNativeSuccinctRMQFlatPayloadSource_component_slice
+    (shape : Cartesian.CartesianShape)
+    (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource)
+    (hcounted :
+      concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat
+        shape source) :
+    let layout := concreteBPNativeSuccinctRMQFlatPayloadLayout shape
+    ((layout.componentPayload
+          (concreteBPNativeSuccinctRMQFlatPayloadSourceComponent source)).drop
+        (concreteBPNativeSuccinctRMQFlatPayloadSourceComponentOffset
+          shape source)).take
+        (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload
+          shape source).length =
+      concreteBPNativeSuccinctRMQFlatPayloadSourcePayload
+        shape source := by
+  have hdirect :
+      ((concreteBPNativeSuccinctRMQFlatPayloadComponentPayload shape
+            (concreteBPNativeSuccinctRMQFlatPayloadSourceComponent source)).drop
+          (concreteBPNativeSuccinctRMQFlatPayloadSourceComponentOffset
+            shape source)).take
+          (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload
+            shape source).length =
+        concreteBPNativeSuccinctRMQFlatPayloadSourcePayload
+          shape source := by
+    by_cases hready :
+        SuccinctClose.concreteBPRelativeRmmInteriorReady shape
+    · cases source <;>
+        simp [concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat,
+          concreteBPNativeSuccinctRMQFlatPayloadComponentPayload,
+          concreteBPNativeSuccinctRMQFlatPayloadSourceComponent,
+          concreteBPNativeSuccinctRMQFlatPayloadSourceComponentOffset,
+          concreteBPNativeSuccinctRMQFlatPayloadSourcePayload,
+          GenericSelect.sparseExceptionSelectSource,
+          GenericSelect.SparseExceptionSelectData.toChargedSelectPositionSource,
+          GenericSelect.SparseExceptionSelectData.payload,
+          GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.payload,
+          GenericSelect.SparseExceptionDirectory.payload,
+          SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.auxPayload,
+          SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superPayload,
+          SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blockPayload,
+          SuccinctSpace.FixedWidthRankSampleTables.payload,
+          concreteBPNativeCloseDirectory,
+          SuccinctClose.concreteCompactBPCloseLCADirectory,
+          SuccinctClose.concreteBPRelativeRmmInteriorDirectory,
+          SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable.payload,
+          SuccinctClose.PayloadLiveBPLocalSparseOffsetTable.payload,
+          SuccinctClose.PayloadLiveBPGlobalSparseBlockTable.payload,
+          hready, List.append_assoc, Nat.add_assoc] at hcounted ⊢
+    · cases source <;>
+        simp [concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat,
+          concreteBPNativeSuccinctRMQFlatPayloadComponentPayload,
+          concreteBPNativeSuccinctRMQFlatPayloadSourceComponent,
+          concreteBPNativeSuccinctRMQFlatPayloadSourceComponentOffset,
+          concreteBPNativeSuccinctRMQFlatPayloadSourcePayload,
+          GenericSelect.sparseExceptionSelectSource,
+          GenericSelect.SparseExceptionSelectData.toChargedSelectPositionSource,
+          GenericSelect.SparseExceptionSelectData.payload,
+          GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.payload,
+          GenericSelect.SparseExceptionDirectory.payload,
+          SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.auxPayload,
+          SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superPayload,
+          SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blockPayload,
+          SuccinctSpace.FixedWidthRankSampleTables.payload,
+          concreteBPNativeCloseDirectory,
+          SuccinctClose.concreteCompactBPCloseLCADirectory,
+          SuccinctClose.concreteBPRelativeRmmInteriorDirectory,
+          SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable.payload,
+          SuccinctClose.PayloadLiveBPLocalSparseOffsetTable.payload,
+          SuccinctClose.PayloadLiveBPRangeArgMinWitnessTable.payload,
+          hready, List.append_assoc, Nat.add_assoc] at hcounted ⊢
+  simpa using hdirect
+
 structure ConcreteBPNativeSuccinctRMQFlatPayloadSegmentBacking
     (shape : Cartesian.CartesianShape) where
   source : ConcreteBPNativeSuccinctRMQFlatPayloadSource
@@ -704,6 +943,47 @@ def concreteBPNativeSuccinctRMQFlatPayloadSourceFlatOffset
       (concreteBPNativeSuccinctRMQFlatPayloadSourceComponent source) +
     concreteBPNativeSuccinctRMQFlatPayloadSourceComponentOffset
       shape source
+
+theorem concreteBPNativeSuccinctRMQFlatPayloadSource_flat_slice
+    (shape : Cartesian.CartesianShape)
+    (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource)
+    (hcounted :
+      concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat
+        shape source) :
+    let layout := concreteBPNativeSuccinctRMQFlatPayloadLayout shape
+    (layout.payload.drop
+        (concreteBPNativeSuccinctRMQFlatPayloadSourceFlatOffset
+          shape source)).take
+        (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload
+          shape source).length =
+      concreteBPNativeSuccinctRMQFlatPayloadSourcePayload
+        shape source := by
+  let layout := concreteBPNativeSuccinctRMQFlatPayloadLayout shape
+  let component :=
+    concreteBPNativeSuccinctRMQFlatPayloadSourceComponent source
+  let sourcePayload :=
+    concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape source
+  have hcomponent :
+      (layout.payload.drop (layout.componentFlatOffset component)).take
+          (layout.componentPayload component).length =
+        layout.componentPayload component := by
+    simpa [layout, component] using
+      concreteBPNativeSuccinctRMQFlatPayloadLayout_component_slice
+        shape component
+  have hsource :
+      ((layout.componentPayload component).drop
+          (concreteBPNativeSuccinctRMQFlatPayloadSourceComponentOffset
+            shape source)).take sourcePayload.length =
+        sourcePayload := by
+    simpa [layout, component, sourcePayload] using
+      concreteBPNativeSuccinctRMQFlatPayloadSource_component_slice
+        shape source hcounted
+  simpa [layout, component, sourcePayload,
+    concreteBPNativeSuccinctRMQFlatPayloadSourceFlatOffset] using
+    list_slice_trans layout.payload (layout.componentPayload component)
+      sourcePayload (layout.componentFlatOffset component)
+      (concreteBPNativeSuccinctRMQFlatPayloadSourceComponentOffset
+        shape source) hcomponent hsource
 
 def concreteBPNativeSuccinctRMQFlatPayloadSourceBacking
     (shape : Cartesian.CartesianShape)
@@ -736,6 +1016,34 @@ def concreteBPNativeSuccinctRMQFlatPayloadReadStore
           shape source)[index]?
     | none => none
 
+def concreteBPNativeSuccinctRMQFlatPayloadReadSourceManifest
+    (shape : Cartesian.CartesianShape)
+    (segment index : Nat) (word : List Bool) : Prop :=
+  exists source,
+    concreteBPNativeSuccinctRMQFlatPayloadSegmentSource? segment =
+        some source /\
+      (concreteBPNativeSuccinctRMQFlatPayloadSourceWords
+        shape source)[index]? = some word /\
+      SuccinctSpace.flattenPayloadWords
+          (concreteBPNativeSuccinctRMQFlatPayloadSourceWords
+            shape source).toList =
+        concreteBPNativeSuccinctRMQFlatPayloadSourcePayload
+          shape source /\
+      (concreteBPNativeSuccinctRMQFlatPayloadSourceBacking
+        shape source).flatOffset =
+          (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).componentFlatOffset
+            ((concreteBPNativeSuccinctRMQFlatPayloadSourceBacking
+              shape source).component) +
+            (concreteBPNativeSuccinctRMQFlatPayloadSourceBacking
+              shape source).componentOffset /\
+      ((concreteBPNativeSuccinctRMQFlatPayloadSourceBacking
+          shape source).aliasesCountedPayload = true ->
+        (concreteBPNativeSuccinctRMQFlatPayloadSourceBacking
+            shape source).component =
+          .bpCode /\
+        (concreteBPNativeSuccinctRMQFlatPayloadSourceBacking
+            shape source).flatOffset = 0)
+
 def concreteBPNativeSuccinctRMQFlatPayloadReadBacked
     (shape : Cartesian.CartesianShape)
     (segment index : Nat) (word : List Bool) : Prop :=
@@ -749,6 +1057,25 @@ def concreteBPNativeSuccinctRMQFlatPayloadReadBacked
             shape source).toList =
         concreteBPNativeSuccinctRMQFlatPayloadSourcePayload
           shape source /\
+      concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat
+        shape source /\
+      (let layout := concreteBPNativeSuccinctRMQFlatPayloadLayout shape
+       ((layout.componentPayload
+            (concreteBPNativeSuccinctRMQFlatPayloadSourceComponent source)).drop
+          (concreteBPNativeSuccinctRMQFlatPayloadSourceComponentOffset
+            shape source)).take
+          (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload
+            shape source).length =
+        concreteBPNativeSuccinctRMQFlatPayloadSourcePayload
+          shape source) /\
+      (let layout := concreteBPNativeSuccinctRMQFlatPayloadLayout shape
+       (layout.payload.drop
+          (concreteBPNativeSuccinctRMQFlatPayloadSourceFlatOffset
+            shape source)).take
+          (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload
+            shape source).length =
+        concreteBPNativeSuccinctRMQFlatPayloadSourcePayload
+          shape source) /\
       (concreteBPNativeSuccinctRMQFlatPayloadSourceBacking
         shape source).flatOffset =
           (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).componentFlatOffset
@@ -992,16 +1319,16 @@ theorem concreteBPNativeSuccinctRMQFlatPayloadSegmentBacking_offsets
           concreteBPNativeSuccinctRMQFlatPayloadSourceBacking_alias
             shape source
 
-theorem concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_read_backed
+theorem concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_read_source_manifest
     (shape : Cartesian.CartesianShape)
     {segment index : Nat} {word : List Bool}
     (hread :
       (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord?
           segment index = some word) :
-    concreteBPNativeSuccinctRMQFlatPayloadReadBacked
+    concreteBPNativeSuccinctRMQFlatPayloadReadSourceManifest
       shape segment index word := by
   unfold concreteBPNativeSuccinctRMQFlatPayloadReadStore at hread
-  unfold concreteBPNativeSuccinctRMQFlatPayloadReadBacked
+  unfold concreteBPNativeSuccinctRMQFlatPayloadReadSourceManifest
   cases hsource :
       concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?
         segment with
@@ -1020,14 +1347,56 @@ theorem concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_read_backed
           concreteBPNativeSuccinctRMQFlatPayloadSourceBacking_alias
             shape source
 
+theorem concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_counted_read_backed
+    (shape : Cartesian.CartesianShape)
+    {segment index : Nat} {word : List Bool}
+    (hread :
+      (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord?
+          segment index = some word)
+    (hcounted :
+      concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+        shape segment) :
+    concreteBPNativeSuccinctRMQFlatPayloadReadBacked
+      shape segment index word := by
+  unfold concreteBPNativeSuccinctRMQFlatPayloadReadStore at hread
+  unfold concreteBPNativeSuccinctRMQFlatPayloadReadBacked
+  cases hsource :
+      concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?
+        segment with
+  | none =>
+      simp [hsource] at hread
+  | some source =>
+      have hsourceCounted :
+          concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat
+            shape source := by
+        simpa [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+          hsource] using hcounted
+      refine ⟨source, rfl, ?_, ?_, hsourceCounted, ?_, ?_, ?_, ?_⟩
+      · simpa [hsource] using hread
+      · exact
+          concreteBPNativeSuccinctRMQFlatPayloadSourceWords_erases
+            shape source
+      · exact
+          concreteBPNativeSuccinctRMQFlatPayloadSource_component_slice
+            shape source hsourceCounted
+      · exact
+          concreteBPNativeSuccinctRMQFlatPayloadSource_flat_slice
+            shape source hsourceCounted
+      · exact
+          concreteBPNativeSuccinctRMQFlatPayloadSourceBacking_flatOffset
+            shape source
+      · exact
+          concreteBPNativeSuccinctRMQFlatPayloadSourceBacking_alias
+            shape source
+
 /--
-Every successful read from the concrete flat read-store has a component/offset
-backing inside the same counted payload used by the final succinct RMQ payload.
-The only source marked as an alias is the final rank BP-code source, which maps
-back to the already-counted BP-code component rather than a duplicated payload.
+Every successful read from the concrete flat read-store has a source manifest:
+it names the concrete source table, records the source word lookup, and keeps
+the component/offset equation. This is not, by itself, a counted-payload
+containment theorem for finite-small sources.
 -/
 theorem
-    concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_reads_backed_by_counted_payload
+    concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_reads_have_source_manifest
     (shape : Cartesian.CartesianShape) :
     (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).payload =
         concreteBPNativeSuccinctRMQPayload
@@ -1043,7 +1412,7 @@ theorem
       (forall {segment index : Nat} {word : List Bool},
         (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord?
             segment index = some word ->
-          concreteBPNativeSuccinctRMQFlatPayloadReadBacked
+          concreteBPNativeSuccinctRMQFlatPayloadReadSourceManifest
             shape segment index word) := by
   constructor
   · exact concreteBPNativeSuccinctRMQFlatPayloadLayout_payload_eq shape
@@ -1051,8 +1420,1494 @@ theorem
   · exact concreteBPNativeSuccinctRMQFlatPayloadLayout_payload_components shape
   · intro segment index word hread
     exact
-      concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_read_backed
+      concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_read_source_manifest
         shape hread
+
+/--
+Successful reads from sources known to be counted in the current flat payload
+are positionally backed by that payload. The counted-source precondition is
+essential for finite-small interior segments `26` and `27`: in the large branch
+their tables remain fallback sources but are not present in `closePayload`.
+-/
+theorem
+    concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_counted_reads_backed_by_counted_payload
+    (shape : Cartesian.CartesianShape) :
+    (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).payload =
+        concreteBPNativeSuccinctRMQPayload
+          builtGenericSparseExceptionSelectBPCloseAccessFamily shape ++
+          (concreteBPNativeSuccinctRMQFlatPayloadLayout
+            shape).finiteSmallSameBlockPayload /\
+      (let layout := concreteBPNativeSuccinctRMQFlatPayloadLayout shape
+       layout.payload =
+        layout.bpCodePayload ++ layout.accessRankPayload ++
+          layout.selectPayload ++ layout.accessPadding ++
+            layout.closePayload ++ layout.closePadding ++
+              layout.finiteSmallSameBlockPayload) /\
+      (forall {segment index : Nat} {word : List Bool},
+        (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord?
+            segment index = some word ->
+          concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+            shape segment ->
+          concreteBPNativeSuccinctRMQFlatPayloadReadBacked
+            shape segment index word) := by
+  constructor
+  · exact concreteBPNativeSuccinctRMQFlatPayloadLayout_payload_eq shape
+  constructor
+  · exact concreteBPNativeSuccinctRMQFlatPayloadLayout_payload_components shape
+  · intro segment index word hread hcounted
+    exact
+      concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_counted_read_backed
+        shape hread hcounted
+
+/--
+A successful flat-store read is counted if the only conditional finite-small
+sources are known to be on the branch that actually materializes their payload:
+segments `20` through `25` require Ready, while segments `26` and `27` require
+the non-Ready fallback. This local bridge is intentionally not a claim that
+every possible broad read-store lookup is counted.
+-/
+theorem
+    concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_read_segment_counted
+    (shape : Cartesian.CartesianShape)
+    {segment index : Nat} {word : List Bool}
+    (hread :
+      (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord?
+          segment index = some word)
+    (h20 : segment = 20 ->
+      SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (h21 : segment = 21 ->
+      SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (h22 : segment = 22 ->
+      SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (h23 : segment = 23 ->
+      SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (h24 : segment = 24 ->
+      SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (h25 : segment = 25 ->
+      SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (h26 : segment = 26 ->
+      ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (h27 : segment = 27 ->
+      ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape) :
+    concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+      shape segment := by
+  match segment with
+  | 0 =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
+  | 1 =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
+  | 2 =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
+  | 3 =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
+  | 4 =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
+  | 5 =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
+  | 6 =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
+  | 7 =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
+  | 8 =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
+  | 9 =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
+  | 10 =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
+  | 11 =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
+  | 12 =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
+  | 13 =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
+  | 14 =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
+  | 15 =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
+  | 16 =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
+  | 17 =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
+  | 18 =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
+  | 19 =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
+  | 20 =>
+      simpa [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat] using
+        h20 rfl
+  | 21 =>
+      simpa [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat] using
+        h21 rfl
+  | 22 =>
+      simpa [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat] using
+        h22 rfl
+  | 23 =>
+      simpa [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat] using
+        h23 rfl
+  | 24 =>
+      simpa [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat] using
+        h24 rfl
+  | 25 =>
+      simpa [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat] using
+        h25 rfl
+  | 26 =>
+      simpa [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat] using
+        h26 rfl
+  | 27 =>
+      simpa [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat] using
+        h27 rfl
+  | 28 =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
+  | _ + 29 =>
+      unfold concreteBPNativeSuccinctRMQFlatPayloadReadStore at hread
+      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?] at hread
+
+theorem
+    concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_read_segment_counted_of_not_ready
+    (shape : Cartesian.CartesianShape)
+    (hnotReady : ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    {segment index : Nat} {word : List Bool}
+    (h20 : segment ≠ 20)
+    (h21 : segment ≠ 21)
+    (h22 : segment ≠ 22)
+    (h23 : segment ≠ 23)
+    (h24 : segment ≠ 24)
+    (h25 : segment ≠ 25)
+    (hread :
+      (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord?
+          segment index = some word) :
+    concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+      shape segment :=
+  concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_read_segment_counted
+    shape hread
+    (fun hseg => False.elim (h20 hseg))
+    (fun hseg => False.elim (h21 hseg))
+    (fun hseg => False.elim (h22 hseg))
+    (fun hseg => False.elim (h23 hseg))
+    (fun hseg => False.elim (h24 hseg))
+    (fun hseg => False.elim (h25 hseg))
+    (fun _ => hnotReady) (fun _ => hnotReady)
+
+def concreteBPNativeSuccinctRMQFlatPayloadTraceEventSuccessfulReadBacked
+    (shape : Cartesian.CartesianShape) :
+    WordRAM.TraceEvent -> Prop
+  | WordRAM.TraceEvent.readWord segment index (some word) =>
+      concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+        shape segment /\
+        concreteBPNativeSuccinctRMQFlatPayloadReadBacked
+          shape segment index word
+  | _ => True
+
+def concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead :
+    WordRAM.TraceEvent -> Prop
+  | WordRAM.TraceEvent.readWord 26 _ (some _) => False
+  | WordRAM.TraceEvent.readWord 27 _ (some _) => False
+  | _ => True
+
+def concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead :
+    WordRAM.TraceEvent -> Prop
+  | WordRAM.TraceEvent.readWord 20 _ (some _) => False
+  | WordRAM.TraceEvent.readWord 21 _ (some _) => False
+  | WordRAM.TraceEvent.readWord 22 _ (some _) => False
+  | WordRAM.TraceEvent.readWord 23 _ (some _) => False
+  | WordRAM.TraceEvent.readWord 24 _ (some _) => False
+  | WordRAM.TraceEvent.readWord 25 _ (some _) => False
+  | _ => True
+
+private theorem
+    concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead_relabelReadSegmentWith
+    (segmentMap : Nat -> Nat)
+    (h26 : forall segment, segmentMap segment ≠ 26)
+    (h27 : forall segment, segmentMap segment ≠ 27)
+    (event : WordRAM.TraceEvent) :
+    concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+      (event.relabelReadSegmentWith segmentMap) := by
+  cases event with
+  | readWord segment index word? =>
+      cases word? with
+      | none =>
+          simp [WordRAM.TraceEvent.relabelReadSegmentWith,
+            concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead]
+      | some word =>
+          have hnot26 := h26 segment
+          have hnot27 := h27 segment
+          simp [WordRAM.TraceEvent.relabelReadSegmentWith,
+            concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead,
+            hnot26, hnot27]
+  | wordRank target limit result =>
+      simp [WordRAM.TraceEvent.relabelReadSegmentWith,
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead]
+  | wordSelect target occurrence result =>
+      simp [WordRAM.TraceEvent.relabelReadSegmentWith,
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead]
+  | syntheticCostOnlyPrimitive =>
+      simp [WordRAM.TraceEvent.relabelReadSegmentWith,
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead]
+
+private theorem
+    concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noFiniteSmallInteriorSuccessfulRead
+    {α : Type} (segmentMap : Nat -> Nat)
+    (result : WordRAM.TraceResult α)
+    (h26 : forall segment, segmentMap segment ≠ 26)
+    (h27 : forall segment, segmentMap segment ≠ 27) :
+    forall event,
+      List.Mem event
+          (WordRAM.TraceResult.relabelReadSegmentsWith
+            segmentMap result).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  intro event hmem
+  rcases List.mem_map.mp hmem with ⟨localEvent, _hlocal, hrelabeled⟩
+  subst event
+  exact
+    concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead_relabelReadSegmentWith
+      segmentMap h26 h27 localEvent
+
+private theorem
+    concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_of_bases_ne
+    (base dead : Nat)
+    (hbase : base ≠ 26) (hdead : dead ≠ 26) :
+    forall segment, WordRAM.singletonSegmentMap base dead segment ≠ 26 := by
+  intro segment
+  cases segment with
+  | zero =>
+      simpa [WordRAM.singletonSegmentMap] using hbase
+  | succ segment =>
+      simpa [WordRAM.singletonSegmentMap] using hdead
+
+private theorem
+    concreteBPNativeSuccinctRMQSingletonSegmentMap_ne27_of_bases_ne
+    (base dead : Nat)
+    (hbase : base ≠ 27) (hdead : dead ≠ 27) :
+    forall segment, WordRAM.singletonSegmentMap base dead segment ≠ 27 := by
+  intro segment
+  cases segment with
+  | zero =>
+      simpa [WordRAM.singletonSegmentMap] using hbase
+  | succ segment =>
+      simpa [WordRAM.singletonSegmentMap] using hdead
+
+private theorem
+    concreteBPNativeFixedWidthNatTable_readTraceResultAtSegment_noFiniteSmallInteriorSuccessfulRead
+    {entries : List Nat} {width : Nat}
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (segmentBase deadSegment i : Nat)
+    (h26 :
+      forall segment,
+        WordRAM.singletonSegmentMap segmentBase deadSegment segment ≠ 26)
+    (h27 :
+      forall segment,
+        WordRAM.singletonSegmentMap segmentBase deadSegment segment ≠ 27) :
+    forall event,
+      List.Mem event
+          (table.readTraceResultAtSegment
+            segmentBase deadSegment i).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  unfold SuccinctSpace.FixedWidthNatTable.readTraceResultAtSegment
+  exact
+    concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noFiniteSmallInteriorSuccessfulRead
+      (WordRAM.singletonSegmentMap segmentBase deadSegment)
+      (table.readTraceResult i) h26 h27
+
+private theorem
+    concreteBPNativeFixedWidthOptionNatTable_readTraceResultAtSegment_noFiniteSmallInteriorSuccessfulRead
+    {entries : List (Option Nat)} {width : Nat}
+    (table : SuccinctSpace.FixedWidthOptionNatTable entries width)
+    (segmentBase deadSegment i : Nat)
+    (h26 :
+      forall segment,
+        WordRAM.singletonSegmentMap segmentBase deadSegment segment ≠ 26)
+    (h27 :
+      forall segment,
+        WordRAM.singletonSegmentMap segmentBase deadSegment segment ≠ 27) :
+    forall event,
+      List.Mem event
+          (table.readTraceResultAtSegment
+            segmentBase deadSegment i).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  unfold SuccinctSpace.FixedWidthOptionNatTable.readTraceResultAtSegment
+  exact
+    concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noFiniteSmallInteriorSuccessfulRead
+      (WordRAM.singletonSegmentMap segmentBase deadSegment)
+      (table.readTraceResult i) h26 h27
+
+private theorem
+    concreteBPNativeSuccinctRMQTripleSegmentMap_ne_of_bases_ne
+    (base dead : Nat)
+    (h0 : base ≠ 26) (h1 : base + 1 ≠ 26)
+    (h2 : base + 2 ≠ 26) (hdead : dead ≠ 26) :
+    forall segment, WordRAM.tripleSegmentMap base dead segment ≠ 26 := by
+  intro segment
+  cases segment with
+  | zero =>
+      simpa [WordRAM.tripleSegmentMap] using h0
+  | succ segment =>
+      cases segment with
+      | zero =>
+          intro heq
+          exact h1 (by
+            simpa [WordRAM.tripleSegmentMap,
+              WordRAM.TraceEvent.tripleSegmentMap] using heq)
+      | succ segment =>
+          cases segment with
+          | zero =>
+              intro heq
+              exact h2 (by
+                simpa [WordRAM.tripleSegmentMap,
+                  WordRAM.TraceEvent.tripleSegmentMap] using heq)
+          | succ segment =>
+              simpa [WordRAM.tripleSegmentMap] using hdead
+
+private theorem
+    concreteBPNativeSuccinctRMQTripleSegmentMap_ne27_of_bases_ne
+    (base dead : Nat)
+    (h0 : base ≠ 27) (h1 : base + 1 ≠ 27)
+    (h2 : base + 2 ≠ 27) (hdead : dead ≠ 27) :
+    forall segment, WordRAM.tripleSegmentMap base dead segment ≠ 27 := by
+  intro segment
+  cases segment with
+  | zero =>
+      simpa [WordRAM.tripleSegmentMap] using h0
+  | succ segment =>
+      cases segment with
+      | zero =>
+          intro heq
+          exact h1 (by
+            simpa [WordRAM.tripleSegmentMap,
+              WordRAM.TraceEvent.tripleSegmentMap] using heq)
+      | succ segment =>
+          cases segment with
+          | zero =>
+              intro heq
+              exact h2 (by
+                simpa [WordRAM.tripleSegmentMap,
+                  WordRAM.TraceEvent.tripleSegmentMap] using heq)
+          | succ segment =>
+              simpa [WordRAM.tripleSegmentMap] using hdead
+
+private def concreteBPNativeSuccinctRMQSegmentMapAvoidsReadyClose
+    (segmentMap : Nat -> Nat) : Prop :=
+  (forall segment, segmentMap segment ≠ 20) /\
+    (forall segment, segmentMap segment ≠ 21) /\
+    (forall segment, segmentMap segment ≠ 22) /\
+    (forall segment, segmentMap segment ≠ 23) /\
+    (forall segment, segmentMap segment ≠ 24) /\
+    (forall segment, segmentMap segment ≠ 25)
+
+private theorem
+    concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead_relabelReadSegmentWith
+    (segmentMap : Nat -> Nat)
+    (havoid :
+      concreteBPNativeSuccinctRMQSegmentMapAvoidsReadyClose segmentMap)
+    (event : WordRAM.TraceEvent) :
+    concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+      (event.relabelReadSegmentWith segmentMap) := by
+  rcases havoid with ⟨h20, h21, h22, h23, h24, h25⟩
+  cases event with
+  | readWord segment index word? =>
+      cases word? with
+      | none =>
+          simp [WordRAM.TraceEvent.relabelReadSegmentWith,
+            concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead]
+      | some word =>
+          have hnot20 := h20 segment
+          have hnot21 := h21 segment
+          have hnot22 := h22 segment
+          have hnot23 := h23 segment
+          have hnot24 := h24 segment
+          have hnot25 := h25 segment
+          simp [WordRAM.TraceEvent.relabelReadSegmentWith,
+            concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead,
+            hnot20, hnot21, hnot22, hnot23, hnot24, hnot25]
+  | wordRank target limit result =>
+      simp [WordRAM.TraceEvent.relabelReadSegmentWith,
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead]
+  | wordSelect target occurrence result =>
+      simp [WordRAM.TraceEvent.relabelReadSegmentWith,
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead]
+  | syntheticCostOnlyPrimitive =>
+      simp [WordRAM.TraceEvent.relabelReadSegmentWith,
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead]
+
+private theorem
+    concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noReadyCloseSuccessfulRead
+    {α : Type} (segmentMap : Nat -> Nat)
+    (result : WordRAM.TraceResult α)
+    (havoid :
+      concreteBPNativeSuccinctRMQSegmentMapAvoidsReadyClose segmentMap) :
+    forall event,
+      List.Mem event
+          (WordRAM.TraceResult.relabelReadSegmentsWith
+            segmentMap result).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event := by
+  intro event hmem
+  rcases List.mem_map.mp hmem with ⟨localEvent, _hlocal, hrelabeled⟩
+  subst event
+  exact
+    concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead_relabelReadSegmentWith
+      segmentMap havoid localEvent
+
+private theorem
+    concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_target_of_bases_ne
+    (base dead target : Nat)
+    (hbase : base ≠ target) (hdead : dead ≠ target) :
+    forall segment, WordRAM.singletonSegmentMap base dead segment ≠ target := by
+  intro segment
+  cases segment with
+  | zero =>
+      simpa [WordRAM.singletonSegmentMap] using hbase
+  | succ segment =>
+      simpa [WordRAM.singletonSegmentMap] using hdead
+
+private theorem
+    concreteBPNativeSuccinctRMQTripleSegmentMap_ne_target_of_bases_ne
+    (base dead target : Nat)
+    (h0 : base ≠ target) (h1 : base + 1 ≠ target)
+    (h2 : base + 2 ≠ target) (hdead : dead ≠ target) :
+    forall segment, WordRAM.tripleSegmentMap base dead segment ≠ target := by
+  intro segment
+  cases segment with
+  | zero =>
+      simpa [WordRAM.tripleSegmentMap] using h0
+  | succ segment =>
+      cases segment with
+      | zero =>
+          intro heq
+          exact h1 (by
+            simpa [WordRAM.tripleSegmentMap,
+              WordRAM.TraceEvent.tripleSegmentMap] using heq)
+      | succ segment =>
+          cases segment with
+          | zero =>
+              intro heq
+              exact h2 (by
+                simpa [WordRAM.tripleSegmentMap,
+                  WordRAM.TraceEvent.tripleSegmentMap] using heq)
+          | succ segment =>
+              simpa [WordRAM.tripleSegmentMap] using hdead
+
+private theorem
+    concreteBPNativeSuccinctRMQSingletonSegmentMap_avoidsReadyClose_of_bases_ne
+    (base dead : Nat)
+    (hbase20 : base ≠ 20) (hdead20 : dead ≠ 20)
+    (hbase21 : base ≠ 21) (hdead21 : dead ≠ 21)
+    (hbase22 : base ≠ 22) (hdead22 : dead ≠ 22)
+    (hbase23 : base ≠ 23) (hdead23 : dead ≠ 23)
+    (hbase24 : base ≠ 24) (hdead24 : dead ≠ 24)
+    (hbase25 : base ≠ 25) (hdead25 : dead ≠ 25) :
+    concreteBPNativeSuccinctRMQSegmentMapAvoidsReadyClose
+      (WordRAM.singletonSegmentMap base dead) := by
+  exact
+    ⟨concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_target_of_bases_ne
+        base dead 20 hbase20 hdead20,
+      concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_target_of_bases_ne
+        base dead 21 hbase21 hdead21,
+      concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_target_of_bases_ne
+        base dead 22 hbase22 hdead22,
+      concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_target_of_bases_ne
+        base dead 23 hbase23 hdead23,
+      concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_target_of_bases_ne
+        base dead 24 hbase24 hdead24,
+      concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_target_of_bases_ne
+        base dead 25 hbase25 hdead25⟩
+
+private theorem
+    concreteBPNativeSuccinctRMQTripleSegmentMap_avoidsReadyClose_of_bases_ne
+    (base dead : Nat)
+    (h020 : base ≠ 20) (h120 : base + 1 ≠ 20)
+    (h220 : base + 2 ≠ 20) (hdead20 : dead ≠ 20)
+    (h021 : base ≠ 21) (h121 : base + 1 ≠ 21)
+    (h221 : base + 2 ≠ 21) (hdead21 : dead ≠ 21)
+    (h022 : base ≠ 22) (h122 : base + 1 ≠ 22)
+    (h222 : base + 2 ≠ 22) (hdead22 : dead ≠ 22)
+    (h023 : base ≠ 23) (h123 : base + 1 ≠ 23)
+    (h223 : base + 2 ≠ 23) (hdead23 : dead ≠ 23)
+    (h024 : base ≠ 24) (h124 : base + 1 ≠ 24)
+    (h224 : base + 2 ≠ 24) (hdead24 : dead ≠ 24)
+    (h025 : base ≠ 25) (h125 : base + 1 ≠ 25)
+    (h225 : base + 2 ≠ 25) (hdead25 : dead ≠ 25) :
+    concreteBPNativeSuccinctRMQSegmentMapAvoidsReadyClose
+      (WordRAM.tripleSegmentMap base dead) := by
+  exact
+    ⟨concreteBPNativeSuccinctRMQTripleSegmentMap_ne_target_of_bases_ne
+        base dead 20 h020 h120 h220 hdead20,
+      concreteBPNativeSuccinctRMQTripleSegmentMap_ne_target_of_bases_ne
+        base dead 21 h021 h121 h221 hdead21,
+      concreteBPNativeSuccinctRMQTripleSegmentMap_ne_target_of_bases_ne
+        base dead 22 h022 h122 h222 hdead22,
+      concreteBPNativeSuccinctRMQTripleSegmentMap_ne_target_of_bases_ne
+        base dead 23 h023 h123 h223 hdead23,
+      concreteBPNativeSuccinctRMQTripleSegmentMap_ne_target_of_bases_ne
+        base dead 24 h024 h124 h224 hdead24,
+      concreteBPNativeSuccinctRMQTripleSegmentMap_ne_target_of_bases_ne
+        base dead 25 h025 h125 h225 hdead25⟩
+
+private theorem
+    concreteBPNativeNat_ne_readyClose_of_outside
+    {n target : Nat} (houtside : n < 20 ∨ 25 < n)
+    (htarget : target = 20 ∨ target = 21 ∨ target = 22 ∨
+      target = 23 ∨ target = 24 ∨ target = 25) :
+    n ≠ target := by
+  rcases htarget with htarget | htarget | htarget | htarget | htarget | htarget <;>
+    subst target <;> omega
+
+private theorem
+    concreteBPNativeSuccinctRMQSingletonSegmentMap_avoidsReadyClose_of_outside
+    (base dead : Nat)
+    (hbase : base < 20 ∨ 25 < base)
+    (hdead : dead < 20 ∨ 25 < dead) :
+    concreteBPNativeSuccinctRMQSegmentMapAvoidsReadyClose
+      (WordRAM.singletonSegmentMap base dead) := by
+  exact
+    concreteBPNativeSuccinctRMQSingletonSegmentMap_avoidsReadyClose_of_bases_ne
+      base dead
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase (Or.inl rfl))
+      (concreteBPNativeNat_ne_readyClose_of_outside hdead (Or.inl rfl))
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase (Or.inr (Or.inl rfl)))
+      (concreteBPNativeNat_ne_readyClose_of_outside hdead (Or.inr (Or.inl rfl)))
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase (Or.inr (Or.inr (Or.inl rfl))))
+      (concreteBPNativeNat_ne_readyClose_of_outside hdead (Or.inr (Or.inr (Or.inl rfl))))
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase (Or.inr (Or.inr (Or.inr (Or.inl rfl)))))
+      (concreteBPNativeNat_ne_readyClose_of_outside hdead (Or.inr (Or.inr (Or.inr (Or.inl rfl)))))
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl rfl))))))
+      (concreteBPNativeNat_ne_readyClose_of_outside hdead (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl rfl))))))
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr rfl))))))
+      (concreteBPNativeNat_ne_readyClose_of_outside hdead (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr rfl))))))
+
+private theorem
+    concreteBPNativeSuccinctRMQTripleSegmentMap_avoidsReadyClose_of_outside
+    (base dead : Nat)
+    (hbase : base < 20 ∨ 25 < base)
+    (hbase1 : base + 1 < 20 ∨ 25 < base + 1)
+    (hbase2 : base + 2 < 20 ∨ 25 < base + 2)
+    (hdead : dead < 20 ∨ 25 < dead) :
+    concreteBPNativeSuccinctRMQSegmentMapAvoidsReadyClose
+      (WordRAM.tripleSegmentMap base dead) := by
+  exact
+    concreteBPNativeSuccinctRMQTripleSegmentMap_avoidsReadyClose_of_bases_ne
+      base dead
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase (Or.inl rfl))
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase1 (Or.inl rfl))
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase2 (Or.inl rfl))
+      (concreteBPNativeNat_ne_readyClose_of_outside hdead (Or.inl rfl))
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase (Or.inr (Or.inl rfl)))
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase1 (Or.inr (Or.inl rfl)))
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase2 (Or.inr (Or.inl rfl)))
+      (concreteBPNativeNat_ne_readyClose_of_outside hdead (Or.inr (Or.inl rfl)))
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase (Or.inr (Or.inr (Or.inl rfl))))
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase1 (Or.inr (Or.inr (Or.inl rfl))))
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase2 (Or.inr (Or.inr (Or.inl rfl))))
+      (concreteBPNativeNat_ne_readyClose_of_outside hdead (Or.inr (Or.inr (Or.inl rfl))))
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase (Or.inr (Or.inr (Or.inr (Or.inl rfl)))))
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase1 (Or.inr (Or.inr (Or.inr (Or.inl rfl)))))
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase2 (Or.inr (Or.inr (Or.inr (Or.inl rfl)))))
+      (concreteBPNativeNat_ne_readyClose_of_outside hdead (Or.inr (Or.inr (Or.inr (Or.inl rfl)))))
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl rfl))))))
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase1 (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl rfl))))))
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase2 (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl rfl))))))
+      (concreteBPNativeNat_ne_readyClose_of_outside hdead (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl rfl))))))
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr rfl))))))
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase1 (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr rfl))))))
+      (concreteBPNativeNat_ne_readyClose_of_outside hbase2 (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr rfl))))))
+      (concreteBPNativeNat_ne_readyClose_of_outside hdead (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr rfl))))))
+
+private theorem
+    concreteBPNativeFixedWidthNatTable_readTraceResultAtSegment_noReadyCloseSuccessfulRead
+    {entries : List Nat} {width : Nat}
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (segmentBase deadSegment i : Nat)
+    (havoid :
+      concreteBPNativeSuccinctRMQSegmentMapAvoidsReadyClose
+        (WordRAM.singletonSegmentMap segmentBase deadSegment)) :
+    forall event,
+      List.Mem event
+          (table.readTraceResultAtSegment
+            segmentBase deadSegment i).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event := by
+  unfold SuccinctSpace.FixedWidthNatTable.readTraceResultAtSegment
+  exact
+    concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noReadyCloseSuccessfulRead
+      (WordRAM.singletonSegmentMap segmentBase deadSegment)
+      (table.readTraceResult i) havoid
+
+private theorem
+    concreteBPNativeFixedWidthOptionNatTable_readTraceResultAtSegment_noReadyCloseSuccessfulRead
+    {entries : List (Option Nat)} {width : Nat}
+    (table : SuccinctSpace.FixedWidthOptionNatTable entries width)
+    (segmentBase deadSegment i : Nat)
+    (havoid :
+      concreteBPNativeSuccinctRMQSegmentMapAvoidsReadyClose
+        (WordRAM.singletonSegmentMap segmentBase deadSegment)) :
+    forall event,
+      List.Mem event
+          (table.readTraceResultAtSegment
+            segmentBase deadSegment i).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event := by
+  unfold SuccinctSpace.FixedWidthOptionNatTable.readTraceResultAtSegment
+  exact
+    concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noReadyCloseSuccessfulRead
+      (WordRAM.singletonSegmentMap segmentBase deadSegment)
+      (table.readTraceResult i) havoid
+
+private theorem
+    concreteBPNativeSuccinctRMQBpCodeWordReadTraceResult_noFiniteSmallInteriorSuccessfulRead
+    (shape : Cartesian.CartesianShape) (index : Nat) :
+    forall event,
+      List.Mem event
+        (SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpCodeWordReadTraceResult
+          shape index).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  intro event hmem
+  simp [SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpCodeWordReadTraceResult,
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpCodeReadWordTraceEvent,
+    concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead]
+    at hmem ⊢
+  cases hmem with
+  | head =>
+      simp
+  | tail _ htail =>
+      cases htail
+
+private theorem
+    concreteBPNativeSuccinctRMQBpCodeWordReadTraceResult_noReadyCloseSuccessfulRead
+    (shape : Cartesian.CartesianShape) (index : Nat) :
+    forall event,
+      List.Mem event
+        (SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpCodeWordReadTraceResult
+          shape index).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event := by
+  intro event hmem
+  simp [SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpCodeWordReadTraceResult,
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpCodeReadWordTraceEvent,
+    concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead]
+    at hmem ⊢
+  cases hmem with
+  | head =>
+      simp
+  | tail _ htail =>
+      cases htail
+
+private theorem
+    concreteBPNativeSuccinctRMQLocalBPBlockWordsTraceResult_noFiniteSmallInteriorSuccessfulRead
+    (shape : Cartesian.CartesianShape) (blockSize close : Nat) :
+    forall event,
+      List.Mem event
+        (SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPBlockWordsTraceResult
+          shape blockSize close).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPBlockWordsTraceResult
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      concreteBPNativeSuccinctRMQBpCodeWordReadTraceResult_noFiniteSmallInteriorSuccessfulRead
+        shape
+        (SuccinctClose.blockStartOf blockSize
+            (SuccinctClose.blockOfClose blockSize close) /
+          SuccinctRank.machineWordBits shape.bpCode.length)
+  · apply WordRAM.TraceResult.bind_trace_forall
+    · exact
+        concreteBPNativeSuccinctRMQBpCodeWordReadTraceResult_noFiniteSmallInteriorSuccessfulRead
+          shape
+          (SuccinctClose.blockStartOf blockSize
+              (SuccinctClose.blockOfClose blockSize close) /
+            SuccinctRank.machineWordBits shape.bpCode.length + 1)
+    · apply WordRAM.TraceResult.bind_trace_forall
+      · exact
+          concreteBPNativeSuccinctRMQBpCodeWordReadTraceResult_noFiniteSmallInteriorSuccessfulRead
+            shape
+            (SuccinctClose.blockStartOf blockSize
+                (SuccinctClose.blockOfClose blockSize close) /
+              SuccinctRank.machineWordBits shape.bpCode.length + 2)
+      · apply WordRAM.TraceResult.map_trace_forall
+        exact
+          concreteBPNativeSuccinctRMQBpCodeWordReadTraceResult_noFiniteSmallInteriorSuccessfulRead
+            shape
+            (SuccinctClose.blockStartOf blockSize
+                (SuccinctClose.blockOfClose blockSize close) /
+              SuccinctRank.machineWordBits shape.bpCode.length + 3)
+
+private theorem
+    concreteBPNativeSuccinctRMQLocalBPWindowBitsTraceResult_noFiniteSmallInteriorSuccessfulRead
+    (shape : Cartesian.CartesianShape) (blockSize close : Nat) :
+    forall event,
+      List.Mem event
+        (SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPWindowBitsTraceResult
+          shape blockSize close).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPWindowBitsTraceResult
+  exact WordRAM.TraceResult.map_trace_forall
+    concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+    _ _
+    (concreteBPNativeSuccinctRMQLocalBPBlockWordsTraceResult_noFiniteSmallInteriorSuccessfulRead
+      shape blockSize close)
+
+private theorem
+    concreteBPNativeSuccinctRMQLocalBPBlockWordsTraceResult_noReadyCloseSuccessfulRead
+    (shape : Cartesian.CartesianShape) (blockSize close : Nat) :
+    forall event,
+      List.Mem event
+        (SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPBlockWordsTraceResult
+          shape blockSize close).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event := by
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPBlockWordsTraceResult
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      concreteBPNativeSuccinctRMQBpCodeWordReadTraceResult_noReadyCloseSuccessfulRead
+        shape
+        (SuccinctClose.blockStartOf blockSize
+            (SuccinctClose.blockOfClose blockSize close) /
+          SuccinctRank.machineWordBits shape.bpCode.length)
+  · apply WordRAM.TraceResult.bind_trace_forall
+    · exact
+        concreteBPNativeSuccinctRMQBpCodeWordReadTraceResult_noReadyCloseSuccessfulRead
+          shape
+          (SuccinctClose.blockStartOf blockSize
+              (SuccinctClose.blockOfClose blockSize close) /
+            SuccinctRank.machineWordBits shape.bpCode.length + 1)
+    · apply WordRAM.TraceResult.bind_trace_forall
+      · exact
+          concreteBPNativeSuccinctRMQBpCodeWordReadTraceResult_noReadyCloseSuccessfulRead
+            shape
+            (SuccinctClose.blockStartOf blockSize
+                (SuccinctClose.blockOfClose blockSize close) /
+              SuccinctRank.machineWordBits shape.bpCode.length + 2)
+      · apply WordRAM.TraceResult.map_trace_forall
+        exact
+          concreteBPNativeSuccinctRMQBpCodeWordReadTraceResult_noReadyCloseSuccessfulRead
+            shape
+            (SuccinctClose.blockStartOf blockSize
+                (SuccinctClose.blockOfClose blockSize close) /
+              SuccinctRank.machineWordBits shape.bpCode.length + 3)
+
+private theorem
+    concreteBPNativeSuccinctRMQLocalBPWindowBitsTraceResult_noReadyCloseSuccessfulRead
+    (shape : Cartesian.CartesianShape) (blockSize close : Nat) :
+    forall event,
+      List.Mem event
+        (SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPWindowBitsTraceResult
+          shape blockSize close).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event := by
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPWindowBitsTraceResult
+  exact WordRAM.TraceResult.map_trace_forall
+    concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+    _ _
+    (concreteBPNativeSuccinctRMQLocalBPBlockWordsTraceResult_noReadyCloseSuccessfulRead
+      shape blockSize close)
+
+private theorem
+    concreteBPNativeSuccinctRMQFixedWidthSparseDenseEntryTable_readTraceResultRelabeled_noFiniteSmallInteriorSuccessfulRead
+    {entries : List GenericSelect.SparseDenseSelectDenseLocalEntry}
+    {fieldWidth : Nat}
+    (table :
+      GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable
+        entries fieldWidth)
+    (layout : GenericSelect.SparseDenseEntryTableTraceSegmentBases)
+    (i : Nat)
+    (hbaseOccurrence26 :
+      forall segment,
+        WordRAM.singletonSegmentMap layout.baseOccurrence layout.deadSegment
+          segment ≠ 26)
+    (hbaseOccurrence27 :
+      forall segment,
+        WordRAM.singletonSegmentMap layout.baseOccurrence layout.deadSegment
+          segment ≠ 27)
+    (hbaseWordIndex26 :
+      forall segment,
+        WordRAM.singletonSegmentMap layout.baseWordIndex layout.deadSegment
+          segment ≠ 26)
+    (hbaseWordIndex27 :
+      forall segment,
+        WordRAM.singletonSegmentMap layout.baseWordIndex layout.deadSegment
+          segment ≠ 27)
+    (hrankBefore26 :
+      forall segment,
+        WordRAM.singletonSegmentMap layout.rankBefore layout.deadSegment
+          segment ≠ 26)
+    (hrankBefore27 :
+      forall segment,
+        WordRAM.singletonSegmentMap layout.rankBefore layout.deadSegment
+          segment ≠ 27)
+    (hfirstOffset26 :
+      forall segment,
+        WordRAM.singletonSegmentMap layout.firstOffset layout.deadSegment
+          segment ≠ 26)
+    (hfirstOffset27 :
+      forall segment,
+        WordRAM.singletonSegmentMap layout.firstOffset layout.deadSegment
+          segment ≠ 27) :
+    forall event,
+      List.Mem event
+        (table.readTraceResultRelabeled layout i).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  unfold GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.readTraceResultRelabeled
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noFiniteSmallInteriorSuccessfulRead
+        (WordRAM.singletonSegmentMap layout.baseOccurrence
+          layout.deadSegment)
+        (WordRAM.TraceResult.ofResult
+          ((table.baseOccurrenceTable.readProgram i).eval
+            table.baseOccurrenceTable.wordRAMStore))
+        hbaseOccurrence26 hbaseOccurrence27
+  · apply WordRAM.TraceResult.bind_trace_forall
+    · exact
+        concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noFiniteSmallInteriorSuccessfulRead
+          (WordRAM.singletonSegmentMap layout.baseWordIndex
+            layout.deadSegment)
+          (WordRAM.TraceResult.ofResult
+            ((table.baseWordIndexTable.readProgram i).eval
+              table.baseWordIndexTable.wordRAMStore))
+          hbaseWordIndex26 hbaseWordIndex27
+    · apply WordRAM.TraceResult.bind_trace_forall
+      · exact
+          concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noFiniteSmallInteriorSuccessfulRead
+            (WordRAM.singletonSegmentMap layout.rankBefore
+              layout.deadSegment)
+            (WordRAM.TraceResult.ofResult
+              ((table.rankBeforeTable.readProgram i).eval
+                table.rankBeforeTable.wordRAMStore))
+            hrankBefore26 hrankBefore27
+      · apply WordRAM.TraceResult.map_trace_forall
+        exact
+          concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noFiniteSmallInteriorSuccessfulRead
+            (WordRAM.singletonSegmentMap layout.firstOffset
+              layout.deadSegment)
+            (WordRAM.TraceResult.ofResult
+              ((table.firstOffsetTable.readProgram i).eval
+                table.firstOffsetTable.wordRAMStore))
+            hfirstOffset26 hfirstOffset27
+
+private theorem
+    concreteBPNativeSuccinctRMQRelativeOffsetReadTraceResultRelabeled_noFiniteSmallInteriorSuccessfulRead
+    {entries : List Nat} {width : Nat}
+    (segmentBase deadSegment : Nat)
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (base slot : Nat)
+    (h26 :
+      forall segment,
+        WordRAM.singletonSegmentMap segmentBase deadSegment segment ≠ 26)
+    (h27 :
+      forall segment,
+        WordRAM.singletonSegmentMap segmentBase deadSegment segment ≠ 27) :
+    forall event,
+      List.Mem event
+        (GenericSelect.relativeOffsetReadTraceResultRelabeled
+          segmentBase deadSegment table base slot).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  unfold GenericSelect.relativeOffsetReadTraceResultRelabeled
+  apply WordRAM.TraceResult.map_trace_forall
+  exact
+    concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noFiniteSmallInteriorSuccessfulRead
+      (WordRAM.singletonSegmentMap segmentBase deadSegment)
+      (WordRAM.TraceResult.ofResult
+        ((table.readProgram slot).eval table.wordRAMStore))
+      h26 h27
+
+private theorem
+    concreteBPNativeSuccinctRMQFixedWidthSparseDenseEntryTable_readTraceResultRelabeled_noReadyCloseSuccessfulRead
+    {entries : List GenericSelect.SparseDenseSelectDenseLocalEntry}
+    {fieldWidth : Nat}
+    (table :
+      GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable
+        entries fieldWidth)
+    (layout : GenericSelect.SparseDenseEntryTableTraceSegmentBases)
+    (i : Nat)
+    (hbaseOccurrence :
+      concreteBPNativeSuccinctRMQSegmentMapAvoidsReadyClose
+        (WordRAM.singletonSegmentMap layout.baseOccurrence
+          layout.deadSegment))
+    (hbaseWordIndex :
+      concreteBPNativeSuccinctRMQSegmentMapAvoidsReadyClose
+        (WordRAM.singletonSegmentMap layout.baseWordIndex
+          layout.deadSegment))
+    (hrankBefore :
+      concreteBPNativeSuccinctRMQSegmentMapAvoidsReadyClose
+        (WordRAM.singletonSegmentMap layout.rankBefore
+          layout.deadSegment))
+    (hfirstOffset :
+      concreteBPNativeSuccinctRMQSegmentMapAvoidsReadyClose
+        (WordRAM.singletonSegmentMap layout.firstOffset
+          layout.deadSegment)) :
+    forall event,
+      List.Mem event
+        (table.readTraceResultRelabeled layout i).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event := by
+  unfold GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.readTraceResultRelabeled
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noReadyCloseSuccessfulRead
+        (WordRAM.singletonSegmentMap layout.baseOccurrence
+          layout.deadSegment)
+        (WordRAM.TraceResult.ofResult
+          ((table.baseOccurrenceTable.readProgram i).eval
+            table.baseOccurrenceTable.wordRAMStore))
+        hbaseOccurrence
+  · apply WordRAM.TraceResult.bind_trace_forall
+    · exact
+        concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noReadyCloseSuccessfulRead
+          (WordRAM.singletonSegmentMap layout.baseWordIndex
+            layout.deadSegment)
+          (WordRAM.TraceResult.ofResult
+            ((table.baseWordIndexTable.readProgram i).eval
+              table.baseWordIndexTable.wordRAMStore))
+          hbaseWordIndex
+    · apply WordRAM.TraceResult.bind_trace_forall
+      · exact
+          concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noReadyCloseSuccessfulRead
+            (WordRAM.singletonSegmentMap layout.rankBefore
+              layout.deadSegment)
+            (WordRAM.TraceResult.ofResult
+              ((table.rankBeforeTable.readProgram i).eval
+                table.rankBeforeTable.wordRAMStore))
+            hrankBefore
+      · apply WordRAM.TraceResult.map_trace_forall
+        exact
+          concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noReadyCloseSuccessfulRead
+            (WordRAM.singletonSegmentMap layout.firstOffset
+              layout.deadSegment)
+            (WordRAM.TraceResult.ofResult
+              ((table.firstOffsetTable.readProgram i).eval
+                table.firstOffsetTable.wordRAMStore))
+            hfirstOffset
+
+private theorem
+    concreteBPNativeSuccinctRMQRelativeOffsetReadTraceResultRelabeled_noReadyCloseSuccessfulRead
+    {entries : List Nat} {width : Nat}
+    (segmentBase deadSegment : Nat)
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (base slot : Nat)
+    (havoid :
+      concreteBPNativeSuccinctRMQSegmentMapAvoidsReadyClose
+        (WordRAM.singletonSegmentMap segmentBase deadSegment)) :
+    forall event,
+      List.Mem event
+        (GenericSelect.relativeOffsetReadTraceResultRelabeled
+          segmentBase deadSegment table base slot).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event := by
+  unfold GenericSelect.relativeOffsetReadTraceResultRelabeled
+  apply WordRAM.TraceResult.map_trace_forall
+  exact
+    concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noReadyCloseSuccessfulRead
+      (WordRAM.singletonSegmentMap segmentBase deadSegment)
+      (WordRAM.TraceResult.ofResult
+        ((table.readProgram slot).eval table.wordRAMStore))
+      havoid
+
+private theorem
+    concreteBPNativeSuccinctRMQSparseExceptionDirectory_readTraceResultRelabeled_noFiniteSmallInteriorSuccessfulRead
+    {bits : List Bool} {target : Bool}
+    {rankSuperOverhead rankBlockOverhead : Nat}
+    (directory :
+      GenericSelect.SparseExceptionDirectory
+        bits target rankSuperOverhead rankBlockOverhead)
+    (layout : GenericSelect.SparseExceptionDirectoryTraceSegmentBases)
+    (base localSlot localOccurrence : Nat)
+    (hrank26 :
+      forall segment,
+        WordRAM.tripleSegmentMap layout.rankBase layout.deadSegment segment ≠
+          26)
+    (hrank27 :
+      forall segment,
+        WordRAM.tripleSegmentMap layout.rankBase layout.deadSegment segment ≠
+          27)
+    (hrelative26 :
+      forall segment,
+        WordRAM.singletonSegmentMap layout.relativeBase layout.deadSegment
+          segment ≠ 26)
+    (hrelative27 :
+      forall segment,
+        WordRAM.singletonSegmentMap layout.relativeBase layout.deadSegment
+          segment ≠ 27) :
+    forall event,
+      List.Mem event
+        (directory.readTraceResultRelabeled
+          layout base localSlot localOccurrence).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  unfold GenericSelect.SparseExceptionDirectory.readTraceResultRelabeled
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noFiniteSmallInteriorSuccessfulRead
+        (WordRAM.tripleSegmentMap layout.rankBase layout.deadSegment)
+        (directory.rankData.rankTraceResult true localSlot)
+        hrank26 hrank27
+  · exact
+      concreteBPNativeSuccinctRMQRelativeOffsetReadTraceResultRelabeled_noFiniteSmallInteriorSuccessfulRead
+        layout.relativeBase layout.deadSegment directory.relativeTable base
+        (GenericSelect.relativeSplitSelectSparseCompactSlot
+          (directory.rankData.rankTraceResult true localSlot).value
+          localOccurrence directory.localStride)
+        hrelative26 hrelative27
+
+private theorem
+    concreteBPNativeSuccinctRMQSparseExceptionDirectory_readTraceResultRelabeled_noReadyCloseSuccessfulRead
+    {bits : List Bool} {target : Bool}
+    {rankSuperOverhead rankBlockOverhead : Nat}
+    (directory :
+      GenericSelect.SparseExceptionDirectory
+        bits target rankSuperOverhead rankBlockOverhead)
+    (layout : GenericSelect.SparseExceptionDirectoryTraceSegmentBases)
+    (base localSlot localOccurrence : Nat)
+    (hrank :
+      concreteBPNativeSuccinctRMQSegmentMapAvoidsReadyClose
+        (WordRAM.tripleSegmentMap layout.rankBase layout.deadSegment))
+    (hrelative :
+      concreteBPNativeSuccinctRMQSegmentMapAvoidsReadyClose
+        (WordRAM.singletonSegmentMap layout.relativeBase
+          layout.deadSegment)) :
+    forall event,
+      List.Mem event
+        (directory.readTraceResultRelabeled
+          layout base localSlot localOccurrence).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event := by
+  unfold GenericSelect.SparseExceptionDirectory.readTraceResultRelabeled
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noReadyCloseSuccessfulRead
+        (WordRAM.tripleSegmentMap layout.rankBase layout.deadSegment)
+        (directory.rankData.rankTraceResult true localSlot)
+        hrank
+  · exact
+      concreteBPNativeSuccinctRMQRelativeOffsetReadTraceResultRelabeled_noReadyCloseSuccessfulRead
+        layout.relativeBase layout.deadSegment directory.relativeTable base
+        (GenericSelect.relativeSplitSelectSparseCompactSlot
+          (directory.rankData.rankTraceResult true localSlot).value
+          localOccurrence directory.localStride)
+        hrelative
+
+private theorem
+    concreteBPNativeSelectCloseTraceResultRelabeled_noFiniteSmallInteriorSuccessfulRead
+    (shape : Cartesian.CartesianShape) (idx : Nat) :
+    forall event,
+      List.Mem event
+        ((GenericSelect.sparseExceptionSelectData shape.bpCode false)
+          |>.selectTraceResultRelabeled
+            concreteBPNativeSelectCloseTraceSegmentLayout idx).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  let data := GenericSelect.sparseExceptionSelectData shape.bpCode false
+  change forall event,
+      event ∈
+          (data.selectTraceResultRelabeled
+            concreteBPNativeSelectCloseTraceSegmentLayout idx).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event
+  apply
+    GenericSelect.SparseExceptionSelectData.selectTraceResultRelabeled_trace_forall
+      data concreteBPNativeSelectCloseTraceSegmentLayout idx
+      concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+  · intro slot event hmem
+    exact
+      concreteBPNativeSuccinctRMQFixedWidthSparseDenseEntryTable_readTraceResultRelabeled_noFiniteSmallInteriorSuccessfulRead
+        data.superTable concreteBPNativeSelectCloseTraceSegmentLayout.superTable
+        slot
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.baseOccurrence
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.deadSegment
+          (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne27_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.baseOccurrence
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.deadSegment
+          (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.baseWordIndex
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.deadSegment
+          (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne27_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.baseWordIndex
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.deadSegment
+          (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.rankBefore
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.deadSegment
+          (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne27_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.rankBefore
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.deadSegment
+          (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.firstOffset
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.deadSegment
+          (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne27_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.firstOffset
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.deadSegment
+          (by decide) (by decide))
+        event hmem
+  · intro slot event hmem
+    exact
+      concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noFiniteSmallInteriorSuccessfulRead
+        (WordRAM.tripleSegmentMap
+          concreteBPNativeSelectCloseTraceSegmentLayout.longFlagRankBase
+          concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment)
+        (data.longFlagRankData.rankTraceResult true slot)
+        (concreteBPNativeSuccinctRMQTripleSegmentMap_ne_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.longFlagRankBase
+          concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment
+          (by decide) (by decide) (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQTripleSegmentMap_ne27_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.longFlagRankBase
+          concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment
+          (by decide) (by decide) (by decide) (by decide))
+        event hmem
+  · intro base slot event hmem
+    exact
+      concreteBPNativeSuccinctRMQRelativeOffsetReadTraceResultRelabeled_noFiniteSmallInteriorSuccessfulRead
+        concreteBPNativeSelectCloseTraceSegmentLayout.longRelativeBase
+        concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment
+        data.longSuperRelativeTable base slot
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.longRelativeBase
+          concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment
+          (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne27_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.longRelativeBase
+          concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment
+          (by decide) (by decide))
+        event hmem
+  · intro slot event hmem
+    exact
+      concreteBPNativeSuccinctRMQFixedWidthSparseDenseEntryTable_readTraceResultRelabeled_noFiniteSmallInteriorSuccessfulRead
+        data.localTable concreteBPNativeSelectCloseTraceSegmentLayout.localTable
+        slot
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.baseOccurrence
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.deadSegment
+          (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne27_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.baseOccurrence
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.deadSegment
+          (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.baseWordIndex
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.deadSegment
+          (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne27_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.baseWordIndex
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.deadSegment
+          (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.rankBefore
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.deadSegment
+          (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne27_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.rankBefore
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.deadSegment
+          (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.firstOffset
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.deadSegment
+          (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne27_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.firstOffset
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.deadSegment
+          (by decide) (by decide))
+        event hmem
+  · intro base localSlot localOccurrence event hmem
+    exact
+      concreteBPNativeSuccinctRMQSparseExceptionDirectory_readTraceResultRelabeled_noFiniteSmallInteriorSuccessfulRead
+        data.sparseDirectory
+        concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory
+        base localSlot localOccurrence
+        (concreteBPNativeSuccinctRMQTripleSegmentMap_ne_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory.rankBase
+          concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory.deadSegment
+          (by decide) (by decide) (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQTripleSegmentMap_ne27_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory.rankBase
+          concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory.deadSegment
+          (by decide) (by decide) (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory.relativeBase
+          concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory.deadSegment
+          (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne27_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory.relativeBase
+          concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory.deadSegment
+          (by decide) (by decide))
+        event hmem
+  · intro basePosition baseOccurrence q event hmem
+    exact
+      concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noFiniteSmallInteriorSuccessfulRead
+        (WordRAM.singletonSegmentMap
+          concreteBPNativeSelectCloseTraceSegmentLayout.bitWordBase
+          concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment)
+        (GenericSelect.denseTwoWordSelectTraceResult false data.bitWords
+          basePosition baseOccurrence q)
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.bitWordBase
+          concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment
+          (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne27_of_bases_ne
+          concreteBPNativeSelectCloseTraceSegmentLayout.bitWordBase
+          concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment
+          (by decide) (by decide))
+        event hmem
+
+private theorem
+    concreteBPNativeSelectCloseTraceResultRelabeled_noReadyCloseSuccessfulRead
+    (shape : Cartesian.CartesianShape) (idx : Nat) :
+    forall event,
+      List.Mem event
+        ((GenericSelect.sparseExceptionSelectData shape.bpCode false)
+          |>.selectTraceResultRelabeled
+            concreteBPNativeSelectCloseTraceSegmentLayout idx).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event := by
+  let data := GenericSelect.sparseExceptionSelectData shape.bpCode false
+  change forall event,
+      event ∈
+          (data.selectTraceResultRelabeled
+            concreteBPNativeSelectCloseTraceSegmentLayout idx).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event
+  apply
+    GenericSelect.SparseExceptionSelectData.selectTraceResultRelabeled_trace_forall
+      data concreteBPNativeSelectCloseTraceSegmentLayout idx
+      concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+  · intro slot event hmem
+    exact
+      concreteBPNativeSuccinctRMQFixedWidthSparseDenseEntryTable_readTraceResultRelabeled_noReadyCloseSuccessfulRead
+        data.superTable concreteBPNativeSelectCloseTraceSegmentLayout.superTable
+        slot
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_avoidsReadyClose_of_outside
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.baseOccurrence
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.deadSegment
+          (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_avoidsReadyClose_of_outside
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.baseWordIndex
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.deadSegment
+          (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_avoidsReadyClose_of_outside
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.rankBefore
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.deadSegment
+          (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_avoidsReadyClose_of_outside
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.firstOffset
+          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.deadSegment
+          (by decide) (by decide))
+        event hmem
+  · intro slot event hmem
+    exact
+      concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noReadyCloseSuccessfulRead
+        (WordRAM.tripleSegmentMap
+          concreteBPNativeSelectCloseTraceSegmentLayout.longFlagRankBase
+          concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment)
+        (data.longFlagRankData.rankTraceResult true slot)
+        (concreteBPNativeSuccinctRMQTripleSegmentMap_avoidsReadyClose_of_outside
+          concreteBPNativeSelectCloseTraceSegmentLayout.longFlagRankBase
+          concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment
+          (by decide) (by decide) (by decide) (by decide))
+        event hmem
+  · intro base slot event hmem
+    exact
+      concreteBPNativeSuccinctRMQRelativeOffsetReadTraceResultRelabeled_noReadyCloseSuccessfulRead
+        concreteBPNativeSelectCloseTraceSegmentLayout.longRelativeBase
+        concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment
+        data.longSuperRelativeTable base slot
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_avoidsReadyClose_of_outside
+          concreteBPNativeSelectCloseTraceSegmentLayout.longRelativeBase
+          concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment
+          (by decide) (by decide))
+        event hmem
+  · intro slot event hmem
+    exact
+      concreteBPNativeSuccinctRMQFixedWidthSparseDenseEntryTable_readTraceResultRelabeled_noReadyCloseSuccessfulRead
+        data.localTable concreteBPNativeSelectCloseTraceSegmentLayout.localTable
+        slot
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_avoidsReadyClose_of_outside
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.baseOccurrence
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.deadSegment
+          (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_avoidsReadyClose_of_outside
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.baseWordIndex
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.deadSegment
+          (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_avoidsReadyClose_of_outside
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.rankBefore
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.deadSegment
+          (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_avoidsReadyClose_of_outside
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.firstOffset
+          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.deadSegment
+          (by decide) (by decide))
+        event hmem
+  · intro base localSlot localOccurrence event hmem
+    exact
+      concreteBPNativeSuccinctRMQSparseExceptionDirectory_readTraceResultRelabeled_noReadyCloseSuccessfulRead
+        data.sparseDirectory
+        concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory
+        base localSlot localOccurrence
+        (concreteBPNativeSuccinctRMQTripleSegmentMap_avoidsReadyClose_of_outside
+          concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory.rankBase
+          concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory.deadSegment
+          (by decide) (by decide) (by decide) (by decide))
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_avoidsReadyClose_of_outside
+          concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory.relativeBase
+          concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory.deadSegment
+          (by decide) (by decide))
+        event hmem
+  · intro basePosition baseOccurrence q event hmem
+    exact
+      concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noReadyCloseSuccessfulRead
+        (WordRAM.singletonSegmentMap
+          concreteBPNativeSelectCloseTraceSegmentLayout.bitWordBase
+          concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment)
+        (GenericSelect.denseTwoWordSelectTraceResult false data.bitWords
+          basePosition baseOccurrence q)
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_avoidsReadyClose_of_outside
+          concreteBPNativeSelectCloseTraceSegmentLayout.bitWordBase
+          concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment
+          (by decide) (by decide))
+        event hmem
+
+theorem
+    concreteBPNativeSuccinctRMQFlatPayloadTraceEventSuccessfulReadBacked_of_flatStore_match
+    (shape : Cartesian.CartesianShape)
+    {event : WordRAM.TraceEvent}
+    (hmatch :
+      event.matchesReadStore
+        (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape))
+    (h20 :
+      forall index word,
+        event = WordRAM.TraceEvent.readWord 20 index (some word) ->
+          SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (h21 :
+      forall index word,
+        event = WordRAM.TraceEvent.readWord 21 index (some word) ->
+          SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (h22 :
+      forall index word,
+        event = WordRAM.TraceEvent.readWord 22 index (some word) ->
+          SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (h23 :
+      forall index word,
+        event = WordRAM.TraceEvent.readWord 23 index (some word) ->
+          SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (h24 :
+      forall index word,
+        event = WordRAM.TraceEvent.readWord 24 index (some word) ->
+          SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (h25 :
+      forall index word,
+        event = WordRAM.TraceEvent.readWord 25 index (some word) ->
+          SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (h26 :
+      forall index word,
+        event = WordRAM.TraceEvent.readWord 26 index (some word) ->
+          ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (h27 :
+      forall index word,
+        event = WordRAM.TraceEvent.readWord 27 index (some word) ->
+          ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape) :
+    concreteBPNativeSuccinctRMQFlatPayloadTraceEventSuccessfulReadBacked
+      shape event := by
+  cases event with
+  | readWord segment index word? =>
+      cases word? with
+      | none =>
+          simp [concreteBPNativeSuccinctRMQFlatPayloadTraceEventSuccessfulReadBacked]
+      | some word =>
+          have hread :
+              (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord?
+                  segment index = some word := by
+            simpa [WordRAM.TraceEvent.matchesReadStore] using hmatch
+          have hcounted :
+              concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+                shape segment :=
+            concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_read_segment_counted
+              shape hread
+              (fun hseg => h20 index word (by cases hseg; rfl))
+              (fun hseg => h21 index word (by cases hseg; rfl))
+              (fun hseg => h22 index word (by cases hseg; rfl))
+              (fun hseg => h23 index word (by cases hseg; rfl))
+              (fun hseg => h24 index word (by cases hseg; rfl))
+              (fun hseg => h25 index word (by cases hseg; rfl))
+              (fun hseg => h26 index word (by cases hseg; rfl))
+              (fun hseg => h27 index word (by cases hseg; rfl))
+          exact
+            ⟨hcounted,
+              concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_counted_read_backed
+                shape hread hcounted⟩
+  | wordRank target limit result =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadTraceEventSuccessfulReadBacked]
+  | wordSelect target occurrence result =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadTraceEventSuccessfulReadBacked]
+  | syntheticCostOnlyPrimitive =>
+      simp [concreteBPNativeSuccinctRMQFlatPayloadTraceEventSuccessfulReadBacked]
 
 def concreteBPNativeSuccinctRMQFlatPayloadSegmentBackingsAll
     (shape : Cartesian.CartesianShape) : Prop :=
@@ -1545,6 +3400,30 @@ theorem concreteBPNativeSelectCloseGlobalWordTraceResult_no_syntheticCostOnlyPri
         concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment
         false data.bitWords basePosition baseOccurrence q event hmem
 
+private theorem
+    concreteBPNativeSelectCloseGlobalWordTraceResult_noFiniteSmallInteriorSuccessfulRead
+    (shape : Cartesian.CartesianShape) (idx : Nat) :
+    forall event,
+      List.Mem event
+        (concreteBPNativeSelectCloseGlobalWordTraceResult shape idx).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  simpa [concreteBPNativeSelectCloseGlobalWordTraceResult] using
+    concreteBPNativeSelectCloseTraceResultRelabeled_noFiniteSmallInteriorSuccessfulRead
+      shape idx
+
+private theorem
+    concreteBPNativeSelectCloseGlobalWordTraceResult_noReadyCloseSuccessfulRead
+    (shape : Cartesian.CartesianShape) (idx : Nat) :
+    forall event,
+      List.Mem event
+        (concreteBPNativeSelectCloseGlobalWordTraceResult shape idx).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event := by
+  simpa [concreteBPNativeSelectCloseGlobalWordTraceResult] using
+    concreteBPNativeSelectCloseTraceResultRelabeled_noReadyCloseSuccessfulRead
+      shape idx
+
 /-- Real register-program trace for the final false-rank leg. -/
 def concreteBPNativeRankCloseWordTraceResult
     (shape : Cartesian.CartesianShape)
@@ -1665,6 +3544,346 @@ theorem concreteBPNativeRankCloseGlobalWordTraceResult_no_syntheticCostOnlyPrimi
             ((builtRelativeSplitBPCloseRankData shape)
               |>.rankRegisterWordRAMStore false)
             (WordRAM.Register.RegFile.withNat1 pos)
+            event hmem)
+
+private theorem
+    concreteBPNativeSuccinctRMQRankCloseGlobalWordTraceResult_noFiniteSmallInteriorSuccessfulRead
+    (shape : Cartesian.CartesianShape) (pos : Nat) :
+    forall event,
+      List.Mem event
+        (concreteBPNativeRankCloseWordTraceResultAtSegment
+          shape concreteBPNativeRankCloseTraceSegmentBase pos).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  unfold concreteBPNativeRankCloseWordTraceResultAtSegment
+  exact
+    concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noFiniteSmallInteriorSuccessfulRead
+      (WordRAM.tripleSegmentMap concreteBPNativeRankCloseTraceSegmentBase
+        concreteBPNativeDeadTraceSegment)
+      (concreteBPNativeRankCloseWordTraceResult shape pos)
+      (concreteBPNativeSuccinctRMQTripleSegmentMap_ne_of_bases_ne
+        concreteBPNativeRankCloseTraceSegmentBase
+        concreteBPNativeDeadTraceSegment
+        (by decide) (by decide) (by decide) (by decide))
+      (concreteBPNativeSuccinctRMQTripleSegmentMap_ne27_of_bases_ne
+        concreteBPNativeRankCloseTraceSegmentBase
+        concreteBPNativeDeadTraceSegment
+        (by decide) (by decide) (by decide) (by decide))
+
+private theorem
+    concreteBPNativeSuccinctRMQRankCloseGlobalWordTraceResult_noReadyCloseSuccessfulRead
+    (shape : Cartesian.CartesianShape) (pos : Nat) :
+    forall event,
+      List.Mem event
+        (concreteBPNativeRankCloseWordTraceResultAtSegment
+          shape concreteBPNativeRankCloseTraceSegmentBase pos).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event := by
+  unfold concreteBPNativeRankCloseWordTraceResultAtSegment
+  exact
+    concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noReadyCloseSuccessfulRead
+      (WordRAM.tripleSegmentMap concreteBPNativeRankCloseTraceSegmentBase
+        concreteBPNativeDeadTraceSegment)
+      (concreteBPNativeRankCloseWordTraceResult shape pos)
+      (concreteBPNativeSuccinctRMQTripleSegmentMap_avoidsReadyClose_of_outside
+        concreteBPNativeRankCloseTraceSegmentBase
+        concreteBPNativeDeadTraceSegment
+        (by decide) (by decide) (by decide) (by decide))
+
+private theorem
+    concreteBPNativeInteriorSummaryMinCandidateTraceResult_noFiniteSmallInteriorSuccessfulRead
+    (shape : Cartesian.CartesianShape) (block : Nat) :
+    forall event,
+      List.Mem event
+          ((SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+            shape).minCandidateTraceResultAtSegments
+              concreteBPNativeInteriorTraceSegments.summary block).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  exact
+    SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable.minCandidateTraceResultAtSegments_trace_forall
+      (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical shape)
+      concreteBPNativeInteriorTraceSegments.summary block
+      concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+      (SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable.summaryTraceResultAtSegments_trace_forall
+        (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical shape)
+        concreteBPNativeInteriorTraceSegments.summary block
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+        (by
+          intro event hmem
+          exact
+            concreteBPNativeFixedWidthNatTable_readTraceResultAtSegment_noFiniteSmallInteriorSuccessfulRead
+              (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+                shape).baselineTable
+              concreteBPNativeInteriorTraceSegments.summary.baseline
+              concreteBPNativeInteriorTraceSegments.summary.deadSegment
+              _
+              (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_of_bases_ne
+                concreteBPNativeInteriorTraceSegments.summary.baseline
+                concreteBPNativeInteriorTraceSegments.summary.deadSegment
+                (by decide) (by decide))
+              (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne27_of_bases_ne
+                concreteBPNativeInteriorTraceSegments.summary.baseline
+                concreteBPNativeInteriorTraceSegments.summary.deadSegment
+                (by decide) (by decide))
+              event hmem)
+        (by
+          intro event hmem
+          exact
+            concreteBPNativeFixedWidthNatTable_readTraceResultAtSegment_noFiniteSmallInteriorSuccessfulRead
+              (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+                shape).minRelTable
+              concreteBPNativeInteriorTraceSegments.summary.minRel
+              concreteBPNativeInteriorTraceSegments.summary.deadSegment
+              _
+              (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_of_bases_ne
+                concreteBPNativeInteriorTraceSegments.summary.minRel
+                concreteBPNativeInteriorTraceSegments.summary.deadSegment
+                (by decide) (by decide))
+              (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne27_of_bases_ne
+                concreteBPNativeInteriorTraceSegments.summary.minRel
+                concreteBPNativeInteriorTraceSegments.summary.deadSegment
+                (by decide) (by decide))
+              event hmem)
+        (by
+          intro event hmem
+          exact
+            concreteBPNativeFixedWidthNatTable_readTraceResultAtSegment_noFiniteSmallInteriorSuccessfulRead
+              (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+                shape).maxRelTable
+              concreteBPNativeInteriorTraceSegments.summary.maxRel
+              concreteBPNativeInteriorTraceSegments.summary.deadSegment
+              _
+              (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_of_bases_ne
+                concreteBPNativeInteriorTraceSegments.summary.maxRel
+                concreteBPNativeInteriorTraceSegments.summary.deadSegment
+                (by decide) (by decide))
+              (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne27_of_bases_ne
+                concreteBPNativeInteriorTraceSegments.summary.maxRel
+                concreteBPNativeInteriorTraceSegments.summary.deadSegment
+                (by decide) (by decide))
+              event hmem)
+        (by
+          intro event hmem
+          exact
+            concreteBPNativeFixedWidthNatTable_readTraceResultAtSegment_noFiniteSmallInteriorSuccessfulRead
+              (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+                shape).argOffsetTable
+              concreteBPNativeInteriorTraceSegments.summary.argOffset
+              concreteBPNativeInteriorTraceSegments.summary.deadSegment
+              _
+              (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_of_bases_ne
+                concreteBPNativeInteriorTraceSegments.summary.argOffset
+                concreteBPNativeInteriorTraceSegments.summary.deadSegment
+                (by decide) (by decide))
+              (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne27_of_bases_ne
+                concreteBPNativeInteriorTraceSegments.summary.argOffset
+                concreteBPNativeInteriorTraceSegments.summary.deadSegment
+                (by decide) (by decide))
+              event hmem))
+
+private theorem
+    concreteBPNativeInteriorGlobalWordTraceResultOfReady_noFiniteSmallInteriorSuccessfulRead
+    (shape : Cartesian.CartesianShape)
+    (hready : SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (startBlock count : Nat) :
+    forall event,
+      List.Mem event
+          (SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsOfReady
+            shape hready concreteBPNativeInteriorTraceSegments
+            startBlock count).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  exact
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsOfReady_trace_forall
+      shape hready concreteBPNativeInteriorTraceSegments startBlock count
+      concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+      (concreteBPNativeInteriorSummaryMinCandidateTraceResult_noFiniteSmallInteriorSuccessfulRead
+        shape)
+      (by
+        intro macroIdx localStart level event hmem
+        unfold SuccinctClose.PayloadLiveBPLocalSparseOffsetTable.readOffsetTraceResultAtSegment at hmem
+        exact
+          concreteBPNativeFixedWidthNatTable_readTraceResultAtSegment_noFiniteSmallInteriorSuccessfulRead
+            (SuccinctClose.concreteBPRelativeRmmInteriorLocalTable
+              shape).table
+            concreteBPNativeInteriorTraceSegments.localOffset
+            concreteBPNativeInteriorTraceSegments.deadSegment
+            _
+            (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_of_bases_ne
+              concreteBPNativeInteriorTraceSegments.localOffset
+              concreteBPNativeInteriorTraceSegments.deadSegment
+              (by decide) (by decide))
+            (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne27_of_bases_ne
+              concreteBPNativeInteriorTraceSegments.localOffset
+              concreteBPNativeInteriorTraceSegments.deadSegment
+              (by decide) (by decide))
+            event hmem)
+      (by
+        intro macroStart level event hmem
+        unfold SuccinctClose.PayloadLiveBPGlobalSparseBlockTable.readBlockTraceResultAtSegment at hmem
+        exact
+          concreteBPNativeFixedWidthNatTable_readTraceResultAtSegment_noFiniteSmallInteriorSuccessfulRead
+            (SuccinctClose.concreteBPRelativeRmmInteriorGlobalTable
+              shape).table
+            concreteBPNativeInteriorTraceSegments.globalBlock
+            concreteBPNativeInteriorTraceSegments.deadSegment
+            _
+            (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_of_bases_ne
+              concreteBPNativeInteriorTraceSegments.globalBlock
+              concreteBPNativeInteriorTraceSegments.deadSegment
+              (by decide) (by decide))
+            (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne27_of_bases_ne
+              concreteBPNativeInteriorTraceSegments.globalBlock
+              concreteBPNativeInteriorTraceSegments.deadSegment
+              (by decide) (by decide))
+            event hmem)
+
+private theorem
+    concreteBPNativeInteriorGlobalWordTraceResultAllSizeStructural_noFiniteSmallInteriorSuccessfulRead_of_ready
+    (shape : Cartesian.CartesianShape)
+    (hready : SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (startBlock count : Nat) :
+    forall event,
+      List.Mem event
+          (SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+            shape concreteBPNativeInteriorTraceSegments
+            startBlock count).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+  simpa [hready] using
+    concreteBPNativeInteriorGlobalWordTraceResultOfReady_noFiniteSmallInteriorSuccessfulRead
+      shape hready startBlock count
+
+private theorem
+    concreteBPNativeFiniteSmallInteriorRangeMinTraceResultAtSegments_noReadyCloseSuccessfulRead
+    (shape : Cartesian.CartesianShape)
+    (startBlock count : Nat) :
+    forall event,
+      List.Mem event
+          (SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPFiniteSmallInteriorRangeMinTraceResultAtSegments
+            shape concreteBPNativeInteriorTraceSegments
+            startBlock count).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event := by
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPFiniteSmallInteriorRangeMinTraceResultAtSegments
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      concreteBPNativeFixedWidthNatTable_readTraceResultAtSegment_noReadyCloseSuccessfulRead
+        (SuccinctClose.concreteBPFiniteSmallInteriorRangeMinTable shape).minTable
+        concreteBPNativeInteriorTraceSegments.finiteSmallMin
+        concreteBPNativeInteriorTraceSegments.deadSegment
+        _
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_avoidsReadyClose_of_outside
+          concreteBPNativeInteriorTraceSegments.finiteSmallMin
+          concreteBPNativeInteriorTraceSegments.deadSegment
+          (by decide) (by decide))
+  · apply WordRAM.TraceResult.map_trace_forall
+    exact
+      concreteBPNativeFixedWidthNatTable_readTraceResultAtSegment_noReadyCloseSuccessfulRead
+        (SuccinctClose.concreteBPFiniteSmallInteriorRangeMinTable shape).argTable
+        concreteBPNativeInteriorTraceSegments.finiteSmallArg
+        concreteBPNativeInteriorTraceSegments.deadSegment
+        _
+        (concreteBPNativeSuccinctRMQSingletonSegmentMap_avoidsReadyClose_of_outside
+          concreteBPNativeInteriorTraceSegments.finiteSmallArg
+          concreteBPNativeInteriorTraceSegments.deadSegment
+          (by decide) (by decide))
+
+private theorem
+    concreteBPNativeInteriorGlobalWordTraceResultAllSizeStructural_noReadyCloseSuccessfulRead_of_not_ready
+    (shape : Cartesian.CartesianShape)
+    (hnotReady : ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (startBlock count : Nat) :
+    forall event,
+      List.Mem event
+          (SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+            shape concreteBPNativeInteriorTraceSegments
+            startBlock count).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event := by
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+  simpa [hnotReady] using
+    concreteBPNativeFiniteSmallInteriorRangeMinTraceResultAtSegments_noReadyCloseSuccessfulRead
+      shape startBlock count
+
+private theorem
+    concreteBPNativeFiniteSmallSameBlockCloseGlobalTraceResult_noFiniteSmallInteriorSuccessfulRead
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) :
+    forall event,
+      List.Mem event
+          (SuccinctClose.ConcreteCompactBPCloseLCADirectory.finiteSmallSameBlockCloseTraceResultAtSegment
+            shape concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
+            concreteBPNativeInteriorTraceSegments.deadSegment
+            leftClose rightClose).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  exact
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.finiteSmallSameBlockCloseTraceResultAtSegment_trace_forall
+      shape concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
+      concreteBPNativeInteriorTraceSegments.deadSegment
+      leftClose rightClose
+      concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+      (by
+        intro event hmem
+        exact
+          SuccinctClose.ConcreteCompactBPCloseLCADirectory.finiteSmallSameBlockCloseReadTraceResultAtSegment_trace_forall
+            shape concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
+            concreteBPNativeInteriorTraceSegments.deadSegment
+            leftClose rightClose
+            concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+            (concreteBPNativeFixedWidthOptionNatTable_readTraceResultAtSegment_noFiniteSmallInteriorSuccessfulRead
+              (SuccinctClose.concreteBPFiniteSmallSameBlockCloseTable shape)
+              concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
+              concreteBPNativeInteriorTraceSegments.deadSegment
+              _
+              (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_of_bases_ne
+                concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
+                concreteBPNativeInteriorTraceSegments.deadSegment
+                (by decide) (by decide))
+              (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne27_of_bases_ne
+                concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
+                concreteBPNativeInteriorTraceSegments.deadSegment
+                (by decide) (by decide)))
+            event hmem)
+
+private theorem
+    concreteBPNativeFiniteSmallSameBlockCloseGlobalTraceResult_noReadyCloseSuccessfulRead
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) :
+    forall event,
+      List.Mem event
+          (SuccinctClose.ConcreteCompactBPCloseLCADirectory.finiteSmallSameBlockCloseTraceResultAtSegment
+            shape concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
+            concreteBPNativeInteriorTraceSegments.deadSegment
+            leftClose rightClose).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event := by
+  exact
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.finiteSmallSameBlockCloseTraceResultAtSegment_trace_forall
+      shape concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
+      concreteBPNativeInteriorTraceSegments.deadSegment
+      leftClose rightClose
+      concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+      (by
+        intro event hmem
+        exact
+          SuccinctClose.ConcreteCompactBPCloseLCADirectory.finiteSmallSameBlockCloseReadTraceResultAtSegment_trace_forall
+            shape concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
+            concreteBPNativeInteriorTraceSegments.deadSegment
+            leftClose rightClose
+            concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+            (concreteBPNativeFixedWidthOptionNatTable_readTraceResultAtSegment_noReadyCloseSuccessfulRead
+              (SuccinctClose.concreteBPFiniteSmallSameBlockCloseTable shape)
+              concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
+              concreteBPNativeInteriorTraceSegments.deadSegment
+              _
+              (concreteBPNativeSuccinctRMQSingletonSegmentMap_avoidsReadyClose_of_outside
+                concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
+                concreteBPNativeInteriorTraceSegments.deadSegment
+                (by decide) (by decide)))
             event hmem)
 
 /--
@@ -1818,6 +4037,70 @@ theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_refines_i
     concreteBPNativeCloseDirectory,
     SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural_refines,
     concreteBPNativeRankCloseWordTraceResultAtSegment_refines_interpretedCosted]
+
+private theorem
+    concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_noFiniteSmallInteriorSuccessfulRead_of_ready
+    (shape : Cartesian.CartesianShape)
+    (hready : SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (leftClose rightClose : Nat) :
+    forall event,
+      List.Mem event
+          (concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
+            shape leftClose rightClose).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  exact
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural_trace_forall
+      shape
+      (concreteBPNativeRankCloseWordTraceResultAtSegment
+        shape concreteBPNativeRankCloseTraceSegmentBase)
+      concreteBPNativeInteriorTraceSegments
+      concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
+      leftClose rightClose
+      concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+      (fun pos =>
+        concreteBPNativeSuccinctRMQRankCloseGlobalWordTraceResult_noFiniteSmallInteriorSuccessfulRead
+          shape pos)
+      (fun blockSize close =>
+        concreteBPNativeSuccinctRMQLocalBPWindowBitsTraceResult_noFiniteSmallInteriorSuccessfulRead
+          shape blockSize close)
+      (concreteBPNativeFiniteSmallSameBlockCloseGlobalTraceResult_noFiniteSmallInteriorSuccessfulRead
+        shape leftClose rightClose)
+      (fun startBlock count =>
+        concreteBPNativeInteriorGlobalWordTraceResultAllSizeStructural_noFiniteSmallInteriorSuccessfulRead_of_ready
+          shape hready startBlock count)
+
+private theorem
+    concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_noReadyCloseSuccessfulRead_of_not_ready
+    (shape : Cartesian.CartesianShape)
+    (hnotReady : ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (leftClose rightClose : Nat) :
+    forall event,
+      List.Mem event
+          (concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
+            shape leftClose rightClose).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event := by
+  exact
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural_trace_forall
+      shape
+      (concreteBPNativeRankCloseWordTraceResultAtSegment
+        shape concreteBPNativeRankCloseTraceSegmentBase)
+      concreteBPNativeInteriorTraceSegments
+      concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
+      leftClose rightClose
+      concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+      (fun pos =>
+        concreteBPNativeSuccinctRMQRankCloseGlobalWordTraceResult_noReadyCloseSuccessfulRead
+          shape pos)
+      (fun blockSize close =>
+        concreteBPNativeSuccinctRMQLocalBPWindowBitsTraceResult_noReadyCloseSuccessfulRead
+          shape blockSize close)
+      (concreteBPNativeFiniteSmallSameBlockCloseGlobalTraceResult_noReadyCloseSuccessfulRead
+        shape leftClose rightClose)
+      (fun startBlock count =>
+        concreteBPNativeInteriorGlobalWordTraceResultAllSizeStructural_noReadyCloseSuccessfulRead_of_not_ready
+          shape hnotReady startBlock count)
 
 theorem concreteBPNativeLCACloseGlobalWordTraceResult_matchesReadStore_total
     (shape : Cartesian.CartesianShape)
@@ -2736,6 +5019,104 @@ theorem evalGlobalWordTrace_no_syntheticCostOnlyPrimitive
         simp [evalGlobalWordTrace, hguard] <;>
         intro event hmem <;> cases hmem
 
+theorem evalGlobalWordTrace_noFiniteSmallInteriorSuccessfulRead_of_ready
+    (shape : Cartesian.CartesianShape)
+    (hready : SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (left right : Nat) (instr : WholeQueryInstr)
+    (state : WholeQueryState) :
+    forall event,
+      List.Mem event
+          (instr.evalGlobalWordTrace shape left right state).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  cases instr with
+  | selectClose dst idx =>
+      simp [evalGlobalWordTrace]
+      exact
+        concreteBPNativeSelectCloseGlobalWordTraceResult_noFiniteSmallInteriorSuccessfulRead
+          shape (idx.eval left right state)
+  | lcaClose dst leftReg rightReg =>
+      cases hleft : state.opt leftReg with
+      | none =>
+          cases hright : state.opt rightReg <;>
+            simp [evalGlobalWordTrace, hleft, hright] <;>
+            intro event hmem <;> cases hmem
+      | some leftClose =>
+          cases hright : state.opt rightReg with
+          | none =>
+              simp [evalGlobalWordTrace, hleft, hright]
+              intro event hmem
+              cases hmem
+          | some rightClose =>
+              simp [evalGlobalWordTrace, hleft, hright]
+              exact
+                concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_noFiniteSmallInteriorSuccessfulRead_of_ready
+                  shape hready leftClose rightClose
+  | rankCloseIfSome dst guard pos =>
+      cases hguard : state.opt guard with
+      | none =>
+          simp [evalGlobalWordTrace, hguard]
+          intro event hmem
+          cases hmem
+      | some _ =>
+        simp [evalGlobalWordTrace, hguard]
+        exact
+          concreteBPNativeSuccinctRMQRankCloseGlobalWordTraceResult_noFiniteSmallInteriorSuccessfulRead
+            shape (pos.eval left right state)
+  | outputPredIfSome dst guard src =>
+      cases hguard : state.opt guard <;>
+        simp [evalGlobalWordTrace, hguard] <;>
+        intro event hmem <;> cases hmem
+
+theorem evalGlobalWordTrace_noReadyCloseSuccessfulRead_of_not_ready
+    (shape : Cartesian.CartesianShape)
+    (hnotReady : ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (left right : Nat) (instr : WholeQueryInstr)
+    (state : WholeQueryState) :
+    forall event,
+      List.Mem event
+          (instr.evalGlobalWordTrace shape left right state).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event := by
+  cases instr with
+  | selectClose dst idx =>
+      simp [evalGlobalWordTrace]
+      exact
+        concreteBPNativeSelectCloseGlobalWordTraceResult_noReadyCloseSuccessfulRead
+          shape (idx.eval left right state)
+  | lcaClose dst leftReg rightReg =>
+      cases hleft : state.opt leftReg with
+      | none =>
+          cases hright : state.opt rightReg <;>
+            simp [evalGlobalWordTrace, hleft, hright] <;>
+            intro event hmem <;> cases hmem
+      | some leftClose =>
+          cases hright : state.opt rightReg with
+          | none =>
+              simp [evalGlobalWordTrace, hleft, hright]
+              intro event hmem
+              cases hmem
+          | some rightClose =>
+              simp [evalGlobalWordTrace, hleft, hright]
+              exact
+                concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_noReadyCloseSuccessfulRead_of_not_ready
+                  shape hnotReady leftClose rightClose
+  | rankCloseIfSome dst guard pos =>
+      cases hguard : state.opt guard with
+      | none =>
+          simp [evalGlobalWordTrace, hguard]
+          intro event hmem
+          cases hmem
+      | some _ =>
+        simp [evalGlobalWordTrace, hguard]
+        exact
+          concreteBPNativeSuccinctRMQRankCloseGlobalWordTraceResult_noReadyCloseSuccessfulRead
+            shape (pos.eval left right state)
+  | outputPredIfSome dst guard src =>
+      cases hguard : state.opt guard <;>
+        simp [evalGlobalWordTrace, hguard] <;>
+        intro event hmem <;> cases hmem
+
 /--
 Execute one instruction in the large-regime replay.
 
@@ -3028,6 +5409,54 @@ theorem evalGlobalWordTrace_no_syntheticCostOnlyPrimitive
       · exact
           WholeQueryInstr.evalGlobalWordTrace_no_syntheticCostOnlyPrimitive
             shape left right instr state
+      · exact ih
+          (instr.evalGlobalWordTrace shape left right state).value
+
+theorem evalGlobalWordTrace_noFiniteSmallInteriorSuccessfulRead_of_ready
+    (shape : Cartesian.CartesianShape)
+    (hready : SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (left right : Nat)
+    (program : WholeQueryProgram) (state : WholeQueryState) :
+    forall event,
+      List.Mem event
+          (evalGlobalWordTrace
+            shape left right program state).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  induction program generalizing state with
+  | nil =>
+      simp [evalGlobalWordTrace]
+      exact WordRAM.TraceResult.pure_trace_forall _ state
+  | cons instr rest ih =>
+      unfold evalGlobalWordTrace
+      apply WordRAM.TraceResult.bind_trace_forall
+      · exact
+          WholeQueryInstr.evalGlobalWordTrace_noFiniteSmallInteriorSuccessfulRead_of_ready
+            shape hready left right instr state
+      · exact ih
+          (instr.evalGlobalWordTrace shape left right state).value
+
+theorem evalGlobalWordTrace_noReadyCloseSuccessfulRead_of_not_ready
+    (shape : Cartesian.CartesianShape)
+    (hnotReady : ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (left right : Nat)
+    (program : WholeQueryProgram) (state : WholeQueryState) :
+    forall event,
+      List.Mem event
+          (evalGlobalWordTrace
+            shape left right program state).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event := by
+  induction program generalizing state with
+  | nil =>
+      simp [evalGlobalWordTrace]
+      exact WordRAM.TraceResult.pure_trace_forall _ state
+  | cons instr rest ih =>
+      unfold evalGlobalWordTrace
+      apply WordRAM.TraceResult.bind_trace_forall
+      · exact
+          WholeQueryInstr.evalGlobalWordTrace_noReadyCloseSuccessfulRead_of_not_ready
+            shape hnotReady left right instr state
       · exact ih
           (instr.evalGlobalWordTrace shape left right state).value
 
@@ -3529,6 +5958,45 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_no_syntheticC
       shape left right concreteBPNativeSuccinctRMQWholeQueryProgram
       WholeQueryState.empty
 
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_noFiniteSmallInteriorSuccessfulRead_of_ready
+    (shape : Cartesian.CartesianShape)
+    (hready : SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (left right : Nat) :
+    forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  unfold concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+  apply WordRAM.TraceResult.map_trace_forall
+  exact
+    WholeQueryProgram.evalGlobalWordTrace_noFiniteSmallInteriorSuccessfulRead_of_ready
+      shape hready left right concreteBPNativeSuccinctRMQWholeQueryProgram
+      WholeQueryState.empty
+
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_noReadyCloseSuccessfulRead_of_not_ready
+    (shape : Cartesian.CartesianShape)
+    (hnotReady : ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (left right : Nat) :
+    forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event := by
+  have _hsmall :
+      shape.size <
+        SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold :=
+    SuccinctClose.concreteBPRelativeRmmInterior_size_lt_readyThreshold_of_not_ready
+      hnotReady
+  unfold concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+  apply WordRAM.TraceResult.map_trace_forall
+  exact
+    WholeQueryProgram.evalGlobalWordTrace_noReadyCloseSuccessfulRead_of_not_ready
+      shape hnotReady left right concreteBPNativeSuccinctRMQWholeQueryProgram
+      WholeQueryState.empty
+
 /--
 Store-extensional variant of the all-size global trace store theorem. If a
 candidate read store agrees with the concrete global store at every read event
@@ -3571,6 +6039,197 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_matchesReadSt
       simp [WordRAM.TraceEvent.matchesReadStore]
   | syntheticCostOnlyPrimitive =>
       simp [WordRAM.TraceEvent.matchesReadStore]
+
+theorem
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_successful_read_events_backed_by_counted_flat_payload_of_noFiniteSmallInterior
+    (shape : Cartesian.CartesianShape)
+    (hready : SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (left right : Nat)
+    (hnoFiniteSmallInterior :
+      forall event,
+        List.Mem event
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+            shape left right).trace ->
+          concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+            event) :
+    forall {segment index : Nat} {word : List Bool},
+      List.Mem (WordRAM.TraceEvent.readWord segment index (some word))
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+          shape segment /\
+        concreteBPNativeSuccinctRMQFlatPayloadReadBacked
+          shape segment index word := by
+  intro segment index word hmem
+  have hflatStore :
+      forall event,
+        List.Mem event
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+            shape left right).trace ->
+          event.matchesReadStore
+            (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape) := by
+    exact
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_matchesReadStore_of_trace_read_agreement
+        shape left right
+        (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape)
+        (by
+          intro segment index word? _hmem
+          exact
+            concreteBPNativeSuccinctRMQFlatPayloadReadStore_eq_global
+              shape segment index)
+  have hbackedEvent :
+      concreteBPNativeSuccinctRMQFlatPayloadTraceEventSuccessfulReadBacked
+        shape (WordRAM.TraceEvent.readWord segment index (some word)) :=
+    concreteBPNativeSuccinctRMQFlatPayloadTraceEventSuccessfulReadBacked_of_flatStore_match
+      shape
+      (hflatStore
+        (WordRAM.TraceEvent.readWord segment index (some word)) hmem)
+      (fun _ _ _ => hready)
+      (fun _ _ _ => hready)
+      (fun _ _ _ => hready)
+      (fun _ _ _ => hready)
+      (fun _ _ _ => hready)
+      (fun _ _ _ => hready)
+      (fun readIndex readWord hreadEvent =>
+        False.elim (by
+          have hno :=
+            hnoFiniteSmallInterior
+              (WordRAM.TraceEvent.readWord segment index (some word)) hmem
+          cases hreadEvent
+          simp [concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead] at hno))
+      (fun readIndex readWord hreadEvent =>
+        False.elim (by
+          have hno :=
+            hnoFiniteSmallInterior
+              (WordRAM.TraceEvent.readWord segment index (some word)) hmem
+          cases hreadEvent
+          simp [concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead] at hno))
+  simpa [concreteBPNativeSuccinctRMQFlatPayloadTraceEventSuccessfulReadBacked]
+    using hbackedEvent
+
+theorem
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_successful_read_events_backed_by_counted_flat_payload_of_not_ready
+    (shape : Cartesian.CartesianShape)
+    (hnotReady : ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (left right : Nat) :
+    (forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event) ->
+    forall {segment index : Nat} {word : List Bool},
+      List.Mem (WordRAM.TraceEvent.readWord segment index (some word))
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+          shape segment /\
+        concreteBPNativeSuccinctRMQFlatPayloadReadBacked
+          shape segment index word := by
+  intro hnoReadyClose segment index word hmem
+  have hflatStore :
+      forall event,
+        List.Mem event
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+            shape left right).trace ->
+          event.matchesReadStore
+            (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape) := by
+    exact
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_matchesReadStore_of_trace_read_agreement
+        shape left right
+        (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape)
+        (by
+          intro segment index word? _hmem
+          exact
+            concreteBPNativeSuccinctRMQFlatPayloadReadStore_eq_global
+              shape segment index)
+  have hbackedEvent :
+      concreteBPNativeSuccinctRMQFlatPayloadTraceEventSuccessfulReadBacked
+        shape (WordRAM.TraceEvent.readWord segment index (some word)) :=
+    concreteBPNativeSuccinctRMQFlatPayloadTraceEventSuccessfulReadBacked_of_flatStore_match
+      shape
+      (hflatStore
+        (WordRAM.TraceEvent.readWord segment index (some word)) hmem)
+      (fun readIndex readWord hreadEvent =>
+        False.elim (by
+          have hno :=
+            hnoReadyClose
+              (WordRAM.TraceEvent.readWord segment index (some word)) hmem
+          cases hreadEvent
+          simp [concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead] at hno))
+      (fun readIndex readWord hreadEvent =>
+        False.elim (by
+          have hno :=
+            hnoReadyClose
+              (WordRAM.TraceEvent.readWord segment index (some word)) hmem
+          cases hreadEvent
+          simp [concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead] at hno))
+      (fun readIndex readWord hreadEvent =>
+        False.elim (by
+          have hno :=
+            hnoReadyClose
+              (WordRAM.TraceEvent.readWord segment index (some word)) hmem
+          cases hreadEvent
+          simp [concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead] at hno))
+      (fun readIndex readWord hreadEvent =>
+        False.elim (by
+          have hno :=
+            hnoReadyClose
+              (WordRAM.TraceEvent.readWord segment index (some word)) hmem
+          cases hreadEvent
+          simp [concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead] at hno))
+      (fun readIndex readWord hreadEvent =>
+        False.elim (by
+          have hno :=
+            hnoReadyClose
+              (WordRAM.TraceEvent.readWord segment index (some word)) hmem
+          cases hreadEvent
+          simp [concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead] at hno))
+      (fun readIndex readWord hreadEvent =>
+        False.elim (by
+          have hno :=
+            hnoReadyClose
+              (WordRAM.TraceEvent.readWord segment index (some word)) hmem
+          cases hreadEvent
+          simp [concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead] at hno))
+      (fun _ _ _ => hnotReady)
+      (fun _ _ _ => hnotReady)
+  simpa [concreteBPNativeSuccinctRMQFlatPayloadTraceEventSuccessfulReadBacked]
+    using hbackedEvent
+
+theorem
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_successful_read_events_backed_by_counted_flat_payload
+    (shape : Cartesian.CartesianShape)
+    (left right : Nat) :
+    forall {segment index : Nat} {word : List Bool},
+      List.Mem (WordRAM.TraceEvent.readWord segment index (some word))
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+          shape segment /\
+        concreteBPNativeSuccinctRMQFlatPayloadReadBacked
+          shape segment index word := by
+  by_cases hready :
+      SuccinctClose.concreteBPRelativeRmmInteriorReady shape
+  · intro hmem
+    exact
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_successful_read_events_backed_by_counted_flat_payload_of_noFiniteSmallInterior
+        shape hready left right
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_noFiniteSmallInteriorSuccessfulRead_of_ready
+          shape hready left right)
+        hmem
+  · have _hsmall :
+        shape.size <
+          SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold :=
+      SuccinctClose.concreteBPRelativeRmmInterior_size_lt_readyThreshold_of_not_ready
+        hready
+    intro hmem
+    exact
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_successful_read_events_backed_by_counted_flat_payload_of_not_ready
+        shape hready left right
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_noReadyCloseSuccessfulRead_of_not_ready
+          shape hready left right)
+        hmem
 
 /--
 Public all-size execution-story packet for the globally segmented final RMQ
@@ -3866,11 +6525,11 @@ Flat-payload, no-synthetic all-size execution-story packet for the final
 globally segmented RMQ trace.
 
 This is the combined public hardening theorem: the current query-independent
-flat payload layout backs the global read store, successful reads have explicit
-component/offset witnesses inside that counted payload, the final query refines
-the whole-query interpreter, every event is a payload read or word-local
-primitive, no event is the synthetic cost-only marker, and the read/primitive
-natural data are bounded by the trace-local bit width.
+flat payload layout backs the global read store with source manifests for all
+successful reads, counted successful reads carry positional flat-slice evidence,
+the final query refines the whole-query interpreter, every event is a payload
+read or word-local primitive, no event is the synthetic cost-only marker, and
+the read/primitive natural data are bounded by the trace-local bit width.
 -/
 theorem concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execution_story
     (shape : Cartesian.CartesianShape)
@@ -3890,6 +6549,21 @@ theorem concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execut
       (forall {segment index : Nat} {word : List Bool},
         (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord?
             segment index = some word ->
+          concreteBPNativeSuccinctRMQFlatPayloadReadSourceManifest
+            shape segment index word) /\
+      (forall {segment index : Nat} {word : List Bool},
+        (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord?
+            segment index = some word ->
+          concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+            shape segment ->
+          concreteBPNativeSuccinctRMQFlatPayloadReadBacked
+            shape segment index word) /\
+      (forall {segment index : Nat} {word : List Bool},
+        List.Mem (WordRAM.TraceEvent.readWord segment index (some word))
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+            shape left right).trace ->
+          concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+            shape segment /\
           concreteBPNativeSuccinctRMQFlatPayloadReadBacked
             shape segment index word) /\
       concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
@@ -3931,9 +6605,20 @@ theorem concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execut
             (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceEventBits
               shape left right) event) := by
   rcases
-    concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_reads_backed_by_counted_payload
+    concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_reads_have_source_manifest
       shape with
     ⟨hpayload, hcomponents, hreadBacked⟩
+  have hreadBackedCounted :
+      forall {segment index : Nat} {word : List Bool},
+        (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord?
+            segment index = some word ->
+          concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+            shape segment ->
+          concreteBPNativeSuccinctRMQFlatPayloadReadBacked
+            shape segment index word := by
+    exact
+      (concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_counted_reads_backed_by_counted_payload
+        shape).2.2
   have hflatStore :
       forall event,
         List.Mem event
@@ -3958,7 +6643,11 @@ theorem concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execut
   exact
     ⟨hpayload, hcomponents,
       concreteBPNativeSuccinctRMQFlatPayloadSegmentBackings_all shape,
-      hreadBacked, hcost, hrefine, hclass, hflatStore, hnoSynthetic,
+      hreadBacked, hreadBackedCounted,
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_successful_read_events_backed_by_counted_flat_payload
+        shape left right,
+      hcost, hrefine, hclass, hflatStore,
+      hnoSynthetic,
       hreadBits, hprimitiveBits⟩
 
 theorem concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe_eq_traceResult_toCosted

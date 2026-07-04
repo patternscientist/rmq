@@ -77,9 +77,10 @@ List-facing form of the final flat-payload/no-synthetic execution story.
 
 For fixed `xs,left,right`, this names the concrete flat layout and read store,
 states how the flat payload splits into its component payloads, proves every
-successful store read has source/component/offset backing, and packages the
-interpreted trace, store agreement, bounded event data, and absence of
-synthetic cost-only events.
+successful store read has source-manifest evidence, proves counted successful
+store reads have positional flat-payload backing, and packages the interpreted
+trace, store agreement, bounded event data, and absence of synthetic cost-only
+events.
 -/
 def FlatPayloadStoreNoSyntheticExecutionStory
     (xs : List Int) (left right : Nat) : Prop :=
@@ -96,6 +97,19 @@ def FlatPayloadStoreNoSyntheticExecutionStory
       (cartesianShape xs) /\
     (forall {segment index : Nat} {word : List Bool},
       (flatPayloadReadStore xs).readWord? segment index = some word ->
+        SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadReadSourceManifest
+          (cartesianShape xs) segment index word) /\
+    (forall {segment index : Nat} {word : List Bool},
+      (flatPayloadReadStore xs).readWord? segment index = some word ->
+        SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+          (cartesianShape xs) segment ->
+        SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadReadBacked
+          (cartesianShape xs) segment index word) /\
+    (forall {segment index : Nat} {word : List Bool},
+      List.Mem (WordRAM.TraceEvent.readWord segment index (some word))
+        (flatPayloadTraceResult xs left right).trace ->
+        SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+          (cartesianShape xs) segment /\
         SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadReadBacked
           (cartesianShape xs) segment index word) /\
     queryCosted xs left right =

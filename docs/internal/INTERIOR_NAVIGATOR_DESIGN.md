@@ -128,6 +128,14 @@ theorem concreteBPRelativeRmmInteriorDirectory_profile
       directory.read_words_length_le_machine
 ```
 
+2026-07-04 update: the original target above remains a compatibility
+large-regime profile. The current repaired readiness surface also proves
+`SuccinctClose.concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold`
+for the named threshold
+`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15`; non-Ready
+finite-small interior cases are therefore below that threshold, not a
+`2^128` public finite prefix.
+
 The exact names may evolve, but the obligations should not: concrete payload,
 constant charged query, exact leftmost range-min witness, little-o overhead, and
 machine-word bounded reads.

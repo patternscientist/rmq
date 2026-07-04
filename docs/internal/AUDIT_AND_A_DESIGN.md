@@ -378,6 +378,11 @@ large-regime threshold `2^128 <= shape.size`, it packages a concrete two-level
 directory with `LittleOLinear` payload overhead, payload bounded by the concrete
 overhead term, bounded query cost, exact leftmost range-minimum witness erasure,
 and machine-word bounds for the charged local/global/summary reads.
+2026-07-04 note: this paragraph records the original large-regime checkpoint.
+The current finite-small fallback budget is governed by
+`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15` and
+`SuccinctClose.concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold`,
+with the old `2^128` theorem retained as a compatibility corollary.
 
 This result is materially different from the older dense
 `interiorBlockPairRanges` path. The new profile derives the local offset-table

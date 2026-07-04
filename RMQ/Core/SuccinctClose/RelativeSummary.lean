@@ -1766,6 +1766,139 @@ theorem canonicalBPRelativeSummaryLargeRegime_of_size_ge
     canonicalBPRelativeSummaryBlockSizeRaw_width_bound shape,
     Nat.le_trans hrel_le_base hbase_le_super⟩
 
+def concreteBPRelativeRmmInteriorReadyThreshold : Nat := 2 ^ 15
+
+private theorem four_mul_natLog2_le_two_pow_of_ge_four
+    (q : Nat) (hq : 4 <= q) :
+    4 * q <= 2 ^ q := by
+  exact Nat.strongRecOn q (fun q ih => by
+    intro hq
+    by_cases hstep : 5 <= q
+    case pos =>
+      have hprevLarge : 4 <= q - 1 := by
+        omega
+      have hprevLt : q - 1 < q := by
+        omega
+      have ihprev := ih (q - 1) hprevLt hprevLarge
+      have hlin : 4 * q <= 2 * (4 * (q - 1)) := by
+        omega
+      have hpowMul : 2 * 2 ^ (q - 1) = 2 ^ q := by
+        have hqeq : q = (q - 1) + 1 := by
+          omega
+        calc
+          2 * 2 ^ (q - 1) = 2 ^ ((q - 1) + 1) := by
+            simp [Nat.pow_succ, Nat.mul_comm]
+          _ = 2 ^ q := by
+            rw [← hqeq]
+      have hprevScaled :
+          2 * (4 * (q - 1)) <= 2 * 2 ^ (q - 1) := by
+        exact Nat.mul_le_mul_left 2 ihprev
+      exact Nat.le_trans hlin (by simpa [hpowMul] using hprevScaled)
+    case neg =>
+      have hqeq : q = 4 := by
+        omega
+      subst q
+      decide) hq
+
+private theorem two_mul_log2_succ_add_three_le_self_of_ge_16
+    {n : Nat} (hn : 16 <= n) :
+    2 * (Nat.log2 n + 1) + 3 <= n := by
+  let q := Nat.log2 n
+  have hq4 : 4 <= q := by
+    have hpow : 2 ^ 4 <= n := by
+      simpa using hn
+    simpa [q] using natLog2_ge_of_pow_le hpow
+  have hfourqPow : 4 * q <= 2 ^ q :=
+    four_mul_natLog2_le_two_pow_of_ge_four q hq4
+  have hn_ne : n ≠ 0 := by
+    omega
+  have hpowSelf : 2 ^ q <= n := by
+    simpa [q] using Nat.log2_self_le hn_ne
+  have hfourq : 4 * q <= n := Nat.le_trans hfourqPow hpowSelf
+  have hqDiv : q <= n / 4 := by
+    exact (Nat.le_div_iff_mul_le (by decide : 0 < 4)).2
+      (by simpa [Nat.mul_comm] using hfourq)
+  have hdivLower : 4 <= n / 4 := by
+    exact (Nat.le_div_iff_mul_le (by decide : 0 < 4)).2
+      (by simpa using hn)
+  have hdivMul : 4 * (n / 4) <= n := by
+    simpa [Nat.mul_comm] using Nat.div_mul_le_self n 4
+  have htail : 2 * (n / 4) + 5 <= n := by
+    omega
+  omega
+
+theorem canonicalBPRelativeSummaryRelativeWidthRaw_le_base_of_base_ge_16
+    {shape : Cartesian.CartesianShape}
+    (hbase : 16 <= canonicalBPRelativeSummaryBase shape) :
+    canonicalBPRelativeSummaryRelativeWidthRaw shape <=
+      canonicalBPRelativeSummaryBase shape := by
+  simpa [canonicalBPRelativeSummaryRelativeWidthRaw] using
+    two_mul_log2_succ_add_three_le_self_of_ge_16 hbase
+
+theorem canonicalBPRelativeSummaryBase_le_blockCountRaw_of_size_ge_readyThreshold
+    {shape : Cartesian.CartesianShape}
+    (hsize : concreteBPRelativeRmmInteriorReadyThreshold <= shape.size) :
+    canonicalBPRelativeSummaryBase shape <=
+      canonicalBPRelativeSummaryBlockCountRaw shape := by
+  have hsize_pos : shape.size ≠ 0 := by
+    have hpow : 0 < 2 ^ 15 := Nat.pow_pos (by omega)
+    have hsize15 : 2 ^ 15 <= shape.size := by
+      simpa [concreteBPRelativeRmmInteriorReadyThreshold] using hsize
+    omega
+  have hlog15 : 15 <= Nat.log2 shape.size := by
+    exact natLog2_ge_of_pow_le (by
+      simpa [concreteBPRelativeRmmInteriorReadyThreshold] using hsize)
+  have hlog6 : 6 <= Nat.log2 shape.size := by
+    omega
+  have hsquare :=
+    nat_log2_succ_square_le_self_of_log2_ge_six
+      (n := shape.size) hsize_pos hlog6
+  have hbase_pos : 0 < canonicalBPRelativeSummaryBase shape := by
+    simp [canonicalBPRelativeSummaryBase]
+  exact (Nat.le_div_iff_mul_le hbase_pos).2 (by
+    simpa [canonicalBPRelativeSummaryBase,
+      canonicalBPRelativeSummaryBlockCountRaw, Nat.mul_comm] using
+      hsquare)
+
+theorem canonicalBPRelativeSummaryBase_ge_16_of_size_ge_readyThreshold
+    {shape : Cartesian.CartesianShape}
+    (hsize : concreteBPRelativeRmmInteriorReadyThreshold <= shape.size) :
+    16 <= canonicalBPRelativeSummaryBase shape := by
+  have hlog15 : 15 <= Nat.log2 shape.size := by
+    exact natLog2_ge_of_pow_le (by
+      simpa [concreteBPRelativeRmmInteriorReadyThreshold] using hsize)
+  simp [canonicalBPRelativeSummaryBase]
+  omega
+
+theorem canonicalBPRelativeSummaryLargeRegime_of_size_ge_readyThreshold
+    {shape : Cartesian.CartesianShape}
+    (hsize : concreteBPRelativeRmmInteriorReadyThreshold <= shape.size) :
+    canonicalBPRelativeSummaryLargeRegime shape := by
+  have hsize_pos : 0 < shape.size := by
+    have hpow : 0 < 2 ^ 15 := Nat.pow_pos (by omega)
+    have hsize15 : 2 ^ 15 <= shape.size := by
+      simpa [concreteBPRelativeRmmInteriorReadyThreshold] using hsize
+    omega
+  have hbase_ge : 16 <= canonicalBPRelativeSummaryBase shape :=
+    canonicalBPRelativeSummaryBase_ge_16_of_size_ge_readyThreshold hsize
+  have hrel_le_base :
+      canonicalBPRelativeSummaryRelativeWidthRaw shape <=
+        canonicalBPRelativeSummaryBase shape :=
+    canonicalBPRelativeSummaryRelativeWidthRaw_le_base_of_base_ge_16
+      hbase_ge
+  have hbase_le_super :=
+    canonicalBPRelativeSummaryBase_le_superWidth_of_size_pos
+      (shape := shape) hsize_pos
+  unfold canonicalBPRelativeSummaryLargeRegime
+  exact ⟨
+    canonicalBPRelativeSummaryBase_le_blockCountRaw_of_size_ge_readyThreshold
+      hsize,
+    canonicalBPRelativeSummarySuperWidth_le_eight_base_of_size_pos
+      (shape := shape) hsize_pos,
+    canonicalBPRelativeSummarySpanRaw_width_bound shape,
+    canonicalBPRelativeSummaryBlockSizeRaw_width_bound shape,
+    Nat.le_trans hrel_le_base hbase_le_super⟩
+
 theorem canonicalBPRelativeMinMaxArgSummaryTableActive_of_large
     {shape : Cartesian.CartesianShape}
     (hlarge : canonicalBPRelativeSummaryLargeRegime shape) :
@@ -2006,6 +2139,89 @@ theorem concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profil
   exact ⟨hprofile.1, hprofile.2.1, hprofile.2.2, hwords.1,
     hwords.2.1, hwords.2.2.1, hwords.2.2.2⟩
 
+theorem concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile_of_active
+    (shape : Cartesian.CartesianShape)
+    (hactive : canonicalBPRelativeMinMaxArgSummaryTableActive shape) :
+    let table := concreteBPRelativeMinMaxArgSummaryTable_canonical shape
+    canonicalBPRelativeSummaryBlockSize shape =
+        canonicalBPRelativeSummaryBlockSizeRaw shape /\
+      canonicalBPRelativeSummaryBlocksPerSuper shape =
+        canonicalBPRelativeSummaryBlocksPerSuperRaw shape /\
+      canonicalBPRelativeSummaryBlockCount shape =
+        canonicalBPRelativeSummaryBlockCountRaw shape /\
+      canonicalBPRelativeSummarySuperCount shape =
+        canonicalBPRelativeSummarySuperCountRaw shape /\
+      canonicalBPRelativeSummaryRelativeWidth shape =
+        canonicalBPRelativeSummaryRelativeWidthRaw shape /\
+      LittleOLinear
+        (compactBPCloseSummaryPayloadOverhead
+          canonicalBPRelativeSummaryBlockSlots 0 0
+          canonicalBPRelativeSummarySuperSlots) /\
+      table.payload.length <=
+        compactBPCloseSummaryPayloadOverhead
+          canonicalBPRelativeSummaryBlockSlots 0 0
+          canonicalBPRelativeSummarySuperSlots shape.size /\
+      (forall block,
+        (table.summaryCosted block).cost <= 4 /\
+          (table.summaryCosted block).erase =
+            match
+              (bpSuperblockBaselineEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+                (canonicalBPRelativeSummarySuperCountRaw shape))[
+                  block /
+                    canonicalBPRelativeSummaryBlocksPerSuperRaw shape]?,
+              (bpBlockRelativeMinExcessEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+                (canonicalBPRelativeSummaryBlockCountRaw shape))[block]?,
+              (bpBlockRelativeMaxExcessEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+                (canonicalBPRelativeSummaryBlockCountRaw shape))[block]?,
+              (bpBlockArgMinLocalOffsetEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlockCountRaw shape))[block]?
+            with
+            | some baseline, some minRel, some maxRel, some argOffset =>
+                some (baseline, minRel, maxRel, argOffset)
+            | _, _, _, _ => none) /\
+      (forall {index : Nat} {word : List Bool},
+        table.baselineTable.store.words[index]? = some word ->
+          word.length <=
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.minRelTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.maxRelTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.argOffsetTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRank.machineWordBits shape.bpCode.length) := by
+  have hprofile :=
+    concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile
+      shape
+  exact ⟨by
+      simp [canonicalBPRelativeSummaryBlockSize, hactive],
+    by
+      simp [canonicalBPRelativeSummaryBlocksPerSuper, hactive],
+    by
+      simp [canonicalBPRelativeSummaryBlockCount, hactive],
+    by
+      simp [canonicalBPRelativeSummarySuperCount, hactive],
+    by
+      simp [canonicalBPRelativeSummaryRelativeWidth, hactive],
+    by
+      simpa [canonicalBPRelativeSummaryBlockSize,
+        canonicalBPRelativeSummaryBlocksPerSuper,
+        canonicalBPRelativeSummaryBlockCount,
+        canonicalBPRelativeSummarySuperCount,
+        canonicalBPRelativeSummaryRelativeWidth, hactive] using hprofile⟩
+
 theorem concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile_of_large
     (shape : Cartesian.CartesianShape)
     (hlarge : canonicalBPRelativeSummaryLargeRegime shape) :
@@ -2072,25 +2288,9 @@ theorem concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profil
   have hactive :=
     canonicalBPRelativeMinMaxArgSummaryTableActive_of_large
       (shape := shape) hlarge
-  have hprofile :=
-    concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile
-      shape
-  exact ⟨by
-      simp [canonicalBPRelativeSummaryBlockSize, hactive],
-    by
-      simp [canonicalBPRelativeSummaryBlocksPerSuper, hactive],
-    by
-      simp [canonicalBPRelativeSummaryBlockCount, hactive],
-    by
-      simp [canonicalBPRelativeSummarySuperCount, hactive],
-    by
-      simp [canonicalBPRelativeSummaryRelativeWidth, hactive],
-    by
-      simpa [canonicalBPRelativeSummaryBlockSize,
-        canonicalBPRelativeSummaryBlocksPerSuper,
-        canonicalBPRelativeSummaryBlockCount,
-        canonicalBPRelativeSummarySuperCount,
-        canonicalBPRelativeSummaryRelativeWidth, hactive] using hprofile⟩
+  exact
+    concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile_of_active
+      shape hactive
 
 theorem canonicalBPRelativeSummaryBlockSizeRaw_pos
     (shape : Cartesian.CartesianShape) :
@@ -2177,15 +2377,23 @@ theorem canonicalBPRelativeSummaryBlockCount_le_bpCode_length
       canonicalBPRelativeSummaryBlockCountRaw_le_bpCode_length shape
   · simp [canonicalBPRelativeSummaryBlockCount, hactive]
 
+theorem canonicalBPRelativeSummaryRelativeWidthRaw_machine_of_active
+    {shape : Cartesian.CartesianShape}
+    (hactive : canonicalBPRelativeMinMaxArgSummaryTableActive shape) :
+    canonicalBPRelativeSummaryRelativeWidthRaw shape <=
+      SuccinctRank.machineWordBits shape.bpCode.length := by
+  have hparts :=
+    canonicalBPRelativeSummary_active_parts (shape := shape) hactive
+  exact hparts.2.2.2.2.2
+
 theorem canonicalBPRelativeSummaryRelativeWidthRaw_machine_of_large
     {shape : Cartesian.CartesianShape}
     (hlarge : canonicalBPRelativeSummaryLargeRegime shape) :
     canonicalBPRelativeSummaryRelativeWidthRaw shape <=
       SuccinctRank.machineWordBits shape.bpCode.length := by
-  rcases canonicalBPRelativeSummary_large_parts
-      (shape := shape) hlarge with
-    ⟨_hbase_le_count, _hsuperWidth, _hspan, _harg, hmachine⟩
-  simpa [canonicalBPRelativeSummarySuperWidth] using hmachine
+  exact
+    canonicalBPRelativeSummaryRelativeWidthRaw_machine_of_active
+      (canonicalBPRelativeMinMaxArgSummaryTableActive_of_large hlarge)
 
 def concreteBPRelativeRmmInteriorLocalOffsetSlots : Nat := 64
 
@@ -2227,6 +2435,73 @@ def concreteBPRelativeRmmInteriorBlockWidth
   SuccinctRank.machineWordBits
     (canonicalBPRelativeSummaryBlockCount shape)
 
+def concreteBPRelativeRmmInteriorReady
+    (shape : Cartesian.CartesianShape) : Prop :=
+  canonicalBPRelativeMinMaxArgSummaryTableActive shape /\
+    concreteBPRelativeRmmInteriorMacroSize shape <=
+      canonicalBPRelativeSummaryBlockCount shape
+
+instance concreteBPRelativeRmmInteriorReady_decidable
+    (shape : Cartesian.CartesianShape) :
+    Decidable (concreteBPRelativeRmmInteriorReady shape) := by
+  unfold concreteBPRelativeRmmInteriorReady
+  infer_instance
+
+theorem concreteBPRelativeRmmInteriorReady_active
+    {shape : Cartesian.CartesianShape}
+    (hready : concreteBPRelativeRmmInteriorReady shape) :
+    canonicalBPRelativeMinMaxArgSummaryTableActive shape :=
+  hready.1
+
+theorem concreteBPRelativeRmmInteriorReady_empty_obstruction :
+    ¬ concreteBPRelativeRmmInteriorReady Cartesian.CartesianShape.empty := by
+  intro hready
+  have hactive := concreteBPRelativeRmmInteriorReady_active hready
+  have hmachine := hactive.2.2.2.2.2
+  simp [canonicalBPRelativeSummaryRelativeWidthRaw,
+    canonicalBPRelativeSummaryBase, SuccinctRank.machineWordBits,
+    Cartesian.CartesianShape.bpCode] at hmachine
+
+theorem concreteBPRelativeRmmInteriorReady_not_all :
+    ¬ (forall shape : Cartesian.CartesianShape,
+      concreteBPRelativeRmmInteriorReady shape) := by
+  intro hall
+  exact concreteBPRelativeRmmInteriorReady_empty_obstruction
+    (hall Cartesian.CartesianShape.empty)
+
+theorem concreteBPRelativeRmmInteriorMacroSize_le_blockCount_of_ready
+    {shape : Cartesian.CartesianShape}
+    (hready : concreteBPRelativeRmmInteriorReady shape) :
+    concreteBPRelativeRmmInteriorMacroSize shape <=
+      canonicalBPRelativeSummaryBlockCount shape :=
+  hready.2
+
+theorem concreteBPRelativeRmmInterior_not_ready_cases
+    {shape : Cartesian.CartesianShape}
+    (hnotReady : ¬ concreteBPRelativeRmmInteriorReady shape) :
+    ¬ canonicalBPRelativeMinMaxArgSummaryTableActive shape ∨
+      canonicalBPRelativeSummaryBlockCount shape <
+        concreteBPRelativeRmmInteriorMacroSize shape := by
+  by_cases hactive :
+      canonicalBPRelativeMinMaxArgSummaryTableActive shape
+  · right
+    exact Nat.lt_of_not_ge (by
+      intro hmacro
+      exact hnotReady ⟨hactive, hmacro⟩)
+  · exact Or.inl hactive
+
+theorem concreteBPRelativeRmmInterior_blockSize_zero_or_macro_small_of_not_ready
+    {shape : Cartesian.CartesianShape}
+    (hnotReady : ¬ concreteBPRelativeRmmInteriorReady shape) :
+    canonicalBPRelativeSummaryBlockSize shape = 0 ∨
+      canonicalBPRelativeSummaryBlockCount shape <
+        concreteBPRelativeRmmInteriorMacroSize shape := by
+  rcases concreteBPRelativeRmmInterior_not_ready_cases hnotReady with
+    hactive | hmacro
+  · left
+    simp [canonicalBPRelativeSummaryBlockSize, hactive]
+  · exact Or.inr hmacro
+
 theorem concreteBPRelativeRmmInteriorMacroSize_pos
     (shape : Cartesian.CartesianShape) :
     0 < concreteBPRelativeRmmInteriorMacroSize shape := by
@@ -2234,6 +2509,46 @@ theorem concreteBPRelativeRmmInteriorMacroSize_pos
   have hbase : 0 < canonicalBPRelativeSummaryBase shape := by
     simp [canonicalBPRelativeSummaryBase]
   exact Nat.mul_pos hbase hbase
+
+theorem canonicalBPRelativeSummaryBlockCount_pos_of_ready
+    {shape : Cartesian.CartesianShape}
+    (hready : concreteBPRelativeRmmInteriorReady shape) :
+    0 < canonicalBPRelativeSummaryBlockCount shape := by
+  exact Nat.lt_of_lt_of_le
+    (concreteBPRelativeRmmInteriorMacroSize_pos shape)
+    (concreteBPRelativeRmmInteriorMacroSize_le_blockCount_of_ready
+      hready)
+
+theorem canonicalBPRelativeSummaryBlockCountRaw_pos_of_ready
+    {shape : Cartesian.CartesianShape}
+    (hready : concreteBPRelativeRmmInteriorReady shape) :
+    0 < canonicalBPRelativeSummaryBlockCountRaw shape := by
+  have hactive := concreteBPRelativeRmmInteriorReady_active hready
+  have hcount :=
+    canonicalBPRelativeSummaryBlockCount_pos_of_ready
+      (shape := shape) hready
+  simpa [canonicalBPRelativeSummaryBlockCount, hactive] using hcount
+
+theorem concreteBPRelativeRmmInteriorMacroCount_pos_of_ready
+    (shape : Cartesian.CartesianShape)
+    (_hready : concreteBPRelativeRmmInteriorReady shape) :
+    0 < concreteBPRelativeRmmInteriorMacroCount shape := by
+  simp [concreteBPRelativeRmmInteriorMacroCount]
+
+theorem concreteBPRelativeRmmInteriorMacroCount_le_blockCount_succ_of_ready
+    {shape : Cartesian.CartesianShape}
+    (_hready : concreteBPRelativeRmmInteriorReady shape) :
+    concreteBPRelativeRmmInteriorMacroCount shape <=
+      canonicalBPRelativeSummaryBlockCount shape + 1 := by
+  have hdiv :
+      canonicalBPRelativeSummaryBlockCount shape /
+          concreteBPRelativeRmmInteriorMacroSize shape <=
+        canonicalBPRelativeSummaryBlockCount shape := by
+    exact Nat.div_le_self
+      (canonicalBPRelativeSummaryBlockCount shape)
+      (concreteBPRelativeRmmInteriorMacroSize shape)
+  simpa [concreteBPRelativeRmmInteriorMacroCount] using
+    Nat.succ_le_succ hdiv
 
 theorem concreteBPRelativeRmmInteriorOffsetWidth_capacity
     (shape : Cartesian.CartesianShape) :
@@ -2322,32 +2637,91 @@ theorem nat_succ_cube_le_two_pow_of_128_le
         Nat.pow_le_pow_right (by omega : 0 < 2) (by omega)
       exact Nat.le_trans hcubeLe (Nat.le_trans hsmall hpow)) hq
 
-theorem concreteBPRelativeRmmInteriorMacroSize_le_blockCount_of_size_ge
+theorem nat_succ_cube_le_two_pow_of_15_le
+    (q : Nat) (hq : 15 <= q) :
+    (q + 1) * ((q + 1) * (q + 1)) <= 2 ^ q := by
+  exact Nat.strongRecOn q (fun q ih => by
+    intro hq
+    by_cases hstep : 18 <= q
+    · have hprevLarge : 15 <= q - 3 := by
+        omega
+      have hprevLt : q - 3 < q := by
+        omega
+      have ihprev := ih (q - 3) hprevLt hprevLarge
+      have hlin : q + 1 <= 2 * ((q - 3) + 1) := by
+        omega
+      have hcube :
+          (q + 1) * ((q + 1) * (q + 1)) <=
+            (2 * ((q - 3) + 1)) *
+              ((2 * ((q - 3) + 1)) *
+                (2 * ((q - 3) + 1))) := by
+        exact Nat.mul_le_mul hlin (Nat.mul_le_mul hlin hlin)
+      have hscaled :
+          (2 * ((q - 3) + 1)) *
+              ((2 * ((q - 3) + 1)) *
+                (2 * ((q - 3) + 1))) =
+            2 * (2 * (2 *
+              (((q - 3) + 1) *
+                (((q - 3) + 1) * ((q - 3) + 1))))) := by
+        simp [Nat.mul_left_comm, Nat.mul_comm]
+      have hpowMul :
+          2 * (2 * (2 * 2 ^ (q - 3))) = 2 ^ q := by
+        have hqeq : q = (q - 3) + 3 := by
+          omega
+        calc
+          2 * (2 * (2 * 2 ^ (q - 3))) =
+              2 ^ ((q - 3) + 3) := by
+            simp [Nat.pow_succ, Nat.mul_comm]
+          _ = 2 ^ q := by
+            rw [← hqeq]
+      have hprevScaled :
+          2 * (2 * (2 *
+              (((q - 3) + 1) *
+                (((q - 3) + 1) * ((q - 3) + 1))))) <=
+            2 * (2 * (2 * 2 ^ (q - 3))) := by
+        exact Nat.mul_le_mul_left 2
+          (Nat.mul_le_mul_left 2 (Nat.mul_le_mul_left 2 ihprev))
+      exact Nat.le_trans hcube
+        (by simpa [hscaled, hpowMul] using hprevScaled)
+    · have hq18 : q + 1 <= 18 := by
+        omega
+      have hcubeLe :
+          (q + 1) * ((q + 1) * (q + 1)) <=
+            18 * (18 * 18) := by
+        exact Nat.mul_le_mul hq18 (Nat.mul_le_mul hq18 hq18)
+      have hsmall : 18 * (18 * 18) <= 2 ^ 15 := by
+        decide
+      have hpow : 2 ^ 15 <= 2 ^ q :=
+        Nat.pow_le_pow_right (by omega : 0 < 2) (by omega)
+      exact Nat.le_trans hcubeLe (Nat.le_trans hsmall hpow)) hq
+
+theorem concreteBPRelativeRmmInteriorMacroSize_le_blockCount_of_size_ge_readyThreshold
     (shape : Cartesian.CartesianShape)
-    (hsize : 2 ^ 128 <= shape.size) :
+    (hsize : concreteBPRelativeRmmInteriorReadyThreshold <= shape.size) :
     concreteBPRelativeRmmInteriorMacroSize shape <=
       canonicalBPRelativeSummaryBlockCount shape := by
   let base := canonicalBPRelativeSummaryBase shape
-  have hlarge :=
-    canonicalBPRelativeSummaryLargeRegime_of_size_ge
-      (shape := shape) hsize
-  have hactive :=
-    canonicalBPRelativeMinMaxArgSummaryTableActive_of_large
-      (shape := shape) hlarge
+  have hlarge : canonicalBPRelativeSummaryLargeRegime shape :=
+    canonicalBPRelativeSummaryLargeRegime_of_size_ge_readyThreshold hsize
+  have hactive : canonicalBPRelativeMinMaxArgSummaryTableActive shape :=
+    canonicalBPRelativeMinMaxArgSummaryTableActive_of_large hlarge
   have hbasePos : 0 < base := by
     simp [base, canonicalBPRelativeSummaryBase]
-  have hlog128 : 128 <= Nat.log2 shape.size :=
-    natLog2_ge_of_pow_le hsize
+  have hlog15 : 15 <= Nat.log2 shape.size := by
+    exact natLog2_ge_of_pow_le (by
+      simpa [concreteBPRelativeRmmInteriorReadyThreshold] using hsize)
   have hcubePow :
       (Nat.log2 shape.size + 1) *
           ((Nat.log2 shape.size + 1) *
             (Nat.log2 shape.size + 1)) <=
         2 ^ Nat.log2 shape.size :=
-    nat_succ_cube_le_two_pow_of_128_le
-      (Nat.log2 shape.size) hlog128
+    nat_succ_cube_le_two_pow_of_15_le
+      (Nat.log2 shape.size) hlog15
   have hsizePos : shape.size ≠ 0 := by
-    have hpow : 0 < 2 ^ 128 := Nat.pow_pos (by omega)
-    exact Nat.ne_of_gt (Nat.lt_of_lt_of_le hpow hsize)
+    have hpow : 0 < 2 ^ 15 := Nat.pow_pos (by omega)
+    have hsize15 : 2 ^ 15 <= shape.size := by
+      simpa [concreteBPRelativeRmmInteriorReadyThreshold] using hsize
+    omega
   have hcubeSize :
       base * (base * base) <= shape.size := by
     exact Nat.le_trans
@@ -2366,9 +2740,41 @@ theorem concreteBPRelativeRmmInteriorMacroSize_le_blockCount_of_size_ge
     base, hactive, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using
     hraw
 
-theorem concreteBPRelativeRmmInteriorMacroCover_le_two_blockCount_of_size_ge
+theorem concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold
+    (shape : Cartesian.CartesianShape)
+    (hsize : concreteBPRelativeRmmInteriorReadyThreshold <= shape.size) :
+    concreteBPRelativeRmmInteriorReady shape := by
+  have hlarge : canonicalBPRelativeSummaryLargeRegime shape :=
+    canonicalBPRelativeSummaryLargeRegime_of_size_ge_readyThreshold hsize
+  exact ⟨
+    canonicalBPRelativeMinMaxArgSummaryTableActive_of_large hlarge,
+    concreteBPRelativeRmmInteriorMacroSize_le_blockCount_of_size_ge_readyThreshold
+      shape hsize⟩
+
+theorem concreteBPRelativeRmmInteriorMacroSize_le_blockCount_of_size_ge
     (shape : Cartesian.CartesianShape)
     (hsize : 2 ^ 128 <= shape.size) :
+    concreteBPRelativeRmmInteriorMacroSize shape <=
+      canonicalBPRelativeSummaryBlockCount shape := by
+  exact
+    concreteBPRelativeRmmInteriorMacroSize_le_blockCount_of_size_ge_readyThreshold
+      shape (by
+        unfold concreteBPRelativeRmmInteriorReadyThreshold
+        omega)
+
+theorem concreteBPRelativeRmmInteriorReady_of_size_ge
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size) :
+    concreteBPRelativeRmmInteriorReady shape := by
+  exact
+    concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold
+      shape (by
+        unfold concreteBPRelativeRmmInteriorReadyThreshold
+        omega)
+
+theorem concreteBPRelativeRmmInteriorMacroCover_le_two_blockCount_of_ready
+    {shape : Cartesian.CartesianShape}
+    (hready : concreteBPRelativeRmmInteriorReady shape) :
     concreteBPRelativeRmmInteriorMacroCount shape *
         concreteBPRelativeRmmInteriorMacroSize shape <=
       2 * canonicalBPRelativeSummaryBlockCount shape := by
@@ -2380,8 +2786,8 @@ theorem concreteBPRelativeRmmInteriorMacroCover_le_two_blockCount_of_size_ge
   have hmacroLe :
       macroSize <= blockCount := by
     simpa [blockCount, macroSize] using
-      concreteBPRelativeRmmInteriorMacroSize_le_blockCount_of_size_ge
-        shape hsize
+      concreteBPRelativeRmmInteriorMacroSize_le_blockCount_of_ready
+        hready
   have hdivPos : 1 <= blockCount / macroSize :=
     (Nat.le_div_iff_mul_le hmacroPos).2
       (by simpa [Nat.mul_comm] using hmacroLe)
@@ -2405,6 +2811,16 @@ theorem concreteBPRelativeRmmInteriorMacroCover_le_two_blockCount_of_size_ge
     _ = 2 * ((blockCount / macroSize) * macroSize) := by
       simp [Nat.mul_assoc]
     _ <= 2 * blockCount := htwice
+
+theorem concreteBPRelativeRmmInteriorMacroCover_le_two_blockCount_of_size_ge
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size) :
+    concreteBPRelativeRmmInteriorMacroCount shape *
+        concreteBPRelativeRmmInteriorMacroSize shape <=
+      2 * canonicalBPRelativeSummaryBlockCount shape := by
+  exact
+    concreteBPRelativeRmmInteriorMacroCover_le_two_blockCount_of_ready
+      (concreteBPRelativeRmmInteriorReady_of_size_ge shape hsize)
 
 theorem concreteBPRelativeRmmInteriorOffsetWidth_le_five_logBase
     (shape : Cartesian.CartesianShape) :
@@ -2451,23 +2867,16 @@ theorem concreteBPRelativeRmmInteriorOffsetWidth_le_five_logBase
     omega
   exact Nat.le_trans hoffsetRel hrelFive
 
-theorem concreteBPRelativeRmmInteriorBlockWidth_le_base_of_size_ge
-    (shape : Cartesian.CartesianShape)
-    (hsize : 2 ^ 128 <= shape.size) :
+theorem concreteBPRelativeRmmInteriorBlockWidth_le_base_of_ready
+    {shape : Cartesian.CartesianShape}
+    (hready : concreteBPRelativeRmmInteriorReady shape) :
     concreteBPRelativeRmmInteriorBlockWidth shape <=
       canonicalBPRelativeSummaryBase shape := by
-  have hlarge :=
-    canonicalBPRelativeSummaryLargeRegime_of_size_ge
-      (shape := shape) hsize
   have hactive :=
-    canonicalBPRelativeMinMaxArgSummaryTableActive_of_large
-      (shape := shape) hlarge
+    concreteBPRelativeRmmInteriorReady_active hready
   have hcountPos :
       0 < canonicalBPRelativeSummaryBlockCount shape := by
-    exact Nat.lt_of_lt_of_le
-      (concreteBPRelativeRmmInteriorMacroSize_pos shape)
-      (concreteBPRelativeRmmInteriorMacroSize_le_blockCount_of_size_ge
-        shape hsize)
+    exact canonicalBPRelativeSummaryBlockCount_pos_of_ready hready
   have hcountLeSize :
       canonicalBPRelativeSummaryBlockCount shape <= shape.size := by
     have hraw :
@@ -2486,9 +2895,18 @@ theorem concreteBPRelativeRmmInteriorBlockWidth_le_base_of_size_ge
   unfold concreteBPRelativeRmmInteriorBlockWidth
   exact natLog2_succ_le_of_pos_lt_pow hcountPos hcountLt
 
-theorem concreteBPRelativeRmmInteriorGlobalLevelCount_le_base_succ_of_size_ge
+theorem concreteBPRelativeRmmInteriorBlockWidth_le_base_of_size_ge
     (shape : Cartesian.CartesianShape)
     (hsize : 2 ^ 128 <= shape.size) :
+    concreteBPRelativeRmmInteriorBlockWidth shape <=
+      canonicalBPRelativeSummaryBase shape := by
+  exact
+    concreteBPRelativeRmmInteriorBlockWidth_le_base_of_ready
+      (concreteBPRelativeRmmInteriorReady_of_size_ge shape hsize)
+
+theorem concreteBPRelativeRmmInteriorGlobalLevelCount_le_base_succ_of_ready
+    {shape : Cartesian.CartesianShape}
+    (hready : concreteBPRelativeRmmInteriorReady shape) :
     concreteBPRelativeRmmInteriorGlobalLevelCount shape <=
       canonicalBPRelativeSummaryBase shape + 1 := by
   let blockCount := canonicalBPRelativeSummaryBlockCount shape
@@ -2498,20 +2916,16 @@ theorem concreteBPRelativeRmmInteriorGlobalLevelCount_le_base_succ_of_size_ge
       concreteBPRelativeRmmInteriorMacroSize_pos shape
   have hmacroCountPos :
       0 < concreteBPRelativeRmmInteriorMacroCount shape := by
-    simp [concreteBPRelativeRmmInteriorMacroCount]
+    exact concreteBPRelativeRmmInteriorMacroCount_pos_of_ready
+      shape hready
   have hmacroLeBlockSucc :
       concreteBPRelativeRmmInteriorMacroCount shape <=
         blockCount + 1 := by
-    have hdiv :
-        canonicalBPRelativeSummaryBlockCount shape /
-            concreteBPRelativeRmmInteriorMacroSize shape <=
-          canonicalBPRelativeSummaryBlockCount shape := by
-      exact Nat.div_le_self blockCount macroSize
-    simpa [blockCount, macroSize,
-      concreteBPRelativeRmmInteriorMacroCount] using
-      Nat.succ_le_succ hdiv
+    simpa [blockCount] using
+      concreteBPRelativeRmmInteriorMacroCount_le_blockCount_succ_of_ready
+        (shape := shape) hready
   have hblockWidth :=
-    concreteBPRelativeRmmInteriorBlockWidth_le_base_of_size_ge shape hsize
+    concreteBPRelativeRmmInteriorBlockWidth_le_base_of_ready hready
   have hblockLt :
       blockCount < 2 ^ canonicalBPRelativeSummaryBase shape := by
     unfold concreteBPRelativeRmmInteriorBlockWidth at hblockWidth
@@ -2536,6 +2950,15 @@ theorem concreteBPRelativeRmmInteriorGlobalLevelCount_le_base_succ_of_size_ge
       (Nat.le_trans hmacroLeBlockSucc hsuccLePow) hpowStep
   unfold concreteBPRelativeRmmInteriorGlobalLevelCount
   exact natLog2_succ_le_of_pos_lt_pow hmacroCountPos hmacroLt
+
+theorem concreteBPRelativeRmmInteriorGlobalLevelCount_le_base_succ_of_size_ge
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size) :
+    concreteBPRelativeRmmInteriorGlobalLevelCount shape <=
+      canonicalBPRelativeSummaryBase shape + 1 := by
+  exact
+    concreteBPRelativeRmmInteriorGlobalLevelCount_le_base_succ_of_ready
+      (concreteBPRelativeRmmInteriorReady_of_size_ge shape hsize)
 
 /--
 Canonical compact overhead envelope for the intended relative-rmM interior
@@ -2570,6 +2993,38 @@ theorem concreteBPRelativeRmmInteriorOverhead_littleO :
         concreteBPRelativeRmmInteriorGlobalMacroSlots)).add
       (sampledDirectoryOverhead_littleO
         concreteBPRelativeRmmInteriorTopSlots)
+
+theorem concreteBPRelativeMinMaxArgSummaryTable_canonical_payload_le_budget_of_ready
+    (shape : Cartesian.CartesianShape)
+    (hready : concreteBPRelativeRmmInteriorReady shape) :
+    let table := concreteBPRelativeMinMaxArgSummaryTable_canonical shape
+    table.payload.length <=
+      compactBPCloseSummaryPayloadOverhead
+        canonicalBPRelativeSummaryBlockSlots 0 0
+        canonicalBPRelativeSummarySuperSlots shape.size := by
+  have hactive := concreteBPRelativeRmmInteriorReady_active hready
+  have hsummary :=
+    concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile_of_active
+      shape hactive
+  exact hsummary.2.2.2.2.2.2.1
+
+theorem concreteBPRelativeRmmInteriorLocalOffsetBudget_le_overhead_of_ready
+    (shape : Cartesian.CartesianShape)
+    (_hready : concreteBPRelativeRmmInteriorReady shape) :
+    logLogSquaredSampledDirectoryOverhead
+        concreteBPRelativeRmmInteriorLocalOffsetSlots shape.size <=
+      concreteBPRelativeRmmInteriorOverhead shape.size := by
+  unfold concreteBPRelativeRmmInteriorOverhead
+  omega
+
+theorem concreteBPRelativeRmmInteriorGlobalMacroBudget_le_overhead_of_ready
+    (shape : Cartesian.CartesianShape)
+    (_hready : concreteBPRelativeRmmInteriorReady shape) :
+    logLogSampledDirectoryOverhead
+        concreteBPRelativeRmmInteriorGlobalMacroSlots shape.size <=
+      concreteBPRelativeRmmInteriorOverhead shape.size := by
+  unfold concreteBPRelativeRmmInteriorOverhead
+  omega
 
 theorem concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_large
     (shape : Cartesian.CartesianShape)
@@ -2672,6 +3127,103 @@ theorem concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_large
     hrelativeMachine, Nat.le_trans hsummaryPayload hpayloadLe,
     hsummaryExact, hbaselineRead, hminRead, hmaxRead, hargRead⟩
 
+theorem concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_ready
+    (shape : Cartesian.CartesianShape)
+    (hready : concreteBPRelativeRmmInteriorReady shape) :
+    let table := concreteBPRelativeMinMaxArgSummaryTable_canonical shape
+    canonicalBPRelativeSummaryBlockSize shape =
+        canonicalBPRelativeSummaryBlockSizeRaw shape /\
+      canonicalBPRelativeSummaryBlocksPerSuper shape =
+        canonicalBPRelativeSummaryBlocksPerSuperRaw shape /\
+      canonicalBPRelativeSummaryBlockCount shape =
+        canonicalBPRelativeSummaryBlockCountRaw shape /\
+      canonicalBPRelativeSummarySuperCount shape =
+        canonicalBPRelativeSummarySuperCountRaw shape /\
+      canonicalBPRelativeSummaryRelativeWidth shape =
+        canonicalBPRelativeSummaryRelativeWidthRaw shape /\
+      LittleOLinear concreteBPRelativeRmmInteriorOverhead /\
+      canonicalBPRelativeMinMaxArgSummaryTableActive shape /\
+      0 < canonicalBPRelativeSummaryBlockSizeRaw shape /\
+      0 < canonicalBPRelativeSummaryBlocksPerSuperRaw shape /\
+      0 < canonicalBPRelativeSummaryBlockCountRaw shape /\
+      canonicalBPRelativeSummaryBlockCountRaw shape *
+          canonicalBPRelativeSummaryBlockSizeRaw shape <=
+        shape.bpCode.length /\
+      canonicalBPRelativeSummaryBlockCountRaw shape <=
+        shape.bpCode.length /\
+      canonicalBPRelativeSummaryRelativeWidthRaw shape <=
+        SuccinctRank.machineWordBits shape.bpCode.length /\
+      table.payload.length <=
+        concreteBPRelativeRmmInteriorOverhead shape.size /\
+      (forall block,
+        (table.summaryCosted block).cost <= 4 /\
+          (table.summaryCosted block).erase =
+            match
+              (bpSuperblockBaselineEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+                (canonicalBPRelativeSummarySuperCountRaw shape))[
+                  block /
+                    canonicalBPRelativeSummaryBlocksPerSuperRaw shape]?,
+              (bpBlockRelativeMinExcessEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+                (canonicalBPRelativeSummaryBlockCountRaw shape))[block]?,
+              (bpBlockRelativeMaxExcessEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+                (canonicalBPRelativeSummaryBlockCountRaw shape))[block]?,
+              (bpBlockArgMinLocalOffsetEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlockCountRaw shape))[block]?
+            with
+            | some baseline, some minRel, some maxRel, some argOffset =>
+                some (baseline, minRel, maxRel, argOffset)
+            | _, _, _, _ => none) /\
+      (forall {index : Nat} {word : List Bool},
+        table.baselineTable.store.words[index]? = some word ->
+          word.length <=
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.minRelTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.maxRelTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.argOffsetTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRank.machineWordBits shape.bpCode.length) := by
+  have hactive := concreteBPRelativeRmmInteriorReady_active hready
+  have hsummary :=
+    concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile_of_active
+      shape hactive
+  rcases hsummary with
+    ⟨hblockSize, hblocksPerSuper, hblockCount, hsuperCount,
+      hrelativeWidth, _hsummaryLittleO, hsummaryPayload, hsummaryExact,
+      hbaselineRead, hminRead, hmaxRead, hargRead⟩
+  have hrelativeMachine :=
+    canonicalBPRelativeSummaryRelativeWidthRaw_machine_of_active hactive
+  have hpayloadLe :
+      compactBPCloseSummaryPayloadOverhead
+          canonicalBPRelativeSummaryBlockSlots 0 0
+          canonicalBPRelativeSummarySuperSlots shape.size <=
+        concreteBPRelativeRmmInteriorOverhead shape.size := by
+    unfold concreteBPRelativeRmmInteriorOverhead
+    omega
+  exact ⟨hblockSize, hblocksPerSuper, hblockCount, hsuperCount,
+    hrelativeWidth, concreteBPRelativeRmmInteriorOverhead_littleO,
+    hactive, canonicalBPRelativeSummaryBlockSizeRaw_pos shape,
+    canonicalBPRelativeSummaryBlocksPerSuperRaw_pos shape,
+    canonicalBPRelativeSummaryBlockCountRaw_pos_of_ready hready,
+    canonicalBPRelativeSummaryBlockCountRaw_mul_blockSizeRaw_le_bpCode_length
+      shape,
+    canonicalBPRelativeSummaryBlockCountRaw_le_bpCode_length shape,
+    hrelativeMachine, Nat.le_trans hsummaryPayload hpayloadLe,
+    hsummaryExact, hbaselineRead, hminRead, hmaxRead, hargRead⟩
+
 theorem concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_size_ge
     (shape : Cartesian.CartesianShape)
     (hsize : 2 ^ 128 <= shape.size) :
@@ -2742,10 +3294,9 @@ theorem concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_size_ge
           word.length <=
             SuccinctRank.machineWordBits shape.bpCode.length) := by
   exact
-    concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_large
+    concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_ready
       shape
-      (canonicalBPRelativeSummaryLargeRegime_of_size_ge
-        (shape := shape) hsize)
+      (concreteBPRelativeRmmInteriorReady_of_size_ge shape hsize)
 
 /--
 Two-level interior-navigator budget package for the canonical large regime.
@@ -2756,9 +3307,9 @@ macroblock sparse table, and the top routing reserve inside one `o(n)` envelope,
 while also exposing the fixed-width read bounds needed by the charged summary
 queries.
 -/
-theorem concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_size_ge
+theorem concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_ready
     (shape : Cartesian.CartesianShape)
-    (hsize : 2 ^ 128 <= shape.size) :
+    (hready : concreteBPRelativeRmmInteriorReady shape) :
     let table := concreteBPRelativeMinMaxArgSummaryTable_canonical shape
     let relativeSummaryBudget :=
       compactBPCloseSummaryPayloadOverhead
@@ -2840,26 +3391,20 @@ theorem concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_size_g
       concreteBPRelativeRmmInteriorGlobalMacroSlots shape.size
   let topRoutingBudget :=
     sampledDirectoryOverhead concreteBPRelativeRmmInteriorTopSlots shape.size
-  have hlarge :=
-    canonicalBPRelativeSummaryLargeRegime_of_size_ge
-      (shape := shape) hsize
+  have hactive := concreteBPRelativeRmmInteriorReady_active hready
   have hsummary :=
-    concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile_of_large
-      shape hlarge
+    concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile_of_active
+      shape hactive
   rcases hsummary with
     ⟨_hblockSize, _hblocksPerSuper, _hblockCount, _hsuperCount,
       _hrelativeWidth, _hsummaryLittleO, hsummaryPayload, hsummaryExact,
       hbaselineRead, hminRead, hmaxRead, hargRead⟩
-  rcases canonicalBPRelativeSummary_large_parts
-      (shape := shape) hlarge with
-    ⟨_hbase_le_count, _hsuperWidth, _hspan, hargWidth,
-      _hrelative_le_super⟩
-  have hactive :=
-    canonicalBPRelativeMinMaxArgSummaryTableActive_of_large
-      (shape := shape) hlarge
+  rcases canonicalBPRelativeSummary_active_parts
+      (shape := shape) hactive with
+    ⟨_hcover, _hspan, hargWidth, _hsuperPayload, _hblockPayload,
+      _hrelativeMachineFromActive⟩
   have hrelativeMachine :=
-    canonicalBPRelativeSummaryRelativeWidthRaw_machine_of_large
-      (shape := shape) hlarge
+    canonicalBPRelativeSummaryRelativeWidthRaw_machine_of_active hactive
   have hblockCountMachine :
       canonicalBPRelativeSummaryBlockCountRaw shape <
         2 ^ SuccinctRank.machineWordBits shape.bpCode.length := by
@@ -2894,6 +3439,82 @@ theorem concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_size_g
     hpayloadBudget, hactive, hargWidth, hrelativeMachine,
     hblockCountMachine, hsummaryExact, hbaselineRead, hminRead, hmaxRead,
     hargRead⟩
+
+theorem concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_size_ge
+    (shape : Cartesian.CartesianShape)
+    (hsize : 2 ^ 128 <= shape.size) :
+    let table := concreteBPRelativeMinMaxArgSummaryTable_canonical shape
+    let relativeSummaryBudget :=
+      compactBPCloseSummaryPayloadOverhead
+        canonicalBPRelativeSummaryBlockSlots 0 0
+        canonicalBPRelativeSummarySuperSlots shape.size
+    let localOffsetBudget :=
+      logLogSquaredSampledDirectoryOverhead
+        concreteBPRelativeRmmInteriorLocalOffsetSlots shape.size
+    let globalMacroBudget :=
+      logLogSampledDirectoryOverhead
+        concreteBPRelativeRmmInteriorGlobalMacroSlots shape.size
+    let topRoutingBudget :=
+      sampledDirectoryOverhead concreteBPRelativeRmmInteriorTopSlots shape.size
+    LittleOLinear concreteBPRelativeRmmInteriorOverhead /\
+      relativeSummaryBudget + localOffsetBudget +
+          globalMacroBudget + topRoutingBudget =
+        concreteBPRelativeRmmInteriorOverhead shape.size /\
+      table.payload.length + localOffsetBudget +
+          globalMacroBudget + topRoutingBudget <=
+        concreteBPRelativeRmmInteriorOverhead shape.size /\
+      canonicalBPRelativeMinMaxArgSummaryTableActive shape /\
+      canonicalBPRelativeSummaryBlockSizeRaw shape <
+        2 ^ canonicalBPRelativeSummaryRelativeWidthRaw shape /\
+      canonicalBPRelativeSummaryRelativeWidthRaw shape <=
+        SuccinctRank.machineWordBits shape.bpCode.length /\
+      canonicalBPRelativeSummaryBlockCountRaw shape <
+        2 ^ SuccinctRank.machineWordBits shape.bpCode.length /\
+      (forall block,
+        (table.summaryCosted block).cost <= 4 /\
+          (table.summaryCosted block).erase =
+            match
+              (bpSuperblockBaselineEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+                (canonicalBPRelativeSummarySuperCountRaw shape))[
+                  block /
+                    canonicalBPRelativeSummaryBlocksPerSuperRaw shape]?,
+              (bpBlockRelativeMinExcessEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+                (canonicalBPRelativeSummaryBlockCountRaw shape))[block]?,
+              (bpBlockRelativeMaxExcessEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlocksPerSuperRaw shape)
+                (canonicalBPRelativeSummaryBlockCountRaw shape))[block]?,
+              (bpBlockArgMinLocalOffsetEntries shape
+                (canonicalBPRelativeSummaryBlockSizeRaw shape)
+                (canonicalBPRelativeSummaryBlockCountRaw shape))[block]?
+            with
+            | some baseline, some minRel, some maxRel, some argOffset =>
+                some (baseline, minRel, maxRel, argOffset)
+            | _, _, _, _ => none) /\
+      (forall {index : Nat} {word : List Bool},
+        table.baselineTable.store.words[index]? = some word ->
+          word.length <=
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.minRelTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.maxRelTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
+      (forall {block : Nat} {word : List Bool},
+        table.argOffsetTable.store.words[block]? = some word ->
+          word.length <=
+            SuccinctRank.machineWordBits shape.bpCode.length) := by
+  exact
+    concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_ready
+      shape
+      (concreteBPRelativeRmmInteriorReady_of_size_ge shape hsize)
 
 
 end SuccinctClose
