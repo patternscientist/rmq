@@ -41,7 +41,10 @@ which cites the final global trace after the two former close-navigation
 structural traces, and the stronger
 `Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory`, which also
 proves that the all-size global trace contains no dedicated synthetic
-cost-only marker event.
+cost-only marker event. The combined flat-payload companion
+`Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` ties that
+bounded no-synthetic trace to a query-independent flat layout with
+source/component/offset backing evidence for successful reads.
 
 This document is the family-level map for the current Lean development. It
 records the module dependency DAG, correctness and cost status by structure,
@@ -312,7 +315,10 @@ adds the global absence theorem for synthetic cost-only events.
 `TraceResult.ofCosted` now uses a dedicated
 `TraceEvent.syntheticCostOnlyPrimitive` constructor, so legitimate
 `wordRank false 0 0` primitives are no longer confused with the synthetic
-fallback marker.
+fallback marker. The combined theorem
+`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execution_story`
+adds the flat payload layout and source/component/offset backing evidence to
+that same bounded no-synthetic execution story.
 
 | Structure | Correctness status | Cost status | Notes |
 | --- | --- | --- | --- |

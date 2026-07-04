@@ -414,13 +414,32 @@ large-regime companion has the same bounded packet under its explicit size
 premise. Separately, `WordRAM.TraceResult.costOnlyTrace_syntheticCostOnlyPrimitive`
 names the exact fallback marker used when an old `Costed` component is lifted
 to a trace. Plain English: fallback work is no longer just "some primitive
-events"; it is a fixed payload-free marker, and the final trace now says its
-visible addresses and word-primitive data are finite-width. Live assumptions:
-the bound is trace-local and conservative, not a tight asymptotic word-size
-claim for every component; replacing fallback markers with structural replay is
-still the next stronger hardening target. A skeptical grad student should ask
+events"; it is a fixed payload-free marker, and the later no-synthetic theorem
+proves that this marker is absent from the final all-size RMQ trace. Live
+assumptions: the bound is trace-local and conservative, not a tight asymptotic
+word-size claim for every component. A skeptical grad student should ask
 whether the trace-local width can be pushed down to component-level
 machine-word side conditions and then reused by rank/select and BP navigation.
+
+2026-07-03 flat-payload no-synthetic update: the final all-size RMQ global
+trace now has a concrete flat-payload backing theorem,
+`RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory`, backed by
+`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execution_story`.
+The layout object is query-independent and splits the execution payload into BP
+code, final rank/access payload, sparse-exception select payload, padding,
+compact close/LCA payload, and the finite-small structural table used by the
+all-size no-synthetic replay. The theorem packages the flat read store, source
+and component offsets for successful reads, bounded trace-local event data, and
+the proof that no event is the dedicated synthetic cost-only marker. Plain
+English: the final trace no longer merely agrees with "some global store"; its
+reads are formally tied back to concrete payload slices while the old synthetic
+fallback marker is absent from the all-size final trace.
+Live assumptions: word primitives still remain explicit trace events, padding
+is layout-only rather than a meaningful read source, and the BP-code segment
+read by final rank is an alias into the already-counted BP-code slice, not a
+new counted copy. A skeptical grad student should next ask whether the
+trace-local width can be pushed down to component-level machine-word
+side-conditions and then reused by rank/select and BP navigation.
 
 ## Digestion Tasks
 

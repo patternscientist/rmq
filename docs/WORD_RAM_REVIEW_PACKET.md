@@ -204,14 +204,13 @@ word primitive, and each read agrees with one concrete global payload store.
 `RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory` adds the
 current finite-width hardening: every payload-read address and every natural
 operand/result exposed by word-local primitives fits a trace-local bit width.
-Tiny/inactive close-navigation fallback work is represented as the fixed
-synthetic `TraceResult.costOnlyTrace` primitive marker rather than payload
-reads. The large-regime companion adds the explicit `2^128 <= shape.size`
-premise and routes the compact close/LCA leg through structural
-local/fringe/interior trace replay. Remaining hardening is tighter
-component-level machine-word side conditions, structural replacement of
-fallback markers where possible, plus stronger uniform word-width packaging for
-rank/select. The rank/select compressed/FID spoke now reuses the same
+The all-size structural/no-synthetic companion proves that the final RMQ trace
+contains no dedicated synthetic cost-only marker events. The large-regime
+companion adds the explicit `2^128 <= shape.size` premise and routes the
+compact close/LCA leg through structural local/fringe/interior trace replay.
+Remaining hardening is tighter component-level machine-word side conditions
+plus stronger uniform word-width packaging for rank/select. The rank/select
+compressed/FID spoke now reuses the same
 bounded-event style through
 `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreFusedProfile`:
 the compressed payload theorem, interpreted replay, one shared compressed/FID

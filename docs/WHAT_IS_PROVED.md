@@ -31,6 +31,7 @@ The short public theorem aliases live in `RMQ/Headlines.lean`.
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory` | Bounded all-size execution story: the global trace also has a finite trace-local bit width bounding every payload-read address and every natural operand/result exposed by word primitives. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | All-size structural execution story for the same global trace after the zero-block same-block and cross-block interior close-navigation `TraceResult.ofCosted` leaves have been replaced by payload-backed structural traces. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` | Strongest all-size global execution story: the same store-backed and bounded trace plus a proof that no event is the dedicated synthetic cost-only marker. |
+| `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Flat-payload no-synthetic execution story: the final trace reads from one query-independent flat payload layout, successful reads have component/offset backing evidence, addresses and word-primitive operands are bounded, and no synthetic cost-only event occurs. |
 | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory` | Large-regime companion to the all-size execution story: under `2^128 <= shape.size`, the compact close/LCA leg uses the positive-block structural replay rather than the all-size fallback. |
 | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory` | Bounded large-regime companion to the global-store execution story. |
 | `RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery` | Conditional component-level interpreter-backed BP close-navigation profile, parameterized by a supplied word-bounded sampled encoded close-navigation family. |
@@ -95,6 +96,20 @@ The theorem is payload-accounted: auxiliary bits are counted separately from
 proof-only fields and certificates. The final path routes through payload-live
 rank/select and close-navigation components rather than retired raw wrappers
 that charged aggregate reference computations as one step.
+
+The global-store execution story now has a flat-payload no-synthetic backing
+theorem, `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory`.
+It exposes the
+concrete flat payload layout
+`SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadLayout`, whose payload is
+the counted `concreteBPNativeSuccinctRMQPayload` plus the finite-small
+same-block structural table needed by the all-size no-synthetic replay, split
+as BP code, final rank/access payload, generic sparse-exception select payload,
+padding, compact close/LCA payload, and finite-small structural payload. The
+theorem ties the final query trace to this flat store, proves successful reads
+carry explicit source/component offsets, and packages the bounded/no-synthetic
+execution story in the same statement. The BP-code alias maps back to the
+existing BP-code component; it is not a second counted copy.
 
 The strongest interpreter-backed query surface is now
 `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace`, an additive variant

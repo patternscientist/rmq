@@ -126,6 +126,9 @@ abbrev succinctRMQGlobalPayloadStoreBoundedExecutionStory :=
 
 abbrev succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_noSynthetic_execution_story
+
+abbrev succinctRMQFlatPayloadStoreNoSyntheticExecutionStory :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execution_story
 ```
 
 It says the public costed query refines the unified `WordRAM.TraceEvent` stream,
@@ -155,6 +158,11 @@ word-local primitive events fits that width.
 The extensional companion says that any read store agreeing with the concrete
 global store on the read events emitted by the final trace validates that same
 trace.
+
+The flat-payload no-synthetic companion additionally exposes the
+query-independent `concreteBPNativeSuccinctRMQFlatPayloadLayout`, proves
+successful flat-store reads have source/component/offset backing evidence, and
+uses that flat store in the same bounded no-synthetic execution-story packet.
 
 The large-regime positive-replay companion is:
 

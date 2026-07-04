@@ -26,6 +26,8 @@ claims, what it does not claim, and which command checks the relevant surface.
 | The final all-size RMQ query has one globally segmented payload-store execution story: every event is a payload read or word primitive, and every payload read agrees with the concrete global store. | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story` | `lake env lean scripts/wordram_axiom_check.lean` |
 | The same all-size global trace is store-extensional: any read store agreeing with the concrete global store on emitted payload-read events validates the same trace. | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_store_extensional_execution_story` | `lake env lean scripts/wordram_axiom_check.lean` |
 | The same global execution story has a finite trace-local bit width bounding every payload-read address and every natural operand/result exposed by word primitives. | `RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_bounded_execution_story` | `lake env lean scripts/wordram_axiom_check.lean` |
+| The same all-size global trace is structurally replayed without dedicated synthetic cost-only marker events. | `RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_noSynthetic_execution_story` | `lake env lean scripts/wordram_axiom_check.lean` |
+| The no-synthetic execution story is tied to one query-independent flat payload layout with source/component/offset backing evidence for successful reads. | `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execution_story` | `lake env lean scripts/wordram_axiom_check.lean` |
 | The large-regime global-store execution story also has the same bounded-address and bounded-primitive-operand packet under the explicit size premise. | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_bounded_execution_story` | `lake env lean scripts/wordram_axiom_check.lean` |
 
 ## Rank/Select And BP Claims
@@ -42,8 +44,9 @@ claims, what it does not claim, and which command checks the relevant surface.
 
 - The `WordRAM` model is not a proof about Lean's compiled runtime.
 - The all-size final RMQ query now has a single global payload-store execution
-  theorem, but tiny/inactive close-navigation fallback work is represented as
-  explicit synthetic word-primitive events rather than structural payload reads.
+  theorem and a no-synthetic structural replay theorem. The flat-payload theorem
+  is an execution-story layout theorem; the separately cited `2*n + o(n)`
+  theorem remains the asymptotic payload theorem.
 - The large-regime WordRAM theorem still carries the explicit size premise
   needed to replay the positive local/fringe/interior close path structurally;
   the all-input theorem is total and store-backed but includes the fallback
@@ -60,8 +63,8 @@ claims, what it does not claim, and which command checks the relevant surface.
 
 ## Current Provenance Frontier
 
-The global payload-store theorem is landed. The live hardening frontier is now
-tighter rather than existential: replace the remaining tiny/inactive synthetic
-fallback primitive boundary with structural replay where possible, and push the
-trace-local event-width theorem toward component-level machine-word side
-conditions consumed by the public capstone.
+The global payload-store theorem and no-synthetic all-size structural replay
+are landed. The live hardening frontier is now tighter rather than existential:
+push the trace-local event-width theorem toward component-level machine-word
+side conditions consumed by the public capstone, and reuse the flat-store /
+no-synthetic pattern in the rank/select and BP-navigation spokes.
