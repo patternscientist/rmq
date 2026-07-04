@@ -102,6 +102,17 @@ abbrev succinctRMQListIntTwoNPlusOConstantQuery :=
   RMQ.SuccinctClassic.listInt_two_n_plus_o_constant_query_profile
 
 /--
+List-facing flat-payload no-synthetic execution story: for every ordinary
+`xs : List Int`, the same final query keeps the classic half-open/leftmost
+RMQ contract and constant modeled query story while its global WordRAM trace is
+backed by one query-independent flat payload layout/read store with
+component/offset backing, bounded event data, and no synthetic cost-only
+events.
+-/
+abbrev listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory :=
+  RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_execution_story
+
+/--
 Whole-query-interpreted BP-native succinct RMQ capstone: the same two-sided
 `2*n + o(n)`, constant-query theorem shape, with the final query control routed
 through a closed first-order query program whose leaves are the interpreted

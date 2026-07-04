@@ -45,6 +45,10 @@ cost-only marker event. The combined flat-payload companion
 `Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` ties that
 bounded no-synthetic trace to a query-independent flat layout with
 source/component/offset backing evidence for successful reads.
+`Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` lifts
+that execution packet to the ordinary `List Int` public surface while keeping
+the classic half-open leftmost RMQ contract and existing modeled
+constant-query story.
 
 This document is the family-level map for the current Lean development. It
 records the module dependency DAG, correctness and cost status by structure,
@@ -59,7 +63,10 @@ separate appendix.
   succinct RMQ capstone now has a direct ordinary-list public surface,
   `Headlines.succinctRMQListIntTwoNPlusOConstantQuery`, whose query result is
   proved against this contract rather than only against canonical
-  representative arrays.
+  representative arrays.  Its strengthened flat-payload companion,
+  `Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory`,
+  additionally proves the final WordRAM trace is backed by one
+  query-independent flat layout/read store with no synthetic cost-only events.
 - Exact public RMQ backends: linear scan, plus-minus-one linear instance,
   sparse table, memoized sparse table, hybrid block, recursive hybrid, raw
   whole-list microtable, and value-level Fischer-Heun.
@@ -2642,7 +2649,7 @@ The names below are grouped by source module. Repeated base names in
   barrels. The old flat generic-select files are no longer imported by live
   in-repository roots or scripts; new code should import
   `RMQ.Core.GenericSelect` or a role module below `RMQ.Core.GenericSelect.*`.
-- `RMQ/Core/SuccinctRMQClassic.lean` (8):
+- `RMQ/Core/SuccinctRMQClassic.lean` (10):
   `SuccinctClassic.shape_queryOffset?_eq_scanWindow`,
   `SuccinctClassic.scanWindow_cartesianShape_representative_eq`,
   `SuccinctClassic.overhead_littleO`,
@@ -2650,13 +2657,16 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctClassic.queryCosted_cost_le`,
   `SuccinctClassic.queryCosted_exact`,
   `SuccinctClassic.queryCosted_leftmost`, and
-  `SuccinctClassic.listInt_two_n_plus_o_constant_query_profile`.
+  `SuccinctClassic.listInt_two_n_plus_o_constant_query_profile`,
+  `SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory`, and
+  `SuccinctClassic.listInt_flatPayloadStore_noSynthetic_execution_story`.
 - `RMQ/Headlines.lean`:
   public-facing aliases
   `Headlines.exactRMQLowerBoundDoubledCatalanSlack`,
   `Headlines.rankSelectNPlusOConstantQuery`,
   `Headlines.rankSelectWordBoundedNPlusOConstantQuery`, and
   `Headlines.succinctRMQListIntTwoNPlusOConstantQuery`,
+  `Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory`,
   `Headlines.succinctRMQTwoNPlusOConstantQuery`,
   `Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted`,
   `Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace`,

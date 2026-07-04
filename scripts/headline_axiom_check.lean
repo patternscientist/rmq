@@ -36,6 +36,7 @@ the BP-native succinct capstone.
 #print axioms RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreBoundedExecutionStory
 #print axioms RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery
 #print axioms RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery
+#print axioms RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory
 #print axioms RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted
 #print axioms RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace
 #print axioms RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace

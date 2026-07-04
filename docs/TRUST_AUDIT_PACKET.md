@@ -33,13 +33,22 @@ The most reader-facing public RMQ name lives in `RMQ/Headlines.lean`:
 ```lean
 abbrev succinctRMQListIntTwoNPlusOConstantQuery :=
   RMQ.SuccinctClassic.listInt_two_n_plus_o_constant_query_profile
+
+abbrev listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory :=
+  RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_execution_story
 ```
 
-This theorem is stated over ordinary `xs : List Int`: it exposes
+The first theorem is stated over ordinary `xs : List Int`: it exposes
 `SuccinctClassic.buildPayload xs`, proves its length is
 `2 * xs.length + overhead xs.length` with `overhead = o(n)`, and proves that
 `SuccinctClassic.queryCosted xs` answers valid half-open RMQ queries with
 leftmost ties under one constant modeled query bound.
+
+The second theorem keeps those ordinary-list clauses and also consumes the
+final flat-payload no-synthetic WordRAM story for `Cartesian.shape xs`: the
+trace is interpreted, all successful reads are backed by the query-independent
+flat payload layout/read store, event data are bounded, and no synthetic
+cost-only trace marker appears.
 
 The construction-facing RMQ name is:
 

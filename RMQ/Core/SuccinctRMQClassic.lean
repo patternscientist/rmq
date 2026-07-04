@@ -47,6 +47,93 @@ def queryCosted (xs : List Int) (left right : Nat) :
   SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
     (cartesianShape xs) left right
 
+/-- Query-independent flat payload layout used by the final query for `xs`. -/
+abbrev flatPayloadLayout (xs : List Int) :
+    SuccinctFinal.ConcreteBPNativeSuccinctRMQFlatPayloadLayout
+      (cartesianShape xs) :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadLayout
+    (cartesianShape xs)
+
+/-- Read-store view induced by the query-independent flat payload layout. -/
+abbrev flatPayloadReadStore (xs : List Int) : WordRAM.ReadStore :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadReadStore
+    (cartesianShape xs)
+
+/-- Final globally segmented WordRAM trace result for the query on `xs`. -/
+abbrev flatPayloadTraceResult
+    (xs : List Int) (left right : Nat) :
+    WordRAM.TraceResult (Option Nat) :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+    (cartesianShape xs) left right
+
+/-- Trace-local bit width bounding read addresses and word-primitive data. -/
+abbrev flatPayloadTraceEventBits
+    (xs : List Int) (left right : Nat) : Nat :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceEventBits
+    (cartesianShape xs) left right
+
+/--
+List-facing form of the final flat-payload/no-synthetic execution story.
+
+For fixed `xs,left,right`, this names the concrete flat layout and read store,
+states how the flat payload splits into its component payloads, proves every
+successful store read has source/component/offset backing, and packages the
+interpreted trace, store agreement, bounded event data, and absence of
+synthetic cost-only events.
+-/
+def FlatPayloadStoreNoSyntheticExecutionStory
+    (xs : List Int) (left right : Nat) : Prop :=
+  (flatPayloadLayout xs).payload =
+      buildPayload xs ++
+        (flatPayloadLayout xs).finiteSmallSameBlockPayload /\
+    (let layout := flatPayloadLayout xs
+     layout.payload =
+      layout.bpCodePayload ++ layout.accessRankPayload ++
+        layout.selectPayload ++ layout.accessPadding ++
+          layout.closePayload ++ layout.closePadding ++
+            layout.finiteSmallSameBlockPayload) /\
+    SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadSegmentBackingsAll
+      (cartesianShape xs) /\
+    (forall {segment index : Nat} {word : List Bool},
+      (flatPayloadReadStore xs).readWord? segment index = some word ->
+        SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadReadBacked
+          (cartesianShape xs) segment index word) /\
+    queryCosted xs left right =
+      (flatPayloadTraceResult xs left right).toCosted /\
+    queryCosted xs left right =
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted
+        (cartesianShape xs) left right /\
+    (forall event,
+      List.Mem event (flatPayloadTraceResult xs left right).trace ->
+        event.isReadWord \/ event.isWordPrimitive) /\
+    (forall event,
+      List.Mem event (flatPayloadTraceResult xs left right).trace ->
+        event.matchesReadStore (flatPayloadReadStore xs)) /\
+    (forall event,
+      List.Mem event (flatPayloadTraceResult xs left right).trace ->
+        Not event.isSyntheticCostOnlyPrimitive) /\
+    (forall event,
+      List.Mem event (flatPayloadTraceResult xs left right).trace ->
+        SuccinctFinal.concreteBPNativeTraceEventReadAddressFitsInBits
+          (flatPayloadTraceEventBits xs left right) event) /\
+    (forall event,
+      List.Mem event (flatPayloadTraceResult xs left right).trace ->
+        SuccinctFinal.concreteBPNativeTraceEventPrimitiveOperandsFitInBits
+          (flatPayloadTraceEventBits xs left right) event)
+
+/--
+The final query trace for an ordinary list is backed by the concrete flat
+payload layout and contains no synthetic cost-only trace events.
+-/
+theorem flatPayloadStoreNoSyntheticExecutionStory
+    (xs : List Int) (left right : Nat) :
+    FlatPayloadStoreNoSyntheticExecutionStory xs left right := by
+  simpa [FlatPayloadStoreNoSyntheticExecutionStory, flatPayloadLayout,
+    flatPayloadReadStore, flatPayloadTraceResult, flatPayloadTraceEventBits,
+    buildPayload, queryCosted] using
+    SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execution_story
+      (cartesianShape xs) left right
+
 /--
 Shape-only local queries over `Cartesian.shape xs` return the same leftmost
 RMQ answer as scanning the original list.
@@ -211,6 +298,49 @@ theorem listInt_two_n_plus_o_constant_query_profile :
       (fun hlen hbound => queryCosted_exact xs hlen hbound),
       (fun hlen hbound hquery =>
         queryCosted_leftmost xs hlen hbound hquery)⟩
+
+/--
+Classic public theorem over ordinary lists, strengthened with the final
+flat-payload/no-synthetic WordRAM execution story.
+
+For every `xs : List Int`, this keeps the existing `2*n + o(n)` counted
+payload and constant modeled query-cost clauses, proves valid half-open queries
+answer the classic leftmost RMQ contract, and additionally proves every final
+query trace is backed by the query-independent flat payload layout/read store
+with bounded reads, bounded word-primitive data, and no synthetic cost-only
+events.
+-/
+theorem listInt_flatPayloadStore_noSynthetic_execution_story :
+    SuccinctSpace.LittleOLinear overhead /\
+      forall xs : List Int,
+        (buildPayload xs).length =
+          2 * xs.length + overhead xs.length /\
+        (forall left right,
+          (queryCosted xs left right).cost <= queryCost) /\
+        (forall {left len : Nat},
+          0 < len ->
+            left + len <= xs.length ->
+              (queryCosted xs left (left + len)).erase =
+                some (scanWindow xs left len)) /\
+        (forall {left len idx : Nat},
+          0 < len ->
+            left + len <= xs.length ->
+              (queryCosted xs left (left + len)).erase = some idx ->
+                LeftmostArgMin xs left (left + len) idx) /\
+        (forall left right,
+          FlatPayloadStoreNoSyntheticExecutionStory xs left right) := by
+  refine And.intro overhead_littleO ?_
+  intro xs
+  exact
+    And.intro (buildPayload_length xs)
+      (And.intro (queryCosted_cost_le xs)
+        (And.intro
+          (fun hlen hbound => queryCosted_exact xs hlen hbound)
+          (And.intro
+            (fun hlen hbound hquery =>
+              queryCosted_leftmost xs hlen hbound hquery)
+            (fun left right =>
+              flatPayloadStoreNoSyntheticExecutionStory xs left right))))
 
 end SuccinctClassic
 
