@@ -21,6 +21,7 @@ The short public theorem aliases live in `RMQ/Headlines.lean`.
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreExecutionStory` | Lower-level target-indexed global-store execution packet for one fixed rank/select target. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreBoundedExecutionStory` | Lower-level bounded target-indexed global-store packet for one fixed rank/select target. |
 | `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | Classic list-facing succinct RMQ theorem: for every ordinary `xs : List Int`, the built payload has length `2*n + o(n)` and valid half-open queries return the exact leftmost RMQ answer within constant modeled query cost. |
+| `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | List-facing flat-payload no-synthetic execution story: for ordinary `xs : List Int`, the final query keeps the classic half-open leftmost RMQ contract and constant modeled query bound while its WordRAM trace reads from one query-independent flat payload layout with backed reads, bounded event data, and no synthetic cost-only markers. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ capstone with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, paired with the separately proved encoding-quantified lower bound. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Whole-query-interpreted variant of the final BP-native succinct RMQ capstone: same theorem shape, with the final query control represented by a closed first-order program whose leaves are interpreted close-select, compact close/LCA, and register-backed answer-rank operations. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace` | Leaf-trace-preserving variant of the same capstone: the closed controller now evaluates to an explicit domain-leaf trace before projection back to `Costed`; the leaves are still interpreted component queries, not one unified store trace. |
@@ -84,7 +85,10 @@ and a reader-facing ordinary-list theorem.  The list-facing surface is
 `xs : List Int`, it builds a counted payload of length
 `2 * xs.length + overhead xs.length`, proves `overhead = o(n)`, and answers
 valid half-open queries with the exact leftmost RMQ index of `xs` under a fixed
-modeled query-cost bound.  The construction-facing theorem proves the same
+modeled query-cost bound.  The strengthened list-facing execution surface
+`RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory`
+keeps those clauses and additionally consumes the final flat-payload
+no-synthetic WordRAM story for the Cartesian shape of `xs`.  The construction-facing theorem proves the same
 profile over Cartesian-shape representatives:
 
 - the base payload is the balanced-parentheses shape code of length `2*n`;
