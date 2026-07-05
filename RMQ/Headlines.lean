@@ -151,8 +151,8 @@ Unified-`WordRAM.TraceEvent` BP-native succinct RMQ capstone. The final query
 control now emits one `TraceEvent` stream. Select-close, answer-rank, and
 compact-close rank-seed reads are structural payload/register traces; the
 all-size global execution story below additionally replaces the former
-close-navigation fallback leaves with a payload-free zero-block same-block
-branch and the all-size structural cross-block interior route.
+close-navigation fallback leaves with a structural BP-code zero-block
+same-block scan and the all-size structural cross-block interior route.
 -/
 abbrev succinctRMQTwoNPlusOConstantQueryWordTrace :=
   RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_profile
@@ -211,7 +211,7 @@ abbrev succinctRMQGlobalPayloadStoreBoundedExecutionStory :=
 All-size structural execution-story theorem for the final all-size succinct
 RMQ query. This is the citation anchor for the globally segmented trace after
 the zero-block same-block and cross-block interior close-navigation leaves have
-been replaced by a payload-free zero-block branch plus structural payload
+been replaced by structural BP-code, bounded-summary, and two-level payload
 traces.
 -/
 abbrev succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory :=

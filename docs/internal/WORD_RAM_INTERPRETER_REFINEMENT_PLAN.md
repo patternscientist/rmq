@@ -87,8 +87,8 @@ The first interpreter pass should not:
 - solve union-find mutation/amortization;
 - add a whole-bitvector `rank`, whole-bitvector `select`, `rmM`, or `RMQ`
   primitive; or
-- certify small-input semantic fallback branches unless they are routed through
-  explicit finite payload tables.
+- certify small-input compatibility branches unless they are routed through
+  explicit finite payload tables or payload scans.
 
 ## Core Design
 
@@ -298,9 +298,9 @@ Phase-3 bottom layer, not the final BP navigation interpreter: endpoint
 select-close, rank-close, seeded local BP windows, and final RMQ join still
 need to be sequenced as a whole query program.
 
-Large-regime first remains acceptable for the final query capstone.  Small-
-regime semantic fallbacks should be handled later by explicit finite payload
-tables or excluded from the first interpreter theorem with a clear premise.
+Large-regime first remains acceptable for component bring-up.  Small-regime
+compatibility branches should be routed through explicit finite payload tables
+or payload scans before they enter a public all-size interpreter theorem.
 
 ### Phase 4: Final succinct RMQ query program
 

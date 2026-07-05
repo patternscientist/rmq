@@ -40,9 +40,9 @@ also proves successful-read component backing and excludes synthetic cost-only
 trace events.
 The final RMQ global-store surface also has the all-size structural alias
 `Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory`,
-which cites the final global trace after the two former close-navigation
-`TraceResult.ofCosted` fallback leaves are replaced by a payload-free
-zero-block same-block branch and structural cross-block interior traces, and
+which cites the final global trace after the former close-navigation fallback
+leaves are replaced by a structural BP-code zero-block same-block scan and
+structural cross-block interior traces, and
 the stronger
 `Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory`, which also
 proves that the all-size global trace contains no dedicated synthetic
@@ -51,8 +51,9 @@ cost-only marker event. The combined flat-payload companion
 bounded no-synthetic trace to a query-independent flat layout with
 source/component/offset backing evidence for every actual successful read. The
 flat execution payload is exactly the advertised BP-native construction
-payload, not a same-block appendix. Cross-block interior routing is all-size
-structural: Ready shapes use the two-level relative-rmM replay, active
+payload. Zero-block same-block routing scans counted BP-code chunks;
+cross-block interior routing is all-size structural: Ready shapes use the
+two-level relative-rmM replay, active
 non-Ready shapes use a bounded summary scan, and inactive shapes return pure
 none for the interior obligation. The
 route theorem is
@@ -328,7 +329,7 @@ Word-RAM status note: `SuccinctFinalRAM` now has both an all-size unified
 `WordRAM.TraceEvent` stream capstone for the final RMQ query and a stronger
 large-regime compatibility companion theorem. The all-size theorem now consumes
 `SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural`:
-the former zero-block same-block fallback is now a payload-free semantic branch,
+the former zero-block same-block fallback is now a structural BP-code scan,
 while the former cross-block interior fallback is all-size structural: Ready
 uses the existing two-level trace, active non-Ready uses a bounded summary scan,
 and inactive uses a pure-none interior trace. Legacy interior and same-block
@@ -874,7 +875,7 @@ bounded-local-BP primitive. The final two-sided asymptotic profile remains total
 `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`
 has no large-regime premise and exposes both the `2*n + o(n)` constant-query
 upper structure and the doubled Catalan lower slack. The all-input zero-block
-semantic fallback remains present for tiny/inactive cases; the large-regime
+same-block case is handled by a structural BP-code scan; the large-regime
 normalization lemmas
 `SuccinctClose.canonicalBPRelativeSummaryBlockSize_pos_of_size_ge`
 and

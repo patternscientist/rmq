@@ -37,9 +37,9 @@ computes its candidate from the flattened `localBPBlockWordsRead` window.  The
 final BP-native stack now consumes the sibling
 `ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed`, whose seed is
 derived from the final payload-backed `rankCloseCosted` callback via
-`localBPSeedFromRankCloseCosted`. The zero-block semantic fallback is now
-confined to the all-input totality branch: the large/canonical succinct regime
-proves
+`localBPSeedFromRankCloseCosted`. The all-input zero-block same-block branch is
+now a structural scan over counted BP-code chunks: the large/canonical succinct
+regime proves
 `canonicalBPRelativeSummaryBlockSize_pos_of_size_ge` and rewrites
 `lcaCloseCostedWithRankSeed` through
 `ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_eq_positive_dispatch_of_size_ge`.

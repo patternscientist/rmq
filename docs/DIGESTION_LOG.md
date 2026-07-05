@@ -460,6 +460,21 @@ reads in that public trace. A skeptical grad student should ask whether the
 active non-Ready bounded summary scan should eventually be replaced by a
 smaller direct BP-code micro-scan.
 
+2026-07-04 zero-block same-block structural repair: the final all-size
+close/LCA trace no longer treats the zero-block same-block case as an
+untraced value oracle. The new
+`SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult`
+reads the counted chunked BP-code payload, computes the same prefix-min close
+candidate as the costed local BP specification, and is consumed by the public
+global/flat execution story. Plain English: every successful read in the final
+trace is still backed by counted flat payload, and the zero-block same-block
+case now contributes ordinary BP-code reads rather than disappearing into a
+pure branch. Live assumptions: this is a simple whole-BP-code scan for the
+tiny/inactive zero-block case, bounded by the existing readiness threshold, not
+a tight micro-scan. A skeptical grad student should ask whether the structural
+zero-block scan can be shrunk to the exact query window while preserving the
+same all-size theorem surface.
+
 2026-07-04 all-size structural route polish: the replacement for a false
 total-Ready theorem is now named directly by
 `SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorAllSizeStructuralRoute_total`.

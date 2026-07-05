@@ -72,12 +72,17 @@ theorem compactBPCloseOverhead_littleO :
   unfold compactBPCloseOverhead
   exact concreteBPRelativeRmmInteriorOverhead_littleO
 
+def concreteCompactBPCloseZeroBlockScanCost : Nat :=
+  2 * concreteBPRelativeRmmInteriorReadyThreshold + 1
+
 def concreteCompactBPCloseQueryCost : Nat :=
-  10 + concreteBPRelativeRmmInteriorQueryCost
+  concreteCompactBPCloseZeroBlockScanCost + 10 +
+    concreteBPRelativeRmmInteriorQueryCost
 
 def concreteCompactBPCloseQueryCostWithRankSeed
     (rankCost : Nat) : Nat :=
-  8 + 2 * rankCost + concreteBPRelativeRmmInteriorQueryCost
+  concreteCompactBPCloseZeroBlockScanCost + 8 + 2 * rankCost +
+    concreteBPRelativeRmmInteriorQueryCost
 
 def bpCodeWordReadsAt
     (shape : Cartesian.CartesianShape) (index : Nat) : List (List Bool) :=
@@ -1690,37 +1695,171 @@ theorem localBPSameBlockCloseCosted_exact
   rw [hlenEq']
   exact hanswer
 
-/--
-Payload-free fallback for the obstructed zero-block same-block branch.
+def zeroBlockSameBlockCloseStructuralWords
+    (shape : Cartesian.CartesianShape) : List (List Bool) :=
+  SuccinctSpace.chunkPayloadWords
+    (SuccinctRank.machineWordBits shape.bpCode.length)
+    shape.bpCode
 
-When the canonical relative-rmM block size is zero, the charged local BP window
-does not provide a useful structural coverage statement.  The final all-size
-trace therefore uses this explicit zero-payload semantic fallback instead of a
-dense all-pairs same-block table.
+theorem zeroBlockSameBlockCloseStructuralWords_payload
+    (shape : Cartesian.CartesianShape) :
+    SuccinctSpace.flattenPayloadWords
+        (zeroBlockSameBlockCloseStructuralWords shape) =
+      shape.bpCode := by
+  exact
+    SuccinctSpace.flattenPayloadWords_chunkPayloadWords
+      (SuccinctRank.machineWordBits_pos shape.bpCode.length)
+      shape.bpCode
+
+def zeroBlockSameBlockCloseStructuralValueFromWords
+    (shape : Cartesian.CartesianShape)
+    (words : List (List Bool))
+    (leftClose rightClose : Nat) : Option Nat :=
+  if SuccinctSpace.flattenPayloadWords words = shape.bpCode then
+    let left := closeToInorder shape leftClose
+    let right := closeToInorder shape rightClose
+    if left <= right then
+      bpCandidateClose?
+        (some
+          (bpPrefixRangeMinExcess shape (leftClose + 1)
+            (rightClose - leftClose + 1),
+            bpPrefixRangeArgMinPrefixPos shape (leftClose + 1)
+              (rightClose - leftClose + 1)))
+    else
+      none
+  else
+    none
+
+def zeroBlockSameBlockCloseStructuralValue
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) : Option Nat :=
+  zeroBlockSameBlockCloseStructuralValueFromWords shape
+    (zeroBlockSameBlockCloseStructuralWords shape) leftClose rightClose
+
+/--
+Structural zero-block same-block branch.
+
+When the canonical relative-rmM block size is zero, the positive local-window
+coverage theorem is unavailable.  This branch instead computes the BP
+prefix-min candidate from the already-counted BP-code chunks.  It has no
+auxiliary same-block payload and no call to the `scanWindow` answer oracle; the
+valid-query exactness theorem below connects the prefix-min candidate to the
+ordinary RMQ answer.
 -/
 def zeroBlockSameBlockCloseCosted
     (shape : Cartesian.CartesianShape)
     (leftClose rightClose : Nat) : Costed (Option Nat) :=
-  Costed.pure ((localBPSameBlockCloseCosted shape leftClose rightClose).erase)
+  { value :=
+      zeroBlockSameBlockCloseStructuralValue shape leftClose rightClose
+    cost := (zeroBlockSameBlockCloseStructuralWords shape).length }
 
-theorem zeroBlockSameBlockCloseCosted_refines_local
+theorem zeroBlockSameBlockCloseStructuralValue_exact
+    {shape : Cartesian.CartesianShape}
+    {left len leftClose rightClose answerClose : Nat}
+    (hlen : 0 < len)
+    (hbound : left + len <= shape.size)
+    (hleft : bpCloseOfInorder? shape left = some leftClose)
+    (hright :
+      bpCloseOfInorder? shape (left + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder? shape
+          (scanWindow shape.representative left len) =
+        some answerClose) :
+    zeroBlockSameBlockCloseStructuralValue shape leftClose rightClose =
+      some answerClose := by
+  have hpayload := zeroBlockSameBlockCloseStructuralWords_payload shape
+  have hleftIdx := closeToInorder_eq_of_bpCloseOfInorder? hleft
+  have hrightIdx := closeToInorder_eq_of_bpCloseOfInorder? hright
+  have hle :
+      closeToInorder shape leftClose <=
+        closeToInorder shape rightClose := by
+    omega
+  have hprefix :=
+    localBPSameBlockClosePrefixRange_exact
+      (shape := shape) (left := left) (len := len)
+      (leftClose := leftClose) (rightClose := rightClose)
+      (answerClose := answerClose)
+      hlen hbound hleft hright hanswer
+  simpa [zeroBlockSameBlockCloseStructuralValue,
+    zeroBlockSameBlockCloseStructuralValueFromWords, hpayload, hle] using
+    hprefix
+
+theorem zeroBlockSameBlockCloseCosted_refines_structural
     (shape : Cartesian.CartesianShape)
     (leftClose rightClose : Nat) :
     (zeroBlockSameBlockCloseCosted shape leftClose rightClose).erase =
-      (localBPSameBlockCloseCosted shape leftClose rightClose).erase := by
+      zeroBlockSameBlockCloseStructuralValue shape leftClose rightClose := by
   rfl
 
 theorem zeroBlockSameBlockCloseCosted_cost_eq
     (shape : Cartesian.CartesianShape)
     (leftClose rightClose : Nat) :
-    (zeroBlockSameBlockCloseCosted shape leftClose rightClose).cost = 0 := by
+    (zeroBlockSameBlockCloseCosted shape leftClose rightClose).cost =
+      (zeroBlockSameBlockCloseStructuralWords shape).length := by
   rfl
+
+theorem zeroBlockSameBlockCloseStructuralWords_length_le_scanCost_of_blockSize_zero
+    {shape : Cartesian.CartesianShape}
+    (hzero : canonicalBPRelativeSummaryBlockSize shape = 0) :
+    (zeroBlockSameBlockCloseStructuralWords shape).length <=
+      concreteCompactBPCloseZeroBlockScanCost := by
+  have hnotActive :
+      ¬ canonicalBPRelativeMinMaxArgSummaryTableActive shape := by
+    intro hactive
+    have hpos := canonicalBPRelativeSummaryBlockSize_pos_of_active hactive
+    omega
+  have hnotReady : ¬ concreteBPRelativeRmmInteriorReady shape := by
+    intro hready
+    exact hnotActive hready.1
+  have hsizeLt :
+      shape.size < concreteBPRelativeRmmInteriorReadyThreshold := by
+    exact Nat.lt_of_not_ge (by
+      intro hsize
+      exact hnotReady
+        (concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold
+          shape hsize))
+  let wordSize := SuccinctRank.machineWordBits shape.bpCode.length
+  have hword : 0 < wordSize := by
+    simpa [wordSize] using
+      SuccinctRank.machineWordBits_pos shape.bpCode.length
+  have hchunks :=
+    SuccinctSpace.chunkPayloadWords_length_le_div_add_one
+      (wordSize := wordSize) hword shape.bpCode
+  have hdiv :
+      shape.bpCode.length / wordSize <= shape.bpCode.length :=
+    Nat.div_le_self _ _
+  have hbpLen : shape.bpCode.length = 2 * shape.size := by
+    exact Cartesian.CartesianShape.bpCode_length shape
+  have hmain :
+      (SuccinctSpace.chunkPayloadWords wordSize shape.bpCode).length <=
+        concreteCompactBPCloseZeroBlockScanCost := by
+    unfold concreteCompactBPCloseZeroBlockScanCost
+    calc
+      (SuccinctSpace.chunkPayloadWords wordSize shape.bpCode).length
+          <= shape.bpCode.length / wordSize + 1 := hchunks
+      _ <= shape.bpCode.length + 1 := by omega
+      _ = 2 * shape.size + 1 := by rw [hbpLen]
+      _ <= 2 * concreteBPRelativeRmmInteriorReadyThreshold + 1 := by
+        omega
+  simpa [zeroBlockSameBlockCloseStructuralWords, wordSize] using hmain
+
+theorem zeroBlockSameBlockCloseCosted_cost_le_of_blockSize_zero
+    {shape : Cartesian.CartesianShape}
+    {leftClose rightClose : Nat}
+    (hzero : canonicalBPRelativeSummaryBlockSize shape = 0) :
+    (zeroBlockSameBlockCloseCosted shape leftClose rightClose).cost <=
+      concreteCompactBPCloseZeroBlockScanCost := by
+  simpa [zeroBlockSameBlockCloseCosted_cost_eq] using
+    zeroBlockSameBlockCloseStructuralWords_length_le_scanCost_of_blockSize_zero
+      (shape := shape) hzero
 
 theorem zeroBlockSameBlockCloseCosted_cost_le
     (shape : Cartesian.CartesianShape)
     (leftClose rightClose : Nat) :
-    (zeroBlockSameBlockCloseCosted shape leftClose rightClose).cost <= 0 := by
-  simp [zeroBlockSameBlockCloseCosted]
+    (zeroBlockSameBlockCloseCosted shape leftClose rightClose).cost <=
+      (zeroBlockSameBlockCloseStructuralWords shape).length := by
+  rw [zeroBlockSameBlockCloseCosted_cost_eq]
+  exact Nat.le_refl _
 
 theorem zeroBlockSameBlockCloseCosted_exact
     {shape : Cartesian.CartesianShape}
@@ -1736,9 +1875,9 @@ theorem zeroBlockSameBlockCloseCosted_exact
         some answerClose) :
     (zeroBlockSameBlockCloseCosted shape leftClose rightClose).erase =
       some answerClose := by
-  rw [zeroBlockSameBlockCloseCosted_refines_local]
-  exact localBPSameBlockCloseCosted_exact
-    hlen hbound hleft hright hanswer
+  exact
+    zeroBlockSameBlockCloseStructuralValue_exact
+      hlen hbound hleft hright hanswer
 
 def finiteSmallSameBlockCloseKey
     (shape : Cartesian.CartesianShape) (close : Nat) : Nat :=

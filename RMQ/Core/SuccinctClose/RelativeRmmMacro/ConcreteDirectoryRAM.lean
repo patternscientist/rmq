@@ -2320,8 +2320,9 @@ theorem finiteSmallSameBlockCloseReadTraceResultAtSegment_refines
     WordRAM.TraceResult.map_toCosted, Costed.map]
 
 /--
-Finite-small structural replay for the zero-block same-block fallback.  The
-execution performs the one counted table read used by the costed fallback.
+Compatibility replay for the finite-small same-block table.  The public
+all-size close/LCA path below uses the structural BP-code zero-block scan
+instead of this table branch.
 -/
 def finiteSmallSameBlockCloseTraceResultAtSegment
     (shape : Cartesian.CartesianShape)
@@ -2443,74 +2444,188 @@ theorem finiteSmallSameBlockCloseTraceResultAtSegment_no_syntheticCostOnlyPrimit
         (finiteSmallSameBlockCloseSlot shape leftClose rightClose))
       event hmem
 
-/--
-Payload-free trace for the zero-block same-block fallback.
+/-- Read every BP-code payload chunk used by the zero-block same-block replay. -/
+def zeroBlockSameBlockCloseWordsTraceResult
+    (shape : Cartesian.CartesianShape) :
+    WordRAM.TraceResult (List (List Bool)) where
+  value := zeroBlockSameBlockCloseStructuralWords shape
+  trace :=
+    (List.range (zeroBlockSameBlockCloseStructuralWords shape).length).map
+      (fun index => bpCodeReadWordTraceEvent shape index)
 
-The finite-small all-pairs same-block table remains available as a compatibility
-object above, but the all-size public close/LCA trace uses this zero-step branch
-when the canonical block size is zero.
--/
-def zeroBlockSameBlockCloseTraceResult
-    (shape : Cartesian.CartesianShape)
-    (leftClose rightClose : Nat) : WordRAM.TraceResult (Option Nat) :=
-  WordRAM.TraceResult.pure
-    ((zeroBlockSameBlockCloseCosted shape leftClose rightClose).erase)
-
-theorem zeroBlockSameBlockCloseTraceResult_refines
-    (shape : Cartesian.CartesianShape)
-    (leftClose rightClose : Nat) :
-    (zeroBlockSameBlockCloseTraceResult
-      shape leftClose rightClose).toCosted =
-      zeroBlockSameBlockCloseCosted shape leftClose rightClose := by
+theorem zeroBlockSameBlockCloseWordsTraceResult_value
+    (shape : Cartesian.CartesianShape) :
+    (zeroBlockSameBlockCloseWordsTraceResult shape).value =
+      zeroBlockSameBlockCloseStructuralWords shape := by
   rfl
 
-theorem zeroBlockSameBlockCloseTraceResult_trace_forall
+theorem zeroBlockSameBlockCloseWordsTraceResult_trace_length
+    (shape : Cartesian.CartesianShape) :
+    (zeroBlockSameBlockCloseWordsTraceResult shape).trace.length =
+      (zeroBlockSameBlockCloseStructuralWords shape).length := by
+  simp [zeroBlockSameBlockCloseWordsTraceResult]
+
+theorem zeroBlockSameBlockCloseWordsTraceResult_trace_forall
+    (shape : Cartesian.CartesianShape)
+    (P : WordRAM.TraceEvent -> Prop)
+    (hbpCode :
+      forall index, P (bpCodeReadWordTraceEvent shape index)) :
+    forall event,
+      List.Mem event (zeroBlockSameBlockCloseWordsTraceResult shape).trace ->
+        P event := by
+  intro event hmem
+  rcases List.mem_map.mp hmem with ⟨index, _hindex, rfl⟩
+  exact hbpCode index
+
+theorem zeroBlockSameBlockCloseWordsTraceResult_matchesReadStore
+    (shape : Cartesian.CartesianShape)
+    (store : WordRAM.ReadStore)
+    (hbpCode :
+      forall index,
+        store.readWord? 0 index =
+          (SuccinctSpace.chunkPayloadWords
+            (SuccinctRank.machineWordBits shape.bpCode.length)
+            shape.bpCode).toArray[index]?) :
+    forall event,
+      List.Mem event (zeroBlockSameBlockCloseWordsTraceResult shape).trace ->
+        event.matchesReadStore store := by
+  exact
+    zeroBlockSameBlockCloseWordsTraceResult_trace_forall shape
+      (fun event => event.matchesReadStore store)
+      (fun index => by
+        simp [bpCodeReadWordTraceEvent, WordRAM.TraceEvent.matchesReadStore,
+          hbpCode index])
+
+theorem zeroBlockSameBlockCloseWordsTraceResult_no_syntheticCostOnlyPrimitive
+    (shape : Cartesian.CartesianShape) :
+    forall event,
+      List.Mem event (zeroBlockSameBlockCloseWordsTraceResult shape).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  exact
+    zeroBlockSameBlockCloseWordsTraceResult_trace_forall shape
+      (fun event => ¬ event.isSyntheticCostOnlyPrimitive)
+      (fun index => by
+        simp [bpCodeReadWordTraceEvent,
+          WordRAM.TraceEvent.isSyntheticCostOnlyPrimitive])
+
+/--
+Structural zero-block same-block fallback.
+
+When the canonical block size is zero, the close replay scans the counted
+chunked BP-code payload directly and computes the same prefix-min answer as the
+costed local BP specification.
+-/
+def zeroBlockSameBlockCloseStructuralTraceResult
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) : WordRAM.TraceResult (Option Nat) :=
+  WordRAM.TraceResult.map
+    (fun words =>
+      zeroBlockSameBlockCloseStructuralValueFromWords
+        shape words leftClose rightClose)
+    (zeroBlockSameBlockCloseWordsTraceResult shape)
+
+theorem zeroBlockSameBlockCloseStructuralTraceResult_refines
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) :
+    (zeroBlockSameBlockCloseStructuralTraceResult
+      shape leftClose rightClose).toCosted =
+      zeroBlockSameBlockCloseCosted shape leftClose rightClose := by
+  apply Costed.ext
+  · simp [zeroBlockSameBlockCloseStructuralTraceResult,
+      zeroBlockSameBlockCloseWordsTraceResult,
+      zeroBlockSameBlockCloseCosted,
+      zeroBlockSameBlockCloseStructuralValue]
+  · simp [zeroBlockSameBlockCloseStructuralTraceResult,
+      zeroBlockSameBlockCloseWordsTraceResult_trace_length,
+      zeroBlockSameBlockCloseCosted]
+
+theorem zeroBlockSameBlockCloseStructuralTraceResult_exact
+    {shape : Cartesian.CartesianShape}
+    {left len leftClose rightClose answerClose : Nat}
+    (hlen : 0 < len)
+    (hbound : left + len <= shape.size)
+    (hleft : bpCloseOfInorder? shape left = some leftClose)
+    (hright :
+      bpCloseOfInorder? shape (left + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder? shape
+          (scanWindow shape.representative left len) =
+        some answerClose) :
+    (zeroBlockSameBlockCloseStructuralTraceResult
+      shape leftClose rightClose).value =
+      some answerClose := by
+  simpa [zeroBlockSameBlockCloseStructuralTraceResult,
+    zeroBlockSameBlockCloseWordsTraceResult,
+    zeroBlockSameBlockCloseStructuralValue] using
+    zeroBlockSameBlockCloseStructuralValue_exact
+      hlen hbound hleft hright hanswer
+
+theorem zeroBlockSameBlockCloseStructuralTraceResult_trace_forall
     (shape : Cartesian.CartesianShape)
     (leftClose rightClose : Nat)
-    (P : WordRAM.TraceEvent -> Prop) :
+    (P : WordRAM.TraceEvent -> Prop)
+    (hbpCode :
+      forall index, P (bpCodeReadWordTraceEvent shape index)) :
     forall event,
       List.Mem event
-          (zeroBlockSameBlockCloseTraceResult
+          (zeroBlockSameBlockCloseStructuralTraceResult
             shape leftClose rightClose).trace ->
         P event := by
   exact
-    WordRAM.TraceResult.pure_trace_forall P
-      ((zeroBlockSameBlockCloseCosted shape leftClose rightClose).erase)
+    WordRAM.TraceResult.map_trace_forall P
+      (fun words =>
+        zeroBlockSameBlockCloseStructuralValueFromWords
+          shape words leftClose rightClose)
+      (zeroBlockSameBlockCloseWordsTraceResult shape)
+      (zeroBlockSameBlockCloseWordsTraceResult_trace_forall
+        shape P hbpCode)
 
-theorem zeroBlockSameBlockCloseTraceResult_matchesReadStore
+theorem zeroBlockSameBlockCloseStructuralTraceResult_matchesReadStore
     (shape : Cartesian.CartesianShape)
     (leftClose rightClose : Nat)
-    (store : WordRAM.ReadStore) :
+    (store : WordRAM.ReadStore)
+    (hbpCode :
+      forall index,
+        store.readWord? 0 index =
+          (SuccinctSpace.chunkPayloadWords
+            (SuccinctRank.machineWordBits shape.bpCode.length)
+            shape.bpCode).toArray[index]?) :
     forall event,
       List.Mem event
-          (zeroBlockSameBlockCloseTraceResult
+          (zeroBlockSameBlockCloseStructuralTraceResult
             shape leftClose rightClose).trace ->
         event.matchesReadStore store := by
   exact
-    zeroBlockSameBlockCloseTraceResult_trace_forall
+    zeroBlockSameBlockCloseStructuralTraceResult_trace_forall
       shape leftClose rightClose
       (fun event => event.matchesReadStore store)
+      (fun index => by
+        simp [bpCodeReadWordTraceEvent, WordRAM.TraceEvent.matchesReadStore,
+          hbpCode index])
 
-theorem zeroBlockSameBlockCloseTraceResult_no_syntheticCostOnlyPrimitive
+theorem zeroBlockSameBlockCloseStructuralTraceResult_no_syntheticCostOnlyPrimitive
     (shape : Cartesian.CartesianShape)
     (leftClose rightClose : Nat) :
     forall event,
       List.Mem event
-          (zeroBlockSameBlockCloseTraceResult
+          (zeroBlockSameBlockCloseStructuralTraceResult
             shape leftClose rightClose).trace ->
         ¬ event.isSyntheticCostOnlyPrimitive := by
   exact
-    zeroBlockSameBlockCloseTraceResult_trace_forall
+    zeroBlockSameBlockCloseStructuralTraceResult_trace_forall
       shape leftClose rightClose
       (fun event => ¬ event.isSyntheticCostOnlyPrimitive)
+      (fun index => by
+        simp [bpCodeReadWordTraceEvent,
+          WordRAM.TraceEvent.isSyntheticCostOnlyPrimitive])
 
 /--
 Trace-preserving compact close/LCA query.
 
 The rank-seed reads and bounded local BP endpoint decoders are structural
-Word-RAM traces. The zero-block fallback is payload-free; the relative-rmM
-interior query remains an older charged decoder leaf on this compatibility
-trace.
+Word-RAM traces. The zero-block branch scans counted BP-code chunks; the
+relative-rmM interior query remains an older charged decoder leaf on this
+compatibility trace.
 -/
 def lcaCloseTraceResultWithRankSeed
     {shape : Cartesian.CartesianShape}
@@ -2519,7 +2634,7 @@ def lcaCloseTraceResultWithRankSeed
     (leftClose rightClose : Nat) : WordRAM.TraceResult (Option Nat) :=
   let blockSize := canonicalBPRelativeSummaryBlockSize shape
   if blockSize = 0 then
-    zeroBlockSameBlockCloseTraceResult shape leftClose rightClose
+    zeroBlockSameBlockCloseStructuralTraceResult shape leftClose rightClose
   else if blockOfClose blockSize leftClose =
       blockOfClose blockSize rightClose then
     localBPSameBlockCloseDecodedTraceResultWithRankSeed
@@ -2542,7 +2657,7 @@ theorem lcaCloseTraceResultWithRankSeed_refines
         rankCloseCosted leftClose rightClose := by
   by_cases hzero : canonicalBPRelativeSummaryBlockSize shape = 0
   · simp [lcaCloseTraceResultWithRankSeed, lcaCloseCostedWithRankSeed,
-      hzero, zeroBlockSameBlockCloseTraceResult_refines]
+      hzero, zeroBlockSameBlockCloseStructuralTraceResult_refines]
   · by_cases hsame :
       blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose =
         blockOfClose (canonicalBPRelativeSummaryBlockSize shape) rightClose
@@ -2564,6 +2679,12 @@ theorem lcaCloseTraceResultWithRankSeed_matchesReadStore
       forall pos event,
         List.Mem event (rankCloseTrace pos).trace ->
           event.matchesReadStore store)
+    (hbpCode :
+      forall index,
+        store.readWord? 0 index =
+          (SuccinctSpace.chunkPayloadWords
+            (SuccinctRank.machineWordBits shape.bpCode.length)
+            shape.bpCode).toArray[index]?)
     (hbp :
       forall blockSize close event,
         List.Mem event
@@ -2577,8 +2698,8 @@ theorem lcaCloseTraceResultWithRankSeed_matchesReadStore
   by_cases hzero : canonicalBPRelativeSummaryBlockSize shape = 0
   · simp [lcaCloseTraceResultWithRankSeed, hzero]
     exact
-      zeroBlockSameBlockCloseTraceResult_matchesReadStore
-        shape leftClose rightClose store
+      zeroBlockSameBlockCloseStructuralTraceResult_matchesReadStore
+        shape leftClose rightClose store hbpCode
   · by_cases hsame :
       blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose =
         blockOfClose (canonicalBPRelativeSummaryBlockSize shape) rightClose
@@ -2598,8 +2719,8 @@ theorem lcaCloseTraceResultWithRankSeed_matchesReadStore
 
 /--
 Legacy all-size close/LCA trace decomposition: every event in the old total
-trace comes from structural rank/BP leaves, the payload-free zero-block
-same-block fallback, or the remaining `TraceResult.ofCosted` boundary for the
+trace comes from structural rank/BP leaves, the structural BP-code zero-block
+same-block scan, or the remaining `TraceResult.ofCosted` boundary for the
 cross-block interior relative-rmM query.
 -/
 theorem lcaCloseTraceResultWithRankSeed_legacy_ofCosted_boundary_trace_forall
@@ -2619,7 +2740,7 @@ theorem lcaCloseTraceResultWithRankSeed_legacy_ofCosted_boundary_trace_forall
     (hsameZero :
       forall event,
         List.Mem event
-          (zeroBlockSameBlockCloseTraceResult
+          (zeroBlockSameBlockCloseStructuralTraceResult
             shape leftClose rightClose).trace ->
           P event)
     (hinterior :
@@ -2654,8 +2775,9 @@ theorem lcaCloseTraceResultWithRankSeed_legacy_ofCosted_boundary_trace_forall
 
 /--
 All-size structural compact close/LCA query trace.  This replay has no
-`TraceResult.ofCosted` leaf: zero-block queries use the payload-free same-block
-fallback, and cross-block queries use the all-size structural interior replay.
+`TraceResult.ofCosted` leaf: zero-block queries scan the counted BP-code
+payload chunks, and cross-block queries use the all-size structural interior
+replay.
 -/
 def lcaCloseTraceResultWithRankSeedAllSizeStructural
     (shape : Cartesian.CartesianShape)
@@ -2665,7 +2787,7 @@ def lcaCloseTraceResultWithRankSeedAllSizeStructural
     (leftClose rightClose : Nat) : WordRAM.TraceResult (Option Nat) :=
   let blockSize := canonicalBPRelativeSummaryBlockSize shape
   if blockSize = 0 then
-    zeroBlockSameBlockCloseTraceResult shape leftClose rightClose
+    zeroBlockSameBlockCloseStructuralTraceResult shape leftClose rightClose
   else if blockOfClose blockSize leftClose =
       blockOfClose blockSize rightClose then
     localBPSameBlockCloseDecodedTraceResultWithRankSeed
@@ -2691,7 +2813,7 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_refines
   by_cases hzero : canonicalBPRelativeSummaryBlockSize shape = 0
   · simp [lcaCloseTraceResultWithRankSeedAllSizeStructural,
       ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed,
-      hzero, zeroBlockSameBlockCloseTraceResult_refines]
+      hzero, zeroBlockSameBlockCloseStructuralTraceResult_refines]
   · by_cases hsame :
       blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose =
         blockOfClose (canonicalBPRelativeSummaryBlockSize shape) rightClose
@@ -2724,7 +2846,7 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_trace_forall
     (hsameSmall :
       forall event,
         List.Mem event
-          (zeroBlockSameBlockCloseTraceResult
+          (zeroBlockSameBlockCloseStructuralTraceResult
             shape leftClose rightClose).trace ->
           P event)
     (hinterior :
@@ -2781,7 +2903,7 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_no_syntheticCostOnlyPri
       (fun blockSize close =>
         localBPWindowBitsTraceResult_no_syntheticCostOnlyPrimitive
           shape blockSize close)
-      (zeroBlockSameBlockCloseTraceResult_no_syntheticCostOnlyPrimitive
+      (zeroBlockSameBlockCloseStructuralTraceResult_no_syntheticCostOnlyPrimitive
         shape leftClose rightClose)
       (fun startBlock count =>
         concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural_no_syntheticCostOnlyPrimitive
@@ -2804,12 +2926,6 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_matchesReadStore
           (SuccinctSpace.chunkPayloadWords
             (SuccinctRank.machineWordBits shape.bpCode.length)
             shape.bpCode).toArray[index]?)
-    (hsameSmall :
-      forall event,
-        List.Mem event
-          (zeroBlockSameBlockCloseTraceResult
-            shape leftClose rightClose).trace ->
-          event.matchesReadStore store)
     (hinterior :
       forall startBlock count event,
         List.Mem event
@@ -2830,14 +2946,15 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_matchesReadStore
       (fun blockSize close =>
         localBPWindowBitsTraceResult_matchesReadStore
           shape blockSize close store hbpCode)
-      hsameSmall
+      (zeroBlockSameBlockCloseStructuralTraceResult_matchesReadStore
+        shape leftClose rightClose store hbpCode)
       hinterior
 
 /--
 Concrete large-regime compact close/LCA query trace.
 
 The large-regime hypothesis routes through the positive dispatch, so the
-zero-block semantic fallback is not part of this replay.  The cross-block case
+zero-block structural scan is not part of this replay.  The cross-block case
 uses the concrete interior relative-rmM trace.
 -/
 def lcaCloseTraceResultWithRankSeedOfReady

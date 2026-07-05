@@ -41,9 +41,9 @@ balanced-parentheses code and target `false`.
 The C2-local fidelity hardening has also landed on the final path: endpoint
 fringes and positive-block same-block queries route through local BP windows
 and rank-false seeds supplied by the final close-rank access path. The
-zero-block semantic fallback remains only for all-input totality on
-tiny/inactive cases; the large/canonical regime has `_of_size_ge` branch
-normalization lemmas showing that the positive-block path is used. The remaining
+zero-block same-block all-input branch now scans counted BP-code chunks; the
+large/canonical regime has `_of_size_ge` branch normalization lemmas showing
+that the positive-block path is used. The remaining
 succinct work is presentation/model polish, especially an even flatter
 encoded/payload-only version of the final theorem. The older worker scorecards
 and anti-pattern catalog below are retained as historical guardrails. Treat any

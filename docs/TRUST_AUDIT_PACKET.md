@@ -107,8 +107,8 @@ rank-seed reads inside compact close/LCA contribute structural
 payload/register traces. The all-size compact close/LCA leg now also consumes
 `SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural`,
 which replaces the former zero-block same-block fallback and cross-block
-interior `TraceResult.ofCosted` leaves with a payload-free zero-block
-same-block branch and the all-size structural cross-block interior route.
+interior fallback leaves with a structural BP-code zero-block same-block scan
+and the all-size structural cross-block interior route.
 
 There is also a large-regime companion:
 

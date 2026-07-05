@@ -324,7 +324,9 @@ theorem lcaCloseCosted_cost_le
   by_cases hzero : canonicalBPRelativeSummaryBlockSize shape = 0
   · simp [hzero]
     have hlocal :=
-      zeroBlockSameBlockCloseCosted_cost_le shape leftClose rightClose
+      zeroBlockSameBlockCloseCosted_cost_le_of_blockSize_zero
+        (shape := shape) (leftClose := leftClose) (rightClose := rightClose)
+        hzero
     unfold concreteCompactBPCloseQueryCost
     omega
   · simp [hzero]
@@ -353,7 +355,9 @@ theorem lcaCloseCostedWithRankSeed_cost_le
   by_cases hzero : canonicalBPRelativeSummaryBlockSize shape = 0
   · simp [hzero]
     have hlocal :=
-      zeroBlockSameBlockCloseCosted_cost_le shape leftClose rightClose
+      zeroBlockSameBlockCloseCosted_cost_le_of_blockSize_zero
+        (shape := shape) (leftClose := leftClose) (rightClose := rightClose)
+        hzero
     unfold concreteCompactBPCloseQueryCostWithRankSeed
     omega
   · simp [hzero]

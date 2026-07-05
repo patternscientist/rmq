@@ -2306,6 +2306,15 @@ private theorem
       cases htail
 
 private theorem
+    concreteBPNativeSuccinctRMQBpCodeReadWordTraceEvent_noFiniteSmallInteriorSuccessfulRead
+    (shape : Cartesian.CartesianShape) (index : Nat) :
+    concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+      (SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpCodeReadWordTraceEvent
+        shape index) := by
+  simp [SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpCodeReadWordTraceEvent,
+    concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead]
+
+private theorem
     concreteBPNativeSuccinctRMQBpCodeWordReadTraceResult_noReadyCloseSuccessfulRead
     (shape : Cartesian.CartesianShape) (index : Nat) :
     forall event,
@@ -2324,6 +2333,15 @@ private theorem
       simp
   | tail _ htail =>
       cases htail
+
+private theorem
+    concreteBPNativeSuccinctRMQBpCodeReadWordTraceEvent_noReadyCloseSuccessfulRead
+    (shape : Cartesian.CartesianShape) (index : Nat) :
+    concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+      (SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpCodeReadWordTraceEvent
+        shape index) := by
+  simp [SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpCodeReadWordTraceEvent,
+    concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead]
 
 private theorem
     concreteBPNativeSuccinctRMQLocalBPBlockWordsTraceResult_noFiniteSmallInteriorSuccessfulRead
@@ -4218,7 +4236,7 @@ theorem concreteBPNativeLCACloseWordTraceResult_refines_interpretedCosted
 Large-regime structural replay for the compact LCA-close leg.
 
 The size hypothesis lets the close directory dispatch through the positive
-summary-block path, so the zero-block semantic fallback is absent and the
+summary-block path, so the zero-block structural scan is absent and the
 cross-block interior relative-rmM leg uses its concrete trace replay.
 -/
 def concreteBPNativeLCACloseWordTraceResultOfSizeGe
@@ -4354,9 +4372,11 @@ private theorem
       (fun blockSize close =>
         concreteBPNativeSuccinctRMQLocalBPWindowBitsTraceResult_noFiniteSmallInteriorSuccessfulRead
           shape blockSize close)
-      (SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseTraceResult_trace_forall
+      (SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_trace_forall
         shape leftClose rightClose
-        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead)
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+        (concreteBPNativeSuccinctRMQBpCodeReadWordTraceEvent_noFiniteSmallInteriorSuccessfulRead
+          shape))
       (fun startBlock count =>
         concreteBPNativeInteriorGlobalWordTraceResultAllSizeStructural_noFiniteSmallInteriorSuccessfulRead_of_ready
           shape hready startBlock count)
@@ -4386,9 +4406,11 @@ private theorem
       (fun blockSize close =>
         concreteBPNativeSuccinctRMQLocalBPWindowBitsTraceResult_noFiniteSmallInteriorSuccessfulRead
           shape blockSize close)
-      (SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseTraceResult_trace_forall
+      (SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_trace_forall
         shape leftClose rightClose
-        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead)
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+        (concreteBPNativeSuccinctRMQBpCodeReadWordTraceEvent_noFiniteSmallInteriorSuccessfulRead
+          shape))
       (fun startBlock count =>
         concreteBPNativeInteriorGlobalWordTraceResultAllSizeStructural_noFiniteSmallInteriorSuccessfulRead
           shape startBlock count)
@@ -4419,9 +4441,11 @@ private theorem
       (fun blockSize close =>
         concreteBPNativeSuccinctRMQLocalBPWindowBitsTraceResult_noReadyCloseSuccessfulRead
           shape blockSize close)
-      (SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseTraceResult_trace_forall
+      (SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_trace_forall
         shape leftClose rightClose
-        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead)
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+        (concreteBPNativeSuccinctRMQBpCodeReadWordTraceEvent_noReadyCloseSuccessfulRead
+          shape))
       (fun startBlock count =>
         concreteBPNativeInteriorGlobalWordTraceResultAllSizeStructural_noReadyCloseSuccessfulRead_of_not_ready
           shape hnotReady startBlock count)
@@ -4445,6 +4469,7 @@ theorem concreteBPNativeLCACloseGlobalWordTraceResult_matchesReadStore_total
       (fun pos =>
         concreteBPNativeRankCloseGlobalWordTraceResult_matchesReadStore
           shape pos)
+      (concreteBPNativeSuccinctRMQGlobalReadStore_bpCode shape)
       (fun blockSize close =>
         SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPWindowBitsTraceResult_matchesReadStore
           shape blockSize close
@@ -4638,9 +4663,6 @@ theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_matchesRe
         concreteBPNativeRankCloseGlobalWordTraceResult_matchesReadStore
           shape pos)
       (concreteBPNativeSuccinctRMQGlobalReadStore_bpCode shape)
-      (SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseTraceResult_matchesReadStore
-        shape leftClose rightClose
-        (concreteBPNativeSuccinctRMQGlobalReadStore shape))
       (fun startBlock count =>
         concreteBPNativeInteriorGlobalWordTraceResultAllSizeStructural_matchesReadStore
           shape startBlock count)
@@ -5459,7 +5481,7 @@ Execute one instruction in the large-regime replay.
 
 Only the compact close/LCA instruction differs from `evalWordTrace`: it uses the
 large-regime LCA-close trace, which expands the positive-block interior path
-instead of retaining the all-size semantic fallback.
+instead of the all-size structural branch split.
 -/
 def evalWordTraceOfSizeGe (shape : Cartesian.CartesianShape)
     (hsize : 2 ^ 128 <= shape.size) (left right : Nat)
@@ -6000,7 +6022,7 @@ stream.
 Compared with `concreteBPNativeSuccinctRMQWholeQueryWordTraceCosted`, the
 compact close/LCA instruction now uses the large-regime structural replay, so
 the positive-block local/fringe/interior path is represented by trace events
-instead of the all-size semantic fallback.
+instead of the all-size structural branch split.
 -/
 def concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe
     (shape : Cartesian.CartesianShape)
@@ -6806,8 +6828,8 @@ RMQ trace.
 
 The all-size global interpreter now consumes
 `concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural`, so the two
-former close-navigation `TraceResult.ofCosted` fallback leaves are replaced by
-payload-backed finite-small or two-level table traces.
+former close-navigation fallback leaves are replaced by structural BP-code,
+bounded-summary, or two-level table traces.
 -/
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_allSizeStructural_execution_story
     (shape : Cartesian.CartesianShape)

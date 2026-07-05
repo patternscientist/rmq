@@ -355,8 +355,8 @@ theorem listInt_flatPayloadStore_noSynthetic_execution_story :
 
 /--
 Named public capstone: the no-synthetic flat execution story uses the same
-`2*n + o(n)` advertised payload `buildPayload xs`, not a finite-small
-same-block appendix.
+`2*n + o(n)` advertised payload `buildPayload xs`, with every actual
+successful read backed by the counted flat layout.
 -/
 theorem listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story :
     SuccinctSpace.LittleOLinear overhead /\

@@ -2044,9 +2044,6 @@ theorem concreteBPCloseNavigationLCACloseGlobalTraceResult_matchesReadStore
         concreteBPCloseNavigationRankCloseGlobalTraceResult_matchesReadStore
           shape pos)
       (concreteBPCloseNavigationGlobalReadStore_bpCode shape)
-      (SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseTraceResult_matchesReadStore
-        shape leftClose rightClose
-        (concreteBPCloseNavigationGlobalReadStore shape))
       (fun startBlock count =>
         concreteBPCloseNavigationInteriorGlobalTraceResultAllSizeStructural_matchesReadStore
           shape startBlock count)
