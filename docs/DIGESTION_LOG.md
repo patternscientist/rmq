@@ -455,9 +455,31 @@ is now only a sufficient Ready theorem; the same-block finite-small close
 table remains as the one-read same-block fallback. Plain English: the all-size
 flat-payload theorem still proves every actual successful read is counted and
 backed, but segments for the old interior witness table
-are dead/unreachable from that public trace. A skeptical grad student should
+have no successful reads in that public trace. A skeptical grad student should
 ask whether the active non-Ready bounded summary scan should eventually be
 replaced by a smaller direct BP-code micro-scan.
+
+2026-07-04 all-size structural route polish: the replacement for a false
+total-Ready theorem is now named directly by
+`SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorAllSizeStructuralRoute_total`.
+It states that the actual all-size interior trace takes exactly one of three
+routes: Ready two-level replay, active non-Ready bounded summary scan, or
+inactive pure-none. `SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadLegacyInteriorSegmentStatus`
+records that legacy interior slots 26 and 27 remain as compatibility names but
+are not counted flat payload, and
+`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_noFiniteSmallInteriorSuccessfulRead`
+is now a public successful-read exclusion anchor. The two-sided RMQ capstone
+also has the explicit lower-clause anchor
+`SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_lower_bound`,
+and `RMQExamples.Concrete` now instantiates `SuccinctClassic.buildPayload_length`,
+`SuccinctClassic.queryCosted_exact`, and
+`SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory` on `[3, 1, 4, 1, 5]`.
+Plain English: the public story now has theorem names for the structural
+all-size route, for the precise slots-26-and-27 successful-read exclusion, and for the
+lower side of the two-sided capstone. Live assumption: this proves no
+successful reads to legacy slots 26 and 27, not the stronger syntactic absence of failed
+read events. A skeptical grad student should ask whether those legacy slots can
+be deleted entirely after the remaining compatibility lemmas are retired.
 
 2026-07-03 rank/select no-synthetic global-store update: the standalone
 compressed/FID rank/select spoke now has

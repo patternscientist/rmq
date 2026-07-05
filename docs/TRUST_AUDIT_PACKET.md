@@ -106,8 +106,8 @@ rank-seed reads inside compact close/LCA contribute structural
 payload/register traces. The all-size compact close/LCA leg now also consumes
 `SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural`,
 which replaces the former zero-block same-block fallback and cross-block
-interior `TraceResult.ofCosted` leaves with payload-backed finite-small or
-two-level structural traces.
+interior `TraceResult.ofCosted` leaves with the finite-small same-block trace
+and the all-size structural cross-block interior route.
 
 There is also a large-regime companion:
 
@@ -118,11 +118,26 @@ abbrev succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime :=
 
 Its query clauses include the explicit hypothesis `2^128 <= shape.size`; under
 that premise the compact close/LCA leg routes through the positive-block
-local/fringe/interior structural trace replay rather than the all-size
-fallback. This large-regime theorem is now a compatibility companion, not the
-asymptotic reason for an all-size fallback: the current public all-size route
-is structural, with Ready two-level replay, active non-Ready bounded summary
-scan, and inactive pure-none interior replay.
+local/fringe/interior structural trace replay. This large-regime theorem is now
+a compatibility companion: the current public all-size route is structural,
+with Ready two-level replay, active non-Ready bounded summary scan, and inactive
+pure-none interior replay.
+
+The compact interior route itself is now named by:
+
+```lean
+RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorAllSizeStructuralRoute_total
+```
+
+The final trace exclusion theorem is deliberately precise:
+
+```lean
+RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_noFiniteSmallInteriorSuccessfulRead
+```
+
+It proves that no successful read in the public final trace targets legacy
+interior slots 26 and 27; it does not claim that no syntactic read event with a
+failed `none` payload can ever mention those segment numbers.
 
 The strongest all-size execution-story theorem is the global-store companion:
 
@@ -189,9 +204,9 @@ abbrev succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory :=
 It adds the explicit premise `2^128 <= shape.size` and uses the structural
 local/fringe/interior close-navigation replay on the compact close/LCA leg. The
 all-size flat-payload theorem remains the main public endpoint; it now avoids
-the legacy interior witness table entirely by splitting cross-block interior
-replay into Ready two-level, active non-Ready bounded summary scan, and
-inactive pure-none cases. As before, these are word-RAM model statements;
+successful-read dependence on the legacy interior witness slots by splitting
+cross-block interior replay into Ready two-level, active non-Ready bounded
+summary scan, and inactive pure-none cases. As before, these are word-RAM model statements;
 they are not Lean-runtime claims and not a general CPU semantics.
 
 The rank/select spoke now has a fused compressed/FID capstone alias:

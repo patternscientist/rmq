@@ -2228,5 +2228,26 @@ theorem builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_dou
       exact Nat.le_trans hcanonical hmono
     · exact htotal.2 n
 
+/--
+Named lower side of the generic-select two-sided capstone.
+
+This is the first numeric clause of
+`builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`,
+exposed separately so audit readers can see that the public two-sided theorem
+contains the doubled Catalan lower-bound comparison, not only the `2*n + o(n)`
+upper construction.
+-/
+theorem builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_lower_bound
+    (n : Nat) :
+    EncodingLowerBound.doubledLogSlackLower n <=
+      2 *
+        (2 * n +
+          concreteBPNativeSuccinctRMQOverhead
+            genericSparseExceptionBPCloseAccessOverhead n) := by
+  have hcap :=
+    builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile
+  dsimp only at hcap
+  exact (hcap.2 n).1
+
 end SuccinctFinal
 end RMQ

@@ -1,5 +1,6 @@
 import RMQ.Core.Window
 import RMQ.Core.Succinct
+import RMQ.Core.SuccinctRMQClassic
 import RMQ.Core.UnionFind
 
 /-!
@@ -19,6 +20,29 @@ example : RMQ.Succinct.rankPrefix true [true, false, true, true] 3 = 2 := by
 
 example : RMQ.Succinct.select false [true, false, true, false] 1 = some 3 := by
   rfl
+
+def tinyRMQInput : List Int := [3, 1, 4, 1, 5]
+
+example :
+    (RMQ.SuccinctClassic.buildPayload tinyRMQInput).length =
+      2 * tinyRMQInput.length +
+        RMQ.SuccinctClassic.overhead tinyRMQInput.length := by
+  exact RMQ.SuccinctClassic.buildPayload_length tinyRMQInput
+
+example :
+    (RMQ.SuccinctClassic.queryCosted tinyRMQInput 0 5).erase =
+      some (RMQ.scanWindow tinyRMQInput 0 5) := by
+  simpa using
+    (RMQ.SuccinctClassic.queryCosted_exact
+      tinyRMQInput (left := 0) (len := 5)
+      (by decide) (by decide))
+
+example :
+    RMQ.SuccinctClassic.FlatPayloadStoreNoSyntheticExecutionStory
+      tinyRMQInput 0 5 := by
+  exact
+    RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory
+      tinyRMQInput 0 5
 
 def tinyUnionFind : RMQ.UnionFind.State where
   size := 3

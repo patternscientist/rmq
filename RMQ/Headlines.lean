@@ -101,7 +101,10 @@ word-primitive operands/results.
 abbrev rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreBoundedExecutionStory :=
   RMQ.RankSelect.compressedFIDFixedWeightTargetGlobalPayloadStore_bounded_execution_story
 
-/-- BP-native succinct RMQ capstone: exact RMQ, `2*n + o(n)`, constant query. -/
+/--
+BP-native succinct RMQ capstone: exact RMQ, `2*n + o(n)`, constant query, and
+the doubled-Catalan lower-bound comparison in the same theorem surface.
+-/
 abbrev succinctRMQTwoNPlusOConstantQuery :=
   RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile
 
@@ -146,8 +149,8 @@ Unified-`WordRAM.TraceEvent` BP-native succinct RMQ capstone. The final query
 control now emits one `TraceEvent` stream. Select-close, answer-rank, and
 compact-close rank-seed reads are structural payload/register traces; the
 all-size global execution story below additionally replaces the former
-close-navigation fallback leaves with payload-backed finite-small/structural
-traces.
+close-navigation fallback leaves with the finite-small same-block trace and
+the all-size structural cross-block interior route.
 -/
 abbrev succinctRMQTwoNPlusOConstantQueryWordTrace :=
   RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_profile
@@ -156,8 +159,9 @@ abbrev succinctRMQTwoNPlusOConstantQueryWordTrace :=
 Large-regime unified-`WordRAM.TraceEvent` BP-native succinct RMQ capstone. This
 has the same two-sided `2*n + o(n)`, constant-query theorem shape, but the query
 clauses carry the explicit size hypothesis that lets the compact close/LCA leg
-expand through the structural local/fringe/interior trace replay instead of the
-all-size fallback.
+expand through the Ready local/fringe/interior trace replay. The public
+all-size route is also structural: Ready two-level, active bounded summary
+scan, or inactive pure-none.
 -/
 abbrev succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime :=
   RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_large_regime_profile
@@ -204,8 +208,8 @@ abbrev succinctRMQGlobalPayloadStoreBoundedExecutionStory :=
 /--
 All-size structural execution-story theorem for the final all-size succinct
 RMQ query. This is the citation anchor for the globally segmented trace after
-the zero-block same-block and cross-block interior close-navigation fallback
-leaves have been replaced by payload-backed structural traces.
+the zero-block same-block and cross-block interior close-navigation leaves have
+been replaced by payload-backed structural traces.
 -/
 abbrev succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_allSizeStructural_execution_story
@@ -235,7 +239,7 @@ abbrev succinctRMQFlatPayloadStoreNoSyntheticExecutionStory :=
 Large-regime companion to `succinctRMQGlobalPayloadStoreExecutionStory`; this
 uses the positive-block local/fringe/interior close-navigation replay under the
 explicit `2^128 <= shape.size` compatibility premise. It is no longer the
-theorem used to justify a giant finite-prefix dense fallback in the all-size
+theorem used to justify the old numeric compatibility story in the all-size
 payload story.
 -/
 abbrev succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory :=

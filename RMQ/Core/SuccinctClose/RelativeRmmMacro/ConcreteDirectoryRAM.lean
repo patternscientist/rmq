@@ -988,9 +988,10 @@ theorem boundedSummaryRangeScanTraceResultAtSegments_no_syntheticCostOnlyPrimiti
           segments block event hmem)
 
 /--
-Finite-small structural replay for the concrete relative-rmM interior range
-minimum.  The witness is the payload-backed finite table added to the concrete
-interior directory, read through its min and arg payload tables.
+Legacy diagnostic replay for the retired all-pairs relative-rmM interior
+witness table, read through its min and arg payload tables. The public all-size
+interior trace does not dispatch here; see
+`concreteBPRelativeRmmInteriorAllSizeStructuralRoute_total`.
 -/
 def concreteBPFiniteSmallInteriorRangeMinTraceResultAtSegments
     (shape : Cartesian.CartesianShape)
@@ -1128,6 +1129,47 @@ def concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
       segments.summary startBlock count
   else
     WordRAM.TraceResult.pure none
+
+/--
+Public route theorem for the all-size structural interior replay.
+
+`Ready` remains the fast two-level regime predicate, not a total predicate.
+The public all-size trace is total because every shape follows one of three
+concrete structural routes: Ready uses the two-level replay, active non-Ready
+uses the bounded summary scan, and inactive uses a pure `none` trace.
+-/
+theorem concreteBPRelativeRmmInteriorAllSizeStructuralRoute_total
+    (shape : Cartesian.CartesianShape)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (startBlock count : Nat) :
+    (∃ hready : concreteBPRelativeRmmInteriorReady shape,
+      concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+          shape segments startBlock count =
+        concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsOfReady
+          shape hready segments startBlock count) ∨
+      (¬ concreteBPRelativeRmmInteriorReady shape ∧
+        canonicalBPRelativeMinMaxArgSummaryTableActive shape ∧
+        concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+            shape segments startBlock count =
+          boundedSummaryRangeScanTraceResultAtSegments
+            (concreteBPRelativeMinMaxArgSummaryTable_canonical shape)
+            segments.summary startBlock count) ∨
+      (¬ concreteBPRelativeRmmInteriorReady shape ∧
+        ¬ canonicalBPRelativeMinMaxArgSummaryTableActive shape ∧
+        concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+            shape segments startBlock count =
+          WordRAM.TraceResult.pure none) := by
+  unfold concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+  by_cases hready : concreteBPRelativeRmmInteriorReady shape
+  · left
+    exact ⟨hready, by simp [hready]⟩
+  · right
+    by_cases hactive :
+        canonicalBPRelativeMinMaxArgSummaryTableActive shape
+    · left
+      exact ⟨hready, hactive, by simp [hready, hactive]⟩
+    · right
+      exact ⟨hready, hactive, by simp [hready, hactive]⟩
 
 theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural_refines
     (shape : Cartesian.CartesianShape)

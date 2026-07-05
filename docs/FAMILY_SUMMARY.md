@@ -52,7 +52,13 @@ source/component/offset backing evidence for every actual successful read,
 using an all-size structural cross-block interior route: Ready shapes use the
 two-level relative-rmM replay, active non-Ready shapes use a bounded summary
 scan, and inactive shapes return pure none for the interior obligation. The
-theorem `SuccinctClose.concreteBPRelativeRmmInteriorReady_not_all` still records
+route theorem is
+`SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorAllSizeStructuralRoute_total`.
+The successful-read exclusion theorem for the public final trace is
+`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_noFiniteSmallInteriorSuccessfulRead`;
+it excludes successful reads to legacy interior slots 26 and 27, not all
+syntactic read events. The theorem
+`SuccinctClose.concreteBPRelativeRmmInteriorReady_not_all` still records
 the exact empty-shape obstruction to making the current Ready predicate
 universal, while `SuccinctClose.concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold`
 is now only a sufficient Ready theorem, not the public fallback story.

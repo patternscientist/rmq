@@ -17,7 +17,7 @@ open SuccinctSpace
 The local endpoint and same-block work below is charged as bounded BP-word
 primitive work over the base BP payload, so the auxiliary close overhead is the
 all-size structural relative-rmM interior navigator payload. The old
-finite-small interior fallback accounting name is retained below as a zero
+retired-interior accounting name is retained below as a zero
 compatibility surface; the same-block finite-small close table is separate.
 -/
 def compactBPCloseFiniteSmallFallbackPayloadLength

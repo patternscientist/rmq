@@ -105,7 +105,8 @@ Segments are assigned as follows:
 * `1..16`: close-select auxiliary tables.
 * `17..19`: final false-rank samples and packed BP-code words.
 * `20..25`: compact close/LCA relative-rmM interior tables.
-* `26..27`: finite-small interior range-min witness tables.
+* `26..27`: legacy finite-small interior witness slots; the public all-size
+  trace proves no successful reads to these slots.
 * `28`: finite-small same-block close table.
 
 Word-primitive events such as in-word rank/select are not payload reads and
@@ -476,6 +477,9 @@ def concreteBPNativeSuccinctRMQFlatPayloadSegmentSource? :
   | 23 => some .closeSummaryArgOffset
   | 24 => some .closeInteriorLocal
   | 25 => some .closeInteriorGlobal
+  -- Legacy dead interior slots. They remain addressable for compatibility
+  -- manifests, but the public all-size trace proves no successful reads to
+  -- them and they are never counted as flat payload.
   | 26 => some .closeFiniteSmallInteriorMin
   | 27 => some .closeFiniteSmallInteriorArg
   | 28 => some .closeFiniteSmallSameBlock
@@ -578,6 +582,27 @@ theorem concreteBPNativeSuccinctRMQFlatPayloadFiniteSmallSegmentStatus
     concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
     concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat,
     concreteBPNativeSuccinctRMQFlatPayloadSourceLargeReadyCounted]
+
+/--
+Compatibility status for the retired all-pairs interior slots.
+
+Segments `26` and `27` still have manifest names, but they are legacy
+compatibility slots in the public flat payload: they are not counted, and the
+all-size final trace proves no successful reads to them.
+-/
+theorem concreteBPNativeSuccinctRMQFlatPayloadLegacyInteriorSegmentStatus
+    (shape : Cartesian.CartesianShape) :
+    concreteBPNativeSuccinctRMQFlatPayloadSegmentSource? 26 =
+        some .closeFiniteSmallInteriorMin /\
+      concreteBPNativeSuccinctRMQFlatPayloadSegmentSource? 27 =
+        some .closeFiniteSmallInteriorArg /\
+      ¬ concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+          shape 26 /\
+      ¬ concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+          shape 27 := by
+  simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+    concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+    concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
 
 def concreteBPNativeSuccinctRMQFlatPayloadSourceComponentOffset
     (shape : Cartesian.CartesianShape) :
@@ -1512,8 +1537,9 @@ theorem
 /--
 Successful reads from sources known to be counted in the current flat payload
 are positionally backed by that payload. The counted-source precondition is
-essential for finite-small interior segments `26` and `27`: in the large branch
-their tables remain fallback sources but are not present in `closePayload`.
+essential for legacy finite-small interior segments `26` and `27`: their source
+names are retained for compatibility, but they are not counted in `closePayload`
+and the public all-size trace proves no successful reads to them.
 -/
 theorem
     concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_counted_reads_backed_by_counted_payload
@@ -1549,8 +1575,8 @@ theorem
 A successful flat-store read is counted once the branch predicates required by
 conditional close sources are discharged: summary segments `20` through `23`
 require the canonical summary table to be active, local/global interior segments
-`24` and `25` require Ready, and retired dense finite-small interior segments
-`26` and `27` must not occur.
+`24` and `25` require Ready, and retired all-pairs interior slots `26` and
+`27` must not occur.
 -/
 theorem
     concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_read_segment_counted
@@ -3991,7 +4017,7 @@ private theorem
     concreteBPNativeInteriorGlobalWordTraceResultOfReady_noFiniteSmallInteriorSuccessfulRead
       shape hready startBlock count
 
-private theorem
+theorem
     concreteBPNativeInteriorGlobalWordTraceResultAllSizeStructural_noFiniteSmallInteriorSuccessfulRead
     (shape : Cartesian.CartesianShape)
     (startBlock count : Nat) :

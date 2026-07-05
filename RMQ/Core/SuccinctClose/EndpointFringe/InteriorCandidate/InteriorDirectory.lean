@@ -686,6 +686,12 @@ theorem concreteBPRelativeRmmInteriorGlobalTable_payload_le_budget_of_size_ge
     concreteBPRelativeRmmInteriorGlobalTable_payload_le_budget_of_ready
       shape (concreteBPRelativeRmmInteriorReady_of_size_ge shape hsize)
 
+/--
+Legacy diagnostic slot for the retired all-pairs interior witness table. The
+public all-size compact-close interior route no longer dispatches to this
+table; it uses Ready/two-level replay, active bounded summary scan, or inactive
+pure-none replay instead.
+-/
 def finiteSmallInteriorRangeSlot
     (blockCount startBlock count : Nat) : Nat :=
   if 0 < count /\ startBlock + count <= blockCount then
@@ -694,7 +700,7 @@ def finiteSmallInteriorRangeSlot
     (blockCount + 1) * (blockCount + 1)
 
 def finiteSmallInteriorRanges (blockCount : Nat) : List (Nat × Nat) :=
-  (List.range ((blockCount + 1) * (blockCount + 1))).map fun slot =>
+    (List.range ((blockCount + 1) * (blockCount + 1))).map fun slot =>
     (slot / (blockCount + 1), slot % (blockCount + 1))
 
 theorem finiteSmallInteriorRanges_get?_of_valid

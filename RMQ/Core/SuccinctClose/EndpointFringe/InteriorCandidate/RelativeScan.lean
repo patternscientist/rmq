@@ -374,6 +374,11 @@ theorem rangeScanCosted_erase_exact
       simpa [rangeScanCosted, Costed.bind, hvalue,
         bpRangeArgMinPrefixPos, bpRangeMinExcess] using htail
 
+/--
+Legacy diagnostic shortcut that jumps directly to the semantic winning block.
+It is retained for obstruction/proposal compatibility, but the public all-size
+compact-close interior replay does not depend on this callback.
+-/
 def rangeArgMinBlockCandidateCosted
     {shape : Cartesian.CartesianShape}
     {blockSize blocksPerSuper blockCount superCount
