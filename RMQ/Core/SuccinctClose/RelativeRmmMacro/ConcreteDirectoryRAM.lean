@@ -2465,6 +2465,181 @@ theorem zeroBlockSameBlockCloseWordsTraceResult_trace_length
       (zeroBlockSameBlockCloseStructuralWords shape).length := by
   simp [zeroBlockSameBlockCloseWordsTraceResult]
 
+private theorem list_range_flatMap_getElem?_singleton
+    (words : List (List Bool)) :
+    (List.range words.length).flatMap
+        (fun index =>
+          match words[index]? with
+          | some word => [word]
+          | none => []) =
+      words := by
+  induction words with
+  | nil =>
+      simp
+  | cons word words ih =>
+      change
+        (List.range (words.length + 1)).flatMap
+            (fun index =>
+              match (word :: words)[index]? with
+              | some word => [word]
+              | none => []) =
+          word :: words
+      rw [List.range_succ_eq_map]
+      simp [List.flatMap_map, List.getElem?_cons_succ, ih]
+
+def readStorePayloadWordValue
+    (store : WordRAM.ReadStore) (segment index : Nat) :
+    List (List Bool) :=
+  match store.readWord? segment index with
+  | some word => [word]
+  | none => []
+
+/--
+Store-parameterized read of every BP-code payload chunk used by the zero-block
+same-block replay.  Unlike `zeroBlockSameBlockCloseWordsTraceResult`, both the
+returned words and read events are produced from the supplied read store.
+-/
+def zeroBlockSameBlockCloseWordsTraceResultWithStore
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore) :
+    WordRAM.TraceResult (List (List Bool)) where
+  value :=
+    (List.range (zeroBlockSameBlockCloseStructuralWords shape).length).flatMap
+      (fun index => readStorePayloadWordValue store 0 index)
+  trace :=
+    (List.range (zeroBlockSameBlockCloseStructuralWords shape).length).map
+      (fun index =>
+        WordRAM.TraceEvent.readWord 0 index (store.readWord? 0 index))
+
+theorem zeroBlockSameBlockCloseWordsTraceResultWithStore_matchesReadStore
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore) :
+    forall event,
+      List.Mem event
+          (zeroBlockSameBlockCloseWordsTraceResultWithStore
+            shape store).trace ->
+        event.matchesReadStore store := by
+  intro event hmem
+  rcases List.mem_map.mp hmem with ⟨index, _hindex, rfl⟩
+  simp [WordRAM.TraceEvent.matchesReadStore]
+
+theorem zeroBlockSameBlockCloseWordsTraceResultWithStore_no_syntheticCostOnlyPrimitive
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore) :
+    forall event,
+      List.Mem event
+          (zeroBlockSameBlockCloseWordsTraceResultWithStore
+            shape store).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  intro event hmem
+  rcases List.mem_map.mp hmem with ⟨index, _hindex, rfl⟩
+  simp [WordRAM.TraceEvent.isSyntheticCostOnlyPrimitive]
+
+theorem zeroBlockSameBlockCloseWordsTraceResultWithStore_value_eq_of_store_agreement
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (hbpCode :
+      forall index,
+        store.readWord? 0 index =
+          (SuccinctSpace.chunkPayloadWords
+            (SuccinctRank.machineWordBits shape.bpCode.length)
+            shape.bpCode).toArray[index]?) :
+    (zeroBlockSameBlockCloseWordsTraceResultWithStore
+      shape store).value =
+      (zeroBlockSameBlockCloseWordsTraceResult shape).value := by
+  simpa [zeroBlockSameBlockCloseWordsTraceResultWithStore,
+    zeroBlockSameBlockCloseWordsTraceResult,
+    zeroBlockSameBlockCloseStructuralWords,
+    readStorePayloadWordValue, hbpCode] using
+    list_range_flatMap_getElem?_singleton
+      (SuccinctSpace.chunkPayloadWords
+        (SuccinctRank.machineWordBits shape.bpCode.length)
+        shape.bpCode)
+
+theorem zeroBlockSameBlockCloseWordsTraceResultWithStore_trace_eq_of_store_agreement
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (hbpCode :
+      forall index,
+        store.readWord? 0 index =
+          (SuccinctSpace.chunkPayloadWords
+            (SuccinctRank.machineWordBits shape.bpCode.length)
+            shape.bpCode).toArray[index]?) :
+    (zeroBlockSameBlockCloseWordsTraceResultWithStore
+      shape store).trace =
+      (zeroBlockSameBlockCloseWordsTraceResult shape).trace := by
+  simp [zeroBlockSameBlockCloseWordsTraceResultWithStore,
+    zeroBlockSameBlockCloseWordsTraceResult,
+    bpCodeReadWordTraceEvent, hbpCode]
+
+/--
+Store-parameterized zero-block same-block evaluator.
+
+The trace and answer are evaluated from `store.readWord?` at the BP-code segment,
+then decoded by the bits-derived zero-block value function.
+-/
+def zeroBlockSameBlockCloseStructuralTraceResultWithStore
+    (shape : Cartesian.CartesianShape)
+    (store : WordRAM.ReadStore)
+    (leftClose rightClose : Nat) : WordRAM.TraceResult (Option Nat) :=
+  WordRAM.TraceResult.map
+    (fun words =>
+      zeroBlockSameBlockCloseStructuralValueFromWords
+        shape words leftClose rightClose)
+    (zeroBlockSameBlockCloseWordsTraceResultWithStore shape store)
+
+theorem zeroBlockSameBlockCloseStructuralTraceResultWithStore_matchesReadStore
+    (shape : Cartesian.CartesianShape)
+    (store : WordRAM.ReadStore)
+    (leftClose rightClose : Nat) :
+    forall event,
+      List.Mem event
+          (zeroBlockSameBlockCloseStructuralTraceResultWithStore
+            shape store leftClose rightClose).trace ->
+        event.matchesReadStore store := by
+  exact
+    WordRAM.TraceResult.map_trace_forall
+      (fun event => event.matchesReadStore store)
+      (fun words =>
+        zeroBlockSameBlockCloseStructuralValueFromWords
+          shape words leftClose rightClose)
+      (zeroBlockSameBlockCloseWordsTraceResultWithStore shape store)
+      (zeroBlockSameBlockCloseWordsTraceResultWithStore_matchesReadStore
+        shape store)
+
+theorem zeroBlockSameBlockCloseStructuralTraceResultWithStore_no_syntheticCostOnlyPrimitive
+    (shape : Cartesian.CartesianShape)
+    (store : WordRAM.ReadStore)
+    (leftClose rightClose : Nat) :
+    forall event,
+      List.Mem event
+          (zeroBlockSameBlockCloseStructuralTraceResultWithStore
+            shape store leftClose rightClose).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  exact
+    WordRAM.TraceResult.map_trace_forall
+      (fun event => ¬ event.isSyntheticCostOnlyPrimitive)
+      (fun words =>
+        zeroBlockSameBlockCloseStructuralValueFromWords
+          shape words leftClose rightClose)
+      (zeroBlockSameBlockCloseWordsTraceResultWithStore shape store)
+      (zeroBlockSameBlockCloseWordsTraceResultWithStore_no_syntheticCostOnlyPrimitive
+        shape store)
+
+theorem zeroBlockSameBlockCloseStructuralTraceResult_store_parametric
+    (shape : Cartesian.CartesianShape)
+    (storeA storeB : WordRAM.ReadStore)
+    (leftClose rightClose : Nat)
+    (hread :
+      forall index, storeA.readWord? 0 index = storeB.readWord? 0 index) :
+    (zeroBlockSameBlockCloseStructuralTraceResultWithStore
+      shape storeA leftClose rightClose).value =
+        (zeroBlockSameBlockCloseStructuralTraceResultWithStore
+          shape storeB leftClose rightClose).value /\
+      (zeroBlockSameBlockCloseStructuralTraceResultWithStore
+        shape storeA leftClose rightClose).trace =
+        (zeroBlockSameBlockCloseStructuralTraceResultWithStore
+          shape storeB leftClose rightClose).trace := by
+  constructor <;>
+    simp [zeroBlockSameBlockCloseStructuralTraceResultWithStore,
+      zeroBlockSameBlockCloseWordsTraceResultWithStore,
+      readStorePayloadWordValue, hread]
+
 theorem zeroBlockSameBlockCloseWordsTraceResult_trace_forall
     (shape : Cartesian.CartesianShape)
     (P : WordRAM.TraceEvent -> Prop)
@@ -2523,6 +2698,34 @@ def zeroBlockSameBlockCloseStructuralTraceResult
       zeroBlockSameBlockCloseStructuralValueFromWords
         shape words leftClose rightClose)
     (zeroBlockSameBlockCloseWordsTraceResult shape)
+
+theorem zeroBlockSameBlockCloseStructuralTraceResult_evalWithStore
+    (shape : Cartesian.CartesianShape)
+    (store : WordRAM.ReadStore)
+    (leftClose rightClose : Nat)
+    (hbpCode :
+      forall index,
+        store.readWord? 0 index =
+          (SuccinctSpace.chunkPayloadWords
+            (SuccinctRank.machineWordBits shape.bpCode.length)
+            shape.bpCode).toArray[index]?) :
+    (zeroBlockSameBlockCloseStructuralTraceResultWithStore
+      shape store leftClose rightClose).value =
+        (zeroBlockSameBlockCloseStructuralTraceResult
+          shape leftClose rightClose).value /\
+      (zeroBlockSameBlockCloseStructuralTraceResultWithStore
+        shape store leftClose rightClose).trace =
+        (zeroBlockSameBlockCloseStructuralTraceResult
+          shape leftClose rightClose).trace := by
+  constructor
+  · simp [zeroBlockSameBlockCloseStructuralTraceResultWithStore,
+      zeroBlockSameBlockCloseStructuralTraceResult,
+      zeroBlockSameBlockCloseWordsTraceResultWithStore_value_eq_of_store_agreement
+        shape store hbpCode]
+  · simp [zeroBlockSameBlockCloseStructuralTraceResultWithStore,
+      zeroBlockSameBlockCloseStructuralTraceResult,
+      zeroBlockSameBlockCloseWordsTraceResultWithStore_trace_eq_of_store_agreement
+        shape store hbpCode]
 
 theorem zeroBlockSameBlockCloseStructuralTraceResult_refines
     (shape : Cartesian.CartesianShape)

@@ -367,6 +367,12 @@ adds the flat payload layout and source/component/offset backing evidence for
 every actual successful final-query read to that same bounded no-synthetic
 execution story; its flat payload equation is the advertised BP-native payload
 directly.
+The whole-query store-extensional theorem is still fixed-trace, but the
+zero-block same-block close leaf now has a store-parametric evaluator:
+`RMQ.Headlines.succinctRMQZeroBlockSameBlockEvalWithStore` evaluates against a
+supplied `WordRAM.ReadStore`, and
+`RMQ.Headlines.succinctRMQZeroBlockSameBlockStoreParametric` proves equal
+produced value/trace for stores that agree on BP-code segment reads.
 
 | Structure | Correctness status | Cost status | Notes |
 | --- | --- | --- | --- |
@@ -2253,6 +2259,8 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryWordTraceCosted_exact`, and
   `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_profile`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_refines_wholeQueryInterpretedCosted`,
+  `SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_evalWithStore`,
+  `SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_store_parametric`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_matchesReadStore`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQGlobalReadStore_retiredFiniteSmallInterior_none`,

@@ -1711,20 +1711,132 @@ theorem zeroBlockSameBlockCloseStructuralWords_payload
       (SuccinctRank.machineWordBits_pos shape.bpCode.length)
       shape.bpCode
 
-def zeroBlockSameBlockCloseStructuralValueFromWords
-    (shape : Cartesian.CartesianShape)
-    (words : List (List Bool))
-    (leftClose rightClose : Nat) : Option Nat :=
-  if SuccinctSpace.flattenPayloadWords words = shape.bpCode then
-    let left := closeToInorder shape leftClose
-    let right := closeToInorder shape rightClose
-    if left <= right then
+/-- BP excess computed from an explicit BP bit list. -/
+def bpExcessAtBits (bits : List Bool) (pos : Nat) : Nat :=
+  Succinct.rankPrefix true bits pos -
+    Succinct.rankPrefix false bits pos
+
+def bpBetterArgMinPrefixPosBits
+    (bits : List Bool) (left right : Nat) : Nat :=
+  if bpExcessAtBits bits right < bpExcessAtBits bits left then
+    right
+  else
+    left
+
+def bpPrefixRangeArgMinPrefixPosFromBits
+    (bits : List Bool) :
+    Nat -> Nat -> Nat -> Nat
+  | _pos, 0, best => best
+  | pos, steps + 1, best =>
+      let sample := Nat.min pos bits.length
+      let best' := bpBetterArgMinPrefixPosBits bits best sample
+      bpPrefixRangeArgMinPrefixPosFromBits bits (pos + 1) steps best'
+
+def bpPrefixRangeArgMinPrefixPosBits
+    (bits : List Bool) (start count : Nat) : Nat :=
+  match count with
+  | 0 => Nat.min start bits.length
+  | steps + 1 =>
+      bpPrefixRangeArgMinPrefixPosFromBits bits (start + 1) steps
+        (Nat.min start bits.length)
+
+def bpPrefixRangeMinExcessBits
+    (bits : List Bool) (start count : Nat) : Nat :=
+  bpExcessAtBits bits (bpPrefixRangeArgMinPrefixPosBits bits start count)
+
+def bpCandidateCloseFromBits?
+    (bits : List Bool) (leftClose rightClose : Nat) : Option Nat :=
+  bpCandidateClose?
+    (some
+      (bpPrefixRangeMinExcessBits bits (leftClose + 1)
+        (rightClose - leftClose + 1),
+        bpPrefixRangeArgMinPrefixPosBits bits (leftClose + 1)
+          (rightClose - leftClose + 1)))
+
+theorem bpExcessAtBits_eq_bpExcessAt_of_eq
+    {shape : Cartesian.CartesianShape} {bits : List Bool}
+    (hbits : bits = shape.bpCode) (pos : Nat) :
+    bpExcessAtBits bits pos = bpExcessAt shape pos := by
+  subst bits
+  rfl
+
+theorem bpBetterArgMinPrefixPosBits_eq_bpBetterArgMinPrefixPos_of_eq
+    {shape : Cartesian.CartesianShape} {bits : List Bool}
+    (hbits : bits = shape.bpCode) (left right : Nat) :
+    bpBetterArgMinPrefixPosBits bits left right =
+      bpBetterArgMinPrefixPos shape left right := by
+  subst bits
+  simp [bpBetterArgMinPrefixPosBits, bpBetterArgMinPrefixPos,
+    bpExcessAtBits, bpExcessAt]
+
+theorem bpPrefixRangeArgMinPrefixPosFromBits_eq_bpPrefixRangeArgMinPrefixPosFrom_of_eq
+    {shape : Cartesian.CartesianShape} {bits : List Bool}
+    (hbits : bits = shape.bpCode)
+    (pos steps best : Nat) :
+    bpPrefixRangeArgMinPrefixPosFromBits bits pos steps best =
+      bpPrefixRangeArgMinPrefixPosFrom shape pos steps best := by
+  subst bits
+  induction steps generalizing pos best with
+  | zero =>
+      simp [bpPrefixRangeArgMinPrefixPosFromBits,
+        bpPrefixRangeArgMinPrefixPosFrom]
+  | succ steps ih =>
+      simp [bpPrefixRangeArgMinPrefixPosFromBits,
+        bpPrefixRangeArgMinPrefixPosFrom,
+        bpBetterArgMinPrefixPosBits, bpBetterArgMinPrefixPos,
+        bpExcessAtBits, bpExcessAt, ih]
+
+theorem bpPrefixRangeArgMinPrefixPosBits_eq_bpPrefixRangeArgMinPrefixPos_of_eq
+    {shape : Cartesian.CartesianShape} {bits : List Bool}
+    (hbits : bits = shape.bpCode) (start count : Nat) :
+    bpPrefixRangeArgMinPrefixPosBits bits start count =
+      bpPrefixRangeArgMinPrefixPos shape start count := by
+  subst bits
+  cases count with
+  | zero =>
+      simp [bpPrefixRangeArgMinPrefixPosBits,
+        bpPrefixRangeArgMinPrefixPos]
+  | succ steps =>
+      simp [bpPrefixRangeArgMinPrefixPosBits,
+        bpPrefixRangeArgMinPrefixPos,
+        bpPrefixRangeArgMinPrefixPosFromBits_eq_bpPrefixRangeArgMinPrefixPosFrom_of_eq
+          rfl]
+
+theorem bpPrefixRangeMinExcessBits_eq_bpPrefixRangeMinExcess_of_eq
+    {shape : Cartesian.CartesianShape} {bits : List Bool}
+    (hbits : bits = shape.bpCode) (start count : Nat) :
+    bpPrefixRangeMinExcessBits bits start count =
+      bpPrefixRangeMinExcess shape start count := by
+  rw [bpPrefixRangeMinExcessBits, bpPrefixRangeMinExcess,
+    bpPrefixRangeArgMinPrefixPosBits_eq_bpPrefixRangeArgMinPrefixPos_of_eq
+      hbits]
+  exact bpExcessAtBits_eq_bpExcessAt_of_eq hbits _
+
+theorem bpCandidateCloseFromBits?_eq_bpCandidateClose?_of_eq
+    {shape : Cartesian.CartesianShape} {bits : List Bool}
+    (hbits : bits = shape.bpCode) (leftClose rightClose : Nat) :
+    bpCandidateCloseFromBits? bits leftClose rightClose =
       bpCandidateClose?
         (some
           (bpPrefixRangeMinExcess shape (leftClose + 1)
             (rightClose - leftClose + 1),
             bpPrefixRangeArgMinPrefixPos shape (leftClose + 1)
-              (rightClose - leftClose + 1)))
+              (rightClose - leftClose + 1))) := by
+  simp [bpCandidateCloseFromBits?,
+    bpPrefixRangeMinExcessBits_eq_bpPrefixRangeMinExcess_of_eq hbits,
+    bpPrefixRangeArgMinPrefixPosBits_eq_bpPrefixRangeArgMinPrefixPos_of_eq
+      hbits]
+
+def zeroBlockSameBlockCloseStructuralValueFromWords
+    (shape : Cartesian.CartesianShape)
+    (words : List (List Bool))
+    (leftClose rightClose : Nat) : Option Nat :=
+  let bits := SuccinctSpace.flattenPayloadWords words
+  if bits = shape.bpCode then
+    let left := closeToInorder shape leftClose
+    let right := closeToInorder shape rightClose
+    if left <= right then
+      bpCandidateCloseFromBits? bits leftClose rightClose
     else
       none
   else
@@ -1780,8 +1892,19 @@ theorem zeroBlockSameBlockCloseStructuralValue_exact
       (leftClose := leftClose) (rightClose := rightClose)
       (answerClose := answerClose)
       hlen hbound hleft hright hanswer
+  have hcandidate :
+      bpCandidateCloseFromBits? shape.bpCode leftClose rightClose =
+        bpCandidateClose?
+          (some
+            (bpPrefixRangeMinExcess shape (leftClose + 1)
+              (rightClose - leftClose + 1),
+              bpPrefixRangeArgMinPrefixPos shape (leftClose + 1)
+                (rightClose - leftClose + 1))) :=
+    bpCandidateCloseFromBits?_eq_bpCandidateClose?_of_eq
+      (shape := shape) (bits := shape.bpCode) rfl leftClose rightClose
   simpa [zeroBlockSameBlockCloseStructuralValue,
-    zeroBlockSameBlockCloseStructuralValueFromWords, hpayload, hle] using
+    zeroBlockSameBlockCloseStructuralValueFromWords, hpayload, hle,
+    hcandidate] using
     hprefix
 
 theorem zeroBlockSameBlockCloseCosted_refines_structural

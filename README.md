@@ -61,6 +61,8 @@ Short public aliases live in [`RMQ/Headlines.lean`](RMQ/Headlines.lean).
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime` | Large-regime WordRAM variant: same two-sided theorem shape, with an explicit size premise that routes the compact close/LCA leg through the Ready structural replay; the public all-size route is now structural as well. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` | All-size execution-story theorem for the final succinct RMQ query: the costed query refines one globally segmented trace, every event is either a payload read or bounded word primitive, and every read agrees with one concrete global payload store. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory` | Store-extensional all-size execution story: any read store agreeing with the concrete global store on the emitted payload-read events validates the same final-query trace. |
+| `RMQ.Headlines.succinctRMQZeroBlockSameBlockEvalWithStore` | Zero-block same-block close leaf evaluated against a supplied `WordRAM.ReadStore`; if the store agrees with the BP-code chunk store on segment 0, the produced value and trace match the canonical structural trace. |
+| `RMQ.Headlines.succinctRMQZeroBlockSameBlockStoreParametric` | Zero-block same-block close leaf is store-parametric: two supplied stores agreeing on BP-code segment reads produce the same value and trace. This does not yet lift to the whole final RMQ query. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory` | Bounded all-size execution story: the global trace also carries a finite trace-local bit width bounding every payload-read address and every natural operand/result exposed by word primitives. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | All-size structural execution story: the zero-block same-block leaf scans counted BP-code chunks, and the cross-block interior close-navigation leaf is replayed by structural traces. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` | No-synthetic all-size execution story: the same bounded global trace contains no dedicated synthetic cost-only marker events. |
@@ -90,6 +92,12 @@ zero-block same-block scan costs `2 * 2^15 + 1`, and the active non-Ready
 interior scan costs `4 * 2^15`. Legacy finite-small interior store segments
 `26` and `27` now resolve to empty source views and `none` reads; they are not
 part of the counted flat payload.
+
+The final all-size global-store theorem above remains a fixed-trace
+store-extensional statement. The new store-parametric evaluator theorem currently
+covers the zero-block same-block close leaf only: the leaf value and trace are
+computed from a supplied `WordRAM.ReadStore`, and store agreement implies equal
+produced value/trace.
 
 The construction-level theorem names are intentionally verbose, so that the
 model assumptions and dependency path remain inspectable. See

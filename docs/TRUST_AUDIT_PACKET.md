@@ -201,6 +201,20 @@ The extensional companion says that any read store agreeing with the concrete
 global store on the read events emitted by the final trace validates that same
 trace.
 
+A stronger store-parametric surface currently exists for the zero-block
+same-block close leaf only:
+
+```lean
+RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_evalWithStore
+RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_store_parametric
+RMQ.Headlines.succinctRMQZeroBlockSameBlockEvalWithStore
+RMQ.Headlines.succinctRMQZeroBlockSameBlockStoreParametric
+```
+
+There the evaluator is run against a supplied `WordRAM.ReadStore`, and stores
+that agree on BP-code segment reads produce the same value and trace. This is
+not yet the compact close/LCA or whole-query store-parametric lift.
+
 The flat-payload no-synthetic companion additionally exposes the
 query-independent `concreteBPNativeSuccinctRMQFlatPayloadLayout`, proves
 its payload is the advertised `concreteBPNativeSuccinctRMQPayload`, proves

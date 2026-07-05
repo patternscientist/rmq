@@ -50,6 +50,8 @@ RMQ.WordRAM.Program.eval_no_zero_cost_control
 RMQ.WordRAM.Program.eval_word_reads_length_le_machine
 RMQ.WordRAM.Program.eval_eq_of_readWord_eq
 RMQ.WordRAM.Program.eval_toCosted_eq_of_readWord_eq
+RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_evalWithStore
+RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_store_parametric
 RMQ.WordRAM.Register.NatExpr.eval_fitsInBits_of_noOverflow
 RMQ.WordRAM.Register.RegProgram.eval_event_address_fitsInBits
 RMQ.WordRAM.Register.NatProgram.eval_event_address_fitsInBits
@@ -74,6 +76,12 @@ Read in plain English:
   same read interface.
 - `eval_toCosted_eq_of_readWord_eq`: the same extensionality holds after
   projecting to `Costed`.
+- `zeroBlockSameBlockCloseStructuralTraceResult_evalWithStore`: the zero-block
+  same-block close leaf evaluates against a supplied `ReadStore`, and concrete
+  BP-code segment agreement recovers the canonical structural value/trace.
+- `zeroBlockSameBlockCloseStructuralTraceResult_store_parametric`: two supplied
+  read stores agreeing on BP-code segment reads produce the same zero-block
+  value/trace. This is a leaf theorem, not the final whole-query lift.
 - `Register.NatExpr.NoOverflow` and its helper theorems: arithmetic is
   interpreted as mathematical `Nat`; machine-word safety is an explicit
   side condition, not implicit wraparound.
@@ -103,6 +111,8 @@ RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecuti
 RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted
 RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace
 RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace
+RMQ.Headlines.succinctRMQZeroBlockSameBlockEvalWithStore
+RMQ.Headlines.succinctRMQZeroBlockSameBlockStoreParametric
 ```
 
 ## Reproduction Commands

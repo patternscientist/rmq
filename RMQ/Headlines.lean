@@ -201,6 +201,23 @@ abbrev succinctRMQGlobalPayloadStoreExtensionalExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_store_extensional_execution_story
 
 /--
+Zero-block same-block close evaluator with a supplied `WordRAM.ReadStore`.
+If the supplied store agrees with the concrete BP-code chunk store on segment 0,
+the produced value and trace equal the canonical zero-block structural trace.
+This is a zero-block leaf theorem, not yet the whole final RMQ query lift.
+-/
+abbrev succinctRMQZeroBlockSameBlockEvalWithStore :=
+  RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_evalWithStore
+
+/--
+Zero-block same-block close store-parametric theorem. Two supplied read stores
+that agree on the BP-code segment reads produce the same zero-block value and
+trace. This strengthens the fixed-trace agreement story for this leaf only.
+-/
+abbrev succinctRMQZeroBlockSameBlockStoreParametric :=
+  RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_store_parametric
+
+/--
 Bounded execution-story theorem for the final all-size succinct RMQ query. This
 extends `succinctRMQGlobalPayloadStoreExecutionStory` with a concrete finite
 trace-local bit width bounding every payload-read address and every natural
