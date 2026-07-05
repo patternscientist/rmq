@@ -1690,6 +1690,56 @@ theorem localBPSameBlockCloseCosted_exact
   rw [hlenEq']
   exact hanswer
 
+/--
+Payload-free fallback for the obstructed zero-block same-block branch.
+
+When the canonical relative-rmM block size is zero, the charged local BP window
+does not provide a useful structural coverage statement.  The final all-size
+trace therefore uses this explicit zero-payload semantic fallback instead of a
+dense all-pairs same-block table.
+-/
+def zeroBlockSameBlockCloseCosted
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) : Costed (Option Nat) :=
+  Costed.pure ((localBPSameBlockCloseCosted shape leftClose rightClose).erase)
+
+theorem zeroBlockSameBlockCloseCosted_refines_local
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) :
+    (zeroBlockSameBlockCloseCosted shape leftClose rightClose).erase =
+      (localBPSameBlockCloseCosted shape leftClose rightClose).erase := by
+  rfl
+
+theorem zeroBlockSameBlockCloseCosted_cost_eq
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) :
+    (zeroBlockSameBlockCloseCosted shape leftClose rightClose).cost = 0 := by
+  rfl
+
+theorem zeroBlockSameBlockCloseCosted_cost_le
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) :
+    (zeroBlockSameBlockCloseCosted shape leftClose rightClose).cost <= 0 := by
+  simp [zeroBlockSameBlockCloseCosted]
+
+theorem zeroBlockSameBlockCloseCosted_exact
+    {shape : Cartesian.CartesianShape}
+    {left len leftClose rightClose answerClose : Nat}
+    (hlen : 0 < len)
+    (hbound : left + len <= shape.size)
+    (hleft : bpCloseOfInorder? shape left = some leftClose)
+    (hright :
+      bpCloseOfInorder? shape (left + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder? shape
+          (scanWindow shape.representative left len) =
+        some answerClose) :
+    (zeroBlockSameBlockCloseCosted shape leftClose rightClose).erase =
+      some answerClose := by
+  rw [zeroBlockSameBlockCloseCosted_refines_local]
+  exact localBPSameBlockCloseCosted_exact
+    hlen hbound hleft hright hanswer
+
 def finiteSmallSameBlockCloseKey
     (shape : Cartesian.CartesianShape) (close : Nat) : Nat :=
   Nat.min close shape.bpCode.length

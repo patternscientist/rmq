@@ -84,15 +84,12 @@ events.
 -/
 def FlatPayloadStoreNoSyntheticExecutionStory
     (xs : List Int) (left right : Nat) : Prop :=
-  (flatPayloadLayout xs).payload =
-      buildPayload xs ++
-        (flatPayloadLayout xs).finiteSmallSameBlockPayload /\
+  (flatPayloadLayout xs).payload = buildPayload xs /\
     (let layout := flatPayloadLayout xs
      layout.payload =
       layout.bpCodePayload ++ layout.accessRankPayload ++
         layout.selectPayload ++ layout.accessPadding ++
-          layout.closePayload ++ layout.closePadding ++
-            layout.finiteSmallSameBlockPayload) /\
+          layout.closePayload ++ layout.closePadding) /\
     SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadSegmentBackingsAll
       (cartesianShape xs) /\
     (forall {segment index : Nat} {word : List Bool},
@@ -355,6 +352,32 @@ theorem listInt_flatPayloadStore_noSynthetic_execution_story :
               queryCosted_leftmost xs hlen hbound hquery)
             (fun left right =>
               flatPayloadStoreNoSyntheticExecutionStory xs left right))))
+
+/--
+Named public capstone: the no-synthetic flat execution story uses the same
+`2*n + o(n)` advertised payload `buildPayload xs`, not a finite-small
+same-block appendix.
+-/
+theorem listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story :
+    SuccinctSpace.LittleOLinear overhead /\
+      forall xs : List Int,
+        (buildPayload xs).length =
+          2 * xs.length + overhead xs.length /\
+        (forall left right,
+          (queryCosted xs left right).cost <= queryCost) /\
+        (forall {left len : Nat},
+          0 < len ->
+            left + len <= xs.length ->
+              (queryCosted xs left (left + len)).erase =
+                some (scanWindow xs left len)) /\
+        (forall {left len idx : Nat},
+          0 < len ->
+            left + len <= xs.length ->
+              (queryCosted xs left (left + len)).erase = some idx ->
+                LeftmostArgMin xs left (left + len) idx) /\
+        (forall left right,
+          FlatPayloadStoreNoSyntheticExecutionStory xs left right) :=
+  listInt_flatPayloadStore_noSynthetic_execution_story
 
 end SuccinctClassic
 

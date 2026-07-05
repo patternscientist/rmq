@@ -2438,17 +2438,79 @@ theorem finiteSmallSameBlockCloseTraceResultAtSegment_no_syntheticCostOnlyPrimit
       shape segmentBase deadSegment leftClose rightClose
       (fun event => ¬ event.isSyntheticCostOnlyPrimitive)
       ((concreteBPFiniteSmallSameBlockCloseTable
-          shape).readTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+        shape).readTraceResultAtSegment_no_syntheticCostOnlyPrimitive
         segmentBase deadSegment
         (finiteSmallSameBlockCloseSlot shape leftClose rightClose))
       event hmem
 
 /--
+Payload-free trace for the zero-block same-block fallback.
+
+The finite-small all-pairs same-block table remains available as a compatibility
+object above, but the all-size public close/LCA trace uses this zero-step branch
+when the canonical block size is zero.
+-/
+def zeroBlockSameBlockCloseTraceResult
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) : WordRAM.TraceResult (Option Nat) :=
+  WordRAM.TraceResult.pure
+    ((zeroBlockSameBlockCloseCosted shape leftClose rightClose).erase)
+
+theorem zeroBlockSameBlockCloseTraceResult_refines
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) :
+    (zeroBlockSameBlockCloseTraceResult
+      shape leftClose rightClose).toCosted =
+      zeroBlockSameBlockCloseCosted shape leftClose rightClose := by
+  rfl
+
+theorem zeroBlockSameBlockCloseTraceResult_trace_forall
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat)
+    (P : WordRAM.TraceEvent -> Prop) :
+    forall event,
+      List.Mem event
+          (zeroBlockSameBlockCloseTraceResult
+            shape leftClose rightClose).trace ->
+        P event := by
+  exact
+    WordRAM.TraceResult.pure_trace_forall P
+      ((zeroBlockSameBlockCloseCosted shape leftClose rightClose).erase)
+
+theorem zeroBlockSameBlockCloseTraceResult_matchesReadStore
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat)
+    (store : WordRAM.ReadStore) :
+    forall event,
+      List.Mem event
+          (zeroBlockSameBlockCloseTraceResult
+            shape leftClose rightClose).trace ->
+        event.matchesReadStore store := by
+  exact
+    zeroBlockSameBlockCloseTraceResult_trace_forall
+      shape leftClose rightClose
+      (fun event => event.matchesReadStore store)
+
+theorem zeroBlockSameBlockCloseTraceResult_no_syntheticCostOnlyPrimitive
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) :
+    forall event,
+      List.Mem event
+          (zeroBlockSameBlockCloseTraceResult
+            shape leftClose rightClose).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  exact
+    zeroBlockSameBlockCloseTraceResult_trace_forall
+      shape leftClose rightClose
+      (fun event => ¬ event.isSyntheticCostOnlyPrimitive)
+
+/--
 Trace-preserving compact close/LCA query.
 
 The rank-seed reads and bounded local BP endpoint decoders are structural
-Word-RAM traces. The zero-block fallback and relative-rmM interior query remain
-charged decoder leaves.
+Word-RAM traces. The zero-block fallback is payload-free; the relative-rmM
+interior query remains an older charged decoder leaf on this compatibility
+trace.
 -/
 def lcaCloseTraceResultWithRankSeed
     {shape : Cartesian.CartesianShape}
@@ -2457,8 +2519,7 @@ def lcaCloseTraceResultWithRankSeed
     (leftClose rightClose : Nat) : WordRAM.TraceResult (Option Nat) :=
   let blockSize := canonicalBPRelativeSummaryBlockSize shape
   if blockSize = 0 then
-    WordRAM.TraceResult.ofCosted
-      (finiteSmallSameBlockCloseCosted shape leftClose rightClose)
+    zeroBlockSameBlockCloseTraceResult shape leftClose rightClose
   else if blockOfClose blockSize leftClose =
       blockOfClose blockSize rightClose then
     localBPSameBlockCloseDecodedTraceResultWithRankSeed
@@ -2481,7 +2542,7 @@ theorem lcaCloseTraceResultWithRankSeed_refines
         rankCloseCosted leftClose rightClose := by
   by_cases hzero : canonicalBPRelativeSummaryBlockSize shape = 0
   · simp [lcaCloseTraceResultWithRankSeed, lcaCloseCostedWithRankSeed,
-      hzero]
+      hzero, zeroBlockSameBlockCloseTraceResult_refines]
   · by_cases hsame :
       blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose =
         blockOfClose (canonicalBPRelativeSummaryBlockSize shape) rightClose
@@ -2516,8 +2577,8 @@ theorem lcaCloseTraceResultWithRankSeed_matchesReadStore
   by_cases hzero : canonicalBPRelativeSummaryBlockSize shape = 0
   · simp [lcaCloseTraceResultWithRankSeed, hzero]
     exact
-      WordRAM.TraceResult.ofCosted_matchesReadStore
-        (finiteSmallSameBlockCloseCosted shape leftClose rightClose) store
+      zeroBlockSameBlockCloseTraceResult_matchesReadStore
+        shape leftClose rightClose store
   · by_cases hsame :
       blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose =
         blockOfClose (canonicalBPRelativeSummaryBlockSize shape) rightClose
@@ -2537,9 +2598,9 @@ theorem lcaCloseTraceResultWithRankSeed_matchesReadStore
 
 /--
 Legacy all-size close/LCA trace decomposition: every event in the old total
-trace comes from structural rank/BP leaves or exactly one of the two remaining
-`TraceResult.ofCosted` boundaries, namely the zero-block same-block fallback or
-the cross-block interior relative-rmM query.
+trace comes from structural rank/BP leaves, the payload-free zero-block
+same-block fallback, or the remaining `TraceResult.ofCosted` boundary for the
+cross-block interior relative-rmM query.
 -/
 theorem lcaCloseTraceResultWithRankSeed_legacy_ofCosted_boundary_trace_forall
     {shape : Cartesian.CartesianShape}
@@ -2558,9 +2619,8 @@ theorem lcaCloseTraceResultWithRankSeed_legacy_ofCosted_boundary_trace_forall
     (hsameZero :
       forall event,
         List.Mem event
-          (WordRAM.TraceResult.ofCosted
-            (finiteSmallSameBlockCloseCosted
-              shape leftClose rightClose)).trace ->
+          (zeroBlockSameBlockCloseTraceResult
+            shape leftClose rightClose).trace ->
           P event)
     (hinterior :
       forall startBlock count event,
@@ -2593,21 +2653,19 @@ theorem lcaCloseTraceResultWithRankSeed_legacy_ofCosted_boundary_trace_forall
           hinterior
 
 /--
-All-size structural compact close/LCA query trace.  This is the first close/LCA
-replay in this file with no `TraceResult.ofCosted` leaf: zero-block queries use
-the finite-small same-block payload table, and cross-block queries use the
-all-size structural interior replay.
+All-size structural compact close/LCA query trace.  This replay has no
+`TraceResult.ofCosted` leaf: zero-block queries use the payload-free same-block
+fallback, and cross-block queries use the all-size structural interior replay.
 -/
 def lcaCloseTraceResultWithRankSeedAllSizeStructural
     (shape : Cartesian.CartesianShape)
     (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
     (segments : BPRelativeRmmInteriorTraceSegments)
-    (sameBlockSegment : Nat)
+    (_sameBlockSegment : Nat)
     (leftClose rightClose : Nat) : WordRAM.TraceResult (Option Nat) :=
   let blockSize := canonicalBPRelativeSummaryBlockSize shape
   if blockSize = 0 then
-    finiteSmallSameBlockCloseTraceResultAtSegment
-      shape sameBlockSegment segments.deadSegment leftClose rightClose
+    zeroBlockSameBlockCloseTraceResult shape leftClose rightClose
   else if blockOfClose blockSize leftClose =
       blockOfClose blockSize rightClose then
     localBPSameBlockCloseDecodedTraceResultWithRankSeed
@@ -2633,7 +2691,7 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_refines
   by_cases hzero : canonicalBPRelativeSummaryBlockSize shape = 0
   · simp [lcaCloseTraceResultWithRankSeedAllSizeStructural,
       ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed,
-      hzero, finiteSmallSameBlockCloseTraceResultAtSegment_refines]
+      hzero, zeroBlockSameBlockCloseTraceResult_refines]
   · by_cases hsame :
       blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose =
         blockOfClose (canonicalBPRelativeSummaryBlockSize shape) rightClose
@@ -2666,8 +2724,8 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_trace_forall
     (hsameSmall :
       forall event,
         List.Mem event
-          (finiteSmallSameBlockCloseTraceResultAtSegment
-            shape sameBlockSegment segments.deadSegment leftClose rightClose).trace ->
+          (zeroBlockSameBlockCloseTraceResult
+            shape leftClose rightClose).trace ->
           P event)
     (hinterior :
       forall startBlock count event,
@@ -2723,8 +2781,8 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_no_syntheticCostOnlyPri
       (fun blockSize close =>
         localBPWindowBitsTraceResult_no_syntheticCostOnlyPrimitive
           shape blockSize close)
-      (finiteSmallSameBlockCloseTraceResultAtSegment_no_syntheticCostOnlyPrimitive
-        shape sameBlockSegment segments.deadSegment leftClose rightClose)
+      (zeroBlockSameBlockCloseTraceResult_no_syntheticCostOnlyPrimitive
+        shape leftClose rightClose)
       (fun startBlock count =>
         concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural_no_syntheticCostOnlyPrimitive
           shape segments startBlock count)
@@ -2749,8 +2807,8 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_matchesReadStore
     (hsameSmall :
       forall event,
         List.Mem event
-          (finiteSmallSameBlockCloseTraceResultAtSegment
-            shape sameBlockSegment segments.deadSegment leftClose rightClose).trace ->
+          (zeroBlockSameBlockCloseTraceResult
+            shape leftClose rightClose).trace ->
           event.matchesReadStore store)
     (hinterior :
       forall startBlock count event,

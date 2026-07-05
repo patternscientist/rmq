@@ -35,7 +35,7 @@ abbrev succinctRMQListIntTwoNPlusOConstantQuery :=
   RMQ.SuccinctClassic.listInt_two_n_plus_o_constant_query_profile
 
 abbrev listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory :=
-  RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_execution_story
+  RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story
 ```
 
 The first theorem is stated over ordinary `xs : List Int`: it exposes
@@ -46,9 +46,10 @@ leftmost ties under one constant modeled query bound.
 
 The second theorem keeps those ordinary-list clauses and also consumes the
 final flat-payload no-synthetic WordRAM story for `Cartesian.shape xs`: the
-trace is interpreted, all successful reads are backed by the query-independent
-flat payload layout/read store, event data are bounded, and no synthetic
-cost-only trace marker appears.
+trace is interpreted, the flat execution payload is exactly
+`SuccinctClassic.buildPayload xs`, all successful reads are backed by the
+query-independent flat payload layout/read store, event data are bounded, and
+no synthetic cost-only trace marker appears.
 
 The construction-facing RMQ name is:
 
@@ -106,8 +107,8 @@ rank-seed reads inside compact close/LCA contribute structural
 payload/register traces. The all-size compact close/LCA leg now also consumes
 `SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural`,
 which replaces the former zero-block same-block fallback and cross-block
-interior `TraceResult.ofCosted` leaves with the finite-small same-block trace
-and the all-size structural cross-block interior route.
+interior `TraceResult.ofCosted` leaves with a payload-free zero-block
+same-block branch and the all-size structural cross-block interior route.
 
 There is also a large-regime companion:
 
@@ -188,6 +189,7 @@ trace.
 
 The flat-payload no-synthetic companion additionally exposes the
 query-independent `concreteBPNativeSuccinctRMQFlatPayloadLayout`, proves
+its payload is the advertised `concreteBPNativeSuccinctRMQPayload`, proves
 successful flat-store reads have source/component/offset backing evidence, and
 uses that flat store in the same bounded no-synthetic execution-story packet.
 

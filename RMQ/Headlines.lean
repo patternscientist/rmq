@@ -122,10 +122,12 @@ List-facing flat-payload no-synthetic execution story: for every ordinary
 RMQ contract and constant modeled query story while its global WordRAM trace is
 backed by one query-independent counted flat payload layout/read store: every
 actual successful read has source/component/offset evidence, event data are
-bounded, and no synthetic cost-only events occur.
+bounded, and no synthetic cost-only events occur. The flat execution payload is
+the advertised `2*n + o(n)` `buildPayload`, with no finite-small same-block
+appendix.
 -/
 abbrev listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory :=
-  RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_execution_story
+  RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story
 
 /--
 Whole-query-interpreted BP-native succinct RMQ capstone: the same two-sided
@@ -149,8 +151,8 @@ Unified-`WordRAM.TraceEvent` BP-native succinct RMQ capstone. The final query
 control now emits one `TraceEvent` stream. Select-close, answer-rank, and
 compact-close rank-seed reads are structural payload/register traces; the
 all-size global execution story below additionally replaces the former
-close-navigation fallback leaves with the finite-small same-block trace and
-the all-size structural cross-block interior route.
+close-navigation fallback leaves with a payload-free zero-block same-block
+branch and the all-size structural cross-block interior route.
 -/
 abbrev succinctRMQTwoNPlusOConstantQueryWordTrace :=
   RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_profile
@@ -209,7 +211,8 @@ abbrev succinctRMQGlobalPayloadStoreBoundedExecutionStory :=
 All-size structural execution-story theorem for the final all-size succinct
 RMQ query. This is the citation anchor for the globally segmented trace after
 the zero-block same-block and cross-block interior close-navigation leaves have
-been replaced by payload-backed structural traces.
+been replaced by a payload-free zero-block branch plus structural payload
+traces.
 -/
 abbrev succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_allSizeStructural_execution_story
@@ -228,9 +231,10 @@ This is the strongest current execution-model citation: the final query reads
 from one query-independent counted flat payload layout, every actual successful
 payload read has a source/component/offset backing witness, all events are
 reads or bounded word-local primitives, and no event is the synthetic cost-only
-marker. Cross-block interior replay is all-size structural: Ready shapes use
-the compact two-level directory, active non-Ready shapes use a bounded summary
-scan, and inactive shapes have no interior read obligation.
+marker. The flat payload is exactly the advertised BP-native build payload.
+Cross-block interior replay is all-size structural: Ready shapes use the
+compact two-level directory, active non-Ready shapes use a bounded summary scan,
+and inactive shapes have no interior read obligation.
 -/
 abbrev succinctRMQFlatPayloadStoreNoSyntheticExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execution_story

@@ -93,7 +93,7 @@ def concreteBPNativeInteriorTraceSegments :
   finiteSmallArg := 27
   deadSegment := concreteBPNativeDeadTraceSegment
 
-/-- Segment base for the finite-small same-block close table. -/
+/-- Retired compatibility segment for the finite-small same-block close table. -/
 def concreteBPNativeFiniteSmallSameBlockCloseTraceSegment : Nat := 28
 
 /--
@@ -107,7 +107,8 @@ Segments are assigned as follows:
 * `20..25`: compact close/LCA relative-rmM interior tables.
 * `26..27`: legacy finite-small interior witness slots; the public all-size
   trace proves no successful reads to these slots.
-* `28`: finite-small same-block close table.
+* `28`: retired finite-small same-block compatibility slot; the public
+  all-size trace does not read it and the flat layout does not count it.
 
 Word-primitive events such as in-word rank/select are not payload reads and
 therefore do not consult this store.
@@ -127,8 +128,6 @@ def concreteBPNativeSuccinctRMQGlobalReadStore
       SuccinctClose.concreteBPRelativeRmmInteriorGlobalTable shape
     let smallInterior :=
       SuccinctClose.concreteBPFiniteSmallInteriorRangeMinTable shape
-    let smallSameBlock :=
-      SuccinctClose.concreteBPFiniteSmallSameBlockCloseTable shape
     if segment = 0 then
       selectData.bitWords.store.wordRAMStore.readWord? 0 index
     else if segment = 1 then
@@ -185,8 +184,6 @@ def concreteBPNativeSuccinctRMQGlobalReadStore
       smallInterior.minTable.wordRAMStore.readWord? 0 index
     else if segment = 27 then
       smallInterior.argTable.wordRAMStore.readWord? 0 index
-    else if segment = 28 then
-      smallSameBlock.wordRAMStore.readWord? 0 index
     else
       none
 
@@ -216,7 +213,6 @@ inductive ConcreteBPNativeSuccinctRMQFlatPayloadComponent where
   | accessRankPayload
   | selectPayload
   | closePayload
-  | finiteSmallSameBlockPayload
 deriving DecidableEq
 
 /--
@@ -267,7 +263,6 @@ structure ConcreteBPNativeSuccinctRMQFlatPayloadLayout
   accessPadding : List Bool
   closePayload : List Bool
   closePadding : List Bool
-  finiteSmallSameBlockPayload : List Bool
 
 def concreteBPNativeSuccinctRMQFlatPayloadLayout
     (shape : Cartesian.CartesianShape) :
@@ -278,8 +273,6 @@ def concreteBPNativeSuccinctRMQFlatPayloadLayout
   let selectSource :=
     GenericSelect.sparseExceptionSelectSource shape.bpCode false
   let closeDirectory := concreteBPNativeCloseDirectory shape
-  let finiteSmallSameBlockPayload :=
-    (SuccinctClose.concreteBPFiniteSmallSameBlockCloseTable shape).payload
   let accessPadding :=
     List.replicate
       (genericSparseExceptionBPCloseAccessOverhead shape.size -
@@ -290,15 +283,13 @@ def concreteBPNativeSuccinctRMQFlatPayloadLayout
         closeDirectory.payload.length) false
   { payload :=
       concreteBPNativeSuccinctRMQPayload
-        builtGenericSparseExceptionSelectBPCloseAccessFamily shape ++
-        finiteSmallSameBlockPayload
+        builtGenericSparseExceptionSelectBPCloseAccessFamily shape
     bpCodePayload := shape.bpCode
     accessRankPayload := rankData.auxPayload
     selectPayload := selectSource.payload
     accessPadding := accessPadding
     closePayload := closeDirectory.payload
-    closePadding := closePadding
-    finiteSmallSameBlockPayload := finiteSmallSameBlockPayload }
+    closePadding := closePadding }
 
 def ConcreteBPNativeSuccinctRMQFlatPayloadLayout.componentPayload
     {shape : Cartesian.CartesianShape}
@@ -308,7 +299,6 @@ def ConcreteBPNativeSuccinctRMQFlatPayloadLayout.componentPayload
   | .accessRankPayload => layout.accessRankPayload
   | .selectPayload => layout.selectPayload
   | .closePayload => layout.closePayload
-  | .finiteSmallSameBlockPayload => layout.finiteSmallSameBlockPayload
 
 def concreteBPNativeSuccinctRMQFlatPayloadComponentPayload
     (shape : Cartesian.CartesianShape) :
@@ -320,8 +310,6 @@ def concreteBPNativeSuccinctRMQFlatPayloadComponentPayload
       (GenericSelect.sparseExceptionSelectSource shape.bpCode false).payload
   | .closePayload =>
       (concreteBPNativeCloseDirectory shape).payload
-  | .finiteSmallSameBlockPayload =>
-      (SuccinctClose.concreteBPFiniteSmallSameBlockCloseTable shape).payload
 
 @[simp] theorem concreteBPNativeSuccinctRMQFlatPayloadLayout_componentPayload_eq
     (shape : Cartesian.CartesianShape)
@@ -343,19 +331,25 @@ def ConcreteBPNativeSuccinctRMQFlatPayloadLayout.componentFlatOffset
   | .closePayload =>
       layout.bpCodePayload.length + layout.accessRankPayload.length +
         layout.selectPayload.length + layout.accessPadding.length
-  | .finiteSmallSameBlockPayload =>
-      layout.bpCodePayload.length + layout.accessRankPayload.length +
-        layout.selectPayload.length + layout.accessPadding.length +
-          layout.closePayload.length + layout.closePadding.length
 
 theorem concreteBPNativeSuccinctRMQFlatPayloadLayout_payload_eq
     (shape : Cartesian.CartesianShape) :
     (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).payload =
       concreteBPNativeSuccinctRMQPayload
-          builtGenericSparseExceptionSelectBPCloseAccessFamily shape ++
-        (concreteBPNativeSuccinctRMQFlatPayloadLayout
-          shape).finiteSmallSameBlockPayload := by
+          builtGenericSparseExceptionSelectBPCloseAccessFamily shape := by
   rfl
+
+theorem concreteBPNativeSuccinctRMQFlatPayloadLayout_payload_length
+    {n : Nat} {shape : Cartesian.CartesianShape}
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n)) :
+    (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).payload.length =
+      2 * n +
+        concreteBPNativeSuccinctRMQOverhead
+          genericSparseExceptionBPCloseAccessOverhead n := by
+  rw [concreteBPNativeSuccinctRMQFlatPayloadLayout_payload_eq]
+  exact
+    concreteBPNativeSuccinctRMQPayload_length
+      builtGenericSparseExceptionSelectBPCloseAccessFamily hshape
 
 theorem concreteBPNativeSuccinctRMQFlatPayloadLayout_payload_components
     (shape : Cartesian.CartesianShape) :
@@ -363,8 +357,7 @@ theorem concreteBPNativeSuccinctRMQFlatPayloadLayout_payload_components
     layout.payload =
       layout.bpCodePayload ++ layout.accessRankPayload ++
         layout.selectPayload ++ layout.accessPadding ++
-          layout.closePayload ++ layout.closePadding ++
-            layout.finiteSmallSameBlockPayload := by
+          layout.closePayload ++ layout.closePadding := by
   simp [concreteBPNativeSuccinctRMQFlatPayloadLayout,
     concreteBPNativeSuccinctRMQPayload,
     concreteBPNativeSuccinctRMQAuxPayload,
@@ -516,7 +509,7 @@ def concreteBPNativeSuccinctRMQFlatPayloadSourceComponent :
   | .closeInteriorGlobal => .closePayload
   | .closeFiniteSmallInteriorMin => .closePayload
   | .closeFiniteSmallInteriorArg => .closePayload
-  | .closeFiniteSmallSameBlock => .finiteSmallSameBlockPayload
+  | .closeFiniteSmallSameBlock => .closePayload
 
 def concreteBPNativeSuccinctRMQFlatPayloadSourceAliasesCountedPayload :
     ConcreteBPNativeSuccinctRMQFlatPayloadSource -> Bool
@@ -541,6 +534,8 @@ def concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat
   | .closeFiniteSmallInteriorMin =>
       False
   | .closeFiniteSmallInteriorArg =>
+      False
+  | .closeFiniteSmallSameBlock =>
       False
   | _ => True
 
@@ -570,8 +565,8 @@ theorem concreteBPNativeSuccinctRMQFlatPayloadFiniteSmallSegmentStatus
           shape 26 /\
       ¬ concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
           shape 27 /\
-      concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
-        shape 28 /\
+      ¬ concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+          shape 28 /\
       ¬ concreteBPNativeSuccinctRMQFlatPayloadSourceLargeReadyCounted
         .closeFiniteSmallInteriorMin /\
       ¬ concreteBPNativeSuccinctRMQFlatPayloadSourceLargeReadyCounted
@@ -741,8 +736,6 @@ def concreteBPNativeSuccinctRMQFlatPayloadSourceWords
   let globalTable := SuccinctClose.concreteBPRelativeRmmInteriorGlobalTable shape
   let smallInterior :=
     SuccinctClose.concreteBPFiniteSmallInteriorRangeMinTable shape
-  let smallSameBlock :=
-    SuccinctClose.concreteBPFiniteSmallSameBlockCloseTable shape
   match source with
   | .bpCode =>
       (SuccinctSpace.chunkPayloadWords
@@ -802,8 +795,7 @@ def concreteBPNativeSuccinctRMQFlatPayloadSourceWords
       smallInterior.minTable.store.words
   | .closeFiniteSmallInteriorArg =>
       smallInterior.argTable.store.words
-  | .closeFiniteSmallSameBlock =>
-      smallSameBlock.store.words
+  | .closeFiniteSmallSameBlock => #[]
 
 def concreteBPNativeSuccinctRMQFlatPayloadSourcePayload
     (shape : Cartesian.CartesianShape)
@@ -817,8 +809,6 @@ def concreteBPNativeSuccinctRMQFlatPayloadSourcePayload
   let globalTable := SuccinctClose.concreteBPRelativeRmmInteriorGlobalTable shape
   let smallInterior :=
     SuccinctClose.concreteBPFiniteSmallInteriorRangeMinTable shape
-  let smallSameBlock :=
-    SuccinctClose.concreteBPFiniteSmallSameBlockCloseTable shape
   match source with
   | .bpCode => shape.bpCode
   | .selectSuperBaseOccurrence =>
@@ -875,8 +865,7 @@ def concreteBPNativeSuccinctRMQFlatPayloadSourcePayload
       smallInterior.minTable.payload
   | .closeFiniteSmallInteriorArg =>
       smallInterior.argTable.payload
-  | .closeFiniteSmallSameBlock =>
-      smallSameBlock.payload
+  | .closeFiniteSmallSameBlock => []
 
 set_option linter.unusedSimpArgs false in
 set_option maxHeartbeats 1000000 in
@@ -1360,10 +1349,9 @@ theorem concreteBPNativeSuccinctRMQFlatPayloadSourceWords_erases
         (SuccinctClose.concreteBPFiniteSmallInteriorRangeMinTable
           shape).argTable.store.erases
   | closeFiniteSmallSameBlock =>
-      simpa [concreteBPNativeSuccinctRMQFlatPayloadSourceWords,
-        concreteBPNativeSuccinctRMQFlatPayloadSourcePayload] using
-        (SuccinctClose.concreteBPFiniteSmallSameBlockCloseTable
-          shape).store.erases
+      change SuccinctSpace.flattenPayloadWords ([] : List (List Bool)) =
+        ([] : List Bool)
+      rfl
 
 theorem concreteBPNativeSuccinctRMQFlatPayloadSourceBacking_flatOffset
     (shape : Cartesian.CartesianShape)
@@ -1511,15 +1499,12 @@ theorem
     (shape : Cartesian.CartesianShape) :
     (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).payload =
         concreteBPNativeSuccinctRMQPayload
-          builtGenericSparseExceptionSelectBPCloseAccessFamily shape ++
-          (concreteBPNativeSuccinctRMQFlatPayloadLayout
-            shape).finiteSmallSameBlockPayload /\
+          builtGenericSparseExceptionSelectBPCloseAccessFamily shape /\
       (let layout := concreteBPNativeSuccinctRMQFlatPayloadLayout shape
        layout.payload =
         layout.bpCodePayload ++ layout.accessRankPayload ++
           layout.selectPayload ++ layout.accessPadding ++
-            layout.closePayload ++ layout.closePadding ++
-              layout.finiteSmallSameBlockPayload) /\
+            layout.closePayload ++ layout.closePadding) /\
       (forall {segment index : Nat} {word : List Bool},
         (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord?
             segment index = some word ->
@@ -1546,15 +1531,12 @@ theorem
     (shape : Cartesian.CartesianShape) :
     (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).payload =
         concreteBPNativeSuccinctRMQPayload
-          builtGenericSparseExceptionSelectBPCloseAccessFamily shape ++
-          (concreteBPNativeSuccinctRMQFlatPayloadLayout
-            shape).finiteSmallSameBlockPayload /\
+          builtGenericSparseExceptionSelectBPCloseAccessFamily shape /\
       (let layout := concreteBPNativeSuccinctRMQFlatPayloadLayout shape
        layout.payload =
         layout.bpCodePayload ++ layout.accessRankPayload ++
           layout.selectPayload ++ layout.accessPadding ++
-            layout.closePayload ++ layout.closePadding ++
-              layout.finiteSmallSameBlockPayload) /\
+            layout.closePayload ++ layout.closePadding) /\
       (forall {segment index : Nat} {word : List Bool},
         (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord?
             segment index = some word ->
@@ -1745,9 +1727,9 @@ theorem
   | 27 =>
       exact False.elim (h27 rfl)
   | 28 =>
-      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
-        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
-        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
+      unfold concreteBPNativeSuccinctRMQFlatPayloadReadStore at hread
+      simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+        concreteBPNativeSuccinctRMQFlatPayloadSourceWords] at hread
   | _ + 29 =>
       unfold concreteBPNativeSuccinctRMQFlatPayloadReadStore at hread
       simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?] at hread
@@ -4372,8 +4354,9 @@ private theorem
       (fun blockSize close =>
         concreteBPNativeSuccinctRMQLocalBPWindowBitsTraceResult_noFiniteSmallInteriorSuccessfulRead
           shape blockSize close)
-      (concreteBPNativeFiniteSmallSameBlockCloseGlobalTraceResult_noFiniteSmallInteriorSuccessfulRead
-        shape leftClose rightClose)
+      (SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseTraceResult_trace_forall
+        shape leftClose rightClose
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead)
       (fun startBlock count =>
         concreteBPNativeInteriorGlobalWordTraceResultAllSizeStructural_noFiniteSmallInteriorSuccessfulRead_of_ready
           shape hready startBlock count)
@@ -4403,8 +4386,9 @@ private theorem
       (fun blockSize close =>
         concreteBPNativeSuccinctRMQLocalBPWindowBitsTraceResult_noFiniteSmallInteriorSuccessfulRead
           shape blockSize close)
-      (concreteBPNativeFiniteSmallSameBlockCloseGlobalTraceResult_noFiniteSmallInteriorSuccessfulRead
-        shape leftClose rightClose)
+      (SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseTraceResult_trace_forall
+        shape leftClose rightClose
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead)
       (fun startBlock count =>
         concreteBPNativeInteriorGlobalWordTraceResultAllSizeStructural_noFiniteSmallInteriorSuccessfulRead
           shape startBlock count)
@@ -4435,8 +4419,9 @@ private theorem
       (fun blockSize close =>
         concreteBPNativeSuccinctRMQLocalBPWindowBitsTraceResult_noReadyCloseSuccessfulRead
           shape blockSize close)
-      (concreteBPNativeFiniteSmallSameBlockCloseGlobalTraceResult_noReadyCloseSuccessfulRead
-        shape leftClose rightClose)
+      (SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseTraceResult_trace_forall
+        shape leftClose rightClose
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead)
       (fun startBlock count =>
         concreteBPNativeInteriorGlobalWordTraceResultAllSizeStructural_noReadyCloseSuccessfulRead_of_not_ready
           shape hnotReady startBlock count)
@@ -4653,22 +4638,9 @@ theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_matchesRe
         concreteBPNativeRankCloseGlobalWordTraceResult_matchesReadStore
           shape pos)
       (concreteBPNativeSuccinctRMQGlobalReadStore_bpCode shape)
-      (SuccinctClose.ConcreteCompactBPCloseLCADirectory.finiteSmallSameBlockCloseTraceResultAtSegment_matchesReadStore
-        shape concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
-        concreteBPNativeInteriorTraceSegments.deadSegment leftClose rightClose
-        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-        (by
-          intro segment index
-          cases segment <;>
-            simp [concreteBPNativeSuccinctRMQGlobalReadStore,
-              concreteBPNativeInteriorTraceSegments,
-              concreteBPNativeFiniteSmallSameBlockCloseTraceSegment,
-              concreteBPNativeDeadTraceSegment,
-              WordRAM.singletonSegmentMap,
-              WordRAM.TraceEvent.singletonSegmentMap,
-              SuccinctSpace.FixedWidthOptionNatTable.wordRAMStore,
-              SuccinctSpace.PayloadWordStore.wordRAMStore,
-              WordRAM.Store.readWord?]))
+      (SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseTraceResult_matchesReadStore
+        shape leftClose rightClose
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape))
       (fun startBlock count =>
         concreteBPNativeInteriorGlobalWordTraceResultAllSizeStructural_matchesReadStore
           shape startBlock count)
@@ -6623,6 +6595,29 @@ theorem
           shape left right)
         hmem
 
+theorem
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_noFiniteSmallSameBlockSuccessfulRead
+    (shape : Cartesian.CartesianShape)
+    (left right : Nat) :
+    forall {index : Nat} {word : List Bool},
+      ¬ List.Mem (WordRAM.TraceEvent.readWord
+          concreteBPNativeFiniteSmallSameBlockCloseTraceSegment index
+          (some word))
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace := by
+  intro index word hmem
+  have hbacked :=
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_successful_read_events_backed_by_counted_flat_payload
+      shape left right hmem
+  have hnotCounted :
+      ¬ concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+          shape concreteBPNativeFiniteSmallSameBlockCloseTraceSegment := by
+    simp [concreteBPNativeFiniteSmallSameBlockCloseTraceSegment,
+      concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+      concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+      concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
+  exact hnotCounted hbacked.1
+
 /--
 Public all-size execution-story packet for the globally segmented final RMQ
 trace. It removes the large-regime premise from the store-backed story: every
@@ -6928,15 +6923,12 @@ theorem concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execut
     (left right : Nat) :
     (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).payload =
         concreteBPNativeSuccinctRMQPayload
-          builtGenericSparseExceptionSelectBPCloseAccessFamily shape ++
-          (concreteBPNativeSuccinctRMQFlatPayloadLayout
-            shape).finiteSmallSameBlockPayload /\
+          builtGenericSparseExceptionSelectBPCloseAccessFamily shape /\
       (let layout := concreteBPNativeSuccinctRMQFlatPayloadLayout shape
        layout.payload =
         layout.bpCodePayload ++ layout.accessRankPayload ++
           layout.selectPayload ++ layout.accessPadding ++
-            layout.closePayload ++ layout.closePadding ++
-              layout.finiteSmallSameBlockPayload) /\
+            layout.closePayload ++ layout.closePadding) /\
       concreteBPNativeSuccinctRMQFlatPayloadSegmentBackingsAll shape /\
       (forall {segment index : Nat} {word : List Bool},
         (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord?

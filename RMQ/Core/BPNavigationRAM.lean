@@ -828,8 +828,6 @@ def concreteBPCloseNavigationGlobalReadStore
     let globalTable := SuccinctClose.concreteBPRelativeRmmInteriorGlobalTable shape
     let smallInterior :=
       SuccinctClose.concreteBPFiniteSmallInteriorRangeMinTable shape
-    let smallSameBlock :=
-      SuccinctClose.concreteBPFiniteSmallSameBlockCloseTable shape
     if segment = 0 then
       selectData.bitWords.store.wordRAMStore.readWord? 0 index
     else if segment = 1 then
@@ -886,8 +884,6 @@ def concreteBPCloseNavigationGlobalReadStore
       smallInterior.minTable.wordRAMStore.readWord? 0 index
     else if segment = 27 then
       smallInterior.argTable.wordRAMStore.readWord? 0 index
-    else if segment = 28 then
-      smallSameBlock.wordRAMStore.readWord? 0 index
     else
       none
 
@@ -901,7 +897,6 @@ structure ConcreteBPCloseNavigationPayloadLayout
   accessPadding : List Bool
   closePayload : List Bool
   closePadding : List Bool
-  finiteSmallSameBlockPayload : List Bool
 
 /-- Counted payload layout for the concrete BP close-navigation global store. -/
 def concreteBPCloseNavigationPayloadLayout
@@ -910,8 +905,6 @@ def concreteBPCloseNavigationPayloadLayout
   let accessDirectory :=
     concreteBPCloseNavigationRelativeSplitAccessFamily.directory shape
   let closeDirectory := concreteBPNativeCloseDirectory shape
-  let finiteSmallSameBlockPayload :=
-    (SuccinctClose.concreteBPFiniteSmallSameBlockCloseTable shape).payload
   let accessPadding :=
     List.replicate
       (relativeSplitSparseExceptionBPCloseAccessOverhead shape.size -
@@ -922,14 +915,13 @@ def concreteBPCloseNavigationPayloadLayout
         closeDirectory.payload.length) false
   { payload := shape.bpCode ++ accessDirectory.rankData.auxPayload ++
       accessDirectory.selectData.payload ++ accessPadding ++
-        closeDirectory.payload ++ closePadding ++ finiteSmallSameBlockPayload
+        closeDirectory.payload ++ closePadding
     bpCodePayload := shape.bpCode
     accessRankPayload := accessDirectory.rankData.auxPayload
     selectPayload := accessDirectory.selectData.payload
     accessPadding := accessPadding
     closePayload := closeDirectory.payload
-    closePadding := closePadding
-    finiteSmallSameBlockPayload := finiteSmallSameBlockPayload }
+    closePadding := closePadding }
 
 theorem concreteBPCloseNavigationPayloadLayout_payload_components
     (shape : Cartesian.CartesianShape) :
@@ -937,8 +929,7 @@ theorem concreteBPCloseNavigationPayloadLayout_payload_components
     layout.payload =
       layout.bpCodePayload ++ layout.accessRankPayload ++
         layout.selectPayload ++ layout.accessPadding ++
-          layout.closePayload ++ layout.closePadding ++
-            layout.finiteSmallSameBlockPayload := by
+          layout.closePayload ++ layout.closePadding := by
   simp [concreteBPCloseNavigationPayloadLayout,
     concreteBPCloseNavigationRelativeSplitAccessFamily,
     List.append_assoc]
@@ -960,7 +951,6 @@ def concreteBPCloseNavigationPayloadSourceWords
   let localTable := SuccinctClose.concreteBPRelativeRmmInteriorLocalTable shape
   let globalTable := SuccinctClose.concreteBPRelativeRmmInteriorGlobalTable shape
   let smallInterior := SuccinctClose.concreteBPFiniteSmallInteriorRangeMinTable shape
-  let smallSameBlock := SuccinctClose.concreteBPFiniteSmallSameBlockCloseTable shape
   match source with
   | .bpCode => selectData.bitWords.store.words
   | .selectSuperBaseOccurrence =>
@@ -1018,7 +1008,7 @@ def concreteBPCloseNavigationPayloadSourceWords
   | .closeFiniteSmallInteriorArg =>
       smallInterior.argTable.store.words
   | .closeFiniteSmallSameBlock =>
-      smallSameBlock.store.words
+      #[]
 
 def concreteBPCloseNavigationPayloadSourcePayload
     (shape : Cartesian.CartesianShape)
@@ -1033,7 +1023,6 @@ def concreteBPCloseNavigationPayloadSourcePayload
   let localTable := SuccinctClose.concreteBPRelativeRmmInteriorLocalTable shape
   let globalTable := SuccinctClose.concreteBPRelativeRmmInteriorGlobalTable shape
   let smallInterior := SuccinctClose.concreteBPFiniteSmallInteriorRangeMinTable shape
-  let smallSameBlock := SuccinctClose.concreteBPFiniteSmallSameBlockCloseTable shape
   match source with
   | .bpCode => shape.bpCode
   | .selectSuperBaseOccurrence =>
@@ -1091,7 +1080,7 @@ def concreteBPCloseNavigationPayloadSourcePayload
   | .closeFiniteSmallInteriorArg =>
       smallInterior.argTable.payload
   | .closeFiniteSmallSameBlock =>
-      smallSameBlock.payload
+      []
 
 def concreteBPCloseNavigationPayloadReadBacked
     (shape : Cartesian.CartesianShape)
@@ -1258,10 +1247,10 @@ theorem concreteBPCloseNavigationPayloadSourceWords_erases
         (SuccinctClose.concreteBPFiniteSmallInteriorRangeMinTable
           shape).argTable.store.erases
   | closeFiniteSmallSameBlock =>
-      simpa [concreteBPCloseNavigationPayloadSourceWords,
-        concreteBPCloseNavigationPayloadSourcePayload] using
-        (SuccinctClose.concreteBPFiniteSmallSameBlockCloseTable
-          shape).store.erases
+      change
+        SuccinctSpace.flattenPayloadWords ([] : List (List Bool)) =
+          ([] : List Bool)
+      rfl
 
 theorem concreteBPCloseNavigationGlobalReadStore_eq_sourceStore
     (shape : Cartesian.CartesianShape) (segment index : Nat) :
@@ -2055,23 +2044,9 @@ theorem concreteBPCloseNavigationLCACloseGlobalTraceResult_matchesReadStore
         concreteBPCloseNavigationRankCloseGlobalTraceResult_matchesReadStore
           shape pos)
       (concreteBPCloseNavigationGlobalReadStore_bpCode shape)
-      (SuccinctClose.ConcreteCompactBPCloseLCADirectory.finiteSmallSameBlockCloseTraceResultAtSegment_matchesReadStore
-        shape SuccinctFinal.concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
-        SuccinctFinal.concreteBPNativeInteriorTraceSegments.deadSegment
-        leftClose rightClose
-        (concreteBPCloseNavigationGlobalReadStore shape)
-        (by
-          intro segment index
-          cases segment <;>
-            simp [concreteBPCloseNavigationGlobalReadStore,
-              SuccinctFinal.concreteBPNativeInteriorTraceSegments,
-              SuccinctFinal.concreteBPNativeFiniteSmallSameBlockCloseTraceSegment,
-              SuccinctFinal.concreteBPNativeDeadTraceSegment,
-              WordRAM.singletonSegmentMap,
-              WordRAM.TraceEvent.singletonSegmentMap,
-              SuccinctSpace.FixedWidthOptionNatTable.wordRAMStore,
-              SuccinctSpace.PayloadWordStore.wordRAMStore,
-              WordRAM.Store.readWord?]))
+      (SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseTraceResult_matchesReadStore
+        shape leftClose rightClose
+        (concreteBPCloseNavigationGlobalReadStore shape))
       (fun startBlock count =>
         concreteBPCloseNavigationInteriorGlobalTraceResultAllSizeStructural_matchesReadStore
           shape startBlock count)

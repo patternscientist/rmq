@@ -112,7 +112,7 @@ def lcaCloseCosted
     (leftClose rightClose : Nat) : Costed (Option Nat) :=
   let blockSize := canonicalBPRelativeSummaryBlockSize shape
   if blockSize = 0 then
-    finiteSmallSameBlockCloseCosted shape leftClose rightClose
+    zeroBlockSameBlockCloseCosted shape leftClose rightClose
   else if blockOfClose blockSize leftClose =
       blockOfClose blockSize rightClose then
     localBPSameBlockCloseDecodedCosted shape blockSize leftClose rightClose
@@ -126,7 +126,7 @@ def lcaCloseCostedWithRankSeed
     (leftClose rightClose : Nat) : Costed (Option Nat) :=
   let blockSize := canonicalBPRelativeSummaryBlockSize shape
   if blockSize = 0 then
-    finiteSmallSameBlockCloseCosted shape leftClose rightClose
+    zeroBlockSameBlockCloseCosted shape leftClose rightClose
   else if blockOfClose blockSize leftClose =
       blockOfClose blockSize rightClose then
     localBPSameBlockCloseDecodedCostedWithRankSeed shape rankCloseCosted
@@ -324,7 +324,7 @@ theorem lcaCloseCosted_cost_le
   by_cases hzero : canonicalBPRelativeSummaryBlockSize shape = 0
   · simp [hzero]
     have hlocal :=
-      finiteSmallSameBlockCloseCosted_cost_le_one shape leftClose rightClose
+      zeroBlockSameBlockCloseCosted_cost_le shape leftClose rightClose
     unfold concreteCompactBPCloseQueryCost
     omega
   · simp [hzero]
@@ -353,7 +353,7 @@ theorem lcaCloseCostedWithRankSeed_cost_le
   by_cases hzero : canonicalBPRelativeSummaryBlockSize shape = 0
   · simp [hzero]
     have hlocal :=
-      finiteSmallSameBlockCloseCosted_cost_le_one shape leftClose rightClose
+      zeroBlockSameBlockCloseCosted_cost_le shape leftClose rightClose
     unfold concreteCompactBPCloseQueryCostWithRankSeed
     omega
   · simp [hzero]
@@ -1081,7 +1081,7 @@ theorem lcaCloseCosted_exact_of_query
   by_cases hzero : canonicalBPRelativeSummaryBlockSize shape = 0
   · simp [hzero]
     exact
-      finiteSmallSameBlockCloseCosted_exact hlen hbound hleft hright hanswer
+      zeroBlockSameBlockCloseCosted_exact hlen hbound hleft hright hanswer
   · simp [hzero]
     by_cases hsame :
         blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose =
@@ -1165,7 +1165,7 @@ theorem lcaCloseCostedWithRankSeed_exact_of_query
   by_cases hzero : canonicalBPRelativeSummaryBlockSize shape = 0
   · simp [hzero]
     exact
-      finiteSmallSameBlockCloseCosted_exact hlen hbound hleft hright hanswer
+      zeroBlockSameBlockCloseCosted_exact hlen hbound hleft hright hanswer
   · simp [hzero]
     by_cases hsame :
         blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose =

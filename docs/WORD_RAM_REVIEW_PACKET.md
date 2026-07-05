@@ -213,8 +213,10 @@ Ready uses the two-level replay, active non-Ready uses a bounded summary scan,
 and inactive uses a pure-none interior trace. The named route theorem is
 `RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorAllSizeStructuralRoute_total`.
 Legacy interior witness definitions may remain internal; the public final trace
-proves no successful reads to their 26/27 segments, not a stronger no-read
-claim.
+proves no successful reads to their 26/27 segments. The retired same-block
+compatibility slot is also out of the public payload story:
+`RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_noFiniteSmallSameBlockSuccessfulRead`
+records that segment 28 is not successfully read by the final trace.
 Remaining hardening is tighter component-level machine-word side conditions
 plus stronger uniform word-width packaging for rank/select. The rank/select
 compressed/FID spoke now reuses the same

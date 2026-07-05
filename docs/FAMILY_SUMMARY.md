@@ -41,17 +41,20 @@ trace events.
 The final RMQ global-store surface also has the all-size structural alias
 `Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory`,
 which cites the final global trace after the two former close-navigation
-`TraceResult.ofCosted` fallback leaves are replaced by payload-backed
-structural traces, and the stronger
+`TraceResult.ofCosted` fallback leaves are replaced by a payload-free
+zero-block same-block branch and structural cross-block interior traces, and
+the stronger
 `Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory`, which also
 proves that the all-size global trace contains no dedicated synthetic
 cost-only marker event. The combined flat-payload companion
 `Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` ties that
 bounded no-synthetic trace to a query-independent flat layout with
-source/component/offset backing evidence for every actual successful read,
-using an all-size structural cross-block interior route: Ready shapes use the
-two-level relative-rmM replay, active non-Ready shapes use a bounded summary
-scan, and inactive shapes return pure none for the interior obligation. The
+source/component/offset backing evidence for every actual successful read. The
+flat execution payload is exactly the advertised BP-native construction
+payload, not a same-block appendix. Cross-block interior routing is all-size
+structural: Ready shapes use the two-level relative-rmM replay, active
+non-Ready shapes use a bounded summary scan, and inactive shapes return pure
+none for the interior obligation. The
 route theorem is
 `SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorAllSizeStructuralRoute_total`.
 The successful-read exclusion theorem for the public final trace is
@@ -325,13 +328,13 @@ Word-RAM status note: `SuccinctFinalRAM` now has both an all-size unified
 `WordRAM.TraceEvent` stream capstone for the final RMQ query and a stronger
 large-regime compatibility companion theorem. The all-size theorem now consumes
 `SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural`:
-the former zero-block same-block fallback is replayed by a finite-small
-payload-backed same-block close table, while the former cross-block interior
-fallback is now all-size structural: Ready uses the existing two-level trace,
-active non-Ready uses a bounded summary scan, and inactive uses a pure-none
-interior trace. Legacy interior witness-table definitions remain
-internal compatibility artifacts, but the all-size public trace/store/flat
-payload story no longer emits or counts their segments;
+the former zero-block same-block fallback is now a payload-free semantic branch,
+while the former cross-block interior fallback is all-size structural: Ready
+uses the existing two-level trace, active non-Ready uses a bounded summary scan,
+and inactive uses a pure-none interior trace. Legacy interior and same-block
+witness-table definitions remain internal compatibility artifacts, but the
+all-size public trace/store/flat payload story no longer emits or counts their
+segments;
 the large-regime theorem still carries an explicit `2^128 <= shape.size`
 premise as a compatibility companion and
 replays the positive-block local BP, endpoint-fringe, and relative-rmM interior
@@ -361,7 +364,8 @@ fallback marker. The combined theorem
 `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execution_story`
 adds the flat payload layout and source/component/offset backing evidence for
 every actual successful final-query read to that same bounded no-synthetic
-execution story.
+execution story; its flat payload equation is the advertised BP-native payload
+directly.
 
 | Structure | Correctness status | Cost status | Notes |
 | --- | --- | --- | --- |
@@ -2703,7 +2707,7 @@ The names below are grouped by source module. Repeated base names in
   barrels. The old flat generic-select files are no longer imported by live
   in-repository roots or scripts; new code should import
   `RMQ.Core.GenericSelect` or a role module below `RMQ.Core.GenericSelect.*`.
-- `RMQ/Core/SuccinctRMQClassic.lean` (10):
+- `RMQ/Core/SuccinctRMQClassic.lean` (11):
   `SuccinctClassic.shape_queryOffset?_eq_scanWindow`,
   `SuccinctClassic.scanWindow_cartesianShape_representative_eq`,
   `SuccinctClassic.overhead_littleO`,
@@ -2713,7 +2717,8 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctClassic.queryCosted_leftmost`, and
   `SuccinctClassic.listInt_two_n_plus_o_constant_query_profile`,
   `SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory`, and
-  `SuccinctClassic.listInt_flatPayloadStore_noSynthetic_execution_story`.
+  `SuccinctClassic.listInt_flatPayloadStore_noSynthetic_execution_story`, and
+  `SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story`.
 - `RMQ/Headlines.lean`:
   public-facing aliases
   `Headlines.exactRMQLowerBoundDoubledCatalanSlack`,

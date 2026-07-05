@@ -427,8 +427,8 @@ trace now has a concrete flat-payload backing theorem,
 `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execution_story`.
 The layout object is query-independent and splits the execution payload into BP
 code, final rank/access payload, sparse-exception select payload, padding,
-compact close/LCA payload, and the finite-small structural table used by the
-all-size no-synthetic replay. The theorem packages the flat read store, source
+and compact close/LCA payload; the finite-small same-block table is no longer a
+public flat-payload appendix. The theorem packages the flat read store, source
 and component offsets for successful reads, bounded trace-local event data, and
 the proof that no event is the dedicated synthetic cost-only marker. Plain
 English: the final trace no longer merely agrees with "some global store"; its
@@ -452,12 +452,13 @@ non-Ready shapes use a bounded summary scan over the canonical relative
 min/max/arg table, and inactive shapes use a pure-none interior trace because
 there is no block obligation. `SuccinctClose.concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold`
 is now only a sufficient Ready theorem; the same-block finite-small close
-table remains as the one-read same-block fallback. Plain English: the all-size
-flat-payload theorem still proves every actual successful read is counted and
-backed, but segments for the old interior witness table
-have no successful reads in that public trace. A skeptical grad student should
-ask whether the active non-Ready bounded summary scan should eventually be
-replaced by a smaller direct BP-code micro-scan.
+table is retired from the public flat-payload story and segment 28 is a dead
+compatibility slot. Plain English: the all-size flat-payload theorem still
+proves every actual successful read is counted and backed, but segments for the
+old interior witness table and the retired same-block slot have no successful
+reads in that public trace. A skeptical grad student should ask whether the
+active non-Ready bounded summary scan should eventually be replaced by a
+smaller direct BP-code micro-scan.
 
 2026-07-04 all-size structural route polish: the replacement for a false
 total-Ready theorem is now named directly by
