@@ -14,8 +14,9 @@ Range-minimum query (RMQ) asks for the leftmost position of the smallest value
 in a subarray. The surprising theorem is not that RMQ can be solved, but that
 the array values can be discarded: the Cartesian shape alone determines every
 answer. This repository verifies that story end to end, including correctness,
-modeled query cost, payload-bit accounting, and a public two-sided theorem that
-includes the encoding-quantified information-theoretic lower-bound clause.
+modeled query cost, payload-bit accounting, a public succinct upper-bound
+surface with a numeric doubled-Catalan slack comparison, and a separately cited
+encoding-quantified information-theoretic lower-bound theorem.
 
 For a further explanation aimed at mathematically mature
 readers with little data-structures background, see
@@ -54,7 +55,7 @@ Short public aliases live in [`RMQ/Headlines.lean`](RMQ/Headlines.lean).
 | --- | --- |
 | `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | Reader-facing theorem over ordinary `xs : List Int`: build a payload of length `2*n + o(n)` bits and answer valid half-open RMQ queries exactly, with leftmost ties, within constant modeled query cost. |
 | `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Reader-facing flat-payload execution story over ordinary `xs : List Int`: the same final query uses the advertised `2*n + o(n)` `buildPayload`, satisfies the classic half-open leftmost RMQ contract, is interpreted by the final WordRAM trace, and every actual successful read is backed by one query-independent counted flat payload layout with bounded events and no synthetic cost-only trace markers. |
-| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and an explicit doubled-Catalan lower-bound clause in the same public theorem surface. |
+| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and a numeric doubled-Catalan slack comparison in the same public theorem surface; the encoding-quantified lower-bound theorem is exposed separately as `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack`. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Whole-query-interpreted variant of the final BP-native succinct RMQ capstone: same theorem shape, with the final query control represented by a closed first-order program whose leaves are interpreted close-select, compact close/LCA, and register-backed answer-rank operations. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace` | Unified-`WordRAM.TraceEvent` variant of the same capstone: the final query emits one trace stream, with close-select, answer-rank, and compact-close rank-seed reads replayed as structural payload/register traces. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime` | Large-regime WordRAM variant: same two-sided theorem shape, with an explicit size premise that routes the compact close/LCA leg through the Ready structural replay; the public all-size route is now structural as well. |
@@ -80,6 +81,15 @@ Short public aliases live in [`RMQ/Headlines.lean`](RMQ/Headlines.lean).
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreNoSyntheticFusedProfile` | Strengthened compressed/FID rank/select capstone: the fused global payload-store story also proves successful read events are backed by component stores and no synthetic cost-only events occur. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreExecutionStory` | Target-independent global-store execution story for compressed/FID rank/select: for fixed `bits`, shared access plus rank false/true and select false/true traces all read from one concrete payload store. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory` | Bounded target-independent global-store execution story for compressed/FID rank/select: the shared access/rank/select traces also carry trace-local finite widths bounding payload-read addresses and word-primitive operands/results. |
+
+For the current concrete BP-native RMQ capstone, the fixed modeled query-cost
+bound is `196727`. The visible constant is large because the all-size structural
+path includes bounded scans below
+`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15`: the
+zero-block same-block scan costs `2 * 2^15 + 1`, and the active non-Ready
+interior scan costs `4 * 2^15`. Legacy finite-small interior store segments
+`26` and `27` now resolve to empty source views and `none` reads; they are not
+part of the counted flat payload.
 
 The construction-level theorem names are intentionally verbose, so that the
 model assumptions and dependency path remain inspectable. See

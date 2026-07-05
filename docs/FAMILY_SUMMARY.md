@@ -1017,9 +1017,17 @@ and `docs/internal/LOCAL_BP_DECODER_PATH.md`.
   BP-native RMQ theorem now has payload-accounted storage: exact `2*n`
   balanced-parentheses bits plus `o(n)` auxiliary payload, with constant modeled
   query cost under the RAM/unit-cost indexed-access model, and the public
-  two-sided wrapper packages the coefficient-correct doubled Catalan lower
-  slack alongside that upper structure. The theorem is a model-level succinct
-  data-structure profile, not a claim about extracted wall-clock runtime.
+  two-sided wrapper packages a coefficient-correct numeric doubled Catalan
+  slack comparison alongside that upper structure. The encoding-quantified
+  fixed-length lower-bound theorem is the separate alias
+  `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack`. The theorem is a
+  model-level succinct data-structure profile, not a claim about extracted
+  wall-clock runtime.
+- The current concrete BP-native RMQ query-cost bound is the fixed modeled
+  constant `196727`, obtained from close-access cost `16`, the readiness
+  threshold `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15`,
+  the zero-block same-block scan cost `2 * 2^15 + 1`, the active non-Ready
+  interior scan cost `4 * 2^15`, and Ready interior query cost `30`.
 - The project remains Mathlib-free: imports are Lean/Std plus existing Lean
   arithmetic automation such as `omega`.
 
@@ -2247,6 +2255,10 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_refines_wholeQueryInterpretedCosted`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_matchesReadStore`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQGlobalReadStore_retiredFiniteSmallInterior_none`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadLegacyInteriorSegment_empty`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadReadStore_retiredFiniteSmallInterior_none`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_successful_read_events_backed_by_counted_flat_payload_of_ready`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_bounds`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_bounded_execution_story`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_allSizeStructural_execution_story`,
@@ -2436,6 +2448,10 @@ The names below are grouped by source module. Repeated base names in
   `BPNavigation.concreteBPCloseNavigationFamily_profile`, with mismatch lemmas
   `BPNavigation.sampledCloseNavigationInterface_lcaSlot_unitCost` and
   `BPNavigation.concreteCompactCloseNavigationSeededLCABudget_not_unit`, plus
+  the retired finite-small interior store facts
+  `BPNavigation.concreteBPCloseNavigationGlobalReadStore_retiredFiniteSmallInterior_none`
+  and `BPNavigation.concreteBPCloseNavigationPayloadLegacyInteriorSegment_empty`,
+  plus
   the current-adapter obstruction
   `BPNavigation.concreteSuccinctTreeNavigationGlobalPayloadStoreBoundedExecutionStory_currentCloseStore_obstruction`.
 - `RMQ/Core/Amortized.lean`, `RMQ/Core/UnionFind.lean`,

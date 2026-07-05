@@ -23,7 +23,7 @@ The short public theorem aliases live in `RMQ/Headlines.lean`.
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreBoundedExecutionStory` | Lower-level bounded target-indexed global-store packet for one fixed rank/select target. |
 | `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | Classic list-facing succinct RMQ theorem: for every ordinary `xs : List Int`, the built payload has length `2*n + o(n)` and valid half-open queries return the exact leftmost RMQ answer within constant modeled query cost. |
 | `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | List-facing flat-payload no-synthetic execution story: for ordinary `xs : List Int`, the final query uses the advertised `2*n + o(n)` `buildPayload`, keeps the classic half-open leftmost RMQ contract and constant modeled query bound, and every actual successful WordRAM read is backed by one query-independent counted flat payload layout, with bounded event data and no synthetic cost-only markers. |
-| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ capstone with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and an explicit doubled-Catalan lower-bound clause in the same public theorem surface. |
+| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ capstone with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and a numeric doubled-Catalan slack comparison in the same public theorem surface. The encoding-quantified lower-bound theorem is the separate alias `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack`. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Whole-query-interpreted variant of the final BP-native succinct RMQ capstone: same theorem shape, with the final query control represented by a closed first-order program whose leaves are interpreted close-select, compact close/LCA, and register-backed answer-rank operations. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace` | Leaf-trace-preserving variant of the same capstone: the closed controller now evaluates to an explicit domain-leaf trace before projection back to `Costed`; the leaves are still interpreted component queries, not one unified store trace. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace` | Unified-`WordRAM.TraceEvent` variant of the same capstone: the final query emits one trace stream; close-select, answer-rank, compact-close rank-seed reads, the structural BP-code zero-block same-block scan, and the all-size relative-rmM interior query are structural payload/register traces. |
@@ -101,6 +101,13 @@ profile over Cartesian-shape representatives:
 - query exactness is proved against the same leftmost RMQ contract; and
 - the modeled query cost is bounded by a fixed constant.
 
+For the current concrete BP-native capstone, that fixed modeled query-cost
+bound is `196727`. It unfolds from
+`SuccinctFinal.concreteBPNativeSuccinctRMQQueryCost` with close-access cost
+`16`, `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15`,
+zero-block same-block scan cost `2 * 2^15 + 1`, active non-Ready interior scan
+cost `4 * 2^15`, and Ready interior query cost `30`.
+
 The theorem is payload-accounted: auxiliary bits are counted separately from
 proof-only fields and certificates. The final path routes through payload-live
 rank/select and close-navigation components rather than retired raw wrappers
@@ -122,10 +129,13 @@ Ready shapes use two-level replay, active non-Ready shapes use a bounded
 summary scan, and inactive shapes have a pure-none interior trace. The route is
 named by
 `SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorAllSizeStructuralRoute_total`.
+Legacy finite-small interior store segments `26` and `27` now have empty source
+word/payload views and read as `none` in both the final flat payload store and
+the concrete close-navigation store.
 The final public trace theorem
 `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_noFiniteSmallInteriorSuccessfulRead`
-excludes successful reads to legacy interior slots 26 and 27; it is not a
-stronger no-read-events claim.
+is now a compatibility exclusion for successful reads to legacy interior slots
+26 and 27, not the only barrier against uncounted data.
 `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_noFiniteSmallSameBlockSuccessfulRead`
 separately records that the retired segment-28 same-block compatibility slot is
 not successfully read by the final trace.

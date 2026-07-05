@@ -18,7 +18,7 @@ claims, what it does not claim, and which command checks the relevant surface.
 | Claim | Public theorem alias | Source theorem | Check command |
 | --- | --- | --- | --- |
 | Exact RMQ requires essentially `2*n` bits in the fixed-length payload model, with doubled Catalan slack. | `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack` | `RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack` | `lake env lean scripts/headline_axiom_check.lean` |
-| The BP-native succinct RMQ family answers exact RMQ queries with `2*n + o(n)` payload bits and constant modeled query cost. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile` | `lake env lean scripts/headline_axiom_check.lean` |
+| The BP-native succinct RMQ family answers exact RMQ queries with `2*n + o(n)` payload bits and constant modeled query cost, paired with a numeric doubled-Catalan slack comparison. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile` | `lake env lean scripts/headline_axiom_check.lean` |
 | The ordinary `List Int` succinct RMQ surface combines the classic half-open leftmost contract, the existing `2*n + o(n)` counted-payload story, and the final flat-payload no-synthetic WordRAM execution story. | `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | `RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_execution_story` | `lake env lean scripts/headline_axiom_check.lean` and `lake env lean scripts/wordram_axiom_check.lean` |
 | The same RMQ family has a closed first-order query controller over interpreted leaves. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_interpreted_profile` | `lake env lean scripts/wordram_axiom_check.lean` |
 | The same RMQ family emits an explicit domain-leaf trace before projection back to `Costed`. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_leaf_trace_profile` | `lake env lean scripts/wordram_axiom_check.lean` |
@@ -45,14 +45,23 @@ claims, what it does not claim, and which command checks the relevant surface.
 ## Non-Claims
 
 - The `WordRAM` model is not a proof about Lean's compiled runtime.
+- The BP-native capstone's doubled-Catalan clause is a numeric theorem-surface
+  comparison. The encoding-quantified fixed-length lower-bound statement is
+  the separate public theorem
+  `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack`.
 - The all-size final RMQ query now has a single global payload-store execution
   theorem and a no-synthetic structural replay theorem. The flat-payload theorem
   is an execution-story layout theorem; the separately cited `2*n + o(n)`
   theorem remains the asymptotic payload theorem.
-- The large-regime WordRAM theorem still carries the explicit size premise
-  needed to replay the positive local/fringe/interior close path structurally;
-  the all-input theorem is total and store-backed but includes the fallback
-  primitive boundary.
+- The large-regime WordRAM theorem still carries an explicit size premise as a
+  compatibility strengthening. The public all-input theorem is total,
+  store-backed, and structurally dispatches the compact close/LCA path; legacy
+  finite-small interior store slots `26` and `27` read as `none` and are not
+  part of the counted flat payload.
+- The current concrete BP-native query-cost bound is the fixed model constant
+  `196727`. It includes bounded all-size scans below
+  `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15`; this is a
+  disclosed model constant, not a hidden asymptotic variable.
 - The bounded execution-story theorem supplies a trace-local finite bit width
   for exposed addresses and primitive operands. It is not yet a tight
   asymptotic machine-word side-condition for every component.

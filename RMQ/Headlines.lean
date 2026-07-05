@@ -103,7 +103,9 @@ abbrev rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreBoundedExecutio
 
 /--
 BP-native succinct RMQ capstone: exact RMQ, `2*n + o(n)`, constant query, and
-the doubled-Catalan lower-bound comparison in the same theorem surface.
+a numeric doubled-Catalan lower-bound comparison in the same theorem surface.
+The encoding-quantified lower-bound theorem is exposed separately as
+`exactRMQLowerBoundDoubledCatalanSlack`.
 -/
 abbrev succinctRMQTwoNPlusOConstantQuery :=
   RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile
@@ -124,7 +126,7 @@ backed by one query-independent counted flat payload layout/read store: every
 actual successful read has source/component/offset evidence, event data are
 bounded, and no synthetic cost-only events occur. The flat execution payload is
 the advertised `2*n + o(n)` `buildPayload`, with no finite-small same-block
-appendix.
+appendix; retired finite-small interior slots have empty stores.
 -/
 abbrev listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory :=
   RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story

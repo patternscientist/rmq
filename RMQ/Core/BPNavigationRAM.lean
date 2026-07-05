@@ -826,8 +826,6 @@ def concreteBPCloseNavigationGlobalReadStore
       SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical shape
     let localTable := SuccinctClose.concreteBPRelativeRmmInteriorLocalTable shape
     let globalTable := SuccinctClose.concreteBPRelativeRmmInteriorGlobalTable shape
-    let smallInterior :=
-      SuccinctClose.concreteBPFiniteSmallInteriorRangeMinTable shape
     if segment = 0 then
       selectData.bitWords.store.wordRAMStore.readWord? 0 index
     else if segment = 1 then
@@ -880,12 +878,16 @@ def concreteBPCloseNavigationGlobalReadStore
       localTable.table.wordRAMStore.readWord? 0 index
     else if segment = 25 then
       globalTable.table.wordRAMStore.readWord? 0 index
-    else if segment = 26 then
-      smallInterior.minTable.wordRAMStore.readWord? 0 index
-    else if segment = 27 then
-      smallInterior.argTable.wordRAMStore.readWord? 0 index
     else
       none
+
+theorem concreteBPCloseNavigationGlobalReadStore_retiredFiniteSmallInterior_none
+    (shape : Cartesian.CartesianShape) (index : Nat) :
+    (concreteBPCloseNavigationGlobalReadStore shape).readWord? 26 index =
+        none /\
+      (concreteBPCloseNavigationGlobalReadStore shape).readWord? 27 index =
+        none := by
+  simp [concreteBPCloseNavigationGlobalReadStore]
 
 /-- Payload components used to back successful global reads. -/
 structure ConcreteBPCloseNavigationPayloadLayout
@@ -950,7 +952,6 @@ def concreteBPCloseNavigationPayloadSourceWords
     SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical shape
   let localTable := SuccinctClose.concreteBPRelativeRmmInteriorLocalTable shape
   let globalTable := SuccinctClose.concreteBPRelativeRmmInteriorGlobalTable shape
-  let smallInterior := SuccinctClose.concreteBPFiniteSmallInteriorRangeMinTable shape
   match source with
   | .bpCode => selectData.bitWords.store.words
   | .selectSuperBaseOccurrence =>
@@ -1004,9 +1005,9 @@ def concreteBPCloseNavigationPayloadSourceWords
   | .closeInteriorGlobal =>
       globalTable.table.store.words
   | .closeFiniteSmallInteriorMin =>
-      smallInterior.minTable.store.words
+      #[]
   | .closeFiniteSmallInteriorArg =>
-      smallInterior.argTable.store.words
+      #[]
   | .closeFiniteSmallSameBlock =>
       #[]
 
@@ -1022,7 +1023,6 @@ def concreteBPCloseNavigationPayloadSourcePayload
     SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical shape
   let localTable := SuccinctClose.concreteBPRelativeRmmInteriorLocalTable shape
   let globalTable := SuccinctClose.concreteBPRelativeRmmInteriorGlobalTable shape
-  let smallInterior := SuccinctClose.concreteBPFiniteSmallInteriorRangeMinTable shape
   match source with
   | .bpCode => shape.bpCode
   | .selectSuperBaseOccurrence =>
@@ -1076,11 +1076,24 @@ def concreteBPCloseNavigationPayloadSourcePayload
   | .closeInteriorGlobal =>
       globalTable.payload
   | .closeFiniteSmallInteriorMin =>
-      smallInterior.minTable.payload
+      []
   | .closeFiniteSmallInteriorArg =>
-      smallInterior.argTable.payload
+      []
   | .closeFiniteSmallSameBlock =>
       []
+
+theorem concreteBPCloseNavigationPayloadLegacyInteriorSegment_empty
+    (shape : Cartesian.CartesianShape) :
+    concreteBPCloseNavigationPayloadSourceWords
+        shape .closeFiniteSmallInteriorMin = #[] /\
+      concreteBPCloseNavigationPayloadSourceWords
+        shape .closeFiniteSmallInteriorArg = #[] /\
+      concreteBPCloseNavigationPayloadSourcePayload
+        shape .closeFiniteSmallInteriorMin = [] /\
+      concreteBPCloseNavigationPayloadSourcePayload
+        shape .closeFiniteSmallInteriorArg = [] := by
+  simp [concreteBPCloseNavigationPayloadSourceWords,
+    concreteBPCloseNavigationPayloadSourcePayload]
 
 def concreteBPCloseNavigationPayloadReadBacked
     (shape : Cartesian.CartesianShape)
@@ -1237,15 +1250,13 @@ theorem concreteBPCloseNavigationPayloadSourceWords_erases
         (SuccinctClose.concreteBPRelativeRmmInteriorGlobalTable
           shape).table.store.erases
   | closeFiniteSmallInteriorMin =>
-      simpa [concreteBPCloseNavigationPayloadSourceWords,
-        concreteBPCloseNavigationPayloadSourcePayload] using
-        (SuccinctClose.concreteBPFiniteSmallInteriorRangeMinTable
-          shape).minTable.store.erases
+      change SuccinctSpace.flattenPayloadWords ([] : List (List Bool)) =
+        ([] : List Bool)
+      rfl
   | closeFiniteSmallInteriorArg =>
-      simpa [concreteBPCloseNavigationPayloadSourceWords,
-        concreteBPCloseNavigationPayloadSourcePayload] using
-        (SuccinctClose.concreteBPFiniteSmallInteriorRangeMinTable
-          shape).argTable.store.erases
+      change SuccinctSpace.flattenPayloadWords ([] : List (List Bool)) =
+        ([] : List Bool)
+      rfl
   | closeFiniteSmallSameBlock =>
       change
         SuccinctSpace.flattenPayloadWords ([] : List (List Bool)) =

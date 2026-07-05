@@ -76,11 +76,16 @@ abbrev succinctRMQTwoNPlusOConstantQueryInterpreted :=
   RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_interpreted_profile
 ```
 
-It has the same payload/lower-bound/cost/exactness theorem shape as the main
-capstone, but the query clause uses
+It has the same payload, numeric doubled-Catalan slack comparison, cost, and
+exactness theorem shape as the main capstone, but the query clause uses
 `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted`: a
 closed first-order whole-query controller whose leaves are interpreted
 close-select, compact close/LCA, and register-backed answer-rank operations.
+
+The encoding-quantified fixed-length lower-bound theorem is not hidden in this
+capstone clause. It is separately exposed as
+`RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack`, backed by
+`RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack`.
 
 The next flattening checkpoint is:
 
@@ -130,15 +135,24 @@ The compact interior route itself is now named by:
 RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorAllSizeStructuralRoute_total
 ```
 
-The final trace exclusion theorem is deliberately precise:
+The final trace exclusion theorem remains available:
 
 ```lean
 RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_noFiniteSmallInteriorSuccessfulRead
 ```
 
-It proves that no successful read in the public final trace targets legacy
-interior slots 26 and 27; it does not claim that no syntactic read event with a
-failed `none` payload can ever mention those segment numbers.
+The stronger store-level facts are now:
+
+```lean
+RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQGlobalReadStore_retiredFiniteSmallInterior_none
+RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadReadStore_retiredFiniteSmallInterior_none
+RMQ.BPNavigation.concreteBPCloseNavigationGlobalReadStore_retiredFiniteSmallInterior_none
+```
+
+They prove legacy interior slots 26 and 27 resolve to `none` in the public final
+global store, the public final flat-payload read store, and the concrete
+close-navigation store. The trace exclusion theorem is now a compatibility
+fact rather than the only reason those slots cannot leak uncounted table data.
 
 The strongest all-size execution-story theorem is the global-store companion:
 
@@ -293,12 +307,19 @@ Read literally, this says:
 
 - the auxiliary overhead is `o(n)`;
 - the upper bound has `2*n + overhead n` payload bits;
-- the lower-bound side is present in both ordinary and doubled Catalan-slack
-  forms;
+- the capstone includes the ordinary and doubled numeric Catalan-slack
+  comparison forms;
 - the close-access payload is itself bounded by the advertised overhead;
 - every query has a fixed modeled cost bound; and
 - every valid half-open query over every Cartesian shape of size `n` erases to
   the reference leftmost RMQ answer `scanWindow shape.representative left len`.
+
+For the built generic sparse-exception close-access family, that fixed modeled
+cost bound is `196727`. It unfolds from close-access cost `16`,
+`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15`,
+`SuccinctClose.concreteCompactBPCloseZeroBlockScanCost = 2 * 2^15 + 1`,
+`SuccinctClose.concreteBPRelativeRmmInteriorSmallScanQueryCost = 4 * 2^15`,
+and Ready interior query cost `30`.
 
 ## Axiom Excerpt
 
