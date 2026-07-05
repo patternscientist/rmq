@@ -120,10 +120,9 @@ Its query clauses include the explicit hypothesis `2^128 <= shape.size`; under
 that premise the compact close/LCA leg routes through the positive-block
 local/fringe/interior structural trace replay rather than the all-size
 fallback. This large-regime theorem is now a compatibility companion, not the
-asymptotic reason the all-size finite-small interior branch is acceptable: the
-current all-size fallback is confined below
-`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15` by
-`SuccinctClose.concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold`.
+asymptotic reason for an all-size fallback: the current public all-size route
+is structural, with Ready two-level replay, active non-Ready bounded summary
+scan, and inactive pure-none interior replay.
 
 The strongest all-size execution-story theorem is the global-store companion:
 
@@ -189,10 +188,11 @@ abbrev succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory :=
 
 It adds the explicit premise `2^128 <= shape.size` and uses the structural
 local/fringe/interior close-navigation replay on the compact close/LCA leg. The
-all-size flat-payload theorem remains the main public endpoint; its non-Ready
-interior finite-small table is now bounded by the named `2^15` Ready threshold
-rather than by a `2^128` finite prefix. As before, these are word-RAM model
-statements; they are not Lean-runtime claims and not a general CPU semantics.
+all-size flat-payload theorem remains the main public endpoint; it now avoids
+the legacy interior witness table entirely by splitting cross-block interior
+replay into Ready two-level, active non-Ready bounded summary scan, and
+inactive pure-none cases. As before, these are word-RAM model statements;
+they are not Lean-runtime claims and not a general CPU semantics.
 
 The rank/select spoke now has a fused compressed/FID capstone alias:
 

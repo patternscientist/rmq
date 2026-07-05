@@ -523,21 +523,21 @@ def concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat
     (shape : Cartesian.CartesianShape) :
     ConcreteBPNativeSuccinctRMQFlatPayloadSource -> Prop
   | .closeSummaryBaseline =>
-      SuccinctClose.concreteBPRelativeRmmInteriorReady shape
+      SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive shape
   | .closeSummaryMinRel =>
-      SuccinctClose.concreteBPRelativeRmmInteriorReady shape
+      SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive shape
   | .closeSummaryMaxRel =>
-      SuccinctClose.concreteBPRelativeRmmInteriorReady shape
+      SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive shape
   | .closeSummaryArgOffset =>
-      SuccinctClose.concreteBPRelativeRmmInteriorReady shape
+      SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive shape
   | .closeInteriorLocal =>
       SuccinctClose.concreteBPRelativeRmmInteriorReady shape
   | .closeInteriorGlobal =>
       SuccinctClose.concreteBPRelativeRmmInteriorReady shape
   | .closeFiniteSmallInteriorMin =>
-      ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape
+      False
   | .closeFiniteSmallInteriorArg =>
-      ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape
+      False
   | _ => True
 
 def concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
@@ -562,12 +562,10 @@ theorem concreteBPNativeSuccinctRMQFlatPayloadFiniteSmallSegmentStatus
         some .closeFiniteSmallInteriorArg /\
       concreteBPNativeSuccinctRMQFlatPayloadSegmentSource? 28 =
         some .closeFiniteSmallSameBlock /\
-      (concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
-          shape 26 ↔
-        ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape) /\
-      (concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
-          shape 27 ↔
-        ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape) /\
+      ¬ concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+          shape 26 /\
+      ¬ concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+          shape 27 /\
       concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
         shape 28 /\
       ¬ concreteBPNativeSuccinctRMQFlatPayloadSourceLargeReadyCounted
@@ -855,6 +853,8 @@ def concreteBPNativeSuccinctRMQFlatPayloadSourcePayload
   | .closeFiniteSmallSameBlock =>
       smallSameBlock.payload
 
+set_option linter.unusedSimpArgs false in
+set_option maxHeartbeats 1000000 in
 theorem concreteBPNativeSuccinctRMQFlatPayloadSource_component_slice
     (shape : Cartesian.CartesianShape)
     (source : ConcreteBPNativeSuccinctRMQFlatPayloadSource)
@@ -903,28 +903,50 @@ theorem concreteBPNativeSuccinctRMQFlatPayloadSource_component_slice
           SuccinctClose.PayloadLiveBPLocalSparseOffsetTable.payload,
           SuccinctClose.PayloadLiveBPGlobalSparseBlockTable.payload,
           hready, List.append_assoc, Nat.add_assoc] at hcounted ⊢
-    · cases source <;>
-        simp [concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat,
-          concreteBPNativeSuccinctRMQFlatPayloadComponentPayload,
-          concreteBPNativeSuccinctRMQFlatPayloadSourceComponent,
-          concreteBPNativeSuccinctRMQFlatPayloadSourceComponentOffset,
-          concreteBPNativeSuccinctRMQFlatPayloadSourcePayload,
-          GenericSelect.sparseExceptionSelectSource,
-          GenericSelect.SparseExceptionSelectData.toChargedSelectPositionSource,
-          GenericSelect.SparseExceptionSelectData.payload,
-          GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.payload,
-          GenericSelect.SparseExceptionDirectory.payload,
-          SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.auxPayload,
-          SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superPayload,
-          SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blockPayload,
-          SuccinctSpace.FixedWidthRankSampleTables.payload,
-          concreteBPNativeCloseDirectory,
-          SuccinctClose.concreteCompactBPCloseLCADirectory,
-          SuccinctClose.concreteBPRelativeRmmInteriorDirectory,
-          SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable.payload,
-          SuccinctClose.PayloadLiveBPLocalSparseOffsetTable.payload,
-          SuccinctClose.PayloadLiveBPRangeArgMinWitnessTable.payload,
-          hready, List.append_assoc, Nat.add_assoc] at hcounted ⊢
+    · by_cases hactive :
+          SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive shape
+      · cases source <;>
+          simp [concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat,
+            concreteBPNativeSuccinctRMQFlatPayloadComponentPayload,
+            concreteBPNativeSuccinctRMQFlatPayloadSourceComponent,
+            concreteBPNativeSuccinctRMQFlatPayloadSourceComponentOffset,
+            concreteBPNativeSuccinctRMQFlatPayloadSourcePayload,
+            GenericSelect.sparseExceptionSelectSource,
+            GenericSelect.SparseExceptionSelectData.toChargedSelectPositionSource,
+            GenericSelect.SparseExceptionSelectData.payload,
+            GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.payload,
+            GenericSelect.SparseExceptionDirectory.payload,
+            SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.auxPayload,
+            SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superPayload,
+            SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blockPayload,
+            SuccinctSpace.FixedWidthRankSampleTables.payload,
+            concreteBPNativeCloseDirectory,
+            SuccinctClose.concreteCompactBPCloseLCADirectory,
+            SuccinctClose.concreteBPRelativeRmmInteriorDirectory,
+            SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable.payload,
+            SuccinctClose.PayloadLiveBPLocalSparseOffsetTable.payload,
+            hready, hactive, List.append_assoc, Nat.add_assoc] at hcounted ⊢
+      · cases source <;>
+          simp [concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat,
+            concreteBPNativeSuccinctRMQFlatPayloadComponentPayload,
+            concreteBPNativeSuccinctRMQFlatPayloadSourceComponent,
+            concreteBPNativeSuccinctRMQFlatPayloadSourceComponentOffset,
+            concreteBPNativeSuccinctRMQFlatPayloadSourcePayload,
+            GenericSelect.sparseExceptionSelectSource,
+            GenericSelect.SparseExceptionSelectData.toChargedSelectPositionSource,
+            GenericSelect.SparseExceptionSelectData.payload,
+            GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.payload,
+            GenericSelect.SparseExceptionDirectory.payload,
+            SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.auxPayload,
+            SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superPayload,
+            SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blockPayload,
+            SuccinctSpace.FixedWidthRankSampleTables.payload,
+            concreteBPNativeCloseDirectory,
+            SuccinctClose.concreteCompactBPCloseLCADirectory,
+            SuccinctClose.concreteBPRelativeRmmInteriorDirectory,
+            SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable.payload,
+            SuccinctClose.PayloadLiveBPLocalSparseOffsetTable.payload,
+            hready, hactive, List.append_assoc, Nat.add_assoc] at hcounted ⊢
   simpa using hdirect
 
 structure ConcreteBPNativeSuccinctRMQFlatPayloadSegmentBacking
@@ -1015,6 +1037,70 @@ def concreteBPNativeSuccinctRMQFlatPayloadReadStore
         (concreteBPNativeSuccinctRMQFlatPayloadSourceWords
           shape source)[index]?
     | none => none
+
+private theorem
+    concreteBPNativeSummaryBaselineWords_eq_empty_of_not_active
+    (shape : Cartesian.CartesianShape)
+    (hnotActive :
+      ¬ SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive shape) :
+    (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+      shape).baselineTable.store.words = #[] := by
+  simp [SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical,
+    SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable,
+    SuccinctClose.canonicalBPRelativeSummaryBlockCount,
+    SuccinctClose.canonicalBPRelativeSummarySuperCount,
+    SuccinctClose.bpSuperblockBaselineEntries,
+    SuccinctSpace.FixedWidthNatTable.ofEntries,
+    SuccinctSpace.FixedWidthNatTable.ofEncodedWords,
+    hnotActive]
+
+private theorem
+    concreteBPNativeSummaryMinRelWords_eq_empty_of_not_active
+    (shape : Cartesian.CartesianShape)
+    (hnotActive :
+      ¬ SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive shape) :
+    (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+      shape).minRelTable.store.words = #[] := by
+  simp [SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical,
+    SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable,
+    SuccinctClose.canonicalBPRelativeSummaryBlockCount,
+    SuccinctClose.canonicalBPRelativeSummarySuperCount,
+    SuccinctClose.bpBlockRelativeMinExcessEntries,
+    SuccinctSpace.FixedWidthNatTable.ofEntries,
+    SuccinctSpace.FixedWidthNatTable.ofEncodedWords,
+    hnotActive]
+
+private theorem
+    concreteBPNativeSummaryMaxRelWords_eq_empty_of_not_active
+    (shape : Cartesian.CartesianShape)
+    (hnotActive :
+      ¬ SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive shape) :
+    (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+      shape).maxRelTable.store.words = #[] := by
+  simp [SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical,
+    SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable,
+    SuccinctClose.canonicalBPRelativeSummaryBlockCount,
+    SuccinctClose.canonicalBPRelativeSummarySuperCount,
+    SuccinctClose.bpBlockRelativeMaxExcessEntries,
+    SuccinctSpace.FixedWidthNatTable.ofEntries,
+    SuccinctSpace.FixedWidthNatTable.ofEncodedWords,
+    hnotActive]
+
+private theorem
+    concreteBPNativeSummaryArgOffsetWords_eq_empty_of_not_active
+    (shape : Cartesian.CartesianShape)
+    (hnotActive :
+      ¬ SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive shape) :
+    (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+      shape).argOffsetTable.store.words = #[] := by
+  simp [SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical,
+    SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable,
+    SuccinctClose.canonicalBPRelativeSummaryBlockCount,
+    SuccinctClose.canonicalBPRelativeSummarySuperCount,
+    SuccinctClose.bpBlockArgMinLocalOffsetEntries,
+    SuccinctSpace.FixedWidthNatTable.ofEntries,
+    SuccinctSpace.FixedWidthNatTable.ofEncodedWords,
+    hnotActive]
 
 def concreteBPNativeSuccinctRMQFlatPayloadReadSourceManifest
     (shape : Cartesian.CartesianShape)
@@ -1460,11 +1546,11 @@ theorem
         shape hread hcounted
 
 /--
-A successful flat-store read is counted if the only conditional finite-small
-sources are known to be on the branch that actually materializes their payload:
-segments `20` through `25` require Ready, while segments `26` and `27` require
-the non-Ready fallback. This local bridge is intentionally not a claim that
-every possible broad read-store lookup is counted.
+A successful flat-store read is counted once the branch predicates required by
+conditional close sources are discharged: summary segments `20` through `23`
+require the canonical summary table to be active, local/global interior segments
+`24` and `25` require Ready, and retired dense finite-small interior segments
+`26` and `27` must not occur.
 -/
 theorem
     concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_read_segment_counted
@@ -1473,22 +1559,12 @@ theorem
     (hread :
       (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord?
           segment index = some word)
-    (h20 : segment = 20 ->
-      SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
-    (h21 : segment = 21 ->
-      SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
-    (h22 : segment = 22 ->
-      SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
-    (h23 : segment = 23 ->
-      SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
     (h24 : segment = 24 ->
       SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
     (h25 : segment = 25 ->
       SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
-    (h26 : segment = 26 ->
-      ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
-    (h27 : segment = 27 ->
-      ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape) :
+    (h26 : segment = 26 -> False)
+    (h27 : segment = 27 -> False) :
     concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
       shape segment := by
   match segment with
@@ -1573,25 +1649,61 @@ theorem
         concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
         concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat]
   | 20 =>
-      simpa [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
-        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
-        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat] using
-        h20 rfl
+      by_cases hactive :
+          SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive shape
+      · simpa [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+          concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+          concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat] using
+          hactive
+      · unfold concreteBPNativeSuccinctRMQFlatPayloadReadStore at hread
+        have hwords :=
+          concreteBPNativeSummaryBaselineWords_eq_empty_of_not_active
+            shape hactive
+        simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+          concreteBPNativeSuccinctRMQFlatPayloadSourceWords,
+          hwords] at hread
   | 21 =>
-      simpa [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
-        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
-        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat] using
-        h21 rfl
+      by_cases hactive :
+          SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive shape
+      · simpa [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+          concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+          concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat] using
+          hactive
+      · unfold concreteBPNativeSuccinctRMQFlatPayloadReadStore at hread
+        have hwords :=
+          concreteBPNativeSummaryMinRelWords_eq_empty_of_not_active
+            shape hactive
+        simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+          concreteBPNativeSuccinctRMQFlatPayloadSourceWords,
+          hwords] at hread
   | 22 =>
-      simpa [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
-        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
-        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat] using
-        h22 rfl
+      by_cases hactive :
+          SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive shape
+      · simpa [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+          concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+          concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat] using
+          hactive
+      · unfold concreteBPNativeSuccinctRMQFlatPayloadReadStore at hread
+        have hwords :=
+          concreteBPNativeSummaryMaxRelWords_eq_empty_of_not_active
+            shape hactive
+        simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+          concreteBPNativeSuccinctRMQFlatPayloadSourceWords,
+          hwords] at hread
   | 23 =>
-      simpa [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
-        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
-        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat] using
-        h23 rfl
+      by_cases hactive :
+          SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive shape
+      · simpa [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
+          concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+          concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat] using
+          hactive
+      · unfold concreteBPNativeSuccinctRMQFlatPayloadReadStore at hread
+        have hwords :=
+          concreteBPNativeSummaryArgOffsetWords_eq_empty_of_not_active
+            shape hactive
+        simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
+          concreteBPNativeSuccinctRMQFlatPayloadSourceWords,
+          hwords] at hread
   | 24 =>
       simpa [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
         concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
@@ -1603,15 +1715,9 @@ theorem
         concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat] using
         h25 rfl
   | 26 =>
-      simpa [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
-        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
-        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat] using
-        h26 rfl
+      exact False.elim (h26 rfl)
   | 27 =>
-      simpa [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
-        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
-        concreteBPNativeSuccinctRMQFlatPayloadSourceCountedInFlat] using
-        h27 rfl
+      exact False.elim (h27 rfl)
   | 28 =>
       simp [concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat,
         concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
@@ -1623,14 +1729,12 @@ theorem
 theorem
     concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_read_segment_counted_of_not_ready
     (shape : Cartesian.CartesianShape)
-    (hnotReady : ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (_hnotReady : ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
     {segment index : Nat} {word : List Bool}
-    (h20 : segment ≠ 20)
-    (h21 : segment ≠ 21)
-    (h22 : segment ≠ 22)
-    (h23 : segment ≠ 23)
     (h24 : segment ≠ 24)
     (h25 : segment ≠ 25)
+    (h26 : segment ≠ 26)
+    (h27 : segment ≠ 27)
     (hread :
       (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord?
           segment index = some word) :
@@ -1638,13 +1742,10 @@ theorem
       shape segment :=
   concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_read_segment_counted
     shape hread
-    (fun hseg => False.elim (h20 hseg))
-    (fun hseg => False.elim (h21 hseg))
-    (fun hseg => False.elim (h22 hseg))
-    (fun hseg => False.elim (h23 hseg))
     (fun hseg => False.elim (h24 hseg))
     (fun hseg => False.elim (h25 hseg))
-    (fun _ => hnotReady) (fun _ => hnotReady)
+    (fun hseg => False.elim (h26 hseg))
+    (fun hseg => False.elim (h27 hseg))
 
 def concreteBPNativeSuccinctRMQFlatPayloadTraceEventSuccessfulReadBacked
     (shape : Cartesian.CartesianShape) :
@@ -1664,10 +1765,6 @@ def concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead :
 
 def concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead :
     WordRAM.TraceEvent -> Prop
-  | WordRAM.TraceEvent.readWord 20 _ (some _) => False
-  | WordRAM.TraceEvent.readWord 21 _ (some _) => False
-  | WordRAM.TraceEvent.readWord 22 _ (some _) => False
-  | WordRAM.TraceEvent.readWord 23 _ (some _) => False
   | WordRAM.TraceEvent.readWord 24 _ (some _) => False
   | WordRAM.TraceEvent.readWord 25 _ (some _) => False
   | _ => True
@@ -1870,15 +1967,11 @@ private theorem
           simp [WordRAM.TraceEvent.relabelReadSegmentWith,
             concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead]
       | some word =>
-          have hnot20 := h20 segment
-          have hnot21 := h21 segment
-          have hnot22 := h22 segment
-          have hnot23 := h23 segment
           have hnot24 := h24 segment
           have hnot25 := h25 segment
           simp [WordRAM.TraceEvent.relabelReadSegmentWith,
             concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead,
-            hnot20, hnot21, hnot22, hnot23, hnot24, hnot25]
+            hnot24, hnot25]
   | wordRank target limit result =>
       simp [WordRAM.TraceEvent.relabelReadSegmentWith,
         concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead]
@@ -2091,6 +2184,78 @@ private theorem
     concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noReadyCloseSuccessfulRead
       (WordRAM.singletonSegmentMap segmentBase deadSegment)
       (table.readTraceResult i) havoid
+
+private theorem
+    concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead_relabelReadSegmentWith_payload
+    (segmentMap : Nat -> Nat)
+    (h24 : forall segment, segmentMap segment ≠ 24)
+    (h25 : forall segment, segmentMap segment ≠ 25)
+    (event : WordRAM.TraceEvent) :
+    concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+      (event.relabelReadSegmentWith segmentMap) := by
+  cases event with
+  | readWord segment index word? =>
+      cases word? with
+      | none =>
+          simp [WordRAM.TraceEvent.relabelReadSegmentWith,
+            concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead]
+      | some word =>
+          have hnot24 := h24 segment
+          have hnot25 := h25 segment
+          simp [WordRAM.TraceEvent.relabelReadSegmentWith,
+            concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead,
+            hnot24, hnot25]
+  | wordRank target limit result =>
+      simp [WordRAM.TraceEvent.relabelReadSegmentWith,
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead]
+  | wordSelect target occurrence result =>
+      simp [WordRAM.TraceEvent.relabelReadSegmentWith,
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead]
+  | syntheticCostOnlyPrimitive =>
+      simp [WordRAM.TraceEvent.relabelReadSegmentWith,
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead]
+
+private theorem
+    concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noReadyClosePayloadSuccessfulRead
+    {α : Type} (segmentMap : Nat -> Nat)
+    (result : WordRAM.TraceResult α)
+    (h24 : forall segment, segmentMap segment ≠ 24)
+    (h25 : forall segment, segmentMap segment ≠ 25) :
+    forall event,
+      List.Mem event
+          (WordRAM.TraceResult.relabelReadSegmentsWith
+            segmentMap result).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event := by
+  intro event hmem
+  rcases List.mem_map.mp hmem with ⟨localEvent, _hlocal, hrelabeled⟩
+  subst event
+  exact
+    concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead_relabelReadSegmentWith_payload
+      segmentMap h24 h25 localEvent
+
+private theorem
+    concreteBPNativeFixedWidthNatTable_readTraceResultAtSegment_noReadyClosePayloadSuccessfulRead
+    {entries : List Nat} {width : Nat}
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (segmentBase deadSegment i : Nat)
+    (h24 :
+      forall segment,
+        WordRAM.singletonSegmentMap segmentBase deadSegment segment ≠ 24)
+    (h25 :
+      forall segment,
+        WordRAM.singletonSegmentMap segmentBase deadSegment segment ≠ 25) :
+    forall event,
+      List.Mem event
+          (table.readTraceResultAtSegment
+            segmentBase deadSegment i).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event := by
+  unfold SuccinctSpace.FixedWidthNatTable.readTraceResultAtSegment
+  exact
+    concreteBPNativeSuccinctRMQTraceResult_relabelReadSegmentsWith_noReadyClosePayloadSuccessfulRead
+      (WordRAM.singletonSegmentMap segmentBase deadSegment)
+      (table.readTraceResult i) h24 h25
 
 private theorem
     concreteBPNativeFixedWidthOptionNatTable_readTraceResultAtSegment_noReadyCloseSuccessfulRead
@@ -2841,22 +3006,6 @@ theorem
     (hmatch :
       event.matchesReadStore
         (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape))
-    (h20 :
-      forall index word,
-        event = WordRAM.TraceEvent.readWord 20 index (some word) ->
-          SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
-    (h21 :
-      forall index word,
-        event = WordRAM.TraceEvent.readWord 21 index (some word) ->
-          SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
-    (h22 :
-      forall index word,
-        event = WordRAM.TraceEvent.readWord 22 index (some word) ->
-          SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
-    (h23 :
-      forall index word,
-        event = WordRAM.TraceEvent.readWord 23 index (some word) ->
-          SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
     (h24 :
       forall index word,
         event = WordRAM.TraceEvent.readWord 24 index (some word) ->
@@ -2867,12 +3016,10 @@ theorem
           SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
     (h26 :
       forall index word,
-        event = WordRAM.TraceEvent.readWord 26 index (some word) ->
-          ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+        event = WordRAM.TraceEvent.readWord 26 index (some word) -> False)
     (h27 :
       forall index word,
-        event = WordRAM.TraceEvent.readWord 27 index (some word) ->
-          ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape) :
+        event = WordRAM.TraceEvent.readWord 27 index (some word) -> False) :
     concreteBPNativeSuccinctRMQFlatPayloadTraceEventSuccessfulReadBacked
       shape event := by
   cases event with
@@ -2890,10 +3037,6 @@ theorem
                 shape segment :=
             concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_read_segment_counted
               shape hread
-              (fun hseg => h20 index word (by cases hseg; rfl))
-              (fun hseg => h21 index word (by cases hseg; rfl))
-              (fun hseg => h22 index word (by cases hseg; rfl))
-              (fun hseg => h23 index word (by cases hseg; rfl))
               (fun hseg => h24 index word (by cases hseg; rfl))
               (fun hseg => h25 index word (by cases hseg; rfl))
               (fun hseg => h26 index word (by cases hseg; rfl))
@@ -3683,6 +3826,98 @@ private theorem
               event hmem))
 
 private theorem
+    concreteBPNativeInteriorSummaryMinCandidateTraceResult_noReadyCloseSuccessfulRead
+    (shape : Cartesian.CartesianShape) (block : Nat) :
+    forall event,
+      List.Mem event
+          ((SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+            shape).minCandidateTraceResultAtSegments
+              concreteBPNativeInteriorTraceSegments.summary block).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event := by
+  exact
+    SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable.minCandidateTraceResultAtSegments_trace_forall
+      (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical shape)
+      concreteBPNativeInteriorTraceSegments.summary block
+      concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+      (SuccinctClose.PayloadLiveBPRelativeMinMaxArgSummaryTable.summaryTraceResultAtSegments_trace_forall
+        (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical shape)
+        concreteBPNativeInteriorTraceSegments.summary block
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+        (by
+          intro event hmem
+          exact
+            concreteBPNativeFixedWidthNatTable_readTraceResultAtSegment_noReadyClosePayloadSuccessfulRead
+              (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+                shape).baselineTable
+              concreteBPNativeInteriorTraceSegments.summary.baseline
+              concreteBPNativeInteriorTraceSegments.summary.deadSegment
+              _
+              (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_target_of_bases_ne
+                concreteBPNativeInteriorTraceSegments.summary.baseline
+                concreteBPNativeInteriorTraceSegments.summary.deadSegment
+                24 (by decide) (by decide))
+              (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_target_of_bases_ne
+                concreteBPNativeInteriorTraceSegments.summary.baseline
+                concreteBPNativeInteriorTraceSegments.summary.deadSegment
+                25 (by decide) (by decide))
+              event hmem)
+        (by
+          intro event hmem
+          exact
+            concreteBPNativeFixedWidthNatTable_readTraceResultAtSegment_noReadyClosePayloadSuccessfulRead
+              (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+                shape).minRelTable
+              concreteBPNativeInteriorTraceSegments.summary.minRel
+              concreteBPNativeInteriorTraceSegments.summary.deadSegment
+              _
+              (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_target_of_bases_ne
+                concreteBPNativeInteriorTraceSegments.summary.minRel
+                concreteBPNativeInteriorTraceSegments.summary.deadSegment
+                24 (by decide) (by decide))
+              (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_target_of_bases_ne
+                concreteBPNativeInteriorTraceSegments.summary.minRel
+                concreteBPNativeInteriorTraceSegments.summary.deadSegment
+                25 (by decide) (by decide))
+              event hmem)
+        (by
+          intro event hmem
+          exact
+            concreteBPNativeFixedWidthNatTable_readTraceResultAtSegment_noReadyClosePayloadSuccessfulRead
+              (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+                shape).maxRelTable
+              concreteBPNativeInteriorTraceSegments.summary.maxRel
+              concreteBPNativeInteriorTraceSegments.summary.deadSegment
+              _
+              (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_target_of_bases_ne
+                concreteBPNativeInteriorTraceSegments.summary.maxRel
+                concreteBPNativeInteriorTraceSegments.summary.deadSegment
+                24 (by decide) (by decide))
+              (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_target_of_bases_ne
+                concreteBPNativeInteriorTraceSegments.summary.maxRel
+                concreteBPNativeInteriorTraceSegments.summary.deadSegment
+                25 (by decide) (by decide))
+              event hmem)
+        (by
+          intro event hmem
+          exact
+            concreteBPNativeFixedWidthNatTable_readTraceResultAtSegment_noReadyClosePayloadSuccessfulRead
+              (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+                shape).argOffsetTable
+              concreteBPNativeInteriorTraceSegments.summary.argOffset
+              concreteBPNativeInteriorTraceSegments.summary.deadSegment
+              _
+              (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_target_of_bases_ne
+                concreteBPNativeInteriorTraceSegments.summary.argOffset
+                concreteBPNativeInteriorTraceSegments.summary.deadSegment
+                24 (by decide) (by decide))
+              (concreteBPNativeSuccinctRMQSingletonSegmentMap_ne_target_of_bases_ne
+                concreteBPNativeInteriorTraceSegments.summary.argOffset
+                concreteBPNativeInteriorTraceSegments.summary.deadSegment
+                25 (by decide) (by decide))
+              event hmem))
+
+private theorem
     concreteBPNativeInteriorGlobalWordTraceResultOfReady_noFiniteSmallInteriorSuccessfulRead
     (shape : Cartesian.CartesianShape)
     (hready : SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
@@ -3757,6 +3992,39 @@ private theorem
       shape hready startBlock count
 
 private theorem
+    concreteBPNativeInteriorGlobalWordTraceResultAllSizeStructural_noFiniteSmallInteriorSuccessfulRead
+    (shape : Cartesian.CartesianShape)
+    (startBlock count : Nat) :
+    forall event,
+      List.Mem event
+          (SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+            shape concreteBPNativeInteriorTraceSegments
+            startBlock count).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+  by_cases hready : SuccinctClose.concreteBPRelativeRmmInteriorReady shape
+  · simp [hready]
+    exact
+      concreteBPNativeInteriorGlobalWordTraceResultOfReady_noFiniteSmallInteriorSuccessfulRead
+        shape hready startBlock count
+  · by_cases hactive :
+        SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive shape
+    · simp [hready, hactive]
+      exact
+        SuccinctClose.ConcreteCompactBPCloseLCADirectory.boundedSummaryRangeScanTraceResultAtSegments_trace_forall
+          (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+            shape)
+          concreteBPNativeInteriorTraceSegments.summary
+          concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          (concreteBPNativeInteriorSummaryMinCandidateTraceResult_noFiniteSmallInteriorSuccessfulRead
+            shape)
+    · simp [hready, hactive]
+      exact WordRAM.TraceResult.pure_trace_forall
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+        (none : Option (Nat × Nat))
+
+private theorem
     concreteBPNativeFiniteSmallInteriorRangeMinTraceResultAtSegments_noReadyCloseSuccessfulRead
     (shape : Cartesian.CartesianShape)
     (startBlock count : Nat) :
@@ -3804,9 +4072,23 @@ private theorem
         concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
           event := by
   unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
-  simpa [hnotReady] using
-    concreteBPNativeFiniteSmallInteriorRangeMinTraceResultAtSegments_noReadyCloseSuccessfulRead
-      shape startBlock count
+  by_cases hready : SuccinctClose.concreteBPRelativeRmmInteriorReady shape
+  · exact False.elim (hnotReady hready)
+  · by_cases hactive :
+        SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive shape
+    · simp [hready, hactive]
+      exact
+        SuccinctClose.ConcreteCompactBPCloseLCADirectory.boundedSummaryRangeScanTraceResultAtSegments_trace_forall
+          (SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical
+            shape)
+          concreteBPNativeInteriorTraceSegments.summary
+          concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          (concreteBPNativeInteriorSummaryMinCandidateTraceResult_noReadyCloseSuccessfulRead
+            shape)
+    · simp [hready, hactive]
+      exact WordRAM.TraceResult.pure_trace_forall
+        concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+        (none : Option (Nat × Nat))
 
 private theorem
     concreteBPNativeFiniteSmallSameBlockCloseGlobalTraceResult_noFiniteSmallInteriorSuccessfulRead
@@ -4071,6 +4353,37 @@ private theorem
           shape hready startBlock count)
 
 private theorem
+    concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_noFiniteSmallInteriorSuccessfulRead
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) :
+    forall event,
+      List.Mem event
+          (concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
+            shape leftClose rightClose).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  exact
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural_trace_forall
+      shape
+      (concreteBPNativeRankCloseWordTraceResultAtSegment
+        shape concreteBPNativeRankCloseTraceSegmentBase)
+      concreteBPNativeInteriorTraceSegments
+      concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
+      leftClose rightClose
+      concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+      (fun pos =>
+        concreteBPNativeSuccinctRMQRankCloseGlobalWordTraceResult_noFiniteSmallInteriorSuccessfulRead
+          shape pos)
+      (fun blockSize close =>
+        concreteBPNativeSuccinctRMQLocalBPWindowBitsTraceResult_noFiniteSmallInteriorSuccessfulRead
+          shape blockSize close)
+      (concreteBPNativeFiniteSmallSameBlockCloseGlobalTraceResult_noFiniteSmallInteriorSuccessfulRead
+        shape leftClose rightClose)
+      (fun startBlock count =>
+        concreteBPNativeInteriorGlobalWordTraceResultAllSizeStructural_noFiniteSmallInteriorSuccessfulRead
+          shape startBlock count)
+
+private theorem
     concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_noReadyCloseSuccessfulRead_of_not_ready
     (shape : Cartesian.CartesianShape)
     (hnotReady : ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
@@ -4224,28 +4537,6 @@ theorem concreteBPNativeInteriorGlobalWordTraceResultAllSizeStructural_matchesRe
     SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural_matchesReadStore
       shape concreteBPNativeInteriorTraceSegments
       (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-      (by
-        intro segment index
-        cases segment <;>
-          simp [concreteBPNativeSuccinctRMQGlobalReadStore,
-            concreteBPNativeInteriorTraceSegments,
-            concreteBPNativeDeadTraceSegment,
-            WordRAM.singletonSegmentMap,
-            WordRAM.TraceEvent.singletonSegmentMap,
-            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-            SuccinctSpace.PayloadWordStore.wordRAMStore,
-            WordRAM.Store.readWord?])
-      (by
-        intro segment index
-        cases segment <;>
-          simp [concreteBPNativeSuccinctRMQGlobalReadStore,
-            concreteBPNativeInteriorTraceSegments,
-            concreteBPNativeDeadTraceSegment,
-            WordRAM.singletonSegmentMap,
-            WordRAM.TraceEvent.singletonSegmentMap,
-            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-            SuccinctSpace.PayloadWordStore.wordRAMStore,
-            WordRAM.Store.readWord?])
       (by
         intro segment index
         cases segment <;>
@@ -5068,6 +5359,54 @@ theorem evalGlobalWordTrace_noFiniteSmallInteriorSuccessfulRead_of_ready
         simp [evalGlobalWordTrace, hguard] <;>
         intro event hmem <;> cases hmem
 
+theorem evalGlobalWordTrace_noFiniteSmallInteriorSuccessfulRead
+    (shape : Cartesian.CartesianShape)
+    (left right : Nat) (instr : WholeQueryInstr)
+    (state : WholeQueryState) :
+    forall event,
+      List.Mem event
+          (instr.evalGlobalWordTrace shape left right state).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  cases instr with
+  | selectClose dst idx =>
+      simp [evalGlobalWordTrace]
+      exact
+        concreteBPNativeSelectCloseGlobalWordTraceResult_noFiniteSmallInteriorSuccessfulRead
+          shape (idx.eval left right state)
+  | lcaClose dst leftReg rightReg =>
+      cases hleft : state.opt leftReg with
+      | none =>
+          cases hright : state.opt rightReg <;>
+            simp [evalGlobalWordTrace, hleft, hright] <;>
+            intro event hmem <;> cases hmem
+      | some leftClose =>
+          cases hright : state.opt rightReg with
+          | none =>
+              simp [evalGlobalWordTrace, hleft, hright]
+              intro event hmem
+              cases hmem
+          | some rightClose =>
+              simp [evalGlobalWordTrace, hleft, hright]
+              exact
+                concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_noFiniteSmallInteriorSuccessfulRead
+                  shape leftClose rightClose
+  | rankCloseIfSome dst guard pos =>
+      cases hguard : state.opt guard with
+      | none =>
+          simp [evalGlobalWordTrace, hguard]
+          intro event hmem
+          cases hmem
+      | some _ =>
+        simp [evalGlobalWordTrace, hguard]
+        exact
+          concreteBPNativeSuccinctRMQRankCloseGlobalWordTraceResult_noFiniteSmallInteriorSuccessfulRead
+            shape (pos.eval left right state)
+  | outputPredIfSome dst guard src =>
+      cases hguard : state.opt guard <;>
+        simp [evalGlobalWordTrace, hguard] <;>
+        intro event hmem <;> cases hmem
+
 theorem evalGlobalWordTrace_noReadyCloseSuccessfulRead_of_not_ready
     (shape : Cartesian.CartesianShape)
     (hnotReady : ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
@@ -5433,6 +5772,29 @@ theorem evalGlobalWordTrace_noFiniteSmallInteriorSuccessfulRead_of_ready
       · exact
           WholeQueryInstr.evalGlobalWordTrace_noFiniteSmallInteriorSuccessfulRead_of_ready
             shape hready left right instr state
+      · exact ih
+          (instr.evalGlobalWordTrace shape left right state).value
+
+theorem evalGlobalWordTrace_noFiniteSmallInteriorSuccessfulRead
+    (shape : Cartesian.CartesianShape)
+    (left right : Nat)
+    (program : WholeQueryProgram) (state : WholeQueryState) :
+    forall event,
+      List.Mem event
+          (evalGlobalWordTrace
+            shape left right program state).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  induction program generalizing state with
+  | nil =>
+      simp [evalGlobalWordTrace]
+      exact WordRAM.TraceResult.pure_trace_forall _ state
+  | cons instr rest ih =>
+      unfold evalGlobalWordTrace
+      apply WordRAM.TraceResult.bind_trace_forall
+      · exact
+          WholeQueryInstr.evalGlobalWordTrace_noFiniteSmallInteriorSuccessfulRead
+            shape left right instr state
       · exact ih
           (instr.evalGlobalWordTrace shape left right state).value
 
@@ -5975,6 +6337,22 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_noFiniteSmall
       shape hready left right concreteBPNativeSuccinctRMQWholeQueryProgram
       WholeQueryState.empty
 
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_noFiniteSmallInteriorSuccessfulRead
+    (shape : Cartesian.CartesianShape)
+    (left right : Nat) :
+    forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          event := by
+  unfold concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+  apply WordRAM.TraceResult.map_trace_forall
+  exact
+    WholeQueryProgram.evalGlobalWordTrace_noFiniteSmallInteriorSuccessfulRead
+      shape left right concreteBPNativeSuccinctRMQWholeQueryProgram
+      WholeQueryState.empty
+
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_noReadyCloseSuccessfulRead_of_not_ready
     (shape : Cartesian.CartesianShape)
     (hnotReady : ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
@@ -6086,10 +6464,6 @@ theorem
         (WordRAM.TraceEvent.readWord segment index (some word)) hmem)
       (fun _ _ _ => hready)
       (fun _ _ _ => hready)
-      (fun _ _ _ => hready)
-      (fun _ _ _ => hready)
-      (fun _ _ _ => hready)
-      (fun _ _ _ => hready)
       (fun readIndex readWord hreadEvent =>
         False.elim (by
           have hno :=
@@ -6110,13 +6484,19 @@ theorem
 theorem
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_successful_read_events_backed_by_counted_flat_payload_of_not_ready
     (shape : Cartesian.CartesianShape)
-    (hnotReady : ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (_hnotReady : ¬ SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
     (left right : Nat) :
     (forall event,
       List.Mem event
         (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
           shape left right).trace ->
         concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          event) ->
+    (forall event,
+      List.Mem event
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace ->
+        concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
           event) ->
     forall {segment index : Nat} {word : List Bool},
       List.Mem (WordRAM.TraceEvent.readWord segment index (some word))
@@ -6126,7 +6506,7 @@ theorem
           shape segment /\
         concreteBPNativeSuccinctRMQFlatPayloadReadBacked
           shape segment index word := by
-  intro hnoReadyClose segment index word hmem
+  intro hnoReadyClose hnoFiniteSmallInterior segment index word hmem
   have hflatStore :
       forall event,
         List.Mem event
@@ -6167,33 +6547,17 @@ theorem
       (fun readIndex readWord hreadEvent =>
         False.elim (by
           have hno :=
-            hnoReadyClose
+            hnoFiniteSmallInterior
               (WordRAM.TraceEvent.readWord segment index (some word)) hmem
           cases hreadEvent
-          simp [concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead] at hno))
+          simp [concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead] at hno))
       (fun readIndex readWord hreadEvent =>
         False.elim (by
           have hno :=
-            hnoReadyClose
+            hnoFiniteSmallInterior
               (WordRAM.TraceEvent.readWord segment index (some word)) hmem
           cases hreadEvent
-          simp [concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead] at hno))
-      (fun readIndex readWord hreadEvent =>
-        False.elim (by
-          have hno :=
-            hnoReadyClose
-              (WordRAM.TraceEvent.readWord segment index (some word)) hmem
-          cases hreadEvent
-          simp [concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead] at hno))
-      (fun readIndex readWord hreadEvent =>
-        False.elim (by
-          have hno :=
-            hnoReadyClose
-              (WordRAM.TraceEvent.readWord segment index (some word)) hmem
-          cases hreadEvent
-          simp [concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead] at hno))
-      (fun _ _ _ => hnotReady)
-      (fun _ _ _ => hnotReady)
+          simp [concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead] at hno))
   simpa [concreteBPNativeSuccinctRMQFlatPayloadTraceEventSuccessfulReadBacked]
     using hbackedEvent
 
@@ -6229,6 +6593,8 @@ theorem
         shape hready left right
         (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_noReadyCloseSuccessfulRead_of_not_ready
           shape hready left right)
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_noFiniteSmallInteriorSuccessfulRead
+          shape left right)
         hmem
 
 /--

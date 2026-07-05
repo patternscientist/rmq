@@ -233,6 +233,138 @@ theorem boundedRangeScanCosted_erase_exact
         intro offset hoffset
         exact hsuperCount (by omega))
 
+def summaryRangeScanFromWordsRead
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead) :
+    Nat -> Nat -> List (List Bool)
+  | _block, 0 => []
+  | block, steps + 1 =>
+      table.summaryCandidateWordsRead block ++
+        table.summaryRangeScanFromWordsRead (block + 1) steps
+
+def summaryRangeScanWordsRead
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (startBlock count : Nat) : List (List Bool) :=
+  match count with
+  | 0 => []
+  | steps + 1 =>
+      table.summaryCandidateWordsRead startBlock ++
+        table.summaryRangeScanFromWordsRead (startBlock + 1) steps
+
+def boundedSummaryRangeScanWordsRead
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (startBlock count : Nat) : List (List Bool) :=
+  if startBlock + count <= blockCount then
+    table.summaryRangeScanWordsRead startBlock count
+  else
+    []
+
+theorem summaryRangeScanFromWordsRead_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead block steps : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (hsuperMachine :
+      superWidth <=
+        SuccinctRank.machineWordBits shape.bpCode.length)
+    (hrelativeMachine :
+      relativeWidth <=
+        SuccinctRank.machineWordBits shape.bpCode.length)
+    {word : List Bool}
+    (hmem :
+      word ∈ table.summaryRangeScanFromWordsRead block steps) :
+    word.length <=
+      SuccinctRank.machineWordBits shape.bpCode.length := by
+  induction steps generalizing block with
+  | zero =>
+      simp [summaryRangeScanFromWordsRead] at hmem
+  | succ steps ih =>
+      simp [summaryRangeScanFromWordsRead, List.mem_append] at hmem
+      rcases hmem with hhead | htail
+      · exact
+          table.summaryCandidateWordsRead_length_le_machine
+            hsuperMachine hrelativeMachine hhead
+      · exact ih (block := block + 1) htail
+
+theorem summaryRangeScanWordsRead_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead startBlock count : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (hsuperMachine :
+      superWidth <=
+        SuccinctRank.machineWordBits shape.bpCode.length)
+    (hrelativeMachine :
+      relativeWidth <=
+        SuccinctRank.machineWordBits shape.bpCode.length)
+    {word : List Bool}
+    (hmem : word ∈ table.summaryRangeScanWordsRead startBlock count) :
+    word.length <=
+      SuccinctRank.machineWordBits shape.bpCode.length := by
+  unfold summaryRangeScanWordsRead at hmem
+  cases count with
+  | zero =>
+      simp at hmem
+  | succ steps =>
+      simp [List.mem_append] at hmem
+      rcases hmem with hhead | htail
+      · exact
+          table.summaryCandidateWordsRead_length_le_machine
+            hsuperMachine hrelativeMachine hhead
+      · exact
+          table.summaryRangeScanFromWordsRead_length_le_machine
+            hsuperMachine hrelativeMachine htail
+
+theorem boundedSummaryRangeScanWordsRead_length_le_machine
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead startBlock count : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (hsuperMachine :
+      superWidth <=
+        SuccinctRank.machineWordBits shape.bpCode.length)
+    (hrelativeMachine :
+      relativeWidth <=
+        SuccinctRank.machineWordBits shape.bpCode.length)
+    {word : List Bool}
+    (hmem :
+      word ∈ table.boundedSummaryRangeScanWordsRead startBlock count) :
+    word.length <=
+      SuccinctRank.machineWordBits shape.bpCode.length := by
+  unfold boundedSummaryRangeScanWordsRead at hmem
+  by_cases hbound : startBlock + count <= blockCount
+  · simp [hbound] at hmem
+    exact
+      table.summaryRangeScanWordsRead_length_le_machine
+        hsuperMachine hrelativeMachine hmem
+  · simp [hbound] at hmem
+
 def scanInteriorDirectory
     {shape : Cartesian.CartesianShape}
     {blockSize blocksPerSuper blockCount superCount
@@ -681,6 +813,61 @@ theorem concreteBPRelativeRmmInterior_size_lt_of_not_ready
     exact Nat.pow_le_pow_right (by omega : 0 < 2) (by omega)
   exact Nat.lt_of_lt_of_le hsmall hthreshold
 
+theorem canonicalBPRelativeSummaryBlockSize_eq_zero_of_not_active
+    {shape : Cartesian.CartesianShape}
+    (hnotActive :
+      ¬ canonicalBPRelativeMinMaxArgSummaryTableActive shape) :
+    canonicalBPRelativeSummaryBlockSize shape = 0 := by
+  simp [canonicalBPRelativeSummaryBlockSize, hnotActive]
+
+theorem canonicalBPRelativeSummaryBlockCount_eq_zero_of_not_active
+    {shape : Cartesian.CartesianShape}
+    (hnotActive :
+      ¬ canonicalBPRelativeMinMaxArgSummaryTableActive shape) :
+    canonicalBPRelativeSummaryBlockCount shape = 0 := by
+  simp [canonicalBPRelativeSummaryBlockCount, hnotActive]
+
+theorem canonicalBPRelativeSummaryBlockCount_le_size_of_active
+    {shape : Cartesian.CartesianShape}
+    (hactive : canonicalBPRelativeMinMaxArgSummaryTableActive shape) :
+    canonicalBPRelativeSummaryBlockCount shape <= shape.size := by
+  have hraw :
+      canonicalBPRelativeSummaryBlockCountRaw shape <= shape.size := by
+    unfold canonicalBPRelativeSummaryBlockCountRaw
+    exact Nat.div_le_self _ _
+  simpa [canonicalBPRelativeSummaryBlockCount, hactive] using hraw
+
+theorem concreteBPRelativeRmmInteriorSummaryPayload_le_overhead_of_active
+    {shape : Cartesian.CartesianShape}
+    (hactive : canonicalBPRelativeMinMaxArgSummaryTableActive shape) :
+    (concreteBPRelativeMinMaxArgSummaryTable_canonical shape).payload.length <=
+      concreteBPRelativeRmmInteriorOverhead shape.size := by
+  have hsummary :=
+    concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile_of_active
+      shape hactive
+  have hle :
+      compactBPCloseSummaryPayloadOverhead
+          canonicalBPRelativeSummaryBlockSlots 0 0
+          canonicalBPRelativeSummarySuperSlots shape.size <=
+        concreteBPRelativeRmmInteriorOverhead shape.size := by
+    unfold concreteBPRelativeRmmInteriorOverhead
+    omega
+  exact Nat.le_trans hsummary.2.2.2.2.2.2.1 hle
+
+theorem concreteBPRelativeRmmInteriorSmallScanCost_le_threshold
+    {shape : Cartesian.CartesianShape}
+    (hactive : canonicalBPRelativeMinMaxArgSummaryTableActive shape)
+    (hnotReady : ¬ concreteBPRelativeRmmInteriorReady shape) :
+    4 * canonicalBPRelativeSummaryBlockCount shape <=
+      concreteBPRelativeRmmInteriorSmallScanQueryCost := by
+  have hcountLe :=
+    canonicalBPRelativeSummaryBlockCount_le_size_of_active hactive
+  have hsizeLt :=
+    concreteBPRelativeRmmInterior_size_lt_readyThreshold_of_not_ready
+      hnotReady
+  unfold concreteBPRelativeRmmInteriorSmallScanQueryCost
+  exact Nat.mul_le_mul_left 4 (by omega)
+
 def concreteBPRelativeRmmInteriorDirectoryPayloadLength
     (shape : Cartesian.CartesianShape) : Nat :=
   let base :=
@@ -689,15 +876,31 @@ def concreteBPRelativeRmmInteriorDirectoryPayloadLength
         (concreteBPRelativeRmmInteriorGlobalTable shape).payload.length
   if concreteBPRelativeRmmInteriorReady shape then
     base
+  else if canonicalBPRelativeMinMaxArgSummaryTableActive shape then
+    (concreteBPRelativeMinMaxArgSummaryTable_canonical shape).payload.length
   else
-    (concreteBPFiniteSmallInteriorRangeMinTable shape).payload.length
+    0
 
-theorem concreteBPRelativeRmmInteriorDirectoryPayloadLength_eq_finiteSmall_of_not_ready
+theorem concreteBPRelativeRmmInteriorDirectoryPayloadLength_eq_summary_of_active_not_ready
     {shape : Cartesian.CartesianShape}
+    (hactive : canonicalBPRelativeMinMaxArgSummaryTableActive shape)
     (hnotReady : ¬ concreteBPRelativeRmmInteriorReady shape) :
     concreteBPRelativeRmmInteriorDirectoryPayloadLength shape =
-      (concreteBPFiniteSmallInteriorRangeMinTable shape).payload.length := by
-  simp [concreteBPRelativeRmmInteriorDirectoryPayloadLength, hnotReady]
+      (concreteBPRelativeMinMaxArgSummaryTable_canonical
+        shape).payload.length := by
+  simp [concreteBPRelativeRmmInteriorDirectoryPayloadLength, hnotReady,
+    hactive]
+
+theorem concreteBPRelativeRmmInteriorDirectoryPayloadLength_eq_zero_of_not_active
+    {shape : Cartesian.CartesianShape}
+    (hnotActive :
+      ¬ canonicalBPRelativeMinMaxArgSummaryTableActive shape) :
+    concreteBPRelativeRmmInteriorDirectoryPayloadLength shape = 0 := by
+  have hnotReady : ¬ concreteBPRelativeRmmInteriorReady shape := by
+    intro hready
+    exact hnotActive (concreteBPRelativeRmmInteriorReady_active hready)
+  simp [concreteBPRelativeRmmInteriorDirectoryPayloadLength, hnotReady,
+    hnotActive]
 
 /--
 Canonical payload-live relative interior directory backed by B's charged
@@ -714,7 +917,6 @@ def concreteBPRelativeRmmInteriorDirectory
   let table := concreteBPRelativeMinMaxArgSummaryTable_canonical shape
   let localTable := concreteBPRelativeRmmInteriorLocalTable shape
   let globalTable := concreteBPRelativeRmmInteriorGlobalTable shape
-  let smallTable := concreteBPFiniteSmallInteriorRangeMinTable shape
   by_cases hready : concreteBPRelativeRmmInteriorReady shape
   · exact
       { payload := table.payload ++ localTable.payload ++ globalTable.payload
@@ -732,8 +934,11 @@ def concreteBPRelativeRmmInteriorDirectory
           have hcost :=
             bpTwoLevelInteriorCandidateCosted_cost_le_thirty
               localTable globalTable table startBlock count
-          unfold concreteBPRelativeRmmInteriorQueryCost
-          simpa using hcost
+          exact Nat.le_trans
+            (by
+              simpa [concreteBPRelativeRmmInteriorReadyQueryCost] using
+                hcost)
+            concreteBPRelativeRmmInteriorReadyQueryCost_le_queryCost
         rangeMin_exact := by
           intro startBlock count hcount hbound
           exact
@@ -883,54 +1088,65 @@ def concreteBPRelativeRmmInteriorDirectory
               (canonicalBPRelativeSummary_superWidth_machine shape)
               (canonicalBPRelativeSummary_relativeWidth_machine shape)
               hmem }
-  · exact
-      { payload := smallTable.payload
-        payload_length_eq := by
-          simp [concreteBPRelativeRmmInteriorDirectoryPayloadLength,
-            smallTable, hready]
-        payloadWordsRead := fun startBlock count =>
-          let slot :=
-            finiteSmallInteriorRangeSlot
-              (canonicalBPRelativeSummaryBlockCount shape)
-              startBlock count
-          interiorPayloadWordReadOfGet? smallTable.minTable.store.words slot ++
-            interiorPayloadWordReadOfGet? smallTable.argTable.store.words slot
-        rangeMinCosted := fun startBlock count =>
-          let slot :=
-            finiteSmallInteriorRangeSlot
-              (canonicalBPRelativeSummaryBlockCount shape)
-              startBlock count
-          smallTable.rangeWitnessCosted slot
-        rangeMin_cost_le := by
-          intro startBlock count
-          have hcost :=
-            smallTable.rangeWitnessCosted_cost_le_two
-              (finiteSmallInteriorRangeSlot
-                (canonicalBPRelativeSummaryBlockCount shape)
-                startBlock count)
-          exact Nat.le_trans (by simpa using hcost)
-            (by unfold concreteBPRelativeRmmInteriorQueryCost; omega)
-        rangeMin_exact := by
-          intro startBlock count hcount hbound
-          simpa [smallTable] using
-            concreteBPFiniteSmallInteriorRangeMinTable_exact
-              shape hcount hbound
-        read_words_length_le_machine := by
-          intro startBlock count word hmem
-          simp only [List.mem_append] at hmem
-          have hreads :=
-            concreteBPRangeArgMinWitnessTable_read_words_length_le_machine
-              shape (canonicalBPRelativeSummaryBlockSize shape)
-              (SuccinctRank.machineWordBits shape.bpCode.length)
-              (finiteSmallInteriorRanges
-                (canonicalBPRelativeSummaryBlockCount shape))
+  · by_cases hactive :
+        canonicalBPRelativeMinMaxArgSummaryTableActive shape
+    · exact
+        { payload := table.payload
+          payload_length_eq := by
+            simp [concreteBPRelativeRmmInteriorDirectoryPayloadLength,
+              table, hready, hactive]
+          payloadWordsRead := fun startBlock count =>
+            table.boundedSummaryRangeScanWordsRead startBlock count
+          rangeMinCosted := fun startBlock count =>
+            table.boundedRangeScanCosted startBlock count
+          rangeMin_cost_le := by
+            intro startBlock count
+            have hcost :=
+              table.boundedRangeScanCosted_cost_le_blockCount
+                startBlock count
+            have hscan :=
+              concreteBPRelativeRmmInteriorSmallScanCost_le_threshold
+                hactive hready
+            exact Nat.le_trans hcost
+              (Nat.le_trans hscan
+                concreteBPRelativeRmmInteriorSmallScanQueryCost_le_queryCost)
+          rangeMin_exact := by
+            intro startBlock count hcount hbound
+            exact table.boundedRangeScanCosted_erase_exact
+              (canonicalBPRelativeSummary_blocksPerSuper_pos shape)
+              (canonicalBPRelativeSummary_cover shape)
               (by
-                simpa [SuccinctRank.machineWordBits] using
-                  (Nat.lt_log2_self (n := shape.bpCode.length)))
-              (by omega)
-          rcases hmem with hmin | harg
-          · exact interiorPayloadWordReadOfGet?_length_le hreads.1 hmin
-          · exact interiorPayloadWordReadOfGet?_length_le hreads.2 harg }
+                intro block hblock
+                exact
+                  canonicalBPRelativeSummary_block_div_lt_superCount
+                    (shape := shape) hblock)
+              hcount hbound
+          read_words_length_le_machine := by
+            intro startBlock count word hmem
+            exact
+              table.boundedSummaryRangeScanWordsRead_length_le_machine
+                (canonicalBPRelativeSummary_superWidth_machine shape)
+                (canonicalBPRelativeSummary_relativeWidth_machine shape)
+                hmem }
+    · exact
+        { payload := []
+          payload_length_eq := by
+            simp [concreteBPRelativeRmmInteriorDirectoryPayloadLength,
+              hready, hactive]
+          payloadWordsRead := fun _ _ => []
+          rangeMinCosted := fun _ _ => Costed.pure none
+          rangeMin_cost_le := by
+            intro startBlock count
+            simp [Costed.pure]
+          rangeMin_exact := by
+            intro startBlock count hcount hbound
+            have hzero :=
+              canonicalBPRelativeSummaryBlockCount_eq_zero_of_not_active
+                hactive
+            omega
+          read_words_length_le_machine := by
+            intro startBlock count word hmem
+            simp at hmem }
 
 theorem concreteBPRelativeRmmInteriorDirectory_profile_of_ready
     (shape : Cartesian.CartesianShape)
@@ -1009,6 +1225,55 @@ theorem concreteBPRelativeRmmInteriorDirectory_profile_of_ready
         rw [hdir.1]
         exact hpayload,
       hdir.2.1, hdir.2.2.1, hdir.2.2.2⟩
+
+theorem concreteBPRelativeRmmInteriorDirectory_profile_allSize_structural
+    (shape : Cartesian.CartesianShape) :
+    let directory := concreteBPRelativeRmmInteriorDirectory shape
+    LittleOLinear concreteBPRelativeRmmInteriorOverhead /\
+      directory.payload.length <=
+        concreteBPRelativeRmmInteriorOverhead shape.size /\
+      (forall startBlock count,
+        (directory.rangeMinCosted startBlock count).cost <=
+          concreteBPRelativeRmmInteriorQueryCost) /\
+      (forall {startBlock count : Nat},
+        0 < count ->
+          startBlock + count <=
+            canonicalBPRelativeSummaryBlockCount shape ->
+            (directory.rangeMinCosted startBlock count).erase =
+              some
+                (bpRangeMinExcess shape
+                  (canonicalBPRelativeSummaryBlockSize shape)
+                  startBlock count,
+                  bpRangeArgMinPrefixPos shape
+                    (canonicalBPRelativeSummaryBlockSize shape)
+                    startBlock count)) /\
+      forall {startBlock count : Nat} {word : List Bool},
+        word ∈ directory.payloadWordsRead startBlock count ->
+          word.length <=
+            SuccinctRank.machineWordBits shape.bpCode.length := by
+  let directory := concreteBPRelativeRmmInteriorDirectory shape
+  have hdir := directory.profile
+  have hpayload :
+      directory.payload.length <=
+        concreteBPRelativeRmmInteriorOverhead shape.size := by
+    by_cases hready : concreteBPRelativeRmmInteriorReady shape
+    · exact
+        (concreteBPRelativeRmmInteriorDirectory_profile_of_ready
+          shape hready).2.1
+    · by_cases hactive :
+          canonicalBPRelativeMinMaxArgSummaryTableActive shape
+      · have hsummary :=
+          concreteBPRelativeRmmInteriorSummaryPayload_le_overhead_of_active
+            hactive
+        rw [hdir.1]
+        simpa [concreteBPRelativeRmmInteriorDirectoryPayloadLength,
+          hready, hactive] using hsummary
+      · rw [hdir.1]
+        simp [concreteBPRelativeRmmInteriorDirectoryPayloadLength,
+          hready, hactive]
+  exact
+    ⟨concreteBPRelativeRmmInteriorOverhead_littleO,
+      hpayload, hdir.2.1, hdir.2.2.1, hdir.2.2.2⟩
 
 theorem concreteBPRelativeRmmInteriorDirectory_profile_of_size_ge
     (shape : Cartesian.CartesianShape)

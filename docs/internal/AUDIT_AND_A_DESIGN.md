@@ -379,10 +379,12 @@ directory with `LittleOLinear` payload overhead, payload bounded by the concrete
 overhead term, bounded query cost, exact leftmost range-minimum witness erasure,
 and machine-word bounds for the charged local/global/summary reads.
 2026-07-04 note: this paragraph records the original large-regime checkpoint.
-The current finite-small fallback budget is governed by
-`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15` and
-`SuccinctClose.concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold`,
-with the old `2^128` theorem retained as a compatibility corollary.
+The current all-size public route no longer uses the legacy interior witness
+fallback: Ready shapes use the two-level directory, active non-Ready shapes use
+a bounded summary scan, and inactive shapes have a pure-none interior replay.
+`SuccinctClose.concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold`
+is retained as a sufficient Ready theorem, with the old `2^128` theorem kept
+only as a compatibility corollary.
 
 This result is materially different from the older dense
 `interiorBlockPairRanges` path. The new profile derives the local offset-table

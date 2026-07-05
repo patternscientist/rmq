@@ -2031,28 +2031,6 @@ theorem concreteBPCloseNavigationInteriorGlobalTraceResultAllSizeStructural_matc
             SuccinctSpace.FixedWidthNatTable.wordRAMStore,
             SuccinctSpace.PayloadWordStore.wordRAMStore,
             WordRAM.Store.readWord?])
-      (by
-        intro segment index
-        cases segment <;>
-          simp [concreteBPCloseNavigationGlobalReadStore,
-            SuccinctFinal.concreteBPNativeInteriorTraceSegments,
-            SuccinctFinal.concreteBPNativeDeadTraceSegment,
-            WordRAM.singletonSegmentMap,
-            WordRAM.TraceEvent.singletonSegmentMap,
-            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-            SuccinctSpace.PayloadWordStore.wordRAMStore,
-            WordRAM.Store.readWord?])
-      (by
-        intro segment index
-        cases segment <;>
-          simp [concreteBPCloseNavigationGlobalReadStore,
-            SuccinctFinal.concreteBPNativeInteriorTraceSegments,
-            SuccinctFinal.concreteBPNativeDeadTraceSegment,
-            WordRAM.singletonSegmentMap,
-            WordRAM.TraceEvent.singletonSegmentMap,
-            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-            SuccinctSpace.PayloadWordStore.wordRAMStore,
-            WordRAM.Store.readWord?])
       startBlock count
 
 theorem concreteBPCloseNavigationLCACloseGlobalTraceResult_matchesReadStore

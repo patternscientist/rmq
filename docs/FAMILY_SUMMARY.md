@@ -49,13 +49,13 @@ cost-only marker event. The combined flat-payload companion
 `Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` ties that
 bounded no-synthetic trace to a query-independent flat layout with
 source/component/offset backing evidence for every actual successful read,
-using the compact interior on Ready shapes and the finite-small interior
-payload only on non-Ready shapes below the named
-`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15`. The theorem
-`SuccinctClose.concreteBPRelativeRmmInteriorReady_not_all` records the exact
-empty-shape obstruction to making the current Ready predicate universal, while
-`SuccinctClose.concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold`
-replaces the former `2^128` finite-prefix escape hatch for the fallback budget.
+using an all-size structural cross-block interior route: Ready shapes use the
+two-level relative-rmM replay, active non-Ready shapes use a bounded summary
+scan, and inactive shapes return pure none for the interior obligation. The
+theorem `SuccinctClose.concreteBPRelativeRmmInteriorReady_not_all` still records
+the exact empty-shape obstruction to making the current Ready predicate
+universal, while `SuccinctClose.concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold`
+is now only a sufficient Ready theorem, not the public fallback story.
 `Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` lifts
 that execution packet to the ordinary `List Int` public surface while keeping
 the classic half-open leftmost RMQ contract and existing modeled
@@ -320,12 +320,12 @@ Word-RAM status note: `SuccinctFinalRAM` now has both an all-size unified
 large-regime compatibility companion theorem. The all-size theorem now consumes
 `SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural`:
 the former zero-block same-block fallback is replayed by a finite-small
-payload-backed same-block close table, and the former cross-block interior
-fallback is replayed by either the existing large-regime two-level structural
-trace or a finite-small payload-backed range-min witness table. The interior
-finite-small range-min table is now theorem-confined to shapes below
-`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15`, by
-`SuccinctClose.concreteBPRelativeRmmInterior_size_lt_readyThreshold_of_not_ready`;
+payload-backed same-block close table, while the former cross-block interior
+fallback is now all-size structural: Ready uses the existing two-level trace,
+active non-Ready uses a bounded summary scan, and inactive uses a pure-none
+interior trace. Legacy interior witness-table definitions remain
+internal compatibility artifacts, but the all-size public trace/store/flat
+payload story no longer emits or counts their segments;
 the large-regime theorem still carries an explicit `2^128 <= shape.size`
 premise as a compatibility companion and
 replays the positive-block local BP, endpoint-fringe, and relative-rmM interior

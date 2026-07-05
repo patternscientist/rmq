@@ -222,11 +222,11 @@ abbrev succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory :=
 Flat-payload no-synthetic execution story for the final succinct RMQ query.
 This is the strongest current execution-model citation: the final query reads
 from one query-independent counted flat payload layout, every actual successful
-payload read has a source/component/offset backing witness on both Ready and
-non-Ready interior branches, all events are reads or bounded word-local
-primitives, and no event is the synthetic cost-only marker. The non-Ready
-interior branch is theorem-confined below
-`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15`.
+payload read has a source/component/offset backing witness, all events are
+reads or bounded word-local primitives, and no event is the synthetic cost-only
+marker. Cross-block interior replay is all-size structural: Ready shapes use
+the compact two-level directory, active non-Ready shapes use a bounded summary
+scan, and inactive shapes have no interior read obligation.
 -/
 abbrev succinctRMQFlatPayloadStoreNoSyntheticExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execution_story

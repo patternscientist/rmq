@@ -2404,7 +2404,26 @@ def concreteBPRelativeRmmInteriorNodeSlots : Nat :=
 
 def concreteBPRelativeRmmInteriorTopSlots : Nat := 16
 
-def concreteBPRelativeRmmInteriorQueryCost : Nat := 30
+def concreteBPRelativeRmmInteriorReadyQueryCost : Nat := 30
+
+def concreteBPRelativeRmmInteriorSmallScanQueryCost : Nat :=
+  4 * concreteBPRelativeRmmInteriorReadyThreshold
+
+def concreteBPRelativeRmmInteriorQueryCost : Nat :=
+  concreteBPRelativeRmmInteriorReadyQueryCost +
+    concreteBPRelativeRmmInteriorSmallScanQueryCost
+
+theorem concreteBPRelativeRmmInteriorReadyQueryCost_le_queryCost :
+    concreteBPRelativeRmmInteriorReadyQueryCost <=
+      concreteBPRelativeRmmInteriorQueryCost := by
+  unfold concreteBPRelativeRmmInteriorQueryCost
+  omega
+
+theorem concreteBPRelativeRmmInteriorSmallScanQueryCost_le_queryCost :
+    concreteBPRelativeRmmInteriorSmallScanQueryCost <=
+      concreteBPRelativeRmmInteriorQueryCost := by
+  unfold concreteBPRelativeRmmInteriorQueryCost
+  omega
 
 def concreteBPRelativeRmmInteriorMacroSize
     (shape : Cartesian.CartesianShape) : Nat :=

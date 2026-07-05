@@ -132,9 +132,10 @@ theorem concreteBPRelativeRmmInteriorDirectory_profile
 large-regime profile. The current repaired readiness surface also proves
 `SuccinctClose.concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold`
 for the named threshold
-`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15`; non-Ready
-finite-small interior cases are therefore below that threshold, not a
-`2^128` public finite prefix.
+`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15`, but the
+public all-size route no longer relies on a non-Ready dense finite-small
+interior table. Non-Ready is handled structurally: active shapes scan the
+bounded summary table and inactive shapes return pure none for the interior.
 
 The exact names may evolve, but the obligations should not: concrete payload,
 constant charged query, exact leftmost range-min witness, little-o overhead, and

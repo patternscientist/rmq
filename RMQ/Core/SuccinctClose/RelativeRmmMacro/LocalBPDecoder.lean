@@ -16,84 +16,61 @@ open SuccinctSpace
 
 The local endpoint and same-block work below is charged as bounded BP-word
 primitive work over the base BP payload, so the auxiliary close overhead is the
-compact two-level interior navigator payload plus the finite-small fallback
-payload used exactly on non-ready shapes.
+all-size structural relative-rmM interior navigator payload. The old
+finite-small interior fallback accounting name is retained below as a zero
+compatibility surface; the same-block finite-small close table is separate.
 -/
 def compactBPCloseFiniteSmallFallbackPayloadLength
-    (shape : Cartesian.CartesianShape) : Nat :=
-  if concreteBPRelativeRmmInteriorReady shape then
-    0
-  else
-    concreteBPRelativeRmmInteriorDirectoryPayloadLength shape
+    (_shape : Cartesian.CartesianShape) : Nat :=
+  0
 
-def compactBPCloseFiniteSmallFallbackOverhead (n : Nat) : Nat :=
-  natListMax
-    ((Cartesian.shapesOfSize n).map fun shape =>
-      compactBPCloseFiniteSmallFallbackPayloadLength shape)
+def compactBPCloseFiniteSmallFallbackOverhead (_n : Nat) : Nat :=
+  0
 
 def compactBPCloseOverhead (n : Nat) : Nat :=
-  concreteBPRelativeRmmInteriorOverhead n +
-    compactBPCloseFiniteSmallFallbackOverhead n
+  concreteBPRelativeRmmInteriorOverhead n
+
+theorem compactBPCloseFiniteSmallFallbackPayloadLength_eq_zero
+    (shape : Cartesian.CartesianShape) :
+    compactBPCloseFiniteSmallFallbackPayloadLength shape = 0 := by
+  rfl
 
 theorem compactBPCloseFiniteSmallFallbackPayloadLength_eq_zero_of_ready
     {shape : Cartesian.CartesianShape}
-    (hready : concreteBPRelativeRmmInteriorReady shape) :
+    (_hready : concreteBPRelativeRmmInteriorReady shape) :
     compactBPCloseFiniteSmallFallbackPayloadLength shape = 0 := by
-  simp [compactBPCloseFiniteSmallFallbackPayloadLength, hready]
+  rfl
 
-theorem compactBPCloseFiniteSmallFallbackPayloadLength_eq_directory_of_not_ready
+theorem compactBPCloseFiniteSmallFallbackPayloadLength_eq_zero_of_not_ready
     {shape : Cartesian.CartesianShape}
-    (hnotReady : ¬ concreteBPRelativeRmmInteriorReady shape) :
-    compactBPCloseFiniteSmallFallbackPayloadLength shape =
-      concreteBPRelativeRmmInteriorDirectoryPayloadLength shape := by
-  simp [compactBPCloseFiniteSmallFallbackPayloadLength, hnotReady]
+    (_hnotReady : ¬ concreteBPRelativeRmmInteriorReady shape) :
+    compactBPCloseFiniteSmallFallbackPayloadLength shape = 0 := by
+  rfl
+
+theorem compactBPCloseFiniteSmallFallbackOverhead_eq_zero
+    (n : Nat) :
+    compactBPCloseFiniteSmallFallbackOverhead n = 0 := by
+  rfl
 
 theorem compactBPCloseFiniteSmallFallbackOverhead_zero_of_size_ge_readyThreshold
-    {n : Nat} (hn : concreteBPRelativeRmmInteriorReadyThreshold <= n) :
+    {n : Nat} (_hn : concreteBPRelativeRmmInteriorReadyThreshold <= n) :
     compactBPCloseFiniteSmallFallbackOverhead n = 0 := by
-  have hle :
-      compactBPCloseFiniteSmallFallbackOverhead n <= 0 := by
-    unfold compactBPCloseFiniteSmallFallbackOverhead
-    apply natListMax_le_of_forall_mem
-    intro value hmem
-    rcases List.mem_map.mp hmem with ⟨shape, hshape, rfl⟩
-    have hshapeSize := Cartesian.mem_shapesOfSize_shapeOfSize hshape
-    have hsize :
-        concreteBPRelativeRmmInteriorReadyThreshold <= shape.size := by
-      rw [hshapeSize.size_eq]
-      exact hn
-    have hready :=
-      concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold
-        shape hsize
-    simp [compactBPCloseFiniteSmallFallbackPayloadLength, hready]
-  omega
+  rfl
 
 theorem compactBPCloseFiniteSmallFallbackOverhead_zero_of_size_ge
-    {n : Nat} (hn : 2 ^ 128 <= n) :
+    {n : Nat} (_hn : 2 ^ 128 <= n) :
     compactBPCloseFiniteSmallFallbackOverhead n = 0 := by
-  exact
-    compactBPCloseFiniteSmallFallbackOverhead_zero_of_size_ge_readyThreshold
-      (by
-        unfold concreteBPRelativeRmmInteriorReadyThreshold
-        exact Nat.le_trans
-          (Nat.pow_le_pow_right (by omega : 0 < 2) (by omega))
-          hn)
+  rfl
 
 theorem compactBPCloseFiniteSmallFallbackOverhead_littleO :
     LittleOLinear compactBPCloseFiniteSmallFallbackOverhead := by
-  exact
-    LittleOLinear.of_eventually_le
-      (littleOLinear_const 0)
-      ⟨concreteBPRelativeRmmInteriorReadyThreshold, by
-        intro n hn
-        rw [compactBPCloseFiniteSmallFallbackOverhead_zero_of_size_ge_readyThreshold hn]
-        exact Nat.le_refl 0⟩
+  simpa [compactBPCloseFiniteSmallFallbackOverhead] using
+    littleOLinear_const 0
 
 theorem compactBPCloseOverhead_littleO :
     LittleOLinear compactBPCloseOverhead := by
   unfold compactBPCloseOverhead
-  exact concreteBPRelativeRmmInteriorOverhead_littleO.add
-    compactBPCloseFiniteSmallFallbackOverhead_littleO
+  exact concreteBPRelativeRmmInteriorOverhead_littleO
 
 def concreteCompactBPCloseQueryCost : Nat :=
   10 + concreteBPRelativeRmmInteriorQueryCost

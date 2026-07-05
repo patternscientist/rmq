@@ -1409,34 +1409,12 @@ theorem concreteCompactBPCloseLCADirectory_profile
   let directory := concreteCompactBPCloseLCADirectory shape
   have hpayload :
       directory.payload.length <= compactBPCloseOverhead shape.size := by
-    by_cases hready : concreteBPRelativeRmmInteriorReady shape
-    · exact
-        (concreteCompactBPCloseLCADirectory_profile_of_ready
-          shape hready).1
-    · have hpayloadEq :
-          directory.payload.length =
-            concreteBPRelativeRmmInteriorDirectoryPayloadLength shape := by
-        simp [directory, concreteCompactBPCloseLCADirectory,
-          (concreteBPRelativeRmmInteriorDirectory shape).payload_length_eq]
-      have hshape :
-          shape ∈ Cartesian.shapesOfSize shape.size :=
-        Cartesian.shapeOfSize_mem_shapesOfSize
-          (cartesianShape_shapeOfSize_self shape)
-      have hpayloadMem :
-          compactBPCloseFiniteSmallFallbackPayloadLength shape ∈
-            (Cartesian.shapesOfSize shape.size).map
-              (fun shape =>
-                compactBPCloseFiniteSmallFallbackPayloadLength shape) :=
-        List.mem_map.mpr ⟨shape, hshape, rfl⟩
-      have hmax := le_natListMax_of_mem hpayloadMem
-      have hfallback :
-          compactBPCloseFiniteSmallFallbackPayloadLength shape =
-            concreteBPRelativeRmmInteriorDirectoryPayloadLength shape :=
-        compactBPCloseFiniteSmallFallbackPayloadLength_eq_directory_of_not_ready
-          hready
-      unfold compactBPCloseOverhead
-      unfold compactBPCloseFiniteSmallFallbackOverhead
-      omega
+    have hinterior :=
+      concreteBPRelativeRmmInteriorDirectory_profile_allSize_structural
+        shape
+    unfold compactBPCloseOverhead
+    simpa [directory, concreteCompactBPCloseLCADirectory] using
+      hinterior.2.1
   exact
     ⟨hpayload,
     compactBPCloseOverhead_littleO,

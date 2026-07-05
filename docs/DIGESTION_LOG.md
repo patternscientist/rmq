@@ -441,23 +441,23 @@ new counted copy. A skeptical grad student should next ask whether the
 trace-local width can be pushed down to component-level machine-word
 side-conditions and then reused by rank/select and BP navigation.
 
-2026-07-04 finite-small interior threshold repair: the non-Ready relative-rmM
-interior fallback is no longer justified as a dense table over a `2^128`
-finite prefix. The new public threshold
-`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15` is consumed
-by `SuccinctClose.concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold`;
-therefore `SuccinctClose.concreteBPRelativeRmmInterior_size_lt_readyThreshold_of_not_ready`
-proves every non-Ready interior shape is below that named threshold, and
-`SuccinctClose.compactBPCloseFiniteSmallFallbackOverhead_littleO` now becomes
-eventually zero at the Ready threshold rather than at `2^128`. The theorem
-`SuccinctClose.concreteBPRelativeRmmInteriorReady_not_all` records the exact
-obstruction to total Ready under the current predicate: the empty shape is not
-active. Plain English: the finite-small table still exists for genuinely small
-inactive shapes, but the main all-size flat-payload story is no longer leaning
-on a gigantic constant-prefix escape hatch. A skeptical grad student should
-ask whether the remaining sub-`2^15` finite-small interior branch should become
-a direct computed/scanning micro-construction with an even tighter payload
-account.
+2026-07-04 structural relative-rmM interior repair: the non-Ready relative-rmM
+interior is no longer a legacy range-min witness table in the public
+all-size trace/store/flat-payload story. The old Ready predicate remains
+intentionally non-total:
+`SuccinctClose.concreteBPRelativeRmmInteriorReady_not_all` records the
+empty-shape obstruction. The public route gets around that obstruction
+structurally: Ready shapes use the compact two-level directory, active
+non-Ready shapes use a bounded summary scan over the canonical relative
+min/max/arg table, and inactive shapes use a pure-none interior trace because
+there is no block obligation. `SuccinctClose.concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold`
+is now only a sufficient Ready theorem; the same-block finite-small close
+table remains as the one-read same-block fallback. Plain English: the all-size
+flat-payload theorem still proves every actual successful read is counted and
+backed, but segments for the old interior witness table
+are dead/unreachable from that public trace. A skeptical grad student should
+ask whether the active non-Ready bounded summary scan should eventually be
+replaced by a smaller direct BP-code micro-scan.
 
 2026-07-03 rank/select no-synthetic global-store update: the standalone
 compressed/FID rank/select spoke now has

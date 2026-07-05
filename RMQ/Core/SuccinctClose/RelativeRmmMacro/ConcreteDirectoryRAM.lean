@@ -700,6 +700,293 @@ theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsOfSizeGe_no_sy
       shape (concreteBPRelativeRmmInteriorReady_of_size_ge shape hsize)
       segments startBlock count
 
+def summaryRangeScanFromTraceResultAtSegments
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (segments : BPRelativeSummaryTraceSegments) :
+    Nat -> Nat -> Option (Nat × Nat) ->
+      WordRAM.TraceResult (Option (Nat × Nat))
+  | _block, 0, best? => WordRAM.TraceResult.pure best?
+  | block, steps + 1, best? =>
+      WordRAM.TraceResult.bind
+        (table.minCandidateTraceResultAtSegments segments block)
+        fun candidate? =>
+          summaryRangeScanFromTraceResultAtSegments table segments
+            (block + 1) steps (bpCandidateMerge? best? candidate?)
+
+def summaryRangeScanTraceResultAtSegments
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (segments : BPRelativeSummaryTraceSegments)
+    (startBlock count : Nat) : WordRAM.TraceResult (Option (Nat × Nat)) :=
+  match count with
+  | 0 => WordRAM.TraceResult.pure none
+  | steps + 1 =>
+      WordRAM.TraceResult.bind
+        (table.minCandidateTraceResultAtSegments segments startBlock)
+        fun first? =>
+          summaryRangeScanFromTraceResultAtSegments table segments
+            (startBlock + 1) steps first?
+
+def boundedSummaryRangeScanTraceResultAtSegments
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (segments : BPRelativeSummaryTraceSegments)
+    (startBlock count : Nat) : WordRAM.TraceResult (Option (Nat × Nat)) :=
+  if startBlock + count <= blockCount then
+    summaryRangeScanTraceResultAtSegments table segments startBlock count
+  else
+    WordRAM.TraceResult.pure none
+
+theorem summaryRangeScanFromTraceResultAtSegments_refines
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead block steps : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (segments : BPRelativeSummaryTraceSegments)
+    (best? : Option (Nat × Nat)) :
+    (summaryRangeScanFromTraceResultAtSegments table segments
+      block steps best?).toCosted =
+      table.rangeScanFromCosted block steps best? := by
+  induction steps generalizing block best? with
+  | zero =>
+      simp [summaryRangeScanFromTraceResultAtSegments,
+        PayloadLiveBPRelativeMinMaxArgSummaryTable.rangeScanFromCosted,
+        WordRAM.TraceResult.pure_toCosted]
+  | succ steps ih =>
+      simp [summaryRangeScanFromTraceResultAtSegments,
+        PayloadLiveBPRelativeMinMaxArgSummaryTable.rangeScanFromCosted,
+        WordRAM.TraceResult.bind_toCosted,
+        PayloadLiveBPRelativeMinMaxArgSummaryTable.minCandidateTraceResultAtSegments_refines_minCandidateCosted,
+        Costed.bind, ih]
+
+theorem summaryRangeScanTraceResultAtSegments_refines
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead startBlock count : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (segments : BPRelativeSummaryTraceSegments) :
+    (summaryRangeScanTraceResultAtSegments table segments
+      startBlock count).toCosted =
+      table.rangeScanCosted startBlock count := by
+  unfold summaryRangeScanTraceResultAtSegments
+  cases count with
+  | zero =>
+      simp [PayloadLiveBPRelativeMinMaxArgSummaryTable.rangeScanCosted,
+        WordRAM.TraceResult.pure_toCosted]
+  | succ steps =>
+      simp [PayloadLiveBPRelativeMinMaxArgSummaryTable.rangeScanCosted,
+        WordRAM.TraceResult.bind_toCosted,
+        PayloadLiveBPRelativeMinMaxArgSummaryTable.minCandidateTraceResultAtSegments_refines_minCandidateCosted,
+        summaryRangeScanFromTraceResultAtSegments_refines, Costed.bind]
+
+theorem boundedSummaryRangeScanTraceResultAtSegments_refines
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead startBlock count : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (segments : BPRelativeSummaryTraceSegments) :
+    (boundedSummaryRangeScanTraceResultAtSegments table segments
+      startBlock count).toCosted =
+      table.boundedRangeScanCosted startBlock count := by
+  unfold boundedSummaryRangeScanTraceResultAtSegments
+  unfold PayloadLiveBPRelativeMinMaxArgSummaryTable.boundedRangeScanCosted
+  by_cases hbound : startBlock + count <= blockCount
+  · simp [hbound, summaryRangeScanTraceResultAtSegments_refines]
+  · simp [hbound, WordRAM.TraceResult.pure_toCosted, Costed.pure]
+
+theorem summaryRangeScanFromTraceResultAtSegments_trace_forall
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead block steps : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (segments : BPRelativeSummaryTraceSegments)
+    (best? : Option (Nat × Nat))
+    (P : WordRAM.TraceEvent -> Prop)
+    (hsummary :
+      forall block event,
+        List.Mem event
+          (table.minCandidateTraceResultAtSegments segments block).trace ->
+        P event) :
+    forall event,
+      List.Mem event
+          (summaryRangeScanFromTraceResultAtSegments table segments
+            block steps best?).trace -> P event := by
+  induction steps generalizing block best? with
+  | zero =>
+      simp [summaryRangeScanFromTraceResultAtSegments]
+      exact WordRAM.TraceResult.pure_trace_forall P best?
+  | succ steps ih =>
+      unfold summaryRangeScanFromTraceResultAtSegments
+      apply WordRAM.TraceResult.bind_trace_forall
+      · exact hsummary block
+      · exact ih (block := block + 1)
+          (best? :=
+            bpCandidateMerge? best?
+              (table.minCandidateTraceResultAtSegments segments block).value)
+
+theorem summaryRangeScanTraceResultAtSegments_trace_forall
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead startBlock count : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (segments : BPRelativeSummaryTraceSegments)
+    (P : WordRAM.TraceEvent -> Prop)
+    (hsummary :
+      forall block event,
+        List.Mem event
+          (table.minCandidateTraceResultAtSegments segments block).trace ->
+        P event) :
+    forall event,
+      List.Mem event
+          (summaryRangeScanTraceResultAtSegments table segments
+            startBlock count).trace -> P event := by
+  unfold summaryRangeScanTraceResultAtSegments
+  cases count with
+  | zero =>
+      simp
+      exact WordRAM.TraceResult.pure_trace_forall P
+        (none : Option (Nat × Nat))
+  | succ steps =>
+      apply WordRAM.TraceResult.bind_trace_forall
+      · exact hsummary startBlock
+      · exact
+          summaryRangeScanFromTraceResultAtSegments_trace_forall
+            table segments
+            (table.minCandidateTraceResultAtSegments
+              segments startBlock).value P hsummary
+
+theorem boundedSummaryRangeScanTraceResultAtSegments_trace_forall
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead startBlock count : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (segments : BPRelativeSummaryTraceSegments)
+    (P : WordRAM.TraceEvent -> Prop)
+    (hsummary :
+      forall block event,
+        List.Mem event
+          (table.minCandidateTraceResultAtSegments segments block).trace ->
+        P event) :
+    forall event,
+      List.Mem event
+          (boundedSummaryRangeScanTraceResultAtSegments table segments
+            startBlock count).trace -> P event := by
+  unfold boundedSummaryRangeScanTraceResultAtSegments
+  by_cases hbound : startBlock + count <= blockCount
+  · simp [hbound]
+    exact
+      summaryRangeScanTraceResultAtSegments_trace_forall
+        table segments P hsummary
+  · simp [hbound]
+    exact WordRAM.TraceResult.pure_trace_forall P
+      (none : Option (Nat × Nat))
+
+theorem boundedSummaryRangeScanTraceResultAtSegments_matchesReadStore
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead startBlock count : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (segments : BPRelativeSummaryTraceSegments)
+    (store : WordRAM.ReadStore)
+    (hbaseline :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.baseline segments.deadSegment segment)
+            index =
+          table.baselineTable.wordRAMStore.readWord? segment index)
+    (hminRel :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.minRel segments.deadSegment segment)
+            index =
+          table.minRelTable.wordRAMStore.readWord? segment index)
+    (hmaxRel :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.maxRel segments.deadSegment segment)
+            index =
+          table.maxRelTable.wordRAMStore.readWord? segment index)
+    (hargOffset :
+      forall segment index,
+        store.readWord?
+            (WordRAM.singletonSegmentMap
+              segments.argOffset segments.deadSegment segment)
+            index =
+          table.argOffsetTable.wordRAMStore.readWord? segment index) :
+    forall event,
+      List.Mem event
+          (boundedSummaryRangeScanTraceResultAtSegments table segments
+            startBlock count).trace ->
+        event.matchesReadStore store := by
+  exact
+    boundedSummaryRangeScanTraceResultAtSegments_trace_forall
+      table segments (fun event => event.matchesReadStore store)
+      (fun block event hmem =>
+        table.minCandidateTraceResultAtSegments_matchesReadStore
+          segments store hbaseline hminRel hmaxRel hargOffset block event
+          hmem)
+
+theorem boundedSummaryRangeScanTraceResultAtSegments_no_syntheticCostOnlyPrimitive
+    {shape : Cartesian.CartesianShape}
+    {blockSize blocksPerSuper blockCount superCount
+      superWidth relativeWidth overhead startBlock count : Nat}
+    (table :
+      PayloadLiveBPRelativeMinMaxArgSummaryTable shape blockSize
+        blocksPerSuper blockCount superCount superWidth relativeWidth
+        overhead)
+    (segments : BPRelativeSummaryTraceSegments) :
+    forall event,
+      List.Mem event
+          (boundedSummaryRangeScanTraceResultAtSegments table segments
+            startBlock count).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  exact
+    boundedSummaryRangeScanTraceResultAtSegments_trace_forall
+      table segments (fun event => ¬ event.isSyntheticCostOnlyPrimitive)
+      (fun block event hmem =>
+        table.minCandidateTraceResultAtSegments_no_syntheticCostOnlyPrimitive
+          segments block event hmem)
+
 /--
 Finite-small structural replay for the concrete relative-rmM interior range
 minimum.  The witness is the payload-backed finite table added to the concrete
@@ -823,9 +1110,10 @@ theorem concreteBPFiniteSmallInteriorRangeMinTraceResultAtSegments_no_syntheticC
           (canonicalBPRelativeSummaryBlockCount shape) startBlock count)
 
 /--
-All-size structural replay for the concrete relative-rmM interior query.  Large
-inputs reuse the existing two-level structural replay; finite-small inputs use
-the payload-backed finite witness table.
+All-size structural replay for the concrete relative-rmM interior query. Ready
+inputs reuse the two-level structural replay; active non-Ready inputs scan the
+bounded summary table; inactive inputs have no interior blocks and return
+`none` without reading payload.
 -/
 def concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
     (shape : Cartesian.CartesianShape)
@@ -834,9 +1122,12 @@ def concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
   if hready : concreteBPRelativeRmmInteriorReady shape then
     concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsOfReady
       shape hready segments startBlock count
+  else if canonicalBPRelativeMinMaxArgSummaryTableActive shape then
+    boundedSummaryRangeScanTraceResultAtSegments
+      (concreteBPRelativeMinMaxArgSummaryTable_canonical shape)
+      segments.summary startBlock count
   else
-    concreteBPFiniteSmallInteriorRangeMinTraceResultAtSegments
-      shape segments startBlock count
+    WordRAM.TraceResult.pure none
 
 theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural_refines
     (shape : Cartesian.CartesianShape)
@@ -850,13 +1141,14 @@ theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructu
   by_cases hready : concreteBPRelativeRmmInteriorReady shape
   · simp [hready,
       concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsOfReady_refines]
-  · have hsmall :
-        shape.size < concreteBPRelativeRmmInteriorReadyThreshold :=
-      concreteBPRelativeRmmInterior_size_lt_readyThreshold_of_not_ready
-        hready
-    unfold concreteBPRelativeRmmInteriorDirectory
-    simp [hready,
-      concreteBPFiniteSmallInteriorRangeMinTraceResultAtSegments_refines]
+  · by_cases hactive :
+        canonicalBPRelativeMinMaxArgSummaryTableActive shape
+    · unfold concreteBPRelativeRmmInteriorDirectory
+      simp [hready, hactive,
+        boundedSummaryRangeScanTraceResultAtSegments_refines]
+    · unfold concreteBPRelativeRmmInteriorDirectory
+      simp [hready, hactive, WordRAM.TraceResult.pure_toCosted,
+        Costed.pure]
 
 theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural_matchesReadStore
     (shape : Cartesian.CartesianShape)
@@ -908,20 +1200,6 @@ theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructu
               segments.globalBlock segments.deadSegment segment) index =
           (concreteBPRelativeRmmInteriorGlobalTable
             shape).table.wordRAMStore.readWord? segment index)
-    (hsmallMin :
-      forall segment index,
-        store.readWord?
-            (WordRAM.singletonSegmentMap
-              segments.finiteSmallMin segments.deadSegment segment) index =
-          (concreteBPFiniteSmallInteriorRangeMinTable
-            shape).minTable.wordRAMStore.readWord? segment index)
-    (hsmallArg :
-      forall segment index,
-        store.readWord?
-            (WordRAM.singletonSegmentMap
-              segments.finiteSmallArg segments.deadSegment segment) index =
-          (concreteBPFiniteSmallInteriorRangeMinTable
-            shape).argTable.wordRAMStore.readWord? segment index)
     (startBlock count : Nat) :
     forall event,
       List.Mem event
@@ -935,14 +1213,17 @@ theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructu
       concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsOfReady_matchesReadStore
         shape hready segments store hbaseline hminRel hmaxRel hargOffset
         hlocal hglobal startBlock count
-  · have hsmall :
-        shape.size < concreteBPRelativeRmmInteriorReadyThreshold :=
-      concreteBPRelativeRmmInterior_size_lt_readyThreshold_of_not_ready
-        hready
-    simp [hready]
-    exact
-      concreteBPFiniteSmallInteriorRangeMinTraceResultAtSegments_matchesReadStore
-        shape segments store hsmallMin hsmallArg startBlock count
+  · by_cases hactive :
+        canonicalBPRelativeMinMaxArgSummaryTableActive shape
+    · simp [hready, hactive]
+      exact
+        boundedSummaryRangeScanTraceResultAtSegments_matchesReadStore
+          (concreteBPRelativeMinMaxArgSummaryTable_canonical shape)
+          segments.summary store hbaseline hminRel hmaxRel hargOffset
+    · simp [hready, hactive]
+      exact WordRAM.TraceResult.pure_trace_forall
+        (fun event => event.matchesReadStore store)
+        (none : Option (Nat × Nat))
 
 theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural_no_syntheticCostOnlyPrimitive
     (shape : Cartesian.CartesianShape)
@@ -959,14 +1240,17 @@ theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructu
     exact
       concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsOfReady_no_syntheticCostOnlyPrimitive
         shape hready segments startBlock count
-  · have hsmall :
-        shape.size < concreteBPRelativeRmmInteriorReadyThreshold :=
-      concreteBPRelativeRmmInterior_size_lt_readyThreshold_of_not_ready
-        hready
-    simp [hready]
-    exact
-      concreteBPFiniteSmallInteriorRangeMinTraceResultAtSegments_no_syntheticCostOnlyPrimitive
-        shape segments startBlock count
+  · by_cases hactive :
+        canonicalBPRelativeMinMaxArgSummaryTableActive shape
+    · simp [hready, hactive]
+      exact
+        boundedSummaryRangeScanTraceResultAtSegments_no_syntheticCostOnlyPrimitive
+          (concreteBPRelativeMinMaxArgSummaryTable_canonical shape)
+          segments.summary
+    · simp [hready, hactive]
+      exact WordRAM.TraceResult.pure_trace_forall
+        (fun event => ¬ event.isSyntheticCostOnlyPrimitive)
+        (none : Option (Nat × Nat))
 
 /-- Interpreted false-rank callback for the BP close seed. -/
 def interpretedRankCloseCosted
