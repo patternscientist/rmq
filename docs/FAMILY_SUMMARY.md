@@ -374,7 +374,12 @@ evaluates the closed final RMQ controller against a caller-provided
 equality with the canonical global trace under
 `concreteBPNativeSuccinctRMQGlobalReadStore`, explicit final-layout
 store-parametricity, refinement/exactness transfer, and formal absence of
-synthetic cost-only events. The zero-block same-block close leaf also has a
+synthetic cost-only events. A convenience theorem now derives that explicit
+final-layout agreement record from
+`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryReadFootprint`, a safe
+layout footprint covering final segments `0..28` plus the dead sentinel `29`;
+this is an overapproximation of the dynamic read set, not a claim that every
+footprint segment is read. The zero-block same-block close leaf also has a
 store-parametric evaluator:
 `RMQ.Headlines.succinctRMQZeroBlockSameBlockEvalWithStore` evaluates against a
 supplied `WordRAM.ReadStore`, and
@@ -2282,6 +2287,8 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_matchesReadStore`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_globalReadStore`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryReadAgreement.of_footprint`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_no_syntheticCostOnlyPrimitive`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_matchesReadStore`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story`,

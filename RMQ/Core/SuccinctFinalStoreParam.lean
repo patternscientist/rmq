@@ -564,6 +564,364 @@ theorem concreteBPNativeSelectCloseGlobalWordTraceResultWithStore_globalReadStor
         (selectClosePullback_bitWords shape)
         idx
 
+/--
+Segment footprint for the supplied-store final whole-query replay.
+
+This is a safe layout footprint, not the exact dynamic read set: it includes the
+live final global segments `0..28` plus the dead sentinel segment `29` required
+by the existing finite segment maps.
+-/
+def concreteBPNativeSuccinctRMQWholeQueryReadFootprint
+    (_shape : Cartesian.CartesianShape) (segment : Nat) : Prop :=
+  segment <= concreteBPNativeDeadTraceSegment
+
+/-- Two read stores agree on every segment in the final whole-query footprint. -/
+def concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+    (shape : Cartesian.CartesianShape)
+    (storeA storeB : WordRAM.ReadStore) : Prop :=
+  forall segment index,
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape segment ->
+      storeA.readWord? segment index = storeB.readWord? segment index
+
+theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_bpCode
+    (shape : Cartesian.CartesianShape) :
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape 0 := by
+  simp [concreteBPNativeSuccinctRMQWholeQueryReadFootprint,
+    concreteBPNativeDeadTraceSegment]
+
+theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_singletonSegmentMap
+    (shape : Cartesian.CartesianShape) {base dead segment : Nat}
+    (hbase : base <= concreteBPNativeDeadTraceSegment)
+    (hdead : dead <= concreteBPNativeDeadTraceSegment) :
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape
+      (WordRAM.singletonSegmentMap base dead segment) := by
+  unfold concreteBPNativeSuccinctRMQWholeQueryReadFootprint
+  cases segment with
+  | zero =>
+      simpa [WordRAM.singletonSegmentMap] using hbase
+  | succ segment =>
+      simpa [WordRAM.singletonSegmentMap] using hdead
+
+theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_tripleSegmentMap
+    (shape : Cartesian.CartesianShape) {base dead segment : Nat}
+    (hbase : base + 2 <= concreteBPNativeDeadTraceSegment)
+    (hdead : dead <= concreteBPNativeDeadTraceSegment) :
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape
+      (WordRAM.tripleSegmentMap base dead segment) := by
+  unfold concreteBPNativeSuccinctRMQWholeQueryReadFootprint
+  cases segment with
+  | zero =>
+      exact Nat.le_trans (Nat.le_add_right base 2) hbase
+  | succ segment =>
+      cases segment with
+      | zero =>
+          exact
+            Nat.le_trans
+              (Nat.succ_le_succ (Nat.le_add_right base 1)) hbase
+      | succ segment =>
+          cases segment with
+          | zero =>
+              simpa [WordRAM.tripleSegmentMap] using hbase
+          | succ segment =>
+              simpa [WordRAM.tripleSegmentMap] using hdead
+
+theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectSuperBaseOccurrence
+    (shape : Cartesian.CartesianShape) (segment : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape
+      (WordRAM.singletonSegmentMap
+        concreteBPNativeSelectCloseTraceSegmentLayout.superTable.baseOccurrence
+        concreteBPNativeSelectCloseTraceSegmentLayout.superTable.deadSegment
+        segment) := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint_singletonSegmentMap
+      shape
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+
+theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectSuperBaseWordIndex
+    (shape : Cartesian.CartesianShape) (segment : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape
+      (WordRAM.singletonSegmentMap
+        concreteBPNativeSelectCloseTraceSegmentLayout.superTable.baseWordIndex
+        concreteBPNativeSelectCloseTraceSegmentLayout.superTable.deadSegment
+        segment) := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint_singletonSegmentMap
+      shape
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+
+theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectSuperRankBefore
+    (shape : Cartesian.CartesianShape) (segment : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape
+      (WordRAM.singletonSegmentMap
+        concreteBPNativeSelectCloseTraceSegmentLayout.superTable.rankBefore
+        concreteBPNativeSelectCloseTraceSegmentLayout.superTable.deadSegment
+        segment) := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint_singletonSegmentMap
+      shape
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+
+theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectSuperFirstOffset
+    (shape : Cartesian.CartesianShape) (segment : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape
+      (WordRAM.singletonSegmentMap
+        concreteBPNativeSelectCloseTraceSegmentLayout.superTable.firstOffset
+        concreteBPNativeSelectCloseTraceSegmentLayout.superTable.deadSegment
+        segment) := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint_singletonSegmentMap
+      shape
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+
+theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectLongFlagRank
+    (shape : Cartesian.CartesianShape) (segment : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape
+      (WordRAM.tripleSegmentMap
+        concreteBPNativeSelectCloseTraceSegmentLayout.longFlagRankBase
+        concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment
+        segment) := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint_tripleSegmentMap
+      shape
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+
+theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectLongRelative
+    (shape : Cartesian.CartesianShape) (segment : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape
+      (WordRAM.singletonSegmentMap
+        concreteBPNativeSelectCloseTraceSegmentLayout.longRelativeBase
+        concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment
+        segment) := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint_singletonSegmentMap
+      shape
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+
+theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectLocalBaseOccurrence
+    (shape : Cartesian.CartesianShape) (segment : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape
+      (WordRAM.singletonSegmentMap
+        concreteBPNativeSelectCloseTraceSegmentLayout.localTable.baseOccurrence
+        concreteBPNativeSelectCloseTraceSegmentLayout.localTable.deadSegment
+        segment) := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint_singletonSegmentMap
+      shape
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+
+theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectLocalBaseWordIndex
+    (shape : Cartesian.CartesianShape) (segment : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape
+      (WordRAM.singletonSegmentMap
+        concreteBPNativeSelectCloseTraceSegmentLayout.localTable.baseWordIndex
+        concreteBPNativeSelectCloseTraceSegmentLayout.localTable.deadSegment
+        segment) := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint_singletonSegmentMap
+      shape
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+
+theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectLocalRankBefore
+    (shape : Cartesian.CartesianShape) (segment : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape
+      (WordRAM.singletonSegmentMap
+        concreteBPNativeSelectCloseTraceSegmentLayout.localTable.rankBefore
+        concreteBPNativeSelectCloseTraceSegmentLayout.localTable.deadSegment
+        segment) := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint_singletonSegmentMap
+      shape
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+
+theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectLocalFirstOffset
+    (shape : Cartesian.CartesianShape) (segment : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape
+      (WordRAM.singletonSegmentMap
+        concreteBPNativeSelectCloseTraceSegmentLayout.localTable.firstOffset
+        concreteBPNativeSelectCloseTraceSegmentLayout.localTable.deadSegment
+        segment) := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint_singletonSegmentMap
+      shape
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+
+theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectSparseRank
+    (shape : Cartesian.CartesianShape) (segment : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape
+      (WordRAM.tripleSegmentMap
+        concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory.rankBase
+        concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory.deadSegment
+        segment) := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint_tripleSegmentMap
+      shape
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+
+theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectSparseRelative
+    (shape : Cartesian.CartesianShape) (segment : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape
+      (WordRAM.singletonSegmentMap
+        concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory.relativeBase
+        concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory.deadSegment
+        segment) := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint_singletonSegmentMap
+      shape
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+
+theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectBitWords
+    (shape : Cartesian.CartesianShape) (segment : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape
+      (WordRAM.singletonSegmentMap
+        concreteBPNativeSelectCloseTraceSegmentLayout.bitWordBase
+        concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment
+        segment) := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint_singletonSegmentMap
+      shape
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+      (by simp [concreteBPNativeSelectCloseTraceSegmentLayout,
+        concreteBPNativeDeadTraceSegment])
+
+theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_rankClose
+    (shape : Cartesian.CartesianShape) (segment : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape
+      (concreteBPNativeRankCloseSegmentMap
+        concreteBPNativeRankCloseTraceSegmentBase segment) := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint_tripleSegmentMap
+      shape
+      (by simp [concreteBPNativeRankCloseTraceSegmentBase,
+        concreteBPNativeDeadTraceSegment])
+      (by simp [concreteBPNativeDeadTraceSegment])
+
+theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_interiorLocal
+    (shape : Cartesian.CartesianShape) (segment : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape
+      (WordRAM.singletonSegmentMap
+        concreteBPNativeInteriorTraceSegments.localOffset
+        concreteBPNativeInteriorTraceSegments.deadSegment
+        segment) := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint_singletonSegmentMap
+      shape
+      (by simp [concreteBPNativeInteriorTraceSegments,
+        concreteBPNativeDeadTraceSegment])
+      (by simp [concreteBPNativeInteriorTraceSegments,
+        concreteBPNativeDeadTraceSegment])
+
+theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_interiorGlobal
+    (shape : Cartesian.CartesianShape) (segment : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape
+      (WordRAM.singletonSegmentMap
+        concreteBPNativeInteriorTraceSegments.globalBlock
+        concreteBPNativeInteriorTraceSegments.deadSegment
+        segment) := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint_singletonSegmentMap
+      shape
+      (by simp [concreteBPNativeInteriorTraceSegments,
+        concreteBPNativeDeadTraceSegment])
+      (by simp [concreteBPNativeInteriorTraceSegments,
+        concreteBPNativeDeadTraceSegment])
+
+theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_summaryBaseline
+    (shape : Cartesian.CartesianShape) (segment : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape
+      (WordRAM.singletonSegmentMap
+        concreteBPNativeInteriorTraceSegments.summary.baseline
+        concreteBPNativeInteriorTraceSegments.summary.deadSegment
+        segment) := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint_singletonSegmentMap
+      shape
+      (by simp [concreteBPNativeInteriorTraceSegments,
+        concreteBPNativeDeadTraceSegment])
+      (by simp [concreteBPNativeInteriorTraceSegments,
+        concreteBPNativeDeadTraceSegment])
+
+theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_summaryMinRel
+    (shape : Cartesian.CartesianShape) (segment : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape
+      (WordRAM.singletonSegmentMap
+        concreteBPNativeInteriorTraceSegments.summary.minRel
+        concreteBPNativeInteriorTraceSegments.summary.deadSegment
+        segment) := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint_singletonSegmentMap
+      shape
+      (by simp [concreteBPNativeInteriorTraceSegments,
+        concreteBPNativeDeadTraceSegment])
+      (by simp [concreteBPNativeInteriorTraceSegments,
+        concreteBPNativeDeadTraceSegment])
+
+theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_summaryMaxRel
+    (shape : Cartesian.CartesianShape) (segment : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape
+      (WordRAM.singletonSegmentMap
+        concreteBPNativeInteriorTraceSegments.summary.maxRel
+        concreteBPNativeInteriorTraceSegments.summary.deadSegment
+        segment) := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint_singletonSegmentMap
+      shape
+      (by simp [concreteBPNativeInteriorTraceSegments,
+        concreteBPNativeDeadTraceSegment])
+      (by simp [concreteBPNativeInteriorTraceSegments,
+        concreteBPNativeDeadTraceSegment])
+
+theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_summaryArgOffset
+    (shape : Cartesian.CartesianShape) (segment : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape
+      (WordRAM.singletonSegmentMap
+        concreteBPNativeInteriorTraceSegments.summary.argOffset
+        concreteBPNativeInteriorTraceSegments.summary.deadSegment
+        segment) := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryReadFootprint_singletonSegmentMap
+      shape
+      (by simp [concreteBPNativeInteriorTraceSegments,
+        concreteBPNativeDeadTraceSegment])
+      (by simp [concreteBPNativeInteriorTraceSegments,
+        concreteBPNativeDeadTraceSegment])
+
 /-- Precise store agreement for the whole final RMQ supplied-store replay.
 The fields enumerate the final global segment layout: BP code, select-close
 auxiliary tables, final false-rank tables, and compact close/LCA interior
@@ -828,6 +1186,120 @@ theorem of_all_segments
     concreteBPNativeSuccinctRMQWholeQueryReadAgreement
       shape storeA storeB := by
   constructor <;> intros <;> exact hread _ _
+
+theorem of_footprint
+    (shape : Cartesian.CartesianShape)
+    {storeA storeB : WordRAM.ReadStore}
+    (hfoot :
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape storeA storeB) :
+    concreteBPNativeSuccinctRMQWholeQueryReadAgreement
+      shape storeA storeB := by
+  constructor
+  · intro index
+    exact
+      hfoot 0 index
+        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_bpCode shape)
+  · intro segment index
+    exact
+      hfoot _ index
+        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectSuperBaseOccurrence
+          shape segment)
+  · intro segment index
+    exact
+      hfoot _ index
+        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectSuperBaseWordIndex
+          shape segment)
+  · intro segment index
+    exact
+      hfoot _ index
+        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectSuperRankBefore
+          shape segment)
+  · intro segment index
+    exact
+      hfoot _ index
+        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectSuperFirstOffset
+          shape segment)
+  · intro segment index
+    exact
+      hfoot _ index
+        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectLongFlagRank
+          shape segment)
+  · intro segment index
+    exact
+      hfoot _ index
+        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectLongRelative
+          shape segment)
+  · intro segment index
+    exact
+      hfoot _ index
+        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectLocalBaseOccurrence
+          shape segment)
+  · intro segment index
+    exact
+      hfoot _ index
+        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectLocalBaseWordIndex
+          shape segment)
+  · intro segment index
+    exact
+      hfoot _ index
+        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectLocalRankBefore
+          shape segment)
+  · intro segment index
+    exact
+      hfoot _ index
+        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectLocalFirstOffset
+          shape segment)
+  · intro segment index
+    exact
+      hfoot _ index
+        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectSparseRank
+          shape segment)
+  · intro segment index
+    exact
+      hfoot _ index
+        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectSparseRelative
+          shape segment)
+  · intro segment index
+    exact
+      hfoot _ index
+        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_selectBitWords
+          shape segment)
+  · intro segment index
+    exact
+      hfoot _ index
+        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_rankClose
+          shape segment)
+  · intro segment index
+    exact
+      hfoot _ index
+        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_interiorLocal
+          shape segment)
+  · intro segment index
+    exact
+      hfoot _ index
+        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_interiorGlobal
+          shape segment)
+  · intro segment index
+    exact
+      hfoot _ index
+        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_summaryBaseline
+          shape segment)
+  · intro segment index
+    exact
+      hfoot _ index
+        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_summaryMinRel
+          shape segment)
+  · intro segment index
+    exact
+      hfoot _ index
+        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_summaryMaxRel
+          shape segment)
+  · intro segment index
+    exact
+      hfoot _ index
+        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_summaryArgOffset
+          shape segment)
 
 end concreteBPNativeSuccinctRMQWholeQueryReadAgreement
 
@@ -1462,6 +1934,24 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_stor
     WholeQueryProgram.evalGlobalWordTraceWithStore_store_parametric
       shape hagree left right concreteBPNativeSuccinctRMQWholeQueryProgram
       WholeQueryState.empty]
+
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint
+    (shape : Cartesian.CartesianShape)
+    {storeA storeB : WordRAM.ReadStore}
+    (hfoot :
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape storeA storeB)
+    (left right : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape storeA left right =
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape storeB left right := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric
+      shape
+      (concreteBPNativeSuccinctRMQWholeQueryReadAgreement.of_footprint
+        shape hfoot)
+      left right
 
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_refines_wholeQueryInterpretedCosted
     (shape : Cartesian.CartesianShape)

@@ -223,6 +223,14 @@ abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreStoreParametric :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric
 
 /--
+Whole-query store-parametricity from agreement on the final layout footprint.
+The footprint is a safe layout overapproximation covering live final segments
+and the dead sentinel used by finite segment maps.
+-/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreStoreParametricOfFootprint :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint
+
+/--
 Whole-query supplied-store replay contains no dedicated synthetic cost-only
 marker events.
 -/
