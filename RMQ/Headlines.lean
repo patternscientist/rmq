@@ -7,6 +7,7 @@ import RMQ.Core.SuccinctSpace.BPCloseRMQNavigationRAM
 import RMQ.Core.SuccinctFinal
 import RMQ.Core.SuccinctFinalRAM
 import RMQ.Core.SuccinctFinalStoreParam
+import RMQ.Core.SuccinctFinalModelAdequacy
 import RMQ.Core.SuccinctRMQClassic
 
 /-!
@@ -133,6 +134,37 @@ abbrev listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory :=
   RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story
 
 /--
+List-facing paper main theorem. For every ordinary `xs : List Int`, the
+advertised `buildPayload` has length `2*n + overhead n` with
+`overhead = o(n)`, valid half-open queries return exact leftmost RMQ answers
+within the modeled constant query budget, and the final trace is the
+no-synthetic flat-payload execution story.
+-/
+theorem listIntSuccinctRMQPaperMainTheorem :
+    RMQ.SuccinctSpace.LittleOLinear RMQ.SuccinctClassic.overhead /\
+      forall xs : List Int,
+        (RMQ.SuccinctClassic.buildPayload xs).length =
+          2 * xs.length + RMQ.SuccinctClassic.overhead xs.length /\
+        (forall left right,
+          (RMQ.SuccinctClassic.queryCosted xs left right).cost <=
+            RMQ.SuccinctClassic.queryCost) /\
+        (forall {left len : Nat},
+          0 < len ->
+            left + len <= xs.length ->
+              (RMQ.SuccinctClassic.queryCosted xs left (left + len)).erase =
+                some (RMQ.scanWindow xs left len)) /\
+        (forall {left len idx : Nat},
+          0 < len ->
+            left + len <= xs.length ->
+              (RMQ.SuccinctClassic.queryCosted xs left (left + len)).erase =
+                some idx ->
+                RMQ.LeftmostArgMin xs left (left + len) idx) /\
+        (forall left right,
+          RMQ.SuccinctClassic.FlatPayloadStoreNoSyntheticExecutionStory
+            xs left right) :=
+  RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story
+
+/--
 Whole-query-interpreted BP-native succinct RMQ capstone: the same two-sided
 `2*n + o(n)`, constant-query theorem shape, with the final query control routed
 through a closed first-order query program whose leaves are the interpreted
@@ -231,11 +263,120 @@ abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreStoreParametricOfFootp
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint
 
 /--
+Every supplied-store whole-query payload-read event is inside the safe final
+layout footprint. The footprint is a layout overapproximation, not a minimal
+dynamic read set.
+-/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreReadsSubsetFootprint :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_reads_subset_footprint
+
+/--
+Every canonical whole-query payload-read event is inside the safe final layout
+footprint.
+-/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultReadsSubsetFootprint :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_reads_subset_footprint
+
+/--
+A supplied-store whole-query replay equals the canonical global trace when the
+supplied store agrees with the concrete global store on the safe final layout
+footprint.
+-/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreEqGlobalOfFootprint :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_eq_global_of_footprint
+
+/--
+Under agreement with the concrete global store on the safe final layout
+footprint, every successful read in the supplied-store whole-query replay is
+backed by counted flat payload.
+-/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedByCountedFlatPayloadOfFootprintGlobal :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_successful_reads_backed_by_counted_flat_payload_of_footprint_global
+
+/--
+Under agreement with the concrete global store on the safe final layout
+footprint, the canonical modeled cost bound transfers to the supplied-store
+whole-query replay.
+-/
+abbrev succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global
+
+theorem succinctRMQWholeQueryGlobalWordTraceCostedWithStoreExactOfFootprintGlobal
+    {n : Nat} {shape : RMQ.Cartesian.CartesianShape}
+    (hshape : List.Mem shape (RMQ.Cartesian.shapesOfSize n))
+    {store : RMQ.WordRAM.ReadStore}
+    (hfoot :
+      RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store
+          (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQGlobalReadStore
+            shape))
+    {left len : Nat} (hlen : 0 < len) (hbound : left + len <= n) :
+    (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+      shape store left (left + len)).erase =
+        some (RMQ.scanWindow shape.representative left len) :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_exact_of_footprint_global
+    hshape hfoot hlen hbound
+
+/--
 Whole-query supplied-store replay contains no dedicated synthetic cost-only
 marker events.
 -/
 abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreNoSynthetic :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_no_syntheticCostOnlyPrimitive
+
+/--
+Reviewer-facing model-adequacy packet for the final succinct RMQ query trace:
+the costed query is the projection of a `WordRAM.TraceResult`, refines the
+whole-query interpreter, has the fixed modeled query-cost bound, reads only
+through payload-read or word-primitive events, matches the global read store,
+has bounded event data, has no synthetic cost-only events, and backs every
+successful read by counted flat payload words.
+-/
+abbrev succinctRMQFinalTraceModelAdequacy :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
+
+/-- Exactness alias paired with `succinctRMQFinalTraceModelAdequacy`. -/
+theorem succinctRMQFinalTraceModelAdequacyExact
+    {n : Nat} {shape : RMQ.Cartesian.CartesianShape}
+    (hshape : List.Mem shape (RMQ.Cartesian.shapesOfSize n))
+    {left len : Nat} (hlen : 0 < len) (hbound : left + len <= n) :
+    (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+      shape left (left + len)).erase =
+        some (RMQ.scanWindow shape.representative left len) :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalTraceModelAdequacy_exact
+    hshape hlen hbound
+
+/--
+Reviewer-facing supplied-store adequacy packet for the final whole-query replay:
+reads match the caller-provided store, the concrete global store instantiation
+recovers the canonical final trace and interpreted query, no synthetic marker
+events appear, and footprint agreement gives store-parametricity.
+-/
+abbrev succinctRMQFinalSuppliedStoreAdequacy :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalSuppliedStoreAdequacy
+
+/--
+Full model-soundness packet for the final succinct RMQ query inside the
+explicit WordRAM/read-store/counted-payload model.
+-/
+abbrev succinctRMQFinalFullModelSoundness :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness
+
+theorem succinctRMQFinalFullModelSoundnessExactOfFootprintGlobal
+    {n : Nat} {shape : RMQ.Cartesian.CartesianShape}
+    (hshape : List.Mem shape (RMQ.Cartesian.shapesOfSize n))
+    {store : RMQ.WordRAM.ReadStore}
+    (hfoot :
+      RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store
+          (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQGlobalReadStore
+            shape))
+    {left len : Nat} (hlen : 0 < len) (hbound : left + len <= n) :
+    (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+      shape store left (left + len)).erase =
+        some (RMQ.scanWindow shape.representative left len) :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness_exact_of_footprint_global
+    hshape hfoot hlen hbound
 
 /--
 Zero-block same-block close evaluator with a supplied `WordRAM.ReadStore`.

@@ -12,6 +12,7 @@ import RMQ.Core.WordRAM.ReadStoreEval
 import RMQ.Core.GenericSelect.RAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
 import RMQ.Core.SuccinctFinalStoreParam
+import RMQ.Core.SuccinctFinalModelAdequacy
 import RMQ.Core.SuccinctRankSelect
 import RMQ.Core.BPCloseNavigation
 import RMQ.Core.BPNavigationPublic

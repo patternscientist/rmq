@@ -55,6 +55,7 @@ Short public aliases live in [`RMQ/Headlines.lean`](RMQ/Headlines.lean).
 | --- | --- |
 | `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | Reader-facing theorem over ordinary `xs : List Int`: build a payload of length `2*n + o(n)` bits and answer valid half-open RMQ queries exactly, with leftmost ties, within constant modeled query cost. |
 | `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Reader-facing flat-payload execution story over ordinary `xs : List Int`: the same final query uses the advertised `2*n + o(n)` `buildPayload`, satisfies the classic half-open leftmost RMQ contract, is interpreted by the final WordRAM trace, and every actual successful read is backed by one query-independent counted flat payload layout with bounded events and no synthetic cost-only trace markers. |
+| `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` | Paper-facing list theorem combining the advertised `2*n + overhead` payload size, `overhead = o(n)`, exact valid RMQ answers with leftmost ties, constant modeled query cost, and the final no-synthetic flat-payload trace story. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and a numeric doubled-Catalan slack comparison in the same public theorem surface; the encoding-quantified lower-bound theorem is exposed separately as `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack`. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Whole-query-interpreted variant of the final BP-native succinct RMQ capstone: same theorem shape, with the final query control represented by a closed first-order program whose leaves are interpreted close-select, compact close/LCA, and register-backed answer-rank operations. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace` | Unified-`WordRAM.TraceEvent` variant of the same capstone: the final query emits one trace stream, with close-select, answer-rank, and compact-close rank-seed reads replayed as structural payload/register traces. |
@@ -100,7 +101,9 @@ replay,
 whose theorem package proves read-store matching, equality with the canonical
 global store replay, store-parametricity over the explicit final layout,
 store-parametricity from a safe layout-footprint overapproximation,
-refinement/exactness transfer, and no synthetic cost-only events. The separate
+emitted-read containment in that footprint, equality/exactness transfer under
+footprint agreement with the canonical global store, and no synthetic cost-only
+events. The footprint is not claimed to be exact or minimal. The separate
 zero-block same-block theorem remains the leaf-level version of the same
 supplied-store story.
 
@@ -189,6 +192,12 @@ Full repository gate, matching the GitHub Actions CI job:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\gate.ps1
+```
+
+Paper-artifact reproduction gate:
+
+```bash
+scripts/reproduce_artifact.sh
 ```
 
 Concise public-headline check:

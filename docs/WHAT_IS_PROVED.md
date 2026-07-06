@@ -23,6 +23,7 @@ The short public theorem aliases live in `RMQ/Headlines.lean`.
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreBoundedExecutionStory` | Lower-level bounded target-indexed global-store packet for one fixed rank/select target. |
 | `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | Classic list-facing succinct RMQ theorem: for every ordinary `xs : List Int`, the built payload has length `2*n + o(n)` and valid half-open queries return the exact leftmost RMQ answer within constant modeled query cost. |
 | `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | List-facing flat-payload no-synthetic execution story: for ordinary `xs : List Int`, the final query uses the advertised `2*n + o(n)` `buildPayload`, keeps the classic half-open leftmost RMQ contract and constant modeled query bound, and every actual successful WordRAM read is backed by one query-independent counted flat payload layout, with bounded event data and no synthetic cost-only markers. |
+| `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` | Paper-facing list theorem combining the advertised `2*n + overhead` payload size, `overhead = o(n)`, exact valid RMQ answers with leftmost ties, constant modeled query cost, and the final no-synthetic flat-payload trace story. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ capstone with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and a numeric doubled-Catalan slack comparison in the same public theorem surface. The encoding-quantified lower-bound theorem is the separate alias `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack`. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Whole-query-interpreted variant of the final BP-native succinct RMQ capstone: same theorem shape, with the final query control represented by a closed first-order program whose leaves are interpreted close-select, compact close/LCA, and register-backed answer-rank operations. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace` | Leaf-trace-preserving variant of the same capstone: the closed controller now evaluates to an explicit domain-leaf trace before projection back to `Costed`; the leaves are still interpreted component queries, not one unified store trace. |
@@ -36,6 +37,15 @@ The short public theorem aliases live in `RMQ/Headlines.lean`.
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | All-size structural execution story for the same global trace after the zero-block same-block and cross-block interior close-navigation leaves have been replaced by structural BP-code, bounded-summary, and two-level payload traces. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` | Strongest all-size global execution story: the same store-backed and bounded trace plus a proof that no event is the dedicated synthetic cost-only marker. |
 | `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Flat-payload no-synthetic execution story: the flat execution payload is exactly the advertised BP-native construction payload; every actual successful read in the final trace has source/component/offset backing in one query-independent counted flat payload layout, addresses and word-primitive operands are bounded, and no synthetic cost-only event occurs. |
+| `RMQ.Headlines.succinctRMQFinalTraceModelAdequacy` | Reviewer-facing model-adequacy packet for the final trace: `Costed` is the projection of a `WordRAM.TraceResult`, the trace refines the whole-query interpreter, the fixed modeled cost bound holds, events are reads or word primitives, reads match the global store, event data are bounded, no synthetic cost-only events appear, and successful reads are backed by counted flat payload words. |
+| `RMQ.Headlines.succinctRMQFinalTraceModelAdequacyExact` | Exactness alias paired with the model-adequacy packet: valid windows erase to the leftmost RMQ answer for the Cartesian representative. |
+| `RMQ.Headlines.succinctRMQFinalSuppliedStoreAdequacy` | Supplied-store adequacy packet: reads match the caller-provided store, the concrete global-store instantiation recovers the canonical trace/interpreter refinement, no synthetic marker events appear, and final-layout footprint agreement gives store-parametricity. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreReadsSubsetFootprint` | Every emitted supplied-store payload-read event lies inside the safe final-layout footprint. The footprint is an overapproximation, not a minimal dynamic read set. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreEqGlobalOfFootprint` | If a supplied store agrees with the canonical global store on the safe final-layout footprint, the supplied-store replay equals the canonical global trace. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedByCountedFlatPayloadOfFootprintGlobal` | Under footprint agreement with the canonical global store, every successful read in the supplied-store replay is backed by counted flat payload. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal` | Under footprint agreement with the canonical global store, the canonical modeled cost bound transfers to the supplied-store replay. |
+| `RMQ.Headlines.succinctRMQFinalFullModelSoundness` | Full model-soundness packet for the explicit WordRAM/read-store/counted-payload model: canonical trace adequacy, supplied-store adequacy, emitted-read footprint containment, and equality/cost equality under footprint agreement with the canonical global store. |
+| `RMQ.Headlines.succinctRMQFinalFullModelSoundnessExactOfFootprintGlobal` | Exactness for any supplied store that agrees with the canonical global store on the safe final-layout footprint. |
 | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory` | Compatibility companion to the all-size execution story: under `2^128 <= shape.size`, the compact close/LCA leg uses the positive-block structural replay; the public all-size theorem handles non-Ready structurally. |
 | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory` | Bounded large-regime companion to the global-store execution story. |
 | `RMQ.Headlines.concreteBPCloseNavigationProfile` | Concrete payload-backed BP close-navigation profile: the current relative-split false-select/rank-close layer plus compact relative-rmM close/LCA layer give `2*n + o(n)` payload, constant modeled query cost, exact Cartesian-shape RMQ answer semantics, and machine-word-bounded component payload reads. |
@@ -122,11 +132,17 @@ read events. In addition, the whole final query now has a supplied-store replay,
 Its theorem package proves read-store matching, canonical global-store
 evaluation, store-parametricity over the explicit final layout, a convenience
 store-parametric theorem from a safe layout-footprint overapproximation,
-refinement/exactness transfer, and no synthetic cost-only events. The
-zero-block same-block theorem remains a leaf-level supplied-store theorem.
+emitted-read containment in that footprint, equality/exactness transfer under
+footprint agreement with the canonical global store, and no synthetic cost-only
+events. The zero-block same-block theorem remains a leaf-level supplied-store
+theorem.
 
 The global-store execution story now has a flat-payload no-synthetic backing
 theorem, `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory`.
+For a concise paper-facing bundle of the same model-adequacy facts, use
+`RMQ.Headlines.succinctRMQFinalTraceModelAdequacy` and
+`RMQ.Headlines.succinctRMQFinalFullModelSoundness`; see
+[`docs/PAPER_MODEL_ADEQUACY.md`](PAPER_MODEL_ADEQUACY.md).
 It exposes the concrete flat payload layout
 `SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadLayout`, whose payload is
 the counted `concreteBPNativeSuccinctRMQPayload` itself, split as BP code,
