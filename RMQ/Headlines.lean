@@ -7,6 +7,7 @@ import RMQ.Core.SuccinctSpace.BPCloseRMQNavigationRAM
 import RMQ.Core.SuccinctFinal
 import RMQ.Core.SuccinctFinalRAM
 import RMQ.Core.SuccinctFinalStoreParam
+import RMQ.Core.SuccinctFinalModelAdequacy
 import RMQ.Core.SuccinctRMQClassic
 
 /-!
@@ -236,6 +237,37 @@ marker events.
 -/
 abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreNoSynthetic :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_no_syntheticCostOnlyPrimitive
+
+/--
+Reviewer-facing model-adequacy packet for the final succinct RMQ query trace:
+the costed query is the projection of a `WordRAM.TraceResult`, refines the
+whole-query interpreter, has the fixed modeled query-cost bound, reads only
+through payload-read or word-primitive events, matches the global read store,
+has bounded event data, has no synthetic cost-only events, and backs every
+successful read by counted flat payload words.
+-/
+abbrev succinctRMQFinalTraceModelAdequacy :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
+
+/-- Exactness alias paired with `succinctRMQFinalTraceModelAdequacy`. -/
+theorem succinctRMQFinalTraceModelAdequacyExact
+    {n : Nat} {shape : RMQ.Cartesian.CartesianShape}
+    (hshape : List.Mem shape (RMQ.Cartesian.shapesOfSize n))
+    {left len : Nat} (hlen : 0 < len) (hbound : left + len <= n) :
+    (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+      shape left (left + len)).erase =
+        some (RMQ.scanWindow shape.representative left len) :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalTraceModelAdequacy_exact
+    hshape hlen hbound
+
+/--
+Reviewer-facing supplied-store adequacy packet for the final whole-query replay:
+reads match the caller-provided store, the concrete global store instantiation
+recovers the canonical final trace and interpreted query, no synthetic marker
+events appear, and footprint agreement gives store-parametricity.
+-/
+abbrev succinctRMQFinalSuppliedStoreAdequacy :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalSuppliedStoreAdequacy
 
 /--
 Zero-block same-block close evaluator with a supplied `WordRAM.ReadStore`.
