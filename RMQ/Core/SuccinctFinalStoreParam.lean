@@ -1,6 +1,7 @@
 import RMQ.Core.SuccinctFinalRAM
 import RMQ.Core.WordRAM.ReadStoreEval
 import RMQ.Core.GenericSelect.RAMStoreParam
+import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
 
 /-!
 # Store-parametric leaves for the final RMQ whole-query trace
@@ -140,6 +141,110 @@ theorem concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_store_paramet
   unfold concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
   rw [WordRAM.ReadStore.pullback_eq_of_agree_on_map
     (concreteBPNativeRankCloseSegmentMap rankSegmentBase) hread]
+
+/--
+Store-parameterized positive same-block local-BP close leaf with the concrete
+final false-rank seed.  Both the rank seed and the BP-code local window read
+from the supplied global read store.
+-/
+def localBPSameBlockCloseDecodedTraceResultWithFinalRankSeedWithStore
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (blockSize leftClose rightClose : Nat) :
+  WordRAM.TraceResult (Option Nat) :=
+  SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSameBlockCloseDecodedTraceResultWithRankSeedWithStore
+      shape
+      (concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+        shape store concreteBPNativeRankCloseTraceSegmentBase)
+      store blockSize leftClose rightClose
+
+theorem localBPSameBlockCloseDecodedTraceResultWithFinalRankSeed_matchesReadStore
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (blockSize leftClose rightClose : Nat) :
+    forall event,
+      event ∈
+          (localBPSameBlockCloseDecodedTraceResultWithFinalRankSeedWithStore
+            shape store blockSize leftClose rightClose).trace ->
+        event.matchesReadStore store := by
+  unfold localBPSameBlockCloseDecodedTraceResultWithFinalRankSeedWithStore
+  exact
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSameBlockCloseDecodedTraceResultWithRankSeedWithStore_matchesReadStore
+        shape
+        (concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+          shape store concreteBPNativeRankCloseTraceSegmentBase)
+        store blockSize leftClose rightClose
+        (fun pos event hmem =>
+          concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_matchesReadStore
+            shape store concreteBPNativeRankCloseTraceSegmentBase pos
+            event hmem)
+
+theorem localBPSameBlockCloseDecodedTraceResultWithFinalRankSeed_evalWithStore
+    (shape : Cartesian.CartesianShape)
+    (blockSize leftClose rightClose : Nat) :
+    localBPSameBlockCloseDecodedTraceResultWithFinalRankSeedWithStore
+        shape (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        blockSize leftClose rightClose =
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSameBlockCloseDecodedTraceResultWithRankSeed
+          shape
+          (concreteBPNativeRankCloseWordTraceResultAtSegment
+            shape concreteBPNativeRankCloseTraceSegmentBase)
+          blockSize leftClose rightClose := by
+  unfold localBPSameBlockCloseDecodedTraceResultWithFinalRankSeedWithStore
+  have hrank :
+      (concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+        shape (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        concreteBPNativeRankCloseTraceSegmentBase) =
+        concreteBPNativeRankCloseWordTraceResultAtSegment
+          shape concreteBPNativeRankCloseTraceSegmentBase := by
+    funext pos
+    exact
+      concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_globalReadStore
+        shape pos
+  rw [hrank]
+  exact
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSameBlockCloseDecodedTraceResultWithRankSeedWithStore_eq_of_agree
+        (concreteBPNativeRankCloseWordTraceResultAtSegment
+          shape concreteBPNativeRankCloseTraceSegmentBase)
+        (concreteBPNativeSuccinctRMQGlobalReadStore_bpCode shape)
+        blockSize leftClose rightClose
+
+theorem localBPSameBlockCloseDecodedTraceResultWithFinalRankSeed_store_parametric
+    (shape : Cartesian.CartesianShape)
+    {storeA storeB : WordRAM.ReadStore}
+    (hbp :
+      forall index,
+        storeA.readWord? 0 index = storeB.readWord? 0 index)
+    (hrank :
+      forall segment index,
+        storeA.readWord?
+            (concreteBPNativeRankCloseSegmentMap
+              concreteBPNativeRankCloseTraceSegmentBase segment)
+            index =
+          storeB.readWord?
+            (concreteBPNativeRankCloseSegmentMap
+              concreteBPNativeRankCloseTraceSegmentBase segment)
+            index)
+    (blockSize leftClose rightClose : Nat) :
+    localBPSameBlockCloseDecodedTraceResultWithFinalRankSeedWithStore
+        shape storeA blockSize leftClose rightClose =
+      localBPSameBlockCloseDecodedTraceResultWithFinalRankSeedWithStore
+        shape storeB blockSize leftClose rightClose := by
+  unfold localBPSameBlockCloseDecodedTraceResultWithFinalRankSeedWithStore
+  have hrankTrace :
+      (concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+        shape storeA concreteBPNativeRankCloseTraceSegmentBase) =
+        concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+          shape storeB concreteBPNativeRankCloseTraceSegmentBase := by
+    funext pos
+    exact
+      concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_store_parametric
+        shape concreteBPNativeRankCloseTraceSegmentBase pos hrank
+  rw [hrankTrace]
+  exact
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSameBlockCloseDecodedTraceResultWithRankSeedWithStore_store_parametric
+        shape
+        (concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+          shape storeB concreteBPNativeRankCloseTraceSegmentBase)
+        hbp blockSize leftClose rightClose
 
 /--
 Store-parameterized close-select leaf: the sparse-exception select tower
