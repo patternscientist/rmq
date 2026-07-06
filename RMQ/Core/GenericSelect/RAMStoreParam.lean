@@ -69,6 +69,23 @@ theorem ofProgramWithStore_matchesReadStore
       (Program.evalR_matchesReadStore program
         (store.pullback segmentMap) inner hinner)
 
+theorem ofProgramWithStore_no_syntheticCostOnlyPrimitive
+    (segmentMap : Nat -> Nat) (store : ReadStore)
+    {ty : Ty} (program : Program ty) :
+    forall event,
+      event ∈ (ofProgramWithStore segmentMap store program).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  unfold ofProgramWithStore
+  exact
+    relabelReadSegmentsWith_no_syntheticCostOnlyPrimitive
+      segmentMap
+      (ofResult (program.evalR (store.pullback segmentMap)))
+      (by
+        intro event hmem
+        simpa only [ofResult_trace] using
+          Program.evalR_no_syntheticCostOnlyPrimitive program
+            (store.pullback segmentMap) event hmem)
+
 /-- Store-parametric relabeled register-program atom. -/
 def ofNatProgramWithStore (segmentMap : Nat -> Nat) (store : ReadStore)
     (program : Register.NatProgram) (regs : Register.RegFile) :
@@ -113,6 +130,23 @@ theorem ofNatProgramWithStore_matchesReadStore
       segmentMap store
       (Register.NatProgram.evalR_matchesReadStore program
         (store.pullback segmentMap) regs inner hinner)
+
+theorem ofNatProgramWithStore_no_syntheticCostOnlyPrimitive
+    (segmentMap : Nat -> Nat) (store : ReadStore)
+    (program : Register.NatProgram) (regs : Register.RegFile) :
+    forall event,
+      event ∈ (ofNatProgramWithStore segmentMap store program regs).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  unfold ofNatProgramWithStore
+  exact
+    relabelReadSegmentsWith_no_syntheticCostOnlyPrimitive
+      segmentMap
+      (ofResult (program.evalR (store.pullback segmentMap) regs))
+      (by
+        intro event hmem
+        simpa only [ofResult_trace] using
+          Register.NatProgram.evalR_no_syntheticCostOnlyPrimitive
+            program (store.pullback segmentMap) regs event hmem)
 
 end TraceResult
 
@@ -190,6 +224,24 @@ theorem rankTraceResultRelabeledWithStore_matchesReadStore
         event.matchesReadStore store := by
   exact
     WordRAM.TraceResult.ofNatProgramWithStore_matchesReadStore
+      (WordRAM.tripleSegmentMap rankBase deadSegment) store
+      (data.rankRegisterProgram target (NatExpr.reg 0))
+      (RegFile.withNat1 pos)
+
+theorem rankTraceResultRelabeledWithStore_no_syntheticCostOnlyPrimitive
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data :
+      TwoLevelPayloadLiveStoredWordRankData
+        bits superOverhead blockOverhead queryCost)
+    (rankBase deadSegment : Nat) (store : WordRAM.ReadStore)
+    (target : Bool) (pos : Nat) :
+    forall event,
+      event ∈
+          (data.rankTraceResultRelabeledWithStore rankBase deadSegment
+            store target pos).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  exact
+    WordRAM.TraceResult.ofNatProgramWithStore_no_syntheticCostOnlyPrimitive
       (WordRAM.tripleSegmentMap rankBase deadSegment) store
       (data.rankRegisterProgram target (NatExpr.reg 0))
       (RegFile.withNat1 pos)
@@ -351,7 +403,40 @@ theorem readTraceResultRelabeledWithStore_matchesReadStore
       · intro rankBefore?
         apply WordRAM.TraceResult.map_trace_forall
         exact
-          WordRAM.TraceResult.ofProgramWithStore_matchesReadStore _ store _
+        WordRAM.TraceResult.ofProgramWithStore_matchesReadStore _ store _
+
+theorem readTraceResultRelabeledWithStore_no_syntheticCostOnlyPrimitive
+    {entries : List SparseDenseSelectDenseLocalEntry}
+    {fieldWidth : Nat}
+    (table :
+      FixedWidthSparseDenseSelectDenseLocalEntryTable
+        entries fieldWidth)
+    (layout : SparseDenseEntryTableTraceSegmentBases)
+    (store : WordRAM.ReadStore) (i : Nat) :
+    forall event,
+      event ∈
+          (table.readTraceResultRelabeledWithStore layout store i).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  unfold readTraceResultRelabeledWithStore
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      WordRAM.TraceResult.ofProgramWithStore_no_syntheticCostOnlyPrimitive
+        _ store _
+  · intro baseOccurrence?
+    apply WordRAM.TraceResult.bind_trace_forall
+    · exact
+        WordRAM.TraceResult.ofProgramWithStore_no_syntheticCostOnlyPrimitive
+          _ store _
+    · intro baseWordIndex?
+      apply WordRAM.TraceResult.bind_trace_forall
+      · exact
+          WordRAM.TraceResult.ofProgramWithStore_no_syntheticCostOnlyPrimitive
+            _ store _
+      · intro rankBefore?
+        apply WordRAM.TraceResult.map_trace_forall
+        exact
+          WordRAM.TraceResult.ofProgramWithStore_no_syntheticCostOnlyPrimitive
+            _ store _
 
 end FixedWidthSparseDenseSelectDenseLocalEntryTable
 
@@ -421,6 +506,23 @@ theorem relativeOffsetReadTraceResultRelabeledWithStore_matchesReadStore
   unfold relativeOffsetReadTraceResultRelabeledWithStore
   apply WordRAM.TraceResult.map_trace_forall
   exact WordRAM.TraceResult.ofProgramWithStore_matchesReadStore _ store _
+
+theorem relativeOffsetReadTraceResultRelabeledWithStore_no_syntheticCostOnlyPrimitive
+    {entries : List Nat} {width : Nat}
+    (segmentBase deadSegment : Nat)
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (store : WordRAM.ReadStore)
+    (base slot : Nat) :
+    forall event,
+      event ∈
+          (relativeOffsetReadTraceResultRelabeledWithStore
+            segmentBase deadSegment table store base slot).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  unfold relativeOffsetReadTraceResultRelabeledWithStore
+  apply WordRAM.TraceResult.map_trace_forall
+  exact
+    WordRAM.TraceResult.ofProgramWithStore_no_syntheticCostOnlyPrimitive
+      _ store _
 
 namespace SparseExceptionDirectory
 
@@ -534,6 +636,30 @@ theorem readTraceResultRelabeledWithStore_matchesReadStore
         layout.rankBase layout.deadSegment store true localSlot
   · exact
       relativeOffsetReadTraceResultRelabeledWithStore_matchesReadStore
+        layout.relativeBase layout.deadSegment directory.relativeTable
+        store base _
+
+theorem readTraceResultRelabeledWithStore_no_syntheticCostOnlyPrimitive
+    {bits : List Bool} {target : Bool}
+    {rankSuperOverhead rankBlockOverhead : Nat}
+    (directory :
+      SparseExceptionDirectory
+        bits target rankSuperOverhead rankBlockOverhead)
+    (layout : SparseExceptionDirectoryTraceSegmentBases)
+    (store : WordRAM.ReadStore)
+    (base localSlot localOccurrence : Nat) :
+    forall event,
+      event ∈
+          (directory.readTraceResultRelabeledWithStore
+            layout store base localSlot localOccurrence).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  unfold readTraceResultRelabeledWithStore
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      directory.rankData.rankTraceResultRelabeledWithStore_no_syntheticCostOnlyPrimitive
+        layout.rankBase layout.deadSegment store true localSlot
+  · exact
+      relativeOffsetReadTraceResultRelabeledWithStore_no_syntheticCostOnlyPrimitive
         layout.relativeBase layout.deadSegment directory.relativeTable
         store base _
 
@@ -666,6 +792,66 @@ theorem denseTwoWordSelectTraceResultWithStoreLocal_matchesReadStore
                       wordSelectTraceResult_matchesReadStore target
                         secondWord _ localStore
 
+theorem denseTwoWordSelectTraceResultWithStoreLocal_no_syntheticCostOnlyPrimitive
+    (target : Bool) {bits : List Bool} {wordSize : Nat}
+    (bitWords : SuccinctSpace.BoundedPayloadWordStore bits wordSize)
+    (localStore : WordRAM.ReadStore)
+    (basePosition baseOccurrence q : Nat) :
+    forall event,
+      event ∈
+          (denseTwoWordSelectTraceResultWithStoreLocal target bitWords
+            localStore basePosition baseOccurrence q).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  unfold denseTwoWordSelectTraceResultWithStoreLocal
+  apply WordRAM.TraceResult.bind_trace_forall
+  · intro event hmem
+    simp only [WordRAM.TraceResult.ofResult_trace] at hmem
+    exact
+      WordRAM.Program.evalR_no_syntheticCostOnlyPrimitive
+        (bitWords.store.readProgram (basePosition / wordSize))
+        localStore event hmem
+  · cases hfirst :
+        (WordRAM.TraceResult.ofResult
+          ((bitWords.store.readProgram (basePosition / wordSize)).evalR
+            localStore)).value with
+    | none =>
+        exact WordRAM.TraceResult.pure_trace_forall _ _
+    | some firstWord =>
+        apply WordRAM.TraceResult.bind_trace_forall
+        · exact
+            SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordRankTraceResult_no_syntheticCostOnlyPrimitive
+              target firstWord _
+        · apply WordRAM.TraceResult.bind_trace_forall
+          · exact
+              SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordRankTraceResult_no_syntheticCostOnlyPrimitive
+                target firstWord _
+          · dsimp only []
+            split
+            · apply WordRAM.TraceResult.map_trace_forall
+              exact
+                wordSelectTraceResult_no_syntheticCostOnlyPrimitive
+                  target firstWord _
+            · apply WordRAM.TraceResult.bind_trace_forall
+              · intro event hmem
+                simp only [WordRAM.TraceResult.ofResult_trace] at hmem
+                exact
+                  WordRAM.Program.evalR_no_syntheticCostOnlyPrimitive
+                    (bitWords.store.readProgram
+                      (basePosition / wordSize + 1))
+                    localStore event hmem
+              · cases hsecond :
+                    (WordRAM.TraceResult.ofResult
+                      ((bitWords.store.readProgram
+                        (basePosition / wordSize + 1)).evalR
+                          localStore)).value with
+                | none =>
+                    exact WordRAM.TraceResult.pure_trace_forall _ _
+                | some secondWord =>
+                    apply WordRAM.TraceResult.map_trace_forall
+                    exact
+                      wordSelectTraceResult_no_syntheticCostOnlyPrimitive
+                        target secondWord _
+
 /-- Store-parametric relabeled dense two-word select branch. -/
 def denseTwoWordSelectTraceResultRelabeledWithStore
     (bitWordSegmentBase deadSegment : Nat)
@@ -750,6 +936,29 @@ theorem denseTwoWordSelectTraceResultRelabeledWithStore_matchesReadStore
       (WordRAM.singletonSegmentMap bitWordSegmentBase deadSegment)
       (fun _segment _index => rfl)
       (denseTwoWordSelectTraceResultWithStoreLocal_matchesReadStore
+        target bitWords _ basePosition baseOccurrence q)
+
+theorem denseTwoWordSelectTraceResultRelabeledWithStore_no_syntheticCostOnlyPrimitive
+    (bitWordSegmentBase deadSegment : Nat)
+    (target : Bool) {bits : List Bool} {wordSize : Nat}
+    (bitWords : SuccinctSpace.BoundedPayloadWordStore bits wordSize)
+    (store : WordRAM.ReadStore)
+    (basePosition baseOccurrence q : Nat) :
+    forall event,
+      event ∈
+          (denseTwoWordSelectTraceResultRelabeledWithStore
+            bitWordSegmentBase deadSegment target bitWords store
+            basePosition baseOccurrence q).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  unfold denseTwoWordSelectTraceResultRelabeledWithStore
+  exact
+    WordRAM.TraceResult.relabelReadSegmentsWith_no_syntheticCostOnlyPrimitive
+      (WordRAM.singletonSegmentMap bitWordSegmentBase deadSegment)
+      (denseTwoWordSelectTraceResultWithStoreLocal target bitWords
+        (store.pullback
+          (WordRAM.singletonSegmentMap bitWordSegmentBase deadSegment))
+        basePosition baseOccurrence q)
+      (denseTwoWordSelectTraceResultWithStoreLocal_no_syntheticCostOnlyPrimitive
         target bitWords _ basePosition baseOccurrence q)
 
 namespace SparseExceptionSelectData
@@ -1152,6 +1361,80 @@ theorem selectTraceResultRelabeledWithStore_matchesReadStore
                         (by simpa [hlocalValue, hsparseBranch] using hmem)
                   · exact
                       denseTwoWordSelectTraceResultRelabeledWithStore_matchesReadStore
+                        layout.bitWordBase layout.deadSegment target
+                        data.bitWords store _ _ _ event
+                        (by simpa [hlocalValue, hsparseBranch] using hmem)
+  · intro event hmem
+    simp [hvalid] at hmem
+
+theorem selectTraceResultRelabeledWithStore_no_syntheticCostOnlyPrimitive
+    {bits : List Bool} {target : Bool}
+    {rankSuperOverhead rankBlockOverhead : Nat}
+    (data :
+      SparseExceptionSelectData
+        bits target rankSuperOverhead rankBlockOverhead)
+    (layout : SparseExceptionSelectTraceSegmentLayout)
+    (store : WordRAM.ReadStore)
+    (idx : Nat) :
+    forall event,
+      event ∈
+          (data.selectTraceResultRelabeledWithStore layout store idx).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  unfold selectTraceResultRelabeledWithStore
+  by_cases hvalid : idx < occurrenceCount bits target
+  · intro event hmem
+    simp [hvalid, WordRAM.TraceResult.bind] at hmem
+    rcases hmem with hmem | hmem
+    · exact
+        data.superTable.readTraceResultRelabeledWithStore_no_syntheticCostOnlyPrimitive
+          layout.superTable store
+          (selectSuperSlot (data.queryOccurrence idx) data.superStride)
+          event hmem
+    · cases hsuperValue :
+          (data.superTable.readTraceResultRelabeledWithStore
+            layout.superTable store
+            (selectSuperSlot (data.queryOccurrence idx)
+              data.superStride)).value with
+      | none =>
+          simp [hsuperValue] at hmem
+      | some super =>
+          by_cases hlong :
+              relativeSplitSelectEntryIsMarked super = true
+          · simp [hsuperValue, hlong] at hmem
+            rcases hmem with hmem | hmem
+            · exact
+                data.longFlagRankData.rankTraceResultRelabeledWithStore_no_syntheticCostOnlyPrimitive
+                  layout.longFlagRankBase layout.deadSegment store true
+                  (selectSuperSlot (data.queryOccurrence idx)
+                    data.superStride)
+                  event hmem
+            · exact
+                relativeOffsetReadTraceResultRelabeledWithStore_no_syntheticCostOnlyPrimitive
+                  layout.longRelativeBase layout.deadSegment
+                  data.longSuperRelativeTable store _ _ event hmem
+          · simp [hsuperValue, hlong] at hmem
+            rcases hmem with hmem | hmem
+            · exact
+                data.localTable.readTraceResultRelabeledWithStore_no_syntheticCostOnlyPrimitive
+                  layout.localTable store _ event hmem
+            · cases hlocalValue :
+                  (data.localTable.readTraceResultRelabeledWithStore
+                    layout.localTable store
+                    (relativeSplitSelectLocalSlot
+                      (data.queryOccurrence idx) data.superStride
+                      data.localSlotsPerSuper data.localStride
+                      super)).value with
+              | none =>
+                  simp [hlocalValue] at hmem
+              | some loc =>
+                  by_cases hsparseBranch :
+                      relativeSplitSelectEntryIsMarked loc = true
+                  · exact
+                      data.sparseDirectory.readTraceResultRelabeledWithStore_no_syntheticCostOnlyPrimitive
+                        layout.sparseDirectory store _ _ _ event
+                        (by simpa [hlocalValue, hsparseBranch] using hmem)
+                  · exact
+                      denseTwoWordSelectTraceResultRelabeledWithStore_no_syntheticCostOnlyPrimitive
                         layout.bitWordBase layout.deadSegment target
                         data.bitWords store _ _ _ event
                         (by simpa [hlocalValue, hsparseBranch] using hmem)

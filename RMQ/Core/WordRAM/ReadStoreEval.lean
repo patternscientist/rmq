@@ -248,6 +248,72 @@ theorem evalR_matchesReadStore
           · subst event
             trivial
 
+theorem evalR_no_syntheticCostOnlyPrimitive
+    (program : Program ty) (store : ReadStore) :
+    forall event : TraceEvent,
+      event ∈ (program.evalR store).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  induction program with
+  | pure value =>
+      intro event hmem
+      simp [evalR] at hmem
+  | readWord segment index =>
+      intro event hmem
+      simp [evalR] at hmem
+      subst event
+      simp [TraceEvent.isSyntheticCostOnlyPrimitive]
+  | mapOptWordNat program ih =>
+      intro event hmem
+      exact ih event hmem
+  | mapOptWordOptionNat width program ih =>
+      intro event hmem
+      exact ih event hmem
+  | joinOptOptNat program ih =>
+      intro event hmem
+      exact ih event hmem
+  | sampledRank target offset sample word sampleIH wordIH =>
+      intro event hmem hsynth
+      cases hsample : (evalR sample store).value with
+      | none =>
+          cases hword : (evalR word store).value with
+          | none =>
+              simp [evalR, hsample, hword] at hmem
+              rcases hmem with h | h
+              · exact sampleIH event h hsynth
+              · exact wordIH event h hsynth
+          | some wordValue =>
+              simp [evalR, hsample, hword] at hmem
+              rcases hmem with h | h
+              · exact sampleIH event h hsynth
+              · exact wordIH event h hsynth
+      | some sampleValue =>
+          cases hword : (evalR word store).value with
+          | none =>
+              simp [evalR, hsample, hword] at hmem
+              rcases hmem with h | h
+              · exact sampleIH event h hsynth
+              · exact wordIH event h hsynth
+          | some wordValue =>
+              simp [evalR, hsample, hword] at hmem
+              rcases hmem with h | htail
+              · exact sampleIH event h hsynth
+              · rcases htail with h | h
+                · exact wordIH event h hsynth
+                · subst event
+                  simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hsynth
+  | wordSelectFromOpt target occurrence word wordIH =>
+      intro event hmem hsynth
+      cases hword : (evalR word store).value with
+      | none =>
+          simp [evalR, hword] at hmem
+          exact wordIH event hmem hsynth
+      | some wordValue =>
+          simp [evalR, hword] at hmem
+          rcases hmem with h | h
+          · exact wordIH event h hsynth
+          · subst event
+            simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hsynth
+
 /--
 The one-step atom lemma for store-parametric leaves: evaluating a component
 program against a global store pulled back along the component's segment map is
@@ -317,6 +383,28 @@ theorem evalR_matchesReadStore
       simp [evalR] at hmem
       subst event
       rfl
+  | ifSomeNat reg thenProgram elseProgram thenIH elseIH =>
+      intro event hmem
+      cases hreg : regs.optNat reg with
+      | none =>
+          exact elseIH event (by simpa [evalR, hreg] using hmem)
+      | some value =>
+          exact thenIH event (by simpa [evalR, hreg] using hmem)
+
+theorem evalR_no_syntheticCostOnlyPrimitive
+    (program : RegProgram) (store : ReadStore) (regs : RegFile) :
+    forall event : TraceEvent,
+      event ∈ (program.evalR store regs).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  induction program with
+  | pureOpt value =>
+      intro event hmem
+      simp [evalR] at hmem
+  | readJoinedOptionNat segment width index =>
+      intro event hmem
+      simp [evalR] at hmem
+      subst event
+      simp [TraceEvent.isSyntheticCostOnlyPrimitive]
   | ifSomeNat reg thenProgram elseProgram thenIH elseIH =>
       intro event hmem
       cases hreg : regs.optNat reg with
@@ -521,6 +609,110 @@ theorem evalR_matchesReadStore
                         exact hword
                       · subst event
                         trivial
+
+theorem evalR_no_syntheticCostOnlyPrimitive
+    (program : NatProgram) (store : ReadStore) (regs : RegFile) :
+    forall event : TraceEvent,
+      event ∈ (program.evalR store regs).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  cases program with
+  | pureNat value =>
+      intro event hmem
+      simp [evalR] at hmem
+  | sampledRank target offset sampleSegment sampleIndex
+      wordSegment wordIndex =>
+      intro event hmem hsynth
+      cases hsample :
+          store.readWord? sampleSegment (sampleIndex.eval regs) with
+      | none =>
+          cases hword :
+              store.readWord? wordSegment (wordIndex.eval regs) <;>
+            simp [evalR, hsample, hword] at hmem <;>
+            (rcases hmem with h | h
+             · subst event
+               simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hsynth
+             · subst event
+               simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hsynth)
+      | some sampleWord =>
+          cases hword :
+              store.readWord? wordSegment (wordIndex.eval regs) with
+          | none =>
+              simp [evalR, hsample, hword] at hmem
+              rcases hmem with h | h
+              · subst event
+                simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hsynth
+              · subst event
+                simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hsynth
+          | some word =>
+              simp [evalR, hsample, hword] at hmem
+              rcases hmem with h | htail
+              · subst event
+                simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hsynth
+              · rcases htail with h | h
+                · subst event
+                  simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hsynth
+                · subst event
+                  simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hsynth
+  | twoLevelSampledRank target offset superSegment superIndex
+      blockSegment blockIndex wordSegment wordIndex =>
+      intro event hmem hsynth
+      cases hsuper :
+          store.readWord? superSegment (superIndex.eval regs) with
+      | none =>
+          cases hblock :
+              store.readWord? blockSegment (blockIndex.eval regs) <;>
+            cases hword :
+              store.readWord? wordSegment (wordIndex.eval regs) <;>
+            simp [evalR, hsuper, hblock, hword] at hmem <;>
+            (rcases hmem with h | htail
+             · subst event
+               simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hsynth
+             · rcases htail with h | h
+               · subst event
+                 simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hsynth
+               · subst event
+                 simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hsynth)
+      | some superWord =>
+          cases hblock :
+              store.readWord? blockSegment (blockIndex.eval regs) with
+          | none =>
+              cases hword :
+                  store.readWord? wordSegment (wordIndex.eval regs) <;>
+                simp [evalR, hsuper, hblock, hword] at hmem <;>
+                (rcases hmem with h | htail
+                 · subst event
+                   simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hsynth
+                 · rcases htail with h | h
+                   · subst event
+                     simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hsynth
+                   · subst event
+                     simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hsynth)
+          | some blockWord =>
+              cases hword :
+                  store.readWord? wordSegment (wordIndex.eval regs) with
+              | none =>
+                  simp [evalR, hsuper, hblock, hword] at hmem
+                  rcases hmem with h | htail
+                  · subst event
+                    simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hsynth
+                  · rcases htail with h | h
+                    · subst event
+                      simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hsynth
+                    · subst event
+                      simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hsynth
+              | some word =>
+                  simp [evalR, hsuper, hblock, hword] at hmem
+                  rcases hmem with h | htail
+                  · subst event
+                    simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hsynth
+                  · rcases htail with h | htail
+                    · subst event
+                      simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hsynth
+                    · rcases htail with h | h
+                      · subst event
+                        simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hsynth
+                      · subst event
+                        simp [TraceEvent.isSyntheticCostOnlyPrimitive] at hsynth
 
 /-- Atom lemma for natural-register-program leaves. -/
 theorem evalR_pullback_eq_eval

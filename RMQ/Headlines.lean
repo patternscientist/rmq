@@ -6,6 +6,7 @@ import RMQ.Core.RankSelectPublicRAM
 import RMQ.Core.SuccinctSpace.BPCloseRMQNavigationRAM
 import RMQ.Core.SuccinctFinal
 import RMQ.Core.SuccinctFinalRAM
+import RMQ.Core.SuccinctFinalStoreParam
 import RMQ.Core.SuccinctRMQClassic
 
 /-!
@@ -199,6 +200,34 @@ payload-read events emitted by the query validates the same trace.
 -/
 abbrev succinctRMQGlobalPayloadStoreExtensionalExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_store_extensional_execution_story
+
+/--
+Whole-query supplied-store replay: every read event emitted by the final RMQ
+query reports the word observed from the caller-provided `WordRAM.ReadStore`.
+-/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreMatchesReadStore :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_matchesReadStore
+
+/--
+Concrete-store evaluation theorem for the whole-query supplied-store replay:
+instantiating the replay with the final global read store gives the canonical
+globally segmented whole-query trace.
+-/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreEval :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_globalReadStore
+
+/--
+Whole-query store-parametricity over the explicit final segment layout.
+-/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreStoreParametric :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric
+
+/--
+Whole-query supplied-store replay contains no dedicated synthetic cost-only
+marker events.
+-/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreNoSynthetic :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_no_syntheticCostOnlyPrimitive
 
 /--
 Zero-block same-block close evaluator with a supplied `WordRAM.ReadStore`.

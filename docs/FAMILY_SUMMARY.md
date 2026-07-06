@@ -367,8 +367,15 @@ adds the flat payload layout and source/component/offset backing evidence for
 every actual successful final-query read to that same bounded no-synthetic
 execution story; its flat payload equation is the advertised BP-native payload
 directly.
-The whole-query store-extensional theorem is still fixed-trace, but the
-zero-block same-block close leaf now has a store-parametric evaluator:
+The whole-query supplied-store replay is now present:
+`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore`
+evaluates the closed final RMQ controller against a caller-provided
+`WordRAM.ReadStore`; its theorem package proves per-event read-store matching,
+equality with the canonical global trace under
+`concreteBPNativeSuccinctRMQGlobalReadStore`, explicit final-layout
+store-parametricity, refinement/exactness transfer, and formal absence of
+synthetic cost-only events. The zero-block same-block close leaf also has a
+store-parametric evaluator:
 `RMQ.Headlines.succinctRMQZeroBlockSameBlockEvalWithStore` evaluates against a
 supplied `WordRAM.ReadStore`, and
 `RMQ.Headlines.succinctRMQZeroBlockSameBlockStoreParametric` proves equal
@@ -378,7 +385,7 @@ all-size structural close/LCA surfaces under
 `SuccinctClose.ConcreteCompactBPCloseLCADirectory`: the Ready two-level
 interior, all-size interior dispatcher, cross-block wrapper, and all-size
 LCA-close dispatcher each have supplied-store agreement, store-parametricity,
-and read-store matching theorems.
+read-store matching, and no-synthetic theorem surfaces.
 
 | Structure | Correctness status | Cost status | Notes |
 | --- | --- | --- | --- |
@@ -2271,6 +2278,11 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore_store_parametric`,
   `SuccinctClose.ConcreteCompactBPCloseLCADirectory.crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_matchesReadStore`,
   `SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore_eq_of_agree`,
+  `SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore_no_syntheticCostOnlyPrimitive`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_matchesReadStore`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_globalReadStore`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_no_syntheticCostOnlyPrimitive`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_matchesReadStore`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQGlobalReadStore_retiredFiniteSmallInterior_none`,
