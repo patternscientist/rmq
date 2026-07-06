@@ -69,6 +69,16 @@ spokes:
 
 ## Current Digests
 
+- [`digests/PROJECT_DIGESTION_2026_07_06.md`](digests/PROJECT_DIGESTION_2026_07_06.md):
+  current state-significance-and-path-to-a-paper digest for `main` at
+  `3f6f1e3`, for a mathematically mature non-DS audience. Covers the
+  store-parametric whole-query capstone and the 2026-07-06 model-adequacy /
+  footprint-containment / paper-surface landings; ranks the achievements; and
+  gives the candid publishable-work gap analysis (the query-cost constant as
+  the single remaining blocker, with the corrected `2^15`-readiness story).
+  Includes a recorded adversarial review loop (Appendix A) whose fact-check
+  round corrected an earlier `2^128`-gate mischaracterization in
+  `docs/PUBLICATION_STRATEGY.md`.
 - [`digests/DEEP_PROJECT_DIGESTION_2026_06_28.md`](digests/DEEP_PROJECT_DIGESTION_2026_06_28.md):
   deep Lean-club-facing project digestion for current `main`, with first-contact
   definitions of RMQ, Cartesian shape, rank/select, balanced parentheses,
@@ -516,6 +526,28 @@ flat byte-offset layout, and word-rank/word-select remain explicit primitive
 events. A skeptical grad student should next ask whether this component-backed
 global store can be flattened into one counted offset manifest and whether the
 trace-local bounds can be replaced by uniform machine-word side conditions.
+
+## Current Paper-Path Note
+
+2026-07-06 digestion pass: the project-wide digest was refreshed as
+`digests/PROJECT_DIGESTION_2026_07_06.md` after the store-parametric
+whole-query capstone (2026-07-04/05) and the model-adequacy, footprint
+containment, paper-surface, and artifact-reproducibility landings
+(2026-07-06). Two corrections worth recording at log level. First, the fast
+compact-interior path is proved applicable for all `shape.size >= 2^15`
+(`concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold`); earlier
+strategy prose that described the clean path as gated on `2^128` was too
+pessimistic and has been corrected — the `2^128` premise survives only in
+derived compatibility lemmas. Second, the whole-query footprint is a set of
+segments with agreement required at every address inside them, and the new
+containment theorem proves all emitted reads stay inside it, so exactness and
+the cost bound transfer to any footprint-agreeing supplied store. The live
+publishable-work gap is now concentrated in one place: the public query-cost
+bound `196727` is a conservative cross-regime sum with sub-threshold scan
+caps, and there is no public regime-split theorem stating the small cost once
+the machinery engages. A skeptical grad student should ask for exactly that
+theorem next: "for `n >= 2^15`, the final query cost is bounded by a few
+hundred," assembled from the existing component facts.
 
 ## Digestion Tasks
 

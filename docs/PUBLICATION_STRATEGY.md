@@ -59,21 +59,28 @@ candidates — are:
 
 ### P0 — blocking (a referee rejects without these)
 
-1. **Resolve or defend the cost model.** The concrete query-cost constant is
-   `196727`, which hides a `2 * 2^15` bounded scan, and the "clean" `O(1)`
-   replay is gated on `2^128 <= shape.size` — physically unrealizable inputs.
-   This is the first quantity a referee computes. Measured against the
-   time-credits discipline, "constant = 196727, clean regime at `n >= 2^128`"
-   reads as `O(1)` in name only. Resolve it by either:
-   - **(i)** doing the genuine `w = Theta(log n)` block decomposition so the
-     constant is small and `O(1)` holds for *all* `n` at a realistic word size
-     (this is the real research work), or
-   - **(ii)** proving a soundness theorem that licenses the modeling and
-     defending it head-on.
+1. **Resolve or defend the cost model constant.** The concrete query-cost
+   constant is `196727`. *(Correction, 2026-07-06: an earlier revision of this
+   document said the clean `O(1)` replay is "gated on `2^128 <= shape.size`."
+   That was too pessimistic: the source proves the fast interior path applies
+   for all `shape.size >= 2^15`
+   (`concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold`); the
+   `2^128` premise survives only in derived legacy compatibility lemmas.)*
+   The actual situation: the fast path is proved from the modest threshold
+   `2^15`; below it, correct capped brute scans; and the public bound is a
+   single conservative *sum* of every branch's cap (`3*16` close accesses,
+   `2*2^15 + 1` zero-block scan, `4*2^15` interior scan, `30` fast interior,
+   plus small change), with **no public regime-split theorem** stating the
+   small cost once the machinery engages. Resolve by, in increasing ambition:
+   - **(i)** state the regime-split bound ("for `n >= 2^15`, cost `<=` a few
+     hundred") from the existing component facts;
+   - **(ii)** tighten the cross-branch sum to a maximum;
+   - **(iii)** replace sub-threshold scans with classical small-block table
+     lookup, shrinking the uniform constant to something presentable (the
+     modeled word size `log2 n + 1` already supports this).
 
-   The repository is already honest *about* this (see the constant and
-   thresholds disclosed in `WHAT_IS_PROVED.md`); the paper must *resolve* it, not
-   merely disclose it.
+   The repository is already honest *about* the constant; the paper must
+   *resolve or precisely split* it, not merely disclose it.
 2. **A soundness bridge for the cost model.** Nipkow's cost *is* the program;
    the time-credits cost *is* steps. Ours is a bespoke trace semantics. State and
    prove a theorem relating modeled trace cost to a *standard* Word-RAM step
@@ -113,12 +120,38 @@ candidates — are:
 
 ## 4. The single highest-leverage move
 
-**Fix the cost model so `O(1)` is genuinely `O(1)` for all `n` at word size
-`Theta(log n)`, then state one soundness theorem tying trace-cost to a standard
-Word-RAM.** Everything else (distillation, related work, extraction) is
-tractable engineering. The `2^128`-gated / `196727`-constant story is the one
-thing that, left as-is, turns a referee from "impressive" to "reject — the
-headline claim is not what it says."
+**Make the constant honest at statement level: a public regime-split (or
+genuinely small uniform) query-cost theorem.** Everything else (distillation,
+related work, extraction) is tractable engineering. The five-digit constant is
+the one thing that, left as-is, invites a referee to ask "did you formalize
+the hard part, or cap your way past it?" — the true answer ("formalized, and
+engaged from `n >= 2^15`") must become a theorem, not a conversation.
+
+## 4a. Status update (2026-07-06)
+
+Landed on `main` since this document was written (through `3f6f1e3`):
+
+- **P0-2 (soundness bridge), internal half:** the model-adequacy /
+  full-model-soundness surfaces
+  (`RMQ.Headlines.succinctRMQFinalTraceModelAdequacy`,
+  `...succinctRMQFinalFullModelSoundness`), plus footprint containment (every
+  emitted read provably lies inside the declared footprint) and
+  exactness/cost transfer to footprint-agreeing supplied stores. The
+  *external* half — extraction / executable reference with benchmarks —
+  remains open (P2 item 7).
+- **P0-3 (distillation), Lean half:** one fused headline
+  (`RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`) plus
+  `docs/PAPER_MAIN_THEOREM.md`, `docs/PAPER_MODEL_ADEQUACY.md`,
+  `docs/PAPER_THEOREM_MAP.md`. Paper prose remains.
+- **P1 item 4 (related work):** first draft landed
+  (`docs/RELATED_WORK_AND_LIMITATIONS.md`), including the correct scoping
+  that the lower bound is encoding-counting, not cell-probe (Liu-Yu/Liu).
+  A referee-grade novelty search remains.
+- **P2 item 8 (artifact):** reproduction script, CI workflows, `CITATION.cff`,
+  and an AI-assisted-development disclosure landed.
+
+Remaining, in priority order: **P0-1 (the constant, as corrected above);
+extraction + benchmarks; novelty search; the paper itself.**
 
 ## 5. Recommended target
 
