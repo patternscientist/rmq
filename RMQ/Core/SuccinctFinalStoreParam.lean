@@ -1953,6 +1953,68 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_stor
         shape hfoot)
       left right
 
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_reads_subset_footprint
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (left right : Nat) :
+    forall {segment index : Nat} {word? : Option WordRAM.Word},
+      WordRAM.TraceEvent.readWord segment index word? ∈
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+            shape store left right).trace ->
+        concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape segment := by
+  intro segment index word? hmem
+  by_contra hnot
+  let flippedWord? : Option WordRAM.Word :=
+    match word? with
+    | none => some []
+    | some _ => none
+  have hflip_ne : flippedWord? ≠ word? := by
+    cases word? <;> simp [flippedWord?]
+  let flippedStore : WordRAM.ReadStore :=
+    { readWord? := fun segment' index' =>
+        if segment' = segment ∧ index' = index then
+          flippedWord?
+        else
+          store.readWord? segment' index' }
+  have hfoot :
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store flippedStore := by
+    intro segment' index' hsegment'
+    by_cases hsame : segment' = segment ∧ index' = index
+    · rcases hsame with ⟨rfl, _⟩
+      exact False.elim (hnot hsegment')
+    · simp [flippedStore, hsame]
+  have htrace :=
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint
+      shape hfoot left right
+  have hmemFlipped :
+      WordRAM.TraceEvent.readWord segment index word? ∈
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+            shape flippedStore left right).trace := by
+    rw [htrace] at hmem
+    exact hmem
+  have hmatch :=
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_matchesReadStore
+      shape flippedStore left right
+      (WordRAM.TraceEvent.readWord segment index word?) hmemFlipped
+  have hflipped_eq : flippedWord? = word? := by
+    simpa [WordRAM.TraceEvent.matchesReadStore, flippedStore] using hmatch
+  exact hflip_ne hflipped_eq
+
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_reads_subset_footprint
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    forall {segment index : Nat} {word? : Option WordRAM.Word},
+      WordRAM.TraceEvent.readWord segment index word? ∈
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+            shape left right).trace ->
+        concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape segment := by
+  intro segment index word? hmem
+  rw [← concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_globalReadStore
+    shape left right] at hmem
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_reads_subset_footprint
+      shape (concreteBPNativeSuccinctRMQGlobalReadStore shape) left right
+      hmem
+
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_refines_wholeQueryInterpretedCosted
     (shape : Cartesian.CartesianShape)
     (left right : Nat) :
