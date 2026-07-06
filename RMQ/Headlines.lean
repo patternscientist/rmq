@@ -134,6 +134,37 @@ abbrev listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory :=
   RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story
 
 /--
+List-facing paper main theorem. For every ordinary `xs : List Int`, the
+advertised `buildPayload` has length `2*n + overhead n` with
+`overhead = o(n)`, valid half-open queries return exact leftmost RMQ answers
+within the modeled constant query budget, and the final trace is the
+no-synthetic flat-payload execution story.
+-/
+theorem listIntSuccinctRMQPaperMainTheorem :
+    RMQ.SuccinctSpace.LittleOLinear RMQ.SuccinctClassic.overhead /\
+      forall xs : List Int,
+        (RMQ.SuccinctClassic.buildPayload xs).length =
+          2 * xs.length + RMQ.SuccinctClassic.overhead xs.length /\
+        (forall left right,
+          (RMQ.SuccinctClassic.queryCosted xs left right).cost <=
+            RMQ.SuccinctClassic.queryCost) /\
+        (forall {left len : Nat},
+          0 < len ->
+            left + len <= xs.length ->
+              (RMQ.SuccinctClassic.queryCosted xs left (left + len)).erase =
+                some (RMQ.scanWindow xs left len)) /\
+        (forall {left len idx : Nat},
+          0 < len ->
+            left + len <= xs.length ->
+              (RMQ.SuccinctClassic.queryCosted xs left (left + len)).erase =
+                some idx ->
+                RMQ.LeftmostArgMin xs left (left + len) idx) /\
+        (forall left right,
+          RMQ.SuccinctClassic.FlatPayloadStoreNoSyntheticExecutionStory
+            xs left right) :=
+  RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story
+
+/--
 Whole-query-interpreted BP-native succinct RMQ capstone: the same two-sided
 `2*n + o(n)`, constant-query theorem shape, with the final query control routed
 through a closed first-order query program whose leaves are the interpreted
@@ -253,6 +284,22 @@ footprint.
 -/
 abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreEqGlobalOfFootprint :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_eq_global_of_footprint
+
+/--
+Under agreement with the concrete global store on the safe final layout
+footprint, every successful read in the supplied-store whole-query replay is
+backed by counted flat payload.
+-/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedByCountedFlatPayloadOfFootprintGlobal :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_successful_reads_backed_by_counted_flat_payload_of_footprint_global
+
+/--
+Under agreement with the concrete global store on the safe final layout
+footprint, the canonical modeled cost bound transfers to the supplied-store
+whole-query replay.
+-/
+abbrev succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global
 
 theorem succinctRMQWholeQueryGlobalWordTraceCostedWithStoreExactOfFootprintGlobal
     {n : Nat} {shape : RMQ.Cartesian.CartesianShape}

@@ -2057,6 +2057,50 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_eq_g
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_eq_global_of_footprint
       shape store hfoot left right]
 
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_successful_reads_backed_by_counted_flat_payload_of_footprint_global
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (hfoot :
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store (concreteBPNativeSuccinctRMQGlobalReadStore shape))
+    (left right : Nat) :
+    forall {segment index : Nat} {word : List Bool},
+      WordRAM.TraceEvent.readWord segment index (some word) ∈
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+            shape store left right).trace ->
+        concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
+            shape segment /\
+          concreteBPNativeSuccinctRMQFlatPayloadReadBacked
+            shape segment index word := by
+  intro segment index word hmem
+  have hmemGlobal :
+      WordRAM.TraceEvent.readWord segment index (some word) ∈
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+            shape left right).trace := by
+    rw [
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_eq_global_of_footprint
+        shape store hfoot left right] at hmem
+    exact hmem
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_successful_read_events_backed_by_counted_flat_payload
+      shape left right hmemGlobal
+
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (hfoot :
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store (concreteBPNativeSuccinctRMQGlobalReadStore shape))
+    (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+      shape store left right).cost <=
+        concreteBPNativeSuccinctRMQQueryCost
+          SuccinctSelect.sparseDenseFalseSelectQueryCost := by
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_eq_global_of_footprint
+      shape store hfoot left right]
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le
+      shape left right
+
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_refines_wholeQueryInterpretedCosted
     (shape : Cartesian.CartesianShape)
     (left right : Nat) :

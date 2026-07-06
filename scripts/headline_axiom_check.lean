@@ -38,6 +38,7 @@ the BP-native succinct capstone.
 #print axioms RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery
 #print axioms RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery
 #print axioms RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory
+#print axioms RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem
 #print axioms RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted
 #print axioms RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace
 #print axioms RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace
@@ -54,6 +55,8 @@ the BP-native succinct capstone.
 #print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreReadsSubsetFootprint
 #print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadsSubsetFootprint
 #print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreEqGlobalOfFootprint
+#print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedByCountedFlatPayloadOfFootprintGlobal
+#print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal
 #print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedWithStoreExactOfFootprintGlobal
 #print axioms RMQ.Headlines.succinctRMQFinalFullModelSoundness
 #print axioms RMQ.Headlines.succinctRMQFinalFullModelSoundnessExactOfFootprintGlobal
