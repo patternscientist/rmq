@@ -15,8 +15,9 @@ Run this command from the repository root:
 scripts/reproduce_artifact.sh
 ```
 
-It prints the `elan`, `lean`, and `lake` versions; runs `lake build`; runs the
-three paper-facing axiom checks; runs the full repository gate when `pwsh` is
+It prints the `elan`, `lean`, and `lake` versions; runs `lake build`; explicitly
+builds the public roots needed by broad axiom imports; runs the three
+paper-facing axiom checks; runs the full repository gate when `pwsh` is
 available; performs the forbidden-token scans below; checks local dirty-tree
 whitespace with `git diff --check`; and, when `HEAD^` exists, checks the latest
 committed patch with `git diff --check HEAD^..HEAD`.
@@ -31,6 +32,14 @@ The paper-facing Lean checks run by the artifact gate are:
 
 ```bash
 lake build
+lake build RMQHub
+lake build RMQRankSelect
+lake build RMQBPNavigation
+lake build RMQUnionFind
+lake build VerifiedDS
+lake build RMQArchive
+lake build RMQExamples
+lake build RMQ.Core.GenericSelectBPCompat
 lake env lean scripts/headline_axiom_check.lean
 lake env lean scripts/wordram_axiom_check.lean
 lake env lean scripts/axiom_check.lean

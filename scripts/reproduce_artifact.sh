@@ -21,6 +21,16 @@ lake --version
 section "lake build"
 lake build
 
+section "public root builds for axiom checks"
+lake build RMQHub
+lake build RMQRankSelect
+lake build RMQBPNavigation
+lake build RMQUnionFind
+lake build VerifiedDS
+lake build RMQArchive
+lake build RMQExamples
+lake build RMQ.Core.GenericSelectBPCompat
+
 section "headline axiom check"
 lake env lean scripts/headline_axiom_check.lean
 
