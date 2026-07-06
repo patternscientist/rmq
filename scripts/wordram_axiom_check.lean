@@ -1,5 +1,9 @@
 import RMQ.Headlines
 import RMQ.Core.SuccinctSpace.BPCloseLCARegisterRAM
+import RMQ.Core.WordRAM.ReadStoreEval
+import RMQ.Core.GenericSelect.RAMStoreParam
+import RMQ.Core.SuccinctFinalStoreParam
+import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
 
 /-!
 Focused trust-base check for the Word-RAM refinement boundary.
@@ -19,6 +23,8 @@ that consume the Word-RAM bridge layer.
 #print axioms RMQ.WordRAM.Program.eval_word_reads_length_le_machine
 #print axioms RMQ.WordRAM.Program.eval_eq_of_readWord_eq
 #print axioms RMQ.WordRAM.Program.eval_toCosted_eq_of_readWord_eq
+#print axioms RMQ.WordRAM.Program.evalR_ofStore
+#print axioms RMQ.WordRAM.Program.evalR_matchesReadStore
 #print axioms RMQ.WordRAM.TraceResult.costOnlyTrace_no_readWord
 #print axioms RMQ.WordRAM.TraceResult.costOnlyTrace_syntheticCostOnlyPrimitive
 #print axioms RMQ.WordRAM.TraceResult.ofCosted_trace_no_readWord
@@ -45,6 +51,8 @@ that consume the Word-RAM bridge layer.
 #print axioms RMQ.WordRAM.Register.RegProgram.eval_eq_of_readWord_eq
 #print axioms RMQ.WordRAM.Register.RegProgram.eval_toCosted_eq_of_readWord_eq
 #print axioms RMQ.WordRAM.Register.RegProgram.eval_trace_length_le_readCount
+#print axioms RMQ.WordRAM.Register.RegProgram.evalR_ofStore
+#print axioms RMQ.WordRAM.Register.RegProgram.evalR_matchesReadStore
 
 #print axioms RMQ.WordRAM.Register.NatProgram.eval_toCosted_cost_eq_trace_length
 #print axioms RMQ.WordRAM.Register.NatProgram.eval_reads_subset_payload
@@ -59,6 +67,8 @@ that consume the Word-RAM bridge layer.
 #print axioms RMQ.WordRAM.Register.NatProgram.eval_eq_of_readWord_eq
 #print axioms RMQ.WordRAM.Register.NatProgram.eval_toCosted_eq_of_readWord_eq
 #print axioms RMQ.WordRAM.Register.NatProgram.eval_trace_length_le_stepCount
+#print axioms RMQ.WordRAM.Register.NatProgram.evalR_ofStore
+#print axioms RMQ.WordRAM.Register.NatProgram.evalR_matchesReadStore
 
 #print axioms RMQ.SuccinctSpace.PayloadLiveBPCloseLCADirectory.lcaCloseFromEndpointRegsProgram_refines_lcaCloseProgram_glue
 #print axioms RMQ.SuccinctSpace.PayloadLiveBPCloseLCADirectory.lcaCloseFromEndpointRegsProgram_cost_le_one
@@ -80,8 +90,16 @@ that consume the Word-RAM bridge layer.
 #print axioms RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_no_syntheticCostOnlyPrimitive
 #print axioms RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_evalWithStore
 #print axioms RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_store_parametric
+#print axioms RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSameBlockCloseDecodedTraceResultWithRankSeedWithStore_eq_of_agree
+#print axioms RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSameBlockCloseDecodedTraceResultWithRankSeedWithStore_store_parametric
+#print axioms RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSameBlockCloseDecodedTraceResultWithRankSeedWithStore_matchesReadStore
 #print axioms RMQ.SuccinctFinal.concreteBPNativeLCACloseWordTraceResult_refines_interpretedCosted
 #print axioms RMQ.SuccinctFinal.concreteBPNativeLCACloseWordTraceResultAtSegmentsOfSizeGe_refines_interpretedCosted
+#print axioms RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_matchesReadStore
+#print axioms RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_globalReadStore
+#print axioms RMQ.SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_store_parametric
+#print axioms RMQ.SuccinctFinal.concreteBPNativeSelectCloseGlobalWordTraceResultWithStore_matchesReadStore
+#print axioms RMQ.SuccinctFinal.concreteBPNativeSelectCloseGlobalWordTraceResultWithStore_globalReadStore
 
 #print axioms RMQ.RankSelectSpec.subLogAccessInterpretedCosted_refines_subLogAccessCosted
 #print axioms RMQ.RankSelectSpec.subLogAccessTraceResult_execution_story
