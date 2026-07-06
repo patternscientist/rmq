@@ -7,9 +7,27 @@ The expected toolchain is:
 leanprover/lean4:v4.22.0
 ```
 
-## Build And Axiom Checks
+## One-Command Paper Artifact Gate
 
-Run these commands from the repository root:
+Run this command from the repository root:
+
+```bash
+scripts/reproduce_artifact.sh
+```
+
+It prints the `elan`, `lean`, and `lake` versions; runs `lake build`; runs the
+three paper-facing axiom checks; runs the full repository gate when `pwsh` is
+available; performs the forbidden-token scans below; checks local dirty-tree
+whitespace with `git diff --check`; and, when `HEAD^` exists, checks the latest
+committed patch with `git diff --check HEAD^..HEAD`.
+
+In GitHub Actions, `pwsh` is required so that `scripts/gate.ps1` runs as part
+of this artifact gate. Outside CI, the script reports a skipped full repository
+gate if `pwsh` is unavailable.
+
+## Paper Build And Axiom Checks
+
+The paper-facing Lean checks run by the artifact gate are:
 
 ```bash
 lake build
@@ -18,15 +36,26 @@ lake env lean scripts/wordram_axiom_check.lean
 lake env lean scripts/axiom_check.lean
 ```
 
-The one-command artifact gate is:
+## Full Repository Gate
 
-```bash
-scripts/reproduce_artifact.sh
+The broader repository acceptance gate is:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\gate.ps1
 ```
 
-It prints the `elan`, `lean`, and `lake` versions, runs the build and curated
-axiom checks, performs the forbidden-token scans below, and finishes with
-`git diff --check`.
+That gate builds the public roots, runs broader hygiene scans, checks the
+curated spoke axiom scripts, runs succinct cost/space lints, checks shim-import
+boundaries, and performs `git diff --check`.
+
+## GitHub Actions
+
+The `CI` workflow runs `scripts/gate.ps1` directly on push and pull request.
+The `Artifact Reproducibility` workflow runs `scripts/reproduce_artifact.sh` on
+push and tag events, tees output to `artifact-reproduction.log`, and uploads
+that log as a workflow artifact. The release workflow reruns the reproduction
+script for `v*` tags and attaches the reproduction log, theorem-map documents,
+axiom-check scripts, and a source archive to the GitHub release.
 
 ## Forbidden-Token Scans
 

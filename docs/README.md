@@ -14,6 +14,17 @@ This repository has two kinds of documentation:
   mature audience without data-structures background.
 - [`WHAT_IS_PROVED.md`](WHAT_IS_PROVED.md): compact scope summary for external
   readers.
+- [`PAPER_MAIN_THEOREM.md`](PAPER_MAIN_THEOREM.md): English main theorem and
+  machine-level theorem map for the paper-facing RMQ artifact.
+- [`PAPER_THEOREM_MAP.md`](PAPER_THEOREM_MAP.md): short citation map from paper
+  claims to checked Lean theorem names.
+- [`ARTIFACT_REPRODUCIBILITY.md`](ARTIFACT_REPRODUCIBILITY.md): exact
+  toolchain, build commands, axiom checks, forbidden-token scans, release-tag
+  instructions, and non-claims.
+- [`RELATED_WORK_AND_LIMITATIONS.md`](RELATED_WORK_AND_LIMITATIONS.md):
+  related-work positioning and model limitations.
+- [`AI_ASSISTED_DEVELOPMENT_NOTE.md`](AI_ASSISTED_DEVELOPMENT_NOTE.md): short
+  note on AI assistance and the actual artifact trust base.
 - [`TRUST_BASE.md`](TRUST_BASE.md): build gate, expected axioms, dependency
   policy, and model assumptions.
 - [`TRUST_AUDIT_PACKET.md`](TRUST_AUDIT_PACKET.md): compact reviewer packet for
@@ -63,6 +74,12 @@ The public gate is:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\gate.ps1
+```
+
+The paper-artifact reproduction gate is:
+
+```bash
+scripts/reproduce_artifact.sh
 ```
 
 For a shorter check of the public headline aliases:

@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this Lean artifact, please cite it using this provisional metadata."
+title: "RMQ: A Lean 4 Artifact for Succinct Range Minimum Query Models"
+type: software
+authors:
+  - name: "RMQ repository contributors"
+repository-code: "https://github.com/patternscientist/rmq"
+url: "https://github.com/patternscientist/rmq"
+abstract: "A Mathlib-free Lean 4 repository formalizing range minimum query structures, succinct RMQ theorem surfaces, and trace/read-store/payload model adequacy checks."
+keywords:
+  - Lean 4
+  - range minimum query
+  - succinct data structures
+  - formal verification
+license: Apache-2.0
+version: "provisional"
+date-released: "2026-07-06"

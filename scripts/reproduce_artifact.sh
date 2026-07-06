@@ -4,6 +4,11 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repo_root"
 
+section() {
+  echo
+  echo "== $1 =="
+}
+
 echo "== Tool versions =="
 if command -v elan >/dev/null 2>&1; then
   elan --version
@@ -13,19 +18,29 @@ fi
 lean --version
 lake --version
 
-echo "== lake build =="
+section "lake build"
 lake build
 
-echo "== headline axiom check =="
+section "headline axiom check"
 lake env lean scripts/headline_axiom_check.lean
 
-echo "== WordRAM axiom check =="
+section "WordRAM axiom check"
 lake env lean scripts/wordram_axiom_check.lean
 
-echo "== full axiom check =="
+section "full axiom check"
 lake env lean scripts/axiom_check.lean
 
-echo "== forbidden source tokens =="
+section "full repository gate"
+if command -v pwsh >/dev/null 2>&1; then
+  pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File scripts/gate.ps1
+elif [[ "${CI:-}" == "true" ]]; then
+  echo "pwsh is required for scripts/gate.ps1 in CI"
+  exit 1
+else
+  echo "pwsh not found; skipping scripts/gate.ps1 outside CI"
+fi
+
+section "forbidden source tokens"
 forbidden_source_re='\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib'
 if rg -n "$forbidden_source_re" RMQ lakefile.toml; then
   echo "Forbidden source token scan failed"
@@ -33,14 +48,21 @@ if rg -n "$forbidden_source_re" RMQ lakefile.toml; then
 fi
 echo "No forbidden source tokens found"
 
-echo "== forbidden reduction shortcuts =="
+section "forbidden reduction shortcuts"
 if rg -n 'native_decide|Lean\.ofReduceBool' RMQ; then
   echo "Forbidden reduction shortcut scan failed"
   exit 1
 fi
 echo "No forbidden reduction shortcuts found"
 
-echo "== whitespace diff check =="
+section "whitespace dirty-tree diff check"
 git diff --check
+
+section "whitespace committed-patch diff check"
+if git rev-parse --verify HEAD^ >/dev/null 2>&1; then
+  git diff --check HEAD^..HEAD
+else
+  echo "No HEAD^ commit; skipping committed-patch whitespace check"
+fi
 
 echo "Artifact reproduction completed successfully"
