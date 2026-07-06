@@ -31,7 +31,7 @@ The short public theorem aliases live in `RMQ/Headlines.lean`.
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` | All-size final-query execution story: the public costed query refines one globally segmented `WordRAM.TraceEvent` stream, every event is a payload read or bounded word primitive, and every read agrees with one concrete payload store. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory` | Store-extensional all-size execution story: any read store agreeing with the concrete global store on emitted payload-read events validates the same final-query trace. |
 | `RMQ.Headlines.succinctRMQZeroBlockSameBlockEvalWithStore` | Zero-block same-block close leaf evaluated against a supplied `WordRAM.ReadStore`; BP-code segment agreement gives the canonical structural value and trace. |
-| `RMQ.Headlines.succinctRMQZeroBlockSameBlockStoreParametric` | Zero-block same-block close leaf is store-parametric: two stores agreeing on BP-code segment reads produce the same value and trace. This is not yet a whole-query lift. |
+| `RMQ.Headlines.succinctRMQZeroBlockSameBlockStoreParametric` | Zero-block same-block close leaf is store-parametric: two stores agreeing on BP-code segment reads produce the same value and trace. The whole final query has a separate supplied-store replay and store-parametric theorem package. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory` | Bounded all-size execution story: the global trace also has a finite trace-local bit width bounding every payload-read address and every natural operand/result exposed by word primitives. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | All-size structural execution story for the same global trace after the zero-block same-block and cross-block interior close-navigation leaves have been replaced by structural BP-code, bounded-summary, and two-level payload traces. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` | Strongest all-size global execution story: the same store-backed and bounded trace plus a proof that no event is the dedicated synthetic cost-only marker. |
@@ -117,10 +117,13 @@ that charged aggregate reference computations as one step.
 
 The whole final-query store-extensional theorem is still fixed-trace: it
 validates the emitted global trace against any store that agrees on those emitted
-read events. The new store-parametric evaluator surface currently covers the
-zero-block same-block close leaf only, where the evaluator reads a supplied
-`WordRAM.ReadStore` and the produced value/trace is extensional in the BP-code
-segment reads.
+read events. In addition, the whole final query now has a supplied-store replay,
+`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore`.
+Its theorem package proves read-store matching, canonical global-store
+evaluation, store-parametricity over the explicit final layout, a convenience
+store-parametric theorem from a safe layout-footprint overapproximation,
+refinement/exactness transfer, and no synthetic cost-only events. The
+zero-block same-block theorem remains a leaf-level supplied-store theorem.
 
 The global-store execution story now has a flat-payload no-synthetic backing
 theorem, `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory`.

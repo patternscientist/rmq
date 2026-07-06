@@ -241,7 +241,8 @@ abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreNoSynthetic :=
 Zero-block same-block close evaluator with a supplied `WordRAM.ReadStore`.
 If the supplied store agrees with the concrete BP-code chunk store on segment 0,
 the produced value and trace equal the canonical zero-block structural trace.
-This is a zero-block leaf theorem, not yet the whole final RMQ query lift.
+This is a zero-block leaf theorem; the whole-query supplied-store replay is
+exposed by `succinctRMQWholeQueryGlobalWordTraceResultWithStoreEval`.
 -/
 abbrev succinctRMQZeroBlockSameBlockEvalWithStore :=
   RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_evalWithStore
@@ -249,7 +250,8 @@ abbrev succinctRMQZeroBlockSameBlockEvalWithStore :=
 /--
 Zero-block same-block close store-parametric theorem. Two supplied read stores
 that agree on the BP-code segment reads produce the same zero-block value and
-trace. This strengthens the fixed-trace agreement story for this leaf only.
+trace. This is the leaf-level counterpart of the whole-query supplied-store
+store-parametric theorems above.
 -/
 abbrev succinctRMQZeroBlockSameBlockStoreParametric :=
   RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_store_parametric

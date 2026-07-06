@@ -201,8 +201,8 @@ The extensional companion says that any read store agreeing with the concrete
 global store on the read events emitted by the final trace validates that same
 trace.
 
-A stronger store-parametric surface currently exists for the zero-block
-same-block close leaf only:
+A zero-block same-block supplied-store surface remains available as a focused
+leaf theorem:
 
 ```lean
 RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_evalWithStore
@@ -212,8 +212,23 @@ RMQ.Headlines.succinctRMQZeroBlockSameBlockStoreParametric
 ```
 
 There the evaluator is run against a supplied `WordRAM.ReadStore`, and stores
-that agree on BP-code segment reads produce the same value and trace. This is
-not yet the compact close/LCA or whole-query store-parametric lift.
+that agree on BP-code segment reads produce the same value and trace. The
+whole final query now also has a supplied-store replay:
+
+```lean
+RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_matchesReadStore
+RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_globalReadStore
+RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric
+RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint
+RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_refines_wholeQueryInterpretedCosted
+RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_exact
+RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_no_syntheticCostOnlyPrimitive
+```
+
+The footprint theorem uses a safe final-layout overapproximation, not an exact
+dynamic read-set theorem. Proving that every emitted read lies inside that
+footprint remains future polish rather than a blocker for the capstone.
 
 The flat-payload no-synthetic companion additionally exposes the
 query-independent `concreteBPNativeSuccinctRMQFlatPayloadLayout`, proves
