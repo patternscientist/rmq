@@ -372,7 +372,13 @@ zero-block same-block close leaf now has a store-parametric evaluator:
 `RMQ.Headlines.succinctRMQZeroBlockSameBlockEvalWithStore` evaluates against a
 supplied `WordRAM.ReadStore`, and
 `RMQ.Headlines.succinctRMQZeroBlockSameBlockStoreParametric` proves equal
-produced value/trace for stores that agree on BP-code segment reads.
+produced value/trace for stores that agree on BP-code segment reads.  The
+compact close/LCA replay also now has store-parametric Ready interior and
+all-size structural close/LCA surfaces under
+`SuccinctClose.ConcreteCompactBPCloseLCADirectory`: the Ready two-level
+interior, all-size interior dispatcher, cross-block wrapper, and all-size
+LCA-close dispatcher each have supplied-store agreement, store-parametricity,
+and read-store matching theorems.
 
 | Structure | Correctness status | Cost status | Notes |
 | --- | --- | --- | --- |
@@ -2261,6 +2267,10 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_refines_wholeQueryInterpretedCosted`,
   `SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_evalWithStore`,
   `SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_store_parametric`,
+  `SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsOfReadyWithStore_eq_of_agree`,
+  `SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore_store_parametric`,
+  `SuccinctClose.ConcreteCompactBPCloseLCADirectory.crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_matchesReadStore`,
+  `SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore_eq_of_agree`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_matchesReadStore`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQGlobalReadStore_retiredFiniteSmallInterior_none`,
