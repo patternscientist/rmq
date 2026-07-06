@@ -39,6 +39,10 @@ The short public theorem aliases live in `RMQ/Headlines.lean`.
 | `RMQ.Headlines.succinctRMQFinalTraceModelAdequacy` | Reviewer-facing model-adequacy packet for the final trace: `Costed` is the projection of a `WordRAM.TraceResult`, the trace refines the whole-query interpreter, the fixed modeled cost bound holds, events are reads or word primitives, reads match the global store, event data are bounded, no synthetic cost-only events appear, and successful reads are backed by counted flat payload words. |
 | `RMQ.Headlines.succinctRMQFinalTraceModelAdequacyExact` | Exactness alias paired with the model-adequacy packet: valid windows erase to the leftmost RMQ answer for the Cartesian representative. |
 | `RMQ.Headlines.succinctRMQFinalSuppliedStoreAdequacy` | Supplied-store adequacy packet: reads match the caller-provided store, the concrete global-store instantiation recovers the canonical trace/interpreter refinement, no synthetic marker events appear, and final-layout footprint agreement gives store-parametricity. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreReadsSubsetFootprint` | Every emitted supplied-store payload-read event lies inside the safe final-layout footprint. The footprint is an overapproximation, not a minimal dynamic read set. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreEqGlobalOfFootprint` | If a supplied store agrees with the canonical global store on the safe final-layout footprint, the supplied-store replay equals the canonical global trace. |
+| `RMQ.Headlines.succinctRMQFinalFullModelSoundness` | Full model-soundness packet for the explicit WordRAM/read-store/counted-payload model: canonical trace adequacy, supplied-store adequacy, emitted-read footprint containment, and equality/cost equality under footprint agreement with the canonical global store. |
+| `RMQ.Headlines.succinctRMQFinalFullModelSoundnessExactOfFootprintGlobal` | Exactness for any supplied store that agrees with the canonical global store on the safe final-layout footprint. |
 | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory` | Compatibility companion to the all-size execution story: under `2^128 <= shape.size`, the compact close/LCA leg uses the positive-block structural replay; the public all-size theorem handles non-Ready structurally. |
 | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory` | Bounded large-regime companion to the global-store execution story. |
 | `RMQ.Headlines.concreteBPCloseNavigationProfile` | Concrete payload-backed BP close-navigation profile: the current relative-split false-select/rank-close layer plus compact relative-rmM close/LCA layer give `2*n + o(n)` payload, constant modeled query cost, exact Cartesian-shape RMQ answer semantics, and machine-word-bounded component payload reads. |
@@ -125,13 +129,16 @@ read events. In addition, the whole final query now has a supplied-store replay,
 Its theorem package proves read-store matching, canonical global-store
 evaluation, store-parametricity over the explicit final layout, a convenience
 store-parametric theorem from a safe layout-footprint overapproximation,
-refinement/exactness transfer, and no synthetic cost-only events. The
-zero-block same-block theorem remains a leaf-level supplied-store theorem.
+emitted-read containment in that footprint, equality/exactness transfer under
+footprint agreement with the canonical global store, and no synthetic cost-only
+events. The zero-block same-block theorem remains a leaf-level supplied-store
+theorem.
 
 The global-store execution story now has a flat-payload no-synthetic backing
 theorem, `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory`.
 For a concise paper-facing bundle of the same model-adequacy facts, use
 `RMQ.Headlines.succinctRMQFinalTraceModelAdequacy` and
+`RMQ.Headlines.succinctRMQFinalFullModelSoundness`; see
 [`docs/PAPER_MODEL_ADEQUACY.md`](PAPER_MODEL_ADEQUACY.md).
 It exposes the concrete flat payload layout
 `SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadLayout`, whose payload is

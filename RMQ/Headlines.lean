@@ -232,6 +232,45 @@ abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreStoreParametricOfFootp
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint
 
 /--
+Every supplied-store whole-query payload-read event is inside the safe final
+layout footprint. The footprint is a layout overapproximation, not a minimal
+dynamic read set.
+-/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreReadsSubsetFootprint :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_reads_subset_footprint
+
+/--
+Every canonical whole-query payload-read event is inside the safe final layout
+footprint.
+-/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultReadsSubsetFootprint :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_reads_subset_footprint
+
+/--
+A supplied-store whole-query replay equals the canonical global trace when the
+supplied store agrees with the concrete global store on the safe final layout
+footprint.
+-/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreEqGlobalOfFootprint :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_eq_global_of_footprint
+
+theorem succinctRMQWholeQueryGlobalWordTraceCostedWithStoreExactOfFootprintGlobal
+    {n : Nat} {shape : RMQ.Cartesian.CartesianShape}
+    (hshape : List.Mem shape (RMQ.Cartesian.shapesOfSize n))
+    {store : RMQ.WordRAM.ReadStore}
+    (hfoot :
+      RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store
+          (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQGlobalReadStore
+            shape))
+    {left len : Nat} (hlen : 0 < len) (hbound : left + len <= n) :
+    (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+      shape store left (left + len)).erase =
+        some (RMQ.scanWindow shape.representative left len) :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_exact_of_footprint_global
+    hshape hfoot hlen hbound
+
+/--
 Whole-query supplied-store replay contains no dedicated synthetic cost-only
 marker events.
 -/
@@ -268,6 +307,29 @@ events appear, and footprint agreement gives store-parametricity.
 -/
 abbrev succinctRMQFinalSuppliedStoreAdequacy :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalSuppliedStoreAdequacy
+
+/--
+Full model-soundness packet for the final succinct RMQ query inside the
+explicit WordRAM/read-store/counted-payload model.
+-/
+abbrev succinctRMQFinalFullModelSoundness :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness
+
+theorem succinctRMQFinalFullModelSoundnessExactOfFootprintGlobal
+    {n : Nat} {shape : RMQ.Cartesian.CartesianShape}
+    (hshape : List.Mem shape (RMQ.Cartesian.shapesOfSize n))
+    {store : RMQ.WordRAM.ReadStore}
+    (hfoot :
+      RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store
+          (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQGlobalReadStore
+            shape))
+    {left len : Nat} (hlen : 0 < len) (hbound : left + len <= n) :
+    (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+      shape store left (left + len)).erase =
+        some (RMQ.scanWindow shape.representative left len) :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness_exact_of_footprint_global
+    hshape hfoot hlen hbound
 
 /--
 Zero-block same-block close evaluator with a supplied `WordRAM.ReadStore`.

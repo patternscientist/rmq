@@ -374,12 +374,18 @@ evaluates the closed final RMQ controller against a caller-provided
 equality with the canonical global trace under
 `concreteBPNativeSuccinctRMQGlobalReadStore`, explicit final-layout
 store-parametricity, refinement/exactness transfer, and formal absence of
-synthetic cost-only events. A convenience theorem now derives that explicit
+synthetic cost-only events. It also proves every emitted supplied-store and
+canonical payload-read event is inside the safe final-layout footprint. A
+convenience theorem now derives that explicit
 final-layout agreement record from
 `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryReadFootprint`, a safe
 layout footprint covering final segments `0..28` plus the dead sentinel `29`;
 this is an overapproximation of the dynamic read set, not a claim that every
-footprint segment is read. The zero-block same-block close leaf also has a
+footprint segment is read or that the footprint is minimal. Agreement with the
+canonical global store on that footprint yields equality with the canonical
+global trace and exact RMQ results through
+`SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness`. The
+zero-block same-block close leaf also has a
 store-parametric evaluator:
 `RMQ.Headlines.succinctRMQZeroBlockSameBlockEvalWithStore` evaluates against a
 supplied `WordRAM.ReadStore`, and
@@ -2289,7 +2295,12 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryReadAgreement.of_footprint`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_reads_subset_footprint`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_eq_global_of_footprint`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_exact_of_footprint_global`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_no_syntheticCostOnlyPrimitive`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness`,
+  `SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness_exact_of_footprint_global`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_matchesReadStore`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story`,
   `SuccinctFinal.concreteBPNativeSuccinctRMQGlobalReadStore_retiredFiniteSmallInterior_none`,

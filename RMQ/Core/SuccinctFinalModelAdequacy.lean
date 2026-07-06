@@ -183,6 +183,99 @@ theorem concreteBPNativeSuccinctRMQFinalSuppliedStoreAdequacy
           concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint
             shape hfoot left right }
 
+/--
+Full model-soundness packet for the final succinct RMQ query in the explicit
+WordRAM/read-store/counted-payload model.  The packet is deliberately scoped to
+the formal model: it combines the canonical trace model adequacy, the
+supplied-store replay adequacy, emitted-read containment in the safe final
+layout footprint, and the fact that a supplied store agreeing with the concrete
+global store on that footprint recovers the canonical trace and costed result.
+-/
+structure ConcreteBPNativeSuccinctRMQFinalFullModelSoundness
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (left right : Nat) : Prop where
+  trace_model :
+    ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
+      shape left right
+  supplied_store_model :
+    ConcreteBPNativeSuccinctRMQFinalSuppliedStoreAdequacy
+      shape store left right
+  supplied_reads_subset_footprint :
+    forall {segment index : Nat} {word? : Option WordRAM.Word},
+      WordRAM.TraceEvent.readWord segment index word? ∈
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+            shape store left right).trace ->
+        concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape segment
+  canonical_reads_subset_footprint :
+    forall {segment index : Nat} {word? : Option WordRAM.Word},
+      WordRAM.TraceEvent.readWord segment index word? ∈
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+            shape left right).trace ->
+        concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape segment
+  supplied_eq_global_of_footprint :
+    concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store (concreteBPNativeSuccinctRMQGlobalReadStore shape) ->
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+          shape store left right =
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right
+  supplied_costed_eq_global_of_footprint :
+    concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store (concreteBPNativeSuccinctRMQGlobalReadStore shape) ->
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+          shape store left right =
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+          shape left right
+
+/-- Existing final trace and supplied-store theorems collected into one packet. -/
+theorem concreteBPNativeSuccinctRMQFinalFullModelSoundness
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (left right : Nat) :
+    ConcreteBPNativeSuccinctRMQFinalFullModelSoundness
+      shape store left right := by
+  exact
+    { trace_model :=
+        concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
+          shape left right
+      supplied_store_model :=
+        concreteBPNativeSuccinctRMQFinalSuppliedStoreAdequacy
+          shape store left right
+      supplied_reads_subset_footprint :=
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_reads_subset_footprint
+          shape store left right
+      canonical_reads_subset_footprint :=
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_reads_subset_footprint
+          shape left right
+      supplied_eq_global_of_footprint := by
+        intro hfoot
+        exact
+          concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_eq_global_of_footprint
+            shape store hfoot left right
+      supplied_costed_eq_global_of_footprint := by
+        intro hfoot
+        exact
+          concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_eq_global_of_footprint
+            shape store hfoot left right }
+
+/--
+Exactness for any supplied store that agrees with the canonical global store on
+the safe final layout footprint.
+-/
+theorem concreteBPNativeSuccinctRMQFinalFullModelSoundness_exact_of_footprint_global
+    {n : Nat} {shape : Cartesian.CartesianShape}
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n))
+    {store : WordRAM.ReadStore}
+    (hfoot :
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store (concreteBPNativeSuccinctRMQGlobalReadStore shape))
+    {left len : Nat} (hlen : 0 < len) (hbound : left + len <= n) :
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+      shape store left (left + len)).erase =
+        some (scanWindow shape.representative left len) := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_exact_of_footprint_global
+      hshape hfoot hlen hbound
+
 end SuccinctFinal
 
 end RMQ

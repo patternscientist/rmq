@@ -100,7 +100,9 @@ replay,
 whose theorem package proves read-store matching, equality with the canonical
 global store replay, store-parametricity over the explicit final layout,
 store-parametricity from a safe layout-footprint overapproximation,
-refinement/exactness transfer, and no synthetic cost-only events. The separate
+emitted-read containment in that footprint, equality/exactness transfer under
+footprint agreement with the canonical global store, and no synthetic cost-only
+events. The footprint is not claimed to be exact or minimal. The separate
 zero-block same-block theorem remains the leaf-level version of the same
 supplied-store story.
 

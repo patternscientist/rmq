@@ -20,6 +20,8 @@ payload bits, and constant modeled query cost.
 RMQ.Headlines.succinctRMQFinalTraceModelAdequacy
 RMQ.Headlines.succinctRMQFinalTraceModelAdequacyExact
 RMQ.Headlines.succinctRMQFinalSuppliedStoreAdequacy
+RMQ.Headlines.succinctRMQFinalFullModelSoundness
+RMQ.Headlines.succinctRMQFinalFullModelSoundnessExactOfFootprintGlobal
 ```
 
 These are the reviewer-facing anchors for what the modeled constant query
@@ -29,7 +31,9 @@ the fixed modeled cost bound holds, trace events are reads or word primitives,
 reads match the global store, event data are bounded, no synthetic cost-only
 events appear, successful reads are backed by counted flat payload words, and
 the supplied-store replay is store-parametric under final-layout footprint
-agreement.
+agreement. The full-model packet also records that emitted supplied-store and
+canonical reads are inside the safe footprint, and that footprint agreement
+with the canonical global store recovers the canonical trace and exact result.
 
 The footprint is a safe layout overapproximation, not an exact dynamic read-set
 claim.
@@ -56,6 +60,6 @@ form, kept separate from the upper-bound construction.
 ## Non-Claims
 
 The public theorem map does not assert Lean runtime performance, compiler
-correctness, full CPU semantics, production serialization, or an exact dynamic
-footprint theorem. See `docs/PAPER_MODEL_ADEQUACY.md` for the model-adequacy
-scope.
+correctness, full CPU semantics, production serialization, or an exact/minimal
+dynamic read-set characterization. See `docs/PAPER_MODEL_ADEQUACY.md` for the
+model-adequacy scope.

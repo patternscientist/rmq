@@ -88,18 +88,21 @@ The supplied-store replay is anchored by:
 
 ```lean
 RMQ.Headlines.succinctRMQFinalSuppliedStoreAdequacy
+RMQ.Headlines.succinctRMQFinalFullModelSoundness
 ```
 
 It packages the facts that reads match the caller-provided `WordRAM.ReadStore`,
 the concrete global read store instance recovers the canonical final trace and
 interpreter refinement, no synthetic cost-only events appear, and agreement on
-the final layout footprint gives store-parametricity.
+the final layout footprint gives store-parametricity and equality with the
+canonical global trace.
 
 The footprint theorem uses a safe final-layout overapproximation. It is not an
-exact dynamic read-set theorem. Proving that every emitted read lies inside the
-footprint remains useful future polish, but it is not needed for the current
-anti-oracle statement because successful reads already have counted flat-payload
-backing.
+exact dynamic read-set theorem, and it is not claimed to be minimal. The current
+full-model packet includes the theorem that every emitted supplied-store and
+canonical payload-read event lies inside that safe footprint; exactness then
+transfers to any supplied store agreeing with the canonical global store on the
+footprint.
 
 ## The Constant
 
@@ -121,7 +124,7 @@ The adequacy packet does not prove:
 - a compiler correctness theorem;
 - a full CPU or memory hierarchy semantics;
 - production-ready serialization;
-- an exact dynamic footprint theorem.
+- an exact or minimal dynamic read-set characterization.
 
 It does prove a model-adequacy bridge: the final query's modeled constant-cost
 execution has an explicit trace, explicit counted payload reads, bounded event

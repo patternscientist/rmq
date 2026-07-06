@@ -1962,7 +1962,9 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_read
             shape store left right).trace ->
         concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape segment := by
   intro segment index word? hmem
-  by_contra hnot
+  by_cases hsegment :
+      concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape segment
+  · exact hsegment
   let flippedWord? : Option WordRAM.Word :=
     match word? with
     | none => some []
@@ -1981,7 +1983,7 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_read
     intro segment' index' hsegment'
     by_cases hsame : segment' = segment ∧ index' = index
     · rcases hsame with ⟨rfl, _⟩
-      exact False.elim (hnot hsegment')
+      exact False.elim (hsegment hsegment')
     · simp [flippedStore, hsame]
   have htrace :=
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint
@@ -1998,7 +2000,7 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_read
       (WordRAM.TraceEvent.readWord segment index word?) hmemFlipped
   have hflipped_eq : flippedWord? = word? := by
     simpa [WordRAM.TraceEvent.matchesReadStore, flippedStore] using hmatch
-  exact hflip_ne hflipped_eq
+  exact False.elim (hflip_ne hflipped_eq)
 
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_reads_subset_footprint
     (shape : Cartesian.CartesianShape) (left right : Nat) :
@@ -2014,6 +2016,46 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_reads_subset_
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_reads_subset_footprint
       shape (concreteBPNativeSuccinctRMQGlobalReadStore shape) left right
       hmem
+
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_eq_global_of_footprint
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (hfoot :
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store (concreteBPNativeSuccinctRMQGlobalReadStore shape))
+    (left right : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape store left right =
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right := by
+  calc
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape store left right =
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        left right :=
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint
+          shape hfoot left right
+    _ =
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right :=
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_globalReadStore
+          shape left right
+
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_eq_global_of_footprint
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (hfoot :
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store (concreteBPNativeSuccinctRMQGlobalReadStore shape))
+    (left right : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+        shape store left right =
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+        shape left right := by
+  unfold concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+  unfold concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_eq_global_of_footprint
+      shape store hfoot left right]
 
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_refines_wholeQueryInterpretedCosted
     (shape : Cartesian.CartesianShape)
@@ -2040,6 +2082,24 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_exac
   unfold concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
   rw [
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_globalReadStore]
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact
+      hshape hlen hbound
+
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_exact_of_footprint_global
+    {n : Nat} {shape : Cartesian.CartesianShape}
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n))
+    {store : WordRAM.ReadStore}
+    (hfoot :
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store (concreteBPNativeSuccinctRMQGlobalReadStore shape))
+    {left len : Nat} (hlen : 0 < len) (hbound : left + len <= n) :
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+      shape store left (left + len)).erase =
+        some (scanWindow shape.representative left len) := by
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_eq_global_of_footprint
+      shape store hfoot left (left + len)]
   exact
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact
       hshape hlen hbound
