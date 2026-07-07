@@ -13,10 +13,13 @@ audit summaries, and chat transcripts are provenance evidence, not proof
 objects. The trust story for the artifact does not rest on AI authorship or on
 the correctness of any agent.
 
-The trust base is:
+The proof trust base is:
 
 - Lean kernel checking of the committed theorem statements and proofs.
 - A reproducible build pinned by `lean-toolchain`.
+
+The reviewer and reproducibility checks around that trust base include:
+
 - Curated axiom checks in `scripts/headline_axiom_check.lean`,
   `scripts/wordram_axiom_check.lean`, and `scripts/axiom_check.lean`.
 - Hygiene scans for placeholders, custom axioms, unsafe hooks, and other known

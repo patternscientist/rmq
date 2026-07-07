@@ -18,6 +18,11 @@ def concreteBPNativeSuccinctRMQQueryCost
     SuccinctClose.concreteCompactBPCloseQueryCostWithRankSeed
       closeAccessCost
 
+theorem concreteBPNativeSuccinctRMQQueryCost_eq :
+    concreteBPNativeSuccinctRMQQueryCost
+      SuccinctSelect.sparseDenseFalseSelectQueryCost = 196727 := by
+  rfl
+
 def concreteBPNativeSuccinctRMQFastQueryCost
     (closeAccessCost : Nat) : Nat :=
   3 * closeAccessCost +

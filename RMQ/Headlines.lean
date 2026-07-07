@@ -294,12 +294,31 @@ abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedB
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_successful_reads_backed_by_counted_flat_payload_of_footprint_global
 
 /--
+The canonical final global trace has modeled cost bounded by the all-size
+final-query cost expression.
+-/
+abbrev succinctRMQWholeQueryGlobalWordTraceCostedCostLe :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le
+
+/--
 Under agreement with the concrete global store on the safe final layout
 footprint, the canonical modeled cost bound transfers to the supplied-store
 whole-query replay.
 -/
 abbrev succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global
+
+/--
+All-size modeled query-cost constant for the final BP-native succinct RMQ
+query. This includes the bounded all-size fallback scans.
+-/
+abbrev succinctRMQQueryCost :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQQueryCost
+    RMQ.SuccinctSelect.sparseDenseFalseSelectQueryCost
+
+/-- The named all-size final-query cost constant computes to `196727`. -/
+abbrev succinctRMQQueryCostEq :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQQueryCost_eq
 
 /--
 Fast-regime modeled query-cost constant for the final BP-native succinct RMQ

@@ -7,6 +7,10 @@ The expected toolchain is:
 leanprover/lean4:v4.22.0
 ```
 
+For the reviewer path through the artifact, see `../artifact/README.md`. For
+paper claim rows and exact theorem/check correspondence, see
+`PAPER_CLAIM_CORRESPONDENCE.md`.
+
 ## One-Command Paper Artifact Gate
 
 Run this command from the repository root:

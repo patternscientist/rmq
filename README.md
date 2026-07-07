@@ -273,6 +273,11 @@ imports, this material):
 - [`docs/ADD_PROVENANCE.md`](docs/ADD_PROVENANCE.md): public provenance note for
   the audit-driven development workflow; ADD is process evidence, not a proof
   object or trust base.
+- [`docs/PAPER_CLAIM_CORRESPONDENCE.md`](docs/PAPER_CLAIM_CORRESPONDENCE.md):
+  reviewer-grade paper claim correspondence table with Lean aliases, source
+  theorem names, source files, and exact check commands.
+- [`docs/PAPER_RELATED_WORK.md`](docs/PAPER_RELATED_WORK.md): paper-ready
+  related-work draft and limitations framing for a formalization submission.
 - [`docs/WHAT_IS_PROVED.md`](docs/WHAT_IS_PROVED.md): compact scope summary.
 - [`docs/TRUST_AUDIT_PACKET.md`](docs/TRUST_AUDIT_PACKET.md): skeptical-review
   packet for the headline theorem.

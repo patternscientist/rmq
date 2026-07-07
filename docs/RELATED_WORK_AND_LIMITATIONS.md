@@ -1,5 +1,8 @@
 # Related Work And Limitations
 
+For a paper-ready related-work draft, see `PAPER_RELATED_WORK.md`. This file is
+the compact limitations-oriented companion.
+
 ## Succinct RMQ And Tree Navigation
 
 Fischer and Heun give the classic succinct/static RMQ setting that motivates

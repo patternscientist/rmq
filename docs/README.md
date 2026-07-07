@@ -24,13 +24,18 @@ This repository has two kinds of documentation:
   machine-level theorem map for the paper-facing RMQ artifact.
 - [`PAPER_THEOREM_MAP.md`](PAPER_THEOREM_MAP.md): short citation map from paper
   claims to checked Lean theorem names.
+- [`PAPER_CLAIM_CORRESPONDENCE.md`](PAPER_CLAIM_CORRESPONDENCE.md):
+  reviewer-grade paper claim correspondence table with aliases, source theorem
+  names, source files, and exact check commands.
 - [`ARTIFACT_REPRODUCIBILITY.md`](ARTIFACT_REPRODUCIBILITY.md): exact
   toolchain, build commands, axiom checks, forbidden-token scans, release-tag
   instructions, and non-claims.
 - [`RELATED_WORK_AND_LIMITATIONS.md`](RELATED_WORK_AND_LIMITATIONS.md):
   related-work positioning and model limitations.
+- [`PAPER_RELATED_WORK.md`](PAPER_RELATED_WORK.md): paper-ready related-work
+  draft and limitations framing for a formalization submission.
 - [`AI_ASSISTED_DEVELOPMENT_NOTE.md`](AI_ASSISTED_DEVELOPMENT_NOTE.md): short
-  note on AI assistance and the actual artifact trust base.
+  trust-boundary note on AI assistance, ADD provenance, and reviewer checks.
 - [`TRUST_BASE.md`](TRUST_BASE.md): build gate, expected axioms, dependency
   policy, and model assumptions.
 - [`TRUST_AUDIT_PACKET.md`](TRUST_AUDIT_PACKET.md): compact reviewer packet for

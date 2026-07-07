@@ -2,6 +2,9 @@
 
 This is a short citation map for the paper-facing theorem surfaces. The full
 inventory remains in `docs/FAMILY_SUMMARY.md`.
+For a reviewer-grade table mapping paper claim rows to aliases, source
+theorems, source files, and exact commands, see
+`PAPER_CLAIM_CORRESPONDENCE.md`.
 
 ## Main RMQ Upper Bound
 

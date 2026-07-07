@@ -2,8 +2,9 @@
 
 This note explains how the RMQ/VerifiedDS repository used AI-assisted,
 audit-driven development (ADD). It is public provenance, not a proof object.
-The proof artifact is the Lean source, its import roots, the checked theorem
-surface, the axiom scans, and the reproduction scripts.
+The proof artifact is the Lean source, its import roots, and the checked
+theorem surface. The axiom scans and reproduction scripts are reviewer and
+reproducibility checks around that artifact.
 
 The short version: ADD helped choose targets, find weaknesses, and keep prose
 honest. It is not part of the trust base. AI-generated code, worker reports,
@@ -63,12 +64,15 @@ documented theorem, trust, and reproduction surfaces.
 
 ## Trust Base And Non-Trust Base
 
-Trust rests on:
+Proof trust rests on:
 
 - Lean kernel checking of the source imported through roots such as
   `VerifiedDS.lean`, `RMQ/Headlines.lean`, and the relevant `RMQ/Core/...`
   modules;
-- the pinned Lean/Std environment and Mathlib-free dependency footprint;
+- the pinned Lean/Std environment and Mathlib-free dependency footprint.
+
+Reviewer confidence and reproducibility are supported by:
+
 - axiom and hygiene checks that reject custom axioms, placeholders, unsafe
   hooks, and other known escape hatches;
 - theorem-surface review through `RMQ.Headlines`;

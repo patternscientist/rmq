@@ -5,9 +5,12 @@ Lean theorem surfaces that support them. It is intentionally narrower than
 `docs/FAMILY_SUMMARY.md`: use it when auditing what the repository currently
 claims, what it does not claim, and which command checks the relevant surface.
 
+For the reviewer path through the artifact, see `README.md`.
 For a concise map of public import roots, final theorem spines, proof-core
 files, compatibility shims, archive surfaces, examples, and validation code,
-see `docs/CODE_MAP.md`.
+see `../docs/CODE_MAP.md`.
+For a paper-row correspondence table with source files and exact check
+commands, see `../docs/PAPER_CLAIM_CORRESPONDENCE.md`.
 
 ## Scope
 
