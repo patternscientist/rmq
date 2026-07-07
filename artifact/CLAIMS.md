@@ -5,6 +5,10 @@ Lean theorem surfaces that support them. It is intentionally narrower than
 `docs/FAMILY_SUMMARY.md`: use it when auditing what the repository currently
 claims, what it does not claim, and which command checks the relevant surface.
 
+For a concise map of public import roots, final theorem spines, proof-core
+files, compatibility shims, archive surfaces, examples, and validation code,
+see `docs/CODE_MAP.md`.
+
 ## Scope
 
 - The project is Mathlib-free: Lean 4, Std, and `omega`.

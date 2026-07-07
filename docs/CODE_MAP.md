@@ -1,0 +1,151 @@
+# Code Map
+
+This map is for readers who want to understand the repository as a formalized
+artifact without first reading the whole Lean tree. It is an orientation guide,
+not a new claim surface: theorem truth lives in Lean declarations checked by
+the Lean kernel under the pinned toolchain. The curated scripts are
+reproducibility and reviewer checks around that kernel-checked surface.
+
+## First Files To Open
+
+Start with these files in this order:
+
+1. `README.md` for the public story and current headline theorem aliases.
+2. `artifact/CLAIMS.md` for claim-to-theorem-to-command traceability.
+3. `RMQ/Headlines.lean` for short aliases over the construction-heavy theorem
+   names.
+4. `RMQ.lean` for the main RMQ import root.
+5. `docs/WHAT_IS_PROVED.md` and `docs/TRUST_AUDIT_PACKET.md` for scope,
+   non-claims, and reviewer-facing trust-base details.
+
+## Public Roots
+
+- `RMQ.lean` is the flagship import root for the active RMQ stack: reference
+  semantics, RMQ/LCA reductions, concrete implementations, succinct RMQ,
+  lower bounds, model layers, and headline aliases.
+- `RMQ/Headlines.lean` is the citable public alias layer. It deliberately wraps
+  precise construction names without changing theorem statements.
+- `RMQExamples.lean` and `RMQExamples/` are small downstream-facing import and
+  example checks. They are useful smoke tests for public roots.
+- `RMQHub.lean` exposes reusable model infrastructure without importing the RMQ
+  backend stack.
+- `RMQRankSelect.lean`, `RMQBPNavigation.lean`, and `RMQUnionFind.lean` are the
+  current family roots for the rank/select, balanced-parentheses navigation,
+  and union-find spokes.
+- `VerifiedDS.lean` and `VerifiedDS/` are thin facade roots over those public
+  roots. The canonical theorem names still live under `RMQ`, `RMQ.Headlines`,
+  `RMQ.RankSelect`, `RMQ.BPNavigation`, and `RMQ.UnionFind`.
+- `RMQArchive.lean` is an optional archive root. It keeps retired or historical
+  surfaces checked without making `import RMQ` depend on them.
+
+## Final Succinct RMQ Spine
+
+The public succinct RMQ result is intentionally split across a construction
+spine and a model-adequacy spine.
+
+- `RMQ/Core/SuccinctFinal.lean` builds the BP-native succinct RMQ construction:
+  payload accounting, exactness, modeled cost, and the main
+  `builtGenericSparseExceptionBPNativeSuccinctRMQFamily_*` theorem family.
+- `RMQ/Core/SuccinctFinalRAM.lean` is the implementation-heavy bridge from the
+  final costed query to interpreted and traced `WordRAM` executions. This is
+  where the whole-query interpreter, global segment layout, global read store,
+  bounded trace events, no-synthetic execution story, and fast-regime cost
+  theorem are proved.
+- `RMQ/Core/SuccinctFinalStoreParam.lean` is the supplied-store replay layer.
+  It proves that leaves and the whole final query can be evaluated against an
+  explicit `WordRAM.ReadStore`, with read events reporting that store and with
+  footprint/store-parametricity theorems.
+- `RMQ/Core/SuccinctFinalModelAdequacy.lean` packages existing final-query
+  theorem surfaces into reviewer-facing records such as
+  `ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy`,
+  `ConcreteBPNativeSuccinctRMQFinalSuppliedStoreAdequacy`, and
+  `ConcreteBPNativeSuccinctRMQFinalFullModelSoundness`.
+- `RMQ/Core/SuccinctRMQClassic.lean` is the ordinary `List Int` front door. It
+  specializes the BP-native construction to a reader-facing RMQ input list,
+  half-open queries, and leftmost ties.
+- `RMQ/Headlines.lean` exposes the short public names, including
+  `succinctRMQListIntTwoNPlusOConstantQuery`,
+  `listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory`,
+  `listIntSuccinctRMQPaperMainTheorem`,
+  `succinctRMQTwoNPlusOConstantQuery`,
+  `succinctRMQFlatPayloadStoreNoSyntheticExecutionStory`, and
+  `succinctRMQFinalFullModelSoundness`.
+
+The model-adequacy theorem spine to look for is:
+
+- `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story`
+- `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_bounded_execution_story`
+- `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_noSynthetic_execution_story`
+- `concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execution_story`
+- `concreteBPNativeSuccinctRMQFinalTraceModelAdequacy`
+- `concreteBPNativeSuccinctRMQFinalSuppliedStoreAdequacy`
+- `concreteBPNativeSuccinctRMQFinalFullModelSoundness`
+
+These are model-scoped Lean statements. They do not claim anything about the
+compiled runtime behavior of Lean programs.
+
+## Proof-Core Clusters
+
+The files below are dense by design: they carry construction details, model
+bridges, and store/accounting lemmas that public aliases summarize.
+
+- `RMQ/Core/GenericSelect/` is the split generic select implementation used by
+  the close-select path. `GenericSelect/RAM.lean` and
+  `GenericSelect/RAMStoreParam.lean` are the `WordRAM` and supplied-store
+  bridges.
+- `RMQ/Core/SuccinctSelect/` contains the select/rank construction and the
+  close-select components consumed by the final RMQ construction.
+- `RMQ/Core/SuccinctClose/` contains compact close/LCA, endpoint fringe,
+  interior-candidate, and relative-rmM macro components. The store-parametric
+  close/LCA bridge is in
+  `SuccinctClose/RelativeRmmMacro/ConcreteDirectoryRAMStoreParam.lean`.
+- `RMQ/Core/WordRAM.lean`, `RMQ/Core/WordRAM/Register.lean`, and
+  `RMQ/Core/WordRAM/ReadStoreEval.lean` define the trace and read-store model
+  used by the execution-story theorems.
+- `RMQ/Core/SuccinctSpace/` contains the older succinct-space model layers and
+  BP/rank-select/RAM bridge infrastructure still consumed by the active proof.
+- `RMQ/Core/RankSelectPublic*.lean` and `RMQ/Core/RankSelectCompressed*/`
+  support the standalone rank/select public family.
+- `RMQ/Core/UnionFind*.lean` is the union-find spoke, with forest refinement
+  and amortized-analysis checkpoints separate from the RMQ theorem spine.
+
+## Compatibility And Archive
+
+Several files are intentionally compatibility shims rather than new proof
+frontiers:
+
+- `RMQ/Core/SuccinctRankProposal.lean`
+- `RMQ/Core/SuccinctSelectProposal.lean`
+- `RMQ/Core/SuccinctCloseProposal.lean`
+- `RMQ/Core/GenericSelectBuilder.lean`
+- `RMQ/Core/GenericSelectParams.lean`
+- `RMQ/Core/GenericSelectPrimitives.lean`
+- `RMQ/Core/GenericSelectLegacy.lean`
+- `RMQ/Core/GenericSelectBPCompat.lean`
+- `RMQ/Core/GenericSelect/LegacyNames.lean`
+- `RMQ/Core/GenericSelect/PrimitiveLegacyNames.lean`
+- `RMQ/Core/GenericSelect/SuccinctSelectLegacyNames.lean`
+
+They are retained so older downstream imports and names remain checked. New
+in-repository code should import the canonical split modules instead.
+
+`scripts/shim_lint.ps1` is the guardrail for this boundary. It scans live roots,
+docs, examples, and scripts to prevent stale proposal shims and old flat
+GenericSelect compatibility imports from re-entering active imports.
+
+The optional archive root is `RMQArchive.lean`, which imports `RMQ.Archive`.
+Archive files are checked historical/retired surfaces, not the recommended
+starting point for the current proof spine.
+
+## Examples And Validation
+
+- `RMQExamples.lean` and `RMQExamples/` are checked examples for external
+  import surfaces.
+- `RMQ/Validation/SuccinctClassic.lean` contains executable validation for the
+  classic public succinct RMQ API.
+
+Validation and examples are helpful for readers and reviewers, but validation
+is explicitly not part of the proof trust base. The proof trust base is the
+Lean kernel checking theorem declarations under the pinned toolchain. The
+repository's hygiene scans and axiom scripts are reproducibility and reviewer
+checks; they are not additional trusted proof machinery.

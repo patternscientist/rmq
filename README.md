@@ -124,6 +124,10 @@ model assumptions and dependency path remain inspectable. See
 [`docs/TRUST_AUDIT_PACKET.md`](docs/TRUST_AUDIT_PACKET.md) for the alias chain,
 the theorem shape, and curated `#print axioms` checks.
 
+For a concise repository orientation by import root, theorem spine, proof-core
+cluster, compatibility shim, archive, example, and validation code, see
+[`docs/CODE_MAP.md`](docs/CODE_MAP.md).
+
 ## Public Import Roots
 
 ```lean
@@ -258,6 +262,9 @@ imports, this material):
 
 ## Documentation Map
 
+- [`docs/CODE_MAP.md`](docs/CODE_MAP.md): concise orientation map for public
+  roots, final succinct RMQ theorem/model-adequacy spines, proof-core modules,
+  compatibility shims, archive files, examples, and validation code.
 - [`docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md`](docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md):
   stress-tested Lean-club explanation of the current project state.
 - [`docs/digests/PROJECT_DIGESTION_2026_07_06.md`](docs/digests/PROJECT_DIGESTION_2026_07_06.md):
