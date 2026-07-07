@@ -2101,6 +2101,25 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le
       shape left right
 
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_of_size_ge_readyThreshold
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (hfoot :
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store (concreteBPNativeSuccinctRMQGlobalReadStore shape))
+    (hsize :
+      SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <=
+        shape.size)
+    (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+      shape store left right).cost <=
+        concreteBPNativeSuccinctRMQFastRegimeQueryCost := by
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_eq_global_of_footprint
+      shape store hfoot left right]
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_of_size_ge_readyThreshold
+      shape hsize left right
+
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_refines_wholeQueryInterpretedCosted
     (shape : Cartesian.CartesianShape)
     (left right : Nat) :

@@ -1154,6 +1154,17 @@ def concreteBPRelativeRmmInteriorDirectory
             intro startBlock count word hmem
             simp at hmem }
 
+theorem concreteBPRelativeRmmInteriorDirectory_rangeMinCosted_cost_le_of_ready
+    (shape : Cartesian.CartesianShape)
+    (hready : concreteBPRelativeRmmInteriorReady shape)
+    (startBlock count : Nat) :
+    ((concreteBPRelativeRmmInteriorDirectory shape).rangeMinCosted
+      startBlock count).cost <=
+        concreteBPRelativeRmmInteriorReadyQueryCost := by
+  unfold concreteBPRelativeRmmInteriorDirectory
+  simp [hready, concreteBPRelativeRmmInteriorReadyQueryCost,
+    bpTwoLevelInteriorCandidateCosted_cost_le_thirty]
+
 theorem concreteBPRelativeRmmInteriorDirectory_profile_of_ready
     (shape : Cartesian.CartesianShape)
     (hready : concreteBPRelativeRmmInteriorReady shape) :

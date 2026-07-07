@@ -104,12 +104,34 @@ canonical payload-read event lies inside that safe footprint; exactness then
 transfers to any supplied store agreeing with the canonical global store on the
 footprint.
 
+## Zero-Block Leaf Guard
+
+One leaf-level supplied-store blemish is disclosed explicitly. The zero-block
+same-block supplied-store decoder currently flattens the supplied BP-code words
+and checks `bits = shape.bpCode` before returning the canonical structural
+answer. On corrupted stores that fail this guard, the leaf may return `none`
+rather than decode arbitrary garbage. This is a model boundary and nonclaim, not
+a proof bug: the final footprint-agreement theorems state exactness and cost
+transfer for stores agreeing with the canonical global store on the declared
+footprint.
+
 ## The Constant
 
 The current fixed modeled query-cost bound is `196727`. This is an ugly fixed
-model constant, not runtime-performance evidence. It reflects conservative
-all-size structural fallbacks, including bounded scans below the current compact
-interior readiness threshold.
+model constant, not execution-performance evidence. It reflects conservative
+all-size structural fallbacks, including bounded scans below
+`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15`.
+There is now a separate fast-regime cost theorem for the same final global
+trace:
+`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_of_size_ge_readyThreshold`.
+Under `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= shape.size`,
+it uses Ready interior cost `30` and proves
+`SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118`, excluding
+the zero-block same-block scan and active non-Ready bounded interior scan. The
+supplied-store/full-model companions transfer this fast bound under the same
+final-layout footprint agreement. The older `2^128` premise is only a
+compatibility/large-regime strengthening, not the current explanation for
+readiness.
 
 The paper-level claim is that the query is constant in the stated model and
 that the model's counted reads are payload-backed. It is not a claim that this
@@ -120,11 +142,13 @@ CPU implementation.
 
 The adequacy packet does not prove:
 
-- Lean runtime performance;
+- compiled Lean execution performance;
 - a compiler correctness theorem;
 - a full CPU or memory hierarchy semantics;
 - production-ready serialization;
 - an exact or minimal dynamic read-set characterization.
+- arbitrary-garbage decoding for corrupted zero-block supplied-store words; the
+  zero-block leaf currently guards by checking `bits = shape.bpCode`.
 
 It does prove a model-adequacy bridge: the final query's modeled constant-cost
 execution has an explicit trace, explicit counted payload reads, bounded event

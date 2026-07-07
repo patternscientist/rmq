@@ -32,7 +32,7 @@ The pointwise component theorem remains
   separates these from proof-only data (certificates, function fields).
 - **Modeled cost**: a query's cost is the number of unit-cost primitive steps
   (indexed payload reads, fixed word operations) in the project's RAM/`Costed`
-  model. It is *not* Lean runtime and *not* CPU time.
+  model. It is *not* compiled Lean execution speed and *not* CPU time.
 
 ## 1. What the theorem says
 

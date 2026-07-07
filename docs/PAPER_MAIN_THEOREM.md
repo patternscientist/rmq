@@ -38,3 +38,14 @@ cost bound.
 The lower bound in this artifact is an entropy/Catalan counting lower bound for
 exact RMQ encodings. It is not the Liu-Yu/Liu cell-probe lower bound, and the
 paper artifact should not cite it as such.
+
+## Main Open RMQ Frontier
+
+The current public all-size modeled query bound is `196727`. The proof now uses
+the real readiness threshold
+`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15`; `2^128`
+appears only in compatibility/large-regime theorems. The fast-regime companion
+`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_of_size_ge_readyThreshold`
+keeps the conservative all-size theorem true while proving the smaller
+Ready-threshold bound
+`SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118`.

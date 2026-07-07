@@ -168,7 +168,7 @@ interval, parent-open/enclose query, and parent-index query now have a real
 constant-query public component behind them. This is deliberately not a
 succinct bound: `concreteMatchingOpenEncloseOverhead shape =
 3 * shape.bpCode.length` counts dense modeled table entries, not an `o(n)`
-auxiliary payload and not Lean runtime.
+auxiliary payload and not compiled Lean execution speed.
 
 The focused obstruction is
 `singletonLcaCloseSemantics_not_matchingOpen_counterexample`: on the one-node

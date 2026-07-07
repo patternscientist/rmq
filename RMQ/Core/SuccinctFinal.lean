@@ -18,6 +18,20 @@ def concreteBPNativeSuccinctRMQQueryCost
     SuccinctClose.concreteCompactBPCloseQueryCostWithRankSeed
       closeAccessCost
 
+def concreteBPNativeSuccinctRMQFastQueryCost
+    (closeAccessCost : Nat) : Nat :=
+  3 * closeAccessCost +
+    SuccinctClose.concreteCompactBPCloseReadyQueryCostWithRankSeed
+      closeAccessCost
+
+def concreteBPNativeSuccinctRMQFastRegimeQueryCost : Nat :=
+  concreteBPNativeSuccinctRMQFastQueryCost
+    SuccinctSelect.sparseDenseFalseSelectQueryCost
+
+theorem concreteBPNativeSuccinctRMQFastRegimeQueryCost_eq :
+    concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118 := by
+  rfl
+
 def concreteBPNativeRankSelectDirectory
     {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
     {rankSelectCost : Nat}
@@ -1522,6 +1536,28 @@ theorem concreteBPNativeLCACloseCosted_cost_le
         intro pos
         exact concreteBPNativeRankCloseCosted_cost_le accessFamily shape pos)
 
+theorem concreteBPNativeLCACloseCosted_cost_le_of_ready
+    {closeAccessOverhead : Nat -> Nat} {closeAccessCost : Nat}
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily
+        closeAccessOverhead closeAccessCost)
+    (shape : Cartesian.CartesianShape)
+    (hready : SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (leftClose rightClose : Nat) :
+    (concreteBPNativeLCACloseCosted accessFamily shape leftClose
+        rightClose).cost <=
+      SuccinctClose.concreteCompactBPCloseReadyQueryCostWithRankSeed
+        closeAccessCost := by
+  unfold concreteBPNativeLCACloseCosted concreteBPNativeCloseDirectory
+  exact
+    SuccinctClose.concreteCompactBPCloseLCADirectory_lcaCloseCostedWithRankSeed_cost_le_of_ready
+      hready
+      (concreteBPNativeRankCloseCosted accessFamily shape)
+      leftClose rightClose closeAccessCost
+      (by
+        intro pos
+        exact concreteBPNativeRankCloseCosted_cost_le accessFamily shape pos)
+
 theorem concreteBPNativeSelectCloseCosted_exact
     {closeAccessOverhead : Nat -> Nat} {closeAccessCost : Nat}
     (accessFamily :
@@ -1674,6 +1710,58 @@ theorem concreteBPNativeSuccinctRMQQueryCosted_cost_le
                   accessFamily shape (answerClose + 1)
               simp [Costed.bind, Costed.map,
                 concreteBPNativeSuccinctRMQQueryCost, hleftValue,
+                hrightValue, hlcaValue]
+              omega
+
+theorem concreteBPNativeSuccinctRMQQueryCosted_cost_le_of_ready
+    {closeAccessOverhead : Nat -> Nat} {closeAccessCost : Nat}
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily
+        closeAccessOverhead closeAccessCost)
+    (shape : Cartesian.CartesianShape)
+    (hready : SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (left right : Nat) :
+    (concreteBPNativeSuccinctRMQQueryCosted
+        accessFamily shape left right).cost <=
+      concreteBPNativeSuccinctRMQFastQueryCost closeAccessCost := by
+  unfold concreteBPNativeSuccinctRMQQueryCosted
+  have hleft :=
+    concreteBPNativeSelectCloseCosted_cost_le accessFamily shape left
+  have hright :=
+    concreteBPNativeSelectCloseCosted_cost_le
+      accessFamily shape (right - 1)
+  cases hleftValue :
+      (concreteBPNativeSelectCloseCosted
+        accessFamily shape left).value with
+  | none =>
+      simp [Costed.bind, concreteBPNativeSuccinctRMQFastQueryCost,
+        hleftValue]
+      omega
+  | some leftClose =>
+      cases hrightValue :
+          (concreteBPNativeSelectCloseCosted
+            accessFamily shape (right - 1)).value with
+      | none =>
+          simp [Costed.bind, concreteBPNativeSuccinctRMQFastQueryCost,
+            hleftValue, hrightValue]
+          omega
+      | some rightClose =>
+          have hlca :=
+            concreteBPNativeLCACloseCosted_cost_le_of_ready
+              accessFamily shape hready leftClose rightClose
+          cases hlcaValue :
+              (concreteBPNativeLCACloseCosted
+                accessFamily shape leftClose rightClose).value with
+          | none =>
+              simp [Costed.bind, concreteBPNativeSuccinctRMQFastQueryCost,
+                hleftValue, hrightValue, hlcaValue]
+              omega
+          | some answerClose =>
+              have hrank :=
+                concreteBPNativeRankCloseCosted_cost_le
+                  accessFamily shape (answerClose + 1)
+              simp [Costed.bind, Costed.map,
+                concreteBPNativeSuccinctRMQFastQueryCost, hleftValue,
                 hrightValue, hlcaValue]
               omega
 

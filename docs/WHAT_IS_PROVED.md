@@ -2,7 +2,7 @@
 
 This document is the short scope map for external readers. It separates the
 mathematical statements, modeled complexity claims, payload accounting, and
-non-claims about executable Lean runtime.
+non-claims about compiled Lean execution speed.
 
 ## Headline Surfaces
 
@@ -25,7 +25,7 @@ The short public theorem aliases live in `RMQ/Headlines.lean`.
 | `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | List-facing flat-payload no-synthetic execution story: for ordinary `xs : List Int`, the final query uses the advertised `2*n + o(n)` `buildPayload`, keeps the classic half-open leftmost RMQ contract and constant modeled query bound, and every actual successful WordRAM read is backed by one query-independent counted flat payload layout, with bounded event data and no synthetic cost-only markers. |
 | `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` | Paper-facing list theorem combining the advertised `2*n + overhead` payload size, `overhead = o(n)`, exact valid RMQ answers with leftmost ties, constant modeled query cost, and the final no-synthetic flat-payload trace story. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ capstone with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and a numeric doubled-Catalan slack comparison in the same public theorem surface. The encoding-quantified lower-bound theorem is the separate alias `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack`. |
-| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Whole-query-interpreted variant of the final BP-native succinct RMQ capstone: same theorem shape, with the final query control represented by a closed first-order program whose leaves are interpreted close-select, compact close/LCA, and register-backed answer-rank operations. |
+| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Whole-query-interpreted variant of the final BP-native succinct RMQ capstone: same theorem shape, with the final query control represented by closed `WordRAM`/register-program syntax whose leaves are interpreted close-select, compact close/LCA, and register-backed answer-rank operations. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace` | Leaf-trace-preserving variant of the same capstone: the closed controller now evaluates to an explicit domain-leaf trace before projection back to `Costed`; the leaves are still interpreted component queries, not one unified store trace. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace` | Unified-`WordRAM.TraceEvent` variant of the same capstone: the final query emits one trace stream; close-select, answer-rank, compact-close rank-seed reads, the structural BP-code zero-block same-block scan, and the all-size relative-rmM interior query are structural payload/register traces. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime` | Large-regime WordRAM variant: the same two-sided theorem shape with an explicit size premise that lets the compact close/LCA query replay the Ready local/fringe/interior close navigation structurally; the public all-size route is also structural. |
@@ -34,6 +34,7 @@ The short public theorem aliases live in `RMQ/Headlines.lean`.
 | `RMQ.Headlines.succinctRMQZeroBlockSameBlockEvalWithStore` | Zero-block same-block close leaf evaluated against a supplied `WordRAM.ReadStore`; BP-code segment agreement gives the canonical structural value and trace. |
 | `RMQ.Headlines.succinctRMQZeroBlockSameBlockStoreParametric` | Zero-block same-block close leaf is store-parametric: two stores agreeing on BP-code segment reads produce the same value and trace. The whole final query has a separate supplied-store replay and store-parametric theorem package. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory` | Bounded all-size execution story: the global trace also has a finite trace-local bit width bounding every payload-read address and every natural operand/result exposed by word primitives. |
+| `RMQ.Headlines.succinctRMQFastRegimeGlobalPayloadStoreCostLeOfReadyThreshold` | Fast-regime final-query cost theorem: under `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= shape.size`, the final globally segmented BP-native RMQ trace costs at most `RMQ.Headlines.succinctRMQFastRegimeQueryCost = 118`, excluding the zero-block and active non-Ready bounded scans. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | All-size structural execution story for the same global trace after the zero-block same-block and cross-block interior close-navigation leaves have been replaced by structural BP-code, bounded-summary, and two-level payload traces. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` | Strongest all-size global execution story: the same store-backed and bounded trace plus a proof that no event is the dedicated synthetic cost-only marker. |
 | `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Flat-payload no-synthetic execution story: the flat execution payload is exactly the advertised BP-native construction payload; every actual successful read in the final trace has source/component/offset backing in one query-independent counted flat payload layout, addresses and word-primitive operands are bounded, and no synthetic cost-only event occurs. |
@@ -120,6 +121,16 @@ bound is `196727`. It unfolds from
 zero-block same-block scan cost `2 * 2^15 + 1`, active non-Ready interior scan
 cost `4 * 2^15`, and Ready interior query cost `30`.
 
+The fast-regime companion
+`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_of_size_ge_readyThreshold`
+proves the construction-level global-trace cost bound
+`SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118` whenever
+`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= shape.size`. It
+uses `SuccinctClose.concreteBPRelativeRmmInteriorReadyQueryCost = 30` and does
+not include either bounded fallback scan. The older `2^128` premise survives
+only as a compatibility/large-regime strengthening, not as the current
+readiness explanation.
+
 The theorem is payload-accounted: auxiliary bits are counted separately from
 proof-only fields and certificates. The final path routes through payload-live
 rank/select and close-navigation components rather than retired raw wrappers
@@ -135,7 +146,11 @@ store-parametric theorem from a safe layout-footprint overapproximation,
 emitted-read containment in that footprint, equality/exactness transfer under
 footprint agreement with the canonical global store, and no synthetic cost-only
 events. The zero-block same-block theorem remains a leaf-level supplied-store
-theorem.
+theorem. Its supplied-store decoder currently flattens supplied BP-code words
+and checks `bits = shape.bpCode`; on corrupted stores that fail this guard, that
+leaf may return `none` rather than decode arbitrary garbage. This is a disclosed
+leaf-level model blemish, not a proof bug in the canonical or
+footprint-agreeing-store theorem.
 
 The global-store execution story now has a flat-payload no-synthetic backing
 theorem, `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory`.
@@ -243,8 +258,8 @@ headline alias
 keeps the same compressed payload and constant-query theorem shape but routes
 the access, rank, and select reads through the repository's first-order
 `WordRAM` bridge layer. This sharpens the non-oracle story for the standalone
-rank/select spoke; it is still a word-RAM model theorem, not a Lean runtime
-claim or a single closed machine-code program.
+rank/select spoke; it is still a word-RAM model theorem, not a compiled Lean
+execution claim or a single closed machine-code program.
 
 The trace-level surface now includes
 `RMQ.RankSelect.compressedFIDFixedWeightAccessTraceResult_execution_story`,

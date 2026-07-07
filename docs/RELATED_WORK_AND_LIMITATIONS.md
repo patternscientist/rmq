@@ -30,7 +30,8 @@ Nipkow, Zhan-Haslbeck, and Chargueraud-Pottier represent complementary
 traditions for verified algorithms, cost models, and program/separation-logic
 reasoning. The RMQ artifact instead uses value-level list semantics plus an
 explicit modeled WordRAM trace/store layer. It proves theorems about that model;
-it does not verify generated machine code or Lean runtime performance.
+it does not verify generated machine code or compiled Lean execution
+performance.
 
 ## Anti-Oracle Positioning
 
@@ -45,6 +46,9 @@ not an exact or minimal dynamic read-set theorem.
 
 - No CPU, compiler, extraction, cache, or benchmarking claim is made.
 - The cost model is the repository's explicit modeled WordRAM/query-cost layer.
+- The current public all-size RMQ cost bound is the conservative constant
+  `196727`; the fast-regime theorem under the real `2^15` readiness threshold
+  proves the smaller modeled bound `118`, but constants are still not optimized.
 - The final footprint is not claimed exact or minimal.
 - Constants are not optimized in this pass.
 - The cell-probe lower bounds of Liu-Yu/Liu are related work, not mechanized

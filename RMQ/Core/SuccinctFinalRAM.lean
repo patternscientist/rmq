@@ -7518,6 +7518,19 @@ theorem concreteBPNativeSuccinctRMQQueryInterpretedCosted_cost_le
     concreteBPNativeSuccinctRMQQueryCosted_cost_le
       builtGenericSparseExceptionSelectBPCloseAccessFamily shape left right
 
+theorem concreteBPNativeSuccinctRMQQueryInterpretedCosted_cost_le_of_ready
+    (shape : Cartesian.CartesianShape)
+    (hready : SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (left right : Nat) :
+    (concreteBPNativeSuccinctRMQQueryInterpretedCosted
+      shape left right).cost <=
+        concreteBPNativeSuccinctRMQFastRegimeQueryCost := by
+  rw [concreteBPNativeSuccinctRMQQueryInterpretedCosted_refines_queryCosted]
+  exact
+    concreteBPNativeSuccinctRMQQueryCosted_cost_le_of_ready
+      builtGenericSparseExceptionSelectBPCloseAccessFamily
+      shape hready left right
+
 theorem concreteBPNativeSuccinctRMQQueryInterpretedCosted_exact
     {n : Nat} {shape : Cartesian.CartesianShape}
     (hshape : List.Mem shape (Cartesian.shapesOfSize n))
@@ -7542,6 +7555,19 @@ theorem concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_cost_le
   exact
     concreteBPNativeSuccinctRMQQueryInterpretedCosted_cost_le
       shape left right
+
+theorem concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_cost_le_of_ready
+    (shape : Cartesian.CartesianShape)
+    (hready : SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted
+      shape left right).cost <=
+        concreteBPNativeSuccinctRMQFastRegimeQueryCost := by
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_refines_queryInterpretedCosted]
+  exact
+    concreteBPNativeSuccinctRMQQueryInterpretedCosted_cost_le_of_ready
+      shape hready left right
 
 theorem concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_exact
     {n : Nat} {shape : Cartesian.CartesianShape}
@@ -7617,6 +7643,35 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le
   exact
     concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_cost_le
       shape left right
+
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_of_ready
+    (shape : Cartesian.CartesianShape)
+    (hready : SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
+    (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+      shape left right).cost <=
+        concreteBPNativeSuccinctRMQFastRegimeQueryCost := by
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_refines_wholeQueryInterpretedCosted]
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_cost_le_of_ready
+      shape hready left right
+
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_of_size_ge_readyThreshold
+    (shape : Cartesian.CartesianShape)
+    (hsize :
+      SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <=
+        shape.size)
+    (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+      shape left right).cost <=
+        concreteBPNativeSuccinctRMQFastRegimeQueryCost := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_of_ready
+      shape
+      (SuccinctClose.concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold
+        shape hsize)
+      left right
 
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact
     {n : Nat} {shape : Cartesian.CartesianShape}

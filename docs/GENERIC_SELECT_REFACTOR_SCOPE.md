@@ -25,7 +25,7 @@ The model distinction is important:
 - stored input bits count in the public `n + overhead n` payload;
 - auxiliary directory payload is charged separately;
 - proof-only fields do not count as payload;
-- query costs are modeled ticks/charged reads, not Lean runtime.
+- query costs are modeled ticks/charged reads, not compiled Lean execution speed.
 
 ## Landed Modules
 

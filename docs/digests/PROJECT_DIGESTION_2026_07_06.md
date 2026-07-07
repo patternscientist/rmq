@@ -7,9 +7,14 @@ rank/select, amortized analysis), Lean internals, or anything about where
 formalization research is published. Every such term is defined at first use;
 if one is not, that is a defect in this document.
 
-**Status.** Describes `main` at `3f6f1e3` on 2026-07-06. This is a teaching and
-orientation document; where prose and Lean disagree, the Lean wins. The full
-first-contact treatment of the mathematics and the cost model is
+**Status.** Describes `main` at `3f6f1e3` on 2026-07-06. This is the canonical
+current public project digestion on the publication branch. The coordinator
+checkout's local `PROJECT_DIGESTION_2026_07_CURRENT.md` was used as
+branch-local source material, but is not duplicated here; this dated digest is
+the public current-state document, while older digests are historical
+background. This is a teaching and orientation document; where prose and Lean
+disagree, the Lean wins. The full first-contact treatment of the mathematics
+and the cost model is
 [`DEEP_PROJECT_DIGESTION_2026_06_28.md`](DEEP_PROJECT_DIGESTION_2026_06_28.md);
 this digest updates the state (a great deal has landed since, including in the
 last two days), ranks what has been achieved, and — new here — explains what
@@ -32,9 +37,10 @@ shifted from *proving the theorem* to *making the cost claim mean something*:
 the query is now a concrete machine-like program whose every memory read is
 logged, audited against a declared memory layout, and — the newest theorems —
 provably dependent on nothing but the declared stored bits, with the model
-bridge itself packaged as a theorem. What most remains before this is a
-publishable paper is one honest embarrassment: the proved "constant" number of
-steps is currently `196727`, for reasons explained candidly in section 5.
+bridge itself packaged as a theorem. The integrated branch keeps the
+conservative all-size constant `196727`, but now also exposes the
+Ready-threshold fast-regime theorem with named cost `118`; section 5 records
+both the original gap analysis and the later closure.
 
 ---
 
@@ -104,7 +110,10 @@ proof (unproved placeholders, custom axioms, trusting the compiler instead of
 the kernel, and so on). What it does **not** mean: nothing here claims that
 compiled Lean code runs fast on hardware. All cost claims are theorems about
 an explicit *cost model* — and that is where the interesting honesty problems
-live, so the model is the subject of the next two sections.
+live, so the model is the subject of the next two sections. The accompanying
+audit-driven-development provenance note is
+[`../ADD_PROVENANCE.md`](../ADD_PROVENANCE.md); it describes process evidence,
+not an additional proof object.
 
 ---
 
@@ -133,9 +142,11 @@ failure modes, all explicitly policed here:
 
 The defenses, built in layers over months (the deep digest covers the earlier
 ones in detail): a hard, audited line between counted payload and proof-only
-fields; a cost-accounting type whose execution logs cannot be forged (the only
-functions able to append a step to a log are the ones that actually perform
-the corresponding primitive — fabricating a log entry is a type error); a
+fields; a cost-accounting trace discipline in which interpreter-generated
+events are produced through checked constructors and then audited by provenance
+theorems (for example, reads must match the store, successful reads must have
+counted-payload backing, and the final trace has no synthetic cost-only
+markers); a
 sublinear-overhead predicate that is *proved* for the concrete overhead
 function, so `o(n)` cannot hide linear data; and "anti-vacuity" theorems that
 close degenerate readings (an example appears in section 4, item 3). The
@@ -237,7 +248,8 @@ counted flat payload layout; that event data fit a stated finite bit width;
 that no synthetic markers occur; and that the supplied-store story of
 section 3.2 holds, footprint containment included. The accompanying
 documentation states the non-claims with equal precision: no verified CPU or
-compiler, no claim about Lean runtime, no minimal-footprint claim.
+compiler, no claim about compiled Lean execution speed, no minimal-footprint
+claim.
 
 ### 3.4 Also since the last digest
 
@@ -321,17 +333,16 @@ bound. ("Extraction" = mechanically translating the verified definitions into
 a conventional language so they can be compiled and run.) The strongest
 existing standards for *cost* claims are Nipkow's verified running-time
 analyses (Isabelle), where cost is a function of the actual program, and the
-Charguéraud–Pottier–Guéneau "time credit" line (Coq), which includes a full
+Charguéraud-Pottier-Guéneau "time credit" line (Coq), which includes a full
 inverse-Ackermann union-find verification. Against these, the deltas this
-project would claim: the succinct RMQ result itself — upper *and* matching
-encoding lower bound appear to be unmechanized before, though a referee-grade
-novelty search is itself remaining work and the repository's standing policy
-is to make no first-ever claims — and the anti-oracle discipline of
-section 4, item 2, as a method.
+project would propose: the succinct RMQ result itself — upper *and* matching
+encoding lower bound in one Lean development — subject to a referee-grade
+novelty search before any priority wording is used, and the anti-oracle
+discipline of section 4, item 2, as a method.
 
-### 5.2 The one remaining blocking gap: the constant
+### 5.2 The former blocking gap: the constant split
 
-The uniform modeled query-cost bound is `196727`. The theorem is true, and
+The uniform modeled query-cost bound remains `196727`. The theorem is true, and
 uniform in `n`; the number is large for reasons the repository now documents
 precisely — and one of this digest's review rounds materially *corrected* the
 story, in the repository's favor (Appendix A):
@@ -349,24 +360,19 @@ story, in the repository's favor (Appendix A):
 - The public bound is a single conservative *sum* of every branch's cap —
   three bracket-navigation accesses at 16, a zero-block scan cap `2*2^15 + 1`,
   an interior scan cap `4*2^15`, the fast interior path's 30, plus small
-  change — which is where `196727` comes from. There is *no* public
-  regime-split theorem saying "for `n >= 2^15` the cost is a few hundred,"
-  even though the component facts to assemble one exist.
+  change — which is where `196727` comes from.
+- The later integrated theorem surface now states the regime split explicitly:
+  `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_of_size_ge_readyThreshold`
+  proves the same final global trace costs at most
+  `SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118` under
+  `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= shape.size`.
 
 So the honest characterization is: constant-time is genuinely proved for all
-`n`, with the real machinery engaged from a modest size; but the *stated*
-constant conflates regimes, and the sub-threshold regime is handled by capped
-scanning rather than the classical constant-step small-block tables. To a
-referee calibrated by the standards above, a five-digit constant invites the
-question "did you formalize the hard part, or cap your way past it?" — and
-the current answer ("the hard part is formalized and engaged from `2^15`, but
-the public statement doesn't say so") must become a theorem, not a
-conversation. The fixes, in increasing ambition: state the regime-split bound;
-tighten the sum to a maximum over branches; replace sub-threshold scans with
-the classical table lookup, shrinking the uniform constant to something
-presentable. The first two look like assembly of existing parts; the third is
-real but standard work — and the model's word size (`log2 n + 1`) already
-supports it.
+`n`, with the real machinery engaged from a modest size and now exposed through
+a public fast-regime theorem. The sub-threshold regime is still handled by
+capped scanning rather than classical constant-step small-block tables, so
+tighter uniform constants remain useful engineering; they are not the remaining
+paper-level proof blocker.
 
 ### 5.3 Expected but no longer blocking (largely landed 2026-07-06)
 
@@ -383,8 +389,9 @@ supports it.
   the lower bound (encoding-counting, not cell-probe) and the non-claims. A
   literature-grade novelty search remains.
 - **Artifact packaging** — reproduction script, CI workflows, citation file,
-  and an AI-assisted-development disclosure landed; this now meets or exceeds
-  the community's usual artifact bar.
+  and an AI-assisted-development disclosure landed. These are strong
+  preparation; artifact-evaluation packaging, archiving, and review remain
+  future work.
 - **Effort narrative** — person-time, failed designs and why (unusually well
   preserved here as theorems); still to be written up.
 
@@ -407,15 +414,17 @@ Everything in the 06-28 ledger stands, with these updates:
   declared footprint, and exactness/cost transfer to footprint-agreeing
   stores (2026-07-04..06);
 - the model bridge is now itself a theorem surface, with explicit non-claims:
-  no verified CPU/compiler, no Lean-runtime claim, no minimal-footprint claim,
+  no verified CPU/compiler, no compiled-Lean-execution claim, no
+  minimal-footprint claim,
   no cell-probe lower bound;
 - still true: no inverse-Ackermann union-find theorem; the word-RAM pricing is
-  a stated model, not derived; no first-ever-formalization claims;
-- newly explicit: the `196727` constant — now correctly attributed to a
-  conservative cross-regime sum with sub-threshold scan caps, with the fast
-  path proved from `n >= 2^15` — is the top publication blocker, and an
-  earlier `2^128`-gate characterization of it was too pessimistic and is
-  corrected here and in the strategy document.
+  a stated model, not derived; no priority or novelty claim before a
+  referee-grade search;
+- newly explicit: the `196727` constant is correctly attributed to a
+  conservative cross-regime sum with sub-threshold scan caps, the fast path is
+  proved from `n >= 2^15`, and the integrated fast-regime theorem exposes the
+  smaller `118` bound. An earlier `2^128`-gate characterization was too
+  pessimistic and is corrected here and in the strategy document.
 
 ---
 
@@ -424,11 +433,11 @@ Everything in the 06-28 ledger stands, with these updates:
 **"Constant time" with constant 196727 — is that a joke?** It is the honest
 worst case of a statement that sums every regime's cap into one number. The
 underlying design is the standard one — real machinery proved to engage for
-all `n >= 32768`, complete (never truncated) fallback scans below — but no
-public theorem currently *says* "a few hundred steps once the machinery
-engages," and sub-threshold inputs are scanned rather than table-looked-up.
-Stating the regime split and shrinking the fallback is the project's most
-important open task; more important than any new feature.
+all `n >= 32768`, complete (never truncated) fallback scans below — and the
+integrated theorem surface now says the fast regime costs at most `118`.
+Sub-threshold inputs are still scanned rather than table-looked-up, so shrinking
+that fallback remains useful polish rather than the central remaining proof
+obligation.
 
 **Does store-parametricity really rule out oracles?** Combined with exactness
 on every input, yes, for the value path: one fixed evaluator, correct for all
@@ -504,9 +513,10 @@ names what each round changed, so the diffs are checkable against the text).
   `3f6f1e3`) with the model-adequacy/full-soundness surfaces, footprint
   containment, paper distillation documents, and the artifact reproduction
   pipeline. Sections 3.3, 5.3, and 6 were rewritten against the new state;
-  the gap list shrank accordingly and section 5.2 became the single blocking
-  item.
+  the gap list shrank accordingly and section 5.2 became the target that later
+  produced the fast-regime theorem.
 
 Remaining objections after these rounds are, to this document's knowledge,
-genuine open problems (the constant; external calibration; the novelty
-search) rather than writing defects.
+genuine open problems (external calibration, artifact packaging, tighter
+uniform constants if desired, and the novelty search) rather than writing
+defects.

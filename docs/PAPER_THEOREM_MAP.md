@@ -26,6 +26,9 @@ RMQ.Headlines.succinctRMQFinalFullModelSoundness
 RMQ.Headlines.succinctRMQFinalFullModelSoundnessExactOfFootprintGlobal
 RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedByCountedFlatPayloadOfFootprintGlobal
 RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal
+RMQ.Headlines.succinctRMQFastRegimeGlobalPayloadStoreCostLeOfReadyThreshold
+RMQ.Headlines.succinctRMQFastRegimeSuppliedStoreCostLeOfFootprintGlobal
+RMQ.Headlines.succinctRMQFastRegimeFinalFullModelCostLeOfFootprintGlobal
 ```
 
 These are the reviewer-facing anchors for what the modeled constant query
@@ -40,6 +43,12 @@ canonical reads are inside the safe footprint, and that footprint agreement
 with the canonical global store recovers the canonical trace and exact result.
 The last two aliases expose the direct supplied-store transfer theorems for
 counted flat-payload backing and modeled cost under footprint agreement.
+The fast-regime aliases add the Ready-threshold cost theorem: when
+`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= shape.size`, the
+same final global trace has modeled cost at most the named constant
+`SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118`, and the
+same bound transfers to supplied-store/full-model statements under footprint
+agreement.
 
 The footprint is a safe layout overapproximation, not an exact dynamic read-set
 claim.
@@ -66,7 +75,7 @@ Liu-Yu/Liu cell-probe lower bound.
 
 ## Non-Claims
 
-The public theorem map does not assert Lean runtime performance, compiler
+The public theorem map does not assert compiled Lean execution performance, compiler
 correctness, full CPU semantics, production serialization, or an exact/minimal
 dynamic read-set characterization. See `docs/PAPER_MODEL_ADEQUACY.md` for the
 model-adequacy scope.

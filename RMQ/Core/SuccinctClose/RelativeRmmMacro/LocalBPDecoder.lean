@@ -84,6 +84,13 @@ def concreteCompactBPCloseQueryCostWithRankSeed
   concreteCompactBPCloseZeroBlockScanCost + 8 + 2 * rankCost +
     concreteBPRelativeRmmInteriorQueryCost
 
+def concreteCompactBPCloseReadyQueryCost : Nat :=
+  10 + concreteBPRelativeRmmInteriorReadyQueryCost
+
+def concreteCompactBPCloseReadyQueryCostWithRankSeed
+    (rankCost : Nat) : Nat :=
+  8 + 2 * rankCost + concreteBPRelativeRmmInteriorReadyQueryCost
+
 def bpCodeWordReadsAt
     (shape : Cartesian.CartesianShape) (index : Nat) : List (List Bool) :=
   payloadWordReadOfGet?

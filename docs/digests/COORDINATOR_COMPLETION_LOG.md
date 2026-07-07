@@ -32,7 +32,7 @@ Live assumptions:
 - Digest notes are explanatory artifacts, not independent verification.
 - They must be refreshed when theorem surfaces or cost/space claims change.
 - Model distinctions still matter: payload bits, proof-only fields, charged
-  reads, and executable Lean runtime are separate notions.
+  reads, and compiled Lean execution are separate notions.
 
 What a skeptical grad student would ask:
 

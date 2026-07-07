@@ -18,8 +18,10 @@ modeled query cost, payload-bit accounting, a public succinct upper-bound
 surface with a numeric doubled-Catalan slack comparison, and a separately cited
 encoding-quantified information-theoretic lower-bound theorem.
 
-For a further explanation aimed at mathematically mature
+For the current publication-oriented explanation aimed at mathematically mature
 readers with little data-structures background, see
+[`docs/digests/PROJECT_DIGESTION_2026_07_06.md`](docs/digests/PROJECT_DIGESTION_2026_07_06.md).
+The deeper first-contact background note remains
 [`docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md`](docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md).
 
 ## Why Care
@@ -57,7 +59,7 @@ Short public aliases live in [`RMQ/Headlines.lean`](RMQ/Headlines.lean).
 | `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Reader-facing flat-payload execution story over ordinary `xs : List Int`: the same final query uses the advertised `2*n + o(n)` `buildPayload`, satisfies the classic half-open leftmost RMQ contract, is interpreted by the final WordRAM trace, and every actual successful read is backed by one query-independent counted flat payload layout with bounded events and no synthetic cost-only trace markers. |
 | `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` | Paper-facing list theorem combining the advertised `2*n + overhead` payload size, `overhead = o(n)`, exact valid RMQ answers with leftmost ties, constant modeled query cost, and the final no-synthetic flat-payload trace story. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and a numeric doubled-Catalan slack comparison in the same public theorem surface; the encoding-quantified lower-bound theorem is exposed separately as `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack`. |
-| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Whole-query-interpreted variant of the final BP-native succinct RMQ capstone: same theorem shape, with the final query control represented by a closed first-order program whose leaves are interpreted close-select, compact close/LCA, and register-backed answer-rank operations. |
+| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Whole-query-interpreted variant of the final BP-native succinct RMQ capstone: same theorem shape, with the final query control represented by closed `WordRAM`/register-program syntax whose leaves are interpreted close-select, compact close/LCA, and register-backed answer-rank operations. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace` | Unified-`WordRAM.TraceEvent` variant of the same capstone: the final query emits one trace stream, with close-select, answer-rank, and compact-close rank-seed reads replayed as structural payload/register traces. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime` | Large-regime WordRAM variant: same two-sided theorem shape, with an explicit size premise that routes the compact close/LCA leg through the Ready structural replay; the public all-size route is now structural as well. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` | All-size execution-story theorem for the final succinct RMQ query: the costed query refines one globally segmented trace, every event is either a payload read or bounded word primitive, and every read agrees with one concrete global payload store. |
@@ -65,6 +67,7 @@ Short public aliases live in [`RMQ/Headlines.lean`](RMQ/Headlines.lean).
 | `RMQ.Headlines.succinctRMQZeroBlockSameBlockEvalWithStore` | Zero-block same-block close leaf evaluated against a supplied `WordRAM.ReadStore`; if the store agrees with the BP-code chunk store on segment 0, the produced value and trace match the canonical structural trace. |
 | `RMQ.Headlines.succinctRMQZeroBlockSameBlockStoreParametric` | Zero-block same-block close leaf is store-parametric: two supplied stores agreeing on BP-code segment reads produce the same value and trace. The whole final query has its own supplied-store replay and store-parametric theorem package. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory` | Bounded all-size execution story: the global trace also carries a finite trace-local bit width bounding every payload-read address and every natural operand/result exposed by word primitives. |
+| `RMQ.Headlines.succinctRMQFastRegimeGlobalPayloadStoreCostLeOfReadyThreshold` | Fast-regime final-query cost theorem: under `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= shape.size`, the same globally segmented final trace costs at most the named fast constant `RMQ.Headlines.succinctRMQFastRegimeQueryCost = 118`, excluding the zero-block and non-Ready bounded-scan fallbacks. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | All-size structural execution story: the zero-block same-block leaf scans counted BP-code chunks, and the cross-block interior close-navigation leaf is replayed by structural traces. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` | No-synthetic all-size execution story: the same bounded global trace contains no dedicated synthetic cost-only marker events. |
 | `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Flat-payload no-synthetic execution story: the public flat payload is exactly the advertised BP-native construction payload, and every actual successful read in the final query trace has source/component/offset evidence in that counted layout; cross-block interior navigation is all-size structural, using Ready two-level replay, active non-Ready bounded summary scan, or inactive pure-none. |
@@ -93,6 +96,15 @@ zero-block same-block scan costs `2 * 2^15 + 1`, and the active non-Ready
 interior scan costs `4 * 2^15`. Legacy finite-small interior store segments
 `26` and `27` now resolve to empty source views and `none` reads; they are not
 part of the counted flat payload.
+
+The Ready-threshold fast-regime theorem
+`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_of_size_ge_readyThreshold`
+proves a smaller construction-level bound for the same final global trace:
+`SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118`. This
+uses the existing Ready interior cost
+`SuccinctClose.concreteBPRelativeRmmInteriorReadyQueryCost = 30` and excludes
+both bounded fallback scans. The supplied-store/full-model companions transfer
+the same fast bound under final-layout footprint agreement.
 
 The final all-size global-store theorem above remains a fixed-trace
 store-extensional statement. The supplied-store route now also has a whole-final
@@ -248,6 +260,12 @@ imports, this material):
 
 - [`docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md`](docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md):
   stress-tested Lean-club explanation of the current project state.
+- [`docs/digests/PROJECT_DIGESTION_2026_07_06.md`](docs/digests/PROJECT_DIGESTION_2026_07_06.md):
+  canonical current publication-oriented project digestion for `main` at
+  `3f6f1e3`, with an integration note for the later fast-regime cost split.
+- [`docs/ADD_PROVENANCE.md`](docs/ADD_PROVENANCE.md): public provenance note for
+  the audit-driven development workflow; ADD is process evidence, not a proof
+  object or trust base.
 - [`docs/WHAT_IS_PROVED.md`](docs/WHAT_IS_PROVED.md): compact scope summary.
 - [`docs/TRUST_AUDIT_PACKET.md`](docs/TRUST_AUDIT_PACKET.md): skeptical-review
   packet for the headline theorem.
@@ -268,8 +286,12 @@ imports, this material):
 
 ## Current Development Docket
 
-The RMQ capstone is in place. The next development frontier is to reuse and
-stress-test the infrastructure:
+The RMQ capstone is in place, including the public fast-regime cost split. The
+all-size bound remains the conservative constant `196727`; under
+`shape.size >= SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold`, the
+same final global trace has the proved fast-regime bound
+`SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118`. The
+development frontier is now to package, calibrate, and reuse the infrastructure:
 
 1. deepen balanced-parentheses navigation into a fuller tree-navigation API and
    continue turning useful component traces into public store-backed execution

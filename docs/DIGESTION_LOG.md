@@ -22,7 +22,7 @@ questions:
 - what changed conceptually;
 - what the completed work now means in plain English;
 - what assumptions are live, especially payload bits, proof-only fields,
-  charged reads, and Lean runtime nonclaims;
+  charged reads, and compiled Lean execution nonclaims;
 - what a skeptical grad student would ask next;
 - the informal mathematical statement;
 - the proof idea in ordinary language;
@@ -70,28 +70,34 @@ spokes:
 ## Current Digests
 
 - [`digests/PROJECT_DIGESTION_2026_07_06.md`](digests/PROJECT_DIGESTION_2026_07_06.md):
-  current state-significance-and-path-to-a-paper digest for `main` at
+  canonical current public state-significance-and-path-to-a-paper digest for
+  `main` at
   `3f6f1e3`, for a mathematically mature non-DS audience. Covers the
   store-parametric whole-query capstone and the 2026-07-06 model-adequacy /
   footprint-containment / paper-surface landings; ranks the achievements; and
-  gives the candid publishable-work gap analysis (the query-cost constant as
-  the single remaining blocker, with the corrected `2^15`-readiness story).
+  gives the candid publishable-work gap analysis that led to the later
+  fast-regime cost theorem, with the corrected `2^15`-readiness story.
   Includes a recorded adversarial review loop (Appendix A) whose fact-check
   round corrected an earlier `2^128`-gate mischaracterization in
   `docs/PUBLICATION_STRATEGY.md`.
+- [`ADD_PROVENANCE.md`](ADD_PROVENANCE.md):
+  public audit-driven-development provenance note. It explains the coordinator
+  / specialist-worker distinction, theorem-shaped prompts, audit-of-audits
+  synthesis, Goodhart failure modes, and transcript-evidence policy. It is
+  process evidence, not a proof object or trust-base assumption.
 - [`digests/DEEP_PROJECT_DIGESTION_2026_06_28.md`](digests/DEEP_PROJECT_DIGESTION_2026_06_28.md):
-  deep Lean-club-facing project digestion for current `main`, with first-contact
+  historical deep Lean-club-facing project digestion, with first-contact
   definitions of RMQ, Cartesian shape, rank/select, balanced parentheses,
   modeled cost, payload accounting, compressed/FID, and union-find; includes a
   recorded adversarial classroom fixedpoint loop. Revised 2026-06-28 (Part I-IV
   structure): groundings now quote the primitives directly (`Spec.LeftmostArgMin`,
-  `Costed`, the private-constructor `RAM.Exec` anti-cheat, the `RMQBackend`
+  `Costed`, the private-constructor `RAM.Exec` traced substrate, the `RMQBackend`
   contract, `binomialCount` as Pascal's recurrence, the union-find
   `tarjanLevelIndexPotential` collapse self-diagnostic), and a literature map
   (Bender-Farach-Colton, Jacobson, Munro-Raman, RRR, Fischer-Heun, Tarjan) was
   added so the routine/classical steps are recognizable as known results.
 - [`digests/PROJECT_STATE_2026_06_28.md`](digests/PROJECT_STATE_2026_06_28.md):
-  current project-wide digest, including the merged rank/select log-chunk
+  June 28 project-wide digest, including the merged rank/select log-chunk
   primary-budget/split-width route-directory work and the merged union-find
   Tarjan-level scaffold.
 - [`digests/RMQ_PROOF_MAP.md`](digests/RMQ_PROOF_MAP.md): index and shared
@@ -142,7 +148,7 @@ now adds the same style of finite trace-local event-width packet used by the
 final RMQ bounded trace theorem: every payload-read segment/index and every
 natural operand/result exposed by word-local rank/select primitives fits the
 declared trace-local width.  Live assumptions: this is still the project's
-modeled RAM/indexed-read cost layer, not Lean runtime, the earlier
+modeled RAM/indexed-read cost layer, not compiled Lean execution speed, the earlier
 target-indexed theorem remains as lower-level compatibility, and the width is
 trace-local rather than an asymptotic machine-word-size theorem.  A skeptical
 grad student should now ask whether the trace-local width can be replaced or
@@ -295,7 +301,7 @@ reads. This separates the counted payload from proof-only certificates more
 sharply and removes the main oracle-shaped concern from the public succinct RMQ
 surface.
 
-Live assumptions remain model assumptions, not Lean runtime claims. The theorem
+Live assumptions remain model assumptions, not compiled Lean execution claims. The theorem
 uses the standard word-RAM interpretation of charged payload reads and word
 operations; it is not a statement about Lean's compiled `List` performance, and
 it is not yet a single closed AST for every branch in the final query. The
@@ -362,7 +368,7 @@ tables. Plain English: the trace is no longer merely a list of plausible
 component calls; in the large regime, each information-bearing read has an
 address in the declared payload. Live assumptions remain the word-RAM model,
 the explicit `2^128 <= shape.size` premise for this strongest theorem, and the
-separation between model cost and Lean runtime. A skeptical grad student should
+separation between model cost and compiled Lean execution. A skeptical grad student should
 now ask how much of this store-backed execution-story pattern can be reused for
 rank/select, BP tree navigation, and eventually a more general machine model.
 
@@ -541,13 +547,27 @@ pessimistic and has been corrected — the `2^128` premise survives only in
 derived compatibility lemmas. Second, the whole-query footprint is a set of
 segments with agreement required at every address inside them, and the new
 containment theorem proves all emitted reads stay inside it, so exactness and
-the cost bound transfer to any footprint-agreeing supplied store. The live
-publishable-work gap is now concentrated in one place: the public query-cost
-bound `196727` is a conservative cross-regime sum with sub-threshold scan
-caps, and there is no public regime-split theorem stating the small cost once
-the machinery engages. A skeptical grad student should ask for exactly that
-theorem next: "for `n >= 2^15`, the final query cost is bounded by a few
-hundred," assembled from the existing component facts.
+the cost bound transfer to any footprint-agreeing supplied store. The former
+publishable-work proof gap was the public query-cost bound: `196727` is a
+conservative cross-regime sum with sub-threshold scan caps. The integrated
+fast-regime theorem now states the smaller bound explicitly:
+`SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118` under the
+real `2^15` readiness threshold. A skeptical grad student should now ask for
+paper/artifact packaging, external novelty calibration, and tighter
+machine-word side conditions, not another existence proof for the regime split.
+
+2026-07-07 publication/provenance alignment pass: the publication branch treats
+`digests/PROJECT_DIGESTION_2026_07_06.md` as the canonical current public
+digest. The coordinator checkout's local
+`digests/PROJECT_DIGESTION_2026_07_CURRENT.md` and `ADD_PROVENANCE.md` were
+read as branch-local evidence, but this branch keeps only one current public
+digest to avoid competing "current state" documents. The new public
+`ADD_PROVENANCE.md` records transcript exports as local provenance evidence,
+not as committed proof artifacts. Publication wording was tightened: priority
+language now waits for a referee-grade novelty search; interpreter-generated
+trace claims are scoped to checked constructors and provenance theorems; and
+`RAM.Exec` is described as the private-constructor traced substrate, while
+first-order/register syntax belongs to `WordRAM.Program` / register programs.
 
 ## Digestion Tasks
 

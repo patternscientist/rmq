@@ -301,6 +301,33 @@ whole-query replay.
 abbrev succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global
 
+/--
+Fast-regime modeled query-cost constant for the final BP-native succinct RMQ
+query. This excludes the zero-block same-block scan and the active non-Ready
+bounded interior scan; the close/LCA interior leg uses the Ready two-level
+cost `SuccinctClose.concreteBPRelativeRmmInteriorReadyQueryCost = 30`.
+-/
+abbrev succinctRMQFastRegimeQueryCost :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost
+
+/-- The named fast-regime final-query cost constant computes to `118`. -/
+abbrev succinctRMQFastRegimeQueryCostEq :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost_eq
+
+/--
+Under the explicit Ready-threshold size premise, the final globally segmented
+BP-native RMQ trace has the fast-regime modeled cost bound.
+-/
+abbrev succinctRMQFastRegimeGlobalPayloadStoreCostLeOfReadyThreshold :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_of_size_ge_readyThreshold
+
+/--
+The fast-regime cost bound transfers to a supplied-store replay when the store
+agrees with the concrete global store on the safe final layout footprint.
+-/
+abbrev succinctRMQFastRegimeSuppliedStoreCostLeOfFootprintGlobal :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_of_size_ge_readyThreshold
+
 theorem succinctRMQWholeQueryGlobalWordTraceCostedWithStoreExactOfFootprintGlobal
     {n : Nat} {shape : RMQ.Cartesian.CartesianShape}
     (hshape : List.Mem shape (RMQ.Cartesian.shapesOfSize n))
@@ -377,6 +404,25 @@ theorem succinctRMQFinalFullModelSoundnessExactOfFootprintGlobal
         some (RMQ.scanWindow shape.representative left len) :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness_exact_of_footprint_global
     hshape hfoot hlen hbound
+
+/-- Full-model-facing fast-regime cost theorem under footprint agreement. -/
+theorem succinctRMQFastRegimeFinalFullModelCostLeOfFootprintGlobal
+    {shape : RMQ.Cartesian.CartesianShape}
+    {store : RMQ.WordRAM.ReadStore}
+    (hfoot :
+      RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store
+          (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQGlobalReadStore
+            shape))
+    (hsize :
+      RMQ.SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <=
+        shape.size)
+    (left right : Nat) :
+    (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+      shape store left right).cost <=
+        RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_of_size_ge_readyThreshold
+    hfoot hsize left right
 
 /--
 Zero-block same-block close evaluator with a supplied `WordRAM.ReadStore`.

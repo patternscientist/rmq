@@ -23,6 +23,46 @@ example : RMQ.Succinct.select false [true, false, true, false] 1 = some 3 := by
 
 def tinyRMQInput : List Int := [3, 1, 4, 1, 5]
 
+def succinctClassicPayloadTruePositions (xs : List Int) : List Nat :=
+  (RMQ.SuccinctClassic.buildPayload xs).zipIdx.filterMap fun bitAndIdx =>
+    if bitAndIdx.1 then some bitAndIdx.2 else none
+
+#guard (RMQ.SuccinctClassic.buildPayload ([] : List Int)).length == 561
+
+#guard (RMQ.SuccinctClassic.buildPayload ([7] : List Int)).length == 10708
+
+#guard (RMQ.SuccinctClassic.buildPayload ([7] : List Int)).take 16 ==
+  [true, false, false, false, false, false, false, false,
+    false, true, false, false, false, false, false, true]
+
+#guard succinctClassicPayloadTruePositions ([7] : List Int) ==
+  [0, 9, 15, 24, 30, 59, 71]
+
+#guard succinctClassicPayloadTruePositions ([2, 1] : List Int) ==
+  [0, 1, 15, 22, 36, 42, 50, 77, 129, 164]
+
+#guard succinctClassicPayloadTruePositions ([1, 1] : List Int) ==
+  [0, 2, 15, 22, 35, 42, 50, 77, 128, 164]
+
+#guard (RMQ.SuccinctClassic.queryCosted tinyRMQInput 0 5).erase == some 1
+
+#guard (RMQ.SuccinctClassic.queryCosted tinyRMQInput 2 4).erase == some 3
+
+#guard (RMQ.SuccinctClassic.queryCosted ([4, 4, 5] : List Int) 0 2).erase ==
+  some 0
+
+#guard (RMQ.SuccinctClassic.queryCosted ([5, 4, 4] : List Int) 0 3).erase ==
+  some 1
+
+#guard (RMQ.SuccinctClassic.queryCosted ([8, 6, 7, 6, 9] : List Int) 1 4).erase ==
+  some 1
+
+#guard (RMQ.SuccinctClassic.queryCosted ([8, 6, 7, 6, 9] : List Int) 2 5).erase ==
+  some 3
+
+#guard (RMQ.SuccinctClassic.queryCosted ([9, 8, 7] : List Int) 1 1).erase ==
+  none
+
 example :
     (RMQ.SuccinctClassic.buildPayload tinyRMQInput).length =
       2 * tinyRMQInput.length +

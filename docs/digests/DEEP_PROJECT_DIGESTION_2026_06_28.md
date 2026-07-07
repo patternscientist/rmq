@@ -687,7 +687,7 @@ compression, and several amortized bounds are proved; a self-diagnostic theorem
 shows the current residual potential collapses to rank slack, so the present
 design cannot reach `O(alpha(n))` without a new residual index.
 
-**Is "first verified RMQ/..." being claimed?** No first-ever claims are made here.
+**Is "first verified RMQ/..." being claimed?** No priority claims are made here.
 The framing is: a faithful, model-transparent, end-to-end Lean connection of
 known theory, plus genuine (and honestly-scoped) new frontier work on the spokes.
 

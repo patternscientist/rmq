@@ -40,6 +40,7 @@ lake build VerifiedDS
 lake build RMQArchive
 lake build RMQExamples
 lake build RMQ.Core.GenericSelectBPCompat
+lake exe rmq_succinct_classic_validate
 lake env lean scripts/headline_axiom_check.lean
 lake env lean scripts/wordram_axiom_check.lean
 lake env lean scripts/axiom_check.lean

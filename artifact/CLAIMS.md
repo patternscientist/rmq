@@ -9,7 +9,8 @@ claims, what it does not claim, and which command checks the relevant surface.
 
 - The project is Mathlib-free: Lean 4, Std, and `omega`.
 - Correctness statements use the repository's half-open, leftmost RMQ contract.
-- Cost statements are model-level statements, not Lean-runtime benchmarks.
+- Cost statements are model-level statements, not compiled Lean execution
+  benchmarks.
 - Payload-space statements count modeled stored bits, not proof-only fields.
 - Word-RAM statements concern the explicit `WordRAM` model and trace events.
 
@@ -20,7 +21,7 @@ claims, what it does not claim, and which command checks the relevant surface.
 | Exact RMQ requires essentially `2*n` bits in the fixed-length payload model, with doubled Catalan slack. | `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack` | `RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack` | `lake env lean scripts/headline_axiom_check.lean` |
 | The BP-native succinct RMQ family answers exact RMQ queries with `2*n + o(n)` payload bits and constant modeled query cost, paired with a numeric doubled-Catalan slack comparison. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile` | `lake env lean scripts/headline_axiom_check.lean` |
 | The ordinary `List Int` succinct RMQ surface combines the classic half-open leftmost contract, the existing `2*n + o(n)` counted-payload story, and the final flat-payload no-synthetic WordRAM execution story. | `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | `RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_execution_story` | `lake env lean scripts/headline_axiom_check.lean` and `lake env lean scripts/wordram_axiom_check.lean` |
-| The same RMQ family has a closed first-order query controller over interpreted leaves. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_interpreted_profile` | `lake env lean scripts/wordram_axiom_check.lean` |
+| The same RMQ family has a closed `WordRAM`/register-program query controller over interpreted leaves. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_interpreted_profile` | `lake env lean scripts/wordram_axiom_check.lean` |
 | The same RMQ family emits an explicit domain-leaf trace before projection back to `Costed`. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_leaf_trace_profile` | `lake env lean scripts/wordram_axiom_check.lean` |
 | The same RMQ family emits a unified `WordRAM.TraceEvent` stream for the final query. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_profile` | `lake env lean scripts/wordram_axiom_check.lean` |
 | In the large regime, the WordRAM final query routes the compact close/LCA leg through structural local/fringe/interior trace replay rather than the all-size fallback. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_large_regime_profile` | `lake env lean scripts/headline_axiom_check.lean` and `lake env lean scripts/wordram_axiom_check.lean` |
@@ -28,6 +29,7 @@ claims, what it does not claim, and which command checks the relevant surface.
 | The same all-size global trace is store-extensional: any read store agreeing with the concrete global store on emitted payload-read events validates the same trace. | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_store_extensional_execution_story` | `lake env lean scripts/wordram_axiom_check.lean` |
 | The zero-block same-block close leaf has a store-parametric evaluator: two supplied stores agreeing on BP-code segment reads produce the same value and trace. | `RMQ.Headlines.succinctRMQZeroBlockSameBlockStoreParametric` | `RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_store_parametric` | `lake env lean scripts/wordram_axiom_check.lean` |
 | The same global execution story has a finite trace-local bit width bounding every payload-read address and every natural operand/result exposed by word primitives. | `RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_bounded_execution_story` | `lake env lean scripts/wordram_axiom_check.lean` |
+| In the Ready-threshold fast regime, the final globally segmented BP-native RMQ trace has modeled query cost at most `118`, excluding the zero-block same-block and active non-Ready bounded scans. | `RMQ.Headlines.succinctRMQFastRegimeGlobalPayloadStoreCostLeOfReadyThreshold` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_of_size_ge_readyThreshold` | `lake env lean scripts/headline_axiom_check.lean` and `lake env lean scripts/wordram_axiom_check.lean` |
 | The same all-size global trace is structurally replayed without dedicated synthetic cost-only marker events. | `RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_noSynthetic_execution_story` | `lake env lean scripts/wordram_axiom_check.lean` |
 | The no-synthetic execution story is tied to one query-independent flat payload layout with source/component/offset backing evidence for successful reads. | `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execution_story` | `lake env lean scripts/wordram_axiom_check.lean` |
 | The large-regime global-store execution story also has the same bounded-address and bounded-primitive-operand packet under the explicit size premise. | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_bounded_execution_story` | `lake env lean scripts/wordram_axiom_check.lean` |
@@ -62,7 +64,9 @@ claims, what it does not claim, and which command checks the relevant surface.
 - The current concrete BP-native query-cost bound is the fixed model constant
   `196727`. It includes bounded all-size scans below
   `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15`; this is a
-  disclosed model constant, not a hidden asymptotic variable.
+  disclosed model constant, not a hidden asymptotic variable. The separate
+  fast-regime theorem under that readiness premise proves the named constant
+  `SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118`.
 - The bounded execution-story theorem supplies a trace-local finite bit width
   for exposed addresses and primitive operands. It is not yet a tight
   asymptotic machine-word side-condition for every component.
@@ -75,8 +79,9 @@ claims, what it does not claim, and which command checks the relevant surface.
 
 ## Current Provenance Frontier
 
-The global payload-store theorem and no-synthetic all-size structural replay
-are landed. The live hardening frontier is now tighter rather than existential:
-push the trace-local event-width theorem toward component-level machine-word
-side conditions consumed by the public capstone, and reuse the flat-store /
-no-synthetic pattern in the rank/select and BP-navigation spokes.
+The global payload-store theorem, no-synthetic all-size structural replay, and
+Ready-threshold fast-regime cost theorem are landed. The live hardening frontier
+is now tighter rather than existential: push the trace-local event-width theorem
+toward component-level machine-word side conditions consumed by the public
+capstone, package the artifact/paper claim correspondence, and reuse the
+flat-store / no-synthetic pattern in the rank/select and BP-navigation spokes.

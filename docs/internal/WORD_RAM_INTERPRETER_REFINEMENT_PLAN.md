@@ -81,7 +81,7 @@ The first interpreter pass should not:
 - replace the RMQ reference spec;
 - replace the full `Costed` API;
 - migrate every existing query and builder;
-- model Lean runtime;
+- model compiled Lean execution;
 - prove cache behavior or real CPU execution;
 - compile to C/RISC-V;
 - solve union-find mutation/amortization;

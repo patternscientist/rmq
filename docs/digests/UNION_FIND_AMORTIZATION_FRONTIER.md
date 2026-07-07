@@ -75,7 +75,7 @@ is
 
 ## Live Assumptions
 
-- Costs are modeled with `Costed`, not measured Lean runtime.
+- Costs are modeled with `Costed`, not measured Lean execution speed.
 - The forest is list-backed and proof-friendly. It is not a mutable-array
   implementation.
 - Invariants such as `RootMassInvariant` and `RankPowerMassInvariant` are proof

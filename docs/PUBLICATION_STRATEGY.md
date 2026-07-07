@@ -28,8 +28,9 @@ realistic venues, and the sitting precedent each would judge us against:
 1. **Affeldt, Garrigue, Tanaka — ITP 2019.** What a succinct-data-structure
    mechanization looks like *as a paper*: rank/select + LOUDS from Navarro's
    *Compact Data Structures*, extracted to executable OCaml. Our deltas:
-   the RMQ / Cartesian / LCA succinct capstone (apparently not previously
-   mechanized), a *matching information-theoretic lower bound*, and the
+   the RMQ / Cartesian / LCA succinct capstone as a novelty candidate pending
+   a referee-grade literature/artifact search, a *matching
+   information-theoretic lower bound*, and the
    anti-oracle Word-RAM cost discipline.
 2. **Nipkow — *Amortized Complexity Verified* (ITP'15/JAR), *Verified Analysis
    of Functional Data Structures* (FSCD'16), and the 2024 ACM book *Functional
@@ -44,54 +45,59 @@ realistic venues, and the sitting precedent each would judge us against:
    *real program steps*, with `O` formalized via filters. This is the bar for
    "is your `O(1)` real?"
 
-Against those three, the genuinely novel contributions here — the paper's thesis
-candidates — are:
+Against those three, the candidate contributions here — the paper's thesis
+candidates, subject to the novelty search described below — are:
 
-- **(a)** first mechanized succinct RMQ **upper bound** `2n + o(n)`, `O(1)`;
+- **(a)** a mechanized succinct RMQ **upper bound** `2n + o(n)`, `O(1)`,
+  with any priority wording deferred until a referee-grade novelty search;
 - **(b)** a mechanized **matching lower bound** (rare: the three lines above are
   all upper-bound/correctness; a mechanized information-theoretic lower bound is
   a real differentiator); and
 - **(c)** the **anti-oracle Word-RAM trace discipline** as a *method* for
-  cost-honesty without an executable machine (first-order program syntax,
-  trace-event cost, `eval_eq_of_readWord_eq`, store-parametricity).
+  cost-honesty without an executable machine (`WordRAM.Program` /
+  register-program syntax, trace-event cost, `eval_eq_of_readWord_eq`,
+  store-parametricity). `RAM.Exec` is the private-constructor traced substrate
+  used for small primitive traces, not the first-order syntax layer.
 
 ## 3. What is missing for paper-level, prioritized
 
-### P0 — blocking (a referee rejects without these)
+### P0 — proof blockers closed; paper/artifact work remains
 
-1. **Resolve or defend the cost model constant.** The concrete query-cost
-   constant is `196727`. *(Correction, 2026-07-06: an earlier revision of this
-   document said the clean `O(1)` replay is "gated on `2^128 <= shape.size`."
-   That was too pessimistic: the source proves the fast interior path applies
-   for all `shape.size >= 2^15`
+1. **Cost model constant split.** The concrete all-size query-cost constant is
+   still the conservative model bound `196727`. *(Correction, 2026-07-06: an
+   earlier revision of this document said the clean `O(1)` replay is "gated on
+   `2^128 <= shape.size`." That was too pessimistic: the source proves the fast
+   interior path applies for all `shape.size >= 2^15`
    (`concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold`); the
    `2^128` premise survives only in derived legacy compatibility lemmas.)*
-   The actual situation: the fast path is proved from the modest threshold
-   `2^15`; below it, correct capped brute scans; and the public bound is a
-   single conservative *sum* of every branch's cap (`3*16` close accesses,
-   `2*2^15 + 1` zero-block scan, `4*2^15` interior scan, `30` fast interior,
-   plus small change), with **no public regime-split theorem** stating the
-   small cost once the machinery engages. Resolve by, in increasing ambition:
-   - **(i)** state the regime-split bound ("for `n >= 2^15`, cost `<=` a few
-     hundred") from the existing component facts;
-   - **(ii)** tighten the cross-branch sum to a maximum;
-   - **(iii)** replace sub-threshold scans with classical small-block table
-     lookup, shrinking the uniform constant to something presentable (the
-     modeled word size `log2 n + 1` already supports this).
+   The integrated theorem surface now exposes the fast regime directly:
+   `RMQ.Headlines.succinctRMQFastRegimeGlobalPayloadStoreCostLeOfReadyThreshold`
+   cites
+   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_of_size_ge_readyThreshold`
+   and proves the named fast constant
+   `SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118` under
+   `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= shape.size`.
+   Tighter uniform constants or classical sub-threshold table lookup would be
+   welcome engineering, but they are no longer the paper-level proof blocker.
 
-   The repository is already honest *about* the constant; the paper must
-   *resolve or precisely split* it, not merely disclose it.
-2. **A soundness bridge for the cost model.** Nipkow's cost *is* the program;
-   the time-credits cost *is* steps. Ours is a bespoke trace semantics. State and
-   prove a theorem relating modeled trace cost to a *standard* Word-RAM step
-   count, or to an executable reference interpreter that can actually be run. The
-   anti-oracle boundary is a strong *ingredient* — it rules out reading the
-   answer out of a proof-only oracle — but it is not yet packaged as a stated
-   soundness result. Frame it as one.
-3. **Distill to ONE theorem plus a one-page model.** A paper has a single
-   headline (here: upper `and` lower), the model defined in roughly a page, and
-   the ~40 headline aliases pushed to an appendix / the artifact. The current
-   theorem surface signals "in progress"; distillation is mandatory.
+Two items that were previously P0 are no longer proof blockers on the Lean/docs
+side:
+
+- **Model adequacy / soundness packaging has landed internally.** The public
+  surfaces
+  `RMQ.Headlines.succinctRMQFinalTraceModelAdequacy` and
+  `RMQ.Headlines.succinctRMQFinalFullModelSoundness` package trace length,
+  event classification, payload-read/store agreement, no-synthetic markers,
+  successful-read counted-payload backing, footprint containment, and
+  footprint-agreeing supplied-store transfer. Remaining work is paper prose and
+  external calibration: an executable reference interpreter, benchmarks, and
+  possibly extraction.
+- **Distillation has landed on the Lean/docs side.**
+  `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` and
+  `docs/PAPER_MAIN_THEOREM.md`, `docs/PAPER_MODEL_ADEQUACY.md`, and
+  `docs/PAPER_THEOREM_MAP.md` give the one-headline-plus-model citation
+  surface. Remaining work is the paper narrative, not discovering which theorem
+  should be the theorem.
 
 ### P1 — strongly expected
 
@@ -116,16 +122,17 @@ candidates — are:
 8. **Artifact Evaluation.** We are close: CI, `scripts/gate.ps1`, and
    `#print axioms` checks already exist. AE badges are standard at ITP/CPP, with
    Lean artifacts archived to Zenodo / Software Heritage (e.g. ITP 2025
-   entries). But AE-ready is the last mile, not the thesis.
+   entries). But artifact-evaluation packaging and review are the last mile,
+   not the thesis.
 
-## 4. The single highest-leverage move
+## 4. The single highest-leverage move after integration
 
-**Make the constant honest at statement level: a public regime-split (or
-genuinely small uniform) query-cost theorem.** Everything else (distillation,
-related work, extraction) is tractable engineering. The five-digit constant is
-the one thing that, left as-is, invites a referee to ask "did you formalize
-the hard part, or cap your way past it?" — the true answer ("formalized, and
-engaged from `n >= 2^15`") must become a theorem, not a conversation.
+**Turn the theorem surface into a paper artifact.** The regime split is now a
+theorem, so the highest-leverage move is no longer another proof worker. It is
+paper/artifact packaging: a referee-grade theorem map, claim-to-check table,
+novelty search, related-work calibration, and reproduction script that make the
+`196727` all-size bound and `118` Ready-threshold fast bound impossible to
+misread.
 
 ## 4a. Status update (2026-07-06)
 
@@ -149,17 +156,21 @@ Landed on `main` since this document was written (through `3f6f1e3`):
   A referee-grade novelty search remains.
 - **P2 item 8 (artifact):** reproduction script, CI workflows, `CITATION.cff`,
   and an AI-assisted-development disclosure landed.
+- **Cost-regime split:** the fast-regime theorem cited above exposes the
+  `118` modeled bound under the real `2^15` readiness threshold while
+  preserving the all-size `196727` theorem.
 
-Remaining, in priority order: **P0-1 (the constant, as corrected above);
-extraction + benchmarks; novelty search; the paper itself.**
+Remaining, in priority order: **paper/artifact packaging; novelty search;
+extraction + benchmarks; optional tighter uniform constants.**
 
 ## 5. Recommended target
 
-**ITP**, with the thesis: *the first mechanized succinct RMQ — upper bound
+**ITP**, with the thesis: *a mechanized succinct RMQ — upper bound
 `2n + o(n)` / `O(1)` and a matching Catalan lower bound — in a Mathlib-free
 Lean 4 development, using an anti-oracle Word-RAM trace discipline for
-cost-honesty.* The lower bound and the anti-oracle method are the deltas over
-Affeldt ITP 2019, contingent on closing the P0 cost-model gap.
+cost-honesty.* The lower bound and the anti-oracle method are the proposed
+deltas over Affeldt ITP 2019, contingent on referee-grade novelty search and
+artifact packaging before any priority wording appears in a paper.
 
 ## References
 

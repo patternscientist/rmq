@@ -276,6 +276,22 @@ theorem concreteBPNativeSuccinctRMQFinalFullModelSoundness_exact_of_footprint_gl
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_exact_of_footprint_global
       hshape hfoot hlen hbound
 
+theorem concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_of_size_ge_readyThreshold
+    {shape : Cartesian.CartesianShape} {store : WordRAM.ReadStore}
+    (hfoot :
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store (concreteBPNativeSuccinctRMQGlobalReadStore shape))
+    (hsize :
+      SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <=
+        shape.size)
+    (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+      shape store left right).cost <=
+        concreteBPNativeSuccinctRMQFastRegimeQueryCost := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_of_size_ge_readyThreshold
+      shape store hfoot hsize left right
+
 end SuccinctFinal
 
 end RMQ

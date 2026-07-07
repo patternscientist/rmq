@@ -258,7 +258,7 @@ all-size flat-payload theorem remains the main public endpoint; it now avoids
 successful-read dependence on the legacy interior witness slots by splitting
 cross-block interior replay into Ready two-level, active non-Ready bounded
 summary scan, and inactive pure-none cases. As before, these are word-RAM model statements;
-they are not Lean-runtime claims and not a general CPU semantics.
+they are not compiled Lean execution claims and not a general CPU semantics.
 
 The rank/select spoke now has a fused compressed/FID capstone alias:
 
