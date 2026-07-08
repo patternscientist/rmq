@@ -13,6 +13,12 @@ For public artifact status, start with:
 
 Useful internal entry points:
 
+- [`AUDIT_PROTOCOL.md`](AUDIT_PROTOCOL.md): repo-local definition of audit
+  modes, severity, evidence, and report shape for coordinator and external
+  reviews.
+- [`DESIGN_DECISIONS.md`](DESIGN_DECISIONS.md): architecture and proof-model
+  decision ledger for choices that future workers should preserve or
+  explicitly supersede.
 - [`CODEX_AUTONOMY.md`](CODEX_AUTONOMY.md) and
   [`WORKER_INTEGRATION_CHECKLIST.md`](WORKER_INTEGRATION_CHECKLIST.md):
   proof-sprint and worker-loop discipline.

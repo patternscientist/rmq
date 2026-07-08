@@ -14,6 +14,9 @@
   `docs/FAMILY_SUMMARY.md` and, when relevant, `README.md`.
 - Preserve the distinction between payload bits, proof-only fields, model-level
   cost ticks, and executable Lean runtime behavior.
+- For audits, follow `docs/internal/AUDIT_PROTOCOL.md`.
+- When a branch makes or changes a nontrivial design decision, update
+  `docs/internal/DESIGN_DECISIONS.md` or report why no update was needed.
 
 ## Verification
 
