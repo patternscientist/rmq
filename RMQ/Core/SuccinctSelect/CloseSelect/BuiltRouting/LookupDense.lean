@@ -1,4 +1,5 @@
 import RMQ.Core.SuccinctSelect.CloseSelect.BuiltRouting.SpanBudgets
+import RMQ.Core.SuccinctSelect.AsymptoticFacts
 
 /-!
 # Sparse/dense lookup and dense routing facts

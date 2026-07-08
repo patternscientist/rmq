@@ -9,6 +9,11 @@ For code orientation and import boundaries, use `CODE_MAP.md`. For the
 one-command artifact gate, use `../artifact/README.md` and
 `../scripts/reproduce_artifact.sh`.
 
+The narrow paper import root is `RMQPaper`, which imports
+`RMQ.Headlines.RMQ`. The supporting-spoke rows near the end of this document are
+checked repository surfaces, but they are deliberately outside the RMQ paper
+root.
+
 ## How To Read The Table
 
 The `Lean alias` column gives the public name a paper should cite when one is
@@ -26,7 +31,7 @@ reproducibility checks around that kernel-checked surface.
 
 | Paper theorem / claim row | Lean alias | Source theorem | Source file | Exact check command |
 | --- | --- | --- | --- | --- |
-| Main paper theorem over ordinary `List Int`: advertised `2*n + overhead`, `overhead = o(n)`, exact half-open leftmost RMQ answers, constant modeled query cost, and final no-synthetic flat-payload execution story. | `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` | `RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story` | `RMQ/Core/SuccinctRMQClassic.lean` | `lake env lean scripts/headline_axiom_check.lean` |
+| Main paper theorem over ordinary `List Int`: advertised `2*n + overhead`, `overhead = o(n)`, exact half-open leftmost RMQ answers, constant modeled query cost, and final no-synthetic flat-payload execution story. | `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` via `RMQ.Headlines.RMQ` / `RMQPaper` | `RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story` | `RMQ/Core/SuccinctRMQClassic.lean` | `lake build RMQPaper`; `lake env lean scripts/headline_axiom_check.lean` |
 | Short list-facing succinct RMQ profile: `2*n + o(n)` payload and constant modeled query cost for valid list queries. | `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | `RMQ.SuccinctClassic.listInt_two_n_plus_o_constant_query_profile` | `RMQ/Core/SuccinctRMQClassic.lean` | `lake env lean scripts/headline_axiom_check.lean` |
 | Construction-facing BP-native succinct RMQ upper-bound profile over Cartesian shapes, paired with doubled-Catalan slack comparison. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile` | `RMQ/Core/SuccinctFinal.lean` | `lake env lean scripts/headline_axiom_check.lean` |
 | Information-theoretic exact RMQ lower bound in doubled Catalan slack form. | `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack` | `RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack` | `RMQ/Core/EncodingLowerBound.lean` | `lake env lean scripts/headline_axiom_check.lean` |
@@ -60,6 +65,10 @@ reproducibility checks around that kernel-checked surface.
 | Bounded large-regime compatibility companion. | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_bounded_execution_story` | `RMQ/Core/SuccinctFinalRAM.lean` | `lake env lean scripts/headline_axiom_check.lean` |
 
 ## Supporting Spoke Claims
+
+These rows are checked for the full repository, but `RMQPaper` does not import
+the standalone rank/select public capstones, standalone BP-navigation public
+capstones, or their current obstruction/history rows.
 
 | Paper theorem / claim row | Lean alias | Source theorem | Source file | Exact check command |
 | --- | --- | --- | --- | --- |

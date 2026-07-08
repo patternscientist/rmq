@@ -1,3 +1,4 @@
+import RMQPaper
 import RMQ
 import RMQ.Core.EncodingLowerBound
 import RMQ.Headlines

@@ -6,6 +6,9 @@ defaultTargets = ["RMQ"]
 name = "RMQ"
 
 [[lean_lib]]
+name = "RMQPaper"
+
+[[lean_lib]]
 name = "RMQHub"
 
 [[lean_lib]]

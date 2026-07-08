@@ -73,6 +73,7 @@ record the blocker.
 
 ```powershell
 lake build
+lake build RMQPaper
 lake build RMQHub
 lake build RMQRankSelect
 lake build RMQBPNavigation
@@ -114,9 +115,16 @@ expected result may include Lean's ordinary logical axioms such as classical
 choice or propositional extensionality. It should not include `sorryAx`,
 `Lean.ofReduceBool`, or project-specific axioms.
 
+The narrow paper import root is:
+
+```powershell
+lake build RMQPaper
+```
+
 The main paper-facing names to inspect are listed in
 `../docs/PAPER_CLAIM_CORRESPONDENCE.md`. Short public aliases live in
-`../RMQ/Headlines.lean`; construction-heavy source theorem names and files are
+`../RMQ/Headlines/RMQ.lean`; the aggregate full-repository alias barrel remains
+`../RMQ/Headlines.lean`. Construction-heavy source theorem names and files are
 in the correspondence table.
 
 ## What The Artifact Proves

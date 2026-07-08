@@ -5,7 +5,8 @@ Lean theorem surfaces that support them. It is intentionally narrower than
 `docs/FAMILY_SUMMARY.md`: use it when auditing what the repository currently
 claims, what it does not claim, and which command checks the relevant surface.
 
-For the reviewer path through the artifact, see `README.md`.
+For the reviewer path through the artifact, start with `import RMQPaper` and
+the RMQ-only headline module `RMQ.Headlines.RMQ`; see `README.md`.
 For a concise map of public import roots, final theorem spines, proof-core
 files, compatibility shims, archive surfaces, examples, and validation code,
 see `../docs/CODE_MAP.md`.
@@ -25,8 +26,8 @@ commands, see `../docs/PAPER_CLAIM_CORRESPONDENCE.md`.
 
 | Claim | Public theorem alias | Source theorem | Check command |
 | --- | --- | --- | --- |
-| Exact RMQ requires essentially `2*n` bits in the fixed-length payload model, with doubled Catalan slack. | `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack` | `RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack` | `lake env lean scripts/headline_axiom_check.lean` |
-| The BP-native succinct RMQ family answers exact RMQ queries with `2*n + o(n)` payload bits and constant modeled query cost, paired with a numeric doubled-Catalan slack comparison. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile` | `lake env lean scripts/headline_axiom_check.lean` |
+| Exact RMQ requires essentially `2*n` bits in the fixed-length payload model, with doubled Catalan slack. | `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack` via `RMQ.Headlines.RMQ` | `RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack` | `lake build RMQPaper` and `lake env lean scripts/headline_axiom_check.lean` |
+| The BP-native succinct RMQ family answers exact RMQ queries with `2*n + o(n)` payload bits and constant modeled query cost, paired with a numeric doubled-Catalan slack comparison. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` via `RMQ.Headlines.RMQ` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile` | `lake build RMQPaper` and `lake env lean scripts/headline_axiom_check.lean` |
 | The ordinary `List Int` succinct RMQ surface combines the classic half-open leftmost contract, the existing `2*n + o(n)` counted-payload story, and the final flat-payload no-synthetic WordRAM execution story. | `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | `RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_execution_story` | `lake env lean scripts/headline_axiom_check.lean` and `lake env lean scripts/wordram_axiom_check.lean` |
 | The same RMQ family has a closed `WordRAM`/register-program query controller over interpreted leaves. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_interpreted_profile` | `lake env lean scripts/wordram_axiom_check.lean` |
 | The same RMQ family emits an explicit domain-leaf trace before projection back to `Costed`. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_leaf_trace_profile` | `lake env lean scripts/wordram_axiom_check.lean` |
@@ -42,6 +43,9 @@ commands, see `../docs/PAPER_CLAIM_CORRESPONDENCE.md`.
 | The large-regime global-store execution story also has the same bounded-address and bounded-primitive-operand packet under the explicit size premise. | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_bounded_execution_story` | `lake env lean scripts/wordram_axiom_check.lean` |
 
 ## Rank/Select And BP Claims
+
+These are checked repository spokes and remain in the aggregate
+`RMQ.Headlines` barrel. They are not imported by `RMQPaper`.
 
 | Claim | Public theorem alias | Source theorem | Check command |
 | --- | --- | --- | --- |

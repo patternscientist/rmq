@@ -22,6 +22,7 @@ section "lake build"
 lake build
 
 section "public root builds for axiom checks"
+lake build RMQPaper
 lake build RMQHub
 lake build RMQRankSelect
 lake build RMQBPNavigation
@@ -55,14 +56,14 @@ fi
 
 section "forbidden source tokens"
 forbidden_source_re='\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\b|import Mathlib'
-if rg -n "$forbidden_source_re" RMQ lakefile.toml; then
+if rg -n "$forbidden_source_re" RMQ RMQPaper.lean lakefile.toml; then
   echo "Forbidden source token scan failed"
   exit 1
 fi
 echo "No forbidden source tokens found"
 
 section "forbidden reduction shortcuts"
-if rg -n 'native_decide|Lean\.ofReduceBool' RMQ; then
+if rg -n 'native_decide|Lean\.ofReduceBool' RMQ RMQPaper.lean; then
   echo "Forbidden reduction shortcut scan failed"
   exit 1
 fi

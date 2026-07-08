@@ -1,5 +1,6 @@
 import RMQ.Core.GenericSelect.Family
-import RMQ.Core.SuccinctSelect
+import RMQ.Core.SuccinctSelect.TwoLevel
+import RMQ.Core.SuccinctSelect.CloseSelect.SparseExceptionCloseData.BuildProfile
 import RMQ.Core.SuccinctClose
 
 namespace RMQ

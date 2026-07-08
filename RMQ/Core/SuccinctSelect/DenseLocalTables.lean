@@ -1,4 +1,4 @@
-import RMQ.Core.SuccinctSelect.Obstructions
+import RMQ.Core.SuccinctSelect.AsymptoticFacts
 import RMQ.Core.GenericSelect.DenseEntryTable
 
 /-!

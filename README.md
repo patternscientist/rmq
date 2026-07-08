@@ -51,7 +51,10 @@ definitions in the checked source.
 
 ## Headline Theorems
 
-Short public aliases live in [`RMQ/Headlines.lean`](RMQ/Headlines.lean).
+The RMQ-only paper aliases live in
+[`RMQ/Headlines/RMQ.lean`](RMQ/Headlines/RMQ.lean) and are imported by
+`RMQPaper`. The aggregate full-repository alias barrel remains
+[`RMQ/Headlines.lean`](RMQ/Headlines.lean).
 
 | Alias | Meaning |
 | --- | --- |
@@ -131,6 +134,7 @@ cluster, compatibility shim, archive, example, and validation code, see
 ## Public Import Roots
 
 ```lean
+import RMQPaper         -- narrow RMQ paper theorem root
 import RMQ              -- RMQ/LCA family and succinct RMQ capstone
 import RMQHub           -- reusable cost/RAM/refinement/amortized/lower-bound hub
 import RMQRankSelect    -- standalone rank/select spoke
@@ -144,7 +148,11 @@ import VerifiedDS.BPNavigation
 import VerifiedDS.UnionFind
 ```
 
-`RMQ` remains the stable artifact name for the current theorem inventory.
+`RMQPaper` is the reviewer-clean paper root: it imports the RMQ-only headline
+surface without standalone rank/select public spokes, standalone BP-navigation
+public spokes, union-find, archive roots, proposal/legacy/compat barrels, or
+old implementation roots. `RMQ` remains the stable artifact name for the
+broader current theorem inventory.
 `VerifiedDS` and its role modules are deliberately only facades for now: they
 signal the broader library direction without forcing a namespace or repository
 migration before the spoke APIs settle.
@@ -154,6 +162,8 @@ migration before the spoke APIs settle.
 For external readers, start with [`docs/WHAT_IS_PROVED.md`](docs/WHAT_IS_PROVED.md).
 For the full theorem inventory and dependency map, see
 [`docs/FAMILY_SUMMARY.md`](docs/FAMILY_SUMMARY.md).
+For the measured paper-root import closure, see
+[`docs/RMQ_IMPORT_CLOSURE.md`](docs/RMQ_IMPORT_CLOSURE.md).
 For tiny checked examples of the public surfaces, see
 [`RMQExamples/Concrete.lean`](RMQExamples/Concrete.lean).
 

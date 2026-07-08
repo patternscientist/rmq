@@ -6,7 +6,10 @@ non-claims about compiled Lean execution speed.
 
 ## Headline Surfaces
 
-The short public theorem aliases live in `RMQ/Headlines.lean`.
+The RMQ-only public theorem aliases live in `RMQ/Headlines/RMQ.lean` and are
+imported by `RMQPaper`. The aggregate `RMQ/Headlines.lean` barrel re-exports
+those RMQ aliases and adds standalone rank/select and BP-navigation spoke
+aliases.
 
 | Alias | Meaning |
 | --- | --- |
@@ -58,6 +61,13 @@ The short public theorem aliases live in `RMQ/Headlines.lean`.
 The original theorem names remain construction-heavy so that their dependencies
 and modeling choices are explicit. `RMQ.Headlines` only gives stable public
 aliases.
+
+For paper review, use `import RMQPaper`. Its checked closure contains the
+succinct RMQ construction, lower bound, and WordRAM/model-adequacy machinery,
+but not standalone rank/select public capstones, standalone BP-navigation
+public capstones, union-find, archive roots, proposal/legacy/compat barrels,
+obstruction modules, or old implementation roots. See
+[`docs/RMQ_IMPORT_CLOSURE.md`](RMQ_IMPORT_CLOSURE.md) for exact counts.
 
 ## RMQ Correctness
 

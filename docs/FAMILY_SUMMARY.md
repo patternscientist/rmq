@@ -92,6 +92,15 @@ obstruction
 `Headlines.concreteSuccinctBPTreeNavigationGlobalPayloadStoreBoundedExecutionStory_currentCloseStoreObstruction`
 records that this current close/LCA trace cannot simply be relabeled into the
 matching-open leg needed by fuller BP tree navigation.
+The RMQ-only paper import surface is now split out as
+`RMQ/Headlines/RMQ.lean`, with top-level reviewer root `RMQPaper.lean`.
+`RMQ/Headlines.lean` remains the aggregate public barrel and re-exports the
+RMQ aliases while adding standalone rank/select and BP-navigation spoke
+aliases. The measured `RMQPaper` closure imports the succinct RMQ construction,
+lower bound, and WordRAM/model-adequacy machinery, but not standalone
+rank/select public capstones, standalone BP-navigation public capstones,
+union-find, archive roots, proposal/legacy/compat barrels, obstruction modules,
+or old `RMQ/Impl` roots; see `docs/RMQ_IMPORT_CLOSURE.md`.
 
 This document is the family-level map for the current Lean development. It
 records the module dependency DAG, correctness and cost status by structure,
@@ -110,6 +119,9 @@ separate appendix.
   `Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory`,
   additionally proves the final WordRAM trace is backed by one
   query-independent flat layout/read store with no synthetic cost-only events.
+  Reviewers who only need the RMQ paper theorem surface can build
+  `RMQPaper`; the broader `RMQ` and `RMQ.Headlines` roots remain checked
+  repository/testbed imports.
 - Exact public RMQ backends: linear scan, plus-minus-one linear instance,
   sparse table, memoized sparse table, hybrid block, recursive hybrid, raw
   whole-list microtable, and value-level Fischer-Heun.

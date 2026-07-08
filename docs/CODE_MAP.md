@@ -12,19 +12,27 @@ Start with these files in this order:
 
 1. `README.md` for the public story and current headline theorem aliases.
 2. `artifact/CLAIMS.md` for claim-to-theorem-to-command traceability.
-3. `RMQ/Headlines.lean` for short aliases over the construction-heavy theorem
-   names.
-4. `RMQ.lean` for the main RMQ import root.
-5. `docs/WHAT_IS_PROVED.md` and `docs/TRUST_AUDIT_PACKET.md` for scope,
+3. `RMQPaper.lean` for the narrow RMQ paper import root.
+4. `RMQ/Headlines/RMQ.lean` for RMQ-only aliases over the construction-heavy
+   theorem names.
+5. `RMQ/Headlines.lean` for the aggregate alias barrel, including spokes.
+6. `RMQ.lean` for the broad RMQ import root.
+7. `docs/WHAT_IS_PROVED.md` and `docs/TRUST_AUDIT_PACKET.md` for scope,
    non-claims, and reviewer-facing trust-base details.
 
 ## Public Roots
 
+- `RMQPaper.lean` is the reviewer-clean RMQ paper import root. It imports
+  `RMQ.Headlines.RMQ` and avoids standalone rank/select public capstones,
+  standalone BP-navigation public capstones, union-find, archive roots,
+  proposal/legacy/compat barrels, obstruction modules, and old implementation
+  roots.
 - `RMQ.lean` is the flagship import root for the active RMQ stack: reference
   semantics, RMQ/LCA reductions, concrete implementations, succinct RMQ,
   lower bounds, model layers, and headline aliases.
-- `RMQ/Headlines.lean` is the citable public alias layer. It deliberately wraps
-  precise construction names without changing theorem statements.
+- `RMQ/Headlines/RMQ.lean` is the RMQ-only citable alias layer used by the
+  paper root. `RMQ/Headlines.lean` re-exports it and adds standalone
+  rank/select and BP-navigation aliases for the full repository.
 - `RMQExamples.lean` and `RMQExamples/` are small downstream-facing import and
   example checks. They are useful smoke tests for public roots.
 - `RMQHub.lean` exposes reusable model infrastructure without importing the RMQ
@@ -63,13 +71,14 @@ spine and a model-adequacy spine.
 - `RMQ/Core/SuccinctRMQClassic.lean` is the ordinary `List Int` front door. It
   specializes the BP-native construction to a reader-facing RMQ input list,
   half-open queries, and leftmost ties.
-- `RMQ/Headlines.lean` exposes the short public names, including
+- `RMQ/Headlines/RMQ.lean` exposes the RMQ-only short public names, including
   `succinctRMQListIntTwoNPlusOConstantQuery`,
   `listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory`,
   `listIntSuccinctRMQPaperMainTheorem`,
   `succinctRMQTwoNPlusOConstantQuery`,
   `succinctRMQFlatPayloadStoreNoSyntheticExecutionStory`, and
-  `succinctRMQFinalFullModelSoundness`.
+  `succinctRMQFinalFullModelSoundness`. `RMQ/Headlines.lean` re-exports these
+  names and adds spoke aliases.
 
 The model-adequacy theorem spine to look for is:
 
@@ -132,6 +141,12 @@ in-repository code should import the canonical split modules instead.
 `scripts/shim_lint.ps1` is the guardrail for this boundary. It scans live roots,
 docs, examples, and scripts to prevent stale proposal shims and old flat
 GenericSelect compatibility imports from re-entering active imports.
+
+The paper root has its own measured closure in `docs/RMQ_IMPORT_CLOSURE.md`.
+In the current worktree, `RMQPaper` imports 124 workspace Lean files and 104190
+Lean LOC, with no modules matching archive/proposal/legacy/compat/obstruction
+or standalone public-spoke patterns. The larger whole-workspace source count
+belongs to the checked data-structure testbed, not the minimal paper root.
 
 The optional archive root is `RMQArchive.lean`, which imports `RMQ.Archive`.
 Archive files are checked historical/retired surfaces, not the recommended
