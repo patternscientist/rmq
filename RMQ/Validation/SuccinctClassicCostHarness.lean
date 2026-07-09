@@ -54,8 +54,7 @@ def expectedAnswer (xs : List Int) (left right : Nat) : Option Nat :=
   else
     none
 
-def routeKind (xs : List Int) : String :=
-  let shape := RMQ.SuccinctClassic.cartesianShape xs
+def routeKindOfShape (shape : RMQ.Cartesian.CartesianShape) : String :=
   if RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockSize shape = 0 then
     "zero-block"
   else if RMQ.SuccinctClose.concreteBPRelativeRmmInteriorReady shape then
@@ -64,6 +63,13 @@ def routeKind (xs : List Int) : String :=
     "active-not-ready"
   else
     "inactive-not-ready"
+
+def routeKind (xs : List Int) : String :=
+  routeKindOfShape (RMQ.SuccinctClassic.cartesianShape xs)
+
+def preparedRouteKind
+    (prepared : RMQ.SuccinctClassic.PreparedInput) : String :=
+  routeKindOfShape prepared.shape
 
 def boolString (b : Bool) : String :=
   if b then "true" else "false"
@@ -78,18 +84,21 @@ def fastRegimeQueryCost : Nat :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost
 
 def reportWindow
-    (emitPhases : Bool) (xs : List Int) (routeBound : Nat)
+    (emitPhases : Bool) (prepared : RMQ.SuccinctClassic.PreparedInput)
+    (routeBound : Nat)
     (fastRegimeApplies : Bool) (window : Window) : IO Bool := do
   if emitPhases then
     IO.println
       ("phase=queryCosted start window=" ++ windowLabel window ++
-        " note=public queryCosted recomputes cartesianShape")
-  let query := RMQ.SuccinctClassic.queryCosted xs window.left window.right
+        " note=preparedQueryCosted reuses the prepared cartesianShape")
+  let query :=
+    RMQ.SuccinctClassic.preparedQueryCosted
+      prepared window.left window.right
   if emitPhases then
     IO.println
       ("phase=queryCosted done window=" ++ windowLabel window ++
         " modeledTraceCost=" ++ toString query.cost)
-  let expected := expectedAnswer xs window.left window.right
+  let expected := expectedAnswer prepared.xs window.left window.right
   let agrees := query.erase == expected
   let underRouteBound := query.cost <= routeBound
   let underFastRegimeBound := query.cost <= fastRegimeQueryCost
@@ -105,35 +114,41 @@ def reportWindow
   pure agrees
 
 def reportWindows
-    (emitPhases : Bool) (xs : List Int) (routeBound : Nat)
+    (emitPhases : Bool) (prepared : RMQ.SuccinctClassic.PreparedInput)
+    (routeBound : Nat)
     (fastRegimeApplies : Bool) : List Window -> IO Bool
   | [] => pure true
   | window :: rest => do
-      let okHere <- reportWindow emitPhases xs routeBound fastRegimeApplies window
-      let okRest <- reportWindows emitPhases xs routeBound fastRegimeApplies rest
+      let okHere <-
+        reportWindow emitPhases prepared routeBound fastRegimeApplies window
+      let okRest <-
+        reportWindows emitPhases prepared routeBound fastRegimeApplies rest
       pure (okHere && okRest)
 
 def reportFixture (emitPhases : Bool) (fixture : Fixture) : IO Bool := do
   if emitPhases then
     IO.println
       ("phase=shapeMetadata start input=" ++ fixture.name ++
-        " note=cartesianShape uses the current List Int reference builder")
-  let shape := RMQ.SuccinctClassic.cartesianShape fixture.xs
+        " note=prepareInput computes the canonical cartesianShape once")
+  let prepared := RMQ.SuccinctClassic.prepareInput fixture.xs
+  let shape := prepared.shape
   if emitPhases then
     IO.println
       ("phase=shapeMetadata done input=" ++ fixture.name ++
         " shapeSize=" ++ toString shape.size ++
-        " bpCodeLength=" ++ toString shape.bpCode.length)
+        " bpCodeLength=" ++ toString shape.bpCode.length ++
+        " preparedArrayValues=" ++ toString prepared.values.size)
   if emitPhases then
     IO.println
       ("phase=buildPayload start input=" ++ fixture.name ++
-        " note=public buildPayload recomputes cartesianShape")
-  let payloadBits := (RMQ.SuccinctClassic.buildPayload fixture.xs).length
+        " note=preparedBuildPayload reuses the prepared cartesianShape")
+  let payloadBits :=
+    (RMQ.SuccinctClassic.preparedBuildPayload prepared).length
   if emitPhases then
     IO.println
       ("phase=buildPayload done input=" ++ fixture.name ++
         " payloadBits=" ++ toString payloadBits)
-  let routeBound := RMQ.SuccinctClassic.routeSplitQueryCost fixture.xs
+  let routeBound := RMQ.SuccinctClassic.preparedRouteSplitQueryCost prepared
   let fastRegimeApplies :=
     RMQ.SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= shape.size
   IO.println
@@ -141,7 +156,8 @@ def reportFixture (emitPhases : Bool) (fixture : Fixture) : IO Bool := do
       " n=" ++ toString fixture.xs.length ++
       " shapeSize=" ++ toString shape.size ++
       " payloadBits=" ++ toString payloadBits ++
-      " route=" ++ routeKind fixture.xs ++
+      " preparedArrayValues=" ++ toString prepared.values.size ++
+      " route=" ++ preparedRouteKind prepared ++
       " routeSplitBound=" ++
         toString routeBound ++
       " cleanAllSizeBound=" ++ toString RMQ.SuccinctClassic.queryCost ++
@@ -149,7 +165,7 @@ def reportFixture (emitPhases : Bool) (fixture : Fixture) : IO Bool := do
       " fastRegimeApplies=" ++ boolString fastRegimeApplies ++
       " readyThreshold=" ++
         toString RMQ.SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold)
-  reportWindows emitPhases fixture.xs routeBound fastRegimeApplies
+  reportWindows emitPhases prepared routeBound fastRegimeApplies
     fixture.windows
 
 def defaultFixtures : List Fixture :=
@@ -223,13 +239,13 @@ def usage : String :=
   "  lake exe rmq_succinct_classic_cost_harness\n" ++
   "  lake exe rmq_succinct_classic_cost_harness -- --profile-size N\n\n" ++
   "--profile-size N runs one deterministic balanced fixture through the " ++
-  "current public List Int buildPayload/queryCosted path with phase markers. " ++
+  "theorem-backed prepared buildPayload/queryCosted mirror with phase markers. " ++
   "Use N=32768 only as an opt-in ready-threshold profiling run."
 
 def runDefault : IO Unit := do
   IO.println "SuccinctClassic executable cost harness"
   IO.println
-    "modeledTraceCost is queryCosted.cost, i.e. the checked WordRAM trace/event count; it is not wall-clock runtime."
+    "modeledTraceCost is preparedQueryCosted.cost, theorem-equal to queryCosted.cost; it is not wall-clock runtime."
   let ok <- reportFixtures defaultFixtures
   if ok then
     IO.println "all reported windows agree with reference List Int RMQ semantics"
@@ -240,7 +256,7 @@ def runDefault : IO Unit := do
 def runProfileSize (n : Nat) : IO Unit := do
   IO.println "SuccinctClassic executable construction/profile mode"
   IO.println
-    "This mode reports phase markers for the current public List Int path; wall-clock timing is external runtime evidence, not a model-cost theorem."
+    "This mode reports phase markers for the theorem-backed prepared mirror; wall-clock timing is external runtime evidence, not a model-cost theorem."
   IO.println
     ("requestedSize=" ++ toString n ++
       " readyThreshold=" ++

@@ -43,25 +43,28 @@ The same executable has an opt-in construction profile:
 lake exe rmq_succinct_classic_cost_harness -- --profile-size N
 ```
 
-The profile mode runs one deterministic balanced fixture through the current
-public `List Int` `SuccinctClassic.buildPayload` / `queryCosted` path and emits
-phase markers around `cartesianShape`, `buildPayload`, and each `queryCosted`
-call. Use `N = 32768` only as an explicit ready-threshold experiment, not as
-part of the default artifact gate. Current profiling evidence shows that
-`N = 1024` completes but `N = 2048` is already beyond a five-minute local
-review budget on the worker machine, before any `32768` ready-regime fixture is
-reasonable. The bottleneck is construction, not the checked model-cost theorem:
-the public list-facing path repeatedly rebuilds `Cartesian.shape xs`, whose
-reference builder uses `shapeRange`, `scanWindow`, and indexed `List Int`
-accesses.
+The profile mode now runs one deterministic balanced fixture through the
+theorem-backed prepared mirror in `SuccinctClassic.PreparedInput`. The prepared
+wrapper computes the canonical `cartesianShape` once per fixture, stores an
+`Array Int` copy of the input for executable consumers, and reuses the prepared
+shape through `preparedBuildPayload`, `preparedRouteSplitQueryCost`, and
+`preparedQueryCosted`. The central agreement theorems are
+`preparedInput_shape_eq_cartesianShape`,
+`preparedBuildPayload_eq_buildPayload`, and
+`preparedQueryCosted_eq_queryCosted`, with explicit result and model-cost
+corollaries for the prepared query.
 
-The next executable-strengthening target is therefore an Array-backed
-Cartesian-shape builder and a prepared/builder-mirror `SuccinctClassic` path:
-prove the Array builder produces the same shape as `Cartesian.shape xs`, then
-prove the prepared payload/query mirror agrees with `buildPayload xs` and
-`queryCosted xs` while reusing the built shape. That would let a ready-threshold
-fixture strengthen reviewer evidence without changing theorem-level
-model-cost claims.
+Use `N = 32768` only as an explicit ready-threshold experiment, not as part of
+the default artifact gate. Current prepared-path profiling evidence shows that
+`N = 1024` and `N = 1280` complete locally, while `N = 2048` still exceeded a
+15-minute worker timeout. The bottleneck is therefore narrower but still
+construction-side: the prepared layer removes repeated shape rebuilding across
+payload and query calls, but `prepareInput` intentionally still computes the
+canonical `Cartesian.shape xs`, whose reference builder uses `shapeRange`,
+`scanWindow`, and indexed `List Int` accesses. A genuinely faster
+array/stack-based Cartesian builder remains future work and must be proved
+extensionally equal to `Cartesian.shape xs` before the executable harness uses
+it.
 
 The final RMQ roadmap refines the ordering: first lift the strongest final
 store/footprint model theorem to the list-facing interface, then clean the
