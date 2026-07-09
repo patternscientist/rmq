@@ -19,6 +19,50 @@ namespace SuccinctClassic
 def cartesianShape (xs : List Int) : Cartesian.CartesianShape :=
   Cartesian.shape xs
 
+/--
+Prepared executable input for the list-facing succinct RMQ path.
+
+The `values` array is an executable cache of the original list, while
+`shape` is the one Cartesian shape reused by the prepared payload and query
+wrappers below.  The agreement fields are proof-only bridges back to the
+canonical `List Int` reference path.
+-/
+structure PreparedInput where
+  xs : List Int
+  values : Array Int
+  shape : Cartesian.CartesianShape
+  values_toList_eq : values.toList = xs
+  shape_eq : shape = cartesianShape xs
+
+/-- Build the prepared executable input by computing the canonical shape once. -/
+def prepareInput (xs : List Int) : PreparedInput where
+  xs := xs
+  values := xs.toArray
+  shape := cartesianShape xs
+  values_toList_eq := by
+    simp
+  shape_eq := rfl
+
+/-- The prepared array cache erases back to the original list. -/
+theorem preparedInput_values_toList_eq (prepared : PreparedInput) :
+    prepared.values.toList = prepared.xs :=
+  prepared.values_toList_eq
+
+/-- The prepared Cartesian shape is exactly the canonical list-facing shape. -/
+theorem preparedInput_shape_eq_cartesianShape (prepared : PreparedInput) :
+    prepared.shape = cartesianShape prepared.xs :=
+  prepared.shape_eq
+
+/-- The canonical prepared builder stores an array copy of the input list. -/
+theorem prepareInput_values_toList_eq (xs : List Int) :
+    (prepareInput xs).values.toList = xs := by
+  simp [prepareInput]
+
+/-- The canonical prepared builder stores the canonical Cartesian shape. -/
+theorem prepareInput_shape_eq_cartesianShape (xs : List Int) :
+    (prepareInput xs).shape = cartesianShape xs := by
+  rfl
+
 /-- The auxiliary `o(n)` term used by the public BP-native construction. -/
 abbrev overhead : Nat -> Nat :=
   SuccinctFinal.concreteBPNativeSuccinctRMQOverhead
@@ -38,6 +82,11 @@ abbrev routeSplitQueryCost (xs : List Int) : Nat :=
   SuccinctFinal.concreteBPNativeSuccinctRMQRouteSplitQueryCost
     (cartesianShape xs)
 
+/-- Shape-sensitive route-split budget over an already prepared shape. -/
+abbrev preparedRouteSplitQueryCost (prepared : PreparedInput) : Nat :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQRouteSplitQueryCost
+    prepared.shape
+
 /--
 The counted payload built from an ordinary input list: the `2*n` BP shape code
 plus the compact auxiliary payload used by the final BP-native construction.
@@ -46,6 +95,15 @@ def buildPayload (xs : List Int) : List Bool :=
   SuccinctFinal.concreteBPNativeSuccinctRMQPayload
     SuccinctFinal.builtGenericSparseExceptionSelectBPCloseAccessFamily
     (cartesianShape xs)
+
+/--
+Prepared payload construction.  This reuses the stored Cartesian shape and is
+proved below to agree with the canonical `buildPayload` path.
+-/
+def preparedBuildPayload (prepared : PreparedInput) : List Bool :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQPayload
+    SuccinctFinal.builtGenericSparseExceptionSelectBPCloseAccessFamily
+    prepared.shape
 
 /--
 The all-size, global-word-trace query of the public BP-native construction,
@@ -57,6 +115,16 @@ def queryCosted (xs : List Int) (left right : Nat) :
     (cartesianShape xs) left right
 
 /--
+Prepared all-size query.  This reuses the stored Cartesian shape and is proved
+below to agree with the canonical `queryCosted` path, including model cost.
+-/
+def preparedQueryCosted
+    (prepared : PreparedInput) (left right : Nat) :
+    Costed (Option Nat) :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+    prepared.shape left right
+
+/--
 The supplied-store final query specialized to the Cartesian shape of an
 ordinary input list.
 -/
@@ -65,6 +133,46 @@ def queryCostedWithStore
     Costed (Option Nat) :=
   SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
     (cartesianShape xs) store left right
+
+/-- The prepared route-split budget agrees with the canonical list-facing one. -/
+theorem preparedRouteSplitQueryCost_eq_routeSplitQueryCost
+    (prepared : PreparedInput) :
+    preparedRouteSplitQueryCost prepared =
+      routeSplitQueryCost prepared.xs := by
+  cases prepared with
+  | mk xs values shape hvalues hshape =>
+      simp [preparedRouteSplitQueryCost, routeSplitQueryCost, hshape]
+
+/-- Prepared payload construction agrees with canonical `buildPayload`. -/
+theorem preparedBuildPayload_eq_buildPayload
+    (prepared : PreparedInput) :
+    preparedBuildPayload prepared = buildPayload prepared.xs := by
+  cases prepared with
+  | mk xs values shape hvalues hshape =>
+      simp [preparedBuildPayload, buildPayload, hshape]
+
+/-- Prepared query execution agrees exactly with canonical `queryCosted`. -/
+theorem preparedQueryCosted_eq_queryCosted
+    (prepared : PreparedInput) (left right : Nat) :
+    preparedQueryCosted prepared left right =
+      queryCosted prepared.xs left right := by
+  cases prepared with
+  | mk xs values shape hvalues hshape =>
+      simp [preparedQueryCosted, queryCosted, hshape]
+
+/-- Prepared query results agree with canonical `queryCosted` results. -/
+theorem preparedQueryCosted_erase_eq
+    (prepared : PreparedInput) (left right : Nat) :
+    (preparedQueryCosted prepared left right).erase =
+      (queryCosted prepared.xs left right).erase := by
+  rw [preparedQueryCosted_eq_queryCosted]
+
+/-- Prepared query model costs agree with canonical `queryCosted` costs. -/
+theorem preparedQueryCosted_cost_eq
+    (prepared : PreparedInput) (left right : Nat) :
+    (preparedQueryCosted prepared left right).cost =
+      (queryCosted prepared.xs left right).cost := by
+  rw [preparedQueryCosted_eq_queryCosted]
 
 /-- Query-independent flat payload layout used by the final query for `xs`. -/
 abbrev flatPayloadLayout (xs : List Int) :

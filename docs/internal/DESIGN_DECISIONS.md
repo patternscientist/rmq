@@ -218,6 +218,69 @@ Supersedes:
 
 None.
 
+## DD-20260709-004: Prepared SuccinctClassic Reuse Before Fast Shape Construction
+
+Status: Accepted
+Date: 2026-07-09
+Scope: Executable RMQ cost harness and list-facing prepared construction.
+
+Decision:
+
+The executable `SuccinctClassic` cost harness may use the
+`SuccinctClassic.PreparedInput` mirror instead of repeatedly calling the
+list-facing `buildPayload` and `queryCosted` wrappers, but only through the
+proved agreement theorems in `RMQ.Core.SuccinctRMQClassic`.
+
+Context:
+
+The previous harness rebuilt `Cartesian.shape xs` for metadata, payload
+construction, route classification, route-cost bounds, and each query window.
+This obscured the useful executable evidence with repeated reference-builder
+work, while the theorem story already factors the final RMQ construction over a
+Cartesian shape.
+
+Options considered:
+
+- Keep calling the public list-facing wrappers everywhere in the harness.
+- Add a theorem-backed prepared mirror that reuses one canonical shape per
+  fixture.
+- Replace the reference shape builder with a new fast Array/stack builder in
+  the harness before proving its agreement with `Cartesian.shape xs`.
+
+Rationale:
+
+The prepared mirror is the smallest sound abstraction boundary: it preserves
+the public `List Int` reference contract, keeps the model-cost theorem surface
+unchanged, and proves the prepared payload/query path equal to the canonical
+path, including query model cost. A faster Array/stack Cartesian builder is
+still valuable, but the harness should not silently use it until a central
+shape-agreement theorem is checked.
+
+Consequences:
+
+Prepared harness runs now reuse the built shape across payload and query calls.
+This improves executable profiling evidence but does not prove or claim a
+better Lean runtime complexity for constructing `Cartesian.shape xs`.
+Future fast builders should prove extensional equality to the canonical shape
+before replacing `prepareInput`.
+
+Evidence:
+
+- `RMQ/Core/SuccinctRMQClassic.lean`
+- `RMQ/Validation/SuccinctClassicCostHarness.lean`
+- `docs/RMQ_EXTRACTION_FRONTIER.md`
+- `lake build RMQ.Core.SuccinctRMQClassic`
+- `lake exe rmq_succinct_classic_cost_harness -- --profile-size 1280`
+
+Follow-up:
+
+Build and prove a genuine Array/stack-based Cartesian-shape constructor whose
+output is extensionally equal to `Cartesian.shape xs`.
+
+Supersedes:
+
+None.
+
 ## DD-20260708-004: Use A Narrow RMQ Paper Root
 
 Status: Accepted
