@@ -129,7 +129,7 @@ def reportFixture (emitPhases : Bool) (fixture : Fixture) : IO Bool := do
   if emitPhases then
     IO.println
       ("phase=shapeMetadata start input=" ++ fixture.name ++
-        " note=prepareInput computes the canonical cartesianShape once")
+        " note=prepareInput uses theorem-backed stackCartesianShape once")
   let prepared := RMQ.SuccinctClassic.prepareInput fixture.xs
   let shape := prepared.shape
   if emitPhases then
@@ -237,10 +237,12 @@ def reportFixtures : List Fixture -> IO Bool
 def usage : String :=
   "usage:\n" ++
   "  lake exe rmq_succinct_classic_cost_harness\n" ++
-  "  lake exe rmq_succinct_classic_cost_harness -- --profile-size N\n\n" ++
+  "  lake exe rmq_succinct_classic_cost_harness -- --profile-size N\n" ++
+  "  lake exe rmq_succinct_classic_cost_harness -- --shape-profile-size N\n\n" ++
   "--profile-size N runs one deterministic balanced fixture through the " ++
   "theorem-backed prepared buildPayload/queryCosted mirror with phase markers. " ++
-  "Use N=32768 only as an opt-in ready-threshold profiling run."
+  "--shape-profile-size N runs only prepared shape construction for bottleneck " ++
+  "diagnosis. Use N=32768 only as an opt-in ready-threshold profiling run."
 
 def runDefault : IO Unit := do
   IO.println "SuccinctClassic executable cost harness"
@@ -272,6 +274,20 @@ def runProfileSize (n : Nat) : IO Unit := do
     IO.eprintln "at least one profiled window disagreed with reference List Int RMQ semantics"
     IO.Process.exit 1
 
+def runShapeProfileSize (n : Nat) : IO Unit := do
+  IO.println "SuccinctClassic executable shape-construction profile mode"
+  IO.println
+    "This mode runs prepareInput only; wall-clock timing is external runtime evidence, not a model-cost theorem."
+  let fixture := profileFixture n
+  let prepared := RMQ.SuccinctClassic.prepareInput fixture.xs
+  IO.println
+    ("input=" ++ fixture.name ++
+      " n=" ++ toString fixture.xs.length ++
+      " shapeSize=" ++ toString prepared.shape.size ++
+      " bpCodeLength=" ++ toString prepared.shape.bpCode.length ++
+      " preparedArrayValues=" ++ toString prepared.values.size ++
+      " route=" ++ preparedRouteKind prepared)
+
 def normalizeArgs : List String -> List String
   | "--" :: rest => rest
   | args => args
@@ -285,6 +301,13 @@ def mainImpl (args : List String) : IO Unit := do
       | some n => runProfileSize n
       | none =>
           IO.eprintln ("invalid --profile-size value: " ++ nText)
+          IO.eprintln usage
+          IO.Process.exit 2
+  | ["--shape-profile-size", nText] =>
+      match nText.toNat? with
+      | some n => runShapeProfileSize n
+      | none =>
+          IO.eprintln ("invalid --shape-profile-size value: " ++ nText)
           IO.eprintln usage
           IO.Process.exit 2
   | _ =>

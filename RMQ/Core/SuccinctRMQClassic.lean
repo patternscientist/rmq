@@ -34,14 +34,19 @@ structure PreparedInput where
   values_toList_eq : values.toList = xs
   shape_eq : shape = cartesianShape xs
 
-/-- Build the prepared executable input by computing the canonical shape once. -/
+/--
+Build the prepared executable input with the theorem-backed stack/right-spine
+Cartesian-shape builder.
+-/
 def prepareInput (xs : List Int) : PreparedInput where
   xs := xs
   values := xs.toArray
-  shape := cartesianShape xs
+  shape := Cartesian.stackCartesianShape xs
   values_toList_eq := by
     simp
-  shape_eq := rfl
+  shape_eq := by
+    unfold cartesianShape
+    exact Cartesian.stackCartesianShape_eq_shape xs
 
 /-- The prepared array cache erases back to the original list. -/
 theorem preparedInput_values_toList_eq (prepared : PreparedInput) :
@@ -58,10 +63,19 @@ theorem prepareInput_values_toList_eq (xs : List Int) :
     (prepareInput xs).values.toList = xs := by
   simp [prepareInput]
 
-/-- The canonical prepared builder stores the canonical Cartesian shape. -/
+/-- The prepared builder stores a theorem-backed canonical Cartesian shape. -/
 theorem prepareInput_shape_eq_cartesianShape (xs : List Int) :
     (prepareInput xs).shape = cartesianShape xs := by
-  rfl
+  simp [prepareInput, cartesianShape, Cartesian.stackCartesianShape_eq_shape]
+
+/--
+The executable stack/right-spine shape builder agrees with the canonical
+list-facing Cartesian shape used by `SuccinctClassic`.
+-/
+theorem stackCartesianShape_eq_cartesianShape (xs : List Int) :
+    Cartesian.stackCartesianShape xs = cartesianShape xs := by
+  unfold cartesianShape
+  exact Cartesian.stackCartesianShape_eq_shape xs
 
 /-- The auxiliary `o(n)` term used by the public BP-native construction. -/
 abbrev overhead : Nat -> Nat :=

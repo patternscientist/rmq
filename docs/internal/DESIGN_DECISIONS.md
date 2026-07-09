@@ -218,6 +218,76 @@ Supersedes:
 
 None.
 
+## DD-20260709-005: Theorem-Backed Stack Cartesian Builder For Prepared Input
+
+Status: Accepted
+Date: 2026-07-09
+Scope: Executable RMQ prepared construction and Cartesian-shape building.
+
+Decision:
+
+`SuccinctClassic.prepareInput` may build its stored shape with
+`Cartesian.stackCartesianShape` instead of directly calling the reference
+`Cartesian.shape xs`, because the central agreement theorem
+`Cartesian.stackCartesianShape_eq_shape` proves extensional equality to the
+canonical shape. The list-facing theorem
+`SuccinctClassic.stackCartesianShape_eq_cartesianShape` records the same bridge
+at the prepared SuccinctClassic boundary.
+
+Context:
+
+DD-20260709-004 allowed the executable harness to reuse a prepared shape, but
+kept `prepareInput` on the canonical `shapeRange`/`scanWindow` builder until a
+faster constructor had a checked agreement theorem. That theorem now exists.
+
+Options considered:
+
+- Keep `prepareInput` on `cartesianShape xs` and leave the faster builder as a
+  standalone executable helper.
+- Route `prepareInput` through an unproved executable shortcut.
+- Route `prepareInput` through the stack/right-spine builder only after proving
+  equality to `Cartesian.shape xs`.
+
+Rationale:
+
+The accepted route preserves the public `List Int` reference semantics while
+removing the reference `shapeRange` builder from the prepared executable path.
+The proof uses a valued executable Cartesian tree, an inorder-values invariant,
+and a validity invariant stating that each root is the leftmost minimum of its
+subtree values. The prepared payload/query wrappers keep their existing
+agreement theorems, so model-cost claims remain statements about the checked
+WordRAM path rather than Lean runtime.
+
+Consequences:
+
+Prepared executable runs now construct their Cartesian shape through the
+theorem-backed stack/right-spine builder before reusing it for payload and
+query reporting. This is runtime engineering evidence, not a theorem about
+wall-clock complexity, extracted-code performance, or a changed query-cost
+model. Larger profiling runs should still report the exact phase output and
+timings; payload construction and final-query execution may remain bottlenecks
+after shape construction is no longer the reference recursive scan.
+
+Evidence:
+
+- `RMQ/Core/Shape.lean`
+- `RMQ/Core/SuccinctRMQClassic.lean`
+- `RMQ/Validation/SuccinctClassicCostHarness.lean`
+- `docs/RMQ_EXTRACTION_FRONTIER.md`
+- `lake build RMQ.Core.SuccinctRMQClassic`
+
+Follow-up:
+
+If executable profiling still bottlenecks in prepared construction, compare the
+right-spine stack builder against a fully monotone Array-backed implementation,
+but keep the same agreement-theorem boundary before routing any new builder
+through `prepareInput`.
+
+Supersedes:
+
+Completes the fast-builder follow-up in DD-20260709-004 for the prepared
+`SuccinctClassic` path.
+
 ## DD-20260709-004: Prepared SuccinctClassic Reuse Before Fast Shape Construction
 
 Status: Accepted
@@ -274,8 +344,8 @@ Evidence:
 
 Follow-up:
 
-Build and prove a genuine Array/stack-based Cartesian-shape constructor whose
-output is extensionally equal to `Cartesian.shape xs`.
+Completed for the prepared path by DD-20260709-005. Future variants should keep
+the same theorem-backed replacement boundary.
 
 Supersedes:
 
