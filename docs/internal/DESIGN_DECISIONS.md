@@ -851,3 +851,73 @@ of the default artifact gate.
 Supersedes:
 
 None.
+
+## DD-20260709-003: Keep Ready-Threshold Executable Profiling Opt-In
+
+Status: Accepted
+Date: 2026-07-09
+Scope: RMQ executable evidence and ready-regime artifact fixtures.
+
+Decision:
+
+Do not add a default `2^15` ready-threshold fixture to the artifact gate yet.
+Keep ready-regime executable profiling behind an explicit
+`lake exe rmq_succinct_classic_cost_harness -- --profile-size N` command until
+the public list-facing construction has an Array-backed builder mirror.
+
+Context:
+
+The fast-regime theorem surface is already model-level: under the real
+`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 32768` premise,
+the final query cost is bounded by the checked `118` trace/event constant. The
+new executable harness is reviewer evidence for the public
+`SuccinctClassic.buildPayload` / `queryCosted` path, not a runtime theorem.
+Local profiling completed `N = 1024`, but an opt-in `N = 2048` profile did not
+finish inside a five-minute worker budget. A default `32768` ready-threshold
+fixture would therefore make artifact review about construction runtime rather
+than the theorem-level model claim.
+
+Options considered:
+
+- Add a default `32768` ready-regime fixture to the cost harness.
+- Add an opt-in size-parameterized profile and keep the default fixture set
+  reviewer-friendly.
+- Skip executable ready-regime evidence entirely until extraction work.
+
+Rationale:
+
+The current public path repeatedly rebuilds `Cartesian.shape xs`: the shape
+builder is the reference `List Int` `shapeRange`, whose root selection uses
+`scanWindow`, and `scanWindow` compares indices through indexed list reads.
+`buildPayload xs` and each `queryCosted xs left right` call recompute that
+shape. That construction bottleneck is separate from the checked
+`queryCosted.cost` model cost, so putting a threshold fixture in the default
+gate would blur the trust boundary.
+
+Consequences:
+
+The default harness may report fast-regime applicability and bounds, but it
+must not imply a Lean wall-clock claim. Ready-threshold experiments should be
+explicit opt-in profiling runs. The next theorem/engineering target is an
+Array-backed Cartesian builder, with a theorem such as
+`shapeArray_toList_eq_shape`, followed by a prepared `SuccinctClassic` builder
+mirror proving that the reused-shape payload/query path agrees with
+`buildPayload xs` and `queryCosted xs`.
+
+Evidence:
+
+- `RMQ/Validation/SuccinctClassicCostHarness.lean`
+- `docs/RMQ_EXTRACTION_FRONTIER.md`
+- `artifact/README.md`
+- Local command: `lake exe rmq_succinct_classic_cost_harness -- --profile-size 1024`
+- Local timeout: `lake exe rmq_succinct_classic_cost_harness -- --profile-size 2048`
+  exceeded 300 seconds on the worker machine.
+
+Follow-up:
+
+Introduce the Array-backed builder mirror and equivalence theorem before
+promoting a ready-threshold executable fixture into the default artifact path.
+
+Supersedes:
+
+None.

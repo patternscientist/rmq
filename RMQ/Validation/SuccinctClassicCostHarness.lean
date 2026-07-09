@@ -33,6 +33,21 @@ def zigZagInput (len : Nat) : List Int :=
     else
       Int.ofNat i - Int.ofNat len
 
+def balancedInputCore : Nat -> Nat -> List Int
+  | 0, _depth => []
+  | len + 1, depth =>
+      let leftLen := len / 2
+      let rightLen := len - leftLen
+      balancedInputCore leftLen (depth + 1) ++
+        [Int.ofNat depth] ++
+          balancedInputCore rightLen (depth + 1)
+termination_by len _depth => len
+decreasing_by
+  all_goals omega
+
+def balancedInput (len : Nat) : List Int :=
+  balancedInputCore len 0
+
 def expectedAnswer (xs : List Int) (left right : Nat) : Option Nat :=
   if left < right /\ right <= xs.length then
     some (RMQ.scanWindow xs left (right - left))
@@ -53,31 +68,74 @@ def routeKind (xs : List Int) : String :=
 def boolString (b : Bool) : String :=
   if b then "true" else "false"
 
+def appliesString (applies ok : Bool) : String :=
+  if applies then boolString ok else "not-applicable"
+
 def windowLabel (window : Window) : String :=
   "[" ++ toString window.left ++ ", " ++ toString window.right ++ ")"
 
-def reportWindow (xs : List Int) (window : Window) : IO Bool := do
+def fastRegimeQueryCost : Nat :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost
+
+def reportWindow
+    (emitPhases : Bool) (xs : List Int) (routeBound : Nat)
+    (fastRegimeApplies : Bool) (window : Window) : IO Bool := do
+  if emitPhases then
+    IO.println
+      ("phase=queryCosted start window=" ++ windowLabel window ++
+        " note=public queryCosted recomputes cartesianShape")
   let query := RMQ.SuccinctClassic.queryCosted xs window.left window.right
+  if emitPhases then
+    IO.println
+      ("phase=queryCosted done window=" ++ windowLabel window ++
+        " modeledTraceCost=" ++ toString query.cost)
   let expected := expectedAnswer xs window.left window.right
   let agrees := query.erase == expected
+  let underRouteBound := query.cost <= routeBound
+  let underFastRegimeBound := query.cost <= fastRegimeQueryCost
   IO.println
     ("  window=" ++ windowLabel window ++
       " answer=" ++ reprStr query.erase ++
       " expected=" ++ reprStr expected ++
       " agrees=" ++ boolString agrees ++
-      " modeledTraceCost=" ++ toString query.cost)
+      " modeledTraceCost=" ++ toString query.cost ++
+      " underRouteSplitBound=" ++ boolString underRouteBound ++
+      " underFastRegimeBound=" ++
+        appliesString fastRegimeApplies underFastRegimeBound)
   pure agrees
 
-def reportWindows (xs : List Int) : List Window -> IO Bool
+def reportWindows
+    (emitPhases : Bool) (xs : List Int) (routeBound : Nat)
+    (fastRegimeApplies : Bool) : List Window -> IO Bool
   | [] => pure true
   | window :: rest => do
-      let okHere <- reportWindow xs window
-      let okRest <- reportWindows xs rest
+      let okHere <- reportWindow emitPhases xs routeBound fastRegimeApplies window
+      let okRest <- reportWindows emitPhases xs routeBound fastRegimeApplies rest
       pure (okHere && okRest)
 
-def reportFixture (fixture : Fixture) : IO Bool := do
-  let payloadBits := (RMQ.SuccinctClassic.buildPayload fixture.xs).length
+def reportFixture (emitPhases : Bool) (fixture : Fixture) : IO Bool := do
+  if emitPhases then
+    IO.println
+      ("phase=shapeMetadata start input=" ++ fixture.name ++
+        " note=cartesianShape uses the current List Int reference builder")
   let shape := RMQ.SuccinctClassic.cartesianShape fixture.xs
+  if emitPhases then
+    IO.println
+      ("phase=shapeMetadata done input=" ++ fixture.name ++
+        " shapeSize=" ++ toString shape.size ++
+        " bpCodeLength=" ++ toString shape.bpCode.length)
+  if emitPhases then
+    IO.println
+      ("phase=buildPayload start input=" ++ fixture.name ++
+        " note=public buildPayload recomputes cartesianShape")
+  let payloadBits := (RMQ.SuccinctClassic.buildPayload fixture.xs).length
+  if emitPhases then
+    IO.println
+      ("phase=buildPayload done input=" ++ fixture.name ++
+        " payloadBits=" ++ toString payloadBits)
+  let routeBound := RMQ.SuccinctClassic.routeSplitQueryCost fixture.xs
+  let fastRegimeApplies :=
+    RMQ.SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= shape.size
   IO.println
     ("input=" ++ fixture.name ++
       " n=" ++ toString fixture.xs.length ++
@@ -85,11 +143,14 @@ def reportFixture (fixture : Fixture) : IO Bool := do
       " payloadBits=" ++ toString payloadBits ++
       " route=" ++ routeKind fixture.xs ++
       " routeSplitBound=" ++
-        toString (RMQ.SuccinctClassic.routeSplitQueryCost fixture.xs) ++
+        toString routeBound ++
       " cleanAllSizeBound=" ++ toString RMQ.SuccinctClassic.queryCost ++
+      " fastRegimeBound=" ++ toString fastRegimeQueryCost ++
+      " fastRegimeApplies=" ++ boolString fastRegimeApplies ++
       " readyThreshold=" ++
         toString RMQ.SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold)
-  reportWindows fixture.xs fixture.windows
+  reportWindows emitPhases fixture.xs routeBound fastRegimeApplies
+    fixture.windows
 
 def defaultFixtures : List Fixture :=
   [
@@ -139,14 +200,33 @@ def defaultFixtures : List Fixture :=
     }
   ]
 
+def profileFixture (n : Nat) : Fixture :=
+  {
+    name := "balanced-profile-" ++ toString n,
+    xs := balancedInput n,
+    windows := [
+      { left := 0, right := n },
+      { left := n / 3, right := (2 * n) / 3 },
+      { left := n / 2, right := n / 2 + 1 }
+    ]
+  }
+
 def reportFixtures : List Fixture -> IO Bool
   | [] => pure true
   | fixture :: rest => do
-      let okHere <- reportFixture fixture
+      let okHere <- reportFixture false fixture
       let okRest <- reportFixtures rest
       pure (okHere && okRest)
 
-def mainImpl : IO Unit := do
+def usage : String :=
+  "usage:\n" ++
+  "  lake exe rmq_succinct_classic_cost_harness\n" ++
+  "  lake exe rmq_succinct_classic_cost_harness -- --profile-size N\n\n" ++
+  "--profile-size N runs one deterministic balanced fixture through the " ++
+  "current public List Int buildPayload/queryCosted path with phase markers. " ++
+  "Use N=32768 only as an opt-in ready-threshold profiling run."
+
+def runDefault : IO Unit := do
   IO.println "SuccinctClassic executable cost harness"
   IO.println
     "modeledTraceCost is queryCosted.cost, i.e. the checked WordRAM trace/event count; it is not wall-clock runtime."
@@ -157,7 +237,45 @@ def mainImpl : IO Unit := do
     IO.eprintln "at least one reported window disagreed with reference List Int RMQ semantics"
     IO.Process.exit 1
 
+def runProfileSize (n : Nat) : IO Unit := do
+  IO.println "SuccinctClassic executable construction/profile mode"
+  IO.println
+    "This mode reports phase markers for the current public List Int path; wall-clock timing is external runtime evidence, not a model-cost theorem."
+  IO.println
+    ("requestedSize=" ++ toString n ++
+      " readyThreshold=" ++
+        toString RMQ.SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold ++
+      " thresholdRun=" ++
+        boolString
+          (RMQ.SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= n))
+  let fixture := profileFixture n
+  let ok <- reportFixture true fixture
+  if ok then
+    IO.println "profiled windows agree with reference List Int RMQ semantics"
+  else
+    IO.eprintln "at least one profiled window disagreed with reference List Int RMQ semantics"
+    IO.Process.exit 1
+
+def normalizeArgs : List String -> List String
+  | "--" :: rest => rest
+  | args => args
+
+def mainImpl (args : List String) : IO Unit := do
+  match normalizeArgs args with
+  | [] => runDefault
+  | ["--help"] => IO.println usage
+  | ["--profile-size", nText] =>
+      match nText.toNat? with
+      | some n => runProfileSize n
+      | none =>
+          IO.eprintln ("invalid --profile-size value: " ++ nText)
+          IO.eprintln usage
+          IO.Process.exit 2
+  | _ =>
+      IO.eprintln usage
+      IO.Process.exit 2
+
 end RMQ.Validation.SuccinctClassicCostHarness
 
-def main : IO Unit :=
-  RMQ.Validation.SuccinctClassicCostHarness.mainImpl
+def main (args : List String) : IO Unit :=
+  RMQ.Validation.SuccinctClassicCostHarness.mainImpl args

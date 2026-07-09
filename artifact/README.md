@@ -157,7 +157,21 @@ import examples.
 `lake exe rmq_succinct_classic_cost_harness` prints a compact reviewer-facing
 report for deterministic fixtures: input size, half-open query windows,
 returned answer, reference answer, route-split bound, and the modeled
-`queryCosted.cost` trace/event count.
+`queryCosted.cost` trace/event count. It also says whether the `2^15`
+ready-threshold fast-regime premise applies before reporting any comparison
+with the fast-regime bound.
+
+The cost harness has an opt-in construction profile for larger experiments:
+
+```powershell
+lake exe rmq_succinct_classic_cost_harness -- --profile-size N
+```
+
+This profile mode is not part of the default artifact gate. It emits phase
+markers around the current public `List Int` construction/query path so a
+reviewer can separately time construction experiments, including an explicit
+`N = 32768` ready-threshold run, without confusing Lean runtime with the
+checked model-cost theorem.
 
 Validation and examples are useful reviewer smoke tests. They are not part of
 the proof trust base, and they do not replace Lean kernel checking of theorem

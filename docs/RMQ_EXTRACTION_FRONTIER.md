@@ -32,10 +32,36 @@ already satisfies the modeled constant-query bound.
 The current cost harness reports `queryCosted.cost`, which is the checked
 WordRAM trace/event count produced by the model-facing path. It does not report
 Lean wall-clock runtime, CPU cost, extracted-code performance, or compiler
-behavior. Its deterministic examples exercise the small-input zero-block route
-and a generated `1024`-element active-not-Ready route-split fixture. Larger
-ready-regime runs at or beyond the `2^15` readiness threshold should be added
-only after construction cost is profiled separately.
+behavior. Its default deterministic examples exercise the small-input
+zero-block route and a generated `1024`-element active-not-Ready route-split
+fixture. The report now also prints whether the fast-regime theorem premise is
+applicable before comparing a window against the `118` fast-regime bound.
+
+The same executable has an opt-in construction profile:
+
+```powershell
+lake exe rmq_succinct_classic_cost_harness -- --profile-size N
+```
+
+The profile mode runs one deterministic balanced fixture through the current
+public `List Int` `SuccinctClassic.buildPayload` / `queryCosted` path and emits
+phase markers around `cartesianShape`, `buildPayload`, and each `queryCosted`
+call. Use `N = 32768` only as an explicit ready-threshold experiment, not as
+part of the default artifact gate. Current profiling evidence shows that
+`N = 1024` completes but `N = 2048` is already beyond a five-minute local
+review budget on the worker machine, before any `32768` ready-regime fixture is
+reasonable. The bottleneck is construction, not the checked model-cost theorem:
+the public list-facing path repeatedly rebuilds `Cartesian.shape xs`, whose
+reference builder uses `shapeRange`, `scanWindow`, and indexed `List Int`
+accesses.
+
+The next executable-strengthening target is therefore an Array-backed
+Cartesian-shape builder and a prepared/builder-mirror `SuccinctClassic` path:
+prove the Array builder produces the same shape as `Cartesian.shape xs`, then
+prove the prepared payload/query mirror agrees with `buildPayload xs` and
+`queryCosted xs` while reusing the built shape. That would let a ready-threshold
+fixture strengthen reviewer evidence without changing theorem-level
+model-cost claims.
 
 The final RMQ roadmap refines the ordering: first lift the strongest final
 store/footprint model theorem to the list-facing interface, then clean the
