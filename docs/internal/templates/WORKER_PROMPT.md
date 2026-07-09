@@ -12,6 +12,12 @@ Worker identity:
   starting. If it does not, repeat the requested title at the top of your
   completion report.
 
+Skill:
+- Use $[SKILL_NAME] before starting. For narrow Lean proof, construction,
+  cost/space, executable-validation, or theorem-surface implementation work,
+  this is usually `$rmq-proof-sprint`. Use a different RMQ skill only when the
+  coordinator explicitly assigns one.
+
 Branch/worktree:
 - Create a fresh worktree and branch named exactly: [WORKER_BRANCH].
 - Base it on: [BASE_BRANCH].

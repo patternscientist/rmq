@@ -55,6 +55,8 @@ Every worker prompt should name:
 - worker handle, requested chat/thread title in the form
   `({worker handle}) {short task summary}`, exact worker branch name, base
   branch, fresh-worktree requirement, and write scope;
+- skill to use before starting, usually `$rmq-proof-sprint` for narrow Lean
+  proof, construction, cost/space, validation, or theorem-surface work;
 - exact theorem/profile/document target;
 - forbidden shortcuts;
 - verification commands;

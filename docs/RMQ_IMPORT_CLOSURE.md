@@ -93,12 +93,12 @@ $smell = 'RankSelectPublic|BPNavigationPublic|BPNavigationRAM|UnionFind|Archive|
 
 | Root / scope | Files | Lean LOC | Role | Smell audit |
 | --- | ---: | ---: | --- | --- |
-| `import RMQPaper` | 124 | 104190 | Required RMQ paper theorem root. | No rank/select public spokes, BP-navigation public spokes, union-find, archive, proposal, legacy, compat, obstruction, or old `RMQ/Impl` modules. |
-| `import RMQ.Headlines.RMQ` | 123 | 104182 | RMQ-only headline alias surface used by `RMQPaper`. | Same clean result as `RMQPaper`. |
-| `import RMQ.Headlines` | 158 | 137720 | Aggregate public alias barrel for RMQ plus standalone spokes. | No archive/proposal/legacy/compat/obstruction modules; it deliberately imports rank/select and BP-navigation public spokes. |
-| `import RMQ` | 190 | 146642 | Broad stable RMQ library root with implementation families and historical checks. | Still imports checked obstruction modules listed below. |
-| All public roots union | 224 | 158372 | Checked library/testbed public surface: RMQ, examples, rank/select, BP navigation, union-find, archive, hub, and VerifiedDS facades. | Broader than the paper theorem root by design. |
-| Whole workspace Lean source | 247 | 162089 | Entire checked Lean workspace, including scripts and optional roots. | This is the source of the large presentation number, not the minimal paper root. |
+| `import RMQPaper` | 126 | 105607 | Required RMQ paper theorem root. | No rank/select public spokes, BP-navigation public spokes, union-find, archive, proposal, legacy, compat, obstruction, or old `RMQ/Impl` modules. |
+| `import RMQ.Headlines.RMQ` | 125 | 105599 | RMQ-only headline alias surface used by `RMQPaper`. | Same clean result as `RMQPaper`. |
+| `import RMQ.Headlines` | 160 | 139137 | Aggregate public alias barrel for RMQ plus standalone spokes. | No archive/proposal/legacy/compat/obstruction modules; it deliberately imports rank/select and BP-navigation public spokes. |
+| `import RMQ` | 192 | 148059 | Broad stable RMQ library root with implementation families and historical checks. | Still imports checked obstruction modules listed below. |
+| All public roots union | 226 | 159789 | Checked library/testbed public surface: RMQ, examples, rank/select, BP navigation, union-find, archive, hub, and VerifiedDS facades. | Broader than the paper theorem root by design. |
+| Whole workspace Lean source | 254 | 164618 | Entire checked Lean workspace, including scripts and optional roots. | This is the source of the large presentation number, not the minimal paper root. |
 
 The broad `import RMQ` root still reaches:
 
@@ -118,10 +118,10 @@ The approximate 170k-line presentation number describes the whole repository
 as a checked data-structure testbed: RMQ, lower bounds, rank/select,
 BP-navigation, union-find, examples, validation, compatibility shims, archive,
 and reviewer scripts. In this worktree the measured whole-workspace Lean source
-count is 162089 lines.
+count is 164618 lines.
 
-The RMQ paper root is smaller: `RMQPaper` has 124 workspace source files and
-104190 Lean LOC. That closure still includes the construction-heavy succinct
+The RMQ paper root is smaller: `RMQPaper` has 126 workspace source files and
+105607 Lean LOC. That closure still includes the construction-heavy succinct
 RMQ, lower-bound, and WordRAM/model-adequacy machinery needed for the paper
 claims, but it no longer asks reviewers to mentally subtract unrelated public
 spokes or historical/proposal/obstruction roots.

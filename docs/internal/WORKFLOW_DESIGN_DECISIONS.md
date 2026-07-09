@@ -64,6 +64,65 @@ Supersedes:
 
 None.
 
+## WDD-20260709-014: Name The Worker Skill In Delegation Prompts
+
+Status: Accepted
+Date: 2026-07-09
+Scope: Worker prompt protocol and skill routing.
+
+Decision:
+
+Coordinator-issued worker prompts should explicitly name the RMQ skill the
+worker should use before starting. For narrow Lean proof, construction,
+cost/space, executable-validation, or theorem-surface implementation work, the
+default is `$rmq-proof-sprint`; other skills should be named only when the
+coordinator intentionally routes the task elsewhere.
+
+Context:
+
+Workers may sometimes infer the right skill from the repository context, but
+that is weaker than making the role contract explicit. The proof-sprint skill
+contains current proof discipline, verification expectations, and
+design-decision reporting norms; relying on spontaneous skill selection risks
+workers missing the latest workflow rules.
+
+Options considered:
+
+- Let workers choose skills implicitly from task context.
+- Put skill recommendations only in coordinator-facing launch metadata.
+- Put the assigned skill directly in the worker prompt while keeping model/mode
+  recommendations outside the prompt.
+
+Rationale:
+
+The skill is part of the worker's process contract, unlike model/mode choice,
+which remains user-facing launch metadata. Naming the skill in the pasted
+prompt makes design-log and verification discipline more reliable without
+making model identity part of the proof trust base.
+
+Consequences:
+
+`docs/internal/templates/WORKER_PROMPT.md` now includes a skill section, and
+`rmq-coordinator` must fill it when engineering worker prompts. Completed-worker
+audits should note when a worker made a real design decision without updating
+the appropriate design ledger.
+
+Evidence:
+
+- `docs/internal/templates/WORKER_PROMPT.md`
+- `.agents/skills/rmq-coordinator/SKILL.md`
+- `docs/internal/WORKFLOW_DESIGN_DECISIONS.md`
+
+Follow-up:
+
+After a few more worker launches, check whether a dedicated `$rmq-worker` skill
+would be useful or whether `$rmq-proof-sprint` plus explicit skill routing is
+enough.
+
+Supersedes:
+
+None.
+
 ## WDD-20260709-013: Keep Claim-Drift Status Labels Current With Public Cost Moves
 
 Status: Accepted

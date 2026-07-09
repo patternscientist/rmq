@@ -54,11 +54,17 @@ spine and a model-adequacy spine.
 - `RMQ/Core/SuccinctFinal.lean` builds the BP-native succinct RMQ construction:
   payload accounting, exactness, modeled cost, and the main
   `builtGenericSparseExceptionBPNativeSuccinctRMQFamily_*` theorem family.
-- `RMQ/Core/SuccinctFinalRAM.lean` is the implementation-heavy bridge from the
-  final costed query to interpreted and traced `WordRAM` executions. This is
-  where the whole-query interpreter, global segment layout, global read store,
-  bounded trace events, no-synthetic execution story, and fast-regime cost
-  theorem are proved.
+- `RMQ/Core/SuccinctFinalRAM.lean` is the compatibility root and
+  implementation-heavy bridge from the final costed query to interpreted and
+  traced `WordRAM` executions. It now keeps the whole-query interpreter,
+  traced execution-story packets, bounded trace events, no-synthetic execution
+  story, and fast-regime cost theorem while importing the focused RAM split
+  modules below.
+- `RMQ/Core/SuccinctFinal/RAM/Segments.lean` contains the concrete final RAM
+  segment numbering and canonical global `WordRAM.ReadStore`.
+- `RMQ/Core/SuccinctFinal/RAM/FlatPayload.lean` contains the query-independent
+  flat payload layout, segment/source/backing manifest, flat read store, and
+  successful-read backing predicates used by the final execution story.
 - `RMQ/Core/SuccinctFinalStoreParam.lean` is the supplied-store replay layer.
   It proves that leaves and the whole final query can be evaluated against an
   explicit `WordRAM.ReadStore`, with read events reporting that store and with
@@ -143,7 +149,7 @@ docs, examples, and scripts to prevent stale proposal shims and old flat
 GenericSelect compatibility imports from re-entering active imports.
 
 The paper root has its own measured closure in `docs/RMQ_IMPORT_CLOSURE.md`.
-In the current worktree, `RMQPaper` imports 124 workspace Lean files and 104190
+In the current worktree, `RMQPaper` imports 126 workspace Lean files and 105607
 Lean LOC, with no modules matching archive/proposal/legacy/compat/obstruction
 or standalone public-spoke patterns. The larger whole-workspace source count
 belongs to the checked data-structure testbed, not the minimal paper root.
