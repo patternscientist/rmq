@@ -12,6 +12,7 @@ The strongest near-term ADD improvements are repo-native and model-agnostic:
 - make audit packets reproducible;
 - make claim-drift scans cheap;
 - make design decisions mandatory at the point of architectural change;
+- treat nontrivial ADD/process changes as workflow design decisions;
 - archive CI logs, timings, and artifact outputs where reviewers can inspect
   them;
 - use Codex, Claude, and other agents through the same evidence standard rather
@@ -154,6 +155,11 @@ Suggested behavior:
 
 This should be advisory at first. Mandatory enforcement can come after the team
 has used the log for a few branches.
+
+The check should cover both `docs/internal/DESIGN_DECISIONS.md` and
+`docs/internal/WORKFLOW_DESIGN_DECISIONS.md`: proof/code architecture changes go
+in the former, while ADD process, audit, automation, and model-routing changes
+go in the latter.
 
 ### 6. CI Artifact Outputs
 

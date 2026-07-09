@@ -6,6 +6,10 @@ understand before changing the repo. It is process documentation, not a proof
 artifact; entries should cite checked files, theorem surfaces, docs, commands,
 or commits whenever possible.
 
+For ADD process, audit, automation, delegation, or model-routing choices, use
+`WORKFLOW_DESIGN_DECISIONS.md`. If a choice affects both proof/code architecture
+and workflow, record it in the most relevant ledger and cross-link the other one.
+
 See also:
 
 - [`AUDIT_PROTOCOL.md`](AUDIT_PROTOCOL.md)
@@ -652,6 +656,7 @@ Evidence:
 
 - `docs/internal/AUDIT_PROTOCOL.md`
 - `docs/internal/ADD_WORKFLOW_TOOLING_PLAN.md`
+- `docs/internal/WORKFLOW_DESIGN_DECISIONS.md`
 
 Follow-up:
 

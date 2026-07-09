@@ -19,6 +19,9 @@ Useful internal entry points:
 - [`DESIGN_DECISIONS.md`](DESIGN_DECISIONS.md): architecture and proof-model
   decision ledger for choices that future workers should preserve or
   explicitly supersede.
+- [`WORKFLOW_DESIGN_DECISIONS.md`](WORKFLOW_DESIGN_DECISIONS.md): ADD/process
+  decision ledger for audit, delegation, automation, and evidence-policy
+  choices.
 - [`RMQ_FINAL_ROADMAP.md`](RMQ_FINAL_ROADMAP.md): delegation-ready ladder for
   the final RMQ paper-hardening sequence.
 - [`ADD_WORKFLOW_TOOLING_PLAN.md`](ADD_WORKFLOW_TOOLING_PLAN.md): repo-native
