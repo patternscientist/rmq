@@ -100,7 +100,7 @@ make a theorem true.
 - No compiler, CPU, cache, extraction, benchmark, or production-serialization
   claim is made.
 - The all-size modeled query-cost bound is the clean fixed route-split
-  corollary `65585`; the old `196727` aggregate is legacy compatibility.
+  corollary `4144`; the old `196727` aggregate is legacy compatibility.
 - The fast-regime theorem proves the smaller modeled bound `118` under the real
   `2^15` readiness threshold.
 - `2^128` appears only where compatibility or large-regime theorem surfaces

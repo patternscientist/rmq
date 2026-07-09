@@ -75,7 +75,7 @@ The RMQ-only paper aliases live in
 | `RMQ.Headlines.succinctRMQZeroBlockSameBlockStoreParametric` | Zero-block same-block close leaf is store-parametric: two supplied stores agreeing on BP-code segment reads produce the same value and trace. The whole final query has its own supplied-store replay and store-parametric theorem package. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory` | Bounded all-size execution story: the global trace also carries a finite trace-local bit width bounding every payload-read address and every natural operand/result exposed by word primitives. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceRouteSplitCostedCostLe` | Route-split all-size cost theorem: the final global trace is bounded by the structural route actually taken, rather than by a sum of mutually exclusive fallback costs. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe` | Clean fixed all-size cost theorem: the final global trace costs at most `RMQ.Headlines.succinctRMQQueryCost = 65585`, the maximum of the checked route-split leaves. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe` | Clean fixed all-size cost theorem: the final global trace costs at most `RMQ.Headlines.succinctRMQQueryCost = 4144`, the maximum of the checked route-split leaves. |
 | `RMQ.Headlines.succinctRMQFastRegimeGlobalPayloadStoreCostLeOfReadyThreshold` | Fast-regime final-query cost theorem: under `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= shape.size`, the same globally segmented final trace costs at most the named fast constant `RMQ.Headlines.succinctRMQFastRegimeQueryCost = 118`, excluding the zero-block and non-Ready bounded-scan fallbacks. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | All-size structural execution story: the zero-block same-block leaf scans counted BP-code chunks, and the cross-block interior close-navigation leaf is replayed by structural traces. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` | No-synthetic all-size execution story: the same bounded global trace contains no dedicated synthetic cost-only marker events. |
@@ -98,10 +98,11 @@ The RMQ-only paper aliases live in
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory` | Bounded target-independent global-store execution story for compressed/FID rank/select: the shared access/rank/select traces also carry trace-local finite widths bounding payload-read addresses and word-primitive operands/results. |
 
 For the current concrete BP-native RMQ capstone, the paper-facing fixed
-modeled query-cost bound is `65585`. The route-split theorem first separates
+modeled query-cost bound is `4144`. The route-split theorem first separates
 the mutually exclusive all-size close/LCA routes: Ready costs `118`, active
 non-Ready costs `568`, inactive non-Ready costs `88`, and the zero-block
-BP-code scan gives the fixed all-size maximum `65585`. The old `196727`
+BP-code chunk scan costs `4096` before the final query's fixed close-select
+overhead, giving the fixed all-size maximum `4144`. The old `196727`
 aggregate remains checked under explicit legacy aliases, but it is no longer
 the public all-size cost alias.
 
@@ -317,7 +318,7 @@ imports, this material):
 ## Current Development Docket
 
 The RMQ capstone is in place, including the public route-split all-size cost
-theorem. The fixed all-size bound is now `65585`; under
+theorem. The fixed all-size bound is now `4144`; under
 `shape.size >= SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold`, the
 same final global trace has the proved fast-regime bound
 `SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118`. The

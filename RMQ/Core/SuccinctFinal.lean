@@ -69,10 +69,10 @@ theorem concreteBPNativeSuccinctRMQInactiveNotReadyQueryCost_eq :
 
 def concreteBPNativeSuccinctRMQCleanAllSizeQueryCost : Nat :=
   3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
-    SuccinctClose.concreteCompactBPCloseZeroBlockScanCost
+    SuccinctClose.concreteCompactBPCloseZeroBlockRouteScanCost
 
 theorem concreteBPNativeSuccinctRMQCleanAllSizeQueryCost_eq :
-    concreteBPNativeSuccinctRMQCleanAllSizeQueryCost = 65585 := by
+    concreteBPNativeSuccinctRMQCleanAllSizeQueryCost = 4144 := by
   rfl
 
 theorem concreteBPNativeSuccinctRMQRouteSplitQueryCost_le_cleanAllSize
@@ -88,24 +88,21 @@ theorem concreteBPNativeSuccinctRMQRouteSplitQueryCost_le_cleanAllSize
   · simp [hzero]
     by_cases hready : SuccinctClose.concreteBPRelativeRmmInteriorReady shape
     · simp [hready, SuccinctClose.concreteCompactBPCloseReadyQueryCostWithRankSeed,
-        SuccinctClose.concreteCompactBPCloseZeroBlockScanCost,
+        SuccinctClose.concreteCompactBPCloseZeroBlockRouteScanCost,
         SuccinctClose.concreteBPRelativeRmmInteriorReadyQueryCost,
-        SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold,
         SuccinctSelect.sparseDenseFalseSelectQueryCost]
     · simp [hready]
       by_cases hactive :
           SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive shape
       · simp [hactive,
           SuccinctClose.concreteCompactBPCloseActiveNotReadyQueryCostWithRankSeed,
-          SuccinctClose.concreteCompactBPCloseZeroBlockScanCost,
+          SuccinctClose.concreteCompactBPCloseZeroBlockRouteScanCost,
           SuccinctClose.concreteBPRelativeRmmInteriorActiveNotReadySmallScanQueryCost,
           SuccinctClose.concreteBPRelativeRmmInteriorActiveNotReadyBaseBound,
-          SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold,
           SuccinctSelect.sparseDenseFalseSelectQueryCost]
       · simp [hactive,
           SuccinctClose.concreteCompactBPCloseInactiveNotReadyQueryCostWithRankSeed,
-          SuccinctClose.concreteCompactBPCloseZeroBlockScanCost,
-          SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold,
+          SuccinctClose.concreteCompactBPCloseZeroBlockRouteScanCost,
           SuccinctSelect.sparseDenseFalseSelectQueryCost]
 
 def concreteBPNativeRankSelectDirectory

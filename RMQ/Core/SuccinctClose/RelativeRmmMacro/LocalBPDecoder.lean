@@ -75,6 +75,12 @@ theorem compactBPCloseOverhead_littleO :
 def concreteCompactBPCloseZeroBlockScanCost : Nat :=
   2 * concreteBPRelativeRmmInteriorReadyThreshold + 1
 
+def concreteCompactBPCloseZeroBlockRouteScanCost : Nat := 4096
+
+theorem concreteCompactBPCloseZeroBlockRouteScanCost_eq :
+    concreteCompactBPCloseZeroBlockRouteScanCost = 4096 := by
+  rfl
+
 def concreteCompactBPCloseQueryCost : Nat :=
   concreteCompactBPCloseZeroBlockScanCost + 10 +
     concreteBPRelativeRmmInteriorQueryCost
@@ -1998,6 +2004,96 @@ theorem zeroBlockSameBlockCloseStructuralWords_length_le_scanCost_of_blockSize_z
   unfold concreteCompactBPCloseZeroBlockScanCost
   omega
 
+theorem zeroBlockSameBlockCloseStructuralWords_length_le_routeScanCost_of_blockSize_zero
+    {shape : Cartesian.CartesianShape}
+    (hzero : canonicalBPRelativeSummaryBlockSize shape = 0) :
+    (zeroBlockSameBlockCloseStructuralWords shape).length <=
+      concreteCompactBPCloseZeroBlockRouteScanCost := by
+  have hnotActive :
+      ¬ canonicalBPRelativeMinMaxArgSummaryTableActive shape := by
+    intro hactive
+    have hpos := canonicalBPRelativeSummaryBlockSize_pos_of_active hactive
+    omega
+  have hnotReady : ¬ concreteBPRelativeRmmInteriorReady shape := by
+    intro hready
+    exact hnotActive hready.1
+  have hsizeLt :
+      shape.size < concreteBPRelativeRmmInteriorReadyThreshold := by
+    exact Nat.lt_of_not_ge (by
+      intro hsize
+      exact hnotReady
+        (concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold
+          shape hsize))
+  have hthreshold :
+      concreteBPRelativeRmmInteriorReadyThreshold = 32768 := by
+    rfl
+  have hsizeLt32768 : shape.size < 32768 := by
+    simpa [hthreshold] using hsizeLt
+  have hbpLen : shape.bpCode.length = 2 * shape.size :=
+    Cartesian.CartesianShape.bpCode_length shape
+  have hlenLt65536 : shape.bpCode.length < 65536 := by
+    omega
+  have hwordPos :
+      0 < SuccinctRank.machineWordBits shape.bpCode.length :=
+    SuccinctRank.machineWordBits_pos shape.bpCode.length
+  have hdivLt :
+      shape.bpCode.length /
+          SuccinctRank.machineWordBits shape.bpCode.length < 4096 := by
+    by_cases hlt4096 : shape.bpCode.length < 4096
+    · exact Nat.lt_of_le_of_lt
+        (Nat.div_le_self shape.bpCode.length
+          (SuccinctRank.machineWordBits shape.bpCode.length))
+        hlt4096
+    · have hge4096 : 4096 <= shape.bpCode.length :=
+        Nat.le_of_not_gt hlt4096
+      by_cases hlt32768 : shape.bpCode.length < 32768
+      · have hpow12 : 2 ^ 12 <= shape.bpCode.length := by
+          have hpow : 2 ^ 12 = 4096 := by decide
+          omega
+        have hlog12 :
+            12 <= Nat.log2 shape.bpCode.length :=
+          natLog2_ge_of_pow_le hpow12
+        have hword13 :
+            13 <= SuccinctRank.machineWordBits shape.bpCode.length := by
+          unfold SuccinctRank.machineWordBits
+          omega
+        have hmulLt :
+            shape.bpCode.length <
+              4096 * SuccinctRank.machineWordBits shape.bpCode.length := by
+          have htarget : 32768 < 4096 * 13 := by decide
+          have hmul :
+              4096 * 13 <=
+                4096 * SuccinctRank.machineWordBits shape.bpCode.length :=
+            Nat.mul_le_mul_left 4096 hword13
+          omega
+        exact (Nat.div_lt_iff_lt_mul hwordPos).2 hmulLt
+      · have hge32768 : 32768 <= shape.bpCode.length :=
+          Nat.le_of_not_gt hlt32768
+        have hpow15 : 2 ^ 15 <= shape.bpCode.length := by
+          have hpow : 2 ^ 15 = 32768 := by decide
+          omega
+        have hlog15 :
+            15 <= Nat.log2 shape.bpCode.length :=
+          natLog2_ge_of_pow_le hpow15
+        have hword16 :
+            16 <= SuccinctRank.machineWordBits shape.bpCode.length := by
+          unfold SuccinctRank.machineWordBits
+          omega
+        have hmulLt :
+            shape.bpCode.length <
+              4096 * SuccinctRank.machineWordBits shape.bpCode.length := by
+          have htarget : 65536 = 4096 * 16 := by decide
+          have hmul :
+              4096 * 16 <=
+                4096 * SuccinctRank.machineWordBits shape.bpCode.length :=
+            Nat.mul_le_mul_left 4096 hword16
+          omega
+        exact (Nat.div_lt_iff_lt_mul hwordPos).2 hmulLt
+  have hwords :=
+    zeroBlockSameBlockCloseStructuralWords_length_le_bpCodeWordCount shape
+  unfold concreteCompactBPCloseZeroBlockRouteScanCost
+  omega
+
 theorem zeroBlockSameBlockCloseCosted_cost_le_of_blockSize_zero
     {shape : Cartesian.CartesianShape}
     {leftClose rightClose : Nat}
@@ -2006,6 +2102,16 @@ theorem zeroBlockSameBlockCloseCosted_cost_le_of_blockSize_zero
       concreteCompactBPCloseZeroBlockScanCost := by
   simpa [zeroBlockSameBlockCloseCosted_cost_eq] using
     zeroBlockSameBlockCloseStructuralWords_length_le_scanCost_of_blockSize_zero
+      (shape := shape) hzero
+
+theorem zeroBlockSameBlockCloseCosted_cost_le_routeScanCost_of_blockSize_zero
+    {shape : Cartesian.CartesianShape}
+    {leftClose rightClose : Nat}
+    (hzero : canonicalBPRelativeSummaryBlockSize shape = 0) :
+    (zeroBlockSameBlockCloseCosted shape leftClose rightClose).cost <=
+      concreteCompactBPCloseZeroBlockRouteScanCost := by
+  simpa [zeroBlockSameBlockCloseCosted_cost_eq] using
+    zeroBlockSameBlockCloseStructuralWords_length_le_routeScanCost_of_blockSize_zero
       (shape := shape) hzero
 
 theorem zeroBlockSameBlockCloseCosted_cost_le

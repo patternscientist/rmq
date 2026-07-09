@@ -589,6 +589,23 @@ route. A skeptical grad student should next ask whether the zero-block scan can
 be replaced without adding an uncounted answer table or proof-only answer
 field.
 
+2026-07-09 R3 zero-block scan tightening: the public route-split theorem now
+uses `SuccinctClose.concreteCompactBPCloseZeroBlockRouteScanCost = 4096` for
+the zero-block same-block close/LCA leg, backed by
+`SuccinctClose.zeroBlockSameBlockCloseCosted_cost_le_routeScanCost_of_blockSize_zero`.
+The clean fixed all-size RMQ query equality is now
+`SuccinctFinal.concreteBPNativeSuccinctRMQCleanAllSizeQueryCost_eq = 4144`.
+Conceptually, the zero-block trace did not change: it still scans counted
+chunked BP-code payload words. The proof stopped discarding the machine-word
+divisor and uses `shape.size < 2^15` plus
+`machineWordBits shape.bpCode.length` to cap the chunk count by `4096`.
+Plain English: no new answer table or oracle was added; the same honest scan
+now has the tight small-regime word-count bound consumed by the public theorem.
+Live assumption: the zero-block branch still scans the full BP-code chunk list,
+so exact all-size `118` remains false. A skeptical grad student should next ask
+for a charged zero-block interval navigator, or for a theorem showing the
+current BP-code-only trace cannot beat the full chunk scan.
+
 ## Digestion Tasks
 
 1. Turn the RMQ capstone into a two-page lecture-style proof map:

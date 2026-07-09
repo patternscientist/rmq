@@ -73,6 +73,13 @@ cost notes.
 - The zero-block scan and conservative footprint story are live R3 hardening
   targets, not hidden proof defects.
 
+## Post-Report R3 Follow-Up
+
+This report records the pre-R3 surface audited before worker
+`W03-r3-zero-block` landed. The R3 follow-up keeps the same structural
+zero-block scan but sharpens its counted word cap, replacing the fixed
+all-size corollary `65585` with the checked public constant `4144`.
+
 ## Coordinator Follow-Up
 
 Applied accepted P3 documentation fixes and added durable audit-report storage

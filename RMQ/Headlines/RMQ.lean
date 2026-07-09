@@ -333,7 +333,7 @@ succinct RMQ query.
 abbrev succinctRMQQueryCost :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCleanAllSizeQueryCost
 
-/-- The clean fixed all-size final-query cost constant computes to `65585`. -/
+/-- The clean fixed all-size final-query cost constant computes to `4144`. -/
 abbrev succinctRMQQueryCostEq :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCleanAllSizeQueryCost_eq
 
