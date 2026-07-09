@@ -796,3 +796,58 @@ non-interactive orchestration after two or more real uses.
 Supersedes:
 
 None.
+
+## DD-20260709-002: Separate Differential Validation From Cost Reporting
+
+Status: Accepted
+Date: 2026-07-09
+Scope: RMQ executable evidence.
+
+Decision:
+
+Keep the broad `SuccinctClassic` differential validator and add a separate
+reviewer-facing cost harness that prints deterministic construction/query
+reports, route metadata, and `queryCosted.cost`.
+
+Context:
+
+The existing validation executable is optimized for coverage: it checks many
+deterministic windows and fails fast on a mismatch. DD-20260708-010 established
+the staged executable-evidence ladder. Reviewers also need a small
+human-readable artifact that shows specific inputs, windows, answers, model
+costs, and reference agreement without implying new theorem trust.
+
+Options considered:
+
+- Extend the differential validator with verbose reports.
+- Add theorem aliases or doc-only examples instead of an executable report.
+- Keep validation and cost-reporting as separate executables.
+
+Rationale:
+
+Separate executables keep CI-style validation compact while giving reviewers a
+stable command whose output can be pasted into an artifact report. The reported
+cost remains the model trace/event count from `queryCosted.cost`, not Lean
+runtime or hardware timing.
+
+Consequences:
+
+Runnable evidence must continue to state its non-proof status and must compare
+answers directly with the `List Int` reference semantics. Larger fixtures that
+target ready-regime behavior should be added only when construction cost is
+profiled and documented.
+
+Evidence:
+
+- `RMQ/Validation/SuccinctClassic.lean`
+- `RMQ/Validation/SuccinctClassicCostHarness.lean`
+- `docs/RMQ_EXTRACTION_FRONTIER.md`
+
+Follow-up:
+
+Profile construction for larger ready-regime fixtures before making them part
+of the default artifact gate.
+
+Supersedes:
+
+None.

@@ -45,6 +45,7 @@ lake build RMQArchive
 lake build RMQExamples
 lake build RMQ.Core.GenericSelectBPCompat
 lake exe rmq_succinct_classic_validate
+lake exe rmq_succinct_classic_cost_harness
 lake env lean scripts/headline_axiom_check.lean
 lake env lean scripts/wordram_axiom_check.lean
 lake env lean scripts/axiom_check.lean
@@ -99,8 +100,8 @@ theorem-map documents as release artifacts.
 ## Expected Outputs And Non-Claims
 
 Expected successful output is a completed Lake build, successful Lean execution
-of the three axiom-check scripts, no forbidden-token matches, and a clean
-whitespace diff check.
+of the two classic RMQ executables and the three axiom-check scripts, no
+forbidden-token matches, and a clean whitespace diff check.
 
 The artifact does not claim extracted-code performance, compiler/runtime
 behavior, CPU-level timing, benchmarking, or constant optimization. The

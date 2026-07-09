@@ -158,6 +158,9 @@ starting point for the current proof spine.
   import surfaces.
 - `RMQ/Validation/SuccinctClassic.lean` contains executable validation for the
   classic public succinct RMQ API.
+- `RMQ/Validation/SuccinctClassicCostHarness.lean` contains a reviewer-facing
+  executable report for deterministic `SuccinctClassic.buildPayload` and
+  `SuccinctClassic.queryCosted` runs, including modeled trace/event costs.
 
 Validation and examples are helpful for readers and reviewers, but validation
 is explicitly not part of the proof trust base. The proof trust base is the
