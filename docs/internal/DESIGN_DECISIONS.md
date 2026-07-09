@@ -984,3 +984,64 @@ promoting a ready-threshold executable fixture into the default artifact path.
 Supersedes:
 
 None.
+
+## DD-20260709-005: Split Final RAM Segment And Flat-Payload Layers
+
+Status: Accepted
+Date: 2026-07-09
+Scope: Final RMQ RAM bridge module architecture.
+
+Decision:
+
+Keep `RMQ.Core.SuccinctFinalRAM` as the compatibility/root module for the
+final RAM theorem surface, but move the concrete segment numbering and
+canonical global read-store map to
+`RMQ.Core.SuccinctFinal.RAM.Segments`, and move the query-independent flat
+payload layout, flat read store, segment/source/backing manifest, and
+successful-read backing predicates to
+`RMQ.Core.SuccinctFinal.RAM.FlatPayload`.
+
+Context:
+
+`SuccinctFinalRAM.lean` had accumulated both theorem-heavy trace/program/cost
+proofs and the lower-level storage manifest used by those proofs. The public
+names and theorem statements were stable enough to make a mechanical split
+around reviewer-legible storage boundaries.
+
+Options considered:
+
+- Leave the file monolithic until a semantic proof change needs it.
+- Move segment layout and flat-payload backing into focused imported modules
+  while leaving trace/program/cost semantics in the compatibility root.
+- Rename public theorem surfaces while splitting.
+
+Rationale:
+
+The split lets reviewers inspect the storage story separately from the
+whole-query replay proof, without changing public theorem names, aliases,
+payload accounting, model-cost claims, or executable behavior.
+
+Consequences:
+
+Future changes to segment numbering or flat-payload backing should start in the
+new `RAM/Segments.lean` and `RAM/FlatPayload.lean` modules. Changes to the
+whole-query interpreter, execution-story packets, and cost theorem semantics
+should remain in `SuccinctFinalRAM.lean` unless a later split establishes a new
+stable proof boundary.
+
+Evidence:
+
+- `RMQ/Core/SuccinctFinal/RAM/Segments.lean`
+- `RMQ/Core/SuccinctFinal/RAM/FlatPayload.lean`
+- `RMQ/Core/SuccinctFinalRAM.lean`
+- `lake build RMQ.Core.SuccinctFinalRAM`
+
+Follow-up:
+
+The next safe reviewer-legibility split is likely the whole-query
+interpreter/program layer or the bounded-event/no-synthetic execution-story
+packets, keeping public aliases unchanged.
+
+Supersedes:
+
+None.
