@@ -51,8 +51,8 @@ human-readable file when the interpretation changes.
 - "Lean runtime" should not be presented as the RAM model-cost theorem.
 - `2^128` is compatibility/history language, not the current public activation
   route.
-- `196727` is the current conservative all-size bound until superseded by a new
-  checked theorem and updated public aliases.
+- `65585` is the current clean fixed all-size bound from the route-split
+  theorem; `196727` should be described only as legacy compatibility.
 - `118` is the fast-regime modeled bound under the readiness threshold, not the
   all-size theorem unless a future theorem proves that.
 - "No extraction gap" must not erase the remaining executable/compiler ladder;

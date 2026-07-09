@@ -140,7 +140,8 @@ things:
 - a final global trace with no synthetic cost-only marker events;
 - successful final-query reads backed by counted flat payload words;
 - supplied-store replay and exactness/cost transfer under footprint agreement;
-- the conservative all-size modeled query-cost constant `196727`;
+- the route-split all-size modeled query-cost theorem and clean fixed
+  all-size constant `65585`;
 - the fast-regime modeled query-cost constant `118` under the real `2^15`
   readiness threshold; and
 - an information-theoretic Catalan/Cartesian-shape RMQ lower bound.

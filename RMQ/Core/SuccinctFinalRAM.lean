@@ -7531,6 +7531,26 @@ theorem concreteBPNativeSuccinctRMQQueryInterpretedCosted_cost_le_of_ready
       builtGenericSparseExceptionSelectBPCloseAccessFamily
       shape hready left right
 
+theorem concreteBPNativeSuccinctRMQQueryInterpretedCosted_cost_le_routeSplit
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    (concreteBPNativeSuccinctRMQQueryInterpretedCosted
+      shape left right).cost <=
+        concreteBPNativeSuccinctRMQRouteSplitQueryCost shape := by
+  rw [concreteBPNativeSuccinctRMQQueryInterpretedCosted_refines_queryCosted]
+  exact
+    concreteBPNativeSuccinctRMQQueryCosted_cost_le_routeSplit
+      builtGenericSparseExceptionSelectBPCloseAccessFamily shape left right
+
+theorem concreteBPNativeSuccinctRMQQueryInterpretedCosted_cost_le_cleanAllSize
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    (concreteBPNativeSuccinctRMQQueryInterpretedCosted
+      shape left right).cost <=
+        concreteBPNativeSuccinctRMQCleanAllSizeQueryCost := by
+  exact Nat.le_trans
+    (concreteBPNativeSuccinctRMQQueryInterpretedCosted_cost_le_routeSplit
+      shape left right)
+    (concreteBPNativeSuccinctRMQRouteSplitQueryCost_le_cleanAllSize shape)
+
 theorem concreteBPNativeSuccinctRMQQueryInterpretedCosted_exact
     {n : Nat} {shape : Cartesian.CartesianShape}
     (hshape : List.Mem shape (Cartesian.shapesOfSize n))
@@ -7568,6 +7588,27 @@ theorem concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_cost_le_of_ready
   exact
     concreteBPNativeSuccinctRMQQueryInterpretedCosted_cost_le_of_ready
       shape hready left right
+
+theorem concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_cost_le_routeSplit
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted
+      shape left right).cost <=
+        concreteBPNativeSuccinctRMQRouteSplitQueryCost shape := by
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_refines_queryInterpretedCosted]
+  exact
+    concreteBPNativeSuccinctRMQQueryInterpretedCosted_cost_le_routeSplit
+      shape left right
+
+theorem concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_cost_le_cleanAllSize
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted
+      shape left right).cost <=
+        concreteBPNativeSuccinctRMQCleanAllSizeQueryCost := by
+  exact Nat.le_trans
+    (concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_cost_le_routeSplit
+      shape left right)
+    (concreteBPNativeSuccinctRMQRouteSplitQueryCost_le_cleanAllSize shape)
 
 theorem concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_exact
     {n : Nat} {shape : Cartesian.CartesianShape}
@@ -7672,6 +7713,27 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_of_si
       (SuccinctClose.concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold
         shape hsize)
       left right
+
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_routeSplit
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+      shape left right).cost <=
+        concreteBPNativeSuccinctRMQRouteSplitQueryCost shape := by
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_refines_wholeQueryInterpretedCosted]
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_cost_le_routeSplit
+      shape left right
+
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_cleanAllSize
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+      shape left right).cost <=
+        concreteBPNativeSuccinctRMQCleanAllSizeQueryCost := by
+  exact Nat.le_trans
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_routeSplit
+      shape left right)
+    (concreteBPNativeSuccinctRMQRouteSplitQueryCost_le_cleanAllSize shape)
 
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact
     {n : Nat} {shape : Cartesian.CartesianShape}

@@ -349,12 +349,13 @@ Read literally, this says:
 - every valid half-open query over every Cartesian shape of size `n` erases to
   the reference leftmost RMQ answer `scanWindow shape.representative left len`.
 
-For the built generic sparse-exception close-access family, that fixed modeled
-cost bound is `196727`. It unfolds from close-access cost `16`,
-`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15`,
-`SuccinctClose.concreteCompactBPCloseZeroBlockScanCost = 2 * 2^15 + 1`,
-`SuccinctClose.concreteBPRelativeRmmInteriorSmallScanQueryCost = 4 * 2^15`,
-and Ready interior query cost `30`.
+For the built generic sparse-exception close-access family, the paper-facing
+fixed modeled cost bound is now `65585`, via the route-split theorem and clean
+fixed corollary. The checked leaves are Ready `118`, active non-Ready `568`
+using the `480` bounded summary scan, inactive non-Ready `88`, and the
+zero-block BP-code scan maximum `65585`. The old `196727` aggregate is still
+checked as compatibility, but it is no longer the public all-size alias because
+it sums mutually exclusive fallback costs.
 
 ## Axiom Excerpt
 

@@ -569,6 +569,26 @@ trace claims are scoped to checked constructors and provenance theorems; and
 `RAM.Exec` is described as the private-constructor traced substrate, while
 first-order/register syntax belongs to `WordRAM.Program` / register programs.
 
+2026-07-08 R2 clean all-size cost pass: the public all-size RMQ cost surface now
+has a branch-sensitive theorem,
+`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_routeSplit`,
+plus the fixed corollary
+`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_cleanAllSize`
+and checked equality
+`SuccinctFinal.concreteBPNativeSuccinctRMQCleanAllSizeQueryCost_eq = 65585`.
+Conceptually, the old `196727` theorem was true but paid for mutually
+exclusive routes at once: the zero-block BP-code scan and the interior fallback
+scan were added even though a close/LCA query dispatches to only one route.
+The new theorem keeps Ready at `118`, active non-Ready at `568`, inactive
+non-Ready at `88`, and leaves the zero-block structural scan as the all-size
+maximum. Plain English: the public theorem now says "pay for the route you
+actually take," with a smaller fixed all-size maximum for paper use. Live
+assumption: exact all-size `118` is still false for this construction unless
+the zero-block same-block structural replay is replaced by a smaller counted
+route. A skeptical grad student should next ask whether the zero-block scan can
+be replaced without adding an uncounted answer table or proof-only answer
+field.
+
 ## Digestion Tasks
 
 1. Turn the RMQ capstone into a two-page lecture-style proof map:

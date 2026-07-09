@@ -41,11 +41,13 @@ paper artifact should not cite it as such.
 
 ## Main Open RMQ Frontier
 
-The current public all-size modeled query bound is `196727`. The proof now uses
-the real readiness threshold
+The current public all-size modeled query bound is the clean fixed corollary
+`SuccinctFinal.concreteBPNativeSuccinctRMQCleanAllSizeQueryCost = 65585`,
+derived from the route-split theorem
+`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_routeSplit`.
+The proof uses the real readiness threshold
 `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15`; `2^128`
 appears only in compatibility/large-regime theorems. The fast-regime companion
-`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_of_size_ge_readyThreshold`
-keeps the conservative all-size theorem true while proving the smaller
-Ready-threshold bound
-`SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118`.
+proves the smaller Ready-threshold bound
+`SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118`. The old
+`196727` aggregate remains checked only as a legacy compatibility theorem.

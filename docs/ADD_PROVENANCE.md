@@ -137,10 +137,11 @@ The older `2^128` facts survive only as compatibility/large-regime corollaries.
 The route through the all-size structural close/LCA layer is anchored by
 `RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorAllSizeStructuralRoute_total`.
 The later public cost-regime split theorem consumes that readiness fact: the
-all-size bound remains the conservative model constant `196727`, while the
-Ready-threshold theorem states
+all-size route-split surface now has the clean fixed corollary `65585`, while
+the Ready-threshold theorem states
 `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118` once
-the `2^15` readiness condition is available.
+the `2^15` readiness condition is available. The old `196727` aggregate remains
+checked only as a legacy compatibility theorem.
 
 ## Case Study D: Proof Digestion
 

@@ -49,9 +49,10 @@ not an exact or minimal dynamic read-set theorem.
 
 - No CPU, compiler, extraction, cache, or benchmarking claim is made.
 - The cost model is the repository's explicit modeled WordRAM/query-cost layer.
-- The current public all-size RMQ cost bound is the conservative constant
-  `196727`; the fast-regime theorem under the real `2^15` readiness threshold
-  proves the smaller modeled bound `118`, but constants are still not optimized.
+- The current public all-size RMQ cost bound is the clean fixed route-split
+  corollary `65585`; the fast-regime theorem under the real `2^15` readiness
+  threshold proves the smaller modeled bound `118`, but constants are still not
+  optimized.
 - The final footprint is not claimed exact or minimal.
 - Constants are not optimized in this pass.
 - The cell-probe lower bounds of Liu-Yu/Liu are related work, not mechanized

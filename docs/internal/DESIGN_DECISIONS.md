@@ -373,17 +373,18 @@ None.
 
 ## DD-20260708-007: State The Two Query-Cost Regimes Explicitly
 
-Status: Accepted
+Status: Superseded by DD-20260708-011
 Date: 2026-07-08
 Scope: RMQ cost claims.
 
 Decision:
 
-The public query-cost story distinguishes the all-size constant bound from the
-fast-regime bound: `196727` remains the all-size model-cost constant, while
-`118` is the fast-regime constant under the readiness threshold. The old
-`2^128` threshold is compatibility/history language, not the public activation
-story.
+The public query-cost story distinguished the all-size constant bound from the
+fast-regime bound: `196727` remained the all-size model-cost constant, while
+`118` was the fast-regime constant under the readiness threshold. The old
+`2^128` threshold was compatibility/history language, not the public activation
+story. DD-20260708-011 later superseded the all-size alias with a route-split
+theorem and fixed `65585` corollary.
 
 Context:
 
@@ -523,6 +524,70 @@ Launch this only after the list-facing final-model lift lands.
 Supersedes:
 
 None.
+
+## DD-20260708-011: Make The Route-Split Cost Bound The Public All-Size Alias
+
+Status: Accepted
+Date: 2026-07-08
+Scope: RMQ cost theorem surface.
+
+Decision:
+
+Expose the all-size final-query cost through a route-split theorem and a clean
+fixed corollary `65585`. Keep the old `196727` aggregate under explicit legacy
+compatibility aliases only.
+
+Context:
+
+R2 found that exact all-size `118` is not honest with the current structural
+zero-block replay: the zero-block same-block branch really scans counted
+BP-code chunks. However, the old all-size aggregate also added the zero-block
+scan and interior fallback costs even though the close/LCA replay takes those
+routes mutually exclusively.
+
+Options considered:
+
+- Keep explaining the `196727` aggregate in prose.
+- Claim all-size `118` despite the zero-block scan.
+- Make the theorem surface branch-sensitive, then publish the maximum of those
+  checked branches as the fixed all-size constant.
+
+Rationale:
+
+The route-split theorem is the clearest reviewer story that is true today:
+Ready remains `118`, active non-Ready is bounded by the newly checked `480`
+scan leaf for total query cost `568`, inactive non-Ready is `88`, and the
+zero-block structural BP-code scan gives the fixed all-size maximum `65585`.
+No proof-only answer fields, synthetic events, uncounted payload, or public
+`2^128` activation premise are introduced.
+
+Consequences:
+
+Paper-facing aliases should point to
+`concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_routeSplit`
+or its fixed corollary
+`concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_cleanAllSize`.
+The old `concreteBPNativeSuccinctRMQQueryCost_eq = 196727` remains checked, but
+only as a compatibility surface.
+
+Evidence:
+
+- `RMQ/Core/SuccinctClose/RelativeRmmMacro/ConcreteDirectory.lean`
+- `RMQ/Core/SuccinctFinal.lean`
+- `RMQ/Core/SuccinctFinalRAM.lean`
+- `RMQ/Core/SuccinctRMQClassic.lean`
+- `RMQ/Headlines/RMQ.lean`
+- `docs/PAPER_CLAIM_CORRESPONDENCE.md`
+
+Follow-up:
+
+The next constant-shrinking target is to replace the zero-block BP-code scan
+with a smaller counted structural route, if one can be proved without hiding an
+answer table.
+
+Supersedes:
+
+DD-20260708-009.
 
 ## DD-20260708-010: Treat Executable Evidence As A Ladder, Not The Trust Base
 
