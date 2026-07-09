@@ -860,19 +860,39 @@ theorem concreteBPRelativeRmmInteriorSummaryPayload_le_overhead_of_active
     omega
   exact Nat.le_trans hsummary.2.2.2.2.2.2.1 hle
 
+theorem concreteBPRelativeRmmInteriorSmallScanCost_le_activeNotReadySmallScanQueryCost
+    {shape : Cartesian.CartesianShape}
+    (hactive : canonicalBPRelativeMinMaxArgSummaryTableActive shape)
+    (hnotReady : ¬ concreteBPRelativeRmmInteriorReady shape) :
+    4 * canonicalBPRelativeSummaryBlockCount shape <=
+      concreteBPRelativeRmmInteriorActiveNotReadySmallScanQueryCost := by
+  have hcountLt :=
+    concreteBPRelativeRmmInteriorBlockCount_lt_macroSize_of_active_not_ready
+      hactive hnotReady
+  have hmacroLe :=
+    concreteBPRelativeRmmInteriorMacroSize_le_activeNotReadyBlockBound_of_active_not_ready
+      hactive hnotReady
+  have hmacroLe' :
+      concreteBPRelativeRmmInteriorMacroSize shape <= 121 := by
+    simpa [concreteBPRelativeRmmInteriorActiveNotReadyBaseBound] using
+      hmacroLe
+  have hblockLe :
+      canonicalBPRelativeSummaryBlockCount shape <= 120 := by
+    omega
+  simpa [concreteBPRelativeRmmInteriorActiveNotReadySmallScanQueryCost,
+    concreteBPRelativeRmmInteriorActiveNotReadyBaseBound] using
+    Nat.mul_le_mul_left 4 hblockLe
+
 theorem concreteBPRelativeRmmInteriorSmallScanCost_le_threshold
     {shape : Cartesian.CartesianShape}
     (hactive : canonicalBPRelativeMinMaxArgSummaryTableActive shape)
     (hnotReady : ¬ concreteBPRelativeRmmInteriorReady shape) :
     4 * canonicalBPRelativeSummaryBlockCount shape <=
       concreteBPRelativeRmmInteriorSmallScanQueryCost := by
-  have hcountLe :=
-    canonicalBPRelativeSummaryBlockCount_le_size_of_active hactive
-  have hsizeLt :=
-    concreteBPRelativeRmmInterior_size_lt_readyThreshold_of_not_ready
-      hnotReady
-  unfold concreteBPRelativeRmmInteriorSmallScanQueryCost
-  exact Nat.mul_le_mul_left 4 (by omega)
+  exact Nat.le_trans
+    (concreteBPRelativeRmmInteriorSmallScanCost_le_activeNotReadySmallScanQueryCost
+      hactive hnotReady)
+    concreteBPRelativeRmmInteriorActiveNotReadySmallScanQueryCost_le_smallScanQueryCost
 
 def concreteBPRelativeRmmInteriorDirectoryPayloadLength
     (shape : Cartesian.CartesianShape) : Nat :=
@@ -1111,11 +1131,13 @@ def concreteBPRelativeRmmInteriorDirectory
               table.boundedRangeScanCosted_cost_le_blockCount
                 startBlock count
             have hscan :=
-              concreteBPRelativeRmmInteriorSmallScanCost_le_threshold
+              concreteBPRelativeRmmInteriorSmallScanCost_le_activeNotReadySmallScanQueryCost
                 hactive hready
             exact Nat.le_trans hcost
               (Nat.le_trans hscan
-                concreteBPRelativeRmmInteriorSmallScanQueryCost_le_queryCost)
+                (Nat.le_trans
+                  concreteBPRelativeRmmInteriorActiveNotReadySmallScanQueryCost_le_smallScanQueryCost
+                  concreteBPRelativeRmmInteriorSmallScanQueryCost_le_queryCost))
           rangeMin_exact := by
             intro startBlock count hcount hbound
             exact table.boundedRangeScanCosted_erase_exact
@@ -1164,6 +1186,22 @@ theorem concreteBPRelativeRmmInteriorDirectory_rangeMinCosted_cost_le_of_ready
   unfold concreteBPRelativeRmmInteriorDirectory
   simp [hready, concreteBPRelativeRmmInteriorReadyQueryCost,
     bpTwoLevelInteriorCandidateCosted_cost_le_thirty]
+
+theorem concreteBPRelativeRmmInteriorDirectory_rangeMinCosted_cost_le_of_active_not_ready
+    (shape : Cartesian.CartesianShape)
+    (hactive : canonicalBPRelativeMinMaxArgSummaryTableActive shape)
+    (hnotReady : ¬ concreteBPRelativeRmmInteriorReady shape)
+    (startBlock count : Nat) :
+    ((concreteBPRelativeRmmInteriorDirectory shape).rangeMinCosted
+      startBlock count).cost <=
+        concreteBPRelativeRmmInteriorActiveNotReadySmallScanQueryCost := by
+  unfold concreteBPRelativeRmmInteriorDirectory
+  simp [hnotReady, hactive]
+  exact Nat.le_trans
+    ((concreteBPRelativeMinMaxArgSummaryTable_canonical shape).boundedRangeScanCosted_cost_le_blockCount
+      startBlock count)
+    (concreteBPRelativeRmmInteriorSmallScanCost_le_activeNotReadySmallScanQueryCost
+      hactive hnotReady)
 
 theorem concreteBPRelativeRmmInteriorDirectory_profile_of_ready
     (shape : Cartesian.CartesianShape)

@@ -2409,6 +2409,25 @@ def concreteBPRelativeRmmInteriorReadyQueryCost : Nat := 30
 def concreteBPRelativeRmmInteriorSmallScanQueryCost : Nat :=
   4 * concreteBPRelativeRmmInteriorReadyThreshold
 
+def concreteBPRelativeRmmInteriorActiveNotReadyBaseBound : Nat := 11
+
+def concreteBPRelativeRmmInteriorActiveNotReadySmallScanQueryCost : Nat :=
+  4 * (concreteBPRelativeRmmInteriorActiveNotReadyBaseBound *
+    concreteBPRelativeRmmInteriorActiveNotReadyBaseBound - 1)
+
+theorem concreteBPRelativeRmmInteriorActiveNotReadySmallScanQueryCost_eq :
+    concreteBPRelativeRmmInteriorActiveNotReadySmallScanQueryCost = 480 := by
+  rfl
+
+theorem concreteBPRelativeRmmInteriorActiveNotReadySmallScanQueryCost_le_smallScanQueryCost :
+    concreteBPRelativeRmmInteriorActiveNotReadySmallScanQueryCost <=
+      concreteBPRelativeRmmInteriorSmallScanQueryCost := by
+  unfold concreteBPRelativeRmmInteriorActiveNotReadySmallScanQueryCost
+  unfold concreteBPRelativeRmmInteriorActiveNotReadyBaseBound
+  unfold concreteBPRelativeRmmInteriorSmallScanQueryCost
+  unfold concreteBPRelativeRmmInteriorReadyThreshold
+  decide
+
 def concreteBPRelativeRmmInteriorQueryCost : Nat :=
   concreteBPRelativeRmmInteriorReadyQueryCost +
     concreteBPRelativeRmmInteriorSmallScanQueryCost
@@ -2509,6 +2528,17 @@ theorem concreteBPRelativeRmmInterior_not_ready_cases
       exact hnotReady ⟨hactive, hmacro⟩)
   · exact Or.inl hactive
 
+theorem concreteBPRelativeRmmInteriorBlockCount_lt_macroSize_of_active_not_ready
+    {shape : Cartesian.CartesianShape}
+    (hactive : canonicalBPRelativeMinMaxArgSummaryTableActive shape)
+    (hnotReady : ¬ concreteBPRelativeRmmInteriorReady shape) :
+    canonicalBPRelativeSummaryBlockCount shape <
+      concreteBPRelativeRmmInteriorMacroSize shape := by
+  rcases concreteBPRelativeRmmInterior_not_ready_cases hnotReady with
+    hnotActive | hmacro
+  · exact False.elim (hnotActive hactive)
+  · exact hmacro
+
 theorem concreteBPRelativeRmmInterior_blockSize_zero_or_macro_small_of_not_ready
     {shape : Cartesian.CartesianShape}
     (hnotReady : ¬ concreteBPRelativeRmmInteriorReady shape) :
@@ -2547,6 +2577,138 @@ theorem canonicalBPRelativeSummaryBlockCountRaw_pos_of_ready
     canonicalBPRelativeSummaryBlockCount_pos_of_ready
       (shape := shape) hready
   simpa [canonicalBPRelativeSummaryBlockCount, hactive] using hcount
+
+theorem nat_succ_cube_le_two_pow_of_11_le
+    (q : Nat) (hq : 11 <= q) :
+    (q + 1) * ((q + 1) * (q + 1)) <= 2 ^ q := by
+  exact Nat.strongRecOn q (fun q ih => by
+    intro hq
+    by_cases hstep : 14 <= q
+    · have hprevLarge : 11 <= q - 3 := by
+        omega
+      have hprevLt : q - 3 < q := by
+        omega
+      have ihprev := ih (q - 3) hprevLt hprevLarge
+      have hlin : q + 1 <= 2 * ((q - 3) + 1) := by
+        omega
+      have hcube :
+          (q + 1) * ((q + 1) * (q + 1)) <=
+            (2 * ((q - 3) + 1)) *
+              ((2 * ((q - 3) + 1)) *
+                (2 * ((q - 3) + 1))) := by
+        exact Nat.mul_le_mul hlin (Nat.mul_le_mul hlin hlin)
+      have hscaled :
+          (2 * ((q - 3) + 1)) *
+              ((2 * ((q - 3) + 1)) *
+                (2 * ((q - 3) + 1))) =
+            2 * (2 * (2 *
+              (((q - 3) + 1) *
+                (((q - 3) + 1) * ((q - 3) + 1))))) := by
+        simp [Nat.mul_left_comm, Nat.mul_comm]
+      have hpowMul :
+          2 * (2 * (2 * 2 ^ (q - 3))) = 2 ^ q := by
+        have hqeq : q = (q - 3) + 3 := by
+          omega
+        calc
+          2 * (2 * (2 * 2 ^ (q - 3))) =
+              2 ^ ((q - 3) + 3) := by
+            simp [Nat.pow_succ, Nat.mul_comm]
+          _ = 2 ^ q := by
+            rw [← hqeq]
+      have hprevScaled :
+          2 * (2 * (2 *
+              (((q - 3) + 1) *
+                (((q - 3) + 1) * ((q - 3) + 1))))) <=
+            2 * (2 * (2 * 2 ^ (q - 3))) := by
+        exact Nat.mul_le_mul_left 2
+          (Nat.mul_le_mul_left 2 (Nat.mul_le_mul_left 2 ihprev))
+      exact Nat.le_trans hcube
+        (by simpa [hscaled, hpowMul] using hprevScaled)
+    · have hcases : q = 11 ∨ q = 12 ∨ q = 13 := by
+        omega
+      rcases hcases with hq11 | hrest
+      · subst q
+        decide
+      · rcases hrest with hq12 | hq13
+        · subst q
+          decide
+        · subst q
+          decide) hq
+
+theorem concreteBPRelativeRmmInteriorMacroSize_le_blockCount_of_active_of_log2_ge_eleven
+    {shape : Cartesian.CartesianShape}
+    (hactive : canonicalBPRelativeMinMaxArgSummaryTableActive shape)
+    (hlog : 11 <= Nat.log2 shape.size) :
+    concreteBPRelativeRmmInteriorMacroSize shape <=
+      canonicalBPRelativeSummaryBlockCount shape := by
+  let base := canonicalBPRelativeSummaryBase shape
+  have hbasePos : 0 < base := by
+    simp [base, canonicalBPRelativeSummaryBase]
+  have hcubePow :
+      (Nat.log2 shape.size + 1) *
+          ((Nat.log2 shape.size + 1) *
+            (Nat.log2 shape.size + 1)) <=
+        2 ^ Nat.log2 shape.size :=
+    nat_succ_cube_le_two_pow_of_11_le
+      (Nat.log2 shape.size) hlog
+  have hsizePos : shape.size ≠ 0 := by
+    intro hzero
+    simp [hzero] at hlog
+  have hcubeSize :
+      base * (base * base) <= shape.size := by
+    exact Nat.le_trans
+      (by
+        simpa [base, canonicalBPRelativeSummaryBase] using hcubePow)
+      (Nat.log2_self_le hsizePos)
+  have hraw :
+      base * base <= canonicalBPRelativeSummaryBlockCountRaw shape := by
+    unfold canonicalBPRelativeSummaryBlockCountRaw
+    exact (Nat.le_div_iff_mul_le hbasePos).2
+      (by
+        simpa [base, canonicalBPRelativeSummaryBase, Nat.mul_assoc,
+          Nat.mul_left_comm, Nat.mul_comm] using hcubeSize)
+  simpa [concreteBPRelativeRmmInteriorMacroSize,
+    canonicalBPRelativeSummaryBlockCount, canonicalBPRelativeSummaryBase,
+    base, hactive, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using
+    hraw
+
+theorem concreteBPRelativeRmmInteriorReady_of_active_of_log2_ge_eleven
+    {shape : Cartesian.CartesianShape}
+    (hactive : canonicalBPRelativeMinMaxArgSummaryTableActive shape)
+    (hlog : 11 <= Nat.log2 shape.size) :
+    concreteBPRelativeRmmInteriorReady shape := by
+  exact ⟨hactive,
+    concreteBPRelativeRmmInteriorMacroSize_le_blockCount_of_active_of_log2_ge_eleven
+      hactive hlog⟩
+
+theorem canonicalBPRelativeSummaryBase_le_activeNotReadyBaseBound_of_active_not_ready
+    {shape : Cartesian.CartesianShape}
+    (hactive : canonicalBPRelativeMinMaxArgSummaryTableActive shape)
+    (hnotReady : ¬ concreteBPRelativeRmmInteriorReady shape) :
+    canonicalBPRelativeSummaryBase shape <=
+      concreteBPRelativeRmmInteriorActiveNotReadyBaseBound := by
+  have hlogLt : Nat.log2 shape.size < 11 := by
+    exact Nat.lt_of_not_ge (by
+      intro hlog
+      exact hnotReady
+        (concreteBPRelativeRmmInteriorReady_of_active_of_log2_ge_eleven
+          hactive hlog))
+  unfold canonicalBPRelativeSummaryBase
+  unfold concreteBPRelativeRmmInteriorActiveNotReadyBaseBound
+  omega
+
+theorem concreteBPRelativeRmmInteriorMacroSize_le_activeNotReadyBlockBound_of_active_not_ready
+    {shape : Cartesian.CartesianShape}
+    (hactive : canonicalBPRelativeMinMaxArgSummaryTableActive shape)
+    (hnotReady : ¬ concreteBPRelativeRmmInteriorReady shape) :
+    concreteBPRelativeRmmInteriorMacroSize shape <=
+      concreteBPRelativeRmmInteriorActiveNotReadyBaseBound *
+        concreteBPRelativeRmmInteriorActiveNotReadyBaseBound := by
+  have hbase :=
+    canonicalBPRelativeSummaryBase_le_activeNotReadyBaseBound_of_active_not_ready
+      hactive hnotReady
+  simpa [concreteBPRelativeRmmInteriorMacroSize] using
+    Nat.mul_le_mul hbase hbase
 
 theorem concreteBPRelativeRmmInteriorMacroCount_pos_of_ready
     (shape : Cartesian.CartesianShape)
