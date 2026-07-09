@@ -460,6 +460,67 @@ Supersedes:
 The "worker prompts should name the recommended model/mode explicitly" wording
 from WDD-20260708-007.
 
+## WDD-20260709-010: Require Coordinator Close-Out Prompt Engineering
+
+Status: Accepted
+Date: 2026-07-09
+Scope: Coordinator finish protocol and roadmap delegation.
+
+Decision:
+
+After completed-worker audits, branch integrations, or roadmap-planning turns,
+the coordinator should end by engineering the best next ambitious prompt or
+prompt set, ready for the user to paste into worker or external-auditor chats,
+unless the correct next step is explicitly to wait, hand off, or not launch more
+work yet. Launch metadata remains outside the prompt text, as in
+WDD-20260709-009.
+
+Context:
+
+The coordinator role is not only to falsify a worker branch or summarize what
+landed. The useful cycle is audit, integrate, re-read the roadmap/frontier, and
+turn the result into the next concrete delegation. A final line such as "next
+target: R3" leaves too much coordination work for the user and increases the
+chance that the next worker receives an underspecified or stale prompt.
+
+Options considered:
+
+- Let coordinator reports end with a generic next target.
+- Require full prompt engineering only when the user explicitly asks.
+- Make prompt engineering the default coordinator close-out, with an explicit
+  no-launch reason when delegation would be premature.
+
+Rationale:
+
+Ready-to-paste prompts preserve the current source-grounded frontier at the
+moment it is freshest, make maximum effective parallelization explicit, and
+reduce prompt drift between audit verdict and next worker launch. Requiring an
+explicit no-launch reason also prevents ceremonial delegation when a handoff,
+user decision, or unmerged dependency is the wiser next move.
+
+Consequences:
+
+The `rmq-coordinator` skill's finish section now requires final reports to
+include what remains open, what not to work on next, and concrete next prompt
+artifacts with coordinator-facing launch metadata outside the prompt text.
+Future coordinator audits should not stop at "next best target" when a
+responsible worker or auditor prompt can be written.
+
+Evidence:
+
+- `.agents/skills/rmq-coordinator/SKILL.md`
+- `docs/internal/templates/WORKER_PROMPT.md`
+- `docs/internal/templates/AUDIT_PROMPT.md`
+
+Follow-up:
+
+After several uses, check whether coordinator reports are becoming too long and
+whether prompt artifacts should move into a short dedicated "Launch" subsection.
+
+Supersedes:
+
+None.
+
 ## WDD-20260709-008: Require Explicit Worker Branch Contracts
 
 Status: Accepted

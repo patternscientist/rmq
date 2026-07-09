@@ -132,4 +132,21 @@ Final reports should state:
 - why it matters for the roadmap;
 - commands run and skipped;
 - design/workflow logs updated, or why none were needed;
-- next best target.
+- what remains open and what should not be worked on next;
+- best next ambitious prompt or prompt set, ready to paste into the appropriate
+  worker or external-auditor chat, unless the right next step is explicitly to
+  wait, hand off, or not launch more work yet.
+
+For each proposed prompt, include coordinator-facing launch metadata outside
+the prompt text:
+
+- worker/auditor handle;
+- fresh chat or existing worker recommendation;
+- recommended model/mode and reason;
+- target branch/base branch when the prompt creates a branch.
+
+If no prompt should be launched, say why in operational terms, such as an
+unmerged dependency, a context-health handoff requirement, a pending external
+audit, or a design choice that needs user input. Do not end a completed-worker
+audit or integration report with only a generic "next target" when a concrete
+delegation prompt can be responsibly engineered.
