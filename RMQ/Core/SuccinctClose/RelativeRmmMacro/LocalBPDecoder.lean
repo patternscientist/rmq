@@ -1928,6 +1928,51 @@ theorem zeroBlockSameBlockCloseCosted_cost_eq
       (zeroBlockSameBlockCloseStructuralWords shape).length := by
   rfl
 
+theorem zeroBlockSameBlockCloseStructuralWords_length_le_bpCodeWordCount
+    (shape : Cartesian.CartesianShape) :
+    (zeroBlockSameBlockCloseStructuralWords shape).length <=
+      shape.bpCode.length /
+          SuccinctRank.machineWordBits shape.bpCode.length + 1 := by
+  let wordSize := SuccinctRank.machineWordBits shape.bpCode.length
+  have hword : 0 < wordSize := by
+    simpa [wordSize] using
+      SuccinctRank.machineWordBits_pos shape.bpCode.length
+  simpa [zeroBlockSameBlockCloseStructuralWords, wordSize] using
+    SuccinctSpace.chunkPayloadWords_length_le_div_add_one
+      (wordSize := wordSize) hword shape.bpCode
+
+theorem zeroBlockSameBlockCloseCosted_cost_le_bpCodeWordCount
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) :
+    (zeroBlockSameBlockCloseCosted shape leftClose rightClose).cost <=
+      shape.bpCode.length /
+          SuccinctRank.machineWordBits shape.bpCode.length + 1 := by
+  simpa [zeroBlockSameBlockCloseCosted_cost_eq] using
+    zeroBlockSameBlockCloseStructuralWords_length_le_bpCodeWordCount shape
+
+theorem zeroBlockSameBlockCloseStructuralWords_length_le_size
+    (shape : Cartesian.CartesianShape) :
+    (zeroBlockSameBlockCloseStructuralWords shape).length <=
+      2 * shape.size + 1 := by
+  have hwords :=
+    zeroBlockSameBlockCloseStructuralWords_length_le_bpCodeWordCount shape
+  have hdiv :
+      shape.bpCode.length /
+          SuccinctRank.machineWordBits shape.bpCode.length <=
+        shape.bpCode.length :=
+    Nat.div_le_self _ _
+  have hbpLen : shape.bpCode.length = 2 * shape.size := by
+    exact Cartesian.CartesianShape.bpCode_length shape
+  omega
+
+theorem zeroBlockSameBlockCloseCosted_cost_le_size
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) :
+    (zeroBlockSameBlockCloseCosted shape leftClose rightClose).cost <=
+      2 * shape.size + 1 := by
+  simpa [zeroBlockSameBlockCloseCosted_cost_eq] using
+    zeroBlockSameBlockCloseStructuralWords_length_le_size shape
+
 theorem zeroBlockSameBlockCloseStructuralWords_length_le_scanCost_of_blockSize_zero
     {shape : Cartesian.CartesianShape}
     (hzero : canonicalBPRelativeSummaryBlockSize shape = 0) :
@@ -1948,30 +1993,10 @@ theorem zeroBlockSameBlockCloseStructuralWords_length_le_scanCost_of_blockSize_z
       exact hnotReady
         (concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold
           shape hsize))
-  let wordSize := SuccinctRank.machineWordBits shape.bpCode.length
-  have hword : 0 < wordSize := by
-    simpa [wordSize] using
-      SuccinctRank.machineWordBits_pos shape.bpCode.length
-  have hchunks :=
-    SuccinctSpace.chunkPayloadWords_length_le_div_add_one
-      (wordSize := wordSize) hword shape.bpCode
-  have hdiv :
-      shape.bpCode.length / wordSize <= shape.bpCode.length :=
-    Nat.div_le_self _ _
-  have hbpLen : shape.bpCode.length = 2 * shape.size := by
-    exact Cartesian.CartesianShape.bpCode_length shape
-  have hmain :
-      (SuccinctSpace.chunkPayloadWords wordSize shape.bpCode).length <=
-        concreteCompactBPCloseZeroBlockScanCost := by
-    unfold concreteCompactBPCloseZeroBlockScanCost
-    calc
-      (SuccinctSpace.chunkPayloadWords wordSize shape.bpCode).length
-          <= shape.bpCode.length / wordSize + 1 := hchunks
-      _ <= shape.bpCode.length + 1 := by omega
-      _ = 2 * shape.size + 1 := by rw [hbpLen]
-      _ <= 2 * concreteBPRelativeRmmInteriorReadyThreshold + 1 := by
-        omega
-  simpa [zeroBlockSameBlockCloseStructuralWords, wordSize] using hmain
+  have hlocal :=
+    zeroBlockSameBlockCloseStructuralWords_length_le_size shape
+  unfold concreteCompactBPCloseZeroBlockScanCost
+  omega
 
 theorem zeroBlockSameBlockCloseCosted_cost_le_of_blockSize_zero
     {shape : Cartesian.CartesianShape}

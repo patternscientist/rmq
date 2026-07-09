@@ -377,6 +377,64 @@ theorem lcaCloseCostedWithRankSeed_cost_le
         directory.crossBlockCloseCostedWithRankSeed_cost_le rankCloseCosted
           leftClose rightClose rankCost hrankCost
 
+theorem lcaCloseCosted_cost_le_bpCodeWordCount_of_blockSize_zero
+    {shape : Cartesian.CartesianShape}
+    (directory : ConcreteCompactBPCloseLCADirectory shape)
+    (leftClose rightClose : Nat)
+    (hzero : canonicalBPRelativeSummaryBlockSize shape = 0) :
+    (directory.lcaCloseCosted leftClose rightClose).cost <=
+      shape.bpCode.length /
+          SuccinctRank.machineWordBits shape.bpCode.length + 1 := by
+  unfold lcaCloseCosted
+  simp [hzero]
+  exact
+    zeroBlockSameBlockCloseCosted_cost_le_bpCodeWordCount
+      shape leftClose rightClose
+
+theorem lcaCloseCostedWithRankSeed_cost_le_bpCodeWordCount_of_blockSize_zero
+    {shape : Cartesian.CartesianShape}
+    (directory : ConcreteCompactBPCloseLCADirectory shape)
+    (rankCloseCosted : Nat -> Costed Nat)
+    (leftClose rightClose : Nat)
+    (hzero : canonicalBPRelativeSummaryBlockSize shape = 0) :
+    (directory.lcaCloseCostedWithRankSeed rankCloseCosted leftClose
+        rightClose).cost <=
+      shape.bpCode.length /
+          SuccinctRank.machineWordBits shape.bpCode.length + 1 := by
+  unfold lcaCloseCostedWithRankSeed
+  simp [hzero]
+  exact
+    zeroBlockSameBlockCloseCosted_cost_le_bpCodeWordCount
+      shape leftClose rightClose
+
+theorem lcaCloseCosted_cost_le_size_of_blockSize_zero
+    {shape : Cartesian.CartesianShape}
+    (directory : ConcreteCompactBPCloseLCADirectory shape)
+    (leftClose rightClose : Nat)
+    (hzero : canonicalBPRelativeSummaryBlockSize shape = 0) :
+    (directory.lcaCloseCosted leftClose rightClose).cost <=
+      2 * shape.size + 1 := by
+  unfold lcaCloseCosted
+  simp [hzero]
+  exact
+    zeroBlockSameBlockCloseCosted_cost_le_size
+      shape leftClose rightClose
+
+theorem lcaCloseCostedWithRankSeed_cost_le_size_of_blockSize_zero
+    {shape : Cartesian.CartesianShape}
+    (directory : ConcreteCompactBPCloseLCADirectory shape)
+    (rankCloseCosted : Nat -> Costed Nat)
+    (leftClose rightClose : Nat)
+    (hzero : canonicalBPRelativeSummaryBlockSize shape = 0) :
+    (directory.lcaCloseCostedWithRankSeed rankCloseCosted leftClose
+        rightClose).cost <=
+      2 * shape.size + 1 := by
+  unfold lcaCloseCostedWithRankSeed
+  simp [hzero]
+  exact
+    zeroBlockSameBlockCloseCosted_cost_le_size
+      shape leftClose rightClose
+
 theorem crossBlockCloseCosted_erase_decoded
     {shape : Cartesian.CartesianShape}
     (directory : ConcreteCompactBPCloseLCADirectory shape)
