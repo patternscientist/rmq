@@ -527,7 +527,7 @@ None.
 
 ## DD-20260708-011: Make The Route-Split Cost Bound The Public All-Size Alias
 
-Status: Accepted
+Status: Superseded by DD-20260709-001
 Date: 2026-07-08
 Scope: RMQ cost theorem surface.
 
@@ -588,6 +588,69 @@ answer table.
 Supersedes:
 
 DD-20260708-009.
+
+## DD-20260709-001: Sharpen The Zero-Block Route-Split Scan Cap
+
+Status: Accepted
+Date: 2026-07-09
+Scope: RMQ cost theorem surface.
+
+Decision:
+
+Keep the legacy aggregate `concreteCompactBPCloseZeroBlockScanCost` unchanged,
+but replace the zero-block branch of the public route-split cost expression
+with the sharper counted cap
+`SuccinctClose.concreteCompactBPCloseZeroBlockRouteScanCost = 4096`. The clean
+all-size final-query constant is now
+`SuccinctFinal.concreteBPNativeSuccinctRMQCleanAllSizeQueryCost = 4144`.
+
+Context:
+
+The structural zero-block same-block trace reads chunked BP-code payload words.
+The earlier route-split corollary bounded those chunks by `2 * size + 1` under
+`size < 2^15`, giving `65585` after final-query overhead. The trace already
+uses machine-sized chunks, so the divisor by
+`SuccinctRank.machineWordBits shape.bpCode.length` can be retained in the
+uniform small-size proof.
+
+Options considered:
+
+- Keep the `65585` route-split corollary.
+- Add or reactivate a finite same-block answer table.
+- Prove the tighter chunk-count cap for the existing structural scan.
+
+Rationale:
+
+The new proof is still a counted BP-code scan: it adds no answer table, no
+proof-only answer field, no synthetic trace event, and no public activation
+premise. It proves the strongest local improvement available from the existing
+trace shape: a zero-block close/LCA cap of `4096`, yielding whole-query bound
+`4144`. The active non-Ready route remains checked at `568`, and exact
+all-size `118` remains false for the current all-size route.
+
+Consequences:
+
+Paper-facing aliases should cite the `4144` clean fixed corollary. The legacy
+`concreteBPNativeSuccinctRMQQueryCost_eq = 196727` aggregate remains checked
+only as compatibility and deliberately keeps the older coarse scan component.
+
+Evidence:
+
+- `RMQ/Core/SuccinctClose/RelativeRmmMacro/LocalBPDecoder.lean`
+- `RMQ/Core/SuccinctClose/RelativeRmmMacro/ConcreteDirectory.lean`
+- `RMQ/Core/SuccinctFinal.lean`
+- `RMQ/Headlines/RMQ.lean`
+
+Follow-up:
+
+The next theorem-shaped R3 target is a real zero-block interval navigator with
+charged range-min evidence, or an obstruction theorem showing that the current
+BP-code-only trace cannot beat the full chunk scan without new counted
+structure.
+
+Supersedes:
+
+DD-20260708-011.
 
 ## DD-20260708-010: Treat Executable Evidence As A Ladder, Not The Trust Base
 

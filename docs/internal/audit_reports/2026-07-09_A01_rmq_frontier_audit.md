@@ -58,7 +58,7 @@ cost notes.
   `scripts/wordram_axiom_check.lean`, and `scripts/axiom_check.lean` passed
   with standard Lean axioms only.
 - Model theorem evidence: all-size cost now goes through the route-split
-  theorem and fixed `65585` corollary; fast-regime `118` retains its readiness
+  theorem and fixed `4144` corollary; fast-regime `118` retains its readiness
   threshold; legacy `196727` remains checked only as compatibility.
 - Artifact/process evidence: claim-drift and design-decision checks passed; ADD
   and audit logs are treated as process evidence, not proof evidence.
@@ -72,6 +72,13 @@ cost notes.
 - ADD logs and audit reports do not prove mathematical claims.
 - The zero-block scan and conservative footprint story are live R3 hardening
   targets, not hidden proof defects.
+
+## Post-Report R3 Follow-Up
+
+This report records the pre-R3 surface audited before worker
+`W03-r3-zero-block` landed. The R3 follow-up keeps the same structural
+zero-block scan but sharpens its counted word cap, replacing the fixed
+all-size corollary `65585` with the checked public constant `4144`.
 
 ## Coordinator Follow-Up
 

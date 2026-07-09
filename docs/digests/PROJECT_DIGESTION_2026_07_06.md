@@ -38,7 +38,7 @@ the query is now a concrete machine-like program whose every memory read is
 logged, audited against a declared memory layout, and — the newest theorems —
 provably dependent on nothing but the declared stored bits, with the model
 bridge itself packaged as a theorem. The integrated branch now exposes a
-route-split all-size theorem with fixed modeled constant `65585`; the older
+route-split all-size theorem with fixed modeled constant `4144`; the older
 `196727` aggregate remains only as legacy compatibility, and the
 Ready-threshold fast-regime theorem has named cost `118`. Section 5 records
 both the original gap analysis and the later closure.
@@ -343,12 +343,15 @@ discipline of section 4, item 2, as a method.
 
 ### 5.2 The former blocking gap: the constant split
 
-The public all-size modeled query-cost bound is now `65585`, not the older
+The public all-size modeled query-cost bound is now `4144`, not the older
 `196727` aggregate. The legacy theorem remains true and uniform in `n`, but the
 new public theorem pays for the route the query actually takes rather than
-summing mutually exclusive branch caps. The repository documents why the
-constants have this shape, and one of this digest's review rounds materially
-*corrected* the story, in the repository's favor (Appendix A):
+summing mutually exclusive branch caps. R2 first exposed a route-split maximum
+`65585`; R3 then proved the zero-block same-block route only needs a `4096`
+machine-word chunk cap, lowering the clean public maximum to `4144`. The
+repository documents why the constants have this shape, and one of this
+digest's review rounds materially *corrected* the story, in the repository's
+favor (Appendix A):
 
 - The fast navigation path is proved applicable for **all `n >= 2^15`**
   (= 32768) — a modest, explicit threshold theorem
@@ -364,7 +367,9 @@ constants have this shape, and one of this digest's review rounds materially
   — three bracket-navigation accesses at 16, a zero-block scan cap
   `2*2^15 + 1`, an interior scan cap `4*2^15`, the fast interior path's 30,
   plus small change. The new route-split theorem keeps those routes mutually
-  exclusive and exposes the fixed all-size maximum `65585`.
+  exclusive and exposed the R2 fixed all-size maximum `65585`; R3 then
+  sharpens the zero-block cap to `4096`, giving the current fixed all-size
+  maximum `4144`.
 - The later integrated theorem surface states the regime split explicitly:
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_of_size_ge_readyThreshold`
   proves the same final global trace costs at most

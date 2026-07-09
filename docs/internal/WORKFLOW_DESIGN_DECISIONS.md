@@ -64,6 +64,57 @@ Supersedes:
 
 None.
 
+## WDD-20260709-013: Keep Claim-Drift Status Labels Current With Public Cost Moves
+
+Status: Accepted
+Date: 2026-07-09
+Scope: Claim-drift policy maintenance.
+
+Decision:
+
+When a checked public cost constant changes, update the claim-drift policy
+status labels that explain compatibility-only constants, even if the scanned
+pattern itself is unchanged.
+
+Context:
+
+The all-size clean RMQ bound moved from `65585` to `4144`, while the legacy
+aggregate pattern `196727` remains compatibility-only. Leaving the policy status
+label tied to the old route-split value would make scan output stale despite
+the checker still passing.
+
+Options considered:
+
+- Leave policy labels as historical hints.
+- Update only public prose.
+- Keep policy labels synchronized with current public theorem constants.
+
+Rationale:
+
+The scan is an audit aid. Its labels should summarize the current theorem
+surface, not require auditors to know which historical bound the label came
+from.
+
+Consequences:
+
+Future public cost moves should update `docs/internal/CLAIM_DRIFT_POLICY.*`
+alongside theorem maps and artifact claims.
+
+Evidence:
+
+- `docs/internal/CLAIM_DRIFT_POLICY.md`
+- `docs/internal/CLAIM_DRIFT_POLICY.json`
+- `scripts/claim_drift_scan.ps1`
+
+Follow-up:
+
+Consider adding the current clean all-size constant itself as a policy term if
+stale cost numbers continue to recur in non-historical docs.
+
+Supersedes:
+
+None.
+
 ## WDD-20260708-003: Add Coordinator And Audit Skills Before Roadmap Practice
 
 Status: Accepted

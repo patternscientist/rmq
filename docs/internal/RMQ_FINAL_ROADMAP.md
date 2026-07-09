@@ -63,7 +63,7 @@ the artifact can be made cleaner and more familiar:
 - The supplied-store/footprint story has now been lifted to the list-facing
   `SuccinctClassic` interface.
 - The public all-size cost alias now uses the route-split theorem and fixed
-  constant `65585`; exact all-size `118` remains false for the current
+  constant `4144`; exact all-size `118` remains false for the current
   zero-block structural replay.
 - A zero-block guard and conservative footprint bounds remain visible enough to
   invite reviewer questions.

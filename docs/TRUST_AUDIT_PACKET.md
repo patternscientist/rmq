@@ -352,10 +352,10 @@ Read literally, this says:
   the reference leftmost RMQ answer `scanWindow shape.representative left len`.
 
 For the built generic sparse-exception close-access family, the paper-facing
-fixed modeled cost bound is now `65585`, via the route-split theorem and clean
+fixed modeled cost bound is now `4144`, via the route-split theorem and clean
 fixed corollary. The checked leaves are Ready `118`, active non-Ready `568`
 using the `480` bounded summary scan, inactive non-Ready `88`, and the
-zero-block BP-code scan maximum `65585`. The old `196727` aggregate is still
+zero-block BP-code chunk scan cap `4096` plus fixed final-query overhead. The old `196727` aggregate is still
 checked as compatibility, but it is no longer the public all-size alias because
 it sums mutually exclusive fallback costs.
 

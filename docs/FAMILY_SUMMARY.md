@@ -75,7 +75,7 @@ the zero-block same-block scan and the active non-Ready bounded interior scan.
 The all-size public cost alias now points to the cleaner route-split theorem
 `Headlines.succinctRMQWholeQueryGlobalWordTraceRouteSplitCostedCostLe` and its
 fixed corollary `Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe`,
-whose named constant is `Headlines.succinctRMQQueryCost = 65585`. The old
+whose named constant is `Headlines.succinctRMQQueryCost = 4144`. The old
 `196727` aggregate remains available only through explicit legacy aliases.
 The supplied-store/full-model fast companions transfer the same bound under
 the existing final-layout footprint agreement.
@@ -1087,9 +1087,10 @@ and `docs/internal/LOCAL_BP_DECODER_PATH.md`.
   model-level succinct data-structure profile, not a claim about extracted
   wall-clock runtime.
 - The current concrete BP-native RMQ paper-facing all-size query-cost bound is
-  the fixed modeled constant `65585`, obtained as the maximum of the checked
-  route-split leaves: zero-block BP-code scan, Ready cost `118`, active
-  non-Ready cost `568`, and inactive non-Ready cost `88`. The compatibility
+  the fixed modeled constant `4144`, obtained as the maximum of the checked
+  route-split leaves: zero-block BP-code chunk scan cost `4096` plus the final
+  query's fixed close-select overhead, Ready cost `118`, active non-Ready cost
+  `568`, and inactive non-Ready cost `88`. The compatibility
   constant `196727` is still checked, but it is no longer the public all-size
   alias because it sums mutually exclusive fallback costs.
 - The project remains Mathlib-free: imports are Lean/Std plus existing Lean

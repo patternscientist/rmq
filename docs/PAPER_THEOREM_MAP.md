@@ -58,7 +58,7 @@ expose the direct supplied-store transfer theorems for counted flat-payload
 backing and modeled cost under footprint agreement.
 The all-size cost aliases now expose a route-split theorem plus the clean fixed
 corollary `SuccinctFinal.concreteBPNativeSuccinctRMQCleanAllSizeQueryCost =
-65585`; the legacy `196727` aggregate is retained under explicit compatibility
+4144`; the legacy `196727` aggregate is retained under explicit compatibility
 aliases because it sums fallback costs that the structural route takes
 mutually exclusively. The fast-regime aliases add the Ready-threshold cost theorem: when
 `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= shape.size`, the

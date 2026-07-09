@@ -117,10 +117,11 @@ footprint.
 
 ## The Constant
 
-The current fixed modeled query-cost bound is `65585`. This is a checked model
+The current fixed modeled query-cost bound is `4144`. This is a checked model
 constant, not execution-performance evidence. It is the fixed corollary of the
 route-split all-size theorem: Ready costs `118`, active non-Ready costs `568`,
-inactive non-Ready costs `88`, and the zero-block BP-code scan is the maximum.
+inactive non-Ready costs `88`, and the zero-block BP-code chunk scan costs
+`4096` before the final query's fixed close-select overhead.
 The old `196727` aggregate remains checked as a legacy compatibility theorem,
 but it is no longer the paper-facing all-size cost alias. There is still a
 separate fast-regime cost theorem for the same final global trace:

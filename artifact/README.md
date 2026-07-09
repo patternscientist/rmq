@@ -141,7 +141,7 @@ things:
 - successful final-query reads backed by counted flat payload words;
 - supplied-store replay and exactness/cost transfer under footprint agreement;
 - the route-split all-size modeled query-cost theorem and clean fixed
-  all-size constant `65585`;
+  all-size constant `4144`;
 - the fast-regime modeled query-cost constant `118` under the real `2^15`
   readiness threshold; and
 - an information-theoretic Catalan/Cartesian-shape RMQ lower bound.

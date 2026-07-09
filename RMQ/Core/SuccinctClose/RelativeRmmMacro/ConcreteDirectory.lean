@@ -1374,7 +1374,7 @@ def concreteCompactBPCloseInactiveNotReadyQueryCostWithRankSeed
 def concreteCompactBPCloseRouteSplitQueryCostWithRankSeed
     (rankCost : Nat) (shape : Cartesian.CartesianShape) : Nat :=
   if canonicalBPRelativeSummaryBlockSize shape = 0 then
-    concreteCompactBPCloseZeroBlockScanCost
+    concreteCompactBPCloseZeroBlockRouteScanCost
   else if concreteBPRelativeRmmInteriorReady shape then
     concreteCompactBPCloseReadyQueryCostWithRankSeed rankCost
   else if canonicalBPRelativeMinMaxArgSummaryTableActive shape then
@@ -1606,7 +1606,7 @@ theorem concreteCompactBPCloseLCADirectory_lcaCloseCostedWithRankSeed_cost_le_ro
   · unfold ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed
     simp [hzero]
     exact
-      zeroBlockSameBlockCloseCosted_cost_le_of_blockSize_zero
+      zeroBlockSameBlockCloseCosted_cost_le_routeScanCost_of_blockSize_zero
         (shape := shape) (leftClose := leftClose) (rightClose := rightClose)
         hzero
   · simp [hzero]

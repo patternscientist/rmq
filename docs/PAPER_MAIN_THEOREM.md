@@ -42,7 +42,7 @@ paper artifact should not cite it as such.
 ## Main Open RMQ Frontier
 
 The current public all-size modeled query bound is the clean fixed corollary
-`SuccinctFinal.concreteBPNativeSuccinctRMQCleanAllSizeQueryCost = 65585`,
+`SuccinctFinal.concreteBPNativeSuccinctRMQCleanAllSizeQueryCost = 4144`,
 derived from the route-split theorem
 `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_routeSplit`.
 The proof uses the real readiness threshold
