@@ -132,6 +132,19 @@ External auditors should not need private chat history to evaluate a checked
 claim. If project history matters, provide a short sanitized digest instead of
 raw transcript dumps.
 
+## Audit Report Storage
+
+External audit reports should be durable repo artifacts when they affect the
+roadmap, a public theorem surface, an artifact claim, or workflow policy. Store
+them under `docs/internal/audit_reports/` using a name such as
+`YYYY-MM-DD_HANDLE_target.md`.
+
+If an auditor has write access, the prompt may allow writes only to that report
+file while keeping source/proof files read-only. If an auditor cannot write to
+the repository, the coordinator should store the report or a faithful summary
+from the chat transcript. Stored audit reports are process evidence; they are
+not proof of mathematical, cost-model, or executable claims.
+
 ## Skill Boundary
 
 This document is the portable source of truth for audit behavior. If the

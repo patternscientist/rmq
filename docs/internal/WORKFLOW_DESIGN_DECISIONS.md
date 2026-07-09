@@ -521,6 +521,64 @@ Supersedes:
 
 None.
 
+## WDD-20260709-011: Store Material Audit Reports In The Repo
+
+Status: Accepted
+Date: 2026-07-09
+Scope: Audit provenance and coordinator accessibility.
+
+Decision:
+
+Material external audit reports should be stored under
+`docs/internal/audit_reports/` in addition to being returned in chat. Audit
+prompts should name the preferred report file path. If an auditor has write
+access, it may write only that report file while source/proof files remain
+read-only; if not, the coordinator stores the chat report or a faithful
+summary.
+
+Context:
+
+Chat-only audit reports are easy to lose and force future coordinators to rely
+on copy-paste context. The ADD workflow benefits from a running, searchable
+collection of audit evidence, accepted findings, rejected findings, and
+coordinator dispositions.
+
+Options considered:
+
+- Leave audit reports only in chat.
+- Store raw transcript dumps as the audit log.
+- Store scoped, sanitized markdown reports in the repository.
+
+Rationale:
+
+Repo-native reports make audits discoverable to future coordinators while
+preserving the trust boundary: reports are process evidence, not proof
+evidence. Scoped markdown files are easier to cite and review than raw chat
+transcripts, and they can record coordinator disposition when an auditor
+finding is accepted with correction.
+
+Consequences:
+
+`docs/internal/AUDIT_PROTOCOL.md`, `.agents/skills/rmq-audit/SKILL.md`, and
+`docs/internal/templates/AUDIT_PROMPT.md` now require or request a durable
+report path for material audits. The first stored report is
+`docs/internal/audit_reports/2026-07-09_A01_rmq_frontier_audit.md`.
+
+Evidence:
+
+- `docs/internal/AUDIT_PROTOCOL.md`
+- `.agents/skills/rmq-audit/SKILL.md`
+- `docs/internal/templates/AUDIT_PROMPT.md`
+- `docs/internal/audit_reports/README.md`
+
+Follow-up:
+
+If the collection grows large, add an index or split reports by year/month.
+
+Supersedes:
+
+None.
+
 ## WDD-20260709-008: Require Explicit Worker Branch Contracts
 
 Status: Accepted

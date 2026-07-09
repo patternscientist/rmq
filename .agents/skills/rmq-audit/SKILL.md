@@ -21,7 +21,13 @@ artifact docs, or process evidence and then recommend the next action.
 Keep auditor/model/mode recommendations as coordinator-facing launch metadata
 for the user, not as text inside the external-auditor prompt. The prompt itself
 should identify the auditor handle, branch/commit/base, scope, evidence tiers,
-checks, and report shape.
+checks, report storage path, and report shape.
+
+For audits that may affect the roadmap, public theorem surface, artifact
+claims, or workflow policy, assign a durable report path under
+`docs/internal/audit_reports/`. If the auditor can write files, allow writes
+only to that report file and keep source/proof files read-only. If the auditor
+cannot write files, ask for markdown that the coordinator can store faithfully.
 
 If the user asks for a read-only local audit rather than an external-auditor
 prompt, use `rmq-coordinator` for completed-worker integration audits or a
@@ -79,6 +85,8 @@ Ask the external auditor to lead with findings:
 4. Stale or rejected objections.
 5. Verification commands run, skipped, and why.
 6. Best next theorem, docs, artifact, or workflow prompt.
+7. Report file path, or an explicit note that the report was chat-only and must
+   be stored by the coordinator.
 
 Severity:
 

@@ -285,8 +285,9 @@ imports, this material):
 - [`docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md`](docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md):
   stress-tested Lean-club explanation of the current project state.
 - [`docs/digests/PROJECT_DIGESTION_2026_07_06.md`](docs/digests/PROJECT_DIGESTION_2026_07_06.md):
-  canonical current publication-oriented project digestion for `main` at
-  `3f6f1e3`, with an integration note for the later fast-regime cost split.
+  canonical July 2026 publication-oriented project digestion, originally
+  rooted at `main` commit `3f6f1e3` and updated with later supplied-store,
+  fast-regime, and route-split cost notes.
 - [`docs/ADD_PROVENANCE.md`](docs/ADD_PROVENANCE.md): public provenance note for
   the audit-driven development workflow; ADD is process evidence, not a proof
   object or trust base.

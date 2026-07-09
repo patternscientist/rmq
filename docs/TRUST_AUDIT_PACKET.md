@@ -1,6 +1,6 @@
 # Trust Audit Packet
 
-Snapshot: 2026-07-02. This is the compact packet to hand to a skeptical
+Snapshot: 2026-07-09. This is the compact packet to hand to a skeptical
 Lean/formalization reviewer before asking for a broader library-readiness
 review. It focuses on the public succinct RMQ headline theorem, its alias
 chain, its cost/space model, and the main anti-oracle checks.
@@ -28,14 +28,16 @@ powershell -ExecutionPolicy Bypass -File scripts\review_wordram.ps1
 
 ## Public Headline Alias
 
-The most reader-facing public RMQ name lives in `RMQ/Headlines.lean`:
+The most reader-facing public RMQ names live in the narrow RMQ paper surface:
+`RMQPaper.lean` imports `RMQ/Headlines/RMQ.lean`, while
+`RMQ/Headlines.lean` remains the aggregate full-repository barrel.
 
 ```lean
-abbrev succinctRMQListIntTwoNPlusOConstantQuery :=
-  RMQ.SuccinctClassic.listInt_two_n_plus_o_constant_query_profile
-
-abbrev listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory :=
+abbrev listIntSuccinctRMQPaperMainTheorem :=
   RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story
+
+abbrev succinctRMQWholeQueryGlobalWordTraceCostedCostLe :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_cleanAllSize
 ```
 
 The first theorem is stated over ordinary `xs : List Int`: it exposes
@@ -542,11 +544,12 @@ lake env lean scripts\union_find_axiom_check.lean
 
 ## Reviewer Reading Order
 
-1. `RMQ/Headlines.lean`
-2. `docs/WHAT_IS_PROVED.md`
-3. `docs/TRUST_BASE.md`
-4. this packet
-5. `scripts/headline_axiom_check.lean`
-6. `RMQ/Core/SuccinctFinal.lean`, starting at
+1. `RMQPaper.lean`
+2. `RMQ/Headlines/RMQ.lean`
+3. `docs/WHAT_IS_PROVED.md`
+4. `docs/TRUST_BASE.md`
+5. this packet
+6. `scripts/headline_axiom_check.lean`
+7. `RMQ/Core/SuccinctFinal.lean`, starting at
    `builtGenericSparseExceptionSelectBPCloseAccessDirectory` and
    `builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`
