@@ -9,6 +9,8 @@ or commits whenever possible.
 For ADD process, audit, automation, delegation, or model-routing choices, use
 `WORKFLOW_DESIGN_DECISIONS.md`. If a choice affects both proof/code architecture
 and workflow, record it in the most relevant ledger and cross-link the other one.
+Entries in either ledger should preserve enough rationale, rejected
+alternatives, consequences, and evidence for a future paper exposition.
 
 See also:
 

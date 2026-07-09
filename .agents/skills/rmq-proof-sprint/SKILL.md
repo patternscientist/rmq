@@ -7,6 +7,19 @@ description: Use for Lean RMQ formalization work in this repository, especially 
 
 Use this workflow for nontrivial work in the RMQ Lean repository.
 
+## Skill Routing
+
+Use this skill for narrow Lean proof, construction, cost/space, and theorem
+implementation work. Use `rmq-coordinator` for high-context roadmap
+coordination, branch integration, worker delegation, and handoffs. Use
+`rmq-audit` for read-only adversarial review of branches, theorem surfaces,
+claim drift, and worker reports.
+
+Before finalizing nontrivial proof work, check whether
+`docs/internal/DESIGN_DECISIONS.md` or
+`docs/internal/WORKFLOW_DESIGN_DECISIONS.md` needs an update. Proof/code
+architecture choices go in the former; ADD/process choices go in the latter.
+
 ## Orient
 
 1. Read the nearest relevant module plus `docs/FAMILY_SUMMARY.md` sections for

@@ -1,0 +1,33 @@
+name: RMQ audit
+description: Request an evidence-classed audit of an RMQ branch or claim surface.
+title: "[audit] "
+labels: ["audit"]
+body:
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Branch, commit, base, theorem surface, docs, or worker report.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: What would clear or block this target?
+    validations:
+      required: true
+  - type: textarea
+    id: checks
+    attributes:
+      label: Required checks
+      description: Commands or evidence that should be inspected.
+    validations:
+      required: true
+  - type: textarea
+    id: non_goals
+    attributes:
+      label: Non-goals and stale objections
+      description: Known out-of-scope issues or already answered audit claims.
+    validations:
+      required: false

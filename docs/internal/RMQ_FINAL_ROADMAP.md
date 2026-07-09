@@ -85,7 +85,9 @@ Deliverables:
 
 - This roadmap.
 - Design-decision entries for the roadmap choices.
-- A concrete ADD tooling plan.
+- A concrete ADD tooling plan and first-pass implementation: coordinator/audit
+  skills, prompt templates, claim-drift policy, advisory scripts, CI hooks, and
+  issue/PR templates.
 - Internal links from `AGENTS.md` and `docs/internal/README.md`.
 
 Acceptance:

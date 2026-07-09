@@ -5,3 +5,4 @@ build/
 .worktrees/
 .tmp_rank_select_materials/
 local_archive/
+.audit-packets/

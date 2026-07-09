@@ -1,0 +1,4 @@
+interface:
+  display_name: "RMQ Coordinator"
+  short_description: "Coordinate RMQ roadmap, audits, and handoffs"
+  default_prompt: "Use $rmq-coordinator to reconstruct the RMQ frontier and delegate the next roadmap step."

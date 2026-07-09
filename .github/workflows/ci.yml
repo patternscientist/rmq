@@ -27,3 +27,15 @@ jobs:
       - name: Run repository gate
         shell: pwsh
         run: ./scripts/gate.ps1
+
+      - name: Run ADD advisory scans
+        if: always()
+        shell: pwsh
+        run: |
+          ./scripts/claim_drift_scan.ps1
+          if ("${{ github.event_name }}" -eq "pull_request") {
+            git fetch origin "${{ github.base_ref }}" --depth=1
+            ./scripts/design_decision_check.ps1 -Base "origin/${{ github.base_ref }}"
+          } else {
+            ./scripts/design_decision_check.ps1 -Base "HEAD~1"
+          }

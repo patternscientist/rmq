@@ -36,3 +36,15 @@ jobs:
         with:
           name: artifact-reproduction-log
           path: artifact-reproduction.log
+
+      - name: Create audit packet
+        if: always()
+        shell: pwsh
+        run: ./scripts/make_audit_packet.ps1 -OutDir audit-packet
+
+      - name: Upload audit packet
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-packet
+          path: audit-packet

@@ -1,0 +1,40 @@
+name: RMQ worker task
+description: Define a theorem-shaped or artifact-shaped RMQ worker task.
+title: "[worker] "
+labels: ["worker"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: One sentence naming the exact target.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Write scope
+      description: Files or directories the worker owns.
+    validations:
+      required: true
+  - type: textarea
+    id: target
+    attributes:
+      label: Required target
+      description: Exact theorem, profile, script, or document behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: forbidden
+    attributes:
+      label: Forbidden shortcuts
+      description: Shortcuts the worker must not take.
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification
+      description: Commands the worker must run or explain if skipped.
+    validations:
+      required: true

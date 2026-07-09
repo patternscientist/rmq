@@ -51,6 +51,10 @@ Required sections:
   - skeptical-reviewer questions;
   - exact command outcomes.
 
+Status:
+
+- Implemented as `docs/internal/templates/WORKER_PROMPT.md`.
+
 ### 2. Audit Prompt Template
 
 Path:
@@ -76,6 +80,28 @@ Required sections:
   - theorem evidence;
   - docs/artifact drift;
   - recommended next theorem-shaped targets.
+
+Status:
+
+- Implemented as `docs/internal/templates/AUDIT_PROMPT.md`.
+
+### 2a. Coordinator Re-Entry And Handoff Templates
+
+Paths:
+
+- `docs/internal/templates/COORDINATOR_REENTRY_PROMPT.md`
+- `docs/internal/templates/COORDINATOR_HANDOFF_PACKET.md`
+
+Purpose:
+
+- make high-context coordination refreshable from source;
+- make context-health and fresh-coordinator handoff normal workflow events;
+- preserve enough frontier/design context for the next coordinator to continue
+  without inheriting stale chat assumptions.
+
+Status:
+
+- Implemented.
 
 ### 3. Audit Packet Generator
 
@@ -106,6 +132,10 @@ Suggested output:
 
 The script should avoid private chat exports by default.
 
+Status:
+
+- Implemented as `scripts/make_audit_packet.ps1`.
+
 ### 4. Claim-Drift Scan Script
 
 Path:
@@ -135,6 +165,12 @@ The script should print matched file/line pairs and exit nonzero only in a
 strict mode, so exploratory branches can use it without fighting intentional
 mentions.
 
+Status:
+
+- Implemented as `scripts/claim_drift_scan.ps1` with policy in
+  `docs/internal/CLAIM_DRIFT_POLICY.md` and
+  `docs/internal/CLAIM_DRIFT_POLICY.json`.
+
 ### 5. Design-Decision Check
 
 Path:
@@ -161,6 +197,10 @@ The check should cover both `docs/internal/DESIGN_DECISIONS.md` and
 in the former, while ADD process, audit, automation, and model-routing changes
 go in the latter.
 
+Status:
+
+- Implemented as `scripts/design_decision_check.ps1`.
+
 ### 6. CI Artifact Outputs
 
 Existing GitHub Actions should be extended only after the scripts above exist.
@@ -178,6 +218,11 @@ Candidate additions:
 - run `scripts/claim_drift_scan.ps1` in advisory mode;
 - run `scripts/design_decision_check.ps1` in advisory mode on pull requests.
 
+Status:
+
+- CI now runs the advisory claim-drift and design-decision scans.
+- Artifact reproduction now uploads an audit packet.
+
 ### 7. Issue Or PR Templates
 
 Paths:
@@ -194,6 +239,10 @@ Purpose:
 
 These are useful after the roadmap branch merges, but they are lower priority
 than the prompt templates and scripts.
+
+Status:
+
+- Implemented initial issue and pull-request templates.
 
 ## What To Defer
 
@@ -245,6 +294,12 @@ Likely useful after templates stabilize:
 
 Do not create these skills until the templates have been used on at least two
 real branches. Premature skills freeze accidental wording.
+
+Current exception:
+
+- The coordinator and audit skills were created now because the workflow itself
+  needs a stable coordinator handoff and audit entry point before practicing the
+  final roadmap. Keep them concise and revise after real use.
 
 ## Trust Boundary
 

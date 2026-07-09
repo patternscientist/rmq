@@ -17,6 +17,12 @@
 - For audits, follow `docs/internal/AUDIT_PROTOCOL.md`.
 - When a branch makes or changes a nontrivial design decision, update
   `docs/internal/DESIGN_DECISIONS.md` or report why no update was needed.
+- When a branch makes or changes a nontrivial ADD/process decision, update
+  `docs/internal/WORKFLOW_DESIGN_DECISIONS.md` or report why no update was
+  needed.
+- Write design-decision entries with enough rationale, rejected alternatives,
+  consequences, and evidence for future paper exposition, not merely as terse
+  change logs.
 
 ## Verification
 

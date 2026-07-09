@@ -1,0 +1,119 @@
+---
+name: rmq-coordinator
+description: Use for high-context RMQ coordination, including re-entry/frontier reconstruction, roadmap planning, worker delegation, branch integration, public-claim synchronization, ADD workflow practice, design-decision logging, context-health checks, and coordinator handoffs. Use when the task is to coordinate RMQ work rather than implement a narrow Lean proof or perform a read-only audit.
+---
+
+# RMQ Coordinator
+
+Use this skill for lead/coordinator work in the RMQ repository.
+
+## Re-Entry
+
+Start by reconstructing the live frontier from source, not memory:
+
+```powershell
+git status --short --branch
+git log --oneline --decorate -20
+git branch --all --contains HEAD
+```
+
+Read the relevant internal contract:
+
+- `docs/internal/RMQ_FINAL_ROADMAP.md`
+- `docs/internal/AUDIT_PROTOCOL.md`
+- `docs/internal/DESIGN_DECISIONS.md`
+- `docs/internal/WORKFLOW_DESIGN_DECISIONS.md`
+- `docs/internal/ADD_WORKFLOW_TOOLING_PLAN.md`
+- current theorem-map, artifact, and claim docs for the task
+
+When the task touches paper-facing RMQ claims, inspect `RMQPaper.lean`,
+`RMQ/Headlines/RMQ.lean`, `docs/PAPER_CLAIM_CORRESPONDENCE.md`,
+`docs/WHAT_IS_PROVED.md`, and `artifact/CLAIMS.md`.
+
+## Frontier Report
+
+Before delegating or integrating, identify:
+
+- current branch, HEAD, base, and dirty files;
+- active worker branches/worktrees;
+- closed theorem/doc/artifact surfaces;
+- live blockers, ranked by paper impact;
+- the next theorem-shaped, docs-shaped, or tooling-shaped target;
+- what not to work on next.
+
+Treat external audits as evidence, not commands. Translate true findings into
+precise theorem, docs, artifact, or workflow targets.
+
+## Delegation
+
+Use `docs/internal/templates/WORKER_PROMPT.md` for proof or implementation
+workers and `docs/internal/templates/AUDIT_PROMPT.md` for auditors.
+
+Every worker prompt should name:
+
+- base branch and write scope;
+- exact theorem/profile/document target;
+- forbidden shortcuts;
+- verification commands;
+- completion report requirements.
+
+For proof work, route narrow implementation to `rmq-proof-sprint`. For read-only
+review, route to `rmq-audit`.
+
+## Integration
+
+For each completed worker branch:
+
+1. Fetch and inspect the branch, commit, base, and diff.
+2. Verify that the worker owned the changed files.
+3. Trace public aliases to source theorem statements when claims changed.
+4. Run the smallest gate that genuinely covers the change.
+5. Update theorem maps, artifact docs, and design logs if the public surface or
+   architecture changed.
+
+Do not merge a branch that merely reports an honest caveat when a local theorem
+repair is still available.
+
+## Decision Logging
+
+Before finalizing any nontrivial turn, ask:
+
+- Did this choose or change a proof/model/code abstraction?
+- Did this change a public theorem surface, artifact path, import root, or trust
+  boundary?
+- Did this change ADD workflow, audit protocol, delegation, automation,
+  evidence policy, model routing, or handoff policy?
+
+Use `docs/internal/DESIGN_DECISIONS.md` for proof/code/artifact decisions and
+`docs/internal/WORKFLOW_DESIGN_DECISIONS.md` for ADD/process decisions. Design
+entries should preserve enough rationale and rejected alternatives for a future
+paper exposition.
+
+## Context Health And Handoff
+
+Create a fresh coordinator handoff before context degradation becomes visible.
+Triggers include:
+
+- a major roadmap rung just landed;
+- several worker branches have been integrated in one chat;
+- the user has had to restate frontier facts;
+- the coordinator is relying on stale branch memory instead of fresh git/source
+  checks;
+- audits start optimizing against old audit text;
+- the next task is a major proof branch, merge wave, or public-claim freeze;
+- the user reports low remaining context/usage.
+
+Use `docs/internal/templates/COORDINATOR_HANDOFF_PACKET.md` for the handoff.
+The packet should include branch/HEAD/base, merged and unmerged branches,
+current theorem/doc/artifact frontier, open blockers, next prompts, design
+decisions since the last handoff, verification evidence, and explicit non-goals.
+
+## Finish
+
+Final reports should state:
+
+- what changed;
+- why it matters for the roadmap;
+- commands run and skipped;
+- design/workflow logs updated, or why none were needed;
+- next best target.

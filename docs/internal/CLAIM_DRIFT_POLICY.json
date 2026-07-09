@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "updated": "2026-07-08",
+  "terms": [
+    {
+      "id": "novelty-first-mechanized",
+      "pattern": "first mechanized|first-ever|apparently not previously",
+      "status": "qualified-only",
+      "strict": true,
+      "allowedPathRegex": "^docs/internal/|^docs/PAPER_RELATED_WORK\\.md$|^docs/RELATED_WORK_AND_LIMITATIONS\\.md$",
+      "allowedLineRegex": "qualified|pending|referee|novelty|search|not claim|not claimed|avoid|policy|scan"
+    },
+    {
+      "id": "forgeability",
+      "pattern": "cannot be forged|forged",
+      "status": "scoped-only",
+      "strict": true,
+      "allowedPathRegex": "^docs/internal/",
+      "allowedLineRegex": "interpreter-generated|checked provenance|checked .*theorem|scoped|not proof|policy|scan|trace not forgeable"
+    },
+    {
+      "id": "artifact-readiness",
+      "pattern": "artifact ready|AE-ready",
+      "status": "current-claim-only-when-evidenced",
+      "strict": true,
+      "allowedPathRegex": "^docs/internal/",
+      "allowedLineRegex": "only appear|not claim|future|policy|scan|when the artifact status is actually being claimed"
+    },
+    {
+      "id": "lean-runtime",
+      "pattern": "Lean runtime",
+      "status": "separate-from-model-cost",
+      "strict": true,
+      "allowedPathRegex": "^docs/internal/|^docs/RMQ_EXTRACTION_FRONTIER\\.md$|^docs/PAPER_RELATED_WORK\\.md$",
+      "allowedLineRegex": "not|separate|distinguish|conflate|policy|scan|model"
+    },
+    {
+      "id": "legacy-2pow128",
+      "pattern": "2\\^128",
+      "status": "legacy-compatibility-only",
+      "strict": false,
+      "allowedPathRegex": "",
+      "allowedLineRegex": ""
+    },
+    {
+      "id": "all-size-196727",
+      "pattern": "196727",
+      "status": "current-conservative-all-size-bound-until-superseded",
+      "strict": false,
+      "allowedPathRegex": "",
+      "allowedLineRegex": ""
+    },
+    {
+      "id": "fast-regime-118",
+      "pattern": "\\b118\\b",
+      "status": "fast-regime-bound-only-unless-all-size-theorem-lands",
+      "strict": false,
+      "allowedPathRegex": "",
+      "allowedLineRegex": ""
+    },
+    {
+      "id": "no-extraction-gap",
+      "pattern": "no extraction gap",
+      "status": "internal-planning-only",
+      "strict": true,
+      "allowedPathRegex": "^docs/internal/|^docs/RMQ_EXTRACTION_FRONTIER\\.md$",
+      "allowedLineRegex": "must not|planning|policy|scan|not erase|runnable"
+    }
+  ]
+}
