@@ -81,6 +81,75 @@ theorem listIntSuccinctRMQPaperMainTheorem :
   RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story
 
 /--
+List-facing supplied-store equality: if the caller-provided store agrees with
+the canonical global store on the final checked footprint, the supplied-store
+query is the same costed query as the canonical list-facing path.
+-/
+theorem listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint
+    (xs : List Int) {store : RMQ.WordRAM.ReadStore}
+    (hfoot :
+      RMQ.SuccinctClassic.storesAgreeOnFootprint xs store
+        (RMQ.SuccinctClassic.globalReadStore xs))
+    (left right : Nat) :
+    RMQ.SuccinctClassic.queryCostedWithStore xs store left right =
+      RMQ.SuccinctClassic.queryCosted xs left right :=
+  RMQ.SuccinctClassic.queryCostedWithStore_eq_queryCosted_of_footprint
+    xs hfoot left right
+
+/--
+List-facing supplied-store exactness: if the caller-provided store agrees with
+the canonical global store on the final checked footprint, valid half-open
+queries erase to the same leftmost `List Int` RMQ answer as the canonical path.
+-/
+theorem listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal
+    (xs : List Int) {store : RMQ.WordRAM.ReadStore}
+    (hfoot :
+      RMQ.SuccinctClassic.storesAgreeOnFootprint xs store
+        (RMQ.SuccinctClassic.globalReadStore xs))
+    {left len : Nat} (hlen : 0 < len)
+    (hbound : left + len <= xs.length) :
+    (RMQ.SuccinctClassic.queryCostedWithStore
+      xs store left (left + len)).erase =
+        some (RMQ.scanWindow xs left len) :=
+  RMQ.SuccinctClassic.listIntFinalFullModelSoundnessExactOfFootprintGlobal
+    xs hfoot hlen hbound
+
+/--
+List-facing supplied-store all-size cost transfer under final footprint
+agreement with the canonical global store.
+-/
+theorem listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal
+    (xs : List Int) {store : RMQ.WordRAM.ReadStore}
+    (hfoot :
+      RMQ.SuccinctClassic.storesAgreeOnFootprint xs store
+        (RMQ.SuccinctClassic.globalReadStore xs))
+    (left right : Nat) :
+    (RMQ.SuccinctClassic.queryCostedWithStore
+      xs store left right).cost <=
+        RMQ.SuccinctClassic.queryCost :=
+  RMQ.SuccinctClassic.listIntFinalFullModelCostLeOfFootprintGlobal
+    xs hfoot left right
+
+/--
+List-facing supplied-store fast-regime cost transfer under the final footprint
+agreement and the Ready-threshold condition on the Cartesian shape of `xs`.
+-/
+theorem listIntSuccinctRMQFastRegimeFinalFullModelCostLeOfFootprintGlobal
+    (xs : List Int) {store : RMQ.WordRAM.ReadStore}
+    (hfoot :
+      RMQ.SuccinctClassic.storesAgreeOnFootprint xs store
+        (RMQ.SuccinctClassic.globalReadStore xs))
+    (hsize :
+      RMQ.SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <=
+        (RMQ.SuccinctClassic.cartesianShape xs).size)
+    (left right : Nat) :
+    (RMQ.SuccinctClassic.queryCostedWithStore
+      xs store left right).cost <=
+        RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost :=
+  RMQ.SuccinctClassic.listIntFastRegimeFinalFullModelCostLeOfFootprintGlobal
+    xs hfoot hsize left right
+
+/--
 Whole-query-interpreted BP-native succinct RMQ capstone: the same two-sided
 `2*n + o(n)`, constant-query theorem shape, with the final query control routed
 through a closed first-order query program whose leaves are the interpreted

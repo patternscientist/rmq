@@ -1,5 +1,5 @@
 import RMQ.Core.Microtable
-import RMQ.Core.SuccinctFinalRAM
+import RMQ.Core.SuccinctFinalModelAdequacy
 
 /-!
 # Classic list-facing succinct RMQ theorem
@@ -47,6 +47,16 @@ def queryCosted (xs : List Int) (left right : Nat) :
   SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
     (cartesianShape xs) left right
 
+/--
+The supplied-store final query specialized to the Cartesian shape of an
+ordinary input list.
+-/
+def queryCostedWithStore
+    (xs : List Int) (store : WordRAM.ReadStore) (left right : Nat) :
+    Costed (Option Nat) :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+    (cartesianShape xs) store left right
+
 /-- Query-independent flat payload layout used by the final query for `xs`. -/
 abbrev flatPayloadLayout (xs : List Int) :
     SuccinctFinal.ConcreteBPNativeSuccinctRMQFlatPayloadLayout
@@ -58,6 +68,17 @@ abbrev flatPayloadLayout (xs : List Int) :
 abbrev flatPayloadReadStore (xs : List Int) : WordRAM.ReadStore :=
   SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadReadStore
     (cartesianShape xs)
+
+/-- Canonical globally segmented read store for the final query on `xs`. -/
+abbrev globalReadStore (xs : List Int) : WordRAM.ReadStore :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQGlobalReadStore
+    (cartesianShape xs)
+
+/-- List-facing final footprint agreement for two supplied read stores. -/
+abbrev storesAgreeOnFootprint
+    (xs : List Int) (storeA storeB : WordRAM.ReadStore) : Prop :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+    (cartesianShape xs) storeA storeB
 
 /-- Final globally segmented WordRAM trace result for the query on `xs`. -/
 abbrev flatPayloadTraceResult
@@ -243,6 +264,53 @@ theorem queryCosted_cost_le
     SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le
       (cartesianShape xs) left right
 
+/--
+If a supplied store agrees with the canonical global store on the final
+footprint, the supplied-store query is exactly the canonical list-facing query.
+-/
+theorem queryCostedWithStore_eq_queryCosted_of_footprint
+    (xs : List Int) {store : WordRAM.ReadStore}
+    (hfoot : storesAgreeOnFootprint xs store (globalReadStore xs))
+    (left right : Nat) :
+    queryCostedWithStore xs store left right =
+      queryCosted xs left right := by
+  simpa [queryCostedWithStore, queryCosted, storesAgreeOnFootprint,
+    globalReadStore] using
+    SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_eq_global_of_footprint
+      (cartesianShape xs) store hfoot left right
+
+/--
+Under footprint agreement with the canonical global store, the supplied-store
+list-facing query inherits the all-size final model cost bound.
+-/
+theorem listIntFinalFullModelCostLeOfFootprintGlobal
+    (xs : List Int) {store : WordRAM.ReadStore}
+    (hfoot : storesAgreeOnFootprint xs store (globalReadStore xs))
+    (left right : Nat) :
+    (queryCostedWithStore xs store left right).cost <= queryCost := by
+  simpa [queryCostedWithStore, queryCost, storesAgreeOnFootprint,
+    globalReadStore] using
+    SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global
+      (cartesianShape xs) store hfoot left right
+
+/--
+Under the Ready-threshold size condition, footprint agreement transfers the
+fast-regime final model cost bound to the supplied-store list-facing query.
+-/
+theorem listIntFastRegimeFinalFullModelCostLeOfFootprintGlobal
+    (xs : List Int) {store : WordRAM.ReadStore}
+    (hfoot : storesAgreeOnFootprint xs store (globalReadStore xs))
+    (hsize :
+      SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <=
+        (cartesianShape xs).size)
+    (left right : Nat) :
+    (queryCostedWithStore xs store left right).cost <=
+      SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost := by
+  simpa [queryCostedWithStore, storesAgreeOnFootprint, globalReadStore] using
+    SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_of_size_ge_readyThreshold
+      (shape := cartesianShape xs) (store := store)
+      hfoot hsize left right
+
 /-- Valid half-open queries return the exact leftmost-minimum index of `xs`. -/
 theorem queryCosted_exact
     (xs : List Int) {left len : Nat}
@@ -262,6 +330,34 @@ theorem queryCosted_exact
             SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact
               (n := xs.length) (shape := cartesianShape xs)
               hshape hlen hbound
+    _ = some (scanWindow xs left len) := by
+          rw [scanWindow_cartesianShape_representative_eq xs hlen hbound]
+
+/--
+List-facing final full-model exactness for a supplied store that agrees with
+the canonical global store on the final footprint.
+-/
+theorem listIntFinalFullModelSoundnessExactOfFootprintGlobal
+    (xs : List Int) {store : WordRAM.ReadStore}
+    (hfoot : storesAgreeOnFootprint xs store (globalReadStore xs))
+    {left len : Nat} (hlen : 0 < len)
+    (hbound : left + len <= xs.length) :
+    (queryCostedWithStore xs store left (left + len)).erase =
+      some (scanWindow xs left len) := by
+  have hshape :
+      List.Mem (cartesianShape xs)
+        (Cartesian.shapesOfSize xs.length) := by
+    exact
+      Cartesian.shapeOfSize_mem_shapesOfSize
+        (by simpa [cartesianShape] using Cartesian.shape_shapeOfSize xs)
+  calc
+    (queryCostedWithStore xs store left (left + len)).erase =
+        some (scanWindow (cartesianShape xs).representative left len) := by
+          simpa [queryCostedWithStore, storesAgreeOnFootprint,
+            globalReadStore] using
+            SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness_exact_of_footprint_global
+              (n := xs.length) (shape := cartesianShape xs)
+              hshape hfoot hlen hbound
     _ = some (scanWindow xs left len) := by
           rw [scanWindow_cartesianShape_representative_eq xs hlen hbound]
 

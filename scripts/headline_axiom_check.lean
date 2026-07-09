@@ -40,6 +40,10 @@ the BP-native succinct capstone.
 #print axioms RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery
 #print axioms RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory
 #print axioms RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem
+#print axioms RMQ.Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint
+#print axioms RMQ.Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal
+#print axioms RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal
+#print axioms RMQ.Headlines.listIntSuccinctRMQFastRegimeFinalFullModelCostLeOfFootprintGlobal
 #print axioms RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted
 #print axioms RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace
 #print axioms RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace

@@ -27,6 +27,10 @@ RMQ.Headlines.succinctRMQFinalTraceModelAdequacyExact
 RMQ.Headlines.succinctRMQFinalSuppliedStoreAdequacy
 RMQ.Headlines.succinctRMQFinalFullModelSoundness
 RMQ.Headlines.succinctRMQFinalFullModelSoundnessExactOfFootprintGlobal
+RMQ.Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint
+RMQ.Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal
+RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal
+RMQ.Headlines.listIntSuccinctRMQFastRegimeFinalFullModelCostLeOfFootprintGlobal
 RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedByCountedFlatPayloadOfFootprintGlobal
 RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal
 RMQ.Headlines.succinctRMQFastRegimeGlobalPayloadStoreCostLeOfReadyThreshold
@@ -44,8 +48,12 @@ the supplied-store replay is store-parametric under final-layout footprint
 agreement. The full-model packet also records that emitted supplied-store and
 canonical reads are inside the safe footprint, and that footprint agreement
 with the canonical global store recovers the canonical trace and exact result.
-The last two aliases expose the direct supplied-store transfer theorems for
-counted flat-payload backing and modeled cost under footprint agreement.
+The list-facing aliases expose the same footprint-agreement story at the
+ordinary `List Int` surface: the supplied-store query is equal to canonical
+`SuccinctClassic.queryCosted`, valid windows erase to the list RMQ answer, and
+the all-size plus fast-regime cost bounds transfer. The store/model aliases
+expose the direct supplied-store transfer theorems for counted flat-payload
+backing and modeled cost under footprint agreement.
 The fast-regime aliases add the Ready-threshold cost theorem: when
 `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= shape.size`, the
 same final global trace has modeled cost at most the named constant

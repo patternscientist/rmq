@@ -77,7 +77,15 @@ the existing final-layout footprint agreement.
 `Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` lifts
 that execution packet to the ordinary `List Int` public surface while keeping
 the classic half-open leftmost RMQ contract and existing modeled
-constant-query story. The BP-navigation spoke now also has the concrete
+constant-query story. The list-facing supplied-store wrappers
+`SuccinctClassic.queryCostedWithStore`,
+`SuccinctClassic.storesAgreeOnFootprint`, and the headline aliases
+`Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint`,
+`Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal`,
+`Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal`, and
+`Headlines.listIntSuccinctRMQFastRegimeFinalFullModelCostLeOfFootprintGlobal`
+now lift the final full-model footprint exactness and cost transfers to
+ordinary `xs : List Int`. The BP-navigation spoke now also has the concrete
 payload-backed profile `Headlines.concreteBPCloseNavigationProfile`, which
 fixes the relative-split false-select/rank-close layer and compact relative-rmM
 close/LCA directory instead of relying on the older sampled conditional family.
@@ -2809,7 +2817,11 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctClassic.listInt_two_n_plus_o_constant_query_profile`,
   `SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory`, and
   `SuccinctClassic.listInt_flatPayloadStore_noSynthetic_execution_story`, and
-  `SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story`.
+  `SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story`,
+  `SuccinctClassic.queryCostedWithStore_eq_queryCosted_of_footprint`,
+  `SuccinctClassic.listIntFinalFullModelSoundnessExactOfFootprintGlobal`,
+  `SuccinctClassic.listIntFinalFullModelCostLeOfFootprintGlobal`, and
+  `SuccinctClassic.listIntFastRegimeFinalFullModelCostLeOfFootprintGlobal`.
 - `RMQ/Headlines.lean`:
   public-facing aliases
   `Headlines.exactRMQLowerBoundDoubledCatalanSlack`,
@@ -2818,6 +2830,10 @@ The names below are grouped by source module. Repeated base names in
   `Headlines.succinctRMQListIntTwoNPlusOConstantQuery`,
   `Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory`,
   `Headlines.listIntSuccinctRMQPaperMainTheorem`,
+  `Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint`,
+  `Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal`,
+  `Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal`,
+  `Headlines.listIntSuccinctRMQFastRegimeFinalFullModelCostLeOfFootprintGlobal`,
   `Headlines.succinctRMQTwoNPlusOConstantQuery`,
   `Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted`,
   `Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace`,

@@ -61,6 +61,10 @@ The RMQ-only paper aliases live in
 | `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | Reader-facing theorem over ordinary `xs : List Int`: build a payload of length `2*n + o(n)` bits and answer valid half-open RMQ queries exactly, with leftmost ties, within constant modeled query cost. |
 | `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Reader-facing flat-payload execution story over ordinary `xs : List Int`: the same final query uses the advertised `2*n + o(n)` `buildPayload`, satisfies the classic half-open leftmost RMQ contract, is interpreted by the final WordRAM trace, and every actual successful read is backed by one query-independent counted flat payload layout with bounded events and no synthetic cost-only trace markers. |
 | `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` | Paper-facing list theorem combining the advertised `2*n + overhead` payload size, `overhead = o(n)`, exact valid RMQ answers with leftmost ties, constant modeled query cost, and the final no-synthetic flat-payload trace story. |
+| `RMQ.Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint` | List-facing supplied-store equality: under final footprint agreement with `SuccinctClassic.globalReadStore xs`, `SuccinctClassic.queryCostedWithStore xs store left right` is the same costed query as canonical `SuccinctClassic.queryCosted xs left right`. |
+| `RMQ.Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal` | List-facing supplied-store exactness: if a caller-provided store agrees with `SuccinctClassic.globalReadStore xs` on the final checked footprint, valid half-open queries through `SuccinctClassic.queryCostedWithStore` erase to the exact leftmost `List Int` RMQ answer. |
+| `RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal` | List-facing supplied-store all-size cost transfer: under the same footprint agreement, the supplied-store query has modeled cost at most `SuccinctClassic.queryCost`. |
+| `RMQ.Headlines.listIntSuccinctRMQFastRegimeFinalFullModelCostLeOfFootprintGlobal` | List-facing supplied-store fast-regime cost transfer: under footprint agreement plus `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= (SuccinctClassic.cartesianShape xs).size`, the supplied-store query has modeled cost at most the final fast-regime constant. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and a numeric doubled-Catalan slack comparison in the same public theorem surface; the encoding-quantified lower-bound theorem is exposed separately as `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack`. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Whole-query-interpreted variant of the final BP-native succinct RMQ capstone: same theorem shape, with the final query control represented by closed `WordRAM`/register-program syntax whose leaves are interpreted close-select, compact close/LCA, and register-backed answer-rank operations. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace` | Unified-`WordRAM.TraceEvent` variant of the same capstone: the final query emits one trace stream, with close-select, answer-rank, and compact-close rank-seed reads replayed as structural payload/register traces. |
@@ -107,7 +111,9 @@ proves a smaller construction-level bound for the same final global trace:
 uses the existing Ready interior cost
 `SuccinctClose.concreteBPRelativeRmmInteriorReadyQueryCost = 30` and excludes
 both bounded fallback scans. The supplied-store/full-model companions transfer
-the same fast bound under final-layout footprint agreement.
+the same fast bound under final-layout footprint agreement. The list-facing
+wrappers expose the same transfer through
+`SuccinctClassic.queryCostedWithStore` for ordinary `xs : List Int`.
 
 The final all-size global-store theorem above remains a fixed-trace
 store-extensional statement. The supplied-store route now also has a whole-final
