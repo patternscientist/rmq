@@ -52,12 +52,14 @@ for an external auditor, optionally with help from `rmq-audit`.
 
 Every worker prompt should name:
 
-- base branch and write scope;
+- exact worker branch name, base branch, fresh-worktree requirement, and write
+  scope;
 - recommended model/mode and reason;
 - exact theorem/profile/document target;
 - forbidden shortcuts;
 - verification commands;
-- completion report requirements, including commit hash for write tasks.
+- completion report requirements, including branch name, worktree path, base
+  branch, and commit hash for write tasks.
 
 For proof work, route narrow implementation to `rmq-proof-sprint`. For ordinary
 completed-worker branch review, this coordinator skill owns the full cycle:

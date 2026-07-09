@@ -390,6 +390,64 @@ Supersedes:
 
 None.
 
+## WDD-20260709-008: Require Explicit Worker Branch Contracts
+
+Status: Accepted
+Date: 2026-07-09
+Scope: Worker prompt protocol and branch auditability.
+
+Decision:
+
+Every coordinator-issued worker prompt for a write task should name the exact
+branch the worker must create, the base branch, and the fresh-worktree
+requirement. Completion reports must include the branch name, worktree path,
+base branch, and final commit hash. Read-only audit prompts may omit the create
+step, but they should still identify the branch, commit, and base being
+audited.
+
+Context:
+
+As ADD parallelism increases, the coordinator frequently audits several worker
+branches that finish close together. Relying on descriptive prose or chat
+memory to identify a worker's branch creates avoidable lookup work and raises
+the risk of auditing or merging the wrong artifact.
+
+Options considered:
+
+- Let workers choose branch names freely.
+- Ask workers to report branch names after the fact but not prescribe them.
+- Require coordinator prompts to prescribe exact branch names and report fields.
+
+Rationale:
+
+Exact branch contracts make worker output mechanically discoverable via
+`git worktree list`, `git for-each-ref`, branch comparison, and merge commands.
+They also make future paper/process exposition easier: each roadmap rung can be
+traced to a named branch, base, commit, checks, and coordinator audit.
+
+Consequences:
+
+`docs/internal/templates/WORKER_PROMPT.md` now includes explicit branch,
+worktree, base, and final-report fields. The coordinator skill must fill those
+fields before sending a worker prompt. Missing branch/report metadata should be
+treated as a coordination defect during worker audit, unless the task was
+explicitly read-only or branchless.
+
+Evidence:
+
+- `docs/internal/templates/WORKER_PROMPT.md`
+- `.agents/skills/rmq-coordinator/SKILL.md`
+
+Follow-up:
+
+Use roadmap-rung branch names such as `codex/rmq-r2-clean-allsize-cost` for
+proof branches, and keep names short enough for audit reports and command-line
+use.
+
+Supersedes:
+
+None.
+
 ## WDD-20260708-002: Add Repo-Native ADD Tooling Before Model-Specific Automation
 
 Status: Accepted

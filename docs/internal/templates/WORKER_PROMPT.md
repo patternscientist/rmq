@@ -4,9 +4,12 @@ Use this template for proof, implementation, validation, docs, or tooling
 workers. Delete irrelevant bracketed guidance before sending.
 
 ```text
-Work in a fresh branch/worktree based on [BASE_BRANCH]. Fetch first and verify
-the base. Do not edit the coordinator checkout. Do not revert or overwrite
-unrelated changes.
+Branch/worktree:
+- Create a fresh worktree and branch named exactly: [WORKER_BRANCH].
+- Base it on: [BASE_BRANCH].
+- Fetch first and verify the base before editing.
+- Do not edit the coordinator checkout.
+- Do not revert or overwrite unrelated changes.
 
 Recommended model/mode:
 [Name the suggested model/mode and why. Nontrivial Lean proof work should use
@@ -35,8 +38,9 @@ Forbidden shortcuts:
 Completion discipline:
 - Stage only intended files.
 - Commit the finished branch unless the prompt explicitly says not to commit.
-- Include the commit hash in the completion report. If committing is blocked,
-  state the exact reason and leave the worktree status clear.
+- Include the branch name, worktree path, base branch, and final commit hash in
+  the completion report. If committing is blocked, state the exact reason and
+  leave the worktree status clear.
 
 Context to read:
 - docs/internal/RMQ_FINAL_ROADMAP.md
@@ -61,6 +65,7 @@ Verification:
 - scripts/design_decision_check.ps1 [if architecture/workflow-sensitive files changed]
 
 Completion report:
+- branch name, worktree path, base branch, and final commit hash;
 - changed files;
 - theorem names / script names / docs changed;
 - conceptual meaning;
