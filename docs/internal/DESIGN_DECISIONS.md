@@ -417,3 +417,247 @@ all-size cost story without weakening the checked model.
 Supersedes:
 
 None.
+
+## DD-20260708-008: Make The List-Facing Full-Model Lift The Next Proof Target
+
+Status: Accepted
+Date: 2026-07-08
+Scope: RMQ public theorem surface.
+
+Decision:
+
+The next RMQ proof target should lift the final supplied-store/footprint
+model-adequacy theorem to the public `SuccinctClassic`/`List Int` interface.
+
+Context:
+
+The theorem stack already has a strong final shape-level store story. A
+reviewer should not have to manually chase that story through the shape adapter
+to understand what the classical list-facing RMQ theorem means under a supplied
+payload store.
+
+Options considered:
+
+- Start external code generation first.
+- Add more explanatory prose to the model-adequacy docs.
+- Close the theorem-shaped gap at the public list-facing interface.
+
+Rationale:
+
+The gap is theorem-shaped, close to the paper surface, and likely cheaper than a
+new executable/codegen ladder. It also sharpens every later executable claim by
+pinning the public model theorem first.
+
+Consequences:
+
+The next proof worker should target `SuccinctClassic` wrappers and headline
+aliases, not broad refactors or C/Rust generation.
+
+Evidence:
+
+- `RMQ/Core/SuccinctRMQClassic.lean`
+- `RMQ/Headlines/RMQ.lean`
+- `docs/internal/RMQ_FINAL_ROADMAP.md`
+
+Follow-up:
+
+Expose a list-facing supplied-store/footprint theorem under
+`RMQ.Headlines.RMQ`.
+
+Supersedes:
+
+None.
+
+## DD-20260708-009: Clean The All-Size Cost Surface Rather Than Explain Around It
+
+Status: Accepted
+Date: 2026-07-08
+Scope: RMQ cost theorem surface.
+
+Decision:
+
+After the list-facing lift, prioritize a cleaner all-size cost theorem that
+supersedes the distracting `196727` public surface if the formal route allows
+it.
+
+Context:
+
+The current all-size theorem is correct, but the constant and nearby
+compatibility history invite unnecessary audit effort. The fast-regime theorem
+already shows the shape of the desired public story.
+
+Options considered:
+
+- Treat the ugly constant as only a documentation issue.
+- Reintroduce uncounted dense answer tables or proof-only answer fields to make
+  the constant look nicer.
+- Prove a cleaner all-size theorem without weakening the execution-story
+  guarantees.
+
+Rationale:
+
+The strongest paper version should expose a principled all-size theorem and
+keep legacy thresholds private or compatibility-only.
+
+Consequences:
+
+Any worker reducing the public constant must preserve counted payload backing,
+no-synthetic traces, and the retirement of `2^128` as a public activation
+threshold.
+
+Evidence:
+
+- `RMQ/Headlines/RMQ.lean`
+- `docs/internal/RMQ_FINAL_ROADMAP.md`
+
+Follow-up:
+
+Launch this only after the list-facing final-model lift lands.
+
+Supersedes:
+
+None.
+
+## DD-20260708-010: Treat Executable Evidence As A Ladder, Not The Trust Base
+
+Status: Accepted
+Date: 2026-07-08
+Scope: RMQ executable and extraction frontier.
+
+Decision:
+
+Strengthen executable evidence in stages: runnable Lean validation first, then
+a checked trace/register interpreter bridge, then a verified reference Word-RAM
+machine, and only then translation-validated C/Rust if still useful.
+
+Context:
+
+Lean compilation means there is no Coq-style extraction gap to close for the
+existing definitions, but reviewers still benefit from a familiar executable
+path and a small-step machine bridge. Theorems about model cost remain distinct
+from wall-clock timings.
+
+Options considered:
+
+- Jump straight to a verified backend.
+- Present benchmarks as model-cost proofs.
+- Build a staged artifact ladder with explicit trust boundaries.
+
+Rationale:
+
+The staged route gives reviewer-legible executable evidence without confusing
+runtime measurements with the checked RAM cost model.
+
+Consequences:
+
+Executable work should report both theorem links and runtime measurements, but
+only the former should be used as proof evidence.
+
+Evidence:
+
+- `docs/RMQ_EXTRACTION_FRONTIER.md`
+- `docs/internal/RMQ_FINAL_ROADMAP.md`
+
+Follow-up:
+
+Start with the runnable Lean validation path after the public theorem surface
+has been cleaned.
+
+Supersedes:
+
+None.
+
+## DD-20260708-011: Refactor Only Around Stable Proof Boundaries
+
+Status: Accepted
+Date: 2026-07-08
+Scope: RMQ source architecture.
+
+Decision:
+
+Perform major source reshaping after the list-facing and all-size theorem
+boundaries are pinned, and preserve public names through aliases.
+
+Context:
+
+Some final RMQ files are large enough that proof architecture is harder to see
+than it should be. Refactoring can improve reviewer trust, but broad movement
+before theorem surfaces stabilize increases merge and audit risk.
+
+Options considered:
+
+- Broad renaming before theorem closure.
+- Mix semantic strengthening with large file movement.
+- Wait for stable public theorem boundaries, then split modules around proof
+  roles.
+
+Rationale:
+
+Architecture should serve the final theorem argument. Stable aliases let the
+paper and artifact docs remain steady while internals get cleaner.
+
+Consequences:
+
+Refactor workers should avoid semantic strengthening unless it is tiny,
+separately documented, and verified by the same gates.
+
+Evidence:
+
+- `docs/RMQ_IMPORT_CLOSURE.md`
+- `docs/internal/RMQ_FINAL_ROADMAP.md`
+
+Follow-up:
+
+Prepare a read-only module split proposal after R1/R2 are integrated.
+
+Supersedes:
+
+None.
+
+## DD-20260708-012: Keep ADD Tooling Repo-Native And Model-Agnostic First
+
+Status: Accepted
+Date: 2026-07-08
+Scope: ADD process tooling.
+
+Decision:
+
+Add worker/audit templates, audit-packet generation, claim-drift scans,
+design-decision reminders, and CI artifacts before building model-specific
+orchestration.
+
+Context:
+
+The project uses multiple agents and external audits, but public trust should
+come from checked theorems, reproducible commands, and stable evidence classes.
+Tool-specific automation is useful only after the process contract is stable.
+
+Options considered:
+
+- Treat raw chat exports or hidden model reasoning as public proof evidence.
+- Start with a full SDK/MCP orchestrator.
+- Standardize evidence and prompts first.
+
+Rationale:
+
+The workflow should improve because evidence is standardized, not because a
+particular model is trusted.
+
+Consequences:
+
+The next process worker should implement templates and scripts before broader
+automation experiments.
+
+Evidence:
+
+- `docs/internal/AUDIT_PROTOCOL.md`
+- `docs/internal/ADD_WORKFLOW_TOOLING_PLAN.md`
+
+Follow-up:
+
+Create the prompt templates and advisory scripts, then consider skills or
+non-interactive orchestration after two or more real uses.
+
+Supersedes:
+
+None.

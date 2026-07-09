@@ -39,6 +39,24 @@ It does not add trust beyond the checked sources and commands it cites.
 Private model traces or hidden reasoning are not stable project evidence and
 must not be treated as public artifact evidence.
 
+## Claim Evidence Tiers
+
+When an audit discusses a positive claim, it should name the strongest evidence
+tier that actually supports it:
+
+- Kernel theorem: checked Lean theorem or alias, with file and theorem name.
+- Model theorem: checked theorem about the explicit RAM/store/trace model, not
+  Lean runtime.
+- Executable validation: checked executable or `lake exe` run that tests the
+  relevant definitions, without upgrading the result to a theorem.
+- Artifact evidence: reproducible command output, CI log, timing, or bundled
+  artifact record.
+- Process evidence: audit logs, design decisions, worker reports, and ADD
+  provenance.
+
+Process evidence can justify why the team looked somewhere. It cannot justify a
+mathematical or executable claim by itself.
+
 ## Audit Modes
 
 - Branch audit: compare a branch against its intended base, verify owned
