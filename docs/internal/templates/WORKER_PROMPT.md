@@ -5,8 +5,12 @@ workers. Delete irrelevant bracketed guidance before sending.
 
 ```text
 Worker identity:
-- Coordinator handle: [WORKER_HANDLE].
+- Worker handle: [WORKER_HANDLE].
+- Requested chat/thread title: `([WORKER_HANDLE]) [SHORT_TASK_SUMMARY]`.
 - Use this handle in the completion report.
+- If your environment supports renaming the chat/thread, set that title before
+  starting. If it does not, repeat the requested title at the top of your
+  completion report.
 
 Branch/worktree:
 - Create a fresh worktree and branch named exactly: [WORKER_BRANCH].

@@ -33,6 +33,8 @@ Purpose:
 
 - force every worker task to name the branch base, write scope, target theorem or
   document, forbidden shortcuts, verification commands, and completion report;
+- make live worker chats easy to identify by requiring titles of the form
+  `({worker handle}) {short task summary}`;
 - prevent "clean partial checkpoint" reports when the next formal step is
   available;
 - make proof-digestion output standard.
@@ -40,6 +42,7 @@ Purpose:
 Required sections:
 
 - Base branch and worktree assumptions.
+- Worker handle and requested chat/thread title.
 - Goal in one sentence.
 - Concrete target theorem/file names.
 - Non-goals and forbidden shortcuts.

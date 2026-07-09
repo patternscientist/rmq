@@ -52,8 +52,9 @@ for an external auditor, optionally with help from `rmq-audit`.
 
 Every worker prompt should name:
 
-- worker handle, exact worker branch name, base branch, fresh-worktree
-  requirement, and write scope;
+- worker handle, requested chat/thread title in the form
+  `({worker handle}) {short task summary}`, exact worker branch name, base
+  branch, fresh-worktree requirement, and write scope;
 - exact theorem/profile/document target;
 - forbidden shortcuts;
 - verification commands;
@@ -141,6 +142,7 @@ For each proposed prompt, include coordinator-facing launch metadata outside
 the prompt text:
 
 - worker/auditor handle;
+- requested chat/thread title when launching a worker;
 - fresh chat or existing worker recommendation;
 - recommended model/mode and reason;
 - target branch/base branch when the prompt creates a branch.

@@ -521,6 +521,63 @@ Supersedes:
 
 None.
 
+## WDD-20260709-012: Prefix Worker Chat Titles With Worker Handles
+
+Status: Accepted
+Date: 2026-07-09
+Scope: Worker launch protocol and active-worker tracking.
+
+Decision:
+
+Worker prompts should request chat/thread titles of the form
+`({worker handle}) {short task summary}`, for example
+`(W03-r3-zero-block) shrink zero-block RMQ cost`. If the environment supports
+renaming the chat/thread, the worker should set that title before starting. If
+not, the worker should repeat the requested title at the top of the completion
+report.
+
+Context:
+
+Workers usually receive automatic descriptive chat names, which is helpful, but
+parallel ADD work benefits from seeing both the worker handle and task summary
+at a glance. Branch names identify durable Git artifacts; chat titles identify
+live coordination surfaces.
+
+Options considered:
+
+- Keep relying on automatically generated task summaries.
+- Put only the worker handle in the chat title.
+- Prefix the descriptive title with the worker handle in parentheses.
+
+Rationale:
+
+The prefix convention preserves descriptive task names while making active
+worker ownership visible in the chat list. It is lightweight enough for humans,
+does not require random hashes, and does not replace branch names, worktree
+paths, or commit hashes in completion reports.
+
+Consequences:
+
+`docs/internal/templates/WORKER_PROMPT.md` now includes a requested chat/thread
+title. `rmq-coordinator` and the coordinator re-entry template remind
+coordinators to include that title in launch metadata and generated worker
+prompts.
+
+Evidence:
+
+- `docs/internal/templates/WORKER_PROMPT.md`
+- `.agents/skills/rmq-coordinator/SKILL.md`
+- `docs/internal/templates/COORDINATOR_REENTRY_PROMPT.md`
+
+Follow-up:
+
+If live worker counts grow large enough that chat titles are still insufficient,
+add an `ACTIVE_WORKERS.md` scratch ledger as described in WDD-20260709-009.
+
+Supersedes:
+
+None.
+
 ## WDD-20260709-011: Store Material Audit Reports In The Repo
 
 Status: Accepted

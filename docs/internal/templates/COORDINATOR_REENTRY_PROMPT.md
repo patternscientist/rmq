@@ -47,7 +47,9 @@ Tasks:
    - what should not be worked on next;
    - top 3 next prompts, ranked;
    - coordinator-facing launch metadata for each prompt: recommended
-     model/mode and why, fresh worker vs existing worker, and worker handle.
+     model/mode and why, fresh worker vs existing worker, worker handle, and
+     requested chat/thread title in the form `({worker handle}) {short task
+     summary}`.
 
 Do not edit files in this pass unless explicitly asked.
 ```
