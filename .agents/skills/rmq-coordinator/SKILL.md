@@ -1,6 +1,6 @@
 ---
 name: rmq-coordinator
-description: Use for high-context RMQ coordination, including re-entry/frontier reconstruction, roadmap planning, worker delegation, branch integration, public-claim synchronization, ADD workflow practice, design-decision logging, context-health checks, and coordinator handoffs. Use when the task is to coordinate RMQ work rather than implement a narrow Lean proof or perform a read-only audit.
+description: Use for high-context RMQ coordination, including re-entry/frontier reconstruction, worker-output audit, branch integration, roadmap planning, worker delegation, public-claim synchronization, ADD workflow practice, design-decision logging, context-health checks, and coordinator handoffs. Use when the task is to coordinate RMQ work rather than implement a narrow Lean proof or engineer an external-auditor prompt.
 ---
 
 # RMQ Coordinator
@@ -47,18 +47,22 @@ precise theorem, docs, artifact, or workflow targets.
 ## Delegation
 
 Use `docs/internal/templates/WORKER_PROMPT.md` for proof or implementation
-workers and `docs/internal/templates/AUDIT_PROMPT.md` for auditors.
+workers. Use `docs/internal/templates/AUDIT_PROMPT.md` when packaging a prompt
+for an external auditor, optionally with help from `rmq-audit`.
 
 Every worker prompt should name:
 
 - base branch and write scope;
+- recommended model/mode and reason;
 - exact theorem/profile/document target;
 - forbidden shortcuts;
 - verification commands;
-- completion report requirements.
+- completion report requirements, including commit hash for write tasks.
 
-For proof work, route narrow implementation to `rmq-proof-sprint`. For read-only
-review, route to `rmq-audit`.
+For proof work, route narrow implementation to `rmq-proof-sprint`. For ordinary
+completed-worker branch review, this coordinator skill owns the full cycle:
+audit the worker output, integrate accepted work, update public/docs/design
+surfaces, and produce the next ambitious prompt set.
 
 ## Integration
 
@@ -70,6 +74,10 @@ For each completed worker branch:
 4. Run the smallest gate that genuinely covers the change.
 5. Update theorem maps, artifact docs, and design logs if the public surface or
    architecture changed.
+6. Merge or reject the branch.
+7. Re-read the current roadmap/frontier and produce the best next ambitious
+   prompt or prompt set, using parallel workers when the dependencies are
+   genuinely independent.
 
 Do not merge a branch that merely reports an honest caveat when a local theorem
 repair is still available.

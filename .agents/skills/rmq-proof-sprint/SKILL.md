@@ -11,9 +11,9 @@ Use this workflow for nontrivial work in the RMQ Lean repository.
 
 Use this skill for narrow Lean proof, construction, cost/space, and theorem
 implementation work. Use `rmq-coordinator` for high-context roadmap
-coordination, branch integration, worker delegation, and handoffs. Use
-`rmq-audit` for read-only adversarial review of branches, theorem surfaces,
-claim drift, and worker reports.
+coordination, worker-output audit, branch integration, worker delegation, and
+handoffs. Use `rmq-audit` only when engineering an external-auditor prompt or
+packet from the current RMQ context.
 
 Before finalizing nontrivial proof work, check whether
 `docs/internal/DESIGN_DECISIONS.md` or

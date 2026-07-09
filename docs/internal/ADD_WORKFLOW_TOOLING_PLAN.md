@@ -295,8 +295,8 @@ Future experiment:
 
 Likely useful after templates stabilize:
 
-- an `rmq-audit` skill that reads `AUDIT_PROTOCOL.md`, theorem-map docs, and the
-  audit prompt template;
+- an `rmq-audit` skill that engineers external-auditor prompts from
+  `AUDIT_PROTOCOL.md`, theorem-map docs, and the audit prompt template;
 - an `rmq-worker` skill that reads the worker prompt template, design-decision
   policy, and verification gates;
 - a non-interactive audit command that runs the audit packet generator and
@@ -309,7 +309,9 @@ Current exception:
 
 - The coordinator and audit skills were created now because the workflow itself
   needs a stable coordinator handoff and audit entry point before practicing the
-  final roadmap. Keep them concise and revise after real use.
+  final roadmap. After the first roadmap worker, the coordinator skill owns the
+  normal audit-integrate-next-prompt cycle, while `rmq-audit` is the external
+  audit prompt/packet skill. Keep them concise and revise after real use.
 
 ## Trust Boundary
 

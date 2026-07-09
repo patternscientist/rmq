@@ -1,22 +1,27 @@
 ---
 name: rmq-audit
-description: Use for read-only or adversarial RMQ audits of branches, worker reports, theorem surfaces, public claims, artifact docs, import roots, trust-base wording, and ADD workflow evidence. Use when Codex should falsify or clear a target against checked source, commands, and explicit evidence tiers rather than coordinate or implement proof work.
+description: Use to engineer external-auditor prompts and audit packets for RMQ, filling docs/internal/templates/AUDIT_PROMPT.md from current repository context, theorem surfaces, claim docs, and explicit evidence tiers. Do not use for the coordinator's normal audit-integrate-next-prompt cycle.
 ---
 
-# RMQ Audit
+# RMQ External Audit Prompt
 
-Use this skill for falsification-oriented RMQ review.
+Use this skill when the coordinator needs a high-quality prompt or evidence
+packet for an external auditor. The coordinator remains responsible for
+integrating worker branches and turning audit findings into theorem, docs,
+artifact, or workflow targets.
 
 ## Ground Rules
 
 Read `docs/internal/AUDIT_PROTOCOL.md` before serious audits. If claim wording is
 in scope, also read `docs/internal/CLAIM_DRIFT_POLICY.md`.
 
-An audit does not add trust by itself. It cites checked theorem statements,
-source diffs, command outputs, artifact docs, or process evidence and then
-recommends the next action.
+An external audit does not add trust by itself. It should be engineered so the
+auditor can cite checked theorem statements, source diffs, command outputs,
+artifact docs, or process evidence and then recommend the next action.
 
-If the user asks for a read-only audit, do not edit files.
+If the user asks for a read-only local audit rather than an external-auditor
+prompt, use `rmq-coordinator` for completed-worker integration audits or a
+plain review workflow for one-off local review.
 
 ## Evidence Tiers
 
@@ -32,18 +37,19 @@ Do not use process evidence as proof of a mathematical or executable claim.
 Keep payload bits, proof-only fields, model-cost ticks, Lean runtime, and
 compiled-code behavior separate.
 
-## Audit Modes
+## Prompt Modes
 
-- Branch audit: compare branch, base, owned files, diff, and gates.
-- Theorem-surface audit: trace public aliases to concrete theorem statements.
-- Claim-drift audit: compare public prose with checked theorem truth and the
+- Branch audit prompt: compare branch, base, owned files, diff, and gates.
+- Theorem-surface audit prompt: trace public aliases to concrete theorem
+  statements.
+- Claim-drift audit prompt: compare public prose with checked theorem truth and the
   claim-drift policy.
-- Worker-stop audit: decide whether a worker stopped at a real obstruction or
-  at an honest partial checkpoint with obvious local work remaining.
-- Literature/parity audit: compare against external precedent and separate
+- Worker-stop audit prompt: decide whether a worker stopped at a real obstruction
+  or at an honest partial checkpoint with obvious local work remaining.
+- Literature/parity audit prompt: compare against external precedent and separate
   novelty, reviewer-pattern, and theorem gaps.
 
-## Useful Commands
+## Useful Prompt Inputs
 
 ```powershell
 git status --short --branch
@@ -54,13 +60,13 @@ scripts/claim_drift_scan.ps1
 scripts/design_decision_check.ps1
 ```
 
-For proof branches, use the target-specific Lake commands requested by the
+For proof branches, include the target-specific Lake commands requested by the
 coordinator prompt. For public RMQ surfaces, `lake build RMQPaper` and
 `lake env lean scripts/headline_axiom_check.lean` are common minimum checks.
 
 ## Report Shape
 
-Lead with findings for review-style requests:
+Ask the external auditor to lead with findings:
 
 1. Scope: branch, commit, base, files, theorem surfaces, and prompt.
 2. Verdict: merge-ready, merge-ready with follow-up, blocked, or needs another

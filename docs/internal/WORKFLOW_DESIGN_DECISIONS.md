@@ -98,8 +98,10 @@ inventing parallel policy.
 Consequences:
 
 Future coordinator re-entry should use `rmq-coordinator`; branch and claim
-audits should use `rmq-audit`; narrow theorem work should use
-`rmq-proof-sprint`.
+audits were initially assigned to `rmq-audit`; narrow theorem work should use
+`rmq-proof-sprint`. WDD-20260708-008 later refines the audit split: the
+coordinator owns completed-worker audit/integration, while `rmq-audit`
+engineers external-auditor prompts and packets.
 
 Evidence:
 
@@ -115,6 +117,69 @@ trap inventories into references if they keep crowding the proof skill.
 Supersedes:
 
 None.
+
+## WDD-20260708-008: Let Coordinator Own Integration Audits And Repurpose Audit Skill
+
+Status: Accepted
+Date: 2026-07-08
+Scope: ADD skill routing and worker integration.
+
+Decision:
+
+`rmq-coordinator` owns the recurring coordinator cycle: audit completed worker
+branches, integrate accepted work, synchronize public/docs/design surfaces, then
+consult the current roadmap and produce the next ambitious prompt set with
+maximum effective parallelization. `rmq-audit` is repurposed as the skill for
+engineering external-auditor prompts and audit packets from current repository
+context, using `docs/internal/templates/AUDIT_PROMPT.md` and the audit protocol.
+
+Context:
+
+In practice, a coordinator audit almost never stops at falsification. The useful
+workflow is audit plus integration plus next-step planning. External auditors,
+especially non-Codex auditors, do not use a Codex skill; they need a filled
+prompt and evidence packet. Keeping a separate local `rmq-audit` skill for
+ordinary branch audits duplicated coordinator responsibility and made the skill
+boundary fuzzy.
+
+Options considered:
+
+- Keep `rmq-audit` as a local read-only branch-audit skill.
+- Delete the audit skill and leave external-auditor prompts ad hoc.
+- Move completed-worker audits into `rmq-coordinator` and repurpose `rmq-audit`
+  for external audit prompt engineering.
+
+Rationale:
+
+The new split matches actual workflow roles. The coordinator remains accountable
+for source-grounded integration and roadmap continuation. The audit skill
+becomes a prompt-engineering tool for auditors outside the coordinator loop,
+which is where a specialized audit template is genuinely useful.
+
+Consequences:
+
+Coordinator reports after worker audits should include merge/integration status
+and the next prompt set, not just a verdict. External audit requests should
+produce a filled audit prompt with scope, evidence tiers, required checks, and
+recommended auditor/model/mode. Future references to `rmq-audit` should not
+imply that normal worker integration is delegated away from the coordinator.
+
+Evidence:
+
+- `.agents/skills/rmq-coordinator/SKILL.md`
+- `.agents/skills/rmq-audit/SKILL.md`
+- `.agents/skills/rmq-proof-sprint/SKILL.md`
+- `docs/internal/templates/AUDIT_PROMPT.md`
+
+Follow-up:
+
+After the next external audit request, evaluate whether `rmq-audit` should be
+renamed to `rmq-external-audit-prompt` or whether the revised description is
+clear enough.
+
+Supersedes:
+
+WDD-20260708-003 for the branch/claim audit routing portion.
 
 ## WDD-20260708-004: Make Context Health And Coordinator Handoff Routine
 
