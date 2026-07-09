@@ -599,6 +599,360 @@ theorem shape_addConst (delta : Int) (xs : List Int) :
     shape (addConst delta xs) = shape xs := by
   exact shape_eq_of_sameRMQBehavior (sameRMQBehavior_addConst delta xs)
 
+/--
+Executable valued Cartesian tree used by the stack/right-spine builder.
+
+The public reference layer continues to be `shape`; this tree is only a
+construction device whose inorder values erase back to the input list and whose
+shape is proved equal to the canonical Cartesian shape below.
+-/
+inductive StackCartesianTree where
+  | empty
+  | node (left : StackCartesianTree) (value : Int) (right : StackCartesianTree)
+deriving DecidableEq, Repr
+
+namespace StackCartesianTree
+
+/-- Inorder values represented by an executable Cartesian tree. -/
+def values : StackCartesianTree -> List Int
+  | empty => []
+  | node left value right => left.values ++ value :: right.values
+
+/-- Erase the valued executable tree to the existing explicit shape type. -/
+def shape : StackCartesianTree -> CartesianShape
+  | empty => CartesianShape.empty
+  | node left _value right => CartesianShape.node left.shape right.shape
+
+/--
+Validity invariant for the valued tree.
+
+The root is the leftmost minimum of its inorder values: left-subtree values are
+strictly larger than the root, while right-subtree values may tie it.
+-/
+def Valid : StackCartesianTree -> Prop
+  | empty => True
+  | node left value right =>
+      left.Valid /\ right.Valid /\
+        (forall w, w ∈ left.values -> value < w) /\
+        (forall w, w ∈ right.values -> value <= w)
+
+/-- Insert a new value at the right end by descending the right spine. -/
+def insertRight : StackCartesianTree -> Int -> StackCartesianTree
+  | empty, value => node empty value empty
+  | node left pivot right, value =>
+      if value < pivot then
+        node (node left pivot right) value empty
+      else
+        node left pivot (insertRight right value)
+
+/-- One frame of the right-spine stack used by the tail-recursive inserter. -/
+structure RightSpineFrame where
+  left : StackCartesianTree
+  value : Int
+deriving DecidableEq, Repr
+
+/-- Rebuild ancestor frames after a right-spine insertion. -/
+def plugRight :
+    StackCartesianTree -> List RightSpineFrame -> StackCartesianTree
+  | right, [] => right
+  | right, frame :: rest =>
+      plugRight (node frame.left frame.value right) rest
+
+/-- Tail-recursive right-spine insertion with an explicit stack of ancestors. -/
+def insertRightStackLoop
+    (value : Int) :
+    StackCartesianTree -> List RightSpineFrame -> StackCartesianTree
+  | empty, frames => plugRight (node empty value empty) frames
+  | node left pivot right, frames =>
+      if value < pivot then
+        plugRight (node (node left pivot right) value empty) frames
+      else
+        insertRightStackLoop value right
+          ({ left := left, value := pivot } :: frames)
+termination_by tree _frames => tree
+
+/-- Stack-backed insertion at the right end. -/
+def insertRightStack (tree : StackCartesianTree) (value : Int) :
+    StackCartesianTree :=
+  insertRightStackLoop value tree []
+
+theorem insertRightStackLoop_eq_insertRight
+    (value : Int) (tree : StackCartesianTree)
+    (frames : List RightSpineFrame) :
+    insertRightStackLoop value tree frames =
+      plugRight (insertRight tree value) frames := by
+  induction tree generalizing frames with
+  | empty =>
+      simp [insertRightStackLoop, insertRight]
+  | node left pivot right _ihLeft ihRight =>
+      by_cases hlt : value < pivot
+      · simp [insertRightStackLoop, insertRight, hlt]
+      · rw [insertRightStackLoop, insertRight]
+        simp [hlt]
+        rw [ihRight ({ left := left, value := pivot } :: frames)]
+        simp [plugRight]
+
+theorem insertRightStack_eq_insertRight
+    (tree : StackCartesianTree) (value : Int) :
+    insertRightStack tree value = insertRight tree value := by
+  simp [insertRightStack, insertRightStackLoop_eq_insertRight, plugRight]
+
+theorem values_insertRight
+    (tree : StackCartesianTree) (value : Int) :
+    (insertRight tree value).values = tree.values ++ [value] := by
+  induction tree with
+  | empty =>
+      simp [insertRight, values]
+  | node left pivot right _ihLeft ihRight =>
+      by_cases hlt : value < pivot
+      · simp [insertRight, values, hlt, List.append_assoc]
+      · simp [insertRight, values, hlt, ihRight, List.append_assoc]
+
+theorem values_insertRightStack
+    (tree : StackCartesianTree) (value : Int) :
+    (insertRightStack tree value).values = tree.values ++ [value] := by
+  rw [insertRightStack_eq_insertRight, values_insertRight]
+
+theorem valid_insertRight
+    {tree : StackCartesianTree} (value : Int)
+    (hvalid : tree.Valid) :
+    (insertRight tree value).Valid := by
+  induction tree with
+  | empty =>
+      simp [insertRight, Valid, values]
+  | node left pivot right _ihLeft ihRight =>
+      rcases hvalid with ⟨hleftValid, hrightValid, hleftGt, hrightGe⟩
+      by_cases hlt : value < pivot
+      · rw [insertRight]
+        simp [hlt]
+        change
+          (node left pivot right).Valid /\ empty.Valid /\
+            (forall w,
+              w ∈ (node left pivot right).values -> value < w) /\
+            (forall w, w ∈ empty.values -> value <= w)
+        refine ⟨⟨hleftValid, hrightValid, hleftGt, hrightGe⟩,
+          by trivial, ?_, ?_⟩
+        · intro w hw
+          simp [values] at hw
+          rcases hw with hw | hw
+          · have hpivot : pivot < w := hleftGt w hw
+            omega
+          · rcases hw with rfl | hw
+            · exact hlt
+            · have hpivot : pivot <= w := hrightGe w hw
+              omega
+        · intro w hw
+          simp [values] at hw
+      · simp [insertRight, Valid, hlt]
+        refine ⟨hleftValid, ihRight hrightValid, hleftGt, ?_⟩
+        intro w hw
+        have hvalues :
+            (insertRight right value).values = right.values ++ [value] :=
+          values_insertRight right value
+        rw [hvalues] at hw
+        simp at hw
+        rcases hw with hw | rfl
+        · exact hrightGe w hw
+        · omega
+
+theorem valid_insertRightStack
+    {tree : StackCartesianTree} (value : Int)
+    (hvalid : tree.Valid) :
+    (insertRightStack tree value).Valid := by
+  rw [insertRightStack_eq_insertRight]
+  exact valid_insertRight value hvalid
+
+private theorem leftmostArgMin_root_of_valid
+    {left right : StackCartesianTree} {pivot : Int}
+    (hleftGt : forall w, w ∈ left.values -> pivot < w)
+    (hrightGe : forall w, w ∈ right.values -> pivot <= w) :
+    LeftmostArgMin (values (node left pivot right)) 0
+      (values (node left pivot right)).length left.values.length := by
+  let xs := values (node left pivot right)
+  have hget_root : xs[left.values.length]? = some pivot := by
+    simp [xs, values]
+  have hnonempty : 0 < xs.length := by
+    simp [xs, values]
+    omega
+  refine ⟨hnonempty, by simp, by omega, by simp [values],
+    pivot, hget_root, ?_, ?_⟩
+  · intro j w _hleft_j hj_right hget_j
+    by_cases hj_left : j < left.values.length
+    · have hget_left : left.values[j]? = some w := by
+        simpa [values, List.getElem?_append, hj_left] using hget_j
+      have hlt : pivot < w := hleftGt w (List.mem_of_getElem? hget_left)
+      omega
+    · by_cases hj_root : j = left.values.length
+      · subst j
+        rw [hget_root] at hget_j
+        injection hget_j with hw
+        simp [hw]
+      · have hj_right_part : left.values.length + 1 <= j := by omega
+        have hget_assoc :
+            ((left.values ++ [pivot]) ++ right.values)[j]? = some w := by
+          simpa [xs, values, List.append_assoc] using hget_j
+        have hget_right :
+            right.values[j - (left.values.length + 1)]? = some w := by
+          have hprefix : (left.values ++ [pivot]).length <= j := by
+            simp
+            exact hj_right_part
+          have hnot_left_length : ¬ j < left.values.length + 1 := by
+            omega
+          rw [List.getElem?_append] at hget_assoc
+          simp [hnot_left_length] at hget_assoc
+          simpa using hget_assoc
+        exact hrightGe w (List.mem_of_getElem? hget_right)
+  · intro j w _hleft_j hj_idx hget_j
+    have hj_left : j < left.values.length := hj_idx
+    have hget_left : left.values[j]? = some w := by
+      simpa [xs, values, List.getElem?_append, hj_left] using hget_j
+    exact hleftGt w (List.mem_of_getElem? hget_left)
+
+theorem shape_eq_shape_values
+    (tree : StackCartesianTree) (hvalid : tree.Valid) :
+    tree.shape = Cartesian.shape tree.values := by
+  induction tree with
+  | empty =>
+      simp [shape, values, Cartesian.shape, shapeRange]
+  | node left pivot right ihleft ihright =>
+      rcases hvalid with ⟨hleftValid, hrightValid, hleftGt, hrightGe⟩
+      let xs := values (node left pivot right)
+      have hscan :
+          scanWindow xs 0 xs.length = left.values.length := by
+        have harg :
+            LeftmostArgMin xs 0 xs.length left.values.length := by
+          simpa [xs] using
+            leftmostArgMin_root_of_valid
+              (left := left) (right := right) (pivot := pivot)
+              hleftGt hrightGe
+        have hscanArg :
+            LeftmostArgMin xs 0 xs.length (scanWindow xs 0 xs.length) := by
+          simpa using
+            scanWindow_leftmost xs 0 xs.length (by
+              simp [xs, values]
+              omega) (by simp)
+        exact leftmostArgMin_unique xs 0 xs.length
+          (scanWindow xs 0 xs.length) left.values.length
+          hscanArg harg
+      have hleftShape :
+          shapeRange xs 0 left.values.length = left.shape := by
+        have happend :
+            shapeRange (left.values ++ (pivot :: right.values)) 0
+                left.values.length =
+              shapeRange left.values 0 left.values.length :=
+          shapeRange_append_left left.values (pivot :: right.values)
+            (by simp)
+        calc
+          shapeRange xs 0 left.values.length
+              = shapeRange left.values 0 left.values.length := by
+                simpa [xs, values] using happend
+          _ = Cartesian.shape left.values := rfl
+          _ = left.shape := (ihleft hleftValid).symm
+      have hrightShape :
+          shapeRange xs (left.values.length + 1) right.values.length =
+            right.shape := by
+        have happend :
+            shapeRange ((left.values ++ [pivot]) ++ right.values)
+                ((left.values ++ [pivot]).length + 0)
+                right.values.length =
+              shapeRange right.values 0 right.values.length :=
+          shapeRange_append_right (left.values ++ [pivot]) right.values
+            (by simp)
+        calc
+          shapeRange xs (left.values.length + 1) right.values.length
+              =
+            shapeRange ((left.values ++ [pivot]) ++ right.values)
+                ((left.values ++ [pivot]).length + 0)
+                right.values.length := by
+                simp [xs, values, List.append_assoc]
+          _ = shapeRange right.values 0 right.values.length := happend
+          _ = Cartesian.shape right.values := rfl
+          _ = right.shape := (ihright hrightValid).symm
+      have hlen :
+          xs.length = left.values.length + 1 + right.values.length := by
+        simp [xs, values, Nat.add_assoc]
+        omega
+      unfold Cartesian.shape
+      cases hlen_cases : xs.length with
+      | zero =>
+          simp [xs, values] at hlen_cases
+      | succ len' =>
+          have hscan' :
+              scanWindow xs 0 (len' + 1) = left.values.length := by
+            simpa [hlen_cases] using hscan
+          have hrightLen :
+              len' - left.values.length = right.values.length := by
+            omega
+          have hshape :
+              shapeRange xs 0 (len' + 1) =
+                CartesianShape.node left.shape right.shape := by
+            simp [shapeRange, hscan', hrightLen, hleftShape, hrightShape]
+          simpa [shape, xs, values, hlen_cases] using hshape.symm
+
+/-- Tail-recursive executable builder over an input list. -/
+def buildTreeAux :
+    StackCartesianTree -> List Int -> StackCartesianTree
+  | tree, [] => tree
+  | tree, value :: rest =>
+      buildTreeAux (insertRightStack tree value) rest
+
+/-- Build the executable Cartesian tree for all values in `xs`. -/
+def buildTree (xs : List Int) : StackCartesianTree :=
+  buildTreeAux empty xs
+
+theorem buildTreeAux_values
+    (tree : StackCartesianTree) (xs : List Int) :
+    (buildTreeAux tree xs).values = tree.values ++ xs := by
+  induction xs generalizing tree with
+  | nil =>
+      simp [buildTreeAux]
+  | cons value rest ih =>
+      rw [buildTreeAux]
+      rw [ih (insertRightStack tree value)]
+      rw [values_insertRightStack]
+      simp [List.append_assoc]
+
+theorem buildTree_values (xs : List Int) :
+    (buildTree xs).values = xs := by
+  simp [buildTree, buildTreeAux_values, values]
+
+theorem buildTreeAux_valid
+    {tree : StackCartesianTree} (xs : List Int)
+    (hvalid : tree.Valid) :
+    (buildTreeAux tree xs).Valid := by
+  induction xs generalizing tree with
+  | nil =>
+      simpa [buildTreeAux] using hvalid
+  | cons value rest ih =>
+      rw [buildTreeAux]
+      exact ih (valid_insertRightStack value hvalid)
+
+theorem buildTree_valid (xs : List Int) :
+    (buildTree xs).Valid := by
+  exact buildTreeAux_valid xs (tree := empty) (by simp [Valid])
+
+end StackCartesianTree
+
+/--
+Executable stack/right-spine Cartesian-shape builder for `List Int`.
+
+This avoids the reference `shapeRange` construction in executable paths; the
+agreement theorem below is the trust boundary back to canonical semantics.
+-/
+def stackCartesianShape (xs : List Int) : CartesianShape :=
+  (StackCartesianTree.buildTree xs).shape
+
+/-- The stack/right-spine executable builder agrees with canonical `shape`. -/
+theorem stackCartesianShape_eq_shape (xs : List Int) :
+    stackCartesianShape xs = shape xs := by
+  unfold stackCartesianShape
+  have hshape :=
+    StackCartesianTree.shape_eq_shape_values
+      (StackCartesianTree.buildTree xs)
+      (StackCartesianTree.buildTree_valid xs)
+  have hvalues := StackCartesianTree.buildTree_values xs
+  rw [hshape, hvalues]
+
 namespace CartesianShape
 
 /--
