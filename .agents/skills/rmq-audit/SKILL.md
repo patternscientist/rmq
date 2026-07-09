@@ -18,6 +18,10 @@ in scope, also read `docs/internal/CLAIM_DRIFT_POLICY.md`.
 An external audit does not add trust by itself. It should be engineered so the
 auditor can cite checked theorem statements, source diffs, command outputs,
 artifact docs, or process evidence and then recommend the next action.
+Keep auditor/model/mode recommendations as coordinator-facing launch metadata
+for the user, not as text inside the external-auditor prompt. The prompt itself
+should identify the auditor handle, branch/commit/base, scope, evidence tiers,
+checks, and report shape.
 
 If the user asks for a read-only local audit rather than an external-auditor
 prompt, use `rmq-coordinator` for completed-worker integration audits or a

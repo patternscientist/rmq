@@ -331,19 +331,21 @@ None.
 
 ## WDD-20260708-007: Make Model Recommendations And Worker Commits Explicit
 
-Status: Accepted
+Status: Accepted, amended by WDD-20260709-009
 Date: 2026-07-08
 Scope: Worker prompt protocol and model routing.
 
 Decision:
 
-Every coordinator-issued worker prompt should include a recommended model/mode
-and a short reason. Nontrivial Lean proof work should use 5.5 Extra High or a
-stronger available mode by default. Smaller docs, grep-only audit, validation,
-or mechanical tooling tasks may use cheaper modes when their outputs are
-straightforward to verify. Worker prompts should also instruct workers to commit
-their finished branch by default, stage only intended files, and report the
-commit hash, unless the task is explicitly read-only or no-commit.
+Every coordinator-issued delegation package should include a recommended
+model/mode and a short reason, but the model recommendation belongs in the
+coordinator's chat with the user rather than in the prompt text pasted to the
+worker. Nontrivial Lean proof work should use 5.5 Extra High or a stronger
+available mode by default. Smaller docs, grep-only audit, validation, or
+mechanical tooling tasks may use cheaper modes when their outputs are
+straightforward to verify. Worker prompts should still instruct workers to
+commit their finished branch by default, stage only intended files, and report
+the commit hash, unless the task is explicitly read-only or no-commit.
 
 Context:
 
@@ -370,10 +372,11 @@ force workers to distinguish intended changes from scratch files.
 
 Consequences:
 
-Worker prompts and coordinator prompt templates must carry model/mode metadata.
-Completion reports for write tasks should include a commit hash. If a worker
-does not commit, the coordinator should treat that as an integration issue
-unless the prompt was read-only or no-commit.
+Coordinator reports and prompt handoff notes must carry model/mode metadata.
+Worker prompt text should not include model/mode instructions unless a specific
+external system requires it. Completion reports for write tasks should include
+a commit hash. If a worker does not commit, the coordinator should treat that as
+an integration issue unless the prompt was read-only or no-commit.
 
 Evidence:
 
@@ -389,6 +392,73 @@ quality, cleanup cost, missed-blocker rate, and token/time cost by task class.
 Supersedes:
 
 None.
+
+## WDD-20260709-009: Split Launch Metadata From Worker Prompts
+
+Status: Accepted
+Date: 2026-07-09
+Scope: Worker launch protocol and active-worker tracking.
+
+Decision:
+
+Coordinator responses that hand prompts to the user should include launch
+metadata outside the worker prompt text: recommended model/mode, why that mode
+is recommended, and whether the prompt should go to a fresh worker chat or an
+existing worker. The worker prompt itself should omit model/mode instructions.
+The coordinator should assign active worker handles using a lightweight
+monotone scheme such as `W01-r2-cost`, `W02-r2-scout`, and carry that handle in
+the worker prompt and completion report.
+
+Context:
+
+The user chooses the actual chat/model surface. Putting model instructions in
+the pasted worker prompt is noisy and can confuse the worker's task focus.
+Separately, as worker chats persist across tasks, branch names identify code
+artifacts but not necessarily the live worker chat being reused.
+
+Options considered:
+
+- Put model recommendations directly inside worker prompts.
+- Omit model recommendations entirely and let every worker run on the default
+  chat setting.
+- Tell the user the recommended mode/freshness separately, while keeping the
+  worker prompt task-focused.
+- Identify workers only by branch name.
+- Use heavyweight random hashes for worker chats.
+- Use simple monotone handles plus branch names.
+
+Rationale:
+
+Separating launch metadata keeps prompts cleaner while preserving
+token-conscious routing as a coordinator responsibility. Simple handles are
+enough for human coordination, while branch names and commit hashes remain the
+durable Git identities for audit and merge.
+
+Consequences:
+
+Future coordinator reports should present each prompt with a short header such
+as "Send to fresh worker W03-r3-refactor; recommended mode: 5.5 Extra High".
+Worker prompts should include the assigned worker handle, exact branch name,
+base branch, and completion-report fields, but not model/mode text. Existing
+workers can be reused only when their prior task is complete or the new prompt
+is a direct continuation; otherwise use a fresh worker.
+
+Evidence:
+
+- `docs/internal/templates/WORKER_PROMPT.md`
+- `.agents/skills/rmq-coordinator/SKILL.md`
+- `docs/internal/ADD_WORKFLOW_TOOLING_PLAN.md`
+
+Follow-up:
+
+If active worker count grows beyond what chat memory can track reliably, add an
+`ACTIVE_WORKERS.md` scratch or internal ledger. Until then, coordinator reports
+can carry the handle mapping.
+
+Supersedes:
+
+The "worker prompts should name the recommended model/mode explicitly" wording
+from WDD-20260708-007.
 
 ## WDD-20260709-008: Require Explicit Worker Branch Contracts
 

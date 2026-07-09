@@ -52,14 +52,20 @@ for an external auditor, optionally with help from `rmq-audit`.
 
 Every worker prompt should name:
 
-- exact worker branch name, base branch, fresh-worktree requirement, and write
-  scope;
-- recommended model/mode and reason;
+- worker handle, exact worker branch name, base branch, fresh-worktree
+  requirement, and write scope;
 - exact theorem/profile/document target;
 - forbidden shortcuts;
 - verification commands;
 - completion report requirements, including branch name, worktree path, base
   branch, and commit hash for write tasks.
+
+When presenting prompts to the user, keep coordinator-facing launch metadata
+outside the worker prompt text:
+
+- recommended model/mode and reason;
+- whether the prompt should go to a fresh worker chat or an existing worker;
+- the worker handle assigned to that chat.
 
 For proof work, route narrow implementation to `rmq-proof-sprint`. For ordinary
 completed-worker branch review, this coordinator skill owns the full cycle:

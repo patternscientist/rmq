@@ -46,7 +46,8 @@ Tasks:
    - what remains;
    - what should not be worked on next;
    - top 3 next prompts, ranked;
-   - recommended model/mode for each worker prompt and why.
+   - coordinator-facing launch metadata for each prompt: recommended
+     model/mode and why, fresh worker vs existing worker, and worker handle.
 
 Do not edit files in this pass unless explicitly asked.
 ```

@@ -274,8 +274,9 @@ Initial policy:
 - final public-claim audits: at least one strong external model plus local
   coordinator audit.
 
-Worker prompts should name the recommended model/mode explicitly. That line is
-coordination metadata, not proof evidence; checked Lean theorems, scripts, and
+Coordinator reports should name the recommended model/mode explicitly before
+the prompt is sent. That recommendation is launch metadata for the user, not
+worker instructions and not proof evidence; checked Lean theorems, scripts, and
 artifact outputs remain the trust base. Smaller docs, grep-only audits, or
 mechanical template updates may use cheaper modes when their outputs are easy to
 verify.

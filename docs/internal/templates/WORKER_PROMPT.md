@@ -4,17 +4,16 @@ Use this template for proof, implementation, validation, docs, or tooling
 workers. Delete irrelevant bracketed guidance before sending.
 
 ```text
+Worker identity:
+- Coordinator handle: [WORKER_HANDLE].
+- Use this handle in the completion report.
+
 Branch/worktree:
 - Create a fresh worktree and branch named exactly: [WORKER_BRANCH].
 - Base it on: [BASE_BRANCH].
 - Fetch first and verify the base before editing.
 - Do not edit the coordinator checkout.
 - Do not revert or overwrite unrelated changes.
-
-Recommended model/mode:
-[Name the suggested model/mode and why. Nontrivial Lean proof work should use
-5.5 Extra High or stronger unless the coordinator explicitly downgrades a
-low-risk docs/tooling task.]
 
 Goal:
 [One sentence naming the exact theorem/profile/document/tooling target.]
@@ -65,6 +64,7 @@ Verification:
 - scripts/design_decision_check.ps1 [if architecture/workflow-sensitive files changed]
 
 Completion report:
+- worker handle;
 - branch name, worktree path, base branch, and final commit hash;
 - changed files;
 - theorem names / script names / docs changed;

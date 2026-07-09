@@ -5,8 +5,9 @@ fills the template from current repository context before sending it to an
 external auditor.
 
 ```text
-Recommended auditor/model/mode:
-[Name the suggested auditor/model/mode and why.]
+Auditor identity:
+- Coordinator handle: [AUDITOR_HANDLE].
+- Use this handle in the report.
 
 Audit [BRANCH_OR_COMMIT_OR_CLAIM_SURFACE] against [BASE_OR_EXPECTED_CLAIM].
 This is [READ_ONLY / PATCH_ALLOWED]. Treat external audits and worker reports as

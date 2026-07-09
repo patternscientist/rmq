@@ -39,7 +39,7 @@ and final `2*n + o(n), O(1)` join.
 Each worker branch should end with a report in this shape:
 
 ```text
-Worker:        A/B/C or branch name
+Worker:        <worker handle, e.g. W01-r2-cost>
 Owned target:  <roadmap target and join theorem this feeds>
 Branch:        <git branch>
 Changed files: <file list>
