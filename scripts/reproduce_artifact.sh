@@ -35,6 +35,9 @@ lake build RMQ.Core.GenericSelectBPCompat
 section "classic RMQ concrete validation"
 lake exe rmq_succinct_classic_validate
 
+section "classic RMQ executable cost harness"
+lake exe rmq_succinct_classic_cost_harness
+
 section "headline axiom check"
 lake env lean scripts/headline_axiom_check.lean
 

@@ -35,6 +35,7 @@ Expected successful output includes these section headers:
 == lake build ==
 == public root builds for axiom checks ==
 == classic RMQ concrete validation ==
+== classic RMQ executable cost harness ==
 == headline axiom check ==
 == WordRAM axiom check ==
 == full axiom check ==
@@ -83,6 +84,7 @@ lake build RMQArchive
 lake build RMQExamples
 lake build RMQ.Core.GenericSelectBPCompat
 lake exe rmq_succinct_classic_validate
+lake exe rmq_succinct_classic_cost_harness
 lake env lean scripts\headline_axiom_check.lean
 lake env lean scripts\wordram_axiom_check.lean
 lake env lean scripts\axiom_check.lean
@@ -151,6 +153,11 @@ things:
 `lake exe rmq_succinct_classic_validate` runs executable validation for the
 classic public succinct RMQ API. `lake build RMQExamples` checks small external
 import examples.
+
+`lake exe rmq_succinct_classic_cost_harness` prints a compact reviewer-facing
+report for deterministic fixtures: input size, half-open query windows,
+returned answer, reference answer, route-split bound, and the modeled
+`queryCosted.cost` trace/event count.
 
 Validation and examples are useful reviewer smoke tests. They are not part of
 the proof trust base, and they do not replace Lean kernel checking of theorem

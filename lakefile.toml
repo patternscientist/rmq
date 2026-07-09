@@ -32,3 +32,7 @@ name = "VerifiedDS"
 [[lean_exe]]
 name = "rmq_succinct_classic_validate"
 root = "RMQ.Validation.SuccinctClassic"
+
+[[lean_exe]]
+name = "rmq_succinct_classic_cost_harness"
+root = "RMQ.Validation.SuccinctClassicCostHarness"
