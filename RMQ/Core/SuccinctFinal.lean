@@ -38,6 +38,76 @@ theorem concreteBPNativeSuccinctRMQFastRegimeQueryCost_eq :
     concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118 := by
   rfl
 
+def concreteBPNativeSuccinctRMQRouteSplitQueryCostWithCloseAccess
+    (closeAccessCost : Nat) (shape : Cartesian.CartesianShape) : Nat :=
+  3 * closeAccessCost +
+    SuccinctClose.concreteCompactBPCloseRouteSplitQueryCostWithRankSeed
+      closeAccessCost shape
+
+def concreteBPNativeSuccinctRMQRouteSplitQueryCost
+    (shape : Cartesian.CartesianShape) : Nat :=
+  concreteBPNativeSuccinctRMQRouteSplitQueryCostWithCloseAccess
+    SuccinctSelect.sparseDenseFalseSelectQueryCost shape
+
+def concreteBPNativeSuccinctRMQActiveNotReadyQueryCost : Nat :=
+  3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
+    SuccinctClose.concreteCompactBPCloseActiveNotReadyQueryCostWithRankSeed
+      SuccinctSelect.sparseDenseFalseSelectQueryCost
+
+theorem concreteBPNativeSuccinctRMQActiveNotReadyQueryCost_eq :
+    concreteBPNativeSuccinctRMQActiveNotReadyQueryCost = 568 := by
+  rfl
+
+def concreteBPNativeSuccinctRMQInactiveNotReadyQueryCost : Nat :=
+  3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
+    SuccinctClose.concreteCompactBPCloseInactiveNotReadyQueryCostWithRankSeed
+      SuccinctSelect.sparseDenseFalseSelectQueryCost
+
+theorem concreteBPNativeSuccinctRMQInactiveNotReadyQueryCost_eq :
+    concreteBPNativeSuccinctRMQInactiveNotReadyQueryCost = 88 := by
+  rfl
+
+def concreteBPNativeSuccinctRMQCleanAllSizeQueryCost : Nat :=
+  3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
+    SuccinctClose.concreteCompactBPCloseZeroBlockScanCost
+
+theorem concreteBPNativeSuccinctRMQCleanAllSizeQueryCost_eq :
+    concreteBPNativeSuccinctRMQCleanAllSizeQueryCost = 65585 := by
+  rfl
+
+theorem concreteBPNativeSuccinctRMQRouteSplitQueryCost_le_cleanAllSize
+    (shape : Cartesian.CartesianShape) :
+    concreteBPNativeSuccinctRMQRouteSplitQueryCost shape <=
+      concreteBPNativeSuccinctRMQCleanAllSizeQueryCost := by
+  unfold concreteBPNativeSuccinctRMQRouteSplitQueryCost
+    concreteBPNativeSuccinctRMQRouteSplitQueryCostWithCloseAccess
+    concreteBPNativeSuccinctRMQCleanAllSizeQueryCost
+    SuccinctClose.concreteCompactBPCloseRouteSplitQueryCostWithRankSeed
+  by_cases hzero : SuccinctClose.canonicalBPRelativeSummaryBlockSize shape = 0
+  · simp [hzero]
+  · simp [hzero]
+    by_cases hready : SuccinctClose.concreteBPRelativeRmmInteriorReady shape
+    · simp [hready, SuccinctClose.concreteCompactBPCloseReadyQueryCostWithRankSeed,
+        SuccinctClose.concreteCompactBPCloseZeroBlockScanCost,
+        SuccinctClose.concreteBPRelativeRmmInteriorReadyQueryCost,
+        SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold,
+        SuccinctSelect.sparseDenseFalseSelectQueryCost]
+    · simp [hready]
+      by_cases hactive :
+          SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive shape
+      · simp [hactive,
+          SuccinctClose.concreteCompactBPCloseActiveNotReadyQueryCostWithRankSeed,
+          SuccinctClose.concreteCompactBPCloseZeroBlockScanCost,
+          SuccinctClose.concreteBPRelativeRmmInteriorActiveNotReadySmallScanQueryCost,
+          SuccinctClose.concreteBPRelativeRmmInteriorActiveNotReadyBaseBound,
+          SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold,
+          SuccinctSelect.sparseDenseFalseSelectQueryCost]
+      · simp [hactive,
+          SuccinctClose.concreteCompactBPCloseInactiveNotReadyQueryCostWithRankSeed,
+          SuccinctClose.concreteCompactBPCloseZeroBlockScanCost,
+          SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold,
+          SuccinctSelect.sparseDenseFalseSelectQueryCost]
+
 def concreteBPNativeRankSelectDirectory
     {rankSuper rankBlock selectSuper selectBlock : Nat -> Nat}
     {rankSelectCost : Nat}
@@ -1564,6 +1634,26 @@ theorem concreteBPNativeLCACloseCosted_cost_le_of_ready
         intro pos
         exact concreteBPNativeRankCloseCosted_cost_le accessFamily shape pos)
 
+theorem concreteBPNativeLCACloseCosted_cost_le_routeSplit
+    {closeAccessOverhead : Nat -> Nat} {closeAccessCost : Nat}
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily
+        closeAccessOverhead closeAccessCost)
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat) :
+    (concreteBPNativeLCACloseCosted accessFamily shape leftClose
+        rightClose).cost <=
+      SuccinctClose.concreteCompactBPCloseRouteSplitQueryCostWithRankSeed
+        closeAccessCost shape := by
+  unfold concreteBPNativeLCACloseCosted concreteBPNativeCloseDirectory
+  exact
+    SuccinctClose.concreteCompactBPCloseLCADirectory_lcaCloseCostedWithRankSeed_cost_le_routeSplit
+      (concreteBPNativeRankCloseCosted accessFamily shape)
+      leftClose rightClose closeAccessCost
+      (by
+        intro pos
+        exact concreteBPNativeRankCloseCosted_cost_le accessFamily shape pos)
+
 theorem concreteBPNativeSelectCloseCosted_exact
     {closeAccessOverhead : Nat -> Nat} {closeAccessCost : Nat}
     (accessFamily :
@@ -1770,6 +1860,71 @@ theorem concreteBPNativeSuccinctRMQQueryCosted_cost_le_of_ready
                 concreteBPNativeSuccinctRMQFastQueryCost, hleftValue,
                 hrightValue, hlcaValue]
               omega
+
+theorem concreteBPNativeSuccinctRMQQueryCosted_cost_le_routeSplit
+    {closeAccessOverhead : Nat -> Nat} {closeAccessCost : Nat}
+    (accessFamily :
+      PayloadLiveBPCloseAccessFamily
+        closeAccessOverhead closeAccessCost)
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    (concreteBPNativeSuccinctRMQQueryCosted
+        accessFamily shape left right).cost <=
+      concreteBPNativeSuccinctRMQRouteSplitQueryCostWithCloseAccess
+        closeAccessCost shape := by
+  unfold concreteBPNativeSuccinctRMQQueryCosted
+  have hleft :=
+    concreteBPNativeSelectCloseCosted_cost_le accessFamily shape left
+  have hright :=
+    concreteBPNativeSelectCloseCosted_cost_le
+      accessFamily shape (right - 1)
+  cases hleftValue :
+      (concreteBPNativeSelectCloseCosted
+        accessFamily shape left).value with
+  | none =>
+      simp [Costed.bind,
+        concreteBPNativeSuccinctRMQRouteSplitQueryCostWithCloseAccess,
+        hleftValue]
+      omega
+  | some leftClose =>
+      cases hrightValue :
+          (concreteBPNativeSelectCloseCosted
+            accessFamily shape (right - 1)).value with
+      | none =>
+          simp [Costed.bind,
+            concreteBPNativeSuccinctRMQRouteSplitQueryCostWithCloseAccess,
+            hleftValue, hrightValue]
+          omega
+      | some rightClose =>
+          have hlca :=
+            concreteBPNativeLCACloseCosted_cost_le_routeSplit
+              accessFamily shape leftClose rightClose
+          cases hlcaValue :
+              (concreteBPNativeLCACloseCosted
+                accessFamily shape leftClose rightClose).value with
+          | none =>
+              simp [Costed.bind,
+                concreteBPNativeSuccinctRMQRouteSplitQueryCostWithCloseAccess,
+                hleftValue, hrightValue, hlcaValue]
+              omega
+          | some answerClose =>
+              have hrank :=
+                concreteBPNativeRankCloseCosted_cost_le
+                  accessFamily shape (answerClose + 1)
+              simp [Costed.bind, Costed.map,
+                concreteBPNativeSuccinctRMQRouteSplitQueryCostWithCloseAccess,
+                hleftValue, hrightValue, hlcaValue]
+              omega
+
+theorem concreteBPNativeSuccinctRMQQueryCosted_cost_le_cleanAllSize
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    (concreteBPNativeSuccinctRMQQueryCosted
+        builtGenericSparseExceptionSelectBPCloseAccessFamily
+        shape left right).cost <=
+      concreteBPNativeSuccinctRMQCleanAllSizeQueryCost := by
+  exact Nat.le_trans
+    (concreteBPNativeSuccinctRMQQueryCosted_cost_le_routeSplit
+      builtGenericSparseExceptionSelectBPCloseAccessFamily shape left right)
+    (concreteBPNativeSuccinctRMQRouteSplitQueryCost_le_cleanAllSize shape)
 
 theorem concreteBPNativeSuccinctRMQQueryCosted_exact
     {closeAccessOverhead : Nat -> Nat} {closeAccessCost n : Nat}

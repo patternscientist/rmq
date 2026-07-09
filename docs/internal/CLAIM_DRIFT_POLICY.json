@@ -45,7 +45,7 @@
     {
       "id": "all-size-196727",
       "pattern": "196727",
-      "status": "current-conservative-all-size-bound-until-superseded",
+      "status": "legacy-compatibility-only-after-route-split-65585",
       "strict": false,
       "allowedPathRegex": "",
       "allowedLineRegex": ""

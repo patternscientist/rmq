@@ -37,9 +37,10 @@ shifted from *proving the theorem* to *making the cost claim mean something*:
 the query is now a concrete machine-like program whose every memory read is
 logged, audited against a declared memory layout, and — the newest theorems —
 provably dependent on nothing but the declared stored bits, with the model
-bridge itself packaged as a theorem. The integrated branch keeps the
-conservative all-size constant `196727`, but now also exposes the
-Ready-threshold fast-regime theorem with named cost `118`; section 5 records
+bridge itself packaged as a theorem. The integrated branch now exposes a
+route-split all-size theorem with fixed modeled constant `65585`; the older
+`196727` aggregate remains only as legacy compatibility, and the
+Ready-threshold fast-regime theorem has named cost `118`. Section 5 records
 both the original gap analysis and the later closure.
 
 ---
@@ -342,10 +343,12 @@ discipline of section 4, item 2, as a method.
 
 ### 5.2 The former blocking gap: the constant split
 
-The uniform modeled query-cost bound remains `196727`. The theorem is true, and
-uniform in `n`; the number is large for reasons the repository now documents
-precisely — and one of this digest's review rounds materially *corrected* the
-story, in the repository's favor (Appendix A):
+The public all-size modeled query-cost bound is now `65585`, not the older
+`196727` aggregate. The legacy theorem remains true and uniform in `n`, but the
+new public theorem pays for the route the query actually takes rather than
+summing mutually exclusive branch caps. The repository documents why the
+constants have this shape, and one of this digest's review rounds materially
+*corrected* the story, in the repository's favor (Appendix A):
 
 - The fast navigation path is proved applicable for **all `n >= 2^15`**
   (= 32768) — a modest, explicit threshold theorem
@@ -357,22 +360,23 @@ story, in the repository's favor (Appendix A):
   *correct* because the fallback only triggers in regimes where the object
   being scanned is itself provably below the threshold — the capped scan is a
   complete scan, never a truncated one.
-- The public bound is a single conservative *sum* of every branch's cap —
-  three bracket-navigation accesses at 16, a zero-block scan cap `2*2^15 + 1`,
-  an interior scan cap `4*2^15`, the fast interior path's 30, plus small
-  change — which is where `196727` comes from.
-- The later integrated theorem surface now states the regime split explicitly:
+- The old `196727` bound was a single conservative *sum* of every branch's cap
+  — three bracket-navigation accesses at 16, a zero-block scan cap
+  `2*2^15 + 1`, an interior scan cap `4*2^15`, the fast interior path's 30,
+  plus small change. The new route-split theorem keeps those routes mutually
+  exclusive and exposes the fixed all-size maximum `65585`.
+- The later integrated theorem surface states the regime split explicitly:
   `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_of_size_ge_readyThreshold`
   proves the same final global trace costs at most
   `SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118` under
   `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= shape.size`.
 
 So the honest characterization is: constant-time is genuinely proved for all
-`n`, with the real machinery engaged from a modest size and now exposed through
-a public fast-regime theorem. The sub-threshold regime is still handled by
-capped scanning rather than classical constant-step small-block tables, so
-tighter uniform constants remain useful engineering; they are not the remaining
-paper-level proof blocker.
+`n`, with a public route-split all-size theorem and a smaller public fast-regime
+theorem once the real machinery is engaged from a modest size. The zero-block
+same-block branch is still handled by counted structural scanning rather than a
+smaller constant-time small-block route, so tighter uniform constants remain
+useful engineering; they are not the remaining paper-level proof blocker.
 
 ### 5.3 Expected but no longer blocking (largely landed 2026-07-06)
 

@@ -25,9 +25,18 @@ abbrev overhead : Nat -> Nat :=
     SuccinctFinal.genericSparseExceptionBPCloseAccessOverhead
 
 /-- Constant modeled query budget of the public BP-native construction. -/
-abbrev queryCost : Nat :=
+abbrev legacyQueryCost : Nat :=
   SuccinctFinal.concreteBPNativeSuccinctRMQQueryCost
     SuccinctSelect.sparseDenseFalseSelectQueryCost
+
+/-- Clean fixed all-size modeled query budget of the public construction. -/
+abbrev queryCost : Nat :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQCleanAllSizeQueryCost
+
+/-- Shape-sensitive route-split modeled query budget for `xs`. -/
+abbrev routeSplitQueryCost (xs : List Int) : Nat :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQRouteSplitQueryCost
+    (cartesianShape xs)
 
 /--
 The counted payload built from an ordinary input list: the `2*n` BP shape code
@@ -257,11 +266,19 @@ theorem buildPayload_length (xs : List Int) :
       hshape
 
 /-- Every query has the constant modeled cost of the final construction. -/
+theorem queryCosted_cost_le_routeSplit
+    (xs : List Int) (left right : Nat) :
+    (queryCosted xs left right).cost <= routeSplitQueryCost xs := by
+  simpa [queryCosted, routeSplitQueryCost] using
+    SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_routeSplit
+      (cartesianShape xs) left right
+
+/-- Every query has the clean fixed all-size modeled cost bound. -/
 theorem queryCosted_cost_le
     (xs : List Int) (left right : Nat) :
     (queryCosted xs left right).cost <= queryCost := by
   simpa [queryCosted, queryCost] using
-    SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le
+    SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_cleanAllSize
       (cartesianShape xs) left right
 
 /--
@@ -288,10 +305,8 @@ theorem listIntFinalFullModelCostLeOfFootprintGlobal
     (hfoot : storesAgreeOnFootprint xs store (globalReadStore xs))
     (left right : Nat) :
     (queryCostedWithStore xs store left right).cost <= queryCost := by
-  simpa [queryCostedWithStore, queryCost, storesAgreeOnFootprint,
-    globalReadStore] using
-    SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global
-      (cartesianShape xs) store hfoot left right
+  rw [queryCostedWithStore_eq_queryCosted_of_footprint xs hfoot left right]
+  exact queryCosted_cost_le xs left right
 
 /--
 Under the Ready-threshold size condition, footprint agreement transfers the

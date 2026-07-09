@@ -63,8 +63,8 @@ candidates, subject to the novelty search described below — are:
 
 ### P0 — proof blockers closed; paper/artifact work remains
 
-1. **Cost model constant split.** The concrete all-size query-cost constant is
-   still the conservative model bound `196727`. *(Correction, 2026-07-06: an
+1. **Cost model constant split.** The concrete all-size query-cost surface now
+   has a route-split theorem and clean fixed corollary `65585`. *(Correction, 2026-07-06: an
    earlier revision of this document said the clean `O(1)` replay is "gated on
    `2^128 <= shape.size`." That was too pessimistic: the source proves the fast
    interior path applies for all `shape.size >= 2^15`
@@ -127,12 +127,12 @@ side:
 
 ## 4. The single highest-leverage move after integration
 
-**Turn the theorem surface into a paper artifact.** The regime split is now a
-theorem, so the highest-leverage move is no longer another proof worker. It is
-paper/artifact packaging: a referee-grade theorem map, claim-to-check table,
-novelty search, related-work calibration, and reproduction script that make the
-`196727` all-size bound and `118` Ready-threshold fast bound impossible to
-misread.
+**Turn the theorem surface into a paper artifact.** The route-split all-size
+cost theorem is now in place, so the highest-leverage move is paper/artifact
+packaging: a referee-grade theorem map, claim-to-check table, novelty search,
+related-work calibration, and reproduction script that make the `65585`
+all-size bound, the legacy `196727` aggregate, and the `118` Ready-threshold
+fast bound impossible to misread.
 
 ## 4a. Status update (2026-07-06)
 
@@ -157,8 +157,9 @@ Landed on `main` since this document was written (through `3f6f1e3`):
 - **P2 item 8 (artifact):** reproduction script, CI workflows, `CITATION.cff`,
   and an AI-assisted-development disclosure landed.
 - **Cost-regime split:** the fast-regime theorem cited above exposes the
-  `118` modeled bound under the real `2^15` readiness threshold while
-  preserving the all-size `196727` theorem.
+  `118` modeled bound under the real `2^15` readiness threshold. Later R2 work
+  replaced the public all-size alias with the route-split `65585` theorem while
+  preserving the old `196727` aggregate as legacy compatibility.
 
 Remaining, in priority order: **paper/artifact packaging; novelty search;
 extraction + benchmarks; optional tighter uniform constants.**

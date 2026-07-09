@@ -294,9 +294,9 @@ tripwires whose allowed status changes when theorem or artifact truth changes.
 
 Context:
 
-Some scanned terms, such as `196727`, are current theorem truth today but may
-become legacy compatibility language after future proof work. A static grep
-list would either freeze old claims or create noisy false positives.
+Some scanned terms, such as `196727`, can move from public theorem truth to
+legacy compatibility language after proof work. A static grep list would either
+freeze old claims or create noisy false positives.
 
 Options considered:
 

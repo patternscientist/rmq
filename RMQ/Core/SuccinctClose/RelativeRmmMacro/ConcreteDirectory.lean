@@ -1362,6 +1362,26 @@ def concreteCompactBPCloseLCADirectory
   payload := (concreteBPRelativeRmmInteriorDirectory shape).payload
   payload_eq_interior := rfl
 
+def concreteCompactBPCloseActiveNotReadyQueryCostWithRankSeed
+    (rankCost : Nat) : Nat :=
+  8 + 2 * rankCost +
+    concreteBPRelativeRmmInteriorActiveNotReadySmallScanQueryCost
+
+def concreteCompactBPCloseInactiveNotReadyQueryCostWithRankSeed
+    (rankCost : Nat) : Nat :=
+  8 + 2 * rankCost
+
+def concreteCompactBPCloseRouteSplitQueryCostWithRankSeed
+    (rankCost : Nat) (shape : Cartesian.CartesianShape) : Nat :=
+  if canonicalBPRelativeSummaryBlockSize shape = 0 then
+    concreteCompactBPCloseZeroBlockScanCost
+  else if concreteBPRelativeRmmInteriorReady shape then
+    concreteCompactBPCloseReadyQueryCostWithRankSeed rankCost
+  else if canonicalBPRelativeMinMaxArgSummaryTableActive shape then
+    concreteCompactBPCloseActiveNotReadyQueryCostWithRankSeed rankCost
+  else
+    concreteCompactBPCloseInactiveNotReadyQueryCostWithRankSeed rankCost
+
 theorem concreteCompactBPCloseLCADirectory_crossBlockCloseCostedWithRankSeed_cost_le_of_ready
     {shape : Cartesian.CartesianShape}
     (hready : concreteBPRelativeRmmInteriorReady shape)
@@ -1425,6 +1445,125 @@ theorem concreteCompactBPCloseLCADirectory_crossBlockCloseCostedWithRankSeed_cos
   simp [concreteCompactBPCloseLCADirectory, Costed.bind, Costed.map] at hleftSeed hleft hmiddle hrightSeed hright ⊢
   omega
 
+theorem concreteCompactBPCloseLCADirectory_crossBlockCloseCostedWithRankSeed_cost_le_of_active_not_ready
+    {shape : Cartesian.CartesianShape}
+    (hactive : canonicalBPRelativeMinMaxArgSummaryTableActive shape)
+    (hnotReady : ¬ concreteBPRelativeRmmInteriorReady shape)
+    (rankCloseCosted : Nat -> Costed Nat)
+    (leftClose rightClose rankCost : Nat)
+    (hrankCost : forall pos, (rankCloseCosted pos).cost <= rankCost) :
+    ((concreteCompactBPCloseLCADirectory shape).crossBlockCloseCostedWithRankSeed
+        rankCloseCosted leftClose rightClose).cost <=
+      concreteCompactBPCloseActiveNotReadyQueryCostWithRankSeed rankCost := by
+  unfold ConcreteCompactBPCloseLCADirectory.crossBlockCloseCostedWithRankSeed
+    concreteCompactBPCloseActiveNotReadyQueryCostWithRankSeed
+  have hleftSeed :=
+    localBPSeedFromRankCloseCosted_cost_le shape rankCloseCosted
+      (canonicalBPRelativeSummaryBlockSize shape) leftClose rankCost
+      hrankCost
+  have hleft :=
+    localBPLeftFringeCandidateSeededCosted_cost_le shape
+      (canonicalBPRelativeSummaryBlockSize shape) leftClose
+      (localBPSeedFromRankCloseCosted shape rankCloseCosted
+        (canonicalBPRelativeSummaryBlockSize shape) leftClose).value
+  have hrightSeed :=
+    localBPSeedFromRankCloseCosted_cost_le shape rankCloseCosted
+      (canonicalBPRelativeSummaryBlockSize shape) rightClose rankCost
+      hrankCost
+  have hright :=
+    localBPRightFringeCandidateSeededCosted_cost_le shape
+      (canonicalBPRelativeSummaryBlockSize shape) rightClose
+      (localBPSeedFromRankCloseCosted shape rankCloseCosted
+        (canonicalBPRelativeSummaryBlockSize shape) rightClose).value
+  have hmiddle :
+      (if blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+            leftClose + 1 <
+            blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+              rightClose then
+          (concreteBPRelativeRmmInteriorDirectory shape).rangeMinCosted
+            (blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+                leftClose + 1)
+            (blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+                rightClose -
+              blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+                leftClose - 1)
+        else
+          Costed.pure none).cost <=
+        concreteBPRelativeRmmInteriorActiveNotReadySmallScanQueryCost := by
+    by_cases hgap :
+        blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+            leftClose + 1 <
+          blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+            rightClose
+    · simp [hgap]
+      exact
+        concreteBPRelativeRmmInteriorDirectory_rangeMinCosted_cost_le_of_active_not_ready
+          shape hactive hnotReady
+          (blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+            leftClose + 1)
+          (blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+              rightClose -
+            blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+              leftClose - 1)
+    · simp [hgap, Costed.pure]
+  simp [concreteCompactBPCloseLCADirectory, Costed.bind, Costed.map] at hleftSeed hleft hmiddle hrightSeed hright ⊢
+  omega
+
+theorem concreteCompactBPCloseLCADirectory_crossBlockCloseCostedWithRankSeed_cost_le_of_inactive_not_ready
+    {shape : Cartesian.CartesianShape}
+    (hnotActive : ¬ canonicalBPRelativeMinMaxArgSummaryTableActive shape)
+    (hnotReady : ¬ concreteBPRelativeRmmInteriorReady shape)
+    (rankCloseCosted : Nat -> Costed Nat)
+    (leftClose rightClose rankCost : Nat)
+    (hrankCost : forall pos, (rankCloseCosted pos).cost <= rankCost) :
+    ((concreteCompactBPCloseLCADirectory shape).crossBlockCloseCostedWithRankSeed
+        rankCloseCosted leftClose rightClose).cost <=
+      concreteCompactBPCloseInactiveNotReadyQueryCostWithRankSeed rankCost := by
+  unfold ConcreteCompactBPCloseLCADirectory.crossBlockCloseCostedWithRankSeed
+    concreteCompactBPCloseInactiveNotReadyQueryCostWithRankSeed
+  have hleftSeed :=
+    localBPSeedFromRankCloseCosted_cost_le shape rankCloseCosted
+      (canonicalBPRelativeSummaryBlockSize shape) leftClose rankCost
+      hrankCost
+  have hleft :=
+    localBPLeftFringeCandidateSeededCosted_cost_le shape
+      (canonicalBPRelativeSummaryBlockSize shape) leftClose
+      (localBPSeedFromRankCloseCosted shape rankCloseCosted
+        (canonicalBPRelativeSummaryBlockSize shape) leftClose).value
+  have hrightSeed :=
+    localBPSeedFromRankCloseCosted_cost_le shape rankCloseCosted
+      (canonicalBPRelativeSummaryBlockSize shape) rightClose rankCost
+      hrankCost
+  have hright :=
+    localBPRightFringeCandidateSeededCosted_cost_le shape
+      (canonicalBPRelativeSummaryBlockSize shape) rightClose
+      (localBPSeedFromRankCloseCosted shape rankCloseCosted
+        (canonicalBPRelativeSummaryBlockSize shape) rightClose).value
+  have hmiddle :
+      (if blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+            leftClose + 1 <
+            blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+              rightClose then
+          (concreteBPRelativeRmmInteriorDirectory shape).rangeMinCosted
+            (blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+                leftClose + 1)
+            (blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+                rightClose -
+              blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+                leftClose - 1)
+        else
+          Costed.pure none).cost <= 0 := by
+    by_cases hgap :
+        blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+            leftClose + 1 <
+          blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+            rightClose
+    · simp [hgap, concreteBPRelativeRmmInteriorDirectory, hnotReady,
+        hnotActive, Costed.pure]
+    · simp [hgap, Costed.pure]
+  simp [concreteCompactBPCloseLCADirectory, Costed.bind, Costed.map] at hleftSeed hleft hmiddle hrightSeed hright ⊢
+  omega
+
 theorem concreteCompactBPCloseLCADirectory_lcaCloseCostedWithRankSeed_cost_le_of_ready
     {shape : Cartesian.CartesianShape}
     (hready : concreteBPRelativeRmmInteriorReady shape)
@@ -1453,6 +1592,69 @@ theorem concreteCompactBPCloseLCADirectory_lcaCloseCostedWithRankSeed_cost_le_of
     exact
       concreteCompactBPCloseLCADirectory_crossBlockCloseCostedWithRankSeed_cost_le_of_ready
         hready rankCloseCosted leftClose rightClose rankCost hrankCost
+
+theorem concreteCompactBPCloseLCADirectory_lcaCloseCostedWithRankSeed_cost_le_routeSplit
+    {shape : Cartesian.CartesianShape}
+    (rankCloseCosted : Nat -> Costed Nat)
+    (leftClose rightClose rankCost : Nat)
+    (hrankCost : forall pos, (rankCloseCosted pos).cost <= rankCost) :
+    ((concreteCompactBPCloseLCADirectory shape).lcaCloseCostedWithRankSeed
+        rankCloseCosted leftClose rightClose).cost <=
+      concreteCompactBPCloseRouteSplitQueryCostWithRankSeed rankCost shape := by
+  unfold concreteCompactBPCloseRouteSplitQueryCostWithRankSeed
+  by_cases hzero : canonicalBPRelativeSummaryBlockSize shape = 0
+  · unfold ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed
+    simp [hzero]
+    exact
+      zeroBlockSameBlockCloseCosted_cost_le_of_blockSize_zero
+        (shape := shape) (leftClose := leftClose) (rightClose := rightClose)
+        hzero
+  · simp [hzero]
+    by_cases hready : concreteBPRelativeRmmInteriorReady shape
+    · simpa [hready] using
+        concreteCompactBPCloseLCADirectory_lcaCloseCostedWithRankSeed_cost_le_of_ready
+          hready rankCloseCosted leftClose rightClose rankCost hrankCost
+    · by_cases hactive : canonicalBPRelativeMinMaxArgSummaryTableActive shape
+      · unfold ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed
+        simp [hzero]
+        by_cases hsame :
+            blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+                leftClose =
+              blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+                rightClose
+        · simp [hready, hactive, hsame]
+          have hlocal :=
+            localBPSameBlockCloseDecodedCostedWithRankSeed_cost_le shape
+              rankCloseCosted
+              (canonicalBPRelativeSummaryBlockSize shape) leftClose
+              rightClose rankCost hrankCost
+          unfold concreteCompactBPCloseActiveNotReadyQueryCostWithRankSeed
+          omega
+        · simp [hready, hactive, hsame]
+          simpa [hready, hactive] using
+            concreteCompactBPCloseLCADirectory_crossBlockCloseCostedWithRankSeed_cost_le_of_active_not_ready
+              hactive hready rankCloseCosted leftClose rightClose rankCost
+              hrankCost
+      · unfold ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed
+        simp [hzero]
+        by_cases hsame :
+            blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+                leftClose =
+              blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+                rightClose
+        · simp [hready, hactive, hsame]
+          have hlocal :=
+            localBPSameBlockCloseDecodedCostedWithRankSeed_cost_le shape
+              rankCloseCosted
+              (canonicalBPRelativeSummaryBlockSize shape) leftClose
+              rightClose rankCost hrankCost
+          unfold concreteCompactBPCloseInactiveNotReadyQueryCostWithRankSeed
+          omega
+        · simp [hready, hactive, hsame]
+          simpa [hready, hactive] using
+            concreteCompactBPCloseLCADirectory_crossBlockCloseCostedWithRankSeed_cost_le_of_inactive_not_ready
+              hactive hready rankCloseCosted leftClose rightClose rankCost
+              hrankCost
 
 theorem concreteCompactBPCloseLCADirectory_profile_of_ready
     (shape : Cartesian.CartesianShape)

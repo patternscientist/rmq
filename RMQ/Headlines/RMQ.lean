@@ -279,11 +279,28 @@ abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedB
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_successful_reads_backed_by_counted_flat_payload_of_footprint_global
 
 /--
-The canonical final global trace has modeled cost bounded by the all-size
-final-query cost expression.
+Compatibility alias for the old conservative aggregate all-size cost theorem.
+It remains true, but it sums mutually exclusive fallback costs and is no longer
+the paper-facing cost alias.
+-/
+abbrev succinctRMQLegacy196727WholeQueryGlobalWordTraceCostedCostLe :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le
+
+/--
+The canonical final global trace has modeled cost bounded by the route selected
+by the all-size structural close/LCA replay: zero-block BP-code scan, Ready
+two-level replay, active non-Ready bounded summary scan, or inactive pure
+route.
+-/
+abbrev succinctRMQWholeQueryGlobalWordTraceRouteSplitCostedCostLe :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_routeSplit
+
+/--
+The canonical final global trace has modeled cost bounded by the clean fixed
+all-size final-query constant, the maximum of the checked route-split leaves.
 -/
 abbrev succinctRMQWholeQueryGlobalWordTraceCostedCostLe :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_cleanAllSize
 
 /--
 Under agreement with the concrete global store on the safe final layout
@@ -294,16 +311,47 @@ abbrev succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGloba
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global
 
 /--
-All-size modeled query-cost constant for the final BP-native succinct RMQ
-query. This includes the bounded all-size fallback scans.
+Legacy all-size modeled query-cost constant for the final BP-native succinct
+RMQ query. This is the old conservative aggregate kept for compatibility.
 -/
-abbrev succinctRMQQueryCost :=
+abbrev succinctRMQLegacy196727QueryCost :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQQueryCost
     RMQ.SuccinctSelect.sparseDenseFalseSelectQueryCost
 
-/-- The named all-size final-query cost constant computes to `196727`. -/
-abbrev succinctRMQQueryCostEq :=
+/-- The legacy all-size final-query cost constant computes to `196727`. -/
+abbrev succinctRMQLegacy196727QueryCostEq :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQQueryCost_eq
+
+/-- Shape-sensitive route-split all-size modeled query-cost expression. -/
+abbrev succinctRMQRouteSplitQueryCost :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQRouteSplitQueryCost
+
+/--
+Clean fixed all-size modeled query-cost constant for the final BP-native
+succinct RMQ query.
+-/
+abbrev succinctRMQQueryCost :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCleanAllSizeQueryCost
+
+/-- The clean fixed all-size final-query cost constant computes to `65585`. -/
+abbrev succinctRMQQueryCostEq :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCleanAllSizeQueryCost_eq
+
+/-- Active non-Ready route constant for the all-size route split. -/
+abbrev succinctRMQActiveNotReadyQueryCost :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQActiveNotReadyQueryCost
+
+/-- The active non-Ready route constant computes to `568`. -/
+abbrev succinctRMQActiveNotReadyQueryCostEq :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQActiveNotReadyQueryCost_eq
+
+/-- Inactive non-Ready route constant for the all-size route split. -/
+abbrev succinctRMQInactiveNotReadyQueryCost :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQInactiveNotReadyQueryCost
+
+/-- The inactive non-Ready route constant computes to `88`. -/
+abbrev succinctRMQInactiveNotReadyQueryCostEq :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQInactiveNotReadyQueryCost_eq
 
 /--
 Fast-regime modeled query-cost constant for the final BP-native succinct RMQ

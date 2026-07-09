@@ -72,6 +72,11 @@ uses that sufficient Ready-threshold premise to prove the final global trace
 cost is bounded by
 `SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118`, excluding
 the zero-block same-block scan and the active non-Ready bounded interior scan.
+The all-size public cost alias now points to the cleaner route-split theorem
+`Headlines.succinctRMQWholeQueryGlobalWordTraceRouteSplitCostedCostLe` and its
+fixed corollary `Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe`,
+whose named constant is `Headlines.succinctRMQQueryCost = 65585`. The old
+`196727` aggregate remains available only through explicit legacy aliases.
 The supplied-store/full-model fast companions transfer the same bound under
 the existing final-layout footprint agreement.
 `Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` lifts
@@ -1081,11 +1086,12 @@ and `docs/internal/LOCAL_BP_DECODER_PATH.md`.
   `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack`. The theorem is a
   model-level succinct data-structure profile, not a claim about extracted
   wall-clock runtime.
-- The current concrete BP-native RMQ query-cost bound is the fixed modeled
-  constant `196727`, obtained from close-access cost `16`, the readiness
-  threshold `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15`,
-  the zero-block same-block scan cost `2 * 2^15 + 1`, the active non-Ready
-  interior scan cost `4 * 2^15`, and Ready interior query cost `30`.
+- The current concrete BP-native RMQ paper-facing all-size query-cost bound is
+  the fixed modeled constant `65585`, obtained as the maximum of the checked
+  route-split leaves: zero-block BP-code scan, Ready cost `118`, active
+  non-Ready cost `568`, and inactive non-Ready cost `88`. The compatibility
+  constant `196727` is still checked, but it is no longer the public all-size
+  alias because it sums mutually exclusive fallback costs.
 - The project remains Mathlib-free: imports are Lean/Std plus existing Lean
   arithmetic automation such as `omega`.
 
@@ -2811,6 +2817,7 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctClassic.scanWindow_cartesianShape_representative_eq`,
   `SuccinctClassic.overhead_littleO`,
   `SuccinctClassic.buildPayload_length`,
+  `SuccinctClassic.queryCosted_cost_le_routeSplit`,
   `SuccinctClassic.queryCosted_cost_le`,
   `SuccinctClassic.queryCosted_exact`,
   `SuccinctClassic.queryCosted_leftmost`, and
@@ -2841,6 +2848,8 @@ The names below are grouped by source module. Repeated base names in
   `Headlines.succinctRMQGlobalPayloadStoreExecutionStory`,
   `Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory`,
   `Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory`,
+  `Headlines.succinctRMQWholeQueryGlobalWordTraceRouteSplitCostedCostLe`,
+  `Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe`,
   `Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedByCountedFlatPayloadOfFootprintGlobal`,
   `Headlines.succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal`,
   `Headlines.concreteBPCloseNavigationProfile`,

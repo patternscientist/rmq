@@ -60,10 +60,11 @@ The current integrated branch has a strong paper base:
 The remaining pressure points are not "honesty" problems. They are places where
 the artifact can be made cleaner and more familiar:
 
-- The strongest supplied-store/footprint story is not yet lifted to the
-  list-facing `SuccinctClassic` interface.
-- The all-size public constant `196727` is correct but inelegant; the fast-regime
-  constant `118` is much more paper-shaped.
+- The supplied-store/footprint story has now been lifted to the list-facing
+  `SuccinctClassic` interface.
+- The public all-size cost alias now uses the route-split theorem and fixed
+  constant `65585`; exact all-size `118` remains false for the current
+  zero-block structural replay.
 - A zero-block guard and conservative footprint bounds remain visible enough to
   invite reviewer questions.
 - Some implementation files are large enough that proof architecture is harder

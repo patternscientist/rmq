@@ -117,12 +117,13 @@ footprint.
 
 ## The Constant
 
-The current fixed modeled query-cost bound is `196727`. This is an ugly fixed
-model constant, not execution-performance evidence. It reflects conservative
-all-size structural fallbacks, including bounded scans below
-`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15`.
-There is now a separate fast-regime cost theorem for the same final global
-trace:
+The current fixed modeled query-cost bound is `65585`. This is a checked model
+constant, not execution-performance evidence. It is the fixed corollary of the
+route-split all-size theorem: Ready costs `118`, active non-Ready costs `568`,
+inactive non-Ready costs `88`, and the zero-block BP-code scan is the maximum.
+The old `196727` aggregate remains checked as a legacy compatibility theorem,
+but it is no longer the paper-facing all-size cost alias. There is still a
+separate fast-regime cost theorem for the same final global trace:
 `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_of_size_ge_readyThreshold`.
 Under `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= shape.size`,
 it uses Ready interior cost `30` and proves

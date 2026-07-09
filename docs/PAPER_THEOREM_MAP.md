@@ -33,6 +33,8 @@ RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal
 RMQ.Headlines.listIntSuccinctRMQFastRegimeFinalFullModelCostLeOfFootprintGlobal
 RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedByCountedFlatPayloadOfFootprintGlobal
 RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal
+RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceRouteSplitCostedCostLe
+RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe
 RMQ.Headlines.succinctRMQFastRegimeGlobalPayloadStoreCostLeOfReadyThreshold
 RMQ.Headlines.succinctRMQFastRegimeSuppliedStoreCostLeOfFootprintGlobal
 RMQ.Headlines.succinctRMQFastRegimeFinalFullModelCostLeOfFootprintGlobal
@@ -54,7 +56,11 @@ ordinary `List Int` surface: the supplied-store query is equal to canonical
 the all-size plus fast-regime cost bounds transfer. The store/model aliases
 expose the direct supplied-store transfer theorems for counted flat-payload
 backing and modeled cost under footprint agreement.
-The fast-regime aliases add the Ready-threshold cost theorem: when
+The all-size cost aliases now expose a route-split theorem plus the clean fixed
+corollary `SuccinctFinal.concreteBPNativeSuccinctRMQCleanAllSizeQueryCost =
+65585`; the legacy `196727` aggregate is retained under explicit compatibility
+aliases because it sums fallback costs that the structural route takes
+mutually exclusively. The fast-regime aliases add the Ready-threshold cost theorem: when
 `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= shape.size`, the
 same final global trace has modeled cost at most the named constant
 `SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118`, and the
