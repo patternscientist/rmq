@@ -265,14 +265,24 @@ ADD should route by task risk, not by model prestige.
 Initial policy:
 
 - coordinator and architecture synthesis: strongest available model;
-- proof workers on ambitious theorem targets: strongest available model until
-  success patterns are established;
+- proof workers on ambitious theorem targets: 5.5 Extra High or the strongest
+  available model until success patterns are established;
 - read-only claim-drift scans: cheaper models are acceptable when backed by
   exact grep/build evidence;
 - independent validation and example generation: cheaper models are acceptable
   if outputs are checked by Lean/CI;
 - final public-claim audits: at least one strong external model plus local
   coordinator audit.
+
+Worker prompts should name the recommended model/mode explicitly. That line is
+coordination metadata, not proof evidence; checked Lean theorems, scripts, and
+artifact outputs remain the trust base. Smaller docs, grep-only audits, or
+mechanical template updates may use cheaper modes when their outputs are easy to
+verify.
+
+Worker prompts should also ask workers to commit the finished branch by default,
+stage only intended files, and report the commit hash. Read-only audits and
+explicit no-commit tasks are the exceptions.
 
 Future experiment:
 

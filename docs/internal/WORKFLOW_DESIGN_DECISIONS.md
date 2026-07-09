@@ -264,6 +264,67 @@ Supersedes:
 
 None.
 
+## WDD-20260708-007: Make Model Recommendations And Worker Commits Explicit
+
+Status: Accepted
+Date: 2026-07-08
+Scope: Worker prompt protocol and model routing.
+
+Decision:
+
+Every coordinator-issued worker prompt should include a recommended model/mode
+and a short reason. Nontrivial Lean proof work should use 5.5 Extra High or a
+stronger available mode by default. Smaller docs, grep-only audit, validation,
+or mechanical tooling tasks may use cheaper modes when their outputs are
+straightforward to verify. Worker prompts should also instruct workers to commit
+their finished branch by default, stage only intended files, and report the
+commit hash, unless the task is explicitly read-only or no-commit.
+
+Context:
+
+The project is starting to become token-conscious rather than reflexively
+spending the highest-capability setting on every task. At the same time,
+ambitious proof work still has high coordination and proof-search risk, so
+model downgrades there would be false economy until there is real comparative
+evidence. Requiring commits at handoff gives the coordinator an exact artifact
+to audit and merge instead of an ambiguous dirty worktree.
+
+Options considered:
+
+- Keep all chats on the same high mode forever.
+- Let each worker choose its own model/mode and whether to commit.
+- Require the coordinator to name model/mode and require commits for completed
+  write tasks.
+
+Rationale:
+
+Explicit model recommendations turn model choice into a reviewable routing
+decision without making model identity part of the proof trust base. Commit
+requirements reduce coordinator cleanup, make branch audits reproducible, and
+force workers to distinguish intended changes from scratch files.
+
+Consequences:
+
+Worker prompts and coordinator prompt templates must carry model/mode metadata.
+Completion reports for write tasks should include a commit hash. If a worker
+does not commit, the coordinator should treat that as an integration issue
+unless the prompt was read-only or no-commit.
+
+Evidence:
+
+- `docs/internal/templates/WORKER_PROMPT.md`
+- `docs/internal/templates/COORDINATOR_REENTRY_PROMPT.md`
+- `docs/internal/ADD_WORKFLOW_TOOLING_PLAN.md`
+
+Follow-up:
+
+After several comparable tasks, build a model-routing matrix that records
+quality, cleanup cost, missed-blocker rate, and token/time cost by task class.
+
+Supersedes:
+
+None.
+
 ## WDD-20260708-002: Add Repo-Native ADD Tooling Before Model-Specific Automation
 
 Status: Accepted

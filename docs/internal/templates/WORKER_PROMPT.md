@@ -8,6 +8,11 @@ Work in a fresh branch/worktree based on [BASE_BRANCH]. Fetch first and verify
 the base. Do not edit the coordinator checkout. Do not revert or overwrite
 unrelated changes.
 
+Recommended model/mode:
+[Name the suggested model/mode and why. Nontrivial Lean proof work should use
+5.5 Extra High or stronger unless the coordinator explicitly downgrades a
+low-risk docs/tooling task.]
+
 Goal:
 [One sentence naming the exact theorem/profile/document/tooling target.]
 
@@ -26,6 +31,12 @@ Forbidden shortcuts:
 - Do not conflate model-cost ticks, payload bits, proof-only fields, Lean
   runtime, or compiled-code behavior.
 - Do not stage transcript dumps, zips, scratch dirs, or unrelated files.
+
+Completion discipline:
+- Stage only intended files.
+- Commit the finished branch unless the prompt explicitly says not to commit.
+- Include the commit hash in the completion report. If committing is blocked,
+  state the exact reason and leave the worktree status clear.
 
 Context to read:
 - docs/internal/RMQ_FINAL_ROADMAP.md

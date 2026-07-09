@@ -45,7 +45,8 @@ Tasks:
    - what is closed;
    - what remains;
    - what should not be worked on next;
-   - top 3 next prompts, ranked.
+   - top 3 next prompts, ranked;
+   - recommended model/mode for each worker prompt and why.
 
 Do not edit files in this pass unless explicitly asked.
 ```
