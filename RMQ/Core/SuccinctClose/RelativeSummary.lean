@@ -1265,6 +1265,174 @@ def canonicalBPRelativeSummaryRelativeWidthRaw
 def canonicalBPRelativeSummarySuperSlots : Nat := 16
 
 def canonicalBPRelativeSummaryBlockSlots : Nat := 64
+namespace RelativeRmm
+
+structure Layout where
+  blockSize : Nat
+  blocksPerSuper : Nat
+  blockCount : Nat
+  relativeWidth : Nat
+
+def canonicalLayout
+    (shape : Cartesian.CartesianShape) : Layout where
+  blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
+  blocksPerSuper := canonicalBPRelativeSummaryBlocksPerSuperRaw shape
+  blockCount := canonicalBPRelativeSummaryBlockCountRaw shape
+  relativeWidth := canonicalBPRelativeSummaryRelativeWidthRaw shape
+
+namespace Layout
+
+def superSampleCount (layout : Layout) : Nat :=
+  layout.blockCount / layout.blocksPerSuper + 1
+
+def superWidth
+    (_layout : Layout) (shape : Cartesian.CartesianShape) : Nat :=
+  SuccinctRank.machineWordBits shape.bpCode.length
+
+def macroSize (layout : Layout) : Nat :=
+  layout.blocksPerSuper * layout.blocksPerSuper
+
+def macroSampleCount (layout : Layout) : Nat :=
+  layout.blockCount / layout.macroSize + 1
+
+def offsetWidth (layout : Layout) : Nat :=
+  SuccinctRank.machineWordBits layout.macroSize
+
+def levelCount (layout : Layout) : Nat :=
+  layout.offsetWidth
+
+def globalLevelCount (layout : Layout) : Nat :=
+  SuccinctRank.machineWordBits layout.macroSampleCount
+
+def blockAddressWidth (layout : Layout) : Nat :=
+  SuccinctRank.machineWordBits layout.blockCount
+
+structure Valid
+    (layout : Layout) (shape : Cartesian.CartesianShape) : Prop where
+  blockSize_pos : 0 < layout.blockSize
+  blocksPerSuper_pos : 0 < layout.blocksPerSuper
+  relativeWidth_pos : 0 < layout.relativeWidth
+  fullBlocks_fit :
+    layout.blockCount * layout.blockSize <= shape.bpCode.length
+  nextBlock_covers :
+    shape.bpCode.length < (layout.blockCount + 1) * layout.blockSize
+  superSpan_fits :
+    2 * bpSuperblockSpan layout.blockSize layout.blocksPerSuper <
+      2 ^ layout.relativeWidth
+  blockOffset_fits :
+    layout.blockSize < 2 ^ layout.relativeWidth
+
+structure SummaryFits
+    (layout : Layout) (shape : Cartesian.CartesianShape) : Prop where
+  super_payload_fits :
+    layout.superSampleCount * layout.superWidth shape <=
+      sampledDirectoryOverhead
+        canonicalBPRelativeSummarySuperSlots shape.size
+  block_payload_fits :
+    3 * (layout.blockCount * layout.relativeWidth) <=
+      logLogSampledDirectoryOverhead
+        canonicalBPRelativeSummaryBlockSlots shape.size
+  relative_word_fits :
+    layout.relativeWidth <=
+      SuccinctRank.machineWordBits shape.bpCode.length
+
+def CompactReady
+    (layout : Layout) (shape : Cartesian.CartesianShape) : Prop :=
+  layout.Valid shape /\
+    layout.SummaryFits shape /\
+    layout.macroSize <= layout.blockCount
+
+theorem CompactReady.valid
+    {layout : Layout} {shape : Cartesian.CartesianShape}
+    (hready : layout.CompactReady shape) : layout.Valid shape :=
+  hready.1
+
+theorem CompactReady.summaryFits
+    {layout : Layout} {shape : Cartesian.CartesianShape}
+    (hready : layout.CompactReady shape) : layout.SummaryFits shape :=
+  hready.2.1
+
+theorem CompactReady.macroSize_le_blockCount
+    {layout : Layout} {shape : Cartesian.CartesianShape}
+    (hready : layout.CompactReady shape) :
+    layout.macroSize <= layout.blockCount :=
+  hready.2.2
+
+end Layout
+
+@[simp] theorem canonicalLayout_blockSize
+    (shape : Cartesian.CartesianShape) :
+    (canonicalLayout shape).blockSize =
+      canonicalBPRelativeSummaryBlockSizeRaw shape := rfl
+
+@[simp] theorem canonicalLayout_blocksPerSuper
+    (shape : Cartesian.CartesianShape) :
+    (canonicalLayout shape).blocksPerSuper =
+      canonicalBPRelativeSummaryBlocksPerSuperRaw shape := rfl
+
+@[simp] theorem canonicalLayout_blockCount
+    (shape : Cartesian.CartesianShape) :
+    (canonicalLayout shape).blockCount =
+      canonicalBPRelativeSummaryBlockCountRaw shape := rfl
+
+@[simp] theorem canonicalLayout_relativeWidth
+    (shape : Cartesian.CartesianShape) :
+    (canonicalLayout shape).relativeWidth =
+      canonicalBPRelativeSummaryRelativeWidthRaw shape := rfl
+
+@[simp] theorem canonicalLayout_superSampleCount
+    (shape : Cartesian.CartesianShape) :
+    (canonicalLayout shape).superSampleCount =
+      canonicalBPRelativeSummarySuperCountRaw shape := rfl
+
+@[simp] theorem canonicalLayout_superWidth
+    (shape : Cartesian.CartesianShape) :
+    (canonicalLayout shape).superWidth shape =
+      canonicalBPRelativeSummarySuperWidth shape := rfl
+
+@[simp] theorem canonicalLayout_macroSize
+    (shape : Cartesian.CartesianShape) :
+    (canonicalLayout shape).macroSize =
+      canonicalBPRelativeSummaryBlocksPerSuperRaw shape *
+        canonicalBPRelativeSummaryBlocksPerSuperRaw shape := rfl
+
+@[simp] theorem canonicalLayout_macroSampleCount
+    (shape : Cartesian.CartesianShape) :
+    (canonicalLayout shape).macroSampleCount =
+      canonicalBPRelativeSummaryBlockCountRaw shape /
+          (canonicalBPRelativeSummaryBlocksPerSuperRaw shape *
+            canonicalBPRelativeSummaryBlocksPerSuperRaw shape) + 1 := rfl
+
+@[simp] theorem canonicalLayout_offsetWidth
+    (shape : Cartesian.CartesianShape) :
+    (canonicalLayout shape).offsetWidth =
+      SuccinctRank.machineWordBits
+        (canonicalBPRelativeSummaryBlocksPerSuperRaw shape *
+          canonicalBPRelativeSummaryBlocksPerSuperRaw shape) := rfl
+
+@[simp] theorem canonicalLayout_levelCount
+    (shape : Cartesian.CartesianShape) :
+    (canonicalLayout shape).levelCount =
+      SuccinctRank.machineWordBits
+        (canonicalBPRelativeSummaryBlocksPerSuperRaw shape *
+          canonicalBPRelativeSummaryBlocksPerSuperRaw shape) := rfl
+
+@[simp] theorem canonicalLayout_globalLevelCount
+    (shape : Cartesian.CartesianShape) :
+    (canonicalLayout shape).globalLevelCount =
+      SuccinctRank.machineWordBits
+        (canonicalBPRelativeSummaryBlockCountRaw shape /
+            (canonicalBPRelativeSummaryBlocksPerSuperRaw shape *
+              canonicalBPRelativeSummaryBlocksPerSuperRaw shape) + 1) := rfl
+
+@[simp] theorem canonicalLayout_blockAddressWidth
+    (shape : Cartesian.CartesianShape) :
+    (canonicalLayout shape).blockAddressWidth =
+      SuccinctRank.machineWordBits
+        (canonicalBPRelativeSummaryBlockCountRaw shape) := rfl
+
+end RelativeRmm
+
 
 def canonicalBPRelativeMinMaxArgSummaryTableActive
     (shape : Cartesian.CartesianShape) : Prop :=
@@ -1398,6 +1566,25 @@ private theorem canonicalBPRelativeSummary_raw_cover
   simpa [canonicalBPRelativeSummaryBlockCountRaw,
     canonicalBPRelativeSummaryBlockSizeRaw, Nat.mul_assoc,
     Nat.mul_left_comm, Nat.mul_comm] using hmul
+
+theorem canonicalBPRelativeSummaryBlockCountRaw_upper_cover
+    (shape : Cartesian.CartesianShape) :
+    shape.bpCode.length <
+      (canonicalBPRelativeSummaryBlockCountRaw shape + 1) *
+        canonicalBPRelativeSummaryBlockSizeRaw shape := by
+  let base := canonicalBPRelativeSummaryBase shape
+  have hbase : 0 < base := by
+    simp [base, canonicalBPRelativeSummaryBase]
+  have hlt := Nat.lt_div_mul_add hbase (a := shape.size)
+  rw [Cartesian.CartesianShape.bpCode_length]
+  calc
+    2 * shape.size < 2 * ((shape.size / base) * base + base) :=
+      Nat.mul_lt_mul_of_pos_left hlt (by omega)
+    _ = 2 * ((shape.size / base + 1) * base) := by
+      congr 1
+      rw [Nat.add_mul, Nat.one_mul]
+    _ = (shape.size / base + 1) * (2 * base) := by
+      simp [Nat.mul_assoc, Nat.mul_comm]
 
 private theorem canonicalBPRelativeSummary_superPayload_bound_of_large
     {shape : Cartesian.CartesianShape}
@@ -2395,6 +2582,99 @@ theorem canonicalBPRelativeSummaryRelativeWidthRaw_machine_of_large
     canonicalBPRelativeSummaryRelativeWidthRaw_machine_of_active
       (canonicalBPRelativeMinMaxArgSummaryTableActive_of_large hlarge)
 
+namespace RelativeRmm
+
+theorem canonicalLayout_valid (shape : Cartesian.CartesianShape) :
+    (canonicalLayout shape).Valid shape := by
+  exact {
+    blockSize_pos := by
+      simpa using canonicalBPRelativeSummaryBlockSizeRaw_pos shape
+    blocksPerSuper_pos := by
+      simpa using canonicalBPRelativeSummaryBlocksPerSuperRaw_pos shape
+    relativeWidth_pos := by
+      simp [canonicalBPRelativeSummaryRelativeWidthRaw]
+    fullBlocks_fit := by
+      simpa using
+        canonicalBPRelativeSummaryBlockCountRaw_mul_blockSizeRaw_le_bpCode_length
+          shape
+    nextBlock_covers := by
+      simpa using canonicalBPRelativeSummaryBlockCountRaw_upper_cover shape
+    superSpan_fits := by
+      simpa using canonicalBPRelativeSummarySpanRaw_width_bound shape
+    blockOffset_fits := by
+      simpa using canonicalBPRelativeSummaryBlockSizeRaw_width_bound shape
+  }
+
+theorem canonicalLayout_summaryFits_iff_legacyActive
+    (shape : Cartesian.CartesianShape) :
+    Iff ((canonicalLayout shape).SummaryFits shape)
+      (canonicalBPRelativeMinMaxArgSummaryTableActive shape) := by
+  apply Iff.intro
+  case mp =>
+    intro hfits
+    have hvalid := canonicalLayout_valid shape
+    unfold canonicalBPRelativeMinMaxArgSummaryTableActive
+    exact And.intro
+      (by simpa using hvalid.fullBlocks_fit)
+      (And.intro
+        (by simpa using hvalid.superSpan_fits)
+        (And.intro
+          (by simpa using hvalid.blockOffset_fits)
+          (And.intro
+            (by simpa using hfits.super_payload_fits)
+            (And.intro
+              (by simpa using hfits.block_payload_fits)
+              (by simpa using hfits.relative_word_fits)))))
+  case mpr =>
+    intro hactive
+    have hparts :=
+      canonicalBPRelativeSummary_active_parts (shape := shape) hactive
+    exact {
+      super_payload_fits := by
+        simpa using hparts.2.2.2.1
+      block_payload_fits := by
+        simpa using hparts.2.2.2.2.1
+      relative_word_fits := by
+        simpa using hparts.2.2.2.2.2
+    }
+
+theorem legacy_parameters_eq_canonical_of_legacyActive
+    {shape : Cartesian.CartesianShape}
+    (hactive : canonicalBPRelativeMinMaxArgSummaryTableActive shape) :
+    canonicalBPRelativeSummaryBlockSize shape =
+        (canonicalLayout shape).blockSize /\
+      canonicalBPRelativeSummaryBlocksPerSuper shape =
+        (canonicalLayout shape).blocksPerSuper /\
+      canonicalBPRelativeSummaryBlockCount shape =
+        (canonicalLayout shape).blockCount /\
+      canonicalBPRelativeSummarySuperCount shape =
+        (canonicalLayout shape).superSampleCount /\
+      canonicalBPRelativeSummaryRelativeWidth shape =
+        (canonicalLayout shape).relativeWidth := by
+  simp [canonicalBPRelativeSummaryBlockSize,
+    canonicalBPRelativeSummaryBlocksPerSuper,
+    canonicalBPRelativeSummaryBlockCount,
+    canonicalBPRelativeSummarySuperCount,
+    canonicalBPRelativeSummaryRelativeWidth, hactive]
+
+theorem legacy_parameters_eq_canonical_of_summaryFits
+    {shape : Cartesian.CartesianShape}
+    (hfits : (canonicalLayout shape).SummaryFits shape) :
+    canonicalBPRelativeSummaryBlockSize shape =
+        (canonicalLayout shape).blockSize /\
+      canonicalBPRelativeSummaryBlocksPerSuper shape =
+        (canonicalLayout shape).blocksPerSuper /\
+      canonicalBPRelativeSummaryBlockCount shape =
+        (canonicalLayout shape).blockCount /\
+      canonicalBPRelativeSummarySuperCount shape =
+        (canonicalLayout shape).superSampleCount /\
+      canonicalBPRelativeSummaryRelativeWidth shape =
+        (canonicalLayout shape).relativeWidth := by
+  exact legacy_parameters_eq_canonical_of_legacyActive
+    ((canonicalLayout_summaryFits_iff_legacyActive shape).mp hfits)
+
+end RelativeRmm
+
 def concreteBPRelativeRmmInteriorLocalOffsetSlots : Nat := 64
 
 def concreteBPRelativeRmmInteriorGlobalMacroSlots : Nat := 32
@@ -2490,6 +2770,81 @@ theorem concreteBPRelativeRmmInteriorReady_active
     (hready : concreteBPRelativeRmmInteriorReady shape) :
     canonicalBPRelativeMinMaxArgSummaryTableActive shape :=
   hready.1
+
+namespace RelativeRmm
+
+theorem canonicalLayout_compactReady_iff_legacyReady
+    (shape : Cartesian.CartesianShape) :
+    Iff ((canonicalLayout shape).CompactReady shape)
+      (concreteBPRelativeRmmInteriorReady shape) := by
+  apply Iff.intro
+  case mp =>
+    intro hcompact
+    have hactive :=
+      (canonicalLayout_summaryFits_iff_legacyActive shape).mp
+        hcompact.summaryFits
+    exact And.intro hactive (by
+      simpa [concreteBPRelativeRmmInteriorMacroSize,
+        canonicalBPRelativeSummaryBlocksPerSuperRaw,
+        canonicalBPRelativeSummaryBlockCount, hactive] using
+        hcompact.macroSize_le_blockCount)
+  case mpr =>
+    intro hready
+    have hactive := concreteBPRelativeRmmInteriorReady_active hready
+    unfold Layout.CompactReady
+    exact And.intro
+      (canonicalLayout_valid shape)
+      (And.intro
+        ((canonicalLayout_summaryFits_iff_legacyActive shape).mpr hactive)
+        (by
+          simpa [concreteBPRelativeRmmInteriorMacroSize,
+            canonicalBPRelativeSummaryBlocksPerSuperRaw,
+            canonicalBPRelativeSummaryBlockCount, hactive] using hready.2))
+
+theorem legacy_ready_parameters_eq_canonical
+    {shape : Cartesian.CartesianShape}
+    (hready : concreteBPRelativeRmmInteriorReady shape) :
+    concreteBPRelativeRmmInteriorMacroSize shape =
+        (canonicalLayout shape).macroSize /\
+      concreteBPRelativeRmmInteriorMacroCount shape =
+        (canonicalLayout shape).macroSampleCount /\
+      concreteBPRelativeRmmInteriorOffsetWidth shape =
+        (canonicalLayout shape).offsetWidth /\
+      concreteBPRelativeRmmInteriorLevelCount shape =
+        (canonicalLayout shape).levelCount /\
+      concreteBPRelativeRmmInteriorGlobalLevelCount shape =
+        (canonicalLayout shape).globalLevelCount /\
+      concreteBPRelativeRmmInteriorBlockWidth shape =
+        (canonicalLayout shape).blockAddressWidth := by
+  have hactive := concreteBPRelativeRmmInteriorReady_active hready
+  simp [concreteBPRelativeRmmInteriorMacroSize,
+    concreteBPRelativeRmmInteriorMacroCount,
+    concreteBPRelativeRmmInteriorOffsetWidth,
+    concreteBPRelativeRmmInteriorLevelCount,
+    concreteBPRelativeRmmInteriorGlobalLevelCount,
+    concreteBPRelativeRmmInteriorBlockWidth,
+    canonicalBPRelativeSummaryBlocksPerSuperRaw,
+    canonicalBPRelativeSummaryBlockCount, hactive]
+
+theorem legacy_ready_parameters_eq_canonical_of_compactReady
+    {shape : Cartesian.CartesianShape}
+    (hready : (canonicalLayout shape).CompactReady shape) :
+    concreteBPRelativeRmmInteriorMacroSize shape =
+        (canonicalLayout shape).macroSize /\
+      concreteBPRelativeRmmInteriorMacroCount shape =
+        (canonicalLayout shape).macroSampleCount /\
+      concreteBPRelativeRmmInteriorOffsetWidth shape =
+        (canonicalLayout shape).offsetWidth /\
+      concreteBPRelativeRmmInteriorLevelCount shape =
+        (canonicalLayout shape).levelCount /\
+      concreteBPRelativeRmmInteriorGlobalLevelCount shape =
+        (canonicalLayout shape).globalLevelCount /\
+      concreteBPRelativeRmmInteriorBlockWidth shape =
+        (canonicalLayout shape).blockAddressWidth := by
+  exact legacy_ready_parameters_eq_canonical
+    ((canonicalLayout_compactReady_iff_legacyReady shape).mp hready)
+
+end RelativeRmm
 
 theorem concreteBPRelativeRmmInteriorReady_empty_obstruction :
     ¬ concreteBPRelativeRmmInteriorReady Cartesian.CartesianShape.empty := by
@@ -2931,6 +3286,24 @@ theorem concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold
     canonicalBPRelativeMinMaxArgSummaryTableActive_of_large hlarge,
     concreteBPRelativeRmmInteriorMacroSize_le_blockCount_of_size_ge_readyThreshold
       shape hsize⟩
+
+namespace RelativeRmm
+
+theorem canonical_compactReady_or_below_threshold
+    (shape : Cartesian.CartesianShape) :
+    Or ((canonicalLayout shape).CompactReady shape)
+      (shape.size < concreteBPRelativeRmmInteriorReadyThreshold) := by
+  by_cases hbelow :
+      shape.size < concreteBPRelativeRmmInteriorReadyThreshold
+  case pos =>
+    exact Or.inr hbelow
+  case neg =>
+    exact Or.inl
+      ((canonicalLayout_compactReady_iff_legacyReady shape).mpr
+        (concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold
+          shape (Nat.le_of_not_gt hbelow)))
+
+end RelativeRmm
 
 theorem concreteBPRelativeRmmInteriorMacroSize_le_blockCount_of_size_ge
     (shape : Cartesian.CartesianShape)
