@@ -28,6 +28,10 @@ Useful internal entry points:
   worktree states from launch through retirement.
 - [`RMQ_FINAL_ROADMAP.md`](RMQ_FINAL_ROADMAP.md): delegation-ready ladder for
   the final RMQ paper-hardening sequence.
+- [`RELATIVE_RMM_LAYOUT_DESIGN.md`](RELATIVE_RMM_LAYOUT_DESIGN.md): joined U1
+  layout/interface decision from the F0/P1/N1 scouts.
+- [`RMQ_DECLARATION_CLOSURE_2026_07_10.md`](RMQ_DECLARATION_CLOSURE_2026_07_10.md):
+  declaration-versus-import closure evidence and A1 limitations.
 - [`ADD_WORKFLOW_TOOLING_PLAN.md`](ADD_WORKFLOW_TOOLING_PLAN.md): repo-native
   tooling plan for making audit-driven development repeatable before roadmap
   work begins.

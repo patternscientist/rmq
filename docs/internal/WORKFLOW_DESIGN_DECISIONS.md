@@ -15,8 +15,9 @@ not proof evidence.
 
 ## Current Decision Index
 
-WDD-20260709-015 through WDD-20260709-019 govern the current audit-context,
-obstruction, skill-context, lifecycle, and architecture-scout policies. Earlier
+WDD-20260709-015 through WDD-20260709-019 and WDD-20260710-001 govern the
+current audit-context, obstruction, skill-context, lifecycle, scout, and durable
+read-only-report policies. Earlier
 entries retain stable IDs and historical insertion order; read their Status
 rather than inferring current priority from file order.
 
@@ -1099,6 +1100,61 @@ Evidence:
 Follow-up:
 
 Launch the three scouts against the consolidation commit.
+
+Supersedes:
+
+None.
+## WDD-20260710-001: Make Material Read-Only Scout Results Durable
+
+Status: Accepted
+Date: 2026-07-10
+Scope: Read-only worker evidence and task recovery.
+
+Decision:
+
+A material read-only scout must either write one assigned report-only file or be
+incorporated promptly into a durable coordinator synthesis. Chat/task history
+alone is not the project record.
+
+Context:
+
+The W12 total-parameter scout completed successfully, but its task became
+unopenable in the desktop UI and displayed "Content not found." The task-history
+API still exposed the completed turn, so the coordinator recovered and audited
+it. Without that recovery path, a critical architecture decision would have
+been stranded in transient UI state.
+
+Options considered:
+
+- Treat chat history as sufficient.
+- Require every scout to create its own report branch.
+- Permit report-only output or immediate coordinator synthesis, depending on
+  task size and concurrency.
+
+Rationale:
+
+Durable source-grounded synthesis prevents UI/session corruption from losing
+design evidence without creating a branch for every small read-only task. It
+also keeps raw transcripts out of the public artifact.
+
+Consequences:
+
+Coordinator prompts for material scouts should name the intended durable
+disposition. The coordinator closes the lifecycle only after the report is
+stored or incorporated. Duplicate/corrupted task entries are process failures,
+not reasons to rerun completed source analysis automatically.
+
+Evidence:
+
+- `docs/internal/RELATIVE_RMM_LAYOUT_DESIGN.md`
+- `docs/internal/RMQ_DECLARATION_CLOSURE_2026_07_10.md`
+- `docs/internal/WORKER_LIFECYCLE.md`
+
+Follow-up:
+
+The worker template now carries the durable report/synthesis disposition.
+Evaluate whether the later audit-packet generator should enforce that field for
+material read-only tasks.
 
 Supersedes:
 

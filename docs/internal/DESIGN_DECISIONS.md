@@ -21,7 +21,7 @@ See also:
 ## Current Decision Index
 
 The active final-route architecture is DD-20260709-007 through
-DD-20260709-010. Foundational decisions such as the Mathlib-free trust boundary,
+DD-20260709-010 together with DD-20260710-001. Foundational decisions such as the Mathlib-free trust boundary,
 list-facing reference semantics, narrow paper root, and cost/runtime separation
 remain active where their individual status says so. Entries retain stable IDs
 and historical insertion order; do not infer current priority from file order.
@@ -1131,10 +1131,10 @@ Scope: Relative rmM parameters and final RMQ routing architecture.
 
 Decision:
 
-The next final-route architecture must define total positive geometric
-parameters for every input and keep compact-table readiness or payload
-availability as a separate predicate. Inactivity must not zero block size,
-block count, superblock count, relative width, or other routing geometry.
+The next final-route architecture must define total geometry with positive
+routing divisors and widths, truthful semantic counts, and a separate
+compact-storage readiness predicate. Inactivity must not overwrite geometry.
+A legitimate empty-input count may remain zero.
 
 Context:
 
@@ -1170,8 +1170,8 @@ Evidence:
 
 Follow-up:
 
-Join the total-parameter, dependency-closure, and naming scouts before assigning
-the implementing worker.
+The scouts are joined in `RELATIVE_RMM_LAYOUT_DESIGN.md`; proceed with its U1
+interface and preserve truthful empty-input count semantics.
 
 Supersedes:
 
@@ -1201,14 +1201,17 @@ Options considered:
 
 - Retain the route split and explain it.
 - Replace the small branch with an uncounted answer table.
-- Provide one semantic directory interface with counted small/packed and
-  ready/compact implementations.
+- Provide one semantic directory interface, first attempting one total
+  hierarchy and introducing a separate packed implementation only if a formal
+  obstruction requires it.
 
 Rationale:
 
 A uniform abstraction makes the exactness and cost proof follow the mathematical
-decomposition rather than threshold compatibility. Counted representations
-preserve the existing space and execution-story truth.
+decomposition rather than threshold compatibility. A naturally degenerate
+single hierarchy is preferred; counted representation selection remains an
+implementation option only if formally necessary. Existing space and
+execution-story truth must be preserved.
 
 Consequences:
 
@@ -1327,3 +1330,66 @@ route stabilizes.
 Supersedes:
 
 None.
+## DD-20260710-001: Use Computational Layout Data With Separate Validity And Readiness
+
+Status: Accepted
+Date: 2026-07-10
+Scope: U1 relative-rmM interface.
+
+Decision:
+
+Represent the canonical relative-rmM layout with four computational Nat fields:
+block size, blocks per superblock, block count, and relative width. Put
+positivity, coverage, and codec facts in `Layout.Valid`; put payload-budget and
+one-word facts in `Layout.SummaryFits`; define `Layout.CompactReady` by adding
+the existing macro-size condition.
+
+No layout projection may depend on SummaryFits or CompactReady. Counts retain
+truthful zero semantics.
+
+Context:
+
+The P1 scout correctly found that the raw formulas are already total. The
+current defect comes from Active-gated wrappers that overwrite those values.
+The scout proposed a shape-indexed proof-carrying record, while the coordinator
+audit found that a smaller computational record plus named predicates better
+separates runtime data from proof certificates and simplifies extensional
+agreement.
+
+Options considered:
+
+- Keep the existing Active-gated scalar definitions.
+- Use a shape-indexed record carrying all proof fields.
+- Use pure computational layout data with separate validity/readiness
+  predicates.
+- Scatter `max 1` across current formulas.
+
+Rationale:
+
+The chosen split matches the mathematical presentation, makes executable data
+obvious, and keeps proof-only evidence out of the data representation. It also
+lets canonical validity and legacy agreement be cited directly without making
+arbitrary layouts silently valid.
+
+Consequences:
+
+U1 adds the interface and agreement theorems without changing query dispatch.
+U2 first attempts one naturally total directory hierarchy. A separate packed
+small implementation requires a formal obstruction showing that the total
+hierarchy is inadequate.
+
+Evidence:
+
+- `docs/internal/RELATIVE_RMM_LAYOUT_DESIGN.md`
+- `RMQ/Core/SuccinctClose/RelativeSummary.lean`
+- `RMQ/Core/SuccinctClose/RelativeRmmMacro/ConcreteDirectory.lean`
+
+Follow-up:
+
+Implement U1 in the existing RelativeSummary module surface, run the full proof
+gate, then externally audit the interface before changing the directory route.
+
+Supersedes:
+
+The overbroad phrase "total positive geometric parameters" in
+DD-20260709-007; that decision remains active with truthful zero-count semantics.

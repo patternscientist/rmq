@@ -56,7 +56,8 @@ Every worker prompt should name:
 - worker handle and requested title in the form
   `({worker handle}) {short task summary}`;
 - for write tasks, exact branch, base, fresh worktree, and write scope; for
-  read-only scouts, exact commit/scope with no branch requirement;
+  read-only scouts, exact commit/scope with no branch requirement and a durable
+  report or coordinator-synthesis disposition;
 - skill to use before starting, usually `$rmq-proof-sprint` for narrow Lean
   proof, construction, cost/space, validation, or theorem-surface work;
 - exact theorem/profile/document target;

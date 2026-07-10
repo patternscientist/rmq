@@ -14,6 +14,8 @@ Skill:
 Checkout contract:
 - Task mode: [WRITE / READ-ONLY].
 - Exact base/target commit: [BASE_BRANCH_OR_COMMIT].
+- Durable disposition for material read-only work: [REPORT PATH / COORDINATOR
+  SYNTHESIS TARGET].
 - For a write task, create branch exactly [WORKER_BRANCH] in a fresh worktree
   and report its path.
 - For a read-only task, inspect the exact commit without creating a branch;
@@ -67,7 +69,8 @@ Report:
 - skeptical-reviewer questions;
 - decisions logged or why none were needed;
 - exact command outcomes;
-- lifecycle disposition requested and next crisp target.
+- lifecycle disposition requested, durable report/synthesis disposition, and
+  next crisp target.
 ```
 
 Model/mode recommendations are coordinator-to-user launch metadata. Do not put

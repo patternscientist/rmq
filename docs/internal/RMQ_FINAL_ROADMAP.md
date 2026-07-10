@@ -68,78 +68,65 @@ N1 naming/module design ------------+----------------------------+
                                       V1 artifact and paper freeze
 ```
 
-The three `F0`/`P1`/`N1` scouts are read-only and can run in parallel. Their
-reports are design inputs, not three competing implementations. The
-coordinator joins them before assigning `U1`.
+The `F0`/`P1`/`N1` scouts are complete and joined in
+`RMQ_DECLARATION_CLOSURE_2026_07_10.md` and
+`RELATIVE_RMM_LAYOUT_DESIGN.md`. Those syntheses, rather than the individual
+chat reports, govern `U1`.
 
 ## Active Campaign
 
 ### F0. Pin The Reviewer Dependency Closure
 
-Status: next, read-only.
+Status: complete for U1 planning; A1 removal still needs global reverse
+consumers and checked import-pruning experiments.
 
-Compute declaration-level and module-level reverse dependencies for the
-headline RMQ aliases, final list-facing theorem, store/trace theorems, and
-executable harness. Distinguish:
+The Lean declaration probe found 126 imported workspace modules and 72 modules
+in the all-headline declaration closure. Fifty-four import-only modules are A1
+candidates, not dead-code findings. See
+`RMQ_DECLARATION_CLOSURE_2026_07_10.md`.
 
-- theorem dependencies needed by `RMQPaper`;
-- executable-only dependencies;
-- broad-library, history, compatibility, and obstruction modules;
-- declarations that are reachable only because of barrel imports.
+### P1. Design Total Relative-RmM Layout
 
-Deliver a reproducible report and concrete quarantine/split candidates. Do not
-delete modules in this step.
+Status: complete; synthesized in `RELATIVE_RMM_LAYOUT_DESIGN.md`.
 
-### P1. Design Total Positive Relative-RmM Parameters
-
-Status: next, read-only.
-
-Design the smallest total parameter record that keeps block size, block count,
-superblock count, relative width, and address bounds meaningful for every
-input. Separate:
-
-- geometric layout facts;
-- machine-width/well-formedness facts;
-- optional compact-table readiness or payload availability.
-
-The design must explain how empty and very small inputs are represented without
-zero-valued routing parameters, how current `Ready`/`Active` theorems migrate,
-and which theorem signatures let existing proofs port incrementally.
+The canonical layout has positive routing divisors and widths, while truthful
+semantic counts may be zero on empty domains. Computational layout data is
+separate from `Valid`, `SummaryFits`, and `CompactReady` proof predicates. No
+layout projection depends on storage readiness.
 
 ### N1. Fix The Canonical Naming And Module Architecture
 
-Status: next, read-only.
-
-Map the final proof spine to reviewer-facing concepts and propose a conservative
-module/naming plan. Prefer short namespaces and mathematical names. Preserve
-public aliases during migration. Identify compatibility names and monolithic
-files that should become thin re-export roots, but do not perform file movement
-until the uniform route is stable.
+Status: complete for U1. The accepted namespace and sequencing decisions are
+recorded in `RELATIVE_RMM_LAYOUT_DESIGN.md`; the scout's fine-grained file tree
+is advisory and will be reconsidered after U2 stabilizes proof boundaries.
 
 ### U1. Implement Total Layout Parameters
 
-Status: blocked on the joined `F0`/`P1`/`N1` design.
+Status: next implementation target.
 
-Introduce total positive geometry and prove agreement with the current
-canonical parameters wherever the current route is ready. `Active` or `Ready`
-may control compact storage, but must not erase geometry. Preserve all payload,
-word-bound, and address-bound obligations.
+Add the computational `RelativeRmm.Layout`, canonical constructor, intrinsic
+validity, summary-fit, compact-readiness, and legacy agreement surfaces specified
+in `RELATIVE_RMM_LAYOUT_DESIGN.md`. Do not change query dispatch in U1.
 
 Acceptance:
 
-- every routing divisor/count has an explicit positivity theorem;
-- no theorem obtains a geometric zero merely from inactive storage;
-- current ready-regime results port through agreement lemmas;
-- no public theorem or artifact claim is weakened.
+- every routing divisor and width is positive;
+- every count has truthful zero semantics;
+- no layout projection branches on `SummaryFits` or `CompactReady`;
+- legacy Active/Ready and current Ready-route behavior agree through checked
+  lemmas;
+- no public query, payload, trace, cost, or artifact claim changes.
 
 ### U2. Build One Uniform Local/Interior Directory Route
 
 Status: blocked on `U1`.
 
-Make all sizes use the same directory abstraction. Empty, singleton, and small
-instances may use degenerate or packed representations behind that abstraction,
-but the top-level query must not dispatch to a separate unbounded structural
-scan because a parameter became zero.
+Make all sizes use the same directory abstraction. First attempt to totalize
+the existing hierarchy so small instances degenerate naturally. Introduce a
+separate counted packed implementation only if a formal obstruction shows that
+the total hierarchy cannot cover the bounded small regime cleanly. The top-level
+query must not dispatch to an unbounded structural scan because a parameter
+became zero.
 
 Acceptance:
 
