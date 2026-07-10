@@ -1388,12 +1388,14 @@ Evidence:
 
 - `docs/internal/RELATIVE_RMM_LAYOUT_DESIGN.md`
 - `RMQ/Core/SuccinctClose/RelativeSummary.lean`
+- `03043fe` (U1 implementation and relocation)
 - `RMQ/Core/SuccinctClose/RelativeRmmMacro/ConcreteDirectory.lean`
 
 Follow-up:
 
-Implement U1 in the existing RelativeSummary module surface, run the full proof
-gate, then externally audit the interface before changing the directory route.
+U1 is implemented in the existing `RelativeSummary` surface and passed its
+proof gates. Externally audit the interface at `03043fe` before changing the
+directory route.
 
 Supersedes:
 

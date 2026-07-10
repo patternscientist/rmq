@@ -102,11 +102,13 @@ is advisory and will be reconsidered after U2 stabilizes proof boundaries.
 
 ### U1. Implement Total Layout Parameters
 
-Status: next implementation target.
+Status: complete at `03043fe`.
 
-Add the computational `RelativeRmm.Layout`, canonical constructor, intrinsic
-validity, summary-fit, compact-readiness, and legacy agreement surfaces specified
-in `RELATIVE_RMM_LAYOUT_DESIGN.md`. Do not change query dispatch in U1.
+`RelativeRmm.Layout`, its canonical constructor, intrinsic validity,
+summary-fit, compact-readiness, legacy Active/Ready equivalences, and Ready-route
+parameter agreement now live in `RelativeSummary.lean`. The raw upper-cover
+theorem moved upstream from `LocalBPDecoder.lean`. Query dispatch, payload,
+trace, cost, and public theorem claims did not change.
 
 Acceptance:
 
@@ -119,7 +121,7 @@ Acceptance:
 
 ### U2. Build One Uniform Local/Interior Directory Route
 
-Status: blocked on `U1`.
+Status: next, after the independent U1 interface audit.
 
 Make all sizes use the same directory abstraction. First attempt to totalize
 the existing hierarchy so small instances degenerate naturally. Introduce a

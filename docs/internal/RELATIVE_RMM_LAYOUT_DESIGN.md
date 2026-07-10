@@ -1,11 +1,25 @@
 # Relative RmM Layout Design
 
-Status: coordinator synthesis for roadmap node U1.
+Status: implemented at coordinator commit `03043fe`; pending external U1 audit.
 Pinned source frontier: `25395d43deea39cdbac2c273c60d1298c93cc2f3`.
 
 This document joins the F0 declaration-closure, P1 parameter-design, and N1
 architecture scouts. It freezes the U1 interface target only. It does not
 choose the U2 small-directory implementation.
+## Implementation Outcome
+
+U1 landed the four-field computational `RelativeRmm.Layout` and the separate
+`Layout.Valid`, `Layout.SummaryFits`, and `Layout.CompactReady` predicates.
+Checked equivalences identify canonical `SummaryFits` with legacy `Active` and
+canonical `CompactReady` with legacy `Ready`; fieldwise agreement lemmas keep
+the existing Ready route unchanged.
+
+The raw upper-cover theorem now lives beside the raw formulas in
+`RelativeSummary.lean`. No final-query dispatch, payload representation, trace,
+cost constant, headline alias, or artifact claim changed. This is an interface
+and proof-dependency milestone; U2 remains responsible for consuming the layout
+in one all-size directory route.
+
 
 ## Problem
 
