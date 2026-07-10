@@ -73,5 +73,6 @@ Report:
   next crisp target.
 ```
 
-Model/mode recommendations are coordinator-to-user launch metadata. Do not put
-them in the worker prompt.
+Model recommendations are coordinator-to-user launch metadata. Name the exact
+variant, reasoning level, and speed/service mode; do not put them in the worker
+prompt.

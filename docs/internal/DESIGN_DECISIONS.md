@@ -21,7 +21,8 @@ See also:
 ## Current Decision Index
 
 The active final-route architecture is DD-20260709-007 through
-DD-20260709-010 together with DD-20260710-001. Foundational decisions such as the Mathlib-free trust boundary,
+DD-20260709-010 together with DD-20260710-001 through DD-20260710-003.
+Foundational decisions such as the Mathlib-free trust boundary,
 list-facing reference semantics, narrow paper root, and cost/runtime separation
 remain active where their individual status says so. Entries retain stable IDs
 and historical insertion order; do not infer current priority from file order.
@@ -1378,6 +1379,11 @@ U2 first attempts one naturally total directory hierarchy. A separate packed
 small implementation requires a formal obstruction showing that the total
 hierarchy is inadequate.
 
+U1 also relocates `canonicalBPRelativeSummaryBlockCountRaw_upper_cover` from
+`RelativeRmmMacro/LocalBPDecoder.lean` to `RelativeSummary.lean`: its proof uses
+only raw layout arithmetic, so the upstream location preserves dependency
+direction without a duplicate helper or downstream import.
+
 Evidence:
 
 - `docs/internal/RELATIVE_RMM_LAYOUT_DESIGN.md`
@@ -1393,3 +1399,124 @@ Supersedes:
 
 The overbroad phrase "total positive geometric parameters" in
 DD-20260709-007; that decision remains active with truthful zero-count semantics.
+
+## DD-20260710-002: Treat Declaration Closure As A Pruning Candidate Generator
+
+Status: Accepted
+Date: 2026-07-10
+Scope: Reviewer-root import pruning, quarantine, and deletion.
+
+Decision:
+
+Use declaration-versus-import closure to identify exact-import and quarantine
+experiments. Do not infer that an imported module is globally dead, removable,
+or irrelevant merely because no named declaration from it occurs in the
+headline theorem bodies.
+
+Removal or quarantine requires a full-repository reverse-consumer check,
+successful exact-import replacement, `RMQPaper` and full builds, public axiom
+checks, regenerated closure measurements, and an explicit compatibility/public
+alias disposition.
+
+Context:
+
+The F0 scout found 54 modules in the 126-module `RMQPaper` import closure that
+contribute no declaration to any headline type or proof/value body. That is
+strong evidence of import-DAG width, but elaboration dependencies, attributes,
+instances, tactics, compatibility roots, and other public spokes are not
+captured by the measured headline declaration closure.
+
+Options considered:
+
+- Delete or quarantine all 54 modules as unused.
+- Ignore the closure result because it is not a deletion proof.
+- Treat it as a ranked candidate list and require checked pruning experiments
+  plus global reverse-consumer evidence before removal.
+
+Rationale:
+
+The chosen policy converts a valuable measurement into controlled architecture
+work without confusing theorem-body reachability with repository-wide source,
+elaboration, runtime, or compatibility reachability. It gives reviewers a
+narrower path only when compilation and public-surface evidence support it.
+
+Consequences:
+
+F0 is complete for U1 planning but does not authorize deletion. Productionizing
+the declaration probe and performing A1 import pruning remain later work after
+the uniform route stabilizes.
+
+Evidence:
+
+- `docs/internal/RMQ_DECLARATION_CLOSURE_2026_07_10.md`
+- `docs/RMQ_IMPORT_CLOSURE.md`
+- `RMQPaper.lean`
+
+Follow-up:
+
+At A1, generate the full reverse-consumer graph, test exact imports one coherent
+module boundary at a time, and record any removal or quarantine separately.
+
+Supersedes:
+
+None.
+
+## DD-20260710-003: Freeze Conceptual Namespaces Before Physical Module Splits
+
+Status: Accepted
+Date: 2026-07-10
+Scope: Final RMQ naming and module architecture.
+
+Decision:
+
+Use the conceptual namespaces recorded in `RELATIVE_RMM_LAYOUT_DESIGN.md` and
+preserve stable public aliases, but defer broad physical file movement until U2
+stabilizes the uniform route and its proof consumers. Split a file only when
+declaration closure and a stable mathematical or execution-story boundary
+justify a coherent unit.
+
+Do not adopt the architecture scout's fine-grained file tree as a target by
+itself, and do not create one-file-per-theorem-category fragmentation.
+
+Context:
+
+The N1 scout identified reviewer-legible concepts across relative-rmM layout,
+BP close, payload, execution, cost, model adequacy, and the list-facing API. It
+also proposed a detailed module tree before U1/U2 had fixed the final consumers.
+Moving files now would mix semantic migration with import surgery and could
+create parallel APIs or compatibility churn.
+
+Options considered:
+
+- Perform the complete fine-grained module split before U1.
+- Leave names and module boundaries entirely unchanged.
+- Freeze conceptual namespaces and compatibility policy now, then perform only
+  evidence-backed physical splits after U2.
+
+Rationale:
+
+Conceptual names help proofs and paper exposition immediately. Delaying physical
+movement keeps the semantic campaign reviewable and lets actual dependency
+closure determine module boundaries instead of file size or speculative taste.
+
+Consequences:
+
+U1 stays in `RelativeSummary.lean`; U2 changes the route without broad movement;
+A1 may later introduce coherent modules while retaining compatibility imports
+and public aliases.
+
+Evidence:
+
+- `docs/internal/RELATIVE_RMM_LAYOUT_DESIGN.md`
+- `docs/internal/RMQ_DECLARATION_CLOSURE_2026_07_10.md`
+- `docs/RMQ_CODE_MAP.md`
+- `RMQ/Core/SuccinctClose/RelativeSummary.lean`
+
+Follow-up:
+
+Re-run declaration closure after U2 and approve each physical split against its
+stable consumers and paper-facing proof story.
+
+Supersedes:
+
+None.

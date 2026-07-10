@@ -69,7 +69,8 @@ Every worker prompt should name:
 When presenting prompts to the user, keep coordinator-facing launch metadata
 outside the worker prompt text:
 
-- recommended model/mode and reason;
+- recommended exact model variant, reasoning/mode, and reason (for example,
+  `GPT-5.6 Sol, Extra High, Fast`, never merely `5.6`);
 - whether the prompt should go to a fresh worker chat or an existing worker;
 - the worker handle assigned to that chat.
 
@@ -151,7 +152,8 @@ the prompt text:
 - worker/auditor handle;
 - requested chat/thread title when launching a worker;
 - fresh chat or existing worker recommendation;
-- recommended model/mode and reason;
+- recommended exact model variant, reasoning/mode, and reason (for example,
+  `GPT-5.6 Sol, Extra High, Fast`, never merely `5.6`);
 - target branch/base branch when the prompt creates a branch.
 
 If no prompt should be launched, say why in operational terms, such as an

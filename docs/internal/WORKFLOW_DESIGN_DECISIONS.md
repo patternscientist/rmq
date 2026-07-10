@@ -15,9 +15,10 @@ not proof evidence.
 
 ## Current Decision Index
 
-WDD-20260709-015 through WDD-20260709-019 and WDD-20260710-001 govern the
-current audit-context, obstruction, skill-context, lifecycle, scout, and durable
-read-only-report policies. Earlier
+WDD-20260709-015 through WDD-20260709-019 and WDD-20260710-001 through
+WDD-20260710-002 govern the
+current audit-context, obstruction, skill-context, lifecycle, scout, durable
+read-only-report, and model-routing policies. Earlier
 entries retain stable IDs and historical insertion order; read their Status
 rather than inferring current priority from file order.
 
@@ -1159,3 +1160,66 @@ material read-only tasks.
 Supersedes:
 
 None.
+
+## WDD-20260710-002: Name The Exact Model Variant In Launch Recommendations
+
+Status: Accepted
+Date: 2026-07-10
+Scope: Coordinator model routing and token-conscious delegation.
+
+Decision:
+
+Every coordinator launch recommendation must name the exact model variant,
+reasoning level, and speed/service mode outside the worker prompt. A family-only
+label such as `5.6` is insufficient.
+
+Default routing is:
+
+- `GPT-5.6 Sol, Extra High, Fast` for nontrivial Lean proofs, architecture,
+  integration, or adversarial audits;
+- `GPT-5.6 Terra` with a task-appropriate reasoning level for bounded,
+  lower-risk engineering, documentation, or tooling work;
+- `GPT-5.6 Luna` only for mechanical, low-risk scans, formatting, inventory, or
+  status tasks whose outputs are independently checked.
+
+Context:
+
+The 5.6 family contains materially different variants. Saying only `5.6` leaves
+the user unable to reproduce the coordinator's quality/cost choice or evaluate
+which lower-tier delegation experiments succeed.
+
+Options considered:
+
+- Continue naming only the model family and reasoning mode.
+- Use Sol for every task.
+- Name the exact variant and route by proof risk, coupling, and audit burden.
+
+Rationale:
+
+Explicit variant recommendations make delegation reproducible and permit
+careful token/cost experiments without silently lowering the quality floor for
+load-bearing proof work. Keeping this metadata outside worker prompts avoids
+spending worker context on coordinator resource policy.
+
+Consequences:
+
+Coordinator reports must state the variant, reasoning level, speed/service
+mode, fresh-versus-existing worker choice, and reason. Deviations from the
+default routing should be explained and later compared using verification and
+audit outcomes rather than subjective impressions alone.
+
+Evidence:
+
+- `.agents/skills/rmq-coordinator/SKILL.md`
+- `docs/internal/templates/WORKER_PROMPT.md`
+- WDD-20260708-007 and WDD-20260709-009
+
+Follow-up:
+
+Record enough launch/outcome metadata to evaluate whether Terra or Luna can
+replace Sol for recurring low-risk ADD tasks without increasing rework.
+
+Supersedes:
+
+The underspecified model-family wording in WDD-20260708-007 and WDD-20260709-009;
+their requirement to keep launch metadata outside worker prompts remains active.
