@@ -2563,25 +2563,6 @@ theorem bpRelativeRmmCandidateMerge_exact_of_query_semantics_no_block_bounds
       hlen hleft hright hanswer hblockSize hleftBlock hrightBlock
       hcross hmin hleftmost
 
-theorem canonicalBPRelativeSummaryBlockCountRaw_upper_cover
-    (shape : Cartesian.CartesianShape) :
-    shape.bpCode.length <
-      (canonicalBPRelativeSummaryBlockCountRaw shape + 1) *
-        canonicalBPRelativeSummaryBlockSizeRaw shape := by
-  let base := canonicalBPRelativeSummaryBase shape
-  have hbase : 0 < base := by
-    simp [base, canonicalBPRelativeSummaryBase]
-  have hlt := Nat.lt_div_mul_add hbase (a := shape.size)
-  rw [Cartesian.CartesianShape.bpCode_length]
-  calc
-    2 * shape.size < 2 * ((shape.size / base) * base + base) :=
-      Nat.mul_lt_mul_of_pos_left hlt (by omega)
-    _ = 2 * ((shape.size / base + 1) * base) := by
-      congr 1
-      rw [Nat.add_mul, Nat.one_mul]
-    _ = (shape.size / base + 1) * (2 * base) := by
-      simp [Nat.mul_assoc, Nat.mul_comm]
-
 theorem canonicalBPRelativeSummary_blockOfClose_le_blockCount_of_active
     {shape : Cartesian.CartesianShape}
     (hactive : canonicalBPRelativeMinMaxArgSummaryTableActive shape)
