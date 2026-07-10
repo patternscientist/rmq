@@ -1,407 +1,58 @@
-# Codex Autonomy and Anti-Filler Policy
+# Codex Autonomy And Anti-Filler Policy
 
-Companion to `CODEX_ORCHESTRATION.md`. This note says how to run longer proof
-loops, how to avoid gate-green filler, and how to parallelize without making
-extra work.
+This is concise coordinator guidance. Normative proof-worker behavior lives in
+`.agents/skills/rmq-proof-sprint/SKILL.md`; the active target lives in
+`RMQ_FINAL_ROADMAP.md`.
 
-Before running a loop, read `docs/ROADMAP.md`, especially "Mission and
-positioning" and the A-D finish line. The loop is driving RMQ toward a
-research-grade, CSLib-compatible proof of concept for a hub-and-spoke advanced
-data-structure library.
+## Objective Gate
 
-## Core Principle
+A branch needs both proof integrity and target integrity. The first is checked
+by builds, hygiene, axiom checks, and diffs. The second requires the named
+construction to be consumed by its declared join without hidden cost, payload,
+or oracle assumptions. A green gate is necessary and not sufficient.
 
-This is a Lean project, so "sound and complete" is largely machine-checkable:
-`lake build`, a hygiene scan, and curated `#print axioms` checks. That objective
-gate buys autonomy.
+## Autonomous Loop
 
-The axiom gate is curated, so new public theorem surfaces must update it. If a
-worker adds or documents a public exactness, cost, space, or obstruction theorem
-but leaves it out of `scripts/axiom_check.lean`, the report must say why it is a
-local helper rather than a checkpoint theorem.
+Within the assigned branch, a worker should:
 
-But this repo has already shown the failure mode: a round can pass the gate and
-still be filler. More `_value/_erase/_cost/_run` wrappers, new breadth backends,
-or abstraction layers on top of asserted costs can all be sound while failing to
-move the project forward.
+1. restate the target and consumer;
+2. prove the smallest blocking lemma;
+3. consume it;
+4. run the narrow check;
+5. inspect whether the named target is actually closed;
+6. repeat while the next step is local and inside scope.
 
-So three mechanisms run together:
+The worker must not stop merely because the branch is honest about being
+partial.
 
-- The gate checks soundness and non-regression.
-- The roadmap contract checks value.
-- A cost/space-fidelity audit checks whether complexity claims are actually
-  backed by the counted representation and operations they cite.
+## Valid Stops
 
-A green gate is necessary, not sufficient.
+- the named target closes;
+- a minimal formal obstruction shows the target signature is wrong;
+- materially distinct construction families fail for one structural reason and
+  an obstruction dossier identifies the coordinator-level design choice;
+- an external dependency, approval, or branch conflict blocks progress;
+- the user redirects.
 
-## What The Gate Cannot See
-
-The gate checks build, hygiene, and curated axiom dependence. It is structurally
-blind to whether a cost, query-time, or space claim is faithful. For example,
-`Costed.tickValue 1 expensiveValue` can be perfectly sound and axiom-clean while
-claiming one step for work that was done off-trace.
-
-The gate cannot tell by itself:
-
-- whether a cost is derived from primitive operations or asserted as a literal
-  tick;
-- whether the returned value is computed by counted operations or produced by
-  pure Lean and wrapped with a cost;
-- whether a charged payload is the structure the query actually reads, or a
-  separate accounting field tied to a larger proof-side object;
-- whether a `..._profile` theorem has a concrete instance, or is only an
-  abstract conditional over a hypothetical family;
-- whether a unit-cost word operation is applied to a machine-sized word rather
-  than a super-word.
-
-A cost, query-time, or space claim counts as genuine only when all of the
-following hold:
-
-1. The cost is derived from trace length or primitive-operation costs, not a
-   handwritten aggregate tick.
-2. The value flows through the counted operations. Typed value-computing
-   primitives are good; arbitrary value slots beside trace entries are not.
-3. Unit-cost primitives are faithful to the model: one indexed read, one branch,
-   one comparison, or one operation over a concretely machine-bounded word.
-4. The theorem is witnessed by a concrete construction or family instance, not
-   just an abstract interface theorem.
-5. The charged space is the payload the encoded query reads, with decoder or
-   exact-read proofs tying bits to the semantic entries.
-6. Superseded unfaithful paths are retired in the same round, not merely removed
-   from the axiom inventory.
-
-Recurring anti-patterns:
-
-- Asserted aggregate costs such as `tickValue` around non-primitive work.
-- Value/trace decoupling, where the result is computed separately from the
-  counted trace.
-- Decoupled space accounting, where the query reads proof-side data larger than
-  the charged payload.
-- Abstract-no-witness results: a headline profile over a hypothesized family
-  with no concrete `def : ...Family`.
-- Modeled O(1) for O(n) work, especially word operations over unbounded words or
-  unit reads from structures backed by scans.
-- Uncharged semantic guards in costed query definitions. Full-list/reference
-  computations such as `rankPrefix ... bits.length`, `List.length` of
-  materialized references, `scanWindow`, or `bpCloseOfInorder?` are invalid in
-  an O(1) query path unless the work is charged through the model; use cheap
-  metadata guards such as shape/index bounds, or move the semantic facts to
-  proof-only exactness lemmas.
-- Delist-don't-retire, where an obsolete theorem is dropped from
-  `axiom_check` but left in source.
-- Component-deepening, where subcomponents are hardened repeatedly without
-  advancing the target's load-bearing join theorem.
-
-Useful lint ideas for the catchable subset:
-
-```powershell
-rg -n "tickValue|:= 1|indexedReadCost" RMQ
-rg -n "_profile" RMQ
-```
-
-The lints are only prompts for review. Value-flow, faithful-primitive, and
-genuine-space questions still require adversarial reading.
-
-## Loop Modes
-
-### Attended Loop
-
-Use this when the user wants to stay in the loop. It should still be a loop, not
-a one-lemma checkpoint. Work through a substantial roadmap slice, run the gate,
-report the result, and name the next target. Do not report after every tiny
-proof leaf unless a stop condition occurs.
-
-### Unattended Loop
-
-Use this only when the user explicitly requests unattended continuation. The
-driver can be a shell loop around non-interactive Codex runs:
-
-```text
-while scripts/gate.ps1 ; do
-  codex exec "Advance the next docs/ROADMAP.md target per docs/internal/CODEX_AUTONOMY.md.
-              Continue across targets while the gate stays green.
-              Stop only on a stop condition below."
-done
-```
-
-In unattended mode, change the checkpoint rule to:
-
-> If the gate is green and a roadmap target remains, continue autonomously to
-> the next target. Do not return to the human between green rounds.
-
-A single run should aim to close its ambitious owned target end to end, and may
-chain into the next target if the gate stays green and budget remains. Do not
-split what should be one milestone into several small "wins" just to claim more
-iterations.
-
-For unattended workers, distinguish iteration progress from loop completion:
-
-- An iteration can land a hard lemma, local kernel, representation layer, or
-  partial profile.
-- A loop should keep going after such progress if the owned concrete component
-  profile or capstone theorem still has an obvious next construction/proof
-  step.
-- A loop break is justified only by target closure, an external/tool blocker,
-  a formal theorem that the owned target itself is impossible or mis-specified,
-  or an extreme exhaustion dossier.
-
-At the start of every loop iteration, write a short goal reflection before
-editing:
-
-```text
-Overall goal:   <the actual capstone or roadmap theorem>
-Current gap:    <what still prevents that theorem from typechecking>
-Hard part:      <the real construction/proof obligation being avoided most easily>
-This iteration: <the most ambitious concrete step toward closing that gap>
-Not doing:      <technically-valid but lower-priority outputs to avoid>
-```
-
-This reflection is not ceremony. If "This iteration" does not attack the
-hardest live gap, revise the target before editing.
-
-Before stopping an unattended loop, run a stop audit:
-
-1. Did this round prove the named roadmap theorem, concrete component profile,
-   or final construction promised at loop start?
-2. Is the next theorem or construction suggested by the diff obvious and still
-   within the current branch's owned files?
-3. Did the round introduce an API hook, parameter, abstract family, or canonical
-   identity witness while the concrete compact/payload-live witness remains
-   exactly the missing item?
-4. If the target is not closed, did the worker record a brick-wall dossier:
-   at least fifty serious attempts at the positive construction, the common
-   obstruction, and why the next move is a fundamental design choice rather
-   than more local proof work? Or did the worker prove a formal impossibility
-   theorem for the target statement itself?
-
-If 1 is no and either 2 or 3 is yes, the loop should continue. If 1 is no and
-4 is no, the loop should continue. "The gate is green" only proves soundness;
-it does not prove that a worker has reached a valid loop endpoint.
-
-For the succinct RMQ capstone, a blocker theorem is no longer enough by
-default. The project has already pinned the obvious bad designs. A blocker may
-justify stopping only when it is a minimal impossibility theorem discovered
-while attempting the named positive construction, and the worker can state why
-the target signature itself must change. Otherwise keep going to the concrete
-builder/profile.
-
-A "brick wall" is not "this proof is hard" or "the next lemma is nontrivial."
-Failed constructions are normally evidence for the next repaired statement or
-construction variant, not a reason to stop. A brick-wall stop requires either a
-formal impossibility theorem for the target statement itself or an extreme
-exhaustion dossier: at least fifty distinct serious attempts at the named
-positive construction, all failing for the same structural reason, where
-repairing the failure would require changing the target statement,
-representation model, cost model, ownership split, or another design choice the
-coordinator should approve.
-
-## Stop Conditions
-
-Surface early in unattended mode, or stop the current attended slice, when any
-of these happens:
-
-1. Gate red after the worker has isolated or repaired the local edit once and
-   there is no obvious local proof repair left. Ordinary Lean failures are loop
-   work, not a stop condition.
-2. A public contract change is needed: `RMQBackend`, `LeftmostArgMin`,
-   `ExactRMQStateEncoding`, or the LCA/RMQ bridge types.
-3. A policy break is needed: adding Mathlib, admitting an axiom, changing the
-   cost convention, or dropping a key invariant.
-4. A concrete construction attempt proves the target signature is
-   mis-specified or unprovable as stated, and the branch records the minimal
-   impossibility theorem. Repeating a known blocker is not a stop condition.
-5. At least fifty concrete construction attempts hit the same design-level
-   brick wall, and the branch records enough evidence for the coordinator to
-   choose a new representation, invariant, or target statement.
-6. A taste-sensitive API or abstraction fork has no clear winner.
-7. The roadmap is exhausted.
-
-Within an explicitly approved unattended budget, anything else should be worked
-through rather than surfaced immediately.
+There is no fixed attempt count. Evidence quality, not repetition, justifies an
+obstruction stop.
 
 ## Anti-Filler Rules
 
-1. Work only from `docs/ROADMAP.md`. A definition or theorem not traceable to
-   the active target is scope creep.
-2. A target is done only when its pre-registered statement is proved
-   `sorry`-free. A filler theorem cannot satisfy a hard, pre-committed
-   signature.
-3. No new breadth unless the active target requires it. No new RMQ backend, no
-   new wrapper family, and no new abstraction layer unless it is needed for the
-   current join theorem.
-4. Debt must fall or a target must close. Each round's report must show one of:
-   a roadmap target newly proved, or a tracked debt metric strictly decreased.
-5. Each closed target names one theorem a researcher would cite. If the report
-   cannot name one, the round did not earn a green light even if the gate passed.
-6. A claim with no concrete witness is not done. An abstract profile over a
-   hypothesized family does not close a target until a concrete instance or
-   construction instantiates it.
-7. Retire in the same round. If a faithful path supersedes an old or unfaithful
-   definition, delete or disconnect the predecessor now; do not merely delist it
-   from the axiom check.
-8. Never stop with unwired scaffolding. A structure that has no live consumer,
-   retired predecessor, or capstone theorem is not a checkpoint; it is unfinished
-   work.
-9. A hook is not the witness. Adding a configurable index, codec slot,
-   directory parameter, or bridge theorem is useful only if the same round keeps
-   going to the concrete construction/profile, unless a valid stop condition
-   blocks it.
-10. A blocker is not the milestone. Negative theorems are valuable when they
-    prune false designs, but after a blocker is documented, future loop rounds
-    must land a positive construction/profile unless they prove the requested
-    theorem is itself ill-specified.
-11. Do not procrastinate with substantial side outputs. A theorem cluster can
-    be sound, interesting, and technically nontrivial while still being the
-    wrong work right now. If it does not reduce the current distance to the
-    named capstone, concrete component profile, or join theorem, it is
-    procrastination. Prefer one hard lemma that moves the live construction over
-    ten polished helper surfaces that leave the hard part untouched.
-12. Each worker must keep the big picture in view. Reports and loop iterations
-    should name how the branch changes the shortest path to the final theorem,
-    not merely what new objects exist.
-13. Treat partial wins as iteration checkpoints, not loop endpoints. If the
-    branch proves a useful local kernel, sample table, range summary, adapter,
-    or helper exactness theorem, the next action is to consume it in the owned
-    concrete profile unless that is blocked by a documented design-level wall.
-13a. Never use "avoid overclaiming" as a stop condition. Not overclaiming is a
-     standing obligation for every theorem name, doc note, and report. If the
-     owned target is not yet true, say so in scratch notes and keep working
-     until it is true or a valid stop condition fires. A clean honest partial
-     checkpoint is still unfinished work when the prompt asked for the stronger
-     theorem.
-14. Conditional-local exactness is not component exactness. A theorem whose
-    hypotheses already assume the answer lies in a chosen local block, run, or
-    descriptor range must be followed by the global routing theorem that proves
-    those hypotheses from the query inputs.
-14a. Answer-as-premise bridges are not loop endpoints. A theorem whose central
-     premise says that a payload table, selector cell, descriptor entry, or
-     routing slot already contains the semantic answer does not close the named
-     target. For C2, a premise such as `selectorEntries[slot]? = some
-     (bpRangeArgMinBlock ...)` must be followed in the same unattended loop by
-     the concrete selector builder, slot arithmetic from the query, payload
-     budget, machine-word read bounds, and consumption in the named profile.
-15. A charged word read must be machine-bounded. Any new constant-time
-    fixed-width table, descriptor word, summary word, or payload word must carry
-    an explicit bound tying the read word width to the machine-word model before
-    it can support an O(1) claim.
-16. Audit-caveat cleanup is not target closure. If the owned target is C1, C2,
-    C3, or the final succinct theorem, repairing a caveat on a helper layer is
-    one loop iteration; the worker should immediately try to consume that
-    repaired layer in the concrete component profile or capstone theorem. It is
-    a valid endpoint only when the prompt explicitly scoped the target to that
-    caveat repair.
-17. A proof-field surface is not a payload witness. A descriptor-select or
-    navigation structure whose exactness is stored in fields, or whose routing
-    uses a free index function, must be followed by the concrete builder that
-    fills those fields from payload tables and either charges the routing or
-    proves it is bounded arithmetic.
-18. A packed descriptor exactness theorem is not a compact select witness by
-    itself. If the descriptor payload is still accounted as one full local
-    delta slot per occurrence, the worker must continue to a compact
-    dense/sparse descriptor builder with a `LittleOLinear` payload theorem, or
-    prove a formal obstruction for that representation.
-19. A range witness is not a BP close answer. A macro candidate or
-    `_exact_of_prefix_pos` theorem must be followed by charged endpoint-fringe
-    repair and the semantic theorem that the built prefix position is the
-    representative-array RMQ answer close.
-20. Endpoint-fringe repair is not enough if exactness still assumes the merged
-    candidate. A theorem such as `_exact_of_merged_candidate` must be followed
-    by the proof that the concrete payload entries actually merge to the
-    semantic answer candidate.
-21. A dense block-pair budget premise is not a succinct close witness. For C2,
-    a sampled profile whose space result assumes a budget for
-    `interiorBlockPairRanges blockCount` or an equivalent all-pairs/interior
-    payload must be followed by a compact relative/universal-table close
-    directory with its own `LittleOLinear` overhead proof.
-22. Invalid stop audits are not permission to stop. If a worker's own audit says
-    the loop stop is invalid, it must continue the loop immediately instead of
-    sending a final completion report. A final report that admits invalidity
-    without further implementation is a protocol failure.
-22a. An honest caveat is not a stopping certificate. A report may and must
-     avoid overclaiming, but if it says the target is only partially reached and
-     the next proof/construction is local and obvious, the loop must continue in
-     the same turn.
-23. Worker audits always include loop-stop validity and prompt/spec delta.
-    Every audit should explicitly say whether the worker should have stopped,
-    and whether the next prompts or loop specs need tightening.
-24. Worker reports always include proof digestion. A completion report must
-    state what changed conceptually, what the work just done now means in plain
-    English, what assumptions are live, and what a skeptical grad student would
-    ask. A branch that cannot explain itself at this level may be correct Lean
-    but is not ready to be treated as library-facing progress.
+- Every branch feeds the active roadmap join.
+- Helpers must be consumed by the target.
+- New interfaces name their concrete instance.
+- Cost follows charged operations; space follows payload actually read.
+- Superseded routes are retired or quarantined when the replacement is stable.
+- Public theorem names do not outrun their statements.
+- Design choices are logged with alternatives and consequences.
 
-Useful debt metrics:
+## Parallelism And Handoff
 
-```powershell
-rg -c "tickValue|indexedReadCost|storedMicrotableLookupCost" RMQ
-rg -n "_of_supplied|_of_firstOccurrences" RMQ
-```
+Parallelize only independent leaves with disjoint ownership and a named join.
+Read-only audit, dependency, and validation leaves are preferred. Shared
+records, public signatures, and causally ordered abstractions have one owner.
 
-The first approximates asserted-cost charges. The second approximates theorems
-gated on uncosted supplied inputs.
-
-## Parallelization Policy
-
-A parallel task is legitimate iff its output is consumed by the current target's
-join theorem. If deleting the task would not block the join, it is filler.
-
-Parallelize the decomposition of one target, not unrelated targets for
-throughput. The lead pass decomposes the active target into independent
-sub-lemmas that all feed one join theorem, spawns a worker per independent leaf,
-and does the join itself.
-
-Good: for the cost-model target, separate leaves for Array/List refinement,
-primitive operation semantics, and operational step soundness, then a join
-theorem that refounds one algorithm on the substrate.
-
-Bad: one worker adds a new backend, another polishes docs, another starts a
-future data structure. That is parallel, but not goal-directed.
-
-## Proof Workers
-
-Proof workers are first-class, not only read-only scouts. For substantial
-targets, the lead should proactively look for parallel write workers when the
-active target decomposes into at least two independent leaves with pinned
-contracts.
-
-This default does not override the need for disjoint ownership, a clean join
-theorem, and gate verification. If the target has no genuinely independent
-leaf, the lead should keep the work local instead of manufacturing parallel
-side quests.
-
-Protocol:
-
-1. Decompose, then write contracts first. State the join theorem and the exact
-   lemma signatures each worker must prove. Workers should not change those
-   signatures.
-2. Isolate workers. Give each write worker a separate worktree/branch and
-   disjoint file ownership, ideally one module or one small module family.
-3. Join centrally. The lead merges or ports the leaves into the main worktree,
-   proves the join theorem, and runs the gate.
-4. Check in and steer. While workers run, the lead should periodically inspect
-   whether they are still attacking the owned target, and steer them away from
-   premature loop stops, abstract hooks, or technically substantial side work
-   that does not feed the join.
-5. Stop on forkiness. If a leaf turns into a taste-sensitive API choice or a
-   public-contract change, stop and surface it rather than dispatching it.
-
-Read-only scouts may be many and cheap. Write/proof workers should be few,
-DAG-bound, and pinned by exact lemma signatures.
-
-## Iteration Report Template
-
-```text
-Target:        <roadmap id + name>
-Goal check:    <overall goal / current gap / hard part / this iteration>
-Discharged:    <theorem names that now typecheck, or "in progress, leaf X">
-Headline:      <the citable theorem this produced>
-Debt delta:    asserted-cost count A -> B ; gated-hypothesis count C -> D
-Gate:          PASS/FAIL (build / hygiene / axioms / diff)
-Parallelism:   <leaves spawned and the join they fed, or "none">
-Digestion:     <conceptual delta / plain-English meaning / live assumptions / skeptical question>
-Next:          <next roadmap target, or stop condition hit>
-Stop audit:    <target retired? next obvious? abstract hook left? why stop is valid>
-```
-
-If "Headline" and "Debt delta" are both empty, the round was filler regardless
-of the gate.
+The worker commits a narrow branch and reports exact evidence. The coordinator
+audits, integrates/ports/rejects, updates the roadmap and lifecycle state, and
+engineers the next prompt set.

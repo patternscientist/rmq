@@ -1,153 +1,122 @@
 # Audit Protocol
 
-This document fixes the repo-local meaning of "audit" for ADD work. It is
-internal workflow guidance; Lean, Lake, and the checked theorem statements
-remain the proof artifacts.
+This document fixes the repo-local meaning of an ADD audit. Lean, Lake, checked
+theorems, and reproducible commands remain the evidence; an audit adds no trust
+by itself.
 
 ## Definition
 
-An audit is a falsification-oriented review of a specific target against
-explicit evidence and explicit acceptance criteria.
+An audit is a falsification-oriented review of an exact target against explicit
+acceptance criteria. It identifies the target and base, rejection conditions,
+evidence for each finding, stale objections, and the next concrete action.
+Auditors test both literal correctness and design intent. Work that is true but
+preserves the abstraction defect the active roadmap is meant to remove is not
+successful completion.
 
-Every audit should answer:
+## Evidence Tiers
 
-- What exact claim, branch, theorem surface, document, or worker report is in
-  scope?
-- What would make the target unacceptable?
-- Which checked source, command output, or public claim supports the verdict?
-- Which objections were considered and rejected as stale, out of scope, or
-  already answered by source evidence?
-- What is the next theorem-shaped, document-shaped, or artifact-shaped action?
+1. kernel theorem;
+2. theorem about the explicit model/store/trace;
+3. executable validation;
+4. reproducible artifact or CI evidence;
+5. process evidence such as audit reports and design logs.
 
-An audit may recommend work, block a merge, or clear a branch for integration.
-It does not add trust beyond the checked sources and commands it cites.
-
-## Evidence Classes
-
-- Kernel evidence: checked Lean theorem statements, public aliases, import
-  roots, and axiom-check output.
-- Execution evidence: Lake builds, executable validators, artifact scripts,
-  benchmark harnesses, and their observed outputs.
-- Source evidence: exact files, theorem names, diffs, line references, and
-  commits.
-- Claim evidence: README, artifact docs, paper theorem maps, and public
-  limitation documents.
-- Process evidence: worker reports, digests, review notes, and sanitized
-  transcript excerpts. Process evidence can explain how a decision was reached,
-  but it is never proof of a mathematical or implementation claim.
-
-Private model traces or hidden reasoning are not stable project evidence and
-must not be treated as public artifact evidence.
-
-## Claim Evidence Tiers
-
-When an audit discusses a positive claim, it should name the strongest evidence
-tier that actually supports it:
-
-- Kernel theorem: checked Lean theorem or alias, with file and theorem name.
-- Model theorem: checked theorem about the explicit RAM/store/trace model, not
-  Lean runtime.
-- Executable validation: checked executable or `lake exe` run that tests the
-  relevant definitions, without upgrading the result to a theorem.
-- Artifact evidence: reproducible command output, CI log, timing, or bundled
-  artifact record.
-- Process evidence: audit logs, design decisions, worker reports, and ADD
-  provenance.
-
-Process evidence can justify why the team looked somewhere. It cannot justify a
-mathematical or executable claim by itself.
+Process evidence explains decisions. It does not prove mathematics, model
+adequacy, or executable behavior. Hidden reasoning and private model traces are
+not public artifact evidence.
 
 ## Audit Modes
 
-- Branch audit: compare a branch against its intended base, verify owned
-  changes, inspect stale or unrelated edits, run the relevant gates, and decide
-  whether it is merge-ready.
-- Theorem-surface audit: trace public aliases to source theorems, inspect
-  assumptions, constants, imports, and axiom status, and verify that theorem
-  names match theorem strength.
-- Claim-drift audit: compare public-facing prose with the checked theorem
-  truth, especially numerical constants, cost-model wording, novelty language,
-  AI/ADD provenance, and artifact readiness.
-- Worker-stop audit: decide whether a worker stopped at a genuine obstruction
-  or merely stopped at an honest partial checkpoint when local progress remains.
-- External-auditor audit: provide a self-contained packet, require concrete
-  citations, and translate accepted findings into precise repo targets.
-- Literature/parity audit: compare the project against current external
-  precedent, record search scope, qualify novelty language, and separate
-  reviewer pattern-matching gaps from theorem gaps.
+### Fresh Blind Delta
 
-## Severity
+Default for merge gates and major milestones. Use a new session with low
+history and high evidence. Supply the exact base and target commits, bounded
+acceptance criteria, an audit packet, and load-bearing public/trust surfaces.
+Do not supply prior verdicts or findings unless a closed source fact is needed
+to avoid a known stale objection.
 
-- P0: the checked proof or trust story is invalid, a public theorem is false, or
-  a merge would corrupt the artifact.
-- P1: a public claim materially overstates the checked state, a required gate
-  fails, or a theorem surface is weaker than its public name suggests.
-- P2: reviewer-friction, maintainability, import-surface, or documentation
-  issues that do not falsify the current theorem story.
-- P3: polish, clarity, naming, or presentation improvements.
+Inspect the delta plus the public surfaces it can affect, not the whole
+repository by default.
 
-## Required Report Shape
+### Continuation
 
-Use this shape unless the user asks for a different format:
+Use the same auditor for one correction loop on its own findings. Supply the
+new commit, old audited commit, accepted findings, and claimed fixes. This is
+token-efficient but not an independent final gate.
 
-1. Scope: branch, commit, base, files, theorem surfaces, and prompt.
-2. Verdict: merge-ready, merge-ready with follow-up, blocked, or needs another
-   worker pass.
-3. Findings: ordered by severity, each with evidence and an actionable target.
-4. Stale or rejected objections: audit claims that no longer apply, are
-   unsupported, or are answered by checked source.
-5. Verification: commands run, commands skipped, and why.
-6. Next action: the best next prompt, patch, theorem target, or artifact step.
+### Longitudinal Architecture
 
-For review-style requests, lead with findings. For coordinator planning, lead
-with the current frontier and the next highest-leverage target.
+Use a persistent auditor periodically to compare selected milestones, detect
+accumulated architecture drift, and assess roadmap direction. It may know prior
+history. It must not be the only release auditor.
 
-## Coordinator Rules
+### Whole-Frontier
 
-- Fetch or otherwise verify the relevant heads before judging branch freshness,
-  unless the user explicitly asks about a fixed local snapshot.
-- Treat external audits as evidence, not commands. A true finding becomes a
-  theorem-shaped, docs-shaped, or artifact-shaped target.
-- Do not accept "honestly caveated but weak" as a final state when a stronger
-  local repair is available.
-- Keep payload bits, proof-only fields, model-level cost ticks, executable Lean
-  runtime, and compiled performance in separate buckets.
-- When a branch changes a design decision, require an update to
-  [`DESIGN_DECISIONS.md`](DESIGN_DECISIONS.md) or an explicit report that no
-  design-decision update was needed.
+Use for release candidates, stale-coordinator reconstruction, major
+trust-boundary changes, or after several architecture milestones. Scope it with
+the paper root and theorem map, not raw chat exports.
 
-## External Auditor Packets
+## Context Policy
 
-When sending work to an external auditor, include:
+The default is **low history, high evidence**, not zero context. A commit hash
+alone is enough only when the auditor has the repo and the prompt also names
+scope and acceptance criteria. A normal packet contains:
 
-- the branch, commit, and intended base;
-- the exact claim or theorem surface to inspect;
-- the files and docs that form the public/trust surface;
-- the commands that should pass and any platform caveats;
-- known non-goals and stale objections;
-- the required report format and severity scale;
-- a request to cite source, theorem, or command evidence for every finding.
+- target and base commit;
+- diff stat and changed-file list;
+- active roadmap node and intended design change;
+- relevant aliases, source theorems, trust docs, and decision entries;
+- required commands and platform caveats;
+- known non-goals.
 
-External auditors should not need private chat history to evaluate a checked
-claim. If project history matters, provide a short sanitized digest instead of
-raw transcript dumps.
+Do not give a fresh auditor full transcripts or a previous report's conclusion.
+Use a short source-grounded digest only when history changes the delta's
+meaning.
 
-## Audit Report Storage
+Recommended cadence:
 
-External audit reports should be durable repo artifacts when they affect the
-roadmap, a public theorem surface, an artifact claim, or workflow policy. Store
-them under `docs/internal/audit_reports/` using a name such as
-`YYYY-MM-DD_HANDLE_target.md`.
+1. fresh blind audit at a material proof/public milestone;
+2. same-session continuation for one correction pass;
+3. fresh acceptance audit after material corrections;
+4. longitudinal architecture review every two to four milestones.
 
-If an auditor has write access, the prompt may allow writes only to that report
-file while keeping source/proof files read-only. If an auditor cannot write to
-the repository, the coordinator should store the report or a faithful summary
-from the chat transcript. Stored audit reports are process evidence; they are
-not proof of mathematical, cost-model, or executable claims.
+## Severity And Verdicts
 
-## Skill Boundary
+- **P0**: proof/trust invalidity or artifact corruption.
+- **P1**: material claim overstatement, failed required gate, or misleading
+  theorem surface.
+- **P2**: roadmap misalignment, architecture/reviewer friction, missing tests,
+  or maintainability risk.
+- **P3**: polish and local clarity.
 
-This document is the portable source of truth for audit behavior. If the
-workflow stabilizes further, it can be turned into a dedicated Codex skill for
-auditors, but the skill should point back here rather than inventing a parallel
-definition.
+Verdicts: merge-ready, merge-ready with follow-up, blocked, or needs another
+worker pass.
+
+## Required Report
+
+1. Scope: mode, auditor, base, target, surfaces, and acceptance criteria.
+2. Verdict.
+3. Findings ordered P0 to P3 with exact evidence.
+4. Evidence tier for every positive claim.
+5. Stale/rejected objections.
+6. Commands run/skipped and outcomes.
+7. Roadmap alignment in letter and spirit.
+8. Best next target.
+9. Durable report path.
+
+## Coordinator Disposition
+
+The coordinator verifies heads, audits the audit, records dispositions,
+integrates or rejects the branch, updates roadmap/lifecycle state, and engineers
+the next prompts.
+
+Material reports live under `docs/internal/audit_reports/`. Report-only
+auditors may write exactly one assigned report file; source files remain
+read-only.
+
+## External Packet Minimum
+
+Use `scripts/make_audit_packet.ps1` plus task-specific material. Include base,
+target, scope, design intent, load-bearing surfaces, acceptance criteria,
+checks, non-goals, severity scale, and report path. Private chat history is
+optional process context, never a prerequisite for checking a theorem claim.

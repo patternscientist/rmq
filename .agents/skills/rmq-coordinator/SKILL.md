@@ -24,6 +24,7 @@ Read the relevant internal contract:
 - `docs/internal/DESIGN_DECISIONS.md`
 - `docs/internal/WORKFLOW_DESIGN_DECISIONS.md`
 - `docs/internal/ADD_WORKFLOW_TOOLING_PLAN.md`
+- `docs/internal/WORKER_LIFECYCLE.md`
 - current theorem-map, artifact, and claim docs for the task
 
 When the task touches paper-facing RMQ claims, inspect `RMQPaper.lean`,
@@ -52,9 +53,10 @@ for an external auditor, optionally with help from `rmq-audit`.
 
 Every worker prompt should name:
 
-- worker handle, requested chat/thread title in the form
-  `({worker handle}) {short task summary}`, exact worker branch name, base
-  branch, fresh-worktree requirement, and write scope;
+- worker handle and requested title in the form
+  `({worker handle}) {short task summary}`;
+- for write tasks, exact branch, base, fresh worktree, and write scope; for
+  read-only scouts, exact commit/scope with no branch requirement;
 - skill to use before starting, usually `$rmq-proof-sprint` for narrow Lean
   proof, construction, cost/space, validation, or theorem-surface work;
 - exact theorem/profile/document target;
@@ -85,8 +87,9 @@ For each completed worker branch:
 4. Run the smallest gate that genuinely covers the change.
 5. Update theorem maps, artifact docs, and design logs if the public surface or
    architecture changed.
-6. Merge or reject the branch.
-7. Re-read the current roadmap/frontier and produce the best next ambitious
+6. Merge, port, or reject the branch and record the disposition.
+7. Update lifecycle state and retire the worktree/branch when evidence is preserved.
+8. Re-read the current roadmap/frontier and produce the best next ambitious
    prompt or prompt set, using parallel workers when the dependencies are
    genuinely independent.
 
@@ -136,6 +139,7 @@ Final reports should state:
 - commands run and skipped;
 - design/workflow logs updated, or why none were needed;
 - what remains open and what should not be worked on next;
+- worker lifecycle dispositions and any retirement still pending;
 - best next ambitious prompt or prompt set, ready to paste into the appropriate
   worker or external-auditor chat, unless the right next step is explicitly to
   wait, hand off, or not launch more work yet.

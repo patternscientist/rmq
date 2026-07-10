@@ -1,121 +1,58 @@
-# Codex Orchestration For RMQ
+# Codex Orchestration
 
-This note records the free Codex-native workflow tools that fit the RMQ
-formalization work.
+This document describes the coordinator/worker split. Detailed proof behavior
+is owned by `rmq-proof-sprint`; audit behavior is owned by
+`AUDIT_PROTOCOL.md`.
 
-## What We Added
+## Coordinator Responsibilities
 
-- `AGENTS.md`: durable repository guidance for future Codex sessions.
-- `.agents/skills/rmq-proof-sprint/SKILL.md`: a repo-local workflow skill for
-  RMQ proof, cost, space, succinct, and LCA tasks.
-- `.codex/agents/rmq-proof-auditor.toml`: read-only custom subagent profile for
-  audits.
-- `.codex/agents/rmq-frontier-explorer.toml`: read-only custom subagent profile
-  for milestone planning.
+- reconstruct the exact frontier from git and source;
+- name one active roadmap join;
+- identify independent leaves and assign disjoint ownership;
+- prescribe worker handle, title, base, branch, worktree, skill, and target;
+- give model/mode and fresh-vs-returning recommendations outside the prompt;
+- monitor context health and hand off before stale chat assumptions dominate;
+- audit worker output in source, not by report alone;
+- integrate, port, reject, and retire branches/worktrees;
+- update the roadmap and engineer the next ambitious prompt set.
 
-These are local/repo-scoped and do not require paid external services.
-`AGENTS.md` and custom agents are picked up by new Codex runs; repo skills may
-also require a restart if they do not appear immediately.
+## Worker Responsibilities
 
-## Recommended Use
+- use the assigned skill and branch contract;
+- remain inside write scope;
+- close the named target or produce a valid obstruction dossier;
+- preserve cost/payload/trust fidelity;
+- log real design decisions;
+- run required checks;
+- commit and report exact evidence.
 
-- Normal theorem implementation: use the main thread plus the
-  `rmq-proof-sprint` skill. For any substantial target, first do a quick
-  parallelization check: identify the join theorem or concrete profile, the
-  independent leaves, and whether agents will actually shorten the critical
-  path.
-- Bounded proof loops: use the main thread as coordinator, with an ambitious
-  owned target chosen adaptively at each checkpoint. A loop should try to close
-  that target overall. Substantial proof steps are iteration results inside the
-  loop, not automatic loop endpoints.
-- Before or during a large milestone: proactively spawn subagents when their
-  outputs feed the current target. Use read-only scouts for independent risk
-  checks and write workers only for disjoint file/theorem ownership. Example
-  scout split:
+## Parallelism
 
-  ```text
-  Spawn two read-only subagents: rmq-proof-auditor checks current theorem
-  statements and trust-base risks; rmq-frontier-explorer proposes the next
-  three proof milestones. Wait for both and synthesize.
-  ```
+Before launching, state the join, each independent leaf and consumer, shared
+interfaces with one owner, integration order, and coordinator work while
+workers run. Avoid parallel implementation of causally ordered interfaces.
+Prefer parallel read-only scouts when the architecture is not settled.
 
-- During implementation: keep the main thread responsible for the blocking
-  local step, final integration, and verification. While agents run, continue
-  non-overlapping work, check in periodically when useful, and steer agents away
-  from premature loop breaks or side quests.
-- For multi-chat branches, use `docs/internal/WORKER_INTEGRATION_CHECKLIST.md` as the
-  worker report template and coordinator merge gate.
-- For every worker or loop completion report, require a proof-digestion block:
-  what changed conceptually, what the work just done now means in plain
-  English, what assumptions are live, and what a skeptical grad student would
-  ask. Public milestones should update `docs/DIGESTION_LOG.md` or a focused
-  digest, not only the theorem inventory.
+## Audit Cycle
 
-## Bounded Proof Loop Template
+Every submitted branch receives:
 
-1. Choose the next ambitious target from the current family summary: the
-   concrete component profile or capstone theorem to close, not merely the next
-   helper layer.
-2. Write the iteration goal reflection:
-   - Overall goal: the capstone theorem or concrete component profile.
-   - Current gap: what blocks it now.
-   - Hard part: the proof/construction most tempting to postpone.
-   - This iteration: the largest coherent step toward that hard part.
-   - Not doing: adjacent outputs that would look useful but leave the gap.
-3. Spawn the agents that materially help this target: usually two or three
-   read-only scouts for independent risks, or a small number of write workers
-   when the leaves have disjoint ownership and pinned signatures.
-4. Implement the smallest coherent blocking slice locally while agents run.
-5. Integrate scout findings without broadening the milestone.
-6. Iterate on `lake env lean <touched module>` failures. A single tactic or
-   proof-shape retry can have a small cap, but an obvious repaired statement,
-   helper lemma, or construction variant starts the next iteration rather than
-   ending the loop.
-7. If the proof wants a new abstraction or the API choice is taste-sensitive,
-   stop and report the design choice. Failed construction attempts by
-   themselves are not enough to stop; continue through repaired statements and
-   nearby construction variants unless a formal impossibility theorem shows the
-   target is mis-specified, or an extreme dossier records at least fifty serious
-   attempts failing for the same design-level reason. Repeating a known blocker
-   or landing one useful partial theorem is not itself a loop endpoint.
-   Likewise, "we can honestly report this without overclaiming" is not a stop
-   condition. Honesty is mandatory, but if the owned target remains stronger
-   than the checkpoint, the next loop iteration starts immediately.
-8. Run a checkpoint: touched-module checks, then `lake build`, the trust-base
-   scan, the `native_decide` scan when relevant, and `git diff --check`.
-9. Update `docs/FAMILY_SUMMARY.md`.
-10. Add or refresh the proof-digestion note when the milestone changes a public
-    theorem surface, model assumption, or frontier explanation.
-11. If the checkpoint is clean and no strict stop condition fired, choose the
-   next iteration adaptively and repeat the loop against the same owned target.
-   Otherwise report the checkpoint and the exact stop condition.
+1. diff and freshness audit;
+2. theorem/implementation and design-intent audit;
+3. verification review;
+4. design-decision review;
+5. integrate/port/reject verdict;
+6. roadmap and lifecycle update;
+7. next prompt engineering.
 
-Default loop size: enough meaningful iterations to close the owned target, or
-to demonstrate that closing it now requires a fundamental design choice. A loop
-should not stop just because it has produced one or two substantial steps in
-the right direction. Keep the user in the loop only at strict stop points so the
-frontier can be redirected before real design churn sets in.
+External audits follow `AUDIT_PROTOCOL.md`: fresh blind for independent gates,
+continuation for one correction loop, and longitudinal review for accumulated
+architecture.
 
-The reflection is a guard against polished procrastination. If the best next
-step is a difficult payload-live construction, a loop should not spend its
-iteration on extra wrappers, docs, or negative variants unless those artifacts
-are immediately consumed by that construction or prove the target signature
-itself must change.
+## Context Health
 
-When reporting a short-of-target stop, include the brick-wall dossier: signatures
-tried, the common obstruction, why obvious local repairs do not suffice, and
-which design choice the coordinator must make. Failed constructions justify a
-stop only after the fifty-attempt exhaustion standard above; a formal
-impossibility theorem for the target statement can replace that threshold.
-
-## Features Not Adopted Yet
-
-- Hooks: useful later for automatic `lake build` or hygiene scans, but they
-  require hook trust/review and can become noisy during proof exploration.
-- Plugins: useful if this RMQ workflow should be distributed outside this repo.
-  A repo skill is simpler while the workflow is still evolving.
-- `codex exec`: useful for CI-style scripted audits, but interactive proof work
-  is still better in the app/thread until the checks stabilize.
-- External autonomous agents such as Manus: use only for broad research or
-  artifact-style work where their output can be audited before it touches the
-  proof tree. Codex subagents remain the default for repo-local proof work.
+Use the coordinator re-entry and handoff templates. Handoff is routine when the
+frontier cannot be restated from source concisely, prior reports dominate the
+context, or the coordinator repeatedly rechecks facts it should pin in a
+digest. A new coordinator reads source and exact commits; private reasoning is
+not authority.

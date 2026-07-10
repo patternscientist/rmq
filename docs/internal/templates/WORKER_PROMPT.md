@@ -1,87 +1,74 @@
 # Worker Prompt Template
 
-Use this template for proof, implementation, validation, docs, or tooling
-workers. Delete irrelevant bracketed guidance before sending.
+Delete bracketed guidance before sending.
 
 ```text
 Worker identity:
-- Worker handle: [WORKER_HANDLE].
-- Requested chat/thread title: `([WORKER_HANDLE]) [SHORT_TASK_SUMMARY]`.
-- Use this handle in the completion report.
-- If your environment supports renaming the chat/thread, set that title before
-  starting. If it does not, repeat the requested title at the top of your
-  completion report.
+- Handle: [WORKER_HANDLE]
+- Requested title: `([WORKER_HANDLE]) [SHORT_TASK_SUMMARY]`
+- Fresh or returning worker: [FRESH / RETURNING, with reason]
 
 Skill:
-- Use $[SKILL_NAME] before starting. For narrow Lean proof, construction,
-  cost/space, executable-validation, or theorem-surface implementation work,
-  this is usually `$rmq-proof-sprint`. Use a different RMQ skill only when the
-  coordinator explicitly assigns one.
+- Use $[SKILL_NAME] before starting.
 
-Branch/worktree:
-- Create a fresh worktree and branch named exactly: [WORKER_BRANCH].
-- Base it on: [BASE_BRANCH].
-- Fetch first and verify the base before editing.
-- Do not edit the coordinator checkout.
-- Do not revert or overwrite unrelated changes.
+Checkout contract:
+- Task mode: [WRITE / READ-ONLY].
+- Exact base/target commit: [BASE_BRANCH_OR_COMMIT].
+- For a write task, create branch exactly [WORKER_BRANCH] in a fresh worktree
+  and report its path.
+- For a read-only task, inspect the exact commit without creating a branch;
+  temporary detached worktrees are allowed, but source and docs stay unchanged.
+- Fetch and verify the target before starting.
+- Do not edit the coordinator checkout or overwrite unrelated work.
 
-Goal:
-[One sentence naming the exact theorem/profile/document/tooling target.]
-
-Write scope:
-- [File or directory 1]
-- [File or directory 2]
-
-Required target:
-- [Exact theorem name, executable name, document name, or script behavior.]
+Roadmap contract:
+- Node/join: [ROADMAP_NODE_AND_CONSUMER]
+- Goal: [ONE SENTENCE EXACT TARGET]
+- Required theorem/file/tool: [EXACT TARGET]
+- Write scope: [PATHS]
+- Non-goals: [BOUNDARIES]
 
 Forbidden shortcuts:
-- Do not replace theorem work with prose caveats.
-- Do not add proof-only answer fields, uncounted payload, synthetic events, or
-  public-route compatibility thresholds unless the prompt explicitly asks for
-  that historical/compatibility surface.
-- Do not conflate model-cost ticks, payload bits, proof-only fields, Lean
-  runtime, or compiled-code behavior.
-- Do not stage transcript dumps, zips, scratch dirs, or unrelated files.
+- No prose substitute for proof.
+- No proof-only answers, uncounted payload, synthetic events, semantic routing
+  oracles, or stale compatibility thresholds on the reviewer path.
+- Keep payload bits, proof fields, model ticks, machine state, Lean runtime, and
+  measured performance distinct.
+- Do not stage transcripts, archives, scratch files, or unrelated changes.
 
-Completion discipline:
-- Stage only intended files.
-- Commit the finished branch unless the prompt explicitly says not to commit.
-- Include the branch name, worktree path, base branch, and final commit hash in
-  the completion report. If committing is blocked, state the exact reason and
-  leave the worktree status clear.
+Context:
+- Read AGENTS.md and the assigned section of
+  docs/internal/RMQ_FINAL_ROADMAP.md.
+- Read the target modules and direct consumer.
+- Read only relevant design-decision entries and task-specific docs.
+- Use .agents/skills/rmq-proof-sprint/references/KNOWN_FAILURE_MODES.md only if
+  the target touches those traps.
 
-Context to read:
-- docs/internal/RMQ_FINAL_ROADMAP.md
-- docs/internal/AUDIT_PROTOCOL.md
-- docs/internal/DESIGN_DECISIONS.md
-- docs/internal/WORKFLOW_DESIGN_DECISIONS.md
-- [Task-specific theorem/docs files]
-
-Design-decision check:
-- If you choose or change a proof/code/artifact architecture decision, update
-  docs/internal/DESIGN_DECISIONS.md.
-- If you choose or change ADD workflow, audit, automation, delegation,
-  evidence, model-routing, or handoff policy, update
-  docs/internal/WORKFLOW_DESIGN_DECISIONS.md.
-- Entries should record rationale and rejected alternatives clearly enough that
-  a future paper writer can reconstruct the design exposition.
+Completion:
+- Work until the named target closes or a valid obstruction dossier forces a
+  coordinator decision.
+- Log real code/artifact decisions in DESIGN_DECISIONS.md and workflow changes
+  in WORKFLOW_DESIGN_DECISIONS.md.
+- Stage only intended files and commit unless explicitly read-only.
 
 Verification:
-- [Targeted lake build or docs/script checks]
+- [TARGETED BUILD/CHECKS]
 - git diff --check
-- scripts/claim_drift_scan.ps1 [if public/trust prose changed]
-- scripts/design_decision_check.ps1 [if architecture/workflow-sensitive files changed]
+- powershell -ExecutionPolicy Bypass -File scripts\design_decision_check.ps1
+- powershell -ExecutionPolicy Bypass -File scripts\claim_drift_scan.ps1
+  [only if public prose changed]
 
-Completion report:
-- worker handle;
-- branch name, worktree path, base branch, and final commit hash;
-- changed files;
-- theorem names / script names / docs changed;
-- conceptual meaning;
-- live assumptions;
+Report:
+- handle/title, exact inspected commit, and, for write tasks, branch,
+  worktree, base, and commit;
+- changed files and exact theorem/definition names;
+- conceptual meaning, plain-English meaning, live assumptions, and downstream
+  consumer;
 - skeptical-reviewer questions;
-- design/workflow decisions logged, or why none were needed;
-- exact verification command outcomes;
-- next crisp target.
+- decisions logged or why none were needed;
+- exact command outcomes;
+- lifecycle disposition requested and next crisp target.
 ```
+
+Model/mode recommendations are coordinator-to-user launch metadata. Do not put
+them in the worker prompt.

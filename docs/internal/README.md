@@ -24,6 +24,8 @@ Useful internal entry points:
 - [`WORKFLOW_DESIGN_DECISIONS.md`](WORKFLOW_DESIGN_DECISIONS.md): ADD/process
   decision ledger for audit, delegation, automation, and evidence-policy
   choices.
+- [`WORKER_LIFECYCLE.md`](WORKER_LIFECYCLE.md): delegated-task, branch, and
+  worktree states from launch through retirement.
 - [`RMQ_FINAL_ROADMAP.md`](RMQ_FINAL_ROADMAP.md): delegation-ready ladder for
   the final RMQ paper-hardening sequence.
 - [`ADD_WORKFLOW_TOOLING_PLAN.md`](ADD_WORKFLOW_TOOLING_PLAN.md): repo-native

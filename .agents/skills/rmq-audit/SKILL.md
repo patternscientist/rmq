@@ -1,96 +1,63 @@
 ---
 name: rmq-audit
-description: Use to engineer external-auditor prompts and audit packets for RMQ, filling docs/internal/templates/AUDIT_PROMPT.md from current repository context, theorem surfaces, claim docs, and explicit evidence tiers. Do not use for the coordinator's normal audit-integrate-next-prompt cycle.
+description: Use to engineer independent external-auditor prompts and evidence packets for RMQ. Select fresh-blind, continuation, longitudinal, or whole-frontier mode and fill the repo audit template from exact commits and source evidence.
 ---
 
 # RMQ External Audit Prompt
 
-Use this skill when the coordinator needs a high-quality prompt or evidence
-packet for an external auditor. The coordinator remains responsible for
-integrating worker branches and turning audit findings into theorem, docs,
-artifact, or workflow targets.
+Use this skill to prepare an external audit. The coordinator still audits the
+report, integrates branches, updates the roadmap, and engineers worker prompts.
 
-## Ground Rules
+## 1. Choose Independence Mode
 
-Read `docs/internal/AUDIT_PROTOCOL.md` before serious audits. If claim wording is
-in scope, also read `docs/internal/CLAIM_DRIFT_POLICY.md`.
+Read `docs/internal/AUDIT_PROTOCOL.md` and choose:
 
-An external audit does not add trust by itself. It should be engineered so the
-auditor can cite checked theorem statements, source diffs, command outputs,
-artifact docs, or process evidence and then recommend the next action.
-Keep auditor/model/mode recommendations as coordinator-facing launch metadata
-for the user, not as text inside the external-auditor prompt. The prompt itself
-should identify the auditor handle, branch/commit/base, scope, evidence tiers,
-checks, report storage path, and report shape.
+- **fresh blind delta** for an independent milestone/merge gate;
+- **continuation** for one correction loop on that auditor's findings;
+- **longitudinal architecture** for periodic milestone comparison;
+- **whole frontier** for release or trust-boundary review.
 
-For audits that may affect the roadmap, public theorem surface, artifact
-claims, or workflow policy, assign a durable report path under
-`docs/internal/audit_reports/`. If the auditor can write files, allow writes
-only to that report file and keep source/proof files read-only. If the auditor
-cannot write files, ask for markdown that the coordinator can store faithfully.
+Default to low history and high evidence. Do not give a fresh auditor prior
+verdicts or full transcripts. A commit alone is not enough: name base, target,
+scope, design intent, acceptance criteria, load-bearing surfaces, and checks.
 
-If the user asks for a read-only local audit rather than an external-auditor
-prompt, use `rmq-coordinator` for completed-worker integration audits or a
-plain review workflow for one-off local review.
+Keep model/mode recommendations outside the pasted prompt as coordinator launch
+metadata.
 
-## Evidence Tiers
+## 2. Build The Packet
 
-Classify positive claims by the strongest supporting tier:
+Use `docs/internal/templates/AUDIT_PROMPT.md` and, when useful,
+`scripts/make_audit_packet.ps1`. Include:
 
-- kernel theorem;
-- model theorem;
-- executable validation;
-- artifact evidence;
-- process evidence.
+- auditor handle and audit mode;
+- exact base/target commits and branch;
+- active roadmap node and intended change;
+- relevant theorem aliases, source theorems, trust/claim docs, and decision
+  entries;
+- required commands and platform caveats;
+- explicit non-goals and rejection conditions;
+- durable report path under `docs/internal/audit_reports/`.
 
-Do not use process evidence as proof of a mathematical or executable claim.
-Keep payload bits, proof-only fields, model-cost ticks, Lean runtime, and
-compiled-code behavior separate.
+For claim wording, also read
+`docs/internal/CLAIM_DRIFT_POLICY.md`.
 
-## Prompt Modes
+## 3. Demand Adversarial Evidence
 
-- Branch audit prompt: compare branch, base, owned files, diff, and gates.
-- Theorem-surface audit prompt: trace public aliases to concrete theorem
-  statements.
-- Claim-drift audit prompt: compare public prose with checked theorem truth and the
-  claim-drift policy.
-- Worker-stop audit prompt: decide whether a worker stopped at a real obstruction
-  or at an honest partial checkpoint with obvious local work remaining.
-- Literature/parity audit prompt: compare against external precedent and separate
-  novelty, reviewer-pattern, and theorem gaps.
+Require the auditor to test literal truth and the spirit of the roadmap target.
+Specifically look for technically correct wrappers, renamed caveats, decorative
+reads, proof-only answers, uncounted storage, synthetic events, or valuable work
+that advances a different goal.
 
-## Useful Prompt Inputs
+Positive evidence tiers are kernel theorem, model theorem, executable
+validation, artifact evidence, then process evidence. Process reports do not
+prove mathematical or executable claims.
 
-```powershell
-git status --short --branch
-git log --oneline --decorate -20
-git diff --stat BASE..HEAD
-git diff --check
-scripts/claim_drift_scan.ps1
-scripts/design_decision_check.ps1
-```
+## 4. Require A Useful Report
 
-For proof branches, include the target-specific Lake commands requested by the
-coordinator prompt. For public RMQ surfaces, `lake build RMQPaper` and
-`lake env lean scripts/headline_axiom_check.lean` are common minimum checks.
+Ask for findings first, P0 through P3, with exact source/theorem/command
+evidence, stale objections, verification outcomes, roadmap alignment, and the
+best next target. Report-only auditors may write exactly the assigned report
+file; proof/source files remain read-only.
 
-## Report Shape
-
-Ask the external auditor to lead with findings:
-
-1. Scope: branch, commit, base, files, theorem surfaces, and prompt.
-2. Verdict: merge-ready, merge-ready with follow-up, blocked, or needs another
-   worker pass.
-3. Findings: ordered by severity, each with evidence and an actionable target.
-4. Stale or rejected objections.
-5. Verification commands run, skipped, and why.
-6. Best next theorem, docs, artifact, or workflow prompt.
-7. Report file path, or an explicit note that the report was chat-only and must
-   be stored by the coordinator.
-
-Severity:
-
-- P0: proof/trust invalidity or artifact corruption.
-- P1: public overclaim, failing required gate, or misleading theorem surface.
-- P2: reviewer-friction, maintainability, import-surface, or documentation risk.
-- P3: polish.
+Afterward the coordinator verifies the report, records dispositions, updates
+the worker lifecycle/roadmap, and engineers the next prompt set.

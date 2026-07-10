@@ -13,6 +13,13 @@ Workflow design decisions are still design decisions. They affect the quality
 and trustworthiness of the project, but they are process/provenance evidence,
 not proof evidence.
 
+## Current Decision Index
+
+WDD-20260709-015 through WDD-20260709-019 govern the current audit-context,
+obstruction, skill-context, lifecycle, and architecture-scout policies. Earlier
+entries retain stable IDs and historical insertion order; read their Status
+rather than inferring current priority from file order.
+
 ## WDD-20260708-001: Log ADD Improvements As Workflow Design Decisions
 
 Status: Accepted
@@ -806,7 +813,7 @@ None.
 
 ## WDD-20260708-002: Add Repo-Native ADD Tooling Before Model-Specific Automation
 
-Status: Accepted
+Status: Fulfilled; retained as sequencing rationale
 Date: 2026-07-08
 Scope: ADD tooling sequence.
 
@@ -847,8 +854,251 @@ Evidence:
 
 Follow-up:
 
-After two or more real uses, revisit whether to create dedicated `rmq-audit` and
-`rmq-worker` skills or a non-interactive orchestration command.
+The coordinator and external-audit skills are now landed. Continue with the
+structured read-only automation and evidence-manifest steps in
+`ADD_WORKFLOW_TOOLING_PLAN.md` rather than creating a duplicate worker skill.
+
+Supersedes:
+
+None.
+## WDD-20260709-015: Use Low-History High-Evidence External Audits
+
+Status: Accepted
+Date: 2026-07-09
+Scope: External auditor context and independence.
+
+Decision:
+
+Use fresh blind sessions for independent milestone gates, the same session for
+one correction loop, persistent sessions for periodic longitudinal architecture
+review, and a fresh session again for final acceptance. Fresh auditors receive
+exact base/target commits, a bounded audit packet, design intent, load-bearing
+surfaces, and acceptance criteria, but not previous verdicts or full
+transcripts.
+
+Context:
+
+A persistent auditor saves rereading tokens but accumulates framing and
+confirmation bias. A context-free auditor is independent but may waste effort
+rediscovering source facts.
+
+Options considered:
+
+- Reuse one primary auditor for every gate.
+- Start every audit with only a commit hash.
+- Separate blind-delta, continuation, longitudinal, and whole-frontier modes.
+
+Rationale:
+
+Low history preserves independence; high evidence prevents whole-repo
+rediscovery. A commit alone does not express scope or intended design.
+
+Consequences:
+
+Audit prompts must state mode. Continuation audits are efficient correction
+checks but never the sole final gate.
+
+Evidence:
+
+- `docs/internal/AUDIT_PROTOCOL.md`
+- `docs/internal/templates/AUDIT_PROMPT.md`
+
+Follow-up:
+
+Measure token use and missed findings across several blind/continuation pairs.
+
+Supersedes:
+
+None.
+
+## WDD-20260709-016: Replace Numeric Attempt Quotas With Obstruction Dossiers
+
+Status: Accepted
+Date: 2026-07-09
+Scope: Proof-worker stop conditions.
+
+Decision:
+
+Remove the fixed fifty-attempt exhaustion rule. A short-of-target stop requires
+a closed target, a minimal formal obstruction, an external blocker, or an
+obstruction dossier covering materially distinct construction families and the
+coordinator-level choice now required.
+
+Context:
+
+Counting attempts rewards repetition and is difficult to audit. One precise
+counterexample can be stronger than many minor proof variants.
+
+Options considered:
+
+- Keep the numeric quota.
+- Let workers stop after any reported difficulty.
+- Require evidence classified by distinct construction family and structural
+  failure.
+
+Rationale:
+
+The dossier tests information gained and design consequence, not persistence
+theater. It preserves the anti-premature-stop norm without wasting tokens.
+
+Consequences:
+
+Normative autonomy, orchestration, checklist, and proof-sprint guidance now use
+the dossier.
+
+Evidence:
+
+- `.agents/skills/rmq-proof-sprint/SKILL.md`
+- `.agents/skills/rmq-proof-sprint/references/KNOWN_FAILURE_MODES.md`
+- `docs/internal/CODEX_AUTONOMY.md`
+
+Follow-up:
+
+Audit the first real obstruction dossier against this standard.
+
+Supersedes:
+
+The fixed-count stop language in the previous proof-sprint/autonomy documents.
+
+## WDD-20260709-017: Keep Skills Thin And Load History On Demand
+
+Status: Accepted
+Date: 2026-07-09
+Scope: Skill context and token discipline.
+
+Decision:
+
+Skills contain the operating contract and routing rules. The roadmap, audit
+protocol, and ledgers remain source documents. Historical proof traps move to
+task-specific references loaded only when relevant.
+
+Context:
+
+The proof-sprint skill had grown into a long duplicate of historical C1/C2
+planning and stop policy. Every worker paid that context cost regardless of
+task.
+
+Options considered:
+
+- Keep all history in the skill.
+- Remove historical guidance entirely.
+- Keep a concise skill with an on-demand failure-mode reference.
+
+Rationale:
+
+This preserves hard-won constraints while reducing stale duplication and token
+load. It also makes policy ownership clear.
+
+Consequences:
+
+Worker prompts request only task-specific context. Updating one source of truth
+is preferred to synchronizing repeated prose.
+
+Evidence:
+
+- `.agents/skills/rmq-proof-sprint/SKILL.md`
+- `.agents/skills/rmq-proof-sprint/references/KNOWN_FAILURE_MODES.md`
+- `docs/internal/templates/WORKER_PROMPT.md`
+
+Follow-up:
+
+Apply the same compression test to coordinator/audit skills after two more
+cycles.
+
+Supersedes:
+
+None.
+
+## WDD-20260709-018: Treat Worktree Retirement As Part Of Task Completion
+
+Status: Accepted
+Date: 2026-07-09
+Scope: Worker branch and worktree lifecycle.
+
+Decision:
+
+Track tasks from planned through submitted, audited, integrated/rejected/ported,
+archived, and retired. Integration alone is not operational completion.
+Coordinator-owned cleanup happens only after evidence is preserved and a
+dry-run confirms no uncommitted work would be lost.
+
+Context:
+
+The repository has accumulated many worktrees and branches because creation and
+integration were governed but retirement was not.
+
+Options considered:
+
+- Keep all worktrees indefinitely.
+- Automatically delete them after merge.
+- Add explicit lifecycle states and cautious coordinator retirement.
+
+Rationale:
+
+Explicit retirement reduces coordination cost without risking destructive loss.
+Milestone and evidence branches can still be retained deliberately.
+
+Consequences:
+
+Completion reports request a lifecycle disposition. Destructive cleanup remains
+manual/approved.
+
+Evidence:
+
+- `docs/internal/WORKER_LIFECYCLE.md`
+- `docs/internal/WORKER_INTEGRATION_CHECKLIST.md`
+
+Follow-up:
+
+Produce a read-only inventory and retirement proposal for existing worktrees;
+do not bulk-delete as part of this consolidation.
+
+Supersedes:
+
+None.
+
+## WDD-20260709-019: Join Read-Only Architecture Scouts Before Shared Implementation
+
+Status: Accepted
+Date: 2026-07-09
+Scope: Final-roadmap delegation order.
+
+Decision:
+
+Run declaration-closure, total-parameter, and naming/module scouts in parallel
+against one exact frontier. The coordinator synthesizes their reports into one
+approved interface before assigning the total-parameter implementation.
+
+Context:
+
+The next technical step changes a shared abstraction used by routing, payload,
+and cost proofs. Parallel implementation would create competing root records
+and theorem signatures.
+
+Options considered:
+
+- Assign one implementation worker immediately.
+- Run three implementation experiments.
+- Parallelize independent read-only evidence/design leaves, then give the joined
+  abstraction one owner.
+
+Rationale:
+
+This maximizes effective parallelism while respecting causal ownership.
+
+Consequences:
+
+The scouts do not edit source or make competing branches. Their output is
+consolidated before `U1`.
+
+Evidence:
+
+- `docs/internal/RMQ_FINAL_ROADMAP.md`
+- `docs/internal/CODEX_ORCHESTRATION.md`
+
+Follow-up:
+
+Launch the three scouts against the consolidation commit.
 
 Supersedes:
 

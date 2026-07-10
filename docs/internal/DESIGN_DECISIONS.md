@@ -18,6 +18,15 @@ See also:
 - [`../ADD_PROVENANCE.md`](../ADD_PROVENANCE.md)
 - [`../AI_ASSISTED_DEVELOPMENT_NOTE.md`](../AI_ASSISTED_DEVELOPMENT_NOTE.md)
 
+## Current Decision Index
+
+The active final-route architecture is DD-20260709-007 through
+DD-20260709-010. Foundational decisions such as the Mathlib-free trust boundary,
+list-facing reference semantics, narrow paper root, and cost/runtime separation
+remain active where their individual status says so. Entries retain stable IDs
+and historical insertion order; do not infer current priority from file order.
+Use each entry's Status and the live roadmap.
+
 ## When To Update
 
 Update this document when a branch:
@@ -560,7 +569,7 @@ None.
 
 ## DD-20260708-008: Make The List-Facing Full-Model Lift The Next Proof Target
 
-Status: Accepted
+Status: Fulfilled; superseded as live guidance by the landed list-facing surface
 Date: 2026-07-08
 Scope: RMQ public theorem surface.
 
@@ -601,8 +610,8 @@ Evidence:
 
 Follow-up:
 
-Expose a list-facing supplied-store/footprint theorem under
-`RMQ.Headlines.RMQ`.
+Completed by the list-facing supplied-store/footprint theorems in
+`SuccinctRMQClassic` and `RMQ.Headlines.RMQ`.
 
 Supersedes:
 
@@ -610,7 +619,7 @@ None.
 
 ## DD-20260708-009: Clean The All-Size Cost Surface Rather Than Explain Around It
 
-Status: Accepted
+Status: Fulfilled; superseded by DD-20260708-011 and DD-20260709-001
 Date: 2026-07-08
 Scope: RMQ cost theorem surface.
 
@@ -652,7 +661,8 @@ Evidence:
 
 Follow-up:
 
-Launch this only after the list-facing final-model lift lands.
+Completed by the route-split theorem and current clean all-size constant
+`4144`; the new roadmap targets the underlying uniform-route architecture.
 
 Supersedes:
 
@@ -996,7 +1006,7 @@ Decision:
 Do not add a default `2^15` ready-threshold fixture to the artifact gate yet.
 Keep ready-regime executable profiling behind an explicit
 `lake exe rmq_succinct_classic_cost_harness -- --profile-size N` command until
-the public list-facing construction has an Array-backed builder mirror.
+the prepared builder demonstrates reviewer-friendly ready-threshold runtime.
 
 Context:
 
@@ -1019,23 +1029,21 @@ Options considered:
 
 Rationale:
 
-The current public path repeatedly rebuilds `Cartesian.shape xs`: the shape
-builder is the reference `List Int` `shapeRange`, whose root selection uses
-`scanWindow`, and `scanWindow` compares indices through indexed list reads.
-`buildPayload xs` and each `queryCosted xs left right` call recompute that
-shape. That construction bottleneck is separate from the checked
-`queryCosted.cost` model cost, so putting a threshold fixture in the default
-gate would blur the trust boundary.
+The canonical `buildPayload xs` and `queryCosted xs left right` interfaces may
+recompute the reference shape. The prepared executable path now uses
+`Cartesian.stackCartesianShape` once and reuses the resulting `PreparedInput`,
+with agreement theorems back to the canonical semantics. That removes the old
+reference-builder description from the prepared path, but ready-threshold
+runtime has not yet been established as a default reviewer command. This
+engineering question remains separate from the checked `queryCosted.cost`.
 
 Consequences:
 
 The default harness may report fast-regime applicability and bounds, but it
-must not imply a Lean wall-clock claim. Ready-threshold experiments should be
-explicit opt-in profiling runs. The next theorem/engineering target is an
-Array-backed Cartesian builder, with a theorem such as
-`shapeArray_toList_eq_shape`, followed by a prepared `SuccinctClassic` builder
-mirror proving that the reused-shape payload/query path agrees with
-`buildPayload xs` and `queryCosted xs`.
+must not imply a Lean wall-clock claim. Ready-threshold experiments should remain explicit opt-in profiling runs. The
+prepared stack builder and agreement theorems are now landed; the remaining
+work is measurement and any theorem-backed construction optimization needed to
+make a threshold fixture reviewer-friendly.
 
 Evidence:
 
@@ -1048,8 +1056,8 @@ Evidence:
 
 Follow-up:
 
-Introduce the Array-backed builder mirror and equivalence theorem before
-promoting a ready-threshold executable fixture into the default artifact path.
+Profile the landed prepared builder at the ready threshold and promote a
+fixture only when its runtime fits the documented artifact-review budget.
 
 Supersedes:
 
@@ -1111,6 +1119,210 @@ Follow-up:
 The next safe reviewer-legibility split is likely the whole-query
 interpreter/program layer or the bounded-event/no-synthetic execution-story
 packets, keeping public aliases unchanged.
+
+Supersedes:
+
+None.
+## DD-20260709-007: Separate Total Geometry From Compact-Storage Readiness
+
+Status: Accepted
+Date: 2026-07-09
+Scope: Relative rmM parameters and final RMQ routing architecture.
+
+Decision:
+
+The next final-route architecture must define total positive geometric
+parameters for every input and keep compact-table readiness or payload
+availability as a separate predicate. Inactivity must not zero block size,
+block count, superblock count, relative width, or other routing geometry.
+
+Context:
+
+The current canonical `Active` predicate combines geometry, storage budget,
+and word-width facts. Its inactive branch collapses geometric values to zero,
+which creates a top-level zero-block structural replay and the public all-size
+cost split. The route is correct, but the abstraction makes a proof artifact
+look like an algorithmic regime.
+
+Options considered:
+
+- Continue lowering the zero-block scan constant.
+- Keep zero-valued parameters and hide the branch behind a public wrapper.
+- Make layout total, let readiness govern storage only, and prove agreement with
+  the current ready route.
+
+Rationale:
+
+Total geometry matches standard directory presentations and removes a
+reviewer-visible proof accident. Agreement lemmas provide a conservative
+migration path without weakening current payload, machine, or space theorems.
+
+Consequences:
+
+The next proof campaign begins with parameter design and agreement theorems.
+Local zero-block constant patches do not count as advancing this decision.
+
+Evidence:
+
+- `docs/internal/RMQ_FINAL_ROADMAP.md`
+- `RMQ/Core/SuccinctClose/RelativeSummary.lean`
+- `RMQ/Core/SuccinctClose/RelativeRmmMacro/LocalBPDecoder.lean`
+
+Follow-up:
+
+Join the total-parameter, dependency-closure, and naming scouts before assigning
+the implementing worker.
+
+Supersedes:
+
+The architectural endpoint implicit in DD-20260709-001; its checked cost
+improvement remains valid as an intermediate theorem.
+
+## DD-20260709-008: Use One Uniform Directory Abstraction At All Sizes
+
+Status: Accepted
+Date: 2026-07-09
+Scope: Final local/interior RMQ query route.
+
+Decision:
+
+Empty, singleton, small, and ready inputs should use one directory abstraction.
+Degenerate or packed representations may implement that abstraction, but the
+reviewer path must not dispatch to an unbounded structural scan because a
+layout parameter is zero.
+
+Context:
+
+The present all-size route is theorem-sound and payload-backed, but its
+zero-block replay is an artifact of inactive geometry. Preserving that branch
+while polishing constants would leave the central elegance problem intact.
+
+Options considered:
+
+- Retain the route split and explain it.
+- Replace the small branch with an uncounted answer table.
+- Provide one semantic directory interface with counted small/packed and
+  ready/compact implementations.
+
+Rationale:
+
+A uniform abstraction makes the exactness and cost proof follow the mathematical
+decomposition rather than threshold compatibility. Counted representations
+preserve the existing space and execution-story truth.
+
+Consequences:
+
+The all-size constant is rederived only after the uniform route lands. Dense
+answers, proof-only answers, synthetic events, and decorative reads remain
+forbidden.
+
+Evidence:
+
+- `docs/internal/RMQ_FINAL_ROADMAP.md`
+- `docs/internal/audit_reports/2026-07-09_A02_rmq_pre_w10_frontier_audit.md`
+
+Follow-up:
+
+Use the joined scout design to pre-register the uniform-directory theorem
+signatures.
+
+Supersedes:
+
+None.
+
+## DD-20260709-009: Make Exact Dynamic Read Agreement The Primary Adequacy Surface
+
+Status: Accepted
+Date: 2026-07-09
+Scope: Supplied-store and machine-model adequacy.
+
+Decision:
+
+After the uniform route stabilizes, make agreement on the actual dynamic read
+set the primary supplied-store theorem. Retain conservative safe-footprint
+agreement as a convenient corollary and bundle recurring machine invariants in
+a named well-formedness certificate.
+
+Context:
+
+The current list-facing footprint lift is real and useful, but broad safe
+footprints and repeated side conditions ask reviewers to reconstruct why they
+are sufficient.
+
+Options considered:
+
+- Keep only the broad footprint theorem.
+- Expose raw side conditions at every public layer.
+- Lead with exact dynamic reads and derive broad-footprint convenience results.
+
+Rationale:
+
+Exact read agreement is the closest theorem to the execution semantics. A
+certificate packages standard machine preconditions without hiding payload or
+cost assumptions.
+
+Consequences:
+
+This is sequenced after the routing refactor so the dynamic read set is stable.
+
+Evidence:
+
+- `docs/internal/RMQ_FINAL_ROADMAP.md`
+- `RMQ/Core/SuccinctRMQClassic.lean`
+
+Follow-up:
+
+Inventory existing exact-read lemmas during the dependency scout.
+
+Supersedes:
+
+None.
+
+## DD-20260709-010: Prove A Small-Step Machine Bridge Before External Code Generation
+
+Status: Accepted
+Date: 2026-07-09
+Scope: Executable and cost-model publication architecture.
+
+Decision:
+
+Use the existing first-order query controller as the source for a small,
+familiar Word-RAM small-step semantics and prove result/step correspondence
+before considering generated C or Rust.
+
+Context:
+
+The Lean definitions already execute. The remaining reviewer-friction gap is a
+familiar machine refinement theorem, not a Coq-style extraction step. A custom
+translation validator introduced too early could add more bespoke machinery
+than it removes.
+
+Options considered:
+
+- Stop at executable Lean validation.
+- Generate external code immediately.
+- Prove the small-step simulation, complete executable evidence, then reassess
+  whether external code lowers reviewer effort.
+
+Rationale:
+
+The reference-machine pattern is recognizable in formalization research and
+directly connects the checked trace cost to machine steps. External code remains
+available if venue or performance goals justify it.
+
+Consequences:
+
+C/Rust generation is not on the active path before the machine theorem.
+
+Evidence:
+
+- `docs/internal/RMQ_FINAL_ROADMAP.md`
+- `docs/RMQ_EXTRACTION_FRONTIER.md`
+
+Follow-up:
+
+Pre-register the instruction set and simulation statement after the uniform
+route stabilizes.
 
 Supersedes:
 

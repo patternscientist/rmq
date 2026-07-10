@@ -48,13 +48,14 @@
   explicit RAM/indexed-access model.
 - Highest-value novelty: pair the existing `2n - O(log n)` lower-bound
   framework with a payload-accounted upper-bound construction.
-- Near-term proof strategy: add explicit table/access/space model layers first,
-  then refine concrete storage such as sparse tables, microtables, and
-  rank/select directories behind those interfaces.
+- Near-term RMQ strategy: separate total positive directory geometry from
+  optional compact-storage readiness, then prove one uniform all-size route and
+  cost theorem before further executable/machine refinement.
 - Current RMQ paper-hardening strategy: use
   `docs/internal/RMQ_FINAL_ROADMAP.md` as the delegation ladder and
   `docs/internal/ADD_WORKFLOW_TOOLING_PLAN.md` for process/tooling prerequisites
-  before starting new broad roadmap work.
+  before starting new broad roadmap work. Track delegated branches through
+  retirement with `docs/internal/WORKER_LIFECYCLE.md`.
 
 ## Subagent Policy
 
