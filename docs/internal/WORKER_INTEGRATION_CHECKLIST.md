@@ -6,7 +6,9 @@ Use this after every submitted worker branch.
 
 - [ ] Handle/title, base, branch, worktree, and commit are exact.
 - [ ] Changed files fit the write scope.
-- [ ] The branch advances the named roadmap node and join in spirit.
+- [ ] The branch closes its named local rung and advances the roadmap join in
+      spirit.
+- [ ] Local-rung status and roadmap-node status are recorded separately.
 - [ ] Unrelated or stale-base changes are absent.
 
 ## Target Closure

@@ -25,6 +25,9 @@ Checkout contract:
 
 Roadmap contract:
 - Node/join: [ROADMAP_NODE_AND_CONSUMER]
+- Local owned rung: [EXACT LOCAL DELIVERABLE]
+- Roadmap-node closure condition: [WHAT MUST HOLD BEYOND THIS RUNG]
+- This task closes: [LOCAL RUNG / ENTIRE ROADMAP NODE]
 - Goal: [ONE SENTENCE EXACT TARGET]
 - Required theorem/file/tool: [EXACT TARGET]
 - Write scope: [PATHS]

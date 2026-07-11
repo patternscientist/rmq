@@ -16,7 +16,7 @@ not proof evidence.
 ## Current Decision Index
 
 WDD-20260709-015 through WDD-20260709-019, WDD-20260710-001 through
-WDD-20260710-002, and WDD-20260711-001 govern the
+WDD-20260710-002, and WDD-20260711-001 through WDD-20260711-002 govern the
 current audit-context, obstruction, skill-context, lifecycle, scout, durable
 read-only-report, model-routing, and proof-completion policies. Earlier
 entries retain stable IDs and historical insertion order; read their Status
@@ -1316,3 +1316,86 @@ Supersedes:
 No earlier decision. It strengthens WDD-20260709-016's stop conditions and
 WDD-20260709-017's thin-skill policy by placing detailed completion rules in a
 required on-demand reference.
+
+## WDD-20260711-002: Separate Local-Rung Closure From Roadmap Closure
+
+Status: Accepted
+Date: 2026-07-11
+Scope: Coordinator frontier tracking, worker bases, and delegation prompts.
+
+Decision:
+
+Coordinators must track two completion states independently:
+
+- whether the worker's exact local rung is closed;
+- whether the larger roadmap node and its named downstream consumer are closed.
+
+Every worker prompt names both states and says which one the assignment owns.
+A local prerequisite may be reported complete without implying that its roadmap
+node is complete. Roadmap status changes only after coordinator integration and
+consumer-level verification.
+
+Before launch, the coordinator also verifies that the worker's exact base
+contains the current workflow skills and prompt policy. When proof and workflow
+changes are sibling branches, the coordinator creates an explicit integration
+base or requires the worker to merge the named workflow commit before invoking
+the skill.
+
+Context:
+
+The machine-backed uniform-directory campaign produced several valuable local
+rungs: the uniform directory, the per-component machine store, and the composed
+range-store footprint. Those rungs materially advance U2, but the final
+close/LCA reviewer path still consumes the legacy three-way interior route and
+the old zero-block path remains live. Calling a local rung complete and calling
+U2 complete are therefore different statements.
+
+At the same time, the completion-gate policy landed on a sibling branch rather
+than the current U2 proof branch. A prompt that merely says to use the latest
+skill is ineffective if the checkout does not contain that skill version.
+
+Options considered:
+
+- Use only roadmap-node-sized assignments.
+- Let workers use "complete" informally and rely on prose context.
+- Track local and roadmap closure separately but leave branch policy implicit.
+- Track both statuses explicitly and require the worker base to contain the
+  governing workflow policy.
+
+Rationale:
+
+Some proof campaigns are causally too large for one safe write assignment, so
+local rungs remain useful. Explicit dual status preserves that granularity
+without allowing checkpoint language to drift into a public frontier claim.
+
+Joining workflow policy into the worker base makes the process contract
+reproducible. It also leaves a publication-friendly history: the project can
+explain which intermediate abstractions were established, which consumer made
+them meaningful, and when the larger theorem architecture actually changed.
+
+Consequences:
+
+Coordinator reports and integration checklists distinguish local-rung and
+roadmap-node status. Worker prompts identify the downstream closure condition
+even when the current task owns only a prerequisite. A worker cannot infer
+policy from a sibling branch or chat description; the policy commit must be in
+the checkout it uses.
+
+Evidence:
+
+- `.agents/skills/rmq-coordinator/SKILL.md`
+- `docs/internal/templates/WORKER_PROMPT.md`
+- `docs/internal/WORKER_INTEGRATION_CHECKLIST.md`
+- sibling frontiers `8c92a4a` and `856fb74` above common base `0c5d422`
+
+Follow-up:
+
+Use the dual-status fields for the next U2 addressability repair and the
+subsequent final-route migration. Mark U2 complete only after the canonical
+directory is consumed by the reviewer close/LCA path and the zero-block route
+is no longer reachable there.
+
+Supersedes:
+
+No earlier decision. It operationalizes WDD-20260711-001 without weakening its
+completion standard.

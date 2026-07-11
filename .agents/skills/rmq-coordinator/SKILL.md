@@ -15,6 +15,8 @@ Start by reconstructing the live frontier from source, not memory:
 git status --short --branch
 git log --oneline --decorate -20
 git branch --all --contains HEAD
+git worktree list --porcelain
+git log --oneline --decorate --graph --all --simplify-by-decoration -35
 ```
 
 Read the relevant internal contract:
@@ -61,12 +63,21 @@ Every worker prompt should name:
 - skill to use before starting, usually `$rmq-proof-sprint` for narrow Lean
   proof, construction, cost/space, validation, or theorem-surface work;
 - exact theorem/profile/document target;
+- the local owned rung and the larger roadmap node it feeds;
+- the exact condition under which the local rung is complete and the distinct
+  condition under which the roadmap node may be marked closed;
 - a requirement-to-evidence matrix obligation and the applicable inherited
   invariants from the proof-sprint completion gate;
 - forbidden shortcuts;
 - verification commands;
 - completion report requirements, including branch name, worktree path, base
   branch, and commit hash for write tasks.
+
+Before launch, verify that the worker's exact base contains the current
+workflow skill and prompt policy. If proof and workflow branches are siblings,
+join them in an explicit integration base or require the worker to merge the
+named workflow commit before using the skill. Do not assume a worker can see
+policy that exists only on another branch.
 
 When presenting prompts to the user, keep coordinator-facing launch metadata
 outside the worker prompt text:
@@ -92,15 +103,17 @@ For each completed worker branch:
    worker's `COMPLETE` declaration against prompt requirements, the named
    consumer, and inherited invariants; do not let a local rung redefine the
    assigned target.
-5. Trace returned values to charged reads and check actual footprint addresses
+5. Record local-rung status and roadmap-node status separately; a closed helper
+   or prerequisite does not close its consumer node.
+6. Trace returned values to charged reads and check actual footprint addresses
    against modeled address capacity when machine/store work changed.
-6. Run the smallest gate that genuinely covers the change, including small and
+7. Run the smallest gate that genuinely covers the change, including small and
    threshold boundary cases when layout or dispatch changed.
-7. Update theorem maps, artifact docs, and design logs if the public surface or
+8. Update theorem maps, artifact docs, and design logs if the public surface or
    architecture changed.
-8. Merge, port, continue, or reject the branch and record the disposition.
-9. Update lifecycle state and retire the worktree/branch when evidence is preserved.
-10. Re-read the current roadmap/frontier and produce the best next ambitious
+9. Merge, port, continue, or reject the branch and record the disposition.
+10. Update lifecycle state and retire the worktree/branch when evidence is preserved.
+11. Re-read the current roadmap/frontier and produce the best next ambitious
    prompt or prompt set, using parallel workers when the dependencies are
    genuinely independent.
 
@@ -151,6 +164,7 @@ Final reports should state:
 - design/workflow logs updated, or why none were needed;
 - what remains open and what should not be worked on next;
 - worker lifecycle dispositions and any retirement still pending;
+- local-rung completion and roadmap-node completion as separate statuses;
 - best next ambitious prompt or prompt set, ready to paste into the appropriate
   worker or external-auditor chat, unless the right next step is explicitly to
   wait, hand off, or not launch more work yet.
