@@ -324,4 +324,23 @@ lands should the all-size cost constant be rederived (per DD-20260709-008).
 
 ## 10. Coordinator disposition
 
-(Left for the coordinator: accepted/rejected findings and next action.)
+Disposition date: 2026-07-10.
+
+- The merge-ready-with-follow-up verdict is accepted.
+- P2.1 is accepted and closed by the named
+  `Layout.Valid.macroSize_pos` theorem.
+- P3.2 is deferred to U2: add named per-field agreement corollaries only where
+  actual consumers replace positional conjunction projections.
+- P3.3 is accepted as harmless under the frozen U1 design and deferred to A1
+  naming/module review.
+- P3.4 is accepted as an intentional interface choice: do not add a global
+  `Decidable CompactReady` instance without a consuming theorem.
+- P3.5 is rejected as a required workflow-log change. The strict checker raised
+  a review tripwire, but the roadmap delta was status-only and introduced no
+  workflow decision.
+- P3.6 is accepted and closed by formatting the implementation section and
+  clarifying that the remaining prospective U1 wording is the frozen acceptance
+  specification.
+
+Next action: begin U2 with one total interior-directory abstraction; do not
+start cost rederivation or broad file movement first.

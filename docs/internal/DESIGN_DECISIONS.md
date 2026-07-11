@@ -1364,6 +1364,7 @@ Options considered:
 - Use pure computational layout data with separate validity/readiness
   predicates.
 - Scatter `max 1` across current formulas.
+- Give `CompactReady` a global `Decidable` instance for convenient branching.
 
 Rationale:
 
@@ -1371,6 +1372,11 @@ The chosen split matches the mathematical presentation, makes executable data
 obvious, and keeps proof-only evidence out of the data representation. It also
 lets canonical validity and legacy agreement be cited directly without making
 arbitrary layouts silently valid.
+
+The uniform-route plan deliberately leaves `CompactReady` without a global
+`Decidable` instance. A local instance can be recovered through the checked
+legacy equivalence if a real construction-time consumer needs it; routine
+decidability would otherwise encourage the route split U2 is meant to remove.
 
 Consequences:
 
@@ -1384,18 +1390,23 @@ U1 also relocates `canonicalBPRelativeSummaryBlockCountRaw_upper_cover` from
 only raw layout arithmetic, so the upstream location preserves dependency
 direction without a duplicate helper or downstream import.
 
+The accepted interface includes the named `Layout.Valid.macroSize_pos` accessor.
+Named per-field legacy-agreement corollaries should be added only when U2
+consumers demonstrate that they improve the proof surface.
+
 Evidence:
 
 - `docs/internal/RELATIVE_RMM_LAYOUT_DESIGN.md`
 - `RMQ/Core/SuccinctClose/RelativeSummary.lean`
 - `03043fe` (U1 implementation and relocation)
 - `RMQ/Core/SuccinctClose/RelativeRmmMacro/ConcreteDirectory.lean`
+- `docs/internal/audit_reports/2026-07-10_A03_u1_total_layout_audit.md`
 
 Follow-up:
 
-U1 is implemented in the existing `RelativeSummary` surface and passed its
-proof gates. Externally audit the interface at `03043fe` before changing the
-directory route.
+U1 and its named macro-size positivity accessor passed the proof gates; A03
+accepted the interface. Begin U2 from the uniform-directory theorem target and
+add agreement corollaries only for actual consumers.
 
 Supersedes:
 

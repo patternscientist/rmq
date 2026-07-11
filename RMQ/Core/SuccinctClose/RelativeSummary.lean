@@ -1358,6 +1358,12 @@ theorem CompactReady.macroSize_le_blockCount
     layout.macroSize <= layout.blockCount :=
   hready.2.2
 
+theorem Valid.macroSize_pos
+    {layout : Layout} {shape : Cartesian.CartesianShape}
+    (hvalid : layout.Valid shape) :
+    0 < layout.macroSize :=
+  Nat.mul_pos hvalid.blocksPerSuper_pos hvalid.blocksPerSuper_pos
+
 end Layout
 
 @[simp] theorem canonicalLayout_blockSize

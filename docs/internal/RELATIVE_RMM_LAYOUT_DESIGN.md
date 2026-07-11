@@ -1,11 +1,13 @@
 # Relative RmM Layout Design
 
-Status: implemented at coordinator commit `03043fe`; pending external U1 audit.
+Status: implemented at `03043fe` and accepted by external audit A03 at
+`16e378c`.
 Pinned source frontier: `25395d43deea39cdbac2c273c60d1298c93cc2f3`.
 
 This document joins the F0 declaration-closure, P1 parameter-design, and N1
 architecture scouts. It freezes the U1 interface target only. It does not
 choose the U2 small-directory implementation.
+
 ## Implementation Outcome
 
 U1 landed the four-field computational `RelativeRmm.Layout` and the separate
@@ -20,6 +22,9 @@ cost constant, headline alias, or artifact claim changed. This is an interface
 and proof-dependency milestone; U2 remains responsible for consuming the layout
 in one all-size directory route.
 
+Prospective `U1 should` and `U1 must` language below is retained as the frozen
+acceptance specification; A03 checked those obligations against the landed
+source.
 
 ## Problem
 

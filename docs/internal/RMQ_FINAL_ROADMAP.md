@@ -121,7 +121,7 @@ Acceptance:
 
 ### U2. Build One Uniform Local/Interior Directory Route
 
-Status: next, after the independent U1 interface audit.
+Status: next; external audit A03 accepted U1 with its small follow-up closed.
 
 Make all sizes use the same directory abstraction. First attempt to totalize
 the existing hierarchy so small instances degenerate naturally. Introduce a
