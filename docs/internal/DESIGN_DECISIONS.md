@@ -21,7 +21,7 @@ See also:
 ## Current Decision Index
 
 The active final-route architecture is DD-20260709-007 through
-DD-20260709-010 together with DD-20260710-001 through DD-20260710-003.
+DD-20260709-010 together with DD-20260710-001 through DD-20260710-004.
 Foundational decisions such as the Mathlib-free trust boundary,
 list-facing reference semantics, narrow paper root, and cost/runtime separation
 remain active where their individual status says so. Entries retain stable IDs
@@ -1533,3 +1533,91 @@ stable consumers and paper-facing proof story.
 Supersedes:
 
 None.
+## DD-20260710-004: Rechunk One Total Raw-Canonical Relative-rmM Hierarchy
+
+Status: Accepted
+Date: 2026-07-10
+Scope: U2 all-size relative-rmM interior directory representation.
+
+Decision:
+
+Instantiate one two-level local/global relative-rmM hierarchy unconditionally
+from `RelativeRmm.canonicalLayout`. Store the canonical raw summary, local,
+and global payloads for every shape. Read each addressed logical fixed-width
+cell back from a bounded chunk store whose words have
+`SuccinctRank.machineWordBits shape.bpCode.length` bits, and charge at most
+eight machine-word reads per logical cell.
+Empty, singleton, and small shapes use the same macro arithmetic as large
+shapes. No top-level branch may inspect `Active`, `Ready`, or
+`CompactReady`; readiness appears only in the checked agreement and payload
+transport theorems.
+
+Context:
+
+U1 proved the raw canonical layout valid for every shape, and the existing
+`bpTwoLevelInteriorCandidateCosted_erase_exact` join already needed only
+geometry plus query count/bounds. The remaining blocker was representational:
+for the singleton Cartesian shape, the raw relative width is five bits while
+the modeled machine word is two bits. Thus the legacy one-cell/one-word codec
+cannot be used raw at all sizes even though the hierarchy itself is correct.
+
+Options considered:
+
+- Keep the Ready/active-not-Ready/inactive top-level route split.
+- Add a separate packed small directory.
+- Store dense all-pairs range answers or scan the raw summaries.
+- Keep one raw relative cell as one machine word.
+- Rechunk every logical cell uniformly and preserve the hierarchy.
+- Return semantic answers with proof-only or decorative read traces.
+
+Rationale:
+
+Uniform rechunking addresses the concrete singleton width mismatch without
+changing the rmM geometry or introducing a second algorithm. Each summary,
+local-offset, and global-block value is decoded from a bounded chunk-store
+read; those decoded values directly feed the same two-level merge geometry.
+Layerwise refinement theorems recover the older logical table computation, so
+exactness is transferred without treating the old result as an executable
+oracle. Kernel-checked bounds give four machine-backed reads per summary,
+five logical cells per span, at most thirty logical cells on the cross-macro
+route, at most eight machine chunks per cell, and therefore at most 240 actual
+modeled reads. The payload is still exactly the concatenated raw
+summary/local/global payload; no answer table or proof-only field is added.
+The all-size overhead is exact raw payload below the existing readiness
+threshold and the established `o(n)` envelope above it. CompactReady transport
+proves the total directory has the same valid-range answer and payload length
+as the legacy compact directory.
+
+Consequences:
+
+`canonicalRelativeRmmInteriorDirectory_rangeMinCosted_erase_exact` has no
+Ready or Active premise. The all-size profile packages the unconditional
+payload bound, constant modeled query cost, exactness, and machine-word reads.
+U1 now exposes named fieldwise CompactReady agreement corollaries because the
+U2 payload transport is their concrete consumer.
+
+This rung does not alter `lcaCloseCosted`, final-query dispatch, the zero-block
+same-block route, or final all-size constants. Those remain a separate consumer
+change.
+
+Evidence:
+
+- `RMQ/Core/SuccinctClose/RelativeSummary.lean`
+- `RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean`
+- `canonicalRelativeRmmInteriorDirectory_profile_allSize`
+- `canonicalRelativeRmmInteriorRangeMinCosted_refines_logical`
+- `canonicalRelativeRmmInteriorWordsRead_reconstruct_logical`
+- the singleton width audit: raw relative width 5, machine width 2
+
+Follow-up:
+
+Replace the three-way interior route in the compact close/LCA consumer with
+`canonicalRelativeRmmInteriorDirectory`, then rebuild the global trace/store
+transport. That consumer is the next step toward removing the final zero-block
+route; this decision does not itself remove it.
+
+Supersedes:
+
+The three-way interior routing consequence of DD-20260709-007 for the interior
+directory abstraction. It does not supersede the still-live final-query route
+until the consumer migration lands.

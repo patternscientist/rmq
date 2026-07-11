@@ -533,6 +533,36 @@ events. A skeptical grad student should next ask whether this component-backed
 global store can be flattened into one counted offset manifest and whether the
 trace-local bounds can be replaced by uniform machine-word side conditions.
 
+2026-07-10 U2 uniform relative-rmM interior rung: the new
+`SuccinctClose.canonicalRelativeRmmInteriorDirectory` instantiates one
+two-level local/global rmM hierarchy from
+`RelativeRmm.canonicalLayout` for every Cartesian shape. Exactness now follows
+from positive count and the canonical block bound alone; `Ready` and `Active`
+do not appear in
+`canonicalRelativeRmmInteriorDirectory_rangeMinCosted_erase_exact`.
+Conceptually, small inputs are no longer a different interior algorithm: empty
+geometry has no valid positive range, and singleton/small ranges pass through
+the same macro hierarchy. The old one-cell codec could not simply be made
+total--the singleton raw relative width is five bits while its modeled machine
+word is two--so each logical cell is uniformly rechunked into machine-width
+pieces. The charged range path decodes summary, local-offset, and global-block
+values from those bounded chunk stores; the decoded values directly select and
+merge candidates through the two-level hierarchy. Layerwise checked agreement
+with the earlier logical tables transfers the existing exactness join without
+executing an independent semantic answer. The structural bounds are four reads
+per summary, five logical cells per span, at most thirty cells and 240 actual
+modeled reads on the largest branch. The public word-list reconstruction and
+payload profile count the same raw summary/local/global bits at every size.
+Under CompactReady, named U1 field transports prove payload-length and
+valid-range agreement with the legacy directory. Plain English: the directory
+theorem is now all-size and payload-live without a small oracle, dense answer
+table, decorative read replay, or readiness dispatch. Live assumptions are the
+existing model-level `Costed` indexed-read semantics and the checked
+machine-to-logical codec refinements; compiled Lean runtime is not claimed. A
+skeptical grad student should next ask for the final compact close/LCA consumer
+and global trace/store transport to use this directory, replacing the
+three-way interior route, and then ask which remaining zero-block same-block
+route can be deleted.
 ## Current Paper-Path Note
 
 2026-07-06 digestion pass: the project-wide digest was refreshed as

@@ -58,14 +58,26 @@ non-Ready shapes use a bounded summary scan, and inactive shapes return pure
 none for the interior obligation. The
 route theorem is
 `SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorAllSizeStructuralRoute_total`.
+The first U2 replacement rung is now proved independently of that dispatch:
+`SuccinctClose.canonicalRelativeRmmInteriorDirectory` instantiates one raw
+`RelativeRmm.canonicalLayout` two-level hierarchy for every shape, and
+`SuccinctClose.canonicalRelativeRmmInteriorDirectory_profile_allSize` proves
+its all-size payload bound, constant modeled query cost, unconditional
+count/bound exactness, and machine-width reads. Its summary, local-offset, and
+global-block values are decoded from charged bounded-store reads and directly
+feed the two-level merges, while
+`SuccinctClose.canonicalRelativeRmmInteriorDirectory_agrees_with_legacy_of_compactReady`
+proves valid-range agreement with the legacy compact directory. Final-query
+dispatch and the zero-block route have not yet been changed to consume U2.
 The successful-read exclusion theorem for the public final trace is
 `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_noFiniteSmallInteriorSuccessfulRead`;
 it excludes successful reads to legacy interior slots 26 and 27, not all
 syntactic read events. The theorem
 `SuccinctClose.concreteBPRelativeRmmInteriorReady_not_all` still records
-the exact empty-shape obstruction to making the current Ready predicate
+the exact empty-shape obstruction to making the legacy Ready predicate
 universal, while `SuccinctClose.concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold`
 is now only a sufficient Ready theorem, not the public fallback story.
+U2 leaves that predicate intact while removing it from the new exactness path.
 The fast-regime cost theorem
 `Headlines.succinctRMQFastRegimeGlobalPayloadStoreCostLeOfReadyThreshold`
 uses that sufficient Ready-threshold premise to prove the final global trace
@@ -2153,6 +2165,12 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctClose.concreteBPRelativeRmmInteriorDirectory_parameter_profile_of_size_ge`,
   `SuccinctClose.concreteBPRelativeRmmInteriorDirectory_twoLevel_budget_profile_of_size_ge`,
   `SuccinctClose.bpTwoLevelInteriorCandidateCosted_erase_exact`,
+  `SuccinctClose.canonicalRelativeRmmInteriorDirectory`,
+  `SuccinctClose.canonicalRelativeRmmInteriorDirectory_rangeMinCosted_erase_exact`,
+  `SuccinctClose.canonicalRelativeRmmInteriorDirectory_agrees_with_legacy_of_compactReady`,
+  `SuccinctClose.canonicalRelativeRmmInteriorRangeMinCosted_refines_logical`,
+  `SuccinctClose.canonicalRelativeRmmInteriorWordsRead_reconstruct_logical`,
+  `SuccinctClose.canonicalRelativeRmmInteriorDirectory_profile_allSize`,
   `SuccinctClose.concreteBPRelativeRmmInteriorLocalTable_payload_le_budget_of_size_ge`,
   `SuccinctClose.concreteBPRelativeRmmInteriorGlobalTable_payload_le_budget_of_size_ge`,
   `SuccinctClose.concreteBPRelativeRmmInterior_size_lt_readyThreshold_of_not_ready`,
