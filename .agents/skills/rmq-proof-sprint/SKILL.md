@@ -16,14 +16,21 @@ Before editing:
 2. Read the assigned node in `docs/internal/RMQ_FINAL_ROADMAP.md`.
 3. Read the target modules and their direct public consumers.
 4. Read only relevant entries in `docs/internal/DESIGN_DECISIONS.md`.
-5. Read `references/KNOWN_FAILURE_MODES.md` only when the target touches one of
+5. Read `references/COMPLETION_GATE.md` for every nontrivial proof,
+   representation, store, trace, cost-model, or public-theorem task.
+6. Read `references/KNOWN_FAILURE_MODES.md` only when the target touches one of
    those historical traps.
-6. Confirm the assigned base, branch, worktree, write scope, target theorem, and
+7. Confirm the assigned base, branch, worktree, write scope, target theorem, and
    checks.
 
 Restate the named target, downstream consumer, hard obligation, forbidden
 shortcuts, and exact stop conditions. Do not edit the coordinator checkout or
 revert unrelated work.
+
+Before editing, build the requirement-to-evidence matrix required by
+`references/COMPLETION_GATE.md`. It includes both prompt bullets and inherited
+RMQ invariants; omission from the prompt does not waive an invariant needed by
+the named consumer.
 
 ## 2. Check Parallelism
 
@@ -59,6 +66,11 @@ Requirements:
 
 A helper, wrapper, record field, or conditional exactness theorem is complete
 only when the assigned downstream target consumes it.
+
+For machine-backed work, prove address capacity against the modeled word width
+for the actual execution footprint, including dead/sentinel addresses. Host
+array bounds are not machine-addressability. Trace the returned value backward
+to the charged reads; post-hoc replay of a value obtained elsewhere is invalid.
 
 ## 4. Work To The Named Target
 
@@ -112,6 +124,11 @@ status, or scope changes, update `docs/FAMILY_SUMMARY.md` and, when relevant,
 
 ## 7. Finish The Branch
 
+Run the final self-audit in `references/COMPLETION_GATE.md` before staging.
+Re-run it after verification and after any post-commit discovery. If an
+assigned or inherited criterion remains open, continue on the same branch; a
+commit is a checkpoint, not a stop condition.
+
 Stage only intended files. Commit unless the prompt explicitly says read-only
 or no-commit. Report:
 
@@ -122,7 +139,9 @@ or no-commit. Report:
 - skeptical-reviewer questions;
 - design decisions logged, or why none were needed;
 - exact verification outcomes;
-- remaining blockers and the next crisp target.
+- the completed requirement-to-evidence matrix;
+- one exact completion status and declaration from the completion gate;
+- remaining blockers and the next crisp target when status is not complete.
 
 A worker may stop only when the target closes, a formal obstruction forces a
 coordinator decision, required external state blocks progress, or the user

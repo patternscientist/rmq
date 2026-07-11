@@ -10,7 +10,8 @@ Every delegated task moves through these states:
 1. **Planned**: handle, target, base, and intended branch are assigned.
 2. **Launched**: the prompt has been sent.
 3. **Active**: a worker has created or confirmed its worktree and branch.
-4. **Submitted**: the worker reports a commit or a read-only report.
+4. **Submitted**: the worker reports a commit or a read-only report. Submission
+   does not imply that the worker's completion assessment is accepted.
 5. **Audited**: the coordinator records a merge, port, reject, or follow-up
    verdict.
 6. **Integrated**: accepted work is present in the coordinator frontier.
@@ -51,6 +52,8 @@ one coordinator update can state clearly.
 - Read-only scouts inspect an exact commit and do not need a branch.
 - Report-only auditors may use an `audit/` branch with a single allowed report
   path.
+- A same-worker repair for an unmet acceptance criterion remains part of the
+  same lifecycle task even when it adds another commit.
 - A branch must never be merged merely because its worker says it is complete.
 - Prefer additive aliases and porting over conflict-heavy merges when the
   frontier moved materially during the task.

@@ -29,6 +29,25 @@ Roadmap contract:
 - Required theorem/file/tool: [EXACT TARGET]
 - Write scope: [PATHS]
 - Non-goals: [BOUNDARIES]
+- Explicitly deferred work: [ITEMS]. A deferred item is non-blocking only when
+  it is not required for this target or its inherited invariants to be true.
+
+Acceptance contract:
+- Before editing, create a requirement-to-evidence matrix for every prompt
+  requirement, the named consumer, every applicable inherited invariant, and
+  every requested check. Name the intended theorem/check for each row.
+- Read and apply
+  .agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md.
+- Preserve all applicable inherited invariants: counted-store provenance,
+  result dependency on charged reads, execution-derived trace/footprint,
+  supplied-store agreement, successful-read backing, machine-width words,
+  machine-width addresses and operands, all assigned edge cases, and no hidden
+  readiness/compatibility dispatch.
+- For machine/layout work, audit actual footprint addresses against
+  `2 ^ wordWidth`, including dead/sentinel addresses; array bounds are not
+  enough.
+- For execution work, trace the returned result backward to the charged reads;
+  post-hoc replay or decorative reads do not count.
 
 Forbidden shortcuts:
 - No prose substitute for proof.
@@ -43,12 +62,18 @@ Context:
   docs/internal/RMQ_FINAL_ROADMAP.md.
 - Read the target modules and direct consumer.
 - Read only relevant design-decision entries and task-specific docs.
+- Read .agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md.
 - Use .agents/skills/rmq-proof-sprint/references/KNOWN_FAILURE_MODES.md only if
   the target touches those traps.
 
 Completion:
 - Work until the named target closes or a valid obstruction dossier forces a
   coordinator decision.
+- A commit, push, green build, local helper, or honest caveat is a checkpoint,
+  not completion. If your self-audit says a required property remains for the
+  next consumer, continue on the same branch and add another commit.
+- Exercise applicable edge cases in Lean: empty, singleton, size two,
+  threshold minus one, threshold, and representative query shapes.
 - Log real code/artifact decisions in DESIGN_DECISIONS.md and workflow changes
   in WORKFLOW_DESIGN_DECISIONS.md.
 - Stage only intended files and commit unless explicitly read-only.
@@ -69,6 +94,10 @@ Report:
 - skeptical-reviewer questions;
 - decisions logged or why none were needed;
 - exact command outcomes;
+- completed requirement-to-evidence matrix;
+- one status from COMPLETE / OBSTRUCTED / BLOCKED / INCOMPLETE;
+- use COMPLETE only with the exact declaration: `No assigned or inherited
+  acceptance criterion remains unmet.`;
 - lifecycle disposition requested, durable report/synthesis disposition, and
   next crisp target.
 ```

@@ -30,8 +30,16 @@ Scope:
 
 Adversarial requirements:
 - Test literal correctness and the spirit of the target.
+- Reconstruct a requirement-to-evidence matrix independently from the prompt,
+  named consumer, roadmap node, and inherited RMQ invariants. Do not accept the
+  worker's chosen local endpoint as the target without checking that contract.
 - Look for wrappers, renamed caveats, decorative reads, proof-only answers,
   uncounted storage, synthetic events, or work that advances a different goal.
+- Treat the report's own remaining-risk or next-consumer caveats as evidence
+  against completion when they concern assigned or inherited criteria.
+- For machine/store changes, trace returned values backward to charged reads
+  and test actual footprint addresses, including tiny inputs and dead/sentinel
+  addresses, against modeled word capacity rather than host array bounds.
 - Trace public names to source theorems and exact assumptions.
 - Cite evidence for every finding and positive claim.
 

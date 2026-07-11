@@ -48,6 +48,13 @@ Specifically look for technically correct wrappers, renamed caveats, decorative
 reads, proof-only answers, uncounted storage, synthetic events, or valuable work
 that advances a different goal.
 
+Also ask the auditor to reconstruct the worker's requirement-to-evidence
+matrix independently. Treat a completion report's own "remaining risk",
+"reviewer should ask", or "next consumer must prove" language as presumptive
+evidence of incomplete closure. For machine-backed work, require backward value
+dependency and actual address-capacity checks, including tiny instances and
+dead/sentinel addresses.
+
 Positive evidence tiers are kernel theorem, model theorem, executable
 validation, artifact evidence, then process evidence. Process reports do not
 prove mathematical or executable claims.

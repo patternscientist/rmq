@@ -13,6 +13,14 @@ constraints, not a substitute for inspecting current source.
   oracles.
 - Synthetic trace events and repeated decorative reads do not establish an
   execution story.
+- Replaying charged reads after first obtaining a wide-cell or semantic value
+  does not make that value machine-derived.
+- Proving an address is within a host array does not prove it fits the modeled
+  machine word. Check the actual footprint, including dead addresses, against
+  `2 ^ wordWidth`.
+- A per-component machine-backed adapter does not close a range or global-store
+  claim until the composed execution derives its result and footprint from
+  that store.
 - Dense all-pairs tables need an actual sublinear budget; an eventuality theorem
   that excludes the branch being counted is not enough.
 
@@ -27,6 +35,10 @@ Common incomplete endpoints include:
 - an abstract profile whose concrete compact builder remains absent;
 - a routing/index function that can hide search, predecessor, or oracle work;
 - a new parameter or adapter with no concrete public instance.
+
+An honest "remaining audit risk" is useful evidence, but it is also evidence
+that an assigned acceptance criterion remains open. Commit the checkpoint and
+continue rather than reporting the task complete.
 
 ## Select And Close History
 

@@ -61,6 +61,8 @@ Every worker prompt should name:
 - skill to use before starting, usually `$rmq-proof-sprint` for narrow Lean
   proof, construction, cost/space, validation, or theorem-surface work;
 - exact theorem/profile/document target;
+- a requirement-to-evidence matrix obligation and the applicable inherited
+  invariants from the proof-sprint completion gate;
 - forbidden shortcuts;
 - verification commands;
 - completion report requirements, including branch name, worktree path, base
@@ -86,12 +88,19 @@ For each completed worker branch:
 1. Fetch and inspect the branch, commit, base, and diff.
 2. Verify that the worker owned the changed files.
 3. Trace public aliases to source theorem statements when claims changed.
-4. Run the smallest gate that genuinely covers the change.
-5. Update theorem maps, artifact docs, and design logs if the public surface or
+4. Reconstruct the requirement-to-evidence matrix independently. Check the
+   worker's `COMPLETE` declaration against prompt requirements, the named
+   consumer, and inherited invariants; do not let a local rung redefine the
+   assigned target.
+5. Trace returned values to charged reads and check actual footprint addresses
+   against modeled address capacity when machine/store work changed.
+6. Run the smallest gate that genuinely covers the change, including small and
+   threshold boundary cases when layout or dispatch changed.
+7. Update theorem maps, artifact docs, and design logs if the public surface or
    architecture changed.
-6. Merge, port, or reject the branch and record the disposition.
-7. Update lifecycle state and retire the worktree/branch when evidence is preserved.
-8. Re-read the current roadmap/frontier and produce the best next ambitious
+8. Merge, port, continue, or reject the branch and record the disposition.
+9. Update lifecycle state and retire the worktree/branch when evidence is preserved.
+10. Re-read the current roadmap/frontier and produce the best next ambitious
    prompt or prompt set, using parallel workers when the dependencies are
    genuinely independent.
 

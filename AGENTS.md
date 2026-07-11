@@ -81,6 +81,12 @@
   honest, but if the assigned target is not yet true and the next local
   proof/construction step is available, keep working instead of stopping at a
   clean partial checkpoint.
+- For nontrivial proof, representation, store, trace, or cost-model work,
+  workers must apply
+  `.agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md`. A commit,
+  push, green build, or candid remaining-risk note is a checkpoint, not target
+  closure. Completion requires every explicit criterion and applicable
+  inherited invariant to have concrete theorem/check evidence.
 - Every worker completion report must include a short proof-digestion section:
   what changed conceptually, what the work just done now means in plain
   English, what assumptions are live, and what a skeptical grad student would

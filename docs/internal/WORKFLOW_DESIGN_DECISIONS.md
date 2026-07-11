@@ -15,10 +15,10 @@ not proof evidence.
 
 ## Current Decision Index
 
-WDD-20260709-015 through WDD-20260709-019 and WDD-20260710-001 through
-WDD-20260710-002 govern the
+WDD-20260709-015 through WDD-20260709-019, WDD-20260710-001 through
+WDD-20260710-002, and WDD-20260711-001 govern the
 current audit-context, obstruction, skill-context, lifecycle, scout, durable
-read-only-report, and model-routing policies. Earlier
+read-only-report, model-routing, and proof-completion policies. Earlier
 entries retain stable IDs and historical insertion order; read their Status
 rather than inferring current priority from file order.
 
@@ -1223,3 +1223,96 @@ Supersedes:
 
 The underspecified model-family wording in WDD-20260708-007 and WDD-20260709-009;
 their requirement to keep launch metadata outside worker prompts remains active.
+
+## WDD-20260711-001: Make Proof Completion Evidence-Gated
+
+Status: Accepted
+Date: 2026-07-11
+Scope: Proof-worker completion, coordinator integration, and external audit.
+
+Decision:
+
+A nontrivial proof or representation worker may declare completion only after a
+requirement-to-evidence matrix closes every explicit prompt requirement, named
+downstream consumer, applicable inherited RMQ invariant, and requested check.
+The proof-sprint skill owns a mandatory completion gate; worker prompts,
+coordinator integration, and external audits independently apply the same
+contract.
+
+The inherited gate includes counted-store provenance, dependency of returned
+values on charged reads, execution-derived traces and footprints,
+supplied-store agreement, successful-read backing, machine-width words,
+machine-width addresses and operands, all assigned edge cases, and the absence
+of proof-only answers, decorative reads, and hidden regime dispatch.
+
+Context:
+
+Recent uniform-directory work produced mathematically useful checkpoints with
+green builds and candid self-audits. One checkpoint still obtained a logical
+cell before replaying charged reads; a repair established real per-table reads
+but identified an open composed-footprint obligation; the next repair closed
+that footprint but missed the inherited machine-address-capacity condition on
+tiny instances. The reports were honest, yet the workers treated local rungs
+or commits as completion even when their own caveats named work required by the
+assigned consumer.
+
+This exposed a workflow ambiguity: the existing rule that a green build is not
+closure did not force workers to preserve the full acceptance contract across
+local proof steps or to distinguish a useful submitted checkpoint from a
+completed target.
+
+Options considered:
+
+- Trust worker completion reports and rely on occasional external audits.
+- Leave completion discipline entirely to the coordinator's post hoc review.
+- Add more target-specific prose to every proof prompt.
+- Define one reusable evidence gate, require prompts to instantiate it, and
+  require coordinators and auditors to reconstruct it independently.
+
+Rationale:
+
+A reusable matrix prevents the target from shrinking as implementation details
+accumulate. Inherited invariants keep architectural obligations live even when
+a prompt author forgets to repeat them. Independent reconstruction by the
+coordinator and auditor limits self-confirming interpretations.
+
+The gate also improves paper exposition. It preserves a traceable connection
+from each implementation decision to the reviewer-facing claims it supports:
+where answers come from, which storage is counted, how execution footprints are
+formed, and why machine bounds cover all cases.
+
+Consequences:
+
+A commit, push, green build, local helper, or candid remaining-risk paragraph
+is a checkpoint, not completion. If a post-commit self-audit finds a locally
+repairable unmet criterion, the same worker continues on the same branch and
+adds another commit. A submitted branch remains one lifecycle task until the
+owned target closes, is formally obstructed, is externally blocked, or is
+explicitly redirected.
+
+Completion reports must include the matrix, one controlled status, and the
+exact declaration `No assigned or inherited acceptance criterion remains
+unmet` for `COMPLETE`. Machine/layout work must test tiny and threshold cases,
+trace returned values backward to charged reads, and prove actual footprint
+addresses, including dead/sentinel addresses, fit modeled capacity.
+
+Evidence:
+
+- `.agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md`
+- `.agents/skills/rmq-proof-sprint/SKILL.md`
+- `docs/internal/templates/WORKER_PROMPT.md`
+- `docs/internal/WORKER_INTEGRATION_CHECKLIST.md`
+- `docs/internal/templates/AUDIT_PROMPT.md`
+- `docs/internal/WORKER_LIFECYCLE.md`
+
+Follow-up:
+
+Apply the gate to the next same-worker uniform-directory repair. After two proof
+cycles, audit whether the matrix catches omissions before commit and whether
+any invariant needs a more theorem-specific checklist.
+
+Supersedes:
+
+No earlier decision. It strengthens WDD-20260709-016's stop conditions and
+WDD-20260709-017's thin-skill policy by placing detailed completion rules in a
+required on-demand reference.
