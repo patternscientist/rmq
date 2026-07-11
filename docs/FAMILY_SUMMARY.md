@@ -63,13 +63,22 @@ The first U2 replacement rung is now proved independently of that dispatch:
 `RelativeRmm.canonicalLayout` two-level hierarchy for every shape, and
 `SuccinctClose.canonicalRelativeRmmInteriorDirectory_profile_allSize` proves
 its exact raw little-o payload bound, constant modeled query cost,
-unconditional count/bound exactness, and machine-width reads. The reusable
-`FixedWidthNatTable.machineStore` is built over each complete counted table
-payload; logical indices determine consecutive physical addresses, every
-address is read with `PayloadWordStore.readWordCosted`, and decoding uses only
-those returned chunks. Supplied stores agreeing on that exact cell footprint
-produce the same value and cost. Those decoded summary, local-offset, and
-global-block values directly feed the two-level merges, while
+unconditional count/bound exactness, and the composed machine-store contract.
+`canonicalRelativeRmmInteriorComponentStore` concatenates the four summary
+tables, local offsets, and global blocks in directory-payload order.
+`canonicalRelativeRmmInteriorRangeMinCostedWithStore` then threads one
+supplied flat word array through every addressed read; the decoded summary,
+local, and global candidates are functions only of those indexed results.
+Its ordered physical footprint is the address projection of the execution's
+actual read log, so its length is exactly the modeled read cost. Agreement on
+the first store's consumed footprint determines the whole execution, hence
+result, cost, and recorded footprint. Successful canonical-store reads are
+in range and backed by the counted payload, and every returned word is bounded
+by the modeled machine width. The capstone
+`canonicalRelativeRmmInteriorRangeMinCostedWithStore_eq_current` connects that
+execution to the earlier canonical range query, retaining unconditional
+exactness and the 240-read bound. The strengthened all-size profile packages
+all of these guarantees. Meanwhile,
 `SuccinctClose.canonicalRelativeRmmInteriorDirectory_agrees_with_legacy_of_compactReady`
 proves valid-range agreement with the legacy compact directory. Final-query
 dispatch and the zero-block route have not yet been changed to consume U2.
@@ -2172,6 +2181,14 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctClose.canonicalRelativeRmmInteriorDirectory`,
   `SuccinctClose.canonicalRelativeRmmInteriorDirectory_rangeMinCosted_erase_exact`,
   `SuccinctClose.canonicalRelativeRmmInteriorDirectory_agrees_with_legacy_of_compactReady`,
+  `SuccinctClose.canonicalRelativeRmmInteriorComponentStore_flattens_payload`,
+  `SuccinctClose.canonicalRelativeRmmInteriorRangeMinCostedWithStore_eq_current`,
+  `SuccinctClose.canonicalRelativeRmmInteriorRangeMinCostedWithStore_eq_of_agree`,
+  `SuccinctClose.canonicalRelativeRmmInteriorRange_successful_read_backed`,
+  `SuccinctClose.canonicalRelativeRmmInteriorRange_returned_word_bounded`,
+  `SuccinctClose.canonicalRelativeRmmInteriorRangeFootprint_recorded`,
+  `SuccinctClose.canonicalRelativeRmmInteriorRangeMinCostedWithStore_erase_exact`,
+  `SuccinctClose.canonicalRelativeRmmInteriorRangeMinCostedWithStore_cost_le`,
   `SuccinctClose.canonicalRelativeRmmInteriorRangeMinCosted_refines_logical`,
   `SuccinctClose.canonicalRelativeRmmInteriorWordsRead_reconstruct_logical`,
   `SuccinctClose.canonicalRelativeRmmInteriorDirectory_profile_allSize`,

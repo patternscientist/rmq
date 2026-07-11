@@ -178,7 +178,7 @@ theorem boundedPayloadWordReadValues_consecutive
       have hget :
           store.store.words[start]? =
             some (store.store.words.toList.get ⟨start, by simpa using hstart⟩) := by
-        simp [Array.getElem?_toList, hstart]
+        simp [hstart]
       rw [show consecutiveWordIndices start (count + 1) =
         start :: consecutiveWordIndices (start + 1) count by
           rfl]
@@ -362,8 +362,7 @@ theorem FixedWidthNatTable.machineFootprint_successful_read_backed
         simpa [Array.getElem?_toList] using hword
       refine ⟨word, ?_, List.mem_of_getElem? hlist,
         (table.machineStore hwordSize).erases⟩
-      simpa [hword] using
-        (table.machineStore hwordSize).store.readWordCosted_erase address
+      simp [hword]
 
 @[simp] theorem FixedWidthNatTable.machineReadCosted_erase
     {entries : List Nat} {width wordSize : Nat}
@@ -437,14 +436,12 @@ theorem FixedWidthNatTable.machineFootprint_successful_read_backed
           rw [hreads', hslice]
         rw [boundedPayloadWordReadsCosted_erase, hvalues]
         simp [fixedWidthNatTableMachineDecode,
-          flattenPayloadWords_chunkPayloadWords hwordSize, hword]
+          flattenPayloadWords_chunkPayloadWords hwordSize]
         simpa [hword, hentry] using hexact
   · have hentryNone : entries[i]? = none := by
       rw [List.getElem?_eq_none_iff]
       omega
-    simp [hvalid, FixedWidthNatTable.machineStore,
-      boundedPayloadWordReadValues, fixedWidthNatTableMachineDecode,
-      collectPayloadWords, hentryNone]
+    simp [hvalid, FixedWidthNatTable.machineStore]
 
 theorem FixedWidthNatTable.machineStore_word_length_le
     {entries : List Nat} {width wordSize : Nat}

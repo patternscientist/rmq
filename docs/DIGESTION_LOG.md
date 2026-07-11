@@ -533,42 +533,51 @@ events. A skeptical grad student should next ask whether this component-backed
 global store can be flattened into one counted offset manifest and whether the
 trace-local bounds can be replaced by uniform machine-word side conditions.
 
-2026-07-10 U2 uniform relative-rmM interior rung: the new
-`SuccinctClose.canonicalRelativeRmmInteriorDirectory` instantiates one
-two-level local/global rmM hierarchy from
-`RelativeRmm.canonicalLayout` for every Cartesian shape. Exactness now follows
-from positive count and the canonical block bound alone; `Ready` and `Active`
-do not appear in
-`canonicalRelativeRmmInteriorDirectory_rangeMinCosted_erase_exact`.
-Conceptually, small inputs are no longer a different interior algorithm: empty
-geometry has no valid positive range, and singleton/small ranges pass through
-the same macro hierarchy. The old one-cell codec could not simply be made
-total--the singleton raw relative width is five bits while its modeled machine
-word is two--so each logical cell is uniformly rechunked into machine-width
-pieces. The charged range path decodes summary, local-offset, and global-block
-values from those bounded chunk stores; the decoded values directly select and
-merge candidates through the two-level hierarchy. Layerwise checked agreement
-with the earlier logical tables transfers the existing exactness join without
-executing an independent semantic answer. The structural bounds are four reads
-per summary, five logical cells per span, at most thirty cells and 240 actual
-modeled reads on the largest branch. The reusable component adapter now builds one bounded store over each complete
-counted fixed-width table, computes physical addresses from the logical index,
-and obtains the decoded cell solely from indexed
-`PayloadWordStore.readWordCosted` results. Agreement on exactly that footprint
-determines result and cost, invalid indices still incur an indexed missing read,
-and every stored word is machine-width bounded. The exact raw
-summary/local/global overhead itself is now proved `LittleOLinear`; no
-threshold-spliced public overhead remains.
-Under CompactReady, named U1 field transports prove payload-length and
-valid-range agreement with the legacy directory. Plain English: the directory
-theorem is now all-size and payload-live without a small oracle, dense answer
-table, decorative read replay, or readiness dispatch. Live assumptions are the
-existing model-level `Costed` indexed-read semantics and the checked
-machine-to-logical codec refinements; compiled Lean runtime is not claimed. A
-skeptical grad student should next ask for the final compact close/LCA consumer
-and global trace/store transport to use this directory, replacing the
-three-way interior route, and then ask which remaining zero-block same-block
-route can be deleted.
+2026-07-10 U2 composed range-store closure: the canonical
+`SuccinctClose.canonicalRelativeRmmInteriorDirectory` still instantiates one
+all-size two-level hierarchy from `RelativeRmm.canonicalLayout`, but its
+reviewer-facing execution and payload trace now come from one physical store.
+`canonicalRelativeRmmInteriorComponentStore` concatenates the rechunked
+baseline, min-relative, max-relative, arg-offset, local-offset, and global-block
+tables in directory-payload order. The corresponding offset record identifies
+each segment and the canonical dead address. Its flattening theorem says those
+machine words decode exactly to the counted summary/local/global payload.
+
+`canonicalRelativeRmmInteriorRangeMinCostedWithStore` threads one supplied
+flat word array through every summary, local, and global read. The decoded
+candidates are built only from returned indexed words. Its physical footprint
+is an ordered list--including repeated and failed addresses--obtained by
+projecting addresses from that same execution's read log. Therefore the
+footprint length is definitionally the modeled cost, and the directory's
+`payloadWordsRead` field is the successful-word projection of the execution,
+not an independently generated witness. Agreement on the first store's actual
+footprint determines the full execution, including adaptive later addresses;
+consequently it determines result, cost, and the recorded footprint.
+
+On the canonical component store, every successful read address is in range,
+the returned word is backed by the counted payload, and its length is at most
+the modeled machine width. The capstone
+`canonicalRelativeRmmInteriorRangeMinCostedWithStore_eq_current` connects the
+composed execution to the earlier canonical range query. Thus the existing
+unconditional exactness theorem and the 240 physical-read bound transfer to
+the supplied-store path. `canonicalRelativeRmmInteriorDirectory_profile_allSize`
+now includes a `CanonicalRelativeRmmInteriorStoreProfile` packaging flattening,
+execution agreement, footprint determinacy, backing, word bounds, footprint
+recording, and cost/footprint equality. The earlier generic
+`FixedWidthNatTable` machine adapter evidence remains because this composed
+execution is now its concrete downstream consumer.
+
+Plain English: U2 now has one counted machine store and one query whose reads
+both determine its answer and generate its footprint; there is no second
+public directory abstraction with a decorative trace. Live assumptions are
+the model-level `Costed` convention that one indexed word read costs one tick,
+the proved fixed-width chunk codec, and valid positive range premises for
+semantic exactness; no compiled Lean runtime bound is claimed. CompactReady is
+used only for checked legacy agreement. Final close/LCA dispatch, the
+zero-block route, and public final-query constants are unchanged. A skeptical
+grad student should next ask for this component store and its offsets to become
+a segment of the global flat close/LCA store, with the final consumer using
+this exact footprint instead of the three-way legacy interior route.
 ## Current Paper-Path Note
 
 2026-07-06 digestion pass: the project-wide digest was refreshed as
