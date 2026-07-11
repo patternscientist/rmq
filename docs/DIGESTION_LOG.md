@@ -551,8 +551,14 @@ merge candidates through the two-level hierarchy. Layerwise checked agreement
 with the earlier logical tables transfers the existing exactness join without
 executing an independent semantic answer. The structural bounds are four reads
 per summary, five logical cells per span, at most thirty cells and 240 actual
-modeled reads on the largest branch. The public word-list reconstruction and
-payload profile count the same raw summary/local/global bits at every size.
+modeled reads on the largest branch. The reusable component adapter now builds one bounded store over each complete
+counted fixed-width table, computes physical addresses from the logical index,
+and obtains the decoded cell solely from indexed
+`PayloadWordStore.readWordCosted` results. Agreement on exactly that footprint
+determines result and cost, invalid indices still incur an indexed missing read,
+and every stored word is machine-width bounded. The exact raw
+summary/local/global overhead itself is now proved `LittleOLinear`; no
+threshold-spliced public overhead remains.
 Under CompactReady, named U1 field transports prove payload-length and
 valid-range agreement with the legacy directory. Plain English: the directory
 theorem is now all-size and payload-live without a small oracle, dense answer

@@ -1,4 +1,5 @@
 import RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.TwoLevelCandidate
+import RMQ.Core.SuccinctSpace.MachineChunkedTable
 
 /-!
 # Endpoint-fringe relative-rmM interior directory
@@ -1464,31 +1465,13 @@ def canonicalRelativeRmmInteriorWordsRead
     (SuccinctSpace.chunkPayloadWords
       (SuccinctRank.machineWordBits shape.bpCode.length))
 
-def canonicalRelativeRmmMachineReadWordCosted
-    (shape : Cartesian.CartesianShape) (word : List Bool) :
-    Costed (List Bool) :=
-  let store := SuccinctSpace.BoundedPayloadWordStore.ofChunks word
-    (SuccinctRank.machineWordBits_pos shape.bpCode.length)
-  Costed.map SuccinctSpace.flattenPayloadWords store.store.readAllWordsCosted
-
-@[simp] theorem canonicalRelativeRmmMachineReadWordCosted_erase
-    (shape : Cartesian.CartesianShape) (word : List Bool) :
-    (canonicalRelativeRmmMachineReadWordCosted shape word).erase = word := by
-  simp [canonicalRelativeRmmMachineReadWordCosted,
-    SuccinctSpace.BoundedPayloadWordStore.ofChunks,
-    SuccinctSpace.flattenPayloadWords_chunkPayloadWords,
-    SuccinctRank.machineWordBits_pos]
-
 def canonicalRelativeRmmMachineReadNatCosted
     {entries : List Nat} {width : Nat}
     (shape : Cartesian.CartesianShape)
     (table : SuccinctSpace.FixedWidthNatTable entries width)
     (i : Nat) : Costed (Option Nat) :=
-  match table.store.words[i]? with
-  | none => Costed.pure none
-  | some word =>
-      Costed.map (fun decoded => some (SuccinctSpace.bitsToNatLE decoded))
-        (canonicalRelativeRmmMachineReadWordCosted shape word)
+  table.machineReadCosted
+    (SuccinctRank.machineWordBits_pos shape.bpCode.length) i
 
 @[simp] theorem canonicalRelativeRmmMachineReadNatCosted_erase
     {entries : List Nat} {width : Nat}
@@ -1497,16 +1480,8 @@ def canonicalRelativeRmmMachineReadNatCosted
     (i : Nat) :
     (canonicalRelativeRmmMachineReadNatCosted shape table i).erase =
       (table.readCosted i).erase := by
-  rw [table.readCosted_erase]
-  unfold canonicalRelativeRmmMachineReadNatCosted
-  have hexact := table.read_exact i
-  cases hword : table.store.words[i]? with
-  | none =>
-      simp [hword] at hexact
-      simp [Costed.pure, hexact]
-  | some word =>
-      simp [hword] at hexact
-      simp [Costed.map, hexact]
+  exact table.machineReadCosted_erase
+    (SuccinctRank.machineWordBits_pos shape.bpCode.length) i
 
 def canonicalRelativeRmmMachineSummaryCosted
     (shape : Cartesian.CartesianShape) (block : Nat) :
@@ -1919,28 +1894,6 @@ theorem canonicalRelativeRmmBlockWidth_le_seven_machine
       SuccinctRank.machineWordBits shape.bpCode.length <=
         7 * SuccinctRank.machineWordBits shape.bpCode.length)
 
-theorem canonicalRelativeRmmMachineReadWordCosted_cost_le_eight
-    {shape : Cartesian.CartesianShape} {word : List Bool}
-    (hword : word.length <=
-      7 * SuccinctRank.machineWordBits shape.bpCode.length) :
-    (canonicalRelativeRmmMachineReadWordCosted shape word).cost <= 8 := by
-  let width := SuccinctRank.machineWordBits shape.bpCode.length
-  have hwidth : 0 < width :=
-    SuccinctRank.machineWordBits_pos shape.bpCode.length
-  have hchunks :=
-    SuccinctSpace.chunkPayloadWords_length_le_div_add_one hwidth word
-  have hdiv : word.length / width <= 7 := by
-    apply Nat.div_le_of_le_mul
-    simpa [Nat.mul_comm, width] using hword
-  have hcost :
-      (canonicalRelativeRmmMachineReadWordCosted shape word).cost =
-        (SuccinctSpace.chunkPayloadWords width word).length := by
-    simp [canonicalRelativeRmmMachineReadWordCosted,
-      SuccinctSpace.BoundedPayloadWordStore.ofChunks,
-      SuccinctSpace.PayloadWordStore.readAllWordsCosted, width]
-  rw [hcost]
-  omega
-
 theorem canonicalRelativeRmmMachineReadNatCosted_cost_le_eight
     {entries : List Nat} {width : Nat}
     {shape : Cartesian.CartesianShape}
@@ -1949,13 +1902,24 @@ theorem canonicalRelativeRmmMachineReadNatCosted_cost_le_eight
       7 * SuccinctRank.machineWordBits shape.bpCode.length)
     (i : Nat) :
     (canonicalRelativeRmmMachineReadNatCosted shape table i).cost <= 8 := by
+  let wordSize := SuccinctRank.machineWordBits shape.bpCode.length
+  have hwordSize : 0 < wordSize :=
+    SuccinctRank.machineWordBits_pos shape.bpCode.length
+  have hdiv : width / wordSize <= 7 := by
+    apply Nat.div_le_of_le_mul
+    simpa [Nat.mul_comm, wordSize] using hwidth
   unfold canonicalRelativeRmmMachineReadNatCosted
-  cases hword : table.store.words[i]? with
-  | none => simp [Costed.pure]
-  | some word =>
-      have hlen := table.word_length_of_get? hword
-      exact canonicalRelativeRmmMachineReadWordCosted_cost_le_eight
-        (by omega)
+  unfold SuccinctSpace.FixedWidthNatTable.machineReadCosted
+  rw [SuccinctSpace.FixedWidthNatTable.machineReadCostedWithStore_cost]
+  by_cases hvalid : i < entries.length
+  · rw [if_pos hvalid]
+    change
+      (SuccinctSpace.fixedWidthNatTableMachineFootprint width wordSize i).length <= 8
+    simp [SuccinctSpace.fixedWidthNatTableMachineFootprint,
+      SuccinctSpace.fixedWidthNatTableMachineChunkCount]
+    split <;> omega
+  · rw [if_neg hvalid]
+    omega
 
 theorem costed_bind_cost_le
     {α β : Type} (x : Costed α) (f : α -> Costed β)
@@ -2491,27 +2455,7 @@ theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw
     Nat.add_assoc, Nat.mul_assoc]
 
 def canonicalRelativeRmmInteriorOverhead (n : Nat) : Nat :=
-  if concreteBPRelativeRmmInteriorReadyThreshold <= n then
-    concreteBPRelativeRmmInteriorOverhead n
-  else
-    canonicalRelativeRmmInteriorRawPayloadOverhead n
-
-theorem canonicalRelativeRmmInteriorOverhead_littleO :
-    LittleOLinear canonicalRelativeRmmInteriorOverhead := by
-  intro scale hscale
-  cases concreteBPRelativeRmmInteriorOverhead_littleO scale hscale with
-  | intro threshold hthreshold =>
-      exact Exists.intro
-        (Nat.max threshold concreteBPRelativeRmmInteriorReadyThreshold)
-        (by
-          intro n hn
-          have hthresholdLe : threshold <= n :=
-            Nat.le_trans (Nat.le_max_left _ _) hn
-          have hreadyLe :
-              concreteBPRelativeRmmInteriorReadyThreshold <= n :=
-            Nat.le_trans (Nat.le_max_right _ _) hn
-          simpa [canonicalRelativeRmmInteriorOverhead, hreadyLe] using
-            hthreshold n hthresholdLe)
+  canonicalRelativeRmmInteriorRawPayloadOverhead n
 
 theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_legacy_of_compactReady
     {shape : Cartesian.CartesianShape}
@@ -2601,30 +2545,49 @@ theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_legacy_of_compac
     concreteBPRelativeRmmInteriorDirectoryPayloadLength, hlegacyReady,
     hsummary, hlocal, hglobal, Nat.add_assoc]
 
+
+theorem canonicalRelativeRmmInteriorRawPayloadOverhead_littleO :
+    LittleOLinear canonicalRelativeRmmInteriorRawPayloadOverhead := by
+  apply LittleOLinear.of_eventually_le
+    concreteBPRelativeRmmInteriorOverhead_littleO
+  refine ⟨concreteBPRelativeRmmInteriorReadyThreshold, ?_⟩
+  intro n hn
+  let shape : Cartesian.CartesianShape :=
+    Cartesian.shape (List.replicate n (0 : Int))
+  have hsize : shape.size = n := by
+    simp [shape, Cartesian.shape_size]
+  have hready :
+      concreteBPRelativeRmmInteriorReady shape := by
+    apply concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold
+    simpa [hsize] using hn
+  have hcompact :
+      (RelativeRmm.canonicalLayout shape).CompactReady shape :=
+    (RelativeRmm.canonicalLayout_compactReady_iff_legacyReady shape).mpr
+      hready
+  have heq :=
+    canonicalRelativeRmmInteriorDirectory_payload_length_eq_legacy_of_compactReady
+      hcompact
+  have hlegacy :=
+    (concreteBPRelativeRmmInteriorDirectory_profile_of_ready shape hready).2.1
+  rw [canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw] at heq
+  calc
+    canonicalRelativeRmmInteriorRawPayloadOverhead n =
+        (concreteBPRelativeRmmInteriorDirectory shape).payload.length := by
+      simpa [hsize] using heq
+    _ <= concreteBPRelativeRmmInteriorOverhead shape.size := hlegacy
+    _ = concreteBPRelativeRmmInteriorOverhead n := by rw [hsize]
+
+theorem canonicalRelativeRmmInteriorOverhead_littleO :
+    LittleOLinear canonicalRelativeRmmInteriorOverhead := by
+  simpa [canonicalRelativeRmmInteriorOverhead] using
+    canonicalRelativeRmmInteriorRawPayloadOverhead_littleO
+
 theorem canonicalRelativeRmmInteriorDirectory_payload_le_overhead
     (shape : Cartesian.CartesianShape) :
     (canonicalRelativeRmmInteriorDirectory shape).payload.length <=
       canonicalRelativeRmmInteriorOverhead shape.size := by
-  by_cases hlarge :
-      concreteBPRelativeRmmInteriorReadyThreshold <= shape.size
-  case pos =>
-    have hlegacyReady :=
-      concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold
-        shape hlarge
-    have hcompact :=
-      (RelativeRmm.canonicalLayout_compactReady_iff_legacyReady shape).mpr
-        hlegacyReady
-    have heq :=
-      canonicalRelativeRmmInteriorDirectory_payload_length_eq_legacy_of_compactReady
-        hcompact
-    have hlegacyPayload :=
-      (concreteBPRelativeRmmInteriorDirectory_profile_of_ready
-        shape hlegacyReady).2.1
-    rw [heq]
-    simpa [canonicalRelativeRmmInteriorOverhead, hlarge] using hlegacyPayload
-  case neg =>
-    rw [canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw]
-    simp [canonicalRelativeRmmInteriorOverhead, hlarge]
+  rw [canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw]
+  simp [canonicalRelativeRmmInteriorOverhead]
 
 theorem canonicalRelativeRmmInteriorWordsRead_reconstruct_logical
     (shape : Cartesian.CartesianShape) (startBlock count : Nat) :

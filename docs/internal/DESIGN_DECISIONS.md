@@ -1167,6 +1167,11 @@ Evidence:
 
 - `docs/internal/RMQ_FINAL_ROADMAP.md`
 - `RMQ/Core/SuccinctClose/RelativeSummary.lean`
+- `RMQ/Core/SuccinctSpace/MachineChunkedTable.lean`
+- `FixedWidthNatTable.machineReadCosted_erase`
+- `FixedWidthNatTable.machineReadCostedWithStore_eq_of_agree`
+- `FixedWidthNatTable.machineFootprint_successful_read_backed`
+- `canonicalRelativeRmmInteriorRawPayloadOverhead_littleO`
 - `RMQ/Core/SuccinctClose/RelativeRmmMacro/LocalBPDecoder.lean`
 
 Follow-up:
@@ -1398,6 +1403,11 @@ Evidence:
 
 - `docs/internal/RELATIVE_RMM_LAYOUT_DESIGN.md`
 - `RMQ/Core/SuccinctClose/RelativeSummary.lean`
+- `RMQ/Core/SuccinctSpace/MachineChunkedTable.lean`
+- `FixedWidthNatTable.machineReadCosted_erase`
+- `FixedWidthNatTable.machineReadCostedWithStore_eq_of_agree`
+- `FixedWidthNatTable.machineFootprint_successful_read_backed`
+- `canonicalRelativeRmmInteriorRawPayloadOverhead_littleO`
 - `03043fe` (U1 implementation and relocation)
 - `RMQ/Core/SuccinctClose/RelativeRmmMacro/ConcreteDirectory.lean`
 - `docs/internal/audit_reports/2026-07-10_A03_u1_total_layout_audit.md`
@@ -1524,6 +1534,11 @@ Evidence:
 - `docs/internal/RMQ_DECLARATION_CLOSURE_2026_07_10.md`
 - `docs/RMQ_CODE_MAP.md`
 - `RMQ/Core/SuccinctClose/RelativeSummary.lean`
+- `RMQ/Core/SuccinctSpace/MachineChunkedTable.lean`
+- `FixedWidthNatTable.machineReadCosted_erase`
+- `FixedWidthNatTable.machineReadCostedWithStore_eq_of_agree`
+- `FixedWidthNatTable.machineFootprint_successful_read_backed`
+- `canonicalRelativeRmmInteriorRawPayloadOverhead_littleO`
 
 Follow-up:
 
@@ -1573,20 +1588,29 @@ Options considered:
 Rationale:
 
 Uniform rechunking addresses the concrete singleton width mismatch without
-changing the rmM geometry or introducing a second algorithm. Each summary,
-local-offset, and global-block value is decoded from a bounded chunk-store
-read; those decoded values directly feed the same two-level merge geometry.
-Layerwise refinement theorems recover the older logical table computation, so
-exactness is transferred without treating the old result as an executable
-oracle. Kernel-checked bounds give four machine-backed reads per summary,
-five logical cells per span, at most thirty logical cells on the cross-macro
-route, at most eight machine chunks per cell, and therefore at most 240 actual
-modeled reads. The payload is still exactly the concatenated raw
-summary/local/global payload; no answer table or proof-only field is added.
-The all-size overhead is exact raw payload below the existing readiness
-threshold and the established `o(n)` envelope above it. CompactReady transport
-proves the total directory has the same valid-range answer and payload length
-as the legacy compact directory.
+changing the rmM geometry or introducing a second algorithm. The reusable
+`SuccinctSpace.FixedWidthNatTable.machineStore` chunks every logical cell of
+one complete counted table and concatenates all chunks into a single bounded
+store whose flattening is exactly the original table payload. A read computes
+consecutive physical addresses from the logical index and fixed width, calls
+`PayloadWordStore.readWordCosted` at every address, and decodes only the
+returned chunks. It never obtains the logical wide cell before those charged
+reads; an invalid logical index performs a charged missing read at the
+canonical end address.
+
+`FixedWidthNatTable.machineReadCosted_erase` proves reconstruction from those
+indexed results, while `machineReadCostedWithStore_eq_of_agree` proves that
+stores agreeing on the physical footprint give the same value and cost.
+`machineStore_erases`, `machineStore_word_length_le`, and the fixed-block
+address lemmas supply counted-payload, word-width, and in-range evidence.
+Layerwise refinement recovers the older logical table computation, so
+summary/local/global candidates consume only decoded machine-read values.
+Kernel-checked bounds give at most eight physical reads per logical cell and
+240 on the largest branch. The exact raw payload overhead is now proved
+little-o directly by
+`canonicalRelativeRmmInteriorRawPayloadOverhead_littleO`; the threshold-spliced
+overhead definition is retired. CompactReady is used only for checked legacy
+agreement and eventual asymptotic domination, never construction or dispatch.
 
 Consequences:
 
@@ -1603,6 +1627,11 @@ change.
 Evidence:
 
 - `RMQ/Core/SuccinctClose/RelativeSummary.lean`
+- `RMQ/Core/SuccinctSpace/MachineChunkedTable.lean`
+- `FixedWidthNatTable.machineReadCosted_erase`
+- `FixedWidthNatTable.machineReadCostedWithStore_eq_of_agree`
+- `FixedWidthNatTable.machineFootprint_successful_read_backed`
+- `canonicalRelativeRmmInteriorRawPayloadOverhead_littleO`
 - `RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean`
 - `canonicalRelativeRmmInteriorDirectory_profile_allSize`
 - `canonicalRelativeRmmInteriorRangeMinCosted_refines_logical`

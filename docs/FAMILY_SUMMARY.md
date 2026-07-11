@@ -62,10 +62,14 @@ The first U2 replacement rung is now proved independently of that dispatch:
 `SuccinctClose.canonicalRelativeRmmInteriorDirectory` instantiates one raw
 `RelativeRmm.canonicalLayout` two-level hierarchy for every shape, and
 `SuccinctClose.canonicalRelativeRmmInteriorDirectory_profile_allSize` proves
-its all-size payload bound, constant modeled query cost, unconditional
-count/bound exactness, and machine-width reads. Its summary, local-offset, and
-global-block values are decoded from charged bounded-store reads and directly
-feed the two-level merges, while
+its exact raw little-o payload bound, constant modeled query cost,
+unconditional count/bound exactness, and machine-width reads. The reusable
+`FixedWidthNatTable.machineStore` is built over each complete counted table
+payload; logical indices determine consecutive physical addresses, every
+address is read with `PayloadWordStore.readWordCosted`, and decoding uses only
+those returned chunks. Supplied stores agreeing on that exact cell footprint
+produce the same value and cost. Those decoded summary, local-offset, and
+global-block values directly feed the two-level merges, while
 `SuccinctClose.canonicalRelativeRmmInteriorDirectory_agrees_with_legacy_of_compactReady`
 proves valid-range agreement with the legacy compact directory. Final-query
 dispatch and the zero-block route have not yet been changed to consume U2.
