@@ -2850,6 +2850,83 @@ theorem legacy_ready_parameters_eq_canonical_of_compactReady
   exact legacy_ready_parameters_eq_canonical
     ((canonicalLayout_compactReady_iff_legacyReady shape).mp hready)
 
+theorem legacy_blockSize_eq_canonical_of_compactReady
+    {shape : Cartesian.CartesianShape}
+    (hready : (canonicalLayout shape).CompactReady shape) :
+    canonicalBPRelativeSummaryBlockSize shape =
+      (canonicalLayout shape).blockSize :=
+  (legacy_parameters_eq_canonical_of_summaryFits hready.summaryFits).1
+
+theorem legacy_blocksPerSuper_eq_canonical_of_compactReady
+    {shape : Cartesian.CartesianShape}
+    (hready : (canonicalLayout shape).CompactReady shape) :
+    canonicalBPRelativeSummaryBlocksPerSuper shape =
+      (canonicalLayout shape).blocksPerSuper :=
+  (legacy_parameters_eq_canonical_of_summaryFits hready.summaryFits).2.1
+
+theorem legacy_blockCount_eq_canonical_of_compactReady
+    {shape : Cartesian.CartesianShape}
+    (hready : (canonicalLayout shape).CompactReady shape) :
+    canonicalBPRelativeSummaryBlockCount shape =
+      (canonicalLayout shape).blockCount :=
+  (legacy_parameters_eq_canonical_of_summaryFits hready.summaryFits).2.2.1
+
+theorem legacy_superCount_eq_canonical_of_compactReady
+    {shape : Cartesian.CartesianShape}
+    (hready : (canonicalLayout shape).CompactReady shape) :
+    canonicalBPRelativeSummarySuperCount shape =
+      (canonicalLayout shape).superSampleCount :=
+  (legacy_parameters_eq_canonical_of_summaryFits hready.summaryFits).2.2.2.1
+
+theorem legacy_relativeWidth_eq_canonical_of_compactReady
+    {shape : Cartesian.CartesianShape}
+    (hready : (canonicalLayout shape).CompactReady shape) :
+    canonicalBPRelativeSummaryRelativeWidth shape =
+      (canonicalLayout shape).relativeWidth :=
+  (legacy_parameters_eq_canonical_of_summaryFits hready.summaryFits).2.2.2.2
+
+theorem legacy_macroSize_eq_canonical_of_compactReady
+    {shape : Cartesian.CartesianShape}
+    (hready : (canonicalLayout shape).CompactReady shape) :
+    concreteBPRelativeRmmInteriorMacroSize shape =
+      (canonicalLayout shape).macroSize :=
+  (legacy_ready_parameters_eq_canonical_of_compactReady hready).1
+
+theorem legacy_macroCount_eq_canonical_of_compactReady
+    {shape : Cartesian.CartesianShape}
+    (hready : (canonicalLayout shape).CompactReady shape) :
+    concreteBPRelativeRmmInteriorMacroCount shape =
+      (canonicalLayout shape).macroSampleCount :=
+  (legacy_ready_parameters_eq_canonical_of_compactReady hready).2.1
+
+theorem legacy_offsetWidth_eq_canonical_of_compactReady
+    {shape : Cartesian.CartesianShape}
+    (hready : (canonicalLayout shape).CompactReady shape) :
+    concreteBPRelativeRmmInteriorOffsetWidth shape =
+      (canonicalLayout shape).offsetWidth :=
+  (legacy_ready_parameters_eq_canonical_of_compactReady hready).2.2.1
+
+theorem legacy_levelCount_eq_canonical_of_compactReady
+    {shape : Cartesian.CartesianShape}
+    (hready : (canonicalLayout shape).CompactReady shape) :
+    concreteBPRelativeRmmInteriorLevelCount shape =
+      (canonicalLayout shape).levelCount :=
+  (legacy_ready_parameters_eq_canonical_of_compactReady hready).2.2.2.1
+
+theorem legacy_globalLevelCount_eq_canonical_of_compactReady
+    {shape : Cartesian.CartesianShape}
+    (hready : (canonicalLayout shape).CompactReady shape) :
+    concreteBPRelativeRmmInteriorGlobalLevelCount shape =
+      (canonicalLayout shape).globalLevelCount :=
+  (legacy_ready_parameters_eq_canonical_of_compactReady hready).2.2.2.2.1
+
+theorem legacy_blockAddressWidth_eq_canonical_of_compactReady
+    {shape : Cartesian.CartesianShape}
+    (hready : (canonicalLayout shape).CompactReady shape) :
+    concreteBPRelativeRmmInteriorBlockWidth shape =
+      (canonicalLayout shape).blockAddressWidth :=
+  (legacy_ready_parameters_eq_canonical_of_compactReady hready).2.2.2.2.2
+
 end RelativeRmm
 
 theorem concreteBPRelativeRmmInteriorReady_empty_obstruction :

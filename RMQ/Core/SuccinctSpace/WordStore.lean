@@ -385,6 +385,84 @@ theorem chunkPayloadWords_length_le_div_add_one
   rw [List.getElem?_eq_none_iff] at hnone
   exact hnone
 
+
+/-- Exact number of positive-width chunks occupied by a bit list. -/
+theorem chunkPayloadWords_length_eq_div_add_indicator
+    {wordSize : Nat} (hword : 0 < wordSize) (payload : List Bool) :
+    (chunkPayloadWords wordSize payload).length =
+      payload.length / wordSize +
+        (if payload.length % wordSize = 0 then 0 else 1) := by
+  let count :=
+    payload.length / wordSize +
+      (if payload.length % wordSize = 0 then 0 else 1)
+  have hdiv0 := Nat.div_add_mod payload.length wordSize
+  have hdiv :
+      payload.length =
+        payload.length / wordSize * wordSize + payload.length % wordSize := by
+    simpa [Nat.mul_comm] using hdiv0.symm
+  have hmod := Nat.mod_lt payload.length hword
+  have hcovered : payload.length <= count * wordSize := by
+    by_cases hzero : payload.length % wordSize = 0
+    · simp [count, hzero]
+      omega
+    · simp [count, hzero, Nat.add_mul]
+      omega
+  have hupper : (chunkPayloadWords wordSize payload).length <= count := by
+    have hnone :=
+      chunkPayloadWords_get?_none_of_length_le_mul
+        (wordSize := wordSize) (payload := payload) (i := count) hcovered
+    rw [List.getElem?_eq_none_iff] at hnone
+    exact hnone
+  have hlower : count <= (chunkPayloadWords wordSize payload).length := by
+    by_cases hempty : payload.length = 0
+    · simp [count, hempty]
+    · have hcount : 0 < count := by
+        by_cases hzero : payload.length % wordSize = 0
+        · dsimp [count]
+          rw [if_pos hzero]
+          simp only [Nat.add_zero]
+          apply Nat.pos_of_ne_zero
+          intro hq
+          apply hempty
+          simpa only [hq, hzero, Nat.zero_mul, Nat.zero_add] using hdiv
+        · dsimp [count]
+          rw [if_neg hzero]
+          exact Nat.zero_lt_succ _
+      have hlast : (count - 1) * wordSize < payload.length := by
+        by_cases hzero : payload.length % wordSize = 0
+        · have hqpos : 0 < payload.length / wordSize := by
+            simpa [count, hzero] using hcount
+          have hqsub :
+              payload.length / wordSize - 1 <
+                payload.length / wordSize := by omega
+          have hmul := Nat.mul_lt_mul_of_pos_right hqsub hword
+          have hlen :
+              payload.length =
+                payload.length / wordSize * wordSize := by omega
+          dsimp [count]
+          rw [if_pos hzero]
+          simp only [Nat.add_zero]
+          calc
+            (payload.length / wordSize - 1) * wordSize <
+                payload.length / wordSize * wordSize := hmul
+            _ = payload.length := hlen.symm
+        · have hrem : 0 < payload.length % wordSize := by omega
+          have hbase :
+              payload.length / wordSize * wordSize <
+                payload.length := by omega
+          dsimp [count]
+          rw [if_neg hzero]
+          simp only [Nat.add_sub_cancel]
+          exact hbase
+      rcases chunkPayloadWords_get?_some_of_mul_lt hword hlast with
+        ⟨chunk, hchunk⟩
+      have hindex :
+          count - 1 < (chunkPayloadWords wordSize payload).length :=
+        (List.getElem?_eq_some_iff.mp hchunk).1
+      omega
+  change (chunkPayloadWords wordSize payload).length = count
+  omega
+
 /--
 A stored word array whose flattened word contents are exactly the counted
 payload bits.
@@ -570,6 +648,71 @@ theorem ofChunksWithSentinel_word_length_le
     payload hword).word_length_le hmem
 
 end BoundedPayloadWordStore
+
+/-- Values returned by indexed reads from a bounded counted-payload store. -/
+def boundedPayloadWordReadValues
+    {payload : List Bool} {wordSize : Nat}
+    (store : BoundedPayloadWordStore payload wordSize)
+    (indices : List Nat) : List (Option (List Bool)) :=
+  indices.map fun i => store.store.words[i]?
+
+/-- Perform every requested indexed payload read, including missing reads. -/
+def boundedPayloadWordReadsCosted
+    {payload : List Bool} {wordSize : Nat}
+    (store : BoundedPayloadWordStore payload wordSize) :
+    List Nat -> Costed (List (Option (List Bool)))
+  | [] => Costed.pure []
+  | i :: rest =>
+      Costed.bind (store.store.readWordCosted i) fun word? =>
+        Costed.bind (boundedPayloadWordReadsCosted store rest) fun words =>
+          Costed.pure (word? :: words)
+
+@[simp] theorem boundedPayloadWordReadsCosted_cost
+    {payload : List Bool} {wordSize : Nat}
+    (store : BoundedPayloadWordStore payload wordSize)
+    (indices : List Nat) :
+    (boundedPayloadWordReadsCosted store indices).cost = indices.length := by
+  induction indices with
+  | nil => simp [boundedPayloadWordReadsCosted]
+  | cons i rest ih =>
+      simp [boundedPayloadWordReadsCosted, ih, Nat.add_comm]
+
+@[simp] theorem boundedPayloadWordReadsCosted_erase
+    {payload : List Bool} {wordSize : Nat}
+    (store : BoundedPayloadWordStore payload wordSize)
+    (indices : List Nat) :
+    (boundedPayloadWordReadsCosted store indices).erase =
+      boundedPayloadWordReadValues store indices := by
+  induction indices with
+  | nil => simp [boundedPayloadWordReadsCosted, boundedPayloadWordReadValues]
+  | cons i rest ih =>
+      simp [boundedPayloadWordReadsCosted, boundedPayloadWordReadValues, ih]
+
+/-- Agreement on the requested physical addresses determines value and cost. -/
+theorem boundedPayloadWordReadsCosted_eq_of_agree
+    {payloadA payloadB : List Bool} {wordSize : Nat}
+    (storeA : BoundedPayloadWordStore payloadA wordSize)
+    (storeB : BoundedPayloadWordStore payloadB wordSize)
+    (indices : List Nat)
+    (hagrees : forall i, i ∈ indices ->
+      storeA.store.words[i]? = storeB.store.words[i]?) :
+    boundedPayloadWordReadsCosted storeA indices =
+      boundedPayloadWordReadsCosted storeB indices := by
+  induction indices with
+  | nil => simp [boundedPayloadWordReadsCosted]
+  | cons i rest ih =>
+      simp only [boundedPayloadWordReadsCosted]
+      have hi := hagrees i (by simp)
+      have hrest : forall j, j ∈ rest ->
+          storeA.store.words[j]? = storeB.store.words[j]? := by
+        intro j hj
+        exact hagrees j (by simp [hj])
+      have hread : storeA.store.readWordCosted i =
+          storeB.store.readWordCosted i := by
+        apply Costed.ext
+        · simpa [PayloadWordStore.readWordCosted] using hi
+        · simp
+      rw [hread, ih hrest]
 
 end SuccinctSpace
 

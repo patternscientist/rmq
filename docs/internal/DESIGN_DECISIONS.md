@@ -21,7 +21,7 @@ See also:
 ## Current Decision Index
 
 The active final-route architecture is DD-20260709-007 through
-DD-20260709-010 together with DD-20260710-001 through DD-20260710-003.
+DD-20260709-010 together with DD-20260710-001 through DD-20260710-004.
 Foundational decisions such as the Mathlib-free trust boundary,
 list-facing reference semantics, narrow paper root, and cost/runtime separation
 remain active where their individual status says so. Entries retain stable IDs
@@ -1167,6 +1167,11 @@ Evidence:
 
 - `docs/internal/RMQ_FINAL_ROADMAP.md`
 - `RMQ/Core/SuccinctClose/RelativeSummary.lean`
+- `RMQ/Core/SuccinctSpace/MachineChunkedTable.lean`
+- `FixedWidthNatTable.machineReadCosted_erase`
+- `FixedWidthNatTable.machineReadCostedWithStore_eq_of_agree`
+- `FixedWidthNatTable.machineFootprint_successful_read_backed`
+- `canonicalRelativeRmmInteriorRawPayloadOverhead_littleO`
 - `RMQ/Core/SuccinctClose/RelativeRmmMacro/LocalBPDecoder.lean`
 
 Follow-up:
@@ -1398,6 +1403,11 @@ Evidence:
 
 - `docs/internal/RELATIVE_RMM_LAYOUT_DESIGN.md`
 - `RMQ/Core/SuccinctClose/RelativeSummary.lean`
+- `RMQ/Core/SuccinctSpace/MachineChunkedTable.lean`
+- `FixedWidthNatTable.machineReadCosted_erase`
+- `FixedWidthNatTable.machineReadCostedWithStore_eq_of_agree`
+- `FixedWidthNatTable.machineFootprint_successful_read_backed`
+- `canonicalRelativeRmmInteriorRawPayloadOverhead_littleO`
 - `03043fe` (U1 implementation and relocation)
 - `RMQ/Core/SuccinctClose/RelativeRmmMacro/ConcreteDirectory.lean`
 - `docs/internal/audit_reports/2026-07-10_A03_u1_total_layout_audit.md`
@@ -1524,6 +1534,11 @@ Evidence:
 - `docs/internal/RMQ_DECLARATION_CLOSURE_2026_07_10.md`
 - `docs/RMQ_CODE_MAP.md`
 - `RMQ/Core/SuccinctClose/RelativeSummary.lean`
+- `RMQ/Core/SuccinctSpace/MachineChunkedTable.lean`
+- `FixedWidthNatTable.machineReadCosted_erase`
+- `FixedWidthNatTable.machineReadCostedWithStore_eq_of_agree`
+- `FixedWidthNatTable.machineFootprint_successful_read_backed`
+- `canonicalRelativeRmmInteriorRawPayloadOverhead_littleO`
 
 Follow-up:
 
@@ -1533,3 +1548,130 @@ stable consumers and paper-facing proof story.
 Supersedes:
 
 None.
+## DD-20260710-004: Rechunk One Total Raw-Canonical Relative-rmM Hierarchy
+
+Status: Accepted
+Date: 2026-07-10
+Scope: U2 all-size relative-rmM interior directory representation.
+
+Decision:
+
+Instantiate one two-level local/global relative-rmM hierarchy unconditionally
+from `RelativeRmm.canonicalLayout`. Store the canonical raw summary, local,
+and global payloads for every shape, then rechunk all six fixed-width tables
+into one bounded physical component store. Concatenate summary baseline,
+min-relative, max-relative, arg-offset, local-offset, and global-block words in
+directory-payload order with explicit offsets. Thread one supplied flat store
+through every addressed read, and define the range footprint from that same
+execution's ordered read log. Each fixed-width chunk has
+`SuccinctRank.machineWordBits shape.bpCode.length` bits, with at most eight
+reads per logical cell.
+Empty, singleton, and small shapes use the same macro arithmetic as large
+shapes. No top-level branch may inspect `Active`, `Ready`, or
+`CompactReady`; readiness appears only in the checked agreement and payload
+transport theorems.
+
+Context:
+
+U1 proved the raw canonical layout valid for every shape, and the existing
+`bpTwoLevelInteriorCandidateCosted_erase_exact` join already needed only
+geometry plus query count/bounds. The remaining blocker was representational:
+for the singleton Cartesian shape, the raw relative width is five bits while
+the modeled machine word is two bits. Thus the legacy one-cell/one-word codec
+cannot be used raw at all sizes even though the hierarchy itself is correct.
+
+Options considered:
+
+- Keep the Ready/active-not-Ready/inactive top-level route split.
+- Add a separate packed small directory.
+- Store dense all-pairs range answers or scan the raw summaries.
+- Keep one raw relative cell as one machine word.
+- Rechunk every logical cell uniformly and preserve the hierarchy.
+- Return semantic answers with proof-only or decorative read traces.
+
+Rationale:
+
+Uniform rechunking addresses the concrete singleton width mismatch without
+changing the rmM geometry or introducing a second algorithm. The reusable
+`FixedWidthNatTable.machineStore` and
+`machineReadComputationAt_refines_machineReadCosted` remain the accepted
+per-table adapter. The composed consumer
+`canonicalRelativeRmmInteriorComponentStore` appends the six bounded stores
+at explicit segment offsets. Its flattening is exactly the counted
+summary/local/global directory payload.
+
+`canonicalRelativeRmmInteriorRangeMinCostedWithStore` computes physical
+addresses from the logical index, table width, and segment offset; every read
+comes from its supplied flat array. Summary, local, and global candidates are
+constructed only from the returned chunks. The physical footprint is the
+ordered address projection of that execution's read log, including repeats and
+failed reads, and its length equals the modeled cost. Thus
+`payloadWordsRead` is an execution-derived projection rather than an
+independent reviewer-facing witness.
+
+`canonicalRelativeRmmInteriorRangeMinCostedWithStore_eq_of_agree` proves that
+stores agreeing on the first execution's actual footprint produce the same
+full execution after cost projection. This handles adaptive later addresses,
+so result, cost, and recorded footprint all agree. Successful reads from the
+canonical component store are in range and backed by its counted words; every
+returned word is machine-width bounded.
+`canonicalRelativeRmmInteriorRangeMinCostedWithStore_eq_current` connects the
+composed execution to the prior canonical query, transferring unconditional
+exactness and the 240-read cap. The exact raw payload overhead remains proved
+little-o directly by
+`canonicalRelativeRmmInteriorRawPayloadOverhead_littleO`; the threshold-spliced
+overhead definition is retired. CompactReady is used only for checked legacy
+agreement and eventual asymptotic domination, never construction or dispatch.
+
+Consequences:
+
+`canonicalRelativeRmmInteriorDirectory_rangeMinCosted_erase_exact` has no
+Ready or Active premise. The strengthened all-size profile packages the
+unconditional payload bound, constant modeled query cost, exactness, and
+`CanonicalRelativeRmmInteriorStoreProfile`: exact component flattening,
+canonical execution agreement, footprint determinacy of result and cost,
+successful-read backing, returned-word bounds, recorded-footprint identity,
+and cost/footprint equality. The canonical directory's `rangeMinCosted` and
+`payloadWordsRead` are both projections of the one supplied-store execution;
+there is no equally public competing directory with an independent trace.
+U1's fieldwise CompactReady agreement corollaries and the generic machine-table
+adapter remain as earlier-decision evidence because this composed path now
+consumes them downstream.
+
+This rung does not alter `lcaCloseCosted`, final-query dispatch, the zero-block
+same-block route, or final all-size constants. Those remain a separate consumer
+change.
+
+Evidence:
+
+- `RMQ/Core/SuccinctClose/RelativeSummary.lean`
+- `RMQ/Core/SuccinctSpace/MachineChunkedTable.lean`
+- `RMQ/Core/SuccinctSpace/MachineChunkedTableProgram.lean`
+- `FixedWidthNatTable.machineReadComputationAt_refines_machineReadCosted`
+- `BoundedPayloadWordStore.append_erases`
+- `canonicalRelativeRmmInteriorRawPayloadOverhead_littleO`
+- `RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean`
+- `canonicalRelativeRmmInteriorComponentStore_flattens_payload`
+- `canonicalRelativeRmmInteriorRangeMinCostedWithStore_eq_current`
+- `canonicalRelativeRmmInteriorRangeMinCostedWithStore_eq_of_agree`
+- `canonicalRelativeRmmInteriorRange_successful_read_backed`
+- `canonicalRelativeRmmInteriorRange_returned_word_bounded`
+- `canonicalRelativeRmmInteriorRangeFootprint_recorded`
+- `canonicalRelativeRmmInteriorRangeMinCostedWithStore_erase_exact`
+- `canonicalRelativeRmmInteriorRangeMinCostedWithStore_cost_le`
+- `canonicalRelativeRmmInteriorDirectory_profile_allSize`
+- the singleton width audit: raw relative width 5, machine width 2
+
+Follow-up:
+
+Embed `canonicalRelativeRmmInteriorComponentStore` and its offsets as one
+segment of the later global flat close/LCA store. Replace the three-way interior
+route with the exact supplied-store execution and transport its recorded
+footprint into the global trace. This decision does not itself remove the
+zero-block route or change public final-query constants.
+
+Supersedes:
+
+The three-way interior routing consequence of DD-20260709-007 for the interior
+directory abstraction. It does not supersede the still-live final-query route
+until the consumer migration lands.

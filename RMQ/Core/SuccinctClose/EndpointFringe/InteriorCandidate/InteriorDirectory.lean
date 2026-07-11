@@ -1,4 +1,5 @@
 import RMQ.Core.SuccinctClose.EndpointFringe.InteriorCandidate.TwoLevelCandidate
+import RMQ.Core.SuccinctSpace.MachineChunkedTableProgram
 
 /-!
 # Endpoint-fringe relative-rmM interior directory
@@ -1387,6 +1388,2426 @@ theorem concreteBPRelativeRmmInteriorDirectory_profile
           word.length <=
             SuccinctRank.machineWordBits shape.bpCode.length := by
   exact concreteBPRelativeRmmInteriorDirectory_profile_of_size_ge shape hsize
+
+/-!
+## Total canonical-layout interior directory
+
+The U2 directory below instantiates the two-level rmM hierarchy directly from
+`RelativeRmm.canonicalLayout` for every shape. Small layouts degenerate
+through the same macro arithmetic; there is no readiness dispatch.
+-/
+
+def canonicalRelativeRmmSummaryTable
+    (shape : Cartesian.CartesianShape) :
+    let layout := RelativeRmm.canonicalLayout shape
+    PayloadLiveBPRelativeMinMaxArgSummaryTable shape
+      layout.blockSize layout.blocksPerSuper layout.blockCount
+      layout.superSampleCount (layout.superWidth shape) layout.relativeWidth
+      (layout.superSampleCount * layout.superWidth shape +
+        3 * (layout.blockCount * layout.relativeWidth)) := by
+  let layout := RelativeRmm.canonicalLayout shape
+  have hvalid := RelativeRmm.canonicalLayout_valid shape
+  exact concreteBPRelativeMinMaxArgSummaryTable shape
+    layout.blockSize layout.blocksPerSuper layout.blockCount
+    layout.superSampleCount (layout.superWidth shape) layout.relativeWidth
+    hvalid.blocksPerSuper_pos hvalid.fullBlocks_fit
+    (SuccinctRank.self_lt_two_pow_machineWordBits shape.bpCode.length)
+    hvalid.superSpan_fits hvalid.blockOffset_fits
+
+def canonicalRelativeRmmInteriorLocalTable
+    (shape : Cartesian.CartesianShape) :
+    let layout := RelativeRmm.canonicalLayout shape
+    PayloadLiveBPLocalSparseOffsetTable shape layout.blockSize
+      layout.blockCount layout.macroSize layout.macroSampleCount
+      layout.levelCount layout.offsetWidth
+      ((layout.macroSampleCount * (layout.levelCount * layout.macroSize)) *
+        layout.offsetWidth) := by
+  let layout := RelativeRmm.canonicalLayout shape
+  exact concreteBPLocalSparseOffsetTable shape layout.blockSize
+    layout.blockCount layout.macroSize layout.macroSampleCount
+    layout.levelCount layout.offsetWidth
+    (SuccinctRank.self_lt_two_pow_machineWordBits layout.macroSize)
+
+def canonicalRelativeRmmInteriorGlobalTable
+    (shape : Cartesian.CartesianShape) :
+    let layout := RelativeRmm.canonicalLayout shape
+    PayloadLiveBPGlobalSparseBlockTable shape layout.blockSize
+      layout.blockCount layout.macroSize layout.macroSampleCount
+      layout.globalLevelCount layout.blockAddressWidth
+      ((layout.globalLevelCount * layout.macroSampleCount) *
+        layout.blockAddressWidth) := by
+  let layout := RelativeRmm.canonicalLayout shape
+  have hvalid := RelativeRmm.canonicalLayout_valid shape
+  exact concreteBPGlobalSparseBlockTable shape layout.blockSize
+    layout.blockCount layout.macroSize layout.macroSampleCount
+    layout.globalLevelCount layout.blockAddressWidth hvalid.macroSize_pos
+    (SuccinctRank.self_lt_two_pow_machineWordBits layout.blockCount)
+
+def canonicalRelativeRmmInteriorDirectoryPayloadLength
+    (shape : Cartesian.CartesianShape) : Nat :=
+  (canonicalRelativeRmmSummaryTable shape).payload.length +
+    (canonicalRelativeRmmInteriorLocalTable shape).payload.length +
+      (canonicalRelativeRmmInteriorGlobalTable shape).payload.length
+
+
+/-- Machine-word stores for the four summary fields in payload order. -/
+def canonicalRelativeRmmSummaryMachineStore
+    (shape : Cartesian.CartesianShape) :
+    let table := canonicalRelativeRmmSummaryTable shape
+    BoundedPayloadWordStore
+      (table.baselineTable.payload ++
+        (table.minRelTable.payload ++
+          (table.maxRelTable.payload ++ table.argOffsetTable.payload)))
+      (SuccinctRank.machineWordBits shape.bpCode.length) := by
+  let table := canonicalRelativeRmmSummaryTable shape
+  let hword := SuccinctRank.machineWordBits_pos shape.bpCode.length
+  exact
+    BoundedPayloadWordStore.append (table.baselineTable.machineStore hword)
+      (BoundedPayloadWordStore.append (table.minRelTable.machineStore hword)
+        (BoundedPayloadWordStore.append (table.maxRelTable.machineStore hword)
+          (table.argOffsetTable.machineStore hword)))
+
+def canonicalRelativeRmmLocalMachineStore
+    (shape : Cartesian.CartesianShape) :
+    let table := canonicalRelativeRmmInteriorLocalTable shape
+    BoundedPayloadWordStore table.table.payload
+      (SuccinctRank.machineWordBits shape.bpCode.length) := by
+  let table := canonicalRelativeRmmInteriorLocalTable shape
+  let hword := SuccinctRank.machineWordBits_pos shape.bpCode.length
+  exact table.table.machineStore hword
+
+def canonicalRelativeRmmGlobalMachineStore
+    (shape : Cartesian.CartesianShape) :
+    let table := canonicalRelativeRmmInteriorGlobalTable shape
+    BoundedPayloadWordStore table.table.payload
+      (SuccinctRank.machineWordBits shape.bpCode.length) := by
+  let table := canonicalRelativeRmmInteriorGlobalTable shape
+  let hword := SuccinctRank.machineWordBits_pos shape.bpCode.length
+  exact table.table.machineStore hword
+
+/--
+One canonical bounded store for all six fixed-width tables, in counted
+directory-payload order: baseline, relative minimum, relative maximum,
+arg-min offset, local sparse offset, global sparse block.
+-/
+def canonicalRelativeRmmInteriorComponentStore
+    (shape : Cartesian.CartesianShape) :
+    let summary := canonicalRelativeRmmSummaryTable shape
+    let localTable := canonicalRelativeRmmInteriorLocalTable shape
+    let globalTable := canonicalRelativeRmmInteriorGlobalTable shape
+    BoundedPayloadWordStore
+      (((summary.baselineTable.payload ++
+          (summary.minRelTable.payload ++
+            (summary.maxRelTable.payload ++ summary.argOffsetTable.payload))) ++
+        localTable.table.payload) ++ globalTable.table.payload)
+      (SuccinctRank.machineWordBits shape.bpCode.length) := by
+  exact
+    BoundedPayloadWordStore.append
+      (BoundedPayloadWordStore.append
+        (canonicalRelativeRmmSummaryMachineStore shape)
+        (canonicalRelativeRmmLocalMachineStore shape))
+      (canonicalRelativeRmmGlobalMachineStore shape)
+
+/-- Explicit flat word offsets for the six directory components. -/
+structure CanonicalRelativeRmmInteriorComponentOffsets where
+  baseline : Nat
+  minRel : Nat
+  maxRel : Nat
+  argOffset : Nat
+  localOffset : Nat
+  globalBlock : Nat
+  deadAddress : Nat
+deriving Repr, DecidableEq
+
+def canonicalRelativeRmmInteriorComponentOffsets
+    (shape : Cartesian.CartesianShape) :
+    CanonicalRelativeRmmInteriorComponentOffsets :=
+  let hword := SuccinctRank.machineWordBits_pos shape.bpCode.length
+  let summary := canonicalRelativeRmmSummaryTable shape
+  let baselineWords :=
+    (summary.baselineTable.machineStore hword).store.words.size
+  let minRelWords :=
+    (summary.minRelTable.machineStore hword).store.words.size
+  let maxRelWords :=
+    (summary.maxRelTable.machineStore hword).store.words.size
+  let argOffsetWords :=
+    (summary.argOffsetTable.machineStore hword).store.words.size
+  let localWords :=
+    (canonicalRelativeRmmLocalMachineStore shape).store.words.size
+  { baseline := 0
+    minRel := baselineWords
+    maxRel := baselineWords + minRelWords
+    argOffset := baselineWords + minRelWords + maxRelWords
+    localOffset := baselineWords + minRelWords + maxRelWords + argOffsetWords
+    globalBlock :=
+      baselineWords + minRelWords + maxRelWords + argOffsetWords + localWords
+    deadAddress :=
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words.size }
+
+theorem canonicalRelativeRmmInteriorComponentStore_flattens_payload
+    (shape : Cartesian.CartesianShape) :
+    flattenPayloadWords
+        (canonicalRelativeRmmInteriorComponentStore
+          shape).store.words.toList =
+      (canonicalRelativeRmmSummaryTable shape).payload ++
+        (canonicalRelativeRmmInteriorLocalTable shape).payload ++
+
+          (canonicalRelativeRmmInteriorGlobalTable shape).payload := by
+  simpa [PayloadLiveBPRelativeMinMaxArgSummaryTable.payload,
+    PayloadLiveBPLocalSparseOffsetTable.payload,
+    PayloadLiveBPGlobalSparseBlockTable.payload] using
+    (canonicalRelativeRmmInteriorComponentStore shape).erases
+
+theorem canonicalRelativeRmmInteriorComponentStore_words_toList
+    (shape : Cartesian.CartesianShape) :
+    (canonicalRelativeRmmInteriorComponentStore shape).store.words.toList =
+      let hword := SuccinctRank.machineWordBits_pos shape.bpCode.length
+      let summary := canonicalRelativeRmmSummaryTable shape
+      (summary.baselineTable.machineStore hword).store.words.toList ++
+        (summary.minRelTable.machineStore hword).store.words.toList ++
+          (summary.maxRelTable.machineStore hword).store.words.toList ++
+            (summary.argOffsetTable.machineStore hword).store.words.toList ++
+              ((canonicalRelativeRmmInteriorLocalTable
+                shape).table.machineStore hword).store.words.toList ++
+                ((canonicalRelativeRmmInteriorGlobalTable
+                  shape).table.machineStore hword).store.words.toList := by
+  simp [canonicalRelativeRmmInteriorComponentStore,
+    canonicalRelativeRmmSummaryMachineStore,
+    canonicalRelativeRmmLocalMachineStore,
+    canonicalRelativeRmmGlobalMachineStore,
+    BoundedPayloadWordStore.append]
+
+theorem canonicalRelativeRmmInteriorComponentStore_words_bounded
+    (shape : Cartesian.CartesianShape)
+    {word : List Bool}
+    (hmem :
+      List.Mem word
+        (canonicalRelativeRmmInteriorComponentStore
+          shape).store.words.toList) :
+    word.length <= SuccinctRank.machineWordBits shape.bpCode.length :=
+  (canonicalRelativeRmmInteriorComponentStore shape).word_length_le hmem
+def canonicalRelativeRmmInteriorLogicalWordsRead
+    (shape : Cartesian.CartesianShape) (startBlock count : Nat) :
+    List (List Bool) :=
+  bpTwoLevelInteriorCandidateWordsRead
+    (canonicalRelativeRmmInteriorLocalTable shape)
+    (canonicalRelativeRmmInteriorGlobalTable shape)
+    (canonicalRelativeRmmSummaryTable shape) startBlock count
+
+/-- Every logical rmM cell is represented by consecutive machine chunks. -/
+def canonicalRelativeRmmInteriorWordsRead
+    (shape : Cartesian.CartesianShape) (startBlock count : Nat) :
+    List (List Bool) :=
+  (canonicalRelativeRmmInteriorLogicalWordsRead shape startBlock count).flatMap
+    (SuccinctSpace.chunkPayloadWords
+      (SuccinctRank.machineWordBits shape.bpCode.length))
+
+def canonicalRelativeRmmMachineReadNatCosted
+    {entries : List Nat} {width : Nat}
+    (shape : Cartesian.CartesianShape)
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (i : Nat) : Costed (Option Nat) :=
+  table.machineReadCosted
+    (SuccinctRank.machineWordBits_pos shape.bpCode.length) i
+
+@[simp] theorem canonicalRelativeRmmMachineReadNatCosted_erase
+    {entries : List Nat} {width : Nat}
+    (shape : Cartesian.CartesianShape)
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (i : Nat) :
+    (canonicalRelativeRmmMachineReadNatCosted shape table i).erase =
+      (table.readCosted i).erase := by
+  exact table.machineReadCosted_erase
+    (SuccinctRank.machineWordBits_pos shape.bpCode.length) i
+
+def canonicalRelativeRmmMachineSummaryCosted
+    (shape : Cartesian.CartesianShape) (block : Nat) :
+    Costed (Option (Nat × Nat × Nat × Nat)) :=
+  let layout := RelativeRmm.canonicalLayout shape
+  let table := canonicalRelativeRmmSummaryTable shape
+  Costed.bind
+    (canonicalRelativeRmmMachineReadNatCosted shape table.baselineTable
+      (block / layout.blocksPerSuper)) fun baseline? =>
+    Costed.bind
+      (canonicalRelativeRmmMachineReadNatCosted shape table.minRelTable block)
+      fun minRel? =>
+      Costed.bind
+        (canonicalRelativeRmmMachineReadNatCosted shape table.maxRelTable block)
+        fun maxRel? =>
+        Costed.map
+          (fun argOffset? =>
+            match baseline?, minRel?, maxRel?, argOffset? with
+            | some baseline, some minRel, some maxRel, some argOffset =>
+                some (baseline, minRel, maxRel, argOffset)
+            | _, _, _, _ => none)
+          (canonicalRelativeRmmMachineReadNatCosted shape table.argOffsetTable
+            block)
+
+def canonicalRelativeRmmMachineMinCandidateCosted
+    (shape : Cartesian.CartesianShape) (block : Nat) :
+    Costed (Option (Nat × Nat)) :=
+  let layout := RelativeRmm.canonicalLayout shape
+  Costed.map
+    (fun summary? =>
+      summary?.map
+        (bpRelativeSummaryMinCandidate layout.blockSize
+          layout.blocksPerSuper block))
+    (canonicalRelativeRmmMachineSummaryCosted shape block)
+
+def canonicalRelativeRmmMachineLocalSpanCandidateCosted
+    (shape : Cartesian.CartesianShape)
+    (macroIdx localStart level : Nat) :
+    Costed (Option (Nat × Nat)) :=
+  let layout := RelativeRmm.canonicalLayout shape
+  let table := canonicalRelativeRmmInteriorLocalTable shape
+  Costed.bind
+    (canonicalRelativeRmmMachineReadNatCosted shape table.table
+      (bpLocalSparseCellSlot layout.macroSize layout.levelCount
+        macroIdx localStart level)) fun offset? =>
+    match offset? with
+    | some offset =>
+        canonicalRelativeRmmMachineMinCandidateCosted shape
+          (macroIdx * layout.macroSize + offset)
+    | none => Costed.pure none
+
+def canonicalRelativeRmmMachineGlobalSpanCandidateCosted
+    (shape : Cartesian.CartesianShape)
+    (macroStart level : Nat) :
+    Costed (Option (Nat × Nat)) :=
+  let layout := RelativeRmm.canonicalLayout shape
+  let table := canonicalRelativeRmmInteriorGlobalTable shape
+  Costed.bind
+    (canonicalRelativeRmmMachineReadNatCosted shape table.table
+      (bpGlobalSparseCellSlot layout.macroSampleCount
+        macroStart level)) fun block? =>
+    match block? with
+    | some block =>
+        canonicalRelativeRmmMachineMinCandidateCosted shape block
+    | none => Costed.pure none
+
+def canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted
+    (shape : Cartesian.CartesianShape)
+    (macroIdx localStart count : Nat) :
+    Costed (Option (Nat × Nat)) :=
+  let level := Nat.log2 count
+  let span := bpSparseLogSpan count
+  let rightLocalStart := localStart + count - span
+  Costed.bind
+    (canonicalRelativeRmmMachineLocalSpanCandidateCosted shape
+      macroIdx localStart level) fun left? =>
+    Costed.map (fun right? => bpCandidateMerge? left? right?)
+      (canonicalRelativeRmmMachineLocalSpanCandidateCosted shape
+        macroIdx rightLocalStart level)
+
+def canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted
+    (shape : Cartesian.CartesianShape)
+    (macroStart macroSpanCount : Nat) :
+    Costed (Option (Nat × Nat)) :=
+  let level := Nat.log2 macroSpanCount
+  let spanMacros := bpSparseLogSpan macroSpanCount
+  let rightMacroStart := macroStart + macroSpanCount - spanMacros
+  Costed.bind
+    (canonicalRelativeRmmMachineGlobalSpanCandidateCosted shape
+      macroStart level) fun left? =>
+    Costed.map (fun right? => bpCandidateMerge? left? right?)
+      (canonicalRelativeRmmMachineGlobalSpanCandidateCosted shape
+        rightMacroStart level)
+
+def canonicalRelativeRmmMachineAdjacentMacroCandidateCosted
+    (shape : Cartesian.CartesianShape)
+    (macroStart localStart rightCount : Nat) :
+    Costed (Option (Nat × Nat)) :=
+  let layout := RelativeRmm.canonicalLayout shape
+  let leftCount := layout.macroSize - localStart
+  Costed.bind
+    (canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
+      macroStart localStart leftCount) fun left? =>
+    Costed.map (fun right? => bpCandidateMerge? left? right?)
+      (canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
+        (macroStart + 1) 0 rightCount)
+
+def canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted
+    (shape : Cartesian.CartesianShape)
+    (macroStart localStart middleMacroCount : Nat) :
+    Costed (Option (Nat × Nat)) :=
+  let layout := RelativeRmm.canonicalLayout shape
+  let leftCount := layout.macroSize - localStart
+  Costed.bind
+    (canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
+      macroStart localStart leftCount) fun left? =>
+    Costed.map (fun middle? => bpCandidateMerge? left? middle?)
+      (canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted shape
+        (macroStart + 1) middleMacroCount)
+
+def canonicalRelativeRmmMachineCrossMacroCandidateCosted
+    (shape : Cartesian.CartesianShape)
+    (macroStart localStart middleMacroCount rightCount : Nat) :
+    Costed (Option (Nat × Nat)) :=
+  let layout := RelativeRmm.canonicalLayout shape
+  let leftCount := layout.macroSize - localStart
+  let rightMacroStart := macroStart + 1 + middleMacroCount
+  Costed.bind
+    (canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
+      macroStart localStart leftCount) fun left? =>
+    Costed.bind
+      (canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted shape
+        (macroStart + 1) middleMacroCount) fun middle? =>
+      Costed.map
+        (fun right? => bpCandidateMerge3? left? middle? right?)
+        (canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
+          rightMacroStart 0 rightCount)
+
+def canonicalRelativeRmmInteriorQueryCost : Nat := 240
+
+def canonicalRelativeRmmInteriorRangeMinCosted
+    (shape : Cartesian.CartesianShape) (startBlock count : Nat) :
+    Costed (Option (Prod Nat Nat)) :=
+  let layout := RelativeRmm.canonicalLayout shape
+  let macroStart := startBlock / layout.macroSize
+  let localStart := startBlock % layout.macroSize
+  if count = 0 then
+    Costed.pure none
+  else if count <= layout.macroSize - localStart then
+    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
+      macroStart localStart count
+  else
+    let leftCount := layout.macroSize - localStart
+    let remaining := count - leftCount
+    let middleMacroCount := remaining / layout.macroSize
+    let rightCount := remaining % layout.macroSize
+    if middleMacroCount = 0 then
+      canonicalRelativeRmmMachineAdjacentMacroCandidateCosted shape
+        macroStart localStart rightCount
+    else if rightCount = 0 then
+      canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted shape
+        macroStart localStart middleMacroCount
+    else
+      canonicalRelativeRmmMachineCrossMacroCandidateCosted shape
+        macroStart localStart middleMacroCount rightCount
+
+@[simp] theorem canonicalRelativeRmmMachineSummaryCosted_refines
+    (shape : Cartesian.CartesianShape) (block : Nat) :
+    (canonicalRelativeRmmMachineSummaryCosted shape block).erase =
+      ((canonicalRelativeRmmSummaryTable shape).summaryCosted block).erase := by
+  simp [canonicalRelativeRmmMachineSummaryCosted,
+    PayloadLiveBPRelativeMinMaxArgSummaryTable.summaryCosted,
+    Costed.erase_bind, Costed.map]
+  rfl
+
+@[simp] theorem canonicalRelativeRmmMachineMinCandidateCosted_refines
+    (shape : Cartesian.CartesianShape) (block : Nat) :
+    (canonicalRelativeRmmMachineMinCandidateCosted shape block).erase =
+      ((canonicalRelativeRmmSummaryTable shape).minCandidateCosted block).erase := by
+  simp [canonicalRelativeRmmMachineMinCandidateCosted,
+    PayloadLiveBPRelativeMinMaxArgSummaryTable.minCandidateCosted, Costed.map]
+
+@[simp] theorem canonicalRelativeRmmMachineLocalSpanCandidateCosted_refines
+    (shape : Cartesian.CartesianShape)
+    (macroIdx localStart level : Nat) :
+    (canonicalRelativeRmmMachineLocalSpanCandidateCosted shape
+      macroIdx localStart level).erase =
+      ((canonicalRelativeRmmInteriorLocalTable shape).spanCandidateCosted
+        (canonicalRelativeRmmSummaryTable shape)
+        macroIdx localStart level).erase := by
+  unfold canonicalRelativeRmmMachineLocalSpanCandidateCosted
+  unfold PayloadLiveBPLocalSparseOffsetTable.spanCandidateCosted
+  rw [Costed.erase_bind, Costed.erase_bind]
+  rw [canonicalRelativeRmmMachineReadNatCosted_erase]
+  unfold PayloadLiveBPLocalSparseOffsetTable.readOffsetCosted
+  generalize hvalue :
+    ((canonicalRelativeRmmInteriorLocalTable shape).table.readCosted
+      (bpLocalSparseCellSlot
+        (RelativeRmm.canonicalLayout shape).macroSize
+        (RelativeRmm.canonicalLayout shape).levelCount
+        macroIdx localStart level)).erase = value
+  cases value <;> simp [Costed.pure]
+
+@[simp] theorem canonicalRelativeRmmMachineGlobalSpanCandidateCosted_refines
+    (shape : Cartesian.CartesianShape)
+    (macroStart level : Nat) :
+    (canonicalRelativeRmmMachineGlobalSpanCandidateCosted shape
+      macroStart level).erase =
+      ((canonicalRelativeRmmInteriorGlobalTable shape).spanCandidateCosted
+        (canonicalRelativeRmmSummaryTable shape)
+        macroStart level).erase := by
+  unfold canonicalRelativeRmmMachineGlobalSpanCandidateCosted
+  unfold PayloadLiveBPGlobalSparseBlockTable.spanCandidateCosted
+  rw [Costed.erase_bind, Costed.erase_bind]
+  rw [canonicalRelativeRmmMachineReadNatCosted_erase]
+  unfold PayloadLiveBPGlobalSparseBlockTable.readBlockCosted
+  generalize hvalue :
+    ((canonicalRelativeRmmInteriorGlobalTable shape).table.readCosted
+      (bpGlobalSparseCellSlot
+        (RelativeRmm.canonicalLayout shape).macroSampleCount
+        macroStart level)).erase = value
+  cases value <;> simp [Costed.pure]
+
+@[simp] theorem canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_refines
+    (shape : Cartesian.CartesianShape)
+    (macroIdx localStart count : Nat) :
+    (canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
+      macroIdx localStart count).erase =
+      ((canonicalRelativeRmmInteriorLocalTable shape).twoSpanCandidateCosted
+        (canonicalRelativeRmmSummaryTable shape)
+        macroIdx localStart count).erase := by
+  simp [canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted,
+    PayloadLiveBPLocalSparseOffsetTable.twoSpanCandidateCosted,
+    Costed.erase_bind, Costed.map]
+
+@[simp] theorem canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_refines
+    (shape : Cartesian.CartesianShape)
+    (macroStart count : Nat) :
+    (canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted shape
+      macroStart count).erase =
+      ((canonicalRelativeRmmInteriorGlobalTable shape).twoSpanCandidateCosted
+        (canonicalRelativeRmmSummaryTable shape)
+        macroStart count).erase := by
+  simp [canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted,
+    PayloadLiveBPGlobalSparseBlockTable.twoSpanCandidateCosted,
+    Costed.erase_bind, Costed.map]
+
+@[simp] theorem canonicalRelativeRmmMachineAdjacentMacroCandidateCosted_refines
+    (shape : Cartesian.CartesianShape)
+    (macroStart localStart rightCount : Nat) :
+    (canonicalRelativeRmmMachineAdjacentMacroCandidateCosted shape
+      macroStart localStart rightCount).erase =
+      (bpTwoLevelAdjacentMacroCandidateCosted
+        (canonicalRelativeRmmInteriorLocalTable shape)
+        (canonicalRelativeRmmSummaryTable shape)
+        macroStart localStart rightCount).erase := by
+  simp [canonicalRelativeRmmMachineAdjacentMacroCandidateCosted,
+    bpTwoLevelAdjacentMacroCandidateCosted, Costed.erase_bind, Costed.map]
+
+@[simp] theorem canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted_refines
+    (shape : Cartesian.CartesianShape)
+    (macroStart localStart middleMacroCount : Nat) :
+    (canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted shape
+      macroStart localStart middleMacroCount).erase =
+      (bpTwoLevelLeftMiddleMacroCandidateCosted
+        (canonicalRelativeRmmInteriorLocalTable shape)
+        (canonicalRelativeRmmInteriorGlobalTable shape)
+        (canonicalRelativeRmmSummaryTable shape)
+        macroStart localStart middleMacroCount).erase := by
+  simp [canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted,
+    bpTwoLevelLeftMiddleMacroCandidateCosted, Costed.erase_bind, Costed.map]
+
+@[simp] theorem canonicalRelativeRmmMachineCrossMacroCandidateCosted_refines
+    (shape : Cartesian.CartesianShape)
+    (macroStart localStart middleMacroCount rightCount : Nat) :
+    (canonicalRelativeRmmMachineCrossMacroCandidateCosted shape
+      macroStart localStart middleMacroCount rightCount).erase =
+      (bpTwoLevelCrossMacroCandidateCosted
+        (canonicalRelativeRmmInteriorLocalTable shape)
+        (canonicalRelativeRmmInteriorGlobalTable shape)
+        (canonicalRelativeRmmSummaryTable shape)
+        macroStart localStart middleMacroCount rightCount).erase := by
+  simp [canonicalRelativeRmmMachineCrossMacroCandidateCosted,
+    bpTwoLevelCrossMacroCandidateCosted, Costed.erase_bind, Costed.map]
+
+
+def canonicalRelativeRmmMachineReadNatComputation
+    {entries : List Nat} {width : Nat}
+    (shape : Cartesian.CartesianShape)
+    (table : FixedWidthNatTable entries width)
+    (base i : Nat) : FlatStoreComputation (Option Nat) :=
+  table.machineReadComputationAt
+    (SuccinctRank.machineWordBits shape.bpCode.length) base
+    (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress i
+
+def canonicalRelativeRmmMachineSummaryComputation
+    (shape : Cartesian.CartesianShape) (block : Nat) :
+    FlatStoreComputation (Option (Prod Nat (Prod Nat (Prod Nat Nat)))) :=
+  let layout := RelativeRmm.canonicalLayout shape
+  let table := canonicalRelativeRmmSummaryTable shape
+  let offsets := canonicalRelativeRmmInteriorComponentOffsets shape
+  FlatStoreComputation.bind
+    (canonicalRelativeRmmMachineReadNatComputation shape table.baselineTable
+      offsets.baseline (block / layout.blocksPerSuper)) fun baseline =>
+    FlatStoreComputation.bind
+      (canonicalRelativeRmmMachineReadNatComputation shape table.minRelTable
+        offsets.minRel block) fun minRel =>
+      FlatStoreComputation.bind
+        (canonicalRelativeRmmMachineReadNatComputation shape table.maxRelTable
+          offsets.maxRel block) fun maxRel =>
+        FlatStoreComputation.map
+          (fun argOffset =>
+            match baseline, minRel, maxRel, argOffset with
+            | some b, some mn, some mx, some arg => some (b, mn, mx, arg)
+            | _, _, _, _ => none)
+          (canonicalRelativeRmmMachineReadNatComputation
+            shape table.argOffsetTable offsets.argOffset block)
+
+def canonicalRelativeRmmMachineMinCandidateComputation
+    (shape : Cartesian.CartesianShape) (block : Nat) :
+    FlatStoreComputation (Option (Prod Nat Nat)) :=
+  let layout := RelativeRmm.canonicalLayout shape
+  FlatStoreComputation.map
+    (fun summary =>
+      summary.map
+        (bpRelativeSummaryMinCandidate layout.blockSize
+          layout.blocksPerSuper block))
+    (canonicalRelativeRmmMachineSummaryComputation shape block)
+
+def canonicalRelativeRmmMachineLocalSpanCandidateComputation
+    (shape : Cartesian.CartesianShape)
+    (macroIdx localStart level : Nat) :
+    FlatStoreComputation (Option (Prod Nat Nat)) :=
+  let layout := RelativeRmm.canonicalLayout shape
+  let table := canonicalRelativeRmmInteriorLocalTable shape
+  let offsets := canonicalRelativeRmmInteriorComponentOffsets shape
+  FlatStoreComputation.bind
+    (canonicalRelativeRmmMachineReadNatComputation shape table.table
+      offsets.localOffset
+      (bpLocalSparseCellSlot layout.macroSize layout.levelCount
+        macroIdx localStart level)) fun offset =>
+    match offset with
+    | some value =>
+        canonicalRelativeRmmMachineMinCandidateComputation shape
+          (macroIdx * layout.macroSize + value)
+    | none => FlatStoreComputation.pure none
+
+def canonicalRelativeRmmMachineGlobalSpanCandidateComputation
+    (shape : Cartesian.CartesianShape)
+    (macroStart level : Nat) :
+    FlatStoreComputation (Option (Prod Nat Nat)) :=
+  let layout := RelativeRmm.canonicalLayout shape
+  let table := canonicalRelativeRmmInteriorGlobalTable shape
+  let offsets := canonicalRelativeRmmInteriorComponentOffsets shape
+  FlatStoreComputation.bind
+    (canonicalRelativeRmmMachineReadNatComputation shape table.table
+      offsets.globalBlock
+      (bpGlobalSparseCellSlot layout.macroSampleCount
+        macroStart level)) fun block =>
+    match block with
+    | some value =>
+        canonicalRelativeRmmMachineMinCandidateComputation shape value
+    | none => FlatStoreComputation.pure none
+
+def canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+    (shape : Cartesian.CartesianShape)
+    (macroIdx localStart count : Nat) :
+    FlatStoreComputation (Option (Prod Nat Nat)) :=
+  let level := Nat.log2 count
+  let span := bpSparseLogSpan count
+  let rightLocalStart := localStart + count - span
+  FlatStoreComputation.bind
+    (canonicalRelativeRmmMachineLocalSpanCandidateComputation
+      shape macroIdx localStart level) fun left =>
+    FlatStoreComputation.map (fun right => bpCandidateMerge? left right)
+      (canonicalRelativeRmmMachineLocalSpanCandidateComputation
+        shape macroIdx rightLocalStart level)
+
+def canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation
+    (shape : Cartesian.CartesianShape)
+    (macroStart macroSpanCount : Nat) :
+    FlatStoreComputation (Option (Prod Nat Nat)) :=
+  let level := Nat.log2 macroSpanCount
+  let spanMacros := bpSparseLogSpan macroSpanCount
+  let rightMacroStart := macroStart + macroSpanCount - spanMacros
+  FlatStoreComputation.bind
+    (canonicalRelativeRmmMachineGlobalSpanCandidateComputation
+      shape macroStart level) fun left =>
+    FlatStoreComputation.map (fun right => bpCandidateMerge? left right)
+      (canonicalRelativeRmmMachineGlobalSpanCandidateComputation
+        shape rightMacroStart level)
+
+def canonicalRelativeRmmMachineAdjacentMacroCandidateComputation
+    (shape : Cartesian.CartesianShape)
+    (macroStart localStart rightCount : Nat) :
+    FlatStoreComputation (Option (Prod Nat Nat)) :=
+  let layout := RelativeRmm.canonicalLayout shape
+  let leftCount := layout.macroSize - localStart
+  FlatStoreComputation.bind
+    (canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+      shape macroStart localStart leftCount) fun left =>
+    FlatStoreComputation.map (fun right => bpCandidateMerge? left right)
+      (canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+        shape (macroStart + 1) 0 rightCount)
+
+def canonicalRelativeRmmMachineLeftMiddleMacroCandidateComputation
+    (shape : Cartesian.CartesianShape)
+    (macroStart localStart middleMacroCount : Nat) :
+    FlatStoreComputation (Option (Prod Nat Nat)) :=
+  let layout := RelativeRmm.canonicalLayout shape
+  let leftCount := layout.macroSize - localStart
+  FlatStoreComputation.bind
+    (canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+      shape macroStart localStart leftCount) fun left =>
+    FlatStoreComputation.map (fun middle => bpCandidateMerge? left middle)
+      (canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation
+        shape (macroStart + 1) middleMacroCount)
+
+def canonicalRelativeRmmMachineCrossMacroCandidateComputation
+    (shape : Cartesian.CartesianShape)
+    (macroStart localStart middleMacroCount rightCount : Nat) :
+    FlatStoreComputation (Option (Prod Nat Nat)) :=
+  let layout := RelativeRmm.canonicalLayout shape
+  let leftCount := layout.macroSize - localStart
+  let rightMacroStart := macroStart + 1 + middleMacroCount
+  FlatStoreComputation.bind
+    (canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+      shape macroStart localStart leftCount) fun left =>
+    FlatStoreComputation.bind
+      (canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation
+        shape (macroStart + 1) middleMacroCount) fun middle =>
+      FlatStoreComputation.map
+        (fun right => bpCandidateMerge3? left middle right)
+        (canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+          shape rightMacroStart 0 rightCount)
+
+def canonicalRelativeRmmInteriorRangeMinComputation
+    (shape : Cartesian.CartesianShape) (startBlock count : Nat) :
+    FlatStoreComputation (Option (Prod Nat Nat)) :=
+  let layout := RelativeRmm.canonicalLayout shape
+  let macroStart := startBlock / layout.macroSize
+  let localStart := startBlock % layout.macroSize
+  if count = 0 then
+    FlatStoreComputation.pure none
+  else if count <= layout.macroSize - localStart then
+    canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+      shape macroStart localStart count
+  else
+    let leftCount := layout.macroSize - localStart
+    let remaining := count - leftCount
+    let middleMacroCount := remaining / layout.macroSize
+    let rightCount := remaining % layout.macroSize
+    if middleMacroCount = 0 then
+      canonicalRelativeRmmMachineAdjacentMacroCandidateComputation
+        shape macroStart localStart rightCount
+    else if rightCount = 0 then
+      canonicalRelativeRmmMachineLeftMiddleMacroCandidateComputation
+        shape macroStart localStart middleMacroCount
+    else
+      canonicalRelativeRmmMachineCrossMacroCandidateComputation
+        shape macroStart localStart middleMacroCount rightCount
+
+def canonicalRelativeRmmInteriorRangeMinExecutionWithStore
+    (shape : Cartesian.CartesianShape) (store : Array (List Bool))
+    (startBlock count : Nat) : FlatStoreExecution (Option (Prod Nat Nat)) :=
+  (canonicalRelativeRmmInteriorRangeMinComputation
+    shape startBlock count).run store
+
+def canonicalRelativeRmmInteriorRangeMinCostedWithStore
+    (shape : Cartesian.CartesianShape) (store : Array (List Bool))
+    (startBlock count : Nat) : Costed (Option (Prod Nat Nat)) :=
+  (canonicalRelativeRmmInteriorRangeMinExecutionWithStore
+    shape store startBlock count).toCosted
+
+def canonicalRelativeRmmInteriorRangeFootprintWithStore
+    (shape : Cartesian.CartesianShape) (store : Array (List Bool))
+    (startBlock count : Nat) : List Nat :=
+  (canonicalRelativeRmmInteriorRangeMinExecutionWithStore
+    shape store startBlock count).footprint
+
+theorem canonicalRelativeRmmBaselineReadComputation_refines
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    ((canonicalRelativeRmmMachineReadNatComputation shape
+        (canonicalRelativeRmmSummaryTable shape).baselineTable
+        (canonicalRelativeRmmInteriorComponentOffsets shape).baseline i).run
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words).toCosted =
+      canonicalRelativeRmmMachineReadNatCosted shape
+        (canonicalRelativeRmmSummaryTable shape).baselineTable i := by
+  unfold canonicalRelativeRmmMachineReadNatComputation
+  unfold canonicalRelativeRmmMachineReadNatCosted
+  apply FixedWidthNatTable.machineReadComputationAt_refines_machineReadCosted
+  case hsegment =>
+    intro localAddress hlocal
+    have hlist :
+        (canonicalRelativeRmmInteriorComponentStore
+          shape).store.words.toList[localAddress]? =
+        ((canonicalRelativeRmmSummaryTable shape).baselineTable.machineStore
+          (SuccinctRank.machineWordBits_pos
+            shape.bpCode.length)).store.words.toList[localAddress]? := by
+      rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
+      simp [List.getElem?_append, hlocal]
+    simpa [canonicalRelativeRmmInteriorComponentOffsets,
+      Array.getElem?_toList] using hlist
+  case hdead =>
+    simp [canonicalRelativeRmmInteriorComponentOffsets]
+theorem canonicalRelativeRmmMinRelReadComputation_refines
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    ((canonicalRelativeRmmMachineReadNatComputation shape
+        (canonicalRelativeRmmSummaryTable shape).minRelTable
+        (canonicalRelativeRmmInteriorComponentOffsets shape).minRel i).run
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words).toCosted =
+      canonicalRelativeRmmMachineReadNatCosted shape
+        (canonicalRelativeRmmSummaryTable shape).minRelTable i := by
+  unfold canonicalRelativeRmmMachineReadNatComputation
+  unfold canonicalRelativeRmmMachineReadNatCosted
+  apply FixedWidthNatTable.machineReadComputationAt_refines_machineReadCosted
+  case hsegment =>
+    intro localAddress hlocal
+    have hlist :
+        (canonicalRelativeRmmInteriorComponentStore
+          shape).store.words.toList[
+            (canonicalRelativeRmmInteriorComponentOffsets shape).minRel +
+              localAddress]? =
+        ((canonicalRelativeRmmSummaryTable shape).minRelTable.machineStore
+          (SuccinctRank.machineWordBits_pos
+            shape.bpCode.length)).store.words.toList[localAddress]? := by
+      rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
+      simp [canonicalRelativeRmmInteriorComponentOffsets,
+        List.getElem?_append, hlocal] <;> omega
+    simpa [Array.getElem?_toList] using hlist
+  case hdead =>
+    simp [canonicalRelativeRmmInteriorComponentOffsets]
+
+theorem canonicalRelativeRmmMaxRelReadComputation_refines
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    ((canonicalRelativeRmmMachineReadNatComputation shape
+        (canonicalRelativeRmmSummaryTable shape).maxRelTable
+        (canonicalRelativeRmmInteriorComponentOffsets shape).maxRel i).run
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words).toCosted =
+      canonicalRelativeRmmMachineReadNatCosted shape
+        (canonicalRelativeRmmSummaryTable shape).maxRelTable i := by
+  unfold canonicalRelativeRmmMachineReadNatComputation
+  unfold canonicalRelativeRmmMachineReadNatCosted
+  apply FixedWidthNatTable.machineReadComputationAt_refines_machineReadCosted
+  case hsegment =>
+    intro localAddress hlocal
+    have hlist :
+        (canonicalRelativeRmmInteriorComponentStore
+          shape).store.words.toList[
+            (canonicalRelativeRmmInteriorComponentOffsets shape).maxRel +
+              localAddress]? =
+        ((canonicalRelativeRmmSummaryTable shape).maxRelTable.machineStore
+          (SuccinctRank.machineWordBits_pos
+            shape.bpCode.length)).store.words.toList[localAddress]? := by
+      let hword := SuccinctRank.machineWordBits_pos shape.bpCode.length
+      let summary := canonicalRelativeRmmSummaryTable shape
+      let baselineWords :=
+        (summary.baselineTable.machineStore hword).store.words.toList
+      let minRelWords :=
+        (summary.minRelTable.machineStore hword).store.words.toList
+      let maxRelWords :=
+        (summary.maxRelTable.machineStore hword).store.words.toList
+      let argWords :=
+        (summary.argOffsetTable.machineStore hword).store.words.toList
+      let localWords :=
+        ((canonicalRelativeRmmInteriorLocalTable
+          shape).table.machineStore hword).store.words.toList
+      let globalWords :=
+        ((canonicalRelativeRmmInteriorGlobalTable
+          shape).table.machineStore hword).store.words.toList
+      have hmiddle :
+          ((baselineWords ++ minRelWords) ++ maxRelWords ++
+            (argWords ++ localWords ++ globalWords))[
+              (baselineWords ++ minRelWords).length + localAddress]? =
+            maxRelWords[localAddress]? :=
+        List.getElem?_append_middle_of_lt
+          (baselineWords ++ minRelWords) maxRelWords
+          (argWords ++ localWords ++ globalWords) localAddress hlocal
+      rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
+      simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
+        argWords, localWords, globalWords,
+        canonicalRelativeRmmInteriorComponentOffsets,
+        List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
+    simpa [Array.getElem?_toList] using hlist
+  case hdead =>
+    simp [canonicalRelativeRmmInteriorComponentOffsets]
+
+theorem canonicalRelativeRmmArgOffsetReadComputation_refines
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    ((canonicalRelativeRmmMachineReadNatComputation shape
+        (canonicalRelativeRmmSummaryTable shape).argOffsetTable
+        (canonicalRelativeRmmInteriorComponentOffsets shape).argOffset i).run
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words).toCosted =
+      canonicalRelativeRmmMachineReadNatCosted shape
+        (canonicalRelativeRmmSummaryTable shape).argOffsetTable i := by
+  unfold canonicalRelativeRmmMachineReadNatComputation
+  unfold canonicalRelativeRmmMachineReadNatCosted
+  apply FixedWidthNatTable.machineReadComputationAt_refines_machineReadCosted
+  case hsegment =>
+    intro localAddress hlocal
+    have hlist :
+        (canonicalRelativeRmmInteriorComponentStore
+          shape).store.words.toList[
+            (canonicalRelativeRmmInteriorComponentOffsets shape).argOffset +
+              localAddress]? =
+        ((canonicalRelativeRmmSummaryTable shape).argOffsetTable.machineStore
+          (SuccinctRank.machineWordBits_pos
+            shape.bpCode.length)).store.words.toList[localAddress]? := by
+      let hword := SuccinctRank.machineWordBits_pos shape.bpCode.length
+      let summary := canonicalRelativeRmmSummaryTable shape
+      let baselineWords :=
+        (summary.baselineTable.machineStore hword).store.words.toList
+      let minRelWords :=
+        (summary.minRelTable.machineStore hword).store.words.toList
+      let maxRelWords :=
+        (summary.maxRelTable.machineStore hword).store.words.toList
+      let argWords :=
+        (summary.argOffsetTable.machineStore hword).store.words.toList
+      let localWords :=
+        ((canonicalRelativeRmmInteriorLocalTable
+          shape).table.machineStore hword).store.words.toList
+      let globalWords :=
+        ((canonicalRelativeRmmInteriorGlobalTable
+          shape).table.machineStore hword).store.words.toList
+      have hmiddle :
+          (((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords ++
+            (localWords ++ globalWords))[
+              ((baselineWords ++ minRelWords) ++ maxRelWords).length +
+                localAddress]? = argWords[localAddress]? :=
+        List.getElem?_append_middle_of_lt
+          ((baselineWords ++ minRelWords) ++ maxRelWords) argWords
+          (localWords ++ globalWords) localAddress hlocal
+      rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
+      simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
+        argWords, localWords, globalWords,
+        canonicalRelativeRmmInteriorComponentOffsets,
+        List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
+    simpa [Array.getElem?_toList] using hlist
+  case hdead =>
+    simp [canonicalRelativeRmmInteriorComponentOffsets]
+
+theorem canonicalRelativeRmmLocalReadComputation_refines
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    ((canonicalRelativeRmmMachineReadNatComputation shape
+        (canonicalRelativeRmmInteriorLocalTable shape).table
+        (canonicalRelativeRmmInteriorComponentOffsets shape).localOffset i).run
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words).toCosted =
+      canonicalRelativeRmmMachineReadNatCosted shape
+        (canonicalRelativeRmmInteriorLocalTable shape).table i := by
+  unfold canonicalRelativeRmmMachineReadNatComputation
+  unfold canonicalRelativeRmmMachineReadNatCosted
+  apply FixedWidthNatTable.machineReadComputationAt_refines_machineReadCosted
+  case hsegment =>
+    intro localAddress hlocal
+    have hlist :
+        (canonicalRelativeRmmInteriorComponentStore
+          shape).store.words.toList[
+            (canonicalRelativeRmmInteriorComponentOffsets shape).localOffset +
+              localAddress]? =
+        ((canonicalRelativeRmmInteriorLocalTable shape).table.machineStore
+          (SuccinctRank.machineWordBits_pos
+            shape.bpCode.length)).store.words.toList[localAddress]? := by
+      let hword := SuccinctRank.machineWordBits_pos shape.bpCode.length
+      let summary := canonicalRelativeRmmSummaryTable shape
+      let baselineWords :=
+        (summary.baselineTable.machineStore hword).store.words.toList
+      let minRelWords :=
+        (summary.minRelTable.machineStore hword).store.words.toList
+      let maxRelWords :=
+        (summary.maxRelTable.machineStore hword).store.words.toList
+      let argWords :=
+        (summary.argOffsetTable.machineStore hword).store.words.toList
+      let localWords :=
+        ((canonicalRelativeRmmInteriorLocalTable
+          shape).table.machineStore hword).store.words.toList
+      let globalWords :=
+        ((canonicalRelativeRmmInteriorGlobalTable
+          shape).table.machineStore hword).store.words.toList
+      have hmiddle :
+          ((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
+            localWords ++ globalWords)[
+              (((baselineWords ++ minRelWords) ++ maxRelWords) ++
+                argWords).length + localAddress]? =
+            localWords[localAddress]? :=
+        List.getElem?_append_middle_of_lt
+          (((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords)
+          localWords globalWords localAddress hlocal
+      rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
+      simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
+        argWords, localWords, globalWords,
+        canonicalRelativeRmmInteriorComponentOffsets,
+        canonicalRelativeRmmLocalMachineStore,
+        List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
+    simpa [Array.getElem?_toList] using hlist
+  case hdead =>
+    simp [canonicalRelativeRmmInteriorComponentOffsets]
+
+theorem canonicalRelativeRmmGlobalReadComputation_refines
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    ((canonicalRelativeRmmMachineReadNatComputation shape
+        (canonicalRelativeRmmInteriorGlobalTable shape).table
+        (canonicalRelativeRmmInteriorComponentOffsets shape).globalBlock i).run
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words).toCosted =
+      canonicalRelativeRmmMachineReadNatCosted shape
+        (canonicalRelativeRmmInteriorGlobalTable shape).table i := by
+  unfold canonicalRelativeRmmMachineReadNatComputation
+  unfold canonicalRelativeRmmMachineReadNatCosted
+  apply FixedWidthNatTable.machineReadComputationAt_refines_machineReadCosted
+  case hsegment =>
+    intro localAddress hlocal
+    have hlist :
+        (canonicalRelativeRmmInteriorComponentStore
+          shape).store.words.toList[
+            (canonicalRelativeRmmInteriorComponentOffsets shape).globalBlock +
+              localAddress]? =
+        ((canonicalRelativeRmmInteriorGlobalTable shape).table.machineStore
+          (SuccinctRank.machineWordBits_pos
+            shape.bpCode.length)).store.words.toList[localAddress]? := by
+      let hword := SuccinctRank.machineWordBits_pos shape.bpCode.length
+      let summary := canonicalRelativeRmmSummaryTable shape
+      let baselineWords :=
+        (summary.baselineTable.machineStore hword).store.words.toList
+      let minRelWords :=
+        (summary.minRelTable.machineStore hword).store.words.toList
+      let maxRelWords :=
+        (summary.maxRelTable.machineStore hword).store.words.toList
+      let argWords :=
+        (summary.argOffsetTable.machineStore hword).store.words.toList
+      let localWords :=
+        ((canonicalRelativeRmmInteriorLocalTable
+          shape).table.machineStore hword).store.words.toList
+      let globalWords :=
+        ((canonicalRelativeRmmInteriorGlobalTable
+          shape).table.machineStore hword).store.words.toList
+      have hmiddle :
+          (((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
+            localWords) ++ globalWords ++ [])[
+              ((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
+                localWords).length + localAddress]? =
+            globalWords[localAddress]? :=
+        List.getElem?_append_middle_of_lt
+          ((((baselineWords ++ minRelWords) ++ maxRelWords) ++ argWords) ++
+            localWords) globalWords [] localAddress hlocal
+      rw [canonicalRelativeRmmInteriorComponentStore_words_toList]
+      simpa [hword, summary, baselineWords, minRelWords, maxRelWords,
+        argWords, localWords, globalWords,
+        canonicalRelativeRmmInteriorComponentOffsets,
+        canonicalRelativeRmmLocalMachineStore,
+        List.length_append, List.append_assoc, Nat.add_assoc] using hmiddle
+    simpa [Array.getElem?_toList] using hlist
+  case hdead =>
+    simp [canonicalRelativeRmmInteriorComponentOffsets]
+
+theorem canonicalRelativeRmmMachineSummaryComputation_refines
+    (shape : Cartesian.CartesianShape) (block : Nat) :
+    ((canonicalRelativeRmmMachineSummaryComputation shape block).run
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words).toCosted =
+      canonicalRelativeRmmMachineSummaryCosted shape block := by
+  unfold canonicalRelativeRmmMachineSummaryComputation
+  unfold canonicalRelativeRmmMachineSummaryCosted
+  simp only [FlatStoreComputation.bind_run_toCosted,
+    FlatStoreComputation.map_run_toCosted,
+    canonicalRelativeRmmBaselineReadComputation_refines,
+    canonicalRelativeRmmMinRelReadComputation_refines,
+    canonicalRelativeRmmMaxRelReadComputation_refines,
+    canonicalRelativeRmmArgOffsetReadComputation_refines]
+
+theorem canonicalRelativeRmmMachineMinCandidateComputation_refines
+    (shape : Cartesian.CartesianShape) (block : Nat) :
+    ((canonicalRelativeRmmMachineMinCandidateComputation shape block).run
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words).toCosted =
+      canonicalRelativeRmmMachineMinCandidateCosted shape block := by
+  unfold canonicalRelativeRmmMachineMinCandidateComputation
+  unfold canonicalRelativeRmmMachineMinCandidateCosted
+  simp only [FlatStoreComputation.map_run_toCosted,
+    canonicalRelativeRmmMachineSummaryComputation_refines]
+
+theorem canonicalRelativeRmmMachineLocalSpanCandidateComputation_refines
+    (shape : Cartesian.CartesianShape)
+    (macroIdx localStart level : Nat) :
+    ((canonicalRelativeRmmMachineLocalSpanCandidateComputation
+        shape macroIdx localStart level).run
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words).toCosted =
+      canonicalRelativeRmmMachineLocalSpanCandidateCosted
+        shape macroIdx localStart level := by
+  unfold canonicalRelativeRmmMachineLocalSpanCandidateComputation
+  unfold canonicalRelativeRmmMachineLocalSpanCandidateCosted
+  rw [FlatStoreComputation.bind_run_toCosted]
+  rw [canonicalRelativeRmmLocalReadComputation_refines]
+  generalize hread :
+    canonicalRelativeRmmMachineReadNatCosted shape
+      (canonicalRelativeRmmInteriorLocalTable shape).table
+      (bpLocalSparseCellSlot
+        (RelativeRmm.canonicalLayout shape).macroSize
+        (RelativeRmm.canonicalLayout shape).levelCount
+        macroIdx localStart level) = read
+  simp only [RelativeRmm.canonicalLayout, RelativeRmm.Layout.macroSize,
+    RelativeRmm.Layout.levelCount, RelativeRmm.Layout.offsetWidth] at hread
+  simp only [RelativeRmm.canonicalLayout, RelativeRmm.Layout.macroSize,
+    RelativeRmm.Layout.levelCount, RelativeRmm.Layout.offsetWidth]
+  cases read with
+  | mk value cost =>
+      cases value with
+      | none =>
+          rw [hread]
+          rfl
+      | some offset =>
+          rw [hread]
+          have hmin :=
+            canonicalRelativeRmmMachineMinCandidateComputation_refines
+              shape
+              (macroIdx *
+                (canonicalBPRelativeSummaryBlocksPerSuperRaw shape *
+                  canonicalBPRelativeSummaryBlocksPerSuperRaw shape) +
+                offset)
+          have houter :=
+            congrArg
+              (fun next : Costed (Option (Prod Nat Nat)) =>
+                Costed.bind
+                  ({ value := some offset, cost := cost } : Costed (Option Nat))
+                  (fun _ => next)) hmin
+          simpa [Costed.bind] using houter
+
+theorem canonicalRelativeRmmMachineGlobalSpanCandidateComputation_refines
+    (shape : Cartesian.CartesianShape)
+    (macroStart level : Nat) :
+    ((canonicalRelativeRmmMachineGlobalSpanCandidateComputation
+        shape macroStart level).run
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words).toCosted =
+      canonicalRelativeRmmMachineGlobalSpanCandidateCosted
+        shape macroStart level := by
+  unfold canonicalRelativeRmmMachineGlobalSpanCandidateComputation
+  unfold canonicalRelativeRmmMachineGlobalSpanCandidateCosted
+  rw [FlatStoreComputation.bind_run_toCosted]
+  rw [canonicalRelativeRmmGlobalReadComputation_refines]
+  generalize hread :
+    canonicalRelativeRmmMachineReadNatCosted shape
+      (canonicalRelativeRmmInteriorGlobalTable shape).table
+      (bpGlobalSparseCellSlot
+        (RelativeRmm.canonicalLayout shape).macroSampleCount
+        macroStart level) = read
+  simp only [RelativeRmm.canonicalLayout,
+    RelativeRmm.Layout.macroSampleCount,
+    RelativeRmm.Layout.macroSize] at hread
+  simp only [RelativeRmm.canonicalLayout,
+    RelativeRmm.Layout.macroSampleCount, RelativeRmm.Layout.macroSize]
+  cases read with
+  | mk value cost =>
+      cases value with
+      | none =>
+          rw [hread]
+          rfl
+      | some block =>
+          rw [hread]
+          have hmin :=
+            canonicalRelativeRmmMachineMinCandidateComputation_refines
+              shape block
+          have houter :=
+            congrArg
+              (fun next : Costed (Option (Prod Nat Nat)) =>
+                Costed.bind
+                  ({ value := some block, cost := cost } : Costed (Option Nat))
+                  (fun _ => next)) hmin
+          simpa [Costed.bind] using houter
+
+theorem canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation_refines
+    (shape : Cartesian.CartesianShape)
+    (macroIdx localStart count : Nat) :
+    ((canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+        shape macroIdx localStart count).run
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words).toCosted =
+      canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted
+        shape macroIdx localStart count := by
+  unfold canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+  unfold canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted
+  simp only [FlatStoreComputation.bind_run_toCosted,
+    FlatStoreComputation.map_run_toCosted,
+    canonicalRelativeRmmMachineLocalSpanCandidateComputation_refines]
+
+theorem canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation_refines
+    (shape : Cartesian.CartesianShape)
+    (macroStart count : Nat) :
+    ((canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation
+        shape macroStart count).run
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words).toCosted =
+      canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted
+        shape macroStart count := by
+  unfold canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation
+  unfold canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted
+  simp only [FlatStoreComputation.bind_run_toCosted,
+    FlatStoreComputation.map_run_toCosted,
+    canonicalRelativeRmmMachineGlobalSpanCandidateComputation_refines]
+
+theorem canonicalRelativeRmmMachineAdjacentMacroCandidateComputation_refines
+    (shape : Cartesian.CartesianShape)
+    (macroStart localStart rightCount : Nat) :
+    ((canonicalRelativeRmmMachineAdjacentMacroCandidateComputation
+        shape macroStart localStart rightCount).run
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words).toCosted =
+      canonicalRelativeRmmMachineAdjacentMacroCandidateCosted
+        shape macroStart localStart rightCount := by
+  unfold canonicalRelativeRmmMachineAdjacentMacroCandidateComputation
+  unfold canonicalRelativeRmmMachineAdjacentMacroCandidateCosted
+  simp only [FlatStoreComputation.bind_run_toCosted,
+    FlatStoreComputation.map_run_toCosted,
+    canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation_refines]
+
+theorem canonicalRelativeRmmMachineLeftMiddleMacroCandidateComputation_refines
+    (shape : Cartesian.CartesianShape)
+    (macroStart localStart middleMacroCount : Nat) :
+    ((canonicalRelativeRmmMachineLeftMiddleMacroCandidateComputation
+        shape macroStart localStart middleMacroCount).run
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words).toCosted =
+      canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted
+        shape macroStart localStart middleMacroCount := by
+  unfold canonicalRelativeRmmMachineLeftMiddleMacroCandidateComputation
+  unfold canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted
+  simp only [FlatStoreComputation.bind_run_toCosted,
+    FlatStoreComputation.map_run_toCosted,
+    canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation_refines,
+    canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation_refines]
+
+theorem canonicalRelativeRmmMachineCrossMacroCandidateComputation_refines
+    (shape : Cartesian.CartesianShape)
+    (macroStart localStart middleMacroCount rightCount : Nat) :
+    ((canonicalRelativeRmmMachineCrossMacroCandidateComputation
+        shape macroStart localStart middleMacroCount rightCount).run
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words).toCosted =
+      canonicalRelativeRmmMachineCrossMacroCandidateCosted
+        shape macroStart localStart middleMacroCount rightCount := by
+  unfold canonicalRelativeRmmMachineCrossMacroCandidateComputation
+  unfold canonicalRelativeRmmMachineCrossMacroCandidateCosted
+  simp only [FlatStoreComputation.bind_run_toCosted,
+    FlatStoreComputation.map_run_toCosted,
+    canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation_refines,
+    canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation_refines]
+
+theorem canonicalRelativeRmmInteriorRangeMinCostedWithStore_eq_current
+    (shape : Cartesian.CartesianShape) (startBlock count : Nat) :
+    canonicalRelativeRmmInteriorRangeMinCostedWithStore shape
+        (canonicalRelativeRmmInteriorComponentStore shape).store.words
+        startBlock count =
+      canonicalRelativeRmmInteriorRangeMinCosted shape startBlock count := by
+  unfold canonicalRelativeRmmInteriorRangeMinCostedWithStore
+  unfold canonicalRelativeRmmInteriorRangeMinExecutionWithStore
+  unfold canonicalRelativeRmmInteriorRangeMinComputation
+  unfold canonicalRelativeRmmInteriorRangeMinCosted
+  by_cases hcount : count = 0
+  case pos =>
+    simpa [hcount] using
+      (FlatStoreComputation.pure_run_toCosted
+        (none : Option (Prod Nat Nat))
+        (canonicalRelativeRmmInteriorComponentStore shape).store.words)
+  case neg =>
+    simp only [hcount, if_false]
+    by_cases hwithin :
+        count <= (RelativeRmm.canonicalLayout shape).macroSize -
+          startBlock % (RelativeRmm.canonicalLayout shape).macroSize
+    case pos =>
+      simp only [hwithin, if_true]
+      exact canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation_refines
+        shape
+        (startBlock / (RelativeRmm.canonicalLayout shape).macroSize)
+        (startBlock % (RelativeRmm.canonicalLayout shape).macroSize)
+        count
+    case neg =>
+      simp only [hwithin, if_false]
+      by_cases hmiddle :
+          (count -
+              ((RelativeRmm.canonicalLayout shape).macroSize -
+                startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) /
+              (RelativeRmm.canonicalLayout shape).macroSize = 0
+      case pos =>
+        simp only [hmiddle, if_true]
+        exact
+          canonicalRelativeRmmMachineAdjacentMacroCandidateComputation_refines
+            shape
+            (startBlock / (RelativeRmm.canonicalLayout shape).macroSize)
+            (startBlock % (RelativeRmm.canonicalLayout shape).macroSize)
+            ((count -
+              ((RelativeRmm.canonicalLayout shape).macroSize -
+                startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) %
+              (RelativeRmm.canonicalLayout shape).macroSize)
+      case neg =>
+        simp only [hmiddle, if_false]
+        by_cases hright :
+            (count -
+                ((RelativeRmm.canonicalLayout shape).macroSize -
+                  startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) %
+                (RelativeRmm.canonicalLayout shape).macroSize = 0
+        case pos =>
+          simp only [hright, if_true]
+          exact
+            canonicalRelativeRmmMachineLeftMiddleMacroCandidateComputation_refines
+              shape
+              (startBlock / (RelativeRmm.canonicalLayout shape).macroSize)
+              (startBlock % (RelativeRmm.canonicalLayout shape).macroSize)
+              ((count -
+                ((RelativeRmm.canonicalLayout shape).macroSize -
+                  startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) /
+                (RelativeRmm.canonicalLayout shape).macroSize)
+        case neg =>
+          simp only [hright, if_false]
+          exact
+            canonicalRelativeRmmMachineCrossMacroCandidateComputation_refines
+              shape
+              (startBlock / (RelativeRmm.canonicalLayout shape).macroSize)
+              (startBlock % (RelativeRmm.canonicalLayout shape).macroSize)
+              ((count -
+                ((RelativeRmm.canonicalLayout shape).macroSize -
+                  startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) /
+                (RelativeRmm.canonicalLayout shape).macroSize)
+              ((count -
+                ((RelativeRmm.canonicalLayout shape).macroSize -
+                  startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) %
+                (RelativeRmm.canonicalLayout shape).macroSize)
+
+def canonicalRelativeRmmInteriorRangePhysicalWordsReadWithStore
+    (shape : Cartesian.CartesianShape) (store : Array (List Bool))
+    (startBlock count : Nat) : List (List Bool) :=
+  (canonicalRelativeRmmInteriorRangeMinExecutionWithStore
+    shape store startBlock count).reads.filterMap Prod.snd
+
+theorem canonicalRelativeRmmInteriorRangeFootprint_recorded
+    (shape : Cartesian.CartesianShape) (store : Array (List Bool))
+    (startBlock count : Nat) :
+    canonicalRelativeRmmInteriorRangeFootprintWithStore
+        shape store startBlock count =
+      (canonicalRelativeRmmInteriorRangeMinExecutionWithStore
+        shape store startBlock count).reads.map Prod.fst := rfl
+
+theorem canonicalRelativeRmmInteriorRangeMinExecutionWithStore_eq_of_agree
+    (shape : Cartesian.CartesianShape)
+    (storeA storeB : Array (List Bool))
+    (startBlock count : Nat)
+    (hagrees :
+      forall address,
+        List.Mem address
+            (canonicalRelativeRmmInteriorRangeFootprintWithStore
+              shape storeA startBlock count) ->
+          storeA[address]? = storeB[address]?) :
+    canonicalRelativeRmmInteriorRangeMinExecutionWithStore
+        shape storeA startBlock count =
+      canonicalRelativeRmmInteriorRangeMinExecutionWithStore
+        shape storeB startBlock count := by
+  exact
+    (canonicalRelativeRmmInteriorRangeMinComputation
+      shape startBlock count).footprint_determines storeA storeB hagrees
+
+theorem canonicalRelativeRmmInteriorRangeMinCostedWithStore_eq_of_agree
+    (shape : Cartesian.CartesianShape)
+    (storeA storeB : Array (List Bool))
+    (startBlock count : Nat)
+    (hagrees :
+      forall address,
+        List.Mem address
+            (canonicalRelativeRmmInteriorRangeFootprintWithStore
+              shape storeA startBlock count) ->
+          storeA[address]? = storeB[address]?) :
+    canonicalRelativeRmmInteriorRangeMinCostedWithStore
+        shape storeA startBlock count =
+      canonicalRelativeRmmInteriorRangeMinCostedWithStore
+        shape storeB startBlock count := by
+  exact congrArg FlatStoreExecution.toCosted
+    (canonicalRelativeRmmInteriorRangeMinExecutionWithStore_eq_of_agree
+      shape storeA storeB startBlock count hagrees)
+
+theorem canonicalRelativeRmmInteriorRangeRead_matches_store
+    (shape : Cartesian.CartesianShape) (store : Array (List Bool))
+    (startBlock count address : Nat) (word : Option (List Bool))
+    (hread :
+      List.Mem (address, word)
+        (canonicalRelativeRmmInteriorRangeMinExecutionWithStore
+          shape store startBlock count).reads) :
+    store[address]? = word := by
+  exact
+    (canonicalRelativeRmmInteriorRangeMinComputation
+      shape startBlock count).reads_match_store store address word hread
+
+theorem canonicalRelativeRmmInteriorRange_successful_read_backed
+    (shape : Cartesian.CartesianShape)
+    (startBlock count address : Nat) (word : List Bool)
+    (hread :
+      List.Mem (address, some word)
+        (canonicalRelativeRmmInteriorRangeMinExecutionWithStore shape
+          (canonicalRelativeRmmInteriorComponentStore shape).store.words
+          startBlock count).reads) :
+    address <
+        (canonicalRelativeRmmInteriorComponentStore shape).store.words.size /\
+      List.Mem word
+        (canonicalRelativeRmmInteriorComponentStore shape).store.words.toList /\
+      flattenPayloadWords
+          (canonicalRelativeRmmInteriorComponentStore
+            shape).store.words.toList =
+        (canonicalRelativeRmmSummaryTable shape).payload ++
+          (canonicalRelativeRmmInteriorLocalTable shape).payload ++
+            (canonicalRelativeRmmInteriorGlobalTable shape).payload := by
+  have hmatch :=
+    canonicalRelativeRmmInteriorRangeRead_matches_store
+      shape (canonicalRelativeRmmInteriorComponentStore shape).store.words
+      startBlock count address (some word) hread
+  have hlist :
+      (canonicalRelativeRmmInteriorComponentStore
+        shape).store.words.toList[address]? = some word := by
+    simpa [Array.getElem?_toList] using hmatch
+  have hlt : address <
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words.size := by
+    exact (List.getElem?_eq_some_iff.mp hlist).1
+  exact And.intro hlt
+    (And.intro (List.mem_of_getElem? hlist)
+      (canonicalRelativeRmmInteriorComponentStore_flattens_payload shape))
+
+theorem canonicalRelativeRmmInteriorRange_returned_word_bounded
+    (shape : Cartesian.CartesianShape)
+    (startBlock count address : Nat) (word : List Bool)
+    (hread :
+      List.Mem (address, some word)
+        (canonicalRelativeRmmInteriorRangeMinExecutionWithStore shape
+          (canonicalRelativeRmmInteriorComponentStore shape).store.words
+          startBlock count).reads) :
+    word.length <= SuccinctRank.machineWordBits shape.bpCode.length := by
+  exact canonicalRelativeRmmInteriorComponentStore_words_bounded shape
+    (canonicalRelativeRmmInteriorRange_successful_read_backed
+      shape startBlock count address word hread).2.1
+
+theorem canonicalRelativeRmmInteriorRange_cost_eq_footprint_length
+    (shape : Cartesian.CartesianShape) (store : Array (List Bool))
+    (startBlock count : Nat) :
+    (canonicalRelativeRmmInteriorRangeMinCostedWithStore
+      shape store startBlock count).cost =
+      (canonicalRelativeRmmInteriorRangeFootprintWithStore
+        shape store startBlock count).length := by
+  simp [canonicalRelativeRmmInteriorRangeMinCostedWithStore,
+    canonicalRelativeRmmInteriorRangeFootprintWithStore,
+    FlatStoreExecution.toCosted]
+theorem canonicalRelativeRmmInteriorRangeMinCosted_refines_logical
+    (shape : Cartesian.CartesianShape) (startBlock count : Nat) :
+    (canonicalRelativeRmmInteriorRangeMinCosted shape startBlock count).erase =
+      (bpTwoLevelInteriorCandidateCosted
+        (canonicalRelativeRmmInteriorLocalTable shape)
+        (canonicalRelativeRmmInteriorGlobalTable shape)
+        (canonicalRelativeRmmSummaryTable shape)
+        startBlock count).erase := by
+  unfold canonicalRelativeRmmInteriorRangeMinCosted
+    bpTwoLevelInteriorCandidateCosted
+  by_cases hcount : count = 0
+  · simp [hcount, Costed.pure]
+  · simp only [hcount, if_false]
+    by_cases hwithin :
+        count <=
+          (RelativeRmm.canonicalLayout shape).macroSize -
+            startBlock % (RelativeRmm.canonicalLayout shape).macroSize
+    · simp only [hwithin, if_true]
+      exact canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_refines
+        shape
+        (startBlock / (RelativeRmm.canonicalLayout shape).macroSize)
+        (startBlock % (RelativeRmm.canonicalLayout shape).macroSize)
+        count
+    · simp only [hwithin, if_false]
+      by_cases hmiddle :
+          (count -
+              ((RelativeRmm.canonicalLayout shape).macroSize -
+                startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) /
+              (RelativeRmm.canonicalLayout shape).macroSize = 0
+      · simp only [hmiddle, if_true]
+        exact canonicalRelativeRmmMachineAdjacentMacroCandidateCosted_refines
+          shape
+          (startBlock / (RelativeRmm.canonicalLayout shape).macroSize)
+          (startBlock % (RelativeRmm.canonicalLayout shape).macroSize)
+          ((count -
+              ((RelativeRmm.canonicalLayout shape).macroSize -
+                startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) %
+            (RelativeRmm.canonicalLayout shape).macroSize)
+      · simp only [hmiddle, if_false]
+        by_cases hright :
+            (count -
+                ((RelativeRmm.canonicalLayout shape).macroSize -
+                  startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) %
+                (RelativeRmm.canonicalLayout shape).macroSize = 0
+        · simp only [hright, if_true]
+          exact
+            canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted_refines
+              shape
+              (startBlock / (RelativeRmm.canonicalLayout shape).macroSize)
+              (startBlock % (RelativeRmm.canonicalLayout shape).macroSize)
+              ((count -
+                  ((RelativeRmm.canonicalLayout shape).macroSize -
+                    startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) /
+                (RelativeRmm.canonicalLayout shape).macroSize)
+        · simp only [hright, if_false]
+          exact canonicalRelativeRmmMachineCrossMacroCandidateCosted_refines
+            shape
+            (startBlock / (RelativeRmm.canonicalLayout shape).macroSize)
+            (startBlock % (RelativeRmm.canonicalLayout shape).macroSize)
+            ((count -
+                ((RelativeRmm.canonicalLayout shape).macroSize -
+                  startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) /
+              (RelativeRmm.canonicalLayout shape).macroSize)
+            ((count -
+                ((RelativeRmm.canonicalLayout shape).macroSize -
+                  startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) %
+              (RelativeRmm.canonicalLayout shape).macroSize)
+
+theorem canonicalRelativeRmmRelativeWidth_le_seven_machine
+    (shape : Cartesian.CartesianShape) :
+    (RelativeRmm.canonicalLayout shape).relativeWidth <=
+      7 * SuccinctRank.machineWordBits shape.bpCode.length := by
+  have hsize :
+      shape.size <= shape.bpCode.length := by
+    rw [Cartesian.CartesianShape.bpCode_length]
+    omega
+  have hmono :
+      SuccinctRank.machineWordBits shape.size <=
+        SuccinctRank.machineWordBits shape.bpCode.length :=
+    SuccinctRank.machineWordBits_mono_le hsize
+  have hnested := SuccinctRank.nestedMachineWordBits_le_succ shape.size
+  have hword := SuccinctRank.machineWordBits_pos shape.bpCode.length
+  change
+    2 * SuccinctRank.machineWordBits
+          (SuccinctRank.machineWordBits shape.size) + 3 <=
+      7 * SuccinctRank.machineWordBits shape.bpCode.length
+  omega
+
+theorem canonicalRelativeRmmOffsetWidth_le_seven_machine
+    (shape : Cartesian.CartesianShape) :
+    (RelativeRmm.canonicalLayout shape).offsetWidth <=
+      7 * SuccinctRank.machineWordBits shape.bpCode.length := by
+  have hsize :
+      shape.size <= shape.bpCode.length := by
+    rw [Cartesian.CartesianShape.bpCode_length]
+    omega
+  have hmono :
+      SuccinctRank.machineWordBits shape.size <=
+        SuccinctRank.machineWordBits shape.bpCode.length :=
+    SuccinctRank.machineWordBits_mono_le hsize
+  have hnested := SuccinctRank.nestedMachineWordBits_le_succ shape.size
+  have hsquare :=
+    SuccinctRank.machineWordBits_mul_self_log_bound
+      (SuccinctRank.machineWordBits shape.size)
+  have hword := SuccinctRank.machineWordBits_pos shape.bpCode.length
+  change
+    SuccinctRank.machineWordBits
+        (SuccinctRank.machineWordBits shape.size *
+          SuccinctRank.machineWordBits shape.size) <=
+      7 * SuccinctRank.machineWordBits shape.bpCode.length
+  omega
+
+theorem canonicalRelativeRmmBlockWidth_le_seven_machine
+    (shape : Cartesian.CartesianShape) :
+    (RelativeRmm.canonicalLayout shape).blockAddressWidth <=
+      7 * SuccinctRank.machineWordBits shape.bpCode.length := by
+  have hcount :
+      (RelativeRmm.canonicalLayout shape).blockCount <=
+        shape.bpCode.length := by
+    exact canonicalBPRelativeSummaryBlockCountRaw_le_bpCode_length shape
+  have hmono := SuccinctRank.machineWordBits_mono_le hcount
+  have hword := SuccinctRank.machineWordBits_pos shape.bpCode.length
+  simpa [RelativeRmm.Layout.blockAddressWidth] using
+    Nat.le_trans hmono (by omega :
+      SuccinctRank.machineWordBits shape.bpCode.length <=
+        7 * SuccinctRank.machineWordBits shape.bpCode.length)
+
+theorem canonicalRelativeRmmMachineReadNatCosted_cost_le_eight
+    {entries : List Nat} {width : Nat}
+    {shape : Cartesian.CartesianShape}
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (hwidth : width <=
+      7 * SuccinctRank.machineWordBits shape.bpCode.length)
+    (i : Nat) :
+    (canonicalRelativeRmmMachineReadNatCosted shape table i).cost <= 8 := by
+  let wordSize := SuccinctRank.machineWordBits shape.bpCode.length
+  have hwordSize : 0 < wordSize :=
+    SuccinctRank.machineWordBits_pos shape.bpCode.length
+  have hdiv : width / wordSize <= 7 := by
+    apply Nat.div_le_of_le_mul
+    simpa [Nat.mul_comm, wordSize] using hwidth
+  unfold canonicalRelativeRmmMachineReadNatCosted
+  unfold SuccinctSpace.FixedWidthNatTable.machineReadCosted
+  rw [SuccinctSpace.FixedWidthNatTable.machineReadCostedWithStore_cost]
+  by_cases hvalid : i < entries.length
+  · rw [if_pos hvalid]
+    change
+      (SuccinctSpace.fixedWidthNatTableMachineFootprint width wordSize i).length <= 8
+    simp [SuccinctSpace.fixedWidthNatTableMachineFootprint,
+      SuccinctSpace.fixedWidthNatTableMachineChunkCount]
+    split <;> omega
+  · rw [if_neg hvalid]
+    omega
+
+theorem costed_bind_cost_le
+    {α β : Type} (x : Costed α) (f : α -> Costed β)
+    {a b : Nat} (hx : x.cost <= a)
+    (hf : forall value, (f value).cost <= b) :
+    (Costed.bind x f).cost <= a + b := by
+  exact Nat.add_le_add hx (hf x.value)
+
+theorem canonicalRelativeRmmMachineSummaryCosted_cost_le_thirty_two
+    (shape : Cartesian.CartesianShape) (block : Nat) :
+    (canonicalRelativeRmmMachineSummaryCosted shape block).cost <= 32 := by
+  let baselineRead :=
+    canonicalRelativeRmmMachineReadNatCosted shape
+      (canonicalRelativeRmmSummaryTable shape).baselineTable
+      (block / (RelativeRmm.canonicalLayout shape).blocksPerSuper)
+  let minRead :=
+    canonicalRelativeRmmMachineReadNatCosted shape
+      (canonicalRelativeRmmSummaryTable shape).minRelTable block
+  let maxRead :=
+    canonicalRelativeRmmMachineReadNatCosted shape
+      (canonicalRelativeRmmSummaryTable shape).maxRelTable block
+  let argRead :=
+    canonicalRelativeRmmMachineReadNatCosted shape
+      (canonicalRelativeRmmSummaryTable shape).argOffsetTable block
+  have hsuper :
+      (RelativeRmm.canonicalLayout shape).superWidth shape <=
+        7 * SuccinctRank.machineWordBits shape.bpCode.length := by
+    simp [RelativeRmm.Layout.superWidth]
+    have hpos := SuccinctRank.machineWordBits_pos shape.bpCode.length
+    omega
+  have hrelative :=
+    canonicalRelativeRmmRelativeWidth_le_seven_machine shape
+  have hb : baselineRead.cost <= 8 :=
+    canonicalRelativeRmmMachineReadNatCosted_cost_le_eight
+      (canonicalRelativeRmmSummaryTable shape).baselineTable hsuper
+      (block / (RelativeRmm.canonicalLayout shape).blocksPerSuper)
+  have hmin : minRead.cost <= 8 :=
+    canonicalRelativeRmmMachineReadNatCosted_cost_le_eight
+      (canonicalRelativeRmmSummaryTable shape).minRelTable hrelative block
+  have hmax : maxRead.cost <= 8 :=
+    canonicalRelativeRmmMachineReadNatCosted_cost_le_eight
+      (canonicalRelativeRmmSummaryTable shape).maxRelTable hrelative block
+  have harg : argRead.cost <= 8 :=
+    canonicalRelativeRmmMachineReadNatCosted_cost_le_eight
+      (canonicalRelativeRmmSummaryTable shape).argOffsetTable hrelative block
+  have h3 (baseline? minRel? maxRel? : Option Nat) :
+      (Costed.map
+        (fun argOffset? =>
+          match baseline?, minRel?, maxRel?, argOffset? with
+          | some baseline, some minRel, some maxRel, some argOffset =>
+              some (baseline, minRel, maxRel, argOffset)
+          | _, _, _, _ => none) argRead).cost <= 8 := by
+    simpa [Costed.map] using harg
+  have h2 (baseline? minRel? : Option Nat) :
+      (Costed.bind maxRead fun maxRel? =>
+        Costed.map
+          (fun argOffset? =>
+            match baseline?, minRel?, maxRel?, argOffset? with
+            | some baseline, some minRel, some maxRel, some argOffset =>
+                some (baseline, minRel, maxRel, argOffset)
+            | _, _, _, _ => none) argRead).cost <= 16 := by
+    exact costed_bind_cost_le _ _ hmax (fun maxRel? => h3 _ _ maxRel?)
+  have h1 (baseline? : Option Nat) :
+      (Costed.bind minRead fun minRel? =>
+        Costed.bind maxRead fun maxRel? =>
+          Costed.map
+            (fun argOffset? =>
+              match baseline?, minRel?, maxRel?, argOffset? with
+              | some baseline, some minRel, some maxRel, some argOffset =>
+                  some (baseline, minRel, maxRel, argOffset)
+              | _, _, _, _ => none) argRead).cost <= 24 := by
+    exact costed_bind_cost_le _ _ hmin (fun minRel? => h2 _ minRel?)
+  have hall :=
+    costed_bind_cost_le baselineRead
+      (fun baseline? =>
+        Costed.bind minRead fun minRel? =>
+          Costed.bind maxRead fun maxRel? =>
+            Costed.map
+              (fun argOffset? =>
+                match baseline?, minRel?, maxRel?, argOffset? with
+                | some baseline, some minRel, some maxRel, some argOffset =>
+                    some (baseline, minRel, maxRel, argOffset)
+                | _, _, _, _ => none) argRead)
+      hb h1
+  simpa [canonicalRelativeRmmMachineSummaryCosted, baselineRead,
+    minRead, maxRead, argRead] using hall
+
+theorem canonicalRelativeRmmMachineMinCandidateCosted_cost_le_thirty_two
+    (shape : Cartesian.CartesianShape) (block : Nat) :
+    (canonicalRelativeRmmMachineMinCandidateCosted shape block).cost <= 32 := by
+  simpa [canonicalRelativeRmmMachineMinCandidateCosted, Costed.map] using
+    canonicalRelativeRmmMachineSummaryCosted_cost_le_thirty_two shape block
+
+theorem canonicalRelativeRmmMachineLocalSpanCandidateCosted_cost_le_forty
+    (shape : Cartesian.CartesianShape)
+    (macroIdx localStart level : Nat) :
+    (canonicalRelativeRmmMachineLocalSpanCandidateCosted shape
+      macroIdx localStart level).cost <= 40 := by
+  let read :=
+    canonicalRelativeRmmMachineReadNatCosted shape
+      (canonicalRelativeRmmInteriorLocalTable shape).table
+      (bpLocalSparseCellSlot
+        (RelativeRmm.canonicalLayout shape).macroSize
+        (RelativeRmm.canonicalLayout shape).levelCount
+        macroIdx localStart level)
+  have hread : read.cost <= 8 :=
+    canonicalRelativeRmmMachineReadNatCosted_cost_le_eight
+      (canonicalRelativeRmmInteriorLocalTable shape).table
+      (canonicalRelativeRmmOffsetWidth_le_seven_machine shape)
+      (bpLocalSparseCellSlot
+        (RelativeRmm.canonicalLayout shape).macroSize
+        (RelativeRmm.canonicalLayout shape).levelCount
+        macroIdx localStart level)
+  have htail : forall offset?,
+      (match offset? with
+      | some offset =>
+          canonicalRelativeRmmMachineMinCandidateCosted shape
+            (macroIdx * (RelativeRmm.canonicalLayout shape).macroSize + offset)
+      | none => Costed.pure none).cost <= 32 := by
+    intro offset?
+    cases offset? with
+    | none => simp [Costed.pure]
+    | some offset =>
+        exact
+          canonicalRelativeRmmMachineMinCandidateCosted_cost_le_thirty_two
+            shape
+            (macroIdx * (RelativeRmm.canonicalLayout shape).macroSize + offset)
+  have hall := costed_bind_cost_le read
+    (fun offset? =>
+      match offset? with
+      | some offset =>
+          canonicalRelativeRmmMachineMinCandidateCosted shape
+            (macroIdx * (RelativeRmm.canonicalLayout shape).macroSize + offset)
+      | none => Costed.pure none)
+    hread htail
+  simpa [canonicalRelativeRmmMachineLocalSpanCandidateCosted, read] using hall
+
+theorem canonicalRelativeRmmMachineGlobalSpanCandidateCosted_cost_le_forty
+    (shape : Cartesian.CartesianShape)
+    (macroStart level : Nat) :
+    (canonicalRelativeRmmMachineGlobalSpanCandidateCosted shape
+      macroStart level).cost <= 40 := by
+  let read :=
+    canonicalRelativeRmmMachineReadNatCosted shape
+      (canonicalRelativeRmmInteriorGlobalTable shape).table
+      (bpGlobalSparseCellSlot
+        (RelativeRmm.canonicalLayout shape).macroSampleCount
+        macroStart level)
+  have hread : read.cost <= 8 :=
+    canonicalRelativeRmmMachineReadNatCosted_cost_le_eight
+      (canonicalRelativeRmmInteriorGlobalTable shape).table
+      (canonicalRelativeRmmBlockWidth_le_seven_machine shape)
+      (bpGlobalSparseCellSlot
+        (RelativeRmm.canonicalLayout shape).macroSampleCount
+        macroStart level)
+  have htail : forall block?,
+      (match block? with
+      | some block => canonicalRelativeRmmMachineMinCandidateCosted shape block
+      | none => Costed.pure none).cost <= 32 := by
+    intro block?
+    cases block? with
+    | none => simp [Costed.pure]
+    | some block =>
+        exact
+          canonicalRelativeRmmMachineMinCandidateCosted_cost_le_thirty_two
+            shape block
+  have hall := costed_bind_cost_le read
+    (fun block? =>
+      match block? with
+      | some block => canonicalRelativeRmmMachineMinCandidateCosted shape block
+      | none => Costed.pure none)
+    hread htail
+  simpa [canonicalRelativeRmmMachineGlobalSpanCandidateCosted, read] using hall
+
+theorem canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighty
+    (shape : Cartesian.CartesianShape)
+    (macroIdx localStart count : Nat) :
+    (canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
+      macroIdx localStart count).cost <= 80 := by
+  let left :=
+    canonicalRelativeRmmMachineLocalSpanCandidateCosted shape
+      macroIdx localStart (Nat.log2 count)
+  let right :=
+    canonicalRelativeRmmMachineLocalSpanCandidateCosted shape
+      macroIdx (localStart + count - bpSparseLogSpan count) (Nat.log2 count)
+  have hleft : left.cost <= 40 :=
+    canonicalRelativeRmmMachineLocalSpanCandidateCosted_cost_le_forty
+      shape macroIdx localStart (Nat.log2 count)
+  have hright : right.cost <= 40 :=
+    canonicalRelativeRmmMachineLocalSpanCandidateCosted_cost_le_forty
+      shape macroIdx (localStart + count - bpSparseLogSpan count)
+      (Nat.log2 count)
+  have hall := costed_bind_cost_le left
+    (fun left? => Costed.map (fun right? => bpCandidateMerge? left? right?)
+      right)
+    hleft (fun _ => by simpa [Costed.map] using hright)
+  simpa [canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted,
+    left, right] using hall
+
+theorem canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_cost_le_eighty
+    (shape : Cartesian.CartesianShape)
+    (macroStart count : Nat) :
+    (canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted shape
+      macroStart count).cost <= 80 := by
+  let left :=
+    canonicalRelativeRmmMachineGlobalSpanCandidateCosted shape
+      macroStart (Nat.log2 count)
+  let right :=
+    canonicalRelativeRmmMachineGlobalSpanCandidateCosted shape
+      (macroStart + count - bpSparseLogSpan count) (Nat.log2 count)
+  have hleft : left.cost <= 40 :=
+    canonicalRelativeRmmMachineGlobalSpanCandidateCosted_cost_le_forty
+      shape macroStart (Nat.log2 count)
+  have hright : right.cost <= 40 :=
+    canonicalRelativeRmmMachineGlobalSpanCandidateCosted_cost_le_forty
+      shape (macroStart + count - bpSparseLogSpan count) (Nat.log2 count)
+  have hall := costed_bind_cost_le left
+    (fun left? => Costed.map (fun right? => bpCandidateMerge? left? right?)
+      right)
+    hleft (fun _ => by simpa [Costed.map] using hright)
+  simpa [canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted,
+    left, right] using hall
+
+theorem canonicalRelativeRmmMachineAdjacentMacroCandidateCosted_cost_le
+    (shape : Cartesian.CartesianShape)
+    (macroStart localStart rightCount : Nat) :
+    (canonicalRelativeRmmMachineAdjacentMacroCandidateCosted shape
+      macroStart localStart rightCount).cost <= 160 := by
+  let left :=
+    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
+      macroStart localStart
+      ((RelativeRmm.canonicalLayout shape).macroSize - localStart)
+  let right :=
+    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
+      (macroStart + 1) 0 rightCount
+  have hleft : left.cost <= 80 :=
+    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighty
+      shape macroStart localStart
+      ((RelativeRmm.canonicalLayout shape).macroSize - localStart)
+  have hright : right.cost <= 80 :=
+    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighty
+      shape (macroStart + 1) 0 rightCount
+  have hall := costed_bind_cost_le left
+    (fun left? => Costed.map (fun right? => bpCandidateMerge? left? right?)
+      right)
+    hleft (fun _ => by simpa [Costed.map] using hright)
+  simpa [canonicalRelativeRmmMachineAdjacentMacroCandidateCosted,
+    left, right] using hall
+
+theorem canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted_cost_le
+    (shape : Cartesian.CartesianShape)
+    (macroStart localStart middleMacroCount : Nat) :
+    (canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted shape
+      macroStart localStart middleMacroCount).cost <= 160 := by
+  let left :=
+    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
+      macroStart localStart
+      ((RelativeRmm.canonicalLayout shape).macroSize - localStart)
+  let middle :=
+    canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted shape
+      (macroStart + 1) middleMacroCount
+  have hleft : left.cost <= 80 :=
+    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighty
+      shape macroStart localStart
+      ((RelativeRmm.canonicalLayout shape).macroSize - localStart)
+  have hmiddle : middle.cost <= 80 :=
+    canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_cost_le_eighty
+      shape (macroStart + 1) middleMacroCount
+  have hall := costed_bind_cost_le left
+    (fun left? => Costed.map (fun middle? => bpCandidateMerge? left? middle?)
+      middle)
+    hleft (fun _ => by simpa [Costed.map] using hmiddle)
+  simpa [canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted,
+    left, middle] using hall
+
+theorem canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le
+    (shape : Cartesian.CartesianShape)
+    (macroStart localStart middleMacroCount rightCount : Nat) :
+    (canonicalRelativeRmmMachineCrossMacroCandidateCosted shape
+      macroStart localStart middleMacroCount rightCount).cost <= 240 := by
+  let left :=
+    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
+      macroStart localStart
+      ((RelativeRmm.canonicalLayout shape).macroSize - localStart)
+  let middle :=
+    canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted shape
+      (macroStart + 1) middleMacroCount
+  let right :=
+    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted shape
+      (macroStart + 1 + middleMacroCount) 0 rightCount
+  have hleft : left.cost <= 80 :=
+    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighty
+      shape macroStart localStart
+      ((RelativeRmm.canonicalLayout shape).macroSize - localStart)
+  have hmiddle : middle.cost <= 80 :=
+    canonicalRelativeRmmMachineGlobalTwoSpanCandidateCosted_cost_le_eighty
+      shape (macroStart + 1) middleMacroCount
+  have hright : right.cost <= 80 :=
+    canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighty
+      shape (macroStart + 1 + middleMacroCount) 0 rightCount
+  have htail : forall left?,
+      (Costed.bind middle fun middle? =>
+        Costed.map (fun right? => bpCandidateMerge3? left? middle? right?)
+          right).cost <= 160 := by
+    intro left?
+    exact costed_bind_cost_le _ _ hmiddle
+      (fun _ => by simpa [Costed.map] using hright)
+  have hall := costed_bind_cost_le left
+    (fun left? =>
+      Costed.bind middle fun middle? =>
+        Costed.map (fun right? => bpCandidateMerge3? left? middle? right?)
+          right)
+    hleft htail
+  simpa [canonicalRelativeRmmMachineCrossMacroCandidateCosted,
+    left, middle, right] using hall
+
+theorem canonicalRelativeRmmInteriorRangeMinCosted_cost_le
+    (shape : Cartesian.CartesianShape) (startBlock count : Nat) :
+    (canonicalRelativeRmmInteriorRangeMinCosted shape startBlock count).cost <=
+      canonicalRelativeRmmInteriorQueryCost := by
+  unfold canonicalRelativeRmmInteriorRangeMinCosted
+  by_cases hcount : count = 0
+  · simp [hcount, canonicalRelativeRmmInteriorQueryCost, Costed.pure]
+  · simp only [hcount, if_false]
+    by_cases hwithin :
+        count <=
+          (RelativeRmm.canonicalLayout shape).macroSize -
+            startBlock % (RelativeRmm.canonicalLayout shape).macroSize
+    · simp only [hwithin, if_true]
+      exact Nat.le_trans
+        (canonicalRelativeRmmMachineLocalTwoSpanCandidateCosted_cost_le_eighty
+          shape
+          (startBlock / (RelativeRmm.canonicalLayout shape).macroSize)
+          (startBlock % (RelativeRmm.canonicalLayout shape).macroSize)
+          count) (by simp [canonicalRelativeRmmInteriorQueryCost])
+    · simp only [hwithin, if_false]
+      by_cases hmiddle :
+          (count -
+              ((RelativeRmm.canonicalLayout shape).macroSize -
+                startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) /
+              (RelativeRmm.canonicalLayout shape).macroSize = 0
+      · simp only [hmiddle, if_true]
+        exact Nat.le_trans
+          (canonicalRelativeRmmMachineAdjacentMacroCandidateCosted_cost_le
+            shape
+            (startBlock / (RelativeRmm.canonicalLayout shape).macroSize)
+            (startBlock % (RelativeRmm.canonicalLayout shape).macroSize)
+            ((count -
+                ((RelativeRmm.canonicalLayout shape).macroSize -
+                  startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) %
+              (RelativeRmm.canonicalLayout shape).macroSize))
+          (by simp [canonicalRelativeRmmInteriorQueryCost])
+      · simp only [hmiddle, if_false]
+        by_cases hright :
+            (count -
+                ((RelativeRmm.canonicalLayout shape).macroSize -
+                  startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) %
+                (RelativeRmm.canonicalLayout shape).macroSize = 0
+        · simp only [hright, if_true]
+          exact Nat.le_trans
+            (canonicalRelativeRmmMachineLeftMiddleMacroCandidateCosted_cost_le
+              shape
+              (startBlock / (RelativeRmm.canonicalLayout shape).macroSize)
+              (startBlock % (RelativeRmm.canonicalLayout shape).macroSize)
+              ((count -
+                  ((RelativeRmm.canonicalLayout shape).macroSize -
+                    startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) /
+                (RelativeRmm.canonicalLayout shape).macroSize))
+            (by simp [canonicalRelativeRmmInteriorQueryCost])
+        · simp only [hright, if_false]
+          exact
+            canonicalRelativeRmmMachineCrossMacroCandidateCosted_cost_le
+              shape
+              (startBlock / (RelativeRmm.canonicalLayout shape).macroSize)
+              (startBlock % (RelativeRmm.canonicalLayout shape).macroSize)
+              ((count -
+                  ((RelativeRmm.canonicalLayout shape).macroSize -
+                    startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) /
+                (RelativeRmm.canonicalLayout shape).macroSize)
+              ((count -
+                  ((RelativeRmm.canonicalLayout shape).macroSize -
+                    startBlock % (RelativeRmm.canonicalLayout shape).macroSize)) %
+                (RelativeRmm.canonicalLayout shape).macroSize)
+
+theorem canonicalRelativeRmmInteriorRangeMinCosted_erase_exact
+    {shape : Cartesian.CartesianShape} {startBlock count : Nat}
+    (hcount : 0 < count)
+    (hbound : startBlock + count <=
+      (RelativeRmm.canonicalLayout shape).blockCount) :
+    (canonicalRelativeRmmInteriorRangeMinCosted shape startBlock count).erase =
+      some
+        (bpRangeMinExcess shape
+          (RelativeRmm.canonicalLayout shape).blockSize startBlock count,
+          bpRangeArgMinPrefixPos shape
+            (RelativeRmm.canonicalLayout shape).blockSize startBlock count) := by
+  let layout := RelativeRmm.canonicalLayout shape
+  have hvalid := RelativeRmm.canonicalLayout_valid shape
+  have hmacroCover :
+      layout.blockCount <= layout.macroSampleCount * layout.macroSize := by
+    have hlt := Nat.lt_div_mul_add hvalid.macroSize_pos
+      (a := layout.blockCount)
+    have hlt' : layout.blockCount <
+        (layout.blockCount / layout.macroSize + 1) * layout.macroSize := by
+      simpa [Nat.add_mul, Nat.mul_add, Nat.add_assoc,
+        Nat.add_comm, Nat.add_left_comm] using hlt
+    exact Nat.le_of_lt
+      (by simpa [RelativeRmm.Layout.macroSampleCount] using hlt')
+  have hsuperIndex : forall {block : Nat}, block < layout.blockCount ->
+      block / layout.blocksPerSuper < layout.superSampleCount := by
+    intro block hblock
+    exact PayloadLiveBPRelativeMinMaxArgSummaryTable.div_lt_succ_div_of_lt
+      (blockCount := layout.blockCount) hblock
+  have hexact := bpTwoLevelInteriorCandidateCosted_erase_exact
+    (canonicalRelativeRmmInteriorLocalTable shape)
+    (canonicalRelativeRmmInteriorGlobalTable shape)
+    (canonicalRelativeRmmSummaryTable shape)
+    hvalid.macroSize_pos hcount (by simpa [layout] using hbound)
+    (by
+      intro block hblock
+      exact PayloadLiveBPRelativeMinMaxArgSummaryTable.div_lt_succ_div_of_lt
+        (blockCount := layout.blockCount) hblock)
+    hmacroCover
+    (by
+      intro localCount hlocalPos hlocalLe
+      have hcap : localCount < 2 ^ layout.levelCount :=
+        Nat.lt_of_le_of_lt hlocalLe
+          (SuccinctRank.self_lt_two_pow_machineWordBits layout.macroSize)
+      have hsucc := natLog2_succ_le_of_pos_lt_pow hlocalPos hcap
+      simpa [RelativeRmm.Layout.levelCount,
+        RelativeRmm.Layout.offsetWidth] using hsucc)
+    (by
+      intro macroSpanCount hspanPos hspanLe
+      have hcap : macroSpanCount < 2 ^ layout.globalLevelCount :=
+        Nat.lt_of_le_of_lt hspanLe
+          (SuccinctRank.self_lt_two_pow_machineWordBits
+            layout.macroSampleCount)
+      have hsucc := natLog2_succ_le_of_pos_lt_pow hspanPos hcap
+      simpa [RelativeRmm.Layout.globalLevelCount] using hsucc)
+    hvalid.blocksPerSuper_pos hvalid.fullBlocks_fit hsuperIndex
+  rw [canonicalRelativeRmmInteriorRangeMinCosted_refines_logical]
+  simpa [layout] using hexact
+
+theorem canonicalRelativeRmmInteriorWordsRead_length_le_machine
+    {shape : Cartesian.CartesianShape} {startBlock count : Nat}
+    {word : List Bool}
+    (hmem : List.Mem word
+      (canonicalRelativeRmmInteriorWordsRead shape startBlock count)) :
+    word.length <= SuccinctRank.machineWordBits shape.bpCode.length := by
+  unfold canonicalRelativeRmmInteriorWordsRead at hmem
+  cases List.mem_flatMap.mp hmem with
+  | intro logicalWord hrest =>
+      exact SuccinctSpace.chunkPayloadWords_word_length_le
+        (SuccinctRank.machineWordBits shape.bpCode.length) hrest.2
+
+
+theorem canonicalRelativeRmmInteriorRangeMinCostedWithStore_cost_le
+    (shape : Cartesian.CartesianShape) (startBlock count : Nat) :
+    (canonicalRelativeRmmInteriorRangeMinCostedWithStore shape
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words
+      startBlock count).cost <= canonicalRelativeRmmInteriorQueryCost := by
+  rw [canonicalRelativeRmmInteriorRangeMinCostedWithStore_eq_current]
+  exact canonicalRelativeRmmInteriorRangeMinCosted_cost_le
+    shape startBlock count
+
+theorem canonicalRelativeRmmInteriorRangeMinCostedWithStore_erase_exact
+    {shape : Cartesian.CartesianShape} {startBlock count : Nat}
+    (hcount : 0 < count)
+    (hbound : startBlock + count <=
+      (RelativeRmm.canonicalLayout shape).blockCount) :
+    (canonicalRelativeRmmInteriorRangeMinCostedWithStore shape
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words
+      startBlock count).erase =
+      some
+        (bpRangeMinExcess shape
+          (RelativeRmm.canonicalLayout shape).blockSize startBlock count,
+          bpRangeArgMinPrefixPos shape
+            (RelativeRmm.canonicalLayout shape).blockSize startBlock count) := by
+  rw [canonicalRelativeRmmInteriorRangeMinCostedWithStore_eq_current]
+  exact canonicalRelativeRmmInteriorRangeMinCosted_erase_exact hcount hbound
+
+theorem canonicalRelativeRmmInteriorRangePhysicalWordsRead_length_le_machine
+    {shape : Cartesian.CartesianShape} {startBlock count : Nat}
+    {word : List Bool}
+    (hmem :
+      List.Mem word
+        (canonicalRelativeRmmInteriorRangePhysicalWordsReadWithStore shape
+          (canonicalRelativeRmmInteriorComponentStore shape).store.words
+          startBlock count)) :
+    word.length <= SuccinctRank.machineWordBits shape.bpCode.length := by
+  unfold canonicalRelativeRmmInteriorRangePhysicalWordsReadWithStore at hmem
+  cases List.mem_filterMap.mp hmem with
+  | intro read hrest =>
+      cases hrest with
+      | intro hread hvalue =>
+          cases read with
+          | mk address wordOption =>
+              cases wordOption with
+              | none =>
+                  simp at hvalue
+              | some stored =>
+                  simp at hvalue
+                  subst stored
+                  exact
+                    canonicalRelativeRmmInteriorRange_returned_word_bounded
+                      shape startBlock count address word hread
+def canonicalRelativeRmmInteriorDirectory
+    (shape : Cartesian.CartesianShape) :
+    PayloadLiveBPRelativeRmmInteriorDirectory shape
+      (RelativeRmm.canonicalLayout shape).blockSize
+      (RelativeRmm.canonicalLayout shape).blockCount
+      (canonicalRelativeRmmInteriorDirectoryPayloadLength shape)
+      canonicalRelativeRmmInteriorQueryCost where
+  payload :=
+    (canonicalRelativeRmmSummaryTable shape).payload ++
+      (canonicalRelativeRmmInteriorLocalTable shape).payload ++
+        (canonicalRelativeRmmInteriorGlobalTable shape).payload
+  payload_length_eq := by
+    simp [canonicalRelativeRmmInteriorDirectoryPayloadLength,
+      Nat.add_assoc]
+  payloadWordsRead := fun startBlock count =>
+    canonicalRelativeRmmInteriorRangePhysicalWordsReadWithStore shape
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words
+      startBlock count
+  rangeMinCosted := fun startBlock count =>
+    canonicalRelativeRmmInteriorRangeMinCostedWithStore shape
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words
+      startBlock count
+  rangeMin_cost_le :=
+    canonicalRelativeRmmInteriorRangeMinCostedWithStore_cost_le shape
+  rangeMin_exact := by
+    intro startBlock count hcount hbound
+    exact canonicalRelativeRmmInteriorRangeMinCostedWithStore_erase_exact
+      hcount hbound
+  read_words_length_le_machine := by
+    intro startBlock count word hmem
+    exact
+      canonicalRelativeRmmInteriorRangePhysicalWordsRead_length_le_machine hmem
+
+theorem canonicalRelativeRmmInteriorDirectory_rangeMinCosted_erase_exact
+    {shape : Cartesian.CartesianShape} {startBlock count : Nat}
+    (hcount : 0 < count)
+    (hbound : startBlock + count <=
+      (RelativeRmm.canonicalLayout shape).blockCount) :
+    ((canonicalRelativeRmmInteriorDirectory shape).rangeMinCosted
+        startBlock count).erase =
+      some
+        (bpRangeMinExcess shape
+          (RelativeRmm.canonicalLayout shape).blockSize startBlock count,
+          bpRangeArgMinPrefixPos shape
+            (RelativeRmm.canonicalLayout shape).blockSize
+            startBlock count) := by
+  exact (canonicalRelativeRmmInteriorDirectory shape).rangeMin_exact
+    hcount hbound
+
+def canonicalRelativeRmmInteriorRawPayloadOverhead (n : Nat) : Nat :=
+  let base := Nat.log2 n + 1
+  let blockCount := n / base
+  let relativeWidth := 2 * (Nat.log2 base + 1) + 3
+  let superCount := blockCount / base + 1
+  let superWidth := SuccinctRank.machineWordBits (2 * n)
+  let macroSize := base * base
+  let macroCount := blockCount / macroSize + 1
+  let offsetWidth := SuccinctRank.machineWordBits macroSize
+  let globalLevelCount := SuccinctRank.machineWordBits macroCount
+  let blockAddressWidth := SuccinctRank.machineWordBits blockCount
+  (superCount * superWidth + 3 * (blockCount * relativeWidth)) +
+    ((macroCount * (offsetWidth * macroSize)) * offsetWidth) +
+      ((globalLevelCount * macroCount) * blockAddressWidth)
+
+theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw
+    (shape : Cartesian.CartesianShape) :
+    (canonicalRelativeRmmInteriorDirectory shape).payload.length =
+      canonicalRelativeRmmInteriorRawPayloadOverhead shape.size := by
+  rw [(canonicalRelativeRmmInteriorDirectory shape).payload_length_eq]
+  unfold canonicalRelativeRmmInteriorDirectoryPayloadLength
+  rw [(canonicalRelativeRmmSummaryTable shape).payload_length]
+  rw [(canonicalRelativeRmmInteriorLocalTable shape).payload_length]
+  rw [(canonicalRelativeRmmInteriorGlobalTable shape).payload_length]
+  simp [canonicalRelativeRmmInteriorRawPayloadOverhead,
+    RelativeRmm.canonicalLayout, RelativeRmm.Layout.superSampleCount,
+    RelativeRmm.Layout.superWidth, RelativeRmm.Layout.macroSize,
+    RelativeRmm.Layout.macroSampleCount, RelativeRmm.Layout.offsetWidth,
+    RelativeRmm.Layout.levelCount, RelativeRmm.Layout.globalLevelCount,
+    RelativeRmm.Layout.blockAddressWidth,
+    canonicalBPRelativeSummaryBlockSizeRaw,
+    canonicalBPRelativeSummaryBlocksPerSuperRaw,
+    canonicalBPRelativeSummaryBlockCountRaw,
+    canonicalBPRelativeSummaryRelativeWidthRaw,
+    canonicalBPRelativeSummaryBase,
+    Cartesian.CartesianShape.bpCode_length,
+    Nat.add_assoc, Nat.mul_assoc]
+
+def canonicalRelativeRmmInteriorOverhead (n : Nat) : Nat :=
+  canonicalRelativeRmmInteriorRawPayloadOverhead n
+
+theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_legacy_of_compactReady
+    {shape : Cartesian.CartesianShape}
+    (hready : (RelativeRmm.canonicalLayout shape).CompactReady shape) :
+    (canonicalRelativeRmmInteriorDirectory shape).payload.length =
+      (concreteBPRelativeRmmInteriorDirectory shape).payload.length := by
+  let layout := RelativeRmm.canonicalLayout shape
+  have hlegacyReady :=
+    (RelativeRmm.canonicalLayout_compactReady_iff_legacyReady shape).mp hready
+  have hsummary :
+      (canonicalRelativeRmmSummaryTable shape).payload.length =
+        (concreteBPRelativeMinMaxArgSummaryTable_canonical shape).payload.length := by
+    calc
+      (canonicalRelativeRmmSummaryTable shape).payload.length =
+          layout.superSampleCount * layout.superWidth shape +
+            3 * (layout.blockCount * layout.relativeWidth) := by
+        simpa [layout] using
+          (canonicalRelativeRmmSummaryTable shape).payload_length
+      _ = canonicalBPRelativeSummarySuperCount shape *
+            canonicalBPRelativeSummarySuperWidth shape +
+          3 * (canonicalBPRelativeSummaryBlockCount shape *
+            canonicalBPRelativeSummaryRelativeWidth shape) := by
+        rw [RelativeRmm.legacy_superCount_eq_canonical_of_compactReady
+          hready]
+        rw [RelativeRmm.legacy_blockCount_eq_canonical_of_compactReady
+          hready]
+        rw [RelativeRmm.legacy_relativeWidth_eq_canonical_of_compactReady
+          hready]
+        rfl
+      _ =
+          (concreteBPRelativeMinMaxArgSummaryTable_canonical
+            shape).payload.length := by
+        exact
+          (concreteBPRelativeMinMaxArgSummaryTable_canonical
+            shape).payload_length.symm
+  have hlocal :
+      (canonicalRelativeRmmInteriorLocalTable shape).payload.length =
+        (concreteBPRelativeRmmInteriorLocalTable shape).payload.length := by
+    calc
+      (canonicalRelativeRmmInteriorLocalTable shape).payload.length =
+          (layout.macroSampleCount *
+              (layout.levelCount * layout.macroSize)) *
+            layout.offsetWidth := by
+        simpa [layout] using
+          (canonicalRelativeRmmInteriorLocalTable shape).payload_length
+      _ = (concreteBPRelativeRmmInteriorMacroCount shape *
+              (concreteBPRelativeRmmInteriorLevelCount shape *
+                concreteBPRelativeRmmInteriorMacroSize shape)) *
+            concreteBPRelativeRmmInteriorOffsetWidth shape := by
+        rw [RelativeRmm.legacy_macroCount_eq_canonical_of_compactReady
+          hready]
+        rw [RelativeRmm.legacy_levelCount_eq_canonical_of_compactReady
+          hready]
+        rw [RelativeRmm.legacy_macroSize_eq_canonical_of_compactReady
+          hready]
+        rw [RelativeRmm.legacy_offsetWidth_eq_canonical_of_compactReady
+          hready]
+      _ = (concreteBPRelativeRmmInteriorLocalTable
+            shape).payload.length := by
+        exact (concreteBPRelativeRmmInteriorLocalTable
+          shape).payload_length.symm
+  have hglobal :
+      (canonicalRelativeRmmInteriorGlobalTable shape).payload.length =
+        (concreteBPRelativeRmmInteriorGlobalTable shape).payload.length := by
+    calc
+      (canonicalRelativeRmmInteriorGlobalTable shape).payload.length =
+          (layout.globalLevelCount * layout.macroSampleCount) *
+            layout.blockAddressWidth := by
+        simpa [layout] using
+          (canonicalRelativeRmmInteriorGlobalTable shape).payload_length
+      _ = (concreteBPRelativeRmmInteriorGlobalLevelCount shape *
+              concreteBPRelativeRmmInteriorMacroCount shape) *
+            concreteBPRelativeRmmInteriorBlockWidth shape := by
+        rw [RelativeRmm.legacy_globalLevelCount_eq_canonical_of_compactReady
+          hready]
+        rw [RelativeRmm.legacy_macroCount_eq_canonical_of_compactReady
+          hready]
+        rw [RelativeRmm.legacy_blockAddressWidth_eq_canonical_of_compactReady
+          hready]
+      _ = (concreteBPRelativeRmmInteriorGlobalTable
+            shape).payload.length := by
+        exact (concreteBPRelativeRmmInteriorGlobalTable
+          shape).payload_length.symm
+  rw [(canonicalRelativeRmmInteriorDirectory shape).payload_length_eq]
+  rw [(concreteBPRelativeRmmInteriorDirectory shape).payload_length_eq]
+  simp [canonicalRelativeRmmInteriorDirectoryPayloadLength,
+    concreteBPRelativeRmmInteriorDirectoryPayloadLength, hlegacyReady,
+    hsummary, hlocal, hglobal, Nat.add_assoc]
+
+
+theorem canonicalRelativeRmmInteriorRawPayloadOverhead_littleO :
+    LittleOLinear canonicalRelativeRmmInteriorRawPayloadOverhead := by
+  apply LittleOLinear.of_eventually_le
+    concreteBPRelativeRmmInteriorOverhead_littleO
+  refine ⟨concreteBPRelativeRmmInteriorReadyThreshold, ?_⟩
+  intro n hn
+  let shape : Cartesian.CartesianShape :=
+    Cartesian.shape (List.replicate n (0 : Int))
+  have hsize : shape.size = n := by
+    simp [shape, Cartesian.shape_size]
+  have hready :
+      concreteBPRelativeRmmInteriorReady shape := by
+    apply concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold
+    simpa [hsize] using hn
+  have hcompact :
+      (RelativeRmm.canonicalLayout shape).CompactReady shape :=
+    (RelativeRmm.canonicalLayout_compactReady_iff_legacyReady shape).mpr
+      hready
+  have heq :=
+    canonicalRelativeRmmInteriorDirectory_payload_length_eq_legacy_of_compactReady
+      hcompact
+  have hlegacy :=
+    (concreteBPRelativeRmmInteriorDirectory_profile_of_ready shape hready).2.1
+  rw [canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw] at heq
+  calc
+    canonicalRelativeRmmInteriorRawPayloadOverhead n =
+        (concreteBPRelativeRmmInteriorDirectory shape).payload.length := by
+      simpa [hsize] using heq
+    _ <= concreteBPRelativeRmmInteriorOverhead shape.size := hlegacy
+    _ = concreteBPRelativeRmmInteriorOverhead n := by rw [hsize]
+
+theorem canonicalRelativeRmmInteriorOverhead_littleO :
+    LittleOLinear canonicalRelativeRmmInteriorOverhead := by
+  simpa [canonicalRelativeRmmInteriorOverhead] using
+    canonicalRelativeRmmInteriorRawPayloadOverhead_littleO
+
+theorem canonicalRelativeRmmInteriorDirectory_payload_le_overhead
+    (shape : Cartesian.CartesianShape) :
+    (canonicalRelativeRmmInteriorDirectory shape).payload.length <=
+      canonicalRelativeRmmInteriorOverhead shape.size := by
+  rw [canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw]
+  simp [canonicalRelativeRmmInteriorOverhead]
+
+theorem canonicalRelativeRmmInteriorWordsRead_reconstruct_logical
+    (shape : Cartesian.CartesianShape) (startBlock count : Nat) :
+    SuccinctSpace.flattenPayloadWords
+        (canonicalRelativeRmmInteriorWordsRead shape startBlock count) =
+      SuccinctSpace.flattenPayloadWords
+        (canonicalRelativeRmmInteriorLogicalWordsRead
+          shape startBlock count) := by
+  unfold canonicalRelativeRmmInteriorWordsRead
+  generalize canonicalRelativeRmmInteriorLogicalWordsRead
+      shape startBlock count = words
+  induction words with
+  | nil =>
+      simp [SuccinctSpace.flattenPayloadWords]
+  | cons head tail ih =>
+      change SuccinctSpace.flattenPayloadWords
+          (SuccinctSpace.chunkPayloadWords
+              (SuccinctRank.machineWordBits shape.bpCode.length) head ++
+            tail.flatMap (SuccinctSpace.chunkPayloadWords
+              (SuccinctRank.machineWordBits shape.bpCode.length))) =
+        head ++ SuccinctSpace.flattenPayloadWords tail
+      rw [SuccinctSpace.flattenPayloadWords_append]
+      rw [SuccinctSpace.flattenPayloadWords_chunkPayloadWords
+        (SuccinctRank.machineWordBits_pos shape.bpCode.length) head]
+      rw [ih]
+
+
+structure CanonicalRelativeRmmInteriorStoreProfile
+    (shape : Cartesian.CartesianShape) : Prop where
+  component_flattens :
+    flattenPayloadWords
+        (canonicalRelativeRmmInteriorComponentStore
+          shape).store.words.toList =
+      (canonicalRelativeRmmSummaryTable shape).payload ++
+        (canonicalRelativeRmmInteriorLocalTable shape).payload ++
+          (canonicalRelativeRmmInteriorGlobalTable shape).payload
+  canonical_execution_eq :
+    forall startBlock count,
+      canonicalRelativeRmmInteriorRangeMinCostedWithStore shape
+          (canonicalRelativeRmmInteriorComponentStore shape).store.words
+          startBlock count =
+        canonicalRelativeRmmInteriorRangeMinCosted shape startBlock count
+  agreement_determines_result_cost :
+    forall storeA storeB startBlock count,
+      (forall address,
+        List.Mem address
+            (canonicalRelativeRmmInteriorRangeFootprintWithStore
+              shape storeA startBlock count) ->
+          storeA[address]? = storeB[address]?) ->
+        canonicalRelativeRmmInteriorRangeMinCostedWithStore
+            shape storeA startBlock count =
+          canonicalRelativeRmmInteriorRangeMinCostedWithStore
+            shape storeB startBlock count
+  successful_read_backed :
+    forall {startBlock count address : Nat} {word : List Bool},
+      0 < count ->
+      startBlock + count <=
+        (RelativeRmm.canonicalLayout shape).blockCount ->
+      List.Mem (address, some word)
+        (canonicalRelativeRmmInteriorRangeMinExecutionWithStore shape
+          (canonicalRelativeRmmInteriorComponentStore shape).store.words
+          startBlock count).reads ->
+      address <
+          (canonicalRelativeRmmInteriorComponentStore shape).store.words.size /\
+        List.Mem word
+          (canonicalRelativeRmmInteriorComponentStore
+            shape).store.words.toList
+  returned_words_bounded :
+    forall {startBlock count address : Nat} {word : List Bool},
+      List.Mem (address, some word)
+        (canonicalRelativeRmmInteriorRangeMinExecutionWithStore shape
+          (canonicalRelativeRmmInteriorComponentStore shape).store.words
+          startBlock count).reads ->
+      word.length <= SuccinctRank.machineWordBits shape.bpCode.length
+  footprint_recorded :
+    forall store startBlock count,
+      canonicalRelativeRmmInteriorRangeFootprintWithStore
+          shape store startBlock count =
+        (canonicalRelativeRmmInteriorRangeMinExecutionWithStore
+          shape store startBlock count).reads.map Prod.fst
+  cost_eq_footprint_length :
+    forall store startBlock count,
+      (canonicalRelativeRmmInteriorRangeMinCostedWithStore
+        shape store startBlock count).cost =
+        (canonicalRelativeRmmInteriorRangeFootprintWithStore
+          shape store startBlock count).length
+
+def canonicalRelativeRmmInteriorStoreProfile
+    (shape : Cartesian.CartesianShape) :
+    CanonicalRelativeRmmInteriorStoreProfile shape where
+  component_flattens :=
+    canonicalRelativeRmmInteriorComponentStore_flattens_payload shape
+  canonical_execution_eq :=
+    canonicalRelativeRmmInteriorRangeMinCostedWithStore_eq_current shape
+  agreement_determines_result_cost := by
+    intro storeA storeB startBlock count hagrees
+    exact canonicalRelativeRmmInteriorRangeMinCostedWithStore_eq_of_agree
+      shape storeA storeB startBlock count hagrees
+  successful_read_backed := by
+    intro startBlock count address word hcount hbound hread
+    have hbacked :=
+      canonicalRelativeRmmInteriorRange_successful_read_backed
+        shape startBlock count address word hread
+    exact And.intro hbacked.1 hbacked.2.1
+  returned_words_bounded := by
+    intro startBlock count address word hread
+    exact canonicalRelativeRmmInteriorRange_returned_word_bounded
+      shape startBlock count address word hread
+  footprint_recorded :=
+    canonicalRelativeRmmInteriorRangeFootprint_recorded shape
+  cost_eq_footprint_length :=
+    canonicalRelativeRmmInteriorRange_cost_eq_footprint_length shape
+theorem canonicalRelativeRmmInteriorDirectory_profile_allSize
+    (shape : Cartesian.CartesianShape) :
+    let directory := canonicalRelativeRmmInteriorDirectory shape
+    LittleOLinear canonicalRelativeRmmInteriorOverhead /\
+      directory.payload.length <=
+        canonicalRelativeRmmInteriorOverhead shape.size /\
+      (forall startBlock count,
+        (directory.rangeMinCosted startBlock count).cost <=
+          canonicalRelativeRmmInteriorQueryCost) /\
+      (forall {startBlock count : Nat},
+        0 < count ->
+          startBlock + count <=
+            (RelativeRmm.canonicalLayout shape).blockCount ->
+            (directory.rangeMinCosted startBlock count).erase =
+              some
+                (bpRangeMinExcess shape
+                  (RelativeRmm.canonicalLayout shape).blockSize
+                  startBlock count,
+                  bpRangeArgMinPrefixPos shape
+                    (RelativeRmm.canonicalLayout shape).blockSize
+                    startBlock count)) /\
+      (forall {startBlock count : Nat} {word : List Bool},
+        List.Mem word (directory.payloadWordsRead startBlock count) ->
+          word.length <=
+            SuccinctRank.machineWordBits shape.bpCode.length) /\
+      CanonicalRelativeRmmInteriorStoreProfile shape := by
+  let directory := canonicalRelativeRmmInteriorDirectory shape
+  have hprofile := directory.profile
+  exact And.intro canonicalRelativeRmmInteriorOverhead_littleO
+    (And.intro
+      (canonicalRelativeRmmInteriorDirectory_payload_le_overhead shape)
+      (And.intro hprofile.2.1
+        (And.intro hprofile.2.2.1
+          (And.intro hprofile.2.2.2 (canonicalRelativeRmmInteriorStoreProfile shape)))))
+
+theorem canonicalRelativeRmmInteriorDirectory_agrees_with_legacy_of_compactReady
+    {shape : Cartesian.CartesianShape}
+    (hready : (RelativeRmm.canonicalLayout shape).CompactReady shape)
+    {startBlock count : Nat}
+    (hcount : 0 < count)
+    (hbound : startBlock + count <=
+      (RelativeRmm.canonicalLayout shape).blockCount) :
+    ((canonicalRelativeRmmInteriorDirectory shape).rangeMinCosted
+        startBlock count).erase =
+      ((concreteBPRelativeRmmInteriorDirectory shape).rangeMinCosted
+        startBlock count).erase := by
+  have hlegacyReady :=
+    (RelativeRmm.canonicalLayout_compactReady_iff_legacyReady shape).mp hready
+  have hblockCount :=
+    RelativeRmm.legacy_blockCount_eq_canonical_of_compactReady hready
+  have hblockSize :=
+    RelativeRmm.legacy_blockSize_eq_canonical_of_compactReady hready
+  have hlegacyBound :
+      startBlock + count <= canonicalBPRelativeSummaryBlockCount shape := by
+    simpa [hblockCount] using hbound
+  have hcanonical :=
+    canonicalRelativeRmmInteriorDirectory_rangeMinCosted_erase_exact
+      hcount hbound
+  have hlegacy :=
+    (concreteBPRelativeRmmInteriorDirectory shape).rangeMin_exact
+      hcount hlegacyBound
+  rw [hcanonical, hlegacy]
+  simp [hblockSize]
 
 theorem concreteBPRelativeMinMaxArgSummaryTable_canonical_interior_scan_not_constant
     (shape : Cartesian.CartesianShape)
