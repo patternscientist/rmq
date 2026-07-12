@@ -30,10 +30,11 @@ not public artifact evidence.
 ### Fresh Blind Delta
 
 Default for merge gates and major milestones. Use a new session with low
-history and high evidence. Supply the exact base and target commits, bounded
-acceptance criteria, an audit packet, and load-bearing public/trust surfaces.
-Do not supply prior verdicts or findings unless a closed source fact is needed
-to avoid a known stale objection.
+history and high evidence. Supply the exact base and target commits, frozen
+acceptance IDs and verbatim requirements, an audit packet, and load-bearing
+public/trust surfaces. Do not supply the worker's verdict, narrative, prior
+verdicts, or findings unless a closed source fact is needed to avoid a known
+stale objection.
 
 Inspect the delta plus the public surfaces it can affect, not the whole
 repository by default.
@@ -63,6 +64,7 @@ alone is enough only when the auditor has the repo and the prompt also names
 scope and acceptance criteria. A normal packet contains:
 
 - target and base commit;
+- frozen acceptance IDs and verbatim requirements;
 - diff stat and changed-file list;
 - active roadmap node and intended design change;
 - relevant aliases, source theorems, trust docs, and decision entries;
@@ -75,7 +77,8 @@ meaning.
 
 Recommended cadence:
 
-1. fresh blind audit at a material proof/public milestone;
+1. fresh blind audit at every public paper capstone, trust-boundary change,
+   combined space/execution theorem, or roadmap-node closure;
 2. same-session continuation for one correction pass;
 3. fresh acceptance audit after material corrections;
 4. longitudinal architecture review every two to four milestones.
@@ -106,9 +109,10 @@ worker pass.
 
 ## Coordinator Disposition
 
-The coordinator verifies heads, audits the audit, records dispositions,
-integrates or rejects the branch, updates roadmap/lifecycle state, and engineers
-the next prompts.
+The coordinator verifies heads, audits the audit, reconstructs the frozen
+acceptance matrix from source, and alone records `ACCEPTED`. It then integrates
+or rejects the branch, updates roadmap/lifecycle state, and engineers the next
+prompts.
 
 Material reports live under `docs/internal/audit_reports/`. Report-only
 auditors may write exactly one assigned report file; source files remain
@@ -117,6 +121,8 @@ read-only.
 ## External Packet Minimum
 
 Use `scripts/make_audit_packet.ps1` plus task-specific material. Include base,
-target, scope, design intent, load-bearing surfaces, acceptance criteria,
-checks, non-goals, severity scale, and report path. Private chat history is
-optional process context, never a prerequisite for checking a theorem claim.
+target, scope, design intent, load-bearing surfaces, frozen acceptance IDs and
+verbatim requirements, checks, non-goals, severity scale, and report path.
+Private chat history is optional process context, never a prerequisite for
+checking a theorem claim. A fresh acceptance packet omits the worker verdict and
+narrative.

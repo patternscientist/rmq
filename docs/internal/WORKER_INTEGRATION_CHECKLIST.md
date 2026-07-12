@@ -16,6 +16,10 @@ Use this after every submitted worker branch.
 - [ ] The worker supplied a requirement-to-evidence matrix covering every
       prompt requirement, named consumer, applicable inherited invariant, and
       requested check.
+- [ ] Matrix rows retain frozen IDs and verbatim requirements; the worker did
+      not redefine requirements around the implementation.
+- [ ] Every closed semantic row quotes a checked theorem type or exact
+      hypotheses/conclusion. Declaration names alone are rejected.
 - [ ] The exact target exists and typechecks.
 - [ ] Its declared downstream consumer uses it.
 - [ ] No wrapper, proof field, alias, or conditional premise is counted as the
@@ -23,19 +27,24 @@ Use this after every submitted worker branch.
 - [ ] If short of target, a formal obstruction or dossier forces a genuine
       coordinator decision.
 - [ ] The worker was justified in stopping.
-- [ ] A `COMPLETE` report contains `No assigned or inherited acceptance
-      criterion remains unmet` and does not identify required follow-up for the
-      same target.
+- [ ] A `CANDIDATE_COMPLETE` report contains the required provisional
+      declaration and identifies no required follow-up for the same target.
 
 ## Fidelity
 
 - [ ] Counted payload is the payload read.
+- [ ] If public claims combine space, execution, provenance, or machine facts,
+      their theorem arguments concern the same object or a checked identity,
+      erasure, or flattening chain connects them at the public consumer.
 - [ ] The returned value and routing depend on the charged reads; no semantic
       or wide-cell answer is obtained first and replayed afterward.
 - [ ] The trace/footprint is derived from the execution it describes.
 - [ ] Successful reads are charged, store-backed, and word bounded.
 - [ ] Every executed address, dead/sentinel address, and operand fits the
       modeled machine word; host array bounds alone are not accepted.
+- [ ] A whole-machine claim embeds every read-producing segment in one
+      pre-execution physical array and relates its one query-independent width
+      and capacity to input size.
 - [ ] Supplied-store agreement determines result, cost, and relevant trace.
 - [ ] Proof-only fields do not contain answers or routing oracles.
 - [ ] Cost is derived from primitives or checked trace length.
@@ -61,6 +70,8 @@ Use this after every submitted worker branch.
 - [ ] Paper/headline checks ran when public surfaces changed.
 - [ ] Hygiene/native-decision scans ran when relevant.
 - [ ] Decision/claim scans ran when relevant.
+- [ ] Claim policy/allowlist entries were checked against source; a green scan
+      using stale expectations is not accepted.
 - [ ] `git diff --check` passed.
 - [ ] Skipped checks have a concrete reason.
 
@@ -77,3 +88,7 @@ Prefer a same-worker continuation when the architecture is sound and an
 assigned criterion remains locally closable. A submitted commit with an open
 criterion stays in the same lifecycle task; do not relabel the repair as a new
 roadmap success.
+
+Only the coordinator records `ACCEPTED`. Before accepting or merging a public
+paper capstone, trust-boundary change, combined space/execution theorem, or
+roadmap-node closure, require a fresh blind audit of the exact candidate commit.
