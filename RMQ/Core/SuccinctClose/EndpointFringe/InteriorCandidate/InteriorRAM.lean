@@ -158,12 +158,72 @@ structure BPRelativeSummaryTraceSegments where
 
 /-- Global segment bases for the concrete relative-rmM interior candidate. -/
 structure BPRelativeRmmInteriorTraceSegments where
+  canonicalComponent : Nat
   summary : BPRelativeSummaryTraceSegments
   localOffset : Nat
   globalBlock : Nat
   finiteSmallMin : Nat
   finiteSmallArg : Nat
   deadSegment : Nat
+
+/-- Interpret one flat read interface as one segment of a WordRAM store. -/
+def flatWordStoreOfReadStore
+    (store : WordRAM.ReadStore) (segment : Nat) : FlatWordStore :=
+  fun address => store.readWord? segment address
+
+/-- Convert an operational flat-store execution into its exact read trace. -/
+def flatStoreExecutionTraceResultAtSegment
+    (segment : Nat) (execution : FlatStoreExecution alpha) :
+    WordRAM.TraceResult alpha where
+  value := execution.value
+  trace := execution.reads.map fun read =>
+    WordRAM.TraceEvent.readWord segment read.1 read.2
+
+@[simp] theorem flatStoreExecutionTraceResultAtSegment_toCosted
+    (segment : Nat) (execution : FlatStoreExecution alpha) :
+    (flatStoreExecutionTraceResultAtSegment segment execution).toCosted =
+      execution.toCosted := by
+  apply Costed.ext
+  case hvalue => rfl
+  case hcost =>
+    simp [flatStoreExecutionTraceResultAtSegment,
+      FlatStoreExecution.toCosted]
+
+theorem flatStoreComputationTraceResultAtSegment_matchesReadStore
+    (computation : FlatStoreComputation alpha)
+    (store : WordRAM.ReadStore) (segment : Nat) :
+    forall event,
+      List.Mem event
+        (flatStoreExecutionTraceResultAtSegment segment
+          (computation.run
+            (flatWordStoreOfReadStore store segment))).trace ->
+        event.matchesReadStore store := by
+  intro event hmem
+  cases List.mem_map.mp hmem with
+  | intro read hrest =>
+      cases hrest with
+      | intro hread hevent =>
+          subst event
+          have hmatch :=
+            computation.reads_match_store
+              (flatWordStoreOfReadStore store segment)
+              read.1 read.2 hread
+          simpa [flatWordStoreOfReadStore,
+            WordRAM.TraceEvent.matchesReadStore] using hmatch
+
+theorem flatStoreExecutionTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+    (segment : Nat) (execution : FlatStoreExecution alpha) :
+    forall event,
+      List.Mem event
+        (flatStoreExecutionTraceResultAtSegment segment execution).trace ->
+        Not event.isSyntheticCostOnlyPrimitive := by
+  intro event hmem
+  cases List.mem_map.mp hmem with
+  | intro read hrest =>
+      cases hrest with
+      | intro hread hevent =>
+          subst event
+          simp [WordRAM.TraceEvent.isSyntheticCostOnlyPrimitive]
 
 namespace PayloadLiveBPRelativeMinMaxArgSummaryTable
 

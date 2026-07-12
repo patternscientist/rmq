@@ -1577,6 +1577,23 @@ theorem canonicalRelativeRmmInteriorComponentStore_words_toList
     canonicalRelativeRmmGlobalMachineStore,
     BoundedPayloadWordStore.append]
 
+theorem canonicalRelativeRmmInteriorComponentStore_words_size_eq
+    (shape : Cartesian.CartesianShape) :
+    (canonicalRelativeRmmInteriorComponentStore shape).store.words.size =
+      let hword := SuccinctRank.machineWordBits_pos shape.bpCode.length
+      let summary := canonicalRelativeRmmSummaryTable shape
+      (summary.baselineTable.machineStore hword).store.words.size +
+        ((summary.minRelTable.machineStore hword).store.words.size +
+          ((summary.maxRelTable.machineStore hword).store.words.size +
+            ((summary.argOffsetTable.machineStore hword).store.words.size +
+              (((canonicalRelativeRmmInteriorLocalTable
+                shape).table.machineStore hword).store.words.size +
+                ((canonicalRelativeRmmInteriorGlobalTable
+                  shape).table.machineStore hword).store.words.size)))) := by
+  have h := congrArg List.length
+    (canonicalRelativeRmmInteriorComponentStore_words_toList shape)
+  simpa using h
+
 theorem canonicalRelativeRmmInteriorComponentStore_words_bounded
     (shape : Cartesian.CartesianShape)
     {word : List Bool}
@@ -1914,6 +1931,110 @@ def canonicalRelativeRmmMachineReadNatComputation
     (SuccinctRank.machineWordBits shape.bpCode.length) base
     (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress i
 
+theorem canonicalRelativeRmmMachineReadNatComputation_footprint_le_dead
+    (shape : Cartesian.CartesianShape)
+    {entries : List Nat} {width : Nat}
+    (table : FixedWidthNatTable entries width)
+    (base i : Nat)
+    (hbase :
+      base +
+          (table.machineStore
+            (SuccinctRank.machineWordBits_pos shape.bpCode.length)).store.words.size <=
+        (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress) :
+    (canonicalRelativeRmmMachineReadNatComputation shape table base i)
+      |>.FootprintWithin
+        (fun address =>
+          address <=
+            (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress) := by
+  intro store address hmem
+  rcases table.machineReadComputationAt_footprint_live_or_dead
+      (SuccinctRank.machineWordBits_pos shape.bpCode.length)
+      store base
+      (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress
+      i address hmem with hlive | hdead
+  · omega
+  · omega
+
+theorem canonicalRelativeRmmBaselineReadComputation_footprint_le_dead
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    (canonicalRelativeRmmMachineReadNatComputation shape
+      (canonicalRelativeRmmSummaryTable shape).baselineTable
+      (canonicalRelativeRmmInteriorComponentOffsets shape).baseline i)
+      |>.FootprintWithin
+        (fun address =>
+          address <=
+            (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress) := by
+  apply canonicalRelativeRmmMachineReadNatComputation_footprint_le_dead
+  simp [canonicalRelativeRmmInteriorComponentOffsets,
+    canonicalRelativeRmmInteriorComponentStore_words_size_eq] <;> omega
+
+theorem canonicalRelativeRmmMinRelReadComputation_footprint_le_dead
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    (canonicalRelativeRmmMachineReadNatComputation shape
+      (canonicalRelativeRmmSummaryTable shape).minRelTable
+      (canonicalRelativeRmmInteriorComponentOffsets shape).minRel i)
+      |>.FootprintWithin
+        (fun address =>
+          address <=
+            (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress) := by
+  apply canonicalRelativeRmmMachineReadNatComputation_footprint_le_dead
+  simp [canonicalRelativeRmmInteriorComponentOffsets,
+    canonicalRelativeRmmInteriorComponentStore_words_size_eq] <;> omega
+
+theorem canonicalRelativeRmmMaxRelReadComputation_footprint_le_dead
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    (canonicalRelativeRmmMachineReadNatComputation shape
+      (canonicalRelativeRmmSummaryTable shape).maxRelTable
+      (canonicalRelativeRmmInteriorComponentOffsets shape).maxRel i)
+      |>.FootprintWithin
+        (fun address =>
+          address <=
+            (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress) := by
+  apply canonicalRelativeRmmMachineReadNatComputation_footprint_le_dead
+  simp [canonicalRelativeRmmInteriorComponentOffsets,
+    canonicalRelativeRmmInteriorComponentStore_words_size_eq] <;> omega
+
+theorem canonicalRelativeRmmArgOffsetReadComputation_footprint_le_dead
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    (canonicalRelativeRmmMachineReadNatComputation shape
+      (canonicalRelativeRmmSummaryTable shape).argOffsetTable
+      (canonicalRelativeRmmInteriorComponentOffsets shape).argOffset i)
+      |>.FootprintWithin
+        (fun address =>
+          address <=
+            (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress) := by
+  apply canonicalRelativeRmmMachineReadNatComputation_footprint_le_dead
+  simp [canonicalRelativeRmmInteriorComponentOffsets,
+    canonicalRelativeRmmInteriorComponentStore_words_size_eq] <;> omega
+
+theorem canonicalRelativeRmmLocalReadComputation_footprint_le_dead
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    (canonicalRelativeRmmMachineReadNatComputation shape
+      (canonicalRelativeRmmInteriorLocalTable shape).table
+      (canonicalRelativeRmmInteriorComponentOffsets shape).localOffset i)
+      |>.FootprintWithin
+        (fun address =>
+          address <=
+            (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress) := by
+  apply canonicalRelativeRmmMachineReadNatComputation_footprint_le_dead
+  simp [canonicalRelativeRmmInteriorComponentOffsets,
+    canonicalRelativeRmmInteriorComponentStore_words_size_eq,
+    canonicalRelativeRmmLocalMachineStore] <;> omega
+
+theorem canonicalRelativeRmmGlobalReadComputation_footprint_le_dead
+    (shape : Cartesian.CartesianShape) (i : Nat) :
+    (canonicalRelativeRmmMachineReadNatComputation shape
+      (canonicalRelativeRmmInteriorGlobalTable shape).table
+      (canonicalRelativeRmmInteriorComponentOffsets shape).globalBlock i)
+      |>.FootprintWithin
+        (fun address =>
+          address <=
+            (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress) := by
+  apply canonicalRelativeRmmMachineReadNatComputation_footprint_le_dead
+  simp [canonicalRelativeRmmInteriorComponentOffsets,
+    canonicalRelativeRmmInteriorComponentStore_words_size_eq,
+    canonicalRelativeRmmLocalMachineStore] <;> omega
+
 def canonicalRelativeRmmMachineSummaryComputation
     (shape : Cartesian.CartesianShape) (block : Nat) :
     FlatStoreComputation (Option (Prod Nat (Prod Nat (Prod Nat Nat)))) :=
@@ -2081,25 +2202,416 @@ def canonicalRelativeRmmInteriorRangeMinComputation
       canonicalRelativeRmmMachineCrossMacroCandidateComputation
         shape macroStart localStart middleMacroCount rightCount
 
-def canonicalRelativeRmmInteriorRangeMinExecutionWithStore
-    (shape : Cartesian.CartesianShape) (store : Array (List Bool))
+theorem canonicalRelativeRmmMachineSummaryComputation_footprint_le_dead
+    (shape : Cartesian.CartesianShape) (block : Nat) :
+    (canonicalRelativeRmmMachineSummaryComputation shape block)
+      |>.FootprintWithin
+        (fun address =>
+          address <=
+            (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress) := by
+  unfold canonicalRelativeRmmMachineSummaryComputation
+  apply FlatStoreComputation.bind_footprintWithin
+  · exact canonicalRelativeRmmBaselineReadComputation_footprint_le_dead shape _
+  · intro baseline
+    apply FlatStoreComputation.bind_footprintWithin
+    · exact canonicalRelativeRmmMinRelReadComputation_footprint_le_dead shape _
+    · intro minRel
+      apply FlatStoreComputation.bind_footprintWithin
+      · exact canonicalRelativeRmmMaxRelReadComputation_footprint_le_dead shape _
+      · intro maxRel
+        apply FlatStoreComputation.map_footprintWithin
+        exact canonicalRelativeRmmArgOffsetReadComputation_footprint_le_dead shape _
+
+theorem canonicalRelativeRmmMachineMinCandidateComputation_footprint_le_dead
+    (shape : Cartesian.CartesianShape) (block : Nat) :
+    (canonicalRelativeRmmMachineMinCandidateComputation shape block)
+      |>.FootprintWithin
+        (fun address =>
+          address <=
+            (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress) := by
+  unfold canonicalRelativeRmmMachineMinCandidateComputation
+  apply FlatStoreComputation.map_footprintWithin
+  exact canonicalRelativeRmmMachineSummaryComputation_footprint_le_dead shape block
+
+theorem canonicalRelativeRmmMachineLocalSpanCandidateComputation_footprint_le_dead
+    (shape : Cartesian.CartesianShape)
+    (macroIdx localStart level : Nat) :
+    (canonicalRelativeRmmMachineLocalSpanCandidateComputation
+      shape macroIdx localStart level)
+      |>.FootprintWithin
+        (fun address =>
+          address <=
+            (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress) := by
+  unfold canonicalRelativeRmmMachineLocalSpanCandidateComputation
+  apply FlatStoreComputation.bind_footprintWithin
+  · exact canonicalRelativeRmmLocalReadComputation_footprint_le_dead shape _
+  · intro offset
+    cases offset with
+    | none => exact FlatStoreComputation.pure_footprintWithin _ _
+    | some value =>
+        exact canonicalRelativeRmmMachineMinCandidateComputation_footprint_le_dead
+          shape _
+
+theorem canonicalRelativeRmmMachineGlobalSpanCandidateComputation_footprint_le_dead
+    (shape : Cartesian.CartesianShape)
+    (macroStart level : Nat) :
+    (canonicalRelativeRmmMachineGlobalSpanCandidateComputation
+      shape macroStart level)
+      |>.FootprintWithin
+        (fun address =>
+          address <=
+            (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress) := by
+  unfold canonicalRelativeRmmMachineGlobalSpanCandidateComputation
+  apply FlatStoreComputation.bind_footprintWithin
+  · exact canonicalRelativeRmmGlobalReadComputation_footprint_le_dead shape _
+  · intro block
+    cases block with
+    | none => exact FlatStoreComputation.pure_footprintWithin _ _
+    | some value =>
+        exact canonicalRelativeRmmMachineMinCandidateComputation_footprint_le_dead
+          shape _
+
+theorem canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation_footprint_le_dead
+    (shape : Cartesian.CartesianShape)
+    (macroIdx localStart count : Nat) :
+    (canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+      shape macroIdx localStart count)
+      |>.FootprintWithin
+        (fun address =>
+          address <=
+            (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress) := by
+  unfold canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation
+  apply FlatStoreComputation.bind_footprintWithin
+  · exact
+      canonicalRelativeRmmMachineLocalSpanCandidateComputation_footprint_le_dead
+        shape _ _ _
+  · intro left
+    apply FlatStoreComputation.map_footprintWithin
+    exact
+      canonicalRelativeRmmMachineLocalSpanCandidateComputation_footprint_le_dead
+        shape _ _ _
+
+theorem canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation_footprint_le_dead
+    (shape : Cartesian.CartesianShape)
+    (macroStart macroSpanCount : Nat) :
+    (canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation
+      shape macroStart macroSpanCount)
+      |>.FootprintWithin
+        (fun address =>
+          address <=
+            (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress) := by
+  unfold canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation
+  apply FlatStoreComputation.bind_footprintWithin
+  · exact
+      canonicalRelativeRmmMachineGlobalSpanCandidateComputation_footprint_le_dead
+        shape _ _
+  · intro left
+    apply FlatStoreComputation.map_footprintWithin
+    exact
+      canonicalRelativeRmmMachineGlobalSpanCandidateComputation_footprint_le_dead
+        shape _ _
+
+theorem canonicalRelativeRmmMachineAdjacentMacroCandidateComputation_footprint_le_dead
+    (shape : Cartesian.CartesianShape)
+    (macroStart localStart rightCount : Nat) :
+    (canonicalRelativeRmmMachineAdjacentMacroCandidateComputation
+      shape macroStart localStart rightCount)
+      |>.FootprintWithin
+        (fun address =>
+          address <=
+            (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress) := by
+  unfold canonicalRelativeRmmMachineAdjacentMacroCandidateComputation
+  apply FlatStoreComputation.bind_footprintWithin
+  · exact
+      canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation_footprint_le_dead
+        shape _ _ _
+  · intro left
+    apply FlatStoreComputation.map_footprintWithin
+    exact
+      canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation_footprint_le_dead
+        shape _ _ _
+
+theorem canonicalRelativeRmmMachineLeftMiddleMacroCandidateComputation_footprint_le_dead
+    (shape : Cartesian.CartesianShape)
+    (macroStart localStart middleMacroCount : Nat) :
+    (canonicalRelativeRmmMachineLeftMiddleMacroCandidateComputation
+      shape macroStart localStart middleMacroCount)
+      |>.FootprintWithin
+        (fun address =>
+          address <=
+            (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress) := by
+  unfold canonicalRelativeRmmMachineLeftMiddleMacroCandidateComputation
+  apply FlatStoreComputation.bind_footprintWithin
+  · exact
+      canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation_footprint_le_dead
+        shape _ _ _
+  · intro left
+    apply FlatStoreComputation.map_footprintWithin
+    exact
+      canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation_footprint_le_dead
+        shape _ _
+
+theorem canonicalRelativeRmmMachineCrossMacroCandidateComputation_footprint_le_dead
+    (shape : Cartesian.CartesianShape)
+    (macroStart localStart middleMacroCount rightCount : Nat) :
+    (canonicalRelativeRmmMachineCrossMacroCandidateComputation
+      shape macroStart localStart middleMacroCount rightCount)
+      |>.FootprintWithin
+        (fun address =>
+          address <=
+            (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress) := by
+  unfold canonicalRelativeRmmMachineCrossMacroCandidateComputation
+  apply FlatStoreComputation.bind_footprintWithin
+  · exact
+      canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation_footprint_le_dead
+        shape _ _ _
+  · intro left
+    apply FlatStoreComputation.bind_footprintWithin
+    · exact
+        canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation_footprint_le_dead
+          shape _ _
+    · intro middle
+      apply FlatStoreComputation.map_footprintWithin
+      exact
+        canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation_footprint_le_dead
+          shape _ _ _
+
+theorem canonicalRelativeRmmInteriorRangeMinComputation_footprint_le_dead
+    (shape : Cartesian.CartesianShape) (startBlock count : Nat) :
+    (canonicalRelativeRmmInteriorRangeMinComputation shape startBlock count)
+      |>.FootprintWithin
+        (fun address =>
+          address <=
+            (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress) := by
+  unfold canonicalRelativeRmmInteriorRangeMinComputation
+  split
+  · exact FlatStoreComputation.pure_footprintWithin _ _
+  · dsimp only
+    split
+    · exact
+        canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation_footprint_le_dead
+          shape _ _ _
+    · split
+      · exact
+          canonicalRelativeRmmMachineAdjacentMacroCandidateComputation_footprint_le_dead
+            shape _ _ _
+      · split
+        · exact
+            canonicalRelativeRmmMachineLeftMiddleMacroCandidateComputation_footprint_le_dead
+              shape _ _ _
+        · exact
+            canonicalRelativeRmmMachineCrossMacroCandidateComputation_footprint_le_dead
+              shape _ _ _ _
+
+def canonicalRelativeRmmInteriorRangeMinExecutionWithRead
+    (shape : Cartesian.CartesianShape) (store : FlatWordStore)
     (startBlock count : Nat) : FlatStoreExecution (Option (Prod Nat Nat)) :=
   (canonicalRelativeRmmInteriorRangeMinComputation
     shape startBlock count).run store
 
+def canonicalRelativeRmmInteriorRangeMinCostedWithRead
+    (shape : Cartesian.CartesianShape) (store : FlatWordStore)
+    (startBlock count : Nat) : Costed (Option (Prod Nat Nat)) :=
+  (canonicalRelativeRmmInteriorRangeMinExecutionWithRead
+    shape store startBlock count).toCosted
+
+def canonicalRelativeRmmInteriorRangeFootprintWithRead
+    (shape : Cartesian.CartesianShape) (store : FlatWordStore)
+    (startBlock count : Nat) : List Nat :=
+  (canonicalRelativeRmmInteriorRangeMinExecutionWithRead
+    shape store startBlock count).footprint
+
+def canonicalRelativeRmmInteriorRangeMinExecutionWithStore
+    (shape : Cartesian.CartesianShape) (store : Array (List Bool))
+    (startBlock count : Nat) : FlatStoreExecution (Option (Prod Nat Nat)) :=
+  canonicalRelativeRmmInteriorRangeMinExecutionWithRead
+    shape (FlatWordStore.ofArray store) startBlock count
+
 def canonicalRelativeRmmInteriorRangeMinCostedWithStore
     (shape : Cartesian.CartesianShape) (store : Array (List Bool))
     (startBlock count : Nat) : Costed (Option (Prod Nat Nat)) :=
-  (canonicalRelativeRmmInteriorRangeMinExecutionWithStore
-    shape store startBlock count).toCosted
+  canonicalRelativeRmmInteriorRangeMinCostedWithRead
+    shape (FlatWordStore.ofArray store) startBlock count
 
 def canonicalRelativeRmmInteriorRangeFootprintWithStore
     (shape : Cartesian.CartesianShape) (store : Array (List Bool))
     (startBlock count : Nat) : List Nat :=
-  (canonicalRelativeRmmInteriorRangeMinExecutionWithStore
-    shape store startBlock count).footprint
+  canonicalRelativeRmmInteriorRangeFootprintWithRead
+    shape (FlatWordStore.ofArray store) startBlock count
 
+/--
+Pre-execution address universe for the canonical interior machine.  It covers
+the input bits, valid block operands, every live component word, and the
+inclusive one-past-end dead address.
+-/
+def canonicalRelativeRmmInteriorReviewerCapacity
+    (shape : Cartesian.CartesianShape) : Nat :=
+  Nat.max shape.bpCode.length
+    (Nat.max (RelativeRmm.canonicalLayout shape).blockCount
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words.size)
+
+def canonicalRelativeRmmInteriorReviewerWordBits
+    (shape : Cartesian.CartesianShape) : Nat :=
+  SuccinctRank.machineWordBits
+    (canonicalRelativeRmmInteriorReviewerCapacity shape)
+
+theorem canonicalRelativeRmmInteriorRangeFootprint_address_le_dead
+    (shape : Cartesian.CartesianShape) (store : FlatWordStore)
+    (startBlock count address : Nat)
+    (hmem :
+      List.Mem address
+        (canonicalRelativeRmmInteriorRangeFootprintWithRead
+          shape store startBlock count)) :
+    address <=
+      (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress := by
+  exact
+    canonicalRelativeRmmInteriorRangeMinComputation_footprint_le_dead
+      shape startBlock count store address hmem
+
+theorem canonicalRelativeRmmInteriorRangeFootprint_live_or_dead
+    (shape : Cartesian.CartesianShape) (store : FlatWordStore)
+    (startBlock count address : Nat)
+    (hmem :
+      List.Mem address
+        (canonicalRelativeRmmInteriorRangeFootprintWithRead
+          shape store startBlock count)) :
+    address <
+        (canonicalRelativeRmmInteriorComponentStore shape).store.words.size \/
+      address =
+        (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress := by
+  have hle :=
+    canonicalRelativeRmmInteriorRangeFootprint_address_le_dead
+      shape store startBlock count address hmem
+  have hdead :
+      (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress =
+        (canonicalRelativeRmmInteriorComponentStore shape).store.words.size := by
+    rfl
+  rw [hdead] at hle
+  rcases Nat.lt_or_eq_of_le hle with hlt | heq
+  · exact Or.inl hlt
+  · exact Or.inr (by simpa [hdead] using heq)
+
+theorem canonicalRelativeRmmInteriorDeadAddress_fits_reviewerWordBits
+    (shape : Cartesian.CartesianShape) :
+    (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress <
+      2 ^ canonicalRelativeRmmInteriorReviewerWordBits shape := by
+  exact Nat.lt_of_le_of_lt
+    (show
+      (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress <=
+        canonicalRelativeRmmInteriorReviewerCapacity shape by
+      unfold canonicalRelativeRmmInteriorReviewerCapacity
+      rw [show
+        (canonicalRelativeRmmInteriorComponentOffsets shape).deadAddress =
+          (canonicalRelativeRmmInteriorComponentStore shape).store.words.size by rfl]
+      exact Nat.le_trans (Nat.le_max_right _ _) (Nat.le_max_right _ _))
+    (SuccinctRank.self_lt_two_pow_machineWordBits _)
+
+theorem canonicalRelativeRmmInteriorRangeFootprint_address_fits_reviewerWordBits
+    (shape : Cartesian.CartesianShape) (store : FlatWordStore)
+    (startBlock count address : Nat)
+    (hmem :
+      List.Mem address
+        (canonicalRelativeRmmInteriorRangeFootprintWithRead
+          shape store startBlock count)) :
+    address < 2 ^ canonicalRelativeRmmInteriorReviewerWordBits shape := by
+  exact Nat.lt_of_le_of_lt
+    (canonicalRelativeRmmInteriorRangeFootprint_address_le_dead
+      shape store startBlock count address hmem)
+    (canonicalRelativeRmmInteriorDeadAddress_fits_reviewerWordBits shape)
+
+theorem canonicalRelativeRmmInteriorValidQuery_operands_fit_reviewerWordBits
+    (shape : Cartesian.CartesianShape) {startBlock count : Nat}
+    (hbound :
+      startBlock + count <=
+        (RelativeRmm.canonicalLayout shape).blockCount) :
+    startBlock < 2 ^ canonicalRelativeRmmInteriorReviewerWordBits shape /\
+      count < 2 ^ canonicalRelativeRmmInteriorReviewerWordBits shape /\
+      startBlock + count <
+        2 ^ canonicalRelativeRmmInteriorReviewerWordBits shape := by
+  have hblocks :
+      (RelativeRmm.canonicalLayout shape).blockCount <=
+        canonicalRelativeRmmInteriorReviewerCapacity shape := by
+    exact Nat.le_trans
+      (Nat.le_max_left
+        (RelativeRmm.canonicalLayout shape).blockCount
+        (canonicalRelativeRmmInteriorComponentStore shape).store.words.size)
+      (Nat.le_max_right _ _)
+  have hcap :
+      canonicalRelativeRmmInteriorReviewerCapacity shape <
+        2 ^ canonicalRelativeRmmInteriorReviewerWordBits shape :=
+    SuccinctRank.self_lt_two_pow_machineWordBits _
+  omega
+
+theorem canonicalRelativeRmmInteriorRangeFootprint_address_fits_threshold_boundary
+    (shape : Cartesian.CartesianShape) (store : FlatWordStore)
+    (startBlock count address : Nat)
+    (_hboundary :
+      shape.size = concreteBPRelativeRmmInteriorReadyThreshold \/
+        shape.size + 1 = concreteBPRelativeRmmInteriorReadyThreshold)
+    (hmem :
+      List.Mem address
+        (canonicalRelativeRmmInteriorRangeFootprintWithRead
+          shape store startBlock count)) :
+    address < 2 ^ canonicalRelativeRmmInteriorReviewerWordBits shape :=
+  canonicalRelativeRmmInteriorRangeFootprint_address_fits_reviewerWordBits
+    shape store startBlock count address hmem
+
+/-- Kernel-checked empty-shape specialization of the total address theorem. -/
+theorem canonicalRelativeRmmInteriorRangeFootprint_empty_kernel_checked
+    (store : FlatWordStore) (address : Nat)
+    (hmem :
+      List.Mem address
+        (canonicalRelativeRmmInteriorRangeFootprintWithRead
+          Cartesian.CartesianShape.empty store 0 0)) :
+    address <
+      2 ^ canonicalRelativeRmmInteriorReviewerWordBits
+        Cartesian.CartesianShape.empty :=
+  canonicalRelativeRmmInteriorRangeFootprint_address_fits_reviewerWordBits
+    Cartesian.CartesianShape.empty store 0 0 address hmem
+
+/-- Kernel-checked singleton-shape specialization. -/
+theorem canonicalRelativeRmmInteriorRangeFootprint_singleton_kernel_checked
+    (store : FlatWordStore) (address : Nat)
+    (hmem :
+      List.Mem address
+        (canonicalRelativeRmmInteriorRangeFootprintWithRead
+          (Cartesian.CartesianShape.node
+            Cartesian.CartesianShape.empty Cartesian.CartesianShape.empty)
+          store 0 0)) :
+    address <
+      2 ^ canonicalRelativeRmmInteriorReviewerWordBits
+        (Cartesian.CartesianShape.node
+          Cartesian.CartesianShape.empty Cartesian.CartesianShape.empty) :=
+  canonicalRelativeRmmInteriorRangeFootprint_address_fits_reviewerWordBits
+    (Cartesian.CartesianShape.node
+      Cartesian.CartesianShape.empty Cartesian.CartesianShape.empty)
+    store 0 0 address hmem
+
+/-- Kernel-checked size-two specialization. -/
+theorem canonicalRelativeRmmInteriorRangeFootprint_sizeTwo_kernel_checked
+    (store : FlatWordStore) (address : Nat)
+    (hmem :
+      List.Mem address
+        (canonicalRelativeRmmInteriorRangeFootprintWithRead
+          (Cartesian.CartesianShape.node
+            (Cartesian.CartesianShape.node
+              Cartesian.CartesianShape.empty Cartesian.CartesianShape.empty)
+            Cartesian.CartesianShape.empty)
+          store 0 1)) :
+    address <
+      2 ^ canonicalRelativeRmmInteriorReviewerWordBits
+        (Cartesian.CartesianShape.node
+          (Cartesian.CartesianShape.node
+            Cartesian.CartesianShape.empty Cartesian.CartesianShape.empty)
+          Cartesian.CartesianShape.empty) :=
+  canonicalRelativeRmmInteriorRangeFootprint_address_fits_reviewerWordBits
+    (Cartesian.CartesianShape.node
+      (Cartesian.CartesianShape.node
+        Cartesian.CartesianShape.empty Cartesian.CartesianShape.empty)
+      Cartesian.CartesianShape.empty)
+    store 0 1 address hmem
 theorem canonicalRelativeRmmBaselineReadComputation_refines
+
     (shape : Cartesian.CartesianShape) (i : Nat) :
     ((canonicalRelativeRmmMachineReadNatComputation shape
         (canonicalRelativeRmmSummaryTable shape).baselineTable
@@ -2563,7 +3075,8 @@ theorem canonicalRelativeRmmInteriorRangeMinCostedWithStore_eq_current
         startBlock count =
       canonicalRelativeRmmInteriorRangeMinCosted shape startBlock count := by
   unfold canonicalRelativeRmmInteriorRangeMinCostedWithStore
-  unfold canonicalRelativeRmmInteriorRangeMinExecutionWithStore
+  unfold canonicalRelativeRmmInteriorRangeMinCostedWithRead
+  unfold canonicalRelativeRmmInteriorRangeMinExecutionWithRead
   unfold canonicalRelativeRmmInteriorRangeMinComputation
   unfold canonicalRelativeRmmInteriorRangeMinCosted
   by_cases hcount : count = 0
@@ -2744,6 +3257,23 @@ theorem canonicalRelativeRmmInteriorRange_returned_word_bounded
     (canonicalRelativeRmmInteriorRange_successful_read_backed
       shape startBlock count address word hread).2.1
 
+theorem canonicalRelativeRmmInteriorRange_returned_word_bounded_reviewer
+    (shape : Cartesian.CartesianShape)
+    (startBlock count address : Nat) (word : List Bool)
+    (hread :
+      List.Mem (address, some word)
+        (canonicalRelativeRmmInteriorRangeMinExecutionWithStore shape
+          (canonicalRelativeRmmInteriorComponentStore shape).store.words
+          startBlock count).reads) :
+    word.length <= canonicalRelativeRmmInteriorReviewerWordBits shape := by
+  exact Nat.le_trans
+    (canonicalRelativeRmmInteriorRange_returned_word_bounded
+      shape startBlock count address word hread)
+    (SuccinctRank.machineWordBits_mono_le
+      (Nat.le_max_left shape.bpCode.length
+        (Nat.max (RelativeRmm.canonicalLayout shape).blockCount
+          (canonicalRelativeRmmInteriorComponentStore shape).store.words.size)))
+
 theorem canonicalRelativeRmmInteriorRange_cost_eq_footprint_length
     (shape : Cartesian.CartesianShape) (store : Array (List Bool))
     (startBlock count : Nat) :
@@ -2752,8 +3282,11 @@ theorem canonicalRelativeRmmInteriorRange_cost_eq_footprint_length
       (canonicalRelativeRmmInteriorRangeFootprintWithStore
         shape store startBlock count).length := by
   simp [canonicalRelativeRmmInteriorRangeMinCostedWithStore,
+    canonicalRelativeRmmInteriorRangeMinCostedWithRead,
     canonicalRelativeRmmInteriorRangeFootprintWithStore,
-    FlatStoreExecution.toCosted]
+    canonicalRelativeRmmInteriorRangeFootprintWithRead,
+    canonicalRelativeRmmInteriorRangeMinExecutionWithRead,
+    FlatStoreExecution.footprint]
 theorem canonicalRelativeRmmInteriorRangeMinCosted_refines_logical
     (shape : Cartesian.CartesianShape) (startBlock count : Nat) :
     (canonicalRelativeRmmInteriorRangeMinCosted shape startBlock count).erase =
@@ -3707,6 +4240,27 @@ structure CanonicalRelativeRmmInteriorStoreProfile
           (canonicalRelativeRmmInteriorComponentStore shape).store.words
           startBlock count).reads ->
       word.length <= SuccinctRank.machineWordBits shape.bpCode.length
+  returned_words_bounded_reviewer :
+    forall {startBlock count address : Nat} {word : List Bool},
+      List.Mem (address, some word)
+        (canonicalRelativeRmmInteriorRangeMinExecutionWithStore shape
+          (canonicalRelativeRmmInteriorComponentStore shape).store.words
+          startBlock count).reads ->
+      word.length <= canonicalRelativeRmmInteriorReviewerWordBits shape
+  footprint_addresses_bounded :
+    forall store startBlock count address,
+      List.Mem address
+        (canonicalRelativeRmmInteriorRangeFootprintWithStore
+          shape store startBlock count) ->
+      address < 2 ^ canonicalRelativeRmmInteriorReviewerWordBits shape
+  valid_query_operands_bounded :
+    forall {startBlock count},
+      startBlock + count <=
+        (RelativeRmm.canonicalLayout shape).blockCount ->
+      startBlock < 2 ^ canonicalRelativeRmmInteriorReviewerWordBits shape /\
+        count < 2 ^ canonicalRelativeRmmInteriorReviewerWordBits shape /\
+        startBlock + count <
+          2 ^ canonicalRelativeRmmInteriorReviewerWordBits shape
   footprint_recorded :
     forall store startBlock count,
       canonicalRelativeRmmInteriorRangeFootprintWithStore
@@ -3741,6 +4295,17 @@ def canonicalRelativeRmmInteriorStoreProfile
     intro startBlock count address word hread
     exact canonicalRelativeRmmInteriorRange_returned_word_bounded
       shape startBlock count address word hread
+  returned_words_bounded_reviewer := by
+    intro startBlock count address word hread
+    exact canonicalRelativeRmmInteriorRange_returned_word_bounded_reviewer
+      shape startBlock count address word hread
+  footprint_addresses_bounded := by
+    intro store startBlock count address hmem
+    exact
+      canonicalRelativeRmmInteriorRangeFootprint_address_fits_reviewerWordBits
+        shape (FlatWordStore.ofArray store) startBlock count address hmem
+  valid_query_operands_bounded :=
+    canonicalRelativeRmmInteriorValidQuery_operands_fit_reviewerWordBits shape
   footprint_recorded :=
     canonicalRelativeRmmInteriorRangeFootprint_recorded shape
   cost_eq_footprint_length :=

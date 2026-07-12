@@ -1,4 +1,15 @@
 # Trust Audit Packet
+## U2 Canonical Reviewer Trust Boundary
+
+The active final route has no Ready/Active/zero-block dispatch. Its close/LCA
+interior reads the concatenated canonical component at segment `20`.
+`concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_refines_canonicalInterpretedCosted`
+and `...Costed_exact` connect the charged trace to semantic RMQ exactness.
+Supplied-store agreement, successful-read canonical-payload backing, no
+synthetic events, machine-word bounds, and physical-address bounds are checked
+at the composed consumer. The transitional all-size cap is exactly `328`;
+older route constants are retained only as compatibility history.
+
 
 Snapshot: 2026-07-09. This is the compact packet to hand to a skeptical
 Lean/formalization reviewer before asking for a broader library-readiness
@@ -207,10 +218,10 @@ A zero-block same-block supplied-store surface remains available as a focused
 leaf theorem:
 
 ```lean
-RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_evalWithStore
-RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_store_parametric
-RMQ.Headlines.succinctRMQZeroBlockSameBlockEvalWithStore
-RMQ.Headlines.succinctRMQZeroBlockSameBlockStoreParametric
+RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreEqGlobalOfFootprint
+RMQ.Headlines.succinctRMQCanonicalReviewerMachineWordsComponentSlice
+RMQ.Headlines.succinctRMQCanonicalInteriorPhysicalFootprintFits
+RMQ.Headlines.succinctRMQCanonicalReviewerValidQueryOperandsFit
 ```
 
 There the evaluator is run against a supplied `WordRAM.ReadStore`, and stores

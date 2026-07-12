@@ -95,6 +95,12 @@ abbrev queryCost : Nat :=
 abbrev routeSplitQueryCost (xs : List Int) : Nat :=
   SuccinctFinal.concreteBPNativeSuccinctRMQRouteSplitQueryCost
     (cartesianShape xs)
+/-- Checked transitional U2 cost for the canonical reviewer route. -/
+abbrev canonicalTransitionalQueryCost : Nat :=
+  3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
+      SuccinctSelect.sparseDenseFalseSelectQueryCost
+
 
 /-- Shape-sensitive route-split budget over an already prepared shape. -/
 abbrev preparedRouteSplitQueryCost (prepared : PreparedInput) : Nat :=
@@ -236,53 +242,37 @@ events.
 -/
 def FlatPayloadStoreNoSyntheticExecutionStory
     (xs : List Int) (left right : Nat) : Prop :=
-  (flatPayloadLayout xs).payload = buildPayload xs /\
-    (let layout := flatPayloadLayout xs
-     layout.payload =
-      layout.bpCodePayload ++ layout.accessRankPayload ++
-        layout.selectPayload ++ layout.accessPadding ++
-          layout.closePayload ++ layout.closePadding) /\
-    SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadSegmentBackingsAll
-      (cartesianShape xs) /\
-    (forall {segment index : Nat} {word : List Bool},
-      (flatPayloadReadStore xs).readWord? segment index = some word ->
-        SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadReadSourceManifest
-          (cartesianShape xs) segment index word) /\
-    (forall {segment index : Nat} {word : List Bool},
-      (flatPayloadReadStore xs).readWord? segment index = some word ->
-        SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
-          (cartesianShape xs) segment ->
-        SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadReadBacked
-          (cartesianShape xs) segment index word) /\
+  SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerPayload
+      (cartesianShape xs) =
+      (flatPayloadLayout xs).payload ++
+        (SuccinctClose.canonicalRelativeRmmInteriorDirectory
+          (cartesianShape xs)).payload /\
+    SuccinctSpace.flattenPayloadWords
+        (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+          (cartesianShape xs)).store.words.toList =
+      (SuccinctClose.canonicalRelativeRmmInteriorDirectory
+        (cartesianShape xs)).payload /\
     (forall {segment index : Nat} {word : List Bool},
       List.Mem (WordRAM.TraceEvent.readWord segment index (some word))
-        (flatPayloadTraceResult xs left right).trace ->
-        SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
-          (cartesianShape xs) segment /\
-        SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadReadBacked
+          (flatPayloadTraceResult xs left right).trace ->
+        SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerReadBacked
           (cartesianShape xs) segment index word) /\
     queryCosted xs left right =
       (flatPayloadTraceResult xs left right).toCosted /\
     queryCosted xs left right =
-      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted
         (cartesianShape xs) left right /\
     (forall event,
       List.Mem event (flatPayloadTraceResult xs left right).trace ->
         event.isReadWord \/ event.isWordPrimitive) /\
     (forall event,
       List.Mem event (flatPayloadTraceResult xs left right).trace ->
-        event.matchesReadStore (flatPayloadReadStore xs)) /\
+        event.matchesReadStore
+          (SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerReadStore
+            (cartesianShape xs))) /\
     (forall event,
       List.Mem event (flatPayloadTraceResult xs left right).trace ->
-        Not event.isSyntheticCostOnlyPrimitive) /\
-    (forall event,
-      List.Mem event (flatPayloadTraceResult xs left right).trace ->
-        SuccinctFinal.concreteBPNativeTraceEventReadAddressFitsInBits
-          (flatPayloadTraceEventBits xs left right) event) /\
-    (forall event,
-      List.Mem event (flatPayloadTraceResult xs left right).trace ->
-        SuccinctFinal.concreteBPNativeTraceEventPrimitiveOperandsFitInBits
-          (flatPayloadTraceEventBits xs left right) event)
+        Not event.isSyntheticCostOnlyPrimitive)
 
 /--
 The final query trace for an ordinary list is backed by the concrete flat
@@ -387,12 +377,12 @@ theorem buildPayload_length (xs : List Int) :
       SuccinctFinal.builtGenericSparseExceptionSelectBPCloseAccessFamily
       hshape
 
-/-- Every query has the constant modeled cost of the final construction. -/
-theorem queryCosted_cost_le_routeSplit
+/-- Every query has the checked canonical transitional U2 cost. -/
+theorem queryCosted_cost_le_canonicalTransitional
     (xs : List Int) (left right : Nat) :
-    (queryCosted xs left right).cost <= routeSplitQueryCost xs := by
-  simpa [queryCosted, routeSplitQueryCost] using
-    SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_routeSplit
+    (queryCosted xs left right).cost <= canonicalTransitionalQueryCost := by
+  simpa [queryCosted, canonicalTransitionalQueryCost] using
+    SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional
       (cartesianShape xs) left right
 
 /-- Every query has the clean fixed all-size modeled cost bound. -/
@@ -430,23 +420,17 @@ theorem listIntFinalFullModelCostLeOfFootprintGlobal
   rw [queryCostedWithStore_eq_queryCosted_of_footprint xs hfoot left right]
   exact queryCosted_cost_le xs left right
 
-/--
-Under the Ready-threshold size condition, footprint agreement transfers the
-fast-regime final model cost bound to the supplied-store list-facing query.
--/
-theorem listIntFastRegimeFinalFullModelCostLeOfFootprintGlobal
+/-- Footprint agreement transfers the canonical transitional U2 cost bound. -/
+theorem listIntCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal
     (xs : List Int) {store : WordRAM.ReadStore}
     (hfoot : storesAgreeOnFootprint xs store (globalReadStore xs))
-    (hsize :
-      SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <=
-        (cartesianShape xs).size)
     (left right : Nat) :
     (queryCostedWithStore xs store left right).cost <=
-      SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost := by
+      canonicalTransitionalQueryCost := by
   simpa [queryCostedWithStore, storesAgreeOnFootprint, globalReadStore] using
-    SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_of_size_ge_readyThreshold
+    SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_canonicalTransitional
       (shape := cartesianShape xs) (store := store)
-      hfoot hsize left right
+      hfoot left right
 
 /-- Valid half-open queries return the exact leftmost-minimum index of `xs`. -/
 theorem queryCosted_exact

@@ -3,6 +3,20 @@ import RMQ.Core.SuccinctSpace.MachineChunkedTable
 namespace RMQ
 namespace SuccinctSpace
 
+/-- Read interface for one flat physical word store. -/
+abbrev FlatWordStore := Nat -> Option (List Bool)
+
+def FlatWordStore.ofArray (store : Array (List Bool)) : FlatWordStore :=
+  fun address => store[address]?
+
+instance : Coe (Array (List Bool)) FlatWordStore where
+  coe := FlatWordStore.ofArray
+
+@[simp] theorem FlatWordStore.ofArray_at_size
+    (store : Array (List Bool)) :
+    FlatWordStore.ofArray store store.size = none := by
+  simp [FlatWordStore.ofArray]
+
 /--
 One evaluation of a flat supplied word store. The read log is operational:
 each entry records the physical address requested and the word returned there.
@@ -45,22 +59,22 @@ def append (first : FlatStoreExecution alpha)
 end FlatStoreExecution
 
 /--
-A computation over one flat array of machine words. Agreement on the addresses
+A computation over one flat word-read interface. Agreement on the addresses
 actually read determines the whole execution, and every recorded read is the
 supplied-store lookup at that address.
 -/
 structure FlatStoreComputation (alpha : Type u) where
-  run : Array (List Bool) -> FlatStoreExecution alpha
+  run : FlatWordStore -> FlatStoreExecution alpha
   footprint_determines :
     forall storeA storeB,
       (forall address,
         List.Mem address (run storeA).footprint ->
-          storeA[address]? = storeB[address]?) ->
+          storeA address = storeB address) ->
         run storeA = run storeB
   reads_match_store :
     forall store address word,
       List.Mem (address, word) (run store).reads ->
-        store[address]? = word
+        store address = word
 
 namespace FlatStoreComputation
 
@@ -76,27 +90,27 @@ def pure (value : alpha) : FlatStoreComputation alpha where
 def read (address : Nat) :
     FlatStoreComputation (Option (List Bool)) where
   run := fun store =>
-    { value := store[address]?
-      reads := [(address, store[address]?)] }
+    { value := store address
+      reads := [(address, store address)] }
   footprint_determines := by
     intro storeA storeB hagree
-    have hread : storeA[address]? = storeB[address]? :=
+    have hread : storeA address = storeB address :=
       hagree address (by
         exact List.Mem.head [])
     simp [hread]
   reads_match_store := by
     intro store readAddress word hmem
     have hpair :
-        (readAddress, word) = (address, store[address]?) := by
+        (readAddress, word) = (address, store address) := by
       change List.Mem (readAddress, word)
-        [(address, store[address]?)] at hmem
+        [(address, store address)] at hmem
       rcases List.mem_cons.mp hmem with hpair | hnil
       case inl => exact hpair
       case inr =>
         cases hnil
     have haddress : readAddress = address :=
       congrArg Prod.fst hpair
-    have hword : word = store[address]? :=
+    have hword : word = store address :=
       congrArg Prod.snd hpair
     subst readAddress
     exact hword.symm
@@ -116,7 +130,7 @@ def bind (computation : FlatStoreComputation alpha)
     have hfirstAgree :
         forall address,
           List.Mem address firstA.footprint ->
-            storeA[address]? = storeB[address]? := by
+            storeA address = storeB address := by
       intro address hmem
       apply hagree address
       simpa only [FlatStoreExecution.append_footprint] using
@@ -126,7 +140,7 @@ def bind (computation : FlatStoreComputation alpha)
     have hsecondAgree :
         forall address,
           List.Mem address secondA.footprint ->
-            storeA[address]? = storeB[address]? := by
+            storeA address = storeB address := by
       intro address hmem
       apply hagree address
       simpa only [FlatStoreExecution.append_footprint] using
@@ -167,16 +181,16 @@ def readMany : List Nat ->
       bind (read address) fun word =>
         map (fun words => word :: words) (readMany rest)
 
-@[simp] theorem pure_run (value : alpha) (store : Array (List Bool)) :
+@[simp] theorem pure_run (value : alpha) (store : FlatWordStore) :
     (pure value).run store = { value := value, reads := [] } := rfl
 
-@[simp] theorem read_run (address : Nat) (store : Array (List Bool)) :
+@[simp] theorem read_run (address : Nat) (store : FlatWordStore) :
     (read address).run store =
-      { value := store[address]?, reads := [(address, store[address]?)] } := rfl
+      { value := store address, reads := [(address, store address)] } := rfl
 
 @[simp] theorem bind_run (computation : FlatStoreComputation alpha)
     (next : alpha -> FlatStoreComputation beta)
-    (store : Array (List Bool)) :
+    (store : FlatWordStore) :
     (bind computation next).run store =
       FlatStoreExecution.append
         (computation.run store)
@@ -184,46 +198,103 @@ def readMany : List Nat ->
 
 @[simp] theorem map_run_value (f : alpha -> beta)
     (computation : FlatStoreComputation alpha)
-    (store : Array (List Bool)) :
+    (store : FlatWordStore) :
     ((map f computation).run store).value =
       f (computation.run store).value := by
   rfl
 
 @[simp] theorem map_run_reads (f : alpha -> beta)
     (computation : FlatStoreComputation alpha)
-    (store : Array (List Bool)) :
+    (store : FlatWordStore) :
     ((map f computation).run store).reads =
       (computation.run store).reads := by
   simp [map, bind, pure, FlatStoreExecution.append]
 
 @[simp] theorem readMany_run_value
-    (addresses : List Nat) (store : Array (List Bool)) :
+    (addresses : List Nat) (store : FlatWordStore) :
     ((readMany addresses).run store).value =
-      addresses.map fun address => store[address]? := by
+      addresses.map fun address => store address := by
   induction addresses with
   | nil => rfl
   | cons address rest ih =>
       simp [readMany, ih, FlatStoreExecution.append]
 
 @[simp] theorem readMany_run_reads
-    (addresses : List Nat) (store : Array (List Bool)) :
+    (addresses : List Nat) (store : FlatWordStore) :
     ((readMany addresses).run store).reads =
-      addresses.map fun address => (address, store[address]?) := by
+      addresses.map fun address => (address, store address) := by
   induction addresses with
   | nil => rfl
   | cons address rest ih =>
       simp [readMany, ih, FlatStoreExecution.append]
 
+@[simp] theorem map_run_footprint (f : alpha -> beta)
+    (computation : FlatStoreComputation alpha)
+    (store : FlatWordStore) :
+    ((map f computation).run store).footprint =
+      (computation.run store).footprint := by
+  simp [FlatStoreExecution.footprint]
+
+@[simp] theorem readMany_run_footprint
+    (addresses : List Nat) (store : FlatWordStore) :
+    ((readMany addresses).run store).footprint = addresses := by
+  unfold FlatStoreExecution.footprint
+  rw [readMany_run_reads]
+  induction addresses with
+  | nil => rfl
+  | cons address rest ih => simp [ih]
+
+/-- A computation issues only addresses satisfying a predicate, independently of store contents. -/
+def FootprintWithin (computation : FlatStoreComputation alpha)
+    (P : Nat -> Prop) : Prop :=
+  forall store address,
+    List.Mem address (computation.run store).footprint -> P address
+
+theorem pure_footprintWithin (value : alpha) (P : Nat -> Prop) :
+    (pure value).FootprintWithin P := by
+  intro store address hmem
+  cases hmem
+
+theorem bind_footprintWithin
+    (computation : FlatStoreComputation alpha)
+    (next : alpha -> FlatStoreComputation beta)
+    (P : Nat -> Prop)
+    (hfirst : computation.FootprintWithin P)
+    (hnext : forall value, (next value).FootprintWithin P) :
+    (bind computation next).FootprintWithin P := by
+  intro store address hmem
+  rw [bind_run, FlatStoreExecution.append_footprint] at hmem
+  rcases List.mem_append.mp hmem with hmem | hmem
+  · exact hfirst store address hmem
+  · exact hnext _ store address hmem
+
+theorem map_footprintWithin
+    (f : alpha -> beta) (computation : FlatStoreComputation alpha)
+    (P : Nat -> Prop)
+    (h : computation.FootprintWithin P) :
+    (map f computation).FootprintWithin P := by
+  intro store address hmem
+  rw [map_run_footprint] at hmem
+  exact h store address hmem
+
+theorem readMany_footprintWithin
+    (addresses : List Nat) (P : Nat -> Prop)
+    (haddresses : forall address, List.Mem address addresses -> P address) :
+    (readMany addresses).FootprintWithin P := by
+  intro store address hmem
+  rw [readMany_run_footprint] at hmem
+  exact haddresses address hmem
+
 
 
 @[simp] theorem pure_run_toCosted
-    (value : alpha) (store : Array (List Bool)) :
+    (value : alpha) (store : FlatWordStore) :
     ((pure value).run store).toCosted = Costed.pure value := rfl
 
 @[simp] theorem bind_run_toCosted
     (computation : FlatStoreComputation alpha)
     (next : alpha -> FlatStoreComputation beta)
-    (store : Array (List Bool)) :
+    (store : FlatWordStore) :
     ((bind computation next).run store).toCosted =
       Costed.bind ((computation.run store).toCosted)
         (fun value => ((next value).run store).toCosted) := by
@@ -235,7 +306,7 @@ def readMany : List Nat ->
 
 @[simp] theorem map_run_toCosted
     (f : alpha -> beta) (computation : FlatStoreComputation alpha)
-    (store : Array (List Bool)) :
+    (store : FlatWordStore) :
     ((map f computation).run store).toCosted =
       Costed.map f ((computation.run store).toCosted) := by
   apply Costed.ext
@@ -286,13 +357,13 @@ theorem machineReadComputationAt_footprint_determines
     {entries : List Nat} {width : Nat}
     (table : FixedWidthNatTable entries width)
     (wordSize base deadAddress i : Nat)
-    (storeA storeB : Array (List Bool))
+    (storeA storeB : FlatWordStore)
     (hagrees :
       forall address,
         List.Mem address
             ((table.machineReadComputationAt
               wordSize base deadAddress i).run storeA).footprint ->
-          storeA[address]? = storeB[address]?) :
+          storeA address = storeB address) :
     (table.machineReadComputationAt
         wordSize base deadAddress i).run storeA =
       (table.machineReadComputationAt
@@ -305,17 +376,51 @@ theorem machineReadComputationAt_reads_match_store
     {entries : List Nat} {width : Nat}
     (table : FixedWidthNatTable entries width)
     (wordSize base deadAddress i : Nat)
-    (store : Array (List Bool))
+    (store : FlatWordStore)
     {address : Nat} {word : Option (List Bool)}
     (hmem :
       List.Mem (address, word)
         ((table.machineReadComputationAt
           wordSize base deadAddress i).run store).reads) :
-    store[address]? = word :=
+    store address = word :=
   (table.machineReadComputationAt
     wordSize base deadAddress i).reads_match_store
       store address word hmem
-
+/--
+Every physical address issued by the flat table adapter is either a live word
+inside its shifted component slice or the explicitly supplied dead address.
+-/
+theorem machineReadComputationAt_footprint_live_or_dead
+    {entries : List Nat} {width : Nat}
+    (table : FixedWidthNatTable entries width)
+    (hwordSize : 0 < wordSize)
+    (store : FlatWordStore) (base deadAddress i address : Nat)
+    (hmem :
+      List.Mem address
+        ((table.machineReadComputationAt
+          wordSize base deadAddress i).run store).footprint) :
+    address < base + (table.machineStore hwordSize).store.words.size \/
+      address = deadAddress := by
+  unfold machineReadComputationAt at hmem
+  by_cases hvalid : i < entries.length
+  · have hmem' :
+        List.Mem address
+          (fixedWidthNatTableMachineFootprintAt base width wordSize i) := by
+      simpa [hvalid] using hmem
+    unfold fixedWidthNatTableMachineFootprintAt at hmem'
+    rcases List.mem_map.mp hmem' with
+      ⟨localAddress, hlocalMem, haddress⟩
+    subst address
+    left
+    have hlocal :=
+      table.machineFootprint_address_lt hwordSize hvalid hlocalMem
+    omega
+  · right
+    have hsingleton : List.Mem address [deadAddress] := by
+      simpa [hvalid] using hmem
+    rcases List.mem_cons.mp hsingleton with hEq | hnil
+    · exact hEq
+    · cases hnil
 
 /--
 The flat offset adapter refines the accepted per-table machine adapter whenever
@@ -325,13 +430,13 @@ theorem machineReadComputationAt_refines_machineReadCosted
     {entries : List Nat} {width wordSize : Nat}
     (table : FixedWidthNatTable entries width)
     (hwordSize : 0 < wordSize)
-    (store : Array (List Bool)) (base deadAddress i : Nat)
+    (store : FlatWordStore) (base deadAddress i : Nat)
     (hsegment :
       forall localAddress,
         localAddress < (table.machineStore hwordSize).store.words.size ->
-        store[base + localAddress]? =
+        store (base + localAddress) =
           (table.machineStore hwordSize).store.words[localAddress]?)
-    (hdead : store[deadAddress]? = none) :
+    (hdead : store deadAddress = none) :
     ((table.machineReadComputationAt
         wordSize base deadAddress i).run store).toCosted =
       table.machineReadCosted hwordSize i := by

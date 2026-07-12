@@ -130,24 +130,18 @@ theorem listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal
   RMQ.SuccinctClassic.listIntFinalFullModelCostLeOfFootprintGlobal
     xs hfoot left right
 
-/--
-List-facing supplied-store fast-regime cost transfer under the final footprint
-agreement and the Ready-threshold condition on the Cartesian shape of `xs`.
--/
-theorem listIntSuccinctRMQFastRegimeFinalFullModelCostLeOfFootprintGlobal
+/-- List-facing supplied-store canonical transitional U2 cost transfer. -/
+theorem listIntSuccinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal
     (xs : List Int) {store : RMQ.WordRAM.ReadStore}
     (hfoot :
       RMQ.SuccinctClassic.storesAgreeOnFootprint xs store
         (RMQ.SuccinctClassic.globalReadStore xs))
-    (hsize :
-      RMQ.SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <=
-        (RMQ.SuccinctClassic.cartesianShape xs).size)
     (left right : Nat) :
     (RMQ.SuccinctClassic.queryCostedWithStore
       xs store left right).cost <=
-        RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost :=
-  RMQ.SuccinctClassic.listIntFastRegimeFinalFullModelCostLeOfFootprintGlobal
-    xs hfoot hsize left right
+        RMQ.SuccinctClassic.canonicalTransitionalQueryCost :=
+  RMQ.SuccinctClassic.listIntCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal
+    xs hfoot left right
 
 /--
 Whole-query-interpreted BP-native succinct RMQ capstone: the same two-sided
@@ -170,9 +164,9 @@ abbrev succinctRMQTwoNPlusOConstantQueryLeafTrace :=
 Unified-`WordRAM.TraceEvent` BP-native succinct RMQ capstone. The final query
 control now emits one `TraceEvent` stream. Select-close, answer-rank, and
 compact-close rank-seed reads are structural payload/register traces; the
-all-size global execution story below additionally replaces the former
-close-navigation fallback leaves with a structural BP-code zero-block
-same-block scan and the all-size structural cross-block interior route.
+all-size global execution story below uses raw positive block size for
+same-block decoding and the canonical component store for every cross-block
+interior query; there is no zero-block dispatch in this path.
 -/
 abbrev succinctRMQTwoNPlusOConstantQueryWordTrace :=
   RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_profile
@@ -180,10 +174,9 @@ abbrev succinctRMQTwoNPlusOConstantQueryWordTrace :=
 /--
 Large-regime unified-`WordRAM.TraceEvent` BP-native succinct RMQ capstone. This
 has the same two-sided `2*n + o(n)`, constant-query theorem shape, but the query
-clauses carry the explicit size hypothesis that lets the compact close/LCA leg
-expand through the Ready local/fringe/interior trace replay. The public
-all-size route is also structural: Ready two-level, active bounded summary
-scan, or inactive pure-none.
+clauses retain an explicit size hypothesis for compatibility. The public
+all-size reviewer route is the same unconditional canonical directory route
+used at every size.
 -/
 abbrev succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime :=
   RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_large_regime_profile
@@ -270,12 +263,8 @@ footprint.
 abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreEqGlobalOfFootprint :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_eq_global_of_footprint
 
-/--
-Under agreement with the concrete global store on the safe final layout
-footprint, every successful read in the supplied-store whole-query replay is
-backed by counted flat payload.
--/
-abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedByCountedFlatPayloadOfFootprintGlobal :=
+/-- Supplied-store successful reads are backed by the canonical reviewer payload. -/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedByCanonicalReviewerPayloadOfFootprintGlobal :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_successful_reads_backed_by_counted_flat_payload_of_footprint_global
 
 /--
@@ -286,14 +275,13 @@ the paper-facing cost alias.
 abbrev succinctRMQLegacy196727WholeQueryGlobalWordTraceCostedCostLe :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le
 
-/--
-The canonical final global trace has modeled cost bounded by the route selected
-by the all-size structural close/LCA replay: zero-block BP-code scan, Ready
-two-level replay, active non-Ready bounded summary scan, or inactive pure
-route.
--/
-abbrev succinctRMQWholeQueryGlobalWordTraceRouteSplitCostedCostLe :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_routeSplit
+/-- The uniform canonical reviewer trace has the checked transitional U2 bound. -/
+abbrev succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional
+
+/-- The checked canonical transitional U2 bound computes to `328`. -/
+abbrev succinctRMQCanonicalTransitionalQueryCostEq :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq
 
 /--
 The canonical final global trace has modeled cost bounded by the clean fixed
@@ -322,10 +310,6 @@ abbrev succinctRMQLegacy196727QueryCost :=
 abbrev succinctRMQLegacy196727QueryCostEq :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQQueryCost_eq
 
-/-- Shape-sensitive route-split all-size modeled query-cost expression. -/
-abbrev succinctRMQRouteSplitQueryCost :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQRouteSplitQueryCost
-
 /--
 Clean fixed all-size modeled query-cost constant for the final BP-native
 succinct RMQ query.
@@ -336,49 +320,6 @@ abbrev succinctRMQQueryCost :=
 /-- The clean fixed all-size final-query cost constant computes to `4144`. -/
 abbrev succinctRMQQueryCostEq :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCleanAllSizeQueryCost_eq
-
-/-- Active non-Ready route constant for the all-size route split. -/
-abbrev succinctRMQActiveNotReadyQueryCost :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQActiveNotReadyQueryCost
-
-/-- The active non-Ready route constant computes to `568`. -/
-abbrev succinctRMQActiveNotReadyQueryCostEq :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQActiveNotReadyQueryCost_eq
-
-/-- Inactive non-Ready route constant for the all-size route split. -/
-abbrev succinctRMQInactiveNotReadyQueryCost :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQInactiveNotReadyQueryCost
-
-/-- The inactive non-Ready route constant computes to `88`. -/
-abbrev succinctRMQInactiveNotReadyQueryCostEq :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQInactiveNotReadyQueryCost_eq
-
-/--
-Fast-regime modeled query-cost constant for the final BP-native succinct RMQ
-query. This excludes the zero-block same-block scan and the active non-Ready
-bounded interior scan; the close/LCA interior leg uses the Ready two-level
-cost `SuccinctClose.concreteBPRelativeRmmInteriorReadyQueryCost = 30`.
--/
-abbrev succinctRMQFastRegimeQueryCost :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost
-
-/-- The named fast-regime final-query cost constant computes to `118`. -/
-abbrev succinctRMQFastRegimeQueryCostEq :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost_eq
-
-/--
-Under the explicit Ready-threshold size premise, the final globally segmented
-BP-native RMQ trace has the fast-regime modeled cost bound.
--/
-abbrev succinctRMQFastRegimeGlobalPayloadStoreCostLeOfReadyThreshold :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_of_size_ge_readyThreshold
-
-/--
-The fast-regime cost bound transfers to a supplied-store replay when the store
-agrees with the concrete global store on the safe final layout footprint.
--/
-abbrev succinctRMQFastRegimeSuppliedStoreCostLeOfFootprintGlobal :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_of_size_ge_readyThreshold
 
 theorem succinctRMQWholeQueryGlobalWordTraceCostedWithStoreExactOfFootprintGlobal
     {n : Nat} {shape : RMQ.Cartesian.CartesianShape}
@@ -457,8 +398,8 @@ theorem succinctRMQFinalFullModelSoundnessExactOfFootprintGlobal
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness_exact_of_footprint_global
     hshape hfoot hlen hbound
 
-/-- Full-model-facing fast-regime cost theorem under footprint agreement. -/
-theorem succinctRMQFastRegimeFinalFullModelCostLeOfFootprintGlobal
+/-- Full-model canonical transitional U2 cost theorem under footprint agreement. -/
+theorem succinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal
     {shape : RMQ.Cartesian.CartesianShape}
     {store : RMQ.WordRAM.ReadStore}
     (hfoot :
@@ -466,50 +407,28 @@ theorem succinctRMQFastRegimeFinalFullModelCostLeOfFootprintGlobal
         shape store
           (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQGlobalReadStore
             shape))
-    (hsize :
-      RMQ.SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <=
-        shape.size)
     (left right : Nat) :
     (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
       shape store left right).cost <=
-        RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_of_size_ge_readyThreshold
-    hfoot hsize left right
-
-/--
-Zero-block same-block close evaluator with a supplied `WordRAM.ReadStore`.
-If the supplied store agrees with the concrete BP-code chunk store on segment 0,
-the produced value and trace equal the canonical zero-block structural trace.
-This is a zero-block leaf theorem; the whole-query supplied-store replay is
-exposed by `succinctRMQWholeQueryGlobalWordTraceResultWithStoreEval`.
--/
-abbrev succinctRMQZeroBlockSameBlockEvalWithStore :=
-  RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_evalWithStore
-
-/--
-Zero-block same-block close store-parametric theorem. Two supplied read stores
-that agree on the BP-code segment reads produce the same zero-block value and
-trace. This is the leaf-level counterpart of the whole-query supplied-store
-store-parametric theorems above.
--/
-abbrev succinctRMQZeroBlockSameBlockStoreParametric :=
-  RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.zeroBlockSameBlockCloseStructuralTraceResult_store_parametric
+        3 * RMQ.SuccinctSelect.sparseDenseFalseSelectQueryCost +
+          RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
+            RMQ.SuccinctSelect.sparseDenseFalseSelectQueryCost :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_canonicalTransitional
+    hfoot left right
 
 /--
 Bounded execution-story theorem for the final all-size succinct RMQ query. This
 extends `succinctRMQGlobalPayloadStoreExecutionStory` with a concrete finite
-trace-local bit width bounding every payload-read address and every natural
-operand/result exposed by word-local primitive events.
+trace-local compatibility width. The reviewer-native pre-execution word model
+is exposed by the canonical reviewer aliases below.
 -/
 abbrev succinctRMQGlobalPayloadStoreBoundedExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_bounded_execution_story
 
 /--
 All-size structural execution-story theorem for the final all-size succinct
-RMQ query. This is the citation anchor for the globally segmented trace after
-the zero-block same-block and cross-block interior close-navigation leaves have
-been replaced by structural BP-code, bounded-summary, and two-level payload
-traces.
+RMQ query. Same-block decoding and canonical cross-block component replay are
+the only close/LCA branches consumed by this reviewer path.
 -/
 abbrev succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_allSizeStructural_execution_story
@@ -525,16 +444,29 @@ abbrev succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory :=
 /--
 Flat-payload no-synthetic execution story for the final succinct RMQ query.
 This is the strongest current execution-model citation: the final query reads
-from one query-independent counted flat payload layout, every actual successful
-payload read has a source/component/offset backing witness, all events are
-reads or bounded word-local primitives, and no event is the synthetic cost-only
-marker. The flat payload is exactly the advertised BP-native build payload.
-Cross-block interior replay is all-size structural: Ready shapes use the
-compact two-level directory, active non-Ready shapes use a bounded summary scan,
-and inactive shapes have no interior read obligation.
+from one query-independent canonical reviewer payload/store, every successful
+read is counted, the canonical component flattens exactly to its appended
+directory payload, and no event is synthetic. Cross-block replay is uniformly
+the canonical directory execution for all sizes.
 -/
 abbrev succinctRMQFlatPayloadStoreNoSyntheticExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execution_story
+
+/-- Exact canonical-component slice in the physical reviewer machine words. -/
+abbrev succinctRMQCanonicalReviewerMachineWordsComponentSlice :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerMachineWords_component_slice
+
+/-- Every consumed canonical interior physical address fits the total word width. -/
+abbrev succinctRMQCanonicalInteriorPhysicalFootprintFits :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalInteriorPhysicalFootprint_fits
+
+/-- Valid final-query operands fit the same pre-execution reviewer word width. -/
+abbrev succinctRMQCanonicalReviewerValidQueryOperandsFit :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerValidQueryOperands_fit
+
+/-- All-size canonical interior profile, including store and footprint guarantees. -/
+abbrev succinctRMQCanonicalInteriorDirectoryProfileAllSize :=
+  RMQ.SuccinctClose.canonicalRelativeRmmInteriorDirectory_profile_allSize
 
 /--
 Large-regime companion to `succinctRMQGlobalPayloadStoreExecutionStory`; this

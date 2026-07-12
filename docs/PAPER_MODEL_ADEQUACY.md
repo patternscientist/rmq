@@ -1,4 +1,25 @@
 # Final RMQ Model Adequacy
+## Canonical U2 Machine Adequacy
+
+The reviewer path uses
+`concreteBPNativeSuccinctRMQCanonicalReviewerWordBits`, not the former
+trace-local post-hoc width. Its capacity includes query operands, all
+addressable counted machine words, the segment-20 canonical interior offset,
+and live/dead component addresses. The key checks are
+`concreteBPNativeSuccinctRMQCanonicalInteriorPhysicalFootprint_fits` and
+`concreteBPNativeSuccinctRMQCanonicalReviewerValidQueryOperands_fit`.
+
+The interior result is constructed only from indexed supplied-store reads.
+`canonicalRelativeRmmInteriorRangeFootprint_recorded` identifies the recorded
+footprint with the execution log;
+`canonicalRelativeRmmInteriorRangeMinCostedWithStore_eq_of_agree` proves
+dynamic-footprint determinacy; successful-read backing and returned-word bounds
+are lifted to the canonical reviewer payload and global read store. Empty,
+singleton, size-two, and symbolic threshold-boundary cases are kernel checked.
+
+This remains a mathematical Word-RAM/cost model. It is not a compiled Lean
+runtime or hardware timing claim.
+
 
 This note is the reviewer-facing map for the final BP-native succinct RMQ query
 model. The Lean anchor is:
@@ -117,24 +138,19 @@ footprint.
 
 ## The Constant
 
-The current fixed modeled query-cost bound is `4144`. This is a checked model
-constant, not execution-performance evidence. It is the fixed corollary of the
-route-split all-size theorem: Ready costs `118`, active non-Ready costs `568`,
-inactive non-Ready costs `88`, and the zero-block BP-code chunk scan costs
-`4096` before the final query's fixed close-select overhead.
-The old `196727` aggregate remains checked as a legacy compatibility theorem,
-but it is no longer the paper-facing all-size cost alias. There is still a
-separate fast-regime cost theorem for the same final global trace:
-`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_of_size_ge_readyThreshold`.
-Under `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= shape.size`,
-it uses Ready interior cost `30` and proves
-`SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118`, excluding
-the zero-block same-block scan and active non-Ready bounded interior scan. The
-supplied-store/full-model companions transfer this fast bound under the same
-final-layout footprint agreement. The older `2^128` premise is only a
-compatibility/large-regime strengthening, not the current explanation for
-readiness.
+The current reviewer-route modeled bound is the checked transitional sum
+`328`. It is proved by
+`concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional`
+and evaluated by
+`concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq`. The sum is
+three close-select/final-rank costs plus
+`canonicalCompactBPCloseQueryCostWithRankSeed`, whose interior contribution
+is the physical 240-read canonical directory cap.
 
+The supplied-store and full-model companions transfer the same `328` bound
+under final footprint agreement. The older `118` Ready theorem, route-split
+`4144`, and aggregate `196727` survive only as compatibility facts for
+pre-canonical execution stories. They are not current reviewer-route claims.
 The paper-level claim is that the query is constant in the stated model and
 that the model's counted reads are payload-backed. It is not a claim that this
 Lean code is production serialization, optimized machine code, or a verified

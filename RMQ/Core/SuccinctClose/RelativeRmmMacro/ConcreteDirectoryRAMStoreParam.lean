@@ -3621,7 +3621,7 @@ theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsOfReadyWithSto
 All-size structural interior replay whose table reads come from a supplied
 global read store.
 -/
-def concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+def concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStoreLegacy
     (shape : Cartesian.CartesianShape)
     (segments : BPRelativeRmmInteriorTraceSegments)
     (store : WordRAM.ReadStore)
@@ -3635,6 +3635,117 @@ def concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralW
       segments.summary store startBlock count
   else
     WordRAM.TraceResult.pure none
+/-- Canonical supplied-store execution on the one component segment. -/
+def concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+    (shape : Cartesian.CartesianShape)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (store : WordRAM.ReadStore)
+    (startBlock count : Nat) : WordRAM.TraceResult (Option (Prod Nat Nat)) :=
+  flatStoreExecutionTraceResultAtSegment segments.canonicalComponent
+    ((canonicalRelativeRmmInteriorRangeMinComputation shape startBlock count).run
+      (flatWordStoreOfReadStore store segments.canonicalComponent))
+
+theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore_eq_of_agree
+    (shape : Cartesian.CartesianShape)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    {store : WordRAM.ReadStore}
+    (hcomponent :
+      forall address,
+        store.readWord? segments.canonicalComponent address =
+          (canonicalRelativeRmmInteriorComponentStore shape).store.words[address]?)
+    (startBlock count : Nat) :
+    concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+        shape segments store startBlock count =
+      concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+        shape segments startBlock count := by
+  have hstore :
+      flatWordStoreOfReadStore store segments.canonicalComponent =
+        SuccinctSpace.FlatWordStore.ofArray
+          (canonicalRelativeRmmInteriorComponentStore shape).store.words := by
+    funext address
+    exact hcomponent address
+  simp [concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore,
+    concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural,
+    canonicalRelativeRmmInteriorRangeMinTraceResultAtSegment,
+    canonicalRelativeRmmInteriorRangeMinExecutionWithStore,
+    canonicalRelativeRmmInteriorRangeMinExecutionWithRead, hstore]
+
+theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore_refines_of_agree
+    (shape : Cartesian.CartesianShape)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    {store : WordRAM.ReadStore}
+    (hcomponent :
+      forall address,
+        store.readWord? segments.canonicalComponent address =
+          (canonicalRelativeRmmInteriorComponentStore shape).store.words[address]?)
+    (startBlock count : Nat) :
+    (concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+      shape segments store startBlock count).toCosted =
+      (canonicalRelativeRmmInteriorDirectory shape).rangeMinCosted
+        startBlock count := by
+  rw [concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore_eq_of_agree
+    shape segments hcomponent startBlock count]
+  exact
+    concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural_refines
+      shape segments startBlock count
+
+theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore_store_parametric
+    (shape : Cartesian.CartesianShape)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    {storeA storeB : WordRAM.ReadStore}
+    (hcomponent :
+      forall address,
+        storeA.readWord? segments.canonicalComponent address =
+          storeB.readWord? segments.canonicalComponent address)
+    (startBlock count : Nat) :
+    concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+        shape segments storeA startBlock count =
+      concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+        shape segments storeB startBlock count := by
+  have hstore :
+      flatWordStoreOfReadStore storeA segments.canonicalComponent =
+        flatWordStoreOfReadStore storeB segments.canonicalComponent := by
+    funext address
+    exact hcomponent address
+  simp [concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore,
+    hstore]
+
+theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore_matchesReadStore
+    (shape : Cartesian.CartesianShape)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (store : WordRAM.ReadStore)
+    (startBlock count : Nat) :
+    forall event,
+      List.Mem event
+          (concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+            shape segments store startBlock count).trace ->
+        event.matchesReadStore store := by
+  exact
+    flatStoreComputationTraceResultAtSegment_matchesReadStore
+      (canonicalRelativeRmmInteriorRangeMinComputation shape startBlock count)
+      store segments.canonicalComponent
+
+theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore_no_syntheticCostOnlyPrimitive
+    (shape : Cartesian.CartesianShape)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (store : WordRAM.ReadStore)
+    (startBlock count : Nat) :
+    forall event,
+      List.Mem event
+          (concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+            shape segments store startBlock count).trace ->
+        Not event.isSyntheticCostOnlyPrimitive := by
+  exact
+    flatStoreExecutionTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+      segments.canonicalComponent
+      ((canonicalRelativeRmmInteriorRangeMinComputation
+        shape startBlock count).run
+          (flatWordStoreOfReadStore store segments.canonicalComponent))
+
+/-
+Legacy Ready/Active/inactive proof archive. The executable legacy definition
+above remains only for compatibility and is not used by the canonical route.
+
 
 theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore_eq_of_agree
     (shape : Cartesian.CartesianShape)
@@ -3897,6 +4008,7 @@ theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructu
           (concreteBPRelativeMinMaxArgSummaryTable_canonical shape)
           segments.summary store
     · simp [hready, hactive]
+-/
 
 /-- Store-parameterized BP-code payload word read at global segment `0`. -/
 def bpCodeWordReadTraceResultWithStore
@@ -4463,7 +4575,7 @@ theorem localBPRightFringeCandidateSeededTraceResultWithStore_no_syntheticCostOn
         shape store blockSize rightClose)
 
 /-- Store-parameterized all-size structural cross-block close decoder. -/
-def crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+def crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStoreLegacy
     (shape : Cartesian.CartesianShape)
     (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
     (segments : BPRelativeRmmInteriorTraceSegments)
@@ -4486,6 +4598,274 @@ def crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
                 shape segments store (leftBlock + 1)
                 (rightBlock - leftBlock - 1)
             else
+              WordRAM.TraceResult.pure none)
+            fun middle? =>
+              WordRAM.TraceResult.bind
+                (localBPSeedFromRankCloseTraceResult
+                  shape rankCloseTrace blockSize rightClose)
+                fun rightSeed =>
+                  WordRAM.TraceResult.map
+                    (fun right? =>
+                      bpCandidateClose?
+                        (bpCandidateMerge3? left? middle? right?))
+                    (localBPRightFringeCandidateSeededTraceResultWithStore
+                      shape store blockSize rightClose rightSeed)
+/-- Canonical cross-block supplied-store consumer. -/
+def crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (store : WordRAM.ReadStore)
+    (leftClose rightClose : Nat) : WordRAM.TraceResult (Option Nat) :=
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
+  let leftBlock := blockOfClose blockSize leftClose
+  let rightBlock := blockOfClose blockSize rightClose
+  WordRAM.TraceResult.bind
+    (localBPSeedFromRankCloseTraceResult
+      shape rankCloseTrace blockSize leftClose)
+    fun leftSeed =>
+      WordRAM.TraceResult.bind
+        (localBPLeftFringeCandidateSeededTraceResultWithStore
+          shape store blockSize leftClose leftSeed)
+        fun left? =>
+          WordRAM.TraceResult.bind
+            (if leftBlock + 1 < rightBlock then
+              concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+                shape segments store (leftBlock + 1)
+                (rightBlock - leftBlock - 1)
+            else
+              WordRAM.TraceResult.pure none)
+            fun middle? =>
+              WordRAM.TraceResult.bind
+                (localBPSeedFromRankCloseTraceResult
+                  shape rankCloseTrace blockSize rightClose)
+                fun rightSeed =>
+                  WordRAM.TraceResult.map
+                    (fun right? =>
+                      bpCandidateClose?
+                        (bpCandidateMerge3? left? middle? right?))
+                    (localBPRightFringeCandidateSeededTraceResultWithStore
+                      shape store blockSize rightClose rightSeed)
+
+theorem crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_eq_of_agree
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    {store : WordRAM.ReadStore}
+    (hbpCode :
+      forall index,
+        store.readWord? 0 index =
+          (SuccinctSpace.chunkPayloadWords
+            (SuccinctRank.machineWordBits shape.bpCode.length)
+            shape.bpCode).toArray[index]?)
+    (hcomponent :
+      forall address,
+        store.readWord? segments.canonicalComponent address =
+          (canonicalRelativeRmmInteriorComponentStore shape).store.words[address]?)
+    (leftClose rightClose : Nat) :
+    crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+        shape rankCloseTrace segments store leftClose rightClose =
+      crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments
+        shape rankCloseTrace segments leftClose rightClose := by
+  unfold crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+  unfold crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
+  by_cases hmiddle :
+      blockOfClose blockSize leftClose + 1 <
+        blockOfClose blockSize rightClose
+  case pos =>
+    simp [blockSize, hmiddle,
+      localBPLeftFringeCandidateSeededTraceResultWithStore_eq_of_agree
+        hbpCode,
+      localBPRightFringeCandidateSeededTraceResultWithStore_eq_of_agree
+        hbpCode,
+      concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore_eq_of_agree
+        shape segments hcomponent]
+  case neg =>
+    simp [blockSize, hmiddle,
+      localBPLeftFringeCandidateSeededTraceResultWithStore_eq_of_agree
+        hbpCode,
+      localBPRightFringeCandidateSeededTraceResultWithStore_eq_of_agree
+        hbpCode]
+
+theorem crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_refines_of_agree
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (rankCloseCosted : Nat -> Costed Nat)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    {store : WordRAM.ReadStore}
+    (hbpCode :
+      forall index,
+        store.readWord? 0 index =
+          (SuccinctSpace.chunkPayloadWords
+            (SuccinctRank.machineWordBits shape.bpCode.length)
+            shape.bpCode).toArray[index]?)
+    (hcomponent :
+      forall address,
+        store.readWord? segments.canonicalComponent address =
+          (canonicalRelativeRmmInteriorComponentStore shape).store.words[address]?)
+    (leftClose rightClose : Nat)
+    (hrank :
+      forall pos, (rankCloseTrace pos).toCosted = rankCloseCosted pos) :
+    (crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+      shape rankCloseTrace segments store leftClose rightClose).toCosted =
+      canonicalCrossBlockCloseCostedWithRankSeed
+        shape rankCloseCosted leftClose rightClose := by
+  rw [crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_eq_of_agree
+    shape rankCloseTrace segments hbpCode hcomponent leftClose rightClose]
+  exact
+    crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments_refines
+      shape rankCloseTrace rankCloseCosted segments leftClose rightClose hrank
+
+theorem crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_store_parametric
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    {storeA storeB : WordRAM.ReadStore}
+    (hbpCode :
+      forall index, storeA.readWord? 0 index = storeB.readWord? 0 index)
+    (hcomponent :
+      forall address,
+        storeA.readWord? segments.canonicalComponent address =
+          storeB.readWord? segments.canonicalComponent address)
+    (leftClose rightClose : Nat) :
+    crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+        shape rankCloseTrace segments storeA leftClose rightClose =
+      crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+        shape rankCloseTrace segments storeB leftClose rightClose := by
+  unfold crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
+  by_cases hmiddle :
+      blockOfClose blockSize leftClose + 1 <
+        blockOfClose blockSize rightClose
+  case pos =>
+    simp [blockSize, hmiddle,
+      localBPLeftFringeCandidateSeededTraceResultWithStore_store_parametric
+        shape hbpCode,
+      localBPRightFringeCandidateSeededTraceResultWithStore_store_parametric
+        shape hbpCode,
+      concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore_store_parametric
+        shape segments hcomponent]
+  case neg =>
+    simp [blockSize, hmiddle,
+      localBPLeftFringeCandidateSeededTraceResultWithStore_store_parametric
+        shape hbpCode,
+      localBPRightFringeCandidateSeededTraceResultWithStore_store_parametric
+        shape hbpCode]
+
+theorem crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_trace_forall
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (store : WordRAM.ReadStore)
+    (leftClose rightClose : Nat)
+    (P : WordRAM.TraceEvent -> Prop)
+    (hrank :
+      forall pos event, List.Mem event (rankCloseTrace pos).trace -> P event)
+    (hbp :
+      forall blockSize close event,
+        List.Mem event
+          (localBPWindowBitsTraceResultWithStore
+            shape store blockSize close).trace -> P event)
+    (hinterior :
+      forall startBlock count event,
+        List.Mem event
+          (concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+            shape segments store startBlock count).trace -> P event) :
+    forall event,
+      List.Mem event
+          (crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+            shape rankCloseTrace segments store leftClose rightClose).trace ->
+        P event := by
+  unfold crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
+  apply WordRAM.TraceResult.bind_trace_forall
+  case hresult =>
+    exact localBPSeedFromRankCloseTraceResult_trace_forall
+      shape rankCloseTrace blockSize leftClose P hrank
+  case hnext =>
+    apply WordRAM.TraceResult.bind_trace_forall
+    case hresult =>
+      exact localBPLeftFringeCandidateSeededTraceResultWithStore_trace_forall
+        shape store blockSize leftClose _ P (hbp blockSize leftClose)
+    case hnext =>
+      apply WordRAM.TraceResult.bind_trace_forall
+      case hresult =>
+        by_cases hmiddle :
+            blockOfClose blockSize leftClose + 1 <
+              blockOfClose blockSize rightClose
+        case pos =>
+          simpa [blockSize, hmiddle] using
+            hinterior (blockOfClose blockSize leftClose + 1)
+              (blockOfClose blockSize rightClose -
+                blockOfClose blockSize leftClose - 1)
+        case neg =>
+          simp [blockSize, hmiddle]
+      case hnext =>
+        apply WordRAM.TraceResult.bind_trace_forall
+        case hresult =>
+          exact localBPSeedFromRankCloseTraceResult_trace_forall
+            shape rankCloseTrace blockSize rightClose P hrank
+        case hnext =>
+          exact WordRAM.TraceResult.map_trace_forall P _ _
+            (localBPRightFringeCandidateSeededTraceResultWithStore_trace_forall
+              shape store blockSize rightClose _ P (hbp blockSize rightClose))
+
+theorem crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_matchesReadStore
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (store : WordRAM.ReadStore)
+    (leftClose rightClose : Nat)
+    (hrank :
+      forall pos event,
+        List.Mem event (rankCloseTrace pos).trace ->
+          event.matchesReadStore store) :
+    forall event,
+      List.Mem event
+          (crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+            shape rankCloseTrace segments store leftClose rightClose).trace ->
+        event.matchesReadStore store := by
+  exact
+    crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_trace_forall
+      shape rankCloseTrace segments store leftClose rightClose
+      (fun event => event.matchesReadStore store) hrank
+      (fun blockSize close =>
+        localBPWindowBitsTraceResultWithStore_matchesReadStore
+          shape store blockSize close)
+      (fun startBlock count =>
+        concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore_matchesReadStore
+          shape segments store startBlock count)
+
+theorem crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_no_syntheticCostOnlyPrimitive
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (store : WordRAM.ReadStore)
+    (leftClose rightClose : Nat)
+    (hrank :
+      forall pos event,
+        List.Mem event (rankCloseTrace pos).trace ->
+          Not event.isSyntheticCostOnlyPrimitive) :
+    forall event,
+      List.Mem event
+          (crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+            shape rankCloseTrace segments store leftClose rightClose).trace ->
+        Not event.isSyntheticCostOnlyPrimitive := by
+  exact
+    crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_trace_forall
+      shape rankCloseTrace segments store leftClose rightClose
+      (fun event => Not event.isSyntheticCostOnlyPrimitive) hrank
+      (fun blockSize close =>
+        localBPWindowBitsTraceResultWithStore_no_syntheticCostOnlyPrimitive
+          shape store blockSize close)
+      (fun startBlock count =>
+        concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore_no_syntheticCostOnlyPrimitive
+          shape segments store startBlock count)
+
+/-
+Legacy segmented-table cross-block proof archive.
+
               WordRAM.TraceResult.pure none)
             fun middle? =>
               WordRAM.TraceResult.bind
@@ -4873,6 +5253,7 @@ theorem crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithSto
       (fun startBlock count =>
         concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore_no_syntheticCostOnlyPrimitive
           shape segments store startBlock count)
+-/
 
 theorem zeroBlockSameBlockCloseStructuralTraceResultWithStore_eq_of_agree
     (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
@@ -4923,7 +5304,7 @@ theorem zeroBlockSameBlockCloseStructuralTraceResultWithStore_store_parametric_e
   exact h
 
 /-- Store-parameterized all-size structural compact close/LCA query trace. -/
-def lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
+def lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStoreLegacy
     (shape : Cartesian.CartesianShape)
     (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
     (segments : BPRelativeRmmInteriorTraceSegments)
@@ -4941,6 +5322,187 @@ def lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
   else
     crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
       shape rankCloseTrace segments store leftClose rightClose
+/-- Canonical supplied-store LCA-close route with no zero-block branch. -/
+def lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (store : WordRAM.ReadStore)
+    (_sameBlockSegment : Nat)
+    (leftClose rightClose : Nat) : WordRAM.TraceResult (Option Nat) :=
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
+  if blockOfClose blockSize leftClose =
+      blockOfClose blockSize rightClose then
+    localBPSameBlockCloseDecodedTraceResultWithRankSeedWithStore
+      shape rankCloseTrace store blockSize leftClose rightClose
+  else
+    crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+      shape rankCloseTrace segments store leftClose rightClose
+
+theorem lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore_eq_of_agree
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    {store : WordRAM.ReadStore}
+    (sameBlockSegment leftClose rightClose : Nat)
+    (hbpCode :
+      forall index,
+        store.readWord? 0 index =
+          (SuccinctSpace.chunkPayloadWords
+            (SuccinctRank.machineWordBits shape.bpCode.length)
+            shape.bpCode).toArray[index]?)
+    (hcomponent :
+      forall address,
+        store.readWord? segments.canonicalComponent address =
+          (canonicalRelativeRmmInteriorComponentStore shape).store.words[address]?) :
+    lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
+        shape rankCloseTrace segments store sameBlockSegment leftClose
+        rightClose =
+      lcaCloseTraceResultWithRankSeedAllSizeStructural
+        shape rankCloseTrace segments sameBlockSegment leftClose
+        rightClose := by
+  unfold lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
+  unfold lcaCloseTraceResultWithRankSeedAllSizeStructural
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
+  by_cases hsame :
+      blockOfClose blockSize leftClose =
+        blockOfClose blockSize rightClose
+  case pos =>
+    simp [blockSize, hsame,
+      localBPSameBlockCloseDecodedTraceResultWithRankSeedWithStore_eq_of_agree
+        rankCloseTrace hbpCode]
+  case neg =>
+    simp [blockSize, hsame,
+      crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_eq_of_agree
+        shape rankCloseTrace segments hbpCode hcomponent]
+
+theorem lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore_refines_of_agree
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (rankCloseCosted : Nat -> Costed Nat)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    {store : WordRAM.ReadStore}
+    (sameBlockSegment leftClose rightClose : Nat)
+    (hbpCode :
+      forall index,
+        store.readWord? 0 index =
+          (SuccinctSpace.chunkPayloadWords
+            (SuccinctRank.machineWordBits shape.bpCode.length)
+            shape.bpCode).toArray[index]?)
+    (hcomponent :
+      forall address,
+        store.readWord? segments.canonicalComponent address =
+          (canonicalRelativeRmmInteriorComponentStore shape).store.words[address]?)
+    (hrank :
+      forall pos, (rankCloseTrace pos).toCosted = rankCloseCosted pos) :
+    (lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
+      shape rankCloseTrace segments store sameBlockSegment leftClose
+      rightClose).toCosted =
+      canonicalLcaCloseCostedWithRankSeed
+        shape rankCloseCosted leftClose rightClose := by
+  rw [lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore_eq_of_agree
+    shape rankCloseTrace segments sameBlockSegment leftClose rightClose
+    hbpCode hcomponent]
+  exact
+    lcaCloseTraceResultWithRankSeedAllSizeStructural_refines
+      shape rankCloseTrace rankCloseCosted segments sameBlockSegment
+      leftClose rightClose hrank
+
+theorem lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore_store_parametric
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    {storeA storeB : WordRAM.ReadStore}
+    (sameBlockSegment leftClose rightClose : Nat)
+    (hbpCode :
+      forall index, storeA.readWord? 0 index = storeB.readWord? 0 index)
+    (hcomponent :
+      forall address,
+        storeA.readWord? segments.canonicalComponent address =
+          storeB.readWord? segments.canonicalComponent address) :
+    lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
+        shape rankCloseTrace segments storeA sameBlockSegment leftClose
+        rightClose =
+      lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
+        shape rankCloseTrace segments storeB sameBlockSegment leftClose
+        rightClose := by
+  unfold lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
+  by_cases hsame :
+      blockOfClose blockSize leftClose =
+        blockOfClose blockSize rightClose
+  case pos =>
+    simp [blockSize, hsame,
+      localBPSameBlockCloseDecodedTraceResultWithRankSeedWithStore_store_parametric
+        shape rankCloseTrace hbpCode]
+  case neg =>
+    simp [blockSize, hsame,
+      crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_store_parametric
+        shape rankCloseTrace segments hbpCode hcomponent]
+
+theorem lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore_matchesReadStore
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (store : WordRAM.ReadStore)
+    (sameBlockSegment leftClose rightClose : Nat)
+    (hrank :
+      forall pos event,
+        List.Mem event (rankCloseTrace pos).trace ->
+          event.matchesReadStore store) :
+    forall event,
+      List.Mem event
+          (lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
+            shape rankCloseTrace segments store sameBlockSegment leftClose
+            rightClose).trace ->
+        event.matchesReadStore store := by
+  unfold lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
+  by_cases hsame :
+      blockOfClose blockSize leftClose =
+        blockOfClose blockSize rightClose
+  case pos =>
+    simpa [blockSize, hsame] using
+      localBPSameBlockCloseDecodedTraceResultWithRankSeedWithStore_matchesReadStore
+        shape rankCloseTrace store blockSize leftClose rightClose hrank
+  case neg =>
+    simpa [blockSize, hsame] using
+      crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_matchesReadStore
+        shape rankCloseTrace segments store leftClose rightClose hrank
+
+theorem lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore_no_syntheticCostOnlyPrimitive
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (store : WordRAM.ReadStore)
+    (sameBlockSegment leftClose rightClose : Nat)
+    (hrank :
+      forall pos event,
+        List.Mem event (rankCloseTrace pos).trace ->
+          Not event.isSyntheticCostOnlyPrimitive) :
+    forall event,
+      List.Mem event
+          (lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
+            shape rankCloseTrace segments store sameBlockSegment leftClose
+            rightClose).trace ->
+        Not event.isSyntheticCostOnlyPrimitive := by
+  unfold lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
+  by_cases hsame :
+      blockOfClose blockSize leftClose =
+        blockOfClose blockSize rightClose
+  case pos =>
+    simpa [blockSize, hsame] using
+      localBPSameBlockCloseDecodedTraceResultWithRankSeedWithStore_no_syntheticCostOnlyPrimitive
+        shape rankCloseTrace store blockSize leftClose rightClose hrank
+  case neg =>
+    simpa [blockSize, hsame] using
+      crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_no_syntheticCostOnlyPrimitive
+        shape rankCloseTrace segments store leftClose rightClose hrank
+
+/-
+Legacy zero-block and segmented-table LCA proof archive.
+
 
 theorem lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore_eq_of_agree
     (shape : Cartesian.CartesianShape)
@@ -5257,6 +5819,7 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore_no_syntheticCo
       exact
         crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_no_syntheticCostOnlyPrimitive
           shape rankCloseTrace segments store leftClose rightClose hrank
+-/
 
 end ConcreteCompactBPCloseLCADirectory
 

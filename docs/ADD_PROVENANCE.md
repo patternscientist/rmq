@@ -1,4 +1,24 @@
 # Audit-Driven Development Provenance
+## Case Study E: Closing The U2 Consumer, Not Just Its Adapter
+
+The uniform-directory campaign first landed a total hierarchy, then a composed
+machine store and dynamic footprint. Those were real proof rungs, but audit
+correctly rejected them as U2 completion while the public close/LCA consumer
+still dispatched through Ready/Active/zero-block compatibility routes.
+
+The closing repair embedded the concatenated component at global segment
+`20`, made the all-size close/LCA and supplied-store executions consume it,
+proved physical-address and operand bounds using a reviewer-native capacity,
+and moved the final trace to the canonical interpreted query. Kernel-checked
+empty, singleton, size-two, and symbolic threshold-boundary facts guard the
+small-input failure mode. The cost was rederived honestly as the transitional
+sum `328`; the implementation did not pad reads to preserve `118` or a
+route-split constant.
+
+This is the ADD lesson: a locally correct adapter is a checkpoint. Completion
+requires its named downstream consumer, provenance, machine bounds, edge cases,
+and public theorem map to agree.
+
 
 This note explains how the RMQ/VerifiedDS repository used AI-assisted,
 audit-driven development (ADD). It is public provenance, not a proof object.

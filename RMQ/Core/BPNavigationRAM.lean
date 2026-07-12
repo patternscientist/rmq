@@ -867,7 +867,8 @@ def concreteBPCloseNavigationGlobalReadStore
     else if segment = 19 then
       rankStore.readWord? 2 index
     else if segment = 20 then
-      summary.baselineTable.wordRAMStore.readWord? 0 index
+      (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+        shape).store.words[index]?
     else if segment = 21 then
       summary.minRelTable.wordRAMStore.readWord? 0 index
     else if segment = 22 then
@@ -1098,6 +1099,13 @@ theorem concreteBPCloseNavigationPayloadLegacyInteriorSegment_empty
 def concreteBPCloseNavigationPayloadReadBacked
     (shape : Cartesian.CartesianShape)
     (segment index : Nat) (word : List Bool) : Prop :=
+  (segment = 20 /\
+    (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+      shape).store.words[index]? = some word /\
+    SuccinctSpace.flattenPayloadWords
+        (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+          shape).store.words.toList =
+      (SuccinctClose.canonicalRelativeRmmInteriorDirectory shape).payload) \/
   exists source,
     SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?
         segment = some source /\
@@ -1267,12 +1275,16 @@ theorem concreteBPCloseNavigationGlobalReadStore_eq_sourceStore
     (shape : Cartesian.CartesianShape) (segment index : Nat) :
     (concreteBPCloseNavigationGlobalReadStore shape).readWord?
         segment index =
-      match
-        SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?
-          segment with
-      | some source =>
-          (concreteBPCloseNavigationPayloadSourceWords shape source)[index]?
-      | none => none := by
+      if segment = 20 then
+        (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+          shape).store.words[index]?
+      else
+        match
+          SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?
+            segment with
+        | some source =>
+            (concreteBPCloseNavigationPayloadSourceWords shape source)[index]?
+        | none => none := by
   match segment with
   | 0 => rfl
   | 1 => rfl
@@ -1313,17 +1325,26 @@ theorem concreteBPCloseNavigationGlobalReadStore_successful_read_backed
           segment index = some word) :
     concreteBPCloseNavigationPayloadReadBacked
       shape segment index word := by
-  unfold concreteBPCloseNavigationPayloadReadBacked
   rw [concreteBPCloseNavigationGlobalReadStore_eq_sourceStore] at hread
-  cases hsource :
-      SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?
-        segment with
-  | none =>
-      simp [hsource] at hread
-  | some source =>
-      exact ⟨source, rfl,
-        by simpa [hsource] using hread,
-        concreteBPCloseNavigationPayloadSourceWords_erases shape source⟩
+  by_cases hcomponent :
+      segment = 20
+  · left
+    refine ⟨hcomponent, ?_, ?_⟩
+    · simpa [hcomponent] using hread
+    · simpa [SuccinctClose.canonicalRelativeRmmInteriorDirectory] using
+        SuccinctClose.canonicalRelativeRmmInteriorComponentStore_flattens_payload
+          shape
+  · right
+    simp [hcomponent] at hread
+    cases hsource :
+        SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?
+          segment with
+    | none =>
+        simp [hsource] at hread
+    | some source =>
+        exact ⟨source, rfl,
+          by simpa [hsource] using hread,
+          concreteBPCloseNavigationPayloadSourceWords_erases shape source⟩
 
 theorem concreteBPCloseNavigationGlobalReadStore_bpCode
     (shape : Cartesian.CartesianShape) (index : Nat) :
@@ -1760,20 +1781,10 @@ theorem concreteBPCloseNavigationLCACloseGlobalTraceResult_refines
     (leftClose rightClose : Nat) :
     (SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
       shape leftClose rightClose).toCosted =
-      SuccinctFinal.concreteBPNativeLCACloseCosted
-        concreteBPCloseNavigationAccessFamily shape leftClose rightClose := by
-  rw [
-    SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_refines_interpretedCosted]
-  unfold SuccinctFinal.concreteBPNativeLCACloseInterpretedCosted
-    SuccinctFinal.concreteBPNativeLCACloseCosted
-  have hfun :
-      SuccinctFinal.concreteBPNativeRankCloseInterpretedCosted shape =
-        SuccinctFinal.concreteBPNativeRankCloseCosted
-          concreteBPCloseNavigationAccessFamily shape := by
-    funext pos
-    exact concreteBPCloseNavigationRankCloseInterpretedCosted_refines_rankCloseCosted
-      shape pos
-  simp [hfun]
+      SuccinctFinal.concreteBPNativeLCACloseCanonicalInterpretedCosted
+        shape leftClose rightClose :=
+  SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_refines_interpretedCosted
+    shape leftClose rightClose
 
 def concreteBPCloseNavigationGlobalTraceResult
     (shape : Cartesian.CartesianShape)
@@ -1801,16 +1812,129 @@ def concreteBPCloseNavigationGlobalTraceResult
                           (answerClose + 1))
                   | none => WordRAM.TraceResult.pure none
           | _, _ => WordRAM.TraceResult.pure none
+/-- Canonical U2 cost semantics for the close-navigation trace. -/
+def concreteBPCloseNavigationCanonicalCosted
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    Costed (Option Nat) :=
+  Costed.bind
+    (SuccinctFinal.concreteBPNativeSelectCloseCosted
+      concreteBPCloseNavigationAccessFamily shape left)
+    fun leftClose? =>
+      Costed.bind
+        (SuccinctFinal.concreteBPNativeSelectCloseCosted
+          concreteBPCloseNavigationAccessFamily shape (right - 1))
+        fun rightClose? =>
+          match leftClose?, rightClose? with
+          | some leftClose, some rightClose =>
+              Costed.bind
+                (SuccinctFinal.concreteBPNativeLCACloseCanonicalInterpretedCosted
+                  shape leftClose rightClose)
+                fun answerClose? =>
+                  match answerClose? with
+                  | some answerClose =>
+                      Costed.map (fun closeRank => some (closeRank - 1))
+                        (SuccinctFinal.concreteBPNativeRankCloseCosted
+                          concreteBPCloseNavigationAccessFamily
+                          shape (answerClose + 1))
+                  | none => Costed.pure none
+          | _, _ => Costed.pure none
 
+
+set_option linter.unusedSimpArgs false in
+
+theorem concreteBPCloseNavigationCanonicalCosted_exact
+    {n : Nat} {shape : Cartesian.CartesianShape}
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n))
+    {left len : Nat} (hlen : 0 < len) (hbound : left + len <= n) :
+    (concreteBPCloseNavigationCanonicalCosted
+      shape left (left + len)).erase =
+        some (scanWindow shape.representative left len) := by
+  have hshapeSize := Cartesian.mem_shapesOfSize_shapeOfSize hshape
+  have hleftLt : left < n := by omega
+  have hrightLt : left + len - 1 < n := by omega
+  have hboundShape : left + len <= shape.size := by
+    rw [Cartesian.ShapeOfSize.size_eq hshapeSize]
+    exact hbound
+  have hleftLtShape : left < shape.size := by
+    rw [Cartesian.ShapeOfSize.size_eq hshapeSize]
+    exact hleftLt
+  have hrightLtShape : left + len - 1 < shape.size := by
+    rw [Cartesian.ShapeOfSize.size_eq hshapeSize]
+    exact hrightLt
+  have hscanBounds :=
+    Cartesian.scanWindow_bounds shape.representative left len hlen
+  have hscanLt :
+      scanWindow shape.representative left len < shape.size := by
+    rw [Cartesian.ShapeOfSize.size_eq hshapeSize]
+    omega
+  rcases SuccinctSpace.bpCloseOfInorder?_some_of_lt
+      shape hleftLtShape with ⟨leftClose, hleftClose⟩
+  rcases SuccinctSpace.bpCloseOfInorder?_some_of_lt
+      shape hrightLtShape with ⟨rightClose, hrightClose⟩
+  rcases SuccinctSpace.bpCloseOfInorder?_some_of_lt shape hscanLt with
+    ⟨answerClose, hanswerClose⟩
+  have hselectLeft :
+      (SuccinctFinal.concreteBPNativeSelectCloseCosted
+        concreteBPCloseNavigationAccessFamily shape left).value =
+          some leftClose := by
+    have h :=
+      SuccinctFinal.concreteBPNativeSelectCloseCosted_exact
+        concreteBPCloseNavigationAccessFamily shape left
+    simpa [Costed.erase, hleftClose] using h
+  have hselectRight :
+      (SuccinctFinal.concreteBPNativeSelectCloseCosted
+        concreteBPCloseNavigationAccessFamily shape (left + len - 1)).value =
+          some rightClose := by
+    have h :=
+      SuccinctFinal.concreteBPNativeSelectCloseCosted_exact
+        concreteBPCloseNavigationAccessFamily shape (left + len - 1)
+    simpa [Costed.erase, hrightClose] using h
+  have hrankExact :
+      ∀ pos,
+        (SuccinctFinal.concreteBPNativeRankCloseInterpretedCosted
+          shape pos).erase =
+            Succinct.rankPrefix false shape.bpCode pos := by
+    intro pos
+    rw [concreteBPCloseNavigationRankCloseInterpretedCosted_refines_rankCloseCosted]
+    exact
+      SuccinctFinal.concreteBPNativeRankCloseCosted_exact
+        concreteBPCloseNavigationAccessFamily shape pos
+  have hlca :
+      (SuccinctFinal.concreteBPNativeLCACloseCanonicalInterpretedCosted
+        shape leftClose rightClose).value = some answerClose := by
+    have h :=
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalLcaCloseCostedWithRankSeed_exact_of_query
+        (SuccinctFinal.concreteBPNativeRankCloseInterpretedCosted shape)
+        hrankExact hlen hboundShape hleftClose hrightClose hanswerClose
+    simpa [SuccinctFinal.concreteBPNativeLCACloseCanonicalInterpretedCosted,
+      Costed.erase] using h
+  have hrank :
+      (SuccinctFinal.concreteBPNativeRankCloseCosted
+        concreteBPCloseNavigationAccessFamily shape (answerClose + 1)).value =
+          scanWindow shape.representative left len + 1 := by
+    have hrankExact' :=
+      SuccinctFinal.concreteBPNativeRankCloseCosted_exact
+        concreteBPCloseNavigationAccessFamily shape (answerClose + 1)
+    have hrankRecover :=
+      SuccinctSpace.bpCloseOfInorder?_rankFalse_succ shape hanswerClose
+    calc
+      _ = Succinct.rankPrefix false shape.bpCode (answerClose + 1) := by
+        simpa [Costed.erase] using hrankExact'
+      _ = scanWindow shape.representative left len + 1 := hrankRecover
+  have hrankSub :
+      scanWindow shape.representative left len + 1 - 1 =
+        scanWindow shape.representative left len := by omega
+  unfold concreteBPCloseNavigationCanonicalCosted
+  simp [Costed.erase, Costed.bind, Costed.map, Costed.pure,
+    hselectLeft, hselectRight, hlca, hrank, hrankSub]
 set_option linter.unusedSimpArgs false in
 theorem concreteBPCloseNavigationCosted_eq_globalTraceResult_toCosted
     (shape : Cartesian.CartesianShape)
     (left right : Nat) :
-    concreteBPCloseNavigationCosted shape left right =
+    concreteBPCloseNavigationCanonicalCosted shape left right =
       (concreteBPCloseNavigationGlobalTraceResult
         shape left right).toCosted := by
-  unfold concreteBPCloseNavigationCosted
-    SuccinctFinal.concreteBPNativeSuccinctRMQQueryCosted
+  unfold concreteBPCloseNavigationCanonicalCosted
     concreteBPCloseNavigationGlobalTraceResult
   simp [WordRAM.TraceResult.bind_toCosted,
     concreteBPCloseNavigationSelectCloseGlobalTraceResult_refines,
@@ -1831,8 +1955,7 @@ theorem concreteBPCloseNavigationCosted_eq_globalTraceResult_toCosted
             concreteBPCloseNavigationLCACloseGlobalTraceResult_refines
               shape leftClose rightClose
           cases hanswer :
-              (SuccinctFinal.concreteBPNativeLCACloseCosted
-                concreteBPCloseNavigationAccessFamily
+              (SuccinctFinal.concreteBPNativeLCACloseCanonicalInterpretedCosted
                 shape leftClose rightClose).value with
           | none =>
               have hlcaValue :
@@ -1843,8 +1966,7 @@ theorem concreteBPCloseNavigationCosted_eq_globalTraceResult_toCosted
               have hlcaCost :
                   (SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
                     shape leftClose rightClose).trace.length =
-                    (SuccinctFinal.concreteBPNativeLCACloseCosted
-                      concreteBPCloseNavigationAccessFamily
+                    (SuccinctFinal.concreteBPNativeLCACloseCanonicalInterpretedCosted
                       shape leftClose rightClose).cost := by
                 have hc := congrArg Costed.cost hlca
                 simpa [WordRAM.TraceResult.toCosted,
@@ -1860,8 +1982,7 @@ theorem concreteBPCloseNavigationCosted_eq_globalTraceResult_toCosted
               have hlcaCost :
                   (SuccinctFinal.concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
                     shape leftClose rightClose).trace.length =
-                    (SuccinctFinal.concreteBPNativeLCACloseCosted
-                      concreteBPCloseNavigationAccessFamily
+                    (SuccinctFinal.concreteBPNativeLCACloseCanonicalInterpretedCosted
                       shape leftClose rightClose).cost := by
                 have hc := congrArg Costed.cost hlca
                 simpa [WordRAM.TraceResult.toCosted,
@@ -1966,71 +2087,9 @@ theorem concreteBPCloseNavigationInteriorGlobalTraceResultAllSizeStructural_matc
       shape SuccinctFinal.concreteBPNativeInteriorTraceSegments
       (concreteBPCloseNavigationGlobalReadStore shape)
       (by
-        intro segment index
-        cases segment <;>
-          simp [concreteBPCloseNavigationGlobalReadStore,
-            SuccinctFinal.concreteBPNativeInteriorTraceSegments,
-            SuccinctFinal.concreteBPNativeDeadTraceSegment,
-            WordRAM.singletonSegmentMap,
-            WordRAM.TraceEvent.singletonSegmentMap,
-            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-            SuccinctSpace.PayloadWordStore.wordRAMStore,
-            WordRAM.Store.readWord?])
-      (by
-        intro segment index
-        cases segment <;>
-          simp [concreteBPCloseNavigationGlobalReadStore,
-            SuccinctFinal.concreteBPNativeInteriorTraceSegments,
-            SuccinctFinal.concreteBPNativeDeadTraceSegment,
-            WordRAM.singletonSegmentMap,
-            WordRAM.TraceEvent.singletonSegmentMap,
-            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-            SuccinctSpace.PayloadWordStore.wordRAMStore,
-            WordRAM.Store.readWord?])
-      (by
-        intro segment index
-        cases segment <;>
-          simp [concreteBPCloseNavigationGlobalReadStore,
-            SuccinctFinal.concreteBPNativeInteriorTraceSegments,
-            SuccinctFinal.concreteBPNativeDeadTraceSegment,
-            WordRAM.singletonSegmentMap,
-            WordRAM.TraceEvent.singletonSegmentMap,
-            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-            SuccinctSpace.PayloadWordStore.wordRAMStore,
-            WordRAM.Store.readWord?])
-      (by
-        intro segment index
-        cases segment <;>
-          simp [concreteBPCloseNavigationGlobalReadStore,
-            SuccinctFinal.concreteBPNativeInteriorTraceSegments,
-            SuccinctFinal.concreteBPNativeDeadTraceSegment,
-            WordRAM.singletonSegmentMap,
-            WordRAM.TraceEvent.singletonSegmentMap,
-            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-            SuccinctSpace.PayloadWordStore.wordRAMStore,
-            WordRAM.Store.readWord?])
-      (by
-        intro segment index
-        cases segment <;>
-          simp [concreteBPCloseNavigationGlobalReadStore,
-            SuccinctFinal.concreteBPNativeInteriorTraceSegments,
-            SuccinctFinal.concreteBPNativeDeadTraceSegment,
-            WordRAM.singletonSegmentMap,
-            WordRAM.TraceEvent.singletonSegmentMap,
-            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-            SuccinctSpace.PayloadWordStore.wordRAMStore,
-            WordRAM.Store.readWord?])
-      (by
-        intro segment index
-        cases segment <;>
-          simp [concreteBPCloseNavigationGlobalReadStore,
-            SuccinctFinal.concreteBPNativeInteriorTraceSegments,
-            SuccinctFinal.concreteBPNativeDeadTraceSegment,
-            WordRAM.singletonSegmentMap,
-            WordRAM.TraceEvent.singletonSegmentMap,
-            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-            SuccinctSpace.PayloadWordStore.wordRAMStore,
-            WordRAM.Store.readWord?])
+        intro address
+        simp [concreteBPCloseNavigationGlobalReadStore,
+          SuccinctFinal.concreteBPNativeInteriorTraceSegments])
       startBlock count
 
 theorem concreteBPCloseNavigationLCACloseGlobalTraceResult_matchesReadStore
@@ -2195,7 +2254,7 @@ profile and does not use a synthetic cost-only adapter.
 theorem concreteBPCloseNavigationGlobalTrace_execution_story
     (shape : Cartesian.CartesianShape)
     (left right : Nat) :
-    concreteBPCloseNavigationCosted shape left right =
+    concreteBPCloseNavigationCanonicalCosted shape left right =
       (concreteBPCloseNavigationGlobalTraceResult
         shape left right).toCosted /\
     (forall {n len : Nat},
@@ -2236,8 +2295,8 @@ theorem concreteBPCloseNavigationGlobalTrace_execution_story
   · intro n len hshape hright hlen hbound
     subst right
     rw [← concreteBPCloseNavigationCosted_eq_globalTraceResult_toCosted]
-    have hprofile := concreteBPCloseNavigationFamily_profile
-    exact hprofile.2 n |>.2.2.2.1 hshape hlen hbound
+    exact
+      concreteBPCloseNavigationCanonicalCosted_exact hshape hlen hbound
   constructor
   · exact
       concreteBPCloseNavigationGlobalTraceResult_event_read_or_primitive
@@ -2265,7 +2324,7 @@ word-primitive operand/result fits the declared trace-local bit width
 theorem concreteBPCloseNavigationGlobalTrace_bounded_execution_story
     (shape : Cartesian.CartesianShape)
     (left right : Nat) :
-    concreteBPCloseNavigationCosted shape left right =
+    concreteBPCloseNavigationCanonicalCosted shape left right =
       (concreteBPCloseNavigationGlobalTraceResult
         shape left right).toCosted /\
     (forall {n len : Nat},
@@ -2371,14 +2430,20 @@ theorem concreteSuccinctTreeNavigationGlobalPayloadStoreBoundedExecutionStory_cu
     simp [shape, SuccinctSpace.bpCloseOfInorder?, scanWindow,
       Cartesian.CartesianShape.size, Cartesian.CartesianShape.bpCode]
   have hlcaCosted :
-      (SuccinctFinal.concreteBPNativeLCACloseCosted
-          concreteBPCloseNavigationAccessFamily shape 1 1).erase =
+      (SuccinctFinal.concreteBPNativeLCACloseCanonicalInterpretedCosted
+          shape 1 1).erase =
         some 1 := by
     exact
-      SuccinctFinal.concreteBPNativeLCACloseCosted_exact
-        concreteBPCloseNavigationAccessFamily
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalLcaCloseCostedWithRankSeed_exact_of_query
+        (SuccinctFinal.concreteBPNativeRankCloseInterpretedCosted shape)
         (shape := shape) (left := 0) (len := 1)
         (leftClose := 1) (rightClose := 1) (answerClose := 1)
+        (by
+          intro pos
+          rw [concreteBPCloseNavigationRankCloseInterpretedCosted_refines_rankCloseCosted]
+          exact
+            SuccinctFinal.concreteBPNativeRankCloseCosted_exact
+              concreteBPCloseNavigationAccessFamily shape pos)
         (by omega)
         (by
           simp [shape, Cartesian.CartesianShape.size])

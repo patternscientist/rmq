@@ -29,10 +29,10 @@ structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
         shape left right =
       (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
         shape left right).toCosted
-  refines_interpreted :
+  refines_canonical_interpreted :
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
         shape left right =
-      concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted
+      concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted
         shape left right
   cost_le :
     (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
@@ -69,15 +69,13 @@ structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
           (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
             shape left right).trace ->
         ¬ event.isSyntheticCostOnlyPrimitive
-  successful_reads_backed_by_counted_flat_payload :
+  successful_reads_backed_by_canonical_reviewer_payload :
     forall {segment index : Nat} {word : List Bool},
       WordRAM.TraceEvent.readWord segment index (some word) ∈
           (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
             shape left right).trace ->
-        concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
-            shape segment /\
-          concreteBPNativeSuccinctRMQFlatPayloadReadBacked
-            shape segment index word
+        concreteBPNativeSuccinctRMQCanonicalReviewerReadBacked
+          shape segment index word
 
 /-- Existing theorem packets collected into the final trace model-adequacy record. -/
 theorem concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
@@ -91,7 +89,7 @@ theorem concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
       hreadBits, hprimitiveBits⟩
   exact
     { toCosted_eq := hcost
-      refines_interpreted := hrefine
+      refines_canonical_interpreted := hrefine
       cost_le :=
         concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le
           shape left right
@@ -100,7 +98,7 @@ theorem concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
       event_bounds := fun event hmem =>
         ⟨hreadBits event hmem, hprimitiveBits event hmem⟩
       no_synthetic := hnoSynthetic
-      successful_reads_backed_by_counted_flat_payload := by
+      successful_reads_backed_by_canonical_reviewer_payload := by
         intro segment index word hmem
         exact
           concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_successful_read_events_backed_by_counted_flat_payload
@@ -137,11 +135,11 @@ structure ConcreteBPNativeSuccinctRMQFinalSuppliedStoreAdequacy
         shape (concreteBPNativeSuccinctRMQGlobalReadStore shape) left right =
       concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
         shape left right
-  refines_interpreted :
+  refines_canonical_interpreted :
     (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
       shape (concreteBPNativeSuccinctRMQGlobalReadStore shape)
       left right).toCosted =
-      concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted
+      concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted
         shape left right
   no_synthetic :
     forall event,
@@ -171,8 +169,8 @@ theorem concreteBPNativeSuccinctRMQFinalSuppliedStoreAdequacy
       global_store_eval :=
         concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_globalReadStore
           shape left right
-      refines_interpreted :=
-        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_refines_wholeQueryInterpretedCosted
+      refines_canonical_interpreted :=
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_refines_canonicalInterpretedCosted
           shape left right
       no_synthetic :=
         concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_no_syntheticCostOnlyPrimitive
@@ -276,21 +274,20 @@ theorem concreteBPNativeSuccinctRMQFinalFullModelSoundness_exact_of_footprint_gl
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_exact_of_footprint_global
       hshape hfoot hlen hbound
 
-theorem concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_of_size_ge_readyThreshold
+theorem concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_canonicalTransitional
     {shape : Cartesian.CartesianShape} {store : WordRAM.ReadStore}
     (hfoot :
       concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
         shape store (concreteBPNativeSuccinctRMQGlobalReadStore shape))
-    (hsize :
-      SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <=
-        shape.size)
     (left right : Nat) :
     (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
       shape store left right).cost <=
-        concreteBPNativeSuccinctRMQFastRegimeQueryCost := by
+        3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
+          SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
+            SuccinctSelect.sparseDenseFalseSelectQueryCost := by
   exact
-    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_of_size_ge_readyThreshold
-      shape store hfoot hsize left right
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_canonicalTransitional
+      shape store hfoot left right
 
 end SuccinctFinal
 

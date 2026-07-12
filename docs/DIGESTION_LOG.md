@@ -578,6 +578,40 @@ zero-block route, and public final-query constants are unchanged. A skeptical
 grad student should next ask for this component store and its offsets to become
 a segment of the global flat close/LCA store, with the final consumer using
 this exact footprint instead of the three-way legacy interior route.
+## 2026-07-11 U2 Canonical Reviewer Route Closure
+
+The canonical range store is now consumed all the way through cross-block
+close, `lcaClose`, the globally segmented whole-query trace, the supplied-store
+replay, model adequacy, and the ordinary `List Int` surface. Segment `20`
+serves the six-table concatenated component. Its local address is translated by
+`concreteBPNativeSuccinctRMQCanonicalInteriorWordOffset`, and
+`concreteBPNativeSuccinctRMQCanonicalInteriorPhysicalAddress` states the
+physical reviewer-store address.
+
+The result is not computed semantically and replayed afterward. Endpoint
+fringes and the middle candidate are constructed from charged reads; the
+canonical interior execution itself generates the ordered dynamic footprint.
+Agreement on those addresses determines the adaptive execution, result, trace,
+and cost. Successful reads are backed by the counted canonical reviewer payload,
+and returned words and translated addresses satisfy the reviewer-native word
+bound.
+
+The previous trace-local width was replaced on the reviewer path by
+`concreteBPNativeSuccinctRMQCanonicalReviewerWordBits`, derived from input
+operands and addressable counted machine words. Empty, singleton, size-two, and
+symbolic readiness-boundary cases are checked in the kernel. The all-size
+canonical trace is exact, and the honest transitional cost is the named sum
+`328`; no decorative reads preserve the obsolete `118` or route-split
+story.
+
+Plain English: every input size now follows the same positive canonical
+geometry, reads the same counted component representation, and reaches the
+paper-facing answer through those reads. Live assumptions remain the explicit
+WordRAM read-cost model and mathematical `Nat` arithmetic with proved fit
+conditions; there is no compiled-runtime claim. A skeptical graduate student
+should next ask U3 to simplify the checked `328` decomposition into the final
+paper constant, not whether the old zero-block route is still hiding underneath.
+
 ## Current Paper-Path Note
 
 2026-07-06 digestion pass: the project-wide digest was refreshed as

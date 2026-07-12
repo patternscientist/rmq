@@ -121,31 +121,38 @@ Acceptance:
 
 ### U2. Build One Uniform Local/Interior Directory Route
 
-Status: next; external audit A03 accepted U1 with its small follow-up closed.
+Status: complete.
 
-Make all sizes use the same directory abstraction. First attempt to totalize
-the existing hierarchy so small instances degenerate naturally. Introduce a
-separate counted packed implementation only if a formal obstruction shows that
-the total hierarchy cannot cover the bounded small regime cleanly. The top-level
-query must not dispatch to an unbounded structural scan because a parameter
-became zero.
+Every size uses `RelativeRmm.canonicalLayout`, the same canonical interior
+component store, and the same close/LCA reviewer route. Segment `20` embeds
+the component in the global store at an exact physical word offset. The
+execution-derived dynamic footprint controls supplied-store agreement; all
+successful reads are charged and counted, returned words and physical
+addresses are bounded, and the final result depends on those reads. Empty,
+singleton, size-two, and symbolic threshold-boundary cases are kernel checked.
+No Ready/Active/inactive or zero-block dispatch is reachable from
+`RMQPaper` / `RMQ.Headlines.RMQ`.
 
-Acceptance:
+Acceptance evidence:
 
-- all successful reads remain charged and backed by counted payload;
-- no proof-only answer fields, dense answer tables, or synthetic events;
-- the same semantic exactness theorem covers small and ready inputs;
-- the old zero-block route is unreachable from the reviewer path, then retired
-  or quarantined as compatibility history.
+- `canonicalRelativeRmmInteriorDirectory_profile_allSize`;
+- `canonicalRelativeRmmInteriorRangeFootprint_address_fits_reviewerWordBits`;
+- `canonicalRelativeRmmInteriorRangeMinCostedWithStore_eq_of_agree`;
+- `concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore_store_parametric`;
+- `concreteBPNativeSuccinctRMQCanonicalInteriorPhysicalFootprint_fits`;
+- `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact`;
+- canonical reviewer-payload successful-read backing in the final adequacy packet.
 
 ### U3. Reprove One Principled All-Size Cost Bound
 
-Status: blocked on `U2`.
+Status: next; unblocked by `U2`.
 
-Derive the all-size constant from the uniform route. Aim for `118`, but do not
-force that numeral if a clean machine derivation gives a nearby constant. The
-paper-facing theorem should expose one explained constant; old `4144` and
-`196727` theorems may remain as compatibility aliases outside the main path.
+The uniform route currently has the honest checked transitional sum `328`,
+proved by
+`concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq`. Derive the
+final explained constant from the named primitive costs without padding or
+decorative reads. Ready `118`, route-split, `4144`, and `196727` remain
+compatibility facts outside the current reviewer explanation.
 
 Acceptance:
 

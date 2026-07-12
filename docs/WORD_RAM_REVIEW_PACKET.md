@@ -1,4 +1,23 @@
 # Word-RAM Review Packet
+## Canonical U2 Word-RAM Route
+
+The reviewer-facing close/LCA path now uses
+`canonicalRelativeRmmInteriorComponentStore` at global segment `20`.
+`canonicalRelativeRmmInteriorRangeMinExecutionWithRead` constructs candidates
+from the supplied read interface and records the same ordered addresses as its
+dynamic footprint. Store agreement determines the execution, and the composed
+whole-query supplied-store evaluator is store-parametric and no-synthetic.
+
+Physical addresses use
+`concreteBPNativeSuccinctRMQCanonicalInteriorPhysicalAddress` and fit
+`concreteBPNativeSuccinctRMQCanonicalReviewerWordBits`. The width is derived
+from query/input operands and addressable counted machine words, rather than
+from a completed trace. Empty, singleton, size-two, and threshold-boundary
+evidence is kernel checked. The honest current modeled cap is `328`.
+
+The old zero-block evaluator and Ready/route-split `118` discussion below is
+compatibility history, not part of the `RMQPaper` reviewer route.
+
 
 Snapshot: 2026-07-01. This packet is a focused reviewer note for the
 first-order Word-RAM refinement boundary used by the interpreted RMQ and
@@ -111,8 +130,9 @@ RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecuti
 RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted
 RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace
 RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace
-RMQ.Headlines.succinctRMQZeroBlockSameBlockEvalWithStore
-RMQ.Headlines.succinctRMQZeroBlockSameBlockStoreParametric
+RMQ.Headlines.succinctRMQCanonicalReviewerMachineWordsComponentSlice
+RMQ.Headlines.succinctRMQCanonicalInteriorPhysicalFootprintFits
+RMQ.Headlines.succinctRMQCanonicalReviewerValidQueryOperandsFit
 ```
 
 ## Reproduction Commands

@@ -1109,17 +1109,95 @@ theorem concreteBPFiniteSmallInteriorRangeMinTraceResultAtSegments_no_syntheticC
         segments.finiteSmallArg segments.deadSegment
         (finiteSmallInteriorRangeSlot
           (canonicalBPRelativeSummaryBlockCount shape) startBlock count)
+/-- Canonical all-size interior execution as one physical component segment. -/
+def canonicalRelativeRmmInteriorRangeMinTraceResultAtSegment
+    (shape : Cartesian.CartesianShape) (componentSegment : Nat)
+    (startBlock count : Nat) : WordRAM.TraceResult (Option (Prod Nat Nat)) :=
+  flatStoreExecutionTraceResultAtSegment componentSegment
+    (canonicalRelativeRmmInteriorRangeMinExecutionWithStore shape
+      (canonicalRelativeRmmInteriorComponentStore shape).store.words
+      startBlock count)
+
+theorem canonicalRelativeRmmInteriorRangeMinTraceResultAtSegment_refines
+    (shape : Cartesian.CartesianShape) (componentSegment : Nat)
+    (startBlock count : Nat) :
+    (canonicalRelativeRmmInteriorRangeMinTraceResultAtSegment
+      shape componentSegment startBlock count).toCosted =
+      (canonicalRelativeRmmInteriorDirectory shape).rangeMinCosted
+        startBlock count := by
+  simp [canonicalRelativeRmmInteriorRangeMinTraceResultAtSegment,
+    canonicalRelativeRmmInteriorDirectory,
+    canonicalRelativeRmmInteriorRangeMinCostedWithStore,
+    canonicalRelativeRmmInteriorRangeMinCostedWithRead,
+    canonicalRelativeRmmInteriorRangeMinExecutionWithStore,
+    canonicalRelativeRmmInteriorRangeMinExecutionWithRead]
+
+theorem canonicalRelativeRmmInteriorRangeMinTraceResultAtSegment_matchesReadStore
+    (shape : Cartesian.CartesianShape) (componentSegment : Nat)
+    (store : WordRAM.ReadStore)
+    (hcomponent :
+      forall address,
+        store.readWord? componentSegment address =
+          (canonicalRelativeRmmInteriorComponentStore
+            shape).store.words[address]?)
+    (startBlock count : Nat) :
+    forall event,
+      List.Mem event
+        (canonicalRelativeRmmInteriorRangeMinTraceResultAtSegment
+          shape componentSegment startBlock count).trace ->
+        event.matchesReadStore store := by
+  intro event hmem
+  unfold canonicalRelativeRmmInteriorRangeMinTraceResultAtSegment at hmem
+  unfold flatStoreExecutionTraceResultAtSegment at hmem
+  cases List.mem_map.mp hmem with
+  | intro read hrest =>
+      cases hrest with
+      | intro hread hevent =>
+          subst event
+          have hstored :=
+            (canonicalRelativeRmmInteriorRangeMinComputation
+              shape startBlock count).reads_match_store
+              (FlatWordStore.ofArray
+                (canonicalRelativeRmmInteriorComponentStore
+                  shape).store.words)
+              read.1 read.2 hread
+          simp [WordRAM.TraceEvent.matchesReadStore]
+          rw [hcomponent]
+          exact hstored
+
+theorem canonicalRelativeRmmInteriorRangeMinTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+    (shape : Cartesian.CartesianShape) (componentSegment : Nat)
+    (startBlock count : Nat) :
+    forall event,
+      List.Mem event
+        (canonicalRelativeRmmInteriorRangeMinTraceResultAtSegment
+          shape componentSegment startBlock count).trace ->
+        Not event.isSyntheticCostOnlyPrimitive := by
+  exact
+    flatStoreExecutionTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+      componentSegment
+      (canonicalRelativeRmmInteriorRangeMinExecutionWithStore shape
+        (canonicalRelativeRmmInteriorComponentStore shape).store.words
+        startBlock count)
+
 
 /--
-All-size structural replay for the concrete relative-rmM interior query. Ready
-inputs reuse the two-level structural replay; active non-Ready inputs scan the
-bounded summary table; inactive inputs have no interior blocks and return
-`none` without reading payload.
+All-size structural replay for the canonical relative-rmM interior query.
+Every shape uses the same positive canonical layout and one component store.
 -/
 def concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
     (shape : Cartesian.CartesianShape)
     (segments : BPRelativeRmmInteriorTraceSegments)
     (startBlock count : Nat) : WordRAM.TraceResult (Option (Nat × Nat)) :=
+  canonicalRelativeRmmInteriorRangeMinTraceResultAtSegment
+    shape segments.canonicalComponent startBlock count
+
+/-- Compatibility replay for the former Ready/Active/inactive route. -/
+def concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralLegacy
+    (shape : Cartesian.CartesianShape)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (startBlock count : Nat) :
+    WordRAM.TraceResult (Option (Prod Nat Nat)) :=
   if hready : concreteBPRelativeRmmInteriorReady shape then
     concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsOfReady
       shape hready segments startBlock count
@@ -1138,28 +1216,28 @@ The public all-size trace is total because every shape follows one of three
 concrete structural routes: Ready uses the two-level replay, active non-Ready
 uses the bounded summary scan, and inactive uses a pure `none` trace.
 -/
-theorem concreteBPRelativeRmmInteriorAllSizeStructuralRoute_total
+theorem concreteBPRelativeRmmInteriorAllSizeStructuralRoute_total_legacy
     (shape : Cartesian.CartesianShape)
     (segments : BPRelativeRmmInteriorTraceSegments)
     (startBlock count : Nat) :
     (∃ hready : concreteBPRelativeRmmInteriorReady shape,
-      concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+      concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralLegacy
           shape segments startBlock count =
         concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsOfReady
           shape hready segments startBlock count) ∨
       (¬ concreteBPRelativeRmmInteriorReady shape ∧
         canonicalBPRelativeMinMaxArgSummaryTableActive shape ∧
-        concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+        concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralLegacy
             shape segments startBlock count =
           boundedSummaryRangeScanTraceResultAtSegments
             (concreteBPRelativeMinMaxArgSummaryTable_canonical shape)
             segments.summary startBlock count) ∨
       (¬ concreteBPRelativeRmmInteriorReady shape ∧
         ¬ canonicalBPRelativeMinMaxArgSummaryTableActive shape ∧
-        concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+        concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralLegacy
             shape segments startBlock count =
           WordRAM.TraceResult.pure none) := by
-  unfold concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+  unfold concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralLegacy
   by_cases hready : concreteBPRelativeRmmInteriorReady shape
   · left
     exact ⟨hready, by simp [hready]⟩
@@ -1171,15 +1249,26 @@ theorem concreteBPRelativeRmmInteriorAllSizeStructuralRoute_total
     · right
       exact ⟨hready, hactive, by simp [hready, hactive]⟩
 
-theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural_refines
+/-- Every shape uses the one canonical component-store route. -/
+theorem concreteBPRelativeRmmInteriorAllSizeStructuralRoute_total
     (shape : Cartesian.CartesianShape)
     (segments : BPRelativeRmmInteriorTraceSegments)
     (startBlock count : Nat) :
-    (concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+    concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+        shape segments startBlock count =
+      canonicalRelativeRmmInteriorRangeMinTraceResultAtSegment
+        shape segments.canonicalComponent startBlock count := by
+  rfl
+
+theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural_refines_legacy
+    (shape : Cartesian.CartesianShape)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (startBlock count : Nat) :
+    (concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralLegacy
       shape segments startBlock count).toCosted =
       (concreteBPRelativeRmmInteriorDirectory shape).rangeMinCosted
         startBlock count := by
-  unfold concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+  unfold concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralLegacy
   by_cases hready : concreteBPRelativeRmmInteriorReady shape
   · simp [hready,
       concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsOfReady_refines]
@@ -1192,7 +1281,7 @@ theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructu
       simp [hready, hactive, WordRAM.TraceResult.pure_toCosted,
         Costed.pure]
 
-theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural_matchesReadStore
+theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural_matchesReadStore_legacy
     (shape : Cartesian.CartesianShape)
     (segments : BPRelativeRmmInteriorTraceSegments)
     (store : WordRAM.ReadStore)
@@ -1245,10 +1334,10 @@ theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructu
     (startBlock count : Nat) :
     forall event,
       List.Mem event
-          (concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+          (concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralLegacy
             shape segments startBlock count).trace ->
         event.matchesReadStore store := by
-  unfold concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+  unfold concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralLegacy
   by_cases hready : concreteBPRelativeRmmInteriorReady shape
   · simp [hready]
     exact
@@ -1267,16 +1356,16 @@ theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructu
         (fun event => event.matchesReadStore store)
         (none : Option (Nat × Nat))
 
-theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural_no_syntheticCostOnlyPrimitive
+theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural_no_syntheticCostOnlyPrimitive_legacy
     (shape : Cartesian.CartesianShape)
     (segments : BPRelativeRmmInteriorTraceSegments)
     (startBlock count : Nat) :
     forall event,
       List.Mem event
-          (concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+          (concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralLegacy
             shape segments startBlock count).trace ->
         ¬ event.isSyntheticCostOnlyPrimitive := by
-  unfold concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+  unfold concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralLegacy
   by_cases hready : concreteBPRelativeRmmInteriorReady shape
   · simp [hready]
     exact
@@ -1293,6 +1382,50 @@ theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructu
       exact WordRAM.TraceResult.pure_trace_forall
         (fun event => ¬ event.isSyntheticCostOnlyPrimitive)
         (none : Option (Nat × Nat))
+
+theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural_refines
+    (shape : Cartesian.CartesianShape)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (startBlock count : Nat) :
+    (concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+      shape segments startBlock count).toCosted =
+      (canonicalRelativeRmmInteriorDirectory shape).rangeMinCosted
+        startBlock count := by
+  exact
+    canonicalRelativeRmmInteriorRangeMinTraceResultAtSegment_refines
+      shape segments.canonicalComponent startBlock count
+
+theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural_matchesReadStore
+    (shape : Cartesian.CartesianShape)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (store : WordRAM.ReadStore)
+    (hcomponent :
+      forall address,
+        store.readWord? segments.canonicalComponent address =
+          (canonicalRelativeRmmInteriorComponentStore
+            shape).store.words[address]?)
+    (startBlock count : Nat) :
+    forall event,
+      List.Mem event
+          (concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+            shape segments startBlock count).trace ->
+        event.matchesReadStore store := by
+  exact
+    canonicalRelativeRmmInteriorRangeMinTraceResultAtSegment_matchesReadStore
+      shape segments.canonicalComponent store hcomponent startBlock count
+
+theorem concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural_no_syntheticCostOnlyPrimitive
+    (shape : Cartesian.CartesianShape)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (startBlock count : Nat) :
+    forall event,
+      List.Mem event
+          (concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural
+            shape segments startBlock count).trace ->
+        Not event.isSyntheticCostOnlyPrimitive := by
+  exact
+    canonicalRelativeRmmInteriorRangeMinTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+      shape segments.canonicalComponent startBlock count
 
 /-- Interpreted false-rank callback for the BP close seed. -/
 def interpretedRankCloseCosted
@@ -2138,17 +2271,84 @@ theorem crossBlockCloseTraceResultWithRankSeedAtSegmentsOfSizeGe_trace_forall
         intro startBlock count event hmem
         exact hinterior startBlock count event hmem)
 
+/-- Raw canonical block indices are bounded by the total canonical block count. -/
+theorem canonicalBPRelativeSummary_blockOfClose_le_blockCountRaw
+    {shape : Cartesian.CartesianShape} {close : Nat}
+    (hclose : close < shape.bpCode.length) :
+    blockOfClose (canonicalBPRelativeSummaryBlockSizeRaw shape) close <=
+      canonicalBPRelativeSummaryBlockCountRaw shape := by
+  have hblockSizePos := canonicalBPRelativeSummaryBlockSizeRaw_pos shape
+  have hupper := canonicalBPRelativeSummaryBlockCountRaw_upper_cover shape
+  have hdiv :
+      close / canonicalBPRelativeSummaryBlockSizeRaw shape <
+        canonicalBPRelativeSummaryBlockCountRaw shape + 1 := by
+    apply (Nat.div_lt_iff_lt_mul hblockSizePos).2
+    exact Nat.lt_trans hclose hupper
+  simpa [blockOfClose] using Nat.le_of_lt_succ hdiv
+
+/-- The total canonical block width fits in two modeled machine words. -/
+theorem canonicalBPRelativeSummaryBlockSizeRaw_le_two_machine_of_size_pos
+    {shape : Cartesian.CartesianShape}
+    (hsize : 0 < shape.size) :
+    canonicalBPRelativeSummaryBlockSizeRaw shape <=
+      2 * SuccinctRank.machineWordBits shape.bpCode.length := by
+  have hbase :=
+    canonicalBPRelativeSummaryBase_le_superWidth_of_size_pos
+      (shape := shape) hsize
+  simpa [canonicalBPRelativeSummaryBlockSizeRaw,
+    canonicalBPRelativeSummarySuperWidth] using
+      Nat.mul_le_mul_left 2 hbase
+
+/-- Honest transitional cap for the canonical close/LCA route. -/
+def canonicalCompactBPCloseQueryCostWithRankSeed
+    (rankCost : Nat) : Nat :=
+  8 + 2 * rankCost + canonicalRelativeRmmInteriorQueryCost
+
+/-- Canonical cross-block costed consumer of the uniform interior directory. -/
+def canonicalCrossBlockCloseCostedWithRankSeed
+    (shape : Cartesian.CartesianShape)
+    (rankCloseCosted : Nat -> Costed Nat)
+    (leftClose rightClose : Nat) : Costed (Option Nat) :=
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
+  let leftBlock := blockOfClose blockSize leftClose
+  let rightBlock := blockOfClose blockSize rightClose
+  Costed.bind
+    (localBPSeedFromRankCloseCosted
+      shape rankCloseCosted blockSize leftClose)
+    fun leftSeed =>
+      Costed.bind
+        (localBPLeftFringeCandidateSeededCosted
+          shape blockSize leftClose leftSeed)
+        fun left? =>
+          Costed.bind
+            (if leftBlock + 1 < rightBlock then
+              (canonicalRelativeRmmInteriorDirectory shape).rangeMinCosted
+                (leftBlock + 1) (rightBlock - leftBlock - 1)
+            else
+              Costed.pure none)
+            fun middle? =>
+              Costed.bind
+                (localBPSeedFromRankCloseCosted
+                  shape rankCloseCosted blockSize rightClose)
+                fun rightSeed =>
+                  Costed.map
+                    (fun right? =>
+                      bpCandidateClose?
+                        (bpCandidateMerge3? left? middle? right?))
+                    (localBPRightFringeCandidateSeededCosted
+                      shape blockSize rightClose rightSeed)
+
 /--
-All-size structural cross-block close decoder.  The endpoint rank seeds and
-fringe decoders are the existing structural traces; the middle interior range
-uses the all-size structural interior replay.
+All-size structural cross-block close decoder. The endpoint rank seeds and
+fringe decoders use the canonical positive layout, and the middle range uses
+the one canonical component-store replay.
 -/
 def crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments
     (shape : Cartesian.CartesianShape)
     (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
     (segments : BPRelativeRmmInteriorTraceSegments)
     (leftClose rightClose : Nat) : WordRAM.TraceResult (Option Nat) :=
-  let blockSize := canonicalBPRelativeSummaryBlockSize shape
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
   let leftBlock := blockOfClose blockSize leftClose
   let rightBlock := blockOfClose blockSize rightClose
   WordRAM.TraceResult.bind
@@ -2188,12 +2388,12 @@ theorem crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments_refine
       forall pos, (rankCloseTrace pos).toCosted = rankCloseCosted pos) :
     (crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments
       shape rankCloseTrace segments leftClose rightClose).toCosted =
-      ConcreteCompactBPCloseLCADirectory.crossBlockCloseCostedWithRankSeed
-        (concreteCompactBPCloseLCADirectory shape)
+      canonicalCrossBlockCloseCostedWithRankSeed
+        shape
         rankCloseCosted leftClose rightClose := by
   unfold crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments
-  unfold ConcreteCompactBPCloseLCADirectory.crossBlockCloseCostedWithRankSeed
-  let blockSize := canonicalBPRelativeSummaryBlockSize shape
+  unfold canonicalCrossBlockCloseCostedWithRankSeed
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
   by_cases hmiddle :
       blockOfClose blockSize leftClose + 1 <
         blockOfClose blockSize rightClose
@@ -2202,12 +2402,324 @@ theorem crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments_refine
       localBPLeftFringeCandidateSeededTraceResult_refines,
       localBPRightFringeCandidateSeededTraceResult_refines,
       concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural_refines,
-      concreteCompactBPCloseLCADirectory, blockSize, hmiddle]
+      blockSize, hmiddle]
   case neg =>
     simp [localBPSeedFromRankCloseTraceResult_refines, hrank,
       localBPLeftFringeCandidateSeededTraceResult_refines,
       localBPRightFringeCandidateSeededTraceResult_refines,
       blockSize, hmiddle]
+
+/-- Canonical cross-block cost is the two rank seeds, two fringes, and one interior query. -/
+theorem canonicalCrossBlockCloseCostedWithRankSeed_cost_le
+    (shape : Cartesian.CartesianShape)
+    (rankCloseCosted : Nat -> Costed Nat)
+    (leftClose rightClose rankCost : Nat)
+    (hrankCost : forall pos, (rankCloseCosted pos).cost <= rankCost) :
+    (canonicalCrossBlockCloseCostedWithRankSeed
+      shape rankCloseCosted leftClose rightClose).cost <=
+        canonicalCompactBPCloseQueryCostWithRankSeed rankCost := by
+  unfold canonicalCrossBlockCloseCostedWithRankSeed
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
+  let leftBlock := blockOfClose blockSize leftClose
+  let rightBlock := blockOfClose blockSize rightClose
+  have hleftSeed :=
+    localBPSeedFromRankCloseCosted_cost_le shape rankCloseCosted
+      blockSize leftClose rankCost hrankCost
+  have hleft :=
+    localBPLeftFringeCandidateSeededCosted_cost_le shape blockSize leftClose
+      (localBPSeedFromRankCloseCosted shape rankCloseCosted
+        blockSize leftClose).value
+  have hmiddle :
+      (if leftBlock + 1 < rightBlock then
+          (canonicalRelativeRmmInteriorDirectory shape).rangeMinCosted
+            (leftBlock + 1) (rightBlock - leftBlock - 1)
+        else
+          Costed.pure none).cost <= canonicalRelativeRmmInteriorQueryCost := by
+    by_cases hgap : leftBlock + 1 < rightBlock
+    case pos =>
+      rw [if_pos hgap]
+      exact
+        (canonicalRelativeRmmInteriorDirectory shape).rangeMin_cost_le
+          (leftBlock + 1) (rightBlock - leftBlock - 1)
+    case neg =>
+      rw [if_neg hgap]
+      simp [Costed.pure]
+  have hrightSeed :=
+    localBPSeedFromRankCloseCosted_cost_le shape rankCloseCosted
+      blockSize rightClose rankCost hrankCost
+  have hright :=
+    localBPRightFringeCandidateSeededCosted_cost_le shape blockSize rightClose
+      (localBPSeedFromRankCloseCosted shape rankCloseCosted
+        blockSize rightClose).value
+  dsimp [blockSize, leftBlock, rightBlock] at hleftSeed hleft hmiddle hrightSeed hright
+  simp [Costed.bind, Costed.map, Costed.pure]
+  simp [Costed.pure] at hmiddle
+  unfold canonicalCompactBPCloseQueryCostWithRankSeed
+  omega
+
+/-- Exact canonical cross-block close semantics for one valid RMQ query. -/
+theorem canonicalCrossBlockCloseCostedWithRankSeed_exact_of_query
+    {shape : Cartesian.CartesianShape}
+    (rankCloseCosted : Nat -> Costed Nat)
+    {left len leftClose rightClose answerClose : Nat}
+    (hrankExact :
+      forall pos,
+        (rankCloseCosted pos).erase =
+          Succinct.rankPrefix false shape.bpCode pos)
+    (hlen : 0 < len)
+    (hbound : left + len <= shape.size)
+    (hleft : bpCloseOfInorder? shape left = some leftClose)
+    (hright :
+      bpCloseOfInorder? shape (left + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder? shape
+          (scanWindow shape.representative left len) =
+        some answerClose)
+    (hcross :
+      blockOfClose (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose <
+        blockOfClose (canonicalBPRelativeSummaryBlockSizeRaw shape)
+          rightClose) :
+    (canonicalCrossBlockCloseCostedWithRankSeed
+      shape rankCloseCosted leftClose rightClose).erase =
+        some answerClose := by
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
+  let leftBlock := blockOfClose blockSize leftClose
+  let rightBlock := blockOfClose blockSize rightClose
+  have hleftCloseBound := bpCloseOfInorder?_bounds shape hleft
+  have hrightCloseBound := bpCloseOfInorder?_bounds shape hright
+  have hrightBlockLe :
+      rightBlock <= canonicalBPRelativeSummaryBlockCountRaw shape := by
+    exact
+      canonicalBPRelativeSummary_blockOfClose_le_blockCountRaw
+        (shape := shape) hrightCloseBound
+  have hsizePos : 0 < shape.size := by omega
+  have hblockSizeLeTwo :
+      blockSize <=
+        2 * SuccinctRank.machineWordBits shape.bpCode.length := by
+    simpa [blockSize] using
+      canonicalBPRelativeSummaryBlockSizeRaw_le_two_machine_of_size_pos
+        (shape := shape) hsizePos
+  have hblockSizeLeThree :
+      blockSize <=
+        3 * SuccinctRank.machineWordBits shape.bpCode.length := by
+    omega
+  have hblockCountLen :
+      canonicalBPRelativeSummaryBlockCountRaw shape * blockSize <=
+        shape.bpCode.length := by
+    simpa [blockSize] using
+      canonicalBPRelativeSummaryBlockCountRaw_mul_blockSizeRaw_le_bpCode_length
+        shape
+  have hleftBaseBlock :
+      localBPWindowBase shape blockSize leftClose <=
+        blockStartOf blockSize leftBlock := by
+    simpa [leftBlock] using
+      localBPWindowBase_le_blockStart shape blockSize leftClose
+  have hleftBaseClose :
+      localBPWindowBase shape blockSize leftClose <= leftClose := by
+    exact Nat.le_trans hleftBaseBlock blockStartOf_blockOfClose_le
+  have hleftBaseLen :
+      localBPWindowBase shape blockSize leftClose <= shape.bpCode.length := by
+    omega
+  have hleftStartBase :
+      localBPWindowBase shape blockSize leftClose <= leftClose + 1 := by
+    omega
+  have hleftInside :
+      leftClose < blockStartOf blockSize leftBlock + blockSize := by
+    simpa [leftBlock] using
+      close_lt_blockStartOf_blockOfClose_add
+        (blockSize := blockSize) (close := leftClose)
+        (canonicalBPRelativeSummaryBlockSizeRaw_pos shape)
+  have hleftEndWidth :
+      blockStartOf blockSize leftBlock + blockSize <=
+        localBPWindowBase shape blockSize leftClose +
+          4 * SuccinctRank.machineWordBits shape.bpCode.length := by
+    simpa [leftBlock] using
+      localBPWindow_block_end_le_four_words shape blockSize leftClose
+        hblockSizeLeThree
+  have hleftSuccLeRight : leftBlock + 1 <= rightBlock := by
+    simpa [blockSize, leftBlock, rightBlock] using
+      Nat.succ_le_of_lt hcross
+  have hleftSuccLeCount :
+      leftBlock + 1 <= canonicalBPRelativeSummaryBlockCountRaw shape := by
+    exact Nat.le_trans hleftSuccLeRight hrightBlockLe
+  have hleftEndLen :
+      blockStartOf blockSize leftBlock + blockSize <=
+        shape.bpCode.length := by
+    have hmul := Nat.mul_le_mul_right blockSize hleftSuccLeCount
+    have hmulLen :
+        (leftBlock + 1) * blockSize <= shape.bpCode.length :=
+      Nat.le_trans hmul hblockCountLen
+    simpa [blockStartOf, Nat.add_mul, Nat.add_comm,
+      Nat.add_left_comm, Nat.add_assoc] using hmulLen
+  have hleftEndCovered :
+      blockStartOf blockSize leftBlock + blockSize <=
+        localBPWindowBase shape blockSize leftClose +
+          (localBPWindowBits shape blockSize leftClose).length := by
+    exact localBPWindowBits_covers_of_le_width
+      (shape := shape) (blockSize := blockSize) (close := leftClose)
+      (pos := blockStartOf blockSize leftBlock + blockSize)
+      (by omega) hleftEndLen hleftEndWidth
+  have hleftSeed :
+      (localBPSeedFromRankCloseCosted shape rankCloseCosted blockSize
+          leftClose).value =
+        localBPSeedExcess shape blockSize leftClose := by
+    simpa [Costed.erase] using
+      localBPSeedFromRankCloseCosted_eq_localBPSeedExcess
+        shape rankCloseCosted blockSize leftClose hrankExact hleftBaseLen
+  have hleftFringe :
+      (localBPLeftFringeCandidateSeededCosted shape blockSize leftClose
+          (localBPSeedFromRankCloseCosted shape rankCloseCosted blockSize
+            leftClose).value).value =
+        (localBPLeftFringeCandidateCosted shape blockSize leftClose).value := by
+    rw [hleftSeed]
+    simpa [Costed.erase] using
+      localBPLeftFringeCandidateSeededCosted_eq_semantic
+        (shape := shape) (blockSize := blockSize) (leftClose := leftClose)
+        hleftBaseLen hleftStartBase hleftEndCovered hleftInside
+  have hrightBaseBlock :
+      localBPWindowBase shape blockSize rightClose <=
+        blockStartOf blockSize rightBlock := by
+    simpa [rightBlock] using
+      localBPWindowBase_le_blockStart shape blockSize rightClose
+  have hrightInside :
+      blockStartOf blockSize rightBlock <= rightClose := by
+    simpa [rightBlock] using
+      (blockStartOf_blockOfClose_le
+        (blockSize := blockSize) (close := rightClose))
+  have hrightBaseLen :
+      localBPWindowBase shape blockSize rightClose <= shape.bpCode.length := by
+    omega
+  have hrightEndLen : rightClose + 1 <= shape.bpCode.length := by
+    omega
+  have hrightBlockEndWidth :
+      blockStartOf blockSize rightBlock + blockSize <=
+        localBPWindowBase shape blockSize rightClose +
+          4 * SuccinctRank.machineWordBits shape.bpCode.length := by
+    simpa [rightBlock] using
+      localBPWindow_block_end_le_four_words shape blockSize rightClose
+        hblockSizeLeThree
+  have hrightEndWidth :
+      rightClose + 1 <=
+        localBPWindowBase shape blockSize rightClose +
+          4 * SuccinctRank.machineWordBits shape.bpCode.length := by
+    have hrightInsideStrict :
+        rightClose < blockStartOf blockSize rightBlock + blockSize := by
+      simpa [rightBlock] using
+        close_lt_blockStartOf_blockOfClose_add
+          (blockSize := blockSize) (close := rightClose)
+          (canonicalBPRelativeSummaryBlockSizeRaw_pos shape)
+    omega
+  have hrightEndCovered :
+      rightClose + 1 <=
+        localBPWindowBase shape blockSize rightClose +
+          (localBPWindowBits shape blockSize rightClose).length := by
+    exact localBPWindowBits_covers_of_le_width
+      (shape := shape) (blockSize := blockSize) (close := rightClose)
+      (pos := rightClose + 1)
+      (by omega) hrightEndLen hrightEndWidth
+  have hrightSeed :
+      (localBPSeedFromRankCloseCosted shape rankCloseCosted blockSize
+          rightClose).value =
+        localBPSeedExcess shape blockSize rightClose := by
+    simpa [Costed.erase] using
+      localBPSeedFromRankCloseCosted_eq_localBPSeedExcess
+        shape rankCloseCosted blockSize rightClose hrankExact hrightBaseLen
+  have hrightFringe :
+      (localBPRightFringeCandidateSeededCosted shape blockSize rightClose
+          (localBPSeedFromRankCloseCosted shape rankCloseCosted blockSize
+            rightClose).value).value =
+        (localBPRightFringeCandidateCosted shape blockSize rightClose).value := by
+    rw [hrightSeed]
+    simpa [Costed.erase] using
+      localBPRightFringeCandidateSeededCosted_eq_semantic
+        (shape := shape) (blockSize := blockSize) (rightClose := rightClose)
+        hrightBaseLen hrightBaseBlock hrightInside hrightEndCovered
+  have hsemantic :=
+    answerClose_prefix_leftmost_min_excess_of_query
+      (shape := shape) (start := left) (len := len)
+      (leftClose := leftClose) (rightClose := rightClose)
+      (answerClose := answerClose)
+      hlen hbound hleft hright hanswer
+  have hmerge :=
+    bpRelativeRmmCandidateMerge_exact_of_query_semantics_no_block_bounds
+      (shape := shape) (blockSize := blockSize)
+      (left := left) (len := len) (leftClose := leftClose)
+      (rightClose := rightClose) (answerClose := answerClose)
+      hlen hleft hright hanswer
+      (canonicalBPRelativeSummaryBlockSizeRaw_pos shape)
+      (by simpa [blockSize] using hcross) hsemantic.1 hsemantic.2
+  unfold canonicalCrossBlockCloseCostedWithRankSeed
+  by_cases hgap : leftBlock + 1 < rightBlock
+  case pos =>
+    have hcount : 0 < rightBlock - leftBlock - 1 := by omega
+    have hmiddle :
+        ((canonicalRelativeRmmInteriorDirectory shape).rangeMinCosted
+          (leftBlock + 1) (rightBlock - leftBlock - 1)).value =
+            some
+              (bpRangeMinExcess shape blockSize (leftBlock + 1)
+                (rightBlock - leftBlock - 1),
+              bpRangeArgMinPrefixPos shape blockSize (leftBlock + 1)
+                (rightBlock - leftBlock - 1)) := by
+      have hmiddleBound :
+          leftBlock + 1 + (rightBlock - leftBlock - 1) <=
+            (RelativeRmm.canonicalLayout shape).blockCount := by
+        have heq :
+            leftBlock + 1 + (rightBlock - leftBlock - 1) = rightBlock := by omega
+        simpa [RelativeRmm.canonicalLayout, heq] using hrightBlockLe
+      simpa [Costed.erase, RelativeRmm.canonicalLayout, blockSize] using
+        canonicalRelativeRmmInteriorDirectory_rangeMinCosted_erase_exact
+          (shape := shape) hcount hmiddleBound
+    have hmerge' :
+        bpCandidateMerge3?
+            (localBPLeftFringeCandidateCosted shape blockSize leftClose).value
+            (some
+              (bpRangeMinExcess shape blockSize (leftBlock + 1)
+                (rightBlock - leftBlock - 1),
+               bpRangeArgMinPrefixPos shape blockSize (leftBlock + 1)
+                (rightBlock - leftBlock - 1)))
+            (localBPRightFringeCandidateCosted shape blockSize rightClose).value =
+          some (bpExcessAt shape (answerClose + 1), answerClose + 1) := by
+      simpa [localBPLeftFringeCandidateCosted,
+        localBPRightFringeCandidateCosted, blockSize, leftBlock, rightBlock,
+        hgap] using hmerge
+    simp [Costed.bind, Costed.map, Costed.erase,
+      localBPLeftFringeCandidateCosted,
+      localBPRightFringeCandidateCosted, hleftFringe, hrightFringe,
+      hgap, hmiddle, blockSize, leftBlock, rightBlock]
+    change
+      bpCandidateClose?
+          (bpCandidateMerge3?
+            (localBPLeftFringeCandidateCosted shape blockSize leftClose).value
+            (some
+              (bpRangeMinExcess shape blockSize (leftBlock + 1) (rightBlock - leftBlock - 1),
+               bpRangeArgMinPrefixPos shape blockSize (leftBlock + 1) (rightBlock - leftBlock - 1)))
+            (localBPRightFringeCandidateCosted shape blockSize rightClose).value) =
+        some answerClose
+    rw [hmerge']
+    simp [bpCandidateClose?]
+  case neg =>
+    have hmerge' :
+        bpCandidateMerge3?
+            (localBPLeftFringeCandidateCosted shape blockSize leftClose).value
+            none
+            (localBPRightFringeCandidateCosted shape blockSize rightClose).value =
+          some (bpExcessAt shape (answerClose + 1), answerClose + 1) := by
+      simpa [localBPLeftFringeCandidateCosted,
+        localBPRightFringeCandidateCosted, blockSize, leftBlock, rightBlock,
+        hgap] using hmerge
+    simp [Costed.bind, Costed.map, Costed.erase, Costed.pure,
+      localBPLeftFringeCandidateCosted,
+      localBPRightFringeCandidateCosted, hleftFringe, hrightFringe,
+      hgap, blockSize, leftBlock, rightBlock]
+    change
+      bpCandidateClose?
+          (bpCandidateMerge3?
+            (localBPLeftFringeCandidateCosted shape blockSize leftClose).value
+            none
+            (localBPRightFringeCandidateCosted shape blockSize rightClose).value) =
+        some answerClose
+    rw [hmerge']
+    simp [bpCandidateClose?]
 
 theorem crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments_trace_forall
     (shape : Cartesian.CartesianShape)
@@ -2235,13 +2747,13 @@ theorem crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments_trace_
             shape rankCloseTrace segments leftClose rightClose).trace ->
         P event := by
   unfold crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments
-  let blockSize := canonicalBPRelativeSummaryBlockSize shape
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
   let leftBlock := blockOfClose blockSize leftClose
   let rightBlock := blockOfClose blockSize rightClose
   intro event hmem
   by_cases hmiddle :
-      blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose + 1 <
-        blockOfClose (canonicalBPRelativeSummaryBlockSize shape) rightClose
+      blockOfClose (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose + 1 <
+        blockOfClose (canonicalBPRelativeSummaryBlockSizeRaw shape) rightClose
   · simp [WordRAM.TraceResult.bind, WordRAM.TraceResult.map,
       WordRAM.TraceResult.pure, hmiddle] at hmem
     rcases List.mem_append.mp hmem with hmem | htail
@@ -2257,11 +2769,11 @@ theorem crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments_trace_
         (by simpa [blockSize] using hmem)
     rcases List.mem_append.mp htail with hmem | htail
     · exact hinterior
-        (blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+        (blockOfClose (canonicalBPRelativeSummaryBlockSizeRaw shape)
           leftClose + 1)
-        (blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+        (blockOfClose (canonicalBPRelativeSummaryBlockSizeRaw shape)
           rightClose -
-          blockOfClose (canonicalBPRelativeSummaryBlockSize shape)
+          blockOfClose (canonicalBPRelativeSummaryBlockSizeRaw shape)
           leftClose - 1)
         event hmem
     rcases List.mem_append.mp htail with hmem | hmem
@@ -2977,21 +3489,30 @@ theorem lcaCloseTraceResultWithRankSeed_legacy_ofCosted_boundary_trace_forall
           hinterior
 
 /--
-All-size structural compact close/LCA query trace.  This replay has no
-`TraceResult.ofCosted` leaf: zero-block queries scan the counted BP-code
-payload chunks, and cross-block queries use the all-size structural interior
-replay.
+Uniform all-size structural compact close/LCA query.  Same-block queries use
+the local decoder, and cross-block queries use the canonical interior replay.
 -/
+def canonicalLcaCloseCostedWithRankSeed
+    (shape : Cartesian.CartesianShape)
+    (rankCloseCosted : Nat -> Costed Nat)
+    (leftClose rightClose : Nat) : Costed (Option Nat) :=
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
+  if blockOfClose blockSize leftClose =
+      blockOfClose blockSize rightClose then
+    localBPSameBlockCloseDecodedCostedWithRankSeed
+      shape rankCloseCosted blockSize leftClose rightClose
+  else
+    canonicalCrossBlockCloseCostedWithRankSeed
+      shape rankCloseCosted leftClose rightClose
+
 def lcaCloseTraceResultWithRankSeedAllSizeStructural
     (shape : Cartesian.CartesianShape)
     (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
     (segments : BPRelativeRmmInteriorTraceSegments)
     (_sameBlockSegment : Nat)
     (leftClose rightClose : Nat) : WordRAM.TraceResult (Option Nat) :=
-  let blockSize := canonicalBPRelativeSummaryBlockSize shape
-  if blockSize = 0 then
-    zeroBlockSameBlockCloseStructuralTraceResult shape leftClose rightClose
-  else if blockOfClose blockSize leftClose =
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
+  if blockOfClose blockSize leftClose =
       blockOfClose blockSize rightClose then
     localBPSameBlockCloseDecodedTraceResultWithRankSeed
       shape rankCloseTrace blockSize leftClose rightClose
@@ -3010,26 +3531,123 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_refines
       forall pos, (rankCloseTrace pos).toCosted = rankCloseCosted pos) :
     (lcaCloseTraceResultWithRankSeedAllSizeStructural
       shape rankCloseTrace segments sameBlockSegment leftClose rightClose).toCosted =
-      ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed
-        (concreteCompactBPCloseLCADirectory shape)
-        rankCloseCosted leftClose rightClose := by
-  by_cases hzero : canonicalBPRelativeSummaryBlockSize shape = 0
-  · simp [lcaCloseTraceResultWithRankSeedAllSizeStructural,
-      ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed,
-      hzero, zeroBlockSameBlockCloseStructuralTraceResult_refines]
-  · by_cases hsame :
-      blockOfClose (canonicalBPRelativeSummaryBlockSize shape) leftClose =
-        blockOfClose (canonicalBPRelativeSummaryBlockSize shape) rightClose
-    · simp [lcaCloseTraceResultWithRankSeedAllSizeStructural,
-        ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed,
-        hzero, hsame,
-        localBPSameBlockCloseDecodedTraceResultWithRankSeed_refines,
-        hrank]
-    · simp [lcaCloseTraceResultWithRankSeedAllSizeStructural,
-        ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed,
-        concreteCompactBPCloseLCADirectory, hzero, hsame,
-        crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments_refines,
-        hrank]
+      canonicalLcaCloseCostedWithRankSeed
+        shape rankCloseCosted leftClose rightClose := by
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
+  by_cases hsame :
+      blockOfClose blockSize leftClose =
+        blockOfClose blockSize rightClose
+  case pos =>
+    simp [lcaCloseTraceResultWithRankSeedAllSizeStructural,
+      canonicalLcaCloseCostedWithRankSeed, blockSize, hsame,
+      localBPSameBlockCloseDecodedTraceResultWithRankSeed_refines, hrank]
+  case neg =>
+    simp [lcaCloseTraceResultWithRankSeedAllSizeStructural,
+      canonicalLcaCloseCostedWithRankSeed, blockSize, hsame,
+      crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments_refines,
+      hrank]
+
+/- Canonical all-size close/LCA cost is bounded without padding or decorative reads. -/
+theorem canonicalLcaCloseCostedWithRankSeed_cost_le
+    (shape : Cartesian.CartesianShape)
+    (rankCloseCosted : Nat -> Costed Nat)
+    (leftClose rightClose rankCost : Nat)
+    (hrankCost : forall pos, (rankCloseCosted pos).cost <= rankCost) :
+    (canonicalLcaCloseCostedWithRankSeed
+      shape rankCloseCosted leftClose rightClose).cost <=
+        canonicalCompactBPCloseQueryCostWithRankSeed rankCost := by
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
+  by_cases hsame :
+      blockOfClose blockSize leftClose =
+        blockOfClose blockSize rightClose
+  case pos =>
+    have hlocal :=
+      localBPSameBlockCloseDecodedCostedWithRankSeed_cost_le
+        shape rankCloseCosted blockSize leftClose rightClose rankCost
+        hrankCost
+    have hcap :
+        rankCost + 4 <=
+          canonicalCompactBPCloseQueryCostWithRankSeed rankCost := by
+      unfold canonicalCompactBPCloseQueryCostWithRankSeed
+      omega
+    exact Nat.le_trans
+      (by
+        simpa [canonicalLcaCloseCostedWithRankSeed, blockSize, hsame] using
+          hlocal)
+      hcap
+  case neg =>
+    simpa [canonicalLcaCloseCostedWithRankSeed, blockSize, hsame] using
+      canonicalCrossBlockCloseCostedWithRankSeed_cost_le
+        shape rankCloseCosted leftClose rightClose rankCost hrankCost
+
+/- Canonical all-size close/LCA execution is exact for every valid RMQ query. -/
+theorem canonicalLcaCloseCostedWithRankSeed_exact_of_query
+    {shape : Cartesian.CartesianShape}
+    (rankCloseCosted : Nat -> Costed Nat)
+    {left len leftClose rightClose answerClose : Nat}
+    (hrankExact :
+      forall pos,
+        (rankCloseCosted pos).erase =
+          Succinct.rankPrefix false shape.bpCode pos)
+    (hlen : 0 < len)
+    (hbound : left + len <= shape.size)
+    (hleft : bpCloseOfInorder? shape left = some leftClose)
+    (hright :
+      bpCloseOfInorder? shape (left + len - 1) = some rightClose)
+    (hanswer :
+      bpCloseOfInorder? shape
+          (scanWindow shape.representative left len) =
+        some answerClose) :
+    (canonicalLcaCloseCostedWithRankSeed
+      shape rankCloseCosted leftClose rightClose).erase =
+        some answerClose := by
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
+  have hsizePos : 0 < shape.size := by omega
+  have hblockSizePos : 0 < blockSize := by
+    simpa [blockSize] using
+      canonicalBPRelativeSummaryBlockSizeRaw_pos shape
+  have hblockSizeLeTwo :
+      blockSize <=
+        2 * SuccinctRank.machineWordBits shape.bpCode.length := by
+    simpa [blockSize] using
+      canonicalBPRelativeSummaryBlockSizeRaw_le_two_machine_of_size_pos
+        (shape := shape) hsizePos
+  have hblockSizeLeThree :
+      blockSize <=
+        3 * SuccinctRank.machineWordBits shape.bpCode.length := by
+    omega
+  by_cases hsame :
+      blockOfClose blockSize leftClose =
+        blockOfClose blockSize rightClose
+  case pos =>
+    simpa [canonicalLcaCloseCostedWithRankSeed, blockSize, hsame] using
+      localBPSameBlockCloseDecodedCostedWithRankSeed_exact_of_query_same_block
+        (shape := shape) (rankCloseCosted := rankCloseCosted)
+        (blockSize := blockSize) (left := left) (len := len)
+        (leftClose := leftClose) (rightClose := rightClose)
+        (answerClose := answerClose)
+        hrankExact hblockSizePos hblockSizeLeThree hsame
+        hlen hbound hleft hright hanswer
+  case neg =>
+    have hbetween :=
+      answerClose_between_endpoint_closes
+        (shape := shape) (left := left) (len := len)
+        (leftClose := leftClose) (rightClose := rightClose)
+        (answerClose := answerClose)
+        hlen hleft hright hanswer
+    have hblockLe :
+        blockOfClose blockSize leftClose <=
+          blockOfClose blockSize rightClose := by
+      unfold blockOfClose
+      exact Nat.div_le_div_right (Nat.le_trans hbetween.1 hbetween.2)
+    have hcross :
+        blockOfClose blockSize leftClose <
+          blockOfClose blockSize rightClose := by
+      omega
+    simpa [canonicalLcaCloseCostedWithRankSeed, blockSize, hsame] using
+      canonicalCrossBlockCloseCostedWithRankSeed_exact_of_query
+        rankCloseCosted hrankExact hlen hbound hleft hright hanswer
+        (by simpa [blockSize] using hcross)
 
 theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_trace_forall
     (shape : Cartesian.CartesianShape)
@@ -3046,12 +3664,6 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_trace_forall
         List.Mem event
           (localBPWindowBitsTraceResult shape blockSize close).trace ->
           P event)
-    (hsameSmall :
-      forall event,
-        List.Mem event
-          (zeroBlockSameBlockCloseStructuralTraceResult
-            shape leftClose rightClose).trace ->
-          P event)
     (hinterior :
       forall startBlock count event,
         List.Mem event
@@ -3064,23 +3676,22 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_trace_forall
             shape rankCloseTrace segments sameBlockSegment leftClose
             rightClose).trace ->
         P event := by
-  let blockSize := canonicalBPRelativeSummaryBlockSize shape
-  by_cases hzero : blockSize = 0
-  · simpa [lcaCloseTraceResultWithRankSeedAllSizeStructural, blockSize,
-      hzero] using hsameSmall
-  · by_cases hsame :
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
+  by_cases hsame :
       blockOfClose blockSize leftClose =
         blockOfClose blockSize rightClose
-    · simpa [lcaCloseTraceResultWithRankSeedAllSizeStructural, blockSize,
-        hzero, hsame] using
-        localBPSameBlockCloseDecodedTraceResultWithRankSeed_trace_forall
-          shape rankCloseTrace blockSize leftClose rightClose P hrank
-          (hbp blockSize leftClose)
-    · simpa [lcaCloseTraceResultWithRankSeedAllSizeStructural, blockSize,
-        hzero, hsame] using
-        crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments_trace_forall
-          shape rankCloseTrace segments leftClose rightClose P
-          hrank hbp hinterior
+  case pos =>
+    simpa [lcaCloseTraceResultWithRankSeedAllSizeStructural, blockSize,
+      hsame] using
+      localBPSameBlockCloseDecodedTraceResultWithRankSeed_trace_forall
+        shape rankCloseTrace blockSize leftClose rightClose P hrank
+        (hbp blockSize leftClose)
+  case neg =>
+    simpa [lcaCloseTraceResultWithRankSeedAllSizeStructural, blockSize,
+      hsame] using
+      crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments_trace_forall
+        shape rankCloseTrace segments leftClose rightClose P
+        hrank hbp hinterior
 
 theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_no_syntheticCostOnlyPrimitive
     (shape : Cartesian.CartesianShape)
@@ -3106,8 +3717,6 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_no_syntheticCostOnlyPri
       (fun blockSize close =>
         localBPWindowBitsTraceResult_no_syntheticCostOnlyPrimitive
           shape blockSize close)
-      (zeroBlockSameBlockCloseStructuralTraceResult_no_syntheticCostOnlyPrimitive
-        shape leftClose rightClose)
       (fun startBlock count =>
         concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural_no_syntheticCostOnlyPrimitive
           shape segments startBlock count)
@@ -3149,8 +3758,6 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_matchesReadStore
       (fun blockSize close =>
         localBPWindowBitsTraceResult_matchesReadStore
           shape blockSize close store hbpCode)
-      (zeroBlockSameBlockCloseStructuralTraceResult_matchesReadStore
-        shape leftClose rightClose store hbpCode)
       hinterior
 
 /--

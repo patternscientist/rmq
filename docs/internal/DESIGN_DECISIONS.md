@@ -1553,6 +1553,43 @@ None.
 Status: Accepted
 Date: 2026-07-10
 Scope: U2 all-size relative-rmM interior directory representation.
+Closure amendment, 2026-07-11:
+
+The decision now includes the downstream reviewer consumer, not only the
+interior component. The canonical component store is embedded at global segment
+`20`; its exact physical word offset is
+`concreteBPNativeSuccinctRMQCanonicalInteriorWordOffset`. The all-size
+cross-block, `lcaClose`, whole-query trace, supplied-store replay, model
+adequacy packet, and ordinary-list surface consume the canonical directory.
+The reviewer route contains no Ready/Active/inactive or zero-block dispatch.
+
+The total machine abstraction is
+`concreteBPNativeSuccinctRMQCanonicalReviewerWordBits`, derived from query
+operands and addressable counted machine-word capacity. It covers live and dead
+interior addresses after translation into the global reviewer store. The
+interior-level and global-level address/operand theorems, plus kernel-checked
+empty, singleton, size-two, and symbolic threshold-boundary cases, close the
+small-input addressability requirement.
+
+Additional alternatives considered and rejected:
+
+- Keep the trace-local post-hoc width: rejected because it does not establish a
+  query-independent address-capacity story or cover canonical dead addresses.
+- Use only `machineWordBits shape.bpCode.length`: rejected because tiny inputs
+  need to address fixed global segments and the counted component store.
+- Use a fixed 64- or 128-bit width: rejected as arbitrary for the unbounded
+  mathematical model.
+- Preserve the Ready `118` or route-split constant using padding/decorative
+  reads: rejected because modeled cost must be the consumed trace.
+- Embed six independent global segments: rejected because one concatenated
+  component plus exact offsets gives the intended later flat-store transport.
+
+The checked transitional whole-query cost is the primitive sum proved by
+`concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional`;
+`concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq` evaluates it to
+`328`. U3, not U2, owns the final cost simplification. The old `118`,
+route-split, `4144`, and `196727` statements remain compatibility history.
+
 
 Decision:
 

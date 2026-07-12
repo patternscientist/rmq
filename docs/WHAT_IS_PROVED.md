@@ -1,4 +1,22 @@
 # What Is Proved
+## U2 Canonical Reviewer Route
+
+The final all-size reviewer trace now uses one positive canonical block geometry
+and one canonical relative-rmM component store. Segment `20` exposes the
+concatenated component at its exact physical machine-word offset. The returned
+interior candidate is decoded from supplied-store reads; its dynamic footprint
+is the execution's ordered read log, and agreement on that footprint determines
+result, trace, and modeled cost. Successful reads are backed by the counted
+canonical reviewer payload and returned words and physical addresses satisfy
+the reviewer word bound.
+
+The final trace is exact through
+`concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact`. Its honest
+transitional all-size bound is `328`, checked by
+`concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq`. The former
+Ready/zero-block/route-split descriptions and numeric `118`, `4144`, and
+`196727` facts survive only as compatibility history.
+
 
 This document is the short scope map for external readers. It separates the
 mathematical statements, modeled complexity claims, payload accounting, and
@@ -30,21 +48,21 @@ aliases.
 | `RMQ.Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint` | List-facing supplied-store equality: under final footprint agreement with `SuccinctClassic.globalReadStore xs`, `SuccinctClassic.queryCostedWithStore xs store left right` is the same costed query as canonical `SuccinctClassic.queryCosted xs left right`. |
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal` | List-facing supplied-store exactness: if a caller-provided store agrees with `SuccinctClassic.globalReadStore xs` on the final checked footprint, valid half-open queries through `SuccinctClassic.queryCostedWithStore` erase to the exact leftmost `List Int` RMQ answer. |
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal` | List-facing supplied-store all-size cost transfer: under the same footprint agreement, `SuccinctClassic.queryCostedWithStore xs store left right` has modeled cost at most `SuccinctClassic.queryCost`. |
-| `RMQ.Headlines.listIntSuccinctRMQFastRegimeFinalFullModelCostLeOfFootprintGlobal` | List-facing fast-regime supplied-store cost transfer: under footprint agreement plus `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= (SuccinctClassic.cartesianShape xs).size`, the supplied-store query has modeled cost at most the final fast-regime constant. |
+| `RMQ.Headlines.listIntSuccinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal` | List-facing supplied-store transfer of the canonical transitional `328` bound under footprint agreement. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ capstone with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and a numeric doubled-Catalan slack comparison in the same public theorem surface. The encoding-quantified lower-bound theorem is the separate alias `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack`. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Whole-query-interpreted variant of the final BP-native succinct RMQ capstone: same theorem shape, with the final query control represented by closed `WordRAM`/register-program syntax whose leaves are interpreted close-select, compact close/LCA, and register-backed answer-rank operations. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace` | Leaf-trace-preserving variant of the same capstone: the closed controller now evaluates to an explicit domain-leaf trace before projection back to `Costed`; the leaves are still interpreted component queries, not one unified store trace. |
-| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace` | Unified-`WordRAM.TraceEvent` variant of the same capstone: the final query emits one trace stream; close-select, answer-rank, compact-close rank-seed reads, the structural BP-code zero-block same-block scan, and the all-size relative-rmM interior query are structural payload/register traces. |
+| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace` | Unified-`WordRAM.TraceEvent` variant: same-block decoding and canonical component-store cross-block replay are the only final close/LCA branches. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime` | Large-regime WordRAM variant: the same two-sided theorem shape with an explicit size premise that lets the compact close/LCA query replay the Ready local/fringe/interior close navigation structurally; the public all-size route is also structural. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` | All-size final-query execution story: the public costed query refines one globally segmented `WordRAM.TraceEvent` stream, every event is a payload read or bounded word primitive, and every read agrees with one concrete payload store. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory` | Store-extensional all-size execution story: any read store agreeing with the concrete global store on emitted payload-read events validates the same final-query trace. |
-| `RMQ.Headlines.succinctRMQZeroBlockSameBlockEvalWithStore` | Zero-block same-block close leaf evaluated against a supplied `WordRAM.ReadStore`; BP-code segment agreement gives the canonical structural value and trace. |
-| `RMQ.Headlines.succinctRMQZeroBlockSameBlockStoreParametric` | Zero-block same-block close leaf is store-parametric: two stores agreeing on BP-code segment reads produce the same value and trace. The whole final query has a separate supplied-store replay and store-parametric theorem package. |
-| `RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory` | Bounded all-size execution story: the global trace also has a finite trace-local bit width bounding every payload-read address and every natural operand/result exposed by word primitives. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceRouteSplitCostedCostLe` | Route-split all-size cost theorem: the final global trace is bounded by the actual structural close/LCA route instead of summing the mutually exclusive zero-block and interior fallback costs. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe` | Clean fixed all-size cost theorem: the same final global trace is bounded by `RMQ.Headlines.succinctRMQQueryCost = 4144`, the maximum of the checked route-split leaves. |
-| `RMQ.Headlines.succinctRMQFastRegimeGlobalPayloadStoreCostLeOfReadyThreshold` | Fast-regime final-query cost theorem: under `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= shape.size`, the final globally segmented BP-native RMQ trace costs at most `RMQ.Headlines.succinctRMQFastRegimeQueryCost = 118`, excluding the zero-block and active non-Ready bounded scans. |
-| `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | All-size structural execution story for the same global trace after the zero-block same-block and cross-block interior close-navigation leaves have been replaced by structural BP-code, bounded-summary, and two-level payload traces. |
+| `RMQ.Headlines.succinctRMQCanonicalInteriorDirectoryProfileAllSize` | Canonical all-size interior profile collecting exactness, `240`, component-store, footprint, backing, and reviewer-width guarantees. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreEqGlobalOfFootprint` | Whole final query is store-parametric under agreement on the composed checked footprint. |
+| `RMQ.Headlines.succinctRMQCanonicalReviewerMachineWordsComponentSlice` | The canonical interior component occupies its exact physical suffix in the reviewer machine-word array. |
+| `RMQ.Headlines.succinctRMQCanonicalInteriorPhysicalFootprintFits` | Every physical address consumed by the canonical interior execution, including its sentinel address, fits the pre-execution reviewer word width. |
+| `RMQ.Headlines.succinctRMQCanonicalReviewerValidQueryOperandsFit` | Valid query operands fit the same input/addressable-store/sentinel-derived width. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe` | The uniform canonical final trace has the checked transitional U2 bound `328`. |
+| `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | All-size structural execution story using raw positive same-block decoding and canonical cross-block component replay, with no zero-block dispatch. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` | Strongest all-size global execution story: the same store-backed and bounded trace plus a proof that no event is the dedicated synthetic cost-only marker. |
 | `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Flat-payload no-synthetic execution story: the flat execution payload is exactly the advertised BP-native construction payload; every actual successful read in the final trace has source/component/offset backing in one query-independent counted flat payload layout, addresses and word-primitive operands are bounded, and no synthetic cost-only event occurs. |
 | `RMQ.Headlines.succinctRMQFinalTraceModelAdequacy` | Reviewer-facing model-adequacy packet for the final trace: `Costed` is the projection of a `WordRAM.TraceResult`, the trace refines the whole-query interpreter, the fixed modeled cost bound holds, events are reads or word primitives, reads match the global store, event data are bounded, no synthetic cost-only events appear, and successful reads are backed by counted flat payload words. |

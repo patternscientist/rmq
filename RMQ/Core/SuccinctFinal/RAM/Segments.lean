@@ -49,6 +49,7 @@ def concreteBPNativeRankCloseTraceSegmentBase : Nat := 17
 /-- Segment bases for the compact close/LCA interior navigator. -/
 def concreteBPNativeInteriorTraceSegments :
     SuccinctClose.BPRelativeRmmInteriorTraceSegments where
+  canonicalComponent := 20
   summary :=
     { baseline := 20
       minRel := 21
@@ -81,7 +82,7 @@ Segments are assigned as follows:
 Word-primitive events such as in-word rank/select are not payload reads and
 therefore do not consult this store.
 -/
-def concreteBPNativeSuccinctRMQGlobalReadStore
+def concreteBPNativeSuccinctRMQGlobalReadStoreLegacy
     (shape : Cartesian.CartesianShape) : WordRAM.ReadStore where
   readWord? segment index :=
     let selectData :=
@@ -149,18 +150,98 @@ def concreteBPNativeSuccinctRMQGlobalReadStore
     else
       none
 
-theorem concreteBPNativeSuccinctRMQGlobalReadStore_bpCode
+/--
+Reviewer-facing global store. Segment 20 is replaced by the canonical
+concatenated interior component; every other segment is the compatibility
+global store.
+-/
+def concreteBPNativeSuccinctRMQGlobalReadStore
+    (shape : Cartesian.CartesianShape) : WordRAM.ReadStore where
+  readWord? segment index :=
+    let selectData :=
+      GenericSelect.sparseExceptionSelectData shape.bpCode false
+    let rankStore :=
+      (builtRelativeSplitBPCloseRankData shape).rankRegisterWordRAMStore false
+    if segment = 0 then
+      selectData.bitWords.store.wordRAMStore.readWord? 0 index
+    else if segment = 1 then
+      selectData.superTable.baseOccurrenceTable.wordRAMStore.readWord? 0 index
+    else if segment = 2 then
+      selectData.superTable.baseWordIndexTable.wordRAMStore.readWord? 0 index
+    else if segment = 3 then
+      selectData.superTable.rankBeforeTable.wordRAMStore.readWord? 0 index
+    else if segment = 4 then
+      selectData.superTable.firstOffsetTable.wordRAMStore.readWord? 0 index
+    else if segment = 5 then
+      selectData.localTable.baseOccurrenceTable.wordRAMStore.readWord? 0 index
+    else if segment = 6 then
+      selectData.localTable.baseWordIndexTable.wordRAMStore.readWord? 0 index
+    else if segment = 7 then
+      selectData.localTable.rankBeforeTable.wordRAMStore.readWord? 0 index
+    else if segment = 8 then
+      selectData.localTable.firstOffsetTable.wordRAMStore.readWord? 0 index
+    else if segment = 9 then
+      (selectData.longFlagRankData.rankRegisterWordRAMStore true).readWord? 0 index
+    else if segment = 10 then
+      (selectData.longFlagRankData.rankRegisterWordRAMStore true).readWord? 1 index
+    else if segment = 11 then
+      (selectData.longFlagRankData.rankRegisterWordRAMStore true).readWord? 2 index
+    else if segment = 12 then
+      selectData.longSuperRelativeTable.wordRAMStore.readWord? 0 index
+    else if segment = 13 then
+      (selectData.sparseDirectory.rankData.rankRegisterWordRAMStore true).readWord? 0 index
+    else if segment = 14 then
+      (selectData.sparseDirectory.rankData.rankRegisterWordRAMStore true).readWord? 1 index
+    else if segment = 15 then
+      (selectData.sparseDirectory.rankData.rankRegisterWordRAMStore true).readWord? 2 index
+    else if segment = 16 then
+      selectData.sparseDirectory.relativeTable.wordRAMStore.readWord? 0 index
+    else if segment = 17 then
+      rankStore.readWord? 0 index
+    else if segment = 18 then
+      rankStore.readWord? 1 index
+    else if segment = 19 then
+      rankStore.readWord? 2 index
+    else if segment = 20 then
+      (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+        shape).store.words[index]?
+    else
+      none
+/-- Segment 20 is exactly the canonical concatenated interior component store. -/
+theorem concreteBPNativeSuccinctRMQGlobalReadStore_canonicalComponent
     (shape : Cartesian.CartesianShape) (index : Nat) :
-    (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 0 index =
+
+    (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        concreteBPNativeInteriorTraceSegments.canonicalComponent index =
+      (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+        shape).store.words[index]? := by
+  simp [concreteBPNativeSuccinctRMQGlobalReadStore,
+    concreteBPNativeInteriorTraceSegments]
+
+theorem concreteBPNativeSuccinctRMQGlobalReadStoreLegacy_bpCode
+    (shape : Cartesian.CartesianShape) (index : Nat) :
+    (concreteBPNativeSuccinctRMQGlobalReadStoreLegacy shape).readWord? 0 index =
+
       (SuccinctSpace.chunkPayloadWords
         (SuccinctRank.machineWordBits shape.bpCode.length)
         shape.bpCode).toArray[index]? := by
-  simp [concreteBPNativeSuccinctRMQGlobalReadStore,
+  simp [concreteBPNativeSuccinctRMQGlobalReadStoreLegacy,
     GenericSelect.sparseExceptionSelectData,
     GenericSelect.wordBits,
     SuccinctSpace.BoundedPayloadWordStore.ofChunks,
     SuccinctSpace.PayloadWordStore.wordRAMStore,
     WordRAM.Store.readWord?]
+theorem concreteBPNativeSuccinctRMQGlobalReadStore_bpCode
+    (shape : Cartesian.CartesianShape) (index : Nat) :
+    (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        0 index =
+      (SuccinctSpace.chunkPayloadWords
+        (SuccinctRank.machineWordBits shape.bpCode.length)
+        shape.bpCode).toArray[index]? := by
+  change (concreteBPNativeSuccinctRMQGlobalReadStoreLegacy shape).readWord?
+    0 index = _
+  exact concreteBPNativeSuccinctRMQGlobalReadStoreLegacy_bpCode shape index
+
 
 theorem concreteBPNativeSuccinctRMQGlobalReadStore_retiredFiniteSmallInterior_none
     (shape : Cartesian.CartesianShape) (index : Nat) :

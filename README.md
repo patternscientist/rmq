@@ -71,15 +71,15 @@ The RMQ-only paper aliases live in
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime` | Large-regime WordRAM variant: same two-sided theorem shape, with an explicit size premise that routes the compact close/LCA leg through the Ready structural replay; the public all-size route is now structural as well. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` | All-size execution-story theorem for the final succinct RMQ query: the costed query refines one globally segmented trace, every event is either a payload read or bounded word primitive, and every read agrees with one concrete global payload store. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory` | Store-extensional all-size execution story: any read store agreeing with the concrete global store on the emitted payload-read events validates the same final-query trace. |
-| `RMQ.Headlines.succinctRMQZeroBlockSameBlockEvalWithStore` | Zero-block same-block close leaf evaluated against a supplied `WordRAM.ReadStore`; if the store agrees with the BP-code chunk store on segment 0, the produced value and trace match the canonical structural trace. |
-| `RMQ.Headlines.succinctRMQZeroBlockSameBlockStoreParametric` | Zero-block same-block close leaf is store-parametric: two supplied stores agreeing on BP-code segment reads produce the same value and trace. The whole final query has its own supplied-store replay and store-parametric theorem package. |
-| `RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory` | Bounded all-size execution story: the global trace also carries a finite trace-local bit width bounding every payload-read address and every natural operand/result exposed by word primitives. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceRouteSplitCostedCostLe` | Route-split all-size cost theorem: the final global trace is bounded by the structural route actually taken, rather than by a sum of mutually exclusive fallback costs. |
+| `RMQ.Headlines.succinctRMQCanonicalInteriorDirectoryProfileAllSize` | Canonical all-size interior profile: exactness, `240`, component store, execution footprint, successful-read backing, and reviewer-width guarantees. |
+| `RMQ.Headlines.succinctRMQCanonicalReviewerMachineWordsComponentSlice` | Exact physical machine-word placement of the canonical component after the counted prefix. |
+| `RMQ.Headlines.succinctRMQCanonicalInteriorPhysicalFootprintFits` | Every physical address consumed by the canonical interior execution fits the pre-execution reviewer word width. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe` | Uniform canonical all-size cost theorem with checked transitional bound `328`. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe` | Clean fixed all-size cost theorem: the final global trace costs at most `RMQ.Headlines.succinctRMQQueryCost = 4144`, the maximum of the checked route-split leaves. |
-| `RMQ.Headlines.succinctRMQFastRegimeGlobalPayloadStoreCostLeOfReadyThreshold` | Fast-regime final-query cost theorem: under `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= shape.size`, the same globally segmented final trace costs at most the named fast constant `RMQ.Headlines.succinctRMQFastRegimeQueryCost = 118`, excluding the zero-block and non-Ready bounded-scan fallbacks. |
-| `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | All-size structural execution story: the zero-block same-block leaf scans counted BP-code chunks, and the cross-block interior close-navigation leaf is replayed by structural traces. |
+| `RMQ.Headlines.succinctRMQCanonicalTransitionalQueryCostEq` | The canonical transitional query-cost expression computes to `328`. |
+| `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | All-size structural execution story with raw positive same-block decoding and canonical component-store cross-block replay; there is no zero-block dispatch. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` | No-synthetic all-size execution story: the same bounded global trace contains no dedicated synthetic cost-only marker events. |
-| `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Flat-payload no-synthetic execution story: the public flat payload is exactly the advertised BP-native construction payload, and every actual successful read in the final query trace has source/component/offset evidence in that counted layout; cross-block interior navigation is all-size structural, using Ready two-level replay, active non-Ready bounded summary scan, or inactive pure-none. |
+| `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Canonical reviewer-payload no-synthetic execution story: successful reads are counted, the appended component flattens exactly to its directory payload, and cross-block replay is uniform for all sizes. |
 | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory` | Large-regime companion: under the explicit size premise, the compact close/LCA leg uses the positive-block local/fringe/interior structural replay; it is a compatibility strengthening of the all-size structural route. |
 | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory` | Bounded large-regime companion to the global-store execution story. |
 | `RMQ.Headlines.concreteBPCloseNavigationProfile` | Concrete payload-backed BP close-navigation profile: relative-split false-select/rank-close plus compact relative-rmM close/LCA, with `2*n + o(n)` payload, constant modeled query cost, exact Cartesian-shape RMQ answer semantics, and machine-word-bounded component payload reads. |
@@ -97,25 +97,12 @@ The RMQ-only paper aliases live in
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreExecutionStory` | Target-independent global-store execution story for compressed/FID rank/select: for fixed `bits`, shared access plus rank false/true and select false/true traces all read from one concrete payload store. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory` | Bounded target-independent global-store execution story for compressed/FID rank/select: the shared access/rank/select traces also carry trace-local finite widths bounding payload-read addresses and word-primitive operands/results. |
 
-For the current concrete BP-native RMQ capstone, the paper-facing fixed
-modeled query-cost bound is `4144`. The route-split theorem first separates
-the mutually exclusive all-size close/LCA routes: Ready costs `118`, active
-non-Ready costs `568`, inactive non-Ready costs `88`, and the zero-block
-BP-code chunk scan costs `4096` before the final query's fixed close-select
-overhead, giving the fixed all-size maximum `4144`. The old `196727`
-aggregate remains checked under explicit legacy aliases, but it is no longer
-the public all-size cost alias.
-
-The Ready-threshold fast-regime theorem
-`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_of_size_ge_readyThreshold`
-proves a smaller construction-level bound for the same final global trace:
-`SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118`. This
-uses the existing Ready interior cost
-`SuccinctClose.concreteBPRelativeRmmInteriorReadyQueryCost = 30` and excludes
-both bounded fallback scans. The supplied-store/full-model companions transfer
-the same fast bound under final-layout footprint agreement. The list-facing
-wrappers expose the same transfer through
-`SuccinctClassic.queryCostedWithStore` for ordinary `xs : List Int`.
+For the current concrete BP-native RMQ capstone, U2 exposes one unconditional
+canonical reviewer route. Its checked transitional modeled query bound is
+`328`; no decorative reads preserve the obsolete Ready or route-split
+constants. The supplied-store and list-facing companions transfer this same
+bound under composed-footprint agreement. U3 owns the final explained cost
+cleanup.
 
 The final all-size global-store theorem above remains a fixed-trace
 store-extensional statement. The supplied-store route now also has a whole-final

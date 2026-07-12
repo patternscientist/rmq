@@ -1096,78 +1096,12 @@ structure concreteBPNativeSuccinctRMQWholeQueryReadAgreement
         storeB.readWord?
           (concreteBPNativeRankCloseSegmentMap
             concreteBPNativeRankCloseTraceSegmentBase segment) index
-  interiorLocal :
-    forall segment index,
+  canonicalComponent :
+    forall address,
       storeA.readWord?
-          (WordRAM.singletonSegmentMap
-            concreteBPNativeInteriorTraceSegments.localOffset
-            concreteBPNativeInteriorTraceSegments.deadSegment
-            segment) index =
+          concreteBPNativeInteriorTraceSegments.canonicalComponent address =
         storeB.readWord?
-          (WordRAM.singletonSegmentMap
-            concreteBPNativeInteriorTraceSegments.localOffset
-            concreteBPNativeInteriorTraceSegments.deadSegment
-            segment) index
-  interiorGlobal :
-    forall segment index,
-      storeA.readWord?
-          (WordRAM.singletonSegmentMap
-            concreteBPNativeInteriorTraceSegments.globalBlock
-            concreteBPNativeInteriorTraceSegments.deadSegment
-            segment) index =
-        storeB.readWord?
-          (WordRAM.singletonSegmentMap
-            concreteBPNativeInteriorTraceSegments.globalBlock
-            concreteBPNativeInteriorTraceSegments.deadSegment
-            segment) index
-  summaryBaseline :
-    forall segment index,
-      storeA.readWord?
-          (WordRAM.singletonSegmentMap
-            concreteBPNativeInteriorTraceSegments.summary.baseline
-            concreteBPNativeInteriorTraceSegments.summary.deadSegment
-            segment) index =
-        storeB.readWord?
-          (WordRAM.singletonSegmentMap
-            concreteBPNativeInteriorTraceSegments.summary.baseline
-            concreteBPNativeInteriorTraceSegments.summary.deadSegment
-            segment) index
-  summaryMinRel :
-    forall segment index,
-      storeA.readWord?
-          (WordRAM.singletonSegmentMap
-            concreteBPNativeInteriorTraceSegments.summary.minRel
-            concreteBPNativeInteriorTraceSegments.summary.deadSegment
-            segment) index =
-        storeB.readWord?
-          (WordRAM.singletonSegmentMap
-            concreteBPNativeInteriorTraceSegments.summary.minRel
-            concreteBPNativeInteriorTraceSegments.summary.deadSegment
-            segment) index
-  summaryMaxRel :
-    forall segment index,
-      storeA.readWord?
-          (WordRAM.singletonSegmentMap
-            concreteBPNativeInteriorTraceSegments.summary.maxRel
-            concreteBPNativeInteriorTraceSegments.summary.deadSegment
-            segment) index =
-        storeB.readWord?
-          (WordRAM.singletonSegmentMap
-            concreteBPNativeInteriorTraceSegments.summary.maxRel
-            concreteBPNativeInteriorTraceSegments.summary.deadSegment
-            segment) index
-  summaryArgOffset :
-    forall segment index,
-      storeA.readWord?
-          (WordRAM.singletonSegmentMap
-            concreteBPNativeInteriorTraceSegments.summary.argOffset
-            concreteBPNativeInteriorTraceSegments.summary.deadSegment
-            segment) index =
-        storeB.readWord?
-          (WordRAM.singletonSegmentMap
-            concreteBPNativeInteriorTraceSegments.summary.argOffset
-            concreteBPNativeInteriorTraceSegments.summary.deadSegment
-            segment) index
+          concreteBPNativeInteriorTraceSegments.canonicalComponent address
 
 namespace concreteBPNativeSuccinctRMQWholeQueryReadAgreement
 
@@ -1270,36 +1204,12 @@ theorem of_footprint
       hfoot _ index
         (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_rankClose
           shape segment)
-  · intro segment index
+  · intro address
     exact
-      hfoot _ index
-        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_interiorLocal
-          shape segment)
-  · intro segment index
-    exact
-      hfoot _ index
-        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_interiorGlobal
-          shape segment)
-  · intro segment index
-    exact
-      hfoot _ index
-        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_summaryBaseline
-          shape segment)
-  · intro segment index
-    exact
-      hfoot _ index
-        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_summaryMinRel
-          shape segment)
-  · intro segment index
-    exact
-      hfoot _ index
-        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_summaryMaxRel
-          shape segment)
-  · intro segment index
-    exact
-      hfoot _ index
-        (concreteBPNativeSuccinctRMQWholeQueryReadFootprint_summaryArgOffset
-          shape segment)
+      hfoot _ address (by
+        simp [concreteBPNativeSuccinctRMQWholeQueryReadFootprint,
+          concreteBPNativeInteriorTraceSegments,
+          concreteBPNativeDeadTraceSegment])
 
 end concreteBPNativeSuccinctRMQWholeQueryReadAgreement
 
@@ -1462,72 +1372,7 @@ theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore_
       concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
       leftClose rightClose
       (concreteBPNativeSuccinctRMQGlobalReadStore_bpCode shape)
-      (by
-        intro segment index
-        cases segment <;>
-          simp [concreteBPNativeSuccinctRMQGlobalReadStore,
-            concreteBPNativeInteriorTraceSegments,
-            concreteBPNativeDeadTraceSegment,
-            WordRAM.singletonSegmentMap,
-            WordRAM.TraceEvent.singletonSegmentMap,
-            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-            SuccinctSpace.PayloadWordStore.wordRAMStore,
-            WordRAM.Store.readWord?])
-      (by
-        intro segment index
-        cases segment <;>
-          simp [concreteBPNativeSuccinctRMQGlobalReadStore,
-            concreteBPNativeInteriorTraceSegments,
-            concreteBPNativeDeadTraceSegment,
-            WordRAM.singletonSegmentMap,
-            WordRAM.TraceEvent.singletonSegmentMap,
-            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-            SuccinctSpace.PayloadWordStore.wordRAMStore,
-            WordRAM.Store.readWord?])
-      (by
-        intro segment index
-        cases segment <;>
-          simp [concreteBPNativeSuccinctRMQGlobalReadStore,
-            concreteBPNativeInteriorTraceSegments,
-            concreteBPNativeDeadTraceSegment,
-            WordRAM.singletonSegmentMap,
-            WordRAM.TraceEvent.singletonSegmentMap,
-            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-            SuccinctSpace.PayloadWordStore.wordRAMStore,
-            WordRAM.Store.readWord?])
-      (by
-        intro segment index
-        cases segment <;>
-          simp [concreteBPNativeSuccinctRMQGlobalReadStore,
-            concreteBPNativeInteriorTraceSegments,
-            concreteBPNativeDeadTraceSegment,
-            WordRAM.singletonSegmentMap,
-            WordRAM.TraceEvent.singletonSegmentMap,
-            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-            SuccinctSpace.PayloadWordStore.wordRAMStore,
-            WordRAM.Store.readWord?])
-      (by
-        intro segment index
-        cases segment <;>
-          simp [concreteBPNativeSuccinctRMQGlobalReadStore,
-            concreteBPNativeInteriorTraceSegments,
-            concreteBPNativeDeadTraceSegment,
-            WordRAM.singletonSegmentMap,
-            WordRAM.TraceEvent.singletonSegmentMap,
-            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-            SuccinctSpace.PayloadWordStore.wordRAMStore,
-            WordRAM.Store.readWord?])
-      (by
-        intro segment index
-        cases segment <;>
-          simp [concreteBPNativeSuccinctRMQGlobalReadStore,
-            concreteBPNativeInteriorTraceSegments,
-            concreteBPNativeDeadTraceSegment,
-            WordRAM.singletonSegmentMap,
-            WordRAM.TraceEvent.singletonSegmentMap,
-            SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-            SuccinctSpace.PayloadWordStore.wordRAMStore,
-            WordRAM.Store.readWord?])
+      (concreteBPNativeSuccinctRMQGlobalReadStore_canonicalComponent shape)
 
 theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore_store_parametric
     (shape : Cartesian.CartesianShape)
@@ -1561,12 +1406,7 @@ theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore_
       concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
       leftClose rightClose
       hagree.bpCode
-      hagree.interiorLocal
-      hagree.interiorGlobal
-      hagree.summaryBaseline
-      hagree.summaryMinRel
-      hagree.summaryMaxRel
-      hagree.summaryArgOffset
+      hagree.canonicalComponent
 
 namespace WholeQueryInstr
 
@@ -2067,10 +1907,8 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_succ
       WordRAM.TraceEvent.readWord segment index (some word) ∈
           (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
             shape store left right).trace ->
-        concreteBPNativeSuccinctRMQFlatPayloadSegmentCountedInFlat
-            shape segment /\
-          concreteBPNativeSuccinctRMQFlatPayloadReadBacked
-            shape segment index word := by
+        concreteBPNativeSuccinctRMQCanonicalReviewerReadBacked
+          shape segment index word := by
   intro segment index word hmem
   have hmemGlobal :
       WordRAM.TraceEvent.readWord segment index (some word) ∈
@@ -2101,37 +1939,36 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le
       shape left right
 
-theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_of_size_ge_readyThreshold
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_canonicalTransitional
     (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
     (hfoot :
       concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
         shape store (concreteBPNativeSuccinctRMQGlobalReadStore shape))
-    (hsize :
-      SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <=
-        shape.size)
     (left right : Nat) :
     (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
       shape store left right).cost <=
-        concreteBPNativeSuccinctRMQFastRegimeQueryCost := by
+        3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
+          SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
+            SuccinctSelect.sparseDenseFalseSelectQueryCost := by
   rw [
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_eq_global_of_footprint
       shape store hfoot left right]
   exact
-    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_of_size_ge_readyThreshold
-      shape hsize left right
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional
+      shape left right
 
-theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_refines_wholeQueryInterpretedCosted
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_refines_canonicalInterpretedCosted
     (shape : Cartesian.CartesianShape)
     (left right : Nat) :
     (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
       shape (concreteBPNativeSuccinctRMQGlobalReadStore shape)
       left right).toCosted =
-      concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted
+      concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted
         shape left right := by
   rw [
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_globalReadStore]
   exact
-    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_refines_wholeQueryInterpretedCosted
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_refines_canonicalInterpretedCosted
       shape left right
 
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_exact

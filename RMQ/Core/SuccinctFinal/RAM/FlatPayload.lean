@@ -1762,15 +1762,15 @@ theorem concreteBPNativeSuccinctRMQFlatPayloadSegmentBackings_all
     concreteBPNativeSuccinctRMQFlatPayloadSegmentBacking?,
     concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?]
 
-theorem concreteBPNativeSuccinctRMQFlatPayloadReadStore_eq_global
+theorem concreteBPNativeSuccinctRMQFlatPayloadReadStore_eq_globalLegacy
     (shape : Cartesian.CartesianShape) (segment index : Nat) :
     (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord?
         segment index =
-      (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+      (concreteBPNativeSuccinctRMQGlobalReadStoreLegacy shape).readWord?
         segment index := by
   match segment with
   | 0 =>
-      rw [concreteBPNativeSuccinctRMQGlobalReadStore_bpCode]
+      rw [concreteBPNativeSuccinctRMQGlobalReadStoreLegacy_bpCode]
       rfl
   | 1 => rfl
   | 2 => rfl
@@ -1801,6 +1801,270 @@ theorem concreteBPNativeSuccinctRMQFlatPayloadReadStore_eq_global
   | 27 => rfl
   | 28 => rfl
   | _ + 29 => rfl
+
+/--
+Reviewer-facing counted payload for the canonical all-size route.  The existing
+final payload remains a compatibility projection; this additive component is
+the exact payload erased by the canonical interior machine store.
+-/
+def concreteBPNativeSuccinctRMQCanonicalReviewerPayload
+    (shape : Cartesian.CartesianShape) : List Bool :=
+  (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).payload ++
+    (SuccinctClose.canonicalRelativeRmmInteriorDirectory shape).payload
+
+/--
+Single reviewer store for the final query.  Segments below 20 retain the
+counted select/rank sources.  Segment 20 is the one canonical concatenated
+interior component, and all compatibility close segments are absent.
+-/
+def concreteBPNativeSuccinctRMQCanonicalReviewerReadStore
+    (shape : Cartesian.CartesianShape) : WordRAM.ReadStore where
+  readWord? segment index :=
+    if segment < concreteBPNativeInteriorTraceSegments.canonicalComponent then
+      (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord?
+        segment index
+    else if segment =
+        concreteBPNativeInteriorTraceSegments.canonicalComponent then
+      (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+        shape).store.words[index]?
+    else
+      none
+
+theorem concreteBPNativeSuccinctRMQCanonicalReviewerReadStore_eq_global
+    (shape : Cartesian.CartesianShape) (segment index : Nat) :
+    (concreteBPNativeSuccinctRMQCanonicalReviewerReadStore shape).readWord?
+        segment index =
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        segment index := by
+  match segment with
+  | 0 =>
+      rw [concreteBPNativeSuccinctRMQGlobalReadStore_bpCode]
+      rfl
+  | 1 => rfl
+  | 2 => rfl
+  | 3 => rfl
+  | 4 => rfl
+  | 5 => rfl
+  | 6 => rfl
+  | 7 => rfl
+  | 8 => rfl
+  | 9 => rfl
+  | 10 => rfl
+  | 11 => rfl
+  | 12 => rfl
+  | 13 => rfl
+  | 14 => rfl
+  | 15 => rfl
+  | 16 => rfl
+  | 17 => rfl
+  | 18 => rfl
+  | 19 => rfl
+  | 20 => rfl
+  | _ + 21 => rfl
+
+/-- Exact physical backing of a successful reviewer-store read. -/
+def concreteBPNativeSuccinctRMQCanonicalReviewerReadBacked
+    (shape : Cartesian.CartesianShape)
+    (segment index : Nat) (word : List Bool) : Prop :=
+  (segment < concreteBPNativeInteriorTraceSegments.canonicalComponent /\
+    concreteBPNativeSuccinctRMQFlatPayloadReadBacked
+      shape segment index word) \/
+  (segment = concreteBPNativeInteriorTraceSegments.canonicalComponent /\
+    (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+      shape).store.words[index]? = some word /\
+    SuccinctSpace.flattenPayloadWords
+        (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+          shape).store.words.toList =
+      (SuccinctClose.canonicalRelativeRmmInteriorDirectory shape).payload /\
+    ((concreteBPNativeSuccinctRMQCanonicalReviewerPayload shape).drop
+        (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).payload.length).take
+        (SuccinctClose.canonicalRelativeRmmInteriorDirectory
+          shape).payload.length =
+      (SuccinctClose.canonicalRelativeRmmInteriorDirectory shape).payload)
+
+theorem concreteBPNativeSuccinctRMQCanonicalReviewerReadStore_successful_read_backed
+    (shape : Cartesian.CartesianShape)
+    {segment index : Nat} {word : List Bool}
+    (hread :
+      (concreteBPNativeSuccinctRMQCanonicalReviewerReadStore shape).readWord?
+          segment index = some word) :
+    concreteBPNativeSuccinctRMQCanonicalReviewerReadBacked
+      shape segment index word := by
+  by_cases hlt :
+      segment < concreteBPNativeInteriorTraceSegments.canonicalComponent
+  · left
+    refine ⟨hlt, ?_⟩
+    have hlegacy :
+        (concreteBPNativeSuccinctRMQFlatPayloadReadStore shape).readWord?
+            segment index = some word := by
+      simpa [concreteBPNativeSuccinctRMQCanonicalReviewerReadStore, hlt] using
+        hread
+    have hcounted :=
+      concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_read_segment_counted
+        shape hlegacy
+          (by intro hseg; subst segment
+              simp [concreteBPNativeInteriorTraceSegments] at hlt)
+          (by intro hseg; subst segment
+              simp [concreteBPNativeInteriorTraceSegments] at hlt)
+    exact
+      concreteBPNativeSuccinctRMQFlatPayloadReadStore_successful_counted_read_backed
+        shape hlegacy hcounted
+  · by_cases heq :
+        segment = concreteBPNativeInteriorTraceSegments.canonicalComponent
+    · right
+      subst segment
+      refine ⟨rfl, ?_, ?_, ?_⟩
+      · simpa [concreteBPNativeSuccinctRMQCanonicalReviewerReadStore] using
+          hread
+      · simpa [SuccinctClose.canonicalRelativeRmmInteriorDirectory] using
+          SuccinctClose.canonicalRelativeRmmInteriorComponentStore_flattens_payload
+            shape
+      · simp [concreteBPNativeSuccinctRMQCanonicalReviewerPayload]
+    · simp [concreteBPNativeSuccinctRMQCanonicalReviewerReadStore, hlt, heq]
+        at hread
+/-- Machine words contributed by the pre-U2 counted segments, in segment order. -/
+def concreteBPNativeSuccinctRMQLegacyReviewerMachineWords
+    (shape : Cartesian.CartesianShape) : List (List Bool) :=
+  (List.range concreteBPNativeInteriorTraceSegments.canonicalComponent).flatMap
+    (fun segment =>
+      match concreteBPNativeSuccinctRMQFlatPayloadSegmentSource? segment with
+      | some source =>
+          (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape source).toList
+      | none => [])
+
+/-- Exact word offset of the canonical interior component in the reviewer store. -/
+def concreteBPNativeSuccinctRMQCanonicalInteriorWordOffset
+    (shape : Cartesian.CartesianShape) : Nat :=
+  (concreteBPNativeSuccinctRMQLegacyReviewerMachineWords shape).length
+
+/-- One physical reviewer word array: legacy counted words followed by U2. -/
+def concreteBPNativeSuccinctRMQCanonicalReviewerMachineWords
+    (shape : Cartesian.CartesianShape) : List (List Bool) :=
+  concreteBPNativeSuccinctRMQLegacyReviewerMachineWords shape ++
+    (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+      shape).store.words.toList
+
+/-- Physical flat address of a canonical interior component address. -/
+def concreteBPNativeSuccinctRMQCanonicalInteriorPhysicalAddress
+    (shape : Cartesian.CartesianShape) (address : Nat) : Nat :=
+  concreteBPNativeSuccinctRMQCanonicalInteriorWordOffset shape + address
+
+/-- The canonical component occupies exactly its declared physical word slice. -/
+theorem concreteBPNativeSuccinctRMQCanonicalReviewerMachineWords_component_slice
+    (shape : Cartesian.CartesianShape) :
+    (concreteBPNativeSuccinctRMQCanonicalReviewerMachineWords shape).drop
+        (concreteBPNativeSuccinctRMQCanonicalInteriorWordOffset shape) =
+      (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+        shape).store.words.toList := by
+  simp [concreteBPNativeSuccinctRMQCanonicalReviewerMachineWords,
+    concreteBPNativeSuccinctRMQCanonicalInteriorWordOffset]
+
+/-- Pre-execution input, physical-address, and sentinel capacity. -/
+def concreteBPNativeSuccinctRMQCanonicalReviewerCapacity
+    (shape : Cartesian.CartesianShape) : Nat :=
+  Nat.max shape.bpCode.length
+    (Nat.max concreteBPNativeDeadTraceSegment
+      (concreteBPNativeSuccinctRMQCanonicalReviewerMachineWords shape).length)
+
+def concreteBPNativeSuccinctRMQCanonicalReviewerWordBits
+    (shape : Cartesian.CartesianShape) : Nat :=
+  SuccinctRank.machineWordBits
+    (concreteBPNativeSuccinctRMQCanonicalReviewerCapacity shape)
+
+theorem concreteBPNativeSuccinctRMQCanonicalReviewerWordBits_eq_log2_capacity
+    (shape : Cartesian.CartesianShape) :
+    concreteBPNativeSuccinctRMQCanonicalReviewerWordBits shape =
+      Nat.log2
+          (concreteBPNativeSuccinctRMQCanonicalReviewerCapacity shape) + 1 := by
+  rfl
+
+theorem concreteBPNativeSuccinctRMQCanonicalInteriorPhysicalFootprint_fits
+    (shape : Cartesian.CartesianShape) (store : SuccinctSpace.FlatWordStore)
+    (startBlock count address : Nat)
+    (hmem :
+      List.Mem address
+        (SuccinctClose.canonicalRelativeRmmInteriorRangeFootprintWithRead
+          shape store startBlock count)) :
+    concreteBPNativeSuccinctRMQCanonicalInteriorPhysicalAddress shape address <
+      2 ^ concreteBPNativeSuccinctRMQCanonicalReviewerWordBits shape := by
+  apply Nat.lt_of_le_of_lt
+  · have haddress :=
+      SuccinctClose.canonicalRelativeRmmInteriorRangeFootprint_address_le_dead
+        shape store startBlock count address hmem
+    have hphysical :
+        concreteBPNativeSuccinctRMQCanonicalInteriorPhysicalAddress
+            shape address <=
+          (concreteBPNativeSuccinctRMQCanonicalReviewerMachineWords
+            shape).length := by
+      unfold concreteBPNativeSuccinctRMQCanonicalInteriorPhysicalAddress
+        concreteBPNativeSuccinctRMQCanonicalInteriorWordOffset
+        concreteBPNativeSuccinctRMQCanonicalReviewerMachineWords
+      simp only [List.length_append, Array.length_toList]
+      rw [show
+        (SuccinctClose.canonicalRelativeRmmInteriorComponentOffsets
+          shape).deadAddress =
+          (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+            shape).store.words.size by rfl] at haddress
+      omega
+    have hcapacity :
+        (concreteBPNativeSuccinctRMQCanonicalReviewerMachineWords
+            shape).length <=
+          concreteBPNativeSuccinctRMQCanonicalReviewerCapacity shape := by
+      unfold concreteBPNativeSuccinctRMQCanonicalReviewerCapacity
+      exact Nat.le_trans
+        (Nat.le_max_right concreteBPNativeDeadTraceSegment
+          (concreteBPNativeSuccinctRMQCanonicalReviewerMachineWords
+            shape).length)
+        (Nat.le_max_right shape.bpCode.length
+          (Nat.max concreteBPNativeDeadTraceSegment
+            (concreteBPNativeSuccinctRMQCanonicalReviewerMachineWords
+              shape).length))
+    exact Nat.le_trans hphysical hcapacity
+  · exact SuccinctRank.self_lt_two_pow_machineWordBits _
+
+theorem concreteBPNativeSuccinctRMQCanonicalReviewerValidQueryOperands_fit
+    (shape : Cartesian.CartesianShape) {left right : Nat}
+    (hleft : left <= right) (hright : right <= shape.size) :
+    left < 2 ^ concreteBPNativeSuccinctRMQCanonicalReviewerWordBits shape /\
+      right < 2 ^ concreteBPNativeSuccinctRMQCanonicalReviewerWordBits shape := by
+  have hsize : shape.size <= shape.bpCode.length := by
+    rw [Cartesian.CartesianShape.bpCode_length]
+    omega
+  have hcapacity :
+      shape.bpCode.length <=
+        concreteBPNativeSuccinctRMQCanonicalReviewerCapacity shape :=
+    Nat.le_max_left _ _
+  have hpow :
+      concreteBPNativeSuccinctRMQCanonicalReviewerCapacity shape <
+        2 ^ concreteBPNativeSuccinctRMQCanonicalReviewerWordBits shape :=
+    SuccinctRank.self_lt_two_pow_machineWordBits _
+  constructor
+  · exact Nat.lt_of_le_of_lt
+      (Nat.le_trans hleft (Nat.le_trans hright
+        (Nat.le_trans hsize hcapacity))) hpow
+  · exact Nat.lt_of_le_of_lt
+      (Nat.le_trans hright (Nat.le_trans hsize hcapacity)) hpow
+
+theorem concreteBPNativeSuccinctRMQCanonicalInteriorReturnedWord_fits
+    (shape : Cartesian.CartesianShape)
+    (startBlock count address : Nat) (word : List Bool)
+    (hread :
+      List.Mem (address, some word)
+        (SuccinctClose.canonicalRelativeRmmInteriorRangeMinExecutionWithStore
+          shape
+          (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+            shape).store.words
+          startBlock count).reads) :
+    word.length <=
+      concreteBPNativeSuccinctRMQCanonicalReviewerWordBits shape := by
+  exact Nat.le_trans
+    (SuccinctClose.canonicalRelativeRmmInteriorRange_returned_word_bounded
+      shape startBlock count address word hread)
+    (SuccinctRank.machineWordBits_mono_le
+      (Nat.le_max_left shape.bpCode.length
+        (Nat.max concreteBPNativeDeadTraceSegment
+          (concreteBPNativeSuccinctRMQCanonicalReviewerMachineWords
+            shape).length)))
 
 end SuccinctFinal
 end RMQ
