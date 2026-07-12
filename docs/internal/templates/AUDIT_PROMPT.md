@@ -25,6 +25,7 @@ Scope:
 - Delta: [CHANGED FILES OR PACKET]
 - Load-bearing theorem/public/trust surfaces: [LIST]
 - Acceptance criteria: [WHAT MUST BE TRUE]
+- Frozen acceptance IDs and verbatim requirements: [REQ-..., INV-..., CHK-...]
 - Rejection conditions: [WHAT BLOCKS]
 - Non-goals: [BOUNDARIES]
 
@@ -33,6 +34,9 @@ Adversarial requirements:
 - Reconstruct a requirement-to-evidence matrix independently from the prompt,
   named consumer, roadmap node, and inherited RMQ invariants. Do not accept the
   worker's chosen local endpoint as the target without checking that contract.
+- In fresh-blind mode, do not read the worker verdict or narrative. Inspect
+  exact theorem types and expand load-bearing definitions; declaration-name
+  lists are not evidence.
 - Look for wrappers, renamed caveats, decorative reads, proof-only answers,
   uncounted storage, synthetic events, or work that advances a different goal.
 - Treat the report's own remaining-risk or next-consumer caveats as evidence
@@ -41,6 +45,11 @@ Adversarial requirements:
   and test actual footprint addresses, including tiny inputs and dead/sentinel
   addresses, against modeled word capacity rather than host array bounds.
 - Trace public names to source theorems and exact assumptions.
+- For combined public claims, verify that space, execution, provenance, and
+  machine facts concern the same payload/store/execution or have a checked
+  identity chain. For whole-machine claims, inventory every physical segment
+  and verify one query-independent width/capacity relation to input size.
+- Treat claim-drift policy and allowlists as auditable claims, not ground truth.
 - Cite evidence for every finding and positive claim.
 
 Checks:

@@ -48,12 +48,20 @@ Specifically look for technically correct wrappers, renamed caveats, decorative
 reads, proof-only answers, uncounted storage, synthetic events, or valuable work
 that advances a different goal.
 
-Also ask the auditor to reconstruct the worker's requirement-to-evidence
-matrix independently. Treat a completion report's own "remaining risk",
-"reviewer should ask", or "next consumer must prove" language as presumptive
-evidence of incomplete closure. For machine-backed work, require backward value
-dependency and actual address-capacity checks, including tiny instances and
-dead/sentinel addresses.
+Also ask the auditor to reconstruct the requirement-to-evidence matrix from
+frozen IDs and exact requirements. In fresh-blind mode, withhold the worker
+verdict and narrative. Require checked theorem types and expanded object
+arguments; a declaration-name inventory is not evidence. Treat a completion
+report's own "remaining risk", "reviewer should ask", or "next consumer must
+prove" language as presumptive evidence of incomplete closure.
+
+For combined public claims, require an explicit identity chain showing that
+space, execution, provenance, and machine facts concern the same construction.
+For whole-machine claims, inventory every segment in the physical embedding and
+check that one query-independent width/capacity is related to input size. Audit
+claim-drift policies and allowlists rather than treating green output as ground
+truth. For machine-backed work, also require backward value dependency and
+actual address-capacity checks, including tiny and dead/sentinel cases.
 
 Positive evidence tiers are kernel theorem, model theorem, executable
 validation, artifact evidence, then process evidence. Process reports do not

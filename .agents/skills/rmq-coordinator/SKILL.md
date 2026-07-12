@@ -67,7 +67,7 @@ Every worker prompt should name:
 - the exact condition under which the local rung is complete and the distinct
   condition under which the roadmap node may be marked closed;
 - a requirement-to-evidence matrix obligation and the applicable inherited
-  invariants from the proof-sprint completion gate;
+  invariants from the proof-sprint completion gate, assigned by stable ID;
 - forbidden shortcuts;
 - verification commands;
 - completion report requirements, including branch name, worktree path, base
@@ -100,22 +100,34 @@ For each completed worker branch:
 2. Verify that the worker owned the changed files.
 3. Trace public aliases to source theorem statements when claims changed.
 4. Reconstruct the requirement-to-evidence matrix independently. Check the
-   worker's `COMPLETE` declaration against prompt requirements, the named
-   consumer, and inherited invariants; do not let a local rung redefine the
-   assigned target.
+   worker's `CANDIDATE_COMPLETE` declaration against the frozen prompt
+   requirements, named consumer, and inherited invariants. Inspect checked
+   theorem types and expand load-bearing definitions; declaration names and
+   documentation summaries are not evidence.
 5. Record local-rung status and roadmap-node status separately; a closed helper
    or prerequisite does not close its consumer node.
-6. Trace returned values to charged reads and check actual footprint addresses
+6. For combined public claims, verify that space, execution, provenance, and
+   machine conjuncts concern the same objects. For whole-machine claims,
+   inventory every read segment, physical offset, and the input-size relation
+   for the one query-independent word width.
+7. Trace returned values to charged reads and check actual footprint addresses
    against modeled address capacity when machine/store work changed.
-7. Run the smallest gate that genuinely covers the change, including small and
+8. Run the smallest gate that genuinely covers the change, including small and
    threshold boundary cases when layout or dispatch changed.
-8. Update theorem maps, artifact docs, and design logs if the public surface or
+9. Treat claim-drift tooling as a consistency aid, not ground truth. Inspect the
+   policy/allowlist itself when claims or constants change.
+10. Update theorem maps, artifact docs, and design logs if the public surface or
    architecture changed.
-9. Merge, port, continue, or reject the branch and record the disposition.
-10. Update lifecycle state and retire the worktree/branch when evidence is preserved.
-11. Re-read the current roadmap/frontier and produce the best next ambitious
-   prompt or prompt set, using parallel workers when the dependencies are
-   genuinely independent.
+11. For a public capstone, trust-boundary change, combined space/execution
+   theorem, or roadmap-node closure, launch a fresh blind exact-commit audit
+   before merge or closure. Do not give that auditor the worker verdict.
+12. Record `ACCEPTED` only after the coordinator gate and any mandatory blind
+   audit; otherwise continue, port, or reject the branch.
+13. Update lifecycle state and retire the worktree/branch when evidence is
+   preserved.
+14. Re-read the current roadmap/frontier and produce the best next ambitious
+   prompt or prompt set, using parallel workers when dependencies are genuinely
+   independent.
 
 Do not merge a branch that merely reports an honest caveat when a local theorem
 repair is still available.

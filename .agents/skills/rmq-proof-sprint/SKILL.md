@@ -27,10 +27,12 @@ Restate the named target, downstream consumer, hard obligation, forbidden
 shortcuts, and exact stop conditions. Do not edit the coordinator checkout or
 revert unrelated work.
 
-Before editing, build the requirement-to-evidence matrix required by
-`references/COMPLETION_GATE.md`. It includes both prompt bullets and inherited
-RMQ invariants; omission from the prompt does not waive an invariant needed by
-the named consumer.
+Before editing, build and freeze the requirement-to-evidence matrix required by
+`references/COMPLETION_GATE.md`, using
+`docs/internal/templates/PROOF_ACCEPTANCE_MATRIX.md`. Preserve the
+coordinator-assigned IDs and verbatim requirements. Evidence must quote checked
+theorem conclusions and object-identity/consumer chains; declaration names
+alone do not close rows.
 
 ## 2. Check Parallelism
 
@@ -66,6 +68,11 @@ Requirements:
 
 A helper, wrapper, record field, or conditional exactness theorem is complete
 only when the assigned downstream target consumes it.
+
+When a public theorem combines space and execution claims, expand definitions
+and prove that every conjunct concerns the same payload, store, execution, and
+word model. For whole-machine claims, cover every read-producing segment in one
+physical embedding and relate the query-independent word width to input size.
 
 For machine-backed work, prove address capacity against the modeled word width
 for the actual execution footprint, including dead/sentinel addresses. Host
@@ -139,10 +146,12 @@ or no-commit. Report:
 - skeptical-reviewer questions;
 - design decisions logged, or why none were needed;
 - exact verification outcomes;
-- the completed requirement-to-evidence matrix;
-- one exact completion status and declaration from the completion gate;
+- the completed requirement-to-evidence matrix with checked theorem types;
+- one exact candidate status and declaration from the completion gate;
 - remaining blockers and the next crisp target when status is not complete.
 
-A worker may stop only when the target closes, a formal obstruction forces a
+A worker may submit `CANDIDATE_COMPLETE` only when its frozen matrix closes;
+coordinator acceptance and any required fresh blind audit remain separate. A
+worker may stop only when the target closes, a formal obstruction forces a
 coordinator decision, required external state blocks progress, or the user
 redirects. A green build alone is not target closure.

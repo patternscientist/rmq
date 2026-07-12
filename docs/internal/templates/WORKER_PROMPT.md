@@ -36,21 +36,27 @@ Roadmap contract:
   it is not required for this target or its inherited invariants to be true.
 
 Acceptance contract:
-- Before editing, create a requirement-to-evidence matrix for every prompt
-  requirement, the named consumer, every applicable inherited invariant, and
-  every requested check. Name the intended theorem/check for each row.
+- Frozen acceptance IDs: [REQ-01..., INV-..., CHK-...]. The coordinator has
+  selected the applicable inherited IDs; you may add but may not remove or
+  weaken them.
+- Before editing, create the matrix using
+  docs/internal/templates/PROOF_ACCEPTANCE_MATRIX.md. Copy each requirement
+  verbatim. For every row, state the exact proposition/check needed, named
+  consumer and identity/composition chain, and a plausible falsifier.
 - Read and apply
   .agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md.
-- Preserve all applicable inherited invariants: counted-store provenance,
-  result dependency on charged reads, execution-derived trace/footprint,
-  supplied-store agreement, successful-read backing, machine-width words,
-  machine-width addresses and operands, all assigned edge cases, and no hidden
-  readiness/compatibility dispatch.
+- Preserve every coordinator-assigned inherited invariant.
 - For machine/layout work, audit actual footprint addresses against
   `2 ^ wordWidth`, including dead/sentinel addresses; array bounds are not
   enough.
 - For execution work, trace the returned result backward to the charged reads;
   post-hoc replay or decorative reads do not count.
+- For a public theorem combining space/execution/model claims, prove each
+  conjunct concerns the same payload, store, execution, and word model.
+- For a whole physical-machine claim, cover every read-producing segment in one
+  pre-execution word array and relate its query-independent width/capacity to
+  input size. A component slice or unconstrained little-o width fact is not
+  enough.
 
 Forbidden shortcuts:
 - No prose substitute for proof.
@@ -98,9 +104,12 @@ Report:
 - decisions logged or why none were needed;
 - exact command outcomes;
 - completed requirement-to-evidence matrix;
-- one status from COMPLETE / OBSTRUCTED / BLOCKED / INCOMPLETE;
-- use COMPLETE only with the exact declaration: `No assigned or inherited
-  acceptance criterion remains unmet.`;
+- quote checked theorem types or every hypothesis/conclusion for evidence;
+  declaration names alone do not close matrix rows;
+- one status from CANDIDATE_COMPLETE / OBSTRUCTED / BLOCKED / INCOMPLETE;
+- use CANDIDATE_COMPLETE only with the exact declaration: `I found no assigned
+  or inherited acceptance criterion unmet; coordinator acceptance is still
+  required.`;
 - lifecycle disposition requested, durable report/synthesis disposition, and
   next crisp target.
 ```

@@ -5,22 +5,29 @@ worktree accumulation from becoming hidden coordination debt.
 
 ## States
 
-Every delegated task moves through these states:
+Every delegated task moves through the applicable states:
 
 1. **Planned**: handle, target, base, and intended branch are assigned.
 2. **Launched**: the prompt has been sent.
 3. **Active**: a worker has created or confirmed its worktree and branch.
 4. **Submitted**: the worker reports a commit or a read-only report. Submission
    does not imply that the worker's completion assessment is accepted.
-5. **Audited**: the coordinator records a merge, port, reject, or follow-up
+5. **Candidate complete**: when applicable, the worker reports
+   `CANDIDATE_COMPLETE` with a frozen, closed acceptance matrix. This is
+   self-audit, not acceptance.
+6. **Audited**: the coordinator records a merge, port, reject, or follow-up
    verdict.
-6. **Integrated**: accepted work is present in the coordinator frontier.
-7. **Rejected**: the branch is not part of the frontier; useful evidence is
-   recorded.
-8. **Ported**: selected changes were applied elsewhere; the original branch is
-   no longer authoritative.
-9. **Archived**: the durable report/commit link and disposition are recorded.
-10. **Retired**: the worktree is removed and the branch is retained or deleted
+7. **Externally audited**: when required, a fresh blind auditor has reviewed
+   the exact candidate commit against the frozen contract.
+8. **Accepted**: the coordinator independently closed the matrix and any
+   mandatory external-audit gate.
+9. **Integrated**: accepted work is present in the coordinator frontier.
+10. **Rejected**: the branch is not part of the frontier; useful evidence is
+    recorded.
+11. **Ported**: selected changes were applied elsewhere; the original branch is
+    no longer authoritative.
+12. **Archived**: the durable report/commit link and disposition are recorded.
+13. **Retired**: the worktree is removed and the branch is retained or deleted
     according to the policy below.
 
 A write task is not operationally complete at **Integrated**. It is complete
@@ -55,6 +62,9 @@ one coordinator update can state clearly.
 - A same-worker repair for an unmet acceptance criterion remains part of the
   same lifecycle task even when it adds another commit.
 - A branch must never be merged merely because its worker says it is complete.
+- Public paper capstones, trust-boundary changes, combined space/execution
+  theorems, and roadmap-node closures require a fresh blind exact-commit audit
+  before acceptance or merge.
 - Prefer additive aliases and porting over conflict-heavy merges when the
   frontier moved materially during the task.
 - Tag or retain milestone/release branches. Ordinary integrated worker branches

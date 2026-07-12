@@ -1399,3 +1399,86 @@ Supersedes:
 
 No earlier decision. It operationalizes WDD-20260711-001 without weakening its
 completion standard.
+
+## WDD-20260712-001: Separate Worker Candidate Completion From Acceptance
+
+Status: Accepted
+Date: 2026-07-12
+Scope: Proof-worker evidence, coordinator acceptance, external audit, and
+paper-capstone integration.
+
+Decision:
+
+Workers freeze stable acceptance IDs and verbatim requirements before editing,
+then report only `CANDIDATE_COMPLETE`. Matrix evidence must quote checked
+theorem conclusions and show the identity/composition chain to the named
+consumer; declaration names alone do not close rows. Only the coordinator may
+record `ACCEPTED` after independently reconstructing the matrix from source.
+
+Public paper capstones, trust-boundary changes, combined space/execution
+theorems, and roadmap-node closures additionally require a fresh blind audit of
+the exact candidate commit before acceptance or merge. Fresh auditors receive
+the frozen contract, but not the worker verdict or narrative.
+
+Context:
+
+The U2 final-route worker produced substantial correct work and a polished
+completion matrix, but selected nearby theorem names as evidence for stronger
+requirements. The public space theorem still counted a different payload from
+the executed canonical reviewer payload; the physical embedding covered only
+the interior suffix; and the advertised word-model theorem did not relate the
+chosen capacity to input size. Stale claim-drift policy also allowed stale
+public constants to pass the scan. The worker nevertheless declared U2 closed
+and stated that no acceptance criterion remained.
+
+Options considered:
+
+- Add another prose warning while retaining worker self-certification.
+- Require more theorem names in the completion report.
+- Keep mutable matrix requirements and rely on post hoc coordinator review.
+- Freeze exact acceptance IDs, require conclusion-level and object-identity
+  evidence, make worker completion provisional, and use a two-person gate for
+  public milestones.
+
+Rationale:
+
+The failure was semantic entailment, not honesty or build hygiene. Stable
+requirements prevent target shrinkage. Quoted theorem conclusions expose weak
+evidence. Explicit identity chains catch true statements about sibling
+payloads that do not compose into the public claim. Provisional worker status
+and blind milestone review prevent the implementer's narrative from becoming
+the acceptance standard.
+
+This structure also makes paper exposition easier: each public claim has a
+recoverable chain from construction identity through storage, execution, word
+model, and theorem statement, with rejected alternatives and audit evidence.
+
+Consequences:
+
+Worker prompts assign applicable invariant IDs. The proof-sprint gate and
+matrix template require exact propositions, consumers, falsifiers, and residual
+gaps. Coordinators inspect theorem types and definitions, audit claim-scan
+policies themselves, and reserve `ACCEPTED` for their verdict. External audit
+cost rises for public milestones but not for ordinary isolated leaves.
+
+Evidence:
+
+- `.agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md`
+- `docs/internal/templates/PROOF_ACCEPTANCE_MATRIX.md`
+- `.agents/skills/rmq-coordinator/SKILL.md`
+- `docs/internal/WORKER_INTEGRATION_CHECKLIST.md`
+- `docs/internal/templates/AUDIT_PROMPT.md`
+- `docs/internal/AUDIT_PROTOCOL.md`
+- U2 candidate commits `b8ae4aa` and `ba49ae9`
+
+Follow-up:
+
+Apply this contract to the same-worker U2 repair. After that branch reaches
+candidate completion, run a fresh blind exact-commit audit before accepting U2
+or starting U3. Evaluate after two public milestones whether any invariant IDs
+need splitting or automation.
+
+Supersedes:
+
+It strengthens WDD-20260711-001 and WDD-20260711-002. Their evidence-gating,
+dual-status, and current-policy-base requirements remain active.

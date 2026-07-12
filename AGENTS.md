@@ -85,8 +85,11 @@
   workers must apply
   `.agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md`. A commit,
   push, green build, or candid remaining-risk note is a checkpoint, not target
-  closure. Completion requires every explicit criterion and applicable
-  inherited invariant to have concrete theorem/check evidence.
+  closure. Freeze verbatim requirements and stable acceptance IDs before
+  editing. Evidence rows must quote exact propositions and object-composition
+  chains; theorem names alone do not close them. Workers may report only
+  `CANDIDATE_COMPLETE`; the coordinator records `ACCEPTED` after independent
+  reconstruction and any mandatory blind exact-commit audit.
 - Every worker completion report must include a short proof-digestion section:
   what changed conceptually, what the work just done now means in plain
   English, what assumptions are live, and what a skeptical grad student would
