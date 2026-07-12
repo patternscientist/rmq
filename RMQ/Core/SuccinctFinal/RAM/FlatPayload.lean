@@ -1978,6 +1978,15 @@ theorem concreteBPNativeSuccinctRMQCanonicalReviewerWordBits_eq_log2_capacity
           (concreteBPNativeSuccinctRMQCanonicalReviewerCapacity shape) + 1 := by
   rfl
 
+
+/-- The reviewer width is the standard logarithmic machine-word model. -/
+theorem concreteBPNativeSuccinctRMQCanonicalReviewerWordBits_model
+    (shape : Cartesian.CartesianShape) :
+    concreteBPNativeSuccinctRMQCanonicalReviewerWordBits shape =
+        SuccinctRank.machineWordBits
+          (concreteBPNativeSuccinctRMQCanonicalReviewerCapacity shape) /\
+      SuccinctSpace.LittleOLinear SuccinctRank.machineWordBits := by
+  exact ⟨rfl, SuccinctRank.machineWordBits_littleO⟩
 theorem concreteBPNativeSuccinctRMQCanonicalInteriorPhysicalFootprint_fits
     (shape : Cartesian.CartesianShape) (store : SuccinctSpace.FlatWordStore)
     (startBlock count address : Nat)
