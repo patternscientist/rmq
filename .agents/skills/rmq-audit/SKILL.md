@@ -63,6 +63,18 @@ claim-drift policies and allowlists rather than treating green output as ground
 truth. For machine-backed work, also require backward value dependency and
 actual address-capacity checks, including tiny and dead/sentinel cases.
 
+For semantic liveness, source coverage, ownership, or refinement claims,
+expand the definitions and run counterfactual mutation checks: add a dead
+source, remove an operationally used source, replace a predicate with a
+tautology, and assign a consumer label without an evaluator edge. Require the
+auditor to identify which checked theorem rejects each applicable mutation.
+For returned-value or routing claims, inspect that projection specifically;
+aggregate trace inequality may be caused only by the log, and a singleton
+witness does not establish a universal dependency claim. For guarded public
+wrappers, compare the validity domain of every conjoined execution and adequacy
+field, including invalid ranges; reject raw adequacy left unconditional inside
+an otherwise guarded public record.
+
 Positive evidence tiers are kernel theorem, model theorem, executable
 validation, artifact evidence, then process evidence. Process reports do not
 prove mathematical or executable claims.

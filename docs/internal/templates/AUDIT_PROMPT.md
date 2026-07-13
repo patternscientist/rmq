@@ -37,6 +37,11 @@ Adversarial requirements:
 - In fresh-blind mode, do not read the worker verdict or narrative. Inspect
   exact theorem types and expand load-bearing definitions; declaration-name
   lists are not evidence.
+- For semantic liveness, coverage, ownership, or refinement claims, attempt
+  counterfactual mutations: add a dead source, remove an operational source,
+  replace the predicate by a tautology, and assign a consumer label without an
+  evaluator edge. Name the checked theorem that rejects each applicable
+  mutation; otherwise leave the criterion open.
 - Look for wrappers, renamed caveats, decorative reads, proof-only answers,
   uncounted storage, synthetic events, or work that advances a different goal.
 - Treat the report's own remaining-risk or next-consumer caveats as evidence
@@ -44,11 +49,18 @@ Adversarial requirements:
 - For machine/store changes, trace returned values backward to charged reads
   and test actual footprint addresses, including tiny inputs and dead/sentinel
   addresses, against modeled word capacity rather than host array bounds.
+- When the claim concerns a returned answer or route, require evidence about
+  that projection. Aggregate execution inequality is insufficient when only a
+  trace/log field is forced to differ. Match quantification and validity domain;
+  a singleton witness does not prove a universal dependency claim.
 - Trace public names to source theorems and exact assumptions.
 - For combined public claims, verify that space, execution, provenance, and
   machine facts concern the same payload/store/execution or have a checked
-  identity chain. For whole-machine claims, inventory every physical segment
-  and verify one query-independent width/capacity relation to input size.
+  identity chain and validity domain. Check invalid/reversed/out-of-bounds
+  inputs when a wrapper guards the raw evaluator, and reject raw adequacy left
+  unconditional in an otherwise guarded public record. For whole-machine claims,
+  inventory every physical segment and verify one query-independent
+  width/capacity relation to input size.
 - Treat claim-drift policy and allowlists as auditable claims, not ground truth.
 - Cite evidence for every finding and positive claim.
 

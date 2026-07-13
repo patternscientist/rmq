@@ -13,6 +13,17 @@ Auditors test both literal correctness and design intent. Work that is true but
 preserves the abstraction defect the active roadmap is meant to remove is not
 successful completion.
 
+For semantic liveness, coverage, ownership, dependency, refinement, or public
+composition claims, falsification includes expanding load-bearing definitions
+and attempting counterfactual mutations. Examples are adding a dead manifest
+source, assigning a consumer without an evaluator edge, ignoring a decisive
+read value, or mixing guarded and unguarded executions. The report names the
+checked theorem that rejects each applicable mutation. Aggregate-record
+inequality is not evidence about the returned value when only a log field is
+forced to change, and a concrete witness does not close a universally
+quantified dependency claim. A public record cannot leave raw adequacy
+unconditional while guarding its other execution fields.
+
 ## Evidence Tiers
 
 1. kernel theorem;

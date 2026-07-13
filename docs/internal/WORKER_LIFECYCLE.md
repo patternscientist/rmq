@@ -13,8 +13,11 @@ Every delegated task moves through the applicable states:
 4. **Submitted**: the worker reports a commit or a read-only report. Submission
    does not imply that the worker's completion assessment is accepted.
 5. **Candidate complete**: when applicable, the worker reports
-   `CANDIDATE_COMPLETE` with a frozen, closed acceptance matrix. This is
-   self-audit, not acceptance.
+   `CANDIDATE_COMPLETE` with the exact provisional declaration and a frozen,
+   closed acceptance matrix containing attempted anti-vacuity challenges. This
+   is self-audit, not acceptance. A missing status, informal "closed" claim, or
+   requirement-to-theorem name list remains **Submitted**, not candidate
+   complete.
 6. **Audited**: the coordinator records a merge, port, reject, or follow-up
    verdict.
 7. **Externally audited**: when required, a fresh blind auditor has reviewed

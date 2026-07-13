@@ -40,6 +40,25 @@ An honest "remaining audit risk" is useful evidence, but it is also evidence
 that an assigned acceptance criterion remains open. Commit the checkpoint and
 continue rather than reporting the task complete.
 
+## Letter-Complete Semantic Claims
+
+A theorem can have the requested name and still fail the intended semantic
+obligation. Known examples include:
+
+- defining every source as live with `Live := True`, then proving counted/live
+  equivalence from an exhaustive constructor list;
+- assigning consumer names in a second hand-written table without connecting
+  them to the evaluator leaves that issue reads;
+- proving two complete trace records differ when only a logged return word is
+  forced to differ, then presenting that as returned-answer dependency;
+- combining a raw unguarded adequacy packet with a guarded list-facing result
+  and calling the conjunction one execution story.
+
+For semantic coverage, liveness, ownership, dependency, and composition claims,
+expand the load-bearing definitions and identify which checked theorem fails
+under the corresponding mutation. Green builds, exhaustive enumeration, and
+accurate declaration-name inventories do not supply that evidence.
+
 ## Select And Close History
 
 For historical C1 descriptor-select work, proof fields such as

@@ -42,7 +42,9 @@ Acceptance contract:
 - Before editing, create the matrix using
   docs/internal/templates/PROOF_ACCEPTANCE_MATRIX.md. Copy each requirement
   verbatim. For every row, state the exact proposition/check needed, named
-  consumer and identity/composition chain, and a plausible falsifier.
+  consumer and identity/composition chain, and an anti-vacuity challenge to
+  attempt for every applicable semantic subclaim. Before closing a row, record
+  each outcome and which theorem rejects the challenged mutation.
 - Read and apply
   .agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md.
 - Preserve every coordinator-assigned inherited invariant.
@@ -51,8 +53,21 @@ Acceptance contract:
   enough.
 - For execution work, trace the returned result backward to the charged reads;
   post-hoc replay or decorative reads do not count.
+- For returned-value or routing claims, require evidence about that value,
+  state, or route. Inequality of an aggregate execution or trace record is not
+  enough when only the log is forced to change. Match the evidence
+  quantification and validity domain to the public claim; a singleton witness
+  does not prove a universal dependency theorem.
+- For semantic liveness, coverage, or ownership, expand the definitions and
+  show which theorem fails if a dead source is added, a live source is removed,
+  or a consumer label is assigned without an evaluator connection.
 - For a public theorem combining space/execution/model claims, prove each
   conjunct concerns the same payload, store, execution, and word model.
+- If a public wrapper guards valid inputs, ensure every combined field uses the
+  same guard/domain. Raw adequacy may occur only under the valid-range premise
+  or in a guarded packet with matching invalid semantics; a bridge theorem does
+  not justify leaving raw adequacy unconditional in the same public record.
+  Test invalid, reversed, and out-of-bounds cases.
 - For a whole physical-machine claim, cover every read-producing segment in one
   pre-execution word array and relate its query-independent width/capacity to
   input size. A component slice or unconstrained little-o width fact is not
@@ -95,6 +110,10 @@ Verification:
   [only if public prose changed]
 
 Report:
+- begin with exactly one status line. For candidate completion, the first two
+  lines must be exactly `Status: CANDIDATE_COMPLETE` and `I found no assigned
+  or inherited acceptance criterion unmet; coordinator acceptance is still
+  required.` Do not substitute "closed", "complete", or "merge-ready";
 - handle/title, exact inspected commit, and, for write tasks, branch,
   worktree, base, and commit;
 - changed files and exact theorem/definition names;
@@ -103,13 +122,11 @@ Report:
 - skeptical-reviewer questions;
 - decisions logged or why none were needed;
 - exact command outcomes;
-- completed requirement-to-evidence matrix;
+- durable completed requirement-to-evidence matrix, including anti-vacuity
+  challenges attempted and outcomes;
 - quote checked theorem types or every hypothesis/conclusion for evidence;
   declaration names alone do not close matrix rows;
 - one status from CANDIDATE_COMPLETE / OBSTRUCTED / BLOCKED / INCOMPLETE;
-- use CANDIDATE_COMPLETE only with the exact declaration: `I found no assigned
-  or inherited acceptance criterion unmet; coordinator acceptance is still
-  required.`;
 - lifecycle disposition requested, durable report/synthesis disposition, and
   next crisp target.
 ```

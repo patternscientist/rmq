@@ -20,6 +20,10 @@ Use this after every submitted worker branch.
       not redefine requirements around the implementation.
 - [ ] Every closed semantic row quotes a checked theorem type or exact
       hypotheses/conclusion. Declaration names alone are rejected.
+- [ ] Every semantic liveness, coverage, ownership, refinement, or equivalence
+      row expands its load-bearing definitions and records an attempted
+      anti-vacuity mutation for every applicable semantic subclaim plus the
+      theorem that rejects each one.
 - [ ] The exact target exists and typechecks.
 - [ ] Its declared downstream consumer uses it.
 - [ ] No wrapper, proof field, alias, or conditional premise is counted as the
@@ -29,6 +33,8 @@ Use this after every submitted worker branch.
 - [ ] The worker was justified in stopping.
 - [ ] A `CANDIDATE_COMPLETE` report contains the required provisional
       declaration and identifies no required follow-up for the same target.
+- [ ] The report begins with the exact status/declaration. Informal claims such
+      as "closed at worker/gate level" are treated as `INCOMPLETE`.
 
 ## Fidelity
 
@@ -36,8 +42,14 @@ Use this after every submitted worker branch.
 - [ ] If public claims combine space, execution, provenance, or machine facts,
       their theorem arguments concern the same object or a checked identity,
       erasure, or flattening chain connects them at the public consumer.
+- [ ] Guarded public wrappers apply one validity domain to every combined field,
+      or a checked equivalence connects guarded and raw executions; invalid,
+      reversed, and out-of-bounds cases do not mix two execution stories.
 - [ ] The returned value and routing depend on the charged reads; no semantic
       or wide-cell answer is obtained first and replayed afterward.
+- [ ] Evidence about a returned value or route constrains that projection;
+      aggregate record inequality is not accepted when only its log changes,
+      and concrete witnesses do not close universally quantified claims.
 - [ ] The trace/footprint is derived from the execution it describes.
 - [ ] Successful reads are charged, store-backed, and word bounded.
 - [ ] Every executed address, dead/sentinel address, and operand fits the

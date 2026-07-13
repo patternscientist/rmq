@@ -104,28 +104,39 @@ For each completed worker branch:
    requirements, named consumer, and inherited invariants. Inspect checked
    theorem types and expand load-bearing definitions; declaration names and
    documentation summaries are not evidence.
-5. Record local-rung status and roadmap-node status separately; a closed helper
+5. For semantic liveness, coverage, ownership, refinement, or equivalence
+   claims, perform a counterfactual mutation audit: add a dead source, remove a
+   used source, replace the predicate by a tautology, or assign a consumer label
+   without an evaluator edge. Identify the theorem that fails. If none fails,
+   the row is open.
+6. Record local-rung status and roadmap-node status separately; a closed helper
    or prerequisite does not close its consumer node.
-6. For combined public claims, verify that space, execution, provenance, and
+7. For combined public claims, verify that space, execution, provenance, and
    machine conjuncts concern the same objects. For whole-machine claims,
    inventory every read segment, physical offset, and the input-size relation
-   for the one query-independent word width.
-7. Trace returned values to charged reads and check actual footprint addresses
-   against modeled address capacity when machine/store work changed.
-8. Run the smallest gate that genuinely covers the change, including small and
+   for the one query-independent word width. Check that validity guards apply
+   to every combined field or are connected by a theorem on the same domain.
+8. Trace returned values to charged reads and check the relevant value/state/
+   route projection, not merely inequality of an aggregate record. Check actual
+   evidence quantification and validity domain against the public claim; one
+   concrete witness cannot close a universal row. Check actual footprint
+   addresses against modeled address capacity when machine/store work changed.
+9. Treat a missing or informal candidate status as `INCOMPLETE`; "closed at
+   worker/gate level" is not the required provisional declaration.
+10. Run the smallest gate that genuinely covers the change, including small and
    threshold boundary cases when layout or dispatch changed.
-9. Treat claim-drift tooling as a consistency aid, not ground truth. Inspect the
+11. Treat claim-drift tooling as a consistency aid, not ground truth. Inspect the
    policy/allowlist itself when claims or constants change.
-10. Update theorem maps, artifact docs, and design logs if the public surface or
+12. Update theorem maps, artifact docs, and design logs if the public surface or
    architecture changed.
-11. For a public capstone, trust-boundary change, combined space/execution
+13. For a public capstone, trust-boundary change, combined space/execution
    theorem, or roadmap-node closure, launch a fresh blind exact-commit audit
    before merge or closure. Do not give that auditor the worker verdict.
-12. Record `ACCEPTED` only after the coordinator gate and any mandatory blind
+14. Record `ACCEPTED` only after the coordinator gate and any mandatory blind
    audit; otherwise continue, port, or reject the branch.
-13. Update lifecycle state and retire the worktree/branch when evidence is
+15. Update lifecycle state and retire the worktree/branch when evidence is
    preserved.
-14. Re-read the current roadmap/frontier and produce the best next ambitious
+16. Re-read the current roadmap/frontier and produce the best next ambitious
    prompt or prompt set, using parallel workers when dependencies are genuinely
    independent.
 

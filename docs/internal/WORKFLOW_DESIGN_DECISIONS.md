@@ -1482,3 +1482,119 @@ Supersedes:
 
 It strengthens WDD-20260711-001 and WDD-20260711-002. Their evidence-gating,
 dual-status, and current-policy-base requirements remain active.
+
+## WDD-20260713-001: Require Counterfactual Semantic Closure Evidence
+
+Status: Accepted
+Date: 2026-07-13
+Scope: Proof-worker completion, coordinator reconstruction, external audits,
+and publication-facing evidence for semantic coverage claims.
+
+Decision:
+
+Semantic liveness, coverage, ownership, dependency, refinement, and public
+composition rows now require counterfactual evidence in addition to theorem
+types and green gates. The worker, coordinator, and auditor expand the
+load-bearing definitions and identify which checked theorem rejects applicable
+mutations: adding a dead manifest source, removing an operationally used
+source, assigning a consumer label without an evaluator edge, replacing a
+semantic predicate by a tautology, ignoring a returned read value, or mixing
+guarded and unguarded executions.
+
+Bundled requirements receive one attempted mutation per applicable semantic
+subclaim. Projection-specific evidence must match the public claim's
+quantification and validity domain: a singleton corruption witness cannot prove
+universal dependency, and a valid-range bridge cannot justify unconditional raw
+adequacy inside an otherwise guarded all-input record.
+
+Returned-value and routing requirements must be supported at the relevant
+projection; inequality of an aggregate trace record is insufficient when its
+log alone forces the inequality. Public wrappers with validity guards must use
+one execution domain across result, trace, cost, footprint, and adequacy fields,
+or provide a checked equivalence under the valid-range premise and an explicit
+invalid-input semantics.
+
+Worker candidate reports must begin with the exact provisional status and
+declaration. Informal substitutes such as "closed at worker/gate level",
+"complete", or "merge-ready" are protocol failures and are treated as
+`INCOMPLETE`. The durable acceptance matrix records anti-vacuity challenges
+actually attempted and their outcomes, not merely plausible falsifiers.
+
+Context:
+
+The W17 U2 candidate at `9d19613` made substantial genuine progress: one
+counted/executed payload, a real supplied-store adapter, physical footprints,
+whole-query width bounds, and a uniform reviewer route. Its report nevertheless
+declared worker/gate closure from a declaration-name inventory. In source,
+`ReviewerSource.Live` was definitionally `True`; consumer ownership came from a
+second hand-written table rather than evaluator reachability; a store
+corruption theorem could differ only through its logged read; and the public
+list packet combined guarded result fields with an unguarded raw adequacy
+packet on invalid ranges. CI, artifact reproduction, axiom inventories, and
+claim scans all passed because these were semantic entailment failures rather
+than compilation or trust failures.
+
+Options considered:
+
+- Rely on the mandatory blind audit to catch such defects after every worker.
+- Add more theorem names and executable examples to completion reports.
+- Ban particular definitions such as `Live := True` globally.
+- Require definition expansion, projection-specific evidence, and targeted
+  counterfactual mutations at worker, coordinator, and auditor gates.
+
+Rationale:
+
+Blind audit remains necessary for public milestones but should validate a real
+candidate, not perform the implementer's missing semantic self-audit. More
+theorem names reproduce the same failure, while a global syntactic ban would
+reject legitimate propositions that happen to be universally true. A
+counterfactual challenge tests the intended meaning directly: an exact live
+manifest should reject a dead source, a consumer theorem should reject a forged
+label, and value dependency should fail when the decisive read is ignored.
+
+This evidence is also paper-friendly. It exposes why the formal definitions
+capture the operational concepts used in the exposition, records the boundary
+between traces and returned values, and gives reviewers compact falsification
+tests instead of asking them to infer non-vacuity from a large theorem stack.
+
+Consequences:
+
+The proof-sprint gate and worker matrix are slightly more demanding for
+semantic rows, but ordinary arithmetic or local helper proofs are unaffected.
+Coordinator and external-audit passes gain explicit mutation checks. Exact
+status syntax prevents polished prose from blurring provisional worker status
+with coordinator acceptance. Green build and CI evidence remain necessary but
+are explicitly lower-tier than semantic closure evidence.
+
+Evidence:
+
+- `.agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md`
+- `.agents/skills/rmq-proof-sprint/references/KNOWN_FAILURE_MODES.md`
+- `.agents/skills/rmq-proof-sprint/SKILL.md`
+- `.agents/skills/rmq-coordinator/SKILL.md`
+- `.agents/skills/rmq-audit/SKILL.md`
+- `docs/internal/templates/PROOF_ACCEPTANCE_MATRIX.md`
+- `docs/internal/templates/WORKER_PROMPT.md`
+- `docs/internal/templates/AUDIT_PROMPT.md`
+- `docs/internal/WORKER_INTEGRATION_CHECKLIST.md`
+- `docs/internal/AUDIT_PROTOCOL.md`
+- `docs/internal/WORKER_LIFECYCLE.md`
+- W17 candidate commit `9d19613`
+
+Follow-up:
+
+Apply the revised gate to the same-worker W17 repair. A fresh blind auditor of
+the repaired exact commit must independently repeat the applicable mutations
+before the coordinator records U2 `ACCEPTED`. Because W17's original frozen
+matrix predates `INV-SEMANTIC-NONVACUITY`, its repair prompt must record an
+explicit coordinator-approved contract amendment adding that row and reopening
+the bundled manifest, value-dependency, and public-composition rows. After two
+semantic-capstone cycles, assess whether a lightweight structured-report linter
+would prevent status or matrix-format drift without pretending to automate
+semantic review.
+
+Supersedes:
+
+It strengthens WDD-20260712-001. Frozen requirements, provisional worker
+status, coordinator reconstruction, and mandatory blind public-capstone audit
+remain active.

@@ -32,7 +32,8 @@ Before editing, build and freeze the requirement-to-evidence matrix required by
 `docs/internal/templates/PROOF_ACCEPTANCE_MATRIX.md`. Preserve the
 coordinator-assigned IDs and verbatim requirements. Evidence must quote checked
 theorem conclusions and object-identity/consumer chains; declaration names
-alone do not close rows.
+alone do not close rows. Semantic rows must also record the attempted
+anti-vacuity challenge and identify which theorem rejects it.
 
 ## 2. Check Parallelism
 
@@ -78,6 +79,10 @@ For machine-backed work, prove address capacity against the modeled word width
 for the actual execution footprint, including dead/sentinel addresses. Host
 array bounds are not machine-addressability. Trace the returned value backward
 to the charged reads; post-hoc replay of a value obtained elsewhere is invalid.
+Evidence about the returned answer or routing must constrain that projection;
+aggregate trace inequality is insufficient when only the log changes. Expand
+semantic liveness/coverage definitions and reject tautological predicates or
+consumer labels disconnected from actual evaluator leaves.
 
 ## 4. Work To The Named Target
 
@@ -155,3 +160,7 @@ coordinator acceptance and any required fresh blind audit remain separate. A
 worker may stop only when the target closes, a formal obstruction forces a
 coordinator decision, required external state blocks progress, or the user
 redirects. A green build alone is not target closure.
+
+The exact status and declaration must be the first lines of the final report.
+Do not replace them with informal claims that the task, branch, or gate is
+closed.
