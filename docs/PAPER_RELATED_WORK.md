@@ -99,14 +99,14 @@ make a theorem true.
 - The cost model is not Lean runtime or compiled-code performance.
 - No compiler, CPU, cache, extraction, benchmark, or production-serialization
   claim is made.
-- The all-size modeled query-cost bound is the clean fixed route-split
-  corollary `4144`; the old `196727` aggregate is legacy compatibility.
-- The fast-regime theorem proves the smaller modeled bound `118` under the real
-  `2^15` readiness threshold.
+- The all-size modeled query-cost bound on the canonical reviewer route is the
+  uniform checked `328`. Ready `118`, route-split `4144`, zero-block, and
+  `196727` are compatibility/history only.
 - `2^128` appears only where compatibility or large-regime theorem surfaces
   explicitly carry that premise.
-- The footprint is a safe layout overapproximation, not an exact or minimal
-  dynamic read-set theorem.
+- The auxiliary logical layout footprint is a safe overapproximation. The
+  reviewer flat-physical footprint is execution-derived and exactly the
+  execution's ordered read projection.
 - The current related-work and novelty story should avoid unqualified priority
   language until the novelty search is complete.
 

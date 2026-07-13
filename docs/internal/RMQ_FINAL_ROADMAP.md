@@ -9,7 +9,7 @@ architecture document, not a public claim surface.
 A reviewer should be able to find, without reverse-engineering the repository:
 
 1. one classical list-facing RMQ theorem and its exact Lean source;
-2. the matching lower bound and the `2n + o(n)` payload upper bound;
+2. the matching lower bound and the `buildPayload.length <= 2n + o(n)` upper bound;
 3. the counted payload, proof-only data, machine state, and cost measure;
 4. a familiar execution/refinement chain from the public query to a small
    machine model;
@@ -26,7 +26,7 @@ when the represented algorithm genuinely has two regimes.
 The integrated paper frontier already contains:
 
 - the narrow `RMQPaper` reviewer root and `RMQ.Headlines.RMQ` alias surface;
-- the list-facing `2n + o(n)` constant-query profile and exact lower-bound
+- the list-facing at-most-`2n + o(n)` constant-query profile and exact lower-bound
   package;
 - flat counted-payload backing for successful reads and a no-synthetic final
   trace;
@@ -123,15 +123,17 @@ Acceptance:
 
 Status: worker candidate; coordinator acceptance pending.
 
-Every size uses `RelativeRmm.canonicalLayout`, the same canonical interior
-component store, and the same close/LCA reviewer route. Segment `20` embeds
-the component in the global store at an exact physical word offset. The
-execution-derived dynamic footprint controls supplied-store agreement; all
-successful reads are charged and counted, returned words and physical
-addresses are bounded, and the final result depends on those reads. One
-pre-execution physical word list erases exactly to the public `buildPayload`,
-and the reviewer capacity is linear with an explicit logarithmic word-width
-bound. Empty,
+Every size uses `RelativeRmm.canonicalLayout` and the same close/LCA reviewer
+route. One exhaustive typed 20-source universe includes canonical close and
+proves counted/live equivalence, region exclusivity, logical-segment coverage,
+emitted-read coverage, named consumers, and absence of canonical legacy
+duplicates. The existing supplied-store evaluator runs through a checked
+flat-physical address-translation adapter. Its execution-derived ordered
+footprint controls agreement; a checked consumed-address disagreement changes
+the execution, proving physical-store dependence. One pre-execution physical
+word list erases exactly to public `buildPayload`, while the amended public
+space statement is `buildPayload.length <= 2*n + overhead n` with little-o
+overhead and no padding. Empty,
 singleton, size-two, and symbolic threshold-boundary cases are kernel checked.
 No Ready/Active/inactive or zero-block dispatch is reachable from
 `RMQPaper` / `RMQ.Headlines.RMQ`.
@@ -145,13 +147,18 @@ Acceptance evidence:
 - `concreteBPNativeSuccinctRMQCanonicalInteriorPhysicalFootprint_fits`;
 - `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact`;
 - `concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases`;
-- `concreteBPNativeSuccinctRMQWholeQueryReviewerPhysical_refines_logical`;
-- `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_ordered_read_footprint`;
+- `concreteBPNativeSuccinctRMQReviewerSource_counted_iff_live` and the typed
+  source/region/segment coverage chain;
+- `concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_refines_logical`;
+- `concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_eq_of_orderedFootprint`;
+- `concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_ne_of_consumed_read_disagreement`;
+- `SuccinctClassic.queryCosted_invalid` and its canonical, supplied-store,
+  trace, costed, and physical wrappers;
 - reviewer physical successful-read backing and whole-query word/address bounds
   in the final adequacy packet.
 
 Only the coordinator may replace this status with `ACCEPTED`, after independently
-reconstructing the frozen W15 matrix and obtaining a fresh blind exact-commit
+reconstructing the frozen/formally amended W17 matrix and obtaining a fresh blind exact-commit
 audit.
 
 ### U3. Reprove One Principled All-Size Cost Bound

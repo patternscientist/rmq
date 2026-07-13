@@ -1,21 +1,23 @@
 # Trust Audit Packet
 ## U2 Canonical Reviewer Trust Boundary
 
-The active final route has no Ready/Active/zero-block dispatch. Its close/LCA
-interior reads the concatenated canonical component at segment `20`, while one
-pre-execution physical list covers every live read-producing segment and erases
-exactly to the public `buildPayload`.
+The active final route has no Ready/Active/zero-block dispatch. One exhaustive
+typed 20-source universe, including canonical close, covers every reviewer-live
+read source and one pre-execution physical list erases exactly to the public
+`buildPayload`.
 `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_refines_canonicalInterpretedCosted`
 and `...Costed_exact` connect the charged trace to semantic RMQ exactness.
-Agreement on the actual ordered logical footprint determines the complete
-supplied trace; the physical refinement preserves order and failures, and
-successful reads are positional reads from the same counted list. No-synthetic,
+The existing supplied-store evaluator reads the supplied flat physical store
+through a checked address-translation adapter. Agreement on the first
+execution's consumed physical footprint determines the complete physical
+trace; the refinement preserves order, failures, and repetitions, while a
+checked consumed-address disagreement changes the execution. No-synthetic,
 linear-capacity, logarithmic-width, stored/returned-word, physical-address, and
 primitive-operand bounds are checked at the composed consumer. The transitional
 all-size cap is exactly `328`; older route constants are compatibility history.
 
 
-Snapshot: 2026-07-09. This is the compact packet to hand to a skeptical
+Snapshot: 2026-07-13 (W17 corrected candidate). This is the compact packet to hand to a skeptical
 Lean/formalization reviewer before asking for a broader library-readiness
 review. It focuses on the public succinct RMQ headline theorem, its alias
 chain, its cost/space model, and the main anti-oracle checks.
@@ -48,8 +50,7 @@ The most reader-facing public RMQ names live in the narrow RMQ paper surface:
 `RMQ/Headlines.lean` remains the aggregate full-repository barrel.
 
 ```lean
-abbrev listIntSuccinctRMQPaperMainTheorem :=
-  RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story
+theorem listIntSuccinctRMQPaperMainTheorem : ...
 
 abbrev succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional
@@ -58,13 +59,16 @@ abbrev succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe :=
 The first theorem is stated over ordinary `xs : List Int`: it exposes
 `SuccinctClassic.buildPayload xs`, proves its length is at most
 `2 * xs.length + overhead xs.length` with `overhead = o(n)`, and proves that
-`SuccinctClassic.queryCosted xs` answers valid half-open RMQ queries with
-leftmost ties under one constant modeled query bound.
+`SuccinctClassic.queryCosted xs` rejects invalid or empty ranges and answers
+valid half-open RMQ queries with leftmost ties under one constant modeled query
+bound. Exact physical erasure is separate; the payload is not padded to force
+size equality.
 
 The execution story keeps those ordinary-list clauses and also consumes the
 final no-synthetic WordRAM story for `Cartesian.shape xs`: one physical word
-list erases exactly to `SuccinctClassic.buildPayload xs`, physical execution
-refines the logical trace, all successful reads are backed positionally, and
+list erases exactly to `SuccinctClassic.buildPayload xs`; the supplied-store
+evaluator reads that flat store through checked translation; physical execution
+refines the logical trace; first-footprint agreement determines the result; and
 one query-independent reviewer width bounds the whole execution.
 
 The construction-facing RMQ name is:
@@ -218,7 +222,7 @@ global store on the read events emitted by the final trace validates that same
 trace.
 
 A zero-block same-block supplied-store surface remains available as a focused
-leaf theorem:
+compatibility-only leaf theorem:
 
 ```lean
 RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreEqGlobalOfFootprint

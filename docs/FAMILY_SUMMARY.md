@@ -1,15 +1,18 @@
 # RMQ Family Summary
-## Current U2 Worker Candidate (2026-07-12)
+## Corrected U2 Worker Candidate (W17, 2026-07-13)
 
-W15 supplies candidate evidence for U2; only the coordinator may accept the
+W17 supersedes the rejected W15 candidate; only the coordinator may accept the
 node after independently reconstructing the frozen matrix and obtaining a fresh
 blind exact-commit audit. The all-size final trace consumes
 `SuccinctClose.canonicalRelativeRmmInteriorDirectory` through
 `concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural`; it does not
-dispatch on legacy `Ready`, `Active`, or the zero-block route. Segment `20`
-serves `canonicalRelativeRmmInteriorComponentStore` as one concatenated
-baseline/min-relative/max-relative/arg-offset/local/global machine-word store.
-The whole machine is the single pre-execution list
+dispatch on legacy `Ready`, `Active`, or the zero-block route. One exhaustive
+typed 20-source universe includes canonical close. Its theorems establish
+counted source iff reviewer-live source, source/region exclusivity, complete
+logical-segment coverage, emitted-read region membership, named consumers
+(with BP code explicitly shared), and absence of legacy duplicate
+close/interior sources from the canonical payload. The whole machine is the
+single pre-execution list
 `concreteBPNativeSuccinctRMQReviewerPhysicalWords`; its exact-erasure theorem
 identifies that list with the canonical public payload underlying
 `SuccinctClassic.buildPayload`, rather than an appended sibling payload.
@@ -25,11 +28,24 @@ store-parametric through
 `concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore_store_parametric`
 and the whole-query supplied-store theorems.
 
-The whole-query ordered logical read footprint retains repeated and failed
-reads. Agreement on that actual footprint determines the complete supplied
-`TraceResult`, while the physical refinement preserves result, cost, ordered
-trace, failures, and footprint. Successful physical reads are positional reads
-from the one physical list.
+The reviewer-facing capstone is genuine supplied flat-physical execution, not
+a mapping of an already-computed logical value and trace. The existing
+supplied-store evaluator reads the caller's flat store through
+`concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter` at checked translated
+addresses. Canonical execution preserves result, cost, ordered successful and
+failed reads, repetitions, and the execution-derived physical footprint.
+Agreement on the first execution's consumed ordered physical footprint
+determines the complete execution, while
+`concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_ne_of_consumed_read_disagreement`
+checks that a disagreement at a consumed address changes it.
+
+The public list boundary rejects invalid or empty ranges coherently through
+`queryCosted_invalid`, `queryTraceResult_invalid`,
+`queryTraceResultWithStore_invalid`, and their physical/store wrappers. The
+space theorem is the amended inequality
+`buildPayload.length <= 2*n + overhead n`, with `overhead = o(n)`. Exact
+physical-word erasure remains mandatory and proved; the payload is not padded
+to manufacture equality.
 
 The reviewer-native capacity and width are
 `concreteBPNativeSuccinctRMQReviewerCapacity n = 400000 * (n + 1)` and
@@ -1126,12 +1142,9 @@ and `docs/internal/LOCAL_BP_DECODER_PATH.md`.
   model-level succinct data-structure profile, not a claim about extracted
   wall-clock runtime.
 - The current concrete BP-native RMQ paper-facing all-size query-cost bound is
-  the fixed modeled constant `4144`, obtained as the maximum of the checked
-  route-split leaves: zero-block BP-code chunk scan cost `4096` plus the final
-  query's fixed close-select overhead, Ready cost `118`, active non-Ready cost
-  `568`, and inactive non-Ready cost `88`. The compatibility
-  constant `196727` is still checked, but it is no longer the public all-size
-  alias because it sums mutually exclusive fallback costs.
+  the uniform canonical checked constant `328`. Ready `118`, route-split
+  `4144`, zero-block, and `196727` remain compatibility/history facts and are
+  not consumed by the reviewer route.
 - The project remains Mathlib-free: imports are Lean/Std plus existing Lean
   arithmetic automation such as `omega`.
 
@@ -2875,6 +2888,10 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctClassic.buildPayload_length`,
   `SuccinctClassic.queryCosted_cost_le_canonicalTransitional`,
   `SuccinctClassic.queryCosted_cost_le`,
+  `SuccinctClassic.queryCosted_invalid`,
+  `SuccinctClassic.queryTraceResult_invalid`,
+  `SuccinctClassic.queryTraceResultWithStore_invalid`,
+  `SuccinctClassic.reviewerPhysicalTraceResultWithStore_invalid`,
   `SuccinctClassic.queryCosted_exact`,
   `SuccinctClassic.queryCosted_leftmost`, and
   `SuccinctClassic.listInt_two_n_plus_o_constant_query_profile`,
@@ -2883,8 +2900,7 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story`,
   `SuccinctClassic.queryCostedWithStore_eq_queryCosted_of_footprint`,
   `SuccinctClassic.listIntFinalFullModelSoundnessExactOfFootprintGlobal`,
-  `SuccinctClassic.listIntFinalFullModelCostLeOfFootprintGlobal`, and
-  `SuccinctClassic.listIntFastRegimeFinalFullModelCostLeOfFootprintGlobal`.
+  `SuccinctClassic.listIntFinalFullModelCostLeOfFootprintGlobal`.
 - `RMQ/Headlines.lean`:
   public-facing aliases
   `Headlines.exactRMQLowerBoundDoubledCatalanSlack`,
@@ -2897,6 +2913,7 @@ The names below are grouped by source module. Repeated base names in
   `Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal`,
   `Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal`,
   `Headlines.listIntSuccinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal`,
+  `Headlines.listIntSuccinctRMQQueryCostedInvalid`,
   `Headlines.succinctRMQTwoNPlusOConstantQuery`,
   `Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted`,
   `Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace`,
@@ -2905,9 +2922,12 @@ The names below are grouped by source module. Repeated base names in
   `Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory`,
   `Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory`,
   `Headlines.succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe`,
-  `Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe`,
-  `Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedByCountedFlatPayloadOfFootprintGlobal`,
+  `Headlines.succinctRMQCompatibility4144WholeQueryGlobalWordTraceCostedCostLe`,
+  `Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedByCanonicalReviewerPayloadOfFootprintGlobal`,
   `Headlines.succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal`,
+  `Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical`,
+  `Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint`,
+  `Headlines.succinctRMQReviewerPhysicalExecutionNeOfConsumedReadDisagreement`,
   `Headlines.concreteBPCloseNavigationProfile`,
   `Headlines.concreteBPCloseNavigationGlobalPayloadStoreExecutionStory`,
   `Headlines.concreteBPCloseNavigationGlobalPayloadStoreBoundedExecutionStory`,

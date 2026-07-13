@@ -4,7 +4,8 @@
 
 **TL;DR:** This project uses Lean to machine-check a classic optimal RMQ
 story: after preprocessing an array, exact range-minimum queries can be answered
-in constant modeled time from a Cartesian-shape payload of `2*n + o(n)` bits,
+in constant modeled time from a Cartesian-shape payload of at most
+`2*n + o(n)` bits,
 and any fixed-length payload-only exact RMQ encoding needs
 `2n - 1.5 log n - O(1)` bits. The same code base is now growing into a
 verified advanced-data-structures testbed, with standalone rank/select,
@@ -58,13 +59,12 @@ The RMQ-only paper aliases live in
 
 | Alias | Meaning |
 | --- | --- |
-| `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | Reader-facing theorem over ordinary `xs : List Int`: build a payload of length `2*n + o(n)` bits and answer valid half-open RMQ queries exactly, with leftmost ties, within constant modeled query cost. |
-| `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Reader-facing flat-payload execution story over ordinary `xs : List Int`: the same final query uses the advertised `2*n + o(n)` `buildPayload`, satisfies the classic half-open leftmost RMQ contract, is interpreted by the final WordRAM trace, and every actual successful read is backed by one query-independent counted flat payload layout with bounded events and no synthetic cost-only trace markers. |
-| `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` | Paper-facing list theorem combining the advertised `2*n + overhead` payload size, `overhead = o(n)`, exact valid RMQ answers with leftmost ties, constant modeled query cost, and the final no-synthetic flat-payload trace story. |
+| `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | Reader-facing theorem over ordinary `xs : List Int`: `buildPayload.length <= 2*n + overhead n` with `overhead = o(n)`; valid half-open queries return the exact leftmost RMQ answer, invalid or empty ranges return `none`, and modeled query cost is constant. |
+| `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Reader-facing no-synthetic execution story over ordinary `xs : List Int`, including the same public space inequality and range contract. Exact physical-word erasure is also conjoined directly in the paper main theorem; the construction is not padded to manufacture a size equality. |
+| `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` | Paper-facing list theorem combining the amended at-most payload bound, `overhead = o(n)`, invalid-range rejection, exact valid answers with leftmost ties, constant modeled query cost, and the final no-synthetic flat-payload trace story. |
 | `RMQ.Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint` | List-facing supplied-store equality: under final footprint agreement with `SuccinctClassic.globalReadStore xs`, `SuccinctClassic.queryCostedWithStore xs store left right` is the same costed query as canonical `SuccinctClassic.queryCosted xs left right`. |
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal` | List-facing supplied-store exactness: if a caller-provided store agrees with `SuccinctClassic.globalReadStore xs` on the final checked footprint, valid half-open queries through `SuccinctClassic.queryCostedWithStore` erase to the exact leftmost `List Int` RMQ answer. |
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal` | List-facing supplied-store all-size cost transfer: under the same footprint agreement, the supplied-store query has modeled cost at most `SuccinctClassic.queryCost`. |
-| `RMQ.Headlines.listIntSuccinctRMQFastRegimeFinalFullModelCostLeOfFootprintGlobal` | List-facing supplied-store fast-regime cost transfer: under footprint agreement plus `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= (SuccinctClassic.cartesianShape xs).size`, the supplied-store query has modeled cost at most the final fast-regime constant. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and a numeric doubled-Catalan slack comparison in the same public theorem surface; the encoding-quantified lower-bound theorem is exposed separately as `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack`. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Whole-query-interpreted variant of the final BP-native succinct RMQ capstone: same theorem shape, with the final query control represented by closed `WordRAM`/register-program syntax whose leaves are interpreted close-select, compact close/LCA, and register-backed answer-rank operations. |
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace` | Unified-`WordRAM.TraceEvent` variant of the same capstone: the final query emits one trace stream, with close-select, answer-rank, and compact-close rank-seed reads replayed as structural payload/register traces. |
@@ -75,11 +75,15 @@ The RMQ-only paper aliases live in
 | `RMQ.Headlines.succinctRMQCanonicalReviewerMachineWordsComponentSlice` | Exact physical machine-word placement of the canonical component after the counted prefix. |
 | `RMQ.Headlines.succinctRMQCanonicalInteriorPhysicalFootprintFits` | Every physical address consumed by the canonical interior execution fits the pre-execution reviewer word width. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe` | Uniform canonical all-size cost theorem with checked transitional bound `328`. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe` | Clean fixed all-size cost theorem: the final global trace costs at most `RMQ.Headlines.succinctRMQQueryCost = 4144`, the maximum of the checked route-split leaves. |
+| `RMQ.Headlines.succinctRMQCompatibility4144WholeQueryGlobalWordTraceCostedCostLe` | Compatibility-only route-split `4144` theorem; it is not the canonical reviewer route. |
 | `RMQ.Headlines.succinctRMQCanonicalTransitionalQueryCostEq` | The canonical transitional query-cost expression computes to `328`. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | All-size structural execution story with raw positive same-block decoding and canonical component-store cross-block replay; there is no zero-block dispatch. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` | No-synthetic all-size execution story: the same bounded global trace contains no dedicated synthetic cost-only marker events. |
-| `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Canonical reviewer-payload no-synthetic execution story: successful reads are counted, the appended component flattens exactly to its directory payload, and cross-block replay is uniform for all sizes. |
+| `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Canonical reviewer-payload no-synthetic execution story: successful reads are counted in one exhaustive typed 20-source universe, including canonical close, and cross-block replay is uniform for all sizes. |
+| `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical` | Genuine supplied flat-physical execution: the existing supplied-store evaluator reads the caller's flat store through checked address translation and refines the canonical logical execution, preserving value, cost, ordered successes/failures, repeated reads, and footprint. |
+| `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint` | Agreement on the first physical execution's consumed ordered footprint determines the complete physical execution. |
+| `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionNeOfConsumedReadDisagreement` | Checked corruption witness: disagreement at a consumed physical address changes the complete physical execution, so the supplied flat store is not ignored. |
+| `RMQ.Headlines.listIntSuccinctRMQQueryCostedInvalid` | One public validity boundary rejects every invalid or empty range; specialized empty, reversed, and out-of-bounds aliases are exported beside it. |
 | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory` | Large-regime companion: under the explicit size premise, the compact close/LCA leg uses the positive-block local/fringe/interior structural replay; it is a compatibility strengthening of the all-size structural route. |
 | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory` | Bounded large-regime companion to the global-store execution story. |
 | `RMQ.Headlines.concreteBPCloseNavigationProfile` | Concrete payload-backed BP close-navigation profile: relative-split false-select/rank-close plus compact relative-rmM close/LCA, with `2*n + o(n)` payload, constant modeled query cost, exact Cartesian-shape RMQ answer semantics, and machine-word-bounded component payload reads. |
@@ -97,18 +101,22 @@ The RMQ-only paper aliases live in
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreExecutionStory` | Target-independent global-store execution story for compressed/FID rank/select: for fixed `bits`, shared access plus rank false/true and select false/true traces all read from one concrete payload store. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory` | Bounded target-independent global-store execution story for compressed/FID rank/select: the shared access/rank/select traces also carry trace-local finite widths bounding payload-read addresses and word-primitive operands/results. |
 
-The current W15 branch supplies the U2 worker candidate; coordinator acceptance
+The W17 branch supplies the corrected U2 worker candidate; coordinator acceptance
 still requires independent matrix reconstruction and a fresh blind exact-commit
 audit. The canonical reviewer route has one live public payload,
 `SuccinctClassic.buildPayload`. One pre-execution reviewer physical word list
-erases exactly to that payload and refines the segmented logical execution,
-including ordered trace, failures, and footprint. Its query-independent width is
+erases exactly to that payload. The existing supplied-store evaluator runs
+through a checked adapter that reads the supplied flat store at translated
+physical addresses; canonical execution refines the logical execution while
+preserving decoded result, modeled cost, ordered trace (including repeated and
+failed reads), and the execution-derived footprint. Its query-independent width is
 `machineWordBits (400000 * (n + 1))`, with a checked linear capacity bound and
 an explicit `O(log (n + 2))` inequality.
 
 The supplied-store theorem uses the execution's ordered read footprint, retaining
-repeated and failed reads. Agreement there determines the complete `TraceResult`,
-so result, cost, ordered trace, and footprint all follow from charged reads. The
+repeated and failed reads. Agreement there determines the complete physical
+`TraceResult`; a checked consumed-address disagreement theorem witnesses that
+the supplied flat store is semantically observed. The
 checked transitional all-size cap remains `328`; U3 owns the final explained
 constant. Ready `118`, route-split `4144`, zero-block, and `196727` declarations
 remain compatibility/history surfaces and have no reverse edge into the
@@ -169,8 +177,8 @@ At a high level, the repository currently includes:
   balanced-parentheses representations;
 - an information-theoretic RMQ lower-bound framework, including the sharpened
   Catalan slack equivalent to `2n - 1.5 log n - O(1)`;
-- a payload-accounted BP-native succinct RMQ upper bound with `2*n + o(n)`
-  payload and constant modeled query cost;
+- a payload-accounted BP-native succinct RMQ upper bound with payload length at
+  most `2*n + o(n)` and constant modeled query cost;
 - an interpreter-backed final succinct RMQ query surface whose all-size
   execution story emits one global `WordRAM.TraceEvent` stream; every event is
   either a payload read or a bounded word primitive, and every read is checked
@@ -270,9 +278,9 @@ imports, this material):
 - [`docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md`](docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md):
   stress-tested Lean-club explanation of the current project state.
 - [`docs/digests/PROJECT_DIGESTION_2026_07_06.md`](docs/digests/PROJECT_DIGESTION_2026_07_06.md):
-  canonical July 2026 publication-oriented project digestion, originally
-  rooted at `main` commit `3f6f1e3` and updated with later supplied-store,
-  fast-regime, and route-split cost notes.
+  historical July 2026 publication-oriented project digestion, originally
+  rooted at `main` commit `3f6f1e3`; its fast-regime and route-split notes are
+  superseded compatibility history.
 - [`docs/ADD_PROVENANCE.md`](docs/ADD_PROVENANCE.md): public provenance note for
   the audit-driven development workflow; ADD is process evidence, not a proof
   object or trust base.

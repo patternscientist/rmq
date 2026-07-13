@@ -23,26 +23,71 @@ example : RMQ.Succinct.select false [true, false, true, false] 1 = some 3 := by
 
 def tinyRMQInput : List Int := [3, 1, 4, 1, 5]
 
-def succinctClassicPayloadTruePositions (xs : List Int) : List Nat :=
-  (RMQ.SuccinctClassic.buildPayload xs).zipIdx.filterMap fun bitAndIdx =>
-    if bitAndIdx.1 then some bitAndIdx.2 else none
+inductive CanonicalQueryRoute where
+  | invalid
+  | sameBlock
+  | crossBlock
+deriving Repr, DecidableEq, BEq
 
-#guard (RMQ.SuccinctClassic.buildPayload ([] : List Int)).length == 561
+/-- Executable inspection of the actual canonical close/LCA branch. -/
+def canonicalQueryRoute
+    (xs : List Int) (left right : Nat) : CanonicalQueryRoute :=
+  if _hvalid : RMQ.ValidRange xs left right then
+    let shape := RMQ.SuccinctClassic.cartesianShape xs
+    match RMQ.SuccinctSpace.bpCloseOfInorder? shape left,
+        RMQ.SuccinctSpace.bpCloseOfInorder? shape (right - 1) with
+    | some leftClose, some rightClose =>
+        let blockSize :=
+          RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw shape
+        if RMQ.SuccinctClose.blockOfClose blockSize leftClose =
+            RMQ.SuccinctClose.blockOfClose blockSize rightClose then
+          .sameBlock
+        else
+          .crossBlock
+    | _, _ => .invalid
+  else
+    .invalid
 
-#guard (RMQ.SuccinctClassic.buildPayload ([7] : List Int)).length == 10708
+/-- Canonical physical store with the first actually consumed word removed. -/
+def dropFirstConsumedPhysicalWord
+    (xs : List Int) (left right : Nat) : RMQ.WordRAM.ReadStore :=
+  let canonical := RMQ.SuccinctClassic.reviewerPhysicalReadStore xs
+  let first? :=
+    (RMQ.SuccinctClassic.reviewerPhysicalFootprint xs left right).head?
+  { readWord? := fun segment address =>
+      if segment == 0 && some address == first? then none
+      else canonical.readWord? segment address }
 
-#guard (RMQ.SuccinctClassic.buildPayload ([7] : List Int)).take 16 ==
-  [true, false, false, false, false, false, false, false,
-    false, true, false, false, false, false, false, true]
+/-- Executable positional backing check for every physical read, including
+failed reads at the checked dead address. -/
+def physicalReadsMatchCanonicalStore
+    (xs : List Int) (left right : Nat) : Bool :=
+  let result :=
+    RMQ.SuccinctClassic.reviewerPhysicalTraceResult xs left right
+  let words := RMQ.SuccinctClassic.reviewerPhysicalWords xs
+  result.trace.all fun event =>
+    match event with
+    | RMQ.WordRAM.TraceEvent.readWord segment address word? =>
+        segment == 0 && words[address]? == word?
+    | _ => true
 
-#guard succinctClassicPayloadTruePositions ([7] : List Int) ==
-  [0, 9, 15, 24, 30, 59, 71]
+#guard
+  (RMQ.SuccinctClassic.buildPayload tinyRMQInput).length <=
+    2 * tinyRMQInput.length +
+      RMQ.SuccinctClassic.overhead tinyRMQInput.length
 
-#guard succinctClassicPayloadTruePositions ([2, 1] : List Int) ==
-  [0, 1, 15, 22, 36, 42, 50, 77, 129, 164]
+#guard
+  RMQ.SuccinctSpace.flattenPayloadWords
+      (RMQ.SuccinctClassic.reviewerPhysicalWords tinyRMQInput) ==
+    RMQ.SuccinctClassic.buildPayload tinyRMQInput
 
-#guard succinctClassicPayloadTruePositions ([1, 1] : List Int) ==
-  [0, 2, 15, 22, 35, 42, 50, 77, 128, 164]
+#guard RMQ.SuccinctClassic.queryCost == 328
+
+#guard canonicalQueryRoute tinyRMQInput 2 4 == .sameBlock
+
+#guard canonicalQueryRoute tinyRMQInput 0 5 == .crossBlock
+
+#guard canonicalQueryRoute tinyRMQInput 1 1 == .invalid
 
 #guard (RMQ.SuccinctClassic.queryCosted tinyRMQInput 0 5).erase == some 1
 
@@ -63,8 +108,33 @@ def succinctClassicPayloadTruePositions (xs : List Int) : List Nat :=
 #guard (RMQ.SuccinctClassic.queryCosted ([9, 8, 7] : List Int) 1 1).erase ==
   none
 
+#guard (RMQ.SuccinctClassic.queryCosted ([9, 8, 7] : List Int) 2 1).erase ==
+  none
+
+#guard (RMQ.SuccinctClassic.queryCosted ([9, 8, 7] : List Int) 0 4).erase ==
+  none
+
+#guard
+  (RMQ.SuccinctClassic.reviewerPhysicalTraceResult
+    ([9, 8, 7] : List Int) 1 1).value == none
+
+#guard
+  (RMQ.SuccinctClassic.reviewerPhysicalTraceResult
+    ([9, 8, 7] : List Int) 1 1).trace == []
+
+#guard
+  (RMQ.SuccinctClassic.reviewerPhysicalTraceResult
+    ([7] : List Int) 0 1).value == some 0
+
+#guard
+  (RMQ.SuccinctClassic.reviewerPhysicalTraceResultWithStore
+    ([7] : List Int)
+    (dropFirstConsumedPhysicalWord ([7] : List Int) 0 1) 0 1).value == none
+
+#guard physicalReadsMatchCanonicalStore ([7] : List Int) 0 1
+
 example :
-    (RMQ.SuccinctClassic.buildPayload tinyRMQInput).length =
+    (RMQ.SuccinctClassic.buildPayload tinyRMQInput).length <=
       2 * tinyRMQInput.length +
         RMQ.SuccinctClassic.overhead tinyRMQInput.length := by
   exact RMQ.SuccinctClassic.buildPayload_length tinyRMQInput

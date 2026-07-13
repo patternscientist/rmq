@@ -1737,3 +1737,33 @@ Supersedes:
 The three-way interior routing consequence of DD-20260709-007 for the interior
 directory abstraction. It does not supersede the still-live final-query route
 until the consumer migration lands.
+
+## DD-20260713-001: amend REQ-01 space equality to the public upper bound
+
+Status: accepted coordinator amendment for W17.
+
+Decision:
+
+- Exact physical-word erasure to the public list-facing `buildPayload` remains
+  mandatory.
+- The public space clause is
+  `buildPayload.length <= 2 * n + overhead n`, with `overhead = o(n)`.
+- Exact length equality is not required, and the payload must not be padded to
+  manufacture it.
+
+Rationale:
+
+The publication claim is an upper bound of `2*n + o(n)` bits.  Exact erasure
+already establishes the important object-identity fact: the bits counted by
+the public theorem are exactly the bits underlying physical execution.  An
+additional exact-length equation is stronger than that claim and is unrelated
+to execution provenance.  Padding would add unread or decorative bits solely
+to satisfy an equation, weakening rather than strengthening the reviewer
+story.
+
+Consequences:
+
+All W17 public theorem surfaces and prose use the upper-bound form.  Exact
+equalities remain appropriate only for genuine representation identities such
+as physical-word flattening to `buildPayload`; they are not manufactured for
+the asymptotic budget.

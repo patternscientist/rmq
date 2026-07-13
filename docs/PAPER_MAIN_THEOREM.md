@@ -6,30 +6,43 @@ For every ordinary input list `xs : List Int`, the verified succinct RMQ
 construction builds an advertised payload of length at most `2 * xs.length +
 overhead xs.length`, where `overhead` is little-o-linear. Every valid half-open RMQ query
 returns the exact leftmost range minimum answer under the repository's
-value-level list semantics, within the modeled constant query budget. The final
+value-level list semantics, invalid or empty ranges return `none`, and the
+modeled query budget is constant. The final
 query also has a checked WordRAM trace/store/payload story: the costed query is
 the projection of a trace, successful reads are backed by counted flat payload
 words, event data are bounded in the model, no synthetic cost-only trace marker
-is used. One pre-execution physical word list erases exactly to that same public
-payload and refines the segmented execution. Agreement on the execution's
-ordered read footprint determines the complete supplied-store trace, and one
+is used. One pre-execution physical word list, described by an exhaustive typed
+20-source universe including canonical close, erases exactly to that same
+public payload. The existing supplied-store evaluator runs through a checked
+adapter that reads a caller-supplied flat store at translated physical
+addresses. Canonical flat-physical execution refines logical execution while
+preserving decoded result, cost, ordered successes/failures, repetitions, and
+the execution-derived footprint. Agreement on the first execution's consumed
+physical footprint determines the complete physical trace; a checked
+consumed-address disagreement witness proves the store is observed. One
 query-independent logarithmic word width bounds its storage, addresses, and
 primitive operands/results.
 
 ## Machine-Level Theorem Map
 
 - `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`: list-facing main theorem
-  with `2n + overhead`, `LittleOLinear overhead`, exact valid RMQ answers,
-  leftmost ties, modeled constant query cost, and the no-synthetic flat-payload
-  execution story.
+  with the inequality `buildPayload.length <= 2n + overhead`,
+  `LittleOLinear overhead`, exact physical-word erasure to that same
+  `buildPayload`, invalid-range rejection, exact valid RMQ answers, leftmost
+  ties, modeled constant query cost, and the no-synthetic execution story. The
+  payload is not padded to manufacture equality.
 - `RMQ.Headlines.succinctRMQFinalFullModelSoundness`: final trace/read-store/
   counted-payload model-soundness packet.
 - `RMQ.Headlines.succinctRMQFinalFullModelSoundnessExactOfFootprintGlobal`:
   exact valid RMQ answers for any supplied store agreeing with the canonical
   global store on the declared footprint.
-- `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedByCountedFlatPayloadOfFootprintGlobal`:
-  supplied-store successful reads are backed by counted flat payload under
-  footprint agreement.
+- `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical`,
+  `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint`, and
+  `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionNeOfConsumedReadDisagreement`:
+  genuine supplied flat-physical execution, first-footprint determinacy, and a
+  checked corruption/non-agreement witness.
+- `RMQ.Headlines.listIntSuccinctRMQQueryCostedInvalid`: one validity boundary
+  rejects invalid or empty list ranges.
 - `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal`:
   the canonical modeled cost bound transfers to footprint-agreeing supplied
   stores.

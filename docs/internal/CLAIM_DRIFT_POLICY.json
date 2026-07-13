@@ -1,6 +1,6 @@
 {
-  "version": 2,
-  "updated": "2026-07-12",
+  "version": 3,
+  "updated": "2026-07-13",
   "terms": [
     {
       "id": "novelty-first-mechanized",
@@ -78,6 +78,38 @@
       "id": "canonical-physical-payload-identity",
       "pattern": "ReviewerPhysicalWords|reviewer physical words",
       "status": "current-same-object-machine-evidence",
+      "strict": false,
+      "allowedPathRegex": "",
+      "allowedLineRegex": ""
+    },
+    {
+      "id": "genuine-flat-physical-execution",
+      "pattern": "FlatPhysical|flat-physical|physical execution|physical replay",
+      "status": "current-only-when-evaluator-reads-supplied-flat-store",
+      "strict": false,
+      "allowedPathRegex": "",
+      "allowedLineRegex": ""
+    },
+    {
+      "id": "typed-reviewer-source-manifest",
+      "pattern": "20-source|ReviewerSource|reviewer source manifest",
+      "status": "current-exhaustive-typed-canonical-universe",
+      "strict": false,
+      "allowedPathRegex": "",
+      "allowedLineRegex": ""
+    },
+    {
+      "id": "public-space-inequality",
+      "pattern": "buildPayload.*(<=|at most|length)",
+      "status": "current-at-most-two-n-plus-little-o-no-padding",
+      "strict": false,
+      "allowedPathRegex": "",
+      "allowedLineRegex": ""
+    },
+    {
+      "id": "invalid-range-rejection",
+      "pattern": "invalid range|invalid-range|empty range|out-of-bounds|reversed range",
+      "status": "current-returns-none-on-all-list-surfaces",
       "strict": false,
       "allowedPathRegex": "",
       "allowedLineRegex": ""

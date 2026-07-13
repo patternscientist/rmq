@@ -685,7 +685,7 @@ so exact all-size `118` remains false. A skeptical grad student should next ask
 for a charged zero-block interval navigator, or for a theorem showing the
 current BP-code-only trace cannot beat the full chunk scan.
 
-## 2026-07-12 W15 Whole-Machine U2 Worker Candidate
+## 2026-07-12 W15 Whole-Machine U2 Worker Candidate (Superseded)
 
 The W16 audit found that the earlier uniform-directory milestone still joined
 space and execution facts about different objects: the public payload remained
@@ -714,6 +714,49 @@ used to supply missing U2 truth. A skeptical grad student should next ask the
 coordinator to reconstruct the frozen matrix at the exact commit and commission
 a fresh blind audit. Until then this is worker-candidate evidence, not U2
 acceptance.
+
+## 2026-07-13 W17 Genuine Physical Execution Correction
+
+The coordinator rejected W15 because its reviewer-facing physical result was
+constructed by mapping an already-computed logical value and trace. Exact
+physical-word erasure and the underlying supplied-store proofs were real
+progress, but that capstone did not itself compute the answer from a supplied
+flat physical store. W17 replaces it with
+`concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore`: the
+existing supplied-store evaluator runs behind
+`concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter`, which performs
+checked logical-to-physical address translation and actually reads the caller's
+flat store. Canonical flat execution refines logical execution while preserving
+decoded result, modeled cost, ordered successes and failures, repeated reads,
+and the execution-derived footprint. Agreement on the first execution's
+consumed physical footprint determines the entire execution; disagreement at a
+consumed address provably changes it.
+
+The same correction makes storage provenance structural rather than
+route-descriptive. One exhaustive typed 20-source universe includes canonical
+close, proves counted source iff reviewer-live source, gives injective/exclusive
+physical regions and complete logical-segment coverage, maps emitted reads to
+listed regions, records named consumers with BP code explicitly shared, and
+keeps legacy duplicate close/interior storage behind compatibility surfaces.
+The list-facing API now has one validity boundary, so empty, reversed, and
+out-of-bounds ranges return `none` through canonical, supplied-store, trace,
+costed, and reviewer-physical surfaces.
+
+The approved space amendment is also explicit: the public theorem states
+`buildPayload.length <= 2*n + overhead n` with `overhead = o(n)`. Exact erasure
+of physical words to `buildPayload` remains proved, and no padding is introduced
+to manufacture equality. The canonical modeled cap is the uniform `328`; Ready
+`118`, route-split `4144`, zero-block, and `196727` remain compatibility/history.
+
+Plain English: changing a physical word that the machine consumes can now
+change its execution, which is the missing evidence that the payload is not
+decorative. Live assumptions remain the explicit WordRAM cost model,
+query-independent reviewer width, and kernel-checked translation/store
+theorems; this is not compiled Lean or hardware timing. A skeptical graduate
+student should next reconstruct every frozen or formally amended acceptance row
+at the pushed exact commit and verify that both remote workflows are green.
+Until that coordinator-only step, W17 is corrected worker evidence, not an
+accepted U2 declaration.
 
 ## Digestion Tasks
 

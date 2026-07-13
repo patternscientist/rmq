@@ -136,15 +136,22 @@ under the pinned toolchain. The public theorem surface proves, among other
 things:
 
 - exact half-open leftmost RMQ answers for the list-facing succinct RMQ theorem;
-- `2*n + o(n)` payload accounting for the advertised succinct construction;
+- `buildPayload.length <= 2*n + overhead n`, with `overhead = o(n)`, for the
+  advertised succinct construction, without padding to force equality;
 - model-level constant query cost, not Lean runtime or compiled-code
   performance;
 - a final global trace with no synthetic cost-only marker events;
 - one pre-execution physical word list erasing exactly to the public
-  `SuccinctClassic.buildPayload`, with every successful final-query read backed
-  positionally by that list;
-- complete supplied-store trace equality under agreement on the actual ordered
-  execution footprint, including failed and repeated reads;
+  `SuccinctClassic.buildPayload`, organized by one exhaustive typed 20-source
+  universe including canonical close;
+- genuine supplied flat-physical execution through the existing evaluator and
+  a checked address-translation adapter, preserving results, cost, ordered
+  successful and failed reads, repetitions, and footprint;
+- complete physical-execution equality under agreement on the first execution's
+  consumed ordered footprint, plus a checked consumed-address disagreement
+  witness showing that the supplied store is not ignored;
+- coherent rejection of empty, reversed, and out-of-bounds ranges across the
+  canonical, supplied-store, trace, and costed list surfaces;
 - a linear reviewer capacity and query-independent logarithmic word width
   bounding physical words, physical addresses, and primitive operands/results;
 - the checked canonical transitional all-size modeled query cap `328`; and
@@ -162,10 +169,8 @@ import examples.
 
 `lake exe rmq_succinct_classic_cost_harness` prints a compact reviewer-facing
 report for deterministic fixtures: input size, half-open query windows,
-returned answer, reference answer, route-split bound, and the modeled
-`queryCosted.cost` trace/event count. It also says whether the `2^15`
-ready-threshold fast-regime premise applies before reporting any comparison
-with the fast-regime bound.
+returned answer, reference answer, canonical same-block/cross-block route,
+uniform `328` bound, and the modeled `queryCosted.cost` trace/event count.
 
 The cost harness has an opt-in construction profile for larger experiments:
 
@@ -175,8 +180,7 @@ lake exe rmq_succinct_classic_cost_harness -- --profile-size N
 
 This profile mode is not part of the default artifact gate. It emits phase
 markers around the current public `List Int` construction/query path so a
-reviewer can separately time construction experiments, including an explicit
-`N = 32768` ready-threshold run, without confusing Lean runtime with the
+reviewer can separately time construction experiments without confusing Lean runtime with the
 checked model-cost theorem.
 
 Validation and examples are useful reviewer smoke tests. They are not part of

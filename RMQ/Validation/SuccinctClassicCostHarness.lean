@@ -22,6 +22,13 @@ structure Fixture where
   windows : List Window
 deriving Repr
 
+/-- The only live canonical query-route classification. -/
+inductive CanonicalQueryRoute where
+  | invalid
+  | sameBlock
+  | crossBlock
+deriving Repr, DecidableEq, BEq
+
 def generatedInput (len seed : Nat) : List Int :=
   (List.range len).map fun i =>
     Int.ofNat ((seed * 11 + len * 7 + i * i + 3 * i) % 17) - 8
@@ -49,44 +56,45 @@ def balancedInput (len : Nat) : List Int :=
   balancedInputCore len 0
 
 def expectedAnswer (xs : List Int) (left right : Nat) : Option Nat :=
-  if left < right /\ right <= xs.length then
+  if RMQ.ValidRange xs left right then
     some (RMQ.scanWindow xs left (right - left))
   else
     none
 
-def routeKindOfShape (shape : RMQ.Cartesian.CartesianShape) : String :=
-  if RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockSize shape = 0 then
-    "zero-block"
-  else if RMQ.SuccinctClose.concreteBPRelativeRmmInteriorReady shape then
-    "ready"
-  else if RMQ.SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive shape then
-    "active-not-ready"
+def canonicalQueryRoute
+    (prepared : RMQ.SuccinctClassic.PreparedInput)
+    (window : Window) : CanonicalQueryRoute :=
+  if _hvalid : RMQ.ValidRange prepared.xs window.left window.right then
+    match RMQ.SuccinctSpace.bpCloseOfInorder? prepared.shape window.left,
+        RMQ.SuccinctSpace.bpCloseOfInorder?
+          prepared.shape (window.right - 1) with
+    | some leftClose, some rightClose =>
+        let blockSize :=
+          RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw
+            prepared.shape
+        if RMQ.SuccinctClose.blockOfClose blockSize leftClose =
+            RMQ.SuccinctClose.blockOfClose blockSize rightClose then
+          .sameBlock
+        else
+          .crossBlock
+    | _, _ => .invalid
   else
-    "inactive-not-ready"
+    .invalid
 
-def routeKind (xs : List Int) : String :=
-  routeKindOfShape (RMQ.SuccinctClassic.cartesianShape xs)
-
-def preparedRouteKind
-    (prepared : RMQ.SuccinctClassic.PreparedInput) : String :=
-  routeKindOfShape prepared.shape
+def canonicalQueryRouteString : CanonicalQueryRoute -> String
+  | .invalid => "invalid"
+  | .sameBlock => "sameBlock"
+  | .crossBlock => "crossBlock"
 
 def boolString (b : Bool) : String :=
   if b then "true" else "false"
 
-def appliesString (applies ok : Bool) : String :=
-  if applies then boolString ok else "not-applicable"
-
 def windowLabel (window : Window) : String :=
   "[" ++ toString window.left ++ ", " ++ toString window.right ++ ")"
 
-def fastRegimeQueryCost : Nat :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost
-
 def reportWindow
     (emitPhases : Bool) (prepared : RMQ.SuccinctClassic.PreparedInput)
-    (routeBound : Nat)
-    (fastRegimeApplies : Bool) (window : Window) : IO Bool := do
+    (window : Window) : IO Bool := do
   if emitPhases then
     IO.println
       ("phase=queryCosted start window=" ++ windowLabel window ++
@@ -100,29 +108,37 @@ def reportWindow
         " modeledTraceCost=" ++ toString query.cost)
   let expected := expectedAnswer prepared.xs window.left window.right
   let agrees := query.erase == expected
-  let underRouteBound := query.cost <= routeBound
-  let underFastRegimeBound := query.cost <= fastRegimeQueryCost
+  let route := canonicalQueryRoute prepared window
+  let routeAgrees :=
+    match route, expected with
+    | .invalid, none => true
+    | .sameBlock, some _ => true
+    | .crossBlock, some _ => true
+    | _, _ => false
+  let canonicalBoundIs328 := RMQ.SuccinctClassic.queryCost == 328
+  let underCanonicalBound := query.cost <= RMQ.SuccinctClassic.queryCost
   IO.println
     ("  window=" ++ windowLabel window ++
       " answer=" ++ reprStr query.erase ++
       " expected=" ++ reprStr expected ++
       " agrees=" ++ boolString agrees ++
+      " canonicalRoute=" ++ canonicalQueryRouteString route ++
+      " routeAgrees=" ++ boolString routeAgrees ++
       " modeledTraceCost=" ++ toString query.cost ++
-      " underRouteSplitBound=" ++ boolString underRouteBound ++
-      " underFastRegimeBound=" ++
-        appliesString fastRegimeApplies underFastRegimeBound)
-  pure agrees
+      " canonicalBound=" ++ toString RMQ.SuccinctClassic.queryCost ++
+      " canonicalBoundIs328=" ++ boolString canonicalBoundIs328 ++
+      " underCanonicalBound=" ++ boolString underCanonicalBound)
+  pure (agrees && routeAgrees && canonicalBoundIs328 && underCanonicalBound)
 
 def reportWindows
-    (emitPhases : Bool) (prepared : RMQ.SuccinctClassic.PreparedInput)
-    (routeBound : Nat)
-    (fastRegimeApplies : Bool) : List Window -> IO Bool
+    (emitPhases : Bool)
+    (prepared : RMQ.SuccinctClassic.PreparedInput) : List Window -> IO Bool
   | [] => pure true
   | window :: rest => do
       let okHere <-
-        reportWindow emitPhases prepared routeBound fastRegimeApplies window
+        reportWindow emitPhases prepared window
       let okRest <-
-        reportWindows emitPhases prepared routeBound fastRegimeApplies rest
+        reportWindows emitPhases prepared rest
       pure (okHere && okRest)
 
 def reportFixture (emitPhases : Bool) (fixture : Fixture) : IO Bool := do
@@ -148,25 +164,14 @@ def reportFixture (emitPhases : Bool) (fixture : Fixture) : IO Bool := do
     IO.println
       ("phase=buildPayload done input=" ++ fixture.name ++
         " payloadBits=" ++ toString payloadBits)
-  let routeBound := RMQ.SuccinctClassic.preparedRouteSplitQueryCost prepared
-  let fastRegimeApplies :=
-    RMQ.SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= shape.size
   IO.println
     ("input=" ++ fixture.name ++
       " n=" ++ toString fixture.xs.length ++
       " shapeSize=" ++ toString shape.size ++
       " payloadBits=" ++ toString payloadBits ++
       " preparedArrayValues=" ++ toString prepared.values.size ++
-      " route=" ++ preparedRouteKind prepared ++
-      " routeSplitBound=" ++
-        toString routeBound ++
-      " cleanAllSizeBound=" ++ toString RMQ.SuccinctClassic.queryCost ++
-      " fastRegimeBound=" ++ toString fastRegimeQueryCost ++
-      " fastRegimeApplies=" ++ boolString fastRegimeApplies ++
-      " readyThreshold=" ++
-        toString RMQ.SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold)
-  reportWindows emitPhases prepared routeBound fastRegimeApplies
-    fixture.windows
+      " canonicalQueryBound=" ++ toString RMQ.SuccinctClassic.queryCost)
+  reportWindows emitPhases prepared fixture.windows
 
 def defaultFixtures : List Fixture :=
   [
@@ -175,7 +180,10 @@ def defaultFixtures : List Fixture :=
       xs := [3, 1, 4, 1, 5],
       windows := [
         { left := 0, right := 5 },
-        { left := 2, right := 4 }
+        { left := 2, right := 4 },
+        { left := 1, right := 1 },
+        { left := 2, right := 1 },
+        { left := 0, right := 6 }
       ]
     },
     {
@@ -188,7 +196,7 @@ def defaultFixtures : List Fixture :=
       ]
     },
     {
-      name := "generated-64-route-split",
+      name := "generated-64-canonical",
       xs := generatedInput 64 9,
       windows := [
         { left := 0, right := 64 },
@@ -197,7 +205,7 @@ def defaultFixtures : List Fixture :=
       ]
     },
     {
-      name := "zigzag-128-route-split",
+      name := "zigzag-128-canonical",
       xs := zigZagInput 128,
       windows := [
         { left := 0, right := 128 },
@@ -206,12 +214,12 @@ def defaultFixtures : List Fixture :=
       ]
     },
     {
-      name := "generated-1024-route-split",
-      xs := generatedInput 1024 13,
+      name := "generated-128-canonical-alternate",
+      xs := generatedInput 128 13,
       windows := [
-        { left := 0, right := 1024 },
-        { left := 127, right := 640 },
-        { left := 511, right := 512 }
+        { left := 0, right := 128 },
+        { left := 15, right := 96 },
+        { left := 63, right := 64 }
       ]
     }
   ]
@@ -242,7 +250,7 @@ def usage : String :=
   "--profile-size N runs one deterministic balanced fixture through the " ++
   "theorem-backed prepared buildPayload/queryCosted mirror with phase markers. " ++
   "--shape-profile-size N runs only prepared shape construction for bottleneck " ++
-  "diagnosis. Use N=32768 only as an opt-in ready-threshold profiling run."
+  "diagnosis."
 
 def runDefault : IO Unit := do
   IO.println "SuccinctClassic executable cost harness"
@@ -259,13 +267,7 @@ def runProfileSize (n : Nat) : IO Unit := do
   IO.println "SuccinctClassic executable construction/profile mode"
   IO.println
     "This mode reports phase markers for the theorem-backed prepared mirror; wall-clock timing is external runtime evidence, not a model-cost theorem."
-  IO.println
-    ("requestedSize=" ++ toString n ++
-      " readyThreshold=" ++
-        toString RMQ.SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold ++
-      " thresholdRun=" ++
-        boolString
-          (RMQ.SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= n))
+  IO.println ("requestedSize=" ++ toString n)
   let fixture := profileFixture n
   let ok <- reportFixture true fixture
   if ok then
@@ -285,8 +287,7 @@ def runShapeProfileSize (n : Nat) : IO Unit := do
       " n=" ++ toString fixture.xs.length ++
       " shapeSize=" ++ toString prepared.shape.size ++
       " bpCodeLength=" ++ toString prepared.shape.bpCode.length ++
-      " preparedArrayValues=" ++ toString prepared.values.size ++
-      " route=" ++ preparedRouteKind prepared)
+      " preparedArrayValues=" ++ toString prepared.values.size)
 
 def normalizeArgs : List String -> List String
   | "--" :: rest => rest

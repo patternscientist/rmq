@@ -30,8 +30,9 @@ abbrev succinctRMQTwoNPlusOConstantQuery :=
 
 /--
 Classic list-facing succinct RMQ theorem: for every ordinary `xs : List Int`,
-the built payload has length `2*n + o(n)` and valid half-open queries return
-the exact leftmost RMQ answer within constant modeled query cost.
+the built payload has length at most `2*n + overhead n` for an `o(n)` overhead,
+and valid half-open queries return the exact leftmost RMQ answer within constant
+modeled query cost.
 -/
 abbrev succinctRMQListIntTwoNPlusOConstantQuery :=
   RMQ.SuccinctClassic.listInt_two_n_plus_o_constant_query_profile
@@ -61,9 +62,15 @@ theorem listIntSuccinctRMQPaperMainTheorem :
       forall xs : List Int,
         (RMQ.SuccinctClassic.buildPayload xs).length <=
           2 * xs.length + RMQ.SuccinctClassic.overhead xs.length /\
+        RMQ.SuccinctSpace.flattenPayloadWords
+            (RMQ.SuccinctClassic.reviewerPhysicalWords xs) =
+          RMQ.SuccinctClassic.buildPayload xs /\
         (forall left right,
           (RMQ.SuccinctClassic.queryCosted xs left right).cost <=
             RMQ.SuccinctClassic.queryCost) /\
+        (forall left right,
+          Not (RMQ.ValidRange xs left right) ->
+            (RMQ.SuccinctClassic.queryCosted xs left right).erase = none) /\
         (forall {left len : Nat},
           0 < len ->
             left + len <= xs.length ->
@@ -78,6 +85,33 @@ theorem listIntSuccinctRMQPaperMainTheorem :
         (forall left right,
           RMQ.SuccinctClassic.FlatPayloadStoreNoSyntheticExecutionStory
             xs left right) /\
+        (forall left right,
+          (RMQ.SuccinctClassic.reviewerPhysicalTraceResult
+              xs left right).value =
+              (RMQ.SuccinctClassic.queryTraceResult xs left right).value /\
+          (RMQ.SuccinctClassic.reviewerPhysicalTraceResult
+              xs left right).trace =
+              (RMQ.SuccinctClassic.queryTraceResult xs left right).trace.map
+                (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalizeEvent
+                  (RMQ.SuccinctClassic.cartesianShape xs)) /\
+          (RMQ.SuccinctClassic.reviewerPhysicalTraceResult
+              xs left right).toCosted =
+              RMQ.SuccinctClassic.queryCosted xs left right) /\
+        (forall (storeA storeB : RMQ.WordRAM.ReadStore) left right,
+          RMQ.SuccinctClassic.physicalStoresAgreeOnOrderedReadFootprint
+              xs storeA storeB left right ->
+            RMQ.SuccinctClassic.reviewerPhysicalTraceResultWithStore
+                xs storeA left right =
+              RMQ.SuccinctClassic.reviewerPhysicalTraceResultWithStore
+                xs storeB left right) /\
+        (forall source : RMQ.SuccinctFinal.ReviewerSource,
+          source.Counted <-> source.Live) /\
+        List.Nodup
+          RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalSources /\
+        (forall segment : Nat,
+          (Exists fun source =>
+            RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSegmentSource?
+              segment = some source) <-> segment < 21) /\
         (forall (storeA storeB : RMQ.WordRAM.ReadStore) left right,
           RMQ.SuccinctClassic.storesAgreeOnOrderedReadFootprint
               xs storeA storeB left right ->
@@ -90,9 +124,21 @@ theorem listIntSuccinctRMQPaperMainTheorem :
     ⟨hoverhead, hxs⟩
   refine ⟨hoverhead, ?_⟩
   intro xs
-  rcases hxs xs with ⟨hpayload, hcost, hexact, hleftmost, hstory⟩
+  rcases hxs xs with
+    ⟨hpayload, hcost, hinvalid, hexact, hleftmost, hstory⟩
   exact
-    ⟨hpayload, hcost, hexact, hleftmost, hstory,
+    ⟨hpayload,
+      RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases
+        (RMQ.SuccinctClassic.cartesianShape xs),
+      hcost, hinvalid, hexact, hleftmost, hstory,
+      RMQ.SuccinctClassic.reviewerPhysicalTraceResult_refines_queryTraceResult
+        xs,
+      fun storeA storeB left right hagree =>
+        RMQ.SuccinctClassic.reviewerPhysicalTraceResultWithStore_eq_of_orderedReadFootprint
+          xs storeA storeB left right hagree,
+      RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSource_counted_iff_live,
+      RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalSources_nodup,
+      RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSegmentSource?_coverage,
       fun storeA storeB left right hagree =>
         RMQ.SuccinctClassic.queryTraceResultWithStore_eq_of_orderedReadFootprint
           xs storeA storeB left right hagree⟩
@@ -110,12 +156,72 @@ abbrev succinctRMQReviewerPhysicalWordsErasePublicPayload :=
 /-- The physical-address footprint is literally the read projection consumed
 by the translated whole-query execution. -/
 abbrev succinctRMQReviewerPhysicalFootprintRecorded :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalFootprint_recorded
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprint_recorded
 
 /-- Full segmented-to-flat refinement preserving value, cost, ordered trace,
 and successful or failed read results. -/
 abbrev succinctRMQReviewerPhysicalExecutionRefinesLogical :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryReviewerPhysical_refines_logical
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_refines_logical
+
+/-- The supplied flat store is translated before the existing whole-query
+evaluator performs each read. -/
+abbrev succinctRMQReviewerPhysicalStoreAdapter :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter
+
+/-- Agreement on the first physical execution's consumed footprint determines
+the complete physical execution. -/
+abbrev succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_eq_of_orderedFootprint
+
+/-- A supplied-store disagreement at a consumed physical address is observable
+in the complete execution. -/
+abbrev succinctRMQReviewerPhysicalExecutionNeOfConsumedReadDisagreement :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_ne_of_consumed_read_disagreement
+
+/-- List-facing physical refinement, including invalid-range rejection. -/
+abbrev listIntSuccinctRMQReviewerPhysicalExecutionRefinesLogical :=
+  RMQ.SuccinctClassic.reviewerPhysicalTraceResult_refines_queryTraceResult
+
+/-- List-facing consumed-footprint determinism for supplied flat stores. -/
+abbrev listIntSuccinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint :=
+  RMQ.SuccinctClassic.reviewerPhysicalTraceResultWithStore_eq_of_orderedReadFootprint
+
+/-- The exhaustive live canonical source universe, including canonical close. -/
+abbrev succinctRMQReviewerPhysicalSources :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalSources
+
+/-- Counted source if and only if canonical reviewer-live source. -/
+abbrev succinctRMQReviewerSourceCountedIffLive :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSource_counted_iff_live
+
+/-- Canonical live physical sources are duplicate-free. -/
+abbrev succinctRMQReviewerPhysicalSourcesNodup :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalSources_nodup
+
+/-- Named source regions are exclusive. -/
+abbrev succinctRMQReviewerSourceRegionInjective :=
+  @RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSource_region_injective
+
+/-- Logical segments are covered exactly through segment 20. -/
+abbrev succinctRMQReviewerSegmentSourceCoverage :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSegmentSource?_coverage
+
+/-- Every emitted logical read, including failures, maps to a listed live
+source/region and its checked physical event. -/
+abbrev succinctRMQReviewerEveryReadHasListedRegion :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_read_has_listed_region
+
+/-- Every counted source has a named consumer or is shared BP code. -/
+abbrev succinctRMQReviewerSourceConsumerOrSharedBP :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSource_counted_consumer_or_sharedBP
+
+/-- No legacy duplicate close source occurs in the canonical source list. -/
+abbrev succinctRMQReviewerPhysicalSourcesExcludeLegacyClose :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalSources_exclude_legacy_close
+
+/-- Compatibility-only legacy tail segments are unreachable. -/
+abbrev succinctRMQReviewerLegacyTailReadNone :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerReadStore_legacyTail_none
 
 /-- The exact physical word list has concrete linear capacity. -/
 abbrev succinctRMQReviewerPhysicalWordsFitLinearCapacity :=
@@ -135,7 +241,19 @@ abbrev succinctRMQReviewerSuccessfulReadWordFits :=
 
 /-- Every address recorded in the consumed physical footprint fits that width. -/
 abbrev succinctRMQReviewerPhysicalFootprintAddressFits :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalFootprint_address_fits_reviewerWordBits
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprint_address_fits_reviewerWordBits
+
+/-- Public invalid-range rejection for the list-facing canonical query. -/
+abbrev listIntSuccinctRMQQueryCostedInvalid :=
+  RMQ.SuccinctClassic.queryCosted_invalid
+
+/-- Empty, reversed, and out-of-bounds specializations of the invalid contract. -/
+abbrev listIntSuccinctRMQQueryCostedEmptyRange :=
+  RMQ.SuccinctClassic.queryCosted_empty_range
+abbrev listIntSuccinctRMQQueryCostedReversedRange :=
+  RMQ.SuccinctClassic.queryCosted_reversed_range
+abbrev listIntSuccinctRMQQueryCostedOutOfBounds :=
+  RMQ.SuccinctClassic.queryCosted_out_of_bounds
 
 /--
 List-facing supplied-store equality: if the caller-provided store agrees with
@@ -340,12 +458,9 @@ abbrev succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe :=
 abbrev succinctRMQCanonicalTransitionalQueryCostEq :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq
 
-/--
-The canonical final global trace has modeled cost bounded by the clean fixed
-all-size final-query constant, the maximum of the checked route-split leaves.
--/
+/-- The canonical final global trace has the uniform checked `328` bound. -/
 abbrev succinctRMQWholeQueryGlobalWordTraceCostedCostLe :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_cleanAllSize
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional
 
 /--
 Under agreement with the concrete global store on the safe final layout
@@ -353,6 +468,14 @@ footprint, the canonical modeled cost bound transfers to the supplied-store
 whole-query replay.
 -/
 abbrev succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_canonicalTransitional
+
+/-- Compatibility-only route-split all-size bound `4144`. -/
+abbrev succinctRMQCompatibility4144WholeQueryGlobalWordTraceCostedCostLe :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_cleanAllSize
+
+/-- Compatibility-only supplied-store transfer of the `4144` bound. -/
+abbrev succinctRMQCompatibility4144WholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global
 
 /--
@@ -367,15 +490,18 @@ abbrev succinctRMQLegacy196727QueryCost :=
 abbrev succinctRMQLegacy196727QueryCostEq :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQQueryCost_eq
 
-/--
-Clean fixed all-size modeled query-cost constant for the final BP-native
-succinct RMQ query.
--/
-abbrev succinctRMQQueryCost :=
+/-- Uniform canonical modeled query-cost constant for the final reviewer path. -/
+abbrev succinctRMQQueryCost := RMQ.SuccinctClassic.queryCost
+
+/-- The uniform canonical final-query cost constant computes to `328`. -/
+abbrev succinctRMQQueryCostEq :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq
+
+/-- Compatibility-only route-split cost constant `4144`. -/
+abbrev succinctRMQCompatibility4144QueryCost :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCleanAllSizeQueryCost
 
-/-- The clean fixed all-size final-query cost constant computes to `4144`. -/
-abbrev succinctRMQQueryCostEq :=
+abbrev succinctRMQCompatibility4144QueryCostEq :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCleanAllSizeQueryCost_eq
 
 theorem succinctRMQWholeQueryGlobalWordTraceCostedWithStoreExactOfFootprintGlobal

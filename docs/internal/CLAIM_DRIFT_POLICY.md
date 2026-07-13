@@ -55,12 +55,25 @@ human-readable file when the interpretation changes.
   any final explained constant.
 - `4144`, Ready-regime `118`, the zero-block route, and `196727` are
   compatibility/history only, not the canonical reviewer execution.
-- U2 may be described by W15 only as a worker candidate until the coordinator
-  reconstructs the frozen matrix and obtains a fresh blind exact-commit audit.
+- W15's post-hoc physical-result construction was rejected. W17 may be
+  described only as a corrected worker candidate until the coordinator
+  reconstructs the frozen/formally amended matrix and obtains a fresh blind
+  exact-commit audit.
 - Current machine claims must identify the same public `buildPayload`, reviewer
   physical words, execution, ordered footprint, and reviewer word width.
-- `118` is the fast-regime modeled bound under the readiness threshold, not the
-  all-size theorem unless a future theorem proves that.
+- "Physical execution" in the current reviewer story must name the genuine
+  `FlatPhysical` supplied-store evaluator and translation adapter, not a mapping
+  of an already-computed logical result and trace.
+- The canonical live manifest is one typed universe of exactly 20 sources,
+  including canonical close. Legacy close/interior storage is compatibility
+  only; BP code is the explicitly shared source.
+- The public list space statement is
+  `buildPayload.length <= 2*n + overhead n` with little-o overhead. Exact
+  physical-word erasure remains mandatory, but no padding may manufacture a
+  size equality.
+- Invalid or empty list ranges return `none` across the canonical,
+  supplied-store, trace, costed, and reviewer-physical surfaces.
+- `118` is compatibility/history, not the canonical all-size theorem.
 - "No extraction gap" must not erase the remaining executable/compiler ladder;
   Lean executability is evidence about runnable definitions, not a verified
   backend.

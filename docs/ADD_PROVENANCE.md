@@ -6,15 +6,22 @@ machine store and dynamic footprint. Those were real proof rungs, but audit
 correctly rejected them as U2 completion while the public close/LCA consumer
 still dispatched through Ready/Active/zero-block compatibility routes.
 
-The closing worker-candidate repair embedded the concatenated component at
-global segment `20`, then represented every live query source in one
-pre-execution physical word list whose erasure is exactly the public
-`buildPayload`. Physical replay preserves the complete logical execution, and
-agreement on the actual ordered footprint determines the supplied trace. A
+The rejected W15 candidate embedded a concatenated component and one physical
+word list, but its reviewer-facing capstone mapped an already-computed logical
+value and trace; that was not physical execution. W17 replaces it with one
+typed 20-source manifest and the existing supplied-store evaluator behind an
+adapter that actually reads the supplied flat store at checked translated
+addresses. The physical word list still erases exactly to public
+`buildPayload`. Canonical physical execution preserves the complete logical
+execution, agreement on its first consumed footprint determines the result,
+and a checked consumed-address disagreement witnesses store dependence. A
 linear reviewer capacity and query-independent logarithmic width cover stored
 and returned words, live/dead addresses, and primitive operands/results.
 Kernel-checked empty, singleton, size-two, and symbolic threshold-boundary facts
-guard the small-input failure mode. The cost was rederived honestly as the
+guard the small-input failure mode. The public space theorem is the amended
+inequality `buildPayload.length <= 2*n + overhead n`, with little-o overhead
+and no padding to manufacture equality. Invalid or empty list ranges return
+`none` through one validity boundary. The cost was rederived honestly as the
 transitional sum `328`; the implementation did not pad reads to preserve `118`
 or a route-split constant. Coordinator acceptance remains separate from this
 worker evidence and requires matrix reconstruction plus a fresh blind audit.
@@ -150,6 +157,9 @@ all worker output.
 
 ## Case Study C: Structural Readiness Repair
 
+This section records a superseded compatibility-era route and does not
+describe the current canonical reviewer execution.
+
 The compact close/LCA path once had public prose that made the clean replay
 sound gated by `2^128 <= shape.size`. Later audit and source review corrected
 the story: the readiness threshold is the structural theorem
@@ -191,8 +201,10 @@ surfaces, including:
 - `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`;
 - `RMQ.Headlines.succinctRMQFinalTraceModelAdequacy`;
 - `RMQ.Headlines.succinctRMQFinalFullModelSoundness`;
-- `RMQ.Headlines.succinctRMQFinalFullModelSoundnessExactOfFootprintGlobal`; and
-- `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedByCountedFlatPayloadOfFootprintGlobal`.
+- `RMQ.Headlines.succinctRMQFinalFullModelSoundnessExactOfFootprintGlobal`;
+- `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical`;
+- `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint`; and
+- `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionNeOfConsumedReadDisagreement`.
 
 ## What ADD Claims
 

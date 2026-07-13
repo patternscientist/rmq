@@ -1,13 +1,17 @@
 # Claims Packet
 ## Canonical U2 Reviewer Claim
 
-The current W15 worker candidate uses the canonical relative-rmM component at
-global segment `20` inside one whole-machine physical word list. That list
-erases exactly to the public `SuccinctClassic.buildPayload`; the physical replay
-preserves result, modeled cost, ordered trace, failures, and footprint. Agreement
-on the actual ordered logical read footprint determines the complete supplied
-`TraceResult`, and successful physical reads are positional reads from the same
-counted list. The linear capacity and query-independent logarithmic width bound
+The corrected W17 worker candidate uses one exhaustive typed 20-source universe,
+including canonical close, inside one whole-machine physical word list. That
+list erases exactly to the public `SuccinctClassic.buildPayload`. The existing
+supplied-store evaluator runs through an adapter that actually reads the supplied
+flat store at checked translated addresses; canonical flat-physical execution
+preserves decoded result, modeled cost, ordered successes and failures, repeated
+reads, and the execution-derived footprint. Agreement on the first execution's
+consumed ordered physical footprint determines the complete physical
+`TraceResult`, while a checked consumed-address disagreement witness proves that
+the evaluator observes its supplied store. The linear capacity and
+query-independent logarithmic width bound
 all stored/returned words, physical addresses, and charged primitive data.
 The checked transitional modeled cap is `328`. Ready `118`, route-split,
 zero-block, `4144`, and `196727` claims are compatibility rows only. Coordinator
@@ -43,7 +47,8 @@ commands, see `../docs/PAPER_CLAIM_CORRESPONDENCE.md`.
 | --- | --- | --- | --- |
 | Exact RMQ requires essentially `2*n` bits in the fixed-length payload model, with doubled Catalan slack. | `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack` via `RMQ.Headlines.RMQ` | `RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack` | `lake build RMQPaper` and `lake env lean scripts/headline_axiom_check.lean` |
 | The BP-native succinct RMQ family answers exact RMQ queries with `2*n + o(n)` payload bits and constant modeled query cost, paired with a numeric doubled-Catalan slack comparison. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` via `RMQ.Headlines.RMQ` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile` | `lake build RMQPaper` and `lake env lean scripts/headline_axiom_check.lean` |
-| The ordinary `List Int` succinct RMQ surface combines the classic half-open leftmost contract, the existing `2*n + o(n)` counted-payload story, and the final flat-payload no-synthetic WordRAM execution story. | `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | `RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_execution_story` | `lake env lean scripts/headline_axiom_check.lean` and `lake env lean scripts/wordram_axiom_check.lean` |
+| The ordinary `List Int` succinct RMQ surface proves `buildPayload.length <= 2*n + overhead n` with `overhead = o(n)`, rejects invalid or empty ranges, preserves the classic valid half-open leftmost contract, and supplies the final no-synthetic execution story. Exact physical erasure is separate and no padding is used. | `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory`, `RMQ.Headlines.listIntSuccinctRMQQueryCostedInvalid` | `RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story`, `RMQ.SuccinctClassic.queryCosted_invalid` | `lake env lean scripts/headline_axiom_check.lean` and `lake env lean scripts/wordram_axiom_check.lean` |
+| The reviewer capstone is genuine supplied flat-physical execution, determined by its first consumed ordered physical footprint; disagreement at a consumed address changes the execution. | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical`, `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint`, `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionNeOfConsumedReadDisagreement` | Corresponding `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysical*` theorems | `lake env lean scripts/wordram_axiom_check.lean` and `lake env lean scripts/headline_axiom_check.lean` |
 | The ordinary `List Int` supplied-store surface runs `SuccinctClassic.queryCostedWithStore` against a caller-provided store agreeing with `SuccinctClassic.globalReadStore xs` on the checked footprint: equality, valid-window exactness, all-size cost, and the canonical transitional `328` bound transfer. | `RMQ.Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint`, `RMQ.Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal`, `RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal`, `RMQ.Headlines.listIntSuccinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal` | `RMQ.SuccinctClassic.queryCostedWithStore_eq_queryCosted_of_footprint`, `RMQ.SuccinctClassic.listIntFinalFullModelSoundnessExactOfFootprintGlobal`, `RMQ.SuccinctClassic.listIntFinalFullModelCostLeOfFootprintGlobal`, `RMQ.SuccinctClassic.listIntCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal` | `lake build RMQPaper` and `lake env lean scripts/headline_axiom_check.lean` |
 | The same RMQ family has a closed `WordRAM`/register-program query controller over interpreted leaves. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_interpreted_profile` | `lake env lean scripts/wordram_axiom_check.lean` |
 | The same RMQ family emits an explicit domain-leaf trace before projection back to `Costed`. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_leaf_trace_profile` | `lake env lean scripts/wordram_axiom_check.lean` |
@@ -87,12 +92,9 @@ These are checked repository spokes and remain in the aggregate
   store-backed, and structurally dispatches the compact close/LCA path; legacy
   finite-small interior store slots `26` and `27` read as `none` and are not
   part of the counted flat payload.
-- The current concrete BP-native all-size query-cost surface is route-split,
-  with a clean fixed corollary `4144`. The separate fast-regime theorem under
-  the readiness premise proves the named constant
-  `SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118`. The
-  old `196727` aggregate remains checked only as a legacy compatibility
-  constant.
+- The canonical reviewer route has the uniform checked bound `328`. Ready
+  `118`, route-split `4144`, zero-block, and `196727` theorems remain checked
+  only as legacy compatibility/history surfaces.
 - The bounded execution-story theorem supplies a trace-local finite bit width
   for exposed addresses and primitive operands. It is not yet a tight
   asymptotic machine-word side-condition for every component.

@@ -1,14 +1,22 @@
 # What Is Proved
 ## U2 Canonical Reviewer Route
 
-The final all-size reviewer trace now uses one positive canonical block geometry
-and one canonical relative-rmM component store. Segment `20` exposes the
-concatenated component at its exact physical machine-word offset. The returned
-interior candidate is decoded from supplied-store reads; its dynamic footprint
-is the execution's ordered read log, and agreement on that footprint determines
-result, trace, and modeled cost. Successful reads are backed by the counted
-canonical reviewer payload and returned words and physical addresses satisfy
-the reviewer word bound.
+The final all-size reviewer trace uses one positive canonical block geometry and
+one exhaustive typed 20-source universe including canonical close. Counted
+source iff reviewer-live source; physical regions are exclusive; every logical
+segment is covered; emitted reads map to listed regions; and legacy duplicate
+close/interior storage is absent from the canonical payload and reachable only
+through compatibility surfaces.
+
+The public physical execution is genuine supplied-store evaluation. The
+existing evaluator reads the caller's flat store through checked address
+translation, and canonical physical execution refines logical execution while
+preserving result, modeled cost, ordered successes/failures, repeated reads,
+and the execution-derived footprint. Agreement on the first physical
+execution's consumed footprint determines the complete execution; disagreement
+at a consumed address is checked to change it. Successful reads are backed by
+the canonical reviewer payload and returned words and physical addresses
+satisfy the reviewer word bound.
 
 The final trace is exact through
 `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact`. Its honest
@@ -42,9 +50,10 @@ aliases.
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory` | Bounded target-independent global-store execution story for compressed/FID rank/select: the combined traces also have finite trace-local widths bounding every payload-read address and word-primitive natural operand/result. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreExecutionStory` | Lower-level target-indexed global-store execution packet for one fixed rank/select target. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreBoundedExecutionStory` | Lower-level bounded target-indexed global-store packet for one fixed rank/select target. |
-| `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | Classic list-facing succinct RMQ theorem: for every ordinary `xs : List Int`, the built payload has length `2*n + o(n)` and valid half-open queries return the exact leftmost RMQ answer within constant modeled query cost. |
-| `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | List-facing flat-payload no-synthetic execution story: for ordinary `xs : List Int`, the final query uses the advertised `2*n + o(n)` `buildPayload`, keeps the classic half-open leftmost RMQ contract and constant modeled query bound, and every actual successful WordRAM read is backed by one query-independent counted flat payload layout, with bounded event data and no synthetic cost-only markers. |
-| `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` | Paper-facing list theorem combining the advertised `2*n + overhead` payload size, `overhead = o(n)`, exact valid RMQ answers with leftmost ties, constant modeled query cost, and the final no-synthetic flat-payload trace story. |
+| `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | Classic list-facing theorem: `buildPayload.length <= 2*n + overhead n` with `overhead = o(n)`; valid half-open queries return exact leftmost answers, invalid or empty ranges return `none`, and modeled cost is constant. |
+| `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | List-facing no-synthetic execution story with the same at-most space bound and range contract. Exact physical erasure is proved separately; no padding manufactures equality. |
+| `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` | Paper-facing list theorem combining the amended at-most payload bound, `overhead = o(n)`, invalid-range rejection, exact valid answers with leftmost ties, constant modeled query cost, and the final no-synthetic trace story. |
+| `RMQ.Headlines.listIntSuccinctRMQQueryCostedInvalid` | Public validity boundary: invalid or empty list ranges return `none`; specialized empty, reversed, and out-of-bounds aliases are exported beside it. |
 | `RMQ.Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint` | List-facing supplied-store equality: under final footprint agreement with `SuccinctClassic.globalReadStore xs`, `SuccinctClassic.queryCostedWithStore xs store left right` is the same costed query as canonical `SuccinctClassic.queryCosted xs left right`. |
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal` | List-facing supplied-store exactness: if a caller-provided store agrees with `SuccinctClassic.globalReadStore xs` on the final checked footprint, valid half-open queries through `SuccinctClassic.queryCostedWithStore` erase to the exact leftmost `List Int` RMQ answer. |
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal` | List-facing supplied-store all-size cost transfer: under the same footprint agreement, `SuccinctClassic.queryCostedWithStore xs store left right` has modeled cost at most `SuccinctClassic.queryCost`. |
@@ -62,6 +71,9 @@ aliases.
 | `RMQ.Headlines.succinctRMQCanonicalInteriorPhysicalFootprintFits` | Every physical address consumed by the canonical interior execution, including its sentinel address, fits the pre-execution reviewer word width. |
 | `RMQ.Headlines.succinctRMQCanonicalReviewerValidQueryOperandsFit` | Valid query operands fit the same input/addressable-store/sentinel-derived width. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe` | The uniform canonical final trace has the checked transitional U2 bound `328`. |
+| `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical` | Genuine supplied flat-physical execution refines canonical logical execution, preserving decoded result, cost, ordered reads (including failures and repetitions), and footprint. |
+| `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint` | Agreement on the first physical execution's consumed ordered footprint determines the complete physical execution. |
+| `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionNeOfConsumedReadDisagreement` | Disagreement at a consumed physical address changes the complete execution, witnessing physical-store dependence. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | All-size structural execution story using raw positive same-block decoding and canonical cross-block component replay, with no zero-block dispatch. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` | Strongest all-size global execution story: the same store-backed and bounded trace plus a proof that no event is the dedicated synthetic cost-only marker. |
 | `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Flat-payload no-synthetic execution story: the flat execution payload is exactly the advertised BP-native construction payload; every actual successful read in the final trace has source/component/offset backing in one query-independent counted flat payload layout, addresses and word-primitive operands are bounded, and no synthetic cost-only event occurs. |
@@ -70,7 +82,7 @@ aliases.
 | `RMQ.Headlines.succinctRMQFinalSuppliedStoreAdequacy` | Supplied-store adequacy packet: reads match the caller-provided store, the concrete global-store instantiation recovers the canonical trace/interpreter refinement, no synthetic marker events appear, and final-layout footprint agreement gives store-parametricity. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreReadsSubsetFootprint` | Every emitted supplied-store payload-read event lies inside the safe final-layout footprint. The footprint is an overapproximation, not a minimal dynamic read set. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreEqGlobalOfFootprint` | If a supplied store agrees with the canonical global store on the safe final-layout footprint, the supplied-store replay equals the canonical global trace. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedByCountedFlatPayloadOfFootprintGlobal` | Under footprint agreement with the canonical global store, every successful read in the supplied-store replay is backed by counted flat payload. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedByCanonicalReviewerPayloadOfFootprintGlobal` | Under footprint agreement with the canonical global store, every successful read in the supplied-store replay is backed by the canonical reviewer payload. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal` | Under footprint agreement with the canonical global store, the canonical modeled cost bound transfers to the supplied-store replay. |
 | `RMQ.Headlines.succinctRMQFinalFullModelSoundness` | Full model-soundness packet for the explicit WordRAM/read-store/counted-payload model: canonical trace adequacy, supplied-store adequacy, emitted-read footprint containment, and equality/cost equality under footprint agreement with the canonical global store. |
 | `RMQ.Headlines.succinctRMQFinalFullModelSoundnessExactOfFootprintGlobal` | Exactness for any supplied store that agrees with the canonical global store on the safe final-layout footprint. |
@@ -134,10 +146,12 @@ relevant Cartesian shapes.
 The succinct capstone now has both a construction-facing Cartesian-shape theorem
 and a reader-facing ordinary-list theorem.  The list-facing surface is
 `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery`: for every
-`xs : List Int`, it builds a counted payload of length
-`2 * xs.length + overhead xs.length`, proves `overhead = o(n)`, and answers
-valid half-open queries with the exact leftmost RMQ index of `xs` under a fixed
-modeled query-cost bound.  The strengthened list-facing execution surface
+`xs : List Int`, it proves the counted payload inequality
+`buildPayload.length <= 2 * xs.length + overhead xs.length`, proves
+`overhead = o(n)`, rejects invalid or empty ranges, and answers valid half-open
+queries with the exact leftmost RMQ index of `xs` under a fixed modeled
+query-cost bound. No padding is added to force an exact size equality. The
+strengthened list-facing execution surface
 `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory`
 keeps those clauses and additionally consumes the final flat-payload
 no-synthetic WordRAM story for the Cartesian shape of `xs`.  The construction-facing theorem proves the same
@@ -151,9 +165,12 @@ profile over Cartesian-shape representatives:
 For the current concrete BP-native capstone, the canonical reviewer route has
 the checked transitional all-size cap `328`. The exact public
 `SuccinctClassic.buildPayload` is also the erasure of the one pre-execution
-physical word list used by the execution refinement. Agreement on the ordered
-logical read footprint determines the complete supplied-store trace, including
-result, cost, read order, repeated reads, and failures. The query-independent
+physical word list used by the execution refinement. The existing
+supplied-store evaluator reads the flat store through checked physical-address
+translation. Agreement on the first physical execution's consumed ordered
+footprint determines the complete physical execution, including result, cost,
+read order, repeated reads, and failures; a checked consumed-address
+disagreement changes the execution. The query-independent
 reviewer width derives from the linear capacity `400000 * (n + 1)` and obeys an
 explicit logarithmic all-size inequality.
 
@@ -168,21 +185,24 @@ proof-only fields and certificates. The final path routes through payload-live
 rank/select and close-navigation components rather than retired raw wrappers
 that charged aggregate reference computations as one step.
 
-The whole final-query store-extensional theorem is still fixed-trace: it
+The older logical whole-query store-extensional theorem is fixed-trace: it
 validates the emitted global trace against any store that agrees on those emitted
-read events. In addition, the whole final query now has a supplied-store replay,
+read events. In addition, the whole final query has a genuine flat-physical
+supplied-store evaluator,
+`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore`,
+whose adapter performs translated reads. The logical compatibility surface is
 `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore`.
 Its theorem package proves read-store matching, canonical global-store
 evaluation, store-parametricity over the explicit final layout, a convenience
 store-parametric theorem from a safe layout-footprint overapproximation,
 emitted-read containment in that footprint, equality/exactness transfer under
 footprint agreement with the canonical global store, and no synthetic cost-only
-events. The zero-block same-block theorem remains a leaf-level supplied-store
+events. The zero-block same-block theorem remains a compatibility-only leaf-level supplied-store
 theorem. Its supplied-store decoder currently flattens supplied BP-code words
 and checks `bits = shape.bpCode`; on corrupted stores that fail this guard, that
 leaf may return `none` rather than decode arbitrary garbage. This is a disclosed
-leaf-level model blemish, not a proof bug in the canonical or
-footprint-agreeing-store theorem.
+leaf-level model blemish, not a proof bug in the canonical route; the uniform
+reviewer execution does not dispatch through that leaf.
 
 The global-store execution story now has a flat-payload no-synthetic backing
 theorem, `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory`.
@@ -194,16 +214,11 @@ It exposes the concrete flat payload layout
 `SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadLayout`, whose payload is
 the counted `concreteBPNativeSuccinctRMQPayload` itself, split as BP code,
 final rank/access payload, generic sparse-exception select payload, padding,
-and compact close/LCA payload. The theorem ties the final query trace to this
-flat store and proves successful reads carry explicit source/component offsets
-in the counted flat payload on both the Ready compact path and the non-Ready
-structural path. Zero-block same-block queries scan counted BP-code chunks;
-cross-block interior
-queries now dispatch all-size without the legacy range-min witness table:
-Ready shapes use two-level replay, active non-Ready shapes use a bounded
-summary scan, and inactive shapes have a pure-none interior trace. The route is
-named by
-`SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorAllSizeStructuralRoute_total`.
+and compact close/LCA payload. The canonical reviewer manifest replaces the old
+route-dependent source description with one typed 20-source universe. It
+includes canonical close, lists each named consumer (with BP code explicitly
+shared), and proves source/region and segment coverage universally without
+requiring one query to exercise mutually exclusive segments.
 Legacy finite-small interior store segments `26` and `27` now have empty source
 word/payload views and read as `none` in both the final flat payload store and
 the concrete close-navigation store.

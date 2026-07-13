@@ -41,19 +41,22 @@ performance.
 The final trace/store/payload model is designed to block oracle-like cost
 claims. Successful read events must be tied to a read store and, for the final
 flat-payload story, to counted payload backing. No synthetic cost-only marker is
-used in the final public trace story. Footprint agreement gives supplied-store
-replay and cost transfer, but the footprint is a safe layout overapproximation,
-not an exact or minimal dynamic read-set theorem.
+used in the final public trace story. The genuine reviewer flat-physical
+evaluator reads the supplied store through checked address translation. Its
+recorded footprint is the execution-derived ordered read projection; agreement
+on the first footprint determines the full execution, and a checked
+consumed-address disagreement changes it. The older logical layout footprint
+remains a safe overapproximation.
 
 ## Current Limitations
 
 - No CPU, compiler, extraction, cache, or benchmarking claim is made.
 - The cost model is the repository's explicit modeled WordRAM/query-cost layer.
-- The current public all-size RMQ cost bound is the clean fixed route-split
-  corollary `4144`; the fast-regime theorem under the real `2^15` readiness
-  threshold proves the smaller modeled bound `118`, but constants are still not
-  optimized.
-- The final footprint is not claimed exact or minimal.
+- The current public all-size RMQ cost bound is the uniform canonical checked
+  `328`. Ready `118`, route-split `4144`, zero-block, and `196727` are
+  compatibility/history only.
+- The auxiliary logical layout footprint is not claimed minimal; the reviewer
+  flat-physical footprint is execution-derived and recorded exactly.
 - Constants are not optimized in this pass.
 - The cell-probe lower bounds of Liu-Yu/Liu are related work, not mechanized
   theorem content here.

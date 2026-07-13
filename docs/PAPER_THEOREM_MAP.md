@@ -12,23 +12,30 @@ RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReads
 RMQ.Headlines.succinctRMQReviewerPhysicalWordsErasePublicPayload
 RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical
 RMQ.Headlines.succinctRMQReviewerPhysicalFootprintRecorded
+RMQ.Headlines.succinctRMQReviewerPhysicalStoreAdapter
+RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint
+RMQ.Headlines.succinctRMQReviewerPhysicalExecutionNeOfConsumedReadDisagreement
 RMQ.Headlines.succinctRMQReviewerPhysicalWordsFitLinearCapacity
 RMQ.Headlines.succinctRMQReviewerWordBitsLogarithmic
 RMQ.Headlines.succinctRMQReviewerPhysicalWordFits
 RMQ.Headlines.succinctRMQReviewerSuccessfulReadWordFits
 RMQ.Headlines.succinctRMQReviewerPhysicalFootprintAddressFits
-RMQ.Headlines.listIntSuccinctRMQQueryTraceResultWithStoreEqOfOrderedReadFootprint
+RMQ.Headlines.listIntSuccinctRMQQueryCostedInvalid
 ```
 
 The final trace refines
 `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted`
 and is exact by
 `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact`.
-Its interior words come from the concatenated canonical component at segment
-`20`, but the physical theorem covers every live read-producing segment. One
-pre-execution physical word list erases exactly to the public `buildPayload` and
-refines the logical execution with failures and order preserved. Agreement on
-the actual ordered logical footprint determines the complete supplied trace.
+Its one typed 20-source manifest includes canonical close and covers every live
+read-producing segment; it proves counted iff live, region exclusivity, segment
+coverage, and absence of legacy duplicate close/interior payload sources. One
+pre-execution physical word list erases exactly to the public `buildPayload`.
+The existing supplied-store evaluator reads a supplied flat store through a
+checked translation adapter. Canonical physical execution refines logical
+execution with failures, repetitions, and order preserved. Agreement on the
+first execution's consumed ordered physical footprint determines the complete
+physical trace, and a checked consumed-address disagreement changes it.
 The capacity is linear and the query-independent reviewer width has an explicit
 all-size logarithmic bound while covering stored/returned words, addresses, and
 primitive operands/results. The checked transitional cost is exactly `328`. Ready-threshold `118`,
@@ -51,9 +58,11 @@ RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery
 ```
 
 These are the paper-facing ordinary-list theorem, the shorter list-facing
-profile, and the construction-facing BP-native Cartesian-shape theorem: exact
-leftmost RMQ answers, `2*n + o(n)` payload bits, constant modeled query cost,
-and the final flat-payload/no-synthetic execution story.
+profile, and the construction-facing BP-native Cartesian-shape theorem. The
+list surface proves `buildPayload.length <= 2*n + overhead n` with little-o
+overhead, rejects invalid or empty ranges, returns exact leftmost answers for
+valid ranges, and has constant modeled query cost. Exact physical erasure is a
+separate theorem; no payload padding manufactures equality.
 
 ## Final Trace Model Adequacy
 
@@ -76,6 +85,9 @@ RMQ.Headlines.succinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlo
 RMQ.Headlines.succinctRMQReviewerPhysicalWordsErasePublicPayload
 RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical
 RMQ.Headlines.succinctRMQReviewerPhysicalFootprintRecorded
+RMQ.Headlines.succinctRMQReviewerPhysicalStoreAdapter
+RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint
+RMQ.Headlines.succinctRMQReviewerPhysicalExecutionNeOfConsumedReadDisagreement
 RMQ.Headlines.succinctRMQReviewerPhysicalWordsFitLinearCapacity
 RMQ.Headlines.succinctRMQReviewerWordBitsLogarithmic
 RMQ.Headlines.succinctRMQReviewerPhysicalWordFits
@@ -96,7 +108,8 @@ with the canonical global store recovers the canonical trace and exact result.
 The list-facing aliases expose the same footprint-agreement story at the
 ordinary `List Int` surface: the supplied-store query is equal to canonical
 `SuccinctClassic.queryCosted`, valid windows erase to the list RMQ answer, and
-the all-size plus fast-regime cost bounds transfer. The store/model aliases
+the canonical `328` cost bound transfers, and invalid ranges return `none`.
+The store/model aliases
 expose the direct supplied-store transfer theorems for counted flat-payload
 backing and modeled cost under footprint agreement.
 The current final global trace has the uniform canonical bound

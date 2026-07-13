@@ -1,16 +1,18 @@
 # Word-RAM Review Packet
 ## Canonical U2 Word-RAM Route
 
-The reviewer-facing close/LCA path uses
-`canonicalRelativeRmmInteriorComponentStore` at global segment `20`, embedded
-with every other live read-producing source in
+The reviewer-facing path uses one exhaustive typed 20-source universe including
+canonical close. Its source/region and segment-coverage theorems account for
+every live read-producing source in
 `concreteBPNativeSuccinctRMQReviewerPhysicalWords`. That one pre-execution list
-erases exactly to the canonical public payload. Physical replay refines logical
-replay with result, cost, ordered trace, failures, and footprint preserved.
+erases exactly to the canonical public payload.
 
-The exact ordered logical read footprint retains repeated and failed reads;
-agreement on it determines the complete supplied `TraceResult`. Successful
-physical reads are positional reads from the one list. The capacity
+The existing supplied-store evaluator reads a caller-supplied flat store
+through `concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter` at checked
+translated addresses. The execution-derived ordered physical footprint retains
+repeated and failed reads; agreement on the first execution's footprint
+determines the complete physical `TraceResult`, while a checked disagreement at
+a consumed address changes it. The capacity
 `400000 * (n + 1)` is linear, and
 `concreteBPNativeSuccinctRMQReviewerWordBits n` is derived from that capacity
 before execution. It has an explicit logarithmic all-size upper bound and
@@ -23,7 +25,7 @@ The old zero-block evaluator and Ready/route-split `118` discussion below is
 compatibility history, not part of the `RMQPaper` reviewer route.
 
 
-Snapshot: 2026-07-01. This packet is a focused reviewer note for the
+Snapshot: 2026-07-13 (W17 corrected candidate). This packet is a focused reviewer note for the
 first-order Word-RAM refinement boundary used by the interpreted RMQ and
 rank/select theorem surfaces.
 
@@ -99,7 +101,7 @@ Read in plain English:
   same read interface.
 - `eval_toCosted_eq_of_readWord_eq`: the same extensionality holds after
   projecting to `Costed`.
-- `zeroBlockSameBlockCloseStructuralTraceResult_evalWithStore`: the zero-block
+- Compatibility-only `zeroBlockSameBlockCloseStructuralTraceResult_evalWithStore`: the zero-block
   same-block close leaf evaluates against a supplied `ReadStore`, and concrete
   BP-code segment agreement recovers the canonical structural value/trace.
 - `zeroBlockSameBlockCloseStructuralTraceResult_store_parametric`: two supplied

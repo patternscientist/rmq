@@ -2889,6 +2889,428 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_exac
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact
       hshape hlen hbound
 
+/-! ### Genuine flat physical-store execution -/
+
+/--
+Adapt one caller-supplied flat physical store to the logical segment interface
+expected by the existing whole-query evaluator.  Every evaluator read is
+performed at the checked translated physical address in segment zero.
+-/
+def concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter
+    (shape : Cartesian.CartesianShape) (physicalStore : WordRAM.ReadStore) :
+    WordRAM.ReadStore where
+  readWord? segment index :=
+    physicalStore.readWord? 0
+      (concreteBPNativeSuccinctRMQReviewerPhysicalAddress shape segment index)
+
+/-- The canonical flat physical store adapts exactly to the canonical logical
+segmented store, including failed and dead reads. -/
+theorem concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter_canonical
+    (shape : Cartesian.CartesianShape) :
+    concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter shape
+        (concreteBPNativeSuccinctRMQReviewerPhysicalReadStore shape) =
+      concreteBPNativeSuccinctRMQGlobalReadStore shape := by
+  apply WordRAM.ReadStore.ext
+  intro segment index
+  change
+    (concreteBPNativeSuccinctRMQReviewerPhysicalWords shape)[
+        concreteBPNativeSuccinctRMQReviewerPhysicalAddress
+          shape segment index]? =
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        segment index
+  exact
+    (concreteBPNativeSuccinctRMQGlobalReadStore_eq_reviewerPhysical
+      shape segment index).symm
+
+/--
+Execute the existing supplied-store whole-query evaluator against a genuinely
+flat physical store.  The value is computed by that evaluator through
+`ReviewerPhysicalStoreAdapter`; only the emitted logical read labels are then
+translated to the physical addresses that were actually consulted.
+-/
+def concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+    (shape : Cartesian.CartesianShape) (physicalStore : WordRAM.ReadStore)
+    (left right : Nat) : WordRAM.TraceResult (Option Nat) :=
+  let logicalResult :=
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+      shape
+      (concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter
+        shape physicalStore)
+      left right
+  { value := logicalResult.value
+  , trace := logicalResult.trace.map
+      (concreteBPNativeSuccinctRMQReviewerPhysicalizeEvent shape) }
+
+/-- Canonical genuine flat physical execution. -/
+def concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    WordRAM.TraceResult (Option Nat) :=
+  concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+    shape (concreteBPNativeSuccinctRMQReviewerPhysicalReadStore shape)
+    left right
+
+/-- Ordered physical addresses consumed by a supplied flat-store execution.
+Repeated reads and failed/dead reads are retained in execution order. -/
+def concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprintWithStore
+    (shape : Cartesian.CartesianShape) (physicalStore : WordRAM.ReadStore)
+    (left right : Nat) : List Nat :=
+  (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+      shape physicalStore left right).trace.filterMap fun event =>
+    match event with
+    | WordRAM.TraceEvent.readWord 0 address _ => some address
+    | WordRAM.TraceEvent.readWord _ _ _ => none
+    | _ => none
+
+/-- Canonical execution-derived ordered physical footprint. -/
+def concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprint
+    (shape : Cartesian.CartesianShape) (left right : Nat) : List Nat :=
+  concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprintWithStore
+    shape (concreteBPNativeSuccinctRMQReviewerPhysicalReadStore shape)
+    left right
+
+/-- Agreement on every physical address consumed by the first execution. -/
+def concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalStoresAgreeOnOrderedFootprint
+    (shape : Cartesian.CartesianShape)
+    (storeA storeB : WordRAM.ReadStore) (left right : Nat) : Prop :=
+  forall address,
+    address ∈
+        concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprintWithStore
+          shape storeA left right ->
+      storeA.readWord? 0 address = storeB.readWord? 0 address
+
+/-- Every logical evaluator read contributes its translated address to the
+execution-derived physical footprint, whether it succeeds or fails. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryLogicalRead_mem_flatPhysicalFootprint
+    (shape : Cartesian.CartesianShape) (physicalStore : WordRAM.ReadStore)
+    (left right segment index : Nat) (word? : Option WordRAM.Word)
+    (hmem : WordRAM.TraceEvent.readWord segment index word? ∈
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape
+        (concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter
+          shape physicalStore)
+        left right).trace) :
+    concreteBPNativeSuccinctRMQReviewerPhysicalAddress
+        shape segment index ∈
+      concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprintWithStore
+        shape physicalStore left right := by
+  unfold concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprintWithStore
+  simp only [List.mem_filterMap]
+  refine ⟨WordRAM.TraceEvent.readWord 0
+    (concreteBPNativeSuccinctRMQReviewerPhysicalAddress shape segment index)
+    word?, ?_, by simp⟩
+  simp only [
+    concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore,
+    List.mem_map]
+  exact
+    ⟨WordRAM.TraceEvent.readWord segment index word?, hmem, rfl⟩
+
+/-- Every physical read event reports the word returned by the supplied flat
+physical store at that exact address. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_matchesReadStore
+    (shape : Cartesian.CartesianShape) (physicalStore : WordRAM.ReadStore)
+    (left right : Nat) :
+    forall event,
+      event ∈
+          (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+            shape physicalStore left right).trace ->
+        event.matchesReadStore physicalStore := by
+  intro event hmem
+  simp only [
+    concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore,
+    List.mem_map] at hmem
+  rcases hmem with ⟨logicalEvent, hlogical, rfl⟩
+  have hmatch :=
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_matchesReadStore
+      shape
+      (concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter
+        shape physicalStore)
+      left right logicalEvent hlogical
+  cases logicalEvent with
+  | readWord segment index word? =>
+      simpa [concreteBPNativeSuccinctRMQReviewerPhysicalizeEvent,
+        concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter,
+        WordRAM.TraceEvent.matchesReadStore] using hmatch
+  | wordRank target limit result => trivial
+  | wordSelect target occurrence result => trivial
+  | syntheticCostOnlyPrimitive => trivial
+
+/-- Agreement on the first execution's consumed physical footprint determines
+the complete flat physical execution: value, cost, ordered trace, successes,
+failures, and repeated reads are all identical. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_eq_of_orderedFootprint
+    (shape : Cartesian.CartesianShape)
+    (storeA storeB : WordRAM.ReadStore) (left right : Nat)
+    (hagree :
+      concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalStoresAgreeOnOrderedFootprint
+        shape storeA storeB left right) :
+    concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+        shape storeA left right =
+      concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+        shape storeB left right := by
+  have hlogical :
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint
+        shape
+        (concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter shape storeA)
+        (concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter shape storeB)
+        left right := by
+    rw [
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint_iff]
+    intro segment index word? hmem
+    apply hagree
+    exact
+      concreteBPNativeSuccinctRMQWholeQueryLogicalRead_mem_flatPhysicalFootprint
+        shape storeA left right segment index word? hmem
+  have heval :=
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_ordered_read_footprint
+      shape
+      (concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter shape storeA)
+      (concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter shape storeB)
+      left right hlogical
+  unfold concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+  rw [heval]
+
+/-- A disagreement at an address actually consumed by the first execution is
+observable: the two complete physical executions cannot be equal.  This is the
+checked corruption/non-agreement principle showing that the evaluator does not
+ignore its supplied flat store. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_ne_of_consumed_read_disagreement
+    (shape : Cartesian.CartesianShape)
+    (storeA storeB : WordRAM.ReadStore) (left right address : Nat)
+    (wordA? : Option WordRAM.Word)
+    (hmem : WordRAM.TraceEvent.readWord 0 address wordA? ∈
+      (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+        shape storeA left right).trace)
+    (hneq : storeA.readWord? 0 address ≠ storeB.readWord? 0 address) :
+    concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+        shape storeA left right ≠
+      concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+        shape storeB left right := by
+  intro heq
+  have hmatchA :=
+    concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_matchesReadStore
+      shape storeA left right
+      (WordRAM.TraceEvent.readWord 0 address wordA?) hmem
+  have hmemB : WordRAM.TraceEvent.readWord 0 address wordA? ∈
+      (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+        shape storeB left right).trace := by
+    rw [← heq]
+    exact hmem
+  have hmatchB :=
+    concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_matchesReadStore
+      shape storeB left right
+      (WordRAM.TraceEvent.readWord 0 address wordA?) hmemB
+  apply hneq
+  calc
+    storeA.readWord? 0 address = wordA? := hmatchA
+    _ = storeB.readWord? 0 address := hmatchB.symm
+
+/-- The canonical genuine physical execution is extensionally the translated
+canonical logical execution because the canonical physical store adapter is
+exactly the canonical logical store. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult_eq_legacyTranslation
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+        shape left right =
+      concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalTraceResult
+        shape left right := by
+  unfold concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+    concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+  rw [
+    concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter_canonical,
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_globalReadStore]
+  rfl
+
+/-- Genuine flat execution refines canonical logical execution while preserving
+the decoded result, modeled cost, and ordered trace under checked translation.
+The read-event payload preserves both successful and failed reads verbatim. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_refines_logical
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+        shape left right).value =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).value /\
+    (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+        shape left right).trace =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace.map
+          (concreteBPNativeSuccinctRMQReviewerPhysicalizeEvent shape) /\
+    (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+        shape left right).toCosted =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).toCosted := by
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult_eq_legacyTranslation]
+  exact ⟨
+    (concreteBPNativeSuccinctRMQWholeQueryReviewerPhysical_refines_logical
+      shape left right).1,
+    (concreteBPNativeSuccinctRMQWholeQueryReviewerPhysical_refines_logical
+      shape left right).2.1,
+    (concreteBPNativeSuccinctRMQWholeQueryReviewerPhysical_refines_logical
+      shape left right).2.2.1⟩
+
+/-- Every logical read, including a failed read, is retained at its translated
+address in the genuine canonical physical execution. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_read_translated
+    (shape : Cartesian.CartesianShape) (left right segment index : Nat)
+    (word? : Option WordRAM.Word)
+    (hmem : WordRAM.TraceEvent.readWord segment index word? ∈
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace) :
+    WordRAM.TraceEvent.readWord 0
+        (concreteBPNativeSuccinctRMQReviewerPhysicalAddress
+          shape segment index) word? ∈
+      (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+        shape left right).trace := by
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult_eq_legacyTranslation]
+  exact
+    (concreteBPNativeSuccinctRMQWholeQueryReviewerPhysical_refines_logical
+      shape left right).2.2.2 segment index word? hmem
+
+/-- Every emitted logical read, successful or failed, belongs to a named live
+source/region and is present at that source's checked translated address in the
+genuine physical execution. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_read_has_listed_region
+    (shape : Cartesian.CartesianShape) (left right segment index : Nat)
+    (word? : Option WordRAM.Word)
+    (hmem : WordRAM.TraceEvent.readWord segment index word? ∈
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace) :
+    Exists fun source : ReviewerSource =>
+      Exists fun region : Nat =>
+        source ∈ concreteBPNativeSuccinctRMQReviewerPhysicalSources /\
+        concreteBPNativeSuccinctRMQReviewerSegmentSource? segment =
+          some source /\
+        source.region = region /\
+        WordRAM.TraceEvent.readWord 0
+            (concreteBPNativeSuccinctRMQReviewerPhysicalAddress
+              shape segment index) word? ∈
+          (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+            shape left right).trace := by
+  have hlt : segment < 21 :=
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_segment_lt
+      shape left right hmem
+  rcases
+      (concreteBPNativeSuccinctRMQReviewerSegmentSource?_coverage segment).2 hlt
+    with ⟨source, hsource⟩
+  exact ⟨source, source.region,
+    concreteBPNativeSuccinctRMQReviewerPhysicalSources_all source,
+    hsource, rfl,
+    concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_read_translated
+      shape left right segment index word? hmem⟩
+
+/-- The new execution-derived canonical footprint agrees with the earlier
+translated-trace footprint, now as a consequence of genuine execution. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprint_eq_legacy
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprint
+        shape left right =
+      concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalFootprint
+        shape left right := by
+  exact congrArg
+    (fun result : WordRAM.TraceResult (Option Nat) =>
+      result.trace.filterMap fun event =>
+        match event with
+        | WordRAM.TraceEvent.readWord 0 address _ => some address
+        | WordRAM.TraceEvent.readWord _ _ _ => none
+        | _ => none)
+    (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult_eq_legacyTranslation
+      shape left right)
+
+/-- Successful reads of the genuine physical execution are positional reads
+from the one canonical pre-execution word list. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_successful_read_backed
+    (shape : Cartesian.CartesianShape) (left right : Nat)
+    {address : Nat} {word : List Bool}
+    (hmem : WordRAM.TraceEvent.readWord 0 address (some word) ∈
+      (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+        shape left right).trace) :
+    address <
+        (concreteBPNativeSuccinctRMQReviewerPhysicalWords shape).length /\
+      (concreteBPNativeSuccinctRMQReviewerPhysicalWords shape)[address]? =
+        some word := by
+  have hmatch :=
+    concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_matchesReadStore
+      shape (concreteBPNativeSuccinctRMQReviewerPhysicalReadStore shape)
+      left right (WordRAM.TraceEvent.readWord 0 address (some word)) hmem
+  have hread :
+      (concreteBPNativeSuccinctRMQReviewerPhysicalWords shape)[address]? =
+        some word := by
+    simpa [WordRAM.TraceEvent.matchesReadStore,
+      concreteBPNativeSuccinctRMQReviewerPhysicalReadStore] using hmatch
+  exact ⟨(List.getElem?_eq_some_iff.mp hread).1, hread⟩
+
+/-- Primitive operands in the genuine physical execution fit the one declared
+reviewer word width. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult_primitiveOperandsFit_reviewerWordBits
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    forall event,
+      event ∈
+          (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+            shape left right).trace ->
+        concreteBPNativeTraceEventPrimitiveOperandsFitInBits
+          (concreteBPNativeSuccinctRMQReviewerWordBits shape.size) event := by
+  intro event hmem
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult_eq_legacyTranslation]
+    at hmem
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalTraceResult_primitiveOperandsFit_reviewerWordBits
+      shape left right event hmem
+
+/-- Genuine canonical physical executions contain no synthetic cost-only
+events. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult_no_syntheticCostOnlyPrimitive
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    forall event,
+      event ∈
+          (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+            shape left right).trace ->
+        ¬ event.isSyntheticCostOnlyPrimitive := by
+  intro event hmem
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult_eq_legacyTranslation]
+    at hmem
+  simp only [concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalTraceResult,
+    List.mem_map] at hmem
+  rcases hmem with ⟨logicalEvent, hlogical, rfl⟩
+  have hno :=
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_no_syntheticCostOnlyPrimitive
+      shape left right logicalEvent hlogical
+  cases logicalEvent <;>
+    simp [concreteBPNativeSuccinctRMQReviewerPhysicalizeEvent,
+      WordRAM.TraceEvent.isSyntheticCostOnlyPrimitive] at hno ⊢
+
+/-- Every execution-derived canonical physical footprint address fits the one
+query-independent reviewer word width. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprint_address_fits_reviewerWordBits
+    (shape : Cartesian.CartesianShape) (left right address : Nat)
+    (hmem : address ∈
+      concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprint
+        shape left right) :
+    address <
+      2 ^ concreteBPNativeSuccinctRMQReviewerWordBits shape.size := by
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprint_eq_legacy]
+    at hmem
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalFootprint_address_fits_reviewerWordBits
+      shape left right address hmem
+
+/-- The canonical physical footprint is exactly the read-address projection of
+the genuine canonical flat-store execution. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprint_recorded
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprint
+        shape left right =
+      (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+        shape left right).trace.filterMap fun event =>
+        match event with
+        | WordRAM.TraceEvent.readWord 0 address _ => some address
+        | WordRAM.TraceEvent.readWord _ _ _ => none
+        | _ => none := by
+  rfl
+
 end SuccinctFinal
 
 end RMQ

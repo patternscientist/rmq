@@ -3,9 +3,17 @@
 
 The reviewer path uses one pre-execution list,
 `concreteBPNativeSuccinctRMQReviewerPhysicalWords`, whose erasure is exactly the
-canonical public payload. The segmented logical execution refines to positional
-reads from that list while preserving result, cost, ordered trace, failures,
-and footprint.
+canonical public payload. It is assembled from one exhaustive typed 20-source
+universe that includes canonical close. The manifest proves counted iff live,
+exclusive source regions, complete logical-segment coverage, and exclusion of
+legacy duplicate close/interior sources from the canonical payload.
+
+The existing supplied-store evaluator is run through
+`concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter`, which actually reads
+the caller's flat store at checked translated physical addresses. Canonical
+flat-physical execution refines the logical execution while preserving decoded
+result, modeled cost, ordered successful and failed reads, repeated reads, and
+the execution-derived physical footprint.
 
 Its query-independent width is
 `concreteBPNativeSuccinctRMQReviewerWordBits n = machineWordBits (400000 *
@@ -14,15 +22,17 @@ capacity, `reviewerWordBits n <= 20 * (log2 (n + 2) + 1)`, and bounds for every
 stored/returned word, translated live or dead address, segment encoding, query
 operand, primitive operand/result, and consumed footprint address.
 
-The interior result is constructed only from indexed supplied-store reads.
-`canonicalRelativeRmmInteriorRangeFootprint_recorded` identifies the recorded
-footprint with the execution log;
-`canonicalRelativeRmmInteriorRangeMinCostedWithStore_eq_of_agree` proves
-dynamic-footprint determinacy. At whole-query level, agreement on the actual
-ordered logical read footprint determines the complete supplied `TraceResult`,
-including failures and repeated reads. Successful-read backing and returned-word bounds
-are lifted to the canonical reviewer payload and physical store. Empty,
-singleton, size-two, and symbolic threshold-boundary cases are kernel checked.
+At whole-query level,
+`concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprint_recorded` identifies
+the physical footprint with the execution's ordered read projection. Agreement
+on the first execution's consumed ordered physical footprint determines the
+complete physical `TraceResult`, including failures and repeated reads. The
+checked theorem
+`concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_ne_of_consumed_read_disagreement`
+shows that disagreement at a consumed address changes the execution, so the
+flat store is not ignored. Successful-read backing and returned-word bounds are
+lifted to the canonical reviewer payload and physical store. Empty, singleton,
+size-two, and symbolic threshold-boundary cases are kernel checked.
 
 This remains a mathematical Word-RAM/cost model. It is not a compiled Lean
 runtime or hardware timing claim.
@@ -125,23 +135,25 @@ interpreter refinement, no synthetic cost-only events appear, and agreement on
 the final layout footprint gives store-parametricity and equality with the
 canonical global trace.
 
-The footprint theorem uses a safe final-layout overapproximation. It is not an
-exact dynamic read-set theorem, and it is not claimed to be minimal. The current
+The logical supplied-store packet also retains a safe final-layout
+overapproximation; that auxiliary footprint is not claimed minimal. In
+contrast, the reviewer flat-physical footprint is execution-derived and is
+exactly the read projection consumed by that execution. The current
 full-model packet includes the theorem that every emitted supplied-store and
 canonical payload-read event lies inside that safe footprint; exactness then
 transfers to any supplied store agreeing with the canonical global store on the
 footprint.
 
-## Zero-Block Leaf Guard
+## Compatibility-Only Zero-Block Leaf Guard
 
-One leaf-level supplied-store blemish is disclosed explicitly. The zero-block
+One compatibility leaf-level supplied-store blemish is disclosed explicitly.
+The zero-block
 same-block supplied-store decoder currently flattens the supplied BP-code words
 and checks `bits = shape.bpCode` before returning the canonical structural
 answer. On corrupted stores that fail this guard, the leaf may return `none`
 rather than decode arbitrary garbage. This is a model boundary and nonclaim, not
-a proof bug: the final footprint-agreement theorems state exactness and cost
-transfer for stores agreeing with the canonical global store on the declared
-footprint.
+a proof bug. This leaf is not reachable from the uniform canonical reviewer
+route; it remains only on compatibility/history surfaces.
 
 ## The Constant
 
@@ -171,7 +183,8 @@ The adequacy packet does not prove:
 - a compiler correctness theorem;
 - a full CPU or memory hierarchy semantics;
 - production-ready serialization;
-- an exact or minimal dynamic read-set characterization.
+- minimality of the auxiliary safe logical layout footprint (the reviewer
+  flat-physical footprint itself is execution-derived and recorded exactly);
 - arbitrary-garbage decoding for corrupted zero-block supplied-store words; the
   zero-block leaf currently guards by checking `bits = shape.bpCode`.
 

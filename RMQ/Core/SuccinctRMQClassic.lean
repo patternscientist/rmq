@@ -125,14 +125,49 @@ def preparedBuildPayload (prepared : PreparedInput) : List Bool :=
   SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerPayload
     prepared.shape
 
+/-- One principled validity boundary for every public `List Int` execution
+surface.  The controller thunk is not evaluated for empty, reversed, or
+out-of-bounds ranges. -/
+def withValidRange {α : Type}
+    (xs : List Int) (left right : Nat)
+    (run : Unit -> α) (invalid : α) : α :=
+  if ValidRange xs left right then run () else invalid
+
+/-- Canonical guarded trace result. -/
+def queryTraceResult (xs : List Int) (left right : Nat) :
+    WordRAM.TraceResult (Option Nat) :=
+  withValidRange xs left right
+    (fun _ =>
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        (cartesianShape xs) left right)
+    (WordRAM.TraceResult.pure none)
+
+/-- Guarded supplied-store trace result. -/
+def queryTraceResultWithStore
+    (xs : List Int) (store : WordRAM.ReadStore) (left right : Nat) :
+    WordRAM.TraceResult (Option Nat) :=
+  withValidRange xs left right
+    (fun _ =>
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        (cartesianShape xs) store left right)
+    (WordRAM.TraceResult.pure none)
+
 /--
 The all-size, global-word-trace query of the public BP-native construction,
 specialized to the Cartesian shape of an ordinary input list.
 -/
 def queryCosted (xs : List Int) (left right : Nat) :
     Costed (Option Nat) :=
-  SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
-    (cartesianShape xs) left right
+  (queryTraceResult xs left right).toCosted
+
+/-- Guarded list-facing form of the canonical interpreted cost target. -/
+def canonicalInterpretedQueryCosted
+    (xs : List Int) (left right : Nat) : Costed (Option Nat) :=
+  withValidRange xs left right
+    (fun _ =>
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted
+        (cartesianShape xs) left right)
+    (Costed.pure none)
 
 /--
 Prepared all-size query.  This reuses the stored Cartesian shape and is proved
@@ -141,8 +176,11 @@ below to agree with the canonical `queryCosted` path, including model cost.
 def preparedQueryCosted
     (prepared : PreparedInput) (left right : Nat) :
     Costed (Option Nat) :=
-  SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
-    prepared.shape left right
+  (withValidRange prepared.xs left right
+    (fun _ =>
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        prepared.shape left right)
+    (WordRAM.TraceResult.pure none)).toCosted
 
 /--
 The supplied-store final query specialized to the Cartesian shape of an
@@ -151,8 +189,91 @@ ordinary input list.
 def queryCostedWithStore
     (xs : List Int) (store : WordRAM.ReadStore) (left right : Nat) :
     Costed (Option Nat) :=
-  SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
-    (cartesianShape xs) store left right
+  (queryTraceResultWithStore xs store left right).toCosted
+
+/-- The guarded canonical trace rejects every invalid range before execution. -/
+theorem queryTraceResult_invalid
+    (xs : List Int) (left right : Nat)
+    (hbad : Not (ValidRange xs left right)) :
+    queryTraceResult xs left right = WordRAM.TraceResult.pure none := by
+  simp [queryTraceResult, withValidRange, hbad]
+
+/-- The guarded canonical costed query rejects every invalid range. -/
+theorem queryCosted_invalid
+    (xs : List Int) (left right : Nat)
+    (hbad : Not (ValidRange xs left right)) :
+    queryCosted xs left right = Costed.pure none := by
+  simp [queryCosted, queryTraceResult_invalid xs left right hbad,
+    WordRAM.TraceResult.pure_toCosted]
+
+/-- Supplied logical stores cannot bypass invalid-range rejection. -/
+theorem queryTraceResultWithStore_invalid
+    (xs : List Int) (store : WordRAM.ReadStore) (left right : Nat)
+    (hbad : Not (ValidRange xs left right)) :
+    queryTraceResultWithStore xs store left right =
+      WordRAM.TraceResult.pure none := by
+  simp [queryTraceResultWithStore, withValidRange, hbad]
+
+/-- Costed supplied-store queries reject every invalid range. -/
+theorem queryCostedWithStore_invalid
+    (xs : List Int) (store : WordRAM.ReadStore) (left right : Nat)
+    (hbad : Not (ValidRange xs left right)) :
+    queryCostedWithStore xs store left right = Costed.pure none := by
+  simp [queryCostedWithStore,
+    queryTraceResultWithStore_invalid xs store left right hbad,
+    WordRAM.TraceResult.pure_toCosted]
+
+/-- On a valid range the public trace is exactly the canonical evaluator. -/
+theorem queryTraceResult_valid
+    (xs : List Int) (left right : Nat)
+    (hvalid : ValidRange xs left right) :
+    queryTraceResult xs left right =
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        (cartesianShape xs) left right := by
+  simp [queryTraceResult, withValidRange, hvalid]
+
+/-- On a valid range the supplied-store trace is exactly the supplied-store
+evaluator. -/
+theorem queryTraceResultWithStore_valid
+    (xs : List Int) (store : WordRAM.ReadStore) (left right : Nat)
+    (hvalid : ValidRange xs left right) :
+    queryTraceResultWithStore xs store left right =
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        (cartesianShape xs) store left right := by
+  simp [queryTraceResultWithStore, withValidRange, hvalid]
+
+/-- Prepared queries use the same validity boundary. -/
+theorem preparedQueryCosted_invalid
+    (prepared : PreparedInput) (left right : Nat)
+    (hbad : Not (ValidRange prepared.xs left right)) :
+    preparedQueryCosted prepared left right = Costed.pure none := by
+  simp [preparedQueryCosted, withValidRange, hbad,
+    WordRAM.TraceResult.pure_toCosted]
+
+/-- Empty half-open ranges are rejected. -/
+theorem queryCosted_empty_range (xs : List Int) (left : Nat) :
+    (queryCosted xs left left).erase = none := by
+  rw [queryCosted_invalid]
+  · rfl
+  · simp [ValidRange]
+
+/-- Reversed half-open ranges are rejected. -/
+theorem queryCosted_reversed_range
+    (xs : List Int) {left right : Nat} (hreverse : right <= left) :
+    (queryCosted xs left right).erase = none := by
+  rw [queryCosted_invalid]
+  · rfl
+  · simp [ValidRange]
+    omega
+
+/-- Ranges ending beyond the input are rejected. -/
+theorem queryCosted_out_of_bounds
+    (xs : List Int) {left right : Nat} (hout : xs.length < right) :
+    (queryCosted xs left right).erase = none := by
+  rw [queryCosted_invalid]
+  · rfl
+  · simp [ValidRange]
+    omega
 
 /-- The prepared route-split budget agrees with the canonical list-facing one. -/
 theorem preparedRouteSplitQueryCost_eq_routeSplitQueryCost
@@ -178,7 +299,8 @@ theorem preparedQueryCosted_eq_queryCosted
       queryCosted prepared.xs left right := by
   cases prepared with
   | mk xs values shape hvalues hshape =>
-      simp [preparedQueryCosted, queryCosted, hshape]
+      simp [preparedQueryCosted, queryCosted, queryTraceResult,
+        withValidRange, hshape]
 
 /-- Prepared query results agree with canonical `queryCosted` results. -/
 theorem preparedQueryCosted_erase_eq
@@ -211,42 +333,181 @@ abbrev globalReadStore (xs : List Int) : WordRAM.ReadStore :=
   SuccinctFinal.concreteBPNativeSuccinctRMQGlobalReadStore
     (cartesianShape xs)
 
-/-- Supplied-store trace result before `Costed` projection. -/
-abbrev queryTraceResultWithStore
-    (xs : List Int) (store : WordRAM.ReadStore) (left right : Nat) :
-    WordRAM.TraceResult (Option Nat) :=
-  SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
-    (cartesianShape xs) store left right
-
 /-- Ordered logical footprint recorded by one supplied-store execution. -/
-abbrev orderedReadFootprintWithStore
+def orderedReadFootprintWithStore
     (xs : List Int) (store : WordRAM.ReadStore) (left right : Nat) :=
-  SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryOrderedReadFootprintWithStore
-    (cartesianShape xs) store left right
+  (queryTraceResultWithStore xs store left right).trace.filterMap fun event =>
+    match event with
+    | WordRAM.TraceEvent.readWord segment index _ => some (segment, index)
+    | _ => none
 
 /-- Agreement on exactly the addresses emitted by `storeA`'s execution. -/
-abbrev storesAgreeOnOrderedReadFootprint
+def storesAgreeOnOrderedReadFootprint
     (xs : List Int) (storeA storeB : WordRAM.ReadStore)
     (left right : Nat) : Prop :=
-  SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint
-    (cartesianShape xs) storeA storeB left right
+  forall segment index,
+    (segment, index) ∈
+        orderedReadFootprintWithStore xs storeA left right ->
+      storeA.readWord? segment index = storeB.readWord? segment index
 
 /-- One flat pre-execution machine-word list whose erasure is `buildPayload`. -/
 abbrev reviewerPhysicalWords (xs : List Int) : List (List Bool) :=
   SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalWords
     (cartesianShape xs)
 
-/-- Full reviewer execution after checked logical-to-physical translation. -/
-abbrev reviewerPhysicalTraceResult
+/-- Canonical flat physical store for an ordinary input list. -/
+abbrev reviewerPhysicalReadStore (xs : List Int) : WordRAM.ReadStore :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalReadStore
+    (cartesianShape xs)
+
+/-- Guarded genuine execution against a caller-supplied flat physical store. -/
+def reviewerPhysicalTraceResultWithStore
+    (xs : List Int) (store : WordRAM.ReadStore) (left right : Nat) :
+    WordRAM.TraceResult (Option Nat) :=
+  withValidRange xs left right
+    (fun _ =>
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+        (cartesianShape xs) store left right)
+    (WordRAM.TraceResult.pure none)
+
+/-- Guarded canonical genuine flat physical execution. -/
+def reviewerPhysicalTraceResult
     (xs : List Int) (left right : Nat) : WordRAM.TraceResult (Option Nat) :=
-  SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalTraceResult
-    (cartesianShape xs) left right
+  reviewerPhysicalTraceResultWithStore xs
+    (reviewerPhysicalReadStore xs) left right
 
 /-- Ordered physical addresses consumed by the reviewer execution. -/
-abbrev reviewerPhysicalFootprint
+def reviewerPhysicalFootprintWithStore
+    (xs : List Int) (store : WordRAM.ReadStore) (left right : Nat) : List Nat :=
+  (reviewerPhysicalTraceResultWithStore xs store left right).trace.filterMap
+    fun event =>
+      match event with
+      | WordRAM.TraceEvent.readWord 0 address _ => some address
+      | WordRAM.TraceEvent.readWord _ _ _ => none
+      | _ => none
+
+/-- Ordered physical addresses consumed by the canonical reviewer execution. -/
+def reviewerPhysicalFootprint
     (xs : List Int) (left right : Nat) : List Nat :=
-  SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalFootprint
-    (cartesianShape xs) left right
+  reviewerPhysicalFootprintWithStore xs (reviewerPhysicalReadStore xs)
+    left right
+
+/-- Agreement on every physical address emitted by the first guarded
+execution. -/
+def physicalStoresAgreeOnOrderedReadFootprint
+    (xs : List Int) (storeA storeB : WordRAM.ReadStore)
+    (left right : Nat) : Prop :=
+  forall address,
+    address ∈ reviewerPhysicalFootprintWithStore xs storeA left right ->
+      storeA.readWord? 0 address = storeB.readWord? 0 address
+
+/-- Supplied flat physical stores cannot bypass invalid-range rejection. -/
+theorem reviewerPhysicalTraceResultWithStore_invalid
+    (xs : List Int) (store : WordRAM.ReadStore) (left right : Nat)
+    (hbad : Not (ValidRange xs left right)) :
+    reviewerPhysicalTraceResultWithStore xs store left right =
+      WordRAM.TraceResult.pure none := by
+  simp [reviewerPhysicalTraceResultWithStore, withValidRange, hbad]
+
+/-- The canonical genuine flat physical execution rejects invalid ranges. -/
+theorem reviewerPhysicalTraceResult_invalid
+    (xs : List Int) (left right : Nat)
+    (hbad : Not (ValidRange xs left right)) :
+    reviewerPhysicalTraceResult xs left right =
+      WordRAM.TraceResult.pure none := by
+  simp [reviewerPhysicalTraceResult,
+    reviewerPhysicalTraceResultWithStore_invalid xs
+      (reviewerPhysicalReadStore xs) left right hbad]
+
+/-- On a valid range the list-facing physical evaluator is exactly the raw
+flat-store-parametric evaluator. -/
+theorem reviewerPhysicalTraceResultWithStore_valid
+    (xs : List Int) (store : WordRAM.ReadStore) (left right : Nat)
+    (hvalid : ValidRange xs left right) :
+    reviewerPhysicalTraceResultWithStore xs store left right =
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+        (cartesianShape xs) store left right := by
+  simp [reviewerPhysicalTraceResultWithStore, withValidRange, hvalid]
+
+/-- On a valid range the canonical list-facing physical evaluator is the
+canonical raw flat physical execution. -/
+theorem reviewerPhysicalTraceResult_valid
+    (xs : List Int) (left right : Nat)
+    (hvalid : ValidRange xs left right) :
+    reviewerPhysicalTraceResult xs left right =
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+        (cartesianShape xs) left right := by
+  rw [reviewerPhysicalTraceResult,
+    reviewerPhysicalTraceResultWithStore_valid xs
+      (reviewerPhysicalReadStore xs) left right hvalid]
+  rfl
+
+/-- The guarded canonical physical execution refines the guarded canonical
+logical execution, preserving the decoded result, ordered translated trace,
+and modeled cost. -/
+theorem reviewerPhysicalTraceResult_refines_queryTraceResult
+    (xs : List Int) (left right : Nat) :
+    (reviewerPhysicalTraceResult xs left right).value =
+        (queryTraceResult xs left right).value /\
+      (reviewerPhysicalTraceResult xs left right).trace =
+        (queryTraceResult xs left right).trace.map
+          (SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalizeEvent
+            (cartesianShape xs)) /\
+      (reviewerPhysicalTraceResult xs left right).toCosted =
+        queryCosted xs left right := by
+  by_cases hvalid : ValidRange xs left right
+  · simpa only [reviewerPhysicalTraceResult_valid xs left right hvalid,
+      queryTraceResult_valid xs left right hvalid, queryCosted] using
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_refines_logical
+        (cartesianShape xs) left right
+  · simp [reviewerPhysicalTraceResult,
+      reviewerPhysicalTraceResultWithStore, queryTraceResult, queryCosted,
+      withValidRange, hvalid, WordRAM.TraceResult.pure_toCosted]
+
+/-- Agreement on the first guarded execution's physical footprint determines
+the complete guarded physical execution. -/
+theorem reviewerPhysicalTraceResultWithStore_eq_of_orderedReadFootprint
+    (xs : List Int) (storeA storeB : WordRAM.ReadStore)
+    (left right : Nat)
+    (hagree : physicalStoresAgreeOnOrderedReadFootprint
+      xs storeA storeB left right) :
+    reviewerPhysicalTraceResultWithStore xs storeA left right =
+      reviewerPhysicalTraceResultWithStore xs storeB left right := by
+  by_cases hvalid : ValidRange xs left right
+  · rw [reviewerPhysicalTraceResultWithStore_valid xs storeA left right hvalid,
+      reviewerPhysicalTraceResultWithStore_valid xs storeB left right hvalid]
+    apply
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_eq_of_orderedFootprint
+    intro address hmem
+    apply hagree address
+    simpa [reviewerPhysicalFootprintWithStore,
+      reviewerPhysicalTraceResultWithStore_valid xs storeA left right hvalid,
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprintWithStore]
+      using hmem
+  · simp [reviewerPhysicalTraceResultWithStore, withValidRange, hvalid]
+
+/-- A disagreement at a consumed physical address is observable at the public
+list-facing evaluator. -/
+theorem reviewerPhysicalTraceResultWithStore_ne_of_consumed_read_disagreement
+    (xs : List Int) (storeA storeB : WordRAM.ReadStore)
+    (left right address : Nat) (wordA? : Option WordRAM.Word)
+    (hmem : WordRAM.TraceEvent.readWord 0 address wordA? ∈
+      (reviewerPhysicalTraceResultWithStore
+        xs storeA left right).trace)
+    (hneq : storeA.readWord? 0 address ≠ storeB.readWord? 0 address) :
+    reviewerPhysicalTraceResultWithStore xs storeA left right ≠
+      reviewerPhysicalTraceResultWithStore xs storeB left right := by
+  by_cases hvalid : ValidRange xs left right
+  · rw [reviewerPhysicalTraceResultWithStore_valid xs storeA left right hvalid,
+      reviewerPhysicalTraceResultWithStore_valid xs storeB left right hvalid]
+    apply
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_ne_of_consumed_read_disagreement
+        (cartesianShape xs) storeA storeB left right address wordA?
+    · simpa [reviewerPhysicalTraceResultWithStore_valid xs storeA left right hvalid]
+        using hmem
+    · exact hneq
+  · simp [reviewerPhysicalTraceResultWithStore, withValidRange, hvalid]
+      at hmem
 
 /-- Query-independent all-size physical capacity. -/
 abbrev reviewerCapacity (n : Nat) : Nat :=
@@ -266,8 +527,7 @@ abbrev storesAgreeOnFootprint
 abbrev flatPayloadTraceResult
     (xs : List Int) (left right : Nat) :
     WordRAM.TraceResult (Option Nat) :=
-  SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
-    (cartesianShape xs) left right
+  queryTraceResult xs left right
 
 /-- Trace-local bit width bounding read addresses and word-primitive data. -/
 abbrev flatPayloadTraceEventBits
@@ -293,30 +553,46 @@ def FlatPayloadStoreNoSyntheticExecutionStory
     SuccinctFinal.ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
       (cartesianShape xs) left right /\
     SuccinctSpace.flattenPayloadWords
-        (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
-          (cartesianShape xs)).store.words.toList =
-      (SuccinctClose.canonicalRelativeRmmInteriorDirectory
-        (cartesianShape xs)).payload /\
-    (forall {segment index : Nat} {word : List Bool},
-      List.Mem (WordRAM.TraceEvent.readWord segment index (some word))
-          (flatPayloadTraceResult xs left right).trace ->
-        SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerReadBacked
-          (cartesianShape xs) segment index word) /\
-    queryCosted xs left right =
-      (flatPayloadTraceResult xs left right).toCosted /\
-    queryCosted xs left right =
-      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted
-        (cartesianShape xs) left right /\
+        (reviewerPhysicalWords xs) = buildPayload xs /\
+    ((reviewerPhysicalTraceResult xs left right).value =
+        (queryTraceResult xs left right).value /\
+      (reviewerPhysicalTraceResult xs left right).trace =
+        (queryTraceResult xs left right).trace.map
+          (SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalizeEvent
+            (cartesianShape xs)) /\
+      (reviewerPhysicalTraceResult xs left right).toCosted =
+        queryCosted xs left right) /\
+    reviewerPhysicalFootprint xs left right =
+      ((reviewerPhysicalTraceResult xs left right).trace.filterMap fun event =>
+        match event with
+        | WordRAM.TraceEvent.readWord 0 address _ => some address
+        | WordRAM.TraceEvent.readWord _ _ _ => none
+        | _ => none) /\
+    (forall storeB : WordRAM.ReadStore,
+      physicalStoresAgreeOnOrderedReadFootprint xs
+          (reviewerPhysicalReadStore xs) storeB left right ->
+        reviewerPhysicalTraceResult xs left right =
+          reviewerPhysicalTraceResultWithStore xs storeB left right) /\
+    (forall (storeB : WordRAM.ReadStore) address wordA?,
+      WordRAM.TraceEvent.readWord 0 address wordA? ∈
+          (reviewerPhysicalTraceResult xs left right).trace ->
+        (reviewerPhysicalReadStore xs).readWord? 0 address ≠
+            storeB.readWord? 0 address ->
+          reviewerPhysicalTraceResult xs left right ≠
+            reviewerPhysicalTraceResultWithStore xs storeB left right) /\
     (forall event,
-      List.Mem event (flatPayloadTraceResult xs left right).trace ->
-        event.isReadWord \/ event.isWordPrimitive) /\
-    (forall event,
-      List.Mem event (flatPayloadTraceResult xs left right).trace ->
+      List.Mem event (reviewerPhysicalTraceResult xs left right).trace ->
         event.matchesReadStore
-          (SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerReadStore
-            (cartesianShape xs))) /\
+          (reviewerPhysicalReadStore xs)) /\
+    (forall {address : Nat} {word : List Bool},
+      WordRAM.TraceEvent.readWord 0 address (some word) ∈
+          (reviewerPhysicalTraceResult xs left right).trace ->
+        address < (reviewerPhysicalWords xs).length /\
+          (reviewerPhysicalWords xs)[address]? = some word) /\
+    queryCosted xs left right =
+      canonicalInterpretedQueryCosted xs left right /\
     (forall event,
-      List.Mem event (flatPayloadTraceResult xs left right).trace ->
+      List.Mem event (reviewerPhysicalTraceResult xs left right).trace ->
         Not event.isSyntheticCostOnlyPrimitive)
 
 /--
@@ -329,12 +605,87 @@ theorem flatPayloadStoreNoSyntheticExecutionStory
   unfold FlatPayloadStoreNoSyntheticExecutionStory
   refine ⟨rfl,
     SuccinctFinal.concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
-      (cartesianShape xs) left right, ?_⟩
-  have h :=
-    SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execution_story
-      (cartesianShape xs) left right
-  simpa [flatPayloadLayout, flatPayloadReadStore, flatPayloadTraceResult,
-    flatPayloadTraceEventBits, queryCosted] using h.2
+      (cartesianShape xs) left right, ?_, ?_, rfl, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · simpa [reviewerPhysicalWords, buildPayload] using
+      SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases
+        (cartesianShape xs)
+  · by_cases hvalid : ValidRange xs left right
+    · simpa only [reviewerPhysicalTraceResult_valid xs left right hvalid,
+        queryTraceResult_valid xs left right hvalid, queryCosted] using
+        SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_refines_logical
+          (cartesianShape xs) left right
+    · simp [reviewerPhysicalTraceResult,
+        reviewerPhysicalTraceResultWithStore,
+        queryTraceResult, queryCosted, withValidRange, hvalid,
+        WordRAM.TraceResult.pure_toCosted]
+  · intro storeB hagree
+    exact
+      reviewerPhysicalTraceResultWithStore_eq_of_orderedReadFootprint
+        xs (reviewerPhysicalReadStore xs) storeB left right hagree
+  · intro storeB address wordA? hmem hneq
+    exact
+      reviewerPhysicalTraceResultWithStore_ne_of_consumed_read_disagreement
+        xs (reviewerPhysicalReadStore xs) storeB left right address wordA?
+        hmem hneq
+  · intro event hmem
+    by_cases hvalid : ValidRange xs left right
+    · have hraw : event ∈
+          (SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+            (cartesianShape xs) left right).trace := by
+        simpa only [reviewerPhysicalTraceResult_valid xs left right hvalid]
+          using hmem
+      exact
+        SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_matchesReadStore
+          (cartesianShape xs) (reviewerPhysicalReadStore xs)
+          left right event hraw
+    · exfalso
+      have hnil : List.Mem event [] := by
+        simpa [reviewerPhysicalTraceResult_invalid xs left right hvalid,
+          WordRAM.TraceResult.pure] using hmem
+      exact List.not_mem_nil hnil
+  · intro address word hmem
+    by_cases hvalid : ValidRange xs left right
+    · have hraw : WordRAM.TraceEvent.readWord 0 address (some word) ∈
+          (SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+            (cartesianShape xs) left right).trace := by
+        simpa only [reviewerPhysicalTraceResult_valid xs left right hvalid]
+          using hmem
+      simpa only [reviewerPhysicalWords] using
+        SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_successful_read_backed
+          (cartesianShape xs) left right hraw
+    · exfalso
+      simp [reviewerPhysicalTraceResult_invalid xs left right hvalid,
+        WordRAM.TraceResult.pure] at hmem
+  · by_cases hvalid : ValidRange xs left right
+    · rw [show queryCosted xs left right =
+          (SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+            (cartesianShape xs) left right).toCosted by
+          simp [queryCosted, queryTraceResult_valid xs left right hvalid]]
+      rw [show canonicalInterpretedQueryCosted xs left right =
+          SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted
+            (cartesianShape xs) left right by
+          simp [canonicalInterpretedQueryCosted, withValidRange, hvalid]]
+      exact
+          SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_refines_canonicalInterpretedCosted
+            (cartesianShape xs) left right
+    · simp [queryCosted, queryTraceResult,
+        canonicalInterpretedQueryCosted, withValidRange, hvalid,
+        WordRAM.TraceResult.pure_toCosted]
+  · intro event hmem
+    by_cases hvalid : ValidRange xs left right
+    · have hraw : event ∈
+          (SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+            (cartesianShape xs) left right).trace := by
+        simpa only [reviewerPhysicalTraceResult_valid xs left right hvalid]
+          using hmem
+      exact
+        SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult_no_syntheticCostOnlyPrimitive
+          (cartesianShape xs) left right event hraw
+    · exfalso
+      have hnil : List.Mem event [] := by
+        simpa [reviewerPhysicalTraceResult_invalid xs left right hvalid,
+          WordRAM.TraceResult.pure] using hmem
+      exact List.not_mem_nil hnil
 
 /--
 Shape-only local queries over `Cartesian.shape xs` return the same leftmost
@@ -428,9 +779,15 @@ theorem buildPayload_length (xs : List Int) :
 theorem queryCosted_cost_le_canonicalTransitional
     (xs : List Int) (left right : Nat) :
     (queryCosted xs left right).cost <= canonicalTransitionalQueryCost := by
-  simpa [queryCosted, canonicalTransitionalQueryCost] using
-    SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional
-      (cartesianShape xs) left right
+  by_cases hvalid : ValidRange xs left right
+  · rw [queryCosted, queryTraceResult_valid xs left right hvalid]
+    simpa [canonicalTransitionalQueryCost,
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted]
+      using
+        SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional
+          (cartesianShape xs) left right
+  · simp [queryCosted, queryTraceResult, withValidRange, hvalid,
+      canonicalTransitionalQueryCost, queryCost]
 
 /-- Every query has the clean fixed all-size modeled cost bound. -/
 theorem queryCosted_cost_le
@@ -448,10 +805,19 @@ theorem queryCostedWithStore_eq_queryCosted_of_footprint
     (left right : Nat) :
     queryCostedWithStore xs store left right =
       queryCosted xs left right := by
-  simpa [queryCostedWithStore, queryCosted, storesAgreeOnFootprint,
-    globalReadStore] using
-    SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_eq_global_of_footprint
-      (cartesianShape xs) store hfoot left right
+  by_cases hvalid : ValidRange xs left right
+  · rw [queryCostedWithStore, queryCosted,
+      queryTraceResultWithStore_valid xs store left right hvalid,
+      queryTraceResult_valid xs left right hvalid]
+    simpa [
+      storesAgreeOnFootprint, globalReadStore,
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore,
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted]
+      using
+        SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_eq_global_of_footprint
+          (cartesianShape xs) store hfoot left right
+  · simp [queryCostedWithStore, queryCosted,
+      queryTraceResultWithStore, queryTraceResult, withValidRange, hvalid]
 
 /-- Agreement on the actual ordered footprint determines the complete
 supplied-store execution: decoded result, cost, ordered trace, repeated reads,
@@ -463,9 +829,22 @@ theorem queryTraceResultWithStore_eq_of_orderedReadFootprint
       xs storeA storeB left right) :
     queryTraceResultWithStore xs storeA left right =
       queryTraceResultWithStore xs storeB left right := by
-  exact
-    SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_ordered_read_footprint
-      (cartesianShape xs) storeA storeB left right hagree
+  by_cases hvalid : ValidRange xs left right
+  · have hraw :
+        SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint
+          (cartesianShape xs) storeA storeB left right := by
+      intro segment index hmem
+      apply hagree segment index
+      simpa [orderedReadFootprintWithStore,
+        queryTraceResultWithStore_valid xs storeA left right hvalid,
+        SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryOrderedReadFootprintWithStore]
+        using hmem
+    rw [queryTraceResultWithStore_valid xs storeA left right hvalid,
+      queryTraceResultWithStore_valid xs storeB left right hvalid]
+    exact
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_ordered_read_footprint
+        (cartesianShape xs) storeA storeB left right hraw
+  · simp [queryTraceResultWithStore, withValidRange, hvalid]
 
 /-- Dynamic-footprint agreement also determines the decoded result and modeled
 cost after projection to `Costed`. -/
@@ -499,10 +878,8 @@ theorem listIntCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal
     (left right : Nat) :
     (queryCostedWithStore xs store left right).cost <=
       canonicalTransitionalQueryCost := by
-  simpa [queryCostedWithStore, storesAgreeOnFootprint, globalReadStore] using
-    SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_canonicalTransitional
-      (shape := cartesianShape xs) (store := store)
-      hfoot left right
+  rw [queryCostedWithStore_eq_queryCosted_of_footprint xs hfoot left right]
+  exact queryCosted_cost_le_canonicalTransitional xs left right
 
 /-- Valid half-open queries return the exact leftmost-minimum index of `xs`. -/
 theorem queryCosted_exact
@@ -519,7 +896,13 @@ theorem queryCosted_exact
   calc
     (queryCosted xs left (left + len)).erase =
         some (scanWindow (cartesianShape xs).representative left len) := by
-          simpa [queryCosted] using
+          have hvalid : ValidRange xs left (left + len) := by
+            constructor <;> omega
+          rw [queryCosted,
+            queryTraceResult_valid xs left (left + len) hvalid]
+          simpa [
+            SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted]
+            using
             SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact
               (n := xs.length) (shape := cartesianShape xs)
               hshape hlen hbound
@@ -537,22 +920,9 @@ theorem listIntFinalFullModelSoundnessExactOfFootprintGlobal
     (hbound : left + len <= xs.length) :
     (queryCostedWithStore xs store left (left + len)).erase =
       some (scanWindow xs left len) := by
-  have hshape :
-      List.Mem (cartesianShape xs)
-        (Cartesian.shapesOfSize xs.length) := by
-    exact
-      Cartesian.shapeOfSize_mem_shapesOfSize
-        (by simpa [cartesianShape] using Cartesian.shape_shapeOfSize xs)
-  calc
-    (queryCostedWithStore xs store left (left + len)).erase =
-        some (scanWindow (cartesianShape xs).representative left len) := by
-          simpa [queryCostedWithStore, storesAgreeOnFootprint,
-            globalReadStore] using
-            SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness_exact_of_footprint_global
-              (n := xs.length) (shape := cartesianShape xs)
-              hshape hfoot hlen hbound
-    _ = some (scanWindow xs left len) := by
-          rw [scanWindow_cartesianShape_representative_eq xs hlen hbound]
+  rw [queryCostedWithStore_eq_queryCosted_of_footprint
+    xs hfoot left (left + len)]
+  exact queryCosted_exact xs hlen hbound
 
 /-- Valid half-open queries return an index satisfying the core leftmost-tie spec. -/
 theorem queryCosted_leftmost
@@ -580,6 +950,9 @@ theorem listInt_two_n_plus_o_constant_query_profile :
           2 * xs.length + overhead xs.length /\
         (forall left right,
           (queryCosted xs left right).cost <= queryCost) /\
+        (forall left right,
+          Not (ValidRange xs left right) ->
+            (queryCosted xs left right).erase = none) /\
         (forall {left len : Nat},
           0 < len ->
             left + len <= xs.length ->
@@ -595,6 +968,9 @@ theorem listInt_two_n_plus_o_constant_query_profile :
   exact
     ⟨buildPayload_length xs,
       queryCosted_cost_le xs,
+      (fun left right hbad => by
+        rw [queryCosted_invalid xs left right hbad]
+        rfl),
       (fun hlen hbound => queryCosted_exact xs hlen hbound),
       (fun hlen hbound hquery =>
         queryCosted_leftmost xs hlen hbound hquery)⟩
@@ -617,6 +993,9 @@ theorem listInt_flatPayloadStore_noSynthetic_execution_story :
           2 * xs.length + overhead xs.length /\
         (forall left right,
           (queryCosted xs left right).cost <= queryCost) /\
+        (forall left right,
+          Not (ValidRange xs left right) ->
+            (queryCosted xs left right).erase = none) /\
         (forall {left len : Nat},
           0 < len ->
             left + len <= xs.length ->
@@ -635,12 +1014,16 @@ theorem listInt_flatPayloadStore_noSynthetic_execution_story :
     And.intro (buildPayload_length xs)
       (And.intro (queryCosted_cost_le xs)
         (And.intro
-          (fun hlen hbound => queryCosted_exact xs hlen hbound)
+          (fun left right hbad => by
+            rw [queryCosted_invalid xs left right hbad]
+            rfl)
           (And.intro
-            (fun hlen hbound hquery =>
-              queryCosted_leftmost xs hlen hbound hquery)
-            (fun left right =>
-              flatPayloadStoreNoSyntheticExecutionStory xs left right))))
+            (fun hlen hbound => queryCosted_exact xs hlen hbound)
+            (And.intro
+              (fun hlen hbound hquery =>
+                queryCosted_leftmost xs hlen hbound hquery)
+              (fun left right =>
+                flatPayloadStoreNoSyntheticExecutionStory xs left right)))))
 
 /--
 Named public capstone: the no-synthetic flat execution story uses the same
@@ -654,6 +1037,9 @@ theorem listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story :
           2 * xs.length + overhead xs.length /\
         (forall left right,
           (queryCosted xs left right).cost <= queryCost) /\
+        (forall left right,
+          Not (ValidRange xs left right) ->
+            (queryCosted xs left right).erase = none) /\
         (forall {left len : Nat},
           0 < len ->
             left + len <= xs.length ->

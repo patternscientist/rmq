@@ -77,21 +77,63 @@ structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
             shape left right).trace ->
         concreteBPNativeSuccinctRMQCanonicalReviewerReadBacked
           shape segment index word
+  canonical_manifest_counted_iff_live :
+    forall source : ReviewerSource, source.Counted <-> source.Live
+  canonical_manifest_nodup :
+    List.Nodup concreteBPNativeSuccinctRMQReviewerPhysicalSources
+  canonical_regions_exclusive :
+    forall {source other : ReviewerSource},
+      source.region = other.region -> source = other
+  canonical_segments_complete :
+    forall segment : Nat,
+      (Exists fun source =>
+        concreteBPNativeSuccinctRMQReviewerSegmentSource? segment =
+          some source) <-> segment < 21
+  every_emitted_read_has_listed_region :
+    forall {segment index : Nat} {word? : Option WordRAM.Word},
+      WordRAM.TraceEvent.readWord segment index word? ∈
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+            shape left right).trace ->
+        Exists fun source : ReviewerSource =>
+          Exists fun region : Nat =>
+            source ∈ concreteBPNativeSuccinctRMQReviewerPhysicalSources /\
+            concreteBPNativeSuccinctRMQReviewerSegmentSource? segment =
+              some source /\
+            source.region = region /\
+            WordRAM.TraceEvent.readWord 0
+                (concreteBPNativeSuccinctRMQReviewerPhysicalAddress
+                  shape segment index) word? ∈
+              (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+                shape left right).trace
+  canonical_sources_have_consumer_or_shared_bp :
+    forall source : ReviewerSource, source.Counted ->
+      source = .sharedBPCode \/
+        Exists fun consumer => source.consumer? = some consumer
+  canonical_manifest_excludes_legacy_close :
+    forall (source : ReviewerSource),
+      source ∈ concreteBPNativeSuccinctRMQReviewerPhysicalSources ->
+      forall legacy : ConcreteBPNativeSuccinctRMQFlatPayloadSource,
+        source.legacyOuterSource? = some legacy ->
+          Not legacy.LegacyCloseOrInterior
+  compatibility_tail_unreachable :
+    forall segment index, 21 <= segment ->
+      (concreteBPNativeSuccinctRMQCanonicalReviewerReadStore shape).readWord?
+          segment index = none
   physical_words_erase_public_payload :
     SuccinctSpace.flattenPayloadWords
         (concreteBPNativeSuccinctRMQReviewerPhysicalWords shape) =
       concreteBPNativeSuccinctRMQCanonicalReviewerPayload shape
   physical_execution_refines_logical :
-    (concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalTraceResult
+    (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
         shape left right).value =
       (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
         shape left right).value /\
-    (concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalTraceResult
+    (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
         shape left right).trace =
       (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
         shape left right).trace.map
           (concreteBPNativeSuccinctRMQReviewerPhysicalizeEvent shape) /\
-    (concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalTraceResult
+    (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
         shape left right).toCosted =
       (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
         shape left right).toCosted /\
@@ -102,12 +144,12 @@ structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
         WordRAM.TraceEvent.readWord 0
             (concreteBPNativeSuccinctRMQReviewerPhysicalAddress
               shape segment index) word? ∈
-          (concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalTraceResult
+          (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
             shape left right).trace)
   physical_footprint_recorded :
-    concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalFootprint
+    concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprint
         shape left right =
-      (concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalTraceResult
+      (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
           shape left right).trace.filterMap fun event =>
         match event with
         | WordRAM.TraceEvent.readWord 0 address _ => some address
@@ -116,26 +158,46 @@ structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
   every_recorded_physical_footprint_address_fits :
     forall address,
       address ∈
-          concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalFootprint
+          concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprint
             shape left right ->
         address <
           2 ^ concreteBPNativeSuccinctRMQReviewerWordBits shape.size
   physical_events_match_store :
     forall event,
       event ∈
-          (concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalTraceResult
+          (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
             shape left right).trace ->
         event.matchesReadStore
           (concreteBPNativeSuccinctRMQReviewerPhysicalReadStore shape)
   successful_physical_reads_backed :
     forall {address : Nat} {word : List Bool},
       WordRAM.TraceEvent.readWord 0 address (some word) ∈
-          (concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalTraceResult
+          (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
             shape left right).trace ->
         address <
             (concreteBPNativeSuccinctRMQReviewerPhysicalWords shape).length /\
           (concreteBPNativeSuccinctRMQReviewerPhysicalWords shape)[address]? =
             some word
+  physical_execution_determined_by_consumed_footprint :
+    forall storeB : WordRAM.ReadStore,
+      concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalStoresAgreeOnOrderedFootprint
+          shape (concreteBPNativeSuccinctRMQReviewerPhysicalReadStore shape)
+          storeB left right ->
+        concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+            shape left right =
+          concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+            shape storeB left right
+  physical_store_disagreement_observable :
+    forall (storeB : WordRAM.ReadStore) address wordA?,
+      WordRAM.TraceEvent.readWord 0 address wordA? ∈
+          (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+            shape left right).trace ->
+        (concreteBPNativeSuccinctRMQReviewerPhysicalReadStore shape).readWord?
+            0 address ≠ storeB.readWord? 0 address ->
+          concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+              shape left right ≠
+            concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+              shape storeB left right
   reviewer_capacity_linear :
     concreteBPNativeSuccinctRMQReviewerCapacity shape.size =
       400000 * (shape.size + 1)
@@ -159,7 +221,7 @@ structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
   physical_primitive_operands_fit_reviewer_word :
     forall event,
       event ∈
-          (concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalTraceResult
+          (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
             shape left right).trace ->
         concreteBPNativeTraceEventPrimitiveOperandsFitInBits
           (concreteBPNativeSuccinctRMQReviewerWordBits shape.size) event
@@ -201,25 +263,65 @@ theorem concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
         exact
           concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_successful_read_events_backed_by_counted_flat_payload
             shape left right hmem
+      canonical_manifest_counted_iff_live :=
+        concreteBPNativeSuccinctRMQReviewerSource_counted_iff_live
+      canonical_manifest_nodup :=
+        concreteBPNativeSuccinctRMQReviewerPhysicalSources_nodup
+      canonical_regions_exclusive :=
+        @concreteBPNativeSuccinctRMQReviewerSource_region_injective
+      canonical_segments_complete :=
+        concreteBPNativeSuccinctRMQReviewerSegmentSource?_coverage
+      every_emitted_read_has_listed_region := by
+        intro segment index word? hmem
+        exact
+          concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_read_has_listed_region
+            shape left right segment index word? hmem
+      canonical_sources_have_consumer_or_shared_bp :=
+        concreteBPNativeSuccinctRMQReviewerSource_counted_consumer_or_sharedBP
+      canonical_manifest_excludes_legacy_close :=
+        concreteBPNativeSuccinctRMQReviewerPhysicalSources_exclude_legacy_close
+      compatibility_tail_unreachable :=
+        fun segment index hsegment =>
+          concreteBPNativeSuccinctRMQCanonicalReviewerReadStore_legacyTail_none
+            shape segment index hsegment
       physical_words_erase_public_payload :=
         concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases shape
       physical_execution_refines_logical :=
-        concreteBPNativeSuccinctRMQWholeQueryReviewerPhysical_refines_logical
-          shape left right
+        ⟨(concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_refines_logical
+            shape left right).1,
+          (concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_refines_logical
+            shape left right).2.1,
+          (concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_refines_logical
+            shape left right).2.2,
+          concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_read_translated
+            shape left right⟩
       physical_footprint_recorded :=
-        concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalFootprint_recorded
+        concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprint_recorded
           shape left right
       every_recorded_physical_footprint_address_fits :=
-        concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalFootprint_address_fits_reviewerWordBits
+        concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalFootprint_address_fits_reviewerWordBits
           shape left right
       physical_events_match_store :=
-        concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalTraceResult_matchesReadStore
-          shape left right
+        concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_matchesReadStore
+          shape (concreteBPNativeSuccinctRMQReviewerPhysicalReadStore shape)
+          left right
       successful_physical_reads_backed := by
         intro address word hmem
         exact
-          concreteBPNativeSuccinctRMQWholeQueryReviewerPhysical_successful_read_backed
+          concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_successful_read_backed
             shape left right hmem
+      physical_execution_determined_by_consumed_footprint := by
+        intro storeB hagree
+        exact
+          concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_eq_of_orderedFootprint
+            shape (concreteBPNativeSuccinctRMQReviewerPhysicalReadStore shape)
+            storeB left right hagree
+      physical_store_disagreement_observable := by
+        intro storeB address wordA? hmem hneq
+        exact
+          concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_ne_of_consumed_read_disagreement
+            shape (concreteBPNativeSuccinctRMQReviewerPhysicalReadStore shape)
+            storeB left right address wordA? hmem hneq
       reviewer_capacity_linear :=
         concreteBPNativeSuccinctRMQReviewerCapacity_linear shape.size
       physical_words_fit_capacity :=
@@ -233,7 +335,7 @@ theorem concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
       every_physical_address_fits_reviewer_word :=
         concreteBPNativeSuccinctRMQReviewerPhysicalAddress_fits shape
       physical_primitive_operands_fit_reviewer_word :=
-        concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalTraceResult_primitiveOperandsFit_reviewerWordBits
+        concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult_primitiveOperandsFit_reviewerWordBits
           shape left right
       every_stored_physical_word_fits_reviewer_word :=
         concreteBPNativeSuccinctRMQReviewerPhysicalWord_length_le_wordBits shape

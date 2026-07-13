@@ -14,11 +14,39 @@ namespace SuccinctFinal
 
 open SuccinctSpace
 
-abbrev ReviewerSource := ConcreteBPNativeSuccinctRMQFlatPayloadSource
+/--
+The exhaustive live-source universe of the canonical reviewer machine.
 
-/-- Unique payload sources, in canonical public order. -/
+The shared BP-code source occurs once even though logical segments `0` and
+`19` both read it.  The canonical concatenated close component is a first-class
+source rather than a special region appended after an outer-source list.
+-/
+inductive ReviewerSource where
+  | sharedBPCode
+  | finalRankSuperFalse
+  | finalRankBlockFalse
+  | selectSuperBaseOccurrence
+  | selectSuperBaseWordIndex
+  | selectSuperRankBefore
+  | selectSuperFirstOffset
+  | selectLocalBaseOccurrence
+  | selectLocalBaseWordIndex
+  | selectLocalRankBefore
+  | selectLocalFirstOffset
+  | selectLongFlagRankSuperTrue
+  | selectLongFlagRankBlockTrue
+  | selectLongFlagBits
+  | selectLongRelative
+  | selectSparseRankSuperTrue
+  | selectSparseRankBlockTrue
+  | selectSparseFlagBits
+  | selectSparseRelative
+  | canonicalClose
+deriving DecidableEq
+
+/-- Unique live payload sources, in canonical public order. -/
 def concreteBPNativeSuccinctRMQReviewerPhysicalSources : List ReviewerSource :=
-  [ .finalRankBPCodeAlias
+  [ .sharedBPCode
   , .finalRankSuperFalse
   , .finalRankBlockFalse
   , .selectSuperBaseOccurrence
@@ -36,28 +64,225 @@ def concreteBPNativeSuccinctRMQReviewerPhysicalSources : List ReviewerSource :=
   , .selectSparseRankSuperTrue
   , .selectSparseRankBlockTrue
   , .selectSparseFlagBits
-  , .selectSparseRelative ]
+  , .selectSparseRelative
+  , .canonicalClose ]
+
+/-- Every constructor of the canonical live-source universe is listed. -/
+theorem concreteBPNativeSuccinctRMQReviewerPhysicalSources_all
+    (source : ReviewerSource) :
+    source ∈ concreteBPNativeSuccinctRMQReviewerPhysicalSources := by
+  cases source <;>
+    simp [concreteBPNativeSuccinctRMQReviewerPhysicalSources]
+
+/-- Canonical countedness is exactly membership in the exhaustive manifest. -/
+def ReviewerSource.Counted (source : ReviewerSource) : Prop :=
+  source ∈ concreteBPNativeSuccinctRMQReviewerPhysicalSources
+
+/-- Every constructor is reviewer-live; compatibility sources have another type. -/
+def ReviewerSource.Live (_source : ReviewerSource) : Prop := True
+
+theorem concreteBPNativeSuccinctRMQReviewerSource_counted_iff_live
+    (source : ReviewerSource) :
+    source.Counted ↔ source.Live := by
+  simp [ReviewerSource.Counted, ReviewerSource.Live,
+    concreteBPNativeSuccinctRMQReviewerPhysicalSources_all]
+
+theorem concreteBPNativeSuccinctRMQReviewerPhysicalSources_nodup :
+    concreteBPNativeSuccinctRMQReviewerPhysicalSources.Nodup := by
+  decide
+
+theorem concreteBPNativeSuccinctRMQReviewerPhysicalSources_length :
+    concreteBPNativeSuccinctRMQReviewerPhysicalSources.length = 20 := by
+  rfl
+
+/-- Named controller families that consume canonical reviewer sources. -/
+inductive ReviewerConsumer where
+  | selectClose
+  | rankClose
+  | canonicalClose
+deriving DecidableEq
+
+/--
+Static source ownership by the closed whole-query controller.  BP code is
+intentionally `none`: it is the explicitly shared source used by select-close,
+rank-close, and local BP close decoding.
+-/
+def ReviewerSource.consumer? : ReviewerSource -> Option ReviewerConsumer
+  | .sharedBPCode => none
+  | .finalRankSuperFalse => some .rankClose
+  | .finalRankBlockFalse => some .rankClose
+  | .selectSuperBaseOccurrence => some .selectClose
+  | .selectSuperBaseWordIndex => some .selectClose
+  | .selectSuperRankBefore => some .selectClose
+  | .selectSuperFirstOffset => some .selectClose
+  | .selectLocalBaseOccurrence => some .selectClose
+  | .selectLocalBaseWordIndex => some .selectClose
+  | .selectLocalRankBefore => some .selectClose
+  | .selectLocalFirstOffset => some .selectClose
+  | .selectLongFlagRankSuperTrue => some .selectClose
+  | .selectLongFlagRankBlockTrue => some .selectClose
+  | .selectLongFlagBits => some .selectClose
+  | .selectLongRelative => some .selectClose
+  | .selectSparseRankSuperTrue => some .selectClose
+  | .selectSparseRankBlockTrue => some .selectClose
+  | .selectSparseFlagBits => some .selectClose
+  | .selectSparseRelative => some .selectClose
+  | .canonicalClose => some .canonicalClose
+
+theorem concreteBPNativeSuccinctRMQReviewerSource_counted_consumer_or_sharedBP
+    (source : ReviewerSource) (_hcounted : source.Counted) :
+    source = .sharedBPCode ∨
+      ∃ consumer, source.consumer? = some consumer := by
+  cases source <;> simp [ReviewerSource.consumer?]
+
+/-- Compatibility classification on the old, non-canonical source universe. -/
+def ConcreteBPNativeSuccinctRMQFlatPayloadSource.LegacyCloseOrInterior :
+    ConcreteBPNativeSuccinctRMQFlatPayloadSource -> Prop
+  | .closeSummaryBaseline | .closeSummaryMinRel | .closeSummaryMaxRel |
+      .closeSummaryArgOffset | .closeInteriorLocal | .closeInteriorGlobal |
+      .closeFiniteSmallInteriorMin | .closeFiniteSmallInteriorArg |
+      .closeFiniteSmallSameBlock => True
+  | _ => False
+
+/--
+Bridge for the outer sources retained from the older source vocabulary.
+Canonical close deliberately has no legacy-source image: it is one new
+concatenated live component, not any of the duplicate legacy close tables.
+-/
+def ReviewerSource.legacyOuterSource? : ReviewerSource ->
+    Option ConcreteBPNativeSuccinctRMQFlatPayloadSource
+  | .sharedBPCode => some .finalRankBPCodeAlias
+  | .finalRankSuperFalse => some .finalRankSuperFalse
+  | .finalRankBlockFalse => some .finalRankBlockFalse
+  | .selectSuperBaseOccurrence => some .selectSuperBaseOccurrence
+  | .selectSuperBaseWordIndex => some .selectSuperBaseWordIndex
+  | .selectSuperRankBefore => some .selectSuperRankBefore
+  | .selectSuperFirstOffset => some .selectSuperFirstOffset
+  | .selectLocalBaseOccurrence => some .selectLocalBaseOccurrence
+  | .selectLocalBaseWordIndex => some .selectLocalBaseWordIndex
+  | .selectLocalRankBefore => some .selectLocalRankBefore
+  | .selectLocalFirstOffset => some .selectLocalFirstOffset
+  | .selectLongFlagRankSuperTrue => some .selectLongFlagRankSuperTrue
+  | .selectLongFlagRankBlockTrue => some .selectLongFlagRankBlockTrue
+  | .selectLongFlagBits => some .selectLongFlagBits
+  | .selectLongRelative => some .selectLongRelative
+  | .selectSparseRankSuperTrue => some .selectSparseRankSuperTrue
+  | .selectSparseRankBlockTrue => some .selectSparseRankBlockTrue
+  | .selectSparseFlagBits => some .selectSparseFlagBits
+  | .selectSparseRelative => some .selectSparseRelative
+  | .canonicalClose => none
+
+theorem concreteBPNativeSuccinctRMQReviewerSource_legacyBridge_excludes_close
+    (source : ReviewerSource)
+    (legacy : ConcreteBPNativeSuccinctRMQFlatPayloadSource)
+    (hbridge : source.legacyOuterSource? = some legacy) :
+    ¬ legacy.LegacyCloseOrInterior := by
+  cases source <;> simp [ReviewerSource.legacyOuterSource?,
+    ConcreteBPNativeSuccinctRMQFlatPayloadSource.LegacyCloseOrInterior]
+      at hbridge ⊢
+  all_goals subst legacy <;>
+    simp
+
+theorem concreteBPNativeSuccinctRMQReviewerPhysicalSources_exclude_legacy_close
+    (source : ReviewerSource)
+    (_hsource : source ∈ concreteBPNativeSuccinctRMQReviewerPhysicalSources)
+    (legacy : ConcreteBPNativeSuccinctRMQFlatPayloadSource)
+    (hbridge : source.legacyOuterSource? = some legacy) :
+    ¬ legacy.LegacyCloseOrInterior :=
+  concreteBPNativeSuccinctRMQReviewerSource_legacyBridge_excludes_close
+    source legacy hbridge
 
 def concreteBPNativeSuccinctRMQReviewerSourceWords
     (shape : Cartesian.CartesianShape) (source : ReviewerSource) :
     List (List Bool) :=
-  (concreteBPNativeSuccinctRMQFlatPayloadSourceWords shape source).toList
+  let selectData := GenericSelect.sparseExceptionSelectData shape.bpCode false
+  let rankData := builtRelativeSplitBPCloseRankData shape
+  match source with
+  | .sharedBPCode => rankData.bitWords.store.words.toList
+  | .finalRankSuperFalse =>
+      rankData.superTables.falseTable.store.words.toList
+  | .finalRankBlockFalse =>
+      rankData.blockTables.falseTable.store.words.toList
+  | .selectSuperBaseOccurrence =>
+      selectData.superTable.baseOccurrenceTable.store.words.toList
+  | .selectSuperBaseWordIndex =>
+      selectData.superTable.baseWordIndexTable.store.words.toList
+  | .selectSuperRankBefore =>
+      selectData.superTable.rankBeforeTable.store.words.toList
+  | .selectSuperFirstOffset =>
+      selectData.superTable.firstOffsetTable.store.words.toList
+  | .selectLocalBaseOccurrence =>
+      selectData.localTable.baseOccurrenceTable.store.words.toList
+  | .selectLocalBaseWordIndex =>
+      selectData.localTable.baseWordIndexTable.store.words.toList
+  | .selectLocalRankBefore =>
+      selectData.localTable.rankBeforeTable.store.words.toList
+  | .selectLocalFirstOffset =>
+      selectData.localTable.firstOffsetTable.store.words.toList
+  | .selectLongFlagRankSuperTrue =>
+      selectData.longFlagRankData.superTables.trueTable.store.words.toList
+  | .selectLongFlagRankBlockTrue =>
+      selectData.longFlagRankData.blockTables.trueTable.store.words.toList
+  | .selectLongFlagBits =>
+      selectData.longFlagRankData.bitWords.store.words.toList
+  | .selectLongRelative =>
+      selectData.longSuperRelativeTable.store.words.toList
+  | .selectSparseRankSuperTrue =>
+      selectData.sparseDirectory.rankData.superTables.trueTable.store.words.toList
+  | .selectSparseRankBlockTrue =>
+      selectData.sparseDirectory.rankData.blockTables.trueTable.store.words.toList
+  | .selectSparseFlagBits =>
+      selectData.sparseDirectory.rankData.bitWords.store.words.toList
+  | .selectSparseRelative =>
+      selectData.sparseDirectory.relativeTable.store.words.toList
+  | .canonicalClose =>
+      (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
+        shape).store.words.toList
 
 def concreteBPNativeSuccinctRMQReviewerSourcePayload
     (shape : Cartesian.CartesianShape) (source : ReviewerSource) : List Bool :=
-  concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape source
+  let selectData := GenericSelect.sparseExceptionSelectData shape.bpCode false
+  let rankData := builtRelativeSplitBPCloseRankData shape
+  match source with
+  | .sharedBPCode => shape.bpCode
+  | .finalRankSuperFalse => rankData.superTables.falseTable.payload
+  | .finalRankBlockFalse => rankData.blockTables.falseTable.payload
+  | .selectSuperBaseOccurrence =>
+      selectData.superTable.baseOccurrenceTable.payload
+  | .selectSuperBaseWordIndex =>
+      selectData.superTable.baseWordIndexTable.payload
+  | .selectSuperRankBefore => selectData.superTable.rankBeforeTable.payload
+  | .selectSuperFirstOffset => selectData.superTable.firstOffsetTable.payload
+  | .selectLocalBaseOccurrence =>
+      selectData.localTable.baseOccurrenceTable.payload
+  | .selectLocalBaseWordIndex =>
+      selectData.localTable.baseWordIndexTable.payload
+  | .selectLocalRankBefore => selectData.localTable.rankBeforeTable.payload
+  | .selectLocalFirstOffset => selectData.localTable.firstOffsetTable.payload
+  | .selectLongFlagRankSuperTrue =>
+      selectData.longFlagRankData.superTables.trueTable.payload
+  | .selectLongFlagRankBlockTrue =>
+      selectData.longFlagRankData.blockTables.trueTable.payload
+  | .selectLongFlagBits => selectData.longFlagBits
+  | .selectLongRelative => selectData.longSuperRelativeTable.payload
+  | .selectSparseRankSuperTrue =>
+      selectData.sparseDirectory.rankData.superTables.trueTable.payload
+  | .selectSparseRankBlockTrue =>
+      selectData.sparseDirectory.rankData.blockTables.trueTable.payload
+  | .selectSparseFlagBits => selectData.sparseDirectory.flagBits
+  | .selectSparseRelative => selectData.sparseDirectory.relativeTable.payload
+  | .canonicalClose =>
+      (SuccinctClose.canonicalRelativeRmmInteriorDirectory shape).payload
 
 def concreteBPNativeSuccinctRMQReviewerCloseWords
     (shape : Cartesian.CartesianShape) : List (List Bool) :=
-  (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
-    shape).store.words.toList
+  concreteBPNativeSuccinctRMQReviewerSourceWords shape .canonicalClose
 
-/-- Physical regions: nineteen unique outer sources followed by canonical close. -/
+/-- Physical regions are exactly the exhaustive typed live-source universe. -/
 def concreteBPNativeSuccinctRMQReviewerPhysicalRegions
     (shape : Cartesian.CartesianShape) : List (List (List Bool)) :=
   concreteBPNativeSuccinctRMQReviewerPhysicalSources.map
-      (concreteBPNativeSuccinctRMQReviewerSourceWords shape) ++
-    [concreteBPNativeSuccinctRMQReviewerCloseWords shape]
+    (concreteBPNativeSuccinctRMQReviewerSourceWords shape)
 
 /-- One pre-execution physical machine-word list. -/
 def concreteBPNativeSuccinctRMQReviewerPhysicalWords
@@ -68,8 +293,120 @@ def concreteBPNativeSuccinctRMQReviewerPhysicalWords
 def concreteBPNativeSuccinctRMQReviewerLivePayload
     (shape : Cartesian.CartesianShape) : List Bool :=
   concreteBPNativeSuccinctRMQReviewerPhysicalSources.flatMap
-      (concreteBPNativeSuccinctRMQReviewerSourcePayload shape) ++
-    (SuccinctClose.canonicalRelativeRmmInteriorDirectory shape).payload
+    (concreteBPNativeSuccinctRMQReviewerSourcePayload shape)
+
+theorem concreteBPNativeSuccinctRMQReviewerSourceWords_erases
+    (shape : Cartesian.CartesianShape) (source : ReviewerSource) :
+    flattenPayloadWords
+        (concreteBPNativeSuccinctRMQReviewerSourceWords shape source) =
+      concreteBPNativeSuccinctRMQReviewerSourcePayload shape source := by
+  cases source with
+  | sharedBPCode =>
+      simpa [concreteBPNativeSuccinctRMQReviewerSourceWords,
+        concreteBPNativeSuccinctRMQReviewerSourcePayload] using
+        (builtRelativeSplitBPCloseRankData shape).bitWords.erases
+  | finalRankSuperFalse =>
+      simpa [concreteBPNativeSuccinctRMQReviewerSourceWords,
+        concreteBPNativeSuccinctRMQReviewerSourcePayload] using
+        (builtRelativeSplitBPCloseRankData
+          shape).superTables.falseTable.store.erases
+  | finalRankBlockFalse =>
+      simpa [concreteBPNativeSuccinctRMQReviewerSourceWords,
+        concreteBPNativeSuccinctRMQReviewerSourcePayload] using
+        (builtRelativeSplitBPCloseRankData
+          shape).blockTables.falseTable.store.erases
+  | selectSuperBaseOccurrence =>
+      simpa [concreteBPNativeSuccinctRMQReviewerSourceWords,
+        concreteBPNativeSuccinctRMQReviewerSourcePayload,
+        GenericSelect.sparseExceptionSelectData] using
+        (GenericSelect.superTable shape.bpCode false).baseOccurrenceTable.store.erases
+  | selectSuperBaseWordIndex =>
+      simpa [concreteBPNativeSuccinctRMQReviewerSourceWords,
+        concreteBPNativeSuccinctRMQReviewerSourcePayload,
+        GenericSelect.sparseExceptionSelectData] using
+        (GenericSelect.superTable shape.bpCode false).baseWordIndexTable.store.erases
+  | selectSuperRankBefore =>
+      simpa [concreteBPNativeSuccinctRMQReviewerSourceWords,
+        concreteBPNativeSuccinctRMQReviewerSourcePayload,
+        GenericSelect.sparseExceptionSelectData] using
+        (GenericSelect.superTable shape.bpCode false).rankBeforeTable.store.erases
+  | selectSuperFirstOffset =>
+      simpa [concreteBPNativeSuccinctRMQReviewerSourceWords,
+        concreteBPNativeSuccinctRMQReviewerSourcePayload,
+        GenericSelect.sparseExceptionSelectData] using
+        (GenericSelect.superTable shape.bpCode false).firstOffsetTable.store.erases
+  | selectLocalBaseOccurrence =>
+      simpa [concreteBPNativeSuccinctRMQReviewerSourceWords,
+        concreteBPNativeSuccinctRMQReviewerSourcePayload,
+        GenericSelect.sparseExceptionSelectData] using
+        (GenericSelect.localTable shape.bpCode false).baseOccurrenceTable.store.erases
+  | selectLocalBaseWordIndex =>
+      simpa [concreteBPNativeSuccinctRMQReviewerSourceWords,
+        concreteBPNativeSuccinctRMQReviewerSourcePayload,
+        GenericSelect.sparseExceptionSelectData] using
+        (GenericSelect.localTable shape.bpCode false).baseWordIndexTable.store.erases
+  | selectLocalRankBefore =>
+      simpa [concreteBPNativeSuccinctRMQReviewerSourceWords,
+        concreteBPNativeSuccinctRMQReviewerSourcePayload,
+        GenericSelect.sparseExceptionSelectData] using
+        (GenericSelect.localTable shape.bpCode false).rankBeforeTable.store.erases
+  | selectLocalFirstOffset =>
+      simpa [concreteBPNativeSuccinctRMQReviewerSourceWords,
+        concreteBPNativeSuccinctRMQReviewerSourcePayload,
+        GenericSelect.sparseExceptionSelectData] using
+        (GenericSelect.localTable shape.bpCode false).firstOffsetTable.store.erases
+  | selectLongFlagRankSuperTrue =>
+      simpa [concreteBPNativeSuccinctRMQReviewerSourceWords,
+        concreteBPNativeSuccinctRMQReviewerSourcePayload,
+        GenericSelect.sparseExceptionSelectData] using
+        (GenericSelect.longFlagRankData
+          shape.bpCode false).superTables.trueTable.store.erases
+  | selectLongFlagRankBlockTrue =>
+      simpa [concreteBPNativeSuccinctRMQReviewerSourceWords,
+        concreteBPNativeSuccinctRMQReviewerSourcePayload,
+        GenericSelect.sparseExceptionSelectData] using
+        (GenericSelect.longFlagRankData
+          shape.bpCode false).blockTables.trueTable.store.erases
+  | selectLongFlagBits =>
+      simpa [concreteBPNativeSuccinctRMQReviewerSourceWords,
+        concreteBPNativeSuccinctRMQReviewerSourcePayload,
+        GenericSelect.sparseExceptionSelectData] using
+        (GenericSelect.longFlagRankData shape.bpCode false).bitWords.erases
+  | selectLongRelative =>
+      simpa [concreteBPNativeSuccinctRMQReviewerSourceWords,
+        concreteBPNativeSuccinctRMQReviewerSourcePayload,
+        GenericSelect.sparseExceptionSelectData] using
+        (GenericSelect.longSuperRelativeTable shape.bpCode false).store.erases
+  | selectSparseRankSuperTrue =>
+      simpa [concreteBPNativeSuccinctRMQReviewerSourceWords,
+        concreteBPNativeSuccinctRMQReviewerSourcePayload,
+        GenericSelect.sparseExceptionSelectData] using
+        (GenericSelect.sparseExceptionDirectory
+          shape.bpCode false).rankData.superTables.trueTable.store.erases
+  | selectSparseRankBlockTrue =>
+      simpa [concreteBPNativeSuccinctRMQReviewerSourceWords,
+        concreteBPNativeSuccinctRMQReviewerSourcePayload,
+        GenericSelect.sparseExceptionSelectData] using
+        (GenericSelect.sparseExceptionDirectory
+          shape.bpCode false).rankData.blockTables.trueTable.store.erases
+  | selectSparseFlagBits =>
+      simpa [concreteBPNativeSuccinctRMQReviewerSourceWords,
+        concreteBPNativeSuccinctRMQReviewerSourcePayload,
+        GenericSelect.sparseExceptionSelectData] using
+        (GenericSelect.sparseExceptionDirectory
+          shape.bpCode false).rankData.bitWords.erases
+  | selectSparseRelative =>
+      simpa [concreteBPNativeSuccinctRMQReviewerSourceWords,
+        concreteBPNativeSuccinctRMQReviewerSourcePayload,
+        GenericSelect.sparseExceptionSelectData] using
+        (GenericSelect.sparseExceptionDirectory
+          shape.bpCode false).relativeTable.store.erases
+  | canonicalClose =>
+      simpa [concreteBPNativeSuccinctRMQReviewerSourceWords,
+        concreteBPNativeSuccinctRMQReviewerSourcePayload,
+        SuccinctClose.canonicalRelativeRmmInteriorDirectory] using
+        SuccinctClose.canonicalRelativeRmmInteriorComponentStore_flattens_payload
+          shape
 
 private theorem reviewerSources_erases
     (shape : Cartesian.CartesianShape) (sources : List ReviewerSource) :
@@ -84,10 +421,9 @@ private theorem reviewerSources_erases
       simp only [List.flatMap_cons, flattenPayloadWords_append]
       change
         flattenPayloadWords
-            (concreteBPNativeSuccinctRMQFlatPayloadSourceWords
-              shape source).toList ++ _ =
-          concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape source ++ _
-      rw [concreteBPNativeSuccinctRMQFlatPayloadSourceWords_erases]
+            (concreteBPNativeSuccinctRMQReviewerSourceWords shape source) ++ _ =
+          concreteBPNativeSuccinctRMQReviewerSourcePayload shape source ++ _
+      rw [concreteBPNativeSuccinctRMQReviewerSourceWords_erases]
       exact congrArg
         (fun tail =>
           concreteBPNativeSuccinctRMQReviewerSourcePayload shape source ++ tail)
@@ -97,8 +433,7 @@ theorem concreteBPNativeSuccinctRMQReviewerPhysicalWords_components
     (shape : Cartesian.CartesianShape) :
     concreteBPNativeSuccinctRMQReviewerPhysicalWords shape =
       concreteBPNativeSuccinctRMQReviewerPhysicalSources.flatMap
-          (concreteBPNativeSuccinctRMQReviewerSourceWords shape) ++
-        concreteBPNativeSuccinctRMQReviewerCloseWords shape := by
+        (concreteBPNativeSuccinctRMQReviewerSourceWords shape) := by
   have hmap :
       (concreteBPNativeSuccinctRMQReviewerPhysicalSources.map
         (concreteBPNativeSuccinctRMQReviewerSourceWords shape)).flatten =
@@ -107,8 +442,8 @@ theorem concreteBPNativeSuccinctRMQReviewerPhysicalWords_components
     induction concreteBPNativeSuccinctRMQReviewerPhysicalSources with
     | nil => rfl
     | cons source sources ih => simp [ih]
-  simp [concreteBPNativeSuccinctRMQReviewerPhysicalWords,
-    concreteBPNativeSuccinctRMQReviewerPhysicalRegions, hmap]
+  simpa [concreteBPNativeSuccinctRMQReviewerPhysicalWords,
+    concreteBPNativeSuccinctRMQReviewerPhysicalRegions] using hmap
 
 theorem concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases_live
     (shape : Cartesian.CartesianShape) :
@@ -116,15 +451,7 @@ theorem concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases_live
         (concreteBPNativeSuccinctRMQReviewerPhysicalWords shape) =
       concreteBPNativeSuccinctRMQReviewerLivePayload shape := by
   rw [concreteBPNativeSuccinctRMQReviewerPhysicalWords_components,
-    flattenPayloadWords_append, reviewerSources_erases]
-  rw [show
-    flattenPayloadWords
-        (concreteBPNativeSuccinctRMQReviewerCloseWords shape) =
-      (SuccinctClose.canonicalRelativeRmmInteriorDirectory shape).payload by
-      simpa [concreteBPNativeSuccinctRMQReviewerCloseWords,
-        SuccinctClose.canonicalRelativeRmmInteriorDirectory] using
-        SuccinctClose.canonicalRelativeRmmInteriorComponentStore_flattens_payload
-          shape]
+    reviewerSources_erases]
   rfl
 
 /-- The manifest payload is literally the canonical public payload. -/
@@ -132,7 +459,14 @@ theorem concreteBPNativeSuccinctRMQReviewerLivePayload_eq_public
     (shape : Cartesian.CartesianShape) :
     concreteBPNativeSuccinctRMQReviewerLivePayload shape =
       concreteBPNativeSuccinctRMQCanonicalReviewerPayload shape := by
-  rfl
+  simp [concreteBPNativeSuccinctRMQReviewerLivePayload,
+    concreteBPNativeSuccinctRMQReviewerPhysicalSources,
+    concreteBPNativeSuccinctRMQReviewerSourcePayload,
+    concreteBPNativeSuccinctRMQCanonicalReviewerPayload,
+    concreteBPNativeSuccinctRMQCanonicalReviewerPayloadLayout,
+    concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessPayload,
+    concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessSources,
+    concreteBPNativeSuccinctRMQFlatPayloadSourcePayload, List.append_assoc]
 
 /-- The physical erasure is literally the canonical public payload. -/
 theorem concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases
@@ -145,39 +479,147 @@ theorem concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases
 
 /-! ### Logical segment map and guarded address translation -/
 
-def concreteBPNativeSuccinctRMQReviewerSegmentRegion? : Nat -> Option Nat
-  | 0 => some 0
-  | 1 => some 3
-  | 2 => some 4
-  | 3 => some 5
-  | 4 => some 6
-  | 5 => some 7
-  | 6 => some 8
-  | 7 => some 9
-  | 8 => some 10
-  | 9 => some 11
-  | 10 => some 12
-  | 11 => some 13
-  | 12 => some 14
-  | 13 => some 15
-  | 14 => some 16
-  | 15 => some 17
-  | 16 => some 18
-  | 17 => some 1
-  | 18 => some 2
-  | 19 => some 0
-  | 20 => some 19
+/-- The unique physical region occupied by a canonical live source. -/
+def ReviewerSource.region : ReviewerSource -> Nat
+  | .sharedBPCode => 0
+  | .finalRankSuperFalse => 1
+  | .finalRankBlockFalse => 2
+  | .selectSuperBaseOccurrence => 3
+  | .selectSuperBaseWordIndex => 4
+  | .selectSuperRankBefore => 5
+  | .selectSuperFirstOffset => 6
+  | .selectLocalBaseOccurrence => 7
+  | .selectLocalBaseWordIndex => 8
+  | .selectLocalRankBefore => 9
+  | .selectLocalFirstOffset => 10
+  | .selectLongFlagRankSuperTrue => 11
+  | .selectLongFlagRankBlockTrue => 12
+  | .selectLongFlagBits => 13
+  | .selectLongRelative => 14
+  | .selectSparseRankSuperTrue => 15
+  | .selectSparseRankBlockTrue => 16
+  | .selectSparseFlagBits => 17
+  | .selectSparseRelative => 18
+  | .canonicalClose => 19
+
+theorem concreteBPNativeSuccinctRMQReviewerSource_region_injective
+    {source other : ReviewerSource}
+    (h : source.region = other.region) : source = other := by
+  cases source <;> cases other <;>
+    simp [ReviewerSource.region] at h ⊢
+
+theorem concreteBPNativeSuccinctRMQReviewerSource_region_eq_iff
+    (source other : ReviewerSource) :
+    source.region = other.region ↔ source = other := by
+  constructor
+  · exact concreteBPNativeSuccinctRMQReviewerSource_region_injective
+  · intro h
+    cases h
+    rfl
+
+theorem concreteBPNativeSuccinctRMQReviewerPhysicalRegions_source_get
+    (shape : Cartesian.CartesianShape) (source : ReviewerSource) :
+    (concreteBPNativeSuccinctRMQReviewerPhysicalRegions shape)[source.region]? =
+      some (concreteBPNativeSuccinctRMQReviewerSourceWords shape source) := by
+  cases source <;>
+    rfl
+
+/-- Complete typed logical-segment-to-source map for the canonical route. -/
+def concreteBPNativeSuccinctRMQReviewerSegmentSource? :
+    Nat -> Option ReviewerSource
+  | 0 => some .sharedBPCode
+  | 1 => some .selectSuperBaseOccurrence
+  | 2 => some .selectSuperBaseWordIndex
+  | 3 => some .selectSuperRankBefore
+  | 4 => some .selectSuperFirstOffset
+  | 5 => some .selectLocalBaseOccurrence
+  | 6 => some .selectLocalBaseWordIndex
+  | 7 => some .selectLocalRankBefore
+  | 8 => some .selectLocalFirstOffset
+  | 9 => some .selectLongFlagRankSuperTrue
+  | 10 => some .selectLongFlagRankBlockTrue
+  | 11 => some .selectLongFlagBits
+  | 12 => some .selectLongRelative
+  | 13 => some .selectSparseRankSuperTrue
+  | 14 => some .selectSparseRankBlockTrue
+  | 15 => some .selectSparseFlagBits
+  | 16 => some .selectSparseRelative
+  | 17 => some .finalRankSuperFalse
+  | 18 => some .finalRankBlockFalse
+  | 19 => some .sharedBPCode
+  | 20 => some .canonicalClose
   | _ + 21 => none
+
+def concreteBPNativeSuccinctRMQReviewerSegmentRegion? (segment : Nat) :
+    Option Nat :=
+  (concreteBPNativeSuccinctRMQReviewerSegmentSource? segment).map
+    ReviewerSource.region
+
+theorem concreteBPNativeSuccinctRMQReviewerSegmentSource?_coverage
+    (segment : Nat) :
+    (∃ source,
+      concreteBPNativeSuccinctRMQReviewerSegmentSource? segment = some source) ↔
+      segment < 21 := by
+  match segment with
+  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
+      15 | 16 | 17 | 18 | 19 | 20 =>
+      simp [concreteBPNativeSuccinctRMQReviewerSegmentSource?]
+  | _ + 21 =>
+      simp [concreteBPNativeSuccinctRMQReviewerSegmentSource?]
+
+theorem concreteBPNativeSuccinctRMQReviewerSegmentRegion?_coverage
+    (segment : Nat) :
+    (∃ region,
+      concreteBPNativeSuccinctRMQReviewerSegmentRegion? segment = some region) ↔
+      segment < 21 := by
+  match segment with
+  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
+      15 | 16 | 17 | 18 | 19 | 20 =>
+      simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+        concreteBPNativeSuccinctRMQReviewerSegmentSource?, ReviewerSource.region]
+  | _ + 21 =>
+      simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+        concreteBPNativeSuccinctRMQReviewerSegmentSource?]
+
+theorem concreteBPNativeSuccinctRMQReviewerSegmentRegion?_dead
+    (segment : Nat) (hsegment : 21 <= segment) :
+    concreteBPNativeSuccinctRMQReviewerSegmentRegion? segment = none := by
+  match segment with
+  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
+      15 | 16 | 17 | 18 | 19 | 20 => omega
+  | _ + 21 =>
+      rfl
+
+theorem concreteBPNativeSuccinctRMQReviewerSegmentSource_counted
+    {segment : Nat} {source : ReviewerSource}
+    (_hsource :
+      concreteBPNativeSuccinctRMQReviewerSegmentSource? segment = some source) :
+    source.Counted := by
+  exact concreteBPNativeSuccinctRMQReviewerPhysicalSources_all source
+
+/-- All legacy tail segments are inaccessible from the canonical read store. -/
+theorem concreteBPNativeSuccinctRMQCanonicalReviewerReadStore_legacyTail_none
+    (shape : Cartesian.CartesianShape) (segment index : Nat)
+    (hsegment : 21 <= segment) :
+    (concreteBPNativeSuccinctRMQCanonicalReviewerReadStore shape).readWord?
+        segment index = none := by
+  match segment with
+  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
+      15 | 16 | 17 | 18 | 19 | 20 => omega
+  | n + 21 =>
+      have hnot20 : ¬ n + 21 < 20 := by omega
+      simp [concreteBPNativeSuccinctRMQCanonicalReviewerReadStore,
+        concreteBPNativeInteriorTraceSegments, hnot20]
 
 def concreteBPNativeSuccinctRMQReviewerSegmentWords
     (shape : Cartesian.CartesianShape) (segment : Nat) : List (List Bool) :=
-  if segment < 20 then
-    match concreteBPNativeSuccinctRMQFlatPayloadSegmentSource? segment with
+  if segment = 0 then
+    SuccinctSpace.chunkPayloadWords
+      (SuccinctRank.machineWordBits shape.bpCode.length) shape.bpCode
+  else
+    match concreteBPNativeSuccinctRMQReviewerSegmentSource? segment with
     | some source => concreteBPNativeSuccinctRMQReviewerSourceWords shape source
     | none => []
-  else if segment = 20 then
-    concreteBPNativeSuccinctRMQReviewerCloseWords shape
-  else []
 
 def concreteBPNativeSuccinctRMQReviewerRegionOffset
     (shape : Cartesian.CartesianShape) (region : Nat) : Nat :=
@@ -314,24 +756,26 @@ theorem concreteBPNativeSuccinctRMQReviewerSegmentRegion_get_of_ne_zero
       concreteBPNativeSuccinctRMQReviewerSegmentRegion? segment = some region) :
     (concreteBPNativeSuccinctRMQReviewerPhysicalRegions shape)[region]? =
       some (concreteBPNativeSuccinctRMQReviewerSegmentWords shape segment) := by
-  match segment with
-  | 0 => contradiction
-  | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
-      15 | 16 | 17 | 18 | 19 | 20 =>
-      simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
+  unfold concreteBPNativeSuccinctRMQReviewerSegmentRegion? at hregion
+  cases hsource :
+      concreteBPNativeSuccinctRMQReviewerSegmentSource? segment with
+  | none => simp [hsource] at hregion
+  | some source =>
+      simp [hsource] at hregion
       subst region
-      rfl
-  | _ + 21 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
+      rw [concreteBPNativeSuccinctRMQReviewerPhysicalRegions_source_get]
+      congr 1
+      simp [concreteBPNativeSuccinctRMQReviewerSegmentWords, hsegment, hsource]
 
 /-- Segment 0 is exactly the ordinary-chunk prefix of the sentinel BP region. -/
 theorem concreteBPNativeSuccinctRMQReviewerBP_prefix
     (shape : Cartesian.CartesianShape) :
     (concreteBPNativeSuccinctRMQReviewerSourceWords
-        shape .finalRankBPCodeAlias).take
-        (concreteBPNativeSuccinctRMQReviewerSourceWords shape .bpCode).length =
-      concreteBPNativeSuccinctRMQReviewerSourceWords shape .bpCode := by
+        shape .sharedBPCode).take
+        (concreteBPNativeSuccinctRMQReviewerSegmentWords shape 0).length =
+      concreteBPNativeSuccinctRMQReviewerSegmentWords shape 0 := by
   simp [concreteBPNativeSuccinctRMQReviewerSourceWords,
-    concreteBPNativeSuccinctRMQFlatPayloadSourceWords,
+    concreteBPNativeSuccinctRMQReviewerSegmentWords,
     builtRelativeSplitBPCloseRankData,
     builtRelativeSplitBPCloseRankWordSize,
     SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock,
@@ -349,28 +793,32 @@ theorem concreteBPNativeSuccinctRMQReviewerSegment_slice
       concreteBPNativeSuccinctRMQReviewerSegmentWords shape segment := by
   by_cases hzero : segment = 0
   · subst segment
-    simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
+    have hregionZero : region = 0 := by
+      simpa [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+        concreteBPNativeSuccinctRMQReviewerSegmentSource?,
+        ReviewerSource.region] using hregion.symm
     subst region
     have hle :
-        (concreteBPNativeSuccinctRMQReviewerSourceWords shape .bpCode).length <=
+        (concreteBPNativeSuccinctRMQReviewerSegmentWords shape 0).length <=
           (concreteBPNativeSuccinctRMQReviewerSourceWords
-            shape .finalRankBPCodeAlias).length := by
+            shape .sharedBPCode).length := by
       simp [concreteBPNativeSuccinctRMQReviewerSourceWords,
-        concreteBPNativeSuccinctRMQFlatPayloadSourceWords,
+        concreteBPNativeSuccinctRMQReviewerSegmentWords,
         builtRelativeSplitBPCloseRankData,
         builtRelativeSplitBPCloseRankWordSize,
         SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock,
         SuccinctRank.canonicalTwoLevelRankDataOfBridgeLocalBlock,
         SuccinctRank.canonicalRankWordBridgeOfChunksWithSentinel,
         SuccinctSpace.BoundedPayloadWordStore.ofChunksWithSentinel]
-    simpa [concreteBPNativeSuccinctRMQReviewerRegionOffset,
-      concreteBPNativeSuccinctRMQReviewerPhysicalWords,
-      concreteBPNativeSuccinctRMQReviewerPhysicalRegions,
-      concreteBPNativeSuccinctRMQReviewerPhysicalSources,
-      concreteBPNativeSuccinctRMQReviewerSegmentWords,
-      concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?,
-      List.take_append_of_le_length hle] using
-      concreteBPNativeSuccinctRMQReviewerBP_prefix shape
+    change
+      (concreteBPNativeSuccinctRMQReviewerPhysicalWords shape).take
+          (concreteBPNativeSuccinctRMQReviewerSegmentWords shape 0).length =
+        concreteBPNativeSuccinctRMQReviewerSegmentWords shape 0
+    rw [concreteBPNativeSuccinctRMQReviewerPhysicalWords_components]
+    simp only [concreteBPNativeSuccinctRMQReviewerPhysicalSources,
+      List.flatMap_cons, List.flatMap_nil, List.append_nil]
+    rw [List.take_append_of_le_length hle]
+    exact concreteBPNativeSuccinctRMQReviewerBP_prefix shape
   · exact list_flatten_region_slice _
       (concreteBPNativeSuccinctRMQReviewerSegmentRegion_get_of_ne_zero
         shape segment region hzero hregion)
@@ -393,30 +841,26 @@ theorem concreteBPNativeSuccinctRMQReviewerSegmentWords_readStore
     (shape : Cartesian.CartesianShape) (segment index : Nat) :
     (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? segment index =
       (concreteBPNativeSuccinctRMQReviewerSegmentWords shape segment)[index]? := by
-  rw [← concreteBPNativeSuccinctRMQCanonicalReviewerReadStore_eq_global]
-  by_cases hlt : segment < 20
-  case pos =>
-    cases hsource :
-        concreteBPNativeSuccinctRMQFlatPayloadSegmentSource? segment <;>
-      simp [concreteBPNativeSuccinctRMQCanonicalReviewerReadStore,
-        concreteBPNativeSuccinctRMQReviewerSegmentWords, hlt,
-        concreteBPNativeInteriorTraceSegments,
-        concreteBPNativeSuccinctRMQFlatPayloadReadStore,
-        concreteBPNativeSuccinctRMQReviewerSourceWords, hsource,
-        Array.getElem?_toList]
-  case neg =>
-    by_cases heq : segment = 20
-    case pos =>
-      subst segment
-      simp [concreteBPNativeSuccinctRMQCanonicalReviewerReadStore,
+  match segment with
+  | 0 =>
+      rw [concreteBPNativeSuccinctRMQGlobalReadStore_bpCode]
+      simp [concreteBPNativeSuccinctRMQReviewerSegmentWords]
+  | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
+      15 | 16 | 17 | 18 | 19 | 20 =>
+      simp [concreteBPNativeSuccinctRMQGlobalReadStore,
         concreteBPNativeSuccinctRMQReviewerSegmentWords,
-        concreteBPNativeInteriorTraceSegments,
-        concreteBPNativeSuccinctRMQReviewerCloseWords,
-        Array.getElem?_toList]
-    case neg =>
-      simp [concreteBPNativeSuccinctRMQCanonicalReviewerReadStore,
-        concreteBPNativeSuccinctRMQReviewerSegmentWords, hlt, heq,
-        concreteBPNativeInteriorTraceSegments]
+        concreteBPNativeSuccinctRMQReviewerSegmentSource?,
+        concreteBPNativeSuccinctRMQReviewerSourceWords,
+        SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterWordRAMStore,
+        SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superSampleWords,
+        SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blockSampleWords,
+        SuccinctSpace.FixedWidthNatTable.wordRAMStore,
+        SuccinctSpace.PayloadWordStore.wordRAMStore,
+        WordRAM.Store.readWord?, Array.getElem?_toList]
+  | _ + 21 =>
+      simp [concreteBPNativeSuccinctRMQGlobalReadStore,
+        concreteBPNativeSuccinctRMQReviewerSegmentWords,
+        concreteBPNativeSuccinctRMQReviewerSegmentSource?]
 
 /-- All canonical logical reads, including failures, are physical positional reads. -/
 theorem concreteBPNativeSuccinctRMQGlobalReadStore_eq_reviewerPhysical
@@ -433,30 +877,51 @@ theorem concreteBPNativeSuccinctRMQGlobalReadStore_eq_reviewerPhysical
       have hempty :
           concreteBPNativeSuccinctRMQReviewerSegmentWords shape segment = [] := by
         match segment with
-        | 0 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
-        | 1 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
-        | 2 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
-        | 3 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
-        | 4 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
-        | 5 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
-        | 6 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
-        | 7 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
-        | 8 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
-        | 9 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
-        | 10 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
-        | 11 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
-        | 12 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
-        | 13 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
-        | 14 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
-        | 15 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
-        | 16 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
-        | 17 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
-        | 18 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
-        | 19 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
-        | 20 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?] at hregion
+        | 0 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+            concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
+        | 1 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+            concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
+        | 2 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+            concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
+        | 3 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+            concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
+        | 4 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+            concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
+        | 5 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+            concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
+        | 6 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+            concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
+        | 7 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+            concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
+        | 8 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+            concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
+        | 9 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+            concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
+        | 10 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+            concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
+        | 11 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+            concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
+        | 12 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+            concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
+        | 13 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+            concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
+        | 14 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+            concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
+        | 15 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+            concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
+        | 16 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+            concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
+        | 17 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+            concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
+        | 18 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+            concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
+        | 19 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+            concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
+        | 20 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+            concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
         | n + 21 =>
-            have hnot : ¬ n + 21 < 20 := by omega
-            simp [concreteBPNativeSuccinctRMQReviewerSegmentWords, hnot]
+            simp [concreteBPNativeSuccinctRMQReviewerSegmentWords,
+              concreteBPNativeSuccinctRMQReviewerSegmentSource?]
       simp [hempty,
         concreteBPNativeSuccinctRMQReviewerPhysicalDeadAddress]
   | some region =>
@@ -726,11 +1191,10 @@ theorem concreteBPNativeSuccinctRMQReviewerSegmentEncoding_fits
 private theorem concreteBPNativeSuccinctRMQReviewerBPWords_length_le
     (shape : Cartesian.CartesianShape) :
     (concreteBPNativeSuccinctRMQReviewerSourceWords
-      shape .finalRankBPCodeAlias).length <= 2 * shape.bpCode.length + 1 := by
+      shape .sharedBPCode).length <= 2 * shape.bpCode.length + 1 := by
   have hchunks := chunkPayloadWords_length_le_payload_length
     (SuccinctRank.machineWordBits_pos shape.bpCode.length) shape.bpCode
   simp [concreteBPNativeSuccinctRMQReviewerSourceWords,
-    concreteBPNativeSuccinctRMQFlatPayloadSourceWords,
     builtRelativeSplitBPCloseRankData,
     builtRelativeSplitBPCloseRankWordSize,
     SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock,
@@ -754,7 +1218,6 @@ private theorem concreteBPNativeSuccinctRMQReviewerSelectSuperBaseOccurrence_len
         shape.bpCode.length := by
     simpa [GenericSelect.superEntries_length] using hsuperCount
   simp [concreteBPNativeSuccinctRMQReviewerSourceWords,
-    concreteBPNativeSuccinctRMQFlatPayloadSourceWords,
     GenericSelect.sparseExceptionSelectData,
     GenericSelect.superTable,
     GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.ofEntries,
@@ -774,7 +1237,6 @@ private theorem concreteBPNativeSuccinctRMQReviewerSelectSuperFields_length_le
   have h :=
     concreteBPNativeSuccinctRMQReviewerSelectSuperBaseOccurrence_length_le shape
   simp [concreteBPNativeSuccinctRMQReviewerSourceWords,
-    concreteBPNativeSuccinctRMQFlatPayloadSourceWords,
     GenericSelect.sparseExceptionSelectData,
     GenericSelect.superTable,
     GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.ofEntries,
@@ -806,7 +1268,6 @@ private theorem concreteBPNativeSuccinctRMQReviewerSelectLocalFields_length_le
       10 * shape.bpCode.length := by
     simpa [GenericSelect.localEntries_length] using hslots
   simp [concreteBPNativeSuccinctRMQReviewerSourceWords,
-    concreteBPNativeSuccinctRMQFlatPayloadSourceWords,
     GenericSelect.sparseExceptionSelectData,
     GenericSelect.localTable,
     GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.ofEntries,
@@ -837,7 +1298,6 @@ private theorem concreteBPNativeSuccinctRMQReviewerSelectFlagBitWords_length_le
       shape.bpCode false)
     (GenericSelect.sparseExceptionEffectiveFlagBits shape.bpCode false)
   simp [concreteBPNativeSuccinctRMQReviewerSourceWords,
-    concreteBPNativeSuccinctRMQFlatPayloadSourceWords,
     GenericSelect.sparseExceptionSelectData,
     GenericSelect.longFlagRankData,
     GenericSelect.sparseExceptionDirectory,
@@ -908,7 +1368,6 @@ private theorem concreteBPNativeSuccinctRMQReviewerRankTableSources_length_le
     GenericSelect.sparseExceptionEffectiveFlagBits_length_le_length
       shape.bpCode false
   simp [concreteBPNativeSuccinctRMQReviewerSourceWords,
-    concreteBPNativeSuccinctRMQFlatPayloadSourceWords,
     builtRelativeSplitBPCloseRankData,
     GenericSelect.sparseExceptionSelectData,
     GenericSelect.longFlagRankData,
@@ -959,7 +1418,6 @@ private theorem concreteBPNativeSuccinctRMQReviewerRelativeSources_length_le
       shape).payload_length_le_overhead
   have hlinear := genericSparseExceptionBPCloseAccessOverhead_le_linear shape.size
   simp [concreteBPNativeSuccinctRMQReviewerSourceWords,
-    concreteBPNativeSuccinctRMQFlatPayloadSourceWords,
     GenericSelect.sparseExceptionSelectData,
     GenericSelect.sparseExceptionDirectory] at hlongWords hsparseWords ⊢
   omega
@@ -984,8 +1442,6 @@ private theorem concreteBPNativeSuccinctRMQReviewerCloseWords_length_le
     localTable.table hword
   have hglobal := fixedWidthNatTable_machineWords_length_le_payload_length
     global.table hword
-  unfold concreteBPNativeSuccinctRMQReviewerCloseWords
-  simp only [Array.length_toList]
   change
     (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
       shape).store.words.toList.length <=
@@ -1042,6 +1498,10 @@ theorem concreteBPNativeSuccinctRMQReviewerPhysicalWords_length_le_capacity
       (concreteBPNativeSuccinctRMQReviewerCloseWords shape).length <=
         218 * (shape.size + 1) :=
     Nat.le_trans hclose hdirLinear
+  have hcanonicalCloseBound :
+      (concreteBPNativeSuccinctRMQReviewerSourceWords
+        shape .canonicalClose).length <= 218 * (shape.size + 1) := by
+    simpa [concreteBPNativeSuccinctRMQReviewerCloseWords] using hcloseBound
   rw [concreteBPNativeSuccinctRMQReviewerPhysicalWords_components]
   simp [concreteBPNativeSuccinctRMQReviewerPhysicalSources]
   rw [Cartesian.CartesianShape.bpCode_length] at *
@@ -1217,132 +1677,132 @@ theorem concreteBPNativeSuccinctRMQReviewerPhysicalWord_length_le_wordBits
       (concreteBPNativeSuccinctRMQReviewerPhysicalWords shape)) :
     word.length <= concreteBPNativeSuccinctRMQReviewerWordBits shape.size := by
   rw [concreteBPNativeSuccinctRMQReviewerPhysicalWords_components] at hmem
-  rcases List.mem_append.mp hmem with houter | hclose
-  · simp only [concreteBPNativeSuccinctRMQReviewerPhysicalSources,
-      List.flatMap_cons, List.flatMap_nil, List.append_nil,
-      List.mem_append] at houter
-    rcases houter with h0 | h1 | h2 | h3 | h4 | h5 | h6 | h7 | h8 |
-      h9 | h10 | h11 | h12 | h13 | h14 | h15 | h16 | h17 | h18
-    · change List.Mem word
+  rcases List.mem_flatMap.mp hmem with
+    ⟨source, hsource, hsourceWord⟩
+  simp [concreteBPNativeSuccinctRMQReviewerPhysicalSources] at hsource
+  rcases hsource with h0 | h1 | h2 | h3 | h4 | h5 | h6 | h7 | h8 |
+    h9 | h10 | h11 | h12 | h13 | h14 | h15 | h16 | h17 | h18 | h19
+  all_goals subst source
+  · change List.Mem word
         (builtRelativeSplitBPCloseRankData
-          shape).bitWords.store.words.toList at h0
-      exact Nat.le_trans
-        ((builtRelativeSplitBPCloseRankData
-          shape).payload_word_length_le_machine h0)
-        (concreteBPNativeSuccinctRMQReviewerMachineWordBits_le_wordBits shape)
-    · change List.Mem word
+          shape).bitWords.store.words.toList at hsourceWord
+    exact Nat.le_trans
+      ((builtRelativeSplitBPCloseRankData
+        shape).payload_word_length_le_machine hsourceWord)
+      (concreteBPNativeSuccinctRMQReviewerMachineWordBits_le_wordBits shape)
+  · change List.Mem word
         (builtRelativeSplitBPCloseRankData
-          shape).superTables.falseTable.store.words.toList at h1
-      apply GenericSelect.fixedWidthNatTable_word_length_le_of_mem
-        (builtRelativeSplitBPCloseRankData shape).superTables.falseTable
-        ?_ h1
-      simpa [builtRelativeSplitBPCloseRankData,
-        builtRelativeSplitBPCloseRankWordSize,
-        SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock,
-        SuccinctRank.canonicalTwoLevelRankDataOfBridgeLocalBlock] using
-          concreteBPNativeSuccinctRMQReviewerMachineWordBits_le_wordBits shape
-    · change List.Mem word
+          shape).superTables.falseTable.store.words.toList at hsourceWord
+    apply GenericSelect.fixedWidthNatTable_word_length_le_of_mem
+      (builtRelativeSplitBPCloseRankData shape).superTables.falseTable
+      ?_ hsourceWord
+    simpa [builtRelativeSplitBPCloseRankData,
+      builtRelativeSplitBPCloseRankWordSize,
+      SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock,
+      SuccinctRank.canonicalTwoLevelRankDataOfBridgeLocalBlock] using
+        concreteBPNativeSuccinctRMQReviewerMachineWordBits_le_wordBits shape
+  · change List.Mem word
         (builtRelativeSplitBPCloseRankData
-          shape).blockTables.falseTable.store.words.toList at h2
-      apply GenericSelect.fixedWidthNatTable_word_length_le_of_mem
-        (builtRelativeSplitBPCloseRankData shape).blockTables.falseTable
-        ?_ h2
-      simpa [builtRelativeSplitBPCloseRankData,
-        SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock,
-        SuccinctRank.canonicalTwoLevelRankDataOfBridgeLocalBlock] using
-          concreteBPNativeSuccinctRMQReviewerFinalBlockWidth_le_wordBits shape
-    · apply concreteBPNativeSuccinctRMQReviewerSelectSuperWord_length_le shape
-      unfold GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.readWords
-      apply List.mem_append_left
-      apply List.mem_append_left
-      apply List.mem_append_left
-      exact h3
-    · apply concreteBPNativeSuccinctRMQReviewerSelectSuperWord_length_le shape
-      unfold GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.readWords
-      apply List.mem_append_left
-      apply List.mem_append_left
-      apply List.mem_append_right
-      exact h4
-    · apply concreteBPNativeSuccinctRMQReviewerSelectSuperWord_length_le shape
-      unfold GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.readWords
-      apply List.mem_append_left
-      apply List.mem_append_right
-      exact h5
-    · apply concreteBPNativeSuccinctRMQReviewerSelectSuperWord_length_le shape
-      unfold GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.readWords
-      apply List.mem_append_right
-      exact h6
-    · apply concreteBPNativeSuccinctRMQReviewerSelectLocalWord_length_le shape
-      unfold GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.readWords
-      apply List.mem_append_left
-      apply List.mem_append_left
-      apply List.mem_append_left
-      exact h7
-    · apply concreteBPNativeSuccinctRMQReviewerSelectLocalWord_length_le shape
-      unfold GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.readWords
-      apply List.mem_append_left
-      apply List.mem_append_left
-      apply List.mem_append_right
-      exact h8
-    · apply concreteBPNativeSuccinctRMQReviewerSelectLocalWord_length_le shape
-      unfold GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.readWords
-      apply List.mem_append_left
-      apply List.mem_append_right
-      exact h9
-    · apply concreteBPNativeSuccinctRMQReviewerSelectLocalWord_length_le shape
-      unfold GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.readWords
-      apply List.mem_append_right
-      exact h10
-    · apply concreteBPNativeSuccinctRMQReviewerSelectLongRankWord_length_le shape
-      unfold GenericSelect.SparseExceptionSelectData.longFlagRankReadWords
-      apply List.mem_append_left
-      apply List.mem_append_left
-      apply List.mem_append_left
-      apply List.mem_append_left
-      exact h11
-    · apply concreteBPNativeSuccinctRMQReviewerSelectLongRankWord_length_le shape
-      unfold GenericSelect.SparseExceptionSelectData.longFlagRankReadWords
-      apply List.mem_append_left
-      apply List.mem_append_left
-      apply List.mem_append_right
-      exact h12
-    · apply concreteBPNativeSuccinctRMQReviewerSelectLongRankWord_length_le shape
-      unfold GenericSelect.SparseExceptionSelectData.longFlagRankReadWords
-      apply List.mem_append_right
-      exact h13
-    · exact
-        concreteBPNativeSuccinctRMQReviewerSelectLongRelativeWord_length_le
-          shape h14
-    · apply concreteBPNativeSuccinctRMQReviewerSelectSparseWord_length_le shape
-      unfold GenericSelect.SparseExceptionDirectory.readWords
-      apply List.mem_append_left
-      apply List.mem_append_left
-      apply List.mem_append_left
-      apply List.mem_append_left
-      apply List.mem_append_left
-      exact h15
-    · apply concreteBPNativeSuccinctRMQReviewerSelectSparseWord_length_le shape
-      unfold GenericSelect.SparseExceptionDirectory.readWords
-      apply List.mem_append_left
-      apply List.mem_append_left
-      apply List.mem_append_left
-      apply List.mem_append_right
-      exact h16
-    · apply concreteBPNativeSuccinctRMQReviewerSelectSparseWord_length_le shape
-      unfold GenericSelect.SparseExceptionDirectory.readWords
-      apply List.mem_append_left
-      apply List.mem_append_right
-      exact h17
-    · apply concreteBPNativeSuccinctRMQReviewerSelectSparseWord_length_le shape
-      unfold GenericSelect.SparseExceptionDirectory.readWords
-      apply List.mem_append_right
-      exact h18
+          shape).blockTables.falseTable.store.words.toList at hsourceWord
+    apply GenericSelect.fixedWidthNatTable_word_length_le_of_mem
+      (builtRelativeSplitBPCloseRankData shape).blockTables.falseTable
+      ?_ hsourceWord
+    simpa [builtRelativeSplitBPCloseRankData,
+      SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock,
+      SuccinctRank.canonicalTwoLevelRankDataOfBridgeLocalBlock] using
+        concreteBPNativeSuccinctRMQReviewerFinalBlockWidth_le_wordBits shape
+  · apply concreteBPNativeSuccinctRMQReviewerSelectSuperWord_length_le shape
+    unfold GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.readWords
+    apply List.mem_append_left
+    apply List.mem_append_left
+    apply List.mem_append_left
+    exact hsourceWord
+  · apply concreteBPNativeSuccinctRMQReviewerSelectSuperWord_length_le shape
+    unfold GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.readWords
+    apply List.mem_append_left
+    apply List.mem_append_left
+    apply List.mem_append_right
+    exact hsourceWord
+  · apply concreteBPNativeSuccinctRMQReviewerSelectSuperWord_length_le shape
+    unfold GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.readWords
+    apply List.mem_append_left
+    apply List.mem_append_right
+    exact hsourceWord
+  · apply concreteBPNativeSuccinctRMQReviewerSelectSuperWord_length_le shape
+    unfold GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.readWords
+    apply List.mem_append_right
+    exact hsourceWord
+  · apply concreteBPNativeSuccinctRMQReviewerSelectLocalWord_length_le shape
+    unfold GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.readWords
+    apply List.mem_append_left
+    apply List.mem_append_left
+    apply List.mem_append_left
+    exact hsourceWord
+  · apply concreteBPNativeSuccinctRMQReviewerSelectLocalWord_length_le shape
+    unfold GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.readWords
+    apply List.mem_append_left
+    apply List.mem_append_left
+    apply List.mem_append_right
+    exact hsourceWord
+  · apply concreteBPNativeSuccinctRMQReviewerSelectLocalWord_length_le shape
+    unfold GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.readWords
+    apply List.mem_append_left
+    apply List.mem_append_right
+    exact hsourceWord
+  · apply concreteBPNativeSuccinctRMQReviewerSelectLocalWord_length_le shape
+    unfold GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.readWords
+    apply List.mem_append_right
+    exact hsourceWord
+  · apply concreteBPNativeSuccinctRMQReviewerSelectLongRankWord_length_le shape
+    unfold GenericSelect.SparseExceptionSelectData.longFlagRankReadWords
+    apply List.mem_append_left
+    apply List.mem_append_left
+    apply List.mem_append_left
+    apply List.mem_append_left
+    exact hsourceWord
+  · apply concreteBPNativeSuccinctRMQReviewerSelectLongRankWord_length_le shape
+    unfold GenericSelect.SparseExceptionSelectData.longFlagRankReadWords
+    apply List.mem_append_left
+    apply List.mem_append_left
+    apply List.mem_append_right
+    exact hsourceWord
+  · apply concreteBPNativeSuccinctRMQReviewerSelectLongRankWord_length_le shape
+    unfold GenericSelect.SparseExceptionSelectData.longFlagRankReadWords
+    apply List.mem_append_right
+    exact hsourceWord
+  · exact
+      concreteBPNativeSuccinctRMQReviewerSelectLongRelativeWord_length_le
+        shape hsourceWord
+  · apply concreteBPNativeSuccinctRMQReviewerSelectSparseWord_length_le shape
+    unfold GenericSelect.SparseExceptionDirectory.readWords
+    apply List.mem_append_left
+    apply List.mem_append_left
+    apply List.mem_append_left
+    apply List.mem_append_left
+    apply List.mem_append_left
+    exact hsourceWord
+  · apply concreteBPNativeSuccinctRMQReviewerSelectSparseWord_length_le shape
+    unfold GenericSelect.SparseExceptionDirectory.readWords
+    apply List.mem_append_left
+    apply List.mem_append_left
+    apply List.mem_append_left
+    apply List.mem_append_right
+    exact hsourceWord
+  · apply concreteBPNativeSuccinctRMQReviewerSelectSparseWord_length_le shape
+    unfold GenericSelect.SparseExceptionDirectory.readWords
+    apply List.mem_append_left
+    apply List.mem_append_right
+    exact hsourceWord
+  · apply concreteBPNativeSuccinctRMQReviewerSelectSparseWord_length_le shape
+    unfold GenericSelect.SparseExceptionDirectory.readWords
+    apply List.mem_append_right
+    exact hsourceWord
   · change List.Mem word
       (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
-        shape).store.words.toList at hclose
+        shape).store.words.toList at hsourceWord
     exact Nat.le_trans
       (SuccinctClose.canonicalRelativeRmmInteriorComponentStore_words_bounded
-        shape hclose)
+        shape hsourceWord)
       (concreteBPNativeSuccinctRMQReviewerMachineWordBits_le_wordBits shape)
 
 /-- Every successful logical read returns a word bounded by the reviewer width. -/

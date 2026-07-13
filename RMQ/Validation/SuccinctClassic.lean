@@ -5,8 +5,10 @@ import RMQ.Core.SuccinctRMQClassic
 
 This module is an executable differential harness.  It computes
 `SuccinctClassic.queryCosted xs left right` directly and compares its erased
-answer with the independent linear `scanWindow` kernel on deterministic small
-inputs and all nonempty valid windows.
+answer with the independent `List Int` contract on deterministic small inputs,
+including valid windows and empty, reversed, and out-of-bounds ranges.  It also
+checks the canonical same/cross-block routes and genuine flat-store backing and
+dependency evidence.
 -/
 
 namespace RMQ.Validation.SuccinctClassic
@@ -18,6 +20,12 @@ structure Mismatch where
   got : Option Nat
   expected : Option Nat
 deriving Repr
+
+inductive CanonicalQueryRoute where
+  | invalid
+  | sameBlock
+  | crossBlock
+deriving Repr, DecidableEq, BEq
 
 def generatedInput (len seed : Nat) : List Int :=
   (List.range len).map fun i =>
@@ -41,16 +49,32 @@ def generatedInputs : List (List Int) :=
       (List.range (len + 3)).map fun seed =>
         generatedInput len seed
 
-def windowsFor (xs : List Int) : List (Prod Nat Nat) :=
+def validWindowsFor (xs : List Int) : List (Prod Nat Nat) :=
   (List.range xs.length).flatMap fun left =>
     (List.range (xs.length - left)).map fun offset =>
       (left, left + offset + 1)
+
+def invalidWindowsFor (xs : List Int) : List (Prod Nat Nat) :=
+  [ (0, 0)
+  , (xs.length, xs.length)
+  , (1, 0)
+  , (0, xs.length + 1)
+  ]
+
+def windowsFor (xs : List Int) : List (Prod Nat Nat) :=
+  validWindowsFor xs ++ invalidWindowsFor xs
+
+def expectedAnswer (xs : List Int) (left right : Nat) : Option Nat :=
+  if RMQ.ValidRange xs left right then
+    some (RMQ.scanWindow xs left (right - left))
+  else
+    none
 
 def checkWindow (xs : List Int) (window : Prod Nat Nat) : Option Mismatch :=
   let left := window.1
   let right := window.2
   let got := (RMQ.SuccinctClassic.queryCosted xs left right).erase
-  let expected := some (RMQ.scanWindow xs left (right - left))
+  let expected := expectedAnswer xs left right
   if got == expected then
     none
   else
@@ -73,6 +97,79 @@ def firstMismatch : List (List Int) -> Option Mismatch
 def totalWindowCount : Nat :=
   generatedInputs.foldl (fun total xs => total + (windowsFor xs).length) 0
 
+/-- Executable inspection of the actual canonical close/LCA route. -/
+def canonicalQueryRoute
+    (xs : List Int) (left right : Nat) : CanonicalQueryRoute :=
+  if _hvalid : RMQ.ValidRange xs left right then
+    let shape := RMQ.SuccinctClassic.cartesianShape xs
+    match RMQ.SuccinctSpace.bpCloseOfInorder? shape left,
+        RMQ.SuccinctSpace.bpCloseOfInorder? shape (right - 1) with
+    | some leftClose, some rightClose =>
+        let blockSize :=
+          RMQ.SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw shape
+        if RMQ.SuccinctClose.blockOfClose blockSize leftClose =
+            RMQ.SuccinctClose.blockOfClose blockSize rightClose then
+          .sameBlock
+        else
+          .crossBlock
+    | _, _ => .invalid
+  else
+    .invalid
+
+/-- Canonical physical store with the first execution-derived address removed. -/
+def dropFirstConsumedPhysicalWord
+    (xs : List Int) (left right : Nat) : RMQ.WordRAM.ReadStore :=
+  let canonical := RMQ.SuccinctClassic.reviewerPhysicalReadStore xs
+  let first? :=
+    (RMQ.SuccinctClassic.reviewerPhysicalFootprint xs left right).head?
+  { readWord? := fun segment address =>
+      if segment == 0 && some address == first? then none
+      else canonical.readWord? segment address }
+
+def physicalReadsMatchCanonicalStore
+    (xs : List Int) (left right : Nat) : Bool :=
+  let result :=
+    RMQ.SuccinctClassic.reviewerPhysicalTraceResult xs left right
+  let words := RMQ.SuccinctClassic.reviewerPhysicalWords xs
+  result.trace.all fun event =>
+    match event with
+    | RMQ.WordRAM.TraceEvent.readWord segment address word? =>
+        segment == 0 && words[address]? == word?
+    | _ => true
+
+def routeEvidenceOK : Bool :=
+  canonicalQueryRoute ([3, 1, 4, 1, 5] : List Int) 2 4 ==
+      .sameBlock &&
+    canonicalQueryRoute ([3, 1, 4, 1, 5] : List Int) 0 5 ==
+      .crossBlock &&
+    canonicalQueryRoute ([3, 1, 4, 1, 5] : List Int) 1 1 == .invalid
+
+def physicalErasureOK : Bool :=
+  let xs : List Int := [3, 1, 4, 1, 5]
+  RMQ.SuccinctSpace.flattenPayloadWords
+      (RMQ.SuccinctClassic.reviewerPhysicalWords xs) ==
+    RMQ.SuccinctClassic.buildPayload xs
+
+def physicalBackingOK : Bool :=
+  physicalReadsMatchCanonicalStore ([7] : List Int) 0 1
+
+def physicalDependencyOK : Bool :=
+  let xs : List Int := [7]
+  let canonical :=
+    RMQ.SuccinctClassic.reviewerPhysicalTraceResult xs 0 1
+  let corrupted :=
+    RMQ.SuccinctClassic.reviewerPhysicalTraceResultWithStore xs
+      (dropFirstConsumedPhysicalWord xs 0 1) 0 1
+  (RMQ.SuccinctClassic.reviewerPhysicalFootprint xs 0 1).head?.isSome &&
+    canonical.value == some 0 && corrupted.value == none
+
+def canonicalBoundOK : Bool :=
+  RMQ.SuccinctClassic.queryCost == 328
+
+def structuralEvidenceOK : Bool :=
+  routeEvidenceOK && physicalErasureOK && physicalBackingOK &&
+    physicalDependencyOK && canonicalBoundOK
+
 def mismatchMessage (mismatch : Mismatch) : String :=
   "mismatch: xs=" ++ reprStr mismatch.xs ++
     " window=[" ++ toString mismatch.left ++ ", " ++
@@ -82,14 +179,21 @@ def mismatchMessage (mismatch : Mismatch) : String :=
 
 def mainImpl : IO Unit := do
   match firstMismatch generatedInputs with
-  | none =>
-      IO.println
-        ("validated " ++ toString totalWindowCount ++
-          " SuccinctClassic query windows across " ++
-          toString generatedInputs.length ++ " deterministic inputs")
   | some mismatch =>
       IO.eprintln (mismatchMessage mismatch)
       IO.Process.exit 1
+  | none =>
+      if structuralEvidenceOK then
+        IO.println
+          ("validated " ++ toString totalWindowCount ++
+            " SuccinctClassic valid/invalid query windows across " ++
+            toString generatedInputs.length ++
+            " deterministic inputs; canonical same/cross routes, 328 bound, " ++
+            "physical erasure/backing, and flat-store dependency checked")
+      else
+        IO.eprintln
+          "canonical route, bound, physical erasure/backing, or dependency evidence failed"
+        IO.Process.exit 1
 
 end RMQ.Validation.SuccinctClassic
 
