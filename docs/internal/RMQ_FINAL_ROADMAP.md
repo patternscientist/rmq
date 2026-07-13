@@ -151,7 +151,10 @@ Acceptance evidence:
   source/region/segment coverage chain;
 - `concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_refines_logical`;
 - `concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_eq_of_orderedFootprint`;
-- `concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_ne_of_consumed_read_disagreement`;
+- `concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_value_eq_suppliedStoreEvaluator`;
+- `concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_value_ne_of_suppliedStoreEvaluator_value_ne`;
+- `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_operational_source`
+  and `concreteBPNativeSuccinctRMQReviewerSource_counted_evaluator_connection`;
 - `SuccinctClassic.queryCosted_invalid` and its canonical, supplied-store,
   trace, costed, and physical wrappers;
 - reviewer physical successful-read backing and whole-query word/address bounds

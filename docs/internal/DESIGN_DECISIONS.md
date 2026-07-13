@@ -1767,3 +1767,93 @@ All W17 public theorem surfaces and prose use the upper-bound form.  Exact
 equalities remain appropriate only for genuine representation identities such
 as physical-word flattening to `buildPayload`; they are not manufactured for
 the asymptotic budget.
+
+## DD-20260713-002: operational liveness, guarded adequacy, and value evidence
+
+Status: accepted coordinator amendment for the W17 semantic gate.
+
+Decision:
+
+- Define reviewer-source liveness from the actual logical segment map and its
+  read-producing evaluator leaf.  A non-shared source is live only with a
+  segment-derived `ReviewerReadLeaf` ownership witness; the single BP-code
+  source is live only through the checked segment-0/segment-19 shared
+  dependencies.
+- Connect both directions to execution.  Every emitted read resolves to a
+  counted/live source and an actual branch of
+  `WholeQueryInstr.evalGlobalWordTrace`; every counted source reaches a branch
+  in the closed whole-query program, with the checked shared-BP witness where
+  applicable.  The older `consumer?` label remains compatibility metadata and
+  is not acceptance evidence.
+- Keep raw shape-level model adequacy under an explicit `ValidRange` premise at
+  the list consumer.  The same list story has a separate all-invalid packet in
+  which logical and physical results are `none`, traces and physical footprint
+  are empty, cost is zero, and every supplied flat store yields that same
+  guarded execution.
+- State supplied-store dependency at the `.value` projection: the physical
+  result is exactly the existing supplied-store evaluator result after checked
+  address translation.  Use a valid singleton corruption at consumed physical
+  address seven as the nontrivial witness; it changes the real answer from
+  `some 0` to `none` and rejects a mutant that retains the supplied trace while
+  substituting the canonical value.
+
+Alternatives considered:
+
+- `ReviewerSource.Live := True`: rejected because adding a dead source cannot
+  falsify it and it says nothing about evaluator use.
+- Manifest membership or a second hand-written consumer enumeration: rejected
+  because it merely restates the payload list.  Forged labels must fail without
+  changing the operational maps.
+- One anti-vacuity check for the bundled manifest row: rejected because dead
+  addition, used-source removal, forged ownership, emitted-read coverage, and
+  counted-source reachability are different semantic subclaims.
+- Aggregate `TraceResult` inequality after corrupting a consumed word: retained
+  only as a lower-level trace-observability compatibility lemma.  It is not
+  answer-dependency evidence because the trace alone can make the records
+  unequal.
+- Unconditional raw adequacy inside an otherwise guarded public record:
+  rejected because an invalid public query executes the guarded
+  `none`/empty/zero branch, not the raw shape evaluator.
+- Claim that every consumed read changes every answer: rejected as false and
+  unnecessary.  The dependency-transfer theorem is conditional on differing
+  translated evaluator values, and the concrete witness identifies one
+  decisive consumed word for one valid query.
+
+Publication-facing rationale:
+
+The paper theorem should describe one execution on each public input.  On a
+valid range, that execution is the adapter-backed supplied-store evaluator and
+its physical trace.  On an invalid range, it is the guarded empty execution.
+Operational liveness makes the payload inventory falsifiable, and the
+projection theorem plus corruption witness establishes answer provenance
+without overstating universal sensitivity of every read.
+
+Consequences:
+
+- `ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy` contains operational
+  read/source and counted-source/evaluator connections, and replaces aggregate
+  disagreement as its dependency field with `.value`-level supplied-evaluator
+  facts.
+- `FlatPayloadStoreNoSyntheticExecutionStory` places raw adequacy behind
+  `ValidRange`, packages invalid result/trace/cost/footprint/store behavior, and
+  carries the projection-level dependency theorem for the same guarded
+  physical execution.
+- `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` consumes the valid raw
+  packet, invalid packet, and supplied-store value equality explicitly.  The
+  curated axiom inventories expose the operational, mutation, guarded, and
+  value-projection declarations.
+
+Evidence:
+
+- `ReviewerSource.Live`, `ReviewerSource.OperationallyOwnedBy`, and
+  `ReviewerSharedBPConsumer.Checked`.
+- `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_operational_source`.
+- `concreteBPNativeSuccinctRMQReviewerSource_counted_evaluator_connection`.
+- `concreteBPNativeSuccinctRMQReviewerManifest_add_dead_rejected`.
+- `concreteBPNativeSuccinctRMQReviewerManifest_remove_used_rejected`.
+- `concreteBPNativeSuccinctRMQReviewerSource_forged_consumer_rejected`.
+- `concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_value_eq_suppliedStoreEvaluator`.
+- `reviewerPhysicalTraceResultWithStore_value_eq_suppliedStoreEvaluator_of_valid`.
+- `flatPayloadStoreNoSyntheticExecutionStory_invalid_semantics`.
+- The six singleton corruption/mutant guards in
+  `RMQ/Validation/SuccinctClassic.lean`.

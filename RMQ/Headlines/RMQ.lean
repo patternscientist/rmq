@@ -86,6 +86,32 @@ theorem listIntSuccinctRMQPaperMainTheorem :
           RMQ.SuccinctClassic.FlatPayloadStoreNoSyntheticExecutionStory
             xs left right) /\
         (forall left right,
+          RMQ.ValidRange xs left right ->
+            RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
+              (RMQ.SuccinctClassic.cartesianShape xs) left right) /\
+        (forall left right,
+          Not (RMQ.ValidRange xs left right) ->
+            RMQ.SuccinctClassic.queryTraceResult xs left right =
+                RMQ.WordRAM.TraceResult.pure none /\
+            RMQ.SuccinctClassic.reviewerPhysicalTraceResult xs left right =
+                RMQ.WordRAM.TraceResult.pure none /\
+            RMQ.SuccinctClassic.queryCosted xs left right =
+                RMQ.Costed.pure none /\
+            RMQ.SuccinctClassic.reviewerPhysicalFootprint xs left right = [] /\
+            forall store : RMQ.WordRAM.ReadStore,
+              RMQ.SuccinctClassic.reviewerPhysicalTraceResultWithStore
+                  xs store left right =
+                RMQ.WordRAM.TraceResult.pure none) /\
+        (forall (store : RMQ.WordRAM.ReadStore) left right,
+          RMQ.ValidRange xs left right ->
+            (RMQ.SuccinctClassic.reviewerPhysicalTraceResultWithStore
+              xs store left right).value =
+            (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+              (RMQ.SuccinctClassic.cartesianShape xs)
+              (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter
+                (RMQ.SuccinctClassic.cartesianShape xs) store)
+              left right).value) /\
+        (forall left right,
           (RMQ.SuccinctClassic.reviewerPhysicalTraceResult
               xs left right).value =
               (RMQ.SuccinctClassic.queryTraceResult xs left right).value /\
@@ -131,6 +157,14 @@ theorem listIntSuccinctRMQPaperMainTheorem :
       RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases
         (RMQ.SuccinctClassic.cartesianShape xs),
       hcost, hinvalid, hexact, hleftmost, hstory,
+      fun left right hvalid =>
+        RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_rawAdequacy_of_valid
+          xs left right hvalid,
+      RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_invalid_semantics
+        xs,
+      fun store left right hvalid =>
+        RMQ.SuccinctClassic.reviewerPhysicalTraceResultWithStore_value_eq_suppliedStoreEvaluator_of_valid
+          xs store left right hvalid,
       RMQ.SuccinctClassic.reviewerPhysicalTraceResult_refines_queryTraceResult
         xs,
       fun storeA storeB left right hagree =>
@@ -173,10 +207,15 @@ the complete physical execution. -/
 abbrev succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_eq_of_orderedFootprint
 
-/-- A supplied-store disagreement at a consumed physical address is observable
-in the complete execution. -/
-abbrev succinctRMQReviewerPhysicalExecutionNeOfConsumedReadDisagreement :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_ne_of_consumed_read_disagreement
+/-- The answer projection is exactly the translated supplied-store evaluator's
+answer projection. -/
+abbrev succinctRMQReviewerPhysicalValueFromSuppliedStore :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_value_eq_suppliedStoreEvaluator
+
+/-- If translated supplied-store evaluator answers differ, the corresponding
+physical answer projections differ. -/
+abbrev succinctRMQReviewerPhysicalValueDependency :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_value_ne_of_suppliedStoreEvaluator_value_ne
 
 /-- List-facing physical refinement, including invalid-range rejection. -/
 abbrev listIntSuccinctRMQReviewerPhysicalExecutionRefinesLogical :=
@@ -211,9 +250,35 @@ source/region and its checked physical event. -/
 abbrev succinctRMQReviewerEveryReadHasListedRegion :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_read_has_listed_region
 
-/-- Every counted source has a named consumer or is shared BP code. -/
-abbrev succinctRMQReviewerSourceConsumerOrSharedBP :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSource_counted_consumer_or_sharedBP
+/-- Every emitted read resolves to a counted operational source and an actual
+read-producing evaluator branch in the closed program. -/
+abbrev succinctRMQReviewerEveryReadOperationalSource :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_operational_source
+
+/-- Every counted source reaches an actual evaluator branch; shared BP also
+carries its checked shared-consumer dependency. -/
+abbrev succinctRMQReviewerCountedSourceEvaluatorConnection :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSource_counted_evaluator_connection
+
+/-- Select, rank, and canonical-close shared-BP dependencies each reach their
+actual read-producing evaluator branch. -/
+abbrev succinctRMQReviewerSharedBPConsumerEvaluatorConnection :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_evaluator_connection
+
+/-- Dead additions, used-source removals, and forged consumer labels are
+separately rejected by the operational manifest predicates. -/
+abbrev succinctRMQReviewerManifestAddDeadRejected :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerManifest_add_dead_rejected
+abbrev succinctRMQReviewerManifestRemoveUsedRejected :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerManifest_remove_used_rejected
+abbrev succinctRMQReviewerForgedConsumerRejected :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSource_forged_consumer_rejected
+abbrev succinctRMQReviewerVacuousLiveAcceptsDead :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerManifest_vacuousLive_accepts_dead
+abbrev succinctRMQReviewerEnumerationAcceptsDead :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerManifest_enumeration_accepts_dead
+abbrev succinctRMQReviewerFalseLiveRejected :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerManifest_falseLive_rejected
 
 /-- No legacy duplicate close source occurs in the canonical source list. -/
 abbrev succinctRMQReviewerPhysicalSourcesExcludeLegacyClose :=
@@ -254,6 +319,20 @@ abbrev listIntSuccinctRMQQueryCostedReversedRange :=
   RMQ.SuccinctClassic.queryCosted_reversed_range
 abbrev listIntSuccinctRMQQueryCostedOutOfBounds :=
   RMQ.SuccinctClassic.queryCosted_out_of_bounds
+
+/-- The guarded story exposes raw model adequacy only on valid ranges. -/
+abbrev listIntSuccinctRMQRawAdequacyOfValid :=
+  RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_rawAdequacy_of_valid
+
+/-- All invalid public inputs share the same none/empty/zero physical and
+logical execution packet. -/
+abbrev listIntSuccinctRMQInvalidPhysicalSemantics :=
+  RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_invalid_semantics
+
+/-- Valid list-facing physical answers come from the translated supplied-store
+evaluator at the `.value` projection. -/
+abbrev listIntSuccinctRMQPhysicalValueFromSuppliedStore :=
+  RMQ.SuccinctClassic.reviewerPhysicalTraceResultWithStore_value_eq_suppliedStoreEvaluator_of_valid
 
 /--
 List-facing supplied-store equality: if the caller-provided store agrees with

@@ -28,9 +28,11 @@ the physical footprint with the execution's ordered read projection. Agreement
 on the first execution's consumed ordered physical footprint determines the
 complete physical `TraceResult`, including failures and repeated reads. The
 checked theorem
-`concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_ne_of_consumed_read_disagreement`
-shows that disagreement at a consumed address changes the execution, so the
-flat store is not ignored. Successful-read backing and returned-word bounds are
+`concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_value_eq_suppliedStoreEvaluator`
+identifies the physical answer with the translated supplied-store evaluator at
+`.value`; a decisive singleton corruption changes the real answer from
+`some 0` to `none`, while the value-ignore mutant retains stale `some 0`.
+Successful-read backing and returned-word bounds are
 lifted to the canonical reviewer payload and physical store. Empty, singleton,
 size-two, and symbolic threshold-boundary cases are kernel checked.
 

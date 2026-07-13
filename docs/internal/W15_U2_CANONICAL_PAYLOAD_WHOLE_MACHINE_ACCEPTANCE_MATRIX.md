@@ -8,7 +8,14 @@ Coordinator amendment (2026-07-13): exact physical-word erasure to
 length equality is no longer required, and the payload must not be padded to
 manufacture equality.
 
-Worker: W15, continued and closed locally by W17
+Coordinator amendment (2026-07-13, semantic gate): add
+`INV-SEMANTIC-NONVACUITY`; reopen `REQ-02`, `REQ-06`,
+`INV-VALUE-DEPENDENCY`, `INV-PUBLIC-COMPOSITION`, and the bundled W17
+validity/composition evidence.  Each applicable semantic subclaim requires its
+own attempted anti-vacuity mutation; prior bundled evidence is not silently
+reinterpreted.
+
+Worker: W15, continued as the W17 semantic candidate
 Branch: `codex/rmq-u2-final-route`
 Starting checkpoint: `ba49ae9a12ff72cd9a909a6b8f06566d3f3205c3`
 Workflow merge: `e8ff7e46d44c427088c4c4af1b4faec6804b089c`
@@ -49,6 +56,7 @@ Evidence is entered only after Lean checks the quoted propositions.
 | --- | --- | --- | --- | --- | --- | --- |
 | `INV-STORE-IDENTITY` | the exact payload/store executed is the payload/store counted by the public space theorem; a theorem about a sibling payload is insufficient | Same-object equalities required by REQ-01 and REQ-03, present in the paper conjunction. | `buildPayload` = physical flattening -> executed store. | Appended sibling payload. | None. | Open. |
 | `INV-VALUE-DEPENDENCY` | returned values and routing decisions depend on actual charged reads, not a semantic answer computed before the reads | For every final result, supplied-store execution/refinement traces decisive reads and decoding; store disagreement at a decisive word may change result, while agreement on footprint fixes it. | Supplied physical reads -> decoded select/rank/interior candidates -> result. | Precomputed semantic answer replayed after reads. | None. | Open. |
+| `INV-SEMANTIC-NONVACUITY` | semantic coverage, liveness, ownership, and refinement predicates are derived from the operational construction they describe. A predicate defined to be `True`, an enumeration restated as membership, or a separately hand-written consumer label does not establish operational liveness by itself | Operational segment/source/leaf maps and actual evaluator-branch equalities in both directions; semantic mutations must fail per subclaim. | Closed whole-query evaluator -> emitted reads and counted sources -> typed manifest -> final adequacy -> public story. | `True`, `False`, enumeration membership, dead addition, used removal, forged label, or free-standing label passes as liveness. | Added by explicit 2026-07-13 coordinator amendment; current evidence is in the semantic-gate table below. | Reopened/amended. |
 | `INV-TRACE-EXECUTION` | traces and footprints are derived from the execution they describe | Trace is the execution trace; footprint is exactly its ordered/read-address projection; physical translation theorem preserves order/failures. | Physical execution -> trace -> footprint. | Separately recorded footprint. | None. | Open. |
 | `INV-STORE-AGREEMENT` | supplied-store agreement determines result, cost, and the relevant trace | Agreement on the actual physical footprint implies equality of result, cost, ordered trace, and footprint with canonical execution. | Supplied store -> physical execution -> final/list query. | Agreement proves result only, or uses a static superset without trace equality. | None. | Open. |
 | `INV-READ-BACKING` | every successful read is backed positionally by the counted store | Every successful translated read is `reviewerPhysicalWords[address]? = some word` and flattening is `buildPayload`. | Trace event -> translated address -> physical word -> public payload. | Segment word backed only by a sibling array. | None. | Open. |
@@ -134,7 +142,8 @@ Evidence is entered only after Lean checks the quoted propositions.
 
 The tables above are the immutable pre-edit freeze. Their `Open` cells record
 the starting state, not the post-edit verdict. This section is the reconstructed
-worker evidence. Command rows remain pending until the final ladder is run.
+candidate evidence. The final ladder results are recorded in the verification
+ledger below.
 
 ### Exact load-bearing propositions
 
@@ -164,7 +173,8 @@ theorem concreteBPNativeSuccinctRMQReviewerSource_counted_iff_live
 theorem concreteBPNativeSuccinctRMQReviewerPhysicalSources_nodup
 theorem concreteBPNativeSuccinctRMQReviewerSource_region_injective
 theorem concreteBPNativeSuccinctRMQReviewerSegmentSource?_coverage
-theorem concreteBPNativeSuccinctRMQReviewerSource_counted_consumer_or_sharedBP
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_operational_source
+theorem concreteBPNativeSuccinctRMQReviewerSource_counted_evaluator_connection
 theorem concreteBPNativeSuccinctRMQReviewerPhysicalSources_exclude_legacy_close
 theorem concreteBPNativeSuccinctRMQCanonicalReviewerReadStore_legacyTail_none
 ```
@@ -224,13 +234,13 @@ theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_refines_logical
 ```
 
 The complete physical execution is determined by agreement on the first
-execution-derived ordered physical footprint. The converse corruption theorem
-shows a disagreement at a consumed address changes the complete execution, so
-the flat store is not ignored:
+execution-derived ordered physical footprint. Answer provenance is stated
+separately at `.value`, not inferred from aggregate-record inequality:
 
 ```lean
 theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_eq_of_orderedFootprint
-theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_ne_of_consumed_read_disagreement
+theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_value_eq_suppliedStoreEvaluator
+theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_value_ne_of_suppliedStoreEvaluator_value_ne
 ```
 
 The exact logical footprint retains order, repetition, and failures:
@@ -358,20 +368,26 @@ refinement/determinism, the typed manifest, and
 physical words, payload, physical/logical execution, physical footprint,
 capacity, width, backing, and word/address bounds above.
 
-### Final requirement verdicts
+### Pre-semantic-audit requirement verdicts (historical)
+
+The following W17 verdict table records the state before the 2026-07-13
+semantic-gate amendment.  Its `REQ-02`, `REQ-06`, `INV-VALUE-DEPENDENCY`,
+`INV-PUBLIC-COMPOSITION`, and W17 validity/composition verdicts are explicitly
+reopened and superseded by the current-format amendment table below; the old
+word `Closed` is not current evidence for those rows.
 
 | ID | Exact proposition and evidence | Public consumer and complete identity/composition chain | Plausible falsifier checked | Worker verdict |
 | --- | --- | --- | --- | --- |
-| `REQ-01` | `buildPayload xs` is definitionally `CanonicalReviewerPayload (cartesianShape xs)`; `ReviewerPhysicalWords_erases` has that exact payload as its right side. | `buildPayload` -> canonical layout -> reviewer physical words erasure -> global read-store equality -> supplied trace -> `queryCosted` -> paper theorem. | Appended sibling payload would make the erasure right side differ from `buildPayload`; it does not. | Closed locally; public builds, axiom inventories, integrated gate, and artifact reproduction are green. |
-| `REQ-02` | `ReviewerSource` is one typed 20-constructor universe including canonical close. `...counted_iff_live`, `...PhysicalSources_nodup`, `...Source_region_injective`, segment coverage, consumer/shared-BP ownership, legacy-close exclusion, and `...read_segment_lt` are checked. | Every emitted logical read, including failures, has segment `<21`; segment coverage maps it to a listed source/region. Legacy tail reads are `none` on the canonical store. | Opposite-polarity/dead legacy tables in the canonical payload, an unlisted failed read, or a duplicated region. The universal all-event theorem and typed manifest exclude all three. | Closed locally; all three axiom inventories are green. |
-| `REQ-03` | `ReviewerPhysicalStoreAdapter` makes the existing supplied-store evaluator read the caller's flat store at translated addresses. `...FlatPhysical_refines_logical` preserves value, cost, ordered trace, successes/failures; `...FlatPhysicalFootprint_recorded` is execution-derived; agreement determines the complete run and consumed-address disagreement is observable. | Supplied flat store -> checked adapter -> existing whole-query evaluator -> physical trace/footprint -> guarded list consumer -> paper theorem. | Mapping a precomputed canonical logical value, ignoring the store, dropping failure/repetition order, or using a component slice. The evaluator definition, refinement, complete-result determinism, and corruption theorem exclude these. | Closed locally; theorem builds and executable corruption witness are green. |
-| `REQ-04` | Exact propositions quoted above cover stored/returned words, all translated live/dead addresses, footprint addresses, input operands, segment/dead encodings, and every charged primitive operand/result. | Pre-execution `reviewerWordBits shape.size` -> physical list/address map -> physical trace -> adequacy record -> headlines. | A failed sentinel outside the width or a primitive using a larger operand. Universal address and event theorems include both. | Closed locally; WordRAM and headline inventories are green. |
-| `REQ-05` | Capacity is definitionally `400000*(n+1)`; physical length is bounded by it; width is `<= 20*(log2(n+2)+1)` and is sufficient for input/store/dead addresses. | Input size -> linear capacity -> `machineWordBits capacity` -> whole physical execution. | Polynomial-only capacity or unconstrained `LittleOLinear machineWordBits`; neither is used. | Closed locally; full gate is green. |
-| `REQ-06` | Final adequacy contains manifest, every-read-to-region, exact erasure, genuine physical refinement, footprint, backing, capacity/width, determinism, and corruption fields. The list story and paper theorem consume the same physical evaluator; the paper theorem directly conjoins exact erasure, physical refinement/determinism, and manifest facts. Headlines and all three axiom inventories name the load-bearing declarations. | ReviewerPhysical -> RAM all-read coverage -> StoreParam adapter/execution -> ModelAdequacy -> SuccinctClassic -> `RMQ.Headlines.RMQ` -> `RMQPaper`. | Headline drops physical execution, combines sibling objects, or checks only local helpers. The direct paper conjunction and inventories prevent this. | Closed locally; `RMQPaper`, headlines, all inventories, and artifact reproduction are green. |
-| `REQ-07` | README, artifact guide/claims, family/what-is-proved, paper theorem/model/claim maps, trust/Word-RAM packets, roadmap, digestion/provenance, and both claim policies identify `328` as canonical transitional and `118`/`4144`/zero-block/`196727` as compatibility/history. Roadmap says worker candidate only. | Checked theorem -> public docs -> roadmap candidate boundary -> claim-drift policy. | Stale current-`4144` prose or `Status: complete`; corrected in live sections. | Closed locally; claim-drift scan reports 437 reviewed hits and 0 strict failures. |
-| `REQ-08` | Existing canonical exactness/no-synthetic/`328` theorems remain; the physical value is computed by the existing evaluator through `ReviewerPhysicalStoreAdapter`; footprint agreement proves dependency and consumed-address disagreement gives a checked non-ignore witness. | Canonical directory -> all-size close/LCA -> supplied logical evaluator through flat adapter -> physical execution -> guarded list query. | Ready/Active/zero-block dispatch, answer table, padded event, precomputed logical-value remapping, or appended payload. None occurs in the canonical chain. | Closed locally; dependency, hygiene, and full integrated gates are green. |
-| `W17-RANGE` | `SuccinctClassic.withValidRange` is the single list-facing boundary used by canonical, supplied-store, trace, costed, prepared, and physical surfaces. `queryCosted_invalid` plus empty/reversed/out-of-bounds corollaries prove `none`; invalid traces are empty and cost zero. | `ValidRange xs left right` -> controller thunk or pure `none` -> every public List execution projection. | `[9,8,7] 1 1`, a reversed window, or an end beyond length returns `some`; theorems and executable guards reject all three. | Closed locally; examples, validator, and cost harness are green. |
-| `W17-EXAMPLES` | `RMQExamples/Concrete.lean` and both validation modules use semantic checks: valid same/cross-block, invalid ranges, exact `328`, route classification, exact erasure, physical backing, and corruption dependency. | Public list/physical surfaces -> executable `#guard` and differential harness. | Refreshed hard-coded bit positions or legacy Ready/route-split labels. Neither remains. | Closed locally; 498-window validator and bounded 128-element cost harness are green. |
+| `REQ-01` | `buildPayload xs` is definitionally `CanonicalReviewerPayload (cartesianShape xs)`; `ReviewerPhysicalWords_erases` has that exact payload as its right side. | `buildPayload` -> canonical layout -> reviewer physical words erasure -> global read-store equality -> supplied trace -> `queryCosted` -> paper theorem. | Appended sibling payload would make the erasure right side differ from `buildPayload`; it does not. | Candidate evidence satisfied; public builds, axiom inventories, and integrated gate are green. Local Bash was unavailable, so artifact reproduction remains a required remote workflow. |
+| `REQ-02` | `ReviewerSource` is one typed 20-constructor universe including canonical close. `Live` is derived from read-producing leaf ownership or a checked shared-BP dependency. Counted/live equivalence, physical-region uniqueness, segment coverage, both evaluator-connection directions, legacy-close exclusion, and compatibility-tail absence are checked. | Every emitted read, including failures, maps through actual segment/source/leaf maps to a counted live source and evaluator branch. Every counted source reaches an actual evaluator leaf or checked shared-BP consumer. | Dead addition, used-source removal, forged labels, `True`, enumeration, and `False` liveness mutants. Separate checked theorems reject or expose each mutant. | Candidate evidence satisfied; all three axiom inventories are green. |
+| `REQ-03` | `ReviewerPhysicalStoreAdapter` makes the existing supplied-store evaluator read the caller's flat store at translated addresses. Refinement preserves value, cost, ordered successes/failures, repeated reads, and execution-derived footprint; footprint agreement determines the complete run. Projection equality proves physical `.value` is the translated supplied evaluator's `.value`, and a decisive consumed-word corruption changes that value. | Supplied flat store -> checked adapter -> existing whole-query evaluator -> physical trace/footprint/value -> guarded list consumer -> paper theorem. | Mapping a precomputed canonical value, ignoring the store, dropping failure/repetition order, or using a component slice. The evaluator/refinement theorem, projection identity, determinism, and six-part corruption witness exclude these. | Candidate evidence satisfied; theorem builds and executable projection-level corruption witness are green. |
+| `REQ-04` | Exact propositions quoted above cover stored/returned words, all translated live/dead addresses, footprint addresses, input operands, segment/dead encodings, and every charged primitive operand/result. | Pre-execution `reviewerWordBits shape.size` -> physical list/address map -> physical trace -> adequacy record -> headlines. | A failed sentinel outside the width or a primitive using a larger operand. Universal address and event theorems include both. | Candidate evidence satisfied; WordRAM and headline inventories are green. |
+| `REQ-05` | Capacity is definitionally `400000*(n+1)`; physical length is bounded by it; width is `<= 20*(log2(n+2)+1)` and is sufficient for input/store/dead addresses. | Input size -> linear capacity -> `machineWordBits capacity` -> whole physical execution. | Polynomial-only capacity or unconstrained `LittleOLinear machineWordBits`; neither is used. | Candidate evidence satisfied; full local gate is green. |
+| `REQ-06` | Final adequacy contains operational manifest connections, every-read evidence, exact erasure, physical refinement, `.value` provenance, footprint, backing, capacity/width, and determinism. The List story exposes raw adequacy only under `ValidRange`; its invalid branch is one pure-none/empty/zero packet for every supplied store. The paper theorem and headlines consume both branches and all load-bearing semantics. | ReviewerPhysical -> RAM evaluator branches -> StoreParam adapter/execution -> ModelAdequacy -> guarded SuccinctRMQClassic story -> `RMQ.Headlines.RMQ` -> `RMQPaper`. | Unconditional raw adequacy inside an all-input packet, aggregate inequality substituted for answer dependency, sibling objects, or label-only liveness. The strengthened record, guarded story, direct paper conjunction, and curated inventories reject these. | Candidate evidence satisfied; `RMQPaper`, headlines, all inventories, and full local gate are green. |
+| `REQ-07` | README, artifact guide/claims, family/what-is-proved, paper theorem/model/claim maps, trust/Word-RAM packets, roadmap, digestion/provenance, and both claim policies identify `328` as canonical transitional and `118`/`4144`/zero-block/`196727` as compatibility/history. Roadmap says candidate evidence only. | Checked theorem -> public docs -> roadmap candidate boundary -> claim-drift policy. | Stale current-`4144` prose or `Status: complete`; corrected in live sections. | Candidate evidence satisfied; claim-drift scan reports 493 reviewed hits and 0 strict failures. |
+| `REQ-08` | Existing canonical exactness/no-synthetic/`328` theorems remain; the physical value is computed by the existing evaluator through `ReviewerPhysicalStoreAdapter`; the universal projection theorem and decisive corruption witness establish supplied-store answer dependency with exact quantifiers. | Canonical directory -> all-size close/LCA -> supplied logical evaluator through flat adapter -> physical execution -> guarded list query. | Ready/Active/zero-block dispatch, answer table, padded event, precomputed logical-value remapping, aggregate-only disagreement, or appended payload. None occurs in the canonical chain. | Candidate evidence satisfied; dependency, hygiene, and full integrated local gates are green. |
+| `W17-RANGE` | `SuccinctClassic.withValidRange` is the single list-facing boundary used by canonical, supplied-store, trace, costed, prepared, and physical surfaces. The invalid packet proves logical/physical `none`, empty traces/footprint, zero cost, and pure `none` for every supplied store. | `ValidRange xs left right` -> controller thunk or pure `none` -> every public List execution projection. | `[9,8,7] 1 1`, a reversed window, or an end beyond length returns `some`; theorems and per-projection executable mutations reject all three. | Candidate evidence satisfied; examples, validator, and cost harness are green. |
+| `W17-EXAMPLES` | `RMQExamples/Concrete.lean` and validation use semantic checks: valid same/cross-block, invalid ranges, exact `328`, route classification, exact erasure, physical backing, decisive corruption, and raw/guarded invalid mismatch. | Public list/physical surfaces -> executable theorem examples, `#guard`, and differential harness. | Refreshed hard-coded bit positions, legacy route labels, or aggregate-only corruption. None remains. | Candidate evidence satisfied; 498-window validator and the cost harness are green. |
 
 ### Inherited invariant verdicts
 
@@ -391,6 +407,162 @@ capacity, width, backing, and word/address bounds above.
 | `INV-PUBLIC-COMPOSITION` | List story nests final adequacy for the same `cartesianShape xs`; paper theorem consumes that story. | Proof closed. |
 | `INV-GLOBAL-PHYSICAL-MACHINE` | Genuine supplied-flat-store evaluation, universal all-read source coverage, and full physical refinement, not a component slice or post-hoc value mapping. | Proof closed. |
 | `INV-WIDTH-SCALING` | Linear capacity equality plus explicit logarithmic width inequality. | Proof closed. |
+
+### W17 semantic-gate amendment: current acceptance-matrix format
+
+| ID | Exact frozen requirement | Scope | Evidence needed (exact proposition/check) | Named consumer and identity/composition chain | Anti-vacuity challenge attempted and outcome | Evidence obtained | Status / residual gap |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `REQ-02.a` | Every emitted read maps to a counted operational source. | Local and public | For every read event in the actual whole-query trace, produce source, leaf, instruction, source/leaf segment equalities, `Counted`, `Live`, operational ownership, closed-program membership, and actual evaluator-branch equality. | `WholeQueryProgram.evalGlobalWordTrace` -> `...read_operational_source` -> final adequacy `every_emitted_read_has_operational_source` -> valid list story -> paper theorem. | Remove the source used by an emitted segment. `...Manifest_remove_used_rejected` proves the resulting manifest is not complete; the all-read theorem also cannot produce its required `Counted` witness from that manifest. | `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_operational_source`, quoted below. | Candidate evidence satisfied; final local verification ledger green. |
+| `REQ-02.b` | Every counted source reaches an actual read-producing evaluator leaf or a checked shared-BP consumer. | Local and public | From `source.Counted`, produce either checked shared-BP dependency plus an instruction/branch equality, or segment-derived ownership plus an instruction/branch equality. Separately quantify over all select, rank, and canonical-close shared-BP consumers. | Typed manifest -> `...counted_evaluator_connection` and `...SharedBPConsumer_evaluator_connection` -> final adequacy `canonical_counted_sources_reach_evaluator` / `all_shared_bp_dependencies_reach_evaluator` -> valid list story; headline aliases expose both theorems directly. | Add a dead candidate. `...add_dead_rejected` proves manifest soundness false. Replace liveness by `True` or enumeration: `...vacuousLive_accepts_dead` and `...enumeration_accepts_dead` show both mutants accept the dead entry, while operational soundness rejects it. Replace liveness by `False`: `...falseLive_rejected` refutes counted/false equivalence. Remove canonical-close from the shared consumer universe: the universal shared-consumer field no longer covers all constructors and the canonical dependency alias changes type. | `concreteBPNativeSuccinctRMQReviewerSource_counted_evaluator_connection`, `...ReviewerSharedBPConsumer_evaluator_connection`, and four predicate-mutation theorems, quoted below. | Candidate evidence satisfied; final local verification ledger green. |
+| `REQ-02.c` | A separately hand-written consumer label is not sufficient evidence; legacy duplicates remain compatibility-only. | Local and public | Consumer claims require an operational leaf witness; legacy-close exclusion and compatibility-tail `none` remain checked. | Segment source/leaf maps -> `CheckedConsumerClaim` -> derived compatibility label; canonical manifest -> physical layout -> paper story. | Forge a consumer label distinct from the derived one. `...forged_consumer_rejected` proves the forged `CheckedConsumerClaim` is impossible. A label-only `consumer?` equality is deliberately absent from final adequacy. | `...ReviewerSource_forged_consumer_rejected`, `...PhysicalSources_exclude_legacy_close`, and `...CanonicalReviewerReadStore_legacyTail_none`. | Candidate evidence satisfied; final local verification ledger green. |
+| `REQ-06.a` | Final adequacy, List story, paper theorem, and headlines consume the operational manifest and supplied-store answer semantics for the same execution. | Public composition | Final adequacy fields contain both liveness directions and `.value` provenance; list story consumes raw adequacy only under `ValidRange`; paper theorem directly consumes valid adequacy, invalid packet, and supplied-store value equality. | ReviewerPhysical -> SuccinctFinalRAM -> StoreParam -> ModelAdequacy -> SuccinctRMQClassic -> `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` -> RMQPaper. | Drop the operational fields or substitute aggregate inequality: the strengthened record constructor and headline type no longer accept that packet. Drop the valid premise: the list story field type requires `ValidRange`. | Focused builds are green; exact public declarations are in the three curated axiom inventories. | Candidate evidence satisfied; final local verification ledger green. |
+| `REQ-06.b` | Curated inventories expose every load-bearing semantic declaration. | Verification | All three axiom scripts name operational read/source theorems, dead/remove/forge/vacuous/enumeration/false mutations, `.value` theorems, valid raw adequacy, invalid packet, and the strengthened headline. | Source theorem -> headline alias -> printed assumptions. | Retain the old aggregate-disagreement or hand-written-consumer alias as the dependency/liveness inventory entry. Those entries were removed and replaced by the projection/operational names. | All three curated axiom inventories execute successfully. | Candidate evidence satisfied; final local verification ledger green. |
+| `INV-VALUE-DEPENDENCY.a` | Returned values depend on actual charged supplied reads, not a semantic answer computed before the reads. | Local and public | Physical `.value` equals the existing supplied-store evaluator `.value` after translation; differing translated evaluator values imply differing physical values, with exact quantifiers. | Physical store -> checked adapter -> existing supplied-store evaluator -> flat physical `.value` -> valid list wrapper -> paper theorem. | Substitute the canonical value while retaining the supplied trace. The validation mutant does exactly this and is separated from the real execution at `.value` by the decisive corruption. Aggregate record inequality is not used in final adequacy or headlines. | Two universal projection theorems plus valid list wrappers, quoted below. | Candidate evidence satisfied; final local verification ledger green. |
+| `INV-VALUE-DEPENDENCY.b` | Include a nontrivial decisive corruption witness without claiming every read is decisive. | Executable kernel evidence | One valid query consumes an address whose changed word changes `.value`; separately check consumption and store disagreement. | Singleton canonical physical store -> address `7` -> supplied evaluator -> public physical answer. | Ignore the supplied returned value: mutant remains `some 0`, while actual dropped-word execution is `none`. Six separate `#guard`s check canonical value, corrupted value, consumption, changed store word, mutant value, and real-vs-mutant value inequality. | `RMQ/Validation/SuccinctClassic.lean`; focused validation and RMQExamples builds green. | Candidate evidence satisfied; final local verification ledger green. |
+| `INV-PUBLIC-COMPOSITION.a` | Raw adequacy may appear only under a valid-range premise. | Public | `ValidRange xs left right -> FinalTraceModelAdequacy (cartesianShape xs) left right`. | `withValidRange` -> `flatPayloadStoreNoSyntheticExecutionStory_rawAdequacy_of_valid` -> paper main theorem. | Mix unconditional raw adequacy into the invalid branch. `invalidEmptyRawPhysicalResult.value != invalidEmptyPublicPhysicalResult.value` is kernel-checked, so the mutant describes a different execution. | Exact valid theorem quoted below; raw/public mismatch guard passes. | Candidate evidence satisfied; final local verification ledger green. |
+| `INV-PUBLIC-COMPOSITION.b` | Every invalid input has one guarded result/trace/cost/footprint/supplied-store execution. | Public | Under `Not (ValidRange xs left right)`: logical and physical results are pure `none`, cost is pure `none` (zero), footprint is `[]`, and every supplied store yields pure `none`. | One validity boundary -> guarded logical and physical wrappers -> list story -> paper theorem/headline. | Mutate each semantic projection separately: result to `some 0`, trace to a synthetic event, cost to `1`, footprint to `[0]`, or supplied-store result to `some 0`. Five separate guards reject the five mutations. | `flatPayloadStoreNoSyntheticExecutionStory_invalid_semantics`, quoted below, plus five guards. | Candidate evidence satisfied; final local verification ledger green. |
+| `INV-PUBLIC-COMPOSITION.c` | Space, erasure, execution, and semantics concern the same construction. | Public | The same `xs` and `cartesianShape xs` occur in `buildPayload`, exact physical erasure, guarded physical result, adequacy, width, and paper conjunction. | `buildPayload xs` = canonical payload <- physical-word erasure -> adapter-backed evaluator -> guarded story -> paper theorem. | Replace physical words by a sibling payload or pad to equality. Exact erasure would fail; no padding edit exists. Replace guarded execution by raw invalid evaluator: raw/public mismatch guard fails. | Existing exact erasure plus strengthened story/paper theorem. | Candidate evidence satisfied; final local verification ledger green. |
+| `W17-VALIDITY.a` | Empty range returns `none` with empty/zero execution. | Executable and theorem | Instantiate the complete invalid packet at `[9,8,7] 1 1`. | Public validity boundary -> all projections. | Raw-invalid substitution and five per-projection mutations above are rejected. | `RMQExamples/Concrete.lean` full packet example and validation guards. | Candidate evidence satisfied; final local verification ledger green. |
+| `W17-VALIDITY.b` | Reversed range returns `none` with empty/zero execution. | Executable and theorem | Instantiate the physical-result invalid conjunct at `[9,8,7] 2 1`; general theorem covers every projection/store. | Same guarded packet. | Reversed query returning any `some` value contradicts `queryCosted_reversed_range` and the packet. | RMQExamples theorem example and existing guard. | Candidate evidence satisfied; final local verification ledger green. |
+| `W17-VALIDITY.c` | Out-of-bounds range returns `none` with empty/zero execution. | Executable and theorem | Instantiate the footprint-invalid conjunct at `[9,8,7] 0 4`; general theorem covers every projection/store. | Same guarded packet. | Nonempty footprint contradicts the packet; the `[0]` footprint mutant is rejected separately. | RMQExamples theorem example and existing guard. | Candidate evidence satisfied; final local verification ledger green. |
+| `INV-SEMANTIC-NONVACUITY` | Semantic coverage, liveness, ownership, and refinement predicates are derived from the operational construction they describe. `True`, membership restatement, or a separately hand-written consumer label is insufficient. | Inherited invariant | Operational source/leaf maps, actual evaluator branch equalities in both directions, projection-level value identity, guarded object identity, and per-subclaim mutation failures. | Closed program/read trace -> operational manifest -> adapter-backed physical evaluator -> guarded list story -> paper main theorem. | `True`, enumeration, `False`, dead addition, used removal, forged label, ignored return value, raw/guarded mix, and five invalid-projection mutations were attempted separately; each outcome is named above. | Exact theorem types and guard outcomes below; final build, axiom, validator, harness, hygiene, drift, and gate rows are green. | Candidate evidence satisfied; coordinator reconstruction and blind exact-commit audit remain. |
+
+### Checked theorem types for the semantic amendment
+
+```lean
+theorem concreteBPNativeSuccinctRMQReviewerSource_counted_iff_live
+    (source : ReviewerSource) :
+    source.Counted ↔ source.Live
+
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_operational_source
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    ∀ {segment index : Nat} {word? : Option WordRAM.Word},
+      WordRAM.TraceEvent.readWord segment index word? ∈
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+            shape left right).trace →
+        ∃ source : ReviewerSource,
+        ∃ leaf : ReviewerReadLeaf,
+        ∃ instr : WholeQueryInstr,
+          concreteBPNativeSuccinctRMQReviewerSegmentSource? segment =
+              some source ∧
+          concreteBPNativeSuccinctRMQReviewerSegmentLeaf? segment =
+              some leaf ∧
+          source.Counted ∧ source.Live ∧
+          source.OperationallyOwnedBy leaf ∧
+          instr ∈ concreteBPNativeSuccinctRMQWholeQueryProgram ∧
+          instr.reviewerReadLeaf? = some leaf ∧
+          WholeQueryInstr.reviewerReadLeafEvaluatorBranch
+            shape left right WholeQueryState.empty leaf instr
+```
+
+```lean
+theorem concreteBPNativeSuccinctRMQReviewerSource_counted_evaluator_connection
+    (shape : Cartesian.CartesianShape) (left right : Nat)
+    (state : WholeQueryState) (source : ReviewerSource)
+    (hcounted : source.Counted) :
+    (source = .sharedBPCode ∧
+      ∃ consumer : ReviewerSharedBPConsumer,
+      ∃ instr,
+        consumer.Checked ∧
+        instr ∈ concreteBPNativeSuccinctRMQWholeQueryProgram ∧
+        instr.reviewerReadLeaf? = some consumer.leaf ∧
+        WholeQueryInstr.reviewerReadLeafEvaluatorBranch
+          shape left right state consumer.leaf instr) ∨
+    (∃ leaf : ReviewerReadLeaf,
+      ∃ instr,
+        source.OperationallyOwnedBy leaf ∧
+        instr ∈ concreteBPNativeSuccinctRMQWholeQueryProgram ∧
+        instr.reviewerReadLeaf? = some leaf ∧
+        WholeQueryInstr.reviewerReadLeafEvaluatorBranch
+          shape left right state leaf instr)
+
+theorem concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_evaluator_connection
+    (shape : Cartesian.CartesianShape) (left right : Nat)
+    (state : WholeQueryState) (consumer : ReviewerSharedBPConsumer) :
+    consumer.Checked ∧
+      ∃ instr,
+        instr ∈ concreteBPNativeSuccinctRMQWholeQueryProgram ∧
+        instr.reviewerReadLeaf? = some consumer.leaf ∧
+        WholeQueryInstr.reviewerReadLeafEvaluatorBranch
+          shape left right state consumer.leaf instr
+```
+
+```lean
+theorem concreteBPNativeSuccinctRMQReviewerManifest_add_dead_rejected
+    (manifest : List ReviewerSourceCandidate) :
+    ¬ ReviewerSourceCandidate.ManifestSound (.dead :: manifest)
+
+theorem concreteBPNativeSuccinctRMQReviewerManifest_remove_used_rejected
+    (removed : ReviewerSource) :
+    ¬ ReviewerSource.ManifestComplete
+      (concreteBPNativeSuccinctRMQReviewerManifestWithout removed)
+
+theorem concreteBPNativeSuccinctRMQReviewerSource_forged_consumer_rejected
+    (source : ReviewerSource) (actual forged : ReviewerConsumer)
+    (hactual : source.consumer? = some actual)
+    (hforged : forged ≠ actual) :
+    ¬ source.CheckedConsumerClaim forged
+
+theorem concreteBPNativeSuccinctRMQReviewerManifest_vacuousLive_accepts_dead :
+    ReviewerSourceCandidate.VacuousLive .dead
+
+theorem concreteBPNativeSuccinctRMQReviewerManifest_enumeration_accepts_dead
+    (manifest : List ReviewerSourceCandidate) :
+    ReviewerSourceCandidate.Enumerated (.dead :: manifest) .dead
+
+theorem concreteBPNativeSuccinctRMQReviewerManifest_falseLive_rejected :
+    ¬ (∀ source : ReviewerSource, source.Counted ↔ False)
+```
+
+```lean
+theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_value_eq_suppliedStoreEvaluator
+    (shape : Cartesian.CartesianShape) (physicalStore : WordRAM.ReadStore)
+    (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+      shape physicalStore left right).value =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape
+        (concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter
+          shape physicalStore)
+        left right).value
+
+theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_value_ne_of_suppliedStoreEvaluator_value_ne
+    (shape : Cartesian.CartesianShape) (storeA storeB : WordRAM.ReadStore)
+    (left right : Nat)
+    (hneq :
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape
+        (concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter shape storeA)
+        left right).value ≠
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape
+        (concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter shape storeB)
+        left right).value) :
+    (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+      shape storeA left right).value ≠
+    (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+      shape storeB left right).value
+```
+
+```lean
+theorem flatPayloadStoreNoSyntheticExecutionStory_rawAdequacy_of_valid
+    (xs : List Int) (left right : Nat)
+    (hvalid : ValidRange xs left right) :
+    SuccinctFinal.ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
+      (cartesianShape xs) left right
+
+theorem flatPayloadStoreNoSyntheticExecutionStory_invalid_semantics
+    (xs : List Int) (left right : Nat)
+    (hbad : ¬ ValidRange xs left right) :
+    queryTraceResult xs left right = WordRAM.TraceResult.pure none ∧
+      reviewerPhysicalTraceResult xs left right =
+        WordRAM.TraceResult.pure none ∧
+      queryCosted xs left right = Costed.pure none ∧
+      reviewerPhysicalFootprint xs left right = [] ∧
+      ∀ store : WordRAM.ReadStore,
+        reviewerPhysicalTraceResultWithStore xs store left right =
+          WordRAM.TraceResult.pure none
+```
 
 ### Adversarial-case evidence
 
@@ -418,32 +590,32 @@ capacity, width, backing, and word/address bounds above.
 ## Final verification ledger
 
 All earlier post-edit local `pending` qualifiers are discharged by this ledger.
-The final worker verdict for `REQ-01` through `REQ-08`, every inherited
-invariant, every adversarial case, and `DEF-U3`/`DEF-M1`/`DEF-A1` is
-**closed locally**. Remote workflow outcomes are inspected after pushing the
-exact commit and reported outside this commit.
-`DEF-ACCEPTANCE` deliberately remains coordinator-owned.
+The final candidate evidence for `REQ-01` through `REQ-08`, every inherited
+invariant, every adversarial case, and `DEF-U3`/`DEF-M1`/`DEF-A1` satisfies the
+worker gate. Remote workflow outcomes are inspected after pushing the exact
+commit and reported outside this commit. `DEF-ACCEPTANCE` deliberately remains
+coordinator-owned.
 
 | Check | Result |
 | --- | --- |
-| Runtime-health identity and command probes | Pass: `git status --short --branch` 0.5 s; `git rev-parse HEAD` 0.4 s; `git ls-remote --heads` 0.9 s; focused declaration `rg` 0.5 s; small `Get-Content` 0.5 s; first legitimate small `apply_patch` 3.5 s. No abnormal Git, read orchestration, or patch latency. |
-| Focused ReviewerPhysical, RAM, StoreParam, ModelAdequacy, SuccinctClassic, headline, example, and validation builds | Pass; no new linter warnings. |
-| `lake build RMQPaper` | Pass in 4.7 s. |
-| `lake build` | Pass in 8.9 s, 197-target graph. |
-| `lake build RMQExamples` | Pass in 25.2 s, 187-target graph. |
-| `lake env lean scripts/axiom_check.lean` | Pass in 89.7 s; new load-bearing declarations printed with only expected Lean principles. |
-| `lake env lean scripts/wordram_axiom_check.lean` | Pass in 40.9 s. |
-| `lake env lean scripts/headline_axiom_check.lean` | Pass in 19.7 s. |
-| `lake exe rmq_succinct_classic_validate` | Pass in 11.0 s: 498 valid/invalid windows across 43 deterministic inputs. |
-| `lake exe rmq_succinct_classic_cost_harness` | Pass in 73.9 s: invalid, same-block, and cross-block windows under exact canonical bound `328`. The default maximum fixture is the measured 128-element ceiling; the former 1024-element runtime-only fixture was removed after a 1204 s timeout, without changing theorem-level all-size claims. |
-| Forbidden-token/Mathlib hygiene scan | No matches in 1.4 s. |
-| `native_decide` / `Lean.ofReduceBool` scan | No matches in 0.4 s. |
+| Runtime-health identity and command probes | Pass: `git status --short --branch` 0.4 s; `git rev-parse HEAD` 0.4 s; branch `git rev-parse` 0.4 s; `git ls-remote --heads` 0.8 s; focused declaration `rg` 0.4 s; small `Get-Content` 0.5 s; first legitimate small `apply_patch` 3.4 s. No abnormal Git, read orchestration, or patch latency. |
+| Focused ReviewerPhysical, RAM, StoreParam, ModelAdequacy, SuccinctClassic, headline, example, and validation builds | Pass in 191.3 s; no new linter warnings. |
+| `lake build RMQPaper` | Pass in 6.2 s. |
+| `lake build` | Pass in 32.1 s, 197-target graph. |
+| `lake build RMQExamples` | Pass in 4.8 s, 187-target graph. |
+| `lake env lean scripts/axiom_check.lean` | Pass in 142.4 s; load-bearing declarations printed with only expected Lean principles. |
+| `lake env lean scripts/wordram_axiom_check.lean` | Pass in 63.6 s. |
+| `lake env lean scripts/headline_axiom_check.lean` | Pass in 67.4 s. |
+| `lake exe rmq_succinct_classic_validate` | Pass in 7.6 s: 498 valid/invalid windows across 43 deterministic inputs. |
+| `lake exe rmq_succinct_classic_cost_harness` | Pass in 20.5 s: invalid, same-block, and cross-block windows under exact canonical bound `328`. |
+| Forbidden-token/Mathlib hygiene scan | No matches in 1.0 s. |
+| `native_decide` / `Lean.ofReduceBool` scan | No matches in 0.2 s. |
 | Canonical-claim stale wording scan | No current/paper-facing `4144`, unconditional U2-complete, or appended-sibling wording. |
-| `git diff --check` | Pass in 0.5 s; only Windows line-ending notices. |
-| `scripts/design_decision_check.ps1` | Final pass in 2.3 s across 33 changed files. |
-| `scripts/claim_drift_scan.ps1` | Final pass in 3.4 s: 437 reviewed hits, 0 strict failures. |
-| `powershell -ExecutionPolicy Bypass -File scripts\\gate.ps1` | `GATE PASS` in 284.1 s. |
-| Git Bash `scripts/reproduce_artifact.sh` | Pass in 285.6 s with Lean 4.22.0. Bash lacked `pwsh` and explicitly skipped its nested gate outside CI; the standalone PowerShell gate immediately above passed. |
+| `git diff --check` | Pass in 0.2 s; only Windows line-ending notices. |
+| `scripts/design_decision_check.ps1` | Final pass in 1.4 s across 26 changed files. |
+| `scripts/claim_drift_scan.ps1` | Final pass in 1.9 s: 491 reviewed hits, 0 strict failures. |
+| `powershell -ExecutionPolicy Bypass -File scripts\\gate.ps1` | Post-ledger `GATE PASS` in 226 s. |
+| Local artifact reproduction | Not run: a direct `Get-Command bash` probe reported that Bash is unavailable after 8.0 s. The required remote Artifact Reproducibility workflow remains part of the post-push gate. |
 
-Controlled status: worker candidate only. Coordinator reconstruction and a
+Controlled status: candidate evidence only. Coordinator reconstruction and a
 fresh blind exact-commit audit are the mandatory next consumer.

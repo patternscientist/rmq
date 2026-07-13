@@ -11,7 +11,13 @@ The existing supplied-store evaluator reads the supplied flat physical store
 through a checked address-translation adapter. Agreement on the first
 execution's consumed physical footprint determines the complete physical
 trace; the refinement preserves order, failures, and repetitions, while a
-checked consumed-address disagreement changes the execution. No-synthetic,
+projection theorem identifies the answer with the translated supplied-store
+evaluator value and a decisive singleton corruption changes `some 0` to
+`none`. Operational read/source theorems connect every emitted read and every
+counted source to actual evaluator branches; dead additions, used-source
+removals, forged labels, and vacuous predicates are checked separately. Raw
+adequacy is exposed only for valid public ranges; invalid ranges share the
+guarded none/empty/zero packet. No-synthetic,
 linear-capacity, logarithmic-width, stored/returned-word, physical-address, and
 primitive-operand bounds are checked at the composed consumer. The transitional
 all-size cap is exactly `328`; older route constants are compatibility history.

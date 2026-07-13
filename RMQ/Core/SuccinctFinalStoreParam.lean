@@ -2941,6 +2941,24 @@ def concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
   , trace := logicalResult.trace.map
       (concreteBPNativeSuccinctRMQReviewerPhysicalizeEvent shape) }
 
+/--
+The result projection of flat physical execution is literally the result
+projection computed by the existing supplied-store evaluator after checked
+address translation.  This exposes the semantic dependency directly, without
+using equality of aggregate trace records as a proxy for answer dependency.
+-/
+theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_value_eq_suppliedStoreEvaluator
+    (shape : Cartesian.CartesianShape) (physicalStore : WordRAM.ReadStore)
+    (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+      shape physicalStore left right).value =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape
+        (concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter
+          shape physicalStore)
+        left right).value := by
+  rfl
+
 /-- Canonical genuine flat physical execution. -/
 def concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
     (shape : Cartesian.CartesianShape) (left right : Nat) :
@@ -2948,6 +2966,45 @@ def concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
   concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
     shape (concreteBPNativeSuccinctRMQReviewerPhysicalReadStore shape)
     left right
+
+/-- Canonical flat store with one chosen physical address made unreadable.
+This is a scoped semantic-corruption fixture, not part of the construction. -/
+def concreteBPNativeSuccinctRMQReviewerPhysicalDropAddressStore
+    (shape : Cartesian.CartesianShape) (droppedAddress : Nat) :
+    WordRAM.ReadStore where
+  readWord? segment address :=
+    if segment = 0 && address = droppedAddress then
+      none
+    else
+      (concreteBPNativeSuccinctRMQReviewerPhysicalReadStore shape).readWord?
+        segment address
+
+/--
+If two translated supplied-store evaluations differ at the result projection,
+the corresponding flat physical executions differ at that same projection.
+The theorem is intentionally restricted to stores and queries for which the
+decisive evaluator results differ; it does not claim that every consumed word
+is decisive for every query.
+-/
+theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_value_ne_of_suppliedStoreEvaluator_value_ne
+    (shape : Cartesian.CartesianShape) (storeA storeB : WordRAM.ReadStore)
+    (left right : Nat)
+    (hneq :
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape
+        (concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter shape storeA)
+        left right).value ≠
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape
+        (concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter shape storeB)
+        left right).value) :
+    (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+      shape storeA left right).value ≠
+    (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+      shape storeB left right).value := by
+  simpa only [
+    concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_value_eq_suppliedStoreEvaluator]
+    using hneq
 
 /-- Ordered physical addresses consumed by a supplied flat-store execution.
 Repeated reads and failed/dead reads are retained in execution order. -/

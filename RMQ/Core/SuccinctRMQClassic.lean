@@ -429,6 +429,55 @@ theorem reviewerPhysicalTraceResultWithStore_valid
         (cartesianShape xs) store left right := by
   simp [reviewerPhysicalTraceResultWithStore, withValidRange, hvalid]
 
+/-- On a valid public range, the answer projection is literally the answer
+computed by the existing supplied-store evaluator after physical-address
+translation. -/
+theorem reviewerPhysicalTraceResultWithStore_value_eq_suppliedStoreEvaluator_of_valid
+    (xs : List Int) (store : WordRAM.ReadStore) (left right : Nat)
+    (hvalid : ValidRange xs left right) :
+    (reviewerPhysicalTraceResultWithStore xs store left right).value =
+      (SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        (cartesianShape xs)
+        (SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter
+          (cartesianShape xs) store)
+        left right).value := by
+  rw [reviewerPhysicalTraceResultWithStore_valid xs store left right hvalid]
+  exact
+    SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_value_eq_suppliedStoreEvaluator
+      (cartesianShape xs) store left right
+
+/-- Projection-specific dependency transfer.  It is deliberately quantified
+only over pairs of valid supplied-store executions whose translated evaluator
+answers differ; it does not claim that every consumed word is decisive. -/
+theorem reviewerPhysicalTraceResultWithStore_value_ne_of_suppliedStoreEvaluator_value_ne_of_valid
+    (xs : List Int) (storeA storeB : WordRAM.ReadStore) (left right : Nat)
+    (hvalid : ValidRange xs left right)
+    (hneq :
+      (SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        (cartesianShape xs)
+        (SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter
+          (cartesianShape xs) storeA)
+        left right).value ≠
+      (SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        (cartesianShape xs)
+        (SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter
+          (cartesianShape xs) storeB)
+        left right).value) :
+    (reviewerPhysicalTraceResultWithStore xs storeA left right).value ≠
+      (reviewerPhysicalTraceResultWithStore xs storeB left right).value := by
+  rw [reviewerPhysicalTraceResultWithStore_valid xs storeA left right hvalid,
+    reviewerPhysicalTraceResultWithStore_valid xs storeB left right hvalid]
+  exact
+    SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_value_ne_of_suppliedStoreEvaluator_value_ne
+      (cartesianShape xs) storeA storeB left right hneq
+
+/-- Public corruption fixture: make one translated physical address
+unreadable while leaving every other canonical physical word unchanged. -/
+abbrev reviewerPhysicalDropAddressStore
+    (xs : List Int) (address : Nat) : WordRAM.ReadStore :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalDropAddressStore
+    (cartesianShape xs) address
+
 /-- On a valid range the canonical list-facing physical evaluator is the
 canonical raw flat physical execution. -/
 theorem reviewerPhysicalTraceResult_valid
@@ -550,8 +599,9 @@ def FlatPayloadStoreNoSyntheticExecutionStory
   SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerPayload
       (cartesianShape xs) =
       buildPayload xs /\
-    SuccinctFinal.ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
-      (cartesianShape xs) left right /\
+    (ValidRange xs left right ->
+      SuccinctFinal.ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
+        (cartesianShape xs) left right) /\
     SuccinctSpace.flattenPayloadWords
         (reviewerPhysicalWords xs) = buildPayload xs /\
     ((reviewerPhysicalTraceResult xs left right).value =
@@ -573,13 +623,37 @@ def FlatPayloadStoreNoSyntheticExecutionStory
           (reviewerPhysicalReadStore xs) storeB left right ->
         reviewerPhysicalTraceResult xs left right =
           reviewerPhysicalTraceResultWithStore xs storeB left right) /\
-    (forall (storeB : WordRAM.ReadStore) address wordA?,
-      WordRAM.TraceEvent.readWord 0 address wordA? ∈
-          (reviewerPhysicalTraceResult xs left right).trace ->
-        (reviewerPhysicalReadStore xs).readWord? 0 address ≠
-            storeB.readWord? 0 address ->
-          reviewerPhysicalTraceResult xs left right ≠
-            reviewerPhysicalTraceResultWithStore xs storeB left right) /\
+    (forall store : WordRAM.ReadStore,
+      ValidRange xs left right ->
+        (reviewerPhysicalTraceResultWithStore xs store left right).value =
+          (SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+            (cartesianShape xs)
+            (SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter
+              (cartesianShape xs) store)
+            left right).value) /\
+    (forall storeA storeB : WordRAM.ReadStore,
+      ValidRange xs left right ->
+      (SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        (cartesianShape xs)
+        (SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter
+          (cartesianShape xs) storeA)
+        left right).value ≠
+      (SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        (cartesianShape xs)
+        (SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter
+          (cartesianShape xs) storeB)
+        left right).value ->
+        (reviewerPhysicalTraceResultWithStore xs storeA left right).value ≠
+          (reviewerPhysicalTraceResultWithStore xs storeB left right).value) /\
+    (Not (ValidRange xs left right) ->
+      queryTraceResult xs left right = WordRAM.TraceResult.pure none /\
+      reviewerPhysicalTraceResult xs left right =
+        WordRAM.TraceResult.pure none /\
+      queryCosted xs left right = Costed.pure none /\
+      reviewerPhysicalFootprint xs left right = [] /\
+      forall store : WordRAM.ReadStore,
+        reviewerPhysicalTraceResultWithStore xs store left right =
+          WordRAM.TraceResult.pure none) /\
     (forall event,
       List.Mem event (reviewerPhysicalTraceResult xs left right).trace ->
         event.matchesReadStore
@@ -604,8 +678,9 @@ theorem flatPayloadStoreNoSyntheticExecutionStory
     FlatPayloadStoreNoSyntheticExecutionStory xs left right := by
   unfold FlatPayloadStoreNoSyntheticExecutionStory
   refine ⟨rfl,
-    SuccinctFinal.concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
-      (cartesianShape xs) left right, ?_, ?_, rfl, ?_, ?_, ?_, ?_, ?_, ?_⟩
+    (fun _ =>
+      SuccinctFinal.concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
+        (cartesianShape xs) left right), ?_, ?_, rfl, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
   · simpa [reviewerPhysicalWords, buildPayload] using
       SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases
         (cartesianShape xs)
@@ -622,11 +697,25 @@ theorem flatPayloadStoreNoSyntheticExecutionStory
     exact
       reviewerPhysicalTraceResultWithStore_eq_of_orderedReadFootprint
         xs (reviewerPhysicalReadStore xs) storeB left right hagree
-  · intro storeB address wordA? hmem hneq
+  · intro store hvalid
     exact
-      reviewerPhysicalTraceResultWithStore_ne_of_consumed_read_disagreement
-        xs (reviewerPhysicalReadStore xs) storeB left right address wordA?
-        hmem hneq
+      reviewerPhysicalTraceResultWithStore_value_eq_suppliedStoreEvaluator_of_valid
+        xs store left right hvalid
+  · intro storeA storeB hvalid hneq
+    exact
+      reviewerPhysicalTraceResultWithStore_value_ne_of_suppliedStoreEvaluator_value_ne_of_valid
+        xs storeA storeB left right hvalid hneq
+  · intro hbad
+    refine ⟨queryTraceResult_invalid xs left right hbad,
+      reviewerPhysicalTraceResult_invalid xs left right hbad,
+      queryCosted_invalid xs left right hbad, ?_, ?_⟩
+    · unfold reviewerPhysicalFootprint reviewerPhysicalFootprintWithStore
+      rw [reviewerPhysicalTraceResultWithStore_invalid xs
+        (reviewerPhysicalReadStore xs) left right hbad]
+      rfl
+    · intro store
+      exact reviewerPhysicalTraceResultWithStore_invalid
+        xs store left right hbad
   · intro event hmem
     by_cases hvalid : ValidRange xs left right
     · have hraw : event ∈
@@ -686,6 +775,32 @@ theorem flatPayloadStoreNoSyntheticExecutionStory
         simpa [reviewerPhysicalTraceResult_invalid xs left right hvalid,
           WordRAM.TraceResult.pure] using hmem
       exact List.not_mem_nil hnil
+
+/-- The raw shape-level adequacy packet is consumed by the public story only
+on the validity domain of the guarded list execution. -/
+theorem flatPayloadStoreNoSyntheticExecutionStory_rawAdequacy_of_valid
+    (xs : List Int) (left right : Nat)
+    (hvalid : ValidRange xs left right) :
+    SuccinctFinal.ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
+      (cartesianShape xs) left right :=
+  (flatPayloadStoreNoSyntheticExecutionStory xs left right).2.1 hvalid
+
+/-- On every invalid public range, result, trace, cost, footprint, and every
+supplied-flat-store execution are the same guarded empty execution. -/
+theorem flatPayloadStoreNoSyntheticExecutionStory_invalid_semantics
+    (xs : List Int) (left right : Nat)
+    (hbad : ¬ ValidRange xs left right) :
+    queryTraceResult xs left right = WordRAM.TraceResult.pure none ∧
+      reviewerPhysicalTraceResult xs left right =
+        WordRAM.TraceResult.pure none ∧
+      queryCosted xs left right = Costed.pure none ∧
+      reviewerPhysicalFootprint xs left right = [] ∧
+      ∀ store : WordRAM.ReadStore,
+        reviewerPhysicalTraceResultWithStore xs store left right =
+          WordRAM.TraceResult.pure none := by
+  exact
+    (flatPayloadStoreNoSyntheticExecutionStory xs left right).2.2.2.2.2.2.2.2.1
+      hbad
 
 /--
 Shape-only local queries over `Cartesian.shape xs` return the same leftmost
@@ -938,7 +1053,7 @@ theorem queryCosted_leftmost
 /--
 Classic public theorem over ordinary lists.
 
-For every `xs : List Int`, `buildPayload xs` has length
+For every `xs : List Int`, `buildPayload xs` has length at most
 `2 * xs.length + overhead xs.length` with `overhead = o(n)`, and
 `queryCosted xs` answers valid half-open RMQ queries exactly with leftmost ties
 within the constant modeled query budget `queryCost`.

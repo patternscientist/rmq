@@ -79,6 +79,36 @@ structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
           shape segment index word
   canonical_manifest_counted_iff_live :
     forall source : ReviewerSource, source.Counted <-> source.Live
+  canonical_counted_sources_have_operational_connection :
+    forall source : ReviewerSource, source.Counted ->
+      (source = .sharedBPCode /\
+        Exists fun consumer : ReviewerSharedBPConsumer => consumer.Checked) \/
+      (Exists fun leaf : ReviewerReadLeaf => source.OperationallyOwnedBy leaf)
+  canonical_counted_sources_reach_evaluator :
+    forall source : ReviewerSource, source.Counted ->
+      (source = .sharedBPCode /\
+        Exists fun consumer : ReviewerSharedBPConsumer =>
+        Exists fun instr : WholeQueryInstr =>
+          consumer.Checked /\
+          instr ∈ concreteBPNativeSuccinctRMQWholeQueryProgram /\
+          instr.reviewerReadLeaf? = some consumer.leaf /\
+          WholeQueryInstr.reviewerReadLeafEvaluatorBranch
+            shape left right WholeQueryState.empty consumer.leaf instr) \/
+      (Exists fun leaf : ReviewerReadLeaf =>
+        Exists fun instr : WholeQueryInstr =>
+          source.OperationallyOwnedBy leaf /\
+          instr ∈ concreteBPNativeSuccinctRMQWholeQueryProgram /\
+          instr.reviewerReadLeaf? = some leaf /\
+          WholeQueryInstr.reviewerReadLeafEvaluatorBranch
+            shape left right WholeQueryState.empty leaf instr)
+  all_shared_bp_dependencies_reach_evaluator :
+    forall consumer : ReviewerSharedBPConsumer,
+      consumer.Checked ∧
+        Exists fun instr : WholeQueryInstr =>
+          instr ∈ concreteBPNativeSuccinctRMQWholeQueryProgram ∧
+          instr.reviewerReadLeaf? = some consumer.leaf ∧
+          WholeQueryInstr.reviewerReadLeafEvaluatorBranch
+            shape left right WholeQueryState.empty consumer.leaf instr
   canonical_manifest_nodup :
     List.Nodup concreteBPNativeSuccinctRMQReviewerPhysicalSources
   canonical_regions_exclusive :
@@ -96,7 +126,7 @@ structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
             shape left right).trace ->
         Exists fun source : ReviewerSource =>
           Exists fun region : Nat =>
-            source ∈ concreteBPNativeSuccinctRMQReviewerPhysicalSources /\
+            source.Counted /\
             concreteBPNativeSuccinctRMQReviewerSegmentSource? segment =
               some source /\
             source.region = region /\
@@ -105,10 +135,28 @@ structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
                   shape segment index) word? ∈
               (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
                 shape left right).trace
-  canonical_sources_have_consumer_or_shared_bp :
-    forall source : ReviewerSource, source.Counted ->
-      source = .sharedBPCode \/
-        Exists fun consumer => source.consumer? = some consumer
+  every_emitted_read_has_operational_source :
+    forall {segment index : Nat} {word? : Option WordRAM.Word},
+      WordRAM.TraceEvent.readWord segment index word? ∈
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+            shape left right).trace ->
+        Exists fun source : ReviewerSource =>
+        Exists fun leaf : ReviewerReadLeaf =>
+        Exists fun instr : WholeQueryInstr =>
+          concreteBPNativeSuccinctRMQReviewerSegmentSource? segment =
+              some source /\
+          concreteBPNativeSuccinctRMQReviewerSegmentLeaf? segment =
+              some leaf /\
+          source.Counted /\ source.Live /\
+          source.OperationallyOwnedBy leaf /\
+          instr ∈ concreteBPNativeSuccinctRMQWholeQueryProgram /\
+          instr.reviewerReadLeaf? = some leaf /\
+          WholeQueryInstr.reviewerReadLeafEvaluatorBranch
+            shape left right WholeQueryState.empty leaf instr
+  operational_consumer_labels_are_derived :
+    forall {source : ReviewerSource} {leaf : ReviewerReadLeaf},
+      source ≠ .sharedBPCode -> source.OperationallyOwnedBy leaf ->
+        source.consumer? = some leaf.consumer
   canonical_manifest_excludes_legacy_close :
     forall (source : ReviewerSource),
       source ∈ concreteBPNativeSuccinctRMQReviewerPhysicalSources ->
@@ -187,17 +235,29 @@ structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
             shape left right =
           concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
             shape storeB left right
-  physical_store_disagreement_observable :
-    forall (storeB : WordRAM.ReadStore) address wordA?,
-      WordRAM.TraceEvent.readWord 0 address wordA? ∈
-          (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
-            shape left right).trace ->
-        (concreteBPNativeSuccinctRMQReviewerPhysicalReadStore shape).readWord?
-            0 address ≠ storeB.readWord? 0 address ->
-          concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
-              shape left right ≠
-            concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
-              shape storeB left right
+  physical_value_is_supplied_store_evaluator_value :
+    forall physicalStore : WordRAM.ReadStore,
+      (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+        shape physicalStore left right).value =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape
+        (concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter
+          shape physicalStore)
+        left right).value
+  physical_value_dependency :
+    forall storeA storeB : WordRAM.ReadStore,
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape
+        (concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter shape storeA)
+        left right).value ≠
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape
+        (concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter shape storeB)
+        left right).value ->
+      (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+        shape storeA left right).value ≠
+      (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore
+        shape storeB left right).value
   reviewer_capacity_linear :
     concreteBPNativeSuccinctRMQReviewerCapacity shape.size =
       400000 * (shape.size + 1)
@@ -265,6 +325,16 @@ theorem concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
             shape left right hmem
       canonical_manifest_counted_iff_live :=
         concreteBPNativeSuccinctRMQReviewerSource_counted_iff_live
+      canonical_counted_sources_have_operational_connection :=
+        concreteBPNativeSuccinctRMQReviewerSource_counted_operational_connection
+      canonical_counted_sources_reach_evaluator := by
+        intro source hcounted
+        exact
+          concreteBPNativeSuccinctRMQReviewerSource_counted_evaluator_connection
+            shape left right WholeQueryState.empty source hcounted
+      all_shared_bp_dependencies_reach_evaluator :=
+        concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_evaluator_connection
+          shape left right WholeQueryState.empty
       canonical_manifest_nodup :=
         concreteBPNativeSuccinctRMQReviewerPhysicalSources_nodup
       canonical_regions_exclusive :=
@@ -276,8 +346,11 @@ theorem concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
         exact
           concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_read_has_listed_region
             shape left right segment index word? hmem
-      canonical_sources_have_consumer_or_shared_bp :=
-        concreteBPNativeSuccinctRMQReviewerSource_counted_consumer_or_sharedBP
+      every_emitted_read_has_operational_source :=
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_operational_source
+          shape left right
+      operational_consumer_labels_are_derived :=
+        concreteBPNativeSuccinctRMQReviewerSource_operational_owner_consumer
       canonical_manifest_excludes_legacy_close :=
         concreteBPNativeSuccinctRMQReviewerPhysicalSources_exclude_legacy_close
       compatibility_tail_unreachable :=
@@ -316,12 +389,16 @@ theorem concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
           concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_eq_of_orderedFootprint
             shape (concreteBPNativeSuccinctRMQReviewerPhysicalReadStore shape)
             storeB left right hagree
-      physical_store_disagreement_observable := by
-        intro storeB address wordA? hmem hneq
+      physical_value_is_supplied_store_evaluator_value := by
+        intro physicalStore
         exact
-          concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_ne_of_consumed_read_disagreement
-            shape (concreteBPNativeSuccinctRMQReviewerPhysicalReadStore shape)
-            storeB left right address wordA? hmem hneq
+          concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_value_eq_suppliedStoreEvaluator
+            shape physicalStore left right
+      physical_value_dependency := by
+        intro storeA storeB hneq
+        exact
+          concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_value_ne_of_suppliedStoreEvaluator_value_ne
+            shape storeA storeB left right hneq
       reviewer_capacity_linear :=
         concreteBPNativeSuccinctRMQReviewerCapacity_linear shape.size
       physical_words_fit_capacity :=

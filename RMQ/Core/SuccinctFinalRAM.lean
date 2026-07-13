@@ -3276,6 +3276,78 @@ def evalGlobalWordTrace (shape : Cartesian.CartesianShape)
       | none =>
           WordRAM.TraceResult.pure (state.setOpt dst none)
 
+/-- Read-producing reviewer leaf selected by the actual global evaluator
+instruction branch.  Output-only instructions have no read leaf. -/
+def reviewerReadLeaf? : WholeQueryInstr -> Option ReviewerReadLeaf
+  | .selectClose _ _ => some .selectClose
+  | .lcaClose _ _ _ => some .canonicalClose
+  | .rankCloseIfSome _ _ _ => some .rankClose
+  | .outputPredIfSome _ _ _ => none
+
+/--
+Checked expansion of a reviewer leaf into the branch executed by
+`evalGlobalWordTrace`.  This predicate mentions the actual evaluator result,
+so a free-standing controller label cannot inhabit it.
+ -/
+def reviewerReadLeafEvaluatorBranch
+    (shape : Cartesian.CartesianShape) (left right : Nat)
+    (state : WholeQueryState) (leaf : ReviewerReadLeaf)
+    (instr : WholeQueryInstr) : Prop :=
+  match leaf with
+  | .selectClose =>
+      ∃ dst idx,
+        instr = .selectClose dst idx ∧
+        instr.evalGlobalWordTrace shape left right state =
+          WordRAM.TraceResult.map
+            (fun close? => state.setOpt dst close?)
+            (concreteBPNativeSelectCloseGlobalWordTraceResult shape
+              (idx.eval left right state))
+  | .canonicalClose =>
+      ∃ dst leftReg rightReg,
+        instr = .lcaClose dst leftReg rightReg ∧
+        instr.evalGlobalWordTrace shape left right state =
+          match state.opt leftReg, state.opt rightReg with
+          | some leftClose, some rightClose =>
+              WordRAM.TraceResult.map
+                (fun answer? => state.setOpt dst answer?)
+                (concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
+                  shape leftClose rightClose)
+          | _, _ => WordRAM.TraceResult.pure (state.setOpt dst none)
+  | .rankClose =>
+      ∃ dst guard pos,
+        instr = .rankCloseIfSome dst guard pos ∧
+        instr.evalGlobalWordTrace shape left right state =
+          match state.opt guard with
+          | some _ =>
+              WordRAM.TraceResult.map
+                (fun closeRank => state.setNat dst closeRank)
+                (concreteBPNativeRankCloseWordTraceResultAtSegment
+                  shape concreteBPNativeRankCloseTraceSegmentBase
+                  (pos.eval left right state))
+          | none => WordRAM.TraceResult.pure state
+
+theorem reviewerReadLeaf?_some_evaluatorBranch
+    (shape : Cartesian.CartesianShape) (left right : Nat)
+    (state : WholeQueryState) (leaf : ReviewerReadLeaf)
+    (instr : WholeQueryInstr)
+    (hleaf : instr.reviewerReadLeaf? = some leaf) :
+    reviewerReadLeafEvaluatorBranch shape left right state leaf instr := by
+  cases instr with
+  | selectClose dst idx =>
+      simp [reviewerReadLeaf?] at hleaf
+      subst leaf
+      exact ⟨dst, idx, rfl, rfl⟩
+  | lcaClose dst leftReg rightReg =>
+      simp [reviewerReadLeaf?] at hleaf
+      subst leaf
+      exact ⟨dst, leftReg, rightReg, rfl, rfl⟩
+  | rankCloseIfSome dst guard pos =>
+      simp [reviewerReadLeaf?] at hleaf
+      subst leaf
+      exact ⟨dst, guard, pos, rfl, rfl⟩
+  | outputPredIfSome dst guard src =>
+      simp [reviewerReadLeaf?] at hleaf
+
 theorem evalGlobalWordTrace_refines_eval
     (shape : Cartesian.CartesianShape)
     (left right : Nat) (instr : WholeQueryInstr)
@@ -4011,6 +4083,76 @@ def concreteBPNativeSuccinctRMQWholeQueryProgram : WholeQueryProgram :=
       (.add (.optNatD .answerClose 0) (.const 1))
   , WholeQueryInstr.outputPredIfSome .output .answerClose .closeRank
   ]
+
+/-- Every operational reviewer leaf is present in the concrete closed query
+program, as classified from the instruction constructors themselves. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryProgram_contains_reviewerReadLeaf
+    (leaf : ReviewerReadLeaf) :
+    ∃ instr,
+      instr ∈ concreteBPNativeSuccinctRMQWholeQueryProgram ∧
+      instr.reviewerReadLeaf? = some leaf := by
+  cases leaf <;>
+    simp [concreteBPNativeSuccinctRMQWholeQueryProgram,
+      WholeQueryInstr.reviewerReadLeaf?]
+
+/-- Every checked shared-BP dependency reaches its corresponding actual
+read-producing branch in the closed evaluator program. -/
+theorem concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_evaluator_connection
+    (shape : Cartesian.CartesianShape) (left right : Nat)
+    (state : WholeQueryState) (consumer : ReviewerSharedBPConsumer) :
+    consumer.Checked ∧
+      ∃ instr,
+        instr ∈ concreteBPNativeSuccinctRMQWholeQueryProgram ∧
+        instr.reviewerReadLeaf? = some consumer.leaf ∧
+        WholeQueryInstr.reviewerReadLeafEvaluatorBranch
+          shape left right state consumer.leaf instr := by
+  refine ⟨concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_all_checked
+      consumer, ?_⟩
+  rcases
+      concreteBPNativeSuccinctRMQWholeQueryProgram_contains_reviewerReadLeaf
+        consumer.leaf with ⟨instr, hmem, hleaf⟩
+  exact ⟨instr, hmem, hleaf,
+    WholeQueryInstr.reviewerReadLeaf?_some_evaluatorBranch
+      shape left right state consumer.leaf instr hleaf⟩
+
+/-- Counted-source liveness reaches an actual read-producing branch of the
+closed evaluator.  Shared BP ownership additionally carries the checked
+segment-0/segment-19 dependency witness. -/
+theorem concreteBPNativeSuccinctRMQReviewerSource_counted_evaluator_connection
+    (shape : Cartesian.CartesianShape) (left right : Nat)
+    (state : WholeQueryState) (source : ReviewerSource)
+    (hcounted : source.Counted) :
+    (source = .sharedBPCode ∧
+      ∃ consumer : ReviewerSharedBPConsumer,
+      ∃ instr,
+        consumer.Checked ∧
+        instr ∈ concreteBPNativeSuccinctRMQWholeQueryProgram ∧
+        instr.reviewerReadLeaf? = some consumer.leaf ∧
+        WholeQueryInstr.reviewerReadLeafEvaluatorBranch
+          shape left right state consumer.leaf instr) ∨
+    (∃ leaf : ReviewerReadLeaf,
+      ∃ instr,
+        source.OperationallyOwnedBy leaf ∧
+        instr ∈ concreteBPNativeSuccinctRMQWholeQueryProgram ∧
+        instr.reviewerReadLeaf? = some leaf ∧
+        WholeQueryInstr.reviewerReadLeafEvaluatorBranch
+          shape left right state leaf instr) := by
+  rcases
+      concreteBPNativeSuccinctRMQReviewerSource_counted_operational_connection
+        source hcounted with hshared | ⟨leaf, howned⟩
+  · rcases hshared with ⟨hsource, consumer, hchecked⟩
+    rcases
+        concreteBPNativeSuccinctRMQWholeQueryProgram_contains_reviewerReadLeaf
+          consumer.leaf with ⟨instr, hmem, hleaf⟩
+    refine Or.inl ⟨hsource, consumer, instr, hchecked, hmem, hleaf, ?_⟩
+    exact WholeQueryInstr.reviewerReadLeaf?_some_evaluatorBranch
+      shape left right state consumer.leaf instr hleaf
+  · rcases
+        concreteBPNativeSuccinctRMQWholeQueryProgram_contains_reviewerReadLeaf
+          leaf with ⟨instr, hmem, hleaf⟩
+    refine Or.inr ⟨leaf, instr, howned, hmem, hleaf, ?_⟩
+    exact WholeQueryInstr.reviewerReadLeaf?_some_evaluatorBranch
+      shape left right state leaf instr hleaf
 
 /--
 Final BP-native RMQ query as one closed whole-query control program.
@@ -5518,6 +5660,51 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_segment_
           WholeQueryState.empty)
         (WordRAM.TraceEvent.readWord segment index word?) hmem
   exact hlive
+
+/-- Every emitted reviewer read resolves to a counted operational source and
+to an actual read-producing branch present in the closed evaluator program. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_operational_source
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    ∀ {segment index : Nat} {word? : Option WordRAM.Word},
+      WordRAM.TraceEvent.readWord segment index word? ∈
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+            shape left right).trace →
+        ∃ source : ReviewerSource,
+        ∃ leaf : ReviewerReadLeaf,
+        ∃ instr : WholeQueryInstr,
+          concreteBPNativeSuccinctRMQReviewerSegmentSource? segment =
+              some source ∧
+          concreteBPNativeSuccinctRMQReviewerSegmentLeaf? segment =
+              some leaf ∧
+          source.Counted ∧
+          source.Live ∧
+          source.OperationallyOwnedBy leaf ∧
+          instr ∈ concreteBPNativeSuccinctRMQWholeQueryProgram ∧
+          instr.reviewerReadLeaf? = some leaf ∧
+          WholeQueryInstr.reviewerReadLeafEvaluatorBranch
+            shape left right WholeQueryState.empty leaf instr := by
+  intro segment index word? hmem
+  have hsegment : segment < 21 :=
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_segment_lt
+      shape left right hmem
+  rcases
+      (concreteBPNativeSuccinctRMQReviewerSegmentSource?_coverage segment).2
+        hsegment with ⟨source, hsource⟩
+  rcases
+      (concreteBPNativeSuccinctRMQReviewerSegmentLeaf?_coverage segment).2
+        hsegment with ⟨leaf, hleafSegment⟩
+  have hcounted : source.Counted :=
+    concreteBPNativeSuccinctRMQReviewerSegmentSource_counted hsource
+  have hlive : source.Live :=
+    (concreteBPNativeSuccinctRMQReviewerSource_counted_iff_live source).1
+      hcounted
+  rcases
+      concreteBPNativeSuccinctRMQWholeQueryProgram_contains_reviewerReadLeaf
+        leaf with ⟨instr, hinstr, hleafInstr⟩
+  refine ⟨source, leaf, instr, hsource, hleafSegment, hcounted, hlive,
+    ⟨segment, hsource, hleafSegment⟩, hinstr, hleafInstr, ?_⟩
+  exact WholeQueryInstr.reviewerReadLeaf?_some_evaluatorBranch
+    shape left right WholeQueryState.empty leaf instr hleafInstr
 
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_read_or_primitive
     (shape : Cartesian.CartesianShape)

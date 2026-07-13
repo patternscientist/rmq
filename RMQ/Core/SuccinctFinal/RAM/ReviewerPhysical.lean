@@ -67,6 +67,108 @@ def concreteBPNativeSuccinctRMQReviewerPhysicalSources : List ReviewerSource :=
   , .selectSparseRelative
   , .canonicalClose ]
 
+/--
+The actual globally segmented evaluator leaves that can issue reviewer reads.
+This type follows the three read-producing branches of
+`WholeQueryInstr.evalGlobalWordTrace`; the RAM module proves that connection
+against the concrete closed program.
+ -/
+inductive ReviewerReadLeaf where
+  | selectClose
+  | rankClose
+  | canonicalClose
+deriving DecidableEq
+
+/-- Complete typed logical-segment-to-source map for the canonical route. -/
+def concreteBPNativeSuccinctRMQReviewerSegmentSource? :
+    Nat -> Option ReviewerSource
+  | 0 => some .sharedBPCode
+  | 1 => some .selectSuperBaseOccurrence
+  | 2 => some .selectSuperBaseWordIndex
+  | 3 => some .selectSuperRankBefore
+  | 4 => some .selectSuperFirstOffset
+  | 5 => some .selectLocalBaseOccurrence
+  | 6 => some .selectLocalBaseWordIndex
+  | 7 => some .selectLocalRankBefore
+  | 8 => some .selectLocalFirstOffset
+  | 9 => some .selectLongFlagRankSuperTrue
+  | 10 => some .selectLongFlagRankBlockTrue
+  | 11 => some .selectLongFlagBits
+  | 12 => some .selectLongRelative
+  | 13 => some .selectSparseRankSuperTrue
+  | 14 => some .selectSparseRankBlockTrue
+  | 15 => some .selectSparseFlagBits
+  | 16 => some .selectSparseRelative
+  | 17 => some .finalRankSuperFalse
+  | 18 => some .finalRankBlockFalse
+  | 19 => some .sharedBPCode
+  | 20 => some .canonicalClose
+  | _ + 21 => none
+
+/-- Read-producing evaluator leaf selected by each live logical segment. -/
+def concreteBPNativeSuccinctRMQReviewerSegmentLeaf? :
+    Nat -> Option ReviewerReadLeaf
+  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
+      15 | 16 => some .selectClose
+  | 17 | 18 | 19 => some .rankClose
+  | 20 => some .canonicalClose
+  | _ + 21 => none
+
+/-- A source is owned by a leaf exactly when a logical segment read by that
+leaf resolves to the source in the canonical source map. -/
+def ReviewerSource.OperationallyOwnedBy
+    (source : ReviewerSource) (leaf : ReviewerReadLeaf) : Prop :=
+  ∃ segment,
+    concreteBPNativeSuccinctRMQReviewerSegmentSource? segment = some source ∧
+    concreteBPNativeSuccinctRMQReviewerSegmentLeaf? segment = some leaf
+
+/-- The evaluator leaves that deliberately share the single BP-code
+physical source. -/
+inductive ReviewerSharedBPConsumer where
+  | selectClose
+  | rankClose
+  | canonicalClose
+deriving DecidableEq
+
+def ReviewerSharedBPConsumer.segment : ReviewerSharedBPConsumer -> Nat
+  | .selectClose => 0
+  | .rankClose => 19
+  | .canonicalClose => 0
+
+def ReviewerSharedBPConsumer.leaf :
+    ReviewerSharedBPConsumer -> ReviewerReadLeaf
+  | .selectClose => .selectClose
+  | .rankClose => .rankClose
+  | .canonicalClose => .canonicalClose
+
+/-- Representative segment proving that the named read-producing leaf is part
+of the operational segment universe.  Canonical close shares BP segment zero
+for local decoding and has its own representative canonical segment 20. -/
+def ReviewerSharedBPConsumer.leafSegment :
+    ReviewerSharedBPConsumer -> Nat
+  | .selectClose => 0
+  | .rankClose => 19
+  | .canonicalClose => 20
+
+/-- A shared-BP dependency is checked against both operational maps. -/
+def ReviewerSharedBPConsumer.Checked
+    (consumer : ReviewerSharedBPConsumer) : Prop :=
+  concreteBPNativeSuccinctRMQReviewerSegmentSource? consumer.segment =
+      some .sharedBPCode ∧
+    concreteBPNativeSuccinctRMQReviewerSegmentLeaf? consumer.leafSegment =
+      some consumer.leaf
+
+/-- All select, rank, and canonical-close BP-code dependencies are checked
+against the source map and the operational leaf universe. -/
+theorem concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_all_checked
+    (consumer : ReviewerSharedBPConsumer) : consumer.Checked := by
+  cases consumer <;>
+    simp [ReviewerSharedBPConsumer.Checked,
+      ReviewerSharedBPConsumer.segment, ReviewerSharedBPConsumer.leaf,
+      ReviewerSharedBPConsumer.leafSegment,
+      concreteBPNativeSuccinctRMQReviewerSegmentSource?,
+      concreteBPNativeSuccinctRMQReviewerSegmentLeaf?]
+
 /-- Every constructor of the canonical live-source universe is listed. -/
 theorem concreteBPNativeSuccinctRMQReviewerPhysicalSources_all
     (source : ReviewerSource) :
@@ -78,14 +180,71 @@ theorem concreteBPNativeSuccinctRMQReviewerPhysicalSources_all
 def ReviewerSource.Counted (source : ReviewerSource) : Prop :=
   source ∈ concreteBPNativeSuccinctRMQReviewerPhysicalSources
 
-/-- Every constructor is reviewer-live; compatibility sources have another type. -/
-def ReviewerSource.Live (_source : ReviewerSource) : Prop := True
+/--
+Operational reviewer liveness.  A non-shared source must be reached by a
+logical segment belonging to an actual read-producing evaluator leaf.  The BP
+code is live only through an explicitly checked shared consumer.
+ -/
+def ReviewerSource.Live (source : ReviewerSource) : Prop :=
+  (source = .sharedBPCode ∧
+      ∃ consumer : ReviewerSharedBPConsumer, consumer.Checked) ∨
+    (source ≠ .sharedBPCode ∧
+      ∃ leaf : ReviewerReadLeaf, source.OperationallyOwnedBy leaf)
+
+theorem concreteBPNativeSuccinctRMQReviewerSource_operationally_live
+    (source : ReviewerSource) : source.Live := by
+  cases source with
+  | sharedBPCode =>
+      exact Or.inl ⟨rfl, .selectClose,
+        concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_all_checked
+          .selectClose⟩
+  | finalRankSuperFalse =>
+      exact Or.inr ⟨by decide, .rankClose, 17, rfl, rfl⟩
+  | finalRankBlockFalse =>
+      exact Or.inr ⟨by decide, .rankClose, 18, rfl, rfl⟩
+  | selectSuperBaseOccurrence =>
+      exact Or.inr ⟨by decide, .selectClose, 1, rfl, rfl⟩
+  | selectSuperBaseWordIndex =>
+      exact Or.inr ⟨by decide, .selectClose, 2, rfl, rfl⟩
+  | selectSuperRankBefore =>
+      exact Or.inr ⟨by decide, .selectClose, 3, rfl, rfl⟩
+  | selectSuperFirstOffset =>
+      exact Or.inr ⟨by decide, .selectClose, 4, rfl, rfl⟩
+  | selectLocalBaseOccurrence =>
+      exact Or.inr ⟨by decide, .selectClose, 5, rfl, rfl⟩
+  | selectLocalBaseWordIndex =>
+      exact Or.inr ⟨by decide, .selectClose, 6, rfl, rfl⟩
+  | selectLocalRankBefore =>
+      exact Or.inr ⟨by decide, .selectClose, 7, rfl, rfl⟩
+  | selectLocalFirstOffset =>
+      exact Or.inr ⟨by decide, .selectClose, 8, rfl, rfl⟩
+  | selectLongFlagRankSuperTrue =>
+      exact Or.inr ⟨by decide, .selectClose, 9, rfl, rfl⟩
+  | selectLongFlagRankBlockTrue =>
+      exact Or.inr ⟨by decide, .selectClose, 10, rfl, rfl⟩
+  | selectLongFlagBits =>
+      exact Or.inr ⟨by decide, .selectClose, 11, rfl, rfl⟩
+  | selectLongRelative =>
+      exact Or.inr ⟨by decide, .selectClose, 12, rfl, rfl⟩
+  | selectSparseRankSuperTrue =>
+      exact Or.inr ⟨by decide, .selectClose, 13, rfl, rfl⟩
+  | selectSparseRankBlockTrue =>
+      exact Or.inr ⟨by decide, .selectClose, 14, rfl, rfl⟩
+  | selectSparseFlagBits =>
+      exact Or.inr ⟨by decide, .selectClose, 15, rfl, rfl⟩
+  | selectSparseRelative =>
+      exact Or.inr ⟨by decide, .selectClose, 16, rfl, rfl⟩
+  | canonicalClose =>
+      exact Or.inr ⟨by decide, .canonicalClose, 20, rfl, rfl⟩
 
 theorem concreteBPNativeSuccinctRMQReviewerSource_counted_iff_live
     (source : ReviewerSource) :
     source.Counted ↔ source.Live := by
-  simp [ReviewerSource.Counted, ReviewerSource.Live,
-    concreteBPNativeSuccinctRMQReviewerPhysicalSources_all]
+  constructor
+  · intro _
+    exact concreteBPNativeSuccinctRMQReviewerSource_operationally_live source
+  · intro _
+    exact concreteBPNativeSuccinctRMQReviewerPhysicalSources_all source
 
 theorem concreteBPNativeSuccinctRMQReviewerPhysicalSources_nodup :
     concreteBPNativeSuccinctRMQReviewerPhysicalSources.Nodup := by
@@ -101,6 +260,12 @@ inductive ReviewerConsumer where
   | rankClose
   | canonicalClose
 deriving DecidableEq
+
+/-- Public controller name obtained from an operational evaluator leaf. -/
+def ReviewerReadLeaf.consumer : ReviewerReadLeaf -> ReviewerConsumer
+  | .selectClose => .selectClose
+  | .rankClose => .rankClose
+  | .canonicalClose => .canonicalClose
 
 /--
 Static source ownership by the closed whole-query controller.  BP code is
@@ -129,11 +294,150 @@ def ReviewerSource.consumer? : ReviewerSource -> Option ReviewerConsumer
   | .selectSparseRelative => some .selectClose
   | .canonicalClose => some .canonicalClose
 
+/-- A consumer claim is accepted only with a segment-derived operational leaf
+witness.  The compatibility `consumer?` label alone is not evidence. -/
+def ReviewerSource.CheckedConsumerClaim
+    (source : ReviewerSource) (consumer : ReviewerConsumer) : Prop :=
+  ∃ leaf : ReviewerReadLeaf,
+    source.OperationallyOwnedBy leaf ∧ leaf.consumer = consumer
+
+/-- Every counted source has an operational connection.  The shared BP source
+uses its separately checked dependency relation; all others name an evaluator
+leaf reached through the segment map. -/
+theorem concreteBPNativeSuccinctRMQReviewerSource_counted_operational_connection
+    (source : ReviewerSource) (_hcounted : source.Counted) :
+    (source = .sharedBPCode ∧
+      ∃ consumer : ReviewerSharedBPConsumer, consumer.Checked) ∨
+    (∃ leaf : ReviewerReadLeaf, source.OperationallyOwnedBy leaf) := by
+  rcases concreteBPNativeSuccinctRMQReviewerSource_operationally_live source with
+    hshared | howned
+  · exact Or.inl hshared
+  · exact Or.inr howned.2
+
+/-- For a non-shared source, operational segment ownership determines the
+compatibility consumer label. -/
+theorem concreteBPNativeSuccinctRMQReviewerSource_operational_owner_consumer
+    {source : ReviewerSource} {leaf : ReviewerReadLeaf}
+    (hnotShared : source ≠ .sharedBPCode)
+    (howned : source.OperationallyOwnedBy leaf) :
+    source.consumer? = some leaf.consumer := by
+  rcases howned with ⟨segment, hsource, hleaf⟩
+  match segment with
+  | 0 =>
+      simp [concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hsource
+      exact (hnotShared hsource.symm).elim
+  | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 |
+      16 | 17 | 18 | 20 =>
+      simp [concreteBPNativeSuccinctRMQReviewerSegmentSource?,
+        concreteBPNativeSuccinctRMQReviewerSegmentLeaf?] at hsource hleaf
+      subst source
+      subst leaf
+      rfl
+  | 19 =>
+      simp [concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hsource
+      exact (hnotShared hsource.symm).elim
+  | _ + 21 =>
+      simp [concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hsource
+
+/-- A forged compatibility label is rejected because it cannot carry the
+segment-derived operational ownership witness. -/
+theorem concreteBPNativeSuccinctRMQReviewerSource_forged_consumer_rejected
+    (source : ReviewerSource) (actual forged : ReviewerConsumer)
+    (hactual : source.consumer? = some actual)
+    (hforged : forged ≠ actual) :
+    ¬ source.CheckedConsumerClaim forged := by
+  intro hclaim
+  rcases hclaim with ⟨leaf, howned, hleafConsumer⟩
+  have hnotShared : source ≠ .sharedBPCode := by
+    intro hshared
+    subst source
+    simp [ReviewerSource.consumer?] at hactual
+  have hderived :=
+    concreteBPNativeSuccinctRMQReviewerSource_operational_owner_consumer
+      hnotShared howned
+  have hleafActual : leaf.consumer = actual := by
+    exact Option.some.inj (hderived.symm.trans hactual)
+  exact hforged (hleafConsumer.symm.trans hleafActual)
+
 theorem concreteBPNativeSuccinctRMQReviewerSource_counted_consumer_or_sharedBP
     (source : ReviewerSource) (_hcounted : source.Counted) :
     source = .sharedBPCode ∨
       ∃ consumer, source.consumer? = some consumer := by
   cases source <;> simp [ReviewerSource.consumer?]
+
+/-! ### Semantic manifest anti-vacuity mutations -/
+
+/-- Completeness means that every operationally live source is listed. -/
+def ReviewerSource.ManifestComplete (manifest : List ReviewerSource) : Prop :=
+  ∀ source, source.Live → source ∈ manifest
+
+/-- Candidate entries make an attempted dead-source addition expressible
+without polluting the closed `ReviewerSource` universe. -/
+inductive ReviewerSourceCandidate where
+  | source (value : ReviewerSource)
+  | dead
+deriving DecidableEq
+
+def ReviewerSourceCandidate.Live : ReviewerSourceCandidate -> Prop
+  | ReviewerSourceCandidate.source value => ReviewerSource.Live value
+  | ReviewerSourceCandidate.dead => False
+
+def ReviewerSourceCandidate.ManifestSound
+    (manifest : List ReviewerSourceCandidate) : Prop :=
+  ∀ entry, entry ∈ manifest → entry.Live
+
+/-- Deliberately vacuous liveness mutant used by the acceptance challenge. -/
+def ReviewerSourceCandidate.VacuousLive
+    (_entry : ReviewerSourceCandidate) : Prop := True
+
+/-- Deliberately circular enumeration mutant used by the acceptance challenge. -/
+def ReviewerSourceCandidate.Enumerated
+    (manifest : List ReviewerSourceCandidate)
+    (entry : ReviewerSourceCandidate) : Prop := entry ∈ manifest
+
+/-- Replacing operational liveness by `True` accepts the dead candidate. -/
+theorem concreteBPNativeSuccinctRMQReviewerManifest_vacuousLive_accepts_dead :
+    ReviewerSourceCandidate.VacuousLive .dead := by
+  trivial
+
+/-- Replacing liveness by enumeration membership also accepts the dead
+candidate as soon as it is added. -/
+theorem concreteBPNativeSuccinctRMQReviewerManifest_enumeration_accepts_dead
+    (manifest : List ReviewerSourceCandidate) :
+    ReviewerSourceCandidate.Enumerated (.dead :: manifest) .dead := by
+  simp [ReviewerSourceCandidate.Enumerated]
+
+/-- Replacing reviewer liveness by `False` cannot satisfy counted/live
+equivalence even for the shared BP-code source. -/
+theorem concreteBPNativeSuccinctRMQReviewerManifest_falseLive_rejected :
+    ¬ (∀ source : ReviewerSource, source.Counted ↔ False) := by
+  intro hfalse
+  exact (hfalse .sharedBPCode).1
+    (concreteBPNativeSuccinctRMQReviewerPhysicalSources_all .sharedBPCode)
+
+/-- Anti-vacuity mutation: adjoining a dead candidate falsifies manifest
+soundness immediately. -/
+theorem concreteBPNativeSuccinctRMQReviewerManifest_add_dead_rejected
+    (manifest : List ReviewerSourceCandidate) :
+    ¬ ReviewerSourceCandidate.ManifestSound (.dead :: manifest) := by
+  intro hsound
+  exact hsound .dead (by simp)
+
+def concreteBPNativeSuccinctRMQReviewerManifestWithout
+    (removed : ReviewerSource) : List ReviewerSource :=
+  concreteBPNativeSuccinctRMQReviewerPhysicalSources.filter
+    (fun source => source ≠ removed)
+
+/-- Anti-vacuity mutation: removing any used source falsifies operational
+completeness. -/
+theorem concreteBPNativeSuccinctRMQReviewerManifest_remove_used_rejected
+    (removed : ReviewerSource) :
+    ¬ ReviewerSource.ManifestComplete
+      (concreteBPNativeSuccinctRMQReviewerManifestWithout removed) := by
+  intro hcomplete
+  have hmem := hcomplete removed
+    (concreteBPNativeSuccinctRMQReviewerSource_operationally_live removed)
+  simp [concreteBPNativeSuccinctRMQReviewerManifestWithout] at hmem
 
 /-- Compatibility classification on the old, non-canonical source universe. -/
 def ConcreteBPNativeSuccinctRMQFlatPayloadSource.LegacyCloseOrInterior :
@@ -524,32 +828,6 @@ theorem concreteBPNativeSuccinctRMQReviewerPhysicalRegions_source_get
   cases source <;>
     rfl
 
-/-- Complete typed logical-segment-to-source map for the canonical route. -/
-def concreteBPNativeSuccinctRMQReviewerSegmentSource? :
-    Nat -> Option ReviewerSource
-  | 0 => some .sharedBPCode
-  | 1 => some .selectSuperBaseOccurrence
-  | 2 => some .selectSuperBaseWordIndex
-  | 3 => some .selectSuperRankBefore
-  | 4 => some .selectSuperFirstOffset
-  | 5 => some .selectLocalBaseOccurrence
-  | 6 => some .selectLocalBaseWordIndex
-  | 7 => some .selectLocalRankBefore
-  | 8 => some .selectLocalFirstOffset
-  | 9 => some .selectLongFlagRankSuperTrue
-  | 10 => some .selectLongFlagRankBlockTrue
-  | 11 => some .selectLongFlagBits
-  | 12 => some .selectLongRelative
-  | 13 => some .selectSparseRankSuperTrue
-  | 14 => some .selectSparseRankBlockTrue
-  | 15 => some .selectSparseFlagBits
-  | 16 => some .selectSparseRelative
-  | 17 => some .finalRankSuperFalse
-  | 18 => some .finalRankBlockFalse
-  | 19 => some .sharedBPCode
-  | 20 => some .canonicalClose
-  | _ + 21 => none
-
 def concreteBPNativeSuccinctRMQReviewerSegmentRegion? (segment : Nat) :
     Option Nat :=
   (concreteBPNativeSuccinctRMQReviewerSegmentSource? segment).map
@@ -566,6 +844,19 @@ theorem concreteBPNativeSuccinctRMQReviewerSegmentSource?_coverage
       simp [concreteBPNativeSuccinctRMQReviewerSegmentSource?]
   | _ + 21 =>
       simp [concreteBPNativeSuccinctRMQReviewerSegmentSource?]
+
+/-- The operational leaf map covers exactly the live logical segments. -/
+theorem concreteBPNativeSuccinctRMQReviewerSegmentLeaf?_coverage
+    (segment : Nat) :
+    (∃ leaf,
+      concreteBPNativeSuccinctRMQReviewerSegmentLeaf? segment = some leaf) ↔
+      segment < 21 := by
+  match segment with
+  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
+      15 | 16 | 17 | 18 | 19 | 20 =>
+      simp [concreteBPNativeSuccinctRMQReviewerSegmentLeaf?]
+  | _ + 21 =>
+      simp [concreteBPNativeSuccinctRMQReviewerSegmentLeaf?]
 
 theorem concreteBPNativeSuccinctRMQReviewerSegmentRegion?_coverage
     (segment : Nat) :

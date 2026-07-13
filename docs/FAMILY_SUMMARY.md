@@ -9,8 +9,9 @@ blind exact-commit audit. The all-size final trace consumes
 dispatch on legacy `Ready`, `Active`, or the zero-block route. One exhaustive
 typed 20-source universe includes canonical close. Its theorems establish
 counted source iff reviewer-live source, source/region exclusivity, complete
-logical-segment coverage, emitted-read region membership, named consumers
-(with BP code explicitly shared), and absence of legacy duplicate
+logical-segment coverage, emitted-read operational ownership, actual
+read-producing evaluator-branch reachability for every counted source (with BP
+code explicitly shared through checked dependencies), and absence of legacy duplicate
 close/interior sources from the canonical payload. The whole machine is the
 single pre-execution list
 `concreteBPNativeSuccinctRMQReviewerPhysicalWords`; its exact-erasure theorem
@@ -35,13 +36,18 @@ supplied-store evaluator reads the caller's flat store through
 addresses. Canonical execution preserves result, cost, ordered successful and
 failed reads, repetitions, and the execution-derived physical footprint.
 Agreement on the first execution's consumed ordered physical footprint
-determines the complete execution, while
-`concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_ne_of_consumed_read_disagreement`
-checks that a disagreement at a consumed address changes it.
+determines the complete execution. At the answer projection,
+`concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_value_eq_suppliedStoreEvaluator`
+identifies the physical value with the translated supplied-store evaluator
+value, and the singleton corruption guards change that value from `some 0` to
+`none` while rejecting a trace-preserving value-ignore mutant.
 
 The public list boundary rejects invalid or empty ranges coherently through
 `queryCosted_invalid`, `queryTraceResult_invalid`,
 `queryTraceResultWithStore_invalid`, and their physical/store wrappers. The
+public story consumes raw model adequacy only under `ValidRange`; its invalid
+branch packages the same `none` result, empty trace/footprint, zero cost, and
+supplied-store-independent guarded execution. The
 space theorem is the amended inequality
 `buildPayload.length <= 2*n + overhead n`, with `overhead = o(n)`. Exact
 physical-word erasure remains mandatory and proved; the payload is not padded
@@ -2927,7 +2933,10 @@ The names below are grouped by source module. Repeated base names in
   `Headlines.succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal`,
   `Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical`,
   `Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint`,
-  `Headlines.succinctRMQReviewerPhysicalExecutionNeOfConsumedReadDisagreement`,
+  `Headlines.succinctRMQReviewerPhysicalValueFromSuppliedStore`,
+  `Headlines.succinctRMQReviewerPhysicalValueDependency`,
+  `Headlines.succinctRMQReviewerEveryReadOperationalSource`,
+  `Headlines.succinctRMQReviewerCountedSourceEvaluatorConnection`,
   `Headlines.concreteBPCloseNavigationProfile`,
   `Headlines.concreteBPCloseNavigationGlobalPayloadStoreExecutionStory`,
   `Headlines.concreteBPCloseNavigationGlobalPayloadStoreBoundedExecutionStory`,

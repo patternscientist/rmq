@@ -61,7 +61,7 @@ The RMQ-only paper aliases live in
 | --- | --- |
 | `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | Reader-facing theorem over ordinary `xs : List Int`: `buildPayload.length <= 2*n + overhead n` with `overhead = o(n)`; valid half-open queries return the exact leftmost RMQ answer, invalid or empty ranges return `none`, and modeled query cost is constant. |
 | `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Reader-facing no-synthetic execution story over ordinary `xs : List Int`, including the same public space inequality and range contract. Exact physical-word erasure is also conjoined directly in the paper main theorem; the construction is not padded to manufacture a size equality. |
-| `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` | Paper-facing list theorem combining the amended at-most payload bound, `overhead = o(n)`, invalid-range rejection, exact valid answers with leftmost ties, constant modeled query cost, and the final no-synthetic flat-payload trace story. |
+| `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` | Paper-facing list theorem combining the amended at-most payload bound, `overhead = o(n)`, exact valid answers, guarded raw adequacy, the all-invalid none/empty/zero packet, translated supplied-store `.value` provenance, constant modeled query cost, and the final no-synthetic flat-payload trace story. |
 | `RMQ.Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint` | List-facing supplied-store equality: under final footprint agreement with `SuccinctClassic.globalReadStore xs`, `SuccinctClassic.queryCostedWithStore xs store left right` is the same costed query as canonical `SuccinctClassic.queryCosted xs left right`. |
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal` | List-facing supplied-store exactness: if a caller-provided store agrees with `SuccinctClassic.globalReadStore xs` on the final checked footprint, valid half-open queries through `SuccinctClassic.queryCostedWithStore` erase to the exact leftmost `List Int` RMQ answer. |
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal` | List-facing supplied-store all-size cost transfer: under the same footprint agreement, the supplied-store query has modeled cost at most `SuccinctClassic.queryCost`. |
@@ -82,7 +82,11 @@ The RMQ-only paper aliases live in
 | `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Canonical reviewer-payload no-synthetic execution story: successful reads are counted in one exhaustive typed 20-source universe, including canonical close, and cross-block replay is uniform for all sizes. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical` | Genuine supplied flat-physical execution: the existing supplied-store evaluator reads the caller's flat store through checked address translation and refines the canonical logical execution, preserving value, cost, ordered successes/failures, repeated reads, and footprint. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint` | Agreement on the first physical execution's consumed ordered footprint determines the complete physical execution. |
-| `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionNeOfConsumedReadDisagreement` | Checked corruption witness: disagreement at a consumed physical address changes the complete physical execution, so the supplied flat store is not ignored. |
+| `RMQ.Headlines.succinctRMQReviewerPhysicalValueFromSuppliedStore` | Projection theorem: the flat physical answer is exactly the existing translated supplied-store evaluator answer. |
+| `RMQ.Headlines.succinctRMQReviewerPhysicalValueDependency` | If translated supplied-store evaluator values differ, the corresponding flat-physical `.value` projections differ. |
+| `RMQ.Headlines.succinctRMQReviewerEveryReadOperationalSource` | Every emitted read maps to a counted/live source and an actual read-producing evaluator branch. |
+| `RMQ.Headlines.succinctRMQReviewerCountedSourceEvaluatorConnection` | Every counted source reaches an evaluator branch; the shared BP source carries checked shared-consumer dependencies. |
+| `RMQ.Headlines.listIntSuccinctRMQInvalidPhysicalSemantics` | Invalid public inputs have one guarded none/empty/zero logical and physical execution for every supplied store. |
 | `RMQ.Headlines.listIntSuccinctRMQQueryCostedInvalid` | One public validity boundary rejects every invalid or empty range; specialized empty, reversed, and out-of-bounds aliases are exported beside it. |
 | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory` | Large-regime companion: under the explicit size premise, the compact close/LCA leg uses the positive-block local/fringe/interior structural replay; it is a compatibility strengthening of the all-size structural route. |
 | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory` | Bounded large-regime companion to the global-store execution story. |
@@ -115,8 +119,11 @@ an explicit `O(log (n + 2))` inequality.
 
 The supplied-store theorem uses the execution's ordered read footprint, retaining
 repeated and failed reads. Agreement there determines the complete physical
-`TraceResult`; a checked consumed-address disagreement theorem witnesses that
-the supplied flat store is semantically observed. The
+`TraceResult`. Answer dependency is separately stated at `.value`: physical
+execution returns the translated supplied-store evaluator value, and a checked
+decisive singleton corruption changes `some 0` to `none` while a
+trace-preserving value-ignore mutant does not. Operational liveness also rejects
+dead-source addition, used-source removal, and forged consumer labels. The
 checked transitional all-size cap remains `328`; U3 owns the final explained
 constant. Ready `118`, route-split `4144`, zero-block, and `196727` declarations
 remain compatibility/history surfaces and have no reverse edge into the

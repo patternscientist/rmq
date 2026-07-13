@@ -204,7 +204,8 @@ surfaces, including:
 - `RMQ.Headlines.succinctRMQFinalFullModelSoundnessExactOfFootprintGlobal`;
 - `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical`;
 - `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint`; and
-- `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionNeOfConsumedReadDisagreement`.
+- `RMQ.Headlines.succinctRMQReviewerPhysicalValueFromSuppliedStore` and
+  `RMQ.Headlines.succinctRMQReviewerPhysicalValueDependency`.
 
 ## What ADD Claims
 

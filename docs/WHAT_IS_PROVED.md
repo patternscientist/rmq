@@ -3,8 +3,10 @@
 
 The final all-size reviewer trace uses one positive canonical block geometry and
 one exhaustive typed 20-source universe including canonical close. Counted
-source iff reviewer-live source; physical regions are exclusive; every logical
-segment is covered; emitted reads map to listed regions; and legacy duplicate
+source iff operationally live source; physical regions are exclusive; every logical
+segment is covered; emitted reads map to counted evaluator leaves; every
+counted source reaches an actual read-producing evaluator branch (or a checked
+shared-BP dependency); and legacy duplicate
 close/interior storage is absent from the canonical payload and reachable only
 through compatibility surfaces.
 
@@ -14,7 +16,10 @@ translation, and canonical physical execution refines logical execution while
 preserving result, modeled cost, ordered successes/failures, repeated reads,
 and the execution-derived footprint. Agreement on the first physical
 execution's consumed footprint determines the complete execution; disagreement
-at a consumed address is checked to change it. Successful reads are backed by
+at a consumed address remains trace-observability evidence, while answer
+dependency is proved at `.value`: the physical value is the translated
+supplied-store evaluator value, and a checked decisive singleton corruption
+changes `some 0` to `none`. Successful reads are backed by
 the canonical reviewer payload and returned words and physical addresses
 satisfy the reviewer word bound.
 
@@ -52,7 +57,7 @@ aliases.
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreBoundedExecutionStory` | Lower-level bounded target-indexed global-store packet for one fixed rank/select target. |
 | `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | Classic list-facing theorem: `buildPayload.length <= 2*n + overhead n` with `overhead = o(n)`; valid half-open queries return exact leftmost answers, invalid or empty ranges return `none`, and modeled cost is constant. |
 | `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | List-facing no-synthetic execution story with the same at-most space bound and range contract. Exact physical erasure is proved separately; no padding manufactures equality. |
-| `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` | Paper-facing list theorem combining the amended at-most payload bound, `overhead = o(n)`, invalid-range rejection, exact valid answers with leftmost ties, constant modeled query cost, and the final no-synthetic trace story. |
+| `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` | Paper-facing list theorem combining the amended at-most payload bound, `overhead = o(n)`, exact valid answers, guarded raw adequacy, the all-invalid none/empty/zero packet, translated supplied-store `.value` provenance, constant modeled query cost, and the final no-synthetic trace story. |
 | `RMQ.Headlines.listIntSuccinctRMQQueryCostedInvalid` | Public validity boundary: invalid or empty list ranges return `none`; specialized empty, reversed, and out-of-bounds aliases are exported beside it. |
 | `RMQ.Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint` | List-facing supplied-store equality: under final footprint agreement with `SuccinctClassic.globalReadStore xs`, `SuccinctClassic.queryCostedWithStore xs store left right` is the same costed query as canonical `SuccinctClassic.queryCosted xs left right`. |
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal` | List-facing supplied-store exactness: if a caller-provided store agrees with `SuccinctClassic.globalReadStore xs` on the final checked footprint, valid half-open queries through `SuccinctClassic.queryCostedWithStore` erase to the exact leftmost `List Int` RMQ answer. |
@@ -73,11 +78,15 @@ aliases.
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe` | The uniform canonical final trace has the checked transitional U2 bound `328`. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical` | Genuine supplied flat-physical execution refines canonical logical execution, preserving decoded result, cost, ordered reads (including failures and repetitions), and footprint. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint` | Agreement on the first physical execution's consumed ordered footprint determines the complete physical execution. |
-| `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionNeOfConsumedReadDisagreement` | Disagreement at a consumed physical address changes the complete execution, witnessing physical-store dependence. |
+| `RMQ.Headlines.succinctRMQReviewerPhysicalValueFromSuppliedStore` | The flat physical `.value` is exactly the existing supplied-store evaluator `.value` after checked address translation. |
+| `RMQ.Headlines.succinctRMQReviewerPhysicalValueDependency` | If two translated supplied-store evaluator values differ, their flat-physical `.value` projections differ; this does not claim every read is decisive. |
+| `RMQ.Headlines.succinctRMQReviewerEveryReadOperationalSource` | Every emitted read maps to a counted/live source and an actual read-producing evaluator branch. |
+| `RMQ.Headlines.succinctRMQReviewerCountedSourceEvaluatorConnection` | Every counted source reaches an actual evaluator branch; shared BP carries its checked dependency. |
+| `RMQ.Headlines.listIntSuccinctRMQInvalidPhysicalSemantics` | Empty, reversed, and out-of-bounds public queries share the guarded none/empty/zero logical and physical execution for every supplied store. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | All-size structural execution story using raw positive same-block decoding and canonical cross-block component replay, with no zero-block dispatch. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` | Strongest all-size global execution story: the same store-backed and bounded trace plus a proof that no event is the dedicated synthetic cost-only marker. |
 | `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Flat-payload no-synthetic execution story: the flat execution payload is exactly the advertised BP-native construction payload; every actual successful read in the final trace has source/component/offset backing in one query-independent counted flat payload layout, addresses and word-primitive operands are bounded, and no synthetic cost-only event occurs. |
-| `RMQ.Headlines.succinctRMQFinalTraceModelAdequacy` | Reviewer-facing model-adequacy packet for the final trace: `Costed` is the projection of a `WordRAM.TraceResult`, the trace refines the whole-query interpreter, the fixed modeled cost bound holds, events are reads or word primitives, reads match the global store, event data are bounded, no synthetic cost-only events appear, and successful reads are backed by counted flat payload words. |
+| `RMQ.Headlines.succinctRMQFinalTraceModelAdequacy` | Reviewer-facing model-adequacy packet for the final trace: `Costed` is the projection of a `WordRAM.TraceResult`, emitted reads and counted sources connect to actual evaluator leaves, physical `.value` comes from the translated supplied-store evaluator, the fixed modeled cost bound holds, events are reads or word primitives, no synthetic cost-only events appear, and successful reads are backed by counted flat payload words. |
 | `RMQ.Headlines.succinctRMQFinalTraceModelAdequacyExact` | Exactness alias paired with the model-adequacy packet: valid windows erase to the leftmost RMQ answer for the Cartesian representative. |
 | `RMQ.Headlines.succinctRMQFinalSuppliedStoreAdequacy` | Supplied-store adequacy packet: reads match the caller-provided store, the concrete global-store instantiation recovers the canonical trace/interpreter refinement, no synthetic marker events appear, and final-layout footprint agreement gives store-parametricity. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreReadsSubsetFootprint` | Every emitted supplied-store payload-read event lies inside the safe final-layout footprint. The footprint is an overapproximation, not a minimal dynamic read set. |

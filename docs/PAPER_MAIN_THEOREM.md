@@ -38,9 +38,17 @@ primitive operands/results.
   global store on the declared footprint.
 - `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical`,
   `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint`, and
-  `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionNeOfConsumedReadDisagreement`:
-  genuine supplied flat-physical execution, first-footprint determinacy, and a
-  checked corruption/non-agreement witness.
+  `RMQ.Headlines.succinctRMQReviewerPhysicalValueFromSuppliedStore`:
+  genuine supplied flat-physical execution, first-footprint determinacy, and
+  answer provenance at the translated supplied-store `.value` projection.
+- `RMQ.Headlines.succinctRMQReviewerEveryReadOperationalSource` and
+  `RMQ.Headlines.succinctRMQReviewerCountedSourceEvaluatorConnection`, plus
+  `RMQ.Headlines.succinctRMQReviewerSharedBPConsumerEvaluatorConnection`:
+  both directions of operational source/evaluator liveness, including checked
+  select/rank/canonical-close shared-BP dependencies.
+- `RMQ.Headlines.listIntSuccinctRMQRawAdequacyOfValid` and
+  `RMQ.Headlines.listIntSuccinctRMQInvalidPhysicalSemantics`: raw adequacy only
+  for valid ranges and one none/empty/zero execution for every invalid range.
 - `RMQ.Headlines.listIntSuccinctRMQQueryCostedInvalid`: one validity boundary
   rejects invalid or empty list ranges.
 - `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal`:

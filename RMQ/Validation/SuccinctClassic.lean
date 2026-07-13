@@ -153,15 +153,97 @@ def physicalErasureOK : Bool :=
 def physicalBackingOK : Bool :=
   physicalReadsMatchCanonicalStore ([7] : List Int) 0 1
 
-def physicalDependencyOK : Bool :=
-  let xs : List Int := [7]
+/--
+Anti-vacuity mutant for the supplied-word-value subclaim: preserve the trace
+from the supplied physical-store execution, but ignore its returned value and
+substitute the canonical-store value.  The singleton corruption below kills
+this mutant at the `.value` projection.
+-/
+def ignoreSuppliedStoreReturnedValueMutation
+    (xs : List Int) (physicalStore : RMQ.WordRAM.ReadStore)
+    (left right : Nat) : RMQ.WordRAM.TraceResult (Option Nat) :=
+  let supplied :=
+    RMQ.SuccinctClassic.reviewerPhysicalTraceResultWithStore
+      xs physicalStore left right
   let canonical :=
-    RMQ.SuccinctClassic.reviewerPhysicalTraceResult xs 0 1
-  let corrupted :=
-    RMQ.SuccinctClassic.reviewerPhysicalTraceResultWithStore xs
-      (dropFirstConsumedPhysicalWord xs 0 1) 0 1
-  (RMQ.SuccinctClassic.reviewerPhysicalFootprint xs 0 1).head?.isSome &&
-    canonical.value == some 0 && corrupted.value == none
+    RMQ.SuccinctClassic.reviewerPhysicalTraceResult xs left right
+  { value := canonical.value, trace := supplied.trace }
+
+def singletonCanonicalPhysicalResult :=
+  RMQ.SuccinctClassic.reviewerPhysicalTraceResult
+    ([7] : List Int) 0 1
+
+def singletonDroppedPhysicalStore :=
+  dropFirstConsumedPhysicalWord ([7] : List Int) 0 1
+
+def singletonCorruptedPhysicalResult :=
+  RMQ.SuccinctClassic.reviewerPhysicalTraceResultWithStore
+    ([7] : List Int) singletonDroppedPhysicalStore 0 1
+
+def singletonIgnoreReturnedValueMutationResult :=
+  ignoreSuppliedStoreReturnedValueMutation
+    ([7] : List Int) singletonDroppedPhysicalStore 0 1
+
+/-- The decisive word is actually consumed by the canonical execution. -/
+def singletonDecisiveReadConsumedOK : Bool :=
+  singletonCanonicalPhysicalResult.trace.contains
+    (RMQ.WordRAM.TraceEvent.readWord 0 7
+      ((RMQ.SuccinctClassic.reviewerPhysicalWords ([7] : List Int))[7]?))
+
+/-- The physical corruption really changes the word returned at the consumed
+address, rather than merely changing an unrelated store cell. -/
+def singletonDecisiveStoreWordChangedOK : Bool :=
+  (RMQ.SuccinctClassic.reviewerPhysicalReadStore ([7] : List Int)).readWord?
+      0 7 !=
+    singletonDroppedPhysicalStore.readWord? 0 7
+
+/- Kernel-reduced corruption witness at the answer projection. -/
+#guard singletonCanonicalPhysicalResult.value == some 0
+#guard singletonCorruptedPhysicalResult.value == none
+#guard singletonDecisiveReadConsumedOK
+#guard singletonDecisiveStoreWordChangedOK
+
+/- The returned-value-ignoring mutant keeps the stale canonical answer and is
+therefore rejected by the same decisive corruption. -/
+#guard singletonIgnoreReturnedValueMutationResult.value == some 0
+#guard singletonCorruptedPhysicalResult.value !=
+  singletonIgnoreReturnedValueMutationResult.value
+
+/- Guarded/unguarded composition mutation: the raw shape evaluator still has
+an internal answer on this empty range, while the public physical execution is
+the required guarded `none`.  Substituting raw adequacy on all inputs therefore
+changes the public execution. -/
+def invalidEmptyRawPhysicalResult :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
+    (RMQ.SuccinctClassic.cartesianShape ([9, 8, 7] : List Int)) 1 1
+
+def invalidEmptyPublicPhysicalResult :=
+  RMQ.SuccinctClassic.reviewerPhysicalTraceResult
+    ([9, 8, 7] : List Int) 1 1
+
+#guard invalidEmptyRawPhysicalResult.value !=
+  invalidEmptyPublicPhysicalResult.value
+
+/- Separate invalid-branch mutations for every public execution projection. -/
+#guard invalidEmptyPublicPhysicalResult.value != some 0
+#guard invalidEmptyPublicPhysicalResult.trace !=
+  [RMQ.WordRAM.TraceEvent.syntheticCostOnlyPrimitive]
+#guard (RMQ.SuccinctClassic.queryCosted
+  ([9, 8, 7] : List Int) 1 1).cost != 1
+#guard (RMQ.SuccinctClassic.reviewerPhysicalFootprint
+  ([9, 8, 7] : List Int) 1 1) != [0]
+#guard (RMQ.SuccinctClassic.reviewerPhysicalTraceResultWithStore
+  ([9, 8, 7] : List Int) singletonDroppedPhysicalStore 1 1).value != some 0
+
+def physicalDependencyOK : Bool :=
+  (RMQ.SuccinctClassic.reviewerPhysicalFootprint
+      ([7] : List Int) 0 1).head?.isSome &&
+    singletonDecisiveReadConsumedOK && singletonDecisiveStoreWordChangedOK &&
+    singletonCanonicalPhysicalResult.value == some 0 &&
+    singletonCorruptedPhysicalResult.value == none &&
+    singletonIgnoreReturnedValueMutationResult.value == some 0 &&
+    singletonCorruptedPhysicalResult.value !=
+      singletonIgnoreReturnedValueMutationResult.value
 
 def canonicalBoundOK : Bool :=
   RMQ.SuccinctClassic.queryCost == 328

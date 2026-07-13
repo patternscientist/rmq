@@ -133,6 +133,39 @@ def physicalReadsMatchCanonicalStore
 
 #guard physicalReadsMatchCanonicalStore ([7] : List Int) 0 1
 
+/- The one guarded story supplies the same none/empty/zero packet for each
+public invalid-range shape, including every caller-supplied physical store. -/
+example :
+    RMQ.SuccinctClassic.queryTraceResult ([9, 8, 7] : List Int) 1 1 =
+        RMQ.WordRAM.TraceResult.pure none /\
+      RMQ.SuccinctClassic.reviewerPhysicalTraceResult
+          ([9, 8, 7] : List Int) 1 1 = RMQ.WordRAM.TraceResult.pure none /\
+      RMQ.SuccinctClassic.queryCosted ([9, 8, 7] : List Int) 1 1 =
+        RMQ.Costed.pure none /\
+      RMQ.SuccinctClassic.reviewerPhysicalFootprint
+          ([9, 8, 7] : List Int) 1 1 = [] /\
+      forall store : RMQ.WordRAM.ReadStore,
+        RMQ.SuccinctClassic.reviewerPhysicalTraceResultWithStore
+            ([9, 8, 7] : List Int) store 1 1 =
+          RMQ.WordRAM.TraceResult.pure none := by
+  exact RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_invalid_semantics
+    ([9, 8, 7] : List Int) 1 1 (by decide)
+
+example :
+    RMQ.SuccinctClassic.reviewerPhysicalTraceResult
+        ([9, 8, 7] : List Int) 2 1 =
+      RMQ.WordRAM.TraceResult.pure none := by
+  exact
+    (RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_invalid_semantics
+      ([9, 8, 7] : List Int) 2 1 (by decide)).2.1
+
+example :
+    RMQ.SuccinctClassic.reviewerPhysicalFootprint
+        ([9, 8, 7] : List Int) 0 4 = [] := by
+  exact
+    (RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_invalid_semantics
+      ([9, 8, 7] : List Int) 0 4 (by decide)).2.2.2.1
+
 example :
     (RMQ.SuccinctClassic.buildPayload tinyRMQInput).length <=
       2 * tinyRMQInput.length +

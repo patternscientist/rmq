@@ -758,6 +758,48 @@ at the pushed exact commit and verify that both remote workflows are green.
 Until that coordinator-only step, W17 is corrected worker evidence, not an
 accepted U2 declaration.
 
+## 2026-07-13 W17 Semantic Nonvacuity Correction
+
+The follow-up audit found that three individually true-looking surfaces did not
+yet compose into the advertised semantics. `ReviewerSource.Live` was `True`,
+the public story mixed guarded list execution with unconditional raw adequacy,
+and the corruption theorem compared aggregate trace records rather than the
+returned answer. The revised acceptance contract adds
+`INV-SEMANTIC-NONVACUITY` and reopens those rows explicitly.
+
+Operational liveness now starts from the logical segment/source map and a
+`ReviewerReadLeaf` classification tied to the constructors of the actual
+closed whole-query program. Every emitted read resolves to a counted/live
+source, its segment-derived leaf, a concrete program instruction, and the
+expanded `evalGlobalWordTrace` branch. Conversely, every counted source reaches
+one of those evaluator branches; the one BP-code source carries checked
+segment-0 and segment-19 shared dependencies. Adding a dead candidate, removing
+any used source, and forging a consumer label fail three separate checked
+properties. In plain English, the payload list cannot prove its own liveness.
+
+The public List story now describes one execution per input. A `ValidRange`
+premise is required to extract raw shape-level adequacy. On an invalid input,
+the same story instead proves `none` for logical and physical results, empty
+logical/physical traces and footprint, zero modeled cost, and the same guarded
+result for every supplied flat store. Empty, reversed, and out-of-bounds cases
+exercise that packet independently.
+
+Answer provenance is now stated at `.value`. The flat physical result is
+definitionally the result of the existing supplied-store evaluator after the
+address adapter, and differing translated evaluator values transfer to
+differing flat-physical values. A valid singleton query supplies the concrete
+nontrivial witness: physical address seven is consumed, removing it changes the
+returned answer from `some 0` to `none`, and a trace-preserving mutant that
+ignores the supplied return value remains incorrectly at `some 0`. This does
+not claim every consumed word is decisive for every query.
+
+Live assumptions remain the closed whole-query program, checked segment and
+physical-address maps, the explicit WordRAM cost model, and the public
+half-open validity contract. A skeptical graduate student should next inspect
+the exact theorem types in the amended matrix and rerun each mutation against
+the pushed commit; aggregate record inequality or a hand-written label should
+not be accepted as a substitute for these projection and evaluator links.
+
 ## Digestion Tasks
 
 1. Turn the RMQ capstone into a two-page lecture-style proof map:

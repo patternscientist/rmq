@@ -11,8 +11,11 @@ The existing supplied-store evaluator reads a caller-supplied flat store
 through `concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter` at checked
 translated addresses. The execution-derived ordered physical footprint retains
 repeated and failed reads; agreement on the first execution's footprint
-determines the complete physical `TraceResult`, while a checked disagreement at
-a consumed address changes it. The capacity
+determines the complete physical `TraceResult`. The answer projection is the
+translated supplied-store evaluator projection; a consumed decisive-word
+corruption changes `some 0` to `none` and rejects a trace-preserving
+value-ignore mutant. Operational source liveness is tied in both directions to
+the actual closed evaluator, not to a hand-written label. The capacity
 `400000 * (n + 1)` is linear, and
 `concreteBPNativeSuccinctRMQReviewerWordBits n` is derived from that capacity
 before execution. It has an explicit logarithmic all-size upper bound and
