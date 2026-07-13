@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "updated": "2026-07-08",
+  "version": 2,
+  "updated": "2026-07-12",
   "terms": [
     {
       "id": "novelty-first-mechanized",
@@ -45,7 +45,7 @@
     {
       "id": "all-size-196727",
       "pattern": "196727",
-      "status": "legacy-compatibility-only-after-route-split-4144",
+      "status": "legacy-compatibility-history-only",
       "strict": false,
       "allowedPathRegex": "",
       "allowedLineRegex": ""
@@ -53,7 +53,31 @@
     {
       "id": "fast-regime-118",
       "pattern": "\\b118\\b",
-      "status": "fast-regime-bound-only-unless-all-size-theorem-lands",
+      "status": "legacy-compatibility-history-only",
+      "strict": false,
+      "allowedPathRegex": "",
+      "allowedLineRegex": ""
+    },
+    {
+      "id": "legacy-route-split-4144",
+      "pattern": "\\b4144\\b",
+      "status": "legacy-compatibility-history-only",
+      "strict": false,
+      "allowedPathRegex": "",
+      "allowedLineRegex": ""
+    },
+    {
+      "id": "canonical-transitional-328",
+      "pattern": "\\b328\\b",
+      "status": "current-canonical-transitional-bound",
+      "strict": false,
+      "allowedPathRegex": "",
+      "allowedLineRegex": ""
+    },
+    {
+      "id": "canonical-physical-payload-identity",
+      "pattern": "ReviewerPhysicalWords|reviewer physical words",
+      "status": "current-same-object-machine-evidence",
       "strict": false,
       "allowedPathRegex": "",
       "allowedLineRegex": ""

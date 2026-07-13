@@ -1,15 +1,18 @@
 # RMQ Family Summary
-## Current U2 Reviewer Route (2026-07-11)
+## Current U2 Worker Candidate (2026-07-12)
 
-U2 is complete at the reviewer consumer. The all-size final trace consumes
+W15 supplies candidate evidence for U2; only the coordinator may accept the
+node after independently reconstructing the frozen matrix and obtaining a fresh
+blind exact-commit audit. The all-size final trace consumes
 `SuccinctClose.canonicalRelativeRmmInteriorDirectory` through
 `concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural`; it does not
 dispatch on legacy `Ready`, `Active`, or the zero-block route. Segment `20`
 serves `canonicalRelativeRmmInteriorComponentStore` as one concatenated
 baseline/min-relative/max-relative/arg-offset/local/global machine-word store.
-`concreteBPNativeSuccinctRMQCanonicalInteriorWordOffset` and
-`concreteBPNativeSuccinctRMQCanonicalInteriorPhysicalAddress` place that
-segment exactly in the reviewer machine-word store.
+The whole machine is the single pre-execution list
+`concreteBPNativeSuccinctRMQReviewerPhysicalWords`; its exact-erasure theorem
+identifies that list with the canonical public payload underlying
+`SuccinctClassic.buildPayload`, rather than an appended sibling payload.
 
 The interior dynamic footprint is the ordered address projection of the
 execution that computes the answer. Theorems
@@ -22,12 +25,21 @@ store-parametric through
 `concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore_store_parametric`
 and the whole-query supplied-store theorems.
 
-The reviewer-native width is
-`concreteBPNativeSuccinctRMQCanonicalReviewerWordBits`, derived from the input
-and addressable counted machine-word capacity. It bounds physical interior
-addresses and valid-query operands through
-`concreteBPNativeSuccinctRMQCanonicalInteriorPhysicalFootprint_fits` and
-`concreteBPNativeSuccinctRMQCanonicalReviewerValidQueryOperands_fit`.
+The whole-query ordered logical read footprint retains repeated and failed
+reads. Agreement on that actual footprint determines the complete supplied
+`TraceResult`, while the physical refinement preserves result, cost, ordered
+trace, failures, and footprint. Successful physical reads are positional reads
+from the one physical list.
+
+The reviewer-native capacity and width are
+`concreteBPNativeSuccinctRMQReviewerCapacity n = 400000 * (n + 1)` and
+`concreteBPNativeSuccinctRMQReviewerWordBits n = machineWordBits
+(concreteBPNativeSuccinctRMQReviewerCapacity n)`. The capacity is linear, and
+the width satisfies the checked all-size inequality
+`reviewerWordBits n <= 20 * (log2 (n + 2) + 1)`. It bounds stored/returned
+physical words, translated live and dead addresses, segment encodings, query
+operands, primitive operands/results, and every address in the consumed
+physical footprint.
 Interior empty, singleton, size-two, and symbolic readiness-boundary evidence is
 kernel checked by the corresponding
 `canonicalRelativeRmmInteriorRangeFootprint_*_kernel_checked` and
@@ -37,9 +49,10 @@ The current honest transitional final-query bound is
 `concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq : ... = 328`,
 consumed by
 `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional`.
-The older `118`, route-split, `4144`, and `196727` surfaces are
+The older `118`, route-split, `4144`, zero-block, and `196727` surfaces are
 compatibility/history, not the reviewer-route explanation. U3 owns replacement
-of `328` by the final decomposed paper constant.
+of `328` by the final decomposed paper constant; it is not required for the U2
+candidate's truth.
 
 
 Snapshot: 2026-07-01, after the reusable table/access and payload models,

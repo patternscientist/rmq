@@ -156,10 +156,11 @@ Landed on `main` since this document was written (through `3f6f1e3`):
   A referee-grade novelty search remains.
 - **P2 item 8 (artifact):** reproduction script, CI workflows, `CITATION.cff`,
   and an AI-assisted-development disclosure landed.
-- **Cost-regime split:** the fast-regime theorem cited above exposes the
-  `118` modeled bound under the real `2^15` readiness threshold. Later R2 work
-  replaced the public all-size alias with the route-split `4144` theorem while
-  preserving the old `196727` aggregate as legacy compatibility.
+- **Historical cost-regime split (superseded by W15):** the fast-regime theorem
+  cited above exposes `118` under the readiness threshold, and R2 later exposed
+  route-split `4144`. Those declarations and `196727` are now compatibility
+  history. The canonical reviewer route is uniform and keeps the checked
+  transitional cap `328`; U3 owns its final explained constant.
 
 Remaining, in priority order: **paper/artifact packaging; novelty search;
 extraction + benchmarks; optional tighter uniform constants.**

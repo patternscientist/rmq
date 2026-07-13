@@ -1,20 +1,27 @@
 # Final RMQ Model Adequacy
 ## Canonical U2 Machine Adequacy
 
-The reviewer path uses
-`concreteBPNativeSuccinctRMQCanonicalReviewerWordBits`, not the former
-trace-local post-hoc width. Its capacity includes query operands, all
-addressable counted machine words, the segment-20 canonical interior offset,
-and live/dead component addresses. The key checks are
-`concreteBPNativeSuccinctRMQCanonicalInteriorPhysicalFootprint_fits` and
-`concreteBPNativeSuccinctRMQCanonicalReviewerValidQueryOperands_fit`.
+The reviewer path uses one pre-execution list,
+`concreteBPNativeSuccinctRMQReviewerPhysicalWords`, whose erasure is exactly the
+canonical public payload. The segmented logical execution refines to positional
+reads from that list while preserving result, cost, ordered trace, failures,
+and footprint.
+
+Its query-independent width is
+`concreteBPNativeSuccinctRMQReviewerWordBits n = machineWordBits (400000 *
+(n + 1))`, not a trace-local post-hoc width. Checked theorems give linear
+capacity, `reviewerWordBits n <= 20 * (log2 (n + 2) + 1)`, and bounds for every
+stored/returned word, translated live or dead address, segment encoding, query
+operand, primitive operand/result, and consumed footprint address.
 
 The interior result is constructed only from indexed supplied-store reads.
 `canonicalRelativeRmmInteriorRangeFootprint_recorded` identifies the recorded
 footprint with the execution log;
 `canonicalRelativeRmmInteriorRangeMinCostedWithStore_eq_of_agree` proves
-dynamic-footprint determinacy; successful-read backing and returned-word bounds
-are lifted to the canonical reviewer payload and global read store. Empty,
+dynamic-footprint determinacy. At whole-query level, agreement on the actual
+ordered logical read footprint determines the complete supplied `TraceResult`,
+including failures and repeated reads. Successful-read backing and returned-word bounds
+are lifted to the canonical reviewer payload and physical store. Empty,
 singleton, size-two, and symbolic threshold-boundary cases are kernel checked.
 
 This remains a mathematical Word-RAM/cost model. It is not a compiled Lean

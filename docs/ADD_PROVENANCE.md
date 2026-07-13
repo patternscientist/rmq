@@ -6,14 +6,18 @@ machine store and dynamic footprint. Those were real proof rungs, but audit
 correctly rejected them as U2 completion while the public close/LCA consumer
 still dispatched through Ready/Active/zero-block compatibility routes.
 
-The closing repair embedded the concatenated component at global segment
-`20`, made the all-size close/LCA and supplied-store executions consume it,
-proved physical-address and operand bounds using a reviewer-native capacity,
-and moved the final trace to the canonical interpreted query. Kernel-checked
-empty, singleton, size-two, and symbolic threshold-boundary facts guard the
-small-input failure mode. The cost was rederived honestly as the transitional
-sum `328`; the implementation did not pad reads to preserve `118` or a
-route-split constant.
+The closing worker-candidate repair embedded the concatenated component at
+global segment `20`, then represented every live query source in one
+pre-execution physical word list whose erasure is exactly the public
+`buildPayload`. Physical replay preserves the complete logical execution, and
+agreement on the actual ordered footprint determines the supplied trace. A
+linear reviewer capacity and query-independent logarithmic width cover stored
+and returned words, live/dead addresses, and primitive operands/results.
+Kernel-checked empty, singleton, size-two, and symbolic threshold-boundary facts
+guard the small-input failure mode. The cost was rederived honestly as the
+transitional sum `328`; the implementation did not pad reads to preserve `118`
+or a route-split constant. Coordinator acceptance remains separate from this
+worker evidence and requires matrix reconstruction plus a fresh blind audit.
 
 This is the ADD lesson: a locally correct adapter is a checkpoint. Completion
 requires its named downstream consumer, provenance, machine bounds, edge cases,

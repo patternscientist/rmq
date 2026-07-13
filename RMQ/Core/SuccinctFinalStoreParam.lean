@@ -57,6 +57,282 @@ theorem concreteBPNativeRankClose_pullback_globalReadStore
       SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterWordRAMStore,
       WordRAM.Store.readWord?]
 
+private theorem natProgram_evalR_eq_of_trace_read_agreement
+    (program : WordRAM.Register.NatProgram)
+    (storeA storeB : WordRAM.ReadStore)
+    (regs : WordRAM.Register.RegFile)
+    (hagree :
+      forall segment index word?,
+        List.Mem (WordRAM.TraceEvent.readWord segment index word?)
+            (program.evalR storeA regs).trace ->
+          storeA.readWord? segment index = storeB.readWord? segment index) :
+    program.evalR storeA regs = program.evalR storeB regs := by
+  cases program with
+  | pureNat value =>
+      rfl
+  | sampledRank target offset sampleSegment sampleIndex wordSegment wordIndex =>
+      let sampleI := sampleIndex.eval regs
+      let wordI := wordIndex.eval regs
+      have hsample :
+          storeA.readWord? sampleSegment sampleI =
+            storeB.readWord? sampleSegment sampleI := by
+        apply hagree sampleSegment sampleI
+          (storeA.readWord? sampleSegment sampleI)
+        simp only [WordRAM.Register.NatProgram.evalR]
+        generalize ha : storeA.readWord? sampleSegment sampleI = a
+        generalize hw : storeA.readWord? wordSegment wordI = w
+        cases a <;> cases w <;>
+          exact List.Mem.head _
+      have hword :
+          storeA.readWord? wordSegment wordI =
+            storeB.readWord? wordSegment wordI := by
+        apply hagree wordSegment wordI
+          (storeA.readWord? wordSegment wordI)
+        simp only [WordRAM.Register.NatProgram.evalR]
+        generalize ha : storeA.readWord? sampleSegment sampleI = a
+        generalize hw : storeA.readWord? wordSegment wordI = w
+        cases a <;> cases w <;>
+          exact List.Mem.tail _ (List.Mem.head _)
+      simp [WordRAM.Register.NatProgram.evalR, sampleI, wordI,
+        hsample, hword]
+  | twoLevelSampledRank target offset superSegment superIndex blockSegment
+      blockIndex wordSegment wordIndex =>
+      let superI := superIndex.eval regs
+      let blockI := blockIndex.eval regs
+      let wordI := wordIndex.eval regs
+      have hsuper :
+          storeA.readWord? superSegment superI =
+            storeB.readWord? superSegment superI := by
+        apply hagree superSegment superI
+          (storeA.readWord? superSegment superI)
+        simp only [WordRAM.Register.NatProgram.evalR]
+        generalize hs : storeA.readWord? superSegment superI = s
+        generalize hb : storeA.readWord? blockSegment blockI = b
+        generalize hw : storeA.readWord? wordSegment wordI = w
+        cases s <;> cases b <;> cases w <;>
+          exact List.Mem.head _
+      have hblock :
+          storeA.readWord? blockSegment blockI =
+            storeB.readWord? blockSegment blockI := by
+        apply hagree blockSegment blockI
+          (storeA.readWord? blockSegment blockI)
+        simp only [WordRAM.Register.NatProgram.evalR]
+        generalize hs : storeA.readWord? superSegment superI = s
+        generalize hb : storeA.readWord? blockSegment blockI = b
+        generalize hw : storeA.readWord? wordSegment wordI = w
+        cases s <;> cases b <;> cases w <;>
+          exact List.Mem.tail _ (List.Mem.head _)
+      have hword :
+          storeA.readWord? wordSegment wordI =
+            storeB.readWord? wordSegment wordI := by
+        apply hagree wordSegment wordI
+          (storeA.readWord? wordSegment wordI)
+        simp only [WordRAM.Register.NatProgram.evalR]
+        generalize hs : storeA.readWord? superSegment superI = s
+        generalize hb : storeA.readWord? blockSegment blockI = b
+        generalize hw : storeA.readWord? wordSegment wordI = w
+        cases s <;> cases b <;> cases w <;>
+          exact List.Mem.tail _ (List.Mem.tail _ (List.Mem.head _))
+      simp [WordRAM.Register.NatProgram.evalR, superI, blockI, wordI,
+        hsuper, hblock, hword]
+
+private theorem program_evalR_eq_of_trace_read_agreement
+    {ty : WordRAM.Ty} (program : WordRAM.Program ty)
+    (storeA storeB : WordRAM.ReadStore)
+    (hagree :
+      forall segment index word?,
+        List.Mem (WordRAM.TraceEvent.readWord segment index word?)
+            (program.evalR storeA).trace ->
+          storeA.readWord? segment index = storeB.readWord? segment index) :
+    program.evalR storeA = program.evalR storeB := by
+  induction program generalizing storeA storeB with
+  | pure value => rfl
+  | readWord segment index =>
+      have hread := hagree segment index (storeA.readWord? segment index)
+        (List.Mem.head [])
+      simp [WordRAM.Program.evalR, hread]
+  | mapOptWordNat program ih =>
+      have hp := ih storeA storeB (by
+        intro segment index word? hmem
+        apply hagree segment index word?
+        simpa [WordRAM.Program.evalR] using hmem)
+      simp [WordRAM.Program.evalR, hp]
+  | mapOptWordOptionNat width program ih =>
+      have hp := ih storeA storeB (by
+        intro segment index word? hmem
+        apply hagree segment index word?
+        simpa [WordRAM.Program.evalR] using hmem)
+      simp [WordRAM.Program.evalR, hp]
+  | joinOptOptNat program ih =>
+      have hp := ih storeA storeB (by
+        intro segment index word? hmem
+        apply hagree segment index word?
+        simpa [WordRAM.Program.evalR] using hmem)
+      simp [WordRAM.Program.evalR, hp]
+  | sampledRank target offset sample word sampleIH wordIH =>
+      have hsample := sampleIH storeA storeB (by
+        intro segment index word? hmem
+        apply hagree segment index word?
+        cases hs : (sample.evalR storeA).value with
+        | none =>
+            cases hw : (word.evalR storeA).value <;>
+              simp only [WordRAM.Program.evalR, hs, hw] <;>
+              exact List.mem_append_left _ hmem
+        | some sampleValue =>
+            cases hw : (word.evalR storeA).value with
+            | none =>
+                simp only [WordRAM.Program.evalR, hs, hw]
+                exact List.mem_append_left _ hmem
+            | some wordValue =>
+                simp only [WordRAM.Program.evalR, hs, hw]
+                exact List.mem_append_left _
+                  (List.mem_append_left _ hmem))
+      have hword := wordIH storeA storeB (by
+        intro segment index word? hmem
+        apply hagree segment index word?
+        cases hs : (sample.evalR storeA).value with
+        | none =>
+            cases hw : (word.evalR storeA).value <;>
+              simp only [WordRAM.Program.evalR, hs, hw] <;>
+              exact List.mem_append_right _ hmem
+        | some sampleValue =>
+            cases hw : (word.evalR storeA).value with
+            | none =>
+                simp only [WordRAM.Program.evalR, hs, hw]
+                exact List.mem_append_right _ hmem
+            | some wordValue =>
+                simp only [WordRAM.Program.evalR, hs, hw]
+                exact List.mem_append_left _
+                  (List.mem_append_right _ hmem))
+      simp [WordRAM.Program.evalR, hsample, hword]
+  | wordSelectFromOpt target occurrence word wordIH =>
+      have hword := wordIH storeA storeB (by
+        intro segment index word? hmem
+        apply hagree segment index word?
+        cases hw : (word.evalR storeA).value with
+        | none =>
+            simpa [WordRAM.Program.evalR, hw] using hmem
+        | some value =>
+            simp only [WordRAM.Program.evalR, hw]
+            exact List.mem_append_left _ hmem)
+      simp [WordRAM.Program.evalR, hword]
+
+private def StoreTraceLocal {alpha : Type}
+    (eval : WordRAM.ReadStore -> WordRAM.TraceResult alpha) : Prop :=
+  forall storeA storeB,
+    (forall segment index word?,
+      List.Mem (WordRAM.TraceEvent.readWord segment index word?)
+          (eval storeA).trace ->
+        storeA.readWord? segment index = storeB.readWord? segment index) ->
+    eval storeA = eval storeB
+
+private theorem storeTraceLocal_const {alpha : Type}
+    (result : WordRAM.TraceResult alpha) :
+    StoreTraceLocal (fun _store => result) := by
+  intro storeA storeB hagree
+  rfl
+
+private theorem storeTraceLocal_map {alpha beta : Type}
+    (eval : WordRAM.ReadStore -> WordRAM.TraceResult alpha)
+    (hlocal : StoreTraceLocal eval) (f : alpha -> beta) :
+    StoreTraceLocal (fun store => WordRAM.TraceResult.map f (eval store)) := by
+  intro storeA storeB hagree
+  have heval := hlocal storeA storeB (by
+    intro segment index word? hmem
+    apply hagree segment index word?
+    simpa [WordRAM.TraceResult.map, WordRAM.TraceResult.bind,
+      WordRAM.TraceResult.pure] using hmem)
+  change WordRAM.TraceResult.map f (eval storeA) =
+    WordRAM.TraceResult.map f (eval storeB)
+  exact congrArg (WordRAM.TraceResult.map f) heval
+
+private theorem storeTraceLocal_bind {alpha beta : Type}
+    (eval : WordRAM.ReadStore -> WordRAM.TraceResult alpha)
+    (next : alpha -> WordRAM.ReadStore -> WordRAM.TraceResult beta)
+    (heval : StoreTraceLocal eval)
+    (hnext : forall value, StoreTraceLocal (next value)) :
+    StoreTraceLocal (fun store =>
+      WordRAM.TraceResult.bind (eval store) (fun value => next value store)) := by
+  intro storeA storeB hagree
+  have hevalEq := heval storeA storeB (by
+    intro segment index word? hmem
+    apply hagree segment index word?
+    simp only [WordRAM.TraceResult.bind]
+    exact List.mem_append_left _ hmem)
+  have hnextEq := hnext (eval storeA).value storeA storeB (by
+    intro segment index word? hmem
+    apply hagree segment index word?
+    simp only [WordRAM.TraceResult.bind]
+    exact List.mem_append_right _ hmem)
+  have hnextEqB :
+      next (eval storeB).value storeA = next (eval storeB).value storeB := by
+    simpa [hevalEq] using hnextEq
+  change WordRAM.TraceResult.bind (eval storeA) (fun value => next value storeA) =
+    WordRAM.TraceResult.bind (eval storeB) (fun value => next value storeB)
+  rw [hevalEq]
+  simp only [WordRAM.TraceResult.bind]
+  rw [hnextEqB]
+
+private theorem storeTraceLocal_relabelReadSegmentsWith_pullback
+    {alpha : Type} (segmentMap : Nat -> Nat)
+    (eval : WordRAM.ReadStore -> WordRAM.TraceResult alpha)
+    (hlocal : StoreTraceLocal eval) :
+    StoreTraceLocal (fun store =>
+      WordRAM.TraceResult.relabelReadSegmentsWith segmentMap
+        (eval (store.pullback segmentMap))) := by
+  intro storeA storeB hagree
+  have hinner := hlocal
+    (storeA.pullback segmentMap) (storeB.pullback segmentMap) (by
+      intro segment index word? hmem
+      have hglobal := hagree (segmentMap segment) index word? (by
+        simp only [WordRAM.TraceResult.relabelReadSegmentsWith]
+        apply List.mem_map.mpr
+        exact ⟨WordRAM.TraceEvent.readWord segment index word?, hmem, by
+          simp [WordRAM.TraceEvent.relabelReadSegmentWith]⟩)
+      simpa [WordRAM.ReadStore.pullback] using hglobal)
+  exact congrArg
+    (WordRAM.TraceResult.relabelReadSegmentsWith segmentMap) hinner
+
+private theorem ofResultProgram_storeTraceLocal
+    {ty : WordRAM.Ty} (program : WordRAM.Program ty) :
+    StoreTraceLocal (fun store =>
+      WordRAM.TraceResult.ofResult (program.evalR store)) := by
+  intro storeA storeB hagree
+  exact congrArg WordRAM.TraceResult.ofResult
+    (program_evalR_eq_of_trace_read_agreement program storeA storeB (by
+      intro segment index word? hmem
+      apply hagree segment index word?
+      simpa [WordRAM.TraceResult.ofResult] using hmem))
+
+private theorem ofProgramWithStore_storeTraceLocal
+    (segmentMap : Nat -> Nat) {ty : WordRAM.Ty}
+    (program : WordRAM.Program ty) :
+    StoreTraceLocal (fun store =>
+      WordRAM.TraceResult.ofProgramWithStore segmentMap store program) := by
+  simpa [WordRAM.TraceResult.ofProgramWithStore] using
+    storeTraceLocal_relabelReadSegmentsWith_pullback segmentMap
+      (fun store => WordRAM.TraceResult.ofResult (program.evalR store))
+      (ofResultProgram_storeTraceLocal program)
+
+private theorem ofNatProgramWithStore_storeTraceLocal
+    (segmentMap : Nat -> Nat) (program : WordRAM.Register.NatProgram)
+    (regs : WordRAM.Register.RegFile) :
+    StoreTraceLocal (fun store =>
+      WordRAM.TraceResult.ofNatProgramWithStore segmentMap store program regs) := by
+  have hinner : StoreTraceLocal (fun store =>
+      WordRAM.TraceResult.ofResult (program.evalR store regs)) := by
+    intro storeA storeB hagree
+    exact congrArg WordRAM.TraceResult.ofResult
+      (natProgram_evalR_eq_of_trace_read_agreement
+        program storeA storeB regs (by
+          intro segment index word? hmem
+          apply hagree segment index word?
+          simpa [WordRAM.TraceResult.ofResult] using hmem))
+  simpa [WordRAM.TraceResult.ofNatProgramWithStore] using
+    storeTraceLocal_relabelReadSegmentsWith_pullback segmentMap
+      (fun store => WordRAM.TraceResult.ofResult (program.evalR store regs))
+      hinner
+
 /--
 Store-parameterized final false-rank leaf: the two-level register rank program
 is evaluated against the supplied read store pulled back along the rank segment
@@ -141,6 +417,46 @@ theorem concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_store_paramet
   unfold concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
   rw [WordRAM.ReadStore.pullback_eq_of_agree_on_map
     (concreteBPNativeRankCloseSegmentMap rankSegmentBase) hread]
+
+theorem concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_eq_of_trace_read_agreement
+    (shape : Cartesian.CartesianShape)
+    (storeA storeB : WordRAM.ReadStore)
+    (rankSegmentBase pos : Nat)
+    (hagree :
+      forall segment index word?,
+        List.Mem (WordRAM.TraceEvent.readWord segment index word?)
+            (concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+              shape storeA rankSegmentBase pos).trace ->
+          storeA.readWord? segment index = storeB.readWord? segment index) :
+    concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+        shape storeA rankSegmentBase pos =
+      concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+        shape storeB rankSegmentBase pos := by
+  have hinner :=
+    natProgram_evalR_eq_of_trace_read_agreement
+      ((builtRelativeSplitBPCloseRankData shape).rankRegisterProgram
+        false (WordRAM.Register.NatExpr.reg 0))
+      (storeA.pullback
+        (concreteBPNativeRankCloseSegmentMap rankSegmentBase))
+      (storeB.pullback
+        (concreteBPNativeRankCloseSegmentMap rankSegmentBase))
+      (WordRAM.Register.RegFile.withNat1 pos)
+      (by
+        intro segment index word? hmem
+        have hglobal := hagree
+          (concreteBPNativeRankCloseSegmentMap rankSegmentBase segment)
+          index word? (by
+            simp only [
+              concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore,
+              WordRAM.TraceResult.relabelReadSegmentsWith,
+              WordRAM.TraceResult.ofResult]
+            apply List.mem_map.mpr
+            refine ⟨WordRAM.TraceEvent.readWord segment index word?,
+              hmem, ?_⟩
+            simp [WordRAM.TraceEvent.relabelReadSegmentWith])
+        simpa [WordRAM.ReadStore.pullback] using hglobal)
+  unfold concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+  rw [hinner]
 
 /--
 Store-parameterized positive same-block local-BP close leaf with the concrete
@@ -1273,6 +1589,174 @@ theorem concreteBPNativeSelectCloseGlobalWordTraceResultWithStore_store_parametr
         hagree.selectBitWords
         idx
 
+private theorem selectEntryReadWithStore_storeTraceLocal
+    {entries : List GenericSelect.SparseDenseSelectDenseLocalEntry}
+    {fieldWidth : Nat}
+    (table : GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable
+      entries fieldWidth)
+    (layout : GenericSelect.SparseDenseEntryTableTraceSegmentBases)
+    (i : Nat) :
+    StoreTraceLocal (fun store =>
+      table.readTraceResultRelabeledWithStore layout store i) := by
+  unfold GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.readTraceResultRelabeledWithStore
+  apply storeTraceLocal_bind
+  · exact ofProgramWithStore_storeTraceLocal _ _
+  · intro baseOccurrence?
+    apply storeTraceLocal_bind
+    · exact ofProgramWithStore_storeTraceLocal _ _
+    · intro baseWordIndex?
+      apply storeTraceLocal_bind
+      · exact ofProgramWithStore_storeTraceLocal _ _
+      · intro rankBefore?
+        apply storeTraceLocal_map
+        exact ofProgramWithStore_storeTraceLocal _ _
+
+private theorem rankTraceResultRelabeledWithStore_storeTraceLocal
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data : SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
+      bits superOverhead blockOverhead queryCost)
+    (rankBase deadSegment : Nat) (target : Bool) (pos : Nat) :
+    StoreTraceLocal (fun store =>
+      data.rankTraceResultRelabeledWithStore
+        rankBase deadSegment store target pos) := by
+  unfold SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankTraceResultRelabeledWithStore
+  exact ofNatProgramWithStore_storeTraceLocal _ _ _
+
+private theorem relativeOffsetReadWithStore_storeTraceLocal
+    {entries : List Nat} {width : Nat}
+    (segmentBase deadSegment : Nat)
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (base slot : Nat) :
+    StoreTraceLocal (fun store =>
+      GenericSelect.relativeOffsetReadTraceResultRelabeledWithStore
+        segmentBase deadSegment table store base slot) := by
+  unfold GenericSelect.relativeOffsetReadTraceResultRelabeledWithStore
+  apply storeTraceLocal_map
+  exact ofProgramWithStore_storeTraceLocal _ _
+
+private theorem sparseDirectoryReadWithStore_storeTraceLocal
+    {bits : List Bool} {target : Bool}
+    {rankSuperOverhead rankBlockOverhead : Nat}
+    (directory : GenericSelect.SparseExceptionDirectory
+      bits target rankSuperOverhead rankBlockOverhead)
+    (layout : GenericSelect.SparseExceptionDirectoryTraceSegmentBases)
+    (base localSlot localOccurrence : Nat) :
+    StoreTraceLocal (fun store =>
+      directory.readTraceResultRelabeledWithStore
+        layout store base localSlot localOccurrence) := by
+  unfold GenericSelect.SparseExceptionDirectory.readTraceResultRelabeledWithStore
+  apply storeTraceLocal_bind
+  · exact rankTraceResultRelabeledWithStore_storeTraceLocal _ _ _ _ _
+  · intro exceptionRank
+    exact relativeOffsetReadWithStore_storeTraceLocal _ _ _ _ _
+
+private theorem denseTwoWordSelectWithStoreLocal_storeTraceLocal
+    (target : Bool) {bits : List Bool} {wordSize : Nat}
+    (bitWords : SuccinctSpace.BoundedPayloadWordStore bits wordSize)
+    (basePosition baseOccurrence q : Nat) :
+    StoreTraceLocal (fun store =>
+      GenericSelect.denseTwoWordSelectTraceResultWithStoreLocal
+        target bitWords store basePosition baseOccurrence q) := by
+  unfold GenericSelect.denseTwoWordSelectTraceResultWithStoreLocal
+  apply storeTraceLocal_bind
+  · exact ofResultProgram_storeTraceLocal _
+  · intro firstWord?
+    cases firstWord? with
+    | none => exact storeTraceLocal_const _
+    | some firstWord =>
+        apply storeTraceLocal_bind
+        · exact storeTraceLocal_const _
+        · intro beforeFirst
+          apply storeTraceLocal_bind
+          · exact storeTraceLocal_const _
+          · intro uptoFirst
+            dsimp only
+            split
+            · apply storeTraceLocal_map
+              exact storeTraceLocal_const _
+            · apply storeTraceLocal_bind
+              · exact ofResultProgram_storeTraceLocal _
+              · intro secondWord?
+                cases secondWord? with
+                | none => exact storeTraceLocal_const _
+                | some secondWord =>
+                    apply storeTraceLocal_map
+                    exact storeTraceLocal_const _
+
+private theorem denseTwoWordSelectRelabeledWithStore_storeTraceLocal
+    (bitWordSegmentBase deadSegment : Nat)
+    (target : Bool) {bits : List Bool} {wordSize : Nat}
+    (bitWords : SuccinctSpace.BoundedPayloadWordStore bits wordSize)
+    (basePosition baseOccurrence q : Nat) :
+    StoreTraceLocal (fun store =>
+      GenericSelect.denseTwoWordSelectTraceResultRelabeledWithStore
+        bitWordSegmentBase deadSegment target bitWords store
+        basePosition baseOccurrence q) := by
+  unfold GenericSelect.denseTwoWordSelectTraceResultRelabeledWithStore
+  exact storeTraceLocal_relabelReadSegmentsWith_pullback _ _
+    (denseTwoWordSelectWithStoreLocal_storeTraceLocal
+      target bitWords basePosition baseOccurrence q)
+
+private theorem sparseExceptionSelectWithStore_storeTraceLocal
+    {bits : List Bool} {target : Bool}
+    {rankSuperOverhead rankBlockOverhead : Nat}
+    (data : GenericSelect.SparseExceptionSelectData
+      bits target rankSuperOverhead rankBlockOverhead)
+    (layout : GenericSelect.SparseExceptionSelectTraceSegmentLayout)
+    (idx : Nat) :
+    StoreTraceLocal (fun store =>
+      data.selectTraceResultRelabeledWithStore layout store idx) := by
+  unfold GenericSelect.SparseExceptionSelectData.selectTraceResultRelabeledWithStore
+  dsimp only
+  by_cases hvalid : idx < GenericSelect.occurrenceCount bits target
+  · simp only [hvalid, if_pos]
+    apply storeTraceLocal_bind
+    · exact selectEntryReadWithStore_storeTraceLocal _ _ _
+    · intro super?
+      cases super? with
+      | none => exact storeTraceLocal_const _
+      | some super =>
+          by_cases hmarked : GenericSelect.relativeSplitSelectEntryIsMarked super
+          · simp only [hmarked, if_pos]
+            apply storeTraceLocal_bind
+            · exact rankTraceResultRelabeledWithStore_storeTraceLocal _ _ _ _ _
+            · intro exceptionRank
+              exact relativeOffsetReadWithStore_storeTraceLocal _ _ _ _ _
+          · simp [hmarked]
+            apply storeTraceLocal_bind
+            · exact selectEntryReadWithStore_storeTraceLocal _ _ _
+            · intro loc?
+              cases loc? with
+              | none => exact storeTraceLocal_const _
+              | some loc =>
+                  by_cases hlocalMarked :
+                      GenericSelect.relativeSplitSelectEntryIsMarked loc
+                  · simp only [hlocalMarked, if_pos]
+                    exact sparseDirectoryReadWithStore_storeTraceLocal
+                      _ _ _ _ _
+                  · simp [hlocalMarked]
+                    exact denseTwoWordSelectRelabeledWithStore_storeTraceLocal
+                      _ _ _ _ _ _ _
+  · simp only [hvalid]
+    exact storeTraceLocal_const _
+
+theorem concreteBPNativeSelectCloseGlobalWordTraceResultWithStore_eq_of_trace_read_agreement
+    (shape : Cartesian.CartesianShape)
+    (storeA storeB : WordRAM.ReadStore) (idx : Nat)
+    (hagree :
+      forall segment index word?,
+        List.Mem (WordRAM.TraceEvent.readWord segment index word?)
+            (concreteBPNativeSelectCloseGlobalWordTraceResultWithStore
+              shape storeA idx).trace ->
+          storeA.readWord? segment index = storeB.readWord? segment index) :
+    concreteBPNativeSelectCloseGlobalWordTraceResultWithStore
+        shape storeA idx =
+      concreteBPNativeSelectCloseGlobalWordTraceResultWithStore
+        shape storeB idx := by
+  exact sparseExceptionSelectWithStore_storeTraceLocal
+    (GenericSelect.sparseExceptionSelectData shape.bpCode false)
+    concreteBPNativeSelectCloseTraceSegmentLayout idx storeA storeB hagree
+
 theorem concreteBPNativeSelectCloseGlobalWordTraceResultWithStore_no_syntheticCostOnlyPrimitive
     (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
     (idx : Nat) :
@@ -1408,6 +1892,233 @@ theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore_
       hagree.bpCode
       hagree.canonicalComponent
 
+private theorem finalRankCloseWithStore_storeTraceLocal
+    (shape : Cartesian.CartesianShape) (pos : Nat) :
+    StoreTraceLocal (fun store =>
+      concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+        shape store concreteBPNativeRankCloseTraceSegmentBase pos) := by
+  intro storeA storeB hagree
+  exact
+    concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_eq_of_trace_read_agreement
+      shape storeA storeB concreteBPNativeRankCloseTraceSegmentBase pos hagree
+
+private theorem bpCodeWordReadWithStore_storeTraceLocal (index : Nat) :
+    StoreTraceLocal (fun store =>
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpCodeWordReadTraceResultWithStore
+        store index) := by
+  intro storeA storeB hagree
+  have hread := hagree 0 index (storeA.readWord? 0 index) (List.Mem.head [])
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpCodeWordReadTraceResultWithStore
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.readStorePayloadWordValue
+  simp [hread]
+
+private theorem localBPBlockWordsWithStore_storeTraceLocal
+    (shape : Cartesian.CartesianShape) (blockSize close : Nat) :
+    StoreTraceLocal (fun store =>
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPBlockWordsTraceResultWithStore
+        shape store blockSize close) := by
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPBlockWordsTraceResultWithStore
+  apply storeTraceLocal_bind
+  · exact bpCodeWordReadWithStore_storeTraceLocal _
+  · intro w0
+    apply storeTraceLocal_bind
+    · exact bpCodeWordReadWithStore_storeTraceLocal _
+    · intro w1
+      apply storeTraceLocal_bind
+      · exact bpCodeWordReadWithStore_storeTraceLocal _
+      · intro w2
+        apply storeTraceLocal_map
+        exact bpCodeWordReadWithStore_storeTraceLocal _
+
+private theorem localBPWindowBitsWithStore_storeTraceLocal
+    (shape : Cartesian.CartesianShape) (blockSize close : Nat) :
+    StoreTraceLocal (fun store =>
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPWindowBitsTraceResultWithStore
+        shape store blockSize close) := by
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPWindowBitsTraceResultWithStore
+  apply storeTraceLocal_map
+  exact localBPBlockWordsWithStore_storeTraceLocal shape blockSize close
+
+private theorem localBPSameBlockSeededWithStore_storeTraceLocal
+    (shape : Cartesian.CartesianShape)
+    (blockSize leftClose rightClose seed : Nat) :
+    StoreTraceLocal (fun store =>
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSameBlockCloseSeededTraceResultWithStore
+        shape store blockSize leftClose rightClose seed) := by
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSameBlockCloseSeededTraceResultWithStore
+  apply storeTraceLocal_map
+  exact localBPWindowBitsWithStore_storeTraceLocal shape blockSize leftClose
+
+private theorem localBPLeftFringeSeededWithStore_storeTraceLocal
+    (shape : Cartesian.CartesianShape)
+    (blockSize leftClose seed : Nat) :
+    StoreTraceLocal (fun store =>
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPLeftFringeCandidateSeededTraceResultWithStore
+        shape store blockSize leftClose seed) := by
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPLeftFringeCandidateSeededTraceResultWithStore
+  apply storeTraceLocal_map
+  exact localBPWindowBitsWithStore_storeTraceLocal shape blockSize leftClose
+
+private theorem localBPRightFringeSeededWithStore_storeTraceLocal
+    (shape : Cartesian.CartesianShape)
+    (blockSize rightClose seed : Nat) :
+    StoreTraceLocal (fun store =>
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPRightFringeCandidateSeededTraceResultWithStore
+        shape store blockSize rightClose seed) := by
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPRightFringeCandidateSeededTraceResultWithStore
+  apply storeTraceLocal_map
+  exact localBPWindowBitsWithStore_storeTraceLocal shape blockSize rightClose
+
+private theorem finalRankSeedWithStore_storeTraceLocal
+    (shape : Cartesian.CartesianShape) (blockSize close : Nat) :
+    StoreTraceLocal (fun store =>
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSeedFromRankCloseTraceResult
+        shape
+        (concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+          shape store concreteBPNativeRankCloseTraceSegmentBase)
+        blockSize close) := by
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSeedFromRankCloseTraceResult
+  apply storeTraceLocal_map
+  exact finalRankCloseWithStore_storeTraceLocal shape _
+
+private theorem canonicalInteriorWithStore_storeTraceLocal
+    (shape : Cartesian.CartesianShape)
+    (segments : SuccinctClose.BPRelativeRmmInteriorTraceSegments)
+    (startBlock count : Nat) :
+    StoreTraceLocal (fun store =>
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+        shape segments store startBlock count) := by
+  intro storeA storeB hagree
+  let computation :=
+    SuccinctClose.canonicalRelativeRmmInteriorRangeMinComputation
+      shape startBlock count
+  let flatA :=
+    SuccinctClose.flatWordStoreOfReadStore
+      storeA segments.canonicalComponent
+  let flatB :=
+    SuccinctClose.flatWordStoreOfReadStore
+      storeB segments.canonicalComponent
+  have hexecution : computation.run flatA = computation.run flatB :=
+    computation.footprint_determines flatA flatB (by
+      intro address haddress
+      simp only [SuccinctSpace.FlatStoreExecution.footprint] at haddress
+      rcases List.mem_map.mp haddress with ⟨read, hread, hfst⟩
+      have htrace := hagree segments.canonicalComponent read.1 read.2 (by
+        unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+        simp only [
+          SuccinctClose.flatStoreExecutionTraceResultAtSegment]
+        apply List.mem_map.mpr
+        exact ⟨read, hread, rfl⟩)
+      cases read with
+      | mk readAddress word? =>
+          have hreadAddress : readAddress = address := by
+            simpa using hfst
+          subst address
+          simpa [flatA, flatB,
+            SuccinctClose.flatWordStoreOfReadStore]
+            using htrace)
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+  exact congrArg
+    (SuccinctClose.flatStoreExecutionTraceResultAtSegment
+      segments.canonicalComponent) hexecution
+
+private theorem finalSameBlockLcaWithStore_storeTraceLocal
+    (shape : Cartesian.CartesianShape)
+    (blockSize leftClose rightClose : Nat) :
+    StoreTraceLocal (fun store =>
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSameBlockCloseDecodedTraceResultWithRankSeedWithStore
+        shape
+        (concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+          shape store concreteBPNativeRankCloseTraceSegmentBase)
+        store blockSize leftClose rightClose) := by
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSameBlockCloseDecodedTraceResultWithRankSeedWithStore
+  apply storeTraceLocal_bind
+  · exact finalRankSeedWithStore_storeTraceLocal shape blockSize leftClose
+  · intro seed
+    exact localBPSameBlockSeededWithStore_storeTraceLocal
+      shape blockSize leftClose rightClose seed
+
+private theorem finalCrossBlockLcaWithStore_storeTraceLocal
+    (shape : Cartesian.CartesianShape)
+    (segments : SuccinctClose.BPRelativeRmmInteriorTraceSegments)
+    (leftClose rightClose : Nat) :
+    StoreTraceLocal (fun store =>
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+        shape
+        (concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+          shape store concreteBPNativeRankCloseTraceSegmentBase)
+        segments store leftClose rightClose) := by
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+  let blockSize := SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw shape
+  let leftBlock := SuccinctClose.blockOfClose
+    blockSize leftClose
+  let rightBlock := SuccinctClose.blockOfClose
+    blockSize rightClose
+  dsimp only
+  apply storeTraceLocal_bind
+  · exact finalRankSeedWithStore_storeTraceLocal shape blockSize leftClose
+  · intro leftSeed
+    apply storeTraceLocal_bind
+    · exact localBPLeftFringeSeededWithStore_storeTraceLocal
+        shape blockSize leftClose leftSeed
+    · intro left?
+      apply storeTraceLocal_bind
+      · by_cases hmiddle : leftBlock + 1 < rightBlock
+        · dsimp only [blockSize, leftBlock, rightBlock] at hmiddle
+          simp only [hmiddle, if_pos]
+          exact canonicalInteriorWithStore_storeTraceLocal
+            shape segments (leftBlock + 1) (rightBlock - leftBlock - 1)
+        · dsimp only [blockSize, leftBlock, rightBlock] at hmiddle
+          simp only [hmiddle]
+          exact storeTraceLocal_const _
+      · intro middle?
+        apply storeTraceLocal_bind
+        · exact finalRankSeedWithStore_storeTraceLocal
+            shape blockSize rightClose
+        · intro rightSeed
+          apply storeTraceLocal_map
+          exact localBPRightFringeSeededWithStore_storeTraceLocal
+            shape blockSize rightClose rightSeed
+
+private theorem finalLcaCloseWithStore_storeTraceLocal
+    (shape : Cartesian.CartesianShape) (leftClose rightClose : Nat) :
+    StoreTraceLocal (fun store =>
+      concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
+        shape store leftClose rightClose) := by
+  unfold concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
+  let blockSize := SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw shape
+  dsimp only
+  by_cases hsame :
+      SuccinctClose.blockOfClose
+          blockSize leftClose =
+      SuccinctClose.blockOfClose
+          blockSize rightClose
+  · dsimp only [blockSize] at hsame
+    simp only [hsame, if_pos]
+    exact finalSameBlockLcaWithStore_storeTraceLocal
+      shape blockSize leftClose rightClose
+  · dsimp only [blockSize] at hsame
+    simp only [hsame]
+    exact finalCrossBlockLcaWithStore_storeTraceLocal
+      shape concreteBPNativeInteriorTraceSegments leftClose rightClose
+
+theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore_eq_of_trace_read_agreement
+    (shape : Cartesian.CartesianShape)
+    (storeA storeB : WordRAM.ReadStore) (leftClose rightClose : Nat)
+    (hagree :
+      forall segment index word?,
+        List.Mem (WordRAM.TraceEvent.readWord segment index word?)
+            (concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
+              shape storeA leftClose rightClose).trace ->
+          storeA.readWord? segment index = storeB.readWord? segment index) :
+    concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
+        shape storeA leftClose rightClose =
+      concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
+        shape storeB leftClose rightClose := by
+  exact finalLcaCloseWithStore_storeTraceLocal
+    shape leftClose rightClose storeA storeB hagree
+
 namespace WholeQueryInstr
 
 def evalGlobalWordTraceWithStore
@@ -1444,6 +2155,60 @@ def evalGlobalWordTraceWithStore
             (state.setOpt dst (some (state.nat src - 1)))
       | none =>
           WordRAM.TraceResult.pure (state.setOpt dst none)
+
+private theorem evalGlobalWordTraceWithStore_storeTraceLocal
+    (shape : Cartesian.CartesianShape) (left right : Nat)
+    (instr : WholeQueryInstr) (state : WholeQueryState) :
+    StoreTraceLocal (fun store =>
+      instr.evalGlobalWordTraceWithStore shape store left right state) := by
+  cases instr with
+  | selectClose dst idx =>
+      unfold evalGlobalWordTraceWithStore
+      apply storeTraceLocal_map
+      exact fun storeA storeB hagree =>
+        concreteBPNativeSelectCloseGlobalWordTraceResultWithStore_eq_of_trace_read_agreement
+          shape storeA storeB (idx.eval left right state) hagree
+  | lcaClose dst leftReg rightReg =>
+      cases hleft : state.opt leftReg with
+      | none =>
+          cases hright : state.opt rightReg with
+          | none =>
+              simp only [evalGlobalWordTraceWithStore, hleft, hright]
+              exact storeTraceLocal_const _
+          | some rightClose =>
+              simp only [evalGlobalWordTraceWithStore, hleft, hright]
+              exact storeTraceLocal_const _
+      | some leftClose =>
+          cases hright : state.opt rightReg with
+          | none =>
+              simp only [evalGlobalWordTraceWithStore, hleft, hright]
+              exact storeTraceLocal_const _
+          | some rightClose =>
+              simp only [evalGlobalWordTraceWithStore, hleft, hright]
+              apply storeTraceLocal_map
+              exact fun storeA storeB hagree =>
+                concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore_eq_of_trace_read_agreement
+                  shape storeA storeB leftClose rightClose hagree
+  | rankCloseIfSome dst guard pos =>
+      cases hguard : state.opt guard with
+      | none =>
+          simp only [evalGlobalWordTraceWithStore, hguard]
+          exact storeTraceLocal_const _
+      | some value =>
+          simp only [evalGlobalWordTraceWithStore, hguard]
+          apply storeTraceLocal_map
+          exact fun storeA storeB hagree =>
+            concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_eq_of_trace_read_agreement
+              shape storeA storeB concreteBPNativeRankCloseTraceSegmentBase
+              (pos.eval left right state) hagree
+  | outputPredIfSome dst guard src =>
+      cases hguard : state.opt guard with
+      | none =>
+          simp only [evalGlobalWordTraceWithStore, hguard]
+          exact storeTraceLocal_const _
+      | some value =>
+          simp only [evalGlobalWordTraceWithStore, hguard]
+          exact storeTraceLocal_const _
 
 theorem evalGlobalWordTraceWithStore_matchesReadStore
     (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
@@ -1609,7 +2374,24 @@ def evalGlobalWordTraceWithStore
       WordRAM.TraceResult.bind
         (instr.evalGlobalWordTraceWithStore shape store left right state)
         fun state' =>
-          evalGlobalWordTraceWithStore shape store left right rest state'
+      evalGlobalWordTraceWithStore shape store left right rest state'
+
+private theorem evalGlobalWordTraceWithStore_storeTraceLocal
+    (shape : Cartesian.CartesianShape) (left right : Nat)
+    (program : WholeQueryProgram) (state : WholeQueryState) :
+    StoreTraceLocal (fun store =>
+      evalGlobalWordTraceWithStore shape store left right program state) := by
+  induction program generalizing state with
+  | nil =>
+      simp only [evalGlobalWordTraceWithStore]
+      exact storeTraceLocal_const _
+  | cons instr rest ih =>
+      unfold evalGlobalWordTraceWithStore
+      apply storeTraceLocal_bind
+      · exact WholeQueryInstr.evalGlobalWordTraceWithStore_storeTraceLocal
+          shape left right instr state
+      · intro state'
+        exact ih state'
 
 theorem evalGlobalWordTraceWithStore_matchesReadStore
     (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
@@ -1712,6 +2494,109 @@ def concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
     (left right : Nat) : Costed (Option Nat) :=
   (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
     shape store left right).toCosted
+
+/-- One logical payload address, before the later physical-store translation. -/
+abbrev ConcreteBPNativeSuccinctRMQLogicalReadAddress := Nat × Nat
+
+/-- Ordered logical read footprint of the supplied-store execution.
+
+This is the read-event projection of the trace itself. It retains repeated
+addresses and records failed reads because the returned `word?` is deliberately
+discarded only after recognizing a `readWord` event.
+-/
+def concreteBPNativeSuccinctRMQWholeQueryOrderedReadFootprintWithStore
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (left right : Nat) :
+    List ConcreteBPNativeSuccinctRMQLogicalReadAddress :=
+  (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+      shape store left right).trace.filterMap fun event =>
+    match event with
+    | WordRAM.TraceEvent.readWord segment index _ => some (segment, index)
+    | _ => none
+
+/-- The recorded ordered footprint is exactly the execution's read projection. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryOrderedReadFootprintWithStore_recorded
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (left right : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryOrderedReadFootprintWithStore
+        shape store left right =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+          shape store left right).trace.filterMap fun event =>
+        match event with
+        | WordRAM.TraceEvent.readWord segment index _ => some (segment, index)
+        | _ => none := by
+  rfl
+
+/-- Two stores agree on every logical address actually read by the first
+supplied-store execution. -/
+def concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint
+    (shape : Cartesian.CartesianShape)
+    (storeA storeB : WordRAM.ReadStore) (left right : Nat) : Prop :=
+  forall segment index,
+    (segment, index) ∈
+        concreteBPNativeSuccinctRMQWholeQueryOrderedReadFootprintWithStore
+          shape storeA left right ->
+      storeA.readWord? segment index = storeB.readWord? segment index
+
+/-- Dynamic-footprint agreement is exactly agreement at every emitted read
+event, irrespective of whether that event returned a word or failed. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint_iff
+    (shape : Cartesian.CartesianShape)
+    (storeA storeB : WordRAM.ReadStore) (left right : Nat) :
+    concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint
+        shape storeA storeB left right ↔
+      forall segment index word?,
+        WordRAM.TraceEvent.readWord segment index word? ∈
+            (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+              shape storeA left right).trace ->
+          storeA.readWord? segment index =
+            storeB.readWord? segment index := by
+  constructor
+  · intro hagree segment index word? hmem
+    apply hagree segment index
+    simp only [
+      concreteBPNativeSuccinctRMQWholeQueryOrderedReadFootprintWithStore,
+      List.mem_filterMap]
+    exact ⟨WordRAM.TraceEvent.readWord segment index word?, hmem, by simp⟩
+  · intro hagree segment index hmem
+    simp only [
+      concreteBPNativeSuccinctRMQWholeQueryOrderedReadFootprintWithStore,
+      List.mem_filterMap] at hmem
+    rcases hmem with ⟨event, hevent, hproject⟩
+    cases event with
+    | readWord segment' index' word? =>
+        simp at hproject
+        rcases hproject with ⟨rfl, rfl⟩
+        exact hagree segment' index' word? hevent
+    | wordRank target limit result => simp at hproject
+    | wordSelect target occurrence result => simp at hproject
+    | syntheticCostOnlyPrimitive => simp at hproject
+
+/-- Agreement on the reads actually emitted by the supplied-store execution
+determines the complete execution, including its result, modeled cost, ordered
+trace, and failed reads. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_ordered_read_footprint
+    (shape : Cartesian.CartesianShape)
+    (storeA storeB : WordRAM.ReadStore) (left right : Nat)
+    (hagree :
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint
+        shape storeA storeB left right) :
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape storeA left right =
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape storeB left right := by
+  have hlocal :
+      StoreTraceLocal (fun store =>
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+          shape store left right) := by
+    unfold concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+    apply storeTraceLocal_map
+    exact WholeQueryProgram.evalGlobalWordTraceWithStore_storeTraceLocal
+      shape left right concreteBPNativeSuccinctRMQWholeQueryProgram
+      WholeQueryState.empty
+  exact hlocal storeA storeB
+    ((concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint_iff
+      shape storeA storeB left right).mp hagree)
 
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_matchesReadStore
     (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)

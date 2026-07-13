@@ -51,7 +51,7 @@ abbrev listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory :=
 
 /--
 List-facing paper main theorem. For every ordinary `xs : List Int`, the
-advertised `buildPayload` has length `2*n + overhead n` with
+advertised `buildPayload` has length at most `2*n + overhead n` with
 `overhead = o(n)`, valid half-open queries return exact leftmost RMQ answers
 within the modeled constant query budget, and the final trace is the
 no-synthetic flat-payload execution story.
@@ -59,7 +59,7 @@ no-synthetic flat-payload execution story.
 theorem listIntSuccinctRMQPaperMainTheorem :
     RMQ.SuccinctSpace.LittleOLinear RMQ.SuccinctClassic.overhead /\
       forall xs : List Int,
-        (RMQ.SuccinctClassic.buildPayload xs).length =
+        (RMQ.SuccinctClassic.buildPayload xs).length <=
           2 * xs.length + RMQ.SuccinctClassic.overhead xs.length /\
         (forall left right,
           (RMQ.SuccinctClassic.queryCosted xs left right).cost <=
@@ -77,8 +77,65 @@ theorem listIntSuccinctRMQPaperMainTheorem :
                 RMQ.LeftmostArgMin xs left (left + len) idx) /\
         (forall left right,
           RMQ.SuccinctClassic.FlatPayloadStoreNoSyntheticExecutionStory
-            xs left right) :=
-  RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story
+            xs left right) /\
+        (forall (storeA storeB : RMQ.WordRAM.ReadStore) left right,
+          RMQ.SuccinctClassic.storesAgreeOnOrderedReadFootprint
+              xs storeA storeB left right ->
+            RMQ.SuccinctClassic.queryTraceResultWithStore
+                xs storeA left right =
+              RMQ.SuccinctClassic.queryTraceResultWithStore
+                xs storeB left right) := by
+  rcases
+    RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story with
+    ⟨hoverhead, hxs⟩
+  refine ⟨hoverhead, ?_⟩
+  intro xs
+  rcases hxs xs with ⟨hpayload, hcost, hexact, hleftmost, hstory⟩
+  exact
+    ⟨hpayload, hcost, hexact, hleftmost, hstory,
+      fun storeA storeB left right hagree =>
+        RMQ.SuccinctClassic.queryTraceResultWithStore_eq_of_orderedReadFootprint
+          xs storeA storeB left right hagree⟩
+
+/-- Exact dynamic-footprint supplied-store determinism. Equality is of the
+complete trace result, hence preserves decoded result, cost, ordered trace,
+repeated reads, and failures. -/
+abbrev listIntSuccinctRMQQueryTraceResultWithStoreEqOfOrderedReadFootprint :=
+  RMQ.SuccinctClassic.queryTraceResultWithStore_eq_of_orderedReadFootprint
+
+/-- One physical word list erases exactly to the canonical public payload. -/
+abbrev succinctRMQReviewerPhysicalWordsErasePublicPayload :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases
+
+/-- The physical-address footprint is literally the read projection consumed
+by the translated whole-query execution. -/
+abbrev succinctRMQReviewerPhysicalFootprintRecorded :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalFootprint_recorded
+
+/-- Full segmented-to-flat refinement preserving value, cost, ordered trace,
+and successful or failed read results. -/
+abbrev succinctRMQReviewerPhysicalExecutionRefinesLogical :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryReviewerPhysical_refines_logical
+
+/-- The exact physical word list has concrete linear capacity. -/
+abbrev succinctRMQReviewerPhysicalWordsFitLinearCapacity :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalWords_length_le_capacity
+
+/-- The one reviewer width is explicitly logarithmic in input size. -/
+abbrev succinctRMQReviewerWordBitsLogarithmic :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerWordBits_le_log
+
+/-- Every stored physical machine word fits the one reviewer width. -/
+abbrev succinctRMQReviewerPhysicalWordFits :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalWord_length_le_wordBits
+
+/-- Every successful logical read returns a word fitting that same width. -/
+abbrev succinctRMQReviewerSuccessfulReadWordFits :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSuccessfulRead_word_length_le_wordBits
+
+/-- Every address recorded in the consumed physical footprint fits that width. -/
+abbrev succinctRMQReviewerPhysicalFootprintAddressFits :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalFootprint_address_fits_reviewerWordBits
 
 /--
 List-facing supplied-store equality: if the caller-provided store agrees with
@@ -443,11 +500,11 @@ abbrev succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory :=
 
 /--
 Flat-payload no-synthetic execution story for the final succinct RMQ query.
-This is the strongest current execution-model citation: the final query reads
-from one query-independent canonical reviewer payload/store, every successful
-read is counted, the canonical component flattens exactly to its appended
-directory payload, and no event is synthetic. Cross-block replay is uniformly
-the canonical directory execution for all sizes.
+This citation packages the final adequacy record: the final query reads from one
+query-independent canonical reviewer payload/store, every successful read is
+counted, one physical word list erases exactly to the public payload, and no
+event is synthetic. Cross-block replay is uniformly the canonical directory
+execution for all sizes.
 -/
 abbrev succinctRMQFlatPayloadStoreNoSyntheticExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execution_story

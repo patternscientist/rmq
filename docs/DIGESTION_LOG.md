@@ -685,6 +685,36 @@ so exact all-size `118` remains false. A skeptical grad student should next ask
 for a charged zero-block interval navigator, or for a theorem showing the
 current BP-code-only trace cannot beat the full chunk scan.
 
+## 2026-07-12 W15 Whole-Machine U2 Worker Candidate
+
+The W16 audit found that the earlier uniform-directory milestone still joined
+space and execution facts about different objects: the public payload remained
+the old list while the canonical interior was an appended sibling, and the
+physical theorem covered only segment `20`. W15 replaced that split with one
+live public payload and one pre-execution physical word list. The physical list
+erases exactly to `SuccinctClassic.buildPayload`, and physical replay refines
+the whole logical query with result, modeled cost, ordered trace, failures, and
+footprint preserved.
+
+Conceptually, the query is now store-parametric on what it actually reads.
+The ordered logical footprint retains repetitions and failed reads; agreement
+there determines the complete supplied `TraceResult`. Successful physical reads
+are positional reads from the same counted list. A capacity of
+`400000 * (n + 1)` bounds the physical representation, and the derived reviewer
+word width is at most `20 * (log2 (n + 2) + 1)`. That one width covers stored
+and returned words, live/dead/sentinel addresses, segment encodings, and charged
+primitive operands/results.
+
+Plain English: there is no longer a counted payload on one side and a more
+convenient executable sibling on the other. The answer, trace, and `328` cost
+come from reads of the one represented payload. The claims remain about the
+formal Word-RAM/model cost, not compiled Lean time or hardware. U3 still owns a
+tighter explained constant; M1 may repackage the adequacy facts; neither may be
+used to supply missing U2 truth. A skeptical grad student should next ask the
+coordinator to reconstruct the frozen matrix at the exact commit and commission
+a fresh blind audit. Until then this is worker-candidate evidence, not U2
+acceptance.
+
 ## Digestion Tasks
 
 1. Turn the RMQ capstone into a two-page lecture-style proof map:

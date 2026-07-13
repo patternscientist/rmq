@@ -51,8 +51,14 @@ human-readable file when the interpretation changes.
 - "Lean runtime" should not be presented as the RAM model-cost theorem.
 - `2^128` is compatibility/history language, not the current public activation
   route.
-- `4144` is the current clean fixed all-size bound from the route-split
-  theorem; `196727` should be described only as legacy compatibility.
+- `328` is the current checked transitional canonical reviewer bound; U3 owns
+  any final explained constant.
+- `4144`, Ready-regime `118`, the zero-block route, and `196727` are
+  compatibility/history only, not the canonical reviewer execution.
+- U2 may be described by W15 only as a worker candidate until the coordinator
+  reconstructs the frozen matrix and obtains a fresh blind exact-commit audit.
+- Current machine claims must identify the same public `buildPayload`, reviewer
+  physical words, execution, ordered footprint, and reviewer word width.
 - `118` is the fast-regime modeled bound under the readiness threshold, not the
   all-size theorem unless a future theorem proves that.
 - "No extraction gap" must not erase the remaining executable/compiler ladder;

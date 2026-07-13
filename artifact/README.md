@@ -140,13 +140,19 @@ things:
 - model-level constant query cost, not Lean runtime or compiled-code
   performance;
 - a final global trace with no synthetic cost-only marker events;
-- successful final-query reads backed by counted flat payload words;
-- supplied-store replay and exactness/cost transfer under footprint agreement;
-- the route-split all-size modeled query-cost theorem and clean fixed
-  all-size constant `4144`;
-- the fast-regime modeled query-cost constant `118` under the real `2^15`
-  readiness threshold; and
+- one pre-execution physical word list erasing exactly to the public
+  `SuccinctClassic.buildPayload`, with every successful final-query read backed
+  positionally by that list;
+- complete supplied-store trace equality under agreement on the actual ordered
+  execution footprint, including failed and repeated reads;
+- a linear reviewer capacity and query-independent logarithmic word width
+  bounding physical words, physical addresses, and primitive operands/results;
+- the checked canonical transitional all-size modeled query cap `328`; and
 - an information-theoretic Catalan/Cartesian-shape RMQ lower bound.
+
+The Ready `118`, route-split `4144`, zero-block, and `196727` theorems remain
+available only as compatibility/history. They are not the canonical reviewer
+route described by this guide.
 
 ## Validation And Examples
 

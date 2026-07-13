@@ -3994,6 +3994,128 @@ theorem canonicalRelativeRmmInteriorDirectory_rangeMinCosted_erase_exact
   exact (canonicalRelativeRmmInteriorDirectory shape).rangeMin_exact
     hcount hbound
 
+private theorem nat_succ_square_le_four_mul_two_pow_all_size (q : Nat) :
+    (q + 1) * (q + 1) <= 4 * 2 ^ q := by
+  by_cases hlarge : 6 <= q
+  case pos =>
+    have hsq := nat_succ_square_le_two_pow_of_six_le q hlarge
+    exact Nat.le_trans hsq (by
+      have hpos : 0 < 2 ^ q := Nat.pow_pos (by omega : 0 < 2)
+      omega)
+  case neg =>
+    have hcases :
+        q = 0 \/ q = 1 \/ q = 2 \/ q = 3 \/ q = 4 \/ q = 5 := by
+      omega
+    rcases hcases with hq | hq | hq | hq | hq | hq <;>
+      subst q <;> decide
+
+private theorem nat_log2_one_eq_zero : Nat.log2 1 = 0 := by
+  have hpow : (1 : Nat) < 2 ^ (1 : Nat) := by simp
+  have hlt : Nat.log2 1 < 1 :=
+    (Nat.log2_lt (by omega : Not ((1 : Nat) = 0))).2 hpow
+  omega
+
+private theorem machineWordBits_le_self_of_pos
+    {n : Nat} (hn : 0 < n) :
+    SuccinctRank.machineWordBits n <= n := by
+  unfold SuccinctRank.machineWordBits
+  by_cases hone : n = 1
+  case pos =>
+    subst n
+    simp [nat_log2_one_eq_zero]
+  case neg =>
+    have hn_ne : Not (n = 0) := by omega
+    have hpow : n < 2 ^ n := by
+      have hsucc := SuccinctSpace.nat_succ_le_two_pow n
+      omega
+    have hlog_lt : Nat.log2 n < n :=
+      (Nat.log2_lt hn_ne).2 hpow
+    omega
+
+private theorem machineWordBits_sq_le_four_mul_self_of_pos
+    {n : Nat} (hn : 0 < n) :
+    SuccinctRank.machineWordBits n *
+        SuccinctRank.machineWordBits n <= 4 * n := by
+  let q := Nat.log2 n
+  have hn_ne : Not (n = 0) := by omega
+  have hpow : 2 ^ q <= n := by
+    simpa [q] using Nat.log2_self_le hn_ne
+  have hsq : (q + 1) * (q + 1) <= 4 * 2 ^ q :=
+    nat_succ_square_le_four_mul_two_pow_all_size q
+  exact Nat.le_trans
+    (by
+      simpa [q, SuccinctRank.machineWordBits] using hsq)
+    (Nat.mul_le_mul_left 4 hpow)
+
+private theorem nat_succ_cube_le_eight_mul_two_pow_all_size (q : Nat) :
+    (q + 1) * ((q + 1) * (q + 1)) <= 8 * 2 ^ q := by
+  by_cases hlarge : 11 <= q
+  case pos =>
+    exact Nat.le_trans
+      (nat_succ_cube_le_two_pow_of_11_le q hlarge)
+      (by omega)
+  case neg =>
+    have hcases :
+        q = 0 \/ q = 1 \/ q = 2 \/ q = 3 \/ q = 4 \/ q = 5 \/
+          q = 6 \/ q = 7 \/ q = 8 \/ q = 9 \/ q = 10 := by
+      omega
+    rcases hcases with hq | hq | hq | hq | hq | hq |
+      hq | hq | hq | hq | hq <;> subst q <;> decide
+
+private theorem machineWordBits_cube_le_eight_mul_self_of_pos
+    {n : Nat} (hn : 0 < n) :
+    SuccinctRank.machineWordBits n *
+        (SuccinctRank.machineWordBits n *
+          SuccinctRank.machineWordBits n) <= 8 * n := by
+  let q := Nat.log2 n
+  have hcube := nat_succ_cube_le_eight_mul_two_pow_all_size q
+  have hpow : 2 ^ q <= n := by
+    simpa [q] using Nat.log2_self_le (Nat.ne_of_gt hn)
+  change (q + 1) * ((q + 1) * (q + 1)) <= 8 * n
+  exact Nat.le_trans hcube (Nat.mul_le_mul_left 8 hpow)
+private theorem one_lt_two_pow_of_pos_local {k : Nat} (hk : 0 < k) :
+    1 < 2 ^ k := by
+  cases k with
+  | zero => omega
+  | succ k =>
+      have hpos : 0 < 2 ^ k := Nat.pow_pos (by omega : 0 < 2)
+      simp [Nat.pow_succ]
+      omega
+
+
+private theorem machineWordBits_two_mul_le_two_mul (n : Nat) :
+    SuccinctRank.machineWordBits (2 * n) <=
+      2 * SuccinctRank.machineWordBits n := by
+  by_cases hn : n = 0
+  case pos =>
+    subst n
+    simp [SuccinctRank.machineWordBits]
+  case neg =>
+    let w := SuccinctRank.machineWordBits n
+    have hwpos : 0 < w := by
+      simpa [w] using SuccinctRank.machineWordBits_pos n
+    have hnlt : n < 2 ^ w := by
+      simpa [w] using SuccinctRank.self_lt_two_pow_machineWordBits n
+    have htwo : 2 <= 2 ^ w := by
+      have hone := one_lt_two_pow_of_pos_local hwpos
+      omega
+    have hscale : 2 * n < 2 * 2 ^ w :=
+      Nat.mul_lt_mul_of_pos_left hnlt (by omega)
+    have hright : 2 * 2 ^ w <= 2 ^ w * 2 ^ w :=
+      Nat.mul_le_mul_right (2 ^ w) htwo
+    have hpowEq : 2 ^ w * 2 ^ w = 2 ^ (2 * w) := by
+      calc
+        2 ^ w * 2 ^ w = 2 ^ (w + w) := (Nat.pow_add 2 w w).symm
+        _ = 2 ^ (2 * w) := by congr 1 <;> omega
+    have hlt : 2 * n < 2 ^ (2 * w) := by
+      calc
+        2 * n < 2 * 2 ^ w := hscale
+        _ <= 2 ^ w * 2 ^ w := hright
+        _ = 2 ^ (2 * w) := hpowEq
+    have hbits : Nat.log2 (2 * n) + 1 <= 2 * w :=
+      natLog2_succ_le_of_pos_lt_pow (by omega) hlt
+    simpa [SuccinctRank.machineWordBits, w] using hbits
+
 def canonicalRelativeRmmInteriorRawPayloadOverhead (n : Nat) : Nat :=
   let base := Nat.log2 n + 1
   let blockCount := n / base
@@ -4008,6 +4130,134 @@ def canonicalRelativeRmmInteriorRawPayloadOverhead (n : Nat) : Nat :=
   (superCount * superWidth + 3 * (blockCount * relativeWidth)) +
     ((macroCount * (offsetWidth * macroSize)) * offsetWidth) +
       ((globalLevelCount * macroCount) * blockAddressWidth)
+
+theorem canonicalRelativeRmmInteriorRawPayloadOverhead_le_linear (n : Nat) :
+    canonicalRelativeRmmInteriorRawPayloadOverhead n <= 218 * (n + 1) := by
+  by_cases hn : n = 0
+  case pos =>
+    subst n
+    simp [canonicalRelativeRmmInteriorRawPayloadOverhead,
+      SuccinctRank.machineWordBits, nat_log2_one_eq_zero]
+  case neg =>
+    have hnpos : 0 < n := by omega
+    let w := SuccinctRank.machineWordBits n
+    let e := SuccinctRank.machineWordBits w
+    let b := n / w
+    let sw := SuccinctRank.machineWordBits (2 * n)
+    let s := b / w + 1
+    let r := 2 * e + 3
+    let M := w * w
+    let m := b / M + 1
+    let o := SuccinctRank.machineWordBits M
+    let g := SuccinctRank.machineWordBits m
+    let a := SuccinctRank.machineWordBits b
+    have hwpos : 0 < w := by
+      simpa [w] using SuccinctRank.machineWordBits_pos n
+    have hwle : w <= n := machineWordBits_le_self_of_pos hnpos
+    have hele : e <= w := machineWordBits_le_self_of_pos hwpos
+    have hwsq : w * w <= 4 * n :=
+      machineWordBits_sq_le_four_mul_self_of_pos hnpos
+    have hwcube : w * (w * w) <= 8 * n :=
+      machineWordBits_cube_le_eight_mul_self_of_pos hnpos
+    have hbw : b * w <= n := by
+      simpa [b] using Nat.div_mul_le_self n w
+    have hble : b <= n := by
+      simpa [b] using Nat.div_le_self n w
+    have hsw : sw <= 2 * w := by
+      simpa [sw, w] using machineWordBits_two_mul_le_two_mul n
+    have hr : r <= 5 * w := by
+      simp only [r]
+      omega
+    have hsdiv : (b / w) * w <= b := Nat.div_mul_le_self b w
+    have hsCore : (b / w) * w + w <= 2 * n := by omega
+    have hsuper : s * sw <= 4 * n := by
+      calc
+        s * sw <= s * (2 * w) := Nat.mul_le_mul_left s hsw
+        _ = 2 * ((b / w) * w + w) := by
+          simp [s, Nat.mul_add, Nat.mul_left_comm, Nat.mul_comm]
+        _ <= 2 * (2 * n) := Nat.mul_le_mul_left 2 hsCore
+        _ = 4 * n := by omega
+    have hrel : 3 * (b * r) <= 15 * n := by
+      calc
+        3 * (b * r) <= 3 * (b * (5 * w)) :=
+          Nat.mul_le_mul_left 3 (Nat.mul_le_mul_left b hr)
+        _ = 15 * (b * w) := by
+          simp [Nat.mul_left_comm, Nat.mul_comm]
+          omega
+        _ <= 15 * n := Nat.mul_le_mul_left 15 hbw
+    have hsummary : s * sw + 3 * (b * r) <= 19 * n := by
+      omega
+    have hoBound : o <= 2 * e + 1 := by
+      simpa [o, M, e, w] using
+        SuccinctRank.machineWordBits_mul_self_log_bound w
+    have heSq : e * e <= 4 * w := by
+      simpa [e] using machineWordBits_sq_le_four_mul_self_of_pos hwpos
+    have hoSqRaw : o * o <= (2 * e + 1) * (2 * e + 1) :=
+      Nat.mul_le_mul hoBound hoBound
+    have htwoSq : (2 * e) * (2 * e) = 4 * (e * e) := by
+      simp [Nat.mul_left_comm, Nat.mul_comm]
+      omega
+    have hExpand : (2 * e + 1) * (2 * e + 1) =
+        4 * (e * e) + 4 * e + 1 := by
+      calc
+        (2 * e + 1) * (2 * e + 1) =
+            (2 * e) * (2 * e) + (2 * e) + (2 * e) + 1 := by
+          simp [Nat.add_mul, Nat.mul_add, Nat.add_assoc]
+        _ = 4 * (e * e) + 4 * e + 1 := by rw [htwoSq]; omega
+    have hoSq : o * o <= 21 * w := by
+      calc
+        o * o <= (2 * e + 1) * (2 * e + 1) := hoSqRaw
+        _ = 4 * (e * e) + 4 * e + 1 := hExpand
+        _ <= 21 * w := by omega
+    have hmM : m * M <= b + M := by
+      have hdiv := Nat.div_mul_le_self b M
+      calc
+        m * M = (b / M) * M + M := by simp [m, Nat.add_mul]
+        _ <= b + M := Nat.add_le_add_right hdiv M
+    have hMw : M * w <= 8 * n := by
+      simpa [M, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hwcube
+    have hsumw : (b + M) * w <= 9 * n := by
+      calc
+        (b + M) * w = b * w + M * w := Nat.add_mul b M w
+        _ <= n + 8 * n := Nat.add_le_add hbw hMw
+        _ = 9 * n := by omega
+    have hlocal : (m * (o * M)) * o <= 189 * n := by
+      calc
+        (m * (o * M)) * o = (m * M) * (o * o) := by
+          simp [Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm]
+        _ <= (m * M) * (21 * w) :=
+          Nat.mul_le_mul_left (m * M) hoSq
+        _ = 21 * ((m * M) * w) := by
+          simp [Nat.mul_assoc, Nat.mul_comm]
+        _ <= 21 * ((b + M) * w) :=
+          Nat.mul_le_mul_left 21 (Nat.mul_le_mul_right w hmM)
+        _ <= 21 * (9 * n) := Nat.mul_le_mul_left 21 hsumw
+        _ = 189 * n := by omega
+    have hmle : m <= n + 1 := by
+      have hdiv : b / M <= b := Nat.div_le_self b M
+      simp only [m]
+      omega
+    have hgle : g <= 2 * w := by
+      have hm2n : m <= 2 * n := by omega
+      exact Nat.le_trans
+        (by
+          simpa [g, sw] using
+            SuccinctRank.machineWordBits_mono_le hm2n)
+        hsw
+    have hale : a <= w := by
+      simpa [a, w] using SuccinctRank.machineWordBits_mono_le hble
+    have hmM5 : m * M <= 5 * n := by omega
+    have hglobal : (g * m) * a <= 10 * n := by
+      calc
+        (g * m) * a <= ((2 * w) * m) * w :=
+          Nat.mul_le_mul (Nat.mul_le_mul_right m hgle) hale
+        _ = 2 * (m * M) := by
+          simp [M, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm]
+        _ <= 2 * (5 * n) := Nat.mul_le_mul_left 2 hmM5
+        _ = 10 * n := by omega
+    change (s * sw + 3 * (b * r)) + (m * (o * M)) * o +
+      (g * m) * a <= 218 * (n + 1)
+    omega
 
 theorem canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw
     (shape : Cartesian.CartesianShape) :

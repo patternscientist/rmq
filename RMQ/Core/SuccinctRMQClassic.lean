@@ -79,16 +79,15 @@ theorem stackCartesianShape_eq_cartesianShape (xs : List Int) :
 
 /-- The auxiliary `o(n)` term used by the public BP-native construction. -/
 abbrev overhead : Nat -> Nat :=
-  SuccinctFinal.concreteBPNativeSuccinctRMQOverhead
-    SuccinctFinal.genericSparseExceptionBPCloseAccessOverhead
+  SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerOverhead
 
 /-- Constant modeled query budget of the public BP-native construction. -/
 abbrev legacyQueryCost : Nat :=
   SuccinctFinal.concreteBPNativeSuccinctRMQQueryCost
     SuccinctSelect.sparseDenseFalseSelectQueryCost
 
-/-- Clean fixed all-size modeled query budget of the public construction. -/
-abbrev queryCost : Nat :=
+/-- Compatibility bound for the retired route-split/zero-block explanation. -/
+abbrev compatibilityCleanAllSizeQueryCost : Nat :=
   SuccinctFinal.concreteBPNativeSuccinctRMQCleanAllSizeQueryCost
 
 /-- Shape-sensitive route-split modeled query budget for `xs`. -/
@@ -96,10 +95,13 @@ abbrev routeSplitQueryCost (xs : List Int) : Nat :=
   SuccinctFinal.concreteBPNativeSuccinctRMQRouteSplitQueryCost
     (cartesianShape xs)
 /-- Checked transitional U2 cost for the canonical reviewer route. -/
-abbrev canonicalTransitionalQueryCost : Nat :=
+abbrev queryCost : Nat :=
   3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
     SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
       SuccinctSelect.sparseDenseFalseSelectQueryCost
+
+/-- Stable descriptive alias for the checked canonical reviewer bound. -/
+abbrev canonicalTransitionalQueryCost : Nat := queryCost
 
 
 /-- Shape-sensitive route-split budget over an already prepared shape. -/
@@ -112,8 +114,7 @@ The counted payload built from an ordinary input list: the `2*n` BP shape code
 plus the compact auxiliary payload used by the final BP-native construction.
 -/
 def buildPayload (xs : List Int) : List Bool :=
-  SuccinctFinal.concreteBPNativeSuccinctRMQPayload
-    SuccinctFinal.builtGenericSparseExceptionSelectBPCloseAccessFamily
+  SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerPayload
     (cartesianShape xs)
 
 /--
@@ -121,8 +122,7 @@ Prepared payload construction.  This reuses the stored Cartesian shape and is
 proved below to agree with the canonical `buildPayload` path.
 -/
 def preparedBuildPayload (prepared : PreparedInput) : List Bool :=
-  SuccinctFinal.concreteBPNativeSuccinctRMQPayload
-    SuccinctFinal.builtGenericSparseExceptionSelectBPCloseAccessFamily
+  SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerPayload
     prepared.shape
 
 /--
@@ -196,20 +196,65 @@ theorem preparedQueryCosted_cost_eq
 
 /-- Query-independent flat payload layout used by the final query for `xs`. -/
 abbrev flatPayloadLayout (xs : List Int) :
-    SuccinctFinal.ConcreteBPNativeSuccinctRMQFlatPayloadLayout
+    SuccinctFinal.ConcreteBPNativeSuccinctRMQCanonicalReviewerPayloadLayout
       (cartesianShape xs) :=
-  SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadLayout
+  SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerPayloadLayout
     (cartesianShape xs)
 
 /-- Read-store view induced by the query-independent flat payload layout. -/
 abbrev flatPayloadReadStore (xs : List Int) : WordRAM.ReadStore :=
-  SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadReadStore
+  SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerReadStore
     (cartesianShape xs)
 
 /-- Canonical globally segmented read store for the final query on `xs`. -/
 abbrev globalReadStore (xs : List Int) : WordRAM.ReadStore :=
   SuccinctFinal.concreteBPNativeSuccinctRMQGlobalReadStore
     (cartesianShape xs)
+
+/-- Supplied-store trace result before `Costed` projection. -/
+abbrev queryTraceResultWithStore
+    (xs : List Int) (store : WordRAM.ReadStore) (left right : Nat) :
+    WordRAM.TraceResult (Option Nat) :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+    (cartesianShape xs) store left right
+
+/-- Ordered logical footprint recorded by one supplied-store execution. -/
+abbrev orderedReadFootprintWithStore
+    (xs : List Int) (store : WordRAM.ReadStore) (left right : Nat) :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryOrderedReadFootprintWithStore
+    (cartesianShape xs) store left right
+
+/-- Agreement on exactly the addresses emitted by `storeA`'s execution. -/
+abbrev storesAgreeOnOrderedReadFootprint
+    (xs : List Int) (storeA storeB : WordRAM.ReadStore)
+    (left right : Nat) : Prop :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnOrderedReadFootprint
+    (cartesianShape xs) storeA storeB left right
+
+/-- One flat pre-execution machine-word list whose erasure is `buildPayload`. -/
+abbrev reviewerPhysicalWords (xs : List Int) : List (List Bool) :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalWords
+    (cartesianShape xs)
+
+/-- Full reviewer execution after checked logical-to-physical translation. -/
+abbrev reviewerPhysicalTraceResult
+    (xs : List Int) (left right : Nat) : WordRAM.TraceResult (Option Nat) :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalTraceResult
+    (cartesianShape xs) left right
+
+/-- Ordered physical addresses consumed by the reviewer execution. -/
+abbrev reviewerPhysicalFootprint
+    (xs : List Int) (left right : Nat) : List Nat :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryReviewerPhysicalFootprint
+    (cartesianShape xs) left right
+
+/-- Query-independent all-size physical capacity. -/
+abbrev reviewerCapacity (n : Nat) : Nat :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQReviewerCapacity n
+
+/-- Query-independent all-size machine word width. -/
+abbrev reviewerWordBits (n : Nat) : Nat :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQReviewerWordBits n
 
 /-- List-facing final footprint agreement for two supplied read stores. -/
 abbrev storesAgreeOnFootprint
@@ -244,9 +289,9 @@ def FlatPayloadStoreNoSyntheticExecutionStory
     (xs : List Int) (left right : Nat) : Prop :=
   SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerPayload
       (cartesianShape xs) =
-      (flatPayloadLayout xs).payload ++
-        (SuccinctClose.canonicalRelativeRmmInteriorDirectory
-          (cartesianShape xs)).payload /\
+      buildPayload xs /\
+    SuccinctFinal.ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
+      (cartesianShape xs) left right /\
     SuccinctSpace.flattenPayloadWords
         (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
           (cartesianShape xs)).store.words.toList =
@@ -281,11 +326,15 @@ payload layout and contains no synthetic cost-only trace events.
 theorem flatPayloadStoreNoSyntheticExecutionStory
     (xs : List Int) (left right : Nat) :
     FlatPayloadStoreNoSyntheticExecutionStory xs left right := by
-  simpa [FlatPayloadStoreNoSyntheticExecutionStory, flatPayloadLayout,
-    flatPayloadReadStore, flatPayloadTraceResult, flatPayloadTraceEventBits,
-    buildPayload, queryCosted] using
+  unfold FlatPayloadStoreNoSyntheticExecutionStory
+  refine ⟨rfl,
+    SuccinctFinal.concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
+      (cartesianShape xs) left right, ?_⟩
+  have h :=
     SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execution_story
       (cartesianShape xs) left right
+  simpa [flatPayloadLayout, flatPayloadReadStore, flatPayloadTraceResult,
+    flatPayloadTraceEventBits, queryCosted] using h.2
 
 /--
 Shape-only local queries over `Cartesian.shape xs` return the same leftmost
@@ -359,12 +408,11 @@ theorem scanWindow_cartesianShape_representative_eq
 theorem overhead_littleO :
     SuccinctSpace.LittleOLinear overhead := by
   exact
-    SuccinctFinal.concreteBPNativeSuccinctRMQOverhead_littleO
-      SuccinctFinal.builtGenericSparseExceptionSelectBPCloseAccessFamily
+    SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerOverhead_littleO
 
-/-- The built payload has exactly `2*n + overhead n` bits. -/
+/-- The live canonical payload has at most `2*n + overhead n` bits. -/
 theorem buildPayload_length (xs : List Int) :
-    (buildPayload xs).length =
+    (buildPayload xs).length <=
       2 * xs.length + overhead xs.length := by
   have hshape :
       List.Mem (cartesianShape xs)
@@ -373,8 +421,7 @@ theorem buildPayload_length (xs : List Int) :
       Cartesian.shapeOfSize_mem_shapesOfSize
         (by simpa [cartesianShape] using Cartesian.shape_shapeOfSize xs)
   simpa [buildPayload, overhead] using
-    SuccinctFinal.concreteBPNativeSuccinctRMQPayload_length
-      SuccinctFinal.builtGenericSparseExceptionSelectBPCloseAccessFamily
+    SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerPayload_length_le
       hshape
 
 /-- Every query has the checked canonical transitional U2 cost. -/
@@ -389,9 +436,7 @@ theorem queryCosted_cost_le_canonicalTransitional
 theorem queryCosted_cost_le
     (xs : List Int) (left right : Nat) :
     (queryCosted xs left right).cost <= queryCost := by
-  simpa [queryCosted, queryCost] using
-    SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_cleanAllSize
-      (cartesianShape xs) left right
+  exact queryCosted_cost_le_canonicalTransitional xs left right
 
 /--
 If a supplied store agrees with the canonical global store on the final
@@ -407,6 +452,33 @@ theorem queryCostedWithStore_eq_queryCosted_of_footprint
     globalReadStore] using
     SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_eq_global_of_footprint
       (cartesianShape xs) store hfoot left right
+
+/-- Agreement on the actual ordered footprint determines the complete
+supplied-store execution: decoded result, cost, ordered trace, repeated reads,
+and failed reads are identical. -/
+theorem queryTraceResultWithStore_eq_of_orderedReadFootprint
+    (xs : List Int) (storeA storeB : WordRAM.ReadStore)
+    (left right : Nat)
+    (hagree : storesAgreeOnOrderedReadFootprint
+      xs storeA storeB left right) :
+    queryTraceResultWithStore xs storeA left right =
+      queryTraceResultWithStore xs storeB left right := by
+  exact
+    SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_ordered_read_footprint
+      (cartesianShape xs) storeA storeB left right hagree
+
+/-- Dynamic-footprint agreement also determines the decoded result and modeled
+cost after projection to `Costed`. -/
+theorem queryCostedWithStore_eq_of_orderedReadFootprint
+    (xs : List Int) (storeA storeB : WordRAM.ReadStore)
+    (left right : Nat)
+    (hagree : storesAgreeOnOrderedReadFootprint
+      xs storeA storeB left right) :
+    queryCostedWithStore xs storeA left right =
+      queryCostedWithStore xs storeB left right := by
+  exact congrArg WordRAM.TraceResult.toCosted
+    (queryTraceResultWithStore_eq_of_orderedReadFootprint
+      xs storeA storeB left right hagree)
 
 /--
 Under footprint agreement with the canonical global store, the supplied-store
@@ -504,7 +576,7 @@ within the constant modeled query budget `queryCost`.
 theorem listInt_two_n_plus_o_constant_query_profile :
     SuccinctSpace.LittleOLinear overhead /\
       forall xs : List Int,
-        (buildPayload xs).length =
+        (buildPayload xs).length <=
           2 * xs.length + overhead xs.length /\
         (forall left right,
           (queryCosted xs left right).cost <= queryCost) /\
@@ -541,7 +613,7 @@ events.
 theorem listInt_flatPayloadStore_noSynthetic_execution_story :
     SuccinctSpace.LittleOLinear overhead /\
       forall xs : List Int,
-        (buildPayload xs).length =
+        (buildPayload xs).length <=
           2 * xs.length + overhead xs.length /\
         (forall left right,
           (queryCosted xs left right).cost <= queryCost) /\
@@ -578,7 +650,7 @@ successful read backed by the counted flat layout.
 theorem listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story :
     SuccinctSpace.LittleOLinear overhead /\
       forall xs : List Int,
-        (buildPayload xs).length =
+        (buildPayload xs).length <=
           2 * xs.length + overhead xs.length /\
         (forall left right,
           (queryCosted xs left right).cost <= queryCost) /\

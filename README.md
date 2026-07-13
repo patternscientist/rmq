@@ -97,25 +97,22 @@ The RMQ-only paper aliases live in
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreExecutionStory` | Target-independent global-store execution story for compressed/FID rank/select: for fixed `bits`, shared access plus rank false/true and select false/true traces all read from one concrete payload store. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory` | Bounded target-independent global-store execution story for compressed/FID rank/select: the shared access/rank/select traces also carry trace-local finite widths bounding payload-read addresses and word-primitive operands/results. |
 
-For the current concrete BP-native RMQ capstone, U2 exposes one unconditional
-canonical reviewer route. Its checked transitional modeled query bound is
-`328`; no decorative reads preserve the obsolete Ready or route-split
-constants. The supplied-store and list-facing companions transfer this same
-bound under composed-footprint agreement. U3 owns the final explained cost
-cleanup.
+The current W15 branch supplies the U2 worker candidate; coordinator acceptance
+still requires independent matrix reconstruction and a fresh blind exact-commit
+audit. The canonical reviewer route has one live public payload,
+`SuccinctClassic.buildPayload`. One pre-execution reviewer physical word list
+erases exactly to that payload and refines the segmented logical execution,
+including ordered trace, failures, and footprint. Its query-independent width is
+`machineWordBits (400000 * (n + 1))`, with a checked linear capacity bound and
+an explicit `O(log (n + 2))` inequality.
 
-The final all-size global-store theorem above remains a fixed-trace
-store-extensional statement. The supplied-store route now also has a whole-final
-replay,
-`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore`,
-whose theorem package proves read-store matching, equality with the canonical
-global store replay, store-parametricity over the explicit final layout,
-store-parametricity from a safe layout-footprint overapproximation,
-emitted-read containment in that footprint, equality/exactness transfer under
-footprint agreement with the canonical global store, and no synthetic cost-only
-events. The footprint is not claimed to be exact or minimal. The separate
-zero-block same-block theorem remains the leaf-level version of the same
-supplied-store story.
+The supplied-store theorem uses the execution's ordered read footprint, retaining
+repeated and failed reads. Agreement there determines the complete `TraceResult`,
+so result, cost, ordered trace, and footprint all follow from charged reads. The
+checked transitional all-size cap remains `328`; U3 owns the final explained
+constant. Ready `118`, route-split `4144`, zero-block, and `196727` declarations
+remain compatibility/history surfaces and have no reverse edge into the
+reviewer route.
 
 The construction-level theorem names are intentionally verbose, so that the
 model assumptions and dependency path remain inspectable. See
@@ -304,12 +301,11 @@ imports, this material):
 
 ## Current Development Docket
 
-The RMQ capstone is in place, including the public route-split all-size cost
-theorem. The fixed all-size bound is now `4144`; under
-`shape.size >= SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold`, the
-same final global trace has the proved fast-regime bound
-`SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118`. The
-development frontier is now to package, calibrate, and reuse the infrastructure:
+The RMQ capstone is in place with the uniform canonical reviewer route and its
+checked transitional all-size cap `328`. U3 owns the final explained constant.
+The older route-split `4144`, Ready `118`, zero-block, and `196727` statements
+remain compatibility/history surfaces. The development frontier is now to
+package, calibrate, and reuse the infrastructure:
 
 1. deepen balanced-parentheses navigation into a fuller tree-navigation API and
    continue turning useful component traces into public store-backed execution

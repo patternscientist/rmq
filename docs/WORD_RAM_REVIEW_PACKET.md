@@ -1,19 +1,23 @@
 # Word-RAM Review Packet
 ## Canonical U2 Word-RAM Route
 
-The reviewer-facing close/LCA path now uses
-`canonicalRelativeRmmInteriorComponentStore` at global segment `20`.
-`canonicalRelativeRmmInteriorRangeMinExecutionWithRead` constructs candidates
-from the supplied read interface and records the same ordered addresses as its
-dynamic footprint. Store agreement determines the execution, and the composed
-whole-query supplied-store evaluator is store-parametric and no-synthetic.
+The reviewer-facing close/LCA path uses
+`canonicalRelativeRmmInteriorComponentStore` at global segment `20`, embedded
+with every other live read-producing source in
+`concreteBPNativeSuccinctRMQReviewerPhysicalWords`. That one pre-execution list
+erases exactly to the canonical public payload. Physical replay refines logical
+replay with result, cost, ordered trace, failures, and footprint preserved.
 
-Physical addresses use
-`concreteBPNativeSuccinctRMQCanonicalInteriorPhysicalAddress` and fit
-`concreteBPNativeSuccinctRMQCanonicalReviewerWordBits`. The width is derived
-from query/input operands and addressable counted machine words, rather than
-from a completed trace. Empty, singleton, size-two, and threshold-boundary
-evidence is kernel checked. The honest current modeled cap is `328`.
+The exact ordered logical read footprint retains repeated and failed reads;
+agreement on it determines the complete supplied `TraceResult`. Successful
+physical reads are positional reads from the one list. The capacity
+`400000 * (n + 1)` is linear, and
+`concreteBPNativeSuccinctRMQReviewerWordBits n` is derived from that capacity
+before execution. It has an explicit logarithmic all-size upper bound and
+bounds every stored/returned word, translated live/dead address, segment
+encoding, query operand, primitive operand/result, and consumed footprint
+address. Empty, singleton, size-two, and threshold-boundary evidence is kernel
+checked. The honest current modeled cap is `328`.
 
 The old zero-block evaluator and Ready/route-split `118` discussion below is
 compatibility history, not part of the `RMQPaper` reviewer route.

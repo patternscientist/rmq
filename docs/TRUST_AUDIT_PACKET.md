@@ -2,13 +2,17 @@
 ## U2 Canonical Reviewer Trust Boundary
 
 The active final route has no Ready/Active/zero-block dispatch. Its close/LCA
-interior reads the concatenated canonical component at segment `20`.
+interior reads the concatenated canonical component at segment `20`, while one
+pre-execution physical list covers every live read-producing segment and erases
+exactly to the public `buildPayload`.
 `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_refines_canonicalInterpretedCosted`
 and `...Costed_exact` connect the charged trace to semantic RMQ exactness.
-Supplied-store agreement, successful-read canonical-payload backing, no
-synthetic events, machine-word bounds, and physical-address bounds are checked
-at the composed consumer. The transitional all-size cap is exactly `328`;
-older route constants are retained only as compatibility history.
+Agreement on the actual ordered logical footprint determines the complete
+supplied trace; the physical refinement preserves order and failures, and
+successful reads are positional reads from the same counted list. No-synthetic,
+linear-capacity, logarithmic-width, stored/returned-word, physical-address, and
+primitive-operand bounds are checked at the composed consumer. The transitional
+all-size cap is exactly `328`; older route constants are compatibility history.
 
 
 Snapshot: 2026-07-09. This is the compact packet to hand to a skeptical
@@ -47,22 +51,21 @@ The most reader-facing public RMQ names live in the narrow RMQ paper surface:
 abbrev listIntSuccinctRMQPaperMainTheorem :=
   RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story
 
-abbrev succinctRMQWholeQueryGlobalWordTraceCostedCostLe :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_cleanAllSize
+abbrev succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional
 ```
 
 The first theorem is stated over ordinary `xs : List Int`: it exposes
-`SuccinctClassic.buildPayload xs`, proves its length is
+`SuccinctClassic.buildPayload xs`, proves its length is at most
 `2 * xs.length + overhead xs.length` with `overhead = o(n)`, and proves that
 `SuccinctClassic.queryCosted xs` answers valid half-open RMQ queries with
 leftmost ties under one constant modeled query bound.
 
-The second theorem keeps those ordinary-list clauses and also consumes the
-final flat-payload no-synthetic WordRAM story for `Cartesian.shape xs`: the
-trace is interpreted, the flat execution payload is exactly
-`SuccinctClassic.buildPayload xs`, all successful reads are backed by the
-query-independent flat payload layout/read store, event data are bounded, and
-no synthetic cost-only trace marker appears.
+The execution story keeps those ordinary-list clauses and also consumes the
+final no-synthetic WordRAM story for `Cartesian.shape xs`: one physical word
+list erases exactly to `SuccinctClassic.buildPayload xs`, physical execution
+refines the logical trace, all successful reads are backed positionally, and
+one query-independent reviewer width bounds the whole execution.
 
 The construction-facing RMQ name is:
 
@@ -362,13 +365,11 @@ Read literally, this says:
 - every valid half-open query over every Cartesian shape of size `n` erases to
   the reference leftmost RMQ answer `scanWindow shape.representative left len`.
 
-For the built generic sparse-exception close-access family, the paper-facing
-fixed modeled cost bound is now `4144`, via the route-split theorem and clean
-fixed corollary. The checked leaves are Ready `118`, active non-Ready `568`
-using the `480` bounded summary scan, inactive non-Ready `88`, and the
-zero-block BP-code chunk scan cap `4096` plus fixed final-query overhead. The old `196727` aggregate is still
-checked as compatibility, but it is no longer the public all-size alias because
-it sums mutually exclusive fallback costs.
+For the built generic sparse-exception close-access family, the canonical
+reviewer trace has the checked transitional cap `328`. The earlier route-split
+`4144` corollary, Ready `118`, active/inactive fallback leaves, zero-block scan,
+and `196727` aggregate remain checked compatibility/history only. They are not
+the route summarized by this packet's public alias chain.
 
 ## Axiom Excerpt
 

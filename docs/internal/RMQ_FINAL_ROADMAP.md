@@ -31,8 +31,8 @@ The integrated paper frontier already contains:
 - flat counted-payload backing for successful reads and a no-synthetic final
   trace;
 - list-facing supplied-store/footprint result, cost, and exactness theorems;
-- public all-size cost `4144`, fast-regime cost `118`, and legacy `196727`
-  compatibility surfaces;
+- canonical transitional all-size cost `328`, with `4144`, Ready `118`,
+  zero-block, and `196727` retained only as compatibility/history surfaces;
 - differential validation and a theorem-adjacent executable cost harness;
 - a prepared Cartesian builder path with theorem-backed agreement;
 - paper/artifact correspondence, import-closure, trust, provenance, and
@@ -121,14 +121,17 @@ Acceptance:
 
 ### U2. Build One Uniform Local/Interior Directory Route
 
-Status: complete.
+Status: worker candidate; coordinator acceptance pending.
 
 Every size uses `RelativeRmm.canonicalLayout`, the same canonical interior
 component store, and the same close/LCA reviewer route. Segment `20` embeds
 the component in the global store at an exact physical word offset. The
 execution-derived dynamic footprint controls supplied-store agreement; all
 successful reads are charged and counted, returned words and physical
-addresses are bounded, and the final result depends on those reads. Empty,
+addresses are bounded, and the final result depends on those reads. One
+pre-execution physical word list erases exactly to the public `buildPayload`,
+and the reviewer capacity is linear with an explicit logarithmic word-width
+bound. Empty,
 singleton, size-two, and symbolic threshold-boundary cases are kernel checked.
 No Ready/Active/inactive or zero-block dispatch is reachable from
 `RMQPaper` / `RMQ.Headlines.RMQ`.
@@ -141,7 +144,15 @@ Acceptance evidence:
 - `concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore_store_parametric`;
 - `concreteBPNativeSuccinctRMQCanonicalInteriorPhysicalFootprint_fits`;
 - `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact`;
-- canonical reviewer-payload successful-read backing in the final adequacy packet.
+- `concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases`;
+- `concreteBPNativeSuccinctRMQWholeQueryReviewerPhysical_refines_logical`;
+- `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_ordered_read_footprint`;
+- reviewer physical successful-read backing and whole-query word/address bounds
+  in the final adequacy packet.
+
+Only the coordinator may replace this status with `ACCEPTED`, after independently
+reconstructing the frozen W15 matrix and obtaining a fresh blind exact-commit
+audit.
 
 ### U3. Reprove One Principled All-Size Cost Bound
 

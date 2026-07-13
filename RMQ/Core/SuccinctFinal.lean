@@ -1171,10 +1171,91 @@ theorem relativeSplitSparseExceptionBPCloseAccessOverhead_littleO :
     relativeSplitSparseExceptionBPCloseRankOverhead_littleO.add
       SuccinctSelect.canonicalRelativeSplitSparseExceptionFalseSelectOverhead_littleO
 
+/- A sharp all-size cubic/logarithmic comparison over natural exponents. -/
+theorem nat_succ_cube_le_eight_mul_two_pow (q : Nat) :
+    (q + 1) * ((q + 1) * (q + 1)) <= 8 * 2 ^ q := by
+  by_cases hlarge : 11 <= q
+  case pos =>
+    exact Nat.le_trans
+      (SuccinctClose.nat_succ_cube_le_two_pow_of_11_le q hlarge)
+      (by omega)
+  case neg =>
+    have hcases :
+        q = 0 \/ q = 1 \/ q = 2 \/ q = 3 \/ q = 4 \/ q = 5 \/
+          q = 6 \/ q = 7 \/ q = 8 \/ q = 9 \/ q = 10 := by
+      omega
+    rcases hcases with hq | hq | hq | hq | hq | hq | hq | hq | hq | hq | hq <;>
+      subst q <;> decide
+
+/- The standard machine-word width has the sharp universal cubic envelope. -/
+theorem machineWordBits_cube_le_eight_mul_self_of_pos
+    {n : Nat} (hn : 0 < n) :
+    SuccinctRank.machineWordBits n *
+        (SuccinctRank.machineWordBits n *
+          SuccinctRank.machineWordBits n) <=
+      8 * n := by
+  let q := Nat.log2 n
+  have hcube :=
+    nat_succ_cube_le_eight_mul_two_pow q
+  have hpow : 2 ^ q <= n := by
+    simpa [q] using Nat.log2_self_le (Nat.ne_of_gt hn)
+  change (q + 1) * ((q + 1) * (q + 1)) <= 8 * n
+  exact Nat.le_trans hcube (Nat.mul_le_mul_left 8 hpow)
+
+/- Every cubed-log sampled envelope is linearly bounded at every size. -/
+theorem logLogCubedSampledDirectoryOverhead_le_eight_mul
+    (slots n : Nat) :
+    SuccinctSpace.logLogCubedSampledDirectoryOverhead slots n <=
+      8 * slots * n := by
+  let w := SuccinctRank.machineWordBits n
+  let e := SuccinctRank.machineWordBits w
+  have hw : 0 < w := by
+    simpa [w] using SuccinctRank.machineWordBits_pos n
+  have hcube : e * (e * e) <= 8 * w := by
+    simpa [e] using
+      (machineWordBits_cube_le_eight_mul_self_of_pos (n := w) hw)
+  have hscaled := Nat.mul_le_mul_left (slots * (n / w)) hcube
+  have hdiv : (n / w) * w <= n := Nat.div_mul_le_self n w
+  have hdivScaled := Nat.mul_le_mul_left (8 * slots) hdiv
+  exact Nat.le_trans
+    (by
+      simpa [SuccinctSpace.logLogCubedSampledDirectoryOverhead,
+        SuccinctRank.machineWordBits, w, e, Nat.mul_assoc,
+        Nat.mul_left_comm, Nat.mul_comm] using hscaled)
+    (by
+      simpa [SuccinctRank.machineWordBits, w, Nat.mul_assoc,
+        Nat.mul_left_comm, Nat.mul_comm] using hdivScaled)
+
+/- Explicit-exception directory envelopes are bounded by their slot multiple. -/
+theorem idDivLogLogOverhead_le_mul (slots n : Nat) :
+    SuccinctSpace.idDivLogLogOverhead slots n <= slots * n := by
+  unfold SuccinctSpace.idDivLogLogOverhead
+  exact Nat.mul_le_mul_left slots (Nat.div_le_self _ _)
+
 def genericSparseExceptionBPCloseAccessOverhead
     (n : Nat) : Nat :=
   relativeSplitSparseExceptionBPCloseRankOverhead n +
     GenericSelect.canonicalSparseExceptionSelectOverhead (2 * n)
+
+theorem genericSparseExceptionBPCloseAccessOverhead_le_linear (n : Nat) :
+    genericSparseExceptionBPCloseAccessOverhead n <= 19906 * n + 561 := by
+  have h36 :=
+    logLogCubedSampledDirectoryOverhead_le_eight_mul 36 (2 * n)
+  have h40 :=
+    logLogCubedSampledDirectoryOverhead_le_eight_mul 40 (2 * n)
+  have h192 :=
+    logLogCubedSampledDirectoryOverhead_le_eight_mul 192 (2 * n)
+  have h640 :=
+    logLogCubedSampledDirectoryOverhead_le_eight_mul 640 (2 * n)
+  have h1 := idDivLogLogOverhead_le_mul 1 (2 * n)
+  have h512 := idDivLogLogOverhead_le_mul 512 (2 * n)
+  unfold genericSparseExceptionBPCloseAccessOverhead
+    relativeSplitSparseExceptionBPCloseRankOverhead
+    GenericSelect.canonicalSparseExceptionSelectOverhead
+    GenericSelect.longSuperRelativeTableOverhead
+    GenericSelect.canonicalSparseExceptionDirectoryOverhead
+    GenericSelect.sparseExceptionRelativeTableOverhead
+  omega
 
 theorem genericSparseExceptionBPCloseAccessOverhead_littleO :
     SuccinctSpace.LittleOLinear

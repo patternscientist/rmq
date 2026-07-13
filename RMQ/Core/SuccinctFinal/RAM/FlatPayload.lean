@@ -1802,15 +1802,161 @@ theorem concreteBPNativeSuccinctRMQFlatPayloadReadStore_eq_globalLegacy
   | 28 => rfl
   | _ + 29 => rfl
 
+/-- The exact auxiliary-bit envelope of the canonical reviewer payload. -/
+def concreteBPNativeSuccinctRMQCanonicalReviewerOverhead (n : Nat) : Nat :=
+  genericSparseExceptionBPCloseAccessOverhead n +
+    SuccinctClose.canonicalRelativeRmmInteriorOverhead n
+
+theorem concreteBPNativeSuccinctRMQCanonicalReviewerOverhead_littleO :
+    SuccinctSpace.LittleOLinear
+      concreteBPNativeSuccinctRMQCanonicalReviewerOverhead := by
+  unfold concreteBPNativeSuccinctRMQCanonicalReviewerOverhead
+  exact genericSparseExceptionBPCloseAccessOverhead_littleO.add
+    SuccinctClose.canonicalRelativeRmmInteriorOverhead_littleO
+
 /--
-Reviewer-facing counted payload for the canonical all-size route.  The existing
-final payload remains a compatibility projection; this additive component is
-the exact payload erased by the canonical interior machine store.
+Unique non-close payload sources used by the canonical reviewer execution.
+The BP word store is listed separately because segments `0` and `19` share it.
 -/
+def concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessSources :
+    List ConcreteBPNativeSuccinctRMQFlatPayloadSource :=
+  [ .finalRankSuperFalse, .finalRankBlockFalse,
+    .selectSuperBaseOccurrence, .selectSuperBaseWordIndex,
+    .selectSuperRankBefore, .selectSuperFirstOffset,
+    .selectLocalBaseOccurrence, .selectLocalBaseWordIndex,
+    .selectLocalRankBefore, .selectLocalFirstOffset,
+    .selectLongFlagRankSuperTrue, .selectLongFlagRankBlockTrue,
+    .selectLongFlagBits, .selectLongRelative,
+    .selectSparseRankSuperTrue, .selectSparseRankBlockTrue,
+    .selectSparseFlagBits, .selectSparseRelative ]
+
+def concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessPayload
+    (shape : Cartesian.CartesianShape) : List Bool :=
+  concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessSources.flatMap
+    (concreteBPNativeSuccinctRMQFlatPayloadSourcePayload shape)
+
+/--
+The unique reviewer-facing payload layout.  Its close component is literally
+the payload executed by the canonical interior directory; the legacy
+summary/local/global close payload remains available only through the
+compatibility layout above.
+-/
+structure ConcreteBPNativeSuccinctRMQCanonicalReviewerPayloadLayout
+    (shape : Cartesian.CartesianShape) where
+  payload : List Bool
+  bpCodePayload : List Bool
+  accessPayload : List Bool
+  closePayload : List Bool
+
+def concreteBPNativeSuccinctRMQCanonicalReviewerPayloadLayout
+    (shape : Cartesian.CartesianShape) :
+    ConcreteBPNativeSuccinctRMQCanonicalReviewerPayloadLayout shape :=
+  let accessPayload :=
+    concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessPayload shape
+  let closePayload :=
+    (SuccinctClose.canonicalRelativeRmmInteriorDirectory shape).payload
+  { payload :=
+      shape.bpCode ++ accessPayload ++ closePayload
+    bpCodePayload := shape.bpCode
+    accessPayload := accessPayload
+    closePayload := closePayload }
+
+theorem concreteBPNativeSuccinctRMQCanonicalReviewerPayloadLayout_components
+    (shape : Cartesian.CartesianShape) :
+    let layout :=
+      concreteBPNativeSuccinctRMQCanonicalReviewerPayloadLayout shape
+    layout.payload = layout.bpCodePayload ++ layout.accessPayload ++
+      layout.closePayload := by
+  rfl
+
+/-- Bit offset of the canonical close component in the public payload. -/
+def concreteBPNativeSuccinctRMQCanonicalReviewerCloseBitOffset
+    (shape : Cartesian.CartesianShape) : Nat :=
+  let layout :=
+    concreteBPNativeSuccinctRMQCanonicalReviewerPayloadLayout shape
+  layout.bpCodePayload.length + layout.accessPayload.length
+
+/-- The one counted payload executed by the canonical reviewer route. -/
 def concreteBPNativeSuccinctRMQCanonicalReviewerPayload
     (shape : Cartesian.CartesianShape) : List Bool :=
-  (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).payload ++
+  (concreteBPNativeSuccinctRMQCanonicalReviewerPayloadLayout shape).payload
+
+theorem concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessPayload_length_le
+    (shape : Cartesian.CartesianShape) :
+    (concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessPayload
+      shape).length <=
+      (builtGenericSparseExceptionSelectBPCloseAccessDirectory
+        shape).payload.length := by
+  simp [concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessPayload,
+    concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessSources,
+    concreteBPNativeSuccinctRMQFlatPayloadSourcePayload,
+    builtGenericSparseExceptionSelectBPCloseAccessDirectory,
+    GenericSelect.sparseExceptionSelectSource,
+    GenericSelect.SparseExceptionSelectData.toChargedSelectPositionSource,
+    GenericSelect.SparseExceptionSelectData.payload,
+    GenericSelect.FixedWidthSparseDenseSelectDenseLocalEntryTable.payload,
+    SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.auxPayload,
+    SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superPayload,
+    SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.blockPayload,
+    SuccinctSpace.FixedWidthRankSampleTables.payload,
+    GenericSelect.SparseExceptionDirectory.payload,
+    List.append_assoc]
+  omega
+
+theorem concreteBPNativeSuccinctRMQCanonicalReviewerPayload_length_le
+    {n : Nat} {shape : Cartesian.CartesianShape}
+    (hshape : List.Mem shape (Cartesian.shapesOfSize n)) :
+    (concreteBPNativeSuccinctRMQCanonicalReviewerPayload shape).length <=
+      2 * n + concreteBPNativeSuccinctRMQCanonicalReviewerOverhead n := by
+  have hshapeSize := Cartesian.mem_shapesOfSize_shapeOfSize hshape
+  have hbp : shape.bpCode.length = 2 * n :=
+    Cartesian.CartesianShape.bpCode_length_of_shapeOfSize hshapeSize
+  have haccessDirectory :
+      (builtGenericSparseExceptionSelectBPCloseAccessDirectory
+          shape).payload.length <=
+        genericSparseExceptionBPCloseAccessOverhead n := by
+    exact concreteBPNativeCloseAccessPayload_length_le_overhead
+      builtGenericSparseExceptionSelectBPCloseAccessFamily hshape
+  have haccess :=
+    concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessPayload_length_le
+      shape
+  have hclose :=
+    SuccinctClose.canonicalRelativeRmmInteriorDirectory_payload_length_eq_raw
+      shape
+  simp [concreteBPNativeSuccinctRMQCanonicalReviewerPayload,
+    concreteBPNativeSuccinctRMQCanonicalReviewerPayloadLayout,
+    concreteBPNativeSuccinctRMQCanonicalReviewerOverhead, hbp,
+    SuccinctClose.canonicalRelativeRmmInteriorOverhead,
+    Cartesian.ShapeOfSize.size_eq hshapeSize] at hclose ⊢
+  omega
+
+theorem concreteBPNativeSuccinctRMQCanonicalReviewerPayload_close_slice
+    (shape : Cartesian.CartesianShape) :
+    ((concreteBPNativeSuccinctRMQCanonicalReviewerPayload shape).drop
+        (concreteBPNativeSuccinctRMQCanonicalReviewerCloseBitOffset shape)).take
+        (SuccinctClose.canonicalRelativeRmmInteriorDirectory
+          shape).payload.length =
+      (SuccinctClose.canonicalRelativeRmmInteriorDirectory shape).payload := by
+  let accessPayload :=
+    concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessPayload shape
+  let closePayload :=
     (SuccinctClose.canonicalRelativeRmmInteriorDirectory shape).payload
+  change
+    ((shape.bpCode ++ accessPayload ++ closePayload).drop
+        (shape.bpCode.length + accessPayload.length)).take
+          closePayload.length = closePayload
+  calc
+    ((shape.bpCode ++ accessPayload ++ closePayload).drop
+        (shape.bpCode.length + accessPayload.length)).take
+          closePayload.length =
+        ((accessPayload ++ closePayload).drop accessPayload.length).take
+          closePayload.length := by
+              rw [show
+                shape.bpCode ++ accessPayload ++ closePayload =
+                  shape.bpCode ++ (accessPayload ++ closePayload) by
+                    simp [List.append_assoc]]
+              rw [list_drop_append_length_add]
+    _ = closePayload := by simp
 
 /--
 Single reviewer store for the final query.  Segments below 20 retain the
@@ -1877,7 +2023,7 @@ def concreteBPNativeSuccinctRMQCanonicalReviewerReadBacked
           shape).store.words.toList =
       (SuccinctClose.canonicalRelativeRmmInteriorDirectory shape).payload /\
     ((concreteBPNativeSuccinctRMQCanonicalReviewerPayload shape).drop
-        (concreteBPNativeSuccinctRMQFlatPayloadLayout shape).payload.length).take
+        (concreteBPNativeSuccinctRMQCanonicalReviewerCloseBitOffset shape)).take
         (SuccinctClose.canonicalRelativeRmmInteriorDirectory
           shape).payload.length =
       (SuccinctClose.canonicalRelativeRmmInteriorDirectory shape).payload)
@@ -1919,7 +2065,8 @@ theorem concreteBPNativeSuccinctRMQCanonicalReviewerReadStore_successful_read_ba
       · simpa [SuccinctClose.canonicalRelativeRmmInteriorDirectory] using
           SuccinctClose.canonicalRelativeRmmInteriorComponentStore_flattens_payload
             shape
-      · simp [concreteBPNativeSuccinctRMQCanonicalReviewerPayload]
+      · exact
+          concreteBPNativeSuccinctRMQCanonicalReviewerPayload_close_slice shape
     · simp [concreteBPNativeSuccinctRMQCanonicalReviewerReadStore, hlt, heq]
         at hread
 /-- Machine words contributed by the pre-U2 counted segments, in segment order. -/

@@ -148,29 +148,20 @@ profile over Cartesian-shape representatives:
 - query exactness is proved against the same leftmost RMQ contract; and
 - the modeled query cost is bounded by a fixed constant.
 
-For the current concrete BP-native capstone, the paper-facing fixed modeled
-query-cost bound is now `4144`, exposed by
-`SuccinctFinal.concreteBPNativeSuccinctRMQCleanAllSizeQueryCost_eq`. The
-stronger route-split theorem
-`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_routeSplit`
-first bounds the actual all-size route: Ready costs `118`, active non-Ready
-costs `568` using the checked `480` bounded summary scan, inactive non-Ready
-costs `88`, and the zero-block BP-code chunk scan costs `4096` before the
-final query's fixed close-select overhead, giving the fixed all-size maximum
-`4144`. The legacy `196727` aggregate remains checked as
-`SuccinctFinal.concreteBPNativeSuccinctRMQQueryCost_eq`, but it is now a
-compatibility surface because it adds mutually exclusive zero-block and
-interior fallback costs.
+For the current concrete BP-native capstone, the canonical reviewer route has
+the checked transitional all-size cap `328`. The exact public
+`SuccinctClassic.buildPayload` is also the erasure of the one pre-execution
+physical word list used by the execution refinement. Agreement on the ordered
+logical read footprint determines the complete supplied-store trace, including
+result, cost, read order, repeated reads, and failures. The query-independent
+reviewer width derives from the linear capacity `400000 * (n + 1)` and obeys an
+explicit logarithmic all-size inequality.
 
-The fast-regime companion
-`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_of_size_ge_readyThreshold`
-proves the construction-level global-trace cost bound
-`SuccinctFinal.concreteBPNativeSuccinctRMQFastRegimeQueryCost = 118` whenever
-`SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold <= shape.size`. It
-uses `SuccinctClose.concreteBPRelativeRmmInteriorReadyQueryCost = 30` and does
-not include either bounded fallback scan. The older `2^128` premise survives
-only as a compatibility/large-regime strengthening, not as the current
-readiness explanation.
+Ready `118`, the route-split `4144` theorem, the zero-block route, and the
+aggregate `196727` theorem remain checked only for compatibility and historical
+comparison. They do not describe the canonical reviewer execution. U3 may
+derive a tighter explained constant without changing this U2 machine/store
+identity.
 
 The theorem is payload-accounted: auxiliary bits are counted separately from
 proof-only fields and certificates. The final path routes through payload-live

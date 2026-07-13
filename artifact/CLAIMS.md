@@ -1,14 +1,18 @@
 # Claims Packet
 ## Canonical U2 Reviewer Claim
 
-The current all-size final trace uses the canonical relative-rmM component store
-at global segment `20`, is exact for valid half-open queries, and has the
-checked transitional modeled bound `328`. Cite
-`RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe`
-and `RMQ.Headlines.succinctRMQCanonicalTransitionalQueryCostEq`.
-Footprint-agreeing supplied stores preserve exactness, cost, and successful-read
-backing through the canonical reviewer payload. Ready `118`, route-split,
-zero-block, `4144`, and `196727` claims are compatibility rows only.
+The current W15 worker candidate uses the canonical relative-rmM component at
+global segment `20` inside one whole-machine physical word list. That list
+erases exactly to the public `SuccinctClassic.buildPayload`; the physical replay
+preserves result, modeled cost, ordered trace, failures, and footprint. Agreement
+on the actual ordered logical read footprint determines the complete supplied
+`TraceResult`, and successful physical reads are positional reads from the same
+counted list. The linear capacity and query-independent logarithmic width bound
+all stored/returned words, physical addresses, and charged primitive data.
+The checked transitional modeled cap is `328`. Ready `118`, route-split,
+zero-block, `4144`, and `196727` claims are compatibility rows only. Coordinator
+acceptance still requires matrix reconstruction and a fresh blind exact-commit
+audit.
 
 
 This file is a compact public-facing map from headline claims to the exact

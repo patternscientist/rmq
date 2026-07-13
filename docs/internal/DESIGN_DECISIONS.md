@@ -1555,6 +1555,19 @@ Date: 2026-07-10
 Scope: U2 all-size relative-rmM interior directory representation.
 Closure amendment, 2026-07-11:
 
+Whole-machine candidate amendment, 2026-07-12:
+
+The list-facing construction has one live public payload,
+`SuccinctClassic.buildPayload`. Reviewer physical words erase exactly to that
+payload and supply the canonical execution; an appended sibling payload is not
+an acceptable space/execution bridge. The uniform route keeps the checked
+transitional bound `328`. Ready `118`, route-split `4144`, zero-block, and
+`196727` are compatibility/history only.
+
+This amendment records W15 worker-candidate evidence, not U2 acceptance. Only
+the coordinator may accept U2 after independently reconstructing the frozen
+completion matrix and obtaining a fresh blind exact-commit audit.
+
 The decision now includes the downstream reviewer consumer, not only the
 interior component. The canonical component store is embedded at global segment
 `20`; its exact physical word offset is
@@ -1564,10 +1577,12 @@ adequacy packet, and ordinary-list surface consume the canonical directory.
 The reviewer route contains no Ready/Active/inactive or zero-block dispatch.
 
 The total machine abstraction is
-`concreteBPNativeSuccinctRMQCanonicalReviewerWordBits`, derived from query
-operands and addressable counted machine-word capacity. It covers live and dead
-interior addresses after translation into the global reviewer store. The
-interior-level and global-level address/operand theorems, plus kernel-checked
+`concreteBPNativeSuccinctRMQReviewerWordBits n = machineWordBits (400000 *
+(n + 1))`, derived before execution from the input size and a linear bound on
+the exact public physical store. It covers all stored and returned words,
+segment encodings, primitive operands/results, and live, failed, and sentinel
+addresses after translation into the global reviewer store. The physical
+erasure/refinement and whole-query address/operand theorems, plus kernel-checked
 empty, singleton, size-two, and symbolic threshold-boundary cases, close the
 small-input addressability requirement.
 
@@ -1583,12 +1598,22 @@ Additional alternatives considered and rejected:
   reads: rejected because modeled cost must be the consumed trace.
 - Embed six independent global segments: rejected because one concatenated
   component plus exact offsets gives the intended later flat-store transport.
+- Prove only a segment-20 slice theorem: rejected because it would leave the
+  other executed rank/select/BP segments disconnected from the one physical
+  array and public payload.
+- Use a safe static footprint overapproximation as the primary agreement
+  theorem: retained only as compatibility because exact ordered execution
+  agreement is stronger and preserves failed and repeated reads.
 
 The checked transitional whole-query cost is the primitive sum proved by
 `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional`;
 `concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq` evaluates it to
 `328`. U3, not U2, owns the final cost simplification. The old `118`,
 route-split, `4144`, and `196727` statements remain compatibility history.
+For paper exposition, the machine story must be presented in this order: the
+public payload, its exact physical-word representation, the logical-to-physical
+execution refinement, the execution-derived footprint, and only then the width
+and cost bounds. This avoids conjoining facts about sibling objects.
 
 
 Decision:
