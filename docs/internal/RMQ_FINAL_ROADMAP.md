@@ -121,16 +121,20 @@ Acceptance:
 
 ### U2. Build One Uniform Local/Interior Directory Route
 
-Status: W19 candidate complete; coordinator reconstruction and blind audit pending.
+Status: W19 global/per-query composition repair candidate; coordinator
+reconstruction and blind audit pending.
 
 Every size uses `RelativeRmm.canonicalLayout` and the same close/LCA reviewer
 route. One exhaustive typed 20-source universe includes canonical close.
 For every indexed read, W19 retains the same global occurrence, program
 instruction occurrence, folded prefix state, component-local position, exact
-invocation parameters, source, and composed-trace offset. Every counted source
-and shared-BP consumer has a successful witness in an actual closed whole-query
-execution under a valid ordinary `List Int` query. Fresh segment `21` is
-rejected by the common occurrence relation; a checked bridge embeds the
+invocation parameters, source, and composed-trace offset for that exact current
+query. Separately, the non-parameterized
+`ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy` packet proves that
+every counted source and shared-BP consumer has a successful witness in some
+actual closed whole-query execution under a valid ordinary `List Int` query.
+It does not say every source is read by the current query. Fresh segment `21`
+is rejected by the common occurrence relation, and a checked bridge embeds the
 successful positive predicate into the mutation-side arbitrary-result
 predicate. W18 event-value and component may-read facts are compatibility only.
 Region exclusivity,
@@ -166,6 +170,8 @@ Acceptance evidence:
   `concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_successful_closed_valid_occurrence`,
   `ReviewerProducerClaim.hasOperationalProducer_of_successful`, and
   `concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_producer`;
+- `concreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy`, consumed once
+  by `listIntSuccinctRMQPaperMainTheorem`, outside current-query quantifiers;
 - `SuccinctClassic.queryCosted_invalid` and its canonical, supplied-store,
   trace, costed, and physical wrappers;
 - reviewer physical successful-read backing and whole-query word/address bounds

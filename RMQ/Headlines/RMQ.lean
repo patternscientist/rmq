@@ -54,32 +54,21 @@ abbrev listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory :=
 abbrev listIntSuccinctRMQOccurrenceProvenanceOfValid :=
   RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_occurrenceProvenance_of_valid
 
-/-- Valid List-Int queries expose the proof-only W19 extension of final model
-adequacy, including all counted-source and shared-consumer witnesses. -/
-abbrev listIntSuccinctRMQSemanticProvenanceAdequacyOfValid :=
-  RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_semanticProvenanceAdequacy_of_valid
-
 /-- Compatibility W18 event-value projection. -/
 abbrev listIntSuccinctRMQEventValueProducerProvenanceOfValid :=
   RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_eventValueProducerProvenance_of_valid
-
-/-- Valid List-Int story projected to counted-source valid execution
-reachability. -/
-abbrev listIntSuccinctRMQCountedSourceSuccessfulClosedValidOccurrence :=
-  RMQ.SuccinctClassic.reviewerCountedSource_successfulClosedValidOccurrence_of_valid
-
-/-- Valid List-Int story projected to exact shared-BP consumer reachability. -/
-abbrev listIntSuccinctRMQSharedBPConsumerSuccessfulClosedValidOccurrence :=
-  RMQ.SuccinctClassic.reviewerSharedBPConsumer_successfulClosedValidOccurrence_of_valid
 
 /--
 List-facing paper main theorem. For every ordinary `xs : List Int`, the
 advertised `buildPayload` has length at most `2*n + overhead n` with
 `overhead = o(n)`, valid half-open queries return exact leftmost RMQ answers
 within the modeled constant query budget, and the final trace is the
-no-synthetic flat-payload execution story.
+no-synthetic flat-payload execution story. The reviewer-manifest semantic
+packet is one query-independent conjunct; raw trace adequacy and indexed
+occurrence provenance remain under each current query's validity premise.
 -/
 theorem listIntSuccinctRMQPaperMainTheorem :
+    RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy /\
     RMQ.SuccinctSpace.LittleOLinear RMQ.SuccinctClassic.overhead /\
       forall xs : List Int,
         (RMQ.SuccinctClassic.buildPayload xs).length <=
@@ -109,7 +98,7 @@ theorem listIntSuccinctRMQPaperMainTheorem :
             xs left right) /\
         (forall left right,
           RMQ.ValidRange xs left right ->
-            RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQFinalSemanticProvenanceAdequacy
+            RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
               (RMQ.SuccinctClassic.cartesianShape xs) left right) /\
         (forall left right,
           RMQ.ValidRange xs left right ->
@@ -156,22 +145,6 @@ theorem listIntSuccinctRMQPaperMainTheorem :
                 xs storeA left right =
               RMQ.SuccinctClassic.reviewerPhysicalTraceResultWithStore
                 xs storeB left right) /\
-        (forall left right,
-          RMQ.ValidRange xs left right ->
-            forall source : RMQ.SuccinctFinal.ReviewerSource,
-              source.Counted ->
-                source.HasSuccessfulClosedValidOccurrence) /\
-        (forall left right,
-          RMQ.ValidRange xs left right ->
-            forall consumer : RMQ.SuccinctFinal.ReviewerSharedBPConsumer,
-              consumer.HasSuccessfulClosedValidOccurrence) /\
-        Not RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource.HasOperationalProducer /\
-        List.Nodup
-          RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalSources /\
-        (forall segment : Nat,
-          (Exists fun source =>
-            RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSegmentSource?
-              segment = some source) <-> segment < 21) /\
         (forall (storeA storeB : RMQ.WordRAM.ReadStore) left right,
           RMQ.SuccinctClassic.storesAgreeOnOrderedReadFootprint
               xs storeA storeB left right ->
@@ -182,7 +155,9 @@ theorem listIntSuccinctRMQPaperMainTheorem :
   rcases
     RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story with
     ⟨hoverhead, hxs⟩
-  refine ⟨hoverhead, ?_⟩
+  refine
+    ⟨RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy,
+      hoverhead, ?_⟩
   intro xs
   rcases hxs xs with
     ⟨hpayload, hcost, hinvalid, hexact, hleftmost, hstory⟩
@@ -192,7 +167,7 @@ theorem listIntSuccinctRMQPaperMainTheorem :
         (RMQ.SuccinctClassic.cartesianShape xs),
       hcost, hinvalid, hexact, hleftmost, hstory,
       fun left right hvalid =>
-        RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_semanticProvenanceAdequacy_of_valid
+        RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_rawAdequacy_of_valid
           xs left right hvalid,
       fun left right hvalid =>
         RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_occurrenceProvenance_of_valid
@@ -207,15 +182,6 @@ theorem listIntSuccinctRMQPaperMainTheorem :
       fun storeA storeB left right hagree =>
         RMQ.SuccinctClassic.reviewerPhysicalTraceResultWithStore_eq_of_orderedReadFootprint
           xs storeA storeB left right hagree,
-      fun left right hvalid source hcounted =>
-        RMQ.SuccinctClassic.reviewerCountedSource_successfulClosedValidOccurrence_of_valid
-          xs left right hvalid source hcounted,
-      fun left right hvalid consumer =>
-        RMQ.SuccinctClassic.reviewerSharedBPConsumer_successfulClosedValidOccurrence_of_valid
-          xs left right hvalid consumer,
-      RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_producer,
-      RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalSources_nodup,
-      RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSegmentSource?_coverage,
       fun storeA storeB left right hagree =>
         RMQ.SuccinctClassic.queryTraceResultWithStore_eq_of_orderedReadFootprint
           xs storeA storeB left right hagree⟩
@@ -679,10 +645,12 @@ successful read by counted flat payload words.
 abbrev succinctRMQFinalTraceModelAdequacy :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
 
-/-- Proof-only W19 extension of final trace-model adequacy with successful
-closed-valid-query witnesses for every counted source and shared consumer. -/
-abbrev succinctRMQFinalSemanticProvenanceAdequacy :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalSemanticProvenanceAdequacy
+/-- Query-independent W19 reviewer-manifest packet: every counted source and
+shared-BP consumer has some successful closed-valid indexed occurrence, the
+positive predicate bridges to the common mutation predicate, and the fresh
+source is rejected by that same predicate. -/
+abbrev succinctRMQReviewerManifestSemanticAdequacy :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy
 
 /-- Exactness alias paired with `succinctRMQFinalTraceModelAdequacy`. -/
 theorem succinctRMQFinalTraceModelAdequacyExact

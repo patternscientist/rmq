@@ -102,8 +102,11 @@ make a theorem true.
 - The all-size modeled query-cost bound on the canonical reviewer route is the
   uniform checked `328`. Ready `118`, route-split `4144`, zero-block, and
   `196727` are compatibility/history only.
-- `2^128` appears only where compatibility or large-regime theorem surfaces
-  explicitly carry that premise.
+- No current canonical execution theorem has a `2^128` activation premise.
+  Explicit compatibility/large-regime companions retain that sufficient
+  premise. Separately, W19's proof-only sparse-local nonvacuity proof chooses
+  symbolic `N = 2^128`; this is not a route, payload, cost, runtime, or paper
+  theorem premise.
 - The auxiliary logical layout footprint is a safe overapproximation. The
   reviewer flat-physical footprint is execution-derived and exactly the
   execution's ordered read projection.

@@ -67,6 +67,37 @@ spokes:
   level-index potential checkpoints. These still leave residual/large-credit
   structure explicit; the Tarjan inverse-Ackermann theorem remains open.
 
+## W19 Global-Liveness / Query-Provenance Composition Digest (2026-07-13)
+
+The W19 occurrence and symbolic witness proofs did not change. The repaired
+public composition changes what is quantified where. For one current valid
+query, indexed provenance follows each actual trace position through the exact
+program instruction, folded pre-state, invocation parameters, component-local
+position, and trace embedding. Separately, the reviewer-manifest theorem says
+each counted source and named shared-BP consumer has some successful valid
+whole-query witness. It does not say the current query reads every source.
+
+The split was selected because the source-liveness predicate existentially
+chooses its own list and valid query; adding unrelated current-query parameters
+and an unused validity premise did not strengthen it and suggested a false
+universal liveness claim. The paper theorem now consumes one non-parameterized
+manifest packet and keeps trace adequacy and occurrence provenance inside the
+current-query validity domain. Native validation still imports only the genuine
+`SuccinctRMQClassic` runtime path; proof-only long/sparse witness modules remain
+outside executable closure.
+
+The live assumptions are unchanged: modeled WordRAM cost is not compiled Lean
+runtime, payload bits remain distinct from proof-only witness data, and `328`
+is the checked transitional canonical bound. No current canonical execution
+theorem has a `2^128` activation premise. W19's proof-only sparse-local
+nonvacuity witness does use symbolic `N = 2^128`; that size is not a route,
+payload, cost, runtime, or paper-theorem premise.
+
+A skeptical graduate student should next ask whether the paper statement makes
+the two quantifier scopes visually unavoidable, and whether an import guard can
+prevent future executables from importing the proof-only witness seam. U3 is
+not opened by this repair.
+
 ## Current Digests
 
 - [`digests/PROJECT_DIGESTION_2026_07_06.md`](digests/PROJECT_DIGESTION_2026_07_06.md):

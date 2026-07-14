@@ -49,8 +49,11 @@ human-readable file when the interpretation changes.
 - "Artifact ready" and "AE-ready" should only appear when the artifact status is
   actually being claimed.
 - "Lean runtime" should not be presented as the RAM model-cost theorem.
-- `2^128` is compatibility/history language, not the current public activation
-  route.
+- No current canonical execution theorem uses `2^128` as an activation premise.
+  Explicit legacy compatibility companions may retain that sufficient premise.
+  Separately, W19's proof-only sparse-local nonvacuity witness uses symbolic
+  `N = 2^128`; that witness is not an execution, payload, cost, runtime, or
+  paper-main-theorem premise.
 - `328` is the current checked transitional canonical reviewer bound; U3 owns
   any final explained constant.
 - `4144`, Ready-regime `118`, the zero-block route, and `196727` are
@@ -73,6 +76,10 @@ human-readable file when the interpretation changes.
   required implication over the common claim domain.
   Component may-read, successful read, top-level valid-query reachability, and
   actual emitted occurrence are distinct evidence levels.
+- Successful closed-valid source reachability is a global existential: each
+  source has some valid query witness. It must not be wrapped in unused current
+  `xs`/`left`/`right`/`ValidRange` parameters or described as a read by every
+  current query. Indexed forward provenance remains query-specific.
 - Current machine claims must identify the same public `buildPayload`, reviewer
   physical words, execution, ordered footprint, and reviewer word width.
 - "Physical execution" in the current reviewer story must name the genuine

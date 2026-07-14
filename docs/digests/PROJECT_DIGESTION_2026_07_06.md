@@ -21,6 +21,13 @@ last two days), ranks what has been achieved, and — new here — explains what
 still separates the repository from a publishable research paper. It was
 hardened by an adversarial review loop recorded in Appendix A.
 
+**W19 supersession note (2026-07-13).** The statements below that `2^128`
+survives only in compatibility variants describe the 2026-07-06 execution
+route inventory. No current canonical execution theorem uses it as an
+activation premise, but W19 now also uses symbolic `N = 2^128` in a proof-only
+sparse-local nonvacuity witness. That witness is not an execution, payload,
+cost, runtime, or paper theorem premise.
+
 ---
 
 ## 0. One paragraph

@@ -46,10 +46,14 @@ must replace or bridge these relations and consume the result publicly.
 W19 repair branch: `codex/rmq-u2-positional-provenance`
 W19 exact base: `af8791150b64038e9c0776e3639634f1d83518ea`
 
-W19 worker disposition: `CANDIDATE_COMPLETE`; coordinator acceptance and a
-fresh blind exact-commit audit remain pending. The amendment at the end of this
-file records the new propositions and evidence without rewriting the
-historical W15--W18 ledgers.
+W19 checkpoint `e7278f66d87bd9f90bc9ba71a7107f67cbaa45e1` is accepted evidence
+for occurrence/invocation proofs and symbolic source witnesses, but its public
+composition is `REPAIR_REQUIRED`: global existential liveness was nested under
+unused current-query parameters and validity premises. The continued W19
+candidate separates that global packet from exact-query provenance. Coordinator
+acceptance and a fresh blind exact-commit audit remain pending. The amendment
+at the end of this file records the current propositions and evidence without
+rewriting the historical W15--W18 ledgers.
 
 The roadmap join is the list-facing `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`
 imported by `RMQPaper`. The required object chain is:
@@ -792,10 +796,10 @@ region, component event, and the multiplicity-preserving equation
 | --- | --- | --- | --- |
 | `REQ-02.a` | `WholeQueryProgram.evalGlobalWordTrace_getElem?_producer` -> `WholeQueryInstr.evalGlobalWordTrace_getElem?_read_invocation` -> `concreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance_checked`. | Equal event values cannot erase positions: `repeated_equal_read_occurrences_have_distinct_receipts` returns both receipts, and the singleton validator checks identical successful events at distinct global positions `0` and `12`. | Candidate evidence satisfied. |
 | `REQ-02.b` | `concreteBPNativeSuccinctRMQReviewerSource_counted_successful_closed_valid_occurrence`; exact shared-BP theorem `...ReviewerSharedBPConsumer_successful_closed_valid_occurrence`. | Every witness includes ordinary `xs`, `ValidRange`, an indexed event in the actual closed whole-query trace, exact invocation, and successful `some word`; direct component may-read cannot inhabit this proposition. | Candidate evidence satisfied. |
-| `REQ-06.a` | Final trace adequacy consumes occurrence provenance and common-predicate mutation rejection; the proof-only `ConcreteBPNativeSuccinctRMQFinalSemanticProvenanceAdequacy` extension additionally requires all-source/shared-consumer successful closed-valid reachability. The valid List story, paper main theorem, headline aliases, and `RMQPaper` consume that extension. W18 event-value facts remain compatibility-only. | Removing the indexed receipt, semantic-adequacy extension, successful source theorem, shared-consumer theorem, bridge, or common-predicate rejection breaks a downstream constructor/conjunction. | Candidate evidence satisfied. |
+| `REQ-06.a` | The parameterized `ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy shape left right` consumes indexed occurrence provenance for that exact trace. The separate non-parameterized `ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy` consumes counted-source reachability, shared-BP reachability, the checked `P -> Q` bridge, fresh-source rejection, and manifest structure. `listIntSuccinctRMQPaperMainTheorem` consumes the global packet once and keeps raw trace adequacy plus occurrence provenance under the current `ValidRange`. W18 event-value facts remain compatibility-only. | Removing the indexed receipt breaks the current-query packet. Removing a reachability theorem, bridge, or fresh rejection breaks the global packet. No conclusion with an unused current-query validity premise remains. | Candidate evidence satisfied after W19 composition repair. |
 | `INV-SEMANTIC-NONVACUITY` | Positive `P` and mutation `Q` share `HasClosedValidOccurrence`; checked `P -> Q`; fresh segment `21` proves `not Q`. | The negative is not an arbitrary-state or stronger unrelated predicate. Every accepted source has top-level successful execution evidence. | Candidate evidence satisfied. |
 | `INV-TRACE-EXECUTION` | The forward theorem starts from `getElem?` in the actual closed global trace and carries instruction/local positions and computed invocation parameters. The reverse theorem also starts from that same actual closed evaluator. | Event-value `List.Mem`, arbitrary instruction state, and erased-parameter leaf paths remain insufficient compatibility facts. | Candidate evidence satisfied. |
-| `INV-PUBLIC-COMPOSITION` | `ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy` -> `ConcreteBPNativeSuccinctRMQFinalSemanticProvenanceAdequacy` -> valid `List Int` projection -> `listIntSuccinctRMQPaperMainTheorem` -> `RMQ.Headlines.RMQ` -> `RMQPaper`; all curated axiom inventories name the load-bearing declarations. | Old producer-may-path and event-value aliases are not used by the paper conjunction. The proof-only split preserves the native execution roots. | Candidate evidence satisfied. |
+| `INV-PUBLIC-COMPOSITION` | Query path: `ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy shape left right` -> valid `List Int` raw adequacy and indexed occurrence -> paper theorem. Global path: `ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy` -> one top-level paper conjunct. Both flow through `RMQ.Headlines.RMQ` to `RMQPaper`; curated inventories name both. | The split prevents a global existential witness from masquerading as liveness of every current query. `SuccinctRMQClassicProvenance` remains proof-only, so native executables import neither symbolic witness family. | Candidate evidence satisfied after W19 composition repair. |
 
 ### Source-family evidence
 
@@ -847,3 +851,18 @@ placing symbolic proof-witness modules in the executable import/link closure.
 An exact-base detached probe passed. The final proof/runtime module split is
 therefore part of the accepted candidate design, and both exact executable
 commands pass after that split; no environment or stack override is required.
+
+### W19 global/per-query composition-repair verification ledger
+
+| Check | Result |
+| --- | --- |
+| Exact continuation checkpoint | Verified branch `codex/rmq-u2-positional-provenance` at `e7278f66d87bd9f90bc9ba71a7107f67cbaa45e1` with a clean worktree before editing; no replacement branch was created. |
+| Focused composition build | Pass for `SuccinctFinalRAM`, `ReviewerReachability`, `SuccinctFinalModelAdequacy`, `SuccinctFinalSemanticProvenanceAdequacy`, `SuccinctRMQClassic`, `SuccinctRMQClassicProvenance`, `RMQ.Headlines.RMQ`, and `RMQPaper`. |
+| `lake build RMQPaper`; full `lake build`; `lake build RMQExamples` | Pass. |
+| Three primary axiom inventories | Headline, WordRAM, and broad inventories pass; the current query raw/occurrence theorems and the non-parameterized manifest packet report only the repository-standard axioms. |
+| Both SuccinctClassic executables | Pass. Validator checks 498 windows across 43 inputs; cost harness agrees with reference semantics and retains exact canonical bound `328`. Both roots still import only `SuccinctRMQClassic`. |
+| Phantom-validity/global-liveness scan | No retired `_of_valid` source-liveness wrapper or parameterized semantic packet remains. The only `SuccinctFinalSemanticProvenanceAdequacy` code hit is the proof-only module import itself. |
+| Strict design-decision check | Pass across 28 changed files. |
+| Strict claim-drift scan | Pass: policy version 7, 562 classified hits, 0 strict failures; spaced/unspaced `2^128` is role-classified and canonical activation misuse is strict. |
+| Prohibited-token and `native_decide`/`Lean.ofReduceBool` scans | No matches in live `RMQ` / `lakefile.toml` scope. |
+| `git diff --check` | Pass. |

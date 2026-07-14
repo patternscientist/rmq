@@ -1797,3 +1797,33 @@ arithmetic is proved symbolically in Lean. The scout report at commit
 not counted as evidence and its erroneous prose source summary was corrected
 from its table. The next workflow consumer is a coordinator reconstruction and
 blind exact-commit audit. U3 remains gated on U2 acceptance.
+
+## WDD-20260713-005: gate global liveness separately from query provenance
+
+Status: implemented candidate; coordinator audit pending.
+Date: 2026-07-13.
+
+Decision:
+
+- Curated axiom inventories name one query-independent reviewer-manifest packet
+  and the existing valid-query raw/occurrence surfaces. They no longer print
+  wrappers whose `xs`, bounds, and `ValidRange` premises were unused by a
+  global existential conclusion.
+- Claim drift classifies `2^128` by role: explicit legacy compatibility premise
+  or W19 proof-only sparse-local witness, never current canonical execution
+  activation. The scanner now recognizes both spaced and unspaced notation and
+  includes a strict canonical-activation misuse pattern.
+- The liveness policy status explicitly says `global-existential-some-valid-
+  query-not-current-query`, while indexed occurrence policy remains tied to the
+  current trace.
+- Verification continues to run both native executables from their direct
+  `SuccinctRMQClassic` roots. Importing the proof-only provenance seam into an
+  executable root remains prohibited because it would link symbolic witness
+  construction.
+
+Outcome:
+
+The completion gate now checks the theorem's real quantifier boundary rather
+than accepting vacuous current-query parameters. The three primary axiom
+inventories expose both scopes, strict claim scanning recognizes the proof-only
+`N = 2^128` witness, and the genuine native execution closure is unchanged.

@@ -15,6 +15,13 @@ Status: Process evidence. This report is not proof evidence; checked Lean
 source, theorem statements, and reproducible commands remain the proof/artifact
 evidence.
 
+W19 supersession note (2026-07-13): this dated audit's statement that `2^128`
+appears only in compatibility/history was accurate for the audited execution
+surfaces. No current canonical execution theorem uses it as an activation
+premise. Separately, W19's proof-only sparse-local nonvacuity witness now uses
+symbolic `N = 2^128`; that is not an execution, payload, cost, runtime, or paper
+theorem premise.
+
 ## Auditor Verdict
 
 Paper-surface ready, with follow-up. The auditor reported no P0, P1, or P2

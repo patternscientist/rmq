@@ -181,7 +181,11 @@ the story: the readiness threshold is the structural theorem
 `RMQ.SuccinctClose.concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold`,
 with
 `RMQ.SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold = 2^15`.
-The older `2^128` facts survive only as compatibility/large-regime corollaries.
+No current canonical execution theorem has a `2^128` activation premise. The
+older execution facts survive only as compatibility/large-regime corollaries.
+Separately, W19's proof-only sparse-local nonvacuity witness uses symbolic
+`N = 2^128`; that is not a route, payload, cost, runtime, or paper theorem
+premise.
 
 The route through the all-size structural close/LCA layer is anchored by
 `RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorAllSizeStructuralRoute_total`.

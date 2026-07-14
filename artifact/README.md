@@ -150,12 +150,13 @@ things:
 - complete physical-execution equality under agreement on the first execution's
   consumed ordered footprint, plus a checked consumed-address disagreement
   witness showing that the supplied store is not ignored;
-- W19 indexed occurrence provenance through the exact program instruction,
-  folded pre-state, component-local occurrence, invocation parameters, and
-  multiplicity-preserving offset; every counted source and shared-BP consumer
-  has a successful closed-valid whole-query witness, and fresh segment `21` is
-  rejected with the common predicate plus a checked positive-to-mutation
-  bridge;
+- W19 indexed occurrence provenance for the exact current query through the
+  program instruction, folded pre-state, component-local occurrence, invocation
+  parameters, and multiplicity-preserving offset; separately, one
+  query-independent manifest packet proves every counted source and shared-BP
+  consumer has some successful closed-valid whole-query witness, and rejects
+  fresh segment `21` with the common predicate plus a checked
+  positive-to-mutation bridge;
 - coherent rejection of empty, reversed, and out-of-bounds ranges across the
   canonical, supplied-store, trace, and costed list surfaces;
 - a linear reviewer capacity and query-independent logarithmic word width

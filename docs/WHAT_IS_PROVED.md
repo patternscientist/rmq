@@ -7,9 +7,10 @@ regions are exclusive, every logical segment is covered, and legacy duplicate
 close/interior storage is absent from the canonical payload and reachable only
 through compatibility surfaces. W19 proves indexed occurrence provenance from
 the global trace through the actual program occurrence, folded prefix state,
-component-local occurrence, and exact invocation parameters. Every counted
-source and named shared-BP consumer has a successful actual closed-valid query
-witness. The fresh segment-21 mutation is rejected with the common operational
+component-local occurrence, and exact invocation parameters for the current
+query. Separately, every counted source and named shared-BP consumer has some
+successful actual closed-valid query witness; this global existential does not
+claim current-query liveness. The fresh segment-21 mutation is rejected with the common operational
 predicate, and a checked bridge relates successful positive witnesses to the
 mutation-side arbitrary-result predicate. W18 event-value and component
 may-read theorems remain compatibility facts.
@@ -61,7 +62,7 @@ aliases.
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreBoundedExecutionStory` | Lower-level bounded target-indexed global-store packet for one fixed rank/select target. |
 | `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | Classic list-facing theorem: `buildPayload.length <= 2*n + overhead n` with `overhead = o(n)`; valid half-open queries return exact leftmost answers, invalid or empty ranges return `none`, and modeled cost is constant. |
 | `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | List-facing no-synthetic execution story with the same at-most space bound and range contract. Exact physical erasure is proved separately; no padding manufactures equality. |
-| `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` | Paper-facing list theorem combining the amended at-most payload bound, `overhead = o(n)`, exact valid answers, guarded raw adequacy, the all-invalid none/empty/zero packet, translated supplied-store `.value` provenance, constant modeled query cost, and the final no-synthetic trace story. |
+| `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` | Paper-facing theorem combining one global reviewer-manifest semantic packet with the list theorem's amended at-most payload bound, `overhead = o(n)`, exact valid answers, current-query raw adequacy and occurrence provenance, the all-invalid none/empty/zero packet, translated supplied-store `.value` provenance, constant modeled query cost, and the final no-synthetic trace story. |
 | `RMQ.Headlines.listIntSuccinctRMQQueryCostedInvalid` | Public validity boundary: invalid or empty list ranges return `none`; specialized empty, reversed, and out-of-bounds aliases are exported beside it. |
 | `RMQ.Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint` | List-facing supplied-store equality: under final footprint agreement with `SuccinctClassic.globalReadStore xs`, `SuccinctClassic.queryCostedWithStore xs store left right` is the same costed query as canonical `SuccinctClassic.queryCosted xs left right`. |
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal` | List-facing supplied-store exactness: if a caller-provided store agrees with `SuccinctClassic.globalReadStore xs` on the final checked footprint, valid half-open queries through `SuccinctClassic.queryCostedWithStore` erase to the exact leftmost `List Int` RMQ answer. |
@@ -88,11 +89,12 @@ aliases.
 | `RMQ.Headlines.succinctRMQReviewerCountedSourceSuccessfulClosedValidOccurrence` | Every counted source has a successful occurrence through an actual closed whole-query execution under a valid ordinary list query. |
 | `RMQ.Headlines.succinctRMQReviewerSharedBPConsumerSuccessfulClosedValidOccurrence` | Each select/rank/canonical-close shared-BP consumer has such a successful occurrence through its exact leaf. |
 | `RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer` | Fresh segment 21 fails the common valid-occurrence predicate used by accepted sources. |
+| `RMQ.Headlines.succinctRMQReviewerManifestSemanticAdequacy` | Query-independent W19 packet: each counted source and shared-BP consumer has some successful closed-valid execution witness, successful `P` implies the common mutation predicate `Q`, and fresh segment 21 fails `Q`. It does not assert that the current query reads every source. |
 | `RMQ.Headlines.listIntSuccinctRMQInvalidPhysicalSemantics` | Empty, reversed, and out-of-bounds public queries share the guarded none/empty/zero logical and physical execution for every supplied store. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | All-size structural execution story using raw positive same-block decoding and canonical cross-block component replay, with no zero-block dispatch. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` | Strongest all-size global execution story: the same store-backed and bounded trace plus a proof that no event is the dedicated synthetic cost-only marker. |
 | `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Flat-payload no-synthetic execution story: the flat execution payload is exactly the advertised BP-native construction payload; every actual successful read in the final trace has source/component/offset backing in one query-independent counted flat payload layout, addresses and word-primitive operands are bounded, and no synthetic cost-only event occurs. |
-| `RMQ.Headlines.succinctRMQFinalTraceModelAdequacy` | W19 model adequacy: `Costed` is the projection of a `WordRAM.TraceResult`; indexed reads have occurrence/invocation provenance; counted sources and shared-BP consumers have successful closed-valid witnesses; the common-predicate mutation is rejected; physical `.value` comes from the translated supplied-store evaluator; and the fixed modeled cost/no-synthetic/backing facts hold. |
+| `RMQ.Headlines.succinctRMQFinalTraceModelAdequacy` | Query-parameterized W19 model adequacy: `Costed` is the projection of a `WordRAM.TraceResult`; indexed reads in that exact trace have occurrence/invocation provenance; physical `.value` comes from the translated supplied-store evaluator; and the fixed modeled cost/no-synthetic/backing facts hold. Global source liveness and mutation rejection live in the separate reviewer-manifest packet. |
 | `RMQ.Headlines.succinctRMQFinalTraceModelAdequacyExact` | Exactness alias paired with the model-adequacy packet: valid windows erase to the leftmost RMQ answer for the Cartesian representative. |
 | `RMQ.Headlines.succinctRMQFinalSuppliedStoreAdequacy` | Supplied-store adequacy packet: reads match the caller-provided store, the concrete global-store instantiation recovers the canonical trace/interpreter refinement, no synthetic marker events appear, and final-layout footprint agreement gives store-parametricity. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreReadsSubsetFootprint` | Every emitted supplied-store payload-read event lies inside the safe final-layout footprint. The footprint is an overapproximation, not a minimal dynamic read set. |

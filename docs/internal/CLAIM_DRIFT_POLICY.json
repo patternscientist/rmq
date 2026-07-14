@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "updated": "2026-07-13",
   "terms": [
     {
@@ -35,12 +35,20 @@
       "allowedLineRegex": "not|separate|distinguish|conflate|policy|scan|model"
     },
     {
-      "id": "legacy-2pow128",
-      "pattern": "2\\^128",
-      "status": "legacy-compatibility-only",
+      "id": "role-scoped-2pow128",
+      "pattern": "2\\s*\\^\\s*128",
+      "status": "explicit-compatibility-premise-or-proof-only-sparse-witness-never-canonical-activation",
       "strict": false,
       "allowedPathRegex": "",
       "allowedLineRegex": ""
+    },
+    {
+      "id": "forbidden-2pow128-canonical-activation",
+      "pattern": "(canonical (reviewer )?(execution|route|query).{0,80}(requires|has|uses).{0,40}(activation premise|premise).{0,40}2\\s*\\^\\s*128|2\\s*\\^\\s*128.{0,80}(activates|is required by).{0,60}canonical (reviewer )?(execution|route|query))",
+      "status": "forbidden-current-canonical-activation-claim",
+      "strict": true,
+      "allowedPathRegex": "^docs/internal/CLAIM_DRIFT_POLICY\\.(md|json)$",
+      "allowedLineRegex": "no current|not|never|forbid|policy"
     },
     {
       "id": "all-size-196727",
@@ -125,7 +133,7 @@
     {
       "id": "split-operational-liveness-overclaim",
       "pattern": "counted source iff (reviewer-live|operationally live) source|emitted reads map to counted evaluator leaves|every counted source reaches an actual read-producing evaluator branch",
-      "status": "current-only-for-successful-closed-valid-whole-query-occurrences",
+      "status": "global-existential-some-valid-query-not-current-query",
       "strict": false,
       "allowedPathRegex": "^docs/internal/|^docs/DIGESTION_LOG\\.md$|^docs/ADD_PROVENANCE\\.md$",
       "allowedLineRegex": ""

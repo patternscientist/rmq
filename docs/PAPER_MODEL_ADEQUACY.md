@@ -13,14 +13,19 @@ closed whole-query execution under a valid ordinary `List Int` query.
 The manifest also proves exclusive source regions, complete logical-segment
 coverage, and exclusion of legacy duplicate close/interior sources.
 
-The load-bearing W19 packet is the proof-only
-`ConcreteBPNativeSuccinctRMQFinalSemanticProvenanceAdequacy`, which contains
-the final trace-model adequacy packet and the all-source/shared-consumer
-closed-valid witnesses. `SuccinctRMQClassicProvenance.lean` projects that
-packet through valid ordinary-list queries. This split keeps symbolic witness
-construction out of the native validator link closure; it does not replace or
-alter the genuine `SuccinctRMQClassic` execution checked by the validator and
-cost harness.
+W19 deliberately uses two differently quantified packets. The parameterized
+`ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy shape left right` retains
+indexed forward provenance for that exact query. The proof-only,
+non-parameterized
+`ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy` states global
+reviewer-manifest facts: each counted source and shared-BP consumer has some
+closed valid execution witness, successful predicate `P` implies mutation
+predicate `Q`, and fresh segment 21 fails `Q`. The paper theorem consumes that
+global packet once, not underneath a current-query `ValidRange` premise.
+`SuccinctRMQClassicProvenance.lean` is only the proof-import seam. This split
+keeps symbolic witness construction out of the native validator link closure;
+it does not replace or alter the genuine `SuccinctRMQClassic` execution checked
+by the validator and cost harness.
 
 A counterfactual fresh segment `21` with the plausible existing
 `canonicalClose` label has no witness under the same common closed-valid-

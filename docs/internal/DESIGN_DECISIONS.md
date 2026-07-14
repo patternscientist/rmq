@@ -2050,6 +2050,8 @@ Decision:
   genuine `SuccinctRMQClassic` execution core. This preserves public
   composition without adding symbolic witness construction to the executable
   link closure.
+  This composition choice is superseded by DD-20260713-006; the underlying
+  occurrence and witness proofs remain accepted checkpoint evidence.
 
 Audited design input:
 
@@ -2096,3 +2098,71 @@ Evidence:
 - `docs/CODE_MAP.md`.
 - `ReviewerProducerClaim.hasOperationalProducer_of_successful`.
 - `concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_producer`.
+
+## DD-20260713-006: separate global manifest liveness from current-query provenance
+
+Status: implemented by the continued W19 composition-repair candidate;
+coordinator audit pending.
+
+Context:
+
+`ReviewerProducerClaim.HasSuccessfulClosedValidOccurrence` existentially
+chooses some ordinary list and valid closed query. It does not mention a
+currently quantified `shape`, `xs`, `left`, or `right`. The W19 checkpoint
+nevertheless bundled those global witnesses with parameterized final trace
+adequacy and projected them through wrappers carrying an unused current-query
+`ValidRange`. That theorem shape could be read as claiming every manifest
+source is read by the current query, which is false and stronger than the
+proved witness relation.
+
+Decision:
+
+- Keep `ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy shape left right`
+  query-parameterized. Its indexed occurrence field concerns that exact global
+  trace, instruction occurrence, folded state, invocation parameters, and
+  multiplicity-preserving local embedding.
+- Package counted-source reachability, exact shared-BP reachability, the
+  checked `P -> Q` bridge, fresh-source rejection, and manifest structure in
+  the non-parameterized proof-only
+  `ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy`.
+- Remove `xs`/`left`/`right`/`ValidRange` wrappers whose conclusions are only
+  global existential facts. Consume the global packet once as a top-level
+  conjunct of `listIntSuccinctRMQPaperMainTheorem`; retain raw trace adequacy
+  and indexed forward provenance under the current query's validity premise.
+- Keep `SuccinctRMQClassicProvenance.lean` as a proof-import seam only. Native
+  validation and the cost harness continue importing `SuccinctRMQClassic`
+  directly, so symbolic long/sparse witness modules do not enter executable
+  import closure.
+- Classify `2^128` by role: it is not an activation premise of any current
+  canonical execution theorem; it remains both an explicit premise on legacy
+  compatibility companions and the symbolic size of W19's proof-only
+  sparse-local nonvacuity witness. The witness is not a paper-route, payload,
+  cost, or runtime premise.
+
+Rejected alternatives:
+
+- Retain the unused validity premise and repair only prose.
+- Strengthen the global existential relation into the false claim that each
+  source is read by every valid current query.
+- Replace the closed whole-query witnesses with component may-read facts.
+- Import symbolic witness modules into native executable roots.
+
+Consequences:
+
+The public theorem now exposes two honest quantifier scopes. The global packet
+answers whether every reviewer source has some actual valid execution witness
+and whether the segment-21 mutation fails the same operational predicate. The
+per-query packet answers where every read of the current execution came from.
+The physical evaluator, one public payload, invalid-range semantics,
+logarithmic reviewer width, no-synthetic trace, and checked `328` bound remain
+unchanged. U3 remains unopened.
+
+Evidence:
+
+- `concreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy`.
+- `concreteBPNativeSuccinctRMQFinalTraceModelAdequacy`.
+- `flatPayloadStoreNoSyntheticExecutionStory_rawAdequacy_of_valid` and
+  `flatPayloadStoreNoSyntheticExecutionStory_occurrenceProvenance_of_valid`.
+- `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`.
+- `RMQ.Headlines.succinctRMQReviewerManifestSemanticAdequacy`.
+- The direct `SuccinctRMQClassic` imports in both validation roots.

@@ -13,13 +13,15 @@ is the single pre-execution list
 identifies that list with the canonical public payload underlying
 `SuccinctClassic.buildPayload`, rather than an appended sibling payload.
 
-W19 starts from a global trace `getElem?` witness and retains that same
+W19 separates two quantifier domains. Its per-query theorem starts from a
+global trace `getElem?` witness and retains that same
 occurrence through its program-instruction position, exact folded prefix state,
 component-local position, select/rank/close invocation parameters, source, and
 the global-prefix-length plus local-position embedding. Every counted source
-has a successful occurrence in an actual closed whole-query execution under a
-valid ordinary `List Int` query. The select, rank, and canonical-close shared-BP
-consumers have exact-leaf witnesses as well. Positive predicate `P` is
+has a successful occurrence in some actual closed whole-query execution under
+a valid ordinary `List Int` query; this global existential is not a claim about
+the current query. The select, rank, and canonical-close shared-BP consumers
+have exact-leaf witnesses as well. Positive predicate `P` is
 successful `ReviewerProducerClaim.HasClosedValidOccurrence`; mutation predicate
 `Q` existentially permits either read result. They share the common occurrence
 relation and `hasOperationalProducer_of_successful` checks `P -> Q`; fresh
@@ -2918,14 +2920,12 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctClassic.listIntFinalFullModelCostLeOfFootprintGlobal`.
 - `RMQ/Core/SuccinctFinalSemanticProvenanceAdequacy.lean` and
   `RMQ/Core/SuccinctRMQClassicProvenance.lean`:
-  `SuccinctFinal.concreteBPNativeSuccinctRMQFinalSemanticProvenanceAdequacy`,
-  `SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_semanticProvenanceAdequacy_of_valid`,
-  `SuccinctClassic.reviewerCountedSource_successfulClosedValidOccurrence_of_valid`,
-  and
-  `SuccinctClassic.reviewerSharedBPConsumer_successfulClosedValidOccurrence_of_valid`.
-  These proof-only modules carry W19 through final adequacy and the valid
-  `List Int` story while preserving the native validator's executable import
-  closure.
+  `SuccinctFinal.concreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy`.
+  The first module packages global manifest liveness, the `P -> Q` bridge, and
+  mutation rejection without query parameters; the second is an import-only
+  proof seam. The paper theorem consumes the packet once, while valid `List Int`
+  queries separately consume raw trace adequacy and indexed occurrence
+  provenance. Native validator executable import closure remains unchanged.
 - `RMQ/Headlines.lean`:
   public-facing aliases
   `Headlines.exactRMQLowerBoundDoubledCatalanSlack`,

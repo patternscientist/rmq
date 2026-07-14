@@ -61,7 +61,7 @@ The RMQ-only paper aliases live in
 | --- | --- |
 | `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | Reader-facing theorem over ordinary `xs : List Int`: `buildPayload.length <= 2*n + overhead n` with `overhead = o(n)`; valid half-open queries return the exact leftmost RMQ answer, invalid or empty ranges return `none`, and modeled query cost is constant. |
 | `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Reader-facing no-synthetic execution story over ordinary `xs : List Int`, including the same public space inequality and range contract. Exact physical-word erasure is also conjoined directly in the paper main theorem; the construction is not padded to manufacture a size equality. |
-| `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` | Paper-facing list theorem combining the amended at-most payload bound, `overhead = o(n)`, exact valid answers, guarded raw adequacy, the all-invalid none/empty/zero packet, translated supplied-store `.value` provenance, constant modeled query cost, and the final no-synthetic flat-payload trace story. |
+| `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` | Paper-facing theorem consuming one global reviewer-manifest semantic packet, then combining the list theorem's amended at-most payload bound, `overhead = o(n)`, exact valid answers, current-query raw adequacy and occurrence provenance, the all-invalid none/empty/zero packet, translated supplied-store `.value` provenance, constant modeled query cost, and the final no-synthetic flat-payload trace story. |
 | `RMQ.Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint` | List-facing supplied-store equality: under final footprint agreement with `SuccinctClassic.globalReadStore xs`, `SuccinctClassic.queryCostedWithStore xs store left right` is the same costed query as canonical `SuccinctClassic.queryCosted xs left right`. |
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal` | List-facing supplied-store exactness: if a caller-provided store agrees with `SuccinctClassic.globalReadStore xs` on the final checked footprint, valid half-open queries through `SuccinctClassic.queryCostedWithStore` erase to the exact leftmost `List Int` RMQ answer. |
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal` | List-facing supplied-store all-size cost transfer: under the same footprint agreement, the supplied-store query has modeled cost at most `SuccinctClassic.queryCost`. |
@@ -88,6 +88,7 @@ The RMQ-only paper aliases live in
 | `RMQ.Headlines.succinctRMQReviewerCountedSourceSuccessfulClosedValidOccurrence` | Every counted source is successfully read by some actual closed whole-query execution under a valid ordinary `List Int` query. |
 | `RMQ.Headlines.succinctRMQReviewerSharedBPConsumerSuccessfulClosedValidOccurrence` | Select, rank, and canonical-close consumers each have a successful closed-valid occurrence through their exact invocation leaf. |
 | `RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer` | Fresh segment `21` is rejected by the same common closed-valid-occurrence predicate used by accepted sources; the checked positive-to-mutation bridge accounts for successful versus arbitrary-result reads. |
+| `RMQ.Headlines.succinctRMQReviewerManifestSemanticAdequacy` | Query-independent W19 packet: every counted source and shared-BP consumer has some successful closed-valid execution witness, successful `P` implies the common mutation predicate `Q`, and fresh segment `21` fails `Q`. It does not say the current query reads every source. |
 | `RMQ.Headlines.listIntSuccinctRMQInvalidPhysicalSemantics` | Invalid public inputs have one guarded none/empty/zero logical and physical execution for every supplied store. |
 | `RMQ.Headlines.listIntSuccinctRMQQueryCostedInvalid` | One public validity boundary rejects every invalid or empty range; specialized empty, reversed, and out-of-bounds aliases are exported beside it. |
 | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory` | Large-regime companion: under the explicit size premise, the compact close/LCA leg uses the positive-block local/fringe/interior structural replay; it is a compatibility strengthening of the all-size structural route. |
@@ -107,10 +108,11 @@ The RMQ-only paper aliases live in
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreExecutionStory` | Target-independent global-store execution story for compressed/FID rank/select: for fixed `bits`, shared access plus rank false/true and select false/true traces all read from one concrete payload store. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory` | Bounded target-independent global-store execution story for compressed/FID rank/select: the shared access/rank/select traces also carry trace-local finite widths bounding payload-read addresses and word-primitive operands/results. |
 
-W19 candidate evidence closes the semantic obligations reopened after W18:
-indexed occurrence provenance preserves invocation parameters and every
-counted source has an actual successful closed-valid query witness under the
-same common operational relation used to reject segment `21`. Coordinator
+W19 candidate evidence separates the semantic obligations reopened after W18:
+indexed occurrence provenance preserves invocation parameters for the exact
+current query, while a global packet proves every counted source has some
+actual successful closed-valid query witness under the same common operational
+relation used to reject segment `21`. Coordinator
 reconstruction and a fresh blind exact-commit audit still precede U2
 acceptance. The canonical
 reviewer route otherwise has one live public payload,

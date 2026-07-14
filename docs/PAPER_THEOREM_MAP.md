@@ -21,8 +21,8 @@ RMQ.Headlines.succinctRMQReviewerCountedSourceSuccessfulClosedValidOccurrence
 RMQ.Headlines.succinctRMQReviewerSharedBPConsumerSuccessfulClosedValidOccurrence
 RMQ.Headlines.succinctRMQReviewerSuccessfulOccurrenceImpliesOperationalProducer
 RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer
-RMQ.Headlines.succinctRMQFinalSemanticProvenanceAdequacy
-RMQ.Headlines.listIntSuccinctRMQSemanticProvenanceAdequacyOfValid
+RMQ.Headlines.succinctRMQReviewerManifestSemanticAdequacy
+RMQ.Headlines.listIntSuccinctRMQRawAdequacyOfValid
 RMQ.Headlines.succinctRMQReviewerPhysicalWordsFitLinearCapacity
 RMQ.Headlines.succinctRMQReviewerWordBitsLogarithmic
 RMQ.Headlines.succinctRMQReviewerPhysicalWordFits
@@ -39,10 +39,12 @@ Its one typed 20-source manifest includes canonical close and covers every
 read-producing segment. For each indexed read, W19 retains the global
 occurrence, program instruction occurrence, folded state, component-local
 occurrence, exact invocation parameters, source, and composed-trace offset.
-Every counted source and exact shared-BP consumer has a successful actual
-closed-valid query witness. A checked bridge maps the successful positive
-predicate into the mutation-side arbitrary-result predicate, and fresh segment
-21 fails that common relation. Region
+The query-independent manifest packet states that every counted source and
+exact shared-BP consumer has some successful actual closed-valid query witness.
+A checked bridge maps the successful positive predicate into the mutation-side
+arbitrary-result predicate, and fresh segment 21 fails that common relation.
+It is consumed once outside the paper theorem's current-query quantifiers; the
+indexed forward theorem remains about the exact current trace. Region
 exclusivity, segment
 coverage, and absence of legacy duplicate close/interior payload sources also
 hold. One
@@ -84,8 +86,8 @@ separate theorem; no payload padding manufactures equality.
 
 ```lean
 RMQ.Headlines.succinctRMQFinalTraceModelAdequacy
-RMQ.Headlines.succinctRMQFinalSemanticProvenanceAdequacy
-RMQ.Headlines.listIntSuccinctRMQSemanticProvenanceAdequacyOfValid
+RMQ.Headlines.succinctRMQReviewerManifestSemanticAdequacy
+RMQ.Headlines.listIntSuccinctRMQRawAdequacyOfValid
 RMQ.Headlines.succinctRMQFinalTraceModelAdequacyExact
 RMQ.Headlines.succinctRMQFinalSuppliedStoreAdequacy
 RMQ.Headlines.succinctRMQFinalFullModelSoundness

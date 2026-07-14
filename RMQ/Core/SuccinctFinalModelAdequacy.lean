@@ -83,8 +83,6 @@ structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
   compatibility_shared_bp_dependencies_have_component_path :
     forall consumer : ReviewerSharedBPConsumer,
       consumer.ProducerConnected shape
-  fresh_unused_source_rejected_by_producer :
-    ¬ concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource.HasOperationalProducer
   canonical_manifest_nodup :
     List.Nodup concreteBPNativeSuccinctRMQReviewerPhysicalSources
   canonical_regions_exclusive :
@@ -285,8 +283,6 @@ theorem concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
         concreteBPNativeSuccinctRMQReviewerSource_counted_producer_may_path shape
       compatibility_shared_bp_dependencies_have_component_path :=
         concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_all_producer_connected shape
-      fresh_unused_source_rejected_by_producer :=
-        concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_producer
       canonical_manifest_nodup :=
         concreteBPNativeSuccinctRMQReviewerPhysicalSources_nodup
       canonical_regions_exclusive :=

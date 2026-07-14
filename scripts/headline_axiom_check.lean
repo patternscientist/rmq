@@ -40,10 +40,7 @@ the BP-native succinct capstone.
 #print axioms RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery
 #print axioms RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory
 #print axioms RMQ.Headlines.listIntSuccinctRMQOccurrenceProvenanceOfValid
-#print axioms RMQ.Headlines.listIntSuccinctRMQSemanticProvenanceAdequacyOfValid
 #print axioms RMQ.Headlines.listIntSuccinctRMQEventValueProducerProvenanceOfValid
-#print axioms RMQ.Headlines.listIntSuccinctRMQCountedSourceSuccessfulClosedValidOccurrence
-#print axioms RMQ.Headlines.listIntSuccinctRMQSharedBPConsumerSuccessfulClosedValidOccurrence
 #print axioms RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem
 #print axioms RMQ.Headlines.listIntSuccinctRMQQueryTraceResultWithStoreEqOfOrderedReadFootprint
 #print axioms RMQ.Headlines.succinctRMQReviewerPhysicalWordsErasePublicPayload
@@ -94,7 +91,7 @@ the BP-native succinct capstone.
 #print axioms RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory
 #print axioms RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory
 #print axioms RMQ.Headlines.succinctRMQFinalTraceModelAdequacy
-#print axioms RMQ.Headlines.succinctRMQFinalSemanticProvenanceAdequacy
+#print axioms RMQ.Headlines.succinctRMQReviewerManifestSemanticAdequacy
 #print axioms RMQ.Headlines.succinctRMQFinalTraceModelAdequacyExact
 #print axioms RMQ.Headlines.succinctRMQFinalSuppliedStoreAdequacy
 #print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreReadsSubsetFootprint

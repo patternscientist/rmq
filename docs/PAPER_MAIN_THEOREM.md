@@ -26,7 +26,8 @@ primitive operands/results.
 ## Machine-Level Theorem Map
 
 - `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`: list-facing main theorem
-  with the inequality `buildPayload.length <= 2n + overhead`,
+  with one query-independent reviewer-manifest semantic packet, the inequality
+  `buildPayload.length <= 2n + overhead`,
   `LittleOLinear overhead`, exact physical-word erasure to that same
   `buildPayload`, invalid-range rejection, exact valid RMQ answers, leftmost
   ties, modeled constant query cost, and the no-synthetic execution story. The
@@ -45,16 +46,16 @@ primitive operands/results.
   every indexed read retains its global position, producing instruction
   occurrence, folded prefix state, component-local position, exact invocation
   parameters, source, and multiplicity-preserving embedding.
-- `RMQ.Headlines.succinctRMQReviewerCountedSourceSuccessfulClosedValidOccurrence`
-  and
-  `RMQ.Headlines.succinctRMQReviewerSharedBPConsumerSuccessfulClosedValidOccurrence`:
-  every counted source and exact shared-BP consumer has a successful witness
-  through an actual closed whole-query execution under a valid list query.
-- `RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer`:
-  segment 21 with a plausible canonical-close label fails the same common
-  closed-valid-occurrence predicate; the checked
-  `succinctRMQReviewerSuccessfulOccurrenceImpliesOperationalProducer` bridge
-  accounts for the positive side requiring a successful read.
+- `RMQ.Headlines.succinctRMQReviewerManifestSemanticAdequacy`: one global
+  certificate that every counted source and exact shared-BP consumer has a
+  successful witness through some actual closed whole-query execution under a
+  valid list query, that the successful predicate implies the common mutation
+  predicate, and that fresh segment 21 fails that predicate. It does not claim
+  those sources are read by the current paper-theorem query.
+- `RMQ.Headlines.succinctRMQReviewerEveryReadOccurrenceProvenance` and
+  `RMQ.Headlines.listIntSuccinctRMQRawAdequacyOfValid`: indexed provenance and
+  final trace adequacy remain tied to the exact current query and its validity
+  domain.
 - `RMQ.Headlines.listIntSuccinctRMQRawAdequacyOfValid` and
   `RMQ.Headlines.listIntSuccinctRMQInvalidPhysicalSemantics`: raw adequacy only
   for valid ranges and one none/empty/zero execution for every invalid range.
