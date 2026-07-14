@@ -88,7 +88,11 @@ if ($LASTEXITCODE -ne 0) { Fail "shim_lint.ps1 found issues" }
 & "$PSScriptRoot\claim_drift_policy_regression.ps1"
 if ($LASTEXITCODE -ne 0) { Fail "claim_drift_policy_regression.ps1 found issues" }
 
-# 7. Whitespace / leftover merge markers.
+# 7. Strict claim-policy violations block the aggregate gate.
+& "$PSScriptRoot\claim_drift_scan.ps1" -Strict
+if ($LASTEXITCODE -ne 0) { Fail "claim_drift_scan.ps1 found strict violations" }
+
+# 8. Whitespace / leftover merge markers.
 git diff --check
 if ($LASTEXITCODE -ne 0) { Fail "git diff --check found issues" }
 

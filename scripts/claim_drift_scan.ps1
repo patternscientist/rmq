@@ -27,7 +27,10 @@ $hits = 0
 
 foreach ($term in $policy.terms) {
   $pattern = [string]$term.pattern
-  $matches = @(& rg -n --pcre2 -- $pattern @roots 2>$null)
+  # Keep the parser's file:line:text contract even when a focused caller passes
+  # exactly one file. Without --with-filename, ripgrep emits only line:text and
+  # the verdict loop silently drops the match.
+  $matches = @(& rg -n --with-filename --pcre2 -- $pattern @roots 2>$null)
   $code = $LASTEXITCODE
   if ($code -gt 1) {
     Write-Host "CLAIM-DRIFT: rg failed for $($term.id)"

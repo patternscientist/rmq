@@ -39,6 +39,25 @@ story.
 `docs/internal/CLAIM_DRIFT_POLICY.json`. Keep the JSON concise and update this
 human-readable file when the interpretation changes.
 
+## Controlled Claim-Language Lint
+
+The strict `2^128` rule is a controlled claim-language lint, not a complete
+natural-language semantic checker. It flags a bounded window containing all
+three suspicious token classes: the exponent, a canonical
+execution/route/query role, and activation/premise/threshold language. Narrow
+anchored allowances then admit explicit negation, historical notes,
+compatibility companions, and proof-only witness roles. `noncanonical` and
+`non-canonical` are distinct tokens and are not canonical-role matches.
+The only path allowances are this policy pair and W19's exact frozen acceptance
+matrix, which must quote rejected mutations as contract text.
+
+The strict scanner's exit verdict is the policy result. Regression fixtures
+invoke `claim_drift_scan.ps1 -Strict` itself, so path and line allowances and
+the term's `strict` flag are tested together with its PCRE pattern. The
+aggregate gate and CI both run the repository scan in strict mode.
+
+The strict detector treats a canonical execution's 2^128 activation threshold as suspicious before role allowance; this policy-file example is admitted only by the exact policy-file path allowance.
+
 ## Initial Sensitive Claims
 
 - Novelty language such as "first mechanized" or "first-ever" must be qualified
@@ -53,11 +72,10 @@ human-readable file when the interpretation changes.
   Explicit legacy compatibility companions may retain that sufficient premise.
   Separately, W19's proof-only sparse-local nonvacuity witness uses symbolic
   `N = 2^128`; that witness is not an execution, payload, cost, runtime, or
-  paper-main-theorem premise. The strict policy rejects canonical activation
-  claims in either ordinary word order (canonical route before or after the
-  exponent) and with either `2^128` or `2 ^ 128` spelling. Its gate-backed
-  mutation suite keeps negated canonical statements, compatibility companions,
-  and the proof-only sparse-local witness as accepted role-scoped fixtures.
+  paper-main-theorem premise. The broad bounded detector covers possessive,
+  activated-at, threshold, exponent-first, and spaced/unspaced forms. Narrow
+  role allowances keep explicit negation, historical records, compatibility
+  companions, and proof-only sparse-local witnesses accepted.
 - `328` is the current checked transitional canonical reviewer bound; U3 owns
   any final explained constant.
 - `4144`, Ready-regime `118`, the zero-block route, and `196727` are

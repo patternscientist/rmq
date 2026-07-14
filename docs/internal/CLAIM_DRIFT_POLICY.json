@@ -1,6 +1,6 @@
 {
-  "version": 8,
-  "updated": "2026-07-13",
+  "version": 9,
+  "updated": "2026-07-14",
   "terms": [
     {
       "id": "novelty-first-mechanized",
@@ -44,11 +44,11 @@
     },
     {
       "id": "forbidden-2pow128-canonical-activation",
-      "pattern": "(?i)(?:(?<!no )(?<!not )(?<!never )(?<!current )(?:current )?canonical (reviewer )?(execution|route|query)(?:(?!\\b(?:no|not|never)\\b).){0,100}?(requires|has|uses)(?:(?!\\b(?:no|not|never)\\b).){0,60}?2\\s*\\^\\s*128(?:(?!\\b(?:no|not|never)\\b).){0,100}?(activation premise|premise|to activate)|2\\s*\\^\\s*128(?:(?!\\b(?:no|not|never)\\b).){0,100}?(activates|is required by|is an activation premise for|is the activation premise for)(?:(?!\\b(?:no|not|never)\\b).){0,100}?(?:current )?canonical (reviewer )?(execution|route|query))",
-      "status": "forbidden-current-canonical-activation-claim",
+      "pattern": "(?i)(?=.{0,240}2\\s*\\^\\s*128)(?=.{0,240}(?:^|[^A-Za-z-])canonical(?:\\s+reviewer)?\\s+(?:execution|route|query)\\b)(?=.{0,240}\\b(?:activat(?:e|es|ed|ing|ion)|premise|threshold)\\b).{0,240}",
+      "status": "forbidden-current-canonical-activation-suspicion-controlled-language-lint",
       "strict": true,
-      "allowedPathRegex": "^docs/internal/CLAIM_DRIFT_POLICY\\.(md|json)$",
-      "allowedLineRegex": "no current|not|never|forbid|policy"
+      "allowedPathRegex": "^(?:docs/internal/CLAIM_DRIFT_POLICY\\.(?:md|json)|docs/internal/W15_U2_CANONICAL_PAYLOAD_WHOLE_MACHINE_ACCEPTANCE_MATRIX\\.md)$",
+      "allowedLineRegex": "(?i)^\\s*(?:[-*]\\s*)?(?:no\\s+(?:current\\s+)?canonical\\b|(?:the\\s+)?canonical\\b.{0,100}\\bdoes\\s+not\\b|it\\s+is\\s+not\\s+true\\s+that\\b|historical(?:\\s+(?:note|record|compatibility))?\\s*[:,-]|compatibility(?:[- ]only|\\s+(?:companion|theorem|history))?\\s*[:,-]|proof[- ]only(?:\\s+(?:sparse-local\\s+)?witness)?\\s*[:,-])"
     },
     {
       "id": "all-size-196727",

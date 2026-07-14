@@ -1854,3 +1854,73 @@ uses `rg --pcre2` against five must-reject mutations and five must-accept
 role-scoped fixtures. It independently exercises both word orders, both
 spaced/unspaced exponent spellings, negated canonical claims, compatibility,
 and the symbolic sparse-local proof witness.
+
+Second failure discovered at checkpoint `82406d93`:
+
+The first regression asserted only raw forbidden-pattern matches. It did not
+exercise the scanner's line/path allowances, term `strict` flag, accumulated
+failure count, or exit code. It was therefore fixture-overfit: nearby
+possessive, activated-at, and threshold claims still escaped. In addition,
+`scripts/gate.ps1` ran only that raw-pattern regression, while CI ran the real
+claim scan without `-Strict` in an explicitly advisory step. A forbidden
+publication claim could therefore remain gate-green.
+
+Running fixtures through the real scanner exposed a second concrete scope bug:
+when `rg` received exactly one file it omitted the filename, but the scanner
+parser required `file:line:text`. Ordinary matching lines were silently
+dropped; only fixture text containing another colon happened to parse.
+`--with-filename` now preserves the scanner's input contract for both focused
+and repository-wide scans.
+
+Amended decision:
+
+- The forbidden term is a broad 240-character suspicious-token window over a
+  canonical execution/route/query role, `2^128` (spaced or unspaced), and
+  activation/premise/threshold language. It is intentionally a controlled
+  claim-language lint, not a complete natural-language semantic checker.
+- Its allowances are anchored, explicit roles: direct negation, historical
+  note/record, compatibility companion/history, or proof-only witness. The
+  canonical token boundary excludes `noncanonical` and `non-canonical`.
+- The regression delegates every fixture to `claim_drift_scan.ps1 -Strict` in
+  a child process and asserts the scanner's final exit verdict. Must-accept
+  fixtures that exercise an allowance also require the scanner's `[allowed]`
+  classification; both exact contract/policy path allowances are exercised
+  separately.
+- The aggregate gate runs both the focused regression and the full repository
+  strict scan. CI gives the same strict scan its own blocking step, so no later
+  command can overwrite its exit status, and retains the aggregate gate as an
+  independent blocking consumer.
+
+Rejected alternatives:
+
+- Continue appending grammatical alternatives and negative lookarounds to the
+  checkpoint regex. This repeats the fixture-overfitting failure and makes the
+  accepted roles implicit.
+- Reimplement allowance and strictness logic inside the regression. Two
+  classifiers could disagree while both local test suites remained green.
+- Gate only the focused fixtures. That protects known mutations but permits a
+  strict failure already present elsewhere in publication-facing prose.
+- Keep CI's scan advisory because the aggregate gate runs the regression. The
+  checkpoint showed that raw fixture success and repository strict cleanliness
+  are different obligations.
+
+Publication-facing rationale:
+
+The paper and artifact must distinguish a current canonical execution premise
+from compatibility theorems and a proof-only symbolic witness. Small prose
+reorderings must not silently reactivate the false canonical `2^128` story, but
+truthful scoped history must remain writable. A blocking controlled-language
+lint makes that boundary reproducible without pretending to solve unrestricted
+natural-language semantics.
+
+Amended regression evidence:
+
+- 13 must-reject fixtures receive the forbidden term's final strict failure;
+- 11 must-accept fixtures receive a final strict pass, including explicit
+  allowance cases that also report `[allowed]`;
+- both exact path allowances are exercised through the scanner;
+- the full repository strict scan reports 576 classified hits and zero strict
+  failures;
+- the base-relative strict design check covers eight changed files; and
+- `scripts/gate.ps1` completes with `GATE PASS`, while CI names and invokes its
+  claim scan as strict.
