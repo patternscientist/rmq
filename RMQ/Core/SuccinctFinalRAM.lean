@@ -3850,13 +3850,83 @@ def evalGlobalWordTrace (shape : Cartesian.CartesianShape)
       WordRAM.TraceResult.bind
         (instr.evalGlobalWordTrace shape left right state)
         fun state' =>
-          evalGlobalWordTrace shape left right rest state'
+      evalGlobalWordTrace shape left right rest state'
 
 /--
-An event producer is an instruction occurrence reached by the actual program
-fold.  The tail constructor advances the state through the preceding
-instruction before continuing, so its `preState` cannot be replaced by an
-arbitrary state such as `WholeQueryState.empty`.
+Indexed occurrence witness for one event emitted by one instruction in a
+closed program fold.  Besides the concrete program split and folded pre-state,
+the relation retains the instruction index, instruction-local index, and the
+prefix-length equation embedding that local occurrence at the original global
+position.  Equal event values at different positions therefore remain
+different proof obligations.
+-/
+def ProducesEventAt
+    (shape : Cartesian.CartesianShape) (left right : Nat)
+    (event : WordRAM.TraceEvent) (program : WholeQueryProgram)
+    (state : WholeQueryState) (globalPos : Nat)
+    (instrPos : Nat) (instr : WholeQueryInstr) (preState : WholeQueryState)
+    (localPos : Nat) : Prop :=
+  ∃ before after,
+    program = before ++ instr :: after ∧
+    instrPos = before.length ∧
+    preState =
+      (evalGlobalWordTrace shape left right before state).value ∧
+    globalPos =
+      (evalGlobalWordTrace shape left right before state).trace.length +
+        localPos ∧
+    (instr.evalGlobalWordTrace shape left right preState).trace[localPos]? =
+      some event
+
+/-- Every indexed program-trace occurrence exposes the exact instruction
+occurrence, folded pre-state, and local occurrence embedded at that position. -/
+theorem evalGlobalWordTrace_getElem?_producer
+    (shape : Cartesian.CartesianShape) (left right : Nat)
+    (program : WholeQueryProgram) (state : WholeQueryState)
+    (globalPos : Nat) (event : WordRAM.TraceEvent)
+    (hget : (evalGlobalWordTrace shape left right program state).trace[globalPos]? =
+      some event) :
+    ∃ instrPos instr preState localPos,
+      ProducesEventAt shape left right event program state globalPos
+        instrPos instr preState localPos := by
+  induction program generalizing state globalPos with
+  | nil =>
+      simp [evalGlobalWordTrace] at hget
+  | cons first rest ih =>
+      simp only [evalGlobalWordTrace, WordRAM.TraceResult.bind_trace] at hget
+      by_cases hfirst : globalPos <
+          (first.evalGlobalWordTrace shape left right state).trace.length
+      · have hlocal :
+            (first.evalGlobalWordTrace shape left right state).trace[globalPos]? =
+              some event := by
+          simpa [List.getElem?_append, hfirst] using hget
+        refine ⟨0, first, state, globalPos, [], rest, rfl, rfl, rfl, ?_, hlocal⟩
+        simp [evalGlobalWordTrace]
+      · have htail :
+            (evalGlobalWordTrace shape left right rest
+              (first.evalGlobalWordTrace shape left right state).value).trace[
+                globalPos -
+                  (first.evalGlobalWordTrace shape left right state).trace.length]? =
+              some event := by
+          simpa [List.getElem?_append, hfirst] using hget
+        rcases ih
+            (first.evalGlobalWordTrace shape left right state).value
+            (globalPos -
+              (first.evalGlobalWordTrace shape left right state).trace.length)
+            htail with ⟨instrPos, instr, preState, localPos, before, after,
+              hprogram, hinstrPos, hstate, hpos, hlocal⟩
+        refine ⟨instrPos + 1, instr, preState, localPos,
+          first :: before, after, ?_, ?_, ?_, ?_, hlocal⟩
+        · simp [hprogram]
+        · simp [hinstrPos]
+        · simpa [evalGlobalWordTrace] using hstate
+        · simp only [evalGlobalWordTrace, WordRAM.TraceResult.bind_trace,
+            List.length_append]
+          omega
+
+/--
+Compatibility W18 event-value producer.  This relation reaches an instruction
+at its actual folded state, but does not retain a global or local occurrence
+position.  New occurrence-level consumers use `ProducesEventAt`.
 -/
 inductive ProducesEvent
     (shape : Cartesian.CartesianShape) (left right : Nat)
@@ -3875,7 +3945,8 @@ inductive ProducesEvent
       ProducesEvent shape left right event
         (instr :: rest) state producer preState
 
-/-- Every program-trace event exposes its actual producing occurrence. -/
+/-- Compatibility W18 theorem for event-value membership.  Use
+`evalGlobalWordTrace_getElem?_producer` for occurrence-level provenance. -/
 theorem evalGlobalWordTrace_event_producer
     (shape : Cartesian.CartesianShape) (left right : Nat)
     (program : WholeQueryProgram) (state : WholeQueryState)
@@ -5498,6 +5569,114 @@ theorem WholeQueryInstr.evalGlobalWordTrace_read_producer_path
       cases hguard : state.opt guard <;>
         simp [WholeQueryInstr.evalGlobalWordTrace, hguard] at hmem
 
+/-- Exact parameter tuple used by one read-producing whole-query instruction. -/
+inductive ReviewerReadInvocation where
+  | selectClose (idx : Nat)
+  | canonicalClose (leftClose rightClose : Nat)
+  | rankClose (pos : Nat)
+deriving Repr
+
+namespace ReviewerReadInvocation
+
+/-- Reviewer leaf selected by an exact invocation. -/
+def leaf : ReviewerReadInvocation -> ReviewerReadLeaf
+  | .selectClose _ => .selectClose
+  | .canonicalClose _ _ => .canonicalClose
+  | .rankClose _ => .rankClose
+
+/-- Exact component trace used by an invocation. -/
+def componentTrace
+    (shape : Cartesian.CartesianShape) :
+    ReviewerReadInvocation -> List WordRAM.TraceEvent
+  | .selectClose idx =>
+      (concreteBPNativeSelectCloseGlobalWordTraceResult shape idx).trace
+  | .canonicalClose leftClose rightClose =>
+      (concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
+        shape leftClose rightClose).trace
+  | .rankClose pos =>
+      (concreteBPNativeRankCloseWordTraceResultAtSegment
+        shape concreteBPNativeRankCloseTraceSegmentBase pos).trace
+
+end ReviewerReadInvocation
+
+namespace WholeQueryInstr
+
+/-- The exact invocation computed by an instruction from its real pre-state. -/
+inductive InvokesReviewerRead
+    (left right : Nat) (state : WholeQueryState) :
+    WholeQueryInstr -> ReviewerReadInvocation -> Prop
+  | selectClose (dst : WholeQueryOptReg) (idx : WholeQueryNatExpr) :
+      InvokesReviewerRead left right state (.selectClose dst idx)
+        (.selectClose (idx.eval left right state))
+  | canonicalClose
+      (dst leftReg rightReg : WholeQueryOptReg)
+      (leftClose rightClose : Nat)
+      (hleft : state.opt leftReg = some leftClose)
+      (hright : state.opt rightReg = some rightClose) :
+      InvokesReviewerRead left right state (.lcaClose dst leftReg rightReg)
+        (.canonicalClose leftClose rightClose)
+  | rankClose
+      (dst : WholeQueryNatReg) (guard : WholeQueryOptReg)
+      (pos : WholeQueryNatExpr) (guardValue : Nat)
+      (hguard : state.opt guard = some guardValue) :
+      InvokesReviewerRead left right state (.rankCloseIfSome dst guard pos)
+        (.rankClose (pos.eval left right state))
+
+/-- A local indexed read retains the exact component invocation and the same
+local position inside that invocation's component trace. -/
+theorem evalGlobalWordTrace_getElem?_read_invocation
+    (shape : Cartesian.CartesianShape) (left right : Nat)
+    (instr : WholeQueryInstr) (state : WholeQueryState)
+    (localPos segment index : Nat) (word? : Option WordRAM.Word)
+    (hget : (instr.evalGlobalWordTrace shape left right state).trace[localPos]? =
+      some (.readWord segment index word?)) :
+    ∃ invocation : ReviewerReadInvocation,
+      InvokesReviewerRead left right state instr invocation ∧
+      (invocation.componentTrace shape)[localPos]? =
+        some (.readWord segment index word?) := by
+  cases instr with
+  | selectClose dst idx =>
+      exact ⟨.selectClose (idx.eval left right state),
+        InvokesReviewerRead.selectClose dst idx,
+        by simpa [WholeQueryInstr.evalGlobalWordTrace,
+          ReviewerReadInvocation.componentTrace] using hget⟩
+  | lcaClose dst leftReg rightReg =>
+      cases hleft : state.opt leftReg with
+      | none =>
+          simp [WholeQueryInstr.evalGlobalWordTrace, hleft] at hget
+      | some leftClose =>
+          cases hright : state.opt rightReg with
+          | none =>
+              simp [WholeQueryInstr.evalGlobalWordTrace, hleft, hright] at hget
+          | some rightClose =>
+              exact ⟨.canonicalClose leftClose rightClose,
+                InvokesReviewerRead.canonicalClose
+                  dst leftReg rightReg leftClose rightClose hleft hright,
+                by simpa [WholeQueryInstr.evalGlobalWordTrace, hleft, hright,
+                  ReviewerReadInvocation.componentTrace] using hget⟩
+  | rankCloseIfSome dst guard pos =>
+      cases hguard : state.opt guard with
+      | none =>
+          simp [WholeQueryInstr.evalGlobalWordTrace, hguard] at hget
+      | some guardValue =>
+          exact ⟨.rankClose (pos.eval left right state),
+            InvokesReviewerRead.rankClose dst guard pos guardValue hguard,
+            by simpa [WholeQueryInstr.evalGlobalWordTrace, hguard,
+              ReviewerReadInvocation.componentTrace] using hget⟩
+  | outputPredIfSome dst guard src =>
+      cases hguard : state.opt guard <;>
+        simp [WholeQueryInstr.evalGlobalWordTrace, hguard] at hget
+
+theorem InvokesReviewerRead.reviewerReadLeaf?_eq
+    {left right : Nat} {state : WholeQueryState}
+    {instr : WholeQueryInstr} {invocation : ReviewerReadInvocation}
+    (hinvocation : InvokesReviewerRead left right state instr invocation) :
+    instr.reviewerReadLeaf? = some invocation.leaf := by
+  cases hinvocation <;>
+    simp [WholeQueryInstr.reviewerReadLeaf?, ReviewerReadInvocation.leaf]
+
+end WholeQueryInstr
+
 private theorem fixedWidthNatTableMachineChunkCount_pos
     {width wordSize : Nat} (hwidth : 0 < width) :
     0 < SuccinctSpace.fixedWidthNatTableMachineChunkCount width wordSize := by
@@ -6517,20 +6696,104 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_segment_
         (WordRAM.TraceEvent.readWord segment index word?) hmem
   exact hlive
 
+/-- One segment/leaf claim in the common closed-valid-execution producer
+domain. -/
+structure ReviewerProducerClaim where
+  segment : Nat
+  leaf : ReviewerReadLeaf
+
+namespace ReviewerProducerClaim
+
+/--
+The common operational producer/reachability predicate used by both canonical
+sources and counterfactual mutations.  The witness is an indexed occurrence in
+the closed whole-query execution of an ordinary valid `List Int` query, tied
+to the exact invocation and the same component-local position.  The explicit
+`word?` parameter lets positive source coverage demand a successful `some`
+read while the fresh mutation rules out both successful and failed reads.
+-/
+def HasClosedValidOccurrence
+    (claim : ReviewerProducerClaim) (word? : Option WordRAM.Word) : Prop :=
+  ∃ xs : List Int,
+  ∃ left right globalPos index : Nat,
+    ValidRange xs left right ∧
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+      (Cartesian.shape xs) left right).trace[globalPos]? =
+        some (.readWord claim.segment index word?) ∧
+    ∃ instrPos : Nat,
+    ∃ instr : WholeQueryInstr,
+    ∃ preState : WholeQueryState,
+    ∃ localPos : Nat,
+    ∃ invocation : ReviewerReadInvocation,
+      WholeQueryProgram.ProducesEventAt
+        (Cartesian.shape xs) left right
+        (.readWord claim.segment index word?)
+        concreteBPNativeSuccinctRMQWholeQueryProgram WholeQueryState.empty
+        globalPos instrPos instr preState localPos ∧
+      instr.InvokesReviewerRead left right preState invocation ∧
+      invocation.leaf = claim.leaf ∧
+      (invocation.componentTrace (Cartesian.shape xs))[localPos]? =
+        some (.readWord claim.segment index word?)
+
+/-- Positive producer predicate `P` on a segment/leaf claim: some valid closed
+whole-query execution successfully reads the claim. -/
+def HasSuccessfulClosedValidOccurrence
+    (claim : ReviewerProducerClaim) : Prop :=
+  ∃ word : WordRAM.Word, claim.HasClosedValidOccurrence (some word)
+
+/-- Mutation predicate `Q` on a segment/leaf claim: some valid closed
+whole-query execution emits the claim, whether the read succeeds or fails. -/
+def HasOperationalProducer (claim : ReviewerProducerClaim) : Prop :=
+  ∃ word? : Option WordRAM.Word, claim.HasClosedValidOccurrence word?
+
+/-- Checked `P → Q` bridge.  `P` and `Q` intentionally are not definitionally
+equal because accepted canonical sources must exhibit a successful read while
+the fresh mutation is rejected even as a failed attempted read. -/
+theorem hasOperationalProducer_of_successful
+    {claim : ReviewerProducerClaim}
+    (hclaim : claim.HasSuccessfulClosedValidOccurrence) :
+    claim.HasOperationalProducer := by
+  rcases hclaim with ⟨word, hword⟩
+  exact ⟨some word, hword⟩
+
+end ReviewerProducerClaim
+
+/-- A canonical source is operationally live only when some ordinary valid
+top-level query successfully reads it through the common indexed occurrence
+predicate. -/
+def ReviewerSource.HasSuccessfulClosedValidOccurrence
+    (source : ReviewerSource) : Prop :=
+  ∃ claim : ReviewerProducerClaim,
+    concreteBPNativeSuccinctRMQReviewerSegmentSource? claim.segment =
+      some source ∧
+    claim.HasSuccessfulClosedValidOccurrence
+
+/-- The canonical claim for one named shared-BP consumer. -/
+def ReviewerSharedBPConsumer.producerClaim
+    (consumer : ReviewerSharedBPConsumer) : ReviewerProducerClaim where
+  segment := consumer.segment
+  leaf := consumer.leaf
+
+/-- Shared-BP consumer reachability through the same successful valid-query
+occurrence predicate. -/
+def ReviewerSharedBPConsumer.HasSuccessfulClosedValidOccurrence
+    (consumer : ReviewerSharedBPConsumer) : Prop :=
+  consumer.producerClaim.HasSuccessfulClosedValidOccurrence
+
 /-- A mutation candidate outside the closed source universe.  Its leaf label
-may be plausible; acceptance still requires a real instruction-local read. -/
+may be plausible; acceptance still requires the common valid occurrence. -/
 structure ReviewerUnusedSourceMutation where
   segment : Nat
   allegedLeaf : ReviewerReadLeaf
 
-/-- The W18 counterfactual: a fresh segment paired with the existing
-canonical-close leaf label. -/
-def concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource :
-    ReviewerUnusedSourceMutation where
-  segment := 21
-  allegedLeaf := .canonicalClose
+def ReviewerUnusedSourceMutation.toProducerClaim
+    (candidate : ReviewerUnusedSourceMutation) : ReviewerProducerClaim where
+  segment := candidate.segment
+  leaf := candidate.allegedLeaf
 
-def ReviewerUnusedSourceMutation.HasOperationalProducer
+/-- The W18 arbitrary-state instruction-local predicate, retained only as an
+accurately named compatibility fact. -/
+def ReviewerUnusedSourceMutation.HasArbitraryStateInstructionProducer
     (candidate : ReviewerUnusedSourceMutation) : Prop :=
   ∃ shape : Cartesian.CartesianShape,
   ∃ left right : Nat,
@@ -6542,10 +6805,16 @@ def ReviewerUnusedSourceMutation.HasOperationalProducer
     WordRAM.TraceEvent.readWord candidate.segment index word? ∈
       (instr.evalGlobalWordTrace shape left right preState).trace
 
-/-- The fresh source is rejected by the same operational producer mechanism
-used for accepted reads, not by a separately declared false liveness flag. -/
-theorem concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_producer :
-    ¬ concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource.HasOperationalProducer := by
+/-- The fresh counterfactual: segment `21` paired with the existing
+canonical-close leaf label. -/
+def concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource :
+    ReviewerUnusedSourceMutation where
+  segment := 21
+  allegedLeaf := .canonicalClose
+
+/-- Compatibility W18 rejection for the stronger arbitrary-state predicate. -/
+theorem concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_arbitraryStateInstructionProducer :
+    ¬ concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource.HasArbitraryStateInstructionProducer := by
   intro hproducer
   rcases hproducer with
     ⟨shape, left, right, instr, preState, index, word?, _hleaf, hmem⟩
@@ -6557,6 +6826,26 @@ theorem concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_producer :
         index word?) hmem
   simp [concreteBPNativeSuccinctRMQReviewerReadSegmentLive,
     concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource] at hlive
+
+/-- The mutation-side use of the common operational predicate. -/
+def ReviewerUnusedSourceMutation.HasOperationalProducer
+    (candidate : ReviewerUnusedSourceMutation) : Prop :=
+  candidate.toProducerClaim.HasOperationalProducer
+
+/-- Fresh segment `21` is rejected by the exact common valid-occurrence
+predicate used for accepted canonical sources. -/
+theorem concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_producer :
+    ¬ concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource.HasOperationalProducer := by
+  intro hproducer
+  rcases hproducer with
+    ⟨word?, xs, left, right, globalPos, index, _hvalid, hget,
+      _instrPos, _instr, _preState, _localPos, _invocation,
+      _hproduces, _hinvokes, _hleaf, _hcomponent⟩
+  have hsegment :=
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_segment_lt
+      (Cartesian.shape xs) left right (List.mem_of_getElem? hget)
+  simp [ReviewerUnusedSourceMutation.toProducerClaim,
+    concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource] at hsegment
 
 /--
 Relational source ownership for one produced read.  The source, logical
@@ -6576,13 +6865,123 @@ def ReviewerSource.ProducedReadBy
     WordRAM.TraceEvent.readWord segment index word? ∈
       (instr.evalGlobalWordTrace shape left right preState).trace
 
+/-- Complete indexed receipt for one canonical read occurrence. -/
+def ReviewerReadOccurrenceReceipt
+    (shape : Cartesian.CartesianShape) (left right globalPos segment index : Nat)
+    (word? : Option WordRAM.Word) : Prop :=
+  ∃ source : ReviewerSource,
+  ∃ instrPos : Nat,
+  ∃ instr : WholeQueryInstr,
+  ∃ preState : WholeQueryState,
+  ∃ localPos : Nat,
+  ∃ invocation : ReviewerReadInvocation,
+    WholeQueryProgram.ProducesEventAt shape left right
+      (.readWord segment index word?)
+      concreteBPNativeSuccinctRMQWholeQueryProgram WholeQueryState.empty
+      globalPos instrPos instr preState localPos ∧
+    concreteBPNativeSuccinctRMQReviewerSegmentSource? segment =
+      some source ∧
+    concreteBPNativeSuccinctRMQReviewerSegmentRegion? segment =
+      some source.region ∧
+    instr.InvokesReviewerRead left right preState invocation ∧
+    (invocation.componentTrace shape)[localPos]? =
+      some (.readWord segment index word?) ∧
+    ReviewerProducerReadPath shape invocation.leaf segment index word? ∧
+    source.Counted
+
+/-- Occurrence-preserving producer provenance for every emitted canonical
+read, including failed reads. -/
+def ConcreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance
+    (shape : Cartesian.CartesianShape) (left right : Nat) : Prop :=
+  ∀ {globalPos segment index : Nat} {word? : Option WordRAM.Word},
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+      shape left right).trace[globalPos]? =
+        some (.readWord segment index word?) ->
+      ReviewerReadOccurrenceReceipt
+        shape left right globalPos segment index word?
+
+theorem concreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance_checked
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    ConcreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance
+      shape left right := by
+  intro globalPos segment index word? hget
+  have hprogramGet :
+      (WholeQueryProgram.evalGlobalWordTrace shape left right
+        concreteBPNativeSuccinctRMQWholeQueryProgram
+        WholeQueryState.empty).trace[globalPos]? =
+          some (.readWord segment index word?) := by
+    simpa [concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult] using hget
+  rcases WholeQueryProgram.evalGlobalWordTrace_getElem?_producer
+      shape left right concreteBPNativeSuccinctRMQWholeQueryProgram
+      WholeQueryState.empty globalPos
+      (.readWord segment index word?) hprogramGet with
+    ⟨instrPos, instr, preState, localPos, hproducer⟩
+  rcases hproducer with
+    ⟨before, after, hprogram, hinstrPos, hpreState, hglobalPos, hlocalGet⟩
+  rcases WholeQueryInstr.evalGlobalWordTrace_getElem?_read_invocation
+      shape left right instr preState localPos segment index word? hlocalGet with
+    ⟨invocation, hinvocation, hinvocationGet⟩
+  have hmem : WordRAM.TraceEvent.readWord segment index word? ∈
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace :=
+    List.mem_of_getElem? hget
+  have hsegment : segment < 21 :=
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_segment_lt
+      shape left right hmem
+  rcases (concreteBPNativeSuccinctRMQReviewerSegmentSource?_coverage segment).2
+      hsegment with ⟨source, hsource⟩
+  have hregion :
+      concreteBPNativeSuccinctRMQReviewerSegmentRegion? segment =
+        some source.region := by
+    simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?, hsource]
+  rcases WholeQueryInstr.evalGlobalWordTrace_read_producer_path
+      shape left right instr preState (List.mem_of_getElem? hlocalGet) with
+    ⟨leaf, hleaf, hpath⟩
+  have hinvocationLeaf := hinvocation.reviewerReadLeaf?_eq
+  have hleafEq : leaf = invocation.leaf := by
+    rw [hleaf] at hinvocationLeaf
+    exact Option.some.inj hinvocationLeaf
+  subst leaf
+  refine ⟨source, instrPos, instr, preState, localPos, invocation,
+    ⟨before, after, hprogram, hinstrPos, hpreState, hglobalPos, hlocalGet⟩,
+    hsource, hregion, hinvocation, hinvocationGet, hpath, ?_⟩
+  exact concreteBPNativeSuccinctRMQReviewerSegmentSource_counted hsource
+
+/-- Equal read values at different global positions remain two separately
+indexed provenance obligations. -/
+theorem repeated_equal_read_occurrences_have_distinct_receipts
+    (shape : Cartesian.CartesianShape) (left right : Nat)
+    (firstPos secondPos segment index : Nat) (word? : Option WordRAM.Word)
+    (hne : firstPos ≠ secondPos)
+    (hfirst :
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace[firstPos]? =
+          some (.readWord segment index word?))
+    (hsecond :
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace[secondPos]? =
+          some (.readWord segment index word?)) :
+    firstPos ≠ secondPos ∧
+      ReviewerReadOccurrenceReceipt
+        shape left right firstPos segment index word? ∧
+      ReviewerReadOccurrenceReceipt
+        shape left right secondPos segment index word? := by
+  refine ⟨hne, ?_, ?_⟩
+  · exact
+      concreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance_checked
+        shape left right hfirst
+  · exact
+      concreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance_checked
+        shape left right hsecond
+
 /--
-Producer-level provenance for every emitted canonical read.
+Compatibility W18 event-value provenance for every emitted canonical read.
 
 The returned prefix is the prefix of the concrete closed program that was
 actually folded before `instr`; `preState` is exactly that fold's value; and
 the same read event belongs to `instr`'s evaluation trace and resolves to the
-returned physical source/region.
+returned physical source/region.  It does not retain global or local positions;
+new public consumers use the occurrence-level receipt above.
 -/
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_producer_provenance
     (shape : Cartesian.CartesianShape) (left right : Nat) :
@@ -6639,7 +7038,7 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_producer
     ⟨hsource, hregion, hlocal⟩, hleaf, hpath, ?_⟩
   exact concreteBPNativeSuccinctRMQReviewerSegmentSource_counted hsource
 
-/-- Compact public name for the complete emitted-read producer obligation. -/
+/-- Compatibility W18 name for the event-value producer obligation. -/
 def ConcreteBPNativeSuccinctRMQWholeQueryProducerProvenance
     (shape : Cartesian.CartesianShape) (left right : Nat) : Prop :=
   ∀ {segment index : Nat} {word? : Option WordRAM.Word},

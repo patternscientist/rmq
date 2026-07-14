@@ -74,9 +74,17 @@ spine and a model-adequacy spine.
   `ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy`,
   `ConcreteBPNativeSuccinctRMQFinalSuppliedStoreAdequacy`, and
   `ConcreteBPNativeSuccinctRMQFinalFullModelSoundness`.
+- `RMQ/Core/SuccinctFinalSemanticProvenanceAdequacy.lean` is the proof-only
+  W19 extension of final trace-model adequacy. It imports the auditable
+  small/long/sparse reachability witnesses and requires successful closed-valid
+  occurrences for every counted source and exact shared-BP consumer.
 - `RMQ/Core/SuccinctRMQClassic.lean` is the ordinary `List Int` front door. It
   specializes the BP-native construction to a reader-facing RMQ input list,
   half-open queries, and leftmost ties.
+- `RMQ/Core/SuccinctRMQClassicProvenance.lean` projects the proof-only W19
+  adequacy extension through valid ordinary-list queries. The split keeps
+  symbolic witness modules out of the native validator/cost-harness link
+  closure without changing their genuine `SuccinctRMQClassic` execution path.
 - `RMQ/Headlines/RMQ.lean` exposes the RMQ-only short public names, including
   `succinctRMQListIntTwoNPlusOConstantQuery`,
   `listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory`,

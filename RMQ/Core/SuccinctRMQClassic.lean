@@ -785,19 +785,30 @@ theorem flatPayloadStoreNoSyntheticExecutionStory_rawAdequacy_of_valid
       (cartesianShape xs) left right :=
   (flatPayloadStoreNoSyntheticExecutionStory xs left right).2.1 hvalid
 
-/-- List-facing projection of the load-bearing producer provenance: every
-logical read of a valid query comes from its actual instruction and prefix
-state, and that same event resolves to its physical source and component path. -/
-theorem flatPayloadStoreNoSyntheticExecutionStory_producerProvenance_of_valid
+/-- List-facing projection of occurrence-level producer provenance: every
+indexed logical read of a valid query retains its program/instruction/local
+positions, prefix state, exact invocation parameters, physical source, and
+component-local occurrence. -/
+theorem flatPayloadStoreNoSyntheticExecutionStory_occurrenceProvenance_of_valid
+    (xs : List Int) (left right : Nat)
+    (hvalid : ValidRange xs left right) :
+    SuccinctFinal.ConcreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance
+      (cartesianShape xs) left right :=
+  (flatPayloadStoreNoSyntheticExecutionStory_rawAdequacy_of_valid
+    xs left right hvalid).every_emitted_read_has_occurrence_provenance
+
+/-- Compatibility W18 event-value projection.  This does not retain global or
+local occurrence positions; use the occurrence theorem above. -/
+theorem flatPayloadStoreNoSyntheticExecutionStory_eventValueProducerProvenance_of_valid
     (xs : List Int) (left right : Nat)
     (hvalid : ValidRange xs left right) :
     SuccinctFinal.ConcreteBPNativeSuccinctRMQWholeQueryProducerProvenance
       (cartesianShape xs) left right :=
   (flatPayloadStoreNoSyntheticExecutionStory_rawAdequacy_of_valid
-    xs left right hvalid).every_emitted_read_has_producer_provenance
+    xs left right hvalid).every_emitted_read_has_eventValue_producer_provenance
 
-/-- Every counted List-facing reviewer source has an actual possible component
-read path for the concrete Cartesian construction. -/
+/-- Compatibility W18 component may-read fact.  It is not top-level
+valid-query reachability. -/
 theorem reviewerCountedSource_producerMayPath
     (xs : List Int) (source : SuccinctFinal.ReviewerSource)
     (hcounted : source.Counted) :
@@ -805,8 +816,7 @@ theorem reviewerCountedSource_producerMayPath
   SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSource_counted_producer_may_path
     (cartesianShape xs) source hcounted
 
-/-- Each List-facing shared-BP consumer is connected to the shared source by
-one read event in that consumer's own concrete component path. -/
+/-- Compatibility W18 component-only shared-BP path fact. -/
 theorem reviewerSharedBPConsumer_producerConnected
     (xs : List Int) (consumer : SuccinctFinal.ReviewerSharedBPConsumer) :
     consumer.ProducerConnected (cartesianShape xs) :=

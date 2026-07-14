@@ -235,6 +235,23 @@ def invalidEmptyPublicPhysicalResult :=
 #guard (RMQ.SuccinctClassic.reviewerPhysicalTraceResultWithStore
   ([9, 8, 7] : List Int) singletonDroppedPhysicalStore 1 1).value != some 0
 
+/- Occurrence-level provenance must not collapse equal event values.  The two
+select-close invocations in this valid singleton query emit identical
+twelve-event component traces, so global positions `0` and `12` carry the same
+successful read value while remaining distinct provenance obligations. -/
+def singletonLogicalTrace :=
+  (RMQ.SuccinctClassic.queryTraceResult ([7] : List Int) 0 1).trace
+
+def singletonRepeatedEqualReadPositionsOK : Bool :=
+  (singletonLogicalTrace[0]?).isSome &&
+    singletonLogicalTrace[0]? == singletonLogicalTrace[12]? &&
+    (0 : Nat) != 12 &&
+    match singletonLogicalTrace[0]? with
+    | some (RMQ.WordRAM.TraceEvent.readWord _ _ (some _)) => true
+    | _ => false
+
+#guard singletonRepeatedEqualReadPositionsOK
+
 def physicalDependencyOK : Bool :=
   (RMQ.SuccinctClassic.reviewerPhysicalFootprint
       ([7] : List Int) 0 1).head?.isSome &&
@@ -250,7 +267,8 @@ def canonicalBoundOK : Bool :=
 
 def structuralEvidenceOK : Bool :=
   routeEvidenceOK && physicalErasureOK && physicalBackingOK &&
-    physicalDependencyOK && canonicalBoundOK
+    physicalDependencyOK && singletonRepeatedEqualReadPositionsOK &&
+    canonicalBoundOK
 
 def mismatchMessage (mismatch : Mismatch) : String :=
   "mismatch: xs=" ++ reprStr mismatch.xs ++

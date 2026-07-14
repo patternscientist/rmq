@@ -25,18 +25,21 @@ and no padding to manufacture equality. Invalid or empty list ranges return
 transitional sum `328`; the implementation did not pad reads to preserve `118`
 or a route-split constant.
 
-The coordinator nevertheless rejected W17's provenance subclaim: it classified
+The coordinator rejected W17's provenance subclaim: it classified
 an emitted segment with a static leaf map and then chose any closed-program
-instruction with that category, sometimes at `WholeQueryState.empty`.  W18
-repairs this with an occurrence relation carrying the actual folded prefix
-state and exact instruction-local event.  A second relation ties that same
-event to its physical source and component read path; it deliberately permits
-segments `17`--`19` to have both LCA and final-rank producers.  Reverse liveness
-is now a concrete may-read construction for every counted source, shared BP is
-checked through one event per consumer, and a fresh unused segment with a
-plausible label fails because no operational producer exists. Coordinator
-acceptance remains separate from this worker evidence and requires matrix
-reconstruction plus a fresh blind audit.
+instruction with that category, sometimes at `WholeQueryState.empty`. W18
+repaired the folded-state event-value layer, but audit found that equal events
+could collapse, invocation parameters were erased, and positive component
+may-read used a weaker predicate than the fresh-source mutation. W19 follows
+one global `getElem?` occurrence through its program instruction, folded state,
+component-local position, exact invocation, source, and offset. Symbolic
+closed-valid witnesses cover the large long-super and sparse-local sources;
+small witnesses cover the remaining sources and all shared-BP consumers. A
+common claim relation accepts successful sources and rejects fresh segment
+`21`, with a checked bridge where the positive and mutation quantifiers differ.
+The repeated-equal-event regression checks positions `0` and `12` separately.
+Coordinator acceptance remains separate from this candidate evidence and
+requires a fresh blind exact-commit audit.
 
 This is the ADD lesson: a locally correct adapter is a checkpoint. Completion
 requires its named downstream consumer, provenance, machine bounds, edge cases,

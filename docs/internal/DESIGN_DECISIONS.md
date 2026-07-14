@@ -1927,7 +1927,7 @@ Evidence:
 
 ## DD-20260713-004: occurrence-indexed provenance and one operational source relation
 
-Status: accepted target architecture for the W19 repair.
+Status: implemented by the W19 candidate; coordinator audit pending.
 
 Context:
 
@@ -1987,9 +1987,9 @@ useful but weaker component may-read fact from actual top-level reachability.
 Consequences:
 
 - W18 remains a proof checkpoint, not U2 acceptance evidence.
-- W19 must consume the occurrence-preserving relation through final adequacy,
-  the valid `List Int` theorem, paper theorem, headlines, acceptance matrix,
-  and claim docs before U2 can return to blind-audit status.
+- W19 consumes the occurrence-preserving relation through final adequacy, the
+  valid `List Int` theorem, paper theorem, headlines, acceptance matrix, and
+  claim docs; U2 may now proceed to coordinator reconstruction and blind audit.
 - Public wording must say event-value provenance when only `List.Mem` is
   available and reserve occurrence-level producer provenance for the W19
   relation.
@@ -2008,6 +2008,91 @@ Evidence:
 
 Follow-up:
 
-Implement W19 on a fresh branch from the workflow-hardened integration base,
-then run a fresh blind exact-commit audit using the same-predicate and repeated-
-event regressions before coordinator acceptance.
+Run coordinator reconstruction and a fresh blind exact-commit audit using the
+same-predicate and repeated-event regressions before coordinator acceptance.
+
+## DD-20260713-005: closed-valid occurrence claims and symbolic source families
+
+Status: implemented W19 candidate; coordinator audit pending.
+
+Decision:
+
+- Use `WholeQueryProgram.ProducesEventAt` as the generic indexed interpreter
+  decomposition. It records the global position, program instruction position,
+  exact prefix-folded pre-state, component-local position, and the equality
+  `globalPos = prefixTrace.length + localPos`.
+- Represent the instruction-computed component call by
+  `ReviewerReadInvocation` and `WholeQueryInstr.InvokesReviewerRead`. Select,
+  rank, and canonical-close parameters remain in the public witness rather than
+  being erased to a leaf label.
+- Use `ReviewerProducerClaim.HasClosedValidOccurrence` as the common
+  operational relation. Positive claim `P` existentially requires a successful
+  `some word`; mutation claim `Q` permits any `word?`.
+  `ReviewerProducerClaim.hasOperationalProducer_of_successful` is the checked
+  `P -> Q` bridge. Fresh segment `21` is rejected under `Q` itself.
+- Split the all-source proof into auditable witness families: executable-size
+  symbolic witnesses cover sources 1--11 and 20, the symbolic long-super
+  construction covers 12--15, and the symbolic sparse-local construction
+  covers 16--19. All witnesses end in a successful indexed occurrence of the
+  actual closed whole-query trace under `ValidRange`.
+- Use `N = 2^15` for the long-super witness rather than the scout's advisory
+  `2^128`: the smaller symbolic shape still proves word width 17, stride 289,
+  threshold 24,565, and a strictly longer span, while avoiding irrelevant
+  kernel expansion. Keep `N = 2^128` for the sparse-local witness because its
+  larger word scale gives the required two-occurrence local stride. Both sets
+  of arithmetic are proved in Lean.
+- Keep W18 `List.Mem` event-value and direct component may-read declarations as
+  compatibility facts only. They do not discharge W19 public fields.
+- Package the all-source relation as the proof-only
+  `ConcreteBPNativeSuccinctRMQFinalSemanticProvenanceAdequacy` extension and
+  project it through `SuccinctRMQClassicProvenance.lean`. The paper/headline
+  roots consume this extension, while native validation keeps importing the
+  genuine `SuccinctRMQClassic` execution core. This preserves public
+  composition without adding symbolic witness construction to the executable
+  link closure.
+
+Audited design input:
+
+`docs/internal/U2_POSITIONAL_PROVENANCE_SCOUT.md` was read at exact commit
+`17287f25d1241ab6e4609f19863eced66dd9e62b` after fetching
+`origin/codex/rmq-u2-provenance-reachability-scout`. It was used as design
+input, not proof evidence or a contract amendment. Its prose source-number
+summary was corrected from the authoritative table: small families cover
+1--11 and 20, long-super covers 12--15, and sparse-local covers 16--19. The
+Lean proofs establish the L/S arithmetic rather than importing the report's
+calculations.
+
+Rejected alternatives:
+
+- Event-value `List.Mem` as an occurrence witness.
+- A leaf/source path that discards the component arguments computed by the
+  instruction.
+- Component may-read or arbitrary-state instruction traces as top-level source
+  reachability.
+- A negative mutation predicate stronger than the accepted positive predicate
+  without a checked bridge.
+
+Consequences:
+
+Final adequacy, valid `List Int` projections, the paper main theorem,
+`RMQ.Headlines.RMQ`, `RMQPaper`, and curated axiom inventories consume the W19
+relations. The physical evaluator, one public payload, invalid-range semantics,
+logarithmic reviewer width, no-synthetic trace, and checked `328` bound are
+unchanged. U3 remains unopened.
+
+Evidence:
+
+- `WholeQueryProgram.evalGlobalWordTrace_getElem?_producer`.
+- `WholeQueryInstr.evalGlobalWordTrace_getElem?_read_invocation`.
+- `concreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance_checked`.
+- `repeated_equal_read_occurrences_have_distinct_receipts` and the singleton
+  validator guard at distinct global positions 0 and 12.
+- `concreteBPNativeSuccinctRMQReviewerSource_counted_successful_closed_valid_occurrence`.
+- `concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_successful_closed_valid_occurrence`.
+- `concreteBPNativeSuccinctRMQFinalSemanticProvenanceAdequacy` and
+  `flatPayloadStoreNoSyntheticExecutionStory_semanticProvenanceAdequacy_of_valid`.
+- `RMQ/Core/SuccinctFinalSemanticProvenanceAdequacy.lean`.
+- `RMQ/Core/SuccinctRMQClassicProvenance.lean`.
+- `docs/CODE_MAP.md`.
+- `ReviewerProducerClaim.hasOperationalProducer_of_successful`.
+- `concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_producer`.

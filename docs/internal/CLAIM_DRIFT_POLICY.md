@@ -56,10 +56,10 @@ human-readable file when the interpretation changes.
 - `4144`, Ready-regime `118`, the zero-block route, and `196727` are
   compatibility/history only, not the canonical reviewer execution.
 - W15's post-hoc physical-result construction and W17's static category join
-  were rejected. W18 is a proof checkpoint: it supplies actual-prefix-state
-  event-value producer evidence, but coordinator audit reopened occurrence
-  preservation, invocation-parameter preservation, and same-predicate reverse
-  liveness. W19 owns those repairs before U2 can return to blind-audit status.
+  were rejected. W18 remains a compatibility checkpoint. W19 supplies indexed
+  occurrence preservation, invocation-parameter preservation, successful
+  closed-valid reverse reachability, and common-predicate mutation rejection;
+  coordinator reconstruction and blind exact-commit audit remain separate.
 - Event-value producer evidence means an emitted event value belongs to an
   actual producing instruction's trace at the folded prefix state. Reserve
   "occurrence-level producer provenance" for a theorem that also retains the
@@ -67,6 +67,10 @@ human-readable file when the interpretation changes.
   state, and component invocation parameters.
 - A semantic mutation must test the same predicate and domain used by the
   positive acceptance theorem, or a checked implication must connect them.
+  W19's positive claim quantifies a successful `some word` occurrence, its
+  mutation predicate permits any `word?`, and
+  `ReviewerProducerClaim.hasOperationalProducer_of_successful` checks the
+  required implication over the common claim domain.
   Component may-read, successful read, top-level valid-query reachability, and
   actual emitted occurrence are distinct evidence levels.
 - Current machine claims must identify the same public `buildPayload`, reviewer

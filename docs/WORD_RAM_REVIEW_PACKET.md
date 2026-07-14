@@ -14,14 +14,13 @@ repeated and failed reads; agreement on the first execution's footprint
 determines the complete physical `TraceResult`. The answer projection is the
 translated supplied-store evaluator projection; a consumed decisive-word
 corruption changes `some 0` to `none` and rejects a trace-preserving
-value-ignore mutant. For every read-event value, W18 supplies a closed-program
-instruction at its folded prefix state whose local trace contains that value,
-then relates the value to a compatible physical source and component path.
-Reverse coverage is a direct component may-read path for every counted source;
-each shared-BP consumer uses one same-event component path. A fresh unused
-segment with an existing plausible leaf label is rejected by the stronger
-instruction-trace producer relation. Occurrence positions, invocation
-parameters, and a bridge between those two relations remain W19. The capacity
+value-ignore mutant. For every indexed read, W19 retains the same global
+position, producing instruction occurrence, folded prefix state, local
+component position, exact invocation parameters, source, and composed-trace
+offset. Every counted source and exact shared-BP consumer has a successful
+actual closed-valid query witness. Fresh segment `21` fails the common
+closed-valid-occurrence relation; a checked bridge embeds the successful
+positive predicate into the mutation-side arbitrary-result predicate. The capacity
 `400000 * (n + 1)` is linear, and
 `concreteBPNativeSuccinctRMQReviewerWordBits n` is derived from that capacity
 before execution. It has an explicit logarithmic all-size upper bound and
@@ -34,7 +33,7 @@ The old zero-block evaluator and Ready/route-split `118` discussion below is
 compatibility history, not part of the `RMQPaper` reviewer route.
 
 
-Snapshot: 2026-07-13 (W18 checkpoint; W19 semantic repair pending). This packet is a focused reviewer note for the
+Snapshot: 2026-07-13 (W19 candidate; coordinator audit pending). This packet is a focused reviewer note for the
 first-order Word-RAM refinement boundary used by the interpreted RMQ and
 rank/select theorem surfaces.
 

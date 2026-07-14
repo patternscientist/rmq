@@ -1768,3 +1768,32 @@ Apply the revised contract to W19, then give a fresh blind auditor the exact
 commit and frozen predicates without the worker narrative. After two more
 public-capstone cycles, evaluate whether structured extraction of `P`, `Q`,
 domains, and provenance level from acceptance matrices is worth automating.
+
+## WDD-20260713-004: W19 applies the predicate-parity gate
+
+Status: implemented candidate; coordinator audit pending.
+Date: 2026-07-13.
+
+Decision:
+
+- Record positive predicate `P`, mutation predicate `Q`, their common claim
+  domain, result quantifiers, and the checked `P -> Q` bridge in the amended
+  acceptance matrix.
+- Require global and local indices, the instruction occurrence, prefix-folded
+  state, invocation parameters, and the composed-trace offset in the
+  load-bearing provenance proposition.
+- Require reverse witnesses to finish at a successful event in an actual
+  closed valid whole-query execution. Component may-read and arbitrary-state
+  instruction traces remain named compatibility evidence, not completion.
+- Keep the repeated-equal-event singleton as an executable regression and the
+  generic two-position receipt theorem as kernel evidence.
+
+Outcome:
+
+The W19 candidate exercises the workflow checks introduced after W18 rather
+than satisfying them in prose. The long-super and sparse-local witness
+arithmetic is proved symbolically in Lean. The scout report at commit
+`17287f25d1241ab6e4609f19863eced66dd9e62b` informed proof order only; it was
+not counted as evidence and its erroneous prose source summary was corrected
+from its table. The next workflow consumer is a coordinator reconstruction and
+blind exact-commit audit. U3 remains gated on U2 acceptance.

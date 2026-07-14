@@ -121,17 +121,18 @@ Acceptance:
 
 ### U2. Build One Uniform Local/Interior Directory Route
 
-Status: W18 checkpoint; W19 semantic repair required before blind audit.
+Status: W19 candidate complete; coordinator reconstruction and blind audit pending.
 
 Every size uses `RelativeRmm.canonicalLayout` and the same close/LCA reviewer
 route. One exhaustive typed 20-source universe includes canonical close.
-For every read-event value, W18 supplies a closed-program instruction at the
-actual folded prefix state whose local trace contains that value, plus a
-compatible source/segment/component path. It does not retain the global/local
-occurrence position or the component invocation parameters. Every counted
-source has a direct component may-read path, while the fresh unused-source
-mutation rejects a stronger instruction-trace producer relation; W18 proves no
-bridge between them. Shared-BP consumers have same-event component paths.
+For every indexed read, W19 retains the same global occurrence, program
+instruction occurrence, folded prefix state, component-local position, exact
+invocation parameters, source, and composed-trace offset. Every counted source
+and shared-BP consumer has a successful witness in an actual closed whole-query
+execution under a valid ordinary `List Int` query. Fresh segment `21` is
+rejected by the common occurrence relation; a checked bridge embeds the
+successful positive predicate into the mutation-side arbitrary-result
+predicate. W18 event-value and component may-read facts are compatibility only.
 Region exclusivity,
 logical-segment coverage, and absence of canonical legacy duplicates also hold.
 The existing supplied-store evaluator runs through a checked
@@ -154,30 +155,30 @@ Acceptance evidence:
 - `concreteBPNativeSuccinctRMQCanonicalInteriorPhysicalFootprint_fits`;
 - `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact`;
 - `concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases`;
-- `concreteBPNativeSuccinctRMQWholeQueryProducerProvenance_checked` and the
+- `concreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance_checked`,
+  `repeated_equal_read_occurrences_have_distinct_receipts`, and the
   typed source/region/segment coverage chain;
 - `concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_refines_logical`;
 - `concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_eq_of_orderedFootprint`;
 - `concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_value_eq_suppliedStoreEvaluator`;
 - `concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_value_ne_of_suppliedStoreEvaluator_value_ne`;
-- `concreteBPNativeSuccinctRMQReviewerSource_counted_producer_may_path`,
-  `concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_all_producer_connected`,
-  and `concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_producer`;
+- `concreteBPNativeSuccinctRMQReviewerSource_counted_successful_closed_valid_occurrence`,
+  `concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_successful_closed_valid_occurrence`,
+  `ReviewerProducerClaim.hasOperationalProducer_of_successful`, and
+  `concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_producer`;
 - `SuccinctClassic.queryCosted_invalid` and its canonical, supplied-store,
   trace, costed, and physical wrappers;
 - reviewer physical successful-read backing and whole-query word/address bounds
   in the final adequacy packet.
 
-W19 must replace the event-value witness with occurrence-preserving producer
-provenance, retain the actual invocation parameters, and use one operational
-relation for positive source coverage and counterfactual rejection. Only the
-coordinator may then replace this status with `ACCEPTED`, after independently
-reconstructing the amended matrix and obtaining a fresh blind exact-commit
-audit.
+The worker has discharged W19's occurrence, invocation, common-predicate, and
+all-source valid-execution obligations. Only the coordinator may replace this
+status with `ACCEPTED`, after independently reconstructing the amended matrix
+and obtaining a fresh blind exact-commit audit.
 
 ### U3. Reprove One Principled All-Size Cost Bound
 
-Status: next after U2 acceptance; do not start while W19 is open.
+Status: next after U2 acceptance; do not start while coordinator audit is open.
 
 The uniform route currently has the honest checked transitional sum `328`,
 proved by

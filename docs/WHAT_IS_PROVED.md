@@ -5,11 +5,14 @@ The final all-size reviewer trace uses one positive canonical block geometry and
 one exhaustive typed 20-source universe including canonical close. Physical
 regions are exclusive, every logical segment is covered, and legacy duplicate
 close/interior storage is absent from the canonical payload and reachable only
-through compatibility surfaces. W18 additionally proves event-value producer
-evidence at an actual folded prefix state and direct component may-read paths,
-but it does not yet preserve trace occurrence positions or invocation
-parameters, and its fresh-source mutation uses a stronger operational relation
-than its positive source theorem. W19 owns that semantic closure.
+through compatibility surfaces. W19 proves indexed occurrence provenance from
+the global trace through the actual program occurrence, folded prefix state,
+component-local occurrence, and exact invocation parameters. Every counted
+source and named shared-BP consumer has a successful actual closed-valid query
+witness. The fresh segment-21 mutation is rejected with the common operational
+predicate, and a checked bridge relates successful positive witnesses to the
+mutation-side arbitrary-result predicate. W18 event-value and component
+may-read theorems remain compatibility facts.
 
 The public physical execution is genuine supplied-store evaluation. The
 existing evaluator reads the caller's flat store through checked address
@@ -81,15 +84,15 @@ aliases.
 | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint` | Agreement on the first physical execution's consumed ordered footprint determines the complete physical execution. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalValueFromSuppliedStore` | The flat physical `.value` is exactly the existing supplied-store evaluator `.value` after checked address translation. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalValueDependency` | If two translated supplied-store evaluator values differ, their flat-physical `.value` projections differ; this does not claim every read is decisive. |
-| `RMQ.Headlines.succinctRMQReviewerEveryReadProducerProvenance` | For every read-event value in the trace, an actual closed-program instruction at its folded prefix state contains that value in its local trace, and a component path resolves the same value. Global/local occurrence positions and invocation parameters are not retained by this W18 theorem. |
-| `RMQ.Headlines.succinctRMQReviewerCountedSourceProducerMayPath` | Every counted source has an actual possible attempted-read path in the concrete instruction/leaf construction. This is a may-read fact, not a claim that every query reads every source. |
-| `RMQ.Headlines.succinctRMQReviewerSharedBPConsumerProducerConnected` | Each select/rank/canonical-close shared-BP consumer reaches the BP source through one actual event in its own path. |
-| `RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer` | A plausible fresh canonical-close label on unused segment 21 has no operational producer witness. |
+| `RMQ.Headlines.succinctRMQReviewerEveryReadOccurrenceProvenance` | Every indexed read retains its exact global position, producing program occurrence, folded state, local position, invocation parameters, source, and multiplicity-preserving trace embedding. |
+| `RMQ.Headlines.succinctRMQReviewerCountedSourceSuccessfulClosedValidOccurrence` | Every counted source has a successful occurrence through an actual closed whole-query execution under a valid ordinary list query. |
+| `RMQ.Headlines.succinctRMQReviewerSharedBPConsumerSuccessfulClosedValidOccurrence` | Each select/rank/canonical-close shared-BP consumer has such a successful occurrence through its exact leaf. |
+| `RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer` | Fresh segment 21 fails the common valid-occurrence predicate used by accepted sources. |
 | `RMQ.Headlines.listIntSuccinctRMQInvalidPhysicalSemantics` | Empty, reversed, and out-of-bounds public queries share the guarded none/empty/zero logical and physical execution for every supplied store. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | All-size structural execution story using raw positive same-block decoding and canonical cross-block component replay, with no zero-block dispatch. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` | Strongest all-size global execution story: the same store-backed and bounded trace plus a proof that no event is the dedicated synthetic cost-only marker. |
 | `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Flat-payload no-synthetic execution story: the flat execution payload is exactly the advertised BP-native construction payload; every actual successful read in the final trace has source/component/offset backing in one query-independent counted flat payload layout, addresses and word-primitive operands are bounded, and no synthetic cost-only event occurs. |
-| `RMQ.Headlines.succinctRMQFinalTraceModelAdequacy` | W18 model-adequacy checkpoint: `Costed` is the projection of a `WordRAM.TraceResult`; read-event values have prefix-state producer and compatible component-path witnesses; counted sources and shared-BP consumers have component may-read paths; physical `.value` comes from the translated supplied-store evaluator; and the fixed modeled cost/no-synthetic/backing facts hold. Occurrence-level and unified-relation closure remains W19. |
+| `RMQ.Headlines.succinctRMQFinalTraceModelAdequacy` | W19 model adequacy: `Costed` is the projection of a `WordRAM.TraceResult`; indexed reads have occurrence/invocation provenance; counted sources and shared-BP consumers have successful closed-valid witnesses; the common-predicate mutation is rejected; physical `.value` comes from the translated supplied-store evaluator; and the fixed modeled cost/no-synthetic/backing facts hold. |
 | `RMQ.Headlines.succinctRMQFinalTraceModelAdequacyExact` | Exactness alias paired with the model-adequacy packet: valid windows erase to the leftmost RMQ answer for the Cartesian representative. |
 | `RMQ.Headlines.succinctRMQFinalSuppliedStoreAdequacy` | Supplied-store adequacy packet: reads match the caller-provided store, the concrete global-store instantiation recovers the canonical trace/interpreter refinement, no synthetic marker events appear, and final-layout footprint agreement gives store-parametricity. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreReadsSubsetFootprint` | Every emitted supplied-store payload-read event lies inside the safe final-layout footprint. The footprint is an overapproximation, not a minimal dynamic read set. |

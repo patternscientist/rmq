@@ -77,10 +77,10 @@ structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
             shape left right).trace ->
         concreteBPNativeSuccinctRMQCanonicalReviewerReadBacked
           shape segment index word
-  canonical_counted_sources_have_producer_may_path :
+  compatibility_counted_sources_have_component_may_path :
     forall source : ReviewerSource, source.Counted ->
       source.HasProducerMayPath shape
-  all_shared_bp_dependencies_have_producer_path :
+  compatibility_shared_bp_dependencies_have_component_path :
     forall consumer : ReviewerSharedBPConsumer,
       consumer.ProducerConnected shape
   fresh_unused_source_rejected_by_producer :
@@ -111,7 +111,9 @@ structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
                   shape segment index) word? ∈
               (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
                 shape left right).trace
-  every_emitted_read_has_producer_provenance :
+  every_emitted_read_has_occurrence_provenance :
+    ConcreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance shape left right
+  every_emitted_read_has_eventValue_producer_provenance :
     ConcreteBPNativeSuccinctRMQWholeQueryProducerProvenance shape left right
   canonical_manifest_excludes_legacy_close :
     forall (source : ReviewerSource),
@@ -279,12 +281,10 @@ theorem concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
         exact
           concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_successful_read_events_backed_by_counted_flat_payload
             shape left right hmem
-      canonical_counted_sources_have_producer_may_path :=
-        concreteBPNativeSuccinctRMQReviewerSource_counted_producer_may_path
-          shape
-      all_shared_bp_dependencies_have_producer_path :=
-        concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_all_producer_connected
-          shape
+      compatibility_counted_sources_have_component_may_path :=
+        concreteBPNativeSuccinctRMQReviewerSource_counted_producer_may_path shape
+      compatibility_shared_bp_dependencies_have_component_path :=
+        concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_all_producer_connected shape
       fresh_unused_source_rejected_by_producer :=
         concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_producer
       canonical_manifest_nodup :=
@@ -298,7 +298,10 @@ theorem concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
         exact
           concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_read_has_listed_region
             shape left right segment index word? hmem
-      every_emitted_read_has_producer_provenance :=
+      every_emitted_read_has_occurrence_provenance :=
+        concreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance_checked
+          shape left right
+      every_emitted_read_has_eventValue_producer_provenance :=
         concreteBPNativeSuccinctRMQWholeQueryProducerProvenance_checked
           shape left right
       canonical_manifest_excludes_legacy_close :=

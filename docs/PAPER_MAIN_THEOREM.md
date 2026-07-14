@@ -41,19 +41,20 @@ primitive operands/results.
   `RMQ.Headlines.succinctRMQReviewerPhysicalValueFromSuppliedStore`:
   genuine supplied flat-physical execution, first-footprint determinacy, and
   answer provenance at the translated supplied-store `.value` projection.
-- `RMQ.Headlines.succinctRMQReviewerEveryReadProducerProvenance`:
-  every read-event value has a closed-program instruction at its folded prefix
-  state whose local trace contains that value, plus a compatible physical
-  source, logical segment, and component path. This W18 checkpoint does not
-  retain occurrence positions or concrete invocation parameters.
-- `RMQ.Headlines.succinctRMQReviewerCountedSourceProducerMayPath` and
-  `RMQ.Headlines.succinctRMQReviewerSharedBPConsumerProducerConnected`:
-  reverse may-read evidence for every counted source and same-event paths for
-  every select/rank/canonical-close shared-BP dependency.
+- `RMQ.Headlines.succinctRMQReviewerEveryReadOccurrenceProvenance`:
+  every indexed read retains its global position, producing instruction
+  occurrence, folded prefix state, component-local position, exact invocation
+  parameters, source, and multiplicity-preserving embedding.
+- `RMQ.Headlines.succinctRMQReviewerCountedSourceSuccessfulClosedValidOccurrence`
+  and
+  `RMQ.Headlines.succinctRMQReviewerSharedBPConsumerSuccessfulClosedValidOccurrence`:
+  every counted source and exact shared-BP consumer has a successful witness
+  through an actual closed whole-query execution under a valid list query.
 - `RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer`:
-  segment 21 with a plausible canonical-close label has no instruction-trace
-  producer. This is stronger than, but not yet bridged from, the component
-  may-read relation used by the positive counted-source theorem.
+  segment 21 with a plausible canonical-close label fails the same common
+  closed-valid-occurrence predicate; the checked
+  `succinctRMQReviewerSuccessfulOccurrenceImpliesOperationalProducer` bridge
+  accounts for the positive side requiring a successful read.
 - `RMQ.Headlines.listIntSuccinctRMQRawAdequacyOfValid` and
   `RMQ.Headlines.listIntSuccinctRMQInvalidPhysicalSemantics`: raw adequacy only
   for valid ranges and one none/empty/zero execution for every invalid range.

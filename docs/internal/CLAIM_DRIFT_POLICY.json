@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "updated": "2026-07-13",
   "terms": [
     {
@@ -101,7 +101,7 @@
     {
       "id": "producer-level-provenance",
       "pattern": "producer provenance|producer-level|actual producing instruction|prefix-fold state",
-      "status": "event-value-only-until-occurrence-and-invocation-data-are-retained",
+      "status": "current-when-indexed-occurrence-state-and-invocation-data-are-retained",
       "strict": false,
       "allowedPathRegex": "",
       "allowedLineRegex": ""
@@ -125,16 +125,16 @@
     {
       "id": "split-operational-liveness-overclaim",
       "pattern": "counted source iff (reviewer-live|operationally live) source|emitted reads map to counted evaluator leaves|every counted source reaches an actual read-producing evaluator branch",
-      "status": "forbidden-current-wording-until-one-operational-relation-is-proved",
-      "strict": true,
+      "status": "current-only-for-successful-closed-valid-whole-query-occurrences",
+      "strict": false,
       "allowedPathRegex": "^docs/internal/|^docs/DIGESTION_LOG\\.md$|^docs/ADD_PROVENANCE\\.md$",
       "allowedLineRegex": ""
     },
     {
       "id": "occurrence-provenance-overclaim",
       "pattern": "Every emitted read (now )?(retains|exposes)|each emitted read retains|Producer provenance retains the actual instruction occurrence|actual-instruction producer provenance for every emitted read|producer-level nonvacuity: each emitted read",
-      "status": "forbidden-current-wording-until-position-and-multiplicity-are-proved",
-      "strict": true,
+      "status": "current-with-global-and-local-positions-multiplicity-and-invocation-parameters",
+      "strict": false,
       "allowedPathRegex": "^docs/internal/|^docs/DIGESTION_LOG\\.md$|^docs/ADD_PROVENANCE\\.md$",
       "allowedLineRegex": ""
     },

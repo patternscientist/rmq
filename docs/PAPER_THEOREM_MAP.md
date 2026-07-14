@@ -16,10 +16,13 @@ RMQ.Headlines.succinctRMQReviewerPhysicalStoreAdapter
 RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint
 RMQ.Headlines.succinctRMQReviewerPhysicalValueFromSuppliedStore
 RMQ.Headlines.succinctRMQReviewerPhysicalValueDependency
-RMQ.Headlines.succinctRMQReviewerEveryReadProducerProvenance
-RMQ.Headlines.succinctRMQReviewerCountedSourceProducerMayPath
-RMQ.Headlines.succinctRMQReviewerSharedBPConsumerProducerConnected
+RMQ.Headlines.succinctRMQReviewerEveryReadOccurrenceProvenance
+RMQ.Headlines.succinctRMQReviewerCountedSourceSuccessfulClosedValidOccurrence
+RMQ.Headlines.succinctRMQReviewerSharedBPConsumerSuccessfulClosedValidOccurrence
+RMQ.Headlines.succinctRMQReviewerSuccessfulOccurrenceImpliesOperationalProducer
 RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer
+RMQ.Headlines.succinctRMQFinalSemanticProvenanceAdequacy
+RMQ.Headlines.listIntSuccinctRMQSemanticProvenanceAdequacyOfValid
 RMQ.Headlines.succinctRMQReviewerPhysicalWordsFitLinearCapacity
 RMQ.Headlines.succinctRMQReviewerWordBitsLogarithmic
 RMQ.Headlines.succinctRMQReviewerPhysicalWordFits
@@ -33,13 +36,13 @@ The final trace refines
 and is exact by
 `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact`.
 Its one typed 20-source manifest includes canonical close and covers every
-read-producing segment. For each read-event value, W18 supplies a closed-
-program instruction at its actual folded prefix state whose local trace
-contains that value, plus a compatible source, segment, and component path.
-Every counted source has a direct component may-read path, shared-BP consumers
-use same-event component paths, and a fresh unused segment is rejected by a
-stronger instruction-trace producer relation. Occurrence positions, invocation
-parameters, and a unified positive/mutation relation remain W19. Region
+read-producing segment. For each indexed read, W19 retains the global
+occurrence, program instruction occurrence, folded state, component-local
+occurrence, exact invocation parameters, source, and composed-trace offset.
+Every counted source and exact shared-BP consumer has a successful actual
+closed-valid query witness. A checked bridge maps the successful positive
+predicate into the mutation-side arbitrary-result predicate, and fresh segment
+21 fails that common relation. Region
 exclusivity, segment
 coverage, and absence of legacy duplicate close/interior payload sources also
 hold. One
@@ -81,6 +84,8 @@ separate theorem; no payload padding manufactures equality.
 
 ```lean
 RMQ.Headlines.succinctRMQFinalTraceModelAdequacy
+RMQ.Headlines.succinctRMQFinalSemanticProvenanceAdequacy
+RMQ.Headlines.listIntSuccinctRMQSemanticProvenanceAdequacyOfValid
 RMQ.Headlines.succinctRMQFinalTraceModelAdequacyExact
 RMQ.Headlines.succinctRMQFinalSuppliedStoreAdequacy
 RMQ.Headlines.succinctRMQFinalFullModelSoundness
@@ -102,9 +107,10 @@ RMQ.Headlines.succinctRMQReviewerPhysicalStoreAdapter
 RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint
 RMQ.Headlines.succinctRMQReviewerPhysicalValueFromSuppliedStore
 RMQ.Headlines.succinctRMQReviewerPhysicalValueDependency
-RMQ.Headlines.succinctRMQReviewerEveryReadProducerProvenance
-RMQ.Headlines.succinctRMQReviewerCountedSourceProducerMayPath
-RMQ.Headlines.succinctRMQReviewerSharedBPConsumerProducerConnected
+RMQ.Headlines.succinctRMQReviewerEveryReadOccurrenceProvenance
+RMQ.Headlines.succinctRMQReviewerCountedSourceSuccessfulClosedValidOccurrence
+RMQ.Headlines.succinctRMQReviewerSharedBPConsumerSuccessfulClosedValidOccurrence
+RMQ.Headlines.succinctRMQReviewerSuccessfulOccurrenceImpliesOperationalProducer
 RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer
 RMQ.Headlines.succinctRMQReviewerPhysicalWordsFitLinearCapacity
 RMQ.Headlines.succinctRMQReviewerWordBitsLogarithmic

@@ -1,6 +1,6 @@
 import RMQ.Core.EncodingLowerBound
 import RMQ.Core.SuccinctFinalModelAdequacy
-import RMQ.Core.SuccinctRMQClassic
+import RMQ.Core.SuccinctRMQClassicProvenance
 
 /-!
 RMQ-only public headline aliases for the paper artifact.
@@ -50,9 +50,27 @@ appendix; retired finite-small interior slots have empty stores.
 abbrev listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory :=
   RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story
 
-/-- Valid List-Int queries inherit the actual-instruction producer packet. -/
-abbrev listIntSuccinctRMQProducerProvenanceOfValid :=
-  RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_producerProvenance_of_valid
+/-- Valid List-Int queries inherit indexed occurrence/invocation provenance. -/
+abbrev listIntSuccinctRMQOccurrenceProvenanceOfValid :=
+  RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_occurrenceProvenance_of_valid
+
+/-- Valid List-Int queries expose the proof-only W19 extension of final model
+adequacy, including all counted-source and shared-consumer witnesses. -/
+abbrev listIntSuccinctRMQSemanticProvenanceAdequacyOfValid :=
+  RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_semanticProvenanceAdequacy_of_valid
+
+/-- Compatibility W18 event-value projection. -/
+abbrev listIntSuccinctRMQEventValueProducerProvenanceOfValid :=
+  RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_eventValueProducerProvenance_of_valid
+
+/-- Valid List-Int story projected to counted-source valid execution
+reachability. -/
+abbrev listIntSuccinctRMQCountedSourceSuccessfulClosedValidOccurrence :=
+  RMQ.SuccinctClassic.reviewerCountedSource_successfulClosedValidOccurrence_of_valid
+
+/-- Valid List-Int story projected to exact shared-BP consumer reachability. -/
+abbrev listIntSuccinctRMQSharedBPConsumerSuccessfulClosedValidOccurrence :=
+  RMQ.SuccinctClassic.reviewerSharedBPConsumer_successfulClosedValidOccurrence_of_valid
 
 /--
 List-facing paper main theorem. For every ordinary `xs : List Int`, the
@@ -91,11 +109,11 @@ theorem listIntSuccinctRMQPaperMainTheorem :
             xs left right) /\
         (forall left right,
           RMQ.ValidRange xs left right ->
-            RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
+            RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQFinalSemanticProvenanceAdequacy
               (RMQ.SuccinctClassic.cartesianShape xs) left right) /\
         (forall left right,
           RMQ.ValidRange xs left right ->
-            RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQWholeQueryProducerProvenance
+            RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance
               (RMQ.SuccinctClassic.cartesianShape xs) left right) /\
         (forall left right,
           Not (RMQ.ValidRange xs left right) ->
@@ -138,13 +156,15 @@ theorem listIntSuccinctRMQPaperMainTheorem :
                 xs storeA left right =
               RMQ.SuccinctClassic.reviewerPhysicalTraceResultWithStore
                 xs storeB left right) /\
-        (forall source : RMQ.SuccinctFinal.ReviewerSource,
-          source.Counted ->
-            source.HasProducerMayPath
-              (RMQ.SuccinctClassic.cartesianShape xs)) /\
-        (forall consumer : RMQ.SuccinctFinal.ReviewerSharedBPConsumer,
-          consumer.ProducerConnected
-            (RMQ.SuccinctClassic.cartesianShape xs)) /\
+        (forall left right,
+          RMQ.ValidRange xs left right ->
+            forall source : RMQ.SuccinctFinal.ReviewerSource,
+              source.Counted ->
+                source.HasSuccessfulClosedValidOccurrence) /\
+        (forall left right,
+          RMQ.ValidRange xs left right ->
+            forall consumer : RMQ.SuccinctFinal.ReviewerSharedBPConsumer,
+              consumer.HasSuccessfulClosedValidOccurrence) /\
         Not RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource.HasOperationalProducer /\
         List.Nodup
           RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalSources /\
@@ -172,10 +192,10 @@ theorem listIntSuccinctRMQPaperMainTheorem :
         (RMQ.SuccinctClassic.cartesianShape xs),
       hcost, hinvalid, hexact, hleftmost, hstory,
       fun left right hvalid =>
-        RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_rawAdequacy_of_valid
+        RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_semanticProvenanceAdequacy_of_valid
           xs left right hvalid,
       fun left right hvalid =>
-        RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_producerProvenance_of_valid
+        RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_occurrenceProvenance_of_valid
           xs left right hvalid,
       RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_invalid_semantics
         xs,
@@ -187,8 +207,12 @@ theorem listIntSuccinctRMQPaperMainTheorem :
       fun storeA storeB left right hagree =>
         RMQ.SuccinctClassic.reviewerPhysicalTraceResultWithStore_eq_of_orderedReadFootprint
           xs storeA storeB left right hagree,
-      RMQ.SuccinctClassic.reviewerCountedSource_producerMayPath xs,
-      RMQ.SuccinctClassic.reviewerSharedBPConsumer_producerConnected xs,
+      fun left right hvalid source hcounted =>
+        RMQ.SuccinctClassic.reviewerCountedSource_successfulClosedValidOccurrence_of_valid
+          xs left right hvalid source hcounted,
+      fun left right hvalid consumer =>
+        RMQ.SuccinctClassic.reviewerSharedBPConsumer_successfulClosedValidOccurrence_of_valid
+          xs left right hvalid consumer,
       RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_producer,
       RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalSources_nodup,
       RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSegmentSource?_coverage,
@@ -265,19 +289,31 @@ source/region and its checked physical event. -/
 abbrev succinctRMQReviewerEveryReadHasListedRegion :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_read_has_listed_region
 
-/-- Every emitted read is tied to its actual instruction occurrence, prefix
-state, physical source, logical segment, and concrete component read path. -/
-abbrev succinctRMQReviewerEveryReadProducerProvenance :=
+/-- Every indexed emitted read retains its exact instruction/local occurrence,
+prefix state, invocation parameters, source, and component occurrence. -/
+abbrev succinctRMQReviewerEveryReadOccurrenceProvenance :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance_checked
+
+/-- Compatibility W18 event-value producer fact. -/
+abbrev succinctRMQReviewerEveryReadEventValueProducerProvenance :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryProducerProvenance_checked
 
-/-- Every counted source has an actual possible attempted-read path in the
-concrete select/rank/LCA construction. -/
-abbrev succinctRMQReviewerCountedSourceProducerMayPath :=
+/-- Every counted source has a successful indexed occurrence in an actual
+closed whole-query execution under a valid ordinary List query. -/
+abbrev succinctRMQReviewerCountedSourceSuccessfulClosedValidOccurrence :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSource_counted_successful_closed_valid_occurrence
+
+/-- Every named shared-BP consumer has a successful indexed occurrence through
+its exact invocation leaf in a closed valid whole-query execution. -/
+abbrev succinctRMQReviewerSharedBPConsumerSuccessfulClosedValidOccurrence :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_successful_closed_valid_occurrence
+
+/-- Compatibility W18 component may-read fact; not top-level reachability. -/
+abbrev succinctRMQReviewerCountedSourceComponentMayPath :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSource_counted_producer_may_path
 
-/-- Every shared-BP consumer reaches the shared BP source through one event in
-that same consumer's component path. -/
-abbrev succinctRMQReviewerSharedBPConsumerProducerConnected :=
+/-- Compatibility W18 shared-BP component path fact. -/
+abbrev succinctRMQReviewerSharedBPConsumerComponentPath :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_all_producer_connected
 
 /-- A fresh unused segment with a plausible canonical-close label has no
@@ -285,9 +321,25 @@ operational producer witness. -/
 abbrev succinctRMQReviewerFreshUnusedSourceNoProducer :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_producer
 
-/-- Generic fold decomposition from a program trace event to its actual
-instruction occurrence and pre-execution state. -/
-abbrev succinctRMQProgramEventActualProducer :=
+/-- Generic indexed fold decomposition to exact instruction/local positions. -/
+abbrev succinctRMQProgramOccurrenceActualProducer :=
+  RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTrace_getElem?_producer
+
+/-- Successful common producer claims imply the mutation-side any-result
+predicate by a checked bridge. -/
+abbrev succinctRMQReviewerSuccessfulOccurrenceImpliesOperationalProducer
+    {claim : RMQ.SuccinctFinal.ReviewerProducerClaim}
+    (hclaim : claim.HasSuccessfulClosedValidOccurrence) :
+    claim.HasOperationalProducer :=
+  RMQ.SuccinctFinal.ReviewerProducerClaim.hasOperationalProducer_of_successful hclaim
+
+/-- Equal event values at distinct global indices yield distinct indexed
+provenance receipts. -/
+abbrev succinctRMQReviewerRepeatedEqualOccurrencesRemainDistinct :=
+  RMQ.SuccinctFinal.repeated_equal_read_occurrences_have_distinct_receipts
+
+/-- Compatibility W18 event-value fold decomposition. -/
+abbrev succinctRMQProgramEventValueProducer :=
   RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTrace_event_producer
 
 /-- No legacy duplicate close source occurs in the canonical source list. -/
@@ -626,6 +678,11 @@ successful read by counted flat payload words.
 -/
 abbrev succinctRMQFinalTraceModelAdequacy :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
+
+/-- Proof-only W19 extension of final trace-model adequacy with successful
+closed-valid-query witnesses for every counted source and shared consumer. -/
+abbrev succinctRMQFinalSemanticProvenanceAdequacy :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalSemanticProvenanceAdequacy
 
 /-- Exactness alias paired with `succinctRMQFinalTraceModelAdequacy`. -/
 theorem succinctRMQFinalTraceModelAdequacyExact

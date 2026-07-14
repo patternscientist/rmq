@@ -4,21 +4,31 @@
 The reviewer path uses one pre-execution list,
 `concreteBPNativeSuccinctRMQReviewerPhysicalWords`, whose erasure is exactly the
 canonical public payload. It is assembled from one exhaustive typed 20-source
-universe that includes canonical close. For every read-event value, W18 gives a
-closed-program instruction at the state obtained by folding the exact preceding
-program prefix whose local trace contains that value. A compatible path resolves
-the value to its physical source, region, logical segment, and component.
-Every counted source has a direct component may-read path, and every shared-BP
-consumer has a same-event component path.
+universe that includes canonical close. For every indexed read, W19 retains the
+same global position, closed-program instruction occurrence, state obtained by
+folding the exact preceding prefix, component-local position, exact invocation
+parameters, physical source, region, and logical segment. Every counted source
+and exact shared-BP consumer has a successful occurrence through an actual
+closed whole-query execution under a valid ordinary `List Int` query.
 The manifest also proves exclusive source regions, complete logical-segment
 coverage, and exclusion of legacy duplicate close/interior sources.
 
+The load-bearing W19 packet is the proof-only
+`ConcreteBPNativeSuccinctRMQFinalSemanticProvenanceAdequacy`, which contains
+the final trace-model adequacy packet and the all-source/shared-consumer
+closed-valid witnesses. `SuccinctRMQClassicProvenance.lean` projects that
+packet through valid ordinary-list queries. This split keeps symbolic witness
+construction out of the native validator link closure; it does not replace or
+alter the genuine `SuccinctRMQClassic` execution checked by the validator and
+cost harness.
+
 A counterfactual fresh segment `21` with the plausible existing
-`canonicalClose` label has no instruction-trace producer witness. This is a
-stronger relation than the positive direct component may-read predicate, and no
-checked bridge currently unifies them. W19 must retain occurrence positions and
-invocation parameters and use one positive/mutation operational relation. The
-may-read theorem does not claim that every query reads every source.
+`canonicalClose` label has no witness under the same common closed-valid-
+occurrence relation. The positive predicate existentially requires `some word`;
+the mutation predicate permits any `word?`, and
+`ReviewerProducerClaim.hasOperationalProducer_of_successful` is the checked
+`P -> Q` bridge. W18 event-value and component may-read theorems remain
+compatibility facts and do not carry this reviewer claim.
 
 The existing supplied-store evaluator is run through
 `concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter`, which actually reads

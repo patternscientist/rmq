@@ -1,5 +1,5 @@
 # RMQ Family Summary
-## U2 Producer-Provenance Frontier (W18 repair required, 2026-07-13)
+## U2 Occurrence-Provenance Candidate (W19, 2026-07-13)
 
 The all-size final trace consumes
 `SuccinctClose.canonicalRelativeRmmInteriorDirectory` through
@@ -13,16 +13,19 @@ is the single pre-execution list
 identifies that list with the canonical public payload underlying
 `SuccinctClassic.buildPayload`, rather than an appended sibling payload.
 
-W18 improves the producer story at the event-value level: any read-event value
-in the global trace has a closed-program instruction at its actual folded
-prefix state whose local trace contains that value, and the same value resolves
-to a source/component path. It does not retain the global/local occurrence
-position or the concrete component invocation parameters. Reverse coverage
-uses a direct component may-read predicate, while the fresh-source mutation
-rejects a stronger instruction-trace producer predicate; no checked bridge
-currently connects them. W19 must preserve occurrences and invocation data and
-use one operational relation for positive coverage and mutation rejection
-before U2 returns to blind-audit status.
+W19 starts from a global trace `getElem?` witness and retains that same
+occurrence through its program-instruction position, exact folded prefix state,
+component-local position, select/rank/close invocation parameters, source, and
+the global-prefix-length plus local-position embedding. Every counted source
+has a successful occurrence in an actual closed whole-query execution under a
+valid ordinary `List Int` query. The select, rank, and canonical-close shared-BP
+consumers have exact-leaf witnesses as well. Positive predicate `P` is
+successful `ReviewerProducerClaim.HasClosedValidOccurrence`; mutation predicate
+`Q` existentially permits either read result. They share the common occurrence
+relation and `hasOperationalProducer_of_successful` checks `P -> Q`; fresh
+segment `21` fails `Q`. W18 event-value and component may-read facts remain
+compatibility facts. Coordinator reconstruction and a blind exact-commit audit
+still precede acceptance.
 
 The interior dynamic footprint is the ordered address projection of the
 execution that computes the answer. Theorems
@@ -2913,6 +2916,16 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctClassic.queryCostedWithStore_eq_queryCosted_of_footprint`,
   `SuccinctClassic.listIntFinalFullModelSoundnessExactOfFootprintGlobal`,
   `SuccinctClassic.listIntFinalFullModelCostLeOfFootprintGlobal`.
+- `RMQ/Core/SuccinctFinalSemanticProvenanceAdequacy.lean` and
+  `RMQ/Core/SuccinctRMQClassicProvenance.lean`:
+  `SuccinctFinal.concreteBPNativeSuccinctRMQFinalSemanticProvenanceAdequacy`,
+  `SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_semanticProvenanceAdequacy_of_valid`,
+  `SuccinctClassic.reviewerCountedSource_successfulClosedValidOccurrence_of_valid`,
+  and
+  `SuccinctClassic.reviewerSharedBPConsumer_successfulClosedValidOccurrence_of_valid`.
+  These proof-only modules carry W19 through final adequacy and the valid
+  `List Int` story while preserving the native validator's executable import
+  closure.
 - `RMQ/Headlines.lean`:
   public-facing aliases
   `Headlines.exactRMQLowerBoundDoubledCatalanSlack`,
@@ -2941,9 +2954,9 @@ The names below are grouped by source module. Repeated base names in
   `Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint`,
   `Headlines.succinctRMQReviewerPhysicalValueFromSuppliedStore`,
   `Headlines.succinctRMQReviewerPhysicalValueDependency`,
-  `Headlines.succinctRMQReviewerEveryReadProducerProvenance`,
-  `Headlines.succinctRMQReviewerCountedSourceProducerMayPath`,
-  `Headlines.succinctRMQReviewerSharedBPConsumerProducerConnected`,
+  `Headlines.succinctRMQReviewerEveryReadOccurrenceProvenance`,
+  `Headlines.succinctRMQReviewerCountedSourceSuccessfulClosedValidOccurrence`,
+  `Headlines.succinctRMQReviewerSharedBPConsumerSuccessfulClosedValidOccurrence`,
   `Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer`,
   `Headlines.concreteBPCloseNavigationProfile`,
   `Headlines.concreteBPCloseNavigationGlobalPayloadStoreExecutionStory`,

@@ -43,6 +43,14 @@ connects them. `WholeQueryProgram.ProducesEvent` begins from event-value
 membership and `ReviewerProducerReadPath` erases invocation parameters. W19
 must replace or bridge these relations and consume the result publicly.
 
+W19 repair branch: `codex/rmq-u2-positional-provenance`
+W19 exact base: `af8791150b64038e9c0776e3639634f1d83518ea`
+
+W19 worker disposition: `CANDIDATE_COMPLETE`; coordinator acceptance and a
+fresh blind exact-commit audit remain pending. The amendment at the end of this
+file records the new propositions and evidence without rewriting the
+historical W15--W18 ledgers.
+
 The roadmap join is the list-facing `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`
 imported by `RMQPaper`. The required object chain is:
 
@@ -717,3 +725,125 @@ closes those rows.
 | Claim drift | Strict pass: 526 reviewed hits, 0 strict failures; policy JSON version 4 parses. |
 | `git diff --check` | Pass; only expected Windows line-ending notices. |
 | Aggregate repository gate | `GATE PASS` from `powershell -ExecutionPolicy Bypass -File scripts\\gate.ps1`. |
+
+## W19 occurrence-level and closed-valid-reachability amendment
+
+This amendment reopens and re-evaluates `REQ-02.a`, `REQ-02.b`, `REQ-06.a`,
+`INV-SEMANTIC-NONVACUITY`, `INV-TRACE-EXECUTION`, and
+`INV-PUBLIC-COMPOSITION`. Historical W15--W18 rows remain evidence about those
+checkpoints; they are not the current proposition.
+
+### Exact predicates, domains, and quantifiers
+
+Common occurrence domain `D` is `ReviewerProducerClaim`, a pair of a logical
+segment and a `ReviewerReadLeaf`. For `claim : D` and
+`word? : Option WordRAM.Word`, the common operational relation is:
+
+```lean
+claim.HasClosedValidOccurrence word? :=
+  exists (xs : List Int) (left right globalPos index : Nat),
+    ValidRange xs left right /\
+    closedGlobalTrace (Cartesian.shape xs) left right |>.trace[globalPos]? =
+      some (.readWord claim.segment index word?) /\
+    exists instrPos instr preState localPos invocation,
+      ProducesEventAt ... globalPos instrPos instr preState localPos /\
+      instr.InvokesReviewerRead left right preState invocation /\
+      invocation.leaf = claim.leaf /\
+      invocation.componentTrace (Cartesian.shape xs) |>.getElem? localPos =
+        some (.readWord claim.segment index word?)
+```
+
+The accepted positive predicate is
+`P claim := claim.HasSuccessfulClosedValidOccurrence`, i.e.
+`exists word : WordRAM.Word, claim.HasClosedValidOccurrence (some word)`.
+The mutation predicate is
+`Q claim := claim.HasOperationalProducer`, i.e.
+`exists word? : Option WordRAM.Word, claim.HasClosedValidOccurrence word?`.
+They share domain `D` and the exact operational relation but are not
+definitionally equal because `P` requires success and `Q` also permits failed
+attempts. The checked bridge is:
+
+```lean
+ReviewerProducerClaim.hasOperationalProducer_of_successful :
+  forall {claim : D}, P claim -> Q claim
+```
+
+Canonical-source coverage quantifies
+`forall source : ReviewerSource, source.Counted -> exists claim : D,
+segmentSource? claim.segment = some source /\ P claim`. Shared-BP coverage
+quantifies `forall consumer : ReviewerSharedBPConsumer,
+P consumer.producerClaim`. The fresh mutation tests the same `Q` at
+`concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource.toProducerClaim` and
+proves its negation. No component may-read, arbitrary state, or event-value
+membership predicate appears in these load-bearing conclusions.
+
+Forward provenance quantifies over every shape, query pair, global trace
+position, segment, address, and optional returned word. From
+`globalTrace.trace[globalPos]? = some (.readWord segment index word?)`, it
+returns `ReviewerReadOccurrenceReceipt ... globalPos ...`. The receipt records
+the same global position, program instruction position, exact prefix-folded
+pre-state, component-local position, exact `ReviewerReadInvocation`, source,
+region, component event, and the multiplicity-preserving equation
+`globalPos = prefixTrace.length + localPos`.
+
+### Reopened-row ledger
+
+| Row | W19 proposition/evidence | Anti-vacuity check | W19 worker status |
+| --- | --- | --- | --- |
+| `REQ-02.a` | `WholeQueryProgram.evalGlobalWordTrace_getElem?_producer` -> `WholeQueryInstr.evalGlobalWordTrace_getElem?_read_invocation` -> `concreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance_checked`. | Equal event values cannot erase positions: `repeated_equal_read_occurrences_have_distinct_receipts` returns both receipts, and the singleton validator checks identical successful events at distinct global positions `0` and `12`. | Candidate evidence satisfied. |
+| `REQ-02.b` | `concreteBPNativeSuccinctRMQReviewerSource_counted_successful_closed_valid_occurrence`; exact shared-BP theorem `...ReviewerSharedBPConsumer_successful_closed_valid_occurrence`. | Every witness includes ordinary `xs`, `ValidRange`, an indexed event in the actual closed whole-query trace, exact invocation, and successful `some word`; direct component may-read cannot inhabit this proposition. | Candidate evidence satisfied. |
+| `REQ-06.a` | Final trace adequacy consumes occurrence provenance and common-predicate mutation rejection; the proof-only `ConcreteBPNativeSuccinctRMQFinalSemanticProvenanceAdequacy` extension additionally requires all-source/shared-consumer successful closed-valid reachability. The valid List story, paper main theorem, headline aliases, and `RMQPaper` consume that extension. W18 event-value facts remain compatibility-only. | Removing the indexed receipt, semantic-adequacy extension, successful source theorem, shared-consumer theorem, bridge, or common-predicate rejection breaks a downstream constructor/conjunction. | Candidate evidence satisfied. |
+| `INV-SEMANTIC-NONVACUITY` | Positive `P` and mutation `Q` share `HasClosedValidOccurrence`; checked `P -> Q`; fresh segment `21` proves `not Q`. | The negative is not an arbitrary-state or stronger unrelated predicate. Every accepted source has top-level successful execution evidence. | Candidate evidence satisfied. |
+| `INV-TRACE-EXECUTION` | The forward theorem starts from `getElem?` in the actual closed global trace and carries instruction/local positions and computed invocation parameters. The reverse theorem also starts from that same actual closed evaluator. | Event-value `List.Mem`, arbitrary instruction state, and erased-parameter leaf paths remain insufficient compatibility facts. | Candidate evidence satisfied. |
+| `INV-PUBLIC-COMPOSITION` | `ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy` -> `ConcreteBPNativeSuccinctRMQFinalSemanticProvenanceAdequacy` -> valid `List Int` projection -> `listIntSuccinctRMQPaperMainTheorem` -> `RMQ.Headlines.RMQ` -> `RMQPaper`; all curated axiom inventories name the load-bearing declarations. | Old producer-may-path and event-value aliases are not used by the paper conjunction. The proof-only split preserves the native execution roots. | Candidate evidence satisfied. |
+
+### Source-family evidence
+
+The authoritative source split is:
+
+| Family | Sources | Formal evidence |
+| --- | --- | --- |
+| Small closed-valid witnesses | 1--11 and 20 | `ReviewerReachabilitySmall.lean`, including the singleton and increasing-length-16 executions. |
+| Symbolic long-super witness `L` | 12--15 | `ReviewerReachabilityLong.lean`; a kernel-safe `N = 2^15` shape proves the long-super arithmetic and successful segments 9--12 symbolically. |
+| Symbolic sparse-local witness `S` | 16--19 | `ReviewerReachabilitySparse.lean`; the `N = 2^128` shape proves the sparse-local arithmetic and successful segments 13--16 symbolically without materializing the list. |
+
+The scout report at exact commit
+`17287f25d1241ab6e4609f19863eced66dd9e62b` was audited design input only. Its
+table supplied the corrected split above; its prose summary error and its L/S
+arithmetic were not treated as proof evidence or as a contract amendment.
+
+### Preserved rows and next consumer
+
+Genuine supplied flat-physical execution, one public payload and exact erasure,
+invalid-range none/empty/zero semantics, logarithmic reviewer width,
+no-synthetic trace, and the checked canonical transitional bound `328` are
+unchanged. No threshold, category join, decorative read, component-only
+liveness endpoint, or U3 work was introduced.
+
+Controlled status remains candidate evidence only. Coordinator reconstruction
+and a fresh blind exact-commit audit are the mandatory next consumers before
+`ACCEPTED`.
+
+### W19 final local verification ledger
+
+| Check | Result |
+| --- | --- |
+| Exact branch base | Verified `HEAD = af8791150b64038e9c0776e3639634f1d83518ea` before editing in the isolated W19 worktree. |
+| Focused occurrence/reachability/adequacy/List/headline/paper/validation build | Pass for `ReviewerPhysical`, `SuccinctFinalRAM`, all four `ReviewerReachability*` modules, `SuccinctFinalModelAdequacy`, `SuccinctFinalSemanticProvenanceAdequacy`, `SuccinctRMQClassic`, `SuccinctRMQClassicProvenance`, `RMQ.Headlines.RMQ`, `RMQPaper`, and both validation modules. |
+| `lake build RMQPaper` | Pass. |
+| Full `lake build` | Pass. |
+| `lake build RMQExamples` | Pass. |
+| Eight curated axiom inventories | Pass: headline, hub, WordRAM, broad, archive, rank/select, BP navigation, and union-find. W19 declarations report only the repository-standard `propext`, `Classical.choice`, and `Quot.sound` where applicable. |
+| `lake exe rmq_succinct_classic_validate` | Pass: 498 valid/invalid windows across 43 deterministic inputs, including route, exact `328`, erasure, backing, dependency, and repeated-equal-event structural evidence. |
+| `lake exe rmq_succinct_classic_cost_harness` | Pass: all invalid, same-block, and cross-block windows agree with reference `List Int` semantics and remain below exact canonical bound `328`. |
+| Strict design-decision check | Pass across 34 changed files. |
+| Strict claim-drift scan | Pass: 542 classified hits, 0 strict failures. |
+| Prohibited-token and `native_decide`/`Lean.ofReduceBool` scans | No matches across live RMQ, example, paper, facade, archive, and lake roots. |
+| `git diff --check` | Pass. |
+| `scripts/gate.ps1` | `SHIM LINT PASS`; `GATE PASS`. |
+
+The first native executable replay exposed a Windows stack overflow caused by
+placing symbolic proof-witness modules in the executable import/link closure.
+An exact-base detached probe passed. The final proof/runtime module split is
+therefore part of the accepted candidate design, and both exact executable
+commands pass after that split; no environment or stack override is required.

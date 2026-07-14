@@ -847,6 +847,60 @@ strictly stronger theorem; it is not needed for the present may-read ownership
 contract and should not be confused with the false claim that every query
 reads every source.
 
+## 2026-07-13 W19 Occurrence-Level Producer Provenance
+
+W19 replaces the load-bearing W18 event-value membership with an indexed
+interpreter decomposition. A receipt begins at `globalTrace[globalPos]?`,
+identifies the exact instruction position in the closed program, proves that
+instruction's pre-state is the fold of the preceding prefix, retains the same
+component-local position, and records
+`globalPos = prefixTrace.length + localPos`. `ReviewerReadInvocation` keeps the
+actual select index, rank position, or pair of close positions computed by the
+instruction. Equal event values therefore do not merge: a checked singleton
+regression has identical successful read events at global positions `0` and
+`12`, and the generic theorem returns a separate receipt for each position.
+
+Reverse provenance now ends at top level. Every counted source is successfully
+read by some actual closed whole-query execution under `ValidRange`; small
+witnesses cover sources 1--11 and 20, a symbolic long-super construction covers
+12--15, and a symbolic sparse-local construction covers 16--19. The latter two
+prove their large arithmetic in Lean rather than treating the reachability
+scout's calculations as evidence. Select, rank, and canonical-close shared-BP
+consumers also retain their exact leaf in successful closed-valid witnesses.
+
+Positive claim `P` is a successful `some word` instance of
+`ReviewerProducerClaim.HasClosedValidOccurrence`. Mutation claim `Q` permits
+any `word?` instance of that same relation. They are intentionally not
+definitionally equal, and
+`ReviewerProducerClaim.hasOperationalProducer_of_successful` checks `P -> Q`.
+Fresh segment `21` fails `Q` itself. This removes the W18 mismatch between
+component may-read acceptance and stronger arbitrary-state rejection.
+
+The symbolic reachability proofs live in a proof-only final semantic-
+provenance adequacy extension and a proof-only `List Int` projection module.
+The paper and headline roots import that extension, while the executable
+validator and cost harness continue to import the genuine
+`SuccinctRMQClassic` execution core. This separation was forced by a checked
+native regression: linking the large symbolic witnesses into both executable
+roots caused a Windows stack overflow, whereas the exact-base harness passed;
+after the proof/runtime split, both W19 executables pass unchanged.
+
+Plain English: every emitted read has a positional receipt for the invocation
+that really made it, and every piece of counted storage can be seen succeeding
+in a real valid public query. Two identical reads at different moments remain
+two obligations. The physical evaluator, one public payload, invalid-range
+semantics, logarithmic reviewer width, no-synthetic trace, and checked `328`
+bound did not change; U3 was not started.
+
+Live assumptions remain the explicit WordRAM trace/cost semantics, concrete
+closed whole-query program, source/address maps, component evaluators, and the
+ordinary half-open `ValidRange` contract. The theorem is not a compiled-runtime
+claim and does not say every query reads every source. A skeptical graduate
+student should next reconstruct the symbolic long/sparse witness arithmetic
+and verify that no compatibility may-read or event-value theorem is needed by
+the paper main theorem. Coordinator acceptance and the blind exact-commit audit
+remain separate from this worker candidate.
+
 ## Digestion Tasks
 
 1. Turn the RMQ capstone into a two-page lecture-style proof map:

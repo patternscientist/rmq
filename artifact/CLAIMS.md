@@ -1,7 +1,7 @@
 # Claims Packet
-## Canonical U2 Reviewer Checkpoint
+## Canonical U2 Reviewer Candidate
 
-The W18 producer-provenance checkpoint preserves W17's exhaustive typed
+The W19 occurrence-provenance candidate preserves the exhaustive typed
 20-source universe, including canonical close, inside one whole-machine
 physical word list. That
 list erases exactly to the public `SuccinctClassic.buildPayload`. The existing
@@ -14,19 +14,21 @@ consumed ordered physical footprint determines the complete physical
 the evaluator observes its supplied store. The linear capacity and
 query-independent logarithmic width bound
 all stored/returned words, physical addresses, and charged primitive data.
-For every read-event value in the trace, W18 supplies a closed-program
-instruction at its actual folded prefix state whose local trace contains that
-value, plus a compatible physical-source, segment, and component-path witness.
-Every counted source has a direct component may-read path, each shared-BP
-consumer has a same-event component path, and fresh unused segment `21` is
-rejected by the stronger instruction-trace producer relation. W18 does not yet
-retain global/local occurrence positions or invocation parameters, and no
-checked bridge unifies the positive and mutation predicates; W19 owns those
-acceptance requirements.
+For every indexed read in the global trace, W19 retains that same global
+occurrence, its program-instruction occurrence, exact folded prefix state,
+component-local occurrence, invocation parameters, source, and offset in the
+composed trace. Every counted source and named shared-BP consumer has a
+successful witness through an actual closed whole-query execution under a
+valid ordinary `List Int` query. Fresh unused segment `21` is rejected by the
+same common closed-valid-occurrence predicate, with a checked bridge from the
+successful positive predicate to the mutation-side arbitrary-result predicate.
+The singleton executable regression checks that identical events at global
+positions `0` and `12` remain distinct obligations. W18 event-value and
+component may-read facts remain compatibility facts only.
 The checked transitional modeled cap is `328`. Ready `118`, route-split,
 zero-block, `4144`, and `196727` claims are compatibility rows only. Coordinator
-acceptance requires the W19 semantic repair, matrix reconstruction, and then a
-fresh blind exact-commit audit.
+acceptance still requires coordinator reconstruction and a fresh blind
+exact-commit audit.
 
 
 This file is a compact public-facing map from headline claims to the exact
@@ -59,7 +61,7 @@ commands, see `../docs/PAPER_CLAIM_CORRESPONDENCE.md`.
 | The BP-native succinct RMQ family answers exact RMQ queries with `2*n + o(n)` payload bits and constant modeled query cost, paired with a numeric doubled-Catalan slack comparison. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` via `RMQ.Headlines.RMQ` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile` | `lake build RMQPaper` and `lake env lean scripts/headline_axiom_check.lean` |
 | The ordinary `List Int` succinct RMQ surface proves `buildPayload.length <= 2*n + overhead n` with `overhead = o(n)`, rejects invalid or empty ranges, preserves the classic valid half-open leftmost contract, and supplies the final no-synthetic execution story. Exact physical erasure is separate and no padding is used. | `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory`, `RMQ.Headlines.listIntSuccinctRMQQueryCostedInvalid` | `RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story`, `RMQ.SuccinctClassic.queryCosted_invalid` | `lake env lean scripts/headline_axiom_check.lean` and `lake env lean scripts/wordram_axiom_check.lean` |
 | The reviewer capstone is genuine supplied flat-physical execution, determined by its first consumed ordered footprint; its `.value` is exactly the translated supplied-store evaluator value, and a decisive singleton corruption changes the answer. | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical`, `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint`, `RMQ.Headlines.succinctRMQReviewerPhysicalValueFromSuppliedStore`, `RMQ.Headlines.succinctRMQReviewerPhysicalValueDependency` | Corresponding `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysical*` projection and footprint theorems plus the validation guards | `lake env lean scripts/wordram_axiom_check.lean`, `lake env lean scripts/headline_axiom_check.lean`, and `lake build RMQExamples` |
-| The W18 manifest checkpoint has event-value producer evidence at actual folded prefix states, direct component may-read paths for counted sources, same-event shared-BP component paths, and a stronger instruction-trace rejection of a fresh plausible-label source. It does not yet establish occurrence-preserving or same-predicate semantic nonvacuity. | `RMQ.Headlines.succinctRMQReviewerEveryReadProducerProvenance`, `RMQ.Headlines.succinctRMQReviewerCountedSourceProducerMayPath`, `RMQ.Headlines.succinctRMQReviewerSharedBPConsumerProducerConnected`, `RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryProducerProvenance_checked`, `...ReviewerSource_counted_producer_may_path`, `...ReviewerSharedBPConsumer_all_producer_connected`, `...FreshUnusedCanonicalSource_no_producer` | `lake env lean scripts/wordram_axiom_check.lean` and `lake env lean scripts/headline_axiom_check.lean` |
+| The W19 reviewer candidate preserves indexed occurrences and exact invocation parameters, gives every counted source and shared-BP consumer a successful closed-valid whole-query witness, checks the positive-to-mutation bridge, and rejects fresh segment `21` with the common predicate. | `RMQ.Headlines.succinctRMQReviewerEveryReadOccurrenceProvenance`, `RMQ.Headlines.succinctRMQReviewerCountedSourceSuccessfulClosedValidOccurrence`, `RMQ.Headlines.succinctRMQReviewerSharedBPConsumerSuccessfulClosedValidOccurrence`, `RMQ.Headlines.succinctRMQReviewerSuccessfulOccurrenceImpliesOperationalProducer`, `RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance_checked`, `...ReviewerSource_counted_successful_closed_valid_occurrence`, `...ReviewerSharedBPConsumer_successful_closed_valid_occurrence`, `ReviewerProducerClaim.hasOperationalProducer_of_successful`, `...FreshUnusedCanonicalSource_no_producer` | `lake env lean scripts/wordram_axiom_check.lean` and `lake env lean scripts/headline_axiom_check.lean` |
 | The ordinary `List Int` supplied-store surface runs `SuccinctClassic.queryCostedWithStore` against a caller-provided store agreeing with `SuccinctClassic.globalReadStore xs` on the checked footprint: equality, valid-window exactness, all-size cost, and the canonical transitional `328` bound transfer. | `RMQ.Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint`, `RMQ.Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal`, `RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal`, `RMQ.Headlines.listIntSuccinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal` | `RMQ.SuccinctClassic.queryCostedWithStore_eq_queryCosted_of_footprint`, `RMQ.SuccinctClassic.listIntFinalFullModelSoundnessExactOfFootprintGlobal`, `RMQ.SuccinctClassic.listIntFinalFullModelCostLeOfFootprintGlobal`, `RMQ.SuccinctClassic.listIntCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal` | `lake build RMQPaper` and `lake env lean scripts/headline_axiom_check.lean` |
 | The same RMQ family has a closed `WordRAM`/register-program query controller over interpreted leaves. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_interpreted_profile` | `lake env lean scripts/wordram_axiom_check.lean` |
 | The same RMQ family emits an explicit domain-leaf trace before projection back to `Costed`. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_leaf_trace_profile` | `lake env lean scripts/wordram_axiom_check.lean` |
