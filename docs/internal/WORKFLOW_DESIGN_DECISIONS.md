@@ -2002,14 +2002,16 @@ Category-level regression evidence:
 
 - 26 category, grammatical, and allowance-bypass fixtures receive the
   production forbidden term's final strict failure verdict;
-- 15 truthful fixtures receive a final strict pass, including eight suspicious
+- 15 truthful fixtures receive a final strict pass, including 11 suspicious
   lines admitted only by explicit negation or role allowance;
 - five path/context verdicts cover the policy path, marked matrix rows,
   drive-qualified absolute input, absolute path normalization, and a fresh
   unmarked matrix-file misuse;
 - the repository scan reports 581 classified hits and zero strict failures;
 - the base-relative strict design check covers 12 changed files; and
-- the full aggregate gate passes in 243.4 seconds with `GATE PASS`.
+- the full aggregate gate passes on the implementation tree in 243.4 seconds
+  and again on the completed-ledger tree in 249.1 seconds, both with
+  `GATE PASS`.
 
 The final local/remote candidate SHA remains a post-push lifecycle fact and is
 recorded in the acceptance ledger and handoff only after it is observed.
