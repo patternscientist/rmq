@@ -863,6 +863,7 @@ commands pass after that split; no environment or stack override is required.
 | Both SuccinctClassic executables | Pass. Validator checks 498 windows across 43 inputs; cost harness agrees with reference semantics and retains exact canonical bound `328`. Both roots still import only `SuccinctRMQClassic`. |
 | Phantom-validity/global-liveness scan | No retired `_of_valid` source-liveness wrapper or parameterized semantic packet remains. The only `SuccinctFinalSemanticProvenanceAdequacy` code hit is the proof-only module import itself. |
 | Strict design-decision check | Pass across 28 changed files. |
-| Strict claim-drift scan | Pass: policy version 7, 562 classified hits, 0 strict failures; spaced/unspaced `2^128` is role-classified and canonical activation misuse is strict. |
+| Strict claim-drift scan | Pass: policy version 8, 565 classified hits, 0 strict failures; spaced/unspaced `2^128` remains role-classified, while canonical activation misuse is strict in either ordinary word order. |
+| `claim_drift_policy_regression.ps1` | Pass: `rg --pcre2` rejects five canonical-activation mutations (`uses`, `requires`, `has`, exponent-first, and spaced/unspaced forms) and accepts five truthful role-scoped fixtures (three negations, compatibility companion, proof-only sparse-local `N = 2^128` witness). It is now invoked by `scripts/gate.ps1`. |
 | Prohibited-token and `native_decide`/`Lean.ofReduceBool` scans | No matches in live `RMQ` / `lakefile.toml` scope. |
 | `git diff --check` | Pass. |

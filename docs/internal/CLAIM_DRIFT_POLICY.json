@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "updated": "2026-07-13",
   "terms": [
     {
@@ -44,7 +44,7 @@
     },
     {
       "id": "forbidden-2pow128-canonical-activation",
-      "pattern": "(canonical (reviewer )?(execution|route|query).{0,80}(requires|has|uses).{0,40}(activation premise|premise).{0,40}2\\s*\\^\\s*128|2\\s*\\^\\s*128.{0,80}(activates|is required by).{0,60}canonical (reviewer )?(execution|route|query))",
+      "pattern": "(?i)(?:(?<!no )(?<!not )(?<!never )(?<!current )(?:current )?canonical (reviewer )?(execution|route|query)(?:(?!\\b(?:no|not|never)\\b).){0,100}?(requires|has|uses)(?:(?!\\b(?:no|not|never)\\b).){0,60}?2\\s*\\^\\s*128(?:(?!\\b(?:no|not|never)\\b).){0,100}?(activation premise|premise|to activate)|2\\s*\\^\\s*128(?:(?!\\b(?:no|not|never)\\b).){0,100}?(activates|is required by|is an activation premise for|is the activation premise for)(?:(?!\\b(?:no|not|never)\\b).){0,100}?(?:current )?canonical (reviewer )?(execution|route|query))",
       "status": "forbidden-current-canonical-activation-claim",
       "strict": true,
       "allowedPathRegex": "^docs/internal/CLAIM_DRIFT_POLICY\\.(md|json)$",

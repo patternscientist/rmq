@@ -53,7 +53,11 @@ human-readable file when the interpretation changes.
   Explicit legacy compatibility companions may retain that sufficient premise.
   Separately, W19's proof-only sparse-local nonvacuity witness uses symbolic
   `N = 2^128`; that witness is not an execution, payload, cost, runtime, or
-  paper-main-theorem premise.
+  paper-main-theorem premise. The strict policy rejects canonical activation
+  claims in either ordinary word order (canonical route before or after the
+  exponent) and with either `2^128` or `2 ^ 128` spelling. Its gate-backed
+  mutation suite keeps negated canonical statements, compatibility companions,
+  and the proof-only sparse-local witness as accepted role-scoped fixtures.
 - `328` is the current checked transitional canonical reviewer bound; U3 owns
   any final explained constant.
 - `4144`, Ready-regime `118`, the zero-block route, and `196727` are

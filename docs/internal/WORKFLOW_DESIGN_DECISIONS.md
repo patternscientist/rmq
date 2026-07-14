@@ -1812,7 +1812,9 @@ Decision:
 - Claim drift classifies `2^128` by role: explicit legacy compatibility premise
   or W19 proof-only sparse-local witness, never current canonical execution
   activation. The scanner now recognizes both spaced and unspaced notation and
-  includes a strict canonical-activation misuse pattern.
+  rejects ordinary canonical-activation wording in both directions: a canonical
+  execution/route/query may name `2^128` as its activation premise, or the
+  exponent may name the canonical consumer that it activates.
 - The liveness policy status explicitly says `global-existential-some-valid-
   query-not-current-query`, while indexed occurrence policy remains tied to the
   current trace.
@@ -1827,3 +1829,28 @@ The completion gate now checks the theorem's real quantifier boundary rather
 than accepting vacuous current-query parameters. The three primary axiom
 inventories expose both scopes, strict claim scanning recognizes the proof-only
 `N = 2^128` witness, and the genuine native execution closure is unchanged.
+
+Failure discovered after the accepted composition checkpoint:
+
+Policy version 7 passed its strict scan while failing the natural subject-first
+canonical-activation mutation recorded in the regression script. Its first
+alternative required `activation premise` before the exponent, so it checked a
+stilted word order rather than the prohibited claim itself.
+
+Rejected alternatives:
+
+- Add only that one sentence to a test fixture; this would leave `requires`,
+  `has`, exponent-first wording, and spaced notation unprotected.
+- Broaden the strict rule without negative-role fixtures; this would risk
+  rejecting the truthful no-canonical-activation statement, compatibility
+  companions, or W19's proof-only sparse-local witness.
+- Treat a green repository scan as sufficient; existing prose need not contain
+  the misuse that a future edit could introduce.
+
+Regression evidence:
+
+`scripts/claim_drift_policy_regression.ps1`, invoked by `scripts/gate.ps1`,
+uses `rg --pcre2` against five must-reject mutations and five must-accept
+role-scoped fixtures. It independently exercises both word orders, both
+spaced/unspaced exponent spellings, negated canonical claims, compatibility,
+and the symbolic sparse-local proof witness.
