@@ -83,8 +83,8 @@ if ($LASTEXITCODE -ne 0) { Fail "succinct_cost_lint.ps1 found issues" }
 & "$PSScriptRoot\shim_lint.ps1"
 if ($LASTEXITCODE -ne 0) { Fail "shim_lint.ps1 found issues" }
 
-# 6. Claim-drift policy mutations must reject canonical activation misuse while
-# preserving the explicit compatibility and proof-witness roles.
+# 6. Claim-drift policy mutations must enforce the full canonical-role/exponent
+# category, contextual allowances, parser shapes, and allowance bypasses.
 & "$PSScriptRoot\claim_drift_policy_regression.ps1"
 if ($LASTEXITCODE -ne 0) { Fail "claim_drift_policy_regression.ps1 found issues" }
 

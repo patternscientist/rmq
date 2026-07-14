@@ -1772,7 +1772,7 @@ domains, and provenance level from acceptance matrices is worth automating.
 ## WDD-20260713-004: W19 applies the predicate-parity gate
 
 Status: implemented candidate; coordinator audit pending.
-Date: 2026-07-13.
+Date: 2026-07-13; amended 2026-07-14.
 
 Decision:
 
@@ -1875,7 +1875,8 @@ and repository-wide scans.
 Amended decision:
 
 - The forbidden term is a broad 240-character suspicious-token window over a
-  canonical execution/route/query role, `2^128` (spaced or unspaced), and
+  standalone canonical role followed by execution/route/query language and,
+  on the same line, `2^128` (spaced or unspaced), plus the then-required
   activation/premise/threshold language. It is intentionally a controlled
   claim-language lint, not a complete natural-language semantic checker.
 - Its allowances are anchored, explicit roles: direct negation, historical
@@ -1924,3 +1925,91 @@ Amended regression evidence:
 - the base-relative strict design check covers eight changed files; and
 - `scripts/gate.ps1` completes with `GATE PASS`, while CI names and invokes its
   claim scan as strict.
+
+Third failure discovered at checkpoint `c3c3b51b`:
+
+The previous repair still classified grammatical examples instead of the
+policy category. It required a third activation/premise/threshold token, so
+ordinary statements such as a requirement, availability condition, or need
+could pair the canonical role with the exponent and escape. Its exact
+acceptance-matrix path allowance also accepted every matching line in that
+file, not just the frozen contract rows that quote rejected examples. Finally,
+the scanner still split human-formatted `file:line:text` output at colons. That
+made drive-qualified and other colon-bearing paths part of the classifier's
+semantics even though the policy was meant to classify line content and
+explicit contexts.
+
+Category-level amended decision:
+
+- The production suspicion boundary now has two token classes only: standalone
+  canonical execution/route/query language and the spaced or unspaced
+  exponent. A bounded line containing both is suspicious regardless of its
+  verb or whether it says activation, premise, or threshold.
+- Explicit negation and explicit historical, compatibility, and proof-only
+  role prefixes remain narrow line allowances. Negative-looking words outside
+  those forms do not whitelist a line.
+- The policy files retain their exact whole-path allowance. The acceptance
+  matrix instead requires both its exact path and an exact frozen `POLICY-01`
+  through `POLICY-06` or `POLICY-R1` through `POLICY-R6` table-row marker.
+  Filename alone is not an allowance.
+- The scanner consumes `rg --json` match records and normalizes absolute paths
+  under the repository before matching policy paths. Relative, drive-qualified
+  Windows, colon-bearing, and focused single-file inputs use the same parser.
+- Mutation sentences are lower bounds. The production-verdict regression now
+  adds category-level held-out verbs/orderings, negative and role-prefix bypass
+  attempts, an unmarked live acceptance-matrix mutation, and absolute-path
+  scans. The shared completion gate, known-failure list, worker prompt, matrix
+  template, and proof-sprint skill now require this evidence class.
+
+CI design-decision disposition:
+
+Retain the separate strict design-decision step added before this checkpoint.
+It is a blocking workflow invariant: claim-policy, scanner, gate, CI, and
+worker-guidance changes must carry a base-relative workflow decision rather
+than silently changing publication controls. Pull requests fetch and compare
+the target branch; push builds compare `HEAD~1`. The separate `if: always()`
+step reports a missing decision even if the broader repository gate fails
+first, and its nonzero verdict still fails the job.
+
+Rejected alternatives:
+
+- Add more verbs or word orders to the old three-token detector. That makes
+  the known fixtures the architecture and leaves the next unseen verb open.
+- Admit the whole acceptance matrix by filename. A future false publication
+  claim elsewhere in that durable file would become invisible.
+- Copy allowance logic into the regression. Two final-verdict implementations
+  could diverge while each test remained green.
+- Keep delimiter parsing and special-case a drive prefix. Absolute, relative,
+  colon-bearing, and focused inputs would still have separate semantics.
+- Revert the CI design-decision step or make it advisory. That would allow a
+  publication-control change to land without recording its rationale.
+- Fold design-decision checking only into the aggregate gate. The gate has no
+  event-specific base selection and would not independently report the process
+  failure after an earlier gate error.
+
+Operational and publication-facing consequences:
+
+The lint deliberately over-approximates suspicious prose and relies on narrow,
+reviewable role allowances; it remains a controlled claim-language check, not
+a natural-language theorem prover. A fresh false canonical premise cannot hide
+behind a new verb, the matrix filename, or a Windows drive colon. Truthful
+negation, compatibility history, and the proof-only sparse witness remain
+writable. Because this boundary protects the paper-facing distinction between
+the current route, legacy compatibility, and proof construction, both the
+claim verdict and changes to its workflow contract are blocking in CI.
+
+Category-level regression evidence:
+
+- 26 category, grammatical, and allowance-bypass fixtures receive the
+  production forbidden term's final strict failure verdict;
+- 15 truthful fixtures receive a final strict pass, including eight suspicious
+  lines admitted only by explicit negation or role allowance;
+- five path/context verdicts cover the policy path, marked matrix rows,
+  drive-qualified absolute input, absolute path normalization, and a fresh
+  unmarked matrix-file misuse;
+- the repository scan reports 581 classified hits and zero strict failures;
+- the base-relative strict design check covers 12 changed files; and
+- the full aggregate gate passes in 243.4 seconds with `GATE PASS`.
+
+The final local/remote candidate SHA remains a post-push lifecycle fact and is
+recorded in the acceptance ledger and handoff only after it is observed.

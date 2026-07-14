@@ -42,21 +42,34 @@ human-readable file when the interpretation changes.
 ## Controlled Claim-Language Lint
 
 The strict `2^128` rule is a controlled claim-language lint, not a complete
-natural-language semantic checker. It flags a bounded window containing all
-three suspicious token classes: the exponent, a canonical
-execution/route/query role, and activation/premise/threshold language. Narrow
-anchored allowances then admit explicit negation, historical notes,
-compatibility companions, and proof-only witness roles. `noncanonical` and
-`non-canonical` are distinct tokens and are not canonical-role matches.
-The only path allowances are this policy pair and W19's exact frozen acceptance
-matrix, which must quote rejected mutations as contract text.
+natural-language semantic checker. Its suspicion boundary has only two token
+classes: the exponent and standalone canonical execution/route/query language
+within one bounded line. It does not require an activation, premise, or
+threshold word. Narrow anchored allowances then admit explicit negation,
+historical notes, compatibility companions, and proof-only witness roles.
+`noncanonical` and `non-canonical` are distinct tokens and are not canonical-
+role matches.
+
+The only whole-path allowance is this policy pair. Rejected examples in W19's
+acceptance matrix are allowed only by the conjunction of that exact path and an
+exact frozen `POLICY-01`--`POLICY-06` or `POLICY-R1`--`POLICY-R6` table-row
+marker. A new unmarked claim in the same file remains a strict violation.
 
 The strict scanner's exit verdict is the policy result. Regression fixtures
 invoke `claim_drift_scan.ps1 -Strict` itself, so path and line allowances and
-the term's `strict` flag are tested together with its PCRE pattern. The
-aggregate gate and CI both run the repository scan in strict mode.
+the term's `strict` flag are tested together with its PCRE pattern. The scanner
+parses structured `rg --json` records and normalizes repository-local absolute
+paths before applying policy. Relative, drive-qualified Windows, colon-bearing,
+and focused single-file inputs therefore share one parser and verdict path.
+The aggregate gate and CI both run the repository scan in strict mode.
 
-The strict detector treats a canonical execution's 2^128 activation threshold as suspicious before role allowance; this policy-file example is admitted only by the exact policy-file path allowance.
+Finite fixtures are lower bounds, not a completeness claim. The regression
+therefore includes category-level holdouts, deceptive negative/role prefixes,
+the conjunctive matrix-row allowance, a fresh unmarked matrix-file misuse, and
+absolute single-file input. These test the stated controlled boundary and its
+allowance bypasses without claiming unrestricted semantic understanding.
+
+The strict detector treats a canonical execution's 2^128 mention as suspicious before role allowance; this policy-file example is admitted only by the exact policy-file path allowance.
 
 ## Initial Sensitive Claims
 
@@ -72,10 +85,10 @@ The strict detector treats a canonical execution's 2^128 activation threshold as
   Explicit legacy compatibility companions may retain that sufficient premise.
   Separately, W19's proof-only sparse-local nonvacuity witness uses symbolic
   `N = 2^128`; that witness is not an execution, payload, cost, runtime, or
-  paper-main-theorem premise. The broad bounded detector covers possessive,
-  activated-at, threshold, exponent-first, and spaced/unspaced forms. Narrow
-  role allowances keep explicit negation, historical records, compatibility
-  companions, and proof-only sparse-local witnesses accepted.
+  paper-main-theorem premise. The broad two-token detector covers possessive,
+  activated-at, threshold-free, exponent-first, and spaced/unspaced forms.
+  Narrow role allowances keep explicit negation, historical records,
+  compatibility companions, and proof-only sparse-local witnesses accepted.
 - `328` is the current checked transitional canonical reviewer bound; U3 owns
   any final explained constant.
 - `4144`, Ready-regime `118`, the zero-block route, and `196727` are

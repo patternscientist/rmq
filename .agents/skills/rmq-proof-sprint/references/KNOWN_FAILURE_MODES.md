@@ -64,6 +64,13 @@ obligation. Known examples include:
   from the returned relation, then advertising invocation-specific ownership;
 - declaring a remaining top-level or occurrence-level obligation "strictly
   stronger than assigned" without a coordinator-approved contract amendment.
+- treating a finite list of classifier mutations as an upper bound on the
+  forbidden category, so a nearby held-out verb or word order escapes;
+- testing a raw regex instead of the production final verdict, or granting a
+  whole-file allowance that lets a fresh forbidden claim pass outside the
+  quoted contract row;
+- parsing `file:line:text` by delimiters when drive-qualified or colon-bearing
+  paths are valid scanner inputs, causing focused scans to change semantics.
 
 For semantic coverage, liveness, ownership, dependency, and composition claims,
 expand the load-bearing definitions and identify which checked theorem fails

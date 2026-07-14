@@ -208,6 +208,26 @@ same-block, boundary, and interior queries. When a validity guard exists, also
 exercise reversed and out-of-bounds queries. Prefer kernel-checked examples or
 small proved lemmas. Do not use `native_decide` or `Lean.ofReduceBool`.
 
+### Classifier and linter completion
+
+A finite mutation fixture set establishes only a lower bound on what a
+classifier or linter rejects; it does not establish the category boundary.
+Before closing a classifier/linter row:
+
+- state the token, syntax, or structured-data category being classified;
+- add category-level holdouts that were not used to enumerate grammatical
+  branches in the implementation;
+- mutate each allowance boundary, including path-only, line-only, role-prefix,
+  negation, and other bypass contexts that apply;
+- exercise the production final verdict, including its strictness, path
+  normalization, and allowance logic, rather than a copied regex or helper;
+- cover parser shapes that can change classification, including focused
+  single-file and absolute-path input when the production tool accepts them.
+
+Known examples are minimum fixtures. Completion requires evidence that the
+declared category and its allowance boundaries, not merely those sentences,
+are gate-effective.
+
 ## 4. No Caveated Completion
 
 The following statements in a final self-audit normally mean the worker must

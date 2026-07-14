@@ -91,6 +91,12 @@ or actual invocation, preserve its position, multiplicity, instruction, and
 pre-state in the proposition. Plain `List.Mem` proves only event-value
 membership.
 
+For classifier and linter tasks, finite mutation fixtures are lower bounds.
+State the category boundary, add held-out category representatives and
+allowance-bypass mutations, and run them through the production final verdict.
+Include supported path/parser shapes such as focused single-file and absolute
+paths; a copied regex or filename-wide allowance is not completion evidence.
+
 ## 4. Work To The Named Target
 
 Use the smallest local theorem that unblocks the target, then consume it in the

@@ -45,3 +45,7 @@ Rules:
 12. A worker cannot narrow a row by calling residual work "strictly stronger"
     or future hardening. Record an explicit coordinator-approved contract
     amendment or keep the row open.
+13. For classifier/linter rows, finite fixtures are lower bounds. Freeze the
+    category boundary, add category-level holdouts and allowance-bypass
+    mutations, and test the production final verdict across supported path and
+    parser shapes. A copied regex or whole-file bypass cannot close the row.

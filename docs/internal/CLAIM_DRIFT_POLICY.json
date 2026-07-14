@@ -1,5 +1,5 @@
 {
-  "version": 9,
+  "version": 10,
   "updated": "2026-07-14",
   "terms": [
     {
@@ -44,11 +44,13 @@
     },
     {
       "id": "forbidden-2pow128-canonical-activation",
-      "pattern": "(?i)(?=.{0,240}2\\s*\\^\\s*128)(?=.{0,240}(?:^|[^A-Za-z-])canonical(?:\\s+reviewer)?\\s+(?:execution|route|query)\\b)(?=.{0,240}\\b(?:activat(?:e|es|ed|ing|ion)|premise|threshold)\\b).{0,240}",
-      "status": "forbidden-current-canonical-activation-suspicion-controlled-language-lint",
+      "pattern": "(?i)(?=.{0,240}2\\s*\\^\\s*128)(?=.{0,240}(?:^|[^A-Za-z-])canonical(?:\\s+reviewer)?\\s+(?:execution|route|query)\\b).{0,240}",
+      "status": "forbidden-current-canonical-role-and-2pow128-suspicion-controlled-language-lint",
       "strict": true,
-      "allowedPathRegex": "^(?:docs/internal/CLAIM_DRIFT_POLICY\\.(?:md|json)|docs/internal/W15_U2_CANONICAL_PAYLOAD_WHOLE_MACHINE_ACCEPTANCE_MATRIX\\.md)$",
-      "allowedLineRegex": "(?i)^\\s*(?:[-*]\\s*)?(?:no\\s+(?:current\\s+)?canonical\\b|(?:the\\s+)?canonical\\b.{0,100}\\bdoes\\s+not\\b|it\\s+is\\s+not\\s+true\\s+that\\b|historical(?:\\s+(?:note|record|compatibility))?\\s*[:,-]|compatibility(?:[- ]only|\\s+(?:companion|theorem|history))?\\s*[:,-]|proof[- ]only(?:\\s+(?:sparse-local\\s+)?witness)?\\s*[:,-])"
+      "allowedPathRegex": "^docs/internal/CLAIM_DRIFT_POLICY\\.(?:md|json)$",
+      "allowedLineRegex": "(?i)^\\s*(?:[-*]\\s*)?(?:(?:unlike\\b[^.;]{0,100},\\s*)?no\\s+(?:current\\s+)?canonical(?:\\s+reviewer)?\\s+(?:execution|route|query)\\b\\s*(?:theorem\\s+)?(?:uses?|has|requires?|needs?|takes?|depends?\\s+on)\\b[^.;]{0,100}2\\s*\\^\\s*128|(?:the\\s+)?canonical(?:\\s+reviewer)?\\s+(?:execution|route|query)\\b[^.;]{0,100}\\bdoes\\s+not\\s+(?:use|require|need|have|take|depend\\s+on)\\b[^.;]{0,100}2\\s*\\^\\s*128|(?:the\\s+)?canonical(?:\\s+reviewer)?\\s+(?:execution|route|query)\\b[^.;]{0,100}\\bhas\\s+no\\b[^.;]{0,100}2\\s*\\^\\s*128|(?:the\\s+)?canonical(?:\\s+reviewer)?\\s+(?:execution|route|query)\\b[^.;]{0,100}\\bis\\s+not\\s+2\\s*\\^\\s*128|it\\s+is\\s+not\\s+true\\s+that\\s+(?:the\\s+)?canonical(?:\\s+reviewer)?\\s+(?:execution|route|query)\\b[^.;]{0,100}2\\s*\\^\\s*128|2\\s*\\^\\s*128\\s+is\\s+not\\s+(?:required|needed|used)\\s+by\\b[^.;]{0,100}(?:^|[^A-Za-z-])canonical(?:\\s+reviewer)?\\s+(?:execution|route|query)\\b|historical(?:\\s+(?:note|record|compatibility))?\\s*[:,-]|compatibility(?:[- ]only|\\s+(?:companion|theorem|history))?\\s*[:,-]|proof[- ]only(?:\\s+(?:sparse-local\\s+)?witness)?\\s*[:,-])",
+      "allowedPathLinePathRegex": "^docs/internal/W15_U2_CANONICAL_PAYLOAD_WHOLE_MACHINE_ACCEPTANCE_MATRIX\\.md$",
+      "allowedPathLineRegex": "^\\s*\\|\\s*`POLICY-(?:0[1-6]|R[1-6])`\\s*\\|"
     },
     {
       "id": "all-size-196727",

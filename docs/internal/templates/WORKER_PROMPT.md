@@ -83,6 +83,12 @@ Acceptance contract:
   pre-execution word array and relate its query-independent width/capacity to
   input size. A component slice or unconstrained little-o width fact is not
   enough.
+- For classifier/linter work, treat named mutation fixtures as lower bounds,
+  not the acceptance boundary. Freeze the category being classified; add
+  category-level holdouts and allowance-bypass mutations; and exercise the
+  production final verdict, including strictness, path/line context, focused
+  single-file input, and absolute-path normalization where supported. Do not
+  validate a copied detector in place of the production classifier.
 
 Forbidden shortcuts:
 - No prose substitute for proof.
