@@ -156,6 +156,157 @@ def isSyntheticCostOnlyPrimitive : TraceEvent -> Prop
   | _ => False
 
 /--
+Weight used by the current charged-event model.
+
+The weight is defined on the interpreter's actual event type: attempted
+payload reads and executed word-rank/word-select primitives cost one, while the
+synthetic fallback marker costs zero.  Controller work is absent from
+`TraceEvent` and is therefore outside this weight rather than represented by a
+parallel zero-weight vocabulary.
+-/
+def chargedWeight : TraceEvent -> Nat
+  | readWord _ _ _ => 1
+  | wordRank _ _ _ => 1
+  | wordSelect _ _ _ => 1
+  | syntheticCostOnlyPrimitive => 0
+
+@[simp] theorem chargedWeight_readWord
+    (segment index : Nat) (word? : Option Word) :
+    chargedWeight (readWord segment index word?) = 1 := by
+  rfl
+
+@[simp] theorem chargedWeight_wordRank
+    (target : Bool) (limit result : Nat) :
+    chargedWeight (wordRank target limit result) = 1 := by
+  rfl
+
+@[simp] theorem chargedWeight_wordSelect
+    (target : Bool) (occurrence : Nat) (result : Option Nat) :
+    chargedWeight (wordSelect target occurrence result) = 1 := by
+  rfl
+
+@[simp] theorem chargedWeight_syntheticCostOnlyPrimitive :
+    chargedWeight syntheticCostOnlyPrimitive = 0 := by
+  rfl
+
+/-- Every non-synthetic interpreter event has unit charged weight. -/
+theorem chargedWeight_eq_one_of_not_synthetic
+    {event : TraceEvent}
+    (hnot : Not event.isSyntheticCostOnlyPrimitive) :
+    event.chargedWeight = 1 := by
+  cases event <;>
+    simp [chargedWeight, isSyntheticCostOnlyPrimitive] at hnot ⊢
+
+/-- A trace whose actual events all have unit weight sums to its length. -/
+theorem sum_chargedWeight_eq_length_of_forall_eq_one
+    (trace : List TraceEvent)
+    (hweight : forall event, event ∈ trace -> event.chargedWeight = 1) :
+    (trace.map chargedWeight).sum = trace.length := by
+  induction trace with
+  | nil => simp
+  | cons head tail ih =>
+      have hhead : head.chargedWeight = 1 := hweight head (by simp)
+      have htail : forall event, event ∈ tail -> event.chargedWeight = 1 := by
+        intro event hmem
+        exact hweight event (by simp [hmem])
+      simp [hhead, ih htail, Nat.add_comm]
+
+/--
+If a trace contains no synthetic fallback marker, its actual event-weight sum
+is exactly its length.
+-/
+theorem sum_chargedWeight_eq_length_of_no_synthetic
+    (trace : List TraceEvent)
+    (hnot : forall event, event ∈ trace ->
+      Not event.isSyntheticCostOnlyPrimitive) :
+    (trace.map chargedWeight).sum = trace.length := by
+  apply sum_chargedWeight_eq_length_of_forall_eq_one
+  intro event hmem
+  exact chargedWeight_eq_one_of_not_synthetic (hnot event hmem)
+
+/-- The charged-event weight sum never exceeds the event-list length. -/
+theorem sum_chargedWeight_le_length (trace : List TraceEvent) :
+    (trace.map chargedWeight).sum <= trace.length := by
+  induction trace with
+  | nil => simp
+  | cons head tail ih =>
+      cases head with
+      | readWord segment index word? =>
+          simpa [Nat.add_comm] using Nat.succ_le_succ ih
+      | wordRank target limit result =>
+          simpa [Nat.add_comm] using Nat.succ_le_succ ih
+      | wordSelect target occurrence result =>
+          simpa [Nat.add_comm] using Nat.succ_le_succ ih
+      | syntheticCostOnlyPrimitive =>
+          simp only [List.map_cons, chargedWeight_syntheticCostOnlyPrimitive,
+            List.sum_cons, Nat.zero_add, List.length_cons]
+          exact Nat.le_trans ih (Nat.le_succ tail.length)
+
+/--
+Any occurrence of the synthetic fallback marker makes the actual weight sum
+strictly smaller than the event-list length, irrespective of its position.
+-/
+theorem sum_chargedWeight_lt_length_of_synthetic_mem
+    (trace : List TraceEvent)
+    (hmem : syntheticCostOnlyPrimitive ∈ trace) :
+    (trace.map chargedWeight).sum < trace.length := by
+  induction trace with
+  | nil => simp at hmem
+  | cons head tail ih =>
+      simp only [List.mem_cons] at hmem
+      rcases hmem with hhead | htail
+      · subst head
+        simp only [List.map_cons, chargedWeight_syntheticCostOnlyPrimitive,
+          List.sum_cons, Nat.zero_add, List.length_cons]
+        exact Nat.lt_succ_of_le (sum_chargedWeight_le_length tail)
+      · cases head with
+        | readWord segment index word? =>
+            simpa [Nat.add_comm] using Nat.succ_lt_succ (ih htail)
+        | wordRank target limit result =>
+            simpa [Nat.add_comm] using Nat.succ_lt_succ (ih htail)
+        | wordSelect target occurrence result =>
+            simpa [Nat.add_comm] using Nat.succ_lt_succ (ih htail)
+        | syntheticCostOnlyPrimitive =>
+            simp only [List.map_cons, chargedWeight_syntheticCostOnlyPrimitive,
+              List.sum_cons, Nat.zero_add, List.length_cons]
+            exact Nat.lt_succ_of_le (sum_chargedWeight_le_length tail)
+
+/-- A trace containing a synthetic marker cannot retain weight-sum equality. -/
+theorem sum_chargedWeight_ne_length_of_synthetic_mem
+    (trace : List TraceEvent)
+    (hmem : syntheticCostOnlyPrimitive ∈ trace) :
+    (trace.map chargedWeight).sum ≠ trace.length :=
+  Nat.ne_of_lt (sum_chargedWeight_lt_length_of_synthetic_mem trace hmem)
+
+/--
+The synthetic fallback constructor cannot be classified as an actual payload
+read, word-rank primitive, or word-select primitive.
+-/
+theorem syntheticCostOnlyPrimitive_not_readWord_or_wordRank_or_wordSelect :
+    Not
+      ((Exists fun segment : Nat => Exists fun index : Nat =>
+          Exists fun word? : Option Word =>
+            syntheticCostOnlyPrimitive = readWord segment index word?) \/
+       (Exists fun target : Bool => Exists fun limit : Nat =>
+          Exists fun result : Nat =>
+            syntheticCostOnlyPrimitive = wordRank target limit result) \/
+       (Exists fun target : Bool => Exists fun occurrence : Nat =>
+          Exists fun result : Option Nat =>
+            syntheticCostOnlyPrimitive = wordSelect target occurrence result)) := by
+  simp
+
+/--
+Counterfactual check: inserting a synthetic fallback event into a trace whose
+weight sum equals its length necessarily breaks that equality.
+-/
+theorem syntheticCostOnlyPrimitive_cons_weight_sum_ne_length
+    (trace : List TraceEvent)
+    (htrace : (trace.map chargedWeight).sum = trace.length) :
+    ((syntheticCostOnlyPrimitive :: trace).map chargedWeight).sum ≠
+      (syntheticCostOnlyPrimitive :: trace).length := by
+  simp [htrace]
+
+/--
 Zero-cost control is deliberately not represented as a trace event. Branching,
 register lookup, and expression evaluation may affect which later events occur,
 but they do not themselves appear in the charged trace.

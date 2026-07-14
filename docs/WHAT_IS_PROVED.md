@@ -85,7 +85,11 @@ aliases.
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe` | The uniform canonical final trace has the checked transitional U2 bound `328`. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe` | The unchanged uniform canonical final trace has the principled charged-trace bound `76`. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostEqTraceLength` | The modeled cost is exactly the emitted charged-event trace length. |
-| `RMQ.Headlines.succinctRMQChargedTraceCostAlgebra` | Named U3 component algebra and E1-facing cost interface. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultEventReadWordOrWordRankOrWordSelect` | Every actual emitted canonical event is a payload read, word-rank, or word-select event. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultChargedWeightSumEqCost` | The direct actual-event weight sum equals the `Costed` cost of the same execution. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultChargedWeightSumLe76` | The weighted actual emitted trace is at most `76`. |
+| `RMQ.Headlines.succinctRMQSyntheticCostOnlyPrimitiveMemBreaksChargedWeightLengthEquality` | A synthetic event anywhere in a trace breaks weight-sum/length equality. |
+| `RMQ.Headlines.succinctRMQChargedTraceCostAlgebra` | Named U3 component cap; it is not a substitute small-step instruction interface. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical` | Genuine supplied flat-physical execution refines canonical logical execution, preserving decoded result, cost, ordered reads (including failures and repetitions), and footprint. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint` | Agreement on the first physical execution's consumed ordered footprint determines the complete physical execution. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalValueFromSuppliedStore` | The flat physical `.value` is exactly the existing supplied-store evaluator `.value` after checked address translation. |

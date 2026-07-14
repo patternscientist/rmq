@@ -7159,6 +7159,72 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_no_syntheticC
       shape left right concreteBPNativeSuccinctRMQWholeQueryProgram
       WholeQueryState.empty
 
+/--
+Every event emitted by the accepted canonical whole-query execution is an
+actual attempted payload read, executed word-rank primitive, or executed
+word-select primitive.  Unlike `isReadWord \/ isWordPrimitive`, this explicit
+classification excludes the synthetic fallback constructor.
+-/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_readWord_or_wordRank_or_wordSelect
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    forall event,
+      event ∈
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+            shape left right).trace ->
+        (Exists fun segment : Nat => Exists fun index : Nat =>
+          Exists fun word? : Option WordRAM.Word =>
+            event = WordRAM.TraceEvent.readWord segment index word?) \/
+        (Exists fun target : Bool => Exists fun limit : Nat =>
+          Exists fun result : Nat =>
+            event = WordRAM.TraceEvent.wordRank target limit result) \/
+        (Exists fun target : Bool => Exists fun occurrence : Nat =>
+          Exists fun result : Option Nat =>
+            event = WordRAM.TraceEvent.wordSelect target occurrence result) := by
+  intro event hmem
+  have hnot :=
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_no_syntheticCostOnlyPrimitive
+      shape left right event hmem
+  cases event with
+  | readWord segment index word? =>
+      exact Or.inl ⟨segment, index, word?, rfl⟩
+  | wordRank target limit result =>
+      exact Or.inr (Or.inl ⟨target, limit, result, rfl⟩)
+  | wordSelect target occurrence result =>
+      exact Or.inr (Or.inr ⟨target, occurrence, result, rfl⟩)
+  | syntheticCostOnlyPrimitive =>
+      simp [WordRAM.TraceEvent.isSyntheticCostOnlyPrimitive] at hnot
+
+/-- Every actually emitted canonical event has unit current-model weight. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_chargedWeight_eq_one
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    forall event,
+      event ∈
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+            shape left right).trace ->
+        event.chargedWeight = 1 := by
+  intro event hmem
+  rcases
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_readWord_or_wordRank_or_wordSelect
+        shape left right event hmem with hread | hrank | hselect
+  · rcases hread with ⟨segment, index, word?, rfl⟩
+    simp
+  · rcases hrank with ⟨target, limit, result, rfl⟩
+    simp
+  · rcases hselect with ⟨target, occurrence, result, rfl⟩
+    simp
+
+/-- The synthetic fallback marker is absent from the actual canonical trace. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_syntheticCostOnlyPrimitive_not_mem
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    WordRAM.TraceEvent.syntheticCostOnlyPrimitive ∉
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace := by
+  intro hmem
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_no_syntheticCostOnlyPrimitive
+      shape left right WordRAM.TraceEvent.syntheticCostOnlyPrimitive hmem
+      (by simp [WordRAM.TraceEvent.isSyntheticCostOnlyPrimitive])
+
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_noFiniteSmallInteriorSuccessfulRead_of_ready
     (shape : Cartesian.CartesianShape)
     (hready : SuccinctClose.concreteBPRelativeRmmInteriorReady shape)
@@ -8565,54 +8631,6 @@ theorem concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted_refines_
                   WholeQueryState.setNat, Costed.bind, Costed.map,
                   Costed.pure]
 
-/--
-Operation vocabulary for the accepted U2 execution and the downstream E1
-fully charged small-step simulation.  The first three constructors are the
-only events charged by the current trace model.
--/
-inductive CanonicalRMQCostOperation where
-  | payloadWordRead
-  | wordRank
-  | wordSelect
-  | instructionDispatch
-  | inputAccess
-  | registerAccess
-  | optionBranch
-  | natArithmetic
-  | fixedWidthDecode
-  | candidateMerge
-  | localBPScan
-  | traceAssembly
-  | validRangeGuard
-  deriving DecidableEq
-
-/-- Current U2 trace weight; E1 can refine this map without changing the vocabulary. -/
-def canonicalRMQCurrentTraceWeight : CanonicalRMQCostOperation -> Nat
-  | .payloadWordRead | .wordRank | .wordSelect => 1
-  | .instructionDispatch | .inputAccess | .registerAccess | .optionBranch
-  | .natArithmetic | .fixedWidthDecode | .candidateMerge | .localBPScan
-  | .traceAssembly | .validRangeGuard => 0
-
-def canonicalRMQChargedTraceOperations : List CanonicalRMQCostOperation :=
-  [.payloadWordRead, .wordRank, .wordSelect]
-
-def canonicalRMQCurrentlyUnchargedControllerOperations :
-    List CanonicalRMQCostOperation :=
-  [.instructionDispatch, .inputAccess, .registerAccess, .optionBranch,
-    .natArithmetic, .fixedWidthDecode, .candidateMerge, .localBPScan,
-    .traceAssembly, .validRangeGuard]
-
-theorem canonicalRMQChargedTraceOperationWeights_eq :
-    canonicalRMQChargedTraceOperations.map canonicalRMQCurrentTraceWeight =
-      [1, 1, 1] := by
-  rfl
-
-theorem canonicalRMQCurrentlyUnchargedControllerOperationWeights_eq :
-    canonicalRMQCurrentlyUnchargedControllerOperations.map
-        canonicalRMQCurrentTraceWeight =
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] := by
-  rfl
-
 /-- Named component algebra for the accepted canonical charged trace. -/
 structure CanonicalRMQChargedTraceCostAlgebra where
   selectClose : Nat
@@ -9180,6 +9198,71 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_eq_trace
         (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
           shape left right).trace.length := by
   rfl
+
+/--
+The sum of weights on the events actually emitted by the canonical execution
+is exactly that trace's length.
+-/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_eq_trace_length
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace.map WordRAM.TraceEvent.chargedWeight).sum =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace.length := by
+  apply WordRAM.TraceEvent.sum_chargedWeight_eq_length_of_forall_eq_one
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_chargedWeight_eq_one
+      shape left right
+
+/--
+The actual event-weight sum equals the `Costed.cost` of the same canonical
+execution.
+-/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_eq_cost
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace.map WordRAM.TraceEvent.chargedWeight).sum =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+        shape left right).cost := by
+  calc
+    ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace.map WordRAM.TraceEvent.chargedWeight).sum =
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace.length :=
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_eq_trace_length
+        shape left right
+    _ = (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+          shape left right).cost := by
+      symm
+      exact
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_eq_trace_length
+          shape left right
+
+/-- The weighted actual trace is bounded by the named principled U3 cap. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_le_principledAllSizeChargedTrace
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace.map WordRAM.TraceEvent.chargedWeight).sum <=
+      concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost := by
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_eq_cost]
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace
+      shape left right
+
+/-- The weighted actual canonical trace has the checked literal bound `76`. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_le_76
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace.map WordRAM.TraceEvent.chargedWeight).sum <= 76 := by
+  calc
+    ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace.map WordRAM.TraceEvent.chargedWeight).sum <=
+        concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost :=
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_le_principledAllSizeChargedTrace
+        shape left right
+    _ = 76 :=
+      concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq
 
 /-- The canonical transitional whole-query cap computes to 328 modeled ticks. -/
 theorem concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq :

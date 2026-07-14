@@ -145,17 +145,24 @@ expose the direct supplied-store transfer theorems for counted flat-payload
 backing and modeled cost under footprint agreement.
 The current final global trace has the uniform canonical charged-trace bound
 `SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost = 76`.
-The checked sum is `2*13 + (2*4 + 2*4 + 30) + 4`; exact cost is emitted trace
-length, with no padding. The separately named transitional U2 sum remains
-`328`. Footprint-agreeing supplied-store and full-model aliases transfer the
+The checked sum is `2*13 + (2*4 + 2*4 + 30) + 4`. On the actual canonical
+trace, every event is proved to be `readWord`, `wordRank`, or `wordSelect`, the
+synthetic fallback is absent, and the direct `WordRAM.TraceEvent.chargedWeight`
+sum equals both emitted trace length and the `Costed` cost of the same
+execution before being bounded by `76`. A synthetic event cannot satisfy that
+classification and, wherever inserted, makes the weight sum differ from trace
+length. The separately named transitional U2 sum remains `328`.
+Footprint-agreeing supplied-store and full-model aliases transfer the
 principled bound. Ready `118`, route-split, `4144`, and `196727` remain
 compatibility rows.
 
 This accounting charges payload reads and word-rank/select primitives only.
 Controller dispatch, arithmetic, branching, decoding, local scanning, and
-candidate merging are explicitly inventoried as zero-weight operations for
-the current model. Thus `76` is not a conventional word-RAM runtime theorem;
-E1 must reuse the named operation vocabulary in a fully charged simulation.
+candidate merging are documentary uncharged omissions because they are not
+events in the current trace. U3 does not predeclare them as a checked
+instruction vocabulary. Thus `76` is not a conventional word-RAM runtime
+theorem; E1 must define a richer machine and prove that it simulates this same
+execution.
 
 The whole-query footprint remains a safe final-layout overapproximation. Inside
 the canonical interior component, the stronger dynamic footprint is exact: it

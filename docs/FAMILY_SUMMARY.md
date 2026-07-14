@@ -33,15 +33,20 @@ input-size activation test. The valid middle range supplied by close/LCA then
 costs at most `18` within one macro, `20` on adjacent/left-middle routes, and
 `30` on the six-span cross-macro route.
 
-The current model charges attempted payload-word reads and word-rank/select
-primitives. Instruction dispatch, input/register access, option tests,
-arithmetic (including division/modulo/logarithms), fixed-width decoding, local
-BP scanning, candidate merging, trace assembly, and the public validity guard
-are uncharged. `CanonicalRMQCostOperation` and
-`canonicalRMQCurrentTraceWeight` make that inventory a named E1 simulation
-interface. Therefore `76` is not a conventional word-RAM theorem, a
-`query(serializedPayload,left,right)` theorem, or a preprocessing theorem.
-Those remain E1/M1/construction obligations.
+The current model charges actual emitted `WordRAM.TraceEvent` values directly:
+`readWord`, `wordRank`, and `wordSelect` have weight one, while the synthetic
+fallback marker has weight zero. The canonical whole-query trace proves that
+every emitted event is one of the three genuine constructors, that no
+synthetic marker occurs, and that the weight sum equals both trace length and
+the `Costed` cost of the same execution before being bounded by `76`.
+Instruction dispatch, input/register access, option tests, arithmetic
+(including division/modulo/logarithms), fixed-width decoding, local BP
+scanning, candidate merging, trace assembly, and the public validity guard are
+documentary uncharged omissions, not a checked controller-operation inventory.
+Therefore `76` is not a conventional word-RAM theorem, a
+`query(serializedPayload,left,right)` theorem, or a preprocessing theorem. E1
+must define and simulate a richer machine; M1 and construction obligations
+remain separate.
 
 ## U2 Occurrence-Provenance Candidate (W19, 2026-07-13)
 

@@ -2091,12 +2091,13 @@ Scope: U3 roadmap state and the current-versus-transitional cost claim policy.
 Decision:
 
 The claim-drift policy treats `76` as the current canonical charged-trace cost
-only after the named algebra, executable-trace bound, supplied-store transfer,
-final adequacy theorem, `List Int` theorem, headline aliases, and paper root all
-consume the same U2 execution. The policy retains `328` as an explicitly
-historical transitional token. Frozen U2 matrices and audits are not rewritten;
-live roadmap and claim surfaces identify U3 as candidate-complete pending the
-normal coordinator acceptance boundary.
+only after the named algebra, direct actual-event weight/length/`Costed` bridge,
+executable-trace bound, supplied-store transfer, final adequacy theorem,
+`List Int` theorem, headline aliases, and paper root all consume the same U2
+execution. The policy retains `328` as an explicitly historical transitional
+token. Frozen U2 matrices and audits are not rewritten; live roadmap and claim
+surfaces identify U3 as candidate-complete pending the normal coordinator audit
+boundary.
 
 Context:
 
@@ -2116,11 +2117,12 @@ Options considered:
 
 Rationale:
 
-The third option matches the actual proof boundary. U3 closes cost derivation
-inside the current explicit trace model, while E1 remains responsible for a
-fully charged controller semantics. Preserving frozen evidence keeps the audit
-trail truthful; role-qualified transitional statements remain reviewable
-without competing with the current claim.
+The third option matches the actual proof boundary. U3 is candidate-complete
+for cost derivation inside the current explicit trace model, while E1 remains
+responsible for defining and simulating fully charged controller semantics.
+Preserving frozen evidence keeps the audit trail truthful; role-qualified
+transitional statements remain reviewable without competing with the current
+claim.
 
 Consequences:
 
@@ -2130,8 +2132,11 @@ Consequences:
   and publication-facing documents agree.
 - No policy token claims `query(serializedPayload, left, right)`, preprocessing
   complexity, or conventional word-RAM constant time.
-- The charged/uncharged operation inventory is part of the completion evidence
-  and is the named simulation interface handed to E1.
+- Completion evidence uses `WordRAM.TraceEvent.chargedWeight` on the actual
+  emitted trace, with checked genuine-event classification, no-synthetic,
+  weight-sum/length equality, weight-sum/`Costed` equality, and the `76` bound.
+  Controller omissions remain documentary; U3 does not hand E1 a parallel
+  instruction vocabulary.
 
 Evidence:
 
@@ -2139,6 +2144,9 @@ Evidence:
   numeric equality `76`.
 - `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace`
   connects that algebra to the accepted executable trace.
+- `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_eq_cost`
+  and `..._chargedWeight_sum_le_76` connect actual emitted events to the same
+  `Costed` execution and final cap.
 - `RMQ.Headlines.succinctRMQQueryCostEq` and `RMQPaper` expose the new default.
 - `docs/internal/W21_U3_PRINCIPLED_ALLSIZE_COST_ACCEPTANCE_MATRIX.md` records the
   requirement mapping, the old-to-final decomposition, and the verification

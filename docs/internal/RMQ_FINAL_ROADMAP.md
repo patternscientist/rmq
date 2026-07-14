@@ -196,10 +196,13 @@ The unchanged uniform route now has the principled checked charged-trace sum
 `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq` and bounded
 against the global trace by
 `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace`.
-`...cost_eq_trace_length` supplies exact accounting. The old `328` theorem is
-retained as an explicitly transitional comparison. Ready `118`, route-split,
-`4144`, and `196727` remain compatibility facts outside the current reviewer
-explanation.
+The actual event bridge classifies each emitted event as `readWord`, `wordRank`,
+or `wordSelect`, excludes the synthetic fallback, and proves that direct
+`WordRAM.TraceEvent.chargedWeight` sums to both trace length and the `Costed`
+cost of the same execution before being bounded by `76`. The old `328` theorem
+is retained as an explicitly transitional comparison. Ready `118`,
+route-split, `4144`, and `196727` remain compatibility facts outside the
+current reviewer explanation.
 
 Acceptance:
 
@@ -207,16 +210,19 @@ Acceptance:
   fringe, and interior-directory costs;
 - **Candidate satisfied:** there is no input-size compatibility threshold in
   the public route; macro crossing is an execution-derived structural premise;
-- **Candidate satisfied:** exact trace length and upper-bound surfaces describe
-  the same global execution;
+- **Candidate satisfied:** genuine-event classification, no-synthetic evidence,
+  direct event weights, trace length, `Costed` cost, and the upper bound
+  describe the same global execution;
 - **Candidate satisfied:** final adequacy, supplied-store footprint transfer,
   `List Int`, paper/root aliases, examples, and numeric inventories consume the
   new theorem.
 
 Scope boundary: U3 is only a theorem in the current charged-trace model. It
 does not prove serialized-payload querying, preprocessing complexity, or
-conventional word-RAM complexity. Its `CanonicalRMQCostOperation` inventory is
-the simulation interface for E1.
+conventional word-RAM complexity. Controller dispatch, arithmetic, branching,
+decoding, local scans, and merging remain documentary uncharged omissions. U3
+does not predeclare a replacement instruction vocabulary; E1 must define its
+richer machine and prove a simulation.
 
 ### M1. Make Machine Adequacy Reviewer-Native
 
@@ -252,8 +258,9 @@ Mechanical movement and semantic strengthening should be separate commits.
 
 ### E1. Add A Small-Step Reference Word-RAM Machine
 
-Status: first-order controller and U3 cost vocabulary exist; a fully charged
-small-step simulation remains.
+Status: first-order controller and U3 actual-event accounting exist; E1 must
+define a richer instruction semantics and prove a fully charged small-step
+simulation.
 
 Define the smallest familiar instruction semantics needed by the existing
 first-order query controller. Prove result agreement and a step/trace-cost

@@ -573,6 +573,34 @@ abbrev succinctRMQWholeQueryGlobalWordTraceCostedCostLe :=
 abbrev succinctRMQWholeQueryGlobalWordTraceCostedCostEqTraceLength :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_eq_trace_length
 
+/-- Every event in the accepted trace is an actual read, word-rank, or word-select. -/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultEventReadWordOrWordRankOrWordSelect :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_readWord_or_wordRank_or_wordSelect
+
+/-- The synthetic fallback marker is absent from the accepted trace. -/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultSyntheticCostOnlyPrimitiveNotMem :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_syntheticCostOnlyPrimitive_not_mem
+
+/-- Actual event weights sum exactly to the accepted trace length. -/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultChargedWeightSumEqTraceLength :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_eq_trace_length
+
+/-- Actual event weights sum exactly to the `Costed.cost` of the same execution. -/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultChargedWeightSumEqCost :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_eq_cost
+
+/-- The weighted actual trace has the checked all-size bound `76`. -/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultChargedWeightSumLe76 :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_le_76
+
+/-- A synthetic marker cannot be classified as a real charged event. -/
+abbrev succinctRMQSyntheticCostOnlyPrimitiveNotReadWordOrWordRankOrWordSelect :=
+  RMQ.WordRAM.TraceEvent.syntheticCostOnlyPrimitive_not_readWord_or_wordRank_or_wordSelect
+
+/-- Any synthetic occurrence breaks weight-sum/trace-length equality. -/
+abbrev succinctRMQSyntheticCostOnlyPrimitiveMemBreaksChargedWeightLengthEquality :=
+  RMQ.WordRAM.TraceEvent.sum_chargedWeight_ne_length_of_synthetic_mem
+
 /--
 Under agreement with the concrete global store on the safe final layout
 footprint, the canonical modeled cost bound transfers to the supplied-store
@@ -608,15 +636,9 @@ abbrev succinctRMQQueryCost := RMQ.SuccinctClassic.queryCost
 abbrev succinctRMQQueryCostEq :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq
 
-/-- Operation-aligned cost algebra for U3 and the downstream E1 simulation. -/
+/-- Operation-aligned component cap algebra for the current charged trace. -/
 abbrev succinctRMQChargedTraceCostAlgebra :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra
-
-abbrev succinctRMQChargedTraceOperations :=
-  RMQ.SuccinctFinal.canonicalRMQChargedTraceOperations
-
-abbrev succinctRMQCurrentlyUnchargedControllerOperations :=
-  RMQ.SuccinctFinal.canonicalRMQCurrentlyUnchargedControllerOperations
 
 /-- Compatibility-only route-split cost constant `4144`. -/
 abbrev succinctRMQCompatibility4144QueryCost :=

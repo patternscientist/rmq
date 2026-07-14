@@ -2171,7 +2171,7 @@ Evidence:
 
 ## DD-20260714-007: derive U3 from charged operations in the accepted U2 execution
 
-Status: Candidate accepted on the U3 worker branch; coordinator exact-commit
+Status: Candidate complete on the U3 worker branch; coordinator exact-commit
 reconstruction and blind audit remain separate.
 
 Context:
@@ -2198,11 +2198,16 @@ Decision:
 - Set the paper-facing charged-trace cost to
   `2*13 + (2*4 + 2*4 + 30) + 4 = 76`. Retain `328` only under names containing
   `Transitional`; do not add work to preserve it.
-- Expose `CanonicalRMQCostOperation` and `canonicalRMQCurrentTraceWeight` as
-  E1's simulation interface. Payload reads and word-rank/select primitives
-  have weight one. Controller dispatch, input/register access, arithmetic,
-  branching, decoding, local scanning, candidate merging, trace assembly, and
-  validity checking have weight zero in the present model.
+- Define `WordRAM.TraceEvent.chargedWeight` directly on the actual emitted-event
+  type: payload reads and word-rank/select primitives have weight one, while
+  the synthetic fallback has weight zero. For the canonical whole-query trace,
+  prove genuine-event classification, no synthetic event, weight sum equal to
+  trace length, weight sum equal to the `Costed` cost of the same execution,
+  and the resulting bound by `76`.
+- Keep controller dispatch, input/register access, arithmetic, branching,
+  decoding, local scanning, candidate merging, trace assembly, and validity
+  checking documentary and uncharged. They are not constructors of the current
+  trace, so U3 does not make them a checked instruction inventory.
 - Consume `76` through the actual global trace, supplied-store footprint
   transfer, final adequacy, ordinary-list API, headlines, paper root, examples,
   and axiom inventories. Preserve the U2 theorem and audit artifacts as
@@ -2216,6 +2221,12 @@ Rejected alternatives:
 - Add a Ready/Active or numeric input-size activation threshold to obtain
   one-word fields.
 - Swap in a new payload, alternate query execution, or semantic answer table.
+- Introduce a parallel `CanonicalRMQCostOperation` type with hand-written
+  charged and uncharged lists. Such a vocabulary is disconnected from the
+  evaluator and can classify documentary controller work without proving that
+  the accepted execution emits or simulates those operations. E1 must instead
+  define its own richer instruction semantics and prove a simulation of the
+  current execution.
 - Claim absolute optimality below `76` without a coexistence/lower-witness
   theorem. U3 proves the tight operation-wise compositional cap established by
   the current semantics, not global minimality among all correlated queries.
@@ -2226,8 +2237,11 @@ Consequences:
 
 The public constant is `76`; `328`, `4144`, `118`, and `196727` remain
 transitional or compatibility/history. Exact modeled cost is the emitted trace
-length, but controller work remains explicitly uncharged. E1 must refine the
-named operation weights in a fully charged small-step machine. M1 must still
+length, and the direct actual-event weight sum is checked equal to both that
+length and the same `Costed` cost. A synthetic event cannot satisfy the genuine
+classification and would break the weight-sum/length equality. Controller work
+remains explicitly documentary and uncharged. E1 must define a fully charged
+small-step machine and prove its simulation. M1 must still
 connect querying to a serialized payload representation, and construction
 work must still account for preprocessing.
 

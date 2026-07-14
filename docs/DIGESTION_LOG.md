@@ -1004,18 +1004,32 @@ so `328-252=76`. Fringes have no slack. This is a tight compositional cap for
 the proved component inequalities. U3 does not prove that one query realizes
 all maxima simultaneously or that no correlated global cap below 76 exists.
 
-Live assumptions are the current trace weights: attempted payload-word reads,
-word-rank, and word-select each cost one. Instruction dispatch,
-input/register access, arithmetic, option/branch control, fixed-width decode,
-local BP scan, candidate merge, trace assembly, and validity checking cost
-zero. `CanonicalRMQCostOperation` records both inventories so E1 can give them
-nonzero small-step costs. The result is not compiled Lean time, conventional
-word-RAM complexity, a serialized-payload query theorem, or preprocessing
-complexity.
+Live assumptions are the current trace weights: actual emitted
+`WordRAM.TraceEvent.readWord`, `.wordRank`, and `.wordSelect` values each cost
+one, while `.syntheticCostOnlyPrimitive` costs zero. The canonical execution
+now proves that every emitted event is genuine, no synthetic event occurs, and
+the direct weight sum equals both trace length and the `Costed` cost of the same
+execution. Instruction dispatch, input/register access, arithmetic,
+option/branch control, fixed-width decode, local BP scan, candidate merge,
+trace assembly, and validity checking remain documentary uncharged omissions;
+they are not a checked parallel instruction vocabulary. The result is not
+compiled Lean time, conventional word-RAM complexity, a serialized-payload
+query theorem, or preprocessing complexity.
 
 A skeptical graduate student should next ask two different questions. First,
-can E1 simulate this same execution while charging every controller operation
-and preserve a constant bound? Second, can a coexistence theorem or concrete
+can E1 define richer instruction semantics, simulate this same execution while
+charging every controller operation, and preserve a constant bound? Second,
+can a coexistence theorem or concrete
 witness determine whether 76 is globally minimal rather than merely the best
 clean operation-wise cap presently proved? Neither question reopens U3's
 charged-trace theorem.
+
+Coordinator reconstruction rejected the first candidate's hand-written
+controller-operation vocabulary because no evaluator produced it. The revised
+U3 evidence uses the actual `WordRAM.TraceEvent` type only. As a counterfactual
+sanity check, the synthetic constructor cannot satisfy the genuine-event
+classification, and its occurrence anywhere forces the weight sum strictly
+below trace length. Thus event classification, synthetic exclusion, weighted
+trace, trace length, `Costed` cost, and the `76` cap now describe one checked
+computation. This is candidate-complete evidence; blind exact-commit audit
+remains coordinator-owned.

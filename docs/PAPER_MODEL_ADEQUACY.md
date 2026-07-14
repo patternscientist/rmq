@@ -192,8 +192,14 @@ The current reviewer-route modeled bound is the principled charged-trace sum
 and evaluated by
 `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`. The sum is
 `2*select13 + (2*rank4 + 2*fringe4 + interior30) + rank4`.
-`...cost_eq_trace_length` ties the modeled cost to the emitted trace. The
-transitional `328` theorem remains for U2 comparison.
+The operational bridge classifies every event in the actual canonical trace as
+`readWord`, `wordRank`, or `wordSelect`, excludes
+`syntheticCostOnlyPrimitive`, and proves that the direct
+`WordRAM.TraceEvent.chargedWeight` sum equals both trace length and the
+`Costed` cost of the same execution. The weighted trace is then bounded by
+`76`. A counterfactual theorem proves that inserting a synthetic event anywhere
+would make the weight sum strictly smaller than trace length. The transitional
+`328` theorem remains for U2 comparison.
 
 The supplied-store and full-model companions transfer the same `76` bound
 under final footprint agreement. The older `118` Ready theorem, route-split
@@ -204,11 +210,13 @@ that the model's counted reads are payload-backed. It is not a claim that this
 Lean code is production serialization, optimized machine code, or a verified
 CPU implementation.
 
-Currently charged operations are attempted payload-word reads and word-rank /
-word-select primitives. The named E1 inventory assigns zero weight to
-instruction dispatch, inputs/registers, arithmetic, option tests, branching,
-fixed-width decode, local BP scan, candidate merge, trace assembly, and the
-validity guard. U3 therefore does not prove conventional word-RAM complexity.
+Currently charged events are attempted payload-word reads and word-rank /
+word-select primitives. Instruction dispatch, inputs/registers, arithmetic,
+option tests, branching, fixed-width decode, local BP scan, candidate merge,
+trace assembly, and the validity guard do not appear in the current trace and
+remain documentary uncharged omissions. U3 does not define a substitute
+controller vocabulary or prove conventional word-RAM complexity. E1 must
+define its richer instruction semantics and prove a simulation separately.
 
 ## Non-Claims
 

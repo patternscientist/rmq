@@ -18,9 +18,10 @@ Reviewer-facing adequacy packet for the final BP-native succinct RMQ query
 trace.  The fields collect the existing theorem surfaces that explain what the
 modeled constant-query claim means: the `Costed` result is exactly the
 projection of a `WordRAM.TraceResult`, the trace refines the interpreted
-whole-query program, its events are reads or word primitives, successful reads
-are backed by counted flat payload words, event data are bounded, and no event
-is the synthetic cost-only marker.
+whole-query program, every emitted event is an actual read/rank/select event,
+the actual event-weight sum equals both trace length and `Costed.cost`,
+successful reads are backed by counted flat payload words, event data are
+bounded, and no event is the synthetic cost-only marker.
 -/
 structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
     (shape : Cartesian.CartesianShape) (left right : Nat) : Prop where
@@ -38,12 +39,33 @@ structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
     (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
       shape left right).cost <=
         concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost
-  event_read_or_primitive :
+  event_readWord_or_wordRank_or_wordSelect :
     forall event,
       event ∈
           (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
             shape left right).trace ->
-        event.isReadWord \/ event.isWordPrimitive
+        (Exists fun segment : Nat => Exists fun index : Nat =>
+          Exists fun word? : Option WordRAM.Word =>
+            event = WordRAM.TraceEvent.readWord segment index word?) \/
+        (Exists fun target : Bool => Exists fun limit : Nat =>
+          Exists fun result : Nat =>
+            event = WordRAM.TraceEvent.wordRank target limit result) \/
+        (Exists fun target : Bool => Exists fun occurrence : Nat =>
+          Exists fun result : Option Nat =>
+            event = WordRAM.TraceEvent.wordSelect target occurrence result)
+  chargedWeight_sum_eq_trace_length :
+    ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace.map WordRAM.TraceEvent.chargedWeight).sum =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace.length
+  chargedWeight_sum_eq_cost :
+    ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace.map WordRAM.TraceEvent.chargedWeight).sum =
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+        shape left right).cost
+  chargedWeight_sum_le_76 :
+    ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace.map WordRAM.TraceEvent.chargedWeight).sum <= 76
   matches_global_read_store :
     forall event,
       event ∈
@@ -259,7 +281,7 @@ theorem concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
   rcases
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_noSynthetic_execution_story
       shape left right with
-    ⟨hcost, hrefine, hclass, hstore, hnoSynthetic,
+    ⟨hcost, hrefine, _hclass, hstore, hnoSynthetic,
       hreadBits, hprimitiveBits⟩
   exact
     { toCosted_eq := hcost
@@ -267,7 +289,18 @@ theorem concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
       cost_le :=
         concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace
           shape left right
-      event_read_or_primitive := hclass
+      event_readWord_or_wordRank_or_wordSelect :=
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_readWord_or_wordRank_or_wordSelect
+          shape left right
+      chargedWeight_sum_eq_trace_length :=
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_eq_trace_length
+          shape left right
+      chargedWeight_sum_eq_cost :=
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_eq_cost
+          shape left right
+      chargedWeight_sum_le_76 :=
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_le_76
+          shape left right
       matches_global_read_store := hstore
       event_bounds := fun event hmem =>
         ⟨hreadBits event hmem, hprimitiveBits event hmem⟩

@@ -77,7 +77,11 @@ The RMQ-only paper aliases live in
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe` | Uniform canonical all-size cost theorem with checked transitional bound `328`. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe` | Paper-facing U3 theorem: the unchanged uniform canonical trace has charged-trace cost at most `76`. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostEqTraceLength` | Exact accounting bridge: modeled cost equals emitted charged-event trace length. |
-| `RMQ.Headlines.succinctRMQChargedTraceCostAlgebra` | Operation algebra `2*select13 + (2*rank4 + 2*fringe4 + interior30) + rank4`, reusable by E1. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultEventReadWordOrWordRankOrWordSelect` | Every event actually emitted by the canonical whole-query trace is a payload read, word-rank, or word-select event. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultChargedWeightSumEqCost` | The direct `WordRAM.TraceEvent` weight sum for that trace equals the `Costed` cost of the same execution. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultChargedWeightSumLe76` | The weighted actual emitted trace is bounded by `76`. |
+| `RMQ.Headlines.succinctRMQSyntheticCostOnlyPrimitiveMemBreaksChargedWeightLengthEquality` | Counterfactual check: a synthetic event anywhere in a trace makes its direct weight sum differ from its length. |
+| `RMQ.Headlines.succinctRMQChargedTraceCostAlgebra` | Component cap `2*select13 + (2*rank4 + 2*fringe4 + interior30) + rank4`; the actual-event bridge above connects it to execution. |
 | `RMQ.Headlines.succinctRMQCompatibility4144WholeQueryGlobalWordTraceCostedCostLe` | Compatibility-only route-split `4144` theorem; it is not the canonical reviewer route. |
 | `RMQ.Headlines.succinctRMQCanonicalTransitionalQueryCostEq` | The canonical transitional query-cost expression computes to `328`. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | All-size structural execution story with raw positive same-block decoding and canonical component-store cross-block replay; there is no zero-block dispatch. |
@@ -335,8 +339,9 @@ imports, this material):
 ## Current Development Docket
 
 The RMQ capstone is in place with the uniform canonical reviewer route and its
-principled all-size charged-trace cap `76`; the U3 theorem chain is a completed
-branch candidate pending the normal exact-commit audit boundary.
+principled all-size charged-trace cap `76`; the U3 theorem chain is
+candidate-complete branch evidence pending the coordinator-owned blind
+exact-commit audit boundary.
 The older route-split `4144`, Ready `118`, zero-block, and `196727` statements
 remain compatibility/history surfaces. The development frontier is now to
 package, calibrate, and reuse the infrastructure:
@@ -346,9 +351,11 @@ package, calibrate, and reuse the infrastructure:
    stories where that materially clarifies theorem surfaces;
 2. push the union-find spoke from the current sequence/event scorecard toward a
    true inverse-Ackermann amortized theorem over strict residual events; and
-3. use the U3 operation vocabulary as E1's simulation interface for a fully
-   charged small-step machine, keeping M1 serialized-payload query and complete
-   preprocessing obligations separate; and
+3. have E1 define a richer instruction semantics and prove that it simulates
+   the same canonical execution while charging controller work; U3 deliberately
+   provides no parallel controller-operation vocabulary, and M1's
+   serialized-payload query and complete preprocessing obligations remain
+   separate; and
 4. promote shared cost, refinement, lower-bound, and amortized-analysis pieces
    into a more neutral library surface only when concrete reuse demands it.
 

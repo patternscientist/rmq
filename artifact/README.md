@@ -161,8 +161,10 @@ things:
   canonical, supplied-store, trace, and costed list surfaces;
 - a linear reviewer capacity and query-independent logarithmic word width
   bounding physical words, physical addresses, and primitive operands/results;
-- the checked principled all-size charged-trace query cap `76`, with exact
-  equality between modeled cost and emitted trace length; and
+- the checked principled all-size charged-trace query cap `76`: every actual
+  event is a payload read, word-rank, or word-select event, and direct event
+  weights equal both emitted trace length and the same execution's modeled
+  cost; and
 - an information-theoretic Catalan/Cartesian-shape RMQ lower bound.
 
 The Ready `118`, route-split `4144`, zero-block, and `196727` theorems remain

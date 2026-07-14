@@ -79,12 +79,16 @@ The canonical all-size reviewer trace has the principled charged-trace bound
 `76`, proved by
 `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace`
 and its numeric equality theorem. Its algebra is
-`2*13 + (2*4 + 2*4 + 30) + 4`, and modeled cost equals emitted trace length.
+`2*13 + (2*4 + 2*4 + 30) + 4`. Every actual emitted event is proved to be
+`readWord`, `wordRank`, or `wordSelect`; the direct event-weight sum equals
+both emitted trace length and the `Costed` cost of the same execution and is at
+most `76`.
 The historical U2 `328` theorem remains separately named. Ready
 `118`, route-split `4144`, zero-block, and `196727` declarations are retained
 only as compatibility/history and are not consumed by the paper route.
 
-The `76` result closes U3 only inside the explicit charged-trace model. It
+The `76` result makes U3 candidate-complete only inside the explicit
+charged-trace model. It
 charges payload reads and word-rank/select primitives, not controller
 arithmetic, branching, decoding, local scanning, or preprocessing. It is not a
 serialized-payload query theorem or conventional word-RAM complexity theorem.
