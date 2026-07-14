@@ -147,11 +147,13 @@ The current final global trace has the uniform canonical charged-trace bound
 `SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost = 76`.
 The checked sum is `2*13 + (2*4 + 2*4 + 30) + 4`. On the actual canonical
 trace, every event is proved to be `readWord`, `wordRank`, or `wordSelect`, the
-synthetic fallback is absent, and the direct `WordRAM.TraceEvent.chargedWeight`
-sum equals both emitted trace length and the `Costed` cost of the same
-execution before being bounded by `76`. A synthetic event cannot satisfy that
-classification and, wherever inserted, makes the weight sum differ from trace
-length. The separately named transitional U2 sum remains `328`.
+synthetic fallback is absent, and the direct `WordRAM.TraceEvent.nonSyntheticWeight`
+certificate sum equals both emitted trace length and the `Costed` cost of the
+same execution before being bounded by `76`. That equality uses the canonical
+no-synthetic trace; `TraceResult.toCosted` charges trace length and would count
+a synthetic compatibility marker if present. A synthetic event cannot satisfy
+that classification and, wherever inserted, makes the certificate sum differ
+from trace length. The separately named transitional U2 sum remains `328`.
 Footprint-agreeing supplied-store and full-model aliases transfer the
 principled bound. Ready `118`, route-split, `4144`, and `196727` remain
 compatibility rows.

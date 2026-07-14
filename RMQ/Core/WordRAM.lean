@@ -156,77 +156,81 @@ def isSyntheticCostOnlyPrimitive : TraceEvent -> Prop
   | _ => False
 
 /--
-Weight used by the current charged-event model.
+Certificate weight for separating genuine primitive events from the synthetic
+compatibility marker.
 
-The weight is defined on the interpreter's actual event type: attempted
-payload reads and executed word-rank/word-select primitives cost one, while the
-synthetic fallback marker costs zero.  Controller work is absent from
-`TraceEvent` and is therefore outside this weight rather than represented by a
-parallel zero-weight vocabulary.
+`TraceResult.toCosted` charges `trace.length`, so a synthetic compatibility
+marker, if present, contributes one `Costed` step. `nonSyntheticWeight` is not
+that cost function: it assigns one to `readWord`, `wordRank`, and `wordSelect`,
+and zero to `syntheticCostOnlyPrimitive`. Equality between this weight sum and
+`Costed.cost` is therefore a no-synthetic theorem about the canonical trace,
+not a general property of arbitrary traces. Controller work is absent from
+`TraceEvent` and is therefore outside this certificate rather than represented
+by a parallel zero-weight vocabulary.
 -/
-def chargedWeight : TraceEvent -> Nat
+def nonSyntheticWeight : TraceEvent -> Nat
   | readWord _ _ _ => 1
   | wordRank _ _ _ => 1
   | wordSelect _ _ _ => 1
   | syntheticCostOnlyPrimitive => 0
 
-@[simp] theorem chargedWeight_readWord
+@[simp] theorem nonSyntheticWeight_readWord
     (segment index : Nat) (word? : Option Word) :
-    chargedWeight (readWord segment index word?) = 1 := by
+    nonSyntheticWeight (readWord segment index word?) = 1 := by
   rfl
 
-@[simp] theorem chargedWeight_wordRank
+@[simp] theorem nonSyntheticWeight_wordRank
     (target : Bool) (limit result : Nat) :
-    chargedWeight (wordRank target limit result) = 1 := by
+    nonSyntheticWeight (wordRank target limit result) = 1 := by
   rfl
 
-@[simp] theorem chargedWeight_wordSelect
+@[simp] theorem nonSyntheticWeight_wordSelect
     (target : Bool) (occurrence : Nat) (result : Option Nat) :
-    chargedWeight (wordSelect target occurrence result) = 1 := by
+    nonSyntheticWeight (wordSelect target occurrence result) = 1 := by
   rfl
 
-@[simp] theorem chargedWeight_syntheticCostOnlyPrimitive :
-    chargedWeight syntheticCostOnlyPrimitive = 0 := by
+@[simp] theorem nonSyntheticWeight_syntheticCostOnlyPrimitive :
+    nonSyntheticWeight syntheticCostOnlyPrimitive = 0 := by
   rfl
 
-/-- Every non-synthetic interpreter event has unit charged weight. -/
-theorem chargedWeight_eq_one_of_not_synthetic
+/-- Every non-synthetic interpreter event has unit certificate weight. -/
+theorem nonSyntheticWeight_eq_one_of_not_synthetic
     {event : TraceEvent}
     (hnot : Not event.isSyntheticCostOnlyPrimitive) :
-    event.chargedWeight = 1 := by
+    event.nonSyntheticWeight = 1 := by
   cases event <;>
-    simp [chargedWeight, isSyntheticCostOnlyPrimitive] at hnot ⊢
+    simp [nonSyntheticWeight, isSyntheticCostOnlyPrimitive] at hnot ⊢
 
-/-- A trace whose actual events all have unit weight sums to its length. -/
-theorem sum_chargedWeight_eq_length_of_forall_eq_one
+/-- A trace whose events all have unit certificate weight sums to its length. -/
+theorem sum_nonSyntheticWeight_eq_length_of_forall_eq_one
     (trace : List TraceEvent)
-    (hweight : forall event, event ∈ trace -> event.chargedWeight = 1) :
-    (trace.map chargedWeight).sum = trace.length := by
+    (hweight : forall event, event ∈ trace -> event.nonSyntheticWeight = 1) :
+    (trace.map nonSyntheticWeight).sum = trace.length := by
   induction trace with
   | nil => simp
   | cons head tail ih =>
-      have hhead : head.chargedWeight = 1 := hweight head (by simp)
-      have htail : forall event, event ∈ tail -> event.chargedWeight = 1 := by
+      have hhead : head.nonSyntheticWeight = 1 := hweight head (by simp)
+      have htail : forall event, event ∈ tail -> event.nonSyntheticWeight = 1 := by
         intro event hmem
         exact hweight event (by simp [hmem])
       simp [hhead, ih htail, Nat.add_comm]
 
 /--
-If a trace contains no synthetic fallback marker, its actual event-weight sum
-is exactly its length.
+If a trace contains no synthetic compatibility marker, its certificate-weight
+sum is exactly its length.
 -/
-theorem sum_chargedWeight_eq_length_of_no_synthetic
+theorem sum_nonSyntheticWeight_eq_length_of_no_synthetic
     (trace : List TraceEvent)
     (hnot : forall event, event ∈ trace ->
       Not event.isSyntheticCostOnlyPrimitive) :
-    (trace.map chargedWeight).sum = trace.length := by
-  apply sum_chargedWeight_eq_length_of_forall_eq_one
+    (trace.map nonSyntheticWeight).sum = trace.length := by
+  apply sum_nonSyntheticWeight_eq_length_of_forall_eq_one
   intro event hmem
-  exact chargedWeight_eq_one_of_not_synthetic (hnot event hmem)
+  exact nonSyntheticWeight_eq_one_of_not_synthetic (hnot event hmem)
 
-/-- The charged-event weight sum never exceeds the event-list length. -/
-theorem sum_chargedWeight_le_length (trace : List TraceEvent) :
-    (trace.map chargedWeight).sum <= trace.length := by
+/-- The certificate-weight sum never exceeds the event-list length. -/
+theorem sum_nonSyntheticWeight_le_length (trace : List TraceEvent) :
+    (trace.map nonSyntheticWeight).sum <= trace.length := by
   induction trace with
   | nil => simp
   | cons head tail ih =>
@@ -238,27 +242,28 @@ theorem sum_chargedWeight_le_length (trace : List TraceEvent) :
       | wordSelect target occurrence result =>
           simpa [Nat.add_comm] using Nat.succ_le_succ ih
       | syntheticCostOnlyPrimitive =>
-          simp only [List.map_cons, chargedWeight_syntheticCostOnlyPrimitive,
+          simp only [List.map_cons, nonSyntheticWeight_syntheticCostOnlyPrimitive,
             List.sum_cons, Nat.zero_add, List.length_cons]
           exact Nat.le_trans ih (Nat.le_succ tail.length)
 
 /--
-Any occurrence of the synthetic fallback marker makes the actual weight sum
-strictly smaller than the event-list length, irrespective of its position.
+Any occurrence of the synthetic compatibility marker makes the certificate
+weight sum strictly smaller than the event-list length, irrespective of its
+position.
 -/
-theorem sum_chargedWeight_lt_length_of_synthetic_mem
+theorem sum_nonSyntheticWeight_lt_length_of_synthetic_mem
     (trace : List TraceEvent)
     (hmem : syntheticCostOnlyPrimitive ∈ trace) :
-    (trace.map chargedWeight).sum < trace.length := by
+    (trace.map nonSyntheticWeight).sum < trace.length := by
   induction trace with
   | nil => simp at hmem
   | cons head tail ih =>
       simp only [List.mem_cons] at hmem
       rcases hmem with hhead | htail
       · subst head
-        simp only [List.map_cons, chargedWeight_syntheticCostOnlyPrimitive,
+        simp only [List.map_cons, nonSyntheticWeight_syntheticCostOnlyPrimitive,
           List.sum_cons, Nat.zero_add, List.length_cons]
-        exact Nat.lt_succ_of_le (sum_chargedWeight_le_length tail)
+        exact Nat.lt_succ_of_le (sum_nonSyntheticWeight_le_length tail)
       · cases head with
         | readWord segment index word? =>
             simpa [Nat.add_comm] using Nat.succ_lt_succ (ih htail)
@@ -267,16 +272,16 @@ theorem sum_chargedWeight_lt_length_of_synthetic_mem
         | wordSelect target occurrence result =>
             simpa [Nat.add_comm] using Nat.succ_lt_succ (ih htail)
         | syntheticCostOnlyPrimitive =>
-            simp only [List.map_cons, chargedWeight_syntheticCostOnlyPrimitive,
+            simp only [List.map_cons, nonSyntheticWeight_syntheticCostOnlyPrimitive,
               List.sum_cons, Nat.zero_add, List.length_cons]
-            exact Nat.lt_succ_of_le (sum_chargedWeight_le_length tail)
+            exact Nat.lt_succ_of_le (sum_nonSyntheticWeight_le_length tail)
 
-/-- A trace containing a synthetic marker cannot retain weight-sum equality. -/
-theorem sum_chargedWeight_ne_length_of_synthetic_mem
+/-- A trace containing a synthetic marker cannot retain weight-sum/length equality. -/
+theorem sum_nonSyntheticWeight_ne_length_of_synthetic_mem
     (trace : List TraceEvent)
     (hmem : syntheticCostOnlyPrimitive ∈ trace) :
-    (trace.map chargedWeight).sum ≠ trace.length :=
-  Nat.ne_of_lt (sum_chargedWeight_lt_length_of_synthetic_mem trace hmem)
+    (trace.map nonSyntheticWeight).sum ≠ trace.length :=
+  Nat.ne_of_lt (sum_nonSyntheticWeight_lt_length_of_synthetic_mem trace hmem)
 
 /--
 The synthetic fallback constructor cannot be classified as an actual payload
@@ -296,13 +301,13 @@ theorem syntheticCostOnlyPrimitive_not_readWord_or_wordRank_or_wordSelect :
   simp
 
 /--
-Counterfactual check: inserting a synthetic fallback event into a trace whose
-weight sum equals its length necessarily breaks that equality.
+Counterfactual check: inserting a synthetic compatibility marker into a trace
+whose certificate-weight sum equals its length necessarily breaks that equality.
 -/
 theorem syntheticCostOnlyPrimitive_cons_weight_sum_ne_length
     (trace : List TraceEvent)
-    (htrace : (trace.map chargedWeight).sum = trace.length) :
-    ((syntheticCostOnlyPrimitive :: trace).map chargedWeight).sum ≠
+    (htrace : (trace.map nonSyntheticWeight).sum = trace.length) :
+    ((syntheticCostOnlyPrimitive :: trace).map nonSyntheticWeight).sum ≠
       (syntheticCostOnlyPrimitive :: trace).length := by
   simp [htrace]
 
@@ -555,7 +560,13 @@ namespace TraceResult
 /-- Operational step count, derived from the trace. -/
 def steps (result : TraceResult α) : Nat := result.trace.length
 
-/-- Project an interpreted trace result into the theorem-facing cost carrier. -/
+/--
+Project an interpreted trace result into the theorem-facing cost carrier.
+
+The cost is exactly `trace.length`; consequently, a synthetic compatibility
+marker in the trace is counted as one `Costed` step. The separate
+`TraceEvent.nonSyntheticWeight` certificate gives synthetic markers weight zero.
+-/
 def toCosted (result : TraceResult α) : Costed α where
   value := result.value
   cost := result.steps

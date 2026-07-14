@@ -2091,7 +2091,7 @@ Scope: U3 roadmap state and the current-versus-transitional cost claim policy.
 Decision:
 
 The claim-drift policy treats `76` as the current canonical charged-trace cost
-only after the named algebra, direct actual-event weight/length/`Costed` bridge,
+only after the named algebra, non-synthetic certificate/length/`Costed` bridge,
 executable-trace bound, supplied-store transfer, final adequacy theorem,
 `List Int` theorem, headline aliases, and paper root all consume the same U2
 execution. The policy retains `328` as an explicitly historical transitional
@@ -2132,11 +2132,13 @@ Consequences:
   and publication-facing documents agree.
 - No policy token claims `query(serializedPayload, left, right)`, preprocessing
   complexity, or conventional word-RAM constant time.
-- Completion evidence uses `WordRAM.TraceEvent.chargedWeight` on the actual
-  emitted trace, with checked genuine-event classification, no-synthetic,
-  weight-sum/length equality, weight-sum/`Costed` equality, and the `76` bound.
-  Controller omissions remain documentary; U3 does not hand E1 a parallel
-  instruction vocabulary.
+- Completion evidence uses `WordRAM.TraceEvent.nonSyntheticWeight` on the actual
+  emitted trace as a certificate weight, with checked genuine-event
+  classification, no-synthetic, certificate-sum/length equality,
+  certificate-sum/`Costed` equality, and the `76` bound. `TraceResult.toCosted`
+  still charges full trace length and would count a synthetic compatibility
+  marker if one appeared. Controller omissions remain documentary; U3 does not
+  hand E1 a parallel instruction vocabulary.
 
 Evidence:
 
@@ -2144,8 +2146,8 @@ Evidence:
   numeric equality `76`.
 - `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace`
   connects that algebra to the accepted executable trace.
-- `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_eq_cost`
-  and `..._chargedWeight_sum_le_76` connect actual emitted events to the same
+- `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_eq_cost`
+  and `..._nonSyntheticWeight_sum_le_76` connect actual emitted events to the same
   `Costed` execution and final cap.
 - `RMQ.Headlines.succinctRMQQueryCostEq` and `RMQPaper` expose the new default.
 - `docs/internal/W21_U3_PRINCIPLED_ALLSIZE_COST_ACCEPTANCE_MATRIX.md` records the

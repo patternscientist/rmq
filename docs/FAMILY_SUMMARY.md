@@ -33,12 +33,15 @@ input-size activation test. The valid middle range supplied by close/LCA then
 costs at most `18` within one macro, `20` on adjacent/left-middle routes, and
 `30` on the six-span cross-macro route.
 
-The current model charges actual emitted `WordRAM.TraceEvent` values directly:
-`readWord`, `wordRank`, and `wordSelect` have weight one, while the synthetic
-fallback marker has weight zero. The canonical whole-query trace proves that
-every emitted event is one of the three genuine constructors, that no
-synthetic marker occurs, and that the weight sum equals both trace length and
-the `Costed` cost of the same execution before being bounded by `76`.
+The current operational bridge keeps two quantities distinct.
+`TraceResult.toCosted` charges `trace.length`, so it would count a synthetic
+compatibility marker if one were present. Separately,
+`WordRAM.TraceEvent.nonSyntheticWeight` is a certificate weight: `readWord`,
+`wordRank`, and `wordSelect` have weight one, while the synthetic marker has
+weight zero. The canonical whole-query trace proves that every emitted event is
+one of the three genuine constructors, that no synthetic marker occurs, and
+therefore that the certificate-weight sum equals both trace length and the
+`Costed` cost of the same execution before being bounded by `76`.
 Instruction dispatch, input/register access, option tests, arithmetic
 (including division/modulo/logarithms), fixed-width decoding, local BP
 scanning, candidate merging, trace assembly, and the public validity guard are

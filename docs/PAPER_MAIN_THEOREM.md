@@ -80,9 +80,11 @@ The canonical all-size reviewer trace has the principled charged-trace bound
 `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace`
 and its numeric equality theorem. Its algebra is
 `2*13 + (2*4 + 2*4 + 30) + 4`. Every actual emitted event is proved to be
-`readWord`, `wordRank`, or `wordSelect`; the direct event-weight sum equals
-both emitted trace length and the `Costed` cost of the same execution and is at
-most `76`.
+`readWord`, `wordRank`, or `wordSelect`; the trace has no synthetic marker, so
+the `WordRAM.TraceEvent.nonSyntheticWeight` certificate sum equals both emitted
+trace length and the `Costed` cost of the same execution and is at most `76`.
+`TraceResult.toCosted` itself charges trace length and would count a synthetic
+compatibility marker if one were present.
 The historical U2 `328` theorem remains separately named. Ready
 `118`, route-split `4144`, zero-block, and `196727` declarations are retained
 only as compatibility/history and are not consumed by the paper route.

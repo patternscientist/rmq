@@ -581,25 +581,28 @@ abbrev succinctRMQWholeQueryGlobalWordTraceResultEventReadWordOrWordRankOrWordSe
 abbrev succinctRMQWholeQueryGlobalWordTraceResultSyntheticCostOnlyPrimitiveNotMem :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_syntheticCostOnlyPrimitive_not_mem
 
-/-- Actual event weights sum exactly to the accepted trace length. -/
-abbrev succinctRMQWholeQueryGlobalWordTraceResultChargedWeightSumEqTraceLength :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_eq_trace_length
+/-- Non-synthetic certificate weights sum exactly to the accepted trace length. -/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumEqTraceLength :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_eq_trace_length
 
-/-- Actual event weights sum exactly to the `Costed.cost` of the same execution. -/
-abbrev succinctRMQWholeQueryGlobalWordTraceResultChargedWeightSumEqCost :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_eq_cost
+/--
+For the accepted no-synthetic trace, non-synthetic certificate weights sum
+exactly to the `Costed.cost` of the same execution.
+-/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumEqCost :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_eq_cost
 
-/-- The weighted actual trace has the checked all-size bound `76`. -/
-abbrev succinctRMQWholeQueryGlobalWordTraceResultChargedWeightSumLe76 :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_le_76
+/-- The non-synthetic-weighted actual trace has the checked all-size bound `76`. -/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe76 :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_76
 
-/-- A synthetic marker cannot be classified as a real charged event. -/
+/-- A synthetic marker cannot be classified as a genuine read/rank/select event. -/
 abbrev succinctRMQSyntheticCostOnlyPrimitiveNotReadWordOrWordRankOrWordSelect :=
   RMQ.WordRAM.TraceEvent.syntheticCostOnlyPrimitive_not_readWord_or_wordRank_or_wordSelect
 
-/-- Any synthetic occurrence breaks weight-sum/trace-length equality. -/
-abbrev succinctRMQSyntheticCostOnlyPrimitiveMemBreaksChargedWeightLengthEquality :=
-  RMQ.WordRAM.TraceEvent.sum_chargedWeight_ne_length_of_synthetic_mem
+/-- Any synthetic occurrence breaks non-synthetic-weight/trace-length equality. -/
+abbrev succinctRMQSyntheticCostOnlyPrimitiveMemBreaksNonSyntheticWeightLengthEquality :=
+  RMQ.WordRAM.TraceEvent.sum_nonSyntheticWeight_ne_length_of_synthetic_mem
 
 /--
 Under agreement with the concrete global store on the safe final layout

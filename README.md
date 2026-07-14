@@ -78,9 +78,9 @@ The RMQ-only paper aliases live in
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe` | Paper-facing U3 theorem: the unchanged uniform canonical trace has charged-trace cost at most `76`. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostEqTraceLength` | Exact accounting bridge: modeled cost equals emitted charged-event trace length. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultEventReadWordOrWordRankOrWordSelect` | Every event actually emitted by the canonical whole-query trace is a payload read, word-rank, or word-select event. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultChargedWeightSumEqCost` | The direct `WordRAM.TraceEvent` weight sum for that trace equals the `Costed` cost of the same execution. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultChargedWeightSumLe76` | The weighted actual emitted trace is bounded by `76`. |
-| `RMQ.Headlines.succinctRMQSyntheticCostOnlyPrimitiveMemBreaksChargedWeightLengthEquality` | Counterfactual check: a synthetic event anywhere in a trace makes its direct weight sum differ from its length. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumEqCost` | For the canonical no-synthetic trace, the `WordRAM.TraceEvent.nonSyntheticWeight` certificate sum equals the `Costed` cost of the same execution. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe76` | The non-synthetic-weighted actual emitted trace is bounded by `76`. |
+| `RMQ.Headlines.succinctRMQSyntheticCostOnlyPrimitiveMemBreaksNonSyntheticWeightLengthEquality` | Counterfactual check: a synthetic event anywhere in a trace makes its `nonSyntheticWeight` sum differ from its length. |
 | `RMQ.Headlines.succinctRMQChargedTraceCostAlgebra` | Component cap `2*select13 + (2*rank4 + 2*fringe4 + interior30) + rank4`; the actual-event bridge above connects it to execution. |
 | `RMQ.Headlines.succinctRMQCompatibility4144WholeQueryGlobalWordTraceCostedCostLe` | Compatibility-only route-split `4144` theorem; it is not the canonical reviewer route. |
 | `RMQ.Headlines.succinctRMQCanonicalTransitionalQueryCostEq` | The canonical transitional query-cost expression computes to `328`. |

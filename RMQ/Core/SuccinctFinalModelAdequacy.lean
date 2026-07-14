@@ -19,9 +19,10 @@ trace.  The fields collect the existing theorem surfaces that explain what the
 modeled constant-query claim means: the `Costed` result is exactly the
 projection of a `WordRAM.TraceResult`, the trace refines the interpreted
 whole-query program, every emitted event is an actual read/rank/select event,
-the actual event-weight sum equals both trace length and `Costed.cost`,
-successful reads are backed by counted flat payload words, event data are
-bounded, and no event is the synthetic cost-only marker.
+the `TraceEvent.nonSyntheticWeight` certificate sum equals both trace length
+and `Costed.cost` for this canonical no-synthetic trace, successful reads are
+backed by counted flat payload words, event data are bounded, and no event is
+the synthetic cost-only marker.
 -/
 structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
     (shape : Cartesian.CartesianShape) (left right : Nat) : Prop where
@@ -53,19 +54,19 @@ structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
         (Exists fun target : Bool => Exists fun occurrence : Nat =>
           Exists fun result : Option Nat =>
             event = WordRAM.TraceEvent.wordSelect target occurrence result)
-  chargedWeight_sum_eq_trace_length :
+  nonSyntheticWeight_sum_eq_trace_length :
     ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
-        shape left right).trace.map WordRAM.TraceEvent.chargedWeight).sum =
+        shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum =
       (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
         shape left right).trace.length
-  chargedWeight_sum_eq_cost :
+  nonSyntheticWeight_sum_eq_cost :
     ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
-        shape left right).trace.map WordRAM.TraceEvent.chargedWeight).sum =
+        shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum =
       (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
         shape left right).cost
-  chargedWeight_sum_le_76 :
+  nonSyntheticWeight_sum_le_76 :
     ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
-        shape left right).trace.map WordRAM.TraceEvent.chargedWeight).sum <= 76
+        shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum <= 76
   matches_global_read_store :
     forall event,
       event ∈
@@ -292,14 +293,14 @@ theorem concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
       event_readWord_or_wordRank_or_wordSelect :=
         concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_readWord_or_wordRank_or_wordSelect
           shape left right
-      chargedWeight_sum_eq_trace_length :=
-        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_eq_trace_length
+      nonSyntheticWeight_sum_eq_trace_length :=
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_eq_trace_length
           shape left right
-      chargedWeight_sum_eq_cost :=
-        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_eq_cost
+      nonSyntheticWeight_sum_eq_cost :=
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_eq_cost
           shape left right
-      chargedWeight_sum_le_76 :=
-        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_le_76
+      nonSyntheticWeight_sum_le_76 :=
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_76
           shape left right
       matches_global_read_store := hstore
       event_bounds := fun event hmem =>

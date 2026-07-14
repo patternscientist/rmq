@@ -198,8 +198,12 @@ against the global trace by
 `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace`.
 The actual event bridge classifies each emitted event as `readWord`, `wordRank`,
 or `wordSelect`, excludes the synthetic fallback, and proves that direct
-`WordRAM.TraceEvent.chargedWeight` sums to both trace length and the `Costed`
-cost of the same execution before being bounded by `76`. The old `328` theorem
+`WordRAM.TraceEvent.nonSyntheticWeight` certificate weights sum to both trace
+length and the `Costed` cost of the same execution before being bounded by
+`76`. This equality is canonical-trace evidence: `TraceResult.toCosted` charges
+trace length and would count a synthetic compatibility marker if one were
+present, while `nonSyntheticWeight` assigns that marker weight zero. The old
+`328` theorem
 is retained as an explicitly transitional comparison. Ready `118`,
 route-split, `4144`, and `196727` remain compatibility facts outside the
 current reviewer explanation.
@@ -211,7 +215,7 @@ Acceptance:
 - **Candidate satisfied:** there is no input-size compatibility threshold in
   the public route; macro crossing is an execution-derived structural premise;
 - **Candidate satisfied:** genuine-event classification, no-synthetic evidence,
-  direct event weights, trace length, `Costed` cost, and the upper bound
+  non-synthetic certificate weights, trace length, `Costed` cost, and the upper bound
   describe the same global execution;
 - **Candidate satisfied:** final adequacy, supplied-store footprint transfer,
   `List Int`, paper/root aliases, examples, and numeric inventories consume the

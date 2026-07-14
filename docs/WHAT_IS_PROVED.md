@@ -86,9 +86,9 @@ aliases.
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe` | The unchanged uniform canonical final trace has the principled charged-trace bound `76`. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostEqTraceLength` | The modeled cost is exactly the emitted charged-event trace length. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultEventReadWordOrWordRankOrWordSelect` | Every actual emitted canonical event is a payload read, word-rank, or word-select event. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultChargedWeightSumEqCost` | The direct actual-event weight sum equals the `Costed` cost of the same execution. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultChargedWeightSumLe76` | The weighted actual emitted trace is at most `76`. |
-| `RMQ.Headlines.succinctRMQSyntheticCostOnlyPrimitiveMemBreaksChargedWeightLengthEquality` | A synthetic event anywhere in a trace breaks weight-sum/length equality. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumEqCost` | For the canonical no-synthetic trace, the `nonSyntheticWeight` certificate sum equals the `Costed` cost of the same execution. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe76` | The non-synthetic-weighted actual emitted trace is at most `76`. |
+| `RMQ.Headlines.succinctRMQSyntheticCostOnlyPrimitiveMemBreaksNonSyntheticWeightLengthEquality` | A synthetic event anywhere in a trace breaks `nonSyntheticWeight`/length equality. |
 | `RMQ.Headlines.succinctRMQChargedTraceCostAlgebra` | Named U3 component cap; it is not a substitute small-step instruction interface. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical` | Genuine supplied flat-physical execution refines canonical logical execution, preserving decoded result, cost, ordered reads (including failures and repetitions), and footprint. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint` | Agreement on the first physical execution's consumed ordered footprint determines the complete physical execution. |

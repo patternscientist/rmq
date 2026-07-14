@@ -7194,14 +7194,14 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_readWor
   | syntheticCostOnlyPrimitive =>
       simp [WordRAM.TraceEvent.isSyntheticCostOnlyPrimitive] at hnot
 
-/-- Every actually emitted canonical event has unit current-model weight. -/
-theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_chargedWeight_eq_one
+/-- Every actually emitted canonical event has unit non-synthetic certificate weight. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_nonSyntheticWeight_eq_one
     (shape : Cartesian.CartesianShape) (left right : Nat) :
     forall event,
       event ∈
           (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
             shape left right).trace ->
-        event.chargedWeight = 1 := by
+        event.nonSyntheticWeight = 1 := by
   intro event hmem
   rcases
       concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_readWord_or_wordRank_or_wordSelect
@@ -9200,36 +9200,38 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_eq_trace
   rfl
 
 /--
-The sum of weights on the events actually emitted by the canonical execution
-is exactly that trace's length.
+The non-synthetic certificate weights on the events actually emitted by the
+canonical execution sum to exactly that trace's length.
 -/
-theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_eq_trace_length
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_eq_trace_length
     (shape : Cartesian.CartesianShape) (left right : Nat) :
     ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
-        shape left right).trace.map WordRAM.TraceEvent.chargedWeight).sum =
+        shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum =
       (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
         shape left right).trace.length := by
-  apply WordRAM.TraceEvent.sum_chargedWeight_eq_length_of_forall_eq_one
+  apply WordRAM.TraceEvent.sum_nonSyntheticWeight_eq_length_of_forall_eq_one
   exact
-    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_chargedWeight_eq_one
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_nonSyntheticWeight_eq_one
       shape left right
 
 /--
-The actual event-weight sum equals the `Costed.cost` of the same canonical
-execution.
+The non-synthetic certificate-weight sum equals the `Costed.cost` of the same
+canonical execution. This uses the canonical no-synthetic trace; arbitrary
+traces with synthetic compatibility markers are still counted by
+`TraceResult.toCosted` through their full trace length.
 -/
-theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_eq_cost
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_eq_cost
     (shape : Cartesian.CartesianShape) (left right : Nat) :
     ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
-        shape left right).trace.map WordRAM.TraceEvent.chargedWeight).sum =
+        shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum =
       (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
         shape left right).cost := by
   calc
     ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
-        shape left right).trace.map WordRAM.TraceEvent.chargedWeight).sum =
+        shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum =
         (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
           shape left right).trace.length :=
-      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_eq_trace_length
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_eq_trace_length
         shape left right
     _ = (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
           shape left right).cost := by
@@ -9238,28 +9240,28 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight
         concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_eq_trace_length
           shape left right
 
-/-- The weighted actual trace is bounded by the named principled U3 cap. -/
-theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_le_principledAllSizeChargedTrace
+/-- The non-synthetic-weighted actual trace is bounded by the named U3 cap. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_principledAllSizeChargedTrace
     (shape : Cartesian.CartesianShape) (left right : Nat) :
     ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
-        shape left right).trace.map WordRAM.TraceEvent.chargedWeight).sum <=
+        shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum <=
       concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost := by
   rw [
-    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_eq_cost]
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_eq_cost]
   exact
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace
       shape left right
 
-/-- The weighted actual canonical trace has the checked literal bound `76`. -/
-theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_le_76
+/-- The non-synthetic-weighted actual canonical trace has the checked literal bound `76`. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_76
     (shape : Cartesian.CartesianShape) (left right : Nat) :
     ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
-        shape left right).trace.map WordRAM.TraceEvent.chargedWeight).sum <= 76 := by
+        shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum <= 76 := by
   calc
     ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
-        shape left right).trace.map WordRAM.TraceEvent.chargedWeight).sum <=
+        shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum <=
         concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost :=
-      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_chargedWeight_sum_le_principledAllSizeChargedTrace
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_principledAllSizeChargedTrace
         shape left right
     _ = 76 :=
       concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq

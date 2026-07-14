@@ -16,11 +16,11 @@ Status: `CANDIDATE_COMPLETE`; the exact commit and push are recorded at handoff.
 | U3-01 | Reconstruct named primitive composition. | `CanonicalRMQChargedTraceCostAlgebra.closeLCA`, `.wholeQuery`; `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra` |
 | U3-02 | Tighten every conservative `328` contribution. | `sparseExceptionSelectSource_selectPositionCosted_cost_le_thirteen`; `rankCosted_cost_le_four`; `canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_of_size_ge_four_of_bounded` |
 | U3-03 | Prove one canonical numeric equality. | `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq : ... = 76` |
-| U3-04 | Bound the unchanged executable trace and expose exact accounting. | `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_readWord_or_wordRank_or_wordSelect`; `..._syntheticCostOnlyPrimitive_not_mem`; `..._chargedWeight_sum_eq_trace_length`; `..._chargedWeight_sum_eq_cost`; `..._chargedWeight_sum_le_76` |
-| U3-05 | Consume final adequacy and supplied-store footprints. | `ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy.event_readWord_or_wordRank_or_wordSelect`; `.chargedWeight_sum_eq_trace_length`; `.chargedWeight_sum_eq_cost`; `.chargedWeight_sum_le_76`; `concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_principledAllSizeChargedTrace` |
+| U3-04 | Bound the unchanged executable trace and expose exact accounting. | `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_readWord_or_wordRank_or_wordSelect`; `..._syntheticCostOnlyPrimitive_not_mem`; `..._nonSyntheticWeight_sum_eq_trace_length`; `..._nonSyntheticWeight_sum_eq_cost`; `..._nonSyntheticWeight_sum_le_76` |
+| U3-05 | Consume final adequacy and supplied-store footprints. | `ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy.event_readWord_or_wordRank_or_wordSelect`; `.nonSyntheticWeight_sum_eq_trace_length`; `.nonSyntheticWeight_sum_eq_cost`; `.nonSyntheticWeight_sum_le_76`; `concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_principledAllSizeChargedTrace` |
 | U3-06 | Consume ordinary `List Int`, headlines, and paper root. | `SuccinctClassic.queryCosted_cost_le`; `listIntPrincipledAllSizeChargedTraceCostLeOfFootprintGlobal`; `Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe`; `RMQPaper` |
 | U3-07 | Preserve U2 payload, route, physical erasure, store dependence, footprints, provenance, width, and invalid semantics. | No execution/payload definition is replaced; existing final adequacy, exactness, physical, provenance, and invalid-range theorems remain consumers beside the new cost field. |
-| U3-08 | Connect the cost inventory to actual emitted events without a parallel operation vocabulary. | `WordRAM.TraceEvent.chargedWeight`; actual three-constructor classification; actual no-synthetic theorem; actual weight-sum = trace-length = `Costed.cost` = at most `76`; `syntheticCostOnlyPrimitive_not_readWord_or_wordRank_or_wordSelect`; `sum_chargedWeight_ne_length_of_synthetic_mem` |
+| U3-08 | Connect the cost inventory to actual emitted events without a parallel operation vocabulary. | `WordRAM.TraceEvent.nonSyntheticWeight`; actual three-constructor classification; actual no-synthetic theorem; canonical certificate-weight sum = trace-length = `Costed.cost` = at most `76`; `syntheticCostOnlyPrimitive_not_readWord_or_wordRank_or_wordSelect`; `sum_nonSyntheticWeight_ne_length_of_synthetic_mem` |
 | U3-09 | Keep conventional word-RAM / serialization / preprocessing outside U3. | Theorem names contain `ChargedTrace`; design decision, family summary, paper maps, claim policy, and roadmap state the nonclaims. |
 | U3-10 | Preserve transitional evidence without artificial work. | `concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq = 328` remains separately named; no padding or decorative event is introduced. |
 
@@ -41,15 +41,20 @@ the latter uses tighter theorems for the operations that execution emits.
 
 ## Cost-Model Boundary
 
-Charged at unit weight: attempted payload-word reads, word-rank primitives,
-and word-select primitives.
+`TraceResult.toCosted` charges `trace.length`, so it counts a synthetic
+compatibility marker if one is present. The separate
+`WordRAM.TraceEvent.nonSyntheticWeight` certificate assigns unit weight to
+attempted payload-word reads, word-rank primitives, and word-select primitives,
+and assigns zero to the synthetic marker. The old broad name `chargedWeight`
+was rejected because it obscured that distinction.
 
 Checked execution chain: every event in the actual canonical whole-query trace
-is one of those three constructors; the synthetic fallback is absent; direct
-event weights sum to trace length and to the `Costed` cost of the same
-execution; the sum is at most `76`. Counterfactually, a synthetic event cannot
-meet the genuine-event classification, and its presence anywhere makes the
-weight sum strictly smaller than trace length.
+is one of the three genuine constructors; the synthetic fallback is absent; the
+`nonSyntheticWeight` certificate sum therefore equals trace length and the
+`Costed` cost of the same execution; the sum is at most `76`.
+Counterfactually, a synthetic event cannot meet the genuine-event
+classification, and its presence anywhere makes the certificate sum strictly
+smaller than trace length.
 
 Currently uncharged: instruction dispatch; input and register access;
 option tests and branching; natural-number arithmetic, address and slot
@@ -71,7 +76,7 @@ preprocessing complexity, compiled Lean time, or conventional word-RAM time.
 | `lake build RMQ` and fresh-worktree inventory prerequisites | Pass |
 | Full `lake build` | Pass |
 | `lake env lean scripts/headline_axiom_check.lean` | Pass; direct actual-event bridge and counterfactual aliases inventoried |
-| `lake env lean scripts/wordram_axiom_check.lean` | Pass; direct weights, actual trace chain, and expected Lean logical axioms inventoried |
+| `lake env lean scripts/wordram_axiom_check.lean` | Pass; direct `nonSyntheticWeight` certificates, actual trace chain, and expected Lean logical axioms inventoried |
 | `lake env lean scripts/axiom_check.lean` | Pass; full barrel inventory includes the operational bridge |
 | `lake exe rmq_succinct_classic_validate` | Pass; 498 windows across 43 inputs, principled bound `76` |
 | `lake exe rmq_succinct_classic_cost_harness` | Pass; invalid/same/cross costs `0`/`36`/`44`/`60`, all at most `76` |

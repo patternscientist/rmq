@@ -65,7 +65,8 @@ candidates, subject to the novelty search described below — are:
 
 1. **Cost model constant.** The current reviewer route is uniform for every
    size and has the checked principled charged-trace bound `76`, with exact
-   direct actual-event weight, emitted-trace-length, and `Costed` accounting.
+   `nonSyntheticWeight` certificate, emitted-trace-length, and `Costed`
+   accounting for the canonical no-synthetic trace.
    Ready `118`, route-split
    `4144`, zero-block, and `196727` survive only as compatibility/history
    declarations; nonexistent fast-regime aliases are not part of the paper

@@ -2198,12 +2198,16 @@ Decision:
 - Set the paper-facing charged-trace cost to
   `2*13 + (2*4 + 2*4 + 30) + 4 = 76`. Retain `328` only under names containing
   `Transitional`; do not add work to preserve it.
-- Define `WordRAM.TraceEvent.chargedWeight` directly on the actual emitted-event
-  type: payload reads and word-rank/select primitives have weight one, while
-  the synthetic fallback has weight zero. For the canonical whole-query trace,
-  prove genuine-event classification, no synthetic event, weight sum equal to
-  trace length, weight sum equal to the `Costed` cost of the same execution,
-  and the resulting bound by `76`.
+- Define `WordRAM.TraceEvent.nonSyntheticWeight` directly on the actual emitted-event
+  type as a certificate weight: payload reads and word-rank/select primitives
+  have weight one, while the synthetic compatibility marker has weight zero.
+  The name is deliberate. `TraceResult.toCosted` charges trace length and
+  would count a synthetic marker if one were present; equality between
+  `nonSyntheticWeight` and `Costed.cost` is proved only for the canonical
+  no-synthetic whole-query trace. For that trace, prove genuine-event
+  classification, no synthetic event, certificate weight sum equal to trace
+  length, certificate weight sum equal to the `Costed` cost of the same
+  execution, and the resulting bound by `76`.
 - Keep controller dispatch, input/register access, arithmetic, branching,
   decoding, local scanning, candidate merging, trace assembly, and validity
   checking documentary and uncharged. They are not constructors of the current
@@ -2227,6 +2231,11 @@ Rejected alternatives:
   the accepted execution emits or simulates those operations. E1 must instead
   define its own richer instruction semantics and prove a simulation of the
   current execution.
+- Keep the broader `chargedWeight` name for the direct `TraceEvent` certificate.
+  It suggests the same semantics as `TraceResult.toCosted`, but `toCosted`
+  charges full trace length and would count a synthetic compatibility marker.
+  The narrower `nonSyntheticWeight` name records that equality to `Costed.cost`
+  is a canonical no-synthetic theorem, not a general definition.
 - Claim absolute optimality below `76` without a coexistence/lower-witness
   theorem. U3 proves the tight operation-wise compositional cap established by
   the current semantics, not global minimality among all correlated queries.
@@ -2237,11 +2246,12 @@ Consequences:
 
 The public constant is `76`; `328`, `4144`, `118`, and `196727` remain
 transitional or compatibility/history. Exact modeled cost is the emitted trace
-length, and the direct actual-event weight sum is checked equal to both that
-length and the same `Costed` cost. A synthetic event cannot satisfy the genuine
-classification and would break the weight-sum/length equality. Controller work
-remains explicitly documentary and uncharged. E1 must define a fully charged
-small-step machine and prove its simulation. M1 must still
+length. The direct `nonSyntheticWeight` certificate sum is checked equal to both
+that length and the same `Costed` cost only because the canonical trace has no
+synthetic marker. A synthetic event cannot satisfy the genuine classification
+and would break the certificate-weight/length equality. Controller work remains
+explicitly documentary and uncharged. E1 must define a fully charged small-step
+machine and prove its simulation. M1 must still
 connect querying to a serialized payload representation, and construction
 work must still account for preprocessing.
 

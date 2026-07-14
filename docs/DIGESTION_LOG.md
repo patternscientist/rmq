@@ -1004,12 +1004,16 @@ so `328-252=76`. Fringes have no slack. This is a tight compositional cap for
 the proved component inequalities. U3 does not prove that one query realizes
 all maxima simultaneously or that no correlated global cap below 76 exists.
 
-Live assumptions are the current trace weights: actual emitted
-`WordRAM.TraceEvent.readWord`, `.wordRank`, and `.wordSelect` values each cost
-one, while `.syntheticCostOnlyPrimitive` costs zero. The canonical execution
-now proves that every emitted event is genuine, no synthetic event occurs, and
-the direct weight sum equals both trace length and the `Costed` cost of the same
-execution. Instruction dispatch, input/register access, arithmetic,
+Live assumptions are the current trace/accounting boundary:
+`TraceResult.toCosted` charges trace length and therefore would count a
+synthetic compatibility marker if one were present. The separate
+`WordRAM.TraceEvent.nonSyntheticWeight` certificate assigns one to actual
+emitted `.readWord`, `.wordRank`, and `.wordSelect` values and zero to
+`.syntheticCostOnlyPrimitive`. The canonical execution now proves that every
+emitted event is genuine, no synthetic event occurs, and only for that
+no-synthetic trace the certificate sum equals both trace length and the
+`Costed` cost of the same execution. Instruction dispatch, input/register
+access, arithmetic,
 option/branch control, fixed-width decode, local BP scan, candidate merge,
 trace assembly, and validity checking remain documentary uncharged omissions;
 they are not a checked parallel instruction vocabulary. The result is not
@@ -1028,8 +1032,9 @@ Coordinator reconstruction rejected the first candidate's hand-written
 controller-operation vocabulary because no evaluator produced it. The revised
 U3 evidence uses the actual `WordRAM.TraceEvent` type only. As a counterfactual
 sanity check, the synthetic constructor cannot satisfy the genuine-event
-classification, and its occurrence anywhere forces the weight sum strictly
-below trace length. Thus event classification, synthetic exclusion, weighted
-trace, trace length, `Costed` cost, and the `76` cap now describe one checked
-computation. This is candidate-complete evidence; blind exact-commit audit
+classification, and its occurrence anywhere forces the certificate sum strictly
+below trace length. Thus event classification, synthetic exclusion,
+non-synthetic certificate weights, trace length, `Costed` cost, and the `76`
+cap now describe one checked computation. This is candidate-complete evidence;
+blind exact-commit audit
 remains coordinator-owned.

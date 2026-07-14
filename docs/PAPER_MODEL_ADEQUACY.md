@@ -195,10 +195,13 @@ and evaluated by
 The operational bridge classifies every event in the actual canonical trace as
 `readWord`, `wordRank`, or `wordSelect`, excludes
 `syntheticCostOnlyPrimitive`, and proves that the direct
-`WordRAM.TraceEvent.chargedWeight` sum equals both trace length and the
-`Costed` cost of the same execution. The weighted trace is then bounded by
-`76`. A counterfactual theorem proves that inserting a synthetic event anywhere
-would make the weight sum strictly smaller than trace length. The transitional
+`WordRAM.TraceEvent.nonSyntheticWeight` certificate sum equals both trace
+length and the `Costed` cost of the same execution. This equality is proved for
+the canonical no-synthetic trace; `TraceResult.toCosted` itself charges trace
+length and would count a synthetic compatibility marker if one were present.
+The non-synthetic-weighted trace is then bounded by `76`. A counterfactual
+theorem proves that inserting a synthetic event anywhere would make the
+certificate sum strictly smaller than trace length. The transitional
 `328` theorem remains for U2 comparison.
 
 The supplied-store and full-model companions transfer the same `76` bound
