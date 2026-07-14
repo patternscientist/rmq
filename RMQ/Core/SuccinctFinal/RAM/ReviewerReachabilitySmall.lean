@@ -1428,9 +1428,10 @@ private theorem reviewerIncreasing_canonical_successful_claims :
 
 /--
 The twelve always-small reviewer sources have successful occurrences in real
-closed valid queries.  Sources `1` through `8` and `17` through `19` occur in
-the singleton execution; canonical source `20` occurs in the increasing
-length-sixteen cross-block execution.
+closed valid queries. Source ordinals `1` through `11` are witnessed by the
+singleton execution, whose successful reads include segments `0` through `8`
+and `17` through `19`; canonical source ordinal `20` is witnessed by the
+increasing-length-sixteen cross-block execution.
 -/
 theorem concreteBPNativeSuccinctRMQReviewerSource_small_successful_closed_valid_occurrence
     (source : ReviewerSource)

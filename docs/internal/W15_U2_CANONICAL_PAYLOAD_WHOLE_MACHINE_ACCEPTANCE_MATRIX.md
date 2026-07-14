@@ -837,7 +837,7 @@ and a fresh blind exact-commit audit are the mandatory next consumers before
 | `lake exe rmq_succinct_classic_validate` | Pass: 498 valid/invalid windows across 43 deterministic inputs, including route, exact `328`, erasure, backing, dependency, and repeated-equal-event structural evidence. |
 | `lake exe rmq_succinct_classic_cost_harness` | Pass: all invalid, same-block, and cross-block windows agree with reference `List Int` semantics and remain below exact canonical bound `328`. |
 | Strict design-decision check | Pass across 34 changed files. |
-| Strict claim-drift scan | Pass: 542 classified hits, 0 strict failures. |
+| Strict claim-drift scan | Pass: 544 classified hits, 0 strict failures. |
 | Prohibited-token and `native_decide`/`Lean.ofReduceBool` scans | No matches across live RMQ, example, paper, facade, archive, and lake roots. |
 | `git diff --check` | Pass. |
 | `scripts/gate.ps1` | `SHIM LINT PASS`; `GATE PASS`. |
