@@ -148,15 +148,19 @@ For each completed worker branch:
 15. Update theorem maps, artifact docs, and design logs if the public surface or
    architecture changed.
 16. For a public capstone, trust-boundary change, combined space/execution
-   theorem, or roadmap-node closure, launch a fresh blind exact-commit audit
-   before merge or closure. Do not give that auditor the worker verdict.
-17. Record `ACCEPTED` only after the coordinator gate and any mandatory blind
-   audit; otherwise continue, port, or reject the branch.
-18. Update lifecycle state and retire the worktree/branch when evidence is
-   preserved.
-19. Re-read the current roadmap/frontier and produce the best next ambitious
-   prompt or prompt set, using parallel workers when dependencies are genuinely
-   independent.
+    theorem, or roadmap-node closure, launch a fresh blind exact-commit audit
+    before merge or closure. Do not give that auditor the worker verdict.
+17. For a report-only audit branch, verify report-sensitive checks on the
+    committed report tree. A green gate run before the report was written does
+    not certify the submitted audit commit; inspect and rerun strict claim
+    drift rather than granting report paths a broad allowance.
+18. Record `ACCEPTED` only after the coordinator gate and any mandatory blind
+    audit; otherwise continue, port, or reject the branch.
+19. Update lifecycle state and retire the worktree/branch when evidence is
+    preserved.
+20. Re-read the current roadmap/frontier and produce the best next ambitious
+    prompt or prompt set, using parallel workers when dependencies are genuinely
+    independent.
 
 Do not merge a branch that merely reports an honest caveat when a local theorem
 repair is still available.

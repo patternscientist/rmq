@@ -1927,7 +1927,8 @@ Evidence:
 
 ## DD-20260713-004: occurrence-indexed provenance and one operational source relation
 
-Status: implemented by the W19 candidate; coordinator audit pending.
+Status: Accepted for U2 at `4f7ec8be47ecd65b2859a3784fadeab48a629e4e`
+after coordinator reconstruction and the A04 blind audit.
 
 Context:
 
@@ -2013,7 +2014,8 @@ same-predicate and repeated-event regressions before coordinator acceptance.
 
 ## DD-20260713-005: closed-valid occurrence claims and symbolic source families
 
-Status: implemented W19 candidate; coordinator audit pending.
+Status: Accepted for U2 at `4f7ec8be47ecd65b2859a3784fadeab48a629e4e`
+after coordinator reconstruction and the A04 blind audit.
 
 Decision:
 
@@ -2101,8 +2103,8 @@ Evidence:
 
 ## DD-20260713-006: separate global manifest liveness from current-query provenance
 
-Status: implemented by the continued W19 composition-repair candidate;
-coordinator audit pending.
+Status: Accepted for U2 at `4f7ec8be47ecd65b2859a3784fadeab48a629e4e`
+after coordinator reconstruction and the A04 blind audit.
 
 Context:
 

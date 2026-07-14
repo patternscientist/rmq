@@ -3838,9 +3838,9 @@ theorem evalWordTrace_refines_eval
 Execute a whole-query program in the all-size global-segment replay.
 
 This preserves one `WordRAM.TraceEvent` stream under the final query's shared
-payload-store layout. The close/LCA instruction uses the total all-size trace,
-so tiny/inactive fallback work is kept as synthetic word primitives while real
-payload reads retain global segment addresses.
+payload-store layout. The close/LCA instruction uses the total all-size
+structural trace, so events come from payload-backed reads or charged word
+primitives while payload reads retain global segment addresses.
 -/
 def evalGlobalWordTrace (shape : Cartesian.CartesianShape)
     (left right : Nat) :
@@ -4399,10 +4399,9 @@ All-size final BP-native RMQ query as one globally segmented
 `WordRAM.TraceEvent` result.
 
 Unlike `concreteBPNativeSuccinctRMQWholeQueryWordTraceCosted`, the component
-payload reads already use the final shared segment layout. Unlike the
-large-regime result below, tiny/inactive close-navigation fallback work is
-retained as synthetic word-primitive events rather than structurally replaying
-the positive close navigator.
+payload reads already use the final shared segment layout. The close-navigation
+leg uses the all-size structural replay, including on small shapes, rather than
+emitting synthetic fallback events.
 -/
 def concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
     (shape : Cartesian.CartesianShape)
@@ -7529,7 +7528,8 @@ theorem
 Public all-size execution-story packet for the globally segmented final RMQ
 trace. It removes the large-regime premise from the store-backed story: every
 actual payload read in the final query agrees with the concrete global read
-store, and any tiny/inactive fallback events are explicit word primitives.
+store, and the close-navigation leg uses the same structural route at every
+size.
 -/
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story
     (shape : Cartesian.CartesianShape)

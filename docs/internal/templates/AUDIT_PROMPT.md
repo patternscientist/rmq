@@ -75,6 +75,10 @@ Adversarial requirements:
   width/capacity relation to input size.
 - Treat claim-drift policy and allowlists as auditable claims, not ground truth.
 - Cite evidence for every finding and positive claim.
+- After writing the durable report, rerun strict claim drift, applicable strict
+  design-decision checks, and `git diff --check` on the final report tree. A
+  pre-report pass does not certify the report commit. Paraphrase forbidden
+  current-claim examples instead of adding a broad report-path allowance.
 
 Checks:
 - git status --short --branch
@@ -93,4 +97,8 @@ Report:
 7. Roadmap alignment in letter and spirit.
 8. Best next target.
 9. Report path or explicit chat-only status.
+
+Before committing a report-only branch, record the outcomes of the final-tree
+report-sensitive checks above. Do not claim the submitted commit is green when
+those checks ran only before the report was added.
 ```

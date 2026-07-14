@@ -33,7 +33,8 @@ The old zero-block evaluator and Ready/route-split `118` discussion below is
 compatibility history, not part of the `RMQPaper` reviewer route.
 
 
-Snapshot: 2026-07-13 (W19 candidate; coordinator audit pending). This packet is a focused reviewer note for the
+Snapshot: 2026-07-14 (U2 accepted after the A04 blind audit of exact target
+`4f7ec8be47ecd65b2859a3784fadeab48a629e4e`). This packet is a focused reviewer note for the
 first-order Word-RAM refinement boundary used by the interpreted RMQ and
 rank/select theorem surfaces.
 

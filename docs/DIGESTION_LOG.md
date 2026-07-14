@@ -67,6 +67,32 @@ spokes:
   level-index potential checkpoints. These still leave residual/large-credit
   structure explicit; the Tarjan inverse-Ackermann theorem remains open.
 
+## U2 Acceptance Digest (2026-07-14)
+
+U2 is accepted at exact target
+`4f7ec8be47ecd65b2859a3784fadeab48a629e4e` after coordinator reconstruction
+and the fresh blind A04 audit. The accepted route uses one public
+`SuccinctClassic.buildPayload`, one exact physical-word representation of that
+payload, one supplied-store evaluator with ordered positional reads, and one
+occurrence-preserving provenance relation. The same objects reach final model
+adequacy, the ordinary `List Int` theorem, `RMQ.Headlines.RMQ`, and `RMQPaper`.
+
+In plain English, the public space theorem and the executable model now talk
+about the same represented data. Every successful read is backed by that data;
+failed and repeated reads remain in the execution-derived footprint; every
+emitted read has an indexed producer receipt; and every counted source has a
+successful witness in some valid top-level query. One input-derived word width
+bounds the whole physical machine, and the current all-size modeled cap is the
+checked transitional constant `328`.
+
+The live boundary remains explicit: modeled ticks are not Lean wall-clock time,
+symbolic reachability witnesses are proof-only, and global source liveness does
+not mean every query reads every source. A04 found no proof or architecture
+defect. Its sole P3 finding was stale comment text describing synthetic
+fallback; integration corrected that prose. The next skeptical question is U3:
+derive the cleanest explained all-size constant while preserving the accepted
+single-payload, supplied-store, footprint, and provenance chain.
+
 ## W19 Global-Liveness / Query-Provenance Composition Digest (2026-07-13)
 
 The W19 occurrence and symbolic witness proofs did not change. The repaired

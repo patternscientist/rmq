@@ -129,6 +129,13 @@ Material reports live under `docs/internal/audit_reports/`. Report-only
 auditors may write exactly one assigned report file; source files remain
 read-only.
 
+The report itself is part of the submitted tree. After writing it, the auditor
+reruns strict claim drift, applicable strict design-decision checking, and
+`git diff --check`. A gate run on the audited source before the report existed
+does not certify the report commit. Counterexample prose should be paraphrased
+or use an already justified narrow role allowance; audit-report paths do not
+receive a blanket claim-policy exemption.
+
 ## External Packet Minimum
 
 Use `scripts/make_audit_packet.ps1` plus task-specific material. Include base,

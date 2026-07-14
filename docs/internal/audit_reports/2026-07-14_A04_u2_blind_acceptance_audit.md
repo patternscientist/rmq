@@ -356,7 +356,7 @@ This is concrete corroboration, not the proof of the universal theorem.
 | Manifest liveness is only enumeration or a hand-written consumer label. | Stale. P requires a successful closed valid indexed occurrence and an evaluator invocation edge. |
 | Component may-read or event-value membership is being sold as liveness. | Stale. Those compatibility facts are separate; P/Q and current-query occurrence provenance are load-bearing. |
 | Equal events collapse provenance. | Stale. Occurrence receipts carry global/instruction/local positions. |
-| The canonical route still dispatches on Ready/Active, zero block, or `2^128`. | Stale. Such surfaces are legacy/proof-only; the active route is all-size structural. |
+| The reviewer path still dispatches on readiness, zero block, or the historical large-size threshold. | Stale. Such surfaces are legacy/proof-only; the active route is all-size structural. |
 | `328` merely aliases `4144` or `196727`. | Stale. The public definition and direct evaluator theorem changed; old numbers are explicitly compatibility/legacy. |
 | A proof-only answer or uncounted live store survives. | Stale. The answer comes from the supplied physical-store evaluation, successful reads are charged/backed, and physical erasure equals the one public payload. |
 | Proof-only giant sparse witnesses enter native binaries. | Stale. The import seam keeps them on the theorem/provenance side. |
@@ -400,8 +400,8 @@ reason to withhold U2 acceptance.
 | `lake exe rmq_succinct_classic_validate` | Pass: 498 windows over 43 deterministic inputs. |
 | `lake exe rmq_succinct_classic_cost_harness` | Pass: all reference answers/routes agree; canonical bound is 328. |
 | `powershell -ExecutionPolicy Bypass -File scripts/claim_drift_policy_regression.ps1` | Pass: 26 reject, 15 accept, 5 path/context/bypass; tracked state unchanged. |
-| `powershell -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -Strict` | Pass: 581 hits, 0 strict failures. |
-| `powershell -ExecutionPolicy Bypass -File scripts/gate.ps1` | First sandboxed run could not reach GitHub; rerun with network permission passed in 1,100 seconds and ended `GATE PASS`. |
+| `powershell -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -Strict` | The audited source tree passed with 581 hits and 0 strict failures before the report was written. Initial report commit `f5c2ab0` then failed CI because one stale-objection quotation restated a forbidden current claim. Coordinator integration paraphrased that quotation and reran the strict scan on the final report tree successfully. |
+| `powershell -ExecutionPolicy Bypass -File scripts/gate.ps1` | The audited target passed after network permission. Initial report commit `f5c2ab0` later failed inside its strict claim scan because the report had not been included in the pre-report run. Coordinator integration reran the full gate on the corrected final tree successfully. |
 | Required trust hygiene `rg` scan | No matches. |
 | `rg -n "native_decide|Lean\.ofReduceBool" RMQ` | No matches. |
 
@@ -425,3 +425,20 @@ in the 328 accounting is necessary, and whether the capacity constant can be
 tightened, while insisting that any optimization preserve exact ordered
 footprints, failed reads, supplied-store dependency, and the one-payload public
 chain.
+
+## Coordinator disposition
+
+Disposition date: 2026-07-14.
+
+- The report and its `merge-ready with follow-up` verdict are accepted.
+- REQ-01 through REQ-08 are accepted for exact audited target
+  `4f7ec8be47ecd65b2859a3784fadeab48a629e4e`; U2 is recorded as `ACCEPTED`.
+- Initial report commit `f5c2ab03a064e56f90a17574041cd116568416d8`
+  failed CI because its stale-objection table quoted a forbidden current claim
+  after the auditor's last strict scan. The coordinator repaired the report and
+  reran report-sensitive checks on the final tree. This process miss does not
+  alter the independently checked Lean verdict.
+- The P3 finding is closed by the immediately following integration change,
+  which corrects the three stale comments without changing executable or
+  theorem content.
+- U3, not another U2 repair, is the next proof campaign.

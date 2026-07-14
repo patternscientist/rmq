@@ -1771,7 +1771,8 @@ domains, and provenance level from acceptance matrices is worth automating.
 
 ## WDD-20260713-004: W19 applies the predicate-parity gate
 
-Status: implemented candidate; coordinator audit pending.
+Status: Accepted after coordinator reconstruction and the A04 blind audit of
+exact U2 target `4f7ec8be47ecd65b2859a3784fadeab48a629e4e`.
 Date: 2026-07-13; amended 2026-07-14.
 
 Decision:
@@ -1800,7 +1801,8 @@ blind exact-commit audit. U3 remains gated on U2 acceptance.
 
 ## WDD-20260713-005: gate global liveness separately from query provenance
 
-Status: implemented candidate; coordinator audit pending.
+Status: Accepted after coordinator reconstruction and the A04 blind audit of
+exact U2 target `4f7ec8be47ecd65b2859a3784fadeab48a629e4e`.
 Date: 2026-07-13.
 
 Decision:
@@ -2015,3 +2017,67 @@ Category-level regression evidence:
 
 The final local/remote candidate SHA remains a post-push lifecycle fact and is
 recorded in the acceptance ledger and handoff only after it is observed.
+
+## WDD-20260714-001: certify the submitted audit report tree
+
+Status: Accepted.
+Date: 2026-07-14.
+Scope: report-only external audits and coordinator acceptance gates.
+
+Decision:
+
+An auditor must rerun report-sensitive checks after the durable report is
+written and before committing it. Strict claim drift, applicable strict design
+decision checking, and `git diff --check` run on the final report tree. The
+coordinator independently verifies the committed report tree before accepting
+the audit. Audit-report paths receive no blanket claim-policy allowance.
+
+Context:
+
+A04 correctly audited U2 target `4f7ec8b`, but ran the strict claim scan before
+writing its report. The report's stale-objection table then quoted a forbidden
+current canonical/`2^128` claim. Commit `f5c2ab0` therefore failed both the
+aggregate repository gate and the separate strict scan in CI run
+`29354845274`, even though the audited Lean target itself had green CI. The
+mathematical verdict remained sound, but the submitted audit artifact was not
+gate-clean and the completion response did not preserve that distinction.
+
+Options considered:
+
+- Treat a pre-report gate as sufficient because the report is process evidence.
+- Add a broad allowance for `docs/internal/audit_reports/`.
+- Rerun report-sensitive checks on the final tree and paraphrase forbidden
+  counterexamples unless an existing narrow role allowance is justified.
+
+Rationale:
+
+Audit reports are publication-adjacent provenance and can themselves introduce
+claim drift. A blanket path allowance would hide exactly the class of false
+current-facing statement the scanner protects against. Final-tree checks are
+cheap relative to the proof audit and make the submitted commit, report, and
+claimed verification ledger refer to the same object.
+
+Consequences:
+
+- `rmq-audit`, `AUDIT_PROMPT.md`, and `AUDIT_PROTOCOL.md` require post-report
+  final-tree checks.
+- `rmq-coordinator` independently verifies report-only commits before recording
+  `ACCEPTED`.
+- Reports distinguish checks run on the audited source from checks run after
+  the report edit.
+- Counterexample wording is paraphrased or role-scoped; policy allowlists do not
+  expand merely to accommodate reports.
+
+Evidence:
+
+- Failed A04 report commit `f5c2ab03a064e56f90a17574041cd116568416d8`.
+- GitHub Actions CI run `29354845274` and its exact strict-scan failure.
+- Corrected A04 report and final-tree verification in the U2 acceptance
+  integration change.
+
+Publication-facing significance:
+
+The audit trail can be cited as evidence of falsification-oriented review
+without asking readers to excuse a report that bypasses the repository's own
+claim controls. The report's command ledger now identifies which exact tree was
+checked.

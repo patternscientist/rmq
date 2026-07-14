@@ -944,3 +944,25 @@ commands pass after that split; no environment or stack override is required.
 | `claim_drift_policy_regression.ps1` | Pass: `rg --pcre2` rejects five canonical-activation mutations (`uses`, `requires`, `has`, exponent-first, and spaced/unspaced forms) and accepts five truthful role-scoped fixtures (three negations, compatibility companion, proof-only sparse-local `N = 2^128` witness). It is now invoked by `scripts/gate.ps1`. |
 | Prohibited-token and `native_decide`/`Lean.ofReduceBool` scans | No matches in live `RMQ` / `lakefile.toml` scope. |
 | `git diff --check` | Pass. |
+
+## Coordinator final disposition
+
+Disposition date: 2026-07-14.
+
+- Exact accepted U2 target:
+  `4f7ec8be47ecd65b2859a3784fadeab48a629e4e`.
+- Fresh blind audit report: A04 at
+  `f5c2ab03a064e56f90a17574041cd116568416d8`.
+- Final verdict: **ACCEPTED**. The coordinator independently reconstructed the
+  object-identity, physical-execution, occurrence-provenance, word-width, cost,
+  and public-consumption chains, then accepted A04's independent REQ-01 through
+  REQ-08 verdict. The inherited invariants and adversarial cases are closed by
+  the same checked evidence summarized in A04.
+- A04's sole P3 finding concerned three stale comments in
+  `SuccinctFinalRAM.lean`; the adjacent integration change corrects the prose
+  without changing definitions, theorem statements, payloads, traces, or cost.
+- Historical open, candidate, and repair-required rows above remain as a record
+  of the acceptance campaign. This final disposition supersedes them only for
+  the exact accepted target.
+- U3 is the next active roadmap node. It may improve the explained constant but
+  must preserve U2's one-payload physical execution and provenance chain.

@@ -100,5 +100,13 @@ evidence, stale objections, verification outcomes, roadmap alignment, and the
 best next target. Report-only auditors may write exactly the assigned report
 file; proof/source files remain read-only.
 
+After the report text is complete, rerun every report-sensitive final-tree
+check before committing. At minimum run strict claim drift, strict design
+decision checking when applicable, and `git diff --check` against the tree that
+actually contains the report. A gate run from before the report edit is not
+evidence that the report commit passes. When a report must discuss a forbidden
+claim as a counterexample, paraphrase it or use an explicitly allowed
+historical/quoted context rather than silently expanding an allowlist.
+
 Afterward the coordinator verifies the report, records dispositions, updates
 the worker lifecycle/roadmap, and engineers the next prompt set.

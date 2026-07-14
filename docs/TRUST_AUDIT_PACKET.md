@@ -26,7 +26,8 @@ primitive-operand bounds are checked at the composed consumer. The transitional
 all-size cap is exactly `328`; older route constants are compatibility history.
 
 
-Snapshot: 2026-07-13 (W19 candidate; coordinator audit pending). This is the compact packet to hand to a skeptical
+Snapshot: 2026-07-14 (U2 accepted after the A04 blind audit of exact target
+`4f7ec8be47ecd65b2859a3784fadeab48a629e4e`). This is the compact packet to hand to a skeptical
 Lean/formalization reviewer before asking for a broader library-readiness
 review. It focuses on the public succinct RMQ headline theorem, its alias
 chain, its cost/space model, and the main anti-oracle checks.

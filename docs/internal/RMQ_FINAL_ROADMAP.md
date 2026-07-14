@@ -121,8 +121,10 @@ Acceptance:
 
 ### U2. Build One Uniform Local/Interior Directory Route
 
-Status: W19 global/per-query composition repair candidate; coordinator
-reconstruction and blind audit pending.
+Status: **ACCEPTED** at exact target
+`4f7ec8be47ecd65b2859a3784fadeab48a629e4e` after coordinator reconstruction
+and the fresh blind A04 audit recorded at
+`f5c2ab03a064e56f90a17574041cd116568416d8` on 2026-07-14.
 
 Every size uses `RelativeRmm.canonicalLayout` and the same close/LCA reviewer
 route. One exhaustive typed 20-source universe includes canonical close.
@@ -177,14 +179,16 @@ Acceptance evidence:
 - reviewer physical successful-read backing and whole-query word/address bounds
   in the final adequacy packet.
 
-The worker has discharged W19's occurrence, invocation, common-predicate, and
-all-source valid-execution obligations. Only the coordinator may replace this
-status with `ACCEPTED`, after independently reconstructing the amended matrix
-and obtaining a fresh blind exact-commit audit.
+The coordinator independently reconstructed the frozen matrix and accepted
+A04's finding-free REQ-01--REQ-08 verdict. A04's sole P3 finding concerned
+three stale comments describing synthetic fallback; the integration change
+corrected those comments without changing definitions or theorem statements.
+U2 is closed, and the single-payload, physical-store, occurrence-provenance,
+word-width, and uniform-`328` chain is now the accepted base for U3.
 
 ### U3. Reprove One Principled All-Size Cost Bound
 
-Status: next after U2 acceptance; do not start while coordinator audit is open.
+Status: next active proof node after U2 acceptance.
 
 The uniform route currently has the honest checked transitional sum `328`,
 proved by
