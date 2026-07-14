@@ -71,6 +71,12 @@ interpreter if a later target needs it, further CSLib-style extraction, an
 optional flatter encoded/payload-only presentation of the succinct theorem, and
 the next data-structure spoke.
 
+U3 cost derivation is now candidate-complete: the accepted all-size execution
+has the checked charged-trace algebra
+`2*13 + (2*4 + 2*4 + 30) + 4 = 76`, with exact trace-length accounting. This
+does not close the later E1 fully charged small-step machine, M1 serialized
+payload query, preprocessing, or conventional word-RAM obligations.
+
 Dependency order: A -> B -> (C, D). C can progress in parallel with A/B when it
 is pure extraction/generalization. D-LCA depends on the A/B cost/refinement
 story if it is claimed as an end-to-end time theorem.

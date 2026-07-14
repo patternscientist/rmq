@@ -89,8 +89,11 @@ The strict detector treats a canonical execution's 2^128 mention as suspicious b
   activated-at, threshold-free, exponent-first, and spaced/unspaced forms.
   Narrow role allowances keep explicit negation, historical records,
   compatibility companions, and proof-only sparse-local witnesses accepted.
-- `328` is the current checked transitional canonical reviewer bound; U3 owns
-  any final explained constant.
+- `76` is the current principled canonical charged-trace bound, with exact cost
+  equal to emitted trace length. It charges payload reads and word-rank/select
+  primitives; controller operations remain explicitly uncharged.
+- `328` is the historical checked transitional U2 bound, retained for audit
+  comparison rather than as the paper-facing cost.
 - `4144`, Ready-regime `118`, the zero-block route, and `196727` are
   compatibility/history only, not the canonical reviewer execution.
 - W15's post-hoc physical-result construction and W17's static category join

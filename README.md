@@ -71,10 +71,13 @@ The RMQ-only paper aliases live in
 | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime` | Large-regime WordRAM variant: same two-sided theorem shape, with an explicit size premise that routes the compact close/LCA leg through the Ready structural replay; the public all-size route is now structural as well. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` | All-size execution-story theorem for the final succinct RMQ query: the costed query refines one globally segmented trace, every event is either a payload read or bounded word primitive, and every read agrees with one concrete global payload store. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory` | Store-extensional all-size execution story: any read store agreeing with the concrete global store on the emitted payload-read events validates the same final-query trace. |
-| `RMQ.Headlines.succinctRMQCanonicalInteriorDirectoryProfileAllSize` | Canonical all-size interior profile: exactness, `240`, component store, execution footprint, successful-read backing, and reviewer-width guarantees. |
+| `RMQ.Headlines.succinctRMQCanonicalInteriorDirectoryProfileAllSize` | Canonical all-size interior profile: exactness, component store, execution footprint, successful-read backing, and reviewer-width guarantees. The bounded accepted execution has the separate U3 charged-trace cap `30`; `240` remains the transitional interface cap. |
 | `RMQ.Headlines.succinctRMQCanonicalReviewerMachineWordsComponentSlice` | Exact physical machine-word placement of the canonical component after the counted prefix. |
 | `RMQ.Headlines.succinctRMQCanonicalInteriorPhysicalFootprintFits` | Every physical address consumed by the canonical interior execution fits the pre-execution reviewer word width. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe` | Uniform canonical all-size cost theorem with checked transitional bound `328`. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe` | Paper-facing U3 theorem: the unchanged uniform canonical trace has charged-trace cost at most `76`. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostEqTraceLength` | Exact accounting bridge: modeled cost equals emitted charged-event trace length. |
+| `RMQ.Headlines.succinctRMQChargedTraceCostAlgebra` | Operation algebra `2*select13 + (2*rank4 + 2*fringe4 + interior30) + rank4`, reusable by E1. |
 | `RMQ.Headlines.succinctRMQCompatibility4144WholeQueryGlobalWordTraceCostedCostLe` | Compatibility-only route-split `4144` theorem; it is not the canonical reviewer route. |
 | `RMQ.Headlines.succinctRMQCanonicalTransitionalQueryCostEq` | The canonical transitional query-cost expression computes to `328`. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | All-size structural execution story with raw positive same-block decoding and canonical component-store cross-block replay; there is no zero-block dispatch. |
@@ -139,8 +142,8 @@ singleton regression keeps the equal events at global positions `0` and `12`
 as distinct obligations. The source witnesses use actual successful closed
 valid executions, including symbolic large witnesses for sources `12`--`19`;
 component may-read and W18 event-value facts remain compatibility facts. The
-checked transitional all-size cap remains `328`; U3 owns the final explained
-constant. Ready `118`, route-split `4144`, zero-block, and `196727` declarations
+principled U3 charged-trace cap is `76`; the transitional `328` theorem remains
+for historical comparison. Ready `118`, route-split `4144`, zero-block, and `196727` declarations
 remain compatibility/history surfaces and have no reverse edge into the
 reviewer route.
 
@@ -332,7 +335,8 @@ imports, this material):
 ## Current Development Docket
 
 The RMQ capstone is in place with the uniform canonical reviewer route and its
-checked transitional all-size cap `328`. U3 owns the final explained constant.
+principled all-size charged-trace cap `76`; the U3 theorem chain is a completed
+branch candidate pending the normal exact-commit audit boundary.
 The older route-split `4144`, Ready `118`, zero-block, and `196727` statements
 remain compatibility/history surfaces. The development frontier is now to
 package, calibrate, and reuse the infrastructure:
@@ -342,7 +346,10 @@ package, calibrate, and reuse the infrastructure:
    stories where that materially clarifies theorem surfaces;
 2. push the union-find spoke from the current sequence/event scorecard toward a
    true inverse-Ackermann amortized theorem over strict residual events; and
-3. promote shared cost, refinement, lower-bound, and amortized-analysis pieces
+3. use the U3 operation vocabulary as E1's simulation interface for a fully
+   charged small-step machine, keeping M1 serialized-payload query and complete
+   preprocessing obligations separate; and
+4. promote shared cost, refinement, lower-bound, and amortized-analysis pieces
    into a more neutral library surface only when concrete reuse demands it.
 
 License: Apache-2.0; see [`LICENSE`](LICENSE).

@@ -37,9 +37,7 @@ structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
   cost_le :
     (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
       shape left right).cost <=
-        3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
-          SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
-          SuccinctSelect.sparseDenseFalseSelectQueryCost
+        concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost
   event_read_or_primitive :
     forall event,
       event ∈
@@ -267,7 +265,7 @@ theorem concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
     { toCosted_eq := hcost
       refines_canonical_interpreted := hrefine
       cost_le :=
-        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace
           shape left right
       event_read_or_primitive := hclass
       matches_global_read_store := hstore
@@ -576,6 +574,19 @@ theorem concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_
             SuccinctSelect.sparseDenseFalseSelectQueryCost := by
   exact
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_canonicalTransitional
+      shape store hfoot left right
+
+theorem concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_principledAllSizeChargedTrace
+    {shape : Cartesian.CartesianShape} {store : WordRAM.ReadStore}
+    (hfoot :
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store (concreteBPNativeSuccinctRMQGlobalReadStore shape))
+    (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+      shape store left right).cost <=
+        concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost := by
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_principledAllSizeChargedTrace
       shape store hfoot left right
 
 end SuccinctFinal

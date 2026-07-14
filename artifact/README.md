@@ -161,7 +161,8 @@ things:
   canonical, supplied-store, trace, and costed list surfaces;
 - a linear reviewer capacity and query-independent logarithmic word width
   bounding physical words, physical addresses, and primitive operands/results;
-- the checked canonical transitional all-size modeled query cap `328`; and
+- the checked principled all-size charged-trace query cap `76`, with exact
+  equality between modeled cost and emitted trace length; and
 - an information-theoretic Catalan/Cartesian-shape RMQ lower bound.
 
 The Ready `118`, route-split `4144`, zero-block, and `196727` theorems remain
@@ -177,7 +178,9 @@ import examples.
 `lake exe rmq_succinct_classic_cost_harness` prints a compact reviewer-facing
 report for deterministic fixtures: input size, half-open query windows,
 returned answer, reference answer, canonical same-block/cross-block route,
-uniform `328` bound, and the modeled `queryCosted.cost` trace/event count.
+uniform `76` charged-trace bound, and the modeled `queryCosted.cost` trace/event
+count. Controller work remains uncharged; this harness is not a conventional
+word-RAM runtime benchmark.
 
 The cost harness has an opt-in construction profile for larger experiments:
 

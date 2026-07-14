@@ -81,7 +81,9 @@ def physicalReadsMatchCanonicalStore
       (RMQ.SuccinctClassic.reviewerPhysicalWords tinyRMQInput) ==
     RMQ.SuccinctClassic.buildPayload tinyRMQInput
 
-#guard RMQ.SuccinctClassic.queryCost == 328
+#guard RMQ.SuccinctClassic.queryCost == 76
+
+#guard RMQ.SuccinctClassic.canonicalTransitionalQueryCost == 328
 
 #guard canonicalQueryRoute tinyRMQInput 2 4 == .sameBlock
 

@@ -2168,3 +2168,75 @@ Evidence:
 - `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`.
 - `RMQ.Headlines.succinctRMQReviewerManifestSemanticAdequacy`.
 - The direct `SuccinctRMQClassic` imports in both validation roots.
+
+## DD-20260714-007: derive U3 from charged operations in the accepted U2 execution
+
+Status: Candidate accepted on the U3 worker branch; coordinator exact-commit
+reconstruction and blind audit remain separate.
+
+Context:
+
+U2 checked a uniform `328` upper bound by using the shared select constant
+`16` for two selects and all three ranks, and the relative-rmM interface cap
+`240` for the interior. That theorem was honest but not reviewer-legible as a
+final operational derivation. U3 had to tighten the bound without changing the
+payload, execution, public dispatch, invalid-range behavior, or trace events.
+
+Decision:
+
+- Keep the accepted canonical execution and define
+  `CanonicalRMQChargedTraceCostAlgebra` with select-close, rank-close,
+  endpoint-fringe, and interior-directory fields. Its whole-query expression
+  is `2*select + (2*rank + 2*fringe + interior) + rank`.
+- Use checked direct caps `select <= 13`, `rank <= 4`, and `fringe <= 4`.
+- Tighten the physical interior by actual fixed-width chunk counts. On every
+  size relevant to a cross-block middle query, relative cells occupy at most
+  two words. When execution crosses a macro boundary, the structural fact
+  `macroSize < blockCount` implies one-word relative cells. This gives local
+  `<=18`, adjacent/left-middle `<=20`, cross-macro `<=30`, and uniform
+  interior `<=30`.
+- Set the paper-facing charged-trace cost to
+  `2*13 + (2*4 + 2*4 + 30) + 4 = 76`. Retain `328` only under names containing
+  `Transitional`; do not add work to preserve it.
+- Expose `CanonicalRMQCostOperation` and `canonicalRMQCurrentTraceWeight` as
+  E1's simulation interface. Payload reads and word-rank/select primitives
+  have weight one. Controller dispatch, input/register access, arithmetic,
+  branching, decoding, local scanning, candidate merging, trace assembly, and
+  validity checking have weight zero in the present model.
+- Consume `76` through the actual global trace, supplied-store footprint
+  transfer, final adequacy, ordinary-list API, headlines, paper root, examples,
+  and axiom inventories. Preserve the U2 theorem and audit artifacts as
+  historical evidence.
+
+Rejected alternatives:
+
+- Rename or re-document `328` without tightening its component inequalities.
+- Preserve `328` with padding, decorative reads, or artificial controller
+  events.
+- Add a Ready/Active or numeric input-size activation threshold to obtain
+  one-word fields.
+- Swap in a new payload, alternate query execution, or semantic answer table.
+- Claim absolute optimality below `76` without a coexistence/lower-witness
+  theorem. U3 proves the tight operation-wise compositional cap established by
+  the current semantics, not global minimality among all correlated queries.
+- Present `76` as conventional word-RAM time, serialized-payload query time, or
+  preprocessing complexity.
+
+Consequences:
+
+The public constant is `76`; `328`, `4144`, `118`, and `196727` remain
+transitional or compatibility/history. Exact modeled cost is the emitted trace
+length, but controller work remains explicitly uncharged. E1 must refine the
+named operation weights in a fully charged small-step machine. M1 must still
+connect querying to a serialized payload representation, and construction
+work must still account for preprocessing.
+
+Evidence:
+
+- `GenericSelect.SparseExceptionSelectData.selectCosted_cost_le_thirteen`.
+- `canonicalRelativeRmmRelativeWidth_le_machine_of_macroSize_lt_blockCount`.
+- `canonicalRelativeRmmInteriorRangeMinCosted_cost_le_thirty_of_size_ge_four_of_bounded`.
+- `canonicalLcaCloseCostedWithRankSeed_cost_le_principled`.
+- `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`.
+- `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace`.
+- `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_eq_trace_length`.

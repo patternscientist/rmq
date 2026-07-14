@@ -8565,6 +8565,204 @@ theorem concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted_refines_
                   WholeQueryState.setNat, Costed.bind, Costed.map,
                   Costed.pure]
 
+/--
+Operation vocabulary for the accepted U2 execution and the downstream E1
+fully charged small-step simulation.  The first three constructors are the
+only events charged by the current trace model.
+-/
+inductive CanonicalRMQCostOperation where
+  | payloadWordRead
+  | wordRank
+  | wordSelect
+  | instructionDispatch
+  | inputAccess
+  | registerAccess
+  | optionBranch
+  | natArithmetic
+  | fixedWidthDecode
+  | candidateMerge
+  | localBPScan
+  | traceAssembly
+  | validRangeGuard
+  deriving DecidableEq
+
+/-- Current U2 trace weight; E1 can refine this map without changing the vocabulary. -/
+def canonicalRMQCurrentTraceWeight : CanonicalRMQCostOperation -> Nat
+  | .payloadWordRead | .wordRank | .wordSelect => 1
+  | .instructionDispatch | .inputAccess | .registerAccess | .optionBranch
+  | .natArithmetic | .fixedWidthDecode | .candidateMerge | .localBPScan
+  | .traceAssembly | .validRangeGuard => 0
+
+def canonicalRMQChargedTraceOperations : List CanonicalRMQCostOperation :=
+  [.payloadWordRead, .wordRank, .wordSelect]
+
+def canonicalRMQCurrentlyUnchargedControllerOperations :
+    List CanonicalRMQCostOperation :=
+  [.instructionDispatch, .inputAccess, .registerAccess, .optionBranch,
+    .natArithmetic, .fixedWidthDecode, .candidateMerge, .localBPScan,
+    .traceAssembly, .validRangeGuard]
+
+theorem canonicalRMQChargedTraceOperationWeights_eq :
+    canonicalRMQChargedTraceOperations.map canonicalRMQCurrentTraceWeight =
+      [1, 1, 1] := by
+  rfl
+
+theorem canonicalRMQCurrentlyUnchargedControllerOperationWeights_eq :
+    canonicalRMQCurrentlyUnchargedControllerOperations.map
+        canonicalRMQCurrentTraceWeight =
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] := by
+  rfl
+
+/-- Named component algebra for the accepted canonical charged trace. -/
+structure CanonicalRMQChargedTraceCostAlgebra where
+  selectClose : Nat
+  rankClose : Nat
+  endpointFringe : Nat
+  interiorDirectory : Nat
+
+namespace CanonicalRMQChargedTraceCostAlgebra
+
+def closeLCA (cost : CanonicalRMQChargedTraceCostAlgebra) : Nat :=
+  2 * cost.rankClose + 2 * cost.endpointFringe + cost.interiorDirectory
+
+def wholeQuery (cost : CanonicalRMQChargedTraceCostAlgebra) : Nat :=
+  2 * cost.selectClose + cost.closeLCA + cost.rankClose
+
+end CanonicalRMQChargedTraceCostAlgebra
+
+/-- Tight operation-wise caps established for the unchanged U2 execution. -/
+def concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra :
+    CanonicalRMQChargedTraceCostAlgebra where
+  selectClose := 13
+  rankClose := 4
+  endpointFringe :=
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalEndpointFringeChargedTraceCost
+  interiorDirectory :=
+    SuccinctClose.canonicalRelativeRmmPrincipledInteriorChargedTraceCost
+
+def concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost : Nat :=
+  concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra.wholeQuery
+
+theorem concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCloseCost_eq :
+    concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra.closeLCA =
+      46 := by
+  rfl
+
+theorem concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq :
+    concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost = 76 := by
+  rfl
+
+theorem concreteBPNativeSelectCloseInterpretedCosted_cost_le_thirteen
+    (shape : Cartesian.CartesianShape) (idx : Nat) :
+    (concreteBPNativeSelectCloseInterpretedCosted shape idx).cost <= 13 := by
+  rw [concreteBPNativeSelectCloseInterpretedCosted_refines_selectCloseCosted]
+  simpa [concreteBPNativeSelectCloseCosted,
+    builtGenericSparseExceptionSelectBPCloseAccessFamily,
+    builtGenericSparseExceptionSelectBPCloseAccessDirectory] using
+    GenericSelect.sparseExceptionSelectSource_selectPositionCosted_cost_le_thirteen
+      shape.bpCode false idx
+
+theorem concreteBPNativeRankCloseInterpretedCosted_cost_le_four
+    (shape : Cartesian.CartesianShape) (pos : Nat) :
+    (concreteBPNativeRankCloseInterpretedCosted shape pos).cost <= 4 := by
+  rw [concreteBPNativeRankCloseInterpretedCosted_refines_rankCloseCosted]
+  simpa [concreteBPNativeRankCloseCosted,
+    builtGenericSparseExceptionSelectBPCloseAccessFamily,
+    builtGenericSparseExceptionSelectBPCloseAccessDirectory] using
+    (builtRelativeSplitBPCloseRankData shape).rankCosted_cost_le_four false pos
+
+/--
+Principled U3 cap for the exact direct-bind presentation of the accepted
+canonical execution.  The proof obtains endpoint bounds from the selected
+values themselves and invokes the same close/LCA computation used by U2.
+-/
+theorem concreteBPNativeSuccinctRMQCanonicalQueryInterpretedCosted_cost_le_principledAllSizeChargedTrace
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    (concreteBPNativeSuccinctRMQCanonicalQueryInterpretedCosted
+      shape left right).cost <=
+        concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost := by
+  unfold concreteBPNativeSuccinctRMQCanonicalQueryInterpretedCosted
+  have hleft :=
+    concreteBPNativeSelectCloseInterpretedCosted_cost_le_thirteen shape left
+  have hright :=
+    concreteBPNativeSelectCloseInterpretedCosted_cost_le_thirteen
+      shape (right - 1)
+  have hrankCost : forall pos,
+      (concreteBPNativeRankCloseInterpretedCosted shape pos).cost <= 4 := by
+    intro pos
+    exact concreteBPNativeRankCloseInterpretedCosted_cost_le_four shape pos
+  cases hleftValue :
+      (concreteBPNativeSelectCloseInterpretedCosted shape left).value with
+  | none =>
+      simp [Costed.bind, hleftValue]
+      rw [concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq]
+      omega
+  | some leftClose =>
+      cases hrightValue :
+          (concreteBPNativeSelectCloseInterpretedCosted
+            shape (right - 1)).value with
+      | none =>
+          simp [Costed.bind, hleftValue, hrightValue]
+          rw [concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq]
+          omega
+      | some rightClose =>
+          have hleftExact :
+              (concreteBPNativeSelectCloseInterpretedCosted shape left).erase =
+                SuccinctSpace.bpCloseOfInorder? shape left := by
+            rw [concreteBPNativeSelectCloseInterpretedCosted_refines_selectCloseCosted]
+            exact concreteBPNativeSelectCloseCosted_exact
+              builtGenericSparseExceptionSelectBPCloseAccessFamily shape left
+          have hrightExact :
+              (concreteBPNativeSelectCloseInterpretedCosted
+                shape (right - 1)).erase =
+                  SuccinctSpace.bpCloseOfInorder? shape (right - 1) := by
+            rw [concreteBPNativeSelectCloseInterpretedCosted_refines_selectCloseCosted]
+            exact concreteBPNativeSelectCloseCosted_exact
+              builtGenericSparseExceptionSelectBPCloseAccessFamily
+              shape (right - 1)
+          have hleftSome :
+              SuccinctSpace.bpCloseOfInorder? shape left = some leftClose := by
+            symm
+            simpa [Costed.erase, hleftValue] using hleftExact
+          have hrightSome :
+              SuccinctSpace.bpCloseOfInorder? shape (right - 1) =
+                some rightClose := by
+            symm
+            simpa [Costed.erase, hrightValue] using hrightExact
+          have hleftBound :=
+            SuccinctSpace.bpCloseOfInorder?_bounds shape hleftSome
+          have hrightBound :=
+            SuccinctSpace.bpCloseOfInorder?_bounds shape hrightSome
+          have hlca :=
+            SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalLcaCloseCostedWithRankSeed_cost_le_principled
+              shape (concreteBPNativeRankCloseInterpretedCosted shape)
+              leftClose rightClose 4 hleftBound hrightBound hrankCost
+          have hlcaBound :
+              (SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalLcaCloseCostedWithRankSeed
+                shape (concreteBPNativeRankCloseInterpretedCosted shape)
+                leftClose rightClose).cost <= 46 := by
+            simpa [
+              SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalPrincipledBPCloseChargedTraceCostWithRankSeed,
+              SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalEndpointFringeChargedTraceCost,
+              SuccinctClose.canonicalRelativeRmmPrincipledInteriorChargedTraceCost]
+              using hlca
+          cases hlcaValue :
+              (SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalLcaCloseCostedWithRankSeed
+                shape (concreteBPNativeRankCloseInterpretedCosted shape)
+                leftClose rightClose).value with
+          | none =>
+              simp [concreteBPNativeLCACloseCanonicalInterpretedCosted,
+                Costed.bind, hleftValue, hrightValue, hlcaValue]
+              rw [concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq]
+              omega
+          | some answerClose =>
+              have hrank := hrankCost (answerClose + 1)
+              simp [concreteBPNativeLCACloseCanonicalInterpretedCosted,
+                Costed.bind, Costed.map, hleftValue, hrightValue,
+                hlcaValue]
+              rw [concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq]
+              omega
+
 /-- Honest transitional all-size cost bound for the canonical whole query. -/
 theorem concreteBPNativeSuccinctRMQCanonicalQueryInterpretedCosted_cost_le
     (shape : Cartesian.CartesianShape) (left right : Nat) :
@@ -8742,6 +8940,17 @@ theorem concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted_cost_le
     concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted_refines_canonicalQueryInterpretedCosted]
   exact concreteBPNativeSuccinctRMQCanonicalQueryInterpretedCosted_cost_le
     shape left right
+
+theorem concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted_cost_le_principledAllSizeChargedTrace
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted
+      shape left right).cost <=
+        concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost := by
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted_refines_canonicalQueryInterpretedCosted]
+  exact
+    concreteBPNativeSuccinctRMQCanonicalQueryInterpretedCosted_cost_le_principledAllSizeChargedTrace
+      shape left right
 
 theorem concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted_exact
     {n : Nat} {shape : Cartesian.CartesianShape}
@@ -8948,6 +9157,30 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canon
     concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted_cost_le
       shape left right
 
+/--
+The globally segmented accepted U2 trace has the principled uniform U3 charged
+trace bound.  This is the paper-facing all-size cost theorem.
+-/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+      shape left right).cost <=
+        concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost := by
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_refines_canonicalInterpretedCosted]
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted_cost_le_principledAllSizeChargedTrace
+      shape left right
+
+/-- The modeled cost is exactly the number of emitted charged trace events. -/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_eq_trace_length
+    (shape : Cartesian.CartesianShape) (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+      shape left right).cost =
+        (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+          shape left right).trace.length := by
+  rfl
+
 /-- The canonical transitional whole-query cap computes to 328 modeled ticks. -/
 theorem concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq :
     3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
@@ -9007,17 +9240,17 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedLegacy_cost_le
   concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted_cost_le_routeSplit
     shape left right
 
-/-- Conservative checked corollary retained during U3 cost cleanup. -/
+/-- The principled U3 cap implies the older clean all-size envelope. -/
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_cleanAllSize
     (shape : Cartesian.CartesianShape) (left right : Nat) :
     (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
       shape left right).cost <=
         concreteBPNativeSuccinctRMQCleanAllSizeQueryCost := by
   exact Nat.le_trans
-    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace
       shape left right)
     (by
-      rw [concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq,
+      rw [concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq,
         concreteBPNativeSuccinctRMQCleanAllSizeQueryCost_eq]
       omega)
 

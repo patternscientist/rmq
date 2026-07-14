@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 11,
   "updated": "2026-07-14",
   "terms": [
     {
@@ -79,7 +79,15 @@
     {
       "id": "canonical-transitional-328",
       "pattern": "\\b328\\b",
-      "status": "current-canonical-transitional-bound",
+      "status": "historical-canonical-transitional-bound-not-paper-facing",
+      "strict": false,
+      "allowedPathRegex": "",
+      "allowedLineRegex": ""
+    },
+    {
+      "id": "principled-charged-trace-76",
+      "pattern": "\\b76\\b",
+      "status": "current-canonical-principled-charged-trace-bound-controller-operations-explicitly-uncharged",
       "strict": false,
       "allowedPathRegex": "",
       "allowedLineRegex": ""

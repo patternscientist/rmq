@@ -2081,3 +2081,72 @@ The audit trail can be cited as evidence of falsification-oriented review
 without asking readers to excuse a report that bypasses the repository's own
 claim controls. The report's command ledger now identifies which exact tree was
 checked.
+
+## WDD-20260714-002: migrate the current cost token only after public consumption
+
+Status: Accepted.
+Date: 2026-07-14.
+Scope: U3 roadmap state and the current-versus-transitional cost claim policy.
+
+Decision:
+
+The claim-drift policy treats `76` as the current canonical charged-trace cost
+only after the named algebra, executable-trace bound, supplied-store transfer,
+final adequacy theorem, `List Int` theorem, headline aliases, and paper root all
+consume the same U2 execution. The policy retains `328` as an explicitly
+historical transitional token. Frozen U2 matrices and audits are not rewritten;
+live roadmap and claim surfaces identify U3 as candidate-complete pending the
+normal coordinator acceptance boundary.
+
+Context:
+
+U2 deliberately landed `328` as a checked but conservative bound. U3 replaces
+that live default with the operation-derived expression
+`2 * 13 + (2 * 4 + 2 * 4 + 30) + 4 = 76`. Updating policy before this theorem
+chain was public would let prose lead the formal result. Leaving the policy at
+`328` after public consumption would instead make the strict scanner certify a
+stale claim vocabulary.
+
+Options considered:
+
+- Keep `328` current until a conventional word-RAM small-step machine exists.
+- Replace every historical `328` occurrence, including frozen U2 evidence.
+- Move only the current token to `76`, preserve named transitional history, and
+  state that controller operations remain uncharged pending E1.
+
+Rationale:
+
+The third option matches the actual proof boundary. U3 closes cost derivation
+inside the current explicit trace model, while E1 remains responsible for a
+fully charged controller semantics. Preserving frozen evidence keeps the audit
+trail truthful; role-qualified transitional statements remain reviewable
+without competing with the current claim.
+
+Consequences:
+
+- Strict claim scans require the principled charged-trace `76` vocabulary on
+  current-facing surfaces and classify `328` as transitional history.
+- The roadmap can mark U3 candidate-complete only after the public theorem chain
+  and publication-facing documents agree.
+- No policy token claims `query(serializedPayload, left, right)`, preprocessing
+  complexity, or conventional word-RAM constant time.
+- The charged/uncharged operation inventory is part of the completion evidence
+  and is the named simulation interface handed to E1.
+
+Evidence:
+
+- `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq` checks the
+  numeric equality `76`.
+- `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace`
+  connects that algebra to the accepted executable trace.
+- `RMQ.Headlines.succinctRMQQueryCostEq` and `RMQPaper` expose the new default.
+- `docs/internal/W21_U3_PRINCIPLED_ALLSIZE_COST_ACCEPTANCE_MATRIX.md` records the
+  requirement mapping, the old-to-final decomposition, and the verification
+  ledger.
+
+Publication-facing significance:
+
+The public claim language now changes only after the corresponding formal route
+is consumed end to end. Reviewers can distinguish the improved charged-trace
+constant from both its conservative predecessor and the stronger machine-model
+claims intentionally deferred to E1 and M1.

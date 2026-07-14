@@ -30,8 +30,10 @@ satisfy the reviewer word bound.
 
 The final trace is exact through
 `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact`. Its honest
-transitional all-size bound is `328`, checked by
-`concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq`. The former
+principled all-size charged-trace bound is `76`, checked by
+`concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`; exact modeled
+cost is emitted trace length. The transitional U2 value `328` remains checked
+by `concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq`. The former
 Ready/zero-block/route-split descriptions and numeric `118`, `4144`, and
 `196727` facts survive only as compatibility history.
 
@@ -81,6 +83,9 @@ aliases.
 | `RMQ.Headlines.succinctRMQCanonicalInteriorPhysicalFootprintFits` | Every physical address consumed by the canonical interior execution, including its sentinel address, fits the pre-execution reviewer word width. |
 | `RMQ.Headlines.succinctRMQCanonicalReviewerValidQueryOperandsFit` | Valid query operands fit the same input/addressable-store/sentinel-derived width. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe` | The uniform canonical final trace has the checked transitional U2 bound `328`. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe` | The unchanged uniform canonical final trace has the principled charged-trace bound `76`. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostEqTraceLength` | The modeled cost is exactly the emitted charged-event trace length. |
+| `RMQ.Headlines.succinctRMQChargedTraceCostAlgebra` | Named U3 component algebra and E1-facing cost interface. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical` | Genuine supplied flat-physical execution refines canonical logical execution, preserving decoded result, cost, ordered reads (including failures and repetitions), and footprint. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint` | Agreement on the first physical execution's consumed ordered footprint determines the complete physical execution. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalValueFromSuppliedStore` | The flat physical `.value` is exactly the existing supplied-store evaluator `.value` after checked address translation. |
@@ -180,7 +185,8 @@ profile over Cartesian-shape representatives:
 - the modeled query cost is bounded by a fixed constant.
 
 For the current concrete BP-native capstone, the canonical reviewer route has
-the checked transitional all-size cap `328`. The exact public
+the principled charged-trace all-size cap `76`; the transitional U2 cap `328`
+remains checked separately. The exact public
 `SuccinctClassic.buildPayload` is also the erasure of the one pre-execution
 physical word list used by the execution refinement. The existing
 supplied-store evaluator reads the flat store through checked physical-address
@@ -193,9 +199,8 @@ explicit logarithmic all-size inequality.
 
 Ready `118`, the route-split `4144` theorem, the zero-block route, and the
 aggregate `196727` theorem remain checked only for compatibility and historical
-comparison. They do not describe the canonical reviewer execution. U3 may
-derive a tighter explained constant without changing this U2 machine/store
-identity.
+comparison. They do not describe the canonical reviewer execution. U3 changes
+only theorem-level accounting, not the accepted U2 machine/store identity.
 
 The theorem is payload-accounted: auxiliary bits are counted separately from
 proof-only fields and certificates. The final path routes through payload-live

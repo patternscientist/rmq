@@ -973,3 +973,49 @@ remain separate from this worker candidate.
 4. Maintain a short "assumptions ledger" that can be read aloud before a talk,
    review, or onboarding session: what is model-level, what is executable, what
    is proof-only, and what is not claimed.
+
+## 2026-07-14 W21 Principled All-Size Charged-Trace Cost
+
+U3 derives `76` from the accepted U2 execution rather than preserving its
+transitional `328` sum. The exact component expression is
+`2*select13 + (2*rank4 + 2*endpointFringe4 + interior30) + rank4`. Direct
+sparse-exception select costs at most 13 events; two-level rank costs four;
+each endpoint fringe costs four. The remaining work was the interior.
+
+The old interior proof treated every fixed-width logical cell as up to eight
+physical words, so a summary cost 32, a span 40, two spans 80, and the
+six-span route 240. The new proof reads the actual canonical widths. General
+relative fields cost at most two words. More importantly, taking a
+macro-crossing branch itself proves `macroSize < blockCount`; that structural
+fact forces the relative fields to fit in one word without a size-regime
+dispatch. Consequently within-macro execution costs at most 18,
+adjacent/left-middle at most 20, and the longest cross-macro execution at most
+30. Close/LCA is therefore at most 46, and the whole query at most 76.
+
+Plain English: the algorithm and payload did not change. U3 stopped charging
+rank as though it were select and stopped charging compact fields as though
+each occupied eight words. The new theorem describes the operations the U2
+trace actually emits, and a separate theorem says modeled cost is exactly that
+trace's length.
+
+The old-to-new slack is checked termwise: selects remove `2*(16-13)=6`, ranks
+remove `3*(16-4)=36`, and interior removes `240-30=210`; total slack is 252,
+so `328-252=76`. Fringes have no slack. This is a tight compositional cap for
+the proved component inequalities. U3 does not prove that one query realizes
+all maxima simultaneously or that no correlated global cap below 76 exists.
+
+Live assumptions are the current trace weights: attempted payload-word reads,
+word-rank, and word-select each cost one. Instruction dispatch,
+input/register access, arithmetic, option/branch control, fixed-width decode,
+local BP scan, candidate merge, trace assembly, and validity checking cost
+zero. `CanonicalRMQCostOperation` records both inventories so E1 can give them
+nonzero small-step costs. The result is not compiled Lean time, conventional
+word-RAM complexity, a serialized-payload query theorem, or preprocessing
+complexity.
+
+A skeptical graduate student should next ask two different questions. First,
+can E1 simulate this same execution while charging every controller operation
+and preserve a constant bound? Second, can a coexistence theorem or concrete
+witness determine whether 76 is globally minimal rather than merely the best
+clean operation-wise cap presently proved? Neither question reopens U3's
+charged-trace theorem.

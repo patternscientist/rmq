@@ -2304,6 +2304,18 @@ def canonicalCompactBPCloseQueryCostWithRankSeed
     (rankCost : Nat) : Nat :=
   8 + 2 * rankCost + canonicalRelativeRmmInteriorQueryCost
 
+/-- Four physical BP-code reads form each accepted endpoint fringe. -/
+def canonicalEndpointFringeChargedTraceCost : Nat := 4
+
+/--
+Operation-aligned U3 algebra for the accepted close/LCA execution: two rank
+seeds, two endpoint fringes, and one bounded physical interior replay.
+-/
+def canonicalPrincipledBPCloseChargedTraceCostWithRankSeed
+    (rankCost : Nat) : Nat :=
+  2 * rankCost + 2 * canonicalEndpointFringeChargedTraceCost +
+    canonicalRelativeRmmPrincipledInteriorChargedTraceCost
+
 /-- Canonical cross-block costed consumer of the uniform interior directory. -/
 def canonicalCrossBlockCloseCostedWithRankSeed
     (shape : Cartesian.CartesianShape)
@@ -2455,6 +2467,87 @@ theorem canonicalCrossBlockCloseCostedWithRankSeed_cost_le
   simp [Costed.bind, Costed.map, Costed.pure]
   simp [Costed.pure] at hmiddle
   unfold canonicalCompactBPCloseQueryCostWithRankSeed
+  omega
+
+/--
+The cross-block U2 execution obeys the U3 operation-aligned cap whenever both
+selected closes are genuine BP positions.  No work is added to realize it.
+-/
+theorem canonicalCrossBlockCloseCostedWithRankSeed_cost_le_principled
+    (shape : Cartesian.CartesianShape)
+    (rankCloseCosted : Nat -> Costed Nat)
+    (leftClose rightClose rankCost : Nat)
+    (_hleftCloseBound : leftClose < shape.bpCode.length)
+    (hrightCloseBound : rightClose < shape.bpCode.length)
+    (hrankCost : forall pos, (rankCloseCosted pos).cost <= rankCost) :
+    (canonicalCrossBlockCloseCostedWithRankSeed
+      shape rankCloseCosted leftClose rightClose).cost <=
+        canonicalPrincipledBPCloseChargedTraceCostWithRankSeed rankCost := by
+  unfold canonicalCrossBlockCloseCostedWithRankSeed
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
+  let leftBlock := blockOfClose blockSize leftClose
+  let rightBlock := blockOfClose blockSize rightClose
+  have hleftSeed :=
+    localBPSeedFromRankCloseCosted_cost_le shape rankCloseCosted
+      blockSize leftClose rankCost hrankCost
+  have hleft :=
+    localBPLeftFringeCandidateSeededCosted_cost_le shape blockSize leftClose
+      (localBPSeedFromRankCloseCosted shape rankCloseCosted
+        blockSize leftClose).value
+  have hmiddle :
+      (if leftBlock + 1 < rightBlock then
+          (canonicalRelativeRmmInteriorDirectory shape).rangeMinCosted
+            (leftBlock + 1) (rightBlock - leftBlock - 1)
+        else
+          Costed.pure none).cost <=
+        canonicalRelativeRmmPrincipledInteriorChargedTraceCost := by
+    by_cases hgap : leftBlock + 1 < rightBlock
+    case pos =>
+      rw [if_pos hgap]
+      have hrightBlockLe :
+          rightBlock <= canonicalBPRelativeSummaryBlockCountRaw shape := by
+        exact canonicalBPRelativeSummary_blockOfClose_le_blockCountRaw
+          (shape := shape) hrightCloseBound
+      have hbound :
+          (leftBlock + 1) + (rightBlock - leftBlock - 1) <=
+            (RelativeRmm.canonicalLayout shape).blockCount := by
+        simpa [RelativeRmm.canonicalLayout] using (show
+          (leftBlock + 1) + (rightBlock - leftBlock - 1) <=
+            canonicalBPRelativeSummaryBlockCountRaw shape by omega)
+      let base := canonicalBPRelativeSummaryBase shape
+      have hbasePos : 0 < base := by
+        simp [base, canonicalBPRelativeSummaryBase]
+      have htwoBlocks :
+          2 <= canonicalBPRelativeSummaryBlockCountRaw shape := by omega
+      have htwoDiv : 2 <= shape.size / base := by
+        simpa [canonicalBPRelativeSummaryBlockCountRaw, base] using htwoBlocks
+      have hmul : 2 * base <= shape.size :=
+        (Nat.le_div_iff_mul_le hbasePos).mp htwoDiv
+      have hsizeTwo : 2 <= shape.size := by omega
+      have hlog : 1 <= Nat.log2 shape.size :=
+        natLog2_ge_of_pow_le (by simpa using hsizeTwo)
+      have hbaseTwo : 2 <= base := by
+        simp only [base, canonicalBPRelativeSummaryBase]
+        omega
+      have hsize : 4 <= shape.size := by omega
+      simpa [canonicalRelativeRmmInteriorDirectory] using
+        canonicalRelativeRmmInteriorRangeMinCostedWithStore_cost_le_thirty_of_size_ge_four_of_bounded
+          shape hsize (leftBlock + 1) (rightBlock - leftBlock - 1) hbound
+    case neg =>
+      rw [if_neg hgap]
+      simp [Costed.pure]
+  have hrightSeed :=
+    localBPSeedFromRankCloseCosted_cost_le shape rankCloseCosted
+      blockSize rightClose rankCost hrankCost
+  have hright :=
+    localBPRightFringeCandidateSeededCosted_cost_le shape blockSize rightClose
+      (localBPSeedFromRankCloseCosted shape rankCloseCosted
+        blockSize rightClose).value
+  dsimp [blockSize, leftBlock, rightBlock] at hleftSeed hleft hmiddle hrightSeed hright
+  simp [Costed.bind, Costed.map, Costed.pure]
+  simp [Costed.pure] at hmiddle
+  unfold canonicalPrincipledBPCloseChargedTraceCostWithRankSeed
+  unfold canonicalEndpointFringeChargedTraceCost
   omega
 
 /-- Exact canonical cross-block close semantics for one valid RMQ query. -/
@@ -3579,6 +3672,43 @@ theorem canonicalLcaCloseCostedWithRankSeed_cost_le
     simpa [canonicalLcaCloseCostedWithRankSeed, blockSize, hsame] using
       canonicalCrossBlockCloseCostedWithRankSeed_cost_le
         shape rankCloseCosted leftClose rightClose rankCost hrankCost
+
+/- The accepted all-size close/LCA execution obeys the principled U3 cap. -/
+theorem canonicalLcaCloseCostedWithRankSeed_cost_le_principled
+    (shape : Cartesian.CartesianShape)
+    (rankCloseCosted : Nat -> Costed Nat)
+    (leftClose rightClose rankCost : Nat)
+    (hleftCloseBound : leftClose < shape.bpCode.length)
+    (hrightCloseBound : rightClose < shape.bpCode.length)
+    (hrankCost : forall pos, (rankCloseCosted pos).cost <= rankCost) :
+    (canonicalLcaCloseCostedWithRankSeed
+      shape rankCloseCosted leftClose rightClose).cost <=
+        canonicalPrincipledBPCloseChargedTraceCostWithRankSeed rankCost := by
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
+  by_cases hsame :
+      blockOfClose blockSize leftClose = blockOfClose blockSize rightClose
+  case pos =>
+    have hlocal :=
+      localBPSameBlockCloseDecodedCostedWithRankSeed_cost_le
+        shape rankCloseCosted blockSize leftClose rightClose rankCost
+        hrankCost
+    have hcap :
+        rankCost + 4 <=
+          canonicalPrincipledBPCloseChargedTraceCostWithRankSeed rankCost := by
+      unfold canonicalPrincipledBPCloseChargedTraceCostWithRankSeed
+      unfold canonicalEndpointFringeChargedTraceCost
+      unfold canonicalRelativeRmmPrincipledInteriorChargedTraceCost
+      omega
+    exact Nat.le_trans
+      (by
+        simpa [canonicalLcaCloseCostedWithRankSeed, blockSize, hsame] using
+          hlocal)
+      hcap
+  case neg =>
+    simpa [canonicalLcaCloseCostedWithRankSeed, blockSize, hsame] using
+      canonicalCrossBlockCloseCostedWithRankSeed_cost_le_principled
+        shape rankCloseCosted leftClose rightClose rankCost
+        hleftCloseBound hrightCloseBound hrankCost
 
 /- Canonical all-size close/LCA execution is exact for every valid RMQ query. -/
 theorem canonicalLcaCloseCostedWithRankSeed_exact_of_query

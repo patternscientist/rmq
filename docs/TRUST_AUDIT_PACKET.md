@@ -22,8 +22,10 @@ relation, with a checked successful-to-arbitrary-result bridge. Raw
 adequacy is exposed only for valid public ranges; invalid ranges share the
 guarded none/empty/zero packet. No-synthetic,
 linear-capacity, logarithmic-width, stored/returned-word, physical-address, and
-primitive-operand bounds are checked at the composed consumer. The transitional
-all-size cap is exactly `328`; older route constants are compatibility history.
+primitive-operand bounds are checked at the composed consumer. The principled
+charged-trace cap is exactly `76`; exact cost is emitted trace length and
+controller work remains uncharged. The transitional U2 cap is `328`; older
+route constants are compatibility history.
 
 
 Snapshot: 2026-07-14 (U2 accepted after the A04 blind audit of exact target
@@ -62,8 +64,8 @@ The most reader-facing public RMQ names live in the narrow RMQ paper surface:
 ```lean
 theorem listIntSuccinctRMQPaperMainTheorem : ...
 
-abbrev succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional
+abbrev succinctRMQWholeQueryGlobalWordTraceCostedCostLe :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace
 ```
 
 The first theorem is stated over ordinary `xs : List Int`: it exposes
@@ -380,7 +382,8 @@ Read literally, this says:
   the reference leftmost RMQ answer `scanWindow shape.representative left len`.
 
 For the built generic sparse-exception close-access family, the canonical
-reviewer trace has the checked transitional cap `328`. The earlier route-split
+reviewer trace has the checked charged-trace cap `76`; the U2 transitional cap
+is `328`. The earlier route-split
 `4144` corollary, Ready `118`, active/inactive fallback leaves, zero-block scan,
 and `196727` aggregate remain checked compatibility/history only. They are not
 the route summarized by this packet's public alias chain.

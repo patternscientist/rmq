@@ -56,7 +56,8 @@ first execution's consumed ordered physical footprint determines the complete
 physical trace, and a checked consumed-address disagreement changes it.
 The capacity is linear and the query-independent reviewer width has an explicit
 all-size logarithmic bound while covering stored/returned words, addresses, and
-primitive operands/results. The checked transitional cost is exactly `328`. Ready-threshold `118`,
+primitive operands/results. The principled charged-trace cost is exactly `76`;
+the transitional U2 cost remains `328`. Ready-threshold `118`,
 route-split, zero-block, `4144`, and `196727` rows are compatibility history
 and are not the current reviewer path.
 
@@ -100,8 +101,12 @@ RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReads
 RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal
 RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe
 RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe
+RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostEqTraceLength
+RMQ.Headlines.succinctRMQQueryCostEq
+RMQ.Headlines.succinctRMQChargedTraceCostAlgebra
 RMQ.Headlines.succinctRMQCanonicalTransitionalQueryCostEq
 RMQ.Headlines.succinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal
+RMQ.Headlines.succinctRMQPrincipledAllSizeChargedTraceFinalFullModelCostLeOfFootprintGlobal
 RMQ.Headlines.succinctRMQReviewerPhysicalWordsErasePublicPayload
 RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical
 RMQ.Headlines.succinctRMQReviewerPhysicalFootprintRecorded
@@ -133,18 +138,24 @@ canonical reads are inside the safe footprint, and that footprint agreement
 with the canonical global store recovers the canonical trace and exact result.
 The list-facing aliases expose the same footprint-agreement story at the
 ordinary `List Int` surface: the supplied-store query is equal to canonical
-`SuccinctClassic.queryCosted`, valid windows erase to the list RMQ answer, and
-the canonical `328` cost bound transfers, and invalid ranges return `none`.
+`SuccinctClassic.queryCosted`, valid windows erase to the list RMQ answer, the
+principled `76` charged-trace bound transfers, and invalid ranges return `none`.
 The store/model aliases
 expose the direct supplied-store transfer theorems for counted flat-payload
 backing and modeled cost under footprint agreement.
-The current final global trace has the uniform canonical bound
-`SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost = 328`.
-The cost is the checked sum of three select/rank costs and
-`canonicalCompactBPCloseQueryCostWithRankSeed`; it is not padded to retain a
-legacy numeral. Footprint-agreeing supplied-store and full-model aliases
-transfer the same bound. Ready `118`, route-split, `4144`, and `196727`
-remain compatibility rows.
+The current final global trace has the uniform canonical charged-trace bound
+`SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost = 76`.
+The checked sum is `2*13 + (2*4 + 2*4 + 30) + 4`; exact cost is emitted trace
+length, with no padding. The separately named transitional U2 sum remains
+`328`. Footprint-agreeing supplied-store and full-model aliases transfer the
+principled bound. Ready `118`, route-split, `4144`, and `196727` remain
+compatibility rows.
+
+This accounting charges payload reads and word-rank/select primitives only.
+Controller dispatch, arithmetic, branching, decoding, local scanning, and
+candidate merging are explicitly inventoried as zero-weight operations for
+the current model. Thus `76` is not a conventional word-RAM runtime theorem;
+E1 must reuse the named operation vocabulary in a fully charged simulation.
 
 The whole-query footprint remains a safe final-layout overapproximation. Inside
 the canonical interior component, the stronger dynamic footprint is exact: it

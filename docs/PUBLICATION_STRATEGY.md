@@ -64,10 +64,11 @@ candidates, subject to the novelty search described below — are:
 ### P0 — proof blockers closed; paper/artifact work remains
 
 1. **Cost model constant.** The current reviewer route is uniform for every
-   size and has the checked transitional bound `328`. Ready `118`, route-split
+   size and has the checked principled charged-trace bound `76`, with exact
+   emitted-trace-length accounting. Ready `118`, route-split
    `4144`, zero-block, and `196727` survive only as compatibility/history
    declarations; nonexistent fast-regime aliases are not part of the paper
-   surface. U3 owns a tighter explained constant, if desired.
+   surface. E1 still owns fully charged controller simulation.
 
 Two items that were previously P0 are no longer proof blockers on the Lean/docs
 side:
@@ -119,9 +120,9 @@ side:
 **Turn the theorem surface into a paper artifact.** The uniform canonical
 all-size theorem is now in place, so the highest-leverage move is paper/artifact
 packaging: a referee-grade theorem map, claim-to-check table, novelty search,
-related-work calibration, and reproduction script that make canonical `328`
-impossible to confuse with compatibility-only `118`, `4144`, zero-block, or
-`196727` rows.
+related-work calibration, and reproduction script that make the current
+charged-trace `76` impossible to confuse with transitional `328` or
+compatibility-only `118`, `4144`, zero-block, and `196727` rows.
 
 ## 4a. Status update (2026-07-06)
 
@@ -148,11 +149,11 @@ Landed on `main` since this document was written (through `3f6f1e3`):
 - **Historical cost-regime split (superseded by W17):** the fast-regime theorem
   cited above exposes `118` under the readiness threshold, and R2 later exposed
   route-split `4144`. Those declarations and `196727` are now compatibility
-  history. The canonical reviewer route is uniform and keeps the checked
-  transitional cap `328`; U3 owns its final explained constant.
+  history. The canonical reviewer route is uniform; U3 now gives the checked
+  charged-trace cap `76`, while E1 fully charged controller simulation remains.
 
 Remaining, in priority order: **paper/artifact packaging; novelty search;
-extraction + benchmarks; optional tighter uniform constants.**
+extraction + benchmarks; E1 fully charged simulation.**
 
 ## 5. Recommended target
 

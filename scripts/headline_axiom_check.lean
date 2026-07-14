@@ -100,6 +100,7 @@ the BP-native succinct capstone.
 #print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedByCanonicalReviewerPayloadOfFootprintGlobal
 #print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe
 #print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe
+#print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostEqTraceLength
 #print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal
 #print axioms RMQ.Headlines.succinctRMQQueryCostEq
 #print axioms RMQ.Headlines.succinctRMQCompatibility4144QueryCostEq
@@ -109,6 +110,7 @@ the BP-native succinct capstone.
 #print axioms RMQ.Headlines.succinctRMQFinalFullModelSoundness
 #print axioms RMQ.Headlines.succinctRMQFinalFullModelSoundnessExactOfFootprintGlobal
 #print axioms RMQ.Headlines.succinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal
+#print axioms RMQ.Headlines.succinctRMQPrincipledAllSizeChargedTraceFinalFullModelCostLeOfFootprintGlobal
 #print axioms RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory
 #print axioms RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory
 #print axioms RMQ.Headlines.concreteBPCloseNavigationProfile

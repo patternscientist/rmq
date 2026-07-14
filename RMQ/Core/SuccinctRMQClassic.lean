@@ -94,14 +94,28 @@ abbrev compatibilityCleanAllSizeQueryCost : Nat :=
 abbrev routeSplitQueryCost (xs : List Int) : Nat :=
   SuccinctFinal.concreteBPNativeSuccinctRMQRouteSplitQueryCost
     (cartesianShape xs)
-/-- Checked transitional U2 cost for the canonical reviewer route. -/
+/-- Principled U3 charged-trace cost for the accepted canonical reviewer route. -/
 abbrev queryCost : Nat :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost
+
+/-- Checked historical U2 cost, retained without changing the current route. -/
+abbrev canonicalTransitionalQueryCost : Nat :=
   3 * SuccinctSelect.sparseDenseFalseSelectQueryCost +
     SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
       SuccinctSelect.sparseDenseFalseSelectQueryCost
 
-/-- Stable descriptive alias for the checked canonical reviewer bound. -/
-abbrev canonicalTransitionalQueryCost : Nat := queryCost
+/-- Public operation-aligned cost algebra reusable by the E1 simulation. -/
+abbrev chargedTraceCostAlgebra :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra
+
+theorem queryCost_eq : queryCost = 76 := by
+  exact
+    SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq
+
+theorem canonicalTransitionalQueryCost_eq :
+    canonicalTransitionalQueryCost = 328 := by
+  exact
+    SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq
 
 
 /-- Shape-sensitive route-split budget over an already prepared shape. -/
@@ -940,13 +954,21 @@ theorem queryCosted_cost_le_canonicalTransitional
         SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional
           (cartesianShape xs) left right
   · simp [queryCosted, queryTraceResult, withValidRange, hvalid,
-      canonicalTransitionalQueryCost, queryCost]
+      canonicalTransitionalQueryCost]
 
-/-- Every query has the clean fixed all-size modeled cost bound. -/
+/-- Every query has the principled fixed all-size charged-trace cost bound. -/
 theorem queryCosted_cost_le
     (xs : List Int) (left right : Nat) :
     (queryCosted xs left right).cost <= queryCost := by
-  exact queryCosted_cost_le_canonicalTransitional xs left right
+  by_cases hvalid : ValidRange xs left right
+  · rw [queryCosted, queryTraceResult_valid xs left right hvalid]
+    simpa [queryCost,
+      SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted]
+      using
+        SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace
+          (cartesianShape xs) left right
+  · simp [queryCosted, queryTraceResult, withValidRange, hvalid,
+      queryCost]
 
 /--
 If a supplied store agrees with the canonical global store on the final
@@ -1023,6 +1045,14 @@ theorem listIntFinalFullModelCostLeOfFootprintGlobal
     (queryCostedWithStore xs store left right).cost <= queryCost := by
   rw [queryCostedWithStore_eq_queryCosted_of_footprint xs hfoot left right]
   exact queryCosted_cost_le xs left right
+
+/-- Explicit U3 list-facing supplied-store cost theorem. -/
+theorem listIntPrincipledAllSizeChargedTraceCostLeOfFootprintGlobal
+    (xs : List Int) {store : WordRAM.ReadStore}
+    (hfoot : storesAgreeOnFootprint xs store (globalReadStore xs))
+    (left right : Nat) :
+    (queryCostedWithStore xs store left right).cost <= queryCost :=
+  listIntFinalFullModelCostLeOfFootprintGlobal xs hfoot left right
 
 /-- Footprint agreement transfers the canonical transitional U2 cost bound. -/
 theorem listIntCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal

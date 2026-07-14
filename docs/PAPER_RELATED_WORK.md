@@ -100,7 +100,9 @@ make a theorem true.
 - No compiler, CPU, cache, extraction, benchmark, or production-serialization
   claim is made.
 - The all-size modeled query-cost bound on the canonical reviewer route is the
-  uniform checked `328`. Ready `118`, route-split `4144`, zero-block, and
+  uniform checked charged-trace value `76`. Controller operations remain
+  uncharged; this is not conventional word-RAM complexity. The U2 `328`
+  theorem is transitional. Ready `118`, route-split `4144`, zero-block, and
   `196727` are compatibility/history only.
 - No current canonical execution theorem has a `2^128` activation premise.
   Explicit compatibility/large-regime companions retain that sufficient

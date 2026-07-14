@@ -2000,6 +2000,89 @@ theorem selectCosted_cost_le
   case neg =>
     simp [Costed.pure, hvalid]
 
+/--
+The accepted sparse-exception select execution needs at most thirteen charged
+trace events.  The older public `sparseDenseSelectQueryCost = 16` is a shared
+interface allowance; the direct execution is sharper: four super-entry reads,
+then either a four-read local entry plus a five-event sparse/dense leaf, or a
+four-event flag rank plus one relative read.
+-/
+theorem selectCosted_cost_le_thirteen
+    {bits : List Bool} {target : Bool}
+    {rankSuperOverhead rankBlockOverhead : Nat}
+    (data :
+      SparseExceptionSelectData
+        bits target rankSuperOverhead rankBlockOverhead) (idx : Nat) :
+    (data.selectCosted idx).cost <= 13 := by
+  unfold selectCosted queryOccurrence
+  by_cases hvalid : idx < occurrenceCount bits target
+  case pos =>
+    cases hsuperValue :
+        (data.superTable.readCosted
+          (selectSuperSlot idx data.superStride)).value with
+    | none =>
+        simp [Costed.bind, Costed.pure, hvalid, hsuperValue] <;> omega
+    | some super =>
+        by_cases hlong : relativeSplitSelectEntryIsMarked super = true
+        case pos =>
+          have hrankCost :=
+            data.longFlagRankData.rankCosted_cost_le true
+              (selectSuperSlot idx data.superStride)
+          have hlongCost :
+              (data.longSuperRelativeTable.readCosted
+                (relativeSplitSelectLongCompactSlot
+                  (data.longFlagRankData.rankCosted true
+                    (selectSuperSlot idx data.superStride)).value
+                  (idx - super.baseOccurrence)
+                  data.superStride)).cost <= 1 := by
+            exact data.longSuperRelativeTable.readCosted_cost_le_one _
+          simp [relativeOffsetReadCosted, Costed.bind, Costed.map,
+            Costed.pure, hvalid, hsuperValue, hlong] <;> omega
+        case neg =>
+          let localSlot :=
+            relativeSplitSelectLocalSlot
+              idx data.superStride
+              data.localSlotsPerSuper data.localStride super
+          cases hlocalValue :
+              (data.localTable.readCosted localSlot).value with
+          | none =>
+              simp [Costed.bind, Costed.pure, hvalid, hsuperValue, hlong,
+                localSlot, hlocalValue] <;> omega
+          | some loc =>
+              by_cases hsparse :
+                  relativeSplitSelectEntryIsMarked loc = true
+              case pos =>
+                have hsparseCost :
+                    (data.sparseDirectory.readCosted
+                      (relativeSplitSelectLocalBasePosition
+                        data.wordSize super loc)
+                      (relativeSplitSelectLocalSlot
+                        idx data.superStride
+                        data.localSlotsPerSuper data.localStride super)
+                      (idx -
+                        relativeSplitSelectLocalBaseOccurrence super loc)).cost
+                        <= 5 := by
+                  simpa [localSlot] using
+                    data.sparseDirectory.readCosted_cost_le_five
+                      (relativeSplitSelectLocalBasePosition
+                        data.wordSize super loc)
+                      localSlot
+                      (idx -
+                        relativeSplitSelectLocalBaseOccurrence super loc)
+                simp [Costed.bind, hvalid, hsuperValue, hlong, localSlot,
+                  hlocalValue, hsparse] <;> omega
+              case neg =>
+                have hdenseCost :=
+                  denseTwoWordSelectCosted_cost_le_five target
+                    data.bitWords
+                    (relativeSplitSelectLocalBasePosition
+                      data.wordSize super loc)
+                    (relativeSplitSelectLocalBaseOccurrence super loc) idx
+                simp [Costed.bind, hvalid, hsuperValue, hlong, localSlot,
+                  hlocalValue, hsparse] <;> omega
+  case neg =>
+    simp [Costed.pure, hvalid]
+
 theorem selectCosted_exact
     {bits : List Bool} {target : Bool}
     {rankSuperOverhead rankBlockOverhead : Nat}
@@ -2405,6 +2488,15 @@ def sparseExceptionSelectSource (bits : List Bool) (target : Bool) :
       canonicalSparseExceptionSelectOverhead
       sparseDenseSelectQueryCost :=
   (sparseExceptionSelectData bits target).toChargedSelectPositionSource
+
+/-- Direct thirteen-event bound for the concrete charged select source. -/
+theorem sparseExceptionSelectSource_selectPositionCosted_cost_le_thirteen
+    (bits : List Bool) (target : Bool) (idx : Nat) :
+    ((sparseExceptionSelectSource bits target).selectPositionCosted idx).cost <=
+      13 := by
+  simpa [sparseExceptionSelectSource,
+    SparseExceptionSelectData.toChargedSelectPositionSource] using
+    (sparseExceptionSelectData bits target).selectCosted_cost_le_thirteen idx
 
 theorem sparseExceptionSelectSource_profile
     (bits : List Bool) (target : Bool) :

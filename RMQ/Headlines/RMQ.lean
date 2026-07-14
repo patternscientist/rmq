@@ -565,9 +565,13 @@ abbrev succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe :=
 abbrev succinctRMQCanonicalTransitionalQueryCostEq :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq
 
-/-- The canonical final global trace has the uniform checked `328` bound. -/
+/-- The canonical final global trace has the principled uniform charged-trace bound. -/
 abbrev succinctRMQWholeQueryGlobalWordTraceCostedCostLe :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace
+
+/-- The modeled cost is exactly the emitted charged-event count. -/
+abbrev succinctRMQWholeQueryGlobalWordTraceCostedCostEqTraceLength :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_eq_trace_length
 
 /--
 Under agreement with the concrete global store on the safe final layout
@@ -575,7 +579,7 @@ footprint, the canonical modeled cost bound transfers to the supplied-store
 whole-query replay.
 -/
 abbrev succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_canonicalTransitional
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_principledAllSizeChargedTrace
 
 /-- Compatibility-only route-split all-size bound `4144`. -/
 abbrev succinctRMQCompatibility4144WholeQueryGlobalWordTraceCostedCostLe :=
@@ -583,7 +587,7 @@ abbrev succinctRMQCompatibility4144WholeQueryGlobalWordTraceCostedCostLe :=
 
 /-- Compatibility-only supplied-store transfer of the `4144` bound. -/
 abbrev succinctRMQCompatibility4144WholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_cleanAllSize
 
 /--
 Legacy all-size modeled query-cost constant for the final BP-native succinct
@@ -600,9 +604,19 @@ abbrev succinctRMQLegacy196727QueryCostEq :=
 /-- Uniform canonical modeled query-cost constant for the final reviewer path. -/
 abbrev succinctRMQQueryCost := RMQ.SuccinctClassic.queryCost
 
-/-- The uniform canonical final-query cost constant computes to `328`. -/
+/-- The uniform canonical final-query charged-trace cost computes to `76`. -/
 abbrev succinctRMQQueryCostEq :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq
+
+/-- Operation-aligned cost algebra for U3 and the downstream E1 simulation. -/
+abbrev succinctRMQChargedTraceCostAlgebra :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra
+
+abbrev succinctRMQChargedTraceOperations :=
+  RMQ.SuccinctFinal.canonicalRMQChargedTraceOperations
+
+abbrev succinctRMQCurrentlyUnchargedControllerOperations :=
+  RMQ.SuccinctFinal.canonicalRMQCurrentlyUnchargedControllerOperations
 
 /-- Compatibility-only route-split cost constant `4144`. -/
 abbrev succinctRMQCompatibility4144QueryCost :=
@@ -711,6 +725,21 @@ theorem succinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal
           RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
             RMQ.SuccinctSelect.sparseDenseFalseSelectQueryCost :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_canonicalTransitional
+    hfoot left right
+
+/-- Full-model principled U3 charged-trace theorem under footprint agreement. -/
+theorem succinctRMQPrincipledAllSizeChargedTraceFinalFullModelCostLeOfFootprintGlobal
+    {shape : RMQ.Cartesian.CartesianShape}
+    {store : RMQ.WordRAM.ReadStore}
+    (hfoot :
+      RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store
+          (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQGlobalReadStore shape))
+    (left right : Nat) :
+    (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+      shape store left right).cost <=
+        RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_principledAllSizeChargedTrace
     hfoot left right
 
 /--

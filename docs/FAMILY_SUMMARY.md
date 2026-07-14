@@ -1,4 +1,48 @@
 # RMQ Family Summary
+## U3 Principled All-Size Charged-Trace Cost (W21, 2026-07-14)
+
+U3 keeps the accepted U2 payload and execution unchanged and replaces the
+paper-facing transitional cost explanation with a term-by-term bound on that
+execution:
+
+```text
+2 * select13 + (2 * rank4 + 2 * endpointFringe4 + interior30) + rank4 = 76
+```
+
+The checked algebra is
+`SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra`;
+`...PrincipledAllSizeChargedTraceCost_eq` proves the numeric equality.
+`...WholeQueryGlobalWordTraceCosted_cost_eq_trace_length` proves modeled cost
+is exactly the emitted trace length, and
+`...cost_le_principledAllSizeChargedTrace` proves the upper bound against the
+same global execution consumed by final adequacy, supplied-store footprint
+transfer, `SuccinctClassic`, `RMQ.Headlines.RMQ`, and `RMQPaper`.
+
+The old `328 = 3*16 + (8 + 2*16 + 240)` chain had three conservative layers:
+two selects used `16` instead of the checked direct `13` (`6` total slack),
+three ranks used `16` instead of `4` (`36` slack), and each relative-rmM cell
+used an eight-word envelope, giving interior `240` instead of `30` (`210`
+slack). Endpoint fringes were already exact at four reads. Total removed slack
+is `252`, hence `328 - 252 = 76`.
+
+The interior proof is uniform. For size at least four, relative fields occupy
+at most two words; any execution that actually crosses a macro boundary
+structurally implies `macroSize < blockCount`, which tightens all relevant
+fields to one word. This is a theorem about the taken execution branch, not an
+input-size activation test. The valid middle range supplied by close/LCA then
+costs at most `18` within one macro, `20` on adjacent/left-middle routes, and
+`30` on the six-span cross-macro route.
+
+The current model charges attempted payload-word reads and word-rank/select
+primitives. Instruction dispatch, input/register access, option tests,
+arithmetic (including division/modulo/logarithms), fixed-width decoding, local
+BP scanning, candidate merging, trace assembly, and the public validity guard
+are uncharged. `CanonicalRMQCostOperation` and
+`canonicalRMQCurrentTraceWeight` make that inventory a named E1 simulation
+interface. Therefore `76` is not a conventional word-RAM theorem, a
+`query(serializedPayload,left,right)` theorem, or a preprocessing theorem.
+Those remain E1/M1/construction obligations.
+
 ## U2 Occurrence-Provenance Candidate (W19, 2026-07-13)
 
 The all-size final trace consumes
@@ -78,14 +122,14 @@ kernel checked by the corresponding
 `canonicalRelativeRmmInteriorRangeFootprint_*_kernel_checked` and
 `*_threshold_boundary` theorems.
 
-The current honest transitional final-query bound is
+The U2 historical transitional final-query bound is
 `concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq : ... = 328`,
 consumed by
 `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional`.
 The older `118`, route-split, `4144`, zero-block, and `196727` surfaces are
-compatibility/history, not the reviewer-route explanation. U3 owns replacement
-of `328` by the final decomposed paper constant; it is not required for the U2
-candidate's truth.
+compatibility/history, not the current reviewer-route explanation. U3 replaces
+the paper-facing bound with the decomposed `76` theorem above while retaining
+the U2 theorem for audit comparison.
 
 
 Snapshot: 2026-07-01, after the reusable table/access and payload models,
@@ -139,17 +183,19 @@ packets connect every successful read to counted storage. The canonical
 interior footprint is the actual ordered execution footprint, including
 repeated or failed reads. Agreement on it determines result and modeled cost.
 `canonicalRelativeRmmInteriorDirectory_profile_allSize` packages exactness,
-the 240 interior cap, flattening, backing, word bounds, address bounds, and
-kernel-checked small/boundary evidence.
+the transitional `240` interface cap, flattening, backing, word bounds,
+address bounds, and kernel-checked small/boundary evidence. U3 additionally
+proves `canonicalRelativeRmmPrincipledInteriorChargedTraceCost = 30` for every
+bounded middle range reached by the canonical close execution.
 
 The final whole-query trace refines
 `concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted` and is exact
 by `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact`.
-The current public U2 cost alias is
-`Headlines.succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe`;
-`Headlines.succinctRMQCanonicalTransitionalQueryCostEq` checks the exact
-transitional value `328`. Footprint-agreeing supplied stores inherit the same
-exactness, backing, and bound. Legacy Ready `118`, route-split, `4144`, and
+The current public cost alias is
+`Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe`, whose named
+algebra computes to `76`; `Headlines.succinctRMQCanonicalTransitionalQueryCostEq`
+retains the U2 value `328`. Footprint-agreeing supplied stores inherit the same
+exactness, backing, and principled bound. Legacy Ready `118`, route-split, `4144`, and
 `196727` declarations are compatibility facts only.
 `Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` lifts
 that execution packet to the ordinary `List Int` public surface while keeping
@@ -1159,7 +1205,8 @@ and `docs/internal/LOCAL_BP_DECODER_PATH.md`.
   model-level succinct data-structure profile, not a claim about extracted
   wall-clock runtime.
 - The current concrete BP-native RMQ paper-facing all-size query-cost bound is
-  the uniform canonical checked constant `328`. Ready `118`, route-split
+  the uniform canonical charged-trace constant `76`; controller operations are
+  explicitly uncharged. The U2 `328` theorem is transitional. Ready `118`, route-split
   `4144`, zero-block, and `196727` remain compatibility/history facts and are
   not consumed by the reviewer route.
 - The project remains Mathlib-free: imports are Lean/Std plus existing Lean

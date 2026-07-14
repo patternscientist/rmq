@@ -263,7 +263,8 @@ def physicalDependencyOK : Bool :=
       singletonIgnoreReturnedValueMutationResult.value
 
 def canonicalBoundOK : Bool :=
-  RMQ.SuccinctClassic.queryCost == 328
+  RMQ.SuccinctClassic.queryCost == 76 &&
+    RMQ.SuccinctClassic.canonicalTransitionalQueryCost == 328
 
 def structuralEvidenceOK : Bool :=
   routeEvidenceOK && physicalErasureOK && physicalBackingOK &&
@@ -288,7 +289,7 @@ def mainImpl : IO Unit := do
           ("validated " ++ toString totalWindowCount ++
             " SuccinctClassic valid/invalid query windows across " ++
             toString generatedInputs.length ++
-            " deterministic inputs; canonical same/cross routes, 328 bound, " ++
+            " deterministic inputs; canonical same/cross routes, principled 76 charged-trace bound, " ++
             "physical erasure/backing, and flat-store dependency checked")
       else
         IO.eprintln

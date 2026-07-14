@@ -186,16 +186,16 @@ route; it remains only on compatibility/history surfaces.
 
 ## The Constant
 
-The current reviewer-route modeled bound is the checked transitional sum
-`328`. It is proved by
-`concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional`
+The current reviewer-route modeled bound is the principled charged-trace sum
+`76`. It is proved by
+`concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace`
 and evaluated by
-`concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq`. The sum is
-three close-select/final-rank costs plus
-`canonicalCompactBPCloseQueryCostWithRankSeed`, whose interior contribution
-is the physical 240-read canonical directory cap.
+`concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`. The sum is
+`2*select13 + (2*rank4 + 2*fringe4 + interior30) + rank4`.
+`...cost_eq_trace_length` ties the modeled cost to the emitted trace. The
+transitional `328` theorem remains for U2 comparison.
 
-The supplied-store and full-model companions transfer the same `328` bound
+The supplied-store and full-model companions transfer the same `76` bound
 under final footprint agreement. The older `118` Ready theorem, route-split
 `4144`, and aggregate `196727` survive only as compatibility facts for
 pre-canonical execution stories. They are not current reviewer-route claims.
@@ -203,6 +203,12 @@ The paper-level claim is that the query is constant in the stated model and
 that the model's counted reads are payload-backed. It is not a claim that this
 Lean code is production serialization, optimized machine code, or a verified
 CPU implementation.
+
+Currently charged operations are attempted payload-word reads and word-rank /
+word-select primitives. The named E1 inventory assigns zero weight to
+instruction dispatch, inputs/registers, arithmetic, option tests, branching,
+fixed-width decode, local BP scan, candidate merge, trace assembly, and the
+validity guard. U3 therefore does not prove conventional word-RAM complexity.
 
 ## Non-Claims
 

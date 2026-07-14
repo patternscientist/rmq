@@ -184,25 +184,39 @@ A04's finding-free REQ-01--REQ-08 verdict. A04's sole P3 finding concerned
 three stale comments describing synthetic fallback; the integration change
 corrected those comments without changing definitions or theorem statements.
 U2 is closed, and the single-payload, physical-store, occurrence-provenance,
-word-width, and uniform-`328` chain is now the accepted base for U3.
+word-width, and uniform transitional-`328` chain is now the accepted base for U3.
 
 ### U3. Reprove One Principled All-Size Cost Bound
 
-Status: next active proof node after U2 acceptance.
+Status: **candidate complete on `codex/rmq-u3-principled-allsize-cost`**;
+coordinator exact-commit reconstruction and blind audit remain separate.
 
-The uniform route currently has the honest checked transitional sum `328`,
-proved by
-`concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq`. Derive the
-final explained constant from the named primitive costs without padding or
-decorative reads. Ready `118`, route-split, `4144`, and `196727` remain
-compatibility facts outside the current reviewer explanation.
+The unchanged uniform route now has the principled checked charged-trace sum
+`76 = 2*13 + (2*4 + 2*4 + 30) + 4`, proved by
+`concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq` and bounded
+against the global trace by
+`concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace`.
+`...cost_eq_trace_length` supplies exact accounting. The old `328` theorem is
+retained as an explicitly transitional comparison. Ready `118`, route-split,
+`4144`, and `196727` remain compatibility facts outside the current reviewer
+explanation.
 
 Acceptance:
 
-- the bound is a sum of named primitive/directory costs;
-- there is no input-size compatibility threshold in the public route;
-- the exact-cost and upper-bound surfaces agree with the executable trace;
-- the paper/root aliases and numeric equality checks are updated together.
+- **Candidate satisfied:** the bound is a sum of named select, rank, endpoint
+  fringe, and interior-directory costs;
+- **Candidate satisfied:** there is no input-size compatibility threshold in
+  the public route; macro crossing is an execution-derived structural premise;
+- **Candidate satisfied:** exact trace length and upper-bound surfaces describe
+  the same global execution;
+- **Candidate satisfied:** final adequacy, supplied-store footprint transfer,
+  `List Int`, paper/root aliases, examples, and numeric inventories consume the
+  new theorem.
+
+Scope boundary: U3 is only a theorem in the current charged-trace model. It
+does not prove serialized-payload querying, preprocessing complexity, or
+conventional word-RAM complexity. Its `CanonicalRMQCostOperation` inventory is
+the simulation interface for E1.
 
 ### M1. Make Machine Adequacy Reviewer-Native
 
@@ -238,7 +252,8 @@ Mechanical movement and semantic strengthening should be separate commits.
 
 ### E1. Add A Small-Step Reference Word-RAM Machine
 
-Status: first-order controller exists; small-step simulation remains.
+Status: first-order controller and U3 cost vocabulary exist; a fully charged
+small-step simulation remains.
 
 Define the smallest familiar instruction semantics needed by the existing
 first-order query controller. Prove result agreement and a step/trace-cost

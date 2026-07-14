@@ -2842,6 +2842,39 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional
       shape left right
 
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_principledAllSizeChargedTrace
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (hfoot :
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store (concreteBPNativeSuccinctRMQGlobalReadStore shape))
+    (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+      shape store left right).cost <=
+        concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost := by
+  rw [
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_eq_global_of_footprint
+      shape store hfoot left right]
+  exact
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace
+      shape left right
+
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_cleanAllSize
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (hfoot :
+      concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
+        shape store (concreteBPNativeSuccinctRMQGlobalReadStore shape))
+    (left right : Nat) :
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
+      shape store left right).cost <=
+        concreteBPNativeSuccinctRMQCleanAllSizeQueryCost := by
+  exact Nat.le_trans
+    (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_principledAllSizeChargedTrace
+      shape store hfoot left right)
+    (by
+      rw [concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq,
+        concreteBPNativeSuccinctRMQCleanAllSizeQueryCost_eq]
+      omega)
+
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_refines_canonicalInterpretedCosted
     (shape : Cartesian.CartesianShape)
     (left right : Nat) :

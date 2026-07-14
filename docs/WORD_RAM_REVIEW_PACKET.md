@@ -27,7 +27,9 @@ before execution. It has an explicit logarithmic all-size upper bound and
 bounds every stored/returned word, translated live/dead address, segment
 encoding, query operand, primitive operand/result, and consumed footprint
 address. Empty, singleton, size-two, and threshold-boundary evidence is kernel
-checked. The honest current modeled cap is `328`.
+checked. The honest current charged-trace cap is `76`; modeled cost is emitted
+trace length. Controller operations are explicitly uncharged, so this is not a
+conventional word-RAM theorem. The U2 `328` theorem remains transitional.
 
 The old zero-block evaluator and Ready/route-split `118` discussion below is
 compatibility history, not part of the `RMQPaper` reviewer route.
