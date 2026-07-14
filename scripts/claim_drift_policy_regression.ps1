@@ -9,12 +9,16 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-if (-not (Test-Path -LiteralPath $PolicyPath)) {
+$repoRoot = [System.IO.Path]::GetFullPath((Get-Location).Path)
+$resolvedPolicyPath = [System.IO.Path]::GetFullPath($PolicyPath)
+$resolvedScannerPath = [System.IO.Path]::GetFullPath($ScannerPath)
+
+if (-not (Test-Path -LiteralPath $resolvedPolicyPath)) {
   Write-Host "CLAIM-POLICY-REGRESSION: policy not found: $PolicyPath"
   exit 1
 }
 
-if (-not (Test-Path -LiteralPath $ScannerPath)) {
+if (-not (Test-Path -LiteralPath $resolvedScannerPath)) {
   Write-Host "CLAIM-POLICY-REGRESSION: scanner not found: $ScannerPath"
   exit 1
 }
@@ -69,22 +73,94 @@ $fixtures = @(
 )
 
 $shellPath = (Get-Process -Id $PID).Path
-$relativeFixtureRoot = ".claim-drift-policy-regression-" + [Guid]::NewGuid().ToString("N")
-$absoluteFixtureRoot = Join-Path (Get-Location).Path $relativeFixtureRoot
+$absoluteFixtureRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("claim-drift-policy-regression-" + [Guid]::NewGuid().ToString("N"))
 [System.IO.Directory]::CreateDirectory($absoluteFixtureRoot) | Out-Null
 $matrixPath = "docs/internal/W15_U2_CANONICAL_PAYLOAD_WHOLE_MACHINE_ACCEPTANCE_MATRIX.md"
-$absoluteMatrixPath = [System.IO.Path]::GetFullPath($matrixPath)
 $failures = 0
 $rejectCount = 0
 $acceptCount = 0
 $contextCount = 0
+$baselineStatus = $null
+$baselineTrackedHashes = $null
+
+function Get-TrackedGitStatus {
+  Push-Location $repoRoot
+  try {
+    return (@(& git -c core.excludesfile= -c core.autocrlf=false status --short --untracked-files=all) -join [Environment]::NewLine)
+  } finally {
+    Pop-Location
+  }
+}
+
+function Get-TrackedFileHashSnapshot {
+  Push-Location $repoRoot
+  try {
+    $worktreeRaw = @(& git -c core.excludesfile= -c core.autocrlf=false diff --raw --no-ext-diff --)
+    $indexRaw = @(& git -c core.excludesfile= -c core.autocrlf=false diff --cached --raw --no-ext-diff --)
+    $matrixHash = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $repoRoot $matrixPath)).Hash.ToLowerInvariant()
+    return @(
+      "worktree-diff-raw:"
+      $worktreeRaw
+      "index-diff-raw:"
+      $indexRaw
+      "matrix-sha256: $matrixHash"
+    ) -join [Environment]::NewLine
+  } finally {
+    Pop-Location
+  }
+}
+
+function Assert-TrackedStateUnchanged {
+  param([string]$Context)
+
+  $status = Get-TrackedGitStatus
+  if ($status -ne $baselineStatus) {
+    Write-Host "CLAIM-POLICY-REGRESSION: FAIL [$Context] git status changed"
+    Write-Host "  expected: $baselineStatus"
+    Write-Host "  actual:   $status"
+    $script:failures += 1
+    return
+  }
+
+  $hashes = Get-TrackedFileHashSnapshot
+  if ($hashes -ne $baselineTrackedHashes) {
+    Write-Host "CLAIM-POLICY-REGRESSION: FAIL [$Context] tracked file hashes changed"
+    $script:failures += 1
+    return
+  }
+
+  Write-Host "CLAIM-POLICY-REGRESSION: PASS [$Context] tracked state unchanged"
+}
+
+function New-ShadowMatrixRoot {
+  param([string]$Content)
+
+  $shadowRoot = Join-Path $absoluteFixtureRoot ("shadow-" + [Guid]::NewGuid().ToString("N"))
+  $shadowMatrixPath = Join-Path $shadowRoot $matrixPath
+  [System.IO.Directory]::CreateDirectory((Split-Path -Parent $shadowMatrixPath)) | Out-Null
+  [System.IO.File]::WriteAllText($shadowMatrixPath, $Content + [Environment]::NewLine)
+  [PSCustomObject]@{
+    Root = $shadowRoot
+    RelativeMatrixPath = $matrixPath
+    AbsoluteMatrixPath = $shadowMatrixPath
+  }
+}
 
 function Invoke-StrictClaimScan {
-  param([string]$Path)
+  param(
+    [string]$Path,
+    [string]$WorkingDirectory = $repoRoot
+  )
 
-  $output = @(& $shellPath -NoLogo -NoProfile -ExecutionPolicy Bypass -File $ScannerPath -Strict -PolicyPath $PolicyPath -Path $Path 2>&1)
+  Push-Location $WorkingDirectory
+  try {
+    $output = @(& $shellPath -NoLogo -NoProfile -ExecutionPolicy Bypass -File $resolvedScannerPath -Strict -PolicyPath $resolvedPolicyPath -Path $Path 2>&1)
+    $code = $LASTEXITCODE
+  } finally {
+    Pop-Location
+  }
   [PSCustomObject]@{
-    Code = $LASTEXITCODE
+    Code = $code
     Output = @($output | ForEach-Object { [string]$_ })
   }
 }
@@ -94,10 +170,21 @@ function Test-FinalVerdict {
     [string]$Id,
     [string]$Path,
     [bool]$Reject,
-    [bool]$RequireAllowed = $false
+    [bool]$RequireAllowed = $false,
+    [string]$WorkingDirectory = $repoRoot,
+    [bool]$CheckTrackedState = $false
   )
 
-  $result = Invoke-StrictClaimScan -Path $Path
+  if ($CheckTrackedState) {
+    Assert-TrackedStateUnchanged -Context "before-$Id"
+  }
+
+  $result = Invoke-StrictClaimScan -Path $Path -WorkingDirectory $WorkingDirectory
+
+  if ($CheckTrackedState) {
+    Assert-TrackedStateUnchanged -Context "after-$Id"
+  }
+
   $termFailed = [bool]($result.Output -match "CLAIM-DRIFT\[forbidden-2pow128-canonical-activation\].*\[fail\]")
   $termAllowed = [bool]($result.Output -match "CLAIM-DRIFT\[forbidden-2pow128-canonical-activation\].*\[allowed\]")
   if ($Reject) {
@@ -131,24 +218,28 @@ function Test-AbsoluteWindowsScannerPath {
     Write-Host "CLAIM-POLICY-REGRESSION: FAIL [absolute-windows-drive-qualified] fixture path is not drive-qualified: $absoluteFixturePath"
     $script:failures += 1
   } else {
-    Test-FinalVerdict -Id "absolute-windows-single-file" -Path $absoluteFixturePath -Reject $true
+    Test-FinalVerdict -Id "absolute-windows-single-file" -Path $absoluteFixturePath -Reject $true -CheckTrackedState $true
   }
 
-  Test-FinalVerdict -Id "absolute-matrix-context-allowance" -Path $absoluteMatrixPath -Reject $false -RequireAllowed $true
+  $markedShadow = New-ShadowMatrixRoot -Content '| `POLICY-R3` | The canonical execution requires 2^128. |'
+  Test-FinalVerdict -Id "absolute-matrix-context-allowance" -Path $markedShadow.AbsoluteMatrixPath -WorkingDirectory $markedShadow.Root -Reject $false -RequireAllowed $true -CheckTrackedState $true
   $script:contextCount += 2
 }
 
 try {
+  $baselineStatus = Get-TrackedGitStatus
+  $baselineTrackedHashes = Get-TrackedFileHashSnapshot
+
   if ($AbsoluteWindowsOnly) {
     Test-AbsoluteWindowsScannerPath
   } else {
     foreach ($fixture in $fixtures) {
-      $fixturePath = Join-Path $relativeFixtureRoot ($fixture.id + ".txt")
+      $fixturePath = $fixture.id + ".txt"
       [System.IO.File]::WriteAllText(
-        (Join-Path (Get-Location).Path $fixturePath),
+        (Join-Path $absoluteFixtureRoot $fixturePath),
         [string]$fixture.text + [Environment]::NewLine
       )
-      Test-FinalVerdict -Id $fixture.id -Path $fixturePath -Reject ([bool]$fixture.reject) -RequireAllowed ([bool]$fixture.allowedMatch)
+      Test-FinalVerdict -Id $fixture.id -Path $fixturePath -WorkingDirectory $absoluteFixtureRoot -Reject ([bool]$fixture.reject) -RequireAllowed ([bool]$fixture.allowedMatch)
       if ($fixture.reject) {
         $rejectCount += 1
       } else {
@@ -157,22 +248,16 @@ try {
     }
 
     Test-FinalVerdict -Id "policy-path-allowance" -Path "docs/internal/CLAIM_DRIFT_POLICY.md" -Reject $false -RequireAllowed $true
-    Test-FinalVerdict -Id "matrix-marked-row-allowance" -Path $matrixPath -Reject $false -RequireAllowed $true
+
+    $markedShadow = New-ShadowMatrixRoot -Content '| `POLICY-R3` | The canonical execution requires 2^128. |'
+    Test-FinalVerdict -Id "matrix-marked-row-allowance" -Path $markedShadow.RelativeMatrixPath -WorkingDirectory $markedShadow.Root -Reject $false -RequireAllowed $true -CheckTrackedState $true
     $contextCount += 2
 
     Test-AbsoluteWindowsScannerPath
 
-    $originalMatrixBytes = [System.IO.File]::ReadAllBytes($absoluteMatrixPath)
-    try {
-      [System.IO.File]::AppendAllText(
-        $absoluteMatrixPath,
-        [Environment]::NewLine + "The canonical execution requires 2^128." + [Environment]::NewLine
-      )
-      Test-FinalVerdict -Id "matrix-filename-does-not-bypass" -Path $absoluteMatrixPath -Reject $true
-      $contextCount += 1
-    } finally {
-      [System.IO.File]::WriteAllBytes($absoluteMatrixPath, $originalMatrixBytes)
-    }
+    $unmarkedShadow = New-ShadowMatrixRoot -Content 'The canonical execution requires 2^128.'
+    Test-FinalVerdict -Id "matrix-filename-does-not-bypass" -Path $unmarkedShadow.RelativeMatrixPath -WorkingDirectory $unmarkedShadow.Root -Reject $true -CheckTrackedState $true
+    $contextCount += 1
   }
 } finally {
   if ([System.IO.Directory]::Exists($absoluteFixtureRoot)) {
