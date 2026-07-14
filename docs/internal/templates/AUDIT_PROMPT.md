@@ -42,10 +42,22 @@ Adversarial requirements:
   replace the predicate by a tautology, and assign a consumer label without an
   evaluator edge. Name the checked theorem that rejects each applicable
   mutation; otherwise leave the criterion open.
+- Quote the accepted predicate `P` and mutation predicate `Q`, including every
+  guard and quantifier. Require the same relation or a checked `P -> Q` bridge;
+  compare direct component attempts, successful reads, top-level valid-query
+  reachability, and actual emitted occurrences.
+- For producer provenance, classify the theorem's information level:
+  event-value membership, occurrence position, multiplicity, producing
+  instruction, folded pre-state, local occurrence, and invocation parameters.
+  `List.Mem` alone proves only event-value membership. Evidence used inside a
+  proof but erased from its conclusion does not close a stronger claim.
 - Look for wrappers, renamed caveats, decorative reads, proof-only answers,
   uncounted storage, synthetic events, or work that advances a different goal.
 - Treat the report's own remaining-risk or next-consumer caveats as evidence
   against completion when they concern assigned or inherited criteria.
+- Do not accept the worker's label that a residual question is "strictly
+  stronger", future hardening, or out of scope. Map it independently to the
+  frozen requirements and inherited invariant IDs.
 - For machine/store changes, trace returned values backward to charged reads
   and test actual footprint addresses, including tiny inputs and dead/sentinel
   addresses, against modeled word capacity rather than host array bounds.

@@ -121,14 +121,18 @@ Acceptance:
 
 ### U2. Build One Uniform Local/Interior Directory Route
 
-Status: W18 producer-provenance repair candidate; coordinator acceptance pending.
+Status: W18 checkpoint; W19 semantic repair required before blind audit.
 
 Every size uses `RelativeRmm.canonicalLayout` and the same close/LCA reviewer
 route. One exhaustive typed 20-source universe includes canonical close.
-Every emitted read retains its actual producing instruction, exact prefix-fold
-state, source, segment, and component path. Every counted source has a concrete
-may-read path; shared-BP consumers have same-event paths; a fresh unused segment
-with a plausible label has no producer. Region exclusivity,
+For every read-event value, W18 supplies a closed-program instruction at the
+actual folded prefix state whose local trace contains that value, plus a
+compatible source/segment/component path. It does not retain the global/local
+occurrence position or the component invocation parameters. Every counted
+source has a direct component may-read path, while the fresh unused-source
+mutation rejects a stronger instruction-trace producer relation; W18 proves no
+bridge between them. Shared-BP consumers have same-event component paths.
+Region exclusivity,
 logical-segment coverage, and absence of canonical legacy duplicates also hold.
 The existing supplied-store evaluator runs through a checked
 flat-physical address-translation adapter. Its execution-derived ordered
@@ -164,13 +168,16 @@ Acceptance evidence:
 - reviewer physical successful-read backing and whole-query word/address bounds
   in the final adequacy packet.
 
-Only the coordinator may replace this status with `ACCEPTED`, after independently
-reconstructing the frozen/formally amended W18 matrix and obtaining a fresh blind exact-commit
+W19 must replace the event-value witness with occurrence-preserving producer
+provenance, retain the actual invocation parameters, and use one operational
+relation for positive source coverage and counterfactual rejection. Only the
+coordinator may then replace this status with `ACCEPTED`, after independently
+reconstructing the amended matrix and obtaining a fresh blind exact-commit
 audit.
 
 ### U3. Reprove One Principled All-Size Cost Bound
 
-Status: next; unblocked by `U2`.
+Status: next after U2 acceptance; do not start while W19 is open.
 
 The uniform route currently has the honest checked transitional sum `328`,
 proved by

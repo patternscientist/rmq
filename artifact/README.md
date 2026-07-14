@@ -150,9 +150,11 @@ things:
 - complete physical-execution equality under agreement on the first execution's
   consumed ordered footprint, plus a checked consumed-address disagreement
   witness showing that the supplied store is not ignored;
-- actual-instruction producer provenance for every emitted read, concrete
-  may-read paths for every counted source, same-event shared-BP consumer paths,
-  and operational rejection of a plausible-label unused segment;
+- W18 event-value producer evidence at actual folded prefix states, direct
+  component may-read paths for counted sources, same-event shared-BP component
+  paths, and stronger instruction-trace rejection of a plausible-label unused
+  segment; occurrence positions, invocation parameters, and a unified positive/
+  negative operational relation remain the W19 acceptance gate;
 - coherent rejection of empty, reversed, and out-of-bounds ranges across the
   canonical, supplied-store, trace, and costed list surfaces;
 - a linear reviewer capacity and query-independent logarithmic word width

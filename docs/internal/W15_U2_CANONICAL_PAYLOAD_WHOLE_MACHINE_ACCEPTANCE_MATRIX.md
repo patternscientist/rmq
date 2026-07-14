@@ -32,6 +32,17 @@ an arbitrary same-category instruction at an arbitrary state.
 W18 repair branch: `codex/rmq-u2-producer-provenance`
 W18 exact base: `a96f40b12c42133260a3fe840ccf0e4d33dbda6b`
 
+Coordinator verdict on W18 commit
+`63d503d24aadeb501284a658c303bf69861953df`: `REPAIR_REQUIRED`.
+The actual-prefix-state event-value theorem is accepted checkpoint evidence,
+but the occurrence-level, invocation-preserving, and semantic-nonvacuity rows
+remain open. `ReviewerSource.HasProducerMayPath` is the positive direct
+component predicate; the fresh mutation rejects the stronger
+`ReviewerUnusedSourceMutation.HasOperationalProducer`; no checked implication
+connects them. `WholeQueryProgram.ProducesEvent` begins from event-value
+membership and `ReviewerProducerReadPath` erases invocation parameters. W19
+must replace or bridge these relations and consume the result publicly.
+
 The roadmap join is the list-facing `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`
 imported by `RMQPaper`. The required object chain is:
 
@@ -684,11 +695,12 @@ fresh blind exact-commit audit are the mandatory next consumer.
 
 ## W18 repair verification ledger
 
-Status: `CANDIDATE_COMPLETE`.  The emitted event is connected to its actual
-producing instruction and folded pre-state, and the fresh unused source is
-rejected by the same instruction-trace producer mechanism.  Coordinator
-reconstruction and a fresh blind exact-commit audit remain mandatory before
-`ACCEPTED`.
+Historical worker status: `CANDIDATE_COMPLETE`. Coordinator disposition:
+`REPAIR_REQUIRED`. A read-event value is connected to a producing instruction
+and folded pre-state, but occurrence position and invocation parameters are not
+retained, and the fresh unused source is rejected by a stronger relation than
+the positive counted-source theorem. A fresh blind audit is deferred until W19
+closes those rows.
 
 | Check | W18 result |
 | --- | --- |

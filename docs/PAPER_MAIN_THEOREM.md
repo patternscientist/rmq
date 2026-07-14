@@ -42,16 +42,18 @@ primitive operands/results.
   genuine supplied flat-physical execution, first-footprint determinacy, and
   answer provenance at the translated supplied-store `.value` projection.
 - `RMQ.Headlines.succinctRMQReviewerEveryReadProducerProvenance`:
-  every emitted event retains its actual instruction occurrence, actual
-  prefix-fold state, physical source, logical segment, and concrete component
-  read path.
+  every read-event value has a closed-program instruction at its folded prefix
+  state whose local trace contains that value, plus a compatible physical
+  source, logical segment, and component path. This W18 checkpoint does not
+  retain occurrence positions or concrete invocation parameters.
 - `RMQ.Headlines.succinctRMQReviewerCountedSourceProducerMayPath` and
   `RMQ.Headlines.succinctRMQReviewerSharedBPConsumerProducerConnected`:
   reverse may-read evidence for every counted source and same-event paths for
   every select/rank/canonical-close shared-BP dependency.
 - `RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer`:
-  segment 21 with a plausible canonical-close label fails through the same
-  operational producer relation, rather than through a false liveness flag.
+  segment 21 with a plausible canonical-close label has no instruction-trace
+  producer. This is stronger than, but not yet bridged from, the component
+  may-read relation used by the positive counted-source theorem.
 - `RMQ.Headlines.listIntSuccinctRMQRawAdequacyOfValid` and
   `RMQ.Headlines.listIntSuccinctRMQInvalidPhysicalSemantics`: raw adequacy only
   for valid ranges and one none/empty/zero execution for every invalid range.

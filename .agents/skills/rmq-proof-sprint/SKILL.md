@@ -82,7 +82,14 @@ to the charged reads; post-hoc replay of a value obtained elsewhere is invalid.
 Evidence about the returned answer or routing must constrain that projection;
 aggregate trace inequality is insufficient when only the log changes. Expand
 semantic liveness/coverage definitions and reject tautological predicates or
-consumer labels disconnected from actual evaluator leaves.
+consumer labels disconnected from actual evaluator leaves. For every
+counterfactual closure argument, write down the accepted predicate `P`, the
+rejected mutation predicate `Q`, and their quantifier/domain assumptions. Use
+the same predicate, or prove the checked implication `P -> Q`; `not Q` does not
+refute a weaker `P`. When a claim concerns an event occurrence, repeated read,
+or actual invocation, preserve its position, multiplicity, instruction, and
+pre-state in the proposition. Plain `List.Mem` proves only event-value
+membership.
 
 ## 4. Work To The Named Target
 
@@ -160,6 +167,11 @@ coordinator acceptance and any required fresh blind audit remain separate. A
 worker may stop only when the target closes, a formal obstruction forces a
 coordinator decision, required external state blocks progress, or the user
 redirects. A green build alone is not target closure.
+
+The worker may not self-classify a remaining skeptical question as "strictly
+stronger", "future hardening", or "out of scope" after implementation. First
+map it to the verbatim frozen requirements and inherited invariants. Only a
+coordinator-approved contract amendment can narrow or defer an applicable row.
 
 The exact status and declaration must be the first lines of the final report.
 Do not replace them with informal claims that the task, branch, or gate is

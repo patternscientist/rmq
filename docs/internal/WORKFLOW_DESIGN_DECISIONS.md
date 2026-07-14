@@ -682,6 +682,11 @@ title. `rmq-coordinator` and the coordinator re-entry template remind
 coordinators to include that title in launch metadata and generated worker
 prompts.
 
+Hardening (2026-07-13): after a worker left its automatically generated title
+unchanged, the template now begins with the imperative `Make the title of this
+chat exactly: ...`. The coordinator skill requires that sentence as the first
+line; title metadata alone is insufficient.
+
 Evidence:
 
 - `docs/internal/templates/WORKER_PROMPT.md`
@@ -1662,3 +1667,104 @@ Evidence:
 - `RMQ/Core/SuccinctFinalRAM.lean`
 - `RMQ/Core/SuccinctFinalModelAdequacy.lean`
 - `RMQ/Headlines/RMQ.lean`
+
+## WDD-20260713-003: predicate-identical counterfactuals and failure-mode feedback
+
+Status: accepted.
+Date: 2026-07-13.
+Scope: proof-worker completion, coordinator integration, external audits,
+claim-drift checks, and publication-facing ADD evidence.
+
+Decision:
+
+- Every semantic counterfactual records the accepted predicate `P`, rejected
+  predicate `Q`, and their guards and quantifiers. Closure requires the same
+  predicate or a checked `P -> Q` bridge.
+- Provenance evidence is labeled by the information retained in its theorem
+  conclusion: event value, occurrence position, multiplicity, producing
+  instruction, folded pre-state, local occurrence, and invocation parameters.
+  Data used while building a proof but erased from the proposition does not
+  support the stronger label.
+- Workers cannot unilaterally call a residual skeptical question "strictly
+  stronger", future hardening, or out of scope. They map it to the frozen
+  requirements and inherited invariants; only the coordinator may amend the
+  contract.
+- Every coordinator worker audit now includes a failure-mode feedback loop.
+  The coordinator names the gap, decides whether it is isolated or reusable,
+  patches the smallest appropriate workflow layer when generalizable, records
+  the decision, uses the failed candidate as a regression fixture, and only
+  then engineers the next worker prompts.
+
+Context:
+
+W18 commit `63d503d24aadeb501284a658c303bf69861953df`
+reported candidate completion after materially improving W17. Its accepted
+source theorem used direct component `HasProducerMayPath`, while its fresh-
+source mutation rejected the stronger `HasOperationalProducer`; no bridge
+connected them. The forward provenance theorem began from `List.Mem` and the
+public path record erased invocation parameters, despite prose claiming an
+actual occurrence and invocation. The worker disclosed top-level reachability
+as a possible stronger future theorem, but that question fell inside the
+frozen operational-provenance and semantic-nonvacuity criteria.
+
+Options considered:
+
+- Treat W18 as an isolated proof bug and repair only its Lean definitions.
+- Add task-specific prose to the next worker prompt.
+- Require blind auditors to discover predicate mismatch after every milestone.
+- Add predicate parity and information-preservation checks to the shared
+  worker, coordinator, auditor, matrix, and claim-policy layers, with a
+  standard coordinator feedback loop for future recurring failures.
+
+Rationale:
+
+Counterfactual evidence is useful only when it challenges the property being
+accepted. A stronger negative relation can reject a mutation while leaving the
+weaker positive relation vacuous or operationally irrelevant. Likewise,
+occurrence-level prose is not entailed by event-value membership. Making these
+comparisons explicit is a small, reusable check that would have rejected the
+W18 report before public-capstone review.
+
+The coordinator feedback loop prevents the process from repeatedly paying for
+the same class of failure. Restricting workflow patches to recurring or
+generalizable misses avoids turning ordinary proof bugs into permanent process
+overhead.
+
+Publication-facing significance:
+
+The decision log now preserves why the formal notion of producer provenance
+was strengthened and how ADD responds when a machine-checked theorem satisfies
+the words of a requirement but loses its intended operational information.
+This supports a methods section that explains falsification tests, evidence
+levels, and workflow evolution without relying on chat transcripts.
+
+Consequences:
+
+- Proof-sprint, completion-gate, known-failure, matrix, worker-prompt,
+  coordinator, audit, and audit-prompt guidance share the same predicate and
+  provenance checks.
+- W18 is a named workflow regression fixture.
+- Claim-drift policy rejects stale current-facing W17 and category-only source
+  stories while W19 is pending.
+- The checks add no burden to ordinary local arithmetic proofs and do not make
+  automated scans a substitute for semantic reconstruction.
+
+Evidence:
+
+- `.agents/skills/rmq-proof-sprint/SKILL.md`.
+- `.agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md`.
+- `.agents/skills/rmq-proof-sprint/references/KNOWN_FAILURE_MODES.md`.
+- `.agents/skills/rmq-coordinator/SKILL.md`.
+- `.agents/skills/rmq-audit/SKILL.md`.
+- `docs/internal/templates/WORKER_PROMPT.md`.
+- `docs/internal/templates/PROOF_ACCEPTANCE_MATRIX.md`.
+- `docs/internal/templates/AUDIT_PROMPT.md`.
+- `docs/internal/CLAIM_DRIFT_POLICY.md` and `.json`.
+- W18 commit `63d503d24aadeb501284a658c303bf69861953df`.
+
+Follow-up:
+
+Apply the revised contract to W19, then give a fresh blind auditor the exact
+commit and frozen predicates without the worker narrative. After two more
+public-capstone cycles, evaluate whether structured extraction of `P`, `Q`,
+domains, and provenance level from acceptance matrices is worth automating.

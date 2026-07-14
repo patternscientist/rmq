@@ -1,22 +1,28 @@
 # RMQ Family Summary
-## Corrected U2 Worker Candidate (W17, 2026-07-13)
+## U2 Producer-Provenance Frontier (W18 repair required, 2026-07-13)
 
-W17 supersedes the rejected W15 candidate; only the coordinator may accept the
-node after independently reconstructing the frozen matrix and obtaining a fresh
-blind exact-commit audit. The all-size final trace consumes
+The all-size final trace consumes
 `SuccinctClose.canonicalRelativeRmmInteriorDirectory` through
 `concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural`; it does not
 dispatch on legacy `Ready`, `Active`, or the zero-block route. One exhaustive
-typed 20-source universe includes canonical close. Its theorems establish
-counted source iff reviewer-live source, source/region exclusivity, complete
-logical-segment coverage, emitted-read operational ownership, actual
-read-producing evaluator-branch reachability for every counted source (with BP
-code explicitly shared through checked dependencies), and absence of legacy duplicate
-close/interior sources from the canonical payload. The whole machine is the
-single pre-execution list
+typed 20-source universe includes canonical close, source regions are
+exclusive, all logical segments are covered, and duplicate legacy
+close/interior sources are absent from the canonical payload. The whole machine
+is the single pre-execution list
 `concreteBPNativeSuccinctRMQReviewerPhysicalWords`; its exact-erasure theorem
 identifies that list with the canonical public payload underlying
 `SuccinctClassic.buildPayload`, rather than an appended sibling payload.
+
+W18 improves the producer story at the event-value level: any read-event value
+in the global trace has a closed-program instruction at its actual folded
+prefix state whose local trace contains that value, and the same value resolves
+to a source/component path. It does not retain the global/local occurrence
+position or the concrete component invocation parameters. Reverse coverage
+uses a direct component may-read predicate, while the fresh-source mutation
+rejects a stronger instruction-trace producer predicate; no checked bridge
+currently connects them. W19 must preserve occurrences and invocation data and
+use one operational relation for positive coverage and mutation rejection
+before U2 returns to blind-audit status.
 
 The interior dynamic footprint is the ordered address projection of the
 execution that computes the answer. Theorems

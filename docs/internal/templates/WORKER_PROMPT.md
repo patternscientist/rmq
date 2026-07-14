@@ -3,6 +3,8 @@
 Delete bracketed guidance before sending.
 
 ```text
+Make the title of this chat exactly: `([WORKER_HANDLE]) [SHORT_TASK_SUMMARY]`
+
 Worker identity:
 - Handle: [WORKER_HANDLE]
 - Requested title: `([WORKER_HANDLE]) [SHORT_TASK_SUMMARY]`
@@ -61,6 +63,15 @@ Acceptance contract:
 - For semantic liveness, coverage, or ownership, expand the definitions and
   show which theorem fails if a dead source is added, a live source is removed,
   or a consumer label is assigned without an evaluator connection.
+- For every semantic mutation, record the accepted predicate `P`, the rejected
+  predicate `Q`, and their complete quantifier/domain assumptions. Use the same
+  relation, or prove a checked `P -> Q` bridge. A stronger negative predicate
+  does not test a weaker positive predicate.
+- For trace provenance, state whether the theorem preserves event values,
+  occurrence positions, multiplicity, or actual invocation parameters.
+  `List.Mem` supports only event-value membership. Preserve position,
+  instruction, folded pre-state, local occurrence, and computed invocation
+  parameters whenever the requirement claims occurrence-level production.
 - For a public theorem combining space/execution/model claims, prove each
   conjunct concerns the same payload, store, execution, and word model.
 - If a public wrapper guards valid inputs, ensure every combined field uses the
@@ -96,6 +107,10 @@ Completion:
 - A commit, push, green build, local helper, or honest caveat is a checkpoint,
   not completion. If your self-audit says a required property remains for the
   next consumer, continue on the same branch and add another commit.
+- Do not self-classify a skeptical question as "strictly stronger", "future
+  hardening", or "out of scope" after implementation. Map it to the frozen
+  requirements and inherited IDs; only the coordinator may approve a contract
+  amendment that narrows or defers a row.
 - Exercise applicable edge cases in Lean: empty, singleton, size two,
   threshold minus one, threshold, and representative query shapes.
 - Log real code/artifact decisions in DESIGN_DECISIONS.md and workflow changes
@@ -123,7 +138,8 @@ Report:
 - decisions logged or why none were needed;
 - exact command outcomes;
 - durable completed requirement-to-evidence matrix, including anti-vacuity
-  challenges attempted and outcomes;
+  challenges attempted and outcomes, positive/mutation predicate pairs and
+  bridges, and the provenance information level retained by each theorem;
 - quote checked theorem types or every hypothesis/conclusion for evidence;
   declaration names alone do not close matrix rows;
 - one status from CANDIDATE_COMPLETE / OBSTRUCTED / BLOCKED / INCOMPLETE;

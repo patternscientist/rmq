@@ -73,6 +73,10 @@ Every worker prompt should name:
 - completion report requirements, including branch name, worktree path, base
   branch, and commit hash for write tasks.
 
+Put `Make the title of this chat exactly: ...` as the first line of the pasted
+worker prompt. A title shown only as identity metadata is not an instruction to
+rename the chat.
+
 Before launch, verify that the worker's exact base contains the current
 workflow skill and prompt policy. If proof and workflow branches are siblings,
 join them in an explicit integration base or require the worker to merge the
@@ -109,39 +113,75 @@ For each completed worker branch:
    used source, replace the predicate by a tautology, or assign a consumer label
    without an evaluator edge. Identify the theorem that fails. If none fails,
    the row is open.
-6. Record local-rung status and roadmap-node status separately; a closed helper
+6. Put the positive predicate `P` and mutation predicate `Q` side by side,
+   including guards and quantifiers. Require the same relation or a checked
+   `P -> Q` bridge. Compare component versus top-level execution, attempted
+   versus successful reads, arbitrary versus valid-query parameters, and
+   event-value membership versus actual occurrence production.
+7. Audit information preservation in the theorem conclusion. If prose claims
+   occurrence, multiplicity, or actual invocation provenance, require a global
+   position or equivalent decomposition plus the producing instruction, folded
+   pre-state, local occurrence, and computed invocation parameters. A proof
+   term that used this data but returned a relation that erased it is weaker.
+8. Record local-rung status and roadmap-node status separately; a closed helper
    or prerequisite does not close its consumer node.
-7. For combined public claims, verify that space, execution, provenance, and
+9. For combined public claims, verify that space, execution, provenance, and
    machine conjuncts concern the same objects. For whole-machine claims,
    inventory every read segment, physical offset, and the input-size relation
    for the one query-independent word width. Check that validity guards apply
    to every combined field or are connected by a theorem on the same domain.
-8. Trace returned values to charged reads and check the relevant value/state/
+10. Trace returned values to charged reads and check the relevant value/state/
    route projection, not merely inequality of an aggregate record. Check actual
    evidence quantification and validity domain against the public claim; one
    concrete witness cannot close a universal row. Check actual footprint
    addresses against modeled address capacity when machine/store work changed.
-9. Treat a missing or informal candidate status as `INCOMPLETE`; "closed at
+11. Treat a missing or informal candidate status as `INCOMPLETE`; "closed at
    worker/gate level" is not the required provisional declaration.
-10. Run the smallest gate that genuinely covers the change, including small and
+12. Do not accept the worker's classification of residual work as "strictly
+    stronger", future hardening, or out of scope. Map it independently to the
+    frozen requirements and inherited IDs; only an explicit coordinator
+    contract amendment can narrow or defer a row.
+13. Run the smallest gate that genuinely covers the change, including small and
    threshold boundary cases when layout or dispatch changed.
-11. Treat claim-drift tooling as a consistency aid, not ground truth. Inspect the
+14. Treat claim-drift tooling as a consistency aid, not ground truth. Inspect the
    policy/allowlist itself when claims or constants change.
-12. Update theorem maps, artifact docs, and design logs if the public surface or
+15. Update theorem maps, artifact docs, and design logs if the public surface or
    architecture changed.
-13. For a public capstone, trust-boundary change, combined space/execution
+16. For a public capstone, trust-boundary change, combined space/execution
    theorem, or roadmap-node closure, launch a fresh blind exact-commit audit
    before merge or closure. Do not give that auditor the worker verdict.
-14. Record `ACCEPTED` only after the coordinator gate and any mandatory blind
+17. Record `ACCEPTED` only after the coordinator gate and any mandatory blind
    audit; otherwise continue, port, or reject the branch.
-15. Update lifecycle state and retire the worktree/branch when evidence is
+18. Update lifecycle state and retire the worktree/branch when evidence is
    preserved.
-16. Re-read the current roadmap/frontier and produce the best next ambitious
+19. Re-read the current roadmap/frontier and produce the best next ambitious
    prompt or prompt set, using parallel workers when dependencies are genuinely
    independent.
 
 Do not merge a branch that merely reports an honest caveat when a local theorem
 repair is still available.
+
+### Failure-Mode Feedback Loop
+
+Every completed-worker audit must classify any miss before the coordinator
+delegates the repair:
+
+1. Name the failure precisely and identify the gap between the frozen claim and
+   the checked proposition.
+2. Decide whether it is an isolated implementation defect or a reusable ADD
+   failure mode. Do not add process for a one-off typo or ordinary proof bug.
+3. For a recurring or generalizable miss, patch the smallest durable layer that
+   would have prevented it: completion gate, known-failure reference, matrix,
+   worker prompt, audit packet, coordinator checklist, or claim-drift policy.
+4. Log the workflow decision with trigger, alternatives, rationale,
+   consequences, exact branch evidence, and publication-facing significance.
+   Log a separate proof/code decision when the repair also chooses a theorem or
+   representation abstraction.
+5. Use the failed candidate as a named regression fixture and verify the new
+   rule would reject its exact evidence pattern without rejecting legitimate
+   weaker claims that are labeled accurately.
+6. Only then engineer the next ambitious prompt set from the updated roadmap
+   frontier.
 
 ## Decision Logging
 

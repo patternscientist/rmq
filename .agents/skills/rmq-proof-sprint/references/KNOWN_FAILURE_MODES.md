@@ -53,11 +53,40 @@ obligation. Known examples include:
   forced to differ, then presenting that as returned-answer dependency;
 - combining a raw unguarded adequacy packet with a guarded list-facing result
   and calling the conjunction one execution story.
+- accepting sources with a weak predicate `P`, rejecting a fresh mutation with
+  a stronger predicate `Q`, and presenting `not Q` as evidence against `P`
+  without proving `P -> Q`;
+- proving a direct component may attempt a failed read and presenting that as
+  top-level valid-query reachability or successful source liveness;
+- using `List.Mem` to establish producer evidence and then describing it as
+  occurrence- or multiplicity-preserving provenance for repeated equal events;
+- constructing a witness from the actual invocation but erasing its parameters
+  from the returned relation, then advertising invocation-specific ownership;
+- declaring a remaining top-level or occurrence-level obligation "strictly
+  stronger than assigned" without a coordinator-approved contract amendment.
 
 For semantic coverage, liveness, ownership, dependency, and composition claims,
 expand the load-bearing definitions and identify which checked theorem fails
 under the corresponding mutation. Green builds, exhaustive enumeration, and
 accurate declaration-name inventories do not supply that evidence.
+
+### W18 regression: relation splitting
+
+The W18 producer-provenance candidate improved the forward theorem from an
+arbitrary-state category join to an actual prefix-state producer witness, but
+its positive source coverage and negative fresh-source mutation used different
+relations. Accepted sources had a direct component `HasProducerMayPath`, which
+could include a failed attempt outside top-level query reachability; the fresh
+source was rejected with the stronger `HasOperationalProducer`. Since no
+bridge from the positive predicate to the negative predicate was proved, the
+mutation did not challenge the accepted property.
+
+The same candidate began from `event \in trace`, so equal repeated events were
+not position-distinguished, and its public path record erased the actual
+invocation parameters used to build the proof. This is the canonical regression
+test for predicate identity, quantifier parity, and provenance information
+preservation. Do not treat a stronger residual theorem as optional merely
+because a worker report labels it future hardening.
 
 ## Select And Close History
 

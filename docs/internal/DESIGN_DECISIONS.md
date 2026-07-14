@@ -1860,7 +1860,8 @@ Evidence:
 
 ## DD-20260713-003: producer-level provenance replaces category joins
 
-Status: accepted W18 repair of the W17 semantic-provenance gate.
+Status: historical W18 checkpoint; superseded for the reviewer surface by
+DD-20260713-004.
 
 Decision:
 
@@ -1923,3 +1924,90 @@ Evidence:
 - `concreteBPNativeSuccinctRMQReviewerSource_counted_producer_may_path`.
 - `concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_all_producer_connected`.
 - `concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_producer`.
+
+## DD-20260713-004: occurrence-indexed provenance and one operational source relation
+
+Status: accepted target architecture for the W19 repair.
+
+Context:
+
+W18 replaced W17's arbitrary-state category join with a real producing
+instruction and folded prefix state. That is genuine progress, but the public
+relation begins from event-value membership in the global trace, so equal
+repeated events are not distinguished. Its `ReviewerProducerReadPath` also
+forgets the concrete invocation parameters used to construct the witness.
+
+The reverse-liveness acceptance theorem uses
+`ReviewerSource.HasProducerMayPath`, a direct component attempted-read relation,
+while the fresh-source mutation proves absence of the stronger
+`ReviewerUnusedSourceMutation.HasOperationalProducer`, an actual instruction-
+trace relation. Since W18 proves no implication from the positive predicate to
+the mutation predicate, the negative theorem does not test the property used
+to accept counted sources.
+
+Decision:
+
+- Represent reviewer producer provenance with an occurrence-preserving
+  relation: a global trace position, or an equivalent list decomposition that
+  preserves multiplicity, is connected to the producing instruction's local
+  occurrence at the actual folded prefix state.
+- Retain in the public path witness the concrete component invocation and the
+  equalities showing that its parameters are exactly those computed by the
+  producing instruction. Source and consumer labels are projections of that
+  witness, not independently chosen metadata.
+- Use one operational source relation for both positive coverage and
+  counterfactual rejection. If the positive theorem intentionally states only
+  component may-read, label it as such and test the mutation with that exact
+  predicate. A reviewer-facing top-level liveness claim instead requires an
+  existential valid top-level execution containing the source occurrence.
+- Keep weaker event-value membership and component may-read theorems as
+  accurately named compatibility or helper facts; do not use them to close an
+  occurrence-level or top-level operational claim.
+
+Alternatives considered:
+
+- Retain W18 and explain that identical events are observationally
+  interchangeable.
+- Keep separate positive and negative relations and add prose saying they have
+  the same intent.
+- Add only a bridge from component may-read to operational production.
+- Preserve occurrences and invocation parameters in the theorem surface and
+  unify the relation used on both sides of the counterfactual.
+
+Rationale:
+
+Reviewer-facing provenance is easiest to audit when it follows the standard
+interpreter decomposition: one program occurrence, one folded pre-state, one
+local trace occurrence, and its position in the composed global trace. This
+handles repeated equal reads without asking a reviewer to infer causality from
+list membership. One relation for accepted and rejected sources makes the
+nonvacuity test logically direct. It also forces the paper to distinguish the
+useful but weaker component may-read fact from actual top-level reachability.
+
+Consequences:
+
+- W18 remains a proof checkpoint, not U2 acceptance evidence.
+- W19 must consume the occurrence-preserving relation through final adequacy,
+  the valid `List Int` theorem, paper theorem, headlines, acceptance matrix,
+  and claim docs before U2 can return to blind-audit status.
+- Public wording must say event-value provenance when only `List.Mem` is
+  available and reserve occurrence-level producer provenance for the W19
+  relation.
+- The physical store, payload identity, invalid-range semantics, word width,
+  and checked modeled bound `328` are unaffected.
+
+Evidence:
+
+- W18 commit `63d503d24aadeb501284a658c303bf69861953df`.
+- `WholeQueryProgram.ProducesEvent` and
+  `WholeQueryProgram.evalGlobalWordTrace_event_producer`.
+- `ReviewerProducerReadPath`.
+- `ReviewerSource.HasProducerMayPath`.
+- `ReviewerUnusedSourceMutation.HasOperationalProducer` and
+  `concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_producer`.
+
+Follow-up:
+
+Implement W19 on a fresh branch from the workflow-hardened integration base,
+then run a fresh blind exact-commit audit using the same-predicate and repeated-
+event regressions before coordinator acceptance.

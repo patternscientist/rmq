@@ -68,6 +68,16 @@ expand the definitions and run counterfactual mutation checks: add a dead
 source, remove an operationally used source, replace a predicate with a
 tautology, and assign a consumer label without an evaluator edge. Require the
 auditor to identify which checked theorem rejects each applicable mutation.
+Require the auditor to quote the accepted predicate `P` and rejected mutation
+predicate `Q`, including guards and quantifiers, and demand either predicate
+identity or a checked `P -> Q` bridge. Explicitly compare component may-read,
+successful read, top-level reachability, and actual emitted occurrence.
+
+For trace provenance, require the auditor to state whether the theorem retains
+only event-value membership or also occurrence position, multiplicity,
+producing instruction, folded pre-state, local occurrence, and invocation
+parameters. `List.Mem` alone is not occurrence-level evidence, and proof-term
+construction does not compensate for information erased from the proposition.
 For returned-value or routing claims, inspect that projection specifically;
 aggregate trace inequality may be caused only by the log, and a singleton
 witness does not establish a universal dependency claim. For guarded public
@@ -78,6 +88,10 @@ an otherwise guarded public record.
 Positive evidence tiers are kernel theorem, model theorem, executable
 validation, artifact evidence, then process evidence. Process reports do not
 prove mathematical or executable claims.
+
+Do not inherit the worker's statement that a residual theorem is "strictly
+stronger" or optional. The auditor maps it independently to the frozen
+requirements and inherited invariants.
 
 ## 4. Require A Useful Report
 

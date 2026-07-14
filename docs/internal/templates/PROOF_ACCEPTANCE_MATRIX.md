@@ -32,3 +32,16 @@ Rules:
 8. Projection-specific evidence must match the quantification and validity
    domain of the requirement. A singleton executable witness does not close a
    universal dependency row.
+9. Every semantic mutation row must record the accepted predicate `P`, the
+   rejected predicate `Q`, and all guards and quantifiers. Require `P = Q` or a
+   checked implication `P -> Q`; otherwise leave the row open.
+10. Distinguish component may-read, component successful-read, top-level
+    reachable-read, and actual emitted-occurrence claims. Evidence at one level
+    does not silently entail another.
+11. For provenance rows, state whether evidence preserves only event values or
+    also occurrence position, multiplicity, producing instruction, folded
+    pre-state, and invocation parameters. `List.Mem` alone is event-value
+    evidence.
+12. A worker cannot narrow a row by calling residual work "strictly stronger"
+    or future hardening. Record an explicit coordinator-approved contract
+    amendment or keep the row open.

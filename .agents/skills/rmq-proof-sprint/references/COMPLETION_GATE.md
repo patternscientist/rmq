@@ -117,6 +117,37 @@ It is legitimate for every constructor of a finite universe to be live, but
 that fact must be proved from operational reachability or read production, not
 made true by the definition of `Live`.
 
+#### Predicate identity and quantifier parity
+
+For each positive claim and its mutation test, write the propositions beside
+one another. If accepted sources satisfy `P source` but the mutation theorem
+proves `not Q mutant`, closure requires either `P = Q` or a checked bridge
+`P mutant -> Q mutant`. Compare all guards and quantifiers, including:
+
+- direct component execution versus top-level query reachability;
+- attempted reads versus successful reads;
+- arbitrary parameters versus parameters produced by a valid query;
+- one concrete instance versus every public instance;
+- existential may-read paths versus actual emitted occurrences.
+
+A stronger negative predicate makes a mutation easier to reject and therefore
+does not validate a weaker positive predicate. If the predicates or domains do
+not match and no bridge is proved, the semantic row remains open.
+
+#### Provenance information preservation
+
+State the evidence level in the matrix. `event \in trace` identifies an event
+value but does not distinguish equal repeated occurrences. An occurrence-level
+claim must retain a global position or equivalent multiplicity-preserving
+decomposition, the producing instruction, the actual folded pre-state, and the
+local occurrence that maps to that global occurrence. If a component path is
+claimed for that invocation, its parameters must be equal to those computed by
+the producing instruction, not merely compatible with the same source label.
+
+Proof construction is not the theorem conclusion. Producing an invocation-
+specific witness internally and then returning a record that erases its
+parameters does not establish invocation-specific provenance.
+
 ### Value dependency
 
 Trace the returned answer backward. Identify the charged reads that determine
@@ -209,6 +240,11 @@ A worker may stop only when one of these is true:
 
 Difficulty, elapsed time, token pressure, a green build, a clean checkpoint,
 or the desire for an independent audit are not stop conditions.
+
+A worker's statement that a residual question is "strictly stronger than the
+assigned obligation" is not a stop condition. The worker must first map the
+question to the frozen requirement wording and inherited invariant IDs. Only
+the coordinator may approve a contract amendment that narrows or defers it.
 
 ## 6. Required Candidate Declaration
 

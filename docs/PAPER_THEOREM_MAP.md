@@ -33,11 +33,14 @@ The final trace refines
 and is exact by
 `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact`.
 Its one typed 20-source manifest includes canonical close and covers every
-read-producing segment.  Every emitted event exposes its actual instruction
-occurrence and actual prefix-fold state, and the same event resolves to its
-source, segment, and component path.  Every counted source has a concrete
-may-read path, shared-BP consumers use same-event paths, and a fresh unused
-segment is rejected by the producer relation.  Region exclusivity, segment
+read-producing segment. For each read-event value, W18 supplies a closed-
+program instruction at its actual folded prefix state whose local trace
+contains that value, plus a compatible source, segment, and component path.
+Every counted source has a direct component may-read path, shared-BP consumers
+use same-event component paths, and a fresh unused segment is rejected by a
+stronger instruction-trace producer relation. Occurrence positions, invocation
+parameters, and a unified positive/mutation relation remain W19. Region
+exclusivity, segment
 coverage, and absence of legacy duplicate close/interior payload sources also
 hold. One
 pre-execution physical word list erases exactly to the public `buildPayload`.

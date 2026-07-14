@@ -55,16 +55,20 @@ human-readable file when the interpretation changes.
   any final explained constant.
 - `4144`, Ready-regime `118`, the zero-block route, and `196727` are
   compatibility/history only, not the canonical reviewer execution.
-- W15's post-hoc physical-result construction was rejected. W17's physical
-  execution repair remains accepted candidate evidence, but its static
-  category-join provenance was rejected. W18 may be described only as a
-  producer-provenance repair candidate until the coordinator reconstructs the
-  frozen/formally amended matrix and obtains a fresh blind exact-commit audit.
-- Producer provenance means the emitted event is retained in the actual
-  producing instruction's trace at the actual folded prefix state and is tied
-  to its source and component path through that same event. Static category
-  joins and arbitrary empty-state evaluator witnesses are compatibility facts,
-  not reviewer provenance.
+- W15's post-hoc physical-result construction and W17's static category join
+  were rejected. W18 is a proof checkpoint: it supplies actual-prefix-state
+  event-value producer evidence, but coordinator audit reopened occurrence
+  preservation, invocation-parameter preservation, and same-predicate reverse
+  liveness. W19 owns those repairs before U2 can return to blind-audit status.
+- Event-value producer evidence means an emitted event value belongs to an
+  actual producing instruction's trace at the folded prefix state. Reserve
+  "occurrence-level producer provenance" for a theorem that also retains the
+  global and local occurrence, multiplicity, producing instruction, actual
+  state, and component invocation parameters.
+- A semantic mutation must test the same predicate and domain used by the
+  positive acceptance theorem, or a checked implication must connect them.
+  Component may-read, successful read, top-level valid-query reachability, and
+  actual emitted occurrence are distinct evidence levels.
 - Current machine claims must identify the same public `buildPayload`, reviewer
   physical words, execution, ordered footprint, and reviewer word width.
 - "Physical execution" in the current reviewer story must name the genuine

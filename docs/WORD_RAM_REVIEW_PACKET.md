@@ -14,12 +14,14 @@ repeated and failed reads; agreement on the first execution's footprint
 determines the complete physical `TraceResult`. The answer projection is the
 translated supplied-store evaluator projection; a consumed decisive-word
 corruption changes `some 0` to `none` and rejects a trace-preserving
-value-ignore mutant. Producer provenance retains the actual instruction
-occurrence and prefix-fold state for every event, then relates that same event
-to its physical source and concrete component path. Reverse liveness is a
-concrete may-read path for every counted source; each shared-BP consumer uses
-one same-event path. A fresh unused segment with an existing plausible leaf
-label is rejected because no instruction trace can emit it. The capacity
+value-ignore mutant. For every read-event value, W18 supplies a closed-program
+instruction at its folded prefix state whose local trace contains that value,
+then relates the value to a compatible physical source and component path.
+Reverse coverage is a direct component may-read path for every counted source;
+each shared-BP consumer uses one same-event component path. A fresh unused
+segment with an existing plausible leaf label is rejected by the stronger
+instruction-trace producer relation. Occurrence positions, invocation
+parameters, and a bridge between those two relations remain W19. The capacity
 `400000 * (n + 1)` is linear, and
 `concreteBPNativeSuccinctRMQReviewerWordBits n` is derived from that capacity
 before execution. It has an explicit logarithmic all-size upper bound and
@@ -32,7 +34,7 @@ The old zero-block evaluator and Ready/route-split `118` discussion below is
 compatibility history, not part of the `RMQPaper` reviewer route.
 
 
-Snapshot: 2026-07-13 (W18 producer-provenance repair candidate). This packet is a focused reviewer note for the
+Snapshot: 2026-07-13 (W18 checkpoint; W19 semantic repair pending). This packet is a focused reviewer note for the
 first-order Word-RAM refinement boundary used by the interpreted RMQ and
 rank/select theorem surfaces.
 

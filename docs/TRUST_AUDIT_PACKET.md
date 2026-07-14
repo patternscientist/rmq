@@ -13,12 +13,14 @@ execution's consumed physical footprint determines the complete physical
 trace; the refinement preserves order, failures, and repetitions, while a
 projection theorem identifies the answer with the translated supplied-store
 evaluator value and a decisive singleton corruption changes `some 0` to
-`none`. Producer-level theorems connect every emitted read to its actual
-instruction occurrence, actual prefix-fold state, exact instruction-local
-event, physical source, logical segment, and concrete component path. Every
-counted source has a concrete may-read path; shared-BP consumers carry
-same-event paths. A fresh unused segment with a plausible canonical-close label
-is rejected because no instruction trace can produce it. Raw
+`none`. W18 producer theorems connect each read-event value to a closed-program
+instruction at its actual folded prefix state whose local trace contains that
+value, plus a compatible physical source, logical segment, and component path.
+Every counted source has a direct component may-read path; shared-BP consumers
+carry same-event component paths. A fresh unused segment with a plausible
+canonical-close label is rejected by a stronger instruction-trace producer
+relation. Occurrence positions, invocation parameters, and one relation for
+positive coverage and mutation rejection remain W19. Raw
 adequacy is exposed only for valid public ranges; invalid ranges share the
 guarded none/empty/zero packet. No-synthetic,
 linear-capacity, logarithmic-width, stored/returned-word, physical-address, and
@@ -26,7 +28,7 @@ primitive-operand bounds are checked at the composed consumer. The transitional
 all-size cap is exactly `328`; older route constants are compatibility history.
 
 
-Snapshot: 2026-07-13 (W18 producer-provenance repair candidate). This is the compact packet to hand to a skeptical
+Snapshot: 2026-07-13 (W18 checkpoint; W19 semantic repair pending). This is the compact packet to hand to a skeptical
 Lean/formalization reviewer before asking for a broader library-readiness
 review. It focuses on the public succinct RMQ headline theorem, its alias
 chain, its cost/space model, and the main anti-oracle checks.

@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "updated": "2026-07-13",
   "terms": [
     {
@@ -101,9 +101,41 @@
     {
       "id": "producer-level-provenance",
       "pattern": "producer provenance|producer-level|actual producing instruction|prefix-fold state",
-      "status": "current-only-when-same-event-actual-state-and-source-path",
+      "status": "event-value-only-until-occurrence-and-invocation-data-are-retained",
       "strict": false,
       "allowedPathRegex": "",
+      "allowedLineRegex": ""
+    },
+    {
+      "id": "stale-w17-current-frontier",
+      "pattern": "The W17 branch supplies|Corrected U2 Worker Candidate \\(W17|W17 supersedes the rejected W15 candidate",
+      "status": "historical-only",
+      "strict": true,
+      "allowedPathRegex": "^docs/internal/",
+      "allowedLineRegex": ""
+    },
+    {
+      "id": "stale-w18-candidate-status",
+      "pattern": "W18 (producer-provenance )?repair candidate|W18 producer-provenance repair candidate|W18 .*coordinator acceptance pending",
+      "status": "historical-only-after-coordinator-repair-disposition",
+      "strict": true,
+      "allowedPathRegex": "^docs/internal/|^docs/DIGESTION_LOG\\.md$|^docs/ADD_PROVENANCE\\.md$",
+      "allowedLineRegex": ""
+    },
+    {
+      "id": "split-operational-liveness-overclaim",
+      "pattern": "counted source iff (reviewer-live|operationally live) source|emitted reads map to counted evaluator leaves|every counted source reaches an actual read-producing evaluator branch",
+      "status": "forbidden-current-wording-until-one-operational-relation-is-proved",
+      "strict": true,
+      "allowedPathRegex": "^docs/internal/|^docs/DIGESTION_LOG\\.md$|^docs/ADD_PROVENANCE\\.md$",
+      "allowedLineRegex": ""
+    },
+    {
+      "id": "occurrence-provenance-overclaim",
+      "pattern": "Every emitted read (now )?(retains|exposes)|each emitted read retains|Producer provenance retains the actual instruction occurrence|actual-instruction producer provenance for every emitted read|producer-level nonvacuity: each emitted read",
+      "status": "forbidden-current-wording-until-position-and-multiplicity-are-proved",
+      "strict": true,
+      "allowedPathRegex": "^docs/internal/|^docs/DIGESTION_LOG\\.md$|^docs/ADD_PROVENANCE\\.md$",
       "allowedLineRegex": ""
     },
     {

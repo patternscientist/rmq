@@ -84,8 +84,8 @@ The RMQ-only paper aliases live in
 | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint` | Agreement on the first physical execution's consumed ordered footprint determines the complete physical execution. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalValueFromSuppliedStore` | Projection theorem: the flat physical answer is exactly the existing translated supplied-store evaluator answer. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalValueDependency` | If translated supplied-store evaluator values differ, the corresponding flat-physical `.value` projections differ. |
-| `RMQ.Headlines.succinctRMQReviewerEveryReadProducerProvenance` | Every emitted read comes from an actual instruction occurrence at its actual prefix-fold state; the same event resolves to its physical source, logical segment, and concrete component read path. |
-| `RMQ.Headlines.succinctRMQReviewerCountedSourceProducerMayPath` | Every counted source has an actual possible attempted-read path in the concrete instruction/leaf construction. |
+| `RMQ.Headlines.succinctRMQReviewerEveryReadProducerProvenance` | For every read-event value in the trace, an actual closed-program instruction at its folded prefix state contains that value in its local trace, and a component path resolves the same value. This W18 checkpoint does not retain the global/local occurrence position or invocation parameters. |
+| `RMQ.Headlines.succinctRMQReviewerCountedSourceProducerMayPath` | Every counted source has a possible attempted-read path in a direct component construction. This is not yet the same relation as top-level producer reachability. |
 | `RMQ.Headlines.succinctRMQReviewerSharedBPConsumerProducerConnected` | Select, rank, and canonical-close consumers each reach the shared BP source through one event in that consumer's own read path. |
 | `RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer` | A fresh unused segment with a plausible canonical-close label is rejected because no instruction trace can produce its event. |
 | `RMQ.Headlines.listIntSuccinctRMQInvalidPhysicalSemantics` | Invalid public inputs have one guarded none/empty/zero logical and physical execution for every supplied store. |
@@ -107,9 +107,11 @@ The RMQ-only paper aliases live in
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreExecutionStory` | Target-independent global-store execution story for compressed/FID rank/select: for fixed `bits`, shared access plus rank false/true and select false/true traces all read from one concrete payload store. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory` | Bounded target-independent global-store execution story for compressed/FID rank/select: the shared access/rank/select traces also carry trace-local finite widths bounding payload-read addresses and word-primitive operands/results. |
 
-The W17 branch supplies the corrected U2 worker candidate; coordinator acceptance
-still requires independent matrix reconstruction and a fresh blind exact-commit
-audit. The canonical reviewer route has one live public payload,
+W18 is a proof checkpoint, not an accepted U2 candidate. It fixes W17's
+arbitrary-state category join at the event-value level; W19 owns positional
+occurrence provenance, invocation-parameter preservation, and one operational
+relation for positive source coverage and mutation rejection. The canonical
+reviewer route otherwise has one live public payload,
 `SuccinctClassic.buildPayload`. One pre-execution reviewer physical word list
 erases exactly to that payload. The existing supplied-store evaluator runs
 through a checked adapter that reads the supplied flat store at translated
@@ -126,10 +128,12 @@ execution returns the translated supplied-store evaluator value, and a checked
 decisive singleton corruption changes `some 0` to `none` while a
 trace-preserving value-ignore mutant does not. Operational checks also reject
 dead-source addition, used-source removal, and mismatched consumer labels.
-Producer-level evidence separately retains each emitted event in its actual
-instruction trace at the actual prefix-fold state, joins that same event to its
-source/component path, gives every counted source a concrete may-read path,
-and rejects fresh unused segment `21` through the same producer mechanism. The
+W18 event-value evidence separately connects any read-event value in the global
+trace to a closed-program instruction at its folded prefix state and to a
+compatible source/component path. It also gives every counted source a direct
+component may-read path and rejects fresh unused segment `21` with a stronger
+instruction-trace producer relation. Those two relations are not yet bridged,
+so they are checkpoint evidence rather than final semantic nonvacuity. The
 checked transitional all-size cap remains `328`; U3 owns the final explained
 constant. Ready `118`, route-split `4144`, zero-block, and `196727` declarations
 remain compatibility/history surfaces and have no reverse edge into the
