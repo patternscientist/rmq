@@ -4,9 +4,19 @@
 The reviewer path uses one pre-execution list,
 `concreteBPNativeSuccinctRMQReviewerPhysicalWords`, whose erasure is exactly the
 canonical public payload. It is assembled from one exhaustive typed 20-source
-universe that includes canonical close. The manifest proves counted iff live,
-exclusive source regions, complete logical-segment coverage, and exclusion of
-legacy duplicate close/interior sources from the canonical payload.
+universe that includes canonical close.  Every emitted read exposes its actual
+instruction occurrence and the state obtained by folding the exact preceding
+program prefix.  That same event resolves to its physical source, region,
+logical segment, and concrete component path.  Every counted source has a
+concrete may-read path, and every shared-BP consumer has a same-event BP path.
+The manifest also proves exclusive source regions, complete logical-segment
+coverage, and exclusion of legacy duplicate close/interior sources.
+
+A counterfactual fresh segment `21` with the plausible existing
+`canonicalClose` label has no operational producer witness.  It is rejected by
+the same instruction-trace mechanism as accepted events, not by defining a
+liveness predicate to be false.  The may-read theorem does not claim that
+every query reads every source.
 
 The existing supplied-store evaluator is run through
 `concreteBPNativeSuccinctRMQReviewerPhysicalStoreAdapter`, which actually reads

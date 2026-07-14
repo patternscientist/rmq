@@ -16,9 +16,10 @@ RMQ.Headlines.succinctRMQReviewerPhysicalStoreAdapter
 RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint
 RMQ.Headlines.succinctRMQReviewerPhysicalValueFromSuppliedStore
 RMQ.Headlines.succinctRMQReviewerPhysicalValueDependency
-RMQ.Headlines.succinctRMQReviewerEveryReadOperationalSource
-RMQ.Headlines.succinctRMQReviewerCountedSourceEvaluatorConnection
-RMQ.Headlines.succinctRMQReviewerSharedBPConsumerEvaluatorConnection
+RMQ.Headlines.succinctRMQReviewerEveryReadProducerProvenance
+RMQ.Headlines.succinctRMQReviewerCountedSourceProducerMayPath
+RMQ.Headlines.succinctRMQReviewerSharedBPConsumerProducerConnected
+RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer
 RMQ.Headlines.succinctRMQReviewerPhysicalWordsFitLinearCapacity
 RMQ.Headlines.succinctRMQReviewerWordBitsLogarithmic
 RMQ.Headlines.succinctRMQReviewerPhysicalWordFits
@@ -31,9 +32,14 @@ The final trace refines
 `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted`
 and is exact by
 `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact`.
-Its one typed 20-source manifest includes canonical close and covers every live
-read-producing segment; it proves counted iff live, region exclusivity, segment
-coverage, and absence of legacy duplicate close/interior payload sources. One
+Its one typed 20-source manifest includes canonical close and covers every
+read-producing segment.  Every emitted event exposes its actual instruction
+occurrence and actual prefix-fold state, and the same event resolves to its
+source, segment, and component path.  Every counted source has a concrete
+may-read path, shared-BP consumers use same-event paths, and a fresh unused
+segment is rejected by the producer relation.  Region exclusivity, segment
+coverage, and absence of legacy duplicate close/interior payload sources also
+hold. One
 pre-execution physical word list erases exactly to the public `buildPayload`.
 The existing supplied-store evaluator reads a supplied flat store through a
 checked translation adapter. Canonical physical execution refines logical
@@ -93,9 +99,10 @@ RMQ.Headlines.succinctRMQReviewerPhysicalStoreAdapter
 RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint
 RMQ.Headlines.succinctRMQReviewerPhysicalValueFromSuppliedStore
 RMQ.Headlines.succinctRMQReviewerPhysicalValueDependency
-RMQ.Headlines.succinctRMQReviewerEveryReadOperationalSource
-RMQ.Headlines.succinctRMQReviewerCountedSourceEvaluatorConnection
-RMQ.Headlines.succinctRMQReviewerSharedBPConsumerEvaluatorConnection
+RMQ.Headlines.succinctRMQReviewerEveryReadProducerProvenance
+RMQ.Headlines.succinctRMQReviewerCountedSourceProducerMayPath
+RMQ.Headlines.succinctRMQReviewerSharedBPConsumerProducerConnected
+RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer
 RMQ.Headlines.succinctRMQReviewerPhysicalWordsFitLinearCapacity
 RMQ.Headlines.succinctRMQReviewerWordBitsLogarithmic
 RMQ.Headlines.succinctRMQReviewerPhysicalWordFits

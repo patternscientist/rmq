@@ -23,8 +23,20 @@ inequality `buildPayload.length <= 2*n + overhead n`, with little-o overhead
 and no padding to manufacture equality. Invalid or empty list ranges return
 `none` through one validity boundary. The cost was rederived honestly as the
 transitional sum `328`; the implementation did not pad reads to preserve `118`
-or a route-split constant. Coordinator acceptance remains separate from this
-worker evidence and requires matrix reconstruction plus a fresh blind audit.
+or a route-split constant.
+
+The coordinator nevertheless rejected W17's provenance subclaim: it classified
+an emitted segment with a static leaf map and then chose any closed-program
+instruction with that category, sometimes at `WholeQueryState.empty`.  W18
+repairs this with an occurrence relation carrying the actual folded prefix
+state and exact instruction-local event.  A second relation ties that same
+event to its physical source and component read path; it deliberately permits
+segments `17`--`19` to have both LCA and final-rank producers.  Reverse liveness
+is now a concrete may-read construction for every counted source, shared BP is
+checked through one event per consumer, and a fresh unused segment with a
+plausible label fails because no operational producer exists. Coordinator
+acceptance remains separate from this worker evidence and requires matrix
+reconstruction plus a fresh blind audit.
 
 This is the ADD lesson: a locally correct adapter is a checkpoint. Completion
 requires its named downstream consumer, provenance, machine bounds, edge cases,

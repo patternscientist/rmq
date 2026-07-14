@@ -1598,3 +1598,67 @@ Supersedes:
 It strengthens WDD-20260712-001. Frozen requirements, provisional worker
 status, coordinator reconstruction, and mandatory blind public-capstone audit
 remain active.
+
+## WDD-20260713-002: Require occurrence-level evidence for producer provenance
+
+Status: accepted workflow clarification for the W18 repair.
+
+Decision:
+
+When a public acceptance row claims that a trace event was produced by a
+program instruction, its evidence must retain the same event in that actual
+instruction occurrence's local trace at the actual state obtained from the
+program prefix.  Separately true source-map, leaf-category, instruction-list,
+or arbitrary-state evaluator facts may remain compatibility evidence, but they
+cannot close producer provenance.
+
+Reverse source liveness must exhibit a concrete possible read path in the
+construction.  For shared storage, the source and named consumer must be tied
+through one event/path witness.  Counterfactual sources with plausible existing
+labels must be rejected by the same operational relation used for accepted
+sources, not by assigning them a false or unlisted liveness predicate.
+
+Context:
+
+The W17 semantic repair passed its build, mutation, and axiom gates but its
+emitted-read theorem classified the segment with a functional leaf map and
+then selected an arbitrary instruction with that category.  The selected
+instruction need not have emitted the event, and `WholeQueryState.empty` is
+not the pre-state of later LCA/rank instructions.  Its shared-BP evidence could
+also combine a source witness from segment `0` with an unrelated leaf witness
+from segment `20`.
+
+Options considered:
+
+- Keep category joins and explain their intended operational reading in prose.
+- Add another label-consistency mutation to the W17 gate.
+- Require actual occurrence/state/event and same-event source/path witnesses.
+
+Rationale:
+
+The first two options cannot distinguish a correctly labeled nonproducer from
+the instruction that actually emitted an event.  Occurrence-level trace
+decomposition mirrors evaluator composition and is therefore stable under
+later program-state dependencies.  A relational path is necessary because
+one logical segment can be consumed by multiple instruction families.
+
+Consequences:
+
+- W17's `REQ-02.a`, `REQ-02.b`, `INV-SEMANTIC-NONVACUITY`, and dependent public
+  rows are recorded as `REPAIR_REQUIRED`; W18 evidence is a superseding matrix
+  section rather than a silent reinterpretation of the old green ledger.
+- Claim policy and reviewer docs reserve “producer provenance” for the
+  same-event actual-state relation.
+- Category-only declarations may stay for compatibility but are removed from
+  the load-bearing headline and axiom surface.
+- Worker status remains candidate-only pending coordinator reconstruction and
+  a fresh blind exact-commit audit.
+
+Evidence:
+
+- `docs/internal/W15_U2_CANONICAL_PAYLOAD_WHOLE_MACHINE_ACCEPTANCE_MATRIX.md`
+- `docs/internal/DESIGN_DECISIONS.md`, DD-20260713-003
+- `docs/internal/CLAIM_DRIFT_POLICY.md`
+- `RMQ/Core/SuccinctFinalRAM.lean`
+- `RMQ/Core/SuccinctFinalModelAdequacy.lean`
+- `RMQ/Headlines/RMQ.lean`

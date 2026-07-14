@@ -1857,3 +1857,69 @@ Evidence:
 - `flatPayloadStoreNoSyntheticExecutionStory_invalid_semantics`.
 - The six singleton corruption/mutant guards in
   `RMQ/Validation/SuccinctClassic.lean`.
+
+## DD-20260713-003: producer-level provenance replaces category joins
+
+Status: accepted W18 repair of the W17 semantic-provenance gate.
+
+Decision:
+
+- Represent occurrence-level production by
+  `WholeQueryProgram.ProducesEvent`.  A witness carries one instruction from
+  the concrete closed program, its actual pre-execution state after folding
+  the exact preceding prefix, and membership of the same event in that
+  instruction evaluation's trace.
+- Resolve that same event to storage with `ReviewerSource.ProducedReadBy` and
+  to its concrete component evaluation with the relational
+  `ReviewerProducerReadPath`.  Source, segment, instruction, state, and leaf
+  are not independently selected facts.
+- Use a relation rather than a functional segment-to-leaf owner.  Logical
+  segments `17`--`19` may be consumed both inside the LCA instruction and by
+  the final rank instruction, while the shared BP source has select, LCA, and
+  final-rank paths.
+- State reverse liveness as `ReviewerSource.HasProducerMayPath`: every counted
+  source has at least one concrete attempted-read path through the actual
+  select/rank/LCA construction.  This is deliberately a may-read obligation;
+  it does not say every query reads every source.
+- State shared-BP ownership as
+  `ReviewerSharedBPConsumer.ProducerConnected`, where one event simultaneously
+  identifies the BP source and the named consumer's component path.
+- Test nonvacuity with
+  `concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource`: fresh segment `21`
+  carries a plausible `canonicalClose` label but has no
+  `HasOperationalProducer` witness because no closed-program instruction trace
+  can emit its event.
+
+Rejected alternative:
+
+The W17 category join selected a leaf from the static segment map and then
+selected any closed-program instruction with that leaf label.  It did not show
+that the selected instruction, at its actual prefix state, emitted the event.
+In particular, `WholeQueryState.empty` is not producer evidence for later LCA
+or rank instructions, and a source witness at shared-BP segment `0` cannot be
+combined with an unrelated canonical-close label at segment `20`.  Static
+`ReviewerSource.Live`, `ReviewerSource.OperationallyOwnedBy`,
+`ReviewerSharedBPConsumer.Checked`, and the functional segment-leaf map remain
+compatibility metadata only; they are not load-bearing reviewer evidence.
+
+Consequences:
+
+- Final adequacy, the valid `List Int` story, the paper theorem, headline
+  aliases, and curated axiom inventories consume producer-level provenance,
+  counted-source may paths, same-event shared-BP paths, and the unused-source
+  rejection.
+- Category-only headline aliases are removed from the load-bearing public
+  surface.  The physical store, supplied-store value dependency, invalid-range
+  packet, payload space, word width, and uniform modeled cost `328` are
+  unchanged.
+
+Evidence:
+
+- `WholeQueryProgram.evalGlobalWordTrace_event_producer` and
+  `WholeQueryProgram.ProducesEvent.prefix_state`.
+- `WholeQueryInstr.evalGlobalWordTrace_read_producer_path`.
+- `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_producer_provenance`.
+- `concreteBPNativeSuccinctRMQWholeQueryProducerProvenance_checked`.
+- `concreteBPNativeSuccinctRMQReviewerSource_counted_producer_may_path`.
+- `concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_all_producer_connected`.
+- `concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_producer`.

@@ -785,6 +785,34 @@ theorem flatPayloadStoreNoSyntheticExecutionStory_rawAdequacy_of_valid
       (cartesianShape xs) left right :=
   (flatPayloadStoreNoSyntheticExecutionStory xs left right).2.1 hvalid
 
+/-- List-facing projection of the load-bearing producer provenance: every
+logical read of a valid query comes from its actual instruction and prefix
+state, and that same event resolves to its physical source and component path. -/
+theorem flatPayloadStoreNoSyntheticExecutionStory_producerProvenance_of_valid
+    (xs : List Int) (left right : Nat)
+    (hvalid : ValidRange xs left right) :
+    SuccinctFinal.ConcreteBPNativeSuccinctRMQWholeQueryProducerProvenance
+      (cartesianShape xs) left right :=
+  (flatPayloadStoreNoSyntheticExecutionStory_rawAdequacy_of_valid
+    xs left right hvalid).every_emitted_read_has_producer_provenance
+
+/-- Every counted List-facing reviewer source has an actual possible component
+read path for the concrete Cartesian construction. -/
+theorem reviewerCountedSource_producerMayPath
+    (xs : List Int) (source : SuccinctFinal.ReviewerSource)
+    (hcounted : source.Counted) :
+    source.HasProducerMayPath (cartesianShape xs) :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSource_counted_producer_may_path
+    (cartesianShape xs) source hcounted
+
+/-- Each List-facing shared-BP consumer is connected to the shared source by
+one read event in that consumer's own concrete component path. -/
+theorem reviewerSharedBPConsumer_producerConnected
+    (xs : List Int) (consumer : SuccinctFinal.ReviewerSharedBPConsumer) :
+    consumer.ProducerConnected (cartesianShape xs) :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_all_producer_connected
+    (cartesianShape xs) consumer
+
 /-- On every invalid public range, result, trace, cost, footprint, and every
 supplied-flat-store execution are the same guarded empty execution. -/
 theorem flatPayloadStoreNoSyntheticExecutionStory_invalid_semantics

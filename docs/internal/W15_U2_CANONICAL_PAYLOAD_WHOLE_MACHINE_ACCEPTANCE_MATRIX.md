@@ -21,6 +21,17 @@ Starting checkpoint: `ba49ae9a12ff72cd9a909a6b8f06566d3f3205c3`
 Workflow merge: `e8ff7e46d44c427088c4c4af1b4faec6804b089c`
 W17 continuation checkpoint: `989e678f145d5cbf66a02c0a207421f81bb7ec7a`
 
+Coordinator verdict on W17: `REPAIR_REQUIRED`.  At exact remote commit
+`a96f40b12c42133260a3fe840ccf0e4d33dbda6b`, the physical store,
+value-dependency, invalid-range, space, width, and uniform-`328` rows remain
+accepted candidate evidence.  `REQ-02.a`, `REQ-02.b`,
+`INV-SEMANTIC-NONVACUITY`, and their dependent `REQ-06`/public-documentation
+rows are reopened because the W17 theorem joined a static segment category to
+an arbitrary same-category instruction at an arbitrary state.
+
+W18 repair branch: `codex/rmq-u2-producer-provenance`
+W18 exact base: `a96f40b12c42133260a3fe840ccf0e4d33dbda6b`
+
 The roadmap join is the list-facing `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`
 imported by `RMQPaper`. The required object chain is:
 
@@ -166,15 +177,20 @@ theorem concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases
 ```
 
 The canonical layout is indexed by one exhaustive typed 20-source universe,
-including canonical close. The checked manifest chain is:
+including canonical close. The load-bearing producer chain is:
 
 ```lean
-theorem concreteBPNativeSuccinctRMQReviewerSource_counted_iff_live
+theorem WholeQueryProgram.evalGlobalWordTrace_event_producer
+theorem WholeQueryProgram.ProducesEvent.prefix_state
+theorem WholeQueryInstr.evalGlobalWordTrace_read_producer_path
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_producer_provenance
+theorem concreteBPNativeSuccinctRMQWholeQueryProducerProvenance_checked
+theorem concreteBPNativeSuccinctRMQReviewerSource_counted_producer_may_path
+theorem concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_all_producer_connected
+theorem concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_producer
 theorem concreteBPNativeSuccinctRMQReviewerPhysicalSources_nodup
 theorem concreteBPNativeSuccinctRMQReviewerSource_region_injective
 theorem concreteBPNativeSuccinctRMQReviewerSegmentSource?_coverage
-theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_operational_source
-theorem concreteBPNativeSuccinctRMQReviewerSource_counted_evaluator_connection
 theorem concreteBPNativeSuccinctRMQReviewerPhysicalSources_exclude_legacy_close
 theorem concreteBPNativeSuccinctRMQCanonicalReviewerReadStore_legacyTail_none
 ```
@@ -412,11 +428,11 @@ word `Closed` is not current evidence for those rows.
 
 | ID | Exact frozen requirement | Scope | Evidence needed (exact proposition/check) | Named consumer and identity/composition chain | Anti-vacuity challenge attempted and outcome | Evidence obtained | Status / residual gap |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `REQ-02.a` | Every emitted read maps to a counted operational source. | Local and public | For every read event in the actual whole-query trace, produce source, leaf, instruction, source/leaf segment equalities, `Counted`, `Live`, operational ownership, closed-program membership, and actual evaluator-branch equality. | `WholeQueryProgram.evalGlobalWordTrace` -> `...read_operational_source` -> final adequacy `every_emitted_read_has_operational_source` -> valid list story -> paper theorem. | Remove the source used by an emitted segment. `...Manifest_remove_used_rejected` proves the resulting manifest is not complete; the all-read theorem also cannot produce its required `Counted` witness from that manifest. | `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_operational_source`, quoted below. | Candidate evidence satisfied; final local verification ledger green. |
-| `REQ-02.b` | Every counted source reaches an actual read-producing evaluator leaf or a checked shared-BP consumer. | Local and public | From `source.Counted`, produce either checked shared-BP dependency plus an instruction/branch equality, or segment-derived ownership plus an instruction/branch equality. Separately quantify over all select, rank, and canonical-close shared-BP consumers. | Typed manifest -> `...counted_evaluator_connection` and `...SharedBPConsumer_evaluator_connection` -> final adequacy `canonical_counted_sources_reach_evaluator` / `all_shared_bp_dependencies_reach_evaluator` -> valid list story; headline aliases expose both theorems directly. | Add a dead candidate. `...add_dead_rejected` proves manifest soundness false. Replace liveness by `True` or enumeration: `...vacuousLive_accepts_dead` and `...enumeration_accepts_dead` show both mutants accept the dead entry, while operational soundness rejects it. Replace liveness by `False`: `...falseLive_rejected` refutes counted/false equivalence. Remove canonical-close from the shared consumer universe: the universal shared-consumer field no longer covers all constructors and the canonical dependency alias changes type. | `concreteBPNativeSuccinctRMQReviewerSource_counted_evaluator_connection`, `...ReviewerSharedBPConsumer_evaluator_connection`, and four predicate-mutation theorems, quoted below. | Candidate evidence satisfied; final local verification ledger green. |
+| `REQ-02.a` | Every emitted read maps to a counted operational source. | Local and public | For every read event in the actual whole-query trace, produce source, leaf, instruction, source/leaf segment equalities, `Counted`, `Live`, operational ownership, closed-program membership, and actual evaluator-branch equality. | Historical W17 chain: static segment map -> category-matching instruction. | W17 selected an arbitrary instruction with the same category and used an arbitrary state; it did not retain event membership in that instruction's actual trace. | Historical W17 theorem `...read_operational_source`, quoted below. | **W17 REPAIR_REQUIRED.** Superseded by the W18 producer-provenance row below. |
+| `REQ-02.b` | Every counted source reaches an actual read-producing evaluator leaf or a checked shared-BP consumer. | Local and public | From `source.Counted`, produce either checked shared-BP dependency plus an instruction/branch equality, or segment-derived ownership plus an instruction/branch equality. Separately quantify over all select, rank, and canonical-close shared-BP consumers. | Historical W17 chain: counted source -> static category -> category-matching evaluator. | W17 did not prove an actual possible read event. Its shared-BP proof could combine source segment `0` with an unrelated leaf witness at segment `20`. | Historical W17 category theorems, quoted below. | **W17 REPAIR_REQUIRED.** Superseded by W18 may-read and same-event shared-BP rows below. |
 | `REQ-02.c` | A separately hand-written consumer label is not sufficient evidence; legacy duplicates remain compatibility-only. | Local and public | Consumer claims require an operational leaf witness; legacy-close exclusion and compatibility-tail `none` remain checked. | Segment source/leaf maps -> `CheckedConsumerClaim` -> derived compatibility label; canonical manifest -> physical layout -> paper story. | Forge a consumer label distinct from the derived one. `...forged_consumer_rejected` proves the forged `CheckedConsumerClaim` is impossible. A label-only `consumer?` equality is deliberately absent from final adequacy. | `...ReviewerSource_forged_consumer_rejected`, `...PhysicalSources_exclude_legacy_close`, and `...CanonicalReviewerReadStore_legacyTail_none`. | Candidate evidence satisfied; final local verification ledger green. |
-| `REQ-06.a` | Final adequacy, List story, paper theorem, and headlines consume the operational manifest and supplied-store answer semantics for the same execution. | Public composition | Final adequacy fields contain both liveness directions and `.value` provenance; list story consumes raw adequacy only under `ValidRange`; paper theorem directly consumes valid adequacy, invalid packet, and supplied-store value equality. | ReviewerPhysical -> SuccinctFinalRAM -> StoreParam -> ModelAdequacy -> SuccinctRMQClassic -> `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` -> RMQPaper. | Drop the operational fields or substitute aggregate inequality: the strengthened record constructor and headline type no longer accept that packet. Drop the valid premise: the list story field type requires `ValidRange`. | Focused builds are green; exact public declarations are in the three curated axiom inventories. | Candidate evidence satisfied; final local verification ledger green. |
-| `REQ-06.b` | Curated inventories expose every load-bearing semantic declaration. | Verification | All three axiom scripts name operational read/source theorems, dead/remove/forge/vacuous/enumeration/false mutations, `.value` theorems, valid raw adequacy, invalid packet, and the strengthened headline. | Source theorem -> headline alias -> printed assumptions. | Retain the old aggregate-disagreement or hand-written-consumer alias as the dependency/liveness inventory entry. Those entries were removed and replaced by the projection/operational names. | All three curated axiom inventories execute successfully. | Candidate evidence satisfied; final local verification ledger green. |
+| `REQ-06.a` | Final adequacy, List story, paper theorem, and headlines consume the operational manifest and supplied-store answer semantics for the same execution. | Public composition | Final adequacy fields contain both provenance directions and `.value` provenance; list story consumes raw adequacy only under `ValidRange`; paper theorem directly consumes the strong packet. | Historical W17 public chain consumed category-only liveness. | Removing the W17 category fields exposed that the public theorem did not require actual producer state/event evidence. | W17 focused builds were green but the proposition was insufficient. | **W17 REPAIR_REQUIRED.** Superseded by W18 public-consumption row below. |
+| `REQ-06.b` | Curated inventories expose every load-bearing semantic declaration. | Verification | All three axiom scripts name load-bearing semantic declarations. | Historical W17 inventories printed category-only aliases. | A green axiom print cannot strengthen a weak proposition. | W17 inventory evidence was propositionally insufficient. | **W17 REPAIR_REQUIRED.** Superseded by W18 inventory row below. |
 | `INV-VALUE-DEPENDENCY.a` | Returned values depend on actual charged supplied reads, not a semantic answer computed before the reads. | Local and public | Physical `.value` equals the existing supplied-store evaluator `.value` after translation; differing translated evaluator values imply differing physical values, with exact quantifiers. | Physical store -> checked adapter -> existing supplied-store evaluator -> flat physical `.value` -> valid list wrapper -> paper theorem. | Substitute the canonical value while retaining the supplied trace. The validation mutant does exactly this and is separated from the real execution at `.value` by the decisive corruption. Aggregate record inequality is not used in final adequacy or headlines. | Two universal projection theorems plus valid list wrappers, quoted below. | Candidate evidence satisfied; final local verification ledger green. |
 | `INV-VALUE-DEPENDENCY.b` | Include a nontrivial decisive corruption witness without claiming every read is decisive. | Executable kernel evidence | One valid query consumes an address whose changed word changes `.value`; separately check consumption and store disagreement. | Singleton canonical physical store -> address `7` -> supplied evaluator -> public physical answer. | Ignore the supplied returned value: mutant remains `some 0`, while actual dropped-word execution is `none`. Six separate `#guard`s check canonical value, corrupted value, consumption, changed store word, mutant value, and real-vs-mutant value inequality. | `RMQ/Validation/SuccinctClassic.lean`; focused validation and RMQExamples builds green. | Candidate evidence satisfied; final local verification ledger green. |
 | `INV-PUBLIC-COMPOSITION.a` | Raw adequacy may appear only under a valid-range premise. | Public | `ValidRange xs left right -> FinalTraceModelAdequacy (cartesianShape xs) left right`. | `withValidRange` -> `flatPayloadStoreNoSyntheticExecutionStory_rawAdequacy_of_valid` -> paper main theorem. | Mix unconditional raw adequacy into the invalid branch. `invalidEmptyRawPhysicalResult.value != invalidEmptyPublicPhysicalResult.value` is kernel-checked, so the mutant describes a different execution. | Exact valid theorem quoted below; raw/public mismatch guard passes. | Candidate evidence satisfied; final local verification ledger green. |
@@ -425,9 +441,13 @@ word `Closed` is not current evidence for those rows.
 | `W17-VALIDITY.a` | Empty range returns `none` with empty/zero execution. | Executable and theorem | Instantiate the complete invalid packet at `[9,8,7] 1 1`. | Public validity boundary -> all projections. | Raw-invalid substitution and five per-projection mutations above are rejected. | `RMQExamples/Concrete.lean` full packet example and validation guards. | Candidate evidence satisfied; final local verification ledger green. |
 | `W17-VALIDITY.b` | Reversed range returns `none` with empty/zero execution. | Executable and theorem | Instantiate the physical-result invalid conjunct at `[9,8,7] 2 1`; general theorem covers every projection/store. | Same guarded packet. | Reversed query returning any `some` value contradicts `queryCosted_reversed_range` and the packet. | RMQExamples theorem example and existing guard. | Candidate evidence satisfied; final local verification ledger green. |
 | `W17-VALIDITY.c` | Out-of-bounds range returns `none` with empty/zero execution. | Executable and theorem | Instantiate the footprint-invalid conjunct at `[9,8,7] 0 4`; general theorem covers every projection/store. | Same guarded packet. | Nonempty footprint contradicts the packet; the `[0]` footprint mutant is rejected separately. | RMQExamples theorem example and existing guard. | Candidate evidence satisfied; final local verification ledger green. |
-| `INV-SEMANTIC-NONVACUITY` | Semantic coverage, liveness, ownership, and refinement predicates are derived from the operational construction they describe. `True`, membership restatement, or a separately hand-written consumer label is insufficient. | Inherited invariant | Operational source/leaf maps, actual evaluator branch equalities in both directions, projection-level value identity, guarded object identity, and per-subclaim mutation failures. | Closed program/read trace -> operational manifest -> adapter-backed physical evaluator -> guarded list story -> paper main theorem. | `True`, enumeration, `False`, dead addition, used removal, forged label, ignored return value, raw/guarded mix, and five invalid-projection mutations were attempted separately; each outcome is named above. | Exact theorem types and guard outcomes below; final build, axiom, validator, harness, hygiene, drift, and gate rows are green. | Candidate evidence satisfied; coordinator reconstruction and blind exact-commit audit remain. |
+| `INV-SEMANTIC-NONVACUITY` | Semantic coverage, liveness, ownership, and refinement predicates are derived from the operational construction they describe. `True`, membership restatement, or a separately hand-written consumer label is insufficient. | Inherited invariant | Occurrence-level producer state/event evidence, same-event source/path evidence, reverse may-read construction, projection-level value identity, guarded object identity, and per-subclaim mutation failures. | Closed program/read trace -> producer occurrence -> operational manifest -> adapter-backed physical evaluator -> guarded list story -> paper main theorem. | W17's category join passed while failing to identify the producer occurrence/state; its dead/label mutations did not target this defect. | The old theorem types below document the failed candidate. | **W17 REPAIR_REQUIRED.** Superseded by W18 actual-producer and fresh-unused-source mutation rows below. |
 
-### Checked theorem types for the semantic amendment
+### Historical W17 theorem types rejected by the producer audit
+
+The following declarations remain compatibility facts, but the coordinator
+found that they do not establish producer provenance.  They are not the
+load-bearing W18 evidence.
 
 ```lean
 theorem concreteBPNativeSuccinctRMQReviewerSource_counted_iff_live
@@ -564,6 +584,48 @@ theorem flatPayloadStoreNoSyntheticExecutionStory_invalid_semantics
           WordRAM.TraceResult.pure none
 ```
 
+### W18 producer-provenance repair
+
+The W18 propositions below supersede the rejected W17 category joins.  The
+accepted physical store, value-dependency, invalid-range, space, width, and
+uniform-`328` evidence is unchanged.
+
+| ID | Repaired exact requirement | Operational evidence and consumer chain | Counterfactual / falsifier | Evidence obtained | Status |
+| --- | --- | --- | --- | --- | --- |
+| `REQ-02.a` | Every emitted whole-query read exposes the actual instruction occurrence, the actual state produced by folding the exact preceding program prefix, and membership of that same event in that instruction evaluation.  The same event resolves to its physical source, region, logical segment, leaf, and component read path. | `WholeQueryProgram.evalGlobalWordTrace_event_producer` -> `ProducesEvent.prefix_state` / `.event_mem_instruction_trace` -> `WholeQueryInstr.evalGlobalWordTrace_read_producer_path` -> `...read_producer_provenance` -> `...WholeQueryProducerProvenance_checked`. | Replacing `preState` by `WholeQueryState.empty`, selecting an arbitrary same-category instruction, or independently joining source/leaf facts cannot construct `ProducesEvent` or `ProducedReadBy`. | Exact producer theorem and compact proposition quoted below. | Candidate evidence satisfied; final W18 verification ledger green. |
+| `REQ-02.b` | Every counted source has an actual possible attempted-read path in the concrete select/rank/LCA construction.  Producer ownership is relational, so segments `17`--`19` can be read by LCA or final rank. | `ReviewerProducerReadPath` -> `ReviewerSource.HasProducerMayPath` -> `...ReviewerSource_counted_producer_may_path` -> final adequacy -> list story -> paper theorem. | A counted source with only a static category label cannot produce the required event membership in a concrete component trace.  This is may-read, not a universal claim that every query reads every source. | `concreteBPNativeSuccinctRMQReviewerSource_counted_producer_may_path`. | Candidate evidence satisfied; final W18 verification ledger green. |
+| `REQ-02.b.shared` | Every select/rank/canonical-close BP consumer reaches the shared BP physical source through one event in its own concrete component path. | `ReviewerSharedBPConsumer.ProducerConnected` -> `...all_producer_connected` -> final adequacy/list/paper. | Joining source segment `0` to an unrelated leaf witness at segment `20` does not satisfy the same-event relation. | `concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_all_producer_connected`. | Candidate evidence satisfied; final W18 verification ledger green. |
+| `REQ-06.a` | Final adequacy, valid List Int story, paper theorem, and headline aliases consume actual producer provenance, counted-source may paths, same-event shared-BP paths, and the fresh-unused-source rejection. | `ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy` -> `FlatPayloadStoreNoSyntheticExecutionStory` -> `listIntSuccinctRMQPaperMainTheorem` -> `RMQPaper`. | Removing any strengthened field makes the downstream constructor/conjunction fail; category-only headline aliases have been removed. | Focused source consumers and new public aliases are checked in Lean. | Candidate evidence satisfied; final W18 verification ledger green. |
+| `REQ-06.b` | All curated inventories expose the actual-producer, reverse may-read, same-event shared-BP, fresh counterfactual, list projection, and strengthened paper declarations. | Core theorem -> List Int projection -> headline alias -> three curated axiom inventories. | Printing only the W17 category theorems no longer covers the load-bearing fields. | `scripts/axiom_check.lean`, `scripts/wordram_axiom_check.lean`, and `scripts/headline_axiom_check.lean` name every strengthened declaration. | Candidate evidence satisfied; final W18 verification ledger green. |
+| `INV-SEMANTIC-NONVACUITY` | Operational evidence is obtained from instruction/program evaluation and concrete component traces, not from `True`, enumeration membership, static categories, or separately selected labels. | Actual program trace -> occurrence/prefix state -> instruction trace -> relational source/component path -> final adequacy/public theorem. | Fresh segment `21` with plausible `.canonicalClose` label is rejected because no instruction trace can emit it; its liveness is not defined as `False`. | `concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_producer`. | Candidate evidence satisfied; final W18 verification ledger green. |
+
+The occurrence-level public packet has the checked shape:
+
+```lean
+def ConcreteBPNativeSuccinctRMQWholeQueryProducerProvenance
+    (shape : Cartesian.CartesianShape) (left right : Nat) : Prop :=
+  forall {segment index} {word?},
+    readWord segment index word? ∈ wholeQueryTrace shape left right ->
+      exists source leaf instr preState before after,
+        wholeQueryProgram = before ++ instr :: after /\
+        preState = (evalGlobalWordTrace shape left right before empty).value /\
+        source.ProducedReadBy
+          shape left right instr preState segment index word? /\
+        instr.reviewerReadLeaf? = some leaf /\
+        ReviewerProducerReadPath shape leaf segment index word? /\
+        source.Counted
+
+theorem concreteBPNativeSuccinctRMQWholeQueryProducerProvenance_checked
+theorem concreteBPNativeSuccinctRMQReviewerSource_counted_producer_may_path
+theorem concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_all_producer_connected
+theorem concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_producer
+```
+
+Here `ProducedReadBy` includes the same event's source-map equality, physical
+region equality, and membership in `instr.evalGlobalWordTrace ... preState`.
+The segment-to-leaf function and W17 `Live`/`Checked` theorems remain only as
+compatibility metadata and are absent from the load-bearing headline aliases.
+
 ### Adversarial-case evidence
 
 | Case | Exact checked evidence | Verdict |
@@ -619,3 +681,27 @@ coordinator-owned.
 
 Controlled status: candidate evidence only. Coordinator reconstruction and a
 fresh blind exact-commit audit are the mandatory next consumer.
+
+## W18 repair verification ledger
+
+Status: `CANDIDATE_COMPLETE`.  The emitted event is connected to its actual
+producing instruction and folded pre-state, and the fresh unused source is
+rejected by the same instruction-trace producer mechanism.  Coordinator
+reconstruction and a fresh blind exact-commit audit remain mandatory before
+`ACCEPTED`.
+
+| Check | W18 result |
+| --- | --- |
+| Exact branch/base | `codex/rmq-u2-producer-provenance` created from verified remote `origin/codex/rmq-u2-final-route` at `a96f40b12c42133260a3fe840ccf0e4d33dbda6b`. |
+| Focused producer/physical build | Pass: `lake build RMQ.Core.SuccinctFinal.RAM.ReviewerPhysical RMQ.Core.SuccinctFinalRAM`. |
+| Focused adequacy/List/headline/paper build | Pass: `lake build RMQ.Core.SuccinctFinalModelAdequacy RMQ.Core.SuccinctRMQClassic RMQ.Headlines.RMQ RMQPaper`. |
+| `lake build` and `lake build RMQExamples` | Pass. |
+| All axiom inventories | Pass: broad, WordRAM, headline, hub, archive, rank/select, BP navigation, and union-find; new producer declarations use only expected Lean principles. |
+| Validator | Pass: 498 valid/invalid windows across 43 deterministic inputs; canonical same/cross routes, `328`, physical erasure/backing, and flat-store dependency checked. |
+| Cost harness | Pass: valid answers agree; invalid windows are none/zero; all modeled costs are below the exact canonical bound `328`. |
+| Forbidden-token/Mathlib hygiene | No matches in `RMQ`, `RMQExamples`, or `lakefile.toml`. |
+| `native_decide` / `Lean.ofReduceBool` | No matches in `RMQ` or `RMQExamples`. |
+| Design decision check | Strict pass across 27 changed files, with code and workflow decisions recorded. |
+| Claim drift | Strict pass: 526 reviewed hits, 0 strict failures; policy JSON version 4 parses. |
+| `git diff --check` | Pass; only expected Windows line-ending notices. |
+| Aggregate repository gate | `GATE PASS` from `powershell -ExecutionPolicy Bypass -File scripts\\gate.ps1`. |

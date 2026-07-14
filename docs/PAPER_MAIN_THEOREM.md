@@ -41,11 +41,17 @@ primitive operands/results.
   `RMQ.Headlines.succinctRMQReviewerPhysicalValueFromSuppliedStore`:
   genuine supplied flat-physical execution, first-footprint determinacy, and
   answer provenance at the translated supplied-store `.value` projection.
-- `RMQ.Headlines.succinctRMQReviewerEveryReadOperationalSource` and
-  `RMQ.Headlines.succinctRMQReviewerCountedSourceEvaluatorConnection`, plus
-  `RMQ.Headlines.succinctRMQReviewerSharedBPConsumerEvaluatorConnection`:
-  both directions of operational source/evaluator liveness, including checked
-  select/rank/canonical-close shared-BP dependencies.
+- `RMQ.Headlines.succinctRMQReviewerEveryReadProducerProvenance`:
+  every emitted event retains its actual instruction occurrence, actual
+  prefix-fold state, physical source, logical segment, and concrete component
+  read path.
+- `RMQ.Headlines.succinctRMQReviewerCountedSourceProducerMayPath` and
+  `RMQ.Headlines.succinctRMQReviewerSharedBPConsumerProducerConnected`:
+  reverse may-read evidence for every counted source and same-event paths for
+  every select/rank/canonical-close shared-BP dependency.
+- `RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer`:
+  segment 21 with a plausible canonical-close label fails through the same
+  operational producer relation, rather than through a false liveness flag.
 - `RMQ.Headlines.listIntSuccinctRMQRawAdequacyOfValid` and
   `RMQ.Headlines.listIntSuccinctRMQInvalidPhysicalSemantics`: raw adequacy only
   for valid ranges and one none/empty/zero execution for every invalid range.

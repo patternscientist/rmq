@@ -13,9 +13,12 @@ execution's consumed physical footprint determines the complete physical
 trace; the refinement preserves order, failures, and repetitions, while a
 projection theorem identifies the answer with the translated supplied-store
 evaluator value and a decisive singleton corruption changes `some 0` to
-`none`. Operational read/source theorems connect every emitted read and every
-counted source to actual evaluator branches; dead additions, used-source
-removals, forged labels, and vacuous predicates are checked separately. Raw
+`none`. Producer-level theorems connect every emitted read to its actual
+instruction occurrence, actual prefix-fold state, exact instruction-local
+event, physical source, logical segment, and concrete component path. Every
+counted source has a concrete may-read path; shared-BP consumers carry
+same-event paths. A fresh unused segment with a plausible canonical-close label
+is rejected because no instruction trace can produce it. Raw
 adequacy is exposed only for valid public ranges; invalid ranges share the
 guarded none/empty/zero packet. No-synthetic,
 linear-capacity, logarithmic-width, stored/returned-word, physical-address, and
@@ -23,7 +26,7 @@ primitive-operand bounds are checked at the composed consumer. The transitional
 all-size cap is exactly `328`; older route constants are compatibility history.
 
 
-Snapshot: 2026-07-13 (W17 corrected candidate). This is the compact packet to hand to a skeptical
+Snapshot: 2026-07-13 (W18 producer-provenance repair candidate). This is the compact packet to hand to a skeptical
 Lean/formalization reviewer before asking for a broader library-readiness
 review. It focuses on the public succinct RMQ headline theorem, its alias
 chain, its cost/space model, and the main anti-oracle checks.

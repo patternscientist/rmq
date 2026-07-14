@@ -84,8 +84,10 @@ The RMQ-only paper aliases live in
 | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint` | Agreement on the first physical execution's consumed ordered footprint determines the complete physical execution. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalValueFromSuppliedStore` | Projection theorem: the flat physical answer is exactly the existing translated supplied-store evaluator answer. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalValueDependency` | If translated supplied-store evaluator values differ, the corresponding flat-physical `.value` projections differ. |
-| `RMQ.Headlines.succinctRMQReviewerEveryReadOperationalSource` | Every emitted read maps to a counted/live source and an actual read-producing evaluator branch. |
-| `RMQ.Headlines.succinctRMQReviewerCountedSourceEvaluatorConnection` | Every counted source reaches an evaluator branch; the shared BP source carries checked shared-consumer dependencies. |
+| `RMQ.Headlines.succinctRMQReviewerEveryReadProducerProvenance` | Every emitted read comes from an actual instruction occurrence at its actual prefix-fold state; the same event resolves to its physical source, logical segment, and concrete component read path. |
+| `RMQ.Headlines.succinctRMQReviewerCountedSourceProducerMayPath` | Every counted source has an actual possible attempted-read path in the concrete instruction/leaf construction. |
+| `RMQ.Headlines.succinctRMQReviewerSharedBPConsumerProducerConnected` | Select, rank, and canonical-close consumers each reach the shared BP source through one event in that consumer's own read path. |
+| `RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer` | A fresh unused segment with a plausible canonical-close label is rejected because no instruction trace can produce its event. |
 | `RMQ.Headlines.listIntSuccinctRMQInvalidPhysicalSemantics` | Invalid public inputs have one guarded none/empty/zero logical and physical execution for every supplied store. |
 | `RMQ.Headlines.listIntSuccinctRMQQueryCostedInvalid` | One public validity boundary rejects every invalid or empty range; specialized empty, reversed, and out-of-bounds aliases are exported beside it. |
 | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory` | Large-regime companion: under the explicit size premise, the compact close/LCA leg uses the positive-block local/fringe/interior structural replay; it is a compatibility strengthening of the all-size structural route. |
@@ -122,8 +124,12 @@ repeated and failed reads. Agreement there determines the complete physical
 `TraceResult`. Answer dependency is separately stated at `.value`: physical
 execution returns the translated supplied-store evaluator value, and a checked
 decisive singleton corruption changes `some 0` to `none` while a
-trace-preserving value-ignore mutant does not. Operational liveness also rejects
-dead-source addition, used-source removal, and forged consumer labels. The
+trace-preserving value-ignore mutant does not. Operational checks also reject
+dead-source addition, used-source removal, and mismatched consumer labels.
+Producer-level evidence separately retains each emitted event in its actual
+instruction trace at the actual prefix-fold state, joins that same event to its
+source/component path, gives every counted source a concrete may-read path,
+and rejects fresh unused segment `21` through the same producer mechanism. The
 checked transitional all-size cap remains `328`; U3 owns the final explained
 constant. Ready `118`, route-split `4144`, zero-block, and `196727` declarations
 remain compatibility/history surfaces and have no reverse edge into the

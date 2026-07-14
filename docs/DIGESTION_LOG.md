@@ -572,7 +572,7 @@ both determine its answer and generate its footprint; there is no second
 public directory abstraction with a decorative trace. Live assumptions are
 the model-level `Costed` convention that one indexed word read costs one tick,
 the proved fixed-width chunk codec, and valid positive range premises for
-semantic exactness; no compiled Lean runtime bound is claimed. CompactReady is
+semantic exactness; a compiled Lean runtime bound is not claimed. CompactReady is
 used only for checked legacy agreement. Final close/LCA dispatch, the
 zero-block route, and public final-query constants are unchanged. A skeptical
 grad student should next ask for this component store and its offsets to become
@@ -799,6 +799,53 @@ half-open validity contract. A skeptical graduate student should next inspect
 the exact theorem types in the amended matrix and rerun each mutation against
 the pushed commit; aggregate record inequality or a hand-written label should
 not be accepted as a substitute for these projection and evaluator links.
+
+## 2026-07-13 W18 Producer-Level Reviewer Provenance
+
+The coordinator's W17 audit found a deeper gap than a missing label.  The
+emitted-read theorem first classified the event's segment with a functional
+segment-to-leaf map and then selected any instruction in the closed program
+having that category.  It did not retain the event in that instruction's
+actual trace, and it evaluated the category witness at an arbitrary state.
+This was especially wrong for later LCA and rank instructions, whose input
+registers are created by earlier program steps.  It also hid that segments
+`17`--`19` can be read inside LCA as well as by final rank.
+
+W18 introduces `WholeQueryProgram.ProducesEvent`.  Its recursive proof follows
+the same `TraceResult.bind` decomposition as program evaluation: a head event
+is tied to the current instruction/current state, while a tail event advances
+to the value produced by the head instruction.  The relation exposes a prefix
+whose actual fold value is exactly the producer's pre-state.  From there,
+`ReviewerSource.ProducedReadBy` and `ReviewerProducerReadPath` keep one event
+connected to its physical source/region, logical segment, producer leaf, and
+concrete select/rank/LCA component trace.  The relational path intentionally
+supports multiple producer families for one segment.
+
+Reverse liveness is now constructive: every counted source has an actual
+possible attempted read in a concrete component call.  Shared BP is stronger
+still: select, rank, and canonical-close each exhibit one event that is both a
+BP-source read and a path in that consumer.  The counterfactual adds fresh
+segment `21` with the plausible existing `.canonicalClose` label.  It fails
+because every real instruction trace proves its read segment is below `21`,
+not because a new `Live` predicate was set to `False`.
+
+Plain English: an emitted memory event now comes with a receipt naming the
+instruction that made it, the machine state that instruction actually saw,
+and the represented payload source it read.  Counted storage is justified by
+at least one real callable read path, but the theorem does not claim every
+query exercises every source.  The accepted physical store, answer dependency,
+invalid-range behavior, `2n + o(n)` payload bound, logarithmic reviewer width,
+and modeled cost `328` are unchanged.
+
+Live assumptions are the repository's explicit WordRAM trace/cost semantics,
+the concrete closed whole-query program, the checked source/physical-address
+maps, and the existing component evaluators.  This is not a compiled-runtime
+or hardware-timing statement.  A skeptical graduate student should next ask
+whether component-level may-read witnesses ought eventually to be strengthened
+to top-level query-reachability witnesses for every source.  That would be a
+strictly stronger theorem; it is not needed for the present may-read ownership
+contract and should not be confused with the false claim that every query
+reads every source.
 
 ## Digestion Tasks
 

@@ -55,10 +55,16 @@ human-readable file when the interpretation changes.
   any final explained constant.
 - `4144`, Ready-regime `118`, the zero-block route, and `196727` are
   compatibility/history only, not the canonical reviewer execution.
-- W15's post-hoc physical-result construction was rejected. W17 may be
-  described only as a corrected worker candidate until the coordinator
-  reconstructs the frozen/formally amended matrix and obtains a fresh blind
-  exact-commit audit.
+- W15's post-hoc physical-result construction was rejected. W17's physical
+  execution repair remains accepted candidate evidence, but its static
+  category-join provenance was rejected. W18 may be described only as a
+  producer-provenance repair candidate until the coordinator reconstructs the
+  frozen/formally amended matrix and obtains a fresh blind exact-commit audit.
+- Producer provenance means the emitted event is retained in the actual
+  producing instruction's trace at the actual folded prefix state and is tied
+  to its source and component path through that same event. Static category
+  joins and arbitrary empty-state evaluator witnesses are compatibility facts,
+  not reviewer provenance.
 - Current machine claims must identify the same public `buildPayload`, reviewer
   physical words, execution, ordered footprint, and reviewer word width.
 - "Physical execution" in the current reviewer story must name the genuine

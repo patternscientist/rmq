@@ -150,6 +150,9 @@ things:
 - complete physical-execution equality under agreement on the first execution's
   consumed ordered footprint, plus a checked consumed-address disagreement
   witness showing that the supplied store is not ignored;
+- actual-instruction producer provenance for every emitted read, concrete
+  may-read paths for every counted source, same-event shared-BP consumer paths,
+  and operational rejection of a plausible-label unused segment;
 - coherent rejection of empty, reversed, and out-of-bounds ranges across the
   canonical, supplied-store, trace, and costed list surfaces;
 - a linear reviewer capacity and query-independent logarithmic word width
@@ -191,7 +194,7 @@ declarations.
 
 The artifact does not claim:
 
-- compiled Lean runtime performance;
+- any model claim about compiled Lean runtime performance;
 - compiler correctness;
 - CPU, cache, or memory-hierarchy semantics;
 - extraction or benchmarking;

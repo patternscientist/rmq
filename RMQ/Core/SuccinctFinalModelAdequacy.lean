@@ -77,38 +77,14 @@ structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
             shape left right).trace ->
         concreteBPNativeSuccinctRMQCanonicalReviewerReadBacked
           shape segment index word
-  canonical_manifest_counted_iff_live :
-    forall source : ReviewerSource, source.Counted <-> source.Live
-  canonical_counted_sources_have_operational_connection :
+  canonical_counted_sources_have_producer_may_path :
     forall source : ReviewerSource, source.Counted ->
-      (source = .sharedBPCode /\
-        Exists fun consumer : ReviewerSharedBPConsumer => consumer.Checked) \/
-      (Exists fun leaf : ReviewerReadLeaf => source.OperationallyOwnedBy leaf)
-  canonical_counted_sources_reach_evaluator :
-    forall source : ReviewerSource, source.Counted ->
-      (source = .sharedBPCode /\
-        Exists fun consumer : ReviewerSharedBPConsumer =>
-        Exists fun instr : WholeQueryInstr =>
-          consumer.Checked /\
-          instr ∈ concreteBPNativeSuccinctRMQWholeQueryProgram /\
-          instr.reviewerReadLeaf? = some consumer.leaf /\
-          WholeQueryInstr.reviewerReadLeafEvaluatorBranch
-            shape left right WholeQueryState.empty consumer.leaf instr) \/
-      (Exists fun leaf : ReviewerReadLeaf =>
-        Exists fun instr : WholeQueryInstr =>
-          source.OperationallyOwnedBy leaf /\
-          instr ∈ concreteBPNativeSuccinctRMQWholeQueryProgram /\
-          instr.reviewerReadLeaf? = some leaf /\
-          WholeQueryInstr.reviewerReadLeafEvaluatorBranch
-            shape left right WholeQueryState.empty leaf instr)
-  all_shared_bp_dependencies_reach_evaluator :
+      source.HasProducerMayPath shape
+  all_shared_bp_dependencies_have_producer_path :
     forall consumer : ReviewerSharedBPConsumer,
-      consumer.Checked ∧
-        Exists fun instr : WholeQueryInstr =>
-          instr ∈ concreteBPNativeSuccinctRMQWholeQueryProgram ∧
-          instr.reviewerReadLeaf? = some consumer.leaf ∧
-          WholeQueryInstr.reviewerReadLeafEvaluatorBranch
-            shape left right WholeQueryState.empty consumer.leaf instr
+      consumer.ProducerConnected shape
+  fresh_unused_source_rejected_by_producer :
+    ¬ concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource.HasOperationalProducer
   canonical_manifest_nodup :
     List.Nodup concreteBPNativeSuccinctRMQReviewerPhysicalSources
   canonical_regions_exclusive :
@@ -135,28 +111,8 @@ structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
                   shape segment index) word? ∈
               (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
                 shape left right).trace
-  every_emitted_read_has_operational_source :
-    forall {segment index : Nat} {word? : Option WordRAM.Word},
-      WordRAM.TraceEvent.readWord segment index word? ∈
-          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
-            shape left right).trace ->
-        Exists fun source : ReviewerSource =>
-        Exists fun leaf : ReviewerReadLeaf =>
-        Exists fun instr : WholeQueryInstr =>
-          concreteBPNativeSuccinctRMQReviewerSegmentSource? segment =
-              some source /\
-          concreteBPNativeSuccinctRMQReviewerSegmentLeaf? segment =
-              some leaf /\
-          source.Counted /\ source.Live /\
-          source.OperationallyOwnedBy leaf /\
-          instr ∈ concreteBPNativeSuccinctRMQWholeQueryProgram /\
-          instr.reviewerReadLeaf? = some leaf /\
-          WholeQueryInstr.reviewerReadLeafEvaluatorBranch
-            shape left right WholeQueryState.empty leaf instr
-  operational_consumer_labels_are_derived :
-    forall {source : ReviewerSource} {leaf : ReviewerReadLeaf},
-      source ≠ .sharedBPCode -> source.OperationallyOwnedBy leaf ->
-        source.consumer? = some leaf.consumer
+  every_emitted_read_has_producer_provenance :
+    ConcreteBPNativeSuccinctRMQWholeQueryProducerProvenance shape left right
   canonical_manifest_excludes_legacy_close :
     forall (source : ReviewerSource),
       source ∈ concreteBPNativeSuccinctRMQReviewerPhysicalSources ->
@@ -323,18 +279,14 @@ theorem concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
         exact
           concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_successful_read_events_backed_by_counted_flat_payload
             shape left right hmem
-      canonical_manifest_counted_iff_live :=
-        concreteBPNativeSuccinctRMQReviewerSource_counted_iff_live
-      canonical_counted_sources_have_operational_connection :=
-        concreteBPNativeSuccinctRMQReviewerSource_counted_operational_connection
-      canonical_counted_sources_reach_evaluator := by
-        intro source hcounted
-        exact
-          concreteBPNativeSuccinctRMQReviewerSource_counted_evaluator_connection
-            shape left right WholeQueryState.empty source hcounted
-      all_shared_bp_dependencies_reach_evaluator :=
-        concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_evaluator_connection
-          shape left right WholeQueryState.empty
+      canonical_counted_sources_have_producer_may_path :=
+        concreteBPNativeSuccinctRMQReviewerSource_counted_producer_may_path
+          shape
+      all_shared_bp_dependencies_have_producer_path :=
+        concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_all_producer_connected
+          shape
+      fresh_unused_source_rejected_by_producer :=
+        concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_producer
       canonical_manifest_nodup :=
         concreteBPNativeSuccinctRMQReviewerPhysicalSources_nodup
       canonical_regions_exclusive :=
@@ -346,11 +298,9 @@ theorem concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
         exact
           concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_read_has_listed_region
             shape left right segment index word? hmem
-      every_emitted_read_has_operational_source :=
-        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_operational_source
+      every_emitted_read_has_producer_provenance :=
+        concreteBPNativeSuccinctRMQWholeQueryProducerProvenance_checked
           shape left right
-      operational_consumer_labels_are_derived :=
-        concreteBPNativeSuccinctRMQReviewerSource_operational_owner_consumer
       canonical_manifest_excludes_legacy_close :=
         concreteBPNativeSuccinctRMQReviewerPhysicalSources_exclude_legacy_close
       compatibility_tail_unreachable :=

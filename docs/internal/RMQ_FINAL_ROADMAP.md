@@ -121,13 +121,16 @@ Acceptance:
 
 ### U2. Build One Uniform Local/Interior Directory Route
 
-Status: worker candidate; coordinator acceptance pending.
+Status: W18 producer-provenance repair candidate; coordinator acceptance pending.
 
 Every size uses `RelativeRmm.canonicalLayout` and the same close/LCA reviewer
-route. One exhaustive typed 20-source universe includes canonical close and
-proves counted/live equivalence, region exclusivity, logical-segment coverage,
-emitted-read coverage, named consumers, and absence of canonical legacy
-duplicates. The existing supplied-store evaluator runs through a checked
+route. One exhaustive typed 20-source universe includes canonical close.
+Every emitted read retains its actual producing instruction, exact prefix-fold
+state, source, segment, and component path. Every counted source has a concrete
+may-read path; shared-BP consumers have same-event paths; a fresh unused segment
+with a plausible label has no producer. Region exclusivity,
+logical-segment coverage, and absence of canonical legacy duplicates also hold.
+The existing supplied-store evaluator runs through a checked
 flat-physical address-translation adapter. Its execution-derived ordered
 footprint controls agreement; a checked consumed-address disagreement changes
 the execution, proving physical-store dependence. One pre-execution physical
@@ -147,21 +150,22 @@ Acceptance evidence:
 - `concreteBPNativeSuccinctRMQCanonicalInteriorPhysicalFootprint_fits`;
 - `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact`;
 - `concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases`;
-- `concreteBPNativeSuccinctRMQReviewerSource_counted_iff_live` and the typed
-  source/region/segment coverage chain;
+- `concreteBPNativeSuccinctRMQWholeQueryProducerProvenance_checked` and the
+  typed source/region/segment coverage chain;
 - `concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_refines_logical`;
 - `concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_eq_of_orderedFootprint`;
 - `concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_value_eq_suppliedStoreEvaluator`;
 - `concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_value_ne_of_suppliedStoreEvaluator_value_ne`;
-- `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_operational_source`
-  and `concreteBPNativeSuccinctRMQReviewerSource_counted_evaluator_connection`;
+- `concreteBPNativeSuccinctRMQReviewerSource_counted_producer_may_path`,
+  `concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_all_producer_connected`,
+  and `concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_producer`;
 - `SuccinctClassic.queryCosted_invalid` and its canonical, supplied-store,
   trace, costed, and physical wrappers;
 - reviewer physical successful-read backing and whole-query word/address bounds
   in the final adequacy packet.
 
 Only the coordinator may replace this status with `ACCEPTED`, after independently
-reconstructing the frozen/formally amended W17 matrix and obtaining a fresh blind exact-commit
+reconstructing the frozen/formally amended W18 matrix and obtaining a fresh blind exact-commit
 audit.
 
 ### U3. Reprove One Principled All-Size Cost Bound

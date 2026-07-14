@@ -105,7 +105,12 @@ def concreteBPNativeSuccinctRMQReviewerSegmentSource? :
   | 20 => some .canonicalClose
   | _ + 21 => none
 
-/-- Read-producing evaluator leaf selected by each live logical segment. -/
+/--
+Compatibility category map for the historically designated consumer of each
+logical segment.  It is not producer ownership: segments `17`--`19` can also
+be read inside LCA evaluation.  The load-bearing operational relation is
+`ReviewerProducerReadPath` in `SuccinctFinalRAM`.
+-/
 def concreteBPNativeSuccinctRMQReviewerSegmentLeaf? :
     Nat -> Option ReviewerReadLeaf
   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
@@ -150,7 +155,11 @@ def ReviewerSharedBPConsumer.leafSegment :
   | .rankClose => 19
   | .canonicalClose => 20
 
-/-- A shared-BP dependency is checked against both operational maps. -/
+/--
+Compatibility check against the two static maps.  This does not connect the
+BP source and consumer through one event; `ReviewerSharedBPConsumer.ProducerConnected`
+is the load-bearing same-event relation.
+-/
 def ReviewerSharedBPConsumer.Checked
     (consumer : ReviewerSharedBPConsumer) : Prop :=
   concreteBPNativeSuccinctRMQReviewerSegmentSource? consumer.segment =
@@ -181,10 +190,10 @@ def ReviewerSource.Counted (source : ReviewerSource) : Prop :=
   source ∈ concreteBPNativeSuccinctRMQReviewerPhysicalSources
 
 /--
-Operational reviewer liveness.  A non-shared source must be reached by a
-logical segment belonging to an actual read-producing evaluator leaf.  The BP
-code is live only through an explicitly checked shared consumer.
- -/
+Compatibility category liveness retained for older clients.  It only joins
+the static segment maps and is not reviewer evidence that an instruction
+actually may read the source.  Use `ReviewerSource.HasProducerMayPath`.
+-/
 def ReviewerSource.Live (source : ReviewerSource) : Prop :=
   (source = .sharedBPCode ∧
       ∃ consumer : ReviewerSharedBPConsumer, consumer.Checked) ∨
@@ -237,6 +246,7 @@ theorem concreteBPNativeSuccinctRMQReviewerSource_operationally_live
   | canonicalClose =>
       exact Or.inr ⟨by decide, .canonicalClose, 20, rfl, rfl⟩
 
+/-- Compatibility theorem; not part of the load-bearing reviewer surface. -/
 theorem concreteBPNativeSuccinctRMQReviewerSource_counted_iff_live
     (source : ReviewerSource) :
     source.Counted ↔ source.Live := by

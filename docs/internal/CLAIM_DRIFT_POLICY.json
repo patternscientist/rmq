@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "updated": "2026-07-13",
   "terms": [
     {
@@ -94,6 +94,14 @@
       "id": "typed-reviewer-source-manifest",
       "pattern": "20-source|ReviewerSource|reviewer source manifest",
       "status": "current-exhaustive-typed-canonical-universe",
+      "strict": false,
+      "allowedPathRegex": "",
+      "allowedLineRegex": ""
+    },
+    {
+      "id": "producer-level-provenance",
+      "pattern": "producer provenance|producer-level|actual producing instruction|prefix-fold state",
+      "status": "current-only-when-same-event-actual-state-and-source-path",
       "strict": false,
       "allowedPathRegex": "",
       "allowedLineRegex": ""

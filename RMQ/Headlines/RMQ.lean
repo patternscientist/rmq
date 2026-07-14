@@ -50,6 +50,10 @@ appendix; retired finite-small interior slots have empty stores.
 abbrev listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory :=
   RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story
 
+/-- Valid List-Int queries inherit the actual-instruction producer packet. -/
+abbrev listIntSuccinctRMQProducerProvenanceOfValid :=
+  RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_producerProvenance_of_valid
+
 /--
 List-facing paper main theorem. For every ordinary `xs : List Int`, the
 advertised `buildPayload` has length at most `2*n + overhead n` with
@@ -88,6 +92,10 @@ theorem listIntSuccinctRMQPaperMainTheorem :
         (forall left right,
           RMQ.ValidRange xs left right ->
             RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
+              (RMQ.SuccinctClassic.cartesianShape xs) left right) /\
+        (forall left right,
+          RMQ.ValidRange xs left right ->
+            RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQWholeQueryProducerProvenance
               (RMQ.SuccinctClassic.cartesianShape xs) left right) /\
         (forall left right,
           Not (RMQ.ValidRange xs left right) ->
@@ -131,7 +139,13 @@ theorem listIntSuccinctRMQPaperMainTheorem :
               RMQ.SuccinctClassic.reviewerPhysicalTraceResultWithStore
                 xs storeB left right) /\
         (forall source : RMQ.SuccinctFinal.ReviewerSource,
-          source.Counted <-> source.Live) /\
+          source.Counted ->
+            source.HasProducerMayPath
+              (RMQ.SuccinctClassic.cartesianShape xs)) /\
+        (forall consumer : RMQ.SuccinctFinal.ReviewerSharedBPConsumer,
+          consumer.ProducerConnected
+            (RMQ.SuccinctClassic.cartesianShape xs)) /\
+        Not RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource.HasOperationalProducer /\
         List.Nodup
           RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalSources /\
         (forall segment : Nat,
@@ -160,6 +174,9 @@ theorem listIntSuccinctRMQPaperMainTheorem :
       fun left right hvalid =>
         RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_rawAdequacy_of_valid
           xs left right hvalid,
+      fun left right hvalid =>
+        RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_producerProvenance_of_valid
+          xs left right hvalid,
       RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_invalid_semantics
         xs,
       fun store left right hvalid =>
@@ -170,7 +187,9 @@ theorem listIntSuccinctRMQPaperMainTheorem :
       fun storeA storeB left right hagree =>
         RMQ.SuccinctClassic.reviewerPhysicalTraceResultWithStore_eq_of_orderedReadFootprint
           xs storeA storeB left right hagree,
-      RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSource_counted_iff_live,
+      RMQ.SuccinctClassic.reviewerCountedSource_producerMayPath xs,
+      RMQ.SuccinctClassic.reviewerSharedBPConsumer_producerConnected xs,
+      RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_producer,
       RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalSources_nodup,
       RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSegmentSource?_coverage,
       fun storeA storeB left right hagree =>
@@ -229,10 +248,6 @@ abbrev listIntSuccinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint :=
 abbrev succinctRMQReviewerPhysicalSources :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalSources
 
-/-- Counted source if and only if canonical reviewer-live source. -/
-abbrev succinctRMQReviewerSourceCountedIffLive :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSource_counted_iff_live
-
 /-- Canonical live physical sources are duplicate-free. -/
 abbrev succinctRMQReviewerPhysicalSourcesNodup :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalSources_nodup
@@ -250,35 +265,30 @@ source/region and its checked physical event. -/
 abbrev succinctRMQReviewerEveryReadHasListedRegion :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_read_has_listed_region
 
-/-- Every emitted read resolves to a counted operational source and an actual
-read-producing evaluator branch in the closed program. -/
-abbrev succinctRMQReviewerEveryReadOperationalSource :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_operational_source
+/-- Every emitted read is tied to its actual instruction occurrence, prefix
+state, physical source, logical segment, and concrete component read path. -/
+abbrev succinctRMQReviewerEveryReadProducerProvenance :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryProducerProvenance_checked
 
-/-- Every counted source reaches an actual evaluator branch; shared BP also
-carries its checked shared-consumer dependency. -/
-abbrev succinctRMQReviewerCountedSourceEvaluatorConnection :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSource_counted_evaluator_connection
+/-- Every counted source has an actual possible attempted-read path in the
+concrete select/rank/LCA construction. -/
+abbrev succinctRMQReviewerCountedSourceProducerMayPath :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSource_counted_producer_may_path
 
-/-- Select, rank, and canonical-close shared-BP dependencies each reach their
-actual read-producing evaluator branch. -/
-abbrev succinctRMQReviewerSharedBPConsumerEvaluatorConnection :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_evaluator_connection
+/-- Every shared-BP consumer reaches the shared BP source through one event in
+that same consumer's component path. -/
+abbrev succinctRMQReviewerSharedBPConsumerProducerConnected :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_all_producer_connected
 
-/-- Dead additions, used-source removals, and forged consumer labels are
-separately rejected by the operational manifest predicates. -/
-abbrev succinctRMQReviewerManifestAddDeadRejected :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerManifest_add_dead_rejected
-abbrev succinctRMQReviewerManifestRemoveUsedRejected :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerManifest_remove_used_rejected
-abbrev succinctRMQReviewerForgedConsumerRejected :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSource_forged_consumer_rejected
-abbrev succinctRMQReviewerVacuousLiveAcceptsDead :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerManifest_vacuousLive_accepts_dead
-abbrev succinctRMQReviewerEnumerationAcceptsDead :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerManifest_enumeration_accepts_dead
-abbrev succinctRMQReviewerFalseLiveRejected :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerManifest_falseLive_rejected
+/-- A fresh unused segment with a plausible canonical-close label has no
+operational producer witness. -/
+abbrev succinctRMQReviewerFreshUnusedSourceNoProducer :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource_no_producer
+
+/-- Generic fold decomposition from a program trace event to its actual
+instruction occurrence and pre-execution state. -/
+abbrev succinctRMQProgramEventActualProducer :=
+  RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTrace_event_producer
 
 /-- No legacy duplicate close source occurs in the canonical source list. -/
 abbrev succinctRMQReviewerPhysicalSourcesExcludeLegacyClose :=
