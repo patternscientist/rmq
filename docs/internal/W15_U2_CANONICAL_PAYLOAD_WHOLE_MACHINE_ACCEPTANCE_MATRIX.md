@@ -873,7 +873,7 @@ Requested verification rows:
 | `POLICY-CHK-04` | `git diff --check` | Exit 0. | Pass after final POLICY evidence update. | Closed. |
 | `POLICY-CHK-05` | full `scripts/gate.ps1` | Exit 0 after running both the focused mutation regression and repository strict claim scan. | Final-tree pass in 305.1 s; focused verdict suite, repository strict scan, and `GATE PASS` all present. | Closed. |
 | `POLICY-CHK-06` | verify the relevant CI invocation is strict | CI YAML contains a blocking `claim_drift_scan.ps1 -Strict` invocation and the aggregate gate also runs strict. | Pass: `.github/workflows/ci.yml` gives `./scripts/claim_drift_scan.ps1 -Strict` its own blocking `Run strict claim-drift scan` step, so no later command can overwrite its exit status; `scripts/gate.ps1` independently invokes the strict scan. | Closed. |
-| `POLICY-CHK-07` | verify local and remote HEAD match | After commit/push, both resolve to the same exact SHA and the worktree is clean. | None yet. | Open. |
+| `POLICY-CHK-07` | verify local and remote HEAD match | After commit/push, both resolve to the same exact SHA and the worktree is clean. | Pass after the implementation push: clean worktree; local `HEAD` and `origin/codex/rmq-u2-positional-provenance` both resolved to `c3d1c57dbea88b0433128fe50ace08cedf84445f`. The ledger-only follow-up is verified again in the final handoff. | Closed. |
 
 The first native executable replay exposed a Windows stack overflow caused by
 placing symbolic proof-witness modules in the executable import/link closure.
