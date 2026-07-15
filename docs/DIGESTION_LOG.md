@@ -344,8 +344,8 @@ Mathlib-free Ackermann/alpha schedule?
 
 2026-06-30 update: the succinct RMQ capstone now has an additive interpreted
 headline,
-`RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` [FROZEN-HISTORY:
-the spelling names the declaration at this dated checkpoint]. Conceptually,
+`RMQ.Headlines.succinctRMQLegacy196727InterpretedTwoNPlusOConstantQuery`.
+Conceptually,
 the public `2*n + o(n)`, constant-query RMQ theorem is no longer only a
 composition of disciplined `Costed` callbacks: the final query is replayed
 through Word-RAM bridge layers for the generic sparse-exception close-select
@@ -370,8 +370,8 @@ without changing the theorem's mathematical content.
 
 2026-07-01 update: the RMQ whole-query controller now has a leaf-trace
 checkpoint,
-`RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace` [FROZEN-HISTORY:
-the spelling names the declaration at this dated checkpoint]. Conceptually, the
+`RMQ.Headlines.succinctRMQLegacy196727LeafTraceTwoNPlusOConstantQuery`.
+Conceptually, the
 closed controller no longer immediately erases its operational story to the
 plain `Costed` carrier. It evaluates to an explicit domain-leaf trace recording
 the select-close, compact close/LCA, and answer-rank leaves it called, together
@@ -388,8 +388,8 @@ trace, and whether that inlining changes any public theorem beyond making the
 execution model flatter.
 
 2026-07-01 update: the next rung has landed as
-`RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace` [FROZEN-HISTORY:
-the spelling names the declaration at this dated checkpoint]. Conceptually, the
+`RMQ.Headlines.succinctRMQLegacy196727WordTraceTwoNPlusOConstantQuery`.
+Conceptually, the
 final closed query controller now emits one `WordRAM.TraceEvent` stream. The
 close-select part, answer-rank part, and compact-close rank-seed reads are real
 payload/register traces. The bounded local BP decoders, endpoint-fringe
@@ -401,8 +401,7 @@ skeptical grad student should now ask for the exact theorem that replaces each
 remaining decoder leaf by payload-read events.
 
 2026-07-01 update: the large-regime companion has landed as
-`RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime` [FROZEN-HISTORY:
-the spelling names the declaration at this dated checkpoint].
+`RMQ.Headlines.succinctRMQLegacy196727LargeRegimeWordTraceTwoNPlusOConstantQuery`.
 Conceptually, this does not change the `2*n + o(n)`, constant-query theorem
 shape; it strengthens the execution story under the explicit size premise
 `2^128 <= shape.size`. In that regime, the compact close/LCA part of the final
@@ -438,8 +437,7 @@ large-regime. The public alias
 `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` now points to
 `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story`,
 which has no `2^128 <= shape.size` premise. The large-regime theorem is kept as
-`RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory` [FROZEN-HISTORY:
-the spelling names the declaration at this dated checkpoint].
+`RMQ.Headlines.succinctRMQCompatibilityLargeRegimeGlobalPayloadStoreExecutionStory`.
 Conceptually, every actual payload read in the final query is checked against
 one concrete global store for all input sizes. Tiny/inactive close-navigation
 fallback work is still present, but it is represented as explicitly counted
@@ -1133,3 +1131,33 @@ conventional word-RAM time remain outside U3. A skeptical graduate student
 should next inspect whether the direct successful-read clause plus exact erasure
 is the right reusable simulation premise for E1's richer small-step machine.
 Fresh blind exact-commit audit remains coordinator-owned.
+
+## 2026-07-14 W21 Frozen-History Allowance Boundary
+
+Coordinator reconstruction found one remaining policy bypass after the Lean
+capstone and canonical/compatibility split were accepted: the topology lint
+skipped every file under the digest and audit-report directories, and the
+claim policy carried matching broad path allowances. That made directory
+placement, rather than an occurrence's checked role, determine whether a
+retired paper alias was visible to the gate.
+
+The repaired boundary registers exactly one old-alias line in each of two
+immutable June snapshots. Admission requires the exact normalized path, exact
+case-sensitive marker-plus-line content, and exactly one occurrence. The marker
+is rejected everywhere else. The README-linked July publication digest and all
+audit reports are fully scanned and their documentary headline names are
+resolved. The strict claim policy uses the same two path-and-line conjunctions;
+neither mechanism exempts a directory.
+
+Production mutations now show both sides of the rule: a retired alias in the
+current publication digest or an audit report rejects; the registered snapshot
+occurrence accepts; the same text at a current path rejects; and casual,
+misplaced, malformed, or duplicate markers reject. Every virtual mutation checks
+tracked state before and after. Plain English: frozen history is immutable
+evidence with a checked address and exact content, not a label that a new claim
+can give itself. The accepted algorithm, payload, trace, theorem topology, and
+charged-trace-only `76` model boundary are unchanged. A skeptical graduate
+student should next rerun the production mutations at the exact candidate
+commit and verify that no new snapshot exception can be added without changing
+both policy data and its regression. Fresh blind exact-commit audit remains
+coordinator-owned.

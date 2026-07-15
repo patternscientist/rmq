@@ -235,8 +235,8 @@ lexical claim checks and ordinary builds are necessary but insufficient.
 Before closing the migration row:
 
 - search the entire tracked repository for every removed spelling and classify
-  the only allowed survivors as exact enforcement data or explicitly frozen
-  history;
+  the only allowed survivors as exact enforcement data or precisely registered
+  frozen-history occurrences;
 - extract documentary `RMQ.Headlines.*` references from prose, tables, and
   fenced inventories;
 - elaborate generated `#check` files under the broad headline import and, for
@@ -245,6 +245,16 @@ Before closing the migration row:
   presents it as a current anchor;
 - run production-verdict mutations for prose, fenced code, a dead alias, and a
   renamed-name remnant.
+
+A frozen-history exception must be exact or role-scoped at occurrence level:
+for example, an immutable snapshot path coupled to exact checked marker and
+line content. A whole digest or audit-report directory is never an acceptable
+history exemption, and a casual marker word is not authorization. Before
+closing the row, run production-verdict mutations proving that the exact
+registered occurrence accepts while the same occurrence at a current path, a
+retired current-facing alias in an audit report, and forged, misplaced, or
+duplicate markers reject. The mutation harness must verify tracked state before
+and after every virtual edit.
 
 Do not mark the row complete merely because no forbidden token appears in a
 selected claim table. Documentary symbol resolution is the closure evidence.

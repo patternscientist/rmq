@@ -73,20 +73,27 @@ The strict detector treats a canonical execution's 2^128 mention as suspicious b
 
 ## Canonical Paper Topology
 
-Policy version 13 rejects every spelling removed during the W21 paper-surface
+Policy version 14 rejects every spelling removed during the W21 paper-surface
 migration: the six unqualified legacy query aliases, the transitional and
 large-regime aliases, and the compatibility-only W18 projection names. The
-only allowances are explicit frozen chronology/audit paths and exact policy or
-lint enforcement files. The production scanner regression exercises each
-removed-name category.
+only whole-path allowances are exact policy or lint enforcement files. Audit
+reports receive no allowance. Historical aliases may remain only on a line
+beginning with the exact marker
+`<!-- RMQ-PAPER-TOPOLOGY-FROZEN-SNAPSHOT -->` in one of the two exact registered
+June 28 snapshot files. The path and line conditions are conjunctive; neither a
+digest directory nor casual `FROZEN-HISTORY` wording grants an allowance. The
+production scanner regression exercises each removed-name category and every
+history-scope boundary.
 
 A lexical claim scan is still only a tripwire. It cannot establish that a
 rename migrated every documentary Lean reference, that a surviving name is in
 scope under the document's advertised import, or that a compatibility name is
 not being presented as current. `scripts/paper_topology_lint.ps1` therefore
 performs a repository-wide removed-name search and generates Lean `#check`
-files: every documentary `RMQ.Headlines.*` name resolves under the broad barrel,
-and every canonical RMQ name used by paper maps also resolves under `RMQPaper`.
+files: every unmarked documentary `RMQ.Headlines.*` name—including names in the
+README-linked current publication digest and audit reports—resolves under the
+broad barrel, and every canonical RMQ name used by paper maps also resolves
+under `RMQPaper`.
 `scripts/paper_topology_lint_regression.ps1` mutates prose, fenced code, a dead
 name, a renamed W18 name, and a compatibility-as-current anchor through that
 production verdict.

@@ -2319,6 +2319,8 @@ Rejected alternatives:
 - Treat removal from Lean aliases and selected claim rows as documentary
   migration closure without repository-wide old-name search and checked
   resolution of every documentary headline reference.
+- Treat a mixed-role digest or audit-report directory as frozen history, or let
+  an unvalidated marker word create an exception.
 
 Consequences:
 
@@ -2330,6 +2332,14 @@ the broad barrel, but no unqualified historical query capstone remains. This
 does not strengthen the model boundary: controller operations remain uncharged,
 and serialized-payload querying, preprocessing, and conventional word-RAM
 complexity remain downstream obligations.
+
+The documentary-history boundary is deliberately occurrence-level. Two dated
+June snapshots retain one old spelling each through exact path, exact
+case-sensitive marker-plus-line content, and an exactly-once check. The
+README-linked current publication digest and audit reports receive no blanket
+allowance and remain subject to headline resolution. This keeps historical
+evidence readable without making directory placement or a forged marker a way
+to reintroduce a current paper capstone.
 
 Evidence:
 

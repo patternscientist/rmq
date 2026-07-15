@@ -160,6 +160,25 @@ function New-ShadowMatrixRoot {
   }
 }
 
+function New-ShadowFileRoot {
+  param(
+    [string]$RelativePath,
+    [string]$Content
+  )
+
+  $shadowRoot = Join-Path $absoluteFixtureRoot ("shadow-" + [Guid]::NewGuid().ToString("N"))
+  $shadowPath = Join-Path $shadowRoot $RelativePath
+  [System.IO.Directory]::CreateDirectory((Split-Path -Parent $shadowPath)) | Out-Null
+  [System.IO.File]::WriteAllText(
+    $shadowPath,
+    $Content + [Environment]::NewLine)
+  [PSCustomObject]@{
+    Root = $shadowRoot
+    RelativePath = $RelativePath
+    AbsolutePath = $shadowPath
+  }
+}
+
 function Invoke-StrictClaimScan {
   param(
     [string]$Path,
@@ -278,6 +297,41 @@ try {
     $unmarkedShadow = New-ShadowMatrixRoot -Content 'The canonical execution requires 2^128.'
     Test-FinalVerdict -Id "matrix-filename-does-not-bypass" -Path $unmarkedShadow.RelativeMatrixPath -WorkingDirectory $unmarkedShadow.Root -Reject $true -CheckTrackedState $true
     $contextCount += 1
+
+    $retiredTerm = 'forbidden-retired-paper-query-alias'
+    $retiredAlias = 'RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery'
+    $exactFrozenLine = '<!-- RMQ-PAPER-TOPOLOGY-FROZEN-SNAPSHOT --> RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery'
+
+    $currentDigestShadow = New-ShadowFileRoot `
+      -RelativePath 'docs/digests/PROJECT_DIGESTION_2026_07_06.md' `
+      -Content "Current capstone: $retiredAlias."
+    Test-FinalVerdict -Id 'retired-alias-current-publication-digest' -Path $currentDigestShadow.RelativePath -WorkingDirectory $currentDigestShadow.Root -Reject $true -TermId $retiredTerm -CheckTrackedState $true
+
+    $auditShadow = New-ShadowFileRoot `
+      -RelativePath 'docs/internal/audit_reports/frozen-boundary-mutation.md' `
+      -Content "Current capstone: $retiredAlias."
+    Test-FinalVerdict -Id 'retired-current-alias-audit-report' -Path $auditShadow.RelativePath -WorkingDirectory $auditShadow.Root -Reject $true -TermId $retiredTerm -CheckTrackedState $true
+
+    $validFrozenShadow = New-ShadowFileRoot `
+      -RelativePath 'docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md' `
+      -Content $exactFrozenLine
+    Test-FinalVerdict -Id 'valid-exact-frozen-snapshot-occurrence' -Path $validFrozenShadow.RelativePath -WorkingDirectory $validFrozenShadow.Root -Reject $false -RequireAllowed $true -TermId $retiredTerm -CheckTrackedState $true
+
+    $misplacedFrozenShadow = New-ShadowFileRoot `
+      -RelativePath 'docs/digests/PROJECT_DIGESTION_2026_07_06.md' `
+      -Content $exactFrozenLine
+    Test-FinalVerdict -Id 'same-frozen-occurrence-outside-exact-scope' -Path $misplacedFrozenShadow.RelativePath -WorkingDirectory $misplacedFrozenShadow.Root -Reject $true -TermId $retiredTerm -CheckTrackedState $true
+
+    $forgedFrozenShadow = New-ShadowFileRoot `
+      -RelativePath 'docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md' `
+      -Content "$exactFrozenLine forged"
+    Test-FinalVerdict -Id 'forged-exact-marker-does-not-bypass' -Path $forgedFrozenShadow.RelativePath -WorkingDirectory $forgedFrozenShadow.Root -Reject $true -TermId $retiredTerm -CheckTrackedState $true
+
+    $casualFrozenShadow = New-ShadowFileRoot `
+      -RelativePath 'docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md' `
+      -Content "[FROZEN-HISTORY: casual] $retiredAlias"
+    Test-FinalVerdict -Id 'casual-history-word-does-not-bypass' -Path $casualFrozenShadow.RelativePath -WorkingDirectory $casualFrozenShadow.Root -Reject $true -TermId $retiredTerm -CheckTrackedState $true
+    $contextCount += 6
   }
 } finally {
   if ([System.IO.Directory]::Exists($absoluteFixtureRoot)) {

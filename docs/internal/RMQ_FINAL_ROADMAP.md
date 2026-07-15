@@ -220,10 +220,15 @@ there as `CompatibilityW18` aliases as well.
 
 Self-contained topology repair also makes documentary symbol migration a
 blocking checked obligation. Repository-wide old-name search leaves removed
-spellings only in exact enforcement data or explicitly frozen history, and the
-topology lint elaborates every documented headline identifier under the broad
-barrel plus every canonical paper identifier under `RMQPaper`. Prose, fenced,
-dead-name, renamed-W18, and compatibility-as-current mutations are blocking.
+spellings only in exact enforcement data or two registered June-snapshot
+occurrences. Each historical occurrence is an exact path plus exact
+case-sensitive marker-and-line value required exactly once; the same marker is
+rejected elsewhere. The README-linked current publication digest and all audit
+reports are fully scanned. The topology lint elaborates every documented
+headline identifier under the broad barrel plus every canonical paper
+identifier under `RMQPaper`. Prose, fenced, dead-name, renamed-W18,
+compatibility-as-current, current-digest, audit-report, and frozen-scope
+mutations are blocking.
 
 Acceptance:
 

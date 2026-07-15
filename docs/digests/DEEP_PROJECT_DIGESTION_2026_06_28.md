@@ -170,7 +170,7 @@ thing stored. Everything else -- the navigation tables -- is provably `o(n)`.
 The public headline theorem has a short alias in `RMQ/Headlines.lean`:
 
 ```lean
-RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery
+<!-- RMQ-PAPER-TOPOLOGY-FROZEN-SNAPSHOT --> RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery
   := RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile
 ```
 

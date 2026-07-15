@@ -299,11 +299,12 @@ imports, this material):
   roots, final succinct RMQ theorem/model-adequacy spines, proof-core modules,
   compatibility shims, archive files, examples, and validation code.
 - [`docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md`](docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md):
-  stress-tested Lean-club explanation of the current project state.
+  immutable historical Lean-club snapshot; exact frozen lines are marked and
+  remain outside the current paper surface.
 - [`docs/digests/PROJECT_DIGESTION_2026_07_06.md`](docs/digests/PROJECT_DIGESTION_2026_07_06.md):
-  historical July 2026 publication-oriented project digestion, originally
-  rooted at `main` commit `3f6f1e3`; its fast-regime and route-split notes are
-  superseded compatibility history.
+  current publication-oriented project digestion. Its documentary headline
+  identifiers are checked under both the broad and `RMQPaper` imports; dated
+  fast-regime discussion is explicitly labeled compatibility history.
 - [`docs/ADD_PROVENANCE.md`](docs/ADD_PROVENANCE.md): public provenance note for
   the audit-driven development workflow; ADD is process evidence, not a proof
   object or trust base.

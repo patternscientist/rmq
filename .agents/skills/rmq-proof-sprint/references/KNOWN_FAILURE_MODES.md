@@ -88,7 +88,8 @@ Lean build does not elaborate documentary identifiers.
 Migration closure requires all of the following:
 
 1. a repository-wide search for every removed spelling, with only exact
-   enforcement files and explicitly tagged frozen history exempted;
+   enforcement files and precisely registered frozen-history occurrences
+   exempted;
 2. extraction of documentary public identifiers from prose, tables, and
    fences;
 3. generated Lean resolution under the import promised by each document
@@ -99,6 +100,15 @@ Migration closure requires all of the following:
 
 A lexical scanner remains useful as a tripwire, but it is not evidence of
 public-symbol migration closure.
+
+Frozen history is an occurrence-level exception, not a directory role. An
+acceptable mechanism couples an exact immutable snapshot path to exact checked
+metadata and line content, or enforces an equivalently narrow structured
+scope. Never exempt a mixed-role digest or audit-report directory wholesale.
+The words `FROZEN-HISTORY`, a history-like filename, or an unvalidated marker
+do not grant an allowance. Mutate the exact production verdict to show that a
+registered occurrence accepts while the same text at a current path, a forged
+marker, a duplicate marker, and an audit-report occurrence reject.
 
 ### W18 regression: relation splitting
 

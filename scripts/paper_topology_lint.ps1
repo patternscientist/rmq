@@ -2,7 +2,8 @@
 
 param(
   [string]$MutationPath = '',
-  [string]$MutationText = ''
+  [string]$MutationText = '',
+  [string]$MutationRemoveText = ''
 )
 
 $ErrorActionPreference = 'Stop'
@@ -17,6 +18,14 @@ function Normalize-RepoPath([string]$Path) {
 }
 
 $MutationPath = Normalize-RepoPath $MutationPath
+
+$frozenSnapshotMarker = '<!-- RMQ-PAPER-TOPOLOGY-FROZEN-SNAPSHOT -->'
+$frozenSnapshotLines = [ordered]@{
+  'docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md' =
+    '<!-- RMQ-PAPER-TOPOLOGY-FROZEN-SNAPSHOT --> RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery'
+  'docs/digests/PROJECT_STATE_2026_06_28.md' =
+    '<!-- RMQ-PAPER-TOPOLOGY-FROZEN-SNAPSHOT --> `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` abbreviates'
+}
 
 function Fail([string]$Message) {
   Write-Host "PAPER-TOPOLOGY: FAIL $Message"
@@ -35,6 +44,12 @@ function Read-Text([string]$Path) {
   $normalized = Normalize-RepoPath $Path
   $text = Get-Content -Raw -LiteralPath $normalized
   if ($MutationPath -ne '' -and $normalized -eq $MutationPath) {
+    if ($MutationRemoveText -ne '') {
+      if (-not $text.Contains($MutationRemoveText)) {
+        throw "mutation removal text not found in $normalized"
+      }
+      $text = $text.Replace($MutationRemoveText, '')
+    }
     $text += [Environment]::NewLine + $MutationText + [Environment]::NewLine
   }
   return $text
@@ -44,11 +59,11 @@ function Read-Lines([string]$Path) {
   return [regex]::Split((Read-Text $Path), '\r?\n')
 }
 
-function Is-FrozenHistoryPath([string]$Path) {
+function Is-PreciselyFrozenSnapshotLine([string]$Path, [string]$Line) {
   $normalized = Normalize-RepoPath $Path
   return (
-    $normalized.StartsWith('docs/digests/') -or
-    $normalized.StartsWith('docs/internal/audit_reports/'))
+    $frozenSnapshotLines.Contains($normalized) -and
+    $Line -ceq $frozenSnapshotLines[$normalized])
 }
 
 function Run-LeanResolution(
@@ -89,6 +104,8 @@ $compatibilityModule = 'RMQ/Headlines/RMQCompatibility.lean'
 $paperRoot = 'RMQPaper.lean'
 $aggregateModule = 'RMQ/Headlines.lean'
 $headlineInventory = 'scripts/headline_axiom_check.lean'
+$currentPublicationDigest =
+  'docs/digests/PROJECT_DIGESTION_2026_07_06.md'
 
 $currentLeanSurfaces = @($canonicalModule, $paperRoot, $headlineInventory)
 $publicClaimSurfaces = @(
@@ -99,13 +116,15 @@ $publicClaimSurfaces = @(
   'docs/PAPER_THEOREM_MAP.md',
   'docs/PAPER_MAIN_THEOREM.md',
   'docs/PAPER_MODEL_ADEQUACY.md',
-  'docs/WHAT_IS_PROVED.md'
+  'docs/WHAT_IS_PROVED.md',
+  $currentPublicationDigest
 )
 $paperDocumentSurfaces = @(
   'docs/PAPER_CLAIM_CORRESPONDENCE.md',
   'docs/PAPER_THEOREM_MAP.md',
   'docs/PAPER_MAIN_THEOREM.md',
-  'docs/PAPER_MODEL_ADEQUACY.md'
+  'docs/PAPER_MODEL_ADEQUACY.md',
+  $currentPublicationDigest
 )
 
 $requiredFiles = @(
@@ -115,6 +134,8 @@ $requiredFiles = @(
   $aggregateModule,
   $headlineInventory
 ) + $publicClaimSurfaces
+
+$requiredFiles += @($frozenSnapshotLines.Keys)
 
 foreach ($path in $requiredFiles) {
   [void](Require-File $path)
@@ -172,6 +193,7 @@ $oldRegimePattern =
 # data.  They are not documentary theorem references.
 $enforcementPaths = @(
   'docs/internal/CLAIM_DRIFT_POLICY.json',
+  'docs/internal/CLAIM_DRIFT_POLICY.md',
   'scripts/claim_drift_policy_regression.ps1',
   'scripts/paper_topology_lint.ps1',
   'scripts/paper_topology_lint_regression.ps1'
@@ -183,26 +205,42 @@ if ($LASTEXITCODE -ne 0) {
   $trackedFiles = @()
 }
 
-# Repository-wide migration closure: outside exact enforcement files, explicit
-# frozen-history paths, and FROZEN-HISTORY-tagged chronology lines, no removed
-# spelling may survive in tracked text.  This is intentionally broader than a
-# Markdown-table or claim-language scan.
+# Repository-wide migration closure: outside exact enforcement files and an
+# exact marker on one line of one registered June snapshot, no removed spelling
+# may survive in tracked text. No directory or casual history word grants an
+# allowance.
 $textExtensions = @('.lean', '.md', '.ps1', '.json', '.toml', '.yml', '.yaml', '.sh')
+$frozenSnapshotLineCounts = @{}
+foreach ($path in $frozenSnapshotLines.Keys) {
+  $frozenSnapshotLineCounts[$path] = 0
+}
 foreach ($path in $trackedFiles) {
   if ($enforcementPaths -contains $path) { continue }
-  if (Is-FrozenHistoryPath $path) { continue }
   if ($textExtensions -notcontains [IO.Path]::GetExtension($path)) { continue }
   if (-not (Test-Path -LiteralPath $path)) { continue }
 
   $lineNumber = 0
   foreach ($line in Read-Lines $path) {
     $lineNumber += 1
-    if ($line -match 'FROZEN-HISTORY') { continue }
+    $isPreciselyFrozen = Is-PreciselyFrozenSnapshotLine $path $line
+    if ($line.Contains($frozenSnapshotMarker) -and -not $isPreciselyFrozen) {
+      Fail "[frozen-marker-scope] $path`:$lineNumber has a malformed or misplaced snapshot marker"
+    }
+    if ($isPreciselyFrozen) {
+      $frozenSnapshotLineCounts[$path] += 1
+      continue
+    }
     foreach ($name in $retiredAliasReplacements.Keys) {
       if ($line -match ([regex]::Escape($name) + '(?![A-Za-z0-9_])')) {
         Fail "[removed-spelling] $path`:$lineNumber contains $name; use $($retiredAliasReplacements[$name])"
       }
     }
+  }
+}
+
+foreach ($path in $frozenSnapshotLines.Keys) {
+  if ($frozenSnapshotLineCounts[$path] -ne 1) {
+    Fail "[frozen-marker-metadata] registered snapshot $path must have exactly one exact frozen line; found $($frozenSnapshotLineCounts[$path])"
   }
 }
 
@@ -220,7 +258,6 @@ foreach ($path in $publicClaimSurfaces) {
   $lineNumber = 0
   foreach ($line in Read-Lines $path) {
     $lineNumber += 1
-    if ($line -match 'FROZEN-HISTORY') { continue }
     if ($line -match '^\s*\|' -and $line -match $retiredSourcePattern) {
       Fail "[retired-source-row] $path`:$lineNumber presents a retired source profile in a current table row"
     }
@@ -317,9 +354,11 @@ foreach ($anchor in $legacyAnchors) {
   }
 }
 
-# Extract single-token documentary identifiers from every non-frozen tracked
-# Markdown file.  Broad documentation must resolve after `import RMQ.Headlines`;
-# the RMQ paper maps additionally must resolve after the narrower `import RMQPaper`.
+# Extract single-token documentary identifiers from every tracked Markdown
+# file, including the current publication digest and audit reports. Only an
+# exact registered snapshot line is omitted. Broad documentation must resolve
+# after `import RMQ.Headlines`; the RMQ paper maps additionally resolve after
+# the narrower `import RMQPaper`.
 $broadDocumentNames = [System.Collections.Generic.HashSet[string]]::new(
   [StringComparer]::Ordinal)
 $paperDocumentNames = [System.Collections.Generic.HashSet[string]]::new(
@@ -336,11 +375,10 @@ $headlinePattern =
 
 foreach ($path in $trackedFiles) {
   if ([IO.Path]::GetExtension($path) -ne '.md') { continue }
-  if (Is-FrozenHistoryPath $path) { continue }
   if (-not (Test-Path -LiteralPath $path)) { continue }
 
   foreach ($line in Read-Lines $path) {
-    if ($line -match 'FROZEN-HISTORY') { continue }
+    if (Is-PreciselyFrozenSnapshotLine $path $line) { continue }
     foreach ($match in [regex]::Matches($line, $headlinePattern)) {
       $name = $match.Groups[1].Value
       # File references such as `RMQ.Headlines.lean` share the namespace prefix
@@ -351,7 +389,8 @@ foreach ($path in $trackedFiles) {
       # spoke headlines.  Resolve canonical RMQ declarations under RMQPaper;
       # the broad resolution above covers every other documented headline.
       if (($paperDocumentSurfaces -contains $path) -and
-          $canonicalHeadlineNames.Contains($name)) {
+          ($path -eq $currentPublicationDigest -or
+            $canonicalHeadlineNames.Contains($name))) {
         [void]$paperDocumentNames.Add($name)
       }
     }

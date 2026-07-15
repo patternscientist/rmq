@@ -248,7 +248,7 @@ The obvious referee question — "why believe your bespoke cost bookkeeping
 means anything?" — now has a Lean-level answer object rather than a prose
 answer: a *model adequacy* packet
 (`RMQ.Headlines.succinctRMQFinalTraceModelAdequacy`,
-`...succinctRMQFinalFullModelSoundness`) proving in one place that the public
+`RMQ.Headlines.succinctRMQFinalFullModelSoundness`) proving in one place that the public
 cost number is literally the length of the exhibited event trace (not an
 opaque aggregate); that every event is a payload read or a bounded word
 primitive; that successful reads carry explicit backing evidence into the
@@ -398,7 +398,7 @@ useful engineering; they are not the remaining paper-level proof blocker.
   would decisively rebut "the model is fiction"; this remains the one item
   where the 2019 Coq work is ahead.
 - **Distillation** — a fused single main theorem and a reviewer-facing
-  theorem map now exist (`listIntSuccinctRMQPaperMainTheorem`,
+  theorem map now exist (`RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`,
   `docs/PAPER_MAIN_THEOREM.md`, `docs/PAPER_MODEL_ADEQUACY.md`). The remaining
   work is the paper prose itself, not the Lean surface.
 - **Related work and limitations** — a first draft landed, correctly scoping

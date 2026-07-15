@@ -94,22 +94,36 @@ foreach ($term in $policy.terms) {
     $fileNorm = ConvertTo-PolicyPath $file
     $lineNo = [string]$record.data.line_number
     $line = Get-RipgrepJsonText $record.data.lines
+    $policyLine = $line.TrimEnd([char[]]"`r`n")
     $hits += 1
 
     $allowed = $false
     if ($term.allowedPathRegex -and $fileNorm -match [string]$term.allowedPathRegex) {
       $allowed = $true
     }
-    if ($term.allowedLineRegex -and $line -match [string]$term.allowedLineRegex) {
+    if ($term.allowedLineRegex -and $policyLine -match [string]$term.allowedLineRegex) {
       $allowed = $true
     }
     if (
       $term.allowedPathLinePathRegex -and
       $term.allowedPathLineRegex -and
       $fileNorm -match [string]$term.allowedPathLinePathRegex -and
-      $line -match [string]$term.allowedPathLineRegex
+      $policyLine -match [string]$term.allowedPathLineRegex
     ) {
       $allowed = $true
+    }
+    if ($term.allowedPathLinePairs) {
+      foreach ($pair in @($term.allowedPathLinePairs)) {
+        if (
+          $pair.pathRegex -and
+          $pair.lineRegex -and
+          $fileNorm -match [string]$pair.pathRegex -and
+          $policyLine -match [string]$pair.lineRegex
+        ) {
+          $allowed = $true
+          break
+        }
+      }
     }
 
     $label = "review"

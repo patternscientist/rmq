@@ -26,7 +26,7 @@ live under the older RMQ, rank/select, BP-navigation, and union-find roots.
 ## What Is Proved Now
 
 The stable RMQ capstone is unchanged. The short alias
-`RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` abbreviates
+<!-- RMQ-PAPER-TOPOLOGY-FROZEN-SNAPSHOT --> `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` abbreviates
 `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`.
 It says that Cartesian-shape RMQ has an exact BP-native representation with
 `2*n + o(n)` payload bits and constant modeled query cost, paired with the

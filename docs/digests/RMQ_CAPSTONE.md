@@ -21,7 +21,7 @@ verified story now connects four layers in one public surface:
 The short public alias is:
 
 ```lean
-#check RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery
+#check RMQ.Headlines.succinctRMQLegacy196727DirectTwoNPlusOConstantQuery
 ```
 
 It abbreviates the construction-heavy theorem

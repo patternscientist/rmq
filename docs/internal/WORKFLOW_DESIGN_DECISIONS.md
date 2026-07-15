@@ -2182,21 +2182,33 @@ that the broad barrel explicitly imports the compatibility module; and requires
 every declaration in that compatibility module to contain `Legacy` or
 `Compatibility`.
 
-The first version of this decision was incomplete: lexical scans and selected
-table-row checks did not establish that removed spellings were gone from prose
-and fenced inventories, nor that documentary theorem references actually
-resolved. The amended lint searches every tracked text surface for each removed
-spelling, permits only exact enforcement files or explicitly frozen history,
-extracts documentary `RMQ.Headlines.*` identifiers, and elaborates generated
-`#check` files under the broad barrel and the narrower `RMQPaper` import where
-appropriate. Its mutation regression covers prose, fenced code, a dead name, a
-renamed W18 remnant, compatibility-as-current misuse, and a valid canonical
-anchor.
+The first two versions of this decision were incomplete. Lexical scans and
+selected table-row checks did not establish that removed spellings were gone
+from prose and fenced inventories, nor that documentary theorem references
+actually resolved. The first structural repair then exempted all of
+`docs/digests/` and `docs/internal/audit_reports/` and treated a casual
+`FROZEN-HISTORY` token as sufficient. Those directory-level bypasses could hide
+a retired current-facing alias in the README-linked publication digest or in a
+new audit report.
+
+The amended lint searches every tracked text surface for each removed spelling
+and resolves documentary `RMQ.Headlines.*` identifiers under the broad barrel
+and the narrower `RMQPaper` import where appropriate. Its only historical
+exceptions couple one of two exact immutable June snapshot paths to exact
+case-sensitive marker-plus-line content, require each registered occurrence
+exactly once, and reject that marker everywhere else. The current publication
+digest and every audit report are fully scanned; neither directory has a
+blanket role. The mutation regression covers prose, fenced code, a dead name, a
+renamed W18 remnant, compatibility-as-current misuse, current-digest and
+audit-report injections, valid exact history, wrong-scope history, and forged,
+casual, or duplicate markers.
 
 The aggregate gate now runs the headline axiom inventory, topology lint, and
-topology mutation regression. Claim policy version 13 makes all W21-removed
-spellings strict outside exact frozen-history/enforcement paths, and the policy
-regression executes every removed-name category through the production scanner.
+topology mutation regression. Claim policy version 14 removes digest and audit
+prefix alternatives and expresses the same two exceptions as exact
+path-and-line pairs. Its regression drives all boundary cases through the
+production strict scanner while checking tracked state before and after every
+virtual mutation.
 Workflow-sensitive path detection includes both topology scripts, the gate,
 claim regression, and policy, so future changes require an explicit workflow
 decision.
@@ -2209,6 +2221,9 @@ Rejected alternatives:
 - Allow historical names in the current headline inventory because their
   source theorems remain sound.
 - Treat a same-line word such as "compatibility" as a blanket lint bypass.
+- Treat every file below a digest or audit-report directory as immutable
+  history.
+- Let a casual or forged frozen-history marker authorize its own exception.
 - Omit the headline axiom inventory from the aggregate gate.
 
 Consequences:
@@ -2225,5 +2240,6 @@ Evidence:
 - `scripts/paper_topology_lint.ps1`.
 - `scripts/paper_topology_lint_regression.ps1`.
 - `scripts/gate.ps1` headline inventory and topology-lint steps.
-- `docs/internal/CLAIM_DRIFT_POLICY.json` version 13.
-- `scripts/claim_drift_policy_regression.ps1` removed-name fixtures.
+- `docs/internal/CLAIM_DRIFT_POLICY.json` version 14 exact path-and-line pairs.
+- `scripts/claim_drift_policy_regression.ps1` removed-name and frozen-scope
+  production fixtures.

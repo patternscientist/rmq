@@ -33,13 +33,17 @@ function Test-Mutation(
     [string]$Id,
     [string]$Path,
     [string]$Text,
-    [bool]$Reject) {
+    [bool]$Reject,
+    [string]$RemoveText = '') {
   $before = Get-TrackedState
   Push-Location $repoRoot
   try {
     $arguments = @(
       '-NoLogo', '-NoProfile', '-ExecutionPolicy', 'Bypass',
       '-File', $lintPath, '-MutationPath', $Path, '-MutationText', $Text)
+    if ($RemoveText -ne '') {
+      $arguments += @('-MutationRemoveText', $RemoveText)
+    }
     $output = @(& $shellPath @arguments 2>&1)
     $code = $LASTEXITCODE
   } finally {
@@ -71,6 +75,10 @@ $fencedTransitional = @'
 #check RMQ.Headlines.succinctRMQCanonicalTransitionalQueryCostEq
 ```
 '@
+$retiredAlias =
+  'RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery'
+$exactFrozenLine =
+  '<!-- RMQ-PAPER-TOPOLOGY-FROZEN-SNAPSHOT --> RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery'
 
 Test-Mutation 'retired-alias-in-prose' 'README.md' 'Current capstone: RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery.' $true
 Test-Mutation 'transitional-alias-in-fence' 'docs/PAPER_THEOREM_MAP.md' $fencedTransitional $true
@@ -78,6 +86,12 @@ Test-Mutation 'dead-documentary-alias' 'docs/PAPER_THEOREM_MAP.md' 'Current caps
 Test-Mutation 'renamed-w18-alias' 'docs/FAMILY_SUMMARY.md' 'Current evidence: RMQ.Headlines.listIntSuccinctRMQEventValueProducerProvenanceOfValid.' $true
 Test-Mutation 'compatibility-as-current-anchor' 'docs/PAPER_THEOREM_MAP.md' 'Current capstone: RMQ.Headlines.succinctRMQCompatibilityLargeRegimeGlobalPayloadStoreExecutionStory.' $true
 Test-Mutation 'canonical-paper-anchor' 'README.md' 'Current capstone: RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile.' $false
+Test-Mutation 'retired-alias-current-publication-digest' 'docs/digests/PROJECT_DIGESTION_2026_07_06.md' "Current capstone: $retiredAlias." $true
+Test-Mutation 'retired-current-alias-audit-report' 'docs/internal/audit_reports/2026-07-14_A04_u2_blind_acceptance_audit.md' "Current capstone: $retiredAlias." $true
+Test-Mutation 'valid-exact-frozen-snapshot-occurrence' 'docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md' $exactFrozenLine $false $exactFrozenLine
+Test-Mutation 'same-frozen-occurrence-current-digest' 'docs/digests/PROJECT_DIGESTION_2026_07_06.md' $exactFrozenLine $true
+Test-Mutation 'casual-frozen-history-marker' 'docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md' "[FROZEN-HISTORY: casual] $retiredAlias" $true
+Test-Mutation 'forged-duplicate-exact-marker' 'docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md' $exactFrozenLine $true
 
 if ($failures -gt 0) {
   Write-Host "PAPER-TOPOLOGY-REGRESSION: $failures failures"
