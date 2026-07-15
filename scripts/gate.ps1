@@ -98,6 +98,9 @@ if ($LASTEXITCODE -ne 0) { Fail "claim_drift_scan.ps1 found strict violations" }
 & "$PSScriptRoot\paper_topology_lint.ps1"
 if ($LASTEXITCODE -ne 0) { Fail "paper_topology_lint.ps1 found issues" }
 
+& "$PSScriptRoot\paper_topology_lint_regression.ps1"
+if ($LASTEXITCODE -ne 0) { Fail "paper_topology_lint_regression.ps1 found issues" }
+
 # 9. Whitespace / leftover merge markers.
 git diff --check
 if ($LASTEXITCODE -ne 0) { Fail "git diff --check found issues" }

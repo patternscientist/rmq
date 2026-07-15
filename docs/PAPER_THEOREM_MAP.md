@@ -4,10 +4,10 @@
 The current paper route is uniform for every size. Its primary anchors are:
 
 ```lean
-RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe
-RMQ.Headlines.succinctRMQCanonicalTransitionalQueryCostEq
-RMQ.Headlines.succinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal
-RMQ.Headlines.listIntSuccinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal
+RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe
+RMQ.Headlines.succinctRMQQueryCostEq
+RMQ.Headlines.succinctRMQPrincipledAllSizeChargedTraceFinalFullModelCostLeOfFootprintGlobal
+RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal
 RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedByCanonicalReviewerPayloadOfFootprintGlobal
 RMQ.Headlines.succinctRMQReviewerPhysicalWordsErasePublicPayload
 RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical
@@ -79,9 +79,11 @@ RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile
 These are the paper-facing ordinary-list theorem, the shorter list-facing
 profile over the same execution, and the construction-facing Cartesian-shape
 theorem. The latter combines doubled-Catalan envelopes, the canonical reviewer
-payload bound and exact physical erasure, the canonical global trace, exact
-answers, non-synthetic certificate equality, and literal bound `76` in one
-checked type. No payload padding manufactures equality.
+payload bound and exact physical erasure, direct positional physical backing
+for every successful read, the canonical global trace, exact answers, both
+non-synthetic certificate equalities (trace length and `Costed.cost`), and the
+literal bound `76` in one checked type. No payload padding manufactures
+equality.
 
 ## Final Trace Model Adequacy
 
@@ -96,16 +98,12 @@ RMQ.Headlines.succinctRMQFinalFullModelSoundnessExactOfFootprintGlobal
 RMQ.Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint
 RMQ.Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal
 RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal
-RMQ.Headlines.listIntSuccinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal
 RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedByCanonicalReviewerPayloadOfFootprintGlobal
 RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal
-RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe
 RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe
 RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostEqTraceLength
 RMQ.Headlines.succinctRMQQueryCostEq
 RMQ.Headlines.succinctRMQChargedTraceCostAlgebra
-RMQ.Headlines.succinctRMQCanonicalTransitionalQueryCostEq
-RMQ.Headlines.succinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal
 RMQ.Headlines.succinctRMQPrincipledAllSizeChargedTraceFinalFullModelCostLeOfFootprintGlobal
 RMQ.Headlines.succinctRMQReviewerPhysicalWordsErasePublicPayload
 RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical

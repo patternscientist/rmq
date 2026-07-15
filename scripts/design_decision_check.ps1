@@ -79,6 +79,7 @@ $workflowPatterns = @(
   "^scripts/claim_drift_scan\.ps1$",
   "^scripts/claim_drift_policy_regression\.ps1$",
   "^scripts/paper_topology_lint\.ps1$",
+  "^scripts/paper_topology_lint_regression\.ps1$",
   "^scripts/gate\.ps1$",
   "^scripts/design_decision_check\.ps1$",
   "^\.github/"

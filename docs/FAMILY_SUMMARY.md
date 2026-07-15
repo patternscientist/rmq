@@ -201,7 +201,8 @@ The final whole-query trace refines
 by `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact`.
 The current public cost alias is
 `Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe`, whose named
-algebra computes to `76`; `Headlines.succinctRMQCanonicalTransitionalQueryCostEq`
+algebra computes to `76`; the source-level compatibility theorem
+`SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq`
 retains the U2 value `328`. Footprint-agreeing supplied stores inherit the same
 exactness, backing, and principled bound. Legacy Ready `118`, route-split, `4144`, and
 `196727` declarations are compatibility facts only.
@@ -213,10 +214,10 @@ constant-query story. The list-facing supplied-store wrappers
 `SuccinctClassic.storesAgreeOnFootprint`, and the headline aliases
 `Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint`,
 `Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal`,
-`Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal`, and
-`Headlines.listIntSuccinctRMQCompatibility328FinalFullModelCostLeOfFootprintGlobal`
-now lift the final full-model footprint exactness and cost transfers to
-ordinary `xs : List Int`. The BP-navigation spoke now also has the concrete
+and `Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal` now lift
+the final full-model footprint exactness and principled cost transfer to
+ordinary `xs : List Int`; the older transitional transfer is retained only in
+the explicit compatibility module. The BP-navigation spoke now also has the concrete
 payload-backed profile `Headlines.concreteBPCloseNavigationProfile`, which
 fixes the relative-split false-select/rank-close layer and compact relative-rmM
 close/LCA directory instead of relying on the older sampled conditional family.

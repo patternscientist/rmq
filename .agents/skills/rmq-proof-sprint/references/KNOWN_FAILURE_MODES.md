@@ -77,6 +77,29 @@ expand the load-bearing definitions and identify which checked theorem fails
 under the corresponding mutation. Green builds, exhaustive enumeration, and
 accurate declaration-name inventories do not supply that evidence.
 
+### Public-symbol migration is not a lexical claim scan
+
+A rename/removal can pass a claim-language scan and still leave a dead theorem
+reference in prose, a fenced inventory, a theorem map, or a file whose import
+does not expose the cited declaration. Searching only current Markdown table
+rows is likewise insufficient: it misses prose and code fences, while a green
+Lean build does not elaborate documentary identifiers.
+
+Migration closure requires all of the following:
+
+1. a repository-wide search for every removed spelling, with only exact
+   enforcement files and explicitly tagged frozen history exempted;
+2. extraction of documentary public identifiers from prose, tables, and
+   fences;
+3. generated Lean resolution under the import promised by each document
+   (`RMQPaper` for canonical RMQ paper anchors, the broad barrel for broader
+   headline references);
+4. mutations for prose, fenced code, an invented dead name, a renamed-name
+   remnant, and a compatibility declaration presented as current.
+
+A lexical scanner remains useful as a tripwire, but it is not evidence of
+public-symbol migration closure.
+
 ### W18 regression: relation splitting
 
 The W18 producer-provenance candidate improved the forward theorem from an

@@ -228,6 +228,27 @@ Known examples are minimum fixtures. Completion requires evidence that the
 declared category and its allowance boundaries, not merely those sentences,
 are gate-effective.
 
+### Public-symbol migration completion
+
+When a public theorem alias is renamed, removed, or moved to compatibility,
+lexical claim checks and ordinary builds are necessary but insufficient.
+Before closing the migration row:
+
+- search the entire tracked repository for every removed spelling and classify
+  the only allowed survivors as exact enforcement data or explicitly frozen
+  history;
+- extract documentary `RMQ.Headlines.*` references from prose, tables, and
+  fenced inventories;
+- elaborate generated `#check` files under the broad headline import and, for
+  canonical paper anchors, under the narrower paper import;
+- reject a compatibility/legacy declaration when a current paper surface
+  presents it as a current anchor;
+- run production-verdict mutations for prose, fenced code, a dead alias, and a
+  renamed-name remnant.
+
+Do not mark the row complete merely because no forbidden token appears in a
+selected claim table. Documentary symbol resolution is the closure evidence.
+
 ## 4. No Caveated Completion
 
 The following statements in a final self-audit normally mean the worker must

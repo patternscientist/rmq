@@ -221,13 +221,14 @@ its payload is the advertised `concreteBPNativeSuccinctRMQPayload`, proves
 successful flat-store reads have source/component/offset backing evidence, and
 uses that flat store in the same bounded no-synthetic execution-story packet.
 
-The large-regime positive-replay companion is:
+The explicitly labeled compatibility/history large-regime companions, which
+are available only through the broad `RMQ.Headlines` import, are:
 
 ```lean
-abbrev succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory :=
+abbrev succinctRMQCompatibilityLargeRegimeGlobalPayloadStoreExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_execution_story
 
-abbrev succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory :=
+abbrev succinctRMQCompatibilityLargeRegimeGlobalPayloadStoreBoundedExecutionStory :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_bounded_execution_story
 ```
 

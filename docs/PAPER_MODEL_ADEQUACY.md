@@ -77,7 +77,9 @@ RMQ.Headlines.succinctRMQFinalTraceModelAdequacy
 The construction-facing join theorem is
 `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`.
 It places the canonical payload bound, physical erasure, exact global trace,
-non-synthetic weight equality, and uniform `76` bound in one checked type.
+direct positional physical backing for each successful read, non-synthetic
+weight equality to trace length and `Costed.cost`, and uniform `76` bound in one
+checked type.
 
 It packages existing checked theorem surfaces. It does not introduce a new
 algorithm, a new cost model, or a verified CPU/compiler semantics.

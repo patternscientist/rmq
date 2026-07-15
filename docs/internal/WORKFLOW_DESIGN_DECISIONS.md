@@ -2163,7 +2163,8 @@ claims intentionally deferred to E1 and M1.
 
 ## WDD-20260714-003: gate the curated paper topology structurally
 
-Status: Candidate complete.
+Status: Amended candidate complete on the W21 implementation branch; fresh
+blind exact-commit audit remains coordinator-owned.
 Date: 2026-07-14.
 Scope: RMQ paper imports, headline axiom inventory, public claim tables, and
 claim-drift regression.
@@ -2181,16 +2182,30 @@ that the broad barrel explicitly imports the compatibility module; and requires
 every declaration in that compatibility module to contain `Legacy` or
 `Compatibility`.
 
-The aggregate gate now runs both the headline axiom inventory and the topology
-lint. Claim policy version 12 makes the six retired alias spellings strict
-outside frozen history, and the policy regression executes all six mutations
-through the production scanner. Workflow-sensitive path detection includes the
-gate, regression, and topology lint, so future changes require an explicit
-workflow decision.
+The first version of this decision was incomplete: lexical scans and selected
+table-row checks did not establish that removed spellings were gone from prose
+and fenced inventories, nor that documentary theorem references actually
+resolved. The amended lint searches every tracked text surface for each removed
+spelling, permits only exact enforcement files or explicitly frozen history,
+extracts documentary `RMQ.Headlines.*` identifiers, and elaborates generated
+`#check` files under the broad barrel and the narrower `RMQPaper` import where
+appropriate. Its mutation regression covers prose, fenced code, a dead name, a
+renamed W18 remnant, compatibility-as-current misuse, and a valid canonical
+anchor.
+
+The aggregate gate now runs the headline axiom inventory, topology lint, and
+topology mutation regression. Claim policy version 13 makes all W21-removed
+spellings strict outside exact frozen-history/enforcement paths, and the policy
+regression executes every removed-name category through the production scanner.
+Workflow-sensitive path detection includes both topology scripts, the gate,
+claim regression, and policy, so future changes require an explicit workflow
+decision.
 
 Rejected alternatives:
 
 - Depend only on prose-oriented claim drift to understand Lean import topology.
+- Treat a repository-wide zero-match scan as sufficient without elaborating the
+  replacement documentary names under their advertised imports.
 - Allow historical names in the current headline inventory because their
   source theorems remain sound.
 - Treat a same-line word such as "compatibility" as a blanket lint bypass.
@@ -2208,6 +2223,7 @@ exposure.
 Evidence:
 
 - `scripts/paper_topology_lint.ps1`.
+- `scripts/paper_topology_lint_regression.ps1`.
 - `scripts/gate.ps1` headline inventory and topology-lint steps.
-- `docs/internal/CLAIM_DRIFT_POLICY.json` version 12.
-- `scripts/claim_drift_policy_regression.ps1` retired-alias fixtures.
+- `docs/internal/CLAIM_DRIFT_POLICY.json` version 13.
+- `scripts/claim_drift_policy_regression.ps1` removed-name fixtures.

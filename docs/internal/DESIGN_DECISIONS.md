@@ -2267,8 +2267,8 @@ Evidence:
 
 ## DD-20260714-008: make the paper topology name one canonical payload and execution
 
-Status: Candidate complete on the W21 implementation branch; a fresh blind
-exact-commit audit remains coordinator-owned.
+Status: Amended candidate complete on the W21 implementation branch; a fresh
+blind exact-commit audit remains coordinator-owned.
 
 Context:
 
@@ -2285,8 +2285,11 @@ Decision:
   `concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_sided_profile`.
   Its single checked type combines doubled-Catalan envelopes, the canonical
   reviewer payload bound, exact physical-word erasure to that payload, the
-  canonical global trace, its literal `76` cost bound, non-synthetic certificate
-  equality to the same `Costed.cost`, and exact valid-query answers.
+  canonical global trace, direct positional physical-word backing for every
+  successful read, its literal `76` cost bound, non-synthetic certificate
+  equality to both trace length and the same `Costed.cost`, and exact valid-query
+  answers. These are conjuncts of the theorem's checked type, not nearby helper
+  results.
 - Expose that theorem as
   `Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`.
   Add `SuccinctClassic.queryCost = 76` directly to
@@ -2311,6 +2314,11 @@ Rejected alternatives:
   alone to signal which theorem is current.
 - Rename the old direct profile as the new capstone without changing its
   checked payload/query objects.
+- Claim that a combined capstone contains read backing or a weight equality
+  merely because a neighboring theorem proves it.
+- Treat removal from Lean aliases and selected claim rows as documentary
+  migration closure without repository-wide old-name search and checked
+  resolution of every documentary headline reference.
 
 Consequences:
 
@@ -2331,4 +2339,5 @@ Evidence:
   conjunct.
 - `RMQ/Headlines/RMQCompatibility.lean` and the explicit compatibility import
   in `RMQ/Headlines.lean`.
-- `scripts/paper_topology_lint.ps1` and the curated headline axiom inventory.
+- `scripts/paper_topology_lint.ps1`, its mutation regression, and the curated
+  headline axiom inventory.

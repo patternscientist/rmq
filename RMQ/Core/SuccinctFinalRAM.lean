@@ -9385,6 +9385,17 @@ theorem concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_
           SuccinctSpace.flattenPayloadWords
               (concreteBPNativeSuccinctRMQReviewerPhysicalWords shape) =
             concreteBPNativeSuccinctRMQCanonicalReviewerPayload shape) /\
+        (forall shape left right {segment index : Nat} {word : List Bool},
+          WordRAM.TraceEvent.readWord segment index (some word) ∈
+              (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+                shape left right).trace ->
+            let address :=
+              concreteBPNativeSuccinctRMQReviewerPhysicalAddress
+                shape segment index
+            address <
+                (concreteBPNativeSuccinctRMQReviewerPhysicalWords shape).length /\
+              (concreteBPNativeSuccinctRMQReviewerPhysicalWords shape)[address]? =
+                some word) /\
         (forall shape left right event,
           event ∈
               (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
@@ -9406,6 +9417,11 @@ theorem concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_
           (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
             shape left right).cost <= 76) /\
         (forall shape left right,
+          ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+              shape left right).trace.map
+              WordRAM.TraceEvent.nonSyntheticWeight).sum =
+              (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+                shape left right).trace.length /\
           ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
               shape left right).trace.map
               WordRAM.TraceEvent.nonSyntheticWeight).sum =
@@ -9432,13 +9448,20 @@ theorem concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_
       n).1 (EncodingLowerBound.canonicalRepresentativeStateEncoding n)
   have hsingleBase : EncodingLowerBound.logSlackLower n <= 2 * n :=
     EncodingLowerBound.canonicalRepresentativePayloadSpaceBounds_lower_le_upper n
-  refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
   · exact Nat.le_trans hdoubledBase (by omega)
   · exact Nat.le_trans hsingleBase (by omega)
   · intro shape hshape
     exact concreteBPNativeSuccinctRMQCanonicalReviewerPayload_length_le hshape
   · intro shape
     exact concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases shape
+  · intro shape left right segment index word hmem
+    apply concreteBPNativeSuccinctRMQReviewerSuccessfulRead_physical
+    have hmatch :=
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_matchesReadStore
+        shape left right
+        (WordRAM.TraceEvent.readWord segment index (some word)) hmem
+    simpa [WordRAM.TraceEvent.matchesReadStore] using hmatch
   · intro shape left right event hmem
     exact
       concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_readWord_or_wordRank_or_wordSelect
@@ -9453,7 +9476,9 @@ theorem concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_
         shape left right
   · intro shape left right
     exact
-      ⟨concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_eq_cost
+      ⟨concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_eq_trace_length
+          shape left right,
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_eq_cost
           shape left right,
         concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_76
           shape left right⟩

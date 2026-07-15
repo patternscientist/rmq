@@ -22,8 +22,10 @@ abbrev exactRMQLowerBoundDoubledCatalanSlack :=
 /--
 Canonical construction-facing capstone. Its checked type combines the
 canonical reviewer payload bound and physical erasure with the exact canonical
-global execution, the non-synthetic-weight/`Costed.cost` equality, the literal
-uniform bound `76`, exact RMQ answers, and the doubled-Catalan space envelopes.
+global execution, direct positional backing in the physical reviewer words for
+every successful payload read, both non-synthetic-weight equalities (to trace
+length and `Costed.cost`), the literal uniform bound `76`, exact RMQ answers,
+and the doubled-Catalan space envelopes.
 -/
 abbrev succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_sided_profile
@@ -53,10 +55,6 @@ abbrev listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory :=
 /-- Valid List-Int queries inherit indexed occurrence/invocation provenance. -/
 abbrev listIntSuccinctRMQOccurrenceProvenanceOfValid :=
   RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_occurrenceProvenance_of_valid
-
-/-- Compatibility W18 event-value projection. -/
-abbrev listIntSuccinctRMQEventValueProducerProvenanceOfValid :=
-  RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_eventValueProducerProvenance_of_valid
 
 /--
 List-facing paper main theorem. For every ordinary `xs : List Int`, the
@@ -261,10 +259,6 @@ prefix state, invocation parameters, source, and component occurrence. -/
 abbrev succinctRMQReviewerEveryReadOccurrenceProvenance :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance_checked
 
-/-- Compatibility W18 event-value producer fact. -/
-abbrev succinctRMQReviewerEveryReadEventValueProducerProvenance :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryProducerProvenance_checked
-
 /-- Every counted source has a successful indexed occurrence in an actual
 closed whole-query execution under a valid ordinary List query. -/
 abbrev succinctRMQReviewerCountedSourceSuccessfulClosedValidOccurrence :=
@@ -274,14 +268,6 @@ abbrev succinctRMQReviewerCountedSourceSuccessfulClosedValidOccurrence :=
 its exact invocation leaf in a closed valid whole-query execution. -/
 abbrev succinctRMQReviewerSharedBPConsumerSuccessfulClosedValidOccurrence :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_successful_closed_valid_occurrence
-
-/-- Compatibility W18 component may-read fact; not top-level reachability. -/
-abbrev succinctRMQReviewerCountedSourceComponentMayPath :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSource_counted_producer_may_path
-
-/-- Compatibility W18 shared-BP component path fact. -/
-abbrev succinctRMQReviewerSharedBPConsumerComponentPath :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_all_producer_connected
 
 /-- A fresh unused segment with a plausible canonical-close label has no
 operational producer witness. -/
@@ -305,17 +291,9 @@ provenance receipts. -/
 abbrev succinctRMQReviewerRepeatedEqualOccurrencesRemainDistinct :=
   RMQ.SuccinctFinal.repeated_equal_read_occurrences_have_distinct_receipts
 
-/-- Compatibility W18 event-value fold decomposition. -/
-abbrev succinctRMQProgramEventValueProducer :=
-  RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTrace_event_producer
-
 /-- No legacy duplicate close source occurs in the canonical source list. -/
 abbrev succinctRMQReviewerPhysicalSourcesExcludeLegacyClose :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerPhysicalSources_exclude_legacy_close
-
-/-- Compatibility-only legacy tail segments are unreachable. -/
-abbrev succinctRMQReviewerLegacyTailReadNone :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerReadStore_legacyTail_none
 
 /-- The exact physical word list has concrete linear capacity. -/
 abbrev succinctRMQReviewerPhysicalWordsFitLinearCapacity :=

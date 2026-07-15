@@ -1,5 +1,5 @@
 {
-  "version": 12,
+  "version": 13,
   "updated": "2026-07-14",
   "terms": [
     {
@@ -54,10 +54,10 @@
     },
     {
       "id": "forbidden-retired-paper-query-alias",
-      "pattern": "succinctRMQTwoNPlusOConstantQuery(?:Interpreted|LeafTrace|WordTrace(?:LargeRegime)?|GlobalWordTraceLargeRegime)?\\b",
-      "status": "forbidden-outside-frozen-history-use-explicit-Legacy-or-Compatibility-name",
+      "pattern": "(?:succinctRMQTwoNPlusOConstantQuery(?:Interpreted|LeafTrace|WordTrace(?:LargeRegime)?|GlobalWordTraceLargeRegime)?|listIntSuccinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal|succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe|succinctRMQCanonicalTransitionalQueryCostEq|succinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal|succinctRMQLargeRegimeGlobalPayloadStore(?:Bounded)?ExecutionStory|listIntSuccinctRMQEventValueProducerProvenanceOfValid|succinctRMQReviewerEveryReadEventValueProducerProvenance|succinctRMQReviewerCountedSourceComponentMayPath|succinctRMQReviewerSharedBPConsumerComponentPath|succinctRMQProgramEventValueProducer)\\b",
+      "status": "forbidden-removed-public-spelling-outside-explicit-frozen-history-or-enforcement-data",
       "strict": true,
-      "allowedPathRegex": "^docs/internal/|^docs/DIGESTION_LOG\\.md$|^docs/digests/",
+      "allowedPathRegex": "^docs/internal/audit_reports/|^docs/digests/|^docs/DIGESTION_LOG\\.md$|^docs/internal/CLAIM_DRIFT_POLICY\\.(?:md|json)$|^scripts/(?:claim_drift_policy_regression|paper_topology_lint|paper_topology_lint_regression)\\.ps1$",
       "allowedLineRegex": ""
     },
     {

@@ -61,6 +61,11 @@ $fixtures = @(
   @{ id = "retired-word-paper-alias"; reject = $true; termId = "forbidden-retired-paper-query-alias"; text = "RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace" },
   @{ id = "retired-large-word-paper-alias"; reject = $true; termId = "forbidden-retired-paper-query-alias"; text = "RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime" },
   @{ id = "retired-large-global-paper-alias"; reject = $true; termId = "forbidden-retired-paper-query-alias"; text = "RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryGlobalWordTraceLargeRegime" },
+  @{ id = "retired-transitional-cost-alias"; reject = $true; termId = "forbidden-retired-paper-query-alias"; text = "RMQ.Headlines.succinctRMQCanonicalTransitionalQueryCostEq" },
+  @{ id = "retired-transitional-model-alias"; reject = $true; termId = "forbidden-retired-paper-query-alias"; text = "RMQ.Headlines.listIntSuccinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal" },
+  @{ id = "retired-large-regime-story-alias"; reject = $true; termId = "forbidden-retired-paper-query-alias"; text = "RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory" },
+  @{ id = "renamed-w18-list-alias"; reject = $true; termId = "forbidden-retired-paper-query-alias"; text = "RMQ.Headlines.listIntSuccinctRMQEventValueProducerProvenanceOfValid" },
+  @{ id = "renamed-w18-program-alias"; reject = $true; termId = "forbidden-retired-paper-query-alias"; text = "RMQ.Headlines.succinctRMQProgramEventValueProducer" },
 
   @{ id = "negated-canonical"; reject = $false; allowedMatch = $true; text = "No canonical execution theorem uses 2^128 as an activation premise." },
   @{ id = "negated-current-canonical"; reject = $false; allowedMatch = $true; text = "No current canonical reviewer route has 2 ^ 128 as an activation premise." },

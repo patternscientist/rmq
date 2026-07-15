@@ -27,9 +27,10 @@ primitive operands/results.
 
 - `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`:
   construction-facing theorem combining doubled-Catalan space envelopes, the
-  canonical reviewer payload bound and exact physical erasure, exact answers
-  through the canonical global trace, and that trace's non-synthetic-weight /
-  `Costed.cost` equality and uniform bound `76`.
+  canonical reviewer payload bound and exact physical erasure, direct
+  positional physical backing for each successful read, exact answers through
+  the canonical global trace, and that trace's non-synthetic-weight equalities
+  to trace length and `Costed.cost`, plus the uniform bound `76`.
 - `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`: list-facing main theorem
   with one query-independent reviewer-manifest semantic packet, the inequality
   `buildPayload.length <= 2n + overhead`,

@@ -1,7 +1,22 @@
 #!/usr/bin/env pwsh
 
+param(
+  [string]$MutationPath = '',
+  [string]$MutationText = ''
+)
+
 $ErrorActionPreference = 'Stop'
 $failures = 0
+
+function Normalize-RepoPath([string]$Path) {
+  $normalized = $Path -replace '\\', '/'
+  while ($normalized.StartsWith('./')) {
+    $normalized = $normalized.Substring(2)
+  }
+  return $normalized
+}
+
+$MutationPath = Normalize-RepoPath $MutationPath
 
 function Fail([string]$Message) {
   Write-Host "PAPER-TOPOLOGY: FAIL $Message"
@@ -17,7 +32,56 @@ function Require-File([string]$Path) {
 }
 
 function Read-Text([string]$Path) {
-  return Get-Content -Raw -LiteralPath $Path
+  $normalized = Normalize-RepoPath $Path
+  $text = Get-Content -Raw -LiteralPath $normalized
+  if ($MutationPath -ne '' -and $normalized -eq $MutationPath) {
+    $text += [Environment]::NewLine + $MutationText + [Environment]::NewLine
+  }
+  return $text
+}
+
+function Read-Lines([string]$Path) {
+  return [regex]::Split((Read-Text $Path), '\r?\n')
+}
+
+function Is-FrozenHistoryPath([string]$Path) {
+  $normalized = Normalize-RepoPath $Path
+  return (
+    $normalized.StartsWith('docs/digests/') -or
+    $normalized.StartsWith('docs/internal/audit_reports/'))
+}
+
+function Run-LeanResolution(
+    [string]$Import,
+    [System.Collections.Generic.HashSet[string]]$Names,
+    [string]$Role) {
+  $lines = [System.Collections.Generic.List[string]]::new()
+  $lines.Add("import $Import")
+  foreach ($name in @($Names | Sort-Object)) {
+    $lines.Add("#check RMQ.Headlines.$name")
+  }
+
+  $tempName = "rmq-paper-topology-{0}.lean" -f [Guid]::NewGuid().ToString('N')
+  $tempPath = [IO.Path]::Combine([IO.Path]::GetTempPath(), $tempName)
+  $encoding = New-Object System.Text.UTF8Encoding($false)
+  try {
+    [IO.File]::WriteAllText(
+      $tempPath,
+      ($lines -join [Environment]::NewLine) + [Environment]::NewLine,
+      $encoding)
+    $output = @(& lake env lean $tempPath 2>&1)
+    $leanExit = $LASTEXITCODE
+    if ($leanExit -ne 0) {
+      Fail "[$Role-resolution] documentary headline identifiers do not resolve under import $Import"
+      foreach ($line in @($output | Where-Object { $_ -match 'error:' })) {
+        Write-Host "PAPER-TOPOLOGY: LEAN $line"
+      }
+    }
+  } finally {
+    if (Test-Path -LiteralPath $tempPath) {
+      Remove-Item -LiteralPath $tempPath -Force
+    }
+  }
 }
 
 $canonicalModule = 'RMQ/Headlines/RMQ.lean'
@@ -37,6 +101,12 @@ $publicClaimSurfaces = @(
   'docs/PAPER_MODEL_ADEQUACY.md',
   'docs/WHAT_IS_PROVED.md'
 )
+$paperDocumentSurfaces = @(
+  'docs/PAPER_CLAIM_CORRESPONDENCE.md',
+  'docs/PAPER_THEOREM_MAP.md',
+  'docs/PAPER_MAIN_THEOREM.md',
+  'docs/PAPER_MODEL_ADEQUACY.md'
+)
 
 $requiredFiles = @(
   $canonicalModule,
@@ -54,103 +124,181 @@ if ($failures -gt 0) {
   exit 1
 }
 
-$retiredAliases = @(
-  'succinctRMQTwoNPlusOConstantQuery',
-  'succinctRMQTwoNPlusOConstantQueryInterpreted',
-  'succinctRMQTwoNPlusOConstantQueryLeafTrace',
-  'succinctRMQTwoNPlusOConstantQueryWordTrace',
-  'succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime',
-  'succinctRMQTwoNPlusOConstantQueryGlobalWordTraceLargeRegime'
-)
+# Every key is a spelling removed from the public API.  The value is the
+# checked current or explicitly historical replacement used in diagnostics.
+$retiredAliasReplacements = [ordered]@{
+  'succinctRMQTwoNPlusOConstantQuery' =
+    'succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile or succinctRMQLegacy196727DirectTwoNPlusOConstantQuery'
+  'succinctRMQTwoNPlusOConstantQueryInterpreted' =
+    'succinctRMQLegacy196727InterpretedTwoNPlusOConstantQuery'
+  'succinctRMQTwoNPlusOConstantQueryLeafTrace' =
+    'succinctRMQLegacy196727LeafTraceTwoNPlusOConstantQuery'
+  'succinctRMQTwoNPlusOConstantQueryWordTrace' =
+    'succinctRMQLegacy196727WordTraceTwoNPlusOConstantQuery'
+  'succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime' =
+    'succinctRMQLegacy196727LargeRegimeWordTraceTwoNPlusOConstantQuery'
+  'succinctRMQTwoNPlusOConstantQueryGlobalWordTraceLargeRegime' =
+    'succinctRMQLegacy196727LargeRegimeGlobalWordTraceTwoNPlusOConstantQuery'
+  'listIntSuccinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal' =
+    'listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal or listIntSuccinctRMQCompatibility328FinalFullModelCostLeOfFootprintGlobal'
+  'succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe' =
+    'succinctRMQWholeQueryGlobalWordTraceCostedCostLe or succinctRMQCompatibility328WholeQueryGlobalWordTraceCostedCostLe'
+  'succinctRMQCanonicalTransitionalQueryCostEq' =
+    'succinctRMQQueryCostEq or succinctRMQCompatibility328QueryCostEq'
+  'succinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal' =
+    'succinctRMQPrincipledAllSizeChargedTraceFinalFullModelCostLeOfFootprintGlobal or succinctRMQCompatibility328FinalFullModelCostLeOfFootprintGlobal'
+  'succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory' =
+    'succinctRMQCompatibilityLargeRegimeGlobalPayloadStoreExecutionStory'
+  'succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory' =
+    'succinctRMQCompatibilityLargeRegimeGlobalPayloadStoreBoundedExecutionStory'
+  'listIntSuccinctRMQEventValueProducerProvenanceOfValid' =
+    'listIntSuccinctRMQOccurrenceProvenanceOfValid or listIntSuccinctRMQCompatibilityW18EventValueProducerProvenanceOfValid'
+  'succinctRMQReviewerEveryReadEventValueProducerProvenance' =
+    'succinctRMQReviewerEveryReadOccurrenceProvenance or succinctRMQCompatibilityW18ReviewerEveryReadEventValueProducerProvenance'
+  'succinctRMQReviewerCountedSourceComponentMayPath' =
+    'succinctRMQReviewerCountedSourceSuccessfulClosedValidOccurrence or succinctRMQCompatibilityW18ReviewerCountedSourceComponentMayPath'
+  'succinctRMQReviewerSharedBPConsumerComponentPath' =
+    'succinctRMQReviewerSharedBPConsumerSuccessfulClosedValidOccurrence or succinctRMQCompatibilityW18ReviewerSharedBPConsumerComponentPath'
+  'succinctRMQProgramEventValueProducer' =
+    'succinctRMQProgramOccurrenceActualProducer or succinctRMQCompatibilityW18ProgramEventValueProducer'
+}
 
 $retiredSourcePattern =
   'builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_(?:profile|whole_query_(?:interpreted|leaf_trace|word_trace(?:_large_regime)?|global_word_trace_large_regime)_profile)'
 $oldRegimePattern =
   '(?i)(?:\b(?:196727|328|118|4144)\b|2\s*\^\s*128|zero[- ]?block|\bReady\b|LargeRegime|large[- ]regime|CanonicalTransitional)'
 
-foreach ($path in $currentLeanSurfaces) {
-  $text = Read-Text $path
-  foreach ($name in $retiredAliases) {
-    if ($text -match ([regex]::Escape($name) + '(?![A-Za-z0-9_])')) {
-      Fail "$path contains retired paper alias $name"
+# These files intentionally contain the removed vocabulary as enforcement
+# data.  They are not documentary theorem references.
+$enforcementPaths = @(
+  'docs/internal/CLAIM_DRIFT_POLICY.json',
+  'scripts/claim_drift_policy_regression.ps1',
+  'scripts/paper_topology_lint.ps1',
+  'scripts/paper_topology_lint_regression.ps1'
+)
+
+$trackedFiles = @(& git ls-files | ForEach-Object { Normalize-RepoPath $_ })
+if ($LASTEXITCODE -ne 0) {
+  Fail '[repository-search] git ls-files failed'
+  $trackedFiles = @()
+}
+
+# Repository-wide migration closure: outside exact enforcement files, explicit
+# frozen-history paths, and FROZEN-HISTORY-tagged chronology lines, no removed
+# spelling may survive in tracked text.  This is intentionally broader than a
+# Markdown-table or claim-language scan.
+$textExtensions = @('.lean', '.md', '.ps1', '.json', '.toml', '.yml', '.yaml', '.sh')
+foreach ($path in $trackedFiles) {
+  if ($enforcementPaths -contains $path) { continue }
+  if (Is-FrozenHistoryPath $path) { continue }
+  if ($textExtensions -notcontains [IO.Path]::GetExtension($path)) { continue }
+  if (-not (Test-Path -LiteralPath $path)) { continue }
+
+  $lineNumber = 0
+  foreach ($line in Read-Lines $path) {
+    $lineNumber += 1
+    if ($line -match 'FROZEN-HISTORY') { continue }
+    foreach ($name in $retiredAliasReplacements.Keys) {
+      if ($line -match ([regex]::Escape($name) + '(?![A-Za-z0-9_])')) {
+        Fail "[removed-spelling] $path`:$lineNumber contains $name; use $($retiredAliasReplacements[$name])"
+      }
     }
   }
+}
+
+foreach ($path in $currentLeanSurfaces) {
+  $text = Read-Text $path
   if ($text -match $retiredSourcePattern) {
-    Fail "$path directly cites a retired source profile"
+    Fail "[retired-source] $path directly cites a retired source profile"
   }
   if ($text -match $oldRegimePattern) {
-    Fail "$path contains an old cost/regime token"
+    Fail "[old-paper-regime] $path contains an old cost/regime token"
   }
 }
 
 foreach ($path in $publicClaimSurfaces) {
-  $text = Read-Text $path
-  foreach ($name in $retiredAliases) {
-    if ($text -match ([regex]::Escape($name) + '(?![A-Za-z0-9_])')) {
-      Fail "$path presents retired paper alias $name"
-    }
-  }
   $lineNumber = 0
-  foreach ($line in Get-Content -LiteralPath $path) {
+  foreach ($line in Read-Lines $path) {
     $lineNumber += 1
+    if ($line -match 'FROZEN-HISTORY') { continue }
     if ($line -match '^\s*\|' -and $line -match $retiredSourcePattern) {
-      Fail "$path`:$lineNumber presents a retired source profile in a current table row"
+      Fail "[retired-source-row] $path`:$lineNumber presents a retired source profile in a current table row"
     }
     if (
       $line -match '^\s*\|' -and
       $line -match '(?:RMQ\.Headlines\.(?:succinctRMQ|listIntSuccinctRMQ)|Headlines\.(?:succinctRMQ|listIntSuccinctRMQ))' -and
       $line -match $oldRegimePattern
     ) {
-      Fail "$path`:$lineNumber has an old cost/regime token in a current table row"
+      Fail "[old-current-row] $path`:$lineNumber has an old cost/regime token in a current headline row"
     }
   }
 }
 
 $paperText = Read-Text $paperRoot
 if ($paperText -notmatch '(?m)^import RMQ\.Headlines\.RMQ\s*$') {
-  Fail "$paperRoot must import RMQ.Headlines.RMQ"
+  Fail "[paper-import] $paperRoot must import RMQ.Headlines.RMQ"
 }
 if ($paperText -match '(?m)^import RMQ\.Headlines(?:\.RMQCompatibility)?\s*$') {
-  Fail "$paperRoot imports a broad or compatibility headline surface"
+  Fail "[paper-import] $paperRoot imports a broad or compatibility headline surface"
 }
 
 $aggregateText = Read-Text $aggregateModule
 if ($aggregateText -notmatch '(?m)^import RMQ\.Headlines\.RMQ\s*$') {
-  Fail "$aggregateModule must explicitly import the canonical RMQ surface"
+  Fail "[broad-import] $aggregateModule must explicitly import the canonical RMQ surface"
 }
 if ($aggregateText -notmatch '(?m)^import RMQ\.Headlines\.RMQCompatibility\s*$') {
-  Fail "$aggregateModule must explicitly import the compatibility RMQ surface"
+  Fail "[broad-import] $aggregateModule must explicitly import the compatibility RMQ surface"
 }
 
 $compatibilityText = Read-Text $compatibilityModule
-foreach ($name in $retiredAliases) {
+foreach ($name in $retiredAliasReplacements.Keys) {
   if ($compatibilityText -match ('(?m)^\s*(?:abbrev|theorem)\s+' +
       [regex]::Escape($name) + '(?![A-Za-z0-9_])')) {
-    Fail "$compatibilityModule preserves retired unqualified alias $name"
+    Fail "[unqualified-compatibility] $compatibilityModule preserves removed alias $name"
   }
 }
+
+$compatibilityNames = [System.Collections.Generic.HashSet[string]]::new(
+  [StringComparer]::Ordinal)
 foreach ($match in [regex]::Matches(
     $compatibilityText,
     '(?m)^\s*(?:abbrev|theorem)\s+([A-Za-z][A-Za-z0-9_]*)')) {
   $name = $match.Groups[1].Value
+  [void]$compatibilityNames.Add($name)
   if ($name -notmatch '(?:Compatibility|Legacy)') {
-    Fail "$compatibilityModule declaration $name lacks Compatibility or Legacy"
+    Fail "[compatibility-name] $compatibilityModule declaration $name lacks Compatibility or Legacy"
+  }
+}
+
+# Compatibility declarations may be documented as history on broad surfaces,
+# but may not occur in the canonical module, paper root, headline inventory,
+# or current paper-claim surfaces.
+foreach ($path in @($currentLeanSurfaces + $publicClaimSurfaces)) {
+  $text = Read-Text $path
+  foreach ($name in $compatibilityNames) {
+    if ($text -match ([regex]::Escape($name) + '(?![A-Za-z0-9_])')) {
+      Fail "[compatibility-current-anchor] $path presents compatibility declaration $name as a current paper anchor"
+    }
   }
 }
 
 $canonicalAlias =
   'succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile'
-$weightAlias =
+$weightLengthAlias =
+  'succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumEqTraceLength'
+$weightCostAlias =
+  'succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumEqCost'
+$weightBoundAlias =
   'succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe76'
 $canonicalText = Read-Text $canonicalModule
 $inventoryText = Read-Text $headlineInventory
-foreach ($anchor in @($canonicalAlias, $weightAlias)) {
+foreach ($anchor in @($canonicalAlias, $weightLengthAlias, $weightCostAlias, $weightBoundAlias)) {
   if ($canonicalText -notmatch [regex]::Escape($anchor)) {
-    Fail "$canonicalModule is missing required anchor $anchor"
+    Fail "[canonical-anchor] $canonicalModule is missing required anchor $anchor"
   }
   if ($inventoryText -notmatch
       ('#print axioms RMQ\.Headlines\.' + [regex]::Escape($anchor))) {
-    Fail "$headlineInventory does not print required anchor $anchor"
+    Fail "[headline-inventory] $headlineInventory does not print required anchor $anchor"
   }
 }
 
@@ -165,8 +313,54 @@ $legacyAnchors = @(
 foreach ($anchor in $legacyAnchors) {
   if ($compatibilityText -notmatch
       ('(?m)^\s*abbrev\s+' + [regex]::Escape($anchor) + '\b')) {
-    Fail "$compatibilityModule is missing retained historical alias $anchor"
+    Fail "[legacy-anchor] $compatibilityModule is missing retained historical alias $anchor"
   }
+}
+
+# Extract single-token documentary identifiers from every non-frozen tracked
+# Markdown file.  Broad documentation must resolve after `import RMQ.Headlines`;
+# the RMQ paper maps additionally must resolve after the narrower `import RMQPaper`.
+$broadDocumentNames = [System.Collections.Generic.HashSet[string]]::new(
+  [StringComparer]::Ordinal)
+$paperDocumentNames = [System.Collections.Generic.HashSet[string]]::new(
+  [StringComparer]::Ordinal)
+$canonicalHeadlineNames = [System.Collections.Generic.HashSet[string]]::new(
+  [StringComparer]::Ordinal)
+foreach ($match in [regex]::Matches(
+    $canonicalText,
+    '(?m)^\s*(?:abbrev|theorem|def)\s+([A-Za-z_][A-Za-z0-9_]*)\b')) {
+  [void]$canonicalHeadlineNames.Add($match.Groups[1].Value)
+}
+$headlinePattern =
+  '(?<![A-Za-z0-9_])(?:RMQ\.)?Headlines\.([a-z][A-Za-z0-9_]*)'
+
+foreach ($path in $trackedFiles) {
+  if ([IO.Path]::GetExtension($path) -ne '.md') { continue }
+  if (Is-FrozenHistoryPath $path) { continue }
+  if (-not (Test-Path -LiteralPath $path)) { continue }
+
+  foreach ($line in Read-Lines $path) {
+    if ($line -match 'FROZEN-HISTORY') { continue }
+    foreach ($match in [regex]::Matches($line, $headlinePattern)) {
+      $name = $match.Groups[1].Value
+      # File references such as `RMQ.Headlines.lean` share the namespace prefix
+      # but are not documentary declaration identifiers.
+      if ($name -in @('lean', 'md')) { continue }
+      [void]$broadDocumentNames.Add($name)
+      # RMQPaper deliberately excludes standalone rank/select and BP-navigation
+      # spoke headlines.  Resolve canonical RMQ declarations under RMQPaper;
+      # the broad resolution above covers every other documented headline.
+      if (($paperDocumentSurfaces -contains $path) -and
+          $canonicalHeadlineNames.Contains($name)) {
+        [void]$paperDocumentNames.Add($name)
+      }
+    }
+  }
+}
+
+if ($failures -eq 0) {
+  Run-LeanResolution 'RMQ.Headlines' $broadDocumentNames 'broad-documentary-symbol'
+  Run-LeanResolution 'RMQPaper' $paperDocumentNames 'paper-documentary-symbol'
 }
 
 if ($failures -gt 0) {
@@ -174,5 +368,9 @@ if ($failures -gt 0) {
   exit 1
 }
 
-Write-Host 'PAPER-TOPOLOGY PASS'
+Write-Host (
+  'PAPER-TOPOLOGY PASS ' +
+  "($($broadDocumentNames.Count) broad documentary identifiers; " +
+  "$($paperDocumentNames.Count) paper identifiers resolved)"
+)
 exit 0

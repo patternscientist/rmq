@@ -210,10 +210,20 @@ A05 accepted that operational chain but rejected the paper topology because six
 unqualified historical profiles remained coequal exports. The correction adds
 `concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_sided_profile`,
 which combines the canonical reviewer payload, physical erasure, space
-envelopes, exact global execution, non-synthetic weight equality, and `76`
-bound in one checked theorem. `RMQPaper` imports only its canonical headline
-alias. Historical source theorems remain reachable solely through the explicit
-`RMQ.Headlines.RMQCompatibility` module under `Legacy`/`Compatibility` names.
+envelopes, exact global execution, direct positional backing for every
+successful trace read, non-synthetic weight equality to trace length and the
+same `Costed.cost`, and `76` bound in one checked theorem. `RMQPaper` imports
+only its canonical headline alias. Historical source theorems remain reachable
+solely through the explicit `RMQ.Headlines.RMQCompatibility` module under
+`Legacy`/`Compatibility` names; compatibility-only W18 projections now live
+there as `CompatibilityW18` aliases as well.
+
+Self-contained topology repair also makes documentary symbol migration a
+blocking checked obligation. Repository-wide old-name search leaves removed
+spellings only in exact enforcement data or explicitly frozen history, and the
+topology lint elaborates every documented headline identifier under the broad
+barrel plus every canonical paper identifier under `RMQPaper`. Prose, fenced,
+dead-name, renamed-W18, and compatibility-as-current mutations are blocking.
 
 Acceptance:
 

@@ -344,7 +344,8 @@ Mathlib-free Ackermann/alpha schedule?
 
 2026-06-30 update: the succinct RMQ capstone now has an additive interpreted
 headline,
-`RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted`. Conceptually,
+`RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` [FROZEN-HISTORY:
+the spelling names the declaration at this dated checkpoint]. Conceptually,
 the public `2*n + o(n)`, constant-query RMQ theorem is no longer only a
 composition of disciplined `Costed` callbacks: the final query is replayed
 through Word-RAM bridge layers for the generic sparse-exception close-select
@@ -369,7 +370,8 @@ without changing the theorem's mathematical content.
 
 2026-07-01 update: the RMQ whole-query controller now has a leaf-trace
 checkpoint,
-`RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace`. Conceptually, the
+`RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace` [FROZEN-HISTORY:
+the spelling names the declaration at this dated checkpoint]. Conceptually, the
 closed controller no longer immediately erases its operational story to the
 plain `Costed` carrier. It evaluates to an explicit domain-leaf trace recording
 the select-close, compact close/LCA, and answer-rank leaves it called, together
@@ -386,7 +388,8 @@ trace, and whether that inlining changes any public theorem beyond making the
 execution model flatter.
 
 2026-07-01 update: the next rung has landed as
-`RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace`. Conceptually, the
+`RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace` [FROZEN-HISTORY:
+the spelling names the declaration at this dated checkpoint]. Conceptually, the
 final closed query controller now emits one `WordRAM.TraceEvent` stream. The
 close-select part, answer-rank part, and compact-close rank-seed reads are real
 payload/register traces. The bounded local BP decoders, endpoint-fringe
@@ -398,7 +401,8 @@ skeptical grad student should now ask for the exact theorem that replaces each
 remaining decoder leaf by payload-read events.
 
 2026-07-01 update: the large-regime companion has landed as
-`RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime`.
+`RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime` [FROZEN-HISTORY:
+the spelling names the declaration at this dated checkpoint].
 Conceptually, this does not change the `2*n + o(n)`, constant-query theorem
 shape; it strengthens the execution story under the explicit size premise
 `2^128 <= shape.size`. In that regime, the compact close/LCA part of the final
@@ -434,7 +438,8 @@ large-regime. The public alias
 `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` now points to
 `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story`,
 which has no `2^128 <= shape.size` premise. The large-regime theorem is kept as
-`RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory`.
+`RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory` [FROZEN-HISTORY:
+the spelling names the declaration at this dated checkpoint].
 Conceptually, every actual payload read in the final query is checked against
 one concrete global store for all input sizes. Tiny/inactive close-navigation
 fallback work is still present, but it is represented as explicitly counted
@@ -1080,3 +1085,51 @@ semantics remain outside U3. A skeptical graduate student should next import
 both its physical-erasure clause and every query clause name the canonical
 reviewer payload/global trace. A fresh blind exact-commit audit remains the next
 acceptance step.
+
+## 2026-07-14 W21 Self-Contained Paper-Topology Closure
+
+Coordinator reconstruction of the first topology checkpoint found two
+different forms of incompleteness. Some removed headline spellings still
+survived in live documentation, and the construction capstone was described as
+containing read-backing and weight/length/cost clauses that were only proved by
+nearby theorems. A lexical claim scan did not expose either problem.
+
+The checked type of
+`concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_sided_profile`
+now contains the whole advertised join. Its physical words erase exactly to the
+canonical counted payload; every successful read in the same canonical trace
+has an in-bounds translated physical address containing the returned word; the
+non-synthetic certificate sum equals that trace's length and the same
+`Costed.cost`; the sum is at most `76`; and the existing space envelopes and
+exact answers remain conjuncts. This uses the prompt-permitted direct
+successful-read backing rather than claiming that a separate execution packet
+is literally nested in the theorem.
+
+The compatibility-only W18 event-value and component-may-path projections now
+live in `RMQ.Headlines.RMQCompatibility` under explicit `CompatibilityW18`
+names. `RMQ.Headlines.RMQ` retains the current indexed-occurrence,
+invocation-preserving, successful closed-valid, mutation, and semantic-adequacy
+aliases. The algorithm, payload, global trace, `76` proof, and transitional
+source theorem are unchanged.
+
+The reusable workflow lesson is structural: public-symbol migration is not a
+lexical claim-scan problem. The production topology lint now searches every
+tracked text surface for removed spellings, reads prose and fenced inventories,
+and generates Lean `#check` files so documentary headline identifiers resolve
+under the broad barrel and canonical paper identifiers also resolve under
+`RMQPaper`. Mutations reject retired prose, a fenced transitional name, an
+invented dead name, a renamed W18 remnant, and a compatibility alias presented
+as current; a canonical paper anchor succeeds.
+
+Plain English: a paper reader can now follow one name to one theorem whose type
+itself ties the counted payload, successful physical reads, actual trace,
+certificate weights, modeled cost, exact answer, and number `76` together.
+Frozen history remains readable, but dead or compatibility-only spellings
+cannot silently re-enter current paper documentation.
+
+The model boundary is unchanged. Controller dispatch, arithmetic, branching,
+decoding, local scans, merging, serialized-payload querying, preprocessing, and
+conventional word-RAM time remain outside U3. A skeptical graduate student
+should next inspect whether the direct successful-read clause plus exact erasure
+is the right reusable simulation premise for E1's richer small-step machine.
+Fresh blind exact-commit audit remains coordinator-owned.

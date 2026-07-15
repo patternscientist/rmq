@@ -13,6 +13,30 @@ the canonical reviewer payload/global trace certified by the paper surface.
 
 namespace RMQ.Headlines
 
+/-- Compatibility W18 List-Int event-value projection. -/
+abbrev listIntSuccinctRMQCompatibilityW18EventValueProducerProvenanceOfValid :=
+  RMQ.SuccinctClassic.flatPayloadStoreNoSyntheticExecutionStory_eventValueProducerProvenance_of_valid
+
+/-- Compatibility W18 event-value producer fact. -/
+abbrev succinctRMQCompatibilityW18ReviewerEveryReadEventValueProducerProvenance :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryProducerProvenance_checked
+
+/-- Compatibility W18 component may-read fact; not top-level reachability. -/
+abbrev succinctRMQCompatibilityW18ReviewerCountedSourceComponentMayPath :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSource_counted_producer_may_path
+
+/-- Compatibility W18 shared-BP component path fact. -/
+abbrev succinctRMQCompatibilityW18ReviewerSharedBPConsumerComponentPath :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerSharedBPConsumer_all_producer_connected
+
+/-- Compatibility W18 event-value fold decomposition. -/
+abbrev succinctRMQCompatibilityW18ProgramEventValueProducer :=
+  RMQ.SuccinctFinal.WholeQueryProgram.evalGlobalWordTrace_event_producer
+
+/-- Compatibility-only legacy tail segments are unreachable. -/
+abbrev succinctRMQReviewerLegacyTailReadNone :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerReadStore_legacyTail_none
+
 /-- Legacy direct-query two-sided profile with the old aggregate budget. -/
 abbrev succinctRMQLegacy196727DirectTwoNPlusOConstantQuery :=
   RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile

@@ -513,12 +513,13 @@ scripts/headline_axiom_check.lean
 Targets:
 
 ```lean
-RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted
+RMQ.Headlines.succinctRMQLegacy196727InterpretedTwoNPlusOConstantQuery
 RMQ.Headlines.bpCloseNavigationInterpretedTwoNPlusOConstantQuery
 ```
 
-Status: landed.  The BP close-navigation alias remains a component-level
-checkpoint, while `succinctRMQTwoNPlusOConstantQueryInterpreted` exposes the
+Status: landed as historical compatibility evidence.  The BP close-navigation
+alias remains a component-level checkpoint, while
+`succinctRMQLegacy196727InterpretedTwoNPlusOConstantQuery` preserves the older
 additive final BP-native succinct RMQ capstone whose close-select, compact
 close/LCA, and final answer-rank leaves route through the current `WordRAM`
 bridge layer.
@@ -568,7 +569,7 @@ semantics, payload accounting, or public cost bound.
 Update: the global payload-store provenance theorem for the final RMQ stream is
 now total.  `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` points
 to the all-size theorem with no `2^128 <= shape.size` premise, while
-`RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory` names
+`RMQ.Headlines.succinctRMQCompatibilityLargeRegimeGlobalPayloadStoreExecutionStory` names
 the positive-block structural replay companion.  The segment relabeling layer
 and combined payload layout are in place for both theorem surfaces, so the
 remaining work is broader reuse and packaging of this execution-story style
@@ -616,7 +617,7 @@ and re-alias only after equivalent statements exist. Preserve:
 - the headline aliases in `RMQ.Headlines`, especially
   `rankSelectWordBoundedNPlusOConstantQuery`,
   `rankSelectCompressedFIDFixedWeightFamilyProfile`, and
-  `succinctRMQTwoNPlusOConstantQuery`;
+  `succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`;
 - `ExactRMQStateEncoding`, `PayloadLosslessEncoding`, and
   `PayloadSpaceBounds`;
 - `RankSelectSpec.BitVectorRankSelectDirectory` and
@@ -625,8 +626,8 @@ and re-alias only after equivalent statements exist. Preserve:
 - the reusable hub boundary exposed by `RMQHub` and `VerifiedDS`.
 
 Interpreter-backed theorem names should be additive at first, for example
-`succinctRMQTwoNPlusOConstantQuery_interpreted` or a similarly explicit alias,
-not an in-place semantic strengthening hidden behind the old name.
+an explicitly labeled compatibility alias, not an in-place semantic
+strengthening hidden behind the canonical paper name.
 
 ### Stress-Test Risks
 
