@@ -2399,3 +2399,15 @@ The paper can cite a stable current digest and move historical derivations to a
 single appendix-style source. This makes the exposition easier to maintain and
 prevents internal proof-campaign vocabulary from becoming part of the claimed
 mathematical architecture.
+
+Amendment after the A06 blind audit:
+
+- A dated snapshot must be a separate historical document; it may not remain
+  embedded as a second current narrative inside `docs/FAMILY_SUMMARY.md`.
+- Canonical Lean comments use mathematical and interface terminology rather
+  than worker or roadmap phase labels such as `W19` or `U3`.
+
+This amendment keeps the source and publication exposition aligned: theorem
+comments explain stable abstractions that a paper can name, while development
+chronology remains recoverable from the decision log, audit reports, and Git
+history.

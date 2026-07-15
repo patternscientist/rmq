@@ -1180,3 +1180,16 @@ boilerplate. A skeptical reviewer should compare the concise trust packet and
 current digest with the checked type of
 `succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`, then verify
 that the compatibility module is absent from `RMQPaper`.
+
+## 2026-07-15 A06 Editorial Fixed Point
+
+The A06 blind audit found one duplicated July 1 snapshot inside the current
+family map and two proof-campaign labels in canonical headline comments. The
+duplicate block was removed in full, and the comments now describe stable
+semantic interfaces rather than worker phases. No theorem, payload, query
+route, trace, or cost model changed.
+
+The paper-topology gate now rejects those two exact classes on the bounded
+current reader surface. This keeps development chronology available in the
+decision and audit records while ensuring that the public source and family map
+read as durable mathematical exposition.

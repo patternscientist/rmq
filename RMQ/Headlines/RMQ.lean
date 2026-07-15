@@ -559,10 +559,10 @@ successful read by counted flat payload words.
 abbrev succinctRMQFinalTraceModelAdequacy :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
 
-/-- Query-independent W19 reviewer-manifest packet: every counted source and
-shared-BP consumer has some successful closed-valid indexed occurrence, the
-positive predicate bridges to the common mutation predicate, and the fresh
-source is rejected by that same predicate. -/
+/-- Query-independent reviewer-manifest semantic-adequacy packet: every counted
+source and shared-BP consumer has some successful closed-valid indexed
+occurrence, the positive predicate bridges to the common mutation predicate,
+and the fresh source is rejected by that same predicate. -/
 abbrev succinctRMQReviewerManifestSemanticAdequacy :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy
 
@@ -609,7 +609,7 @@ theorem succinctRMQFinalFullModelSoundnessExactOfFootprintGlobal
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness_exact_of_footprint_global
     hshape hfoot hlen hbound
 
-/-- Full-model principled U3 charged-trace theorem under footprint agreement. -/
+/-- Canonical full-model charged-trace cost theorem under footprint agreement. -/
 theorem succinctRMQPrincipledAllSizeChargedTraceFinalFullModelCostLeOfFootprintGlobal
     {shape : RMQ.Cartesian.CartesianShape}
     {store : RMQ.WordRAM.ReadStore}

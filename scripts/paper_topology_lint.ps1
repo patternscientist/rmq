@@ -126,6 +126,7 @@ $paperDocumentSurfaces = @(
   'docs/PAPER_MODEL_ADEQUACY.md',
   $currentPublicationDigest
 )
+$currentLifecycleSurfaces = @($canonicalModule) + $publicClaimSurfaces
 
 $requiredFiles = @(
   $canonicalModule,
@@ -276,6 +277,17 @@ foreach ($path in $publicClaimSurfaces) {
   }
 }
 
+# Current reader-facing surfaces must not expose proof-campaign labels or embed
+# a dated snapshot preamble. These are narrow lifecycle tripwires, not an
+# attempt to infer publication roles from arbitrary prose.
+$staleLifecyclePattern =
+  '(?m)(?:\b[WU][0-9]+\b|^\s*Snapshot:\s*20[0-9]{2}-[0-9]{2}-[0-9]{2})'
+foreach ($path in $currentLifecycleSurfaces) {
+  if ((Read-Text $path) -match $staleLifecyclePattern) {
+    Fail "[stale-lifecycle] $path contains a worker-phase label or dated snapshot preamble"
+  }
+}
+
 $paperText = Read-Text $paperRoot
 if ($paperText -notmatch '(?m)^import RMQ\.Headlines\.RMQ\s*$') {
   Fail "[paper-import] $paperRoot must import RMQ.Headlines.RMQ"
@@ -322,6 +334,14 @@ foreach ($path in @($currentLeanSurfaces + $publicClaimSurfaces)) {
       Fail "[compatibility-current-anchor] $path presents compatibility declaration $name as a current paper anchor"
     }
   }
+}
+
+# A structural rejection is already conclusive. Avoid paying for documentary
+# symbol collection and compiler-backed resolution on known-bad mutations;
+# successful repository states still run the complete checked path below.
+if ($failures -gt 0) {
+  Write-Host "PAPER-TOPOLOGY: $failures failures"
+  exit 1
 }
 
 $canonicalAlias =

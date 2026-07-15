@@ -92,6 +92,8 @@ Test-Mutation 'valid-exact-frozen-snapshot-occurrence' 'docs/digests/DEEP_PROJEC
 Test-Mutation 'same-frozen-occurrence-current-digest' 'docs/digests/PROJECT_DIGESTION_CURRENT.md' $exactFrozenLine $true
 Test-Mutation 'casual-frozen-history-marker' 'docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md' "[FROZEN-HISTORY: casual] $retiredAlias" $true
 Test-Mutation 'forged-duplicate-exact-marker' 'docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md' $exactFrozenLine $true
+Test-Mutation 'worker-phase-label-canonical-comment' 'RMQ/Headlines/RMQ.lean' '/-- W99 current packet. -/' $true
+Test-Mutation 'dated-snapshot-current-family-summary' 'docs/FAMILY_SUMMARY.md' 'Snapshot: 2026-01-01, current canonical story.' $true
 
 if ($failures -gt 0) {
   Write-Host "PAPER-TOPOLOGY-REGRESSION: $failures failures"

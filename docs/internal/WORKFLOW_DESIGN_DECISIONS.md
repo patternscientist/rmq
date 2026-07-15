@@ -2289,3 +2289,18 @@ gate still protects the repository, while focused checks provide fast feedback
 during drafting. Future paper exposition remains recoverable from the theorem
 map and design decisions without preserving worker-chat chronology in public
 claims.
+
+Amendment after the A06 blind audit:
+
+The paper-topology lint now rejects two exact editorial leftovers on the
+bounded current surface: worker/roadmap phase tokens of the form `W<number>` or
+`U<number>`, and dated `Snapshot: YYYY-MM-DD` preambles. Mutation tests cover
+both failures. This is intentionally a lexical tripwire for known process
+artifacts, not a general classifier for publication prose; direct review
+against theorem types remains the semantic gate.
+
+The lint also exits after its lexical/structural phase when that phase has
+already rejected the tree. Valid trees and acceptance controls still perform
+the complete documentary identifier collection and Lean elaboration. This
+preserves the evidence boundary while preventing each expected-reject mutation
+from paying for checks that cannot change its verdict.
