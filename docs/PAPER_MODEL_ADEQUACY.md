@@ -1,4 +1,11 @@
 # Final RMQ Model Adequacy
+
+Current RMQ publication proposition:
+`RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`
+joins the canonical reviewer payload to the canonical global trace with exact
+physical backing, exact valid queries, and uniform charged-trace bound `76`.
+Controller operations remain outside the charged event model; this is not a conventional word-RAM or Lean runtime bound.
+
 ## Canonical Machine Adequacy
 
 The reviewer path uses one pre-execution list,
@@ -180,16 +187,13 @@ canonical payload-read event lies inside that safe footprint; exactness then
 transfers to any supplied store agreeing with the canonical global store on the
 footprint.
 
-## Compatibility-Only Zero-Block Leaf Guard
+## Compatibility Boundary
 
-One compatibility leaf-level supplied-store blemish is disclosed explicitly.
-The zero-block
-same-block supplied-store decoder currently flattens the supplied BP-code words
-and checks `bits = shape.bpCode` before returning the canonical structural
-answer. On corrupted stores that fail this guard, the leaf may return `none`
-rather than decode arbitrary garbage. This is a model boundary and nonclaim, not
-a proof bug. This leaf is not reachable from the uniform canonical reviewer
-route; it remains only on compatibility/history surfaces.
+Detailed earlier cost, dispatch, and leaf-level supplied-store chronology is
+quarantined in the explicit
+[`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
+Those facts are not reachable from the uniform canonical reviewer route and do
+not form part of this current model-adequacy statement.
 
 ## The Constant
 
@@ -208,13 +212,11 @@ the canonical no-synthetic trace; `TraceResult.toCosted` itself charges trace
 length and would count a synthetic compatibility marker if one were present.
 The non-synthetic-weighted trace is then bounded by `76`. A counterfactual
 theorem proves that inserting a synthetic event anywhere would make the
-certificate sum strictly smaller than trace length. The transitional
-`328` theorem remains for U2 comparison.
+certificate sum strictly smaller than trace length.
 
 The supplied-store and full-model companions transfer the same `76` bound
-under final footprint agreement. The older `118` Ready theorem, route-split
-`4144`, and aggregate `196727` survive only as compatibility facts for
-pre-canonical execution stories. They are not current reviewer-route claims.
+under final footprint agreement. Earlier execution stories are compatibility
+facts only and are not current reviewer-route claims.
 The paper-level claim is that the query is constant in the stated model and
 that the model's counted reads are payload-backed. It is not a claim that this
 Lean code is production serialization, optimized machine code, or a verified
@@ -238,8 +240,7 @@ The adequacy packet does not prove:
 - production-ready serialization;
 - minimality of the auxiliary safe logical layout footprint (the reviewer
   flat-physical footprint itself is execution-derived and recorded exactly);
-- arbitrary-garbage decoding for corrupted zero-block supplied-store words; the
-  zero-block leaf currently guards by checking `bits = shape.bpCode`.
+- arbitrary-garbage decoding for legacy supplied-store compatibility leaves.
 
 It does prove a model-adequacy bridge: the final query's modeled constant-cost
 execution has an explicit trace, explicit counted payload reads, bounded event

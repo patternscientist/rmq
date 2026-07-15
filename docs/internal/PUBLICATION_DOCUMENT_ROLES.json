@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "updated": "2026-07-14",
+  "currentPublicationDigest": "docs/digests/PROJECT_DIGESTION_CURRENT.md",
+  "requiredCanonicalPatterns": [
+    "(?i)canonical reviewer payload",
+    "(?i)canonical global trace",
+    "\\b76\\b",
+    "(?i)charged[- ]trace",
+    "(?is)controller\\s+operations\\s+remain\\s+outside\\s+the\\s+charged\\s+event\\s+model",
+    "(?is)not\\s+a\\s+conventional\\s+word-RAM"
+  ],
+  "roles": [
+    {
+      "role": "current-public",
+      "documents": [
+        { "path": "README.md", "scope": "rmq-publication", "paperDocument": false, "requiresCanonicalSummary": true },
+        { "path": "artifact/README.md", "scope": "rmq-publication", "paperDocument": false, "requiresCanonicalSummary": true },
+        { "path": "artifact/CLAIMS.md", "scope": "rmq-publication", "paperDocument": false, "requiresCanonicalSummary": true },
+        { "path": "docs/README.md", "scope": "rmq-publication-index", "paperDocument": false, "requiresCanonicalSummary": true },
+        { "path": "docs/FAMILY_SUMMARY.md", "scope": "rmq-publication", "paperDocument": false, "requiresCanonicalSummary": true },
+        { "path": "docs/PAPER_CLAIM_CORRESPONDENCE.md", "scope": "rmq-publication", "paperDocument": true, "requiresCanonicalSummary": true },
+        { "path": "docs/PAPER_THEOREM_MAP.md", "scope": "rmq-publication", "paperDocument": true, "requiresCanonicalSummary": true },
+        { "path": "docs/PAPER_MAIN_THEOREM.md", "scope": "rmq-publication", "paperDocument": true, "requiresCanonicalSummary": true },
+        { "path": "docs/PAPER_MODEL_ADEQUACY.md", "scope": "rmq-publication", "paperDocument": true, "requiresCanonicalSummary": true },
+        { "path": "docs/WHAT_IS_PROVED.md", "scope": "rmq-publication", "paperDocument": false, "requiresCanonicalSummary": true },
+        { "path": "docs/ARTIFACT_REPRODUCIBILITY.md", "scope": "rmq-publication", "paperDocument": false, "requiresCanonicalSummary": true },
+        { "path": "docs/RELATED_WORK_AND_LIMITATIONS.md", "scope": "rmq-publication", "paperDocument": false, "requiresCanonicalSummary": true },
+        { "path": "docs/PAPER_RELATED_WORK.md", "scope": "rmq-publication", "paperDocument": false, "requiresCanonicalSummary": true },
+        { "path": "docs/PUBLICATION_STRATEGY.md", "scope": "rmq-publication", "paperDocument": false, "requiresCanonicalSummary": true },
+        { "path": "docs/TRUST_BASE.md", "scope": "rmq-publication", "paperDocument": false, "requiresCanonicalSummary": true },
+        { "path": "docs/AI_ASSISTED_DEVELOPMENT_NOTE.md", "scope": "process-publication", "paperDocument": false, "requiresCanonicalSummary": true },
+        { "path": "docs/HUB.md", "scope": "other-public", "paperDocument": false, "requiresCanonicalSummary": true },
+        { "path": "docs/RANK_SELECT_FRONTIER.md", "scope": "other-public", "paperDocument": false, "requiresCanonicalSummary": true },
+        { "path": "docs/UNION_FIND_FRONTIER.md", "scope": "other-public", "paperDocument": false, "requiresCanonicalSummary": true },
+        { "path": "docs/REPOSITORY_STRATEGY.md", "scope": "other-public", "paperDocument": false, "requiresCanonicalSummary": true },
+        { "path": "docs/digests/RANK_SELECT_COMPRESSED_FID_2026_06_29.md", "scope": "other-public", "paperDocument": false, "requiresCanonicalSummary": true },
+        { "path": "docs/digests/UNION_FIND_TARJAN_ARCHITECTURE.md", "scope": "other-public", "paperDocument": false, "requiresCanonicalSummary": true },
+        { "path": "docs/digests/PROJECT_DIGESTION_CURRENT.md", "scope": "rmq-publication", "paperDocument": true, "requiresCanonicalSummary": true }
+      ]
+    },
+    {
+      "role": "compatibility",
+      "documents": [
+        { "path": "docs/DIGESTION_LOG.md" },
+        { "path": "docs/digests/COORDINATOR_COMPLETION_LOG.md" },
+        { "path": "docs/digests/RMQ_CAPSTONE.md" },
+        { "path": "docs/digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md" }
+      ]
+    },
+    {
+      "role": "audit-evidence",
+      "documents": [
+        { "path": "docs/ADD_PROVENANCE.md" },
+        { "path": "docs/TRUST_AUDIT_PACKET.md" },
+        { "path": "docs/WORD_RAM_REVIEW_PACKET.md" }
+      ],
+      "pathRegexes": [
+        "^docs/internal/.*\\.md$"
+      ]
+    },
+    {
+      "role": "exact-frozen-snapshot",
+      "documents": [
+        {
+          "path": "docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md",
+          "exactLines": [
+            "<!-- RMQ-PAPER-TOPOLOGY-FROZEN-SNAPSHOT --> RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery"
+          ]
+        },
+        {
+          "path": "docs/digests/PROJECT_STATE_2026_06_28.md",
+          "exactLines": [
+            "<!-- RMQ-PAPER-TOPOLOGY-FROZEN-SNAPSHOT --> `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` abbreviates"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -2351,3 +2351,67 @@ Evidence:
   in `RMQ/Headlines.lean`.
 - `scripts/paper_topology_lint.ps1`, its mutation regression, and the curated
   headline axiom inventory.
+
+## DD-20260714-009: make the publication proposition singular, not merely its names
+
+Status: Accepted on the W22 implementation branch; coordinator reconstruction,
+A05 finding-resolution, and a fresh A06 blind exact-commit audit remain
+mandatory.
+
+Context:
+
+The accepted Lean surface already joined one canonical reviewer payload, its
+physical words, one canonical global trace, exact answers, and the uniform
+charged-trace bound `76`. The A05 finding-resolution audit nevertheless found
+that the designated current digest and a Family Summary status section taught
+an older cost/dispatch proposition. Every cited symbol resolved and every
+retired public alias was closed, so the defect was proposition-level
+publication incoherence rather than a theorem or import failure.
+
+Decision:
+
+- `docs/digests/PROJECT_DIGESTION_CURRENT.md` is the sole current digest.
+- Detailed earlier cost, dispatch, activation, and proof-only chronology lives
+  at exactly
+  `docs/digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md`.
+- `docs/internal/PUBLICATION_DOCUMENT_ROLES.json` is the sole machine-readable
+  role authority for `current-public`, `compatibility`, `audit-evidence`, and
+  `exact-frozen-snapshot` documents.
+- Every designated current RMQ publication surface positively names the
+  canonical reviewer payload, canonical global trace, uniform charged-trace
+  bound `76`, and the exclusion of controller operations from the charged event
+  model.
+- Old U3 numeric and dispatch propositions are forbidden on current-public
+  surfaces independent of negation or a same-line history label.
+
+Rejected alternatives:
+
+- Keep the dated digest current and add a supersession paragraph at its end.
+- Leave detailed compatibility chronology inside current-status prose so long
+  as each sentence says "historical" or "compatibility."
+- Treat successful symbol resolution and zero retired-name hits as semantic
+  coherence evidence.
+- Maintain separate current/frozen path arrays in claim drift and topology
+  scripts.
+- Test only Markdown tables or only exact retired theorem spellings.
+- Weaken or delete the accepted compatibility theorems to simplify prose.
+
+Consequences:
+
+The paper exposition now proceeds directly from the joined construction theorem
+to the list-facing theorem and then states the charged-trace boundary. A reader
+does not encounter a competing route topology in any current document.
+Historical results remain checked and reviewable through the compatibility
+module and one compatibility document. This is an exposition repair only: it
+does not change the algorithm, payload, physical erasure, route, trace,
+compatibility module, exactness, or bound `76`, and it does not claim a
+conventional word-RAM or Lean runtime theorem.
+
+Evidence:
+
+- `docs/internal/W22_U3_SEMANTIC_PUBLICATION_TOPOLOGY_ACCEPTANCE_MATRIX.md`.
+- `docs/internal/PUBLICATION_DOCUMENT_ROLES.json`.
+- `docs/digests/PROJECT_DIGESTION_CURRENT.md` and
+  `docs/digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md`.
+- Role-aware strict claim drift, topology lint, and their production mutation
+  regressions.

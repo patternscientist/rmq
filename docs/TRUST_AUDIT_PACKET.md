@@ -1,4 +1,11 @@
 # Trust Audit Packet
+
+Current RMQ publication proposition:
+`RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`
+joins the canonical reviewer payload to the canonical global trace with exact
+physical backing, exact valid queries, and uniform charged-trace bound `76`.
+Controller operations remain outside the charged event model; this is not a conventional word-RAM or Lean runtime bound.
+
 ## U2 Canonical Reviewer Trust Boundary
 
 The active final route has no Ready/Active/zero-block dispatch. One exhaustive

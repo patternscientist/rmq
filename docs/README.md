@@ -1,5 +1,12 @@
 # Documentation Guide
 
+Current RMQ publication proposition:
+`RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`
+joins the canonical reviewer payload to the canonical global trace with exact
+physical backing, exact valid queries, and uniform charged-trace bound `76`.
+Controller operations remain outside the charged event model; this is not a conventional word-RAM or Lean runtime bound.
+
+
 This repository has two kinds of documentation:
 
 - public artifact docs for readers who want to know what was proved and how to
@@ -12,9 +19,11 @@ This repository has two kinds of documentation:
 - [`digests/DEEP_PROJECT_DIGESTION_2026_06_28.md`](digests/DEEP_PROJECT_DIGESTION_2026_06_28.md):
   stress-tested first-contact explanation for a Lean club or mathematically
   mature audience without data-structures background.
-- [`digests/PROJECT_DIGESTION_2026_07_06.md`](digests/PROJECT_DIGESTION_2026_07_06.md):
-  canonical current publication-oriented digestion for `main` at `3f6f1e3`;
-  older digests are background snapshots.
+- [`digests/PROJECT_DIGESTION_CURRENT.md`](digests/PROJECT_DIGESTION_CURRENT.md):
+  sole current publication-oriented digestion for the canonical reviewer
+  payload/global-trace theorem and its charged-trace boundary.
+- [`digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md):
+  explicit non-current chronology for earlier cost and dispatch surfaces.
 - [`ADD_PROVENANCE.md`](ADD_PROVENANCE.md): public audit-driven-development
   provenance note; ADD and AI assistance are workflow evidence, not proof
   objects or trust-base assumptions.

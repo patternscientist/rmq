@@ -1,5 +1,7 @@
 # Union-Find Frontier
 
+Current RMQ publication proposition: the public alias joins the canonical reviewer payload to the canonical global trace and proves its uniform charged-trace bound `76`. Controller operations remain outside the charged event model; this is not a conventional word-RAM or Lean runtime bound.
+
 Snapshot: 2026-06-27. This note records the first non-succinct data-structure
 spoke.
 

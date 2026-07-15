@@ -2243,3 +2243,72 @@ Evidence:
 - `docs/internal/CLAIM_DRIFT_POLICY.json` version 14 exact path-and-line pairs.
 - `scripts/claim_drift_policy_regression.ps1` removed-name and frozen-scope
   production fixtures.
+
+## WDD-20260714-004: gate proposition-level publication coherence by document role
+
+Status: Accepted on the W22 implementation branch; external acceptance remains
+coordinator-owned.
+Date: 2026-07-14.
+Scope: current public documentation, compatibility history, claim drift, paper
+topology, and completion evidence.
+
+Decision:
+
+Use one machine-readable document-role manifest as the only path-classification
+source for both claim drift and paper topology. A current-public RMQ document
+must pass both negative and positive gates: it contains no retired U3 numeric,
+dispatch, or activation proposition, and it explicitly identifies the
+canonical reviewer payload/global trace, current `76` charged-trace bound, and
+controller-operation boundary. Compatibility and audit evidence remain
+distinct roles; exact frozen snapshots retain occurrence-exact path-and-line
+scope.
+
+After automated checks pass, the worker must manually reconstruct the
+proposition in every current-public document. Green symbol resolution is not a
+substitute for that inventory. Every mutation uses the production verdict and
+checks tracked-state preservation.
+
+The topology regression resolves the complete repository-wide removed-name and
+documentary-name inventories once through an unmodified production-lint
+baseline. Each virtual semantic mutation then scans its changed path, all exact
+frozen snapshots, and every current-public semantic surface while reusing only
+the unchanged repository-wide baseline. The accepting semantic fixtures add no
+documentary name; the one canonical-identifier fixture names an anchor already
+present in the baseline set. A paper-document mutation that introduces an
+identifier must also match a declaration parsed from the canonical headline
+module; the baseline proves that inventory under the `RMQPaper` import.
+
+Rejected alternatives:
+
+- Infer document role from directory names or same-line words.
+- Duplicate path lists and frozen exceptions between scripts.
+- Allow natural-language negation to rescue an old token on a current-public
+  surface.
+- Check only theorem names, tables, or positive `76` tokens.
+- Preserve two documents that both describe themselves as the current digest.
+- Treat an audit report as current-public or grant audit evidence a retired-name
+  blanket exception.
+
+Consequences:
+
+- The current digest path is stable and undated; Git history preserves prior
+  current-state snapshots.
+- Current prose links to one compatibility-history surface instead of repeating
+  detailed retired topology.
+- Every one of the 23 manifest-designated current-public documents has the
+  same explicit positive semantic check. The five named load-bearing reader
+  surfaces remain covered without a special path list.
+- Production mutations reject the exact missed categories and accept the
+  canonical current statement plus truthful compatibility/history statements
+  only in their registered role.
+- Public-symbol migration, frozen-history closure, and proposition coherence are
+  separate mandatory gates.
+
+Evidence:
+
+- `docs/internal/PUBLICATION_DOCUMENT_ROLES.json`.
+- `scripts/claim_drift_scan.ps1` and
+  `scripts/claim_drift_policy_regression.ps1`.
+- `scripts/paper_topology_lint.ps1` and
+  `scripts/paper_topology_lint_regression.ps1`.
+- `docs/internal/W22_U3_SEMANTIC_PUBLICATION_TOPOLOGY_ACCEPTANCE_MATRIX.md`.

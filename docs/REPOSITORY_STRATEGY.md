@@ -1,5 +1,7 @@
 # Repository Strategy
 
+Current RMQ publication proposition: the public alias joins the canonical reviewer payload to the canonical global trace and proves its uniform charged-trace bound `76`. Controller operations remain outside the charged event model; this is not a conventional word-RAM or Lean runtime bound.
+
 This repository is the RMQ proof-of-concept spoke for a broader verified
 advanced-data-structures program. The long-term goal is a hub-and-spoke library:
 shared proof infrastructure in a reusable hub, with independently meaningful

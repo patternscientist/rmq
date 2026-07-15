@@ -1,4 +1,11 @@
 # What Is Proved
+
+Current RMQ publication proposition:
+`RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`
+joins the canonical reviewer payload to the canonical global trace with exact
+physical backing, exact valid queries, and uniform charged-trace bound `76`.
+Controller operations remain outside the charged event model; this is not a conventional word-RAM or Lean runtime bound.
+
 ## U2 Canonical Reviewer Route
 
 The final all-size reviewer trace uses one positive canonical block geometry and
@@ -32,10 +39,9 @@ The final trace is exact through
 `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact`. Its honest
 principled all-size charged-trace bound is `76`, checked by
 `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`; exact modeled
-cost is emitted trace length. The transitional U2 value `328` remains checked
-by `concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq`. The former
-Ready/zero-block/route-split descriptions and numeric `118`, `4144`, and
-`196727` facts survive only as compatibility history.
+cost is emitted trace length. Earlier checked cost and dispatch facts are
+indexed only in the explicit
+[`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
 
 
 This document is the short scope map for external readers. It separates the
@@ -181,8 +187,7 @@ profile over Cartesian-shape representatives:
 - the modeled query cost is bounded by a fixed constant.
 
 For the current concrete BP-native capstone, the canonical reviewer route has
-the principled charged-trace all-size cap `76`; the transitional U2 cap `328`
-remains checked separately. The exact public
+the principled charged-trace all-size cap `76`. The exact public
 `SuccinctClassic.buildPayload` is also the erasure of the one pre-execution
 physical word list used by the execution refinement. The existing
 supplied-store evaluator reads the flat store through checked physical-address
@@ -193,10 +198,10 @@ disagreement changes the execution. The query-independent
 reviewer width derives from the linear capacity `400000 * (n + 1)` and obeys an
 explicit logarithmic all-size inequality.
 
-Ready `118`, the route-split `4144` theorem, the zero-block route, and the
-aggregate `196727` theorem remain checked only for compatibility and historical
-comparison. They do not describe the canonical reviewer execution. U3 changes
-only theorem-level accounting, not the accepted U2 machine/store identity.
+Detailed earlier cost and dispatch theorems remain checked only through the
+compatibility/history surface. They do not describe the canonical reviewer
+execution. U3 changes only theorem-level accounting, not the accepted machine
+or store identity.
 
 The theorem is payload-accounted: auxiliary bits are counted separately from
 proof-only fields and certificates. The final path routes through payload-live
@@ -215,12 +220,9 @@ evaluation, store-parametricity over the explicit final layout, a convenience
 store-parametric theorem from a safe layout-footprint overapproximation,
 emitted-read containment in that footprint, equality/exactness transfer under
 footprint agreement with the canonical global store, and no synthetic cost-only
-events. The zero-block same-block theorem remains a compatibility-only leaf-level supplied-store
-theorem. Its supplied-store decoder currently flattens supplied BP-code words
-and checks `bits = shape.bpCode`; on corrupted stores that fail this guard, that
-leaf may return `none` rather than decode arbitrary garbage. This is a disclosed
-leaf-level model blemish, not a proof bug in the canonical route; the uniform
-reviewer execution does not dispatch through that leaf.
+events. A leaf-level supplied-store compatibility guard and its nonclaims are
+documented only in the explicit compatibility history; the uniform reviewer
+execution does not dispatch through that leaf.
 
 The global-store execution story now has a flat-payload no-synthetic backing
 theorem, `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory`.

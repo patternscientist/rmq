@@ -126,7 +126,7 @@ not opened by this repair.
 
 ## Current Digests
 
-- [`digests/PROJECT_DIGESTION_2026_07_06.md`](digests/PROJECT_DIGESTION_2026_07_06.md):
+- [`digests/PROJECT_DIGESTION_CURRENT.md`](digests/PROJECT_DIGESTION_CURRENT.md):
   canonical current public state-significance-and-path-to-a-paper digest for
   `main` at
   `3f6f1e3`, for a mathematically mature non-DS audience. Covers the
@@ -675,7 +675,7 @@ paper constant, not whether the old zero-block route is still hiding underneath.
 ## Current Paper-Path Note
 
 2026-07-06 digestion pass: the project-wide digest was refreshed as
-`digests/PROJECT_DIGESTION_2026_07_06.md` after the store-parametric
+`digests/PROJECT_DIGESTION_CURRENT.md` after the store-parametric
 whole-query capstone (2026-07-04/05) and the model-adequacy, footprint
 containment, paper-surface, and artifact-reproducibility landings
 (2026-07-06). Two corrections worth recording at log level. First, the fast
@@ -696,7 +696,7 @@ paper/artifact packaging, external novelty calibration, and tighter
 machine-word side conditions, not another existence proof for the regime split.
 
 2026-07-07 publication/provenance alignment pass: the publication branch treats
-`digests/PROJECT_DIGESTION_2026_07_06.md` as the canonical current public
+`digests/PROJECT_DIGESTION_CURRENT.md` as the canonical current public
 digest. The coordinator checkout's local
 `digests/PROJECT_DIGESTION_2026_07_CURRENT.md` and `ADD_PROVENANCE.md` were
 read as branch-local evidence, but this branch keeps only one current public
@@ -1131,6 +1131,50 @@ conventional word-RAM time remain outside U3. A skeptical graduate student
 should next inspect whether the direct successful-read clause plus exact erasure
 is the right reusable simulation premise for E1's richer small-step machine.
 Fresh blind exact-commit audit remains coordinator-owned.
+
+## 2026-07-14 W22 U3 Semantic Publication Topology
+
+A05 exposed a proposition-level publication failure after W21 had already
+closed symbol resolution and exact frozen-history placement. The accepted Lean
+capstone said that the canonical reviewer payload and canonical global trace
+have one uniform charged-trace bound of `76`, but current-facing prose still
+taught retired `118`, `328`, `4144`, and `196727` regimes and a Ready/non-Ready/
+zero-block dispatch. The old checks could prove that names resolved and old
+aliases stayed quarantined without proving that public documents described the
+same theorem.
+
+W22 makes the publication proposition itself an enforced object. One
+machine-readable document-role manifest classifies current-public,
+compatibility, audit-evidence, and exact frozen-snapshot surfaces. Both the
+claim scanner and paper-topology lint consume that manifest. Current-public
+documents must carry the canonical reviewer payload/global-trace identity,
+uniform charged-trace bound `76`, and the controller-operations model boundary;
+obsolete route and cost propositions are blocking even under natural-language
+negation. Exact mutations exercise every semantic category missed by A05 and
+also prove that truthful compatibility history remains admissible in its
+registered role.
+
+The formerly dated current digest has been replaced by
+`docs/digests/PROJECT_DIGESTION_CURRENT.md`. Detailed cost and dispatch
+chronology now lives only in
+`docs/digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md`, and
+`docs/FAMILY_SUMMARY.md` is again a current status surface. The Lean theorem,
+payload, physical words, route, trace, compatibility module, and bound are
+unchanged.
+
+Plain English: a reviewer no longer has to decide which current document to
+believe. Every designated public surface teaches the same construction-facing
+theorem, while retired explanations remain available behind an explicit
+compatibility label. Symbol resolution and retired-name closure are necessary
+but not sufficient for proposition-level publication coherence.
+
+The model boundary is still deliberate: controller dispatch, arithmetic,
+branching, decoding, local scans, merging, serialized-payload querying, and
+preprocessing remain outside the charged trace. This is not a conventional word-RAM or compiled Lean runtime theorem. A skeptical graduate student should next ask
+whether the role manifest covers every genuinely public path and whether E1
+can replace this charged-trace boundary with a checked small-step execution
+simulation. Coordinator reconstruction, A05 finding-resolution, and a fresh
+A06 blind exact-commit audit remain mandatory.
 
 ## 2026-07-14 W21 Frozen-History Allowance Boundary
 

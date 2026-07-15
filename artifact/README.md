@@ -1,5 +1,12 @@
 # Reviewer Artifact Guide
 
+Current RMQ publication proposition:
+`RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`
+joins the canonical reviewer payload to the canonical global trace with exact
+physical backing, exact valid queries, and uniform charged-trace bound `76`.
+Controller operations remain outside the charged event model; this is not a conventional word-RAM or Lean runtime bound.
+
+
 This guide gives one reviewer path through the artifact. It complements the
 compact claim packet in `CLAIMS.md`, the paper correspondence table in
 `../docs/PAPER_CLAIM_CORRESPONDENCE.md`, and the code-orientation map in
@@ -167,9 +174,9 @@ things:
   cost; and
 - an information-theoretic Catalan/Cartesian-shape RMQ lower bound.
 
-The Ready `118`, route-split `4144`, zero-block, and `196727` theorems remain
-available only as compatibility/history. They are not the canonical reviewer
-route described by this guide.
+Earlier cost and dispatch theorems remain available only through the explicit
+[`compatibility history`](../docs/digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
+They are not the canonical reviewer route described by this guide.
 
 ## Validation And Examples
 

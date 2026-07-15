@@ -1,5 +1,5 @@
 {
-  "version": 14,
+  "version": 15,
   "updated": "2026-07-14",
   "terms": [
     {
@@ -43,6 +43,36 @@
       "allowedLineRegex": ""
     },
     {
+      "id": "obsolete-u3-numeric-current-public",
+      "pattern": "\\b(?:118|328|4144|196727)\\b",
+      "status": "forbidden-on-current-public-compatibility-or-audit-evidence-only",
+      "strict": true,
+      "strictDocumentRoles": ["current-public"],
+      "allowedDocumentRoles": ["compatibility", "audit-evidence", "exact-frozen-snapshot"],
+      "allowedPathRegex": "^docs/internal/CLAIM_DRIFT_POLICY\\.(?:md|json)$|^docs/internal/PUBLICATION_DOCUMENT_ROLES\\.json$|^scripts/(?:claim_drift_policy_regression|paper_topology_lint|paper_topology_lint_regression)\\.ps1$",
+      "allowedLineRegex": ""
+    },
+    {
+      "id": "obsolete-u3-route-current-public",
+      "pattern": "(?:(?-i:\\bReady\\b|non-Ready|CanonicalTransitional|LargeRegime)|(?i:zero[- ]block|route[- ]split)|(?i:(?:canonical reviewer|canonical global trace|current reviewer)[^\\r\\n]{0,120}large[- ]regime|large[- ]regime[^\\r\\n]{0,120}(?:canonical reviewer|canonical global trace|current reviewer)))",
+      "status": "forbidden-current-reviewer-dispatch-compatibility-or-audit-evidence-only",
+      "strict": true,
+      "strictDocumentRoles": ["current-public"],
+      "allowedDocumentRoles": ["compatibility", "audit-evidence", "exact-frozen-snapshot"],
+      "allowedPathRegex": "^docs/internal/CLAIM_DRIFT_POLICY\\.(?:md|json)$|^docs/internal/PUBLICATION_DOCUMENT_ROLES\\.json$|^scripts/(?:claim_drift_policy_regression|paper_topology_lint|paper_topology_lint_regression)\\.ps1$",
+      "allowedLineRegex": ""
+    },
+    {
+      "id": "obsolete-u3-2pow128-current-public",
+      "pattern": "2\\s*\\^\\s*128",
+      "status": "forbidden-on-current-public-compatibility-or-proof-audit-only",
+      "strict": true,
+      "strictDocumentRoles": ["current-public"],
+      "allowedDocumentRoles": ["compatibility", "audit-evidence", "exact-frozen-snapshot"],
+      "allowedPathRegex": "^docs/internal/CLAIM_DRIFT_POLICY\\.(?:md|json)$|^docs/internal/PUBLICATION_DOCUMENT_ROLES\\.json$|^scripts/(?:claim_drift_policy_regression|paper_topology_lint|paper_topology_lint_regression)\\.ps1$",
+      "allowedLineRegex": ""
+    },
+    {
       "id": "forbidden-2pow128-canonical-activation",
       "pattern": "(?i)(?=.{0,240}2\\s*\\^\\s*128)(?=.{0,240}(?:^|[^A-Za-z-])canonical(?:\\s+reviewer)?\\s+(?:execution|route|query)\\b).{0,240}",
       "status": "forbidden-current-canonical-role-and-2pow128-suspicion-controlled-language-lint",
@@ -57,18 +87,9 @@
       "pattern": "(?:succinctRMQTwoNPlusOConstantQuery(?:Interpreted|LeafTrace|WordTrace(?:LargeRegime)?|GlobalWordTraceLargeRegime)?|listIntSuccinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal|succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe|succinctRMQCanonicalTransitionalQueryCostEq|succinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal|succinctRMQLargeRegimeGlobalPayloadStore(?:Bounded)?ExecutionStory|listIntSuccinctRMQEventValueProducerProvenanceOfValid|succinctRMQReviewerEveryReadEventValueProducerProvenance|succinctRMQReviewerCountedSourceComponentMayPath|succinctRMQReviewerSharedBPConsumerComponentPath|succinctRMQProgramEventValueProducer)\\b",
       "status": "forbidden-removed-public-spelling-outside-explicit-frozen-history-or-enforcement-data",
       "strict": true,
-      "allowedPathRegex": "^docs/internal/CLAIM_DRIFT_POLICY\\.(?:md|json)$|^scripts/(?:claim_drift_policy_regression|paper_topology_lint|paper_topology_lint_regression)\\.ps1$",
+      "allowedPathRegex": "^docs/internal/CLAIM_DRIFT_POLICY\\.(?:md|json)$|^docs/internal/PUBLICATION_DOCUMENT_ROLES\\.json$|^scripts/(?:claim_drift_policy_regression|paper_topology_lint|paper_topology_lint_regression)\\.ps1$",
       "allowedLineRegex": "",
-      "allowedPathLinePairs": [
-        {
-          "pathRegex": "^docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28\\.md$",
-          "lineRegex": "^<!-- RMQ-PAPER-TOPOLOGY-FROZEN-SNAPSHOT --> RMQ\\.Headlines\\.succinctRMQTwoNPlusOConstantQuery$"
-        },
-        {
-          "pathRegex": "^docs/digests/PROJECT_STATE_2026_06_28\\.md$",
-          "lineRegex": "^<!-- RMQ-PAPER-TOPOLOGY-FROZEN-SNAPSHOT --> `RMQ\\.Headlines\\.succinctRMQTwoNPlusOConstantQuery` abbreviates$"
-        }
-      ]
+      "allowExactFrozenSnapshot": true
     },
     {
       "id": "all-size-196727",

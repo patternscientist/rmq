@@ -1,5 +1,7 @@
 # Rank/Select Compressed/FID Digest (2026-06-29)
 
+Current RMQ publication proposition: the public alias joins the canonical reviewer payload to the canonical global trace and proves its uniform charged-trace bound `76`. Controller operations remain outside the charged event model; this is not a conventional word-RAM or Lean runtime bound.
+
 Base: `main` at `af897e1` ("Promote compressed FID rank-select capstone").
 
 Audience: mathematically mature reader. No data-structures, monad, or

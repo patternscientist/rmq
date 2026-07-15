@@ -259,6 +259,23 @@ and after every virtual edit.
 Do not mark the row complete merely because no forbidden token appears in a
 selected claim table. Documentary symbol resolution is the closure evidence.
 
+### Proposition-level publication coherence
+
+Documentary symbol resolution closes only the name/import layer. For a current
+publication milestone, additionally inventory every document assigned the
+`current-public` role by the shared machine-readable manifest. Each applicable
+surface must positively identify the same payload, physical execution/global
+trace, current bound, and model boundary. Old numeric or dispatch propositions
+must be absent from current-public text rather than admitted by negation or a
+same-line history word; detailed chronology belongs in the registered
+compatibility document.
+
+Run the production mutation matrix for stale numeric bounds, stale dispatch,
+stale activation, canonical current acceptance, truthful compatibility
+acceptance, and exact frozen-snapshot scope. After the scripts pass, manually
+reconstruct the propositions in every current-public document. Name resolution
+without this proposition inventory is not completion.
+
 ## 4. No Caveated Completion
 
 The following statements in a final self-audit normally mean the worker must

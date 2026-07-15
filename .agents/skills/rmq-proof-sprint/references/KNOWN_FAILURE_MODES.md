@@ -101,6 +101,23 @@ Migration closure requires all of the following:
 A lexical scanner remains useful as a tripwire, but it is not evidence of
 public-symbol migration closure.
 
+### Public-symbol closure is not proposition-level publication coherence
+
+Even complete removed-name search and generated Lean resolution can leave two
+current documents teaching different propositions. A current digest may cite a
+real canonical theorem while surrounding prose assigns the public bound or
+dispatch to an older compatibility route.
+
+For publication closure, use one machine-readable document-role manifest in
+every enforcement script. On every `current-public` RMQ surface, require the
+positive canonical payload/global-trace proposition, the current charged-trace
+bound, and its controller-operation boundary. Reject retired numeric or route
+claims by role, not by a same-line word such as “historical,” “compatibility,”
+or natural-language negation. Move detailed chronology to one explicit
+compatibility document. Production mutations must show that the stale
+affirmative propositions reject, the canonical proposition accepts, and the
+same truthful chronology accepts only at the compatibility role.
+
 Frozen history is an occurrence-level exception, not a directory role. An
 acceptable mechanism couples an exact immutable snapshot path to exact checked
 metadata and line content, or enforces an equivalently narrow structured

@@ -1,5 +1,12 @@
 # Paper Related Work Draft
 
+Current RMQ publication proposition:
+`RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`
+joins the canonical reviewer payload to the canonical global trace with exact
+physical backing, exact valid queries, and uniform charged-trace bound `76`.
+Controller operations remain outside the charged event model; this is not a conventional word-RAM or Lean runtime bound.
+
+
 This is a paper-ready related-work draft for an ITP/CPP/JFR-style
 formalization submission. It is deliberately conservative about priority: any
 claim that this mechanizes a novel succinct RMQ theorem should be phrased as a
@@ -101,14 +108,10 @@ make a theorem true.
   claim is made.
 - The all-size modeled query-cost bound on the canonical reviewer route is the
   uniform checked charged-trace value `76`. Controller operations remain
-  uncharged; this is not conventional word-RAM complexity. The U2 `328`
-  theorem is transitional. Ready `118`, route-split `4144`, zero-block, and
-  `196727` are compatibility/history only.
-- No current canonical execution theorem has a `2^128` activation premise.
-  Explicit compatibility/large-regime companions retain that sufficient
-  premise. Separately, W19's proof-only sparse-local nonvacuity proof chooses
-  symbolic `N = 2^128`; this is not a route, payload, cost, runtime, or paper
-  theorem premise.
+  uncharged; this is not conventional word-RAM complexity. Earlier checked
+  cost, dispatch, size-premise, and proof-only chronology lives in the explicit
+  [`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md),
+  not in the current paper proposition.
 - The auxiliary logical layout footprint is a safe overapproximation. The
   reviewer flat-physical footprint is execution-derived and exactly the
   execution's ordered read projection.

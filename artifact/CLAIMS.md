@@ -1,4 +1,11 @@
 # Claims Packet
+
+Current RMQ publication proposition:
+`RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`
+joins the canonical reviewer payload to the canonical global trace with exact
+physical backing, exact valid queries, and uniform charged-trace bound `76`.
+Controller operations remain outside the charged event model; this is not a conventional word-RAM or Lean runtime bound.
+
 ## Canonical Reviewer And U3 Cost Candidate
 
 The W19 occurrence-provenance candidate preserves the exhaustive typed
@@ -31,9 +38,10 @@ cap `76 = 2*13 + (2*4 + 2*4 + 30) + 4`, and modeled cost is exactly emitted
 trace length. Payload-word reads and word-rank/select primitives are charged;
 controller dispatch, input/register access, arithmetic, branching, decoding,
 local scanning, candidate merging, trace assembly, and the validity guard are
-currently uncharged. The transitional `328` theorem remains for comparison.
-Ready `118`, route-split, zero-block, `4144`, and `196727` claims are
-compatibility rows only. Coordinator
+currently uncharged. Earlier cost and dispatch theorems are documented only in
+the explicit
+[`compatibility history`](../docs/digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
+Coordinator
 acceptance still requires coordinator reconstruction and a fresh blind
 exact-commit audit.
 
@@ -106,16 +114,14 @@ These are checked repository spokes and remain in the aggregate
   theorem and a no-synthetic structural replay theorem. The flat-payload theorem
   is an execution-story layout theorem; the separately cited `2*n + o(n)`
   theorem remains the asymptotic payload theorem.
-- The large-regime WordRAM theorem still carries an explicit size premise as a
-  compatibility strengthening. The public all-input theorem is total,
-  store-backed, and structurally dispatches the compact close/LCA path; legacy
-  finite-small interior store slots `26` and `27` read as `none` and are not
-  part of the counted flat payload.
+- Earlier conditional WordRAM strengthening and retired dispatch details live
+  only in the explicit compatibility history. The public all-input theorem is
+  total and store-backed; legacy finite-small interior store slots `26` and
+  `27` read as `none` and are not part of the counted flat payload.
 - The canonical reviewer route has the principled charged-trace bound `76`.
   It does not charge controller operations and is not a conventional word-RAM
-  theorem. The separately named transitional bound is `328`. Ready
-  `118`, route-split `4144`, zero-block, and `196727` theorems remain checked
-  only as legacy compatibility/history surfaces.
+  theorem. Earlier checked cost and dispatch surfaces are indexed in the
+  explicit compatibility history rather than repeated here.
 - The bounded execution-story theorem supplies a trace-local finite bit width
   for exposed addresses and primitive operands. It is not yet a tight
   asymptotic machine-word side-condition for every component.

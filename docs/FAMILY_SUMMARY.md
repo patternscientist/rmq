@@ -1,4 +1,11 @@
 # RMQ Family Summary
+
+Current RMQ publication proposition:
+`RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`
+joins the canonical reviewer payload to the canonical global trace with exact
+physical backing, exact valid queries, and uniform charged-trace bound `76`.
+Controller operations remain outside the charged event model; this is not a conventional word-RAM or Lean runtime bound.
+
 ## U3 Principled All-Size Charged-Trace Cost (W21, 2026-07-14)
 
 U3 keeps the accepted U2 payload and execution unchanged and replaces the
@@ -18,12 +25,11 @@ is exactly the emitted trace length, and
 same global execution consumed by final adequacy, supplied-store footprint
 transfer, `SuccinctClassic`, `RMQ.Headlines.RMQ`, and `RMQPaper`.
 
-The old `328 = 3*16 + (8 + 2*16 + 240)` chain had three conservative layers:
-two selects used `16` instead of the checked direct `13` (`6` total slack),
-three ranks used `16` instead of `4` (`36` slack), and each relative-rmM cell
-used an eight-word envelope, giving interior `240` instead of `30` (`210`
-slack). Endpoint fringes were already exact at four reads. Total removed slack
-is `252`, hence `328 - 252 = 76`.
+The earlier conservative accounting and its step-by-step numeric chronology are
+quarantined in the explicit
+[`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
+The current summary states only the operation-derived bound on the canonical
+execution.
 
 The interior proof is uniform. For size at least four, relative fields occupy
 at most two words; any execution that actually crosses a macro boundary
@@ -56,7 +62,7 @@ remain separate.
 The all-size final trace consumes
 `SuccinctClose.canonicalRelativeRmmInteriorDirectory` through
 `concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural`; it does not
-dispatch on legacy `Ready`, `Active`, or the zero-block route. One exhaustive
+dispatch through the retired size/shape regimes. One exhaustive
 typed 20-source universe includes canonical close, source regions are
 exclusive, all logical segments are covered, and duplicate legacy
 close/interior sources are absent from the canonical payload. The whole machine
@@ -130,14 +136,9 @@ kernel checked by the corresponding
 `canonicalRelativeRmmInteriorRangeFootprint_*_kernel_checked` and
 `*_threshold_boundary` theorems.
 
-The U2 historical transitional final-query bound is
-`concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq : ... = 328`,
-consumed by
-`concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional`.
-The older `118`, route-split, `4144`, zero-block, and `196727` surfaces are
-compatibility/history, not the current reviewer-route explanation. U3 replaces
-the paper-facing bound with the decomposed `76` theorem above while retaining
-the U2 theorem for audit comparison.
+Earlier final-query accounting remains checked and indexed in the explicit
+compatibility history, not in this current reviewer-route explanation. U3's
+paper-facing bound is the decomposed `76` theorem above.
 
 
 Snapshot: 2026-07-01, after the reusable table/access and payload models,
@@ -182,8 +183,8 @@ The final RMQ global-store surface consumes the canonical all-size close/LCA
 trace. The middle range is
 `canonicalRelativeRmmInteriorRangeMinTraceResultAtSegment`, backed by the
 single component store at segment `20`; same-block queries use the same
-positive raw-canonical block geometry. No reviewer branch inspects Ready,
-Active, or a zero block.
+positive raw-canonical block geometry. No reviewer branch inspects a retired
+dispatch predicate.
 
 `Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` proves the
 composed trace has no synthetic cost-only marker, and the flat/reviewer-payload
@@ -201,11 +202,9 @@ The final whole-query trace refines
 by `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact`.
 The current public cost alias is
 `Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe`, whose named
-algebra computes to `76`; the source-level compatibility theorem
-`SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq`
-retains the U2 value `328`. Footprint-agreeing supplied stores inherit the same
-exactness, backing, and principled bound. Legacy Ready `118`, route-split, `4144`, and
-`196727` declarations are compatibility facts only.
+algebra computes to `76`. Footprint-agreeing supplied stores inherit the same
+exactness, backing, and principled bound. Earlier accounting and dispatch
+declarations are indexed only in the compatibility history.
 `Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory` lifts
 that execution packet to the ordinary `List Int` public surface while keeping
 the classic half-open leftmost RMQ contract and existing modeled
@@ -485,27 +484,15 @@ as an opt-in checked root.
 
 ## Correctness And Cost Status
 
-Word-RAM status note: `SuccinctFinalRAM` now has both an all-size unified
-`WordRAM.TraceEvent` stream capstone for the final RMQ query and a stronger
-large-regime compatibility companion theorem. The all-size theorem now consumes
-`SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural`:
-the former zero-block same-block fallback is now a structural BP-code scan,
-while the former cross-block interior fallback is all-size structural: Ready
-uses the existing two-level trace, active non-Ready uses a bounded summary scan,
-and inactive uses a pure-none interior trace. Legacy interior and same-block
-witness-table definitions remain internal compatibility artifacts, but the
-all-size public trace/store/flat payload story no longer emits or counts their
-segments;
-the large-regime theorem still carries an explicit `2^128 <= shape.size`
-premise as a compatibility companion and
-replays the positive-block local BP, endpoint-fringe, and relative-rmM interior
-close path through structural trace events. `Core.WordRAM` exposes
-segment-relabeling and
-`ReadStore` provenance helpers, and the close/LCA RAM layer has relabeled
-adapters: rank-seed reads can be shifted by a caller-supplied base, BP-code
-reads stay on the shared BP-code segment 0, and large-regime relative-rmM
-interior tables take explicit global segment bases while proving the same
-`toCosted` result as the existing interpreted close query. The public headline
+Word-RAM status note: `SuccinctFinalRAM` exposes one all-size unified
+`WordRAM.TraceEvent` stream capstone for the final RMQ query. The canonical
+reviewer execution consumes the all-size structural close/LCA theorem and one
+canonical interior directory; the public trace/store/flat-payload story does
+not emit or count retired witness-table segments. Detailed earlier dispatch,
+cost, and size-premise chronology lives only in the explicit
+[`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
+`Core.WordRAM` exposes segment-relabeling and `ReadStore` provenance helpers.
+The public headline
 alias `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` now consumes
 the all-size layout: every final query event is either a payload read or a
 bounded word primitive, and every read is checked against one concrete global
@@ -544,10 +531,9 @@ this is an overapproximation of the dynamic read set, not a claim that every
 footprint segment is read or that the footprint is minimal. Agreement with the
 canonical global store on that footprint yields equality with the canonical
 global trace and exact RMQ results through
-`SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness`. The
-zero-block same-block close leaf also has a
-store-parametric evaluator:
-`RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreEqGlobalOfFootprint` evaluates against a
+`SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness`.
+`RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreEqGlobalOfFootprint`
+evaluates against a
 supplied `WordRAM.ReadStore`, and
 `RMQ.Headlines.succinctRMQCanonicalInteriorDirectoryProfileAllSize` proves equal
 produced value/trace for stores that agree on BP-code segment reads.  The
@@ -1057,68 +1043,16 @@ then paired with the sharpened Catalan lower side in
 `SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`.
 The older relative-split theorem trio is intentionally retained as an archived
 old capstone for the BP-specialized witness.
-The local BP seed-routing hardening item is now closed for the final BP-native
-path. The main remaining succinct work is optional presentation polish,
-especially packaging an encoded/payload-only view of the same final theorem. The positive
-block-size same-block decoder has been routed through the charged
-bounded-local-BP primitive. The final two-sided asymptotic profile remains total:
-`SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`
-has no large-regime premise and exposes both the `2*n + o(n)` constant-query
-upper structure and the doubled Catalan lower slack. The all-input zero-block
-same-block case is handled by a structural BP-code scan; the large-regime
-normalization lemmas
-`SuccinctClose.canonicalBPRelativeSummaryBlockSize_pos_of_size_ge`
-and
-`SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_eq_positive_dispatch_of_size_ge`
-prove that the large/canonical regime dispatches through the positive-block
-decoded/cross-block branches, while
-`SuccinctClose.zeroBlockSameBlock_does_not_imply_localBPWindowCoverage`
-records why the small zero-block fallback cannot pretend to have four-word
-window coverage. The seeded
-local decoder path now proves coverage, charged-window recovery, and seed
-recovery through
-`SuccinctClose.localBPWindowBits_eq_flatten_localBPBlockWordsRead`,
-`SuccinctClose.localBPWindowGet?_eq_bpCode_get?`,
-`SuccinctClose.localBPBlockWordsRead_get?_eq_bpCode_get?`,
-`SuccinctClose.localBPSeedFromRankFalse_eq_localBPSeedExcess`,
-`SuccinctClose.localBPSeedFromRankFalseCosted_eq_localBPSeedExcess`,
-`SuccinctClose.localBPSeedFromRankCloseCosted_eq_localBPSeedExcess`,
-and `SuccinctClose.localBPSeededExcessAt_eq_bpExcessAt`, plus seeded
-left/right fringe erasure theorems
-`SuccinctClose.localBPLeftFringeCandidateSeededCosted_eq_semantic` and
-`SuccinctClose.localBPRightFringeCandidateSeededCosted_eq_semantic`,
-and same-block theorems
-`SuccinctClose.localBPSameBlockCloseDecodedCosted_eq_semantic` and
-`SuccinctClose.localBPSameBlockCloseDecodedCosted_exact_of_query_same_block`,
-plus the rank-backed sibling
-`SuccinctClose.localBPSameBlockCloseDecodedCostedWithRankSeed_exact_of_query_same_block`.
-`SuccinctClose.ConcreteCompactBPCloseLCADirectory.crossBlockCloseCosted`
-now reads the rank-false seed at each endpoint window base and consumes the
-seeded endpoint helpers before reusing the semantic merge theorem, while its
-positive block-size same-block branch reads the left endpoint seed and computes
-the answer from `flattenPayloadWords (localBPBlockWordsRead ...)`. This local
-hardening gap is no longer a rank endpoint, rank local-width, proof-only
-block-code, select API-shape, built-query close-navigation, dense/sparse
-select-descriptor, concrete macro-directory, or same-block local-decoder
-blocker. The final BP-native stack now consumes the sibling
-`SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_exact_of_query`,
-which routes local decoder seeds through the final payload-backed
-`rankCloseCosted` access path. The compact LCA leg also has a Word-RAM-backed
-rank-seed bridge:
-`SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithInterpretedRankSeed_refines_lcaCloseCostedWithRankSeed`
-builds the false-rank callback from
-`SuccinctSpace.PayloadLiveStoredWordRankData.rankProgramClamped` and
-`rankWordRAMStore false`, with a consumed cost/exactness profile. This bridge
-is now consumed by `RMQ/Core/SuccinctFinalRAM.lean`, whose interpreted final
-query also routes the generic sparse-exception select-close and final
-answer-rank leaves through their Word-RAM bridges; the final answer-rank leg
-now uses the two-level register-backed rank surface rather than only a static
-position call, and the stronger whole-query capstone carries the outer query
-control through a closed first-order instruction list. The large-regime wrapper
-`SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseCostedWithRankSeed_exact_of_query_of_size_ge`
-is a branch-normal-form corollary, not a premise of the total final profile.
-The theorem-shaped local-decoder path is recorded in
-`docs/internal/LOCAL_BP_DECODER_PATH.md`.
+The local BP seed-routing hardening item is closed for the final BP-native
+path. The total two-sided profile exposes the `2*n + o(n)` constant-query upper
+structure and doubled Catalan lower slack for every size. Its charged local
+decoder proves coverage, word recovery, seed recovery, endpoint exactness, and
+same-block exactness before the compact close/LCA directory consumes those
+facts. The final stack routes those seeds through the payload-backed rank path
+and its Word-RAM bridge, and the stronger whole-query capstone carries outer
+control through a closed first-order instruction list. Detailed retired
+dispatch normalization and local obstruction history is quarantined in the
+compatibility history and `docs/internal/LOCAL_BP_DECODER_PATH.md`.
 
 Historical C1/C2 proof-expedition notes have been moved out of the live status
 path. The current succinct RMQ story is: the public capstone consumes the
@@ -1215,9 +1149,9 @@ and `docs/internal/LOCAL_BP_DECODER_PATH.md`.
   wall-clock runtime.
 - The current concrete BP-native RMQ paper-facing all-size query-cost bound is
   the uniform canonical charged-trace constant `76`; controller operations are
-  explicitly uncharged. The U2 `328` theorem is transitional. Ready `118`, route-split
-  `4144`, zero-block, and `196727` remain compatibility/history facts and are
-  not consumed by the reviewer route.
+  explicitly uncharged. Earlier accounting and dispatch facts remain only in
+  the explicit compatibility history and are not consumed by the reviewer
+  route.
 - The project remains Mathlib-free: imports are Lean/Std plus existing Lean
   arithmetic automation such as `omega`.
 
@@ -2267,8 +2201,6 @@ The names below are grouped by source module. Repeated base names in
   `SuccinctClose.canonicalBPRelativeMinMaxArgSummaryTableActive_of_large`,
   `SuccinctClose.concreteBPRelativeMinMaxArgSummaryTable_canonical_compact_payload_profile_of_large`,
   `SuccinctClose.concreteBPRelativeRmmInteriorReadyThreshold`,
-  `SuccinctClose.canonicalBPRelativeSummaryLargeRegime_of_size_ge_readyThreshold`,
-  `SuccinctClose.canonicalBPRelativeSummaryLargeRegime_of_size_ge`,
   `SuccinctClose.concreteBPRelativeRmmInteriorReady_empty_obstruction`,
   `SuccinctClose.concreteBPRelativeRmmInteriorReady_not_all`,
   `SuccinctClose.concreteBPRelativeRmmInteriorReady_of_size_ge_readyThreshold`,

@@ -3,7 +3,10 @@
 param(
   [string]$MutationPath = '',
   [string]$MutationText = '',
-  [string]$MutationRemoveText = ''
+  [string]$MutationRemoveText = '',
+  [string]$DocumentRolesPath = 'docs/internal/PUBLICATION_DOCUMENT_ROLES.json',
+  [switch]$SkipLeanResolution,
+  [switch]$MutationFocused
 )
 
 $ErrorActionPreference = 'Stop'
@@ -20,12 +23,6 @@ function Normalize-RepoPath([string]$Path) {
 $MutationPath = Normalize-RepoPath $MutationPath
 
 $frozenSnapshotMarker = '<!-- RMQ-PAPER-TOPOLOGY-FROZEN-SNAPSHOT -->'
-$frozenSnapshotLines = [ordered]@{
-  'docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md' =
-    '<!-- RMQ-PAPER-TOPOLOGY-FROZEN-SNAPSHOT --> RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery'
-  'docs/digests/PROJECT_STATE_2026_06_28.md' =
-    '<!-- RMQ-PAPER-TOPOLOGY-FROZEN-SNAPSHOT --> `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` abbreviates'
-}
 
 function Fail([string]$Message) {
   Write-Host "PAPER-TOPOLOGY: FAIL $Message"
@@ -61,9 +58,34 @@ function Read-Lines([string]$Path) {
 
 function Is-PreciselyFrozenSnapshotLine([string]$Path, [string]$Line) {
   $normalized = Normalize-RepoPath $Path
-  return (
-    $frozenSnapshotLines.Contains($normalized) -and
-    $Line -ceq $frozenSnapshotLines[$normalized])
+  foreach ($entry in $script:frozenSnapshotDocuments) {
+    if ((Normalize-RepoPath ([string]$entry.path)) -ne $normalized) {
+      continue
+    }
+    foreach ($exactLine in @($entry.exactLines)) {
+      if ($Line -ceq [string]$exactLine) {
+        return $true
+      }
+    }
+  }
+  return $false
+}
+
+function Get-DocumentRole([string]$Path) {
+  $normalized = Normalize-RepoPath $Path
+  foreach ($roleDefinition in @($script:documentRoleManifest.roles)) {
+    foreach ($document in @($roleDefinition.documents)) {
+      if ((Normalize-RepoPath ([string]$document.path)) -eq $normalized) {
+        return [string]$roleDefinition.role
+      }
+    }
+    foreach ($pathRegex in @($roleDefinition.pathRegexes)) {
+      if ($pathRegex -and $normalized -match [string]$pathRegex) {
+        return [string]$roleDefinition.role
+      }
+    }
+  }
+  return ''
 }
 
 function Run-LeanResolution(
@@ -99,35 +121,85 @@ function Run-LeanResolution(
   }
 }
 
+if (-not (Test-Path -LiteralPath $DocumentRolesPath)) {
+  Write-Host "PAPER-TOPOLOGY: FAIL missing document-role manifest $DocumentRolesPath"
+  exit 1
+}
+try {
+  $documentRoleManifest = Get-Content -Raw -LiteralPath $DocumentRolesPath |
+    ConvertFrom-Json -ErrorAction Stop
+} catch {
+  Write-Host "PAPER-TOPOLOGY: FAIL invalid document-role manifest $DocumentRolesPath"
+  exit 1
+}
+
+$allowedDocumentRoles = @(
+  'current-public',
+  'compatibility',
+  'audit-evidence',
+  'exact-frozen-snapshot'
+)
+$roleCounts = @{}
+$exactRolePaths = [System.Collections.Generic.HashSet[string]]::new(
+  [StringComparer]::Ordinal)
+foreach ($roleDefinition in @($documentRoleManifest.roles)) {
+  $roleName = [string]$roleDefinition.role
+  if ($allowedDocumentRoles -notcontains $roleName) {
+    Fail "[document-role-manifest] unknown role $roleName"
+    continue
+  }
+  if (-not $roleCounts.ContainsKey($roleName)) { $roleCounts[$roleName] = 0 }
+  $roleCounts[$roleName] += 1
+  foreach ($document in @($roleDefinition.documents)) {
+    $path = Normalize-RepoPath ([string]$document.path)
+    if (-not $exactRolePaths.Add($path)) {
+      Fail "[document-role-manifest] duplicate exact path $path"
+    }
+  }
+}
+foreach ($roleName in $allowedDocumentRoles) {
+  if (-not $roleCounts.ContainsKey($roleName) -or $roleCounts[$roleName] -ne 1) {
+    Fail "[document-role-manifest] role $roleName must occur exactly once"
+  }
+}
+
+$currentPublicRole = @($documentRoleManifest.roles |
+    Where-Object { $_.role -eq 'current-public' })[0]
+$frozenSnapshotRole = @($documentRoleManifest.roles |
+    Where-Object { $_.role -eq 'exact-frozen-snapshot' })[0]
+$frozenSnapshotDocuments = @($frozenSnapshotRole.documents)
+$publicClaimSurfaces = @($currentPublicRole.documents |
+    ForEach-Object { Normalize-RepoPath ([string]$_.path) })
+$paperDocumentSurfaces = @($currentPublicRole.documents |
+    Where-Object { $_.paperDocument -eq $true } |
+    ForEach-Object { Normalize-RepoPath ([string]$_.path) })
+$canonicalSummarySurfaces = @($currentPublicRole.documents |
+    Where-Object { $_.requiresCanonicalSummary -eq $true } |
+    ForEach-Object { Normalize-RepoPath ([string]$_.path) })
+$currentPublicationDigest = Normalize-RepoPath (
+  [string]$documentRoleManifest.currentPublicationDigest)
+
+if ($publicClaimSurfaces -notcontains $currentPublicationDigest) {
+  Fail "[document-role-manifest] current digest is not current-public: $currentPublicationDigest"
+}
+if ([IO.Path]::GetFileName($currentPublicationDigest) -ne 'PROJECT_DIGESTION_CURRENT.md') {
+  Fail "[document-role-manifest] current digest must be PROJECT_DIGESTION_CURRENT.md"
+}
+foreach ($path in $publicClaimSurfaces) {
+  if ($path -match '(?i)PROJECT_DIGESTION_\d{4}') {
+    Fail "[document-role-manifest] dated digest cannot have current-public role: $path"
+  }
+}
+
 $canonicalModule = 'RMQ/Headlines/RMQ.lean'
 $compatibilityModule = 'RMQ/Headlines/RMQCompatibility.lean'
 $paperRoot = 'RMQPaper.lean'
 $aggregateModule = 'RMQ/Headlines.lean'
 $headlineInventory = 'scripts/headline_axiom_check.lean'
-$currentPublicationDigest =
-  'docs/digests/PROJECT_DIGESTION_2026_07_06.md'
-
 $currentLeanSurfaces = @($canonicalModule, $paperRoot, $headlineInventory)
-$publicClaimSurfaces = @(
-  'README.md',
-  'artifact/CLAIMS.md',
-  'docs/FAMILY_SUMMARY.md',
-  'docs/PAPER_CLAIM_CORRESPONDENCE.md',
-  'docs/PAPER_THEOREM_MAP.md',
-  'docs/PAPER_MAIN_THEOREM.md',
-  'docs/PAPER_MODEL_ADEQUACY.md',
-  'docs/WHAT_IS_PROVED.md',
-  $currentPublicationDigest
-)
-$paperDocumentSurfaces = @(
-  'docs/PAPER_CLAIM_CORRESPONDENCE.md',
-  'docs/PAPER_THEOREM_MAP.md',
-  'docs/PAPER_MAIN_THEOREM.md',
-  'docs/PAPER_MODEL_ADEQUACY.md',
-  $currentPublicationDigest
-)
 
 $requiredFiles = @(
+  $DocumentRolesPath,
   $canonicalModule,
   $compatibilityModule,
   $paperRoot,
@@ -135,7 +207,8 @@ $requiredFiles = @(
   $headlineInventory
 ) + $publicClaimSurfaces
 
-$requiredFiles += @($frozenSnapshotLines.Keys)
+$requiredFiles += @($frozenSnapshotDocuments |
+    ForEach-Object { Normalize-RepoPath ([string]$_.path) })
 
 foreach ($path in $requiredFiles) {
   [void](Require-File $path)
@@ -187,22 +260,41 @@ $retiredAliasReplacements = [ordered]@{
 $retiredSourcePattern =
   'builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_(?:profile|whole_query_(?:interpreted|leaf_trace|word_trace(?:_large_regime)?|global_word_trace_large_regime)_profile)'
 $oldRegimePattern =
-  '(?i)(?:\b(?:196727|328|118|4144)\b|2\s*\^\s*128|zero[- ]?block|\bReady\b|LargeRegime|large[- ]regime|CanonicalTransitional)'
+  '(?:\b(?:196727|328|118|4144)\b|2\s*\^\s*128|zero[- ]block|\bReady\b|non-Ready|route[- ]split|LargeRegime|CanonicalTransitional)'
 
 # These files intentionally contain the removed vocabulary as enforcement
 # data.  They are not documentary theorem references.
 $enforcementPaths = @(
   'docs/internal/CLAIM_DRIFT_POLICY.json',
   'docs/internal/CLAIM_DRIFT_POLICY.md',
+  'docs/internal/PUBLICATION_DOCUMENT_ROLES.json',
   'scripts/claim_drift_policy_regression.ps1',
   'scripts/paper_topology_lint.ps1',
   'scripts/paper_topology_lint_regression.ps1'
 )
 
-$trackedFiles = @(& git ls-files | ForEach-Object { Normalize-RepoPath $_ })
+$trackedFiles = @(
+  @(& git ls-files | ForEach-Object { Normalize-RepoPath $_ }) +
+  @($exactRolePaths)
+) | Sort-Object -Unique
 if ($LASTEXITCODE -ne 0) {
   Fail '[repository-search] git ls-files failed'
   $trackedFiles = @()
+}
+if ($MutationFocused) {
+  if ($MutationPath -eq '') {
+    Fail '[mutation-focus] MutationFocused requires MutationPath'
+  }
+  # The regression first runs one complete production baseline. A focused
+  # virtual mutation therefore needs the changed text plus every exact frozen
+  # snapshot for occurrence-count integrity; current-public surfaces are still
+  # checked in full below. Unchanged repository-wide documentary inventories
+  # and removed-name closure are inherited only from that baseline.
+  $trackedFiles = @(
+    $MutationPath
+    @($frozenSnapshotDocuments |
+        ForEach-Object { Normalize-RepoPath ([string]$_.path) })
+  ) | Sort-Object -Unique
 }
 
 # Repository-wide migration closure: outside exact enforcement files and an
@@ -211,8 +303,12 @@ if ($LASTEXITCODE -ne 0) {
 # allowance.
 $textExtensions = @('.lean', '.md', '.ps1', '.json', '.toml', '.yml', '.yaml', '.sh')
 $frozenSnapshotLineCounts = @{}
-foreach ($path in $frozenSnapshotLines.Keys) {
-  $frozenSnapshotLineCounts[$path] = 0
+foreach ($entry in $frozenSnapshotDocuments) {
+  $path = Normalize-RepoPath ([string]$entry.path)
+  foreach ($exactLine in @($entry.exactLines)) {
+    $key = $path + "`n" + [string]$exactLine
+    $frozenSnapshotLineCounts[$key] = 0
+  }
 }
 foreach ($path in $trackedFiles) {
   if ($enforcementPaths -contains $path) { continue }
@@ -227,7 +323,8 @@ foreach ($path in $trackedFiles) {
       Fail "[frozen-marker-scope] $path`:$lineNumber has a malformed or misplaced snapshot marker"
     }
     if ($isPreciselyFrozen) {
-      $frozenSnapshotLineCounts[$path] += 1
+      $key = $path + "`n" + $line
+      $frozenSnapshotLineCounts[$key] += 1
       continue
     }
     foreach ($name in $retiredAliasReplacements.Keys) {
@@ -238,9 +335,13 @@ foreach ($path in $trackedFiles) {
   }
 }
 
-foreach ($path in $frozenSnapshotLines.Keys) {
-  if ($frozenSnapshotLineCounts[$path] -ne 1) {
-    Fail "[frozen-marker-metadata] registered snapshot $path must have exactly one exact frozen line; found $($frozenSnapshotLineCounts[$path])"
+foreach ($entry in $frozenSnapshotDocuments) {
+  $path = Normalize-RepoPath ([string]$entry.path)
+  foreach ($exactLine in @($entry.exactLines)) {
+    $key = $path + "`n" + [string]$exactLine
+    if ($frozenSnapshotLineCounts[$key] -ne 1) {
+      Fail "[frozen-marker-metadata] registered snapshot $path must have each exact frozen line exactly once; found $($frozenSnapshotLineCounts[$key])"
+    }
   }
 }
 
@@ -255,19 +356,36 @@ foreach ($path in $currentLeanSurfaces) {
 }
 
 foreach ($path in $publicClaimSurfaces) {
+  $text = Read-Text $path
   $lineNumber = 0
   foreach ($line in Read-Lines $path) {
     $lineNumber += 1
     if ($line -match '^\s*\|' -and $line -match $retiredSourcePattern) {
       Fail "[retired-source-row] $path`:$lineNumber presents a retired source profile in a current table row"
     }
-    if (
-      $line -match '^\s*\|' -and
-      $line -match '(?:RMQ\.Headlines\.(?:succinctRMQ|listIntSuccinctRMQ)|Headlines\.(?:succinctRMQ|listIntSuccinctRMQ))' -and
-      $line -match $oldRegimePattern
-    ) {
-      Fail "[old-current-row] $path`:$lineNumber has an old cost/regime token in a current headline row"
+  }
+  if ($text -cmatch $oldRegimePattern) {
+    Fail "[obsolete-current-proposition] $path contains obsolete U3 cost or route vocabulary; move detailed history to a compatibility-role document"
+  }
+}
+
+foreach ($path in $canonicalSummarySurfaces) {
+  $text = Read-Text $path
+  foreach ($pattern in @($documentRoleManifest.requiredCanonicalPatterns)) {
+    if ($text -notmatch [string]$pattern) {
+      Fail "[canonical-public-story] $path is missing required semantic anchor $pattern"
     }
+  }
+}
+
+foreach ($path in @('README.md', 'docs/README.md')) {
+  $text = Read-Text $path
+  $currentDigestFile = [IO.Path]::GetFileName($currentPublicationDigest)
+  if ($text -notmatch [regex]::Escape($currentDigestFile)) {
+    Fail "[current-digest-link] $path does not link the manifest-selected current digest $currentPublicationDigest"
+  }
+  if ($text -match '(?i)PROJECT_DIGESTION_2026_07_06\.md') {
+    Fail "[current-digest-link] $path still links a dated project digestion as current"
   }
 }
 
@@ -373,6 +491,17 @@ foreach ($match in [regex]::Matches(
 $headlinePattern =
   '(?<![A-Za-z0-9_])(?:RMQ\.)?Headlines\.([a-z][A-Za-z0-9_]*)'
 
+if ($MutationFocused -and ($paperDocumentSurfaces -contains $MutationPath) -and
+    -not (Is-PreciselyFrozenSnapshotLine $MutationPath $MutationText)) {
+  foreach ($match in [regex]::Matches($MutationText, $headlinePattern)) {
+    $name = $match.Groups[1].Value
+    if ($name -notin @('lean', 'md') -and
+        -not $canonicalHeadlineNames.Contains($name)) {
+      Fail "[focused-paper-symbol] $MutationPath introduces non-canonical or unresolved paper identifier RMQ.Headlines.$name"
+    }
+  }
+}
+
 foreach ($path in $trackedFiles) {
   if ([IO.Path]::GetExtension($path) -ne '.md') { continue }
   if (-not (Test-Path -LiteralPath $path)) { continue }
@@ -397,7 +526,7 @@ foreach ($path in $trackedFiles) {
   }
 }
 
-if ($failures -eq 0) {
+if ($failures -eq 0 -and -not $SkipLeanResolution) {
   Run-LeanResolution 'RMQ.Headlines' $broadDocumentNames 'broad-documentary-symbol'
   Run-LeanResolution 'RMQPaper' $paperDocumentNames 'paper-documentary-symbol'
 }
@@ -410,6 +539,10 @@ if ($failures -gt 0) {
 Write-Host (
   'PAPER-TOPOLOGY PASS ' +
   "($($broadDocumentNames.Count) broad documentary identifiers; " +
-  "$($paperDocumentNames.Count) paper identifiers resolved)"
+  $(if ($SkipLeanResolution) {
+      "$($paperDocumentNames.Count) paper identifiers inventoried; Lean resolution reused from regression baseline)"
+    } else {
+      "$($paperDocumentNames.Count) paper identifiers resolved)"
+    })
 )
 exit 0

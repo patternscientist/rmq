@@ -84,8 +84,9 @@ if ($LASTEXITCODE -ne 0) { Fail "succinct_cost_lint.ps1 found issues" }
 & "$PSScriptRoot\shim_lint.ps1"
 if ($LASTEXITCODE -ne 0) { Fail "shim_lint.ps1 found issues" }
 
-# 6. Claim-drift policy mutations must enforce the full canonical-role/exponent
-# category, contextual allowances, parser shapes, and allowance bypasses.
+# 6. Claim-drift policy mutations must enforce the shared document roles, the
+# canonical U3 proposition, obsolete route/cost categories, parser shapes, and
+# exact frozen-snapshot boundary.
 & "$PSScriptRoot\claim_drift_policy_regression.ps1"
 if ($LASTEXITCODE -ne 0) { Fail "claim_drift_policy_regression.ps1 found issues" }
 
@@ -93,8 +94,9 @@ if ($LASTEXITCODE -ne 0) { Fail "claim_drift_policy_regression.ps1 found issues"
 & "$PSScriptRoot\claim_drift_scan.ps1" -Strict
 if ($LASTEXITCODE -ne 0) { Fail "claim_drift_scan.ps1 found strict violations" }
 
-# 8. The paper root must expose only the canonical physical-payload/76 query
-# topology; historical profiles remain in the explicit compatibility module.
+# 8. Every current-public document must expose the canonical physical-payload/
+# global-trace/76 proposition and charged-trace boundary. Historical profiles
+# remain on registered compatibility or exact frozen-snapshot surfaces.
 & "$PSScriptRoot\paper_topology_lint.ps1"
 if ($LASTEXITCODE -ne 0) { Fail "paper_topology_lint.ps1 found issues" }
 

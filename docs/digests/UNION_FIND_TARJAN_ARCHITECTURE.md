@@ -1,5 +1,7 @@
 # Union-Find Tarjan Architecture Digest
 
+Current RMQ publication proposition: the public alias joins the canonical reviewer payload to the canonical global trace and proves its uniform charged-trace bound `76`. Controller operations remain outside the charged event model; this is not a conventional word-RAM or Lean runtime bound.
+
 Snapshot: 2026-06-29. This note records the architecture research pass for
 moving the union-find spoke from the current forest-refinement/log-rank/rank
 slack checkpoints toward a true Tarjan inverse-Ackermann theorem.

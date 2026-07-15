@@ -38,6 +38,9 @@ story.
 `scripts/claim_drift_scan.ps1` reads
 `docs/internal/CLAIM_DRIFT_POLICY.json`. Keep the JSON concise and update this
 human-readable file when the interpretation changes.
+Document roles come only from
+`docs/internal/PUBLICATION_DOCUMENT_ROLES.json`; claim drift and paper topology
+must not maintain separate current, compatibility, audit, or frozen path lists.
 
 ## Controlled Claim-Language Lint
 
@@ -73,14 +76,16 @@ The strict detector treats a canonical execution's 2^128 mention as suspicious b
 
 ## Canonical Paper Topology
 
-Policy version 14 rejects every spelling removed during the W21 paper-surface
+Policy version 15 rejects every spelling removed during the W21 paper-surface
 migration: the six unqualified legacy query aliases, the transitional and
 large-regime aliases, and the compatibility-only W18 projection names. The
 only whole-path allowances are exact policy or lint enforcement files. Audit
 reports receive no allowance. Historical aliases may remain only on a line
 beginning with the exact marker
 `<!-- RMQ-PAPER-TOPOLOGY-FROZEN-SNAPSHOT -->` in one of the two exact registered
-June 28 snapshot files. The path and line conditions are conjunctive; neither a
+June 28 snapshot files. Those path-and-line values are read from the shared
+document-role manifest rather than duplicated in the policy. The conditions
+are conjunctive; neither a
 digest directory nor casual `FROZEN-HISTORY` wording grants an allowance. The
 production scanner regression exercises each removed-name category and every
 history-scope boundary.
@@ -105,6 +110,25 @@ compatibility module to contain `Legacy` or `Compatibility`, and blocks old
 query regimes from the canonical module, current public rows, and headline
 axiom inventory. The aggregate gate runs the lint, its mutation regression,
 and the headline axiom inventory.
+
+## Proposition-Level Publication Coherence
+
+Symbol resolution and retired-name closure establish lexical/import topology;
+they do not establish that the surrounding proposition names the current
+payload, execution, route, bound, and model boundary. Policy version 15 assigns
+each designated document one machine-readable role. Any old U3 numeric or
+dispatch vocabulary on a `current-public` path is a strict failure even when a
+sentence negates it or calls it historical. Truthful chronology is accepted on
+the registered `compatibility` surface; audit evidence and exact frozen
+snapshots retain their narrower roles.
+
+The topology lint also checks positive content. Each designated RMQ publication
+surface must name the canonical reviewer payload, canonical global trace,
+uniform `76` charged-trace bound, and the fact that controller operations remain
+outside that event model. The canonical digest, Family Summary, repository
+README, artifact claims, and theorem map are mandatory anchors. A resolved
+theorem identifier beside a contradictory numeric sentence is therefore a
+blocking failure, not a review hit.
 
 ## Initial Sensitive Claims
 

@@ -1,5 +1,7 @@
 # Rank/Select Spoke
 
+Current RMQ publication proposition: the public alias joins the canonical reviewer payload to the canonical global trace and proves its uniform charged-trace bound `76`. Controller operations remain outside the charged event model; this is not a conventional word-RAM or Lean runtime bound.
+
 Snapshot: 2026-07-03. This note records the first extracted succinct
 data-structure spoke in the RMQ repository: plain bitvector access/rank/select.
 

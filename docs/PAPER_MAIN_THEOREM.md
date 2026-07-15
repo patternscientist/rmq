@@ -1,5 +1,12 @@
 # Paper Main Theorem
 
+Current RMQ publication proposition:
+`RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`
+joins the canonical reviewer payload to the canonical global trace with exact
+physical backing, exact valid queries, and uniform charged-trace bound `76`.
+Controller operations remain outside the charged event model; this is not a conventional word-RAM or Lean runtime bound.
+
+
 ## English Statement
 
 For every ordinary input list `xs : List Int`, the verified succinct RMQ

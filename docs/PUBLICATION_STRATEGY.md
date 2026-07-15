@@ -1,5 +1,12 @@
 # Publication Strategy
 
+Current RMQ publication proposition:
+`RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`
+joins the canonical reviewer payload to the canonical global trace with exact
+physical backing, exact valid queries, and uniform charged-trace bound `76`.
+Controller operations remain outside the charged event model; this is not a conventional word-RAM or Lean runtime bound.
+
+
 What this repository would need to become a *paper-level artifact taken
 seriously by the formalization research community* — grounded in specific
 venues and pattern-matched against the extant work published there.
@@ -67,10 +74,10 @@ candidates, subject to the novelty search described below — are:
    size and has the checked principled charged-trace bound `76`, with exact
    `nonSyntheticWeight` certificate, emitted-trace-length, and `Costed`
    accounting for the canonical no-synthetic trace.
-   Ready `118`, route-split
-   `4144`, zero-block, and `196727` survive only as compatibility/history
-   declarations; nonexistent fast-regime aliases are not part of the paper
-   surface. E1 still owns fully charged controller simulation.
+   Earlier checked cost and dispatch declarations live in the explicit
+   [`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md)
+   and are not part of the paper surface. E1 still owns fully charged
+   controller simulation.
 
 Two items that were previously P0 are no longer proof blockers on the Lean/docs
 side:
@@ -123,8 +130,8 @@ side:
 all-size theorem is now in place, so the highest-leverage move is paper/artifact
 packaging: a referee-grade theorem map, claim-to-check table, novelty search,
 related-work calibration, and reproduction script that make the current
-charged-trace `76` impossible to confuse with transitional `328` or
-compatibility-only `118`, `4144`, zero-block, and `196727` rows.
+charged-trace `76` impossible to confuse with the explicitly quarantined
+compatibility chronology.
 
 ## 4a. Status update (2026-07-06)
 
@@ -148,11 +155,10 @@ Landed on `main` since this document was written (through `3f6f1e3`):
   A referee-grade novelty search remains.
 - **P2 item 8 (artifact):** reproduction script, CI workflows, `CITATION.cff`,
   and an AI-assisted-development disclosure landed.
-- **Historical cost-regime split (superseded by W17):** the fast-regime theorem
-  cited above exposes `118` under the readiness threshold, and R2 later exposed
-  route-split `4144`. Those declarations and `196727` are now compatibility
-  history. The canonical reviewer route is uniform; U3 now gives the checked
-  charged-trace cap `76`, while E1 fully charged controller simulation remains.
+- **Historical cost-regime split:** detailed earlier cost and dispatch
+  chronology is quarantined in the explicit compatibility history. The
+  canonical reviewer route is uniform; U3 gives the checked charged-trace cap
+  `76`, while E1 fully charged controller simulation remains.
 
 Remaining, in priority order: **paper/artifact packaging; novelty search;
 extraction + benchmarks; E1 fully charged simulation.**

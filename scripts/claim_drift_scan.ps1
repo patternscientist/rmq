@@ -4,6 +4,7 @@
 param(
   [switch]$Strict,
   [string]$PolicyPath = "docs/internal/CLAIM_DRIFT_POLICY.json",
+  [string]$DocumentRolesPath = "docs/internal/PUBLICATION_DOCUMENT_ROLES.json",
   [string[]]$Path = @("README.md", "artifact", "docs")
 )
 
@@ -14,7 +15,14 @@ if (-not (Test-Path $PolicyPath)) {
   exit 1
 }
 
+if (-not (Test-Path $DocumentRolesPath)) {
+  Write-Host "CLAIM-DRIFT: document-role manifest not found: $DocumentRolesPath"
+  exit 1
+}
+
 $policy = Get-Content -Raw -Path $PolicyPath | ConvertFrom-Json
+$documentRoleManifest = Get-Content -Raw -Path $DocumentRolesPath |
+  ConvertFrom-Json
 $roots = @($Path | Where-Object { Test-Path $_ })
 
 if ($roots.Count -eq 0) {
@@ -70,6 +78,47 @@ function ConvertTo-PolicyPath {
   return ($RipgrepPath -replace "\\", "/")
 }
 
+function Get-DocumentRole {
+  param([string]$PolicyPathValue)
+
+  foreach ($roleDefinition in @($documentRoleManifest.roles)) {
+    foreach ($document in @($roleDefinition.documents)) {
+      $documentPath = ([string]$document.path) -replace "\\", "/"
+      if ($documentPath -eq $PolicyPathValue) {
+        return [string]$roleDefinition.role
+      }
+    }
+    foreach ($pathRegex in @($roleDefinition.pathRegexes)) {
+      if ($pathRegex -and $PolicyPathValue -match [string]$pathRegex) {
+        return [string]$roleDefinition.role
+      }
+    }
+  }
+  return ""
+}
+
+function Test-ExactFrozenSnapshotLine {
+  param(
+    [string]$PolicyPathValue,
+    [string]$PolicyLineValue
+  )
+
+  $frozenRole = @($documentRoleManifest.roles |
+      Where-Object { $_.role -eq "exact-frozen-snapshot" })
+  foreach ($roleDefinition in $frozenRole) {
+    foreach ($document in @($roleDefinition.documents)) {
+      $documentPath = ([string]$document.path) -replace "\\", "/"
+      if ($documentPath -ne $PolicyPathValue) { continue }
+      foreach ($exactLine in @($document.exactLines)) {
+        if ($PolicyLineValue -ceq [string]$exactLine) {
+          return $true
+        }
+      }
+    }
+  }
+  return $false
+}
+
 foreach ($term in $policy.terms) {
   $pattern = [string]$term.pattern
   $matches = @(& rg --json --pcre2 -- $pattern @roots 2>$null)
@@ -95,6 +144,7 @@ foreach ($term in $policy.terms) {
     $lineNo = [string]$record.data.line_number
     $line = Get-RipgrepJsonText $record.data.lines
     $policyLine = $line.TrimEnd([char[]]"`r`n")
+    $documentRole = Get-DocumentRole $fileNorm
     $hits += 1
 
     $allowed = $false
@@ -125,13 +175,26 @@ foreach ($term in $policy.terms) {
         }
       }
     }
+    if ($term.allowedDocumentRoles -and
+        @($term.allowedDocumentRoles) -contains $documentRole) {
+      $allowed = $true
+    }
+    if ($term.allowExactFrozenSnapshot -eq $true -and
+        (Test-ExactFrozenSnapshotLine $fileNorm $policyLine)) {
+      $allowed = $true
+    }
 
     $label = "review"
     if ($allowed) {
       $label = "allowed"
     }
 
-    if ($Strict -and ($term.strict -eq $true) -and -not $allowed) {
+    $strictApplies = ($term.strict -eq $true)
+    if ($term.strictDocumentRoles) {
+      $strictApplies = $strictApplies -and
+        (@($term.strictDocumentRoles) -contains $documentRole)
+    }
+    if ($Strict -and $strictApplies -and -not $allowed) {
       $label = "fail"
       $failures += 1
     }

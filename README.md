@@ -1,5 +1,12 @@
 # Verified Range-Minimum Query
 
+Current RMQ publication proposition:
+`RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`
+joins the canonical reviewer payload to the canonical global trace with exact
+physical backing, exact valid queries, and uniform charged-trace bound `76`.
+Controller operations remain outside the charged event model; this is not a conventional word-RAM or Lean runtime bound.
+
+
 [![CI](https://github.com/patternscientist/rmq/actions/workflows/ci.yml/badge.svg)](https://github.com/patternscientist/rmq/actions/workflows/ci.yml)
 
 **TL;DR:** This project uses Lean to machine-check a classic optimal RMQ
@@ -21,7 +28,7 @@ encoding-quantified information-theoretic lower-bound theorem.
 
 For the current publication-oriented explanation aimed at mathematically mature
 readers with little data-structures background, see
-[`docs/digests/PROJECT_DIGESTION_2026_07_06.md`](docs/digests/PROJECT_DIGESTION_2026_07_06.md).
+[`docs/digests/PROJECT_DIGESTION_CURRENT.md`](docs/digests/PROJECT_DIGESTION_CURRENT.md).
 The deeper first-contact background note remains
 [`docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md`](docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md).
 
@@ -140,10 +147,10 @@ singleton regression keeps the equal events at global positions `0` and `12`
 as distinct obligations. The source witnesses use actual successful closed
 valid executions, including symbolic large witnesses for sources `12`--`19`;
 component may-read and W18 event-value facts remain compatibility facts. The
-principled U3 charged-trace cap is `76`; the transitional `328` theorem remains
-for historical comparison. Ready `118`, route-split `4144`, zero-block, and `196727` declarations
-remain compatibility/history surfaces and have no reverse edge into the
-reviewer route.
+principled U3 charged-trace cap is `76`; detailed earlier cost and dispatch
+chronology lives only in the
+[`compatibility history`](docs/digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md)
+and has no reverse edge into the reviewer route.
 
 The construction-level theorem names are intentionally verbose, so that the
 model assumptions and dependency path remain inspectable. See
@@ -301,7 +308,7 @@ imports, this material):
 - [`docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md`](docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md):
   immutable historical Lean-club snapshot; exact frozen lines are marked and
   remain outside the current paper surface.
-- [`docs/digests/PROJECT_DIGESTION_2026_07_06.md`](docs/digests/PROJECT_DIGESTION_2026_07_06.md):
+- [`docs/digests/PROJECT_DIGESTION_CURRENT.md`](docs/digests/PROJECT_DIGESTION_CURRENT.md):
   current publication-oriented project digestion. Its documentary headline
   identifiers are checked under both the broad and `RMQPaper` imports; dated
   fast-regime discussion is explicitly labeled compatibility history.
@@ -337,8 +344,9 @@ The RMQ capstone is in place with the uniform canonical reviewer route and its
 principled all-size charged-trace cap `76`; the U3 theorem chain is
 candidate-complete branch evidence pending the coordinator-owned blind
 exact-commit audit boundary.
-The older route-split `4144`, Ready `118`, zero-block, and `196727` statements
-remain compatibility/history surfaces. The development frontier is now to
+Earlier cost and dispatch statements remain in the explicit
+[`compatibility history`](docs/digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
+The development frontier is now to
 package, calibrate, and reuse the infrastructure:
 
 1. deepen balanced-parentheses navigation into a fuller tree-navigation API and

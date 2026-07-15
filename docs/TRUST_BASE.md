@@ -1,5 +1,12 @@
 # Trust Base
 
+Current RMQ publication proposition:
+`RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`
+joins the canonical reviewer payload to the canonical global trace with exact
+physical backing, exact valid queries, and uniform charged-trace bound `76`.
+Controller operations remain outside the charged event model; this is not a conventional word-RAM or Lean runtime bound.
+
+
 This document is the short external-facing trust-base summary for the RMQ
 artifact. It complements the detailed theorem inventory in
 `docs/FAMILY_SUMMARY.md` and the compact skeptical-review packet in

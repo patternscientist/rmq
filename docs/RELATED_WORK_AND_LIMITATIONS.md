@@ -1,5 +1,12 @@
 # Related Work And Limitations
 
+Current RMQ publication proposition:
+`RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`
+joins the canonical reviewer payload to the canonical global trace with exact
+physical backing, exact valid queries, and uniform charged-trace bound `76`.
+Controller operations remain outside the charged event model; this is not a conventional word-RAM or Lean runtime bound.
+
+
 For a paper-ready related-work draft, see `PAPER_RELATED_WORK.md`. This file is
 the compact limitations-oriented companion.
 
@@ -54,8 +61,9 @@ remains a safe overapproximation.
 - The cost model is the repository's explicit modeled WordRAM/query-cost layer.
 - The current public all-size RMQ bound is the uniform canonical checked
   charged-trace value `76`. Controller operations remain uncharged, so it is
-  not a conventional word-RAM result. The U2 `328` theorem is transitional;
-  Ready `118`, route-split `4144`, zero-block, and `196727` are compatibility/history only.
+  not a conventional word-RAM result. Earlier checked cost and dispatch
+  surfaces are documented in the explicit
+  [`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
 - The auxiliary logical layout footprint is not claimed minimal; the reviewer
   flat-physical footprint is execution-derived and recorded exactly.
 - U3 gives a tight component-wise cap but does not prove global minimality of

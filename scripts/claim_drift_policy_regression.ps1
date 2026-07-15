@@ -4,6 +4,7 @@
 param(
   [string]$PolicyPath = "docs/internal/CLAIM_DRIFT_POLICY.json",
   [string]$ScannerPath = "scripts/claim_drift_scan.ps1",
+  [string]$DocumentRolesPath = "docs/internal/PUBLICATION_DOCUMENT_ROLES.json",
   [switch]$AbsoluteWindowsOnly
 )
 
@@ -12,6 +13,7 @@ $ErrorActionPreference = "Stop"
 $repoRoot = [System.IO.Path]::GetFullPath((Get-Location).Path)
 $resolvedPolicyPath = [System.IO.Path]::GetFullPath($PolicyPath)
 $resolvedScannerPath = [System.IO.Path]::GetFullPath($ScannerPath)
+$resolvedDocumentRolesPath = [System.IO.Path]::GetFullPath($DocumentRolesPath)
 
 if (-not (Test-Path -LiteralPath $resolvedPolicyPath)) {
   Write-Host "CLAIM-POLICY-REGRESSION: policy not found: $PolicyPath"
@@ -20,6 +22,11 @@ if (-not (Test-Path -LiteralPath $resolvedPolicyPath)) {
 
 if (-not (Test-Path -LiteralPath $resolvedScannerPath)) {
   Write-Host "CLAIM-POLICY-REGRESSION: scanner not found: $ScannerPath"
+  exit 1
+}
+
+if (-not (Test-Path -LiteralPath $resolvedDocumentRolesPath)) {
+  Write-Host "CLAIM-POLICY-REGRESSION: document-role manifest not found: $DocumentRolesPath"
   exit 1
 }
 
@@ -112,12 +119,14 @@ function Get-TrackedFileHashSnapshot {
     $worktreeRaw = @(& git -c core.excludesfile= -c core.autocrlf=false diff --raw --no-ext-diff --)
     $indexRaw = @(& git -c core.excludesfile= -c core.autocrlf=false diff --cached --raw --no-ext-diff --)
     $matrixHash = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $repoRoot $matrixPath)).Hash.ToLowerInvariant()
+    $rolesHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $resolvedDocumentRolesPath).Hash.ToLowerInvariant()
     return @(
       "worktree-diff-raw:"
       $worktreeRaw
       "index-diff-raw:"
       $indexRaw
       "matrix-sha256: $matrixHash"
+      "document-roles-sha256: $rolesHash"
     ) -join [Environment]::NewLine
   } finally {
     Pop-Location
@@ -187,7 +196,7 @@ function Invoke-StrictClaimScan {
 
   Push-Location $WorkingDirectory
   try {
-    $output = @(& $shellPath -NoLogo -NoProfile -ExecutionPolicy Bypass -File $resolvedScannerPath -Strict -PolicyPath $resolvedPolicyPath -Path $Path 2>&1)
+    $output = @(& $shellPath -NoLogo -NoProfile -ExecutionPolicy Bypass -File $resolvedScannerPath -Strict -PolicyPath $resolvedPolicyPath -DocumentRolesPath $resolvedDocumentRolesPath -Path $Path 2>&1)
     $code = $LASTEXITCODE
   } finally {
     Pop-Location
@@ -303,7 +312,7 @@ try {
     $exactFrozenLine = '<!-- RMQ-PAPER-TOPOLOGY-FROZEN-SNAPSHOT --> RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery'
 
     $currentDigestShadow = New-ShadowFileRoot `
-      -RelativePath 'docs/digests/PROJECT_DIGESTION_2026_07_06.md' `
+      -RelativePath 'docs/digests/PROJECT_DIGESTION_CURRENT.md' `
       -Content "Current capstone: $retiredAlias."
     Test-FinalVerdict -Id 'retired-alias-current-publication-digest' -Path $currentDigestShadow.RelativePath -WorkingDirectory $currentDigestShadow.Root -Reject $true -TermId $retiredTerm -CheckTrackedState $true
 
@@ -318,7 +327,7 @@ try {
     Test-FinalVerdict -Id 'valid-exact-frozen-snapshot-occurrence' -Path $validFrozenShadow.RelativePath -WorkingDirectory $validFrozenShadow.Root -Reject $false -RequireAllowed $true -TermId $retiredTerm -CheckTrackedState $true
 
     $misplacedFrozenShadow = New-ShadowFileRoot `
-      -RelativePath 'docs/digests/PROJECT_DIGESTION_2026_07_06.md' `
+      -RelativePath 'docs/digests/PROJECT_DIGESTION_CURRENT.md' `
       -Content $exactFrozenLine
     Test-FinalVerdict -Id 'same-frozen-occurrence-outside-exact-scope' -Path $misplacedFrozenShadow.RelativePath -WorkingDirectory $misplacedFrozenShadow.Root -Reject $true -TermId $retiredTerm -CheckTrackedState $true
 
@@ -331,7 +340,53 @@ try {
       -RelativePath 'docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md' `
       -Content "[FROZEN-HISTORY: casual] $retiredAlias"
     Test-FinalVerdict -Id 'casual-history-word-does-not-bypass' -Path $casualFrozenShadow.RelativePath -WorkingDirectory $casualFrozenShadow.Root -Reject $true -TermId $retiredTerm -CheckTrackedState $true
-    $contextCount += 6
+
+    $numericTerm = 'obsolete-u3-numeric-current-public'
+    $routeTerm = 'obsolete-u3-route-current-public'
+    $powTerm = 'obsolete-u3-2pow128-current-public'
+    $compatibilityPath = 'docs/digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md'
+
+    $current4144Shadow = New-ShadowFileRoot `
+      -RelativePath 'README.md' `
+      -Content 'The public all-size bound is 4144.'
+    Test-FinalVerdict -Id 'current-public-all-size-4144' -Path $current4144Shadow.RelativePath -WorkingDirectory $current4144Shadow.Root -Reject $true -TermId $numericTerm -CheckTrackedState $true
+
+    $currentNegated4144Shadow = New-ShadowFileRoot `
+      -RelativePath 'README.md' `
+      -Content 'The public all-size bound is not 4144.'
+    Test-FinalVerdict -Id 'current-public-negation-does-not-allow-4144' -Path $currentNegated4144Shadow.RelativePath -WorkingDirectory $currentNegated4144Shadow.Root -Reject $true -TermId $numericTerm -CheckTrackedState $true
+
+    $currentReadyShadow = New-ShadowFileRoot `
+      -RelativePath 'docs/FAMILY_SUMMARY.md' `
+      -Content 'The Ready threshold costs 118.'
+    Test-FinalVerdict -Id 'current-public-ready-118' -Path $currentReadyShadow.RelativePath -WorkingDirectory $currentReadyShadow.Root -Reject $true -TermId $routeTerm -CheckTrackedState $true
+
+    $currentDispatchShadow = New-ShadowFileRoot `
+      -RelativePath 'docs/digests/PROJECT_DIGESTION_CURRENT.md' `
+      -Content 'The current Ready/non-Ready/zero-block dispatch selects the large regime.'
+    Test-FinalVerdict -Id 'current-public-route-dispatch' -Path $currentDispatchShadow.RelativePath -WorkingDirectory $currentDispatchShadow.Root -Reject $true -TermId $routeTerm -CheckTrackedState $true
+
+    $currentPowShadow = New-ShadowFileRoot `
+      -RelativePath 'docs/PAPER_THEOREM_MAP.md' `
+      -Content 'The current canonical reviewer execution activates at 2^128.'
+    Test-FinalVerdict -Id 'current-public-2pow128-activation' -Path $currentPowShadow.RelativePath -WorkingDirectory $currentPowShadow.Root -Reject $true -TermId $powTerm -CheckTrackedState $true
+
+    $canonical76Shadow = New-ShadowFileRoot `
+      -RelativePath 'README.md' `
+      -Content 'The canonical reviewer payload and canonical global trace have uniform charged-trace bound 76; controller operations remain outside the charged event model, so this is not a conventional word-RAM theorem.'
+    Test-FinalVerdict -Id 'current-public-canonical-76' -Path $canonical76Shadow.RelativePath -WorkingDirectory $canonical76Shadow.Root -Reject $false -CheckTrackedState $true
+
+    $compatibilityRouteShadow = New-ShadowFileRoot `
+      -RelativePath $compatibilityPath `
+      -Content 'Compatibility history: the former route-split all-size bound was 4144 and the Ready threshold cost was 118; the zero-block route remains historical.'
+    Test-FinalVerdict -Id 'compatibility-old-route-history' -Path $compatibilityRouteShadow.RelativePath -WorkingDirectory $compatibilityRouteShadow.Root -Reject $false -RequireAllowed $true -TermId $numericTerm -CheckTrackedState $true
+
+    $compatibilityPowShadow = New-ShadowFileRoot `
+      -RelativePath $compatibilityPath `
+      -Content 'Compatibility theorem: 2^128 is retained only as an explicit sufficient premise.'
+    Test-FinalVerdict -Id 'compatibility-2pow128-history' -Path $compatibilityPowShadow.RelativePath -WorkingDirectory $compatibilityPowShadow.Root -Reject $false -RequireAllowed $true -TermId $powTerm -CheckTrackedState $true
+
+    $contextCount += 14
   }
 } finally {
   if ([System.IO.Directory]::Exists($absoluteFixtureRoot)) {
