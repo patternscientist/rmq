@@ -55,7 +55,9 @@ definitions in the checked source.
 The RMQ-only paper aliases live in
 [`RMQ/Headlines/RMQ.lean`](RMQ/Headlines/RMQ.lean) and are imported by
 `RMQPaper`. The aggregate full-repository alias barrel remains
-[`RMQ/Headlines.lean`](RMQ/Headlines.lean).
+[`RMQ/Headlines.lean`](RMQ/Headlines.lean); it explicitly adds
+[`RMQ/Headlines/RMQCompatibility.lean`](RMQ/Headlines/RMQCompatibility.lean)
+for checked historical profiles under `Legacy`/`Compatibility` names.
 
 | Alias | Meaning |
 | --- | --- |
@@ -65,16 +67,12 @@ The RMQ-only paper aliases live in
 | `RMQ.Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint` | List-facing supplied-store equality: under final footprint agreement with `SuccinctClassic.globalReadStore xs`, `SuccinctClassic.queryCostedWithStore xs store left right` is the same costed query as canonical `SuccinctClassic.queryCosted xs left right`. |
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal` | List-facing supplied-store exactness: if a caller-provided store agrees with `SuccinctClassic.globalReadStore xs` on the final checked footprint, valid half-open queries through `SuccinctClassic.queryCostedWithStore` erase to the exact leftmost `List Int` RMQ answer. |
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal` | List-facing supplied-store all-size cost transfer: under the same footprint agreement, the supplied-store query has modeled cost at most `SuccinctClassic.queryCost`. |
-| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | BP-native succinct RMQ with exact queries, `2*n + o(n)` payload bits, constant modeled query cost, and a numeric doubled-Catalan slack comparison in the same public theorem surface; the encoding-quantified lower-bound theorem is exposed separately as `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack`. |
-| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted` | Whole-query-interpreted variant of the final BP-native succinct RMQ capstone: same theorem shape, with the final query control represented by closed `WordRAM`/register-program syntax whose leaves are interpreted close-select, compact close/LCA, and register-backed answer-rank operations. |
-| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace` | Unified-`WordRAM.TraceEvent` variant of the same capstone: the final query emits one trace stream, with close-select, answer-rank, and compact-close rank-seed reads replayed as structural payload/register traces. |
-| `RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime` | Large-regime WordRAM variant: same two-sided theorem shape, with an explicit size premise that routes the compact close/LCA leg through the Ready structural replay; the public all-size route is now structural as well. |
+| `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile` | Canonical construction-facing profile: doubled-Catalan space envelopes, the at-most `2*n + o(n)` canonical reviewer payload, exact physical-word erasure to that payload, exact queries through the same global trace, non-synthetic certificate weight equal to its `Costed.cost`, and the uniform bound `76`. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` | All-size execution-story theorem for the final succinct RMQ query: the costed query refines one globally segmented trace, every event is either a payload read or bounded word primitive, and every read agrees with one concrete global payload store. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory` | Store-extensional all-size execution story: any read store agreeing with the concrete global store on the emitted payload-read events validates the same final-query trace. |
 | `RMQ.Headlines.succinctRMQCanonicalInteriorDirectoryProfileAllSize` | Canonical all-size interior profile: exactness, component store, execution footprint, successful-read backing, and reviewer-width guarantees. The bounded accepted execution has the separate U3 charged-trace cap `30`; `240` remains the transitional interface cap. |
 | `RMQ.Headlines.succinctRMQCanonicalReviewerMachineWordsComponentSlice` | Exact physical machine-word placement of the canonical component after the counted prefix. |
 | `RMQ.Headlines.succinctRMQCanonicalInteriorPhysicalFootprintFits` | Every physical address consumed by the canonical interior execution fits the pre-execution reviewer word width. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe` | Uniform canonical all-size cost theorem with checked transitional bound `328`. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe` | Paper-facing U3 theorem: the unchanged uniform canonical trace has charged-trace cost at most `76`. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostEqTraceLength` | Exact accounting bridge: modeled cost equals emitted charged-event trace length. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultEventReadWordOrWordRankOrWordSelect` | Every event actually emitted by the canonical whole-query trace is a payload read, word-rank, or word-select event. |
@@ -82,9 +80,7 @@ The RMQ-only paper aliases live in
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe76` | The non-synthetic-weighted actual emitted trace is bounded by `76`. |
 | `RMQ.Headlines.succinctRMQSyntheticCostOnlyPrimitiveMemBreaksNonSyntheticWeightLengthEquality` | Counterfactual check: a synthetic event anywhere in a trace makes its `nonSyntheticWeight` sum differ from its length. |
 | `RMQ.Headlines.succinctRMQChargedTraceCostAlgebra` | Component cap `2*select13 + (2*rank4 + 2*fringe4 + interior30) + rank4`; the actual-event bridge above connects it to execution. |
-| `RMQ.Headlines.succinctRMQCompatibility4144WholeQueryGlobalWordTraceCostedCostLe` | Compatibility-only route-split `4144` theorem; it is not the canonical reviewer route. |
-| `RMQ.Headlines.succinctRMQCanonicalTransitionalQueryCostEq` | The canonical transitional query-cost expression computes to `328`. |
-| `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | All-size structural execution story with raw positive same-block decoding and canonical component-store cross-block replay; there is no zero-block dispatch. |
+| `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | Uniform structural execution story with direct same-block decoding and canonical component-store cross-block replay. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` | No-synthetic all-size execution story: the same bounded global trace contains no dedicated synthetic cost-only marker events. |
 | `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Canonical reviewer-payload no-synthetic execution story: successful reads are counted in one exhaustive typed 20-source universe, including canonical close, and cross-block replay is uniform for all sizes. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical` | Genuine supplied flat-physical execution: the existing supplied-store evaluator reads the caller's flat store through checked address translation and refines the canonical logical execution, preserving value, cost, ordered successes/failures, repeated reads, and footprint. |
@@ -98,8 +94,6 @@ The RMQ-only paper aliases live in
 | `RMQ.Headlines.succinctRMQReviewerManifestSemanticAdequacy` | Query-independent W19 packet: every counted source and shared-BP consumer has some successful closed-valid execution witness, successful `P` implies the common mutation predicate `Q`, and fresh segment `21` fails `Q`. It does not say the current query reads every source. |
 | `RMQ.Headlines.listIntSuccinctRMQInvalidPhysicalSemantics` | Invalid public inputs have one guarded none/empty/zero logical and physical execution for every supplied store. |
 | `RMQ.Headlines.listIntSuccinctRMQQueryCostedInvalid` | One public validity boundary rejects every invalid or empty range; specialized empty, reversed, and out-of-bounds aliases are exported beside it. |
-| `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory` | Large-regime companion: under the explicit size premise, the compact close/LCA leg uses the positive-block local/fringe/interior structural replay; it is a compatibility strengthening of the all-size structural route. |
-| `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory` | Bounded large-regime companion to the global-store execution story. |
 | `RMQ.Headlines.concreteBPCloseNavigationProfile` | Concrete payload-backed BP close-navigation profile: relative-split false-select/rank-close plus compact relative-rmM close/LCA, with `2*n + o(n)` payload, constant modeled query cost, exact Cartesian-shape RMQ answer semantics, and machine-word-bounded component payload reads. |
 | `RMQ.Headlines.concreteBPCloseNavigationGlobalPayloadStoreExecutionStory` | Concrete BP close-navigation execution story: the same query is represented by a globally segmented `WordRAM.TraceResult`, with payload reads matched against one concrete store and successful reads backed by counted component stores. |
 | `RMQ.Headlines.concreteBPCloseNavigationGlobalPayloadStoreBoundedExecutionStory` | Bounded concrete BP close-navigation execution story: the trace/store packet also has finite trace-local bounds for read addresses and word-primitive operands/results. |

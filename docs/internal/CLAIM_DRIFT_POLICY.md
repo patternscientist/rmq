@@ -71,6 +71,22 @@ allowance bypasses without claiming unrestricted semantic understanding.
 
 The strict detector treats a canonical execution's 2^128 mention as suspicious before role allowance; this policy-file example is admitted only by the exact policy-file path allowance.
 
+## Canonical Paper Topology
+
+Policy version 12 also rejects the six retired unqualified succinct-RMQ query
+alias spellings outside frozen internal/history paths. The production scanner
+regression exercises all six spellings. Publication topology is additionally
+checked by `scripts/paper_topology_lint.ps1`, because a prose scanner cannot by
+itself establish Lean import or alias structure.
+
+The topology lint requires `RMQPaper` to import only `RMQ.Headlines.RMQ`,
+requires the broad `RMQ.Headlines` barrel to import the explicit
+`RMQ.Headlines.RMQCompatibility` module, requires all declarations in that
+compatibility module to contain `Legacy` or `Compatibility`, and blocks old
+query regimes from the canonical module, current public rows, and headline
+axiom inventory. The aggregate gate runs both the lint and the headline axiom
+inventory.
+
 ## Initial Sensitive Claims
 
 - Novelty language such as "first mechanized" or "first-ever" must be qualified

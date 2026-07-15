@@ -7,7 +7,7 @@ construction builds an advertised payload of length at most `2 * xs.length +
 overhead xs.length`, where `overhead` is little-o-linear. Every valid half-open RMQ query
 returns the exact leftmost range minimum answer under the repository's
 value-level list semantics, invalid or empty ranges return `none`, and the
-modeled query budget is constant. The final
+modeled query budget is the uniform charged-trace bound `76`. The final
 query also has a checked WordRAM trace/store/payload story: the costed query is
 the projection of a trace, successful reads are backed by counted flat payload
 words, event data are bounded in the model, no synthetic cost-only trace marker
@@ -25,13 +25,19 @@ primitive operands/results.
 
 ## Machine-Level Theorem Map
 
+- `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`:
+  construction-facing theorem combining doubled-Catalan space envelopes, the
+  canonical reviewer payload bound and exact physical erasure, exact answers
+  through the canonical global trace, and that trace's non-synthetic-weight /
+  `Costed.cost` equality and uniform bound `76`.
 - `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`: list-facing main theorem
   with one query-independent reviewer-manifest semantic packet, the inequality
   `buildPayload.length <= 2n + overhead`,
   `LittleOLinear overhead`, exact physical-word erasure to that same
   `buildPayload`, invalid-range rejection, exact valid RMQ answers, leftmost
-  ties, modeled constant query cost, and the no-synthetic execution story. The
-  payload is not padded to manufacture equality.
+  ties, the checked equality `SuccinctClassic.queryCost = 76`, and the
+  no-synthetic execution story. The payload is not padded to manufacture
+  equality.
 - `RMQ.Headlines.succinctRMQFinalFullModelSoundness`: final trace/read-store/
   counted-payload model-soundness packet.
 - `RMQ.Headlines.succinctRMQFinalFullModelSoundnessExactOfFootprintGlobal`:
@@ -85,9 +91,9 @@ the `WordRAM.TraceEvent.nonSyntheticWeight` certificate sum equals both emitted
 trace length and the `Costed` cost of the same execution and is at most `76`.
 `TraceResult.toCosted` itself charges trace length and would count a synthetic
 compatibility marker if one were present.
-The historical U2 `328` theorem remains separately named. Ready
-`118`, route-split `4144`, zero-block, and `196727` declarations are retained
-only as compatibility/history and are not consumed by the paper route.
+Historical cost and execution profiles remain kernel-checked through
+`RMQ.Headlines.RMQCompatibility`, under aliases explicitly containing
+`Legacy` or `Compatibility`; that module is not imported by `RMQPaper`.
 
 The `76` result makes U3 candidate-complete only inside the explicit
 charged-trace model. It

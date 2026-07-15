@@ -10,7 +10,8 @@ Concise trust-base check for the public headline path.
 The full `scripts/axiom_check.lean` is the acceptance gate. This smaller file
 prints only the theorem surfaces most likely to appear in a public overview:
 shared contract, RMQ/LCA reduction, lower bound, Fischer-Heun/LCA costs, and
-the BP-native succinct capstone.
+the canonical physical-payload/global-trace succinct capstone. Historical RMQ
+profiles are checked by broader inventories, not promoted here.
 -/
 
 #print axioms RMQ.RMQBackend.queryBuilt_eq
@@ -36,7 +37,7 @@ the BP-native succinct capstone.
 #print axioms RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreExecutionStory
 #print axioms RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory
 #print axioms RMQ.Headlines.rankSelectCompressedFIDFixedWeightTargetGlobalPayloadStoreBoundedExecutionStory
-#print axioms RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery
+#print axioms RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile
 #print axioms RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery
 #print axioms RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory
 #print axioms RMQ.Headlines.listIntSuccinctRMQOccurrenceProvenanceOfValid
@@ -79,11 +80,6 @@ the BP-native succinct capstone.
 #print axioms RMQ.Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint
 #print axioms RMQ.Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal
 #print axioms RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal
-#print axioms RMQ.Headlines.listIntSuccinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal
-#print axioms RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted
-#print axioms RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace
-#print axioms RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace
-#print axioms RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime
 #print axioms RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory
 #print axioms RMQ.Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory
 #print axioms RMQ.Headlines.succinctRMQGlobalPayloadStoreBoundedExecutionStory
@@ -98,7 +94,6 @@ the BP-native succinct capstone.
 #print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadsSubsetFootprint
 #print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreEqGlobalOfFootprint
 #print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedByCanonicalReviewerPayloadOfFootprintGlobal
-#print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe
 #print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe
 #print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostEqTraceLength
 #print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultEventReadWordOrWordRankOrWordSelect
@@ -110,16 +105,10 @@ the BP-native succinct capstone.
 #print axioms RMQ.Headlines.succinctRMQSyntheticCostOnlyPrimitiveMemBreaksNonSyntheticWeightLengthEquality
 #print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal
 #print axioms RMQ.Headlines.succinctRMQQueryCostEq
-#print axioms RMQ.Headlines.succinctRMQCompatibility4144QueryCostEq
-#print axioms RMQ.Headlines.succinctRMQLegacy196727QueryCostEq
-#print axioms RMQ.Headlines.succinctRMQCanonicalTransitionalQueryCostEq
 #print axioms RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedWithStoreExactOfFootprintGlobal
 #print axioms RMQ.Headlines.succinctRMQFinalFullModelSoundness
 #print axioms RMQ.Headlines.succinctRMQFinalFullModelSoundnessExactOfFootprintGlobal
-#print axioms RMQ.Headlines.succinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal
 #print axioms RMQ.Headlines.succinctRMQPrincipledAllSizeChargedTraceFinalFullModelCostLeOfFootprintGlobal
-#print axioms RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory
-#print axioms RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory
 #print axioms RMQ.Headlines.concreteBPCloseNavigationProfile
 #print axioms RMQ.Headlines.concreteBPCloseNavigationGlobalPayloadStoreExecutionStory
 #print axioms RMQ.Headlines.concreteBPCloseNavigationGlobalPayloadStoreBoundedExecutionStory

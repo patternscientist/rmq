@@ -91,10 +91,12 @@ spine and a model-adequacy spine.
   `succinctRMQListIntTwoNPlusOConstantQuery`,
   `listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory`,
   `listIntSuccinctRMQPaperMainTheorem`,
-  `succinctRMQTwoNPlusOConstantQuery`,
+  `succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`,
   `succinctRMQFlatPayloadStoreNoSyntheticExecutionStory`, and
-  `succinctRMQFinalFullModelSoundness`. `RMQ/Headlines.lean` re-exports these
-  names and adds spoke aliases.
+  `succinctRMQFinalFullModelSoundness`. `RMQ/Headlines/RMQCompatibility.lean`
+  contains explicitly labeled historical query profiles. `RMQ/Headlines.lean`
+  re-exports both modules and adds spoke aliases; `RMQPaper` imports only the
+  canonical RMQ module.
 
 The model-adequacy theorem spine to look for is:
 

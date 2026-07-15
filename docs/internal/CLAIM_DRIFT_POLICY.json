@@ -1,5 +1,5 @@
 {
-  "version": 11,
+  "version": 12,
   "updated": "2026-07-14",
   "terms": [
     {
@@ -53,9 +53,17 @@
       "allowedPathLineRegex": "^\\s*\\|\\s*`POLICY-(?:0[1-6]|R[1-6])`\\s*\\|"
     },
     {
+      "id": "forbidden-retired-paper-query-alias",
+      "pattern": "succinctRMQTwoNPlusOConstantQuery(?:Interpreted|LeafTrace|WordTrace(?:LargeRegime)?|GlobalWordTraceLargeRegime)?\\b",
+      "status": "forbidden-outside-frozen-history-use-explicit-Legacy-or-Compatibility-name",
+      "strict": true,
+      "allowedPathRegex": "^docs/internal/|^docs/DIGESTION_LOG\\.md$|^docs/digests/",
+      "allowedLineRegex": ""
+    },
+    {
       "id": "all-size-196727",
       "pattern": "196727",
-      "status": "legacy-compatibility-history-only",
+      "status": "legacy-compatibility-history-only-current-table-and-export-enforcement-in-paper-topology-lint",
       "strict": false,
       "allowedPathRegex": "",
       "allowedLineRegex": ""
@@ -63,7 +71,7 @@
     {
       "id": "fast-regime-118",
       "pattern": "\\b118\\b",
-      "status": "legacy-compatibility-history-only",
+      "status": "legacy-compatibility-history-only-current-table-and-export-enforcement-in-paper-topology-lint",
       "strict": false,
       "allowedPathRegex": "",
       "allowedLineRegex": ""
@@ -71,7 +79,7 @@
     {
       "id": "legacy-route-split-4144",
       "pattern": "\\b4144\\b",
-      "status": "legacy-compatibility-history-only",
+      "status": "legacy-compatibility-history-only-current-table-and-export-enforcement-in-paper-topology-lint",
       "strict": false,
       "allowedPathRegex": "",
       "allowedLineRegex": ""
@@ -79,7 +87,7 @@
     {
       "id": "canonical-transitional-328",
       "pattern": "\\b328\\b",
-      "status": "historical-canonical-transitional-bound-not-paper-facing",
+      "status": "historical-canonical-transitional-bound-not-paper-facing-current-table-and-export-enforcement-in-paper-topology-lint",
       "strict": false,
       "allowedPathRegex": "",
       "allowedLineRegex": ""

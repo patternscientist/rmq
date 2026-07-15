@@ -2264,3 +2264,71 @@ Evidence:
 - `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`.
 - `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace`.
 - `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_eq_trace_length`.
+
+## DD-20260714-008: make the paper topology name one canonical payload and execution
+
+Status: Candidate complete on the W21 implementation branch; a fresh blind
+exact-commit audit remains coordinator-owned.
+
+Context:
+
+The A05 blind report at `64cfd2dae2de9b8402fd5601b0e6d0b146a0ca61`
+accepted the operational `76` derivation but rejected the publication topology.
+`RMQPaper` still imported six unqualified direct/interpreted/leaf/word profiles
+whose theorem types paired an older payload with differently executed queries
+bounded by the legacy aggregate. Prose calling those results compatibility did
+not prevent a reviewer from citing them as coequal paper capstones.
+
+Decision:
+
+- Prove
+  `concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_sided_profile`.
+  Its single checked type combines doubled-Catalan envelopes, the canonical
+  reviewer payload bound, exact physical-word erasure to that payload, the
+  canonical global trace, its literal `76` cost bound, non-synthetic certificate
+  equality to the same `Costed.cost`, and exact valid-query answers.
+- Expose that theorem as
+  `Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`.
+  Add `SuccinctClassic.queryCost = 76` directly to
+  `listIntSuccinctRMQPaperMainTheorem`.
+- Keep `RMQ.Headlines.RMQ` as the only RMQ module imported by `RMQPaper`.
+  Remove the six historical aliases and the public transitional/regime cost
+  aliases from that module.
+- Create `RMQ.Headlines.RMQCompatibility`, imported explicitly only by the broad
+  `RMQ.Headlines` barrel. Retained declarations in that module must contain
+  `Legacy` or `Compatibility` in the public name.
+- Preserve source theorems in their construction modules. The boundary is the
+  curated alias and publication topology, not an attempt to hide transitively
+  available Lean declarations.
+
+Rejected alternatives:
+
+- Keep the six aliases in the paper module and add stronger prose disclaimers.
+- Point a new space theorem at the canonical payload while retaining query
+  clauses over an older direct or size-premised execution.
+- Delete or weaken the checked source theorems merely to make them unreachable.
+- Import the compatibility module from `RMQPaper` and rely on alias spelling
+  alone to signal which theorem is current.
+- Rename the old direct profile as the new capstone without changing its
+  checked payload/query objects.
+
+Consequences:
+
+After `import RMQPaper`, the construction-facing, list-facing, adequacy, and
+cost aliases all name the canonical reviewer payload and canonical global trace
+whose actual non-synthetic event certificate equals the same modeled cost and
+is bounded by `76`. Compatibility users retain the historical results through
+the broad barrel, but no unqualified historical query capstone remains. This
+does not strengthen the model boundary: controller operations remain uncharged,
+and serialized-payload querying, preprocessing, and conventional word-RAM
+complexity remain downstream obligations.
+
+Evidence:
+
+- `concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_sided_profile`.
+- `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`.
+- `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` and its `queryCost = 76`
+  conjunct.
+- `RMQ/Headlines/RMQCompatibility.lean` and the explicit compatibility import
+  in `RMQ/Headlines.lean`.
+- `scripts/paper_topology_lint.ps1` and the curated headline axiom inventory.

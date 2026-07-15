@@ -6,11 +6,11 @@ import RMQ.Core.SuccinctRMQClassicProvenance
 RMQ-only public headline aliases for the paper artifact.
 
 This module is the narrow theorem-import surface for the RMQ paper claims. It
-exposes the list-facing theorem, BP-native succinct upper-bound surfaces,
-lower-bound surface, final WordRAM/model-adequacy packets, concrete cost
-equalities, supplied-store/footprint theorems, and large-regime compatibility
-rows without importing standalone rank/select, standalone BP-navigation, or
-union-find public headline spokes.
+exposes one canonical physical-payload/global-trace upper-bound topology, the
+list-facing main theorem, the lower-bound surface, final WordRAM/model-adequacy
+packets, concrete current cost equalities, and supplied-store/footprint
+theorems. Historical query profiles live in `RMQ.Headlines.RMQCompatibility`,
+which is deliberately outside the `RMQPaper` import closure.
 -/
 
 namespace RMQ.Headlines
@@ -20,22 +20,22 @@ abbrev exactRMQLowerBoundDoubledCatalanSlack :=
   RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack
 
 /--
-BP-native succinct RMQ capstone: exact RMQ, `2*n + o(n)`, constant query, and
-a numeric doubled-Catalan lower-bound comparison in the same theorem surface.
-The encoding-quantified lower-bound theorem is exposed separately as
-`exactRMQLowerBoundDoubledCatalanSlack`.
+Canonical construction-facing capstone. Its checked type combines the
+canonical reviewer payload bound and physical erasure with the exact canonical
+global execution, the non-synthetic-weight/`Costed.cost` equality, the literal
+uniform bound `76`, exact RMQ answers, and the doubled-Catalan space envelopes.
 -/
-abbrev succinctRMQTwoNPlusOConstantQuery :=
-  RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile
+abbrev succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_sided_profile
 
 /--
-Classic list-facing succinct RMQ theorem: for every ordinary `xs : List Int`,
-the built payload has length at most `2*n + overhead n` for an `o(n)` overhead,
-and valid half-open queries return the exact leftmost RMQ answer within constant
-modeled query cost.
+Canonical list-facing succinct RMQ theorem: for every ordinary `xs : List Int`,
+the public `buildPayload` has length at most `2*n + overhead n` for an `o(n)`
+overhead, and the same physical-payload/global-trace execution answers valid
+half-open queries exactly within the canonical modeled query bound.
 -/
 abbrev succinctRMQListIntTwoNPlusOConstantQuery :=
-  RMQ.SuccinctClassic.listInt_two_n_plus_o_constant_query_profile
+  RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story
 
 /--
 List-facing flat-payload no-synthetic execution story: for every ordinary
@@ -69,6 +69,7 @@ occurrence provenance remain under each current query's validity premise.
 -/
 theorem listIntSuccinctRMQPaperMainTheorem :
     RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy /\
+    RMQ.SuccinctClassic.queryCost = 76 /\
     RMQ.SuccinctSpace.LittleOLinear RMQ.SuccinctClassic.overhead /\
       forall xs : List Int,
         (RMQ.SuccinctClassic.buildPayload xs).length <=
@@ -157,7 +158,7 @@ theorem listIntSuccinctRMQPaperMainTheorem :
     ⟨hoverhead, hxs⟩
   refine
     ⟨RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy,
-      hoverhead, ?_⟩
+      RMQ.SuccinctClassic.queryCost_eq, hoverhead, ?_⟩
   intro xs
   rcases hxs xs with
     ⟨hpayload, hcost, hinvalid, hexact, hleftmost, hstory⟩
@@ -412,67 +413,6 @@ theorem listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal
   RMQ.SuccinctClassic.listIntFinalFullModelCostLeOfFootprintGlobal
     xs hfoot left right
 
-/-- List-facing supplied-store canonical transitional U2 cost transfer. -/
-theorem listIntSuccinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal
-    (xs : List Int) {store : RMQ.WordRAM.ReadStore}
-    (hfoot :
-      RMQ.SuccinctClassic.storesAgreeOnFootprint xs store
-        (RMQ.SuccinctClassic.globalReadStore xs))
-    (left right : Nat) :
-    (RMQ.SuccinctClassic.queryCostedWithStore
-      xs store left right).cost <=
-        RMQ.SuccinctClassic.canonicalTransitionalQueryCost :=
-  RMQ.SuccinctClassic.listIntCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal
-    xs hfoot left right
-
-/--
-Whole-query-interpreted BP-native succinct RMQ capstone: the same two-sided
-`2*n + o(n)`, constant-query theorem shape, with the final query control routed
-through a closed first-order query program whose leaves are the interpreted
-close-select, compact close/LCA, and answer-rank operations.
--/
-abbrev succinctRMQTwoNPlusOConstantQueryInterpreted :=
-  RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_interpreted_profile
-
-/--
-Leaf-trace-preserving BP-native succinct RMQ capstone: the same theorem shape
-as the whole-query-interpreted headline, with the closed controller evaluating
-to an explicit domain-leaf trace before projection back to `Costed`.
--/
-abbrev succinctRMQTwoNPlusOConstantQueryLeafTrace :=
-  RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_leaf_trace_profile
-
-/--
-Unified-`WordRAM.TraceEvent` BP-native succinct RMQ capstone. The final query
-control now emits one `TraceEvent` stream. Select-close, answer-rank, and
-compact-close rank-seed reads are structural payload/register traces; the
-all-size global execution story below uses raw positive block size for
-same-block decoding and the canonical component store for every cross-block
-interior query; there is no zero-block dispatch in this path.
--/
-abbrev succinctRMQTwoNPlusOConstantQueryWordTrace :=
-  RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_profile
-
-/--
-Large-regime unified-`WordRAM.TraceEvent` BP-native succinct RMQ capstone. This
-has the same two-sided `2*n + o(n)`, constant-query theorem shape, but the query
-clauses retain an explicit size hypothesis for compatibility. The public
-all-size reviewer route is the same unconditional canonical directory route
-used at every size.
--/
-abbrev succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime :=
-  RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_large_regime_profile
-
-/--
-Large-regime globally segmented `WordRAM.TraceEvent` BP-native succinct RMQ
-capstone. This strengthens the large-regime word-trace headline by relabeling
-the final query's select, rank, and compact close/LCA payload reads into one
-shared segment convention. The matching execution-story theorem below proves
-those events agree with one concrete payload store.
--/
-abbrev succinctRMQTwoNPlusOConstantQueryGlobalWordTraceLargeRegime :=
-  RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_global_word_trace_large_regime_profile
-
 /--
 Public execution-story theorem for the final all-size succinct RMQ query: the
 query is the `Costed` projection of one globally segmented `WordRAM` trace,
@@ -549,22 +489,6 @@ abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreEqGlobalOfFootprint :=
 abbrev succinctRMQWholeQueryGlobalWordTraceResultWithStoreSuccessfulReadsBackedByCanonicalReviewerPayloadOfFootprintGlobal :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_successful_reads_backed_by_counted_flat_payload_of_footprint_global
 
-/--
-Compatibility alias for the old conservative aggregate all-size cost theorem.
-It remains true, but it sums mutually exclusive fallback costs and is no longer
-the paper-facing cost alias.
--/
-abbrev succinctRMQLegacy196727WholeQueryGlobalWordTraceCostedCostLe :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le
-
-/-- The uniform canonical reviewer trace has the checked transitional U2 bound. -/
-abbrev succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional
-
-/-- The checked canonical transitional U2 bound computes to `328`. -/
-abbrev succinctRMQCanonicalTransitionalQueryCostEq :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq
-
 /-- The canonical final global trace has the principled uniform charged-trace bound. -/
 abbrev succinctRMQWholeQueryGlobalWordTraceCostedCostLe :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace
@@ -612,26 +536,6 @@ whole-query replay.
 abbrev succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_principledAllSizeChargedTrace
 
-/-- Compatibility-only route-split all-size bound `4144`. -/
-abbrev succinctRMQCompatibility4144WholeQueryGlobalWordTraceCostedCostLe :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_cleanAllSize
-
-/-- Compatibility-only supplied-store transfer of the `4144` bound. -/
-abbrev succinctRMQCompatibility4144WholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGlobal :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_cost_le_of_footprint_global_cleanAllSize
-
-/--
-Legacy all-size modeled query-cost constant for the final BP-native succinct
-RMQ query. This is the old conservative aggregate kept for compatibility.
--/
-abbrev succinctRMQLegacy196727QueryCost :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQQueryCost
-    RMQ.SuccinctSelect.sparseDenseFalseSelectQueryCost
-
-/-- The legacy all-size final-query cost constant computes to `196727`. -/
-abbrev succinctRMQLegacy196727QueryCostEq :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQQueryCost_eq
-
 /-- Uniform canonical modeled query-cost constant for the final reviewer path. -/
 abbrev succinctRMQQueryCost := RMQ.SuccinctClassic.queryCost
 
@@ -642,13 +546,6 @@ abbrev succinctRMQQueryCostEq :=
 /-- Operation-aligned component cap algebra for the current charged trace. -/
 abbrev succinctRMQChargedTraceCostAlgebra :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra
-
-/-- Compatibility-only route-split cost constant `4144`. -/
-abbrev succinctRMQCompatibility4144QueryCost :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCleanAllSizeQueryCost
-
-abbrev succinctRMQCompatibility4144QueryCostEq :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCleanAllSizeQueryCost_eq
 
 theorem succinctRMQWholeQueryGlobalWordTraceCostedWithStoreExactOfFootprintGlobal
     {n : Nat} {shape : RMQ.Cartesian.CartesianShape}
@@ -734,24 +631,6 @@ theorem succinctRMQFinalFullModelSoundnessExactOfFootprintGlobal
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness_exact_of_footprint_global
     hshape hfoot hlen hbound
 
-/-- Full-model canonical transitional U2 cost theorem under footprint agreement. -/
-theorem succinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal
-    {shape : RMQ.Cartesian.CartesianShape}
-    {store : RMQ.WordRAM.ReadStore}
-    (hfoot :
-      RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryStoresAgreeOnFootprint
-        shape store
-          (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQGlobalReadStore
-            shape))
-    (left right : Nat) :
-    (RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore
-      shape store left right).cost <=
-        3 * RMQ.SuccinctSelect.sparseDenseFalseSelectQueryCost +
-          RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalCompactBPCloseQueryCostWithRankSeed
-            RMQ.SuccinctSelect.sparseDenseFalseSelectQueryCost :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness_cost_le_of_footprint_global_canonicalTransitional
-    hfoot left right
-
 /-- Full-model principled U3 charged-trace theorem under footprint agreement. -/
 theorem succinctRMQPrincipledAllSizeChargedTraceFinalFullModelCostLeOfFootprintGlobal
     {shape : RMQ.Cartesian.CartesianShape}
@@ -818,22 +697,5 @@ abbrev succinctRMQCanonicalReviewerValidQueryOperandsFit :=
 /-- All-size canonical interior profile, including store and footprint guarantees. -/
 abbrev succinctRMQCanonicalInteriorDirectoryProfileAllSize :=
   RMQ.SuccinctClose.canonicalRelativeRmmInteriorDirectory_profile_allSize
-
-/--
-Large-regime companion to `succinctRMQGlobalPayloadStoreExecutionStory`; this
-uses the positive-block local/fringe/interior close-navigation replay under the
-explicit `2^128 <= shape.size` compatibility premise. It is no longer the
-theorem used to justify the old numeric compatibility story in the all-size
-payload story.
--/
-abbrev succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_execution_story
-
-/--
-Large-regime bounded companion to
-`succinctRMQGlobalPayloadStoreBoundedExecutionStory`.
--/
-abbrev succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_bounded_execution_story
 
 end RMQ.Headlines

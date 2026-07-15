@@ -9352,6 +9352,115 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact
     concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted_exact
       hshape hlen hbound
 
+/--
+Canonical construction-facing two-sided profile for the accepted reviewer
+payload and execution.  The space clause counts exactly the payload erased by
+the physical reviewer words, while every query clause names the canonical
+global trace whose non-synthetic certificate weight equals its `Costed.cost`
+and is bounded by `76`.
+
+The numeric lower comparisons are space envelopes.  The query bound remains
+scoped to the explicit charged-trace model; this theorem does not charge
+controller operations or assert conventional word-RAM complexity.
+-/
+theorem concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_sided_profile :
+    SuccinctSpace.LittleOLinear
+        concreteBPNativeSuccinctRMQCanonicalReviewerOverhead /\
+      concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost = 76 /\
+      forall n : Nat,
+        EncodingLowerBound.doubledLogSlackLower n <=
+          2 *
+            (2 * n +
+              concreteBPNativeSuccinctRMQCanonicalReviewerOverhead n) /\
+        EncodingLowerBound.logSlackLower n <=
+          2 * n +
+            concreteBPNativeSuccinctRMQCanonicalReviewerOverhead n /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            (concreteBPNativeSuccinctRMQCanonicalReviewerPayload
+              shape).length <=
+              2 * n +
+                concreteBPNativeSuccinctRMQCanonicalReviewerOverhead n) /\
+        (forall shape : Cartesian.CartesianShape,
+          SuccinctSpace.flattenPayloadWords
+              (concreteBPNativeSuccinctRMQReviewerPhysicalWords shape) =
+            concreteBPNativeSuccinctRMQCanonicalReviewerPayload shape) /\
+        (forall shape left right event,
+          event ∈
+              (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+                shape left right).trace ->
+            (Exists fun segment : Nat => Exists fun index : Nat =>
+              Exists fun word? : Option WordRAM.Word =>
+                event = WordRAM.TraceEvent.readWord segment index word?) \/
+            (Exists fun target : Bool => Exists fun limit : Nat =>
+              Exists fun result : Nat =>
+                event = WordRAM.TraceEvent.wordRank target limit result) \/
+            (Exists fun target : Bool => Exists fun occurrence : Nat =>
+              Exists fun result : Option Nat =>
+                event = WordRAM.TraceEvent.wordSelect target occurrence result)) /\
+        (forall shape left right,
+          WordRAM.TraceEvent.syntheticCostOnlyPrimitive ∉
+            (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+              shape left right).trace) /\
+        (forall shape left right,
+          (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+            shape left right).cost <= 76) /\
+        (forall shape left right,
+          ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+              shape left right).trace.map
+              WordRAM.TraceEvent.nonSyntheticWeight).sum =
+              (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+                shape left right).cost /\
+          ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+              shape left right).trace.map
+              WordRAM.TraceEvent.nonSyntheticWeight).sum <= 76) /\
+        (forall {shape : Cartesian.CartesianShape},
+          List.Mem shape (Cartesian.shapesOfSize n) ->
+            forall {left len : Nat},
+              0 < len ->
+                left + len <= n ->
+                  (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
+                    shape left (left + len)).erase =
+                    some (scanWindow shape.representative left len)) := by
+  refine
+    ⟨concreteBPNativeSuccinctRMQCanonicalReviewerOverhead_littleO,
+      concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq, ?_⟩
+  intro n
+  have hdoubledBase :
+      EncodingLowerBound.doubledLogSlackLower n <= 2 * (2 * n) :=
+    (EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack
+      n).1 (EncodingLowerBound.canonicalRepresentativeStateEncoding n)
+  have hsingleBase : EncodingLowerBound.logSlackLower n <= 2 * n :=
+    EncodingLowerBound.canonicalRepresentativePayloadSpaceBounds_lower_le_upper n
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · exact Nat.le_trans hdoubledBase (by omega)
+  · exact Nat.le_trans hsingleBase (by omega)
+  · intro shape hshape
+    exact concreteBPNativeSuccinctRMQCanonicalReviewerPayload_length_le hshape
+  · intro shape
+    exact concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases shape
+  · intro shape left right event hmem
+    exact
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_event_readWord_or_wordRank_or_wordSelect
+        shape left right event hmem
+  · intro shape left right
+    exact
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_syntheticCostOnlyPrimitive_not_mem
+        shape left right
+  · intro shape left right
+    simpa [concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq] using
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace
+        shape left right
+  · intro shape left right
+    exact
+      ⟨concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_eq_cost
+          shape left right,
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_76
+          shape left right⟩
+  · intro shape hshape left len hlen hbound
+    exact concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact
+      hshape hlen hbound
+
 theorem concreteBPNativeSuccinctRMQWholeQueryWordTraceCostedOfSizeGe_cost_le
     (shape : Cartesian.CartesianShape)
     (hsize : 2 ^ 128 <= shape.size)

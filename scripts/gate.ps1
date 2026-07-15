@@ -70,6 +70,7 @@ if ($nd) { Fail "native_decide / ofReduceBool present in source:`n$nd" }
 RunAxiomCheck "scripts/hub_axiom_check.lean" "hub_axiom_check.lean"
 RunAxiomCheck "scripts/wordram_axiom_check.lean" "wordram_axiom_check.lean"
 RunAxiomCheck "scripts/axiom_check.lean" "axiom_check.lean"
+RunAxiomCheck "scripts/headline_axiom_check.lean" "headline_axiom_check.lean"
 RunAxiomCheck "scripts/archive_axiom_check.lean" "archive_axiom_check.lean"
 RunAxiomCheck "scripts/rank_select_axiom_check.lean" "rank_select_axiom_check.lean"
 RunAxiomCheck "scripts/bp_navigation_axiom_check.lean" "bp_navigation_axiom_check.lean"
@@ -92,7 +93,12 @@ if ($LASTEXITCODE -ne 0) { Fail "claim_drift_policy_regression.ps1 found issues"
 & "$PSScriptRoot\claim_drift_scan.ps1" -Strict
 if ($LASTEXITCODE -ne 0) { Fail "claim_drift_scan.ps1 found strict violations" }
 
-# 8. Whitespace / leftover merge markers.
+# 8. The paper root must expose only the canonical physical-payload/76 query
+# topology; historical profiles remain in the explicit compatibility module.
+& "$PSScriptRoot\paper_topology_lint.ps1"
+if ($LASTEXITCODE -ne 0) { Fail "paper_topology_lint.ps1 found issues" }
+
+# 9. Whitespace / leftover merge markers.
 git diff --check
 if ($LASTEXITCODE -ne 0) { Fail "git diff --check found issues" }
 

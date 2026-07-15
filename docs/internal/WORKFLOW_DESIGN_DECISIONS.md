@@ -2160,3 +2160,54 @@ The public claim language now changes only after the corresponding formal route
 is consumed end to end. Reviewers can distinguish the improved charged-trace
 constant from both its conservative predecessor and the stronger machine-model
 claims intentionally deferred to E1 and M1.
+
+## WDD-20260714-003: gate the curated paper topology structurally
+
+Status: Candidate complete.
+Date: 2026-07-14.
+Scope: RMQ paper imports, headline axiom inventory, public claim tables, and
+claim-drift regression.
+
+Decision:
+
+Add `scripts/paper_topology_lint.ps1` as a blocking gate. It checks the exact
+curated surfaces rather than attempting to infer publication role from every
+transitively imported declaration. The lint forbids the six retired aliases and
+old execution-regime tokens in `RMQ.Headlines.RMQ`, `RMQPaper`, and the headline
+axiom inventory; rejects retired aliases and active historical rows in the
+public claim tables; requires the canonical combined profile and weighted-trace
+anchor; verifies that `RMQPaper` imports only the canonical RMQ module; verifies
+that the broad barrel explicitly imports the compatibility module; and requires
+every declaration in that compatibility module to contain `Legacy` or
+`Compatibility`.
+
+The aggregate gate now runs both the headline axiom inventory and the topology
+lint. Claim policy version 12 makes the six retired alias spellings strict
+outside frozen history, and the policy regression executes all six mutations
+through the production scanner. Workflow-sensitive path detection includes the
+gate, regression, and topology lint, so future changes require an explicit
+workflow decision.
+
+Rejected alternatives:
+
+- Depend only on prose-oriented claim drift to understand Lean import topology.
+- Allow historical names in the current headline inventory because their
+  source theorems remain sound.
+- Treat a same-line word such as "compatibility" as a blanket lint bypass.
+- Omit the headline axiom inventory from the aggregate gate.
+
+Consequences:
+
+The regression boundary tests the claimed publication topology directly: a
+historical theorem may remain checked and reachable through the broad barrel,
+but it cannot silently regain an unqualified paper alias, current claim row, or
+headline-inventory role. The Lean theorem remains the semantic evidence that
+space and query concern the same object; the lint protects only its curated
+exposure.
+
+Evidence:
+
+- `scripts/paper_topology_lint.ps1`.
+- `scripts/gate.ps1` headline inventory and topology-lint steps.
+- `docs/internal/CLAIM_DRIFT_POLICY.json` version 12.
+- `scripts/claim_drift_policy_regression.ps1` retired-alias fixtures.

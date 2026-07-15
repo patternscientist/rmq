@@ -73,15 +73,15 @@ theorems, source files, and exact commands, see
 ```lean
 RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem
 RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery
-RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery
+RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile
 ```
 
 These are the paper-facing ordinary-list theorem, the shorter list-facing
-profile, and the construction-facing BP-native Cartesian-shape theorem. The
-list surface proves `buildPayload.length <= 2*n + overhead n` with little-o
-overhead, rejects invalid or empty ranges, returns exact leftmost answers for
-valid ranges, and has constant modeled query cost. Exact physical erasure is a
-separate theorem; no payload padding manufactures equality.
+profile over the same execution, and the construction-facing Cartesian-shape
+theorem. The latter combines doubled-Catalan envelopes, the canonical reviewer
+payload bound and exact physical erasure, the canonical global trace, exact
+answers, non-synthetic certificate equality, and literal bound `76` in one
+checked type. No payload padding manufactures equality.
 
 ## Final Trace Model Adequacy
 

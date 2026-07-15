@@ -188,8 +188,10 @@ word-width, and uniform transitional-`328` chain is now the accepted base for U3
 
 ### U3. Reprove One Principled All-Size Cost Bound
 
-Status: **candidate complete on `codex/rmq-u3-principled-allsize-cost`**;
-coordinator exact-commit reconstruction and blind audit remain separate.
+Status: **candidate complete after the A05 publication-topology correction on
+`codex/rmq-u3-principled-allsize-cost`**; the next fresh blind exact-commit audit
+remains coordinator-owned. A05 report commit `64cfd2d...` was read directly and
+was not merged.
 
 The unchanged uniform route now has the principled checked charged-trace sum
 `76 = 2*13 + (2*4 + 2*4 + 30) + 4`, proved by
@@ -202,11 +204,16 @@ or `wordSelect`, excludes the synthetic fallback, and proves that direct
 length and the `Costed` cost of the same execution before being bounded by
 `76`. This equality is canonical-trace evidence: `TraceResult.toCosted` charges
 trace length and would count a synthetic compatibility marker if one were
-present, while `nonSyntheticWeight` assigns that marker weight zero. The old
-`328` theorem
-is retained as an explicitly transitional comparison. Ready `118`,
-route-split, `4144`, and `196727` remain compatibility facts outside the
-current reviewer explanation.
+present, while `nonSyntheticWeight` assigns that marker weight zero.
+
+A05 accepted that operational chain but rejected the paper topology because six
+unqualified historical profiles remained coequal exports. The correction adds
+`concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_sided_profile`,
+which combines the canonical reviewer payload, physical erasure, space
+envelopes, exact global execution, non-synthetic weight equality, and `76`
+bound in one checked theorem. `RMQPaper` imports only its canonical headline
+alias. Historical source theorems remain reachable solely through the explicit
+`RMQ.Headlines.RMQCompatibility` module under `Legacy`/`Compatibility` names.
 
 Acceptance:
 
@@ -219,7 +226,11 @@ Acceptance:
   describe the same global execution;
 - **Candidate satisfied:** final adequacy, supplied-store footprint transfer,
   `List Int`, paper/root aliases, examples, and numeric inventories consume the
-  new theorem.
+  new theorem;
+- **Candidate satisfied:** every current paper-facing construction/query row
+  names the canonical payload/global-trace execution, while the blocking
+  topology lint prevents retired aliases and regimes from re-entering the
+  paper module, claim tables, or headline inventory.
 
 Scope boundary: U3 is only a theorem in the current charged-trace model. It
 does not prove serialized-payload querying, preprocessing complexity, or

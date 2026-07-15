@@ -1,4 +1,5 @@
 import RMQ.Headlines.RMQ
+import RMQ.Headlines.RMQCompatibility
 import RMQ.Core.BPNavigationPublic
 import RMQ.Core.BPNavigationRAM
 import RMQ.Core.RankSelectPublic
@@ -9,8 +10,10 @@ import RMQ.Core.SuccinctSpace.BPCloseRMQNavigationRAM
 Aggregate public headline aliases for the full repository.
 
 The narrow RMQ paper surface lives in `RMQ.Headlines.RMQ`; this aggregate barrel
-re-exports it and adds standalone rank/select and BP-navigation spoke aliases.
-Existing public names under `RMQ.Headlines` are preserved.
+re-exports it, explicitly adds `RMQ.Headlines.RMQCompatibility` for historical
+RMQ profiles, and adds standalone rank/select and BP-navigation spoke aliases.
+Compatibility declarations are unmistakably named `Compatibility` or `Legacy`
+and are not in the `RMQPaper` import closure.
 -/
 
 namespace RMQ.Headlines

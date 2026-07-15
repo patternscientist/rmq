@@ -49,9 +49,9 @@ reproducibility checks around that kernel-checked surface.
 
 | Paper theorem / claim row | Lean alias | Source theorem | Source file | Exact check command |
 | --- | --- | --- | --- | --- |
-| Main paper theorem over ordinary `List Int`: `buildPayload.length <= 2*n + overhead n`, `overhead = o(n)`, invalid-range rejection, exact valid half-open leftmost answers, constant modeled query cost, and final no-synthetic execution story. | `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` via `RMQ.Headlines.RMQ` / `RMQPaper` | `RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story` | `RMQ/Core/SuccinctRMQClassic.lean` | `lake build RMQPaper`; `lake env lean scripts/headline_axiom_check.lean` |
-| Short list-facing succinct RMQ profile: the same at-most payload bound, invalid-range rejection, and constant modeled query cost. | `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | `RMQ.SuccinctClassic.listInt_two_n_plus_o_constant_query_profile` | `RMQ/Core/SuccinctRMQClassic.lean` | `lake env lean scripts/headline_axiom_check.lean` |
-| Construction-facing BP-native succinct RMQ upper-bound profile over Cartesian shapes, paired with doubled-Catalan slack comparison. | `RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery` | `RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile` | `RMQ/Core/SuccinctFinal.lean` | `lake env lean scripts/headline_axiom_check.lean` |
+| Main paper theorem over ordinary `List Int`: literal `queryCost = 76`, `buildPayload.length <= 2*n + overhead n`, `overhead = o(n)`, invalid-range rejection, exact valid half-open leftmost answers, physical erasure, final no-synthetic execution, and current-query adequacy/provenance. | `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem` via `RMQ.Headlines.RMQ` / `RMQPaper` | `RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story` plus canonical adequacy consumers | `RMQ/Headlines/RMQ.lean` | `lake build RMQPaper`; `lake env lean scripts/headline_axiom_check.lean` |
+| Short list-facing succinct RMQ profile: the same public payload, exact range semantics, no-synthetic physical execution story, and canonical modeled query cost. | `RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery` | `RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story` | `RMQ/Core/SuccinctRMQClassic.lean` | `lake env lean scripts/headline_axiom_check.lean` |
+| Canonical construction-facing profile over Cartesian shapes: doubled-Catalan envelopes, canonical reviewer payload at most `2*n + o(n)`, exact physical erasure, exact canonical global-trace answers, non-synthetic certificate weight equal to the same `Costed.cost`, and uniform bound `76`. | `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_sided_profile` | `RMQ/Core/SuccinctFinalRAM.lean` | `lake env lean scripts/headline_axiom_check.lean` |
 | Information-theoretic exact RMQ lower bound in doubled Catalan slack form. | `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack` | `RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack` | `RMQ/Core/EncodingLowerBound.lean` | `lake env lean scripts/headline_axiom_check.lean` |
 
 ## Final Trace And Model Adequacy
@@ -74,14 +74,13 @@ reproducibility checks around that kernel-checked surface.
 | List-facing supplied-store exactness under final footprint agreement with the canonical global store. | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal` | `RMQ.SuccinctClassic.listIntFinalFullModelSoundnessExactOfFootprintGlobal` | `RMQ/Core/SuccinctRMQClassic.lean` | `lake build RMQPaper`; `lake env lean scripts/headline_axiom_check.lean` |
 | List-facing supplied-store all-size cost transfer under final footprint agreement with the canonical global store. | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal` | `RMQ.SuccinctClassic.listIntFinalFullModelCostLeOfFootprintGlobal` | `RMQ/Core/SuccinctRMQClassic.lean` | `lake build RMQPaper`; `lake env lean scripts/headline_axiom_check.lean` |
 
-## Cost Regimes And Compatibility Rows
+## Compatibility And History Boundary
 
-| Paper theorem / claim row | Lean alias | Source theorem | Source file | Exact check command |
-| --- | --- | --- | --- | --- |
-| Historical U2 query-cost statement: the same final global trace has the checked transitional bound `328`; it is no longer the paper-facing cost. | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCanonicalTransitionalCostedCostLe`, `RMQ.Headlines.succinctRMQCanonicalTransitionalQueryCostEq` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_canonicalTransitional`, `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq` | `RMQ/Core/SuccinctFinalRAM.lean`; `RMQ/Headlines/RMQ.lean` | `lake env lean scripts/headline_axiom_check.lean` |
-| List-facing canonical transitional supplied-store cost transfer under footprint agreement. | `RMQ.Headlines.listIntSuccinctRMQCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal` | `RMQ.SuccinctClassic.listIntCanonicalTransitionalFinalFullModelCostLeOfFootprintGlobal` | `RMQ/Core/SuccinctRMQClassic.lean` | `lake build RMQPaper`; `lake env lean scripts/headline_axiom_check.lean` |
-| Large-regime compatibility theorem with an explicit `2^128 <= shape.size` premise where the existing theorem surface says so. This is not the current readiness explanation for the fast path. | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_execution_story` | `RMQ/Core/SuccinctFinalRAM.lean` | `lake env lean scripts/headline_axiom_check.lean` |
-| Bounded large-regime compatibility companion. | `RMQ.Headlines.succinctRMQLargeRegimeGlobalPayloadStoreBoundedExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_bounded_execution_story` | `RMQ/Core/SuccinctFinalRAM.lean` | `lake env lean scripts/headline_axiom_check.lean` |
+Historical query profiles and conservative envelopes remain kernel-checked in
+their source modules and are re-exported only by
+`RMQ.Headlines.RMQCompatibility` under names containing `Legacy` or
+`Compatibility`. They are intentionally absent from `RMQPaper`, from the
+current claim rows above, and from the headline axiom inventory.
 
 ## Supporting Spoke Claims
 

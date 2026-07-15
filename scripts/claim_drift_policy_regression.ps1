@@ -55,6 +55,13 @@ $fixtures = @(
   @{ id = "bypass-no-canonical-first-clause"; reject = $true; text = "No canonical execution is discussed here; the canonical execution requires 2^128." },
   @{ id = "bypass-not-true-first-clause"; reject = $true; text = "It is not true that the canonical execution is slow; the canonical execution requires 2^128." },
 
+  @{ id = "retired-direct-paper-alias"; reject = $true; termId = "forbidden-retired-paper-query-alias"; text = "RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery" },
+  @{ id = "retired-interpreted-paper-alias"; reject = $true; termId = "forbidden-retired-paper-query-alias"; text = "RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted" },
+  @{ id = "retired-leaf-paper-alias"; reject = $true; termId = "forbidden-retired-paper-query-alias"; text = "RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryLeafTrace" },
+  @{ id = "retired-word-paper-alias"; reject = $true; termId = "forbidden-retired-paper-query-alias"; text = "RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTrace" },
+  @{ id = "retired-large-word-paper-alias"; reject = $true; termId = "forbidden-retired-paper-query-alias"; text = "RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime" },
+  @{ id = "retired-large-global-paper-alias"; reject = $true; termId = "forbidden-retired-paper-query-alias"; text = "RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryGlobalWordTraceLargeRegime" },
+
   @{ id = "negated-canonical"; reject = $false; allowedMatch = $true; text = "No canonical execution theorem uses 2^128 as an activation premise." },
   @{ id = "negated-current-canonical"; reject = $false; allowedMatch = $true; text = "No current canonical reviewer route has 2 ^ 128 as an activation premise." },
   @{ id = "negative-inside-clause"; reject = $false; allowedMatch = $true; text = "The canonical execution does not use 2^128 as an activation premise." },
@@ -69,7 +76,9 @@ $fixtures = @(
   @{ id = "proof-only-sparse-witness"; reject = $false; text = "The proof-only sparse-local witness uses symbolic N = 2 ^ 128." },
   @{ id = "historical-role"; reject = $false; allowedMatch = $true; text = "Historical note: The canonical execution's activation premise was 2^128." },
   @{ id = "compatibility-role"; reject = $false; allowedMatch = $true; text = "Compatibility companion: The canonical reviewer route uses a 2^128 activation threshold." },
-  @{ id = "proof-only-role"; reject = $false; allowedMatch = $true; text = "Proof-only witness: The hypothetical canonical query has a 2 ^ 128 activation premise; this is not an execution premise." }
+  @{ id = "proof-only-role"; reject = $false; allowedMatch = $true; text = "Proof-only witness: The hypothetical canonical query has a 2 ^ 128 activation premise; this is not an execution premise." },
+  @{ id = "canonical-paper-alias"; reject = $false; text = "RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile" },
+  @{ id = "legacy-paper-alias"; reject = $false; text = "RMQ.Headlines.succinctRMQLegacy196727InterpretedTwoNPlusOConstantQuery" }
 )
 
 $shellPath = (Get-Process -Id $PID).Path
@@ -171,6 +180,7 @@ function Test-FinalVerdict {
     [string]$Path,
     [bool]$Reject,
     [bool]$RequireAllowed = $false,
+    [string]$TermId = "forbidden-2pow128-canonical-activation",
     [string]$WorkingDirectory = $repoRoot,
     [bool]$CheckTrackedState = $false
   )
@@ -185,8 +195,9 @@ function Test-FinalVerdict {
     Assert-TrackedStateUnchanged -Context "after-$Id"
   }
 
-  $termFailed = [bool]($result.Output -match "CLAIM-DRIFT\[forbidden-2pow128-canonical-activation\].*\[fail\]")
-  $termAllowed = [bool]($result.Output -match "CLAIM-DRIFT\[forbidden-2pow128-canonical-activation\].*\[allowed\]")
+  $escapedTermId = [regex]::Escape($TermId)
+  $termFailed = [bool]($result.Output -match "CLAIM-DRIFT\[$escapedTermId\].*\[fail\]")
+  $termAllowed = [bool]($result.Output -match "CLAIM-DRIFT\[$escapedTermId\].*\[allowed\]")
   if ($Reject) {
     $passed = ($result.Code -ne 0) -and $termFailed
     $expected = "REJECT"
@@ -239,7 +250,11 @@ try {
         (Join-Path $absoluteFixtureRoot $fixturePath),
         [string]$fixture.text + [Environment]::NewLine
       )
-      Test-FinalVerdict -Id $fixture.id -Path $fixturePath -WorkingDirectory $absoluteFixtureRoot -Reject ([bool]$fixture.reject) -RequireAllowed ([bool]$fixture.allowedMatch)
+      $termId = "forbidden-2pow128-canonical-activation"
+      if ($fixture.ContainsKey("termId")) {
+        $termId = [string]$fixture.termId
+      }
+      Test-FinalVerdict -Id $fixture.id -Path $fixturePath -WorkingDirectory $absoluteFixtureRoot -Reject ([bool]$fixture.reject) -RequireAllowed ([bool]$fixture.allowedMatch) -TermId $termId
       if ($fixture.reject) {
         $rejectCount += 1
       } else {

@@ -1038,3 +1038,45 @@ non-synthetic certificate weights, trace length, `Costed` cost, and the `76`
 cap now describe one checked computation. This is candidate-complete evidence;
 blind exact-commit audit
 remains coordinator-owned.
+
+## 2026-07-14 W21 Canonical Paper Theorem Topology
+
+The A05 blind audit accepted the operational `76` proof and rejected one
+publication-level mismatch: `RMQPaper` still exported six unqualified profiles
+for older direct, interpreted, leaf-trace, word-trace, and size-premised query
+computations. Those theorems were checked, but they used an older payload/query
+pair and a legacy aggregate budget. A paper reader therefore had multiple
+plausible answers to "which succinct RMQ capstone is current?"
+
+The correction proves
+`concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_sided_profile`.
+It combines, in one theorem type, the doubled-Catalan space envelopes, the
+canonical reviewer payload at-most bound, exact physical erasure to that
+payload, exact valid queries through the canonical global trace, equality of
+that trace's `nonSyntheticWeight` sum with its own `Costed.cost`, and the
+uniform bound `76`. The paper alias is
+`succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`.
+`listIntSuccinctRMQPaperMainTheorem` now also contains the checked literal
+equality `SuccinctClassic.queryCost = 76`.
+
+The six older profiles were not deleted. They moved out of
+`RMQ.Headlines.RMQ` into `RMQ.Headlines.RMQCompatibility`, where their retained
+aliases contain `Legacy` or `Compatibility`. `RMQPaper` imports only the
+canonical module; the broad `RMQ.Headlines` barrel explicitly imports both.
+This is an abstraction boundary around curated citation topology, not an
+attempt to hide every transitively available declaration.
+
+Plain English: the paper now has one construction theorem that says which bits
+are counted and which trace queries those same bits. The trace certificate,
+trace length, modeled cost, exact answer, and number `76` can no longer be
+silently paired with a different historical execution through a coequal
+headline alias.
+
+Live assumptions are unchanged. The theorem counts the existing charged trace
+events only; controller dispatch, arithmetic, branching, decoding, local scans,
+merging, preprocessing, compiled runtime, and serialized-payload query
+semantics remain outside U3. A skeptical graduate student should next import
+`RMQPaper`, inspect the single construction-facing profile type, and verify that
+both its physical-erasure clause and every query clause name the canonical
+reviewer payload/global trace. A fresh blind exact-commit audit remains the next
+acceptance step.

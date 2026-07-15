@@ -86,80 +86,27 @@ one query-independent reviewer width bounds the whole execution.
 The construction-facing RMQ name is:
 
 ```lean
-abbrev succinctRMQTwoNPlusOConstantQuery :=
-  RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile
+abbrev succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_sided_profile
 ```
 
-Alias chain:
-
-```text
-RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery
-  = RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile
-    -> builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_n_plus_o_constant_query_profile
-    -> builtGenericSparseExceptionBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
-    -> concreteBPNativeSuccinctRMQFamily_two_n_plus_o_constant_query_profile
-         builtGenericSparseExceptionSelectBPCloseAccessFamily
-```
-
-The additive interpreted public alias is:
-
-```lean
-abbrev succinctRMQTwoNPlusOConstantQueryInterpreted :=
-  RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_interpreted_profile
-```
-
-It has the same payload, numeric doubled-Catalan slack comparison, cost, and
-exactness theorem shape as the main capstone, but the query clause uses
-`SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryInterpretedCosted`: a
-closed first-order whole-query controller whose leaves are interpreted
-close-select, compact close/LCA, and register-backed answer-rank operations.
+Its checked type names the canonical reviewer payload and exact physical
+erasure, the doubled-Catalan space envelopes, and the canonical global trace
+whose non-synthetic certificate sum equals the same `Costed.cost` and is at
+most `76`. Valid queries through that trace erase to the exact representative
+RMQ answer.
 
 The encoding-quantified fixed-length lower-bound theorem is not hidden in this
 capstone clause. It is separately exposed as
 `RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack`, backed by
 `RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack`.
 
-The next flattening checkpoint is:
-
-```lean
-abbrev succinctRMQTwoNPlusOConstantQueryLeafTrace :=
-  RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_leaf_trace_profile
-```
-
-It keeps the same theorem shape but has the closed controller evaluate to an
-explicit domain-leaf trace before projection back to `Costed`.  This is still
-not one unified payload-store trace: the trace records interpreted leaf calls
-for close-select, compact close/LCA, and answer-rank.
-
-The current strongest all-size flattening checkpoint is:
-
-```lean
-abbrev succinctRMQTwoNPlusOConstantQueryWordTrace :=
-  RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_profile
-```
-
-It keeps the same theorem shape and has the closed controller emit one
-`WordRAM.TraceEvent` stream. The close-select leg, answer-rank leg, and the
-rank-seed reads inside compact close/LCA contribute structural
-payload/register traces. The all-size compact close/LCA leg now also consumes
-`SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural`,
-which replaces the former zero-block same-block fallback and cross-block
-interior fallback leaves with a structural BP-code zero-block same-block scan
-and the all-size structural cross-block interior route.
-
-There is also a large-regime companion:
-
-```lean
-abbrev succinctRMQTwoNPlusOConstantQueryWordTraceLargeRegime :=
-  RMQ.SuccinctFinal.builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_whole_query_word_trace_large_regime_profile
-```
-
-Its query clauses include the explicit hypothesis `2^128 <= shape.size`; under
-that premise the compact close/LCA leg routes through the positive-block
-local/fringe/interior structural trace replay. This large-regime theorem is now
-a compatibility companion: the current public all-size route is structural,
-with Ready two-level replay, active non-Ready bounded summary scan, and inactive
-pure-none interior replay.
+The previous direct/interpreted/leaf/word construction profiles remain checked
+history in `RMQ.Headlines.RMQCompatibility`, under aliases that explicitly
+contain `Legacy` or `Compatibility`. The narrow paper root does not import that
+module. The canonical execution instead consumes
+`SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural`
+and the uniform canonical interior directory at every input size.
 
 The compact interior route itself is now named by:
 
@@ -415,7 +362,7 @@ Current excerpt for the public headline path:
   [propext, Classical.choice, Quot.sound]
 'RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory' depends on axioms:
   [propext, Classical.choice, Quot.sound]
-'RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery' depends on axioms:
+'RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile' depends on axioms:
   [propext, Classical.choice, Quot.sound]
 ```
 
@@ -540,7 +487,7 @@ Headline aliases:
 ```lean
 import RMQ.Headlines
 
-#check RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery
+#check RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile
 #check RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack
 ```
 

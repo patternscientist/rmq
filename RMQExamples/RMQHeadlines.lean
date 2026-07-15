@@ -26,10 +26,13 @@ abbrev rankSelectCompressedFIDInterpreted :=
   RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile
 
 abbrev succinctRMQ :=
-  RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery
+  RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile
 
-abbrev succinctRMQInterpreted :=
-  RMQ.Headlines.succinctRMQTwoNPlusOConstantQueryInterpreted
+abbrev succinctRMQList :=
+  RMQ.Headlines.succinctRMQListIntTwoNPlusOConstantQuery
+
+abbrev succinctRMQGlobalTrace :=
+  RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory
 
 abbrev bpCloseNavigationInterpreted
     {rankSlots selectSlots lcaSlots : Nat}
