@@ -1,5 +1,6 @@
 # Paper Theorem Map
-## Canonical U2 Reviewer Route
+
+## Canonical Reviewer Route
 
 The current paper route is uniform for every size. Its primary anchors are:
 
@@ -36,7 +37,7 @@ The final trace refines
 and is exact by
 `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact`.
 Its one typed 20-source manifest includes canonical close and covers every
-read-producing segment. For each indexed read, W19 retains the global
+read-producing segment. For each indexed read, the provenance relation retains the global
 occurrence, program instruction occurrence, folded state, component-local
 occurrence, exact invocation parameters, source, and composed-trace offset.
 The query-independent manifest packet states that every counted source and
@@ -57,8 +58,8 @@ physical trace, and a checked consumed-address disagreement changes it.
 The capacity is linear and the query-independent reviewer width has an explicit
 all-size logarithmic bound while covering stored/returned words, addresses, and
 primitive operands/results. The principled charged-trace cost is exactly `76`;
-the transitional U2 cost remains `328`. Ready-threshold `118`,
-route-split, zero-block, `4144`, and `196727` rows are compatibility history
+earlier checked cost and dispatch rows live only in the explicit
+[`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md)
 and are not the current reviewer path.
 
 
@@ -151,15 +152,15 @@ same execution before being bounded by `76`. That equality uses the canonical
 no-synthetic trace; `TraceResult.toCosted` charges trace length and would count
 a synthetic compatibility marker if present. A synthetic event cannot satisfy
 that classification and, wherever inserted, makes the certificate sum differ
-from trace length. The separately named transitional U2 sum remains `328`.
+from trace length. Earlier checked accounting is kept in the compatibility
+history rather than in this current theorem map.
 Footprint-agreeing supplied-store and full-model aliases transfer the
-principled bound. Ready `118`, route-split, `4144`, and `196727` remain
-compatibility rows.
+principled bound.
 
 This accounting charges payload reads and word-rank/select primitives only.
 Controller dispatch, arithmetic, branching, decoding, local scanning, and
 candidate merging are documentary uncharged omissions because they are not
-events in the current trace. U3 does not predeclare them as a checked
+events in the current trace. The current theorem does not predeclare them as a checked
 instruction vocabulary. Thus `76` is not a conventional word-RAM runtime
 theorem; E1 must define a richer machine and prove that it simulates this same
 execution.

@@ -1,7 +1,8 @@
 # Claims Packet
-## Canonical Reviewer And U3 Cost Candidate
 
-The W19 occurrence-provenance candidate preserves the exhaustive typed
+## Canonical Reviewer Payload And Trace
+
+The occurrence-provenance layer preserves the exhaustive typed
 20-source universe, including canonical close, inside one whole-machine
 physical word list. That
 list erases exactly to the public `SuccinctClassic.buildPayload`. The existing
@@ -14,7 +15,7 @@ consumed ordered physical footprint determines the complete physical
 the evaluator observes its supplied store. The linear capacity and
 query-independent logarithmic width bound
 all stored/returned words, physical addresses, and charged primitive data.
-For every indexed read in the global trace, W19 retains that same global
+For every indexed read in the global trace, the checked relation retains that same global
 occurrence, its program-instruction occurrence, exact folded prefix state,
 component-local occurrence, invocation parameters, source, and offset in the
 composed trace for that exact query. Separately, the query-independent manifest
@@ -24,20 +25,16 @@ valid ordinary `List Int` query. Fresh unused segment `21` is rejected by the
 same common closed-valid-occurrence predicate, with a checked bridge from the
 successful positive predicate to the mutation-side arbitrary-result predicate.
 The singleton executable regression checks that identical events at global
-positions `0` and `12` remain distinct obligations. W18 event-value and
+positions `0` and `12` remain distinct obligations. Earlier event-value and
 component may-read facts remain compatibility facts only.
 The unchanged canonical execution now has the checked principled charged-trace
 cap `76 = 2*13 + (2*4 + 2*4 + 30) + 4`, and modeled cost is exactly emitted
 trace length. Payload-word reads and word-rank/select primitives are charged;
 controller dispatch, input/register access, arithmetic, branching, decoding,
 local scanning, candidate merging, trace assembly, and the validity guard are
-currently uncharged. The transitional `328` theorem remains for comparison.
-Ready `118`, route-split, zero-block, `4144`, and `196727` claims are
-compatibility rows only. Coordinator
-acceptance still requires coordinator reconstruction and a fresh blind
-exact-commit audit.
-
-
+currently uncharged. Earlier cost and dispatch theorems are documented only in
+the explicit
+[`compatibility history`](../docs/digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
 This file is a compact public-facing map from headline claims to the exact
 Lean theorem surfaces that support them. It is intentionally narrower than
 `docs/FAMILY_SUMMARY.md`: use it when auditing what the repository currently
@@ -68,7 +65,7 @@ commands, see `../docs/PAPER_CLAIM_CORRESPONDENCE.md`.
 | The canonical reviewer payload and canonical global trace form one construction-facing profile: doubled-Catalan envelopes, `2*n + o(n)` payload, exact physical erasure, direct positional physical backing for every successful read, exact RMQ answers, non-synthetic certificate weight equal to trace length and the same `Costed.cost`, and the uniform bound `76`. | `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile` via `RMQ.Headlines.RMQ` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_sided_profile` | `lake build RMQPaper` and `lake env lean scripts/headline_axiom_check.lean` |
 | The ordinary `List Int` succinct RMQ surface proves `buildPayload.length <= 2*n + overhead n` with `overhead = o(n)`, rejects invalid or empty ranges, preserves the classic valid half-open leftmost contract, and supplies the final no-synthetic execution story. Exact physical erasure is separate and no padding is used. | `RMQ.Headlines.listIntSuccinctRMQFlatPayloadStoreNoSyntheticExecutionStory`, `RMQ.Headlines.listIntSuccinctRMQQueryCostedInvalid` | `RMQ.SuccinctClassic.listInt_flatPayloadStore_noSynthetic_two_n_plus_o_execution_story`, `RMQ.SuccinctClassic.queryCosted_invalid` | `lake env lean scripts/headline_axiom_check.lean` and `lake env lean scripts/wordram_axiom_check.lean` |
 | The reviewer capstone is genuine supplied flat-physical execution, determined by its first consumed ordered footprint; its `.value` is exactly the translated supplied-store evaluator value, and a decisive singleton corruption changes the answer. | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical`, `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint`, `RMQ.Headlines.succinctRMQReviewerPhysicalValueFromSuppliedStore`, `RMQ.Headlines.succinctRMQReviewerPhysicalValueDependency` | Corresponding `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPhysical*` projection and footprint theorems plus the validation guards | `lake env lean scripts/wordram_axiom_check.lean`, `lake env lean scripts/headline_axiom_check.lean`, and `lake build RMQExamples` |
-| The W19 reviewer candidate preserves indexed occurrences and exact invocation parameters for the current trace. A separate query-independent packet gives every counted source and shared-BP consumer some successful closed-valid whole-query witness, checks the positive-to-mutation bridge, and rejects fresh segment `21` with the common predicate. | `RMQ.Headlines.succinctRMQReviewerEveryReadOccurrenceProvenance`, `RMQ.Headlines.succinctRMQReviewerManifestSemanticAdequacy`, `RMQ.Headlines.succinctRMQReviewerCountedSourceSuccessfulClosedValidOccurrence`, `RMQ.Headlines.succinctRMQReviewerSharedBPConsumerSuccessfulClosedValidOccurrence`, `RMQ.Headlines.succinctRMQReviewerSuccessfulOccurrenceImpliesOperationalProducer`, `RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance_checked`, `...ReviewerManifestSemanticAdequacy`, `...ReviewerSource_counted_successful_closed_valid_occurrence`, `...ReviewerSharedBPConsumer_successful_closed_valid_occurrence`, `ReviewerProducerClaim.hasOperationalProducer_of_successful`, `...FreshUnusedCanonicalSource_no_producer` | `lake env lean scripts/wordram_axiom_check.lean` and `lake env lean scripts/headline_axiom_check.lean` |
+| The reviewer provenance layer preserves indexed occurrences and exact invocation parameters for the current trace. A separate query-independent packet gives every counted source and shared-BP consumer some successful closed-valid whole-query witness, checks the positive-to-mutation bridge, and rejects fresh segment `21` with the common predicate. | `RMQ.Headlines.succinctRMQReviewerEveryReadOccurrenceProvenance`, `RMQ.Headlines.succinctRMQReviewerManifestSemanticAdequacy`, `RMQ.Headlines.succinctRMQReviewerCountedSourceSuccessfulClosedValidOccurrence`, `RMQ.Headlines.succinctRMQReviewerSharedBPConsumerSuccessfulClosedValidOccurrence`, `RMQ.Headlines.succinctRMQReviewerSuccessfulOccurrenceImpliesOperationalProducer`, `RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance_checked`, `...ReviewerManifestSemanticAdequacy`, `...ReviewerSource_counted_successful_closed_valid_occurrence`, `...ReviewerSharedBPConsumer_successful_closed_valid_occurrence`, `ReviewerProducerClaim.hasOperationalProducer_of_successful`, `...FreshUnusedCanonicalSource_no_producer` | `lake env lean scripts/wordram_axiom_check.lean` and `lake env lean scripts/headline_axiom_check.lean` |
 | The ordinary `List Int` supplied-store surface runs `SuccinctClassic.queryCostedWithStore` against a caller-provided store agreeing with `SuccinctClassic.globalReadStore xs` on the checked footprint: equality, valid-window exactness, and the principled all-size charged-trace cost `76` transfer. | `RMQ.Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint`, `RMQ.Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal`, `RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal` | `RMQ.SuccinctClassic.queryCostedWithStore_eq_queryCosted_of_footprint`, `RMQ.SuccinctClassic.listIntFinalFullModelSoundnessExactOfFootprintGlobal`, `RMQ.SuccinctClassic.listIntPrincipledAllSizeChargedTraceCostLeOfFootprintGlobal` | `lake build RMQPaper` and `lake env lean scripts/headline_axiom_check.lean` |
 | The final all-size RMQ query has one globally segmented payload-store execution story: every event is a payload read or word primitive, and every payload read agrees with the concrete global store. | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story` | `lake env lean scripts/wordram_axiom_check.lean` |
 | The same all-size global trace is store-extensional: any read store agreeing with the concrete global store on emitted payload-read events validates the same trace. | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory` | `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_store_extensional_execution_story` | `lake env lean scripts/wordram_axiom_check.lean` |
@@ -106,16 +103,14 @@ These are checked repository spokes and remain in the aggregate
   theorem and a no-synthetic structural replay theorem. The flat-payload theorem
   is an execution-story layout theorem; the separately cited `2*n + o(n)`
   theorem remains the asymptotic payload theorem.
-- The large-regime WordRAM theorem still carries an explicit size premise as a
-  compatibility strengthening. The public all-input theorem is total,
-  store-backed, and structurally dispatches the compact close/LCA path; legacy
-  finite-small interior store slots `26` and `27` read as `none` and are not
-  part of the counted flat payload.
+- Earlier conditional WordRAM strengthening and retired dispatch details live
+  only in the explicit compatibility history. The public all-input theorem is
+  total and store-backed; legacy finite-small interior store slots `26` and
+  `27` read as `none` and are not part of the counted flat payload.
 - The canonical reviewer route has the principled charged-trace bound `76`.
   It does not charge controller operations and is not a conventional word-RAM
-  theorem. The separately named transitional bound is `328`. Ready
-  `118`, route-split `4144`, zero-block, and `196727` theorems remain checked
-  only as legacy compatibility/history surfaces.
+  theorem. Earlier checked cost and dispatch surfaces are indexed in the
+  explicit compatibility history rather than repeated here.
 - The bounded execution-story theorem supplies a trace-local finite bit width
   for exposed addresses and primitive operands. It is not yet a tight
   asymptotic machine-word side-condition for every component.
@@ -130,10 +125,10 @@ These are checked repository spokes and remain in the aggregate
 
 The canonical segment-`20` component-store route, supplied-store
 parametricity, counted-payload backing, total reviewer width, edge-case
-evidence, and principled U3 `76` charged-trace cap are landed and consumed by
+evidence, and principled `76` charged-trace cap are consumed by
 the public all-size path. The next cost-model consumer is E1: define richer
 controller-instruction semantics and prove a fully charged small-step
-simulation of this same execution. U3 exposes only the actual emitted
+simulation of this same execution. The current theorem exposes only the actual emitted
 `WordRAM.TraceEvent` stream and its direct weights; controller dispatch,
 arithmetic, branching, decoding, local scanning, and merging remain
 documentary uncharged omissions rather than a checked substitute machine.

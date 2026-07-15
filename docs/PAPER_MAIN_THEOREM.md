@@ -96,8 +96,7 @@ Historical cost and execution profiles remain kernel-checked through
 `RMQ.Headlines.RMQCompatibility`, under aliases explicitly containing
 `Legacy` or `Compatibility`; that module is not imported by `RMQPaper`.
 
-The `76` result makes U3 candidate-complete only inside the explicit
-charged-trace model. It
+The `76` result is scoped to the explicit charged-trace model. It
 charges payload reads and word-rank/select primitives, not controller
 arithmetic, branching, decoding, local scanning, or preprocessing. It is not a
 serialized-payload query theorem or conventional word-RAM complexity theorem.

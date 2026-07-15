@@ -2243,3 +2243,49 @@ Evidence:
 - `docs/internal/CLAIM_DRIFT_POLICY.json` version 14 exact path-and-line pairs.
 - `scripts/claim_drift_policy_regression.ps1` removed-name and frozen-scope
   production fixtures.
+
+## WDD-20260715-001: bound editorial migrations and gate once at the end
+
+Status: Accepted.
+Date: 2026-07-15.
+Scope: publication-document migrations after a theorem surface changes.
+
+Decision:
+
+1. Start a disputed editorial migration from the last accepted theorem commit,
+   not from a branch that has accumulated speculative policy machinery.
+2. Freeze a short reader-facing document set before editing. Change unrelated
+   spoke, provenance, or workflow documents only when they contain a broken
+   link or a directly false current claim.
+3. Review prose against the canonical theorem type and public consumer chain.
+   Claim-drift and topology scripts are lexical/name-resolution tripwires, not
+   semantic proof systems.
+4. Run focused scans, link/name checks, and `git diff --check` while editing.
+   Run the full repository gate once after the candidate text is stable. A
+   content change after that gate reruns only affected focused checks, plus the
+   full gate if the final committed tree changed materially.
+5. Use a fresh low-context blind audit on the exact final commit. The auditor
+   should compare the small public document set directly with theorem bodies
+   and imports, rather than evaluating whether a growing policy framework can
+   classify arbitrary English.
+6. A lint that searches `git ls-files` must explicitly add required publication
+   files and its virtual mutation target. New replacement documents are
+   untracked before staging; omitting them can turn a cheap lexical rejection
+   into a slow and misleading Lean-resolution path.
+
+Rejected alternatives:
+
+- Run the multi-minute aggregate gate after every prose adjustment.
+- Expand a missed sentence into a repository-wide document-role ontology or a
+  natural-language classifier implemented with regular expressions.
+- Copy a canonical paragraph into every document to satisfy surface scans.
+- Keep patching a sprawling editorial branch when a clean theorem checkpoint
+  makes the intended change smaller and easier to audit.
+
+Consequences:
+
+Editorial work has a bounded cost and a clear completion condition. The final
+gate still protects the repository, while focused checks provide fast feedback
+during drafting. Future paper exposition remains recoverable from the theorem
+map and design decisions without preserving worker-chat chronology in public
+claims.

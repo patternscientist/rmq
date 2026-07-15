@@ -1,10 +1,11 @@
 # Final RMQ Model Adequacy
+
 ## Canonical Machine Adequacy
 
 The reviewer path uses one pre-execution list,
 `concreteBPNativeSuccinctRMQReviewerPhysicalWords`, whose erasure is exactly the
 canonical public payload. It is assembled from one exhaustive typed 20-source
-universe that includes canonical close. For every indexed read, W19 retains the
+universe that includes canonical close. For every indexed read, the provenance layer retains the
 same global position, closed-program instruction occurrence, state obtained by
 folding the exact preceding prefix, component-local position, exact invocation
 parameters, physical source, region, and logical segment. Every counted source
@@ -13,7 +14,7 @@ closed whole-query execution under a valid ordinary `List Int` query.
 The manifest also proves exclusive source regions, complete logical-segment
 coverage, and exclusion of legacy duplicate close/interior sources.
 
-W19 deliberately uses two differently quantified packets. The parameterized
+The provenance layer deliberately uses two differently quantified packets. The parameterized
 `ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy shape left right` retains
 indexed forward provenance for that exact query. The proof-only,
 non-parameterized
@@ -32,7 +33,7 @@ A counterfactual fresh segment `21` with the plausible existing
 occurrence relation. The positive predicate existentially requires `some word`;
 the mutation predicate permits any `word?`, and
 `ReviewerProducerClaim.hasOperationalProducer_of_successful` is the checked
-`P -> Q` bridge. W18 event-value and component may-read theorems remain
+`P -> Q` bridge. Earlier event-value and component may-read theorems remain
 compatibility facts and do not carry this reviewer claim.
 
 The existing supplied-store evaluator is run through
@@ -180,16 +181,13 @@ canonical payload-read event lies inside that safe footprint; exactness then
 transfers to any supplied store agreeing with the canonical global store on the
 footprint.
 
-## Compatibility-Only Zero-Block Leaf Guard
+## Compatibility Boundary
 
-One compatibility leaf-level supplied-store blemish is disclosed explicitly.
-The zero-block
-same-block supplied-store decoder currently flattens the supplied BP-code words
-and checks `bits = shape.bpCode` before returning the canonical structural
-answer. On corrupted stores that fail this guard, the leaf may return `none`
-rather than decode arbitrary garbage. This is a model boundary and nonclaim, not
-a proof bug. This leaf is not reachable from the uniform canonical reviewer
-route; it remains only on compatibility/history surfaces.
+Detailed earlier cost, dispatch, and leaf-level supplied-store chronology is
+quarantined in the explicit
+[`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
+Those facts are not reachable from the uniform canonical reviewer route and do
+not form part of this current model-adequacy statement.
 
 ## The Constant
 
@@ -208,13 +206,11 @@ the canonical no-synthetic trace; `TraceResult.toCosted` itself charges trace
 length and would count a synthetic compatibility marker if one were present.
 The non-synthetic-weighted trace is then bounded by `76`. A counterfactual
 theorem proves that inserting a synthetic event anywhere would make the
-certificate sum strictly smaller than trace length. The transitional
-`328` theorem remains for U2 comparison.
+certificate sum strictly smaller than trace length.
 
 The supplied-store and full-model companions transfer the same `76` bound
-under final footprint agreement. The older `118` Ready theorem, route-split
-`4144`, and aggregate `196727` survive only as compatibility facts for
-pre-canonical execution stories. They are not current reviewer-route claims.
+under final footprint agreement. Earlier execution stories are compatibility
+facts only and are not current reviewer-route claims.
 The paper-level claim is that the query is constant in the stated model and
 that the model's counted reads are payload-backed. It is not a claim that this
 Lean code is production serialization, optimized machine code, or a verified
@@ -224,7 +220,7 @@ Currently charged events are attempted payload-word reads and word-rank /
 word-select primitives. Instruction dispatch, inputs/registers, arithmetic,
 option tests, branching, fixed-width decode, local BP scan, candidate merge,
 trace assembly, and the validity guard do not appear in the current trace and
-remain documentary uncharged omissions. U3 does not define a substitute
+remain documentary uncharged omissions. The current theorem does not define a substitute
 controller vocabulary or prove conventional word-RAM complexity. E1 must
 define its richer instruction semantics and prove a simulation separately.
 
@@ -238,8 +234,7 @@ The adequacy packet does not prove:
 - production-ready serialization;
 - minimality of the auxiliary safe logical layout footprint (the reviewer
   flat-physical footprint itself is execution-derived and recorded exactly);
-- arbitrary-garbage decoding for corrupted zero-block supplied-store words; the
-  zero-block leaf currently guards by checking `bits = shape.bpCode`.
+- arbitrary-garbage decoding for legacy supplied-store compatibility leaves.
 
 It does prove a model-adequacy bridge: the final query's modeled constant-cost
 execution has an explicit trace, explicit counted payload reads, bounded event

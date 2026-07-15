@@ -21,7 +21,7 @@ encoding-quantified information-theoretic lower-bound theorem.
 
 For the current publication-oriented explanation aimed at mathematically mature
 readers with little data-structures background, see
-[`docs/digests/PROJECT_DIGESTION_2026_07_06.md`](docs/digests/PROJECT_DIGESTION_2026_07_06.md).
+[`docs/digests/PROJECT_DIGESTION_CURRENT.md`](docs/digests/PROJECT_DIGESTION_CURRENT.md).
 The deeper first-contact background note remains
 [`docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md`](docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md).
 
@@ -70,10 +70,10 @@ for checked historical profiles under `Legacy`/`Compatibility` names.
 | `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile` | Canonical construction-facing profile: doubled-Catalan space envelopes, the at-most `2*n + o(n)` canonical reviewer payload, exact physical-word erasure, direct positional physical backing for every successful read, exact queries through the same global trace, non-synthetic certificate weight equal to both trace length and its `Costed.cost`, and the uniform bound `76`. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` | All-size execution-story theorem for the final succinct RMQ query: the costed query refines one globally segmented trace, every event is either a payload read or bounded word primitive, and every read agrees with one concrete global payload store. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory` | Store-extensional all-size execution story: any read store agreeing with the concrete global store on the emitted payload-read events validates the same final-query trace. |
-| `RMQ.Headlines.succinctRMQCanonicalInteriorDirectoryProfileAllSize` | Canonical all-size interior profile: exactness, component store, execution footprint, successful-read backing, and reviewer-width guarantees. The bounded accepted execution has the separate U3 charged-trace cap `30`; `240` remains the transitional interface cap. |
+| `RMQ.Headlines.succinctRMQCanonicalInteriorDirectoryProfileAllSize` | Canonical all-size interior profile: exactness, component store, execution footprint, successful-read backing, and reviewer-width guarantees. The current execution has the separate charged-trace cap `30`; `240` remains the transitional interface cap. |
 | `RMQ.Headlines.succinctRMQCanonicalReviewerMachineWordsComponentSlice` | Exact physical machine-word placement of the canonical component after the counted prefix. |
 | `RMQ.Headlines.succinctRMQCanonicalInteriorPhysicalFootprintFits` | Every physical address consumed by the canonical interior execution fits the pre-execution reviewer word width. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe` | Paper-facing U3 theorem: the unchanged uniform canonical trace has charged-trace cost at most `76`. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe` | Paper-facing theorem: the uniform canonical trace has charged-trace cost at most `76`. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostEqTraceLength` | Exact accounting bridge: modeled cost equals emitted charged-event trace length. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultEventReadWordOrWordRankOrWordSelect` | Every event actually emitted by the canonical whole-query trace is a payload read, word-rank, or word-select event. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumEqCost` | For the canonical no-synthetic trace, the `WordRAM.TraceEvent.nonSyntheticWeight` certificate sum equals the `Costed` cost of the same execution. |
@@ -91,7 +91,7 @@ for checked historical profiles under `Legacy`/`Compatibility` names.
 | `RMQ.Headlines.succinctRMQReviewerCountedSourceSuccessfulClosedValidOccurrence` | Every counted source is successfully read by some actual closed whole-query execution under a valid ordinary `List Int` query. |
 | `RMQ.Headlines.succinctRMQReviewerSharedBPConsumerSuccessfulClosedValidOccurrence` | Select, rank, and canonical-close consumers each have a successful closed-valid occurrence through their exact invocation leaf. |
 | `RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer` | Fresh segment `21` is rejected by the same common closed-valid-occurrence predicate used by accepted sources; the checked positive-to-mutation bridge accounts for successful versus arbitrary-result reads. |
-| `RMQ.Headlines.succinctRMQReviewerManifestSemanticAdequacy` | Query-independent W19 packet: every counted source and shared-BP consumer has some successful closed-valid execution witness, successful `P` implies the common mutation predicate `Q`, and fresh segment `21` fails `Q`. It does not say the current query reads every source. |
+| `RMQ.Headlines.succinctRMQReviewerManifestSemanticAdequacy` | Query-independent semantic-adequacy packet: every counted source and shared-BP consumer has some successful closed-valid execution witness, successful `P` implies the common mutation predicate `Q`, and fresh segment `21` fails `Q`. It does not say the current query reads every source. |
 | `RMQ.Headlines.listIntSuccinctRMQInvalidPhysicalSemantics` | Invalid public inputs have one guarded none/empty/zero logical and physical execution for every supplied store. |
 | `RMQ.Headlines.listIntSuccinctRMQQueryCostedInvalid` | One public validity boundary rejects every invalid or empty range; specialized empty, reversed, and out-of-bounds aliases are exported beside it. |
 | `RMQ.Headlines.concreteBPCloseNavigationProfile` | Concrete payload-backed BP close-navigation profile: relative-split false-select/rank-close plus compact relative-rmM close/LCA, with `2*n + o(n)` payload, constant modeled query cost, exact Cartesian-shape RMQ answer semantics, and machine-word-bounded component payload reads. |
@@ -109,14 +109,11 @@ for checked historical profiles under `Legacy`/`Compatibility` names.
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreExecutionStory` | Target-independent global-store execution story for compressed/FID rank/select: for fixed `bits`, shared access plus rank false/true and select false/true traces all read from one concrete payload store. |
 | `RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory` | Bounded target-independent global-store execution story for compressed/FID rank/select: the shared access/rank/select traces also carry trace-local finite widths bounding payload-read addresses and word-primitive operands/results. |
 
-W19 candidate evidence separates the semantic obligations reopened after W18:
-indexed occurrence provenance preserves invocation parameters for the exact
-current query, while a global packet proves every counted source has some
-actual successful closed-valid query witness under the same common operational
-relation used to reject segment `21`. Coordinator
-reconstruction and a fresh blind exact-commit audit still precede U2
-acceptance. The canonical
-reviewer route otherwise has one live public payload,
+The provenance layer separates two semantic obligations: indexed occurrence
+provenance preserves invocation parameters for the exact current query, while
+a global packet proves every counted source has some actual successful
+closed-valid query witness under the same operational relation used to reject
+segment `21`. The canonical reviewer route has one live public payload,
 `SuccinctClassic.buildPayload`. One pre-execution reviewer physical word list
 erases exactly to that payload. The existing supplied-store evaluator runs
 through a checked adapter that reads the supplied flat store at translated
@@ -133,17 +130,17 @@ execution returns the translated supplied-store evaluator value, and a checked
 decisive singleton corruption changes `some 0` to `none` while a
 trace-preserving value-ignore mutant does not. Operational checks also reject
 dead-source addition, used-source removal, and mismatched consumer labels.
-W19 occurrence evidence starts from a global `getElem?` witness and retains
+Occurrence evidence starts from a global `getElem?` witness and retains
 the same position through the program instruction, folded pre-state, local
 component occurrence, and exact select/rank/close parameters. A checked
 singleton regression keeps the equal events at global positions `0` and `12`
 as distinct obligations. The source witnesses use actual successful closed
 valid executions, including symbolic large witnesses for sources `12`--`19`;
-component may-read and W18 event-value facts remain compatibility facts. The
-principled U3 charged-trace cap is `76`; the transitional `328` theorem remains
-for historical comparison. Ready `118`, route-split `4144`, zero-block, and `196727` declarations
-remain compatibility/history surfaces and have no reverse edge into the
-reviewer route.
+component may-read and earlier event-value facts remain compatibility facts. The
+current charged-trace cap is `76`; detailed earlier cost and dispatch
+chronology lives only in the
+[`compatibility history`](docs/digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md)
+and has no reverse edge into the reviewer route.
 
 The construction-level theorem names are intentionally verbose, so that the
 model assumptions and dependency path remain inspectable. See
@@ -301,7 +298,7 @@ imports, this material):
 - [`docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md`](docs/digests/DEEP_PROJECT_DIGESTION_2026_06_28.md):
   immutable historical Lean-club snapshot; exact frozen lines are marked and
   remain outside the current paper surface.
-- [`docs/digests/PROJECT_DIGESTION_2026_07_06.md`](docs/digests/PROJECT_DIGESTION_2026_07_06.md):
+- [`docs/digests/PROJECT_DIGESTION_CURRENT.md`](docs/digests/PROJECT_DIGESTION_CURRENT.md):
   current publication-oriented project digestion. Its documentary headline
   identifiers are checked under both the broad and `RMQPaper` imports; dated
   fast-regime discussion is explicitly labeled compatibility history.
@@ -334,11 +331,10 @@ imports, this material):
 ## Current Development Docket
 
 The RMQ capstone is in place with the uniform canonical reviewer route and its
-principled all-size charged-trace cap `76`; the U3 theorem chain is
-candidate-complete branch evidence pending the coordinator-owned blind
-exact-commit audit boundary.
-The older route-split `4144`, Ready `118`, zero-block, and `196727` statements
-remain compatibility/history surfaces. The development frontier is now to
+principled all-size charged-trace cap `76`.
+Earlier cost and dispatch statements remain in the explicit
+[`compatibility history`](docs/digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
+The development frontier is now to
 package, calibrate, and reuse the infrastructure:
 
 1. deepen balanced-parentheses navigation into a fuller tree-navigation API and
@@ -347,7 +343,7 @@ package, calibrate, and reuse the infrastructure:
 2. push the union-find spoke from the current sequence/event scorecard toward a
    true inverse-Ackermann amortized theorem over strict residual events; and
 3. have E1 define a richer instruction semantics and prove that it simulates
-   the same canonical execution while charging controller work; U3 deliberately
+   the same canonical execution while charging controller work; the current theorem deliberately
    provides no parallel controller-operation vocabulary, and M1's
    serialized-payload query and complete preprocessing obligations remain
    separate; and

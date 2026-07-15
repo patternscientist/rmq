@@ -2351,3 +2351,51 @@ Evidence:
   in `RMQ/Headlines.lean`.
 - `scripts/paper_topology_lint.ps1`, its mutation regression, and the curated
   headline axiom inventory.
+
+## DD-20260715-001: use one current digest and one compatibility history
+
+Status: Accepted.
+Date: 2026-07-15.
+Scope: publication-facing exposition of the canonical succinct RMQ theorem.
+
+Decision:
+
+- `docs/digests/PROJECT_DIGESTION_CURRENT.md` is the sole current project
+  digestion. Its undated name is stable across theorem improvements; Git
+  history records prior versions.
+- Detailed readiness, route-split, large-regime, zero-block, and superseded
+  numeric chronology lives in
+  `docs/digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md`.
+- Current reviewer documents state the canonical proposition directly: one
+  reviewer payload, its exact physical erasure, one canonical global trace,
+  exact valid answers, positional read backing, and charged-trace cost at most
+  `76` under the explicit model boundary.
+- Worker labels, candidate status, pending-audit notes, and branch names are
+  development history. They do not belong in the current public theorem
+  statement.
+
+Rejected alternatives:
+
+- Keep a dated file as the canonical current digest and replace it on each
+  milestone.
+- Repeat the full historical constant and route chronology in every trust,
+  paper, and artifact document.
+- Prefix unrelated documents with one identical canonical paragraph so that a
+  lexical scan sees the desired proposition everywhere.
+- Treat a document-role manifest or regular-expression classifier as evidence
+  that English prose has the intended theorem semantics.
+
+Consequences:
+
+Reviewers encounter one current proposition and one explicitly non-current
+history. The theorem map, model-adequacy note, trust packet, and artifact claim
+packet retain distinct purposes rather than becoming copies of one another.
+Automation remains useful for stale names and known wording hazards, but the
+Lean theorem and theorem-directed review remain authoritative.
+
+Publication-facing significance:
+
+The paper can cite a stable current digest and move historical derivations to a
+single appendix-style source. This makes the exposition easier to maintain and
+prevents internal proof-campaign vocabulary from becoming part of the claimed
+mathematical architecture.

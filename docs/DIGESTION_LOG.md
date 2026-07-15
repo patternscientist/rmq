@@ -126,7 +126,7 @@ not opened by this repair.
 
 ## Current Digests
 
-- [`digests/PROJECT_DIGESTION_2026_07_06.md`](digests/PROJECT_DIGESTION_2026_07_06.md):
+- [`digests/PROJECT_DIGESTION_CURRENT.md`](digests/PROJECT_DIGESTION_CURRENT.md):
   canonical current public state-significance-and-path-to-a-paper digest for
   `main` at
   `3f6f1e3`, for a mathematically mature non-DS audience. Covers the
@@ -675,7 +675,7 @@ paper constant, not whether the old zero-block route is still hiding underneath.
 ## Current Paper-Path Note
 
 2026-07-06 digestion pass: the project-wide digest was refreshed as
-`digests/PROJECT_DIGESTION_2026_07_06.md` after the store-parametric
+the digest now named `digests/PROJECT_DIGESTION_CURRENT.md` after the store-parametric
 whole-query capstone (2026-07-04/05) and the model-adequacy, footprint
 containment, paper-surface, and artifact-reproducibility landings
 (2026-07-06). Two corrections worth recording at log level. First, the fast
@@ -696,7 +696,7 @@ paper/artifact packaging, external novelty calibration, and tighter
 machine-word side conditions, not another existence proof for the regime split.
 
 2026-07-07 publication/provenance alignment pass: the publication branch treats
-`digests/PROJECT_DIGESTION_2026_07_06.md` as the canonical current public
+the digest now named `digests/PROJECT_DIGESTION_CURRENT.md` as the canonical current public
 digest. The coordinator checkout's local
 `digests/PROJECT_DIGESTION_2026_07_CURRENT.md` and `ADD_PROVENANCE.md` were
 read as branch-local evidence, but this branch keeps only one current public
@@ -1161,3 +1161,22 @@ student should next rerun the production mutations at the exact candidate
 commit and verify that no new snapshot exception can be added without changing
 both policy data and its regression. Fresh blind exact-commit audit remains
 coordinator-owned.
+
+## 2026-07-15 Canonical Publication Cleanup
+
+The publication prose was rebuilt from the last sound U3 theorem checkpoint
+after repeated document-only patches kept rediscovering stale candidate,
+route-split, and readiness language. The cleanup retains one undated current
+digest and one compatibility-history document, removes process status from the
+reader-facing claim surface, and rewrites the trust packets around the actual
+payload, physical execution, provenance, exactness, width, and `76`
+charged-trace theorem chain.
+
+No Lean theorem, payload, query route, or cost model changed. The key workflow
+lesson is that claim scanners are tripwires, not interpreters of English. The
+public document set is now reviewed directly against the canonical theorem and
+consumer chain; unrelated spoke documents no longer receive copied RMQ
+boilerplate. A skeptical reviewer should compare the concise trust packet and
+current digest with the checked type of
+`succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`, then verify
+that the compatibility module is absent from `RMQPaper`.

@@ -101,14 +101,10 @@ make a theorem true.
   claim is made.
 - The all-size modeled query-cost bound on the canonical reviewer route is the
   uniform checked charged-trace value `76`. Controller operations remain
-  uncharged; this is not conventional word-RAM complexity. The U2 `328`
-  theorem is transitional. Ready `118`, route-split `4144`, zero-block, and
-  `196727` are compatibility/history only.
-- No current canonical execution theorem has a `2^128` activation premise.
-  Explicit compatibility/large-regime companions retain that sufficient
-  premise. Separately, W19's proof-only sparse-local nonvacuity proof chooses
-  symbolic `N = 2^128`; this is not a route, payload, cost, runtime, or paper
-  theorem premise.
+  uncharged; this is not conventional word-RAM complexity. Earlier checked
+  cost, dispatch, size-premise, and proof-only chronology lives in the explicit
+  [`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md),
+  not in the current paper proposition.
 - The auxiliary logical layout footprint is a safe overapproximation. The
   reviewer flat-physical footprint is execution-derived and exactly the
   execution's ordered read projection.

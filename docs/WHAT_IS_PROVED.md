@@ -1,18 +1,19 @@
 # What Is Proved
-## U2 Canonical Reviewer Route
+
+## Canonical Reviewer Route
 
 The final all-size reviewer trace uses one positive canonical block geometry and
 one exhaustive typed 20-source universe including canonical close. Physical
 regions are exclusive, every logical segment is covered, and legacy duplicate
 close/interior storage is absent from the canonical payload and reachable only
-through compatibility surfaces. W19 proves indexed occurrence provenance from
+through compatibility surfaces. The provenance layer proves indexed occurrence provenance from
 the global trace through the actual program occurrence, folded prefix state,
 component-local occurrence, and exact invocation parameters for the current
 query. Separately, every counted source and named shared-BP consumer has some
 successful actual closed-valid query witness; this global existential does not
 claim current-query liveness. The fresh segment-21 mutation is rejected with the common operational
 predicate, and a checked bridge relates successful positive witnesses to the
-mutation-side arbitrary-result predicate. W18 event-value and component
+mutation-side arbitrary-result predicate. Earlier event-value and component
 may-read theorems remain compatibility facts.
 
 The public physical execution is genuine supplied-store evaluation. The
@@ -32,10 +33,9 @@ The final trace is exact through
 `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact`. Its honest
 principled all-size charged-trace bound is `76`, checked by
 `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`; exact modeled
-cost is emitted trace length. The transitional U2 value `328` remains checked
-by `concreteBPNativeSuccinctRMQCanonicalTransitionalQueryCost_eq`. The former
-Ready/zero-block/route-split descriptions and numeric `118`, `4144`, and
-`196727` facts survive only as compatibility history.
+cost is emitted trace length. Earlier checked cost and dispatch facts are
+indexed only in the explicit
+[`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
 
 
 This document is the short scope map for external readers. It separates the
@@ -83,7 +83,7 @@ aliases.
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumEqCost` | For the canonical no-synthetic trace, the `nonSyntheticWeight` certificate sum equals the `Costed` cost of the same execution. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe76` | The non-synthetic-weighted actual emitted trace is at most `76`. |
 | `RMQ.Headlines.succinctRMQSyntheticCostOnlyPrimitiveMemBreaksNonSyntheticWeightLengthEquality` | A synthetic event anywhere in a trace breaks `nonSyntheticWeight`/length equality. |
-| `RMQ.Headlines.succinctRMQChargedTraceCostAlgebra` | Named U3 component cap; it is not a substitute small-step instruction interface. |
+| `RMQ.Headlines.succinctRMQChargedTraceCostAlgebra` | Named component cap; it is not a substitute small-step instruction interface. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical` | Genuine supplied flat-physical execution refines canonical logical execution, preserving decoded result, cost, ordered reads (including failures and repetitions), and footprint. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionEqOfOrderedFootprint` | Agreement on the first physical execution's consumed ordered footprint determines the complete physical execution. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalValueFromSuppliedStore` | The flat physical `.value` is exactly the existing supplied-store evaluator `.value` after checked address translation. |
@@ -92,12 +92,12 @@ aliases.
 | `RMQ.Headlines.succinctRMQReviewerCountedSourceSuccessfulClosedValidOccurrence` | Every counted source has a successful occurrence through an actual closed whole-query execution under a valid ordinary list query. |
 | `RMQ.Headlines.succinctRMQReviewerSharedBPConsumerSuccessfulClosedValidOccurrence` | Each select/rank/canonical-close shared-BP consumer has such a successful occurrence through its exact leaf. |
 | `RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer` | Fresh segment 21 fails the common valid-occurrence predicate used by accepted sources. |
-| `RMQ.Headlines.succinctRMQReviewerManifestSemanticAdequacy` | Query-independent W19 packet: each counted source and shared-BP consumer has some successful closed-valid execution witness, successful `P` implies the common mutation predicate `Q`, and fresh segment 21 fails `Q`. It does not assert that the current query reads every source. |
+| `RMQ.Headlines.succinctRMQReviewerManifestSemanticAdequacy` | Query-independent semantic-adequacy packet: each counted source and shared-BP consumer has some successful closed-valid execution witness, successful `P` implies the common mutation predicate `Q`, and fresh segment 21 fails `Q`. It does not assert that the current query reads every source. |
 | `RMQ.Headlines.listIntSuccinctRMQInvalidPhysicalSemantics` | Empty, reversed, and out-of-bounds public queries share the guarded none/empty/zero logical and physical execution for every supplied store. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | Uniform structural execution story using direct same-block decoding and canonical cross-block component replay. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` | Strongest all-size global execution story: the same store-backed and bounded trace plus a proof that no event is the dedicated synthetic cost-only marker. |
 | `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory` | Flat-payload no-synthetic execution story: the flat execution payload is exactly the advertised BP-native construction payload; every actual successful read in the final trace has source/component/offset backing in one query-independent counted flat payload layout, addresses and word-primitive operands are bounded, and no synthetic cost-only event occurs. |
-| `RMQ.Headlines.succinctRMQFinalTraceModelAdequacy` | Query-parameterized W19 model adequacy: `Costed` is the projection of a `WordRAM.TraceResult`; indexed reads in that exact trace have occurrence/invocation provenance; physical `.value` comes from the translated supplied-store evaluator; and the fixed modeled cost/no-synthetic/backing facts hold. Global source liveness and mutation rejection live in the separate reviewer-manifest packet. |
+| `RMQ.Headlines.succinctRMQFinalTraceModelAdequacy` | Query-parameterized model adequacy: `Costed` is the projection of a `WordRAM.TraceResult`; indexed reads in that exact trace have occurrence/invocation provenance; physical `.value` comes from the translated supplied-store evaluator; and the fixed modeled cost/no-synthetic/backing facts hold. Global source liveness and mutation rejection live in the separate reviewer-manifest packet. |
 | `RMQ.Headlines.succinctRMQFinalTraceModelAdequacyExact` | Exactness alias paired with the model-adequacy packet: valid windows erase to the leftmost RMQ answer for the Cartesian representative. |
 | `RMQ.Headlines.succinctRMQFinalSuppliedStoreAdequacy` | Supplied-store adequacy packet: reads match the caller-provided store, the concrete global-store instantiation recovers the canonical trace/interpreter refinement, no synthetic marker events appear, and final-layout footprint agreement gives store-parametricity. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreReadsSubsetFootprint` | Every emitted supplied-store payload-read event lies inside the safe final-layout footprint. The footprint is an overapproximation, not a minimal dynamic read set. |
@@ -181,8 +181,7 @@ profile over Cartesian-shape representatives:
 - the modeled query cost is bounded by a fixed constant.
 
 For the current concrete BP-native capstone, the canonical reviewer route has
-the principled charged-trace all-size cap `76`; the transitional U2 cap `328`
-remains checked separately. The exact public
+the principled charged-trace all-size cap `76`. The exact public
 `SuccinctClassic.buildPayload` is also the erasure of the one pre-execution
 physical word list used by the execution refinement. The existing
 supplied-store evaluator reads the flat store through checked physical-address
@@ -193,10 +192,10 @@ disagreement changes the execution. The query-independent
 reviewer width derives from the linear capacity `400000 * (n + 1)` and obeys an
 explicit logarithmic all-size inequality.
 
-Ready `118`, the route-split `4144` theorem, the zero-block route, and the
-aggregate `196727` theorem remain checked only for compatibility and historical
-comparison. They do not describe the canonical reviewer execution. U3 changes
-only theorem-level accounting, not the accepted U2 machine/store identity.
+Detailed earlier cost and dispatch theorems remain checked only through the
+compatibility/history surface. They do not describe the canonical reviewer
+execution. The current cost proof changes only theorem-level accounting, not the accepted machine
+or store identity.
 
 The theorem is payload-accounted: auxiliary bits are counted separately from
 proof-only fields and certificates. The final path routes through payload-live
@@ -215,12 +214,9 @@ evaluation, store-parametricity over the explicit final layout, a convenience
 store-parametric theorem from a safe layout-footprint overapproximation,
 emitted-read containment in that footprint, equality/exactness transfer under
 footprint agreement with the canonical global store, and no synthetic cost-only
-events. The zero-block same-block theorem remains a compatibility-only leaf-level supplied-store
-theorem. Its supplied-store decoder currently flattens supplied BP-code words
-and checks `bits = shape.bpCode`; on corrupted stores that fail this guard, that
-leaf may return `none` rather than decode arbitrary garbage. This is a disclosed
-leaf-level model blemish, not a proof bug in the canonical route; the uniform
-reviewer execution does not dispatch through that leaf.
+events. A leaf-level supplied-store compatibility guard and its nonclaims are
+documented only in the explicit compatibility history; the uniform reviewer
+execution does not dispatch through that leaf.
 
 The global-store execution story now has a flat-payload no-synthetic backing
 theorem, `RMQ.Headlines.succinctRMQFlatPayloadStoreNoSyntheticExecutionStory`.

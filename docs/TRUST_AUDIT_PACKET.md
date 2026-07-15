@@ -1,532 +1,141 @@
 # Trust Audit Packet
-## U2 Canonical Reviewer Trust Boundary
 
-The active final route has no Ready/Active/zero-block dispatch. One exhaustive
-typed 20-source universe, including canonical close, covers every reviewer-live
-read source and one pre-execution physical list erases exactly to the public
-`buildPayload`.
-`concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_refines_canonicalInterpretedCosted`
-and `...Costed_exact` connect the charged trace to semantic RMQ exactness.
-The existing supplied-store evaluator reads the supplied flat physical store
-through a checked address-translation adapter. Agreement on the first
-execution's consumed physical footprint determines the complete physical
-trace; the refinement preserves order, failures, and repetitions, while a
-projection theorem identifies the answer with the translated supplied-store
-evaluator value and a decisive singleton corruption changes `some 0` to
-`none`. W19 producer theorems connect each indexed read to the same global and
-component-local occurrences, producing instruction, folded prefix state, exact
-invocation parameters, source, and multiplicity-preserving offset. Every
-counted source and shared-BP consumer has a successful actual closed-valid
-whole-query witness. Fresh segment `21` is rejected by the common occurrence
-relation, with a checked successful-to-arbitrary-result bridge. Raw
-adequacy is exposed only for valid public ranges; invalid ranges share the
-guarded none/empty/zero packet. No-synthetic,
-linear-capacity, logarithmic-width, stored/returned-word, physical-address, and
-primitive-operand bounds are checked at the composed consumer. The principled
-charged-trace cap is exactly `76`; exact cost is emitted trace length and
-controller work remains uncharged. The transitional U2 cap is `328`; older
-route constants are compatibility history.
+This packet is the shortest reviewer path through the current succinct RMQ
+claim. It records the checked objects that carry the result and the boundary of
+the model. Historical route and cost chronology is kept separately in
+[`digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
 
+## Canonical Proposition
 
-Snapshot: 2026-07-14 (U2 accepted after the A04 blind audit of exact target
-`4f7ec8be47ecd65b2859a3784fadeab48a629e4e`). This is the compact packet to hand to a skeptical
-Lean/formalization reviewer before asking for a broader library-readiness
-review. It focuses on the public succinct RMQ headline theorem, its alias
-chain, its cost/space model, and the main anti-oracle checks.
+The construction-facing anchor is:
 
-## Quick Reproduction
+```lean
+RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile
+```
+
+Its checked type joins one canonical reviewer payload and one canonical global
+trace. For every valid half-open query over a Cartesian shape, it packages:
+
+- payload length at most `2*n + overhead n`, with `overhead = o(n)`;
+- exact erasure of the physical reviewer words to that payload;
+- direct positional physical backing for every successful trace read;
+- only genuine read/rank/select events and no synthetic cost marker;
+- certificate weight equal to trace length and the same `Costed.cost`;
+- uniform charged-trace cost at most `76`; and
+- the exact leftmost RMQ answer.
+
+The ordinary-list endpoint is:
+
+```lean
+RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem
+```
+
+It uses the repository's half-open range contract and leftmost tie policy,
+returns `none` on invalid or empty ranges, and transfers the construction to
+`List Int` semantics.
+
+## Evidence Chain
+
+### Payload identity
+
+`SuccinctClassic.buildPayload` is the public payload. The physical reviewer
+word list is fixed before the query, flattens exactly to that payload, and has
+checked component offsets. The payload theorem is an at-most bound; no padding
+is used to manufacture equality.
+
+### Supplied-store dependence
+
+The physical evaluator calls the supplied-store query path through a checked
+address translation. It preserves the logical result, modeled cost, ordered
+successful and failed reads, repetitions, and the execution-derived footprint.
+Agreement on the first execution's consumed ordered footprint determines the
+complete physical execution. Separate corruption theorems show that changing a
+consumed decisive word can change the returned value.
+
+### Read provenance
+
+For an indexed read in the current global trace, the provenance theorem retains
+the global occurrence, producing instruction occurrence, prefix-folded state,
+component-local occurrence, invocation parameters, source, and composed-trace
+offset. A separate existential packet proves that every counted source and
+shared-BP consumer is exercised by some valid closed whole-query execution.
+These are different quantifier statements: the latter does not say every query
+reads every source.
+
+### Exactness and invalid inputs
+
+The global trace refines the canonical interpreted query and erases to the
+reference `scanWindow` answer on valid ranges. The public validity guard gives
+the same `none`, empty-trace, and zero-cost behavior across the canonical,
+supplied-store, and physical wrappers for invalid inputs.
+
+### Width and capacity
+
+The reviewer capacity is linear in `n`; the pre-execution reviewer word width
+has a checked logarithmic upper bound. The same width bounds physical words,
+live and sentinel addresses, segment encodings, query operands, primitive
+operands and results, and consumed footprint addresses.
+
+## Cost Boundary
+
+The current component derivation is:
+
+```text
+2 * select13 + (2 * rank4 + 2 * endpointFringe4 + interior30) + rank4 = 76
+```
+
+`TraceResult.toCosted` charges trace length. The separate
+`TraceEvent.nonSyntheticWeight` certificate assigns one to `readWord`,
+`wordRank`, and `wordSelect`, and zero to the synthetic compatibility marker.
+The canonical trace proves that every emitted event is genuine and no marker is
+present, so certificate weight equals both trace length and modeled cost.
+
+The theorem does not charge controller dispatch, input/register access, option
+tests, arithmetic, branching, decoding, local scanning, candidate merging,
+trace assembly, or the public validity guard. Consequently `76` is an explicit
+charged-trace bound, not conventional word-RAM time or compiled Lean runtime.
+
+## Compatibility Boundary
+
+`RMQPaper.lean` imports only `RMQ.Headlines.RMQ`. Historical direct,
+large-regime, route-split, and transitional cost aliases are exposed only by
+`RMQ.Headlines.RMQCompatibility` and the broad `RMQ.Headlines` barrel. They
+remain checked results but are not alternative paper capstones.
+
+## Reproduction
 
 From the repository root:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\gate.ps1
-lake env lean scripts\headline_axiom_check.lean
+lake build RMQPaper
+lake env lean scripts/headline_axiom_check.lean
+lake env lean scripts/wordram_axiom_check.lean
+lake exe rmq_succinct_classic_validate
+lake exe rmq_succinct_classic_cost_harness
+powershell -ExecutionPolicy Bypass -File scripts/gate.ps1
 ```
 
-The full gate builds the public roots, checks hygiene, runs curated axiom
-scripts, runs succinct cost/space lints, runs compatibility-shim lints, and
-finishes with `git diff --check`.
-
-For the focused first-order Word-RAM anti-oracle boundary used by the
-interpreted RMQ and rank/select capstones, also see
-`docs/WORD_RAM_REVIEW_PACKET.md` and run:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\review_wordram.ps1
-```
-
-## Public Headline Alias
-
-The most reader-facing public RMQ names live in the narrow RMQ paper surface:
-`RMQPaper.lean` imports `RMQ/Headlines/RMQ.lean`, while
-`RMQ/Headlines.lean` remains the aggregate full-repository barrel.
-
-```lean
-theorem listIntSuccinctRMQPaperMainTheorem : ...
-
-abbrev succinctRMQWholeQueryGlobalWordTraceCostedCostLe :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace
-```
-
-The first theorem is stated over ordinary `xs : List Int`: it exposes
-`SuccinctClassic.buildPayload xs`, proves its length is at most
-`2 * xs.length + overhead xs.length` with `overhead = o(n)`, and proves that
-`SuccinctClassic.queryCosted xs` rejects invalid or empty ranges and answers
-valid half-open RMQ queries with leftmost ties under one constant modeled query
-bound. Exact physical erasure is separate; the payload is not padded to force
-size equality.
-
-The execution story keeps those ordinary-list clauses and also consumes the
-final no-synthetic WordRAM story for `Cartesian.shape xs`: one physical word
-list erases exactly to `SuccinctClassic.buildPayload xs`; the supplied-store
-evaluator reads that flat store through checked translation; physical execution
-refines the logical trace; first-footprint agreement determines the result; and
-one query-independent reviewer width bounds the whole execution.
-
-The construction-facing RMQ name is:
-
-```lean
-abbrev succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQCanonicalReviewerPayload_globalWordTrace_two_sided_profile
-```
-
-Its checked type names the canonical reviewer payload and exact physical
-erasure, the doubled-Catalan space envelopes, and the canonical global trace
-whose non-synthetic certificate sum equals the same `Costed.cost` and is at
-most `76`. Valid queries through that trace erase to the exact representative
-RMQ answer.
-
-The encoding-quantified fixed-length lower-bound theorem is not hidden in this
-capstone clause. It is separately exposed as
-`RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack`, backed by
-`RMQ.EncodingLowerBound.exactRMQ_tight_fixed_length_payload_space_bound_doubled_catalan_slack`.
-
-The previous direct/interpreted/leaf/word construction profiles remain checked
-history in `RMQ.Headlines.RMQCompatibility`, under aliases that explicitly
-contain `Legacy` or `Compatibility`. The narrow paper root does not import that
-module. The canonical execution instead consumes
-`SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural`
-and the uniform canonical interior directory at every input size.
-
-The compact interior route itself is now named by:
-
-```lean
-RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory.concreteBPRelativeRmmInteriorAllSizeStructuralRoute_total
-```
-
-The final trace exclusion theorem remains available:
-
-```lean
-RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_noFiniteSmallInteriorSuccessfulRead
-```
-
-The stronger store-level facts are now:
-
-```lean
-RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQGlobalReadStore_retiredFiniteSmallInterior_none
-RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadReadStore_retiredFiniteSmallInterior_none
-RMQ.BPNavigation.concreteBPCloseNavigationGlobalReadStore_retiredFiniteSmallInterior_none
-```
-
-They prove legacy interior slots 26 and 27 resolve to `none` in the public final
-global store, the public final flat-payload read store, and the concrete
-close-navigation store. The trace exclusion theorem is now a compatibility
-fact rather than the only reason those slots cannot leak uncounted table data.
-
-The strongest all-size execution-story theorem is the global-store companion:
-
-```lean
-abbrev succinctRMQGlobalPayloadStoreExecutionStory :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_execution_story
-
-abbrev succinctRMQGlobalPayloadStoreExtensionalExecutionStory :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_store_extensional_execution_story
-
-abbrev succinctRMQGlobalPayloadStoreBoundedExecutionStory :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_bounded_execution_story
-
-abbrev succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_noSynthetic_execution_story
-
-abbrev succinctRMQFlatPayloadStoreNoSyntheticExecutionStory :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryFlatPayloadStore_noSynthetic_execution_story
-```
-
-It says the public costed query refines the unified `WordRAM.TraceEvent` stream,
-every event is either a payload read or an explicitly counted word primitive,
-and every payload read agrees with one concrete global store built from the
-final succinct RMQ payload components. The all-size structural companion is:
-
-```lean
-RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTrace_allSizeStructural_execution_story
-```
-
-with public alias:
-
-```lean
-RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory
-```
-
-It packages the same store-backed and bounded execution story after replacing
-the two known close-navigation `TraceResult.ofCosted` fallback leaves by
-payload-backed traces. The no-synthetic companion additionally proves that no
-event in the final all-size global trace is
-`TraceEvent.syntheticCostOnlyPrimitive`. That marker is now a dedicated
-constructor used by `TraceResult.ofCosted`, not an overloaded `wordRank` event.
-The bounded companion adds a concrete trace-local finite bit width and proves
-that every payload-read address and every natural operand/result exposed by
-word-local primitive events fits that width.
-The extensional companion says that any read store agreeing with the concrete
-global store on the read events emitted by the final trace validates that same
-trace.
-
-A zero-block same-block supplied-store surface remains available as a focused
-compatibility-only leaf theorem:
-
-```lean
-RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreEqGlobalOfFootprint
-RMQ.Headlines.succinctRMQCanonicalReviewerMachineWordsComponentSlice
-RMQ.Headlines.succinctRMQCanonicalInteriorPhysicalFootprintFits
-RMQ.Headlines.succinctRMQCanonicalReviewerValidQueryOperandsFit
-```
-
-There the evaluator is run against a supplied `WordRAM.ReadStore`, and stores
-that agree on BP-code segment reads produce the same value and trace. The
-whole final query now also has a supplied-store replay:
-
-```lean
-RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
-RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_matchesReadStore
-RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_globalReadStore
-RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric
-RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_store_parametric_of_footprint
-RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_reads_subset_footprint
-RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_reads_subset_footprint
-RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_eq_global_of_footprint
-RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCostedWithStore_exact_of_footprint_global
-RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_refines_wholeQueryInterpretedCosted
-RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_exact
-RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_no_syntheticCostOnlyPrimitive
-RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQFinalFullModelSoundness
-```
-
-The footprint theorem uses a safe final-layout overapproximation, not an exact
-dynamic read-set theorem. The current capstone proves every emitted supplied-store
-and canonical payload-read event lies inside that safe footprint, but it does
-not claim the footprint is exact or minimal.
-
-The flat-payload no-synthetic companion additionally exposes the
-query-independent `concreteBPNativeSuccinctRMQFlatPayloadLayout`, proves
-its payload is the advertised `concreteBPNativeSuccinctRMQPayload`, proves
-successful flat-store reads have source/component/offset backing evidence, and
-uses that flat store in the same bounded no-synthetic execution-story packet.
-
-The explicitly labeled compatibility/history large-regime companions, which
-are available only through the broad `RMQ.Headlines` import, are:
-
-```lean
-abbrev succinctRMQCompatibilityLargeRegimeGlobalPayloadStoreExecutionStory :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_execution_story
-
-abbrev succinctRMQCompatibilityLargeRegimeGlobalPayloadStoreBoundedExecutionStory :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceOfSizeGe_bounded_execution_story
-```
-
-It adds the explicit premise `2^128 <= shape.size` and uses the structural
-local/fringe/interior close-navigation replay on the compact close/LCA leg. The
-all-size flat-payload theorem remains the main public endpoint; it now avoids
-successful-read dependence on the legacy interior witness slots by splitting
-cross-block interior replay into Ready two-level, active non-Ready bounded
-summary scan, and inactive pure-none cases. As before, these are word-RAM model statements;
-they are not compiled Lean execution claims and not a general CPU semantics.
-
-The rank/select spoke now has a fused compressed/FID capstone alias:
-
-```lean
-abbrev rankSelectCompressedFIDFixedWeightGlobalPayloadStoreFusedProfile :=
-  RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStoreFusedProfile
-```
-
-It packages the compressed fixed-weight family profile, interpreted replay,
-target-independent global store, and bounded trace-local event-width story in
-one cited theorem. The bounded target-independent global payload-store
-component is:
-
-```lean
-abbrev rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory :=
-  RMQ.RankSelect.compressedFIDFixedWeightGlobalPayloadStore_bounded_execution_story
-```
-
-For each fixed `bits`, it packages the compressed/FID access, rank false/true,
-and select false/true traces under one target-independent read store and adds a
-finite trace-local width proving that every payload-read address and every
-natural operand/result exposed by word-local rank/select primitives fits that
-width. The lower-level target-indexed theorem remains available for component
-audits; the public endpoint is now the fused theorem. The width is still
-trace-local rather than a uniform asymptotic machine-word theorem.
-The stronger headline alias
-`rankSelectCompressedFIDFixedWeightGlobalPayloadStoreNoSyntheticFusedProfile`
-keeps that public surface and additionally checks that successful trace reads
-are backed by the relabeled component stores and that no synthetic cost-only
-events occur in the compressed/FID access/rank/select traces.
-
-## Theorem Statement
-
-The construction-heavy theorem name is intentionally verbose because it exposes
-the model and construction path:
-
-```lean
-theorem builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile :
-    let accessFamily :=
-      builtGenericSparseExceptionSelectBPCloseAccessFamily
-    SuccinctSpace.LittleOLinear
-        (concreteBPNativeSuccinctRMQOverhead
-          genericSparseExceptionBPCloseAccessOverhead) /\
-      forall n : Nat,
-        EncodingLowerBound.doubledLogSlackLower n <=
-          2 *
-            (2 * n +
-              concreteBPNativeSuccinctRMQOverhead
-                genericSparseExceptionBPCloseAccessOverhead n) /\
-        EncodingLowerBound.logSlackLower n <=
-          2 * n +
-            concreteBPNativeSuccinctRMQOverhead
-              genericSparseExceptionBPCloseAccessOverhead n /\
-        (forall {shape : Cartesian.CartesianShape},
-          List.Mem shape (Cartesian.shapesOfSize n) ->
-            (accessFamily.directory shape).payload.length <=
-              genericSparseExceptionBPCloseAccessOverhead n) /\
-        (forall {shape : Cartesian.CartesianShape},
-          List.Mem shape (Cartesian.shapesOfSize n) ->
-            (concreteBPNativeSuccinctRMQPayload
-              accessFamily shape).length =
-              2 * n +
-                concreteBPNativeSuccinctRMQOverhead
-                  genericSparseExceptionBPCloseAccessOverhead n) /\
-        (forall shape left right,
-          (concreteBPNativeSuccinctRMQQueryCosted
-            accessFamily shape left right).cost <=
-              concreteBPNativeSuccinctRMQQueryCost
-                SuccinctSelect.sparseDenseFalseSelectQueryCost) /\
-        (forall {shape : Cartesian.CartesianShape},
-          List.Mem shape (Cartesian.shapesOfSize n) ->
-            forall {left len : Nat},
-              0 < len ->
-                left + len <= n ->
-                  (concreteBPNativeSuccinctRMQQueryCosted
-                    accessFamily shape left (left + len)).erase =
-                    some (scanWindow shape.representative left len))
-```
-
-Read literally, this says:
-
-- the auxiliary overhead is `o(n)`;
-- the upper bound has `2*n + overhead n` payload bits;
-- the capstone includes the ordinary and doubled numeric Catalan-slack
-  comparison forms;
-- the close-access payload is itself bounded by the advertised overhead;
-- every query has a fixed modeled cost bound; and
-- every valid half-open query over every Cartesian shape of size `n` erases to
-  the reference leftmost RMQ answer `scanWindow shape.representative left len`.
-
-For the built generic sparse-exception close-access family, the canonical
-reviewer trace has the checked charged-trace cap `76`; the U2 transitional cap
-is `328`. The earlier route-split
-`4144` corollary, Ready `118`, active/inactive fallback leaves, zero-block scan,
-and `196727` aggregate remain checked compatibility/history only. They are not
-the route summarized by this packet's public alias chain.
-
-## Axiom Excerpt
-
-Run:
-
-```powershell
-lake env lean scripts\headline_axiom_check.lean
-```
-
-Current excerpt for the public headline path:
-
-```text
-'RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack' depends on axioms:
-  [propext, Classical.choice, Quot.sound]
-'RMQ.Headlines.rankSelectNPlusOConstantQuery' depends on axioms:
-  [propext, Classical.choice, Quot.sound]
-'RMQ.Headlines.rankSelectWordBoundedNPlusOConstantQuery' depends on axioms:
-  [propext, Classical.choice, Quot.sound]
-'RMQ.Headlines.rankSelectCompressedFIDFixedWeightFamilyProfile' depends on axioms:
-  [propext, Classical.choice, Quot.sound]
-'RMQ.Headlines.rankSelectCompressedFIDFixedWeightInterpretedFamilyProfile' depends on axioms:
-  [propext, Classical.choice, Quot.sound]
-'RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreFusedProfile' depends on axioms:
-  [propext, Classical.choice, Quot.sound]
-'RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreNoSyntheticFusedProfile' depends on axioms:
-  [propext, Classical.choice, Quot.sound]
-'RMQ.Headlines.rankSelectCompressedFIDFixedWeightGlobalPayloadStoreBoundedExecutionStory' depends on axioms:
-  [propext, Classical.choice, Quot.sound]
-'RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile' depends on axioms:
-  [propext, Classical.choice, Quot.sound]
-```
-
-The gate rejects `sorryAx` and `Lean.ofReduceBool`. It also scans checked
-source for `sorry`, `admit`, custom `axiom`, `unsafe`, `opaque`,
-`implemented_by`, `partial`, `extern`, `noncomputable`, `native_decide`, and
-`import Mathlib`.
-
-## Dependency Sketch
-
-The final query is:
-
-```lean
-concreteBPNativeSuccinctRMQQueryCosted accessFamily shape left right
-```
-
-Its shape is:
-
-1. Select the close position of the left endpoint using
-   `accessFamily.directory shape.selectCloseCosted`.
-2. Select the close position of the right endpoint the same way.
-3. Run the compact BP close/LCA directory:
-   `SuccinctClose.concreteBPNativeCloseDirectory`.
-4. Rank the answer close position back to an inorder index using
-   `accessFamily.directory shape.rankCloseCosted`.
-5. Return the resulting representative-array index.
-
-The abstract composition surface is named `BPCloseAccessDirectory`. The file
-explicitly calls it a weak compatibility surface because its costed methods are
-fields. The public headline does not stop at an arbitrary inhabitant of that
-surface: its concrete access family is
-
-```lean
-builtGenericSparseExceptionSelectBPCloseAccessFamily
-```
-
-and its directory is defined by:
-
-```lean
-payload :=
-  (builtRelativeSplitBPCloseRankData shape).auxPayload ++
-    (GenericSelect.sparseExceptionSelectSource shape.bpCode false).payload
-
-selectCloseCosted := fun idx =>
-  (GenericSelect.sparseExceptionSelectSource
-    shape.bpCode false).selectPositionCosted idx
-
-rankCloseCosted := fun pos =>
-  (builtRelativeSplitBPCloseRankData shape).rankCosted false pos
-```
-
-The exactness and cost facts for those operations come from:
-
-- `GenericSelect.sparseExceptionSelectSource_profile shape.bpCode false`,
-  which proves select payload length, `LittleOLinear` overhead, cost bound,
-  exact select semantics, and machine-word-bounded read words;
-- `builtRelativeSplitBPCloseRankData`, which is a concrete two-level
-  payload-live rank structure over `shape.bpCode`;
-- `SuccinctSpace.select_false_bpCode_eq_bpCloseOfInorder?`, which identifies
-  false-select in the BP code with the Cartesian inorder close lookup;
-- the compact close/LCA profile for
-  `SuccinctClose.concreteBPNativeCloseDirectory`; and
-- `concreteBPNativeSuccinctRMQQueryCosted_exact`, which composes select-close,
-  LCA-close, rank-close, and the RMQ reference semantics.
-
-So the theorem still uses a generic composition interface, but the headline
-inhabitant supplies concrete payload and query definitions from rank/select and
-close-navigation components rather than leaving correctness hidden in external
-callbacks.
-
-## Model Glossary
-
-- `Costed a`: a value of type `a` plus a natural-number model cost. `erase`
-  forgets the cost.
-- `RAM.Exec`: a shallow primitive-trace model used for small array/word/read
-  executions. It records model steps and converts to `Costed`.
-- Payload bits: the modeled stored bits counted by space theorems. These are
-  separate from proof fields carried by Lean structures.
-- Proof-only fields: certificates and invariants used to prove exactness or
-  bounds. They are not charged as stored payload bits.
-- Unit-cost indexed read: the standard word-RAM modeling assumption that a
-  bounded table/word read costs one primitive step. This is not a claim about
-  Lean `List` runtime.
-- Machine-word bound: theorems such as read-word-length bounds show that the
-  queried words fit under the repository's `machineWordBits` function.
-- Bounded register/address value: `WordRAM.Register.FitsInBits` and
-  `AddressFitsInBits` state that computed natural register values and payload
-  addresses fit a declared machine-bit width.
-- No-overflow side condition: `WordRAM.Register.NatExpr.NoOverflow` treats
-  address arithmetic as mathematical `Nat` arithmetic, then requires proofs
-  that the evaluated result still fits the declared width. The current model
-  does not silently wrap on overflow.
-- Zero-cost control: register lookup, arithmetic expression evaluation, and
-  branching choose later events but do not themselves appear in the trace.
-  The event classifiers prove every trace event is a payload read or a
-  word-local primitive; zero-cost control is not an information-bearing event.
+The curated axiom inventories should report only the repository's accepted Lean
+foundations, such as propositional extensionality, classical choice, and
+quotient soundness. The executable validators are corroborating evidence; they
+do not replace the universal theorems.
 
 ## Non-Claims
 
-This packet does not claim:
+The current theorem does not establish:
 
-- the algorithmic result is new data-structure theory;
-- Lean's native execution of lists or structures has the modeled runtime;
-- the final theorem is a production-ready serialized packed implementation;
-- all BP tree-navigation operations are already available;
-- the compressed/FID rank/select replay is a single closed machine-code
-  program rather than a bridge-backed word-RAM model theorem; or
-- the current first-order WordRAM layer is a complete CPU semantics with
-  built-in bounded machine integers and wraparound behavior; boundedness and
-  no-overflow are explicit theorem hypotheses/proofs; or
-- the repo is CSLib-ready as-is.
-
-The claim is narrower and stronger in the formalization sense: the repo gives
-a machine-checked Lean stack connecting exact RMQ semantics, Cartesian-shape
-counting lower bounds, payload-accounted BP/rank/select upper-bound machinery,
-and a constant-query word-RAM-style succinct RMQ profile.
-
-## Minimal Imports
-
-Headline aliases:
-
-```lean
-import RMQ.Headlines
-
-#check RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile
-#check RMQ.Headlines.exactRMQLowerBoundDoubledCatalanSlack
-```
-
-Standalone spokes:
-
-```lean
-import RMQRankSelect
-import RMQBPNavigation
-import RMQUnionFind
-```
-
-Checked downstream examples:
-
-```powershell
-lake build RMQExamples
-```
-
-Focused spoke checks:
-
-```powershell
-lake build RMQRankSelect
-lake env lean scripts\rank_select_axiom_check.lean
-
-lake build RMQBPNavigation
-lake env lean scripts\bp_navigation_axiom_check.lean
-
-lake build RMQUnionFind
-lake env lean scripts\union_find_axiom_check.lean
-```
+- compiled Lean wall-clock performance;
+- a fully charged small-step controller;
+- end-to-end preprocessing complexity in the same machine;
+- a serialized-payload query API with conventional word-RAM cost; or
+- global minimality of the numerical constant `76`.
 
 ## Reviewer Reading Order
 
-1. `RMQPaper.lean`
-2. `RMQ/Headlines/RMQ.lean`
-3. `docs/WHAT_IS_PROVED.md`
-4. `docs/TRUST_BASE.md`
-5. this packet
-6. `scripts/headline_axiom_check.lean`
-7. `RMQ/Core/SuccinctFinal.lean`, starting at
-   `builtGenericSparseExceptionSelectBPCloseAccessDirectory` and
-   `builtGenericSparseExceptionBPNativeSuccinctRMQFamily_total_two_sided_doubled_catalan_slack_profile`
+1. `RMQ/Headlines/RMQ.lean`
+2. `RMQ/Core/SuccinctFinalRAM.lean`
+3. `RMQ/Core/SuccinctFinalStoreParam.lean`
+4. `RMQ/Core/SuccinctFinalModelAdequacy.lean`
+5. `RMQ/Core/SuccinctRMQClassic.lean`
+6. `docs/PAPER_CLAIM_CORRESPONDENCE.md`
+7. `docs/PAPER_MODEL_ADEQUACY.md`

@@ -303,7 +303,7 @@ try {
     $exactFrozenLine = '<!-- RMQ-PAPER-TOPOLOGY-FROZEN-SNAPSHOT --> RMQ.Headlines.succinctRMQTwoNPlusOConstantQuery'
 
     $currentDigestShadow = New-ShadowFileRoot `
-      -RelativePath 'docs/digests/PROJECT_DIGESTION_2026_07_06.md' `
+      -RelativePath 'docs/digests/PROJECT_DIGESTION_CURRENT.md' `
       -Content "Current capstone: $retiredAlias."
     Test-FinalVerdict -Id 'retired-alias-current-publication-digest' -Path $currentDigestShadow.RelativePath -WorkingDirectory $currentDigestShadow.Root -Reject $true -TermId $retiredTerm -CheckTrackedState $true
 
@@ -318,7 +318,7 @@ try {
     Test-FinalVerdict -Id 'valid-exact-frozen-snapshot-occurrence' -Path $validFrozenShadow.RelativePath -WorkingDirectory $validFrozenShadow.Root -Reject $false -RequireAllowed $true -TermId $retiredTerm -CheckTrackedState $true
 
     $misplacedFrozenShadow = New-ShadowFileRoot `
-      -RelativePath 'docs/digests/PROJECT_DIGESTION_2026_07_06.md' `
+      -RelativePath 'docs/digests/PROJECT_DIGESTION_CURRENT.md' `
       -Content $exactFrozenLine
     Test-FinalVerdict -Id 'same-frozen-occurrence-outside-exact-scope' -Path $misplacedFrozenShadow.RelativePath -WorkingDirectory $misplacedFrozenShadow.Root -Reject $true -TermId $retiredTerm -CheckTrackedState $true
 

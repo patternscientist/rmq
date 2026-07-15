@@ -150,7 +150,7 @@ things:
 - complete physical-execution equality under agreement on the first execution's
   consumed ordered footprint, plus a checked consumed-address disagreement
   witness showing that the supplied store is not ignored;
-- W19 indexed occurrence provenance for the exact current query through the
+- indexed occurrence provenance for the exact current query through the
   program instruction, folded pre-state, component-local occurrence, invocation
   parameters, and multiplicity-preserving offset; separately, one
   query-independent manifest packet proves every counted source and shared-BP
@@ -167,9 +167,9 @@ things:
   cost; and
 - an information-theoretic Catalan/Cartesian-shape RMQ lower bound.
 
-The Ready `118`, route-split `4144`, zero-block, and `196727` theorems remain
-available only as compatibility/history. They are not the canonical reviewer
-route described by this guide.
+Earlier cost and dispatch theorems remain available only through the explicit
+[`compatibility history`](../docs/digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
+They are not the canonical reviewer route described by this guide.
 
 ## Validation And Examples
 

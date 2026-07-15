@@ -54,11 +54,12 @@ remains a safe overapproximation.
 - The cost model is the repository's explicit modeled WordRAM/query-cost layer.
 - The current public all-size RMQ bound is the uniform canonical checked
   charged-trace value `76`. Controller operations remain uncharged, so it is
-  not a conventional word-RAM result. The U2 `328` theorem is transitional;
-  Ready `118`, route-split `4144`, zero-block, and `196727` are compatibility/history only.
+  not a conventional word-RAM result. Earlier checked cost and dispatch
+  surfaces are documented in the explicit
+  [`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
 - The auxiliary logical layout footprint is not claimed minimal; the reviewer
   flat-physical footprint is execution-derived and recorded exactly.
-- U3 gives a tight component-wise cap but does not prove global minimality of
+- The current theorem gives a tight component-wise cap but does not prove global minimality of
   `76` across correlations between component maxima.
 - The cell-probe lower bounds of Liu-Yu/Liu are related work, not mechanized
   theorem content here.

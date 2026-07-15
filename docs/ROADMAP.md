@@ -71,13 +71,13 @@ interpreter if a later target needs it, further CSLib-style extraction, an
 optional flatter encoded/payload-only presentation of the succinct theorem, and
 the next data-structure spoke.
 
-U3 cost derivation is now candidate-complete: the accepted all-size execution
+The current cost derivation is landed within the explicit charged-trace model:
+the canonical all-size execution
 has the checked charged-trace algebra
 `2*13 + (2*4 + 2*4 + 30) + 4 = 76`. Its actual emitted events are classified
 as reads/ranks/selects, exclude the synthetic fallback, and have direct weight
 sum equal to both trace length and the `Costed` cost of the same execution.
-This
-does not close the later E1 fully charged small-step machine, M1 serialized
+This does not close the later E1 fully charged small-step machine, M1 serialized
 payload query, preprocessing, or conventional word-RAM obligations.
 
 Dependency order: A -> B -> (C, D). C can progress in parallel with A/B when it

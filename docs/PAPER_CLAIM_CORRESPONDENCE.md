@@ -1,5 +1,6 @@
 # Paper Claim Correspondence
-## Canonical U3 Claim Rows
+
+## Canonical Claim Rows
 
 | Paper claim | Public alias | Source theorem | Source file | Check |
 | --- | --- | --- | --- | --- |
@@ -14,8 +15,9 @@
 | The whole-query reviewer capacity is linear and one query-independent logarithmic word width bounds physical words, successful returned words, consumed physical addresses, and charged primitive data. | `RMQ.Headlines.succinctRMQReviewerPhysicalWordsFitLinearCapacity`, `RMQ.Headlines.succinctRMQReviewerWordBitsLogarithmic`, `RMQ.Headlines.succinctRMQReviewerPhysicalWordFits`, `RMQ.Headlines.succinctRMQReviewerSuccessfulReadWordFits`, `RMQ.Headlines.succinctRMQReviewerPhysicalFootprintAddressFits` | Corresponding `RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQReviewer*` and `...WholeQueryFlatPhysical*` theorems | `RMQ/Core/SuccinctFinal/RAM/ReviewerPhysical.lean`; `RMQ/Core/SuccinctFinalStoreParam.lean` | `lake env lean scripts/wordram_axiom_check.lean`; `lake env lean scripts/headline_axiom_check.lean` |
 | One validity boundary rejects invalid or empty ranges across canonical, supplied-store, trace, costed, and physical list surfaces. | `RMQ.Headlines.listIntSuccinctRMQQueryCostedInvalid`, `...QueryCostedEmptyRange`, `...QueryCostedReversedRange`, `...QueryCostedOutOfBounds` | `RMQ.SuccinctClassic.queryCosted_invalid`, `...queryCosted_empty_range`, `...queryCosted_reversed_range`, `...queryCosted_out_of_bounds`, plus the corresponding trace/supplied-store/physical invalid theorems | `RMQ/Core/SuccinctRMQClassic.lean` | `lake build RMQPaper`; `lake env lean scripts/headline_axiom_check.lean` |
 
-Compatibility rows for Ready `118`, route-split, zero-block, `4144`, and
-`196727` do not describe the current reviewer execution.
+Earlier cost and dispatch rows are deliberately excluded from this current
+correspondence table and live in the explicit
+[`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
 
 
 This document maps paper-facing claims to checked Lean names and exact

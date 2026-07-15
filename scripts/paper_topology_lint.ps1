@@ -105,7 +105,7 @@ $paperRoot = 'RMQPaper.lean'
 $aggregateModule = 'RMQ/Headlines.lean'
 $headlineInventory = 'scripts/headline_axiom_check.lean'
 $currentPublicationDigest =
-  'docs/digests/PROJECT_DIGESTION_2026_07_06.md'
+  'docs/digests/PROJECT_DIGESTION_CURRENT.md'
 
 $currentLeanSurfaces = @($canonicalModule, $paperRoot, $headlineInventory)
 $publicClaimSurfaces = @(
@@ -204,6 +204,11 @@ if ($LASTEXITCODE -ne 0) {
   Fail '[repository-search] git ls-files failed'
   $trackedFiles = @()
 }
+$trackedFiles = @(
+  $trackedFiles + $requiredFiles + @($MutationPath) |
+    Where-Object { $_ -ne '' -and (Test-Path -LiteralPath $_) } |
+    Sort-Object -Unique
+)
 
 # Repository-wide migration closure: outside exact enforcement files and an
 # exact marker on one line of one registered June snapshot, no removed spelling
