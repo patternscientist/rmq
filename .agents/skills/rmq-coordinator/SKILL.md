@@ -7,6 +7,27 @@ description: Use for high-context RMQ coordination, including re-entry/frontier 
 
 Use this skill for lead/coordinator work in the RMQ repository.
 
+## Skill Availability Gate
+
+Before re-entry or any completed-worker audit, verify that the current task's
+runtime skill catalog exposes every repo-local RMQ skill tracked at the declared
+workflow-governance frontier. Run `scripts/project_skill_preflight.ps1` with:
+
+- the exact governance ref;
+- `rmq-coordinator` as the required skill;
+- the RMQ skill names actually shown in the runtime catalog.
+
+The governance frontier controls workflow instructions; an older detached
+source/audit target does not replace it. If the preflight script is absent, the
+governance ref is not in the checkout ancestry, or a required/canonical skill
+is missing or stale in either the checkout or runtime catalog, stop and notify
+the user. Report the working directory, HEAD, governance ref, and the expected,
+checkout, and runtime skill sets. Do not substitute `rmq-proof-sprint` or
+continue a best-effort coordinator run. Resume only after the checkout/catalog
+is corrected and the task is restarted, unless the user explicitly authorizes
+a disclosed fallback; a fallback cannot record acceptance, integration, or
+roadmap closure.
+
 ## Re-Entry
 
 Start by reconstructing the live frontier from source, not memory:

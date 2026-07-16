@@ -11,6 +11,20 @@ Repo:
 - HEAD:
 - Base:
 - Dirty files:
+- Workflow-governance ref:
+- Canonical RMQ skills at that ref:
+- Required coordinator skill: rmq-coordinator
+- Runtime RMQ skill catalog observed in the new task:
+- Skill-preflight command/result:
+
+Startup hard stop:
+- Before substantive work, the new task must run the project skill preflight
+  against the workflow-governance ref. If the preflight script or any
+  canonical/required skill is absent or stale in the checkout or runtime
+  catalog, stop and report the mismatch. Do not substitute another skill.
+- A failed preflight requires a governance-containing checkout and task restart
+  unless the user explicitly authorizes a disclosed fallback. A fallback may
+  not ACCEPT, integrate, or close a roadmap node.
 
 Merged since last handoff:
 - [branch/commit -> meaning]

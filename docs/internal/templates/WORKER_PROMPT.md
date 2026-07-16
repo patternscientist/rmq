@@ -12,6 +12,14 @@ Worker identity:
 
 Skill:
 - Use $[SKILL_NAME] before starting.
+- Workflow-governance ref: [EXACT COMMIT CONTAINING CURRENT RMQ SKILLS/POLICY].
+- Before substantive work, run `scripts/project_skill_preflight.ps1` against
+  that ref with `[SKILL_NAME]` required and the RMQ skill names actually shown
+  in the task's runtime available-skills catalog. If the script or any
+  canonical/required skill is missing or stale, stop and notify the user; do
+  not substitute another skill or continue best-effort. Restart from a
+  governance-containing checkout unless the user explicitly authorizes a
+  disclosed fallback.
 
 Checkout contract:
 - Task mode: [WRITE / READ-ONLY].

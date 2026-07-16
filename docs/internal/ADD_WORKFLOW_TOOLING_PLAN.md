@@ -11,6 +11,21 @@ issue/PR templates, and durable audit-report storage.
 
 ## Immediate Hardening
 
+### Pin Skill Discovery To The Workflow Frontier
+
+Every RMQ task must separate its workflow-governance ref from any older source
+commit being inspected. Before substantive work, compare the canonical
+`.agents/skills` inventory at that governance ref with both the checkout and the
+runtime project-skill catalog. A missing preflight, stale checkout skill,
+missing runtime skill, or unavailable explicitly named skill is a startup
+blocker: report it, do not substitute, and restart from a governance-containing
+project checkout. Repository scripts cannot refresh an already initialized
+Codex task catalog.
+
+Keep the repo-local skill packages authoritative. Do not solve stale-checkout
+discovery by maintaining unversioned user-global duplicates; that trades a
+visible missing-skill failure for silent policy-version drift.
+
 ### Keep Skills Thin
 
 The roadmap, audit protocol, and decision ledgers are sources of truth. Skills

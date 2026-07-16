@@ -2304,3 +2304,169 @@ already rejected the tree. Valid trees and acceptance controls still perform
 the complete documentary identifier collection and Lean elaboration. This
 preserves the evidence boundary while preventing each expected-reject mutation
 from paying for checks that cannot change its verdict.
+
+## WDD-20260715-002: treat project skill catalog/frontier mismatch as a startup blocker
+
+Status: Accepted.
+Date: 2026-07-15.
+Scope: RMQ task initialization, project-skill discovery, coordinator re-entry,
+worker handoff, and workflow-governance versioning.
+
+Decision:
+
+1. The exact workflow-governance ref is a separate task input from an older
+   source or audit target. The canonical RMQ skill set is the set of tracked
+   `.agents/skills/*/SKILL.md` packages at that governance ref.
+2. Before substantive work, every RMQ task compares that canonical set with
+   both the checkout skill inventory and the RMQ skills shown in the task's
+   runtime available-skills catalog. The applicable skill is named explicitly.
+3. A missing preflight script, governance ref outside checkout ancestry,
+   missing or stale checkout skill, omitted runtime catalog, or missing
+   canonical/required runtime skill is a hard stop. The agent reports CWD,
+   checkout HEAD, governance ref, expected/checkout/runtime sets, and the
+   missing or stale names. It does not substitute another skill or continue
+   best-effort.
+4. Resume requires a new or restarted task rooted at a checkout containing the
+   governing workflow commit and exposing the complete project-skill catalog.
+   A user may explicitly authorize a fallback after disclosure, but that run
+   cannot record coordinator acceptance, integration, or roadmap closure.
+5. Keep repo-local RMQ skills authoritative. Do not maintain user-global copies
+   as the default repair: duplicate skill names can coexist, and unversioned
+   copies replace a visible missing-skill failure with silent policy drift.
+6. Treat the `3f6f1e3`/`c1d39a4` incident as a named regression fixture. The
+   production preflight consumes the real governance ref and caller-supplied
+   runtime catalog; the deterministic regression uses an equivalent synthetic
+   two-commit repository so shallow CI does not depend on historical objects.
+
+Trigger and exact evidence:
+
+An RMQ coordinator task started in the dirty historical checkout
+`3f6f1e3a4c246095370917245639fcc741bb4d25` while the prompt declared
+`c1d39a43d41183a518257184497958b5937f93d6` as the expected frontier and
+explicitly required `$rmq-coordinator`. The runtime catalog exposed only
+`rmq-proof-sprint`, matching the historical checkout. At `c1d39a4`, the tracked
+project inventory is `rmq-audit`, `rmq-coordinator`, and `rmq-proof-sprint`;
+`rmq-audit` and `rmq-coordinator` entered through
+`956effafb453f20b3c395b7711e7c667b6bc8999`, which is an ancestor of `c1d39a4`
+but not `3f6f1e3`. The task continued with another skill instead of stopping,
+so its coordinator dispositions were procedurally provisional even where its
+source findings remained useful.
+
+Options considered:
+
+- Treat the runtime catalog as advisory and use the closest available skill.
+- Read a missing skill from another worktree and silently continue.
+- Copy all RMQ skills into a user-global directory and rely on manual syncing.
+- Require only the explicitly named skill, leaving other project-role skills
+  undiscovered.
+- Pin a workflow-governance ref, compare its full canonical inventory with the
+  checkout and explicit runtime catalog, and hard-stop/restart on mismatch.
+
+Rationale:
+
+Codex discovers repo skills from `.agents/skills` in the current working
+directory ancestry. It does not reconstruct a newer skill set from another Git
+ref or worktree, and repository code cannot refresh a catalog already injected
+into a running task. The only sound response to a stale-checkout mismatch is to
+make it visible before substantive work and restart from the governing
+checkout. Comparing the full canonical set also catches the subtler case where
+the named skill exists but another role skill or bundled reference is stale.
+
+Consequences:
+
+- Coordinator, worker, and handoff templates carry the exact governance ref
+  and an explicit preflight obligation.
+- `AGENTS.md` makes missing applicable skills a repository-wide startup stop,
+  even when the missing skill cannot load its own instructions.
+- The coordinator skill repeats the gate and cannot grant acceptance from an
+  explicitly authorized fallback run.
+- The aggregate gate runs a synthetic production-path regression covering
+  stale checkout, stale runtime catalog, omitted catalog, undefined required
+  skill, frontmatter mismatch, complete catalog, and unrelated extra skills.
+- Historical audit remains possible from a current governance/control
+  checkout; the source target may be older without becoming the workflow base.
+- After this policy lands, the coordinator/project checkout must advance to the
+  governing commit and affected tasks must restart. This commit cannot repair
+  an already initialized task catalog.
+
+Evidence:
+
+- `AGENTS.md`.
+- `.agents/skills/rmq-coordinator/SKILL.md`.
+- `.agents/skills/rmq-coordinator/agents/openai.yaml`.
+- `docs/internal/templates/COORDINATOR_REENTRY_PROMPT.md`.
+- `docs/internal/templates/COORDINATOR_HANDOFF_PACKET.md`.
+- `docs/internal/templates/WORKER_PROMPT.md`.
+- `docs/internal/ADD_WORKFLOW_TOOLING_PLAN.md`.
+- `scripts/project_skill_preflight.ps1`.
+- `scripts/project_skill_preflight_regression.ps1`.
+- `scripts/gate.ps1`.
+
+Publication-facing significance:
+
+Coordinator acceptance and roadmap state are process evidence that organize the
+paper's theorem history. Pinning the workflow frontier prevents those records
+from depending on whichever historical checkout happened to initialize a chat,
+without changing Lean's proof trust base or treating agent orchestration as
+mathematical evidence.
+
+Amends:
+
+- WDD-20260711-002, which required worker bases to contain workflow policy but
+  did not guard the coordinator task's own runtime catalog.
+- WDD-20260713-003, by adding this catalog/frontier mismatch as a reusable ADD
+  failure handled through its failure-mode feedback loop.
+
+## WDD-20260715-003: capture large axiom inventories without streaming them through the gate
+
+Status: Accepted.
+Date: 2026-07-15.
+Scope: aggregate repository-gate execution and axiom-inventory diagnostics.
+
+Decision:
+
+Run each curated Lean axiom inventory with its complete output redirected to a
+temporary file. Preserve the exact process exit-code check and the existing
+`sorryAx|ofReduceBool` scan. On success, emit one compact pass line; on failure,
+emit the last 80 log lines before failing the gate. Do not stream every
+`#print axioms` line through `Tee-Object` during a successful gate.
+
+Trigger:
+
+While validating WDD-20260715-002, the aggregate gate repeatedly terminated in
+the sequential axiom phase after emitting tens of thousands of output tokens.
+The exact full `lake build`, `scripts/wordram_axiom_check.lean`, and
+`scripts/axiom_check.lean` commands passed independently when their output was
+captured to temporary files. The failure therefore belonged to gate output
+transport/resource behavior, not to a changed theorem or forbidden axiom.
+
+Options considered:
+
+- Accept focused checks and leave the aggregate gate red.
+- Remove or weaken one or more axiom inventories.
+- Continue teeing all successful output and retry until resource timing happens
+  to pass.
+- Capture complete output, preserve the exit/pattern checks, and print bounded
+  diagnostics only when needed.
+
+Rationale and consequences:
+
+The trust decision depends on the Lean exit code and forbidden-axiom scan, not
+on echoing thousands of successful inventory lines into the coordinator chat.
+File capture retains all evidence for the duration of the check while reducing
+pipeline pressure. Failure remains blocking and now returns a bounded useful
+diagnostic. No theorem, axiom allowance, or trust boundary changes.
+
+Evidence:
+
+- `scripts/gate.ps1` `RunAxiomCheck`.
+- Exact independent successful runs of `lake build`,
+  `lake env lean scripts/wordram_axiom_check.lean`, and
+  `lake env lean scripts/axiom_check.lean` on
+  `codex/rmq-skill-discovery-hard-stop`.
+
+Publication-facing significance:
+
+The curated axiom inventories remain kernel-facing evidence. Making their gate
+transport reliable prevents an output-volume artifact from being confused with
+a proof-trust failure while preserving the same acceptance rule.

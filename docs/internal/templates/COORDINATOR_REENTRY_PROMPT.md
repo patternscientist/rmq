@@ -9,8 +9,26 @@ reconstruction pass before proposing workers or edits.
 
 Repo: [PATH]
 Expected base/frontier, if any: [BRANCH/COMMIT or "unknown"]
+Workflow-governance ref: [EXACT COMMIT CONTAINING CURRENT RMQ SKILLS/POLICY]
 
 Tasks:
+0. Before substantive work, use $rmq-coordinator and run the project skill
+   preflight against the workflow-governance ref. Pass the RMQ skill names
+   actually shown in this task's runtime available-skills catalog. The expected
+   canonical set is derived from that ref, not from memory.
+   Command:
+     powershell -ExecutionPolicy Bypass -File scripts\project_skill_preflight.ps1
+       -GovernanceRef [WORKFLOW_GOVERNANCE_REF]
+       -RequiredSkills rmq-coordinator
+       -RuntimeProjectSkills "[COMMA-SEPARATED RMQ SKILLS ACTUALLY SHOWN]"
+   - If $rmq-coordinator, another canonical RMQ skill, or the preflight script
+     is unavailable/stale, STOP and report CWD, HEAD, governance ref, expected
+     skills, runtime skills, and missing/stale names.
+   - Do not substitute $rmq-proof-sprint or continue best-effort.
+   - Resume only after starting/restarting from a governance-containing
+     checkout, unless the user explicitly authorizes a fallback after the
+     mismatch is disclosed. A fallback cannot ACCEPT, integrate, or close a
+     roadmap node.
 1. Inspect git state:
    - current branch and HEAD;
    - dirty files;

@@ -14,9 +14,11 @@ function Fail($msg) { Write-Host "GATE FAIL: $msg"; exit 1 }
 
 function RunAxiomCheck($script, $label) {
   $tmp = New-TemporaryFile
-  & lake env lean $script 2>&1 | Tee-Object -FilePath $tmp
+  & lake env lean $script *> $tmp
   $code = $LASTEXITCODE
   if ($code -ne 0) {
+    Write-Host "AXIOM CHECK OUTPUT (tail) [${label}]:"
+    Get-Content $tmp -Tail 80
     Remove-Item $tmp -ErrorAction SilentlyContinue
     Fail "$label did not run cleanly"
   }
@@ -26,7 +28,12 @@ function RunAxiomCheck($script, $label) {
     Fail "non-standard axiom in ${label}:`n$bad"
   }
   Remove-Item $tmp -ErrorAction SilentlyContinue
+  Write-Host "AXIOM CHECK PASS: $label"
 }
+
+# 0. Project-skill startup policy must reject stale checkout/runtime catalogs.
+& "$PSScriptRoot\project_skill_preflight_regression.ps1"
+if ($LASTEXITCODE -ne 0) { Fail "project_skill_preflight_regression.ps1 found issues" }
 
 # 1. Build must be green.
 lake build

@@ -1,5 +1,43 @@
 # RMQ Codex Guidance
 
+## Project Skill Preflight
+
+- The canonical RMQ project skills are the `SKILL.md` packages tracked under
+  `.agents/skills` at the task's declared workflow-governance frontier. Before
+  substantive repository work, identify the applicable role skill and confirm
+  that every canonical RMQ skill, especially any explicitly named skill, is
+  present in the task's runtime available-skills catalog.
+- Use `$rmq-coordinator` for coordination, re-entry, completed-worker audit,
+  integration, roadmap planning, and handoff work; `$rmq-proof-sprint` for
+  narrow Lean/proof/construction work; and `$rmq-audit` for preparing external
+  audit prompts and evidence packets.
+- When an exact governance ref is supplied, run
+  `scripts/project_skill_preflight.ps1` with that ref, the applicable skill,
+  and the RMQ skill names shown in the task's runtime catalog. Keep the
+  governance checkout separate from any older source commit being audited.
+  For example:
+
+  ```powershell
+  powershell -ExecutionPolicy Bypass -File scripts\project_skill_preflight.ps1 `
+    -GovernanceRef <EXACT_SHA> `
+    -RequiredSkills rmq-coordinator `
+    -RuntimeProjectSkills "rmq-audit,rmq-coordinator,rmq-proof-sprint"
+  ```
+
+  Replace the runtime list with the RMQ skills actually exposed to the task; do
+  not copy the expected list merely to make the check pass.
+- If the script is absent, a canonical skill is missing or stale in the
+  checkout, the runtime catalog omits a canonical or explicitly required
+  skill, or the governance ref is not in the checkout's ancestry, **stop before
+  substantive work**. Report the working directory, checkout HEAD, governance
+  ref, expected project skills, runtime project skills, and missing/stale
+  names. Do not substitute another skill or continue best-effort.
+- Resume only in a new or restarted task rooted at a checkout containing the
+  governing workflow commit and exposing the complete skill catalog, unless
+  the user explicitly authorizes a fallback after the mismatch is disclosed.
+  A fallback run cannot record coordinator acceptance, integration, or roadmap
+  closure.
+
 ## Repository Expectations
 
 - Treat this repository as a Mathlib-free Lean 4 project pinned by
