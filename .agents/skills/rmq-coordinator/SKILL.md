@@ -176,6 +176,14 @@ turn the normal coordinator cycle into an audited worker chain:
    architecture choice, or concurrent heavy workers would make the launch
    unsafe or wasteful.
 
+Before task creation, list current tasks and automations and match the exact
+handle/base/branch tuple. Use a 30-minute heartbeat cadence by default, changing
+it only when measured task duration justifies another interval. Task creation
+and monitor attachment are not atomic: if creation succeeds but monitor setup
+fails, preserve and report the created task ID, retry only monitor attachment,
+and never create a replacement worker. On coordinator restart, reconstruct the
+chain from task and automation inventories before launching anything.
+
 Route nontrivial Lean proofs, public theorem repairs, and architecture-bearing
 work to `gpt-5.6-sol` with `max` reasoning by default. Use `xhigh` for tightly
 bounded mechanically checked repairs and `gpt-5.6-terra` with `xhigh` for

@@ -2893,6 +2893,10 @@ Decision:
    `gpt-5.6-terra` with `xhigh` for read-only or lower-risk tooling work. Do not
    select `ultra` without an explicit coordinator record that `max` is
    inadequate for the exact task.
+7. Use a 30-minute monitor cadence by default and make launch recovery
+   idempotent: inventory exact handle/base/branch ownership before creation; if
+   task creation succeeds but monitor attachment fails, retain the task and
+   retry only its monitor rather than creating a duplicate.
 
 Trigger and evidence:
 
@@ -2933,6 +2937,8 @@ Consequences:
   creation and model choice add no proof evidence.
 - Each automation generation has a concrete stop condition and a distinct
   monitor, preventing an invisible uncontrolled recursive loop.
+- A coordinator restart or partial launch failure can be reconstructed from
+  task/automation inventory without multiplying workers.
 - Integration and destructive lifecycle actions remain explicit boundaries, so
   an accepted candidate may still require user direction before a dependent
   A1/V1 launch.

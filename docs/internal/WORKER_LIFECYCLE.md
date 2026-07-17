@@ -97,6 +97,12 @@ completion monitor per worker task together with its handle, task/thread ID,
 exact governed base, branch, and owning coordinator task. A monitor may read
 status but must not open, steer, or mutate an active worker.
 
+Use a 30-minute heartbeat cadence by default. Before creating a task, check the
+current task and automation inventories for the same handle/base/branch. If the
+task is created but monitor attachment fails, retain its task ID and retry the
+monitor only; never create a duplicate worker as recovery. Reconstruct this
+inventory after coordinator restart before launching a successor.
+
 After completion, the owning coordinator must audit the exact candidate,
 finish reusable failure-mode feedback, and decide whether a successor prompt is
 `READY_TO_SEND`. Delete the completed monitor only after that disposition is
