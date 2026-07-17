@@ -112,6 +112,11 @@ without gaining launch authority. If the read-only contract forbids even a
 temporary prompt artifact, report `NOT_RUN` and keep the prompt a non-launchable
 specification. `READY_TO_SEND` always requires a populated template artifact
 and a passing preflight; title/SHA/skill/branch literals alone are insufficient.
+The preflight is a structural lower bound, not a semantic judge. Before
+`READY_TO_SEND`, reread the roadmap target, local-versus-node closure, frozen
+acceptance IDs, scope, forbidden shortcuts, verification, and report contract
+against source evidence; record semantic-contract review `COMPLETE` and pass it
+to the preflight. Trivial filler or merely long text is not a completed review.
 
 Before launch, verify that the worker's exact base contains the current
 workflow skill and prompt policy. If proof and workflow branches are siblings,

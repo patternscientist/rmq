@@ -6,6 +6,10 @@ Coordinator launch metadata (do not paste into the worker prompt):
 
 - Prompt status: [READY_TO_SEND / DRAFT_DO_NOT_SEND].
 - Failure-mode feedback: [COMPLETE / PENDING / NOT_APPLICABLE].
+- Semantic-contract review: [COMPLETE / PENDING]. This is an independent
+  coordinator reread of the target, closure conditions, acceptance IDs, scope,
+  forbidden shortcuts, verification, and report contract; preflight structure
+  checks do not replace it.
 - Worker handle, fresh/returning chat, exact model variant/reasoning/service
   mode, exact governance SHA, exact worker-base SHA, and branch.
 - Run `scripts/worker_prompt_preflight.ps1` for every emitted prompt artifact

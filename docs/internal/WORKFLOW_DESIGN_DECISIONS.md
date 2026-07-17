@@ -2511,6 +2511,10 @@ Decision:
    populated worker-identity, checkout, roadmap, acceptance, verification, and
    report contracts. Literal title/SHA/skill/branch presence is necessary but
    not sufficient for `READY_TO_SEND`.
+8. Treat prompt preflight as a structural lower bound. Reject trivially short
+   contract fields and acceptance lists without stable IDs, but require the
+   coordinator to record a separate semantic-contract review `COMPLETE` before
+   `READY_TO_SEND`; lexical length cannot establish theorem/roadmap fidelity.
 
 Trigger and exact evidence:
 
@@ -2545,6 +2549,13 @@ contract, and completion-report obligations. The same test also exposed an
 ambiguity about whether an emitted `DRAFT_DO_NOT_SEND` artifact should be
 preflighted.
 
+A second fresh-context test of `e2515a6a` confirmed that the skeletal bypass was
+closed, then showed that every required heading/field filled with `x.` could
+still pass. This is partly mechanically preventable and partly irreducible:
+the preflight can reject trivial values and require stable acceptance IDs, but
+only a coordinator source review can determine whether a nontrivial-looking
+goal and proposition contract are actually correct.
+
 Regression mapping:
 
 - The exact-title and governed-base mutations are rejected by
@@ -2569,6 +2580,9 @@ Regression mapping:
 - The skeletal forward-test prompt is rejected unless every required template
   section and load-bearing field is populated, including the committed-range
   diff check and candidate-report status contract.
+- Trivial filler values and acceptance text without a stable ID reject, and
+  `READY_TO_SEND` with semantic-contract review `PENDING` rejects. A recorded
+  review remains coordinator evidence, not mathematical proof.
 
 Rejected alternatives:
 
@@ -2582,6 +2596,8 @@ Rejected alternatives:
   as proof that every mandatory certificate field is load-bearing.
 - Treat a title/SHA/skill/branch token check as certification that the roadmap,
   acceptance, verification, and report contracts were populated.
+- Pretend regexes can establish that plausible-looking roadmap prose is
+  semantically faithful, or omit an explicit human/agent source reread.
 - Preserve the Windows-only `powershell` invocation because local checks pass.
 
 Consequences:

@@ -78,7 +78,8 @@ function Invoke-Case(
   [string]$Base,
   [string]$Status,
   [string]$Feedback,
-  [string[]]$RequiredOutput = @()
+  [string[]]$RequiredOutput = @(),
+  [string]$SemanticReview = "COMPLETE"
 ) {
   $arguments = @(
     "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $preflight,
@@ -91,6 +92,7 @@ function Invoke-Case(
     "-RequiredSkill", "rmq-proof-sprint",
     "-PromptStatus", $Status,
     "-FailureModeFeedbackStatus", $Feedback,
+    "-SemanticContractReviewStatus", $SemanticReview,
     "-TaskMode", "WRITE",
     "-WorkerBranch", "codex/e1-repair"
   )
@@ -172,6 +174,18 @@ try {
   Invoke-Case "skeletal-prompt" 2 $skeletalPrompt $governanceRef $workerBase `
     "READY_TO_SEND" "COMPLETE" @("missing required populated section")
 
+  $trivialPrompt = Join-Path $tempRoot "trivial-fields.txt"
+  $trivialLines = @(Get-Content -LiteralPath $validPrompt) | ForEach-Object {
+    if ($_ -match '^- (Node/join|Local owned rung|Roadmap-node closure condition|Goal|Required theorem/file/tool|Write scope|Non-goals|Frozen acceptance IDs):') {
+      ($_ -replace ':.*$', ': x.')
+    } else {
+      $_
+    }
+  }
+  $trivialLines | Set-Content -LiteralPath $trivialPrompt -Encoding utf8
+  Invoke-Case "trivial-fields" 2 $trivialPrompt $governanceRef $workerBase `
+    "READY_TO_SEND" "COMPLETE" @("not substantively populated")
+
   $metadataTitle = Join-Path $tempRoot "metadata-title.txt"
   Write-Prompt $metadataTitle "Title: (E1-01R1) Repair the machine" `
     $governanceRef $workerBase "codex/e1-repair"
@@ -186,6 +200,9 @@ try {
 
   Invoke-Case "ready-feedback-pending" 2 $validPrompt $governanceRef $workerBase `
     "READY_TO_SEND" "PENDING" @("READY_TO_SEND requires failure-mode feedback")
+
+  Invoke-Case "ready-semantic-review-pending" 2 $validPrompt $governanceRef $workerBase `
+    "READY_TO_SEND" "COMPLETE" @("semantic-contract review COMPLETE") -SemanticReview "PENDING"
 
   Invoke-Case "draft-feedback-pending" 0 $validPrompt $governanceRef $workerBase `
     "DRAFT_DO_NOT_SEND" "PENDING" @("status=DRAFT_DO_NOT_SEND", "PASS")

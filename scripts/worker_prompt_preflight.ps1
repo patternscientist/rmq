@@ -28,6 +28,10 @@ param(
   [ValidateSet("COMPLETE", "PENDING", "NOT_APPLICABLE")]
   [string]$FailureModeFeedbackStatus,
 
+  [Parameter(Mandatory = $true)]
+  [ValidateSet("COMPLETE", "PENDING")]
+  [string]$SemanticContractReviewStatus,
+
   [ValidateSet("WRITE", "READ_ONLY")]
   [string]$TaskMode = "WRITE",
 
@@ -139,6 +143,38 @@ try {
     }
   }
 
+  $substantiveFields = @(
+    @{ Label = "- Fresh or returning worker:"; MinLength = 24 },
+    @{ Label = "- Node/join:"; MinLength = 24 },
+    @{ Label = "- Local owned rung:"; MinLength = 24 },
+    @{ Label = "- Roadmap-node closure condition:"; MinLength = 24 },
+    @{ Label = "- Goal:"; MinLength = 24 },
+    @{ Label = "- Required theorem/file/tool:"; MinLength = 24 },
+    @{ Label = "- Write scope:"; MinLength = 24 },
+    @{ Label = "- Non-goals:"; MinLength = 16 },
+    @{ Label = "- Frozen acceptance IDs:"; MinLength = 12 }
+  )
+  foreach ($field in $substantiveFields) {
+    $match = [regex]::Match(
+      $promptText,
+      "(?m)^$([regex]::Escape($field.Label))\s*(.+?)\s*$"
+    )
+    if (-not $match.Success) {
+      Stop-Preflight "prompt is missing $($field.Label)"
+    }
+    $value = $match.Groups[1].Value.Trim()
+    if ($value.Length -lt $field.MinLength -or $value -match '^[xX. _-]+$') {
+      Stop-Preflight "prompt field '$($field.Label)' is not substantively populated"
+    }
+  }
+  $acceptanceLine = [regex]::Match(
+    $promptText,
+    '(?m)^- Frozen acceptance IDs:\s*(.+?)\s*$'
+  ).Groups[1].Value
+  if ($acceptanceLine -notmatch '\b(?:INV|REQ|CHK|E1|M1|ROADMAP|GOAL|FORBID|COMPLETE|REPORT)-[A-Z0-9]') {
+    Stop-Preflight "frozen acceptance field contains no stable acceptance ID"
+  }
+
   foreach ($reportLiteral in @(
       "Status: CANDIDATE_COMPLETE",
       "coordinator acceptance is still required"
@@ -170,12 +206,17 @@ try {
       $FailureModeFeedbackStatus -eq "PENDING") {
     Stop-Preflight "READY_TO_SEND requires failure-mode feedback COMPLETE or NOT_APPLICABLE"
   }
+  if ($PromptStatus -eq "READY_TO_SEND" -and
+      $SemanticContractReviewStatus -ne "COMPLETE") {
+    Stop-Preflight "READY_TO_SEND requires semantic-contract review COMPLETE"
+  }
 
   Write-Host "WORKER-PROMPT-PREFLIGHT: status=$PromptStatus"
   Write-Host "WORKER-PROMPT-PREFLIGHT: governance=$governanceSha"
   Write-Host "WORKER-PROMPT-PREFLIGHT: worker_base=$workerBaseSha"
   Write-Host "WORKER-PROMPT-PREFLIGHT: worker=$WorkerHandle"
   Write-Host "WORKER-PROMPT-PREFLIGHT: feedback=$FailureModeFeedbackStatus"
+  Write-Host "WORKER-PROMPT-PREFLIGHT: semantic_review=$SemanticContractReviewStatus"
   Write-Host "WORKER-PROMPT-PREFLIGHT: PASS"
   exit 0
 } catch {
