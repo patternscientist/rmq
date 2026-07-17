@@ -2,8 +2,18 @@
 
 Delete bracketed guidance before sending.
 
+Coordinator launch metadata (do not paste into the worker prompt):
+
+- Prompt status: [READY_TO_SEND / DRAFT_DO_NOT_SEND].
+- Failure-mode feedback: [COMPLETE / PENDING / NOT_APPLICABLE].
+- Worker handle, fresh/returning chat, exact model variant/reasoning/service
+  mode, exact governance SHA, exact worker-base SHA, and branch.
+- For `READY_TO_SEND`, run `scripts/worker_prompt_preflight.ps1` and record its
+  passing result. A read-only audit with pending durable feedback may emit only
+  `DRAFT_DO_NOT_SEND`.
+
 ```text
-Make the title of this chat exactly: `([WORKER_HANDLE]) [SHORT_TASK_SUMMARY]`
+Make the title of this chat exactly: ([WORKER_HANDLE]) [SHORT_TASK_SUMMARY]
 
 Worker identity:
 - Handle: [WORKER_HANDLE]
@@ -134,6 +144,7 @@ Completion:
 Verification:
 - [TARGETED BUILD/CHECKS]
 - git diff --check
+- after committing, git diff --check [EXACT BASE SHA]..HEAD
 - powershell -ExecutionPolicy Bypass -File scripts\design_decision_check.ps1
 - powershell -ExecutionPolicy Bypass -File scripts\claim_drift_scan.ps1
   [only if public prose changed]

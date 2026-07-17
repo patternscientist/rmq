@@ -7,6 +7,11 @@ function Fail([string]$Message) {
   exit 1
 }
 
+$powerShellExecutable = (Get-Process -Id $PID).Path
+if (-not $powerShellExecutable) {
+  Fail "could not resolve the current PowerShell executable"
+}
+
 function Write-Skill([string]$Root, [string]$Name, [string]$Description) {
   $dir = Join-Path $Root ".agents\skills\$Name"
   New-Item -ItemType Directory -Force -Path $dir | Out-Null
@@ -35,7 +40,7 @@ function Invoke-Case(
     "-RequiredSkills", $RequiredSkills
   )
   if ($RuntimeSkills) { $arguments += @("-RuntimeProjectSkills", $RuntimeSkills) }
-  $output = @(& powershell @arguments 2>&1)
+  $output = @(& $script:powerShellExecutable @arguments 2>&1)
   $exitCode = $LASTEXITCODE
   if ($exitCode -ne $ExpectedExit) {
     Fail "$Name expected exit $ExpectedExit, got $exitCode`n$($output -join [Environment]::NewLine)"

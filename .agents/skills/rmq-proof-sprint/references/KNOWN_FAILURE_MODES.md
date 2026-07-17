@@ -77,6 +77,50 @@ expand the load-bearing definitions and identify which checked theorem fails
 under the corresponding mutation. Green builds, exhaustive enumeration, and
 accurate declaration-name inventories do not supply that evidence.
 
+### E1 regression: category labels do not make a fully charged machine
+
+Commit `fd5e3d24d045c9ec503c258dfeb87599fe002e19` is the named regression
+fixture for small-step acceptance. It had a genuine executable transition
+system, simulation, receipts, a uniform fuel bound, and a green Word-RAM review,
+but it did not close the advertised fully charged familiar-machine contract:
+
+- `.localBPWindow` charged a recursive variable-length arg-min/rank scan as one
+  step, while `.candidateOfSummary` hid several arithmetic operations behind a
+  candidate category;
+- invalid-range expected values were copied from the raw machine result being
+  checked;
+- `Instr.NatConstantsFitInBits` constrained `.natConst` and returned `True` for
+  other encoded instruction operands;
+- shape-dependent layout metadata lived in specialized program literals
+  outside the counted physical store;
+- the executable validator and cost harness exercised the predecessor
+  `SuccinctRMQClassic` path rather than the new small-step machine;
+- a post-commit working-tree diff check missed trailing whitespace in the
+  candidate range.
+
+Apply `INV-INSTRUCTION-ATOMICITY`, `INV-ORACLE-INDEPENDENCE`, the constructor-
+exhaustive `INV-ADDRESS-WIDTH`, `INV-PROGRAM-ACCOUNTING`, and
+`INV-VALIDATION-REACH` together. A category inventory, one-step increment
+theorem, theorem-name ledger, or predecessor validator must reject this exact
+evidence pattern rather than close it.
+
+### M1 regression: opaque certificate consumption does not pin its fields
+
+Commit `9e68c48a52692fa4fb26f1790179d5c623cb47f1` is the named regression
+fixture for certificate anti-bypass. Its reviewer-native machine certificate
+contained mandatory well-formedness and supplied-store agreement fields, and a
+public paper theorem accepted the certificate as an argument, but no checked
+typed consumer projected every mandatory field at the exact propositions and
+object arguments required by the acceptance contract. A field could therefore
+be deleted and constructor initializers repaired while the intended public
+dependency remained untested.
+
+Apply `INV-CERTIFICATE-ANTI-BYPASS`: provide one checked consumer whose type
+names the exact projections and arguments, and record field-deletion,
+proposition-weakening, and sibling-substitution mutations. Passing a certificate
+opaquely, constructing it, listing its field names, or mentioning it in a
+public theorem body does not make every field load-bearing.
+
 ### Public-symbol migration is not a lexical claim scan
 
 A rename/removal can pass a claim-language scan and still leave a dead theorem

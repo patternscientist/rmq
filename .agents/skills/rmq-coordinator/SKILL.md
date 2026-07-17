@@ -98,6 +98,14 @@ Put `Make the title of this chat exactly: ...` as the first line of the pasted
 worker prompt. A title shown only as identity metadata is not an instruction to
 rename the chat.
 
+Classify every proposed prompt as `READY_TO_SEND` or `DRAFT_DO_NOT_SEND`.
+Use `DRAFT_DO_NOT_SEND` whenever an exact base is not yet governed, a dependency
+is unmerged, or the failure-mode feedback loop below is pending. Before marking
+a prompt `READY_TO_SEND`, populate `docs/internal/templates/WORKER_PROMPT.md`
+and run `scripts/worker_prompt_preflight.ps1` with the prompt file, exact
+governance and worker-base SHAs, worker handle/title, required skill, branch,
+and feedback-loop status. Treat a failed preflight as a launch blocker.
+
 Before launch, verify that the worker's exact base contains the current
 workflow skill and prompt policy. If proof and workflow branches are siblings,
 join them in an explicit integration base or require the worker to merge the
@@ -208,6 +216,14 @@ delegates the repair:
 6. Only then engineer the next ambitious prompt set from the updated roadmap
    frontier.
 
+Record the disposition as a compact table with the precise miss, isolated or
+reusable classification, durable layer, decision-log entry, named regression,
+verification result, owner, and status. If the audit contract forbids edits,
+complete the classification but mark durable patching and regression
+`PENDING`; any requested repair prompt is `DRAFT_DO_NOT_SEND`. A later
+governance-edit turn must complete and verify the loop before the prompt may be
+upgraded to `READY_TO_SEND`.
+
 ## Decision Logging
 
 Before finalizing any nontrivial turn, ask:
@@ -260,6 +276,8 @@ Final reports should state:
 For each proposed prompt, include coordinator-facing launch metadata outside
 the prompt text:
 
+- prompt status (`READY_TO_SEND` or `DRAFT_DO_NOT_SEND`) and prompt-preflight
+  result;
 - worker/auditor handle;
 - requested chat/thread title when launching a worker;
 - fresh chat or existing worker recommendation;

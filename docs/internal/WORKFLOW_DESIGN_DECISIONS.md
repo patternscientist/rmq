@@ -16,11 +16,12 @@ not proof evidence.
 ## Current Decision Index
 
 WDD-20260709-015 through WDD-20260709-019, WDD-20260710-001 through
-WDD-20260710-002, and WDD-20260711-001 through WDD-20260711-002 govern the
-current audit-context, obstruction, skill-context, lifecycle, scout, durable
-read-only-report, model-routing, and proof-completion policies. Earlier
-entries retain stable IDs and historical insertion order; read their Status
-rather than inferring current priority from file order.
+WDD-20260710-002, WDD-20260711-001 through WDD-20260711-002, and
+WDD-20260716-001 govern the current audit-context, obstruction, skill-context,
+lifecycle, scout, durable read-only-report, model-routing, proof-completion,
+and worker-prompt-readiness policies. Earlier entries retain stable IDs and
+historical insertion order; read their Status rather than inferring current
+priority from file order.
 
 ## WDD-20260708-001: Log ADD Improvements As Workflow Design Decisions
 
@@ -2470,3 +2471,140 @@ Publication-facing significance:
 The curated axiom inventories remain kernel-facing evidence. Making their gate
 transport reliable prevents an output-volume artifact from being confused with
 a proof-trust failure while preserving the same acceptance rule.
+
+## WDD-20260716-001: gate worker-prompt readiness and anti-bypass evidence
+
+Status: Accepted.
+Date: 2026-07-16.
+Scope: completed-worker repair delegation, read-only acceptance audits,
+small-step machine evidence, public-certificate anti-bypass, committed-range
+hygiene, and PowerShell workflow portability.
+
+Decision:
+
+1. Classify every proposed worker prompt as `READY_TO_SEND` or
+   `DRAFT_DO_NOT_SEND`. A prompt is ready only after its first-line title
+   instruction, exact governed base, worker identity/branch, required skill,
+   and failure-mode disposition pass `scripts/worker_prompt_preflight.ps1`.
+2. When an audit is read-only, classify reusable misses immediately but leave
+   durable patching and regression `PENDING`. A repair specification requested
+   by the audit may be returned only as `DRAFT_DO_NOT_SEND`; a later governance
+   turn must complete the feedback loop before launch.
+3. Keep coordinator launch metadata outside the pasted worker prompt, but make
+   prompt status and the preflight result mandatory coordinator evidence.
+4. Treat E1 candidate
+   `fd5e3d24d045c9ec503c258dfeb87599fe002e19` as the named regression fixture
+   for small-step atomicity, independent oracles, constructor-exhaustive width,
+   input-dependent program accounting, validation reach, and committed-range
+   hygiene. Install those rules in the proof-sprint completion gate, known
+   failure reference, and matrix template rather than expanding the
+   coordinator skill with Lean-specific details.
+5. Invoke child PowerShell processes through the current host executable rather
+   than the Windows-only command name `powershell`. Run both startup-skill and
+   worker-prompt policy regressions in the aggregate gate.
+6. Treat M1 candidate
+   `9e68c48a52692fa4fb26f1790179d5c623cb47f1` as the named regression fixture
+   for mandatory certificate-field consumption. Require a checked typed
+   consumer that projects every mandatory field at the exact propositions and
+   object arguments promised by the acceptance contract.
+
+Trigger and exact evidence:
+
+The E1 worker reported every matrix row closed at `fd5e3d2`, but an independent
+audit found a recursive `.localBPWindow` evaluator charged as one step,
+multi-arithmetic `.candidateOfSummary`, invalid test expectations copied from
+the raw machine output, an instruction-width predicate that constrained only
+`.natConst`, shape-specialized uncounted code literals, validators that did not
+run the new machine, and trailing whitespace missed by a clean-working-tree
+`git diff --check`. The coordinator then drafted a repair prompt with `Title:`
+metadata instead of the required first-line rename instruction, called it ready
+before completing this feedback loop, and named an E1 base that did not contain
+the current governance commit.
+
+Separately, GitHub CI runs `29545437694` and `29545437344` failed on governance
+commit `4a608537e153cc82009c740bcb719b82b5694e60` because
+`project_skill_preflight_regression.ps1` invoked `powershell` from an Ubuntu
+`pwsh` runner.
+
+The M1 worker supplied a reviewer-native machine certificate at `9e68c48a`, but
+the independent audit found that the public theorem accepted the record
+opaquely. No checked typed consumer pinned every mandatory field to the exact
+well-formedness and supplied-store propositions. Deleting a field and repairing
+constructor initializers could therefore leave the advertised dependency
+unchecked.
+
+Regression mapping:
+
+- The exact-title and governed-base mutations are rejected by
+  `worker_prompt_preflight_regression.ps1`.
+- `READY_TO_SEND` with feedback `PENDING` rejects, while the same prompt labeled
+  `DRAFT_DO_NOT_SEND` accepts without granting launch authority.
+- The `.localBPWindow` and `.candidateOfSummary` evidence fails
+  `INV-INSTRUCTION-ATOMICITY` even though category receipts and one-step
+  increment theorems remain true.
+- Self-derived invalid expectations fail `INV-ORACLE-INDEPENDENCE`.
+- A width predicate that defaults non-`.natConst` constructors to `True` fails
+  the constructor-exhaustive `INV-ADDRESS-WIDTH` mutation.
+- Shape-dependent code literals fail `INV-PROGRAM-ACCOUNTING` until counted or
+  uniformly derived.
+- Predecessor-only executable checks fail `INV-VALIDATION-REACH`.
+- The committed whitespace is rejected by `git diff --check <base>..HEAD` even
+  when plain post-commit `git diff --check` is green.
+- A certificate passed opaquely fails `INV-CERTIFICATE-ANTI-BYPASS` until one
+  checked typed consumer projects every mandatory field at its exact
+  proposition and object arguments; field-deletion, weakening, and sibling-
+  substitution mutations must break that consumer.
+
+Rejected alternatives:
+
+- Add another prose reminder for titles without mechanically checking it.
+- Let a returning worker merge workflow policy after beginning implementation.
+- Ask the proof worker to patch coordinator process as part of the proof repair.
+- Treat constructor/category coverage as evidence about evaluator atomicity.
+- Let the implementation result serve as the expected edge-case oracle.
+- Run only the predecessor validator and call it E1 executable evidence.
+- Treat record construction, field-name inventories, or opaque record passage
+  as proof that every mandatory certificate field is load-bearing.
+- Preserve the Windows-only `powershell` invocation because local checks pass.
+
+Consequences:
+
+- A launch-ready repair prompt now has a reproducible readiness certificate and
+  one exact governance-containing base.
+- Read-only audits can satisfy a request for a repair specification without
+  silently bypassing the failure-mode feedback loop.
+- Fully charged machine reviews must inspect executable bodies, code/data
+  accounting, and validation reach rather than infer semantics from theorem
+  names or category inventories.
+- Reviewer-native certificate reviews must follow exact field projections into
+  typed consumers rather than infer anti-bypass from record construction or a
+  public theorem parameter.
+- Existing legitimate weaker claims remain available when labeled accurately:
+  `fd5e3d2` still supplies a transition-system simulation and fuel bound, but
+  not the rejected fully charged familiar-machine capstone.
+- No Lean theorem, payload representation, public identity, or proof trust base
+  changes in this workflow decision, so no separate proof/code design decision
+  is required.
+
+Evidence:
+
+- `.agents/skills/rmq-coordinator/SKILL.md`.
+- `.agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md`.
+- `.agents/skills/rmq-proof-sprint/references/KNOWN_FAILURE_MODES.md`.
+- `docs/internal/templates/WORKER_PROMPT.md`.
+- `docs/internal/templates/PROOF_ACCEPTANCE_MATRIX.md`.
+- `scripts/worker_prompt_preflight.ps1`.
+- `scripts/worker_prompt_preflight_regression.ps1`.
+- `scripts/project_skill_preflight_regression.ps1`.
+- `scripts/gate.ps1`.
+- Aggregate `scripts/gate.ps1` pass on 2026-07-16, including all Lean builds,
+  eight axiom inventories, both workflow regressions, strict claim drift, and
+  paper-topology mutations.
+
+Publication-facing significance:
+
+Worker and coordinator statuses organize how machine-model claims reach the
+paper frontier. Preventing a macro-step, self-oracle, uncounted-code, stale-
+validator, or opaque-certificate candidate from being labeled ready keeps
+workflow evidence aligned with the theorem actually available, without
+treating the workflow machinery itself as mathematical proof.

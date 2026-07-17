@@ -49,3 +49,21 @@ Rules:
     category boundary, add category-level holdouts and allowance-bypass
     mutations, and test the production final verdict across supported path and
     parser shapes. A copied regex or whole-file bypass cannot close the row.
+14. For small-step machines, inspect evaluator bodies. A constructor/category
+    inventory plus one step per constructor does not close atomicity when one
+    branch hides recursion, variable-length work, or several primitive
+    categories.
+15. Expected executable results must come from an independent specification;
+    an implementation result cannot serve as its own test oracle.
+16. Width evidence must enumerate every encoded constructor field, including
+    dormant instructions, register identifiers, and control-flow operands.
+17. Account for input-dependent constants stored in program code, and verify
+    that executable validators import and mutate the new layer rather than only
+    its predecessor.
+18. After the final commit, run `git diff --check <exact-base>..HEAD`; a clean
+    working tree alone does not certify committed whitespace.
+19. For mandatory public-certificate fields, name a checked typed consumer that
+    projects every exact field proposition and object argument. Record
+    field-deletion, proposition-weakening, and sibling-substitution mutations;
+    opaque record passage and constructor initialization do not establish
+    anti-bypass consumption.

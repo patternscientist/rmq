@@ -64,7 +64,24 @@ leaf, preserve and establish the applicable invariants:
 - `INV-WORD-WIDTH`: stored and returned words fit one declared modeled
   machine word;
 - `INV-ADDRESS-WIDTH`: every executed address, dead/sentinel address, and
-  operand fits the modeled machine word, not merely the host array bounds;
+  encoded instruction operand fits the modeled machine word, not merely the
+  host array bounds. Constructor-exhaustive evidence must include register
+  identifiers, branch/jump targets, dormant code, and arithmetic operands;
+- `INV-INSTRUCTION-ATOMICITY`: each modeled small step performs the familiar
+  primitive operation it advertises. A constructor whose evaluator body hides
+  recursion, a variable-length scan, repeated rank/select work, decoding, or
+  several arithmetic categories is a macro-step unless that work is expanded
+  into charged transitions or bounded by an explicitly accepted primitive;
+- `INV-PROGRAM-ACCOUNTING`: input-dependent constants and metadata carried by
+  executable code are counted machine data or are derived uniformly from
+  counted/public inputs. Calling shape-specialized data "program code" does
+  not remove it from the payload/state accounting obligation;
+- `INV-ORACLE-INDEPENDENCE`: executable fixtures and edge-case expected values
+  come from an independent specification or a theorem already connected to it,
+  never from the implementation result being tested;
+- `INV-VALIDATION-REACH`: executable validation imports and runs the new
+  semantic layer. A validator for the predecessor implementation is regression
+  evidence only and does not validate the new machine;
 - `INV-ALL-SIZE`: exactness covers all assigned sizes and edge cases without
   hidden readiness or compatibility dispatch;
 - `INV-PROOF-SEPARATION`: proof-only fields never carry answers or uncharged
@@ -80,6 +97,11 @@ The following IDs apply when the public claim has the corresponding shape:
   provenance, or machine claims proves them about the same construction and
   execution and over the same validity domain. Conjoining true theorems about
   different payloads or guarded and unguarded executions is not closure.
+- `INV-CERTIFICATE-ANTI-BYPASS`: every mandatory field advertised by a public
+  certificate is projected by a checked typed consumer at the exact proposition
+  and object arguments required by the acceptance contract. Deleting or
+  weakening a field, or replacing it with a sibling fact, must break that
+  consumer rather than leave only constructor initializers and prose unchanged.
 - `INV-GLOBAL-PHYSICAL-MACHINE`: a physical-machine claim supplies one
   pre-execution store/word array and a checked address translation for every
   executed segment, including failed/dead accesses. A theorem for one suffix or
@@ -170,6 +192,26 @@ modeled address capacity, normally `2 ^ wordWidth`. Array in-range proofs alone
 do not suffice. Include repeated reads, failed reads, and canonical dead or
 sentinel addresses, and prove operand bounds required by the consumer.
 
+### Small-step atomicity, code accounting, and independent validation
+
+For a small-step or fully charged machine, expand every executed instruction
+branch. Record the primitive work performed by its evaluator body and mutate
+scan length or formula complexity; identify the theorem or bound that changes.
+A one-step transition theorem and a category receipt do not establish
+atomicity when the evaluator hides variable or multi-category work.
+
+Enumerate every encoded field of every instruction constructor against the
+width predicate. Mutate a dormant constructor with an oversized register,
+offset, or jump target; the width certificate must fail. Inventory all
+input-dependent literals in code and prove that each is counted, charged from
+the store, or uniformly derived from public inputs.
+
+For executable fixtures, write the expected result from the independent
+reference semantics before running the implementation. A theorem whose
+expected value is the implementation output is vacuous. Confirm that each
+validator imports or invokes the new module and would fail after a deliberate
+mutation to its evaluator.
+
 ### Counted-store provenance
 
 Connect the exact store used by the execution to the payload counted by the
@@ -185,6 +227,13 @@ that payload. If any link is a different definition, require a proved equality,
 erasure, flattening, or extensional-equivalence theorem at the public consumer.
 Compare actual object arguments in theorem statements; matching sizes or
 similar names do not establish identity.
+
+For a public certificate or bundled adequacy record, add a checked typed
+consumer that projects every mandatory advertised field at its exact
+proposition and object arguments. Attempt field deletion, proposition
+weakening, and sibling-theorem substitution. If constructors can be adjusted
+while all public consumers still elaborate, the field is packaging, not a
+load-bearing acceptance dependency.
 
 If a list-facing or public wrapper guards valid ranges, trace that guard through
 every combined adequacy, result, cost, trace, and footprint field. A public
@@ -298,6 +347,11 @@ question to the frozen requirement wording and inherited invariant IDs. Only
 the coordinator may approve a contract amendment that narrows or defers it.
 
 ## 6. Required Candidate Declaration
+
+Before the final candidate declaration, run both working-tree hygiene and the
+committed range check. `git diff --check` on a clean post-commit worktree does
+not certify the candidate commit; run `git diff --check <exact-base>..HEAD` (or
+an equivalent exact committed-range check) after the final commit.
 
 The final report must begin with exactly one worker status. For candidate
 completion, its first two lines must be exactly:
