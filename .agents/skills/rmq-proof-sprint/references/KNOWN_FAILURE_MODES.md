@@ -151,6 +151,42 @@ proposition-weakening, and sibling-substitution mutations. Passing a certificate
 opaquely, constructing it, listing its field names, or mentioning it in a
 public theorem body does not make every field load-bearing.
 
+### M1 R2 regression: report-only mutations do not pin a public dependency
+
+Commit `1f50e5698a0842b8c50c1e08d101b076152d6bef` is the named regression
+fixture for mutation reproducibility. It repaired the earlier opaque-field
+defect: an independent 24-proposition `RequiredFacts` type projected every
+certificate field literally, and the paper theorem included guarded
+`WellFormed`, guarded `RequiredFacts`, and exact ordered-dynamic complete-
+`TraceResult` agreement.
+
+The acceptance matrix nevertheless claimed a 24-field deletion campaign plus
+11 proposition/object/public mutations without committing a mutation runner or
+fixtures. The cited snapshot was an unreferenced Git object outside the
+candidate ancestry. The committed headline check printed the paper theorem's
+current axiom inventory but did not pin its expected public type. Deleting only
+the paper theorem's guarded `RequiredFacts` conjunct and its tuple proof still
+allowed both `lake build RMQPaper RMQ` and
+`lake env lean scripts/headline_axiom_check.lean` to pass.
+
+Apply `INV-CERTIFICATE-ANTI-BYPASS` and
+`INV-MUTATION-REPRODUCIBILITY` together:
+
+- retain the real 24-field typed projection;
+- add a committed exact-type consumer that extracts the guarded certificate,
+  guarded required facts, and physical ordered-dynamic complete-result
+  obligations from the paper theorem itself;
+- add a versioned runner for every claimed field deletion, weakening, sibling
+  substitution, guard removal, and public-dependency deletion, plus an expected-
+  accept packet-only control;
+- require the runner to check the intended failing surface, restoration hashes,
+  and clean tracked state after every case.
+
+Do not treat matrix prose, an axiom printout that follows the mutable theorem
+type, copied logs, or an unreachable snapshot as committed mutation evidence.
+Legitimate weaker packaging may remain when labeled non-load-bearing and covered
+by the expected-accept control.
+
 ### Public-symbol migration is not a lexical claim scan
 
 A rename/removal can pass a claim-language scan and still leave a dead theorem

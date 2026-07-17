@@ -102,6 +102,14 @@ The following IDs apply when the public claim has the corresponding shape:
   and object arguments required by the acceptance contract. Deleting or
   weakening a field, or replacing it with a sibling fact, must break that
   consumer rather than leave only constructor initializers and prose unchanged.
+- `INV-MUTATION-REPRODUCIBILITY`: when acceptance relies on an exhaustive,
+  production, or public-dependency mutation campaign, the candidate contains a
+  versioned runner or fixtures that replay every claimed case, check the exact
+  expected failure/acceptance surface, restore tracked state, and leave the tree
+  clean. Report prose, copied terminal output, and dangling Git objects are not
+  replayable evidence. A public theorem additionally has a checked exact-type
+  consumer that fails when the advertised dependency is removed; `#print
+  axioms` over the theorem's current type is not such a consumer.
 - `INV-GLOBAL-PHYSICAL-MACHINE`: a physical-machine claim supplies one
   pre-execution store/word array and a checked address translation for every
   executed segment, including failed/dead accesses. A theorem for one suffix or
@@ -234,6 +242,21 @@ proposition and object arguments. Attempt field deletion, proposition
 weakening, and sibling-theorem substitution. If constructors can be adjusted
 while all public consumers still elaborate, the field is packaging, not a
 load-bearing acceptance dependency.
+
+If the matrix closes a row by citing multiple mutations, commit a replayable
+mutation runner or stable fixture set with the candidate. Each case must name
+the source mutation, expected verdict and failing surface, and must verify
+restoration hashes or a clean tracked tree before continuing. Include expected-
+accept controls that distinguish a deliberately non-load-bearing packet change
+from a required public-dependency failure. A local mutation that once failed is
+useful discovery, but it cannot close `INV-MUTATION-REPRODUCIBILITY`.
+
+For a public theorem dependency, add a checked consumer whose expected type is
+independent of the theorem's mutable current declaration and whose proof route
+actually consumes that theorem. Mutate the public proposition itself and show
+that the committed check fails. Merely running `#print axioms theoremName`,
+`#check theoremName`, or a topology scan that only names nearby declarations
+adapts to the current type and does not pin the dependency.
 
 If a list-facing or public wrapper guards valid ranges, trace that guard through
 every combined adequacy, result, cost, trace, and footprint field. A public

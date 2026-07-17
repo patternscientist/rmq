@@ -2756,3 +2756,106 @@ Gate evidence supports confidence in the theorem and artifact frontier, but
 the amount of repeated compute is not itself mathematical evidence. This rule
 preserves the checks that matter while preventing timeout behavior from being
 misreported as proof failure or mistaken for stronger validation.
+
+## WDD-20260717-002: require committed mutation evidence for public dependencies
+
+Status: Accepted.
+Date: 2026-07-17.
+Scope: public certificate anti-bypass, paper-theorem dependency checks,
+mutation campaigns, worker completion evidence, and repair-prompt readiness.
+
+Decision:
+
+1. Add `INV-MUTATION-REPRODUCIBILITY` whenever acceptance relies on an
+   exhaustive, production, or public-dependency mutation campaign.
+2. Require the candidate to commit a replayable runner or stable fixture set
+   that names every claimed mutation, expected verdict, exact failing surface,
+   expected-accept controls, and restoration/clean-tree check.
+3. Treat matrix prose, copied terminal output, one-off edited worktrees, and
+   unreferenced Git objects as discovery or process evidence, never as
+   replayable acceptance evidence.
+4. For a public dependency, require a checked expected-type consumer whose
+   proof route consumes the public theorem and whose elaboration fails when the
+   advertised conjunct is removed. Axiom printing or checking the theorem's
+   current mutable type does not pin the dependency.
+5. Use M1 R2 candidate
+   `1f50e5698a0842b8c50c1e08d101b076152d6bef` as the named regression
+   fixture, while preserving its legitimate improvement over the earlier M1
+   candidate: the 24-field independent typed projection is real and remains
+   required.
+
+Trigger and exact evidence:
+
+The independent M1 R2 audit found that `RequiredFacts` repeated all 24 exact
+certificate propositions and that `.requiredFacts` used every literal field
+projection. The guarded list packet and paper theorem consumed the new object.
+However, no M1 mutation runner or fixture existed under `scripts/`, and the
+matrix's cited snapshot was outside the candidate ancestry and had no ref.
+
+In a disposable exact-candidate worktree, removing only the paper theorem's
+guarded `RequiredFacts` conjunct and corresponding tuple element still passed
+`lake build RMQPaper RMQ` and
+`lake env lean scripts/headline_axiom_check.lean`. The existing axiom check
+followed the theorem's current type, so it could not reject deletion of the new
+public dependency. The source topology was materially improved, but the frozen
+public anti-deletion acceptance row was not reproducibly enforced.
+
+Regression mapping:
+
+- Candidate `1f50e569...` fails `INV-MUTATION-REPRODUCIBILITY` because
+  `git ls-tree -r --name-only <candidate> scripts` contains no M1 mutation
+  runner or fixtures.
+- The public-dependency deletion passes the candidate's production paper build
+  and headline axiom check, so those checks alone do not satisfy the new rule.
+- A repair closes the rule only when its committed runner rejects that deletion
+  through an expected-type consumer and also accepts one explicitly
+  non-load-bearing packet-only control.
+- A legitimately weaker theorem or packet remains permitted when it does not
+  advertise the deleted fact as load-bearing and its expected-accept control
+  records that boundary.
+
+Rejected alternatives:
+
+- Accept a mutation campaign summarized only in the worker report or matrix.
+- Preserve local mutation commits as unreachable objects and assume reviewers
+  can reconstruct them.
+- Treat `#print axioms` as an assertion of the theorem's full public type.
+- Require every packet restatement to be load-bearing, eliminating useful
+  compatibility or documentary packaging.
+- Discard the genuine R2 typed-field improvement because its public mutation
+  evidence was incomplete.
+
+Consequences:
+
+- M1 R3 remains narrow: it adds durable enforcement around the sound R2
+  topology instead of redesigning the certificate or evaluator.
+- Future public capstones cannot claim anti-deletion coverage without shipping
+  the cases needed to replay it.
+- Expected-accept controls preserve honest non-load-bearing packaging and keep
+  the rule from equating every nearby proposition with a required public input.
+- The workflow change adds no Lean axiom, payload bit, modeled tick, machine
+  event, or runtime claim.
+
+Evidence:
+
+- `.agents/skills/rmq-coordinator/SKILL.md`.
+- `.agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md`.
+- `.agents/skills/rmq-proof-sprint/references/KNOWN_FAILURE_MODES.md`.
+- `docs/internal/templates/PROOF_ACCEPTANCE_MATRIX.md`.
+- `docs/internal/templates/WORKER_PROMPT.md`.
+- Exact-candidate mutation audit of
+  `1f50e5698a0842b8c50c1e08d101b076152d6bef`.
+- System `quick_validate.py`: both modified RMQ skills valid.
+- `scripts/worker_prompt_preflight_regression.ps1`: all cases passed in
+  139.7 seconds.
+- `scripts/project_skill_preflight_regression.ps1`: all cases passed in
+  117.7 seconds.
+- `scripts/design_decision_check.ps1 -Strict` and `git diff --check`: passed.
+
+Publication-facing significance:
+
+The paper theorem's advertised conjunction is part of the reviewer-facing
+claim surface. Requiring a replayable deletion test and independent expected-
+type consumer prevents later refactors from silently removing a claimed
+machine-adequacy dependency while all current-name and current-type checks stay
+green.

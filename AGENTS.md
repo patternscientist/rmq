@@ -145,6 +145,12 @@
   what changed conceptually, what the work just done now means in plain
   English, what assumptions are live, and what a skeptical grad student would
   ask next.
+- When completion relies on a mutation campaign, require committed replayable
+  cases with expected verdicts, exact failing surfaces, expected-accept
+  controls, and restoration/clean-tree checks. Report-only experiments,
+  terminal transcripts, and unreferenced Git objects do not close acceptance
+  rows. Public-dependency claims also require a checked expected-type consumer
+  that fails when the public proposition is mutated.
 - The lead thread remains responsible for periodic check-ins, steering agents
   away from premature loop breaks or side quests, integrating accepted work, and
   running the final gate. For public-facing milestones, it should also fold

@@ -67,3 +67,9 @@ Rules:
     field-deletion, proposition-weakening, and sibling-substitution mutations;
     opaque record passage and constructor initialization do not establish
     anti-bypass consumption.
+20. If closure cites a mutation campaign, identify the committed runner or
+    stable fixtures, exact cases, expected verdict/failure surface, expected-
+    accept controls, and restoration/clean-tree check. Report-only experiments
+    and unreferenced Git objects leave `INV-MUTATION-REPRODUCIBILITY` open.
+    For a public dependency, pin an expected type independently of the current
+    theorem declaration and mutate the public proposition itself.

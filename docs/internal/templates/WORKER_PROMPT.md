@@ -102,6 +102,13 @@ Acceptance contract:
   parameters whenever the requirement claims occurrence-level production.
 - For a public theorem combining space/execution/model claims, prove each
   conjunct concerns the same payload, store, execution, and word model.
+- If acceptance cites a mutation campaign, commit a replayable runner or stable
+  fixtures for every claimed case, expected verdict/failing surface, expected-
+  accept control, and restoration/clean-tree check. Report prose, terminal
+  transcripts, and dangling Git objects are not acceptance evidence. For a
+  public dependency, add an independent expected-type consumer and show that
+  mutating the public proposition itself breaks the committed check; printing
+  or checking the theorem's mutable current type does not pin it.
 - If a public wrapper guards valid inputs, ensure every combined field uses the
   same guard/domain. Raw adequacy may occur only under the valid-range premise
   or in a guarded packet with matching invalid semantics; a bridge theorem does

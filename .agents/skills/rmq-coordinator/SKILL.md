@@ -165,6 +165,13 @@ For each completed worker branch:
    used source, replace the predicate by a tautology, or assign a consumer label
    without an evaluator edge. Identify the theorem that fails. If none fails,
    the row is open.
+   When the acceptance contract claims an exhaustive or production mutation
+   campaign, require the cases, expected verdicts, and restoration checks to be
+   committed and replayable from the candidate. Matrix prose, terminal output,
+   an unreferenced Git object, or a one-off edited worktree is scheduling/process
+   evidence only. For a public dependency, also require a checked exact-type
+   consumer whose elaboration fails when the advertised conjunct is removed;
+   printing the current theorem's axioms does not pin its type.
 6. Put the positive predicate `P` and mutation predicate `Q` side by side,
    including guards and quantifiers. Require the same relation or a checked
    `P -> Q` bridge. Compare component versus top-level execution, attempted
