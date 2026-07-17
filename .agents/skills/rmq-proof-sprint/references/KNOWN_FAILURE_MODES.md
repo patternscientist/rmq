@@ -40,6 +40,36 @@ An honest "remaining audit risk" is useful evidence, but it is also evidence
 that an assigned acceptance criterion remains open. Commit the checkpoint and
 continue rather than reporting the task complete.
 
+## Expensive Verification And Blind Reruns
+
+- A quiet Lean process is not necessarily hung. Check the owned process, CPU,
+  and artifact timestamps before terminating or duplicating it.
+- A wrapper timeout is not a semantic failure. If the child is still running,
+  wait for that process instead of starting the same command again.
+- Never retry the same expensive command on the same tree with the same cold
+  dependencies and timeout. Change the condition first: warm the missing
+  import, fix the actual error, narrow the target, or choose a timeout supported
+  by an observed successful runtime.
+- Do not run multiple heavy Lean/Lake commands concurrently against one build
+  tree. Cache contention and memory pressure can turn otherwise bounded checks
+  into misleading timeouts.
+- A late full-gate failure should be debugged with the smallest failing
+  component. Re-running the entire 20- or 30-minute gate after each local edit
+  is waste, not stronger evidence; reserve one aggregate rerun for the final
+  unchanged tree.
+- Avoid double-paying for coverage. If the final aggregate gate includes a
+  build or axiom inventory already run for diagnosis, the earlier run is useful
+  diagnosis and cache warm-up, while the final aggregate result is the
+  certification. Do not add another identical final invocation without a
+  distinct acceptance purpose.
+
+The regression pattern is: an expensive command reaches a tool timeout or
+stays quiet, its surviving process or cache state is not inspected, and the
+same command is launched again unchanged. The verification ledger in
+`COMPLETION_GATE.md` must reject that pattern by recording tree identity,
+runtime evidence, process disposition, and the material reason for every
+rerun.
+
 ## Letter-Complete Semantic Claims
 
 A theorem can have the requested name and still fail the intended semantic

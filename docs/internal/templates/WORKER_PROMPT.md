@@ -152,7 +152,20 @@ Completion:
 - Stage only intended files and commit unless explicitly read-only.
 
 Verification:
-- [TARGETED BUILD/CHECKS]
+- Development-loop checks: [NARROW CHECKS USED WHILE EDITING]
+- Final-required checks: [ONLY CHECKS REQUIRED ON THE FINAL TREE]
+- Conditional checks: [COMMAND, TRIGGER, AND WHY IT IS NOT UNCONDITIONAL]
+- For each expensive command, record covered acceptance rows, closest observed
+  runtime, chosen timeout, exact tree state, duration, and result. Run only one
+  heavy Lean/Lake process at a time per build tree.
+- If a command times out or stays quiet, inspect its child process, CPU/artifact
+  progress, prerequisites, and whether it fell back to a full build. Do not
+  launch the same expensive command unchanged. Retry only after recording the
+  material change that makes the rerun meaningful.
+- Run the aggregate gate at most once on an unchanged final tree. After a late
+  failure, reproduce and repair the smallest failing component before the one
+  final aggregate rerun. Do not separately duplicate checks already included
+  by the aggregate gate unless the prompt names a distinct acceptance purpose.
 - git diff --check
 - after committing, git diff --check [EXACT BASE SHA]..HEAD
 - powershell -ExecutionPolicy Bypass -File scripts\design_decision_check.ps1

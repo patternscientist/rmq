@@ -64,7 +64,20 @@
 
 ## Verification
 
-- After proof or implementation edits, run `lake build`.
+- Plan verification from changed paths and acceptance rows. During development,
+  run the narrowest affected target and direct consumer first. Reserve full
+  `lake build` and `scripts/gate.ps1` for broad/integration/public-capstone
+  changes or an explicit final contract; narrow proof, docs-only, and read-only
+  work should use proportionate checks and record why broad gates were skipped.
+- Run only one heavy Lean/Lake process at a time per build tree. For a
+  multi-minute command, choose a timeout from observed runtimes with cold-cache
+  margin. After a timeout, inspect surviving child processes, artifact progress,
+  missing prerequisites, and accidental full-build fallback before retrying.
+  Never rerun the same expensive command unchanged merely because its wrapper
+  timed out or remained quiet.
+- Run an aggregate gate at most once on an unchanged final tree. Diagnose a
+  late failure with the smallest failing component, then reserve the next full
+  run for final certification.
 - Run this hygiene scan before finalizing:
 
   ```powershell

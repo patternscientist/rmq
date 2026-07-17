@@ -2658,3 +2658,101 @@ paper frontier. Preventing a macro-step, self-oracle, uncounted-code, stale-
 validator, or opaque-certificate candidate from being labeled ready keeps
 workflow evidence aligned with the theorem actually available, without
 treating the workflow machinery itself as mathematical proof.
+
+## WDD-20260717-001: make verification cost-aware and forbid blind expensive reruns
+
+Status: Accepted.
+Date: 2026-07-17.
+Scope: worker proof loops, completed-worker audits, local repository gates,
+timeouts, cold-worktree warm-up, and final exact-tree certification.
+
+Decision:
+
+1. Require a verification coverage ledger that classifies commands as
+   development-loop, final-required, or conditional and maps each command to
+   changed paths, acceptance rows, unique failure coverage, exact tree state,
+   expected runtime, timeout, observed duration, and rerun reason.
+2. Order verification by information per unit time: static hygiene, focused
+   targets, direct public consumers and relevant trust checks, then broad roots
+   or the aggregate gate only when scope or the frozen contract requires them.
+3. Run only one heavy Lean/Lake process at a time against a shared build tree.
+4. Treat a wrapper timeout or quiet output as an execution-state question, not
+   a semantic failure. Inspect child liveness, CPU/artifact progress, missing
+   import artifacts, environment, and accidental full-build fallback before
+   deciding to stop or retry.
+5. Forbid launching the same expensive command again on an unchanged tree
+   without first accounting for the old process and recording a material
+   changed condition. If the child survived, wait for it; if it ended, retry
+   only after a fix, dependency warm-up, environment correction, target
+   narrowing, or evidence-based timeout change.
+6. Run an aggregate gate at most once on an unchanged final tree. Debug a late
+   failure with its smallest component and reserve the next aggregate run for
+   final certification.
+7. Do not equate repeated gate runs with independent evidence. Worker results
+   remain untrusted for acceptance, but their durations and failure locations
+   may guide proportionate independent audit scheduling and cache use.
+
+Trigger and evidence:
+
+The user identified recurring RMQ runs where a 20-minute command reached a
+timeout and the same work was then paid again for 30 minutes or more. The active
+E1 repair transcript also showed why the policy needs nuance: large source
+checks were repeated after genuine source changes, while an adapter proof first
+exceeded the default heartbeat allowance and later exceeded a larger allowance.
+Some reruns were dependency-valid; the missing rule was to distinguish those
+from unchanged blind retries before spending another long interval.
+
+Historical evidence already records two related cases: high-volume axiom
+output made the aggregate gate look broken even when direct commands passed,
+and topology/full-gate runs could appear hung because of stale Lean processes
+or a focused mutation falling back to full resolution. Together these show
+that silence, wrapper termination, semantic failure, stale children, and cold
+dependency work are different states and must not share one retry policy.
+
+Rejected alternatives:
+
+- Require the full gate after every edit or at every audit checkpoint.
+- Put a universal short timeout on Lean commands and retry when it expires.
+- Solve timeout risk by using arbitrarily huge limits without inspecting
+  progress or target scope.
+- Run several heavy Lean jobs concurrently and assume wall-clock time improves.
+- Trust worker gate results as acceptance evidence merely to avoid local work.
+- Skip all broad gates, including final public/integration certification.
+
+Consequences:
+
+- Narrow work receives narrow verification, while public capstones,
+  integration commits, artifacts, and trust-boundary changes still receive the
+  broad checks their contracts require.
+- Expensive checks are scheduled once for final certification instead of being
+  reflexively duplicated before and inside the aggregate gate.
+- A timeout now requires process and cache diagnosis before a retry, reducing
+  duplicate survivors, cold rebuilds, and misleading failure reports.
+- Exact-tree identity remains essential: a source or checker edit invalidates
+  its dependent checks, while a docs-only edit does not automatically erase
+  unrelated Lean compilation evidence.
+- This is workflow policy only. It changes no Lean theorem, public claim,
+  payload accounting, cost model, or trust allowance.
+
+Evidence:
+
+- `AGENTS.md` verification guidance.
+- `.agents/skills/rmq-coordinator/SKILL.md` verification economics.
+- `.agents/skills/rmq-proof-sprint/SKILL.md` verification workflow.
+- `.agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md` command ledger
+  and rerun rules.
+- `.agents/skills/rmq-proof-sprint/references/KNOWN_FAILURE_MODES.md` expensive-
+  verification regression pattern.
+- `docs/internal/templates/WORKER_PROMPT.md` tiered verification contract.
+- `scripts/worker_prompt_preflight_regression.ps1`: all cases passed in 108.2
+  seconds on the seven-file governance diff.
+- `scripts/project_skill_preflight_regression.ps1`: all cases passed in 84.6
+  seconds on the same tree.
+- `scripts/design_decision_check.ps1 -Strict` and `git diff --check`: passed.
+
+Publication-facing significance:
+
+Gate evidence supports confidence in the theorem and artifact frontier, but
+the amount of repeated compute is not itself mathematical evidence. This rule
+preserves the checks that matter while preventing timeout behavior from being
+misreported as proof failure or mistaken for stronger validation.

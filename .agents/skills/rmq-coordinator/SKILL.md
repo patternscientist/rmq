@@ -217,6 +217,40 @@ For each completed worker branch:
 Do not merge a branch that merely reports an honest caveat when a local theorem
 repair is still available.
 
+### Verification Economics
+
+Plan verification from the changed paths and acceptance rows before launching
+commands. Classify each check as development-loop, final-required, or
+conditional, and state what unique failure it can detect. Run cheap static
+checks first, focused Lean targets next, public consumers next, and the
+aggregate gate last only when the scope or frozen contract requires it. A
+narrow proof, docs-only change, or read-only audit does not automatically need
+every repository root, validator, harness, and aggregate gate.
+
+Treat a command expected to take several minutes as an expensive check:
+
+- run only one heavy Lean/Lake process at a time against a shared build tree;
+- use prior exact-command timings to choose a timeout with realistic margin,
+  never one shorter than a recent successful run;
+- before retrying a timeout, inspect whether its child process is still live,
+  whether build artifacts advanced, whether a dependency warm-up is missing,
+  and whether the focused check fell back to a full build;
+- never launch the same expensive command again on an unchanged tree merely
+  because its wrapper timed out or stayed quiet. Resume/wait for the surviving
+  process, or retry only after a material change such as fixing the failure,
+  warming prerequisites, removing an owned orphan, narrowing the target, or
+  revising a timeout shown by observed runtimes to have been too short;
+- after a late aggregate-gate failure, reproduce and repair the failing
+  component first, then run at most one final aggregate certification on the
+  unchanged final tree.
+
+Worker reports are not acceptance evidence, but their command timings and
+failure locations are valid scheduling evidence. Reuse caches and completed
+exact-tree stages without pretending that this replaces independent semantic
+reconstruction. Record commands skipped as redundant or disproportionate and
+why their covered risk was already tested. Full local gate repetition is not a
+proxy for rigor.
+
 ### Failure-Mode Feedback Loop
 
 Every completed-worker audit must classify any miss before the coordinator

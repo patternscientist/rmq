@@ -308,6 +308,54 @@ and after every virtual edit.
 Do not mark the row complete merely because no forbidden token appears in a
 selected claim table. Documentary symbol resolution is the closure evidence.
 
+### Verification coverage, timeout, and rerun discipline
+
+Before running verification, add a compact command ledger to the acceptance
+matrix. For each command record:
+
+- development-loop, final-required, or conditional role;
+- changed paths and acceptance rows covered;
+- unique failure mode not already covered by another planned command;
+- exact tree identity or dirty-diff state;
+- expected runtime from the closest observed run and the chosen timeout;
+- final outcome, observed duration, and any reason a rerun is necessary.
+
+Order checks by information per unit time: static hygiene and diff checks,
+focused module or executable targets, direct public consumers and relevant
+axiom inventories, then broad builds or the aggregate gate. Do not prescribe
+`lake build`, every named root, every validator, and `scripts/gate.ps1` as
+independent mandatory runs when their coverage is duplicated and the frozen
+contract does not require each result. Broad public, integration, artifact, or
+trust-boundary changes normally need the aggregate gate; narrow proof, docs,
+or read-only work may use proportionate focused checks with an explicit skip
+reason.
+
+For checks expected to take several minutes:
+
+1. Run only one heavy Lean/Lake process at a time against a shared build tree.
+2. Never set a wrapper timeout below a recent successful runtime for the same
+   command and comparable tree. Add realistic margin for a cold worktree.
+3. On timeout or prolonged silence, inspect the owned process tree, CPU use,
+   artifact timestamps, direct-import artifacts, and whether a focused script
+   fell back to a full build. Do not infer failure from silence alone.
+4. If the child survived the wrapper timeout, wait for or resume that process;
+   do not launch a duplicate. Stop an orphan only after identifying it as owned
+   by this task and recording why its result cannot be used.
+5. Retry an ended command only after a material change: a source fix, targeted
+   dependency warm-up, corrected environment, narrower target, or a timeout
+   revised from observed evidence. Record the prior run as incomplete, not as
+   a failed semantic check.
+6. If an aggregate gate fails late, reproduce only the failed component while
+   repairing it. Run at most one new aggregate certification on the unchanged
+   final tree after the component passes.
+
+Any source, theorem, executable, or load-bearing checker edit invalidates the
+checks that transitively consume it. A docs-only or matrix-only edit invalidates
+the relevant claim/design/topology checks but does not automatically invalidate
+unrelated Lean compilation. Explain the dependency judgment. The final report
+must distinguish commands rerun, reused only for scheduling/cache purposes,
+and skipped as redundant or disproportionate. Repetition is not independence.
+
 ## 4. No Caveated Completion
 
 The following statements in a final self-audit normally mean the worker must
