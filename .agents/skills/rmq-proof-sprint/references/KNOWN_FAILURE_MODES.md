@@ -134,6 +134,32 @@ exhaustive `INV-ADDRESS-WIDTH`, `INV-PROGRAM-ACCOUNTING`, and
 theorem, theorem-name ledger, or predecessor validator must reject this exact
 evidence pattern rather than close it.
 
+### E1 R2 regression: disconnected witnesses do not prove a target obstruction
+
+Commit `39e97e08b14e8960c484cc7948409d550a97c955` is the named regression
+fixture for obstruction quantifier parity.  It correctly exposed that the
+current `.localBPWindow` evaluator hides a recursive scan behind two charged
+ticks, and it separately proved:
+
+- an arbitrary configuration can be mutated so its count register exceeds any
+  proposed bound;
+- the canonical raw block-size function is unbounded across List inputs; and
+- one fixed canonical query reaches the `.localBPWindow` category.
+
+Those propositions do not share one witness.  They do not prove a family of
+canonical reachable executions whose actual count register is unbounded, and
+they do not rule out every familiar decomposition allowed by the frozen E1
+contract.  Consequently they obstruct the current macro instruction and fixed
+scalar unrolling, not the frozen target itself.
+
+Apply the valid-stop quantifier rule in `COMPLETION_GATE.md`: require either a
+checked negation of the exact frozen target, a checked implication from that
+target to `False`, or a canonical reachable family that preserves the growing
+parameter and actual invocation in one proposition.  Separate existential
+witnesses may be composed only by a checked bridge theorem.  Legitimate
+narrower statements remain useful when labeled as implementation obstructions
+and must not be rejected merely because they do not close the roadmap target.
+
 ### M1 regression: opaque certificate consumption does not pin its fields
 
 Commit `9e68c48a52692fa4fb26f1790179d5c623cb47f1` is the named regression

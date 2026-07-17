@@ -145,6 +145,13 @@ Context:
 Completion:
 - Work until the named target closes or a valid obstruction dossier forces a
   coordinator decision.
+- An obstruction must negate the exact frozen target or give a checked
+  implication from that target to `False` with matching objects, guards, and
+  quantifiers. Do not join separate arbitrary-state, shape-growth, and one-
+  witness reachability facts by prose; prove the canonical reachable family
+  that carries them together. A failure of the current implementation or one
+  proposed decomposition is a checkpoint unless it rules out every
+  construction permitted by the frozen contract.
 - A commit, push, green build, local helper, or honest caveat is a checkpoint,
   not completion. If your self-audit says a required property remains for the
   next consumer, continue on the same branch and add another commit.

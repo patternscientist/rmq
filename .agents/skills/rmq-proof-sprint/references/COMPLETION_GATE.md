@@ -412,6 +412,19 @@ A worker may stop only when one of these is true:
 Difficulty, elapsed time, token pressure, a green build, a clean checkpoint,
 or the desire for an independent audit are not stop conditions.
 
+For stop condition 2, the obstruction must match the frozen target's domain,
+objects, guards, and quantifiers.  It must either negate the exact target or
+provide a checked implication from the target to `False`.  Separate theorems
+showing an arbitrary-state mutation, an unbounded shape parameter, and one
+reachable concrete execution do not compose by prose into an unbounded family
+of canonical reachable executions.  When reachability is load-bearing, prove
+one checked family that simultaneously carries the growing parameter and the
+actual invocation.  Also distinguish an obstruction to the current
+implementation or one proposed decomposition from an obstruction to every
+construction permitted by the frozen contract.  A narrower implementation
+obstruction is valuable checkpoint evidence, but it does not authorize
+`Status: OBSTRUCTED` for the target.
+
 A worker's statement that a residual question is "strictly stronger than the
 assigned obligation" is not a stop condition. The worker must first map the
 question to the frozen requirement wording and inherited invariant IDs. Only

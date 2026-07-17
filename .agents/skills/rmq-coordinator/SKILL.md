@@ -230,6 +230,13 @@ For each completed worker branch:
    `P -> Q` bridge. Compare component versus top-level execution, attempted
    versus successful reads, arbitrary versus valid-query parameters, and
    event-value membership versus actual occurrence production.
+   Audit formal obstructions by the same rule: require negation of the frozen
+   target or a checked target-to-`False` implication on the same objects and
+   quantifiers.  Do not compose an arbitrary-state mutation, an unbounded
+   shape fact, and a singleton reachability witness by prose.  Require one
+   checked canonical reachable family when their conjunction is load-bearing,
+   and distinguish failure of the current implementation from impossibility
+   of every construction the contract permits.
 7. Audit information preservation in the theorem conclusion. If prose claims
    occurrence, multiplicity, or actual invocation provenance, require a global
    position or equivalent decomposition plus the producing instruction, folded

@@ -2967,3 +2967,76 @@ Automation changes who performs coordination steps, not what the paper proves.
 Exact-commit audits, committed evidence, trust checks, and public theorem
 consumption remain unchanged; agent reports and monitor state remain process
 evidence outside the proof trust base.
+
+## WDD-20260717-004: require quantifier-matched formal obstructions
+
+Status: Accepted.
+Date: 2026-07-17.
+Scope: proof-sprint stop conditions, completed-worker audit, acceptance
+matrices, and worker prompts for formal obstruction claims.
+
+Decision:
+
+1. A formal obstruction may stop a worker only when its checked proposition
+   negates the frozen target or a checked theorem derives `False` from that
+   target on the same domain, objects, guards, and quantifiers.
+2. Separate facts about an arbitrary mutated state, an unbounded shape
+   parameter, and one reachable execution cannot be composed by prose.  If
+   their conjunction is load-bearing, one checked canonical reachable family
+   must preserve the growing parameter and actual invocation together.
+3. Every obstruction report must distinguish impossibility of the frozen
+   target from failure of the current implementation or one proposed
+   decomposition.  The latter is valuable checkpoint evidence but does not
+   authorize target-level `Status: OBSTRUCTED`.
+4. Use E1 R2 candidate
+   `39e97e08b14e8960c484cc7948409d550a97c955` as the named regression: its
+   three true witness theorems do not establish the missing common canonical
+   reachable family and therefore must be rejected as target-level closure.
+
+Trigger and evidence:
+
+The E1 R2 report combined an arbitrary register mutation, unbounded canonical
+block geometry, and a singleton reachable `.localBPWindow` execution into a
+claim that the frozen fully charged familiar-machine target was impossible.
+Independent source reconstruction found no theorem connecting those witnesses
+and no proof that all permitted familiar decompositions fail.  The candidate
+does correctly prove that its current macro instruction and fixed scalar
+unrolling are inadequate; the workflow defect was upgrading that narrower
+result to a target obstruction.
+
+Rejected alternatives:
+
+- Accept narrative witness composition when every cited theorem is true.
+- Require only theorem names, without comparing domains and quantifiers.
+- Discard narrow implementation obstructions that are accurately labeled.
+- Amend the E1 architecture automatically from an incomplete obstruction.
+
+Consequences:
+
+- Workers must retain load-bearing witness identity through the obstruction
+  proposition instead of relying on a prose join.
+- Coordinators and blind auditors can distinguish a real design fork from a
+  repairable implementation checkpoint before changing the roadmap contract.
+- The rule adds no Lean axiom, payload data, modeled tick, trace event, or
+  runtime claim.
+
+Evidence:
+
+- `.agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md`.
+- `.agents/skills/rmq-proof-sprint/references/KNOWN_FAILURE_MODES.md`.
+- `.agents/skills/rmq-coordinator/SKILL.md`.
+- `docs/internal/templates/PROOF_ACCEPTANCE_MATRIX.md`.
+- `docs/internal/templates/WORKER_PROMPT.md`.
+- Exact-candidate audit of
+  `39e97e08b14e8960c484cc7948409d550a97c955`.
+- System `quick_validate.py`: both modified RMQ skills valid.
+- `scripts/worker_prompt_preflight_regression.ps1`: all cases passed in
+  141.7 seconds.
+- `scripts/design_decision_check.ps1 -Strict` and `git diff --check`: passed.
+
+Publication-facing significance:
+
+Obstruction claims determine whether the project changes its machine model or
+payload architecture. Requiring a checked quantifier-matched obstruction
+prevents process prose from forcing a paper-level design amendment that the
+formal evidence does not establish.

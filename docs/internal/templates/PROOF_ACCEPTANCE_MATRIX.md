@@ -73,3 +73,11 @@ Rules:
     and unreferenced Git objects leave `INV-MUTATION-REPRODUCIBILITY` open.
     For a public dependency, pin an expected type independently of the current
     theorem declaration and mutate the public proposition itself.
+21. If the worker stops on an obstruction, put the exact frozen target and the
+    obstruction proposition side by side, including domains, objects, guards,
+    and quantifiers. Require a checked target negation or target-to-`False`
+    implication. Separate arbitrary-state, shape-growth, and singleton-
+    reachability witnesses need a checked bridge into one canonical reachable
+    family; prose composition leaves the target row open. State whether the
+    result obstructs only the current implementation/decomposition or every
+    construction allowed by the contract.
