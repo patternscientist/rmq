@@ -2515,6 +2515,10 @@ Decision:
    contract fields and acceptance lists without stable IDs, but require the
    coordinator to record a separate semantic-contract review `COMPLETE` before
    `READY_TO_SEND`; lexical length cannot establish theorem/roadmap fidelity.
+9. Verify the destination task's runtime skill inventory independently of the
+   governed worker base. A returning task is ready only with explicit current
+   runtime evidence. Unknown or stale returning tasks must be replaced by fresh
+   Codex worktree tasks started from the exact governed repair-base branch.
 
 Trigger and exact evidence:
 
@@ -2556,6 +2560,13 @@ the preflight can reject trivial values and require stable acceptance IDs, but
 only a coordinator source review can determine whether a nontrivial-looking
 goal and proposition contract are actually correct.
 
+The first E1-01R1 and M1-01R1 repair launches were incorrectly recommended as
+returning tasks. Both exact bases contained all three governed RMQ skills, but
+the old task runtimes exposed only `rmq-proof-sprint`; creating or selecting a
+later branch did not rebuild their catalogs. Both workers correctly stopped
+before edits. Prompt/base preflight had certified repository state while
+silently treating the destination runtime as if it were the same object.
+
 Regression mapping:
 
 - The exact-title and governed-base mutations are rejected by
@@ -2583,6 +2594,9 @@ Regression mapping:
 - Trivial filler values and acceptance text without a stable ID reject, and
   `READY_TO_SEND` with semantic-contract review `PENDING` rejects. A recorded
   review remains coordinator evidence, not mathematical proof.
+- A returning prompt with destination runtime `UNKNOWN` or `STALE` rejects. A
+  fresh prompt is ready only when configured to start its Codex worktree from
+  the governed repair-base branch and still runs project-skill preflight first.
 
 Rejected alternatives:
 
@@ -2598,6 +2612,8 @@ Rejected alternatives:
   acceptance, verification, and report contracts were populated.
 - Pretend regexes can establish that plausible-looking roadmap prose is
   semantically faithful, or omit an explicit human/agent source reread.
+- Infer a destination task's runtime catalog from repository files, or assume a
+  branch/worktree created inside an old task refreshes its available skills.
 - Preserve the Windows-only `powershell` invocation because local checks pass.
 
 Consequences:

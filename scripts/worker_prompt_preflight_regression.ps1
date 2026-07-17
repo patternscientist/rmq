@@ -79,7 +79,9 @@ function Invoke-Case(
   [string]$Status,
   [string]$Feedback,
   [string[]]$RequiredOutput = @(),
-  [string]$SemanticReview = "COMPLETE"
+  [string]$SemanticReview = "COMPLETE",
+  [string]$DestinationTaskKind = "RETURNING_TASK",
+  [string]$DestinationRuntimeEvidence = "VERIFIED_CURRENT"
 ) {
   $arguments = @(
     "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $preflight,
@@ -93,6 +95,8 @@ function Invoke-Case(
     "-PromptStatus", $Status,
     "-FailureModeFeedbackStatus", $Feedback,
     "-SemanticContractReviewStatus", $SemanticReview,
+    "-DestinationTaskKind", $DestinationTaskKind,
+    "-DestinationRuntimeEvidence", $DestinationRuntimeEvidence,
     "-TaskMode", "WRITE",
     "-WorkerBranch", "codex/e1-repair"
   )
@@ -160,6 +164,24 @@ try {
     $governanceRef $workerBase "codex/e1-repair"
   Invoke-Case "ready-governed" 0 $validPrompt $governanceRef $workerBase `
     "READY_TO_SEND" "COMPLETE" @("WORKER-PROMPT-PREFLIGHT: PASS")
+
+  Invoke-Case "returning-runtime-unknown" 2 $validPrompt $governanceRef $workerBase `
+    "READY_TO_SEND" "COMPLETE" @("destination runtime VERIFIED_CURRENT") `
+    -DestinationRuntimeEvidence "UNKNOWN"
+
+  $freshPrompt = Join-Path $tempRoot "fresh-governed.txt"
+  @(Get-Content -LiteralPath $validPrompt) | ForEach-Object {
+    $_ -replace '^- Fresh or returning worker: RETURNING',
+      '- Fresh or returning worker: FRESH'
+  } | Set-Content -LiteralPath $freshPrompt -Encoding utf8
+  Invoke-Case "fresh-governed-start" 0 $freshPrompt $governanceRef $workerBase `
+    "READY_TO_SEND" "COMPLETE" @("destination_task=FRESH_GOVERNED_WORKTREE", "PASS") `
+    -DestinationTaskKind "FRESH_GOVERNED_WORKTREE" `
+    -DestinationRuntimeEvidence "GOVERNED_START"
+  Invoke-Case "fresh-runtime-unknown" 2 $freshPrompt $governanceRef $workerBase `
+    "READY_TO_SEND" "COMPLETE" @("destination runtime evidence GOVERNED_START") `
+    -DestinationTaskKind "FRESH_GOVERNED_WORKTREE" `
+    -DestinationRuntimeEvidence "UNKNOWN"
 
   $skeletalPrompt = Join-Path $tempRoot "skeletal-prompt.txt"
   @(

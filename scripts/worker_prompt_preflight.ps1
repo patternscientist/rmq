@@ -32,6 +32,14 @@ param(
   [ValidateSet("COMPLETE", "PENDING")]
   [string]$SemanticContractReviewStatus,
 
+  [Parameter(Mandatory = $true)]
+  [ValidateSet("RETURNING_TASK", "FRESH_GOVERNED_WORKTREE")]
+  [string]$DestinationTaskKind,
+
+  [Parameter(Mandatory = $true)]
+  [ValidateSet("VERIFIED_CURRENT", "GOVERNED_START", "UNKNOWN", "STALE")]
+  [string]$DestinationRuntimeEvidence,
+
   [ValidateSet("WRITE", "READ_ONLY")]
   [string]$TaskMode = "WRITE",
 
@@ -143,6 +151,19 @@ try {
     }
   }
 
+  $dispositionMatch = [regex]::Match(
+    $promptText,
+    '(?m)^- Fresh or returning worker:\s*(FRESH|RETURNING)\b'
+  )
+  $expectedDisposition = if ($DestinationTaskKind -eq "RETURNING_TASK") {
+    "RETURNING"
+  } else {
+    "FRESH"
+  }
+  if ($dispositionMatch.Groups[1].Value -ne $expectedDisposition) {
+    Stop-Preflight "prompt worker disposition does not match destination task kind $DestinationTaskKind"
+  }
+
   $substantiveFields = @(
     @{ Label = "- Fresh or returning worker:"; MinLength = 24 },
     @{ Label = "- Node/join:"; MinLength = 24 },
@@ -210,6 +231,16 @@ try {
       $SemanticContractReviewStatus -ne "COMPLETE") {
     Stop-Preflight "READY_TO_SEND requires semantic-contract review COMPLETE"
   }
+  if ($PromptStatus -eq "READY_TO_SEND" -and
+      $DestinationTaskKind -eq "RETURNING_TASK" -and
+      $DestinationRuntimeEvidence -ne "VERIFIED_CURRENT") {
+    Stop-Preflight "READY_TO_SEND returning task requires destination runtime VERIFIED_CURRENT"
+  }
+  if ($PromptStatus -eq "READY_TO_SEND" -and
+      $DestinationTaskKind -eq "FRESH_GOVERNED_WORKTREE" -and
+      $DestinationRuntimeEvidence -ne "GOVERNED_START") {
+    Stop-Preflight "READY_TO_SEND fresh task requires destination runtime evidence GOVERNED_START"
+  }
 
   Write-Host "WORKER-PROMPT-PREFLIGHT: status=$PromptStatus"
   Write-Host "WORKER-PROMPT-PREFLIGHT: governance=$governanceSha"
@@ -217,6 +248,8 @@ try {
   Write-Host "WORKER-PROMPT-PREFLIGHT: worker=$WorkerHandle"
   Write-Host "WORKER-PROMPT-PREFLIGHT: feedback=$FailureModeFeedbackStatus"
   Write-Host "WORKER-PROMPT-PREFLIGHT: semantic_review=$SemanticContractReviewStatus"
+  Write-Host "WORKER-PROMPT-PREFLIGHT: destination_task=$DestinationTaskKind"
+  Write-Host "WORKER-PROMPT-PREFLIGHT: destination_runtime=$DestinationRuntimeEvidence"
   Write-Host "WORKER-PROMPT-PREFLIGHT: PASS"
   exit 0
 } catch {

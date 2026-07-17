@@ -10,6 +10,10 @@ Coordinator launch metadata (do not paste into the worker prompt):
   coordinator reread of the target, closure conditions, acceptance IDs, scope,
   forbidden shortcuts, verification, and report contract; preflight structure
   checks do not replace it.
+- Destination task: [RETURNING_TASK / FRESH_GOVERNED_WORKTREE].
+- Destination runtime evidence: [VERIFIED_CURRENT / GOVERNED_START / UNKNOWN /
+  STALE]. A returning task requires an explicit current runtime inventory;
+  repository skill files or a later branch switch are not runtime evidence.
 - Worker handle, fresh/returning chat, exact model variant/reasoning/service
   mode, exact governance SHA, exact worker-base SHA, and branch.
 - Run `scripts/worker_prompt_preflight.ps1` for every emitted prompt artifact

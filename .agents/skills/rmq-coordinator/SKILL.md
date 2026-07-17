@@ -124,6 +124,17 @@ join them in an explicit integration base or require the worker to merge the
 named workflow commit before using the skill. Do not assume a worker can see
 policy that exists only on another branch.
 
+Verify the destination task separately from the worker base. A returning task
+may be labeled `READY_TO_SEND` only when its latest runtime inventory explicitly
+shows every canonical RMQ skill at the current governance frontier. Repository
+presence, a prompt instruction, or a branch created inside that task is not
+runtime evidence. If the returning task's catalog is unknown or stale, do not
+resend there: start a fresh Codex worktree task from the exact governed repair-
+base branch, mark the prompt `FRESH`, and require project-skill preflight as its
+first action. Record destination task kind and runtime evidence in
+`worker_prompt_preflight.ps1`. Moving an old task to a new branch/worktree does
+not by itself certify that its runtime skill catalog was rebuilt.
+
 When presenting prompts to the user, keep coordinator-facing launch metadata
 outside the worker prompt text:
 
