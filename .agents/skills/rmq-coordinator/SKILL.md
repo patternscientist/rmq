@@ -225,6 +225,15 @@ For each completed worker branch:
    evidence only. For a public dependency, also require a checked exact-type
    consumer whose elaboration fails when the advertised conjunct is removed;
    printing the current theorem's axioms does not pin its type.
+   A replay harness must also make its own coverage mechanically nonvacuous:
+   declare the exact ordered case registry and any ID-to-object mapping, reject
+   missing or duplicate IDs, require a focused selector to execute exactly one
+   requested frozen ID, and reject unknown selectors. A total pass count is not
+   an exhaustive registry check. If the harness invokes Lean or another child
+   process, require a positive evidence-based per-stage deadline, process-tree
+   termination on timeout, failure classification, and cleanup plus live-tree
+   integrity checks in `finally`. Reproduce these controls without paying for
+   the full semantic campaign before accepting its aggregate gate.
 6. Put the positive predicate `P` and mutation predicate `Q` side by side,
    including guards and quantifiers. Require the same relation or a checked
    `P -> Q` bridge. Compare component versus top-level execution, attempted

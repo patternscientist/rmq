@@ -3040,3 +3040,76 @@ Obstruction claims determine whether the project changes its machine model or
 payload architecture. Requiring a checked quantifier-matched obstruction
 prevents process prose from forcing a paper-level design amendment that the
 formal evidence does not establish.
+
+## WDD-20260717-005: require nonvacuous and bounded replay harnesses
+
+Status: Accepted.
+Date: 2026-07-17.
+Scope: mutation-runner acceptance, focused replay selectors, child-process
+economics, worker-prompt preflight, and completed-worker audit.
+
+Decision:
+
+1. A harness claiming exhaustive replay must declare the exact ordered frozen
+   case registry, prove uniqueness and set equality, check any ID-to-field or
+   ID-to-object mapping, and check exact verdict counts. A total pass count is
+   not coverage evidence.
+2. A focused selector must execute exactly one requested frozen ID and reject
+   unknown IDs. Cheap controls must cover an omitted middle ID, a duplicated
+   middle ID, a valid frozen ID, and an unknown ID.
+3. Every external compiler or tool stage used by a replay harness must have a
+   positive evidence-based deadline, classify timeout as failure, terminate its
+   owned process tree, and run cleanup plus live-tree integrity checks in
+   `finally`. A cheap sleeper self-test exercises this path without hanging the
+   semantic campaign.
+4. Worker prompts carry the stable anchors `REPLAY-EXACT-REGISTRY`,
+   `REPLAY-SELECTOR-NONVACUITY`, and `REPLAY-SUBPROCESS-DEADLINE`; prompt
+   preflight rejects any missing anchor before launch.
+
+Trigger and evidence:
+
+The exact-commit audit of M1 R3 candidate
+`868166550fe0df905aef2f7719147d62e88c87bf` found that its topology regression
+registered descriptive names while the frozen matrix named `A01` and `A02`.
+`-OnlyCase A01`, `-OnlyCase A02`, and an unknown selector all exited zero with
+`0 reject; 0 accept`. The mutation runner's current 41 IDs are correct, but its
+only aggregate completeness check is `$passes -eq 41`, so a missing middle case
+can be replaced by a duplicate without detection. Its synchronous Lean child
+has no deadline or process-tree cleanup path, so a hang can prevent case
+cleanup, live-integrity comparison, and final verdict indefinitely.
+
+Rejected alternatives:
+
+- Accept a zero-case focused run because the full aggregate run happened to
+  pass once.
+- Treat boundary-name lint plus a total pass count as an exact registry proof.
+- Add an arbitrarily large outer gate timeout without a per-stage timeout,
+  owned-process cleanup, or cheap timeout self-test.
+- Rerun the 40-minute aggregate gate to diagnose defects already reproduced by
+  static inspection and focused ten-second controls.
+
+Consequences:
+
+- Exact case IDs become reviewer-replayable rather than documentary labels.
+- Registry drift and selector vacuity fail cheaply before any Lean mutation
+  sweep starts.
+- A hung compiler becomes a bounded failed case with cleanup evidence instead
+  of an indefinite gate and an incentive for wasteful unchanged reruns.
+- The workflow rule changes no Lean proposition, payload bit, proof field,
+  modeled tick, trace event, or runtime claim.
+
+Evidence:
+
+- `.agents/skills/rmq-coordinator/SKILL.md`.
+- `docs/internal/templates/WORKER_PROMPT.md`.
+- `scripts/worker_prompt_preflight.ps1`.
+- Named regressions `m1r3-exact-registry-omitted`,
+  `m1r3-zero-case-selector`, and `m1r3-unbounded-subprocess` in
+  `scripts/worker_prompt_preflight_regression.ps1`.
+- Fresh-blind exact-candidate audits of M1 R3 candidate `8681665`.
+
+Publication-facing significance:
+
+Mutation evidence protects the reviewer-facing public theorem dependency.
+Requiring exact, nonvacuous, bounded replay prevents a green process transcript
+from standing in for actual coverage of the frozen public acceptance contract.

@@ -205,6 +205,16 @@ try {
     }
   }
 
+  foreach ($replayContractLiteral in @(
+      "REPLAY-EXACT-REGISTRY",
+      "REPLAY-SELECTOR-NONVACUITY",
+      "REPLAY-SUBPROCESS-DEADLINE"
+    )) {
+    if (-not $promptText.Contains($replayContractLiteral)) {
+      Stop-Preflight "prompt is missing replay-harness contract '$replayContractLiteral'"
+    }
+  }
+
   if ($TaskMode -eq "WRITE") {
     if ([string]::IsNullOrWhiteSpace($WorkerBranch)) {
       Stop-Preflight "write prompt requires an exact worker branch"

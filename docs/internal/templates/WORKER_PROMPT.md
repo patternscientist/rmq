@@ -109,6 +109,18 @@ Acceptance contract:
   public dependency, add an independent expected-type consumer and show that
   mutating the public proposition itself breaks the committed check; printing
   or checking the theorem's mutable current type does not pin it.
+- `REPLAY-EXACT-REGISTRY`: a replay harness must declare the exact ordered
+  frozen case registry, reject missing or duplicate IDs, verify any ID-to-field
+  or ID-to-object mapping, and check exact verdict counts; a total pass count
+  alone is insufficient.
+- `REPLAY-SELECTOR-NONVACUITY`: focused selection must execute exactly one
+  requested frozen ID and must reject unknown IDs. Add cheap named controls for
+  an omitted middle ID, duplicated middle ID, valid frozen ID, and unknown ID.
+- `REPLAY-SUBPROCESS-DEADLINE`: every external compiler/tool stage in a replay
+  harness must have a positive evidence-based deadline, classify timeout as
+  failure, terminate its owned process tree, and run cleanup plus live-tree
+  integrity checks in `finally`. Add a cheap sleeper self-test; do not discover
+  this control by hanging the full semantic campaign.
 - If a public wrapper guards valid inputs, ensure every combined field uses the
   same guard/domain. Raw adequacy may occur only under the valid-range premise
   or in a guarded packet with matching invalid semantics; a bridge theorem does

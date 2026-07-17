@@ -49,6 +49,9 @@ function Write-Prompt(
     "Acceptance contract:"
     "- Frozen acceptance IDs: E1-TEST, INV-INSTRUCTION-ATOMICITY, CHK-DIFF."
     "- Record exact propositions and adversarial mutations in the matrix."
+    "- REPLAY-EXACT-REGISTRY: declare and validate exact ordered case IDs and mappings."
+    "- REPLAY-SELECTOR-NONVACUITY: run exactly one known ID and reject unknown IDs."
+    "- REPLAY-SUBPROCESS-DEADLINE: bound child stages and clean up after timeout."
     ""
     "Forbidden shortcuts:"
     "- No wrappers, self-oracles, uncounted data, or theorem-name-only closure."
@@ -225,6 +228,19 @@ try {
 
   Invoke-Case "ready-semantic-review-pending" 2 $validPrompt $governanceRef $workerBase `
     "READY_TO_SEND" "COMPLETE" @("semantic-contract review COMPLETE") -SemanticReview "PENDING"
+
+  foreach ($replayContract in @(
+      @{ Name = "m1r3-exact-registry-omitted"; Literal = "REPLAY-EXACT-REGISTRY" },
+      @{ Name = "m1r3-zero-case-selector"; Literal = "REPLAY-SELECTOR-NONVACUITY" },
+      @{ Name = "m1r3-unbounded-subprocess"; Literal = "REPLAY-SUBPROCESS-DEADLINE" }
+    )) {
+    $missingReplayContract = Join-Path $tempRoot ($replayContract.Name + ".txt")
+    @(Get-Content -LiteralPath $validPrompt) | Where-Object {
+      -not $_.Contains($replayContract.Literal)
+    } | Set-Content -LiteralPath $missingReplayContract -Encoding utf8
+    Invoke-Case $replayContract.Name 2 $missingReplayContract $governanceRef $workerBase `
+      "READY_TO_SEND" "COMPLETE" @("missing replay-harness contract '$($replayContract.Literal)'")
+  }
 
   Invoke-Case "draft-feedback-pending" 0 $validPrompt $governanceRef $workerBase `
     "DRAFT_DO_NOT_SEND" "PENDING" @("status=DRAFT_DO_NOT_SEND", "PASS")
