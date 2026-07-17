@@ -170,16 +170,33 @@ turn the normal coordinator cycle into an audited worker chain:
    governance, and no active task already owns the same handle/base/branch.
    Add the successor's logical monitor record to the heartbeat in the same
    operation.
+   `AUTO-CHAIN-PRIVATE-REPAIR-BASE`: when the sole launch blocker is that the
+   completed candidate and current governance are sibling commits, create a
+   dedicated local unpublished repair-base branch and worktree, join governance
+   into the candidate, verify exact two-parent ancestry, changed-path scope,
+   `git diff --check`, clean state, and project-skill preflight, then use that
+   exact commit as the successor base. This is workflow construction, not
+   acceptance or integration into the roadmap frontier. Stop if the join has a
+   semantic/public-theorem conflict, needs a proof choice, touches `main` or a
+   published frontier branch, would overwrite an owned branch, or requires a
+   push.
 5. Remove the completed worker's logical record after its audit and successor-
    launch disposition are delivered. Update the multiplexed heartbeat while
    other workers remain; delete it only when no logical records remain.
-   Preserve task/branch evidence; automation does not authorize destructive
-   lifecycle cleanup.
-6. Stop and notify the user instead of launching when a prompt is only a
-   draft, an integration/merge or push is required, dependencies conflict,
-   the runtime skill inventory is unknown, the next step needs a new proof
-   architecture choice, or concurrent heavy workers would make the launch
-   unsafe or wasteful.
+   `AUTO-CHAIN-MONITOR-RETIREMENT`: do not finish a terminal-worker turn while
+   its old logical watch remains live. Use the automation API first. If deleting
+   the currently executing empty heartbeat cannot acknowledge because it holds
+   its own active-run lock, verify the exact automation ID, target thread, and
+   empty watch set, then move only that exact catalog record recoverably out of
+   the live automation directory and report the retired path. Never alter an
+   unrelated automation. Preserve task/branch evidence; automation does not
+   authorize destructive lifecycle cleanup.
+6. Stop and notify the user instead of launching when a prompt remains a draft
+   after the permitted private repair-base construction, a merge into `main` or
+   another published/frontier branch or any push is required, dependencies
+   conflict, the runtime skill inventory is unknown, the next step needs a new
+   proof architecture choice, the private join has a semantic conflict, or
+   concurrent heavy workers would make the launch unsafe or wasteful.
 
 Before task creation, list current tasks and automations and match the exact
 handle/base/branch tuple. Use a 30-minute heartbeat cadence by default, changing
@@ -197,9 +214,10 @@ an explicit coordinator record of why `max` is inadequate for that exact task.
 Model strength does not relax proof-sprint, audit, or verification gates.
 
 This loop automates launch, monitoring, audit, and next-prompt engineering. It
-does not by itself authorize merges, pushes, branch deletion, worktree cleanup,
-public-claim publication, or acceptance without the ordinary coordinator and
-blind-audit requirements.
+authorizes only the private governed repair-base joins described above. It does
+not authorize integration into `main` or a published roadmap frontier, pushes,
+branch deletion, worktree cleanup, public-claim publication, or acceptance
+without the ordinary coordinator and blind-audit requirements.
 
 ## Integration
 

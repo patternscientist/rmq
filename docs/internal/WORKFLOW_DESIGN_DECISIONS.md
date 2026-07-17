@@ -3113,3 +3113,80 @@ Publication-facing significance:
 Mutation evidence protects the reviewer-facing public theorem dependency.
 Requiring exact, nonvacuous, bounded replay prevents a green process transcript
 from standing in for actual coverage of the frozen public acceptance contract.
+
+## WDD-20260717-006: complete opt-in chains through private repair bases
+
+Status: Accepted.
+Date: 2026-07-17.
+Scope: audited-worker successor construction, repair-base authority, terminal
+watch retirement, and automatic-chain stop boundaries.
+
+Decision:
+
+1. Explicit opt-in to the audited worker chain authorizes the coordinator to
+   create a dedicated local unpublished repair-base branch joining a completed
+   candidate with current governance when that sibling relationship is the sole
+   blocker to a preflighted repair successor.
+2. The join must preserve the candidate as first parent and current governance
+   as second parent, avoid `main` and published/frontier branches, remain local,
+   and pass exact ancestry, scope, clean-state, range, and project-skill checks.
+   Any semantic/public-theorem conflict or proof choice stops for user review.
+3. This narrow authority does not authorize candidate acceptance, roadmap/main
+   integration, push, branch/worktree deletion, publication, or proof-
+   architecture selection.
+4. A terminal-worker audit is not complete while its logical watch remains
+   live. Use the automation API first. If self-deletion of the currently
+   executing empty heartbeat is locked, verify its exact ID, target thread, and
+   empty watch set, then move only that catalog record recoverably outside the
+   live automation directory and report its location.
+
+Trigger and evidence:
+
+The user explicitly opted into automatic launch, monitoring, completed-worker
+audit, next-prompt engineering, successor launch, and repeated monitoring. After
+M1-01R3 candidate `868166550fe0df905aef2f7719147d62e88c87bf` was rejected, the
+coordinator correctly engineered M1-01R4 but left it `DRAFT_DO_NOT_SEND` because
+candidate and governance `5efb1515c543e866cda67e66866f3dc34149ed42` were siblings.
+That treated the private governed repair-base join already required by the
+delegation section as forbidden integration, breaking the opted-in chain. The
+old heartbeat also kept polling the terminal M1 task because its automation API
+could not delete itself while its active run held the record; the record was
+eventually retired recoverably from the live catalog.
+
+Rejected alternatives:
+
+- Require the user to manually construct every mechanical candidate-plus-
+  governance repair base after opting into the automatic chain.
+- Treat a private local repair-base join as equivalent to merging an accepted
+  candidate into `main`.
+- Permit automatic resolution of proof, public-theorem, or architecture
+  conflicts.
+- Leave an empty terminal-worker watch active because the preferred API is
+  self-locked, causing repeated stale audits and user noise.
+- Delete arbitrary automation records or use a duplicate cron workaround.
+
+Consequences:
+
+- The automatic chain now advances through mechanically governed repair loops
+  without silently expanding authority to publication or roadmap integration.
+- Ambiguous semantic joins still stop for the user.
+- Terminal watches have a bounded, recoverable retirement path and cannot keep
+  re-querying already audited workers indefinitely.
+- The workflow change adds no Lean axiom, payload data, proof field, modeled
+  tick, trace event, or runtime claim.
+
+Evidence:
+
+- `.agents/skills/rmq-coordinator/SKILL.md` anchors
+  `AUTO-CHAIN-PRIVATE-REPAIR-BASE` and `AUTO-CHAIN-MONITOR-RETIREMENT`.
+- Named regressions `auto-chain-private-repair-base-allowed`,
+  `auto-chain-main-merge-stopped`, and `auto-chain-terminal-watch-retired` in
+  `scripts/worker_prompt_preflight_regression.ps1`.
+- Exact M1-01R3 audit and successor disposition in coordinator task
+  `019f6d85-7626-7433-a60b-81f8be29689a`.
+
+Publication-facing significance:
+
+This changes only who performs mechanical workflow joins and watch cleanup.
+Mathematical acceptance, exact-commit audit, public theorem identity, and
+submission integration remain independently gated.

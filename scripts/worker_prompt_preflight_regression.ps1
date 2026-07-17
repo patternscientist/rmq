@@ -121,6 +121,31 @@ if (-not (Test-Path -LiteralPath $preflight -PathType Leaf)) {
   Fail "production worker prompt preflight is missing"
 }
 
+$coordinatorSkill = Join-Path $PSScriptRoot "..\.agents\skills\rmq-coordinator\SKILL.md"
+if (-not (Test-Path -LiteralPath $coordinatorSkill -PathType Leaf)) {
+  Fail "coordinator skill is missing"
+}
+$coordinatorPolicy = Get-Content -Raw -LiteralPath $coordinatorSkill
+foreach ($policyCase in @(
+    @{
+      Name = "auto-chain-private-repair-base-allowed"
+      Literal = "AUTO-CHAIN-PRIVATE-REPAIR-BASE"
+    },
+    @{
+      Name = "auto-chain-main-merge-stopped"
+      Literal = 'not authorize integration into `main` or a published roadmap frontier'
+    },
+    @{
+      Name = "auto-chain-terminal-watch-retired"
+      Literal = "AUTO-CHAIN-MONITOR-RETIREMENT"
+    }
+  )) {
+  if (-not $coordinatorPolicy.Contains($policyCase.Literal)) {
+    Fail "$($policyCase.Name) missing policy anchor '$($policyCase.Literal)'"
+  }
+  Write-Host "WORKER-PROMPT-REGRESSION: PASS $($policyCase.Name)"
+}
+
 $tempRoot = Join-Path ([IO.Path]::GetTempPath()) ("rmq-worker-prompt-" + [guid]::NewGuid().ToString("N"))
 New-Item -ItemType Directory -Path $tempRoot | Out-Null
 $oldGitConfigGlobal = $env:GIT_CONFIG_GLOBAL
