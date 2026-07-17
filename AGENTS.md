@@ -155,3 +155,11 @@
   away from premature loop breaks or side quests, integrating accepted work, and
   running the final gate. For public-facing milestones, it should also fold
   the worker's digestion note into `docs/DIGESTION_LOG.md` or a focused digest.
+- When the user explicitly opts into automated worker chaining, use the
+  `rmq-coordinator` audited completion loop: launch only preflighted
+  `READY_TO_SEND` prompts in fresh governed Codex tasks, attach one completion
+  monitor per task, independently audit exact commits, complete reusable
+  failure-mode feedback, and attach monitors to any automatically launched
+  successors. Do not use that opt-in to infer authority to merge, push, delete
+  branches/worktrees, or launch around unresolved dependencies or architecture
+  choices.

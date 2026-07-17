@@ -2859,3 +2859,99 @@ claim surface. Requiring a replayable deletion test and independent expected-
 type consumer prevents later refactors from silently removing a claimed
 machine-adequacy dependency while all current-name and current-type checks stay
 green.
+
+## WDD-20260717-003: permit opt-in audited worker chains
+
+Status: Accepted.
+Date: 2026-07-17.
+Scope: Codex task launch, completion monitoring, completed-worker audit,
+successor-prompt launch, model routing, and automation authority boundaries.
+
+Decision:
+
+1. When the user explicitly opts in, allow the RMQ coordinator to create a
+   fresh governed Codex worker task from a preflighted `READY_TO_SEND` prompt,
+   select a contract-appropriate model/reasoning level, and attach a completion
+   monitor to the owning coordinator task.
+2. While a worker is active, the monitor reads status without opening or
+   steering the task and emits only a terse update. Completion is determined
+   from task state, not silence or elapsed time.
+3. On completion, run the ordinary `rmq-coordinator` exact-commit audit,
+   including independent reconstruction, proportionate verification, mandatory
+   blind leaves, and the reusable failure-mode feedback loop.
+4. Automatically launch successor prompts only after semantic review and
+   failure-mode feedback are complete and `worker_prompt_preflight.ps1` marks
+   each artifact `READY_TO_SEND` against an exact base containing current
+   governance. Suppress duplicate handle/base/branch launches and attach a new
+   monitor to every launched successor.
+5. Stop for user direction when a next step requires merge/push authority,
+   destructive lifecycle work, missing runtime skills, an unresolved
+   dependency, a new proof-architecture choice, or unsafe/wasteful heavy-worker
+   concurrency.
+6. Default public theorem and nontrivial Lean work to `gpt-5.6-sol` with `max`
+   reasoning, use `xhigh` for bounded mechanically checked repairs, and use
+   `gpt-5.6-terra` with `xhigh` for read-only or lower-risk tooling work. Do not
+   select `ultra` without an explicit coordinator record that `max` is
+   inadequate for the exact task.
+
+Trigger and evidence:
+
+The user requested that M1 R3 be launched directly, monitored like E1 R2, and
+that either completion automatically trigger coordinator audit, next ambitious
+prompt engineering, successor task creation, and a successor monitor. The
+repository already had stable prompt preflight, runtime-skill preflight,
+failure-mode feedback, worker lifecycle, and exact-commit audit rules. Those
+gates make a bounded opt-in chain materially different from the unreviewed
+proof-writing loop rejected by WDD-20260708-002.
+
+The live E1 R2 monitor also exposed a scheduling risk: a 30-minute aggregate
+gate timed out and the worker immediately began the same full gate again with a
+one-hour ceiling. Automated chaining therefore inherits verification economics
+and must not treat repeated expensive commands or concurrent heavy workers as
+evidence of rigor.
+
+Rejected alternatives:
+
+- Keep requiring the user to copy every preflighted prompt and manually create
+  every completion timer.
+- Launch successors directly from worker self-reports without coordinator
+  reconstruction or failure-mode feedback.
+- Build an unconstrained recursive proof-writing daemon that can merge, push,
+  delete worktrees, or choose new proof architecture.
+- Use one global monitor for several tasks and risk confusing task identity or
+  deleting the wrong timer.
+- Route every task to `ultra` irrespective of scope, or route proof work to a
+  cheaper model merely because the check surface is automated.
+- Start duplicate or dependency-conflicting workers simply because a prompt
+  can be generated.
+
+Consequences:
+
+- Routine launch/monitor/audit/prompt handoffs no longer require manual copying
+  once the user opts in.
+- Mathematical acceptance remains coordinator-owned and source-grounded; task
+  creation and model choice add no proof evidence.
+- Each automation generation has a concrete stop condition and a distinct
+  monitor, preventing an invisible uncontrolled recursive loop.
+- Integration and destructive lifecycle actions remain explicit boundaries, so
+  an accepted candidate may still require user direction before a dependent
+  A1/V1 launch.
+- Model routing remains strong but cost-aware, with `ultra` exceptional rather
+  than routine.
+
+Evidence:
+
+- `.agents/skills/rmq-coordinator/SKILL.md` opt-in automated completion loop.
+- `AGENTS.md` automated-chain authority boundary.
+- `docs/internal/ADD_WORKFLOW_TOOLING_PLAN.md` reviewed-worker automation stage.
+- `docs/internal/WORKER_LIFECYCLE.md` one-monitor-per-worker lifecycle rule.
+- `scripts/project_skill_preflight.ps1` and
+  `scripts/worker_prompt_preflight.ps1` launch gates.
+- Live E1 R2 and M1 R3 coordinator task/monitor exercise on 2026-07-17.
+
+Publication-facing significance:
+
+Automation changes who performs coordination steps, not what the paper proves.
+Exact-commit audits, committed evidence, trust checks, and public theorem
+consumption remain unchanged; agent reports and monitor state remain process
+evidence outside the proof trust base.

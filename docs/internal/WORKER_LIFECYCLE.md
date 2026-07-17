@@ -90,6 +90,20 @@ After integration/rejection:
 Cleanup is a coordinator action. Do not automate destructive cleanup without a
 dry-run inventory and explicit approval.
 
+## Automated Completion Monitors
+
+When the user opts into the coordinator's audited worker chain, record one
+completion monitor per worker task together with its handle, task/thread ID,
+exact governed base, branch, and owning coordinator task. A monitor may read
+status but must not open, steer, or mutate an active worker.
+
+After completion, the owning coordinator must audit the exact candidate,
+finish reusable failure-mode feedback, and decide whether a successor prompt is
+`READY_TO_SEND`. Delete the completed monitor only after that disposition is
+reported and any launched successor has its own distinct monitor. A monitor is
+coordination state, not branch-retirement evidence, and never authorizes merge,
+push, branch deletion, or worktree cleanup.
+
 ## Audit Interaction
 
 Fresh blind auditors receive exact commits and an audit packet, not a live

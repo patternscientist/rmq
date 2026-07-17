@@ -148,6 +148,46 @@ completed-worker branch review, this coordinator skill owns the full cycle:
 audit the worker output, integrate accepted work, update public/docs/design
 surfaces, and produce the next ambitious prompt set.
 
+### Opt-In Automated Completion Loop
+
+When the user explicitly authorizes automatic worker launch and follow-up,
+turn the normal coordinator cycle into an audited worker chain:
+
+1. Create each worker as a separate user-owned Codex task at an exact governed
+   branch/ref. Put the full preflighted worker prompt in the initial message;
+   do not use a low-context subagent as a substitute for the requested task.
+2. Attach one completion monitor to the coordinator task. While the worker is
+   active, read status without opening or steering it and report only a terse
+   update. Never infer completion from inactivity or a quiet terminal.
+3. On completion, treat the response as untrusted, run the full completed-
+   worker audit at its exact commit, complete the failure-mode feedback loop,
+   and only then engineer successor prompts from the current roadmap.
+4. Automatically launch a successor only when its artifact is
+   `READY_TO_SEND`, `worker_prompt_preflight.ps1` passes, semantic review and
+   reusable-failure feedback are complete, its exact base contains current
+   governance, and no active task already owns the same handle/base/branch.
+   Attach the successor's completion monitor in the same operation.
+5. Delete the completed worker's monitor after its audit and successor-launch
+   disposition are delivered. Preserve task/branch evidence; automation does
+   not authorize destructive lifecycle cleanup.
+6. Stop and notify the user instead of launching when a prompt is only a
+   draft, an integration/merge or push is required, dependencies conflict,
+   the runtime skill inventory is unknown, the next step needs a new proof
+   architecture choice, or concurrent heavy workers would make the launch
+   unsafe or wasteful.
+
+Route nontrivial Lean proofs, public theorem repairs, and architecture-bearing
+work to `gpt-5.6-sol` with `max` reasoning by default. Use `xhigh` for tightly
+bounded mechanically checked repairs and `gpt-5.6-terra` with `xhigh` for
+read-only or lower-risk tooling work. Do not select `ultra` routinely; require
+an explicit coordinator record of why `max` is inadequate for that exact task.
+Model strength does not relax proof-sprint, audit, or verification gates.
+
+This loop automates launch, monitoring, audit, and next-prompt engineering. It
+does not by itself authorize merges, pushes, branch deletion, worktree cleanup,
+public-claim publication, or acceptance without the ordinary coordinator and
+blind-audit requirements.
+
 ## Integration
 
 For each completed worker branch:
