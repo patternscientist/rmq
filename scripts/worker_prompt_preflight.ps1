@@ -98,6 +98,56 @@ try {
     }
   }
 
+  $requiredSections = @(
+    "Worker identity:",
+    "Skill:",
+    "Checkout contract:",
+    "Roadmap contract:",
+    "Acceptance contract:",
+    "Forbidden shortcuts:",
+    "Context:",
+    "Completion:",
+    "Verification:",
+    "Report:"
+  )
+  foreach ($section in $requiredSections) {
+    if (-not [regex]::IsMatch(
+        $promptText,
+        "(?m)^$([regex]::Escape($section))\s*$"
+      )) {
+      Stop-Preflight "prompt is missing required populated section '$section'"
+    }
+  }
+
+  $requiredFields = @(
+    @{ Pattern = "(?m)^- Handle:\s*$([regex]::Escape($WorkerHandle))\s*$"; Name = "worker handle" },
+    @{ Pattern = "(?m)^- Fresh or returning worker:\s*(FRESH|RETURNING)\b.+$"; Name = "fresh/returning worker disposition" },
+    @{ Pattern = "(?m)^- Task mode:\s*$([regex]::Escape($TaskMode))\b.*$"; Name = "task mode" },
+    @{ Pattern = "(?m)^- Exact base/target commit:\s*$([regex]::Escape($workerBaseSha))\b.*$"; Name = "exact base field" },
+    @{ Pattern = "(?m)^- Node/join:\s*\S.+$"; Name = "roadmap node/join" },
+    @{ Pattern = "(?m)^- Local owned rung:\s*\S.+$"; Name = "local owned rung" },
+    @{ Pattern = "(?m)^- Roadmap-node closure condition:\s*\S.+$"; Name = "roadmap closure condition" },
+    @{ Pattern = "(?m)^- Goal:\s*\S.+$"; Name = "exact goal" },
+    @{ Pattern = "(?m)^- Required theorem/file/tool:\s*\S.+$"; Name = "required target" },
+    @{ Pattern = "(?m)^- Write scope:\s*\S.+$"; Name = "write scope" },
+    @{ Pattern = "(?m)^- Non-goals:\s*\S.+$"; Name = "non-goals" },
+    @{ Pattern = "(?m)^- Frozen acceptance IDs:\s*\S.+$"; Name = "frozen acceptance IDs" }
+  )
+  foreach ($field in $requiredFields) {
+    if (-not [regex]::IsMatch($promptText, $field.Pattern)) {
+      Stop-Preflight "prompt is missing populated $($field.Name)"
+    }
+  }
+
+  foreach ($reportLiteral in @(
+      "Status: CANDIDATE_COMPLETE",
+      "coordinator acceptance is still required"
+    )) {
+    if (-not $promptText.Contains($reportLiteral)) {
+      Stop-Preflight "prompt report contract is missing '$reportLiteral'"
+    }
+  }
+
   if ($TaskMode -eq "WRITE") {
     if ([string]::IsNullOrWhiteSpace($WorkerBranch)) {
       Stop-Preflight "write prompt requires an exact worker branch"
@@ -105,9 +155,13 @@ try {
     if (-not $promptText.Contains($WorkerBranch)) {
       Stop-Preflight "prompt does not contain worker branch '$WorkerBranch'"
     }
+    $rangeCheck = "git diff --check $workerBaseSha..HEAD"
+    if (-not $promptText.Contains($rangeCheck)) {
+      Stop-Preflight "write prompt is missing committed-range check '$rangeCheck'"
+    }
   }
 
-  $placeholderPattern = '\[(WORKER_HANDLE|SHORT_TASK_SUMMARY|SKILL_NAME|EXACT[^]]*|BASE_BRANCH_OR_COMMIT|WORKER_BRANCH|ROADMAP_NODE_AND_CONSUMER|ONE SENTENCE EXACT TARGET|TARGETED BUILD/CHECKS|PATHS|BOUNDARIES|ITEMS)\]'
+  $placeholderPattern = '\[(WORKER_HANDLE|SHORT_TASK_SUMMARY|SKILL_NAME|EXACT[^]]*|BASE_BRANCH_OR_COMMIT|WORKER_BRANCH|ROADMAP_NODE_AND_CONSUMER|ONE SENTENCE EXACT TARGET|TARGETED BUILD/CHECKS|PATHS|BOUNDARIES|ITEMS|FRESH / RETURNING[^]]*|WRITE / READ-ONLY|REPORT PATH / COORDINATOR SYNTHESIS TARGET|WHAT MUST HOLD[^]]*|LOCAL RUNG / ENTIRE ROADMAP NODE|REQ-01[^]]*)\]'
   if ($promptText -match $placeholderPattern) {
     Stop-Preflight "prompt still contains template placeholder '$($Matches[0])'"
   }

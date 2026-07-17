@@ -106,6 +106,13 @@ and run `scripts/worker_prompt_preflight.ps1` with the prompt file, exact
 governance and worker-base SHAs, worker handle/title, required skill, branch,
 and feedback-loop status. Treat a failed preflight as a launch blocker.
 
+Run the preflight for every prompt artifact you emit, including
+`DRAFT_DO_NOT_SEND`. A draft with feedback `PENDING` may pass the draft policy
+without gaining launch authority. If the read-only contract forbids even a
+temporary prompt artifact, report `NOT_RUN` and keep the prompt a non-launchable
+specification. `READY_TO_SEND` always requires a populated template artifact
+and a passing preflight; title/SHA/skill/branch literals alone are insufficient.
+
 Before launch, verify that the worker's exact base contains the current
 workflow skill and prompt policy. If proof and workflow branches are siblings,
 join them in an explicit integration base or require the worker to merge the

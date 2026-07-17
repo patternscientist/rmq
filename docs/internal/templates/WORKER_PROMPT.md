@@ -8,9 +8,11 @@ Coordinator launch metadata (do not paste into the worker prompt):
 - Failure-mode feedback: [COMPLETE / PENDING / NOT_APPLICABLE].
 - Worker handle, fresh/returning chat, exact model variant/reasoning/service
   mode, exact governance SHA, exact worker-base SHA, and branch.
-- For `READY_TO_SEND`, run `scripts/worker_prompt_preflight.ps1` and record its
-  passing result. A read-only audit with pending durable feedback may emit only
-  `DRAFT_DO_NOT_SEND`.
+- Run `scripts/worker_prompt_preflight.ps1` for every emitted prompt artifact
+  and record its result. `READY_TO_SEND` requires a passing populated-template
+  check. A read-only audit with pending durable feedback may emit only
+  `DRAFT_DO_NOT_SEND`; if its contract forbids even a temporary prompt file,
+  record `NOT_RUN` and do not grant launch authority.
 
 ```text
 Make the title of this chat exactly: ([WORKER_HANDLE]) [SHORT_TASK_SUMMARY]

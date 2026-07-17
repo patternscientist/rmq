@@ -2507,6 +2507,10 @@ Decision:
    for mandatory certificate-field consumption. Require a checked typed
    consumer that projects every mandatory field at the exact propositions and
    object arguments promised by the acceptance contract.
+7. Preflight every emitted prompt artifact, including drafts, and require the
+   populated worker-identity, checkout, roadmap, acceptance, verification, and
+   report contracts. Literal title/SHA/skill/branch presence is necessary but
+   not sufficient for `READY_TO_SEND`.
 
 Trigger and exact evidence:
 
@@ -2533,6 +2537,14 @@ well-formedness and supplied-store propositions. Deleting a field and repairing
 constructor initializers could therefore leave the advertised dependency
 unchecked.
 
+Fresh-context forward testing of governance `2c30a3a8417704a860187263aac70066e3b9ebc6`
+found that a seven-line prompt containing only the exact title, governance/base
+SHAs, skill, branch, and status literals passed `worker_prompt_preflight.ps1`.
+It omitted the roadmap target, frozen acceptance IDs, write scope, verification
+contract, and completion-report obligations. The same test also exposed an
+ambiguity about whether an emitted `DRAFT_DO_NOT_SEND` artifact should be
+preflighted.
+
 Regression mapping:
 
 - The exact-title and governed-base mutations are rejected by
@@ -2554,6 +2566,9 @@ Regression mapping:
   checked typed consumer projects every mandatory field at its exact
   proposition and object arguments; field-deletion, weakening, and sibling-
   substitution mutations must break that consumer.
+- The skeletal forward-test prompt is rejected unless every required template
+  section and load-bearing field is populated, including the committed-range
+  diff check and candidate-report status contract.
 
 Rejected alternatives:
 
@@ -2565,12 +2580,15 @@ Rejected alternatives:
 - Run only the predecessor validator and call it E1 executable evidence.
 - Treat record construction, field-name inventories, or opaque record passage
   as proof that every mandatory certificate field is load-bearing.
+- Treat a title/SHA/skill/branch token check as certification that the roadmap,
+  acceptance, verification, and report contracts were populated.
 - Preserve the Windows-only `powershell` invocation because local checks pass.
 
 Consequences:
 
 - A launch-ready repair prompt now has a reproducible readiness certificate and
-  one exact governance-containing base.
+  one exact governance-containing base, and the certificate rejects skeletal
+  prompts that omit the task's load-bearing contracts.
 - Read-only audits can satisfy a request for a repair specification without
   silently bypassing the failure-mode feedback loop.
 - Fully charged machine reviews must inspect executable bodies, code/data

@@ -22,10 +22,51 @@ function Write-Prompt(
 ) {
   @(
     $FirstLine
+    ""
+    "Worker identity:"
+    "- Handle: E1-01R1"
+    "- Requested title: (E1-01R1) Repair the machine"
+    "- Fresh or returning worker: RETURNING because this repairs its audited candidate."
+    ""
+    "Skill:"
     "Use `$rmq-proof-sprint before starting."
-    "Workflow-governance ref: $Governance"
-    "Exact base: $Base"
-    "Create branch exactly $Branch"
+    "- Workflow-governance ref: $Governance"
+    ""
+    "Checkout contract:"
+    "- Task mode: WRITE."
+    "- Exact base/target commit: $Base."
+    "- For this write task, create branch exactly $Branch in a fresh worktree."
+    ""
+    "Roadmap contract:"
+    "- Node/join: E1 repair before public M1 plus E1 composition."
+    "- Local owned rung: repair the audited small-step candidate."
+    "- Roadmap-node closure condition: coordinator acceptance after exact-commit audit."
+    "- Goal: close the frozen E1 repair contract."
+    "- Required theorem/file/tool: the checked E1 small-step capstone and validator."
+    "- Write scope: E1 source, its matrix, and directly required checks."
+    "- Non-goals: no A1 refactor or public merge."
+    ""
+    "Acceptance contract:"
+    "- Frozen acceptance IDs: E1-TEST, INV-INSTRUCTION-ATOMICITY, CHK-DIFF."
+    "- Record exact propositions and adversarial mutations in the matrix."
+    ""
+    "Forbidden shortcuts:"
+    "- No wrappers, self-oracles, uncounted data, or theorem-name-only closure."
+    ""
+    "Context:"
+    "- Read AGENTS.md, the assigned roadmap section, and direct consumers."
+    ""
+    "Completion:"
+    "- Continue until every frozen row closes or a formal obstruction is proved."
+    ""
+    "Verification:"
+    "- lake build"
+    "- git diff --check"
+    "- git diff --check $Base..HEAD"
+    ""
+    "Report:"
+    "- Begin candidate completion with Status: CANDIDATE_COMPLETE."
+    "- State that coordinator acceptance is still required."
   ) + $Extra | Set-Content -LiteralPath $Path -Encoding utf8
 }
 
@@ -117,6 +158,19 @@ try {
     $governanceRef $workerBase "codex/e1-repair"
   Invoke-Case "ready-governed" 0 $validPrompt $governanceRef $workerBase `
     "READY_TO_SEND" "COMPLETE" @("WORKER-PROMPT-PREFLIGHT: PASS")
+
+  $skeletalPrompt = Join-Path $tempRoot "skeletal-prompt.txt"
+  @(
+    "Make the title of this chat exactly: (E1-01R1) Repair the machine"
+    "Use `$rmq-proof-sprint before starting."
+    "Workflow-governance ref: $governanceRef"
+    "Exact base: $workerBase"
+    "Create branch exactly codex/e1-repair"
+    "Status: CANDIDATE_COMPLETE"
+    "coordinator acceptance is still required"
+  ) | Set-Content -LiteralPath $skeletalPrompt -Encoding utf8
+  Invoke-Case "skeletal-prompt" 2 $skeletalPrompt $governanceRef $workerBase `
+    "READY_TO_SEND" "COMPLETE" @("missing required populated section")
 
   $metadataTitle = Join-Path $tempRoot "metadata-title.txt"
   Write-Prompt $metadataTitle "Title: (E1-01R1) Repair the machine" `
