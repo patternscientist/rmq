@@ -519,3 +519,48 @@ sizes, dead-ends pruned, and idiomatic path-aligned namespaces with "Proposal" g
 live API, all with a flawless integrity record. What's left (B-tier proof idioms, shim
 retirement, the dependency decision) is the narrow "navigable → maximally idiomatic" gap,
 none of it debt. The project now reads like a real Lean CS-library component.
+
+## 2026-07-17 (C05 coordinator round) — E1 obstruction validated; M1 R4 completed by coordinator ✅/⚠️
+
+**Scope:** worker-output audits of E1-01R3 (`codex/e1-fully-charged-small-step-machine-r3`,
+candidate `7fe5b8b`) and M1-01R4 (`codex/m1-reviewer-native-machine-adequacy-r4`), plus
+roadmap-vs-goal reconciliation. Coordinator ran as user-authorized disclosed fallback
+(Claude runtime; `rmq-*` skills not in runtime catalog; governance `5f59455` not in
+checkout ancestry — read directly from tracked SKILL.md files instead).
+
+**E1-01R3 — obstruction VALID, kernel-verified.**
+`e1R3FamiliarMachineTarget_obstruction : ¬ E1R3FamiliarMachineTarget` and its unbounded
+same-block family independently reconstructed from source; quantifiers match the frozen
+contract; the frozen R3 wording matches the issued prompt verbatim; axioms
+`[propext, Classical.choice, Quot.sound]` independently re-checked at the exact clean
+candidate (129.6s, exit 0). Math: canonical block width is `2*(log2 n + 1)` = Θ(log n);
+the accepted 76-event route fetches the window in 4 unit-charged word reads and extracts
+min-excess event-silently; per-position charging + positional trace equality + one literal
+all-size total are jointly unsatisfiable. Verdict: the frozen E1 contract is
+mis-specified, not the machine unreachable. Coordinator fork (user decision pending):
+Option A — charge word-level primitives and state the transdichotomous word-RAM model
+publicly (recommended); Option B — four-Russians table route (larger refactor, optional
+hardening). Do not merge `7fe5b8b`; preserve as obstruction evidence for the amended
+E1 contract. **Process finding:** the R3 "frozen" matrix rows were committed atomically
+with the obstruction proof — pre-register frozen rows in the repair-base commit in future.
+
+**M1-01R4 — candidate completed at `947bde5` (coordinator tail).**
+Worker's uncommitted 5-file repair audited clean against all frozen R4 rows (exact
+registry, nonvacuous selectors, whole-block A01/A02 fidelity, bounded subprocesses,
+honest matrix with no phantom-gate claims). Worker was credit-blocked before the final
+gate; coordinator ran it: first aggregate failed solely on Q05 timing out at the 300s
+ceiling while focused Q05 rejects in 7.875s — recalibrated `StageDeadlineSeconds`
+default to 900s (hang bound, not performance assertion; WDD-20260717-007 and matrix row
+amended with C05 attribution), then the single permitted retry passed (exit 0, 3183.6s;
+41/40/1 semantics; 16/14/2 topology; claim drift 0 strict failures). Committed on the
+worker branch with both range checks and strict design check green. Coordinator
+acceptance + fresh-blind audit remain open. Note: production topology lint's runner pin
+changed boundary-ID tokens → three `REPLAY-*` anchors (strictly stronger; deliberate).
+
+**Roadmap reconciliation:** U3 is integrated into main but never formally accepted —
+A05 (twice) and A06 findings all resolved, but no fresh blind audit of the resolved
+state and the U3 matrix still says CANDIDATE_COMPLETE; recommendation: spend A07 at the
+commit where the cost-model amendment lands. The cost-model fork must be decided before
+E1-R4 or M1 headline phrasing freezes. Governance branch (12 commits,
+`4a60853..5f59455`) is content-safe but unmerged; `2c30a3a` (gate.ps1) and
+WDD-003/006 authority grants need an explicit user nod.
