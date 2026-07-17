@@ -69,7 +69,9 @@ cycles, an explicit user opt-in may authorize a reviewed worker chain: create a
 fresh governed Codex task from a preflighted `READY_TO_SEND` prompt, monitor it
 without steering, audit its exact completion independently, complete reusable
 failure-mode feedback, and launch only the next preflighted successor. Keep one
-monitor per worker, suppress duplicate handle/base/branch launches, and stop at
+logical monitor record per worker; when the app permits only one heartbeat on a
+coordinator task, multiplex those exact records rather than creating a cron
+workaround. Suppress duplicate handle/base/branch launches, and stop at
 unresolved integration, skill-runtime, dependency, concurrency, or architecture
 boundaries.
 

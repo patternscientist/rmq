@@ -2872,7 +2872,7 @@ Decision:
 1. When the user explicitly opts in, allow the RMQ coordinator to create a
    fresh governed Codex worker task from a preflighted `READY_TO_SEND` prompt,
    select a contract-appropriate model/reasoning level, and attach a completion
-   monitor to the owning coordinator task.
+   logical monitor record to the owning coordinator task.
 2. While a worker is active, the monitor reads status without opening or
    steering the task and emits only a terse update. Completion is determined
    from task state, not silence or elapsed time.
@@ -2883,7 +2883,7 @@ Decision:
    failure-mode feedback are complete and `worker_prompt_preflight.ps1` marks
    each artifact `READY_TO_SEND` against an exact base containing current
    governance. Suppress duplicate handle/base/branch launches and attach a new
-   monitor to every launched successor.
+   logical monitor record to every launched successor.
 5. Stop for user direction when a next step requires merge/push authority,
    destructive lifecycle work, missing runtime skills, an unresolved
    dependency, a new proof-architecture choice, or unsafe/wasteful heavy-worker
@@ -2897,6 +2897,11 @@ Decision:
    idempotent: inventory exact handle/base/branch ownership before creation; if
    task creation succeeds but monitor attachment fails, retain the task and
    retry only its monitor rather than creating a duplicate.
+8. When the platform permits only one heartbeat per coordinator task,
+   multiplex exact per-worker logical records in that heartbeat. Remove only a
+   completed worker's record after audit/disposition, update the heartbeat while
+   others remain, and delete it only when the watch set is empty. Do not create
+   a cron workaround.
 
 Trigger and evidence:
 
@@ -2922,8 +2927,8 @@ Rejected alternatives:
   reconstruction or failure-mode feedback.
 - Build an unconstrained recursive proof-writing daemon that can merge, push,
   delete worktrees, or choose new proof architecture.
-- Use one global monitor for several tasks and risk confusing task identity or
-  deleting the wrong timer.
+- Use an unstructured global monitor that lacks exact per-worker records and
+  risks confusing task identity or deleting the wrong watch entry.
 - Route every task to `ultra` irrespective of scope, or route proof work to a
   cheaper model merely because the check surface is automated.
 - Start duplicate or dependency-conflicting workers simply because a prompt
@@ -2935,8 +2940,9 @@ Consequences:
   once the user opts in.
 - Mathematical acceptance remains coordinator-owned and source-grounded; task
   creation and model choice add no proof evidence.
-- Each automation generation has a concrete stop condition and a distinct
-  monitor, preventing an invisible uncontrolled recursive loop.
+- Each worker has a concrete logical record and stop condition even when one
+  platform heartbeat multiplexes the watch set, preventing an invisible
+  uncontrolled recursive loop.
 - A coordinator restart or partial launch failure can be reconstructed from
   task/automation inventory without multiplying workers.
 - Integration and destructive lifecycle actions remain explicit boundaries, so
