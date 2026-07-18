@@ -238,3 +238,155 @@ Verified anchors for the B3 rows (this worktree, HEAD `d1d645e`):
 | CHK-B3-05 | "`claim_drift_scan.ps1`". | Verification | Exit 0 (0 strict failures). | Public surface. | - | `claim_drift_scan.ps1` exit 0 (762 hits, 0 strict failures), 10 s | Closed |
 | CHK-B3-06 | "`paper_topology_lint.ps1` (mutex-held; stale-doc-constant fixes allowed, structural failures stop-and-report)". | Verification | Exit 0 after at most stale-constant doc sync. | Public surface. | - | `paper_topology_lint.ps1` exit 0 (mutex-held, 94 s; PASS, 82 documentary identifiers / 48 paper identifiers resolved incl. the new `ReadWordOnly` anchor). First run failed only on the stale `SumLe142` documentary rows in the claim registries - stale-doc-constant sync applied per the allowed policy (commit 25a310b); no structural failure | Closed |
 | CHK-B3-07 | "cost harness executable". | Verification | `lake build rmq_succinct_classic_cost_harness` + `lake exe` exit 0 with the derived literal boolean true. | Executable validation. | - | `lake exe rmq_succinct_classic_cost_harness` exit 0, 55 s: every reported window `agrees=true`, `canonicalBoundIs207=true` (the executable computes the derived literal from the live route), `underCanonicalBound=true`; closing line `all reported windows agree with reference List Int RMQ semantics` | Closed |
+
+## B4 continuation rows (provenance hardening; frozen before implementation)
+
+Worker: B4-01 (same branch, continuing from B3 candidate HEAD `6e105a5`,
+full SHA `6e105a58872a643d952a3a1e26f5a9ffc60c0c4b`).
+Contract source: the B4-01 delegation prompt (Option B campaign,
+`OPTION_B_CHARGED_FRINGE_DESIGN.md` staging entry "B4 provenance
+regeneration").  Requirement wording below is verbatim from the delegation
+prompt.  Rows below are frozen at this commit; after this commit only
+evidence, status, and coordinator-approved amendments may change.  No closed
+B2/B3 row may be weakened.
+
+Verified anchors for the B4 rows (this worktree, HEAD `6e105a5`):
+
+- W19 generic surface (all segment-generic, coverage `segment < 23`):
+  `ReviewerReadOccurrenceReceipt` (`SuccinctFinalRAM.lean:6844`; fields:
+  `ProducesEventAt` with the composed-trace offset equation
+  `globalPos = prefixTrace.length + localPos` and folded `preState`
+  (`:3794`), segment->source map, region, `InvokesReviewerRead`,
+  component-local `localPos` getElem?, `ReviewerProducerReadPath`,
+  `source.Counted`);
+  `ConcreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance(_checked)`
+  (`:6870`/`:6879`); `repeated_equal_read_occurrences_have_distinct_receipts`
+  (`:6928`, no source enumeration, covers segments 21/22);
+  `ReviewerProducerClaim.HasClosedValidOccurrence` (`:6691`),
+  `HasSuccessfulClosedValidOccurrence` (`:6716`),
+  `hasOperationalProducer_of_successful` (`:6728`); manifest packet
+  `ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy`
+  (`SuccinctFinalSemanticProvenanceAdequacy.lean:20`, theorem `:42`,
+  headline `succinctRMQReviewerManifestSemanticAdequacy`); adequacy fields
+  `every_emitted_read_has_occurrence_provenance` /
+  `..eventValue_producer_provenance`
+  (`SuccinctFinalModelAdequacy.lean:133`/`:135`).
+- Per-source chains: aggregator
+  `concreteBPNativeSuccinctRMQReviewerSource_counted_successful_closed_valid_occurrence`
+  (`ReviewerReachability.lean:16`); small-cluster theorem +
+  `.fringeChunkTable`/`.selectChunkTable` cases
+  (`ReviewerReachabilitySmall.lean:2080-2180`); witnesses
+  `reviewerIncreasing_fringe_successful_claim` (`:2054`, claim
+  `(21, .canonicalClose)` on the increasing-16 input, closes 1/31),
+  `reviewerSingleton_selectChunkTable_successful_read` (`:1213`, segment-22
+  read of the singleton select close, lifted by
+  `firstSelectClose_read_mem_wholeQuery` `:1026`), claim builder
+  `reviewerClaim_successful_of_local_get` (`:80`).
+- Multi-consumer facts for segment 21: `ReviewerProducerReadPath` cases
+  parameterized by `concreteBPNativeFringeChunkTraceSegment` for the select
+  leg (`SuccinctFinalRAM.lean:5235-5288`), the rank leg (chunk segment
+  `concreteBPNativeRankCloseTraceSegmentBase + 4 = 21`, `:5943-5951`), and
+  the LCA fringe candidates (`:5309-5320`); compat labels
+  `concreteBPNativeSuccinctRMQReviewerSegmentLeaf? 21 = some .canonicalClose`
+  (`ReviewerPhysical.lean:126`), `consumer? .fringeChunkTable = some
+  .canonicalClose` (`:318`); shared-source precedent
+  `ReviewerSharedBPConsumer` (`ReviewerPhysical.lean:180-187`, claims
+  `ReviewerReachabilitySmall.lean:2201-2219`).
+- Segment constants `concreteBPNativeFringeChunkTraceSegment := 21` /
+  `concreteBPNativeSelectChunkTraceSegment := 22` (`Segments.lean:70`/`:73`);
+  legacy interior layout numerals `summary.minRel := 21` / `maxRel := 22`
+  (`Segments.lean:54-58`, distinct segment-numbering universe; the
+  canonical route emits interior reads only at `canonicalComponent = 20`).
+- Chunk geometry: `bpWordChunkCount c e = Nat.min ((e-1)/c + 1) 8`
+  (`ChargedWordChunks.lean:150`), `bpWordChunkCount_eq : 0 < c -> e <= 8*c
+  -> bpWordChunkCount c e = (e-1)/c + 1` (`:158`), `bpWordChunkCount_cov`
+  (`:167`), `machineWordBits_le_8_mul_bpFringeChunkBits` (`:39`);
+  `bpFringeChunkBits m = Nat.log2 m / 8 + 1` (`ChargedFringeChunks.lean:42`);
+  `machineWordBits n = Nat.log2 n + 1` (`SuccinctRank.lean:38`); toolchain
+  fact (M2 ledger, re-verified this session): kernel `decide`/`rfl` cannot
+  reduce `Nat.log2` literals; house patterns are `simp [Nat.log2]` at
+  literals and the `Nat.le_antisymm` sandwich
+  (`reviewerSingleton_log2_two`, `ReviewerReachabilitySmall.lean:467`).
+- o(n) chain: `bpFringeTableOverhead(_littleO)`
+  (`ChargedFringeTableFacts.lean:98`/`:103`),
+  `bpChunkSelectTableOverhead(_littleO)`
+  (`ChargedWordChunks.lean:647`/`:652`), payload-length EQUALITIES
+  `bpFringeChunkTable_payload_length` (`ChargedFringeTableFacts.lean:83`),
+  `bpChunkSelectTable_payload_length` (`ChargedWordChunks.lean:550`);
+  reviewer overhead sum + `_littleO` via `LittleOLinear.add`
+  (`FlatPayload.lean:1813`/`:1819`, `Asymptotics.lean:700`);
+  `overhead`/`overhead_littleO` public shape
+  (`SuccinctRMQClassic.lean:81`/`:946`).
+- Value dependency:
+  `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore`
+  (`SuccinctFinalStoreParam.lean:2388`), read-agreement record with
+  `fringeChunkTable`/`selectChunkTable` fields (`:1045`/`:1221-1228`),
+  `_store_parametric` (`:2550`),
+  `concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResultWithStore_value_eq_suppliedStoreEvaluator`
+  (`:2887`),
+  `concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_value_ne_of_suppliedStoreEvaluator_value_ne`
+  (`:2926`, headline `succinctRMQReviewerPhysicalValueDependency`),
+  `_ne_of_consumed_read_disagreement` (`:3070`); guarded list-facing copies
+  (`SuccinctRMQClassic.lean:486-506`); component corruption witnesses
+  `bpFringeChunkTable_corruption_changes_fringe_value`
+  (`ChargedFringeChunks.lean:1896`, slot 5, `some (1,0)` vs `some (3,0)`)
+  and `bpChunkSelectTable_corruption_changes_select_value`
+  (`ChargedWordChunks.lean:1187`, slot 0, `some 0` vs `some 1`); validation
+  fixtures `dropFirstConsumedPhysicalWord` / singleton `#guard` battery
+  (`Validation/SuccinctClassic.lean:120-236`), repeated-equal-read Bool
+  check `singletonRepeatedEqualReadPositionsOK` (`:245`, positions 0/12;
+  compiled `#guard`, NOT kernel evidence).
+- Whole-query program surface: `queryTraceResult`/`queryCosted` validity
+  guard (`SuccinctRMQClassic.lean:165-195`);
+  `WholeQueryProgram.evalGlobalWordTrace_getElem?_producer`
+  (`SuccinctFinalRAM.lean:3813`),
+  `WholeQueryInstr.evalGlobalWordTrace_getElem?_read_invocation` (`:5541`).
+- Navigation family: `concreteBPCloseNavigationFamily_profile`
+  (`BPNavigationPublic.lean:1666`), execution stories
+  `concreteBPCloseNavigationGlobalTrace_execution_story` (`BPNavigationRAM.lean:2295`)
+  / `_bounded_execution_story` (`:2365`) + headline abbrevs; nav store
+  segment map (`BPNavigationRAM.lean:816-887`, segments 21/22 = chunk/select
+  tables after B3, 26+ dead); doc `docs/BP_NAVIGATION_FRONTIER.md`
+  (snapshot 2026-07-01; audit findings in the REQ-B4-08 row).
+- Bookkeeping targets: `docs/PAPER_CLAIM_CORRESPONDENCE.md:7` (dead
+  `...NonSyntheticWeightSumLe142` alias in a current row) and `:14` (stale
+  "20-source universe" / "fresh segment 21"); B3 matrix REQ-B3-07 evidence
+  wording "manifest nodup over the 23 sources" (actual: 22 sources, 23
+  segments, segments 0 and 19 sharing `.sharedBPCode`);
+  `concreteBPNativeSelectCloseInterpretedCosted_cost_le_thirteen` /
+  `concreteBPNativeRankCloseInterpretedCosted_cost_le_four`
+  (`SuccinctFinalRAM.lean:8717`/`:8728`, both bound the RETIRED Register
+  evaluators; repo-wide grep: zero consumers, not present in any headline,
+  script anchor, or doc claim table, hence not frozen public identities);
+  stale doc-comments `SuccinctFinalRAM.lean:6648-6649` ("0 through 20"),
+  `ReviewerReachabilitySmall.lean:2072` ("thirteen always-small"),
+  `docs/internal/RMQ_FINAL_ROADMAP.md:131-141` ("20-source universe",
+  "Fresh segment 21 is rejected"); stale model doc
+  `docs/PAPER_MODEL_ADEQUACY.md` (76-literal, "20-source universe",
+  "fresh segment 21", `wordRank`/`wordSelect` event vocabulary - all
+  superseded by the B3 readWord-only route at 207).
+
+| ID | Exact frozen requirement | Scope | Evidence needed (exact proposition/check) | Named consumer and identity/composition chain | Anti-vacuity challenge | Evidence obtained | Status / residual gap |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| REQ-B4-01 | "Bookkeeping repairs from the C05 round-3 reconstruction audit (first commit after the freeze): fix `docs/PAPER_CLAIM_CORRESPONDENCE.md` row listing dead identifier `...NonSyntheticWeightSumLe142` -> the live `SumLe207` name; fix the REQ-B3-07 evidence wording '23 sources' -> '22 sources (23 segments)'; rename `concreteBPNativeSelectCloseInterpretedCosted_cost_le_thirteen` and `..._cost_le_four` to `...Register...` names for name/subject consistency (they now bound the RETIRED register evaluators - verify consumers first; if a rename would touch a frozen public identity, add correctly-named aliases instead and record the decision)." | Docs+Local | (a) `PAPER_CLAIM_CORRESPONDENCE.md:7` cites `...NonSyntheticWeightSumLe207`; (b) the REQ-B3-07 evidence cell reads "22 sources (23 segments)"; (c) the two theorems renamed to `concreteBPNativeSelectCloseRegisterInterpretedCosted_cost_le_thirteen` / `concreteBPNativeRankCloseRegisterInterpretedCosted_cost_le_four` (consumer check recorded: zero consumers, no frozen-identity hit, so direct rename, no alias needed); library green. Adjacent stale-provenance doc repairs in the same commit (recorded here as coordinator-visible additions): `PAPER_CLAIM_CORRESPONDENCE.md:14` source/segment counts, `SuccinctFinalRAM.lean:6648` docstring, `ReviewerReachabilitySmall.lean:2072` docstring, `RMQ_FINAL_ROADMAP.md` W19 paragraph counts, clarifying comment at the legacy `summary.minRel/maxRel := 21/22` numerals in `Segments.lean` (shadowing hazard). | Coordinator audit; `claim_drift_scan.ps1` + `paper_topology_lint.ps1` gates. | The rename must not change any statement (same types over the Register evaluators); the doc fixes must not weaken any current claim row (constants/counts only). | | Open |
+| REQ-B4-02 | "W19-standard occurrence provenance for the two new table sources (fringe chunk table segment 21, select chunk table segment 22): for every indexed read of these tables in the accepted whole-query execution, the same provenance data the accepted W19 packets provide for existing sources - global occurrence, producing program instruction occurrence, folded prefix state, component-local position, exact invocation parameters, source, composed-trace offset". | Local+public | Named checked corollaries specializing the generic packet to the two table segments: `(concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult shape left right).trace[globalPos]? = some (.readWord 21 index word?) -> ReviewerReadOccurrenceReceipt shape left right globalPos 21 index word?` (stated via `concreteBPNativeFringeChunkTraceSegment`) and the segment-22 twin, derived FROM `concreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance_checked` (not sibling re-proofs); PLUS closure of the identified multi-consumer gap: segment 21 is operationally read by all three `ReviewerReadLeaf` constructors but only the `(21, .canonicalClose)` successful claim exists - prove `forall leaf : ReviewerReadLeaf, (ReviewerProducerClaim.mk concreteBPNativeFringeChunkTraceSegment leaf).HasSuccessfulClosedValidOccurrence` (new `(21, .selectClose)` and `(21, .rankClose)` claims via `reviewerClaim_successful_of_local_get` on actual executions), with the compat single-label `consumer?`/`SegmentLeaf?` fields documented (doc-comment caveat mirroring the 17-19 note) and unchanged in value (closed B2/B3 rows freeze them). | Paper chain: `every_emitted_read_has_occurrence_provenance` adequacy field; headline `succinctRMQReviewerEveryReadOccurrenceProvenance`; manifest packet extension (REQ-B4-03 row). | The corollaries must be derived from the same generic packet the paper cites (no sibling packet); the new per-leaf claims must use the SAME `HasSuccessfulClosedValidOccurrence` predicate as accepted sources (P = Q by identity, same quantifiers) and cite actual reads of actual closed valid executions; a claim for a leaf whose instruction never reads segment 21 would be false - all three must be genuine. | | Open |
+| REQ-B4-03 | "including B2's explicitly deferred item: occurrence granularity for REPEATED EQUAL fringe/table reads (distinct receipts for repeated equal reads, matching `repeated_equal_read_occurrences_have_distinct_receipts`). Extend the checked provenance packet(s) consumed by the paper chain rather than creating sibling packets." | Local+public | Checked witness theorems: for a concrete valid query there exist `firstPos != secondPos` and one identical successful `readWord 21 index (some word)` event value at both positions of the accepted whole-query trace, with both `ReviewerReadOccurrenceReceipt`s obtained via `repeated_equal_read_occurrences_have_distinct_receipts` (and the segment-22 twin); the two positions must arise from two distinct program-instruction occurrences (composed-trace offsets differ), exhibited by indexed `getElem?` facts; NEW fields carrying these facts added to `ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy` (the query-independent W19 packet the paper chain consumes via `succinctRMQReviewerManifestSemanticAdequacy`), record construction regenerated - an extension of the existing packet, no sibling packet. | Paper chain: `succinctRMQReviewerManifestSemanticAdequacy` headline + `succinctRMQReviewerRepeatedEqualOccurrencesRemainDistinct` (`Headlines/RMQ.lean:291`); doc row `PAPER_CLAIM_CORRESPONDENCE.md:14`. | Position-collapse trap: `event \in trace` alone cannot distinguish the two occurrences - the witness must exhibit indexed `getElem?` facts at two distinct positions; offset trap: the positions must be justified by the composed-trace offset decomposition (prefix-length arithmetic), not by kernel evaluation of the whole trace (ledger: `Nat.log2` blocks kernel reduction; generic-lemma pattern); packet trap: a sibling record instead of extending the consumed packet fails the row. | | Open |
+| REQ-B4-04 | "Chunk-width regime theorems (A07 seed question 1, made checked): two-sided bounds at ALL sizes including n = 0 and n = 1 - (a) 8-chunk coverage: `machineWordBits <= 8 * bpFringeChunkBits` already exists; add the small-n corner theorems making the cap identity explicit at n = 0/1". | Local | Checked corner theorems: pinned literals `bpFringeChunkBits 0 = 1`, `bpFringeChunkBits 1 = 1`, `machineWordBits 0 = 1`, `machineWordBits 1 = 1`; an ALL-size cap identity `bpWordChunkCount (bpFringeChunkBits m) (machineWordBits m) = (machineWordBits m - 1) / bpFringeChunkBits m + 1` (via `bpWordChunkCount_eq` + `machineWordBits_le_8_mul_bpFringeChunkBits` + `bpFringeChunkBits_pos`, no size hypothesis); two-sided companions at all m: `1 <= bpWordChunkCount (bpFringeChunkBits m) (machineWordBits m)` and coverage `machineWordBits m <= bpWordChunkCount (bpFringeChunkBits m) (machineWordBits m) * bpFringeChunkBits m` (from `bpWordChunkCount_cov`); the m = 0 / m = 1 corners evaluated to the explicit numeral (`= 1` / `= 2` per hand computation, checked). | A07 seed question 1; documentation-grade checked facts next to `bpWordChunkCount_eq` (`ChargedWordChunks.lean`). | Corner proofs kernel-checked without `native_decide` and without relying on `decide` reducing `Nat.log2` (blocked); n = 0 and n = 1 must be literal conclusions, not instances of a vacuous hypothesis. | | Open |
+| REQ-B4-05 | "(b) genuine o(n): the select-table row bound must not rest only on the overhead DEFINITION - prove a direct theorem that the total new-table bit count is bounded by the concrete littleO witness chain (exhibit the `LittleOLinear` instance applied, and add explicit numeric sanity theorems at small sizes, e.g. table words at n = 4/16/256 computed by kernel `decide`/`Nat.decEq` where cheap - NO native_decide, and heed the ledger warning: no concrete-record defeq at large shapes; use the generic-lemma pattern)." | Local | Direct checked theorem over the ACTUAL payload lengths (the objects the execution reads and the space theorem counts), not the overhead defs: `SuccinctSpace.LittleOLinear (fun n => (bpFringeChunkTable (bpFringeChunkBits (2*n))).payload.length + (bpChunkSelectTable (bpFringeChunkBits (2*n)) false).payload.length)`, proved by transporting along `bpFringeChunkTable_payload_length` / `bpChunkSelectTable_payload_length` and applying the named instance `bpFringeTableOverhead_littleO.add bpChunkSelectTableOverhead_littleO` (`LittleOLinear.add` exhibited); plus numeric sanity theorems at small sizes: pinned literals `bpFringeChunkBits (2*4) = 1`, `bpFringeChunkBits (2*16) = 1`, `bpFringeChunkBits (2*256) = 2` (log2 house pattern) and the resulting table word counts / payload lengths (`bpFringeChunkRowCount`, `bpChunkSelectRowCount`, entry widths, products) as kernel-checked equations (`decide`/`Nat.decEq`/`rfl` AFTER the log2 rewrite; no `native_decide`; no concrete-record defeq at large shapes). | `overhead_littleO` public chain (`SuccinctRMQClassic.lean:946` -> `FlatPayload.lean:1819`); A07 seed question 1. | Definition-circularity trap: a theorem about `bpFringeTableOverhead + bpChunkSelectTableOverhead` alone restates the definition - the direct theorem must be about the stored tables' payload lengths; sanity numerals must match hand computation (n = 256 is the first size where the fringe chunk width leaves 1: `bpFringeChunkBits 512 = 2`). | | Open |
+| REQ-B4-06 | "Charge-policy uniformity (A07 seed question 2): extend store-parametric value-dependency coverage to the new tables at the WHOLE-QUERY level - a checked theorem that a disagreement on a consumed table address changes the whole-query execution (the B2/B3 corruption witnesses are component-level; lift to the accepted route, following `concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_value_ne_of_suppliedStoreEvaluator_value_ne`'s pattern)." | Local+public | Checked theorems: for each new table segment s in {21, 22}, a concrete valid witness query and a store pair (the canonical global store vs the same store mutated ONLY at segment s, at an address the execution actually consumes - consumed-read fact exhibited) such that the whole-query executions differ, stated over `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore` (the accepted route's supplied-store evaluator): at minimum full-`TraceResult` inequality with the consumed-read disagreement explicit (following `_ne_of_consumed_read_disagreement`), and at the answer projection (`.value` inequality) where attainable via the component corruption values threaded through the `_eq_of_agree`/`_store_parametric` surface; the projection level actually proven is recorded honestly in this row. | Charge policy story (REQ-B4-07 doc section); headline `succinctRMQReviewerPhysicalValueDependency` chain; flat-physical/list-facing transfer per the quoted pattern theorem. | Decorative-read trap: the mutated address must be in the actual consumed footprint of the witness execution, not an unread cell; log-projection trap: a trace-log-only inequality presented as answer dependency fails - state exactly which projection differs; kernel trap: no whole-trace kernel evaluation (generic-lemma pattern). | | Open |
+| REQ-B4-07 | "Additionally write the model-statement doc section (docs/PAPER_MODEL_ADEQUACY.md or successor): the declared charge policy (store reads are the only charged trace events; bounded register decode is uncharged) stated explicitly, with the readWord-only vocabulary theorem and the E1 plan referenced; list what remains uncharged and why that is now a bounded-per-step register computation rather than an unbounded scan (the E1 machine will charge it)." | Docs | `docs/PAPER_MODEL_ADEQUACY.md` gains an explicit charge-policy section citing `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only` (headline `succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`) and the E1 plan, listing the uncharged categories and the bounded-per-step justification (8-chunk cap / literal-bounded fixed-shape folds; the old event-silent per-position scans are gone from the charged route); the doc's stale 76-literal / 20-source / fresh-segment-21 / `wordRank`-`wordSelect` vocabulary passages synced to the live 207 readWord-only route (stale-constant sync policy; no public statement shape weakened; broader prose migration stays B5). | Paper-facing model statement; `claim_drift_scan.ps1`. | The charge policy must match the checked theorems cited (readWord-only vocabulary is a checked structural claim, not prose); uncharged items must be enumerated, not waved at; the E1 reference must state that E1 charges them. | | Open |
+| REQ-B4-08 | "Navigation legacy consistency (A07 seed question 3): audit the navigation family after B3's segment-22 repurposing and rank-bridge deletion - confirm no registered navigation execution story (`concreteBPCloseNavigationFamily_profile`, stories referenced in `docs/BP_NAVIGATION_FRONTIER.md`) changed statement or counts a region its store cannot read; repair or explicitly quarantine with docs + DD entry if inconsistent." | Audit | Recorded audit (worklog + this row): statement-level diff of `concreteBPCloseNavigationFamily_profile`, `concreteBPCloseNavigationGlobalTrace_execution_story`, `_bounded_execution_story` and their headline abbrevs across `d1d645e..6e105a5` (statements unchanged or every change classified); nav store segment map inventoried against every counted nav region (no counted-but-unreadable region beyond deliberate padding slack; the readable-but-uncounted chunk tables at 21/22 classified against the profile's cost model); `BP_NAVIGATION_FRONTIER.md` staleness classified and repaired (stale lines 3/231-233/235 identified in the session audit); outcome = repair (doc sync) and/or explicit quarantine note with DD entry; no statement weakened. | Navigation public surface (`RMQBPNavigation` root); `bp_navigation_axiom_check.lean`. | The audit must compare STATEMENTS (types), not proof bodies; "counts a region its store cannot read" must be checked against the store's actual `readWord?` map, not source labels; the profile-vs-story cost-model split (profile over `concreteBPCloseNavigationCosted`, stories over `concreteBPCloseNavigationCanonicalCosted`, no registered bridge after the B3 deletion) must be documented, not papered over. | | Open |
+| REQ-B4-09 | Process (standing): "freeze new matrix rows FIRST in their own commit, before any implementation edit"; "DD/worklog discipline (continue B3_WORKLOG.md or start B4_WORKLOG.md - record the choice)"; "exact quoted propositions + P/Q pairs in evidence"; "milestone commits + worklog checkpoints". | Process | This matrix commit precedes every B4 implementation commit; `docs/internal/B4_WORKLOG.md` created (decision: separate file, `B3_WORKLOG.md` left frozen as the closed B3 record - recorded in DD-20260718-003) and updated per milestone with the verification ledger; DD entries for each design choice with alternatives. | Coordinator audit of branch history. | `git log` order check at final report. | | Open |
+| REQ-B4-10 | FORBIDDEN (standing, verbatim): "no sorry/admit/axiom/native_decide/partial/unsafe/implemented_by/Mathlib; library green at every commit; no weakened closed rows; no renamed/deleted frozen public identities (aliases allowed); no asserted constants; no dead sources; matrix rows frozen before implementation". | Inherited hygiene | `rg` hygiene battery with no NEW hits in touched files; `lake build RMQ` green at every commit (ledger); every closed B2/B3 row's evidence object unchanged or strengthened; the only renames are the two consumer-free non-frozen Register cost lemmas (REQ-B4-01); no new sources, stores, or asserted constants introduced by this rung. | All touched modules. | Diff review of frozen identities at the final battery; deliberate grep for new threshold/readiness dispatch: none expected (this rung adds no route code). | | Open |
+| INV-B4-PROVENANCE | Inherited (completion gate, provenance information preservation): "An occurrence-level claim must retain a global position or equivalent multiplicity-preserving decomposition, the producing instruction, the actual folded pre-state, and the local occurrence that maps to that global occurrence. If a component path is claimed for that invocation, its parameters must be equal to those computed by the producing instruction". | Inherited | The REQ-B4-02/03 evidence objects are `ReviewerReadOccurrenceReceipt`-level (indexed `getElem?`, `ProducesEventAt` offset decomposition, `InvokesReviewerRead` parameter equality), never bare `event \in trace`. | REQ-B4-02/03. | Membership-only evidence for an occurrence claim fails the row. | | Open |
+| INV-B4-VALUE-DEPENDENCY | Inherited INV-VALUE-DEPENDENCY: "returned values and routing decisions depend on actual charged reads"; evidence conclusions "about the returned value, decisive state/route, or a refinement chain", with "evidence quantification and validity domain" matched and recorded. | Inherited | REQ-B4-06 conclusions state exactly which projection differs (`TraceResult` vs `.value`) and exhibit the witness's consumed-read fact; the component corruption values are cited where the `.value` chain is used. | REQ-B4-06. | A trace-log-only inequality presented as answer dependency fails; record the projection level honestly. | | Open |
+| INV-B4-SEMANTIC-NONVACUITY | Inherited INV-SEMANTIC-NONVACUITY: P/Q parity for every new claim; predicates derived from the operational construction. | Inherited | New per-leaf claims and packet fields use the EXISTING predicates (`HasSuccessfulClosedValidOccurrence`, `ReviewerReadOccurrenceReceipt`) - P = Q by identity; no new predicate is defined `True` or by enumeration. | REQ-B4-02/03. | Defining a new weaker predicate for the new sources fails the row. | | Open |
+| INV-B4-ALL-SIZE | Inherited INV-ALL-SIZE: all-size statements without hidden dispatch; corner cases n = 0/1 exercised. | Inherited | REQ-B4-04 all-size cap identity carries no size hypothesis beyond the proven-true geometry; corners n = 0/1 are explicit theorems; REQ-B4-05 littleO statement quantifies all n past its threshold per `LittleOLinear`. | REQ-B4-04/05. | A corner theorem proven only for n >= 2 fails. | | Open |
+| INV-B4-CATEGORY-SEPARATION | Inherited INV-CATEGORY-SEPARATION: payload bits / proof fields / model ticks / Lean runtime distinct; specifically compiled `#guard` validation checks are NOT kernel evidence. | Inherited | Every REQ-B4 row's closure object is a checked theorem (kernel); Validation `#guard` mirrors may be added as fixtures but are never cited as closure evidence. | All rows. | Citing a `#guard` as theorem-level evidence fails the row. | | Open |
+| CHK-B4-01 | "`lake build RMQ`" green at every commit; final battery also "`lake build RMQPaper RMQExamples`". | Verification | Exit 0 per commit (ledger with durations). | Touched modules. | - | | Open |
+| CHK-B4-02 | "hygiene rg (no NEW hits) + native_decide scan". | Verification | Forbidden-token and `native_decide|ofReduceBool` scans over touched files: no new hits. | Hygiene. | - | | Open |
+| CHK-B4-03 | "cost harness". | Verification | `lake exe rmq_succinct_classic_cost_harness` exit 0, derived-literal boolean true. | Executable validation. | - | | Open |
+| CHK-B4-04 | "`git diff --check` + `git diff --check 6e105a5..HEAD`". | Verification | Exit 0. | Hygiene. | - | | Open |
+| CHK-B4-05 | "`design_decision_check.ps1 -Strict -Base 6e105a58872a643d952a3a1e26f5a9ffc60c0c4b`". | Verification | Exit 0. | Process. | - | | Open |
+| CHK-B4-06 | "`claim_drift_scan.ps1`". | Verification | Exit 0 (0 strict failures). | Public surface. | - | | Open |
+| CHK-B4-07 | "`paper_topology_lint.ps1`" (mutex-held; "Do NOT run gate.ps1"). | Verification | Exit 0 after at most stale-constant doc sync. | Public surface. | - | | Open |

@@ -2976,3 +2976,93 @@ REQ-B3-13).
 
 Supersedes: none (implements the M5 plan of DD-20260717-005 /
 DD-20260718-001).
+
+## DD-20260718-003: B4 provenance-hardening shape (packet extension, per-leaf segment-21 claims, positional repeated-read witnesses)
+
+Status: Proposed
+Date: 2026-07-18
+Scope: B4 rung (worker B4-01, branch `claude/b1-b2-charged-fringe-tables`,
+base `6e105a5`): provenance hardening over the B2/B3 charged-table route.
+Matrix rows REQ-B4-01..10 frozen this commit.
+
+Decision:
+
+1. Worklog: `B3_WORKLOG.md` stays frozen as the closed B3 record; B4 logs
+   in `docs/internal/B4_WORKLOG.md` (mirrors the DD-20260717-005 item-6
+   precedent; the closed B3 rows reference `B3_WORKLOG.md` by name and
+   frozen rows may not be edited).
+2. W19 hardening extends the EXISTING packets, never siblings: named
+   per-segment corollaries for segments 21/22 are derived from
+   `concreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance_checked`;
+   the repeated-equal-read witnesses and the segment-21 per-leaf claims
+   land as NEW fields of
+   `ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy` (the
+   query-independent packet consumed by the paper chain), whose record
+   construction is regenerated in the same commit.  Alternative (a
+   standalone `B4ProvenancePacket` record): rejected - the delegation
+   contract forbids sibling packets and the paper chain already consumes
+   the manifest packet once, without a `ValidRange` premise.
+3. Segment-21 multi-consumer accounting: segment 21 is operationally read
+   by all three `ReviewerReadLeaf`s (select leg chunk pops, rank leg chunk
+   segment `base + 4 = 21`, LCA fringe candidates).  Close the gap with
+   `forall leaf : ReviewerReadLeaf,
+   (ReviewerProducerClaim.mk 21 leaf).HasSuccessfulClosedValidOccurrence`
+   using the SAME predicate as accepted sources.  The compat single-labels
+   (`SegmentLeaf? 21 = some .canonicalClose`, `consumer? .fringeChunkTable
+   = some .canonicalClose`) are kept UNCHANGED (closed B2/B3 rows record
+   them) and documented with a caveat comment mirroring the segments-17-19
+   note.  Alternative (re-label `consumer? := none` + a shared-consumer
+   structure like `ReviewerSharedBPConsumer`): rejected - it would edit
+   evidence objects of closed rows (REQ-B2-04) and the house treats
+   `consumer?` as a primary-consumer compat label with a documented
+   multi-reader caveat (the 17-19 precedent).
+4. Repeated-equal-read witnesses are POSITIONAL (indexed `getElem?` at two
+   distinct whole-trace positions with the composed-trace offset
+   decomposition), obtained on the singleton query `[7], 0, 1` whose two
+   select-close instruction occurrences run at the same index; receipts
+   via `repeated_equal_read_occurrences_have_distinct_receipts`.
+   Alternative (membership-only or compiled `#guard` evidence): rejected -
+   the completion gate's provenance-information-preservation clause
+   requires occurrence-level position retention, and `#guard` is compiled
+   evaluation, not kernel evidence.
+5. Chunk-width corners and the direct o(n) theorem are stated over the
+   actual stored-table payload lengths (transported along the
+   `_payload_length` equalities) with the `LittleOLinear.add` witness
+   exhibited; small-size numerals go through the log2 house pattern
+   (`simp [Nat.log2]` / sandwich) because kernel `decide` cannot reduce
+   `Nat.log2` (M2 ledger, re-verified).
+6. Bookkeeping renames: `concreteBPNativeSelectCloseInterpretedCosted_cost_le_thirteen`
+   -> `concreteBPNativeSelectCloseRegisterInterpretedCosted_cost_le_thirteen`,
+   `concreteBPNativeRankCloseInterpretedCosted_cost_le_four` ->
+   `concreteBPNativeRankCloseRegisterInterpretedCosted_cost_le_four`
+   (both bound the RETIRED Register evaluators; repo-wide grep found zero
+   consumers and no frozen-registry hits, so direct rename without alias;
+   the delegation's alias fallback is not needed).
+7. Navigation (REQ-B4-08): audit outcome recorded in the matrix row - no
+   inconsistent statements; repair = `docs/BP_NAVIGATION_FRONTIER.md`
+   stale-line sync plus an explicit quarantine note that the nav PROFILE
+   (over `concreteBPCloseNavigationCosted`) and the nav EXECUTION STORIES
+   (over `concreteBPCloseNavigationCanonicalCosted`) are distinct cost
+   models with no registered bridge after the B3 deletion, and that the
+   chunk tables the stories read at segments 21/22 are counted by the
+   reviewer route, not the nav profile overhead.  Alternative (building
+   the missing nav-side counted-space bridge now): rejected as out of the
+   B4 contract; recorded as frontier work.
+
+Context: B4 mission (delegation prompt) - provenance-hardening pass over
+the new charged-table route; matrix REQ-B4-01..10.
+
+Rationale: minimal surface, maximal reuse of the checked generic W19
+machinery; every new claim uses predicates already consumed by the paper
+chain, so P = Q by identity for the mutation rows.
+
+Consequences: manifest packet type gains fields (strengthening; statement
+name and headline alias unchanged); no route code, store, or constant
+changes in this rung.
+
+Evidence: matrix rows REQ-B4-01..10 (frozen this commit); implementation
+evidence accrues in `B4_WORKLOG.md` per milestone.
+
+Follow-up: M2..M8 per the worklog milestone list.
+
+Supersedes: none (extends the B2/B3 provenance rows to the B4 standard).
