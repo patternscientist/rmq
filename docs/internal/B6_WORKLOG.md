@@ -460,8 +460,8 @@ they are counted, and the cap simply had room.
   on all 17 inputs (0 `false`), all windows agree with reference semantics.
 - `git diff --check`: clean. `git diff --check d90b062..HEAD`: clean.
 - `design_decision_check.ps1 -Strict -Base d90b062...`: exit 0 (37 changed files).
-- `claim_drift_scan.ps1`: exit 0 (737 hits, 0 strict failures - identical to
-  the pre-swap baseline, as expected when the literal does not move).
+- `claim_drift_scan.ps1`: exit 0 (738 hits, 0 strict failures
+  (pre-swap baseline 737; the one added hit is this rungs own doc text)).
 - `paper_topology_lint.ps1`: PASS (83 broad, 49 paper identifiers resolved).
 - `gate.ps1`: NOT run, per the delegation prompt.
 
