@@ -749,11 +749,81 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
   `hLongSeed`/`hSparseSeed`/`hDenseLen` from the canonical layout facts
   (agreement lemmas listed at `ChargedRankSelectWiring.lean:656`).
 
-## RESUME POINT (M3c-6g: canonical select form) — FULL INVENTORY, VERIFIED
+## M3c-6g: CANONICAL SELECT FORM COMPLETE (`E1SelectCanonical.lean`)
 
-Everything below was inventoried at HEAD by a read-only survey this
-session.  It is recorded verbatim so the next session does NOT have to
-re-derive it.  Nothing here is implemented yet.
+The inventory in the RESUME POINT section below is now DISCHARGED — every
+one of its predictions held, including the two it flagged as unverified.
+Landed in commits `d9ecd68` (prep) and this one.
+
+- PREP (`d9ecd68`), two structural cleanups the inventory called for:
+  - NEW `RMQ/Core/SuccinctFinal/RAM/RankSamplePresence.lean`: the
+    three-seed presence statement `twoLevelRankData_sample_words_present`
+    and its helper `fixedWidthNatTable_word_present_of_entry_present`,
+    de-privatized and SINGLE-SOURCED.  The two byte-identical `private`
+    copies in `ReviewerReachabilityLong.lean` (which named its copy
+    `..._present_long`) and `ReviewerReachabilitySparse.lean` are DELETED
+    and both files now import the shared module.  This is the
+    coordinator-endorsed option (de-privatize one, delete the other); a
+    shared module was preferred over de-privatizing in one sibling
+    because Long and Sparse are independent witness files and neither
+    should have to import the other.  Import is
+    `RMQ.Core.GenericSelect.RAM`, NOT `RMQ.Core.SuccinctRank`:
+    `superSampleWords`/`blockSampleWords` are defined at
+    `GenericSelect/RAM.lean:165,176`, not in `SuccinctRank.lean`.
+  - `E1RankCanonical.lean`: `builtRankData_wordOffset_le` GENERALIZED to
+    `twoLevelRankData_wordOffset_le`, stated for any
+    `TwoLevelPayloadLiveStoredWordRankData` given `hwords` (its payload
+    store is the sentinel-padded chunking of its own bits).  The old
+    shape-specialized name is retained as a one-line instance, so no
+    consumer moved.  The inventory's plan (textual substitution of the
+    body with the payload renamed) worked verbatim.
+- NEW `RMQ/Core/WordRAM/E1SelectCanonical.lean` (added to `RMQ.lean`):
+  - `canonical_longSeed`, `canonical_sparseSeed` — the three seed reads of
+    the long-flag rank object and of the sparse-directory rank object are
+    PRESENT at the canonical global store, with the in-word offset bound.
+    Both are UNCONDITIONAL in the entry (presence does not depend on entry
+    contents), so the dispatch's `∀ super, ... → ... →` hypotheses are
+    discharged by `fun _ _ _ => ...` with no case split.
+  - `canonical_denseLen` — the dense-leg exact `Nat.min` word length, one
+    lemma serving BOTH the `i` and `i + 1` obligations.
+  - `selectCloseBlock_runsTo_canonical` — the canonical-store dispatch.
+- CONFIRMED (the inventory's two flagged unknowns, both now checked):
+  - The `hwords` premise IS `rfl` for both select rank objects
+    (`longFlagRankData_bitWords_words`, `sparseRankData_bitWords_words`),
+    exactly as the constructor chain predicted.
+  - `17 + 4 = 21` closes the chunk-segment identification by `rfl`, the
+    same trick as `E1RankCanonical.lean:386`.
+- CONFIRMED WRONG-GUESS CORRECTION HELD: `hDenseLen` really is the
+  three-step `ofChunks` route (`_selectBitWords` →
+  `selectAlignedBitWords_ofChunks.get_eq_take_drop` → `simp
+  [List.length_take, List.length_drop]`), NOT a
+  `builtRankData_wordOffset_le` mirror.  Sentinel-free, no case split.
+- NEW GOTCHAS (add to the standing list):
+  - `sparseExceptionSelectData` needs its two rank-overhead indices given
+    EXPLICITLY in a helper's type ascription (`_` will not synthesize
+    them); they are
+    `sparseExceptionEffectiveFlagRank{Super,Block}Overhead bits target`.
+  - The sparse local slot's entry argument has type
+    `SparseDenseSelectDenseLocalEntry`, NOT `RelativeSplitSelectEntry` —
+    the two are easy to confuse since both flow through
+    `relativeSplitSelectEntryIsMarked`.
+  - `xIdx` is AMBIGUOUS under the dispatch's `open` set; qualify it as
+    `E1SelectBridge.xIdx` in any new file that opens `E1SelectDispatch`.
+  - Declare the data abbreviation as `private abbrev`, not `private def`,
+    so the `rfl` identifications stay reducible.
+- Verification at this commit: standalone `lake env lean
+  RMQ/Core/WordRAM/E1SelectCanonical.lean` exit 0, NO warnings; `lake
+  build RMQ` exit 0.
+- NEXT: the close/LCA structural leg (the last risk center) —
+  `concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural`
+  (`SuccinctFinalRAM.lean:2330`).
+
+## RESUME POINT (M3c-6g: canonical select form) — DISCHARGED, see M3c-6g above
+
+Everything below was inventoried at HEAD by a read-only survey of an
+earlier session.  It is retained as the audit record of what was predicted
+versus what held; the implementation is described in the M3c-6g section
+immediately above.
 
 TARGET: a new file `RMQ/Core/WordRAM/E1SelectCanonical.lean` (does not
 exist yet; no `selectCloseBlock_runsTo` reference exists outside
