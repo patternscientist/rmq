@@ -122,6 +122,26 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
   modules; `lake build RMQ` green (ledger below); hygiene rg clean on
   touched files.
 
+## M3b-2: whole-query positional trace decomposition (route inventory)
+
+- New module `RMQ/Core/WordRAM/E1RouteDecomposition.lean` (namespace
+  `RMQ.SuccinctFinal`): checked positional decomposition of
+  `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult` into its
+  component traces, one theorem per control branch of the closed
+  five-instruction program:
+  - `..._decompose_of_selects_lca_some`: trace = select(left) ++
+    select(right-1) ++ allSizeStructural LCA ++ rankCloseAtSegment
+    (answerClose+1); value = some (rankValue - 1);
+  - `..._decompose_of_lca_none`: three-leg trace, value = none;
+  - `..._decompose_of_left_select_none` / `..._decompose_of_right_select_none`:
+    two-leg trace, value = none.
+- These are the interfaces the machine simulation targets component by
+  component (REQ-E1-03/04): result agreement and positional receipt
+  equality reduce to per-component machine lemmas composed with
+  `RunsTo.trans`, glued by these route-side equalities.
+- Verification at this commit: `lake env lean` exit 0 (no warnings);
+  `lake build RMQ` green.
+
 ## RESUME POINT (next session: M3b onward)
 
 M3b plan (program + simulation, REQ-E1-03/04/05):
