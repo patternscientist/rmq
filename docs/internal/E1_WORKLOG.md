@@ -511,8 +511,58 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
 - Verification at this commit: standalone `lake env lean` exit 0 (no
   warnings); `lake build RMQ` green; hygiene rg clean on the new file.
 
-## STAGE-2 LAYOUT (dense leg tails - verified against the fold interfaces,
-## write this next)
+## M3c-5c: dense two-word leg, tails + whole-leg theorem (STAGE 2 DONE)
+
+- Appended to `E1DenseSelectBlock.lean` (now imports `E1SelectBlock`):
+  the instruction-exact stage-2 layout below, implemented verbatim.
+  - Segments: `denseTail2Pre W` (2: probe add + word read),
+    `denseTail2Setup WS N2 c` (14: second word start, min-chain length
+    into `rE` directly, `rSI := rSI - rVal`, decode, cursor, count
+    chain), `denseTail1Setup c` (9: `rE := rBlk`, `rSI := rSup + rSI`,
+    decode, cursor, count chain); `denseSelectLegBlock L W G S c WS N2`
+    (193 instrs, layout exactly as planned: head at `L` with miss
+    target `L+192`, compare brNZ `L+84`, second tail `L+85..142` with
+    fold at `L+103`, first tail `L+143..191` with fold at `L+152`,
+    miss tail `L+192`, END `L+193`).
+  - Cats: `denseTail1SetupCats`/`denseTail2SetupCats` (+ rfl `_eq`
+    lemmas vs `.map Instr.category`), `packetShiftCats : Option Nat ->
+    List Category` (3 executed steps both ways), derived `denseLegCats`
+    matching on `store.readWord?` at both word indices, the route-side
+    rank `.value` compare, and the select-fold packet (selectFoldCats
+    precedent - a function, never asserted).
+  - `denseFoldShift_runsTo`: SHARED tail suffix lemma - hosted
+    `selectFoldBlock` at `FB` plus the 3-executed-step packet shift at
+    `FB+36..39` (both tails have identical relative layout), ending at
+    absolute `E`; receipts = the accepted
+    `bpChunkedWordSelectTraceResultAtSegmentsWithStore` trace; value
+    under `decodePacket` = fold value shifted by `regs1 rWI`
+    (word start); count positivity free from `bpWordChunkCount_eq_sub`.
+  - `denseSelectLegBlock_runsTo`: the whole-leg theorem vs
+    `GenericSelect.bpChunkedDenseTwoWordSelectTraceResultWithStore W
+    (G+4) S c false bitWords store (regs0 xBPos) (regs0 xBOcc)
+    (regs0 xQ)` - all four control branches (miss1 / first /
+    second-miss / second) in one statement, receipts POSITIONALLY
+    EQUAL per branch, value under `decodePacket` in `rVal`, cats
+    `denseLegCats`, pinned constants + extension bank preserved.
+    Route hypotheses `hlen1`/`hlen2` (word-length min chains) as
+    per-word implications, discharged at canonical instantiation.
+  - Width certificate `denseSelectLegBlock_fits` (delegates head +
+    both folds; `first`-combinator over the 40 flattened arms).
+- Gotchas discovered: the dense evaluator lives in namespace
+  `RMQ.GenericSelect`, NOT `SuccinctClose` (an unresolved name in a
+  theorem statement silently auto-binds as an implicit sort variable -
+  watch for "Function expected at" + `?m` errors); `cases hv : X.value`
+  substitutes into the goal, so no `rw [hv]` afterwards; the hosting
+  peel through a 193-instruction block needs
+  `set_option maxRecDepth 8192 in` (placed BEFORE the doc comment);
+  `rw [write_same, ...]`-chains ending in an assoc-only mismatch need
+  a trailing `omega`.
+- Verification at this commit: standalone `lake env lean` exit 0 (no
+  warnings); `lake build RMQ` green (only the pre-existing sanctioned
+  `SuccinctFinalRAM.lean:5694+` simp-arg warnings); hygiene rg clean.
+
+## STAGE-2 LAYOUT (dense leg tails - implemented in M3c-5c above;
+## kept for reference)
 
 `selectFoldBlock_runsTo` interface RE-VERIFIED this session
 (`E1SelectBlock.lean:367`): inputs sOne=1, sC=c, sLen(13)=word.length,
