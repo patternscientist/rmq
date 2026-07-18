@@ -229,3 +229,16 @@ the Costed layer needs NO further work.
   `cases hmem with | head | tail` — plain `simp at hmem` does not reduce
   the prefix-form `List.Mem`); `lake build RMQ` exit 0, 12 s incremental
   (213 jobs); hygiene rg no hits.
+- REQ-B3-13 commit: `lake build RMQ` exit 0, 7m05s (the FlatPayload
+  comment rebuilt the heavy downstream chain; run under the
+  `Global\RMQHeavyVerification` mutex next time — this one was launched
+  expecting an incremental no-op); `claim_drift_scan.ps1` exit 0
+  (694 hits, 0 strict failures).
+- Checkpoint battery at `a1a7659`: `git diff --check` and
+  `git diff --check d1d645e..HEAD` clean;
+  `design_decision_check.ps1 -Strict -Base d1d645e...` exit 0
+  (10 changed files); working tree clean; every commit in
+  `d1d645e..HEAD` had `lake build RMQ` green at commit time.
+  `paper_topology_lint.ps1` and the cost harness were NOT run at this
+  checkpoint (public theorem surface untouched by B3-01; they are M6
+  candidate-tree obligations).
