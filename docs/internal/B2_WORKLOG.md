@@ -201,12 +201,38 @@ first, consumers swapped atomically.
 
 ## Milestones (B2-02)
 
-- [ ] M7 docs: matrix extension + worklog (this commit).
-- [ ] M8 parallel modules (green, additive only):
-      `ChargedFringeTableFacts.lean` (moved facts),
-      `ChargedFringeTrace.lean` (TraceResult fold + left/right fringe
-      trace evaluators + refines/matchesReadStore/no-synthetic +
-      chunked cross-block trace consumer twins, plain and WithStore),
+- [x] M7 docs: matrix extension + worklog (commit 43e529a).
+- [x] M8 parallel modules (green, additive only):
+      `ChargedFringeTableFacts.lean` (facts moved below the reviewer
+      layer: entry-width/rowcount bounds, payload length, erasure,
+      `bpFringeTableOverhead(_littleO)`, `bpFringeChunkRowCount_le_linear`,
+      new `bpFringeChunkEntryWidth_le_machineWordBits_capacity`,
+      `bpFringeChunkTable_word_length`);
+      `ChargedFringeTrace.lean`:
+      - `bpFringeChunkFoldComputation(From)` — the chunked fold as a
+        `FlatStoreComputation` (one word read per chunk, `bitsToNatLE`
+        decode into `bpFringeChunkStepDecoded`), with `_run_value`
+        (= Costed fold on any `FixedWidthNatTable`'s own words),
+        `_run_reads_length` (= chunk count), `_run_footprint`
+        (= the visited slot sequence over `List.range'`);
+      - `bpFringeChunkFoldTraceResultAtSegment(WithStore)` +
+        `_toCosted` (= `bpFringeChunkFoldCosted`), `_eq_of_agree`,
+        `_store_parametric`, `_matchesReadStore`, `_trace_forall`,
+        `_no_syntheticCostOnlyPrimitive`;
+      - `bpChunkedLeft/RightFringeCandidateSeededTraceResultAtSegment`
+        (+`WithStore`) with `_refines` (toCosted = the B2-01 Costed
+        fringe candidates), `_trace_forall`, `_matchesReadStore`,
+        `_no_syntheticCostOnlyPrimitive`, `_eq_of_agree`,
+        `_store_parametric`;
+      - `bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments`
+        (+`WithStore`) mirroring the accepted consumers at
+        `ConcreteDirectoryRAM.lean:2358` / StoreParam`:4614` with the
+        fringe leaves swapped, with `_refines` (=
+        `bpChunkedCrossBlockCloseCostedWithRankSeed`), the trace-level
+        exact-value substitution `_value_eq` (value = accepted
+        structural trace value under the accepted query-side facts),
+        `_trace_forall`, `_eq_of_agree`, `_refines_of_agree`,
+        `_store_parametric`;
       imports registered in `RMQ.lean`.
 - [ ] M9 atomic swap (single commit, library green):
       wiring (`canonicalLcaCloseCostedWithRankSeed` else-branch +
