@@ -726,3 +726,41 @@ E1-R4i's canonical select form landed complete at `c0c32c4`.
 must audit UNCHANGED code for that property, not only the delta. Add to the
 coordinator checklist: for each campaign invariant, enumerate every branch of
 every dispatcher the invariant must hold on, and check the untouched arms.
+
+## 2026-07-18 (C05 round 6) — B6 component landed; literal authorization withdrawn ✅
+
+**B6-01 (`3068fee`) built and proved the charged same-block leg** (three new
+modules, 1251 insertions, zero deletions beyond one import) but honestly did
+NOT swap it into the route, reporting INCOMPLETE with a twelve-site resume
+inventory. Correct call: a green component is not the target.
+
+**Coordinator-verified correction to round 5.** I predicted the literal would
+move 207 -> <=240. Wrong. `canonicalLcaCloseCostedWithRankSeed_cost_le`
+(`ChargedFringeWiring.lean:101-150`) is a `by_cases` bounding EACH branch
+separately by the same cap `canonicalCompactBPCloseQueryCostWithRankSeed`;
+`closeLCA = 2*rankClose + 2*endpointFringe + interiorDirectory = 126` while the
+charged same-block arm pays `rankCost + 37 = 48`. The cap absorbs it.
+**The authorization to move the literal is WITHDRAWN as unnecessary**: no new
+historical constant, no `SumLe207` anchor rename, no doc numeral migration,
+no frozen-identity churn. B6-02 must derive this rather than assume it, and
+report if the derivation disagrees.
+
+**Second B6-01 finding, ratified:** the swap can preserve dispatcher identity
+byte-for-byte (stronger than B2's own M9, which added a parameter), because
+the same-block window is definitionally B2's fringe window
+(`localBPWindowBits_eq_flatten_localBPBlockWordsRead`) and the reads reuse the
+segment-21 table. Therefore NO store, payload, overhead, capacity, erasure, or
+`ReviewerSource` work is required — a much smaller blast radius than B2/B3.
+
+**Geometry caveat carried forward:** B2's "whole block lies inside the BP code"
+fact is FALSE same-block (the final block may extend past
+`shape.bpCode.length`); B6-01 covered each close position separately. Any
+successor must not import B2's strictness argument here.
+
+**Empirical corroboration:** the cost harness reports live
+`canonicalRoute=sameBlock` executions at modeledTraceCost 52-54, confirming
+the arm is reachable on the accepted route, not legacy.
+
+**Still open until the swap lands:** the charge-policy claim at
+`docs/PAPER_MODEL_ADEQUACY.md:139-153` remains false; B6-01 correctly declined
+to repair prose ahead of the code.
