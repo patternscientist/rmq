@@ -749,6 +749,155 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
   `hLongSeed`/`hSparseSeed`/`hDenseLen` from the canonical layout facts
   (agreement lemmas listed at `ChargedRankSelectWiring.lean:656`).
 
+## RESUME POINT (M3c-6g: canonical select form) — FULL INVENTORY, VERIFIED
+
+Everything below was inventoried at HEAD by a read-only survey this
+session.  It is recorded verbatim so the next session does NOT have to
+re-derive it.  Nothing here is implemented yet.
+
+TARGET: a new file `RMQ/Core/WordRAM/E1SelectCanonical.lean` (does not
+exist yet; no `selectCloseBlock_runsTo` reference exists outside
+`E1SelectDispatch.lean`).  Import pair, mirroring `E1RankCanonical.lean:1-2`:
+`RMQ.Core.WordRAM.E1SelectDispatch` + `RMQ.Core.SuccinctFinalRAM` (the
+latter transitively supplies every agreement lemma below).
+
+TEMPLATE to mirror: `rankCloseBlock_runsTo_canonical`
+(`E1RankCanonical.lean:263`), NOT `_atSegment` (`:133`).
+
+CANONICAL INSTANTIATION ARGUMENTS:
+- `data := GenericSelect.sparseExceptionSelectData shape.bpCode false`
+  (`GenericSelect/Source.lean:2371`).
+- `layout := concreteBPNativeSelectCloseTraceSegmentLayout`
+  (`SuccinctFinal/RAM/Segments.lean:24`).  Field values: superTable
+  1/2/3/4, localTable 5/6/7/8, longFlagRankBase 9 (seeds 9/10/11),
+  longRelativeBase 12, sparseDirectory.rankBase 13 (seeds 13/14/15),
+  sparseDirectory.relativeBase 16, bitWordBase 0, deadSegment 29.
+- `store := concreteBPNativeSuccinctRMQGlobalReadStore shape`
+  (`Segments.lean:174`).
+- `G := concreteBPNativeRankCloseTraceSegmentBase = 17` (`Segments.lean:48`)
+  so that `G + 4 = 21 = concreteBPNativeFringeChunkTraceSegment`
+  (`Segments.lean:79`) BY `rfl` — the same `17 + 4 = 21` trick the rank
+  template uses at `E1RankCanonical.lean:386`.
+- `ST := concreteBPNativeSelectChunkTraceSegment = 22` (`Segments.lean:82`).
+- `c := SuccinctClose.bpFringeChunkBits shape.bpCode.length`.
+- Target trace object: `concreteBPNativeChunkedSelectCloseGlobalWordTraceResult`
+  (`ChargedRankSelectWiring.lean:645`); public alias
+  `concreteBPNativeSelectCloseGlobalWordTraceResult`
+  (`SuccinctFinalRAM.lean:1342`) is DEFINITIONALLY the same.
+
+DISCHARGING `hDenseLen` (EASIEST — do this one first):
+The select dense store is SENTINEL-FREE: `data.bitWords` is built by
+`BoundedPayloadWordStore.ofChunks` (`GenericSelect/Source.lean:2408-2410`),
+NOT `ofChunksWithSentinel`.  So every present word is a genuine chunk and
+the exact `Nat.min` length is unconditional.  Route:
+1. rewrite `store.readWord? layout.bitWordBase i` into
+   `(...).bitWords.store.words[i]?` with
+   `concreteBPNativeSuccinctRMQGlobalReadStore_selectBitWords`
+   (`ChargedRankSelectWiring.lean:281`);
+2. apply `SelectAlignedBitWords.get_eq_take_drop` from
+   `selectAlignedBitWords_ofChunks` (`GenericSelect/DenseWord.lean:26`;
+   structure at `:13`) to get `word = (bits.drop (i*wordSize)).take wordSize`;
+3. `simp [List.length_take, List.length_drop]` gives exactly
+   `Nat.min wordSize (bits.length - i * wordSize)` — the `hDenseLen`
+   shape, for both `i` and `i + 1`, no case split.
+The worklog's earlier guess that this would mirror
+`builtRankData_wordOffset_le` was WRONG; that name belongs to the
+sentinel-padded RANK store.
+
+DISCHARGING `hLongSeed` / `hSparseSeed` (the only real work):
+Two sub-obligations, seed PRESENCE and the OFFSET BOUND.
+
+(a) PRESENCE.  Per-address agreement lemmas all exist, in exactly the
+    `readWord? seg addr = <sampleWords>[addr]?` form needed, all in
+    `ChargedRankSelectWiring.lean`:
+      `_selectLongFlagSuper` :292, `_selectLongFlagBlock` :305,
+      `_selectLongFlagWord` :318, `_selectLongRelative` :331,
+      `_selectSparseRankSuper` :345, `_selectSparseRankBlock` :359,
+      `_selectSparseRankWord` :374, `_selectSparseRelative` :388,
+      `_selectBitWords` :281, `_routeSelectChunkTable` :402,
+      `_fringeChunkTable` (`Segments.lean:247`)
+    (all prefixed `concreteBPNativeSuccinctRMQGlobalReadStore_`).
+    The three-seed existence statement itself is ALREADY PROVED but is
+    `private`, in two byte-identical copies:
+      `twoLevelRankData_sample_words_present_long`
+        (`SuccinctFinal/RAM/ReviewerReachabilityLong.lean:534`)
+      `twoLevelRankData_sample_words_present`
+        (`SuccinctFinal/RAM/ReviewerReachabilitySparse.lean:672`)
+    stated for a generic `TwoLevelPayloadLiveStoredWordRankData` at any
+    `pos ≤ bits.length`, in the `superSampleWords`/`blockSampleWords`
+    vocabulary — i.e. it composes with the agreement lemmas above by
+    plain rewrite, with NO `read_exact` codec detour (unlike the rank
+    template, which hand-rolls that upgrade three times at
+    `E1RankCanonical.lean:289-357`).  DECISION NEEDED: de-privatize one
+    copy and delete the other (preferred — it removes a duplication),
+    or write a third copy in the new file.  Their shared helper
+    `fixedWidthNatTable_word_present_of_entry_present` is likewise
+    duplicated (`ReviewerReachabilityLong.lean:293`,
+    `ReviewerReachabilitySparse.lean:336`).
+
+(b) OFFSET BOUND.  NO reusable lemma exists (searched
+    `wordOffset.*[<=≤].*length` repo-wide: only hypothesis binders in the
+    E1 block files).  `builtRankData_wordOffset_le`
+    (`E1RankCanonical.lean:42`) is shape-specialized but its proof
+    transfers verbatim with the payload renamed, because ALL THREE rank
+    objects share one constructor,
+    `SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock`
+    (`SuccinctRank.lean:1331`), which always threads
+    `canonicalRankWordBridgeOfChunksWithSentinel` (`:1097`) whose
+    `bitWords := ofChunksWithSentinel` (`:1101-1103`):
+      `builtRelativeSplitBPCloseRankData shape` (`SuccinctFinal.lean:832`)
+      `GenericSelect.longFlagRankData bits target` (`Source.lean:411`)
+      `sparseExceptionEffectiveFlagRankData bits target`
+        (`FlagRank.lean:283`; wired as `sparseDirectory.rankData` at
+        `Directory.lean:225`).
+    PLAN: generalize once as
+      `theorem twoLevelRankData_wordOffset_le {bits so bo qc}
+        (d : ...RankData bits so bo qc)
+        (hwords : d.bitWords.store.words =
+          (SuccinctSpace.chunkPayloadWords d.wordSize bits ++
+            List.replicate (bits.length + 1) []).toArray)
+        (pos : Nat) {w} (hw : d.bitWords.store.words[d.wordIndex pos]? =
+          some w) : d.wordOffset pos ≤ w.length`
+    with the body of `builtRankData_wordOffset_le` (`E1RankCanonical.lean:49-122`)
+    textually substituted (`builtRelativeSplitBPCloseRankData shape` → `d`,
+    `shape.bpCode` → `bits`), then instantiate three times.  All the
+    generic steps it uses are structure-level and transfer: `queryPos pos
+    = Nat.min pos bits.length` (so `Nat.min_le_right` gives the clamp for
+    free), `wordIndex pos = queryPos pos / wordSize := rfl`, `wordOffset
+    pos = queryPos pos - wordIndex pos * wordSize := rfl`.  Supporting
+    lemmas it cites: `SuccinctSpace.chunkPayloadWords_get?_eq_take_drop`
+    (`SuccinctSpace/WordStore.lean:274`),
+    `chunkPayloadWords_length_eq_div_add_indicator` (`:390`),
+    `nat_min_eq_sub_sub` (`E1RankBridge.lean:46`).
+    CAVEAT to check at first build: `hwords` should be `rfl` for both
+    select rank objects (the constructor chain is definitional, as it is
+    for the rank object at `E1RankCanonical.lean:29`), but that single
+    `rfl` is the one step the survey could not verify without building.
+    If it is not `rfl`, unfold the constructor chain named above.
+
+NOT NEEDED: the eight entry-table segments (1-4, 5-8) have only
+`pullback`-level agreement lemmas
+(`ChargedRankSelectWiring.lean:417,437,457,477,497,517,537,557`), NOT
+per-address `readWord?` ones.  This is NOT a gap for the canonical form:
+`superEntry`/`localEntry` enter `selectCloseBlock_runsTo` only as
+hypotheses that the canonical theorem RECEIVES (or case-splits on), never
+as something it must prove.
+
+CONTEXT for the eventual `_refines` join:
+`concreteBPNativeChunkedSelectCloseGlobalWordTraceResult_refines`
+(`ChargedRankSelectWiring.lean:656`) consumes those nineteen agreement
+lemmas in a fixed order (8 pullback, then :292, :305, :318, :331, :345,
+:359, :374, :388, :281, `Segments.lean:247`, :402); companions
+`_matchesReadStore` (:692), `_no_syntheticCostOnlyPrimitive` (:708),
+`_events_readWord` (:730).
+
+AFTER M3c-6g, the remaining dependency order is unchanged: close/LCA
+structural leg (`concreteBPNativeLCACloseGlobalWordTraceResultAllSize
+Structural`, `SuccinctFinalRAM.lean:2330`) — the last risk center —
+then whole-query glue via `E1RouteDecomposition`, then M4 category
+algebra + derived literal, M5 target Prop + supersession note, M6
+validator `lean_exe`, M7 adequacy doc + matrix closure + final battery.
+
 ## STAGE-2 LAYOUT (dense leg tails - implemented in M3c-5c above;
 ## kept for reference)
 
