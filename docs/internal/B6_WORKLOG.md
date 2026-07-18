@@ -355,3 +355,28 @@ the event-silent same-block leaf, so the mission target - closing the last
 event-silent computation on the accepted route - is NOT delivered. Per the
 completion gate a green component checkpoint is not completion, so this rung
 reports INCOMPLETE.
+
+### Verification ledger at `c9bf5f4`
+
+- `lake build RMQ RMQPaper RMQExamples`: exit 0 (30.1 s incremental; full
+  baseline at `c0c32c4` also exit 0).
+- Hygiene `rg` over the three new modules: NO hits for
+  sorry/admit/axiom/unsafe/opaque/implemented_by/partial/extern/noncomputable/
+  `import Mathlib`/`native_decide`/`ofReduceBool`.
+- `git diff --check`: clean. `git diff --check d90b062..HEAD`: clean.
+- `design_decision_check.ps1 -Strict -Base d90b062...`: exit 0 (35 changed files).
+- `claim_drift_scan.ps1`: exit 0 (737 hits, 0 strict failures).
+- `paper_topology_lint.ps1`: PASS (83 broad, 49 paper identifiers resolved).
+- `lake exe rmq_succinct_classic_cost_harness`: exit 0, `canonicalBoundIs207=true`
+  throughout, all reported windows agree with reference List Int RMQ semantics.
+
+The harness output is also independent EMPIRICAL confirmation of the finding
+and of the M0 arithmetic. It reports `canonicalRoute=sameBlock` executions
+(e.g. `window=[31, 32)` at n=64, `window=[64, 65)` and `window=[63, 64)` at
+n=128) with `modeledTraceCost` 52-54, so the same-block arm is genuinely live
+on the accepted route rather than dead or legacy. After the pending swap those
+same-block executions gain at most 33 chunk reads (to at most ~87), which
+remains far below both the branch cap 126 and the route literal 207 -
+corroborating that the literal does not move.
+
+NOTE: `gate.ps1` was NOT run, per the delegation prompt.
