@@ -115,8 +115,11 @@ def concreteBPNativeSuccinctRMQReviewerSegmentSource? :
 /--
 Compatibility category map for the historically designated consumer of each
 logical segment.  It is not producer ownership: segments `17`--`19` can also
-be read inside LCA evaluation.  The load-bearing operational relation is
-`ReviewerProducerReadPath` in `SuccinctFinalRAM`.
+be read inside LCA evaluation.  The `21 ↦ canonicalClose` row is likewise
+only the compat primary-consumer label: segment `21` (the fringe chunk
+table) is also read by the select and rank legs, whose chunked in-word
+folds route every chunk decode through the same table.  The load-bearing
+operational relation is `ReviewerProducerReadPath` in `SuccinctFinalRAM`.
 -/
 def concreteBPNativeSuccinctRMQReviewerSegmentLeaf? :
     Nat -> Option ReviewerReadLeaf

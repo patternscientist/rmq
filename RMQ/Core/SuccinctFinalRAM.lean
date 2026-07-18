@@ -6828,7 +6828,10 @@ Relational source ownership for one produced read.  The source, logical
 segment, physical region, producer instruction, actual pre-state, and exact
 event membership are all facts about the same read event.  In particular this
 relation permits segments `17`--`19` to be produced by either the LCA
-instruction or the final rank instruction.
+instruction or the final rank instruction.  Likewise segment `21` (the
+fringe chunk table) may be produced by any of the three read leaves: the
+select, rank, and LCA/canonical-close legs all route chunked decodes
+through it.
 -/
 def ReviewerSource.ProducedReadBy
     (shape : Cartesian.CartesianShape) (left right : Nat)
@@ -6949,6 +6952,40 @@ theorem repeated_equal_read_occurrences_have_distinct_receipts
   · exact
       concreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance_checked
         shape left right hsecond
+
+/--
+W19 named specialization of the generic occurrence packet to the B2 fringe
+chunk-table reviewer source (segment `21` =
+`concreteBPNativeFringeChunkTraceSegment`): every indexed whole-trace read
+of the fringe chunk table carries a complete occurrence receipt.
+-/
+theorem concreteBPNativeSuccinctRMQFringeChunkTableRead_occurrence_receipt
+    (shape : Cartesian.CartesianShape) (left right : Nat)
+    {globalPos index : Nat} {word? : Option WordRAM.Word}
+    (hget : (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+      shape left right).trace[globalPos]? =
+        some (.readWord concreteBPNativeFringeChunkTraceSegment index word?)) :
+    ReviewerReadOccurrenceReceipt shape left right globalPos
+      concreteBPNativeFringeChunkTraceSegment index word? :=
+  concreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance_checked
+    shape left right hget
+
+/--
+W19 named specialization of the generic occurrence packet to the B3 select
+chunk-table reviewer source (segment `22` =
+`concreteBPNativeSelectChunkTraceSegment`): every indexed whole-trace read
+of the select chunk table carries a complete occurrence receipt.
+-/
+theorem concreteBPNativeSuccinctRMQSelectChunkTableRead_occurrence_receipt
+    (shape : Cartesian.CartesianShape) (left right : Nat)
+    {globalPos index : Nat} {word? : Option WordRAM.Word}
+    (hget : (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+      shape left right).trace[globalPos]? =
+        some (.readWord concreteBPNativeSelectChunkTraceSegment index word?)) :
+    ReviewerReadOccurrenceReceipt shape left right globalPos
+      concreteBPNativeSelectChunkTraceSegment index word? :=
+  concreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance_checked
+    shape left right hget
 
 /--
 Compatibility W18 event-value provenance for every emitted canonical read.

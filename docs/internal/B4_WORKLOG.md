@@ -76,10 +76,49 @@ B3 precedent in DD-20260717-005 item 6).
       stored-table payload lengths; sanity pins at n = 4/16/256
       (rows 8/8/36 and 4/4/12; widths 5/5/7 and 2/2/2; bits 40/40/252 and
       8/8/24; totals 48/48/276).
-- [ ] M4 W19 per-segment corollaries + segment-21 per-leaf claims
-      (REQ-B4-02).
-- [ ] M5 repeated-equal-read positional witnesses + manifest packet
-      extension (REQ-B4-03).
+- [x] M4 W19 per-segment corollaries + segment-21 per-leaf claims
+      (REQ-B4-02): named receipt corollaries
+      `concreteBPNativeSuccinctRMQFringeChunkTableRead_occurrence_receipt` /
+      `concreteBPNativeSuccinctRMQSelectChunkTableRead_occurrence_receipt`
+      in `SuccinctFinalRAM.lean`, derived from
+      `concreteBPNativeSuccinctRMQWholeQueryOccurrenceProvenance_checked`
+      (not re-proved); per-leaf aggregate
+      `concreteBPNativeSuccinctRMQFringeChunkTable_every_reader_leaf_successful_occurrence`
+      in `ReviewerReachabilitySmall.lean` over new private leg witnesses
+      `reviewerSingleton_selectClose_fringeChunk_successful_read` (dense
+      select route: before-rank chunk fold on `[true, false]` at limit 1)
+      and `reviewerSingleton_rankClose_fringeChunk_successful_read` (rank
+      component at pos 2: three seed-value reductions, then the chunk
+      fold's head read), plus the existing
+      `reviewerIncreasing_fringe_successful_claim` for `.canonicalClose`;
+      shared engine = new generic
+      `reviewerFringeChunk_rankFold_first_successful_read` (chunk fold
+      ALWAYS emits >= 1 read since `bpWordChunkCount >= 1` even at limit 0;
+      slot successful via `bpFringeChunkEntries_getElem` +
+      `fixedWidthNatTable_word_of_entry`, existence-level only).
+      Multi-reader caveat doc-comments extended on
+      `ReviewerSource.ProducedReadBy` (SuccinctFinalRAM) and the
+      segment-leaf compat map (`ReviewerPhysical.lean`); no code change
+      there.
+- [x] M5 repeated-equal-read positional witnesses + manifest packet
+      extension (REQ-B4-03): public
+      `concreteBPNativeSuccinctRMQSelectChunk_repeated_equal_read_distinct_receipts`
+      and
+      `concreteBPNativeSuccinctRMQFringeChunk_repeated_equal_read_distinct_receipts`
+      (singleton `[7]`, `left = 0, right = 1`: both select-close
+      instructions evaluate the component at index 0; positions `p` and
+      `prefixLen + p` with `p < prefixLen`; receipts via the generic
+      occurrence packet), through shared private helper
+      `reviewerSingleton_selectComponent_repeated_receipts` (two
+      `ProducesEventAt` tuples + `global_getElem`; no whole-trace kernel
+      evaluation).  `ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy`
+      gains three fields
+      (`fringe_chunk_table_every_reader_leaf_has_successful_closed_valid_occurrence`,
+      `fringe_chunk_repeated_equal_read_occurrences_have_distinct_receipts`,
+      `select_chunk_repeated_equal_read_occurrences_have_distinct_receipts`)
+      discharged by the M4/M5 public theorems; packet doc extended;
+      `Headlines/RMQ.lean` untouched (consumed by name, gains strength
+      only).
 - [ ] M6 whole-query value dependency for segments 21/22 (REQ-B4-06).
 - [ ] M7 charge-policy model doc section + adequacy doc sync (REQ-B4-07)
       and navigation doc repair + DD (REQ-B4-08).
@@ -111,3 +150,19 @@ B3 precedent in DD-20260717-005 item 6).
   registered in `RMQ.lean`; `lake build RMQ` exit 0 (216 jobs,
   incremental).  Toolchain note confirmed: `simp [Nat.log2]` evaluates
   concrete log2 literals (equation lemmas); bare `decide`/`rfl` does not.
+- M4+M5: `lake build RMQ.Core.SuccinctFinalRAM
+  RMQ.Core.SuccinctFinal.RAM.ReviewerPhysical` (mutex-held) exit 0,
+  pre-existing linter warnings only; `lake env lean
+  RMQ/Core/SuccinctFinal/RAM/ReviewerReachabilitySmall.lean` exit 1
+  (~27 s) then exit 0 (~29 s) after one fix round; `lake build RMQ`
+  (mutex-held) exit 0, 216 jobs, 58 s, `Build completed successfully`.
+  Toolchain notes for successors: (a) `rw [Nat.min_eq_left/_right]` does
+  NOT match the `Nat.min` spelled by `bpWordChunkCount` (pattern is
+  instance `min`) - discharge min-positivity term-level via
+  `Nat.le_min.mpr` (defeq bridges `Nat.min`/`min`); (b) tactic
+  `refine ⟨_, w, ?_⟩` cannot leave the ∃-index as a bare `_` when only a
+  later `exact` would determine it - spell the witness slot; (c) after
+  `rw [<.value fact>]` inside a `TraceResult.bind` continuation the beta
+  step has often already happened, so a following `dsimp only` can fail
+  with "no progress" - use `try dsimp only` (the match-iota step after the
+  last scrutinee rewrite still needs it).
