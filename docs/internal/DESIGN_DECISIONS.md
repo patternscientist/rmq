@@ -2590,3 +2590,91 @@ Follow-up: coordinator to confirm the coupling or direct an in-rung
 extension despite the public-surface breakage.
 
 Supersedes: none (refines DD-20260717-002 follow-up).
+
+## DD-20260717-004: Charged-fringe wiring swap, fringe segment 21, and route literal re-derivation (B2-02)
+
+Status: Proposed
+Date: 2026-07-17
+Scope: B2-02 wiring milestone (branch `claude/b1-b2-charged-fringe-tables`):
+`ChargedFringeWiring.lean` (new), `ChargedFringeTrace.lean`,
+`ConcreteDirectoryRAM.lean`, `ConcreteDirectoryRAMStoreParam.lean`,
+`Segments.lean`, `FlatPayload.lean`, `ReviewerPhysical.lean`,
+`SuccinctFinalRAM.lean`, `SuccinctFinalStoreParam.lean`,
+`SuccinctFinalModelAdequacy.lean`, `SuccinctFinalSemanticProvenanceAdequacy.lean`,
+`ReviewerReachability(Small).lean`, `BPNavigationRAM.lean`,
+`SuccinctRMQClassic.lean`, `Headlines/RMQ.lean`, `Validation/*`.
+
+Decisions (executing coordinator ruling C05 — store extension coupled to the
+wiring, every commit `lake build RMQ` green):
+
+1. Dispatcher relocation, not in-place edit: the canonical dispatchers
+   (`canonicalLcaCloseCostedWithRankSeed`,
+   `lcaCloseTraceResultWithRankSeedAllSizeStructural(+WithStore)`) moved to
+   the new downstream module `ChargedFringeWiring.lean` with their
+   fully-qualified names unchanged, because their swapped cross-block branch
+   consumes `bpChunkedCrossBlockClose*`, which lives below
+   `ConcreteDirectoryRAM` in the import order.  The historical event-silent
+   cross-block consumers (`canonicalCrossBlockCloseCostedWithRankSeed` and
+   trace twins) remain untouched upstream and are still consumed by the
+   substitution/exactness proofs.
+2. Trace layer: the chunked fold is one `FlatStoreComputation` (interior
+   component pattern), so store parametricity, footprint determinism, and
+   read/store agreement are structural; the structural trace dispatcher
+   gains one `fringeSegment : Nat` parameter (house `AtSegments` style).
+3. Segment accounting (REQ-B2-17): fringe chunk table = global trace segment
+   21 = reviewer logical segment 21; `ReviewerSource.fringeChunkTable`
+   appended LAST so the amended reviewer payload is exactly
+   `old payload ++ table payload` (the committed candidate shape); adequacy
+   regenerated to `segment < 22` / tail-unreachable at `22 <=`; the
+   dead-source anti-vacuity mutation witness moved from segment 21 to the
+   new first dead segment 22.
+4. Cost re-derivation (REQ-B2-15): `endpointFringe := 37` in the canonical
+   algebra; derived route literal `wholeQuery = 2*13 + (2*4 + 2*37 + 30) + 4
+   = 142` (checked by `rfl`, never asserted); every Lean consumer of 76
+   re-proved at 142; 76 frozen as
+   `concreteBPNativeSuccinctRMQSilentFringeChargedTraceCost(_eq)` /
+   `SuccinctClassic.canonicalSilentFringeQueryCost_eq` following the
+   `canonicalTransitionalQueryCost = 328` pattern.
+5. The transitional close/LCA cap (`canonicalLcaCloseCostedWithRankSeed_cost_le`)
+   now requires the genuine close-position bounds (the 2*37 fringe charge
+   exceeds the old 8-tick slack; the interior principled bound 30 recovers
+   the transitional constant: 2r + 104 <= 8 + 2r + 240).  The consumer proof
+   derives the bounds from select exactness exactly as the principled path
+   does.
+6. Store-parametricity surface: `concreteBPNativeSuccinctRMQWholeQueryReadAgreement`
+   gains a `fringeChunkTable` field (segment 21 agreement); the safe
+   whole-query footprint (`segment <= 29`) already contains 21.
+7. Provenance (REQ-B2-18): `ReviewerProducerReadPath` gains
+   `lcaFringeLeft/lcaFringeRight` constructors carrying membership in the
+   actual chunked fringe candidate component traces; the consumer-level
+   `_trace_forall`s take candidate-trace-membership hypotheses so producer
+   packets stay component-exact; the W19 successful-occurrence packet for
+   the new source is witnessed by the existing increasing-length-16
+   cross-block execution (every chunked fringe invocation performs at least
+   one successful chunk-table read: visited slots are inside the stored row
+   range).
+8. BP close-navigation compatibility profile: its global store's legacy
+   segment 21 (retired summary minRel alias, unread by the canonical trace)
+   is remapped to the fringe chunk table, and its read-backing predicate
+   gains the fringe component disjunct, keeping the navigation execution
+   story green without weakening it.
+
+Rationale: minimal-surface atomic swap per C05; the dead-source manifest
+theorems and the `rfl` public capstone conjunct
+(`reviewerPayload = buildPayload`) hold at every commit because the source,
+the counted payload component, the store segment, and the executed reads all
+land in the same commit.
+
+Evidence: `lake build RMQ` green at the wiring commit; key theorems
+`lcaCloseTraceResultWithRankSeedAllSizeStructural_refines`,
+`canonicalLcaCloseCostedWithRankSeed_exact_of_query` (via
+`bpChunkedCrossBlockCloseCostedWithRankSeed_value_eq`),
+`concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq : = 142`,
+`concreteBPNativeSuccinctRMQSilentFringeChargedTraceCost_eq : = 76`,
+extended `concreteBPNativeSuccinctRMQReviewerPhysicalWords_erases` /
+`_length_le_capacity`, regenerated `ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy`.
+
+Follow-up: full provenance audit pass (B4); prose/doc migration beyond
+committed checks (B5).
+
+Supersedes: none (executes DD-20260717-003's coupling under C05).

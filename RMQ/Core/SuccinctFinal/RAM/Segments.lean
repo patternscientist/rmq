@@ -1,6 +1,7 @@
 import RMQ.Core.SuccinctFinal
 import RMQ.Core.GenericSelect.RAM
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAM
+import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeChunks
 import RMQ.Core.WordRAM.Register
 
 /-!
@@ -64,6 +65,9 @@ def concreteBPNativeInteriorTraceSegments :
 
 /-- Retired compatibility segment for the finite-small same-block close table. -/
 def concreteBPNativeFiniteSmallSameBlockCloseTraceSegment : Nat := 28
+
+/-- Global trace segment of the charged fringe chunk table (B2 wiring). -/
+def concreteBPNativeFringeChunkTraceSegment : Nat := 21
 
 /--
 The concrete read-only payload store for the globally segmented final RMQ
@@ -205,8 +209,23 @@ def concreteBPNativeSuccinctRMQGlobalReadStore
     else if segment = 20 then
       (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
         shape).store.words[index]?
+    else if segment = 21 then
+      (SuccinctClose.bpFringeChunkTable
+        (SuccinctClose.bpFringeChunkBits
+          shape.bpCode.length)).store.words[index]?
     else
       none
+/-- Segment 21 is exactly the charged fringe chunk-table store. -/
+theorem concreteBPNativeSuccinctRMQGlobalReadStore_fringeChunkTable
+    (shape : Cartesian.CartesianShape) (index : Nat) :
+    (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        concreteBPNativeFringeChunkTraceSegment index =
+      (SuccinctClose.bpFringeChunkTable
+        (SuccinctClose.bpFringeChunkBits
+          shape.bpCode.length)).store.words[index]? := by
+  simp [concreteBPNativeSuccinctRMQGlobalReadStore,
+    concreteBPNativeFringeChunkTraceSegment]
+
 /-- Segment 20 is exactly the canonical concatenated interior component store. -/
 theorem concreteBPNativeSuccinctRMQGlobalReadStore_canonicalComponent
     (shape : Cartesian.CartesianShape) (index : Nat) :

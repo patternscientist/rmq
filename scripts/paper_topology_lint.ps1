@@ -351,7 +351,7 @@ $weightLengthAlias =
 $weightCostAlias =
   'succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumEqCost'
 $weightBoundAlias =
-  'succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe76'
+  'succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe142'
 $canonicalText = Read-Text $canonicalModule
 $inventoryText = Read-Text $headlineInventory
 foreach ($anchor in @($canonicalAlias, $weightLengthAlias, $weightCostAlias, $weightBoundAlias)) {

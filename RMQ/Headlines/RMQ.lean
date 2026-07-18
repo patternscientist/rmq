@@ -67,7 +67,7 @@ occurrence provenance remain under each current query's validity premise.
 -/
 theorem listIntSuccinctRMQPaperMainTheorem :
     RMQ.SuccinctFinal.ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy /\
-    RMQ.SuccinctClassic.queryCost = 76 /\
+    RMQ.SuccinctClassic.queryCost = 142 /\
     RMQ.SuccinctSpace.LittleOLinear RMQ.SuccinctClassic.overhead /\
       forall xs : List Int,
         (RMQ.SuccinctClassic.buildPayload xs).length <=
@@ -494,9 +494,9 @@ exactly to the `Costed.cost` of the same execution.
 abbrev succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumEqCost :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_eq_cost
 
-/-- The non-synthetic-weighted actual trace has the checked all-size bound `76`. -/
-abbrev succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe76 :=
-  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_76
+/-- The non-synthetic-weighted actual trace has the checked all-size bound `142`. -/
+abbrev succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe142 :=
+  RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_142
 
 /-- A synthetic marker cannot be classified as a genuine read/rank/select event. -/
 abbrev succinctRMQSyntheticCostOnlyPrimitiveNotReadWordOrWordRankOrWordSelect :=
@@ -517,7 +517,7 @@ abbrev succinctRMQWholeQueryGlobalWordTraceCostedWithStoreCostLeOfFootprintGloba
 /-- Uniform canonical modeled query-cost constant for the final reviewer path. -/
 abbrev succinctRMQQueryCost := RMQ.SuccinctClassic.queryCost
 
-/-- The uniform canonical final-query charged-trace cost computes to `76`. -/
+/-- The uniform canonical final-query charged-trace cost computes to `142`. -/
 abbrev succinctRMQQueryCostEq :=
   RMQ.SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq
 

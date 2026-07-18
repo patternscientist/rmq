@@ -15,6 +15,7 @@ import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeChunks
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeTableFacts
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeSubstitution
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeTrace
+import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeWiring
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeSpace
 import RMQ.Core.SuccinctFinalStoreParam
 import RMQ.Core.SuccinctFinalModelAdequacy

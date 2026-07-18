@@ -263,7 +263,8 @@ def physicalDependencyOK : Bool :=
       singletonIgnoreReturnedValueMutationResult.value
 
 def canonicalBoundOK : Bool :=
-  RMQ.SuccinctClassic.queryCost == 76 &&
+  RMQ.SuccinctClassic.queryCost == 142 &&
+    RMQ.SuccinctClassic.canonicalSilentFringeQueryCost == 76 &&
     RMQ.SuccinctClassic.canonicalTransitionalQueryCost == 328
 
 def structuralEvidenceOK : Bool :=

@@ -1418,6 +1418,10 @@ structure concreteBPNativeSuccinctRMQWholeQueryReadAgreement
           concreteBPNativeInteriorTraceSegments.canonicalComponent address =
         storeB.readWord?
           concreteBPNativeInteriorTraceSegments.canonicalComponent address
+  fringeChunkTable :
+    forall address,
+      storeA.readWord? concreteBPNativeFringeChunkTraceSegment address =
+        storeB.readWord? concreteBPNativeFringeChunkTraceSegment address
 
 namespace concreteBPNativeSuccinctRMQWholeQueryReadAgreement
 
@@ -1525,6 +1529,12 @@ theorem of_footprint
       hfoot _ address (by
         simp [concreteBPNativeSuccinctRMQWholeQueryReadFootprint,
           concreteBPNativeInteriorTraceSegments,
+          concreteBPNativeDeadTraceSegment])
+  · intro address
+    exact
+      hfoot _ address (by
+        simp [concreteBPNativeSuccinctRMQWholeQueryReadFootprint,
+          concreteBPNativeFringeChunkTraceSegment,
           concreteBPNativeDeadTraceSegment])
 
 end concreteBPNativeSuccinctRMQWholeQueryReadAgreement
@@ -1779,6 +1789,7 @@ def concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
     (concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
       shape store concreteBPNativeRankCloseTraceSegmentBase)
     concreteBPNativeInteriorTraceSegments
+    concreteBPNativeFringeChunkTraceSegment
     store concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
     leftClose rightClose
 
@@ -1796,7 +1807,8 @@ theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore_
       shape
       (concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
         shape store concreteBPNativeRankCloseTraceSegmentBase)
-      concreteBPNativeInteriorTraceSegments store
+      concreteBPNativeInteriorTraceSegments
+      concreteBPNativeFringeChunkTraceSegment store
       concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
       leftClose rightClose
       (fun pos event hmem =>
@@ -1818,7 +1830,8 @@ theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore_
       shape
       (concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
         shape store concreteBPNativeRankCloseTraceSegmentBase)
-      concreteBPNativeInteriorTraceSegments store
+      concreteBPNativeInteriorTraceSegments
+      concreteBPNativeFringeChunkTraceSegment store
       concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
       leftClose rightClose
       (fun pos event hmem =>
@@ -1857,6 +1870,7 @@ theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore_
       leftClose rightClose
       (concreteBPNativeSuccinctRMQGlobalReadStore_bpCode shape)
       (concreteBPNativeSuccinctRMQGlobalReadStore_canonicalComponent shape)
+      (concreteBPNativeSuccinctRMQGlobalReadStore_fringeChunkTable shape)
 
 theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore_store_parametric
     (shape : Cartesian.CartesianShape)
@@ -1891,6 +1905,7 @@ theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore_
       leftClose rightClose
       hagree.bpCode
       hagree.canonicalComponent
+      hagree.fringeChunkTable
 
 private theorem finalRankCloseWithStore_storeTraceLocal
     (shape : Cartesian.CartesianShape) (pos : Nat) :
@@ -2038,6 +2053,103 @@ private theorem finalSameBlockLcaWithStore_storeTraceLocal
     exact localBPSameBlockSeededWithStore_storeTraceLocal
       shape blockSize leftClose rightClose seed
 
+private theorem chunkedFringeFoldWithStore_storeTraceLocal
+    (fringeSegment c : Nat) (window : List Bool)
+    (seed relLo relHi count : Nat) :
+    StoreTraceLocal (fun store =>
+      SuccinctClose.bpFringeChunkFoldTraceResultAtSegmentWithStore
+        store fringeSegment c window seed relLo relHi count) := by
+  intro storeA storeB hagree
+  unfold SuccinctClose.bpFringeChunkFoldTraceResultAtSegmentWithStore
+  dsimp only
+  have hrun :
+      (SuccinctClose.bpFringeChunkFoldComputation c window seed relLo relHi
+          count).run
+        (SuccinctClose.flatWordStoreOfReadStore storeA fringeSegment) =
+      (SuccinctClose.bpFringeChunkFoldComputation c window seed relLo relHi
+          count).run
+        (SuccinctClose.flatWordStoreOfReadStore storeB fringeSegment) := by
+    apply
+      (SuccinctClose.bpFringeChunkFoldComputation c window seed relLo relHi
+        count).footprint_determines
+    intro address hfoot
+    rcases List.mem_map.mp hfoot with ⟨read, hread, rfl⟩
+    have hmem :
+        WordRAM.TraceEvent.readWord fringeSegment read.1 read.2 ∈
+          (SuccinctClose.bpFringeChunkFoldTraceResultAtSegmentWithStore
+            storeA fringeSegment c window seed relLo relHi count).trace :=
+      List.mem_map.mpr ⟨read, hread, rfl⟩
+    exact hagree fringeSegment read.1 read.2 hmem
+  rw [hrun]
+
+private theorem chunkedLeftFringeSeededWithStore_storeTraceLocal
+    (shape : Cartesian.CartesianShape)
+    (fringeSegment blockSize leftClose seed : Nat) :
+    StoreTraceLocal (fun store =>
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore
+        shape store fringeSegment blockSize leftClose seed) := by
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore
+  apply storeTraceLocal_bind
+  · exact localBPWindowBitsWithStore_storeTraceLocal shape blockSize leftClose
+  · intro window
+    apply storeTraceLocal_map
+    exact chunkedFringeFoldWithStore_storeTraceLocal fringeSegment _ window seed _ _ _
+
+private theorem chunkedRightFringeSeededWithStore_storeTraceLocal
+    (shape : Cartesian.CartesianShape)
+    (fringeSegment blockSize rightClose seed : Nat) :
+    StoreTraceLocal (fun store =>
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore
+        shape store fringeSegment blockSize rightClose seed) := by
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore
+  apply storeTraceLocal_bind
+  · exact localBPWindowBitsWithStore_storeTraceLocal shape blockSize rightClose
+  · intro window
+    apply storeTraceLocal_map
+    exact chunkedFringeFoldWithStore_storeTraceLocal fringeSegment _ window seed _ _ _
+
+private theorem finalChunkedCrossBlockLcaWithStore_storeTraceLocal
+    (shape : Cartesian.CartesianShape)
+    (segments : SuccinctClose.BPRelativeRmmInteriorTraceSegments)
+    (fringeSegment leftClose rightClose : Nat) :
+    StoreTraceLocal (fun store =>
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+        shape
+        (concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+          shape store concreteBPNativeRankCloseTraceSegmentBase)
+        segments fringeSegment store leftClose rightClose) := by
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+  let blockSize := SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw shape
+  let leftBlock := SuccinctClose.blockOfClose
+    blockSize leftClose
+  let rightBlock := SuccinctClose.blockOfClose
+    blockSize rightClose
+  dsimp only
+  apply storeTraceLocal_bind
+  · exact finalRankSeedWithStore_storeTraceLocal shape blockSize leftClose
+  · intro leftSeed
+    apply storeTraceLocal_bind
+    · exact chunkedLeftFringeSeededWithStore_storeTraceLocal
+        shape fringeSegment blockSize leftClose leftSeed
+    · intro left?
+      apply storeTraceLocal_bind
+      · by_cases hmiddle : leftBlock + 1 < rightBlock
+        · dsimp only [blockSize, leftBlock, rightBlock] at hmiddle
+          simp only [hmiddle, if_pos]
+          exact canonicalInteriorWithStore_storeTraceLocal
+            shape segments (leftBlock + 1) (rightBlock - leftBlock - 1)
+        · dsimp only [blockSize, leftBlock, rightBlock] at hmiddle
+          simp only [hmiddle]
+          exact storeTraceLocal_const _
+      · intro middle?
+        apply storeTraceLocal_bind
+        · exact finalRankSeedWithStore_storeTraceLocal
+            shape blockSize rightClose
+        · intro rightSeed
+          apply storeTraceLocal_map
+          exact chunkedRightFringeSeededWithStore_storeTraceLocal
+            shape fringeSegment blockSize rightClose rightSeed
+
 private theorem finalCrossBlockLcaWithStore_storeTraceLocal
     (shape : Cartesian.CartesianShape)
     (segments : SuccinctClose.BPRelativeRmmInteriorTraceSegments)
@@ -2100,8 +2212,9 @@ private theorem finalLcaCloseWithStore_storeTraceLocal
       shape blockSize leftClose rightClose
   · dsimp only [blockSize] at hsame
     simp only [hsame]
-    exact finalCrossBlockLcaWithStore_storeTraceLocal
-      shape concreteBPNativeInteriorTraceSegments leftClose rightClose
+    exact finalChunkedCrossBlockLcaWithStore_storeTraceLocal
+      shape concreteBPNativeInteriorTraceSegments
+      concreteBPNativeFringeChunkTraceSegment leftClose rightClose
 
 theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore_eq_of_trace_read_agreement
     (shape : Cartesian.CartesianShape)
@@ -3277,7 +3390,7 @@ theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_read_has_listed_region
               shape segment index) word? ∈
           (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
             shape left right).trace := by
-  have hlt : segment < 21 :=
+  have hlt : segment < 22 :=
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_segment_lt
       shape left right hmem
   rcases

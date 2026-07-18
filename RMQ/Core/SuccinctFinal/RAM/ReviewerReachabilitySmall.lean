@@ -1327,7 +1327,7 @@ private theorem reviewerIncreasing_lca_interior_mem
   rw [hblock]
   simp only [SuccinctClose.blockOfClose]
   simp
-  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments
   rw [hblock]
   simp only [SuccinctClose.blockOfClose]
   simp
@@ -1376,15 +1376,16 @@ private theorem reviewerIncreasing_lca_sharedBP_mem :
   rw [hblock]
   simp only [SuccinctClose.blockOfClose]
   simp
-  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments
   rw [hblock]
   simp only [SuccinctClose.blockOfClose]
   simp
   apply List.mem_append_right
   apply List.mem_append_left
-  simpa [
-    SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPLeftFringeCandidateSeededTraceResult,
-    WordRAM.TraceResult.map_trace] using hwindow
+  exact
+    SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedLeftFringeCandidateSeededTraceResultAtSegment_window_mem
+      (Cartesian.shape reviewerIncreasingSixteenInput)
+      concreteBPNativeFringeChunkTraceSegment 10 1 _ hwindow
 
 private theorem reviewerIncreasing_canonical_successful_claim_of_mem
     {segment index : Nat} {word : WordRAM.Word}
@@ -1415,6 +1416,49 @@ private theorem reviewerIncreasing_canonical_successful_claim_of_mem
   · rfl
   · simpa [ReviewerReadInvocation.componentTrace] using hget
 
+private theorem reviewerIncreasing_lca_fringe_successful_mem :
+    ∃ index word,
+      List.Mem
+        (.readWord concreteBPNativeFringeChunkTraceSegment index (some word))
+        (concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
+          (Cartesian.shape reviewerIncreasingSixteenInput) 1 31).trace := by
+  rcases
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedLeftFringeCandidateSeededTraceResultAtSegment_fringe_successful_mayRead
+        (Cartesian.shape reviewerIncreasingSixteenInput)
+        concreteBPNativeFringeChunkTraceSegment 10 1
+        ((SuccinctClose.ConcreteCompactBPCloseLCADirectory.localBPSeedFromRankCloseTraceResult
+          (Cartesian.shape reviewerIncreasingSixteenInput)
+          (concreteBPNativeRankCloseWordTraceResultAtSegment
+            (Cartesian.shape reviewerIncreasingSixteenInput)
+            concreteBPNativeRankCloseTraceSegmentBase) 10 1).value) with
+    ⟨index, word, hmem⟩
+  refine ⟨index, word, ?_⟩
+  have hblock : SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw
+      (Cartesian.shape reviewerIncreasingSixteenInput) = 10 := by
+    rw [reviewerIncreasingSixteenInput_shape]
+    simp [SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw,
+      SuccinctClose.canonicalBPRelativeSummaryBase, reviewerRightSpine,
+      Cartesian.CartesianShape.size, Nat.log2]
+  unfold concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural
+  rw [hblock]
+  simp only [SuccinctClose.blockOfClose]
+  simp
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments
+  rw [hblock]
+  simp only [SuccinctClose.blockOfClose]
+  simp
+  apply List.mem_append_right
+  apply List.mem_append_left
+  exact hmem
+
+private theorem reviewerIncreasing_fringe_successful_claim :
+    (ReviewerProducerClaim.mk concreteBPNativeFringeChunkTraceSegment
+      .canonicalClose).HasSuccessfulClosedValidOccurrence := by
+  rcases reviewerIncreasing_lca_fringe_successful_mem with
+    ⟨index, word, hmem⟩
+  exact reviewerIncreasing_canonical_successful_claim_of_mem hmem
+
 private theorem reviewerIncreasing_canonical_successful_claims :
     (ReviewerProducerClaim.mk 20 .canonicalClose).HasSuccessfulClosedValidOccurrence ∧
     (ReviewerProducerClaim.mk 0 .canonicalClose).HasSuccessfulClosedValidOccurrence := by
@@ -1427,11 +1471,12 @@ private theorem reviewerIncreasing_canonical_successful_claims :
       reviewerIncreasing_lca_sharedBP_mem⟩
 
 /--
-The twelve always-small reviewer sources have successful occurrences in real
-closed valid queries. Source ordinals `1` through `11` are witnessed by the
-singleton execution, whose successful reads include segments `0` through `8`
-and `17` through `19`; canonical source ordinal `20` is witnessed by the
-increasing-length-sixteen cross-block execution.
+The thirteen always-small reviewer sources have successful occurrences in
+real closed valid queries. Source ordinals `1` through `11` are witnessed by
+the singleton execution, whose successful reads include segments `0` through
+`8` and `17` through `19`; the canonical close source and the fringe
+chunk-table source are witnessed by the increasing-length-sixteen
+cross-block execution (segments `20` and `21`).
 -/
 theorem concreteBPNativeSuccinctRMQReviewerSource_small_successful_closed_valid_occurrence
     (source : ReviewerSource)
@@ -1447,7 +1492,8 @@ theorem concreteBPNativeSuccinctRMQReviewerSource_small_successful_closed_valid_
       , .selectLocalBaseWordIndex
       , .selectLocalRankBefore
       , .selectLocalFirstOffset
-      , .canonicalClose ]) :
+      , .canonicalClose
+      , .fringeChunkTable ]) :
     source.HasSuccessfulClosedValidOccurrence := by
   rcases reviewerSingleton_select_table_successful_reads with
     ⟨⟨word1, hread1⟩, ⟨word2, hread2⟩, ⟨word3, hread3⟩,
@@ -1517,9 +1563,14 @@ theorem concreteBPNativeSuccinctRMQReviewerSource_small_successful_closed_valid_
       |>.HasSuccessfulClosedValidOccurrence :=
     ⟨ReviewerProducerClaim.mk 20 .canonicalClose, rfl,
       reviewerIncreasing_canonical_successful_claims.1⟩
+  have h21 : ReviewerSource.fringeChunkTable
+      |>.HasSuccessfulClosedValidOccurrence :=
+    ⟨ReviewerProducerClaim.mk concreteBPNativeFringeChunkTraceSegment
+        .canonicalClose, rfl,
+      reviewerIncreasing_fringe_successful_claim⟩
   simp only [List.mem_cons, List.not_mem_nil, or_false] at hsource
   rcases hsource with rfl | rfl | rfl | rfl | rfl | rfl |
-    rfl | rfl | rfl | rfl | rfl | rfl
+    rfl | rfl | rfl | rfl | rfl | rfl | rfl
   · exact hshared
   · exact h17
   · exact h18
@@ -1532,6 +1583,7 @@ theorem concreteBPNativeSuccinctRMQReviewerSource_small_successful_closed_valid_
   · exact h7
   · exact h8
   · exact h20
+  · exact h21
 
 /-- Every deliberate consumer of the shared BP payload has its own successful
 indexed occurrence in an actual closed valid query. -/

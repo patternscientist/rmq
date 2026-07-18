@@ -278,7 +278,7 @@ theorem bpFringeChunkFoldTraceResultAtSegmentWithStore_matchesReadStore
 
 /--
 Every canonical fold trace event is one fringe-segment read of the table's
-own stored word at the visited slot.
+own stored word at a visited (row-count-bounded) slot.
 -/
 theorem bpFringeChunkFoldTraceResultAtSegment_trace_forall
     {entries : List Nat} {width : Nat}
@@ -288,6 +288,7 @@ theorem bpFringeChunkFoldTraceResultAtSegment_trace_forall
     (P : WordRAM.TraceEvent -> Prop)
     (hread :
       forall address,
+        address < bpFringeChunkRowCount c ->
         P (WordRAM.TraceEvent.readWord fringeSegment address
           table.store.words[address]?)) :
     forall event,
@@ -308,8 +309,25 @@ theorem bpFringeChunkFoldTraceResultAtSegment_trace_forall
       (SuccinctSpace.FlatWordStore.ofArray table.store.words)
       read.1 read.2 hreadMem
   have hwordEq : read.2 = table.store.words[read.1]? := hword.symm
+  have hfoot :
+      read.1 ∈
+        ((bpFringeChunkFoldComputation c window seed relLo relHi
+            count).run
+          (SuccinctSpace.FlatWordStore.ofArray
+            table.store.words)).footprint :=
+    List.mem_map.mpr ⟨read, hreadMem, rfl⟩
+  unfold bpFringeChunkFoldComputation at hfoot
+  rw [bpFringeChunkFoldComputationFrom_run_footprint] at hfoot
+  rcases List.mem_map.mp hfoot with ⟨block, _hblock, hslot⟩
+  have hlt : read.1 < bpFringeChunkRowCount c := by
+    rw [<- hslot]
+    exact
+      bpFringeChunkSlot_lt_rowCount
+        (bpFringeWindowChunkValue_lt c window block)
+        (bpFringeChunkStartOff_le c relLo block)
+        (bpFringeChunkEndOff_le c relHi block)
   rw [hwordEq]
-  exact hread read.1
+  exact hread read.1 hlt
 
 theorem bpFringeChunkFoldTraceResultAtSegment_matchesReadStore
     {entries : List Nat} {width : Nat}
@@ -327,7 +345,7 @@ theorem bpFringeChunkFoldTraceResultAtSegment_matchesReadStore
             window seed relLo relHi count).trace ->
         event.matchesReadStore store := by
   apply bpFringeChunkFoldTraceResultAtSegment_trace_forall
-  intro address
+  intro address _hlt
   show store.readWord? fringeSegment address = table.store.words[address]?
   exact hfringe address
 
@@ -342,7 +360,7 @@ theorem bpFringeChunkFoldTraceResultAtSegment_no_syntheticCostOnlyPrimitive
             window seed relLo relHi count).trace ->
         Not event.isSyntheticCostOnlyPrimitive := by
   apply bpFringeChunkFoldTraceResultAtSegment_trace_forall
-  intro address
+  intro address _hlt
   simp [WordRAM.TraceEvent.isSyntheticCostOnlyPrimitive]
 
 theorem bpFringeChunkFoldTraceResultAtSegmentWithStore_trace_forall
@@ -352,6 +370,7 @@ theorem bpFringeChunkFoldTraceResultAtSegmentWithStore_trace_forall
     (P : WordRAM.TraceEvent -> Prop)
     (hread :
       forall address,
+        address < bpFringeChunkRowCount c ->
         P (WordRAM.TraceEvent.readWord fringeSegment address
           (store.readWord? fringeSegment address))) :
     forall event,
@@ -372,8 +391,24 @@ theorem bpFringeChunkFoldTraceResultAtSegmentWithStore_trace_forall
       read.1 read.2 hreadMem
   have hwordEq : read.2 = store.readWord? fringeSegment read.1 :=
     hword.symm
+  have hfoot :
+      read.1 ∈
+        ((bpFringeChunkFoldComputation c window seed relLo relHi
+            count).run
+          (flatWordStoreOfReadStore store fringeSegment)).footprint :=
+    List.mem_map.mpr ⟨read, hreadMem, rfl⟩
+  unfold bpFringeChunkFoldComputation at hfoot
+  rw [bpFringeChunkFoldComputationFrom_run_footprint] at hfoot
+  rcases List.mem_map.mp hfoot with ⟨block, _hblock, hslot⟩
+  have hlt : read.1 < bpFringeChunkRowCount c := by
+    rw [<- hslot]
+    exact
+      bpFringeChunkSlot_lt_rowCount
+        (bpFringeWindowChunkValue_lt c window block)
+        (bpFringeChunkStartOff_le c relLo block)
+        (bpFringeChunkEndOff_le c relHi block)
   rw [hwordEq]
-  exact hread read.1
+  exact hread read.1 hlt
 
 theorem bpFringeChunkFoldTraceResultAtSegmentWithStore_no_syntheticCostOnlyPrimitive
     (store : WordRAM.ReadStore)
@@ -385,8 +420,38 @@ theorem bpFringeChunkFoldTraceResultAtSegmentWithStore_no_syntheticCostOnlyPrimi
             fringeSegment c window seed relLo relHi count).trace ->
         Not event.isSyntheticCostOnlyPrimitive := by
   apply bpFringeChunkFoldTraceResultAtSegmentWithStore_trace_forall
-  intro address
+  intro address _hlt
   simp [WordRAM.TraceEvent.isSyntheticCostOnlyPrimitive]
+
+/-- A positive-count fold trace contains its first chunk-table read. -/
+theorem bpFringeChunkFoldTraceResultAtSegment_head_mem
+    {entries : List Nat} {width : Nat}
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (fringeSegment c : Nat) (window : List Bool)
+    (seed relLo relHi count : Nat) (hcount : 0 < count) :
+    WordRAM.TraceEvent.readWord fringeSegment
+        (bpFringeChunkSlot c (bpFringeWindowChunkValue c window 0)
+          (bpFringeChunkStartOff c relLo 0)
+          (bpFringeChunkEndOff c relHi 0))
+        table.store.words[bpFringeChunkSlot c
+          (bpFringeWindowChunkValue c window 0)
+          (bpFringeChunkStartOff c relLo 0)
+          (bpFringeChunkEndOff c relHi 0)]? ∈
+      (bpFringeChunkFoldTraceResultAtSegment table fringeSegment c window
+        seed relLo relHi count).trace := by
+  obtain ⟨k, rfl⟩ : ∃ k, count = k + 1 := ⟨count - 1, by omega⟩
+  apply List.mem_map.mpr
+  refine
+    ⟨(bpFringeChunkSlot c (bpFringeWindowChunkValue c window 0)
+        (bpFringeChunkStartOff c relLo 0)
+        (bpFringeChunkEndOff c relHi 0),
+      SuccinctSpace.FlatWordStore.ofArray table.store.words
+        (bpFringeChunkSlot c (bpFringeWindowChunkValue c window 0)
+          (bpFringeChunkStartOff c relLo 0)
+          (bpFringeChunkEndOff c relHi 0))), ?_, rfl⟩
+  show _ ∈
+    (SuccinctSpace.FlatStoreExecution.append _ _).reads
+  exact List.mem_append_left _ (List.mem_cons_self)
 
 namespace ConcreteCompactBPCloseLCADirectory
 
@@ -502,6 +567,8 @@ theorem bpChunkedLeftFringeCandidateSeededTraceResultAtSegment_trace_forall
           P event)
     (hfringe :
       forall address,
+        address <
+          bpFringeChunkRowCount (bpFringeChunkBits shape.bpCode.length) ->
         P (WordRAM.TraceEvent.readWord fringeSegment address
           (bpFringeChunkTable
             (bpFringeChunkBits shape.bpCode.length)).store.words[address]?)) :
@@ -530,6 +597,8 @@ theorem bpChunkedRightFringeCandidateSeededTraceResultAtSegment_trace_forall
           P event)
     (hfringe :
       forall address,
+        address <
+          bpFringeChunkRowCount (bpFringeChunkBits shape.bpCode.length) ->
         P (WordRAM.TraceEvent.readWord fringeSegment address
           (bpFringeChunkTable
             (bpFringeChunkBits shape.bpCode.length)).store.words[address]?)) :
@@ -571,7 +640,7 @@ theorem bpChunkedLeftFringeCandidateSeededTraceResultAtSegment_matchesReadStore
   · exact
       localBPWindowBitsTraceResult_matchesReadStore shape blockSize
         leftClose store hbpCode
-  · intro address
+  · intro address _hlt
     show store.readWord? fringeSegment address = _
     exact hfringe address
 
@@ -599,7 +668,7 @@ theorem bpChunkedRightFringeCandidateSeededTraceResultAtSegment_matchesReadStore
   · exact
       localBPWindowBitsTraceResult_matchesReadStore shape blockSize
         rightClose store hbpCode
-  · intro address
+  · intro address _hlt
     show store.readWord? fringeSegment address = _
     exact hfringe address
 
@@ -615,7 +684,7 @@ theorem bpChunkedLeftFringeCandidateSeededTraceResultAtSegment_no_syntheticCostO
   · exact
       localBPWindowBitsTraceResult_no_syntheticCostOnlyPrimitive shape
         blockSize leftClose
-  · intro address
+  · intro address _hlt
     simp [WordRAM.TraceEvent.isSyntheticCostOnlyPrimitive]
 
 theorem bpChunkedRightFringeCandidateSeededTraceResultAtSegment_no_syntheticCostOnlyPrimitive
@@ -630,7 +699,7 @@ theorem bpChunkedRightFringeCandidateSeededTraceResultAtSegment_no_syntheticCost
   · exact
       localBPWindowBitsTraceResult_no_syntheticCostOnlyPrimitive shape
         blockSize rightClose
-  · intro address
+  · intro address _hlt
     simp [WordRAM.TraceEvent.isSyntheticCostOnlyPrimitive]
 
 /-! ## Supplied-store chunked fringe candidates -/
@@ -989,16 +1058,18 @@ theorem bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmen
     (hrank :
       forall pos event,
         List.Mem event (rankCloseTrace pos).trace -> P event)
-    (hbp :
-      forall blockSize close event,
+    (hfringeLeft :
+      forall blockSize close seed event,
         List.Mem event
-          (localBPWindowBitsTraceResult shape blockSize close).trace ->
+          (bpChunkedLeftFringeCandidateSeededTraceResultAtSegment
+            shape fringeSegment blockSize close seed).trace ->
           P event)
-    (hfringe :
-      forall address,
-        P (WordRAM.TraceEvent.readWord fringeSegment address
-          (bpFringeChunkTable
-            (bpFringeChunkBits shape.bpCode.length)).store.words[address]?))
+    (hfringeRight :
+      forall blockSize close seed event,
+        List.Mem event
+          (bpChunkedRightFringeCandidateSeededTraceResultAtSegment
+            shape fringeSegment blockSize close seed).trace ->
+          P event)
     (hinterior :
       forall startBlock count event,
         List.Mem event
@@ -1025,11 +1096,9 @@ theorem bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmen
         (by simpa [blockSize] using hmem)
     rcases List.mem_append.mp htail with hmem | htail
     · exact
-        bpChunkedLeftFringeCandidateSeededTraceResultAtSegment_trace_forall
-          shape fringeSegment blockSize leftClose
+        hfringeLeft blockSize leftClose
           (localBPSeedFromRankCloseTraceResult
-            shape rankCloseTrace blockSize leftClose).value P
-          (hbp blockSize leftClose) hfringe event
+            shape rankCloseTrace blockSize leftClose).value event
           (by simpa [blockSize] using hmem)
     rcases List.mem_append.mp htail with hmem | htail
     · exact hinterior
@@ -1045,11 +1114,9 @@ theorem bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmen
         shape rankCloseTrace blockSize rightClose P hrank event
         (by simpa [blockSize] using hmem)
     · exact
-        bpChunkedRightFringeCandidateSeededTraceResultAtSegment_trace_forall
-          shape fringeSegment blockSize rightClose
+        hfringeRight blockSize rightClose
           (localBPSeedFromRankCloseTraceResult
-            shape rankCloseTrace blockSize rightClose).value P
-          (hbp blockSize rightClose) hfringe event
+            shape rankCloseTrace blockSize rightClose).value event
           (by simpa [blockSize] using hmem)
   · simp [WordRAM.TraceResult.bind, WordRAM.TraceResult.map,
       WordRAM.TraceResult.pure, hmiddle] at hmem
@@ -1059,22 +1126,18 @@ theorem bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmen
         (by simpa [blockSize] using hmem)
     rcases List.mem_append.mp htail with hmem | htail
     · exact
-        bpChunkedLeftFringeCandidateSeededTraceResultAtSegment_trace_forall
-          shape fringeSegment blockSize leftClose
+        hfringeLeft blockSize leftClose
           (localBPSeedFromRankCloseTraceResult
-            shape rankCloseTrace blockSize leftClose).value P
-          (hbp blockSize leftClose) hfringe event
+            shape rankCloseTrace blockSize leftClose).value event
           (by simpa [blockSize] using hmem)
     rcases List.mem_append.mp htail with hmem | hmem
     · exact localBPSeedFromRankCloseTraceResult_trace_forall
         shape rankCloseTrace blockSize rightClose P hrank event
         (by simpa [blockSize] using hmem)
     · exact
-        bpChunkedRightFringeCandidateSeededTraceResultAtSegment_trace_forall
-          shape fringeSegment blockSize rightClose
+        hfringeRight blockSize rightClose
           (localBPSeedFromRankCloseTraceResult
-            shape rankCloseTrace blockSize rightClose).value P
-          (hbp blockSize rightClose) hfringe event
+            shape rankCloseTrace blockSize rightClose).value event
           (by simpa [blockSize] using hmem)
 
 /-- Supplied-store chunked cross-block close consumer. -/
@@ -1248,6 +1311,340 @@ theorem bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmen
         shape hbp hfringe,
       bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore_store_parametric
         shape hbp hfringe]
+
+/--
+Every charged chunked left-fringe invocation actually reads the fringe
+chunk table: the fold visits at least one chunk on every argument.
+-/
+theorem bpChunkedLeftFringeCandidateSeededTraceResultAtSegment_fringe_mayRead
+    (shape : Cartesian.CartesianShape)
+    (fringeSegment blockSize leftClose seed : Nat) :
+    ∃ index word?,
+      WordRAM.TraceEvent.readWord fringeSegment index word? ∈
+        (bpChunkedLeftFringeCandidateSeededTraceResultAtSegment
+          shape fringeSegment blockSize leftClose seed).trace := by
+  let c := bpFringeChunkBits shape.bpCode.length
+  let base := localBPWindowBase shape blockSize leftClose
+  let start := leftClose + 1
+  let cnt :=
+    blockStartOf blockSize (blockOfClose blockSize leftClose) +
+      blockSize - leftClose
+  let relLo := start - base
+  let relHi := start + cnt - 1 - base
+  let window := localBPWindowBits shape blockSize leftClose
+  let slot :=
+    bpFringeChunkSlot c (bpFringeWindowChunkValue c window 0)
+      (bpFringeChunkStartOff c relLo 0) (bpFringeChunkEndOff c relHi 0)
+  have hmem :=
+    bpFringeChunkFoldTraceResultAtSegment_head_mem
+      (bpFringeChunkTable c) fringeSegment c window seed relLo relHi
+      (Nat.min (relHi / c + 1) 33)
+      (Nat.lt_min.mpr ⟨Nat.succ_pos _, by omega⟩)
+  have hcand :
+      WordRAM.TraceEvent.readWord fringeSegment slot
+          (bpFringeChunkTable c).store.words[slot]? ∈
+        (bpChunkedLeftFringeCandidateSeededTraceResultAtSegment
+          shape fringeSegment blockSize leftClose seed).trace := by
+    show WordRAM.TraceEvent.readWord fringeSegment slot
+        (bpFringeChunkTable c).store.words[slot]? ∈
+      (WordRAM.TraceResult.bind
+        (localBPWindowBitsTraceResult shape blockSize leftClose)
+        (fun window =>
+          WordRAM.TraceResult.map
+            (fun st => bpFringeCandGlobal base seed start st.2)
+            (bpFringeChunkFoldTraceResultAtSegment (bpFringeChunkTable c)
+              fringeSegment c window seed relLo relHi
+              (Nat.min (relHi / c + 1) 33)))).trace
+    rw [WordRAM.TraceResult.bind_trace]
+    apply List.mem_append_right
+    rw [WordRAM.TraceResult.map_trace]
+    rw [localBPWindowBitsTraceResult_value]
+    exact hmem
+  exact ⟨slot, _, hcand⟩
+
+/-- Window-read events belong to the charged chunked left-fringe trace. -/
+theorem bpChunkedLeftFringeCandidateSeededTraceResultAtSegment_window_mem
+    (shape : Cartesian.CartesianShape)
+    (fringeSegment blockSize leftClose seed : Nat)
+    {event : WordRAM.TraceEvent}
+    (hmem :
+      List.Mem event
+        (localBPWindowBitsTraceResult shape blockSize leftClose).trace) :
+    List.Mem event
+      (bpChunkedLeftFringeCandidateSeededTraceResultAtSegment
+        shape fringeSegment blockSize leftClose seed).trace := by
+  let c := bpFringeChunkBits shape.bpCode.length
+  let base := localBPWindowBase shape blockSize leftClose
+  let start := leftClose + 1
+  let cnt :=
+    blockStartOf blockSize (blockOfClose blockSize leftClose) +
+      blockSize - leftClose
+  let relLo := start - base
+  let relHi := start + cnt - 1 - base
+  show List.Mem event
+    (WordRAM.TraceResult.bind
+      (localBPWindowBitsTraceResult shape blockSize leftClose)
+      (fun window =>
+        WordRAM.TraceResult.map
+          (fun st => bpFringeCandGlobal base seed start st.2)
+          (bpFringeChunkFoldTraceResultAtSegment (bpFringeChunkTable c)
+            fringeSegment c window seed relLo relHi
+            (Nat.min (relHi / c + 1) 33)))).trace
+  rw [WordRAM.TraceResult.bind_trace]
+  exact List.mem_append_left _ hmem
+
+/--
+Every charged chunked left-fringe invocation performs a successful
+chunk-table read: the visited slots are inside the stored row range.
+-/
+theorem bpChunkedLeftFringeCandidateSeededTraceResultAtSegment_fringe_successful_mayRead
+    (shape : Cartesian.CartesianShape)
+    (fringeSegment blockSize leftClose seed : Nat) :
+    ∃ index word,
+      WordRAM.TraceEvent.readWord fringeSegment index (some word) ∈
+        (bpChunkedLeftFringeCandidateSeededTraceResultAtSegment
+          shape fringeSegment blockSize leftClose seed).trace := by
+  let c := bpFringeChunkBits shape.bpCode.length
+  let base := localBPWindowBase shape blockSize leftClose
+  let start := leftClose + 1
+  let cnt :=
+    blockStartOf blockSize (blockOfClose blockSize leftClose) +
+      blockSize - leftClose
+  let relLo := start - base
+  let relHi := start + cnt - 1 - base
+  let window := localBPWindowBits shape blockSize leftClose
+  let slot :=
+    bpFringeChunkSlot c (bpFringeWindowChunkValue c window 0)
+      (bpFringeChunkStartOff c relLo 0) (bpFringeChunkEndOff c relHi 0)
+  have hsize :
+      (bpFringeChunkTable c).store.words.size = bpFringeChunkRowCount c := by
+    simp [bpFringeChunkTable, SuccinctSpace.FixedWidthNatTable.ofEntries,
+      SuccinctSpace.FixedWidthNatTable.ofEncodedWords]
+  have hslotLt : slot < (bpFringeChunkTable c).store.words.size := by
+    rw [hsize]
+    exact
+      bpFringeChunkSlot_lt_rowCount
+        (bpFringeWindowChunkValue_lt c window 0)
+        (bpFringeChunkStartOff_le c relLo 0)
+        (bpFringeChunkEndOff_le c relHi 0)
+  have hword :
+      (bpFringeChunkTable c).store.words[slot]? =
+        some ((bpFringeChunkTable c).store.words[slot]'hslotLt) := by
+    simp [hslotLt]
+  have hmem :=
+    bpFringeChunkFoldTraceResultAtSegment_head_mem
+      (bpFringeChunkTable c) fringeSegment c window seed relLo relHi
+      (Nat.min (relHi / c + 1) 33)
+      (Nat.lt_min.mpr ⟨Nat.succ_pos _, by omega⟩)
+  rw [hword] at hmem
+  have hcand :
+      WordRAM.TraceEvent.readWord fringeSegment slot
+          (some ((bpFringeChunkTable c).store.words[slot]'hslotLt)) ∈
+        (bpChunkedLeftFringeCandidateSeededTraceResultAtSegment
+          shape fringeSegment blockSize leftClose seed).trace := by
+    show WordRAM.TraceEvent.readWord fringeSegment slot
+        (some ((bpFringeChunkTable c).store.words[slot]'hslotLt)) ∈
+      (WordRAM.TraceResult.bind
+        (localBPWindowBitsTraceResult shape blockSize leftClose)
+        (fun window =>
+          WordRAM.TraceResult.map
+            (fun st => bpFringeCandGlobal base seed start st.2)
+            (bpFringeChunkFoldTraceResultAtSegment (bpFringeChunkTable c)
+              fringeSegment c window seed relLo relHi
+              (Nat.min (relHi / c + 1) 33)))).trace
+    rw [WordRAM.TraceResult.bind_trace]
+    apply List.mem_append_right
+    rw [WordRAM.TraceResult.map_trace]
+    rw [localBPWindowBitsTraceResult_value]
+    exact hmem
+  exact ⟨slot, _, hcand⟩
+
+theorem bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore_trace_forall
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (fringeSegment blockSize leftClose seed : Nat)
+    (P : WordRAM.TraceEvent -> Prop)
+    (hbp :
+      forall event,
+        List.Mem event
+          (localBPWindowBitsTraceResultWithStore
+            shape store blockSize leftClose).trace ->
+          P event)
+    (hfringe :
+      forall address,
+        address <
+          bpFringeChunkRowCount (bpFringeChunkBits shape.bpCode.length) ->
+        P (WordRAM.TraceEvent.readWord fringeSegment address
+          (store.readWord? fringeSegment address))) :
+    forall event,
+      List.Mem event
+          (bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore
+            shape store fringeSegment blockSize leftClose seed).trace ->
+        P event := by
+  unfold bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact hbp
+  · apply WordRAM.TraceResult.map_trace_forall
+    exact
+      bpFringeChunkFoldTraceResultAtSegmentWithStore_trace_forall
+        store fringeSegment _ _ seed _ _ _ P hfringe
+
+theorem bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore_trace_forall
+    (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
+    (fringeSegment blockSize rightClose seed : Nat)
+    (P : WordRAM.TraceEvent -> Prop)
+    (hbp :
+      forall event,
+        List.Mem event
+          (localBPWindowBitsTraceResultWithStore
+            shape store blockSize rightClose).trace ->
+          P event)
+    (hfringe :
+      forall address,
+        address <
+          bpFringeChunkRowCount (bpFringeChunkBits shape.bpCode.length) ->
+        P (WordRAM.TraceEvent.readWord fringeSegment address
+          (store.readWord? fringeSegment address))) :
+    forall event,
+      List.Mem event
+          (bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore
+            shape store fringeSegment blockSize rightClose seed).trace ->
+        P event := by
+  unfold bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact hbp
+  · apply WordRAM.TraceResult.map_trace_forall
+    exact
+      bpFringeChunkFoldTraceResultAtSegmentWithStore_trace_forall
+        store fringeSegment _ _ seed _ _ _ P hfringe
+
+theorem bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_trace_forall
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (fringeSegment : Nat)
+    (store : WordRAM.ReadStore)
+    (leftClose rightClose : Nat)
+    (P : WordRAM.TraceEvent -> Prop)
+    (hrank :
+      forall pos event, List.Mem event (rankCloseTrace pos).trace -> P event)
+    (hfringeLeft :
+      forall blockSize close seed event,
+        List.Mem event
+          (bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore
+            shape store fringeSegment blockSize close seed).trace ->
+          P event)
+    (hfringeRight :
+      forall blockSize close seed event,
+        List.Mem event
+          (bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore
+            shape store fringeSegment blockSize close seed).trace ->
+          P event)
+    (hinterior :
+      forall startBlock count event,
+        List.Mem event
+          (concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore
+            shape segments store startBlock count).trace -> P event) :
+    forall event,
+      List.Mem event
+          (bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+            shape rankCloseTrace segments fringeSegment store leftClose
+            rightClose).trace ->
+        P event := by
+  unfold bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+  let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
+  apply WordRAM.TraceResult.bind_trace_forall
+  case hresult =>
+    exact localBPSeedFromRankCloseTraceResult_trace_forall
+      shape rankCloseTrace blockSize leftClose P hrank
+  case hnext =>
+    apply WordRAM.TraceResult.bind_trace_forall
+    case hresult =>
+      exact hfringeLeft blockSize leftClose _
+    case hnext =>
+      apply WordRAM.TraceResult.bind_trace_forall
+      case hresult =>
+        by_cases hmiddle :
+            blockOfClose blockSize leftClose + 1 <
+              blockOfClose blockSize rightClose
+        case pos =>
+          simpa [blockSize, hmiddle] using
+            hinterior (blockOfClose blockSize leftClose + 1)
+              (blockOfClose blockSize rightClose -
+                blockOfClose blockSize leftClose - 1)
+        case neg =>
+          simp [blockSize, hmiddle]
+      case hnext =>
+        apply WordRAM.TraceResult.bind_trace_forall
+        case hresult =>
+          exact localBPSeedFromRankCloseTraceResult_trace_forall
+            shape rankCloseTrace blockSize rightClose P hrank
+        case hnext =>
+          exact WordRAM.TraceResult.map_trace_forall P _ _
+            (hfringeRight blockSize rightClose _)
+
+theorem bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_matchesReadStore
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (fringeSegment : Nat)
+    (store : WordRAM.ReadStore)
+    (leftClose rightClose : Nat)
+    (hrank :
+      forall pos event,
+        List.Mem event (rankCloseTrace pos).trace ->
+          event.matchesReadStore store) :
+    forall event,
+      List.Mem event
+          (bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+            shape rankCloseTrace segments fringeSegment store leftClose
+            rightClose).trace ->
+        event.matchesReadStore store := by
+  exact
+    bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_trace_forall
+      shape rankCloseTrace segments fringeSegment store leftClose
+      rightClose
+      (fun event => event.matchesReadStore store) hrank
+      (fun blockSize close seed =>
+        bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore_matchesReadStore
+          shape store fringeSegment blockSize close seed)
+      (fun blockSize close seed =>
+        bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore_matchesReadStore
+          shape store fringeSegment blockSize close seed)
+      (fun startBlock count =>
+        concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore_matchesReadStore
+          shape segments store startBlock count)
+
+theorem bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_no_syntheticCostOnlyPrimitive
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (fringeSegment : Nat)
+    (store : WordRAM.ReadStore)
+    (leftClose rightClose : Nat)
+    (hrank :
+      forall pos event,
+        List.Mem event (rankCloseTrace pos).trace ->
+          Not event.isSyntheticCostOnlyPrimitive) :
+    forall event,
+      List.Mem event
+          (bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
+            shape rankCloseTrace segments fringeSegment store leftClose
+            rightClose).trace ->
+        Not event.isSyntheticCostOnlyPrimitive := by
+  exact
+    bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_trace_forall
+      shape rankCloseTrace segments fringeSegment store leftClose
+      rightClose
+      (fun event => Not event.isSyntheticCostOnlyPrimitive) hrank
+      (fun blockSize close seed =>
+        bpChunkedLeftFringeCandidateSeededTraceResultAtSegmentWithStore_no_syntheticCostOnlyPrimitive
+          shape store fringeSegment blockSize close seed)
+      (fun blockSize close seed =>
+        bpChunkedRightFringeCandidateSeededTraceResultAtSegmentWithStore_no_syntheticCostOnlyPrimitive
+          shape store fringeSegment blockSize close seed)
+      (fun startBlock count =>
+        concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructuralWithStore_no_syntheticCostOnlyPrimitive
+          shape segments store startBlock count)
 
 end ConcreteCompactBPCloseLCADirectory
 

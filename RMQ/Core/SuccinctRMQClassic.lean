@@ -108,9 +108,18 @@ abbrev canonicalTransitionalQueryCost : Nat :=
 abbrev chargedTraceCostAlgebra :=
   SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra
 
-theorem queryCost_eq : queryCost = 76 := by
+theorem queryCost_eq : queryCost = 142 := by
   exact
     SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq
+
+/-- Checked historical U3 cost of the retired event-silent fringe route. -/
+abbrev canonicalSilentFringeQueryCost : Nat :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQSilentFringeChargedTraceCost
+
+theorem canonicalSilentFringeQueryCost_eq :
+    canonicalSilentFringeQueryCost = 76 := by
+  exact
+    SuccinctFinal.concreteBPNativeSuccinctRMQSilentFringeChargedTraceCost_eq
 
 theorem canonicalTransitionalQueryCost_eq :
     canonicalTransitionalQueryCost = 328 := by

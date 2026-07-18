@@ -29,7 +29,8 @@ theorem concreteBPNativeSuccinctRMQReviewerSource_counted_successful_closed_vali
           , .selectLocalBaseWordIndex
           , .selectLocalRankBefore
           , .selectLocalFirstOffset
-          , .canonicalClose ] ∨
+          , .canonicalClose
+          , .fringeChunkTable ] ∨
       source ∈
           [ .selectLongFlagRankSuperTrue
           , .selectLongFlagRankBlockTrue

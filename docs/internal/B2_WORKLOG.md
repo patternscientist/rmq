@@ -234,7 +234,24 @@ first, consumers swapped atomically.
         `_trace_forall`, `_eq_of_agree`, `_refines_of_agree`,
         `_store_parametric`;
       imports registered in `RMQ.lean`.
-- [ ] M9 atomic swap (single commit, library green):
+- [x] M9 atomic swap (single commit, library green):
+      dispatcher relocation to `ChargedFringeWiring.lean` (swapped
+      cross-block branch, re-derived cost/exactness surface, fringe
+      segment parameter); reviewer store extension (constructor appended,
+      segment map 21, erasure/capacity/width/address folds, manifest and
+      liveness regeneration all green in `ReviewerPhysical`); public
+      payload/overhead amendment in `FlatPayload` (layout gains
+      `fringePayload`, `reviewerPayload = buildPayload` stays `rfl`);
+      `SuccinctFinalRAM` regenerated (producer paths `lcaFringeLeft/Right`,
+      may-path witness, adequacy feeds, derived literal 142, frozen 76);
+      `SuccinctFinalStoreParam` agreement field + StoreTraceLocal for the
+      chunked WithStore route; reachability W19 witness for the fringe
+      source over the increasing-16 cross-block execution; BP
+      close-navigation profile store remapped (legacy dead segment 21 ->
+      fringe table) with extended read backing; public surfaces updated
+      (queryCost_eq = 142, canonicalSilentFringeQueryCost_eq = 76,
+      headlines/validation).  See DD-20260717-004.
+      Original plan:
       wiring (`canonicalLcaCloseCostedWithRankSeed` else-branch +
       trace/WithStore twins at the accepted call sites), reviewer store
       extension (constructor, segment 21, erasure/capacity/width/address
@@ -243,8 +260,58 @@ first, consumers swapped atomically.
       by `rfl`), cost re-derivation (fringe 37, derived route literal),
       adequacy regeneration, headline/validation consumer updates, 76
       frozen as historical constant.
-- [ ] M10 final battery + matrix closure + report.
+- [x] M10 final battery + matrix closure (all B2 rows closed; ledger
+      below) + report.
+
+## Resume point
+
+None required: the B2 campaign's frozen matrix (REQ-B2-01..19 and all
+inherited rows) is closed at this commit.  Named successors per contract:
+B4 full provenance audit pass; B5 prose/doc migration, alias consolidation,
+and any revisit of the `/8` chunk scale for a smaller route literal.
 
 ## Verification ledger (B2-02)
 
 - M7: docs only.
+- M8 deps/checks: `lake env lean` per new module
+  (`ChargedFringeTableFacts` 1 iteration, `ChargedFringeSpace` re-check,
+  `ChargedFringeTrace` 3 iterations, ~2-3 min each); `lake build RMQ`
+  exit 0 (full root, incremental).
+- M9 iterative checks (each `lake env lean`/targeted `lake build`, exit 0
+  unless noted): trimmed `ConcreteDirectoryRAM` + `StoreParam`;
+  `ChargedFringeWiring` chain build (84 jobs, mutex held);
+  `Segments`/`FlatPayload` (2 iterations: one assoc goal);
+  `ReviewerPhysical` (1 iteration, clean);
+  `SuccinctFinalRAM` (2 iterations: hardcoded 21/76 bounds, then clean);
+  `SuccinctFinalStoreParam` (2 iterations: one beta reduction + one bound);
+  reachability/adequacy/public modules via full root.
+- M9 battery at the swap tree:
+  - `lake build RMQ` exit 0 (full root, mutex held).
+  - `rg` hygiene on all ChargedFringe modules: no forbidden tokens, no
+    `native_decide`/`ofReduceBool` (exit 1 = no matches).
+  - `git diff --check` exit 0.
+  - `design_decision_check.ps1 -Strict -Base b6338ea...` exit 0
+    (27 changed files).
+  - `claim_drift_scan.ps1` exit 0 (0 strict failures; 715 then 701
+    review-level hits, none strict).
+  - `paper_topology_lint.ps1`: first run failed on the canonical-anchor
+    registry still naming `...NonSyntheticWeightSumLe76`; the registry
+    entry, `scripts/headline_axiom_check.lean` `#print axioms` line, and
+    the current-claim numeric tables (README, artifact/CLAIMS.md,
+    docs/WHAT_IS_PROVED.md, docs/PAPER_CLAIM_CORRESPONDENCE.md,
+    docs/PAPER_MAIN_THEOREM.md, docs/FAMILY_SUMMARY.md) were synced to the
+    derived literal 142 (stale-constant class; frozen-history files
+    untouched); re-run: `PAPER-TOPOLOGY PASS (82 broad documentary
+    identifiers; 48 paper identifiers resolved)`, exit 0 (with
+    `lake build RMQPaper` exit 0).
+  - cost harness executable: `lake build rmq_succinct_classic_cost_harness`
+    exit 0; `lake exe rmq_succinct_classic_cost_harness` exit 0 — every
+    reported window agrees with reference `List Int` RMQ semantics;
+    `canonicalBoundIs142=true`; cross-block modeled trace costs now
+    75-102 (the fringes charge real chunk-table reads; several exceed the
+    retired 76, all under 142); same-block 36.
+  - repo-wide `rg` forbidden-token scan over `RMQ` + `lakefile.toml`:
+    0 hits total.
+  - `git diff --check` and `git diff --check b6338ea..HEAD` clean.
+  - `lake build RMQExamples` exit 0 (updated `#guard queryCost == 142`
+    and `#guard canonicalSilentFringeQueryCost == 76`).

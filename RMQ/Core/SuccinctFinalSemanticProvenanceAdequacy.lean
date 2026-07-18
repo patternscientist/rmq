@@ -35,7 +35,7 @@ structure ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy : Prop whe
     forall segment : Nat,
       (Exists fun source =>
         concreteBPNativeSuccinctRMQReviewerSegmentSource? segment = some source) <->
-          segment < 21
+          segment < 22
 
 /-- The concrete manifest discharges the global W19 packet using the actual
 small, symbolic long-super, and symbolic sparse-local witness families. -/

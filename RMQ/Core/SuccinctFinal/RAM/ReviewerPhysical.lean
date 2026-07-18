@@ -1,4 +1,5 @@
 import RMQ.Core.SuccinctFinal.RAM.FlatPayload
+import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeTableFacts
 
 /-!
 # Canonical reviewer physical store
@@ -42,6 +43,7 @@ inductive ReviewerSource where
   | selectSparseFlagBits
   | selectSparseRelative
   | canonicalClose
+  | fringeChunkTable
 deriving DecidableEq
 
 /-- Unique live payload sources, in canonical public order. -/
@@ -65,7 +67,8 @@ def concreteBPNativeSuccinctRMQReviewerPhysicalSources : List ReviewerSource :=
   , .selectSparseRankBlockTrue
   , .selectSparseFlagBits
   , .selectSparseRelative
-  , .canonicalClose ]
+  , .canonicalClose
+  , .fringeChunkTable ]
 
 /--
 The actual globally segmented evaluator leaves that can issue reviewer reads.
@@ -103,7 +106,8 @@ def concreteBPNativeSuccinctRMQReviewerSegmentSource? :
   | 18 => some .finalRankBlockFalse
   | 19 => some .sharedBPCode
   | 20 => some .canonicalClose
-  | _ + 21 => none
+  | 21 => some .fringeChunkTable
+  | _ + 22 => none
 
 /--
 Compatibility category map for the historically designated consumer of each
@@ -116,8 +120,8 @@ def concreteBPNativeSuccinctRMQReviewerSegmentLeaf? :
   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
       15 | 16 => some .selectClose
   | 17 | 18 | 19 => some .rankClose
-  | 20 => some .canonicalClose
-  | _ + 21 => none
+  | 20 | 21 => some .canonicalClose
+  | _ + 22 => none
 
 /-- A source is owned by a leaf exactly when a logical segment read by that
 leaf resolves to the source in the canonical source map. -/
@@ -245,6 +249,8 @@ theorem concreteBPNativeSuccinctRMQReviewerSource_operationally_live
       exact Or.inr ⟨by decide, .selectClose, 16, rfl, rfl⟩
   | canonicalClose =>
       exact Or.inr ⟨by decide, .canonicalClose, 20, rfl, rfl⟩
+  | fringeChunkTable =>
+      exact Or.inr ⟨by decide, .canonicalClose, 21, rfl, rfl⟩
 
 /-- Compatibility theorem; not part of the load-bearing reviewer surface. -/
 theorem concreteBPNativeSuccinctRMQReviewerSource_counted_iff_live
@@ -261,7 +267,7 @@ theorem concreteBPNativeSuccinctRMQReviewerPhysicalSources_nodup :
   decide
 
 theorem concreteBPNativeSuccinctRMQReviewerPhysicalSources_length :
-    concreteBPNativeSuccinctRMQReviewerPhysicalSources.length = 20 := by
+    concreteBPNativeSuccinctRMQReviewerPhysicalSources.length = 21 := by
   rfl
 
 /-- Named controller families that consume canonical reviewer sources. -/
@@ -303,6 +309,7 @@ def ReviewerSource.consumer? : ReviewerSource -> Option ReviewerConsumer
   | .selectSparseFlagBits => some .selectClose
   | .selectSparseRelative => some .selectClose
   | .canonicalClose => some .canonicalClose
+  | .fringeChunkTable => some .canonicalClose
 
 /-- A consumer claim is accepted only with a segment-derived operational leaf
 witness.  The compatibility `consumer?` label alone is not evidence. -/
@@ -337,7 +344,7 @@ theorem concreteBPNativeSuccinctRMQReviewerSource_operational_owner_consumer
       simp [concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hsource
       exact (hnotShared hsource.symm).elim
   | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 |
-      16 | 17 | 18 | 20 =>
+      16 | 17 | 18 | 20 | 21 =>
       simp [concreteBPNativeSuccinctRMQReviewerSegmentSource?,
         concreteBPNativeSuccinctRMQReviewerSegmentLeaf?] at hsource hleaf
       subst source
@@ -346,7 +353,7 @@ theorem concreteBPNativeSuccinctRMQReviewerSource_operational_owner_consumer
   | 19 =>
       simp [concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hsource
       exact (hnotShared hsource.symm).elim
-  | _ + 21 =>
+  | _ + 22 =>
       simp [concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hsource
 
 /-- A forged compatibility label is rejected because it cannot carry the
@@ -485,6 +492,7 @@ def ReviewerSource.legacyOuterSource? : ReviewerSource ->
   | .selectSparseFlagBits => some .selectSparseFlagBits
   | .selectSparseRelative => some .selectSparseRelative
   | .canonicalClose => none
+  | .fringeChunkTable => none
 
 theorem concreteBPNativeSuccinctRMQReviewerSource_legacyBridge_excludes_close
     (source : ReviewerSource)
@@ -552,6 +560,10 @@ def concreteBPNativeSuccinctRMQReviewerSourceWords
   | .canonicalClose =>
       (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
         shape).store.words.toList
+  | .fringeChunkTable =>
+      (SuccinctClose.bpFringeChunkTable
+        (SuccinctClose.bpFringeChunkBits
+          shape.bpCode.length)).store.words.toList
 
 def concreteBPNativeSuccinctRMQReviewerSourcePayload
     (shape : Cartesian.CartesianShape) (source : ReviewerSource) : List Bool :=
@@ -587,6 +599,9 @@ def concreteBPNativeSuccinctRMQReviewerSourcePayload
   | .selectSparseRelative => selectData.sparseDirectory.relativeTable.payload
   | .canonicalClose =>
       (SuccinctClose.canonicalRelativeRmmInteriorDirectory shape).payload
+  | .fringeChunkTable =>
+      (SuccinctClose.bpFringeChunkTable
+        (SuccinctClose.bpFringeChunkBits shape.bpCode.length)).payload
 
 def concreteBPNativeSuccinctRMQReviewerCloseWords
     (shape : Cartesian.CartesianShape) : List (List Bool) :=
@@ -721,6 +736,11 @@ theorem concreteBPNativeSuccinctRMQReviewerSourceWords_erases
         SuccinctClose.canonicalRelativeRmmInteriorDirectory] using
         SuccinctClose.canonicalRelativeRmmInteriorComponentStore_flattens_payload
           shape
+  | fringeChunkTable =>
+      simpa [concreteBPNativeSuccinctRMQReviewerSourceWords,
+        concreteBPNativeSuccinctRMQReviewerSourcePayload] using
+        SuccinctClose.bpFringeChunkTable_store_erases
+          (SuccinctClose.bpFringeChunkBits shape.bpCode.length)
 
 private theorem reviewerSources_erases
     (shape : Cartesian.CartesianShape) (sources : List ReviewerSource) :
@@ -815,6 +835,7 @@ def ReviewerSource.region : ReviewerSource -> Nat
   | .selectSparseFlagBits => 17
   | .selectSparseRelative => 18
   | .canonicalClose => 19
+  | .fringeChunkTable => 20
 
 theorem concreteBPNativeSuccinctRMQReviewerSource_region_injective
     {source other : ReviewerSource}
@@ -847,12 +868,12 @@ theorem concreteBPNativeSuccinctRMQReviewerSegmentSource?_coverage
     (segment : Nat) :
     (∃ source,
       concreteBPNativeSuccinctRMQReviewerSegmentSource? segment = some source) ↔
-      segment < 21 := by
+      segment < 22 := by
   match segment with
   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
-      15 | 16 | 17 | 18 | 19 | 20 =>
+      15 | 16 | 17 | 18 | 19 | 20 | 21 =>
       simp [concreteBPNativeSuccinctRMQReviewerSegmentSource?]
-  | _ + 21 =>
+  | _ + 22 =>
       simp [concreteBPNativeSuccinctRMQReviewerSegmentSource?]
 
 /-- The operational leaf map covers exactly the live logical segments. -/
@@ -860,35 +881,35 @@ theorem concreteBPNativeSuccinctRMQReviewerSegmentLeaf?_coverage
     (segment : Nat) :
     (∃ leaf,
       concreteBPNativeSuccinctRMQReviewerSegmentLeaf? segment = some leaf) ↔
-      segment < 21 := by
+      segment < 22 := by
   match segment with
   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
-      15 | 16 | 17 | 18 | 19 | 20 =>
+      15 | 16 | 17 | 18 | 19 | 20 | 21 =>
       simp [concreteBPNativeSuccinctRMQReviewerSegmentLeaf?]
-  | _ + 21 =>
+  | _ + 22 =>
       simp [concreteBPNativeSuccinctRMQReviewerSegmentLeaf?]
 
 theorem concreteBPNativeSuccinctRMQReviewerSegmentRegion?_coverage
     (segment : Nat) :
     (∃ region,
       concreteBPNativeSuccinctRMQReviewerSegmentRegion? segment = some region) ↔
-      segment < 21 := by
+      segment < 22 := by
   match segment with
   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
-      15 | 16 | 17 | 18 | 19 | 20 =>
+      15 | 16 | 17 | 18 | 19 | 20 | 21 =>
       simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
         concreteBPNativeSuccinctRMQReviewerSegmentSource?, ReviewerSource.region]
-  | _ + 21 =>
+  | _ + 22 =>
       simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
         concreteBPNativeSuccinctRMQReviewerSegmentSource?]
 
 theorem concreteBPNativeSuccinctRMQReviewerSegmentRegion?_dead
-    (segment : Nat) (hsegment : 21 <= segment) :
+    (segment : Nat) (hsegment : 22 <= segment) :
     concreteBPNativeSuccinctRMQReviewerSegmentRegion? segment = none := by
   match segment with
   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
-      15 | 16 | 17 | 18 | 19 | 20 => omega
-  | _ + 21 =>
+      15 | 16 | 17 | 18 | 19 | 20 | 21 => omega
+  | _ + 22 =>
       rfl
 
 theorem concreteBPNativeSuccinctRMQReviewerSegmentSource_counted
@@ -901,16 +922,18 @@ theorem concreteBPNativeSuccinctRMQReviewerSegmentSource_counted
 /-- All legacy tail segments are inaccessible from the canonical read store. -/
 theorem concreteBPNativeSuccinctRMQCanonicalReviewerReadStore_legacyTail_none
     (shape : Cartesian.CartesianShape) (segment index : Nat)
-    (hsegment : 21 <= segment) :
+    (hsegment : 22 <= segment) :
     (concreteBPNativeSuccinctRMQCanonicalReviewerReadStore shape).readWord?
         segment index = none := by
   match segment with
   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
-      15 | 16 | 17 | 18 | 19 | 20 => omega
-  | n + 21 =>
-      have hnot20 : ¬ n + 21 < 20 := by omega
+      15 | 16 | 17 | 18 | 19 | 20 | 21 => omega
+  | n + 22 =>
+      have hnot20 : ¬ n + 22 < 20 := by omega
+      have hnotFringe : ¬ (n + 22 = 21) := by omega
       simp [concreteBPNativeSuccinctRMQCanonicalReviewerReadStore,
-        concreteBPNativeInteriorTraceSegments, hnot20]
+        concreteBPNativeInteriorTraceSegments,
+        concreteBPNativeFringeChunkTraceSegment, hnot20, hnotFringe]
 
 def concreteBPNativeSuccinctRMQReviewerSegmentWords
     (shape : Cartesian.CartesianShape) (segment : Nat) : List (List Bool) :=
@@ -950,7 +973,7 @@ def concreteBPNativeSuccinctRMQReviewerPhysicalAddress
 one-past-end physical dead address. -/
 theorem concreteBPNativeSuccinctRMQReviewerPhysicalAddress_deadSegment
     (shape : Cartesian.CartesianShape) (segment index : Nat)
-    (hsegment : 21 <= segment) :
+    (hsegment : 22 <= segment) :
     concreteBPNativeSuccinctRMQReviewerPhysicalAddress shape segment index =
       concreteBPNativeSuccinctRMQReviewerPhysicalDeadAddress shape := by
   match segment with
@@ -975,7 +998,8 @@ theorem concreteBPNativeSuccinctRMQReviewerPhysicalAddress_deadSegment
   | 18 => omega
   | 19 => omega
   | 20 => omega
-  | _ + 21 => rfl
+  | 21 => omega
+  | _ + 22 => rfl
 
 /-- An out-of-range local index cannot spill into the following region: it
 translates to the same one-past-end dead address. -/
@@ -1147,7 +1171,7 @@ theorem concreteBPNativeSuccinctRMQReviewerSegmentWords_readStore
       rw [concreteBPNativeSuccinctRMQGlobalReadStore_bpCode]
       simp [concreteBPNativeSuccinctRMQReviewerSegmentWords]
   | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
-      15 | 16 | 17 | 18 | 19 | 20 =>
+      15 | 16 | 17 | 18 | 19 | 20 | 21 =>
       simp [concreteBPNativeSuccinctRMQGlobalReadStore,
         concreteBPNativeSuccinctRMQReviewerSegmentWords,
         concreteBPNativeSuccinctRMQReviewerSegmentSource?,
@@ -1158,7 +1182,7 @@ theorem concreteBPNativeSuccinctRMQReviewerSegmentWords_readStore
         SuccinctSpace.FixedWidthNatTable.wordRAMStore,
         SuccinctSpace.PayloadWordStore.wordRAMStore,
         WordRAM.Store.readWord?, Array.getElem?_toList]
-  | _ + 21 =>
+  | _ + 22 =>
       simp [concreteBPNativeSuccinctRMQGlobalReadStore,
         concreteBPNativeSuccinctRMQReviewerSegmentWords,
         concreteBPNativeSuccinctRMQReviewerSegmentSource?]
@@ -1220,7 +1244,9 @@ theorem concreteBPNativeSuccinctRMQGlobalReadStore_eq_reviewerPhysical
             concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
         | 20 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
             concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
-        | n + 21 =>
+        | 21 => simp [concreteBPNativeSuccinctRMQReviewerSegmentRegion?,
+            concreteBPNativeSuccinctRMQReviewerSegmentSource?] at hregion
+        | n + 22 =>
             simp [concreteBPNativeSuccinctRMQReviewerSegmentWords,
               concreteBPNativeSuccinctRMQReviewerSegmentSource?]
       simp [hempty,
@@ -1768,6 +1794,22 @@ private theorem concreteBPNativeSuccinctRMQReviewerCloseWords_length_le
     summary, localTable, global] at *
   omega
 
+private theorem concreteBPNativeSuccinctRMQReviewerFringeWords_length_le
+    (shape : Cartesian.CartesianShape) :
+    (concreteBPNativeSuccinctRMQReviewerSourceWords
+      shape .fringeChunkTable).length <= 64 * (shape.size + 1) := by
+  have hrows :
+      (concreteBPNativeSuccinctRMQReviewerSourceWords
+        shape .fringeChunkTable).length =
+        SuccinctClose.bpFringeChunkRowCount
+          (SuccinctClose.bpFringeChunkBits shape.bpCode.length) := by
+    simp [concreteBPNativeSuccinctRMQReviewerSourceWords,
+      SuccinctClose.bpFringeChunkTable,
+      SuccinctSpace.FixedWidthNatTable.ofEntries,
+      SuccinctSpace.FixedWidthNatTable.ofEncodedWords]
+  rw [hrows, Cartesian.CartesianShape.bpCode_length]
+  exact SuccinctClose.bpFringeChunkRowCount_le_linear shape.size
+
 theorem concreteBPNativeSuccinctRMQReviewerPhysicalWords_length_le_capacity
     (shape : Cartesian.CartesianShape) :
     (concreteBPNativeSuccinctRMQReviewerPhysicalWords shape).length <=
@@ -1803,6 +1845,8 @@ theorem concreteBPNativeSuccinctRMQReviewerPhysicalWords_length_le_capacity
       (concreteBPNativeSuccinctRMQReviewerSourceWords
         shape .canonicalClose).length <= 218 * (shape.size + 1) := by
     simpa [concreteBPNativeSuccinctRMQReviewerCloseWords] using hcloseBound
+  have hfringeBound :=
+    concreteBPNativeSuccinctRMQReviewerFringeWords_length_le shape
   rw [concreteBPNativeSuccinctRMQReviewerPhysicalWords_components]
   simp [concreteBPNativeSuccinctRMQReviewerPhysicalSources]
   rw [Cartesian.CartesianShape.bpCode_length] at *
@@ -1982,7 +2026,7 @@ theorem concreteBPNativeSuccinctRMQReviewerPhysicalWord_length_le_wordBits
     ⟨source, hsource, hsourceWord⟩
   simp [concreteBPNativeSuccinctRMQReviewerPhysicalSources] at hsource
   rcases hsource with h0 | h1 | h2 | h3 | h4 | h5 | h6 | h7 | h8 |
-    h9 | h10 | h11 | h12 | h13 | h14 | h15 | h16 | h17 | h18 | h19
+    h9 | h10 | h11 | h12 | h13 | h14 | h15 | h16 | h17 | h18 | h19 | h20
   all_goals subst source
   · change List.Mem word
         (builtRelativeSplitBPCloseRankData
@@ -2105,6 +2149,22 @@ theorem concreteBPNativeSuccinctRMQReviewerPhysicalWord_length_le_wordBits
       (SuccinctClose.canonicalRelativeRmmInteriorComponentStore_words_bounded
         shape hsourceWord)
       (concreteBPNativeSuccinctRMQReviewerMachineWordBits_le_wordBits shape)
+  · change List.Mem word
+      (SuccinctClose.bpFringeChunkTable
+        (SuccinctClose.bpFringeChunkBits
+          shape.bpCode.length)).store.words.toList at hsourceWord
+    rcases List.mem_iff_getElem?.1 hsourceWord with ⟨i, hget⟩
+    have hlen : word.length =
+        SuccinctClose.bpFringeChunkEntryWidth
+          (SuccinctClose.bpFringeChunkBits shape.bpCode.length) :=
+      SuccinctClose.bpFringeChunkTable_word_length
+        (by simpa [Array.getElem?_toList] using hget)
+    rw [hlen]
+    have hcap :=
+      SuccinctClose.bpFringeChunkEntryWidth_le_machineWordBits_capacity
+        shape.size
+    rw [Cartesian.CartesianShape.bpCode_length]
+    exact hcap
 
 /-- Every successful logical read returns a word bounded by the reviewer width. -/
 theorem concreteBPNativeSuccinctRMQReviewerSuccessfulRead_word_length_le_wordBits

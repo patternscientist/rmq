@@ -870,7 +870,9 @@ def concreteBPCloseNavigationGlobalReadStore
       (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
         shape).store.words[index]?
     else if segment = 21 then
-      summary.minRelTable.wordRAMStore.readWord? 0 index
+      (SuccinctClose.bpFringeChunkTable
+        (SuccinctClose.bpFringeChunkBits
+          shape.bpCode.length)).store.words[index]?
     else if segment = 22 then
       summary.maxRelTable.wordRAMStore.readWord? 0 index
     else if segment = 23 then
@@ -889,6 +891,17 @@ theorem concreteBPCloseNavigationGlobalReadStore_retiredFiniteSmallInterior_none
       (concreteBPCloseNavigationGlobalReadStore shape).readWord? 27 index =
         none := by
   simp [concreteBPCloseNavigationGlobalReadStore]
+
+/-- Segment 21 is exactly the charged fringe chunk-table store. -/
+theorem concreteBPCloseNavigationGlobalReadStore_fringeChunkTable
+    (shape : Cartesian.CartesianShape) (index : Nat) :
+    (concreteBPCloseNavigationGlobalReadStore shape).readWord?
+        SuccinctFinal.concreteBPNativeFringeChunkTraceSegment index =
+      (SuccinctClose.bpFringeChunkTable
+        (SuccinctClose.bpFringeChunkBits
+          shape.bpCode.length)).store.words[index]? := by
+  simp [concreteBPCloseNavigationGlobalReadStore,
+    SuccinctFinal.concreteBPNativeFringeChunkTraceSegment]
 
 /-- Payload components used to back successful global reads. -/
 structure ConcreteBPCloseNavigationPayloadLayout
@@ -1106,6 +1119,16 @@ def concreteBPCloseNavigationPayloadReadBacked
         (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
           shape).store.words.toList =
       (SuccinctClose.canonicalRelativeRmmInteriorDirectory shape).payload) \/
+  (segment = SuccinctFinal.concreteBPNativeFringeChunkTraceSegment /\
+    (SuccinctClose.bpFringeChunkTable
+      (SuccinctClose.bpFringeChunkBits
+        shape.bpCode.length)).store.words[index]? = some word /\
+    SuccinctSpace.flattenPayloadWords
+        (SuccinctClose.bpFringeChunkTable
+          (SuccinctClose.bpFringeChunkBits
+            shape.bpCode.length)).store.words.toList =
+      (SuccinctClose.bpFringeChunkTable
+        (SuccinctClose.bpFringeChunkBits shape.bpCode.length)).payload) \/
   exists source,
     SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?
         segment = some source /\
@@ -1278,6 +1301,10 @@ theorem concreteBPCloseNavigationGlobalReadStore_eq_sourceStore
       if segment = 20 then
         (SuccinctClose.canonicalRelativeRmmInteriorComponentStore
           shape).store.words[index]?
+      else if segment = 21 then
+        (SuccinctClose.bpFringeChunkTable
+          (SuccinctClose.bpFringeChunkBits
+            shape.bpCode.length)).store.words[index]?
       else
         match
           SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?
@@ -1334,17 +1361,27 @@ theorem concreteBPCloseNavigationGlobalReadStore_successful_read_backed
     · simpa [SuccinctClose.canonicalRelativeRmmInteriorDirectory] using
         SuccinctClose.canonicalRelativeRmmInteriorComponentStore_flattens_payload
           shape
-  · right
-    simp [hcomponent] at hread
-    cases hsource :
-        SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?
-          segment with
-    | none =>
-        simp [hsource] at hread
-    | some source =>
-        exact ⟨source, rfl,
-          by simpa [hsource] using hread,
-          concreteBPCloseNavigationPayloadSourceWords_erases shape source⟩
+  · by_cases hfringe : segment = 21
+    · right
+      left
+      refine
+        ⟨by
+          simpa [SuccinctFinal.concreteBPNativeFringeChunkTraceSegment]
+            using hfringe, ?_, ?_⟩
+      · simpa [hcomponent, hfringe] using hread
+      · exact SuccinctClose.bpFringeChunkTable_store_erases _
+    · right
+      right
+      simp [hcomponent, hfringe] at hread
+      cases hsource :
+          SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?
+            segment with
+      | none =>
+          simp [hsource] at hread
+      | some source =>
+          exact ⟨source, rfl,
+            by simpa [hsource] using hread,
+            concreteBPCloseNavigationPayloadSourceWords_erases shape source⟩
 
 theorem concreteBPCloseNavigationGlobalReadStore_bpCode
     (shape : Cartesian.CartesianShape) (index : Nat) :
@@ -2107,6 +2144,7 @@ theorem concreteBPCloseNavigationLCACloseGlobalTraceResult_matchesReadStore
       (SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegment
         shape SuccinctFinal.concreteBPNativeRankCloseTraceSegmentBase)
       SuccinctFinal.concreteBPNativeInteriorTraceSegments
+      SuccinctFinal.concreteBPNativeFringeChunkTraceSegment
       SuccinctFinal.concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
       leftClose rightClose
       (concreteBPCloseNavigationGlobalReadStore shape)
@@ -2114,6 +2152,7 @@ theorem concreteBPCloseNavigationLCACloseGlobalTraceResult_matchesReadStore
         concreteBPCloseNavigationRankCloseGlobalTraceResult_matchesReadStore
           shape pos)
       (concreteBPCloseNavigationGlobalReadStore_bpCode shape)
+      (concreteBPCloseNavigationGlobalReadStore_fringeChunkTable shape)
       (fun startBlock count =>
         concreteBPCloseNavigationInteriorGlobalTraceResultAllSizeStructural_matchesReadStore
           shape startBlock count)
