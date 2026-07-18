@@ -150,7 +150,15 @@ seed 1 (values 1 vs 3 at position 0).
 - M6: `lake build RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeChunks` exit 0 (76 jobs); `lake env lean .../ChargedFringeSubstitution.lean` exit 0 (2 iterations: namespace fix).
 - M5 deps: `lake build RMQ.Core.SuccinctRMQClassic` exit 0, 5m45s (mutex held).
 - M5: `lake env lean .../ChargedFringeSpace.lean` exit 0 (2 iterations: by_contra unavailable, zero-case normalization).
-- Final: see report (root build, hygiene rg, git diff --check, design_decision_check).
+- Final battery (all at HEAD c1eba0d):
+  - `lake build RMQ` exit 0, 2m51s incremental after `lake build
+    RMQ.Core.SuccinctRMQClassic` (5m45s) — full library root incl. the
+    three new modules and the RMQ.lean import additions; no existing
+    module broke (SuccinctFinalModelAdequacy untouched and still green).
+  - `rg -n "(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)|import Mathlib" <new modules>` — no hits (exit 1).
+  - `rg -n "native_decide|Lean\.ofReduceBool" <new modules>` — no hits.
+  - `git diff --check` and `git diff --check b6338ea..HEAD` — clean.
+  - `powershell -ExecutionPolicy Bypass -File scripts/design_decision_check.ps1 -Strict -Base b6338ea004d49461305ae1df70354a1710109352` — exit 0 (7 changed files).
 
 ## Open risks
 
