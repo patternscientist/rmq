@@ -470,6 +470,47 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
 - Verification at this commit: standalone `lake env lean` exit 0 (no
   warnings); `lake build RMQ` green; hygiene rg clean on the new file.
 
+## M3c-5b: dense two-word leg, head block (`E1DenseSelectBlock.lean`)
+
+- New module `RMQ/Core/WordRAM/E1DenseSelectBlock.lean` (wired into
+  `RMQ.lean`): stage 1 of RESUME step 4 - the dense-leg HEAD
+  `denseHeadBlock B M W G c WS N2` (84 instrs), everything up to and
+  including the first-count compare.
+  - Segments: `denseSegA` (word index `xBPos / WS` -> rP, word start ->
+    rWI, local occurrence `xQ - xBOcc` -> rSI, packed word read at
+    segment `W` -> rWrd), presence brNZ pair (miss exit to absolute
+    target `M` - the leg's miss tail, stage 2), `denseSegB` (WORD-LENGTH
+    MIN CHAIN `min WS (N2 - firstWordStart)` -> rBlk from the per-shape
+    constants WS/N2, first effective limit -> rE, word decode -> rR),
+    hosted `rankAtSegmentBlock (B+15) G c` (fold 1, limit firstOffset),
+    `denseSegC` (save before -> rSup, second limit, decode reload),
+    hosted `rankAtSegmentBlock (B+50) G c` (fold 2, limit word length),
+    `denseSegD` (firstCount -> rVal, compare -> rA).
+  - `denseHeadBlock_runsTo_present`: exact fuel to `B + 84`, receipts
+    POSITIONALLY EQUAL to the word-read event :: fold1.trace ++
+    fold2.trace (the accepted component calls verbatim), all branch
+    inputs decoded in registers (rP/rWI/rSI/rBlk/rWrd/rSup/rVal/rA),
+    frozen `denseHeadPresentCats n1 n2` (derived length
+    `33 + 25*(n1+n2)`), pinned constants (24..26) and extension bank
+    (28 <= r) preserved.  Route-side hypothesis `hlen : w1.length =
+    Nat.min WS (N2 - xBPos / WS * WS)` - the dense store's word-length
+    characterization, discharged at canonical instantiation (expect via
+    `chunkPayloadWords_get?_eq_take_drop`-style take/drop lengths).
+  - `denseHeadBlock_runsTo_miss`: absent word exits to `M` with exactly
+    the read receipt, `denseHeadMissCats` (6), prologue write set only.
+  - Width certificate `denseHeadBlock_fits` (delegates the fold arms to
+    `rankAtSegmentBlock_fits`; needs `0 < WS`, `WS/N2/W < 2^w`,
+    `40 <= 2^w`, `B + 84 < 2^w`, `M < 2^w`).
+- Technique notes: the parametric-destination/effLimit goals mix abbrev
+  and numeral spellings after simp - close min-chain goals by rewriting
+  the ROUTE side (`simp only [bpWordRankEffLimit, nat_min_eq_sub_sub]`
+  then `rw` the pre-derived `hlenChain`), never by omega (division
+  products `xBPos / WS * WS` are nonlinear atoms to omega).  Concrete-
+  register preservation instantiations must be `(by decide)`, variable-
+  register ones `(by omega)` (M3c-4b gotcha, still biting).
+- Verification at this commit: standalone `lake env lean` exit 0 (no
+  warnings); `lake build RMQ` green; hygiene rg clean on the new file.
+
 ## RESUME POINT (next session: select-close read sub-blocks onward)
 
 NEW in the M3c-4 session (commits `eb3f102`, `aff4393`, `d49672d`):
@@ -557,14 +598,30 @@ NEXT (dependency order):
 3. DONE (M3c-5a, `E1SelectBridge.lean`): relative-offset read
    (`relativeReadBlock_runsTo`, 4 instrs with a presence brNZ - the
    "3-instr straight" prediction missed the none-packet skip branch).
-4. Dense two-word leg: compose word read (segment
-   `layout.bitWordBase`), two atomic false-rank folds, compare, then
-   `selectFoldBlock` on first word (occurrence `beforeFirst +
-   localOccurrence`) or second word read + `selectFoldBlock`
-   (occurrence `localOccurrence - firstCount`); word-length register
-   discharge mirrors `builtRankData_wordOffset_le` (word rows have
-   length `wordSize` except the boundary row - find the dense store's
-   length characterization when instantiating).
+4. Dense two-word leg: STAGE 1 DONE (M3c-5b, `E1DenseSelectBlock.lean`
+   `denseHeadBlock_runsTo_present/_miss` - word read, both atomic false
+   folds, compare, receipts = component prefix).  STAGE 2 REMAINING: the
+   two select tails + whole-leg theorem - (a) first-word tail: sOcc :=
+   rSup + rSI (before + localOccurrence), sR := rWrd - 1, sLen := rBlk,
+   sJC := 0, sK := chunk count of rBlk by the 8-cap chain, host
+   `selectFoldBlock` (needs `1 <= count`, discharge from `0 < w.length`
+   route-side), then packet shift: brNZ sVal -> add sVal rWI (+wordStart,
+   preserves the 0 = none packet); (b) second-word tail: second read at
+   rP + 1 (readMem + presence brNZ -> miss), same length chain at index
+   rP+1, sOcc := rSI - rVal (locc - firstCount), select fold, packet
+   shift by (rP+1)*WS via mulConst; (c) miss tail at `M`: const rVal 0 +
+   jump to leg end; (d) whole-leg theorem vs
+   `bpChunkedDenseTwoWordSelectTraceResultWithStore W (G+4) S c false
+   bitWords store bPos bOcc q` - four control branches (miss1 / first /
+   second-miss / second), receipts positionally equal per branch, value
+   under `decodePacket` in sVal(9) = rVal.  Original inventory: compose
+   word read (segment `layout.bitWordBase`), two atomic false-rank
+   folds, compare, then `selectFoldBlock` on first word (occurrence
+   `beforeFirst + localOccurrence`) or second word read +
+   `selectFoldBlock` (occurrence `localOccurrence - firstCount`);
+   word-length register discharge mirrors `builtRankData_wordOffset_le`
+   (word rows have length `wordSize` except the boundary row - find the
+   dense store's length characterization when instantiating).
 5. Top-level select-close block: occurrence-range guard (`idx <
    occurrenceCount`, a per-shape constant register), super read ->
    marked dispatch -> long/local -> sparse/dense, mirroring
