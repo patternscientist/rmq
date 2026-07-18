@@ -69,6 +69,21 @@ theorem bitsToNatLE_append :
       rw [ih, hp, Nat.mul_assoc]
       omega
 
+/-! ## The chunk width never exceeds the modeled word width -/
+
+/--
+A fringe chunk always fits inside one modeled machine word, at every size.
+
+This is the side condition every four-register shift below needs (`c <= L`),
+and it is unconditional: `bpFringeChunkBits m = Nat.log2 m / 8 + 1` while
+`machineWordBits m = Nat.log2 m + 1`.  So the machine never has to shift by
+more than a word, and `2 ^ (L - c)` is a genuine per-shape constant.
+-/
+theorem bpFringeChunkBits_le_machineWordBits (m : Nat) :
+    bpFringeChunkBits m <= SuccinctRank.machineWordBits m := by
+  unfold bpFringeChunkBits SuccinctRank.machineWordBits
+  omega
+
 /-! ## The fixed-stride four-register window representation -/
 
 /--
