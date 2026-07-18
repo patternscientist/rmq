@@ -1930,6 +1930,85 @@ theorem bpFringeChunkTable_corruption_changes_fringe_value :
     decide
   rw [hhonest, hcorrupt]
   simp
+/-! ## Window validity from shape balance -/
+
+/--
+At the accepted seed (`localBPSeedExcess`), the window/seed validity
+predicate holds for every window: the seed is the absolute BP prefix excess
+at the window base, and absolute BP prefix excess is nonnegative.
+-/
+theorem bpFringeWindowValid_localBPSeedExcess
+    (shape : Cartesian.CartesianShape) (blockSize close : Nat)
+    (hbase :
+      localBPWindowBase shape blockSize close <= shape.bpCode.length) :
+    BPFringeWindowValid (localBPWindowBits shape blockSize close)
+      (localBPSeedExcess shape blockSize close) := by
+  intro t ht
+  have hwinLen :
+      (localBPWindowBits shape blockSize close).length <=
+        shape.bpCode.length -
+          localBPWindowBase shape blockSize close := by
+    have hlen :
+        (localBPWindowBits shape blockSize close).length =
+          Nat.min (4 * SuccinctRank.machineWordBits shape.bpCode.length)
+            ((shape.bpCode.drop
+              (localBPWindowBase shape blockSize close)).length) := by
+      simp [localBPWindowBits, List.length_take]
+    rw [hlen, List.length_drop]
+    exact Nat.min_le_right _ _
+  have hcovT :
+      localBPWindowBase shape blockSize close + t <=
+        shape.bpCode.length := by
+    omega
+  have htrans :
+      forall target : Bool,
+        Succinct.rankPrefix target
+            (localBPWindowBits shape blockSize close) t +
+          Succinct.rankPrefix target shape.bpCode
+            (localBPWindowBase shape blockSize close) =
+        Succinct.rankPrefix target shape.bpCode
+          (localBPWindowBase shape blockSize close + t) := by
+    intro target
+    have htakeEq :
+        Succinct.rankPrefix target
+            (localBPWindowBits shape blockSize close) t =
+          Succinct.rankPrefix target
+            (shape.bpCode.drop
+              (localBPWindowBase shape blockSize close)) t := by
+      have happ :=
+        Succinct.rankPrefix_take_eq_of_le target
+          (shape.bpCode.drop (localBPWindowBase shape blockSize close))
+          (n := 4 * SuccinctRank.machineWordBits shape.bpCode.length)
+          (limit := t) (by simpa [localBPWindowBits] using ht)
+      simpa [localBPWindowBits] using happ
+    have hdrop :=
+      Succinct.rankPrefix_drop_eq_sub_of_le target shape.bpCode
+        (start := localBPWindowBase shape blockSize close)
+        (limit := localBPWindowBase shape blockSize close + t)
+        (by omega) hcovT
+    have hsubEq :
+        localBPWindowBase shape blockSize close + t -
+          localBPWindowBase shape blockSize close = t := by
+      omega
+    rw [hsubEq] at hdrop
+    have hmono :=
+      Succinct.rankPrefix_mono_limit target shape.bpCode
+        (lo := localBPWindowBase shape blockSize close)
+        (hi := localBPWindowBase shape blockSize close + t)
+        (by omega)
+    omega
+  have hT := htrans true
+  have hF := htrans false
+  have hnnBase := bpExcessAt_prefix_nonnegative shape hbase
+  have hnnT := bpExcessAt_prefix_nonnegative shape hcovT
+  have hseed :
+      localBPSeedExcess shape blockSize close =
+        Succinct.rankPrefix true shape.bpCode
+            (localBPWindowBase shape blockSize close) -
+          Succinct.rankPrefix false shape.bpCode
+            (localBPWindowBase shape blockSize close) := by
+    simp [localBPSeedExcess, bpExcessAt]
+  omega
 
 end SuccinctClose
 
