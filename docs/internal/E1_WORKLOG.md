@@ -561,6 +561,43 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
   warnings); `lake build RMQ` green (only the pre-existing sanctioned
   `SuccinctFinalRAM.lean:5694+` simp-arg warnings); hygiene rg clean.
 
+## M3c-6a: select-close long and sparse legs (`E1SelectLegBlocks.lean`)
+
+- New module `RMQ/Core/WordRAM/E1SelectLegBlocks.lean` (wired into
+  `RMQ.lean`): the two exception legs of the select dispatch, each
+  "seeded TRUE rank block + entry-field arithmetic + relative read +
+  packet move".
+  - `longLegBlock LB GL CH RL SS WS c L WSc BPS` (73 instrs: rank
+    `LB..58`, `longLegSetup` `59..67` re-pins rOne and computes compact
+    slot `exceptionRank*SS + (q - super.baseOccurrence)` -> `rSlot`,
+    base `super.baseWordIndex*WS + super.firstOffset` -> `xBPos`,
+    `relativeReadBlock (LB+68) RL`, `move rVal rT` at 72).
+  - `sparseLegBlock LB GS CH RS LS WS c L WSc BPS` (77 instrs: same
+    with the two-entry sums `relativeSplitSelectLocalBaseOccurrence` /
+    `relativeSplitSelectLocalBasePosition` and stride `LS`).
+  - `longLegBlock_runsTo` / `sparseLegBlock_runsTo`: receipts
+    POSITIONALLY EQUAL to the route-side `TraceResult.bind` of
+    `d.bpChunkedRankTraceResultWithStore ... true (regs0 rPos)` into
+    `bpRelativeOffsetReadTraceResultWithStore` (exactly the dispatch's
+    long-leg expression / the body of
+    `SparseExceptionDirectory.bpChunkedReadTraceResultWithStore`);
+    packet under `decodePacket` in `rVal`; cats
+    `longLegCats`/`sparseLegCats` (rank hit cats + setup + present/
+    absent relative read + move); preservation
+    `(r <= 8 ∨ 28 <= r) ∧ r ≠ 38` (the legs own `xBPos`).  Entry
+    fields arrive as shifted-encode hypotheses
+    (`regs0 xSF1 = super.baseOccurrence + 1` etc.); seed presence +
+    offset bound are route-side hypotheses for canonical discharge.
+  - Width certificates `longLegBlock_fits`/`sparseLegBlock_fits`
+    (delegate the rank block; `first`-combinator arms).
+- Gotcha: `relativeReadBlock_runsTo`'s value clause uses WordRAM's
+  `bitsToNatLE`, the route uses `SuccinctSpace.bitsToNatLE` - convert
+  with `funext SuccinctSpace.WordRAMBridge.bitsToNatLE_eq` and
+  `rw [← hfn]` (simp cannot rewrite the unapplied function under
+  `Option.map`).
+- Verification at this commit: standalone `lake env lean` exit 0 (no
+  warnings); `lake build RMQ` green; hygiene rg clean.
+
 ## STAGE-2 LAYOUT (dense leg tails - implemented in M3c-5c above;
 ## kept for reference)
 
