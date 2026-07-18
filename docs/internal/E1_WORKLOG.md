@@ -620,6 +620,50 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
   warnings in `SuccinctFinalRAM.lean:5694+`,
   `ReviewerReachabilitySparse.lean:574`, `BPNavigationRAM.lean:2111`.
 
+## M3c-6c: select-close dispatch skeleton (`E1SelectDispatch.lean`)
+
+- New module `RMQ/Core/WordRAM/E1SelectDispatch.lean` (wired into
+  `RMQ.lean`): the top-level select dispatch block, its derived category
+  log, and the hosting peel.  Simulation theorem lands in M3c-6d.
+- `selectCloseBlock A S1..S4 M1..M4 GL RL GS RS G W ST c OC SS LSPS LS
+  DLS WS N2 LLen LWS LBPS SLen SWS SBPS` (405 instructions).  Exact
+  layout: prologue `A+0..A+5` (pin `rOne`/`rC`/`rEight` for the dense
+  leg, occurrence count into `rA`, `xQ := xIdx`, `natLt`), range branch
+  `A+6..A+7`, super slot `A+8..A+9`, super entry 4-read `A+10..A+21`,
+  super-miss branch `A+22`, marked test `A+23..A+24`, local slot
+  `A+25..A+30`, local entry 4-read `A+31..A+42`, local-miss branch
+  `A+43`, marked test `A+44..A+45`, dense base `A+46..A+54`, DENSE leg
+  `A+55..A+247`, jump `A+248..A+249`, LONG leg `A+250..A+322`, jump
+  `A+323..A+324`, SPARSE leg `A+325..A+401`, jump `A+402..A+403`, none
+  tail `A+404`, END `A+405`.
+- `selectCloseCats data layout G ST store c idx`: derived log matching
+  `bpChunkedSelectTraceResultWithStore` branch for branch over the
+  route's OWN decoded entries (`superEntry`/`localEntry` abbreviations),
+  with the three legs' existing derived logs spliced in.  Nothing
+  asserted.
+- GOTCHAS (new):
+  - The SPARSE compact slot uses `data.sparseDirectory.localStride`, NOT
+    `data.localStride` (the latter only drives
+    `relativeSplitSelectLocalSlotInSuper`).  The block takes both, as
+    `DLS` and `LS`; conflating them silently type-checks and would give
+    a wrong slot.
+  - `queryOccurrence data idx = idx` definitionally
+    (`Source.lean:1851`), so `xQ` is a plain register copy of `xIdx`.
+  - Unconditional jumps after the LONG/SPARSE legs cannot use `rOne`:
+    those legs preserve only `r ≤ 8 ∨ 28 ≤ r`, and `rOne = 24` is
+    outside it.  Use the 2-instruction `const rB 1; brNZ rB END` idiom
+    (the DENSE leg does preserve `24..26`, but the same idiom is used
+    for uniformity).
+  - The hosting peel is kept PROPOSITIONAL via a `hostRebase` helper
+    plus a `host_len` macro (`simp only [<length lemmas>] <;> omega`):
+    letting `append_right`'s `A + 6 + 2 + 12 + ...` bases meet `A + 248`
+    by defeq would push a 248-deep `Nat.succ` tower through the kernel,
+    against the standing kernel-safety pattern.  `selectCloseBlock_length`
+    is likewise `by simp [selectCloseBlock]`, not `rfl`.
+- Verification at this commit: standalone `lake env lean` exit 0 (4.3s,
+  no warnings); `lake build RMQ` exit 0 (6.9s, 233/233), only the
+  pre-existing sanctioned unused-simp-arg warnings.
+
 ## STAGE-2 LAYOUT (dense leg tails - implemented in M3c-5c above;
 ## kept for reference)
 
