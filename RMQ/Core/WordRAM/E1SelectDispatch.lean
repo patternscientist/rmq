@@ -486,6 +486,497 @@ theorem selectCloseBlock_hosting {program : E1Machine.Program}
   · exact ((HostedAt.append_left h16).tail).head
   · exact h17.head
 
+/-! ## Symbolic-evaluation macros -/
+
+local macro "disp_eval" : tactic =>
+  `(tactic| straight_eval [selectPrologue, selectSuperSlotSeg,
+      selectLocalSlotSeg, selectDenseBaseSeg,
+      rPos, rVal, rP, rWI, rSI, rE, rSup, rBlk, rWrd,
+      rR, rK, rT, rV, rSlot, rA, rB, rOne, rC, rEight, rJC,
+      xIdx, xQ, xSF1, xSF2, xSF3, xSF4, xLF1, xLF2, xLF3, xLF4,
+      xBPos, xBOcc])
+
+local macro "disp_writes" : tactic =>
+  `(tactic| straight_writes [rPos, rVal, rP, rWI, rSI, rE, rSup,
+      rBlk, rWrd, rR, rK, rT, rV, rSlot, rA, rB, rOne, rC, rEight, rJC,
+      xIdx, xQ, xSF1, xSF2, xSF3, xSF4, xLF1, xLF2, xLF3, xLF4,
+      xBPos, xBOcc])
+
+/-! ## Straight-line segment simulations -/
+
+/-- The dispatch prologue: pins the three dense-leg constants, loads the
+occurrence count, copies the query index into `xQ`, and leaves the
+in-range indicator in `rB`. -/
+theorem dispatchPrologue_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {A c OC : Nat}
+    (hhost : HostedAt program A (selectPrologue c OC))
+    (regs0 : RegFile) :
+    ∃ regsP : RegFile,
+      RunsTo store program ⟨regs0, A, false⟩ ⟨regsP, A + 6, false⟩ []
+        selectPrologueCats ∧
+      regsP rOne = 1 ∧ regsP rC = c ∧ regsP rEight = 8 ∧
+      regsP xQ = regs0 xIdx ∧
+      regsP rB = (if regs0 xIdx < OC then 1 else 0) ∧
+      (∀ r, r ≠ 22 → r ≠ 23 → r ≠ 24 → r ≠ 25 → r ≠ 26 → r ≠ 29 →
+        regsP r = regs0 r) := by
+  have hrun := RunsTo.straight store (selectPrologue c OC)
+    (selectPrologue_straight c OC) A hhost regs0
+  obtain ⟨regsP, hregsP⟩ :
+      ∃ x, straightRegs store (selectPrologue c OC) regs0 = x := ⟨_, rfl⟩
+  rw [hregsP] at hrun
+  have hreads : straightReads store (selectPrologue c OC) regs0 = [] := by
+    disp_eval
+  rw [hreads, selectPrologueCats_eq, selectPrologue_length] at hrun
+  refine ⟨regsP, hrun, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · rw [← hregsP]; disp_eval
+  · rw [← hregsP]; disp_eval
+  · rw [← hregsP]; disp_eval
+  · rw [← hregsP]; disp_eval
+  · rw [← hregsP]; disp_eval
+  · intro r h1 h2 h3 h4 h5 h6
+    rw [← hregsP]
+    apply straightRegs_preserves
+    intro instr hi
+    simp only [selectPrologue, List.mem_cons, List.not_mem_nil,
+      or_false] at hi
+    rcases hi with rfl | rfl | rfl | rfl | rfl | rfl <;>
+      disp_writes <;> omega
+
+/-- The super-slot segment: `selectSuperSlot q SS` into `rPos` and `rP`. -/
+theorem dispatchSuperSlot_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {A SS : Nat}
+    (hhost : HostedAt program A (selectSuperSlotSeg SS))
+    (regs0 : RegFile) :
+    ∃ regsS : RegFile,
+      RunsTo store program ⟨regs0, A, false⟩ ⟨regsS, A + 2, false⟩ []
+        selectSuperSlotCats ∧
+      regsS rPos = regs0 xQ / SS ∧ regsS rP = regs0 xQ / SS ∧
+      (∀ r, r ≠ 8 → r ≠ 10 → regsS r = regs0 r) := by
+  have hrun := RunsTo.straight store (selectSuperSlotSeg SS)
+    (selectSuperSlotSeg_straight SS) A hhost regs0
+  obtain ⟨regsS, hregsS⟩ :
+      ∃ x, straightRegs store (selectSuperSlotSeg SS) regs0 = x := ⟨_, rfl⟩
+  rw [hregsS] at hrun
+  have hreads :
+      straightReads store (selectSuperSlotSeg SS) regs0 = [] := by
+    disp_eval
+  rw [hreads, selectSuperSlotCats_eq, selectSuperSlotSeg_length] at hrun
+  refine ⟨regsS, hrun, ?_, ?_, ?_⟩
+  · rw [← hregsS]; disp_eval
+  · rw [← hregsS]; disp_eval
+  · intro r h1 h2
+    rw [← hregsS]
+    apply straightRegs_preserves
+    intro instr hi
+    simp only [selectSuperSlotSeg, List.mem_cons, List.not_mem_nil,
+      or_false] at hi
+    rcases hi with rfl | rfl <;> disp_writes <;> omega
+
+/-- The local-slot segment: reusing the super slot in `rPos`, compute
+`relativeSplitSelectLocalSlot q SS LSPS LS super` into `rPos` and `rP`. -/
+theorem dispatchLocalSlot_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {A LSPS LS : Nat}
+    (hhost : HostedAt program A (selectLocalSlotSeg LSPS LS))
+    (regs0 : RegFile) (hOne : regs0 rOne = 1) :
+    ∃ regsL : RegFile,
+      RunsTo store program ⟨regs0, A, false⟩ ⟨regsL, A + 6, false⟩ []
+        selectLocalSlotCats ∧
+      regsL rPos =
+        regs0 rPos * LSPS + (regs0 xQ - (regs0 xSF1 - 1)) / LS ∧
+      regsL rP =
+        regs0 rPos * LSPS + (regs0 xQ - (regs0 xSF1 - 1)) / LS ∧
+      (∀ r, r ≠ 8 → r ≠ 10 → r ≠ 22 → r ≠ 23 → regsL r = regs0 r) := by
+  have hrun := RunsTo.straight store (selectLocalSlotSeg LSPS LS)
+    (selectLocalSlotSeg_straight LSPS LS) A hhost regs0
+  obtain ⟨regsL, hregsL⟩ :
+      ∃ x, straightRegs store (selectLocalSlotSeg LSPS LS) regs0 = x :=
+    ⟨_, rfl⟩
+  rw [hregsL] at hrun
+  have hreads :
+      straightReads store (selectLocalSlotSeg LSPS LS) regs0 = [] := by
+    disp_eval
+  rw [hreads, selectLocalSlotCats_eq, selectLocalSlotSeg_length] at hrun
+  refine ⟨regsL, hrun, ?_, ?_, ?_⟩
+  · rw [← hregsL]; disp_eval <;> rw [hOne]
+  · rw [← hregsL]; disp_eval <;> rw [hOne]
+  · intro r h1 h2 h3 h4
+    rw [← hregsL]
+    apply straightRegs_preserves
+    intro instr hi
+    simp only [selectLocalSlotSeg, List.mem_cons, List.not_mem_nil,
+      or_false] at hi
+    rcases hi with rfl | rfl | rfl | rfl | rfl | rfl <;>
+      disp_writes <;> omega
+
+/-- The dense base segment: base position into `xBPos`, base occurrence
+into `xBOcc`, from the shifted field encodes. -/
+theorem dispatchDenseBase_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {A WS : Nat}
+    (hhost : HostedAt program A (selectDenseBaseSeg WS))
+    (regs0 : RegFile) (hOne : regs0 rOne = 1) :
+    ∃ regsD : RegFile,
+      RunsTo store program ⟨regs0, A, false⟩ ⟨regsD, A + 9, false⟩ []
+        selectDenseBaseCats ∧
+      regsD xBPos =
+        ((regs0 xSF2 - 1) + (regs0 xLF2 - 1)) * WS + (regs0 xLF4 - 1) ∧
+      regsD xBOcc = (regs0 xSF1 - 1) + (regs0 xLF1 - 1) ∧
+      (∀ r, r ≠ 22 → r ≠ 23 → r ≠ 38 → r ≠ 39 → regsD r = regs0 r) := by
+  have hrun := RunsTo.straight store (selectDenseBaseSeg WS)
+    (selectDenseBaseSeg_straight WS) A hhost regs0
+  obtain ⟨regsD, hregsD⟩ :
+      ∃ x, straightRegs store (selectDenseBaseSeg WS) regs0 = x := ⟨_, rfl⟩
+  rw [hregsD] at hrun
+  have hreads :
+      straightReads store (selectDenseBaseSeg WS) regs0 = [] := by
+    disp_eval
+  rw [hreads, selectDenseBaseCats_eq, selectDenseBaseSeg_length] at hrun
+  refine ⟨regsD, hrun, ?_, ?_, ?_⟩
+  · rw [← hregsD]; disp_eval <;> rw [hOne]
+  · rw [← hregsD]; disp_eval <;> rw [hOne]
+  · intro r h1 h2 h3 h4
+    rw [← hregsD]
+    apply straightRegs_preserves
+    intro instr hi
+    simp only [selectDenseBaseSeg, List.mem_cons, List.not_mem_nil,
+      or_false] at hi
+    rcases hi with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;>
+      disp_writes <;> omega
+
+/-! ## The dispatch block at the accepted layout -/
+
+/-- The dispatch block with every segment and constant instantiated from
+the accepted select data and its trace segment layout.  All simulation
+theorems below are stated against this instantiation. -/
+def selectCloseBlockAt
+    {bits : List Bool} {rso rbo : Nat}
+    (data : SparseExceptionSelectData bits false rso rbo)
+    (layout : SparseExceptionSelectTraceSegmentLayout)
+    (A G ST c : Nat) : List Instr :=
+  selectCloseBlock A
+    layout.superTable.baseOccurrence layout.superTable.baseWordIndex
+    layout.superTable.rankBefore layout.superTable.firstOffset
+    layout.localTable.baseOccurrence layout.localTable.baseWordIndex
+    layout.localTable.rankBefore layout.localTable.firstOffset
+    layout.longFlagRankBase layout.longRelativeBase
+    layout.sparseDirectory.rankBase layout.sparseDirectory.relativeBase
+    G layout.bitWordBase ST
+    c (occurrenceCount bits false) data.superStride
+    data.localSlotsPerSuper data.localStride
+    data.sparseDirectory.localStride data.wordSize bits.length
+    data.longFlagBits.length data.longFlagRankData.wordSize
+    data.longFlagRankData.blocksPerSuper
+    data.sparseDirectory.flagBits.length
+    data.sparseDirectory.rankData.wordSize
+    data.sparseDirectory.rankData.blocksPerSuper
+
+/-! ## Tail helpers -/
+
+/-- The `none` tail at `A + 404`: one register write reaches END with the
+`none` packet. -/
+theorem dispatchNoneTail_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {A : Nat}
+    (hNone : program[A + 404]? = some (.const rVal 0)) (regs : RegFile) :
+    RunsTo store program ⟨regs, A + 404, false⟩
+      ⟨regs.write rVal 0, A + 405, false⟩ [] [Category.registerWrite] :=
+  RunsTo.const (s := ⟨regs, A + 404, false⟩) rfl hNone
+
+/-- A leg's unconditional jump to END.  `rOne` cannot serve as the
+condition here: the long and sparse legs preserve only `r ≤ 8 ∨ 28 ≤ r`,
+so `rOne = 24` may have been clobbered; the two-instruction
+`const rB 1; brNZ rB END` idiom is condition-independent. -/
+theorem dispatchJump_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {A K : Nat}
+    (hc : program[K]? = some (.const rB 1))
+    (hbr : program[K + 1]? = some (.brNZ rB (A + 405)))
+    (regs : RegFile) :
+    RunsTo store program ⟨regs, K, false⟩
+      ⟨regs.write rB 1, A + 405, false⟩ []
+      [Category.registerWrite, Category.branch] := by
+  have h1 : RunsTo store program ⟨regs, K, false⟩
+      ⟨regs.write rB 1, K + 1, false⟩ [] [Category.registerWrite] :=
+    RunsTo.const (s := ⟨regs, K, false⟩) rfl hc
+  have h2 : RunsTo store program ⟨regs.write rB 1, K + 1, false⟩
+      ⟨regs.write rB 1, A + 405, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_taken (s := ⟨regs.write rB 1, K + 1, false⟩) rfl hbr
+      (by simp [RegFile.write_same])
+  simpa using h1.trans h2
+
+/-! ## Shared prefix: prologue, range branch, super slot, super read -/
+
+/--
+The dispatch prefix on the in-range path: from block entry with the query
+index in `xIdx`, the machine reaches the super-miss branch at `A + 22`
+having emitted EXACTLY the accepted super entry-table read events, with
+the four shifted field decodes in the super bank, the miss indicator in
+`rA`, the super slot in `rPos`, and the pinned constants live.
+-/
+theorem selectCloseBlock_prefix_runsTo
+    (store : ReadStore) {program : E1Machine.Program}
+    {bits : List Bool} {rso rbo : Nat}
+    (data : SparseExceptionSelectData bits false rso rbo)
+    (layout : SparseExceptionSelectTraceSegmentLayout)
+    {A G ST c : Nat}
+    (hhost : HostedAt program A (selectCloseBlockAt data layout A G ST c))
+    (regs0 : RegFile) (idx : Nat) (hIdx : regs0 xIdx = idx)
+    (hrange : idx < occurrenceCount bits false) :
+    ∃ regsE : RegFile,
+      RunsTo store program ⟨regs0, A, false⟩ ⟨regsE, A + 22, false⟩
+        (entryFieldEvents store layout.superTable.baseOccurrence
+          layout.superTable.baseWordIndex layout.superTable.rankBefore
+          layout.superTable.firstOffset
+          (selectSuperSlot idx data.superStride))
+        (selectPrologueCats ++
+          (Category.branch :: (selectSuperSlotCats ++ entryReadCats))) ∧
+      regsE rPos = selectSuperSlot idx data.superStride ∧
+      regsE xQ = idx ∧ regsE rOne = 1 ∧ regsE rC = c ∧ regsE rEight = 8 ∧
+      regsE xSF1 = decodeRead (store.readWord?
+        layout.superTable.baseOccurrence
+        (selectSuperSlot idx data.superStride)) ∧
+      regsE xSF2 = decodeRead (store.readWord?
+        layout.superTable.baseWordIndex
+        (selectSuperSlot idx data.superStride)) ∧
+      regsE xSF3 = decodeRead (store.readWord?
+        layout.superTable.rankBefore
+        (selectSuperSlot idx data.superStride)) ∧
+      regsE xSF4 = decodeRead (store.readWord?
+        layout.superTable.firstOffset
+        (selectSuperSlot idx data.superStride)) ∧
+      regsE rA =
+        ((if decodeRead (store.readWord? layout.superTable.baseOccurrence
+            (selectSuperSlot idx data.superStride)) = 0 then 1 else 0) +
+          (if decodeRead (store.readWord? layout.superTable.baseWordIndex
+            (selectSuperSlot idx data.superStride)) = 0 then 1 else 0) +
+          (if decodeRead (store.readWord? layout.superTable.rankBefore
+            (selectSuperSlot idx data.superStride)) = 0 then 1 else 0) +
+          (if decodeRead (store.readWord? layout.superTable.firstOffset
+            (selectSuperSlot idx data.superStride)) = 0 then 1 else 0)) ∧
+      (∀ r, r ≤ 7 ∨ r = 28 → regsE r = regs0 r) := by
+  obtain ⟨hPro, hbr6, -, hSlotH, hSuperH, -, -, -, -, -, -, -, -, -, -,
+    -, -, -, -, -, -, -, -, -⟩ := selectCloseBlock_hosting hhost
+  obtain ⟨regsP, hrunP, hPOne, hPC, hPEight, hPQ, hPB, hPpres⟩ :=
+    dispatchPrologue_runsTo store hPro regs0
+  rw [hIdx] at hPQ hPB
+  have hPBne : regsP rB ≠ 0 := by rw [hPB, if_pos hrange]; omega
+  have hbrun : RunsTo store program ⟨regsP, A + 6, false⟩
+      ⟨regsP, A + 8, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_taken (s := ⟨regsP, A + 6, false⟩) rfl hbr6 hPBne
+  obtain ⟨regsS, hrunS, hSPos, hSP, hSpres⟩ :=
+    dispatchSuperSlot_runsTo store hSlotH regsP
+  rw [hPQ] at hSPos hSP
+  rw [show A + 8 + 2 = A + 10 from by omega] at hrunS
+  have hSP' : regsS rP = selectSuperSlot idx data.superStride := hSP
+  obtain ⟨regsE, hrunE, hE1, hE2, hE3, hE4, hEA, hEpres⟩ :=
+    entryReadBlock_runsTo store hSuperH (by decide) (by decide)
+      (by decide) (by decide) (by decide) (by decide) (by decide)
+      (by decide) (by decide) (by decide) regsS
+      (selectSuperSlot idx data.superStride) hSP'
+  rw [show A + 10 + 12 = A + 22 from by omega] at hrunE
+  have hall := hrunP.trans (hbrun.trans (hrunS.trans hrunE))
+  -- `omega` cannot see through the register abbrevs (worklog gotcha), so
+  -- the open preservation side conditions get their numerals explicitly.
+  have nSF1 : xSF1 = 30 := rfl
+  have nSF2 : xSF2 = 31 := rfl
+  have nSF3 : xSF3 = 32 := rfl
+  have nSF4 : xSF4 = 33 := rfl
+  have hEpres' : ∀ r, r ≤ 7 ∨ r = 28 → regsE r = regs0 r := by
+    intro r hr
+    rw [hEpres r (by omega) (by omega) (by omega) (by omega) (by omega)
+        (by omega) (by omega),
+      hSpres r (by omega) (by omega),
+      hPpres r (by omega) (by omega) (by omega) (by omega) (by omega)
+        (by omega)]
+  refine ⟨regsE, by simpa using hall, ?_, ?_, ?_, ?_, ?_, hE1, hE2, hE3,
+    hE4, hEA, hEpres'⟩
+  · rw [hEpres rPos (by decide) (by decide) (by decide) (by decide)
+      (by decide) (by decide) (by decide)]
+    exact hSPos
+  · rw [hEpres xQ (by decide) (by decide) (by decide) (by decide)
+      (by decide) (by decide) (by decide), hSpres xQ (by decide)
+      (by decide)]
+    exact hPQ
+  · rw [hEpres rOne (by decide) (by decide) (by decide) (by decide)
+      (by decide) (by decide) (by decide), hSpres rOne (by decide)
+      (by decide)]
+    exact hPOne
+  · rw [hEpres rC (by decide) (by decide) (by decide) (by decide)
+      (by decide) (by decide) (by decide), hSpres rC (by decide)
+      (by decide)]
+    exact hPC
+  · rw [hEpres rEight (by decide) (by decide) (by decide) (by decide)
+      (by decide) (by decide) (by decide),
+      hSpres rEight (by decide) (by decide)]
+    exact hPEight
+
+/-! ## Entry-decode inversion -/
+
+/--
+Inversion of the accepted 4-read entry decode: when the entry table
+answers `some entry`, each of the four shifted field decodes is exactly
+that field plus one — which is precisely the shifted-encode hypothesis
+shape the leg blocks consume, and (being a successor) also witnesses a
+zero miss indicator.
+-/
+theorem entryFields_of_some
+    {entries : List SparseDenseSelectDenseLocalEntry} {fieldWidth : Nat}
+    (table :
+      FixedWidthSparseDenseSelectDenseLocalEntryTable entries fieldWidth)
+    (lay : SparseDenseEntryTableTraceSegmentBases)
+    (store : ReadStore) (i : Nat)
+    {entry : SparseDenseSelectDenseLocalEntry}
+    (h : (table.readTraceResultRelabeledWithStore lay store i).value =
+      some entry) :
+    decodeRead (store.readWord? lay.baseOccurrence i) =
+      entry.baseOccurrence + 1 ∧
+    decodeRead (store.readWord? lay.baseWordIndex i) =
+      entry.baseWordIndex + 1 ∧
+    decodeRead (store.readWord? lay.rankBefore i) =
+      entry.rankBefore + 1 ∧
+    decodeRead (store.readWord? lay.firstOffset i) =
+      entry.firstOffset + 1 := by
+  rw [entryRead_value_eq] at h
+  cases h1 : store.readWord? lay.baseOccurrence i <;>
+    cases h2 : store.readWord? lay.baseWordIndex i <;>
+      cases h3 : store.readWord? lay.rankBefore i <;>
+        cases h4 : store.readWord? lay.firstOffset i <;>
+          rw [h1, h2, h3, h4] at h <;>
+          simp [FixedWidthSparseDenseSelectDenseLocalEntryTable.entryOfFields]
+            at h <;>
+          simp [decodeRead, ← h]
+
+/-! ## Branch simulations: the two `none`-answering guards -/
+
+/-- Out-of-range dispatch: the occurrence-range guard is computed by the
+machine's own `natLt` on the query operand (REQ-E1-05 shape), the read
+projection is empty, and the answer is the `none` packet. -/
+theorem selectCloseBlock_runsTo_outOfRange
+    (store : ReadStore) {program : E1Machine.Program}
+    {bits : List Bool} {rso rbo : Nat}
+    (data : SparseExceptionSelectData bits false rso rbo)
+    (layout : SparseExceptionSelectTraceSegmentLayout)
+    {A G ST c : Nat}
+    (hhost : HostedAt program A (selectCloseBlockAt data layout A G ST c))
+    (regs0 : RegFile) (idx : Nat) (hIdx : regs0 xIdx = idx)
+    (hrange : ¬ idx < occurrenceCount bits false) :
+    ∃ regsF : RegFile,
+      RunsTo store program ⟨regs0, A, false⟩ ⟨regsF, A + 405, false⟩
+        (data.bpChunkedSelectTraceResultWithStore layout (G + 4) ST
+          store c idx).trace
+        (selectCloseCats data layout G ST store c idx) ∧
+      E1Query.decodePacket (regsF rVal) =
+        (data.bpChunkedSelectTraceResultWithStore layout (G + 4) ST
+          store c idx).value ∧
+      (∀ r, r ≤ 7 ∨ r = 28 → regsF r = regs0 r) := by
+  obtain ⟨hPro, hbr6, hbr7, -, -, -, -, -, -, -, -, -, -, -, -,
+    -, -, -, -, -, -, -, -, hNoneH⟩ := selectCloseBlock_hosting hhost
+  obtain ⟨regsP, hrunP, hPOne, -, -, hPQ, hPB, hPpres⟩ :=
+    dispatchPrologue_runsTo store hPro regs0
+  rw [hIdx] at hPQ hPB
+  have hPBz : regsP rB = 0 := by rw [hPB, if_neg hrange]
+  have hb6 : RunsTo store program ⟨regsP, A + 6, false⟩
+      ⟨regsP, A + 7, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_not_taken (s := ⟨regsP, A + 6, false⟩) rfl hbr6 hPBz
+  have hOneNe : regsP rOne ≠ 0 := by rw [hPOne]; omega
+  have hb7 : RunsTo store program ⟨regsP, A + 7, false⟩
+      ⟨regsP, A + 404, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_taken (s := ⟨regsP, A + 7, false⟩) rfl hbr7 hOneNe
+  have hnone := dispatchNoneTail_runsTo store hNoneH regsP
+  have hall := hrunP.trans (hb6.trans (hb7.trans hnone))
+  have nVal : rVal = 9 := rfl
+  refine ⟨regsP.write rVal 0, ?_, ?_, ?_⟩
+  · have hroute :
+        (data.bpChunkedSelectTraceResultWithStore layout (G + 4) ST
+          store c idx).trace = [] := by
+      simp [SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore,
+        hrange]
+    have hcats : selectCloseCats data layout G ST store c idx =
+        selectPrologueCats ++
+          [Category.branch, Category.branch, Category.registerWrite] := by
+      simp [selectCloseCats, hrange]
+    rw [hroute, hcats]
+    simpa using hall
+  · rw [RegFile.write_same]
+    simp [SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore,
+      hrange]
+  · intro r hr
+    rw [RegFile.write_other _ _ (show r ≠ rVal by omega),
+      hPpres r (by omega) (by omega) (by omega) (by omega) (by omega)
+        (by omega)]
+
+/-- In-range dispatch whose super entry-table read misses: the four field
+reads are still charged and still appear in the receipt, and the answer is
+the `none` packet. -/
+theorem selectCloseBlock_runsTo_superMiss
+    (store : ReadStore) {program : E1Machine.Program}
+    {bits : List Bool} {rso rbo : Nat}
+    (data : SparseExceptionSelectData bits false rso rbo)
+    (layout : SparseExceptionSelectTraceSegmentLayout)
+    {A G ST c : Nat}
+    (hhost : HostedAt program A (selectCloseBlockAt data layout A G ST c))
+    (regs0 : RegFile) (idx : Nat) (hIdx : regs0 xIdx = idx)
+    (hrange : idx < occurrenceCount bits false)
+    (hmiss : superEntry data layout store idx = none) :
+    ∃ regsF : RegFile,
+      RunsTo store program ⟨regs0, A, false⟩ ⟨regsF, A + 405, false⟩
+        (data.bpChunkedSelectTraceResultWithStore layout (G + 4) ST
+          store c idx).trace
+        (selectCloseCats data layout G ST store c idx) ∧
+      E1Query.decodePacket (regsF rVal) =
+        (data.bpChunkedSelectTraceResultWithStore layout (G + 4) ST
+          store c idx).value ∧
+      (∀ r, r ≤ 7 ∨ r = 28 → regsF r = regs0 r) := by
+  obtain ⟨-, -, -, -, -, hbr22, -, -, -, -, -, -, -, -, -,
+    -, -, -, -, -, -, -, -, hNoneH⟩ := selectCloseBlock_hosting hhost
+  obtain ⟨regsE, hrunE, -, -, -, -, -, hE1, hE2, hE3, hE4, hEA,
+    hEpres⟩ :=
+    selectCloseBlock_prefix_runsTo store data layout hhost regs0 idx hIdx
+      hrange
+  have hmissRaw :
+      (data.superTable.readTraceResultRelabeledWithStore layout.superTable
+        store (selectSuperSlot idx data.superStride)).value = none := hmiss
+  have hmiss' := hmissRaw
+  rw [entryRead_value_eq] at hmiss'
+  have hAne : regsE rA ≠ 0 := by
+    intro h0
+    rw [hEA] at h0
+    obtain ⟨h1, h2, h3, h4⟩ := (missSum_eq_zero_iff _ _ _ _).mp h0
+    rw [entryOfFields_decode_some h1 h2 h3 h4] at hmiss'
+    exact absurd hmiss' (by simp)
+  have hb22 : RunsTo store program ⟨regsE, A + 22, false⟩
+      ⟨regsE, A + 404, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_taken (s := ⟨regsE, A + 22, false⟩) rfl hbr22 hAne
+  have hnone := dispatchNoneTail_runsTo store hNoneH regsE
+  have hall := hrunE.trans (hb22.trans hnone)
+  have nVal : rVal = 9 := rfl
+  refine ⟨regsE.write rVal 0, ?_, ?_, ?_⟩
+  · have hroute :
+        (data.bpChunkedSelectTraceResultWithStore layout (G + 4) ST
+            store c idx).trace =
+          entryFieldEvents store layout.superTable.baseOccurrence
+            layout.superTable.baseWordIndex layout.superTable.rankBefore
+            layout.superTable.firstOffset
+            (selectSuperSlot idx data.superStride) := by
+      simp only [SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore,
+        SparseExceptionSelectData.queryOccurrence, if_pos hrange,
+        TraceResult.bind_trace]
+      rw [entryRead_trace_eq, hmissRaw]
+      simp
+    have hcats : selectCloseCats data layout G ST store c idx =
+        selectPrologueCats ++
+          (Category.branch :: (selectSuperSlotCats ++
+            (entryReadCats ++
+              [Category.branch, Category.registerWrite]))) := by
+      simp only [selectCloseCats, if_pos hrange, hmiss]
+    rw [hroute, hcats]
+    simpa using hall
+  · rw [RegFile.write_same]
+    simp only [SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore,
+      SparseExceptionSelectData.queryOccurrence, if_pos hrange,
+      TraceResult.bind_value]
+    rw [hmissRaw]
+    simp
+  · intro r hr
+    rw [RegFile.write_other _ _ (show r ≠ rVal by omega), hEpres r hr]
+
 end E1SelectDispatch
 end WordRAM
 end RMQ

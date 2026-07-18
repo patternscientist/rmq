@@ -664,6 +664,49 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
   no warnings); `lake build RMQ` exit 0 (6.9s, 233/233), only the
   pre-existing sanctioned unused-simp-arg warnings.
 
+## M3c-6d: dispatch straight-line sims, prefix, and the two none branches
+
+- Appended to `E1SelectDispatch.lean`:
+  - `dispatchPrologue_runsTo`, `dispatchSuperSlot_runsTo`,
+    `dispatchLocalSlot_runsTo`, `dispatchDenseBase_runsTo` — the four
+    straight-line segments (all first-try green).
+  - `dispatchNoneTail_runsTo`, `dispatchJump_runsTo` (the two tail
+    idioms), `selectCloseBlockAt` (the block instantiated at the accepted
+    layout/data — a large readability win for every later statement).
+  - `selectCloseBlock_prefix_runsTo`: the shared in-range prefix
+    (prologue, taken range branch, super slot, super entry 4-read) to
+    `A + 22`, receipts POSITIONALLY EQUAL to the accepted super
+    entry-table read events, four shifted field decodes in the super
+    bank, miss indicator in `rA`, pinned constants live, `r ≤ 7 ∨ r = 28`
+    preserved.
+  - `entryFields_of_some`: inversion of the accepted 4-read decode — a
+    present entry pins each shifted field register to `field + 1`
+    (exactly the leg blocks' hypothesis shape, and a zero miss indicator
+    for free).  Works for both the super and local tables.
+  - `selectCloseBlock_runsTo_outOfRange` and
+    `selectCloseBlock_runsTo_superMiss`: the two `none`-answering
+    branches, full receipts/value/cats/preservation against
+    `bpChunkedSelectTraceResultWithStore`.
+- Gotchas (new):
+  - `omega` cannot see through the register ABBREVS: `28 ≤ xSF1` and
+    `r ≠ xSF1` both fail.  Use `by decide` for CLOSED side conditions,
+    and put explicit `have nSF1 : xSF1 = 30 := rfl` facts in context when
+    the register is universally quantified (omega then treats the abbrev
+    as an atom with a known value).
+  - `RunsTo.brNZ_taken`'s condition hypothesis is stated on
+    `s.regs cond`, so a tactic block there operates on the unreduced
+    projection and `rw` fails.  Prove `regsX rOne ≠ 0` as a standalone
+    `have` and pass it — `exact` closes the projection by defeq.
+  - `simp only [← superEntry]` is rejected (`←` on a definition to be
+    unfolded).  Get the raw form with a `have hmissRaw : <raw> = none :=
+    hmiss` type ascription instead and `rw` with that.
+  - `cases h1 : store.readWord? ...` already substitutes into the goal,
+    so passing `h1` to a follow-up `simp` is an unused-arg warning.
+- Verification at this commit: standalone `lake env lean` exit 0 (8.2s,
+  no warnings); `lake build RMQ` exit 0.
+- REMAINING for the dispatch: the long, sparse, and dense branch
+  theorems, then the combining `selectCloseBlock_runsTo`.
+
 ## STAGE-2 LAYOUT (dense leg tails - implemented in M3c-5c above;
 ## kept for reference)
 
