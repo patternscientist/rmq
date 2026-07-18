@@ -237,7 +237,7 @@ case correctly.
 
 `lake build RMQ` exit 0, 87.3 s. Hygiene scan on the new module: no hits.
 
-## RESUME INVENTORY (verified this session; B6 is INCOMPLETE at `b77f385`)
+## RESUME INVENTORY as of `b77f385` (SUPERSEDED - all items below were executed by B6-02; retained for audit trail)
 
 Everything below was read at source in this worktree. Nothing here is
 implemented. The library is green at every committed point; the accepted
@@ -380,3 +380,108 @@ remains far below both the branch cap 126 and the route literal 207 -
 corroborating that the literal does not move.
 
 NOTE: `gate.ps1` was NOT run, per the delegation prompt.
+
+## B6-02 SESSION: the swap landed; rung complete as a candidate
+
+Worker B6-02, branch `claude/b1-b2-charged-fringe-tables`, base
+`d90b062`, resumed at `3068fee`, finished at the HEAD recorded below.
+Every item in the superseded RESUME INVENTORY above was executed. Nothing
+in that inventory was found wrong at source; the two places where my own
+derivation added to it are called out below.
+
+### What landed, in order
+
+| Commit | Contents | Build |
+| --- | --- | --- |
+| `2f5dc1b` | STEP 1: the five decoded obligation lemmas, additive only | `lake build RMQ` exit 0 |
+| `2bfc59c` | STEP 2+3: the ATOMIC twelve-site swap plus its entire downstream regeneration | `lake build RMQ RMQPaper RMQExamples` exit 0 |
+| `35b30d7` | W19 same-block successful-read witness chain (component -> decoded -> dispatcher -> route) plus the singleton-query reachability companion | exit 0 |
+| `36e9c79` | Same-block value-dependency corruption witness; `PAPER_MODEL_ADEQUACY.md` repair; DD-20260718-008 | exit 0 |
+| (this) | Matrix closure and worklog | exit 0 |
+
+### Two places my derivation went beyond the inventory
+
+1. **The `omega` in `canonicalLcaCloseCostedWithRankSeed_cost_le` needed one
+   more unfold.** The inventory predicted the `hcap` at `:120-124` would stay
+   `omega`-closed "after the same unfolds". It is not: with the charge moving
+   from `rankCost + 4` to `rankCost + 37`, `omega` must see that
+   `canonicalRelativeRmmInteriorQueryCost = 240`, because
+   `canonicalCompactBPCloseQueryCostWithRankSeed rankCost
+   = 8 + 2*rankCost + canonicalRelativeRmmInteriorQueryCost` and `37 > 8`.
+   Adding `canonicalRelativeRmmInteriorQueryCost` to the unfold list closes
+   it. The coordinator ruling that the cap absorbs the charged arm is
+   CORRECT; only the tactic detail differed. The second cap
+   (`_cost_le_principled`) already unfolded everything it needed and closed
+   unchanged, confirming 48 <= 126 directly.
+
+2. **`_trace_forall` needed a new hypothesis, and I chose the more expensive
+   form deliberately.** The inventory listed site `:319` as "STEP 1 lemma 1"
+   without noting that the dispatcher has no hypothesis covering same-block
+   chunk reads. It does now need one. The cheap option was a raw
+   `address < rowCount -> P (readWord fringeSegment address _)`, which all
+   seven accepted consumers can already discharge (they pass exactly that
+   lambda twice already, for the left and right fringe). I rejected it for
+   the membership form used by `hfringeLeft`/`hfringeRight`, because
+   REQ-B6-04 requires provenance to name the PRODUCING component and the raw
+   form names only a segment and an address. That choice is what makes
+   `ReviewerProducerReadPath.lcaSameBlock` statable. Recorded as
+   DD-20260718-008 item 3. Consequence: `hbp` became subsumed and is
+   retained as `_hbp` for consumer statement stability, documented in place
+   rather than silently dropped.
+
+### The literal did not move
+
+`concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq :
+concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost = 207`
+re-derives by `rfl` and depends on NO axioms. The B6-01 freeze-time finding
+is confirmed: the close/LCA cap is a MAX over branches, not a sum, and the
+cross-block arm's 126 absorbs the same-block arm's 48. So no historical
+constant was minted, no consumer moved, `SumLe207` was not renamed, and no
+doc numeral migration occurred. The authorization to move the literal went
+UNUSED. Coordinator should confirm this disposition (REQ-B6-05).
+
+The literal being unchanged is NOT evidence that the swap was a no-op. The
+cost harness shows `canonicalRoute=sameBlock` executions rising from
+modeledTraceCost 52-54 to 54-62 (window `[31, 32)` at n = 64 goes 52 -> 62)
+while `canonicalBoundIs207=true` holds on all 17 inputs and every window
+still agrees with reference `List Int` RMQ semantics. The reads are real,
+they are counted, and the cap simply had room.
+
+### Verification ledger at the final commit
+
+- `lake build RMQ RMQPaper RMQExamples`: exit 0, no new warnings.
+- Hygiene `rg` on touched modules and tree-wide: ZERO hits for
+  sorry/admit/native_decide/implemented_by/partial/unsafe/extern/
+  noncomputable/`import Mathlib`/`ofReduceBool`.
+- `#print axioms`: route literal depends on NO axioms; vocabulary theorem,
+  route exactness, principled branch cap, and both W19 witnesses depend only
+  on `[propext, Classical.choice, Quot.sound]`.
+- `lake exe rmq_succinct_classic_cost_harness`: exit 0, `canonicalBoundIs207=true`
+  on all 17 inputs (0 `false`), all windows agree with reference semantics.
+- `git diff --check`: clean. `git diff --check d90b062..HEAD`: clean.
+- `design_decision_check.ps1 -Strict -Base d90b062...`: exit 0 (37 changed files).
+- `claim_drift_scan.ps1`: exit 0 (737 hits, 0 strict failures - identical to
+  the pre-swap baseline, as expected when the literal does not move).
+- `paper_topology_lint.ps1`: PASS (83 broad, 49 paper identifiers resolved).
+- `gate.ps1`: NOT run, per the delegation prompt.
+
+### Honest residuals
+
+- `finalSameBlockLcaWithStore_storeTraceLocal` and
+  `localBPSameBlockSeededWithStore_storeTraceLocal` are now unreferenced in
+  `SuccinctFinalStoreParam.lean`. They are private proofs about the retired
+  silent objects, not counted payload sources, so this is not a dead-source
+  violation. B2's own `finalCrossBlockLcaWithStore_storeTraceLocal` is
+  already in exactly this state; B6 matches that precedent rather than
+  diverging from it, and flags the pair as one cleanup candidate for a later
+  rung.
+- REQ-B6-05's DISPOSITION (not its derivation) awaits coordinator
+  confirmation: the derivation outcome 207 is authoritative and checked, but
+  whether to leave the authorization unused is a coordinator call.
+- The `_trace_forall` hypothesis addition is a real, if small, change to an
+  accepted theorem's statement. It is disclosed in the matrix (REQ-B6-09),
+  the DD, and here. No other accepted statement shape changed.
+
+This rung reports CANDIDATE_COMPLETE. Coordinator acceptance is still
+required; nothing here should be read as acceptance, integration, or
+merge-readiness.
