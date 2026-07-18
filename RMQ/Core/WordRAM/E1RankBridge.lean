@@ -87,6 +87,16 @@ theorem bpChunkRankOfEntry_false_eq (c t entry : Nat) :
   show t - (entry / (c + 1) % (2 * c + 2) + t - c) / 2 = _
   rw [nat_mod_eq_sub_div_mul (entry / (c + 1)) (2 * c + 2)]
 
+/-- The true-target in-chunk rank decode, in the machine's literal
+constant-arithmetic form (the false chain WITHOUT the final `t -`
+subtraction — one machine instruction fewer). -/
+theorem bpChunkRankOfEntry_true_eq (c t entry : Nat) :
+    bpChunkRankOfEntry c true t entry =
+      (entry / (c + 1) - entry / (c + 1) / (2 * c + 2) * (2 * c + 2)
+        + t - c) / 2 := by
+  show (entry / (c + 1) % (2 * c + 2) + t - c) / 2 = _
+  rw [nat_mod_eq_sub_div_mul (entry / (c + 1)) (2 * c + 2)]
+
 /-! ## Little-endian decode bridges -/
 
 /-- Decode of the empty word. -/

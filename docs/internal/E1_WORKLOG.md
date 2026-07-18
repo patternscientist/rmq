@@ -368,7 +368,87 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
 - Verification at this commit: standalone `lake env lean` exit 0 (no
   warnings); `lake build RMQ` green; hygiene rg clean.
 
-## RESUME POINT (next session: M3c select-close onward)
+## RESUME POINT (next session: select-close legs onward)
+
+NEW in this session (commits `69b39a9`, `dae5fa6`, `691f7c0`, + this
+one): M3c-2a rank-close canonical glue (`rankCloseBlock_runsTo_canonical`
+at the global store, `rankCloseBlock_fits`, `straight_eval`/
+`straight_writes` macro lift), M3c-2b `RunsTo.iterateUntil`, M3c-3a
+`selectFoldBlock` + `selectFoldBlock_runsTo` (early-exit in-word select
+fold fully simulated; see the M3c-3a section for the full select-close
+inventory), and `bpChunkRankOfEntry_true_eq` in `E1RankBridge.lean`.
+
+NEXT (select-close remaining machine pieces, in dependency order):
+
+1. TRUE-target rank block (`E1RankTrueBlock.lean`): clone
+   `E1RankBlock.lean` (mechanical) for
+   `d.bpChunkedRankTraceResultWithStore store G (G+1) (G+2) (G+4) c TRUE
+   pos` - consumed twice (long leg seeds at `layout.longFlagRankBase`,
+   sparse leg via `sparseDirectory.bpChunkedReadTraceResultWithStore`,
+   both at chunk segment 21).  Deltas vs the false block: drop
+   `.sub rA rT rA` from the loop body (23 instrs; decode ends at
+   `/2` per `bpChunkRankOfEntry_true_eq`, already landed); block length
+   59; offsets shift: back edge B+53, epilogue B+54..56, exit jump B+57
+   (target B+59+1=B+59? recompute: loop B+30..52, brNZ B+53, fin
+   B+54..56, jump B+57 -> B+59, miss B+58, exit B+59); loop pass cats 24
+   long; `bpWordRankAccAt`'s true instance for the invariant (check
+   whether `bpWordRankAccAt` is already target-parametric - it is:
+   `bpWordRankAccAt store seg c TARGET w e n`).  Also needed: an
+   ATOMIC-fold variant theorem (loop-only, no seed reads) for the dense
+   leg's two `bpChunkedWordRankTraceResultAtSegmentWithStore store 21 c
+   false word limit` folds - factor the loop+init as its own hosted
+   sub-block so both the seeded blocks and the dense leg consume it, OR
+   clone a small `rankAtSegmentBlock` with init from register inputs
+   (word value + limit in registers) instead of seed reads.
+2. Entry-table read sub-block: the accepted 4-read evaluator
+   `readTraceResultRelabeledWithStore` (`GenericSelect/RAMStoreParam.lean:
+   258/530`, relabeled segments per
+   `concreteBPNativeSelectCloseTraceSegmentLayout`) - inventory its
+   trace/value shape first (4 sequential `readWord`s, entry assembled
+   from 4 decoded fields, none-propagation per field); machine: 4
+   readMems + 4 zero tests, entry fields kept in separate registers
+   (marked test `relativeSplitSelectEntryIsMarked` +
+   base-position/occurrence arithmetic `RelativeSplit.lean:13-61` are
+   plain register arithmetic).
+3. Relative-offset read (`bpRelativeOffsetReadTraceResultWithStore`,
+   one read + base shift): trivial 3-instr straight segment.
+4. Dense two-word leg: compose word read (segment
+   `layout.bitWordBase`), two atomic false-rank folds, compare, then
+   `selectFoldBlock` on first word (occurrence `beforeFirst +
+   localOccurrence`) or second word read + `selectFoldBlock`
+   (occurrence `localOccurrence - firstCount`); word-length register
+   discharge mirrors `builtRankData_wordOffset_le` (word rows have
+   length `wordSize` except the boundary row - find the dense store's
+   length characterization when instantiating).
+5. Top-level select-close block: occurrence-range guard (`idx <
+   occurrenceCount`, a per-shape constant register), super read ->
+   marked dispatch -> long/local -> sparse/dense, mirroring
+   `bpChunkedSelectTraceResultWithStore` branch for branch; receipts
+   positionally equal to
+   `(concreteBPNativeChunkedSelectCloseGlobalWordTraceResult shape
+   idx).trace`; then canonical instantiation like
+   `rankCloseBlock_runsTo_canonical` (agreement lemmas are all in
+   `ChargedRankSelectWiring.lean` / `Segments.lean`, listed at the
+   `_refines` call at `ChargedRankSelectWiring.lean:656`).
+6. Then the close/LCA structural leg (M3b-2 route decomposition names
+   the target `concreteBPNativeLCACloseGlobalWordTraceResultAllSize
+   Structural`, `SuccinctFinalRAM.lean:2330`), then whole-query glue
+   (`e1ValidPath`), then M4-M7 per the original plan below.
+
+TECHNIQUE (additions to the M3c notes, all battle-tested this session):
+state preservation-helper hypotheses on register NUMERALS, not abbrevs
+(omega cannot unfold abbrevs in hypotheses); no trailing `rfl` after
+`rw`-chains that close the goal; `or_assoc` in the simp set before
+wide `rcases` over block membership; `straight_eval [segments,
+registers]` / `straight_writes [registers]` are the shared macros in
+`E1StraightLine.lean` (simp-arg splicing via
+`Lean.Parser.Tactic.simpLemma,*` works; the M3c-1b gotcha applied to a
+different formulation); early-exit loops: prove by direct induction on
+the spec fold's recursion (receipts/cats stay fold-shaped) rather than
+forcing `iterUntilLog` - `RunsTo.iterateUntil` remains for evaluators
+that are not already structural recursions.
+
+## ORIGINAL M3c PLAN (superseded where marked; kept for the glue/M4-M7 tail)
 
 DONE so far (M3b commits `e93e2ae`, `933955e`, `bd84fc6`; M3c commits
 `c1e7d0a`, `ff03a37`, `b761581`, `0ddf257`):
