@@ -977,6 +977,345 @@ theorem selectCloseBlock_runsTo_superMiss
   · intro r hr
     rw [RegFile.write_other _ _ (show r ≠ rVal by omega), hEpres r hr]
 
+/-! ## Branch simulation: the long exception leg -/
+
+/-- In-range dispatch whose super entry is present and MARKED: control
+takes the long leg (exception rank on the long flag bits, then one
+relative-offset read).  Seed presence and the offset bound are route-side
+hypotheses, discharged at canonical instantiation. -/
+theorem selectCloseBlock_runsTo_long
+    (store : ReadStore) {program : E1Machine.Program}
+    {bits : List Bool} {rso rbo : Nat}
+    (data : SparseExceptionSelectData bits false rso rbo)
+    (layout : SparseExceptionSelectTraceSegmentLayout)
+    {A G ST c : Nat}
+    (hhost : HostedAt program A (selectCloseBlockAt data layout A G ST c))
+    (regs0 : RegFile) (idx : Nat) (hIdx : regs0 xIdx = idx)
+    (hrange : idx < occurrenceCount bits false)
+    {super : SparseDenseSelectDenseLocalEntry}
+    (hsome : superEntry data layout store idx = some super)
+    (hmarked : relativeSplitSelectEntryIsMarked super = true)
+    {superWord deltaWord w : List Bool}
+    (hseedS : store.readWord? layout.longFlagRankBase
+      (data.longFlagRankData.superIndex
+        (selectSuperSlot idx data.superStride)) = some superWord)
+    (hseedB : store.readWord? (layout.longFlagRankBase + 1)
+      (data.longFlagRankData.wordIndex
+        (selectSuperSlot idx data.superStride)) = some deltaWord)
+    (hseedW : store.readWord? (layout.longFlagRankBase + 2)
+      (data.longFlagRankData.wordIndex
+        (selectSuperSlot idx data.superStride)) = some w)
+    (hoff : data.longFlagRankData.wordOffset
+      (selectSuperSlot idx data.superStride) ≤ w.length) :
+    ∃ regsF : RegFile,
+      RunsTo store program ⟨regs0, A, false⟩ ⟨regsF, A + 405, false⟩
+        (data.bpChunkedSelectTraceResultWithStore layout (G + 4) ST
+          store c idx).trace
+        (selectCloseCats data layout G ST store c idx) ∧
+      E1Query.decodePacket (regsF rVal) =
+        (data.bpChunkedSelectTraceResultWithStore layout (G + 4) ST
+          store c idx).value ∧
+      (∀ r, r ≤ 7 ∨ r = 28 → regsF r = regs0 r) := by
+  obtain ⟨-, -, -, -, -, hbr22, hsub23, hbr24, -, -, -, -, -, -, -,
+    -, -, hLongH, hc323, hbr324, -, -, -, -⟩ :=
+    selectCloseBlock_hosting hhost
+  obtain ⟨regsE, hrunE, hEPos, hEQ, hEOne, -, -, hE1, hE2, hE3, hE4,
+    hEA, hEpres⟩ :=
+    selectCloseBlock_prefix_runsTo store data layout hhost regs0 idx
+      hIdx hrange
+  obtain ⟨hf1, hf2, hf3, hf4⟩ :=
+    entryFields_of_some data.superTable layout.superTable store
+      (selectSuperSlot idx data.superStride) hsome
+  have hA0 : regsE rA = 0 := by rw [hEA, hf1, hf2, hf3, hf4]; simp
+  have hb22 : RunsTo store program ⟨regsE, A + 22, false⟩
+      ⟨regsE, A + 23, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_not_taken (s := ⟨regsE, A + 22, false⟩) rfl hbr22 hA0
+  have hsub : RunsTo store program ⟨regsE, A + 23, false⟩
+      ⟨regsE.write rB (regsE xSF3 - regsE rOne), A + 24, false⟩ []
+      [Category.arithmetic] :=
+    RunsTo.sub (s := ⟨regsE, A + 23, false⟩) rfl hsub23
+  obtain ⟨regsM, hregsM⟩ :
+      ∃ x, regsE.write rB (regsE xSF3 - regsE rOne) = x := ⟨_, rfl⟩
+  rw [hregsM] at hsub
+  have hMpres : ∀ r, r ≠ 23 → regsM r = regsE r := by
+    intro r hr
+    rw [← hregsM]
+    exact RegFile.write_other _ _ hr
+  have hMB : regsM rB = super.rankBefore := by
+    rw [← hregsM, RegFile.write_same, hE3, hf3, hEOne]
+    omega
+  have hMBne : regsM rB ≠ 0 := by
+    rw [hMB]
+    exact (relativeSplitSelectEntryIsMarked_iff super).mp hmarked
+  have hb24 : RunsTo store program ⟨regsM, A + 24, false⟩
+      ⟨regsM, A + 250, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_taken (s := ⟨regsM, A + 24, false⟩) rfl hbr24 hMBne
+  have hMPos : regsM rPos = selectSuperSlot idx data.superStride := by
+    rw [hMpres rPos (by decide)]; exact hEPos
+  have hMQ : regsM xQ = idx := by rw [hMpres xQ (by decide)]; exact hEQ
+  have hMF1 : regsM xSF1 = super.baseOccurrence + 1 := by
+    rw [hMpres xSF1 (by decide), hE1]; exact hf1
+  have hMF2 : regsM xSF2 = super.baseWordIndex + 1 := by
+    rw [hMpres xSF2 (by decide), hE2]; exact hf2
+  have hMF4 : regsM xSF4 = super.firstOffset + 1 := by
+    rw [hMpres xSF4 (by decide), hE4]; exact hf4
+  have hsS : store.readWord? layout.longFlagRankBase
+      (data.longFlagRankData.superIndex (regsM rPos)) = some superWord := by
+    rw [hMPos]; exact hseedS
+  have hsB : store.readWord? (layout.longFlagRankBase + 1)
+      (data.longFlagRankData.wordIndex (regsM rPos)) = some deltaWord := by
+    rw [hMPos]; exact hseedB
+  have hsW : store.readWord? (layout.longFlagRankBase + 2)
+      (data.longFlagRankData.wordIndex (regsM rPos)) = some w := by
+    rw [hMPos]; exact hseedW
+  have hsO : data.longFlagRankData.wordOffset (regsM rPos) ≤ w.length := by
+    rw [hMPos]; exact hoff
+  obtain ⟨regsL, hrunL, hdecL, hpresL⟩ :=
+    longLegBlock_runsTo store data.longFlagRankData hLongH regsM super
+      idx hMQ hMF1 hMF2 hMF4 hsS hsB hsW hsO
+  rw [show A + 250 + 73 = A + 323 from by omega] at hrunL
+  rw [hMPos] at hrunL hdecL
+  have hjump := dispatchJump_runsTo store hc323 hbr324 regsL
+  have hall :=
+    hrunE.trans (hb22.trans (hsub.trans (hb24.trans (hrunL.trans hjump))))
+  have hsomeRaw :
+      (data.superTable.readTraceResultRelabeledWithStore layout.superTable
+        store (selectSuperSlot idx data.superStride)).value =
+      some super := hsome
+  have nVal : rVal = 9 := rfl
+  have nB : rB = 23 := rfl
+  refine ⟨regsL.write rB 1, ?_, ?_, ?_⟩
+  · have hroute :
+        (data.bpChunkedSelectTraceResultWithStore layout (G + 4) ST
+            store c idx).trace =
+          entryFieldEvents store layout.superTable.baseOccurrence
+            layout.superTable.baseWordIndex layout.superTable.rankBefore
+            layout.superTable.firstOffset
+            (selectSuperSlot idx data.superStride) ++
+          (TraceResult.bind
+            (data.longFlagRankData.bpChunkedRankTraceResultWithStore store
+              layout.longFlagRankBase (layout.longFlagRankBase + 1)
+              (layout.longFlagRankBase + 2) (G + 4) c true
+              (selectSuperSlot idx data.superStride))
+            (fun exceptionRank =>
+              bpRelativeOffsetReadTraceResultWithStore store
+                layout.longRelativeBase
+                (relativeSplitSelectEntryBasePosition data.wordSize super)
+                (relativeSplitSelectLongCompactSlot exceptionRank
+                  (idx - super.baseOccurrence) data.superStride))).trace := by
+      simp only [SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore,
+        SparseExceptionSelectData.queryOccurrence, if_pos hrange,
+        TraceResult.bind_trace]
+      rw [entryRead_trace_eq, hsomeRaw]
+      simp [hmarked]
+    have hcats : selectCloseCats data layout G ST store c idx =
+        selectPrologueCats ++
+          (Category.branch :: (selectSuperSlotCats ++
+            (entryReadCats ++
+              (Category.branch :: Category.arithmetic :: Category.branch ::
+                (longLegCats
+                  (bpWordChunkCount c
+                    (data.longFlagRankData.wordOffset
+                      (selectSuperSlot idx data.superStride)))
+                  (store.readWord? layout.longRelativeBase
+                    (relativeSplitSelectLongCompactSlot
+                      (data.longFlagRankData.bpChunkedRankTraceResultWithStore
+                        store layout.longFlagRankBase
+                        (layout.longFlagRankBase + 1)
+                        (layout.longFlagRankBase + 2) (G + 4) c true
+                        (selectSuperSlot idx data.superStride)).value
+                      (idx - super.baseOccurrence)
+                      data.superStride)).isSome ++
+                  [Category.registerWrite, Category.branch]))))) := by
+      simp only [selectCloseCats, if_pos hrange, hsome, hmarked, if_true]
+    rw [hroute, hcats]
+    simpa using hall
+  · rw [RegFile.write_other _ _ (show rVal ≠ rB by decide)]
+    simp only [SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore,
+      SparseExceptionSelectData.queryOccurrence, if_pos hrange,
+      TraceResult.bind_value]
+    rw [hsomeRaw]
+    simp only [hmarked, if_true]
+    exact hdecL
+  · intro r hr
+    rw [RegFile.write_other _ _ (show r ≠ rB by omega),
+      hpresL r (by omega) (by omega), hMpres r (by omega), hEpres r hr]
+
+/-! ## Shared local prefix: unmarked super, local slot, local read -/
+
+/--
+The dispatch prefix continued past an UNMARKED super entry: the local
+slot is computed from the super slot still resident in `rPos` and the
+super entry's base occurrence, the local entry table is read, and control
+reaches the local-miss branch at `A + 43`.  Receipts are the accepted
+super read events followed by the accepted local read events.
+-/
+theorem selectCloseBlock_localPrefix_runsTo
+    (store : ReadStore) {program : E1Machine.Program}
+    {bits : List Bool} {rso rbo : Nat}
+    (data : SparseExceptionSelectData bits false rso rbo)
+    (layout : SparseExceptionSelectTraceSegmentLayout)
+    {A G ST c : Nat}
+    (hhost : HostedAt program A (selectCloseBlockAt data layout A G ST c))
+    (regs0 : RegFile) (idx : Nat) (hIdx : regs0 xIdx = idx)
+    (hrange : idx < occurrenceCount bits false)
+    {super : SparseDenseSelectDenseLocalEntry}
+    (hsome : superEntry data layout store idx = some super)
+    (hunmarked : relativeSplitSelectEntryIsMarked super = false) :
+    ∃ regsE : RegFile,
+      RunsTo store program ⟨regs0, A, false⟩ ⟨regsE, A + 43, false⟩
+        (entryFieldEvents store layout.superTable.baseOccurrence
+          layout.superTable.baseWordIndex layout.superTable.rankBefore
+          layout.superTable.firstOffset
+          (selectSuperSlot idx data.superStride) ++
+        entryFieldEvents store layout.localTable.baseOccurrence
+          layout.localTable.baseWordIndex layout.localTable.rankBefore
+          layout.localTable.firstOffset
+          (relativeSplitSelectLocalSlot idx data.superStride
+            data.localSlotsPerSuper data.localStride super))
+        (selectPrologueCats ++
+          (Category.branch :: (selectSuperSlotCats ++
+            (entryReadCats ++
+              (Category.branch :: Category.arithmetic :: Category.branch ::
+                (selectLocalSlotCats ++ entryReadCats)))))) ∧
+      regsE rPos =
+        relativeSplitSelectLocalSlot idx data.superStride
+          data.localSlotsPerSuper data.localStride super ∧
+      regsE xQ = idx ∧ regsE rOne = 1 ∧ regsE rC = c ∧ regsE rEight = 8 ∧
+      regsE xSF1 = super.baseOccurrence + 1 ∧
+      regsE xSF2 = super.baseWordIndex + 1 ∧
+      regsE xSF4 = super.firstOffset + 1 ∧
+      regsE xLF1 = decodeRead (store.readWord?
+        layout.localTable.baseOccurrence
+        (relativeSplitSelectLocalSlot idx data.superStride
+          data.localSlotsPerSuper data.localStride super)) ∧
+      regsE xLF2 = decodeRead (store.readWord?
+        layout.localTable.baseWordIndex
+        (relativeSplitSelectLocalSlot idx data.superStride
+          data.localSlotsPerSuper data.localStride super)) ∧
+      regsE xLF3 = decodeRead (store.readWord?
+        layout.localTable.rankBefore
+        (relativeSplitSelectLocalSlot idx data.superStride
+          data.localSlotsPerSuper data.localStride super)) ∧
+      regsE xLF4 = decodeRead (store.readWord?
+        layout.localTable.firstOffset
+        (relativeSplitSelectLocalSlot idx data.superStride
+          data.localSlotsPerSuper data.localStride super)) ∧
+      regsE rA =
+        ((if decodeRead (store.readWord? layout.localTable.baseOccurrence
+            (relativeSplitSelectLocalSlot idx data.superStride
+              data.localSlotsPerSuper data.localStride super)) = 0
+          then 1 else 0) +
+          (if decodeRead (store.readWord? layout.localTable.baseWordIndex
+            (relativeSplitSelectLocalSlot idx data.superStride
+              data.localSlotsPerSuper data.localStride super)) = 0
+          then 1 else 0) +
+          (if decodeRead (store.readWord? layout.localTable.rankBefore
+            (relativeSplitSelectLocalSlot idx data.superStride
+              data.localSlotsPerSuper data.localStride super)) = 0
+          then 1 else 0) +
+          (if decodeRead (store.readWord? layout.localTable.firstOffset
+            (relativeSplitSelectLocalSlot idx data.superStride
+              data.localSlotsPerSuper data.localStride super)) = 0
+          then 1 else 0)) ∧
+      (∀ r, r ≤ 7 ∨ r = 28 → regsE r = regs0 r) := by
+  obtain ⟨-, -, -, -, -, hbr22, hsub23, hbr24, hLocalSlotH, hLocalH, -,
+    -, -, -, -, -, -, -, -, -, -, -, -, -⟩ :=
+    selectCloseBlock_hosting hhost
+  obtain ⟨regsP, hrunP, hPPos, hPQ, hPOne, hPC, hPEight, hP1, hP2, hP3,
+    hP4, hPA, hPpres⟩ :=
+    selectCloseBlock_prefix_runsTo store data layout hhost regs0 idx
+      hIdx hrange
+  obtain ⟨hf1, hf2, hf3, hf4⟩ :=
+    entryFields_of_some data.superTable layout.superTable store
+      (selectSuperSlot idx data.superStride) hsome
+  have hA0 : regsP rA = 0 := by rw [hPA, hf1, hf2, hf3, hf4]; simp
+  have hb22 : RunsTo store program ⟨regsP, A + 22, false⟩
+      ⟨regsP, A + 23, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_not_taken (s := ⟨regsP, A + 22, false⟩) rfl hbr22 hA0
+  have hsub : RunsTo store program ⟨regsP, A + 23, false⟩
+      ⟨regsP.write rB (regsP xSF3 - regsP rOne), A + 24, false⟩ []
+      [Category.arithmetic] :=
+    RunsTo.sub (s := ⟨regsP, A + 23, false⟩) rfl hsub23
+  obtain ⟨regsM, hregsM⟩ :
+      ∃ x, regsP.write rB (regsP xSF3 - regsP rOne) = x := ⟨_, rfl⟩
+  rw [hregsM] at hsub
+  have hMpres : ∀ r, r ≠ 23 → regsM r = regsP r := by
+    intro r hr
+    rw [← hregsM]
+    exact RegFile.write_other _ _ hr
+  have hrankZero : super.rankBefore = 0 := by
+    simpa [relativeSplitSelectEntryIsMarked] using hunmarked
+  have hMB : regsM rB = 0 := by
+    rw [← hregsM, RegFile.write_same, hP3, hf3, hPOne, hrankZero]
+  have hb24 : RunsTo store program ⟨regsM, A + 24, false⟩
+      ⟨regsM, A + 25, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_not_taken (s := ⟨regsM, A + 24, false⟩) rfl hbr24 hMB
+  have hMOne : regsM rOne = 1 := by
+    rw [hMpres rOne (by decide)]; exact hPOne
+  obtain ⟨regsS, hrunS, hSPos, hSP, hSpres⟩ :=
+    dispatchLocalSlot_runsTo store hLocalSlotH regsM hMOne
+  rw [show A + 25 + 6 = A + 31 from by omega] at hrunS
+  have hslot :
+      regsM rPos * data.localSlotsPerSuper +
+          (regsM xQ - (regsM xSF1 - 1)) / data.localStride =
+        relativeSplitSelectLocalSlot idx data.superStride
+          data.localSlotsPerSuper data.localStride super := by
+    rw [hMpres rPos (by decide), hMpres xQ (by decide),
+      hMpres xSF1 (by decide), hPPos, hPQ, hP1, hf1]
+    simp [relativeSplitSelectLocalSlot, relativeSplitSelectLocalSlotInSuper]
+  rw [hslot] at hSPos hSP
+  obtain ⟨regsE, hrunE, hE1, hE2, hE3, hE4, hEA, hEpres⟩ :=
+    entryReadBlock_runsTo store hLocalH (by decide) (by decide)
+      (by decide) (by decide) (by decide) (by decide) (by decide)
+      (by decide) (by decide) (by decide) regsS
+      (relativeSplitSelectLocalSlot idx data.superStride
+        data.localSlotsPerSuper data.localStride super) hSP
+  rw [show A + 31 + 12 = A + 43 from by omega] at hrunE
+  have hall :=
+    hrunP.trans (hb22.trans (hsub.trans (hb24.trans (hrunS.trans hrunE))))
+  have nLF1 : xLF1 = 34 := rfl
+  have nLF2 : xLF2 = 35 := rfl
+  have nLF3 : xLF3 = 36 := rfl
+  have nLF4 : xLF4 = 37 := rfl
+  have hchain : ∀ r, r ≠ 34 → r ≠ 35 → r ≠ 36 → r ≠ 37 → r ≠ 19 →
+      r ≠ 22 → r ≠ 23 → r ≠ 8 → r ≠ 10 → regsE r = regsP r := by
+    intro r h1 h2 h3 h4 h5 h6 h7 h8 h9
+    rw [hEpres r (by omega) (by omega) (by omega) (by omega) (by omega)
+        (by omega) (by omega),
+      hSpres r (by omega) (by omega) (by omega) (by omega),
+      hMpres r (by omega)]
+  refine ⟨regsE, by simpa using hall, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_,
+    hE1, hE2, hE3, hE4, hEA, ?_⟩
+  · rw [hEpres rPos (by decide) (by decide) (by decide) (by decide)
+      (by decide) (by decide) (by decide)]
+    exact hSPos
+  · rw [hchain xQ (by decide) (by decide) (by decide) (by decide)
+      (by decide) (by decide) (by decide) (by decide) (by decide)]
+    exact hPQ
+  · rw [hchain rOne (by decide) (by decide) (by decide) (by decide)
+      (by decide) (by decide) (by decide) (by decide) (by decide)]
+    exact hPOne
+  · rw [hchain rC (by decide) (by decide) (by decide) (by decide)
+      (by decide) (by decide) (by decide) (by decide) (by decide)]
+    exact hPC
+  · rw [hchain rEight (by decide) (by decide) (by decide) (by decide)
+      (by decide) (by decide) (by decide) (by decide) (by decide)]
+    exact hPEight
+  · rw [hchain xSF1 (by decide) (by decide) (by decide) (by decide)
+      (by decide) (by decide) (by decide) (by decide) (by decide), hP1]
+    exact hf1
+  · rw [hchain xSF2 (by decide) (by decide) (by decide) (by decide)
+      (by decide) (by decide) (by decide) (by decide) (by decide), hP2]
+    exact hf2
+  · rw [hchain xSF4 (by decide) (by decide) (by decide) (by decide)
+      (by decide) (by decide) (by decide) (by decide) (by decide), hP4]
+    exact hf4
+  · intro r hr
+    rw [hchain r (by omega) (by omega) (by omega) (by omega) (by omega)
+        (by omega) (by omega) (by omega) (by omega),
+      hPpres r hr]
+
 end E1SelectDispatch
 end WordRAM
 end RMQ
