@@ -175,7 +175,7 @@ Dense-leg word lengths at the canonical global store.  The select payload
 store is SENTINEL-FREE (`BoundedPayloadWordStore.ofChunks`, not
 `ofChunksWithSentinel`), so every present word is a genuine chunk and its
 length is the exact `Nat.min` — unconditionally, with no case split on
-whether the index is a full or partial chunk.
+whether the index lands on a whole chunk or a short trailing one.
 -/
 theorem canonical_denseLen (shape : Cartesian.CartesianShape) (i : Nat)
     {w : List Bool}
