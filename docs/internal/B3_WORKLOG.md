@@ -120,6 +120,21 @@ record; B3 milestones log here (recorded in DD-20260717-005).
       Costed twin under per-segment agreement / entry-table pullbacks),
       `_trace_forall`, `_matchesReadStore`,
       `_no_syntheticCostOnlyPrimitive`, `_store_parametric`.
+- [x] M5-prep `ChargedRankSelectWiring.lean` (worker B3-02, parallel):
+      shape-level chunk-scale word-size bounds (all four hypotheses of
+      the M3 value equivalences discharged from `wordSize_le_machine` /
+      `longFlagRank_wordSize_le_machine` / `rank_wordSize_le_machine`
+      fields + `machineWordBits_le_8_mul_bpFringeChunkBits`); chunked
+      route Costed consumers
+      `concreteBPNativeChunkedSelectCloseCosted` (value_eq to
+      `selectCosted`, cost <= 35, `_exact` = `Succinct.select`) and
+      `concreteBPNativeChunkedRankCloseCosted` (value_eq to
+      `rankCosted false`, cost <= 11, `_exact` = `Succinct.rankPrefix`);
+      canonical-store agreement facts for segments 17/18/19; chunked
+      rank-close global word trace
+      `concreteBPNativeChunkedRankCloseGlobalWordTraceResult` with
+      `_refines`/`_matchesReadStore`/`_no_syntheticCostOnlyPrimitive`
+      and the rank-leg vocabulary fact `_events_readWord`.
 - [ ] M5 atomic swap: route consumers + reviewer source 22 + payload/
       overhead + cost re-derivation + adequacy/provenance regeneration +
       vocabulary theorem + headline/validation/harness updates +
@@ -256,3 +271,11 @@ pullback equalities; discharge them from
   `lake build RMQ` exit 0, 14.8 s incremental (214 jobs, module
   registered in `RMQ.lean`, mutex held); hygiene rg no hits over the
   touched files; `git diff --check` clean.
+- M5-prep (worker B3-02):
+  `lake env lean .../ChargedRankSelectWiring.lean` exit 0 first
+  iteration; `lake build RMQ` exit 0, 9.9 s incremental (215 jobs,
+  mutex held); hygiene rg no hits; `git diff --check` clean.  The
+  segment-17/18/19 agreement facts reduce by
+  `simp [concreteBPNativeSuccinctRMQGlobalReadStore,
+  concreteBPNativeRankCloseTraceSegmentBase,
+  ...rankRegisterWordRAMStore, WordRAM.Store.readWord?]` alone.
