@@ -319,6 +319,106 @@ theorem RunsTo.iterate {store : ReadStore} {program : Program}
       obtain ⟨s'', hrest, hP0⟩ := ih s' hP
       exact ⟨s'', hbody.trans hrest, hP0⟩
 
+/-! ## Early-exit iterated blocks (select-fold backbone)
+
+The chunked select fold exits early on the found chunk: the iteration
+executed with remaining counter `k + 1` either continues (routing read,
+subtract, back edge) or fires the exit tail (select-table read, jump out).
+Which alternative runs is determined by the store and the loop inputs, so
+it is a FUNCTION of the remaining counter (`exits`), and the whole-loop
+receipts/charges stay fixed functions of the initial counter — exact
+positional receipt equality survives early-exit loop composition.  The
+counter-`0` exhaustion tail (the fold's `none` case) is its own segment.
+-/
+
+/-- Execution-ordered log of an early-exit loop: the iteration executed
+with remaining counter `k + 1` contributes its exit log `exit k` and stops
+if `exits k`, else its continuing log `cont k`; exhaustion (counter `0`)
+contributes `exhaust`. -/
+def iterUntilLog {α : Type} (exits : Nat → Bool)
+    (cont exit : Nat → List α) (exhaust : List α) : Nat → List α
+  | 0 => exhaust
+  | k + 1 =>
+      if exits k then exit k
+      else cont k ++ iterUntilLog exits cont exit exhaust k
+
+@[simp] theorem iterUntilLog_zero {α : Type} (exits : Nat → Bool)
+    (cont exit : Nat → List α) (exhaust : List α) :
+    iterUntilLog exits cont exit exhaust 0 = exhaust := rfl
+
+theorem iterUntilLog_succ {α : Type} (exits : Nat → Bool)
+    (cont exit : Nat → List α) (exhaust : List α) (k : Nat) :
+    iterUntilLog exits cont exit exhaust (k + 1) =
+      if exits k then exit k
+      else cont k ++ iterUntilLog exits cont exit exhaust k := rfl
+
+theorem iterUntilLog_succ_of_exits {α : Type} {exits : Nat → Bool}
+    (cont exit : Nat → List α) (exhaust : List α) {k : Nat}
+    (h : exits k = true) :
+    iterUntilLog exits cont exit exhaust (k + 1) = exit k := by
+  rw [iterUntilLog_succ, if_pos h]
+
+theorem iterUntilLog_succ_of_continues {α : Type} {exits : Nat → Bool}
+    (cont exit : Nat → List α) (exhaust : List α) {k : Nat}
+    (h : exits k = false) :
+    iterUntilLog exits cont exit exhaust (k + 1) =
+      cont k ++ iterUntilLog exits cont exit exhaust k := by
+  rw [iterUntilLog_succ, if_neg (by simp [h])]
+
+/--
+Generic early-exit loop composition.  If from every state satisfying the
+invariant at counter `k + 1` the iteration either exits (when `exits k`)
+with receipts `readsExit k` / charges `catsExit k` into the exit predicate
+`Q`, or continues (when `¬ exits k`) with receipts `readsCont k` / charges
+`catsCont k` re-establishing the invariant at counter `k`, and every
+invariant-`0` state runs the exhaustion tail into `Q`, then from any state
+at counter `k` the whole loop runs into `Q` with the execution-ordered
+`iterUntilLog` receipts and charges.
+-/
+theorem RunsTo.iterateUntil {store : ReadStore} {program : Program}
+    (P : Nat → State → Prop) (Q : State → Prop) (exits : Nat → Bool)
+    (readsCont readsExit : Nat → List TraceEvent)
+    (catsCont catsExit : Nat → List Category)
+    (readsExhaust : List TraceEvent) (catsExhaust : List Category)
+    (hstep : ∀ k s, P (k + 1) s →
+      if exits k then
+        ∃ s', RunsTo store program s s' (readsExit k) (catsExit k) ∧ Q s'
+      else
+        ∃ s', RunsTo store program s s' (readsCont k) (catsCont k) ∧
+          P k s')
+    (hexhaust : ∀ s, P 0 s →
+      ∃ s', RunsTo store program s s' readsExhaust catsExhaust ∧ Q s') :
+    ∀ k s, P k s →
+      ∃ s',
+        RunsTo store program s s'
+            (iterUntilLog exits readsCont readsExit readsExhaust k)
+            (iterUntilLog exits catsCont catsExit catsExhaust k) ∧
+          Q s' := by
+  intro k
+  induction k with
+  | zero =>
+      intro s h
+      exact hexhaust s h
+  | succ k ih =>
+      intro s h
+      have hs := hstep k s h
+      cases hexit : exits k with
+      | true =>
+          rw [if_pos (by simp [hexit])] at hs
+          obtain ⟨s', hrun, hQ⟩ := hs
+          refine ⟨s', ?_, hQ⟩
+          rw [iterUntilLog_succ_of_exits _ _ _ hexit,
+            iterUntilLog_succ_of_exits _ _ _ hexit]
+          exact hrun
+      | false =>
+          rw [if_neg (by simp [hexit])] at hs
+          obtain ⟨s', hbody, hP⟩ := hs
+          obtain ⟨s'', hrest, hQ⟩ := ih s' hP
+          refine ⟨s'', ?_, hQ⟩
+          rw [iterUntilLog_succ_of_continues _ _ _ hexit,
+            iterUntilLog_succ_of_continues _ _ _ hexit]
+          exact hbody.trans hrest
+
 end E1Machine
 end WordRAM
 end RMQ
