@@ -136,16 +136,53 @@ The declared charge policy is therefore:
   bounded arithmetic/comparison on register values, option tests, branching,
   candidate merges, trace assembly, and the validity guard.
 
-Why the uncharged remainder is benign in this model: after B2/B3 every
-uncharged step is a BOUNDED-PER-STEP register computation - a constant-shape
-decode or merge between two charged reads - not an unbounded scan. The old
-event-silent per-position fringe scan and in-word rank/select loops are gone
-from the charged route; their replacements visit at most a literal number of
-chunks (8 per machine word, 33 per fringe window; the 33-cap identity is
-checked in `ChargedFringeChunks.lean`, the 8-per-word cap and its all-size
-regime identities in `ChargedWordChunks.lean`/`ChargedTableRegime.lean`),
-each chunk contributing
-one charged read plus constant register work. The E1 machine (the amended
+Why the uncharged remainder is benign in this model: after B2/B3 **and B6**
+every uncharged step is a BOUNDED-PER-STEP register computation - a
+constant-shape decode or merge between two charged reads - not an unbounded
+scan. The old event-silent per-position fringe scan and in-word rank/select
+loops are gone from the charged route; their replacements visit at most a
+literal number of chunks (8 per machine word, 33 per fringe window; the
+33-cap identity is checked in `ChargedFringeChunks.lean`, the 8-per-word cap
+and its all-size regime identities in
+`ChargedWordChunks.lean`/`ChargedTableRegime.lean`), each chunk contributing
+one charged read plus constant register work.
+
+B6 closes the last exception to that sentence. Until B6 the claim was FALSE
+of one leg: the canonical close/LCA dispatcher's SAME-BLOCK branch still
+called `localBPSameBlockCloseSeededCosted`, which declared `cost := 4` while
+running `localBPSeededPrefixRangeMinExcess` /
+`localBPSeededPrefixRangeArgMinPrefixPos` over
+`rightClose - leftClose + 1` window positions - a scan whose length grows
+with `blockSize = 2*(Nat.log2 size + 1)` and so is not bounded per step. That
+branch is live, not legacy: every singleton query routes to it, and the cost
+harness reports `canonicalRoute=sameBlock` executions at n = 64 and n = 128.
+
+The same-block leg is now charged by the same chunk fold as the endpoint
+fringe, reading the SAME segment-21 `bpFringeChunkTable`, with these checked
+caps:
+
+- `bpChunkedSameBlockCloseSeededCosted_cost_le : cost <= 37`
+  (`ChargedSameBlockChunks.lean`) - 4 window-word reads plus at most 33 chunk
+  reads, the chunk counter capped at `Nat.min (relHi / c + 1) 33`, with no
+  size hypothesis and no readiness guard, so it holds at n = 0, 1, 2 too.
+- `bpChunkedSameBlockCloseDecodedCostedWithRankSeed_cost_le :
+  cost <= rankCost + 37` once the directory rank seed is threaded.
+- `canonicalLcaCloseCostedWithRankSeed_cost_le_principled` - the branch cap is
+  a MAX over the two arms, not a sum, and the cross-block arm's existing
+  `2*rankCost + 2*37 + 30` absorbs the same-block arm's `rankCost + 37`
+  (at `rankCost = 11`: 48 <= 126), so no cost-algebra field changes.
+- `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq` therefore
+  re-derives by `rfl` to **207, unchanged**. The literal did not move because
+  the branch cap genuinely absorbs the new reads, not because the new reads
+  were left out of the accounting - the per-chunk `readWord 21 _ _` events are
+  in the trace and are counted.
+
+What remains uncharged on the accepted route after B6 is exactly the register
+list above, and it is bounded per step at every leg: each charged read is
+followed by a constant-shape mixed-radix unpack of one table entry and a
+constant number of comparisons/merges, with no remaining loop whose trip count
+depends on input size. There is no event-silent computation left on the
+accepted route. The E1 machine (the amended
 E1 target of `OPTION_B_CHARGED_FRINGE_DESIGN.md`) will define the richer
 instruction semantics that individually charges every controller, decode,
 arithmetic, comparison, branch, and register step, and prove a separate

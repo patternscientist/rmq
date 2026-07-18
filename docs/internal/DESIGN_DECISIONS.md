@@ -3303,3 +3303,96 @@ fold; the accepted entry-table read trace/value reduce definitionally to
 the machine shapes (`entryRead_trace_eq`/`entryRead_value_eq`,
 `relativeRead_trace_eq`/`relativeRead_value_eq`), so the dispatch
 simulation composes receipts positionally with no decode gap.
+
+## DD-20260718-008: charged same-block close swapped onto the accepted route; route literal 207 unmoved (B6 REQ-B6-05/-09)
+
+Status: Proposed
+Date: 2026-07-18
+Scope: B6 rung (worker B6-02), branch `claude/b1-b2-charged-fringe-tables`:
+`ChargedSameBlockTrace.lean`, `ChargedFringeWiring.lean`,
+`SuccinctFinalRAM.lean`, `SuccinctFinalStoreParam.lean`,
+`docs/PAPER_MODEL_ADEQUACY.md`.
+
+Decision: the canonical close/LCA dispatchers now call the charged chunked
+same-block consumers, closing the last event-silent computation on the
+accepted route.  Four sub-decisions were forced and are recorded here.
+
+1. THE ROUTE LITERAL DOES NOT MOVE.  The delegation authorized freezing 207
+   as a historical constant "to at most 240" by the 142 pattern.  Read at
+   source, the close/LCA principled cap is a MAX over the two branches, not
+   a sum: the cross-block arm already pays
+   `bpChunkedPrincipledBPCloseChargedTraceCostWithRankSeed rankCost
+   = 2*rankCost + 2*37 + 30` (= 126 at `rankCost = 11`), while the charged
+   same-block arm pays `rankCost + 4 + 33 = rankCost + 37` (= 48).  Since
+   `rankCost + 37 <= 2*rankCost + 104` for every `rankCost`, the existing
+   cap absorbs the new reads with no algebra field touched, and
+   `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`
+   re-derives by `rfl` to 207 UNCHANGED (it depends on no axioms at all).
+   Consequently NO historical constant is minted, `SuccinctClassic.queryCost
+   = 207` and all 27 Lean consumers stand, the `SumLe207` topology anchor is
+   not renamed, and no doc numeral migration occurs.  The authorization to
+   move the literal went UNUSED - strictly less public-surface disruption
+   than authorized, not more.  Alternative rejected: minting a historical
+   207 and a new literal anyway "for symmetry with B2/B3", which would have
+   asserted a constant the algebra does not derive.
+
+2. NO NEW SEGMENT, TABLE, OR STORE OBLIGATION.  The same-block window is
+   DEFINITIONALLY the B2 fringe window
+   (`localBPWindowBits_eq_flatten_localBPBlockWordsRead`), so the same-block
+   chunk reads go to the SAME segment-21 `bpFringeChunkTable` the
+   cross-block fringe already reads.  The dispatchers therefore keep their
+   names, parameter lists, and statement shapes byte-for-byte, the existing
+   unused `_sameBlockSegment` parameter stays unused, and no store, payload,
+   overhead, capacity, erasure, or `ReviewerSource` work arises.
+   `canonical_segments_complete` is unchanged (still `< 22`).  This is
+   stronger identity preservation than B2's own M9 achieved.  Alternative
+   rejected: a dedicated same-block segment/table, which would have required
+   the full space/erasure/capacity/o(n)/provenance treatment for reads that
+   are bit-identical to reads already counted.
+
+3. `_trace_forall` GAINS ONE HYPOTHESIS, IN MEMBERSHIP FORM.  The same-block
+   branch is no longer read-free, so
+   `lcaCloseTraceResultWithRankSeedAllSizeStructural_trace_forall` takes a
+   new `hsameBlock`, stated as membership in
+   `bpChunkedSameBlockCloseSeededTraceResultAtSegment` exactly as the
+   existing `hfringeLeft`/`hfringeRight` are stated.  The cheaper raw form
+   (`address < rowCount -> P (readWord fringeSegment address _)`) was
+   REJECTED even though all seven accepted consumers already have that fact
+   in hand: the raw form names a segment and an address but not a PRODUCER,
+   and REQ-B6-04 requires provenance to cover the actual emitted events by
+   producing component, not by segment membership.  The membership form is
+   what lets `ReviewerProducerReadPath.lcaSameBlock` name the subtrace that
+   produced each same-block read.  Consequence: `hbp` (window-word reads)
+   became subsumed - every branch now reaches its window reads through the
+   component subtrace that produced them - and is retained as `_hbp` so the
+   seven consumers keep their argument shape.  It is documented as retained
+   for statement stability rather than silently deleted.
+
+4. EXACTNESS IS TRANSPORTED, NOT RE-PROVED.  The accepted same-block
+   exactness theorem
+   `localBPSameBlockCloseDecodedCostedWithRankSeed_exact_of_query_same_block`
+   is kept and moved across the M3a substitution
+   (`bpChunkedSameBlockCloseDecodedCostedWithRankSeed_value_eq_of_query`)
+   by `rw [hvalue]; exact haccepted`, exactly as the cross-block case does.
+   B2's "whole block lies inside the BP code" strictness argument is NOT
+   imported: it is false for same-block queries because the final block may
+   extend past `shape.bpCode.length`.  Each close position is covered
+   separately instead, following B6-01.
+
+Consequences: the accepted route's same-block executions now emit
+`readWord 21 _ _` events; the cost harness confirms this empirically, with
+`canonicalRoute=sameBlock` windows rising from modeledTraceCost 52-54 to
+54-62 while `canonicalBoundIs207=true` holds on all 17 reported inputs and
+all windows still agree with reference `List Int` RMQ semantics.  The
+charge-policy section of `docs/PAPER_MODEL_ADEQUACY.md` (the paper-facing
+point of the rung) is now TRUE as written and names the same-block leg, its
+37-cap, and the residual uncharged register work explicitly.
+
+Residual (inherited, not introduced): the retired silent store-locality
+helpers `finalSameBlockLcaWithStore_storeTraceLocal` /
+`localBPSameBlockSeededWithStore_storeTraceLocal` become unreferenced in
+`SuccinctFinalStoreParam.lean`, exactly as B2's own
+`finalCrossBlockLcaWithStore_storeTraceLocal` already is.  They are private
+proofs about the retired silent objects, not counted payload sources, so
+this is not a dead-source violation; B6 leaves them as B2 left its twins and
+flags the pair as a single cleanup candidate for a later rung.

@@ -200,6 +200,78 @@ theorem bpChunkedSameBlockCloseDecodedCostedWithRankSeed_value_eq
     bpChunkedSameBlockCloseSeededCosted_value_eq shape blockSize leftClose
       rightClose _ hvalid hstart hcov
 
+/-! ## Adversarial table-corruption witness (same-block value dependency)
+
+Corrupting one stored table entry that the charged same-block fold actually
+reads changes the returned `Option Nat` CLOSE — not merely the internal
+min-excess and not the trace log.  Read index `11` is exactly the slot the
+witness invocation reads (`hslot` below), so the corrupted entry lies in the
+actual same-block charged read footprint.
+
+This strengthens B2's `bpFringeChunkTable_corruption_changes_fringe_value`,
+whose corruption moves the min-excess component but leaves the argmin
+POSITION at `0`, so it does not by itself move a close.  The witness here is
+stated through the same-block leaf's own projection
+`bpCandidateClose? (bpFringeCandGlobal base seed start _)`.
+-/
+
+def bpFringeSameBlockCorruptedEntriesWitness : List Nat :=
+  (bpFringeChunkEntries 2).set 11 2
+
+def bpFringeSameBlockCorruptedTableWitness :
+    SuccinctSpace.FixedWidthNatTable bpFringeSameBlockCorruptedEntriesWitness
+      (bpFringeChunkEntryWidth 2) :=
+  SuccinctSpace.FixedWidthNatTable.ofEntries _ _ (by
+    intro entry hmem
+    rcases List.mem_or_eq_of_mem_set hmem with hmem' | rfl
+    · exact bpFringeChunkEntries_mem_lt_two_pow_width hmem'
+    · exact Nat.lt_trans
+        (show (2 : Nat) < bpFringeChunkEntryBound 2 by decide)
+        (bpFringeChunkEntryBound_lt_two_pow_width 2))
+
+theorem bpFringeChunkTable_corruption_changes_sameBlock_close_value :
+    bpCandidateClose?
+        (bpFringeCandGlobal 0 1 1
+          (bpFringeChunkFoldCosted (bpFringeChunkTable 2) 2 [true, false] 1 0
+            1 1).value.2) ≠
+      bpCandidateClose?
+        (bpFringeCandGlobal 0 1 1
+          (bpFringeChunkFoldCosted bpFringeSameBlockCorruptedTableWitness 2
+            [true, false] 1 0 1 1).value.2) := by
+  have hhonest :
+      (bpFringeChunkFoldCosted (bpFringeChunkTable 2) 2 [true, false] 1 0 1
+          1).value.2 = some (1, 0) := by
+    rw [bpFringeChunkFoldCosted_value]
+    decide
+  have hslot :
+      bpFringeChunkSlot 2 (bpFringeWindowChunkValue 2 [true, false] 0)
+        (bpFringeChunkStartOff 2 0 0) (bpFringeChunkEndOff 2 1 0) = 11 := by
+    decide
+  have hget : bpFringeSameBlockCorruptedEntriesWitness[11]? = some 2 := by
+    decide
+  have hread :
+      (bpFringeSameBlockCorruptedTableWitness.readCosted 11).value = some 2 := by
+    have h :=
+      SuccinctSpace.FixedWidthNatTable.readCosted_erase
+        bpFringeSameBlockCorruptedTableWitness 11
+    rw [hget] at h
+    exact h
+  have hv :
+      (bpFringeChunkFoldCosted bpFringeSameBlockCorruptedTableWitness 2
+          [true, false] 1 0 1 1).value =
+        bpFringeChunkStepDecoded 2 0 1 0 (1, none)
+          ((bpFringeSameBlockCorruptedTableWitness.readCosted
+            (bpFringeChunkSlot 2 (bpFringeWindowChunkValue 2 [true, false] 0)
+              (bpFringeChunkStartOff 2 0 0)
+              (bpFringeChunkEndOff 2 1 0))).value) := rfl
+  have hcorrupt :
+      (bpFringeChunkFoldCosted bpFringeSameBlockCorruptedTableWitness 2
+          [true, false] 1 0 1 1).value.2 = some (0, 2) := by
+    rw [hv, hslot, hread]
+    decide
+  rw [hhonest, hcorrupt]
+  decide
+
 end SuccinctClose
 
 end RMQ
