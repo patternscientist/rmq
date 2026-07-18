@@ -2528,3 +2528,65 @@ buildPayload/overhead amendment recorded in a separate entry at the store
 milestone; wiring/cost re-derivation at B5.
 
 Supersedes: none (implements DD-20260717-001 direction).
+
+## DD-20260717-003: Couple the reviewer-source extension and public payload amendment to the fringe wiring rung
+
+Status: Proposed
+Date: 2026-07-17
+Scope: B2 store/space milestone (`ChargedFringeSpace.lean`,
+`ChargedFringeSubstitution.lean`); reviewer store
+(`RMQ/Core/SuccinctFinal/RAM/ReviewerPhysical.lean`) and public surface
+(`RMQ/Core/SuccinctRMQClassic.lean`) unchanged on this branch.
+
+Decision: the B2 core rung delivers the chunk-table store, erasure,
+capacity-feed, word-width, o(n) budget, and the amended payload/overhead as
+a committed CANDIDATE pair (`bpChunkedBuildPayloadCandidate`,
+`bpChunkedOverheadCandidate`, with checked `2n + o(n)` shape), but does NOT
+add the `ReviewerSource` constructor or swap the public
+`buildPayload`/`overhead` definitions.  Both are coupled to the wiring rung
+that makes the accepted execution actually read the table.
+
+Context: the accepted public capstone conjunct
+`concreteBPNativeSuccinctRMQCanonicalReviewerPayload (cartesianShape xs) =
+buildPayload xs` is proved by `rfl` inside
+`FlatPayloadStoreNoSyntheticExecutionStory`
+(`SuccinctRMQClassic.lean:615/698`), and the reviewer manifest theorems
+reject dead sources
+(`concreteBPNativeSuccinctRMQReviewerManifest_add_dead_rejected`,
+`ReviewerPhysical.lean:430`).  Amending the counted payload or the source
+universe while the accepted execution performs no table read would either
+falsify a checked public theorem or install exactly the dead counted region
+the manifest layer is designed to reject.
+
+Options considered:
+
+- Amend `buildPayload` now and weaken the capstone conjunct: changes the
+  public claim surface, which is B5 scope and not this worker's call;
+  rejected.
+- Add the `ReviewerSource` constructor now with a dead segment: breaks
+  `canonical_segments_complete` (`segment < 21`) in
+  `SuccinctFinalModelAdequacy` (anticipated B4 fallout) AND the live/dead
+  manifest theorems in `ReviewerPhysical.lean`, i.e. more than the
+  sanctioned adequacy breakage; rejected.
+- Candidate-pair + coupling (chosen): everything the wiring rung needs is
+  committed and checked (payload shape, o(n), erasure, per-source linear
+  word count `<= 64*(n+1)`, word width `<=` reviewer word bits), and the
+  accepted surface stays green.
+
+Consequences: matrix rows REQ-B2-04/05/06 remain open at the
+reviewer/public level with their component-level content closed; the
+wiring successor performs (in one rung): TraceResult/WithStore chunked
+fringe at a new segment, ReviewerSource extension + erasure/capacity fold
+re-proof, public buildPayload/overhead swap, and cost-chain re-derivation.
+
+Evidence: `ChargedFringeSpace.lean` theorems
+(`bpFringeTableOverhead_littleO`, `bpChunkedBuildPayloadCandidate_length`,
+`bpChunkedOverheadCandidate_littleO`, `bpFringeChunkRowCount_le_linear`,
+`bpFringeChunkEntryWidth_le_reviewerWordBits`,
+`bpFringeChunkTable_store_erases`); the `rfl` capstone conjunct at
+`SuccinctRMQClassic.lean:698`.
+
+Follow-up: coordinator to confirm the coupling or direct an in-rung
+extension despite the public-surface breakage.
+
+Supersedes: none (refines DD-20260717-002 follow-up).

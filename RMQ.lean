@@ -11,6 +11,9 @@ import RMQ.Core.SuccinctClose
 import RMQ.Core.WordRAM.ReadStoreEval
 import RMQ.Core.GenericSelect.RAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
+import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeChunks
+import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeSubstitution
+import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeSpace
 import RMQ.Core.SuccinctFinalStoreParam
 import RMQ.Core.SuccinctFinalModelAdequacy
 import RMQ.Core.SuccinctRankSelect

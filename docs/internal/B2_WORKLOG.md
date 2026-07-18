@@ -50,10 +50,20 @@ Branch `claude/b1-b2-charged-fringe-tables`, base `b6338ea`. Matrix:
       pass explicit args (`Nat.succ_mul j c`).
 - [x] M4 charged Costed evaluator + left/right wrappers + literal cost bound
       + corruption witness (value dependency): done, all checked.
-- [ ] M5 store/space: reviewer-source decision, table payload counted,
-      littleO composition, buildPayload/overhead amendment.
-- [ ] M6 substitution lemmas at accepted fringe call sites (Costed +
-      TraceResult layers); wiring if time permits.
+- [x] M5 store/space (delivered scope): `ChargedFringeSpace.lean` —
+      table payload length identity, component erasure, width <= 3c+6,
+      width <= reviewerWordBits n (all n), rowCount <= 64(n+1) capacity
+      feed, `bpFringeTableOverhead_littleO`, candidate amendment pair
+      `bpChunkedBuildPayloadCandidate/OverheadCandidate` with checked
+      `2n + o(n)` shape. ReviewerSource extension + public name swap
+      COUPLED to wiring successor (DD-20260717-003; matrix
+      REQ-B2-04/05/06 annotated OPEN with reasons).
+- [x] M6 (Costed layer): `ChargedFringeSubstitution.lean` —
+      `bpChunkedCrossBlockCloseCostedWithRankSeed(_value_eq,
+      _cost_le_principled)` pin the wiring at the accepted Costed
+      call site under the accepted route's own query-side facts.
+      TraceResult/WithStore substitution + actual wiring = named
+      successor rung.
 
 ## Current state
 
@@ -98,6 +108,13 @@ seed 1 (values 1 vs 3 at position 0).
 (commands, exit codes, durations recorded per milestone)
 
 - M1: none (docs only).
+- M2/M3 deps: `lake build RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam ...` exit 0, 8m50s (mutex held).
+- M2+M3: `lake env lean RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeChunks.lean` exit 0 (after 3 fix iterations; ~2-3 min each).
+- M4: same command exit 0 (2 iterations).
+- M6: `lake build RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeChunks` exit 0 (76 jobs); `lake env lean .../ChargedFringeSubstitution.lean` exit 0 (2 iterations: namespace fix).
+- M5 deps: `lake build RMQ.Core.SuccinctRMQClassic` exit 0, 5m45s (mutex held).
+- M5: `lake env lean .../ChargedFringeSpace.lean` exit 0 (2 iterations: by_contra unavailable, zero-case normalization).
+- Final: see report (root build, hygiene rg, git diff --check, design_decision_check).
 
 ## Open risks
 
