@@ -31,7 +31,7 @@ satisfy the reviewer word bound.
 
 The final trace is exact through
 `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact`. Its honest
-principled all-size charged-trace bound is `142`, checked by
+principled all-size charged-trace bound is `207`, checked by
 `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`; exact modeled
 cost is emitted trace length. Earlier checked cost and dispatch facts are
 indexed only in the explicit
@@ -69,7 +69,7 @@ aliases.
 | `RMQ.Headlines.listIntSuccinctRMQQueryCostedWithStoreEqQueryCostedOfFootprint` | List-facing supplied-store equality: under final footprint agreement with `SuccinctClassic.globalReadStore xs`, `SuccinctClassic.queryCostedWithStore xs store left right` is the same costed query as canonical `SuccinctClassic.queryCosted xs left right`. |
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal` | List-facing supplied-store exactness: if a caller-provided store agrees with `SuccinctClassic.globalReadStore xs` on the final checked footprint, valid half-open queries through `SuccinctClassic.queryCostedWithStore` erase to the exact leftmost `List Int` RMQ answer. |
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal` | List-facing supplied-store all-size cost transfer: under the same footprint agreement, `SuccinctClassic.queryCostedWithStore xs store left right` has modeled cost at most `SuccinctClassic.queryCost`. |
-| `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile` | Canonical construction-facing capstone: doubled-Catalan space envelopes, the at-most `2*n + o(n)` canonical reviewer payload, exact physical erasure, direct positional physical backing for every successful read, exact canonical-global-trace answers, non-synthetic certificate weight equal to trace length and the same `Costed.cost`, and uniform bound `142`. |
+| `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile` | Canonical construction-facing capstone: doubled-Catalan space envelopes, the at-most `2*n + o(n)` canonical reviewer payload, exact physical erasure, direct positional physical backing for every successful read, exact canonical-global-trace answers, non-synthetic certificate weight equal to trace length and the same `Costed.cost`, and uniform bound `207`. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` | All-size final-query execution story: the public costed query refines one globally segmented `WordRAM.TraceEvent` stream, every event is a payload read or bounded word primitive, and every read agrees with one concrete payload store. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory` | Store-extensional all-size execution story: any read store agreeing with the concrete global store on emitted payload-read events validates the same final-query trace. |
 | `RMQ.Headlines.succinctRMQCanonicalInteriorDirectoryProfileAllSize` | Canonical all-size interior profile collecting exactness, `240`, component-store, footprint, backing, and reviewer-width guarantees. |
@@ -77,11 +77,11 @@ aliases.
 | `RMQ.Headlines.succinctRMQCanonicalReviewerMachineWordsComponentSlice` | The canonical interior component occupies its exact physical suffix in the reviewer machine-word array. |
 | `RMQ.Headlines.succinctRMQCanonicalInteriorPhysicalFootprintFits` | Every physical address consumed by the canonical interior execution, including its sentinel address, fits the pre-execution reviewer word width. |
 | `RMQ.Headlines.succinctRMQCanonicalReviewerValidQueryOperandsFit` | Valid query operands fit the same input/addressable-store/sentinel-derived width. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe` | The unchanged uniform canonical final trace has the principled charged-trace bound `142`. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe` | The unchanged uniform canonical final trace has the principled charged-trace bound `207`. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostEqTraceLength` | The modeled cost is exactly the emitted charged-event trace length. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultEventReadWordOrWordRankOrWordSelect` | Every actual emitted canonical event is a payload read, word-rank, or word-select event. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumEqCost` | For the canonical no-synthetic trace, the `nonSyntheticWeight` certificate sum equals the `Costed` cost of the same execution. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe142` | The non-synthetic-weighted actual emitted trace is at most `142`. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe207` | The non-synthetic-weighted actual emitted trace is at most `207`. |
 | `RMQ.Headlines.succinctRMQSyntheticCostOnlyPrimitiveMemBreaksNonSyntheticWeightLengthEquality` | A synthetic event anywhere in a trace breaks `nonSyntheticWeight`/length equality. |
 | `RMQ.Headlines.succinctRMQChargedTraceCostAlgebra` | Named component cap; it is not a substitute small-step instruction interface. |
 | `RMQ.Headlines.succinctRMQReviewerPhysicalExecutionRefinesLogical` | Genuine supplied flat-physical execution refines canonical logical execution, preserving decoded result, cost, ordered reads (including failures and repetitions), and footprint. |
@@ -181,7 +181,7 @@ profile over Cartesian-shape representatives:
 - the modeled query cost is bounded by a fixed constant.
 
 For the current concrete BP-native capstone, the canonical reviewer route has
-the principled charged-trace all-size cap `142`. The exact public
+the principled charged-trace all-size cap `207`. The exact public
 `SuccinctClassic.buildPayload` is also the erasure of the one pre-execution
 physical word list used by the execution refinement. The existing
 supplied-store evaluator reads the flat store through checked physical-address
@@ -251,7 +251,7 @@ The current construction-facing query surface is
 `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`.
 It names the canonical reviewer payload and its physical erasure together with
 the exact global `WordRAM.TraceEvent` stream whose non-synthetic certificate
-sum equals the same `Costed.cost` and is at most `142`. The answer-rank leaf is a
+sum equals the same `Costed.cost` and is at most `207`. The answer-rank leaf is a
 concrete register-program trace: once the dynamic `answerClose + 1` position is
 supplied in a register, the super-sample, block-sample, and bit-word addresses
 are computed inside first-order syntax. The WordRAM/register layer exposes

@@ -2470,3 +2470,42 @@ Publication-facing significance:
 The curated axiom inventories remain kernel-facing evidence. Making their gate
 transport reliable prevents an output-volume artifact from being confused with
 a proof-trust failure while preserving the same acceptance rule.
+
+## WDD-20260718-001: B3 current-anchor migration in the paper topology gate
+
+Status: Accepted.
+Date: 2026-07-18.
+Scope: `scripts/paper_topology_lint.ps1`, `scripts/headline_axiom_check.lean`
+required-anchor lists for the B3 chunked in-word rank/select swap.
+
+Decision:
+
+The paper topology gate migrates its CURRENT weight-bound anchor from
+`succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe142` to
+`succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe207`
+in the same commit that renames the headline abbrev (the B2 precedent for
+the 76 -> 142 migration, coordinator-ratified per the B3 worklog), and
+GAINS one new required anchor:
+`succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` (the B3
+vocabulary signature). The headline axiom inventory prints the same two
+anchors. Frozen historical anchors are untouched; the frozen 142 constant
+lives on as `canonicalSilentWordRankSelectQueryCost` in the Lean surface,
+not as a lint anchor.
+
+Options considered:
+
+- Keep the 142 anchor alongside 207 (rejected: the lint anchors name the
+  CURRENT paper surface; historical constants are policed by the
+  claim-drift policy, not the topology gate).
+- Defer the new vocabulary anchor to B5 doc migration (rejected: the
+  anchor exists to keep the paper-facing signature theorem resolvable
+  from `RMQ.Headlines`; adding it at the swap commit makes the gate catch
+  regressions immediately).
+
+Consequences: `paper_topology_lint.ps1` and `headline_axiom_check.lean`
+fail if the renamed or new anchor disappears from `Headlines/RMQ.lean`;
+documentary claim registries were synced to the new anchor in the same
+change.
+
+Evidence: the B3 M5 swap commit and the M6 battery ledger in
+`docs/internal/B3_WORKLOG.md`.
