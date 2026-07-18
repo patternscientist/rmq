@@ -236,3 +236,122 @@ the two covers, which also handles the `rightClose < leftClose` Nat-truncation
 case correctly.
 
 `lake build RMQ` exit 0, 87.3 s. Hygiene scan on the new module: no hits.
+
+## RESUME INVENTORY (verified this session; B6 is INCOMPLETE at `b77f385`)
+
+Everything below was read at source in this worktree. Nothing here is
+implemented. The library is green at every committed point; the accepted
+route is NOT yet swapped, so the same-block branch is still event-silent and
+the mission target is NOT delivered.
+
+### What is landed and green
+
+| Module | Contents |
+| --- | --- |
+| `ChargedSameBlockChunks.lean` | `bpChunkedSameBlockCloseSeededCosted`, `_cost_le` (<= 37), `_value_eq`; decoded twins `bpChunkedSameBlockCloseDecodedCostedWithRankSeed`, `_cost_le` (<= rankCost + 37), `_value_eq` |
+| `ChargedSameBlockTrace.lean` | `bpChunkedSameBlockCloseSeededTraceResultAtSegment(WithStore)` with `_refines`, `_trace_forall`, `_matchesReadStore`, `_no_syntheticCostOnlyPrimitive`, and WithStore `_eq_of_agree`, `_store_parametric`, `_matchesReadStore`, `_no_syntheticCostOnlyPrimitive`; decoded `...DecodedTraceResultWithRankSeedAtSegment(WithStore)` with `_refines`, `_eq_of_agree`, `_store_parametric` |
+| `ChargedSameBlockSubstitution.lean` | `bpChunkedSameBlockCloseDecodedCostedWithRankSeed_value_eq_of_query` (query-side geometry discharge) |
+
+### STEP 1 - five missing decoded-level obligation lemmas
+
+Add to `ChargedSameBlockTrace.lean`. Each is the decoded (rank-seed)
+analogue of a seeded lemma already present in that file. The proof shape to
+copy is `ChargedFringeTrace.lean:1051`
+(`bpChunkedCrossBlockClose..._trace_forall`): `unfold` then
+`apply WordRAM.TraceResult.bind_trace_forall`, with the seed case
+discharged by `localBPSeedFromRankCloseTraceResult_trace_forall`
+(`ChargedFringeTrace.lean:1094`).
+
+1. `bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment_trace_forall`
+2. `..._matchesReadStore`
+3. `..._no_syntheticCostOnlyPrimitive`
+4. `...AtSegmentWithStore_matchesReadStore`
+5. `...AtSegmentWithStore_no_syntheticCostOnlyPrimitive`
+
+### STEP 2 - the atomic swap in `ChargedFringeWiring.lean` (12 sites)
+
+Line numbers exact at `b77f385`. The dispatcher signature does NOT change:
+the same-block chunk reads go to the SAME table at `fringeSegment`, so the
+existing unused `(_sameBlockSegment : Nat)` parameter (`:55`) stays unused
+and every name and statement identity is preserved byte-for-byte. This is
+strictly stronger identity preservation than B2's own M9 achieved.
+
+| Line | Current | Replace with |
+| --- | --- | --- |
+| 39 | `localBPSameBlockCloseDecodedCostedWithRankSeed` | `bpChunkedSameBlockCloseDecodedCostedWithRankSeed` |
+| 60 | `localBPSameBlockCloseDecodedTraceResultWithRankSeed` | `bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment shape rankCloseTrace fringeSegment blockSize leftClose rightClose` |
+| 431 | `localBPSameBlockCloseDecodedTraceResultWithRankSeedWithStore` | the `...AtSegmentWithStore` twin |
+| 88 | `..._refines` | `bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment_refines` |
+| 117 | `..._cost_le` (`hlocal` gives `rankCost + 4`) | `bpChunkedSameBlockCloseDecodedCostedWithRankSeed_cost_le`; the `hcap` at `:120-124` becomes `rankCost + 37 <= canonicalCompactBPCloseQueryCostWithRankSeed rankCost`, still closed by `omega` after the same unfolds |
+| 166 | `..._cost_le` (`hlocal` gives `rankCost + 4`) | same swap; the `hcap` at `:169-174` becomes `rankCost + 37 <= 2*rankCost + 2*37 + 30`, `omega`-closed for every `rankCost` |
+| 228 | `..._exact_of_query_same_block` | keep the accepted theorem and transport it across the M3a substitution, exactly as the cross-block case does at `:250-269`: `rw [hvalue]; exact haccepted` |
+| 319 | `..._trace_forall` | STEP 1 lemma 1 |
+| 474 | `...WithStore_eq_of_agree` | `...AtSegmentWithStore_eq_of_agree` (landed) |
+| 549 | `...WithStore_store_parametric` | `...AtSegmentWithStore_store_parametric` (landed) |
+| 580 | `...WithStore_matchesReadStore` | STEP 1 lemma 4 |
+| 612 | `...WithStore_no_syntheticCostOnlyPrimitive` | STEP 1 lemma 5 |
+
+`_no_syntheticCostOnlyPrimitive` at `:328` and `_matchesReadStore` at `:364`
+also have same-block cases reached through the `:319` `_trace_forall`; check
+both after the swap.
+
+### STEP 3 - downstream regeneration (largest remaining piece)
+
+The same-block branch begins emitting `readWord 21 _ _` events, which the
+whole-query inductions do not currently expect. Expect work at:
+
+- `SuccinctFinalRAM.lean:2330`
+  `concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural` - already
+  passes `concreteBPNativeFringeChunkTraceSegment` (21); no signature change.
+- `SuccinctFinalRAM.lean:5309` `ReviewerProducerReadPath` - add an
+  `lcaSameBlock` constructor mirroring `lcaFringeLeft` / `lcaFringeRight`,
+  carrying the event's membership in the same-block candidate component
+  trace at the fringe segment; then regenerate the producer and occurrence
+  provenance packets and `lcaCloseGlobalWordTraceResult_producerReadPath`.
+- every `_trace_forall` induction over the whole-query trace that currently
+  discharges the same-block branch as read-free.
+- `SuccinctFinalModelAdequacy.lean` - provenance fields.
+  `canonical_segments_complete` is UNCHANGED (still `< 22`) because no new
+  segment is introduced.
+- W19: add a SAME-BLOCK successful-occurrence witness in
+  `ReviewerReachabilitySmall.lean`. The existing witness is the
+  increasing-16 CROSS-block execution and does not cover this arm. This is
+  the one W19 obligation the segment-21 reuse does not inherit for free.
+
+NO store, payload, overhead, capacity, erasure, or `ReviewerSource` work is
+required: the table, its segment, its store arm (`Segments.lean:224-228`),
+its exactness lemma (`:247`), and the `SuccinctFinalStoreParam.lean:1221`
+agreement field are all reused unchanged.
+
+### STEP 4 - literal, vocabulary theorem, docs
+
+- Re-derive `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`
+  by `rfl`. EXPECTED: `207`, unchanged, because no algebra field changes and
+  the branch cap absorbs the new reads (M0 arithmetic, re-verified at M3a).
+  If it re-derives to 207: mint NO historical constant, leave
+  `SuccinctClassic.queryCost_eq`, the cost harness, the validation and
+  examples guards, and the `SumLe207` topology anchor untouched, and record
+  in REQ-B6-05 that the authorization to move the literal went unused. If it
+  moves, follow the 142-freezing pattern at `SuccinctFinalRAM.lean:8729-8752`
+  and update all 27 Lean sites plus `scripts/paper_topology_lint.ps1:354`
+  and `scripts/headline_axiom_check.lean:97`.
+- Re-establish
+  `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only`
+  over the amended route. The new events are `readWord`, so it should
+  survive, but it must be re-proved over the amended object, not inherited.
+- Repair `docs/PAPER_MODEL_ADEQUACY.md:139-153`. The sentence "after B2/B3
+  every uncharged step is a BOUNDED-PER-STEP register computation ... not an
+  unbounded scan" is FALSE at `b77f385` and stays false until STEP 2 lands.
+  It becomes true once the same-block arm is swapped; the repaired text
+  should name the same-block leg and its 33-cap explicitly.
+
+### Honest status
+
+REQ-B6-01, REQ-B6-02 and REQ-B6-03 are closed as COMPONENT claims (charged
+leaf with literal cap, value equivalence including the query-side
+substitution, and the trace surface). REQ-B6-04, -05, -06, -09 and the
+inherited whole-route invariants are OPEN: the accepted route still executes
+the event-silent same-block leaf, so the mission target - closing the last
+event-silent computation on the accepted route - is NOT delivered. Per the
+completion gate a green component checkpoint is not completion, so this rung
+reports INCOMPLETE.
