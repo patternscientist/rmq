@@ -3190,3 +3190,74 @@ Publication-facing significance:
 This changes only who performs mechanical workflow joins and watch cleanup.
 Mathematical acceptance, exact-commit audit, public theorem identity, and
 submission integration remain independently gated.
+
+## WDD-20260717-007: proxy obstructions require checked target implication
+
+Status: Accepted.
+Date: 2026-07-17.
+Scope: theorem-shaped stop conditions, operational reachability, and completed-
+worker obstruction audit.
+
+Decision:
+
+1. A proxy proposition may support `Status: OBSTRUCTED` only when every
+   load-bearing clause is frozen verbatim or a checked theorem proves that the
+   full frozen target implies the proxy.
+2. A worker may not insert the contradiction-producing lower bound as a field
+   of a stronger proxy and treat its negation as a negation of the assigned
+   target.
+3. Boundary values, guard validity, accepted logical output, and same-block
+   arithmetic do not establish execution reachability.  When an instruction
+   occurrence is load-bearing, the checked witness must retain its occurrence,
+   pre-state, full instruction and evaluated operands, post-state, and exact
+   run or receipt object, or prove an equivalent operational bridge.
+4. A sound negation lacking those bridges remains valuable as a narrowly
+   labeled decomposition obstruction, but it does not close the roadmap node.
+
+Trigger and evidence:
+
+The exact-commit audit of E1 R3 candidate
+`7fe5b8ba353b955b8e989ddd2ae8dc2371140518` found a sound unbounded family of
+accepted same-block boundary intervals and a sound negation of a newly defined
+scalar packet target.  The packet target stipulated
+`localCount <= localBPSteps`; the frozen contract permitted an equally familiar
+primitive decomposition and did not state that lower bound.  Its canonical
+invocation predicate retained no actual run, transition, receipt occurrence,
+instruction operands, pre-state, or post-state.  Three fresh-blind audit leaves
+independently reproduced the mismatch.
+
+Rejected alternatives:
+
+- Accept a stronger proxy because its theorem name and surrounding matrix prose
+  describe the frozen target.
+- Treat accepted boundary arithmetic as proof that the production machine
+  executes the relevant instruction.
+- Discard the narrow arithmetic obstruction entirely because it does not close
+  the broader target.
+- Amend the frozen machine contract implicitly during a repair attempt.
+
+Consequences:
+
+- Obstruction claims now preserve predicate identity and execution-object
+  identity through the contradiction.
+- Narrow decomposition impossibilities remain publishable checkpoint evidence
+  when labeled precisely.
+- Workers must derive, rather than stipulate, the lower bound that drives an
+  impossibility argument.
+- The workflow rule changes no Lean proposition, payload bit, proof field,
+  modeled tick, trace event, or runtime behavior.
+
+Evidence:
+
+- `.agents/skills/rmq-proof-sprint/references/COMPLETION_GATE.md`.
+- Named regression `E1R3-SURROGATE-OBSTRUCTION-REGRESSION` in
+  `.agents/skills/rmq-proof-sprint/references/KNOWN_FAILURE_MODES.md`.
+- Fresh-blind target-fidelity, execution-semantics, and trust/topology audits of
+  exact candidate `7fe5b8ba353b955b8e989ddd2ae8dc2371140518`.
+
+Publication-facing significance:
+
+An obstruction can force a paper-level model or payload decision.  Requiring a
+checked implication from the frozen target prevents a decomposition-specific
+lower bound from being mistaken for an impossibility of the claimed machine
+architecture.

@@ -425,6 +425,16 @@ construction permitted by the frozen contract.  A narrower implementation
 obstruction is valuable checkpoint evidence, but it does not authorize
 `Status: OBSTRUCTED` for the target.
 
+If a worker introduces a proxy proposition for an obstruction, every
+load-bearing proxy clause must either quote the frozen requirement verbatim or
+be derived by a checked theorem from the frozen target.  In particular, do not
+add the contradiction-producing lower bound as a field of the proxy and then
+negate that stronger proposition.  Boundary values, same-block arithmetic, or
+accepted logical results are not an actual invocation witness: when execution
+is load-bearing, retain an occurrence index, pre-state, instruction with its
+evaluated operands, post-state, and the exact run/receipt object, or prove a
+checked bridge to an equivalent operational predicate.
+
 A worker's statement that a residual question is "strictly stronger than the
 assigned obligation" is not a stop condition. The worker must first map the
 question to the frozen requirement wording and inherited invariant IDs. Only

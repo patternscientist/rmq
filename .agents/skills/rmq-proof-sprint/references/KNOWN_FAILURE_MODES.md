@@ -264,6 +264,34 @@ test for predicate identity, quantifier parity, and provenance information
 preservation. Do not treat a stronger residual theorem as optional merely
 because a worker report labels it future hardening.
 
+### E1 R3 regression: surrogate obstruction by stipulated lower bound
+
+Candidate `7fe5b8ba353b955b8e989ddd2ae8dc2371140518` correctly proved an
+unbounded family of accepted same-block boundary intervals and soundly negated
+a new scalar familiar-run packet.  It did not close the frozen E1 obstruction:
+the proxy target stipulated `localCount <= localBPSteps`, while the frozen
+contract permitted any equally familiar primitive decomposition and contained
+no such numeric lower bound.  No checked frozen-target-to-proxy bridge derived
+that clause.
+
+The candidate also named its boundary predicate a canonical invocation even
+though it retained no run, transition, receipt occurrence, full instruction,
+evaluated operands, pre-state, or post-state.  The arithmetic family would
+remain true if the production route stopped executing the local-BP instruction.
+
+Apply `E1R3-SURROGATE-OBSTRUCTION-REGRESSION`:
+
+- compare every load-bearing proxy clause against the frozen contract;
+- require a checked implication from the frozen target to the full proxy;
+- reject a contradiction-producing lower bound introduced only by definition;
+- distinguish accepted boundary arithmetic from occurrence-indexed operational
+  reachability; and
+- retain the result only as a narrow decomposition obstruction when those
+  bridges are absent.
+
+This regression does not reject useful narrow impossibility theorems.  It
+rejects only their promotion to full-target `OBSTRUCTED` status.
+
 ## Select And Close History
 
 For historical C1 descriptor-select work, proof fields such as
