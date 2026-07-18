@@ -246,6 +246,149 @@ theorem rankCloseBlock_runsTo_atSegment
       hsuper hblock hword hoff
   exact ⟨regsF, hrun, hval, hpres⟩
 
+/--
+Rank-close component simulation at the CANONICAL global store (segment
+base `17`): for every shape, every base, and every position, the hosted
+rank-close block runs against
+`concreteBPNativeSuccinctRMQGlobalReadStore shape` — the single store the
+whole accepted query reads — from block entry to `B + 60` with receipts
+POSITIONALLY EQUAL to
+`(concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape pos).trace`,
+the component's `.value` in `rVal`, the frozen `rankCloseHitCats`
+category log, and all registers outside the component bank preserved.
+The machine store and the component store are the SAME argument, so this
+is the store-swap glue form consumed by the whole-query composition
+(REQ-E1-03/04 rank-close leg at the canonical store).
+-/
+theorem rankCloseBlock_runsTo_canonical
+    (shape : Cartesian.CartesianShape) {program : E1Machine.Program}
+    {B : Nat}
+    (hhost : HostedAt program B
+      (rankCloseBlock B concreteBPNativeRankCloseTraceSegmentBase
+        (bpFringeChunkBits shape.bpCode.length)
+        shape.bpCode.length
+        (builtRelativeSplitBPCloseRankData shape).wordSize
+        (builtRelativeSplitBPCloseRankData shape).blocksPerSuper))
+    (regs0 : RegFile) :
+    ∃ regsF : RegFile,
+      RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          program ⟨regs0, B, false⟩ ⟨regsF, B + 60, false⟩
+        (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape
+          (regs0 rPos)).trace
+        (rankCloseHitCats
+          (bpWordChunkCount (bpFringeChunkBits shape.bpCode.length)
+            ((builtRelativeSplitBPCloseRankData shape).wordOffset
+              (regs0 rPos)))) ∧
+      regsF rVal =
+        (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape
+          (regs0 rPos)).value ∧
+      (forall r, r <= 8 ∨ 28 <= r -> regsF r = regs0 r) := by
+  have hp : (builtRelativeSplitBPCloseRankData shape).queryPos
+      (regs0 rPos) <= shape.bpCode.length := Nat.min_le_right _ _
+  -- super sample presence at the canonical store
+  obtain ⟨superSample, hsE⟩ :=
+    (builtRelativeSplitBPCloseRankData shape).super_present false
+      ((builtRelativeSplitBPCloseRankData shape).queryPos (regs0 rPos)) hp
+  have hsMap :
+      (((builtRelativeSplitBPCloseRankData
+          shape).superTables.falseTable.store.words)[
+        (builtRelativeSplitBPCloseRankData shape).superIndex
+          (regs0 rPos)]?).map SuccinctSpace.bitsToNatLE =
+      some superSample := by
+    rw [(builtRelativeSplitBPCloseRankData
+      shape).superTables.falseTable.read_exact]
+    exact hsE
+  obtain ⟨superWord, hsw⟩ :
+      ∃ sw, ((builtRelativeSplitBPCloseRankData
+          shape).superTables.falseTable.store.words)[
+        (builtRelativeSplitBPCloseRankData shape).superIndex
+          (regs0 rPos)]? = some sw := by
+    cases hcase : ((builtRelativeSplitBPCloseRankData
+        shape).superTables.falseTable.store.words)[
+      (builtRelativeSplitBPCloseRankData shape).superIndex
+        (regs0 rPos)]? with
+    | none =>
+        rw [hcase] at hsMap
+        exact Option.noConfusion hsMap
+    | some sw => exact ⟨sw, rfl⟩
+  have hsuper :
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          concreteBPNativeRankCloseTraceSegmentBase
+        ((builtRelativeSplitBPCloseRankData shape).superIndex
+          (regs0 rPos)) = some superWord := by
+    rw [concreteBPNativeSuccinctRMQGlobalReadStore_rankCloseSuper]
+    exact hsw
+  -- block sample presence at the canonical store
+  obtain ⟨blockSample, hbE⟩ :=
+    (builtRelativeSplitBPCloseRankData shape).block_present false
+      ((builtRelativeSplitBPCloseRankData shape).queryPos (regs0 rPos)) hp
+  have hbMap :
+      (((builtRelativeSplitBPCloseRankData
+          shape).blockTables.falseTable.store.words)[
+        (builtRelativeSplitBPCloseRankData shape).wordIndex
+          (regs0 rPos)]?).map SuccinctSpace.bitsToNatLE =
+      some blockSample := by
+    rw [(builtRelativeSplitBPCloseRankData
+      shape).blockTables.falseTable.read_exact]
+    exact hbE
+  obtain ⟨deltaWord, hbw⟩ :
+      ∃ bw, ((builtRelativeSplitBPCloseRankData
+          shape).blockTables.falseTable.store.words)[
+        (builtRelativeSplitBPCloseRankData shape).wordIndex
+          (regs0 rPos)]? = some bw := by
+    cases hcase : ((builtRelativeSplitBPCloseRankData
+        shape).blockTables.falseTable.store.words)[
+      (builtRelativeSplitBPCloseRankData shape).wordIndex
+        (regs0 rPos)]? with
+    | none =>
+        rw [hcase] at hbMap
+        exact Option.noConfusion hbMap
+    | some bw => exact ⟨bw, rfl⟩
+  have hblock :
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          (concreteBPNativeRankCloseTraceSegmentBase + 1)
+        ((builtRelativeSplitBPCloseRankData shape).wordIndex
+          (regs0 rPos)) = some deltaWord := by
+    rw [concreteBPNativeSuccinctRMQGlobalReadStore_rankCloseBlock]
+    exact hbw
+  -- packed word presence at the canonical store
+  obtain ⟨w, hwq⟩ :=
+    (builtRelativeSplitBPCloseRankData shape).word_present
+      ((builtRelativeSplitBPCloseRankData shape).queryPos (regs0 rPos)) hp
+  have hword :
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          (concreteBPNativeRankCloseTraceSegmentBase + 2)
+        ((builtRelativeSplitBPCloseRankData shape).wordIndex
+          (regs0 rPos)) = some w := by
+    rw [concreteBPNativeSuccinctRMQGlobalReadStore_rankCloseWord]
+    exact hwq
+  -- offset bound
+  have hoff : (builtRelativeSplitBPCloseRankData shape).wordOffset
+      (regs0 rPos) <= w.length :=
+    builtRankData_wordOffset_le shape (regs0 rPos) hwq
+  -- instantiate the hit-path block theorem at the canonical store
+  obtain ⟨regsF, hrun, hval, hpres⟩ :=
+    rankCloseBlock_runsTo_hit
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (builtRelativeSplitBPCloseRankData shape) hhost regs0
+      hsuper hblock hword hoff
+  -- the component at the canonical bases IS the accepted canonical trace
+  have htr : concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape
+      (regs0 rPos) =
+    (builtRelativeSplitBPCloseRankData
+        shape).bpChunkedRankTraceResultWithStore
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      concreteBPNativeRankCloseTraceSegmentBase
+      (concreteBPNativeRankCloseTraceSegmentBase + 1)
+      (concreteBPNativeRankCloseTraceSegmentBase + 2)
+      (concreteBPNativeRankCloseTraceSegmentBase + 4)
+      (bpFringeChunkBits shape.bpCode.length) false (regs0 rPos) := by
+    rw [show concreteBPNativeRankCloseTraceSegmentBase + 4 =
+      concreteBPNativeFringeChunkTraceSegment from rfl]
+    rfl
+  rw [htr]
+  exact ⟨regsF, hrun, hval, hpres⟩
+
 end E1RankBlock
 end WordRAM
 end RMQ

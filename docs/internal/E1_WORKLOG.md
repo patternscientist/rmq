@@ -259,6 +259,41 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
 - Verification at this commit: standalone `lake env lean` exit 0 (no
   warnings); `lake build RMQ` green; hygiene rg clean.
 
+## M3c-2a: rank-close canonical-store glue, width certificate, macro lift
+
+- Lifted the symbolic-evaluation macros into `E1StraightLine.lean` as
+  `straight_eval [...]` / `straight_writes [...]` (the simp-arg splicing
+  that the M3c-1b gotcha reported as failing works when the extra
+  arguments are parsed as `Lean.Parser.Tactic.simpLemma,*` and spliced
+  with `$args,*`; the earlier failure was a different formulation).
+  `E1RankBlock.lean`'s `local` macros are now thin wrappers naming the
+  block's segments/registers; all inherited proofs unchanged.
+- `rankCloseBlock_fits` (`E1RankBlock.lean`): constructor-exhaustive
+  REQ-E1-02 certificate for the 60-instruction block — register bank,
+  segments `G..G+4`, immediates, mul/div constants
+  (`WS`/`BPS`/`2^c`/`c+1`/`2*c+2`/`2`, variable divisors positive — `c`
+  needs the route's `bpFringeChunkBits_pos`), branch targets
+  `< 2^w` given `28 <= 2^w`, `G+4 < 2^w`, `L < 2^w`, `0 < c`,
+  `0 < WS < 2^w`, `0 < BPS < 2^w`, `2^c < 2^w`, `2*c+2 < 2^w`,
+  `B+60 < 2^w`.  (Flattening gotcha: `List.mem_append` leaves the
+  disjunction grouped per segment; add `or_assoc` to the simp set before
+  the 60-way `rcases`.)
+- `rankCloseBlock_runsTo_canonical` (`E1RankCanonical.lean`): the M3c
+  store-swap glue — for every shape/base/position the hosted block runs
+  against `concreteBPNativeSuccinctRMQGlobalReadStore shape` (base
+  `concreteBPNativeRankCloseTraceSegmentBase` = 17) with receipts
+  POSITIONALLY EQUAL to
+  `(concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape
+  pos).trace`, value in `rVal`, frozen `rankCloseHitCats`, outside
+  registers preserved.  Machine store and component store are the SAME
+  argument.  Presence via the `_rankCloseSuper/Block/Word` agreement
+  lemmas (`superSampleWords false` reduces definitionally to the
+  false-table words), offset bound via `builtRankData_wordOffset_le`,
+  chunk segment aligned by `17 + 4 = 21 = fringeChunkTraceSegment` (rfl).
+- Verification at this commit: standalone `lake env lean` exit 0 on the
+  three touched modules (no warnings); `lake build RMQ` green; hygiene
+  rg clean on touched files.
+
 ## RESUME POINT (next session: M3c select-close onward)
 
 DONE so far (M3b commits `e93e2ae`, `933955e`, `bd84fc6`; M3c commits

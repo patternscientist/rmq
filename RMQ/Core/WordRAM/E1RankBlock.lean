@@ -346,20 +346,19 @@ theorem rankSegFin_straight :
 
 /-! ## Prologue simulation (block entry to loop entry, hit path) -/
 
-/-- Symbolic machine-state evaluation: unfold the block segments, the
-straight-line fold, the register file, and the register-bank numerals.
-Bridge equations are applied by a follow-up `simp` at each call site. -/
+/-- Symbolic machine-state evaluation: the shared `straight_eval` core
+(`E1StraightLine.lean`) instantiated with this block's segments and
+register-bank numerals.  Bridge equations are applied by a follow-up
+`simp` at each call site. -/
 local macro "regs_eval" : tactic =>
-  `(tactic| simp [rankSeg1, rankSeg2, rankSeg3, rankSegInit,
+  `(tactic| straight_eval [rankSeg1, rankSeg2, rankSeg3, rankSegInit,
       rankLoopBody, rankSegFin, rankMissSeg,
-      straightRegs_cons, straightRegs_nil, straightStepRegs,
-      straightReads_cons, straightReads_nil, straightStepEvent,
-      RegFile.write, rPos, rVal, rP, rWI, rSI, rE, rSup, rBlk, rWrd,
+      rPos, rVal, rP, rWI, rSI, rE, rSup, rBlk, rWrd,
       rR, rK, rT, rV, rSlot, rA, rB, rOne, rC, rEight, rJC])
 
 /-- Destination-register evaluation for preservation side conditions. -/
 local macro "writes_eval" : tactic =>
-  `(tactic| simp [Instr.writesTo, rPos, rVal, rP, rWI, rSI, rE, rSup,
+  `(tactic| straight_writes [rPos, rVal, rP, rWI, rSI, rE, rSup,
       rBlk, rWrd, rR, rK, rT, rV, rSlot, rA, rB, rOne, rC, rEight, rJC])
 
 /--
@@ -987,6 +986,41 @@ theorem rankCloseBlock_runsTo_hit
     rw [hreads]
     exact hall
   · rw [hcompVal, h7Val]
+    omega
+
+/-! ## Width certificate (REQ-E1-02 consumption for this block) -/
+
+/--
+Constructor-exhaustive width certificate for the rank-close block: every
+encoded field — register identifiers (bank `8..27`), seed segments
+`G..G+4`, the immediates `0`/`1`/`8`/`L`, the multiplier/divisor
+constants `WS`/`BPS`/`2^c`/`c+1`/`2*c+2`/`2`, and the branch targets
+`B+30`/`B+59`/`B+60` — fits the modeled width `w`, with the variable
+divisors `c`/`WS`/`BPS` positive (`2^c`, `c+1`, `2*c+2`, `2` are
+positive outright; the route discharges `0 < c` by
+`bpFringeChunkBits_pos`).
+-/
+theorem rankCloseBlock_fits {w B G c L WS BPS : Nat}
+    (hreg : 28 ≤ 2 ^ w) (hG : G + 4 < 2 ^ w) (hL : L < 2 ^ w)
+    (hcpos : 0 < c)
+    (hWSpos : 0 < WS) (hWS : WS < 2 ^ w)
+    (hBPSpos : 0 < BPS) (hBPS : BPS < 2 ^ w)
+    (hpow : 2 ^ c < 2 ^ w) (hlin : 2 * c + 2 < 2 ^ w)
+    (hB : B + 60 < 2 ^ w) :
+    ∀ instr ∈ rankCloseBlock B G c L WS BPS, instr.FieldsFit w := by
+  have hppos : 0 < 2 ^ c := Nat.pow_pos (by omega)
+  intro instr hmem
+  simp only [rankCloseBlock, rankSeg1, rankSeg2, rankSeg3, rankSegInit,
+    rankLoopBody, rankSegFin, rankMissSeg, List.mem_append, List.mem_cons,
+    List.not_mem_nil, or_false, or_assoc] at hmem
+  rcases hmem with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+    | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+    | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+    | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+    | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+    | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;>
+    simp only [Instr.FieldsFit, rPos, rVal, rP, rWI, rSI, rE, rSup, rBlk,
+      rWrd, rR, rK, rT, rV, rSlot, rA, rB, rOne, rC, rEight, rJC] <;>
     omega
 
 end E1RankBlock

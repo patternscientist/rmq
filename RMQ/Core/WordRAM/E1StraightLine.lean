@@ -195,6 +195,28 @@ theorem straightRegs_preserves (store : ReadStore) :
           (fun i hi => h i (by simp [hi])),
         straightStepRegs_preserves store regs instr r (h instr (by simp))]
 
+/-! ## Shared symbolic-evaluation macros -/
+
+/--
+Symbolic machine-state evaluation for straight-line segments: one `simp`
+call with the straight-line fold lemmas, the per-instruction effect
+functions, and the register file, plus the caller-supplied lemma list
+(typically a block module's segment definitions and register-numeral
+abbreviations).  Bridge equations are applied by a follow-up `simp` at
+call sites (`straight_eval [...] <;> simp [...]`).  Block modules wrap
+this in an argument-less `local macro` naming their own segment/register
+inventory.
+-/
+macro "straight_eval" "[" args:Lean.Parser.Tactic.simpLemma,* "]" : tactic =>
+  `(tactic| simp [straightRegs_cons, straightRegs_nil, straightStepRegs,
+      straightReads_cons, straightReads_nil, straightStepEvent,
+      RegFile.write, $args,*])
+
+/-- Destination-register evaluation for preservation side conditions
+(`Instr.writesTo` plus the caller-supplied register abbreviations). -/
+macro "straight_writes" "[" args:Lean.Parser.Tactic.simpLemma,* "]" : tactic =>
+  `(tactic| simp [Instr.writesTo, $args,*])
+
 /-! ## Branch step helpers -/
 
 /-- A `brNZ` whose condition register holds zero falls through. -/
