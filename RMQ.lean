@@ -14,6 +14,7 @@ import RMQ.Core.WordRAM.E1MachineCalculus
 import RMQ.Core.WordRAM.E1QueryProgram
 import RMQ.Core.WordRAM.E1QueryBridge
 import RMQ.Core.WordRAM.E1RouteDecomposition
+import RMQ.Core.WordRAM.E1RankBridge
 import RMQ.Core.GenericSelect.RAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeChunks

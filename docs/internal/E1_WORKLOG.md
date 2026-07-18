@@ -154,6 +154,35 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
 - Verification at this commit: `lake env lean` exit 0 on the module;
   `lake build RMQ` green.
 
+## M3c-1a: rank fold bridge lemmas (`RMQ/Core/WordRAM/E1RankBridge.lean`)
+
+- New module `E1RankBridge.lean` (wired into `RMQ.lean`): the div-mod-by-
+  constant bridge layer the rank-close machine block consumes.
+  - Little-endian decode bridges: `bitsToNatLE_drop` (`/ 2^k`),
+    `bitsToNatLE_take_add_drop` + `bitsToNatLE_take` (`% 2^k`),
+    `bpFringeWindowChunkValue_eq_div_mod` (the fold's window chunk value
+    IS the machine's `W / 2^(j*c) % 2^c` register expression),
+    `div_pow_chunk_succ` (remaining-word register update `R / 2^c`).
+  - Truncated-subtraction machine forms: `nat_min_eq_sub_sub`,
+    `nat_mod_eq_sub_div_mul`, `bpWordChunkSliceLen_eq_sub`,
+    `bpWordChunkCount_eq_sub`, `bpWordRankEffLimit_eq_of_le`,
+    `bpChunkRankOfEntry_false_eq` (in-chunk rank decode as literal
+    div/mul/sub chain).
+  - Option-shift decode bridges: `decodeRead_pred_eq_map_getD`
+    (machine register minus one = fold's `getD 0` decode),
+    `decodeRead_eq_zero_iff`, `decodeRead_some_eq`.
+  - Positional fold shape: `bpWordRankChunkSlotAt`/`bpWordRankChunkEventAt`
+    (per-chunk slot/event), `bpChunkedWordRankTraceFromWithStore_trace_map`
+    (fold trace = ascending `List.range`-indexed read list),
+    `bpWordRankAccAt` + `bpChunkedWordRankTraceFromWithStore_value_accAt`
+    (fold value = literal iterated accumulator - the machine loop
+    invariant's register content).
+  - `iterLog` combinators: `iterLog_congr`, `iterLog_singleton_desc`
+    (descending-counter receipts = ascending `List.range` order),
+    `iterLog_const_length`, `catCount_iterLog_const`, `catCount_append`.
+- Verification at this commit: standalone `lake env lean` exit 0 (no
+  warnings); `lake build RMQ` green; hygiene rg clean on the new file.
+
 ## RESUME POINT (next session: M3c component simulation onward)
 
 DONE so far in M3b (commits `e93e2ae`, `933955e`, this one):
