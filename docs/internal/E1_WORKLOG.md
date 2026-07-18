@@ -227,6 +227,38 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
   warnings after unused-simp-arg cleanup); `lake build RMQ` green;
   hygiene rg clean on the new files.
 
+## M3c-1c: rank-close block at the accepted component (canonical instantiation)
+
+- New module `RMQ/Core/WordRAM/E1RankCanonical.lean` (wired into
+  `RMQ.lean`): `rankCloseBlock_runsTo_atSegment` - for EVERY shape,
+  EVERY base, and EVERY position (no sampling, no readiness guards), the
+  hosted rank-close block runs against
+  `concreteBPNativeChunkedRankCloseSeedReadStore shape rankSegmentBase`
+  from block entry to `B + 60` with receipts POSITIONALLY EQUAL to
+  `(concreteBPNativeRankCloseWordTraceResultAtSegment shape
+  rankSegmentBase (regs0 rPos)).trace`, the component's `.value` in
+  `rVal`, the frozen `rankCloseHitCats` category log, and all registers
+  outside the component bank preserved.
+- Hypothesis discharge is entirely route-side: presence of the three
+  seed reads from `super_present`/`block_present`/`word_present` plus
+  `FixedWidthNatTable.read_exact` (entries-present -> word-present), and
+  the offset bound `wordOffset pos <= word.length` from the sentinel-
+  chunked store's index characterization
+  (`builtRankData_wordOffset_le`, via
+  `chunkPayloadWords_get?_eq_take_drop` for full chunks and the
+  `length_eq_div_add_indicator` boundary argument for the sentinel row -
+  the sentinel is reachable only at an exact top boundary where the
+  offset is zero).
+- The rank-close leg of the M3c inventory is now fully simulated
+  machine-side.  Remaining for glue: swap the seed store for the
+  canonical global store at base 17
+  (`concreteBPNativeRankCloseWordTraceResultAtSegment_canonical_eq` +
+  the block theorem's store genericity re-instantiated at
+  `concreteBPNativeSuccinctRMQGlobalReadStore` with the
+  `_rankCloseSuper/Block/Word/fringeChunkTable` agreement lemmas).
+- Verification at this commit: standalone `lake env lean` exit 0 (no
+  warnings); `lake build RMQ` green; hygiene rg clean.
+
 ## RESUME POINT (next session: M3c component simulation onward)
 
 DONE so far in M3b (commits `e93e2ae`, `933955e`, this one):
