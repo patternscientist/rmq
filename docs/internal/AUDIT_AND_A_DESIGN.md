@@ -606,3 +606,39 @@ M1-registry refresh rung is REQUIRED between B2 integration and M1 final
 acceptance; the full aggregate gate on the B2 branch is deferred to that
 refresh. B2 rung acceptance itself remains gated on the A07 fresh blind
 exact-commit audit at the B-complete commit, per the campaign plan.
+
+## 2026-07-18 (C05 round 3) — B3 candidate reconstructed clean; one doc defect ✅
+
+**Scope:** coordinator reconstruction of `6e105a5` (B3 rung, range
+`d1d645e..6e105a5`): chunked in-word rank/select swap, segment-22 select
+table, derived literal 207, readWord-only vocabulary theorem.
+
+**Verdict: all ten checks CONFIRMED; proceed to B4 on `6e105a5`.** Freeze
+`a32713c` provably precedes implementation with byte-identical requirement
+wording for all 29 B3 rows; dispatcher names preserved with retired bodies
+under explicit `Register` names; the headline capstone diff is exactly three
+`142→207` literals; substitutions prove leaf identities against the spec
+(`boolRankPrefix`/`boolSelectInWord`) through packed-entry decode lemmas;
+207 = rfl of the named algebra with components proven against the actual
+costed functions; the vocabulary theorem's subject is the headline-consumed
+whole-query object, universally quantified, with `isReadWord` structurally
+excluding word primitives; store extension append-only, dead witness at 23
+byte-identical modulo the constant, segment 22 live via a genuine successful
+read; zero forbidden tokens; public docs keep the honest framing with no
+claim inflation; no B2 closed row weakened.
+
+**Defect (paper-facing, trivial):** `docs/PAPER_CLAIM_CORRESPONDENCE.md:7`
+still lists `...NonSyntheticWeightSumLe142`, a dead identifier (renamed
+`SumLe207`), lint-invisible due to its `...` prefix. Queued into B4's first
+bookkeeping commit with the "23 sources → 22 sources (23 segments)" evidence
+wording slip and the optional `..._cost_le_thirteen/four` legacy renames.
+
+**Caveats recorded:** legacy navigation family drift (segment 22 repurposed,
+nav rank bridge deleted; DD-20260718-002) — B4 must confirm no registered
+navigation execution story changed statement or counts an unreadable region.
+
+**A07 seed questions:** (1) two-sided chunk-width regime bounds at all n
+incl. n=0,1 (8-chunk coverage vs genuinely-o(n) select-table rows); (2)
+uniform application of the declared charge policy — no free spec-level
+arithmetic obtains information equivalent to a charged bit-vector read;
+(3) navigation legacy story consistency.
