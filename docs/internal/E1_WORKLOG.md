@@ -294,6 +294,80 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
   three touched modules (no warnings); `lake build RMQ` green; hygiene
   rg clean on touched files.
 
+## M3c-2b: early-exit loop backbone (`RunsTo.iterateUntil`)
+
+- Appended to `E1MachineCalculus.lean`: `iterUntilLog` (execution-ordered
+  early-exit log: per-counter exit decision function `exits`, continuing
+  log, exit log, exhaustion log) with `_zero/_succ/_succ_of_exits/
+  _succ_of_continues`, and `RunsTo.iterateUntil` (invariant `P k s`, exit
+  predicate `Q`, per-step alternative continue/exit decided by
+  `exits k` - a FUNCTION of the remaining counter, so receipts/cats stay
+  fixed functions of the initial counter - plus the counter-0 exhaustion
+  segment).  Machine-generic.
+- NOTE: the select-fold simulation below ended up using direct induction
+  on the fold's own recursion instead (receipts/cats are naturally
+  fold-shaped, so no descending->ascending log flip is needed);
+  `iterateUntil` remains available for loops whose spec is not already a
+  recursion (e.g. LCA-leg folds if their evaluator shape differs).
+
+## M3c-3a: in-word select fold block (`E1SelectBlock.lean`)
+
+- Select-close inventory (the M3b-2 gap): the accepted component is
+  `concreteBPNativeChunkedSelectCloseGlobalWordTraceResult =
+  (sparseExceptionSelectData shape.bpCode false)
+  .bpChunkedSelectTraceResultWithStore
+  concreteBPNativeSelectCloseTraceSegmentLayout 21 22 globalStore c idx`
+  (`ChargedRankSelectWiring.lean:645`, evaluator
+  `ChargedRankSelectLeafTrace.lean:1157`).  Control branches: (i) idx out
+  of occurrence range -> pure none; (ii) super entry-table read (4 accepted
+  relabeled `readWord`s via `readTraceResultRelabeledWithStore`), none ->
+  none; (iii) marked super -> LONG leg: chunked rank fold (target TRUE,
+  seeds at `layout.longFlagRankBase..+2`, chunks at 21) then one relative
+  read; (iv) local entry-table read (4 reads), none -> none; marked local
+  -> SPARSE leg: `sparseDirectory.bpChunkedReadTraceResultWithStore`
+  (true-rank fold + relative read); else DENSE leg
+  (`bpChunkedDenseTwoWordSelectTraceResultWithStore`,
+  `ChargedRankSelectLeafTrace.lean:575`): word read, TWO true/target rank
+  folds (at `firstOffset` and full length), then the early-exit select
+  fold on the first word, or a second word read + select fold.  The
+  in-word select fold `bpChunkedWordSelectTraceFromWithStore`
+  (`ChargedRankSelectTrace.lean:322`) is the early-exit core; slot forms:
+  routing read at `bpFringeChunkSlot c v t t`, select read at
+  `bpChunkSelectSlot c v k = v*(c+1)+k`; the dense select fold runs at
+  the data's target = FALSE; the long/sparse rank folds run at target =
+  TRUE (their value decode differs from `rankCloseBlock`'s false chain by
+  dropping the final `t -` subtraction; receipts are target-independent).
+- New module `RMQ/Core/WordRAM/E1SelectBlock.lean` (wired into
+  `RMQ.lean`): the 36-instruction `selectFoldBlock LB R S c` (loop head
+  22 instrs; exit brNZ at LB+22 -> exit tail LB+30..35; continue tail +
+  back edge LB+23..26; exhaustion tail LB+27..29), frozen bank `9..27`
+  aligned with the rank bank where roles coincide, frozen per-pass
+  category logs (`selContPassCats` 27 / `selExitPassCats` 29 /
+  `selExhaustCats` 3), route-side decoded-rank function `selChunkRankAt`,
+  DERIVED whole-run category log `selectFoldCats` mirroring the fold's
+  exit recursion with checked bound `selectFoldCats_length_le`
+  (`<= 27*count + 3`), width certificate `selectFoldBlock_fits`
+  (constructor-exhaustive, no variable divisors beyond the outright-
+  positive `2^c`/`c+1`/`2*c+2`/`2`), hosting peel, and the simulation
+  theorem `selectFoldBlock_runsTo`: for ANY hosting program, store, word,
+  `count >= 1`, cursor/occurrence state in the bank, the block runs with
+  exact fuel from `LB` to `LB+36` with receipts POSITIONALLY EQUAL to
+  `(bpChunkedWordSelectTraceFromWithStore store R S c false word j count
+  k).trace`, `decodePacket (regsF sVal) = (...).value`, cats
+  `selectFoldCats`, and all registers outside the fold bank preserved.
+  Early exit decided by machine `natLt`/`brNZ` on the machine-decoded
+  chunk rank (no meta-level guard).  Proof: direct induction on `count`
+  mirroring the fold (exit pass / continue-exhaust / continue-IH), each
+  pass via `RunsTo.straight` + the shared `straight_eval` macro.
+- Technique notes: preservation-helper hypotheses must be stated on
+  register NUMERALS (`r ≠ 22`), not the abbrevs (`r ≠ sA`) - omega does
+  not unfold abbrevs in hypotheses; `rw` auto-closes refl goals (no
+  trailing `rfl` after preservation chains); the packet-value goal needs
+  an explicit `X + j*c + 1 = j*c + X + 1` commutation before
+  `decodePacket_succ`.
+- Verification at this commit: standalone `lake env lean` exit 0 (no
+  warnings); `lake build RMQ` green; hygiene rg clean.
+
 ## RESUME POINT (next session: M3c select-close onward)
 
 DONE so far (M3b commits `e93e2ae`, `933955e`, `bd84fc6`; M3c commits
