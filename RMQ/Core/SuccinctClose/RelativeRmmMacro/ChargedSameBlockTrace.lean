@@ -301,6 +301,106 @@ theorem bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment_refines
     localBPSeedFromRankCloseTraceResult_refines,
     bpChunkedSameBlockCloseSeededTraceResultAtSegment_refines, hrank]
 
+/--
+Every decoded same-block trace event is a rank-seed event, one of the accepted
+window-word reads, or a `readWord fringeSegment address` at an in-range
+chunk-table slot.
+-/
+theorem bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment_trace_forall
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (fringeSegment : Nat)
+    (blockSize leftClose rightClose : Nat)
+    (P : WordRAM.TraceEvent -> Prop)
+    (hrank :
+      forall pos event,
+        List.Mem event (rankCloseTrace pos).trace -> P event)
+    (hbp :
+      forall event,
+        List.Mem event
+          (localBPWindowBitsTraceResult shape blockSize leftClose).trace ->
+          P event)
+    (hfringe :
+      forall address,
+        address <
+          bpFringeChunkRowCount (bpFringeChunkBits shape.bpCode.length) ->
+        P (WordRAM.TraceEvent.readWord fringeSegment address
+          (bpFringeChunkTable
+            (bpFringeChunkBits shape.bpCode.length)).store.words[address]?)) :
+    forall event,
+      List.Mem event
+          (bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment
+            shape rankCloseTrace fringeSegment blockSize leftClose
+            rightClose).trace ->
+        P event := by
+  unfold bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      localBPSeedFromRankCloseTraceResult_trace_forall
+        shape rankCloseTrace blockSize leftClose P hrank
+  · exact
+      bpChunkedSameBlockCloseSeededTraceResultAtSegment_trace_forall
+        shape fringeSegment blockSize leftClose rightClose _ P hbp hfringe
+
+theorem bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment_matchesReadStore
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (fringeSegment : Nat)
+    (blockSize leftClose rightClose : Nat)
+    (store : WordRAM.ReadStore)
+    (hrank :
+      forall pos event,
+        List.Mem event (rankCloseTrace pos).trace ->
+          event.matchesReadStore store)
+    (hbpCode :
+      forall index,
+        store.readWord? 0 index =
+          (SuccinctSpace.chunkPayloadWords
+            (SuccinctRank.machineWordBits shape.bpCode.length)
+            shape.bpCode).toArray[index]?)
+    (hfringe :
+      forall address,
+        store.readWord? fringeSegment address =
+          (bpFringeChunkTable
+            (bpFringeChunkBits shape.bpCode.length)).store.words[address]?) :
+    forall event,
+      List.Mem event
+          (bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment
+            shape rankCloseTrace fringeSegment blockSize leftClose
+            rightClose).trace ->
+        event.matchesReadStore store := by
+  apply bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment_trace_forall
+  · exact hrank
+  · exact
+      localBPWindowBitsTraceResult_matchesReadStore shape blockSize
+        leftClose store hbpCode
+  · intro address _hlt
+    show store.readWord? fringeSegment address = _
+    exact hfringe address
+
+theorem bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment_no_syntheticCostOnlyPrimitive
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (fringeSegment : Nat)
+    (blockSize leftClose rightClose : Nat)
+    (hrank :
+      forall pos event,
+        List.Mem event (rankCloseTrace pos).trace ->
+          Not event.isSyntheticCostOnlyPrimitive) :
+    forall event,
+      List.Mem event
+          (bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment
+            shape rankCloseTrace fringeSegment blockSize leftClose
+            rightClose).trace ->
+        Not event.isSyntheticCostOnlyPrimitive := by
+  apply bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment_trace_forall
+  · exact hrank
+  · exact
+      localBPWindowBitsTraceResult_no_syntheticCostOnlyPrimitive shape
+        blockSize leftClose
+  · intro address _hlt
+    simp [WordRAM.TraceEvent.isSyntheticCostOnlyPrimitive]
+
 theorem bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore_eq_of_agree
     {shape : Cartesian.CartesianShape} {store : WordRAM.ReadStore}
     {fringeSegment : Nat}
@@ -352,6 +452,60 @@ theorem bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore_
   simp only
     [bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore_store_parametric
       shape hbp hfringe]
+
+theorem bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore_matchesReadStore
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (fringeSegment : Nat)
+    (store : WordRAM.ReadStore)
+    (blockSize leftClose rightClose : Nat)
+    (hrank :
+      forall pos event,
+        List.Mem event (rankCloseTrace pos).trace ->
+          event.matchesReadStore store) :
+    forall event,
+      List.Mem event
+          (bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
+            shape rankCloseTrace fringeSegment store blockSize leftClose
+            rightClose).trace ->
+        event.matchesReadStore store := by
+  unfold
+    bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      localBPSeedFromRankCloseTraceResult_trace_forall
+        shape rankCloseTrace blockSize leftClose
+        (fun event => event.matchesReadStore store) hrank
+  · exact
+      bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore_matchesReadStore
+        shape store fringeSegment blockSize leftClose rightClose _
+
+theorem bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore_no_syntheticCostOnlyPrimitive
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (fringeSegment : Nat)
+    (store : WordRAM.ReadStore)
+    (blockSize leftClose rightClose : Nat)
+    (hrank :
+      forall pos event,
+        List.Mem event (rankCloseTrace pos).trace ->
+          Not event.isSyntheticCostOnlyPrimitive) :
+    forall event,
+      List.Mem event
+          (bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
+            shape rankCloseTrace fringeSegment store blockSize leftClose
+            rightClose).trace ->
+        Not event.isSyntheticCostOnlyPrimitive := by
+  unfold
+    bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      localBPSeedFromRankCloseTraceResult_trace_forall
+        shape rankCloseTrace blockSize leftClose
+        (fun event => Not event.isSyntheticCostOnlyPrimitive) hrank
+  · exact
+      bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore_no_syntheticCostOnlyPrimitive
+        shape store fringeSegment blockSize leftClose rightClose _
 
 end ConcreteCompactBPCloseLCADirectory
 
