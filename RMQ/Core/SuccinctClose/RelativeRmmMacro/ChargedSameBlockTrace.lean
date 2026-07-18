@@ -342,6 +342,41 @@ theorem bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment_trace_for
       bpChunkedSameBlockCloseSeededTraceResultAtSegment_trace_forall
         shape fringeSegment blockSize leftClose rightClose _ P hbp hfringe
 
+/--
+Decoded same-block trace obligations factored through the seeded component:
+every event is a rank-seed event or an event of the seeded same-block
+subtrace that actually produced it.  This is the form the accepted dispatcher
+consumes, so that a same-block read's provenance names its producing
+component subtrace rather than merely its segment.
+-/
+theorem bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment_trace_forall_of_seeded
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (fringeSegment : Nat)
+    (blockSize leftClose rightClose : Nat)
+    (P : WordRAM.TraceEvent -> Prop)
+    (hrank :
+      forall pos event,
+        List.Mem event (rankCloseTrace pos).trace -> P event)
+    (hseeded :
+      forall seed event,
+        List.Mem event
+          (bpChunkedSameBlockCloseSeededTraceResultAtSegment
+            shape fringeSegment blockSize leftClose rightClose seed).trace ->
+          P event) :
+    forall event,
+      List.Mem event
+          (bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment
+            shape rankCloseTrace fringeSegment blockSize leftClose
+            rightClose).trace ->
+        P event := by
+  unfold bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment
+  apply WordRAM.TraceResult.bind_trace_forall
+  · exact
+      localBPSeedFromRankCloseTraceResult_trace_forall
+        shape rankCloseTrace blockSize leftClose P hrank
+  · exact hseeded _
+
 theorem bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment_matchesReadStore
     (shape : Cartesian.CartesianShape)
     (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)

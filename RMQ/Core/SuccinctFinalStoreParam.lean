@@ -1886,6 +1886,35 @@ private theorem chunkedLeftFringeSeededWithStore_storeTraceLocal
     apply storeTraceLocal_map
     exact chunkedFringeFoldWithStore_storeTraceLocal fringeSegment _ window seed _ _ _
 
+private theorem chunkedSameBlockSeededWithStore_storeTraceLocal
+    (shape : Cartesian.CartesianShape)
+    (fringeSegment blockSize leftClose rightClose seed : Nat) :
+    StoreTraceLocal (fun store =>
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore
+        shape store fringeSegment blockSize leftClose rightClose seed) := by
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore
+  apply storeTraceLocal_bind
+  · exact localBPWindowBitsWithStore_storeTraceLocal shape blockSize leftClose
+  · intro window
+    apply storeTraceLocal_map
+    exact chunkedFringeFoldWithStore_storeTraceLocal fringeSegment _ window seed _ _ _
+
+private theorem chunkedSameBlockLcaWithStore_storeTraceLocal
+    (shape : Cartesian.CartesianShape)
+    (fringeSegment blockSize leftClose rightClose : Nat) :
+    StoreTraceLocal (fun store =>
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
+        shape
+        (concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
+          shape store concreteBPNativeRankCloseTraceSegmentBase)
+        fringeSegment store blockSize leftClose rightClose) := by
+  unfold SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
+  apply storeTraceLocal_bind
+  · exact finalRankSeedWithStore_storeTraceLocal shape blockSize leftClose
+  · intro seed
+    exact chunkedSameBlockSeededWithStore_storeTraceLocal
+      shape fringeSegment blockSize leftClose rightClose seed
+
 private theorem chunkedRightFringeSeededWithStore_storeTraceLocal
     (shape : Cartesian.CartesianShape)
     (fringeSegment blockSize rightClose seed : Nat) :
@@ -1999,8 +2028,9 @@ private theorem finalLcaCloseWithStore_storeTraceLocal
           blockSize rightClose
   · dsimp only [blockSize] at hsame
     simp only [hsame, if_pos]
-    exact finalSameBlockLcaWithStore_storeTraceLocal
-      shape blockSize leftClose rightClose
+    exact chunkedSameBlockLcaWithStore_storeTraceLocal
+      shape concreteBPNativeFringeChunkTraceSegment blockSize leftClose
+      rightClose
   · dsimp only [blockSize] at hsame
     simp only [hsame]
     exact finalChunkedCrossBlockLcaWithStore_storeTraceLocal

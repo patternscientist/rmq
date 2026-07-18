@@ -2395,6 +2395,16 @@ private theorem
           (fun address _hlt => by
             simp [concreteBPNativeFringeChunkTraceSegment,
               concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead]))
+      (fun blockSize close close' seed =>
+        SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegment_trace_forall
+          shape concreteBPNativeFringeChunkTraceSegment blockSize close close'
+          seed
+          concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          (concreteBPNativeSuccinctRMQLocalBPWindowBitsTraceResult_noFiniteSmallInteriorSuccessfulRead
+            shape blockSize close)
+          (fun address _hlt => by
+            simp [concreteBPNativeFringeChunkTraceSegment,
+              concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead]))
       (fun startBlock count =>
         concreteBPNativeInteriorGlobalWordTraceResultAllSizeStructural_noFiniteSmallInteriorSuccessfulRead_of_ready
           shape hready startBlock count)
@@ -2437,6 +2447,16 @@ private theorem
       (fun blockSize close seed =>
         SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedRightFringeCandidateSeededTraceResultAtSegment_trace_forall
           shape concreteBPNativeFringeChunkTraceSegment blockSize close seed
+          concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
+          (concreteBPNativeSuccinctRMQLocalBPWindowBitsTraceResult_noFiniteSmallInteriorSuccessfulRead
+            shape blockSize close)
+          (fun address _hlt => by
+            simp [concreteBPNativeFringeChunkTraceSegment,
+              concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead]))
+      (fun blockSize close close' seed =>
+        SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegment_trace_forall
+          shape concreteBPNativeFringeChunkTraceSegment blockSize close close'
+          seed
           concreteBPNativeSuccinctRMQTraceEventNoFiniteSmallInteriorSuccessfulRead
           (concreteBPNativeSuccinctRMQLocalBPWindowBitsTraceResult_noFiniteSmallInteriorSuccessfulRead
             shape blockSize close)
@@ -2486,6 +2506,16 @@ private theorem
       (fun blockSize close seed =>
         SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedRightFringeCandidateSeededTraceResultAtSegment_trace_forall
           shape concreteBPNativeFringeChunkTraceSegment blockSize close seed
+          concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
+          (concreteBPNativeSuccinctRMQLocalBPWindowBitsTraceResult_noReadyCloseSuccessfulRead
+            shape blockSize close)
+          (fun address _hlt => by
+            simp [concreteBPNativeFringeChunkTraceSegment,
+              concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead]))
+      (fun blockSize close close' seed =>
+        SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegment_trace_forall
+          shape concreteBPNativeFringeChunkTraceSegment blockSize close close'
+          seed
           concreteBPNativeSuccinctRMQTraceEventNoReadyCloseSuccessfulRead
           (concreteBPNativeSuccinctRMQLocalBPWindowBitsTraceResult_noReadyCloseSuccessfulRead
             shape blockSize close)
@@ -4990,6 +5020,15 @@ private theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_p
           (concreteBPNativeLocalBPWindowBitsTraceResult_primitiveOperandsFit_reviewerWordBits
             shape blockSize close)
           (fun address _hlt => by trivial))
+      (fun blockSize close close' seed =>
+        SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegment_trace_forall
+          shape concreteBPNativeFringeChunkTraceSegment blockSize close close'
+          seed
+          (concreteBPNativeTraceEventPrimitiveOperandsFitInBits
+            (concreteBPNativeSuccinctRMQReviewerWordBits shape.size))
+          (concreteBPNativeLocalBPWindowBitsTraceResult_primitiveOperandsFit_reviewerWordBits
+            shape blockSize close)
+          (fun address _hlt => by trivial))
       (fun startBlock count =>
         concreteBPNativeInteriorGlobalWordTraceResultAllSizeStructural_primitiveOperandsFit_reviewerWordBits
           shape startBlock count)
@@ -5318,6 +5357,12 @@ inductive ReviewerProducerReadPath
           shape concreteBPNativeFringeChunkTraceSegment blockSize close
           seed).trace) :
       ReviewerProducerReadPath shape .canonicalClose segment index word?
+  | lcaSameBlock {blockSize leftClose rightClose seed segment index word?}
+      (hmem : WordRAM.TraceEvent.readWord segment index word? ∈
+        (SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegment
+          shape concreteBPNativeFringeChunkTraceSegment blockSize leftClose
+          rightClose seed).trace) :
+      ReviewerProducerReadPath shape .canonicalClose segment index word?
 
 private def reviewerProducerReadPathEvent
     (shape : Cartesian.CartesianShape) (leaf : ReviewerReadLeaf) :
@@ -5425,6 +5470,12 @@ private theorem lcaCloseGlobalWordTraceResult_producerReadPath
   · intro blockSize close seed event hmem
     cases event with
     | readWord => exact ReviewerProducerReadPath.lcaFringeRight hmem
+    | wordRank => trivial
+    | wordSelect => trivial
+    | syntheticCostOnlyPrimitive => trivial
+  · intro blockSize leftClose' rightClose' seed event hmem
+    cases event with
+    | readWord => exact ReviewerProducerReadPath.lcaSameBlock hmem
     | wordRank => trivial
     | wordSelect => trivial
     | syntheticCostOnlyPrimitive => trivial
@@ -6571,6 +6622,17 @@ private theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_r
     exact
       SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedRightFringeCandidateSeededTraceResultAtSegment_trace_forall
         shape concreteBPNativeFringeChunkTraceSegment blockSize close seed
+        concreteBPNativeSuccinctRMQReviewerReadSegmentLive
+        (concreteBPNativeLocalBPWindowBitsTraceResult_reviewerReadSegmentLive
+          shape blockSize close)
+        (fun address _hlt => by
+          simp [concreteBPNativeFringeChunkTraceSegment,
+            concreteBPNativeSuccinctRMQReviewerReadSegmentLive])
+  · intro blockSize close close' seed
+    exact
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegment_trace_forall
+        shape concreteBPNativeFringeChunkTraceSegment blockSize close close'
+        seed
         concreteBPNativeSuccinctRMQReviewerReadSegmentLive
         (concreteBPNativeLocalBPWindowBitsTraceResult_reviewerReadSegmentLive
           shape blockSize close)
@@ -9395,6 +9457,15 @@ private theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_e
     exact
       SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedRightFringeCandidateSeededTraceResultAtSegment_trace_forall
         shape concreteBPNativeFringeChunkTraceSegment blockSize close seed
+        WordRAM.TraceEvent.isReadWord
+        (concreteBPNativeLocalBPWindowBitsTraceResult_events_readWord
+          shape blockSize close)
+        (fun address _hlt => by trivial)
+  · intro blockSize close close' seed
+    exact
+      SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseSeededTraceResultAtSegment_trace_forall
+        shape concreteBPNativeFringeChunkTraceSegment blockSize close close'
+        seed
         WordRAM.TraceEvent.isReadWord
         (concreteBPNativeLocalBPWindowBitsTraceResult_events_readWord
           shape blockSize close)

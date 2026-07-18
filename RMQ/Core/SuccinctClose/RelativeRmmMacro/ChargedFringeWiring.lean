@@ -36,7 +36,7 @@ def canonicalLcaCloseCostedWithRankSeed
   let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
   if blockOfClose blockSize leftClose =
       blockOfClose blockSize rightClose then
-    localBPSameBlockCloseDecodedCostedWithRankSeed
+    bpChunkedSameBlockCloseDecodedCostedWithRankSeed
       shape rankCloseCosted blockSize leftClose rightClose
   else
     bpChunkedCrossBlockCloseCostedWithRankSeed
@@ -57,8 +57,8 @@ def lcaCloseTraceResultWithRankSeedAllSizeStructural
   let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
   if blockOfClose blockSize leftClose =
       blockOfClose blockSize rightClose then
-    localBPSameBlockCloseDecodedTraceResultWithRankSeed
-      shape rankCloseTrace blockSize leftClose rightClose
+    bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment
+      shape rankCloseTrace fringeSegment blockSize leftClose rightClose
   else
     bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments
       shape rankCloseTrace segments fringeSegment leftClose rightClose
@@ -85,7 +85,8 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_refines
   case pos =>
     simp [lcaCloseTraceResultWithRankSeedAllSizeStructural,
       canonicalLcaCloseCostedWithRankSeed, blockSize, hsame,
-      localBPSameBlockCloseDecodedTraceResultWithRankSeed_refines, hrank]
+      bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment_refines,
+      hrank]
   case neg =>
     simp [lcaCloseTraceResultWithRankSeedAllSizeStructural,
       canonicalLcaCloseCostedWithRankSeed, blockSize, hsame,
@@ -114,13 +115,14 @@ theorem canonicalLcaCloseCostedWithRankSeed_cost_le
         blockOfClose blockSize rightClose
   case pos =>
     have hlocal :=
-      localBPSameBlockCloseDecodedCostedWithRankSeed_cost_le
+      bpChunkedSameBlockCloseDecodedCostedWithRankSeed_cost_le
         shape rankCloseCosted blockSize leftClose rightClose rankCost
         hrankCost
     have hcap :
-        rankCost + 4 <=
+        rankCost + 37 <=
           canonicalCompactBPCloseQueryCostWithRankSeed rankCost := by
       unfold canonicalCompactBPCloseQueryCostWithRankSeed
+        canonicalRelativeRmmInteriorQueryCost
       omega
     exact Nat.le_trans
       (by
@@ -163,11 +165,11 @@ theorem canonicalLcaCloseCostedWithRankSeed_cost_le_principled
       blockOfClose blockSize leftClose = blockOfClose blockSize rightClose
   case pos =>
     have hlocal :=
-      localBPSameBlockCloseDecodedCostedWithRankSeed_cost_le
+      bpChunkedSameBlockCloseDecodedCostedWithRankSeed_cost_le
         shape rankCloseCosted blockSize leftClose rightClose rankCost
         hrankCost
     have hcap :
-        rankCost + 4 <=
+        rankCost + 37 <=
           bpChunkedPrincipledBPCloseChargedTraceCostWithRankSeed rankCost := by
       unfold bpChunkedPrincipledBPCloseChargedTraceCostWithRankSeed
       unfold bpChunkedEndpointFringeChargedTraceCost
@@ -224,7 +226,13 @@ theorem canonicalLcaCloseCostedWithRankSeed_exact_of_query
       blockOfClose blockSize leftClose =
         blockOfClose blockSize rightClose
   case pos =>
-    simpa [canonicalLcaCloseCostedWithRankSeed, blockSize, hsame] using
+    have hvalue :=
+      bpChunkedSameBlockCloseDecodedCostedWithRankSeed_value_eq_of_query
+        (shape := shape) (rankCloseCosted := rankCloseCosted)
+        (left := left) (len := len)
+        (leftClose := leftClose) (rightClose := rightClose)
+        hrankExact hlen hbound hleft hright (by simpa [blockSize] using hsame)
+    have haccepted :=
       localBPSameBlockCloseDecodedCostedWithRankSeed_exact_of_query_same_block
         (shape := shape) (rankCloseCosted := rankCloseCosted)
         (blockSize := blockSize) (left := left) (len := len)
@@ -232,6 +240,18 @@ theorem canonicalLcaCloseCostedWithRankSeed_exact_of_query
         (answerClose := answerClose)
         hrankExact hblockSizePos hblockSizeLeThree hsame
         hlen hbound hleft hright hanswer
+    have hchunked :
+        (bpChunkedSameBlockCloseDecodedCostedWithRankSeed
+          shape rankCloseCosted blockSize leftClose rightClose).erase =
+          some answerClose := by
+      show (bpChunkedSameBlockCloseDecodedCostedWithRankSeed
+        shape rankCloseCosted blockSize leftClose rightClose).value =
+          some answerClose
+      rw [show blockSize = canonicalBPRelativeSummaryBlockSizeRaw shape from rfl]
+      rw [hvalue]
+      exact haccepted
+    simpa [canonicalLcaCloseCostedWithRankSeed, blockSize, hsame] using
+      hchunked
   case neg =>
     have hbetween :=
       answerClose_between_endpoint_closes
@@ -280,7 +300,13 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_trace_forall
     (hrank :
       forall pos event,
         List.Mem event (rankCloseTrace pos).trace -> P event)
-    (hbp :
+    -- Retained for statement stability across the B6 same-block swap.  Every
+    -- accepted branch now reaches its window-word reads through the component
+    -- subtrace that produced them (`hfringeLeft`, `hfringeRight`,
+    -- `hsameBlock`), each of which is a `bind` over
+    -- `localBPWindowBitsTraceResult`, so this hypothesis is subsumed.  It is
+    -- kept so the seven accepted consumers keep their argument shape.
+    (_hbp :
       forall blockSize close event,
         List.Mem event
           (localBPWindowBitsTraceResult shape blockSize close).trace ->
@@ -296,6 +322,12 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_trace_forall
         List.Mem event
           (bpChunkedRightFringeCandidateSeededTraceResultAtSegment
             shape fringeSegment blockSize close seed).trace ->
+          P event)
+    (hsameBlock :
+      forall blockSize close close' seed event,
+        List.Mem event
+          (bpChunkedSameBlockCloseSeededTraceResultAtSegment
+            shape fringeSegment blockSize close close' seed).trace ->
           P event)
     (hinterior :
       forall startBlock count event,
@@ -316,9 +348,9 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_trace_forall
   case pos =>
     simpa [lcaCloseTraceResultWithRankSeedAllSizeStructural, blockSize,
       hsame] using
-      localBPSameBlockCloseDecodedTraceResultWithRankSeed_trace_forall
-        shape rankCloseTrace blockSize leftClose rightClose P hrank
-        (hbp blockSize leftClose)
+      bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment_trace_forall_of_seeded
+        shape rankCloseTrace fringeSegment blockSize leftClose rightClose P
+        hrank (hsameBlock blockSize leftClose rightClose)
   case neg =>
     simpa [lcaCloseTraceResultWithRankSeedAllSizeStructural, blockSize,
       hsame] using
@@ -358,6 +390,9 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_no_syntheticCostOnlyPri
       (fun blockSize close seed =>
         bpChunkedRightFringeCandidateSeededTraceResultAtSegment_no_syntheticCostOnlyPrimitive
           shape fringeSegment blockSize close seed)
+      (fun blockSize close close' seed =>
+        bpChunkedSameBlockCloseSeededTraceResultAtSegment_no_syntheticCostOnlyPrimitive
+          shape fringeSegment blockSize close close' seed)
       (fun startBlock count =>
         concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural_no_syntheticCostOnlyPrimitive
           shape segments startBlock count)
@@ -412,6 +447,10 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_matchesReadStore
       (fun blockSize close seed =>
         bpChunkedRightFringeCandidateSeededTraceResultAtSegment_matchesReadStore
           shape fringeSegment blockSize close seed store hbpCode hfringe)
+      (fun blockSize close close' seed =>
+        bpChunkedSameBlockCloseSeededTraceResultAtSegment_matchesReadStore
+          shape fringeSegment blockSize close close' seed store hbpCode
+          hfringe)
       hinterior
 
 /-! ## Supplied-store dispatcher -/
@@ -428,8 +467,8 @@ def lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore
   let blockSize := canonicalBPRelativeSummaryBlockSizeRaw shape
   if blockOfClose blockSize leftClose =
       blockOfClose blockSize rightClose then
-    localBPSameBlockCloseDecodedTraceResultWithRankSeedWithStore
-      shape rankCloseTrace store blockSize leftClose rightClose
+    bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
+      shape rankCloseTrace fringeSegment store blockSize leftClose rightClose
   else
     bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore
       shape rankCloseTrace segments fringeSegment store leftClose
@@ -471,8 +510,8 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore_eq_of_agree
         blockOfClose blockSize rightClose
   case pos =>
     simp [blockSize, hsame,
-      localBPSameBlockCloseDecodedTraceResultWithRankSeedWithStore_eq_of_agree
-        rankCloseTrace hbpCode]
+      bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore_eq_of_agree
+        hbpCode hfringe rankCloseTrace]
   case neg =>
     simp [blockSize, hsame,
       bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_eq_of_agree
@@ -546,8 +585,8 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore_store_parametr
         blockOfClose blockSize rightClose
   case pos =>
     simp [blockSize, hsame,
-      localBPSameBlockCloseDecodedTraceResultWithRankSeedWithStore_store_parametric
-        shape rankCloseTrace hbpCode]
+      bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore_store_parametric
+        shape hbpCode hfringe rankCloseTrace]
   case neg =>
     simp [blockSize, hsame,
       bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_store_parametric
@@ -577,8 +616,9 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore_matchesReadSto
         blockOfClose blockSize rightClose
   case pos =>
     simpa [blockSize, hsame] using
-      localBPSameBlockCloseDecodedTraceResultWithRankSeedWithStore_matchesReadStore
-        shape rankCloseTrace store blockSize leftClose rightClose hrank
+      bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore_matchesReadStore
+        shape rankCloseTrace fringeSegment store blockSize leftClose
+        rightClose hrank
   case neg =>
     simpa [blockSize, hsame] using
       bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_matchesReadStore
@@ -609,8 +649,9 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructuralWithStore_no_syntheticCo
         blockOfClose blockSize rightClose
   case pos =>
     simpa [blockSize, hsame] using
-      localBPSameBlockCloseDecodedTraceResultWithRankSeedWithStore_no_syntheticCostOnlyPrimitive
-        shape rankCloseTrace store blockSize leftClose rightClose hrank
+      bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore_no_syntheticCostOnlyPrimitive
+        shape rankCloseTrace fringeSegment store blockSize leftClose
+        rightClose hrank
   case neg =>
     simpa [blockSize, hsame] using
       bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore_no_syntheticCostOnlyPrimitive
