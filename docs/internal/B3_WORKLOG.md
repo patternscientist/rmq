@@ -135,11 +135,11 @@ record; B3 milestones log here (recorded in DD-20260717-005).
       `concreteBPNativeChunkedRankCloseGlobalWordTraceResult` with
       `_refines`/`_matchesReadStore`/`_no_syntheticCostOnlyPrimitive`
       and the rank-leg vocabulary fact `_events_readWord`.
-- [ ] M5 atomic swap: route consumers + reviewer source 22 + payload/
+- [x] M5 atomic swap: route consumers + reviewer source 22 + payload/
       overhead + cost re-derivation + adequacy/provenance regeneration +
       vocabulary theorem + headline/validation/harness updates +
-      docstring fixes (REQ-B3-13).
-- [ ] M6 final battery + matrix closure + report.
+      docstring fixes (REQ-B3-13).  (workers B3-03 + B3-04)
+- [x] M6 final battery + matrix closure + report.  (worker B3-04)
 
 ## Current state / resume point (B3-02 checkpoint)
 
@@ -513,3 +513,140 @@ five files above; hygiene rg over all touched files: 0 hits.
   `paper_topology_lint.ps1` and the cost harness remain M6
   candidate-tree obligations (public theorem surface untouched by
   B3-02's parallel layer).
+
+
+## Completion (B3-04): M5 landed, M6 battery
+
+Worker B3-04 finished the remaining 30% of the M5 swap on top of the
+B3-03 working tree (per-file notes below), created the ONE atomic swap
+commit, and ran the M6 battery.  The recovery patch
+`docs/internal/B3_M5_WIP.patch` was deleted in the bookkeeping commit
+(its job is done; the swap is committed).
+
+Per-file completion notes (beyond the B3-03 checkpoint):
+
+- `SuccinctFinalStoreParam.lean`: rank segment map extended
+  (`| 3 => base + 4`); register pullback lemma at :40 deleted (only
+  consumer was the retired `_globalReadStore` proof); both WithStore
+  leaves redefined to the M4b chunked twins (rank at
+  `base..base+2, base+4`; select at the house layout + segments 21/22);
+  select `_globalReadStore` is `rfl` against the wiring def, rank via
+  `(_canonical_eq).symm`; `_matchesReadStore`/`_no_synthetic` from the
+  twin lemmas; `_store_parametric` from the twin fed by `hread` at
+  local segments 0/1/2/3; the `_eq_of_trace_read_agreement` chain
+  re-proved COMPOSITIONALLY: new private `StoreTraceLocal` atoms
+  (`bpChunkRead`/`bpWordRead`), fold lemmas (rank/select `From` folds by
+  count induction over `storeTraceLocal_bind`), and chunked leaf
+  compositions (rank twin, relative-offset read, sparse directory,
+  dense two-word, select twin); the dead private `SelectClosePullbacks`
+  section deleted; the read-agreement record gains `selectChunkTable`
+  (footprint case added in `of_footprint`; `..._rankClose` footprint
+  lemma re-proved over the 4-case map).  Compiled green on the first
+  iteration.
+- `ReviewerReachabilitySmall.lean`: WithStore<->Relabeled transfer
+  lemmas for the super/local entry tables at the canonical store (via
+  the wiring pullback facts + `readTraceResultRelabeledWithStore_eq_of_pullback`);
+  chunked select-trace membership helpers (super/local/dense); chunked
+  rank head-read helper; the singleton entry-table successful reads
+  (segments 1-8), shared-BP read (0), rank claims (17/18/19) recomputed
+  over the chunked traces; `_exact`-based select/rank value proofs
+  (`concreteBPNative{Select,Rank}CloseInterpretedCosted_exact` replace
+  the retired `_refines_*CloseCosted` rewrites).  NEW W19:
+  `reviewerSingleton_selectChunkTable_successful_read` - the singleton
+  dense route (basePosition 1, wordSize 2, chunk bits 1, word
+  `[true, false]`) reaches the in-word select fold at occurrence 0,
+  chunk 0 has false-count 0, chunk 1 fires the found branch's
+  SUCCESSFUL segment-22 read at slot 0 (scripted via `read_exact` +
+  `bpFringeChunkEntries_getElem` + `bpChunkRankOfEntry_packed` decode
+  steps and fold-value lemmas `bpChunkedWordRankCosted_value`);
+  `small_successful_closed_valid_occurrence` list extended with
+  `.selectChunkTable` (aggregate cluster list in
+  `ReviewerReachability.lean` extended to match).
+- `ReviewerReachabilityLong.lean` / `ReviewerReachabilitySparse.lean`:
+  the long/sparse select component witnesses recomputed over the
+  chunked route.  KERNEL-SAFETY PATTERN (recorded in DD-20260718-002):
+  at the symbolic 2^15/2^128 shapes, concrete-record defeq (kernel
+  whnf through the built structures) deep-recursed the kernel; every
+  such step is now a GENERIC lemma over symbolic data instantiated
+  propositionally: `twoLevelRankData_sample_words_present*` (sample
+  word existence at pos 0), `chunkedRankTwinWithStore_value_zero*`
+  (chunked rank twin value 0 at slot 0 via `_toCosted_of_agree` +
+  `bpChunkedRankCosted_value_eq` + `rankInterpretedCosted_exact` with
+  `Succinct.rankPrefix_zero` REWRITTEN, never simp-unfolding
+  `rankPrefix` at concrete bits), `chunkedSparseDirectoryTrace_{rank,relative}_mem`,
+  `chunkedSelectTrace_sparse_read_mem`.  Toolchain notes: (a) omega
+  does NOT see `Nat.min` here - use `Nat.zero_min _` with a `Nat.min`
+  ascription (B2 ledger pattern); (b) `simp [Succinct.rankPrefix]` or
+  `Costed.erase`-simpa at concrete huge structures is a kernel bomb -
+  rewrite with the standalone `rankPrefix_zero` and keep `erase`/`value`
+  conversions inside generic lemmas; (c) `sorry`-poisoned declarations
+  are NOT kernel-checked, so sorry-bisection cannot localize kernel
+  deep-recursion (verified empirically; final tree has no sorry
+  anywhere).
+- `BPNavigationRAM.lean`: nav rank leg rewired to the chunked consumer
+  (nav store 21/22 = chunk/select tables):
+  `concreteBPCloseNavigationRankCloseGlobalTraceResult_refines` restated
+  to `= concreteBPNativeRankCloseInterpretedCosted` (proof = the
+  canonical `_refines_interpretedCosted`);
+  `concreteBPCloseNavigationCanonicalCosted`'s rank component is the
+  chunked interpreted consumer; the B2-era bridge
+  `concreteBPCloseNavigationRankCloseInterpretedCosted_refines_rankCloseCosted`
+  deleted as superseded (equality false at chunked costs; B2-deletion
+  precedent); rank matches theorem re-proved via the chunked twin's
+  `_trace_forall` with per-segment seed-store/nav-store word equalities.
+- Public/doc sync: `SuccinctRMQClassic.queryCost_eq = 207`; NEW frozen
+  `canonicalSilentWordRankSelectQueryCost(_eq = 142)` following the
+  76/328 pattern; `Headlines/RMQ.lean` main-theorem conjunct 207,
+  docstrings synced (REQ-B3-13 re-sync), `SumLe142` -> `SumLe207`
+  (coordinator-ratified current-anchor rename), NEW vocabulary abbrev
+  `succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`;
+  `Validation/SuccinctClassic.canonicalBoundOK` = 207 && frozen 142 &&
+  76 && 328; harness boolean `canonicalBoundIs207`;
+  `RMQExamples/Concrete.lean` guards 207 + frozen 142;
+  `scripts/headline_axiom_check.lean` + `scripts/paper_topology_lint.ps1`
+  current anchors renamed to `SumLe207` and extended with the
+  vocabulary anchor; README/`docs/FAMILY_SUMMARY.md` current-cap
+  numerals synced to 207 with the frozen 142 note (B2-mirror scope
+  only; broader doc migration stays B5 per REQ-B3-13).
+
+- M5 swap commit `f1c8af3` (worker B3-04): pre-commit gate = full
+  `lake build RMQ` on the candidate tree, `Build completed successfully`
+  exit 0 (fresh compile of every swapped module across the session; the
+  final synchronous verification run was a no-op green).  Toolchain
+  notes for successors: (a) `sorry`-poisoned declarations are NOT
+  kernel-checked - sorry-bisection cannot localize kernel deep
+  recursion; (b) concrete-record defeq at the symbolic 2^15/2^128
+  reviewer shapes deep-recurses the kernel (44 GB observed on the
+  pre-fix Long file) - push every such step into a generic lemma over
+  symbolic structures and instantiate propositionally; (c) omega does
+  not reduce `Nat.min` here; use `Nat.zero_min` behind a `Nat.min`-typed
+  ascription (B2 ledger pattern); (d) never simp-unfold
+  `Succinct.rankPrefix`/`Costed.erase` at concrete huge structures -
+  rewrite with `rankPrefix_zero` and keep erase/value conversion inside
+  the generic lemma.
+- M6 battery (worker B3-04, candidate tree at `f1c8af3` +
+  doc-sync `25a310b`):
+  - `lake build RMQ`: exit 0 (`Build completed successfully`).
+  - `lake build RMQPaper RMQExamples`: exit 0, 46 s.
+  - hygiene `rg` forbidden tokens over `RMQ` + `lakefile.toml`: 0 hits;
+    `native_decide|ofReduceBool` over `RMQ`: 0 hits.
+  - `lake exe rmq_succinct_classic_cost_harness`: exit 0, 55 s; every
+    window `agrees=true`, `canonicalBoundIs207=true`,
+    `underCanonicalBound=true`.
+  - `git diff --check`: clean; `git diff --check d1d645e..HEAD`: clean
+    at the final HEAD (transient hits were only the committed recovery
+    patch, deleted in this bookkeeping commit).
+  - `design_decision_check.ps1 -Strict -Base d1d645e...`: exit 0
+    (35 changed files), 3 s.
+  - `claim_drift_scan.ps1`: exit 0 (762 hits, 0 strict failures), 10 s.
+  - `paper_topology_lint.ps1` (mutex-held): first run failed on the
+    stale `SumLe142` documentary rows in
+    `docs/PAPER_CLAIM_CORRESPONDENCE.md` / `docs/WHAT_IS_PROVED.md` /
+    `artifact/CLAIMS.md`; stale-doc-constant sync applied (allowed
+    policy; commit `25a310b`, WDD-20260718-001) and the re-run is
+    exit 0, 94 s (PASS: 82 documentary identifiers, 48 paper
+    identifiers resolved, including the new
+    `succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` anchor).
+- Recovery patch `docs/internal/B3_M5_WIP.patch` DELETED in this
+  bookkeeping commit: the M5 swap is committed at `f1c8af3`, so the
+  insurance copy has served its purpose.
