@@ -399,6 +399,30 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
   `SuccinctFinalRAM`/reachability simp-arg warnings listed in
   REQ-E1-09).
 
+## M3c-4b: atomic in-word rank fold block (`E1RankAtBlock.lean`)
+
+- New module `RMQ/Core/WordRAM/E1RankAtBlock.lean` (wired into
+  `RMQ.lean`): the seed-free FALSE-target fold sub-block the dense
+  two-word select leg consumes twice
+  (`bpChunkedWordRankTraceResultAtSegmentWithStore store (G+4) c false w
+  limit`).  Pieces: `rankFalseLoopFold_runsTo` (the shared
+  `rankLoopBody` loop re-proved at a GENERIC loop base `LB`, end
+  `LB+25`, preservation widened to the exact write-set complement
+  `r <= 8 ∨ 10 <= r <= 16 ∨ 24 <= r <= 26 ∨ 28 <= r` — the dense leg
+  must keep `rWrd`/samples across a fold); 32-instr
+  `rankAtSegmentBlock A G c` (7-instr register-input init `A..A+6`,
+  loop `A+7..A+30`, back edge `A+31`); frozen `rankAtSegmentCats`
+  (derived `7 + 25 * count`); `rankAtSegmentBlock_runsTo` (inputs: rOne/
+  rC/rEight pinned, `rE = bpWordRankEffLimit w limit`,
+  `rR = bitsToNatLE w`; receipts positionally equal to the atomic fold
+  trace, value in `rVal`); width certificate `rankAtSegmentBlock_fits`
+  (32 arms, branch target `A+7`).
+- Technique: init-only preservation hypotheses must ALSO be stated on
+  register numerals (`r ≠ 22 ∧ ...`), instantiated with `(by decide)` at
+  abbrev call sites — same omega-opacity gotcha as loop preservation.
+- Verification at this commit: standalone `lake env lean` exit 0 (no
+  warnings); `lake build RMQ` green.
+
 ## RESUME POINT (next session: select-close legs onward)
 
 NEW in this session (commits `69b39a9`, `dae5fa6`, `691f7c0`, + this

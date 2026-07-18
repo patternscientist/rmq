@@ -18,6 +18,7 @@ import RMQ.Core.WordRAM.E1RankBridge
 import RMQ.Core.WordRAM.E1StraightLine
 import RMQ.Core.WordRAM.E1RankBlock
 import RMQ.Core.WordRAM.E1RankTrueBlock
+import RMQ.Core.WordRAM.E1RankAtBlock
 import RMQ.Core.WordRAM.E1RankCanonical
 import RMQ.Core.WordRAM.E1SelectBlock
 import RMQ.Core.GenericSelect.RAMStoreParam
