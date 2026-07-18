@@ -30,7 +30,8 @@ theorem concreteBPNativeSuccinctRMQReviewerSource_counted_successful_closed_vali
           , .selectLocalRankBefore
           , .selectLocalFirstOffset
           , .canonicalClose
-          , .fringeChunkTable ] ∨
+          , .fringeChunkTable
+          , .selectChunkTable ] ∨
       source ∈
           [ .selectLongFlagRankSuperTrue
           , .selectLongFlagRankBlockTrue

@@ -27,35 +27,17 @@ namespace RMQ
 
 namespace SuccinctFinal
 
-/-- Segment map placing the final false-rank component's three local segments
-at a supplied base. -/
+/-- Segment map placing the final false-rank component's four local segments
+at a supplied base: the super/block sample tables and packed bit words at
+`base .. base + 2`, and the shared fringe chunk table at `base + 4` (so the
+canonical base `17` lands on the counted chunk-table segment `21`). -/
 def concreteBPNativeRankCloseSegmentMap (rankSegmentBase : Nat) :
-    Nat -> Nat :=
-  WordRAM.tripleSegmentMap rankSegmentBase concreteBPNativeDeadTraceSegment
-
-/--
-The concrete global read store, pulled back along the final false-rank segment
-map, is exactly the rank component's local store.
--/
-theorem concreteBPNativeRankClose_pullback_globalReadStore
-    (shape : Cartesian.CartesianShape) :
-    (concreteBPNativeSuccinctRMQGlobalReadStore shape).pullback
-        (concreteBPNativeRankCloseSegmentMap
-          concreteBPNativeRankCloseTraceSegmentBase) =
-      WordRAM.ReadStore.ofStore
-        ((builtRelativeSplitBPCloseRankData shape).rankRegisterWordRAMStore
-          false) := by
-  apply WordRAM.ReadStore.ext
-  intro segment index
-  rcases segment with _ | _ | _ | segment <;>
-    simp [WordRAM.ReadStore.pullback, WordRAM.ReadStore.ofStore,
-      concreteBPNativeRankCloseSegmentMap,
-      concreteBPNativeSuccinctRMQGlobalReadStore,
-      concreteBPNativeRankCloseTraceSegmentBase,
-      concreteBPNativeDeadTraceSegment,
-      WordRAM.tripleSegmentMap, WordRAM.TraceEvent.tripleSegmentMap,
-      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterWordRAMStore,
-      WordRAM.Store.readWord?]
+    Nat -> Nat
+  | 0 => rankSegmentBase
+  | 1 => rankSegmentBase + 1
+  | 2 => rankSegmentBase + 2
+  | 3 => rankSegmentBase + 4
+  | _ + 4 => concreteBPNativeDeadTraceSegment
 
 private theorem natProgram_evalR_eq_of_trace_read_agreement
     (program : WordRAM.Register.NatProgram)
@@ -333,22 +315,137 @@ private theorem ofNatProgramWithStore_storeTraceLocal
       (fun store => WordRAM.TraceResult.ofResult (program.evalR store regs))
       hinner
 
+/-! ### Store-trace locality for the chunked rank/select trace atoms -/
+
+private theorem bpChunkReadWithStore_storeTraceLocal (segment i : Nat) :
+    StoreTraceLocal (fun store =>
+      SuccinctClose.bpChunkReadTraceResult store segment i) := by
+  intro storeA storeB hagree
+  have hread := hagree segment i (storeA.readWord? segment i)
+    (List.Mem.head [])
+  simp [SuccinctClose.bpChunkReadTraceResult, hread]
+
+private theorem bpWordReadWithStore_storeTraceLocal (segment i : Nat) :
+    StoreTraceLocal (fun store =>
+      SuccinctClose.bpWordReadTraceResult store segment i) := by
+  intro storeA storeB hagree
+  have hread := hagree segment i (storeA.readWord? segment i)
+    (List.Mem.head [])
+  simp [SuccinctClose.bpWordReadTraceResult, hread]
+
+private theorem chunkedWordRankFoldWithStore_storeTraceLocal
+    (tableSegment c : Nat) (target : Bool) (word : List Bool) (e : Nat) :
+    forall (count j acc : Nat),
+      StoreTraceLocal (fun store =>
+        SuccinctClose.bpChunkedWordRankTraceFromWithStore store
+          tableSegment c target word e j count acc) := by
+  intro count
+  induction count with
+  | zero =>
+      intro j acc
+      exact storeTraceLocal_const _
+  | succ count ih =>
+      intro j acc
+      unfold SuccinctClose.bpChunkedWordRankTraceFromWithStore
+      apply storeTraceLocal_bind
+      · exact bpChunkReadWithStore_storeTraceLocal _ _
+      · intro entry?
+        exact ih (j + 1) _
+
+private theorem chunkedWordRankAtSegmentWithStore_storeTraceLocal
+    (tableSegment c : Nat) (target : Bool) (word : List Bool)
+    (limit : Nat) :
+    StoreTraceLocal (fun store =>
+      SuccinctClose.bpChunkedWordRankTraceResultAtSegmentWithStore store
+        tableSegment c target word limit) := by
+  unfold SuccinctClose.bpChunkedWordRankTraceResultAtSegmentWithStore
+  exact chunkedWordRankFoldWithStore_storeTraceLocal _ _ _ _ _ _ _ _
+
+private theorem chunkedWordSelectFoldWithStore_storeTraceLocal
+    (rankSegment selectSegment c : Nat) (target : Bool)
+    (word : List Bool) :
+    forall (count j k : Nat),
+      StoreTraceLocal (fun store =>
+        SuccinctClose.bpChunkedWordSelectTraceFromWithStore store
+          rankSegment selectSegment c target word j count k) := by
+  intro count
+  induction count with
+  | zero =>
+      intro j k
+      exact storeTraceLocal_const _
+  | succ count ih =>
+      intro j k
+      unfold SuccinctClose.bpChunkedWordSelectTraceFromWithStore
+      apply storeTraceLocal_bind
+      · exact bpChunkReadWithStore_storeTraceLocal _ _
+      · intro entry?
+        by_cases hk :
+            k <
+              SuccinctClose.bpChunkRankOfEntry c target
+                (SuccinctClose.bpWordChunkSliceLen c word.length j)
+                (entry?.getD 0)
+        · simp only [if_pos hk]
+          apply storeTraceLocal_map
+          exact bpChunkReadWithStore_storeTraceLocal _ _
+        · simp only [if_neg hk]
+          exact ih (j + 1) _
+
+private theorem chunkedWordSelectAtSegmentsWithStore_storeTraceLocal
+    (rankSegment selectSegment c : Nat) (target : Bool)
+    (word : List Bool) (occurrence : Nat) :
+    StoreTraceLocal (fun store =>
+      SuccinctClose.bpChunkedWordSelectTraceResultAtSegmentsWithStore store
+        rankSegment selectSegment c target word occurrence) := by
+  unfold SuccinctClose.bpChunkedWordSelectTraceResultAtSegmentsWithStore
+  exact chunkedWordSelectFoldWithStore_storeTraceLocal _ _ _ _ _ _ _ _
+
+private theorem chunkedRankLeafWithStore_storeTraceLocal
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data : SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
+      bits superOverhead blockOverhead queryCost)
+    (superSegment blockSegment wordSegment chunkSegment c : Nat)
+    (target : Bool) (pos : Nat) :
+    StoreTraceLocal (fun store =>
+      data.bpChunkedRankTraceResultWithStore store superSegment
+        blockSegment wordSegment chunkSegment c target pos) := by
+  unfold SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankTraceResultWithStore
+  apply storeTraceLocal_bind
+  · exact bpChunkReadWithStore_storeTraceLocal _ _
+  · intro super?
+    apply storeTraceLocal_bind
+    · exact bpChunkReadWithStore_storeTraceLocal _ _
+    · intro delta?
+      apply storeTraceLocal_bind
+      · exact bpWordReadWithStore_storeTraceLocal _ _
+      · intro word?
+        cases super? with
+        | none =>
+            cases delta? <;> cases word? <;> exact storeTraceLocal_const _
+        | some super =>
+            cases delta? with
+            | none => cases word? <;> exact storeTraceLocal_const _
+            | some delta =>
+                cases word? with
+                | none => exact storeTraceLocal_const _
+                | some word =>
+                    apply storeTraceLocal_map
+                    exact
+                      chunkedWordRankAtSegmentWithStore_storeTraceLocal
+                        _ _ _ _ _
+
 /--
-Store-parameterized final false-rank leaf: the two-level register rank program
-is evaluated against the supplied read store pulled back along the rank segment
-map, and the emitted trace is relabeled into the global layout.
+Store-parameterized final false-rank leaf: the chunked two-level rank seed
+evaluated against the supplied read store at the rank segment map's four
+segments (sample tables and packed bit words at `base .. base + 2`, the
+shared fringe chunk table at `base + 4`).
 -/
 def concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
     (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
     (rankSegmentBase pos : Nat) : WordRAM.TraceResult Nat :=
-  WordRAM.TraceResult.relabelReadSegmentsWith
-    (concreteBPNativeRankCloseSegmentMap rankSegmentBase)
-    (WordRAM.TraceResult.ofResult
-      (((builtRelativeSplitBPCloseRankData shape).rankRegisterProgram
-          false (WordRAM.Register.NatExpr.reg 0)).evalR
-        (store.pullback
-          (concreteBPNativeRankCloseSegmentMap rankSegmentBase))
-        (WordRAM.Register.RegFile.withNat1 pos)))
+  (builtRelativeSplitBPCloseRankData shape)
+    |>.bpChunkedRankTraceResultWithStore store rankSegmentBase
+      (rankSegmentBase + 1) (rankSegmentBase + 2) (rankSegmentBase + 4)
+      (SuccinctClose.bpFringeChunkBits shape.bpCode.length) false pos
 
 /-- For every supplied store, the store-parameterized rank leaf's read events
 report exactly that store's words. -/
@@ -361,20 +458,13 @@ theorem concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_matchesReadSt
             shape store rankSegmentBase pos).trace ->
         event.matchesReadStore store := by
   intro event hmem
-  simp only [concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore,
-    WordRAM.TraceResult.relabelReadSegmentsWith,
-    WordRAM.TraceResult.ofResult] at hmem
-  rcases List.mem_map.mp hmem with ⟨inner, hinner, rfl⟩
   exact
-    WordRAM.TraceEvent.relabelReadSegmentWith_matchesReadStore_of_pullback
-      (concreteBPNativeRankCloseSegmentMap rankSegmentBase) store
-      (WordRAM.Register.NatProgram.evalR_matchesReadStore
-        ((builtRelativeSplitBPCloseRankData shape).rankRegisterProgram
-          false (WordRAM.Register.NatExpr.reg 0))
-        (store.pullback
-          (concreteBPNativeRankCloseSegmentMap rankSegmentBase))
-        (WordRAM.Register.RegFile.withNat1 pos)
-        inner hinner)
+    (builtRelativeSplitBPCloseRankData
+        shape).bpChunkedRankTraceResultWithStore_matchesReadStore
+      store rankSegmentBase (rankSegmentBase + 1) (rankSegmentBase + 2)
+      (rankSegmentBase + 4)
+      (SuccinctClose.bpFringeChunkBits shape.bpCode.length) false pos
+      event hmem
 
 /--
 With the concrete global read store, the store-parameterized rank leaf is
@@ -386,13 +476,9 @@ theorem concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_globalReadSto
         shape (concreteBPNativeSuccinctRMQGlobalReadStore shape)
         concreteBPNativeRankCloseTraceSegmentBase pos =
       concreteBPNativeRankCloseWordTraceResultAtSegment
-        shape concreteBPNativeRankCloseTraceSegmentBase pos := by
-  unfold concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
-    concreteBPNativeRankCloseWordTraceResultAtSegment
-    concreteBPNativeRankCloseWordTraceResult
-  rw [concreteBPNativeRankClose_pullback_globalReadStore,
-    WordRAM.Register.NatProgram.evalR_ofStore]
-  rfl
+        shape concreteBPNativeRankCloseTraceSegmentBase pos :=
+  (concreteBPNativeRankCloseWordTraceResultAtSegment_canonical_eq
+    shape pos).symm
 
 /--
 Whole-leaf parametricity: two read stores agreeing on the rank leaf's mapped
@@ -415,8 +501,14 @@ theorem concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_store_paramet
       concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
         shape storeB rankSegmentBase pos := by
   unfold concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
-  rw [WordRAM.ReadStore.pullback_eq_of_agree_on_map
-    (concreteBPNativeRankCloseSegmentMap rankSegmentBase) hread]
+  exact
+    (builtRelativeSplitBPCloseRankData
+        shape).bpChunkedRankTraceResultWithStore_store_parametric
+      (fun address => hread 0 address)
+      (fun address => hread 1 address)
+      (fun address => hread 2 address)
+      (fun address => hread 3 address)
+      (SuccinctClose.bpFringeChunkBits shape.bpCode.length) false pos
 
 theorem concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_eq_of_trace_read_agreement
     (shape : Cartesian.CartesianShape)
@@ -432,31 +524,12 @@ theorem concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_eq_of_trace_r
         shape storeA rankSegmentBase pos =
       concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
         shape storeB rankSegmentBase pos := by
-  have hinner :=
-    natProgram_evalR_eq_of_trace_read_agreement
-      ((builtRelativeSplitBPCloseRankData shape).rankRegisterProgram
-        false (WordRAM.Register.NatExpr.reg 0))
-      (storeA.pullback
-        (concreteBPNativeRankCloseSegmentMap rankSegmentBase))
-      (storeB.pullback
-        (concreteBPNativeRankCloseSegmentMap rankSegmentBase))
-      (WordRAM.Register.RegFile.withNat1 pos)
-      (by
-        intro segment index word? hmem
-        have hglobal := hagree
-          (concreteBPNativeRankCloseSegmentMap rankSegmentBase segment)
-          index word? (by
-            simp only [
-              concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore,
-              WordRAM.TraceResult.relabelReadSegmentsWith,
-              WordRAM.TraceResult.ofResult]
-            apply List.mem_map.mpr
-            refine ⟨WordRAM.TraceEvent.readWord segment index word?,
-              hmem, ?_⟩
-            simp [WordRAM.TraceEvent.relabelReadSegmentWith])
-        simpa [WordRAM.ReadStore.pullback] using hglobal)
-  unfold concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
-  rw [hinner]
+  exact
+    chunkedRankLeafWithStore_storeTraceLocal
+      (builtRelativeSplitBPCloseRankData shape) rankSegmentBase
+      (rankSegmentBase + 1) (rankSegmentBase + 2) (rankSegmentBase + 4)
+      (SuccinctClose.bpFringeChunkBits shape.bpCode.length) false pos
+      storeA storeB hagree
 
 /--
 Store-parameterized positive same-block local-BP close leaf with the concrete
@@ -563,15 +636,21 @@ theorem localBPSameBlockCloseDecodedTraceResultWithFinalRankSeed_store_parametri
         hbp blockSize leftClose rightClose
 
 /--
-Store-parameterized close-select leaf: the sparse-exception select tower
-evaluated against a supplied read store under the final global segment layout.
+Store-parameterized close-select leaf: the chunked sparse-exception select
+tower evaluated against a supplied read store under the final global segment
+layout, with the shared fringe chunk table at segment
+`concreteBPNativeFringeChunkTraceSegment` and the select chunk table at
+segment `concreteBPNativeSelectChunkTraceSegment`.
 -/
 def concreteBPNativeSelectCloseGlobalWordTraceResultWithStore
     (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
     (idx : Nat) : WordRAM.TraceResult (Option Nat) :=
   (GenericSelect.sparseExceptionSelectData shape.bpCode false)
-    |>.selectTraceResultRelabeledWithStore
-      concreteBPNativeSelectCloseTraceSegmentLayout store idx
+    |>.bpChunkedSelectTraceResultWithStore
+      concreteBPNativeSelectCloseTraceSegmentLayout
+      concreteBPNativeFringeChunkTraceSegment
+      concreteBPNativeSelectChunkTraceSegment store
+      (SuccinctClose.bpFringeChunkBits shape.bpCode.length) idx
 
 /-- For every supplied store, the store-parameterized close-select leaf's read
 events report exactly that store's words. -/
@@ -585,271 +664,11 @@ theorem concreteBPNativeSelectCloseGlobalWordTraceResultWithStore_matchesReadSto
         event.matchesReadStore store := by
   exact
     (GenericSelect.sparseExceptionSelectData shape.bpCode false)
-      |>.selectTraceResultRelabeledWithStore_matchesReadStore
-        concreteBPNativeSelectCloseTraceSegmentLayout store idx
-
-section SelectClosePullbacks
-
-variable (shape : Cartesian.CartesianShape)
-
-private theorem selectClosePullback_superBaseOccurrence :
-    (concreteBPNativeSuccinctRMQGlobalReadStore shape).pullback
-        (WordRAM.singletonSegmentMap
-          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.baseOccurrence
-          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.deadSegment) =
-      WordRAM.ReadStore.ofStore
-        (GenericSelect.sparseExceptionSelectData shape.bpCode
-          false).superTable.baseOccurrenceTable.wordRAMStore := by
-  apply WordRAM.ReadStore.ext
-  intro segment index
-  rcases segment with _ | segment <;>
-    simp [WordRAM.ReadStore.pullback, WordRAM.ReadStore.ofStore,
-      concreteBPNativeSuccinctRMQGlobalReadStore,
-      concreteBPNativeSelectCloseTraceSegmentLayout,
-      concreteBPNativeDeadTraceSegment,
-      WordRAM.singletonSegmentMap, WordRAM.TraceEvent.singletonSegmentMap,
-      SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-      SuccinctSpace.PayloadWordStore.wordRAMStore,
-      WordRAM.Store.readWord?]
-
-private theorem selectClosePullback_superBaseWordIndex :
-    (concreteBPNativeSuccinctRMQGlobalReadStore shape).pullback
-        (WordRAM.singletonSegmentMap
-          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.baseWordIndex
-          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.deadSegment) =
-      WordRAM.ReadStore.ofStore
-        (GenericSelect.sparseExceptionSelectData shape.bpCode
-          false).superTable.baseWordIndexTable.wordRAMStore := by
-  apply WordRAM.ReadStore.ext
-  intro segment index
-  rcases segment with _ | segment <;>
-    simp [WordRAM.ReadStore.pullback, WordRAM.ReadStore.ofStore,
-      concreteBPNativeSuccinctRMQGlobalReadStore,
-      concreteBPNativeSelectCloseTraceSegmentLayout,
-      concreteBPNativeDeadTraceSegment,
-      WordRAM.singletonSegmentMap, WordRAM.TraceEvent.singletonSegmentMap,
-      SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-      SuccinctSpace.PayloadWordStore.wordRAMStore,
-      WordRAM.Store.readWord?]
-
-private theorem selectClosePullback_superRankBefore :
-    (concreteBPNativeSuccinctRMQGlobalReadStore shape).pullback
-        (WordRAM.singletonSegmentMap
-          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.rankBefore
-          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.deadSegment) =
-      WordRAM.ReadStore.ofStore
-        (GenericSelect.sparseExceptionSelectData shape.bpCode
-          false).superTable.rankBeforeTable.wordRAMStore := by
-  apply WordRAM.ReadStore.ext
-  intro segment index
-  rcases segment with _ | segment <;>
-    simp [WordRAM.ReadStore.pullback, WordRAM.ReadStore.ofStore,
-      concreteBPNativeSuccinctRMQGlobalReadStore,
-      concreteBPNativeSelectCloseTraceSegmentLayout,
-      concreteBPNativeDeadTraceSegment,
-      WordRAM.singletonSegmentMap, WordRAM.TraceEvent.singletonSegmentMap,
-      SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-      SuccinctSpace.PayloadWordStore.wordRAMStore,
-      WordRAM.Store.readWord?]
-
-private theorem selectClosePullback_superFirstOffset :
-    (concreteBPNativeSuccinctRMQGlobalReadStore shape).pullback
-        (WordRAM.singletonSegmentMap
-          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.firstOffset
-          concreteBPNativeSelectCloseTraceSegmentLayout.superTable.deadSegment) =
-      WordRAM.ReadStore.ofStore
-        (GenericSelect.sparseExceptionSelectData shape.bpCode
-          false).superTable.firstOffsetTable.wordRAMStore := by
-  apply WordRAM.ReadStore.ext
-  intro segment index
-  rcases segment with _ | segment <;>
-    simp [WordRAM.ReadStore.pullback, WordRAM.ReadStore.ofStore,
-      concreteBPNativeSuccinctRMQGlobalReadStore,
-      concreteBPNativeSelectCloseTraceSegmentLayout,
-      concreteBPNativeDeadTraceSegment,
-      WordRAM.singletonSegmentMap, WordRAM.TraceEvent.singletonSegmentMap,
-      SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-      SuccinctSpace.PayloadWordStore.wordRAMStore,
-      WordRAM.Store.readWord?]
-
-private theorem selectClosePullback_localBaseOccurrence :
-    (concreteBPNativeSuccinctRMQGlobalReadStore shape).pullback
-        (WordRAM.singletonSegmentMap
-          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.baseOccurrence
-          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.deadSegment) =
-      WordRAM.ReadStore.ofStore
-        (GenericSelect.sparseExceptionSelectData shape.bpCode
-          false).localTable.baseOccurrenceTable.wordRAMStore := by
-  apply WordRAM.ReadStore.ext
-  intro segment index
-  rcases segment with _ | segment <;>
-    simp [WordRAM.ReadStore.pullback, WordRAM.ReadStore.ofStore,
-      concreteBPNativeSuccinctRMQGlobalReadStore,
-      concreteBPNativeSelectCloseTraceSegmentLayout,
-      concreteBPNativeDeadTraceSegment,
-      WordRAM.singletonSegmentMap, WordRAM.TraceEvent.singletonSegmentMap,
-      SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-      SuccinctSpace.PayloadWordStore.wordRAMStore,
-      WordRAM.Store.readWord?]
-
-private theorem selectClosePullback_localBaseWordIndex :
-    (concreteBPNativeSuccinctRMQGlobalReadStore shape).pullback
-        (WordRAM.singletonSegmentMap
-          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.baseWordIndex
-          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.deadSegment) =
-      WordRAM.ReadStore.ofStore
-        (GenericSelect.sparseExceptionSelectData shape.bpCode
-          false).localTable.baseWordIndexTable.wordRAMStore := by
-  apply WordRAM.ReadStore.ext
-  intro segment index
-  rcases segment with _ | segment <;>
-    simp [WordRAM.ReadStore.pullback, WordRAM.ReadStore.ofStore,
-      concreteBPNativeSuccinctRMQGlobalReadStore,
-      concreteBPNativeSelectCloseTraceSegmentLayout,
-      concreteBPNativeDeadTraceSegment,
-      WordRAM.singletonSegmentMap, WordRAM.TraceEvent.singletonSegmentMap,
-      SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-      SuccinctSpace.PayloadWordStore.wordRAMStore,
-      WordRAM.Store.readWord?]
-
-private theorem selectClosePullback_localRankBefore :
-    (concreteBPNativeSuccinctRMQGlobalReadStore shape).pullback
-        (WordRAM.singletonSegmentMap
-          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.rankBefore
-          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.deadSegment) =
-      WordRAM.ReadStore.ofStore
-        (GenericSelect.sparseExceptionSelectData shape.bpCode
-          false).localTable.rankBeforeTable.wordRAMStore := by
-  apply WordRAM.ReadStore.ext
-  intro segment index
-  rcases segment with _ | segment <;>
-    simp [WordRAM.ReadStore.pullback, WordRAM.ReadStore.ofStore,
-      concreteBPNativeSuccinctRMQGlobalReadStore,
-      concreteBPNativeSelectCloseTraceSegmentLayout,
-      concreteBPNativeDeadTraceSegment,
-      WordRAM.singletonSegmentMap, WordRAM.TraceEvent.singletonSegmentMap,
-      SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-      SuccinctSpace.PayloadWordStore.wordRAMStore,
-      WordRAM.Store.readWord?]
-
-private theorem selectClosePullback_localFirstOffset :
-    (concreteBPNativeSuccinctRMQGlobalReadStore shape).pullback
-        (WordRAM.singletonSegmentMap
-          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.firstOffset
-          concreteBPNativeSelectCloseTraceSegmentLayout.localTable.deadSegment) =
-      WordRAM.ReadStore.ofStore
-        (GenericSelect.sparseExceptionSelectData shape.bpCode
-          false).localTable.firstOffsetTable.wordRAMStore := by
-  apply WordRAM.ReadStore.ext
-  intro segment index
-  rcases segment with _ | segment <;>
-    simp [WordRAM.ReadStore.pullback, WordRAM.ReadStore.ofStore,
-      concreteBPNativeSuccinctRMQGlobalReadStore,
-      concreteBPNativeSelectCloseTraceSegmentLayout,
-      concreteBPNativeDeadTraceSegment,
-      WordRAM.singletonSegmentMap, WordRAM.TraceEvent.singletonSegmentMap,
-      SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-      SuccinctSpace.PayloadWordStore.wordRAMStore,
-      WordRAM.Store.readWord?]
-
-private theorem selectClosePullback_longFlagRank :
-    (concreteBPNativeSuccinctRMQGlobalReadStore shape).pullback
-        (WordRAM.tripleSegmentMap
-          concreteBPNativeSelectCloseTraceSegmentLayout.longFlagRankBase
-          concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment) =
-      WordRAM.ReadStore.ofStore
-        ((GenericSelect.sparseExceptionSelectData shape.bpCode
-          false).longFlagRankData.rankRegisterWordRAMStore true) := by
-  apply WordRAM.ReadStore.ext
-  intro segment index
-  rcases segment with _ | _ | _ | segment <;>
-    simp [WordRAM.ReadStore.pullback, WordRAM.ReadStore.ofStore,
-      concreteBPNativeSuccinctRMQGlobalReadStore,
-      concreteBPNativeSelectCloseTraceSegmentLayout,
-      concreteBPNativeDeadTraceSegment,
-      WordRAM.tripleSegmentMap, WordRAM.TraceEvent.tripleSegmentMap,
-      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterWordRAMStore,
-      WordRAM.Store.readWord?]
-
-private theorem selectClosePullback_longRelative :
-    (concreteBPNativeSuccinctRMQGlobalReadStore shape).pullback
-        (WordRAM.singletonSegmentMap
-          concreteBPNativeSelectCloseTraceSegmentLayout.longRelativeBase
-          concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment) =
-      WordRAM.ReadStore.ofStore
-        (GenericSelect.sparseExceptionSelectData shape.bpCode
-          false).longSuperRelativeTable.wordRAMStore := by
-  apply WordRAM.ReadStore.ext
-  intro segment index
-  rcases segment with _ | segment <;>
-    simp [WordRAM.ReadStore.pullback, WordRAM.ReadStore.ofStore,
-      concreteBPNativeSuccinctRMQGlobalReadStore,
-      concreteBPNativeSelectCloseTraceSegmentLayout,
-      concreteBPNativeDeadTraceSegment,
-      WordRAM.singletonSegmentMap, WordRAM.TraceEvent.singletonSegmentMap,
-      SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-      SuccinctSpace.PayloadWordStore.wordRAMStore,
-      WordRAM.Store.readWord?]
-
-private theorem selectClosePullback_sparseRank :
-    (concreteBPNativeSuccinctRMQGlobalReadStore shape).pullback
-        (WordRAM.tripleSegmentMap
-          concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory.rankBase
-          concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory.deadSegment) =
-      WordRAM.ReadStore.ofStore
-        ((GenericSelect.sparseExceptionSelectData shape.bpCode
-          false).sparseDirectory.rankData.rankRegisterWordRAMStore true) := by
-  apply WordRAM.ReadStore.ext
-  intro segment index
-  rcases segment with _ | _ | _ | segment <;>
-    simp [WordRAM.ReadStore.pullback, WordRAM.ReadStore.ofStore,
-      concreteBPNativeSuccinctRMQGlobalReadStore,
-      concreteBPNativeSelectCloseTraceSegmentLayout,
-      concreteBPNativeDeadTraceSegment,
-      WordRAM.tripleSegmentMap, WordRAM.TraceEvent.tripleSegmentMap,
-      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterWordRAMStore,
-      WordRAM.Store.readWord?]
-
-private theorem selectClosePullback_sparseRelative :
-    (concreteBPNativeSuccinctRMQGlobalReadStore shape).pullback
-        (WordRAM.singletonSegmentMap
-          concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory.relativeBase
-          concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory.deadSegment) =
-      WordRAM.ReadStore.ofStore
-        (GenericSelect.sparseExceptionSelectData shape.bpCode
-          false).sparseDirectory.relativeTable.wordRAMStore := by
-  apply WordRAM.ReadStore.ext
-  intro segment index
-  rcases segment with _ | segment <;>
-    simp [WordRAM.ReadStore.pullback, WordRAM.ReadStore.ofStore,
-      concreteBPNativeSuccinctRMQGlobalReadStore,
-      concreteBPNativeSelectCloseTraceSegmentLayout,
-      concreteBPNativeDeadTraceSegment,
-      WordRAM.singletonSegmentMap, WordRAM.TraceEvent.singletonSegmentMap,
-      SuccinctSpace.FixedWidthNatTable.wordRAMStore,
-      SuccinctSpace.PayloadWordStore.wordRAMStore,
-      WordRAM.Store.readWord?]
-
-private theorem selectClosePullback_bitWords :
-    (concreteBPNativeSuccinctRMQGlobalReadStore shape).pullback
-        (WordRAM.singletonSegmentMap
-          concreteBPNativeSelectCloseTraceSegmentLayout.bitWordBase
-          concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment) =
-      WordRAM.ReadStore.ofStore
-        (GenericSelect.sparseExceptionSelectData shape.bpCode
-          false).bitWords.store.wordRAMStore := by
-  apply WordRAM.ReadStore.ext
-  intro segment index
-  rcases segment with _ | segment <;>
-    simp [WordRAM.ReadStore.pullback, WordRAM.ReadStore.ofStore,
-      concreteBPNativeSuccinctRMQGlobalReadStore,
-      concreteBPNativeSelectCloseTraceSegmentLayout,
-      concreteBPNativeDeadTraceSegment,
-      WordRAM.singletonSegmentMap, WordRAM.TraceEvent.singletonSegmentMap,
-      SuccinctSpace.PayloadWordStore.wordRAMStore,
-      WordRAM.Store.readWord?]
-
-end SelectClosePullbacks
+      |>.bpChunkedSelectTraceResultWithStore_matchesReadStore
+        concreteBPNativeSelectCloseTraceSegmentLayout
+        concreteBPNativeFringeChunkTraceSegment
+        concreteBPNativeSelectChunkTraceSegment store
+        (SuccinctClose.bpFringeChunkBits shape.bpCode.length) idx
 
 /--
 With the concrete global read store, the store-parameterized close-select leaf
@@ -859,26 +678,8 @@ theorem concreteBPNativeSelectCloseGlobalWordTraceResultWithStore_globalReadStor
     (shape : Cartesian.CartesianShape) (idx : Nat) :
     concreteBPNativeSelectCloseGlobalWordTraceResultWithStore
         shape (concreteBPNativeSuccinctRMQGlobalReadStore shape) idx =
-      concreteBPNativeSelectCloseGlobalWordTraceResult shape idx := by
-  unfold concreteBPNativeSelectCloseGlobalWordTraceResultWithStore
-    concreteBPNativeSelectCloseGlobalWordTraceResult
-  exact
-    (GenericSelect.sparseExceptionSelectData shape.bpCode false)
-      |>.selectTraceResultRelabeledWithStore_eq_of_pullback
-        (selectClosePullback_superBaseOccurrence shape)
-        (selectClosePullback_superBaseWordIndex shape)
-        (selectClosePullback_superRankBefore shape)
-        (selectClosePullback_superFirstOffset shape)
-        (selectClosePullback_longFlagRank shape)
-        (selectClosePullback_longRelative shape)
-        (selectClosePullback_localBaseOccurrence shape)
-        (selectClosePullback_localBaseWordIndex shape)
-        (selectClosePullback_localRankBefore shape)
-        (selectClosePullback_localFirstOffset shape)
-        (selectClosePullback_sparseRank shape)
-        (selectClosePullback_sparseRelative shape)
-        (selectClosePullback_bitWords shape)
-        idx
+      concreteBPNativeSelectCloseGlobalWordTraceResult shape idx :=
+  rfl
 
 /--
 Segment footprint for the supplied-store final whole-query replay.
@@ -1141,12 +942,11 @@ theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_rankClose
     concreteBPNativeSuccinctRMQWholeQueryReadFootprint shape
       (concreteBPNativeRankCloseSegmentMap
         concreteBPNativeRankCloseTraceSegmentBase segment) := by
-  exact
-    concreteBPNativeSuccinctRMQWholeQueryReadFootprint_tripleSegmentMap
-      shape
-      (by simp [concreteBPNativeRankCloseTraceSegmentBase,
-        concreteBPNativeDeadTraceSegment])
-      (by simp [concreteBPNativeDeadTraceSegment])
+  unfold concreteBPNativeSuccinctRMQWholeQueryReadFootprint
+  rcases segment with _ | _ | _ | _ | segment <;>
+    simp [concreteBPNativeRankCloseSegmentMap,
+      concreteBPNativeRankCloseTraceSegmentBase,
+      concreteBPNativeDeadTraceSegment]
 
 theorem concreteBPNativeSuccinctRMQWholeQueryReadFootprint_interiorLocal
     (shape : Cartesian.CartesianShape) (segment : Nat) :
@@ -1422,6 +1222,10 @@ structure concreteBPNativeSuccinctRMQWholeQueryReadAgreement
     forall address,
       storeA.readWord? concreteBPNativeFringeChunkTraceSegment address =
         storeB.readWord? concreteBPNativeFringeChunkTraceSegment address
+  selectChunkTable :
+    forall address,
+      storeA.readWord? concreteBPNativeSelectChunkTraceSegment address =
+        storeB.readWord? concreteBPNativeSelectChunkTraceSegment address
 
 namespace concreteBPNativeSuccinctRMQWholeQueryReadAgreement
 
@@ -1536,6 +1340,12 @@ theorem of_footprint
         simp [concreteBPNativeSuccinctRMQWholeQueryReadFootprint,
           concreteBPNativeFringeChunkTraceSegment,
           concreteBPNativeDeadTraceSegment])
+  · intro address
+    exact
+      hfoot _ address (by
+        simp [concreteBPNativeSuccinctRMQWholeQueryReadFootprint,
+          concreteBPNativeSelectChunkTraceSegment,
+          concreteBPNativeDeadTraceSegment])
 
 end concreteBPNativeSuccinctRMQWholeQueryReadAgreement
 
@@ -1549,24 +1359,11 @@ theorem concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore_no_syntheticC
         ¬ event.isSyntheticCostOnlyPrimitive := by
   unfold concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore
   exact
-    WordRAM.TraceResult.relabelReadSegmentsWith_no_syntheticCostOnlyPrimitive
-      (concreteBPNativeRankCloseSegmentMap rankSegmentBase)
-      (WordRAM.TraceResult.ofResult
-        (((builtRelativeSplitBPCloseRankData shape).rankRegisterProgram
-            false (WordRAM.Register.NatExpr.reg 0)).evalR
-          (store.pullback
-            (concreteBPNativeRankCloseSegmentMap rankSegmentBase))
-          (WordRAM.Register.RegFile.withNat1 pos)))
-      (by
-        intro event hmem
-        simpa only [WordRAM.TraceResult.ofResult_trace] using
-          WordRAM.Register.NatProgram.evalR_no_syntheticCostOnlyPrimitive
-            ((builtRelativeSplitBPCloseRankData shape).rankRegisterProgram
-              false (WordRAM.Register.NatExpr.reg 0))
-            (store.pullback
-              (concreteBPNativeRankCloseSegmentMap rankSegmentBase))
-            (WordRAM.Register.RegFile.withNat1 pos)
-            event hmem)
+    (builtRelativeSplitBPCloseRankData
+        shape).bpChunkedRankTraceResultWithStore_no_syntheticCostOnlyPrimitive
+      store rankSegmentBase (rankSegmentBase + 1) (rankSegmentBase + 2)
+      (rankSegmentBase + 4)
+      (SuccinctClose.bpFringeChunkBits shape.bpCode.length) false pos
 
 theorem concreteBPNativeSelectCloseGlobalWordTraceResultWithStore_store_parametric
     (shape : Cartesian.CartesianShape)
@@ -1582,22 +1379,30 @@ theorem concreteBPNativeSelectCloseGlobalWordTraceResultWithStore_store_parametr
   unfold concreteBPNativeSelectCloseGlobalWordTraceResultWithStore
   exact
     (GenericSelect.sparseExceptionSelectData shape.bpCode false)
-      |>.selectTraceResultRelabeledWithStore_store_parametric
+      |>.bpChunkedSelectTraceResultWithStore_store_parametric
         (layout := concreteBPNativeSelectCloseTraceSegmentLayout)
+        (chunkSegment := concreteBPNativeFringeChunkTraceSegment)
+        (selectTableSegment := concreteBPNativeSelectChunkTraceSegment)
         hagree.selectSuperBaseOccurrence
         hagree.selectSuperBaseWordIndex
         hagree.selectSuperRankBefore
         hagree.selectSuperFirstOffset
-        hagree.selectLongFlagRank
-        hagree.selectLongRelative
         hagree.selectLocalBaseOccurrence
         hagree.selectLocalBaseWordIndex
         hagree.selectLocalRankBefore
         hagree.selectLocalFirstOffset
-        hagree.selectSparseRank
-        hagree.selectSparseRelative
-        hagree.selectBitWords
-        idx
+        (fun address => hagree.selectLongFlagRank 0 address)
+        (fun address => hagree.selectLongFlagRank 1 address)
+        (fun address => hagree.selectLongFlagRank 2 address)
+        (fun address => hagree.selectLongRelative 0 address)
+        (fun address => hagree.selectSparseRank 0 address)
+        (fun address => hagree.selectSparseRank 1 address)
+        (fun address => hagree.selectSparseRank 2 address)
+        (fun address => hagree.selectSparseRelative 0 address)
+        (fun address => hagree.selectBitWords 0 address)
+        hagree.fringeChunkTable
+        hagree.selectChunkTable
+        (SuccinctClose.bpFringeChunkBits shape.bpCode.length) idx
 
 private theorem selectEntryReadWithStore_storeTraceLocal
     {entries : List GenericSelect.SparseDenseSelectDenseLocalEntry}
@@ -1621,102 +1426,81 @@ private theorem selectEntryReadWithStore_storeTraceLocal
         apply storeTraceLocal_map
         exact ofProgramWithStore_storeTraceLocal _ _
 
-private theorem rankTraceResultRelabeledWithStore_storeTraceLocal
-    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
-    (data : SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
-      bits superOverhead blockOverhead queryCost)
-    (rankBase deadSegment : Nat) (target : Bool) (pos : Nat) :
+private theorem relativeOffsetChunkReadWithStore_storeTraceLocal
+    (segment base slot : Nat) :
     StoreTraceLocal (fun store =>
-      data.rankTraceResultRelabeledWithStore
-        rankBase deadSegment store target pos) := by
-  unfold SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankTraceResultRelabeledWithStore
-  exact ofNatProgramWithStore_storeTraceLocal _ _ _
-
-private theorem relativeOffsetReadWithStore_storeTraceLocal
-    {entries : List Nat} {width : Nat}
-    (segmentBase deadSegment : Nat)
-    (table : SuccinctSpace.FixedWidthNatTable entries width)
-    (base slot : Nat) :
-    StoreTraceLocal (fun store =>
-      GenericSelect.relativeOffsetReadTraceResultRelabeledWithStore
-        segmentBase deadSegment table store base slot) := by
-  unfold GenericSelect.relativeOffsetReadTraceResultRelabeledWithStore
+      GenericSelect.bpRelativeOffsetReadTraceResultWithStore
+        store segment base slot) := by
+  unfold GenericSelect.bpRelativeOffsetReadTraceResultWithStore
   apply storeTraceLocal_map
-  exact ofProgramWithStore_storeTraceLocal _ _
+  exact bpChunkReadWithStore_storeTraceLocal _ _
 
-private theorem sparseDirectoryReadWithStore_storeTraceLocal
+private theorem chunkedSparseDirectoryWithStore_storeTraceLocal
     {bits : List Bool} {target : Bool}
     {rankSuperOverhead rankBlockOverhead : Nat}
     (directory : GenericSelect.SparseExceptionDirectory
       bits target rankSuperOverhead rankBlockOverhead)
     (layout : GenericSelect.SparseExceptionDirectoryTraceSegmentBases)
-    (base localSlot localOccurrence : Nat) :
+    (chunkSegment c base localSlot localOccurrence : Nat) :
     StoreTraceLocal (fun store =>
-      directory.readTraceResultRelabeledWithStore
-        layout store base localSlot localOccurrence) := by
-  unfold GenericSelect.SparseExceptionDirectory.readTraceResultRelabeledWithStore
+      directory.bpChunkedReadTraceResultWithStore
+        layout chunkSegment store c base localSlot localOccurrence) := by
+  unfold GenericSelect.SparseExceptionDirectory.bpChunkedReadTraceResultWithStore
   apply storeTraceLocal_bind
-  · exact rankTraceResultRelabeledWithStore_storeTraceLocal _ _ _ _ _
+  · exact chunkedRankLeafWithStore_storeTraceLocal _ _ _ _ _ _ _ _
   · intro exceptionRank
-    exact relativeOffsetReadWithStore_storeTraceLocal _ _ _ _ _
+    exact relativeOffsetChunkReadWithStore_storeTraceLocal _ _ _
 
-private theorem denseTwoWordSelectWithStoreLocal_storeTraceLocal
+private theorem chunkedDenseTwoWordSelectWithStore_storeTraceLocal
+    (bitWordSegment rankTableSegment selectTableSegment c : Nat)
     (target : Bool) {bits : List Bool} {wordSize : Nat}
     (bitWords : SuccinctSpace.BoundedPayloadWordStore bits wordSize)
     (basePosition baseOccurrence q : Nat) :
     StoreTraceLocal (fun store =>
-      GenericSelect.denseTwoWordSelectTraceResultWithStoreLocal
-        target bitWords store basePosition baseOccurrence q) := by
-  unfold GenericSelect.denseTwoWordSelectTraceResultWithStoreLocal
+      GenericSelect.bpChunkedDenseTwoWordSelectTraceResultWithStore
+        bitWordSegment rankTableSegment selectTableSegment c target
+        bitWords store basePosition baseOccurrence q) := by
+  unfold GenericSelect.bpChunkedDenseTwoWordSelectTraceResultWithStore
   apply storeTraceLocal_bind
-  · exact ofResultProgram_storeTraceLocal _
+  · exact bpWordReadWithStore_storeTraceLocal _ _
   · intro firstWord?
     cases firstWord? with
     | none => exact storeTraceLocal_const _
     | some firstWord =>
         apply storeTraceLocal_bind
-        · exact storeTraceLocal_const _
+        · exact chunkedWordRankAtSegmentWithStore_storeTraceLocal _ _ _ _ _
         · intro beforeFirst
           apply storeTraceLocal_bind
-          · exact storeTraceLocal_const _
+          · exact chunkedWordRankAtSegmentWithStore_storeTraceLocal _ _ _ _ _
           · intro uptoFirst
             dsimp only
             split
             · apply storeTraceLocal_map
-              exact storeTraceLocal_const _
+              exact
+                chunkedWordSelectAtSegmentsWithStore_storeTraceLocal
+                  _ _ _ _ _ _
             · apply storeTraceLocal_bind
-              · exact ofResultProgram_storeTraceLocal _
+              · exact bpWordReadWithStore_storeTraceLocal _ _
               · intro secondWord?
                 cases secondWord? with
                 | none => exact storeTraceLocal_const _
                 | some secondWord =>
                     apply storeTraceLocal_map
-                    exact storeTraceLocal_const _
+                    exact
+                      chunkedWordSelectAtSegmentsWithStore_storeTraceLocal
+                        _ _ _ _ _ _
 
-private theorem denseTwoWordSelectRelabeledWithStore_storeTraceLocal
-    (bitWordSegmentBase deadSegment : Nat)
-    (target : Bool) {bits : List Bool} {wordSize : Nat}
-    (bitWords : SuccinctSpace.BoundedPayloadWordStore bits wordSize)
-    (basePosition baseOccurrence q : Nat) :
-    StoreTraceLocal (fun store =>
-      GenericSelect.denseTwoWordSelectTraceResultRelabeledWithStore
-        bitWordSegmentBase deadSegment target bitWords store
-        basePosition baseOccurrence q) := by
-  unfold GenericSelect.denseTwoWordSelectTraceResultRelabeledWithStore
-  exact storeTraceLocal_relabelReadSegmentsWith_pullback _ _
-    (denseTwoWordSelectWithStoreLocal_storeTraceLocal
-      target bitWords basePosition baseOccurrence q)
-
-private theorem sparseExceptionSelectWithStore_storeTraceLocal
+private theorem chunkedSelectLeafWithStore_storeTraceLocal
     {bits : List Bool} {target : Bool}
     {rankSuperOverhead rankBlockOverhead : Nat}
     (data : GenericSelect.SparseExceptionSelectData
       bits target rankSuperOverhead rankBlockOverhead)
     (layout : GenericSelect.SparseExceptionSelectTraceSegmentLayout)
-    (idx : Nat) :
+    (chunkSegment selectTableSegment c : Nat) (idx : Nat) :
     StoreTraceLocal (fun store =>
-      data.selectTraceResultRelabeledWithStore layout store idx) := by
-  unfold GenericSelect.SparseExceptionSelectData.selectTraceResultRelabeledWithStore
+      data.bpChunkedSelectTraceResultWithStore layout chunkSegment
+        selectTableSegment store c idx) := by
+  unfold GenericSelect.SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore
   dsimp only
   by_cases hvalid : idx < GenericSelect.occurrenceCount bits target
   · simp only [hvalid, if_pos]
@@ -1729,9 +1513,9 @@ private theorem sparseExceptionSelectWithStore_storeTraceLocal
           by_cases hmarked : GenericSelect.relativeSplitSelectEntryIsMarked super
           · simp only [hmarked, if_pos]
             apply storeTraceLocal_bind
-            · exact rankTraceResultRelabeledWithStore_storeTraceLocal _ _ _ _ _
+            · exact chunkedRankLeafWithStore_storeTraceLocal _ _ _ _ _ _ _ _
             · intro exceptionRank
-              exact relativeOffsetReadWithStore_storeTraceLocal _ _ _ _ _
+              exact relativeOffsetChunkReadWithStore_storeTraceLocal _ _ _
           · simp [hmarked]
             apply storeTraceLocal_bind
             · exact selectEntryReadWithStore_storeTraceLocal _ _ _
@@ -1742,11 +1526,11 @@ private theorem sparseExceptionSelectWithStore_storeTraceLocal
                   by_cases hlocalMarked :
                       GenericSelect.relativeSplitSelectEntryIsMarked loc
                   · simp only [hlocalMarked, if_pos]
-                    exact sparseDirectoryReadWithStore_storeTraceLocal
-                      _ _ _ _ _
-                  · simp [hlocalMarked]
-                    exact denseTwoWordSelectRelabeledWithStore_storeTraceLocal
+                    exact chunkedSparseDirectoryWithStore_storeTraceLocal
                       _ _ _ _ _ _ _
+                  · simp [hlocalMarked]
+                    exact chunkedDenseTwoWordSelectWithStore_storeTraceLocal
+                      _ _ _ _ _ _ _ _ _
   · simp only [hvalid]
     exact storeTraceLocal_const _
 
@@ -1763,9 +1547,13 @@ theorem concreteBPNativeSelectCloseGlobalWordTraceResultWithStore_eq_of_trace_re
         shape storeA idx =
       concreteBPNativeSelectCloseGlobalWordTraceResultWithStore
         shape storeB idx := by
-  exact sparseExceptionSelectWithStore_storeTraceLocal
+  exact chunkedSelectLeafWithStore_storeTraceLocal
     (GenericSelect.sparseExceptionSelectData shape.bpCode false)
-    concreteBPNativeSelectCloseTraceSegmentLayout idx storeA storeB hagree
+    concreteBPNativeSelectCloseTraceSegmentLayout
+    concreteBPNativeFringeChunkTraceSegment
+    concreteBPNativeSelectChunkTraceSegment
+    (SuccinctClose.bpFringeChunkBits shape.bpCode.length) idx
+    storeA storeB hagree
 
 theorem concreteBPNativeSelectCloseGlobalWordTraceResultWithStore_no_syntheticCostOnlyPrimitive
     (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
@@ -1778,8 +1566,11 @@ theorem concreteBPNativeSelectCloseGlobalWordTraceResultWithStore_no_syntheticCo
   unfold concreteBPNativeSelectCloseGlobalWordTraceResultWithStore
   exact
     (GenericSelect.sparseExceptionSelectData shape.bpCode false)
-      |>.selectTraceResultRelabeledWithStore_no_syntheticCostOnlyPrimitive
-        concreteBPNativeSelectCloseTraceSegmentLayout store idx
+      |>.bpChunkedSelectTraceResultWithStore_no_syntheticCostOnlyPrimitive
+        concreteBPNativeSelectCloseTraceSegmentLayout
+        concreteBPNativeFringeChunkTraceSegment
+        concreteBPNativeSelectChunkTraceSegment store
+        (SuccinctClose.bpFringeChunkBits shape.bpCode.length) idx
 
 def concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructuralWithStore
     (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
@@ -3390,7 +3181,7 @@ theorem concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_read_has_listed_region
               shape segment index) word? ∈
           (concreteBPNativeSuccinctRMQWholeQueryFlatPhysicalTraceResult
             shape left right).trace := by
-  have hlt : segment < 22 :=
+  have hlt : segment < 23 :=
     concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_segment_lt
       shape left right hmem
   rcases

@@ -108,7 +108,7 @@ abbrev canonicalTransitionalQueryCost : Nat :=
 abbrev chargedTraceCostAlgebra :=
   SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCostAlgebra
 
-theorem queryCost_eq : queryCost = 142 := by
+theorem queryCost_eq : queryCost = 207 := by
   exact
     SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq
 
@@ -120,6 +120,17 @@ theorem canonicalSilentFringeQueryCost_eq :
     canonicalSilentFringeQueryCost = 76 := by
   exact
     SuccinctFinal.concreteBPNativeSuccinctRMQSilentFringeChargedTraceCost_eq
+
+/-- Checked historical U3 cost of the retired route whose in-word
+rank/select leaves were event-silent register word primitives (the B3
+recharge replaced them with charged chunk/select-table reads). -/
+abbrev canonicalSilentWordRankSelectQueryCost : Nat :=
+  SuccinctFinal.concreteBPNativeSuccinctRMQSilentWordRankSelectChargedTraceCost
+
+theorem canonicalSilentWordRankSelectQueryCost_eq :
+    canonicalSilentWordRankSelectQueryCost = 142 := by
+  exact
+    SuccinctFinal.concreteBPNativeSuccinctRMQSilentWordRankSelectChargedTraceCost_eq
 
 theorem canonicalTransitionalQueryCost_eq :
     canonicalTransitionalQueryCost = 328 := by

@@ -276,89 +276,193 @@ private theorem reviewerSingleton_local_slot_exists :
   exact Nat.mul_pos reviewerSingleton_super_slot_exists
     (GenericSelect.localSlotsPerSuper_pos _)
 
-private theorem selectTrace_super_read_mem
+private theorem canonicalSuperTableWithStore_eq
+    (shape : Cartesian.CartesianShape) (slot : Nat) :
+    (GenericSelect.sparseExceptionSelectData shape.bpCode
+        false).superTable.readTraceResultRelabeledWithStore
+      concreteBPNativeSelectCloseTraceSegmentLayout.superTable
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape) slot =
+    (GenericSelect.sparseExceptionSelectData shape.bpCode
+        false).superTable.readTraceResultRelabeled
+      concreteBPNativeSelectCloseTraceSegmentLayout.superTable slot :=
+  (GenericSelect.sparseExceptionSelectData shape.bpCode
+      false).superTable.readTraceResultRelabeledWithStore_eq_of_pullback
+    (concreteBPNativeSuccinctRMQGlobalReadStore_pullback_superBaseOccurrence
+      shape)
+    (concreteBPNativeSuccinctRMQGlobalReadStore_pullback_superBaseWordIndex
+      shape)
+    (concreteBPNativeSuccinctRMQGlobalReadStore_pullback_superRankBefore
+      shape)
+    (concreteBPNativeSuccinctRMQGlobalReadStore_pullback_superFirstOffset
+      shape)
+    slot
+
+private theorem canonicalLocalTableWithStore_eq
+    (shape : Cartesian.CartesianShape) (slot : Nat) :
+    (GenericSelect.sparseExceptionSelectData shape.bpCode
+        false).localTable.readTraceResultRelabeledWithStore
+      concreteBPNativeSelectCloseTraceSegmentLayout.localTable
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape) slot =
+    (GenericSelect.sparseExceptionSelectData shape.bpCode
+        false).localTable.readTraceResultRelabeled
+      concreteBPNativeSelectCloseTraceSegmentLayout.localTable slot :=
+  (GenericSelect.sparseExceptionSelectData shape.bpCode
+      false).localTable.readTraceResultRelabeledWithStore_eq_of_pullback
+    (concreteBPNativeSuccinctRMQGlobalReadStore_pullback_localBaseOccurrence
+      shape)
+    (concreteBPNativeSuccinctRMQGlobalReadStore_pullback_localBaseWordIndex
+      shape)
+    (concreteBPNativeSuccinctRMQGlobalReadStore_pullback_localRankBefore
+      shape)
+    (concreteBPNativeSuccinctRMQGlobalReadStore_pullback_localFirstOffset
+      shape)
+    slot
+
+private theorem chunkedSelectTrace_super_read_mem
     {bits : List Bool} {target : Bool}
     {rankSuperOverhead rankBlockOverhead : Nat}
     (data : GenericSelect.SparseExceptionSelectData bits target
       rankSuperOverhead rankBlockOverhead)
     (layout : GenericSelect.SparseExceptionSelectTraceSegmentLayout)
-    (idx : Nat)
+    (chunkSegment selectTableSegment : Nat)
+    (store : WordRAM.ReadStore) (c idx : Nat)
     (hvalid : idx < GenericSelect.occurrenceCount bits target)
     {event : WordRAM.TraceEvent}
     (hmem : event ∈
-      (data.superTable.readTraceResultRelabeled layout.superTable
+      (data.superTable.readTraceResultRelabeledWithStore layout.superTable
+        store
         (GenericSelect.selectSuperSlot
           (data.queryOccurrence idx) data.superStride)).trace) :
-    event ∈ (data.selectTraceResultRelabeled layout idx).trace := by
-  unfold GenericSelect.SparseExceptionSelectData.selectTraceResultRelabeled
+    event ∈
+      (data.bpChunkedSelectTraceResultWithStore layout chunkSegment
+        selectTableSegment store c idx).trace := by
+  unfold GenericSelect.SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore
   simp only [if_pos hvalid, WordRAM.TraceResult.bind_trace,
     List.mem_append]
   exact Or.inl hmem
 
-private theorem selectTrace_local_read_mem
+private theorem chunkedSelectTrace_local_read_mem
     {bits : List Bool} {target : Bool}
     {rankSuperOverhead rankBlockOverhead : Nat}
     (data : GenericSelect.SparseExceptionSelectData bits target
       rankSuperOverhead rankBlockOverhead)
     (layout : GenericSelect.SparseExceptionSelectTraceSegmentLayout)
-    (idx : Nat)
+    (chunkSegment selectTableSegment : Nat)
+    (store : WordRAM.ReadStore) (c idx : Nat)
     (hvalid : idx < GenericSelect.occurrenceCount bits target)
     (super : GenericSelect.SparseDenseSelectDenseLocalEntry)
     (hsuper :
-      (data.superTable.readTraceResultRelabeled layout.superTable
+      (data.superTable.readTraceResultRelabeledWithStore layout.superTable
+        store
         (GenericSelect.selectSuperSlot
           (data.queryOccurrence idx) data.superStride)).value = some super)
     (hshort : GenericSelect.relativeSplitSelectEntryIsMarked super = false)
     {event : WordRAM.TraceEvent}
     (hmem : event ∈
-      (data.localTable.readTraceResultRelabeled layout.localTable
+      (data.localTable.readTraceResultRelabeledWithStore layout.localTable
+        store
         (GenericSelect.relativeSplitSelectLocalSlot
           (data.queryOccurrence idx) data.superStride
           data.localSlotsPerSuper data.localStride super)).trace) :
-    event ∈ (data.selectTraceResultRelabeled layout idx).trace := by
-  unfold GenericSelect.SparseExceptionSelectData.selectTraceResultRelabeled
+    event ∈
+      (data.bpChunkedSelectTraceResultWithStore layout chunkSegment
+        selectTableSegment store c idx).trace := by
+  unfold GenericSelect.SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore
   simp only [if_pos hvalid, WordRAM.TraceResult.bind_trace,
     List.mem_append]
   apply Or.inr
   simp [hsuper, hshort]
   exact Or.inl hmem
 
-private theorem selectTrace_dense_read_mem
+private theorem chunkedSelectTrace_dense_read_mem
     {bits : List Bool} {target : Bool}
     {rankSuperOverhead rankBlockOverhead : Nat}
     (data : GenericSelect.SparseExceptionSelectData bits target
       rankSuperOverhead rankBlockOverhead)
     (layout : GenericSelect.SparseExceptionSelectTraceSegmentLayout)
-    (idx : Nat)
+    (chunkSegment selectTableSegment : Nat)
+    (store : WordRAM.ReadStore) (c idx : Nat)
     (hvalid : idx < GenericSelect.occurrenceCount bits target)
     (super loc : GenericSelect.SparseDenseSelectDenseLocalEntry)
     (hsuper :
-      (data.superTable.readTraceResultRelabeled layout.superTable
+      (data.superTable.readTraceResultRelabeledWithStore layout.superTable
+        store
         (GenericSelect.selectSuperSlot
           (data.queryOccurrence idx) data.superStride)).value = some super)
     (hshort : GenericSelect.relativeSplitSelectEntryIsMarked super = false)
     (hlocal :
-      (data.localTable.readTraceResultRelabeled layout.localTable
+      (data.localTable.readTraceResultRelabeledWithStore layout.localTable
+        store
         (GenericSelect.relativeSplitSelectLocalSlot
           (data.queryOccurrence idx) data.superStride
           data.localSlotsPerSuper data.localStride super)).value = some loc)
     (hdense : GenericSelect.relativeSplitSelectEntryIsMarked loc = false)
     {event : WordRAM.TraceEvent}
     (hmem : event ∈
-      (GenericSelect.denseTwoWordSelectTraceResultRelabeled
-        layout.bitWordBase layout.deadSegment target data.bitWords
+      (GenericSelect.bpChunkedDenseTwoWordSelectTraceResultWithStore
+        layout.bitWordBase chunkSegment selectTableSegment c target
+        data.bitWords store
         (GenericSelect.relativeSplitSelectLocalBasePosition
           data.wordSize super loc)
         (GenericSelect.relativeSplitSelectLocalBaseOccurrence super loc)
         (data.queryOccurrence idx)).trace) :
-    event ∈ (data.selectTraceResultRelabeled layout idx).trace := by
-  unfold GenericSelect.SparseExceptionSelectData.selectTraceResultRelabeled
+    event ∈
+      (data.bpChunkedSelectTraceResultWithStore layout chunkSegment
+        selectTableSegment store c idx).trace := by
+  unfold GenericSelect.SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore
   simp only [if_pos hvalid, WordRAM.TraceResult.bind_trace,
     List.mem_append]
   apply Or.inr
   simp [hsuper, hshort]
   apply Or.inr
   simpa [hlocal, hdense] using hmem
+
+private theorem chunkedDenseTwoWordSelect_first_successful_read
+    (bitWordSegment rankTableSegment selectTableSegment c : Nat)
+    (target : Bool) {bits : List Bool} {wordSize : Nat}
+    (bitWords : SuccinctSpace.BoundedPayloadWordStore bits wordSize)
+    (store : WordRAM.ReadStore)
+    (basePosition baseOccurrence q : Nat) (word : WordRAM.Word)
+    (hword :
+      store.readWord? bitWordSegment (basePosition / wordSize) =
+        some word) :
+    .readWord bitWordSegment (basePosition / wordSize) (some word) ∈
+      (GenericSelect.bpChunkedDenseTwoWordSelectTraceResultWithStore
+        bitWordSegment rankTableSegment selectTableSegment c target
+        bitWords store basePosition baseOccurrence q).trace := by
+  simp [GenericSelect.bpChunkedDenseTwoWordSelectTraceResultWithStore,
+    WordRAM.TraceResult.bind_trace, SuccinctClose.bpWordReadTraceResult,
+    List.mem_append, hword]
+
+private theorem chunkedRankTraceWithStore_successful_reads
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data : SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
+      bits superOverhead blockOverhead queryCost)
+    (store : WordRAM.ReadStore)
+    (superSegment blockSegment wordSegment chunkSegment c : Nat)
+    (target : Bool) (pos : Nat)
+    {superWord blockWord wordBitsWord : WordRAM.Word}
+    (hsuper :
+      store.readWord? superSegment (data.superIndex pos) = some superWord)
+    (hblock :
+      store.readWord? blockSegment (data.wordIndex pos) = some blockWord)
+    (hword :
+      store.readWord? wordSegment (data.wordIndex pos) =
+        some wordBitsWord) :
+    (.readWord superSegment (data.superIndex pos) (some superWord) ∈
+      (data.bpChunkedRankTraceResultWithStore store superSegment
+        blockSegment wordSegment chunkSegment c target pos).trace) ∧
+    (.readWord blockSegment (data.wordIndex pos) (some blockWord) ∈
+      (data.bpChunkedRankTraceResultWithStore store superSegment
+        blockSegment wordSegment chunkSegment c target pos).trace) ∧
+    (.readWord wordSegment (data.wordIndex pos) (some wordBitsWord) ∈
+      (data.bpChunkedRankTraceResultWithStore store superSegment
+        blockSegment wordSegment chunkSegment c target pos).trace) := by
+  refine ⟨?_, ?_, ?_⟩ <;>
+    simp [SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankTraceResultWithStore,
+      WordRAM.TraceResult.bind_trace, List.mem_append,
+      SuccinctClose.bpChunkReadTraceResult,
+      SuccinctClose.bpWordReadTraceResult, hsuper, hblock, hword]
 
 private theorem reviewerSingleton_log2_two : Nat.log2 2 = 1 := by
   apply Nat.le_antisymm
@@ -465,6 +569,284 @@ private theorem reviewerSingleton_dense_first_word_index :
     SuccinctRank.machineWordBits, Succinct.rankPrefix,
     Succinct.select, Succinct.selectFrom, reviewerSingleton_log2_two]
 
+private theorem reviewerSingleton_dense_base_position :
+    GenericSelect.relativeSplitSelectLocalBasePosition
+        (GenericSelect.wordBits
+          (Cartesian.shape reviewerSingletonInput).bpCode.length)
+        (GenericSelect.superEntry
+          (Cartesian.shape reviewerSingletonInput).bpCode false 0)
+        (GenericSelect.localEntry
+          (Cartesian.shape reviewerSingletonInput).bpCode false 0) = 1 := by
+  rw [reviewerSingletonInput_bpCode]
+  simp [GenericSelect.relativeSplitSelectLocalBasePosition,
+    GenericSelect.superEntry, GenericSelect.localEntry,
+    GenericSelect.compactLocalEntryIsLive,
+    GenericSelect.localIsSparseException,
+    GenericSelect.shortSuperLocalSpan,
+    GenericSelect.shortSuperLocalEndOccurrence,
+    GenericSelect.localBaseOccurrence,
+    GenericSelect.localSlotInSuperOfGlobal,
+    GenericSelect.localSuperSlot, GenericSelect.superEndOccurrence,
+    GenericSelect.superBaseOccurrence, GenericSelect.superIsLong,
+    GenericSelect.superSpan, GenericSelect.superLongSpan,
+    GenericSelect.position, GenericSelect.occurrenceCount,
+    GenericSelect.localSlotsPerSuper,
+    GenericSelect.selectLocalSlotsPerSuper,
+    GenericSelect.superStride, GenericSelect.localStride,
+    GenericSelect.ell, GenericSelect.wordBits,
+    SuccinctRank.machineWordBits, Succinct.rankPrefix,
+    Succinct.select, Succinct.selectFrom, reviewerSingleton_log2_two]
+
+private theorem reviewerSingleton_dense_base_occurrence :
+    GenericSelect.relativeSplitSelectLocalBaseOccurrence
+        (GenericSelect.superEntry
+          (Cartesian.shape reviewerSingletonInput).bpCode false 0)
+        (GenericSelect.localEntry
+          (Cartesian.shape reviewerSingletonInput).bpCode false 0) = 0 := by
+  rw [reviewerSingletonInput_bpCode]
+  simp [GenericSelect.relativeSplitSelectLocalBaseOccurrence,
+    GenericSelect.superEntry, GenericSelect.localEntry,
+    GenericSelect.compactLocalEntryIsLive,
+    GenericSelect.localIsSparseException,
+    GenericSelect.shortSuperLocalSpan,
+    GenericSelect.shortSuperLocalEndOccurrence,
+    GenericSelect.localBaseOccurrence,
+    GenericSelect.localSlotInSuperOfGlobal,
+    GenericSelect.localSuperSlot, GenericSelect.superEndOccurrence,
+    GenericSelect.superBaseOccurrence, GenericSelect.superIsLong,
+    GenericSelect.superSpan, GenericSelect.superLongSpan,
+    GenericSelect.position, GenericSelect.occurrenceCount,
+    GenericSelect.localSlotsPerSuper,
+    GenericSelect.selectLocalSlotsPerSuper,
+    GenericSelect.superStride, GenericSelect.localStride,
+    GenericSelect.ell, GenericSelect.wordBits,
+    SuccinctRank.machineWordBits, Succinct.rankPrefix,
+    Succinct.select, Succinct.selectFrom, reviewerSingleton_log2_two]
+
+private theorem reviewerSingleton_chunkBits :
+    SuccinctClose.bpFringeChunkBits
+      (Cartesian.shape reviewerSingletonInput).bpCode.length = 1 := by
+  rw [reviewerSingletonInput_bpCode]
+  simp [SuccinctClose.bpFringeChunkBits, reviewerSingleton_log2_two]
+
+/--
+The singleton close-select execution's in-word select fold on the shared
+word `[true, false]` (target `false`, occurrence `0`) issues a genuine
+SUCCESSFUL read of the counted select chunk-table segment: chunk `0`
+(the `true` bit) contributes no `false`, so the fold routes to chunk `1`
+whose decoded count `1 > 0` fires the found branch's segment-`22` read,
+and the read succeeds because the slot is inside the counted table.
+-/
+private theorem reviewerSingleton_inWordSelect_selectTable_read :
+    ∃ index word,
+      .readWord concreteBPNativeSelectChunkTraceSegment index (some word) ∈
+        (SuccinctClose.bpChunkedWordSelectTraceResultAtSegmentsWithStore
+          (concreteBPNativeSuccinctRMQGlobalReadStore
+            (Cartesian.shape reviewerSingletonInput))
+          concreteBPNativeFringeChunkTraceSegment
+          concreteBPNativeSelectChunkTraceSegment
+          1 false [true, false] 0).trace := by
+  have hfringe : forall address,
+      (concreteBPNativeSuccinctRMQGlobalReadStore
+        (Cartesian.shape reviewerSingletonInput)).readWord?
+          concreteBPNativeFringeChunkTraceSegment address =
+        (SuccinctClose.bpFringeChunkTable 1).store.words[address]? := by
+    intro address
+    have h := concreteBPNativeSuccinctRMQGlobalReadStore_fringeChunkTable
+      (Cartesian.shape reviewerSingletonInput) address
+    rwa [reviewerSingleton_chunkBits] at h
+  have hselect : forall address,
+      (concreteBPNativeSuccinctRMQGlobalReadStore
+        (Cartesian.shape reviewerSingletonInput)).readWord?
+          concreteBPNativeSelectChunkTraceSegment address =
+        (SuccinctClose.bpChunkSelectTable 1 false).store.words[address]? := by
+    intro address
+    have h := concreteBPNativeSuccinctRMQGlobalReadStore_selectChunkTable
+      (Cartesian.shape reviewerSingletonInput) address
+    rwa [reviewerSingleton_chunkBits] at h
+  have hv0 :
+      SuccinctClose.bpFringeWindowChunkValue 1 [true, false] 0 < 2 ^ 1 :=
+    SuccinctClose.bpFringeWindowChunkValue_lt 1 [true, false] 0
+  have hv1 :
+      SuccinctClose.bpFringeWindowChunkValue 1 [true, false] 1 < 2 ^ 1 :=
+    SuccinctClose.bpFringeWindowChunkValue_lt 1 [true, false] 1
+  have ht0 :
+      SuccinctClose.bpWordChunkSliceLen 1
+        ([true, false] : List Bool).length 0 = 1 := by
+    decide
+  have ht1 :
+      SuccinctClose.bpWordChunkSliceLen 1
+        ([true, false] : List Bool).length 1 = 1 := by
+    decide
+  have hle0 :
+      SuccinctClose.bpWordChunkSliceLen 1
+          ([true, false] : List Bool).length 0 <= 1 :=
+    SuccinctClose.bpWordChunkSliceLen_le 1 _ 0
+  have hle1 :
+      SuccinctClose.bpWordChunkSliceLen 1
+          ([true, false] : List Bool).length 1 <= 1 :=
+    SuccinctClose.bpWordChunkSliceLen_le 1 _ 1
+  have hreadVal0 :
+      (SuccinctClose.bpChunkReadTraceResult
+          (concreteBPNativeSuccinctRMQGlobalReadStore
+            (Cartesian.shape reviewerSingletonInput))
+          concreteBPNativeFringeChunkTraceSegment
+          (SuccinctClose.bpFringeChunkSlot 1
+            (SuccinctClose.bpFringeWindowChunkValue 1 [true, false] 0)
+            (SuccinctClose.bpWordChunkSliceLen 1
+              ([true, false] : List Bool).length 0)
+            (SuccinctClose.bpWordChunkSliceLen 1
+              ([true, false] : List Bool).length 0))).value =
+        some
+          (SuccinctClose.bpFringeChunkPacked 1
+            (SuccinctClose.bpFringeWindowChunkValue 1 [true, false] 0)
+            (SuccinctClose.bpWordChunkSliceLen 1
+              ([true, false] : List Bool).length 0)
+            (SuccinctClose.bpWordChunkSliceLen 1
+              ([true, false] : List Bool).length 0)) := by
+    show ((concreteBPNativeSuccinctRMQGlobalReadStore
+        (Cartesian.shape reviewerSingletonInput)).readWord?
+          concreteBPNativeFringeChunkTraceSegment
+          (SuccinctClose.bpFringeChunkSlot _ _ _ _)).map
+        SuccinctSpace.bitsToNatLE = _
+    rw [hfringe]
+    rw [(SuccinctClose.bpFringeChunkTable 1).read_exact]
+    exact SuccinctClose.bpFringeChunkEntries_getElem hv0 hle0 hle0
+  have hreadVal1 :
+      (SuccinctClose.bpChunkReadTraceResult
+          (concreteBPNativeSuccinctRMQGlobalReadStore
+            (Cartesian.shape reviewerSingletonInput))
+          concreteBPNativeFringeChunkTraceSegment
+          (SuccinctClose.bpFringeChunkSlot 1
+            (SuccinctClose.bpFringeWindowChunkValue 1 [true, false] 1)
+            (SuccinctClose.bpWordChunkSliceLen 1
+              ([true, false] : List Bool).length 1)
+            (SuccinctClose.bpWordChunkSliceLen 1
+              ([true, false] : List Bool).length 1))).value =
+        some
+          (SuccinctClose.bpFringeChunkPacked 1
+            (SuccinctClose.bpFringeWindowChunkValue 1 [true, false] 1)
+            (SuccinctClose.bpWordChunkSliceLen 1
+              ([true, false] : List Bool).length 1)
+            (SuccinctClose.bpWordChunkSliceLen 1
+              ([true, false] : List Bool).length 1)) := by
+    show ((concreteBPNativeSuccinctRMQGlobalReadStore
+        (Cartesian.shape reviewerSingletonInput)).readWord?
+          concreteBPNativeFringeChunkTraceSegment
+          (SuccinctClose.bpFringeChunkSlot _ _ _ _)).map
+        SuccinctSpace.bitsToNatLE = _
+    rw [hfringe]
+    rw [(SuccinctClose.bpFringeChunkTable 1).read_exact]
+    exact SuccinctClose.bpFringeChunkEntries_getElem hv1 hle1 hle1
+  have hdec0 :
+      SuccinctClose.bpChunkRankOfEntry 1 false 1
+        (SuccinctClose.bpFringeChunkPacked 1
+          (SuccinctClose.bpFringeWindowChunkValue 1 [true, false] 0)
+          1 1) = 0 := by
+    rw [SuccinctClose.bpChunkRankOfEntry_packed 1 false hv0
+      (Nat.le_refl 1)]
+    decide
+  have hdec1 :
+      SuccinctClose.bpChunkRankOfEntry 1 false 1
+        (SuccinctClose.bpFringeChunkPacked 1
+          (SuccinctClose.bpFringeWindowChunkValue 1 [true, false] 1)
+          1 1) = 1 := by
+    rw [SuccinctClose.bpChunkRankOfEntry_packed 1 false hv1
+      (Nat.le_refl 1)]
+    decide
+  have hselEntry :
+      (SuccinctClose.bpChunkSelectEntries 1 false)[
+        SuccinctClose.bpChunkSelectSlot 1
+          (SuccinctClose.bpFringeWindowChunkValue 1 [true, false] 1) 0]? =
+        some (SuccinctClose.bpChunkSelectPos 1 false
+          (SuccinctClose.bpFringeWindowChunkValue 1 [true, false] 1) 0) :=
+    SuccinctClose.bpChunkSelectEntries_getElem false hv1 (by omega)
+  rcases fixedWidthNatTable_word_of_entry
+      (SuccinctClose.bpChunkSelectTable 1 false) _ hselEntry with
+    ⟨word22, hword22⟩
+  have hsel22 :
+      (concreteBPNativeSuccinctRMQGlobalReadStore
+        (Cartesian.shape reviewerSingletonInput)).readWord?
+          concreteBPNativeSelectChunkTraceSegment
+          (SuccinctClose.bpChunkSelectSlot 1
+            (SuccinctClose.bpFringeWindowChunkValue 1 [true, false] 1)
+            0) = some word22 := by
+    rw [hselect]
+    exact hword22
+  refine ⟨SuccinctClose.bpChunkSelectSlot 1
+      (SuccinctClose.bpFringeWindowChunkValue 1 [true, false] 1) 0,
+    word22, ?_⟩
+  unfold SuccinctClose.bpChunkedWordSelectTraceResultAtSegmentsWithStore
+  have hcount :
+      SuccinctClose.bpWordChunkCount 1
+        ([true, false] : List Bool).length = 2 := by
+    decide
+  rw [hcount]
+  show WordRAM.TraceEvent.readWord _ _ _ ∈
+    (WordRAM.TraceResult.bind
+      (SuccinctClose.bpChunkReadTraceResult
+        (concreteBPNativeSuccinctRMQGlobalReadStore
+          (Cartesian.shape reviewerSingletonInput))
+        concreteBPNativeFringeChunkTraceSegment
+        (SuccinctClose.bpFringeChunkSlot 1
+          (SuccinctClose.bpFringeWindowChunkValue 1 [true, false] 0)
+          (SuccinctClose.bpWordChunkSliceLen 1
+            ([true, false] : List Bool).length 0)
+          (SuccinctClose.bpWordChunkSliceLen 1
+            ([true, false] : List Bool).length 0)))
+      _).trace
+  rw [WordRAM.TraceResult.bind_trace]
+  apply List.mem_append_right
+  rw [hreadVal0]
+  dsimp only
+  rw [if_neg (by
+    simp only [Option.getD_some]
+    rw [ht0, hdec0]
+    omega)]
+  simp only [Option.getD_some, ht0, hdec0, Nat.sub_zero]
+  show WordRAM.TraceEvent.readWord _ _ _ ∈
+    (WordRAM.TraceResult.bind
+      (SuccinctClose.bpChunkReadTraceResult
+        (concreteBPNativeSuccinctRMQGlobalReadStore
+          (Cartesian.shape reviewerSingletonInput))
+        concreteBPNativeFringeChunkTraceSegment
+        (SuccinctClose.bpFringeChunkSlot 1
+          (SuccinctClose.bpFringeWindowChunkValue 1 [true, false] 1)
+          (SuccinctClose.bpWordChunkSliceLen 1
+            ([true, false] : List Bool).length 1)
+          (SuccinctClose.bpWordChunkSliceLen 1
+            ([true, false] : List Bool).length 1)))
+      _).trace
+  rw [WordRAM.TraceResult.bind_trace]
+  apply List.mem_append_right
+  rw [hreadVal1]
+  dsimp only
+  rw [if_pos (by
+    simp only [Option.getD_some]
+    rw [ht1, hdec1]
+    omega)]
+  rw [WordRAM.TraceResult.map_trace]
+  rw [show (SuccinctClose.bpChunkReadTraceResult
+      (concreteBPNativeSuccinctRMQGlobalReadStore
+        (Cartesian.shape reviewerSingletonInput))
+      concreteBPNativeSelectChunkTraceSegment
+      (SuccinctClose.bpChunkSelectSlot 1
+        (SuccinctClose.bpFringeWindowChunkValue 1 [true, false] 1)
+        0)).trace =
+    [WordRAM.TraceEvent.readWord concreteBPNativeSelectChunkTraceSegment
+      (SuccinctClose.bpChunkSelectSlot 1
+        (SuccinctClose.bpFringeWindowChunkValue 1 [true, false] 1) 0)
+      (some word22)] from by
+    show [WordRAM.TraceEvent.readWord _ _
+      ((concreteBPNativeSuccinctRMQGlobalReadStore
+        (Cartesian.shape reviewerSingletonInput)).readWord?
+        concreteBPNativeSelectChunkTraceSegment
+        (SuccinctClose.bpChunkSelectSlot 1
+          (SuccinctClose.bpFringeWindowChunkValue 1 [true, false] 1)
+          0))] = _
+    rw [hsel22]]
+  exact List.Mem.head _
+
 private theorem reviewerSingleton_select_table_successful_reads :
     (∃ word, .readWord 1 0 (some word) ∈
       (concreteBPNativeSelectCloseGlobalWordTraceResult
@@ -524,11 +906,32 @@ private theorem reviewerSingleton_select_table_successful_reads :
       GenericSelect.relativeSplitSelectLocalSlot,
       GenericSelect.relativeSplitSelectLocalSlotInSuper,
       GenericSelect.selectSuperSlot, GenericSelect.superEntry]
+  have hsuperWS :
+      data.superTable.readTraceResultRelabeledWithStore layout.superTable
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (GenericSelect.selectSuperSlot
+          (data.queryOccurrence 0) data.superStride) =
+      data.superTable.readTraceResultRelabeled layout.superTable
+        (GenericSelect.selectSuperSlot
+          (data.queryOccurrence 0) data.superStride) :=
+    canonicalSuperTableWithStore_eq shape _
+  have hlocalWS :
+      data.localTable.readTraceResultRelabeledWithStore layout.localTable
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (GenericSelect.relativeSplitSelectLocalSlot
+          (data.queryOccurrence 0) data.superStride
+          data.localSlotsPerSuper data.localStride super) =
+      data.localTable.readTraceResultRelabeled layout.localTable
+        (GenericSelect.relativeSplitSelectLocalSlot
+          (data.queryOccurrence 0) data.superStride
+          data.localSlotsPerSuper data.localStride super) :=
+    canonicalLocalTableWithStore_eq shape _
   have hsuperValue :
-      (data.superTable.readTraceResultRelabeled layout.superTable
+      (data.superTable.readTraceResultRelabeledWithStore layout.superTable
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
         (GenericSelect.selectSuperSlot
           (data.queryOccurrence 0) data.superStride)).value = some super := by
-    rw [hsuperSlot]
+    rw [hsuperWS, hsuperSlot]
     simpa [hsuperEntry] using
       denseEntryTable_trace_value data.superTable layout.superTable 0
   have hshort :
@@ -544,48 +947,80 @@ private theorem reviewerSingleton_select_table_successful_reads :
     ⟨word4, ?_⟩, ⟨word5, ?_⟩, ⟨word6, ?_⟩,
     ⟨word7, ?_⟩, ⟨word8, ?_⟩⟩
   · change .readWord 1 0 (some word1) ∈
-      (data.selectTraceResultRelabeled layout 0).trace
-    apply selectTrace_super_read_mem data layout 0 hvalid
-    rw [hsuperSlot]
+      (data.bpChunkedSelectTraceResultWithStore layout
+        concreteBPNativeFringeChunkTraceSegment
+        concreteBPNativeSelectChunkTraceSegment
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (SuccinctClose.bpFringeChunkBits shape.bpCode.length) 0).trace
+    apply chunkedSelectTrace_super_read_mem data layout _ _ _ _ 0 hvalid
+    rw [hsuperWS, hsuperSlot]
     simpa [layout, concreteBPNativeSelectCloseTraceSegmentLayout] using h1
   · change .readWord 2 0 (some word2) ∈
-      (data.selectTraceResultRelabeled layout 0).trace
-    apply selectTrace_super_read_mem data layout 0 hvalid
-    rw [hsuperSlot]
+      (data.bpChunkedSelectTraceResultWithStore layout
+        concreteBPNativeFringeChunkTraceSegment
+        concreteBPNativeSelectChunkTraceSegment
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (SuccinctClose.bpFringeChunkBits shape.bpCode.length) 0).trace
+    apply chunkedSelectTrace_super_read_mem data layout _ _ _ _ 0 hvalid
+    rw [hsuperWS, hsuperSlot]
     simpa [layout, concreteBPNativeSelectCloseTraceSegmentLayout] using h2
   · change .readWord 3 0 (some word3) ∈
-      (data.selectTraceResultRelabeled layout 0).trace
-    apply selectTrace_super_read_mem data layout 0 hvalid
-    rw [hsuperSlot]
+      (data.bpChunkedSelectTraceResultWithStore layout
+        concreteBPNativeFringeChunkTraceSegment
+        concreteBPNativeSelectChunkTraceSegment
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (SuccinctClose.bpFringeChunkBits shape.bpCode.length) 0).trace
+    apply chunkedSelectTrace_super_read_mem data layout _ _ _ _ 0 hvalid
+    rw [hsuperWS, hsuperSlot]
     simpa [layout, concreteBPNativeSelectCloseTraceSegmentLayout] using h3
   · change .readWord 4 0 (some word4) ∈
-      (data.selectTraceResultRelabeled layout 0).trace
-    apply selectTrace_super_read_mem data layout 0 hvalid
-    rw [hsuperSlot]
+      (data.bpChunkedSelectTraceResultWithStore layout
+        concreteBPNativeFringeChunkTraceSegment
+        concreteBPNativeSelectChunkTraceSegment
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (SuccinctClose.bpFringeChunkBits shape.bpCode.length) 0).trace
+    apply chunkedSelectTrace_super_read_mem data layout _ _ _ _ 0 hvalid
+    rw [hsuperWS, hsuperSlot]
     simpa [layout, concreteBPNativeSelectCloseTraceSegmentLayout] using h4
   · change .readWord 5 0 (some word5) ∈
-      (data.selectTraceResultRelabeled layout 0).trace
-    exact selectTrace_local_read_mem data layout 0 hvalid super
-      hsuperValue hshort (by
-        rw [hlocalSlot]
+      (data.bpChunkedSelectTraceResultWithStore layout
+        concreteBPNativeFringeChunkTraceSegment
+        concreteBPNativeSelectChunkTraceSegment
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (SuccinctClose.bpFringeChunkBits shape.bpCode.length) 0).trace
+    exact chunkedSelectTrace_local_read_mem data layout _ _ _ _ 0 hvalid
+      super hsuperValue hshort (by
+        rw [hlocalWS, hlocalSlot]
         simpa [layout, concreteBPNativeSelectCloseTraceSegmentLayout] using h5)
   · change .readWord 6 0 (some word6) ∈
-      (data.selectTraceResultRelabeled layout 0).trace
-    exact selectTrace_local_read_mem data layout 0 hvalid super
-      hsuperValue hshort (by
-        rw [hlocalSlot]
+      (data.bpChunkedSelectTraceResultWithStore layout
+        concreteBPNativeFringeChunkTraceSegment
+        concreteBPNativeSelectChunkTraceSegment
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (SuccinctClose.bpFringeChunkBits shape.bpCode.length) 0).trace
+    exact chunkedSelectTrace_local_read_mem data layout _ _ _ _ 0 hvalid
+      super hsuperValue hshort (by
+        rw [hlocalWS, hlocalSlot]
         simpa [layout, concreteBPNativeSelectCloseTraceSegmentLayout] using h6)
   · change .readWord 7 0 (some word7) ∈
-      (data.selectTraceResultRelabeled layout 0).trace
-    exact selectTrace_local_read_mem data layout 0 hvalid super
-      hsuperValue hshort (by
-        rw [hlocalSlot]
+      (data.bpChunkedSelectTraceResultWithStore layout
+        concreteBPNativeFringeChunkTraceSegment
+        concreteBPNativeSelectChunkTraceSegment
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (SuccinctClose.bpFringeChunkBits shape.bpCode.length) 0).trace
+    exact chunkedSelectTrace_local_read_mem data layout _ _ _ _ 0 hvalid
+      super hsuperValue hshort (by
+        rw [hlocalWS, hlocalSlot]
         simpa [layout, concreteBPNativeSelectCloseTraceSegmentLayout] using h7)
   · change .readWord 8 0 (some word8) ∈
-      (data.selectTraceResultRelabeled layout 0).trace
-    exact selectTrace_local_read_mem data layout 0 hvalid super
-      hsuperValue hshort (by
-        rw [hlocalSlot]
+      (data.bpChunkedSelectTraceResultWithStore layout
+        concreteBPNativeFringeChunkTraceSegment
+        concreteBPNativeSelectChunkTraceSegment
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (SuccinctClose.bpFringeChunkBits shape.bpCode.length) 0).trace
+    exact chunkedSelectTrace_local_read_mem data layout _ _ _ _ 0 hvalid
+      super hsuperValue hshort (by
+        rw [hlocalWS, hlocalSlot]
         simpa [layout, concreteBPNativeSelectCloseTraceSegmentLayout] using h8)
 
 private theorem firstSelectClose_read_mem_wholeQuery
@@ -685,19 +1120,42 @@ private theorem reviewerSingleton_sharedBP_select_successful_read :
       GenericSelect.relativeSplitSelectLocalSlot,
       GenericSelect.relativeSplitSelectLocalSlotInSuper,
       GenericSelect.selectSuperSlot, GenericSelect.superEntry]
+  have hsuperWS :
+      data.superTable.readTraceResultRelabeledWithStore layout.superTable
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (GenericSelect.selectSuperSlot
+          (data.queryOccurrence 0) data.superStride) =
+      data.superTable.readTraceResultRelabeled layout.superTable
+        (GenericSelect.selectSuperSlot
+          (data.queryOccurrence 0) data.superStride) :=
+    canonicalSuperTableWithStore_eq shape _
+  have hlocalWS :
+      data.localTable.readTraceResultRelabeledWithStore layout.localTable
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (GenericSelect.relativeSplitSelectLocalSlot
+          (data.queryOccurrence 0) data.superStride
+          data.localSlotsPerSuper data.localStride super) =
+      data.localTable.readTraceResultRelabeled layout.localTable
+        (GenericSelect.relativeSplitSelectLocalSlot
+          (data.queryOccurrence 0) data.superStride
+          data.localSlotsPerSuper data.localStride super) :=
+    canonicalLocalTableWithStore_eq shape _
   have hsuperValue :
-      (data.superTable.readTraceResultRelabeled layout.superTable
+      (data.superTable.readTraceResultRelabeledWithStore layout.superTable
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
         (GenericSelect.selectSuperSlot
           (data.queryOccurrence 0) data.superStride)).value = some super := by
-    rw [hsuperSlot]
+    rw [hsuperWS, hsuperSlot]
     simpa [hsuperEntry] using
       denseEntryTable_trace_value data.superTable layout.superTable 0
   have hlocalValue :
-      (data.localTable.readTraceResultRelabeled layout.localTable
+      (data.localTable.readTraceResultRelabeledWithStore layout.localTable
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
         (GenericSelect.relativeSplitSelectLocalSlot
           (data.queryOccurrence 0) data.superStride
-          data.localSlotsPerSuper data.localStride super)).value = some loc := by
-    rw [hlocalSlot]
+          data.localSlotsPerSuper data.localStride super)).value =
+        some loc := by
+    rw [hlocalWS, hlocalSlot]
     simpa [hlocalEntry] using
       denseEntryTable_trace_value data.localTable layout.localTable 0
   have hshort :
@@ -712,25 +1170,229 @@ private theorem reviewerSingleton_sharedBP_select_successful_read :
     simpa [data, super, loc, shape,
       GenericSelect.sparseExceptionSelectData] using
       reviewerSingleton_dense_first_word_index
-  change .readWord 0 0 (some [true, false]) ∈
-    (data.selectTraceResultRelabeled layout 0).trace
-  apply selectTrace_dense_read_mem data layout 0 hvalid super loc
-    hsuperValue hshort hlocalValue hdense
-  have hword :
-      data.bitWords.store.words[
-        GenericSelect.relativeSplitSelectLocalBasePosition
-          data.wordSize super loc / data.wordSize]? =
-        some [true, false] := by
+  have hstoreWord :
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        layout.bitWordBase
+        (GenericSelect.relativeSplitSelectLocalBasePosition
+          data.wordSize super loc / data.wordSize) = some [true, false] := by
     rw [hfirstIndex]
-    simpa [data, shape] using reviewerSingleton_bitWord_zero
-  have hdenseMem := denseTwoWordSelect_first_successful_read
-    layout.bitWordBase layout.deadSegment false data.bitWords
+    show (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 0 0 =
+      some [true, false]
+    rw [concreteBPNativeSuccinctRMQGlobalReadStore_bpCode]
+    dsimp only [shape]
+    rw [reviewerSingletonInput_bpCode]
+    simp [SuccinctSpace.chunkPayloadWords,
+      SuccinctSpace.chunkPayloadWordsFuel,
+      SuccinctRank.machineWordBits, reviewerSingleton_log2_two]
+  change .readWord 0 0 (some [true, false]) ∈
+    (data.bpChunkedSelectTraceResultWithStore layout
+      concreteBPNativeFringeChunkTraceSegment
+      concreteBPNativeSelectChunkTraceSegment
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (SuccinctClose.bpFringeChunkBits shape.bpCode.length) 0).trace
+  apply chunkedSelectTrace_dense_read_mem data layout _ _ _ _ 0 hvalid
+    super loc hsuperValue hshort hlocalValue hdense
+  have hdenseMem := chunkedDenseTwoWordSelect_first_successful_read
+    layout.bitWordBase concreteBPNativeFringeChunkTraceSegment
+    concreteBPNativeSelectChunkTraceSegment
+    (SuccinctClose.bpFringeChunkBits shape.bpCode.length) false
+    data.bitWords
+    (concreteBPNativeSuccinctRMQGlobalReadStore shape)
     (GenericSelect.relativeSplitSelectLocalBasePosition
       data.wordSize super loc)
     (GenericSelect.relativeSplitSelectLocalBaseOccurrence super loc)
-    (data.queryOccurrence 0) [true, false] hword
+    (data.queryOccurrence 0) [true, false] hstoreWord
   simpa [layout, concreteBPNativeSelectCloseTraceSegmentLayout,
     hfirstIndex] using hdenseMem
+
+/--
+W19 for the select chunk table: the singleton whole-query select leg's
+dense route actually issues a SUCCESSFUL segment-`22` read (the found
+branch of the chunked in-word select on the shared word `[true, false]`).
+-/
+private theorem reviewerSingleton_selectChunkTable_successful_read :
+    ∃ index word,
+      .readWord concreteBPNativeSelectChunkTraceSegment index (some word) ∈
+        (concreteBPNativeSelectCloseGlobalWordTraceResult
+          (Cartesian.shape reviewerSingletonInput) 0).trace := by
+  let shape := Cartesian.shape reviewerSingletonInput
+  let data := GenericSelect.sparseExceptionSelectData shape.bpCode false
+  let layout := concreteBPNativeSelectCloseTraceSegmentLayout
+  let super := GenericSelect.superEntry shape.bpCode false 0
+  let loc := GenericSelect.localEntry shape.bpCode false 0
+  have hvalid : 0 < GenericSelect.occurrenceCount shape.bpCode false := by
+    dsimp [shape]
+    rw [reviewerSingletonInput_bpCode]
+    simp [GenericSelect.occurrenceCount, Succinct.rankPrefix]
+  have hsuperEntry : data.superEntries[0]? = some super := by
+    change (GenericSelect.superEntries shape.bpCode false)[0]? =
+      some (GenericSelect.superEntry shape.bpCode false 0)
+    exact GenericSelect.superEntries_get? shape.bpCode false
+      reviewerSingleton_super_slot_exists
+  have hlocalEntry : data.localEntries[0]? = some loc := by
+    change (GenericSelect.localEntries shape.bpCode false)[0]? =
+      some (GenericSelect.localEntry shape.bpCode false 0)
+    exact GenericSelect.localEntries_get? shape.bpCode false
+      reviewerSingleton_local_slot_exists
+  have hsuperSlot :
+      GenericSelect.selectSuperSlot (data.queryOccurrence 0)
+        data.superStride = 0 := by
+    simp [data, GenericSelect.sparseExceptionSelectData,
+      GenericSelect.SparseExceptionSelectData.queryOccurrence,
+      GenericSelect.selectSuperSlot]
+  have hlocalSlot :
+      GenericSelect.relativeSplitSelectLocalSlot
+        (data.queryOccurrence 0) data.superStride
+        data.localSlotsPerSuper data.localStride super = 0 := by
+    simp [data, super, GenericSelect.sparseExceptionSelectData,
+      GenericSelect.SparseExceptionSelectData.queryOccurrence,
+      GenericSelect.relativeSplitSelectLocalSlot,
+      GenericSelect.relativeSplitSelectLocalSlotInSuper,
+      GenericSelect.selectSuperSlot, GenericSelect.superEntry]
+  have hsuperWS :
+      data.superTable.readTraceResultRelabeledWithStore layout.superTable
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (GenericSelect.selectSuperSlot
+          (data.queryOccurrence 0) data.superStride) =
+      data.superTable.readTraceResultRelabeled layout.superTable
+        (GenericSelect.selectSuperSlot
+          (data.queryOccurrence 0) data.superStride) :=
+    canonicalSuperTableWithStore_eq shape _
+  have hlocalWS :
+      data.localTable.readTraceResultRelabeledWithStore layout.localTable
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (GenericSelect.relativeSplitSelectLocalSlot
+          (data.queryOccurrence 0) data.superStride
+          data.localSlotsPerSuper data.localStride super) =
+      data.localTable.readTraceResultRelabeled layout.localTable
+        (GenericSelect.relativeSplitSelectLocalSlot
+          (data.queryOccurrence 0) data.superStride
+          data.localSlotsPerSuper data.localStride super) :=
+    canonicalLocalTableWithStore_eq shape _
+  have hsuperValue :
+      (data.superTable.readTraceResultRelabeledWithStore layout.superTable
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (GenericSelect.selectSuperSlot
+          (data.queryOccurrence 0) data.superStride)).value = some super := by
+    rw [hsuperWS, hsuperSlot]
+    simpa [hsuperEntry] using
+      denseEntryTable_trace_value data.superTable layout.superTable 0
+  have hlocalValue :
+      (data.localTable.readTraceResultRelabeledWithStore layout.localTable
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        (GenericSelect.relativeSplitSelectLocalSlot
+          (data.queryOccurrence 0) data.superStride
+          data.localSlotsPerSuper data.localStride super)).value =
+        some loc := by
+    rw [hlocalWS, hlocalSlot]
+    simpa [hlocalEntry] using
+      denseEntryTable_trace_value data.localTable layout.localTable 0
+  have hshort :
+      GenericSelect.relativeSplitSelectEntryIsMarked super = false := by
+    simpa [super, shape] using reviewerSingleton_super_not_marked
+  have hdense :
+      GenericSelect.relativeSplitSelectEntryIsMarked loc = false := by
+    simpa [loc, shape] using reviewerSingleton_local_not_marked
+  have hbasePos :
+      GenericSelect.relativeSplitSelectLocalBasePosition
+        data.wordSize super loc = 1 := by
+    simpa [data, super, loc, shape,
+      GenericSelect.sparseExceptionSelectData] using
+      reviewerSingleton_dense_base_position
+  have hbaseOcc :
+      GenericSelect.relativeSplitSelectLocalBaseOccurrence super loc = 0 := by
+    simpa [super, loc, shape] using
+      reviewerSingleton_dense_base_occurrence
+  have hfirstIndex :
+      GenericSelect.relativeSplitSelectLocalBasePosition
+          data.wordSize super loc / data.wordSize = 0 := by
+    simpa [data, super, loc, shape,
+      GenericSelect.sparseExceptionSelectData] using
+      reviewerSingleton_dense_first_word_index
+  rw [hbasePos] at hfirstIndex
+  have hq0 : data.queryOccurrence 0 = 0 := rfl
+  have hcb : SuccinctClose.bpFringeChunkBits shape.bpCode.length = 1 :=
+    reviewerSingleton_chunkBits
+  have hfringe : forall address,
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          concreteBPNativeFringeChunkTraceSegment address =
+        (SuccinctClose.bpFringeChunkTable 1).store.words[address]? := by
+    intro address
+    have h := concreteBPNativeSuccinctRMQGlobalReadStore_fringeChunkTable
+      shape address
+    rwa [hcb] at h
+  have hword0 :
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        layout.bitWordBase 0 = some [true, false] := by
+    show (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? 0 0 =
+      some [true, false]
+    rw [concreteBPNativeSuccinctRMQGlobalReadStore_bpCode]
+    dsimp only [shape]
+    rw [reviewerSingletonInput_bpCode]
+    simp [SuccinctSpace.chunkPayloadWords,
+      SuccinctSpace.chunkPayloadWordsFuel,
+      SuccinctRank.machineWordBits, reviewerSingleton_log2_two]
+  have hbefore :
+      (SuccinctClose.bpChunkedWordRankTraceResultAtSegmentWithStore
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        concreteBPNativeFringeChunkTraceSegment 1 false
+        [true, false] 1).value = 0 := by
+    have h :=
+      SuccinctClose.bpChunkedWordRankTraceResultAtSegmentWithStore_toCosted_of_agree
+        (SuccinctClose.bpFringeChunkTable 1) hfringe 1 false
+        [true, false] 1
+    have hv := congrArg Costed.value h
+    rw [WordRAM.TraceResult.toCosted_value] at hv
+    rw [hv, SuccinctClose.bpChunkedWordRankCosted_value 1 (by omega) false
+      [true, false] 1 (by simp)]
+    decide
+  have hupto :
+      (SuccinctClose.bpChunkedWordRankTraceResultAtSegmentWithStore
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+        concreteBPNativeFringeChunkTraceSegment 1 false
+        [true, false] ([true, false] : List Bool).length).value = 1 := by
+    have h :=
+      SuccinctClose.bpChunkedWordRankTraceResultAtSegmentWithStore_toCosted_of_agree
+        (SuccinctClose.bpFringeChunkTable 1) hfringe 1 false
+        [true, false] ([true, false] : List Bool).length
+    have hv := congrArg Costed.value h
+    rw [WordRAM.TraceResult.toCosted_value] at hv
+    rw [hv, SuccinctClose.bpChunkedWordRankCosted_value 1 (by omega) false
+      [true, false] ([true, false] : List Bool).length (by simp)]
+    decide
+  obtain ⟨index22, word22, hfold⟩ :=
+    reviewerSingleton_inWordSelect_selectTable_read
+  refine ⟨index22, word22, ?_⟩
+  change .readWord concreteBPNativeSelectChunkTraceSegment index22
+      (some word22) ∈
+    (data.bpChunkedSelectTraceResultWithStore layout
+      concreteBPNativeFringeChunkTraceSegment
+      concreteBPNativeSelectChunkTraceSegment
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (SuccinctClose.bpFringeChunkBits shape.bpCode.length) 0).trace
+  apply chunkedSelectTrace_dense_read_mem data layout _ _ _ _ 0 hvalid
+    super loc hsuperValue hshort hlocalValue hdense
+  rw [hbasePos, hbaseOcc, hq0, hcb]
+  unfold GenericSelect.bpChunkedDenseTwoWordSelectTraceResultWithStore
+  simp only [hfirstIndex, Nat.zero_mul, Nat.sub_zero, Nat.zero_sub,
+    Nat.add_zero, Nat.zero_add]
+  rw [WordRAM.TraceResult.bind_trace]
+  apply List.mem_append_right
+  rw [show (SuccinctClose.bpWordReadTraceResult
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      layout.bitWordBase 0).value =
+    some [true, false] from hword0]
+  dsimp only
+  rw [WordRAM.TraceResult.bind_trace]
+  apply List.mem_append_right
+  rw [hbefore]
+  rw [WordRAM.TraceResult.bind_trace]
+  apply List.mem_append_right
+  rw [hupto]
+  simp only [Nat.sub_zero, Nat.add_zero, Nat.zero_add]
+  rw [if_pos (show (0 : Nat) < 1 by decide)]
+  rw [WordRAM.TraceResult.map_trace]
+  simpa using hfold
 
 private theorem reviewerSingleton_select_value :
     (concreteBPNativeSelectCloseGlobalWordTraceResult
@@ -739,13 +1401,11 @@ private theorem reviewerSingleton_select_value :
     concreteBPNativeSelectCloseGlobalWordTraceResult_refines_interpretedCosted
       (Cartesian.shape reviewerSingletonInput) 0
   have hexact :=
-    concreteBPNativeSelectCloseCosted_exact
-      builtGenericSparseExceptionSelectBPCloseAccessFamily
+    concreteBPNativeSelectCloseInterpretedCosted_exact
       (Cartesian.shape reviewerSingletonInput) 0
   have hinterpreted :
       (concreteBPNativeSelectCloseInterpretedCosted
         (Cartesian.shape reviewerSingletonInput) 0).value = some 1 := by
-    rw [concreteBPNativeSelectCloseInterpretedCosted_refines_selectCloseCosted]
     rw [reviewerSingletonInput_shape] at hexact
     rw [reviewerSingletonInput_shape]
     simpa [Costed.erase, SuccinctSpace.bpCloseOfInorder?] using hexact
@@ -758,11 +1418,8 @@ private theorem reviewerSingleton_lca_value :
   let shape := Cartesian.shape reviewerSingletonInput
   have hrankExact : forall pos,
       (concreteBPNativeRankCloseInterpretedCosted shape pos).erase =
-        Succinct.rankPrefix false shape.bpCode pos := by
-    intro pos
-    rw [concreteBPNativeRankCloseInterpretedCosted_refines_rankCloseCosted]
-    exact concreteBPNativeRankCloseCosted_exact
-      builtGenericSparseExceptionSelectBPCloseAccessFamily shape pos
+        Succinct.rankPrefix false shape.bpCode pos :=
+    fun pos => concreteBPNativeRankCloseInterpretedCosted_exact shape pos
   have hcanonical :=
     SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalLcaCloseCostedWithRankSeed_exact_of_query
       (concreteBPNativeRankCloseInterpretedCosted shape)
@@ -819,142 +1476,88 @@ private theorem reviewerSingletonBeforeRankState_answerClose :
     reviewerSingleton_select_value, reviewerSingleton_lca_value,
     WholeQueryState.empty, WholeQueryState.setOpt, WholeQueryState.opt]
 
-private theorem rankTraceResultRelabeled_successful_reads_at
-    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
-    (data : SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
-      bits superOverhead blockOverhead queryCost)
-    (target : Bool) (segmentBase deadSegment pos : Nat) :
-    (exists index word, WordRAM.TraceEvent.readWord segmentBase index
-        (some word) ∈
-      (WordRAM.TraceResult.relabelReadSegmentsWith
-        (WordRAM.tripleSegmentMap segmentBase deadSegment)
-        (data.rankTraceResult target pos)).trace) /\
-    (exists index word, WordRAM.TraceEvent.readWord (segmentBase + 1) index
-        (some word) ∈
-      (WordRAM.TraceResult.relabelReadSegmentsWith
-        (WordRAM.tripleSegmentMap segmentBase deadSegment)
-        (data.rankTraceResult target pos)).trace) /\
-    (exists index word, WordRAM.TraceEvent.readWord (segmentBase + 2) index
-        (some word) ∈
-      (WordRAM.TraceResult.relabelReadSegmentsWith
-        (WordRAM.tripleSegmentMap segmentBase deadSegment)
-        (data.rankTraceResult target pos)).trace) := by
-  let store := data.rankRegisterWordRAMStore target
-  have hsource (localSegment index : Nat)
-      (hsegment : localSegment < 3)
-      (hindex : index = if localSegment = 0 then data.superIndex pos
-        else data.wordIndex pos) :
-      WordRAM.TraceEvent.readWord localSegment index
-          (store.readWord? localSegment index) ∈
-        (data.rankTraceResult target pos).trace := by
-    have hcases :
-        localSegment = 0 \/ localSegment = 1 \/ localSegment = 2 := by
-      omega
-    rcases hcases with rfl | rfl | rfl
-    all_goals subst index
-    all_goals simp [SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankTraceResult,
-      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterProgram,
-      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superIndexExpr,
-      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordIndexExpr,
-      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.queryPosExpr,
-      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superIndex,
-      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordIndex,
-      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.queryPos,
-      WordRAM.Register.NatExpr.eval,
-      WordRAM.Register.RegFile.withNat1_nat_zero,
-      WordRAM.Register.NatProgram.eval]
-    all_goals split <;> simp [store]
-  have hq : data.queryPos pos <= bits.length := Nat.min_le_right _ _
-  rcases data.super_present target (data.queryPos pos) hq with
-    ⟨sample, hsample⟩
-  have hsuperWord :
-      exists word, (data.superSampleWords target)[data.superIndex pos]? =
-        some word := by
-    cases target with
-    | false =>
-        apply fixedWidthNatTable_word_of_entry data.superTables.falseTable
-        simpa [SuccinctSpace.FixedWidthRankSampleTables.entries,
-          SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superIndex] using
-          hsample
-    | true =>
-        apply fixedWidthNatTable_word_of_entry data.superTables.trueTable
-        simpa [SuccinctSpace.FixedWidthRankSampleTables.entries,
-          SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superIndex] using
-          hsample
-  rcases data.block_present target (data.queryPos pos) hq with
-    ⟨delta, hdelta⟩
-  have hblockWord :
-      exists word, (data.blockSampleWords target)[data.wordIndex pos]? =
-        some word := by
-    cases target with
-    | false =>
-        apply fixedWidthNatTable_word_of_entry data.blockTables.falseTable
-        simpa [SuccinctSpace.FixedWidthRankSampleTables.entries,
-          SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordIndex] using
-          hdelta
-    | true =>
-        apply fixedWidthNatTable_word_of_entry data.blockTables.trueTable
-        simpa [SuccinctSpace.FixedWidthRankSampleTables.entries,
-          SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordIndex] using
-          hdelta
-  rcases data.word_present (data.queryPos pos) hq with ⟨wordBits, hwordBits⟩
-  rcases hsuperWord with ⟨superWord, hsuperWord⟩
-  rcases hblockWord with ⟨blockWord, hblockWord⟩
-  have hstoreSuper :
-      store.readWord? 0 (data.superIndex pos) = some superWord := by
-    simpa [store,
-      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterWordRAMStore,
-      WordRAM.Store.readWord?] using hsuperWord
-  have hstoreBlock :
-      store.readWord? 1 (data.wordIndex pos) = some blockWord := by
-    simpa [store,
-      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterWordRAMStore,
-      WordRAM.Store.readWord?] using hblockWord
-  have hstoreBits :
-      store.readWord? 2 (data.wordIndex pos) = some wordBits := by
-    simpa [store,
-      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterWordRAMStore,
-      WordRAM.Store.readWord?] using hwordBits
-  have hmapped (localSegment index : Nat) (hlocal : localSegment < 3)
-      (hindex : index = if localSegment = 0 then data.superIndex pos
-        else data.wordIndex pos) :=
-    List.mem_map_of_mem
-      (f := WordRAM.TraceEvent.relabelReadSegmentWith
-        (WordRAM.tripleSegmentMap segmentBase deadSegment))
-      (hsource localSegment index hlocal hindex)
-  refine ⟨⟨data.superIndex pos, superWord, ?_⟩,
-    ⟨data.wordIndex pos, blockWord, ?_⟩,
-    ⟨data.wordIndex pos, wordBits, ?_⟩⟩
-  · simpa [WordRAM.TraceResult.relabelReadSegmentsWith,
-      WordRAM.TraceEvent.relabelReadSegmentWith,
-      WordRAM.tripleSegmentMap, hstoreSuper] using
-        hmapped 0 (data.superIndex pos) (by omega) rfl
-  · simpa [WordRAM.TraceResult.relabelReadSegmentsWith,
-      WordRAM.TraceEvent.relabelReadSegmentWith,
-      WordRAM.tripleSegmentMap, hstoreBlock] using
-        hmapped 1 (data.wordIndex pos) (by omega) rfl
-  · simpa [WordRAM.TraceResult.relabelReadSegmentsWith,
-      WordRAM.TraceEvent.relabelReadSegmentWith,
-      WordRAM.tripleSegmentMap, hstoreBits] using
-        hmapped 2 (data.wordIndex pos) (by omega) rfl
-
 private theorem reviewerSingleton_rank_successful_claims :
     (ReviewerProducerClaim.mk 17 .rankClose).HasSuccessfulClosedValidOccurrence /\
     (ReviewerProducerClaim.mk 18 .rankClose).HasSuccessfulClosedValidOccurrence /\
     (ReviewerProducerClaim.mk 19 .rankClose).HasSuccessfulClosedValidOccurrence := by
   let shape := Cartesian.shape reviewerSingletonInput
   let data := builtRelativeSplitBPCloseRankData shape
-  have hreads := rankTraceResultRelabeled_successful_reads_at data false
+  have hq : data.queryPos 2 <= shape.bpCode.length := Nat.min_le_right _ _
+  rcases data.super_present false (data.queryPos 2) hq with ⟨sample, hsample⟩
+  have hsuperWordEx :
+      exists word,
+        ((data.superSampleWords false)[data.superIndex 2]?) = some word := by
+    apply fixedWidthNatTable_word_of_entry data.superTables.falseTable
+    simpa [SuccinctSpace.FixedWidthRankSampleTables.entries,
+      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superIndex] using
+      hsample
+  rcases data.block_present false (data.queryPos 2) hq with ⟨delta, hdelta⟩
+  have hblockWordEx :
+      exists word,
+        ((data.blockSampleWords false)[data.wordIndex 2]?) = some word := by
+    apply fixedWidthNatTable_word_of_entry data.blockTables.falseTable
+    simpa [SuccinctSpace.FixedWidthRankSampleTables.entries,
+      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordIndex] using
+      hdelta
+  rcases data.word_present (data.queryPos 2) hq with ⟨wordBits, hwordBits⟩
+  rcases hsuperWordEx with ⟨superWord, hsuperWord⟩
+  rcases hblockWordEx with ⟨blockWord, hblockWord⟩
+  have hsuperRead :
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          concreteBPNativeRankCloseTraceSegmentBase (data.superIndex 2) =
+        some superWord := by
+    rw [concreteBPNativeSuccinctRMQGlobalReadStore_rankCloseSuper]
+    exact hsuperWord
+  have hblockRead :
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          (concreteBPNativeRankCloseTraceSegmentBase + 1)
+          (data.wordIndex 2) =
+        some blockWord := by
+    rw [concreteBPNativeSuccinctRMQGlobalReadStore_rankCloseBlock]
+    exact hblockWord
+  have hwordRead :
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+          (concreteBPNativeRankCloseTraceSegmentBase + 2)
+          (data.wordIndex 2) =
+        some wordBits := by
+    rw [concreteBPNativeSuccinctRMQGlobalReadStore_rankCloseWord]
+    exact hwordBits
+  have hchunkReads := chunkedRankTraceWithStore_successful_reads data
+    (concreteBPNativeSuccinctRMQGlobalReadStore shape)
     concreteBPNativeRankCloseTraceSegmentBase
-    concreteBPNativeDeadTraceSegment 2
-  change
-    (exists index word, .readWord 17 index (some word) ∈
-      (concreteBPNativeRankCloseWordTraceResultAtSegment shape 17 2).trace) /\
-    (exists index word, .readWord 18 index (some word) ∈
-      (concreteBPNativeRankCloseWordTraceResultAtSegment shape 17 2).trace) /\
-    (exists index word, .readWord 19 index (some word) ∈
-      (concreteBPNativeRankCloseWordTraceResultAtSegment shape 17 2).trace)
-      at hreads
+    (concreteBPNativeRankCloseTraceSegmentBase + 1)
+    (concreteBPNativeRankCloseTraceSegmentBase + 2)
+    concreteBPNativeFringeChunkTraceSegment
+    (SuccinctClose.bpFringeChunkBits shape.bpCode.length) false 2
+    hsuperRead hblockRead hwordRead
+  have hcanon :=
+    concreteBPNativeRankCloseWordTraceResultAtSegment_canonical_eq shape 2
+  have hreads :
+      (exists index word,
+        .readWord concreteBPNativeRankCloseTraceSegmentBase index
+            (some word) ∈
+          (concreteBPNativeRankCloseWordTraceResultAtSegment shape
+            concreteBPNativeRankCloseTraceSegmentBase 2).trace) /\
+      (exists index word,
+        .readWord (concreteBPNativeRankCloseTraceSegmentBase + 1) index
+            (some word) ∈
+          (concreteBPNativeRankCloseWordTraceResultAtSegment shape
+            concreteBPNativeRankCloseTraceSegmentBase 2).trace) /\
+      (exists index word,
+        .readWord (concreteBPNativeRankCloseTraceSegmentBase + 2) index
+            (some word) ∈
+          (concreteBPNativeRankCloseWordTraceResultAtSegment shape
+            concreteBPNativeRankCloseTraceSegmentBase 2).trace) := by
+    rcases hchunkReads with ⟨h17, h18, h19⟩
+    refine ⟨⟨data.superIndex 2, superWord, ?_⟩,
+      ⟨data.wordIndex 2, blockWord, ?_⟩,
+      ⟨data.wordIndex 2, wordBits, ?_⟩⟩
+    · rw [hcanon]
+      exact h17
+    · rw [hcanon]
+      exact h18
+    · rw [hcanon]
+      exact h19
   have closeOne {segment index : Nat} {word : WordRAM.Word}
       (hmem : .readWord segment index (some word) ∈
         (concreteBPNativeRankCloseWordTraceResultAtSegment shape 17 2).trace) :
@@ -1020,13 +1623,11 @@ private theorem reviewerIncreasingSixteen_select_left_value :
     concreteBPNativeSelectCloseGlobalWordTraceResult_refines_interpretedCosted
       (Cartesian.shape reviewerIncreasingSixteenInput) 0
   have hexact :=
-    concreteBPNativeSelectCloseCosted_exact
-      builtGenericSparseExceptionSelectBPCloseAccessFamily
+    concreteBPNativeSelectCloseInterpretedCosted_exact
       (Cartesian.shape reviewerIncreasingSixteenInput) 0
   have hinterpreted :
       (concreteBPNativeSelectCloseInterpretedCosted
         (Cartesian.shape reviewerIncreasingSixteenInput) 0).value = some 1 := by
-    rw [concreteBPNativeSelectCloseInterpretedCosted_refines_selectCloseCosted]
     rw [reviewerIncreasingSixteenInput_shape] at hexact
     rw [reviewerIncreasingSixteenInput_shape]
     simpa [Costed.erase, reviewerRightSpine,
@@ -1042,14 +1643,12 @@ private theorem reviewerIncreasingSixteen_select_right_value :
     concreteBPNativeSelectCloseGlobalWordTraceResult_refines_interpretedCosted
       (Cartesian.shape reviewerIncreasingSixteenInput) 15
   have hexact :=
-    concreteBPNativeSelectCloseCosted_exact
-      builtGenericSparseExceptionSelectBPCloseAccessFamily
+    concreteBPNativeSelectCloseInterpretedCosted_exact
       (Cartesian.shape reviewerIncreasingSixteenInput) 15
   have hinterpreted :
       (concreteBPNativeSelectCloseInterpretedCosted
         (Cartesian.shape reviewerIncreasingSixteenInput) 15).value =
           some 31 := by
-    rw [concreteBPNativeSelectCloseInterpretedCosted_refines_selectCloseCosted]
     rw [reviewerIncreasingSixteenInput_shape] at hexact
     rw [reviewerIncreasingSixteenInput_shape]
     simpa [Costed.erase, reviewerRightSpine,
@@ -1493,7 +2092,8 @@ theorem concreteBPNativeSuccinctRMQReviewerSource_small_successful_closed_valid_
       , .selectLocalRankBefore
       , .selectLocalFirstOffset
       , .canonicalClose
-      , .fringeChunkTable ]) :
+      , .fringeChunkTable
+      , .selectChunkTable ]) :
     source.HasSuccessfulClosedValidOccurrence := by
   rcases reviewerSingleton_select_table_successful_reads with
     ⟨⟨word1, hread1⟩, ⟨word2, hread2⟩, ⟨word3, hread3⟩,
@@ -1568,9 +2168,19 @@ theorem concreteBPNativeSuccinctRMQReviewerSource_small_successful_closed_valid_
     ⟨ReviewerProducerClaim.mk concreteBPNativeFringeChunkTraceSegment
         .canonicalClose, rfl,
       reviewerIncreasing_fringe_successful_claim⟩
+  have h22 : ReviewerSource.selectChunkTable
+      |>.HasSuccessfulClosedValidOccurrence := by
+    obtain ⟨index22, word22, hread22⟩ :=
+      reviewerSingleton_selectChunkTable_successful_read
+    exact
+      reviewerSource_hasSuccessfulClosedValidOccurrence_of_mem
+        .selectChunkTable reviewerSingletonInput 0 1
+        concreteBPNativeSelectChunkTraceSegment index22 word22
+        (by simp [ValidRange, reviewerSingletonInput]) rfl
+        (firstSelectClose_read_mem_wholeQuery hread22)
   simp only [List.mem_cons, List.not_mem_nil, or_false] at hsource
   rcases hsource with rfl | rfl | rfl | rfl | rfl | rfl |
-    rfl | rfl | rfl | rfl | rfl | rfl | rfl
+    rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   · exact hshared
   · exact h17
   · exact h18
@@ -1584,6 +2194,7 @@ theorem concreteBPNativeSuccinctRMQReviewerSource_small_successful_closed_valid_
   · exact h8
   · exact h20
   · exact h21
+  · exact h22
 
 /-- Every deliberate consumer of the shared BP payload has its own successful
 indexed occurrence in an actual closed valid query. -/

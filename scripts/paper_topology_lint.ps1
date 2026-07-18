@@ -351,10 +351,12 @@ $weightLengthAlias =
 $weightCostAlias =
   'succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumEqCost'
 $weightBoundAlias =
-  'succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe142'
+  'succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe207'
+$readWordOnlyAlias =
+  'succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly'
 $canonicalText = Read-Text $canonicalModule
 $inventoryText = Read-Text $headlineInventory
-foreach ($anchor in @($canonicalAlias, $weightLengthAlias, $weightCostAlias, $weightBoundAlias)) {
+foreach ($anchor in @($canonicalAlias, $weightLengthAlias, $weightCostAlias, $weightBoundAlias, $readWordOnlyAlias)) {
   if ($canonicalText -notmatch [regex]::Escape($anchor)) {
     Fail "[canonical-anchor] $canonicalModule is missing required anchor $anchor"
   }

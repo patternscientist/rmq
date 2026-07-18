@@ -280,8 +280,9 @@ def concreteBPNativeSuccinctRMQFlatPayloadSegmentSource? :
   -- NOTE: this legacy flat-payload map is a DIFFERENT segment-numbering
   -- universe from the canonical reviewer/global trace store: there,
   -- segment 21 is the charged fringe chunk table
-  -- (`ReviewerSource.fringeChunkTable`, B2 wiring), not a close-summary
-  -- component.
+  -- (`ReviewerSource.fringeChunkTable`, B2 wiring) and segment 22 is the
+  -- charged select chunk table (`ReviewerSource.selectChunkTable`, B3
+  -- wiring), not close-summary components.
   | 21 => some .closeSummaryMinRel
   | 22 => some .closeSummaryMaxRel
   | 23 => some .closeSummaryArgOffset
@@ -1812,15 +1813,17 @@ theorem concreteBPNativeSuccinctRMQFlatPayloadReadStore_eq_globalLegacy
 def concreteBPNativeSuccinctRMQCanonicalReviewerOverhead (n : Nat) : Nat :=
   genericSparseExceptionBPCloseAccessOverhead n +
     SuccinctClose.canonicalRelativeRmmInteriorOverhead n +
-    SuccinctClose.bpFringeTableOverhead n
+    SuccinctClose.bpFringeTableOverhead n +
+    SuccinctClose.bpChunkSelectTableOverhead n
 
 theorem concreteBPNativeSuccinctRMQCanonicalReviewerOverhead_littleO :
     SuccinctSpace.LittleOLinear
       concreteBPNativeSuccinctRMQCanonicalReviewerOverhead := by
   unfold concreteBPNativeSuccinctRMQCanonicalReviewerOverhead
-  exact (genericSparseExceptionBPCloseAccessOverhead_littleO.add
+  exact ((genericSparseExceptionBPCloseAccessOverhead_littleO.add
     SuccinctClose.canonicalRelativeRmmInteriorOverhead_littleO).add
-    SuccinctClose.bpFringeTableOverhead_littleO
+    SuccinctClose.bpFringeTableOverhead_littleO).add
+    SuccinctClose.bpChunkSelectTableOverhead_littleO
 
 /--
 Unique non-close payload sources used by the canonical reviewer execution.
@@ -1856,6 +1859,7 @@ structure ConcreteBPNativeSuccinctRMQCanonicalReviewerPayloadLayout
   accessPayload : List Bool
   closePayload : List Bool
   fringePayload : List Bool
+  selectChunkPayload : List Bool
 
 def concreteBPNativeSuccinctRMQCanonicalReviewerPayloadLayout
     (shape : Cartesian.CartesianShape) :
@@ -1867,19 +1871,25 @@ def concreteBPNativeSuccinctRMQCanonicalReviewerPayloadLayout
   let fringePayload :=
     (SuccinctClose.bpFringeChunkTable
       (SuccinctClose.bpFringeChunkBits shape.bpCode.length)).payload
+  let selectChunkPayload :=
+    (SuccinctClose.bpChunkSelectTable
+      (SuccinctClose.bpFringeChunkBits shape.bpCode.length) false).payload
   { payload :=
-      shape.bpCode ++ accessPayload ++ closePayload ++ fringePayload
+      shape.bpCode ++ accessPayload ++ closePayload ++ fringePayload ++
+        selectChunkPayload
     bpCodePayload := shape.bpCode
     accessPayload := accessPayload
     closePayload := closePayload
-    fringePayload := fringePayload }
+    fringePayload := fringePayload
+    selectChunkPayload := selectChunkPayload }
 
 theorem concreteBPNativeSuccinctRMQCanonicalReviewerPayloadLayout_components
     (shape : Cartesian.CartesianShape) :
     let layout :=
       concreteBPNativeSuccinctRMQCanonicalReviewerPayloadLayout shape
     layout.payload = layout.bpCodePayload ++ layout.accessPayload ++
-      layout.closePayload ++ layout.fringePayload := by
+      layout.closePayload ++ layout.fringePayload ++
+      layout.selectChunkPayload := by
   rfl
 
 /-- Bit offset of the canonical close component in the public payload. -/
@@ -1943,11 +1953,18 @@ theorem concreteBPNativeSuccinctRMQCanonicalReviewerPayload_length_le
         SuccinctClose.bpFringeTableOverhead n := by
     rw [hbp]
     exact SuccinctClose.bpFringeChunkTable_payload_length _
+  have hselect :
+      (SuccinctClose.bpChunkSelectTable
+        (SuccinctClose.bpFringeChunkBits
+          shape.bpCode.length) false).payload.length =
+        SuccinctClose.bpChunkSelectTableOverhead n := by
+    rw [hbp]
+    exact SuccinctClose.bpChunkSelectTable_payload_length _ false
   simp [concreteBPNativeSuccinctRMQCanonicalReviewerPayload,
     concreteBPNativeSuccinctRMQCanonicalReviewerPayloadLayout,
     concreteBPNativeSuccinctRMQCanonicalReviewerOverhead, hbp,
     SuccinctClose.canonicalRelativeRmmInteriorOverhead,
-    Cartesian.ShapeOfSize.size_eq hshapeSize] at hclose hfringe ⊢
+    Cartesian.ShapeOfSize.size_eq hshapeSize] at hclose hfringe hselect ⊢
   omega
 
 theorem concreteBPNativeSuccinctRMQCanonicalReviewerPayload_close_slice
@@ -1964,25 +1981,34 @@ theorem concreteBPNativeSuccinctRMQCanonicalReviewerPayload_close_slice
   let fringePayload :=
     (SuccinctClose.bpFringeChunkTable
       (SuccinctClose.bpFringeChunkBits shape.bpCode.length)).payload
+  let selectChunkPayload :=
+    (SuccinctClose.bpChunkSelectTable
+      (SuccinctClose.bpFringeChunkBits shape.bpCode.length) false).payload
   change
-    ((shape.bpCode ++ accessPayload ++ closePayload ++ fringePayload).drop
+    ((shape.bpCode ++ accessPayload ++ closePayload ++ fringePayload ++
+          selectChunkPayload).drop
         (shape.bpCode.length + accessPayload.length)).take
           closePayload.length = closePayload
   calc
-    ((shape.bpCode ++ accessPayload ++ closePayload ++ fringePayload).drop
+    ((shape.bpCode ++ accessPayload ++ closePayload ++ fringePayload ++
+          selectChunkPayload).drop
         (shape.bpCode.length + accessPayload.length)).take
           closePayload.length =
-        ((accessPayload ++ (closePayload ++ fringePayload)).drop
+        ((accessPayload ++
+              (closePayload ++ (fringePayload ++ selectChunkPayload))).drop
             accessPayload.length).take
           closePayload.length := by
               rw [show
                 shape.bpCode ++ accessPayload ++ closePayload ++
-                    fringePayload =
+                    fringePayload ++ selectChunkPayload =
                   shape.bpCode ++
-                    (accessPayload ++ (closePayload ++ fringePayload)) by
+                    (accessPayload ++
+                      (closePayload ++
+                        (fringePayload ++ selectChunkPayload))) by
                     simp [List.append_assoc]]
               rw [list_drop_append_length_add]
-    _ = (closePayload ++ fringePayload).take closePayload.length := by simp
+    _ = (closePayload ++ (fringePayload ++ selectChunkPayload)).take
+          closePayload.length := by simp
     _ = closePayload := by
           simp
 
@@ -2012,14 +2038,20 @@ theorem concreteBPNativeSuccinctRMQCanonicalReviewerPayload_fringe_slice
   let fringePayload :=
     (SuccinctClose.bpFringeChunkTable
       (SuccinctClose.bpFringeChunkBits shape.bpCode.length)).payload
+  let selectChunkPayload :=
+    (SuccinctClose.bpChunkSelectTable
+      (SuccinctClose.bpFringeChunkBits shape.bpCode.length) false).payload
   change
-    ((shape.bpCode ++ accessPayload ++ closePayload ++ fringePayload).drop
+    ((shape.bpCode ++ accessPayload ++ closePayload ++ fringePayload ++
+          selectChunkPayload).drop
         (shape.bpCode.length + accessPayload.length +
           closePayload.length)).take
           fringePayload.length = fringePayload
   have hassoc :
-      shape.bpCode ++ accessPayload ++ closePayload ++ fringePayload =
-        (shape.bpCode ++ accessPayload ++ closePayload) ++ fringePayload := by
+      shape.bpCode ++ accessPayload ++ closePayload ++ fringePayload ++
+          selectChunkPayload =
+        (shape.bpCode ++ accessPayload ++ closePayload) ++
+          (fringePayload ++ selectChunkPayload) := by
     simp [List.append_assoc]
   have hlen :
       shape.bpCode.length + accessPayload.length + closePayload.length =
@@ -2029,11 +2061,64 @@ theorem concreteBPNativeSuccinctRMQCanonicalReviewerPayload_fringe_slice
   rw [hassoc, hlen, list_drop_append_length]
   simp
 
+/-- Bit offset of the select chunk table in the public payload. -/
+def concreteBPNativeSuccinctRMQCanonicalReviewerSelectChunkBitOffset
+    (shape : Cartesian.CartesianShape) : Nat :=
+  let layout :=
+    concreteBPNativeSuccinctRMQCanonicalReviewerPayloadLayout shape
+  layout.bpCodePayload.length + layout.accessPayload.length +
+    layout.closePayload.length + layout.fringePayload.length
+
+/-- The select chunk-table payload is the final public payload slice. -/
+theorem concreteBPNativeSuccinctRMQCanonicalReviewerPayload_selectChunk_slice
+    (shape : Cartesian.CartesianShape) :
+    ((concreteBPNativeSuccinctRMQCanonicalReviewerPayload shape).drop
+        (concreteBPNativeSuccinctRMQCanonicalReviewerSelectChunkBitOffset
+          shape)).take
+        (SuccinctClose.bpChunkSelectTable
+          (SuccinctClose.bpFringeChunkBits
+            shape.bpCode.length) false).payload.length =
+      (SuccinctClose.bpChunkSelectTable
+        (SuccinctClose.bpFringeChunkBits
+          shape.bpCode.length) false).payload := by
+  let accessPayload :=
+    concreteBPNativeSuccinctRMQCanonicalReviewerLiveAccessPayload shape
+  let closePayload :=
+    (SuccinctClose.canonicalRelativeRmmInteriorDirectory shape).payload
+  let fringePayload :=
+    (SuccinctClose.bpFringeChunkTable
+      (SuccinctClose.bpFringeChunkBits shape.bpCode.length)).payload
+  let selectChunkPayload :=
+    (SuccinctClose.bpChunkSelectTable
+      (SuccinctClose.bpFringeChunkBits shape.bpCode.length) false).payload
+  change
+    ((shape.bpCode ++ accessPayload ++ closePayload ++ fringePayload ++
+          selectChunkPayload).drop
+        (shape.bpCode.length + accessPayload.length +
+          closePayload.length + fringePayload.length)).take
+          selectChunkPayload.length = selectChunkPayload
+  have hassoc :
+      shape.bpCode ++ accessPayload ++ closePayload ++ fringePayload ++
+          selectChunkPayload =
+        (shape.bpCode ++ accessPayload ++ closePayload ++ fringePayload) ++
+          selectChunkPayload := by
+    simp [List.append_assoc]
+  have hlen :
+      shape.bpCode.length + accessPayload.length + closePayload.length +
+          fringePayload.length =
+        (shape.bpCode ++ accessPayload ++ closePayload ++
+          fringePayload).length := by
+    simp [List.length_append]
+    omega
+  rw [hassoc, hlen, list_drop_append_length]
+  simp
+
 /--
 Single reviewer store for the final query.  Segments below 20 retain the
 counted select/rank sources.  Segment 20 is the one canonical concatenated
-interior component, segment 21 is the charged fringe chunk table, and all
-compatibility close segments are absent.
+interior component, segment 21 is the charged fringe chunk table, segment 22
+is the charged select chunk table, and all compatibility close segments are
+absent.
 -/
 def concreteBPNativeSuccinctRMQCanonicalReviewerReadStore
     (shape : Cartesian.CartesianShape) : WordRAM.ReadStore where
@@ -2049,6 +2134,10 @@ def concreteBPNativeSuccinctRMQCanonicalReviewerReadStore
       (SuccinctClose.bpFringeChunkTable
         (SuccinctClose.bpFringeChunkBits
           shape.bpCode.length)).store.words[index]?
+    else if segment = concreteBPNativeSelectChunkTraceSegment then
+      (SuccinctClose.bpChunkSelectTable
+        (SuccinctClose.bpFringeChunkBits
+          shape.bpCode.length) false).store.words[index]?
     else
       none
 
@@ -2083,7 +2172,8 @@ theorem concreteBPNativeSuccinctRMQCanonicalReviewerReadStore_eq_global
   | 19 => rfl
   | 20 => rfl
   | 21 => rfl
-  | _ + 22 => rfl
+  | 22 => rfl
+  | _ + 23 => rfl
 
 /-- Exact physical backing of a successful reviewer-store read. -/
 def concreteBPNativeSuccinctRMQCanonicalReviewerReadBacked
@@ -2121,7 +2211,27 @@ def concreteBPNativeSuccinctRMQCanonicalReviewerReadBacked
           (SuccinctClose.bpFringeChunkBits
             shape.bpCode.length)).payload.length =
       (SuccinctClose.bpFringeChunkTable
-        (SuccinctClose.bpFringeChunkBits shape.bpCode.length)).payload)
+        (SuccinctClose.bpFringeChunkBits shape.bpCode.length)).payload) \/
+  (segment = concreteBPNativeSelectChunkTraceSegment /\
+    (SuccinctClose.bpChunkSelectTable
+      (SuccinctClose.bpFringeChunkBits
+        shape.bpCode.length) false).store.words[index]? = some word /\
+    SuccinctSpace.flattenPayloadWords
+        (SuccinctClose.bpChunkSelectTable
+          (SuccinctClose.bpFringeChunkBits
+            shape.bpCode.length) false).store.words.toList =
+      (SuccinctClose.bpChunkSelectTable
+        (SuccinctClose.bpFringeChunkBits
+          shape.bpCode.length) false).payload /\
+    ((concreteBPNativeSuccinctRMQCanonicalReviewerPayload shape).drop
+        (concreteBPNativeSuccinctRMQCanonicalReviewerSelectChunkBitOffset
+          shape)).take
+        (SuccinctClose.bpChunkSelectTable
+          (SuccinctClose.bpFringeChunkBits
+            shape.bpCode.length) false).payload.length =
+      (SuccinctClose.bpChunkSelectTable
+        (SuccinctClose.bpFringeChunkBits
+          shape.bpCode.length) false).payload)
 
 theorem concreteBPNativeSuccinctRMQCanonicalReviewerReadStore_successful_read_backed
     (shape : Cartesian.CartesianShape)
@@ -2167,6 +2277,7 @@ theorem concreteBPNativeSuccinctRMQCanonicalReviewerReadStore_successful_read_ba
           segment = concreteBPNativeFringeChunkTraceSegment
       · right
         right
+        left
         subst segment
         refine ⟨rfl, ?_, ?_, ?_⟩
         · simpa [concreteBPNativeSuccinctRMQCanonicalReviewerReadStore,
@@ -2176,8 +2287,23 @@ theorem concreteBPNativeSuccinctRMQCanonicalReviewerReadStore_successful_read_ba
         · exact
             concreteBPNativeSuccinctRMQCanonicalReviewerPayload_fringe_slice
               shape
-      · simp [concreteBPNativeSuccinctRMQCanonicalReviewerReadStore, hlt,
-          heq, hfringe] at hread
+      · by_cases hselect :
+            segment = concreteBPNativeSelectChunkTraceSegment
+        · right
+          right
+          right
+          subst segment
+          refine ⟨rfl, ?_, ?_, ?_⟩
+          · simpa [concreteBPNativeSuccinctRMQCanonicalReviewerReadStore,
+              concreteBPNativeSelectChunkTraceSegment,
+              concreteBPNativeFringeChunkTraceSegment,
+              concreteBPNativeInteriorTraceSegments] using hread
+          · exact SuccinctClose.bpChunkSelectTable_store_erases _ false
+          · exact
+              concreteBPNativeSuccinctRMQCanonicalReviewerPayload_selectChunk_slice
+                shape
+        · simp [concreteBPNativeSuccinctRMQCanonicalReviewerReadStore, hlt,
+            heq, hfringe, hselect] at hread
 /-- Machine words contributed by the pre-U2 counted segments, in segment order. -/
 def concreteBPNativeSuccinctRMQLegacyReviewerMachineWords
     (shape : Cartesian.CartesianShape) : List (List Bool) :=

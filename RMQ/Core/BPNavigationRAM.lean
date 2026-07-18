@@ -874,7 +874,9 @@ def concreteBPCloseNavigationGlobalReadStore
         (SuccinctClose.bpFringeChunkBits
           shape.bpCode.length)).store.words[index]?
     else if segment = 22 then
-      summary.maxRelTable.wordRAMStore.readWord? 0 index
+      (SuccinctClose.bpChunkSelectTable
+        (SuccinctClose.bpFringeChunkBits
+          shape.bpCode.length) false).store.words[index]?
     else if segment = 23 then
       summary.argOffsetTable.wordRAMStore.readWord? 0 index
     else if segment = 24 then
@@ -902,6 +904,17 @@ theorem concreteBPCloseNavigationGlobalReadStore_fringeChunkTable
           shape.bpCode.length)).store.words[index]? := by
   simp [concreteBPCloseNavigationGlobalReadStore,
     SuccinctFinal.concreteBPNativeFringeChunkTraceSegment]
+
+/-- Segment 22 is exactly the charged select chunk-table store. -/
+theorem concreteBPCloseNavigationGlobalReadStore_selectChunkTable
+    (shape : Cartesian.CartesianShape) (index : Nat) :
+    (concreteBPCloseNavigationGlobalReadStore shape).readWord?
+        SuccinctFinal.concreteBPNativeSelectChunkTraceSegment index =
+      (SuccinctClose.bpChunkSelectTable
+        (SuccinctClose.bpFringeChunkBits
+          shape.bpCode.length) false).store.words[index]? := by
+  simp [concreteBPCloseNavigationGlobalReadStore,
+    SuccinctFinal.concreteBPNativeSelectChunkTraceSegment]
 
 /-- Payload components used to back successful global reads. -/
 structure ConcreteBPCloseNavigationPayloadLayout
@@ -1129,6 +1142,16 @@ def concreteBPCloseNavigationPayloadReadBacked
             shape.bpCode.length)).store.words.toList =
       (SuccinctClose.bpFringeChunkTable
         (SuccinctClose.bpFringeChunkBits shape.bpCode.length)).payload) \/
+  (segment = SuccinctFinal.concreteBPNativeSelectChunkTraceSegment /\
+    (SuccinctClose.bpChunkSelectTable
+      (SuccinctClose.bpFringeChunkBits
+        shape.bpCode.length) false).store.words[index]? = some word /\
+    SuccinctSpace.flattenPayloadWords
+        (SuccinctClose.bpChunkSelectTable
+          (SuccinctClose.bpFringeChunkBits
+            shape.bpCode.length) false).store.words.toList =
+      (SuccinctClose.bpChunkSelectTable
+        (SuccinctClose.bpFringeChunkBits shape.bpCode.length) false).payload) \/
   exists source,
     SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?
         segment = some source /\
@@ -1305,6 +1328,10 @@ theorem concreteBPCloseNavigationGlobalReadStore_eq_sourceStore
         (SuccinctClose.bpFringeChunkTable
           (SuccinctClose.bpFringeChunkBits
             shape.bpCode.length)).store.words[index]?
+      else if segment = 22 then
+        (SuccinctClose.bpChunkSelectTable
+          (SuccinctClose.bpFringeChunkBits
+            shape.bpCode.length) false).store.words[index]?
       else
         match
           SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?
@@ -1370,18 +1397,29 @@ theorem concreteBPCloseNavigationGlobalReadStore_successful_read_backed
             using hfringe, ?_, ?_⟩
       · simpa [hcomponent, hfringe] using hread
       · exact SuccinctClose.bpFringeChunkTable_store_erases _
-    · right
-      right
-      simp [hcomponent, hfringe] at hread
-      cases hsource :
-          SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?
-            segment with
-      | none =>
-          simp [hsource] at hread
-      | some source =>
-          exact ⟨source, rfl,
-            by simpa [hsource] using hread,
-            concreteBPCloseNavigationPayloadSourceWords_erases shape source⟩
+    · by_cases hselect : segment = 22
+      · right
+        right
+        left
+        refine
+          ⟨by
+            simpa [SuccinctFinal.concreteBPNativeSelectChunkTraceSegment]
+              using hselect, ?_, ?_⟩
+        · simpa [hcomponent, hfringe, hselect] using hread
+        · exact SuccinctClose.bpChunkSelectTable_store_erases _ false
+      · right
+        right
+        right
+        simp [hcomponent, hfringe, hselect] at hread
+        cases hsource :
+            SuccinctFinal.concreteBPNativeSuccinctRMQFlatPayloadSegmentSource?
+              segment with
+        | none =>
+            simp [hsource] at hread
+        | some source =>
+            exact ⟨source, rfl,
+              by simpa [hsource] using hread,
+              concreteBPCloseNavigationPayloadSourceWords_erases shape source⟩
 
 theorem concreteBPCloseNavigationGlobalReadStore_bpCode
     (shape : Cartesian.CartesianShape) (index : Nat) :
@@ -1786,32 +1824,18 @@ theorem concreteBPCloseNavigationSelectCloseGlobalTraceResult_no_syntheticCostOn
         SuccinctFinal.concreteBPNativeSelectCloseTraceSegmentLayout.deadSegment
         false data.bitWords basePosition baseOccurrence q
 
-theorem concreteBPCloseNavigationRankCloseInterpretedCosted_refines_rankCloseCosted
-    (shape : Cartesian.CartesianShape) (pos : Nat) :
-    SuccinctFinal.concreteBPNativeRankCloseInterpretedCosted shape pos =
-      SuccinctFinal.concreteBPNativeRankCloseCosted
-        concreteBPCloseNavigationAccessFamily shape pos := by
-  unfold SuccinctFinal.concreteBPNativeRankCloseInterpretedCosted
-    SuccinctFinal.concreteBPNativeRankCloseCosted
-    concreteBPCloseNavigationAccessFamily
-    concreteBPCloseNavigationRelativeSplitAccessFamily
-  rw [
-    (SuccinctFinal.builtRelativeSplitBPCloseRankData shape)
-      |>.rankRegisterInterpretedCosted_refines_rankInterpretedCosted false pos]
-  exact
-    (SuccinctFinal.builtRelativeSplitBPCloseRankData shape)
-      |>.rankInterpretedCosted_refines_rankCosted false pos
-
+/-- The navigation profile's rank leg is the swapped chunked rank-close
+consumer (B3: the nav store's segments `21`/`22` carry the chunk tables, so
+the chunked legs are the matching cost semantics; the retired register
+bridge to `concreteBPNativeRankCloseCosted` is superseded). -/
 theorem concreteBPCloseNavigationRankCloseGlobalTraceResult_refines
     (shape : Cartesian.CartesianShape) (pos : Nat) :
     (SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegment
       shape SuccinctFinal.concreteBPNativeRankCloseTraceSegmentBase
       pos).toCosted =
-      SuccinctFinal.concreteBPNativeRankCloseCosted
-        concreteBPCloseNavigationAccessFamily shape pos := by
-  rw [
-    SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegment_refines_interpretedCosted,
-    concreteBPCloseNavigationRankCloseInterpretedCosted_refines_rankCloseCosted]
+      SuccinctFinal.concreteBPNativeRankCloseInterpretedCosted shape pos :=
+  SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegment_refines_interpretedCosted
+    shape SuccinctFinal.concreteBPNativeRankCloseTraceSegmentBase pos
 
 theorem concreteBPCloseNavigationLCACloseGlobalTraceResult_refines
     (shape : Cartesian.CartesianShape)
@@ -1870,8 +1894,7 @@ def concreteBPCloseNavigationCanonicalCosted
                   match answerClose? with
                   | some answerClose =>
                       Costed.map (fun closeRank => some (closeRank - 1))
-                        (SuccinctFinal.concreteBPNativeRankCloseCosted
-                          concreteBPCloseNavigationAccessFamily
+                        (SuccinctFinal.concreteBPNativeRankCloseInterpretedCosted
                           shape (answerClose + 1))
                   | none => Costed.pure none
           | _, _ => Costed.pure none
@@ -1932,10 +1955,8 @@ theorem concreteBPCloseNavigationCanonicalCosted_exact
           shape pos).erase =
             Succinct.rankPrefix false shape.bpCode pos := by
     intro pos
-    rw [concreteBPCloseNavigationRankCloseInterpretedCosted_refines_rankCloseCosted]
     exact
-      SuccinctFinal.concreteBPNativeRankCloseCosted_exact
-        concreteBPCloseNavigationAccessFamily shape pos
+      SuccinctFinal.concreteBPNativeRankCloseInterpretedCosted_exact shape pos
   have hlca :
       (SuccinctFinal.concreteBPNativeLCACloseCanonicalInterpretedCosted
         shape leftClose rightClose).value = some answerClose := by
@@ -1946,12 +1967,12 @@ theorem concreteBPCloseNavigationCanonicalCosted_exact
     simpa [SuccinctFinal.concreteBPNativeLCACloseCanonicalInterpretedCosted,
       Costed.erase] using h
   have hrank :
-      (SuccinctFinal.concreteBPNativeRankCloseCosted
-        concreteBPCloseNavigationAccessFamily shape (answerClose + 1)).value =
+      (SuccinctFinal.concreteBPNativeRankCloseInterpretedCosted
+        shape (answerClose + 1)).value =
           scanWindow shape.representative left len + 1 := by
     have hrankExact' :=
-      SuccinctFinal.concreteBPNativeRankCloseCosted_exact
-        concreteBPCloseNavigationAccessFamily shape (answerClose + 1)
+      SuccinctFinal.concreteBPNativeRankCloseInterpretedCosted_exact
+        shape (answerClose + 1)
     have hrankRecover :=
       SuccinctSpace.bpCloseOfInorder?_rankFalse_succ shape hanswerClose
     calc
@@ -2031,8 +2052,7 @@ theorem concreteBPCloseNavigationCosted_eq_globalTraceResult_toCosted
                   (SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegment
                     shape SuccinctFinal.concreteBPNativeRankCloseTraceSegmentBase
                     (answerClose + 1)).value =
-                    (SuccinctFinal.concreteBPNativeRankCloseCosted
-                      concreteBPCloseNavigationAccessFamily
+                    (SuccinctFinal.concreteBPNativeRankCloseInterpretedCosted
                       shape (answerClose + 1)).value := by
                 have hv := congrArg Costed.value hrank
                 simpa [WordRAM.TraceResult.toCosted] using hv
@@ -2040,8 +2060,7 @@ theorem concreteBPCloseNavigationCosted_eq_globalTraceResult_toCosted
                   (SuccinctFinal.concreteBPNativeRankCloseWordTraceResultAtSegment
                     shape SuccinctFinal.concreteBPNativeRankCloseTraceSegmentBase
                     (answerClose + 1)).trace.length =
-                    (SuccinctFinal.concreteBPNativeRankCloseCosted
-                      concreteBPCloseNavigationAccessFamily
+                    (SuccinctFinal.concreteBPNativeRankCloseInterpretedCosted
                       shape (answerClose + 1)).cost := by
                 have hc := congrArg Costed.cost hrank
                 simpa [WordRAM.TraceResult.toCosted,
@@ -2061,53 +2080,36 @@ theorem concreteBPCloseNavigationRankCloseGlobalTraceResult_matchesReadStore
         event.matchesReadStore
           (concreteBPCloseNavigationGlobalReadStore shape) := by
   apply
-    WordRAM.TraceResult.relabelReadSegmentsWith_matchesReadStore
-      (SuccinctFinal.concreteBPNativeRankCloseWordTraceResult shape pos)
-      (WordRAM.ReadStore.ofStore
-        ((SuccinctFinal.builtRelativeSplitBPCloseRankData shape)
-          |>.rankRegisterWordRAMStore false))
-      (concreteBPCloseNavigationGlobalReadStore shape)
-      (WordRAM.tripleSegmentMap
-        SuccinctFinal.concreteBPNativeRankCloseTraceSegmentBase
-        SuccinctFinal.concreteBPNativeDeadTraceSegment)
-  · intro segment index
-    cases segment with
-    | zero =>
-        simp [concreteBPCloseNavigationGlobalReadStore,
-          SuccinctFinal.concreteBPNativeRankCloseTraceSegmentBase,
-          WordRAM.tripleSegmentMap, WordRAM.TraceEvent.tripleSegmentMap,
-          WordRAM.ReadStore.ofStore]
-    | succ segment =>
-        cases segment with
-        | zero =>
-            simp [concreteBPCloseNavigationGlobalReadStore,
-              SuccinctFinal.concreteBPNativeRankCloseTraceSegmentBase,
-              WordRAM.tripleSegmentMap, WordRAM.TraceEvent.tripleSegmentMap,
-              WordRAM.ReadStore.ofStore]
-        | succ segment =>
-            cases segment with
-            | zero =>
-                simp [concreteBPCloseNavigationGlobalReadStore,
-                  SuccinctFinal.concreteBPNativeRankCloseTraceSegmentBase,
-                  WordRAM.tripleSegmentMap, WordRAM.TraceEvent.tripleSegmentMap,
-                  WordRAM.ReadStore.ofStore]
-            | succ segment =>
-                simp [concreteBPCloseNavigationGlobalReadStore,
-                  SuccinctFinal.concreteBPNativeDeadTraceSegment,
-                  WordRAM.tripleSegmentMap, WordRAM.TraceEvent.tripleSegmentMap,
-                  WordRAM.ReadStore.ofStore,
-                  SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterWordRAMStore,
-                  WordRAM.Store.readWord?]
-  · intro event hmem
-    simpa [SuccinctFinal.concreteBPNativeRankCloseWordTraceResult,
-      WordRAM.TraceResult.ofResult_trace,
-      WordRAM.TraceEvent.matchesReadStore_ofStore] using
-      WordRAM.Register.NatProgram.eval_reads_subset_payload
-        ((SuccinctFinal.builtRelativeSplitBPCloseRankData shape)
-          |>.rankRegisterProgram false (WordRAM.Register.NatExpr.reg 0))
-        ((SuccinctFinal.builtRelativeSplitBPCloseRankData shape)
-          |>.rankRegisterWordRAMStore false)
-        (WordRAM.Register.RegFile.withNat1 pos) event hmem
+    (SuccinctFinal.builtRelativeSplitBPCloseRankData
+        shape).bpChunkedRankTraceResultWithStore_trace_forall
+  · intro address
+    simp [WordRAM.TraceEvent.matchesReadStore,
+      SuccinctFinal.concreteBPNativeChunkedRankCloseSeedReadStore,
+      concreteBPCloseNavigationGlobalReadStore,
+      SuccinctFinal.concreteBPNativeRankCloseTraceSegmentBase,
+      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterWordRAMStore,
+      WordRAM.Store.readWord?]
+  · intro address
+    simp [WordRAM.TraceEvent.matchesReadStore,
+      SuccinctFinal.concreteBPNativeChunkedRankCloseSeedReadStore,
+      concreteBPCloseNavigationGlobalReadStore,
+      SuccinctFinal.concreteBPNativeRankCloseTraceSegmentBase,
+      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterWordRAMStore,
+      WordRAM.Store.readWord?]
+  · intro address
+    simp [WordRAM.TraceEvent.matchesReadStore,
+      SuccinctFinal.concreteBPNativeChunkedRankCloseSeedReadStore,
+      concreteBPCloseNavigationGlobalReadStore,
+      SuccinctFinal.concreteBPNativeRankCloseTraceSegmentBase,
+      SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.rankRegisterWordRAMStore,
+      WordRAM.Store.readWord?]
+  · intro address _hlt
+    simp [WordRAM.TraceEvent.matchesReadStore,
+      SuccinctFinal.concreteBPNativeChunkedRankCloseSeedReadStore,
+      concreteBPCloseNavigationGlobalReadStore,
+      SuccinctFinal.concreteBPNativeRankCloseTraceSegmentBase,
+      SuccinctFinal.concreteBPNativeFringeChunkTraceSegment,
+      WordRAM.Store.readWord?]
 
 theorem concreteBPCloseNavigationInteriorGlobalTraceResultAllSizeStructural_matchesReadStore
     (shape : Cartesian.CartesianShape)
@@ -2479,10 +2481,9 @@ theorem concreteSuccinctTreeNavigationGlobalPayloadStoreBoundedExecutionStory_cu
         (leftClose := 1) (rightClose := 1) (answerClose := 1)
         (by
           intro pos
-          rw [concreteBPCloseNavigationRankCloseInterpretedCosted_refines_rankCloseCosted]
           exact
-            SuccinctFinal.concreteBPNativeRankCloseCosted_exact
-              concreteBPCloseNavigationAccessFamily shape pos)
+            SuccinctFinal.concreteBPNativeRankCloseInterpretedCosted_exact
+              shape pos)
         (by omega)
         (by
           simp [shape, Cartesian.CartesianShape.size])

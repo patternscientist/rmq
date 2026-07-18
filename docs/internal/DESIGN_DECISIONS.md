@@ -2865,3 +2865,114 @@ M4b in `B3_WORKLOG.md`.
 Follow-up: none beyond the M5 entry already queued by DD-20260717-005.
 
 Supersedes: none (implements the M4b plan of DD-20260717-005).
+
+## DD-20260718-002: M5 atomic swap - chunked rank/select consumers, Register legacy split, segment-22 store extension (B3 M5)
+
+Status: Proposed
+Date: 2026-07-18
+Scope: B3 rung (workers B3-03/B3-04, branch
+`claude/b1-b2-charged-fringe-tables`): the M5 atomic swap commit
+(`SuccinctFinalRAM.lean`, `SuccinctFinalStoreParam.lean`,
+`Segments.lean`, `ReviewerPhysical.lean`, `FlatPayload.lean`,
+`ChargedRankSelectWiring.lean`, `BPNavigationRAM.lean`, reviewer
+reachability witnesses, adequacy modules, public/doc sync).
+
+Decision:
+
+1. Swap points: `concreteBPNativeSelectCloseInterpretedCosted` /
+   `concreteBPNativeRankCloseInterpretedCosted` are redefined to the
+   M5-prep chunked Costed consumers; the Global/AtSegment word-trace
+   twins are redefined to the M4b chunked WithStore trace twins at the
+   canonical store (select) and at the base-parameterized seed store
+   with chunk segment at `base + 4` (rank; canonical base `17` lands the
+   chunk reads on the counted segment `21`).
+2. Register legacy split (REQ-B3-04): the retired register evaluators
+   stay defined under NEW names
+   (`concreteBPNativeSelectCloseRegisterInterpretedCosted`,
+   `concreteBPNativeRankCloseRegisterInterpretedCosted`, Register trace
+   twins), and the pre-canonical compatibility chain
+   (`WholeQueryInstr.eval*`, legacy LCA replays, legacy-store matches,
+   the `_refines_*CloseCosted` bridges) is rewired to the Register
+   names, so the axiom-pinned legacy lattice keeps its statements
+   verbatim while the canonical route consumes the chunked consumers via
+   the NEW `concreteBPNative{Select,Rank}CloseInterpretedCosted_exact`.
+3. Store extension (C05 coupling): `ReviewerSource.selectChunkTable` is
+   appended as constructor/segment `22` in the same commit as the
+   wiring; the dead-source witness moves to `23` at identical strength;
+   reviewer payload gains `(bpChunkSelectTable c false).payload`
+   appended last; the read-agreement record
+   (`concreteBPNativeSuccinctRMQWholeQueryReadAgreement`) gains a
+   `selectChunkTable` field.
+4. StoreParam re-agreement architecture: the WithStore leaves are
+   redefined to the chunked twins; `concreteBPNativeRankCloseSegmentMap`
+   gains `| 3 => base + 4`; the `_eq_of_trace_read_agreement` chain is
+   re-proved via compositional `StoreTraceLocal` lemmas over the chunked
+   folds (bind/map combinators; no per-theorem trace inductions); the
+   now-false register pullback lemma and the dead private select
+   pullback section are deleted (their only consumers were the retired
+   `_globalReadStore` proofs).
+5. Reviewer reachability witnesses are recomputed over the chunked
+   trace with a kernel-safety pattern: every defeq-heavy step (sample
+   word existence, chunked rank value at slot 0, component membership
+   lifts) is proven ONCE as a generic lemma over symbolic structures and
+   instantiated at the huge symbolic shapes propositionally (the
+   concrete-shape defeq route deep-recursed the kernel at the 2^128
+   sparse witness).  The NEW segment-22 W19 witness is the singleton
+   execution's dense route: word `[true, false]`, chunk bits `1`, the
+   in-word select fold's found branch fires a SUCCESSFUL segment-22
+   read (`reviewerSingleton_selectChunkTable_successful_read`).
+6. BP close-navigation profile: the nav rank leg is rewired to the
+   chunked consumer (nav store segments `21`/`22` carry the chunk/select
+   tables, so the chunked cost semantics is the matching one); the
+   B2-era bridge
+   `concreteBPCloseNavigationRankCloseInterpretedCosted_refines_rankCloseCosted`
+   is deleted as superseded (its equality is false against the chunked
+   consumer; B2-deletion precedent), and
+   `concreteBPCloseNavigationCanonicalCosted`'s rank component becomes
+   `concreteBPNativeRankCloseInterpretedCosted`.
+7. Cost algebra: `selectClose := 35`, `rankClose := 11`; the route
+   literal is DERIVED by `rfl`
+   (`concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq =
+   207`, projection `2*35 + (2*11 + 2*37 + 30) + 11`); `142` is frozen
+   as `concreteBPNativeSuccinctRMQSilentWordRankSelectChargedTraceCost`
+   (public abbrev `canonicalSilentWordRankSelectQueryCost`) following
+   the 76/328 pattern; `nonSyntheticWeight_sum_le_142` renamed
+   `_le_207`; headline abbrev `SumLe142` renamed `SumLe207`
+   (coordinator-ratified current-anchor rename); NEW paper-facing
+   vocabulary abbrev
+   `succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly` for
+   `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only`.
+
+Options considered:
+
+- Keeping the old bridge statements over the swapped names (rejected:
+  the Costed equalities against the register reference evaluators are
+  false at the chunked costs; restating over Register names preserves
+  the frozen statements verbatim).
+- Deleting the register evaluators outright (rejected: REQ-B3-04 keeps
+  the word-primitive instructions and their consumers defined).
+- Proving the reviewer witnesses by concrete-shape defeq (rejected
+  empirically: kernel deep recursion at the symbolic 2^128/2^15
+  shapes; the generic-lemma instantiation pattern is kernel-cheap and
+  reusable).
+- A nav-profile-specific chunked reference evaluator (rejected: the
+  canonical chunked interpreted consumer is definitionally the cost
+  semantics the nav store executes; a sibling evaluator would duplicate
+  the algebra).
+
+Rationale: C05 atomicity (store extension coupled to wiring, library
+green at the single swap commit); the checked derivation `207` wins
+over the projection; every closed B2 row's evidence object is untouched
+or restated over the Register names at identical strength.
+
+Consequences: M6 battery runs on the candidate tree; matrix rows
+REQ-B3-04/06/07/08/09/10/14 close against this commit; the
+`B3_M5_WIP.patch` recovery file is deleted in the bookkeeping commit.
+
+Evidence: the M5 swap commit (this tree), `B3_WORKLOG.md` M5 ledger.
+
+Follow-up: none queued beyond B5 doc migration (out of scope per
+REQ-B3-13).
+
+Supersedes: none (implements the M5 plan of DD-20260717-005 /
+DD-20260718-001).

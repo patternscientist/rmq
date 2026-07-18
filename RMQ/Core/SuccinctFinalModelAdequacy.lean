@@ -64,9 +64,9 @@ structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
         shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum =
       (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
         shape left right).cost
-  nonSyntheticWeight_sum_le_142 :
+  nonSyntheticWeight_sum_le_207 :
     ((concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
-        shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum <= 142
+        shape left right).trace.map WordRAM.TraceEvent.nonSyntheticWeight).sum <= 207
   matches_global_read_store :
     forall event,
       event ∈
@@ -113,7 +113,7 @@ structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
     forall segment : Nat,
       (Exists fun source =>
         concreteBPNativeSuccinctRMQReviewerSegmentSource? segment =
-          some source) <-> segment < 22
+          some source) <-> segment < 23
   every_emitted_read_has_listed_region :
     forall {segment index : Nat} {word? : Option WordRAM.Word},
       WordRAM.TraceEvent.readWord segment index word? ∈
@@ -141,7 +141,7 @@ structure ConcreteBPNativeSuccinctRMQFinalTraceModelAdequacy
         source.legacyOuterSource? = some legacy ->
           Not legacy.LegacyCloseOrInterior
   compatibility_tail_unreachable :
-    forall segment index, 22 <= segment ->
+    forall segment index, 23 <= segment ->
       (concreteBPNativeSuccinctRMQCanonicalReviewerReadStore shape).readWord?
           segment index = none
   physical_words_erase_public_payload :
@@ -299,8 +299,8 @@ theorem concreteBPNativeSuccinctRMQFinalTraceModelAdequacy
       nonSyntheticWeight_sum_eq_cost :=
         concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_eq_cost
           shape left right
-      nonSyntheticWeight_sum_le_142 :=
-        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_142
+      nonSyntheticWeight_sum_le_207 :=
+        concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_nonSyntheticWeight_sum_le_207
           shape left right
       matches_global_read_store := hstore
       event_bounds := fun event hmem =>

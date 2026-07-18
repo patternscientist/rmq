@@ -1,7 +1,7 @@
 import RMQ.Core.SuccinctFinal
 import RMQ.Core.GenericSelect.RAM
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAM
-import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeChunks
+import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedWordChunks
 import RMQ.Core.WordRAM.Register
 
 /-!
@@ -68,6 +68,9 @@ def concreteBPNativeFiniteSmallSameBlockCloseTraceSegment : Nat := 28
 
 /-- Global trace segment of the charged fringe chunk table (B2 wiring). -/
 def concreteBPNativeFringeChunkTraceSegment : Nat := 21
+
+/-- Global trace segment of the charged select chunk table (B3 wiring). -/
+def concreteBPNativeSelectChunkTraceSegment : Nat := 22
 
 /--
 The concrete read-only payload store for the globally segmented final RMQ
@@ -213,8 +216,24 @@ def concreteBPNativeSuccinctRMQGlobalReadStore
       (SuccinctClose.bpFringeChunkTable
         (SuccinctClose.bpFringeChunkBits
           shape.bpCode.length)).store.words[index]?
+    else if segment = 22 then
+      (SuccinctClose.bpChunkSelectTable
+        (SuccinctClose.bpFringeChunkBits
+          shape.bpCode.length) false).store.words[index]?
     else
       none
+
+/-- Segment 22 is exactly the charged select chunk-table store. -/
+theorem concreteBPNativeSuccinctRMQGlobalReadStore_selectChunkTable
+    (shape : Cartesian.CartesianShape) (index : Nat) :
+    (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord?
+        concreteBPNativeSelectChunkTraceSegment index =
+      (SuccinctClose.bpChunkSelectTable
+        (SuccinctClose.bpFringeChunkBits
+          shape.bpCode.length) false).store.words[index]? := by
+  simp [concreteBPNativeSuccinctRMQGlobalReadStore,
+    concreteBPNativeSelectChunkTraceSegment]
+
 /-- Segment 21 is exactly the charged fringe chunk-table store. -/
 theorem concreteBPNativeSuccinctRMQGlobalReadStore_fringeChunkTable
     (shape : Cartesian.CartesianShape) (index : Nat) :

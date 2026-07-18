@@ -503,120 +503,411 @@ private theorem reviewerSparse_relativeEntry_zero :
     reviewerSparse_localBaseOccurrence, reviewerSparse_position_zero]
     using hlookup
 
-private theorem reviewerSparseDirectory_successful_reads :
-    let directory := GenericSelect.sparseExceptionDirectory
-      reviewerSparseShape.bpCode false
-    let layout := concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory
-    (∃ word, WordRAM.TraceEvent.readWord 13 0 (some word) ∈
-      (directory.readTraceResultRelabeled layout 1 0 0).trace) ∧
-    (∃ word, WordRAM.TraceEvent.readWord 14 0 (some word) ∈
-      (directory.readTraceResultRelabeled layout 1 0 0).trace) ∧
-    (∃ word, WordRAM.TraceEvent.readWord 15 0 (some word) ∈
-      (directory.readTraceResultRelabeled layout 1 0 0).trace) ∧
-    (∃ word, WordRAM.TraceEvent.readWord 16 0 (some word) ∈
-      (directory.readTraceResultRelabeled layout 1 0 0).trace) := by
-  let directory := GenericSelect.sparseExceptionDirectory
-    reviewerSparseShape.bpCode false
-  let layout := concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory
-  let rankResult := WordRAM.TraceResult.relabelReadSegmentsWith
-    (WordRAM.tripleSegmentMap layout.rankBase layout.deadSegment)
-    (directory.rankData.rankTraceResult true 0)
-  rcases rankTraceResultRelabeled_successful_reads directory.rankData true
-      layout.rankBase layout.deadSegment with
-    ⟨⟨word13, h13⟩, ⟨word14, h14⟩, ⟨word15, h15⟩⟩
-  have hdirectoryEntry : directory.relativeEntries[0]? = some 0 := by
-    simpa [directory, GenericSelect.sparseExceptionDirectory] using
-      reviewerSparse_relativeEntry_zero
-  rcases fixedWidthNatTable_word_present_of_entry_present
-      directory.relativeTable hdirectoryEntry with ⟨word16, hword16⟩
-  have hrelative := relativeOffsetReadTraceResultRelabeled_successful
-    directory.relativeTable layout.relativeBase layout.deadSegment 1 0 hword16
-  have hrankValue : rankResult.value = 0 := by
-    simp [rankResult, rankTraceResult_value_zero]
-  have hrankRawValue :
-      (directory.rankData.rankTraceResult true 0).value = 0 :=
-    rankTraceResult_value_zero directory.rankData true
-  have hstride : directory.localStride = 2 := by
-    simpa [directory, GenericSelect.sparseExceptionDirectory] using
-      reviewerSparse_localStride
-  refine ⟨⟨word13, ?_⟩, ⟨word14, ?_⟩,
-    ⟨word15, ?_⟩, ⟨word16, ?_⟩⟩
-  · simpa [GenericSelect.SparseExceptionDirectory.readTraceResultRelabeled,
-      directory, layout, rankResult, WordRAM.TraceResult.bind_trace,
-      List.mem_append] using Or.inl h13
-  · simpa [GenericSelect.SparseExceptionDirectory.readTraceResultRelabeled,
-      directory, layout, rankResult, WordRAM.TraceResult.bind_trace,
-      List.mem_append] using Or.inl h14
-  · simpa [GenericSelect.SparseExceptionDirectory.readTraceResultRelabeled,
-      directory, layout, rankResult, WordRAM.TraceResult.bind_trace,
-      List.mem_append] using Or.inl h15
-  · simpa [GenericSelect.SparseExceptionDirectory.readTraceResultRelabeled,
-      directory, layout, rankResult, hrankValue, hrankRawValue, hstride,
-      GenericSelect.relativeSplitSelectSparseCompactSlot,
-      WordRAM.TraceResult.bind_trace, List.mem_append] using Or.inr hrelative
+private theorem canonicalSuperTableWithStore_eq_sparse
+    (shape : Cartesian.CartesianShape) (slot : Nat) :
+    (GenericSelect.sparseExceptionSelectData shape.bpCode
+        false).superTable.readTraceResultRelabeledWithStore
+      concreteBPNativeSelectCloseTraceSegmentLayout.superTable
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape) slot =
+    (GenericSelect.sparseExceptionSelectData shape.bpCode
+        false).superTable.readTraceResultRelabeled
+      concreteBPNativeSelectCloseTraceSegmentLayout.superTable slot :=
+  (GenericSelect.sparseExceptionSelectData shape.bpCode
+      false).superTable.readTraceResultRelabeledWithStore_eq_of_pullback
+    (concreteBPNativeSuccinctRMQGlobalReadStore_pullback_superBaseOccurrence
+      shape)
+    (concreteBPNativeSuccinctRMQGlobalReadStore_pullback_superBaseWordIndex
+      shape)
+    (concreteBPNativeSuccinctRMQGlobalReadStore_pullback_superRankBefore
+      shape)
+    (concreteBPNativeSuccinctRMQGlobalReadStore_pullback_superFirstOffset
+      shape)
+    slot
 
-private theorem successful_sparse_route_reads
-    {bits : List Bool} {rankSuperOverhead rankBlockOverhead : Nat}
-    (data : GenericSelect.SparseExceptionSelectData bits false
+private theorem canonicalLocalTableWithStore_eq_sparse
+    (shape : Cartesian.CartesianShape) (slot : Nat) :
+    (GenericSelect.sparseExceptionSelectData shape.bpCode
+        false).localTable.readTraceResultRelabeledWithStore
+      concreteBPNativeSelectCloseTraceSegmentLayout.localTable
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape) slot =
+    (GenericSelect.sparseExceptionSelectData shape.bpCode
+        false).localTable.readTraceResultRelabeled
+      concreteBPNativeSelectCloseTraceSegmentLayout.localTable slot :=
+  (GenericSelect.sparseExceptionSelectData shape.bpCode
+      false).localTable.readTraceResultRelabeledWithStore_eq_of_pullback
+    (concreteBPNativeSuccinctRMQGlobalReadStore_pullback_localBaseOccurrence
+      shape)
+    (concreteBPNativeSuccinctRMQGlobalReadStore_pullback_localBaseWordIndex
+      shape)
+    (concreteBPNativeSuccinctRMQGlobalReadStore_pullback_localRankBefore
+      shape)
+    (concreteBPNativeSuccinctRMQGlobalReadStore_pullback_localFirstOffset
+      shape)
+    slot
+
+private theorem chunkedRankTraceWithStore_successful_reads_sparse
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data : SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
+      bits superOverhead blockOverhead queryCost)
+    (store : WordRAM.ReadStore)
+    (superSegment blockSegment wordSegment chunkSegment c : Nat)
+    (target : Bool) (pos : Nat)
+    {superWord blockWord wordBitsWord : WordRAM.Word}
+    (hsuper :
+      store.readWord? superSegment (data.superIndex pos) = some superWord)
+    (hblock :
+      store.readWord? blockSegment (data.wordIndex pos) = some blockWord)
+    (hword :
+      store.readWord? wordSegment (data.wordIndex pos) =
+        some wordBitsWord) :
+    (.readWord superSegment (data.superIndex pos) (some superWord) ∈
+      (data.bpChunkedRankTraceResultWithStore store superSegment
+        blockSegment wordSegment chunkSegment c target pos).trace) ∧
+    (.readWord blockSegment (data.wordIndex pos) (some blockWord) ∈
+      (data.bpChunkedRankTraceResultWithStore store superSegment
+        blockSegment wordSegment chunkSegment c target pos).trace) ∧
+    (.readWord wordSegment (data.wordIndex pos) (some wordBitsWord) ∈
+      (data.bpChunkedRankTraceResultWithStore store superSegment
+        blockSegment wordSegment chunkSegment c target pos).trace) := by
+  refine ⟨?_, ?_, ?_⟩ <;>
+    simp [SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankTraceResultWithStore,
+      WordRAM.TraceResult.bind_trace, List.mem_append,
+      SuccinctClose.bpChunkReadTraceResult,
+      SuccinctClose.bpWordReadTraceResult, hsuper, hblock, hword]
+
+private theorem chunkedSparseDirectoryTrace_rank_mem
+    {bits : List Bool} {target : Bool}
+    {rankSuperOverhead rankBlockOverhead : Nat}
+    (directory : GenericSelect.SparseExceptionDirectory bits target
+      rankSuperOverhead rankBlockOverhead)
+    (layout : GenericSelect.SparseExceptionDirectoryTraceSegmentBases)
+    (chunkSegment : Nat) (store : WordRAM.ReadStore) (c : Nat)
+    (base localSlot localOccurrence : Nat)
+    {event : WordRAM.TraceEvent}
+    (hmem : event ∈
+      (directory.rankData.bpChunkedRankTraceResultWithStore store
+        layout.rankBase (layout.rankBase + 1) (layout.rankBase + 2)
+        chunkSegment c true localSlot).trace) :
+    event ∈
+      (directory.bpChunkedReadTraceResultWithStore layout chunkSegment
+        store c base localSlot localOccurrence).trace := by
+  unfold GenericSelect.SparseExceptionDirectory.bpChunkedReadTraceResultWithStore
+  rw [WordRAM.TraceResult.bind_trace]
+  exact List.mem_append_left _ hmem
+
+private theorem chunkedSparseDirectoryTrace_relative_mem
+    {bits : List Bool} {target : Bool}
+    {rankSuperOverhead rankBlockOverhead : Nat}
+    (directory : GenericSelect.SparseExceptionDirectory bits target
+      rankSuperOverhead rankBlockOverhead)
+    (layout : GenericSelect.SparseExceptionDirectoryTraceSegmentBases)
+    (chunkSegment : Nat) (store : WordRAM.ReadStore) (c : Nat)
+    (base localSlot localOccurrence exceptionRank : Nat)
+    (hrankValue :
+      (directory.rankData.bpChunkedRankTraceResultWithStore store
+        layout.rankBase (layout.rankBase + 1) (layout.rankBase + 2)
+        chunkSegment c true localSlot).value = exceptionRank)
+    {event : WordRAM.TraceEvent}
+    (hmem : event ∈
+      (GenericSelect.bpRelativeOffsetReadTraceResultWithStore store
+        layout.relativeBase base
+        (GenericSelect.relativeSplitSelectSparseCompactSlot exceptionRank
+          localOccurrence directory.localStride)).trace) :
+    event ∈
+      (directory.bpChunkedReadTraceResultWithStore layout chunkSegment
+        store c base localSlot localOccurrence).trace := by
+  unfold GenericSelect.SparseExceptionDirectory.bpChunkedReadTraceResultWithStore
+  rw [WordRAM.TraceResult.bind_trace]
+  apply List.mem_append_right
+  rw [hrankValue]
+  exact hmem
+
+private theorem chunkedSelectTrace_sparse_read_mem
+    {bits : List Bool} {target : Bool}
+    {rankSuperOverhead rankBlockOverhead : Nat}
+    (data : GenericSelect.SparseExceptionSelectData bits target
       rankSuperOverhead rankBlockOverhead)
     (layout : GenericSelect.SparseExceptionSelectTraceSegmentLayout)
+    (chunkSegment selectTableSegment : Nat)
+    (store : WordRAM.ReadStore) (c idx : Nat)
+    (hvalid : idx < GenericSelect.occurrenceCount bits target)
     (super loc : GenericSelect.SparseDenseSelectDenseLocalEntry)
-    (hvalid : 0 < GenericSelect.occurrenceCount bits false)
-    (hsuperValue :
-      (data.superTable.readTraceResultRelabeled layout.superTable 0).value =
-        some super)
-    (hsuperMarked :
-      GenericSelect.relativeSplitSelectEntryIsMarked super = false)
-    (hlocalSlot :
-      GenericSelect.relativeSplitSelectLocalSlot 0 data.superStride
-        data.localSlotsPerSuper data.localStride super = 0)
-    (hlocalValue :
-      (data.localTable.readTraceResultRelabeled layout.localTable 0).value =
-        some loc)
+    (hsuper :
+      (data.superTable.readTraceResultRelabeledWithStore layout.superTable
+        store
+        (GenericSelect.selectSuperSlot
+          (data.queryOccurrence idx) data.superStride)).value = some super)
+    (hshort : GenericSelect.relativeSplitSelectEntryIsMarked super = false)
+    (hlocal :
+      (data.localTable.readTraceResultRelabeledWithStore layout.localTable
+        store
+        (GenericSelect.relativeSplitSelectLocalSlot
+          (data.queryOccurrence idx) data.superStride
+          data.localSlotsPerSuper data.localStride super)).value = some loc)
     (hlocalMarked :
       GenericSelect.relativeSplitSelectEntryIsMarked loc = true)
-    (hbasePosition :
-      GenericSelect.relativeSplitSelectLocalBasePosition
-        data.wordSize super loc = 1)
-    (hreads :
-      (∃ word, WordRAM.TraceEvent.readWord 13 0 (some word) ∈
-        (data.sparseDirectory.readTraceResultRelabeled
-          layout.sparseDirectory 1 0 0).trace) ∧
-      (∃ word, WordRAM.TraceEvent.readWord 14 0 (some word) ∈
-        (data.sparseDirectory.readTraceResultRelabeled
-          layout.sparseDirectory 1 0 0).trace) ∧
-      (∃ word, WordRAM.TraceEvent.readWord 15 0 (some word) ∈
-        (data.sparseDirectory.readTraceResultRelabeled
-          layout.sparseDirectory 1 0 0).trace) ∧
-      (∃ word, WordRAM.TraceEvent.readWord 16 0 (some word) ∈
-        (data.sparseDirectory.readTraceResultRelabeled
-          layout.sparseDirectory 1 0 0).trace)) :
+    {event : WordRAM.TraceEvent}
+    (hmem : event ∈
+      (data.sparseDirectory.bpChunkedReadTraceResultWithStore
+        layout.sparseDirectory chunkSegment store c
+        (GenericSelect.relativeSplitSelectLocalBasePosition
+          data.wordSize super loc)
+        (GenericSelect.relativeSplitSelectLocalSlot
+          (data.queryOccurrence idx) data.superStride
+          data.localSlotsPerSuper data.localStride super)
+        ((data.queryOccurrence idx) -
+          GenericSelect.relativeSplitSelectLocalBaseOccurrence super
+            loc)).trace) :
+    event ∈
+      (data.bpChunkedSelectTraceResultWithStore layout chunkSegment
+        selectTableSegment store c idx).trace := by
+  unfold GenericSelect.SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore
+  simp only [if_pos hvalid, WordRAM.TraceResult.bind_trace,
+    List.mem_append]
+  apply Or.inr
+  simp [hsuper, hshort]
+  apply Or.inr
+  simpa [hlocal, hlocalMarked] using hmem
+
+private theorem twoLevelRankData_sample_words_present
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data : SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
+      bits superOverhead blockOverhead queryCost)
+    (target : Bool) (pos : Nat) (hpos : pos <= bits.length) :
+    (∃ word,
+      (data.superSampleWords
+        target)[pos / data.wordSize / data.blocksPerSuper]? = some word) ∧
+    (∃ word,
+      (data.blockSampleWords target)[pos / data.wordSize]? = some word) ∧
+    (∃ word,
+      data.bitWords.store.words[pos / data.wordSize]? = some word) := by
+  refine ⟨?_, ?_, ?_⟩
+  · rcases data.super_present target pos hpos with ⟨sample, hsample⟩
+    cases target with
+    | false =>
+        apply fixedWidthNatTable_word_present_of_entry_present
+          data.superTables.falseTable
+        simpa [SuccinctSpace.FixedWidthRankSampleTables.entries] using
+          hsample
+    | true =>
+        apply fixedWidthNatTable_word_present_of_entry_present
+          data.superTables.trueTable
+        simpa [SuccinctSpace.FixedWidthRankSampleTables.entries] using
+          hsample
+  · rcases data.block_present target pos hpos with ⟨delta, hdelta⟩
+    cases target with
+    | false =>
+        apply fixedWidthNatTable_word_present_of_entry_present
+          data.blockTables.falseTable
+        simpa [SuccinctSpace.FixedWidthRankSampleTables.entries] using
+          hdelta
+    | true =>
+        apply fixedWidthNatTable_word_present_of_entry_present
+          data.blockTables.trueTable
+        simpa [SuccinctSpace.FixedWidthRankSampleTables.entries] using
+          hdelta
+  · exact data.word_present pos hpos
+
+private theorem chunkedRankTwinWithStore_value_zero
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (data : SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
+      bits superOverhead blockOverhead queryCost)
+    {store : WordRAM.ReadStore}
+    {superSegment blockSegment wordSegment chunkSegment c : Nat}
+    (hsuper :
+      forall address,
+        store.readWord? superSegment address =
+          (data.superSampleWords true)[address]?)
+    (hblock :
+      forall address,
+        store.readWord? blockSegment address =
+          (data.blockSampleWords true)[address]?)
+    (hword :
+      forall address,
+        store.readWord? wordSegment address =
+          data.bitWords.store.words[address]?)
+    (hchunk :
+      forall address,
+        store.readWord? chunkSegment address =
+          (SuccinctClose.bpFringeChunkTable c).store.words[address]?)
+    (hc : 0 < c) (hlen : data.wordSize <= 8 * c) :
+    (data.bpChunkedRankTraceResultWithStore store superSegment
+      blockSegment wordSegment chunkSegment c true 0).value = 0 := by
+  have h := data.bpChunkedRankTraceResultWithStore_toCosted_of_agree
+    hsuper hblock hword hchunk 0
+  have hv := congrArg Costed.value h
+  rw [WordRAM.TraceResult.toCosted_value] at hv
+  rw [hv, data.bpChunkedRankCosted_value_eq hc hlen true 0]
+  have hexact := data.rankInterpretedCosted_exact true 0
+  rw [Succinct.rankPrefix_zero] at hexact
+  rw [data.rankInterpretedCosted_refines_rankCosted true 0] at hexact
+  exact hexact
+
+private theorem reviewerSparseDirectory_successful_reads :
     (∃ word, WordRAM.TraceEvent.readWord 13 0 (some word) ∈
-      (data.selectTraceResultRelabeled layout 0).trace) ∧
+      ((GenericSelect.sparseExceptionSelectData reviewerSparseShape.bpCode
+        false).sparseDirectory.bpChunkedReadTraceResultWithStore
+        concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory
+        concreteBPNativeFringeChunkTraceSegment
+        (concreteBPNativeSuccinctRMQGlobalReadStore reviewerSparseShape)
+        (SuccinctClose.bpFringeChunkBits reviewerSparseShape.bpCode.length)
+        1 0 0).trace) ∧
     (∃ word, WordRAM.TraceEvent.readWord 14 0 (some word) ∈
-      (data.selectTraceResultRelabeled layout 0).trace) ∧
+      ((GenericSelect.sparseExceptionSelectData reviewerSparseShape.bpCode
+        false).sparseDirectory.bpChunkedReadTraceResultWithStore
+        concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory
+        concreteBPNativeFringeChunkTraceSegment
+        (concreteBPNativeSuccinctRMQGlobalReadStore reviewerSparseShape)
+        (SuccinctClose.bpFringeChunkBits reviewerSparseShape.bpCode.length)
+        1 0 0).trace) ∧
     (∃ word, WordRAM.TraceEvent.readWord 15 0 (some word) ∈
-      (data.selectTraceResultRelabeled layout 0).trace) ∧
+      ((GenericSelect.sparseExceptionSelectData reviewerSparseShape.bpCode
+        false).sparseDirectory.bpChunkedReadTraceResultWithStore
+        concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory
+        concreteBPNativeFringeChunkTraceSegment
+        (concreteBPNativeSuccinctRMQGlobalReadStore reviewerSparseShape)
+        (SuccinctClose.bpFringeChunkBits reviewerSparseShape.bpCode.length)
+        1 0 0).trace) ∧
     (∃ word, WordRAM.TraceEvent.readWord 16 0 (some word) ∈
-      (data.selectTraceResultRelabeled layout 0).trace) := by
-  have hsuperSlot : GenericSelect.selectSuperSlot 0 data.superStride = 0 := by
-    simp [GenericSelect.selectSuperSlot]
-  have liftSparse
-      {event : WordRAM.TraceEvent}
-      (hmem : event ∈
-        (data.sparseDirectory.readTraceResultRelabeled
-          layout.sparseDirectory 1 0 0).trace) :
-      event ∈ (data.selectTraceResultRelabeled layout 0).trace := by
-    unfold GenericSelect.SparseExceptionSelectData.selectTraceResultRelabeled
-    simp only [GenericSelect.SparseExceptionSelectData.queryOccurrence]
-    simp [hvalid, hsuperSlot, hsuperValue, hsuperMarked, hlocalSlot,
-      hlocalValue, hlocalMarked, hbasePosition,
-      WordRAM.TraceResult.bind_trace, List.mem_append]
-    exact Or.inr (Or.inr hmem)
-  rcases hreads with
-    ⟨⟨word13, h13⟩, ⟨word14, h14⟩, ⟨word15, h15⟩, ⟨word16, h16⟩⟩
-  exact ⟨⟨word13, liftSparse h13⟩, ⟨word14, liftSparse h14⟩,
-    ⟨word15, liftSparse h15⟩, ⟨word16, liftSparse h16⟩⟩
+      ((GenericSelect.sparseExceptionSelectData reviewerSparseShape.bpCode
+        false).sparseDirectory.bpChunkedReadTraceResultWithStore
+        concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory
+        concreteBPNativeFringeChunkTraceSegment
+        (concreteBPNativeSuccinctRMQGlobalReadStore reviewerSparseShape)
+        (SuccinctClose.bpFringeChunkBits reviewerSparseShape.bpCode.length)
+        1 0 0).trace) := by
+  let dataD := (GenericSelect.sparseExceptionSelectData
+    reviewerSparseShape.bpCode false).sparseDirectory
+  let layout := concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory
+  have hqp : dataD.rankData.queryPos 0 = 0 := by
+    unfold SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.queryPos
+    exact Nat.zero_min _
+  have hwi : dataD.rankData.wordIndex 0 = 0 := by
+    unfold SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.wordIndex
+    rw [hqp]
+    exact Nat.zero_div _
+  have hsi : dataD.rankData.superIndex 0 = 0 := by
+    unfold SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.superIndex
+    rw [hwi]
+    exact Nat.zero_div _
+  obtain ⟨⟨superWord, hsuperWord⟩, ⟨blockWord, hblockWord⟩,
+      ⟨wordBits, hwordBits⟩⟩ :=
+    twoLevelRankData_sample_words_present dataD.rankData true 0
+      (Nat.zero_le _)
+  rw [Nat.zero_div, Nat.zero_div] at hsuperWord
+  rw [Nat.zero_div] at hblockWord
+  rw [Nat.zero_div] at hwordBits
+  have hsuperRead :
+      (concreteBPNativeSuccinctRMQGlobalReadStore
+        reviewerSparseShape).readWord? layout.rankBase
+          (dataD.rankData.superIndex 0) = some superWord := by
+    rw [hsi]
+    rw [concreteBPNativeSuccinctRMQGlobalReadStore_selectSparseRankSuper]
+    exact hsuperWord
+  have hblockRead :
+      (concreteBPNativeSuccinctRMQGlobalReadStore
+        reviewerSparseShape).readWord? (layout.rankBase + 1)
+          (dataD.rankData.wordIndex 0) = some blockWord := by
+    rw [hwi]
+    rw [concreteBPNativeSuccinctRMQGlobalReadStore_selectSparseRankBlock]
+    exact hblockWord
+  have hwordRead :
+      (concreteBPNativeSuccinctRMQGlobalReadStore
+        reviewerSparseShape).readWord? (layout.rankBase + 2)
+          (dataD.rankData.wordIndex 0) = some wordBits := by
+    rw [hwi]
+    rw [concreteBPNativeSuccinctRMQGlobalReadStore_selectSparseRankWord]
+    exact hwordBits
+  have hchunkReads := chunkedRankTraceWithStore_successful_reads_sparse
+    dataD.rankData
+    (concreteBPNativeSuccinctRMQGlobalReadStore reviewerSparseShape)
+    layout.rankBase (layout.rankBase + 1) (layout.rankBase + 2)
+    concreteBPNativeFringeChunkTraceSegment
+    (SuccinctClose.bpFringeChunkBits reviewerSparseShape.bpCode.length)
+    true 0 hsuperRead hblockRead hwordRead
+  have hagreeSuper := fun address =>
+    concreteBPNativeSuccinctRMQGlobalReadStore_selectSparseRankSuper
+      reviewerSparseShape address
+  have hagreeBlock := fun address =>
+    concreteBPNativeSuccinctRMQGlobalReadStore_selectSparseRankBlock
+      reviewerSparseShape address
+  have hagreeWord := fun address =>
+    concreteBPNativeSuccinctRMQGlobalReadStore_selectSparseRankWord
+      reviewerSparseShape address
+  have hagreeChunk := fun address =>
+    concreteBPNativeSuccinctRMQGlobalReadStore_fringeChunkTable
+      reviewerSparseShape address
+  have hrankValueChunked :
+      (dataD.rankData.bpChunkedRankTraceResultWithStore
+        (concreteBPNativeSuccinctRMQGlobalReadStore reviewerSparseShape)
+        layout.rankBase (layout.rankBase + 1) (layout.rankBase + 2)
+        concreteBPNativeFringeChunkTraceSegment
+        (SuccinctClose.bpFringeChunkBits reviewerSparseShape.bpCode.length)
+        true 0).value = 0 := by
+    exact chunkedRankTwinWithStore_value_zero dataD.rankData
+      hagreeSuper hagreeBlock hagreeWord hagreeChunk
+      (SuccinctClose.bpFringeChunkBits_pos reviewerSparseShape.bpCode.length)
+      (concreteBPNativeSelectCloseSparseRank_wordSize_le_8_chunk
+        reviewerSparseShape)
+  have hdirectoryEntry : dataD.relativeEntries[0]? = some 0 := by
+    simpa [dataD, GenericSelect.sparseExceptionSelectData,
+      GenericSelect.sparseExceptionDirectory] using
+      reviewerSparse_relativeEntry_zero
+  rcases fixedWidthNatTable_word_present_of_entry_present
+      dataD.relativeTable hdirectoryEntry with ⟨word16, hword16⟩
+  have hrelRead :
+      (concreteBPNativeSuccinctRMQGlobalReadStore
+        reviewerSparseShape).readWord? layout.relativeBase 0 =
+        some word16 := by
+    rw [concreteBPNativeSuccinctRMQGlobalReadStore_selectSparseRelative]
+    exact hword16
+  have hslot :
+      GenericSelect.relativeSplitSelectSparseCompactSlot 0 0
+        dataD.localStride = 0 := by
+    simp [GenericSelect.relativeSplitSelectSparseCompactSlot]
+  have hrelMem :
+      WordRAM.TraceEvent.readWord layout.relativeBase 0 (some word16) ∈
+        (GenericSelect.bpRelativeOffsetReadTraceResultWithStore
+          (concreteBPNativeSuccinctRMQGlobalReadStore reviewerSparseShape)
+          layout.relativeBase 1
+          (GenericSelect.relativeSplitSelectSparseCompactSlot 0 0
+            dataD.localStride)).trace := by
+    unfold GenericSelect.bpRelativeOffsetReadTraceResultWithStore
+    rw [WordRAM.TraceResult.map_trace, hslot]
+    simp [SuccinctClose.bpChunkReadTraceResult, hrelRead]
+  rcases hchunkReads with ⟨h13c, h14c, h15c⟩
+  refine ⟨⟨superWord, ?_⟩, ⟨blockWord, ?_⟩,
+    ⟨wordBits, ?_⟩, ⟨word16, ?_⟩⟩
+  · apply chunkedSparseDirectoryTrace_rank_mem dataD layout
+      concreteBPNativeFringeChunkTraceSegment
+      (concreteBPNativeSuccinctRMQGlobalReadStore reviewerSparseShape)
+      (SuccinctClose.bpFringeChunkBits reviewerSparseShape.bpCode.length)
+      1 0 0
+    have h := h13c
+    rw [hsi] at h
+    exact h
+  · apply chunkedSparseDirectoryTrace_rank_mem dataD layout
+      concreteBPNativeFringeChunkTraceSegment
+      (concreteBPNativeSuccinctRMQGlobalReadStore reviewerSparseShape)
+      (SuccinctClose.bpFringeChunkBits reviewerSparseShape.bpCode.length)
+      1 0 0
+    have h := h14c
+    rw [hwi] at h
+    exact h
+  · apply chunkedSparseDirectoryTrace_rank_mem dataD layout
+      concreteBPNativeFringeChunkTraceSegment
+      (concreteBPNativeSuccinctRMQGlobalReadStore reviewerSparseShape)
+      (SuccinctClose.bpFringeChunkBits reviewerSparseShape.bpCode.length)
+      1 0 0
+    have h := h15c
+    rw [hwi] at h
+    exact h
+  · apply chunkedSparseDirectoryTrace_relative_mem dataD layout
+      concreteBPNativeFringeChunkTraceSegment
+      (concreteBPNativeSuccinctRMQGlobalReadStore reviewerSparseShape)
+      (SuccinctClose.bpFringeChunkBits reviewerSparseShape.bpCode.length)
+      1 0 0 0 hrankValueChunked
+    exact hrelMem
 
 private theorem reviewerSparseSelect_successful_reads :
     (∃ word, WordRAM.TraceEvent.readWord 13 0 (some word) ∈
@@ -640,9 +931,17 @@ private theorem reviewerSparseSelect_successful_reads :
     exact reviewerSparseN_pos
   have hsuperGet := GenericSelect.superEntries_get?
     reviewerSparseShape.bpCode false reviewerSparse_superSlotCount_pos
+  have hsuperWS :
+      data.superTable.readTraceResultRelabeledWithStore layout.superTable
+        (concreteBPNativeSuccinctRMQGlobalReadStore reviewerSparseShape) 0 =
+      data.superTable.readTraceResultRelabeled layout.superTable 0 :=
+    canonicalSuperTableWithStore_eq_sparse reviewerSparseShape 0
   have hsuperValue :
-      (data.superTable.readTraceResultRelabeled layout.superTable 0).value =
+      (data.superTable.readTraceResultRelabeledWithStore layout.superTable
+        (concreteBPNativeSuccinctRMQGlobalReadStore reviewerSparseShape)
+        0).value =
         some (GenericSelect.superEntry reviewerSparseShape.bpCode false 0) := by
+    rw [hsuperWS]
     calc
       _ = data.superEntries[0]? :=
         denseEntryTraceResultRelabeled_value data.superTable
@@ -660,9 +959,17 @@ private theorem reviewerSparseSelect_successful_reads :
       GenericSelect.selectSuperSlot, GenericSelect.superEntry]
   have hlocalGet := GenericSelect.localEntries_get?
     reviewerSparseShape.bpCode false reviewerSparse_localSlotCount_pos
+  have hlocalWS :
+      data.localTable.readTraceResultRelabeledWithStore layout.localTable
+        (concreteBPNativeSuccinctRMQGlobalReadStore reviewerSparseShape) 0 =
+      data.localTable.readTraceResultRelabeled layout.localTable 0 :=
+    canonicalLocalTableWithStore_eq_sparse reviewerSparseShape 0
   have hlocalValue :
-      (data.localTable.readTraceResultRelabeled layout.localTable 0).value =
+      (data.localTable.readTraceResultRelabeledWithStore layout.localTable
+        (concreteBPNativeSuccinctRMQGlobalReadStore reviewerSparseShape)
+        0).value =
         some (GenericSelect.localEntry reviewerSparseShape.bpCode false 0) := by
+    rw [hlocalWS]
     calc
       _ = data.localEntries[0]? :=
         denseEntryTraceResultRelabeled_value data.localTable
@@ -678,22 +985,63 @@ private theorem reviewerSparseSelect_successful_reads :
     simpa [data, GenericSelect.sparseExceptionSelectData,
       reviewerSparse_localBaseOccurrence, reviewerSparse_position_zero]
       using hexact
-  change
-    (∃ word, WordRAM.TraceEvent.readWord 13 0 (some word) ∈
-      (data.selectTraceResultRelabeled layout 0).trace) ∧
-    (∃ word, WordRAM.TraceEvent.readWord 14 0 (some word) ∈
-      (data.selectTraceResultRelabeled layout 0).trace) ∧
-    (∃ word, WordRAM.TraceEvent.readWord 15 0 (some word) ∈
-      (data.selectTraceResultRelabeled layout 0).trace) ∧
-    (∃ word, WordRAM.TraceEvent.readWord 16 0 (some word) ∈
-      (data.selectTraceResultRelabeled layout 0).trace)
-  apply successful_sparse_route_reads data layout
-    (GenericSelect.superEntry reviewerSparseShape.bpCode false 0)
-    (GenericSelect.localEntry reviewerSparseShape.bpCode false 0)
-    hvalid hsuperValue reviewerSparse_super_marked_false hlocalSlot
-    hlocalValue reviewerSparse_local_marked_true hbasePosition
-  simpa [data, layout, GenericSelect.sparseExceptionSelectData] using
-    reviewerSparseDirectory_successful_reads
+  have hsuperSlot' :
+      GenericSelect.selectSuperSlot (data.queryOccurrence 0)
+        data.superStride = 0 := by
+    simp [GenericSelect.SparseExceptionSelectData.queryOccurrence,
+      GenericSelect.selectSuperSlot]
+  have liftSparse
+      {event : WordRAM.TraceEvent}
+      (hmem : event ∈
+        (data.sparseDirectory.bpChunkedReadTraceResultWithStore
+          concreteBPNativeSelectCloseTraceSegmentLayout.sparseDirectory
+          concreteBPNativeFringeChunkTraceSegment
+          (concreteBPNativeSuccinctRMQGlobalReadStore reviewerSparseShape)
+          (SuccinctClose.bpFringeChunkBits
+            reviewerSparseShape.bpCode.length)
+          1 0 0).trace) :
+      event ∈
+        (data.bpChunkedSelectTraceResultWithStore layout
+          concreteBPNativeFringeChunkTraceSegment
+          concreteBPNativeSelectChunkTraceSegment
+          (concreteBPNativeSuccinctRMQGlobalReadStore reviewerSparseShape)
+          (SuccinctClose.bpFringeChunkBits
+            reviewerSparseShape.bpCode.length)
+          0).trace := by
+    apply chunkedSelectTrace_sparse_read_mem data layout _ _ _ _ 0 hvalid
+      (GenericSelect.superEntry reviewerSparseShape.bpCode false 0)
+      (GenericSelect.localEntry reviewerSparseShape.bpCode false 0)
+      (by rw [show GenericSelect.selectSuperSlot (data.queryOccurrence 0)
+            data.superStride = 0 from hsuperSlot']
+          exact hsuperValue)
+      reviewerSparse_super_marked_false
+      (by rw [show GenericSelect.relativeSplitSelectLocalSlot
+            (data.queryOccurrence 0) data.superStride
+            data.localSlotsPerSuper data.localStride
+            (GenericSelect.superEntry reviewerSparseShape.bpCode false 0) =
+            0 from hlocalSlot]
+          exact hlocalValue)
+      reviewerSparse_local_marked_true
+    rw [show GenericSelect.relativeSplitSelectLocalBasePosition
+        data.wordSize
+        (GenericSelect.superEntry reviewerSparseShape.bpCode false 0)
+        (GenericSelect.localEntry reviewerSparseShape.bpCode false 0) =
+        1 from hbasePosition]
+    rw [show GenericSelect.relativeSplitSelectLocalSlot
+        (data.queryOccurrence 0) data.superStride
+        data.localSlotsPerSuper data.localStride
+        (GenericSelect.superEntry reviewerSparseShape.bpCode false 0) =
+        0 from hlocalSlot]
+    rw [show (data.queryOccurrence 0) -
+        GenericSelect.relativeSplitSelectLocalBaseOccurrence
+          (GenericSelect.superEntry reviewerSparseShape.bpCode false 0)
+          (GenericSelect.localEntry reviewerSparseShape.bpCode false 0) =
+        0 from Nat.zero_sub _]
+    exact hmem
+  rcases reviewerSparseDirectory_successful_reads with
+    ⟨⟨word13, h13⟩, ⟨word14, h14⟩, ⟨word15, h15⟩, ⟨word16, h16⟩⟩
+  exact ⟨⟨word13, liftSparse h13⟩, ⟨word14, liftSparse h14⟩,
+    ⟨word15, liftSparse h15⟩, ⟨word16, liftSparse h16⟩⟩
 
 private theorem reviewerSource_successful_of_select_component_mem
     (shape : Cartesian.CartesianShape) (xs : List Int)
