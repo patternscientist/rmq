@@ -164,6 +164,74 @@ theorem bpChunkedSameBlockCloseSeededTraceResultAtSegment_no_syntheticCostOnlyPr
   · intro address _hlt
     simp [WordRAM.TraceEvent.isSyntheticCostOnlyPrimitive]
 
+/--
+Every charged chunked same-block invocation performs a SUCCESSFUL chunk-table
+read: the first visited slot is inside the stored row range, so the emitted
+event carries `some word` rather than `none`.  This is the W19
+successful-occurrence obligation for the same-block arm; the cross-block twin
+is `bpChunkedLeftFringeCandidateSeededTraceResultAtSegment_fringe_successful_mayRead`.
+-/
+theorem bpChunkedSameBlockCloseSeededTraceResultAtSegment_fringe_successful_mayRead
+    (shape : Cartesian.CartesianShape)
+    (fringeSegment blockSize leftClose rightClose seed : Nat) :
+    ∃ index word,
+      WordRAM.TraceEvent.readWord fringeSegment index (some word) ∈
+        (bpChunkedSameBlockCloseSeededTraceResultAtSegment
+          shape fringeSegment blockSize leftClose rightClose seed).trace := by
+  let c := bpFringeChunkBits shape.bpCode.length
+  let base := localBPWindowBase shape blockSize leftClose
+  let start := leftClose + 1
+  let count := rightClose - leftClose + 1
+  let relLo := start - base
+  let relHi := start + count - 1 - base
+  let window := localBPWindowBits shape blockSize leftClose
+  let slot :=
+    bpFringeChunkSlot c (bpFringeWindowChunkValue c window 0)
+      (bpFringeChunkStartOff c relLo 0) (bpFringeChunkEndOff c relHi 0)
+  have hsize :
+      (bpFringeChunkTable c).store.words.size = bpFringeChunkRowCount c := by
+    simp [bpFringeChunkTable, SuccinctSpace.FixedWidthNatTable.ofEntries,
+      SuccinctSpace.FixedWidthNatTable.ofEncodedWords]
+  have hslotLt : slot < (bpFringeChunkTable c).store.words.size := by
+    rw [hsize]
+    exact
+      bpFringeChunkSlot_lt_rowCount
+        (bpFringeWindowChunkValue_lt c window 0)
+        (bpFringeChunkStartOff_le c relLo 0)
+        (bpFringeChunkEndOff_le c relHi 0)
+  have hword :
+      (bpFringeChunkTable c).store.words[slot]? =
+        some ((bpFringeChunkTable c).store.words[slot]'hslotLt) := by
+    simp [hslotLt]
+  have hmem :=
+    bpFringeChunkFoldTraceResultAtSegment_head_mem
+      (bpFringeChunkTable c) fringeSegment c window seed relLo relHi
+      (Nat.min (relHi / c + 1) 33)
+      (Nat.lt_min.mpr ⟨Nat.succ_pos _, by omega⟩)
+  rw [hword] at hmem
+  have hcand :
+      WordRAM.TraceEvent.readWord fringeSegment slot
+          (some ((bpFringeChunkTable c).store.words[slot]'hslotLt)) ∈
+        (bpChunkedSameBlockCloseSeededTraceResultAtSegment
+          shape fringeSegment blockSize leftClose rightClose seed).trace := by
+    show WordRAM.TraceEvent.readWord fringeSegment slot
+        (some ((bpFringeChunkTable c).store.words[slot]'hslotLt)) ∈
+      (WordRAM.TraceResult.bind
+        (localBPWindowBitsTraceResult shape blockSize leftClose)
+        (fun window =>
+          WordRAM.TraceResult.map
+            (fun st =>
+              bpCandidateClose? (bpFringeCandGlobal base seed start st.2))
+            (bpFringeChunkFoldTraceResultAtSegment (bpFringeChunkTable c)
+              fringeSegment c window seed relLo relHi
+              (Nat.min (relHi / c + 1) 33)))).trace
+    rw [WordRAM.TraceResult.bind_trace]
+    apply List.mem_append_right
+    rw [WordRAM.TraceResult.map_trace]
+    rw [localBPWindowBitsTraceResult_value]
+    exact hmem
+  exact ⟨slot, _, hcand⟩
+
 /-! ## Supplied-store twins -/
 
 theorem bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore_eq_of_agree
@@ -435,6 +503,35 @@ theorem bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment_no_synthe
         blockSize leftClose
   · intro address _hlt
     simp [WordRAM.TraceEvent.isSyntheticCostOnlyPrimitive]
+
+/--
+The decoded same-block arm performs a successful chunk-table read at
+`fringeSegment`.  Lifts the seeded W19 witness across the rank-seed bind.
+-/
+theorem bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment_fringe_successful_mayRead
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (fringeSegment blockSize leftClose rightClose : Nat) :
+    ∃ index word,
+      WordRAM.TraceEvent.readWord fringeSegment index (some word) ∈
+        (bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment
+          shape rankCloseTrace fringeSegment blockSize leftClose
+          rightClose).trace := by
+  obtain ⟨index, word, hmem⟩ :=
+    bpChunkedSameBlockCloseSeededTraceResultAtSegment_fringe_successful_mayRead
+      shape fringeSegment blockSize leftClose rightClose
+      (localBPSeedFromRankCloseTraceResult
+        shape rankCloseTrace blockSize leftClose).value
+  refine ⟨index, word, ?_⟩
+  show WordRAM.TraceEvent.readWord fringeSegment index (some word) ∈
+    (WordRAM.TraceResult.bind
+      (localBPSeedFromRankCloseTraceResult
+        shape rankCloseTrace blockSize leftClose)
+      fun seed =>
+        bpChunkedSameBlockCloseSeededTraceResultAtSegment
+          shape fringeSegment blockSize leftClose rightClose seed).trace
+  rw [WordRAM.TraceResult.bind_trace]
+  exact List.mem_append_right _ hmem
 
 theorem bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore_eq_of_agree
     {shape : Cartesian.CartesianShape} {store : WordRAM.ReadStore}

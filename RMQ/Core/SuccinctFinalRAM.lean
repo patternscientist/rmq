@@ -2339,6 +2339,65 @@ def concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
     concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
     leftClose rightClose
 
+/--
+W19 same-block successful-occurrence witness on the ACCEPTED route: whenever
+the canonical close/LCA execution takes the same-block branch, its global
+word trace contains a successful read at segment 21
+(`concreteBPNativeFringeChunkTraceSegment`), the same charged chunk table the
+B2 cross-block fringe reads.  Universally quantified over every shape and
+every same-block close pair, so it covers every reachable same-block
+execution — including the `canonicalRoute=sameBlock` windows the cost harness
+reports — rather than one sampled query.
+-/
+theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_sameBlock_fringeChunk_successful_read
+    (shape : Cartesian.CartesianShape)
+    (leftClose rightClose : Nat)
+    (hsame :
+      SuccinctClose.blockOfClose
+          (SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw shape)
+          leftClose =
+        SuccinctClose.blockOfClose
+          (SuccinctClose.canonicalBPRelativeSummaryBlockSizeRaw shape)
+          rightClose) :
+    ∃ index word,
+      WordRAM.TraceEvent.readWord concreteBPNativeFringeChunkTraceSegment
+          index (some word) ∈
+        (concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
+          shape leftClose rightClose).trace :=
+  SuccinctClose.ConcreteCompactBPCloseLCADirectory.lcaCloseTraceResultWithRankSeedAllSizeStructural_sameBlock_fringe_successful_read
+    shape
+    (concreteBPNativeRankCloseWordTraceResultAtSegment
+      shape concreteBPNativeRankCloseTraceSegmentBase)
+    concreteBPNativeInteriorTraceSegments
+    concreteBPNativeFringeChunkTraceSegment
+    concreteBPNativeFiniteSmallSameBlockCloseTraceSegment
+    leftClose rightClose hsame
+
+/--
+The same-block arm is genuinely REACHABLE from a real RMQ query, not merely
+inhabited: every singleton query (`len = 1`) has `leftClose = rightClose` and
+therefore routes to the same-block branch, where it performs a successful
+segment-21 read.  This is the anti-vacuity companion to the witness above.
+-/
+theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_singletonQuery_fringeChunk_successful_read
+    (shape : Cartesian.CartesianShape)
+    {left leftClose rightClose : Nat}
+    (hleft : SuccinctSpace.bpCloseOfInorder? shape left = some leftClose)
+    (hright :
+      SuccinctSpace.bpCloseOfInorder? shape (left + 1 - 1) = some rightClose) :
+    ∃ index word,
+      WordRAM.TraceEvent.readWord concreteBPNativeFringeChunkTraceSegment
+          index (some word) ∈
+        (concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural
+          shape leftClose rightClose).trace := by
+  have hclose : leftClose = rightClose := by
+    have hidx : left + 1 - 1 = left := by omega
+    rw [hidx, hleft] at hright
+    exact Option.some.inj hright
+  exact
+    concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_sameBlock_fringeChunk_successful_read
+      shape leftClose rightClose (by rw [hclose])
+
 theorem concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural_refines_interpretedCosted
     (shape : Cartesian.CartesianShape)
     (leftClose rightClose : Nat) :

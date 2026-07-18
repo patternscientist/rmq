@@ -453,6 +453,34 @@ theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_matchesReadStore
           hfringe)
       hinterior
 
+/--
+W19 for the swapped same-block arm: whenever the accepted dispatcher takes
+the same-block branch, its trace contains a SUCCESSFUL chunk-table read at
+`fringeSegment`.  Quantified over every shape and every same-block close
+pair, so it covers every reachable same-block execution rather than one
+sampled query.
+-/
+theorem lcaCloseTraceResultWithRankSeedAllSizeStructural_sameBlock_fringe_successful_read
+    (shape : Cartesian.CartesianShape)
+    (rankCloseTrace : Nat -> WordRAM.TraceResult Nat)
+    (segments : BPRelativeRmmInteriorTraceSegments)
+    (fringeSegment sameBlockSegment leftClose rightClose : Nat)
+    (hsame :
+      blockOfClose (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose =
+        blockOfClose (canonicalBPRelativeSummaryBlockSizeRaw shape)
+          rightClose) :
+    ∃ index word,
+      WordRAM.TraceEvent.readWord fringeSegment index (some word) ∈
+        (lcaCloseTraceResultWithRankSeedAllSizeStructural
+          shape rankCloseTrace segments fringeSegment sameBlockSegment
+          leftClose rightClose).trace := by
+  unfold lcaCloseTraceResultWithRankSeedAllSizeStructural
+  simp only [hsame, if_pos]
+  exact
+    bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment_fringe_successful_mayRead
+      shape rankCloseTrace fringeSegment
+      (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose rightClose
+
 /-! ## Supplied-store dispatcher -/
 
 /-- Canonical supplied-store LCA-close route on the chunked fringe. -/
