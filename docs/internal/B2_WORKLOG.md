@@ -65,6 +65,42 @@ Branch `claude/b1-b2-charged-fringe-tables`, base `b6338ea`. Matrix:
       TraceResult/WithStore substitution + actual wiring = named
       successor rung.
 
+## Resume point (for the successor rung / continuation)
+
+The B2 core mathematical and Costed-layer content is complete and committed.
+Exact next steps, in order:
+
+1. TraceResult-layer chunked fringe: mirror
+   `bpFringeChunkFoldCostedFrom` as a `WordRAM.TraceResult` evaluator
+   emitting `readWord segment idx` events for the table reads, segment
+   PARAMETERIZED (follow the interior `AtSegments` pattern,
+   `concreteBPRelativeRmmInteriorRangeMinTraceResultAtSegmentsAllSizeStructural`);
+   prove `_refines` (toCosted = the Costed evaluator), `matchesReadStore`
+   under a store-agreement hypothesis (`store.readWord? segment i =
+   tableWords[i]?`), `no_syntheticCostOnlyPrimitive`, store-parametricity.
+2. TraceResult/WithStore substitution twins of
+   `bpChunkedCrossBlockCloseCostedWithRankSeed_value_eq` at
+   `crossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments`
+   (`ConcreteDirectoryRAM.lean:2358`) and its WithStore twin
+   (`ConcreteDirectoryRAMStoreParam.lean:4614`).
+3. Store extension (coupled, DD-20260717-003): new `ReviewerSource`
+   constructor for the fringe table, segment 21 (or a coordinator-chosen
+   placement), sources list/segment map/region/erasure fold/capacity
+   re-proof in `ReviewerPhysical.lean` (per-source feed already proven:
+   `bpFringeChunkRowCount_le_linear <= 64*(n+1)`; word width already
+   proven <= reviewer word bits); record the anticipated
+   `SuccinctFinalModelAdequacy` `segment < 21` fallout as B4 scope.
+4. Public swap: `buildPayload := bpChunkedBuildPayloadCandidate`-shape,
+   `overhead := bpChunkedOverheadCandidate`-shape (theorems already
+   committed), re-prove/adjust `FlatPayloadStoreNoSyntheticExecutionStory`'s
+   payload-identity conjunct once the execution reads the table.
+5. Wire `bpChunkedCrossBlockCloseCostedWithRankSeed` into
+   `canonicalLcaCloseCostedWithRankSeed` and the whole-query program;
+   re-derive the cost chain with
+   `bpChunkedPrincipledBPCloseChargedTraceCostWithRankSeed`
+   (endpointFringe := 37; expect route literal 2*13 + (2*4 + 2*37 + 30)
+   + 4 = 142).
+
 ## Current state
 
 M1 done. M2+M3 drafted in
