@@ -1268,3 +1268,111 @@ step semantics + width predicate + DD entries). M3 program + simulation
 (result agreement, receipt projection, invalid guard). M4 cost categories +
 derived literal. M5 amended target Prop + supersession note. M6 validator +
 doc discharge. M7 final battery + matrix closure.
+
+## M3d BLOCKER: the same-block LCA branch is still event-silent (SCOPE DECISION NEEDED)
+
+Found while inventorying the close/LCA structural leg (mission milestone 2,
+the flagged "last risk center").  This blocks milestones 2-7.  It does NOT
+affect anything landed through M3c-6g.
+
+### The finding
+
+The whole-query route's `.lcaClose` instruction dispatches to
+`concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural`
+(`SuccinctFinalRAM.lean:2330`, reached from
+`WholeQueryInstr.evalGlobalWordTrace` at `SuccinctFinalRAM.lean:3185-3191`).
+That object splits on `blockOfClose blockSize leftClose = blockOfClose
+blockSize rightClose` (`ChargedFringeWiring.lean:49-63`):
+
+- CROSS-BLOCK branch: `bpChunkedCrossBlockCloseTraceResultWithRankSeed
+  AllSizeStructuralAtSegments` — properly CHARGED.  This is the B2
+  charged-fringe work: every endpoint-fringe min-excess/argmin is paid for
+  by chunk-table reads at the fringe segment, under literal caps.
+- SAME-BLOCK branch: `localBPSameBlockCloseDecodedTraceResultWithRankSeed`
+  (`ConcreteDirectoryRAM.lean:1559`) — still EVENT-SILENT.
+
+The same-block branch is a rank seed plus
+`localBPSameBlockCloseSeededTraceResult` (`ConcreteDirectoryRAM.lean:334`),
+which is exactly ONE `TraceResult.map` over
+`localBPWindowBitsTraceResult` — and
+`localBPWindowBitsTraceResult_cost` (`ConcreteDirectoryRAM.lean:225`) checks
+that this contributes exactly `4` read events, independent of the query
+width.  The model's charge for the whole branch is likewise the constant
+`rankCost + 4` (`localBPSameBlockCloseDecodedCostedWithRankSeed_cost_le`,
+`LocalBPDecoder.lean:1179-1185`).
+
+Inside that single `map`, the value is computed by
+`localBPSeededPrefixRangeMinExcess` / `localBPSeededPrefixRangeArgMinPrefixPos`
+(`LocalBPDecoder.lean:929-941`), which recurse through
+`localBPSeededPrefixRangeArgMinPrefixPosFrom` (`:797-805`) — a PER-POSITION
+scan, one `localBPSeededBetterPrefixPos` comparison (`:739`) per position,
+for `count = rightClose - leftClose + 1` positions.
+
+### Why this blocks E1
+
+Same-block means `leftClose / blockSize = rightClose / blockSize`, so
+`count <= blockSize = 2 * (Nat.log2 shape.size + 1)`
+(`RelativeSummary.lean:1236-1242`).  That is UNBOUNDED in the size — 258 at
+`size = 2^128`, 2002 at `2^1000`.  So on this branch the machine must
+perform Theta(log n) comparisons while the accepted receipt contains a
+CONSTANT 4 window reads.  Under the frozen matrix that is jointly
+unsatisfiable:
+
+- REQ-E1-01 forbids an instruction that hides a variable-length scan, so
+  each of the `count` comparisons costs at least one charged step;
+- REQ-E1-06(c) demands a DERIVED all-size LITERAL total step bound with no
+  size hypothesis — impossible against a Theta(log n) step count;
+- and the obvious repair (fold the window chunk-wise against the fringe
+  chunk table, as the cross-block branch does) adds read events, which
+  REQ-E1-04 forbids: the read projection must be POSITIONALLY EQUAL to the
+  accepted trace, which has exactly those 4 window reads.
+
+The machine does not need more READS here — four words already carry the
+whole window — it needs more STEPS than any literal allows.
+
+### Why this is a scope decision, not a repair I may make
+
+DD-20260717-C05-001 already decided this class of thing: it replaces "the
+event-silent fringe min-excess extraction" with charged chunk-table lookups,
+and it explicitly REJECTS "keeping the extraction event-silent while
+re-labeling the machine 'fully charged': re-hides the scan E1 exists to
+expose; forbidden."  Option B (B2) applied that conversion to the
+CROSS-BLOCK fringe only.  The same-block window decode was never converted,
+and searches find NO charged/chunked same-block variant anywhere in the tree
+(`SameBlockClose` definitions are all event-silent; no
+`localBPWindowBits`-chunked path exists).
+
+Converting it is B2-class route work, and it necessarily perturbs the
+ACCEPTED route: a charged same-block window leg adds chunk-table reads to
+the accepted trace, which moves the accepted literal and therefore the
+FROZEN public identity `SuccinctClassic.queryCost_eq : queryCost = 207`
+(`SuccinctRMQClassic.lean:111`).  Standing rules for this rung forbid me
+from touching frozen public identities or weakening closed B2/B3/B4 rows,
+so I am not able to make that call unilaterally.
+
+### Status of the claim
+
+This is documented and evidence-backed but NOT kernel-checked as an
+obstruction: the step-count half rests on the informal (though routine)
+observation that the listed ISA cannot produce a window argmin in O(1)
+steps.  Deriving that as a checked lower bound is the same shape of argument
+as the R3 obstruction and would be its own task.  I am therefore NOT
+claiming OBSTRUCTED.
+
+### Coordinator decision needed
+
+Either (a) authorize a B2-style charged same-block window leg on the
+accepted route, accepting that the accepted literal and `queryCost = 207`
+move (and say whether that is this rung's work or a separate one); or
+(b) direct that E1 proceed cross-block-only with the same-block branch
+carried as an explicitly-argued residue (this weakens REQ-E1-03/04/06 to a
+branch-restricted claim and needs a matrix amendment); or (c) treat E1 as
+obstructed pending a formalized lower bound and commission that instead.
+
+### Resume point if the answer is (a) or (b)
+
+Milestone 1 is landed (`f2e3860`).  The cross-block branch is properly
+charged and its machine block can be built without any of the above being
+settled; the survey of its fold structure, caps, and segment agreement
+lemmas was in progress when this blocker surfaced.  The same-block branch is
+the ONLY event-silent leg found on the LCA route.
