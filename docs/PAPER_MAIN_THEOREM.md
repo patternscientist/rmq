@@ -57,7 +57,7 @@ primitive operands/results.
   certificate that every counted source and exact shared-BP consumer has a
   successful witness through some actual closed whole-query execution under a
   valid list query, that the successful predicate implies the common mutation
-  predicate, and that fresh segment 21 fails that predicate. It does not claim
+  predicate, and that fresh segment 23 fails that predicate. It does not claim
   those sources are read by the current paper-theorem query.
 - `RMQ.Headlines.succinctRMQReviewerEveryReadOccurrenceProvenance` and
   `RMQ.Headlines.listIntSuccinctRMQRawAdequacyOfValid`: indexed provenance and

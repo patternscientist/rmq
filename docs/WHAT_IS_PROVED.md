@@ -11,7 +11,7 @@ the global trace through the actual program occurrence, folded prefix state,
 component-local occurrence, and exact invocation parameters for the current
 query. Separately, every counted source and named shared-BP consumer has some
 successful actual closed-valid query witness; this global existential does not
-claim current-query liveness. The fresh segment-21 mutation is rejected with the common operational
+claim current-query liveness. The fresh segment-23 mutation is rejected with the common operational
 predicate, and a checked bridge relates successful positive witnesses to the
 mutation-side arbitrary-result predicate. Earlier event-value and component
 may-read theorems remain compatibility facts.
@@ -91,8 +91,8 @@ aliases.
 | `RMQ.Headlines.succinctRMQReviewerEveryReadOccurrenceProvenance` | Every indexed read retains its exact global position, producing program occurrence, folded state, local position, invocation parameters, source, and multiplicity-preserving trace embedding. |
 | `RMQ.Headlines.succinctRMQReviewerCountedSourceSuccessfulClosedValidOccurrence` | Every counted source has a successful occurrence through an actual closed whole-query execution under a valid ordinary list query. |
 | `RMQ.Headlines.succinctRMQReviewerSharedBPConsumerSuccessfulClosedValidOccurrence` | Each select/rank/canonical-close shared-BP consumer has such a successful occurrence through its exact leaf. |
-| `RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer` | Fresh segment 21 fails the common valid-occurrence predicate used by accepted sources. |
-| `RMQ.Headlines.succinctRMQReviewerManifestSemanticAdequacy` | Query-independent semantic-adequacy packet: each counted source and shared-BP consumer has some successful closed-valid execution witness, successful `P` implies the common mutation predicate `Q`, and fresh segment 21 fails `Q`. It does not assert that the current query reads every source. |
+| `RMQ.Headlines.succinctRMQReviewerFreshUnusedSourceNoProducer` | Fresh segment 23 fails the common valid-occurrence predicate used by accepted sources. |
+| `RMQ.Headlines.succinctRMQReviewerManifestSemanticAdequacy` | Query-independent semantic-adequacy packet: each counted source and shared-BP consumer has some successful closed-valid execution witness, successful `P` implies the common mutation predicate `Q`, and fresh segment 23 fails `Q`. It does not assert that the current query reads every source. |
 | `RMQ.Headlines.listIntSuccinctRMQInvalidPhysicalSemantics` | Empty, reversed, and out-of-bounds public queries share the guarded none/empty/zero logical and physical execution for every supplied store. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreAllSizeStructuralExecutionStory` | Uniform structural execution story using direct same-block decoding and canonical cross-block component replay. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreNoSyntheticExecutionStory` | Strongest all-size global execution story: the same store-backed and bounded trace plus a proof that no event is the dedicated synthetic cost-only marker. |

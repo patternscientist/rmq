@@ -22,6 +22,26 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
   early/frequent commits. No work was lost (nothing had been committed; the
   in-context read state was reconstructed from the same tree).
 
+## M1: bookkeeping repairs (C05 round-4 audit queue)
+
+- Fixed the stale "fresh segment 21" counterfactual mentions on the public
+  surfaces (the checked object is
+  `concreteBPNativeSuccinctRMQFreshUnusedCanonicalSource.segment = 23`,
+  `SuccinctFinalRAM.lean:6788`, since B3 added live segment 22): README.md
+  (2 lines), docs/WHAT_IS_PROVED.md (3 lines), artifact/CLAIMS.md (1 line),
+  docs/PAPER_MAIN_THEOREM.md (1 line), docs/PAPER_MODEL_ADEQUACY.md (1 line,
+  same staleness class, found during the fix sweep).
+- Fixed the 33-cap file attribution in PAPER_MODEL_ADEQUACY.md: the 33-cap
+  identity is checked in `ChargedFringeChunks.lean`; `ChargedWordChunks.lean`
+  / `ChargedTableRegime.lean` carry the 8-per-word cap and regime identities.
+- SKIPPED (sanctioned by delegation "skip if it risks churn"): the
+  unused-simp-arg warnings at `SuccinctFinalRAM.lean:5694-5824`. Reason:
+  warnings only; editing the 9k-line kernel-heavy module forces a
+  world-rebuild verification mid-rung for zero semantic gain, exactly the
+  churn risk the delegation names. No Lean source touched in M1.
+- Verification: doc-only commit (library unaffected); `claim_drift_scan.ps1`
+  + `paper_topology_lint.ps1` run at this commit (results in ledger).
+
 Planned milestones: M1 bookkeeping repairs (stale segment-21 doc lines ->
 23; 33-cap attribution; simp-arg warnings if cheap). M2 machine core (ISA +
 step semantics + width predicate + DD entries). M3 program + simulation

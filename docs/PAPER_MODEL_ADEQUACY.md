@@ -30,7 +30,7 @@ non-parameterized
 `ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy` states global
 reviewer-manifest facts: each counted source and shared-BP consumer has some
 closed valid execution witness, successful predicate `P` implies mutation
-predicate `Q`, and fresh segment 21 fails `Q`. The paper theorem consumes that
+predicate `Q`, and fresh segment 23 fails `Q`. The paper theorem consumes that
 global packet once, not underneath a current-query `ValidRange` premise.
 `SuccinctRMQClassicProvenance.lean` is only the proof-import seam. This split
 keeps symbolic witness construction out of the native validator link closure;
@@ -141,8 +141,10 @@ uncharged step is a BOUNDED-PER-STEP register computation - a constant-shape
 decode or merge between two charged reads - not an unbounded scan. The old
 event-silent per-position fringe scan and in-word rank/select loops are gone
 from the charged route; their replacements visit at most a literal number of
-chunks (8 per machine word, 33 per fringe window; checked cap identities in
-`ChargedWordChunks.lean`/`ChargedTableRegime.lean`), each chunk contributing
+chunks (8 per machine word, 33 per fringe window; the 33-cap identity is
+checked in `ChargedFringeChunks.lean`, the 8-per-word cap and its all-size
+regime identities in `ChargedWordChunks.lean`/`ChargedTableRegime.lean`),
+each chunk contributing
 one charged read plus constant register work. The E1 machine (the amended
 E1 target of `OPTION_B_CHARGED_FRINGE_DESIGN.md`) will define the richer
 instruction semantics that individually charges every controller, decode,
