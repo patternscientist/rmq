@@ -57,7 +57,7 @@ B3 precedent in DD-20260717-005 item 6).
 ## Milestones
 
 - [x] M1 matrix extension + this worklog + DD-20260718-003 (docs only).
-- [ ] M2 bookkeeping repairs commit (REQ-B4-01: correspondence-doc alias +
+- [x] M2 bookkeeping repairs commit (REQ-B4-01: correspondence-doc alias +
       counts, REQ-B3-07 wording, Register cost-lemma renames, stale
       docstrings, Segments.lean legacy-numeral comment, roadmap counts).
 - [ ] M3 chunk-width corner + direct o(n) theorems (REQ-B4-04/05).
@@ -75,3 +75,18 @@ B3 precedent in DD-20260717-005 item 6).
 (commands, exit codes, durations recorded per milestone)
 
 - M1: docs only.
+- M2: renames `concreteBPNativeSelectCloseInterpretedCosted_cost_le_thirteen`
+  -> `concreteBPNativeSelectCloseRegisterInterpretedCosted_cost_le_thirteen`
+  and `concreteBPNativeRankCloseInterpretedCosted_cost_le_four` ->
+  `concreteBPNativeRankCloseRegisterInterpretedCosted_cost_le_four`
+  (consumer check: repo-wide grep, zero consumers, no registry hits);
+  `PAPER_CLAIM_CORRESPONDENCE.md` row 1 alias `SumLe142` -> `SumLe207`,
+  row "typed 20-source universe" -> "22-source universe (23 logical
+  segments)" + fresh segment 21 -> 23; REQ-B3-07 evidence wording "23
+  sources" -> "22 sources (23 segments)"; stale docstrings
+  (`SuccinctFinalRAM.lean` read-segment doc "0 through 20" -> "0 through
+  22"; `ReviewerReachabilitySmall.lean` "thirteen" -> "fourteen" with the
+  segment-22 witness noted); `RMQ_FINAL_ROADMAP.md` W19 paragraph counts;
+  `Segments.lean` legacy `summary.minRel/maxRel := 21/22` shadowing-hazard
+  NOTE.  `lake build RMQ` (mutex-held) exit 0, `Build completed
+  successfully` (215 jobs).

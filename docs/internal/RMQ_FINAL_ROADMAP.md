@@ -127,7 +127,9 @@ and the fresh blind A04 audit recorded at
 `f5c2ab03a064e56f90a17574041cd116568416d8` on 2026-07-14.
 
 Every size uses `RelativeRmm.canonicalLayout` and the same close/LCA reviewer
-route. One exhaustive typed 20-source universe includes canonical close.
+route. One exhaustive typed 22-source universe (23 logical segments;
+segments `0` and `19` share the BP-code source) includes canonical close
+and the B2/B3 fringe/select chunk-table sources.
 For every indexed read, W19 retains the same global occurrence, program
 instruction occurrence, folded prefix state, component-local position, exact
 invocation parameters, source, and composed-trace offset for that exact current
@@ -135,7 +137,7 @@ query. Separately, the non-parameterized
 `ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy` packet proves that
 every counted source and shared-BP consumer has a successful witness in some
 actual closed whole-query execution under a valid ordinary `List Int` query.
-It does not say every source is read by the current query. Fresh segment `21`
+It does not say every source is read by the current query. Fresh segment `23`
 is rejected by the common occurrence relation, and a checked bridge embeds the
 successful positive predicate into the mutation-side arbitrary-result
 predicate. W18 event-value and component may-read facts are compatibility only.

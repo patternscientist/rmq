@@ -6646,7 +6646,7 @@ private theorem WholeQueryProgram.evalGlobalWordTrace_reviewerReadSegmentLive
           (instr.evalGlobalWordTrace shape left right state).value
 
 /-- Every logical payload read emitted by the canonical whole-query evaluator,
-including a failed read, has a logical segment number from `0` through `20`. -/
+including a failed read, has a logical segment number from `0` through `22`. -/
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_read_segment_lt
     (shape : Cartesian.CartesianShape)
     (left right : Nat) :
@@ -8714,7 +8714,7 @@ theorem concreteBPNativeSuccinctRMQSilentWordRankSelectChargedTraceCost_eq :
     concreteBPNativeSuccinctRMQSilentWordRankSelectChargedTraceCost = 142 := by
   rfl
 
-theorem concreteBPNativeSelectCloseInterpretedCosted_cost_le_thirteen
+theorem concreteBPNativeSelectCloseRegisterInterpretedCosted_cost_le_thirteen
     (shape : Cartesian.CartesianShape) (idx : Nat) :
     (concreteBPNativeSelectCloseRegisterInterpretedCosted shape idx).cost <=
       13 := by
@@ -8725,7 +8725,7 @@ theorem concreteBPNativeSelectCloseInterpretedCosted_cost_le_thirteen
     GenericSelect.sparseExceptionSelectSource_selectPositionCosted_cost_le_thirteen
       shape.bpCode false idx
 
-theorem concreteBPNativeRankCloseInterpretedCosted_cost_le_four
+theorem concreteBPNativeRankCloseRegisterInterpretedCosted_cost_le_four
     (shape : Cartesian.CartesianShape) (pos : Nat) :
     (concreteBPNativeRankCloseRegisterInterpretedCosted shape pos).cost <=
       4 := by

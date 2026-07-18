@@ -2070,12 +2070,13 @@ private theorem reviewerIncreasing_canonical_successful_claims :
       reviewerIncreasing_lca_sharedBP_mem⟩
 
 /--
-The thirteen always-small reviewer sources have successful occurrences in
-real closed valid queries. Source ordinals `1` through `11` are witnessed by
-the singleton execution, whose successful reads include segments `0` through
-`8` and `17` through `19`; the canonical close source and the fringe
-chunk-table source are witnessed by the increasing-length-sixteen
-cross-block execution (segments `20` and `21`).
+The fourteen always-small reviewer sources have successful occurrences in
+real closed valid queries. Source ordinals `1` through `11` and the select
+chunk-table source are witnessed by the singleton execution, whose successful
+reads include segments `0` through `8`, `17` through `19`, and `22`; the
+canonical close source and the fringe chunk-table source are witnessed by
+the increasing-length-sixteen cross-block execution (segments `20` and
+`21`).
 -/
 theorem concreteBPNativeSuccinctRMQReviewerSource_small_successful_closed_valid_occurrence
     (source : ReviewerSource)

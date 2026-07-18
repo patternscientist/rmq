@@ -47,7 +47,16 @@ def concreteBPNativeSelectCloseTraceSegmentLayout :
 /-- Segment base for the final false-rank callback used by answer recovery. -/
 def concreteBPNativeRankCloseTraceSegmentBase : Nat := 17
 
-/-- Segment bases for the compact close/LCA interior navigator. -/
+/-- Segment bases for the compact close/LCA interior navigator.
+
+NOTE (segment-numbering universes): the `summary` numerals `21`/`22`/`23`
+below belong to the LEGACY interior summary layout, a distinct
+segment-numbering universe consumed only by legacy footprint/agreement
+compatibility lemmas.  The canonical all-size-structural interior route
+emits interior reads only at `canonicalComponent = 20`; in the canonical
+reviewer/global store, segment `21` is the fringe chunk table
+(`concreteBPNativeFringeChunkTraceSegment`) and segment `22` is the select
+chunk table (`concreteBPNativeSelectChunkTraceSegment`). -/
 def concreteBPNativeInteriorTraceSegments :
     SuccinctClose.BPRelativeRmmInteriorTraceSegments where
   canonicalComponent := 20
