@@ -85,6 +85,43 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
 - Machine-generic; nothing route-specific. Verification: standalone
   `lake env lean` exit 0; `lake build RMQ` green; hygiene clean.
 
+## M3b-1: query skeleton + charged invalid guard (REQ-E1-05 machine half)
+
+- New module `RMQ/Core/WordRAM/E1QueryProgram.lean`
+  (`RMQ.WordRAM.E1Query`): frozen register map (inputs 0/1, packet 2,
+  pinned zero 3, size constant 4, guard scratch 5-7, components from 8),
+  option-shift output packet `decodePacket` (mirrors `decodeRead`),
+  `guardBlock`/`invalidExitBlock`/`programSkeleton n validPath` (guard at
+  base 0, valid path at 8, invalid exit at `8 + validPath.length`,
+  reachable only via the guard branches), hosting lemmas, constructor-
+  exhaustive width lemmas (`guardBlock_fits`, `invalidExitBlock_fits`,
+  `programSkeleton_fits`), and the charged rejection theorems
+  `guard_reject_of_not_lt` (exact 8-step log `guardRejectRangeCats`),
+  `guard_reject_of_out_of_bounds` (exact 10-step log
+  `guardRejectBoundsCats`), `guard_reject_of_invalid`,
+  `programSkeleton_reject_of_invalid` - all with EMPTY receipt log and
+  zero memoryRead category, guard computed by machine natLt/natLe/natEq/
+  brNZ on the input registers (anti-vacuity: no meta-level guard).
+  Kernel-checked fixtures: empty `[0,0)` on n=0, reversed `[3,2)` and
+  out-of-bounds `[0,9)` on n=5 (regOut=0, readLog=[], steps=8/10, exact
+  category logs by `rfl`).
+- New module `RMQ/Core/WordRAM/E1QueryBridge.lean`: REQ-E1-05 public
+  parity `programSkeleton_invalid_matches_public_guard` - decoded packet
+  = `(SuccinctClassic.queryCosted xs left right).value`, machine receipt
+  log = accepted invalid trace (both `[]`, positional), memoryRead count
+  = accepted invalid cost (0) - plus empty/reversed/out-of-bounds
+  specializations against `queryCosted_invalid`.
+- DD-20260718-006 records the register map, packet encoding, skeleton
+  layout, and rejected alternatives (completes the program-representation
+  decision deferred by DD-20260718-005).
+- Both modules wired into `RMQ.lean`. Guard lemmas are `HostedAt`-generic
+  so valid-path landing will not touch them.
+- REQ-E1-05 status: machine + public-parity theorems landed; the row
+  CLOSES after the validator exercises the invalid fixtures (M6).
+- Verification at this commit: `lake env lean` exit 0 on both new
+  modules; `lake build RMQ` green (ledger below); hygiene rg clean on
+  touched files.
+
 ## RESUME POINT (next session: M3b onward)
 
 M3b plan (program + simulation, REQ-E1-03/04/05):

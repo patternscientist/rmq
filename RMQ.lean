@@ -11,6 +11,8 @@ import RMQ.Core.SuccinctClose
 import RMQ.Core.WordRAM.ReadStoreEval
 import RMQ.Core.WordRAM.E1Machine
 import RMQ.Core.WordRAM.E1MachineCalculus
+import RMQ.Core.WordRAM.E1QueryProgram
+import RMQ.Core.WordRAM.E1QueryBridge
 import RMQ.Core.GenericSelect.RAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeChunks

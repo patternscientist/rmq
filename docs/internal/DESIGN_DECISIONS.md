@@ -3174,3 +3174,69 @@ the E1 M3 DD entry.
 
 Supersedes: the R3 machine ISA (rejected by the E1-01R3 obstruction
 round; see DD-20260717-C05-001).
+
+## DD-20260718-006: E1 query register map, packet encoding, program skeleton (E1-R4 M3b)
+
+Date: 2026-07-18. Scope: E1 whole-query program representation - register
+map, output packet convention, guard/exit layout. Decided by: worker
+E1-R4b under the amended E1 contract (frozen matrix
+`E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md` REQ-E1-03/05; completes the
+program-representation decision deferred by DD-20260718-005).
+
+Decision (`RMQ/Core/WordRAM/E1QueryProgram.lean`, namespace
+`RMQ.WordRAM.E1Query`):
+
+- Frozen register map: `regLeft = 0` / `regRight = 1` (query operands,
+  loaded by `initialRegs`/`initialState` before execution), `regOut = 2`
+  (answer packet), `regZero = 3` (pinned zero), `regN = 4` (per-shape
+  size constant), `regT1/regT2/regG = 5/6/7` (guard scratch);
+  `firstComponentReg = 8` reserves everything upward for valid-path
+  component blocks.
+- Output packet: option shift, `decodePacket` - `0` decodes to `none`,
+  `v + 1` to `some v` - the SAME convention as the machine's
+  `decodeRead`, so option tests anywhere in the machine are ordinary
+  register comparisons against zero and no typed option channel exists.
+- Program representation: a concrete program is
+  `programSkeleton n validPath = guardBlock n (8 + validPath.length) ++
+  (validPath ++ invalidExitBlock)`. The charged guard prologue (8
+  instructions) sits at base `0`; the valid path at base `8`; the
+  two-instruction invalid exit at base `8 + validPath.length`, reachable
+  ONLY through the guard's two `brNZ` branches (the valid path
+  terminates by writing `regOut` and halting, never falling through).
+  Branch targets are absolute (DD-20260718-005); generators receive
+  explicit bases, with hosting facts provided by
+  `programSkeleton_hosts_guardBlock/_hosts_validPath/_hosts_invalidExit`.
+- The guard is computed by machine instructions on the input registers
+  (natLt/natLe against `regN`, natEq negations against `regZero`, brNZ),
+  so invalid rejection charges the frozen categories: exact logs
+  `guardRejectRangeCats` (8 steps) / `guardRejectBoundsCats` (10 steps),
+  zero memory reads, empty receipt log
+  (`guard_reject_of_not_lt`, `guard_reject_of_out_of_bounds`,
+  `guard_reject_of_invalid`). Public parity with
+  `SuccinctClassic.queryCosted_invalid` is checked in
+  `RMQ/Core/WordRAM/E1QueryBridge.lean`
+  (`programSkeleton_invalid_matches_public_guard` and the
+  empty/reversed/out-of-bounds specializations), REQ-E1-05's machine
+  half; the guard lemmas are stated against any hosting program via
+  `HostedAt`, so they survive valid-path landing unchanged.
+- Width: `guardBlock_fits`/`invalidExitBlock_fits`/`programSkeleton_fits`
+  give the constructor-exhaustive REQ-E1-02 certificate for the skeleton,
+  with hypotheses `n < 2^w`, `8 + validPath.length < 2^w`, `8 <= 2^w`
+  discharged at the reviewer width once the concrete valid path exists
+  (`concreteBPNativeSuccinctRMQReviewerInputOperand_fits` covers `n`).
+
+Alternatives rejected: a meta-level Lean `if` guard around an unguarded
+machine (explicitly fails the REQ-E1-05 anti-vacuity challenge - the
+guard must charge machine steps); a dedicated `some?` flag register per
+optional value (doubles register writes and re-imports the typed option
+banks rejected in DD-20260718-005); placing the invalid exit between
+guard and valid path (would require an unconditional jump over it, which
+the ISA deliberately lacks - `brNZ` on a pinned nonzero register would
+charge a spurious branch on every valid query); per-query program
+generation depending on `left`/`right` (the program must be per-shape
+only, with operands in registers, or result agreement would be trivial).
+
+Consequences: valid-path component generators emit blocks at explicit
+bases `>= 8`, use registers `>= firstComponentReg`, and compose by
+`RunsTo.trans`/`HostedAt.append_*`; the invalid path is closed and its
+category algebra is already literal.
