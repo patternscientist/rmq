@@ -707,6 +707,48 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
 - REMAINING for the dispatch: the long, sparse, and dense branch
   theorems, then the combining `selectCloseBlock_runsTo`.
 
+## M3c-6f: TOP-LEVEL SELECT DISPATCH COMPLETE (all six branches)
+
+- `E1SelectDispatch.lean` now carries the whole dispatch:
+  - `selectCloseBlock_runsTo_outOfRange`, `_superMiss`, `_long`,
+    `_localMiss`, `_sparse`, `_dense` — the six control branches, each
+    with receipts POSITIONALLY EQUAL to
+    `(data.bpChunkedSelectTraceResultWithStore layout (G+4) ST store c
+    idx).trace`, the evaluator's optional answer under `decodePacket` in
+    `rVal`, the derived `selectCloseCats`, and `r ≤ 7 ∨ r = 28`
+    preserved.
+  - `selectCloseBlock_localPrefix_runsTo` — the shared continuation past
+    an unmarked super entry (consumed by the last three branches).
+  - `selectCloseBlock_runsTo` — the combining theorem, case-splitting on
+    range / super presence / super marked / local presence / local
+    marked, with the three route-side hypotheses (`hLongSeed`,
+    `hSparseSeed`, `hDenseLen`) each conditioned on exactly the branch
+    that consumes it.
+- KEY TECHNIQUE (this unblocked five failing proofs at once): do NOT
+  reduce the route side with staged `simp only [...]; rw [...]` chains.
+  After `rw` puts `some super` into the scrutinee, a following
+  `simp only [hunmarked, ...]` does NOT fire, because the `match` has not
+  iota-reduced and the marked-test `if` is not yet in the goal (the
+  telltale symptom is an "unused simp argument" warning on the very
+  hypothesis you are trying to use).  Instead give ONE `simp` the whole
+  fact set — evaluator def, `queryOccurrence`, `hrange`, the raw `.value`
+  equations, the marked/unmarked booleans, `entryRead_trace_eq`, and (for
+  the sparse leg) `SparseExceptionDirectory.bpChunkedReadTraceResultWithStore`
+  — and let it unfold, iota-reduce, and rewrite in one pass.  For the
+  value goals, prove a `have hval : (route).value = (leg expr).value` by
+  the same one-shot `simp` and then `exact` the leg's decode clause.
+- Other gotchas: `by_contra` is Mathlib-only and unavailable here (use
+  `simpa [relativeSplitSelectEntryIsMarked]` to invert an unmarked
+  entry); `by_cases` IS available (core).  `rw` does not close
+  `n + 1 - 1 = n` — add `omega`.
+- Verification at this commit: standalone `lake env lean` exit 0 (11.1s,
+  no warnings); `lake build RMQ` exit 0 (14.6s, 233/233).
+- NEXT: the canonical-store select form mirroring
+  `rankCloseBlock_runsTo_canonical` — instantiate `selectCloseBlock_runsTo`
+  at `concreteBPNativeSuccinctRMQGlobalReadStore` and discharge
+  `hLongSeed`/`hSparseSeed`/`hDenseLen` from the canonical layout facts
+  (agreement lemmas listed at `ChargedRankSelectWiring.lean:656`).
+
 ## STAGE-2 LAYOUT (dense leg tails - implemented in M3c-5c above;
 ## kept for reference)
 

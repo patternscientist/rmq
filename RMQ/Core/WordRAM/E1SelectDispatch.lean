@@ -1316,6 +1316,643 @@ theorem selectCloseBlock_localPrefix_runsTo
         (by omega) (by omega) (by omega) (by omega),
       hPpres r hr]
 
+/-! ## Branch simulations: local miss, sparse leg, dense leg -/
+
+/-- In-range dispatch with an unmarked super entry whose local
+entry-table read misses: both 4-reads are charged and appear in the
+receipt, and the answer is the `none` packet. -/
+theorem selectCloseBlock_runsTo_localMiss
+    (store : ReadStore) {program : E1Machine.Program}
+    {bits : List Bool} {rso rbo : Nat}
+    (data : SparseExceptionSelectData bits false rso rbo)
+    (layout : SparseExceptionSelectTraceSegmentLayout)
+    {A G ST c : Nat}
+    (hhost : HostedAt program A (selectCloseBlockAt data layout A G ST c))
+    (regs0 : RegFile) (idx : Nat) (hIdx : regs0 xIdx = idx)
+    (hrange : idx < occurrenceCount bits false)
+    {super : SparseDenseSelectDenseLocalEntry}
+    (hsome : superEntry data layout store idx = some super)
+    (hunmarked : relativeSplitSelectEntryIsMarked super = false)
+    (hmiss : localEntry data layout store idx super = none) :
+    ∃ regsF : RegFile,
+      RunsTo store program ⟨regs0, A, false⟩ ⟨regsF, A + 405, false⟩
+        (data.bpChunkedSelectTraceResultWithStore layout (G + 4) ST
+          store c idx).trace
+        (selectCloseCats data layout G ST store c idx) ∧
+      E1Query.decodePacket (regsF rVal) =
+        (data.bpChunkedSelectTraceResultWithStore layout (G + 4) ST
+          store c idx).value ∧
+      (∀ r, r ≤ 7 ∨ r = 28 → regsF r = regs0 r) := by
+  obtain ⟨-, -, -, -, -, -, -, -, -, -, hbr43, -, -, -, -,
+    -, -, -, -, -, -, -, -, hNoneH⟩ := selectCloseBlock_hosting hhost
+  obtain ⟨regsE, hrunE, -, -, -, -, -, -, -, -, -, -, -, -, hEA,
+    hEpres⟩ :=
+    selectCloseBlock_localPrefix_runsTo store data layout hhost regs0 idx
+      hIdx hrange hsome hunmarked
+  have hmissRaw :
+      (data.localTable.readTraceResultRelabeledWithStore layout.localTable
+        store (relativeSplitSelectLocalSlot idx data.superStride
+          data.localSlotsPerSuper data.localStride super)).value =
+      none := hmiss
+  have hmiss' := hmissRaw
+  rw [entryRead_value_eq] at hmiss'
+  have hAne : regsE rA ≠ 0 := by
+    intro h0
+    rw [hEA] at h0
+    obtain ⟨h1, h2, h3, h4⟩ := (missSum_eq_zero_iff _ _ _ _).mp h0
+    rw [entryOfFields_decode_some h1 h2 h3 h4] at hmiss'
+    exact absurd hmiss' (by simp)
+  have hb43 : RunsTo store program ⟨regsE, A + 43, false⟩
+      ⟨regsE, A + 404, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_taken (s := ⟨regsE, A + 43, false⟩) rfl hbr43 hAne
+  have hnone := dispatchNoneTail_runsTo store hNoneH regsE
+  have hall := hrunE.trans (hb43.trans hnone)
+  have hsomeRaw :
+      (data.superTable.readTraceResultRelabeledWithStore layout.superTable
+        store (selectSuperSlot idx data.superStride)).value =
+      some super := hsome
+  have nVal : rVal = 9 := rfl
+  refine ⟨regsE.write rVal 0, ?_, ?_, ?_⟩
+  · have hroute :
+        (data.bpChunkedSelectTraceResultWithStore layout (G + 4) ST
+            store c idx).trace =
+          entryFieldEvents store layout.superTable.baseOccurrence
+            layout.superTable.baseWordIndex layout.superTable.rankBefore
+            layout.superTable.firstOffset
+            (selectSuperSlot idx data.superStride) ++
+          entryFieldEvents store layout.localTable.baseOccurrence
+            layout.localTable.baseWordIndex layout.localTable.rankBefore
+            layout.localTable.firstOffset
+            (relativeSplitSelectLocalSlot idx data.superStride
+              data.localSlotsPerSuper data.localStride super) := by
+      simp [SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore,
+        SparseExceptionSelectData.queryOccurrence, hrange, hsomeRaw,
+        hunmarked, hmissRaw, entryRead_trace_eq]
+    have hcats : selectCloseCats data layout G ST store c idx =
+        selectPrologueCats ++
+          (Category.branch :: (selectSuperSlotCats ++
+            (entryReadCats ++
+              (Category.branch :: Category.arithmetic :: Category.branch ::
+                (selectLocalSlotCats ++
+                  (entryReadCats ++
+                    [Category.branch, Category.registerWrite])))))) := by
+      simp [selectCloseCats, hrange, hsome, hunmarked, hmiss]
+    rw [hroute, hcats]
+    simpa using hall
+  · rw [RegFile.write_same]
+    simp [SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore,
+      SparseExceptionSelectData.queryOccurrence, hrange, hsomeRaw,
+      hunmarked, hmissRaw]
+  · intro r hr
+    rw [RegFile.write_other _ _ (show r ≠ rVal by omega), hEpres r hr]
+
+/-- In-range dispatch with an unmarked super entry and a MARKED local
+entry: control takes the sparse-directory leg. -/
+theorem selectCloseBlock_runsTo_sparse
+    (store : ReadStore) {program : E1Machine.Program}
+    {bits : List Bool} {rso rbo : Nat}
+    (data : SparseExceptionSelectData bits false rso rbo)
+    (layout : SparseExceptionSelectTraceSegmentLayout)
+    {A G ST c : Nat}
+    (hhost : HostedAt program A (selectCloseBlockAt data layout A G ST c))
+    (regs0 : RegFile) (idx : Nat) (hIdx : regs0 xIdx = idx)
+    (hrange : idx < occurrenceCount bits false)
+    {super loc : SparseDenseSelectDenseLocalEntry}
+    (hsome : superEntry data layout store idx = some super)
+    (hunmarked : relativeSplitSelectEntryIsMarked super = false)
+    (hlocSome : localEntry data layout store idx super = some loc)
+    (hlocMarked : relativeSplitSelectEntryIsMarked loc = true)
+    {superWord deltaWord w : List Bool}
+    (hseedS : store.readWord? layout.sparseDirectory.rankBase
+      (data.sparseDirectory.rankData.superIndex
+        (relativeSplitSelectLocalSlot idx data.superStride
+          data.localSlotsPerSuper data.localStride super)) =
+      some superWord)
+    (hseedB : store.readWord? (layout.sparseDirectory.rankBase + 1)
+      (data.sparseDirectory.rankData.wordIndex
+        (relativeSplitSelectLocalSlot idx data.superStride
+          data.localSlotsPerSuper data.localStride super)) =
+      some deltaWord)
+    (hseedW : store.readWord? (layout.sparseDirectory.rankBase + 2)
+      (data.sparseDirectory.rankData.wordIndex
+        (relativeSplitSelectLocalSlot idx data.superStride
+          data.localSlotsPerSuper data.localStride super)) = some w)
+    (hoff : data.sparseDirectory.rankData.wordOffset
+      (relativeSplitSelectLocalSlot idx data.superStride
+        data.localSlotsPerSuper data.localStride super) ≤ w.length) :
+    ∃ regsF : RegFile,
+      RunsTo store program ⟨regs0, A, false⟩ ⟨regsF, A + 405, false⟩
+        (data.bpChunkedSelectTraceResultWithStore layout (G + 4) ST
+          store c idx).trace
+        (selectCloseCats data layout G ST store c idx) ∧
+      E1Query.decodePacket (regsF rVal) =
+        (data.bpChunkedSelectTraceResultWithStore layout (G + 4) ST
+          store c idx).value ∧
+      (∀ r, r ≤ 7 ∨ r = 28 → regsF r = regs0 r) := by
+  obtain ⟨-, -, -, -, -, -, -, -, -, -, hbr43, hsub44, hbr45, -, -,
+    -, -, -, -, -, hSparseH, hc402, hbr403, -⟩ :=
+    selectCloseBlock_hosting hhost
+  obtain ⟨regsE, hrunE, hEPos, hEQ, hEOne, -, -, hES1, hES2, hES4,
+    hEL1, hEL2, hEL3, hEL4, hEA, hEpres⟩ :=
+    selectCloseBlock_localPrefix_runsTo store data layout hhost regs0 idx
+      hIdx hrange hsome hunmarked
+  obtain ⟨hg1, hg2, hg3, hg4⟩ :=
+    entryFields_of_some data.localTable layout.localTable store
+      (relativeSplitSelectLocalSlot idx data.superStride
+        data.localSlotsPerSuper data.localStride super) hlocSome
+  have hA0 : regsE rA = 0 := by rw [hEA, hg1, hg2, hg3, hg4]; simp
+  have hb43 : RunsTo store program ⟨regsE, A + 43, false⟩
+      ⟨regsE, A + 44, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_not_taken (s := ⟨regsE, A + 43, false⟩) rfl hbr43 hA0
+  have hsub : RunsTo store program ⟨regsE, A + 44, false⟩
+      ⟨regsE.write rB (regsE xLF3 - regsE rOne), A + 45, false⟩ []
+      [Category.arithmetic] :=
+    RunsTo.sub (s := ⟨regsE, A + 44, false⟩) rfl hsub44
+  obtain ⟨regsM, hregsM⟩ :
+      ∃ x, regsE.write rB (regsE xLF3 - regsE rOne) = x := ⟨_, rfl⟩
+  rw [hregsM] at hsub
+  have hMpres : ∀ r, r ≠ 23 → regsM r = regsE r := by
+    intro r hr
+    rw [← hregsM]
+    exact RegFile.write_other _ _ hr
+  have hMB : regsM rB = loc.rankBefore := by
+    rw [← hregsM, RegFile.write_same, hEL3, hg3, hEOne]
+    omega
+  have hMBne : regsM rB ≠ 0 := by
+    rw [hMB]
+    exact (relativeSplitSelectEntryIsMarked_iff loc).mp hlocMarked
+  have hb45 : RunsTo store program ⟨regsM, A + 45, false⟩
+      ⟨regsM, A + 325, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_taken (s := ⟨regsM, A + 45, false⟩) rfl hbr45 hMBne
+  have hMPos : regsM rPos =
+      relativeSplitSelectLocalSlot idx data.superStride
+        data.localSlotsPerSuper data.localStride super := by
+    rw [hMpres rPos (by decide)]; exact hEPos
+  have hMQ : regsM xQ = idx := by rw [hMpres xQ (by decide)]; exact hEQ
+  have hMS1 : regsM xSF1 = super.baseOccurrence + 1 := by
+    rw [hMpres xSF1 (by decide)]; exact hES1
+  have hMS2 : regsM xSF2 = super.baseWordIndex + 1 := by
+    rw [hMpres xSF2 (by decide)]; exact hES2
+  have hML1 : regsM xLF1 = loc.baseOccurrence + 1 := by
+    rw [hMpres xLF1 (by decide), hEL1]; exact hg1
+  have hML2 : regsM xLF2 = loc.baseWordIndex + 1 := by
+    rw [hMpres xLF2 (by decide), hEL2]; exact hg2
+  have hML4 : regsM xLF4 = loc.firstOffset + 1 := by
+    rw [hMpres xLF4 (by decide), hEL4]; exact hg4
+  have hsS : store.readWord? layout.sparseDirectory.rankBase
+      (data.sparseDirectory.rankData.superIndex (regsM rPos)) =
+      some superWord := by rw [hMPos]; exact hseedS
+  have hsB : store.readWord? (layout.sparseDirectory.rankBase + 1)
+      (data.sparseDirectory.rankData.wordIndex (regsM rPos)) =
+      some deltaWord := by rw [hMPos]; exact hseedB
+  have hsW : store.readWord? (layout.sparseDirectory.rankBase + 2)
+      (data.sparseDirectory.rankData.wordIndex (regsM rPos)) =
+      some w := by rw [hMPos]; exact hseedW
+  have hsO : data.sparseDirectory.rankData.wordOffset (regsM rPos) ≤
+      w.length := by rw [hMPos]; exact hoff
+  obtain ⟨regsL, hrunL, hdecL, hpresL⟩ :=
+    sparseLegBlock_runsTo store data.sparseDirectory.rankData hSparseH
+      regsM super loc idx hMQ hMS1 hMS2 hML1 hML2 hML4 hsS hsB hsW hsO
+  rw [show A + 325 + 77 = A + 402 from by omega] at hrunL
+  rw [hMPos] at hrunL hdecL
+  have hjump := dispatchJump_runsTo store hc402 hbr403 regsL
+  have hall :=
+    hrunE.trans (hb43.trans (hsub.trans (hb45.trans (hrunL.trans hjump))))
+  have hsomeRaw :
+      (data.superTable.readTraceResultRelabeledWithStore layout.superTable
+        store (selectSuperSlot idx data.superStride)).value =
+      some super := hsome
+  have hlocRaw :
+      (data.localTable.readTraceResultRelabeledWithStore layout.localTable
+        store (relativeSplitSelectLocalSlot idx data.superStride
+          data.localSlotsPerSuper data.localStride super)).value =
+      some loc := hlocSome
+  have nVal : rVal = 9 := rfl
+  have nB : rB = 23 := rfl
+  refine ⟨regsL.write rB 1, ?_, ?_, ?_⟩
+  · have hroute :
+        (data.bpChunkedSelectTraceResultWithStore layout (G + 4) ST
+            store c idx).trace =
+          entryFieldEvents store layout.superTable.baseOccurrence
+            layout.superTable.baseWordIndex layout.superTable.rankBefore
+            layout.superTable.firstOffset
+            (selectSuperSlot idx data.superStride) ++
+          (entryFieldEvents store layout.localTable.baseOccurrence
+            layout.localTable.baseWordIndex layout.localTable.rankBefore
+            layout.localTable.firstOffset
+            (relativeSplitSelectLocalSlot idx data.superStride
+              data.localSlotsPerSuper data.localStride super) ++
+          (TraceResult.bind
+            (data.sparseDirectory.rankData.bpChunkedRankTraceResultWithStore
+              store layout.sparseDirectory.rankBase
+              (layout.sparseDirectory.rankBase + 1)
+              (layout.sparseDirectory.rankBase + 2) (G + 4) c true
+              (relativeSplitSelectLocalSlot idx data.superStride
+                data.localSlotsPerSuper data.localStride super))
+            (fun exceptionRank =>
+              bpRelativeOffsetReadTraceResultWithStore store
+                layout.sparseDirectory.relativeBase
+                (relativeSplitSelectLocalBasePosition data.wordSize super
+                  loc)
+                (relativeSplitSelectSparseCompactSlot exceptionRank
+                  (idx -
+                    relativeSplitSelectLocalBaseOccurrence super loc)
+                  data.sparseDirectory.localStride))).trace) := by
+      simp [SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore,
+        SparseExceptionSelectData.queryOccurrence, hrange, hsomeRaw,
+        hunmarked, hlocRaw, hlocMarked, entryRead_trace_eq,
+        SparseExceptionDirectory.bpChunkedReadTraceResultWithStore]
+    have hcats : selectCloseCats data layout G ST store c idx =
+        selectPrologueCats ++
+          (Category.branch :: (selectSuperSlotCats ++
+            (entryReadCats ++
+              (Category.branch :: Category.arithmetic :: Category.branch ::
+                (selectLocalSlotCats ++
+                  (entryReadCats ++
+                    (Category.branch :: Category.arithmetic ::
+                      Category.branch ::
+                      (sparseLegCats
+                        (bpWordChunkCount c
+                          (data.sparseDirectory.rankData.wordOffset
+                            (relativeSplitSelectLocalSlot idx
+                              data.superStride data.localSlotsPerSuper
+                              data.localStride super)))
+                        (store.readWord?
+                          layout.sparseDirectory.relativeBase
+                          (relativeSplitSelectSparseCompactSlot
+                            (data.sparseDirectory.rankData.bpChunkedRankTraceResultWithStore
+                              store layout.sparseDirectory.rankBase
+                              (layout.sparseDirectory.rankBase + 1)
+                              (layout.sparseDirectory.rankBase + 2)
+                              (G + 4) c true
+                              (relativeSplitSelectLocalSlot idx
+                                data.superStride data.localSlotsPerSuper
+                                data.localStride super)).value
+                            (idx -
+                              relativeSplitSelectLocalBaseOccurrence
+                                super loc)
+                            data.sparseDirectory.localStride)).isSome ++
+                        [Category.registerWrite,
+                          Category.branch])))))))) := by
+      simp [selectCloseCats, hrange, hsome, hunmarked, hlocSome,
+        hlocMarked]
+    rw [hroute, hcats]
+    simpa using hall
+  · rw [RegFile.write_other _ _ (show rVal ≠ rB by decide)]
+    have hval :
+        (data.bpChunkedSelectTraceResultWithStore layout (G + 4) ST
+            store c idx).value =
+          (TraceResult.bind
+            (data.sparseDirectory.rankData.bpChunkedRankTraceResultWithStore
+              store layout.sparseDirectory.rankBase
+              (layout.sparseDirectory.rankBase + 1)
+              (layout.sparseDirectory.rankBase + 2) (G + 4) c true
+              (relativeSplitSelectLocalSlot idx data.superStride
+                data.localSlotsPerSuper data.localStride super))
+            (fun exceptionRank =>
+              bpRelativeOffsetReadTraceResultWithStore store
+                layout.sparseDirectory.relativeBase
+                (relativeSplitSelectLocalBasePosition data.wordSize super
+                  loc)
+                (relativeSplitSelectSparseCompactSlot exceptionRank
+                  (idx -
+                    relativeSplitSelectLocalBaseOccurrence super loc)
+                  data.sparseDirectory.localStride))).value := by
+      simp [SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore,
+        SparseExceptionSelectData.queryOccurrence, hrange, hsomeRaw,
+        hunmarked, hlocRaw, hlocMarked,
+        SparseExceptionDirectory.bpChunkedReadTraceResultWithStore]
+    rw [hval]
+    exact hdecL
+  · intro r hr
+    rw [RegFile.write_other _ _ (show r ≠ rB by omega),
+      hpresL r (by omega) (by omega), hMpres r (by omega), hEpres r hr]
+
+/-- In-range dispatch with an unmarked super entry and an unmarked local
+entry: control takes the dense two-word leg.  The word-length min chains
+are route-side hypotheses, discharged at canonical instantiation. -/
+theorem selectCloseBlock_runsTo_dense
+    (store : ReadStore) {program : E1Machine.Program}
+    {bits : List Bool} {rso rbo : Nat}
+    (data : SparseExceptionSelectData bits false rso rbo)
+    (layout : SparseExceptionSelectTraceSegmentLayout)
+    {A G ST c : Nat}
+    (hhost : HostedAt program A (selectCloseBlockAt data layout A G ST c))
+    (regs0 : RegFile) (idx : Nat) (hIdx : regs0 xIdx = idx)
+    (hrange : idx < occurrenceCount bits false)
+    {super loc : SparseDenseSelectDenseLocalEntry}
+    (hsome : superEntry data layout store idx = some super)
+    (hunmarked : relativeSplitSelectEntryIsMarked super = false)
+    (hlocSome : localEntry data layout store idx super = some loc)
+    (hlocUnmarked : relativeSplitSelectEntryIsMarked loc = false)
+    (hlen1 : ∀ w1, store.readWord? layout.bitWordBase
+        (relativeSplitSelectLocalBasePosition data.wordSize super loc /
+          data.wordSize) = some w1 →
+      w1.length = Nat.min data.wordSize
+        (bits.length -
+          relativeSplitSelectLocalBasePosition data.wordSize super loc /
+            data.wordSize * data.wordSize))
+    (hlen2 : ∀ w2, store.readWord? layout.bitWordBase
+        (relativeSplitSelectLocalBasePosition data.wordSize super loc /
+          data.wordSize + 1) = some w2 →
+      w2.length = Nat.min data.wordSize
+        (bits.length -
+          (relativeSplitSelectLocalBasePosition data.wordSize super loc /
+            data.wordSize + 1) * data.wordSize)) :
+    ∃ regsF : RegFile,
+      RunsTo store program ⟨regs0, A, false⟩ ⟨regsF, A + 405, false⟩
+        (data.bpChunkedSelectTraceResultWithStore layout (G + 4) ST
+          store c idx).trace
+        (selectCloseCats data layout G ST store c idx) ∧
+      E1Query.decodePacket (regsF rVal) =
+        (data.bpChunkedSelectTraceResultWithStore layout (G + 4) ST
+          store c idx).value ∧
+      (∀ r, r ≤ 7 ∨ r = 28 → regsF r = regs0 r) := by
+  obtain ⟨-, -, -, -, -, -, -, -, -, -, hbr43, hsub44, hbr45,
+    hDenseBaseH, hDenseH, hc248, hbr249, -, -, -, -, -, -, -⟩ :=
+    selectCloseBlock_hosting hhost
+  obtain ⟨regsE, hrunE, -, hEQ, hEOne, hEC, hEEight, hES1, hES2, -,
+    hEL1, hEL2, hEL3, hEL4, hEA, hEpres⟩ :=
+    selectCloseBlock_localPrefix_runsTo store data layout hhost regs0 idx
+      hIdx hrange hsome hunmarked
+  obtain ⟨hg1, hg2, hg3, hg4⟩ :=
+    entryFields_of_some data.localTable layout.localTable store
+      (relativeSplitSelectLocalSlot idx data.superStride
+        data.localSlotsPerSuper data.localStride super) hlocSome
+  have hA0 : regsE rA = 0 := by rw [hEA, hg1, hg2, hg3, hg4]; simp
+  have hb43 : RunsTo store program ⟨regsE, A + 43, false⟩
+      ⟨regsE, A + 44, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_not_taken (s := ⟨regsE, A + 43, false⟩) rfl hbr43 hA0
+  have hsub : RunsTo store program ⟨regsE, A + 44, false⟩
+      ⟨regsE.write rB (regsE xLF3 - regsE rOne), A + 45, false⟩ []
+      [Category.arithmetic] :=
+    RunsTo.sub (s := ⟨regsE, A + 44, false⟩) rfl hsub44
+  obtain ⟨regsM, hregsM⟩ :
+      ∃ x, regsE.write rB (regsE xLF3 - regsE rOne) = x := ⟨_, rfl⟩
+  rw [hregsM] at hsub
+  have hMpres : ∀ r, r ≠ 23 → regsM r = regsE r := by
+    intro r hr
+    rw [← hregsM]
+    exact RegFile.write_other _ _ hr
+  have hlocZero : loc.rankBefore = 0 := by
+    simpa [relativeSplitSelectEntryIsMarked] using hlocUnmarked
+  have hMB : regsM rB = 0 := by
+    rw [← hregsM, RegFile.write_same, hEL3, hg3, hEOne, hlocZero]
+  have hb45 : RunsTo store program ⟨regsM, A + 45, false⟩
+      ⟨regsM, A + 46, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_not_taken (s := ⟨regsM, A + 45, false⟩) rfl hbr45 hMB
+  have hMOne : regsM rOne = 1 := by
+    rw [hMpres rOne (by decide)]; exact hEOne
+  obtain ⟨regsD, hrunD, hDPos, hDOcc, hDpres⟩ :=
+    dispatchDenseBase_runsTo store hDenseBaseH regsM hMOne
+  rw [show A + 46 + 9 = A + 55 from by omega] at hrunD
+  have hDPos' : regsD xBPos =
+      relativeSplitSelectLocalBasePosition data.wordSize super loc := by
+    rw [hDPos, hMpres xSF2 (by decide), hMpres xLF2 (by decide),
+      hMpres xLF4 (by decide), hES2, hEL2, hEL4, hg2, hg4]
+    simp [relativeSplitSelectLocalBasePosition]
+  have hDOcc' : regsD xBOcc =
+      relativeSplitSelectLocalBaseOccurrence super loc := by
+    rw [hDOcc, hMpres xSF1 (by decide), hMpres xLF1 (by decide),
+      hES1, hEL1, hg1]
+    simp [relativeSplitSelectLocalBaseOccurrence]
+  have hDQ : regsD xQ = idx := by
+    rw [hDpres xQ (by decide) (by decide) (by decide) (by decide),
+      hMpres xQ (by decide)]
+    exact hEQ
+  have hDOne : regsD rOne = 1 := by
+    rw [hDpres rOne (by decide) (by decide) (by decide) (by decide)]
+    exact hMOne
+  have hDC : regsD rC = c := by
+    rw [hDpres rC (by decide) (by decide) (by decide) (by decide),
+      hMpres rC (by decide)]
+    exact hEC
+  have hDEight : regsD rEight = 8 := by
+    rw [hDpres rEight (by decide) (by decide) (by decide) (by decide),
+      hMpres rEight (by decide)]
+    exact hEEight
+  have hlen1' : ∀ w1, store.readWord? layout.bitWordBase
+      (regsD xBPos / data.wordSize) = some w1 →
+      w1.length = Nat.min data.wordSize
+        (bits.length - regsD xBPos / data.wordSize * data.wordSize) := by
+    rw [hDPos']; exact hlen1
+  have hlen2' : ∀ w2, store.readWord? layout.bitWordBase
+      (regsD xBPos / data.wordSize + 1) = some w2 →
+      w2.length = Nat.min data.wordSize
+        (bits.length -
+          (regsD xBPos / data.wordSize + 1) * data.wordSize) := by
+    rw [hDPos']; exact hlen2
+  obtain ⟨regsL, hrunL, hdecL, hpresL⟩ :=
+    denseSelectLegBlock_runsTo store data.bitWords hDenseH regsD hlen1'
+      hlen2' hDOne hDC hDEight
+  rw [show A + 55 + 193 = A + 248 from by omega] at hrunL
+  rw [hDPos', hDOcc', hDQ] at hrunL hdecL
+  have hjump := dispatchJump_runsTo store hc248 hbr249 regsL
+  have hall :=
+    hrunE.trans (hb43.trans (hsub.trans (hb45.trans (hrunD.trans
+      (hrunL.trans hjump)))))
+  have hsomeRaw :
+      (data.superTable.readTraceResultRelabeledWithStore layout.superTable
+        store (selectSuperSlot idx data.superStride)).value =
+      some super := hsome
+  have hlocRaw :
+      (data.localTable.readTraceResultRelabeledWithStore layout.localTable
+        store (relativeSplitSelectLocalSlot idx data.superStride
+          data.localSlotsPerSuper data.localStride super)).value =
+      some loc := hlocSome
+  have nVal : rVal = 9 := rfl
+  have nB : rB = 23 := rfl
+  refine ⟨regsL.write rB 1, ?_, ?_, ?_⟩
+  · have hroute :
+        (data.bpChunkedSelectTraceResultWithStore layout (G + 4) ST
+            store c idx).trace =
+          entryFieldEvents store layout.superTable.baseOccurrence
+            layout.superTable.baseWordIndex layout.superTable.rankBefore
+            layout.superTable.firstOffset
+            (selectSuperSlot idx data.superStride) ++
+          (entryFieldEvents store layout.localTable.baseOccurrence
+            layout.localTable.baseWordIndex layout.localTable.rankBefore
+            layout.localTable.firstOffset
+            (relativeSplitSelectLocalSlot idx data.superStride
+              data.localSlotsPerSuper data.localStride super) ++
+          (bpChunkedDenseTwoWordSelectTraceResultWithStore
+            layout.bitWordBase (G + 4) ST c false data.bitWords store
+            (relativeSplitSelectLocalBasePosition data.wordSize super loc)
+            (relativeSplitSelectLocalBaseOccurrence super loc)
+            idx).trace) := by
+      simp [SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore,
+        SparseExceptionSelectData.queryOccurrence, hrange, hsomeRaw,
+        hunmarked, hlocRaw, hlocUnmarked, entryRead_trace_eq]
+    have hcats : selectCloseCats data layout G ST store c idx =
+        selectPrologueCats ++
+          (Category.branch :: (selectSuperSlotCats ++
+            (entryReadCats ++
+              (Category.branch :: Category.arithmetic :: Category.branch ::
+                (selectLocalSlotCats ++
+                  (entryReadCats ++
+                    (Category.branch :: Category.arithmetic ::
+                      Category.branch ::
+                      (selectDenseBaseCats ++
+                        (denseLegCats store layout.bitWordBase G ST c
+                          data.wordSize
+                          (relativeSplitSelectLocalBasePosition
+                            data.wordSize super loc)
+                          (relativeSplitSelectLocalBaseOccurrence super
+                            loc) idx ++
+                          [Category.registerWrite,
+                            Category.branch]))))))))) := by
+      simp [selectCloseCats, hrange, hsome, hunmarked, hlocSome,
+        hlocUnmarked]
+    rw [hroute, hcats]
+    simpa using hall
+  · rw [RegFile.write_other _ _ (show rVal ≠ rB by decide)]
+    have hval :
+        (data.bpChunkedSelectTraceResultWithStore layout (G + 4) ST
+            store c idx).value =
+          (bpChunkedDenseTwoWordSelectTraceResultWithStore
+            layout.bitWordBase (G + 4) ST c false data.bitWords store
+            (relativeSplitSelectLocalBasePosition data.wordSize super loc)
+            (relativeSplitSelectLocalBaseOccurrence super loc)
+            idx).value := by
+      simp [SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore,
+        SparseExceptionSelectData.queryOccurrence, hrange, hsomeRaw,
+        hunmarked, hlocRaw, hlocUnmarked]
+    rw [hval]
+    exact hdecL
+  · intro r hr
+    rw [RegFile.write_other _ _ (show r ≠ rB by omega),
+      hpresL r (by omega), hDpres r (by omega) (by omega) (by omega)
+        (by omega), hMpres r (by omega), hEpres r hr]
+
+/-! ## The whole select-close dispatch -/
+
+/--
+The whole accepted select-close dispatch, all six control branches in one
+statement: from block entry with the query index in `xIdx`, the hosted
+405-instruction block runs — with exact fuel — to `A + 405` with
+
+* receipts POSITIONALLY EQUAL to
+  `(data.bpChunkedSelectTraceResultWithStore layout (G + 4) ST store c
+  idx).trace`,
+* that evaluator's optional answer under `decodePacket` in `rVal`,
+* the derived category log `selectCloseCats`, and
+* the query-level registers `r ≤ 7` and the query index `xIdx`
+  preserved.
+
+The three route-side hypotheses supply, per branch, the rank seeds the
+exception legs read and the dense leg's word-length min chains; each is
+conditioned on exactly the branch that consumes it, and all three are
+discharged at canonical instantiation from the accepted store's layout
+facts.
+-/
+theorem selectCloseBlock_runsTo
+    (store : ReadStore) {program : E1Machine.Program}
+    {bits : List Bool} {rso rbo : Nat}
+    (data : SparseExceptionSelectData bits false rso rbo)
+    (layout : SparseExceptionSelectTraceSegmentLayout)
+    {A G ST c : Nat}
+    (hhost : HostedAt program A (selectCloseBlockAt data layout A G ST c))
+    (regs0 : RegFile) (idx : Nat) (hIdx : regs0 xIdx = idx)
+    (hLongSeed : ∀ super, superEntry data layout store idx = some super →
+      relativeSplitSelectEntryIsMarked super = true →
+      ∃ sw dw w,
+        store.readWord? layout.longFlagRankBase
+            (data.longFlagRankData.superIndex
+              (selectSuperSlot idx data.superStride)) = some sw ∧
+        store.readWord? (layout.longFlagRankBase + 1)
+            (data.longFlagRankData.wordIndex
+              (selectSuperSlot idx data.superStride)) = some dw ∧
+        store.readWord? (layout.longFlagRankBase + 2)
+            (data.longFlagRankData.wordIndex
+              (selectSuperSlot idx data.superStride)) = some w ∧
+        data.longFlagRankData.wordOffset
+          (selectSuperSlot idx data.superStride) ≤ w.length)
+    (hSparseSeed : ∀ super loc,
+      superEntry data layout store idx = some super →
+      relativeSplitSelectEntryIsMarked super = false →
+      localEntry data layout store idx super = some loc →
+      relativeSplitSelectEntryIsMarked loc = true →
+      ∃ sw dw w,
+        store.readWord? layout.sparseDirectory.rankBase
+            (data.sparseDirectory.rankData.superIndex
+              (relativeSplitSelectLocalSlot idx data.superStride
+                data.localSlotsPerSuper data.localStride super)) =
+          some sw ∧
+        store.readWord? (layout.sparseDirectory.rankBase + 1)
+            (data.sparseDirectory.rankData.wordIndex
+              (relativeSplitSelectLocalSlot idx data.superStride
+                data.localSlotsPerSuper data.localStride super)) =
+          some dw ∧
+        store.readWord? (layout.sparseDirectory.rankBase + 2)
+            (data.sparseDirectory.rankData.wordIndex
+              (relativeSplitSelectLocalSlot idx data.superStride
+                data.localSlotsPerSuper data.localStride super)) =
+          some w ∧
+        data.sparseDirectory.rankData.wordOffset
+          (relativeSplitSelectLocalSlot idx data.superStride
+            data.localSlotsPerSuper data.localStride super) ≤ w.length)
+    (hDenseLen : ∀ super loc,
+      superEntry data layout store idx = some super →
+      relativeSplitSelectEntryIsMarked super = false →
+      localEntry data layout store idx super = some loc →
+      relativeSplitSelectEntryIsMarked loc = false →
+      (∀ w1, store.readWord? layout.bitWordBase
+          (relativeSplitSelectLocalBasePosition data.wordSize super loc /
+            data.wordSize) = some w1 →
+        w1.length = Nat.min data.wordSize
+          (bits.length -
+            relativeSplitSelectLocalBasePosition data.wordSize super loc /
+              data.wordSize * data.wordSize)) ∧
+      (∀ w2, store.readWord? layout.bitWordBase
+          (relativeSplitSelectLocalBasePosition data.wordSize super loc /
+            data.wordSize + 1) = some w2 →
+        w2.length = Nat.min data.wordSize
+          (bits.length -
+            (relativeSplitSelectLocalBasePosition data.wordSize super loc /
+              data.wordSize + 1) * data.wordSize))) :
+    ∃ regsF : RegFile,
+      RunsTo store program ⟨regs0, A, false⟩ ⟨regsF, A + 405, false⟩
+        (data.bpChunkedSelectTraceResultWithStore layout (G + 4) ST
+          store c idx).trace
+        (selectCloseCats data layout G ST store c idx) ∧
+      E1Query.decodePacket (regsF rVal) =
+        (data.bpChunkedSelectTraceResultWithStore layout (G + 4) ST
+          store c idx).value ∧
+      (∀ r, r ≤ 7 ∨ r = 28 → regsF r = regs0 r) := by
+  by_cases hrange : idx < occurrenceCount bits false
+  · cases hsuper : superEntry data layout store idx with
+    | none =>
+        exact selectCloseBlock_runsTo_superMiss store data layout hhost
+          regs0 idx hIdx hrange hsuper
+    | some super =>
+        by_cases hmk : relativeSplitSelectEntryIsMarked super = true
+        · obtain ⟨sw, dw, w, h1, h2, h3, h4⟩ := hLongSeed super hsuper hmk
+          exact selectCloseBlock_runsTo_long store data layout hhost
+            regs0 idx hIdx hrange hsuper hmk h1 h2 h3 h4
+        · have hunm : relativeSplitSelectEntryIsMarked super = false := by
+            simpa using hmk
+          cases hloc : localEntry data layout store idx super with
+          | none =>
+              exact selectCloseBlock_runsTo_localMiss store data layout
+                hhost regs0 idx hIdx hrange hsuper hunm hloc
+          | some loc =>
+              by_cases hlmk : relativeSplitSelectEntryIsMarked loc = true
+              · obtain ⟨sw, dw, w, h1, h2, h3, h4⟩ :=
+                  hSparseSeed super loc hsuper hunm hloc hlmk
+                exact selectCloseBlock_runsTo_sparse store data layout
+                  hhost regs0 idx hIdx hrange hsuper hunm hloc hlmk
+                  h1 h2 h3 h4
+              · have hlunm :
+                    relativeSplitSelectEntryIsMarked loc = false := by
+                  simpa using hlmk
+                obtain ⟨hl1, hl2⟩ :=
+                  hDenseLen super loc hsuper hunm hloc hlunm
+                exact selectCloseBlock_runsTo_dense store data layout
+                  hhost regs0 idx hIdx hrange hsuper hunm hloc hlunm
+                  hl1 hl2
+  · exact selectCloseBlock_runsTo_outOfRange store data layout hhost
+      regs0 idx hIdx hrange
+
 end E1SelectDispatch
 end WordRAM
 end RMQ
