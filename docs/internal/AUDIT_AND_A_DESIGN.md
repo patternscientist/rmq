@@ -680,3 +680,49 @@ remains unproven (candidate E1 target); nav counted-space statement or bridge;
 stale-numeral hunt after B5; deliberate packet-type growth; witness fragility
 of the repeated-read fields under any future program change (re-derive, not
 weaken).
+
+## 2026-07-18 (C05 round 5) — same-block LCA branch found still event-silent ⚠️
+
+**Finding (E1-R4i, coordinator-verified from source).** The accepted route's
+same-block LCA branch was never charged. `localBPSameBlockCloseSeededCosted`
+(`LocalBPDecoder.lean:1128-1143`) sets `cost := 4` while computing
+`localBPSeededPrefixRangeMinExcess` and
+`localBPSeededPrefixRangeArgMinPrefixPos` over
+`count = rightClose - leftClose + 1` positions — unbounded in input size
+(`count` reaches `blockSize = 2*(Nat.log2 size + 1)`). This is exactly the
+family the refuted E1-R3 obstruction exhibited.
+
+**Why four reconstruction audits missed it.** B2 swapped the CROSS-block arm
+and deliberately left the same-block arm byte-identical; every audit checked
+that as *route-identity preservation* and scored it CONFIRMED. It was — but
+"unchanged" is not "safe" when the campaign's goal is to eliminate a property
+that unchanged code still has. The readWord-only vocabulary theorem does not
+catch it either: it constrains event TYPES, not uncharged computation.
+
+**Collateral defect.** The B4 charge-policy section of
+`docs/PAPER_MODEL_ADEQUACY.md` states that uncharged work is bounded-per-step
+register computation. That is FALSE on this branch and must be repaired
+together with the charging (or, if charging were declined, corrected to an
+explicit unbounded-residue disclosure).
+
+**Coordinator decision: Option (a) — charge it, as a new B-campaign rung
+(B6), not inside E1.** Rationale: leaving it re-hides exactly the scan
+DD-20260717-C05-001 forbids; no new mathematics is required
+(`bpFringeChunkFoldCosted_global_eq_localBPSeeded`,
+`ChargedFringeChunks.lean:1694`, already proves the 33-capped chunk fold
+computes the same min-excess/argmin pair, side condition discharged all-size
+by `four_machineWordBits_le_32_mul_bpFringeChunkBits`); and the route must be
+settled before the machine simulates it, or E1's frozen rows become moving
+targets. The literal moves 207 -> at most 240; re-deriving a constant while
+freezing the old value is the established, twice-audited pattern (76 -> 142 ->
+207). "Frozen public identity" forbids renaming or deleting `queryCost_eq`,
+not re-deriving its value.
+
+**E1 status:** BLOCKED pending B6, with no rework implied — the rank-close and
+select-close canonical leg simulations are leaf legs and remain valid.
+E1-R4i's canonical select form landed complete at `c0c32c4`.
+
+**Process lesson (WDD candidate):** a campaign that eliminates a property
+must audit UNCHANGED code for that property, not only the delta. Add to the
+coordinator checklist: for each campaign invariant, enumerate every branch of
+every dispatcher the invariant must hold on, and check the untouched arms.
