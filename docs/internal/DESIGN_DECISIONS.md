@@ -2678,3 +2678,113 @@ Follow-up: full provenance audit pass (B4); prose/doc migration beyond
 committed checks (B5).
 
 Supersedes: none (executes DD-20260717-003's coupling under C05).
+
+## DD-20260717-005: Chunked in-word rank/select recharge shape (B3 core)
+
+Status: Proposed
+Date: 2026-07-17
+Scope: B3 rung (worker B3-01, branch `claude/b1-b2-charged-fringe-tables`,
+base `d1d645e`): new modules
+`RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedWordChunks.lean` and
+`ChargedRankSelectLeaves.lean` (parallel layer); later-milestone swap
+surface unchanged by this entry.
+
+Decision:
+
+1. In-word rank derives per-chunk popcounts from B2's EXISTING `(v, a, b)`
+   fringe chunk table (segment 21) instead of a new popcount table: the
+   entry at slot `(v, t, t)` has empty-range min field
+   `bpFringeChunkExcessOffsetAt c v t = c + rankTrue(t) - rankFalse(t)`
+   (empty-range argmin is `a`, so the min field at `a = b = t` is the
+   prefix statistic itself), giving
+   `rankTrue(t) = (minField + t - c) / 2` and
+   `rankFalse(t) = t - rankTrue(t)`, both truncation-free by
+   `bpFringeChunkExcessOffsetAt_add_false`.  One charged read per chunk.
+2. The chunked in-word rank evaluator clamps the query offset to
+   `effLimit = min limit word.length` and visits
+   `min ((effLimit + c - 1) / c) 8` chunks, reading slot
+   `(v_j, t_j, t_j)` with `t_j = min c (effLimit - j * c)`; the `8` cap is
+   the identity on the reachable domain by the new lemma
+   `machineWordBits m <= 8 * bpFringeChunkBits m` (same omega arithmetic
+   as B2's 32-chunk window cap).  The clamp makes the evaluator agree with
+   `RMQ.RAM.boolRankPrefix` (which also stops at the word end) without
+   ever decoding `false` padding as data, so the universal value
+   equivalence needs only `word.length <= 8 * c` — a hypothesis every
+   accepted call site discharges from its structure's own
+   `wordSize_le_machine` + `BoundedPayloadWordStore.word_length_le`.
+3. In-word select is an early-exit fold: per chunk one existing-table read
+   decodes the SLICE popcount `count_j` (same `(v_j, t_j, t_j)` slot with
+   `t_j` = slice length); the routing branch `k < count_j` is decided by
+   the decoded read; the containing chunk finishes with exactly one read
+   of the NEW select table
+   `bpChunkSelectTable c target : FixedWidthNatTable` (rows
+   `2 ^ c * (c + 1)`, slot `v * (c + 1) + k`, entry = position of the k-th
+   `target` bit of the c-bit pattern of `v`, sentinel `c` when absent).
+   Because the routing count is the slice popcount, the selected position
+   provably lies inside the slice (padding positions and sentinel entries
+   unreachable on the honest route).  Read bound `8 + 1 = 9`.
+4. The select table is stored once, instantiated at the route's
+   `target = false` (the only select target on the accepted route), as
+   reviewer/global segment 22, constructor appended last (B2 segment-21
+   pattern; store extension coupled to the wiring swap per C05).
+5. Leaf recharges keep the accepted evaluators' exact branch structure and
+   replace only the word-primitive sub-computations:
+   `bpChunkedRankCosted` (3 sample/word reads + rank fold, <= 11),
+   `bpChunkedDenseTwoWordSelectCosted` (<= 27),
+   `SparseExceptionDirectory.bpChunkedReadCosted` (<= 12),
+   `SparseExceptionSelectData.bpChunkedSelectCosted` (<= 35).  Projected
+   route literal `2*35 + (2*11 + 2*37 + 30) + 11 = 207`, DERIVED at the
+   swap commit (the checked derivation wins).
+6. Worklog: `B2_WORKLOG.md` stays frozen as the closed B2 record;
+   B3 logs in `docs/internal/B3_WORKLOG.md` (the alternative rename to
+   `B_WORKLOG.md` was rejected because the closed B2 matrix and ledger
+   reference `B2_WORKLOG.md` by name and frozen rows may not be edited).
+
+Context: B3 mission — eliminate the remaining `wordRank`/`wordSelect`
+events from the accepted route (three `TwoLevelPayloadLiveStoredWordRankData`
+rank seeds and the `denseTwoWordSelectCosted` leaf) so the charged
+vocabulary collapses to `readWord` only.
+
+Options considered:
+
+- New popcount-per-chunk-value table (design doc's first suggestion):
+  rejected — the existing `(v, a, b)` entries already determine every
+  in-chunk prefix rank via the offset-encoded min field, so a new rank
+  table would duplicate counted bits and add a second store region for
+  zero proof savings.
+- Adding a packed select field to the B2 entry (one table for both):
+  rejected — a per-entry select answer needs the occurrence index `k` as
+  input, so it cannot live in the `(v, a, b)` index without multiplying
+  the row space by `(c+1)` anyway; widening the packed entry would also
+  reopen the closed width-vs-reviewer-word rows (`bpFringeChunkEntryWidth`
+  consumers) for no read-count gain.
+- Select table indexed by `(target, v, k)` (both targets): rejected —
+  the accepted route selects only `target = false`
+  (`sparseExceptionSelectData shape.bpCode false`); the definition is
+  target-generic, only the `false` instance is stored/counted.  A second
+  instance can be appended as a further source if a future route needs it.
+- Fixed non-clamped chunk count (`limit / c + 1` as in B2's fringe):
+  rejected for rank in favor of the ceiling form — it avoids a guaranteed
+  zero-information read when `c` divides the limit, and the select fold
+  needs the ceiling form regardless (it scans the whole word).
+- Reusing `Costed.tickValue` window packets for the sample reads:
+  not applicable — the three rank sample reads are already genuine
+  charged store reads in the accepted leaf; they are kept verbatim.
+
+Rationale: minimal new counted bits (one small table), minimal new proof
+surface (all decode lemmas reduce to B2's proven offset-encoding), exact
+branch-structure mirroring so every value-equivalence proof is a local
+leaf substitution under the accepted route's own hypotheses.
+
+Consequences: route literal grows to the derived value (projection 207);
+segment universe grows to 23 segments (0-22) at the swap milestone; the
+B5 chunk-scale revisit can shrink both fringe and rank/select literals
+together.
+
+Evidence: matrix rows REQ-B3-01..14 (frozen this commit); implementation
+evidence accrues in `B3_WORKLOG.md` per milestone.
+
+Follow-up: swap-milestone entry (segment 22 placement, cost re-derivation,
+vocabulary theorem naming) at M5, following the DD-20260717-004 pattern.
+
+Supersedes: none (extends DD-20260717-002/-004 to the rank/select leaves).
