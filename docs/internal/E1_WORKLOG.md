@@ -1350,6 +1350,45 @@ FROZEN public identity `SuccinctClassic.queryCost_eq : queryCost = 207`
 from touching frozen public identities or weakening closed B2/B3/B4 rows,
 so I am not able to make that call unilaterally.
 
+### IMPORTANT: the repair needs no new mathematics
+
+A second, independent survey of the leg turned up the decisive fact.  The
+value-equality the conversion needs is ALREADY PROVED AND CLOSED in-tree:
+
+```
+theorem bpFringeChunkFoldCosted_global_eq_localBPSeeded
+    {window : List Bool} {seed base start count : Nat} (c : Nat)
+    (hc : 0 < c) (hlen : window.length <= 32 * c)
+    (hvalid : BPFringeWindowValid window seed)
+    (hcount : 0 < count) (hstart : base <= start)
+    (hcov : start + count <= base + window.length + 1) :
+    bpFringeCandGlobal base seed start
+        (bpFringeChunkFoldCosted (bpFringeChunkTable c) c window seed
+          (start - base) (start + count - 1 - base)
+          (Nat.min ((start + count - 1 - base) / c + 1) 33)).value.2 =
+      some
+        (localBPSeededPrefixRangeMinExcess window seed base start count,
+          localBPSeededPrefixRangeArgMinPrefixPos window seed base
+            start count)
+```
+(`ChargedFringeChunks.lean:1694`)
+
+That is EXACTLY the substitution the same-block branch needs: the 33-capped
+chunk fold computes precisely the pair
+`(localBPSeededPrefixRangeMinExcess, localBPSeededPrefixRangeArgMinPrefixPos)`
+that `localBPSameBlockCloseSeededTraceResult` currently computes silently.
+Its `hlen` side condition is discharged all-size by
+`four_machineWordBits_le_32_mul_bpFringeChunkBits`
+(`ChargedFringeChunks.lean:49`), the accepted four-word window fitting in 32
+chunks at every size.
+
+So option (a) below is a SUBSTITUTION exercise of the same shape B2 already
+performed on the cross-block branch, not new mathematics.  Its cost is
+bounded and predictable: the same-block branch gains at most 33 chunk reads
+at segment 21, so the accepted literal moves from `207` to at most `240`.
+That is the whole of the disruption, and it is why this is a scope call
+rather than a research question.
+
 ### Status of the claim
 
 This is documented and evidence-backed but NOT kernel-checked as an
@@ -1376,3 +1415,87 @@ charged and its machine block can be built without any of the above being
 settled; the survey of its fold structure, caps, and segment agreement
 lemmas was in progress when this blocker surfaced.  The same-block branch is
 the ONLY event-silent leg found on the LCA route.
+
+## RESUME INVENTORY: close/LCA leg (verified this session, read-only survey)
+
+Recorded so the next session does not re-derive it.  Nothing here is
+implemented.  The same-block blocker above gates USE of this, but the
+cross-block half is properly charged and can be built once scope is settled.
+
+LEG ORDER in the whole query (`E1RouteDecomposition.lean`): `select(left)`
+-> `select(right-1)` -> `LCA` -> `rank(answer+1)`.  The LCA leg is THIRD of
+four.  Both `_decompose_of_selects_lca_some` (`:41`) and
+`_decompose_of_lca_none` (`:85`) need it, so the block must be proved for
+BOTH the `some` and `none` value cases.  In the two select-miss cases
+(`:121`, `:148`) the close/LCA instruction writes `none` WITHOUT running its
+leaf, so the machine block must be jumped over entirely, contributing zero
+receipts.
+
+DISPATCHER (`ChargedFringeWiring.lean:49`), split on
+`blockOfClose blockSize leftClose = blockOfClose blockSize rightClose`
+where `blockOfClose blockSize x = x / blockSize` (`BlockLocal.lean:864`) and
+`blockSize = canonicalBPRelativeSummaryBlockSizeRaw shape`
+(`RelativeSummary.lean:1240`).  On the machine: `leftClose / blockSize ==
+rightClose / blockSize`.
+
+CROSS-BLOCK branch
+(`bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegments`,
+`ChargedFringeTrace.lean:922`).  Trace is EXACTLY, in this order:
+  1. rank-seed@left   `localBPSeedFromRankCloseTraceResult` (segs 17/18/19 +
+     <=8 chunk reads at 21)
+  2a. 4 window reads at seg 0   2b. LEFT FRINGE FOLD, <=33 reads at seg 21
+  3. INTERIOR, guarded by `leftBlock + 1 < rightBlock`; the `else` arm is
+     `TraceResult.pure none` and is RECEIPT-EMPTY (but still costs
+     comparison + branch category ticks — account for them)
+  4. rank-seed@right   5a. 4 window reads at seg 0   5b. RIGHT FRINGE FOLD
+  then a pure merge, no reads: `bpCandidateClose? (bpCandidateMerge3? ...)`
+  (`Candidate.lean:24,28`).
+
+FOLDS AND CAPS — two independent caps, so ONE cross-block query runs FOUR
+counted loops (two rank-seed folds <=8, two fringe folds <=33):
+- fringe fold `bpFringeChunkFoldComputationFrom` (`ChargedFringeTrace.lean:32`),
+  iteration count LITERALLY `Nat.min (relHi / c + 1) 33`
+  (`ChargedFringeTrace.lean:509` left, `:529` right); one read per
+  iteration (`bpFringeChunkFoldCostedFrom_cost`,
+  `ChargedFringeChunks.lean:1531`).  NO early exit -> use `RunsTo.iterate`,
+  NOT `iterateUntil`.
+- word-rank fold cap `bpWordChunkCount c e = Nat.min ((e-1)/c + 1) 8`
+  (`ChargedWordChunks.lean:150`) — already simulated by
+  `rankAtSegmentBlock_runsTo` (`E1RankAtBlock.lean:359`), whose `G + 4`
+  lands on segment 21 at `G := 17`.
+- address function `bpFringeChunkSlot c v a b = (v*(c+1) + a)*(c+1) + b`
+  (`ChargedFringeChunks.lean:360`); offsets `bpFringeChunkStartOff` (`:900`),
+  `bpFringeChunkEndOff` (`:904`); `c = bpFringeChunkBits m = Nat.log2 m / 8 + 1`
+  (`:42`).
+
+RECEIPT ORDER — there is NO route-side flip lemma.  The fold's footprint is
+ASCENDING in `j` (`bpFringeChunkFoldComputationFrom_run_footprint`,
+`ChargedFringeTrace.lean:141`) while `iterLog` descends.  Reconcile with
+`iterLog_congr` (`E1RankBridge.lean:345`) + `iterLog_singleton_desc`
+(`E1RankBridge.lean:362`), following the WORKED two-step pattern at
+`E1RankTrueBlock.lean:630-641`.
+
+SEGMENTS AND AGREEMENT LEMMAS — every segment this leg touches ALREADY has a
+per-address lemma, so no pullback plumbing is needed:
+  seg 0  window/bp code  `..._bpCode` (`Segments.lean:281`)
+  seg 17/18/19 rank seed `..._rankCloseSuper/Block/Word`
+                         (`ChargedRankSelectWiring.lean:154/165/176`)
+  seg 20 interior        `..._canonicalComponent` (`Segments.lean:258`)
+  seg 21 fringe + rank chunk table
+                         `..._fringeChunkTable` (`Segments.lean:247`)
+Segment 28 (`concreteBPNativeFiniteSmallSameBlockCloseTraceSegment`) is
+passed but bound to `_sameBlockSegment` and is INERT — no machine code
+should reference it.  Seg 21 is shared by the fringe fold (direct) and the
+rank-seed fold (as `17 + 4`); `rfl` closes the gap
+(`SuccinctFinalRAM.lean:1578`).
+
+INTERIOR leg is NOT a loop: `canonicalRelativeRmmInteriorRangeMinComputation`
+(`InteriorDirectory.lean:2185`) is a five-way `if` dispatch into fixed-shape
+sparse-table span reads.  Cost cap `canonicalRelativeRmmInteriorQueryCost =
+240` (`InteriorDirectory.lean:1777`).
+
+MACHINE-SIDE REUSE: `HostedAt` (`E1MachineCalculus.lean:32`), `RunsTo.trans`
+(`:103`), `iterLog` (`:284`), `RunsTo.iterate` (`:302`), `iterUntilLog`
+(`:338`), `RunsTo.iterateUntil` (`:378`); rank blocks
+`rankAtSegmentBlock_runsTo` (`E1RankAtBlock.lean:359`, 32 instrs) and
+`rankTrueCloseBlock_runsTo_hit` (`E1RankTrueBlock.lean:663`).
