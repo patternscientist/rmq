@@ -119,7 +119,8 @@ segment 22 reused this layer rather than cloning it; that is the template.
 | --- | --- | --- | --- |
 | M0 | `6775e22` | frozen B6 matrix + worklog; no Lean changes | baseline `RMQ RMQPaper RMQExamples` exit 0 at `c0c32c4` |
 | M1 | `194c4e6` | `ChargedSameBlockChunks.lean`: charged Costed same-block leaf, literal cost bound, value equivalence, decoded rank-seed twins | `lake build RMQ` exit 0, 88.5 s |
-| M2 | (this commit) | `ChargedSameBlockTrace.lean`: seeded + decoded trace twins, full obligation suite, WithStore layer | `lake build RMQ` exit 0, 82.2 s |
+| M2 | `285c43e` | `ChargedSameBlockTrace.lean`: seeded + decoded trace twins, full obligation suite, WithStore layer | `lake build RMQ` exit 0, 82.2 s |
+| M3a | (this commit) | `ChargedSameBlockSubstitution.lean`: query-side geometry discharge, exact-value substitution at the accepted same-block call site | `lake build RMQ` exit 0, 87.3 s |
 
 ## M1 — charged same-block leaf at the Costed layer
 
@@ -195,3 +196,43 @@ the supplied-store layer.
 `lake build RMQ` exit 0, 82.2 s.  Hygiene scan on the new module: no hits.
 
 Still NOT consumed by the route.  M3 (the atomic dispatcher swap) is next.
+
+## M3a — exact-value substitution at the accepted same-block call site
+
+New module `ChargedSameBlockSubstitution.lean` (namespace
+`RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory`, matching
+`ChargedFringeSubstitution.lean`).
+
+`bpChunkedSameBlockCloseDecodedCostedWithRankSeed_value_eq_of_query`
+discharges the three geometry hypotheses of the M1 value lemma from the
+accepted route's own query-side facts (`hrankExact`, `hlen`, `hbound`,
+`hleft`, `hright`, `hsame`), giving
+
+```
+(bpChunkedSameBlockCloseDecodedCostedWithRankSeed shape rankCloseCosted
+    (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose rightClose).value =
+  (localBPSameBlockCloseDecodedCostedWithRankSeed shape rankCloseCosted
+    (canonicalBPRelativeSummaryBlockSizeRaw shape) leftClose rightClose).value
+```
+
+The discharge is much shorter than B2's cross-block one because the
+same-block leaf shares its window base and range start with the LEFT fringe
+leaf, so `hvalid` and `hstart` are the left-fringe facts verbatim.
+
+One genuine difference from the cross-block case, worth recording because it
+is the only place the same-block geometry is NOT a specialization of B2's:
+B2 proves the whole block lies inside the BP code
+(`hleftEndLen`) using STRICTNESS `blockOfClose leftClose < blockOfClose
+rightClose` from `hcross`, then `blockOfClose leftClose + 1 <= blockCount`.
+That strictness is unavailable in the same-block case, and the fact is
+genuinely false there: the same-block case admits the FINAL block, whose end
+may exceed `shape.bpCode.length`. The repair is to cover each close position
+separately (`localBPWindowBits_covers_of_le_width` at `pos := leftClose + 1`
+and at `pos := rightClose + 1`) rather than covering the whole block; both
+positions are `< shape.bpCode.length` by `bpCloseOfInorder?_bounds`, and both
+are `< blockStart + blockSize <= base + 4W` by `hsame` and
+`localBPWindow_block_end_le_four_words`. `hcov` then follows by `omega` from
+the two covers, which also handles the `rightClose < leftClose` Nat-truncation
+case correctly.
+
+`lake build RMQ` exit 0, 87.3 s. Hygiene scan on the new module: no hits.
