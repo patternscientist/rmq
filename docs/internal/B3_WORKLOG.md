@@ -327,3 +327,13 @@ below:
   `simp [concreteBPNativeSuccinctRMQGlobalReadStore,
   concreteBPNativeRankCloseTraceSegmentBase,
   ...rankRegisterWordRAMStore, WordRAM.Store.readWord?]` alone.
+- Checkpoint battery at `6394c0c` (worker B3-02): `git diff --check`,
+  `git diff --check abe2c08..HEAD`, and
+  `git diff --check d1d645e..HEAD` all clean;
+  `design_decision_check.ps1 -Strict -Base d1d645e...` exit 0
+  (12 changed files); `claim_drift_scan.ps1` exit 0 (697 hits,
+  0 strict failures); working tree clean; every commit in
+  `abe2c08..HEAD` had `lake build RMQ` green at commit time.
+  `paper_topology_lint.ps1` and the cost harness remain M6
+  candidate-tree obligations (public theorem surface untouched by
+  B3-02's parallel layer).
