@@ -423,38 +423,76 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
 - Verification at this commit: standalone `lake env lean` exit 0 (no
   warnings); `lake build RMQ` green.
 
-## RESUME POINT (next session: select-close legs onward)
+## RESUME POINT (next session: select-close read sub-blocks onward)
 
-NEW in this session (commits `69b39a9`, `dae5fa6`, `691f7c0`, + this
-one): M3c-2a rank-close canonical glue (`rankCloseBlock_runsTo_canonical`
-at the global store, `rankCloseBlock_fits`, `straight_eval`/
-`straight_writes` macro lift), M3c-2b `RunsTo.iterateUntil`, M3c-3a
-`selectFoldBlock` + `selectFoldBlock_runsTo` (early-exit in-word select
-fold fully simulated; see the M3c-3a section for the full select-close
-inventory), and `bpChunkRankOfEntry_true_eq` in `E1RankBridge.lean`.
+NEW in the M3c-4 session (commits `eb3f102`, `aff4393`, `d49672d`):
+RESUME step 1 is DONE — `E1RankTrueBlock.lean` (TRUE-target seeded
+block, chunk segment `S` decoupled from the seed base, generic-base
+loop `rankTrueLoopFold_runsTo`) and `E1RankAtBlock.lean` (atomic
+register-input FALSE fold `rankAtSegmentBlock` + generic-base
+`rankFalseLoopFold_runsTo` with write-set-complement preservation).
+See the M3c-4a/-4b/-4c sections above for exact theorem names/offsets.
 
-NEXT (select-close remaining machine pieces, in dependency order):
+CONCRETE LAYOUT INVENTORY (verified this session,
+`SuccinctFinal/RAM/Segments.lean:24`,
+`concreteBPNativeSelectCloseTraceSegmentLayout`): superTable fields at
+segments 1/2/3/4 (baseOccurrence/baseWordIndex/rankBefore/firstOffset),
+localTable at 5/6/7/8, longFlagRankBase 9 (seeds 9/10/11),
+longRelativeBase 12, sparseDirectory.rankBase 13 (seeds 13/14/15),
+sparseDirectory.relativeBase 16, bitWordBase 0, dead segment
+`concreteBPNativeDeadTraceSegment`; fringe chunk table 21, select chunk
+table 22; rank-close base 17 (its chunk 21 = 17 + 4 is the only
+`seeds+4` coincidence — hence M3c-4c).  ATOMIC-BLOCK NOTE: the dense
+leg instantiates `rankAtSegmentBlock A G c` at `G := 17` so its
+hardwired `G + 4 = 21` hits the chunk table.
 
-1. TRUE-target rank block (`E1RankTrueBlock.lean`): clone
-   `E1RankBlock.lean` (mechanical) for
-   `d.bpChunkedRankTraceResultWithStore store G (G+1) (G+2) (G+4) c TRUE
-   pos` - consumed twice (long leg seeds at `layout.longFlagRankBase`,
-   sparse leg via `sparseDirectory.bpChunkedReadTraceResultWithStore`,
-   both at chunk segment 21).  Deltas vs the false block: drop
-   `.sub rA rT rA` from the loop body (23 instrs; decode ends at
-   `/2` per `bpChunkRankOfEntry_true_eq`, already landed); block length
-   59; offsets shift: back edge B+53, epilogue B+54..56, exit jump B+57
-   (target B+59+1=B+59? recompute: loop B+30..52, brNZ B+53, fin
-   B+54..56, jump B+57 -> B+59, miss B+58, exit B+59); loop pass cats 24
-   long; `bpWordRankAccAt`'s true instance for the invariant (check
-   whether `bpWordRankAccAt` is already target-parametric - it is:
-   `bpWordRankAccAt store seg c TARGET w e n`).  Also needed: an
-   ATOMIC-fold variant theorem (loop-only, no seed reads) for the dense
-   leg's two `bpChunkedWordRankTraceResultAtSegmentWithStore store 21 c
-   false word limit` folds - factor the loop+init as its own hosted
-   sub-block so both the seeded blocks and the dense leg consume it, OR
-   clone a small `rankAtSegmentBlock` with init from register inputs
-   (word value + limit in registers) instead of seed reads.
+TOP-LEVEL DISPATCH SHAPE (verified, `bpChunkedSelectTraceResultWithStore`,
+`ChargedRankSelectLeafTrace.lean:1157`): `q := data.queryOccurrence idx`;
+guard `idx < occurrenceCount bits target` (per-shape constant register);
+super 4-read at `layout.superTable` slot `selectSuperSlot q superStride`;
+none -> none; `relativeSplitSelectEntryIsMarked super` -> LONG leg
+(seeded TRUE rank block at 9..11/21 on slot `selectSuperSlot q
+superStride`, then relative read at segment 12, base
+`relativeSplitSelectEntryBasePosition wordSize super`, slot
+`relativeSplitSelectLongCompactSlot exceptionRank (q -
+super.baseOccurrence) superStride`); else local 4-read at
+`layout.localTable` slot `relativeSplitSelectLocalSlot ...`; none ->
+none; marked local -> SPARSE leg (`bpChunkedReadTraceResultWithStore` =
+seeded TRUE rank block at 13..15/21 on `localSlot`, then relative read
+at 16); else DENSE leg (word read at 0, two atomic FALSE folds at 21,
+compare, `selectFoldBlock` at 21/22 per M3c-3a).
+
+REGISTER-ALLOCATION CONSTRAINT (checked): `E1QueryProgram` reserves
+0..7; component bank 8..27 is fully owned by the rank/select folds;
+hosted-fold preservation covers `r <= 8 ∨ 28 <= r` (seeded) and the
+write-set complement (atomic).  The select dispatch must therefore keep
+`idx`/`q`/the 4 super fields/the 4 local fields/base-position/
+base-occurrence in registers `>= 28` (they survive every hosted fold);
+plan a frozen extension bank 28..39 and record it as a DD entry when
+the dispatch block is written.
+
+ENTRY-TABLE 4-READ REDUCTION PATH (inventoried): the accepted 4-read
+evaluator `readTraceResultRelabeledWithStore`
+(`GenericSelect/RAMStoreParam.lean:258`) is four
+`TraceResult.ofProgramWithStore (singletonSegmentMap fieldSeg dead)
+store (table.readProgram i)` binds ending in `entryOfFields`
+(none-propagating 4-way match, `GenericSelect/DenseEntryTable.lean:109`).
+`ofProgramWithStore` (`RAMStoreParam.lean:29`) = relabel of
+`(readProgram i).evalR (store.pullback segmentMap)`; `readProgram i` is
+`mapOptWordNat/mapOptWordOptionNat (store.readProgram i)` over
+`Program.readWord 0 i` (`SuccinctSpace/WordStoreRAM.lean:26`,
+`TablesRAM.lean:53/145`), so each bind's trace should reduce (near-rfl)
+to `[readWord fieldSeg i (store.readWord? fieldSeg i)]` and its value
+to the decoded option — derive small bridge lemmas
+`ofProgramWithStore_readProgram_trace/_value` first (in a new
+`E1SelectBridge.lean`), then the machine sub-block is 4 readMems +
+4 zero tests with the fields parked in the `>= 28` bank.
+
+NEXT (dependency order):
+
+1. DONE (M3c-4a/-4b/-4c): TRUE-target seeded rank block
+   (`E1RankTrueBlock.lean`) + atomic register-input FALSE fold block
+   (`E1RankAtBlock.lean`).
 2. Entry-table read sub-block: the accepted 4-read evaluator
    `readTraceResultRelabeledWithStore` (`GenericSelect/RAMStoreParam.lean:
    258/530`, relabeled segments per
