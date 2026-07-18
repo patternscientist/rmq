@@ -261,6 +261,182 @@ below:
    `design_decision_check.ps1 -Strict -Base
    d1d645ee221c1756f8c61c5ea222950f73e43c8c`).
 
+## Current state / resume point (B3-03 checkpoint, M5 IN PROGRESS)
+
+Worker B3-03 executed roughly 70% of the M5 atomic swap.  NOTHING of the
+swap is committed (C05 atomicity); the ENTIRE swap lives in the WORKING
+TREE of this worktree, and as insurance in the committed patch
+`docs/internal/B3_M5_WIP.patch` (apply from a clean `67247f3`+this-commit
+tree with `git apply docs/internal/B3_M5_WIP.patch`; delete the patch file
+in the eventual swap commit).  DO NOT reset the working tree without
+applying/keeping the patch.
+
+DONE and verified green (each via `lake build <module>`, incremental):
+
+- Store extension (segment 22 = `bpChunkSelectTable c false`):
+  `Segments.lean` (+`concreteBPNativeSelectChunkTraceSegment := 22`, store
+  branch, `_selectChunkTable` read fact), `ReviewerPhysical.lean`
+  (`ReviewerSource.selectChunkTable` appended, maps/folds/nodup/length 22,
+  coverage < 23, dead witness moved 23, capacity via
+  `bpChunkSelectRowCount_le_linear`, width via
+  `bpChunkSelectEntryWidth_le_machineWordBits_capacity`),
+  `FlatPayload.lean` (overhead += `bpChunkSelectTableOverhead`, layout
+  gains `selectChunkPayload` appended last, `_selectChunk_slice`, reviewer
+  read store segment 22, read-backed 4th disjunct).  All three build green.
+- `ChargedRankSelectWiring.lean` (green): select-leg canonical-store
+  agreement facts (bit words, long flag 9/10/11, long relative 12, sparse
+  13/14/15/16, select table 22) + 8 entry-table pullbacks; entry-table
+  `events_readWord` helpers; `concreteBPNativeChunkedSelectCloseGlobalWordTraceResult`
+  with `_refines` (= chunked Costed via `_toCosted_of_agree`, all 25
+  hypotheses), `_matchesReadStore`, `_no_syntheticCostOnlyPrimitive`,
+  `_events_readWord`; the segment-22 LIVENESS witness
+  `concreteBPNativeChunkedInWordSelect_selectTable_mayRead` (in-word select
+  fold on word `[false]`, occ 0, canonical store: found-branch fires a
+  genuine segment-22 read; decode via `bpChunkRankOfEntry_packed` +
+  `bpWordChunkRank_step`); base-parameterized
+  `concreteBPNativeChunkedRankCloseSeedReadStore shape base` (segments
+  base..base+2 + chunk at base+4, so base 17 lands at counted segment 21)
+  with 4 read facts.
+- `SuccinctFinalRAM.lean` BUILDS GREEN with the full swap core:
+  - swapped `concreteBPNativeSelectCloseInterpretedCosted` /
+    `concreteBPNativeRankCloseInterpretedCosted` := the chunked Costed
+    consumers; `concreteBPNativeSelectCloseWordTraceResult` /
+    `...GlobalWordTraceResult` := the chunked select global trace;
+    `concreteBPNativeRankCloseWordTraceResultAtSegment` := chunked rank
+    twin at the seed store (chunk at base+4);
+    `concreteBPNativeRankCloseWordTraceResult` := AtSegment 0;
+    `..._canonical_eq` (AtSegment 17 = M5-prep chunked global object).
+  - LEGACY SPLIT (REQ-B3-04, key design decision): the pre-canonical
+    compatibility chain keeps the retired register evaluators under NEW
+    names `concreteBPNativeSelectCloseRegisterInterpretedCosted` /
+    `concreteBPNativeRankCloseRegisterInterpretedCosted` /
+    `concreteBPNativeSelectCloseRegisterWordTraceResult` /
+    `concreteBPNativeRankCloseRegisterWordTraceResult(AtSegment)`;
+    `concreteBPNativeLCACloseInterpretedCosted`,
+    `concreteBPNativeSuccinctRMQQueryInterpretedCosted`,
+    `WholeQueryInstr.eval/evalLeafTrace/evalWordTrace(OfSizeGe)`, the
+    legacy LCA replays and the legacy-store matches theorems (incl.
+    restored `_matchesReadStore_total` and OfSizeGe legacy matches) are
+    rewired to the Register legs, so the axiom-pinned
+    `_refines_queryCosted`/`_exact` lattice keeps statements verbatim.
+    The three `_refines_*CloseCosted` bridges are restated over the
+    Register names; NEW `concreteBPNativeSelectCloseInterpretedCosted_exact`
+    (erase = `bpCloseOfInorder?` via
+    `select_false_bpCode_eq_bpCloseOfInorder?`) and
+    `concreteBPNativeRankCloseInterpretedCosted_exact` serve the canonical
+    route.  Deleted (superseded, B2-deletion precedent): the legacy-store
+    rank matches theorem for the chunked AtSegment (replaced by
+    `concreteBPNativeRankCloseRegisterGlobalWordTraceResult_matchesReadStore`).
+  - cost: algebra selectClose := 35, rankClose := 11; closeLCA_eq = 126;
+    `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq = 207`
+    (rfl; derived literal CONFIRMS the 207 projection); 142 frozen as
+    `concreteBPNativeSuccinctRMQSilentWordRankSelectChargedTraceCost(_eq/Algebra)`;
+    `_cost_le_thirtyFive`/`_cost_le_eleven` for the swapped legs
+    (13/4 lemmas retained for the Register legs); principled cost proof
+    re-derived (LCA bound 126 via
+    `canonicalLcaCloseCostedWithRankSeed_cost_le_principled ... 11`);
+    transitional 328 re-proved via 207 <= 328;
+    `nonSyntheticWeight_sum_le_142` renamed `_le_207`; two-sided profile
+    conjuncts at 207.
+  - VOCABULARY THEOREM (REQ-B3-10) PROVED:
+    `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only`
+    (every event of the accepted whole-query global word trace
+    `.isReadWord`; via per-leg `events_readWord` inductions).
+  - provenance: `ReviewerProducerReadPath` select constructors now cite
+    the chunked WithStore components + NEW `selectDenseInWord` constructor
+    (free in-word fold, used only for segment-22 liveness); may-path
+    battery rebuilt WithStore-style (`selectEntryTableWithStore_mayRead`,
+    `chunkedRankTraceWithStore_mayRead`, `chunkedSparseDirectoryWithStore_mayRead`,
+    `chunkedDenseTwoWordSelectWithStore_mayRead`,
+    `chunkedRelativeOffsetWithStore_mayRead`); `counted_producer_may_path`
+    covers `.selectChunkTable` at segment 22; reviewerReadSegmentLive
+    bounds 22 -> 23; FreshUnusedCanonicalSource -> segment 23;
+    noFiniteSmallInterior/noReadyClose for swapped legs via
+    matchesReadStore + store-none helpers; operand-fit via events_readWord.
+- `SuccinctFinalModelAdequacy.lean` + `SuccinctFinalSemanticProvenanceAdequacy.lean`
+  edited (207 field rename, < 23) - compile status pending downstream.
+- `BPNavigationRAM.lean` store profile: segment 22 remapped from
+  `summary.maxRelTable` to the select table + `_selectChunkTable` read
+  fact + read-backed disjunct + successful_read_backed by_cases (its LCA
+  trace theorems still red, below).
+
+REMAINING (last full-library build failed ONLY in these files):
+
+1. `SuccinctFinalStoreParam.lean` (errors at 392/865/3394 [3394 = <22
+   fix ALREADY APPLIED in tree]): replace the two WithStore leaves:
+   `concreteBPNativeRankCloseWordTraceResultAtSegmentWithStore` :=
+   `(builtRelativeSplitBPCloseRankData shape).bpChunkedRankTraceResultWithStore
+   store base (base+1) (base+2) (base+4) c false pos`;
+   `concreteBPNativeSelectCloseGlobalWordTraceResultWithStore` :=
+   `bpChunkedSelectTraceResultWithStore layout 21 22 store c idx` (then
+   `_globalReadStore` for select is `rfl` against the wiring def, for rank
+   it is `(..._canonical_eq shape pos).symm`); `_matchesReadStore` /
+   `_no_synthetic` := twin lemmas; `_store_parametric` := twin
+   store_parametric fed by hread at local segments 0/1/2/3 after EXTENDING
+   `concreteBPNativeRankCloseSegmentMap` with `| 3 => base + 4` (check its
+   consumers' segment case splits gain a `3` case; the pullback lemma at
+   :40 is then false as stated - restrict it to the register store or
+   drop, its only consumer was the old `_globalReadStore`).  The
+   `_eq_of_trace_read_agreement` chain must be re-proved for the chunked
+   twins: per-fold induction, pattern = (a) head read agreement via
+   `List.Mem.head` gives `bpChunkReadTraceResult_eq...` then `rw`, (b)
+   tail agreement transported through `bind_trace` + `mem_append_right`
+   REWRITING BY the head equality; do the rank twin by `show`-ing the
+   exact def body from `ChargedRankSelectLeafTrace.lean:154` (do NOT
+   guess field names), then the select twin over its six components
+   (entry tables via the existing private
+   `program_evalR_eq_of_trace_read_agreement`).  A draft of the fold-level
+   lemmas is in the session scratchpad pattern above; rewrite them against
+   the real defs.
+2. `ReviewerReachabilitySmall.lean` (546/551/468/715/748/763/950/1029/
+   1052/1481): singleton select-table successful reads must be recomputed
+   over the CHUNKED select trace; the `change` patterns must target
+   `bpChunkedSelectTraceResultWithStore` bodies; `_refines_selectCloseCosted`
+   rewrites -> use `concreteBPNativeSelectCloseInterpretedCosted_exact` /
+   `_refines` instead; rank uses (763, 952-960 statements over
+   `AtSegment shape 17 2`) now describe the chunked trace - re-prove via
+   the twin surface.  NEW W19 obligation: successful segment-22 occurrence
+   on a real closed valid execution - the singleton execution's select
+   goes dense (super+local unmarked), word `[true,false]`, first-chunk
+   false-count 1 > 0 so the found branch issues a SUCCESSFUL segment-22
+   read; script it like the `_trace_forall_of_honestRank` hreadVal block
+   (`ChargedRankSelectTrace.lean:620-700`) + `bpChunkSelectSlot_lt_rowCount`;
+   then extend `small_successful_closed_valid_occurrence` list with
+   `.selectChunkTable` (mirror B2's `fringeChunkTable` case at the same
+   theorem).
+3. `ReviewerReachabilityLong.lean:639` / `ReviewerReachabilitySparse.lean:681`:
+   `change` patterns over the old select trace body -> retarget to the
+   chunked def (their symbolic witnesses cite long/sparse component reads,
+   whose chunked components emit the same segments 9-16 plus 21).
+4. `BPNavigationRAM.lean:1837` (its rank interpreted refines - rewire the
+   nav profile's rank leg like the SuccinctFinalRAM legacy split or to the
+   chunked consumer, whichever its store profile matches: nav store 21 =
+   fringe table, 22 = select table now, so the CHUNKED legs match) and
+   `:2101` (LCA matches: pass the nav-store fringe fact
+   `concreteBPCloseNavigationGlobalReadStore_fringeChunkTable` and the
+   chunked rank matches handler).
+5. Public/doc sync (NOT started): `SuccinctRMQClassic.lean`
+   (queryCost_eq = 207; freeze `canonicalSilentWordRankSelectQueryCost`
+   abbrev + `_eq = 142` following the B2 pattern), `Headlines/RMQ.lean`
+   (main-theorem conjunct 207, docstrings, `SumLe142` -> `SumLe207`
+   abbrev rename [coordinator-ratified], NEW vocabulary headline abbrev
+   for `..._readWord_only`), `Validation/SuccinctClassic.lean`
+   (canonicalBoundOK: 207 + frozen 142 + 76 + 328),
+   `Validation/SuccinctClassicCostHarness.lean` (canonicalBoundIs207),
+   `RMQExamples/Concrete.lean` (guards 207 + 142),
+   `scripts/paper_topology_lint.ps1` + `scripts/headline_axiom_check.lean`
+   (SumLe207), README/docs numeric tables (claim_drift will flag), matrix
+   closure rows + DD entries (log: seed-store +4 layout, Register legacy
+   split, deleted/restored legacy theorems, `_cost_le_thirtyFive/eleven`
+   renames, mayRead witness design), `RMQ.lean` needs no new module.
+6. M6 battery per the delegation prompt.
+
+Verified-in-session builds: `lake build RMQ.Core.SuccinctFinal.RAM.FlatPayload`
+/ `...ReviewerPhysical` / `...ChargedRankSelectWiring` /
+`RMQ.Core.SuccinctFinalRAM` all exit 0 (last SuccinctFinalRAM build ~6
+iterations, few minutes each); full `lake build RMQ` fails only in the
+five files above; hygiene rg over all touched files: 0 hits.
+
 ## Verification ledger (B3)
 
 (commands, exit codes, durations recorded per milestone)
