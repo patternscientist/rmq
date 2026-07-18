@@ -60,10 +60,19 @@ record; B3 milestones log here (recorded in DD-20260717-005).
 ## Milestones
 
 - [x] M1 matrix extension + this worklog + DD-20260717-005 (docs only).
-- [ ] M2 `ChargedWordChunks.lean`: word-geometry lemma, in-chunk rank
-      decode lemmas, chunked in-word rank fold (Costed), select chunk
-      table + facts, chunked in-word select fold (Costed), value/cost
-      theorems, select-table corruption witness.
+- [x] M2 `ChargedWordChunks.lean`: word-geometry lemma
+      (`machineWordBits_le_8_mul_bpFringeChunkBits`), in-chunk rank decode
+      (`bpChunkRankOfEntry(_packed)`, `bpFringeChunkMinOffset_self`,
+      `bpRankPrefix_true_add_false`), chunked in-word rank fold
+      (`bpChunkedWordRankCosted`, cost <= 8,
+      `_value` = `RAM.boolRankPrefix` under `word.length <= 8c`), select
+      chunk table (`bpChunkSelectTable c target`) + size/width/erasure/
+      littleO/capacity facts, chunked in-word select fold
+      (`bpChunkedWordSelectCosted`, cost <= 9,
+      `_value` = `RAM.boolSelectInWord` under `word.length <= 8c`),
+      select-table corruption witness
+      (`bpChunkSelectTable_corruption_changes_select_value`: honest
+      `some 0` vs corrupted-slot-0 `some 1` on word `[false]`, occ 0).
 - [ ] M3 `ChargedRankSelectLeaves.lean`: the four Costed leaf recharges +
       value equivalences + literal cost bounds.
 - [ ] M4 trace layer (FlatStoreComputation folds at segments 21/22, house
@@ -110,3 +119,16 @@ template:
 (commands, exit codes, durations recorded per milestone)
 
 - M1: docs only.
+- M2: `lake env lean RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedWordChunks.lean`
+  exit 0 (4 fix iterations, ~1.5-2.5 min each).  Toolchain notes for the
+  successor: (a) core `Nat.min_eq_left/right`, `Nat.min_zero`,
+  `Nat.succ_min_succ` are stated over the generic `min` while the house
+  goals use `Nat.min` — never `rw` them directly; introduce a `have` with a
+  `Nat.min` type ascription first (B2 style); (b) `decide` cannot reduce
+  through `Nat.log2` (well-founded recursion), so witness proofs must route
+  around table widths via `readCosted_erase`-style theorems (the new
+  `bpChunkedWordSelectCostedFrom_step_found` exists for exactly this);
+  (c) `Nat.log2 (c+1) <= c+1` needs the factor-2 slack contradiction
+  pattern from `ChargedFringeTableFacts`, not a direct pow argument.
+- M2 library root: `lake build RMQ` exit 0, 23 s incremental (module
+  registered in `RMQ.lean` this commit; 211 jobs).
