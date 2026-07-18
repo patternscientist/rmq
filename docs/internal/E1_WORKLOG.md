@@ -176,8 +176,28 @@ M3c plan (the remaining big grind, REQ-E1-03/04):
    (segment, index) sequence, plus the component's `matchesReadStore`.
 2. Component order (increasing difficulty): (a) rank-close at segment
    (`concreteBPNativeRankCloseWordTraceResultAtSegment`,
-   `SuccinctFinalRAM.lean:1506`) - sample+chunk reads, no branching?
-   expand first; (b) select-close
+   `SuccinctFinalRAM.lean:1506`).  Structure ALREADY INVENTORIED:
+   it is `bpChunkedRankTraceResultWithStore`
+   (`ChargedRankSelectLeafTrace.lean:154`) = three single-read legs
+   (super sample at `base` index `data.superIndex pos`, block sample at
+   `base+1` index `data.wordIndex pos`, packed word at `base+2` index
+   `data.wordIndex pos`; each leg's trace is one literal
+   `readWord` event - `bpChunkReadTraceResult`/`bpWordReadTraceResult`
+   are single-event records) followed by the 8-cap word-chunk fold
+   `bpChunkedWordRankTraceFromWithStore`
+   (`ChargedRankSelectTrace.lean:106`): `bpWordChunkCount c effLimit`
+   iterations, iteration `j` reading the chunk table at `base+4` index
+   `bpFringeChunkSlot c (bpFringeWindowChunkValue c word j)
+   (bpWordChunkSliceLen c e j) (bpWordChunkSliceLen c e j)`.
+   Machine strategy for the fold: keep a remaining-word register
+   (decoded word value), extract the next c-bit chunk by
+   div/mod-by-`2^c` constant forms; needs arithmetic bridge lemmas
+   `bpFringeWindowChunkValue c word j = (bitsToNatLE word / 2^(j*c)) %
+   2^c`-shaped plus an affine form of `bpFringeChunkSlot`, then
+   `RunsTo.iterate` with the invariant carrying (remaining word,
+   slice-length schedule, accumulator).  The count register is
+   data-dependent (`bpWordChunkCount`), computed by machine arithmetic
+   from the decoded word/limit registers; (b) select-close
    (`concreteBPNativeChunkedSelectCloseGlobalWordTraceResult`, target of
    `SuccinctFinalRAM.lean:1342`) - chunked select tables; (c) the
    all-size structural close/LCA leg
