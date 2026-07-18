@@ -115,36 +115,91 @@ record; B3 milestones log here (recorded in DD-20260717-005).
       docstring fixes (REQ-B3-13).
 - [ ] M6 final battery + matrix closure + report.
 
-## Current state / resume point
+## Current state / resume point (B3-01 checkpoint, HEAD after matrix
+## evidence commit)
 
-M1 committed (docs only).  Implementation starts at M2.
+Delivered and committed, library green at every commit:
 
-Planned M4 steps, following `ChargedFringeTrace.lean` verbatim as the
-template:
+- M1 `a32713c` (matrix rows REQ-B3-01..14 frozen, this worklog,
+  DD-20260717-005);
+- M2 `93ab753` (`ChargedWordChunks.lean`: in-word rank/select chunk core,
+  select table + facts, universal value equivalences, corruption
+  witness);
+- M3 `63aa401` (`ChargedRankSelectLeaves.lean`: the four Costed leaf
+  twins with `_value_eq` at every invocation, costs 11/27/12/35);
+- M4a `2517a32` (`ChargedRankSelectTrace.lean`: word-level trace folds at
+  parameterized segments with the full B2-style surface);
+- REQ-B3-13 docstring/comment fixes `fcd491e`.
 
-1. `ChargedRankSelectTrace.lean`: `bpChunkedWordRankComputationFrom` /
-   `bpChunkedWordSelectComputation` as `FlatStoreComputation`s (one word
-   read per chunk, `bitsToNatLE` decode into the M2 step functions);
-   `_run_value` (= the M2 Costed folds on any table's own words),
-   `_run_reads_length`, `_run_footprint`; then
-   `TraceResultAtSegment(WithStore)` wrappers at parameters
-   `(rankSegment := 21-global / component-local per AtSegments style,
-   selectSegment := 22)` with `_toCosted`, `_eq_of_agree`,
-   `_store_parametric`, `_matchesReadStore`, `_trace_forall`,
-   `_no_syntheticCostOnlyPrimitive`.
-2. Trace twins of the four leaf recharges mirroring
-   `GenericSelect/RAM.lean` (`rankTraceResult` :333,
-   `selectTraceResult` :1779, `selectTraceResultRelabeled` :1835) and
-   `RAMStoreParam.lean` twins, with the `wordRank`/`wordSelect` emissions
-   replaced by the segment folds; segment plumbing via a
-   `chunkTableSegment`/`selectTableSegment` extension of
-   `concreteBPNativeSelectCloseTraceSegmentLayout`.
-3. M5 swap at `SuccinctFinalRAM.lean:23/:30/:37/:1304/:1649/:1671`
-   consumers + `ReviewerPhysical` constructor 22 + `FlatPayload` layout +
-   adequacy/provenance + cost algebra fields
-   (`selectClose := 35`, `rankClose := 11`) + derived literal + 142 frozen
-   (pattern `SilentFringeChargedTraceCost`) + vocabulary theorem +
-   REQ-B3-13 docstring fixes in the same commit as the derived literal.
+The successor (B3-02) resumes at M4b with everything below still to do;
+the Costed layer needs NO further work.
+
+1. M4b leaf trace twins (parallel, additive): chunked mirrors of the
+   accepted trace evaluators in `GenericSelect/RAM.lean` —
+   `rankTraceResult` (:333, built on `NatProgram.twoLevelSampledRank`,
+   emits the 1 `wordRank`), `selectTraceResult` (:1779),
+   `selectTraceResultRelabeled` (:1835, house layout
+   `concreteBPNativeSelectCloseTraceSegmentLayout`),
+   `denseTwoWordSelectTraceResult`, the directory trace, and the
+   `RAMStoreParam.lean` WithStore twins (:162/:972) — replacing the
+   `wordRank`/`wordSelect` emissions with
+   `bpChunkedWordRankTraceResultAtSegmentWithStore` /
+   `bpChunkedWordSelectTraceResultAtSegmentsWithStore` at layout-extended
+   segments (fringe chunk table = global segment 21 for the rank reads,
+   select table = the NEW global segment 22).  The three sample/word
+   reads of each rank seed stay as their existing readWord emissions
+   (split the `twoLevelSampledRank` instruction into its three
+   `readWord`s + the segment-21 fold; `bpChunkReadTraceResult` can carry
+   the sample reads too if the register-program presentation is retired
+   at these five sites only).  Surface per twin: `_refines` (toCosted =
+   the M3 chunked Costed twin), `_trace_forall`, `_matchesReadStore`,
+   `_no_syntheticCostOnlyPrimitive`, `_eq_of_agree`, `_store_parametric`.
+2. M5 atomic swap commit (C05 coupling; mirror B2-02 M9 and
+   DD-20260717-004 exactly):
+   - route consumers `concreteBPNativeRankCloseInterpretedCosted` (:30),
+     `concreteBPNativeSelectCloseInterpretedCosted` (:23) := the chunked
+     Costed twins at `c := bpFringeChunkBits shape.bpCode.length`
+     (hypotheses discharged by `wordSize_le_machine` fields +
+     `machineWordBits_le_8_mul_bpFringeChunkBits`); trace twins at
+     `SuccinctFinalRAM.lean:37/:1304/:1649/:1671` := the M4b chunked
+     trace twins; LCA rank-seed threading unchanged (the dispatcher's
+     rank parameter receives the swapped rank close).
+   - `ReviewerPhysical.lean`: `ReviewerSource.selectChunkTable` appended
+     as constructor 22 (payload
+     `(bpChunkSelectTable (bpFringeChunkBits shape.bpCode.length)
+     false).payload`), segment map 22, erasure/capacity
+     (`bpChunkSelectRowCount_le_linear`)/width
+     (`bpChunkSelectEntryWidth_le_machineWordBits_capacity`)/address
+     folds, manifest nodup (22 sources), liveness + producer may-path +
+     successful-occurrence witness; dead-source witness moved to
+     segment 23 at identical strength; adequacy
+     `canonical_segments_complete <-> segment < 23`,
+     `compatibility_tail_unreachable` at `23 <=`.
+   - `FlatPayload`/`SuccinctRMQClassic`: reviewer payload layout gains
+     the select-table payload appended last; overhead +=
+     `bpChunkSelectTableOverhead`; public statement shapes verbatim;
+     capstone `rfl` conjunct preserved; read-backing gains the
+     segment-22 disjunct.
+   - cost algebra: `selectClose := 35`, `rankClose := 11` (component
+     bounds `bpChunkedSelectCosted_cost_le` /
+     `bpChunkedRankCosted_cost_le` + 3 sample reads); derived literal by
+     `rfl` (projection `2*35 + (2*11 + 2*37 + 30) + 11 = 207`; the
+     checked derivation wins); every 142 consumer re-proved; 142 frozen
+     as historical following the `SilentFringe...` pattern (name
+     suggestion: `...SilentWordRankSelectChargedTraceCost_eq = 142`);
+     re-sync the two REQ-B3-13 docstrings to the new literal; harness
+     boolean + `RMQExamples` guards updated.
+   - vocabulary theorem (REQ-B3-10, paper-facing): after the swap every
+     whole-query trace event is a `readWord` — prove via the regenerated
+     `_trace_forall` inductions (all component handlers now readWord
+     shaped); suggested name
+     `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only`
+     + headline abbrev.
+3. M6 final battery per the delegation prompt (mutex
+   `Global\RMQHeavyVerification` for anything > 5 min; full battery at
+   the candidate tree; `git rev-parse` the base for
+   `design_decision_check.ps1 -Strict -Base
+   d1d645ee221c1756f8c61c5ea222950f73e43c8c`).
 
 ## Verification ledger (B3)
 
