@@ -48,8 +48,8 @@ Branch `claude/b1-b2-charged-fringe-tables`, base `b6338ea`. Matrix:
       `Nat.le_max_left/right` before `omega`; `rw [Nat.succ_mul]` without
       explicit arguments corrupts numeral products (rewrites `2*c`), always
       pass explicit args (`Nat.succ_mul j c`).
-- [ ] M4 charged Costed evaluator + left/right wrappers + literal cost bound
-      + corruption witness (value dependency).
+- [x] M4 charged Costed evaluator + left/right wrappers + literal cost bound
+      + corruption witness (value dependency): done, all checked.
 - [ ] M5 store/space: reviewer-source decision, table payload counted,
       littleO composition, buildPayload/overhead amendment.
 - [ ] M6 substitution lemmas at accepted fringe call sites (Costed +

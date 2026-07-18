@@ -2451,3 +2451,80 @@ Publication significance: the paper's cost claim becomes chargeable end to
 end in the standard succinct-data-structures model (Fischer-Heun precedent),
 removing the largest reviewer-audit burden identified in the C05 roadmap
 audit.
+
+## DD-20260717-002: Charged fringe chunk geometry, packed table, and capped fold shape (B2 core)
+
+Status: Proposed
+Date: 2026-07-17
+Scope: `RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeChunks.lean`
+(B1/B2 Option B core; worker B2-01, branch
+`claude/b1-b2-charged-fringe-tables`).
+
+Decision:
+
+1. Chunk width `bpFringeChunkBits m = Nat.log2 m / 8 + 1` over the BP-code
+   length `m` (the design doc's indicative `log2 n / 2 + 1` replaced by the
+   `/8` sub-log scale of `RankSelectSpec.fixedWeightSubLogChunkBlockSize`).
+2. Boundary handling by generalized mechanism 1 of
+   `OPTION_B_CHARGED_FRINGE_DESIGN.md`: ONE table indexed by
+   `(chunkValue v, startOff a, endOff b)` with `a, b <= c`, rows
+   `2^c * (c+1)^2`, covering full chunks (`a=0, b=c`), partial first/last
+   chunks, and short trailing slices uniformly; padding of short slices with
+   `false` is proven harmless because reads only consult offsets
+   `t <= slice.length` (`bpFringeChunkPattern_windowChunkValue_rankPrefix`).
+3. Table field encoding: one packed `Nat` entry per row,
+   `(deltaOffset * (2c+2) + rangeMinOffset) * (c+1) + rangeArgMin`, all
+   excess fields offset-encoded by `+ c`, with proven mixed-radix unpack
+   lemmas (`bpFringeChunkPacked_arg/_min/_delta`) and proven truncation-free
+   offset characterization (`bpFringeChunkExcessOffsetAt_add_false`).
+   Entry width `Nat.log2 (bpFringeChunkEntryBound c) + 1`.
+4. Charged fold shape: one `FixedWidthNatTable.readCosted` (cost 1) per
+   chunk, over exactly `Nat.min (relHi / c + 1) 33` chunks; the cap `33` is
+   proven to be the identity on the reachable domain (window `<= 4`
+   machine words `<= 32` chunks,
+   `four_machineWordBits_le_32_mul_bpFringeChunkBits`) and makes the fringe
+   read count a literal (`<= 37` including the 4 accepted window-word
+   reads) for every argument with no size guard.
+
+Context: the accepted endpoint fringe (`localBPLeft/RightFringeCandidate-
+SeededCosted`, cost 4) computes its min-excess/argmin value by an
+event-silent per-position scan; Option B replaces this with charged
+four-Russians table lookups.
+
+Options considered:
+
+- `log2 n / 2 + 1` chunk width (design-doc default): 8 chunks/window and a
+  smaller route literal, but the o(n) budget then needs a fresh
+  sqrt-times-polylog product bound; rejected in favor of reusing the proven
+  `/8` slack template (`fixedWeightSubLogChunkDenseDecoderBudget_littleO`).
+  Revisit at B5 if the route literal matters.
+- Separate delta/min/argmin tables (3 reads per chunk): simpler encodings
+  but triples the read literal; rejected.
+- Secondary `(value, offset)` boundary table plus a full-chunk table:
+  two table shapes and a per-fringe case split; rejected as strictly more
+  surface than the uniform `(v, a, b)` index.
+- Machine-word chunked reads (`machineReadCosted`): entry width can exceed
+  `machineWordBits m` only at tiny `m`, which would force a per-read chunk
+  factor; deferred to the store-integration milestone where the reviewer
+  word width (which absorbs the packed width at every size) is the declared
+  machine word.
+
+Rationale: minimize new proof surface by maximizing reuse of proven o(n)
+slack; keep every charged read's decoded value flowing into the fold result
+(REQ-B2-10); keep the read-count literal all-size with no dispatch.
+
+Consequences: fringe cost constant becomes 37 (from 4); the whole-route
+literal will grow accordingly at B5 re-derivation; table bits
+`2^c * (c+1)^2 * width` must be folded into `overhead` (M5).
+
+Evidence: `ChargedFringeChunks.lean` compiles clean at this commit;
+key theorems `bpFringeChunkFold_eq_localBPSeeded`,
+`bpChunkedLeft/RightFringeCandidateSeededCosted_value_eq`,
+`bpChunkedLeft/RightFringeCandidateSeededCosted_cost_le` (<= 37),
+`bpFringeChunkTable_corruption_changes_fringe_value`.
+
+Follow-up: store region placement (reviewer source extension) and
+buildPayload/overhead amendment recorded in a separate entry at the store
+milestone; wiring/cost re-derivation at B5.
+
+Supersedes: none (implements DD-20260717-001 direction).

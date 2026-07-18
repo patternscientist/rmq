@@ -1483,6 +1483,453 @@ theorem bpFringeChunkFold_eq_localBPSeeded
     rw [hargAccepted, haffine]
   rw [hfold, hminEq, hargEq]
   rfl
+/-! ## The charged chunked fold -/
+
+/--
+One fold step computed from a raw table read result: the packed entry is
+decoded by mixed-radix arithmetic; the read value (not the spec) drives both
+the accumulator update and the candidate.
+-/
+def bpFringeChunkStepDecoded (c relLo relHi j : Nat)
+    (st : Nat × Option (Nat × Nat)) (entry? : Option Nat) :
+    Nat × Option (Nat × Nat) :=
+  (st.1 + (entry?.getD 0) / ((c + 1) * (2 * c + 2)) - c,
+    bpFringeMergeCand st.2
+      (if bpFringeChunkStartOff c relLo j < bpFringeChunkEndOff c relHi j
+        then
+        some (st.1 + (entry?.getD 0) / (c + 1) % (2 * c + 2) - c,
+          j * c + (entry?.getD 0) % (c + 1))
+      else none))
+
+/--
+The charged chunked fold: one counted table read per chunk, generic over the
+supplied table so store corruption is expressible.
+-/
+def bpFringeChunkFoldCostedFrom {entries : List Nat} {width : Nat}
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (c : Nat) (window : List Bool) (relLo relHi : Nat) :
+    Nat -> Nat -> (Nat × Option (Nat × Nat)) ->
+      Costed (Nat × Option (Nat × Nat))
+  | _j, 0, st => Costed.pure st
+  | j, count + 1, st =>
+      Costed.bind
+        (table.readCosted
+          (bpFringeChunkSlot c (bpFringeWindowChunkValue c window j)
+            (bpFringeChunkStartOff c relLo j)
+            (bpFringeChunkEndOff c relHi j)))
+        (fun entry? =>
+          bpFringeChunkFoldCostedFrom table c window relLo relHi (j + 1)
+            count (bpFringeChunkStepDecoded c relLo relHi j st entry?))
+
+def bpFringeChunkFoldCosted {entries : List Nat} {width : Nat}
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (c : Nat) (window : List Bool) (seed relLo relHi count : Nat) :
+    Costed (Nat × Option (Nat × Nat)) :=
+  bpFringeChunkFoldCostedFrom table c window relLo relHi 0 count (seed, none)
+
+/-- Exactly one charged read per chunk visited. -/
+theorem bpFringeChunkFoldCostedFrom_cost
+    {entries : List Nat} {width : Nat}
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (c : Nat) (window : List Bool) (relLo relHi : Nat)
+    (j count : Nat) (st : Nat × Option (Nat × Nat)) :
+    (bpFringeChunkFoldCostedFrom table c window relLo relHi
+        j count st).cost = count := by
+  induction count generalizing j st with
+  | zero =>
+      simp [bpFringeChunkFoldCostedFrom, Costed.pure]
+  | succ count ih =>
+      simp [bpFringeChunkFoldCostedFrom, Costed.bind, ih]
+      omega
+
+theorem bpFringeChunkFoldCosted_cost
+    {entries : List Nat} {width : Nat}
+    (table : SuccinctSpace.FixedWidthNatTable entries width)
+    (c : Nat) (window : List Bool) (seed relLo relHi count : Nat) :
+    (bpFringeChunkFoldCosted table c window seed relLo relHi count).cost =
+      count :=
+  bpFringeChunkFoldCostedFrom_cost table c window relLo relHi 0 count _
+
+/--
+Against the honest table, the charged fold computes exactly the silent
+spec fold: each read decodes to the spec fields of its chunk.
+-/
+theorem bpFringeChunkFoldCostedFrom_value
+    (c : Nat) (window : List Bool) (relLo relHi : Nat)
+    (j count : Nat) (st : Nat × Option (Nat × Nat)) :
+    (bpFringeChunkFoldCostedFrom (bpFringeChunkTable c) c window relLo relHi
+        j count st).value =
+      bpFringeChunkFoldFrom c window relLo relHi j count st := by
+  induction count generalizing j st with
+  | zero =>
+      rfl
+  | succ count ih =>
+      have hv := bpFringeWindowChunkValue_lt c window j
+      have ha := bpFringeChunkStartOff_le c relLo j
+      have hb := bpFringeChunkEndOff_le c relHi j
+      have hread :
+          ((bpFringeChunkTable c).readCosted
+              (bpFringeChunkSlot c (bpFringeWindowChunkValue c window j)
+                (bpFringeChunkStartOff c relLo j)
+                (bpFringeChunkEndOff c relHi j))).value =
+            some
+              (bpFringeChunkPacked c (bpFringeWindowChunkValue c window j)
+                (bpFringeChunkStartOff c relLo j)
+                (bpFringeChunkEndOff c relHi j)) :=
+        bpFringeChunkTable_readCosted_erase hv ha hb
+      have hstepEq :
+          bpFringeChunkStepDecoded c relLo relHi j st
+              (some
+                (bpFringeChunkPacked c
+                  (bpFringeWindowChunkValue c window j)
+                  (bpFringeChunkStartOff c relLo j)
+                  (bpFringeChunkEndOff c relHi j))) =
+            bpFringeChunkFoldStep c window relLo relHi j st := by
+        unfold bpFringeChunkStepDecoded bpFringeChunkFoldStep
+          bpFringeChunkCand
+        rw [Option.getD_some]
+        rw [bpFringeChunkPacked_delta c _ ha hb,
+          bpFringeChunkPacked_min c _ ha hb,
+          bpFringeChunkPacked_arg c _ ha hb]
+      show
+        (bpFringeChunkFoldCostedFrom (bpFringeChunkTable c) c window relLo
+            relHi (j + 1) count
+            (bpFringeChunkStepDecoded c relLo relHi j st
+              ((bpFringeChunkTable c).readCosted
+                (bpFringeChunkSlot c (bpFringeWindowChunkValue c window j)
+                  (bpFringeChunkStartOff c relLo j)
+                  (bpFringeChunkEndOff c relHi j))).value)).value =
+          bpFringeChunkFoldFrom c window relLo relHi (j + 1) count
+            (bpFringeChunkFoldStep c window relLo relHi j st)
+      rw [hread, hstepEq]
+      exact ih (j + 1) _
+
+theorem bpFringeChunkFoldCosted_value
+    (c : Nat) (window : List Bool) (seed relLo relHi count : Nat) :
+    (bpFringeChunkFoldCosted (bpFringeChunkTable c) c window seed relLo
+        relHi count).value =
+      bpFringeChunkFold c window seed relLo relHi count :=
+  bpFringeChunkFoldCostedFrom_value c window relLo relHi 0 count _
+
+/-! ## Charged chunked fringe candidates -/
+
+/-- Transport the fold's relative candidate to global coordinates. -/
+def bpFringeCandGlobal (base fallbackVal fallbackPos : Nat) :
+    Option (Nat × Nat) -> Option (Nat × Nat)
+  | some p => some (p.1, base + p.2)
+  | none => some (fallbackVal, fallbackPos)
+
+/--
+Charged chunked left endpoint-fringe candidate: the four charged window-word
+reads of the accepted route, then at most 33 charged chunk-table reads
+combined by a fixed-shape silent fold.  The chunk-count cap
+`Nat.min (relHi / c + 1) 33` is the identity on the reachable domain
+(window <= 4 machine words <= 32 chunks) and makes the read bound a literal
+for every argument.
+-/
+def bpChunkedLeftFringeCandidateSeededCosted
+    (shape : Cartesian.CartesianShape)
+    (blockSize leftClose seed : Nat) : Costed (Option (Nat × Nat)) :=
+  let c := bpFringeChunkBits shape.bpCode.length
+  let base := localBPWindowBase shape blockSize leftClose
+  let start := leftClose + 1
+  let count :=
+    blockStartOf blockSize (blockOfClose blockSize leftClose) +
+      blockSize - leftClose
+  let relLo := start - base
+  let relHi := start + count - 1 - base
+  Costed.bind
+    (Costed.tickValue 4 (localBPWindowBits shape blockSize leftClose))
+    (fun window =>
+      Costed.map
+        (fun st => bpFringeCandGlobal base seed start st.2)
+        (bpFringeChunkFoldCosted (bpFringeChunkTable c) c window seed
+          relLo relHi (Nat.min (relHi / c + 1) 33)))
+
+/-- Charged chunked right endpoint-fringe candidate. -/
+def bpChunkedRightFringeCandidateSeededCosted
+    (shape : Cartesian.CartesianShape)
+    (blockSize rightClose seed : Nat) : Costed (Option (Nat × Nat)) :=
+  let c := bpFringeChunkBits shape.bpCode.length
+  let base := localBPWindowBase shape blockSize rightClose
+  let start := blockStartOf blockSize (blockOfClose blockSize rightClose)
+  let count := rightClose - start + 2
+  let relLo := start - base
+  let relHi := start + count - 1 - base
+  Costed.bind
+    (Costed.tickValue 4 (localBPWindowBits shape blockSize rightClose))
+    (fun window =>
+      Costed.map
+        (fun st => bpFringeCandGlobal base seed start st.2)
+        (bpFringeChunkFoldCosted (bpFringeChunkTable c) c window seed
+          relLo relHi (Nat.min (relHi / c + 1) 33)))
+
+/-- Literal all-size read bound for the charged left fringe. -/
+theorem bpChunkedLeftFringeCandidateSeededCosted_cost_le
+    (shape : Cartesian.CartesianShape)
+    (blockSize leftClose seed : Nat) :
+    (bpChunkedLeftFringeCandidateSeededCosted shape blockSize leftClose
+        seed).cost <= 37 := by
+  unfold bpChunkedLeftFringeCandidateSeededCosted
+  simp [Costed.bind, Costed.map, Costed.tickValue, Costed.pure,
+    bpFringeChunkFoldCosted_cost]
+  exact Nat.add_le_add_left (Nat.min_le_right _ 33) 4
+
+/-- Literal all-size read bound for the charged right fringe. -/
+theorem bpChunkedRightFringeCandidateSeededCosted_cost_le
+    (shape : Cartesian.CartesianShape)
+    (blockSize rightClose seed : Nat) :
+    (bpChunkedRightFringeCandidateSeededCosted shape blockSize rightClose
+        seed).cost <= 37 := by
+  unfold bpChunkedRightFringeCandidateSeededCosted
+  simp [Costed.bind, Costed.map, Costed.tickValue, Costed.pure,
+    bpFringeChunkFoldCosted_cost]
+  exact Nat.add_le_add_left (Nat.min_le_right _ 33) 4
+
+/--
+Core value equivalence for one seeded fringe invocation: under the coverage
+and window-validity facts available at every accepted call site, the charged
+chunked computation returns exactly the accepted candidate pair.
+-/
+theorem bpFringeChunkFoldCosted_global_eq_localBPSeeded
+    {window : List Bool} {seed base start count : Nat} (c : Nat)
+    (hc : 0 < c)
+    (hlen : window.length <= 32 * c)
+    (hvalid : BPFringeWindowValid window seed)
+    (hcount : 0 < count) (hstart : base <= start)
+    (hcov : start + count <= base + window.length + 1) :
+    bpFringeCandGlobal base seed start
+        (bpFringeChunkFoldCosted (bpFringeChunkTable c) c window seed
+          (start - base) (start + count - 1 - base)
+          (Nat.min ((start + count - 1 - base) / c + 1) 33)).value.2 =
+      some
+        (localBPSeededPrefixRangeMinExcess window seed base start count,
+          localBPSeededPrefixRangeArgMinPrefixPos window seed base
+            start count) := by
+  have hrelHiLen : start + count - 1 - base <= window.length := by omega
+  have hdivLe :
+      (start + count - 1 - base) / c <= 32 * c / c :=
+    Nat.div_le_div_right (by omega)
+  have hdivEq : 32 * c / c = 32 := Nat.mul_div_cancel 32 hc
+  have hcap :
+      Nat.min ((start + count - 1 - base) / c + 1) 33 =
+        (start + count - 1 - base) / c + 1 :=
+    Nat.min_eq_left (by omega)
+  rw [hcap]
+  rw [bpFringeChunkFoldCosted_value]
+  have hbridge :=
+    bpFringeChunkFold_eq_localBPSeeded (window := window) (seed := seed)
+      (base := base) (start := start) (count := count) c hc hvalid hcount
+      hstart hcov
+  cases hfold :
+      (bpFringeChunkFold c window seed (start - base)
+        (start + count - 1 - base)
+        ((start + count - 1 - base) / c + 1)).2 with
+  | none =>
+      rw [hfold] at hbridge
+      simp [Option.map] at hbridge
+  | some p =>
+      rw [hfold] at hbridge
+      simp only [Option.map_some] at hbridge
+      show some (p.1, base + p.2) = _
+      exact hbridge
+
+/--
+Fringe-value equivalence, left: for every invocation satisfying the accepted
+route's coverage facts, the charged chunked left fringe candidate is the
+accepted seeded left fringe candidate, value-level.
+-/
+theorem bpChunkedLeftFringeCandidateSeededCosted_value_eq
+    (shape : Cartesian.CartesianShape)
+    (blockSize leftClose seed : Nat)
+    (hvalid :
+      BPFringeWindowValid (localBPWindowBits shape blockSize leftClose)
+        seed)
+    (hcount :
+      0 <
+        blockStartOf blockSize (blockOfClose blockSize leftClose) +
+          blockSize - leftClose)
+    (hstart :
+      localBPWindowBase shape blockSize leftClose <= leftClose + 1)
+    (hcov :
+      leftClose + 1 +
+          (blockStartOf blockSize (blockOfClose blockSize leftClose) +
+            blockSize - leftClose) <=
+        localBPWindowBase shape blockSize leftClose +
+          (localBPWindowBits shape blockSize leftClose).length + 1) :
+    (bpChunkedLeftFringeCandidateSeededCosted shape blockSize leftClose
+        seed).value =
+      (localBPLeftFringeCandidateSeededCosted shape blockSize leftClose
+        seed).value := by
+  have hc := bpFringeChunkBits_pos shape.bpCode.length
+  have hlen :
+      (localBPWindowBits shape blockSize leftClose).length <=
+        32 * bpFringeChunkBits shape.bpCode.length := by
+    have h1 := localBPWindowBits_length_le shape blockSize leftClose
+    have h2 :=
+      four_machineWordBits_le_32_mul_bpFringeChunkBits shape.bpCode.length
+    omega
+  have hcore :=
+    bpFringeChunkFoldCosted_global_eq_localBPSeeded
+      (window := localBPWindowBits shape blockSize leftClose)
+      (seed := seed)
+      (base := localBPWindowBase shape blockSize leftClose)
+      (start := leftClose + 1)
+      (count :=
+        blockStartOf blockSize (blockOfClose blockSize leftClose) +
+          blockSize - leftClose)
+      (bpFringeChunkBits shape.bpCode.length)
+      hc hlen hvalid hcount hstart hcov
+  show
+    bpFringeCandGlobal (localBPWindowBase shape blockSize leftClose) seed
+        (leftClose + 1)
+        (bpFringeChunkFoldCosted
+          (bpFringeChunkTable (bpFringeChunkBits shape.bpCode.length))
+          (bpFringeChunkBits shape.bpCode.length)
+          (localBPWindowBits shape blockSize leftClose) seed
+          (leftClose + 1 - localBPWindowBase shape blockSize leftClose)
+          (leftClose + 1 +
+              (blockStartOf blockSize (blockOfClose blockSize leftClose) +
+                blockSize - leftClose) - 1 -
+            localBPWindowBase shape blockSize leftClose)
+          (Nat.min
+            ((leftClose + 1 +
+                (blockStartOf blockSize
+                  (blockOfClose blockSize leftClose) +
+                  blockSize - leftClose) - 1 -
+              localBPWindowBase shape blockSize leftClose) /
+                bpFringeChunkBits shape.bpCode.length + 1)
+            33)).value.2 =
+      (localBPLeftFringeCandidateSeededCosted shape blockSize leftClose
+        seed).value
+  rw [hcore]
+  rfl
+
+/-- Fringe-value equivalence, right. -/
+theorem bpChunkedRightFringeCandidateSeededCosted_value_eq
+    (shape : Cartesian.CartesianShape)
+    (blockSize rightClose seed : Nat)
+    (hvalid :
+      BPFringeWindowValid (localBPWindowBits shape blockSize rightClose)
+        seed)
+    (hstart :
+      localBPWindowBase shape blockSize rightClose <=
+        blockStartOf blockSize (blockOfClose blockSize rightClose))
+    (hcov :
+      blockStartOf blockSize (blockOfClose blockSize rightClose) +
+          (rightClose -
+            blockStartOf blockSize (blockOfClose blockSize rightClose) +
+            2) <=
+        localBPWindowBase shape blockSize rightClose +
+          (localBPWindowBits shape blockSize rightClose).length + 1) :
+    (bpChunkedRightFringeCandidateSeededCosted shape blockSize rightClose
+        seed).value =
+      (localBPRightFringeCandidateSeededCosted shape blockSize rightClose
+        seed).value := by
+  have hc := bpFringeChunkBits_pos shape.bpCode.length
+  have hlen :
+      (localBPWindowBits shape blockSize rightClose).length <=
+        32 * bpFringeChunkBits shape.bpCode.length := by
+    have h1 := localBPWindowBits_length_le shape blockSize rightClose
+    have h2 :=
+      four_machineWordBits_le_32_mul_bpFringeChunkBits shape.bpCode.length
+    omega
+  have hcore :=
+    bpFringeChunkFoldCosted_global_eq_localBPSeeded
+      (window := localBPWindowBits shape blockSize rightClose)
+      (seed := seed)
+      (base := localBPWindowBase shape blockSize rightClose)
+      (start := blockStartOf blockSize (blockOfClose blockSize rightClose))
+      (count :=
+        rightClose -
+          blockStartOf blockSize (blockOfClose blockSize rightClose) + 2)
+      (bpFringeChunkBits shape.bpCode.length)
+      hc hlen hvalid (by omega) hstart hcov
+  show
+    bpFringeCandGlobal (localBPWindowBase shape blockSize rightClose) seed
+        (blockStartOf blockSize (blockOfClose blockSize rightClose))
+        (bpFringeChunkFoldCosted
+          (bpFringeChunkTable (bpFringeChunkBits shape.bpCode.length))
+          (bpFringeChunkBits shape.bpCode.length)
+          (localBPWindowBits shape blockSize rightClose) seed
+          (blockStartOf blockSize (blockOfClose blockSize rightClose) -
+            localBPWindowBase shape blockSize rightClose)
+          (blockStartOf blockSize (blockOfClose blockSize rightClose) +
+              (rightClose -
+                blockStartOf blockSize
+                  (blockOfClose blockSize rightClose) + 2) - 1 -
+            localBPWindowBase shape blockSize rightClose)
+          (Nat.min
+            ((blockStartOf blockSize (blockOfClose blockSize rightClose) +
+                (rightClose -
+                  blockStartOf blockSize
+                    (blockOfClose blockSize rightClose) + 2) - 1 -
+              localBPWindowBase shape blockSize rightClose) /
+                bpFringeChunkBits shape.bpCode.length + 1)
+            33)).value.2 =
+      (localBPRightFringeCandidateSeededCosted shape blockSize rightClose
+        seed).value
+  rw [hcore]
+  rfl
+/-! ## Adversarial table-corruption witness (value dependency)
+
+Corrupting one stored table entry that the charged fold actually reads
+changes the returned fringe candidate on a concrete witness input.  Read
+index `5` is exactly the slot the witness invocation reads (`hslot` below),
+so the corrupted entry lies in the actual charged read footprint.
+-/
+
+def bpFringeCorruptedEntriesWitness : List Nat :=
+  (bpFringeChunkEntries 1).set 5 22
+
+def bpFringeCorruptedTableWitness :
+    SuccinctSpace.FixedWidthNatTable bpFringeCorruptedEntriesWitness
+      (bpFringeChunkEntryWidth 1) :=
+  SuccinctSpace.FixedWidthNatTable.ofEntries _ _ (by
+    intro entry hmem
+    rcases List.mem_or_eq_of_mem_set hmem with hmem' | rfl
+    · exact bpFringeChunkEntries_mem_lt_two_pow_width hmem'
+    · exact Nat.lt_trans
+        (show (22 : Nat) < bpFringeChunkEntryBound 1 by decide)
+        (bpFringeChunkEntryBound_lt_two_pow_width 1))
+
+theorem bpFringeChunkTable_corruption_changes_fringe_value :
+    (bpFringeChunkFoldCosted (bpFringeChunkTable 1) 1 [true] 1 0 0
+        1).value.2 ≠
+      (bpFringeChunkFoldCosted bpFringeCorruptedTableWitness 1 [true] 1 0 0
+        1).value.2 := by
+  have hhonest :
+      (bpFringeChunkFoldCosted (bpFringeChunkTable 1) 1 [true] 1 0 0
+          1).value.2 = some (1, 0) := by
+    rw [bpFringeChunkFoldCosted_value]
+    decide
+  have hslot :
+      bpFringeChunkSlot 1 (bpFringeWindowChunkValue 1 [true] 0)
+        (bpFringeChunkStartOff 1 0 0) (bpFringeChunkEndOff 1 0 0) = 5 := by
+    decide
+  have hget : bpFringeCorruptedEntriesWitness[5]? = some 22 := by decide
+  have hread :
+      (bpFringeCorruptedTableWitness.readCosted 5).value = some 22 := by
+    have h :=
+      SuccinctSpace.FixedWidthNatTable.readCosted_erase
+        bpFringeCorruptedTableWitness 5
+    rw [hget] at h
+    exact h
+  have hv :
+      (bpFringeChunkFoldCosted bpFringeCorruptedTableWitness 1 [true] 1 0 0
+          1).value =
+        bpFringeChunkStepDecoded 1 0 0 0 (1, none)
+          ((bpFringeCorruptedTableWitness.readCosted
+            (bpFringeChunkSlot 1 (bpFringeWindowChunkValue 1 [true] 0)
+              (bpFringeChunkStartOff 1 0 0)
+              (bpFringeChunkEndOff 1 0 0))).value) := rfl
+  have hcorrupt :
+      (bpFringeChunkFoldCosted bpFringeCorruptedTableWitness 1 [true] 1 0 0
+          1).value.2 = some (3, 0) := by
+    rw [hv, hslot, hread]
+    decide
+  rw [hhonest, hcorrupt]
+  simp
 
 end SuccinctClose
 
