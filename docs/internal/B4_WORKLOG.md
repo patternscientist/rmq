@@ -60,7 +60,22 @@ B3 precedent in DD-20260717-005 item 6).
 - [x] M2 bookkeeping repairs commit (REQ-B4-01: correspondence-doc alias +
       counts, REQ-B3-07 wording, Register cost-lemma renames, stale
       docstrings, Segments.lean legacy-numeral comment, roadmap counts).
-- [ ] M3 chunk-width corner + direct o(n) theorems (REQ-B4-04/05).
+- [x] M3 `ChargedTableRegime.lean` (REQ-B4-04/05): log2 pins; corner pins
+      `bpFringeChunkBits 0/1/2/8/32/512 = 1/1/1/1/1/2`,
+      `machineWordBits 0/1/2 = 1/1/2`; all-size cap identity
+      `bpWordChunkCount_machineWord_eq` + two-sided
+      (`one_le_...`, `..._le_eight`, coverage
+      `machineWordBits_le_bpWordChunkCount_mul`); corners m = 0/1 (`= 1`)
+      and array-size corners n = 0/1 at scale `2*n` (`= 1`/`= 2`);
+      payload-length-vs-overhead identities
+      `bpFringeChunkTable_payload_length_overhead` /
+      `bpChunkSelectTable_payload_length_overhead`; named witness
+      `bpNewTableOverheadSum_littleO :=
+      bpFringeTableOverhead_littleO.add bpChunkSelectTableOverhead_littleO`;
+      direct theorem `bpNewTablePayloadBits_littleO` over the ACTUAL
+      stored-table payload lengths; sanity pins at n = 4/16/256
+      (rows 8/8/36 and 4/4/12; widths 5/5/7 and 2/2/2; bits 40/40/252 and
+      8/8/24; totals 48/48/276).
 - [ ] M4 W19 per-segment corollaries + segment-21 per-leaf claims
       (REQ-B4-02).
 - [ ] M5 repeated-equal-read positional witnesses + manifest packet
@@ -90,3 +105,9 @@ B3 precedent in DD-20260717-005 item 6).
   `Segments.lean` legacy `summary.minRel/maxRel := 21/22` shadowing-hazard
   NOTE.  `lake build RMQ` (mutex-held) exit 0, `Build completed
   successfully` (215 jobs).
+- M3: `lake env lean .../ChargedTableRegime.lean` exit 0 after 2
+  iterations (fix: omega does not see the Nat-div atom's nonnegativity in
+  `1 <= a + 1`-shaped goals here - use `Nat.le_add_left`); module
+  registered in `RMQ.lean`; `lake build RMQ` exit 0 (216 jobs,
+  incremental).  Toolchain note confirmed: `simp [Nat.log2]` evaluates
+  concrete log2 literals (equation lemmas); bare `decide`/`rfl` does not.
