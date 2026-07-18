@@ -2411,3 +2411,43 @@ This amendment keeps the source and publication exposition aligned: theorem
 comments explain stable abstractions that a paper can name, while development
 chronology remains recoverable from the decision log, audit reports, and Git
 history.
+
+## DD-20260717-C05-001: adopt the four-Russians charged route (Option B)
+
+Date: 2026-07-17. Scope: cost model, charged instruction repertoire, table
+region, E1 target amendment. Decided by: user + coordinator C05, on the
+kernel-verified E1-01R3 obstruction (`e1R3FamiliarMachineTarget_obstruction`,
+commit `7fe5b8b`) and the C05 architecture/velocity scouts (round log,
+`AUDIT_AND_A_DESIGN.md`, 2026-07-17).
+
+Decision: replace unit-cost `wordRank`/`wordSelect` and the event-silent
+fringe min-excess extraction with charged lookups into o(n)-bit half-word
+chunk tables, collapsing the charged event vocabulary to memory reads; state
+the transdichotomous word-RAM model explicitly; freeze `76` as a historical
+constant and derive a new literal. Full design and staging:
+`docs/internal/OPTION_B_CHARGED_FRINGE_DESIGN.md`.
+
+Alternatives rejected:
+- Option A (charge word-level primitives incl. a word-min-excess instruction,
+  keep the trace): minimal disruption, but a bespoke unit-cost min-excess
+  primitive is exactly the precedent-free justification the project goal
+  minimizes; retained only as the pivot fallback if B2 stalls (>1 week of
+  repair rounds), with B1 tables as the primitives' realizability evidence.
+- Shape-indexed or n-dependent total bounds: abandons the literal all-size
+  bound and the constant-query headline.
+- Constant-width blocks: breaks the o(n) summary overhead.
+- Keeping the extraction event-silent while re-labeling the machine "fully
+  charged": re-hides the scan E1 exists to expose; forbidden.
+
+Consequences: new table sources in the reviewer store and `buildPayload`
+(public space shape `<= 2n + o(n)` preserved); trace event vocabulary
+collapses to `readWord` with uniform weight, simplifying the non-synthetic
+certificate story; the accepted-route literal grows to an expected 150-250;
+downstream provenance inductions regenerate mechanically; E1's familiar
+machine becomes a standard {read, arithmetic, compare, branch} RAM and the
+R3 obstruction remains valid evidence against the superseded contract only.
+
+Publication significance: the paper's cost claim becomes chargeable end to
+end in the standard succinct-data-structures model (Fischer-Heun precedent),
+removing the largest reviewer-audit burden identified in the C05 roadmap
+audit.
