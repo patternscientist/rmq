@@ -117,4 +117,42 @@ segment 22 reused this layer rather than cloning it; that is the template.
 
 | # | Commit | Content | `lake build` |
 | --- | --- | --- | --- |
-| M0 | (this commit) | frozen B6 matrix + worklog; no Lean changes | baseline `RMQ RMQPaper RMQExamples` exit 0 at `c0c32c4` |
+| M0 | `6775e22` | frozen B6 matrix + worklog; no Lean changes | baseline `RMQ RMQPaper RMQExamples` exit 0 at `c0c32c4` |
+| M1 | (this commit) | `ChargedSameBlockChunks.lean`: charged Costed same-block leaf, literal cost bound, value equivalence, decoded rank-seed twins | `lake build RMQ` exit 0, 88.5 s |
+
+## M1 — charged same-block leaf at the Costed layer
+
+New module
+`RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedSameBlockChunks.lean`
+(imported by `ChargedFringeWiring.lean` so it is live in the library build,
+following B2's additive-then-atomic-swap precedent; the swap is the
+immediate successor milestone and this module is NOT yet consumed by the
+route).
+
+Delivered:
+
+- `bpChunkedSameBlockCloseSeededCosted` — four charged window-word reads
+  then at most 33 charged `bpFringeChunkTable` reads through the B2 fold,
+  then the accepted `bpCandidateClose?` projection. The per-position scan is
+  absent from the charged path; the recursion is `bpFringeChunkFoldCostedFrom`
+  on the chunk counter only.
+- `bpChunkedSameBlockCloseSeededCosted_cost_le : ... .cost <= 37` — literal,
+  no size hypothesis, no readiness guard, no shape side condition.
+- `bpChunkedSameBlockCloseSeededCosted_value_eq` — `.value` equals
+  `(localBPSameBlockCloseSeededCosted shape blockSize leftClose rightClose
+  seed).value`, universally quantified over shape/blockSize/leftClose/
+  rightClose/seed under exactly three hypotheses (`hvalid`, `hstart`,
+  `hcov`); `hcount` is discharged internally since
+  `0 < rightClose - leftClose + 1` always holds. Proof reuses
+  `bpFringeChunkFoldCosted_global_eq_localBPSeeded` verbatim and closes the
+  window mismatch with
+  `← localBPWindowBits_eq_flatten_localBPBlockWordsRead`.
+- `bpChunkedSameBlockCloseDecodedCostedWithRankSeed` + `_cost_le`
+  (`<= rankCost + 37`) + `_value_eq`, threading
+  `localBPSeedFromRankCloseCosted` exactly as the accepted decoded twin
+  does (no seed reconstruction from window bits, so
+  `localBPWindowBits_alone_does_not_determine_base_excess` is untouched).
+
+No new table, segment, store region, payload component, or overhead term was
+introduced, so REQ-B6-04's store/erasure/capacity/o(n) obligations reduce to
+provenance only, as predicted at M0.
