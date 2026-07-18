@@ -511,6 +511,53 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
 - Verification at this commit: standalone `lake env lean` exit 0 (no
   warnings); `lake build RMQ` green; hygiene rg clean on the new file.
 
+## STAGE-2 LAYOUT (dense leg tails - verified against the fold interfaces,
+## write this next)
+
+`selectFoldBlock_runsTo` interface RE-VERIFIED this session
+(`E1SelectBlock.lean:367`): inputs sOne=1, sC=c, sLen(13)=word.length,
+sR(17)=bitsToNatLE word / 2^(j*c), sJC(27)=j*c, sOcc(12)=k, sK(18)=count,
+`0 < count`; ends LB+36, packet in sVal(9), preserves r<=8 ∨
+r∈{10,11,13,14,15,16,24,25,26} ∨ 28<=r.  The dense select call is at
+j=0, count = bpWordChunkCount c word.length (ALWAYS >= 1 - positivity is
+free via `bpWordChunkCount_eq_sub` + omega; discharge the `/2^(0*c)`
+hypothesis by simp [Nat.zero_mul, pow_zero, Nat.div_one]).  Head-output/
+fold-input register alignment is exact: sOcc=rSI, sLen=rE, packet
+register sVal=rVal.
+
+Whole-leg block `denseSelectLegBlock L W G S c WS N2` at base `L`
+(193 instrs, END = L+193, MISS = L+192, first tail T1 = L+143):
+
+- L+0..L+83: `denseHeadBlock L (L+192) W G c WS N2` (M := miss tail).
+- L+84: `brNZ rA (L+143)` (compare taken -> first tail).
+- SECOND TAIL L+85..: add rP rP rOne; readMem rWrd W rP; brNZ rWrd
+  (L+89); brNZ rOne (L+192); mulConst rWI rP WS; const rA WS; const rB
+  N2; sub rB rB rWI; sub rT rA rB; sub rE rA rT (len2 -> sLen directly);
+  sub rSI rSI rVal (sOcc := locc - firstCount); sub rR rWrd rOne;
+  const rJC 0; sub rA rE rOne; divConst rA rA c; add rK rA rOne; sub rB
+  rK rEight; sub rK rK rB; then `selectFoldBlock (L+103) R S c`
+  (L+103..L+138); packet shift L+139: brNZ rVal (L+141); brNZ rOne
+  (L+142); add rVal rWI rVal; L+142: brNZ rOne (L+193) (jump to END).
+- FIRST TAIL L+143..: move rE rBlk; add rSI rSup rSI (sOcc := before +
+  locc); sub rR rWrd rOne; const rJC 0; count chain (5 instrs, from rE);
+  `selectFoldBlock (L+152) R S c` (L+152..L+187); packet shift L+188:
+  brNZ rVal (L+190); brNZ rOne (L+191); add rVal rWI rVal; L+191: brNZ
+  rOne (L+193) (jump over miss tail).
+- MISS TAIL L+192: const rVal 0; fall through to END = L+193.
+
+Packet-shift correctness: fold none -> sVal 0 -> shift skipped -> packet
+none ✓; fold some off -> sVal = off+1 -> add gives rWI + off + 1 =
+packet (wordStart + off) ✓ (commute by omega).  Second-tail length needs
+the SECOND route hypothesis `hlen2 : w2.length = Nat.min WS (N2 -
+(bPos / WS + 1) * WS)`.  Whole-leg theorem target:
+`bpChunkedDenseTwoWordSelectTraceResultWithStore W (G+4) S c false
+bitWords store bPos bOcc q` with bPos/bOcc/q := regs0 xBPos/xBOcc/xQ;
+four control branches (miss1/first/second-miss/second); cats
+`denseLegCats` defined by matching on `store.readWord?` and the two
+route-side rank `.value`s (selectFoldCats precedent); value under
+`decodePacket` in rVal; extension bank untouched by the leg (second
+tail rewrites only rP/rWI in the component bank).
+
 ## RESUME POINT (next session: select-close read sub-blocks onward)
 
 NEW in the M3c-4 session (commits `eb3f102`, `aff4393`, `d49672d`):
