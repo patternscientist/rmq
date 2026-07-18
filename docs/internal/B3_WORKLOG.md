@@ -141,8 +141,7 @@ record; B3 milestones log here (recorded in DD-20260717-005).
       docstring fixes (REQ-B3-13).
 - [ ] M6 final battery + matrix closure + report.
 
-## Current state / resume point (B3-01 checkpoint, HEAD after matrix
-## evidence commit)
+## Current state / resume point (B3-02 checkpoint)
 
 Delivered and committed, library green at every commit:
 
@@ -155,16 +154,65 @@ Delivered and committed, library green at every commit:
   twins with `_value_eq` at every invocation, costs 11/27/12/35);
 - M4a `2517a32` (`ChargedRankSelectTrace.lean`: word-level trace folds at
   parameterized segments with the full B2-style surface);
-- REQ-B3-13 docstring/comment fixes `fcd491e`.
+- REQ-B3-13 docstring/comment fixes `fcd491e`;
+- M4b `4cd74c1` (`ChargedRankSelectLeafTrace.lean`: the four chunked
+  leaf trace twins, WithStore, readWord-only emissions;
+  DD-20260718-001);
+- M5-prep `5eba561` (`ChargedRankSelectWiring.lean`: chunked route
+  Costed consumers with all hypotheses discharged at shape level;
+  chunked rank-close global word trace at the canonical store with
+  `_refines` and the rank-leg `_events_readWord`).
 
-The successor resumes at M5 with everything below still to do; the
-Costed layer (M3) and the trace layer (M4a word-level + M4b leaf twins in
-`ChargedRankSelectLeafTrace.lean`) need NO further work.  M4b agreement
-hypotheses are shaped for the canonical store: per-address agreements at
-the layout segments (rank samples at `rankBase`/`+1`/`+2`, relatives,
-bit words, chunk table, select table) plus the existing entry-table
-pullback equalities; discharge them from
-`concreteBPNativeSuccinctRMQGlobalReadStore` simp facts at M5.
+The successor (B3-03) resumes at the M5 ATOMIC SWAP COMMIT; the Costed
+layer (M3), the trace layer (M4a + M4b), and the route-glue layer
+(M5-prep) need NO further work.  Concrete swap notes beyond the M5 plan
+below:
+
+- Swap points: `concreteBPNativeSelectCloseInterpretedCosted` /
+  `concreteBPNativeRankCloseInterpretedCosted`
+  (`SuccinctFinalRAM.lean:23/:30`) := the M5-prep chunked consumers
+  (values re-proved via `_value_eq`); trace twins at `:37/:1304` :=
+  `SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore` at
+  `concreteBPNativeSelectCloseTraceSegmentLayout`, chunk segment 21,
+  select segment 22, canonical store; rank-close trace twins := the
+  M5-prep `concreteBPNativeChunkedRankCloseGlobalWordTraceResult`.
+- The select twin's `_toCosted_of_agree` needs: 8 entry-table pullback
+  equalities (present shape: the existing house pullback facts — find
+  them where the current WithStore route discharges them,
+  `SuccinctFinalStoreParam.lean`), per-address agreements at 9/10/11
+  (long flag rank), 12 (long relative), 13/14/15 (sparse rank), 16
+  (sparse relative), 0 (bit words), 21 (chunk table — existing
+  `_fringeChunkTable` fact), and 22 (select table — NEW, lands with the
+  store extension: add
+  `concreteBPNativeSelectChunkTraceSegment : Nat := 22` +
+  `else if segment = 22 then (SuccinctClose.bpChunkSelectTable
+  (bpFringeChunkBits shape.bpCode.length) false).store.words[index]?`
+  to `concreteBPNativeSuccinctRMQGlobalReadStore` in `Segments.lean`,
+  same commit as the `ReviewerSource.selectChunkTable` constructor per
+  C05).  The 9/10/11 and 13/14/15 facts follow the M5-prep
+  segment-17/18/19 simp pattern verbatim (store maps them to
+  `rankRegisterWordRAMStore true` segments 0/1/2).
+- Vocabulary theorem: every M4b/M5-prep twin's `_trace_forall` handlers
+  are all `readWord`-shaped, so the whole-query statement is the
+  composition of `_events_readWord`-style instances over the swapped
+  whole-query trace; the interior/endpoint fringe components were
+  already readWord-only after B2 (their `_trace_forall` lemmas are in
+  `ChargedFringeTrace.lean` / the interior trace modules).
+- Cost algebra: `selectClose := 35`, `rankClose := 11` from the M5-prep
+  `_cost_le` wrappers; derived route literal by `rfl` (projection
+  `2*35 + (2*11 + 2*37 + 30) + 11 = 207`); freeze 142 as
+  `...SilentWordRankSelectChargedTraceCost_eq = 142` following the 76
+  (`canonicalSilentFringeQueryCost`) pattern from `d1d645e`; grep for
+  `142` across `SuccinctFinalRAM.lean`, `SuccinctFinalModelAdequacy`,
+  `SuccinctRMQClassic`, `Headlines/RMQ.lean`, `Validation/*`,
+  `RMQExamples/*`, `scripts/paper_topology_lint.ps1` (`SumLe142`
+  CURRENT-anchor rename is coordinator-ratified per the B2 precedent),
+  `scripts/headline_axiom_check.lean`; re-sync the two REQ-B3-13
+  docstrings to the new literal in the same commit.
+- Study `git show d1d645e` per-file before starting: the reviewer-store
+  extension (`ReviewerPhysical.lean` + `FlatPayload.lean` +
+  `Segments.lean` + adequacy/provenance regeneration) mirrors that
+  commit with 21 -> 22 and the dead-source witness moving 22 -> 23.
 
 1. M5 atomic swap commit (C05 coupling; mirror B2-02 M9 and
    DD-20260717-004 exactly):
