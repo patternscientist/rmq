@@ -3066,3 +3066,54 @@ evidence accrues in `B4_WORKLOG.md` per milestone.
 Follow-up: M2..M8 per the worklog milestone list.
 
 Supersedes: none (extends the B2/B3 provenance rows to the B4 standard).
+
+## DD-20260718-004: Navigation-family B4 audit outcome - doc repair plus explicit cost-model quarantine (REQ-B4-08)
+
+Status: Proposed
+Date: 2026-07-18
+Scope: B4 rung (worker B4-01): `docs/BP_NAVIGATION_FRONTIER.md` repair;
+no Lean statement changes.
+
+Decision: the B4 navigation audit (statement-level diff `d1d645e..6e105a5`
+over `BPNavigationRAM.lean`/`BPNavigationPublic.lean`, nav store segment-map
+inventory, repo-wide greps for the deleted bridge and `maxRelTable`
+segment-numbering survivors) found NO inconsistent statement: no registered
+navigation execution story changed statement text, and no nav theorem counts
+a region its store cannot read (the profile's counted padding is deliberate
+slack; all counted close bits are readable via segment 20, with aliases at
+23-25).  Two findings require action, both documentary:
+
+1. STALE-DOC: `docs/BP_NAVIGATION_FRONTIER.md` described the execution
+   stories as being about `concreteBPCloseNavigationCosted` and "the same
+   concrete close-navigation query surface as the profile" - true when the
+   doc was snapshotted (2026-07-01, verified at a342555) but false after
+   the B3 rank-leg rewire.  Repaired: the story paragraph now names
+   `concreteBPCloseNavigationCanonicalCosted` and the chunk-table store
+   segments 21/22.
+2. QUARANTINE: after the B3 deletion of
+   `concreteBPCloseNavigationRankCloseInterpretedCosted_refines_rankCloseCosted`
+   (equality false at chunked costs, DD-20260718-002), the nav PROFILE and
+   the nav EXECUTION STORIES are two different cost models with no
+   registered bridge, and the profile's `2*n + o(n)` payload does not count
+   the chunk tables the stories' store serves at segments 21/22 (that
+   counted budget lives on the reviewer route).  Recorded as an explicit
+   QUARANTINE NOTE in the doc rather than repaired in Lean.
+
+Options considered:
+
+- Build the missing nav-side counted-space statement / cost-model bridge
+  now: rejected as outside the B4 contract (provenance hardening); recorded
+  as open frontier work in the doc's quarantine note.
+- Retire the old profile: rejected - it is a registered public surface
+  (`RMQ.Headlines.concreteBPCloseNavigationProfile`) and its statements
+  remain true about its own query.
+- Silence (doc-only staleness left in place): rejected - REQ-B4-08 requires
+  repair or explicit quarantine with docs + DD.
+
+Evidence: B4 session audit (findings recorded in the REQ-B4-08 matrix row
+and `B4_WORKLOG.md`); repaired doc sections in `BP_NAVIGATION_FRONTIER.md`.
+
+Follow-up: nav-side counted-space statement for the chunked story is
+frontier work (doc note); no Lean follow-up queued in B4.
+
+Supersedes: none (records the REQ-B4-08 audit disposition).

@@ -1,6 +1,7 @@
 # Balanced-Parentheses Navigation Spoke
 
-Snapshot: 2026-07-01. This note records the extracted public surface for the
+Snapshot: 2026-07-01; execution-story section synced 2026-07-18 (B4 audit)
+after the B2/B3 chunk-table recharge. This note records the extracted public surface for the
 compact balanced-parentheses close/LCA navigation layer used by the succinct
 RMQ capstone, plus the first public tree-navigation bridge over BP
 rank/select.
@@ -228,13 +229,33 @@ RMQ.BPNavigation.concreteSuccinctTreeNavigationGlobalPayloadStoreBoundedExecutio
 RMQ.Headlines.concreteSuccinctBPTreeNavigationGlobalPayloadStoreBoundedExecutionStory_currentCloseStoreObstruction
 ```
 
-These theorems consume the same concrete close-navigation query surface as the
-profile. They provide a globally segmented `WordRAM.TraceResult`, prove
-`concreteBPCloseNavigationCosted shape left right = trace.toCosted`, preserve
-the exact Cartesian-shape RMQ/close-navigation semantics, match payload-read
-events against one concrete read store, prove successful reads are backed by
-the concrete payload component stores, and add a finite trace-local width for
-read addresses and word-primitive operands/results.
+Since the B3 rank/select recharge these story theorems are about
+`concreteBPCloseNavigationCanonicalCosted` (the chunked canonical route),
+NOT the profile's `concreteBPCloseNavigationCosted` query. They provide a
+globally segmented `WordRAM.TraceResult`, prove
+`concreteBPCloseNavigationCanonicalCosted shape left right = trace.toCosted`,
+preserve the exact Cartesian-shape RMQ/close-navigation semantics, match
+payload-read events against one concrete read store, prove successful reads
+are backed by the concrete payload component stores (which since B2/B3
+include the universal fringe/select chunk tables at store segments 21/22),
+and add a finite trace-local width for read addresses and word-primitive
+operands/results.
+
+QUARANTINE NOTE (B4 audit, 2026-07-18): the navigation PROFILE
+(`concreteBPCloseNavigationFamily_profile`, over
+`concreteBPCloseNavigationCosted`, which charges in-word rank/select as
+word-local primitives and never reads segments 21/22) and the navigation
+EXECUTION STORIES (over `concreteBPCloseNavigationCanonicalCosted`, the
+chunked route) are two DIFFERENT cost models with no registered bridge: the
+B2-era bridge
+`concreteBPCloseNavigationRankCloseInterpretedCosted_refines_rankCloseCosted`
+was deleted in B3 because its equality is false at the chunked costs
+(DD-20260718-002). The profile's `2*n + o(n)` counted payload does NOT
+include the chunk tables its stories' store serves at segments 21/22; the
+chunk-inclusive counted budget lives on the succinct-RMQ reviewer route
+(`concreteBPNativeSuccinctRMQCanonicalReviewerOverhead`). Neither statement
+is false - they are about different queries - but a nav-side counted-space
+statement covering the chunked story's read store is open frontier work.
 It is not the old sampled conditional interface. The mismatch is recorded by
 `sampledCloseNavigationInterface_lcaSlot_unitCost` and
 `concreteCompactCloseNavigationSeededLCABudget_not_unit`: the older sampled

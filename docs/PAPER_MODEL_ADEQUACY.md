@@ -4,13 +4,22 @@
 
 The reviewer path uses one pre-execution list,
 `concreteBPNativeSuccinctRMQReviewerPhysicalWords`, whose erasure is exactly the
-canonical public payload. It is assembled from one exhaustive typed 20-source
-universe that includes canonical close. For every indexed read, the provenance layer retains the
+canonical public payload. It is assembled from one exhaustive typed 22-source
+universe (23 logical segments; segments 0 and 19 share the BP-code source)
+that includes canonical close and the four-Russians fringe/select chunk-table
+sources at segments 21 and 22. For every indexed read, the provenance layer retains the
 same global position, closed-program instruction occurrence, state obtained by
 folding the exact preceding prefix, component-local position, exact invocation
 parameters, physical source, region, and logical segment. Every counted source
 and exact shared-BP consumer has a successful occurrence through an actual
-closed whole-query execution under a valid ordinary `List Int` query.
+closed whole-query execution under a valid ordinary `List Int` query; the
+fringe chunk table additionally has a successful occurrence for EACH of the
+three read leaves that consume it (select, rank, and LCA/canonical close),
+and both chunk-table segments carry checked repeated-equal-read witnesses:
+one valid execution reads the same table word at two distinct global trace
+positions with two separately indexed provenance receipts
+(`repeated_equal_read_occurrences_have_distinct_receipts` instantiated on
+actual executions, recorded as fields of the manifest packet).
 The manifest also proves exclusive source regions, complete logical-segment
 coverage, and exclusion of legacy duplicate close/interior sources.
 
@@ -28,7 +37,7 @@ keeps symbolic witness construction out of the native validator link closure;
 it does not replace or alter the genuine `SuccinctRMQClassic` execution checked
 by the validator and cost harness.
 
-A counterfactual fresh segment `21` with the plausible existing
+A counterfactual fresh segment `23` with the plausible existing
 `canonicalClose` label has no witness under the same common closed-valid-
 occurrence relation. The positive predicate existentially requires `some word`;
 the mutation predicate permits any `word?`, and
@@ -79,8 +88,8 @@ The construction-facing join theorem is
 `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`.
 It places the canonical payload bound, physical erasure, exact global trace,
 direct positional physical backing for each successful read, non-synthetic
-weight equality to trace length and `Costed.cost`, and uniform `76` bound in one
-checked type.
+weight equality to trace length and `Costed.cost`, and uniform `207` bound in
+one checked type.
 
 It packages existing checked theorem surfaces. It does not introduce a new
 algorithm, a new cost model, or a verified CPU/compiler semantics.
@@ -101,15 +110,45 @@ concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted
 So the modeled step count is the length/cost projection of an explicit event
 trace, rather than an opaque aggregate charge.
 
-## Events
+## Events And The Declared Charge Policy
 
-Final query events are classified as either:
+Since the B2/B3 four-Russians recharge, the accepted route's charged event
+vocabulary is `readWord` ONLY. The checked structural theorem is
 
-- `readWord` payload-read events, or
-- word-local primitives such as `wordRank` and `wordSelect`.
+```lean
+concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only
+```
 
-Word-local primitives model constant-time machine-word operations on already
-available words. They are counted events, but they do not read payload memory.
+(headline `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`):
+every event of the accepted whole-query global word trace is a
+`WordRAM.TraceEvent.readWord` constructor, for every shape and query. The
+`wordRank`/`wordSelect` word-local primitives remain defined for
+legacy/compatibility surfaces (the frozen 76/142/328 routes) but are never
+emitted by the accepted route.
+
+The declared charge policy is therefore:
+
+- **Charged**: attempted payload-word reads (`readWord segment index word?`),
+  one model tick each, including failed reads. Every charged trace event is a
+  memory read; the trace-level cost of a query is its read count.
+- **Uncharged**: instruction dispatch, register moves, fixed-width decode of a
+  fetched word into register values (mixed-radix unpack of a table entry),
+  bounded arithmetic/comparison on register values, option tests, branching,
+  candidate merges, trace assembly, and the validity guard.
+
+Why the uncharged remainder is benign in this model: after B2/B3 every
+uncharged step is a BOUNDED-PER-STEP register computation - a constant-shape
+decode or merge between two charged reads - not an unbounded scan. The old
+event-silent per-position fringe scan and in-word rank/select loops are gone
+from the charged route; their replacements visit at most a literal number of
+chunks (8 per machine word, 33 per fringe window; checked cap identities in
+`ChargedWordChunks.lean`/`ChargedTableRegime.lean`), each chunk contributing
+one charged read plus constant register work. The E1 machine (the amended
+E1 target of `OPTION_B_CHARGED_FRINGE_DESIGN.md`) will define the richer
+instruction semantics that individually charges every controller, decode,
+arithmetic, comparison, branch, and register step, and prove a separate
+literal total; until then these omissions are documentary and enumerated
+here, not silently absorbed into an unbounded primitive.
 
 ## No Synthetic Cost-Only Events
 
@@ -153,9 +192,10 @@ concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceEventBits
   shape left right
 ```
 
-Every payload-read address and every natural operand/result exposed by a
-word-local primitive fits that width. This is still a model-level bound, not a
-claim about a particular hardware instruction set.
+Every payload-read address fits that width (and, on the frozen historical
+routes that still emit word-local primitives, every primitive operand/result
+does too). This is still a model-level bound, not a claim about a particular
+hardware instruction set.
 
 ## Supplied Stores
 
@@ -192,23 +232,26 @@ not form part of this current model-adequacy statement.
 ## The Constant
 
 The current reviewer-route modeled bound is the principled charged-trace sum
-`76`. It is proved by
+`207`. It is proved by
 `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace`
 and evaluated by
 `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`. The sum is
-`2*select13 + (2*rank4 + 2*fringe4 + interior30) + rank4`.
+`2*select35 + (2*rank11 + 2*fringe37 + interior30) + rank11`, derived (never
+asserted) from the component algebra; the retired 142 (silent in-word
+rank/select), 76 (silent fringe), and 328 (transitional) literals stay frozen
+as historical constants with their chains still checked.
 The operational bridge classifies every event in the actual canonical trace as
-`readWord`, `wordRank`, or `wordSelect`, excludes
+`readWord` (the readWord-only vocabulary theorem above), excludes
 `syntheticCostOnlyPrimitive`, and proves that the direct
 `WordRAM.TraceEvent.nonSyntheticWeight` certificate sum equals both trace
 length and the `Costed` cost of the same execution. This equality is proved for
 the canonical no-synthetic trace; `TraceResult.toCosted` itself charges trace
 length and would count a synthetic compatibility marker if one were present.
-The non-synthetic-weighted trace is then bounded by `76`. A counterfactual
+The non-synthetic-weighted trace is then bounded by `207`. A counterfactual
 theorem proves that inserting a synthetic event anywhere would make the
 certificate sum strictly smaller than trace length.
 
-The supplied-store and full-model companions transfer the same `76` bound
+The supplied-store and full-model companions transfer the same `207` bound
 under final footprint agreement. Earlier execution stories are compatibility
 facts only and are not current reviewer-route claims.
 The paper-level claim is that the query is constant in the stated model and
@@ -216,11 +259,10 @@ that the model's counted reads are payload-backed. It is not a claim that this
 Lean code is production serialization, optimized machine code, or a verified
 CPU implementation.
 
-Currently charged events are attempted payload-word reads and word-rank /
-word-select primitives. Instruction dispatch, inputs/registers, arithmetic,
-option tests, branching, fixed-width decode, local BP scan, candidate merge,
-trace assembly, and the validity guard do not appear in the current trace and
-remain documentary uncharged omissions. The current theorem does not define a substitute
+The charged/uncharged boundary is the declared charge policy in the Events
+section above: attempted payload-word reads are the only charged trace
+events, the uncharged remainder is enumerated there and is bounded-per-step
+register computation, and the current theorem does not define a substitute
 controller vocabulary or prove conventional word-RAM complexity. E1 must
 define its richer instruction semantics and prove a simulation separately.
 
