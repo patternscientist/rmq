@@ -1,4 +1,4 @@
-# B2-01 Worklog (charged chunked fringe)
+# B2 Worklog (charged chunked fringe; B2-01 core, B2-02 wiring)
 
 Branch `claude/b1-b2-charged-fringe-tables`, base `b6338ea`. Matrix:
 `docs/internal/B2_CHARGED_FRINGE_ACCEPTANCE_MATRIX.md` (commit `ae99812`).
@@ -165,7 +165,60 @@ seed 1 (values 1 vs 3 at position 0).
 - Reviewer store extension (REQ-B2-04/05) may ripple into
   `SuccinctFinalRAM`/`SuccinctFinalModelAdequacy` (`segment < 21`); decision
   and fallout to be recorded at M5 (B4-scope breakage must be explicit).
+  [B2-02: resolved by coordinator ruling C05 — extension coupled to the
+  wiring, adequacy fields regenerated in-rung, every commit green.]
 - The `(v,a,b)` table triples the index space vs a `(v,offset)` design;
   o(n) budget unaffected (`/8` slack), but the M5 width-vs-reviewer-word
   lemma (`w <= reviewerWordBits n` for all n) still needs a small
-  log-vs-linear argument.
+  log-vs-linear argument.  [B2-01 delivered
+  `bpFringeChunkEntryWidth_le_reviewerWordBits`; closed.]
+
+# B2-02 continuation (wiring rung, coordinator ruling C05)
+
+Worker B2-02 resumes at B2-01 HEAD `fff3f2f`. Matrix extension rows
+REQ-B2-13..19 frozen in `B2_CHARGED_FRINGE_ACCEPTANCE_MATRIX.md` (this
+commit) before implementation. C05: store/source extension COUPLED to trace
+wiring; every commit keeps `lake build RMQ` green; parallel definitions
+first, consumers swapped atomically.
+
+## Segment/layout decisions (fixed at M7)
+
+- Fringe chunk table = global trace segment 21 = reviewer logical segment
+  21; new `ReviewerSource` constructor appended LAST so the amended reviewer
+  payload is exactly `old ++ table payload` (candidate shape).  Adequacy
+  regenerates `canonical_segments_complete` to `segment < 22` and
+  `compatibility_tail_unreachable` to `22 <= segment`.
+- Chunk-table pure facts (payload length, erasure, row-count linear bound,
+  width bound) must be importable from `ReviewerPhysical.lean`, which sits
+  BELOW `SuccinctRMQClassic`; they move to a new low module
+  `ChargedFringeTableFacts.lean` (imports `ChargedFringeChunks` +
+  `SuccinctSpace` asymptotics only); `ChargedFringeSpace.lean` keeps the
+  `SuccinctRMQClassic`-facing candidates and re-exports by import.
+- Trace-layer fringe reads use the existing generic
+  `FixedWidthNatTable.readTraceResultAtSegment` (InteriorRAM.lean:36) with
+  `segmentBase := 21`, `deadSegment := concreteBPNativeDeadTraceSegment`
+  threaded as a parameter structure (house `AtSegments` style).
+
+## Milestones (B2-02)
+
+- [ ] M7 docs: matrix extension + worklog (this commit).
+- [ ] M8 parallel modules (green, additive only):
+      `ChargedFringeTableFacts.lean` (moved facts),
+      `ChargedFringeTrace.lean` (TraceResult fold + left/right fringe
+      trace evaluators + refines/matchesReadStore/no-synthetic +
+      chunked cross-block trace consumer twins, plain and WithStore),
+      imports registered in `RMQ.lean`.
+- [ ] M9 atomic swap (single commit, library green):
+      wiring (`canonicalLcaCloseCostedWithRankSeed` else-branch +
+      trace/WithStore twins at the accepted call sites), reviewer store
+      extension (constructor, segment 21, erasure/capacity/width/address
+      folds, manifest/liveness/provenance regeneration), public
+      payload/overhead amendment (keeping `reviewerPayload = buildPayload`
+      by `rfl`), cost re-derivation (fringe 37, derived route literal),
+      adequacy regeneration, headline/validation consumer updates, 76
+      frozen as historical constant.
+- [ ] M10 final battery + matrix closure + report.
+
+## Verification ledger (B2-02)
+
+- M7: docs only.
