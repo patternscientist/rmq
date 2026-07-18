@@ -564,3 +564,45 @@ commit where the cost-model amendment lands. The cost-model fork must be decided
 E1-R4 or M1 headline phrasing freezes. Governance branch (12 commits,
 `4a60853..5f59455`) is content-safe but unmerged; `2c30a3a` (gate.ps1) and
 WDD-003/006 authority grants need an explicit user nod.
+
+## 2026-07-17 (C05 round 2) — B2 charged-fringe candidate reconstructed clean ✅
+
+**Scope:** coordinator reconstruction audit of `d1d645e` on
+`claude/b1-b2-charged-fringe-tables` (B2-01 checkpoint `fff3f2f` + B2-02
+wiring), against the frozen `B2_CHARGED_FRINGE_ACCEPTANCE_MATRIX.md` and
+`OPTION_B_CHARGED_FRINGE_DESIGN.md`.
+
+**Verdict: all ten adversarial checks CONFIRMED; build B3 on `d1d645e`.**
+Highlights: matrix freezes provably precede implementation (0-byte requirement
+diffs across the ladder); dispatcher name/namespace/statement identity
+preserved with the same-block arm untouched; substitution proven through the
+chunk-fold bridge, not definitional; 142 is a sum of individually proven
+component bounds (2*13 + (2*4 + 2*37 + 30) + 4) with 76 frozen per the 328
+pattern; ReviewerSource append-only (21 constructors, segment 21 live via an
+actual read, fresh-unused anti-vacuity witness moved to segment 22 at
+identical strength); charged reads are store-produced with a checked
+corruption witness at the exact read slot; transitional-cap consumers lost no
+coverage; hygiene clean.
+
+**Coordinator ratifications:** (1) dispatcher relocation to
+`ChargedFringeWiring.lean` — ratified (names preserved, import-direction
+forced); (2) transitional-cap close-bound hypotheses — ratified (derived at
+every consumer); (3)+(4) dead-segment remaps — ratified (internal-only;
+legacy/canonical segment-21 vocabulary divergence noted as a comment-fix);
+(5) anchor-registry `SumLe76 -> SumLe142` — ratified (a CURRENT anchor
+tracking the current route; the frozen legacy anchor list is untouched and
+the historical 76 survives as a frozen constant).
+
+**Queued non-blocking repairs (B3 in passing, or B5):** stale "76"
+docstrings at `RMQ/Headlines/RMQ.lean:27` and
+`RMQ/Core/SuccinctFinalRAM.lean:9543`; `docs/PAPER_THEOREM_MAP.md:86` and
+`docs/PUBLICATION_STRATEGY.md:67` prose; a clarifying comment on the legacy
+`FlatPayloadSegmentSource? 21 => .closeSummaryMinRel` label.
+
+**Cross-branch fact:** B2's adequacy regeneration (`segment < 22`, shifted
+packet text) invalidates exact operands in the M1-R4 mutation registry
+(`947bde5`) and the R3-era runner wired into this branch's gate. An
+M1-registry refresh rung is REQUIRED between B2 integration and M1 final
+acceptance; the full aggregate gate on the B2 branch is deferred to that
+refresh. B2 rung acceptance itself remains gated on the A07 fresh blind
+exact-commit audit at the B-complete commit, per the campaign plan.
