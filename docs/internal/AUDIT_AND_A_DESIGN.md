@@ -642,3 +642,41 @@ incl. n=0,1 (8-chunk coverage vs genuinely-o(n) select-table rows); (2)
 uniform application of the declared charge policy — no free spec-level
 arithmetic obtains information equivalent to a charged bit-vector read;
 (3) navigation legacy story consistency.
+
+## 2026-07-18 (C05 round 4) — B4 candidate reconstructed clean; roadmap edit ratified ✅
+
+**Scope:** coordinator reconstruction of `d90b062` (B4 provenance-hardening
+rung, range `6e105a5..d90b062`).
+
+**Verdict: all ten checks CONFIRMED; proceed to B5.** Freeze precedes
+implementation with byte-identical requirement wording (22 rows); the three
+new packet fields are additive, load-bearing through
+`listIntSuccinctRMQPaperMainTheorem`'s first conjunct, with no field removed;
+repeated-equal-read receipts carry full W19 data via checked
+`ProducesEventAt` tuples (positional arithmetic, no kernel trace evaluation);
+regime theorems are two-sided/all-size with kernel-safe corner pins; the
+value-dependency lift is honestly scoped on every surface (full-TraceResult
+inequality at whole-query level; `.value` dependency carried by the closed
+component witnesses); the navigation quarantine is accurate; doc edits carry
+no claim inflation; the two cost-lemma renames were verbatim-statement and
+consumer-free; hygiene clean.
+
+**Coordinator ratifications:** the out-of-scope `RMQ_FINAL_ROADMAP.md` edit
+is RATIFIED — verified as a faithful two-sentence numeral sync (22 sources /
+23 segments; fresh segment 23) to facts already true at base, with the
+process correctly forced through a WDD entry by the strict design check.
+
+**B5 doc queue (priority order):** (1) four public surfaces still saying
+"fresh segment 21" (`README.md:94`, `docs/WHAT_IS_PROVED.md:14,95`,
+`artifact/CLAIMS.md:68`, `docs/PAPER_MAIN_THEOREM.md:60`) — misdescribes the
+anti-vacuity witness; (2) packet blurbs to mention the three new fields;
+(3) 33-cap file attribution in `PAPER_MODEL_ADEQUACY.md`; (4) WHAT_IS_PROVED
+"stronger execution surface" rewording per the quarantine; (5) unused-simp
+warning cleanup at `SuccinctFinalRAM.lean:5694-5824`.
+
+**A07 carry-forward seeds:** store-vs-littleO object identity for segments
+21/22; whole-query ANSWER-level (`.value`) dependency on chunk-table contents
+remains unproven (candidate E1 target); nav counted-space statement or bridge;
+stale-numeral hunt after B5; deliberate packet-type growth; witness fragility
+of the repeated-read fields under any future program change (re-derive, not
+weaken).
