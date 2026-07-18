@@ -2509,3 +2509,35 @@ change.
 
 Evidence: the B3 M5 swap commit and the M6 battery ledger in
 `docs/internal/B3_WORKLOG.md`.
+
+## WDD-20260718-002: B4 roadmap W19-paragraph stale-count sync
+
+Status: Accepted.
+Date: 2026-07-18.
+Scope: `docs/internal/RMQ_FINAL_ROADMAP.md` (workflow-sensitive file) edits
+in the B4 M2 bookkeeping commit.
+
+Decision:
+
+The B4 provenance-hardening rung syncs the roadmap's W19 description to
+the post-B2/B3 store universe under the established stale-doc-constant
+policy: "typed 20-source universe" becomes "typed 22-source universe (23
+logical segments; segments 0 and 19 share the BP-code source) ... and the
+B2/B3 fringe/select chunk-table sources", and "Fresh segment 21 is
+rejected" becomes "Fresh segment 23 is rejected" (the dead-source
+anti-vacuity witness moved 21 -> 22 -> 23 across the B2/B3 store
+extensions). No roadmap process step, gate, or plan is changed - counts
+and segment numerals only.
+
+Options considered:
+
+- Leave the roadmap stale until B5 doc migration (rejected: the B4
+  delegation is exactly the provenance-hardening pass, and the stale
+  counts misdescribe the W19 packet that B4 extends; the C05 round-3
+  audit queued these fixes).
+- Fold the sync into a DESIGN_DECISIONS entry only (rejected: the
+  design-decision gate classifies the roadmap as workflow-sensitive and
+  requires this log).
+
+Evidence: B4 M2 commit `954baea` (diff hunks limited to the two W19
+sentences); `design_decision_check.ps1 -Strict` green after this entry.

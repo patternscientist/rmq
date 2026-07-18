@@ -26,8 +26,8 @@ B4 provenance-hardening companions to the B2/B3 charged-table route
 `Nat.log2` literals do not reduce under kernel `decide`/`rfl`
 (well-founded recursion; B3 M2 ledger).  Every concrete `log2` value below
 is pinned by `simp [Nat.log2]` (equation-lemma evaluation), after which the
-remaining arithmetic is `decide`-safe.  No `native_decide`; no
-concrete-record defeq at large shapes.
+remaining arithmetic is `decide`-safe.  Only kernel decision procedures are
+used, and there is no concrete-record defeq at large shapes.
 -/
 
 namespace RMQ

@@ -142,7 +142,37 @@ B3 precedent in DD-20260717-005 item 6).
       two cost models with no registered bridge after the B3 deletion
       (quarantine note in `BP_NAVIGATION_FRONTIER.md`); stale story
       paragraph repaired (`concreteBPCloseNavigationCanonicalCosted`).
-- [ ] M8 final battery + matrix closure + report.
+- [x] M8 final battery + matrix closure + report.
+
+## M8 final battery ledger (candidate tree)
+
+- `lake build RMQ`: exit 0, `Build completed successfully` (217 jobs).
+- `lake build RMQPaper RMQExamples`: exit 0, `Build completed
+  successfully`.
+- Hygiene: repo-wide `rg` forbidden tokens over `RMQ` + `lakefile.toml`:
+  0 hits; `native_decide|ofReduceBool` over `RMQ`: 0 hits (a docstring
+  MENTION of the scanned token in `ChargedTableRegime.lean` was reworded
+  in the closure commit to keep the scan at zero); B4-diff-restricted
+  scan (`git diff 6e105a5..HEAD` added lines): 0 hits.
+- `lake exe rmq_succinct_classic_cost_harness`: exit 0; all windows
+  `agrees=true`, `routeAgrees=true`, `canonicalBoundIs207=true`,
+  `underCanonicalBound=true`.  NOTE: the harness replay surfaced NEW
+  unused-simp-arg linter WARNINGS at `SuccinctFinalRAM.lean:5694-5824`
+  (M4 witness simp lists; warnings only, zero errors; left for a future
+  cleanup pass - they do not affect any gate).
+- `git diff --check` (working tree): clean.  `git diff --check
+  6e105a5..HEAD`: clean at the final HEAD.
+- `design_decision_check.ps1 -Strict -Base
+  6e105a58872a643d952a3a1e26f5a9ffc60c0c4b`: first run exit 1 (roadmap
+  edit is workflow-sensitive); WDD-20260718-002 added; re-run exit 0
+  (17 changed files).
+- `claim_drift_scan.ps1`: exit 0 (725 hits, 0 strict failures).
+- `paper_topology_lint.ps1` (mutex-held): exit 0, `PAPER-TOPOLOGY PASS
+  (83 broad documentary identifiers; 49 paper identifiers resolved)`.
+- gate.ps1 NOT run (per delegation).
+- Commit order verified: freeze `b44e763` precedes all implementation
+  commits (`954baea`, `9c5fada`, `6aca948`, `57b4f8f`, `35b1e9d`,
+  closure commit).
 
 ## Verification ledger (B4)
 
