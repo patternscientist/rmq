@@ -338,7 +338,8 @@ theorem denseHeadBlock_runsTo_present
                 (G + 4) c false w1
                 (regs0 xBPos - regs0 xBPos / WS * WS)).value
           then 1 else 0) ∧
-      (∀ r, (24 ≤ r ∧ r ≤ 26) ∨ 28 ≤ r → regsH r = regs0 r) := by
+      (∀ r, r ≤ 8 ∨ (24 ≤ r ∧ r ≤ 26) ∨ 28 ≤ r →
+        regsH r = regs0 r) := by
   obtain ⟨hA, hbr1, hbr2, hB, hF1, hCseg, hF2, hD⟩ :=
     denseHeadBlock_hosting hhost
   -- prologue
@@ -551,7 +552,7 @@ theorem denseHeadBlock_runsTo_present
       (bpChunkedWordRankTraceResultAtSegmentWithStore store (G + 4) c
         false w1 (regs0 xBPos - regs0 xBPos / WS * WS)).value := by
     rw [h6pres rSup (by decide) (by decide), h5Sup]
-  have h6bank : ∀ r, (24 ≤ r ∧ r ≤ 26) ∨ 28 ≤ r →
+  have h6bank : ∀ r, r ≤ 8 ∨ (24 ≤ r ∧ r ≤ 26) ∨ 28 ≤ r →
       regs6 r = regs0 r := by
     intro r hrcond
     rw [h6pres r (by omega) (by omega), h5pres r (by omega),
@@ -1098,7 +1099,8 @@ theorem denseSelectLegBlock_runsTo
         (bpChunkedDenseTwoWordSelectTraceResultWithStore W (G + 4) S c
           false bitWords store (regs0 xBPos) (regs0 xBOcc)
           (regs0 xQ)).value ∧
-      (∀ r, (24 ≤ r ∧ r ≤ 26) ∨ 28 ≤ r → regsF r = regs0 r) := by
+      (∀ r, r ≤ 8 ∨ (24 ≤ r ∧ r ≤ 26) ∨ 28 ≤ r →
+        regsF r = regs0 r) := by
   obtain ⟨hHead, hbrCmp, hPre, hbrW2p, hbrW2m, hSetup2, hFold2, hbrP2a,
     hbrP2b, hAdd2, hbrP2c, hSetup1, hFold1, hbrP1a, hbrP1b, hAdd1,
     hbrP1c, hMissC⟩ := denseSelectLegBlock_hosting hhost

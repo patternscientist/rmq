@@ -598,6 +598,28 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
 - Verification at this commit: standalone `lake env lean` exit 0 (no
   warnings); `lake build RMQ` green; hygiene rg clean.
 
+## M3c-6b: dense-leg preservation strengthened to the pinned bank
+
+- Inherited uncommitted work from the R4g session (cut off mid-commit by
+  a usage limit), verified and landed here unchanged.
+- `E1DenseSelectBlock.lean`: the register-preservation clauses of
+  `denseHeadBlock_runsTo_present` and `denseSelectLegBlock_runsTo` are
+  strengthened from `(∀ r, (24 ≤ r ∧ r ≤ 26) ∨ 28 ≤ r → regsF r =
+  regs0 r)` to `(∀ r, r ≤ 8 ∨ (24 ≤ r ∧ r ≤ 26) ∨ 28 ≤ r → regsF r =
+  regs0 r)`, with the internal `h6bank` hypothesis widened to match.
+- WHY (needed downstream, not cosmetic): the top-level select dispatch
+  calls the dense leg with the pinned constants (`rOne`, `rZero`, the
+  per-shape constant registers) live in `0..8`; without this clause the
+  dispatch would have to re-pin them after every leg call.  The proof
+  cost was nil - `h6pres`/`h5pres` already covered `r ≤ 8`, so only the
+  hypothesis and conclusion widened.
+- Verification at this commit: `lake env lean
+  RMQ\Core\WordRAM\E1DenseSelectBlock.lean` exit 0 (24.3s, zero errors,
+  coordinator-run under the heavy mutex); `lake build RMQ` exit 0
+  (29.5s, 232/232), only the pre-existing sanctioned unused-simp-arg
+  warnings in `SuccinctFinalRAM.lean:5694+`,
+  `ReviewerReachabilitySparse.lean:574`, `BPNavigationRAM.lean:2111`.
+
 ## STAGE-2 LAYOUT (dense leg tails - implemented in M3c-5c above;
 ## kept for reference)
 
