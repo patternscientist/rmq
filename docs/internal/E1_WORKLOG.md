@@ -71,6 +71,57 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
 - REQ-E1-01/02 status: machinery delivered; rows CLOSE only when the
   concrete program consumes them (M3+), per the matrix consumer chains.
 
+## M3a: program-composition calculus (`RMQ/Core/WordRAM/E1MachineCalculus.lean`)
+
+- `HostedAt program base code` (absolute-base block hosting) with
+  `hostedAt_self`, `.head`, `.tail`, `.append_left`, `.append_right`.
+- `RunsTo store program s s' reads cats` exact-fuel big-step relation
+  (fuel = cats.length, consumed exactly): `RunsTo.refl`, `RunsTo.trans`
+  (via `run_add`), generic `RunsTo.step`, one mechanical rule per
+  instruction constructor (readMem/const/move/add/sub/mulConst/divConst/
+  natLt/natLe/natEq/brNZ/halt), and fuel insensitivity after halt
+  (`RunsTo.run_fuel_ge` / `.run_of_le_fuel`) so the machine outcome is
+  well defined for any sufficient fuel budget.
+- Machine-generic; nothing route-specific. Verification: standalone
+  `lake env lean` exit 0; `lake build RMQ` green; hygiene clean.
+
+## RESUME POINT (next session: M3b onward)
+
+M3b plan (program + simulation, REQ-E1-03/04/05):
+1. Inventory the accepted route's exact trace structure: expand
+   `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult`
+   (`SuccinctFinalRAM.lean:4337`) through
+   `WholeQueryProgram.evalGlobalWordTrace` into its component trace
+   concatenation (guard; select left/right; rank seeds; same-block vs
+   cross-block close with chunked fringe folds + interior reads; merge).
+   The B2/B3 wiring modules (`ChargedFringeWiring.lean`,
+   `ChargedRankSelectWiring.lean`) name the per-component TraceResults
+   whose traces concatenate to the whole-query trace.
+2. Fix the register map + program-shape DD (per-shape generated program
+   `e1Program shape : Program`, query operands in fixed input registers;
+   generators emit blocks at explicit bases via a base parameter;
+   chunk-count loops via brNZ back-edges with the literal caps 33/8).
+3. Per-component generators + `RunsTo` correctness lemmas (state
+   precondition -> exact receipt segment = component trace, category
+   counts fixed), composed by `RunsTo.trans`/`HostedAt.append_*`.
+   Data-dependent chunk counts: prove the loop `RunsTo` by induction on
+   the chunk counter, mirroring `bpFringeChunkFoldCostedFrom`'s
+   counter recursion; receipts match because both visit the same slot
+   sequence (`_run_footprint` lemmas in `ChargedFringeTrace.lean`).
+4. Invalid guard first (REQ-E1-05, smallest end-to-end slice): guard
+   block computes validity by natLt/natLe on input registers, brNZ to a
+   halt-with-none-packet exit; theorem vs
+   `SuccinctClassic.queryCosted_invalid`.
+5. Then M4 category algebra + derived literal, M5 target Prop +
+   supersession DD/doc, M6 validator (new lean_exe following
+   `Validation/SuccinctClassic.lean`), M7 battery + matrix closure.
+
+Open rows: REQ-E1-01..11 all open (REQ-E1-09 partially: bookkeeping
+half landed in M1; the adequacy-doc uncharged-list discharge waits on
+the machine theorems). No closed row weakened; no frozen identity
+touched. Branch state at yield: M0 `702cfbe`, M1 `18f35d7`, M2
+`11b8cf9`, M3a (this commit); working tree clean at each yield.
+
 Planned milestones: M1 bookkeeping repairs (stale segment-21 doc lines ->
 23; 33-cap attribution; simp-arg warnings if cheap). M2 machine core (ISA +
 step semantics + width predicate + DD entries). M3 program + simulation

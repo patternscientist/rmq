@@ -10,6 +10,7 @@ import RMQ.Core.SuccinctSelect
 import RMQ.Core.SuccinctClose
 import RMQ.Core.WordRAM.ReadStoreEval
 import RMQ.Core.WordRAM.E1Machine
+import RMQ.Core.WordRAM.E1MachineCalculus
 import RMQ.Core.GenericSelect.RAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeChunks
