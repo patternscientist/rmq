@@ -119,9 +119,29 @@ B3 precedent in DD-20260717-005 item 6).
       discharged by the M4/M5 public theorems; packet doc extended;
       `Headlines/RMQ.lean` untouched (consumed by name, gains strength
       only).
-- [ ] M6 whole-query value dependency for segments 21/22 (REQ-B4-06).
-- [ ] M7 charge-policy model doc section + adequacy doc sync (REQ-B4-07)
-      and navigation doc repair + DD (REQ-B4-08).
+- [x] M6 whole-query value dependency for segments 21/22 (REQ-B4-06):
+      engine `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_ne_of_consumed_read_disagreement`
+      + logical drop store
+      `concreteBPNativeSuccinctRMQDropLogicalAddressStore` (+`_dropped`,
+      `_agree_elsewhere`) in `SuccinctFinalStoreParam.lean`; NEW module
+      `RMQ/Core/SuccinctFinal/RAM/ChargePolicyDependency.lean` with
+      `concreteBPNativeSuccinctRMQ{FringeChunk,SelectChunk}ConsumedDisagreement_changes_wholeQuery`
+      (∀-store form over the exhibited consumed read) and
+      `...{FringeChunk,SelectChunk}Drop_changes_wholeQuery` (canonical
+      store mutated only at the consumed address).  Projection level
+      recorded honestly: full-TraceResult inequality with the consumed
+      read exhibited; `.value` dependency carried by the closed
+      component-level corruption witnesses (REQ-B2-10 / REQ-B3-12); the
+      optional compiled value-probe fixture was SKIPPED (recorded; the
+      checked theorems above are the row's closure objects, and `#guard`
+      output would not be kernel evidence per INV-B4-CATEGORY-SEPARATION).
+- [x] M7 charge-policy model doc section + adequacy doc sync (REQ-B4-07)
+      and navigation doc repair + quarantine + DD-20260718-004
+      (REQ-B4-08).  Nav audit outcome: no inconsistent statements; nav
+      store maps 21/22 to the chunk/select tables; profile vs stories are
+      two cost models with no registered bridge after the B3 deletion
+      (quarantine note in `BP_NAVIGATION_FRONTIER.md`); stale story
+      paragraph repaired (`concreteBPCloseNavigationCanonicalCosted`).
 - [ ] M8 final battery + matrix closure + report.
 
 ## Verification ledger (B4)
@@ -144,6 +164,21 @@ B3 precedent in DD-20260717-005 item 6).
   `Segments.lean` legacy `summary.minRel/maxRel := 21/22` shadowing-hazard
   NOTE.  `lake build RMQ` (mutex-held) exit 0, `Build completed
   successfully` (215 jobs).
+- M6: `lake env lean RMQ/Core/SuccinctFinalStoreParam.lean` exit 0 first
+  iteration (engine + drop store); `lake build
+  RMQ.Core.SuccinctFinalStoreParam` exit 0 (136 jobs); `lake env lean
+  .../ChargePolicyDependency.lean` exit 0 first iteration; module
+  registered in `RMQ.lean` (NOTE: this newly pulls
+  `ReviewerReachabilitySmall` into the RMQ root's direct import closure -
+  it was previously reached only via the provenance seam; oleans existed,
+  build unaffected); mutex-held `lake build RMQ` exit 0 (217 jobs,
+  `Build completed successfully`).  M6 executed by B4-01 directly after
+  the M6 subagent was aborted pre-edit (clean handover, zero edits;
+  coordinator directive).
+- M7: docs-only commit `57b4f8f` (PAPER_MODEL_ADEQUACY charge-policy
+  section + 207/22-source/readWord-only sync; PAPER_CLAIM_CORRESPONDENCE
+  W19 row packet-fields sync; BP_NAVIGATION_FRONTIER repair + quarantine;
+  DD-20260718-004).
 - M3: `lake env lean .../ChargedTableRegime.lean` exit 0 after 2
   iterations (fix: omega does not see the Nat-div atom's nonnegativity in
   `1 <= a + 1`-shaped goals here - use `Nat.le_add_left`); module

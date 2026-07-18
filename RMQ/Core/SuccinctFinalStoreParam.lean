@@ -2582,6 +2582,71 @@ theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_stor
         shape hfoot)
       left right
 
+/--
+Charge-policy value-dependency engine (B4, REQ-B4-06): if the canonical
+whole-query execution consumes a successful read at `(segment, index)` and a
+supplied store disagrees with the returned word at exactly that address, the
+supplied-store execution of the accepted route DIFFERS from the canonical
+one (full `TraceResult` inequality; the disagreeing consumed read is the
+exhibited cause).  This is the logical-level companion of the flat-physical
+`concreteBPNativeSuccinctRMQWholeQueryFlatPhysical_value_ne_of_suppliedStoreEvaluator_value_ne`
+pattern: equality of the executions would force the canonical trace's
+successful read event into the supplied-store trace, where
+`_matchesReadStore` pins its word to the supplied store's answer.
+-/
+theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_ne_of_consumed_read_disagreement
+    (shape : Cartesian.CartesianShape) (left right : Nat)
+    (storeB : WordRAM.ReadStore) {segment index : Nat} {word : WordRAM.Word}
+    (hmem : WordRAM.TraceEvent.readWord segment index (some word) ∈
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult
+        shape left right).trace)
+    (hdis : storeB.readWord? segment index ≠ some word) :
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore shape
+        (concreteBPNativeSuccinctRMQGlobalReadStore shape) left right ≠
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape storeB left right := by
+  intro heq
+  have hmemB : WordRAM.TraceEvent.readWord segment index (some word) ∈
+      (concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore
+        shape storeB left right).trace := by
+    rw [← heq,
+      concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_globalReadStore]
+    exact hmem
+  have hmatch :=
+    concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_matchesReadStore
+      shape storeB left right _ hmemB
+  exact hdis hmatch
+
+/-- Canonical LOGICAL store with one chosen `(segment, address)` made
+unreadable.  Scoped semantic-corruption fixture for the charge-policy
+value-dependency theorems, mirroring the physical
+`concreteBPNativeSuccinctRMQReviewerPhysicalDropAddressStore`. -/
+def concreteBPNativeSuccinctRMQDropLogicalAddressStore
+    (store : WordRAM.ReadStore) (droppedSegment droppedAddress : Nat) :
+    WordRAM.ReadStore where
+  readWord? segment address :=
+    if segment = droppedSegment && address = droppedAddress then
+      none
+    else
+      store.readWord? segment address
+
+theorem concreteBPNativeSuccinctRMQDropLogicalAddressStore_dropped
+    (store : WordRAM.ReadStore) (droppedSegment droppedAddress : Nat) :
+    (concreteBPNativeSuccinctRMQDropLogicalAddressStore
+        store droppedSegment droppedAddress).readWord?
+      droppedSegment droppedAddress = none := by
+  simp [concreteBPNativeSuccinctRMQDropLogicalAddressStore]
+
+theorem concreteBPNativeSuccinctRMQDropLogicalAddressStore_agree_elsewhere
+    (store : WordRAM.ReadStore) (droppedSegment droppedAddress : Nat)
+    {segment address : Nat}
+    (hne : segment ≠ droppedSegment ∨ address ≠ droppedAddress) :
+    (concreteBPNativeSuccinctRMQDropLogicalAddressStore
+        store droppedSegment droppedAddress).readWord? segment address =
+      store.readWord? segment address := by
+  rcases hne with hne | hne <;>
+    simp [concreteBPNativeSuccinctRMQDropLogicalAddressStore, hne]
+
 theorem concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResultWithStore_reads_subset_footprint
     (shape : Cartesian.CartesianShape) (store : WordRAM.ReadStore)
     (left right : Nat) :
