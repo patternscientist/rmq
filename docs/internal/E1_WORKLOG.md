@@ -42,6 +42,35 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
 - Verification: doc-only commit (library unaffected); `claim_drift_scan.ps1`
   + `paper_topology_lint.ps1` run at this commit (results in ledger).
 
+## M2: machine core (`RMQ/Core/WordRAM/E1Machine.lean`)
+
+- New module `RMQ.WordRAM.E1Machine`: 12-constructor atomic ISA (readMem,
+  const, move, add, sub, mulConst, divConst, natLt, natLe, natEq, brNZ,
+  halt), six frozen charge categories, single non-recursive `execInstr`
+  match, fueled `run` (only recursion, on the fuel counter), option-shift
+  read decode `decodeRead` (none -> 0, some w -> bitsToNatLE w + 1).
+- Checked core lemmas: `run_steps_eq_catLog_length` (one step per
+  executed instruction), `catCount_partition` + `run_steps_eq_category_sum`
+  (six categories partition the total), `execInstr_readCount_eq_
+  memoryRead_indicator` + `run_readLog_length_eq_memoryRead_count` (reads
+  charged one-for-one, only readMem emits), `run_readLog_readWord_shape`
+  / `_matchesReadStore` / `_no_syntheticCostOnlyPrimitive` (receipts are
+  genuine store reads), `run_add` (fuel composition backbone),
+  `run_steps_le_fuel`, `run_stuck`, `step_some` inversion.
+- Width accounting (REQ-E1-02 machinery): constructor-exhaustive
+  `Instr.FieldsFit` (no wildcard arm), `ProgramFits`, 12 kernel-checked
+  oversizing/zero-divisor rejection witnesses `fieldsFit_rejects_*`.
+- DD-20260718-005 records the ISA inventory decision (no general
+  mul/div/mod: all route multipliers/divisors are per-shape program
+  constants; mod = sub/div/mul-const composition), the decode choice, the
+  frozen categories, and the rejected alternatives.
+- Wired into the root: `import RMQ.Core.WordRAM.E1Machine` in `RMQ.lean`.
+- Verification at this commit: standalone `lake env lean` on the new
+  module exit 0; `lake build RMQ` (ledger below); hygiene rg on touched
+  files clean.
+- REQ-E1-01/02 status: machinery delivered; rows CLOSE only when the
+  concrete program consumes them (M3+), per the matrix consumer chains.
+
 Planned milestones: M1 bookkeeping repairs (stale segment-21 doc lines ->
 23; 33-cap attribution; simp-arg warnings if cheap). M2 machine core (ISA +
 step semantics + width predicate + DD entries). M3 program + simulation

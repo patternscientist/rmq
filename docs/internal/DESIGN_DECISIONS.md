@@ -3117,3 +3117,60 @@ Follow-up: nav-side counted-space statement for the chunked story is
 frontier work (doc note); no Lean follow-up queued in B4.
 
 Supersedes: none (records the REQ-B4-08 audit disposition).
+
+## DD-20260718-005: E1 amended-machine ISA and instruction encoding (E1-R4 M2)
+
+Date: 2026-07-18. Scope: E1 familiar small-step machine instruction set,
+operand encoding, charge categories. Decided by: worker E1-R4 under the
+amended E1 contract (DD-20260717-C05-001; frozen matrix
+`E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md` REQ-E1-01/02/06).
+
+Decision: `RMQ.WordRAM.E1Machine` (`RMQ/Core/WordRAM/E1Machine.lean`)
+defines the machine with exactly twelve instruction constructors:
+`readMem dst segment addrReg`, `const`, `move`, `add`, `sub`,
+`mulConst dst src k`, `divConst dst src k`, `natLt`, `natLe`, `natEq`,
+`brNZ cond target` (absolute target), `halt`.
+
+- ISA inventory outcome: general register-by-register `mul`/`div`/`mod`
+  are EXCLUDED. Every multiplier/divisor in the accepted route's address
+  and decode arithmetic is a per-shape program constant (chunk width `c`,
+  mixed radices `c + 1` / `2c + 1`, block sizes, strides, region bases),
+  so constant-operand `mulConst`/`divConst` suffice; `x % k` compiles as
+  `x - (x / k) * k` (three constant-form instructions). The old R3
+  machine's composite constructors (`localBPWindow`, `wordRank`,
+  `wordSelect`, `sparseSpan`, `candidateOfSummary`, typed option/word
+  register banks) are deliberately absent - that granularity was the
+  refuted defect.
+- Read decode: one bounded expression `decodeRead` - a missing word
+  decodes to `0`, a stored word to `bitsToNatLE word + 1`, so success is
+  testable by one register comparison and no separate option channel or
+  typed register bank exists. The raw `Option Word` is logged in the
+  `readWord` trace event unchanged (receipt projection stays comparable
+  with the accepted trace positionally).
+- Charge categories (frozen, six): memoryRead, registerWrite (const/
+  move), arithmetic (add/sub/mulConst/divConst), comparison (natLt/
+  natLe/natEq), branch (brNZ), control (halt). Checked accounting:
+  `run_steps_eq_catLog_length`, `catCount_partition`,
+  `run_steps_eq_category_sum`, `run_readLog_length_eq_memoryRead_count`.
+- Width accounting: `Instr.FieldsFit` is a constructor-exhaustive match
+  (no wildcard arm); every encoded field (register ids, segment numbers,
+  immediates, mul/div constants, branch targets) must be `< 2 ^ w`,
+  divisors additionally positive; per-constructor oversizing rejection
+  witnesses are kernel-checked (`fieldsFit_rejects_*`).
+
+Alternatives rejected: typed register banks (re-imports the R3 macro
+shape); relative branch offsets (absolute targets make program
+concatenation lemmas simpler and the width bound is the same); a
+separate read-success flag register written by `readMem` (two register
+writes per instruction complicates one-write-per-step accounting; the
+`+1` shift achieves the same with one write); general `mul`/`div`
+(unneeded per inventory, and constant-only forms keep the
+decode-hiding audit trivial).
+
+Consequences: the fueled `run` is the only recursion; one step = one
+category tick = at most one read event, checked. The program
+representation and per-shape program-generation decision is deferred to
+the E1 M3 DD entry.
+
+Supersedes: the R3 machine ISA (rejected by the E1-01R3 obstruction
+round; see DD-20260717-C05-001).
