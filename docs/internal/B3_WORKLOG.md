@@ -84,8 +84,31 @@ record; B3 milestones log here (recorded in DD-20260717-005).
       `_value_eq` for every idx under the data's own three word-size
       bounds, `_exact` = `Succinct.select target bits idx`); plus
       `BoundedPayloadWordStore.read_word_length_le`.
-- [ ] M4 trace layer (FlatStoreComputation folds at segments 21/22, house
-      surface lemmas), parallel select/rank trace twins.
+- [x] M4a `ChargedRankSelectTrace.lean` (word-level trace folds):
+      `bpChunkReadTraceResult` (one genuine `readWord segment slot` event
+      recording the supplied store's word, value = its `bitsToNatLE`
+      decode — the `Program.evalR` readWord discipline generalized to
+      data-dependent addressing) with toCosted_of_agree/matchesReadStore/
+      trace_forall/no_synthetic/store_parametric;
+      `bpChunkedWordRankTraceResultAtSegmentWithStore` (+`From`) with
+      `_toCosted_of_agree` (= the M3 Costed rank fold under table-segment
+      agreement), bounded `_trace_forall` (every event is a
+      `readWord tableSegment slot` with `slot < bpFringeChunkRowCount c`),
+      `_matchesReadStore`, `_no_syntheticCostOnlyPrimitive`,
+      `_store_parametric`;
+      `bpChunkedWordSelectTraceResultAtSegmentsWithStore` (+`From`,
+      two segments rankSegment/selectSegment) with the same surface plus
+      the canonical select-address bound
+      `_trace_forall_of_honestRank` (under honest-rank-table agreement
+      every select-segment read has `address < bpChunkSelectRowCount c`).
+- [ ] M4b leaf trace twins: chunked mirrors of
+      `GenericSelect.rankTraceResult` (:333), `selectTraceResult`
+      (:1779), `selectTraceResultRelabeled` (:1835),
+      `denseTwoWordSelectTraceResult`, directory trace, and the
+      `RAMStoreParam.lean` WithStore twins, wired over
+      `bpChunkedWordRank/SelectTrace...` with segment-layout extension
+      (`concreteBPNativeSelectCloseTraceSegmentLayout` + chunk/select
+      table segments).
 - [ ] M5 atomic swap: route consumers + reviewer source 22 + payload/
       overhead + cost re-derivation + adequacy/provenance regeneration +
       vocabulary theorem + headline/validation/harness updates +
@@ -146,3 +169,8 @@ template:
   triple-nested `cases` so the read word is named for the fold bound);
   `lake build RMQ` exit 0, 12 s incremental (212 jobs); hygiene rg no
   hits.
+- M4a: `lake env lean .../ChargedRankSelectTrace.lean` exit 0
+  (2 iterations; `List.Mem event [x]`/`[]` eliminations need explicit
+  `cases hmem with | head | tail` — plain `simp at hmem` does not reduce
+  the prefix-form `List.Mem`); `lake build RMQ` exit 0, 12 s incremental
+  (213 jobs); hygiene rg no hits.
