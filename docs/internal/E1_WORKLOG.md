@@ -142,42 +142,75 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
 - Verification at this commit: `lake env lean` exit 0 (no warnings);
   `lake build RMQ` green.
 
-## RESUME POINT (next session: M3b onward)
+## M3b-3: chunk-loop composition backbone
 
-M3b plan (program + simulation, REQ-E1-03/04/05):
-1. Inventory the accepted route's exact trace structure: expand
-   `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult`
-   (`SuccinctFinalRAM.lean:4337`) through
-   `WholeQueryProgram.evalGlobalWordTrace` into its component trace
-   concatenation (guard; select left/right; rank seeds; same-block vs
-   cross-block close with chunked fringe folds + interior reads; merge).
-   The B2/B3 wiring modules (`ChargedFringeWiring.lean`,
-   `ChargedRankSelectWiring.lean`) name the per-component TraceResults
-   whose traces concatenate to the whole-query trace.
-2. Fix the register map + program-shape DD (per-shape generated program
-   `e1Program shape : Program`, query operands in fixed input registers;
-   generators emit blocks at explicit bases via a base parameter;
-   chunk-count loops via brNZ back-edges with the literal caps 33/8).
-3. Per-component generators + `RunsTo` correctness lemmas (state
-   precondition -> exact receipt segment = component trace, category
-   counts fixed), composed by `RunsTo.trans`/`HostedAt.append_*`.
-   Data-dependent chunk counts: prove the loop `RunsTo` by induction on
-   the chunk counter, mirroring `bpFringeChunkFoldCostedFrom`'s
-   counter recursion; receipts match because both visit the same slot
-   sequence (`_run_footprint` lemmas in `ChargedFringeTrace.lean`).
-4. Invalid guard first (REQ-E1-05, smallest end-to-end slice): guard
-   block computes validity by natLt/natLe on input registers, brNZ to a
-   halt-with-none-packet exit; theorem vs
-   `SuccinctClassic.queryCosted_invalid`.
-5. Then M4 category algebra + derived literal, M5 target Prop +
-   supersession DD/doc, M6 validator (new lean_exe following
-   `Validation/SuccinctClassic.lean`), M7 battery + matrix closure.
+- `RunsTo.iterate` + `iterLog` appended to
+  `RMQ/Core/WordRAM/E1MachineCalculus.lean`: generic counted-loop
+  composition (invariant indexed by remaining iterations, one `RunsTo`
+  segment per iteration with iteration-indexed receipt/category
+  functions), so exact positional receipts survive brNZ-back-edge loop
+  composition.  This is the backbone for the 33-cap fringe window folds
+  and 8-cap word-chunk folds.
+- Verification at this commit: `lake env lean` exit 0 on the module;
+  `lake build RMQ` green.
 
-Open rows: REQ-E1-01..11 all open (REQ-E1-09 partially: bookkeeping
-half landed in M1; the adequacy-doc uncharged-list discharge waits on
-the machine theorems). No closed row weakened; no frozen identity
-touched. Branch state at yield: M0 `702cfbe`, M1 `18f35d7`, M2
-`11b8cf9`, M3a (this commit); working tree clean at each yield.
+## RESUME POINT (next session: M3c component simulation onward)
+
+DONE so far in M3b (commits `e93e2ae`, `933955e`, this one):
+- Register map / packet / skeleton frozen (DD-20260718-006), charged
+  invalid guard + REQ-E1-05 public parity landed
+  (`E1QueryProgram.lean`, `E1QueryBridge.lean`).
+- Whole-query positional decomposition landed
+  (`E1RouteDecomposition.lean`): the machine target per valid query is
+  select(left) ++ select(right-1) [++ lca [++ rank(answer+1)]] with the
+  value pinned per branch.
+- Loop backbone `RunsTo.iterate`/`iterLog` landed (M3b-3).
+
+M3c plan (the remaining big grind, REQ-E1-03/04):
+1. All simulation lemmas are stated against the canonical store
+   `concreteBPNativeSuccinctRMQGlobalReadStore shape`
+   (`SuccinctFinalRAM.lean:1374` region) - the same store the accepted
+   trace matches (`.._matchesReadStore` theorems).  Machine receipts are
+   `readWord seg idx (store.readWord? seg idx)` by construction, so
+   positional equality with the component trace reduces to: same
+   (segment, index) sequence, plus the component's `matchesReadStore`.
+2. Component order (increasing difficulty): (a) rank-close at segment
+   (`concreteBPNativeRankCloseWordTraceResultAtSegment`,
+   `SuccinctFinalRAM.lean:1506`) - sample+chunk reads, no branching?
+   expand first; (b) select-close
+   (`concreteBPNativeChunkedSelectCloseGlobalWordTraceResult`, target of
+   `SuccinctFinalRAM.lean:1342`) - chunked select tables; (c) the
+   all-size structural close/LCA leg
+   (`concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural`,
+   `SuccinctFinalRAM.lean:2330`) - same-block vs cross-block split,
+   chunked fringe folds (33-cap), interior reads, merges - the risk
+   center.  For each: expand the trace into a (segment, index) sequence
+   parameterized by inputs/read values; write the generator block
+   (registers >= `firstComponentReg`, explicit base, loops via
+   `RunsTo.iterate`); prove precondition -> exact receipts + value in a
+   register + literal category counts.
+3. Glue: `e1ValidPath shape` = select block; select block; option tests
+   on packets (natEq vs `regZero`, brNZ) mirroring the decomposition
+   branches; lca block; rank block; packet write (`regOut :=
+   rankValue - 1 + 1` encoded per `decodePacket`); halt.  Compose with
+   `RunsTo.trans`/`HostedAt` hosting facts from
+   `programSkeleton_hosts_validPath`; result agreement + positional
+   receipt equality vs the M3b-2 decomposition theorems; then the
+   public `List Int` corollary via `SuccinctClassic.queryTraceResult`
+   (valid branch) and `Cartesian.shape_size`.
+4. Then M4 category algebra + derived literal (guard cats are already
+   literal; loop caps 33/8 give the bound), M5 target Prop +
+   supersession DD/doc note, M6 validator lean_exe (fixtures incl. the
+   three invalid ones already checked as `rfl` examples; machine
+   mutation rejection), M7 adequacy-doc discharge + final battery +
+   matrix closure.
+
+Open rows: REQ-E1-01..11 all open (machinery for 01/02/05/06 landed;
+05 closes with the validator fixtures, 01/02/06 close when the concrete
+program consumes them).  No closed row weakened; no frozen identity
+touched.  Branch state: M0 `702cfbe`, M1 `18f35d7`, M2 `11b8cf9`, M3a
+`d721ca9`, M3b-1 `e93e2ae`, M3b-2 `933955e`, M3b-3 (this commit);
+working tree clean at each yield.
 
 Planned milestones: M1 bookkeeping repairs (stale segment-21 doc lines ->
 23; 33-cap attribution; simp-arg warnings if cheap). M2 machine core (ISA +

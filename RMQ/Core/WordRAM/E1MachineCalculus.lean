@@ -265,6 +265,60 @@ theorem RunsTo.run_of_le_fuel {store : ReadStore} {program : Program}
     ⟨fuel - cats.length, by omega⟩
   exact h.run_fuel_ge hhalted extra
 
+/-! ## Iterated blocks (chunk-loop backbone)
+
+The route's only loops are chunk folds with literal iteration caps
+(33 fringe windows, 8 word chunks).  On the machine they compile to a
+counted block with a `brNZ` back-edge.  `RunsTo.iterate` is the generic
+composition: a loop invariant indexed by the remaining iteration count,
+one `RunsTo` segment per iteration with iteration-indexed receipts and
+category charges, composed by `RunsTo.trans` down to counter zero.  The
+receipts of the whole loop are the concatenation of the per-iteration
+receipts in execution order (counter `k` descending to `0`), so exact
+positional receipt equality survives loop composition.
+-/
+
+/-- Execution-ordered concatenation of iteration-indexed logs: the
+iteration executed with remaining counter `k + 1` contributes `f k`, and
+iterations run with the counter descending. -/
+def iterLog {α : Type} (f : Nat → List α) : Nat → List α
+  | 0 => []
+  | k + 1 => f k ++ iterLog f k
+
+@[simp] theorem iterLog_zero {α : Type} (f : Nat → List α) :
+    iterLog f 0 = [] := rfl
+
+@[simp] theorem iterLog_succ {α : Type} (f : Nat → List α) (k : Nat) :
+    iterLog f (k + 1) = f k ++ iterLog f k := rfl
+
+/--
+Generic counted-loop composition.  If from every state satisfying the
+invariant at counter `k + 1` the body makes one `RunsTo` segment with
+receipts `reads k` and charges `cats k`, re-establishing the invariant at
+counter `k`, then from any state at counter `k` the whole loop runs to an
+invariant-`0` state with the execution-ordered concatenated receipts and
+charges.
+-/
+theorem RunsTo.iterate {store : ReadStore} {program : Program}
+    (P : Nat → State → Prop)
+    (reads : Nat → List TraceEvent) (cats : Nat → List Category)
+    (hstep : ∀ k s, P (k + 1) s →
+      ∃ s', RunsTo store program s s' (reads k) (cats k) ∧ P k s') :
+    ∀ k s, P k s →
+      ∃ s',
+        RunsTo store program s s' (iterLog reads k) (iterLog cats k) ∧
+          P 0 s' := by
+  intro k
+  induction k with
+  | zero =>
+      intro s h
+      exact ⟨s, RunsTo.refl store program s, h⟩
+  | succ k ih =>
+      intro s h
+      obtain ⟨s', hbody, hP⟩ := hstep k s h
+      obtain ⟨s'', hrest, hP0⟩ := ih s' hP
+      exact ⟨s'', hbody.trans hrest, hP0⟩
+
 end E1Machine
 end WordRAM
 end RMQ
