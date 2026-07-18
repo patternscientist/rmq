@@ -21,6 +21,7 @@ import RMQ.Core.WordRAM.E1RankTrueBlock
 import RMQ.Core.WordRAM.E1RankAtBlock
 import RMQ.Core.WordRAM.E1RankCanonical
 import RMQ.Core.WordRAM.E1SelectBlock
+import RMQ.Core.WordRAM.E1SelectBridge
 import RMQ.Core.GenericSelect.RAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeChunks

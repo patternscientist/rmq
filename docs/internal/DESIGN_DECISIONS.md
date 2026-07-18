@@ -3240,3 +3240,66 @@ Consequences: valid-path component generators emit blocks at explicit
 bases `>= 8`, use registers `>= firstComponentReg`, and compose by
 `RunsTo.trans`/`HostedAt.append_*`; the invalid path is closed and its
 category algebra is already literal.
+
+## DD-20260718-007: E1 select-close dispatch extension register bank and entry-field encoding (E1-R4 M3c-5a)
+
+Date: 2026-07-18. Scope: E1 select-close dispatch state representation -
+the register bank that survives hosted component folds, and the machine
+encoding of optional entry-table fields. Decided by: worker E1-R4f under
+the amended E1 contract (frozen matrix
+`E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md` REQ-E1-01/02/03/04; completes
+the register-allocation decision flagged in the E1 worklog resume point).
+
+Decision (`RMQ/Core/WordRAM/E1SelectBridge.lean`, namespace
+`RMQ.WordRAM.E1SelectBridge`):
+
+- Frozen EXTENSION BANK `28..39` for select-close dispatch state that
+  must survive the hosted component folds: `xIdx/xQ = 28/29` (query
+  occurrence index and occurrence `q`), super entry fields
+  `xSF1..xSF4 = 30..33` (`baseOccurrence`/`baseWordIndex`/`rankBefore`/
+  `firstOffset`), local entry fields `xLF1..xLF4 = 34..37`,
+  `xBPos/xBOcc = 38/39` (branch base position/occurrence).  Rationale:
+  the component bank `8..27` is fully owned by the rank/select folds;
+  every fold preservation theorem in the tree covers `28 <= r`
+  (`rankCloseBlock_runsTo_hit`/`rankTrueCloseBlock_runsTo_hit`:
+  `r <= 8 ∨ 28 <= r`; `rankFalseLoopFold_runsTo`/
+  `rankAtSegmentBlock_runsTo` and `selectFoldBlock_runsTo`: write-set
+  complements including `28 <= r`), so extension-bank state survives
+  every hosted fold without new preservation obligations.
+- Entry-table fields are stored in registers under the SHIFTED
+  `decodeRead` encode (`0` = missing field, `field + 1` = present),
+  identical to the machine's read decode and the query packet convention
+  (DD-20260718-005/-006).  None-propagation is the miss-indicator sum
+  (`const`/`natEq`/`add` chain, zero iff all four field reads succeeded,
+  `missSum_eq_zero_iff`) and the marked test
+  (`relativeSplitSelectEntryIsMarked`) is an ordinary nonzero test on
+  the shifted `rankBefore` register minus one
+  (`relativeSplitSelectEntryIsMarked_iff`).
+- The entry-table 4-read sub-block (`entryReadBlock`) takes its FIELD
+  DESTINATION registers as parameters (side conditions `28 <= F`,
+  pairwise distinct) so one block and one simulation theorem
+  (`entryReadBlock_runsTo`) serve both the super instantiation
+  (`30..33`) and the local instantiation (`34..37`); the slot index
+  arrives in `rP` (component bank, computed by the dispatch immediately
+  before the reads and not required to survive folds), scratch is
+  `rT/rA/rB`, and the relative-offset read sub-block
+  (`relativeReadBlock`) assembles its answer packet from `xBPos` under
+  the `decodePacket` convention.
+
+Alternatives rejected: cloning the 4-read block per table (two more
+60-line simulation proofs with no semantic difference); a packed
+single-register entry encode (would need shifts/masks by non-constant
+amounts and re-imports multi-field decode complexity the ISA forbids);
+holding dispatch state in the component bank with per-fold save/restore
+moves (charges spurious register writes and breaks the frozen fold
+category logs); an unshifted field encode with a separate presence flag
+register per field (doubles the bank footprint; rejected for the same
+reason as the typed option channels in DD-20260718-005).
+
+Consequences: the select-close dispatch block (worklog RESUME step 5)
+keeps `idx`/`q`/entry fields/base position/base occurrence in `28..39`
+across the seeded TRUE rank folds, the atomic FALSE folds, and the select
+fold; the accepted entry-table read trace/value reduce definitionally to
+the machine shapes (`entryRead_trace_eq`/`entryRead_value_eq`,
+`relativeRead_trace_eq`/`relativeRead_value_eq`), so the dispatch
+simulation composes receipts positionally with no decode gap.

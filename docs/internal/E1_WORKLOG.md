@@ -423,6 +423,53 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
 - Verification at this commit: standalone `lake env lean` exit 0 (no
   warnings); `lake build RMQ` green.
 
+## M3c-5a: select-close read sub-blocks (`E1SelectBridge.lean`)
+
+- New module `RMQ/Core/WordRAM/E1SelectBridge.lean` (wired into
+  `RMQ.lean`): RESUME steps 2 and 3 - the entry-table 4-read sub-block
+  and the relative-offset read sub-block, plus the route-side reductions
+  they consume.
+  - Route-side reductions (ALL `rfl` - the inventory's near-rfl
+    prediction was exact): `ofProgramWithStore_natTable_trace/_value`
+    (one relabeled fixed-width-table read = one `readWord` event at the
+    mapped segment, value = `bitsToNatLE` decode of the supplied store's
+    word), `entryRead_trace_eq`/`entryRead_value_eq` (the accepted
+    4-read evaluator's trace = `entryFieldEvents` at the layout's four
+    segments; value = `entryOfFields` over the four decodes),
+    `relativeRead_trace_eq`/`relativeRead_value_eq`.
+  - Decode connectors: `entryOfFields_decode_some/_decode_none` (entry
+    presence in terms of the machine's shifted `decodeRead` registers),
+    `missSum_eq_zero_iff`, `relativeSplitSelectEntryIsMarked_iff`
+    (marked test = nonzero test on the `rankBefore` field).
+  - Frozen EXTENSION BANK `28..39` (DD-20260718-007): `xIdx/xQ` 28/29,
+    super fields `xSF1..xSF4` 30..33, local fields `xLF1..xLF4` 34..37,
+    `xBPos/xBOcc` 38/39; shifted `decodeRead` field encode.
+  - `entryReadBlock S1 S2 S3 S4 F1 F2 F3 F4` (12 instrs: 4 readMems at
+    slot index `rP` + miss-indicator sum via `rT/rA/rB`), frozen
+    `entryReadCats`; `entryReadBlock_runsTo` - exact fuel to `A + 12`,
+    receipts POSITIONALLY EQUAL to `entryFieldEvents`, the four shifted
+    field decodes in the PARAMETRIC destination registers (side
+    conditions `28 <= F`, pairwise distinct - one theorem serves the
+    super and local instantiations), miss indicator in `rA`, write-set
+    complement preserved; width certificate `entryReadBlock_fits`.
+  - `relativeReadBlock A S` (4 instrs: read at `rSlot`, presence brNZ,
+    packet add from `xBPos`), `relativeReadCats present`;
+    `relativeReadBlock_runsTo` - exact fuel to `A + 4`, receipts = the
+    accepted relative-offset read trace, the accepted value under
+    `decodePacket` in `rT`, only `rT` written; width certificate
+    `relativeReadBlock_fits`.
+- Technique notes (parametric-destination variant of the numerals
+  gotcha): disequalities for `RegFile.write` if-conditions must be
+  provided in the CONDITION'S orientation (`(10 : Nat) ≠ F1` for address
+  preservation, `F1 ≠ F2` for later-write skips over the queried
+  register) - derive them once by omega from the bank bounds and splice
+  into the per-fact simp lists; the unused-simp-arg linter identifies
+  the ones each fact does not need.  `HostedAt.tail.tail.head` type-
+  checks directly at `A + 2` (literal successor additions are
+  definitionally associated).
+- Verification at this commit: standalone `lake env lean` exit 0 (no
+  warnings); `lake build RMQ` green; hygiene rg clean on the new file.
+
 ## RESUME POINT (next session: select-close read sub-blocks onward)
 
 NEW in the M3c-4 session (commits `eb3f102`, `aff4393`, `d49672d`):
@@ -493,7 +540,11 @@ NEXT (dependency order):
 1. DONE (M3c-4a/-4b/-4c): TRUE-target seeded rank block
    (`E1RankTrueBlock.lean`) + atomic register-input FALSE fold block
    (`E1RankAtBlock.lean`).
-2. Entry-table read sub-block: the accepted 4-read evaluator
+2. DONE (M3c-5a, `E1SelectBridge.lean`): entry-table 4-read sub-block
+   (`entryReadBlock_runsTo`, parametric destinations for the super/local
+   banks) + route-side `rfl` reductions + decode connectors + extension
+   bank 28..39 (DD-20260718-007).  Original plan follows.
+   Entry-table read sub-block: the accepted 4-read evaluator
    `readTraceResultRelabeledWithStore` (`GenericSelect/RAMStoreParam.lean:
    258/530`, relabeled segments per
    `concreteBPNativeSelectCloseTraceSegmentLayout`) - inventory its
@@ -503,8 +554,9 @@ NEXT (dependency order):
    (marked test `relativeSplitSelectEntryIsMarked` +
    base-position/occurrence arithmetic `RelativeSplit.lean:13-61` are
    plain register arithmetic).
-3. Relative-offset read (`bpRelativeOffsetReadTraceResultWithStore`,
-   one read + base shift): trivial 3-instr straight segment.
+3. DONE (M3c-5a, `E1SelectBridge.lean`): relative-offset read
+   (`relativeReadBlock_runsTo`, 4 instrs with a presence brNZ - the
+   "3-instr straight" prediction missed the none-packet skip branch).
 4. Dense two-word leg: compose word read (segment
    `layout.bitWordBase`), two atomic false-rank folds, compare, then
    `selectFoldBlock` on first word (occurrence `beforeFirst +
