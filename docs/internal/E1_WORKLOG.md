@@ -183,6 +183,50 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
 - Verification at this commit: standalone `lake env lean` exit 0 (no
   warnings); `lake build RMQ` green; hygiene rg clean on the new file.
 
+## M3c-1b: straight-line executor + rank-close block simulation
+
+- New module `RMQ/Core/WordRAM/E1StraightLine.lean` (machine-generic,
+  wired into `RMQ.lean`): `Instr.isStraight`, per-instruction effect
+  functions `straightStepRegs`/`straightStepEvent`, segment folds
+  `straightRegs`/`straightReads`, and `RunsTo.straight` - one lemma runs
+  ANY hosted branch-free code segment with computed registers, receipts,
+  and one category tick per instruction (`code.map Instr.category`).
+  Plus `Instr.writesTo` + `straightRegs_preserves` (registers outside a
+  segment's write set are untouched) and `RunsTo.brNZ_taken`/`_not_taken`.
+  This kills the hand-written state-tower style for long blocks: register
+  values are computed by `simp` symbolic evaluation at query sites.
+- New module `RMQ/Core/WordRAM/E1RankBlock.lean` (wired into `RMQ.lean`):
+  the rank-close component block and its hit-path simulation.
+  - Frozen register bank (8..27, doc-commented), segments `rankSeg1`
+    (constants, min-clamp, word/super index + offset arithmetic, THREE
+    seed reads, first zero test), `rankSeg2`/`rankSeg3` (zero tests),
+    `rankSegInit` (option shift, cursor/acc zero, 8-capped count by
+    subtraction chain), `rankLoopBody` (24 instrs: slice length by
+    truncated sub, window chunk value by div/mod-2^c, slot affine form,
+    chunk-table read, `bpChunkRankOfEntry` decode chain, accumulate),
+    `rankSegFin`, `rankMissSeg`; `rankCloseBlock B G c L WS BPS`
+    (60 instructions, branch targets absolute from `B`).
+  - Frozen category logs `rankHitHeadCats` (30) / `rankLoopPassCats` (25)
+    / `rankHitTailCats` (4); `rankCloseHitCats count` with DERIVED length
+    `34 + 25 * count` (`rankCloseHitCats_length`).
+  - `rankCloseBlock_hosting` (hosting peel), straightness certificates,
+    `rankCloseBlock_prologue_runsTo` (entry -> loop entry: exactly the
+    three seed-read receipts, `rankHitHeadCats`, decoded registers),
+    `rankCloseBlock_loop_runsTo` (`RunsTo.iterate` with invariant carrying
+    remaining word `W / 2^(j*c)`, cursor `j*c`, accumulator
+    `bpWordRankAccAt`, counter; receipts = ascending fold reads),
+    and the component theorem `rankCloseBlock_runsTo_hit`:
+    for ANY hosting program, store presenting the three seed reads, and
+    `wordOffset <= word.length`, the block runs with exact fuel to
+    `B + 60` with receipts POSITIONALLY EQUAL to
+    `(d.bpChunkedRankTraceResultWithStore store G (G+1) (G+2) (G+4) c
+    false pos).trace`, the component's `.value` in `rVal`, frozen cats
+    `rankCloseHitCats (bpWordChunkCount c (d.wordOffset pos))`, and all
+    registers outside the component bank preserved.
+- Verification at these commits: standalone `lake env lean` exit 0 (no
+  warnings after unused-simp-arg cleanup); `lake build RMQ` green;
+  hygiene rg clean on the new files.
+
 ## RESUME POINT (next session: M3c component simulation onward)
 
 DONE so far in M3b (commits `e93e2ae`, `933955e`, this one):
