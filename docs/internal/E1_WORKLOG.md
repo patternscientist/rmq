@@ -259,61 +259,85 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
 - Verification at this commit: standalone `lake env lean` exit 0 (no
   warnings); `lake build RMQ` green; hygiene rg clean.
 
-## RESUME POINT (next session: M3c component simulation onward)
+## RESUME POINT (next session: M3c select-close onward)
 
-DONE so far in M3b (commits `e93e2ae`, `933955e`, this one):
+DONE so far (M3b commits `e93e2ae`, `933955e`, `bd84fc6`; M3c commits
+`c1e7d0a`, `ff03a37`, `b761581`, `0ddf257`):
 - Register map / packet / skeleton frozen (DD-20260718-006), charged
   invalid guard + REQ-E1-05 public parity landed
   (`E1QueryProgram.lean`, `E1QueryBridge.lean`).
 - Whole-query positional decomposition landed
-  (`E1RouteDecomposition.lean`): the machine target per valid query is
-  select(left) ++ select(right-1) [++ lca [++ rank(answer+1)]] with the
-  value pinned per branch.
+  (`E1RouteDecomposition.lean`).
 - Loop backbone `RunsTo.iterate`/`iterLog` landed (M3b-3).
+- M3c-1 RANK-CLOSE IS DONE machine-side: bridge lemmas
+  (`E1RankBridge.lean`), straight-line symbolic executor
+  (`E1StraightLine.lean`: `RunsTo.straight`, `straightRegs_preserves`,
+  `RunsTo.brNZ_taken/_not_taken`), the 60-instruction block + hit-path
+  simulation (`E1RankBlock.lean`: `rankCloseBlock_runsTo_hit`), and the
+  canonical instantiation (`E1RankCanonical.lean`:
+  `rankCloseBlock_runsTo_atSegment` - receipts positionally equal to
+  `concreteBPNativeRankCloseWordTraceResultAtSegment` at the seed store,
+  value in `rVal`, frozen cats, for all shapes/positions).
 
-M3c plan (the remaining big grind, REQ-E1-03/04):
-1. All simulation lemmas are stated against the canonical store
-   `concreteBPNativeSuccinctRMQGlobalReadStore shape`
-   (`SuccinctFinalRAM.lean:1374` region) - the same store the accepted
-   trace matches (`.._matchesReadStore` theorems).  Machine receipts are
-   `readWord seg idx (store.readWord? seg idx)` by construction, so
-   positional equality with the component trace reduces to: same
-   (segment, index) sequence, plus the component's `matchesReadStore`.
-2. Component order (increasing difficulty): (a) rank-close at segment
-   (`concreteBPNativeRankCloseWordTraceResultAtSegment`,
-   `SuccinctFinalRAM.lean:1506`).  Structure ALREADY INVENTORIED:
-   it is `bpChunkedRankTraceResultWithStore`
-   (`ChargedRankSelectLeafTrace.lean:154`) = three single-read legs
-   (super sample at `base` index `data.superIndex pos`, block sample at
-   `base+1` index `data.wordIndex pos`, packed word at `base+2` index
-   `data.wordIndex pos`; each leg's trace is one literal
-   `readWord` event - `bpChunkReadTraceResult`/`bpWordReadTraceResult`
-   are single-event records) followed by the 8-cap word-chunk fold
-   `bpChunkedWordRankTraceFromWithStore`
-   (`ChargedRankSelectTrace.lean:106`): `bpWordChunkCount c effLimit`
-   iterations, iteration `j` reading the chunk table at `base+4` index
-   `bpFringeChunkSlot c (bpFringeWindowChunkValue c word j)
-   (bpWordChunkSliceLen c e j) (bpWordChunkSliceLen c e j)`.
-   Machine strategy for the fold: keep a remaining-word register
-   (decoded word value), extract the next c-bit chunk by
-   div/mod-by-`2^c` constant forms; needs arithmetic bridge lemmas
-   `bpFringeWindowChunkValue c word j = (bitsToNatLE word / 2^(j*c)) %
-   2^c`-shaped plus an affine form of `bpFringeChunkSlot`, then
-   `RunsTo.iterate` with the invariant carrying (remaining word,
-   slice-length schedule, accumulator).  The count register is
-   data-dependent (`bpWordChunkCount`), computed by machine arithmetic
-   from the decoded word/limit registers; (b) select-close
-   (`concreteBPNativeChunkedSelectCloseGlobalWordTraceResult`, target of
-   `SuccinctFinalRAM.lean:1342`) - chunked select tables; (c) the
-   all-size structural close/LCA leg
+PROOF TECHNIQUE (read this before writing the next block; it is the
+whole cost model of the grind): do NOT hand-write RunsTo state towers.
+Segment the block into straight-line pieces + branches; run each piece
+with `RunsTo.straight`; name the register file after each piece by
+`obtain ⟨regsN, hregsN⟩ : ∃ x, straightRegs store seg regsM = x :=
+⟨_, rfl⟩`; prove per-register value facts by `rw [<- hregsN]` then the
+`regs_eval` macro (local in `E1RankBlock.lean`: simp with segment defs,
+`straightRegs_cons`, `straightStepRegs/Event`, `RegFile.write`, and the
+register-numeral abbrevs) followed by a second `simp [bridge equations]`
+via `<;>`; preservation by `straightRegs_preserves` + `writes_eval`.
+Loops: `RunsTo.iterate` with the invariant carrying exact register
+contents as functions of iterations-done, receipts as a fixed function
+of the remaining counter, then `iterLog_singleton_desc`/`iterLog_congr`
+to flip descending receipts into the ascending `List.range` order.
+Bridge direction discipline: normalize BOTH sides to machine constant
+forms (`nat_min_eq_sub_sub`, `nat_mod_eq_sub_div_mul`,
+`bpWordChunkSliceLen_eq_sub`, `bpFringeWindowChunkValue_eq_div_mod`,
+`decodeRead_pred_eq_map_getD`, `bpChunkRankOfEntry_false_eq`).  Gotchas:
+omega does NOT see through `Nat.min`, register abbrevs, or variable-
+divisor `/` (generalize the division first); `simp` argument splicing in
+macros fails on the heterogeneous simpArg list (use an argument-less
+macro + follow-up simp); pass `(store := store)` to the brNZ helpers.
+The `regs_eval`/`writes_eval` macros are `local` to `E1RankBlock.lean` -
+either re-declare them in the next block module or lift them into
+`E1StraightLine.lean` first (recommended).
+
+M3c remaining plan (REQ-E1-03/04):
+1. Glue-side store swap for rank-close (small): re-instantiate
+   `rankCloseBlock_runsTo_hit` at
+   `concreteBPNativeSuccinctRMQGlobalReadStore shape` with base 17
+   (presence via `concreteBPNativeSuccinctRMQGlobalReadStore_rankCloseSuper/
+   Block/Word/fringeChunkTable`, `SuccinctFinalRAM.lean:1561-1581`
+   region, + the same `builtRankData_wordOffset_le`), then rewrite the
+   receipts through
+   `concreteBPNativeRankCloseWordTraceResultAtSegment_canonical_eq`.
+   NOTE: the machine store and the component store must be the SAME
+   argument for receipts to match; at base 17 both equal the global
+   store on the touched segments.
+2. (b) select-close
+   (`concreteBPNativeChunkedSelectCloseGlobalWordTraceResult`, public
+   face `concreteBPNativeSelectCloseGlobalWordTraceResult`,
+   `SuccinctFinalRAM.lean:1342`): inventory its trace evaluator first
+   (it is NOT yet inventoried in this log; expect sample legs + the
+   two-segment select fold `bpChunkedWordSelectTraceFromWithStore`,
+   `ChargedRankSelectTrace.lean:322`).  The select fold has a
+   DATA-DEPENDENT EARLY EXIT (found-chunk branch fires one select-table
+   read and stops).  `RunsTo.iterate` does not express early exit; add a
+   dedicated backbone first (suggest `RunsTo.iterateUntil` in
+   `E1MachineCalculus.lean`: invariant P k s plus per-step alternative
+   "exit to Q with exit receipts/cats" - receipts/cats stay fixed
+   functions of the counter because the exit iteration is determined by
+   store+inputs).  Machine loop shape: routing read + `natLt` on the
+   remainder + forward `brNZ` to the select-read tail, else subtract and
+   back edge.
+3. (c) the all-size structural close/LCA leg
    (`concreteBPNativeLCACloseGlobalWordTraceResultAllSizeStructural`,
    `SuccinctFinalRAM.lean:2330`) - same-block vs cross-block split,
    chunked fringe folds (33-cap), interior reads, merges - the risk
-   center.  For each: expand the trace into a (segment, index) sequence
-   parameterized by inputs/read values; write the generator block
-   (registers >= `firstComponentReg`, explicit base, loops via
-   `RunsTo.iterate`); prove precondition -> exact receipts + value in a
-   register + literal category counts.
+   center.  Same technique; expand the trace per control branch.
 3. Glue: `e1ValidPath shape` = select block; select block; option tests
    on packets (natEq vs `regZero`, brNZ) mirroring the decomposition
    branches; lca block; rank block; packet write (`regOut :=
@@ -332,10 +356,16 @@ M3c plan (the remaining big grind, REQ-E1-03/04):
 
 Open rows: REQ-E1-01..11 all open (machinery for 01/02/05/06 landed;
 05 closes with the validator fixtures, 01/02/06 close when the concrete
-program consumes them).  No closed row weakened; no frozen identity
-touched.  Branch state: M0 `702cfbe`, M1 `18f35d7`, M2 `11b8cf9`, M3a
-`d721ca9`, M3b-1 `e93e2ae`, M3b-2 `933955e`, M3b-3 (this commit);
-working tree clean at each yield.
+program consumes them; 03/04 rank-close leg simulated, select-close and
+close/LCA legs plus glue outstanding).  No closed row weakened; no
+frozen identity touched.  Branch state: M0 `702cfbe`, M1 `18f35d7`,
+M2 `11b8cf9`, M3a `d721ca9`, M3b-1 `e93e2ae`, M3b-2 `933955e`, M3b-3
+`bd84fc6`, M3c-1a `c1e7d0a`, M3c-1b `ff03a37` + `b761581`, M3c-1c
+`0ddf257` (+ this worklog commit); working tree clean at each yield.
+Width/fits certificate for `rankCloseBlock` (REQ-E1-02 consumption) is
+NOT yet written - add `rankCloseBlock_fits` alongside the glue (needs
+`0 < c` from `bpFringeChunkBits_pos`, `0 < wordSize`/`blocksPerSuper`
+from the data, and `2^c`, `2*c+2`, `L`, branch targets `< 2^w`).
 
 Planned milestones: M1 bookkeeping repairs (stale segment-21 doc lines ->
 23; 33-cap attribution; simp-arg warnings if cheap). M2 machine core (ISA +
