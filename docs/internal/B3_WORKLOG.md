@@ -73,8 +73,17 @@ record; B3 milestones log here (recorded in DD-20260717-005).
       select-table corruption witness
       (`bpChunkSelectTable_corruption_changes_select_value`: honest
       `some 0` vs corrupted-slot-0 `some 1` on word `[false]`, occ 0).
-- [ ] M3 `ChargedRankSelectLeaves.lean`: the four Costed leaf recharges +
-      value equivalences + literal cost bounds.
+- [x] M3 `ChargedRankSelectLeaves.lean`: the four Costed leaf recharges +
+      value equivalences + literal cost bounds:
+      `TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankCosted`
+      (`_cost_le` <= 11, `_value_eq` = `rankCosted` value for every
+      target/pos under `wordSize <= 8c`, `_exact`);
+      `bpChunkedDenseTwoWordSelectCosted` (<= 27, `_value_eq`);
+      `SparseExceptionDirectory.bpChunkedReadCosted` (<= 12, `_value_eq`);
+      `SparseExceptionSelectData.bpChunkedSelectCosted` (<= 35,
+      `_value_eq` for every idx under the data's own three word-size
+      bounds, `_exact` = `Succinct.select target bits idx`); plus
+      `BoundedPayloadWordStore.read_word_length_le`.
 - [ ] M4 trace layer (FlatStoreComputation folds at segments 21/22, house
       surface lemmas), parallel select/rank trace twins.
 - [ ] M5 atomic swap: route consumers + reviewer source 22 + payload/
@@ -132,3 +141,8 @@ template:
   pattern from `ChargedFringeTableFacts`, not a direct pow argument.
 - M2 library root: `lake build RMQ` exit 0, 23 s incremental (module
   registered in `RMQ.lean` this commit; 211 jobs).
+- M3: `lake env lean .../ChargedRankSelectLeaves.lean` exit 0
+  (2 fix iterations, ~2 min each; the rank cost proof needs explicit
+  triple-nested `cases` so the read word is named for the fold bound);
+  `lake build RMQ` exit 0, 12 s incremental (212 jobs); hygiene rg no
+  hits.
