@@ -1,5 +1,5 @@
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeTrace
-import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedSameBlockChunks
+import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedSameBlockTrace
 
 /-!
 # Canonical LCA-close dispatchers on the charged chunked fringe route

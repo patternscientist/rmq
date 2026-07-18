@@ -118,7 +118,8 @@ segment 22 reused this layer rather than cloning it; that is the template.
 | # | Commit | Content | `lake build` |
 | --- | --- | --- | --- |
 | M0 | `6775e22` | frozen B6 matrix + worklog; no Lean changes | baseline `RMQ RMQPaper RMQExamples` exit 0 at `c0c32c4` |
-| M1 | (this commit) | `ChargedSameBlockChunks.lean`: charged Costed same-block leaf, literal cost bound, value equivalence, decoded rank-seed twins | `lake build RMQ` exit 0, 88.5 s |
+| M1 | `194c4e6` | `ChargedSameBlockChunks.lean`: charged Costed same-block leaf, literal cost bound, value equivalence, decoded rank-seed twins | `lake build RMQ` exit 0, 88.5 s |
+| M2 | (this commit) | `ChargedSameBlockTrace.lean`: seeded + decoded trace twins, full obligation suite, WithStore layer | `lake build RMQ` exit 0, 82.2 s |
 
 ## M1 — charged same-block leaf at the Costed layer
 
@@ -156,3 +157,41 @@ Delivered:
 No new table, segment, store region, payload component, or overhead term was
 introduced, so REQ-B6-04's store/erasure/capacity/o(n) obligations reduce to
 provenance only, as predicted at M0.
+
+## M2 — charged same-block leg at the trace layer
+
+New module
+`RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedSameBlockTrace.lean`
+(namespace `RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory`, matching
+the accepted trace twins).  `ChargedFringeWiring.lean` now imports it, so
+both new modules are live in the library build.
+
+Seeded layer, mirroring `bpChunkedLeft/RightFringeCandidateSeededTrace-
+ResultAtSegment` exactly:
+
+- `bpChunkedSameBlockCloseSeededTraceResultAtSegment(WithStore)` — the four
+  accepted window-word reads at segment `0`, then one chunk-table read per
+  visited chunk at `fringeSegment`, then `bpCandidateClose?`.
+- `_refines : toCosted = bpChunkedSameBlockCloseSeededCosted`.
+- `_trace_forall` — every event is a window read or a
+  `readWord fringeSegment address (table.store.words[address]?)` at an
+  in-range slot (`address < bpFringeChunkRowCount ...`).
+- `_matchesReadStore`, `_no_syntheticCostOnlyPrimitive`, and the WithStore
+  `_eq_of_agree`, `_store_parametric`, `_matchesReadStore`,
+  `_no_syntheticCostOnlyPrimitive`.
+
+Decoded layer:
+
+- `bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegment(WithStore)`
+  threading `localBPSeedFromRankCloseTraceResult` exactly as the accepted
+  decoded twin does, with `_refines`, `_eq_of_agree`, `_store_parametric`.
+
+The reads go to the SAME `bpFringeChunkTable` at the SAME segment the B2
+cross-block fringe already reads, so no new store region, payload component,
+capacity bound, or erasure obligation arises; the existing
+`SuccinctFinalStoreParam` `fringeChunkTable` agreement field already covers
+the supplied-store layer.
+
+`lake build RMQ` exit 0, 82.2 s.  Hygiene scan on the new module: no hits.
+
+Still NOT consumed by the route.  M3 (the atomic dispatcher swap) is next.
