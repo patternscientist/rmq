@@ -2470,3 +2470,41 @@ Publication-facing significance:
 The curated axiom inventories remain kernel-facing evidence. Making their gate
 transport reliable prevents an output-volume artifact from being confused with
 a proof-trust failure while preserving the same acceptance rule.
+
+## WDD-20260717-C05-001: Claude-runtime skill surfaces and worker mechanics
+
+Status: adopted under user authorization (2026-07-17); harmonize with the
+unmerged governance branch (`4a60853..5f59455`) at its merge.
+Scope: skill discovery, worker launch mechanics, blind-audit independence.
+
+Decision:
+
+1. `.claude/skills/rmq-{coordinator,proof-sprint,audit}/SKILL.md` are thin
+   Claude-runtime wrappers that defer to the canonical `.agents/skills`
+   packages. Canonical content lives only in `.agents/skills`; wrappers
+   carry runtime adaptations only. Preflight equivalence on this runtime:
+   wrapper present in the session catalog AND
+   `git diff <governance-ref> -- .agents/skills` empty.
+2. "Codex task" in canonical docs reads as "dedicated worker session or
+   background Agent with its own git worktree" on this runtime. Frozen
+   acceptance matrices are committed BEFORE implementation edits
+   (git-verifiable pre-registration; E1-01R3 lesson), and long campaigns
+   keep a committed worklog checkpoint per milestone so a successor session
+   resumes from commits alone.
+3. Blind audits prefer a different model family than the candidate's author.
+4. Coordinator completion of a mechanically-blocked worker's verification
+   and commit (M1-01R4 precedent, commit 947bde5) is permitted when the
+   worker's own plan is executed on an unchanged tree, every deviation is
+   logged with coordinator attribution, and acceptance remains separately
+   gated.
+
+Trigger and evidence: C05 session 2026-07-17 — structural preflight failure
+(`missing_from_runtime`, `governance_not_in_checkout_ancestry`) on the Claude
+runtime; E1-01R3 same-commit freeze finding; M1-01R4 credit-blocked
+completion. Rejected alternatives: duplicating skill content into
+`.claude/skills` (drift risk); waiting for Codex credits (runway waste);
+treating the preflight failure as a hard stop (defeats the user's explicit
+runtime-adaptation authorization).
+
+Publication-facing significance: none directly; this changes who/how workers
+launch, not what is proved or claimed.
