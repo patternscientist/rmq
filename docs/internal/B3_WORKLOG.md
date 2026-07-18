@@ -101,14 +101,25 @@ record; B3 milestones log here (recorded in DD-20260717-005).
       the canonical select-address bound
       `_trace_forall_of_honestRank` (under honest-rank-table agreement
       every select-segment read has `address < bpChunkSelectRowCount c`).
-- [ ] M4b leaf trace twins: chunked mirrors of
-      `GenericSelect.rankTraceResult` (:333), `selectTraceResult`
-      (:1779), `selectTraceResultRelabeled` (:1835),
-      `denseTwoWordSelectTraceResult`, directory trace, and the
-      `RAMStoreParam.lean` WithStore twins, wired over
-      `bpChunkedWordRank/SelectTrace...` with segment-layout extension
-      (`concreteBPNativeSelectCloseTraceSegmentLayout` + chunk/select
-      table segments).
+- [x] M4b `ChargedRankSelectLeafTrace.lean` (worker B3-02): raw-word
+      read atom `bpWordReadTraceResult` (+ agree/forall/matches/
+      no-synthetic/parametric), relative-offset atom
+      `bpRelativeOffsetReadTraceResultWithStore`, AtSegments-level
+      general select `_trace_forall` wrapper, and the four chunked leaf
+      trace twins —
+      `TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankTraceResultWithStore`
+      (3 direct sample/word `readWord`s + segment-parameterized chunk
+      fold; register presentation retired at these sites only,
+      DD-20260718-001),
+      `bpChunkedDenseTwoWordSelectTraceResultWithStore` (+ bounded
+      `_trace_forall_of_honestRank`),
+      `SparseExceptionDirectory.bpChunkedReadTraceResultWithStore`,
+      `SparseExceptionSelectData.bpChunkedSelectTraceResultWithStore`
+      (accepted super/local entry-table WithStore reads reused
+      verbatim) — each with `_toCosted_of_agree` (= the M3 chunked
+      Costed twin under per-segment agreement / entry-table pullbacks),
+      `_trace_forall`, `_matchesReadStore`,
+      `_no_syntheticCostOnlyPrimitive`, `_store_parametric`.
 - [ ] M5 atomic swap: route consumers + reviewer source 22 + payload/
       overhead + cost re-derivation + adequacy/provenance regeneration +
       vocabulary theorem + headline/validation/harness updates +
@@ -131,30 +142,16 @@ Delivered and committed, library green at every commit:
   parameterized segments with the full B2-style surface);
 - REQ-B3-13 docstring/comment fixes `fcd491e`.
 
-The successor (B3-02) resumes at M4b with everything below still to do;
-the Costed layer needs NO further work.
+The successor resumes at M5 with everything below still to do; the
+Costed layer (M3) and the trace layer (M4a word-level + M4b leaf twins in
+`ChargedRankSelectLeafTrace.lean`) need NO further work.  M4b agreement
+hypotheses are shaped for the canonical store: per-address agreements at
+the layout segments (rank samples at `rankBase`/`+1`/`+2`, relatives,
+bit words, chunk table, select table) plus the existing entry-table
+pullback equalities; discharge them from
+`concreteBPNativeSuccinctRMQGlobalReadStore` simp facts at M5.
 
-1. M4b leaf trace twins (parallel, additive): chunked mirrors of the
-   accepted trace evaluators in `GenericSelect/RAM.lean` —
-   `rankTraceResult` (:333, built on `NatProgram.twoLevelSampledRank`,
-   emits the 1 `wordRank`), `selectTraceResult` (:1779),
-   `selectTraceResultRelabeled` (:1835, house layout
-   `concreteBPNativeSelectCloseTraceSegmentLayout`),
-   `denseTwoWordSelectTraceResult`, the directory trace, and the
-   `RAMStoreParam.lean` WithStore twins (:162/:972) — replacing the
-   `wordRank`/`wordSelect` emissions with
-   `bpChunkedWordRankTraceResultAtSegmentWithStore` /
-   `bpChunkedWordSelectTraceResultAtSegmentsWithStore` at layout-extended
-   segments (fringe chunk table = global segment 21 for the rank reads,
-   select table = the NEW global segment 22).  The three sample/word
-   reads of each rank seed stay as their existing readWord emissions
-   (split the `twoLevelSampledRank` instruction into its three
-   `readWord`s + the segment-21 fold; `bpChunkReadTraceResult` can carry
-   the sample reads too if the register-program presentation is retired
-   at these five sites only).  Surface per twin: `_refines` (toCosted =
-   the M3 chunked Costed twin), `_trace_forall`, `_matchesReadStore`,
-   `_no_syntheticCostOnlyPrimitive`, `_eq_of_agree`, `_store_parametric`.
-2. M5 atomic swap commit (C05 coupling; mirror B2-02 M9 and
+1. M5 atomic swap commit (C05 coupling; mirror B2-02 M9 and
    DD-20260717-004 exactly):
    - route consumers `concreteBPNativeRankCloseInterpretedCosted` (:30),
      `concreteBPNativeSelectCloseInterpretedCosted` (:23) := the chunked
@@ -195,7 +192,7 @@ the Costed layer needs NO further work.
      shaped); suggested name
      `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult_readWord_only`
      + headline abbrev.
-3. M6 final battery per the delegation prompt (mutex
+2. M6 final battery per the delegation prompt (mutex
    `Global\RMQHeavyVerification` for anything > 5 min; full battery at
    the candidate tree; `git rev-parse` the base for
    `design_decision_check.ps1 -Strict -Base
@@ -242,3 +239,20 @@ the Costed layer needs NO further work.
   `paper_topology_lint.ps1` and the cost harness were NOT run at this
   checkpoint (public theorem surface untouched by B3-01; they are M6
   candidate-tree obligations).
+- M4b (worker B3-02):
+  `lake env lean .../ChargedRankSelectLeafTrace.lean` exit 0 after
+  3 iterations (~2 min each).  Toolchain notes for the successor:
+  (a) after `cases` on a funext-bound `Option` variable, the
+  surrounding `match`/`ite` stays iota-unreduced in goals WITHOUT a
+  `.toCosted` head — insert `dsimp only` before any `rw [if_pos ...]`
+  or fold-lemma rewrite (the `_toCosted_of_agree` proofs did not need
+  it, every `_store_parametric` and the select `_trace_forall` did);
+  (b) `set_option ... in` must precede the doc comment, not sit
+  between `-/` and `def`; (c) the accepted-style
+  `simp [...] at hmem` membership destructuring does NOT work on
+  prefix-form `List.Mem` hypotheses (M4a ledger note confirmed) — the
+  select twin's `_trace_forall` uses the bind_trace_forall +
+  `cases hval : (...).value` + `dsimp only` script instead.
+  `lake build RMQ` exit 0, 14.8 s incremental (214 jobs, module
+  registered in `RMQ.lean`, mutex held); hygiene rg no hits over the
+  touched files; `git diff --check` clean.

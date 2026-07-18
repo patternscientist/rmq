@@ -2788,3 +2788,80 @@ Follow-up: swap-milestone entry (segment 22 placement, cost re-derivation,
 vocabulary theorem naming) at M5, following the DD-20260717-004 pattern.
 
 Supersedes: none (extends DD-20260717-002/-004 to the rank/select leaves).
+
+## DD-20260718-001: Leaf trace twins retire the register-program presentation at the recharged sites (B3 M4b)
+
+Status: Proposed
+Date: 2026-07-18
+Scope: B3 rung (worker B3-02, branch `claude/b1-b2-charged-fringe-tables`):
+new module
+`RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedRankSelectLeafTrace.lean`
+(parallel layer; accepted evaluators untouched).
+
+Decision:
+
+1. The chunked leaf trace twins are store-parametric (`WithStore`) direct
+   read-atom evaluators, not relabeled register programs: each accepted
+   sample/word read is one `readWord segment slot` event of the supplied
+   store emitted by `bpChunkReadTraceResult` (decoded table read) or the
+   new `bpWordReadTraceResult` (raw packed-word read), followed by the
+   M4a chunk folds at the caller's chunk/select-table segments.  The
+   `NatProgram.twoLevelSampledRank` register presentation is retired at
+   exactly the five recharged sites (the option B3-01 recorded in the
+   worklog); the instruction itself and every legacy consumer stay
+   defined and untouched (REQ-B3-04).
+2. Segment parameterization: the rank-seed twin takes four explicit
+   segments (`superSegment blockSegment wordSegment chunkSegment`); the
+   directory and select twins consume the accepted
+   `SparseExceptionDirectoryTraceSegmentBases` /
+   `SparseExceptionSelectTraceSegmentLayout` records (rank sample
+   segments = `rankBase`, `rankBase + 1`, `rankBase + 2`, matching the
+   accepted `tripleSegmentMap` images) plus `chunkSegment` and
+   `selectTableSegment` arguments, so the M5 instantiation is the house
+   layout extended by the global chunk segment 21 and the new select
+   segment 22 with no relabeling step.
+3. The unchanged four-field super/local entry-table reads reuse the
+   accepted `readTraceResultRelabeledWithStore` evaluators verbatim (no
+   sibling read path); their refinement chains through the existing
+   `_eq_of_pullback` + `_refines_interpretedCosted` +
+   `readInterpretedCosted_refines_readCosted` lemmas.
+4. The dense twin keeps the `bitWords` parameter as the statement-level
+   name of the counted component store (its word segment must agree with
+   `bitWords.store.words` in every refinement lemma) even though the
+   executed reads are genuine reads of the supplied store; the unused
+   binder is linter-silenced at the definition only.
+
+Options considered:
+
+- Relabeled register programs (`ofNatProgramWithStore` +
+  `tripleSegmentMap`, the accepted presentation): rejected for the
+  recharged sites — the register instruction emits the `wordRank` event
+  the B3 mission removes, so the twin would need a new instruction
+  anyway; direct atoms make `_matchesReadStore` and the vocabulary
+  induction definitionally `readWord`-shaped.
+- A new register instruction (`twoLevelChunkedRank`): rejected — it
+  would extend the `Program`/`NatProgram` universe (public-surface
+  churn) for zero proof gain; the data-dependent chunk addressing is
+  exactly what `bpChunkReadTraceResult` already generalizes.
+- Re-implementing the four-field entry-table reads as direct atoms:
+  rejected — those reads are not recharged by B3; reusing the accepted
+  evaluators keeps the super/local read paths literally identical to the
+  accepted route (no sibling).
+
+Rationale: every event of every twin is a genuine `readWord` of the
+supplied store, so the REQ-B3-10 vocabulary theorem becomes a uniform
+`_trace_forall` instance; refinement (`_toCosted_of_agree`) lands on the
+M3 Costed twins under agreement hypotheses that the canonical global
+store discharges segment-by-segment.
+
+Consequences: M5 wires the route trace twins to these evaluators at the
+house layout + segments 21/22 and discharges the agreement hypotheses
+from `concreteBPNativeSuccinctRMQGlobalReadStore` facts; the
+`_store_parametric` surface feeds the StoreParam determinism layer.
+
+Evidence: `ChargedRankSelectLeafTrace.lean` (this commit), ledger entry
+M4b in `B3_WORKLOG.md`.
+
+Follow-up: none beyond the M5 entry already queued by DD-20260717-005.
+
+Supersedes: none (implements the M4b plan of DD-20260717-005).
