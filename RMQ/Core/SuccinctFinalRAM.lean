@@ -9540,7 +9540,7 @@ Canonical construction-facing two-sided profile for the accepted reviewer
 payload and execution.  The space clause counts exactly the payload erased by
 the physical reviewer words, while every query clause names the canonical
 global trace whose non-synthetic certificate weight equals its `Costed.cost`
-and is bounded by `76`.
+and is bounded by `142`.
 
 The numeric lower comparisons are space envelopes.  The query bound remains
 scoped to the explicit charged-trace model; this theorem does not charge

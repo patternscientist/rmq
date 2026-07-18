@@ -24,7 +24,7 @@ Canonical construction-facing capstone. Its checked type combines the
 canonical reviewer payload bound and physical erasure with the exact canonical
 global execution, direct positional backing in the physical reviewer words for
 every successful payload read, both non-synthetic-weight equalities (to trace
-length and `Costed.cost`), the literal uniform bound `76`, exact RMQ answers,
+length and `Costed.cost`), the literal uniform bound `142`, exact RMQ answers,
 and the doubled-Catalan space envelopes.
 -/
 abbrev succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile :=

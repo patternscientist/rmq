@@ -277,6 +277,11 @@ def concreteBPNativeSuccinctRMQFlatPayloadSegmentSource? :
   | 18 => some .finalRankBlockFalse
   | 19 => some .finalRankBPCodeAlias
   | 20 => some .closeSummaryBaseline
+  -- NOTE: this legacy flat-payload map is a DIFFERENT segment-numbering
+  -- universe from the canonical reviewer/global trace store: there,
+  -- segment 21 is the charged fringe chunk table
+  -- (`ReviewerSource.fringeChunkTable`, B2 wiring), not a close-summary
+  -- component.
   | 21 => some .closeSummaryMinRel
   | 22 => some .closeSummaryMaxRel
   | 23 => some .closeSummaryArgOffset
