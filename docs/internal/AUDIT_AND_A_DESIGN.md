@@ -764,3 +764,58 @@ the arm is reachable on the accepted route, not legacy.
 **Still open until the swap lands:** the charge-policy claim at
 `docs/PAPER_MODEL_ADEQUACY.md:139-153` remains false; B6-01 correctly declined
 to repair prose ahead of the code.
+
+## 2026-07-18 (C05 round 7) — B6 reconstructed clean; charge-policy alarm adjudicated ✅
+
+**B6 reconstruction of `bacd41b` (range `c0c32c4..bacd41b`): PROCEED.** All ten
+checks confirmed. Freeze byte-identical across 20 rows with the REQ-B6-05
+literal prediction PRE-REGISTERED in the freeze commit and later borne out.
+The silent scan is genuinely gone from every reachable path (all surviving
+callers classified legacy/compat, none reachable from the whole-query object).
+207 re-derives from the untouched named algebra; `queryCost_eq` transports it
+and that file is not even in the delta. Vocabulary theorem necessarily
+re-elaborated against the amended dispatcher. W19 witness universally
+quantified with a genuine successful read. Corruption witness targets the
+returned close with the slot proven in the footprint. Zero removed
+declarations; zero forbidden tokens.
+
+**Non-blocking repairs queued:** (1) INV-ALL-SIZE evidence column over-claims
+"no size hypothesis" for equivalence theorems — cite
+`bpChunkedSameBlockCloseDecodedCostedWithRankSeed_value_eq_of_query`, which
+discharges the three hypotheses from purely query-side facts, and narrow the
+phrasing to the cost lemmas; (2) note the `ReviewerProducerReadPath` widening
+(new `lcaSameBlock` constructor, no elimination sites) under REQ-B6-04 — the
+reverse-liveness statement is unchanged but marginally weaker; (3) tighten the
+"no event-silent computation left" sentence; (4) **naming repair, highest
+value for future auditors:** the legacy `concreteBPNativeLCACloseGlobalWord
+TraceResult` and the accepted `...AllSizeStructural` differ by one suffix and
+sit 60 lines apart — apply the existing `Legacy` convention.
+
+**Charge-policy alarm ADJUDICATED — audit verdict too strong.** A parallel
+audit reported the select-close guard `if idx < occurrenceCount bits target`
+as an undisclosed Theta(n) event-silent computation. Coordinator-verified at
+source: the bridge is ALREADY CHECKED in-tree —
+`GenericSelect.falseSelectOccurrenceCount_eq` (`BPCompat.lean:21`, `rfl`) and
+`falseSelectOccurrenceCount_eq_size` (`SlotBasics.lean:35-38`, via
+`SuccinctSpace.bpCode_rankFalse_full`) give
+`occurrenceCount shape.bpCode false = shape.size`. The guard is therefore
+`idx < shape.size`, a comparison against an input parameter.
+
+**Principle recorded (paper-facing, use it consistently):** a Lean-level list
+traversal is a REPRESENTATION ARTIFACT when its value is checked-equal to an
+input parameter or to a charged read (`occurrenceCount` -> `shape.size`;
+`localBPWindowBits` -> the four charged word reads via
+`localBPWindowBits_eq_flatten_localBPBlockWordsRead`; `queryOccurrence`,
+`queryPos`, `machineWordBits`). It is ALGORITHMIC WORK requiring a charge when
+it computes the ANSWER by traversing data (the B2 fringe scan, the B6
+same-block scan). The doc must state this distinction and enumerate the
+artifacts with their bridge lemmas rather than asserting an absolute.
+Folded into E1-R4j's M7 doc work.
+
+**Non-issue dismissed:** the `selectClose := 13` sightings are the FROZEN
+historical algebras (76/142); the current algebra uses `selectClose := 35`
+(`SuccinctFinalRAM.lean:8808`), consistent with 207.
+
+**E1 cleared to proceed** on `bacd41b` under three conditions relayed to the
+worker: target the post-B6 trace; name the accepted `...AllSizeStructural`
+object explicitly (suffix footgun); rely on 207 unchanged.
