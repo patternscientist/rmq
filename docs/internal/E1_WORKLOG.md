@@ -368,6 +368,37 @@ coordinator-reconstructed). Contract: E1-R4 delegation prompt; frozen matrix
 - Verification at this commit: standalone `lake env lean` exit 0 (no
   warnings); `lake build RMQ` green; hygiene rg clean.
 
+## M3c-4a: TRUE-target rank block (`E1RankTrueBlock.lean`)
+
+- New module `RMQ/Core/WordRAM/E1RankTrueBlock.lean` (wired into
+  `RMQ.lean`): mechanical clone of `E1RankBlock` for the TRUE-target
+  seeded component `d.bpChunkedRankTraceResultWithStore store G (G+1)
+  (G+2) (G+4) c TRUE pos` (select-close long/sparse legs).  Deltas
+  exactly as planned: shared segments re-used (NOT cloned) from
+  `E1RankBlock` (`rankSeg1/2/3`, `rankSegInit`, `rankSegFin`,
+  `rankMissSeg`, head/tail cats, register bank); new 23-instr
+  `rankTrueLoopBody` (false body minus `.sub rA rT rA`; decode ends at
+  `/2` per `bpChunkRankOfEntry_true_eq`); 59-instr `rankTrueCloseBlock`
+  (loop B+30..52, back edge B+53, epilogue B+54..56, exit jump B+57 ->
+  B+59, miss B+58); 24-long `rankTrueLoopPassCats`; derived
+  `rankTrueCloseHitCats_length : 34 + 24 * count`.  Theorems:
+  `rankTrueCloseBlock_hosting`, `rankTrueCloseBlock_prologue_runsTo`,
+  `rankTrueLoopFold_runsTo` (stated at a GENERIC loop base `LB` so the
+  select legs can host the fold anywhere; ends `LB+24`),
+  `rankTrueCloseBlock_runsTo_hit` (receipts positionally equal to the
+  component trace, value in `rVal`, frozen cats, outside-bank
+  preservation), width certificate `rankTrueCloseBlock_fits`
+  (constructor-exhaustive, 59 arms, branch targets `B+30/B+58/B+59`).
+- Technique delta discovered: with a generic loop base the invariant's
+  pc equation `hpc : pc = LB` has a BARE-VARIABLE RHS, and `subst hpc`
+  eliminates `LB` (not `pc`), breaking later explicit `LB` references —
+  use `subst pc` to force the direction.  (The false block never hit
+  this because its RHS `B + 30` is not a variable.)
+- Verification at this commit: standalone `lake env lean` exit 0 (no
+  warnings); `lake build RMQ` green (only the pre-existing
+  `SuccinctFinalRAM`/reachability simp-arg warnings listed in
+  REQ-E1-09).
+
 ## RESUME POINT (next session: select-close legs onward)
 
 NEW in this session (commits `69b39a9`, `dae5fa6`, `691f7c0`, + this
