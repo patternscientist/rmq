@@ -5,11 +5,15 @@ import RMQ.Core.WordRAM.E1RankBlock
 
 Mechanical clone of `E1RankBlock.lean` for the TRUE-target seeded rank
 component
-`(data).bpChunkedRankTraceResultWithStore store G (G+1) (G+2) (G+4) c TRUE
+`(data).bpChunkedRankTraceResultWithStore store G (G+1) (G+2) S c TRUE
 pos` — consumed twice by the select-close leg (long-flag seeds at
-`layout.longFlagRankBase..+2`; sparse leg via
-`sparseDirectory.bpChunkedReadTraceResultWithStore`, both at chunk segment
-21).  Deltas vs the false block (worklog RESUME step 1):
+`layout.longFlagRankBase = 9..11`; sparse leg seeds at
+`layout.sparseDirectory.rankBase = 13..15` via
+`sparseDirectory.bpChunkedReadTraceResultWithStore`; BOTH at chunk
+segment 21).  Unlike the false block (rank-close: seeds 17..19, chunk
+21 = 17+4), the select legs' chunk segment is NOT `seeds + 4`, so the
+chunk-table segment `S` is an independent parameter here.  Deltas vs the
+false block (worklog RESUME step 1):
 
 * the loop body drops the final `.sub rA rT rA` flip — the true-target
   in-chunk decode ends at the `/2` division per `bpChunkRankOfEntry_true_eq`
@@ -40,7 +44,7 @@ open RMQ.SuccinctClose
 /-- Loop body (one chunk visit) for the TRUE target, without the back-edge
 branch: the false body with the final `t -` flip dropped
 (`bpChunkRankOfEntry_true_eq`). -/
-def rankTrueLoopBody (G c : Nat) : List Instr :=
+def rankTrueLoopBody (S c : Nat) : List Instr :=
   [ .sub rA rE rJC
   , .sub rB rC rA
   , .sub rT rC rB
@@ -52,7 +56,7 @@ def rankTrueLoopBody (G c : Nat) : List Instr :=
   , .add rA rA rT
   , .mulConst rA rA (c + 1)
   , .add rSlot rA rT
-  , .readMem rA (G + 4) rSlot
+  , .readMem rA S rSlot
   , .sub rA rA rOne
   , .divConst rA rA (c + 1)
   , .divConst rB rA (2 * c + 2)
@@ -65,8 +69,8 @@ def rankTrueLoopBody (G c : Nat) : List Instr :=
   , .add rJC rJC rC
   , .sub rK rK rOne ]
 
-@[simp] theorem rankTrueLoopBody_length (G c : Nat) :
-    (rankTrueLoopBody G c).length = 23 := rfl
+@[simp] theorem rankTrueLoopBody_length (S c : Nat) :
+    (rankTrueLoopBody S c).length = 23 := rfl
 
 /--
 The TRUE-target rank component block at block base `B`, seed segment base
@@ -76,7 +80,7 @@ The TRUE-target rank component block at block base `B`, seed segment base
 epilogue `B+54..56`, exit jump at `B+57` (target `B+59`), miss exit
 `B+58`.
 -/
-def rankTrueCloseBlock (B G c L WS BPS : Nat) : List Instr :=
+def rankTrueCloseBlock (B G S c L WS BPS : Nat) : List Instr :=
   rankSeg1 G c L WS BPS ++
     ([Instr.brNZ rA (B + 58)] ++
       (rankSeg2 ++
@@ -84,13 +88,13 @@ def rankTrueCloseBlock (B G c L WS BPS : Nat) : List Instr :=
           (rankSeg3 ++
             ([Instr.brNZ rA (B + 58)] ++
               (rankSegInit c ++
-                (rankTrueLoopBody G c ++
+                (rankTrueLoopBody S c ++
                   ([Instr.brNZ rK (B + 30)] ++
                     (rankSegFin ++
                       ([Instr.brNZ rA (B + 59)] ++ rankMissSeg))))))))))
 
-@[simp] theorem rankTrueCloseBlock_length (B G c L WS BPS : Nat) :
-    (rankTrueCloseBlock B G c L WS BPS).length = 59 := rfl
+@[simp] theorem rankTrueCloseBlock_length (B G S c L WS BPS : Nat) :
+    (rankTrueCloseBlock B G S c L WS BPS).length = 59 := rfl
 
 /-! ## Frozen category logs -/
 
@@ -125,8 +129,8 @@ theorem rankTrueCloseHitCats_length (count : Nat) :
 /-- Peel the block's hosting fact into per-segment hosting facts and
 per-branch fetch facts (all bases literal offsets from `B`). -/
 theorem rankTrueCloseBlock_hosting {program : E1Machine.Program}
-    {B G c L WS BPS : Nat}
-    (hhost : HostedAt program B (rankTrueCloseBlock B G c L WS BPS)) :
+    {B G S c L WS BPS : Nat}
+    (hhost : HostedAt program B (rankTrueCloseBlock B G S c L WS BPS)) :
     HostedAt program B (rankSeg1 G c L WS BPS) ∧
     program[B + 15]? = some (.brNZ rA (B + 58)) ∧
     HostedAt program (B + 16) rankSeg2 ∧
@@ -134,7 +138,7 @@ theorem rankTrueCloseBlock_hosting {program : E1Machine.Program}
     HostedAt program (B + 18) rankSeg3 ∧
     program[B + 19]? = some (.brNZ rA (B + 58)) ∧
     HostedAt program (B + 20) (rankSegInit c) ∧
-    HostedAt program (B + 30) (rankTrueLoopBody G c) ∧
+    HostedAt program (B + 30) (rankTrueLoopBody S c) ∧
     program[B + 53]? = some (.brNZ rK (B + 30)) ∧
     HostedAt program (B + 54) rankSegFin ∧
     program[B + 57]? = some (.brNZ rA (B + 59)) ∧
@@ -166,8 +170,8 @@ theorem rankTrueCloseBlock_hosting {program : E1Machine.Program}
 
 /-! ## Straightness certificate -/
 
-theorem rankTrueLoopBody_straight (G c : Nat) :
-    forall instr, instr ∈ rankTrueLoopBody G c ->
+theorem rankTrueLoopBody_straight (S c : Nat) :
+    forall instr, instr ∈ rankTrueLoopBody S c ->
       instr.isStraight = true := by
   intro instr hi
   simp only [rankTrueLoopBody, List.mem_cons, List.not_mem_nil,
@@ -202,7 +206,7 @@ theorem rankTrueCloseBlock_prologue_runsTo
     {bits : List Bool} {so bo qc : Nat}
     (d : SuccinctRank.TwoLevelPayloadLiveStoredWordRankData bits so bo qc)
     (hhost : HostedAt program B
-      (rankTrueCloseBlock B G c bits.length d.wordSize d.blocksPerSuper))
+      (rankTrueCloseBlock B G S c bits.length d.wordSize d.blocksPerSuper))
     (regs0 : RegFile) {superWord deltaWord w : List Bool}
     (hsuper : store.readWord? G (d.superIndex (regs0 rPos)) = some superWord)
     (hblock :
@@ -454,8 +458,8 @@ accumulator in `rVal`.  Registers outside the loop's write set (notably
 the decoded samples in `rSup`/`rBlk`) are preserved.
 -/
 theorem rankTrueLoopFold_runsTo
-    (store : ReadStore) {program : E1Machine.Program} {LB G c : Nat}
-    (hLoop : HostedAt program LB (rankTrueLoopBody G c))
+    (store : ReadStore) {program : E1Machine.Program} {LB S c : Nat}
+    (hLoop : HostedAt program LB (rankTrueLoopBody S c))
     (hbrL : program[LB + 23]? = some (.brNZ rK LB))
     (w : List Bool) (e : Nat) (regsL : RegFile)
     (hOne : regsL rOne = 1) (hC : regsL rC = c) (hE : regsL rE = e)
@@ -465,10 +469,10 @@ theorem rankTrueLoopFold_runsTo
     ∃ regs6 : RegFile,
       RunsTo store program ⟨regsL, LB, false⟩ ⟨regs6, LB + 24, false⟩
         ((List.range (bpWordChunkCount c e)).map
-          (fun j => bpWordRankChunkEventAt store (G + 4) c w e j))
+          (fun j => bpWordRankChunkEventAt store S c w e j))
         (iterLog (fun _ => rankTrueLoopPassCats) (bpWordChunkCount c e)) ∧
       regs6 rVal =
-        bpWordRankAccAt store (G + 4) c true w e (bpWordChunkCount c e) ∧
+        bpWordRankAccAt store S c true w e (bpWordChunkCount c e) ∧
       (forall r, r <= 8 ∨ r = 14 ∨ r = 15 ∨ 28 <= r ->
         regs6 r = regsL r) := by
   have hcpos : 1 <= bpWordChunkCount c e := by
@@ -484,13 +488,13 @@ theorem rankTrueLoopFold_runsTo
     s.regs rR = SuccinctSpace.bitsToNatLE w / 2 ^ ((count - k) * c) ∧
     s.regs rJC = (count - k) * c ∧
     s.regs rVal =
-      bpWordRankAccAt store (G + 4) c true w e (count - k) ∧
+      bpWordRankAccAt store S c true w e (count - k) ∧
     s.regs rK = k ∧
     (forall r, r <= 8 ∨ r = 14 ∨ r = 15 ∨ 28 <= r ->
       s.regs r = regsL r)
   have hstep : forall k s, P (k + 1) s ->
       ∃ s', RunsTo store program s s'
-          [bpWordRankChunkEventAt store (G + 4) c w e (count - (k + 1))]
+          [bpWordRankChunkEventAt store S c w e (count - (k + 1))]
           rankTrueLoopPassCats ∧ P k s' := by
     intro k s hP
     obtain ⟨regs, pc, halted⟩ := s
@@ -503,14 +507,14 @@ theorem rankTrueLoopFold_runsTo
     subst pc
     have hik : count - k = (count - (k + 1)) + 1 := by omega
     -- body straight run
-    have hbody := RunsTo.straight store (rankTrueLoopBody G c)
-      (rankTrueLoopBody_straight G c) LB hLoop regs
+    have hbody := RunsTo.straight store (rankTrueLoopBody S c)
+      (rankTrueLoopBody_straight S c) LB hLoop regs
     obtain ⟨regsB, hregsB⟩ :
-        ∃ x, straightRegs store (rankTrueLoopBody G c) regs = x := ⟨_, rfl⟩
+        ∃ x, straightRegs store (rankTrueLoopBody S c) regs = x := ⟨_, rfl⟩
     rw [hregsB] at hbody
     -- receipts of one pass
-    have hreadsB : straightReads store (rankTrueLoopBody G c) regs =
-        [bpWordRankChunkEventAt store (G + 4) c w e (count - (k + 1))] := by
+    have hreadsB : straightReads store (rankTrueLoopBody S c) regs =
+        [bpWordRankChunkEventAt store S c w e (count - (k + 1))] := by
       regs_eval <;>
         simp [hc, he, hjc, hr, bpWordRankChunkEventAt,
           bpWordRankChunkSlotAt, bpFringeChunkSlot,
@@ -558,7 +562,7 @@ theorem rankTrueLoopFold_runsTo
       regs_eval <;> simp [hjc, hc]
       rw [Nat.succ_mul]
     have hBVal : regsB rVal =
-        bpWordRankAccAt store (G + 4) c true w e (count - k) := by
+        bpWordRankAccAt store S c true w e (count - k) := by
       rw [<- hregsB, hik]
       regs_eval <;>
         simp [hval, hone, hc, he, hjc, hr, bpWordRankAccAt,
@@ -612,7 +616,7 @@ theorem rankTrueLoopFold_runsTo
     · simp [Nat.sub_self, hVal, bpWordRankAccAt]
   obtain ⟨sEnd, hloopRun, hPEnd⟩ :=
     RunsTo.iterate P
-      (fun k => [bpWordRankChunkEventAt store (G + 4) c w e
+      (fun k => [bpWordRankChunkEventAt store S c w e
         (count - (k + 1))])
       (fun _ => rankTrueLoopPassCats) hstep count ⟨regsL, LB, false⟩ hstart
   obtain ⟨regsE, pcE, haltE⟩ := sEnd
@@ -623,13 +627,13 @@ theorem rankTrueLoopFold_runsTo
   subst hEpc
   -- receipts in ascending chunk order
   have hreadsIter :
-      iterLog (fun k => [bpWordRankChunkEventAt store (G + 4) c w e
+      iterLog (fun k => [bpWordRankChunkEventAt store S c w e
         (count - (k + 1))]) count =
       (List.range count).map
-        (fun j => bpWordRankChunkEventAt store (G + 4) c w e j) := by
-    have h1 : iterLog (fun k => [bpWordRankChunkEventAt store (G + 4) c
+        (fun j => bpWordRankChunkEventAt store S c w e j) := by
+    have h1 : iterLog (fun k => [bpWordRankChunkEventAt store S c
         w e (count - (k + 1))]) count =
-        iterLog (fun k => [bpWordRankChunkEventAt store (G + 4) c w e
+        iterLog (fun k => [bpWordRankChunkEventAt store S c w e
           (0 + (count - (k + 1)))]) count := by
       apply iterLog_congr
       intro kk _
@@ -661,7 +665,7 @@ theorem rankTrueCloseBlock_runsTo_hit
     {bits : List Bool} {so bo qc : Nat}
     (d : SuccinctRank.TwoLevelPayloadLiveStoredWordRankData bits so bo qc)
     (hhost : HostedAt program B
-      (rankTrueCloseBlock B G c bits.length d.wordSize d.blocksPerSuper))
+      (rankTrueCloseBlock B G S c bits.length d.wordSize d.blocksPerSuper))
     (regs0 : RegFile) {superWord deltaWord w : List Bool}
     (hsuper : store.readWord? G (d.superIndex (regs0 rPos)) = some superWord)
     (hblock :
@@ -671,12 +675,12 @@ theorem rankTrueCloseBlock_runsTo_hit
     ∃ regsF : RegFile,
       RunsTo store program ⟨regs0, B, false⟩ ⟨regsF, B + 59, false⟩
         (d.bpChunkedRankTraceResultWithStore store G (G + 1) (G + 2)
-          (G + 4) c true (regs0 rPos)).trace
+          S c true (regs0 rPos)).trace
         (rankTrueCloseHitCats
           (bpWordChunkCount c (d.wordOffset (regs0 rPos)))) ∧
       regsF rVal =
         (d.bpChunkedRankTraceResultWithStore store G (G + 1) (G + 2)
-          (G + 4) c true (regs0 rPos)).value ∧
+          S c true (regs0 rPos)).value ∧
       (forall r, r <= 8 ∨ 28 <= r -> regsF r = regs0 r) := by
   obtain ⟨_, _, _, _, _, _, _, hLoop, hbrL, hFin, hbr4, _⟩ :=
     rankTrueCloseBlock_hosting hhost
@@ -707,7 +711,7 @@ theorem rankTrueCloseBlock_runsTo_hit
     regs_eval
   rw [hreadsFin] at hrunFin
   have h7Val : regs7 rVal =
-      bpWordRankAccAt store (G + 4) c true w
+      bpWordRankAccAt store S c true w
           (d.wordOffset (regs0 rPos))
           (bpWordChunkCount c (d.wordOffset (regs0 rPos))) +
         SuccinctSpace.bitsToNatLE superWord +
@@ -735,19 +739,19 @@ theorem rankTrueCloseBlock_runsTo_hit
   have hall := ((hpro.trans hloop).trans hrunFin).trans hbr4run
   -- component trace and value, unfolded on the hit path
   have hfoldVal :
-      (bpChunkedWordRankTraceFromWithStore store (G + 4) c true w
+      (bpChunkedWordRankTraceFromWithStore store S c true w
           (d.wordOffset (regs0 rPos)) 0
           (bpWordChunkCount c (d.wordOffset (regs0 rPos))) 0).value =
-        bpWordRankAccAt store (G + 4) c true w
+        bpWordRankAccAt store S c true w
           (d.wordOffset (regs0 rPos))
           (bpWordChunkCount c (d.wordOffset (regs0 rPos))) := by
     have h := bpChunkedWordRankTraceFromWithStore_value_accAt store
-      (G + 4) c true w (d.wordOffset (regs0 rPos))
+      S c true w (d.wordOffset (regs0 rPos))
       (bpWordChunkCount c (d.wordOffset (regs0 rPos))) 0
     simpa [bpWordRankAccAt] using h
   have hcompTrace :
       (d.bpChunkedRankTraceResultWithStore store G (G + 1) (G + 2)
-          (G + 4) c true (regs0 rPos)).trace =
+          S c true (regs0 rPos)).trace =
         [ TraceEvent.readWord G (d.superIndex (regs0 rPos))
             (some superWord)
         , TraceEvent.readWord (G + 1) (d.wordIndex (regs0 rPos))
@@ -755,7 +759,7 @@ theorem rankTrueCloseBlock_runsTo_hit
         , TraceEvent.readWord (G + 2) (d.wordIndex (regs0 rPos))
             (some w) ] ++
         (List.range (bpWordChunkCount c (d.wordOffset (regs0 rPos)))).map
-          (fun j => bpWordRankChunkEventAt store (G + 4) c w
+          (fun j => bpWordRankChunkEventAt store S c w
             (d.wordOffset (regs0 rPos)) j) := by
     simp [SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankTraceResultWithStore,
       TraceResult.bind, TraceResult.map, TraceResult.pure,
@@ -766,10 +770,10 @@ theorem rankTrueCloseBlock_runsTo_hit
       hsuper, hblock, hword]
   have hcompVal :
       (d.bpChunkedRankTraceResultWithStore store G (G + 1) (G + 2)
-          (G + 4) c true (regs0 rPos)).value =
+          S c true (regs0 rPos)).value =
         SuccinctSpace.bitsToNatLE superWord +
           SuccinctSpace.bitsToNatLE deltaWord +
-          bpWordRankAccAt store (G + 4) c true w
+          bpWordRankAccAt store S c true w
             (d.wordOffset (regs0 rPos))
             (bpWordChunkCount c (d.wordOffset (regs0 rPos))) := by
     simp [SuccinctRank.TwoLevelPayloadLiveStoredWordRankData.bpChunkedRankTraceResultWithStore,
@@ -801,7 +805,7 @@ theorem rankTrueCloseBlock_runsTo_hit
              (some w) ] ++
           (List.range (bpWordChunkCount c
             (d.wordOffset (regs0 rPos)))).map
-            (fun j => bpWordRankChunkEventAt store (G + 4) c w
+            (fun j => bpWordRankChunkEventAt store S c w
               (d.wordOffset (regs0 rPos)) j)) =
         (([ TraceEvent.readWord G (d.superIndex (regs0 rPos))
               (some superWord)
@@ -811,7 +815,7 @@ theorem rankTrueCloseBlock_runsTo_hit
               (some w) ] ++
           (List.range (bpWordChunkCount c
             (d.wordOffset (regs0 rPos)))).map
-            (fun j => bpWordRankChunkEventAt store (G + 4) c w
+            (fun j => bpWordRankChunkEventAt store S c w
               (d.wordOffset (regs0 rPos)) j)) ++ []) ++ [] := by
       simp
     rw [hreads]
@@ -824,21 +828,22 @@ theorem rankTrueCloseBlock_runsTo_hit
 /--
 Constructor-exhaustive width certificate for the TRUE-target rank block:
 every encoded field — register identifiers (bank `8..27`), seed segments
-`G..G+4`, the immediates `0`/`1`/`8`/`L`, the multiplier/divisor
-constants `WS`/`BPS`/`2^c`/`c+1`/`2*c+2`/`2`, and the branch targets
-`B+30`/`B+58`/`B+59` — fits the modeled width `w`, with the variable
-divisors `c`/`WS`/`BPS` positive (`2^c`, `c+1`, `2*c+2`, `2` are
-positive outright; the route discharges `0 < c` by
+`G..G+2`, the chunk-table segment `S`, the immediates `0`/`1`/`8`/`L`,
+the multiplier/divisor constants `WS`/`BPS`/`2^c`/`c+1`/`2*c+2`/`2`, and
+the branch targets `B+30`/`B+58`/`B+59` — fits the modeled width `w`,
+with the variable divisors `c`/`WS`/`BPS` positive (`2^c`, `c+1`,
+`2*c+2`, `2` are positive outright; the route discharges `0 < c` by
 `bpFringeChunkBits_pos`).
 -/
-theorem rankTrueCloseBlock_fits {w B G c L WS BPS : Nat}
-    (hreg : 28 ≤ 2 ^ w) (hG : G + 4 < 2 ^ w) (hL : L < 2 ^ w)
+theorem rankTrueCloseBlock_fits {w B G S c L WS BPS : Nat}
+    (hreg : 28 ≤ 2 ^ w) (hG : G + 4 < 2 ^ w) (hS : S < 2 ^ w)
+    (hL : L < 2 ^ w)
     (hcpos : 0 < c)
     (hWSpos : 0 < WS) (hWS : WS < 2 ^ w)
     (hBPSpos : 0 < BPS) (hBPS : BPS < 2 ^ w)
     (hpow : 2 ^ c < 2 ^ w) (hlin : 2 * c + 2 < 2 ^ w)
     (hB : B + 59 < 2 ^ w) :
-    ∀ instr ∈ rankTrueCloseBlock B G c L WS BPS, instr.FieldsFit w := by
+    ∀ instr ∈ rankTrueCloseBlock B G S c L WS BPS, instr.FieldsFit w := by
   have hppos : 0 < 2 ^ c := Nat.pow_pos (by omega)
   intro instr hmem
   simp only [rankTrueCloseBlock, rankSeg1, rankSeg2, rankSeg3, rankSegInit,
