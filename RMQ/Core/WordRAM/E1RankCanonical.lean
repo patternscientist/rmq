@@ -33,56 +33,48 @@ private theorem builtRankData_bitWords_words (shape : Cartesian.CartesianShape) 
         List.replicate (shape.bpCode.length + 1) []).toArray := rfl
 
 /--
-Offset bound for the sentinel-chunked seed word store: whatever word the
-built data presents at the clamped word index, the in-word offset lies
-inside it (full chunks cover the offset strictly below the word size; the
-sentinel row is reached only at an exact top boundary, where the offset is
-zero).
+Offset bound for ANY sentinel-chunked two-level rank object: whatever word
+the data presents at the clamped word index, the in-word offset lies inside
+it (full chunks cover the offset strictly below the word size; the sentinel
+row is reached only at an exact top boundary, where the offset is zero).
+
+The hypothesis `hwords` identifies the payload store as the sentinel-padded
+chunking of `bits`, which is exactly what
+`SuccinctRank.canonicalTwoLevelRankDataOfChunksExactLocalBlock` threads via
+`canonicalRankWordBridgeOfChunksWithSentinel`; every rank object on the
+accepted route — the rank-close object, the select long-flag object, and
+the sparse-directory effective-flag object — is built by that one
+constructor, so each supplies `hwords` definitionally.
 -/
-theorem builtRankData_wordOffset_le
-    (shape : Cartesian.CartesianShape) (pos : Nat) {w : List Bool}
-    (hw : (builtRelativeSplitBPCloseRankData shape).bitWords.store.words[
-        (builtRelativeSplitBPCloseRankData shape).wordIndex pos]? =
-      some w) :
-    (builtRelativeSplitBPCloseRankData shape).wordOffset pos <=
-      w.length := by
-  have hWSpos : 0 < (builtRelativeSplitBPCloseRankData shape).wordSize :=
-    (builtRelativeSplitBPCloseRankData shape).wordSize_pos
-  rw [builtRankData_bitWords_words] at hw
+theorem twoLevelRankData_wordOffset_le
+    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
+    (d : SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
+      bits superOverhead blockOverhead queryCost)
+    (hwords : d.bitWords.store.words =
+      (SuccinctSpace.chunkPayloadWords d.wordSize bits ++
+        List.replicate (bits.length + 1) []).toArray)
+    (pos : Nat) {w : List Bool}
+    (hw : d.bitWords.store.words[d.wordIndex pos]? = some w) :
+    d.wordOffset pos <= w.length := by
+  have hWSpos : 0 < d.wordSize := d.wordSize_pos
+  rw [hwords] at hw
   rw [List.getElem?_toArray] at hw
-  have hwidef : (builtRelativeSplitBPCloseRankData shape).wordIndex pos =
-      (builtRelativeSplitBPCloseRankData shape).queryPos pos /
-        (builtRelativeSplitBPCloseRankData shape).wordSize := rfl
-  have hqle : (builtRelativeSplitBPCloseRankData shape).queryPos pos <=
-      shape.bpCode.length := Nat.min_le_right _ _
-  have hdm := Nat.div_add_mod
-    ((builtRelativeSplitBPCloseRankData shape).queryPos pos)
-    (builtRelativeSplitBPCloseRankData shape).wordSize
-  have hmodlt := Nat.mod_lt
-    ((builtRelativeSplitBPCloseRankData shape).queryPos pos) hWSpos
+  have hwidef : d.wordIndex pos = d.queryPos pos / d.wordSize := rfl
+  have hqle : d.queryPos pos <= bits.length := Nat.min_le_right _ _
+  have hdm := Nat.div_add_mod (d.queryPos pos) d.wordSize
+  have hmodlt := Nat.mod_lt (d.queryPos pos) hWSpos
   have hmulcomm :
-      (builtRelativeSplitBPCloseRankData shape).queryPos pos /
-          (builtRelativeSplitBPCloseRankData shape).wordSize *
-          (builtRelativeSplitBPCloseRankData shape).wordSize =
-        (builtRelativeSplitBPCloseRankData shape).wordSize *
-          ((builtRelativeSplitBPCloseRankData shape).queryPos pos /
-            (builtRelativeSplitBPCloseRankData shape).wordSize) :=
+      d.queryPos pos / d.wordSize * d.wordSize =
+        d.wordSize * (d.queryPos pos / d.wordSize) :=
     Nat.mul_comm _ _
-  show (builtRelativeSplitBPCloseRankData shape).queryPos pos -
-      (builtRelativeSplitBPCloseRankData shape).wordIndex pos *
-        (builtRelativeSplitBPCloseRankData shape).wordSize <= w.length
-  rcases Nat.lt_or_ge
-      ((builtRelativeSplitBPCloseRankData shape).wordIndex pos)
-      (SuccinctSpace.chunkPayloadWords
-        (builtRelativeSplitBPCloseRankData shape).wordSize
-        shape.bpCode).length with hlt | hge
+  show d.queryPos pos - d.wordIndex pos * d.wordSize <= w.length
+  rcases Nat.lt_or_ge (d.wordIndex pos)
+      (SuccinctSpace.chunkPayloadWords d.wordSize bits).length with hlt | hge
   · rw [List.getElem?_append_left hlt] at hw
     have hchunk := SuccinctSpace.chunkPayloadWords_get?_eq_take_drop hw
     have hlen : w.length =
-        Nat.min (builtRelativeSplitBPCloseRankData shape).wordSize
-          (shape.bpCode.length -
-            (builtRelativeSplitBPCloseRankData shape).wordIndex pos *
-              (builtRelativeSplitBPCloseRankData shape).wordSize) := by
+        Nat.min d.wordSize
+          (bits.length - d.wordIndex pos * d.wordSize) := by
       rw [hchunk]
       simp [List.length_take, List.length_drop]
     rw [hlen, nat_min_eq_sub_sub, hwidef]
@@ -90,36 +82,38 @@ theorem builtRankData_wordOffset_le
     omega
   · rw [List.getElem?_append_right hge] at hw
     have hclen := SuccinctSpace.chunkPayloadWords_length_eq_div_add_indicator
-      hWSpos shape.bpCode
-    have hdmL := Nat.div_add_mod shape.bpCode.length
-      (builtRelativeSplitBPCloseRankData shape).wordSize
-    have hdivle : (builtRelativeSplitBPCloseRankData shape).queryPos pos /
-          (builtRelativeSplitBPCloseRankData shape).wordSize <=
-        shape.bpCode.length /
-          (builtRelativeSplitBPCloseRankData shape).wordSize :=
+      hWSpos bits
+    have hdmL := Nat.div_add_mod bits.length d.wordSize
+    have hdivle : d.queryPos pos / d.wordSize <= bits.length / d.wordSize :=
       Nat.div_le_div_right hqle
     rw [hwidef] at hge
     rw [hclen] at hge
-    by_cases hLmod : shape.bpCode.length %
-        (builtRelativeSplitBPCloseRankData shape).wordSize = 0
+    by_cases hLmod : bits.length % d.wordSize = 0
     · rw [if_pos hLmod] at hge
-      have hpq : (builtRelativeSplitBPCloseRankData shape).queryPos pos /
-            (builtRelativeSplitBPCloseRankData shape).wordSize =
-          shape.bpCode.length /
-            (builtRelativeSplitBPCloseRankData shape).wordSize := by
+      have hpq : d.queryPos pos / d.wordSize = bits.length / d.wordSize := by
         omega
       have hmulL :
-          (builtRelativeSplitBPCloseRankData shape).wordSize *
-              ((builtRelativeSplitBPCloseRankData shape).queryPos pos /
-                (builtRelativeSplitBPCloseRankData shape).wordSize) =
-            (builtRelativeSplitBPCloseRankData shape).wordSize *
-              (shape.bpCode.length /
-                (builtRelativeSplitBPCloseRankData shape).wordSize) := by
+          d.wordSize * (d.queryPos pos / d.wordSize) =
+            d.wordSize * (bits.length / d.wordSize) := by
         rw [hpq]
       rw [hwidef]
       omega
     · rw [if_neg hLmod] at hge
       omega
+
+/--
+Offset bound for the sentinel-chunked rank-close seed word store: the
+instance of `twoLevelRankData_wordOffset_le` at the built rank-close data.
+-/
+theorem builtRankData_wordOffset_le
+    (shape : Cartesian.CartesianShape) (pos : Nat) {w : List Bool}
+    (hw : (builtRelativeSplitBPCloseRankData shape).bitWords.store.words[
+        (builtRelativeSplitBPCloseRankData shape).wordIndex pos]? =
+      some w) :
+    (builtRelativeSplitBPCloseRankData shape).wordOffset pos <=
+      w.length :=
+  twoLevelRankData_wordOffset_le (builtRelativeSplitBPCloseRankData shape)
+    (builtRankData_bitWords_words shape) pos hw
 
 /--
 Rank-close component simulation at the accepted seed store: for every

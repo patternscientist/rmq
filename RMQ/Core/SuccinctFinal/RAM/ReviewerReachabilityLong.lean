@@ -1,4 +1,5 @@
 import RMQ.Core.SuccinctFinalRAM
+import RMQ.Core.SuccinctFinal.RAM.RankSamplePresence
 
 /-!
 # Successful valid-query reachability for the long-select sources
@@ -290,18 +291,6 @@ private theorem reviewerLongInput_valid : ValidRange reviewerLongInput 0 1 := by
   · omega
   · exact reviewerLongN_pos
 
-private theorem fixedWidthNatTable_word_present_of_entry_present
-    {entries : List Nat} {width i entry : Nat}
-    (table : SuccinctSpace.FixedWidthNatTable entries width)
-    (hentry : entries[i]? = some entry) :
-    ∃ word, table.store.words[i]? = some word := by
-  cases hword : table.store.words[i]? with
-  | none =>
-      have hexact := table.read_exact i
-      rw [hword, hentry] at hexact
-      simp at hexact
-  | some word => exact ⟨word, rfl⟩
-
 private theorem rankTraceResult_value_zero
     {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
     (data : SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
@@ -531,45 +520,6 @@ private theorem chunkedRankTraceWithStore_successful_reads_long
       SuccinctClose.bpChunkReadTraceResult,
       SuccinctClose.bpWordReadTraceResult, hsuper, hblock, hword]
 
-private theorem twoLevelRankData_sample_words_present_long
-    {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
-    (data : SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
-      bits superOverhead blockOverhead queryCost)
-    (target : Bool) (pos : Nat) (hpos : pos <= bits.length) :
-    (∃ word,
-      (data.superSampleWords
-        target)[pos / data.wordSize / data.blocksPerSuper]? = some word) ∧
-    (∃ word,
-      (data.blockSampleWords target)[pos / data.wordSize]? = some word) ∧
-    (∃ word,
-      data.bitWords.store.words[pos / data.wordSize]? = some word) := by
-  refine ⟨?_, ?_, ?_⟩
-  · rcases data.super_present target pos hpos with ⟨sample, hsample⟩
-    cases target with
-    | false =>
-        apply fixedWidthNatTable_word_present_of_entry_present
-          data.superTables.falseTable
-        simpa [SuccinctSpace.FixedWidthRankSampleTables.entries] using
-          hsample
-    | true =>
-        apply fixedWidthNatTable_word_present_of_entry_present
-          data.superTables.trueTable
-        simpa [SuccinctSpace.FixedWidthRankSampleTables.entries] using
-          hsample
-  · rcases data.block_present target pos hpos with ⟨delta, hdelta⟩
-    cases target with
-    | false =>
-        apply fixedWidthNatTable_word_present_of_entry_present
-          data.blockTables.falseTable
-        simpa [SuccinctSpace.FixedWidthRankSampleTables.entries] using
-          hdelta
-    | true =>
-        apply fixedWidthNatTable_word_present_of_entry_present
-          data.blockTables.trueTable
-        simpa [SuccinctSpace.FixedWidthRankSampleTables.entries] using
-          hdelta
-  · exact data.word_present pos hpos
-
 private theorem chunkedRankTwinWithStore_value_zero_long
     {bits : List Bool} {superOverhead blockOverhead queryCost : Nat}
     (data : SuccinctRank.TwoLevelPayloadLiveStoredWordRankData
@@ -775,7 +725,7 @@ private theorem reviewerLongSelect_successful_reads :
     exact Nat.zero_div _
   obtain ⟨⟨superWord, hsuperWord⟩, ⟨blockWord, hblockWord⟩,
       ⟨wordBits, hwordBits⟩⟩ :=
-    twoLevelRankData_sample_words_present_long data.longFlagRankData true 0
+    twoLevelRankData_sample_words_present data.longFlagRankData true 0
       (Nat.zero_le _)
   rw [Nat.zero_div, Nat.zero_div] at hsuperWord
   rw [Nat.zero_div] at hblockWord
