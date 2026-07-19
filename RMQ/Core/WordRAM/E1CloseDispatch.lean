@@ -410,6 +410,311 @@ theorem witnessProgram_runs_cross (store : ReadStore) (blockSize : Nat)
     simpa using this
   · simp [RegFile.write, dSame]
 
+/-! ## THE CROSS ARM HAS NO TERMINATOR: a latent fall-through
+
+RECORDED BECAUSE NOTHING IN THE TREE RECORDED IT.
+
+`crossBlockArmProgramAt_runsTo` (`E1CrossBlockArm.lean`) exits with
+`halted = false` at `A + 370 + interior.length`, and
+`crossBlockArmProgramAt_length` (`E1CrossBlockArm.lean:809`) is exactly
+`370 + interior.length`.  `closeDispatchProgram` hosts the cross arm at
+`4` and the same-block arm at `4 + crossArm.length`.  Instantiating the
+first at `A = 4` makes the cross arm's exit address
+
+    4 + 370 + interior.length  =  4 + crossArm.length
+
+which IS the same-block arm's base.  A real cross arm would therefore run
+off its own end into the same-block leg and execute all 173 of its
+instructions on the wrong data.
+
+Nothing caught this because `witnessCrossArm` ends in `.halt` -- the
+witness composition works precisely because the witness does the thing the
+real arm does not.
+
+The two sections below (a) exhibit the fall-through BY EXECUTION and (b)
+supply the terminator that fixes it.  Both keep `closeDispatchProgram` and
+`sameBlockDispatchProgram_runsTo` untouched and parametric: the terminator
+is appended to the `crossArm` ARGUMENT, not built into the layout.
+-/
+
+/-- A cross arm with NO terminator.  Identical to `witnessCrossArm` except
+that its second instruction is an ordinary register write instead of
+`.halt`, so it models the real arm's exit condition (`halted = false` at
+its own end) rather than the witness's. -/
+def unterminatedCrossArm : List Instr := [ .const dSame 7, .const dLB 0 ]
+
+/-- The same two-arm layout, hosting the unterminated cross arm. -/
+def fallThroughProgram (blockSize : Nat) : List Instr :=
+  closeDispatchProgram blockSize unterminatedCrossArm witnessSameArm
+
+@[simp] theorem fallThroughProgram_length (blockSize : Nat) :
+    (fallThroughProgram blockSize).length = 8 := by
+  simp [fallThroughProgram, closeDispatchProgram, unterminatedCrossArm,
+    witnessSameArm]
+
+/--
+THE DISCRIMINATOR.  On a query whose endpoints are in DIFFERENT blocks --
+so the dispatch correctly declines to branch and correctly enters the
+cross arm -- the unterminated layout runs off the cross arm's end, EXECUTES
+THE SAME-BLOCK ARM, and halts carrying the same-block marker `9`.
+
+Compare `witnessProgram_runs_cross`, which is the identical layout with a
+terminated cross arm and which halts at `5` carrying the cross marker `7`.
+The only difference between the two programs is one instruction.
+
+This is the right-shape/wrong-content class at the PROGRAM LAYOUT level:
+the dispatch is correct, the branch is correct, the arm is correct, and the
+answer is still the other arm's.
+-/
+theorem unterminatedCrossArm_falls_through (store : ReadStore)
+    (blockSize : Nat) (regs : RegFile) (leftClose rightClose : Nat)
+    (hClose : regs fClose = leftClose) (hRight : regs fRight = rightClose)
+    (hcross : blockOfClose blockSize leftClose ≠
+      blockOfClose blockSize rightClose) :
+    ∃ regsF : RegFile,
+      RunsTo store (fallThroughProgram blockSize) ⟨regs, 0, false⟩
+          ⟨regsF, 7, true⟩ []
+          (closeDispatchCats ++
+            [Category.registerWrite, Category.registerWrite,
+              Category.registerWrite, Category.control]) ∧
+      regsF dSame = 9 := by
+  obtain ⟨hD, hC, hS⟩ :=
+    closeDispatchProgram_hosts blockSize unterminatedCrossArm witnessSameArm
+  have hDisp : HostedAt (fallThroughProgram blockSize) 0
+      (closeDispatch blockSize 6) := by
+    simpa [fallThroughProgram, unterminatedCrossArm] using hD
+  obtain ⟨regs', hrun, _hc, _hr, _hp⟩ :=
+    closeDispatch_runsTo_cross store hDisp regs leftClose rightClose
+      hClose hRight hcross
+  have hCross : HostedAt (fallThroughProgram blockSize) 4
+      unterminatedCrossArm := by
+    simpa [fallThroughProgram] using hC
+  have hSame : HostedAt (fallThroughProgram blockSize) 6 witnessSameArm := by
+    simpa [fallThroughProgram, unterminatedCrossArm] using hS
+  have hf4 : (fallThroughProgram blockSize)[4]? = some (.const dSame 7) :=
+    hCross 0 (by decide)
+  have hf5 : (fallThroughProgram blockSize)[5]? = some (.const dLB 0) :=
+    hCross 1 (by decide)
+  have hf6 : (fallThroughProgram blockSize)[6]? = some (.const dSame 9) :=
+    hSame 0 (by decide)
+  have hf7 : (fallThroughProgram blockSize)[7]? = some Instr.halt :=
+    hSame 1 (by decide)
+  have s4 : RunsTo store (fallThroughProgram blockSize) ⟨regs', 4, false⟩
+      ⟨regs'.write dSame 7, 5, false⟩ [] [Category.registerWrite] :=
+    RunsTo.const (s := ⟨regs', 4, false⟩) rfl hf4
+  have s5 : RunsTo store (fallThroughProgram blockSize)
+      ⟨regs'.write dSame 7, 5, false⟩
+      ⟨(regs'.write dSame 7).write dLB 0, 6, false⟩ []
+      [Category.registerWrite] :=
+    RunsTo.const (s := ⟨regs'.write dSame 7, 5, false⟩) rfl hf5
+  have s6 : RunsTo store (fallThroughProgram blockSize)
+      ⟨(regs'.write dSame 7).write dLB 0, 6, false⟩
+      ⟨((regs'.write dSame 7).write dLB 0).write dSame 9, 7, false⟩ []
+      [Category.registerWrite] :=
+    RunsTo.const (s := ⟨(regs'.write dSame 7).write dLB 0, 6, false⟩) rfl hf6
+  have s7 : RunsTo store (fallThroughProgram blockSize)
+      ⟨((regs'.write dSame 7).write dLB 0).write dSame 9, 7, false⟩
+      ⟨((regs'.write dSame 7).write dLB 0).write dSame 9, 7, true⟩ []
+      [Category.control] :=
+    RunsTo.halt
+      (s := ⟨((regs'.write dSame 7).write dLB 0).write dSame 9, 7, false⟩)
+      rfl hf7
+  refine ⟨((regs'.write dSame 7).write dLB 0).write dSame 9, ?_, ?_⟩
+  · have := ((hrun.trans s4).trans s5).trans (s6.trans s7)
+    simpa using this
+  · simp [RegFile.write, dSame]
+
+/-! ### The non-entailments
+
+Which checks CANNOT tell the two layouts apart.  Recorded so the boundary
+is exact rather than implied, in the style of `spanNoneArm_discriminates`
+(`E1InteriorSpanBlock.lean:540`).
+-/
+
+/--
+THE NON-ENTAILMENTS, carried by the two REAL runs rather than by identities
+on literals.  On one and the same cross-block query, the defective layout
+and the terminated one BOTH halt (`halted = true` in each final state) and
+BOTH produce an EMPTY receipt.  So neither the halt flag, nor any receipt
+comparison, nor any read COUNT can separate them; both facts are readable
+directly off this statement's type.
+
+What does separate them is the final value -- `dSame` is `9`, the
+SAME-BLOCK marker, on the defective layout and `7`, the cross marker, on
+the terminated one -- and the category log
+(`unterminatedCrossArm_catLogs_differ`).
+-/
+theorem unterminatedCrossArm_nonEntailments (store : ReadStore)
+    (blockSize : Nat) (regs : RegFile) (leftClose rightClose : Nat)
+    (hClose : regs fClose = leftClose) (hRight : regs fRight = rightClose)
+    (hcross : blockOfClose blockSize leftClose ≠
+      blockOfClose blockSize rightClose) :
+    (∃ regsF : RegFile,
+        RunsTo store (fallThroughProgram blockSize) ⟨regs, 0, false⟩
+            ⟨regsF, 7, true⟩ []
+            (closeDispatchCats ++
+              [Category.registerWrite, Category.registerWrite,
+                Category.registerWrite, Category.control]) ∧
+          regsF dSame = 9) ∧
+      (∃ regsF : RegFile,
+        RunsTo store (witnessProgram blockSize) ⟨regs, 0, false⟩
+            ⟨regsF, 5, true⟩ []
+            (closeDispatchCats ++
+              [Category.registerWrite, Category.control]) ∧
+          regsF dSame = 7) :=
+  ⟨unterminatedCrossArm_falls_through store blockSize regs leftClose
+      rightClose hClose hRight hcross,
+    witnessProgram_runs_cross store blockSize regs leftClose rightClose
+      hClose hRight hcross⟩
+
+/-- The category logs DO differ -- the fall-through executes two extra
+instructions -- so a positional category comparison catches this one.
+Stated because the honest boundary is "value and category log catch it,
+receipt and halt-flag do not". -/
+theorem unterminatedCrossArm_catLogs_differ :
+    closeDispatchCats ++
+        [Category.registerWrite, Category.registerWrite,
+          Category.registerWrite, Category.control] ≠
+      closeDispatchCats ++ [Category.registerWrite, Category.control] := by
+  simp [closeDispatchCats]
+
+/-! ## THE TERMINATOR
+
+The machine has no unconditional jump, so one is synthesised from a pinned
+nonzero constant and a conditional branch on it.  `dSame` is the dispatch's
+own scratch (`CloseDispatchUntouched`), dead once the branch has been
+resolved, so the terminator clobbers nothing live.
+-/
+
+/-- Two-instruction unconditional jump to `target`. -/
+def jumpTo (scratch target : Nat) : List Instr :=
+  [ .const scratch 1, .brNZ scratch target ]
+
+@[simp] theorem jumpTo_length (scratch target : Nat) :
+    (jumpTo scratch target).length = 2 := rfl
+
+/-- The synthesised jump really is unconditional: it transfers control to
+`target` from ANY entry register file. -/
+theorem jumpTo_runsTo (store : ReadStore) {program : E1Machine.Program}
+    {A scratch target : Nat}
+    (hHost : HostedAt program A (jumpTo scratch target)) (regs : RegFile) :
+    RunsTo store program ⟨regs, A, false⟩
+      ⟨regs.write scratch 1, target, false⟩ []
+      [Category.registerWrite, Category.branch] := by
+  have hf0 : program[A]? = some (.const scratch 1) := by
+    simpa using hHost 0 (by simp [jumpTo])
+  have hf1 : program[A + 1]? = some (.brNZ scratch target) := by
+    simpa using hHost 1 (by simp [jumpTo])
+  have s0 : RunsTo store program ⟨regs, A, false⟩
+      ⟨regs.write scratch 1, A + 1, false⟩ [] [Category.registerWrite] :=
+    RunsTo.const (s := ⟨regs, A, false⟩) rfl hf0
+  have hcond : (regs.write scratch 1) scratch ≠ 0 := by
+    simp [RegFile.write]
+  have s1 : RunsTo store program ⟨regs.write scratch 1, A + 1, false⟩
+      ⟨regs.write scratch 1, target, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_taken (s := ⟨regs.write scratch 1, A + 1, false⟩) rfl hf1
+      hcond
+  simpa using s0.trans s1
+
+/-- THE FIX.  A cross arm suffixed with a jump past the same-block arm, so
+the two dispatch arms CONVERGE at the layout's exit instead of the cross
+arm falling into the same-block leg.
+
+Appending to the `crossArm` argument is what keeps `closeDispatchProgram`
+and `sameBlockDispatchProgram_runsTo` parametric and unchanged. -/
+def crossArmTerminated (crossArm : List Instr) (exit : Nat) : List Instr :=
+  crossArm ++ jumpTo dSame exit
+
+@[simp] theorem crossArmTerminated_length (crossArm : List Instr)
+    (exit : Nat) :
+    (crossArmTerminated crossArm exit).length = crossArm.length + 2 := by
+  simp [crossArmTerminated]
+
+/-- The exit address the terminator must target: past the dispatch, the
+terminated cross arm, and the same-block arm.  Written as a function of
+the layout's own lengths so it cannot drift from them. -/
+def closeDispatchExit (crossArm sameArm : List Instr) : Nat :=
+  4 + (crossArm.length + 2) + sameArm.length
+
+/--
+CONVERGENCE, BY EXECUTION.  With the terminator in place the cross
+direction reaches the layout's exit -- PAST the same-block arm -- instead
+of falling into it.  The stub cross arm's marker `7` survives, so the
+answer is the cross arm's.
+
+This is `unterminatedCrossArm_falls_through`'s counterpart on the repaired
+layout: same dispatch, same arms, one appended terminator, and the
+same-block arm is no longer reached.
+-/
+theorem crossArmTerminated_converges (store : ReadStore) (blockSize : Nat)
+    (regs : RegFile) (leftClose rightClose : Nat)
+    (hClose : regs fClose = leftClose) (hRight : regs fRight = rightClose)
+    (hcross : blockOfClose blockSize leftClose ≠
+      blockOfClose blockSize rightClose) :
+    ∃ regsF : RegFile,
+      RunsTo store
+          (closeDispatchProgram blockSize
+            (crossArmTerminated unterminatedCrossArm
+              (closeDispatchExit unterminatedCrossArm witnessSameArm))
+            witnessSameArm)
+          ⟨regs, 0, false⟩ ⟨regsF, 10, false⟩ []
+          (closeDispatchCats ++
+            [Category.registerWrite, Category.registerWrite,
+              Category.registerWrite, Category.branch]) ∧
+      regsF dSame = 1 := by
+  obtain ⟨hD, hC, _hS⟩ :=
+    closeDispatchProgram_hosts blockSize
+      (crossArmTerminated unterminatedCrossArm
+        (closeDispatchExit unterminatedCrossArm witnessSameArm))
+      witnessSameArm
+  have hDisp : HostedAt
+      (closeDispatchProgram blockSize
+        (crossArmTerminated unterminatedCrossArm
+          (closeDispatchExit unterminatedCrossArm witnessSameArm))
+        witnessSameArm) 0 (closeDispatch blockSize 8) := by
+    simpa [crossArmTerminated, unterminatedCrossArm, jumpTo] using hD
+  obtain ⟨regs', hrun, _hc, _hr, _hp⟩ :=
+    closeDispatch_runsTo_cross store hDisp regs leftClose rightClose
+      hClose hRight hcross
+  have hArm := hC
+  have hf4 : (closeDispatchProgram blockSize
+      (crossArmTerminated unterminatedCrossArm
+        (closeDispatchExit unterminatedCrossArm witnessSameArm))
+      witnessSameArm)[4]? = some (.const dSame 7) := by
+    simpa using hArm 0 (by decide)
+  have hf5 : (closeDispatchProgram blockSize
+      (crossArmTerminated unterminatedCrossArm
+        (closeDispatchExit unterminatedCrossArm witnessSameArm))
+      witnessSameArm)[5]? = some (.const dLB 0) := by
+    simpa using hArm 1 (by decide)
+  have hf6 : (closeDispatchProgram blockSize
+      (crossArmTerminated unterminatedCrossArm
+        (closeDispatchExit unterminatedCrossArm witnessSameArm))
+      witnessSameArm)[6]? = some (.const dSame 1) := by
+    simpa [crossArmTerminated, unterminatedCrossArm, jumpTo] using
+      hArm 2 (by decide)
+  have hf7 : (closeDispatchProgram blockSize
+      (crossArmTerminated unterminatedCrossArm
+        (closeDispatchExit unterminatedCrossArm witnessSameArm))
+      witnessSameArm)[7]? = some (.brNZ dSame 10) := by
+    simpa [crossArmTerminated, unterminatedCrossArm, jumpTo,
+      closeDispatchExit, witnessSameArm] using hArm 3 (by decide)
+  have s4 := RunsTo.const (store := store) (s := ⟨regs', 4, false⟩) rfl hf4
+  have s5 := RunsTo.const (store := store)
+    (s := ⟨regs'.write dSame 7, 5, false⟩) rfl hf5
+  have s6 := RunsTo.const (store := store)
+    (s := ⟨(regs'.write dSame 7).write dLB 0, 6, false⟩) rfl hf6
+  have hcond : (((regs'.write dSame 7).write dLB 0).write dSame 1) dSame
+      ≠ 0 := by
+    simp [RegFile.write]
+  have s7 := RunsTo.brNZ_taken (store := store)
+    (s := ⟨((regs'.write dSame 7).write dLB 0).write dSame 1, 7, false⟩)
+    rfl hf7 hcond
+  refine ⟨((regs'.write dSame 7).write dLB 0).write dSame 1, ?_, ?_⟩
+  · have := ((hrun.trans s4).trans s5).trans (s6.trans s7)
+    simpa using this
+  · simp [RegFile.write, dSame]
+
 end E1CloseDispatch
 end WordRAM
 end RMQ

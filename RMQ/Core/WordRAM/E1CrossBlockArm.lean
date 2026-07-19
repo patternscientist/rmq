@@ -1139,6 +1139,44 @@ machine inputs beyond the two query operands, `hInterior`'s antecedent
 gains those conjuncts and this proof gains the matching obligation to
 establish them at `A + 176`.  That is a hypothesis change, not a
 restatement, and the four preservation clauses are unaffected.
+
+## WHY THIS ARM EXPORTS NO `CloseLegUntouched` CLAUSE (E1-LaneCL)
+
+The same-block side now exports `∀ r, CloseLegUntouched r -> regsF r =
+regs r` (`CloseLegUntouched r := r ≤ 7 ∨ r = 28`,
+`E1SameBlockArm.lean`), matching what
+`selectCloseBlock_runsTo_canonical` already exports so the whole-query
+glue can chain `select; select; close`.  THIS ARM CANNOT YET, and the
+reason is structural rather than bookkeeping:
+
+`hInterior` promises preservation of exactly FOUR registers -- `fClose`,
+`fRight`, `mLV`, `mLP`.  The interior sits in the MIDDLE of this arm, so
+every register the arm might claim must survive it, and `hInterior` says
+nothing about `0..7` or `28`.  The thirteen `hpres*` facts in the proof
+below cover every segment EXCEPT the hole, so the clause is unprovable
+here no matter how the composition is arranged.
+
+THE ONE-LINE CHANGE THAT UNBLOCKS IT, and evidence it is satisfiable at
+the intended instantiation rather than a new obstruction: `hInterior`'s
+consequent gains a fifth conjunct
+
+    (∀ r, CloseLegUntouched r -> regsI r = regsS r)
+
+and this proof then threads it alongside the existing four.  The interior
+already preserves that band -- `LegUntouched`
+(`E1InteriorMinCandidate.lean:934`) unfolds to `ChunkFoldUntouched r`
+(`= r < 89 ∨ 99 < r`, `E1InteriorChunkFold.lean:928`) together with
+disequalities against the summary bank `100..104`, `mMV`/`mMP` (`77`/`78`)
+and the range `105..117`, every one of which holds at `r ≤ 7` and at
+`r = 28`; `SpanUntouched` (`E1InteriorSpanBlock.lean:226`) adds only
+`118..122` and `100`.  So the conjunct is discharged by the interior
+lane's OWN existing predicates and costs it no new reasoning.
+
+That interface is the interior lane's, so it is recorded here rather than
+changed unilaterally.  An EXECUTED witness of the entailment is owed at
+the point of composition, in a module downstream of both this file and
+`E1InteriorMinCandidate.lean` -- this file is built BEFORE the interior
+modules, so it cannot state one.
 -/
 theorem crossBlockArmProgramAt_runsTo
     (shape : Cartesian.CartesianShape) {program : E1Machine.Program}

@@ -45,6 +45,56 @@ open RMQ.SuccinctClose.ConcreteCompactBPCloseLCADirectory
 /-- The same-block close result (the `bpCandidateClose?` payload). -/
 abbrev fRes : Nat := 69
 
+/--
+WHAT THE CLOSE LEG LEAVES ALONE.
+
+The frozen query skeleton bank `0..7` (`E1QueryProgram.lean:48`) together
+with the select leg's input `28` (`xIdx`, `E1SelectBridge.lean:69`).
+
+Stated in EXACTLY the shape `selectCloseBlock_runsTo_canonical` already
+exports (`E1SelectCanonical.lean:212`, `∀ r, r ≤ 7 ∨ r = 28 → ...`), so the
+whole-query glue can chain `select; select; close` without a translation
+step between the two clauses.
+
+WHY THIS IS THE RIGHT SET, checked against the consumer rather than
+guessed.  The glue must carry the FIRST select's answer across the SECOND
+select and then across the close leg.  The second select preserves only
+`r ≤ 7 ∨ r = 28`, and `28` is that select's own input, so the first
+answer has to be stashed in the skeleton bank `0..7` -- which is precisely
+what this clause protects.  See `closeLegUntouched_at_query_operands` for
+the adequacy check, evaluated rather than argued.
+
+Every close-leg component admits this set with room to spare: the leg's
+own banks start at `40` and the only sub-block reaching below `40` is the
+rank-close component at `8..27`, whose `RankSeedLegUntouched`
+(`E1SameBlockLeg.lean`) explicitly claims `r ≤ 7 ∨ 28 ≤ r`.
+-/
+abbrev CloseLegUntouched (r : Nat) : Prop := r ≤ 7 ∨ r = 28
+
+/--
+ADEQUACY, EVALUATED RATHER THAN ARGUED, in the style of
+`spanUntouched_at_crossBlockArm_operands` (`E1InteriorSpanBlock.lean:232`).
+
+The four registers the whole-query glue must carry ACROSS the close leg are
+the two query operands `regLeft`/`regRight` (`0`/`1`), the output packet
+`regOut` (`2`, written last by the query epilogue), and the select leg's
+input `xIdx` (`28`).  All four are inside the protected band.
+
+This is the check a sibling lane's too-WEAK predicate failed by declining
+`mLP`: stating the band is not the same as confirming it covers what the
+consumer needs.
+-/
+theorem closeLegUntouched_at_query_operands :
+    CloseLegUntouched 0 ∧ CloseLegUntouched 1 ∧ CloseLegUntouched 2 ∧
+      CloseLegUntouched 28 := by decide
+
+/-- The stash slots the glue has available for the FIRST select's answer:
+the guard prologue's own scratch, dead once the guard has branched.  Also
+inside the band, so the close leg cannot clobber a stashed endpoint. -/
+theorem closeLegUntouched_at_guard_scratch :
+    CloseLegUntouched 3 ∧ CloseLegUntouched 4 ∧ CloseLegUntouched 5 ∧
+      CloseLegUntouched 6 ∧ CloseLegUntouched 7 := by decide
+
 /-! ## Route-side instantiation of the same-block range
 
 These are the route object's own `let`-bindings, named so the composed
@@ -403,27 +453,33 @@ theorem sameBlockArm_runsTo
       some (regsF fRes) =
         (bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore
           shape store fringeSegment blockSize leftClose rightClose
-          seed).value := by
-  -- `fringeArm_runsTo` also delivers a preservation clause (M3d-9); this
-  -- theorem's own conclusion does not restate it, so it is discarded here.
-  obtain ⟨regsA, hrunA, hvalA, _hpresA⟩ :=
+          seed).value ∧
+      (∀ r, CloseLegUntouched r -> regsF r = regs r) := by
+  -- `fringeArm_runsTo`'s preservation clause (M3d-9) and the epilogue's are
+  -- now COMPOSED into this theorem's conclusion rather than discarded.
+  obtain ⟨regsA, hrunA, hvalA, hpresA⟩ :=
     fringeArm_runsTo store hc hPro hPre hMrg hTail hbr hEpi
       (sbBase shape blockSize leftClose) (sbBB shape blockSize leftClose)
       (sbRelLo shape blockSize leftClose)
       (sbRelHi shape blockSize leftClose rightClose) seed
       (sbStart leftClose) hL hW regs hBase hLo hHi hAcc hBB hSeed hStart
-  obtain ⟨regsF, hrunC, hresC, _hpresC⟩ :=
+  obtain ⟨regsF, hrunC, hresC, hpresC⟩ :=
     sameBlockClose_runsTo store hCls regsA
   have htrans := RunsTo.trans hrunA hrunC
   have hpc : A + 95 + 2 = A + 97 := by omega
   rw [hpc] at htrans
   rw [sameBlockSeeded_trace_eq shape store fringeSegment blockSize leftClose
     rightClose seed]
-  refine ⟨regsF, ?_, ?_⟩
+  refine ⟨regsF, ?_, ?_, ?_⟩
   · simpa [sameBlockArmCats] using htrans
   · rw [sameBlockSeeded_value_eq shape store fringeSegment blockSize
       leftClose rightClose seed, <- hvalA, hresC]
     rfl
+  · -- the epilogue's two slots and the arm's whole bank sit far above `28`
+    intro r hr
+    simp only [CloseLegUntouched] at hr
+    rw [hpresC r ⟨show r ≠ 60 by omega, show r ≠ 69 by omega⟩,
+      hpresA r (by simp only [FringeArmUntouched]; omega)]
 
 /-! ## The RANGE PREAMBLE (add/sub only)
 

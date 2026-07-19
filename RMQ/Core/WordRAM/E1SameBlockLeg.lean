@@ -490,14 +490,15 @@ theorem sameBlockLeg_runsTo_canonical
         (bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
           shape (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape)
           fringeSegment (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-          blockSize leftClose rightClose).value := by
+          blockSize leftClose rightClose).value ∧
+      (∀ r, CloseLegUntouched r -> regsF r = regs r) := by
   -- 1. address preamble
   obtain ⟨regs1, hrun1, hbase1, hbb1, hpres1⟩ :=
     windowAddr_runsTo_route shape
       (concreteBPNativeSuccinctRMQGlobalReadStore shape) hAddr regs leftClose
       hClose
   -- 2. seed leg (position feed, rank-close component, seed arithmetic)
-  obtain ⟨regs2, hrun2, hacc2, hseed2, hb2, hbb2, hcl2, hri2, _hpres2⟩ :=
+  obtain ⟨regs2, hrun2, hacc2, hseed2, hb2, hbb2, hcl2, hri2, hpres2⟩ :=
     rankSeedLeg_runsTo_canonical shape (blockSize := blockSize)
       (leftClose := leftClose) hPos hRank hFin regs1 hbb1
   -- 3. range preamble
@@ -509,7 +510,7 @@ theorem sameBlockLeg_runsTo_canonical
       (by rw [hri2, hpres1 fRight (by decide)]; exact hRight)
       (by rw [hbb2]; exact hbb1)
   -- 4. the same-block arm at the route's own seed
-  obtain ⟨regsF, hrunA, hvalA⟩ :=
+  obtain ⟨regsF, hrunA, hvalA, hpresA⟩ :=
     sameBlockArm_runsTo shape (concreteBPNativeSuccinctRMQGlobalReadStore shape)
       (bpFringeChunkBits_le_machineWordBits shape.bpCode.length)
       hPro hPre hMrg hTail hbr hEpi hCls blockSize leftClose rightClose
@@ -522,7 +523,7 @@ theorem sameBlockLeg_runsTo_canonical
       (by rw [hpres3 fBB (by decide), hbb2]; exact hbb1)
       (by rw [hpres3 fSeed (by decide)]; exact hseed2)
       hstart3
-  refine ⟨regsF, ?_, ?_⟩
+  refine ⟨regsF, ?_, ?_, ?_⟩
   · have htrans := ((hrun1.trans hrun2).trans hrun3).trans hrunA
     have hpc : A + 4 + 64 + 8 + 97 = A + 173 := by omega
     rw [hpc] at htrans
@@ -532,6 +533,15 @@ theorem sameBlockLeg_runsTo_canonical
   · rw [hvalA]
     simp [bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore,
       WordRAM.TraceResult.bind, canonicalSeed]
+  · -- COMPOSED PRESERVATION.  Every stage admits `r <= 7 ∨ r = 28`: the two
+    -- preambles and the arm sit at `>= 40`, and the rank-seed leg's own
+    -- clause already carves out exactly this band.
+    intro r hr
+    have hr' : r ≤ 7 ∨ r = 28 := hr
+    rw [hpresA r hr,
+      hpres3 r (by refine ⟨?_, ?_, ?_, ?_, ?_⟩ <;> omega),
+      hpres2 r (by refine ⟨?_, ?_, ?_, ?_⟩ <;> omega),
+      hpres1 r (by refine ⟨?_, ?_⟩ <;> omega)]
 
 /-! ## ANTI-VACUITY: the hosting hypotheses are simultaneously satisfiable
 
@@ -668,7 +678,8 @@ theorem sameBlockLegProgram_runsTo_canonical
         (bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
           shape (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape)
           fringeSegment (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-          blockSize leftClose rightClose).value := by
+          blockSize leftClose rightClose).value ∧
+      (∀ r, CloseLegUntouched r -> regsF r = regs r) := by
   obtain ⟨p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11⟩ :=
     sameBlockLegProgram_hosts shape fringeSegment blockSize
   have h :=
@@ -811,7 +822,8 @@ theorem sameBlockLegProgramAt_runsTo_canonical
         (bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
           shape (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape)
           fringeSegment (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-          blockSize leftClose rightClose).value := by
+          blockSize leftClose rightClose).value ∧
+      (∀ r, CloseLegUntouched r -> regsF r = regs r) := by
   obtain ⟨p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11⟩ :=
     sameBlockLegProgramAt_hosts shape fringeSegment blockSize B hHost
   exact sameBlockLeg_runsTo_canonical (A := B) shape p0 p1 p2 p3 p4 p5 p6

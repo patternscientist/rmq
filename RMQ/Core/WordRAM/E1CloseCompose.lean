@@ -115,19 +115,24 @@ theorem sameBlockDispatchProgram_runsTo
         (bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
           shape (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape)
           fringeSegment (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-          blockSize leftClose rightClose).value := by
+          blockSize leftClose rightClose).value ∧
+      (∀ r, CloseLegUntouched r -> regsF r = regs r) := by
   obtain ⟨hD, -, hLeg⟩ :=
     closeDispatchProgram_hosts blockSize crossArm
       (sameBlockLegProgramAt shape fringeSegment blockSize
         (4 + crossArm.length))
-  obtain ⟨regs', hrunD, hcl', hri', -⟩ :=
+  obtain ⟨regs', hrunD, hcl', hri', hpresD⟩ :=
     closeDispatch_runsTo_same (concreteBPNativeSuccinctRMQGlobalReadStore shape)
       hD regs leftClose rightClose hClose hRight hsame
-  obtain ⟨regsF, hrunL, hval⟩ :=
+  obtain ⟨regsF, hrunL, hval, hpresL⟩ :=
     sameBlockLegProgramAt_runsTo_canonical shape hLeg regs' hcl' hri'
-  refine ⟨regsF, ?_, hval⟩
-  have htrans := hrunD.trans hrunL
-  simpa [sameBlockDispatchProgram, sameBlockDispatchCats] using htrans
+  refine ⟨regsF, ?_, hval, ?_⟩
+  · have htrans := hrunD.trans hrunL
+    simpa [sameBlockDispatchProgram, sameBlockDispatchCats] using htrans
+  · -- the dispatch's own scratch is `72..74`, far above the protected band
+    intro r hr
+    have hr' : r ≤ 7 ∨ r = 28 := hr
+    rw [hpresL r hr, hpresD r (by refine ⟨?_, ?_, ?_⟩ <;> omega)]
 
 /-! ## ANTI-VACUITY: the leg really does run off base zero
 
@@ -166,7 +171,8 @@ theorem sameBlockDispatchProgram_runsTo_witnessCross
         (bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
           shape (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape)
           fringeSegment (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-          blockSize leftClose rightClose).value := by
+          blockSize leftClose rightClose).value ∧
+      (∀ r, CloseLegUntouched r -> regsF r = regs r) := by
   have h :=
     sameBlockDispatchProgram_runsTo shape (fringeSegment := fringeSegment)
       (crossArm := witnessCrossArm) regs hClose hRight hsame
