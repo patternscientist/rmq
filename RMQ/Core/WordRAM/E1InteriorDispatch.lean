@@ -688,6 +688,195 @@ theorem rangePreamble_runsTo (store : ReadStore) {program : E1Machine.Program}
       hr2, RegFile.write_other _ _ hT,
       hr1, RegFile.write_other _ _ hOne]
 
+/-! ## THE INDEX DECOMPOSITION, SIMULATED
+
+Nine instructions turning `(startBlock, count)` into the five quantities
+the five arms dispatch on and are entered with.
+
+**Both of the route's `%` operations are computed as `v - v / D * D`**,
+because there is no modulus instruction, and
+`E1InteriorTwoSpan.mod_eq_sub_div_mul` is the one bridge between the two
+spellings.  It is used twice here -- once for `localStart` and once for
+`rightCount` -- and those are the only two places in `#9` where the route
+says `%`.
+
+The charge log is seven `arithmetic` and one `registerWrite`, with the
+`registerWrite` at index `3`: `macroSize` is a PROGRAM CONSTANT, so
+loading it is a `const`, not arithmetic. -/
+theorem indexDecomp_runsTo (store : ReadStore) {program : E1Machine.Program}
+    {macroSize Q : Nat} (hHost : HostedAt program Q (indexDecomp macroSize))
+    (regs : RegFile) (startBlock count : Nat)
+    (hStart : regs wStart = startBlock) (hCount : regs wCount = count) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, Q, false⟩ ⟨regs', Q + 9, false⟩ []
+          [Category.arithmetic, Category.arithmetic, Category.arithmetic,
+            Category.registerWrite, Category.arithmetic, Category.arithmetic,
+            Category.arithmetic, Category.arithmetic, Category.arithmetic] ∧
+        regs' uMacro = startBlock / macroSize ∧
+        regs' uLocal = startBlock % macroSize ∧
+        regs' wLeft = macroSize - startBlock % macroSize ∧
+        regs' uMid =
+          (count - (macroSize - startBlock % macroSize)) / macroSize ∧
+        regs' uRight =
+          (count - (macroSize - startBlock % macroSize)) % macroSize ∧
+        regs' wCount = count ∧
+        (∀ r, r ≠ uMacro → r ≠ uLocal → r ≠ uMid → r ≠ uRight → r ≠ wT →
+          r ≠ wLeft → r ≠ wRem → regs' r = regs r) := by
+  have hf : ∀ (k m : Nat) (instr : Instr), k < 9 →
+      (indexDecomp macroSize)[k]? = some instr → Q + k = m →
+      program[m]? = some instr := by
+    intro k m instr hk hget hm
+    rw [← hm, hHost k hk, hget]
+  have h0 : program[Q]? = some (.divConst uMacro wStart macroSize) :=
+    hf 0 Q _ (by omega) rfl (by omega)
+  have h1 : program[Q + 1]? = some (.mulConst wT uMacro macroSize) :=
+    hf 1 _ _ (by omega) rfl (by omega)
+  have h2 : program[Q + 2]? = some (.sub uLocal wStart wT) :=
+    hf 2 _ _ (by omega) rfl (by omega)
+  have h3 : program[Q + 3]? = some (.const wT macroSize) :=
+    hf 3 _ _ (by omega) rfl (by omega)
+  have h4 : program[Q + 4]? = some (.sub wLeft wT uLocal) :=
+    hf 4 _ _ (by omega) rfl (by omega)
+  have h5 : program[Q + 5]? = some (.sub wRem wCount wLeft) :=
+    hf 5 _ _ (by omega) rfl (by omega)
+  have h6 : program[Q + 6]? = some (.divConst uMid wRem macroSize) :=
+    hf 6 _ _ (by omega) rfl (by omega)
+  have h7 : program[Q + 7]? = some (.mulConst wT uMid macroSize) :=
+    hf 7 _ _ (by omega) rfl (by omega)
+  have h8 : program[Q + 8]? = some (.sub uRight wRem wT) :=
+    hf 8 _ _ (by omega) rfl (by omega)
+  -- the two abbreviations the route itself uses
+  obtain ⟨lst, hlst⟩ : ∃ z : Nat, z = startBlock % macroSize := ⟨_, rfl⟩
+  obtain ⟨rem, hrem⟩ : ∃ z : Nat, z = count - (macroSize - lst) := ⟨_, rfl⟩
+  -- THE MODULUS BRIDGE, both uses
+  have emodL : startBlock - startBlock / macroSize * macroSize = lst := by
+    rw [hlst]; exact (E1InteriorTwoSpan.mod_eq_sub_div_mul _ _).symm
+  have emodR : rem - rem / macroSize * macroSize = rem % macroSize :=
+    (E1InteriorTwoSpan.mod_eq_sub_div_mul _ _).symm
+  obtain ⟨r1, hr1⟩ : ∃ z : RegFile,
+      z = regs.write uMacro (startBlock / macroSize) := ⟨_, rfl⟩
+  obtain ⟨r2, hr2⟩ : ∃ z : RegFile,
+      z = r1.write wT (startBlock / macroSize * macroSize) := ⟨_, rfl⟩
+  obtain ⟨r3, hr3⟩ : ∃ z : RegFile, z = r2.write uLocal lst := ⟨_, rfl⟩
+  obtain ⟨r4, hr4⟩ : ∃ z : RegFile, z = r3.write wT macroSize := ⟨_, rfl⟩
+  obtain ⟨r5, hr5⟩ : ∃ z : RegFile,
+      z = r4.write wLeft (macroSize - lst) := ⟨_, rfl⟩
+  obtain ⟨r6, hr6⟩ : ∃ z : RegFile, z = r5.write wRem rem := ⟨_, rfl⟩
+  obtain ⟨r7, hr7⟩ : ∃ z : RegFile,
+      z = r6.write uMid (rem / macroSize) := ⟨_, rfl⟩
+  obtain ⟨r8, hr8⟩ : ∃ z : RegFile,
+      z = r7.write wT (rem / macroSize * macroSize) := ⟨_, rfl⟩
+  obtain ⟨r9, hr9⟩ : ∃ z : RegFile,
+      z = r8.write uRight (rem % macroSize) := ⟨_, rfl⟩
+  have e1m : r1 uMacro = startBlock / macroSize := by
+    rw [hr1, RegFile.write_same]
+  have e2s : r2 wStart = startBlock := by
+    rw [hr2, RegFile.write_other _ _ (by decide),
+      hr1, RegFile.write_other _ _ (by decide), hStart]
+  have e2t : r2 wT = startBlock / macroSize * macroSize := by
+    rw [hr2, RegFile.write_same]
+  have e4t : r4 wT = macroSize := by rw [hr4, RegFile.write_same]
+  have e4l : r4 uLocal = lst := by
+    rw [hr4, RegFile.write_other _ _ (by decide), hr3, RegFile.write_same]
+  have e5c : r5 wCount = count := by
+    rw [hr5, RegFile.write_other _ _ (by decide),
+      hr4, RegFile.write_other _ _ (by decide),
+      hr3, RegFile.write_other _ _ (by decide),
+      hr2, RegFile.write_other _ _ (by decide),
+      hr1, RegFile.write_other _ _ (by decide), hCount]
+  have e5l : r5 wLeft = macroSize - lst := by rw [hr5, RegFile.write_same]
+  have e6r : r6 wRem = rem := by rw [hr6, RegFile.write_same]
+  have e7r : r7 wRem = rem := by
+    rw [hr7, RegFile.write_other _ _ (by decide), e6r]
+  have e7m : r7 uMid = rem / macroSize := by rw [hr7, RegFile.write_same]
+  have e8r : r8 wRem = rem := by
+    rw [hr8, RegFile.write_other _ _ (by decide), e7r]
+  have e8t : r8 wT = rem / macroSize * macroSize := by
+    rw [hr8, RegFile.write_same]
+  have s0 : RunsTo store program ⟨regs, Q, false⟩ ⟨r1, Q + 1, false⟩ []
+      [Category.arithmetic] := by
+    have h := RunsTo.divConst (store := store)
+      (s := (⟨regs, Q, false⟩ : State)) rfl h0
+    simpa [hr1, hStart] using h
+  have s1 : RunsTo store program ⟨r1, Q + 1, false⟩ ⟨r2, Q + 2, false⟩ []
+      [Category.arithmetic] := by
+    have h := RunsTo.mulConst (store := store)
+      (s := (⟨r1, Q + 1, false⟩ : State)) rfl h1
+    simpa [hr2, e1m] using h
+  have s2 : RunsTo store program ⟨r2, Q + 2, false⟩ ⟨r3, Q + 3, false⟩ []
+      [Category.arithmetic] := by
+    have h := RunsTo.sub (store := store)
+      (s := (⟨r2, Q + 2, false⟩ : State)) rfl h2
+    simpa [hr3, e2s, e2t, emodL] using h
+  have s3 : RunsTo store program ⟨r3, Q + 3, false⟩ ⟨r4, Q + 4, false⟩ []
+      [Category.registerWrite] := by
+    have h := RunsTo.const (store := store)
+      (s := (⟨r3, Q + 3, false⟩ : State)) rfl h3
+    simpa [hr4] using h
+  have s4 : RunsTo store program ⟨r4, Q + 4, false⟩ ⟨r5, Q + 5, false⟩ []
+      [Category.arithmetic] := by
+    have h := RunsTo.sub (store := store)
+      (s := (⟨r4, Q + 4, false⟩ : State)) rfl h4
+    simpa [hr5, e4t, e4l] using h
+  have s5 : RunsTo store program ⟨r5, Q + 5, false⟩ ⟨r6, Q + 6, false⟩ []
+      [Category.arithmetic] := by
+    have h := RunsTo.sub (store := store)
+      (s := (⟨r5, Q + 5, false⟩ : State)) rfl h5
+    simpa [hr6, e5c, e5l, hrem] using h
+  have s6 : RunsTo store program ⟨r6, Q + 6, false⟩ ⟨r7, Q + 7, false⟩ []
+      [Category.arithmetic] := by
+    have h := RunsTo.divConst (store := store)
+      (s := (⟨r6, Q + 6, false⟩ : State)) rfl h6
+    simpa [hr7, e6r] using h
+  have s7 : RunsTo store program ⟨r7, Q + 7, false⟩ ⟨r8, Q + 8, false⟩ []
+      [Category.arithmetic] := by
+    have h := RunsTo.mulConst (store := store)
+      (s := (⟨r7, Q + 7, false⟩ : State)) rfl h7
+    simpa [hr8, e7m] using h
+  have s8 : RunsTo store program ⟨r8, Q + 8, false⟩ ⟨r9, Q + 9, false⟩ []
+      [Category.arithmetic] := by
+    have h := RunsTo.sub (store := store)
+      (s := (⟨r8, Q + 8, false⟩ : State)) rfl h8
+    simpa [hr9, e8r, e8t, emodR] using h
+  refine ⟨r9, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · have := ((s0.trans s1).trans (s2.trans s3)).trans
+      ((s4.trans s5).trans ((s6.trans s7).trans s8))
+    simpa using this
+  · rw [hr9, RegFile.write_other _ _ (by decide),
+      hr8, RegFile.write_other _ _ (by decide),
+      hr7, RegFile.write_other _ _ (by decide),
+      hr6, RegFile.write_other _ _ (by decide),
+      hr5, RegFile.write_other _ _ (by decide),
+      hr4, RegFile.write_other _ _ (by decide),
+      hr3, RegFile.write_other _ _ (by decide),
+      hr2, RegFile.write_other _ _ (by decide), e1m]
+  · rw [hr9, RegFile.write_other _ _ (by decide),
+      hr8, RegFile.write_other _ _ (by decide),
+      hr7, RegFile.write_other _ _ (by decide),
+      hr6, RegFile.write_other _ _ (by decide),
+      hr5, RegFile.write_other _ _ (by decide), e4l, hlst]
+  · rw [hr9, RegFile.write_other _ _ (by decide),
+      hr8, RegFile.write_other _ _ (by decide),
+      hr7, RegFile.write_other _ _ (by decide),
+      hr6, RegFile.write_other _ _ (by decide), e5l, hlst]
+  · rw [hr9, RegFile.write_other _ _ (by decide),
+      hr8, RegFile.write_other _ _ (by decide), e7m, hrem, hlst]
+  · rw [hr9, RegFile.write_same, hrem, hlst]
+  · rw [hr9, RegFile.write_other _ _ (by decide),
+      hr8, RegFile.write_other _ _ (by decide),
+      hr7, RegFile.write_other _ _ (by decide),
+      hr6, RegFile.write_other _ _ (by decide), e5c]
+  · intro r hMacro hLocal hMid hRight hT hLeft hRem
+    rw [hr9, RegFile.write_other _ _ hRight,
+      hr8, RegFile.write_other _ _ hT,
+      hr7, RegFile.write_other _ _ hMid,
+      hr6, RegFile.write_other _ _ hRem,
+      hr5, RegFile.write_other _ _ hLeft,
+      hr4, RegFile.write_other _ _ hT,
+      hr3, RegFile.write_other _ _ hLocal,
+      hr2, RegFile.write_other _ _ hT,
+      hr1, RegFile.write_other _ _ hMacro]
+
 /-! ## THE WITNESS LAYOUT AND ITS IMPOSTOR
 
 The real block is 4204 instructions over five heavyweight sub-blocks and
