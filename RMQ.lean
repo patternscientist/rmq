@@ -39,6 +39,7 @@ import RMQ.Core.WordRAM.E1ProgramWidth
 import RMQ.Core.WordRAM.E1CrossBlockArm
 import RMQ.Core.WordRAM.E1InteriorReadBlock
 import RMQ.Core.WordRAM.E1InteriorChunkFold
+import RMQ.Core.WordRAM.E1InteriorChunkValue
 import RMQ.Core.GenericSelect.RAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeChunks

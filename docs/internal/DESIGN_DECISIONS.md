@@ -4374,3 +4374,47 @@ Chosen so the fold's scratch is disjoint both from the merge slots
 `mLV`/`mLP`/`mMV`/`mMP` that the cross-block composition requires the interior
 to preserve, and from the atom's own bank: the fold READS `iIdx` (`85`) as its
 logical index input and writes nothing below `89`.
+
+## DD-20260719-008: the chunk fold's value bridge, and where `bitsToNatLE_append` lives (E1 M3d-13)
+
+Context. `interiorChunkFold_runsTo` (`E1InteriorChunkFold.lean:1785`) proved
+the fold's RECEIPT against the route positionally but stated its VALUE only in
+the machine's own vocabulary (`chunkRevAt` of `chunkAcc`). Closing that gap
+needs `bitsToNatLE` distributed over the chunk concatenation
+`collectPayloadWords` builds, and the repository had no such lemma: only
+`TablesRAM.lean:18` (the two namespaces' decoders agree) and
+`WordStore.lean:53` (a fixed-width round trip) existed.
+
+Decision 1 -- placement. `bitsToNatLE_append` is proved in the new module
+`RMQ/Core/WordRAM/E1InteriorChunkValue.lean`, not added to
+`RMQ/Core/SuccinctSpace/WordStore.lean` where `bitsToNatLE` is defined.
+`WordStore.lean` sits near the root of the space-side import graph; adding to
+it rebuilds essentially the whole tree for a lemma only the E1 machine bridge
+consumes, and touches a frozen space-side module for no proof-side benefit.
+If a second consumer appears the lemma should be promoted, and this entry is
+the record of why it is where it is.
+
+Decision 2 -- the reversal is generalised, and had to be.
+`chunkRevAt` (`E1InteriorChunkFold.lean:1099`) peels a base-`scale` digit off
+the BOTTOM of the accumulator; `chunkAcc` (`:656`) builds one ONTO the bottom.
+The two recursions run in opposite directions, so no induction on `chunkRevAt`
+alone lines them up. `chunkRevGen` exposes the partially built little-endian
+result as a parameter and `chunkRevGen_succ_front` proves a step may be taken
+at the FRONT instead of the end; that single identity is what collapses the
+mismatch to one induction. `chunkRevAt_eq_gen` keeps the original definition
+authoritative -- the generalisation is a proof device, not a redefinition of
+what the machine computes.
+
+Decision 3 -- the width premise is carried, not hidden.
+`chunkFoldValue_eq_route_decode` and `interiorChunkFold_cOut_eq_routeDecode`
+carry `∀ j < n, ∀ w, store.readWord? segment (start + j) = some w →
+w.length = wordSize` as an explicit hypothesis. This is NOT decoration in the
+sense DD-20260719-005 warned about: a ragged store makes the route's
+concatenation carry a value no fixed-base digit reversal reproduces, so the
+machine would be WRONG rather than merely unproved. It is discharged where the
+fold meets a concrete `BoundedPayloadWordStore`, and until then it is visible
+debt. `witnessWidth_cell0` discharges it on the existing witness store, and
+`witnessCOut_cell0_via_bridge` derives `2` -- the value
+`chunkFoldWitness_path_bothPresent` obtained by RUNNING the machine -- through
+the bridge rather than by `rfl`, so the premise set is demonstrably
+satisfiable.
