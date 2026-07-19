@@ -128,8 +128,13 @@ THE CHARGED FRINGE ARM AT AN ARBITRARY HOST BASE.
 `fringeArm_runsTo` restated so that the seven hosting facts are replaced by
 the single hypothesis that the arm's own layout is hosted at `A`.  The
 conclusion is unchanged: four charged window reads followed positionally by
-the accepted fold object's trace, the frozen `fringeArmCats`, and the
-route's `bpFringeCandGlobal` of the fold's best candidate in `fRV`/`fRP`.
+the accepted fold object's trace, the frozen `fringeArmCats`, the route's
+`bpFringeCandGlobal` of the fold's best candidate in `fRV`/`fRP`, and
+(M3d-9) the arm's REGISTER PRESERVATION clause on `FringeArmUntouched`.
+
+The preservation clause is what the cross-block composition consumes: the
+left stash's merge slots `mLV` (75) and `mLP` (76) satisfy
+`FringeArmUntouched` (`by decide`), so they survive the RIGHT arm.
 -/
 theorem fringeArmProgramAt_runsTo
     (store : ReadStore) {program : E1Machine.Program} {A S c L : Nat}
@@ -156,7 +161,8 @@ theorem fringeArmProgramAt_runsTo
         bpFringeCandGlobal bb seed start
           (bpFringeChunkFoldTraceResultAtSegmentWithStore store S c
             (windowBitsOfStore store base) seed relLo relHi
-            (Nat.min (relHi / c + 1) 33)).value.2 := by
+            (Nat.min (relHi / c + 1) 33)).value.2 ∧
+      (∀ r, FringeArmUntouched r -> regsF r = regs r) := by
   obtain ⟨p0, p1, p2, p3, p4, p5⟩ := fringeArmProgramAt_hosts S c L A hHost
   exact fringeArm_runsTo store hc p0 p1 p2 p3 p4 p5 base bb relLo relHi
     seed start h0 h1 h2 regs hBase hLo hHi hAcc hBB hSeed hStart

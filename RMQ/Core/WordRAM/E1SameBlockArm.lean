@@ -405,7 +405,9 @@ theorem sameBlockArm_runsTo
         (bpChunkedSameBlockCloseSeededTraceResultAtSegmentWithStore
           shape store fringeSegment blockSize leftClose rightClose
           seed).value := by
-  obtain ⟨regsA, hrunA, hvalA⟩ :=
+  -- `fringeArm_runsTo` also delivers a preservation clause (M3d-9); this
+  -- theorem's own conclusion does not restate it, so it is discarded here.
+  obtain ⟨regsA, hrunA, hvalA, _hpresA⟩ :=
     fringeArm_runsTo store hc hPro hPre hMrg hTail hbr hEpi
       (sbBase shape blockSize leftClose) (sbBB shape blockSize leftClose)
       (sbRelLo shape blockSize leftClose)

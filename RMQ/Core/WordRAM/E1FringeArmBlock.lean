@@ -929,6 +929,41 @@ def fringeArmCats (store : ReadStore) (S c : Nat) (window : List Bool)
         seed relLo relHi count).value.2).isSome
 
 /--
+THE WHOLE ARM'S WRITE-SET COMPLEMENT.
+
+The arm writes exactly the fold bank `40 .. 62` (`FringeFoldUntouched`,
+`E1FringeFoldBlock.lean:962`) together with the epilogue's scratch `fT`
+(60, already inside the fold bank) and the two result registers `fRV`
+(67) and `fRP` (68) (`FringeCandGlobalUntouched`, `:775`).  Everything
+else survives the arm untouched.
+
+This predicate is the union of the two constituent write sets and nothing
+more: it is not a conservative under-approximation invented to make a
+composition go through.  It is what the cross-block composition needs --
+the merge slots `mLV` (75) and `mLP` (76) satisfy it, so the left stash
+survives the right arm.
+
+NOTE FOR CALLERS (the recurring abbrev-opacity gotcha, M3d-4/M3d-8): the
+bounds are register NUMERALS, so a side condition stated with an abbrev
+(`FringeArmUntouched mLV`) is opaque to `omega`.  Instantiate CLOSED
+conditions with `by decide`.
+-/
+abbrev FringeArmUntouched (r : Nat) : Prop :=
+  r < 40 ∨ (63 ≤ r ∧ r ≠ 67 ∧ r ≠ 68)
+
+/-- A register outside the arm's write set is outside the fold's. -/
+theorem fringeFoldUntouched_of_arm {r : Nat} (h : FringeArmUntouched r) :
+    FringeFoldUntouched r := by
+  simp only [FringeArmUntouched] at h
+  omega
+
+/-- A register outside the arm's write set is outside the epilogue's. -/
+theorem fringeCandGlobalUntouched_of_arm {r : Nat}
+    (h : FringeArmUntouched r) : FringeCandGlobalUntouched r := by
+  simp only [FringeArmUntouched] at h
+  refine ⟨?_, ?_, ?_⟩ <;> omega
+
+/--
 Exact simulation of a whole charged fringe arm: four charged window
 reads, the capped charged chunk fold, and the pure global rebase.
 
@@ -968,7 +1003,8 @@ theorem fringeArm_runsTo
         bpFringeCandGlobal bb seed start
           (bpFringeChunkFoldTraceResultAtSegmentWithStore store S c
             (windowBitsOfStore store base) seed relLo relHi
-            (Nat.min (relHi / c + 1) 33)).value.2 := by
+            (Nat.min (relHi / c + 1) 33)).value.2 ∧
+      (∀ r, FringeArmUntouched r -> regsF r = regs r) := by
   obtain ⟨regsL, hrunL, hvalL, hpresL⟩ :=
     fringeLeg_runsTo store hc hPro hPre hMrg hTail hbr base relLo relHi
       seed h0 h1 h2 regs hBase hLo hHi hAcc
@@ -983,7 +1019,7 @@ theorem fringeArm_runsTo
     rw [hpresL fSeed (by decide), hSeed]
   have hStartL : regsL fStart = start := by
     rw [hpresL fStart (by decide), hStart]
-  obtain ⟨regsF, hrunE, hvalE, _hpresE⟩ :=
+  obtain ⟨regsF, hrunE, hvalE, hpresE⟩ :=
     fringeCandGlobal_runsTo store hEpi regsL bb seed start
       hBBL hSeedL hStartL
   -- the epilogue's arm index is the route-side occupancy of the best
@@ -1005,8 +1041,11 @@ theorem fringeArm_runsTo
         (windowBitsOfStore store base) seed relLo relHi
         (Nat.min (relHi / c + 1) 33)).trace := by simp
   rw [hev] at htrans
-  refine ⟨regsF, htrans, ?_⟩
-  rw [hvalE, hbest]
+  refine ⟨regsF, htrans, ?_, ?_⟩
+  · rw [hvalE, hbest]
+  · intro r hr
+    rw [hpresE r (fringeCandGlobalUntouched_of_arm hr),
+      hpresL r (fringeFoldUntouched_of_arm hr)]
 
 /-! ## Value bridges to the named accepted fringe arm objects
 
