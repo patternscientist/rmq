@@ -634,6 +634,137 @@ theorem wholeQueryOutputStage_runsTo (shape : Cartesian.CartesianShape)
   · rw [RegFile.write_same]
     exact hval
 
+/-! ## THE REPAIR, CONFIRMED — three independent ways
+
+The brief for this lane was explicit that a layout argument is not evidence
+here, three address coincidences over.  So the repair is confirmed at three
+levels, in increasing strength: the ADDRESSES differ, the INSTRUCTION at the
+old exit is not the `none` writer's, and the machine EXECUTES from that
+address to a halt strictly before the `none` writer's first instruction.
+
+The third subsumes the first two.  All three are kept because each fails
+differently under a future layout drift, and the campaign's experience is that
+the check which happens to survive a refactor is the one that catches the next
+defect.
+-/
+
+/-- THE WHOLE-QUERY PROGRAM: the skeleton at the repaired valid path, with the
+select join's miss branches wired to the skeleton's own `none` writer. -/
+def wholeQueryProgram (shape : Cartesian.CartesianShape) (n : Nat) :
+    E1Machine.Program :=
+  programSkeleton n (wholeQueryValidPath shape wholeQueryNoneExit)
+
+/-- LEVEL 1 — ADDRESSES.  The close/LCA leg's exit is no longer the invalid
+exit's base: `5580` against `5644`.  This is the direct negation of
+`wholeQueryValidPath_exit_is_invalidExit`'s conclusion, with the repaired path
+in place of the through-LCA one. -/
+theorem wholeQueryValidPath_exit_is_not_invalidExit
+    (shape : Cartesian.CartesianShape) :
+    E1WholeQueryCloseLca.closeLcaExit 827 ≠
+      8 + (wholeQueryValidPath shape wholeQueryNoneExit).length := by
+  simp [E1WholeQueryCloseLca.closeLcaExit]
+
+/-- LEVEL 2 — INSTRUCTION CONTENT.  At the address the close/LCA leg exits to,
+the repaired program holds the output stage's first instruction, and that
+instruction is not the one `invalidExitBlock` begins with.
+
+An address argument alone would not settle this: two different blocks can
+begin at two different addresses and still both be `none` writers.  This says
+the code actually reached is the rank setup. -/
+theorem wholeQueryProgram_at_closeLcaExit_is_not_noneWriter
+    (shape : Cartesian.CartesianShape) (n : Nat) :
+    (wholeQueryProgram shape n)[E1WholeQueryCloseLca.closeLcaExit 827]? =
+        some (.const rPos 1) ∧
+      some (Instr.const rPos 1) ≠ invalidExitBlock.head? := by
+  refine ⟨?_, by decide⟩
+  have hvp : HostedAt (wholeQueryProgram shape n) 8
+      (wholeQueryValidPath shape wholeQueryNoneExit) :=
+    programSkeleton_hosts_validPath n _
+  obtain ⟨_, hout⟩ := wholeQueryValidPath_hosts_outputStage shape hvp
+  exact (wholeQueryOutputStage_hosts shape hout).1.head
+
+/--
+LEVEL 3 — EXECUTION.  THE REPAIRED VALID PATH DOES NOT REACH THE `none`
+WRITER.
+
+From the close/LCA leg's exit — the exact address that used to fall into
+`.const regOut 0; .halt` — the repaired program RUNS to a HALTED state at pc
+`5643`, while `invalidExitBlock`'s two instructions sit at `5644` and `5645`.
+The machine stops one instruction before the `none` writer begins.
+
+`RunsTo` is exact-fuel (`E1MachineCalculus.lean:96`), so this is not a
+reachability estimate: every step between `5580` and the halt is enumerated by
+the derivation, and none of them is at `5644`.
+
+The output clause is what carries content where the addresses would not.  The
+`none` writer's whole effect is `regOut := 0`; this run's `regOut` is a ROUTE
+OBJECT — the rank leg's value at the position the route's `.full` branch
+indexes.  So the repair is visible in the answer, not only in the layout.
+-/
+theorem wholeQueryValidPath_does_not_reach_noneWriter
+    (shape : Cartesian.CartesianShape) (n : Nat) (regs : RegFile) :
+    ∃ regsF : RegFile,
+      RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          (wholeQueryProgram shape n)
+          ⟨regs, E1WholeQueryCloseLca.closeLcaExit 827, false⟩
+          ⟨regsF, 5643, true⟩
+        (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape
+          (regs fRes + 1)).trace
+        ([Category.registerWrite, Category.arithmetic] ++
+          (rankCloseHitCats
+              (bpWordChunkCount (bpFringeChunkBits shape.bpCode.length)
+                ((builtRelativeSplitBPCloseRankData shape).wordOffset
+                  (regs fRes + 1))) ++
+            [Category.registerWrite, Category.control])) ∧
+      (5643 : Nat) <
+        8 + (wholeQueryValidPath shape wholeQueryNoneExit).length ∧
+      regsF regOut =
+        (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape
+          (regs fRes + 1)).value := by
+  have hvp : HostedAt (wholeQueryProgram shape n) 8
+      (wholeQueryValidPath shape wholeQueryNoneExit) :=
+    programSkeleton_hosts_validPath n _
+  obtain ⟨_, hout⟩ := wholeQueryValidPath_hosts_outputStage shape hvp
+  obtain ⟨regsF, hrun, hval⟩ := wholeQueryOutputStage_runsTo shape hout regs
+  have hpc : E1WholeQueryCloseLca.closeLcaExit 827 + 63 = 5643 := by
+    simp [E1WholeQueryCloseLca.closeLcaExit]
+  rw [hpc] at hrun
+  exact ⟨regsF, hrun, by simp, hval⟩
+
+/--
+WHAT THE REPAIR DOES *NOT* DECIDE, AS AN IFF.
+
+Modelled on `lcaNone_impostor` (`E1WholeQueryCats.lean`): the honest way to
+record a receipt's blind spot is to state the exact condition under which the
+repaired program's output coincides with the `none` writer's, rather than to
+assert the coincidence never happens.
+
+The output stage writes `regOut := rank.value`, and the `none` writer writes
+`regOut := 0`.  So the two agree EXACTLY when the rank leg's value is zero.
+This lane does not prove that never happens, and does not need to: the two
+paths are distinguished by their RECEIPTS and by their halt addresses in every
+case, including that one.  What this theorem forbids is a future consumer
+concluding "the output stage always answers `some`" from the layout repair
+alone — it does not, and the condition is named here. -/
+theorem wholeQueryOutput_agrees_with_noneWriter_iff
+    (shape : Cartesian.CartesianShape) {regsF : RegFile} {pos : Nat}
+    (hout : regsF regOut =
+      (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape pos).value) :
+    decodePacket (regsF regOut) = none ↔
+      (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape pos).value
+        = 0 := by
+  rw [hout]
+  constructor
+  · intro h
+    by_cases hz :
+        (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape pos).value
+          = 0
+    · exact hz
+    · exact absurd h (by simp [decodePacket, hz])
+  · intro h
+    rw [h]
+    rfl
+
 /-! ## SCOPE, STATED HONESTLY
 
 What is EXECUTED above is the guard and both select legs — pc `0` to `821`.
