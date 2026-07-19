@@ -420,6 +420,157 @@ theorem sameBlockLeg_runsTo_canonical
     simp [bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore,
       WordRAM.TraceResult.bind, canonicalSeed]
 
+/-! ## ANTI-VACUITY: the hosting hypotheses are simultaneously satisfiable
+
+`sameBlockLeg_runsTo_canonical` takes THIRTEEN `HostedAt` hypotheses plus a
+back-edge fetch, all constraining ONE program at overlapping-looking
+offsets.  A theorem whose hypotheses cannot all hold at once is worthless,
+so this section exhibits a concrete program and discharges every one of
+them, leaving only genuine route-side facts as hypotheses.
+
+This is the vacuity challenge the matrix demands for a composed
+simulation: had any offset in the layout table been wrong by one, the
+peeling below would fail to typecheck.
+-/
+
+/-- Peel one hosted segment off an append chain at a computed base. -/
+private theorem hostedAt_step {program : E1Machine.Program} {base : Nat}
+    {code₁ code₂ : List Instr} {n : Nat}
+    (h : HostedAt program base (code₁ ++ code₂))
+    (hn : base + code₁.length = n) :
+    HostedAt program n code₂ := hn ▸ h.append_right
+
+/-- The concrete 173-instruction same-block close leg program, laid out
+exactly as the table above.  The internal branch targets (`97` for the
+fold back edge, `164` for the global-rebase epilogue) are the absolute
+addresses that layout produces. -/
+def sameBlockLegProgram (shape : Cartesian.CartesianShape)
+    (fringeSegment blockSize : Nat) : List Instr :=
+  windowAddr blockSize (SuccinctRank.machineWordBits shape.bpCode.length) ++
+    (rankSeedPos ++
+      (rankCloseBlock 5 concreteBPNativeRankCloseTraceSegmentBase
+          (bpFringeChunkBits shape.bpCode.length) shape.bpCode.length
+          (builtRelativeSplitBPCloseRankData shape).wordSize
+          (builtRelativeSplitBPCloseRankData shape).blocksPerSuper ++
+        (rankSeedFinish ++
+          (windowRange ++
+            (fringeArmPrologue (sbChunkBits shape) ++
+              (fringePrefix fringeSegment (sbChunkBits shape) ++
+                (fringeMerge 97 ++
+                  ((fringeShift (sbChunkBits shape)
+                        (SuccinctRank.machineWordBits shape.bpCode.length) ++
+                      fringeAdvance) ++
+                    ([Instr.brNZ fCnt 97] ++
+                      (fringeCandGlobal 164 ++ sameBlockClose))))))))))
+
+@[simp] theorem sameBlockLegProgram_length
+    (shape : Cartesian.CartesianShape) (fringeSegment blockSize : Nat) :
+    (sameBlockLegProgram shape fringeSegment blockSize).length = 173 := by
+  simp [sameBlockLegProgram]
+
+/--
+EVERY hosting hypothesis of `sameBlockLeg_runsTo_canonical` holds
+simultaneously of `sameBlockLegProgram` at base `0`, so the composed
+simulation is NOT vacuous.  Each offset below is forced by the preceding
+segments' lengths; the layout table is checked, not asserted.
+-/
+theorem sameBlockLegProgram_hosts
+    (shape : Cartesian.CartesianShape) (fringeSegment blockSize : Nat) :
+    HostedAt (sameBlockLegProgram shape fringeSegment blockSize) 0
+        (windowAddr blockSize
+          (SuccinctRank.machineWordBits shape.bpCode.length)) ∧
+      HostedAt (sameBlockLegProgram shape fringeSegment blockSize) 4
+        rankSeedPos ∧
+      HostedAt (sameBlockLegProgram shape fringeSegment blockSize) 5
+        (rankCloseBlock 5 concreteBPNativeRankCloseTraceSegmentBase
+          (bpFringeChunkBits shape.bpCode.length) shape.bpCode.length
+          (builtRelativeSplitBPCloseRankData shape).wordSize
+          (builtRelativeSplitBPCloseRankData shape).blocksPerSuper) ∧
+      HostedAt (sameBlockLegProgram shape fringeSegment blockSize) 65
+        rankSeedFinish ∧
+      HostedAt (sameBlockLegProgram shape fringeSegment blockSize) 68
+        windowRange ∧
+      HostedAt (sameBlockLegProgram shape fringeSegment blockSize) 76
+        (fringeArmPrologue (sbChunkBits shape)) ∧
+      HostedAt (sameBlockLegProgram shape fringeSegment blockSize) 97
+        (fringePrefix fringeSegment (sbChunkBits shape)) ∧
+      HostedAt (sameBlockLegProgram shape fringeSegment blockSize) 129
+        (fringeMerge 97) ∧
+      HostedAt (sameBlockLegProgram shape fringeSegment blockSize) 142
+        (fringeShift (sbChunkBits shape)
+          (SuccinctRank.machineWordBits shape.bpCode.length) ++
+          fringeAdvance) ∧
+      (sameBlockLegProgram shape fringeSegment blockSize)[163]? =
+        some (.brNZ fCnt 97) ∧
+      HostedAt (sameBlockLegProgram shape fringeSegment blockSize) 164
+        (fringeCandGlobal 164) ∧
+      HostedAt (sameBlockLegProgram shape fringeSegment blockSize) 171
+        sameBlockClose := by
+  have h0 : HostedAt (sameBlockLegProgram shape fringeSegment blockSize) 0
+      (sameBlockLegProgram shape fringeSegment blockSize) :=
+    hostedAt_self _
+  rw [sameBlockLegProgram] at h0
+  have h1 := hostedAt_step (n := 4) h0 (by simp)
+  have h2 := hostedAt_step (n := 5) h1 (by simp)
+  have h3 := hostedAt_step (n := 65) h2 (by simp)
+  have h4 := hostedAt_step (n := 68) h3 (by simp)
+  have h5 := hostedAt_step (n := 76) h4 (by simp)
+  have h6 := hostedAt_step (n := 97) h5 (by simp)
+  have h7 := hostedAt_step (n := 129) h6 (by simp)
+  have h8 := hostedAt_step (n := 142) h7 (by simp)
+  have h9 := hostedAt_step (n := 163) h8 (by simp)
+  have h10 := hostedAt_step (n := 164) h9 (by simp)
+  have h11 := hostedAt_step (n := 171) h10 (by simp)
+  refine ⟨h0.append_left, h1.append_left, h2.append_left, h3.append_left,
+    h4.append_left, h5.append_left, h6.append_left, h7.append_left,
+    h8.append_left, ?_, h10.append_left, h11⟩
+  exact h9.append_left 0 (by decide)
+
+/--
+THE SAME-BLOCK CLOSE LEG, HOSTING-UNCONDITIONAL.
+
+`sameBlockLeg_runsTo_canonical` with every `HostedAt` hypothesis
+discharged by the concrete `sameBlockLegProgram`.  What remains are only
+genuine route-side facts: the chunk width fits the machine word, and the
+three window words the arm reads are full-width in the canonical store.
+-/
+theorem sameBlockLegProgram_runsTo_canonical
+    (shape : Cartesian.CartesianShape)
+    {fringeSegment blockSize leftClose rightClose : Nat}
+    (hc : sbChunkBits shape ≤ SuccinctRank.machineWordBits shape.bpCode.length)
+    (h0 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (sbBase shape blockSize leftClose)).length =
+        SuccinctRank.machineWordBits shape.bpCode.length)
+    (h1 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (sbBase shape blockSize leftClose + 1)).length =
+        SuccinctRank.machineWordBits shape.bpCode.length)
+    (h2 : (readBits (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (sbBase shape blockSize leftClose + 2)).length =
+        SuccinctRank.machineWordBits shape.bpCode.length)
+    (regs : RegFile)
+    (hClose : regs fClose = leftClose) (hRight : regs fRight = rightClose) :
+    ∃ regsF : RegFile,
+      RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          (sameBlockLegProgram shape fringeSegment blockSize)
+          ⟨regs, 0, false⟩ ⟨regsF, 173, false⟩
+        (bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
+          shape (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape)
+          fringeSegment (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          blockSize leftClose rightClose).trace
+        (sameBlockLegCats shape fringeSegment blockSize leftClose
+          rightClose) ∧
+      some (regsF fRes) =
+        (bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
+          shape (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape)
+          fringeSegment (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          blockSize leftClose rightClose).value := by
+  obtain ⟨p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11⟩ :=
+    sameBlockLegProgram_hosts shape fringeSegment blockSize
+  have h :=
+    sameBlockLeg_runsTo_canonical (A := 0) shape hc p0 p1 p2 p3 p4 p5 p6 p7
+      p8 p9 p10 p11 h0 h1 h2 regs hClose hRight
+  simpa using h
+
 end E1SameBlockLeg
 end WordRAM
 end RMQ
