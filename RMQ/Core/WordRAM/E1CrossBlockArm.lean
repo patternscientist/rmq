@@ -1140,43 +1140,61 @@ gains those conjuncts and this proof gains the matching obligation to
 establish them at `A + 176`.  That is a hypothesis change, not a
 restatement, and the four preservation clauses are unaffected.
 
-## WHY THIS ARM EXPORTS NO `CloseLegUntouched` CLAUSE (E1-LaneCL)
+## THIS ARM NOW EXPORTS `CloseLegUntouched` (E1-LaneA3, DD-20260719-160)
 
-The same-block side now exports `∀ r, CloseLegUntouched r -> regsF r =
-regs r` (`CloseLegUntouched r := r ≤ 7 ∨ r = 28`,
-`E1SameBlockArm.lean`), matching what
-`selectCloseBlock_runsTo_canonical` already exports so the whole-query
-glue can chain `select; select; close`.  THIS ARM CANNOT YET, and the
-reason is structural rather than bookkeeping:
+The clause the header previously recorded as unprovable is now a third
+conjunct of the conclusion:
 
-`hInterior` promises preservation of exactly FOUR registers -- `fClose`,
-`fRight`, `mLV`, `mLP`.  The interior sits in the MIDDLE of this arm, so
-every register the arm might claim must survive it, and `hInterior` says
-nothing about `0..7` or `28`.  The thirteen `hpres*` facts in the proof
-below cover every segment EXCEPT the hole, so the clause is unprovable
-here no matter how the composition is arranged.
+    (∀ r, CloseLegUntouched r -> regsF r = regs r)
 
-THE ONE-LINE CHANGE THAT UNBLOCKS IT, and evidence it is satisfiable at
-the intended instantiation rather than a new obstruction: `hInterior`'s
-consequent gains a fifth conjunct
+with `CloseLegUntouched r := r ≤ 7 ∨ r = 28` (`E1SameBlockArm.lean:72`),
+matching the same-block twin (`E1SameBlockArm.lean:457`) and
+`selectCloseBlock_runsTo_canonical`, so the whole-query glue can chain
+`select; select; close` across BOTH dispatch arms rather than one.
 
-    (∀ r, CloseLegUntouched r -> regsI r = regsS r)
+WHY IT WAS BLOCKED, AND WHAT ACTUALLY CHANGED.  The obstruction was never
+this arm's own write set; it was the HOLE.  `hInterior` promised exactly
+four register equalities (`fClose`, `fRight`, `mLV`, `mLP`), the interior
+sits in the MIDDLE of the arm, and nothing entitled the caller to anything
+about `0..7` or `28` across it.  So `hInterior`'s consequent gains a fifth
+conjunct, and the proof threads it alongside the existing four.
 
-and this proof then threads it alongside the existing four.  The interior
-already preserves that band -- `LegUntouched`
-(`E1InteriorMinCandidate.lean:934`) unfolds to `ChunkFoldUntouched r`
-(`= r < 89 ∨ 99 < r`, `E1InteriorChunkFold.lean:928`) together with
-disequalities against the summary bank `100..104`, `mMV`/`mMP` (`77`/`78`)
-and the range `105..117`, every one of which holds at `r ≤ 7` and at
-`r = 28`; `SpanUntouched` (`E1InteriorSpanBlock.lean:226`) adds only
-`118..122` and `100`.  So the conjunct is discharged by the interior
-lane's OWN existing predicates and costs it no new reasoning.
+**THE FIFTH CONJUNCT CANNOT BE A SEPARATE PREMISE, and that is why
+`interiorDispatch_preserves_closeLeg`'s standalone form did not already
+settle this.**  The preservation is a statement about the register file
+`regsI` that `hInterior`'s own existential BINDS.  A sibling hypothesis
+`(hPres : ∀ r, CloseLegUntouched r -> ...)` has no way to name that
+witness, so it cannot be about the same run.  Widening `hInterior` is
+forced, not stylistic.
 
-That interface is the interior lane's, so it is recorded here rather than
-changed unilaterally.  An EXECUTED witness of the entailment is owed at
-the point of composition, in a module downstream of both this file and
-`E1InteriorMinCandidate.lean` -- this file is built BEFORE the interior
-modules, so it cannot state one.
+SOUNDNESS, CHECKED AGAINST THIS ARM'S OWN WRITE SET RATHER THAN AGAINST A
+CONSUMER'S OPERANDS.  Every one of the fourteen segments below preserves
+the band, by its OWN predicate:
+
+  `WindowAddrUntouched`   `r ≠ 63 ∧ r ≠ 64`                (steps 1, 8)
+  `RankSeedLegUntouched`  `(r ≤ 7 ∨ 28 ≤ r) ∧ ≠46 ≠61 ≠65` (steps 2, 9)
+  `CrossRangeUntouched`   `≠50 ≠51 ≠60 ≠61 ≠66`            (steps 3, 10)
+  `FringeArmUntouched`    `r < 40 ∨ (63 ≤ r ∧ ≠67 ≠68)`    (steps 4, 11)
+  `CrossStashLeftUntouched`  `≠83 ≠75 ≠76`                 (step 5)
+  `CrossRepointUntouched`    `≠70`                         (step 7)
+  `CrossStashRightUntouched` `≠83 ≠79 ≠80`                 (step 12)
+  `CrossPinOneUntouched`     `≠40`                         (step 13)
+  `CandMerge3Untouched`      `≠69 ≠81 ≠82 ≠83 ≠84`         (step 14)
+
+Note in particular that the repoint WRITES `fClose` and the merge WRITES
+`fRes`, but `fClose = 70` and `fRes = 69` are both outside the band, so
+neither is a counterexample.  This check is deliberately NOT
+`dispatchUntouched_at_crossBlockArm_operands`-shaped: an operands check
+passes under an UNSOUND predicate too, because it tests one consumer's
+reads rather than this block's writes.
+
+ADEQUACY is the separate question and is answered by
+`closeLegUntouched_at_query_operands` (`E1SameBlockArm.lean:87`) and
+`closeLegUntouched_at_guard_scratch` (`:94`), both EVALUATED: the band
+covers `regLeft` (0), `regRight` (1), `regOut` (2), `xIdx` (28) and the
+guard scratch `3..7`.  The band deliberately does NOT cover `rVal` (9),
+which carries the SECOND select's answer -- that answer is consumed by
+the select join BEFORE this leg begins, so it has nothing to survive.
 -/
 theorem crossBlockArmProgramAt_runsTo
     (shape : Cartesian.CartesianShape) {program : E1Machine.Program}
@@ -1195,7 +1213,8 @@ theorem crossBlockArmProgramAt_runsTo
           interiorTrace interiorCats ∧
         bestOfRegs (regsI mMV) (regsI mMP) = interiorValue ∧
         regsI fClose = regsS fClose ∧ regsI fRight = regsS fRight ∧
-        regsI mLV = regsS mLV ∧ regsI mLP = regsS mLP)
+        regsI mLV = regsS mLV ∧ regsI mLP = regsS mLP ∧
+        (∀ r, CloseLegUntouched r → regsI r = regsS r))
     (regs : RegFile)
     (hClose : regs fClose = leftClose) (hRight : regs fRight = rightClose) :
     ∃ regsF : RegFile,
@@ -1213,7 +1232,8 @@ theorem crossBlockArmProgramAt_runsTo
         (crossBlockArmSpec shape
           (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape)
           fringeSegment (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-          ⟨interiorValue, interiorTrace⟩ leftClose rightClose).value := by
+          ⟨interiorValue, interiorTrace⟩ leftClose rightClose).value ∧
+      (∀ r, CloseLegUntouched r → regsF r = regs r) := by
   obtain ⟨q0, q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14,
     q15, q16, q17⟩ :=
     crossBlockArmProgramAt_hosts shape fringeSegment (canonicalBPRelativeSummaryBlockSizeRaw shape) A interior hHost
@@ -1249,7 +1269,7 @@ theorem crossBlockArmProgramAt_runsTo
   -- 5. LEFT stash
   obtain ⟨r5, hrun5, hlv5, hlp5, hpres5⟩ := crossStashLeft_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) q6 r4
   -- 6. THE INTERIOR (hypothesis)
-  obtain ⟨r6, hrun6, hmid6, hcl6, hri6, hlv6, hlp6⟩ :=
+  obtain ⟨r6, hrun6, hmid6, hcl6, hri6, hlv6, hlp6, hpres6⟩ :=
     hInterior r5
       (by
         rw [hpres5 fClose (by decide), hpres4 fClose (by decide),
@@ -1343,7 +1363,7 @@ theorem crossBlockArmProgramAt_runsTo
       hpres9 mMP (by decide), hpres8 mMP (by decide),
       hpres7 mMP (by decide)]
   -- 14. THE MERGE
-  obtain ⟨r14, hrun14, _hacc14, hres14, _hpres14⟩ :=
+  obtain ⟨r14, hrun14, _hacc14, hres14, hpres14⟩ :=
     candMerge3_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) q17 r13 (r4 fRV) (r4 fRP) (r6 mMV) (r6 mMP)
       (r11 fRV) (r11 fRP) hone13 hLV hLP hMV hMP
       (by rw [hpres13 mRV (by decide)]; exact hrv12)
@@ -1375,7 +1395,7 @@ theorem crossBlockArmProgramAt_runsTo
     (by omega : A + 353 + interior.length + 1 = A + 354 + interior.length)
   have n14 := runsTo_pc_congr hrun14
     (by omega : A + 354 + interior.length + 16 = A + 370 + interior.length)
-  refine ⟨r14, ?_, ?_⟩
+  refine ⟨r14, ?_, ?_, ?_⟩
   · have htrans :=
       ((((((((((((hrun1.trans hrun2).trans hrun3).trans hrun4).trans
         hrun5).trans hrun6).trans n7).trans n8).trans n9).trans
@@ -1397,6 +1417,17 @@ theorem crossBlockArmProgramAt_runsTo
       List.append_assoc] using htrans
   · rw [hres14, hleft.symm, hright.symm, hmid6]
     simp [crossBlockArmSpec, crossLeftArm, crossRightArm, canonicalSeed]
+  · -- THE PROTECTED BAND, threaded through all fourteen segments.  The
+    -- interior's clause (`hpres6`) is the one that had to come from the
+    -- hypothesis; the other thirteen are each segment's own predicate,
+    -- every one of which admits `r ≤ 7 ∨ r = 28` (see the header).
+    intro r hr
+    have hr' : r ≤ 7 ∨ r = 28 := hr
+    rw [hpres14 r (by omega), hpres13 r (by omega), hpres12 r (by omega),
+      hpres11 r (by omega), hpres10 r (by omega), hpres9 r (by omega),
+      hpres8 r (by omega), hpres7 r (by omega), hpres6 r hr,
+      hpres5 r (by omega), hpres4 r (by omega), hpres3 r (by omega),
+      hpres2 r (by omega), hpres1 r (by omega)]
 
 /-! ## Remaining (NOT implemented here)
 

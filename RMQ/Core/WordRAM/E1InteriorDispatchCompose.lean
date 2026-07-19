@@ -1158,8 +1158,18 @@ theorem canonicalBlockSize_eq_layoutBlockSize
 `crossBlockArmProgramAt_runsTo`'s `hInterior` (`E1CrossBlockArm.lean:1181`)
 promises, for EVERY entry register file agreeing on `fClose` and `fRight`:
 a `RunsTo` at base `A + 176` to `A + 176 + interior.length`, the value in
-`mMV`/`mMP`, and FOUR register equalities -- `fClose`, `fRight`, `mLV`,
-`mLP`.  Four, not five.
+`mMV`/`mMP`, four register equalities -- `fClose`, `fRight`, `mLV`, `mLP`
+-- and, since E1-LaneA3 (DD-20260719-160), a FIFTH conjunct
+`∀ r, CloseLegUntouched r → regsI r = regsS r`.
+
+**WHY THE FIFTH CONJUNCT LIVES HERE RATHER THAN BESIDE
+`interiorDispatch_preserves_closeLeg`.**  That theorem proves the same
+fact, but as a SEPARATE existential: its `regsI` is its own, not the one
+`hInterior`'s existential binds.  The cross arm must thread preservation
+through the very register file whose run it is composing, so a standalone
+lemma cannot be substituted for the conjunct no matter how it is stated.
+Both are now derived from ONE `interiorDispatchBlock_runsTo` invocation,
+so they cannot drift apart.
 
 **The quantifier order is what makes this nontrivial.**  `interiorTrace`,
 `interiorCats` and `interiorValue` are bound OUTSIDE the `∀ regsS`, so the
@@ -1196,12 +1206,13 @@ theorem interiorDispatch_hInterior (shape : Cartesian.CartesianShape)
               leftClose / (RelativeRmm.canonicalLayout shape).blockSize -
                 1) ∧
         regsI fClose = regsS fClose ∧ regsI fRight = regsS fRight ∧
-        regsI mLV = regsS mLV ∧ regsI mLP = regsS mLP := by
+        regsI mLV = regsS mLV ∧ regsI mLP = regsS mLP ∧
+        (∀ r, CloseLegUntouched r → regsI r = regsS r) := by
   intro regsS hCl hRi
   obtain ⟨regsI, hrun, hval, hpres⟩ :=
     interiorDispatchBlock_runsTo shape regsS leftClose rightClose _ _ hHost
       hCl hRi rfl rfl
-  refine ⟨regsI, ?_, hval, ?_, ?_, ?_, ?_⟩
+  refine ⟨regsI, ?_, hval, ?_, ?_, ?_, ?_, ?_⟩
   · rw [canonicalInteriorDispatchBlock_length]
     exact hrun
   · exact hpres fClose
@@ -1212,6 +1223,12 @@ theorem interiorDispatch_hInterior (shape : Cartesian.CartesianShape)
       E1InteriorDispatch.dispatchUntouched_at_crossBlockArm_operands.2.2.1
   · exact hpres mLP
       E1InteriorDispatch.dispatchUntouched_at_crossBlockArm_operands.2.2.2
+  · -- The band, from the dispatch block's OWN predicate.  Note this is the
+    -- clause `dispatchUntouched_at_crossBlockArm_operands` is powerless to
+    -- justify: that check names four registers the consumer READS, whereas
+    -- this quantifies over everything the block does not WRITE.
+    intro r hr
+    exact hpres r (E1InteriorDispatch.dispatchUntouched_of_closeLegUntouched hr)
 
 /-- **THE ADDITIONAL EXPORT, NOT A FIFTH CONJUNCT.**
 
@@ -1324,7 +1341,8 @@ theorem crossBlockArm_withCanonicalInterior_runsTo
               (rightClose / (RelativeRmm.canonicalLayout shape).blockSize -
                 leftClose / (RelativeRmm.canonicalLayout shape).blockSize -
                   1)⟩
-          leftClose rightClose).value :=
+          leftClose rightClose).value ∧
+      (∀ r, CloseLegUntouched r → regsF r = regs r) :=
   E1CrossBlockArm.crossBlockArmProgramAt_runsTo shape hHost
     (interiorDispatch_hInterior shape
       ((E1CrossBlockArm.crossBlockArmProgramAt_hosts shape fringeSegment

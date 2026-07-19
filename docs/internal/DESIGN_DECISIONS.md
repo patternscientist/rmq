@@ -6791,3 +6791,85 @@ the cross-block arm's interior object is not reconciled with the route's
 (`crossBlockArmSpec_eq` yields an `if`-guarded interior where
 `crossBlockArm_withCanonicalInterior_runsTo` produces
 `⟨dispatchRouteValue …, dispatchEvents …⟩`, and no theorem identifies them).
+
+---
+
+## DD-20260719-160 — `hInterior` gains a fifth conjunct; the cross arm exports `CloseLegUntouched`
+
+**Status.** Landed, E1-LaneA3, branch `claude/b1-b2-charged-fringe-tables`.
+Build green at the commit.
+
+`crossBlockArmProgramAt_runsTo` (`E1CrossBlockArm.lean`) now exports a third
+conclusion conjunct `∀ r, CloseLegUntouched r → regsF r = regs r`, and its
+`hInterior` premise's consequent gains a matching fifth conjunct
+`∀ r, CloseLegUntouched r → regsI r = regsS r`.
+`interiorDispatch_hInterior` (`E1InteriorDispatchCompose.lean`) supplies it
+from the dispatch block's own `hpres`, via
+`dispatchUntouched_of_closeLegUntouched`.
+
+**WHY A FIFTH CONJUNCT AND NOT A SIBLING PREMISE.** This is the load-bearing
+structural point and it is why `interiorDispatch_preserves_closeLeg`'s
+existing standalone form did not already settle the matter. The preservation
+is a statement about the register file `regsI` that `hInterior`'s own
+EXISTENTIAL binds. A sibling hypothesis has no way to name that witness, so
+it cannot be about the same run. `interiorDispatch_preserves_closeLeg` proves
+the same fact but under its own separate existential, and its docstring
+explicitly declined to widen `hInterior` ("THE ADDITIONAL EXPORT, NOT A FIFTH
+CONJUNCT"). That was the right call for a lane that did not own
+`E1CrossBlockArm.lean`; it is not a reason the conjunct is avoidable.
+Widening is forced, not stylistic. Both are now derived from ONE
+`interiorDispatchBlock_runsTo` invocation so they cannot drift.
+
+**SOUNDNESS, CHECKED AGAINST THE ARM'S OWN WRITE SET.** The campaign has
+shipped both a too-WEAK preservation predicate and an UNSOUND one, and
+`dispatchUntouched_at_crossBlockArm_operands` passes under both because it
+checks one consumer's READS rather than the block's WRITES. So the check made
+here is the write-set one: each of the arm's fourteen segments admits the band
+`{0..7} ∪ {28}` by its own predicate — `WindowAddrUntouched` (`≠63 ≠64`),
+`RankSeedLegUntouched` (`(r ≤ 7 ∨ 28 ≤ r) ∧ ≠46 ≠61 ≠65`),
+`CrossRangeUntouched` (`≠50 ≠51 ≠60 ≠61 ≠66`), `FringeArmUntouched`
+(`r < 40 ∨ (63 ≤ r ∧ ≠67 ≠68)`), `CrossStashLeftUntouched` (`≠83 ≠75 ≠76`),
+`CrossRepointUntouched` (`≠70`), `CrossStashRightUntouched` (`≠83 ≠79 ≠80`),
+`CrossPinOneUntouched` (`≠40`), `CandMerge3Untouched` (`≠69 ≠81 ≠82 ≠83 ≠84`).
+
+Two writes deserve naming because they look like counterexamples and are not:
+the repoint WRITES `fClose` and the merge WRITES `fRes`, but `fClose = 70` and
+`fRes = 69` are both outside the band.
+
+**ADEQUACY is the separate question** and is answered by two EVALUATED checks
+that already existed: `closeLegUntouched_at_query_operands`
+(`E1SameBlockArm.lean:87`) covers `regLeft` (0), `regRight` (1), `regOut` (2),
+`xIdx` (28); `closeLegUntouched_at_guard_scratch` (`:94`) covers `3..7`.
+
+**WHAT THE BAND DELIBERATELY EXCLUDES.** `rVal` (9) carries the SECOND
+select's answer and is NOT protected. That is correct rather than an
+oversight: the select join consumes `rVal` before the close/LCA leg begins, so
+it has nothing to survive. The FIRST select's answer is the one that must
+cross, and it is stashed in the guard's dead bank `{3,4,5,6,7}`
+(DD-20260719-122), inside the band.
+
+## DD-20260719-161 — the close/LCA leg's preservation is symmetric across both arms
+
+**Status.** Landed, E1-LaneA3. Build green.
+
+`closeLcaProgramAt_runsTo_cross` (`E1WholeQueryCloseLca.lean`) now exports
+`∀ r, CloseLegUntouched r → regsF r = regs r`, matching
+`closeLcaProgramAt_runsTo_same`. The three links are the dispatch prefix
+(`CloseDispatchUntouched`, `≠72 ≠73 ≠74`), the arm (DD-20260719-160), and the
+terminator's `dSame` write (`74`) — all outside the band.
+
+**THIS CORRECTS A STANDING NOTE, and the correction is the point.**
+`E1_LIVE_STATE.md` §3b and this module's own header both recorded preservation
+as ASYMMETRIC across the two arms, and §3b warned that a composed leg claiming
+preservation on both would be claiming something FALSE on one — the too-strong
+predicate failure DD-20260719-056 records at `TwoLegUntouched`.
+
+That warning was sound as guidance but its premise was wrong. The asymmetry
+was never a fact about the cross arm's CODE: the arm's write set has always
+been disjoint from `{0..7} ∪ {28}`, as the write-set audit in DD-20260719-160
+shows segment by segment. It was a fact about its INTERFACE — the mid-arm
+interior hole. Removing the hole made the clause provable with no change to
+any instruction, and the composed leg's claim is therefore not too strong.
+
+The `hCrossPres` escape-hatch hypothesis the module header used to advertise
+is now unnecessary and should not be reintroduced.

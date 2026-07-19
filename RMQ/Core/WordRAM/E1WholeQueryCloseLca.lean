@@ -45,15 +45,23 @@ The cross arm is `370 + interior.length` (`crossBlockArmProgramAt_length`,
 is derived by `simp`/`decide` from the component length lemmas below, never
 written into a `runsTo` by hand.
 
-## What this module does NOT claim
+## PRESERVATION IS NOW SYMMETRIC ACROSS BOTH ARMS (E1-LaneA3)
 
-The composed leg exports `CloseLegUntouched` on the SAME-BLOCK arm only.
-`crossBlockArmProgramAt_runsTo` (`E1CrossBlockArm.lean:1181`) exports no
-preservation clause at all - deliberately, per its own header at `:1143`,
-because its `hInterior` promises only `fClose`/`fRight`/`mLV`/`mLP` and the
-interior sits mid-arm.  Carrying a preservation clause across the cross arm is
-a real obligation and it is NOT discharged here.  It is stated as the explicit
-hypothesis `hCrossPres` where a consumer needs it, rather than assumed.
+BOTH `closeLcaProgramAt_runsTo_same` and `_runsTo_cross` export
+`∀ r, CloseLegUntouched r → regsF r = regs r`.
+
+This header previously recorded the opposite, and the correction is worth
+keeping visible.  The asymmetry was never a fact about this leg or about
+what the cross arm's code writes -- the cross arm's own write set has
+always been disjoint from `{0..7} ∪ {28}`.  It was a fact about the
+INTERFACE: `crossBlockArmProgramAt_runsTo`'s `hInterior` promised only
+`fClose`/`fRight`/`mLV`/`mLP` across the mid-arm interior hole, so the arm
+could not promise a caller more than its own hypothesis promised it.
+Widening `hInterior` with a fifth conjunct (DD-20260719-160) removed the
+hole, and the clause then threaded with no change to any instruction.
+
+Consequently the `hCrossPres` escape hatch this header used to advertise is
+no longer needed, and no consumer should reintroduce it as a hypothesis.
 -/
 
 namespace RMQ
@@ -238,7 +246,14 @@ leg's code; the exit PC here is `closeLcaExit A = A + 4753`, which is the
 same-block arm's END, so the two arms converge instead of one running the
 other.
 
-No preservation clause: see the module header.  The cross arm exports none.
+PRESERVATION IS NOW SYMMETRIC WITH THE SAME-BLOCK TWIN (E1-LaneA3,
+DD-20260719-161).  This arm exports the same `CloseLegUntouched` clause,
+because `crossBlockArmProgramAt_runsTo` now does.  The three links are the
+dispatch prefix (`CloseDispatchUntouched`, `≠72 ≠73 ≠74`), the arm itself,
+and the terminator's `dSame` write (`74`) -- all outside the band.
+
+This is what the module header previously recorded as impossible; the
+asymmetry was never a fact about this leg, only about the arm's interface.
 -/
 theorem closeLcaProgramAt_runsTo_cross (shape : Cartesian.CartesianShape)
     {program : E1Machine.Program} {A leftClose rightClose : Nat}
@@ -294,13 +309,14 @@ theorem closeLcaProgramAt_runsTo_cross (shape : Cartesian.CartesianShape)
               (rightClose / (RelativeRmm.canonicalLayout shape).blockSize -
                 leftClose / (RelativeRmm.canonicalLayout shape).blockSize -
                   1)⟩
-          leftClose rightClose).value := by
+          leftClose rightClose).value ∧
+      (∀ r, CloseLegUntouched r → regsF r = regs r) := by
   obtain ⟨hd, hcrossArm, hjump, _hsameArm⟩ :=
     closeLcaProgramAt_hosts shape hHost
-  obtain ⟨regs', hrunD, hcl', hri', _hpresD⟩ :=
+  obtain ⟨regs', hrunD, hcl', hri', hpresD⟩ :=
     closeDispatch_runsTo_cross (concreteBPNativeSuccinctRMQGlobalReadStore shape)
       hd regs leftClose rightClose hClose hRight hcross
-  obtain ⟨regsA, hrunA, hval⟩ :=
+  obtain ⟨regsA, hrunA, hval, hpresA⟩ :=
     crossBlockArm_withCanonicalInterior_runsTo shape
       (A := A + 4) hcrossArm regs' hcl' hri'
   -- the arm ends at `A + 4 + 370 + 4204 = A + 4578`, the terminator's base
@@ -311,11 +327,18 @@ theorem closeLcaProgramAt_runsTo_cross (shape : Cartesian.CartesianShape)
   have hjrun :=
     jumpTo_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
       (A := A + 4578) hjump regsA
-  refine ⟨regsA.write dSame 1, ?_, ?_⟩
+  refine ⟨regsA.write dSame 1, ?_, ?_, ?_⟩
   · have htrans := (hrunD.trans hrunA).trans hjrun
     simpa [List.append_assoc] using htrans
   · rw [RegFile.write_other _ _ (by decide : fRes ≠ dSame)]
     exact hval
+  · -- band survives: terminator writes `dSame` (74), arm preserves the band,
+    -- dispatch prefix touches only `72..74`
+    intro r hr
+    have hr' : r ≤ 7 ∨ r = 28 := hr
+    have hne : r ≠ dSame := by show r ≠ 74; omega
+    rw [RegFile.write_other _ _ hne, hpresA r hr,
+      hpresD r (by refine ⟨?_, ?_, ?_⟩ <;> omega)]
 
 end E1WholeQueryCloseLca
 end WordRAM
