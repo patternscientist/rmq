@@ -4011,15 +4011,31 @@ NOTHING below is implemented.
 1. STILL BLOCKED: the interior-leg `Nat.log2` decision (M3d-3 section 2).
    Everything remaining on the cross-block path is now downstream of it --
    which is a change from M3d-8, where items 2-4 were independent.
-2. DISCHARGE `hInterior` in `crossBlockArmProgramAt_runsTo`.  This is THE
-   remaining cross-block obligation and it is the only one; the statement,
-   the layout, the width certificate and every surrounding segment are done
-   and green.
+2. DISCHARGE `hInterior` in `crossBlockArmProgramAt_runsTo`
+   (`E1CrossBlockArm.lean:1143`).  This is THE remaining cross-block
+   obligation and it is the only one; the statement, the layout
+   (`crossBlockArmProgramAt_hosts:829`), the width certificate
+   (`crossBlockArmProgramAt_fits:913`), the category log
+   (`crossBlockArmCats:1088`) and every surrounding segment are done and
+   green.  The segments, all verified at these lines this session:
+   `crossLeftRange_runsTo:514`, `crossRightRange_runsTo:561`,
+   `crossStashLeft_runsTo:618`, `crossStashRight_runsTo:651`,
+   `crossPinOne_runsTo:687`, `crossRepoint_runsTo:712`; the two arithmetic
+   bridges `cross_blockEnd_eq:493` / `cross_blockStart_eq:500`; the pc
+   helper `runsTo_pc_congr:119`; the new segment `crossPinOne:436`.
+   Upstream, `FringeArmUntouched` (`E1FringeArmBlock.lean:951`) with
+   `fringeFoldUntouched_of_arm:955` / `fringeCandGlobalUntouched_of_arm:961`
+   and the strengthened `fringeArm_runsTo:975`; `RankSeedLegUntouched`
+   (`E1SameBlockLeg.lean:209`) and `rankSeedLeg_runsTo_canonical:221`.
+   Validator phase 3h/4g: `presSentinel`
+   (`RMQ/Validation/E1MachineValidate.lean:1359`),
+   `armUntouchedRegs:1375`, `runPres:1400`, `mutatedArmScratch:1476`,
+   `presMutantGIsPreservationOnly:1492`.
 3. ANTI-VACUITY BY EXECUTION for the composed cross arm.  The seventeen
    hosting facts are derived from one assumption
    (`crossBlockArmProgramAt_hosts`), but no concrete program has been RUN
    through the whole cross arm the way `armWitness_path1..7`
-   (`E1FringeArmProgram.lean:288`) runs the single arm.  Needs a concrete
+   (`E1FringeArmProgram.lean:294`) runs the single arm.  Needs a concrete
    interior to fill the hole, so it is downstream of item 1.  When it is
    done, host it OFF BASE ZERO for the M3d-8 reason.
 4. If the interior needs pinned inputs beyond `fClose`/`fRight`, extend
