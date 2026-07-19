@@ -2451,3 +2451,80 @@ concretely on the existing witness store, and `witnessCOut_cell0_via_bridge`
 DERIVES the value `2` through the bridge — the same `2` the machine produced by
 running. The `none` arm is checked separately at `witnessRouteDecode_cell2`,
 which a value-only check cannot see.
+
+## 2026-07-19 (C05 round 37) — an UNSATISFIABLE premise, caught before composition
+
+**The campaign's most consequential catch so far.** The value bridge's width
+premise was not merely unsourced — it was **UNSATISFIABLE** at
+`canonicalRelativeRmmInteriorComponentStore`. It demanded `w.length = wordSize`
+of every chunk, but `fixedWidthNatTableMachineWords`
+(`MachineChunkedTable.lean:15`) is a bare `flatMap (chunkPayloadWords wordSize)`
+with no padding, `chunkPayloadWords` is documented at `WordStore.lean:153` as
+"The final word may be shorter", and `BoundedPayloadWordStore` carries only
+`word_length_le` (`:552`), an INEQUALITY. The shortfall is structural rather
+than a boundary case: `superWidth` IS `wordSize`, but `offsetWidth`
+(`RelativeSummary.lean:1299`) and `blockAddressWidth` (`:1308`) apply
+`machineWordBits` to strictly smaller arguments. **The bridge was vacuous for
+seven of the store's eight tables.** Composing the summary group on it would
+have built the whole interior chain on a hypothesis nobody could ever discharge.
+
+**Repair is strengthening only** (`3ea0528`): premises weakened, conclusions
+untouched, nothing renamed. Exactness is consumed at exactly one place —
+`bitsToNatLE_append` yields a `2 ^ w.length` weight — and for the FINAL chunk
+the tail is empty so the width is irrelevant. The premise was over-demanding by
+one index. It now asks `hle : w.length <= wordSize` everywhere and
+`hexact : w.length = wordSize` only at `j + 1 < n`. Both halves discharge at the
+target store: `hle` verbatim from the store's field, `hexact` vacuously since
+the interior tables are single-chunk. The machine side had to move rather than
+the store, because the route imposes no width discipline and MUST NOT — padding
+chunks would break the store's `erases` obligation.
+
+**Anti-vacuity re-checked rather than assumed:** the witness is a genuine
+two-chunk fixture (`chunkIters 3 2 0 = 2`), so `hexact` is still exercised at
+`j = 0`, and the bridge still derives the same `2` the machine produces by
+running.
+
+**The generalisable lesson, and it is a good one:** *a premise that is UNPROVED
+and one that is UNSATISFIABLE look identical at the definition site, and both
+look like diligence.* This one survived a full session AND a coordinator review
+before anyone tried to discharge it. Standing addition to the completion gate:
+when a theorem carries a premise it does not discharge, the rung that introduces
+it owes a witness that the premise is satisfiable at the intended instantiation
+— not merely a note that it is owed.
+
+**COORDINATOR DECISION 1 — the M7 claim is scoped to QUERY TIME.** The worker
+found, and verified at source, that the accepted route DOES reach
+`bpSparseLogSpan` — at STORE-CONSTRUCTION time, via `bpSparseLevelCell`
+(`SparseLevelTable.lean:55`, `bpSparseLogSpan i + domain * Nat.log2 i`). That is
+not a defect; it is what building a precomputed log table means. But it makes
+"no uncharged size-dependent computation on the accepted route" FALSE as stated,
+and it would break under one step of reviewer follow-up. **Ruling: the claim is
+about QUERY TIME, with construction-time computation explicitly carved out as
+preprocessing, which the project's cost model already places outside its scope.**
+Name the carve-out rather than let it be discovered — same discipline as the
+representation-artifact boundary.
+
+The worker also killed a second surrounding claim of mine: "Legacy consumers are
+theorems and unfolds" is FALSE of the family, since the `OfReady` layer beneath
+is consumed by executed defs at six sites (`ConcreteDirectoryRAM.lean:398, 495,
+1920, 2051, 3591, 3700`). The defensible predicate is "not reachable from the
+accepted route at query time". The families to name are
+`PayloadLiveBPLocalSparseOffsetTable` / `PayloadLiveBPGlobalSparseBlockTable`'s
+`twoSpanCandidateTraceResult{,AtSegments}` (`InteriorRAM.lean:559/606/805/852`).
+
+**COORDINATOR DECISION 2 — the stale frozen-row anchor gets a correction NOTE,
+not an edit.** Matrix line 17 cites `SuccinctFinalRAM.lean:4337`, which at this
+HEAD sits inside the doc comment of a DIFFERENT def; the intended def is `:4426`
+(path correct, line stale). Frozen requirement text is not edited. Record the
+correction in the evidence column and the worklog, preserving the freeze as
+auditable while making the row usable.
+
+**COORDINATOR DECISION 3 — the next rung's FIRST task is auditing
+`hcap : chunkCount <= 8` for satisfiability**, exactly as the width premise was.
+The worker flagged that it has not been checked and wrote that "'presumably' is
+exactly what was said about the width premise". That instinct gets acted on, not
+admired.
+
+**Honest matrix note preserved:** REQ-E1-03's interior value evidence had been
+resting on a theorem vacuous at the interior store. It now rests on one that is
+not. No row was closed or weakened, and no frozen text was edited.
