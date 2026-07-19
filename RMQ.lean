@@ -29,6 +29,7 @@ import RMQ.Core.WordRAM.E1SelectCanonical
 import RMQ.Core.WordRAM.E1FringeBridge
 import RMQ.Core.WordRAM.E1FringeFoldBlock
 import RMQ.Core.WordRAM.E1FringeArmBlock
+import RMQ.Core.WordRAM.E1FringeArmProgram
 import RMQ.Core.WordRAM.E1SameBlockArm
 import RMQ.Core.WordRAM.E1SameBlockLeg
 import RMQ.Core.WordRAM.E1CloseDispatch
