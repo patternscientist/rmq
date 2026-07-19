@@ -557,6 +557,69 @@ theorem hexact_global
   hexact_of_segment_agrees _ (interior_wordSize_pos shape) store hcount hvalid
     hentries (hagree_global hstore)
 
+/-! ## `hexact` at the two LEVEL tables
+
+The two-span blocks (`E1InteriorTwoSpan.twoSpanBlock`) open with a read of
+the interior's local or global LEVEL/SPAN table, at the base offsets the
+route's own read computations use (`InteriorDirectory.lean:2359`, `:2384`).
+
+THESE TWO WERE MISSING while all eight `hagree_*` clauses were present.
+The asymmetry was invisible from the `hagree` side -- `hagree_localLevel`
+(`:366`) and `hagree_globalLevel` (`:387`) have been in this module since
+the store was split eight ways -- so the level tables looked as fully
+served as the six with `hexact` twins.  They were not, and the first
+consumer of a level read is where that would have surfaced.  Recorded
+because the shape of the gap is reusable: a table is only as composed as
+its LAST clause, and counting `hagree`s counts the wrong thing.
+
+Only the width and the entry list differ from the six above; the entry
+list is `bpSparseLevelEntries` at the table's own domain, which is what
+makes `hentries` and `hvalid` the same proposition at
+`localLevelGeom`/`globalLevelGeom`. -/
+
+theorem hexact_localLevel
+    {store : ReadStore} {segment : Nat} {shape : Cartesian.CartesianShape}
+    (hstore : HoldsInteriorStore store segment shape)
+    {deadAddress entriesLen chunkCount i : Nat}
+    (hcount : chunkCount = fixedWidthNatTableMachineChunkCount
+      (bpSparseLevelWidth
+        (bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize))
+      (SuccinctRank.machineWordBits shape.bpCode.length))
+    (hvalid : i < entriesLen)
+    (hentries : i < (bpSparseLevelEntries
+      (bpSparseLevelDomain
+        (RelativeRmm.canonicalLayout shape).macroSize)).length) :
+    ∀ j, j + 1 < chunkIters entriesLen chunkCount i → ∀ w,
+      store.readWord? segment
+          (chunkStart
+            (canonicalRelativeRmmInteriorComponentOffsets shape).localLevel
+            deadAddress entriesLen chunkCount i + j) = some w →
+        w.length = SuccinctRank.machineWordBits shape.bpCode.length :=
+  hexact_of_segment_agrees _ (interior_wordSize_pos shape) store hcount hvalid
+    hentries (hagree_localLevel hstore)
+
+theorem hexact_globalLevel
+    {store : ReadStore} {segment : Nat} {shape : Cartesian.CartesianShape}
+    (hstore : HoldsInteriorStore store segment shape)
+    {deadAddress entriesLen chunkCount i : Nat}
+    (hcount : chunkCount = fixedWidthNatTableMachineChunkCount
+      (bpSparseLevelWidth
+        (bpSparseLevelDomain
+          (RelativeRmm.canonicalLayout shape).macroSampleCount))
+      (SuccinctRank.machineWordBits shape.bpCode.length))
+    (hvalid : i < entriesLen)
+    (hentries : i < (bpSparseLevelEntries
+      (bpSparseLevelDomain
+        (RelativeRmm.canonicalLayout shape).macroSampleCount)).length) :
+    ∀ j, j + 1 < chunkIters entriesLen chunkCount i → ∀ w,
+      store.readWord? segment
+          (chunkStart
+            (canonicalRelativeRmmInteriorComponentOffsets shape).globalLevel
+            deadAddress entriesLen chunkCount i + j) = some w →
+        w.length = SuccinctRank.machineWordBits shape.bpCode.length :=
+  hexact_of_segment_agrees _ (interior_wordSize_pos shape) store hcount hvalid
+    hentries (hagree_globalLevel hstore)
+
 /-! ## Anti-vacuity: the bound is load-bearing, and its necessity is PROVED
 
 The standing rule -- where a quantity is computable, EVALUATE it -- was

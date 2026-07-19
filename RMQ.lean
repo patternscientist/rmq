@@ -48,6 +48,7 @@ import RMQ.Core.WordRAM.E1InteriorSummaryGroup
 import RMQ.Core.WordRAM.E1InteriorMinCandidate
 import RMQ.Core.WordRAM.E1InteriorSpanBlock
 import RMQ.Core.WordRAM.E1InteriorMerge
+import RMQ.Core.WordRAM.E1InteriorTwoSpan
 import RMQ.Core.GenericSelect.RAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ConcreteDirectoryRAMStoreParam
 import RMQ.Core.SuccinctClose.RelativeRmmMacro.ChargedFringeChunks

@@ -269,6 +269,51 @@ theorem hexact_global_concrete
         w.length = SuccinctRank.machineWordBits shape.bpCode.length :=
   hexact_global (holdsInteriorStore_concrete shape) hcount hvalid hentries
 
+/-! ## The two LEVEL tables' exactness clauses, on the same terms
+
+`E1InteriorTwoSpan.twoSpanBlock`'s unconditional head is a read of one of
+the two level/span tables.  `hexact_localLevel` and `hexact_globalLevel`
+(`E1InteriorChunkStore.lean`) carry the store side; these two discharge
+the store hypothesis at the concrete store by
+`holdsInteriorStore_concrete`, exactly as the six above do. -/
+
+theorem hexact_localLevel_concrete
+    {shape : Cartesian.CartesianShape} {deadAddress entriesLen chunkCount i : Nat}
+    (hcount : chunkCount = fixedWidthNatTableMachineChunkCount
+      (bpSparseLevelWidth
+        (bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize))
+      (SuccinctRank.machineWordBits shape.bpCode.length))
+    (hvalid : i < entriesLen)
+    (hentries : i < (bpSparseLevelEntries
+      (bpSparseLevelDomain
+        (RelativeRmm.canonicalLayout shape).macroSize)).length) :
+    ∀ j, j + 1 < chunkIters entriesLen chunkCount i → ∀ w,
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? interiorSegment
+          (chunkStart
+            (canonicalRelativeRmmInteriorComponentOffsets shape).localLevel
+            deadAddress entriesLen chunkCount i + j) = some w →
+        w.length = SuccinctRank.machineWordBits shape.bpCode.length :=
+  hexact_localLevel (holdsInteriorStore_concrete shape) hcount hvalid hentries
+
+theorem hexact_globalLevel_concrete
+    {shape : Cartesian.CartesianShape} {deadAddress entriesLen chunkCount i : Nat}
+    (hcount : chunkCount = fixedWidthNatTableMachineChunkCount
+      (bpSparseLevelWidth
+        (bpSparseLevelDomain
+          (RelativeRmm.canonicalLayout shape).macroSampleCount))
+      (SuccinctRank.machineWordBits shape.bpCode.length))
+    (hvalid : i < entriesLen)
+    (hentries : i < (bpSparseLevelEntries
+      (bpSparseLevelDomain
+        (RelativeRmm.canonicalLayout shape).macroSampleCount)).length) :
+    ∀ j, j + 1 < chunkIters entriesLen chunkCount i → ∀ w,
+      (concreteBPNativeSuccinctRMQGlobalReadStore shape).readWord? interiorSegment
+          (chunkStart
+            (canonicalRelativeRmmInteriorComponentOffsets shape).globalLevel
+            deadAddress entriesLen chunkCount i + j) = some w →
+        w.length = SuccinctRank.machineWordBits shape.bpCode.length :=
+  hexact_globalLevel (holdsInteriorStore_concrete shape) hcount hvalid hentries
+
 end E1InteriorStoreConcrete
 end WordRAM
 end RMQ
