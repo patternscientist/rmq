@@ -1766,3 +1766,53 @@ reports rather than falling back to 213.
 correctly dropped — `0445d1d`'s `forall post`-quantified `hmiddle` absorbs both
 new store regions untouched, verified green at [229/244]. B7 crosses no a07
 concurrency boundary after all.
+
+## 2026-07-19 (C05 round 26) — the numeric-prose gap is closed by a self-auditing checker
+
+**T1 delivered `scripts/numeric_prose_check.ps1` + a 12-case regression
+(10 reject / 2 accept)** on `claude/numeric-prose-lint` at `6a8a09f`, closing the
+gap that bit twice (A07's P2-3, then B7-06's sweep) where stale documented
+numerals passed BOTH existing lints. Coordinator ran it independently: exits 1,
+reports exactly one violation, invariants hold, frozen symbols pin.
+
+**Three design choices worth preserving, none of which were specified:**
+1. **Zero hardcoded constants, enforced by a registry SELF-AUDIT** that strips
+   regex syntax and rejects any remaining numeral not explicitly declared. All
+   12 expected values are extracted from their Lean declarations at run time, so
+   the checker follows a campaign automatically instead of going stale at the
+   same rate as the prose it polices. A checker that checks itself against the
+   exact failure mode it exists to prevent.
+2. **Clause scoping, not line scoping** — forced by `README.md:73` carrying a
+   live cap AND a transitional cap on one line. A line-scoped historical test
+   would have exempted the live number and been quietly useless. This was the
+   part flagged in the brief as "where the value is", and it is.
+3. **A "Lean constant and every doc site moved together -> ACCEPT" control.**
+   This is what proves the checker follows legitimate migrations rather than
+   obstructing them. Without it the checker gets switched off the first time a
+   campaign moves a number honestly.
+Marking a clause historical cannot launder a wrong number: it routes to the
+entry's FROZEN sibling and must equal it; a marker with no frozen sibling is
+itself a failure; and frozen symbols must resolve even with zero doc sites, so
+deleting a pinned declaration cannot silently disable the discrimination.
+
+**One genuine violation found**, out of 52 registered sites:
+`docs/WHAT_IS_PROVED.md:75` documents `240` where the live interior cap is `30`.
+Correctly diagnosed: the repair is to MARK THE CLAUSE TRANSITIONAL, not change
+the number — the value matches the frozen `canonicalRelativeRmmInteriorQueryCost`
+(`InteriorDirectory.lean:1777`), and `README.md:73` already states the pair
+correctly. The A07-era stale numerals were all consistent at `4a60853`, i.e.
+repaired since; the checker now pins them so a third recurrence fails.
+
+**NEW GOVERNANCE GAP, same family, one level up.**
+`design_decision_check.ps1`'s `workflowPatterns` ENUMERATES INDIVIDUAL SCRIPT
+PATHS, so a new gate-class script can be introduced with no design-log entry and
+strict checking passes VACUOUSLY — which is exactly why strict passed on T1's
+own branch. The worker correctly left that workflow-sensitive file alone and
+reported it. Queued as a follow-up: the pattern should match gate-class scripts
+structurally rather than by enumeration.
+
+**Gate wiring deliberately deferred to a verified-invocation check only.** The
+aggregate gate is already RED on the a07-owned `wordram_axiom_check` stale
+constant, so a full end-to-end run would fail on that and prove nothing about
+this checker. T1 wires and verifies the invocation, states the external block
+plainly, and stops — rather than manufacturing a green it cannot honestly claim.
