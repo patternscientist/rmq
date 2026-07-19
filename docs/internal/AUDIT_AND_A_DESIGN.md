@@ -2591,3 +2591,63 @@ whole point of the evidence column.
 
 **Also still owed, recorded so it is not lost:** an EXECUTED preservation check
 for the interior fold — the validator has no interior analogue of phase 3h.
+
+## 2026-07-19 (C05 round 39) — the coordinator broke his own rule two rounds after writing it
+
+**The exactness lemma EXISTS.** `chunkPayloadWords_get?_eq_take_drop` is at
+exactly `WordStore.lean:274`, in exactly the per-index form needed, and **six**
+modules already cite it. E1-R4y's proof CALLS it and compiles, settling the
+question by construction rather than by grep. The rest of the inherited
+direction was accurate — `_word_length_le` and `_length_eq_div_add_indicator`
+really are bounds and counts, not per-index exactness — so the original DD's
+direction was right and only the non-existence gloss added downstream was wrong.
+
+**This is the FOURTH coordinator-propagated claim to fail a worker's check**
+(after two `OfSizeGe` variants and the single-chunk vacuity), and it is the
+worst of them, because it was checkable in ONE grep and because I wrote the rule
+against precisely this in round 36 — "when I have not personally verified a
+claim end to end, hand the worker the QUESTION, not the CLAIM" — and then
+asserted a non-existence two rounds later without running the check.
+
+The worker's line deserves preserving: *"Had I followed it literally I'd have
+re-proved an existing lemma in a fifth place, and the duplicate would have been
+indistinguishable from diligence."* That is the actual cost — not a wasted
+session, but a plausible-looking duplicate entering the tree.
+
+**FOURTH STANDING RULE, adopted from the worker verbatim:** *a supplied claim
+about WHAT THE TREE CONTAINS is checkable in one grep and must be checked before
+it is acted on.* Unlike the previous three, this one binds the COORDINATOR
+first: existence claims never enter a prompt unverified. The four rules now
+read: an OWED premise owes a satisfiability witness; a VACUOUS premise owes a
+vacuity witness; a COMPUTABLE quantity gets evaluated, not reasoned about; and a
+CONTAINMENT claim gets grepped, not relayed.
+
+**What the worker actually built** (`d4afd95`, library; `da7556f` docs-only):
+`machineWords_length_eq_of_succ_lt_chunkCount` with
+`succ_mul_le_of_succ_lt_chunkCount` as the factored arithmetic core,
+`hexact_of_segment_agrees` restating it in the value bridge's own `ReadStore`
+shape, and `cell_exists_of_lt` DERIVED from the table's `read_exact` field
+rather than assumed.
+
+**Anti-vacuity applied to its own statement, which is the standard now:**
+`exactFixture_final_length_lt` shows the FINAL chunk at the reachable
+`shape.size = 1` row has length `1` against `wordSize = 2` — so the `j + 1 < n`
+guard is LOAD-BEARING: dropping it makes the statement FALSE, not weaker.
+`exactFixture_nonfinal_lengths` exhibits the two non-final chunks at exactly
+`2`. All four fixture theorems depend on NO axioms.
+
+**And it stated its own evidence's limit unprompted:** `segmentStore_agrees`
+shows the premise is SATISFIABLE, not that it HOLDS at
+`canonicalRelativeRmmInteriorComponentStore`. Deriving it there is the
+composition step and is explicitly not done. That distinction — satisfiable
+versus holds — is exactly what rounds 37 and 38 were about, applied by a worker
+to its own work without being asked.
+
+**Reconnaissance that CONFIRMS a delegation instruction rather than correcting
+it, worth noting since the reverse has been common:** `maxRel`'s value is bound
+into the summary tuple at `InteriorDirectory.lean:2295` and discarded by the
+min-candidate consumer at `:2300`. So "do not optimise it away" is right, and
+its ground is the positional receipt obligation, not the value.
+
+The worker also corrected two anchors in its OWN resume inventory before
+yielding. The anchor-drift class applies to a worker's own notes too.
