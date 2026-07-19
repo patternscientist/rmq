@@ -3113,3 +3113,63 @@ the POSITIONAL RECEIPT is not. Receipt equality in the route's bind order is
 where the right-shape/wrong-content class bites hardest, because a receipt list
 in the right order with a stale head passes every length and read-count check we
 have.
+
+---
+
+## C05 round 48 — diagnosing the cadence, and restructuring around lanes
+
+The user asked the sharp question: are sessions under-scoped, or is proven work
+causing backtracking? Neither. I checked the telemetry and the dependency graph
+rather than answering from memory.
+
+**Sessions are OVER-scoped, and the limit is per-session context.** Every
+session is handed all six remaining items and returns having done one. E1-R5e:
+188k tokens, 89 tool calls. E1-R5f: 210k tokens, 120 tool calls, 816
+insertions. Both stopped cleanly mid-ladder — **because my own brief instructs
+them to**: "if budget runs low, land the current milestone green, commit, and
+write a resume inventory." The one-item cadence is context exhaustion converted
+by my instruction into a disciplined stop.
+
+**The compounding cost nobody was tracking.** `E1_WORKLOG.md` is 7,520 lines
+across 24 `M3d-N` sections, one appended per session. Every session's first act
+is to read it. The read-in tax rises monotonically while the remaining work does
+not shrink proportionally. That is the actual scaling problem.
+
+**On backtracking: real, but not the current bottleneck.** Theorem-level rework
+was concentrated in the earlier premise rounds — the unsatisfiable width
+premise, the falsely-vacuous premise, the false `hagree`, the whnf timeout
+encoding a stale read order. The last three sessions' corrections were
+prose-level. My false obligation cost a session but SIMPLIFIED the tree.
+
+**MY EIGHTH FAILED CLAIM, and the first made to the USER rather than a worker.**
+I said "very little parallelizes." Having actually walked the graph: the
+validator's interior preservation check is a disjoint file depending only on
+landed work; the span/dispatch chain consumes `summaryMinCandidate_runsTo` and
+plausibly does not need receipt equality at all; and the close/LCA machinery is
+further along than my ladder said — `closeDispatch_runsTo_same`,
+`closeDispatch_runsTo_cross` and `sameBlockDispatchProgram_runsTo` are built,
+and `E1RouteDecomposition` already carries all four branch decompositions
+including both none-cases. The pattern holds: my claims about CONTENT are sound,
+my claims about STRUCTURE AND ADDRESSING are not, and the fix is to look rather
+than to try harder to remember.
+
+**Restructured around LANES per the user's economics.** Their point is right:
+fixed per-session overhead is waste when it amortizes over one item, so few deep
+milestone-closing sessions beat many shallow ones. Four lanes, tracked:
+A = receipt equality (in flight, landed `3ccda2e`); B = the whole interior
+program (spans, two-spans, dispatch, `hInterior`); C = the interior preservation
+discriminator; D = the closure ladder, last and alone.
+
+**Lane C launched in parallel**, on a finding worth recording: the interior
+fold's preservation clause is STATED BUT NEVER EXECUTED. `ChunkFoldUntouched`
+(`E1InteriorChunkFold.lean:928`) and the clause at `:1011` exist; the fringe has
+the identical shape AND runs it at validator phase 3h. So the third
+discriminator covers the fringe and not the interior, and nothing in the battery
+would have told us.
+
+**Three overhead cuts applied to the new brief format**, all real budget
+transfer rather than bookkeeping: reads scoped to named line ranges (~590 lines
+instead of 7,520); the docs/lint/paper battery moved OFF the worker and onto me;
+DD-ID bands partitioned per lane, since parallel branches have collided on those
+before. File ownership declared explicitly, with "read freely, do not edit,
+report a cross-lane dependency instead."
