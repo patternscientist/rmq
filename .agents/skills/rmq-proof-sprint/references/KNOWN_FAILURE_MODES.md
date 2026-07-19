@@ -70,6 +70,22 @@ same command is launched again unchanged. The verification ledger in
 runtime evidence, process disposition, and the material reason for every
 rerun.
 
+### B7-R3 regression: startup smoke precedes full executable replay
+
+Commit `024e33eb922355bb811ed20191215c5992328ebc` is the named regression
+fixture. Its imported proof module exposed closed size-3469 address/store
+witnesses, so a full 21-case replay was used as the first startup observation
+and crossed a 20-minute deadline. Fixture caching did not fix a shape-only
+probe; moving the proof-only values into theorem-local `let`s reduced that
+probe from a 120-second timeout to about two seconds.
+
+Apply `B7R3-STARTUP-SMOKE-BEFORE-FULL-REPLAY` when an executable's import
+closure changes. A ledger that starts with the full registry, or runs broad
+candidate certification before startup smoke and one known selector pass,
+fails the regression. The rule does not reject a genuinely slow complete
+campaign: after startup and selector controls pass, its deadline may use an
+observed full-run runtime with cold-cache margin.
+
 ## Letter-Complete Semantic Claims
 
 A theorem can have the requested name and still fail the intended semantic

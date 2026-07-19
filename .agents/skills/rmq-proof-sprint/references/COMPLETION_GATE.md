@@ -353,6 +353,16 @@ trust-boundary changes normally need the aggregate gate; narrow proof, docs,
 or read-only work may use proportionate focused checks with an explicit skip
 reason.
 
+When an executable replay imports changed Lean modules, probe host startup
+before paying for the full campaign: run a bounded startup/shape smoke test,
+then one known exact selector, then the complete registry. This is mandatory
+when the changed import closure adds large closed concrete witnesses or other
+proof-only data. If the smoke test is unexpectedly slow, inspect generated
+initialization and move proof-only values behind theorem-local `let`s or an
+equivalent proof-erased boundary before increasing the replay deadline. Run
+broad trust, policy, topology, or aggregate certification only after these
+controls pass and the content tree is frozen.
+
 For checks expected to take several minutes:
 
 1. Run only one heavy Lean/Lake process at a time against a shared build tree.
