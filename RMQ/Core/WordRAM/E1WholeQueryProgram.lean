@@ -634,6 +634,198 @@ theorem wholeQueryOutputStage_runsTo (shape : Cartesian.CartesianShape)
   · rw [RegFile.write_same]
     exact hval
 
+/-! ## THE SELECT JOIN, EXECUTED — all three of its exits
+
+The join was DEFINED by E1-LaneA1 and never simulated.  Its three exits are
+the two miss branches (to the `none` writer) and the both-hit fall-through
+(to the close/LCA leg at `827`), and all three are executed below.
+
+The two `sub`s undo `decodePacket`'s option shift against `regT2`, which the
+guard pinned to `1` and which no select leg touches (`r ≤ 7` is inside the
+select's preservation band) — so `hOne` is discharged by the caller from the
+guard, not assumed about the world.
+-/
+
+/-- Two writes to the same register collapse.  Needed because the join writes
+`regG` twice — once per miss test — and carrying the doubled write through the
+rest of the derivation would make every later register computation twice as
+large for no content. -/
+theorem RegFile.write_write_same (regs : RegFile) (target v w : Nat) :
+    (regs.write target v).write target w = regs.write target w := by
+  funext r
+  simp only [RegFile.write]
+  split <;> rfl
+
+/-- BOTH SELECTS HIT: the join decodes the two answer packets into `fClose`
+and `fRight` and falls through to the close/LCA leg's base `827`. -/
+theorem selectJoin_runsTo_hit (shape : Cartesian.CartesianShape)
+    {program : E1Machine.Program} {noneExit : Nat}
+    (hHost : HostedAt program 821 (selectJoin noneExit))
+    (regs : RegFile) {cl cr : Nat}
+    (hT1 : regs regT1 = cl + 1) (hV : regs rVal = cr + 1)
+    (hZ : regs regZero = 0) (hOne : regs regT2 = 1) :
+    ∃ regsF : RegFile,
+      RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+          ⟨regs, 821, false⟩ ⟨regsF, 827, false⟩ []
+        [Category.comparison, Category.branch, Category.comparison,
+          Category.branch, Category.arithmetic, Category.arithmetic] ∧
+      regsF fClose = cl ∧ regsF fRight = cr := by
+  have hf821 : program[821]? = some (.natEq regG regT1 regZero) := hHost.head
+  have hf822 : program[822]? = some (.brNZ regG noneExit) := (hHost.tail).head
+  have hf823 : program[823]? = some (.natEq regG rVal regZero) :=
+    ((hHost.tail).tail).head
+  have hf824 : program[824]? = some (.brNZ regG noneExit) :=
+    (((hHost.tail).tail).tail).head
+  have hf825 : program[825]? = some (.sub fClose regT1 regT2) :=
+    ((((hHost.tail).tail).tail).tail).head
+  have hf826 : program[826]? = some (.sub fRight rVal regT2) :=
+    (((((hHost.tail).tail).tail).tail).tail).head
+  -- 821: the left packet is nonzero, so the miss flag is 0
+  have hs821 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+      ⟨regs, 821, false⟩ ⟨regs.write regG 0, 822, false⟩ []
+      [Category.comparison] := by
+    have h := RunsTo.natEq
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := ⟨regs, 821, false⟩) rfl hf821
+    simpa [hT1, hZ] using h
+  -- 822: not taken
+  have hs822 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+      ⟨regs.write regG 0, 822, false⟩ ⟨regs.write regG 0, 823, false⟩ []
+      [Category.branch] := by
+    have h := RunsTo.brNZ
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := ⟨regs.write regG 0, 822, false⟩) rfl hf822
+    simpa [RegFile.write] using h
+  -- 823: the right packet is nonzero too
+  have hs823 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+      ⟨regs.write regG 0, 823, false⟩ ⟨regs.write regG 0, 824, false⟩ []
+      [Category.comparison] := by
+    have h := RunsTo.natEq
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := ⟨regs.write regG 0, 823, false⟩) rfl hf823
+    simpa [RegFile.write_write_same, RegFile.write_other _ _
+      (by decide : rVal ≠ regG), RegFile.write_other _ _
+      (by decide : regZero ≠ regG), hV, hZ] using h
+  -- 824: not taken
+  have hs824 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+      ⟨regs.write regG 0, 824, false⟩ ⟨regs.write regG 0, 825, false⟩ []
+      [Category.branch] := by
+    have h := RunsTo.brNZ
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := ⟨regs.write regG 0, 824, false⟩) rfl hf824
+    simpa [RegFile.write] using h
+  -- 825: fClose := regT1 - regT2 = cl
+  have hs825 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+      ⟨regs.write regG 0, 825, false⟩
+      ⟨(regs.write regG 0).write fClose cl, 826, false⟩ []
+      [Category.arithmetic] := by
+    have h := RunsTo.sub
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := ⟨regs.write regG 0, 825, false⟩) rfl hf825
+    have hval : (regs.write regG 0) regT1 - (regs.write regG 0) regT2 = cl := by
+      simp [RegFile.write, regG, regT1, regT2, hT1, hOne]
+    rw [hval] at h
+    exact h
+  -- 826: fRight := rVal - regT2 = cr
+  have hs826 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+      ⟨(regs.write regG 0).write fClose cl, 826, false⟩
+      ⟨((regs.write regG 0).write fClose cl).write fRight cr, 827, false⟩ []
+      [Category.arithmetic] := by
+    have h := RunsTo.sub
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := ⟨(regs.write regG 0).write fClose cl, 826, false⟩) rfl hf826
+    have hval : ((regs.write regG 0).write fClose cl) rVal -
+        ((regs.write regG 0).write fClose cl) regT2 = cr := by
+      simp [RegFile.write, regG, fClose, rVal, regT2, hV, hOne]
+    rw [hval] at h
+    exact h
+  refine ⟨((regs.write regG 0).write fClose cl).write fRight cr, ?_, ?_, ?_⟩
+  · have htrans :=
+      ((((hs821.trans hs822).trans hs823).trans hs824).trans hs825).trans hs826
+    simpa using htrans
+  · simp [RegFile.write, fClose, fRight]
+  · simp [RegFile.write, fRight]
+
+/-- THE LEFT SELECT MISSED: the first branch is taken and control leaves for
+the `none` writer after two instructions.  The close/LCA leg does not run. -/
+theorem selectJoin_runsTo_leftMiss (shape : Cartesian.CartesianShape)
+    {program : E1Machine.Program} {noneExit : Nat}
+    (hHost : HostedAt program 821 (selectJoin noneExit))
+    (regs : RegFile) (hT1 : regs regT1 = 0) (hZ : regs regZero = 0) :
+    RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+        ⟨regs, 821, false⟩ ⟨regs.write regG 1, noneExit, false⟩ []
+      [Category.comparison, Category.branch] := by
+  have hf821 : program[821]? = some (.natEq regG regT1 regZero) := hHost.head
+  have hf822 : program[822]? = some (.brNZ regG noneExit) := (hHost.tail).head
+  have hs821 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+      ⟨regs, 821, false⟩ ⟨regs.write regG 1, 822, false⟩ []
+      [Category.comparison] := by
+    have h := RunsTo.natEq
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := ⟨regs, 821, false⟩) rfl hf821
+    simpa [hT1, hZ] using h
+  have hs822 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+      ⟨regs.write regG 1, 822, false⟩ ⟨regs.write regG 1, noneExit, false⟩ []
+      [Category.branch] := by
+    have h := RunsTo.brNZ
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := ⟨regs.write regG 1, 822, false⟩) rfl hf822
+    simpa [RegFile.write] using h
+  exact hs821.trans hs822
+
+/-- THE LEFT SELECT HIT BUT THE RIGHT MISSED: the second branch is taken, four
+instructions in.  The category log differs from the left-miss one, which is
+what makes the two `none` branches distinguishable in the receipt. -/
+theorem selectJoin_runsTo_rightMiss (shape : Cartesian.CartesianShape)
+    {program : E1Machine.Program} {noneExit : Nat}
+    (hHost : HostedAt program 821 (selectJoin noneExit))
+    (regs : RegFile) {cl : Nat}
+    (hT1 : regs regT1 = cl + 1) (hV : regs rVal = 0) (hZ : regs regZero = 0) :
+    ∃ regsF : RegFile,
+      RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+        ⟨regs, 821, false⟩ ⟨regsF, noneExit, false⟩ []
+      [Category.comparison, Category.branch, Category.comparison,
+        Category.branch] := by
+  have hf821 : program[821]? = some (.natEq regG regT1 regZero) := hHost.head
+  have hf822 : program[822]? = some (.brNZ regG noneExit) := (hHost.tail).head
+  have hf823 : program[823]? = some (.natEq regG rVal regZero) :=
+    ((hHost.tail).tail).head
+  have hf824 : program[824]? = some (.brNZ regG noneExit) :=
+    (((hHost.tail).tail).tail).head
+  have hs821 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+      ⟨regs, 821, false⟩ ⟨regs.write regG 0, 822, false⟩ []
+      [Category.comparison] := by
+    have h := RunsTo.natEq
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := ⟨regs, 821, false⟩) rfl hf821
+    simpa [hT1, hZ] using h
+  have hs822 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+      ⟨regs.write regG 0, 822, false⟩ ⟨regs.write regG 0, 823, false⟩ []
+      [Category.branch] := by
+    have h := RunsTo.brNZ
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := ⟨regs.write regG 0, 822, false⟩) rfl hf822
+    simpa [RegFile.write] using h
+  have hs823 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+      ⟨regs.write regG 0, 823, false⟩ ⟨regs.write regG 1, 824, false⟩ []
+      [Category.comparison] := by
+    have h := RunsTo.natEq
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := ⟨regs.write regG 0, 823, false⟩) rfl hf823
+    simpa [RegFile.write_write_same, RegFile.write_other _ _
+      (by decide : rVal ≠ regG), RegFile.write_other _ _
+      (by decide : regZero ≠ regG), hV, hZ] using h
+  have hs824 : RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape) program
+      ⟨regs.write regG 1, 824, false⟩ ⟨regs.write regG 1, noneExit, false⟩ []
+      [Category.branch] := by
+    have h := RunsTo.brNZ
+      (store := concreteBPNativeSuccinctRMQGlobalReadStore shape)
+      (s := ⟨regs.write regG 1, 824, false⟩) rfl hf824
+    simpa [RegFile.write] using h
+  refine ⟨regs.write regG 1, ?_⟩
+  have htrans := ((hs821.trans hs822).trans hs823).trans hs824
+  simpa using htrans
+
 /-! ## THE REPAIR, CONFIRMED — three independent ways
 
 The brief for this lane was explicit that a layout argument is not evidence
