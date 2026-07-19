@@ -3,6 +3,7 @@ import RMQ.Core.WordRAM.E1SelectCanonical
 import RMQ.Core.WordRAM.E1CandMerge3
 import RMQ.Core.WordRAM.E1CrossBlockArm
 import RMQ.Core.WordRAM.E1FringeArmProgram
+import RMQ.Core.WordRAM.E1InteriorChunkFold
 
 /-!
 # M6: executable validation of the E1 amended machine
@@ -1511,6 +1512,245 @@ def presMutantGIsPreservationOnly (salt : Nat) : Bool :=
       h.reachedExit == m.reachedExit && h.modeledSteps == m.modeledSteps &&
         h.value == m.value && h.position == m.position
 
+/-! ## Phase 3i/4h: the INTERIOR chunk fold's preservation clause, executed
+
+Phase 3h executes the FRINGE ARM's preservation clause.  The interior's
+eight-capped chunk fold states the same kind of clause --
+`ChunkFoldUntouched` (`E1InteriorChunkFold.lean:928`), carried by the
+headline `interiorChunkFold_runsTo` (`E1InteriorChunkFold.lean:1835`) --
+and until this phase NOTHING executed it.
+
+A CORRECTION THIS PHASE FORCES.  It is natural to describe this as
+porting a check the fringe side already runs on its fold.  The fringe
+side does not run one.  Phase 3h runs `FringeArmUntouched`
+(`E1FringeArmBlock.lean:951`), the ARM's write set; the fringe FOLD's own
+clause, `FringeFoldUntouched` (`E1FringeFoldBlock.lean:962`), is
+unexecuted too, and the string `FringeFoldUntouched` does not occur in
+this file.  So this is the FIRST executed fold-level preservation check
+in the tree, on either side, not a port of an existing one.
+
+WHY THE SENTINELS MATTER, restated for the interior's bank rather than
+borrowed.  The fold's own hosting witness seeds `fun _ => 0` and writes
+only `iIdx` (`witnessRegs`, `E1InteriorChunkFold.lean:1924`).  On that
+register file a preservation check is VACUOUS in the exact sense M3d-9
+named: a fold that ZEROED a register it does not own would still
+"preserve" it, because the register was already zero.  `presSentinel` is
+injective and nowhere zero, so a clobber is detectable whatever value it
+writes, and a register copied in from elsewhere stays distinguishable
+from one left alone.
+
+WHY THE FOLD'S OWN BANK IS SEEDED TOO.  `presSentinel` also seeds
+`89..99`, with values the fold must overwrite before it reads them.  The
+zero-seeded re-run then tests exactly that: `cW` (94), `cT` (95), `cU`
+(96) and `cOut` (99) are the four bank slots `interiorChunkInit` does NOT
+initialise, so if any were read before being written, the two seedings
+would disagree.  That is a second obligation, not a restatement of the
+first.
+
+WHY THE FIXTURES ARE MULTI-CHUNK.  A single-chunk fixture does not
+exercise the fold as a fold -- it degenerates to the atom the predecessor
+block already covers.  Three of the four indices below read TWO chunks
+(`chunkFoldWitness_readCounts` = `[2, 2, 2, 1]`), and
+`chunkPresMultiChunkCases` reports that count rather than assuming it.
+-/
+
+/-- The registers `ChunkFoldUntouched` claims survive the fold, as a
+concrete list.  Mirrors the predicate `r < 89 ∨ 99 < r` LITERALLY.
+
+The range runs past the summary group's bank (`sBlock`..`sArg`, 100..104,
+`E1InteriorSummaryGroup.lean:76-84`) so that the slots the interior's own
+composition carries ACROSS a fold call are actually among the registers
+checked -- otherwise the phase would check only the registers below the
+bank and miss the composition's real exposure. -/
+def chunkUntouchedRegs : List Nat :=
+  (List.range 110).filter fun r => r < 89 || 99 < r
+
+/-- Register file for an interior preservation fixture: every register
+carries its distinct sentinel, then the fold's ONE genuine input -- the
+logical index `iIdx` (85) -- is written over.
+`interiorChunkFold_runsTo` declares exactly that one input
+(`hIdx : regs iIdx = i`), which is why one write suffices here where the
+arm's fixture needed seven. -/
+def chunkPresRegs (i : Nat) : RegFile :=
+  RegFile.write presSentinel E1InteriorReadBlock.iIdx i
+
+/-- The four executed paths of the fold's hosting witness: both chunks
+present, second chunk missing, both missing, and the dead path.  Taken
+from `chunkFoldWitness_path_*` (`E1InteriorChunkFold.lean:1938-1963`). -/
+def chunkPresCases : List Nat := [0, 1, 2, 5]
+
+/-- What one interior preservation fixture reports. -/
+structure ChunkPresReport where
+  index : Nat
+  clobbered : List Nat
+  checkedRegs : Nat
+  reachedExit : Bool
+  modeledSteps : Nat
+  cell : Nat
+  reads : List TraceEvent
+  zeroSeedCell : Nat
+  zeroSeedReads : List TraceEvent
+  preserved : Bool
+  agreesWithZeroSeed : Bool
+deriving Repr
+
+/-- RUN THE INTERIOR FOLD on a sentinel-seeded register file and check the
+preservation clause register by register.
+
+Also re-runs the SAME fixture zero-seeded -- on the fold's own
+`witnessRegs` -- and compares both the returned cell AND the read log
+event by event. -/
+def runChunkPres (salt : Nat) (build : List Instr -> List Instr) (i : Nat) :
+    ChunkPresReport :=
+  let program := build E1InteriorChunkFold.chunkFoldWitness
+  let regs0 := chunkPresRegs i
+  let result :=
+    E1Machine.run E1InteriorChunkFold.witnessStore program (128 + salt)
+      ⟨regs0, 0, false⟩
+  let zeroResult :=
+    E1Machine.run E1InteriorChunkFold.witnessStore program (128 + salt)
+      ⟨E1InteriorChunkFold.witnessRegs i, 0, false⟩
+  let clobbered :=
+    chunkUntouchedRegs.filter fun r => result.final.regs r != regs0 r
+  { index := i
+    clobbered := clobbered
+    checkedRegs := chunkUntouchedRegs.length
+    reachedExit := result.final.pc == 37 && result.final.halted
+    modeledSteps := result.steps
+    cell := result.final.regs E1InteriorChunkFold.cOut
+    reads := result.readLog
+    zeroSeedCell := zeroResult.final.regs E1InteriorChunkFold.cOut
+    zeroSeedReads := zeroResult.readLog
+    preserved := clobbered.isEmpty
+    agreesWithZeroSeed :=
+      result.final.regs E1InteriorChunkFold.cOut ==
+          zeroResult.final.regs E1InteriorChunkFold.cOut &&
+        result.readLog == zeroResult.readLog }
+
+def chunkPresReports (salt : Nat) (build : List Instr -> List Instr) :
+    List ChunkPresReport :=
+  chunkPresCases.map (runChunkPres salt build)
+
+def chunkPresFailures (rs : List ChunkPresReport) : Nat :=
+  (rs.filter (fun r => !r.preserved)).length
+
+def chunkPresExitFailures (rs : List ChunkPresReport) : Nat :=
+  (rs.filter (fun r => !r.reachedExit)).length
+
+def chunkPresSeedDisagreements (rs : List ChunkPresReport) : Nat :=
+  (rs.filter (fun r => !r.agreesWithZeroSeed)).length
+
+/-- Every register any fixture found clobbered, deduplicated. -/
+def chunkPresClobberedRegs (rs : List ChunkPresReport) : List Nat :=
+  dedupList (rs.flatMap ChunkPresReport.clobbered)
+
+/-- ANTI-VACUITY: how many fixtures read more than one chunk.  A sweep of
+single-chunk fixtures would exercise the atom, not the fold. -/
+def chunkPresMultiChunkCases (rs : List ChunkPresReport) : Nat :=
+  (rs.filter (fun r => r.reads.length > 1)).length
+
+def goodChunkPres : List Instr -> List Instr := id
+
+/-- Substitute register `a` by register `b` in REGISTER POSITIONS ONLY.
+
+The non-register fields are left alone by construction: `const`'s value,
+`mulConst`/`divConst`'s scale, `readMem`'s segment, and -- the one a
+blanket numeral rewrite would silently corrupt -- `brNZ`'s absolute
+branch TARGET. -/
+def substReg (a b : Nat) : Instr -> Instr :=
+  let m := fun r => if r == a then b else r
+  fun
+  | .readMem d seg ar => .readMem (m d) seg (m ar)
+  | .const d v => .const (m d) v
+  | .move d s => .move (m d) (m s)
+  | .add d s1 s2 => .add (m d) (m s1) (m s2)
+  | .sub d s1 s2 => .sub (m d) (m s1) (m s2)
+  | .mulConst d s k => .mulConst (m d) (m s) k
+  | .divConst d s k => .divConst (m d) (m s) k
+  | .natLt d s1 s2 => .natLt (m d) (m s1) (m s2)
+  | .natLe d s1 s2 => .natLe (m d) (m s1) (m s2)
+  | .natEq d s1 s2 => .natEq (m d) (m s1) (m s2)
+  | .brNZ c t => .brNZ (m c) t
+  | .halt => .halt
+
+/-- The register mutant H scribbles on: `102`, which is
+`E1InteriorSummaryGroup.sMin` (`E1InteriorSummaryGroup.lean:80`).
+
+Stated as a LITERAL rather than as the symbol, deliberately: this
+validator does not import the summary group, so the phase's build does
+not depend on a module outside this lane.  What the discriminator needs
+of `102` is only that it satisfies `ChunkFoldUntouched` (`99 < 102`) and
+is not a fold input, both of which are local facts.  The `sMin`
+identification below is the LEGITIMACY argument, not a soundness
+dependency. -/
+def chunkClobberTarget : Nat := 102
+
+/-- MUTANT H: rename the COMBINE loop's private scratch `cU` (96, inside
+the fold bank `89..99`) to `102`, consistently across its three
+occurrences, and ONLY within the combine segment.
+
+WHY IT IS INVISIBLE TO THE VALUE.  In `interiorChunkCombine`
+(`E1InteriorChunkFold.lean:316`) `cU` is written at `MB+1`
+(`mulConst cU cT wordScale`) before it is read at `MB+2`
+(`sub cU cAcc cU`) and `MB+4` (`add cRev cRev cU`), and is never read
+after.  So it is a pure private temp whose incoming value cannot matter
+and whose outgoing value nothing consumes; renaming it consistently
+performs the identical arithmetic into `cRev`.
+
+WHY IT IS INVISIBLE TO THE RECEIPT.  The combine loop is READ-FREE by
+construction -- no `readMem` appears in it -- so the mutation cannot
+move, add or drop a single trace event.  Its trip count is driven by
+`cN`, not by `cU`, so the step count and control path are identical too.
+
+WHY `102` IS NOT A CONTRIVED TARGET.  This is the register at which the
+interior's OWN composition consumes the clause: the summary group's proof
+instantiates the fold's preservation hypotheses at exactly this slot --
+`hPres4 sMin`, `hPres3 sMin` (`E1InteriorSummaryGroup.lean:427-429`) --
+to carry a staged minimum across LATER fold invocations.  A clobber here
+computes the right cell for this invocation and destroys the running
+minimum the next one needs, which is precisely the defect the clause
+exists to exclude and precisely what the other two discriminators cannot
+see.
+
+WHY THE CLOBBER IS ROBUSTLY DETECTED.  The target is not a fold input, so
+it carries `presSentinel 102 = 717`.  The value the combine loop writes
+is a base-`wordScale` digit, which on this witness is `0` or `1`.  So
+detection does not depend on the mutant happening to write a value that
+differs from the seed -- the ranges are disjoint.
+
+The combine segment occupies fold indices `26..33` (init 17 + read body
+9), and `chunkFoldWitness` hosts the fold at base `0`, so those are
+program indices too. -/
+def mutatedCombineScratch (program : List Instr) : List Instr :=
+  program.take 26
+    ++ ((program.drop 26).take 8).map
+        (substReg E1InteriorChunkFold.cU chunkClobberTarget)
+    ++ program.drop 34
+
+def chunkPresMutationIsReal : Bool :=
+  let honest := E1InteriorChunkFold.chunkFoldWitness
+  let mutant := mutatedCombineScratch honest
+  honest != mutant && honest.length == mutant.length &&
+    honest.map Instr.category == mutant.map Instr.category
+
+/-- Mutant H is PRESERVATION-ONLY: case for case its exit pc, halted flag,
+modeled step count, returned cell AND read log all match the honest
+sweep, so neither the value discriminator nor the receipt discriminator
+can see it.
+
+The receipt is compared event by event, not by length or count.  That
+matters on this block specifically: `chunkFoldWitness_paths_distinguishable`
+(`E1InteriorChunkFold.lean:2004`) records that its paths 2 and 3 agree on
+BOTH modeled steps and returned cell and are separated ONLY by the read
+log, so a weaker receipt check would be the wrong instrument here. -/
+def chunkMutantHIsPreservationOnly (salt : Nat) : Bool :=
+  let honest := chunkPresReports salt goodChunkPres
+  let mutant := chunkPresReports salt mutatedCombineScratch
+  honest.length == mutant.length &&
+    (List.zip honest mutant).all fun (h, m) =>
+      h.reachedExit == m.reachedExit && h.modeledSteps == m.modeledSteps &&
+        h.cell == m.cell && h.reads == m.reads
+
 def mainImpl : IO UInt32 := do
   IO.println "== E1 amended-machine validator (M6) =="
   IO.println ""
@@ -1815,6 +2055,45 @@ def mainImpl : IO UInt32 := do
   IO.println s!"presMutationWallClockMs={tpm1 - tpm0}"
   IO.println ""
 
+  -- STEP 3i: the INTERIOR fold's preservation clause -- stated since
+  -- M3d-13, executed here for the first time.
+  IO.println "-- phase 3i: interior CHUNK FOLD register preservation (first executed fold-level check) --"
+  let tc0 <- IO.monoMsNow
+  let cPresRs := chunkPresReports salt goodChunkPres
+  let cPresFails := chunkPresFailures cPresRs
+  let cPresExitFails := chunkPresExitFailures cPresRs
+  let cPresSeedDis := chunkPresSeedDisagreements cPresRs
+  let cPresMulti := chunkPresMultiChunkCases cPresRs
+  IO.println s!"chunkPresCases={cPresRs.length}"
+  IO.println s!"chunkPresCheckedRegs={chunkUntouchedRegs.length}   (registers ChunkFoldUntouched claims survive)"
+  IO.println s!"chunkPresSentinelNonZero={presSentinel 0 != 0}   (a zero-seeded file makes this phase vacuous)"
+  IO.println s!"chunkPresTargetSeed={presSentinel chunkClobberTarget}   (seed at 102; the combine digit is 0 or 1, so ranges are disjoint)"
+  IO.println s!"chunkPresMultiChunkCases={cPresMulti}   (must be > 0: a single-chunk sweep exercises the atom, not the fold)"
+  IO.println s!"chunkPresExitFailures={cPresExitFails}"
+  IO.println s!"chunkPresFailures={cPresFails}   (must be 0: the fold's preservation clause, executed)"
+  IO.println s!"chunkPresClobberedRegs={chunkPresClobberedRegs cPresRs}   (must be empty)"
+  IO.println s!"chunkPresSeedDisagreements={cPresSeedDis}   (must be 0: cell AND read log agree under both seedings)"
+  let tc1 <- IO.monoMsNow
+  IO.println s!"chunkPresWallClockMs={tc1 - tc0}"
+  IO.println ""
+
+  -- STEP 4h: a mutation invisible to BOTH of this harness's other
+  -- discriminators, on the interior side.
+  IO.println "-- phase 4h: deliberate mutation of the COMBINE loop's scratch register (preservation-only visible) --"
+  let tcm0 <- IO.monoMsNow
+  let mutHReports := chunkPresReports salt mutatedCombineScratch
+  let mutHFails := chunkPresFailures mutHReports
+  let mutHExit := chunkPresExitFailures mutHReports
+  let mutHPresOnly := chunkMutantHIsPreservationOnly salt
+  IO.println s!"chunkPresMutationIsReal={chunkPresMutationIsReal}   (differs; same length AND same opcode categories)"
+  IO.println s!"mutantH_combine_exitFailures={mutHExit}   (0 expected: exit pc alone MISSES this)"
+  IO.println s!"mutantH_combine_preservationFailures={mutHFails}   (must be > 0: preservation catches it)"
+  IO.println s!"mutantH_clobberedRegs={chunkPresClobberedRegs mutHReports}   (expect [102] -- sMin in the summary group's bank)"
+  IO.println s!"mutantH_isPreservationOnly={mutHPresOnly}   (exit pc, steps, cell AND read log ALL match the honest sweep)"
+  let tcm1 <- IO.monoMsNow
+  IO.println s!"chunkPresMutationWallClockMs={tcm1 - tcm0}"
+  IO.println ""
+
   -- STEP 5: the hole.
   IO.println "-- phase 5: whole-query comparison --"
   IO.println s!"wholeQueryComparisonAvailable={wholeQueryComparisonAvailable}"
@@ -1883,12 +2162,26 @@ def mainImpl : IO UInt32 := do
   -- discriminators -- the third corner of the complementarity argument.
   let okPresMutations :=
     presMutationIsReal && mutGFails != 0 && mutGPresOnly
+  -- The INTERIOR fold's preservation clause, executed: nothing outside
+  -- `89..99` moves, sentinel seeding does not change the cell or the read
+  -- log, and the sweep is genuinely multi-chunk rather than a disguised
+  -- single-chunk atom sweep.
+  let okChunkPres :=
+    cPresFails == 0 && cPresExitFails == 0 && cPresSeedDis == 0 &&
+      cPresMulti > 0 && presSentinel 0 != 0
+  -- Mutant H rejected, and confirmed invisible to BOTH other
+  -- discriminators on the interior side.
+  let okChunkPresMutations :=
+    chunkPresMutationIsReal && mutHFails != 0 && mutHPresOnly
   let okCore := okReference && okLengths && okDispatch && okLeg
   let okComposite := okSelect && okCompose && okComposeCoverage && okMerge
   let okAdversarial := okMutations && okMutantSetup && okMergeMutations
   let okNew := okArm && okArmMutations && okRange && okRangeMutations
   let okPreservation := okPres && okPresMutations
-  let ok := okCore && okComposite && okAdversarial && okNew && okPreservation
+  let okChunkPreservation := okChunkPres && okChunkPresMutations
+  let ok :=
+    okCore && okComposite && okAdversarial && okNew && okPreservation &&
+      okChunkPreservation
   if ok then
     IO.println "RESULT: PASS (with the whole-query comparison still OPEN)"
     return 0
