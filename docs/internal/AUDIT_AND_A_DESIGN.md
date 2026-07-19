@@ -3377,3 +3377,81 @@ the `design_decision_check.ps1` enumeration problem I deferred earlier. The
 first deferral cost nothing; this one produced a vacuous strict pass over real
 work carrying five design decisions. The class is not closed by this fix — only
 the observed hole is.
+
+---
+
+## C05 round 52 — the span-block pattern holds; a claim of mine ENLARGED the
+## remaining work; and a preservation predicate that was too weak to be wrong
+
+Lane B returned INCOMPLETE at `8ad2649`. It closed the #2/#3 **pattern** —
+`E1InteriorSpanBlock.lean`, 612 lines new, both arms, execution semantics,
+preservation, and the `none`-arm discriminator — and did not reach #4-#9 or
+`hInterior`. It also cleared the cross-lane defect: `summaryMinCandidate_runsTo`
+now exports `LegUntouched`, and the worker had independently found the same gap
+from the `hInterior` side before my message arrived.
+
+**The parametric-pattern hypothesis HELD, which is worth recording because it
+was mine and it was a guess.** One `spanBlock`, parametric in a `TableGeom`,
+covers both #2 and #3 — because the two block-index maps
+(`macroIdx * macroSize + value` and `value`) are both `off + value` for a
+caller-supplied `off`. That is the mechanism I did not know when I claimed the
+patterns would unify; the claim was right for a reason I had not identified.
+
+**MY ELEVENTH FAILED CLAIM, and the first that made the work BIGGER.** I told
+Lane B that `candMerge3` already existed and was reusable for #8.
+`bpCandidateMerge3?_some_left_right` takes `left right : Nat × Nat` — **bare
+pairs, not options** — so it assumes both outer arms are occupied, which is the
+FRINGE's situation and not the interior's, where all three sub-legs are
+`Option`. Its epilogue also writes the closed position where #6/#7/#8 need the
+candidate left in the bank. **There is no two-way merge block on the machine
+side at all**, and #4, #5, #6 and #7 all need one. That is unbudgeted work now
+on Lane B2's critical path. Every prior failed claim of mine cost an address or
+a session; this one cost a plan.
+
+**TWELFTH:** the thrice-deferred prose fix — I said the stale name should become
+`unbounded_agreement_refuted` at `:537`; it is at `:594`, and the name it
+replaces does not exist anywhere in the tree.
+
+**THE MOST TRANSFERABLE FINDING, and it is the worker's own error, self-reported
+rather than quietly fixed.** Its first `SpanUntouched` was FALSE at `r = 76` —
+it declined to claim `mLP`, one of the four registers `hInterior` needs. **A
+preservation predicate can be too WEAK and still typecheck.** Nothing catches
+that: not the type checker, not the build, not the validator, not any
+discriminator we have. Only reading the predicate against its downstream
+consumer does. The repair is the right one — `spanUntouched_at_crossBlockArm_operands`
+EVALUATES that the needed registers survive, because the write set is a numeral
+predicate even where the leg is not. A new entry in the "green check is evidence
+only of what it examined" family, and the first one where the defect is
+invisible to every instrument in the battery.
+
+**The `none`-arm discriminator is exactly the right construction.** The impostor
+is not invented — it is the one wrong numeral available at that branch point,
+sending control to the consumer at `Q + 45 + 156` instead of the exit at
+`Q + 222`. Skipping ONLY the summary group is the dangerous error precisely
+because the group holds the four reads and the consumer is read-free. The
+fixture establishes by execution that of receipt, read count, exit code and
+preservation, **not one rejects it**; only the value does, plus a positional
+category comparison, which the worker also stated so the boundary is exact
+rather than implied.
+
+**"Not built" was again a fact about a search.** `hexact_local`/`hexact_global`
+landed as one-line compositions because `hagree_local`/`hagree_global` already
+existed — the same shape as round 46's false obligation and round 39's
+already-present lemma. Third instance. The gate on #2/#3's route-value link is
+now open.
+
+**Honesty caveat the worker volunteered and I want preserved:** the validator
+PASS does **not** exercise its deliverable — phase 5 still reports the interior
+leg unbuilt. Evidence for the span block is the in-tree executed fixtures, not
+that run. A worker distinguishing "my battery is green" from "my battery tested
+my work" is the discipline this campaign runs on.
+
+**Live-state repair.** Its §1 recorded HEAD `f3d96e2` while the head was
+`8ad2649` — because `8ad2649` IS the commit that updated the file. A file that
+records its own branch's head can never name the commit that writes it, so the
+hash is stale by construction. It had been wrong twice, once by me and once by
+the worker. Replaced with an instruction to run `git log`; a line that cannot be
+right is worse than no line.
+
+**Battery now run by me with `-Base`**, the round-51 lesson wired into the
+script rather than remembered.
