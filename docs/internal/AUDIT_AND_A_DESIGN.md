@@ -2163,3 +2163,49 @@ rule was written to prevent: `gate.ps1` aborts early on the a07-owned
 `wordram_axiom_check` red, so it would fail before reaching anything this rung
 could have broken and would establish nothing. The full gate runs at the merge
 window once R1 lands.
+
+## 2026-07-19 (C05 round 32) — the reachability question, settled with one scope caveat
+
+**The `WordReads.lean` unreachability claim is CONFIRMED, and for a sharper
+reason than "no callers".** Those definitions DO have callers, three levels
+deep, terminating at exactly two non-proof consumers: `InteriorDirectory.lean:
+954` (the `payloadWordsRead` field of the LEGACY concrete directory, where the
+accepted trace instead refines to `canonicalRelativeRmmInteriorDirectory` whose
+own `payloadWordsRead` derives from the charged execution) and
+`InteriorDirectory.lean:1720` (a logical projection whose only consumers are two
+theorems). `payloadWordsRead` is additionally a read-set SPECIFICATION field
+paired with a width obligation, not a cost-bearing computation, and
+`evalGlobalWordTrace` never projects it. The bottom of the accepted chain is
+free of `Nat.log2`/`bpSparseLogSpan`: `count` now reaches the charged table only
+as a READ INDEX, and `domain` is a structural constant.
+
+**So the answer the rung exists to settle is: on the accepted route, no.** No
+uncharged computation whose cost grows with input size survives.
+
+**But one scope caveat, verified by the coordinator and worth stating in the
+paper-facing wording.** Surviving uncharged runtime `Nat.log2` DOES exist in
+trace-producing code reachable from a SIBLING entry point — the `OfSizeGe`
+family (`SuccinctFinalRAM.lean:4486`, `InteriorRAM.lean:574/622/820/868`) and
+the `...WithStoreLegacy` mirror (`ConcreteDirectoryRAMStoreParam.lean:3624`).
+Coordinator checked where that surface is exposed: `OfSizeGe` appears ONLY in
+`RMQ/Headlines/RMQCompatibility.lean:133,137` — the quarantine module the U3
+topology work created for retired surfaces — and NOWHERE in `RMQPaper.lean`,
+`Headlines/RMQ.lean`, `docs/WHAT_IS_PROVED.md`, or `artifact/CLAIMS.md`. Its
+guard is `2 ^ 128 <= shape.size`.
+
+Disposition: properly quarantined, no repair needed. **But the claim must be
+worded to its actual scope.** "No uncharged size-dependent computation on the
+ACCEPTED ROUTE" is true and provable; "nowhere in the repository" is false, and
+a reviewer who greps for `Nat.log2` will find these within minutes. The
+charge-policy section must say which, and should name the compatibility family
+explicitly rather than leaving it to be discovered. Queued for the E1 M7 doc
+work, which already owns that section.
+
+This is the same discipline the campaign applied to the representation-artifact
+distinction: state the boundary precisely and name what sits on the other side
+of it, rather than making an absolute claim that a five-minute search refutes.
+
+**Minor, queued:** `SparseLevelTable.lean:9` cites `InteriorDirectory.lean:2117`
+and `:2131` as the uncharged sites; those line numbers now point at refinement
+theorems. The docstring describes the pre-change state and no longer resolves —
+the same anchor-drift class this campaign has logged repeatedly.
