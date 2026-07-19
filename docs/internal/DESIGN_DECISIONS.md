@@ -5043,3 +5043,59 @@ the corresponding single-table read computation. Equality of
 `routeDecodedSummary` with the value of
 `canonicalRelativeRmmMachineSummaryComputation`, which binds four such
 reads into a tuple, is a FURTHER step and is still NOT claimed.
+
+## DD-20260719-018: the option-shift gets a NAME, and the summary tuple is claimed (E1 M3d-23)
+
+Claimed this session; the maximum OBSERVED in this file was
+`DD-20260719-017`, this session's own earlier entry, checked before
+claiming.
+
+THIS ENTRY SUPERSEDES THE CLOSING SCOPE NOTE OF DD-20260719-017. That note
+said equality of `routeDecodedSummary` with the value of
+`canonicalRelativeRmmMachineSummaryComputation` was "a FURTHER step and is
+still NOT claimed". It is now claimed and proved. The note was true when
+written and is recorded here as superseded rather than edited away.
+
+Context. With the four per-read links in hand, binding them into the
+route's four-read tuple should have been immediate: `summaryOfCells`
+inverts the shift through `cellOpt`, and the route's tuple `match`
+(`InteriorDirectory.lean:2294`-`:2296`) is the same four-way split. It was
+not immediate, and the reason is worth recording because it is a trap that
+costs a session if it is not recognised.
+
+The failure. The links originally stated the option-shift as an INLINE
+`match v with | none => 0 | some x => x + 1`. An inline `match` elaborates
+to a fresh auxiliary matcher per declaration. So the inversion lemma
+`cellOpt (match v with ...) = v`, stated in the consumer, was DEFEQ to the
+goal and still did not fire: `simp` saw two different functions. The
+symptom is an "unsolved goals" error whose goal looks character-for-
+character like something `simp` should have closed.
+
+Decision: give the shift a NAME. `E1InteriorSummaryGroup.optShift` is
+defined once, the links state their conclusions with it, and the inversion
+`cellOpt_optShift` is a `simp` lemma that applies. The change is
+definitional -- `optShift v` is defeq to the inline match it replaces -- so
+no statement moved; the four canonical corollaries and every anti-vacuity
+fixture went through the refactor unchanged in content.
+
+The general rule this instances: a shift or wrapper that CONSUMERS must
+invert belongs in a named definition with a named inversion lemma. Writing
+it inline is not a smaller version of the same thing; it is a version that
+cannot be reasoned about across declaration boundaries.
+
+What is now claimed. `routeDecodedSummary_eq_summaryComputation_value`
+(`E1InteriorMinCandidate.lean`): the summary tuple assembled from the four
+route decodes IS the value of the computation the route runs, at the
+canonical store and layout, with NO validity, cap or store hypothesis --
+inherited from the unconditional bridges of DD-20260719-016 and the
+hypothesis-free links of DD-20260719-017. The proof is the four links, the
+shift inversion, `FlatStoreExecution.append`'s value projection, and a
+closing `rfl` for the defeq spellings of the four bases and
+`blocksPerSuper`. `maxHeartbeats` was NOT raised and no whnf timeout was
+encountered.
+
+Scope, stated because this one also invites over-reading. This is the
+tuple's VALUE. The receipt -- positional trace equality for the four reads
+in the route's bind order -- is a separate obligation and is NOT claimed
+here, nor is any statement about the min-candidate consumer's own output
+beyond what `summaryMinCandidate_runsTo` already carries.

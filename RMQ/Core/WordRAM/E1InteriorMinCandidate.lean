@@ -890,11 +890,16 @@ below is unconditional and the `none` arm composes like any other. -/
 group's reads, at the canonical store and layout.
 
 NAMED CAREFULLY.  This is the route's DECODE of the four cells, which is
-what the value bridges deliver.  Showing it equal to the value of
+what the value bridges deliver.
+
+SCOPE NOTE SUPERSEDED (M3d-23).  Through M3d-22 this docstring recorded
+that showing it equal to the value of
 `canonicalRelativeRmmMachineSummaryComputation`
-(`InteriorDirectory.lean:2277`) is a FURTHER step and is NOT claimed here;
-that link runs through `machineReadComputationAt` and has not been
-built. -/
+(`InteriorDirectory.lean:2277`) was a FURTHER step and NOT claimed, because
+the link through `machineReadComputationAt` had not been built.  That link
+now exists (`E1InteriorSummaryGroup.routeDecode_eq_machineReadComputation_value`)
+and the equality IS claimed, at
+`routeDecodedSummary_eq_summaryComputation_value` below. -/
 def routeDecodedSummary (shape : Cartesian.CartesianShape) (block : Nat) :
     Option (Nat × Nat × Nat × Nat) :=
   summaryOfCells
@@ -1027,6 +1032,61 @@ theorem summaryMinCandidate_premises_satisfiable
     summaryMinCandidate_runsTo shape (summaryMinCandidate_hosted_self shape)
       (regs := RegFile.write (fun _ => 0) sBlock block) rfl
   exact ⟨regs', hval⟩
+
+/-! ## The summary tuple, as the value of the ROUTE's own computation
+
+M3d-22 named `routeDecodedSummary` carefully and recorded that equating it
+with the value of `canonicalRelativeRmmMachineSummaryComputation`
+(`InteriorDirectory.lean:2277`) was a FURTHER step, not claimed, because
+the link through `machineReadComputationAt` had not been built.  M3d-23
+built that link, so the step is now available and is taken here.
+
+It is short because all four reads were already handled one at a time.
+What remains is the OPTION-SHIFT bookkeeping: the links deliver each cell
+option-shifted as a `Nat`, `summaryOfCells` re-inverts through `cellOpt`,
+and the route's tuple `match` (`InteriorDirectory.lean:2294`-`:2296`) is
+the same four-way split on the unshifted `Option`s. -/
+
+/-- `cellOpt` INVERTS the shift the links produce.  This is the whole
+bookkeeping content of the theorem below.
+
+It fires only because the links state the shift as the NAMED
+`E1InteriorSummaryGroup.optShift` rather than inline: an inline `match`
+elaborates to a fresh auxiliary per declaration, so this lemma would be
+defeq to the goal and still not apply. -/
+@[simp] theorem cellOpt_optShift (v : Option Nat) :
+    cellOpt (E1InteriorSummaryGroup.optShift v) = v := by
+  cases v <;> rfl
+
+/-- THE SUMMARY TUPLE IS THE ROUTE COMPUTATION'S VALUE.
+
+No validity, cap or store hypothesis, inherited from the unconditional
+bridges and the hypothesis-free links.  This supersedes the scope note on
+`routeDecodedSummary`: that equality is no longer merely unclaimed, it
+HOLDS. -/
+theorem routeDecodedSummary_eq_summaryComputation_value
+    (shape : Cartesian.CartesianShape) (block : Nat) :
+    routeDecodedSummary shape block =
+      ((canonicalRelativeRmmMachineSummaryComputation shape block).run
+        (RMQ.SuccinctClose.flatWordStoreOfReadStore
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          (canonicalSummaryLayout shape).segment)).value := by
+  unfold routeDecodedSummary summaryOfCells
+    canonicalRelativeRmmMachineSummaryComputation
+  rw [E1InteriorSummaryGroup.geomRouteDecode_eq_readComputation_value shape _
+        (canonicalRelativeRmmSummaryTable shape).baselineTable _ _ _
+        rfl rfl rfl,
+      E1InteriorSummaryGroup.geomRouteDecode_eq_readComputation_value shape _
+        (canonicalRelativeRmmSummaryTable shape).minRelTable _ _ _
+        rfl rfl rfl,
+      E1InteriorSummaryGroup.geomRouteDecode_eq_readComputation_value shape _
+        (canonicalRelativeRmmSummaryTable shape).maxRelTable _ _ _
+        rfl rfl rfl,
+      E1InteriorSummaryGroup.geomRouteDecode_eq_readComputation_value shape _
+        (canonicalRelativeRmmSummaryTable shape).argOffsetTable _ _ _
+        rfl rfl rfl]
+  simp [FlatStoreExecution.append]
+  rfl
 
 end E1InteriorMinCandidate
 end WordRAM

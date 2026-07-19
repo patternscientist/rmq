@@ -7239,21 +7239,21 @@ RE-DERIVED, NOT COPIED, as instructed: `summaryGroup_length = 156`
 ### 2. THE LINK, AND WHY IT IS PARAMETRIC
 
 `routeDecode_eq_machineReadComputation_value`
-(`E1InteriorSummaryGroup.lean:865`) is the core: the option-shifted decode
+(`E1InteriorSummaryGroup.lean:879`) is the core: the option-shifted decode
 of `chunkAddrs` IS the option-shifted `.value` of
 `machineReadComputationAt`, given only that the geometry's `entriesLen` and
 `chunkCount` are the route's own.  It takes `wordSize` as an ORDINARY
 PARAMETER and mentions no `shape`.
 
-`geomRouteDecode_eq_readComputation_value` (`:894`) is the shape-level
-corollary, and the four `geomCell_*_eq_readComputation_value` (`:927`,
-`:945`, `:963`, `:981`) compose it with the four bridges.  ALL THREE
+`geomRouteDecode_eq_readComputation_value` (`:904`) is the shape-level
+corollary, and the four `geomCell_*_eq_readComputation_value` (`:935`,
+`:951`, `:967`, `:983`) compose it with the four bridges.  ALL THREE
 HYPOTHESES ARE `rfl` AT EVERY ONE OF THE FOUR -- the predecessor's
 prediction that the address lists agree by `rfl` at
 `canonicalSummaryLayout` is confirmed by construction.
 
 THE DECISIVE STEP IS DEFINITIONAL, NOT ARITHMETIC.
-`chunkAddrs_eq_machineAddresses` (`:841`) is proved by `subst; subst; rfl`: both
+`chunkAddrs_eq_machineAddresses` (`:855`) is proved by `subst; subst; rfl`: both
 sides split on the same validity test, and the valid arm of `chunkAddrs` IS
 `(consecutiveWordIndices (i * count) count).map (base + .)`, which is
 exactly `fixedWidthNatTableMachineFootprintAt` unfolded.
@@ -7280,19 +7280,19 @@ The fixture is three entries at width `20`, word size `8`, hence
 `fixedWidthNatTableMachineChunkCount 20 8 = 3` chunks per cell -- the
 regime where `interiorReadNat_route_atom` does NOT apply.
 
-* `linkWitness_executed` (`:1083`) evaluates BOTH sides at four indices,
+* `linkWitness_executed` (`:1079`) evaluates BOTH sides at four indices,
   `[2, 3, 0, 6]` on each: a fully present three-chunk cell, a second
   differing in one chunk, a cell with a missing chunk, and the dead path.
-* `linkWitness_discriminates_content` (`:1094`) is the right-shape /
+* `linkWitness_discriminates_content` (`:1090`) is the right-shape /
   wrong-content guard in the `witness_maxRel_discriminates` model.  Cells
   `0` and `1` have the SAME shape -- three present chunks each -- and
   differ only in stored bits.  The link separates them.
-* `linkWitness_chunkCount_load_bearing` (`:1101`) and
-  `linkWitness_entriesLen_load_bearing` (`:1107`): a wrong `chunkCount`
+* `linkWitness_chunkCount_load_bearing` (`:1097`) and
+  `linkWitness_entriesLen_load_bearing` (`:1103`): a wrong `chunkCount`
   reads a shorter address list, a wrong `entriesLen` diverts the index to
   the dead path, each decoding a different value.  Neither hypothesis is
   decorative.
-* `linkWitness_link_instantiated` (`:1074`) discharges rule 1: both
+* `linkWitness_link_instantiated` (`:1070`) discharges rule 1: both
   hypotheses JOINTLY satisfiable at a real instantiation, carried to a
   concrete consequence rather than left existential.
 
@@ -7366,10 +7366,10 @@ All file:line verified at this session's HEAD.
 
 1. MISSION ITEM 1 IS DONE, BOTH HALVES.  The four
    `geomCell_*_eq_readComputation_value`
-   (`E1InteriorSummaryGroup.lean:927`, `:945`, `:963`, `:981`) state the
+   (`E1InteriorSummaryGroup.lean:935`, `:951`, `:967`, `:983`) state the
    machine's saved cell as the value of the computation the ROUTE runs,
    with no validity, cap or store hypothesis.  The parametric core they
-   rest on is `routeDecode_eq_machineReadComputation_value` (`:865`).
+   rest on is `routeDecode_eq_machineReadComputation_value` (`:879`).
    Registers `105 .. 117` are TAKEN; THE NEXT BLOCK OPENS AT `118`.
 2. WHAT IS STILL NOT CLAIMED, AND IS THE NEXT NATURAL STEP.  The four link
    ONE read each.  `routeDecodedSummary` (`E1InteriorMinCandidate.lean:898`)
@@ -7422,3 +7422,99 @@ All file:line verified at this session's HEAD.
    a claim cannot be executed, check whether a parametric restatement makes
    it executable without weakening it.  Here it did, and the shape-level
    claim survives as a corollary of the executable one.
+
+### 7. SUPPLEMENT (same session, second commit): the summary TUPLE, and the trap that nearly cost the step
+
+Sections 1-6 above were written at commit `9c66c29`, where the session's
+assigned milestone was complete.  Budget remained, so the step section 6
+item 2 identified as "short and I did not reach it" was attempted.  It
+landed.  ITEM 2 OF THAT RESUME POINT IS THEREFORE SUPERSEDED by this
+section; the rest of the resume point stands.
+
+`routeDecodedSummary_eq_summaryComputation_value`
+(`E1InteriorMinCandidate.lean:1067`): the summary tuple assembled from the
+four route decodes IS the value of
+`canonicalRelativeRmmMachineSummaryComputation`
+(`InteriorDirectory.lean:2277`), at the canonical store and layout, with NO
+validity, cap or store hypothesis.
+
+THE LINE NUMBERS IN SECTIONS 1-6 WERE CORRECTED, NOT LEFT.  The refactor
+below inserted a definition into `E1InteriorSummaryGroup.lean` and shifted
+every theorem after it.  The citations written at `9c66c29` were re-checked
+against the file and updated in place; the numbers in sections 1-6 are the
+CURRENT ones.
+
+### 7a. THE TRAP: AN INLINE `match` IS NOT A SMALL VERSION OF A NAMED ONE
+
+The step should have been immediate -- `summaryOfCells` inverts the shift
+through `cellOpt` (`E1InteriorMinCandidate.lean:153`), and the route's
+tuple `match` (`InteriorDirectory.lean:2294`-`:2296`) is the same four-way
+split.  It was not.
+
+The links originally stated the option-shift as an INLINE
+`match v with | none => 0 | some x => x + 1`.  An inline `match` elaborates
+to a FRESH AUXILIARY MATCHER PER DECLARATION.  So the inversion lemma
+stated in the consumer was DEFEQ to the goal and STILL DID NOT FIRE --
+`simp` saw two different functions.  The symptom is an "unsolved goals"
+error whose goal looks character-for-character like something `simp` should
+already have closed, which is a misleading symptom: it invites raising
+`maxHeartbeats` or piling on `simp` lemmas, neither of which can work.
+
+THE FIX WAS TO NAME THE SHIFT.  `optShift`
+(`E1InteriorSummaryGroup.lean:845`) is defined once; the links state their
+conclusions with it; `cellOpt_optShift`
+(`E1InteriorMinCandidate.lean:1057`) is the `simp` inversion that actually
+applies.  The change is DEFINITIONAL -- `optShift v` is defeq to the inline
+match it replaced -- so no statement moved, and the four canonical
+corollaries and all five anti-vacuity fixtures went through the refactor
+unchanged in content.  Recorded at DD-20260719-018, which also records the
+general rule: a wrapper CONSUMERS must invert belongs in a named definition
+with a named inversion lemma.
+
+`maxHeartbeats` was NOT raised and NO whnf timeout was encountered.  The
+proof closes with the four links, the shift inversion,
+`FlatStoreExecution.append`'s value projection, and a final `rfl` for the
+defeq spellings of the four bases and `blocksPerSuper`.
+
+### 7b. A SCOPE NOTE CORRECTED RATHER THAN LEFT TO ROT
+
+Three places asserted this equality was NOT claimed, and all three were
+made false by this session's own work.  All three were corrected:
+the `routeDecodedSummary` docstring (`E1InteriorMinCandidate.lean:889`),
+now carrying an explicit SUPERSEDED note rather than a silent rewrite;
+DD-20260719-017's closing paragraph, superseded in DD-20260719-018 rather
+than edited away; and resume item 2 above, superseded by this section.
+
+WHAT IS STILL NOT CLAIMED, and the name again invites over-reading: this is
+the tuple's VALUE.  POSITIONAL RECEIPT EQUALITY for the four reads in the
+route's bind order is a SEPARATE obligation and is NOT claimed here.  That
+is the next step, and it is the one the "right shape, wrong content"
+defect class bites hardest -- a receipt list in the right order with a
+stale head passes every length and read-count check.
+
+### 7c. VERIFICATION LEDGER (second commit)
+
+Under the `Global\RMQHeavyVerification` mutex, re-run in full after the
+refactor:
+
+    lake build RMQ RMQPaper RMQExamples   LIB_BUILD_EXIT=0
+    lake build rmq_e1_machine_validate    VALIDATOR_BUILD_EXIT=0
+    lake exe rmq_e1_machine_validate      VALIDATOR_RUN_EXIT=0
+
+Validator counts UNCHANGED again, and for the same reason: no machine block
+was added.  `RESULT: PASS (with the whole-query comparison still OPEN)`,
+`presFailures=0`, `presSentinelNonZero=true`,
+`mutantG_scratch_preservationFailures=36`, `mutantG_clobberedRegs=[70]`,
+`mutantG_isPreservationOnly=true`.  THE INTERIOR ANALOGUE OF PHASE 3h IS
+STILL UNBUILT AND STILL OWED.
+
+`#print axioms`, after a root build, importing the modules DIRECTLY:
+
+    optShift-based links, all twelve       unchanged from section 4
+    cellOpt_optShift                       does not depend on any axioms
+    routeDecodedSummary_eq_summaryComputation_value
+                                           [propext, Classical.choice, Quot.sound]
+
+Never `sorryAx`.  DD-20260719-018 CLAIMED; maximum OBSERVED before claiming
+was `DD-20260719-017`, this session's own earlier entry, verified by
+scanning the tree.

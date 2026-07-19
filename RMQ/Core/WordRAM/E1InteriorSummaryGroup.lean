@@ -832,6 +832,20 @@ chunk per cell, and the interior's reachable shapes are multi-chunk (the
 module header says so at `:33-40`).  Nothing below bounds `width` at all.
 -/
 
+/-- The option-shift the machine's `cOut` uses: `0` is `none`, `v + 1` is
+`some v`.
+
+NAMED RATHER THAN WRITTEN INLINE, and the reason is mechanical rather than
+stylistic.  An inline `match` elaborates to a fresh auxiliary per
+declaration, so a lemma inverting one such shift does NOT fire against
+another -- the terms are defeq but not syntactically equal, and `simp` sees
+two different functions.  Consumers must invert this shift (`cellOpt`,
+`E1InteriorMinCandidate.lean:153`), so it gets a name and the inversion
+gets a `simp` lemma that actually applies. -/
+def optShift : Option Nat -> Nat
+  | none => 0
+  | some v => v + 1
+
 /-- THE TWO ADDRESS LISTS AGREE.
 
 `chunkAddrs`, at any geometry whose `entriesLen` and `chunkCount` are the
@@ -870,15 +884,11 @@ theorem routeDecode_eq_machineReadComputation_value
     (hentries : entriesLen = entries.length)
     (hchunk : chunkCount =
       SuccinctSpace.fixedWidthNatTableMachineChunkCount width wordSize) :
-    (match SuccinctSpace.fixedWidthNatTableMachineDecode
+    optShift (SuccinctSpace.fixedWidthNatTableMachineDecode
         ((chunkAddrs base deadAddress entriesLen chunkCount i).map
-          (fun a => store.readWord? segment a)) with
-     | none => 0
-     | some v => v + 1) =
-      (match ((table.machineReadComputationAt wordSize base deadAddress i).run
-          (RMQ.SuccinctClose.flatWordStoreOfReadStore store segment)).value with
-       | none => 0
-       | some v => v + 1) := by
+          (fun a => store.readWord? segment a))) =
+      optShift ((table.machineReadComputationAt wordSize base deadAddress i).run
+          (RMQ.SuccinctClose.flatWordStoreOfReadStore store segment)).value := by
   rw [chunkAddrs_eq_machineAddresses (entries := entries) (width := width)
     (wordSize := wordSize) base deadAddress entriesLen chunkCount i
     hentries hchunk]
@@ -903,11 +913,9 @@ theorem geomRouteDecode_eq_readComputation_value
       SuccinctSpace.fixedWidthNatTableMachineChunkCount width
         (SuccinctRank.machineWordBits shape.bpCode.length)) :
     geomRouteDecode store L G i =
-      (match ((canonicalRelativeRmmMachineReadNatComputation shape table
+      optShift ((canonicalRelativeRmmMachineReadNatComputation shape table
             G.base i).run
-          (RMQ.SuccinctClose.flatWordStoreOfReadStore store L.segment)).value with
-       | none => 0
-       | some v => v + 1) := by
+          (RMQ.SuccinctClose.flatWordStoreOfReadStore store L.segment)).value := by
   unfold geomRouteDecode canonicalRelativeRmmMachineReadNatComputation
   rw [hdead]
   exact routeDecode_eq_machineReadComputation_value store L.segment table
@@ -929,14 +937,12 @@ theorem geomCell_baseline_eq_readComputation_value
     geomCell (concreteBPNativeSuccinctRMQGlobalReadStore shape)
         (canonicalSummaryLayout shape)
         (canonicalSummaryLayout shape).baseline i =
-      (match ((canonicalRelativeRmmMachineReadNatComputation shape
+      optShift ((canonicalRelativeRmmMachineReadNatComputation shape
             (canonicalRelativeRmmSummaryTable shape).baselineTable
             (canonicalSummaryLayout shape).baseline.base i).run
           (RMQ.SuccinctClose.flatWordStoreOfReadStore
             (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-            (canonicalSummaryLayout shape).segment)).value with
-       | none => 0
-       | some v => v + 1) :=
+            (canonicalSummaryLayout shape).segment)).value :=
   (geomCell_baseline_eq_routeDecode shape i).trans
     (geomRouteDecode_eq_readComputation_value shape _
       (canonicalRelativeRmmSummaryTable shape).baselineTable _ _ i
@@ -947,14 +953,12 @@ theorem geomCell_minRel_eq_readComputation_value
     geomCell (concreteBPNativeSuccinctRMQGlobalReadStore shape)
         (canonicalSummaryLayout shape)
         (canonicalSummaryLayout shape).minRel i =
-      (match ((canonicalRelativeRmmMachineReadNatComputation shape
+      optShift ((canonicalRelativeRmmMachineReadNatComputation shape
             (canonicalRelativeRmmSummaryTable shape).minRelTable
             (canonicalSummaryLayout shape).minRel.base i).run
           (RMQ.SuccinctClose.flatWordStoreOfReadStore
             (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-            (canonicalSummaryLayout shape).segment)).value with
-       | none => 0
-       | some v => v + 1) :=
+            (canonicalSummaryLayout shape).segment)).value :=
   (geomCell_minRel_eq_routeDecode shape i).trans
     (geomRouteDecode_eq_readComputation_value shape _
       (canonicalRelativeRmmSummaryTable shape).minRelTable _ _ i
@@ -965,14 +969,12 @@ theorem geomCell_maxRel_eq_readComputation_value
     geomCell (concreteBPNativeSuccinctRMQGlobalReadStore shape)
         (canonicalSummaryLayout shape)
         (canonicalSummaryLayout shape).maxRel i =
-      (match ((canonicalRelativeRmmMachineReadNatComputation shape
+      optShift ((canonicalRelativeRmmMachineReadNatComputation shape
             (canonicalRelativeRmmSummaryTable shape).maxRelTable
             (canonicalSummaryLayout shape).maxRel.base i).run
           (RMQ.SuccinctClose.flatWordStoreOfReadStore
             (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-            (canonicalSummaryLayout shape).segment)).value with
-       | none => 0
-       | some v => v + 1) :=
+            (canonicalSummaryLayout shape).segment)).value :=
   (geomCell_maxRel_eq_routeDecode shape i).trans
     (geomRouteDecode_eq_readComputation_value shape _
       (canonicalRelativeRmmSummaryTable shape).maxRelTable _ _ i
@@ -983,14 +985,12 @@ theorem geomCell_argOffset_eq_readComputation_value
     geomCell (concreteBPNativeSuccinctRMQGlobalReadStore shape)
         (canonicalSummaryLayout shape)
         (canonicalSummaryLayout shape).argOffset i =
-      (match ((canonicalRelativeRmmMachineReadNatComputation shape
+      optShift ((canonicalRelativeRmmMachineReadNatComputation shape
             (canonicalRelativeRmmSummaryTable shape).argOffsetTable
             (canonicalSummaryLayout shape).argOffset.base i).run
           (RMQ.SuccinctClose.flatWordStoreOfReadStore
             (concreteBPNativeSuccinctRMQGlobalReadStore shape)
-            (canonicalSummaryLayout shape).segment)).value with
-       | none => 0
-       | some v => v + 1) :=
+            (canonicalSummaryLayout shape).segment)).value :=
   (geomCell_argOffset_eq_routeDecode shape i).trans
     (geomRouteDecode_eq_readComputation_value shape _
       (canonicalRelativeRmmSummaryTable shape).argOffsetTable _ _ i
@@ -1055,18 +1055,14 @@ def linkWitnessStore : ReadStore :=
 
 /-- The ROUTE-DECODE side of the link, at the fixture. -/
 def linkWitnessDecodeValue (entriesLen chunkCount i : Nat) : Nat :=
-  match SuccinctSpace.fixedWidthNatTableMachineDecode
+  optShift (SuccinctSpace.fixedWidthNatTableMachineDecode
       ((chunkAddrs 100 999 entriesLen chunkCount i).map
-        (fun a => linkWitnessStore.readWord? 7 a)) with
-  | none => 0
-  | some v => v + 1
+        (fun a => linkWitnessStore.readWord? 7 a)))
 
 /-- The COMPUTATION side of the link, at the fixture. -/
 def linkWitnessRunValue (i : Nat) : Nat :=
-  match ((linkWitnessTable.machineReadComputationAt 8 100 999 i).run
-      (RMQ.SuccinctClose.flatWordStoreOfReadStore linkWitnessStore 7)).value with
-  | none => 0
-  | some v => v + 1
+  optShift ((linkWitnessTable.machineReadComputationAt 8 100 999 i).run
+      (RMQ.SuccinctClose.flatWordStoreOfReadStore linkWitnessStore 7)).value
 
 /-- RULE 1: the link's two hypotheses are JOINTLY SATISFIABLE at a real
 instantiation, and the instance is carried to a concrete consequence
