@@ -72,8 +72,9 @@ point listed the range preambles as reusable.  They are not.
     A+245+n    crossRightRange blockSize                 10    right window range
     A+255+n    fringeArmProgramAt S c L (A+255+n)        95    RIGHT ARM
     A+350+n    crossStashRight                            3    bias -> mRV/mRP
-    A+353+n    candMerge3 (A+353+n)                      16    THREE-WAY MERGE
-    A+369+n                                                    cross arm exit
+    A+353+n    crossPinOne                                1    fOne := 1
+    A+354+n    candMerge3 (A+354+n)                      16    THREE-WAY MERGE
+    A+370+n                                                    cross arm exit
 
 Only the two seed legs, the two arms and the interior emit receipts, and
 they appear in exactly the route's order, so the composite receipt is the
@@ -396,6 +397,44 @@ theorem crossStashRight_fits (w : Nat) (hw : 84 < 2 ^ w) :
   rcases hinstr with rfl | rfl | rfl <;>
     simp only [Instr.FieldsFit, mT, mRV, mRP, fRV, fRP] <;> omega
 
+/--
+UNIT PIN (one instruction), between the right stash and the merge.
+
+`candMerge3_runsTo` (`E1CandMerge3.lean:718`) requires `regs fOne = 1`,
+and NOTHING between the arm entry and the merge guarantees it: `fOne` is
+register 40, inside the fold bank `40 .. 62`, so it fails
+`FringeArmUntouched` and the arms are entitled to clobber it.  The fold's
+own certificate takes `fOne = 1` as a hypothesis and does not restate it
+as a conclusion.
+
+This is the THIRD instance of the same pattern in this development --
+`fringeCandGlobal` pins its own `fT`, both stashes pin their own `mT`,
+and now the merge's unit is re-pinned here -- and it is deliberate in the
+same way: one register write is cheaper than strengthening a 66-instruction
+loop's invariant, and it keeps the segments composable exactly as written.
+
+Kept as its own segment rather than appended to `crossStashRight`, so the
+two stashes stay symmetric and the pin's reason for existing stays legible.
+-/
+def crossPinOne : List Instr := [ .const fOne 1 ]
+
+@[simp] theorem crossPinOne_length : crossPinOne.length = 1 := rfl
+
+/-- Category log of the unit pin. -/
+def crossPinOneCats : List Category := [.registerWrite]
+
+theorem crossPinOne_cats :
+    crossPinOne.map Instr.category = crossPinOneCats := rfl
+
+theorem crossPinOne_fits (w : Nat) (hw : 40 < 2 ^ w) :
+    ∀ instr ∈ crossPinOne, Instr.FieldsFit w instr := by
+  intro instr hinstr
+  simp only [crossPinOne, List.mem_cons, List.not_mem_nil,
+    or_false] at hinstr
+  rcases hinstr with rfl
+  simp only [Instr.FieldsFit, fOne]
+  omega
+
 /-- REPOINT (one instruction): retarget the shared close register at the
 RIGHT close, so that the right window address and range preambles -- which
 both read `fClose` -- compute the right arm's window rather than a second
@@ -419,6 +458,273 @@ theorem crossRepoint_fits (w : Nat) (hw : 71 < 2 ^ w) :
   -- `fClose`/`fRight` are abbrevs and opaque to `omega` (M3d-4 gotcha)
   simp only [Instr.FieldsFit, fClose, fRight]
   omega
+
+/-! ## Segment simulations
+
+The five read-free segments above, each run by `RunsTo.straight`.  The two
+range preambles state their outputs in the ROUTE's own spelling
+(`blockStartOf`/`blockOfClose`), not the machine's fused arithmetic, so
+that the composition below can feed them straight into
+`fringeArmProgramAt_runsTo` with no bridging step in between.
+-/
+
+/-- The machine's fused block-end form IS the route's `blockStartOf` of
+the NEXT block.  `Nat.succ_mul` is the whole content, but the two
+spellings are structurally different and this is the only lemma that
+connects them -- the machine does not copy the route's value, it
+recomputes it from `fClose` by `divConst`/`mulConst`. -/
+theorem cross_blockEnd_eq (blockSize close : Nat) :
+    (close / blockSize + 1) * blockSize =
+      blockStartOf blockSize (blockOfClose blockSize close) + blockSize := by
+  simp [blockStartOf, blockOfClose, Nat.succ_mul]
+
+/-- The machine's `divConst`-then-`mulConst` pair IS the route's
+`blockStartOf (blockOfClose ...)`. -/
+theorem cross_blockStart_eq (blockSize close : Nat) :
+    close / blockSize * blockSize =
+      blockStartOf blockSize (blockOfClose blockSize close) := by
+  simp [blockStartOf, blockOfClose]
+
+/-- Either cross-block range preamble writes only `fLo` (50), `fHi` (51),
+`fT` (60), `fU` (61) and `fStart` (66).  Stated in NUMERALS, not the
+register abbrevs, so `omega` can use it (the recurring M3d-4 gotcha). -/
+abbrev CrossRangeUntouched (r : Nat) : Prop :=
+  r ≠ 50 ∧ r ≠ 51 ∧ r ≠ 60 ∧ r ≠ 61 ∧ r ≠ 66
+
+/-- Exact simulation of the LEFT range preamble: no receipt, ten ticks,
+and the three range registers the left arm demands, in the route's own
+spelling. -/
+theorem crossLeftRange_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {Q blockSize : Nat}
+    (hHost : HostedAt program Q (crossLeftRange blockSize))
+    (regs : RegFile) (leftClose base : Nat)
+    (hClose : regs fClose = leftClose) (hBB : regs fBB = base) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, Q, false⟩ ⟨regs', Q + 10, false⟩ []
+        crossLeftRangeCats ∧
+      regs' fStart = leftClose + 1 ∧
+      regs' fLo = leftClose + 1 - base ∧
+      regs' fHi =
+        leftClose + 1 +
+          (blockStartOf blockSize (blockOfClose blockSize leftClose) +
+            blockSize - leftClose) - 1 - base ∧
+      (∀ r, CrossRangeUntouched r → regs' r = regs r) := by
+  have hrun := RunsTo.straight store (crossLeftRange blockSize)
+    (crossLeftRange_straight blockSize) Q hHost regs
+  obtain ⟨regsW, hregsW⟩ :
+      ∃ x, straightRegs store (crossLeftRange blockSize) regs = x := ⟨_, rfl⟩
+  rw [hregsW] at hrun
+  have hreads : straightReads store (crossLeftRange blockSize) regs = [] := by
+    straight_eval [crossLeftRange]
+  rw [hreads, crossLeftRange_cats] at hrun
+  refine ⟨regsW, by simpa using hrun, ?_, ?_, ?_, ?_⟩
+  · rw [<- hregsW]
+    straight_eval [crossLeftRange, fT, fU, fLo, fHi, fStart, fClose,
+      fBB] <;> simp [hClose]
+  · rw [<- hregsW]
+    straight_eval [crossLeftRange, fT, fU, fLo, fHi, fStart, fClose,
+      fBB] <;> simp [hClose, hBB]
+  · rw [<- hregsW, <- cross_blockEnd_eq]
+    straight_eval [crossLeftRange, fT, fU, fLo, fHi, fStart, fClose,
+      fBB] <;> simp [hClose, hBB]
+  · intro r hr
+    obtain ⟨h50, h51, h60, h61, h66⟩ := hr
+    rw [<- hregsW]
+    apply straightRegs_preserves
+    intro i hi
+    simp only [crossLeftRange, List.mem_cons, List.not_mem_nil,
+      or_false] at hi
+    rcases hi with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+      | rfl <;>
+      straight_writes [fT, fU, fLo, fHi, fStart] <;> omega
+
+/-- Exact simulation of the RIGHT range preamble.  Its start is the right
+block's START, not `leftClose + 1`; that difference is the whole reason
+`E1SameBlockArm.windowRange` is not reusable here. -/
+theorem crossRightRange_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {R blockSize : Nat}
+    (hHost : HostedAt program R (crossRightRange blockSize))
+    (regs : RegFile) (rightClose base : Nat)
+    (hClose : regs fClose = rightClose) (hBB : regs fBB = base) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, R, false⟩ ⟨regs', R + 10, false⟩ []
+        crossRightRangeCats ∧
+      regs' fStart =
+        blockStartOf blockSize (blockOfClose blockSize rightClose) ∧
+      regs' fLo =
+        blockStartOf blockSize (blockOfClose blockSize rightClose) - base ∧
+      regs' fHi =
+        blockStartOf blockSize (blockOfClose blockSize rightClose) +
+          (rightClose -
+            blockStartOf blockSize (blockOfClose blockSize rightClose) + 2)
+          - 1 - base ∧
+      (∀ r, CrossRangeUntouched r → regs' r = regs r) := by
+  have hrun := RunsTo.straight store (crossRightRange blockSize)
+    (crossRightRange_straight blockSize) R hHost regs
+  obtain ⟨regsW, hregsW⟩ :
+      ∃ x, straightRegs store (crossRightRange blockSize) regs = x := ⟨_, rfl⟩
+  rw [hregsW] at hrun
+  have hreads : straightReads store (crossRightRange blockSize) regs = [] := by
+    straight_eval [crossRightRange]
+  rw [hreads, crossRightRange_cats] at hrun
+  refine ⟨regsW, by simpa using hrun, ?_, ?_, ?_, ?_⟩
+  · rw [<- hregsW, <- cross_blockStart_eq]
+    straight_eval [crossRightRange, fT, fU, fLo, fHi, fStart, fClose,
+      fBB] <;> simp [hClose]
+  · rw [<- hregsW, <- cross_blockStart_eq]
+    straight_eval [crossRightRange, fT, fU, fLo, fHi, fStart, fClose,
+      fBB] <;> simp [hClose, hBB]
+  · rw [<- hregsW, <- cross_blockStart_eq]
+    straight_eval [crossRightRange, fT, fU, fLo, fHi, fStart, fClose,
+      fBB] <;> simp [hClose, hBB]
+  · intro r hr
+    obtain ⟨h50, h51, h60, h61, h66⟩ := hr
+    rw [<- hregsW]
+    apply straightRegs_preserves
+    intro i hi
+    simp only [crossRightRange, List.mem_cons, List.not_mem_nil,
+      or_false] at hi
+    rcases hi with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+      | rfl <;>
+      straight_writes [fT, fU, fLo, fHi, fStart] <;> omega
+
+/-- The left stash writes only `mT` (83), `mLV` (75) and `mLP` (76). -/
+abbrev CrossStashLeftUntouched (r : Nat) : Prop :=
+  r ≠ 83 ∧ r ≠ 75 ∧ r ≠ 76
+
+/-- The right stash writes only `mT` (83), `mRV` (79) and `mRP` (80). -/
+abbrev CrossStashRightUntouched (r : Nat) : Prop :=
+  r ≠ 83 ∧ r ≠ 79 ∧ r ≠ 80
+
+/-- Exact simulation of the LEFT stash: the arm's result pair moved into
+the merge's left slot with the house `+1` bias on the value. -/
+theorem crossStashLeft_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {Q : Nat}
+    (hHost : HostedAt program Q crossStashLeft) (regs : RegFile) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, Q, false⟩ ⟨regs', Q + 3, false⟩ []
+        crossStashCats ∧
+      regs' mLV = regs fRV + 1 ∧
+      regs' mLP = regs fRP ∧
+      (∀ r, CrossStashLeftUntouched r → regs' r = regs r) := by
+  have hrun := RunsTo.straight store crossStashLeft crossStashLeft_straight
+    Q hHost regs
+  obtain ⟨regsW, hregsW⟩ :
+      ∃ x, straightRegs store crossStashLeft regs = x := ⟨_, rfl⟩
+  rw [hregsW] at hrun
+  have hreads : straightReads store crossStashLeft regs = [] := by
+    straight_eval [crossStashLeft]
+  rw [hreads, crossStashLeft_cats] at hrun
+  refine ⟨regsW, by simpa using hrun, ?_, ?_, ?_⟩
+  · rw [<- hregsW]
+    straight_eval [crossStashLeft, mT, mLV, mLP, fRV, fRP]
+  · rw [<- hregsW]
+    straight_eval [crossStashLeft, mT, mLV, mLP, fRV, fRP]
+  · intro r hr
+    obtain ⟨h83, h75, h76⟩ := hr
+    rw [<- hregsW]
+    apply straightRegs_preserves
+    intro i hi
+    simp only [crossStashLeft, List.mem_cons, List.not_mem_nil,
+      or_false] at hi
+    rcases hi with rfl | rfl | rfl <;>
+      straight_writes [mT, mLV, mLP] <;> omega
+
+/-- Exact simulation of the RIGHT stash. -/
+theorem crossStashRight_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {Q : Nat}
+    (hHost : HostedAt program Q crossStashRight) (regs : RegFile) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, Q, false⟩ ⟨regs', Q + 3, false⟩ []
+        crossStashCats ∧
+      regs' mRV = regs fRV + 1 ∧
+      regs' mRP = regs fRP ∧
+      (∀ r, CrossStashRightUntouched r → regs' r = regs r) := by
+  have hrun := RunsTo.straight store crossStashRight
+    crossStashRight_straight Q hHost regs
+  obtain ⟨regsW, hregsW⟩ :
+      ∃ x, straightRegs store crossStashRight regs = x := ⟨_, rfl⟩
+  rw [hregsW] at hrun
+  have hreads : straightReads store crossStashRight regs = [] := by
+    straight_eval [crossStashRight]
+  rw [hreads, crossStashRight_cats] at hrun
+  refine ⟨regsW, by simpa using hrun, ?_, ?_, ?_⟩
+  · rw [<- hregsW]
+    straight_eval [crossStashRight, mT, mRV, mRP, fRV, fRP]
+  · rw [<- hregsW]
+    straight_eval [crossStashRight, mT, mRV, mRP, fRV, fRP]
+  · intro r hr
+    obtain ⟨h83, h79, h80⟩ := hr
+    rw [<- hregsW]
+    apply straightRegs_preserves
+    intro i hi
+    simp only [crossStashRight, List.mem_cons, List.not_mem_nil,
+      or_false] at hi
+    rcases hi with rfl | rfl | rfl <;>
+      straight_writes [mT, mRV, mRP] <;> omega
+
+/-- The unit pin writes only `fOne` (40). -/
+abbrev CrossPinOneUntouched (r : Nat) : Prop := r ≠ 40
+
+/-- Exact simulation of the unit pin: one tick, no receipt, `fOne = 1`. -/
+theorem crossPinOne_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {Q : Nat}
+    (hHost : HostedAt program Q crossPinOne) (regs : RegFile) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, Q, false⟩ ⟨regs', Q + 1, false⟩ []
+        crossPinOneCats ∧
+      regs' fOne = 1 ∧
+      (∀ r, CrossPinOneUntouched r → regs' r = regs r) := by
+  have hf0 : program[Q]? = some (.const fOne 1) := by
+    have := hHost 0 (by decide)
+    simpa [crossPinOne] using this
+  refine ⟨regs.write fOne 1, ?_, ?_, ?_⟩
+  · have s0 : RunsTo store program ⟨regs, Q, false⟩
+        ⟨regs.write fOne 1, Q + 1, false⟩ [] [.registerWrite] :=
+      RunsTo.const (s := ⟨regs, Q, false⟩) rfl hf0
+    simpa [crossPinOneCats] using s0
+  · simp [RegFile.write]
+  · intro r hr
+    simp [RegFile.write, fOne, hr]
+
+/-- The repoint writes only `fClose` (70). -/
+abbrev CrossRepointUntouched (r : Nat) : Prop := r ≠ 70
+
+/-- Exact simulation of the repoint: one tick, no receipt, `fClose`
+retargeted at the right close. -/
+theorem crossRepoint_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {Q : Nat}
+    (hHost : HostedAt program Q crossRepoint) (regs : RegFile) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, Q, false⟩ ⟨regs', Q + 1, false⟩ []
+        crossRepointCats ∧
+      regs' fClose = regs fRight ∧
+      (∀ r, CrossRepointUntouched r → regs' r = regs r) := by
+  have hstraight : ∀ instr ∈ crossRepoint, instr.isStraight = true := by
+    intro instr hi
+    simp only [crossRepoint, List.mem_cons, List.not_mem_nil,
+      or_false] at hi
+    rcases hi with rfl
+    rfl
+  have hrun := RunsTo.straight store crossRepoint hstraight Q hHost regs
+  obtain ⟨regsW, hregsW⟩ :
+      ∃ x, straightRegs store crossRepoint regs = x := ⟨_, rfl⟩
+  rw [hregsW] at hrun
+  have hreads : straightReads store crossRepoint regs = [] := by
+    straight_eval [crossRepoint]
+  rw [hreads, crossRepoint_cats] at hrun
+  refine ⟨regsW, by simpa using hrun, ?_, ?_⟩
+  · rw [<- hregsW]
+    straight_eval [crossRepoint, fClose, fRight]
+  · intro r hr
+    rw [<- hregsW]
+    apply straightRegs_preserves
+    intro i hi
+    simp only [crossRepoint, List.mem_cons, List.not_mem_nil,
+      or_false] at hi
+    rcases hi with rfl
+    straight_writes [fClose]
+    omega
 
 /-! ## The five-segment layout, with the interior as a hole -/
 
@@ -478,15 +784,16 @@ def crossBlockArmProgramAt (shape : Cartesian.CartesianShape)
                                     shape.bpCode.length)
                                   (A + 255 + interior.length) ++
                                 (crossStashRight ++
-                                  candMerge3
-                                    (A + 353 +
-                                      interior.length))))))))))))))))
+                                  (crossPinOne ++
+                                    candMerge3
+                                      (A + 354 +
+                                        interior.length)))))))))))))))))
 
 @[simp] theorem crossBlockArmProgramAt_length
     (shape : Cartesian.CartesianShape)
     (fringeSegment blockSize A : Nat) (interior : List Instr) :
     (crossBlockArmProgramAt shape fringeSegment blockSize A interior).length =
-      369 + interior.length := by
+      370 + interior.length := by
   simp [crossBlockArmProgramAt]
   omega
 
@@ -534,8 +841,9 @@ theorem crossBlockArmProgramAt_hosts (shape : Cartesian.CartesianShape)
           (SuccinctRank.machineWordBits shape.bpCode.length)
           (A + 255 + interior.length)) ∧
       HostedAt program (A + 350 + interior.length) crossStashRight ∧
-      HostedAt program (A + 353 + interior.length)
-        (candMerge3 (A + 353 + interior.length)) := by
+      HostedAt program (A + 353 + interior.length) crossPinOne ∧
+      HostedAt program (A + 354 + interior.length)
+        (candMerge3 (A + 354 + interior.length)) := by
   rw [crossBlockArmProgramAt] at hHost
   have h1 := hostedAt_step (n := A + 4) hHost (by simp)
   have h2 := hostedAt_step (n := A + 5) h1 (by simp)
@@ -561,11 +869,13 @@ theorem crossBlockArmProgramAt_hosts (shape : Cartesian.CartesianShape)
     simp; omega)
   have h16 := hostedAt_step (n := A + 353 + interior.length) h15 (by
     simp; omega)
+  have h17 := hostedAt_step (n := A + 354 + interior.length) h16 (by
+    simp; omega)
   exact ⟨hHost.append_left, h1.append_left, h2.append_left,
     h3.append_left, h4.append_left, h5.append_left, h6.append_left,
     h7.append_left, h8.append_left, h9.append_left, h10.append_left,
     h11.append_left, h12.append_left, h13.append_left, h14.append_left,
-    h15.append_left, h16⟩
+    h15.append_left, h16.append_left, h17⟩
 
 /-! ## Width certificate -/
 
@@ -602,7 +912,7 @@ theorem crossBlockArmProgramAt_fits (shape : Cartesian.CartesianShape)
     (hBPSpos : 0 < (builtRelativeSplitBPCloseRankData shape).blocksPerSuper)
     (hBPS : (builtRelativeSplitBPCloseRankData shape).blocksPerSuper < 2 ^ w)
     (hinterior : ∀ instr ∈ interior, Instr.FieldsFit w instr)
-    (hA : A + 369 + interior.length < 2 ^ w) :
+    (hA : A + 370 + interior.length < 2 ^ w) :
     ∀ instr ∈ crossBlockArmProgramAt shape fringeSegment blockSize A
       interior, Instr.FieldsFit w instr := by
   have hlin : 2 * sbChunkBits shape + 2 < 2 ^ w := by
@@ -645,7 +955,7 @@ theorem crossBlockArmProgramAt_fits (shape : Cartesian.CartesianShape)
   intro instr hinstr
   simp only [crossBlockArmProgramAt, List.mem_append] at hinstr
   rcases hinstr with h | h | h | h | h | h | h | h | h | h | h | h | h | h
-    | h | h | h
+    | h | h | h | h
   · exact windowAddr_fits w blockSize _ (by omega) hbspos hbs hLpos hLw
       instr h
   · exact rankSeedPos_fits w (by omega) instr h
@@ -664,7 +974,8 @@ theorem crossBlockArmProgramAt_fits (shape : Cartesian.CartesianShape)
   · exact crossRightRange_fits w blockSize (by omega) hbspos hbs instr h
   · exact harmR instr h
   · exact crossStashRight_fits w hreg instr h
-  · exact candMerge3_fits w (A + 353 + interior.length) (by omega)
+  · exact crossPinOne_fits w (by omega) instr h
+  · exact candMerge3_fits w (A + 354 + interior.length) (by omega)
       (by omega) instr h
 
 /-! ## Remaining (NOT implemented here)

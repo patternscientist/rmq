@@ -193,6 +193,23 @@ def rankSeedLegCats (shape : Cartesian.CartesianShape) (base : Nat) :
       rankSeedFinishCats)
 
 /--
+THE SEED LEG'S WRITE-SET COMPLEMENT.
+
+The leg writes `rPos` (8), the rank-close component's bank (9 .. 27) and
+the seed arithmetic's `fAcc` (46), `fU` (61) and `fSeed` (65).  Numerals,
+not abbrevs, so `omega` can use it.
+
+Added M3d-9 for the cross-block composition: the four specific clauses
+already in `rankSeedLeg_runsTo_canonical` cover only the registers the
+SAME-BLOCK leg happened to need, and the cross-block composition must
+carry the left stash's merge slots `mLV` (75) and `mLP` (76) plus the
+interior's `mMV` (77) / `mMP` (78) across the RIGHT seed leg.  Those four
+satisfy this predicate by `decide`.
+-/
+abbrev RankSeedLegUntouched (r : Nat) : Prop :=
+  (r ≤ 7 ∨ 28 ≤ r) ∧ r ≠ 46 ∧ r ≠ 61 ∧ r ≠ 65
+
+/--
 EXACT SIMULATION OF THE SEED LEG (`P -> P + 64`) at the canonical store.
 
 The receipt is POSITIONALLY equal to the accepted seed object's `.trace`
@@ -232,7 +249,8 @@ theorem rankSeedLeg_runsTo_canonical
       regs' fBase = regs fBase ∧
       regs' fBB = regs fBB ∧
       regs' fClose = regs fClose ∧
-      regs' fRight = regs fRight := by
+      regs' fRight = regs fRight ∧
+      (∀ r, RankSeedLegUntouched r → regs' r = regs r) := by
   obtain ⟨regs1, hrun1, hpos1, hpres1⟩ :=
     rankSeedPos_runsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
       hPos regs
@@ -248,7 +266,7 @@ theorem rankSeedLeg_runsTo_canonical
   -- the position the rank component saw IS the route's window bit base
   have hp : regs1 rPos = sbBB shape blockSize leftClose := by
     rw [hpos1]; exact hBB
-  refine ⟨regs3, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  refine ⟨regs3, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
   · have htrans := (hrun1.trans hrun2).trans hrun3
     have hpc : P + 1 + 60 + 3 = P + 64 := by omega
     rw [hpc] at htrans
@@ -270,6 +288,10 @@ theorem rankSeedLeg_runsTo_canonical
       hpres1 fClose (by decide)]
   · rw [hpres3 fRight (by decide), hpres2 fRight (by decide),
       hpres1 fRight (by decide)]
+  · intro r hr
+    obtain ⟨hbank, h46, h61, h65⟩ := hr
+    rw [hpres3 r ⟨h46, h61, h65⟩, hpres2 r (by omega),
+      hpres1 r (by omega)]
 
 /-! ## The whole same-block close leg at the canonical store
 
@@ -387,7 +409,7 @@ theorem sameBlockLeg_runsTo_canonical
       (concreteBPNativeSuccinctRMQGlobalReadStore shape) hAddr regs leftClose
       hClose
   -- 2. seed leg (position feed, rank-close component, seed arithmetic)
-  obtain ⟨regs2, hrun2, hacc2, hseed2, hb2, hbb2, hcl2, hri2⟩ :=
+  obtain ⟨regs2, hrun2, hacc2, hseed2, hb2, hbb2, hcl2, hri2, _hpres2⟩ :=
     rankSeedLeg_runsTo_canonical shape (blockSize := blockSize)
       (leftClose := leftClose) hPos hRank hFin regs1 hbb1
   -- 3. range preamble
