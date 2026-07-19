@@ -730,3 +730,185 @@ so are the ones that must change:
 
 A swap that leaves every one of these unchanged has not gone live, whatever
 the caps say.
+
+# Session 3 (B7-03)
+
+Two durable results this session: the FIFTH-FAMILY reachability question is
+CLOSED (negative), and the space accounting - the piece B7-02 flagged as the
+one genuinely novel item - is SOLVED in Lean except for its last link.
+No Lean change is committed: the atomicity finding still holds, so the tree
+cannot go green until the whole swap lands. The WIP patch is refreshed.
+
+## FIRST ACTION discharged: the reverted work is now durable
+
+B7-02's 491-line scratchpad patch was recovered intact and committed as
+`docs/internal/B7_STEP2_WIP.patch` (commit `c5a00ae`, docs-only).
+`git apply --check` clean before committing.
+
+RECORDED so a later battery is not misread: this file trips
+`git diff --check`, because a blank CONTEXT line in a unified diff is a
+single space and reads as trailing whitespace. This is structural to any
+committed patch and is NOT a source defect. The precedent has the same
+property - `git show 7cc792a --check` (the B3_M5_WIP.patch commit) exits 2
+with 103 such hits. Stripping them would corrupt the patch.
+
+## SITE COUNT IS FOUR, NOT SIX: the fifth family is UNREACHABLE
+
+The delegation asked for a per-site verdict walked from
+`concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceResult`, not assumed
+from the name. Verdicts:
+
+| Site | Verdict |
+|---|---|
+| Local two-span `...Computation` (`InteriorDirectory.lean`) | REACHABLE |
+| Global two-span `...Computation` | REACHABLE |
+| The two `...Costed` twins | REACHABLE (spec-side; equated by the `_refines` chain, so they must move in the same commit) |
+| `WordReads.lean` `localTwoSpanCandidateWordsRead` | UNREACHABLE |
+| `WordReads.lean` `globalTwoSpanCandidateWordsRead` | UNREACHABLE |
+| `LocalGlobalSparse.lean`, `ConcreteDirectoryRAMStoreParam.lean` | UNREACHABLE (`Costed` spec layer / legacy store-parametric branch off a different root) |
+
+DECISIVE EVIDENCE for the negative verdict, re-confirmed by hand at source
+(not taken on the subagent's word). Both `WordReads` definitions funnel
+into `bpTwoLevelInteriorCandidateWordsRead`, which has exactly TWO def-body
+consumers in the whole tree:
+
+- `InteriorDirectory.lean:955` - the `payloadWordsRead` field of the LEGACY
+  `concreteBPRelativeRmmInteriorDirectory`. The live all-size structural
+  route never projects this field; the CANONICAL directory sets
+  `payloadWordsRead` from
+  `canonicalRelativeRmmInteriorRangePhysicalWordsReadWithStore` instead.
+- `InteriorDirectory.lean:1723` - `canonicalRelativeRmmInteriorLogicalWordsRead`,
+  whose only consumers anywhere are two THEOREMS
+  (`..._length_le_machine`, `..._reconstruct_logical`).
+
+Every other mention is a theorem statement, a proof `simp` set, or the
+`SuccinctCloseProposal.lean` name manifest. None is execution.
+
+CONSEQUENCE: charging the four reachable sites CLOSES the rung. There is no
+residual Theta(log n) silent computation hiding in the `WordsRead` family,
+because that family is an audit projection, not an execution path. B7-02's
+worry that this family "almost certainly moves its arithmetic" is
+DISCHARGED NEGATIVE - it does not move, because it never runs.
+
+CAVEAT OF RECORD: the subagent that produced the first pass read the tree
+while the step-2 patch was being applied underneath it, so ITS LINE NUMBERS
+ARE UNRELIABLE and are deliberately not reproduced above. Its structural
+claims are unaffected, and the decisive one was re-verified independently.
+Trust the names, re-derive the lines.
+
+## SPACE ACCOUNTING: SOLVED IN LEAN, three links of four
+
+This was B7-02's identified novel piece. It is no longer novel; the
+arithmetic is written and elaborates. Verified with `lake env lean` on
+`InteriorDirectory.lean` with the full patch applied (ITERATE AID ONLY - no
+olean is written, so no `#print axioms` claim is made here).
+
+The key move, and the answer to B7-02's trap: B7-02 was RIGHT that
+`hmM5 : m * M <= 5 * n` is too loose for the local level term (it gives
+only `M <= 5n`, hence `~ n log n`). But the fix is NOT to use
+`M = (Nat.log2 n + 1)^2` symbolically. It is to use the TIGHT CUBE BOUND
+that already exists in the same proof three lines above:
+`hMw : M * w <= 8 * n` (from `machineWordBits_cube_le_eight_mul_self_of_pos`).
+The local term is `(M+2) * width`, and
+`(M+2) * (16w+9) = 16*(M*w) + 9*M + 32*w + 18`, which the cube bound closes
+directly. The global term DOES yield to the loose bound, via
+`m * w <= m * (w*w) = m * M <= 5 * n`.
+
+Two new private helpers were added (both elaborate):
+
+    private theorem machineWordBits_add_two_le_four_mul_of_pos
+        {x : Nat} (hx : 0 < x) :
+        SuccinctRank.machineWordBits (x + 2) <=
+          4 * SuccinctRank.machineWordBits x
+
+    private theorem sparseLevelWidth_add_two_le_of_pos
+        {x : Nat} (hx : 0 < x) :
+        Nat.log2 ((x + 2) * (x + 2)) + 1 <=
+          8 * SuccinctRank.machineWordBits x + 1
+
+Status of the four space-accounting links:
+
+1. `..._payload_length_eq_raw` - DONE, and it STAYS AN EXACT EQUALITY (the
+   honest outcome B7-02 recommended). `canonicalRelativeRmmInteriorRawPayloadOverhead`
+   gained two summands, `localLevelDomain := macroSize + 2` and
+   `globalLevelDomain := macroCount + 2`, each contributing
+   `domain * (Nat.log2 (domain * domain) + 1)`. The proof needed only the
+   two `..._payload_length` rewrites plus `bpSparseLevelTableOverhead`,
+   `bpSparseLevelDomain`, `bpSparseLevelWidth` in the simp set.
+
+2. `..._le_linear` - DONE. THE CONSTANT MOVES: 218 -> 527. Derived, not
+   asserted: local level term `<= 196n + 18`, global level term
+   `<= 113n + 3`, and `218n + 218 + 196n + 18 + 113n + 3 = 527n + 239`
+   `<= 527(n+1)`. NOTE FOR THE NEXT WORKER: 527 is a new consumer-visible
+   constant; its consumer is `SuccinctFinal/RAM/ReviewerPhysical.lean:1880`
+   and that site must be migrated in the same commit.
+
+3. `..._payload_length_eq_legacy_of_compactReady` - DONE, and STRENGTHENED
+   rather than weakened. The delegation authorised weakening it to `<=`;
+   that authorisation was NOT used. It is now an exact equality:
+
+       (canonicalRelativeRmmInteriorDirectory shape).payload.length =
+         (concreteBPRelativeRmmInteriorDirectory shape).payload.length +
+           canonicalRelativeRmmInteriorLevelTableOverhead shape
+
+   No row is weakened by this rung's space accounting.
+
+4. `..._littleO` - NOT DONE. THIS IS THE RESUME POINT. With link 3 restated
+   the error moves here, exactly as B7-02 predicted:
+
+       InteriorDirectory.lean:5517:6: error: type mismatch, term
+         heq
+       after simplification has type
+         canonicalRelativeRmmInteriorRawPayloadOverhead n =
+           (concreteBPRelativeRmmInteriorDirectory shape).payload.length +
+             canonicalRelativeRmmInteriorLevelTableOverhead shape : Prop
+       but is expected to have type
+         canonicalRelativeRmmInteriorRawPayloadOverhead n =
+           (concreteBPRelativeRmmInteriorDirectory shape).payload.length : Prop
+
+   The shape of the fix is B7-02's and still stands: split with
+   `LittleOLinear.add` (`SuccinctSpace/Asymptotics.lean:700`) over the
+   legacy part and a level part. The level part needs a closed form IN `n`
+   (the current `canonicalRelativeRmmInteriorLevelTableOverhead` is in
+   `shape`), and is `~ log^2 n * log log n`, dominated by
+   `eventually_scale_log2_succ_cube_le_self` (`Asymptotics.lean:516`).
+   `LittleOLinear.of_le` is at `:35`.
+
+## STATE OF THE TREE AND OF THE PATCH
+
+The source tree is REVERTED and the root build is GREEN. No partial swap is
+committed, per the standing rule and B7-02's precedent.
+
+`docs/internal/B7_STEP2_WIP.patch` is REFRESHED to 661 lines. It is no
+longer just step 2: it is step 2 PLUS space-accounting links 1-3. Verified
+`git apply --check` clean against this commit. Applying it reproduces a tree
+whose only remaining `InteriorDirectory.lean` error is the `_littleO`
+mismatch quoted above.
+
+## BASELINE OF RECORD for the next session
+
+`lake build RMQ` at `c5a00ae`: exit 0, "Build completed successfully", with
+TWELVE pre-existing unused-simp-arg warnings (`SuccinctFinalRAM.lean`
+:5804, :5807, :5809, :5811, :5933, :5934; `ReviewerReachabilitySmall.lean`
+:463, :1484 twice; `ReviewerReachabilityLong.lean`:519;
+`ReviewerReachabilitySparse.lean`:563; `BPNavigationRAM.lean`:2111).
+NONE is in `InteriorDirectory.lean`. Recorded so the next worker does not
+attribute them to the rung. The refreshed patch adds no new warning.
+
+## STATUS AT END OF THIS SESSION: INCOMPLETE
+
+NEXT ACTION, in order:
+
+1. Apply `docs/internal/B7_STEP2_WIP.patch` (step 2 + space accounting 1-3).
+2. Finish `..._littleO` (the only remaining space-accounting link).
+3. Migrate the `218 -> 527` capacity constant at
+   `SuccinctFinal/RAM/ReviewerPhysical.lean:1880`.
+4. Wire the FOUR reachable sites only - the `WordReads` family is settled
+   UNREACHABLE and must NOT be touched.
+5. Repair the 28 theorems / 12 defs band by band, then the caps, then the
+   literal 207 -> 210 across B7-02's widened consumer set.
+6. Provenance, adequacy, docs, matrix.
+
+No acceptance-matrix row changed status this session; no row was weakened.
+No constant is asserted; the 527 and the 207 -> 210 chain are both to be
+derived at the commit that lands them.
