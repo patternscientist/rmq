@@ -692,3 +692,103 @@ closed unilaterally; coordinator acceptance required.
 
 Re-run in this session rather than inherited from session 10; see the B7-11
 verification ledger in `B7_WORKLOG.md` for the pasted decisive lines.
+
+## B7-R1 repair contract (frozen before repair implementation)
+
+Worker: B7-R1. Branch: `codex/b7-charged-sparse-level-r1`. Exact repair base:
+`55e2b9ae3704a16129aaecc9c12f487aee5df12e`. Workflow governance:
+`bd854edaa65944d5a7fa0fac5667e9572c370bbb`. This append-only section was
+written before any B7-R1 Lean, trust, harness, hygiene-artifact, or public-
+surface implementation edit. The original B7 requirement wording above is
+unchanged. Evidence and status may move after this freeze; requirement text may
+move only through an explicit coordinator amendment.
+
+The named join is the accepted-route interior evaluator at an exact reachable
+cost of `33`, consumed by the same-object whole-query algebra
+`210 = 2*35 + (2*11 + 2*37 + 33) + 11`, together with the restored public
+historical `328` identity, trust gates, replayable 21-window harness, committed
+range hygiene, and every current surface registered by
+`docs/internal/CLAIM_DRIFT_POLICY.json`.
+
+The hard obligation is semantic attainment on the canonical reachable object,
+not a syntactic observation about an upper-bound proof. Forbidden substitutes
+include an upper bound presented as attainment, `352` relabeled as the old
+`328` history, deleted trust coverage, an allowlisted whitespace failure, a
+scanner-only surface audit, or conflation of payload, proof, model-cost, trace,
+source, segment, allocation, runtime, or measured-time categories. Valid stop
+conditions are exactly completion, a same-domain kernel-checked obstruction,
+a genuine external-state blocker, or coordinator/user redirection.
+
+### Frozen B7-R1 rows
+
+| ID | Exact frozen requirement | Scope | Evidence needed (exact proposition/check) | Named consumer and identity/composition chain | Anti-vacuity challenge planned | Evidence obtained | Status / residual gap |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `REQ-B7R1-TIGHTNESS-WITNESS` | prove semantic tightness/attainment if the frozen B7 claim is to remain. Require a checked canonical reachable accepted-route witness whose relevant interior execution has exact cost 33, or an equivalent lower-bound theorem showing 33 is necessary on the same object and domain. A theorem `cost <= 33`, use of `exact`, lack of `Nat.le_trans`, comments, or a harness cost for a different aggregate object do not close this row. Also prove/refute the old `cost <= 30` claim on the same reachable object. If the exact frozen tightness target is false, stop only with a kernel-checked obstruction or precise checked counterexample and request the coordinator's design choice; do not silently soften the contract. | Local rung + roadmap join | A theorem over one canonical reachable `canonicalRelativeRmmInteriorRangeMinCosted` execution concluding `.cost = 33`, plus a theorem concluding `not (.cost <= 30)` (or a same-object lower bound implying it). | Concrete canonical shape/query route -> interior `startBlock`/`count` -> `canonicalRelativeRmmInteriorRangeMinCosted` -> live interior cap -> named whole-query component algebra -> public `210`. | Compare P = exact cost `33` on the reachable accepted object with Q = only `cost <= 33`; attempt the old `cost <= 30` proposition on that identical object. | | Open |
+| `REQ-B7R1-HISTORICAL-328-IDENTITY` | restore and pin the public historical identity `RMQ.SuccinctClassic.canonicalTransitionalQueryCost_eq : canonicalTransitionalQueryCost = 328` under the same public name. Do not relabel 352 as that history. If a live 352 compatibility bound remains useful, give it a distinct accurately named definition/theorem and migrate live consumers explicitly. Ensure future component changes cannot move the 328 identity. | Public/history | Checked theorem with the exact required public name and conclusion `= 328`, backed by literal-pinned historical components; any live `352` compatibility declaration has a distinct name and its consumers name it explicitly. | `RMQ.SuccinctClassic` public history -> validation/examples/headlines/topology/current policy. | Mutate a live component and confirm the `328` historical identity remains definitionally fixed; search all `352` consumers for accidental historical attribution. | | Open |
+| `REQ-B7R1-WORDRAM-AXIOM-GATE` | update the stale WordRAM axiom inventory to exact live/historical theorem names and require `lake env lean scripts/wordram_axiom_check.lean` exit 0 on the final candidate. Do not delete coverage merely to make it green. | Trust gate | The inventory names the live `210` weighted-trace theorem and all retained historical/public anchors; the exact command exits `0`. | Source theorem inventory -> WordRAM trust packet. | Replace the stale removed name without dropping its semantic coverage; inspect the complete inventory diff. | | Open |
+| `REQ-B7R1-COMMITTED-DIFF-HYGIENE` | make both `git diff --check` and `git diff --check f6564ec..HEAD` exit 0. Repair the tracked WIP patch artifact truthfully; do not waive or reinterpret the frozen command. | Hygiene | Working-tree and committed-range checks exit `0`, including `55e2b9ae..HEAD` and `f6564ec..HEAD`; the tracked WIP patch remains truthful and replayable or is explicitly retired by an accurate artifact update. | `docs/internal/B7_STEP2_WIP.patch` -> committed B7 history/evidence. | Inspect every reported whitespace location inside the patch rather than allowlisting the path. | | Open |
+| `REQ-B7R1-CURRENT-PUBLIC-SURFACES` | derive the current surface inventory from the candidate's `docs/internal/CLAIM_DRIFT_POLICY.json`. Every registered live surface must consistently state the checked current facts: exact cost `210 = 2*35 + (2*11 + 2*37 + 33) + 11`; 22 physical reviewer sources over logical segments `0..22`, with BP roles 0 and 19 sharing one physical source; live segment 21 and rejected fresh segment 23; global trace positions 0 and 15 from instruction positions 0 and 1; and the canonical trace's separate strong public `readWord`-only theorem identity. Preserve accurate compatibility and frozen-history vocabulary. | Public/current surfaces | A machine-readable exact current-surface registry, a strict scan/regression, topology lint, and manual theorem-type/surface reread agree on every listed fact. | Live source theorems -> public headline aliases -> every registered Markdown surface. | Add stale `207`, `20-source`, fresh `21`, positions `0/12`, retired aliases, and weaker three-constructor vocabulary to current paths; production verdict must reject each while precise history remains allowed. | | Open |
+| `INV-B7-CHARGED-SPARSE-LEVEL` | preserve actual table-read value dependence, positional trace equality, exact accepted-route erasure, one-word width on every reachable macro-crossing case, same counted store, provenance, capacity 218 to 527, and at-most `2*n + o(n)` without conflating allocation, payload, proof fields, or model ticks. | Inherited local + public | Recheck the exact source theorems and object chain for table read -> decoded level/span -> subsequent address/result; positional trace; erasure; reachable width; physical counted-store erasure/backing/provenance; 218/527 capacity bridge; public payload inequality and `LittleOLinear`. | Interior component store -> reviewer physical words -> canonical payload -> public profile/list-facing query. | Corrupt an actually read level cell and trace the returned candidate/route consequence; compare counted and executed object arguments; check tiny and macro-crossing boundaries. | | Open |
+| `INV-B7-READWORD-ONLY` | preserve the exact source/public theorem that every event in the accepted whole-query trace is `isReadWord`; do not attribute that stronger conjunct to a weaker three-constructor theorem or capstone. | Inherited public | Quote the exact source theorem and strong public headline alias types; current prose attributes the strong claim only to that identity, while any three-constructor capstone clause is labeled weaker. | Whole-query trace -> source `..._readWord_only` -> `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly`. | Present the weaker `readWord or wordRank or wordSelect` theorem as support; strict policy/topology and manual type audit must reject the substitution. | | Open |
+| `INV-HALF-OPEN-LEFTMOST` | preserve guarded half-open leftmost `List Int` RMQ semantics, invalid-range behavior, and tie boundaries. | Inherited semantic | Exact list-facing theorem types plus the 21-window registry cover valid half-open leftmost answers, empty/reversed/out-of-bounds rejection, same-block, zero-interior, and load-bearing interior ties. | `scanWindow` specification -> guarded `queryCosted_exact`/invalid result -> harness expected answers. | Retain the leftmost-tie fixture with a participating interior and invalid-range controls; expected answers come from the independent List semantics. | | Open |
+| `COMPLETE-B7R1-EVIDENCE` | one committed clean candidate contains the exact matrix mapping, four-part proof digestion, command ledger, and no claimed result from an earlier tree. | Completion | Append-only final-candidate evidence maps every original non-stretch and B7-R1 row to exact theorem/check output from the final commit; worktree is clean. | All local rows -> roadmap-node evidence packet; coordinator acceptance remains separate. | Invalidate/re-run transitive checks after any source/checker/public edit; do not reuse earlier-tree results as final evidence. | | Open |
+| `REPLAY-EXACT-REGISTRY` | preserve a committed exact ordered registry for all 21 cost-harness windows, with expected answer, route class, pre/post swap cost disposition, and the leftmost-tie fixture; reject missing/duplicate IDs. | Executable replay | Typed ordered registry has exactly 21 unique stable IDs and records expected answer, route, pre-swap cost, post-swap cost, and disposition; validation rejects missing/duplicate IDs. | Registry -> default harness traversal and focused selector. | Remove or duplicate an ID and require registry validation to fail before query execution. | | Open |
+| `REPLAY-SELECTOR-NONVACUITY` | any focused harness selector must execute exactly one requested registered window, reject unknown selectors, and make zero-case selection fail rather than pass vacuously. | Executable replay | A known ID reports exactly one case; unknown/empty selection exits nonzero; default mode reports exactly all 21 in registry order. | CLI selector -> exact registry entry -> query runner. | Known, unknown, and zero-selection controls with counted executed cases. | | Open |
+| `REPLAY-SUBPROCESS-DEADLINE` | every spawned Lean/Lake child has a positive evidence-based deadline, process-tree cleanup, failure classification, and final clean-tree restoration; do not discover timeouts by duplicating a quiet command. | Verification process | Command ledger records positive deadlines derived from prior runs, owned process-tree disposition on timeout, failure class, and final clean status. The committed Lean harness itself spawns no child process. | Verification orchestration -> final candidate evidence. | On any timeout inspect the surviving owned tree and artifacts; never launch an unchanged duplicate. | | Open |
+
+The original non-stretch IDs that must receive final-candidate evidence remain
+exactly `REQ-B7-00` through `REQ-B7-10`, `INV-STORE-IDENTITY`,
+`INV-VALUE-DEPENDENCY`, `INV-NO-SYNTHETIC`, `INV-ALL-SIZE`,
+`INV-PUBLIC-COMPOSITION`, and `CHK-01` through `CHK-08`. `STRETCH-01` keeps its
+frozen status: stretch, attempted only after the assigned rung closes, and not
+silently promoted into or removed from the non-stretch contract.
+
+Local-rung evidence and roadmap-node evidence are distinct. B7-R1 may report
+the local repair matrix complete only when every non-stretch original row and
+every B7-R1 row is evidenced on one clean commit. The broader B7 roadmap-node
+join remains coordinator-owned and additionally requires independent replay
+and any designated blind exact-commit audit.
+
+### B7-R1 verification coverage ledger (planned before verification)
+
+Prior comparable timings: the governed preflight took 8.5s; focused file
+elaboration historically completed within minutes; the prior aggregate
+`lake build RMQ RMQPaper RMQExamples` completed successfully but no precise
+duration was recorded, so its final timeout receives cold-cache margin. Only
+one heavy Lean/Lake process may run in this worktree at a time, coordinated
+under `Global\\RMQHeavyVerification` when overlap is possible.
+
+| Role | Exact command | Changed paths / rows covered | Unique risk | Planned timeout |
+| --- | --- | --- | --- | --- |
+| Development-loop | `git diff --check` | Every edited path; `REQ-B7R1-COMMITTED-DIFF-HYGIENE` | Immediate whitespace defects in the working diff. | 30s |
+| Development-loop | `lake env lean RMQ/Core/SuccinctClose/EndpointFringe/InteriorCandidate/InteriorDirectory.lean` | Tightness theorem; `REQ-B7R1-TIGHTNESS-WITNESS`, `INV-B7-CHARGED-SPARSE-LEVEL` | Exact witness elaboration on the live evaluator object. | 15m |
+| Development-loop | `lake env lean RMQ/Core/SuccinctFinalRAM.lean` | Cost/public source chain; `REQ-B7R1-TIGHTNESS-WITNESS`, `INV-B7-READWORD-ONLY` | Direct consumer breakage after theorem/history changes. | 20m |
+| Development-loop | `lake env lean RMQ/Core/SuccinctRMQClassic.lean` | Historical identity; `REQ-B7R1-HISTORICAL-328-IDENTITY`, half-open public consumers | Public-name/type migration errors. | 15m |
+| Development-loop | `lake env lean scripts/wordram_axiom_check.lean` | Trust inventory; `REQ-B7R1-WORDRAM-AXIOM-GATE`, `CHK-02` | Stale names or untrusted axiom dependencies. | 15m |
+| Development-loop | `lake exe rmq_succinct_classic_cost_harness` | Registry/default execution; `CHK-04`, all three `REPLAY-*`, `INV-HALF-OPEN-LEFTMOST` | Missing/duplicate windows, wrong answer/route/cost/disposition, default under-execution. | 20m |
+| Development-loop | `lake exe rmq_succinct_classic_cost_harness -- --window <registered-id>` | `REPLAY-SELECTOR-NONVACUITY` | Focused selector executes other than exactly one case. | 10m |
+| Development-loop | `lake exe rmq_succinct_classic_cost_harness -- --window __unknown_b7r1__` | `REPLAY-SELECTOR-NONVACUITY` | Unknown selector passes vacuously; expected nonzero. | 10m |
+| Development-loop | `powershell -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -Strict` | Registered current surfaces; `REQ-B7R1-CURRENT-PUBLIC-SURFACES`, `CHK-08` | Stale current claims outside manually noticed files. | 5m |
+| Development-loop | `powershell -ExecutionPolicy Bypass -File scripts/claim_drift_policy_regression.ps1` | Policy/scanner edits; current-surface anti-vacuity | Production-verdict/path/allowance bypass. | 10m |
+| Development-loop | `powershell -ExecutionPolicy Bypass -File scripts/paper_topology_lint.ps1` | Public symbols/topology; `REQ-B7R1-CURRENT-PUBLIC-SURFACES`, `CHK-08` | Dead/retired/compatibility symbols presented as current. | 10m |
+| Final-required | `lake build RMQ RMQPaper RMQExamples` | All Lean/public/example edits; `CHK-01` | Aggregate import/consumer coherence. Run once on unchanged final tree. | 45m |
+| Final-required | `lake env lean scripts/wordram_axiom_check.lean` | Final trust inventory; `CHK-02` | Exact live/historical trust surface. | 15m |
+| Final-required | `lake env lean scripts/headline_axiom_check.lean` | Headline/public trust; `CHK-03` | Public theorem or literal migration not reflected in headline inventory. | 15m |
+| Final-required | `lake exe rmq_succinct_classic_cost_harness` plus known/unknown focused-selector controls | All 21 windows; `CHK-04`, `REPLAY-EXACT-REGISTRY`, `REPLAY-SELECTOR-NONVACUITY`, `INV-HALF-OPEN-LEFTMOST` | Exact ordered coverage and non-vacuous selection on final tree. | 20m each; no concurrent heavy child |
+| Final-required | `powershell -ExecutionPolicy Bypass -File scripts/claim_drift_scan.ps1 -Strict` | Every registry-derived current surface; `CHK-08` | Strict current/history vocabulary drift. | 5m |
+| Final-required | `powershell -ExecutionPolicy Bypass -File scripts/claim_drift_policy_regression.ps1` | Policy production verdict | Held-out/path/allowance anti-bypass. | 10m |
+| Final-required | `powershell -ExecutionPolicy Bypass -File scripts/paper_topology_lint.ps1` | Public topology; `CHK-08` | Documentary symbol resolution and current/compatibility roles. | 10m |
+| Final-required | `powershell -ExecutionPolicy Bypass -File scripts/design_decision_check.ps1 -Strict -Base 55e2b9ae3704a16129aaecc9c12f487aee5df12e` | B7-R1 design/evidence edits; `CHK-07` | Missing design rationale for current branch changes. | 5m |
+| Final-required | `powershell -ExecutionPolicy Bypass -File scripts/design_decision_check.ps1 -Strict -Base f6564ec` | Original B7 committed range; `CHK-07` | Original-rung design record not visible over full range. | 5m |
+| Final-required | `rg -n "\\b(sorry|admit|axiom|unsafe|opaque|implemented_by|partial|extern|noncomputable)\\b|import Mathlib" RMQ lakefile.toml` | Lean hygiene; `REQ-B7-10`, `CHK-05` | Trust-footprint regression. Expected repository-baseline classification, no new hit. | 2m |
+| Final-required | `rg -n "native_decide|Lean\\.ofReduceBool" RMQ` | Trust examples; `REQ-B7-10`, `CHK-05` | Unapproved native-decision trust shortcut. | 2m |
+| Final-required | `git diff --check` | Working tree; `REQ-B7R1-COMMITTED-DIFF-HYGIENE`, `CHK-06` | Uncommitted whitespace. | 30s |
+| Final-required | `git diff --check 55e2b9ae3704a16129aaecc9c12f487aee5df12e..HEAD` | B7-R1 committed range; `COMPLETE-B7R1-EVIDENCE` | Post-commit whitespace invisible to a clean worktree check. | 30s |
+| Final-required | `git diff --check f6564ec..HEAD` | Full original B7 + repair range; `REQ-B7R1-COMMITTED-DIFF-HYGIENE`, `CHK-06` | Historical WIP patch whitespace remains committed. | 30s |
+| Final-required | `git diff --name-only 55e2b9ae3704a16129aaecc9c12f487aee5df12e..HEAD` and `git status --short --branch` | Write scope / cleanliness; `COMPLETE-B7R1-EVIDENCE` | New path outside closed transitive scope or dirty final tree. | 30s |
+| Conditional | `rg -n "native_decide|Lean\\.ofReduceBool" RMQ RMQExamples` | If trust/examples consumers change | Broader smoke-example trust regression. | 2m |
+
+`scripts/gate.ps1`, `scripts/axiom_check.lean`, and the unrelated A07 validator
+are explicitly excluded from B7-R1 final acceptance. A timeout is classified as
+infrastructure/process evidence until the owned child, artifacts, and imports
+are inspected; an unchanged quiet command is never duplicated.
