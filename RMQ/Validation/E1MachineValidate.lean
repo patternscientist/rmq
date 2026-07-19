@@ -1,5 +1,6 @@
 import RMQ.Core.WordRAM.E1CloseCompose
 import RMQ.Core.WordRAM.E1SelectCanonical
+import RMQ.Core.WordRAM.E1CandMerge3
 
 /-!
 # M6: executable validation of the E1 amended machine
@@ -757,6 +758,201 @@ def composeLengthOk : Bool :=
     E1SameBlockLeg.sameBlockLegProgramAt shape legFringeSegment blockSize 6 !=
       E1SameBlockLeg.sameBlockLegProgram shape legFringeSegment blockSize
 
+/-! ## 6e. THE THREE-WAY CANDIDATE MERGE: executed against an INDEPENDENT
+reference
+
+`E1CandMerge3.candMerge3` is the machine block for the cross-block close
+object's fused epilogue.  This phase RUNS it and compares its answer
+against `refMerge3` below, which is written from the specification and
+does not call the route.
+
+## Why this phase's discriminator is the VALUE, not the receipt
+
+Every earlier mutation in this harness is ultimately caught by RECEIPT
+diffing -- phase 4c's mutant B is the sharpest, changing a single operand
+and reaching the correct exit pc while its read log diverges.  That test
+is unavailable here, and saying so precisely matters: the merge block is
+READ-FREE (`candMerge3_readFree`, and the route's epilogue rides a
+`TraceResult.map` that contributes no trace event), so the honest run and
+every mutant produce the SAME empty receipt.
+
+So this phase raises the bar rather than reusing it.  `mutantD_position`
+below changes ONE source operand, preserves program length, preserves the
+entire opcode-category sequence, preserves control flow exactly, and
+therefore agrees with the honest run on exit pc, halted flag, modeled step
+count AND receipt.  Nothing except comparing the computed value against an
+independent reference can reject it -- which is exactly what
+INV-VALUE-DEPENDENCY asks for, and a strictly harder target than mutant B.
+-/
+
+/-- INDEPENDENT reference for the three-way candidate close.
+
+Written from the SPECIFICATION -- of the present candidates take the one
+with the smallest value, earliest on ties, and report its position minus
+one -- as a flatten-then-fold.  It does NOT call `bpCandidateMerge3?`,
+`bpCandidateMerge?`, `bpCandidateBetter`, `bpCandidateClose?`, or the
+machine.
+
+It deliberately does not share the route's structure: the route is a
+LEFT-ASSOCIATED pairwise fold of option-lifted merges, while this
+flattens the options first and folds once over the survivors.  Agreement
+is therefore a real check on the association and on the tie-break, not a
+restatement of the same expression. -/
+def refMerge3 (left middle right : Option (Nat × Nat)) : Option Nat :=
+  match [left, middle, right].filterMap id with
+  | [] => none
+  | c :: cs =>
+      some ((cs.foldl (fun acc x => if x.1 < acc.1 then x else acc) c).2 - 1)
+
+/-- Order-preserving de-duplication, for the path-coverage check. -/
+def dedupList {α : Type} [BEq α] (xs : List α) : List α :=
+  xs.foldl (fun acc x => if acc.contains x then acc else acc ++ [x]) []
+
+/-- Merge fixtures as `(lv, lp, mv, mp, rv, rp)`, with `mv` in the block's
+BIASED form (`0` = middle absent, `k + 1` = middle value `k`).
+
+The value grids overlap deliberately so that TIES occur in both
+directions: a tie must keep the LEFT candidate, and a fixture set without
+ties could not tell `natLt` from `natLe`. -/
+def mergeCases : List (Nat × Nat × Nat × Nat × Nat × Nat) :=
+  [0, 3, 5].flatMap fun lv =>
+    [0, 1, 4, 6].flatMap fun mv =>
+      [0, 3, 5].map fun rv =>
+        (lv, 100 + lv, mv, 200 + mv, rv, 300 + rv)
+
+/-- What one merge run reports.  `expected` is computed from the
+independent reference BEFORE the program is built or run. -/
+structure MergeReport where
+  expected : Option Nat
+  machine : Nat
+  reachedExit : Bool
+  modeledSteps : Nat
+  machineReads : Nat
+  agrees : Bool
+  middlePresent : Bool
+  middleBetter : Bool
+  rightBetter : Bool
+deriving Repr
+
+/-- RUN THE MERGE BLOCK and compare against the independent reference. -/
+def runMerge (salt : Nat) (build : List Instr -> List Instr)
+    (lv lp mv mp rv rp : Nat) : MergeReport :=
+  -- EXPECTATION FIRST, from `refMerge3` alone.
+  let left : Option (Nat × Nat) := some (lv, lp)
+  let middle : Option (Nat × Nat) :=
+    if mv == 0 then none else some (mv - 1, mp)
+  let right : Option (Nat × Nat) := some (rv, rp)
+  let expected := refMerge3 left middle right
+  -- Route-side branch conditions, also computed without the machine.
+  let midBetter := mv != 0 && mv - 1 < lv
+  let acc : Nat × Nat := if midBetter then (mv - 1, mp) else (lv, lp)
+  -- ONLY NOW the machine.
+  let program := build (E1CandMerge3.candMerge3 0) ++ [Instr.halt]
+  let result :=
+    E1Machine.run E1CandMerge3.witnessStore program (64 + salt)
+      ⟨E1CandMerge3.witnessRegs lv lp mv mp rv rp, 0, false⟩
+  let got := result.final.regs E1SameBlockArm.fRes
+  { expected := expected
+    machine := got
+    reachedExit := result.final.pc == 16 && result.final.halted
+    modeledSteps := result.steps
+    machineReads := result.readLog.length
+    agrees := expected == some got
+    middlePresent := mv != 0
+    middleBetter := midBetter
+    rightBetter := rv < acc.1 }
+
+/-- The honest builder. -/
+def goodMerge : List Instr -> List Instr := id
+
+/-- MUTANT C: swap the two operands of the RIGHT comparison.  One operand
+change; same length; same opcode-category sequence; still reaches the
+proved exit pc on every case. -/
+def mutatedMergeCompare (program : List Instr) : List Instr :=
+  program.map fun instr =>
+    match instr with
+    | .natLt d s1 s2 =>
+        if d == E1CandMerge3.mU then .natLt d s2 s1 else .natLt d s1 s2
+    | other => other
+
+/-- MUTANT D: the middle candidate's POSITION move reads the left
+candidate's position instead.
+
+This is the harness's sharpest mutation.  It changes ONE source operand,
+leaves control flow completely untouched, and therefore agrees with the
+honest run on exit pc, halted flag, modeled step count and (the block
+being read-free) receipt.  Only the value comparison against `refMerge3`
+rejects it, and only on the cases where the middle candidate actually
+wins -- so `mergePathCoverage` below is load-bearing for this mutant, not
+decorative. -/
+def mutatedMergePosition (program : List Instr) : List Instr :=
+  program.map fun instr =>
+    match instr with
+    | .move d s =>
+        if d == E1CandMerge3.mAP && s == E1CandMerge3.mMP then
+          .move d E1CandMerge3.mLP
+        else .move d s
+    | other => other
+
+/-- Every merge report for one builder, computed ONCE (the M3d-6 gotcha:
+deriving each statistic from its own sweep re-runs the machine per
+statistic). -/
+def mergeReports (salt : Nat) (build : List Instr -> List Instr) :
+    List MergeReport :=
+  mergeCases.map fun (lv, lp, mv, mp, rv, rp) =>
+    runMerge salt build lv lp mv mp rv rp
+
+/-- Runs whose value disagrees with the independent reference. -/
+def mergeMismatches (reports : List MergeReport) : Nat :=
+  (reports.filter fun rep => !rep.agrees).length
+
+/-- Runs that fail to reach the proved exit pc 16, halted. -/
+def mergeExitFailures (reports : List MergeReport) : Nat :=
+  (reports.filter fun rep => !rep.reachedExit).length
+
+/-- Total modeled steps across the merge sweep: a MODELED quantity. -/
+def mergeModeledSteps (reports : List MergeReport) : Nat :=
+  reports.foldl (fun acc rep => acc + rep.modeledSteps) 0
+
+/-- Total modeled read events.  Must be zero: the block is read-free. -/
+def mergeModeledReads (reports : List MergeReport) : Nat :=
+  reports.foldl (fun acc rep => acc + rep.machineReads) 0
+
+/-- How many of the block's SIX control paths the fixture set reaches.
+
+The path is identified by the three route-side branch conditions.  If this
+is not `6`, some arm of `candMerge3_runsTo` is never exercised and the
+mutation tests below may be vacuous on that arm. -/
+def mergePathCoverage (reports : List MergeReport) : Nat :=
+  (dedupList
+    (reports.map fun rep =>
+      (rep.middlePresent, rep.middleBetter, rep.rightBetter))).length
+
+/-- Both merge mutations genuinely change the instruction list, and
+NEITHER changes its length OR its opcode-category sequence.  This is what
+makes them harder than a mutation a length or opcode audit would find. -/
+def mergeMutationsAreReal : Bool :=
+  let good := E1CandMerge3.candMerge3 0
+  let mc := mutatedMergeCompare good
+  let mp := mutatedMergePosition good
+  good != mc && good != mp &&
+    good.length == mc.length && good.length == mp.length &&
+    good.map Instr.category == mc.map Instr.category &&
+    good.map Instr.category == mp.map Instr.category
+
+/-- MUTANT D IS INVISIBLE TO EVERY NON-VALUE OBSERVABLE.  Checked, not
+asserted: exit pc, halted flag, modeled step count and receipt length all
+agree with the honest sweep case for case.  This is the statement that
+makes the phase's claim -- that only the independent-reference value
+comparison can reject it -- evidence rather than commentary. -/
+def mergeMutantDIsValueOnly (salt : Nat) : Bool :=
+  let honest := mergeReports salt goodMerge
+  let mutant := mergeReports salt mutatedMergePosition
+  (honest.zip mutant).all fun (h, m) =>
+    h.reachedExit == m.reachedExit &&
+      h.modeledSteps == m.modeledSteps &&
+      h.machineReads == m.machineReads
+
 /-! ## 7. THE HOLE: whole-query comparison
 
 DELIBERATELY NOT IMPLEMENTED, and compiling as a hole rather than as a
@@ -988,6 +1184,47 @@ def mainImpl : IO UInt32 := do
   IO.println s!"composeMutationWallClockMs={tcm1 - tcm0}"
   IO.println ""
 
+  -- STEP 3e: the THREE-WAY CANDIDATE MERGE, executed vs an independent ref.
+  IO.println "-- phase 3e: three-way candidate MERGE vs independent reference --"
+  let tg0 <- IO.monoMsNow
+  let mrgReports := mergeReports salt goodMerge
+  let mrgMismatch := mergeMismatches mrgReports
+  let mrgExitFails := mergeExitFailures mrgReports
+  let mrgSteps := mergeModeledSteps mrgReports
+  let mrgReads := mergeModeledReads mrgReports
+  let mrgCoverage := mergePathCoverage mrgReports
+  IO.println s!"mergeCases={mergeCases.length}"
+  IO.println s!"mergePathCoverage={mrgCoverage}   (must be 6: all six control paths)"
+  IO.println s!"mergeExitFailures={mrgExitFails}   (proved exit is pc 16, halted)"
+  IO.println s!"mergeMismatches={mrgMismatch}   (machine fRes vs refMerge3; must be 0)"
+  IO.println s!"mergeModeledSteps={mrgSteps}   (machine-modeled, reproducible)"
+  IO.println s!"mergeModeledReads={mrgReads}   (must be 0: the block is read-free)"
+  let tg1 <- IO.monoMsNow
+  IO.println s!"mergeWallClockMs={tg1 - tg0}   (this binary on this host; NOT evidence)"
+  IO.println ""
+
+  -- STEP 4d: mutating the MERGE, where the receipt cannot help.
+  IO.println "-- phase 4d: deliberate mutations of the MERGE block --"
+  let tgm0 <- IO.monoMsNow
+  let mutCReports := mergeReports salt mutatedMergeCompare
+  let mutDReports := mergeReports salt mutatedMergePosition
+  let mutCMismatch := mergeMismatches mutCReports
+  let mutCExit := mergeExitFailures mutCReports
+  let mutDMismatch := mergeMismatches mutDReports
+  let mutDExit := mergeExitFailures mutDReports
+  let mutDValueOnly := mergeMutantDIsValueOnly salt
+  IO.println s!"mergeMutationsAreReal={mergeMutationsAreReal}   (both differ; same length AND same opcode categories)"
+  IO.println s!"mutantC_compareSwap_exitFailures={mutCExit}   (0 expected: exit pc alone MISSES this)"
+  IO.println s!"mutantC_compareSwap_mismatches={mutCMismatch}   (must be > 0: the value catches it)"
+  IO.println s!"mutantD_position_exitFailures={mutDExit}   (0 expected)"
+  IO.println s!"mutantD_position_mismatches={mutDMismatch}   (must be > 0: ONLY the value catches it)"
+  IO.println s!"mutantD_isValueOnly={mutDValueOnly}   (pc, steps and receipt all agree with honest)"
+  IO.println s!"mergeMutationCRejected={mutCMismatch != 0}"
+  IO.println s!"mergeMutationDRejected={mutDMismatch != 0}"
+  let tgm1 <- IO.monoMsNow
+  IO.println s!"mergeMutationWallClockMs={tgm1 - tgm0}"
+  IO.println ""
+
   -- STEP 5: the hole.
   IO.println "-- phase 5: whole-query comparison --"
   IO.println s!"wholeQueryComparisonAvailable={wholeQueryComparisonAvailable}"
@@ -1020,9 +1257,19 @@ def mainImpl : IO UInt32 := do
   -- The reduced mutant budget must be provably non-binding for a correct
   -- program, and the reduced case set must reach the same-block arm.
   let okMutantSetup := cmpFuelSlack && composeMutantCoversSameBlock salt
+  -- The merge block: value agreement with the independent reference, all
+  -- six control paths reached, read-freedom observed in execution.
+  let okMerge :=
+    mrgMismatch == 0 && mrgExitFails == 0 && mrgReads == 0 &&
+      mrgCoverage == 6
+  -- Both merge mutants rejected, and mutant D confirmed invisible to every
+  -- observable except the value.
+  let okMergeMutations :=
+    mergeMutationsAreReal && mutCMismatch != 0 && mutDMismatch != 0 &&
+      mutDValueOnly
   let okCore := okReference && okLengths && okDispatch && okLeg
-  let okComposite := okSelect && okCompose && okComposeCoverage
-  let okAdversarial := okMutations && okMutantSetup
+  let okComposite := okSelect && okCompose && okComposeCoverage && okMerge
+  let okAdversarial := okMutations && okMutantSetup && okMergeMutations
   let ok := okCore && okComposite && okAdversarial
   if ok then
     IO.println "RESULT: PASS (with the whole-query comparison still OPEN)"
