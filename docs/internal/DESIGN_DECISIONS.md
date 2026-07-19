@@ -5425,3 +5425,270 @@ composition is not built. No row of the matrix is closed. No receipt or
 charge-log link to the route's `FlatStoreComputation.map` is claimed --
 only the machine-side charge log as a function of the route's branch
 conditions.
+
+## DD-20260719-053: the two-span block is ONE parametric block covering both #4 and #5, and the two level tables' `hexact` clauses did not exist (E1 M3d-28)
+
+Written by E1-LaneB4 on behalf of E1-LaneB3, which claimed this ID and
+recorded its substance in commit `f86aa3b` but never entered it in this
+file. Attributed to its author; not renumbered. Predecessor
+`DD-20260719-052` checked before writing.
+
+Context. `#4` (`...LocalTwoSpanCandidateComputation`) and `#5`
+(`...GlobalTwoSpanCandidateComputation`) each read a level cell and then
+run two span legs merged by `bpCandidateMerge?`. The campaign's
+parametric-pattern claim -- that one block instantiated twice beats two
+blocks -- had already held once, at `#2`/`#3`.
+
+Decision: one `twoSpanBlock` (`E1InteriorTwoSpan.lean:185`), 509
+instructions, exit `Q + 509` on BOTH arms, parametric in two `TableGeom`s
+and in the level modulus/divisor. `twoSpanBlock_runsTo` gives receipt,
+charge log, value against the route's own `bpCandidateMerge?`, and
+preservation, with NO store and NO validity hypothesis -- the premises
+are the hosting, four caller inputs and the two geometries' chunk-count
+bounds.
+
+The claim held for a slightly different reason than the live-state file
+gave. `#4` and `#5` differ not only in which span block they call but
+ALSO in the SLOT MAP; both maps are `A + level * M + start` for a
+caller-supplied `A` and a program constant `M`, and that is what makes
+one block cover both.
+
+The staged level read is the UNCONDITIONAL HEAD of the append chain.
+Putting it anywhere else encodes a stale read order and presents as a
+whnf heartbeat timeout rather than as a wrong answer.
+
+A coordinator claim failed inspection, and the counting lesson is the
+point. The brief said everything `#4`/`#5` needed already existed.
+`hexact_localLevel` and `hexact_globalLevel` did not exist anywhere in
+the tree: all eight `hagree_*` clauses were present and six tables had
+`hexact` twins, so the level tables LOOKED as fully served as the rest.
+Counting `hagree`s counts the wrong thing -- a table is only as composed
+as its LAST clause. Written at `E1InteriorChunkStore.lean:580`/`:601`
+with concrete twins at `E1InteriorStoreConcrete.lean:280`/`:298`.
+
+Scope. This is the two-span BLOCK and its two instantiations. No row of
+the acceptance matrix is closed by it. The validator does not exercise it.
+
+## DD-20260719-054: the two-span block's `none` arm admits an impostor PAIR that locates the receipt's boundary, which is whether the skipped code READS (E1 M3d-28)
+
+Written by E1-LaneB4 on behalf of E1-LaneB3, which claimed this ID and
+recorded its substance in commit `e34b750` but never entered it in this
+file. Attributed to its author; not renumbered.
+
+Context. Two earlier fixtures had each shown one instrument failing.
+`spanNoneArm_discriminates` showed a receipt unable to reject a
+`none`-arm impostor; `mergePos_discriminates` showed a category log
+unable to reject an operand-level one. Read together they invite the
+conclusion that the receipt is simply the weaker instrument.
+
+Decision: state the boundary as a PAIR of impostors that are the SAME
+defect -- a wrong branch target -- at two of the block's own live
+numerals, falling on opposite sides of it.
+
+* **A**, target `Q + 275`, past only the FIRST span block. The tail it
+  falls into CONTAINS A READ, so it emits an event the route never
+  emitted and the receipt CATCHES it
+  (`twoSpanNoneArm_receipt_catches_impostorA`).
+* **B**, target `Q + 500`, straight to the merge. `mergeBlock_readFree`
+  makes that tail read-free, so receipt and read count are IDENTICAL to
+  the correct arm's; it merges a STALE left candidate out of `qLV`/`qLP`
+  and returns it where the route returns `none`. The receipt is formally
+  INCAPABLE of catching it (`..._receipt_blind_to_impostorB`). Only the
+  category log and the value reject it.
+
+The rule this establishes: a receipt constrains WHICH READS HAPPENED, so
+its power over a skipped-code defect is exactly whether the skipped code
+READS. The receipt is not uniformly weak -- it is weak precisely there.
+The four prior models all happened to skip read-free code, which is what
+made it look uniformly weak.
+
+Preservation is executed on all three arms with distinct marks.
+
+Scope. Discriminators for the two-span block only. No matrix row closed.
+
+## DD-20260719-055: every nesting level needs its OWN stash pair, because each combiner writes the pair one level below it (E1 M3d-28)
+
+Written by E1-LaneB4 on behalf of E1-LaneB3, which claimed this ID and
+recorded its substance in commit `5914260` but never entered it in this
+file. Attributed to its author; not renumbered.
+
+Context. `#6` and `#7` are two sub-legs merged. The natural combiner
+design is to stash the first sub-leg's candidate in the two-way merge's
+left-input pair `qLV`/`qLP` with `mergeShuttle`, run the second sub-leg,
+then merge.
+
+Decision, forced by a correction: THAT DESIGN IS WRONG. `twoSpanBlock`
+CONTAINS a `mergeShuttle` and a `mergeBlock`, so it writes `qLV`/`qLP`
+itself, and the second sub-leg destroys the stash.
+`twoSpanUntouched_excludes_mergeStash` (`E1InteriorTwoSpan.lean:331`)
+records this as a theorem rather than as a comment, because nothing about
+the block's type says so. The live-state file's "chaining does need a
+two-instruction shuttle, which exists" is true one level DOWN and NOT
+sufficient one level UP.
+
+So `twoLegBlock` carries its OWN stash pair, `uSV`/`uSP` at `142`/`143`,
+and restores into `qLV`/`qLP` only after the second sub-leg has finished
+-- two moves each, replacing the shuttle.
+
+Caught by the TYPE CHECKER, not by a fixture: `TwoSpanUntouched qLV` is
+unprovable because it is false. Worth recording as a case where a
+preservation predicate did its job at the COMPOSITION SITE rather than at
+the block that stated it.
+
+Also landed: `twoSpanUntouched_of_ge` -- the two-span block's whole write
+set lies below `136`, so a combiner can carry its own bank across a
+sub-leg without re-deciding ten conjuncts. The numerals are spelled out
+rather than written as the register `abbrev`s because `omega` collects an
+`abbrev` as an OPAQUE ATOM and reports a counterexample against the name.
+
+Scope. `legSetup_runsTo` is proved. `twoLegBlock` is DEFINED ONLY; at the
+time of this entry `twoLegBlock_runsTo` did not exist and neither `#6`
+nor `#7` was closed. (Both are closed as of `DD-20260719-057`.)
+
+## DD-20260719-056: a preservation predicate can be too STRONG for its own block, and nothing executes it until a simulation quantifies over it (E1 M3d-29)
+
+Claimed this session (E1-LaneB4) from band `056-069`; the maximum
+OBSERVED in this file before claiming was `052`, and `053`-`055` were
+written by this session on its predecessor's behalf immediately above.
+
+Context. `TwoLegUntouched` was defined by the previous lane alongside
+`twoLegBlock`, and evaluated at the four cross-block-arm operands. It
+read
+
+    TwoSpanUntouched r AND MergeUntouched r AND ShuttleUntouched r AND
+      r != uT AND r != uZero AND r != uSV AND r != uSP
+
+Decision: SUPERSEDE it, adding `r != tA AND r != tStart AND r != tN AND
+r != tOff`.
+
+Why the original was UNSOUND FOR ITS OWN BLOCK. `TwoSpanUntouched` omits
+the four two-span inputs `tA`/`tStart`/`tN`/`tOff` (`127`-`130`)
+DELIBERATELY and CORRECTLY: `twoSpanBlock` only READS them, and declining
+to claim them is exactly what lets `#6`-`#9` chain two sub-legs with only
+some inputs rewritten between. But `twoLegBlock` WRITES all four, TWICE,
+in its two `legSetup`s. So the inherited predicate was provable at four
+registers the combiner clobbers -- `TwoLegUntouched 127` closed by
+`decide` -- and the preservation clause of `twoLegBlock_runsTo` stated
+with it would have been FALSE and unprovable.
+
+WHY NOTHING CAUGHT IT. A preservation predicate is not executed until a
+simulation quantifies over it, and this block had none. The existing
+`twoLegUntouched_at_crossBlockArm_operands` evaluation passes under BOTH
+versions, because `70`/`71`/`75`/`76` are not among the registers at
+issue. A green check is evidence only of what it examined, and what it
+examined here was four numerals chosen for a different purpose.
+
+The general rule, and it is the mirror of one already on record. The
+`SpanUntouched`/`mLP` correction recorded in `E1_LIVE_STATE.md` section 9
+was a predicate too WEAK -- it declined to claim a register the consumer
+needed. This one is too STRONG -- it claims a register the block
+destroys. Both typecheck; neither is caught by reading the predicate
+alone. **Only the pairing of a predicate with the consumer's proof
+obligation distinguishes the two, so a preservation predicate written
+before its simulation should be treated as a conjecture.** Ask of every
+such predicate not only whether it claims enough, but whether the block
+actually leaves alone everything it claims.
+
+Scope. The predicate and its two consumers. No matrix row is closed by
+this entry.
+
+## DD-20260719-057: #6 and #7 are ONE block, and the second leg's sources are taken as a FUNCTION of the combiner bank rather than as bare naturals (E1 M3d-29)
+
+Claimed this session; predecessor `DD-20260719-056`, this session's own
+earlier entry, checked before claiming.
+
+Context. `#6` (`...AdjacentMacroCandidateComputation`) and `#7`
+(`...LeftMiddleMacroCandidateComputation`) share a left leg and differ
+only in whether the second leg is local or global. `legSetup`'s
+`mulConst` by a program constant already made the two setups one
+instruction shape with one category log.
+
+Decision: prove ONE `twoLegBlock_runsTo` and instantiate it twice. Exit
+`Q + 1044`; the receipt is the two sub-legs' receipts CONCATENATED and
+nothing else, every instruction outside them being read-free, which is
+what `#6`/`#7` being `bind`/`map` combinations of sub-legs means. The
+value is the ROUTE's own `bpCandidateMerge?` of the two sub-legs' route
+values. No store and no validity hypothesis.
+
+THE DESIGN DECISION THAT MATTERS: the second leg's start and count come
+from DIFFERENT REGISTERS at the two instantiations -- `(uZero, uRight)`
+at `#6`, `(uT, uMid)` at `#7` -- so the block cannot name them. It takes
+instead a FUNCTION from the six combiner-bank readings that hold when the
+second setup runs to the value the source carries (`hS2`, `hN2`).
+
+Why not take `start2`/`n2` as bare naturals with a register index
+alongside. Because that premise would be satisfied by a setup reading the
+WRONG register that happened to hold the right value, which is precisely
+the "right shape, wrong content" class this campaign has been bitten by
+three times. Tying the value to the READING makes the source index
+load-bearing.
+
+The premise is OWED, so its witnesses are exhibited at both
+instantiations (`adjacentMacro_src_witnesses`,
+`leftMiddleMacro_src_witnesses`) and both are PROJECTIONS of the six
+readings -- discharged by picking a hypothesis, not by an argument. The
+premise is demonstrably NOT vacuous: the six readings constrain six
+DISTINCT registers, so a satisfying `RegFile` exists.
+
+Two spellings recorded because each cost a compile cycle. `#7`'s global
+leg takes `kA2 = kO2 = 0`, so its slot base arrives as
+`(macroStart + 1) * 0`; that REDUCES to `0` because `Nat.mul` recurses on
+its SECOND argument -- the mirror of the `0 + value` trap, falling the
+convenient way -- but `rw` matches SYNTACTICALLY, so the reduction has to
+be performed with `Nat.mul_zero` rather than relied upon. And
+`legSetup_runsTo`'s `regs` is implicit and occurs ONLY in its conclusion,
+so it must be supplied as `(regs := ...)` or it stays a metavariable and
+every downstream rewrite fails against `?m uMacro`.
+
+Scope. `#6` and `#7` are closed to the standard `#4`/`#5` were closed at:
+the parametric simulation plus a route-value link carrying no validity,
+cap or store hypothesis. `#9` and `hInterior` are NOT built, so no
+whole-interior claim follows, and the validator does not exercise any of
+it. No matrix row is closed.
+
+## DD-20260719-058: #8 is the two-leg combiner plus one leg, and the stash-pair law is a LADDER -- each level writes the pair one level below (E1 M3d-29)
+
+Claimed this session; predecessor `DD-20260719-057`, this session's own
+earlier entry, checked before claiming.
+
+Context. `#8` (`...CrossMacroCandidateComputation`) merges three sub-legs
+with `bpCandidateMerge3?`, and its first two legs are exactly `#7`'s.
+`merge3_eq_two_merges` had already established that
+`bpCandidateMerge3? l m r` is DEFINITIONALLY
+`bpCandidateMerge? (bpCandidateMerge? l m) r`.
+
+Decision: build `crossLegBlock` as `twoLegBlock` at `#7`'s parameters,
+UNCHANGED, followed by a third local leg and one more two-way merge --
+1574 instructions of which 1044 are the two-leg combiner. Because the
+reassociation is definitional, the route-value link needs no
+reassociation step; the final `rfl` absorbs it.
+
+THE LADDER. `DD-20260719-055` established that `twoSpanBlock` writes
+`qLV`/`qLP`, so `twoLegBlock` needs its own pair `uSV`/`uSP`. The same
+law applies one level up: `twoLegBlock` writes `uSV`/`uSP`, so
+`crossLegBlock` needs a THIRD pair, `vSV`/`vSP` at `144`/`145`. This is
+not a coincidence of two blocks -- **a combiner always writes the stash
+pair of the level below it, because that pair is where its own sub-block
+leaves its answer.** Any future nesting level must allocate a fresh pair
+and must not reuse the one it is built on.
+
+What makes the ladder cheap: `twoLegUntouched_of_ge` (write set below
+`144`) lets the new pair survive the whole two-leg sub-block without
+re-deciding eleven conjuncts, and it was written for exactly this.
+`crossLegUntouched_of_ge` continues it at `146` for `#9`. Added
+`twoLegUntouched_of_bank` because the four INPUT registers sit at
+`136`-`139`, BELOW the block's own scratch, so the `of_ge` form does not
+reach them although a chaining caller must carry them across.
+
+One deliberate three-instruction cost. `rightMacroStart` is recomputed
+from `uMacro`/`uMid` rather than read out of `uT`, and `uZero` is
+re-seeded, although `twoLegBlock` does in fact leave the right values in
+both. Its contract states what the block LEAVES ALONE and says NOTHING
+about the final value of a register it writes; depending on that value
+would mean strengthening the two-leg contract to save three instructions,
+and a contract widened for a caller's convenience is how a block stops
+being reusable.
+
+Scope. `#8` is closed to the same standard as `#6`/`#7`. `#9`'s five-way
+dispatch and the `hInterior` discharge are NOT built. No matrix row is
+closed, and the validator does not exercise any of this.
