@@ -5942,3 +5942,274 @@ All file:line verified at this commit.
    check for the interior fold; the validator has no interior analogue of
    phase 3h.  The M7 doc row still has an approved scope and a drafted
    sentence (M3d-14 section 5) and still needs the interior leg to exist.
+
+## M3d-18 (worker E1-R5a): the store hypothesis is eliminated by instantiation, and the discharge was already in the tree
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `d90b062`, from HEAD
+`a572f4b` (M3d-17's yield) to `bc3c8f0`.  Green.
+
+Mission item 1 -- instantiate at the concrete interior store, discharging
+`HoldsInteriorStore` rather than carrying it -- IS DONE.  Items 2-7 (the
+summary group, the span blocks, the two-span blocks, the five-branch
+dispatch, `hInterior`, the closure ladder, the validator's interior
+preservation phase) are UNBUILT and were not started.
+
+### 1. THE TARGET STORE IS NOT A MATTER OF CHOICE, AND THAT SETTLED IT
+
+M3d-17 left twelve clauses carrying `HoldsInteriorStore store segment shape`
+and witnessed it satisfiable by `interiorReadStore` -- a store built FOR the
+hypothesis.  It flagged, against its own output, that this is the same shape
+of witness that hid the false unbounded `hagree`.  The coordinator ruled:
+eliminate by instantiation.
+
+The question "instantiate at WHICH store?" has exactly one answer, and it is
+not the implementer's to pick.  `crossBlockArmProgramAt_runsTo`
+(`E1CrossBlockArm.lean:1143`) names it in its own `hInterior` premise: the
+interior leg's `RunsTo` must hold at
+`concreteBPNativeSuccinctRMQGlobalReadStore shape`.  Any other store is
+irrelevant to the composition, which is precisely why a store built for the
+hypothesis proves nothing.
+
+THE DISCHARGE WAS ALREADY IN THE TREE.  That store answers segment `20` with
+`(canonicalRelativeRmmInteriorComponentStore shape).store.words[index]?`
+(`Segments.lean:221`), and `concreteBPNativeInteriorTraceSegments`
+(`Segments.lean:60`) sets `canonicalComponent := 20`.  The projection
+`concreteBPNativeSuccinctRMQGlobalReadStore_canonicalComponent`
+(`Segments.lean:258`) already existed: introduced by commit `b8ae4aa`
+("Close U2 uniform reviewer route"), present at the branch base `d90b062`,
+checked with `git log -S` rather than assumed.  It was written for the flat
+reviewer layout, before the interior work, so it is in no sense a witness
+built for this premise.
+
+`holdsInteriorStore_concrete` is that projection plus the `Array`/`List`
+bridge.  Three lines.  The whole of M3d-17's residue closed to an existing
+fact -- which is the shape a genuine discharge usually has, and is worth
+contrasting with the effort a constructed witness demands.
+
+### 2. THE SEGMENT WAS CHECKED, NOT ASSUMED -- AND IT HAD A LIVE TRAP
+
+`concreteBPNativeInteriorTraceSegments` carries a `summary` sub-record with
+`baseline := 20`, `minRel := 21`, `maxRel := 22`, `argOffset := 23`.  In the
+CANONICAL store those are not the summary tables: segment `21` is the fringe
+chunk table (`Segments.lean:224`) and `22` is the select chunk table
+(`Segments.lean:228`).  A composition that read the summary group at the
+sub-record's per-table segments would silently read the wrong tables for
+three of its four reads, and would still typecheck.
+
+It does not arise, and the reason is structural.  The summary group
+(`InteriorDirectory.lean:2277`) reads all four tables at OFFSETS --
+`offsets.baseline`, `.minRel`, `.maxRel`, `.argOffset` -- into ONE flat
+store, and `FlatStoreComputation` (`MachineChunkedTableProgram.lean:66`)
+runs over a single `FlatWordStore : address -> word`.  One segment, four
+offsets.  The eight delivered `hagree_*_concrete` are stated in exactly that
+shape: one segment, the component offsets distinguishing the tables.
+
+RECORDED BECAUSE IT IS A TRAP FOR ITEM 2.  The legacy per-table segments
+(`Segments.lean:101`, `..._Legacy`) are the compatibility layout, where they
+were correct.  Anyone wiring the interior who reaches for
+`interiorSegments.summary.minRel` in the canonical store is reading the
+fringe chunk table.
+
+### 3. WHAT LANDED: `RMQ/Core/WordRAM/E1InteriorStoreConcrete.lean`
+
+Registered in `RMQ.lean:46`.  Thirteen theorems, ALL UNCONDITIONAL in
+`shape` -- no agreement hypothesis survives.  See DD-20260719-013 (claimed
+this session; the maximum OBSERVED in `DESIGN_DECISIONS.md` was
+`DD-20260719-012`, which matches what the delegation stated -- checked
+before claiming, per rule 4).
+
+* `interiorSegment` (`:67`) -- `concreteBPNativeInteriorTraceSegments.canonicalComponent`,
+  named rather than spelled `20` so a layout change moves this module.
+* `holdsInteriorStore_concrete` (`:80`) -- THE DISCHARGE, at the store
+  `hInterior` names, at the segment the route reads.
+* `hagree_baseline_concrete` .. `hagree_globalLevel_concrete`
+  (`:93`, `:100`, `:107`, `:114`, `:121`, `:128`, `:135`, `:142`) -- the
+  eight agreement clauses with the hypothesis SUPPLIED, not assumed.
+* `hexact_baseline_concrete` .. `hexact_argOffset_concrete`
+  (`:156`, `:173`, `:190`, `:207`) -- the summary group's four reads.
+
+`E1InteriorChunkStore`'s parameterised forms are RETAINED beneath these as
+the general lemmas they instantiate, exactly as `readWord?_slice` is
+retained beneath those.  Nothing renamed, nothing deleted, no frozen
+identity touched.  No E1 module now carries an agreement hypothesis.
+
+### 4. THIS SESSION'S OUTPUT, JUDGED BY THE FIVE RULES
+
+Rule 1/5 (a premise owes a witness FOUND at the intended instantiation).
+`holdsInteriorStore_concrete` is found, not built: the store is named by
+`hInterior` and the projection predates the campaign.  Verified by
+`git log -S`, not by reading a docstring.
+
+Rule 2 (a VACUOUS premise owes a witness of vacuity).  The inverse duty
+applies here: the eight delivered clauses are bounded by
+`a < (wordsX shape).length`, and if those lists were empty the clauses would
+be vacuously true and worthless.  EVALUATED at an eight-element shape:
+
+    (baseline, minRel, maxRel, argOffset) = (1, 4, 4, 4)
+    (local, global, localLevel, globalLevel) = (80, 1, 36, 3)
+
+All eight non-empty, so no delivered clause is vacuous.  `interiorSegment`
+evaluates to `20`.  This is `#eval` REPRODUCTION EVIDENCE, not a kernel
+proof -- per M3d-17's corollary these sizes run through `Nat.log2` and do
+not reduce in the kernel.  The clauses themselves are proved generally; the
+`#eval` only rules out vacuity.
+
+Rule 3 (evaluate what is computable).  Done, above.
+
+Rule 4 (check supplied tree claims).  All sixteen file:line anchors in the
+delegation were checked before use.  Fourteen were exact.  TWO HAD WRONG
+DIRECTORIES and are corrected here for successors:
+`ChargedRankSelectWiring.lean` is at
+`RMQ/Core/SuccinctClose/RelativeRmmMacro/`, NOT `RMQ/Core/WordRAM/`;
+`WordStore.lean` is at `RMQ/Core/SuccinctSpace/`, NOT `RMQ/Core/WordRAM/`.
+Line numbers and contents were exact at the corrected paths, so the claims
+were sound and only the paths drifted.  The coordinator's item-2 note was
+also checked at source: the `maxRel` value IS bound into the summary tuple
+at `:2295` and the consumer at `:2300` is `bpRelativeSummaryMinCandidate`,
+so the ground for keeping the read is the positional receipt, as stated.
+
+STILL OWED, AND NOT DISGUISED.  `hexact_*_concrete` retain `hcount`,
+`hvalid`, `hentries`.  They are facts about the CALLER's index arithmetic,
+fixed when the summary group's program is written, and were never debts owed
+to the store -- but they ARE premises, and under rule 1 they owe a witness
+at the intended instantiation when item 2 lands.  Whoever writes item 2
+should not treat "not a debt owed to the store" as "not a debt".
+
+### 5. VERIFICATION LEDGER
+
+`lake build RMQ RMQPaper RMQExamples` exit 0, under the
+`Global\RMQHeavyVerification` mutex:
+
+    [279/281] Built RMQ.Core.WordRAM.E1InteriorStoreConcrete
+    [280/281] Built RMQ
+    Build completed successfully.
+    BUILD_EXIT=0
+
+The new module emits NO warning; its only line in the build log is the Built
+line.  All warnings in the log are pre-existing `unusedSimpArgs` in
+`SuccinctFinalRAM.lean`, `E1InteriorChunkFold.lean:529` and
+`ReviewerReachabilitySmall.lean`.
+
+`#print axioms` AFTER a root build, importing
+`RMQ.Core.WordRAM.E1InteriorStoreConcrete` DIRECTLY -- all thirteen
+`[propext, Classical.choice, Quot.sound]`, never `sorryAx`:
+
+    holdsInteriorStore_concrete    [propext, Classical.choice, Quot.sound]
+    hagree_baseline_concrete .. hagree_globalLevel_concrete (8)
+                                   [propext, Classical.choice, Quot.sound]
+    hexact_baseline_concrete .. hexact_argOffset_concrete (4)
+                                   [propext, Classical.choice, Quot.sound]
+
+`maxHeartbeats` was NOT raised anywhere; the new module contains no
+`set_option`.
+
+`lake build rmq_e1_machine_validate` exit 0; `lake exe rmq_e1_machine_validate`
+exit 0, RESULT: PASS (with the whole-query comparison still OPEN).  Modeled
+counts (reproducible) separated from wall-clock:
+
+    dispatchCases=405   modeledSteps=2430        modeledReads=0
+    legCases=90         legModeledSteps=30343    legModeledReads=1080
+    selectCases=32      selectModeledSteps=8273  selectModeledReads=475
+    composeCases=40     composeModeledSteps=9222 composeModeledReads=322
+    mergeCases=36       mergeModeledSteps=431    mergeModeledReads=0
+    armCases=36         armModeledSteps=6276     armModeledReads=234
+    rangeCases=54       rangeModeledReads=0
+    presCases=36        presCheckedRegs=66       presFailures=0
+    total wall clock 9881 ms
+
+Mutation evidence, unchanged by this session and re-observed green: 4e
+`mutantE_segment_receiptFailures=36` with `mutantE_isReceiptOnly=true`; 4f
+`mutantF_blockEnd_mismatches=33`; 4g
+`mutantG_scratch_preservationFailures=36` with `mutantG_clobberedRegs=[70]`
+and `mutantG_isPreservationOnly=true`.  Phase 5 remains
+`wholeQueryComparisonAvailable=false`, interior leg UNBUILT -- consistent
+with items 2-7 not being started.
+
+`lake env lean scripts/headline_axiom_check.lean` exit 0.
+`claim_drift_scan.ps1`: 744 hits, 0 strict failures, exit 0.
+`paper_topology_lint.ps1`: PASS (83 broad documentary identifiers; 49 paper
+identifiers resolved), exit 0.  `design_decision_check.ps1 -Strict` exit 0.
+`git diff --check` clean on the working tree; the committed-range form flags
+whitespace SOLELY in the inherited `docs/internal/B7_STEP2_WIP.patch`, as
+the delegation predicted.  Hygiene `rg` over the new module: no
+sorry/admit/axiom/native_decide/partial/unsafe/implemented_by/Mathlib and no
+`by_contra`/`norm_num`/`set`.  Tree-wide `native_decide` appears only in
+`scripts/axiom_check.lean` (KNOWN RED, externally owned, not touched).
+
+KNOWN RED confirmed still red and untouched:
+`scripts/wordram_axiom_check.lean`, `scripts/axiom_check.lean`,
+`lake exe rmq_succinct_classic_validate`.
+
+### 6. MATRIX STATUS AT YIELD
+
+All eleven rows REQ-E1-01..11 remain OPEN.  This session closed none and
+weakened none.  No frozen row text was edited.
+
+Component-level evidence for REQ-E1-03 improves in a way that, unlike the
+last three sessions, is NOT double-edged.  M3d-14, M3d-15 and M3d-17 each
+found the previously-recorded evidence unmeetable where it was needed, so
+the row was never as well off as it looked.  Here the twelve clauses were
+correct as stated and merely conditional; removing the condition strictly
+adds.  The row is better off than it was yesterday -- but it is still OPEN,
+and the interior leg it needs remains unbuilt.
+
+### 7. RESUME POINT (M3d-19)
+
+All file:line verified at `bc3c8f0`.
+
+1. ITEM 1 IS DONE AND NEEDS NO REVISITING.  The fold's premises are settled
+   at the target store AND the store hypothesis is gone.  Use
+   `E1InteriorStoreConcrete.hexact_baseline_concrete` / `_minRel_` /
+   `_maxRel_` / `_argOffset_` for the summary group and the eight
+   `hagree_*_concrete` for the other four tables.  `hcap`/`hccPos` from
+   `E1InteriorChunkCap.chunkCount_le_eight_*` / `..._pos_*`; `hle` verbatim
+   from `canonicalRelativeRmmInteriorComponentStore_words_bounded`
+   (`InteriorDirectory.lean:1711`).  Do NOT cite
+   `canonicalRelativeRmmMachineReadNatCosted_cost_le_one` for any of them,
+   and do NOT cite vacuity for `hexact`.
+2. THE SEGMENT TRAP OF SECTION 2 IS THE FIRST THING ITEM 2 CAN GET WRONG.
+   Read at `E1InteriorStoreConcrete.interiorSegment` and the component
+   OFFSETS.  Never at `interiorSegments.summary.minRel` / `.maxRel` in the
+   canonical store -- those are the fringe and select chunk tables there.
+3. THE SUMMARY GROUP `S` (`InteriorDirectory.lean:2277`
+   `canonicalRelativeRmmMachineSummaryComputation`, `:2300`
+   `canonicalRelativeRmmMachineMinCandidateComputation`) is unchanged from
+   M3d-13's item 1 and is not restated.  Its register bank must sit at `100`
+   and above (the fold owns `89 .. 99`) and must claim a DD id.  `iIdx`
+   (`85`) is below the fold's bank, so it survives each fold by
+   `ChunkFoldUntouched`.  Compose on the FOLD uniformly -- the 7-instruction
+   atom is WRONG at the small multi-chunk shapes.
+4. THE `maxRel` READ MUST NOT BE OPTIMISED AWAY.  Re-confirmed at source
+   this session: bound into the summary tuple at `:2295`, discarded by
+   `bpRelativeSummaryMinCandidate` at `:2300`.  The ground for keeping it is
+   the POSITIONAL RECEIPT obligation, not the value.
+5. ITEMS 3-5 UNCHANGED AND UNBUILT: span blocks (`:2311`, `:2329`, the
+   `none` arm must branch PAST the summary group); two-span blocks (`:2351`,
+   `:2376`, THE LEVEL READ IS THE UNCONDITIONAL HEAD of every append chain
+   -- violating that order presents as a whnf heartbeat timeout, NOT a type
+   error, and must never be met by raising `maxHeartbeats`); five-branch
+   dispatch (`:2444`); then `hInterior` at `E1CrossBlockArm.lean:1143`.  The
+   interior has five branches and no scan.
+6. ITEMS 6-7 UNCHANGED AND UNBUILT: the closure ladder (full LCA leg at
+   canonical-store form; whole-query glue via `E1RouteDecomposition` with
+   result agreement on `(...).value` and POSITIONAL receipt equality on
+   `(...).trace`; category accounting across ALL branches including
+   selects-none and lca-none; the public `List Int` corollary; the DERIVED
+   all-size literal step total from the category algebra and the caps
+   33/8/8 -- derive, never assert; the amended-target Prop with its
+   supersession note; the validator's whole-query phase; docs and matrix
+   closure; the ONE consolidated program-layout DD at the glue), and an
+   EXECUTED preservation check for the interior fold -- the validator's
+   phase 3h is fringe-arm only, confirmed this session in its output, and
+   has no interior analogue.
+7. STANDING RULES, still five, unchanged in content.  This session adds no
+   sixth.  It does add a caution to rule 4: the delegation's file:line
+   anchors were sound in line number and content but TWO HAD STALE
+   DIRECTORY PATHS (section 4).  Grepping for the basename rather than
+   trusting the path costs one command and catches it.
+8. THE M7 DOC CLAIM is scoped to QUERY TIME with construction-time
+   computation carved out as preprocessing (the route reaches
+   `bpSparseLogSpan` at store-construction via `bpSparseLevelCell`,
+   `SparseLevelTable.lean:55`).  Do not write it until the interior leg
+   exists.  The stale frozen-row anchor is a NOTE, already appended; do not
+   edit frozen requirement text.
