@@ -3477,3 +3477,59 @@ Publication-facing significance:
 This is workflow infrastructure. It prevents a mechanically predictable scope
 block from interrupting a submission-hardening repair while preserving the
 same strict audit trail for aggregate-gate changes.
+
+## WDD-20260719-002: derive exhaustive current-claim repair scope from one registry
+
+Status: Accepted.
+Date: 2026-07-19.
+Scope: current-claim policy, worker-prompt construction, and R1-R2 repair
+auditing.
+
+Decision:
+
+1. Treat `docs/internal/CLAIM_DRIFT_POLICY.json`
+   `currentFactSurfacePathRegex` as the canonical current-reader-surface
+   registry for exhaustive synchronization tasks.
+2. Include the reviewer-grade claim correspondence, family summary, and model
+   adequacy packet in that registry.
+3. Reject the exact stale current-route vocabulary preserved by rejected
+   candidate `48147cbc67c6c01c4abcf2565f9b981adb5eacb8`: the accepted canonical
+   trace is `readWord`-only, while three-constructor language is allowed only
+   when accurately labeled compatibility or frozen history.
+4. Require worker prompts claiming exhaustive current-surface synchronization
+   to name the registry and inspect every matched tracked path before launch.
+
+Trigger and evidence:
+
+R1-R2 repaired every path in its hand-written 17-file scope and passed strict
+claim drift, yet `artifact/CLAIMS.md`, `docs/PAPER_CLAIM_CORRESPONDENCE.md`, and
+`docs/FAMILY_SUMMARY.md` retained the weaker three-constructor current-route
+story. The policy omitted two of those authoritative surfaces and had no
+event-vocabulary term for the included artifact row.
+
+Rejected alternatives:
+
+- Treat the weaker statement as sufficient because it remains logically true.
+- Add only the three prose files to one repair prompt while leaving governance
+  unable to reproduce the miss.
+- Ban `wordRank` and `wordSelect` globally, which would corrupt accurate model
+  definitions, compatibility surfaces, and frozen history.
+- Continue maintaining an unrelated prompt-local surface list and scanner list.
+
+Consequences and evidence:
+
+- `claim_drift_policy_regression.ps1` freezes the exact rejected candidate
+  patterns plus current readWord-only and compatibility-labeled controls.
+- `worker_prompt_preflight.ps1` rejects an exhaustive synchronization prompt
+  that does not name the canonical registry.
+- Coordinators must still reread source theorems and every matched current
+  surface; scanner success remains a lower bound rather than semantic proof.
+- No Lean proposition, payload, modeled cost, trace, or runtime behavior
+  changes.
+
+Publication-facing significance:
+
+The paper claim map and family summary are authoritative reviewer navigation
+surfaces. Keeping them in the same closed inventory as the artifact and theorem
+map prevents an obsolete but weaker execution vocabulary from surviving a
+submission freeze under a green scanner.

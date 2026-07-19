@@ -66,6 +66,10 @@ Roadmap contract:
   `docs/internal/WORKFLOW_DESIGN_DECISIONS.md` in the same scope because the
   strict workflow-decision checker requires a durable process entry even for a
   comment-only gate edit.
+- Current-surface inventory: [FOR EXHAUSTIVE LIVE/CURRENT PUBLIC-SURFACE TASKS,
+  NAME `docs/internal/CLAIM_DRIFT_POLICY.json` `currentFactSurfacePathRegex`,
+  REQUIRE EVERY MATCHED TRACKED PATH TO BE INSPECTED, AND PUT EVERY EXPECTED
+  REPAIR PATH IN WRITE SCOPE; OTHERWISE NOT_APPLICABLE].
 - Non-goals: [BOUNDARIES]
 - Explicitly deferred work: [ITEMS]. A deferred item is non-blocking only when
   it is not required for this target or its inherited invariants to be true.

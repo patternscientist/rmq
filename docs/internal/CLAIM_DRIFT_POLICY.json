@@ -1,7 +1,7 @@
 {
-  "version": 15,
-  "updated": "2026-07-18",
-  "currentFactSurfacePathRegex": "^(?:README\\.md|artifact/(?:CLAIMS|README)\\.md|docs/(?:PAPER_MAIN_THEOREM|PAPER_THEOREM_MAP|WHAT_IS_PROVED|PAPER_RELATED_WORK|PUBLICATION_STRATEGY|RELATED_WORK_AND_LIMITATIONS|ROADMAP|TRUST_AUDIT_PACKET|WORD_RAM_REVIEW_PACKET)\\.md|docs/digests/PROJECT_DIGESTION_CURRENT\\.md|docs/internal/(?:CLAIM_DRIFT_POLICY\\.md|RMQ_FINAL_ROADMAP\\.md))$",
+  "version": 16,
+  "updated": "2026-07-19",
+  "currentFactSurfacePathRegex": "^(?:README\\.md|artifact/(?:CLAIMS|README)\\.md|docs/(?:FAMILY_SUMMARY|PAPER_CLAIM_CORRESPONDENCE|PAPER_MAIN_THEOREM|PAPER_MODEL_ADEQUACY|PAPER_THEOREM_MAP|WHAT_IS_PROVED|PAPER_RELATED_WORK|PUBLICATION_STRATEGY|RELATED_WORK_AND_LIMITATIONS|ROADMAP|TRUST_AUDIT_PACKET|WORD_RAM_REVIEW_PACKET)\\.md|docs/digests/PROJECT_DIGESTION_CURRENT\\.md|docs/internal/(?:CLAIM_DRIFT_POLICY\\.md|RMQ_FINAL_ROADMAP\\.md))$",
   "terms": [
     {
       "id": "novelty-first-mechanized",
@@ -170,6 +170,15 @@
       "scope": "current-fact-surface",
       "allowedPathRegex": "",
       "allowedLineRegex": "CLAIM-HISTORY-A07-TRACE-POSITIONS"
+    },
+    {
+      "id": "forbidden-retired-current-event-vocabulary",
+      "pattern": "(?i)(?:every\\s+(?:actual\\s+)?(?:emitted\\s+)?event\\b.{0,120}\\breadWord\\b.{0,80}\\bwordRank\\b.{0,80}\\bwordSelect\\b|one\\s+of\\s+the\\s+three\\s+genuine\\s+constructors)",
+      "status": "forbidden-weaker-three-constructor-vocabulary-for-current-readword-only-route-outside-frozen-history-or-explicit-compatibility-labeling",
+      "strict": true,
+      "scope": "current-fact-surface",
+      "allowedPathRegex": "",
+      "allowedLineRegex": "(?i)readWord[- ]only|compatibility[- ]only|never emitted|CLAIM-HISTORY-A07-EVENT-VOCABULARY"
     },
     {
       "id": "producer-level-provenance",

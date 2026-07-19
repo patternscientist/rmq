@@ -100,6 +100,15 @@ edit `scripts/gate.ps1` must also include
 `docs/internal/WORKFLOW_DESIGN_DECISIONS.md`; the strict workflow-decision check
 requires that companion even when the gate edit changes comments only.
 
+For any prompt claiming that every live/current public documentation surface
+is synchronized, derive the read/verification inventory from
+`docs/internal/CLAIM_DRIFT_POLICY.json` `currentFactSurfacePathRegex`, not from a
+prompt-local hand list. Put `- Current-surface inventory:` in the prompt, name
+that registry and field, inspect every matched tracked path on the exact worker
+base, and include every path expected to need changes in write scope before
+`READY_TO_SEND`. A green strict scan is a lower bound, not evidence that the
+registry or term vocabulary is exhaustive.
+
 Put `Make the title of this chat exactly: ...` as the first line of the pasted
 worker prompt. A title shown only as identity metadata is not an instruction to
 rename the chat.
