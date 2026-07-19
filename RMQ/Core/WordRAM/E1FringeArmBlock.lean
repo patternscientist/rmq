@@ -574,7 +574,8 @@ theorem fringeLeg_runsTo
       (regsF fAcc, bestOfRegs (regsF fBV) (regsF fBP)) =
         (bpFringeChunkFoldTraceResultAtSegmentWithStore store S c
           (windowBitsOfStore store base) seed relLo relHi
-          (Nat.min (relHi / c + 1) 33)).value := by
+          (Nat.min (relHi / c + 1) 33)).value ∧
+      (∀ r, FringeFoldUntouched r -> regsF r = regs r) := by
   obtain ⟨regsP, hrunP, hOne, hC, hJC, hBV, hBP, hCnt,
       hW0, hW1, hW2, hW3, hpresP⟩ :=
     fringeArmPrologue_runsTo store hPro base relHi regs hBase hHi
@@ -589,7 +590,7 @@ theorem fringeLeg_runsTo
       SuccinctSpace.bitsToNatLE (windowBitsOfStore store base) := by
     rw [hW0, hW1, hW2, hW3]
     exact windowRegsValue_of_readBits store base h0 h1 h2
-  obtain ⟨regsF, hrunF, hval, _hpresF⟩ :=
+  obtain ⟨regsF, hrunF, hval, hpresF⟩ :=
     fringeFoldLoop_runsTo_accepted store hc hPre hMrg hTail hbr
       (windowBitsOfStore store base) relLo relHi seed
       (Nat.min (relHi / c + 1) 33) (cap_count_pos relHi c)
@@ -597,7 +598,12 @@ theorem fringeLeg_runsTo
   have htrans := RunsTo.trans hrunP hrunF
   have hpc : A + 21 + 67 = A + 88 := by omega
   rw [hpc] at htrans
-  exact ⟨regsF, htrans, hval⟩
+  refine ⟨regsF, htrans, hval, ?_⟩
+  intro r hr
+  have hpro : FringeArmPrologueUntouched r := by
+    simp only [FringeFoldUntouched] at hr
+    refine ⟨?_,?_,?_,?_,?_,?_,?_,?_,?_,?_,?_,?_⟩ <;> omega
+  rw [hpresF r hr, hpresP r hpro]
 
 /-! ## Receipt bridge to the accepted fringe arm objects
 
@@ -680,6 +686,14 @@ and arithmetic ticks, which the arm-indexed category log records.
 
 Since `bpFringeCandGlobal` always returns `some`, the machine carries the
 result UNSHIFTED in `fRV`/`fRP`.
+
+The epilogue PINS ITS OWN unit constant in the scratch register `fT`
+rather than reading `fOne`.  That is deliberate: the fold block's
+preservation predicate `FringeFoldUntouched` (`r < 40 ∨ 63 ≤ r`) is
+conservative and does not certify `fOne`, so an epilogue depending on
+`fOne` would not compose with the fold without strengthening the fold's
+certificate.  Pinning locally costs one register write and keeps the
+epilogue composable as written.
 -/
 
 /-- Window bit base (the route's `localBPWindowBase`). -/
@@ -694,28 +708,36 @@ abbrev fRV : Nat := 67
 abbrev fRP : Nat := 68
 
 /--
-The global-rebase epilogue at base `E` (six instructions, exit `E + 6`):
-if the fold left an occupied best, unshift it and rebase its position by
-the window bit base; otherwise fall back to the seed pair.
+The global-rebase epilogue at base `E` (seven instructions, exit
+`E + 7`): if the fold left an occupied best, unshift it and rebase its
+position by the window bit base; otherwise fall back to the seed pair.
 -/
 def fringeCandGlobal (E : Nat) : List Instr :=
-  [ .brNZ fBV (E + 4)      -- E+0
-  , .move fRV fSeed        -- E+1
-  , .move fRP fStart       -- E+2
-  , .brNZ fOne (E + 6)     -- E+3
-  , .sub fRV fBV fOne      -- E+4
-  , .add fRP fBB fBP ]     -- E+5
+  [ .const fT 1            -- E+0
+  , .brNZ fBV (E + 5)      -- E+1
+  , .move fRV fSeed        -- E+2
+  , .move fRP fStart       -- E+3
+  , .brNZ fT (E + 7)       -- E+4
+  , .sub fRV fBV fT        -- E+5
+  , .add fRP fBB fBP ]     -- E+6
 
 @[simp] theorem fringeCandGlobal_length (E : Nat) :
-    (fringeCandGlobal E).length = 6 := rfl
+    (fringeCandGlobal E).length = 7 := rfl
 
 /--
 Category log of the epilogue, indexed by the route-side condition it
 dispatches on (whether the fold left an occupied best).  Never a numeral.
 -/
 def fringeCandGlobalArmCats (occupied : Bool) : List Category :=
-  if occupied then [.branch, .arithmetic, .arithmetic]
-  else [.branch, .registerWrite, .registerWrite, .branch]
+  if occupied then
+    [.registerWrite, .branch, .arithmetic, .arithmetic]
+  else
+    [.registerWrite, .branch, .registerWrite, .registerWrite, .branch]
+
+/-- The epilogue writes only its scratch register and the two result
+registers. -/
+abbrev FringeCandGlobalUntouched (r : Nat) : Prop :=
+  r ≠ 60 ∧ r ≠ 67 ∧ r ≠ 68
 
 /--
 Exact simulation of the global-rebase epilogue: no receipt, an
@@ -726,107 +748,229 @@ theorem fringeCandGlobal_runsTo
     (store : ReadStore) {program : E1Machine.Program} {E : Nat}
     (hHost : HostedAt program E (fringeCandGlobal E))
     (regs : RegFile) (bb seed start : Nat)
-    (hOne : regs fOne = 1) (hBB : regs fBB = bb)
+    (hBB : regs fBB = bb)
     (hSeed : regs fSeed = seed) (hStart : regs fStart = start) :
     ∃ regs' : RegFile,
-      RunsTo store program ⟨regs, E, false⟩ ⟨regs', E + 6, false⟩ []
+      RunsTo store program ⟨regs, E, false⟩ ⟨regs', E + 7, false⟩ []
         (fringeCandGlobalArmCats (!(regs fBV == 0))) ∧
       some (regs' fRV, regs' fRP) =
         bpFringeCandGlobal bb seed start
           (bestOfRegs (regs fBV) (regs fBP)) ∧
-      (∀ r, r ≠ fRV -> r ≠ fRP -> regs' r = regs r) := by
-  have hf : forall (k m : Nat) (instr : Instr), k < 6 ->
+      (∀ r, FringeCandGlobalUntouched r -> regs' r = regs r) := by
+  have hf : forall (k m : Nat) (instr : Instr), k < 7 ->
       (fringeCandGlobal E)[k]? = some instr -> E + k = m ->
       program[m]? = some instr := by
     intro k m instr hk hget hm
     rw [<- hm, hHost k hk, hget]
-  have h0 : program[E]? = some (.brNZ fBV (E + 4)) :=
-    hf 0 E (.brNZ fBV (E + 4)) (by omega) rfl (by omega)
-  have h1 : program[E + 1]? = some (.move fRV fSeed) :=
+  have h0 : program[E]? = some (.const fT 1) :=
+    hf 0 E (.const fT 1) (by omega) rfl (by omega)
+  have h1 : program[E + 1]? = some (.brNZ fBV (E + 5)) :=
     hf 1 _ _ (by omega) rfl (by omega)
-  have h2 : program[E + 2]? = some (.move fRP fStart) :=
+  have h2 : program[E + 2]? = some (.move fRV fSeed) :=
     hf 2 _ _ (by omega) rfl (by omega)
-  have h3 : program[E + 3]? = some (.brNZ fOne (E + 6)) :=
+  have h3 : program[E + 3]? = some (.move fRP fStart) :=
     hf 3 _ _ (by omega) rfl (by omega)
-  have h4 : program[E + 4]? = some (.sub fRV fBV fOne) :=
+  have h4 : program[E + 4]? = some (.brNZ fT (E + 7)) :=
     hf 4 _ _ (by omega) rfl (by omega)
-  have h5 : program[E + 5]? = some (.add fRP fBB fBP) :=
+  have h5 : program[E + 5]? = some (.sub fRV fBV fT) :=
     hf 5 _ _ (by omega) rfl (by omega)
+  have h6 : program[E + 6]? = some (.add fRP fBB fBP) :=
+    hf 6 _ _ (by omega) rfl (by omega)
+  -- pin the local unit constant, common to both arms
+  have hpin : RunsTo store program ⟨regs, E, false⟩
+      ⟨regs.write fT 1, E + 1, false⟩ [] [Category.registerWrite] := by
+    have h := RunsTo.const (store := store)
+      (s := (⟨regs, E, false⟩ : State)) rfl h0
+    simpa using h
   by_cases hbv : regs fBV = 0
   · -- empty best: fall back to the seed pair
-    have hbr0 : RunsTo store program ⟨regs, E, false⟩
-        ⟨regs, E + 1, false⟩ [] [Category.branch] := by
+    have hbr1 : RunsTo store program ⟨regs.write fT 1, E + 1, false⟩
+        ⟨regs.write fT 1, E + 2, false⟩ [] [Category.branch] := by
       have h := RunsTo.brNZ_not_taken (store := store)
-        (s := (⟨regs, E, false⟩ : State)) rfl h0 hbv
+        (s := (⟨regs.write fT 1, E + 1, false⟩ : State)) rfl h1
+        (by simpa [RegFile.write, fT, fBV] using hbv)
       simpa using h
-    have hm1 : RunsTo store program ⟨regs, E + 1, false⟩
-        ⟨regs.write fRV seed, E + 2, false⟩ []
+    have hm2 : RunsTo store program ⟨regs.write fT 1, E + 2, false⟩
+        ⟨(regs.write fT 1).write fRV seed, E + 3, false⟩ []
         [Category.registerWrite] := by
       have h := RunsTo.move (store := store)
-        (s := (⟨regs, E + 1, false⟩ : State)) rfl h1
-      simpa [hSeed] using h
-    have hm2 : RunsTo store program ⟨regs.write fRV seed, E + 2, false⟩
-        ⟨(regs.write fRV seed).write fRP start, E + 3, false⟩ []
-        [Category.registerWrite] := by
+        (s := (⟨regs.write fT 1, E + 2, false⟩ : State)) rfl h2
+      simpa [RegFile.write, fT, fSeed, hSeed] using h
+    have hm3 : RunsTo store program
+        ⟨(regs.write fT 1).write fRV seed, E + 3, false⟩
+        ⟨((regs.write fT 1).write fRV seed).write fRP start,
+          E + 4, false⟩ [] [Category.registerWrite] := by
       have h := RunsTo.move (store := store)
-        (s := (⟨regs.write fRV seed, E + 2, false⟩ : State)) rfl h2
-      simpa [RegFile.write, fRV, fStart, hStart] using h
-    have hbr3 : RunsTo store program
-        ⟨(regs.write fRV seed).write fRP start, E + 3, false⟩
-        ⟨(regs.write fRV seed).write fRP start, E + 6, false⟩ []
-        [Category.branch] := by
-      have h := RunsTo.brNZ_taken (store := store)
-        (s := (⟨(regs.write fRV seed).write fRP start, E + 3,
+        (s := (⟨(regs.write fT 1).write fRV seed, E + 3,
           false⟩ : State)) rfl h3
-        (by simp [RegFile.write, fOne, fRV, fRP, hOne])
+      simpa [RegFile.write, fT, fRV, fStart, hStart] using h
+    have hbr4 : RunsTo store program
+        ⟨((regs.write fT 1).write fRV seed).write fRP start,
+          E + 4, false⟩
+        ⟨((regs.write fT 1).write fRV seed).write fRP start,
+          E + 7, false⟩ [] [Category.branch] := by
+      have h := RunsTo.brNZ_taken (store := store)
+        (s := (⟨((regs.write fT 1).write fRV seed).write fRP start,
+          E + 4, false⟩ : State)) rfl h4
+        (by simp [RegFile.write, fT, fRV, fRP])
       simpa using h
-    refine ⟨(regs.write fRV seed).write fRP start, ?_, ?_, ?_⟩
-    · have hrun := ((hbr0.trans hm1).trans hm2).trans hbr3
+    refine ⟨((regs.write fT 1).write fRV seed).write fRP start,
+      ?_, ?_, ?_⟩
+    · have hrun := (((hpin.trans hbr1).trans hm2).trans hm3).trans hbr4
       simpa [fringeCandGlobalArmCats, hbv] using hrun
-    · have e1 : ((regs.write fRV seed).write fRP start) fRV = seed := by
-        simp [RegFile.write, fRV, fRP]
-      have e2 : ((regs.write fRV seed).write fRP start) fRP = start := by
-        simp [RegFile.write]
+    · have e1 : (((regs.write fT 1).write fRV seed).write fRP start)
+          fRV = seed := by simp [RegFile.write, fRV, fRP]
+      have e2 : (((regs.write fT 1).write fRV seed).write fRP start)
+          fRP = start := by simp [RegFile.write]
       rw [e1, e2, hbv, bestOfRegs_zero]
       rfl
-    · intro r hRV hRP
-      simp [RegFile.write, hRV, hRP]
+    · intro r hr
+      obtain ⟨hT, hRV, hRP⟩ := hr
+      simp [RegFile.write, hT, hRV, hRP]
   · -- occupied best: unshift and rebase
-    have hbr0 : RunsTo store program ⟨regs, E, false⟩
-        ⟨regs, E + 4, false⟩ [] [Category.branch] := by
+    have hbr1 : RunsTo store program ⟨regs.write fT 1, E + 1, false⟩
+        ⟨regs.write fT 1, E + 5, false⟩ [] [Category.branch] := by
       have h := RunsTo.brNZ_taken (store := store)
-        (s := (⟨regs, E, false⟩ : State)) rfl h0 hbv
+        (s := (⟨regs.write fT 1, E + 1, false⟩ : State)) rfl h1
+        (by simpa [RegFile.write, fT, fBV] using hbv)
       simpa using h
-    have hs4 : RunsTo store program ⟨regs, E + 4, false⟩
-        ⟨regs.write fRV (regs fBV - 1), E + 5, false⟩ []
+    have hs5 : RunsTo store program ⟨regs.write fT 1, E + 5, false⟩
+        ⟨(regs.write fT 1).write fRV (regs fBV - 1), E + 6, false⟩ []
         [Category.arithmetic] := by
       have h := RunsTo.sub (store := store)
-        (s := (⟨regs, E + 4, false⟩ : State)) rfl h4
-      simpa [hOne] using h
-    have ha5 : RunsTo store program
-        ⟨regs.write fRV (regs fBV - 1), E + 5, false⟩
-        ⟨(regs.write fRV (regs fBV - 1)).write fRP (bb + regs fBP),
-          E + 6, false⟩ [] [Category.arithmetic] := by
+        (s := (⟨regs.write fT 1, E + 5, false⟩ : State)) rfl h5
+      simpa [RegFile.write, fT, fBV] using h
+    have ha6 : RunsTo store program
+        ⟨(regs.write fT 1).write fRV (regs fBV - 1), E + 6, false⟩
+        ⟨((regs.write fT 1).write fRV (regs fBV - 1)).write fRP
+          (bb + regs fBP), E + 7, false⟩ [] [Category.arithmetic] := by
       have h := RunsTo.add (store := store)
-        (s := (⟨regs.write fRV (regs fBV - 1), E + 5, false⟩ : State))
-        rfl h5
-      simpa [RegFile.write, fRV, fBB, fBP, hBB] using h
-    refine ⟨(regs.write fRV (regs fBV - 1)).write fRP (bb + regs fBP),
-      ?_, ?_, ?_⟩
-    · have hrun := (hbr0.trans hs4).trans ha5
+        (s := (⟨(regs.write fT 1).write fRV (regs fBV - 1), E + 6,
+          false⟩ : State)) rfl h6
+      simpa [RegFile.write, fT, fRV, fBB, fBP, hBB] using h
+    refine ⟨((regs.write fT 1).write fRV (regs fBV - 1)).write fRP
+      (bb + regs fBP), ?_, ?_, ?_⟩
+    · have hrun := ((hpin.trans hbr1).trans hs5).trans ha6
       simpa [fringeCandGlobalArmCats, hbv] using hrun
-    · have e1 : ((regs.write fRV (regs fBV - 1)).write fRP
+    · have e1 : (((regs.write fT 1).write fRV (regs fBV - 1)).write fRP
           (bb + regs fBP)) fRV = regs fBV - 1 := by
         simp [RegFile.write, fRV, fRP]
-      have e2 : ((regs.write fRV (regs fBV - 1)).write fRP
+      have e2 : (((regs.write fT 1).write fRV (regs fBV - 1)).write fRP
           (bb + regs fBP)) fRP = bb + regs fBP := by
         simp [RegFile.write]
       rw [e1, e2]
       obtain ⟨v, hv⟩ : ∃ v, regs fBV = v + 1 := ⟨regs fBV - 1, by omega⟩
       rw [hv, bestOfRegs_succ]
       simp [bpFringeCandGlobal]
-    · intro r hRV hRP
-      simp [RegFile.write, hRV, hRP]
+    · intro r hr
+      obtain ⟨hT, hRV, hRP⟩ := hr
+      simp [RegFile.write, hT, hRV, hRP]
+
+/-! ## The whole fringe arm: prologue, fold, epilogue
+
+Composing `fringeLeg_runsTo` with `fringeCandGlobal_runsTo` gives a whole
+fringe arm.  Layout: prologue `A .. A+20`, fold loop base `A+21` (exit
+`A+88`), epilogue `A+88 .. A+94`, arm exit `A+95`.
+
+The epilogue's category log is indexed by the ROUTE-side condition — the
+`isSome` of the accepted fold object's best candidate — not by the
+machine's register, and not by a numeral.
+-/
+
+/-- The option-shift convention agrees with `Option.isSome`. -/
+theorem bestOfRegs_isSome (bv bp : Nat) :
+    (bestOfRegs bv bp).isSome = !(bv == 0) := by
+  unfold bestOfRegs
+  by_cases h : bv = 0 <;> simp [h]
+
+/-- Category log of a whole fringe arm, indexed by the route-side
+occupancy of the fold's best candidate. -/
+def fringeArmCats (store : ReadStore) (S c : Nat) (window : List Bool)
+    (relLo relHi seed count : Nat) : List Category :=
+  fringeLegCats store S c window relLo relHi seed count ++
+    fringeCandGlobalArmCats
+      ((bpFringeChunkFoldTraceResultAtSegmentWithStore store S c window
+        seed relLo relHi count).value.2).isSome
+
+/--
+Exact simulation of a whole charged fringe arm: four charged window
+reads, the capped charged chunk fold, and the pure global rebase.
+
+The receipt is exactly the four window reads followed positionally by the
+accepted fold object's trace — the epilogue adds none — and the result
+pair in `fRV`/`fRP` is the route's `bpFringeCandGlobal` applied to the
+accepted fold object's own best candidate.
+-/
+theorem fringeArm_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {A S c L : Nat}
+    (hc : c ≤ L)
+    (hPro : HostedAt program A (fringeArmPrologue c))
+    (hPre : HostedAt program (A + 21) (fringePrefix S c))
+    (hMrg : HostedAt program (A + 21 + 32) (fringeMerge (A + 21)))
+    (hTail : HostedAt program (A + 21 + 45)
+      (fringeShift c L ++ fringeAdvance))
+    (hbr : program[A + 21 + 66]? = some (.brNZ fCnt (A + 21)))
+    (hEpi : HostedAt program (A + 88) (fringeCandGlobal (A + 88)))
+    (base bb relLo relHi seed start : Nat)
+    (h0 : (readBits store base).length = L)
+    (h1 : (readBits store (base + 1)).length = L)
+    (h2 : (readBits store (base + 2)).length = L)
+    (regs : RegFile)
+    (hBase : regs fBase = base) (hLo : regs fLo = relLo)
+    (hHi : regs fHi = relHi) (hAcc : regs fAcc = seed)
+    (hBB : regs fBB = bb) (hSeed : regs fSeed = seed)
+    (hStart : regs fStart = start) :
+    ∃ regsF : RegFile,
+      RunsTo store program ⟨regs, A, false⟩ ⟨regsF, A + 95, false⟩
+        (windowReadEvents store base ++
+          (bpFringeChunkFoldTraceResultAtSegmentWithStore store S c
+            (windowBitsOfStore store base) seed relLo relHi
+            (Nat.min (relHi / c + 1) 33)).trace)
+        (fringeArmCats store S c (windowBitsOfStore store base)
+          relLo relHi seed (Nat.min (relHi / c + 1) 33)) ∧
+      some (regsF fRV, regsF fRP) =
+        bpFringeCandGlobal bb seed start
+          (bpFringeChunkFoldTraceResultAtSegmentWithStore store S c
+            (windowBitsOfStore store base) seed relLo relHi
+            (Nat.min (relHi / c + 1) 33)).value.2 := by
+  obtain ⟨regsL, hrunL, hvalL, hpresL⟩ :=
+    fringeLeg_runsTo store hc hPro hPre hMrg hTail hbr base relLo relHi
+      seed h0 h1 h2 regs hBase hLo hHi hAcc
+  have hbest : bestOfRegs (regsL fBV) (regsL fBP) =
+      (bpFringeChunkFoldTraceResultAtSegmentWithStore store S c
+        (windowBitsOfStore store base) seed relLo relHi
+        (Nat.min (relHi / c + 1) 33)).value.2 :=
+    congrArg Prod.snd hvalL
+  have hBBL : regsL fBB = bb := by
+    rw [hpresL fBB (by decide), hBB]
+  have hSeedL : regsL fSeed = seed := by
+    rw [hpresL fSeed (by decide), hSeed]
+  have hStartL : regsL fStart = start := by
+    rw [hpresL fStart (by decide), hStart]
+  obtain ⟨regsF, hrunE, hvalE, _hpresE⟩ :=
+    fringeCandGlobal_runsTo store hEpi regsL bb seed start
+      hBBL hSeedL hStartL
+  -- the epilogue's arm index is the route-side occupancy of the best
+  have hidx : (!(regsL fBV == 0)) =
+      ((bpFringeChunkFoldTraceResultAtSegmentWithStore store S c
+        (windowBitsOfStore store base) seed relLo relHi
+        (Nat.min (relHi / c + 1) 33)).value.2).isSome := by
+    rw [<- hbest, bestOfRegs_isSome]
+  rw [hidx] at hrunE
+  have htrans := RunsTo.trans hrunL hrunE
+  have hpc : A + 88 + 7 = A + 95 := by omega
+  rw [hpc] at htrans
+  have hev : (windowReadEvents store base ++
+      (bpFringeChunkFoldTraceResultAtSegmentWithStore store S c
+        (windowBitsOfStore store base) seed relLo relHi
+        (Nat.min (relHi / c + 1) 33)).trace) ++ ([] : List TraceEvent) =
+      windowReadEvents store base ++
+      (bpFringeChunkFoldTraceResultAtSegmentWithStore store S c
+        (windowBitsOfStore store base) seed relLo relHi
+        (Nat.min (relHi / c + 1) 33)).trace := by simp
+  rw [hev] at htrans
+  refine ⟨regsF, htrans, ?_⟩
+  rw [hvalE, hbest]
 
 end E1FringeArmBlock
 end WordRAM
