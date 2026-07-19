@@ -1024,3 +1024,68 @@ shape.size + 1)` is determined by the shape, and machine programs are
 constructed per shape — but it must be confirmed, not assumed, and if it fails
 it is a genuine ISA-level obstruction requiring a coordinator decision rather
 than a worker workaround.
+
+## 2026-07-19 (C05 round 12) — interior-leg runtime log2: third instance, decision pending
+
+**Finding (E1-R4m, coordinator-verified at source).** The divisor risk gate
+PASSED: `blockSize` is shape-determined (`2 * (Nat.log2 shape.size + 1)`,
+always >= 2) at every accepted-route call site, so the address preamble needs
+only `divConst`/`mulConst` with per-shape immediates -- no invented
+instruction. But a different ISA-level issue blocks the interior leg.
+
+`bpSparseLogSpan blockCount = 2 ^ Nat.log2 blockCount`
+(`EndpointFringe/PrefixRange/SparseArgMin.lean:598-599`) -- the classic
+sparse-table two-span trick -- is evaluated on a RUNTIME-derived `blockCount`,
+and the resulting level feeds the accepted read address
+(`LocalGlobalSparse.lean:200-202`). Two distinct consequences:
+
+1. **Machine level (E1's blocker).** The machine must compute the level to
+   reproduce the accepted receipts. The existing ISA can, by halving with the
+   constant 2, but that loop runs `Nat.log2 count` times with NO literal
+   all-size cap -- contradicting REQ-E1-06(c) as frozen, and therefore
+   REQ-E1-07. Structurally the same shape as the refuted R3 obstruction but far
+   weaker: log-many rather than per-position, and every iteration charged.
+2. **Route level (NEW, beyond E1's scope).** The accepted route computes this
+   silently. Under the round-7 principle it is ALGORITHMIC WORK -- it forms an
+   address -- not a representation artifact, since its value is not
+   checked-equal to an input parameter or a charged read. So the B6-repaired
+   charge-policy claim is STILL incomplete. This is the THIRD instance of the
+   defect class (B2 fringe scan, B6 same-block scan, now interior log2).
+
+**Why A07 missed it:** A07 inspected `InteriorDirectory.lean:1785-1809` and
+correctly found a constant-branch decomposition there. The log2 lives two
+levels deeper, in the sparse argmin. Building the machine is what forced it
+into view -- the E1 rung earning its keep as a defect detector, exactly as
+intended.
+
+**Honesty qualifier carried from the worker:** this is a structural finding
+from reading route definitions with exact file:line, NOT a checked Lean
+non-existence theorem. Proving no literal bound exists would need a step lower
+bound nobody has attempted. Adjudicate it as well-evidenced, not as proved.
+
+**Also recorded:** the planned M5 supersession wording ("every loop is a chunk
+fold under a literal cap") is FALSE as written for this leg. The per-position
+clause is genuinely void; the literal-cap clause is not, until this is
+resolved. Do not ship that sentence unamended.
+
+**Options (coordinator recommendation: C, with A as the stall fallback):**
+- (A) Declare an `msb`/`log2` unit-cost ISA instruction. Cheapest; unblocks E1
+  immediately; msb is standard in word-RAM formulations and is real hardware
+  (BSR/LZCNT). But it is a declared primitive, and it leaves the route-level
+  silence disclosed rather than fixed.
+- (B) Amend REQ-E1-06(c) to `A + B * machineWordBits`. Honest, but the machine
+  step count becomes Theta(log n) -- the headline weakens from constant-step to
+  O(log n)-step, which a reviewer will read as "not constant time".
+- (C) **Charge it: store the level, or read it from an o(n)-bit
+  floor-log2 table.** Fixes BOTH levels with one mechanism; keeps the campaign's
+  signature theorem (every charged event is a memory read) intact; adds no
+  declared primitive; reuses the exact B2/B3/B6 pattern, so the machinery and
+  audit patterns already exist. Size: the sparse structure indexes macro-block
+  counts, i.e. n/polylog many values at log log n bits each, comfortably o(n).
+  Cost: one more B-style route rung (new/extended counted region, re-derived
+  literal, provenance, full battery) -- on B6's evidence roughly 2-3 sessions.
+- (D) Restructure to avoid log2 entirely -- speculative, not investigated.
+
+Note (C) is the same move the campaign already made twice, and the same
+resolution shape as the queued allocated-cell space theorem: fix the mechanism
+rather than widen the assumption set.
