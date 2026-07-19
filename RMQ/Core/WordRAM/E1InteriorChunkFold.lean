@@ -913,6 +913,171 @@ theorem interiorChunkReadBody_step
     rw [rbR8_apply]
     simp [hW, hAd, hT, hB, hAc, hC]
 
+/-! ## The read loop -/
+
+/-- Registers outside the interior chunk-fold bank. -/
+abbrev ChunkFoldUntouched (r : Nat) : Prop := r < 89 ∨ 99 < r
+
+/-- A register outside the bank is outside the read body's write set. -/
+theorem chunkReadBodyUntouched_of_fold {r : Nat}
+    (h : ChunkFoldUntouched r) : ChunkReadBodyUntouched r := by
+  simp only [ChunkFoldUntouched] at h
+  simp only [ChunkReadBodyUntouched, cW, cAddr, cT, cBad, cAcc, cCnt]
+  omega
+
+/--
+The descending loop counter reads ASCENDING addresses: the iteration
+executed with remaining counter `k + 1` reads position `n - (k + 1)`, so
+concatenating the per-iteration receipts in execution order yields exactly
+the route's ascending address list.  This is the positional statement that
+makes the receipt equality survive loop composition.
+-/
+theorem iterLog_chunkReads_eq (store : ReadStore) (segment : Nat) :
+    ∀ (n start : Nat),
+      iterLog (fun k =>
+        [TraceEvent.readWord segment (start + (n - (k + 1)))
+          (store.readWord? segment (start + (n - (k + 1))))]) n
+        = chunkEventsAt store segment start n := by
+  intro n
+  induction n with
+  | zero => intro start; rfl
+  | succ n ih =>
+      intro start
+      have hhead : start + (n + 1 - (n + 1)) = start := by omega
+      have hcongr :
+          iterLog (fun k =>
+            [TraceEvent.readWord segment (start + (n + 1 - (k + 1)))
+              (store.readWord? segment (start + (n + 1 - (k + 1))))]) n
+            = iterLog (fun k =>
+              [TraceEvent.readWord segment (start + 1 + (n - (k + 1)))
+                (store.readWord? segment
+                  (start + 1 + (n - (k + 1))))]) n := by
+        apply iterLog_congr_local
+        intro k hk
+        have harg : start + (n + 1 - (k + 1)) = start + 1 + (n - (k + 1)) := by
+          omega
+        rw [harg]
+      show [TraceEvent.readWord segment (start + (n + 1 - (n + 1)))
+          (store.readWord? segment (start + (n + 1 - (n + 1))))]
+          ++ iterLog _ n = _
+      rw [hhead, hcongr, ih (start + 1)]
+      rfl
+
+/--
+EXACT SIMULATION OF THE INTERIOR'S CHUNK READ LOOP.
+
+From the loop entry with the pinned constants, the start address, the
+machine-computed iteration count, a zeroed accumulator and a zeroed miss
+counter, the hosted body plus back edge run to the loop exit at `LB + 9`,
+emitting exactly the route's ascending chunk reads -- POSITIONALLY equal
+to `chunkEventsAt` -- charging one per-iteration log per chunk, and
+leaving the big-endian accumulation in `cAcc` with the missing-chunk count
+in `cBad`.
+
+`0 < n` is required and is not decoration: the back edge makes this a
+do-while, so at `n = 0` the machine would still read once while the route
+reads nothing.  That is the same off-by-one `E1InteriorReadBlock` records
+for the single-chunk atom, surfacing here as an explicit hypothesis rather
+than as a silent assumption about the shape.
+-/
+theorem interiorChunkReadLoop_runsTo
+    (store : ReadStore) {program : E1Machine.Program}
+    {segment wordScale LB : Nat}
+    (hHost : HostedAt program LB
+      (interiorChunkReadBody segment wordScale LB))
+    (regsL : RegFile) (start n : Nat) (hn : 0 < n)
+    (hOne : regsL cOne = 1) (hAddr : regsL cAddr = start)
+    (hCnt : regsL cCnt = n) (hAcc : regsL cAcc = 0)
+    (hBad : regsL cBad = 0) :
+    ∃ regsF : RegFile,
+      RunsTo store program ⟨regsL, LB, false⟩ ⟨regsF, LB + 9, false⟩
+          (chunkEventsAt store segment start n)
+          (iterLog (fun _ => interiorChunkReadBodyCats) n) ∧
+        regsF cOne = 1 ∧
+        regsF cCnt = 0 ∧
+        regsF cAcc = chunkAcc store segment wordScale start n ∧
+        regsF cBad = chunkBad store segment start n ∧
+        regsF cN = regsL cN ∧
+        regsF cRev = regsL cRev ∧
+        (∀ r, ChunkFoldUntouched r → regsF r = regsL r) := by
+  let P : Nat → State → Prop := fun k s =>
+    k ≤ n ∧ s.halted = false ∧
+    s.pc = (if k = 0 then LB + 9 else LB) ∧
+    s.regs cOne = 1 ∧
+    s.regs cAddr = start + (n - k) ∧
+    s.regs cCnt = k ∧
+    s.regs cAcc = chunkAcc store segment wordScale start (n - k) ∧
+    s.regs cBad = chunkBad store segment start (n - k) ∧
+    s.regs cN = regsL cN ∧
+    s.regs cRev = regsL cRev ∧
+    (∀ r, ChunkFoldUntouched r → s.regs r = regsL r)
+  have hstep : ∀ k s, P (k + 1) s →
+      ∃ s', RunsTo store program s s'
+          [TraceEvent.readWord segment (start + (n - (k + 1)))
+            (store.readWord? segment (start + (n - (k + 1))))]
+          interiorChunkReadBodyCats ∧ P k s' := by
+    intro k s hP
+    obtain ⟨regs, pc, halted⟩ := s
+    obtain ⟨hkle, hhalt, hpc, hone, haddr, hcnt, hacc, hbad, hcn, hcrev,
+      hpres⟩ := hP
+    simp only at hhalt hpc hone haddr hcnt hacc hbad hcn hcrev hpres
+    subst hhalt
+    rw [if_neg (Nat.succ_ne_zero k)] at hpc
+    subst pc
+    have hik : n - k = (n - (k + 1)) + 1 := by omega
+    obtain ⟨regs', hrun, hone', haddr', hcnt', hacc', hbad', hcn', hpres'⟩ :=
+      interiorChunkReadBody_step store hHost regs
+        (start + (n - (k + 1))) k
+        (chunkAcc store segment wordScale start (n - (k + 1)))
+        (chunkBad store segment start (n - (k + 1)))
+        hone haddr hcnt hacc hbad
+    refine ⟨⟨regs', if k = 0 then LB + 9 else LB, false⟩, hrun, ?_⟩
+    refine ⟨by omega, rfl, rfl, hone', ?_, hcnt', ?_, ?_, ?_, ?_, ?_⟩
+    · show regs' cAddr = start + (n - k)
+      rw [haddr', hik]
+      omega
+    · show regs' cAcc = chunkAcc store segment wordScale start (n - k)
+      rw [hacc', hik]
+      rfl
+    · show regs' cBad = chunkBad store segment start (n - k)
+      rw [hbad', hik]
+      rfl
+    · show regs' cN = regsL cN
+      rw [hcn', hcn]
+    · show regs' cRev = regsL cRev
+      have hrev : ChunkReadBodyUntouched cRev := by decide
+      rw [hpres' cRev hrev, hcrev]
+    · intro r hr
+      show regs' r = regsL r
+      rw [hpres' r (chunkReadBodyUntouched_of_fold hr), hpres r hr]
+  have hP0 : P n ⟨regsL, LB, false⟩ := by
+    refine ⟨Nat.le_refl n, rfl, ?_, hOne, ?_, hCnt, ?_, ?_, rfl, rfl,
+      fun r _ => rfl⟩
+    · show LB = if n = 0 then LB + 9 else LB
+      rw [if_neg (by omega)]
+    · show regsL cAddr = start + (n - n)
+      rw [hAddr]; omega
+    · show regsL cAcc = chunkAcc store segment wordScale start (n - n)
+      rw [hAcc, Nat.sub_self]; rfl
+    · show regsL cBad = chunkBad store segment start (n - n)
+      rw [hBad, Nat.sub_self]; rfl
+  obtain ⟨sF, hrunF, hPF⟩ :=
+    RunsTo.iterate (store := store) (program := program) P
+      (fun k =>
+        [TraceEvent.readWord segment (start + (n - (k + 1)))
+          (store.readWord? segment (start + (n - (k + 1))))])
+      (fun _ => interiorChunkReadBodyCats) hstep n ⟨regsL, LB, false⟩ hP0
+  obtain ⟨regsF, pcF, haltedF⟩ := sF
+  obtain ⟨_, hhaltF, hpcF, honeF, _, hcntF, haccF, hbadF, hcnF, hcrevF,
+    hpresF⟩ := hPF
+  simp only at hhaltF hpcF honeF hcntF haccF hbadF hcnF hcrevF hpresF
+  subst hhaltF
+  subst pcF
+  refine ⟨regsF, ?_, honeF, hcntF, ?_, ?_, hcnF, hcrevF, hpresF⟩
+  · rwa [iterLog_chunkReads_eq store segment n start] at hrunF
+  · rw [haccF, Nat.sub_zero]
+  · rw [hbadF, Nat.sub_zero]
+
 end E1InteriorChunkFold
 end WordRAM
 end RMQ
