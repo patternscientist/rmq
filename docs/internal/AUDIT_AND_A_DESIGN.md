@@ -4581,3 +4581,55 @@ tree for the first time: the interior leg, the close leg with its terminator and
 preservation, the glue foundations, the route case-split, the category function,
 and the guard on both arms. What does not exist is any definition that composes
 them into one runnable query program.
+
+---
+
+## C05 round 71 — the closing push: assembly and cost algebra in parallel
+
+Two lanes launched against everything that remains.
+
+**Lane A1 — whole-query assembly**, on the campaign branch. Instantiate
+`programSkeleton`'s `validPath` with the composed close/LCA leg; **wire the cross
+arm's terminator**, which is defined (`crossArmTerminated`,
+`crossArmTerminated_converges`) but never composed into a real
+`crossBlockArmProgramAt`; then result agreement, POSITIONAL receipt equality,
+category accounting across all four branches, and the public `List Int`
+corollary.
+
+Its brief leads with where the danger actually is, because it is not where a
+reader would guess: **on the `none` branches the positional category log is the
+SOLE discriminator.** Result agreement degenerates to `none = none` and is
+satisfied by any impostor that also returns `none`; a machine running a leg it
+should have skipped is invisible to receipt equality restricted to the legs that
+DID run. And category accounting is the one obligation with no discriminator
+anywhere in the validator. The model to copy is the glue lane's
+`lcaNone_impostor`, whose load-bearing clause states as an **IFF** what the
+receipt is powerless against rather than leaning on the vacuous `t ++ [] = t`.
+
+**Lane A2 — cost algebra and two owed executions**, on a fresh worktree off
+`fd59487`, because A1 holds the campaign worktree and a worktree is a
+single-writer resource (round 65). Four items, all independent of assembly:
+the absent `catCount` ↔ `filter` bridge (zero bridging lemmas exist between the
+machine-level and block-level accounting vocabularies); the per-block
+`catLog.length ≤ N` bounds that are the addends of the derived literal; the
+**statement** of REQ-E1-07's amended target Prop, which is currently the only
+thing blocking REQ-E1-01 whose evidence column is otherwise fully satisfied; and
+the two things that are proved but never executed — `FringeFoldUntouched`, and
+REQ-E1-05's residual five words "and in the validator."
+
+Both briefs carry the three findings that would otherwise cost sessions: that
+**the kernel boundary does NOT block the step literal**, because the conjunct
+demands an inequality and every cap is proved symbolically; that the operative
+constant is **210 and never 207**; and that **there are two distinct 33s** which
+the campaign's own "caps 33/8/8" shorthand conflates, one of them sitting inside
+the other's sibling term in the same algebra.
+
+Ownership partitioned so the lanes cannot collide: A1 owns the whole-query
+composition and the route/guard modules, A2 owns `E1Machine.lean`, the per-block
+bound sites, a new target-Prop module and the validator. DD bands `120-139` and
+`140-159`.
+
+Both told to say what they supply against each row's own `Evidence needed`
+column and to **leave the closing judgement to me** — no worker marks a row
+Closed. After the false scope claim I put in their briefs for weeks, the
+correction has to include not asking them to adjudicate rows either.
