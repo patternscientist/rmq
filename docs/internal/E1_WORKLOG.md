@@ -2478,7 +2478,7 @@ Commit `d72d3ea` (appended to `E1SameBlockArm.lean`) - the RANGE PREAMBLE:
 
 This closes resume-point item 2. `fStart`, `fLo` and `fHi` are add/sub
 only; no divisor is involved, so the divisor risk gate did not have to be
-re-opened. New bank slot `fRight = 71` (`:436`) carries the right close
+re-opened. New bank slot `fRight = 71` (`:442`) carries the right close
 position.
 
 ORDERING NOTE WORTH CARRYING: the instruction order mirrors the route's
@@ -2497,11 +2497,11 @@ imported from `RMQ.lean:33`) - the RANK SEED and the whole LEG:
 - `rankSeedFinish` (`:102`, 3 instructions), `rankSeedFinish_length`
   (`:107`), `rankSeedFinishCats` (`:110`), `rankSeedFinish_fits` (`:114`),
   `rankSeedFinish_straight` (`:131`), `rankSeedFinish_runsTo` (`:149`).
-- `rankSeedLegCats` (`:188`), `rankSeedLeg_runsTo_canonical` (`:204`) -
+- `rankSeedLegCats` (`:187`), `rankSeedLeg_runsTo_canonical` (`:204`) -
   `P -> P + 64`, receipt POSITIONALLY equal to
   `localBPSeedFromRankCloseTraceResult`'s trace at the canonical
   rank-close trace.
-- `canonicalSeed` (`:296`), `sameBlockLegCats` (`:305`),
+- `canonicalSeed` (`:292`), `sameBlockLegCats` (`:302`),
   `sameBlockLeg_runsTo_canonical` (`:333`) - `A -> A + 173`.
 
 This closes resume-point item 3 and reaches the delegation's named target
