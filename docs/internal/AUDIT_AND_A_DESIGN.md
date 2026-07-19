@@ -2774,3 +2774,57 @@ were written to produce.
 delivered clause is vacuous; `interiorSegment` evaluates to `20`. Flagged as
 `#eval` reproduction evidence rather than kernel proof, since the sizes run
 through `Nat.log2` — rule 3's boundary, correctly applied.
+
+## 2026-07-19 (C05 round 42) — summary group lands; two right-shape/wrong-content defects
+
+**The interior summary group is built and proved at the canonical store**
+(`190cb9d`): 156 instructions, 19 theorems, sorry-free, `canonicalSummaryGroup_
+runsTo` supplying all eight premises, plus four `geomCell_*_eq_routeDecode`
+value bridges. First fully composition-shaped session since the excavation.
+
+**Two defects caught pre-composition, both of the class that survives coarse
+checking.**
+
+1. **The head category is not uniform.** The baseline stage needs `divConst`
+   (charging `.arithmetic`); the other three use `move` (`.registerWrite`). The
+   first draft fixed it at `registerWrite` — and because both are ONE-ELEMENT
+   logs, that draft would have produced a category log of the RIGHT LENGTH and
+   WRONG CONTENT in one slot of four, invisible to a length check AND to a
+   read-count check. Now a parameter. Same failure class as the stale read
+   order: only exact positional comparison catches it.
+2. **Three of four summary reads are multi-chunk at EVERY shape tried** —
+   `(1,2,2,2)` at sizes 8, 16, 64 and 256, identical throughout. The
+   single-chunk atom would have been unsound for three of four reads
+   EVERYWHERE, not merely at small shapes. **The coordinator's stated reason for
+   the fold ruling understated the case — second time a ruling of mine was right
+   for a stronger reason than I gave.** Worth noting as a pattern: my rulings
+   have been landing correctly while my justifications have been the weaker part
+   of the record.
+
+**The owed premises were DISCHARGED, not inherited, and mechanically.**
+`hcount` becomes `rfl`; `hvalid`/`hentries` become the SAME PROPOSITION, because
+`canonicalSummaryLayout` defines `chunkCount` to be the route's chunk count and
+`entriesLen` to be the route's entry-list length. Machine-checked rather than
+argued — the four bridges pass `rfl` and the same `hvalid` term twice and
+compile. Honest residue: callers owe one `i < entriesLen` per read.
+
+**COORDINATOR RULING on the reported discrepancy.** `E1InteriorChunkValue.lean:
+521-524` still justifies `hexact` as discharging "vacuously, because the interior
+tables are single-chunk". BOTH halves are now false — it was discharged
+substantively in M3d-16, and three of four summary tables are two-chunk at every
+shape evaluated. The theorem is correct; only its docstring's justification is
+stale. The worker reported rather than edited, deferring to "that module's
+owner" — the right instinct in general, but here it is the same campaign, same
+branch, same rung. **Directed for repair rather than left standing:** a
+known-false justification beside a correct theorem is exactly what a reviewer
+finds and cannot unsee, and it encodes the very error rounds 38 and 40 were
+about.
+
+**Anti-vacuity with its limit stated, as is now standard:** entry lengths
+`(1,2,2,2)`, `(1,3,3,3)`, `(2,9,9,9)`, `(4,28,28,28)` at sizes 8/16/64/256 — all
+sixteen non-zero, so no bridge is vacuous. Flagged as `#eval` reproduction
+evidence rather than kernel proof, since the sizes run through `Nat.log2`.
+`interiorSegment` = 20, independently reproducing the previous session.
+
+**Register-bank state for the successor:** `100..104` taken, next block opens at
+`105`; `iIdx` is NOT preserved across a group but `sBlock` is.
