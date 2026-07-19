@@ -244,3 +244,39 @@ STEP 6 - provenance, vocabulary theorem, docs.
   algorithmic-work principle and named bridge lemmas; then the stretch
   inventory (STRETCH-01), whose first known entry is the dead `maxRel`
   read recorded in DD-20260718-012.
+
+## Milestone 2 - the two instantiations (commit 4, RESUME STEP 1 done)
+
+`InteriorDirectory.lean`, added beside the existing local/global tables:
+
+- `canonicalRelativeRmmInteriorLocalLevelTable shape`
+  = `bpSparseLevelTable (RelativeRmm.canonicalLayout shape).macroSize`
+- `canonicalRelativeRmmInteriorGlobalLevelTable shape`
+  = `bpSparseLevelTable (RelativeRmm.canonicalLayout shape).macroSampleCount`
+- `canonicalRelativeRmmInteriorLevelTableOverhead` (the sum, for REQ-B7-06)
+- payload-length lemmas for both.
+
+CONFIRMED WHILE WRITING THESE: the global bound is `macroSampleCount`, not
+`macroCount`. `canonicalRelativeRmmInteriorGlobalTable`
+(`InteriorDirectory.lean:1432`) is parameterized by
+`layout.macroSampleCount`, and `bpGlobalSparseCellSlot` is applied to
+`layout.macroSampleCount` at `:2105-2107`. DD-20260718-012's sizing prose
+said `macroCount`; the instantiation uses the correct field.
+
+Nothing consumes the instantiations yet. They are not counted payload
+sources at this commit (they are not in the interior component store), so
+no dead-counted-source obligation arises; this remains the parallel half
+of parallel-then-swap.
+
+Verification at this commit: `lake build RMQ` exit 0 (384.9s, zero
+errors). `#print axioms` after the M1 root build, on all ten new names:
+`[propext, Quot.sound]` or `[propext]` only - no `Classical.choice`, and
+no `Lean.ofReduceBool`, so no `native_decide` leaked in.
+
+## Verification ledger (cumulative)
+
+- `f6564ec` baseline `lake build RMQ`: exit 0, 243 jobs, fresh tree.
+- `78d15c3` (M1): `lake build RMQ` exit 0, 417.8s, 244 jobs, 0 errors;
+  hygiene rg clean; `git diff --check` clean.
+- M2 (this commit): `lake build RMQ` exit 0, 384.9s, 0 errors.
+- `#print axioms` on the ten M1 names: clean (see above).

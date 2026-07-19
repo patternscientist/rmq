@@ -1444,6 +1444,65 @@ def canonicalRelativeRmmInteriorGlobalTable
     layout.globalLevelCount layout.blockAddressWidth hvalid.macroSize_pos
     (SuccinctRank.self_lt_two_pow_machineWordBits layout.blockCount)
 
+/-!
+### Charged sparse-level tables (B7)
+
+Two instantiations of the generic count-indexed level/span table
+(`SparseLevelTable.lean`).  The accepted interior execution presents local
+counts bounded by `layout.macroSize`
+(`canonicalRelativeRmmMachineLocalTwoSpanCandidateComputation`) and global
+counts bounded by `layout.macroSampleCount`
+(`canonicalRelativeRmmMachineGlobalTwoSpanCandidateComputation`), so each
+table's domain covers exactly the values that actually occur.  Sized
+separately rather than merged, so each budget can be dominated by the
+envelope its companion sparse table already uses (DD-20260718-013).
+-/
+
+/-- Charged level/span table for local counts (`count <= macroSize`). -/
+def canonicalRelativeRmmInteriorLocalLevelTable
+    (shape : Cartesian.CartesianShape) :
+    PayloadLiveBPSparseLevelTable
+      (bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize)
+      (bpSparseLevelTableOverhead
+        (bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize)) :=
+  bpSparseLevelTable (RelativeRmm.canonicalLayout shape).macroSize
+
+/-- Charged level/span table for global counts
+(`macroSpanCount <= macroSampleCount`). -/
+def canonicalRelativeRmmInteriorGlobalLevelTable
+    (shape : Cartesian.CartesianShape) :
+    PayloadLiveBPSparseLevelTable
+      (bpSparseLevelDomain
+        (RelativeRmm.canonicalLayout shape).macroSampleCount)
+      (bpSparseLevelTableOverhead
+        (bpSparseLevelDomain
+          (RelativeRmm.canonicalLayout shape).macroSampleCount)) :=
+  bpSparseLevelTable (RelativeRmm.canonicalLayout shape).macroSampleCount
+
+/-- Counted size of the two charged level tables. -/
+def canonicalRelativeRmmInteriorLevelTableOverhead
+    (shape : Cartesian.CartesianShape) : Nat :=
+  bpSparseLevelTableOverhead
+      (bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize) +
+    bpSparseLevelTableOverhead
+      (bpSparseLevelDomain
+        (RelativeRmm.canonicalLayout shape).macroSampleCount)
+
+theorem canonicalRelativeRmmInteriorLocalLevelTable_payload_length
+    (shape : Cartesian.CartesianShape) :
+    (canonicalRelativeRmmInteriorLocalLevelTable shape).payload.length =
+      bpSparseLevelTableOverhead
+        (bpSparseLevelDomain (RelativeRmm.canonicalLayout shape).macroSize) :=
+  (canonicalRelativeRmmInteriorLocalLevelTable shape).payload_length
+
+theorem canonicalRelativeRmmInteriorGlobalLevelTable_payload_length
+    (shape : Cartesian.CartesianShape) :
+    (canonicalRelativeRmmInteriorGlobalLevelTable shape).payload.length =
+      bpSparseLevelTableOverhead
+        (bpSparseLevelDomain
+          (RelativeRmm.canonicalLayout shape).macroSampleCount) :=
+  (canonicalRelativeRmmInteriorGlobalLevelTable shape).payload_length
+
 def canonicalRelativeRmmInteriorDirectoryPayloadLength
     (shape : Cartesian.CartesianShape) : Nat :=
   (canonicalRelativeRmmSummaryTable shape).payload.length +
