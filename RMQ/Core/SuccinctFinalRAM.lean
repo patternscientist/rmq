@@ -8824,20 +8824,59 @@ theorem concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq :
     concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost = 207 := by
   rfl
 
+/-! ### Frozen historical component costs
+
+A frozen historical constant records what a RETIRED route cost at the time
+it was retired.  It must therefore be pinned to a literal.  A historical
+constant whose definition names a LIVE definition is not frozen at all: it
+silently tracks the live route, so a later recharge rewrites history and
+breaks the very `rfl` identity that was supposed to certify it.
+
+The three constants below are the literal values that the two frozen
+algebras used to obtain by naming live definitions.  Each is stated with
+the live definition it was captured from, and with the value that
+definition held at capture time.  Nothing here may be changed when a live
+route is recharged; that is the entire point.
+-/
+
+/-- Frozen historical interior-directory component of the retired routes:
+the value `SuccinctClose.canonicalRelativeRmmPrincipledInteriorChargedTraceCost`
+held (`30`) before the charged sparse-level recharge moved the live
+interior cap.  Pinned, so the frozen `76` and `142` identities below do not
+track the live interior route. -/
+def canonicalRelativeRmmSilentSparseLevelInteriorChargedTraceCost : Nat := 30
+
+/-- Frozen historical endpoint-fringe component of the retired
+event-silent fringe route: the value
+`SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalEndpointFringeChargedTraceCost`
+held (`4`) when that route was retired. -/
+def canonicalSilentFringeHistoricalEndpointFringeChargedTraceCost : Nat := 4
+
+/-- Frozen historical endpoint-fringe component of the retired silent
+in-word rank/select route: the value
+`SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedEndpointFringeChargedTraceCost`
+held (`37`) when that route was retired. -/
+def canonicalSilentWordRankSelectHistoricalEndpointFringeChargedTraceCost : Nat := 37
+
 /--
 Frozen historical algebra of the retired event-silent fringe route
 (pattern: `canonicalTransitionalQueryCost = 328`).  The retired route's
 fringe leaves computed their min-excess/argmin scan without charged reads;
 the chunked route replaces the two 4-read fringes by two 37-read fringes.
+
+All four fields are literals (three numerals and one pinned historical
+component), so this algebra is genuinely frozen: no live recharge can move
+it.  It previously named the live endpoint-fringe and interior-directory
+definitions, which made the `76` below track the current route.
 -/
 def concreteBPNativeSuccinctRMQSilentFringeChargedTraceCostAlgebra :
     CanonicalRMQChargedTraceCostAlgebra where
   selectClose := 13
   rankClose := 4
   endpointFringe :=
-    SuccinctClose.ConcreteCompactBPCloseLCADirectory.canonicalEndpointFringeChargedTraceCost
+    canonicalSilentFringeHistoricalEndpointFringeChargedTraceCost
   interiorDirectory :=
-    SuccinctClose.canonicalRelativeRmmPrincipledInteriorChargedTraceCost
+    canonicalRelativeRmmSilentSparseLevelInteriorChargedTraceCost
 
 /-- Frozen historical whole-query literal of the retired silent-fringe route. -/
 def concreteBPNativeSuccinctRMQSilentFringeChargedTraceCost : Nat :=
@@ -8853,15 +8892,20 @@ Frozen historical algebra of the retired silent in-word rank/select route
 without charged reads; pattern: `canonicalSilentFringeQueryCost = 76`).
 The B3 chunked route replaces the 13-tick select closes and 4-tick rank
 seeds by 35-tick and 11-tick charged chunk-table executions.
+
+All four fields are literals (three numerals and one pinned historical
+component), so this algebra is genuinely frozen: no live recharge can move
+it.  It previously named the live endpoint-fringe and interior-directory
+definitions, which made the `142` below track the current route.
 -/
 def concreteBPNativeSuccinctRMQSilentWordRankSelectChargedTraceCostAlgebra :
     CanonicalRMQChargedTraceCostAlgebra where
   selectClose := 13
   rankClose := 4
   endpointFringe :=
-    SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedEndpointFringeChargedTraceCost
+    canonicalSilentWordRankSelectHistoricalEndpointFringeChargedTraceCost
   interiorDirectory :=
-    SuccinctClose.canonicalRelativeRmmPrincipledInteriorChargedTraceCost
+    canonicalRelativeRmmSilentSparseLevelInteriorChargedTraceCost
 
 /-- Frozen historical whole-query literal of the retired silent in-word
 rank/select route (the B2 candidate value). -/
