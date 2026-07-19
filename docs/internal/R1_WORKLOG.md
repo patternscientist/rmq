@@ -27,6 +27,85 @@ expected/checkout/working/runtime skills =
   rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint
 ```
 
+## R1-R1 continuation: governed preflight and frozen repair contract
+
+Worker: R1-R1
+
+Requested title: `(R1-R1) Close the A07 repair acceptance gaps`
+
+Continuation base: `6155d48dde13dfc8e4b3da108b4b81e258300b86`
+
+The continuation began on the required branch
+`codex/r1-a07-blocker-repairs-r1-restart` with a clean worktree and exact HEAD
+`6155d48dde13dfc8e4b3da108b4b81e258300b86`. The governing skill and its
+completion gate were re-read, including the occurrence-information-preservation
+rule and the W18 regression in `KNOWN_FAILURE_MODES.md`. Before substantive
+repair work, the governed preflight was rerun:
+
+```text
+powershell -ExecutionPolicy Bypass -File scripts/project_skill_preflight.ps1
+  -GovernanceRef cdb134b5b62b9d4030cf12c583c4836f8c0f95e4
+  -RequiredSkills rmq-proof-sprint
+  -RuntimeProjectSkills rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint
+Exit 0: SKILL-PREFLIGHT: PASS
+checkout = 6155d48dde13dfc8e4b3da108b4b81e258300b86
+expected/checkout/working/runtime skills =
+  rmq-audit-prompt,rmq-coordinator,rmq-proof-sprint
+```
+
+Named target: strengthen the existing public same-block occurrence theorem in
+place so that destructuring its proposition retains one identical local
+occurrence across the whole-query producer, exact `.canonicalClose 1 1`
+invocation, component trace, and charged same-block subtrace; make that theorem
+a load-bearing field of the existing manifest packet; then repair the remaining
+evidence-tier, current-prose, validator-attestation, and committed-ledger gaps.
+
+Downstream consumer: the existing
+`ConcreteBPNativeSuccinctRMQReviewerManifestSemanticAdequacy` packet, which is
+the first conjunct of `RMQ.Headlines.listIntSuccinctRMQPaperMainTheorem`. No
+sibling packet or unused wrapper is acceptable.
+
+Hard obligation: the strengthened conclusion itself, rather than witness
+choices erased inside its proof, must expose the actual third instruction,
+folded pre-state, local position, global offset, exact invocation, and both
+component occurrences. The current validator facts at global positions `0`
+and `15` and instruction positions `0` and `1` must remain nonvacuous and must
+be rerun after the final transitive Lean change.
+
+Forbidden shortcuts: a hidden receipt-local existential, `List.Mem`, equal
+event values, or two unrelated existentials do not establish occurrence
+identity; command or executable evidence is not kernel evidence; pre-change
+validation cannot certify a changed consumer; no passing R1-A/B/D/E theorem or
+public identity may be weakened. The replay IDs remain `NOT_APPLICABLE` because
+this continuation introduces no mutation replay harness.
+
+Valid stop conditions remain exact target closure, a checked obstruction on
+the frozen proposition, a genuine external blocker, or an explicit coordinator
+redirect. A helper theorem, build, executable run, or commit is only a
+checkpoint.
+
+### Frozen R1-R1 requirement-to-evidence matrix
+
+These rows are frozen before the first R1-R1 implementation or public-prose
+edit. Only evidence, status, and an explicitly approved amendment may change.
+
+| ID | Exact frozen requirement | Intended exact evidence | Consumer / identity chain | Anti-vacuity challenge | Evidence obtained | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| `REQ-R1R1-C-IDENTITY` | "Strengthen the existing theorem proposition in place. Expose enough checked data to identify the same occurrence across all layers" and make the exact proposition let a downstream consumer recover "one indexed whole-query event, its instruction/folded pre-state/local position/invocation, and the same charged same-block subtrace event"; strengthen the existing manifest/public consumer so it consumes this proposition. | The existing `concreteBPNativeSuccinctRMQSingleton_sameBlockFringeChunk_indexed_occurrence_receipt` conclusion retains a shared `globalPos`/`localPos` and concludes `ProducesEventAt ... globalPos 2 (.lcaClose ...) reviewerSingletonBeforeLCAState localPos`, exact `InvokesReviewerRead ... (.canonicalClose 1 1)`, the global-offset equality, and both invocation/component and charged-same-block `getElem?` facts at that same `localPos`. The existing manifest structure has a field with this exact strengthened proposition, initialized by this theorem. | valid `[7]`, `[0,1)` -> whole-query instruction `2` and folded prefix state -> exact `.canonicalClose 1 1` -> invocation component trace at shared `localPos` -> charged same-block decoded trace at the same `localPos` -> manifest packet -> headline paper-main-theorem conjunct. | Destructure only the theorem conclusion and attempt to choose the receipt/component local positions independently. Closure requires the shared explicit `ProducesEventAt` and same `localPos` facts to make that impossible; proof-body witness choice or an unused wrapper fails. | Not yet implemented. | Open |
+| `REQ-R1R1-F-TIER-LABELS` | Apply the matrices' evidence-tier convention consistently: B2 `REQ-B4-07`/`REQ-B4-08` and B6 `REQ-B6-06` are attested documentation/audit/prose-review evidence, while genuine theorem rows remain kernel-checked. Inspect neighboring non-kernel rows left as bare `Closed`. | The three named status cells, and any neighboring artifact-only row discovered by the scoped audit, visibly say `Closed (attested: <correct tier>)`; theorem-backed rows retain bare `Closed`. | Matrix row -> coordinator evidence reconstruction. | Relabeling every row indiscriminately or leaving a prose/audit artifact visually indistinguishable from a proposition fails. | Not yet inspected to closure. | Open |
+| `REQ-R1R1-G-FINAL-EXECUTABLE` | Preserve the nonvacuous validator fixture at global positions `0` and `15`, actual producing program positions `0` and `1`, the actual folded state for the second instruction, successful equal reads, distinct positions, and neighboring indexed checks; run the executable after the last transitive change and again on the final clean candidate commit if later edits touched its inputs. | Source review preserves the literal fixture and `lake exe rmq_succinct_classic_validate` exits `0` after the final transitive Lean change and on the final committed tree. | `RMQ/Validation/SuccinctClassic.lean` -> compiled validator executable. | A module build, pre-change run, dynamic trace search, or comparison of an event with itself fails. | Not yet rerun for this continuation. | Open |
+| `REQ-R1R1-PUBLIC-FIXTURE-SYNC` | Update current prose from singleton positions `0`/`12` to `0`/`15`, name instruction positions `0`/`1` where useful, correct current `docs/ADD_PROVENANCE.md` so segment `21` is live and fresh rejected segment is `23`, search current docs for displaced claims, and update the stale gate comment from physical-payload/76 topology to live 207 topology without changing behavior. | `README.md`, `docs/ADD_PROVENANCE.md`, and `scripts/gate.ps1` contain the live facts; scoped current-doc search finds no unclassified current-facing stale literal/segment claim; frozen history is left intact. | Current public/provenance prose and gate commentary -> reviewer interpretation; gate executable behavior unchanged. | Rewriting historical snapshots or changing the gate command sequence fails; leaving another current-facing `0`/`12` or rejected-segment-21 statement fails. | Not yet repaired. | Open |
+| `COMPLETE-R1R1-COMMITTED-EVIDENCE` | Correct the contradiction where committed hygiene is marked Closed while final-command rows remain Pending; add an exact-candidate result section; distinguish pre-repair scheduling evidence from commands run after the last relevant change; no row may remain Pending when `CANDIDATE_COMPLETE` is claimed. | Durable ledger records the semantic/Lean commit certified by each result, identifies final post-commit attestation as response-only when necessarily later than the ledger commit, contains no `Pending` final rows at candidate report time, and the final response names exact SHA, exit, duration, and clean state for every required command. | Frozen matrix -> committed worklog -> exact final worker response -> coordinator re-audit. | Backdating a command to a later commit, calling response-only evidence committed, or marking an unrun row Closed fails. | Original 6155d48 results are scheduling/cache evidence only for this continuation. | Open |
+| `INV-R1-ABDE-PRESERVATION` | Preserve all passing R1-A, R1-B, R1-D, and R1-E theorem behavior, the half-open leftmost `List Int` semantics, and the frozen public identities. | Focused/direct-consumer builds plus both durable axiom scripts elaborate the unchanged answer-dependency and distinct-instruction propositions; public builds and claim/topology checks remain green; no renamed/deleted identity or cost/payload/execution change appears in the exact-base diff. | R1-A inventories, R1-B `.value ≠`, R1-D receipts, R1-E public surfaces -> existing capstone. | Weakening R1-C by changing a shared base receipt, altering R1-B/D types, or moving the route/payload/cost object fails. | Not yet certified after the repair. | Open |
+| `INV-CATEGORY-SEPARATION` | Preserve the distinctions among payload bits, proof-only data, modeled ticks, traces, physical allocation, and Lean runtime; do not call process/executable evidence kernel evidence. | R1-C closure is a checked proposition consumed by the manifest; validator and command rows are labeled executable/attested; documentation makes no new payload/allocation or runtime claim. | Theorem packet and evidence matrices -> public claim interpretation. | Using the validator `#guard` or gate transcript as proof of occurrence identity fails. | Not yet certified after the repair. | Open |
+| `DEFER-R1R1-COORDINATOR-REAUDIT` | Coordinator exact-commit re-audit and any integration are explicitly deferred until after this worker reports a candidate. | Final report names the exact candidate and makes no acceptance, integration, publication, push, or merge-readiness claim. | Worker candidate -> coordinator-owned re-audit. | Worker self-acceptance fails. | Explicitly deferred and non-blocking. | Deferred |
+
+Parallelization check: the join is one strengthened theorem type consumed by
+one shared manifest structure. The theorem signature, constructor, inventories,
+matrix evidence, and validator invalidation are causally ordered and share the
+same public interface, so no independent write leaf would shorten the critical
+path. This continuation proceeds single-threaded.
+
 ## Frozen target and stop conditions
 
 Named target: repair every blocking finding from the external blind A07 audit
