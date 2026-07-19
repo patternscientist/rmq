@@ -6460,3 +6460,247 @@ All file:line verified at this commit.
    effect on registers -- two heads of the same arity and the same log
    length can charge differently, and the resulting error is invisible to
    both length and read-count checks (section 4, finding A).
+
+## M3d-20 (worker E1-R5c): the stale `hexact` gloss repaired, and a content-level obstruction found in the min-candidate consumer
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `d90b062`, from HEAD
+`190cb9d` to `ff9bee1`.  Green.
+
+Mission item 0 (the coordinator-directed docstring repair) IS DONE.  Items
+1-6 are UNBUILT.  Item 1 was not started, deliberately: the design survey
+below found a soundness constraint on it that changes its size, and
+starting a module that could not land green was the worse trade.  This is
+the fifteenth session to make that call.
+
+### 1. THE ANCHORS ALL HELD, INCLUDING THE ONES IN THE DELEGATION
+
+Every anchor supplied was grepped before use, per rule 4.  All were exact:
+`E1InteriorChunkValue.lean:521-524`, the seven `InteriorDirectory.lean`
+anchors (`:2295`, `:2300`, `:2311`, `:2329`, `:2351`, `:2376`, `:2444`),
+and `E1CrossBlockArm.lean:1143`.  No repair was needed this session -- the
+first session in three where that is true.
+
+### 2. WHAT LANDED: THE `hexact` JUSTIFICATION, REPAIRED
+
+`E1InteriorChunkValue.lean:521-524` justified the `hexact` premise as
+discharging "vacuously, because the interior tables are single-chunk".
+The delegation reported both halves false; both halves were CHECKED here
+before the rewrite rather than taken on report, and both are indeed false.
+
+* THE DISCHARGE IS SUBSTANTIVE.  Chain, read at source:
+  `hexact_*_concrete` (`E1InteriorStoreConcrete.lean:156`, `:173`, `:190`,
+  `:207`) -> `hexact_*` (`E1InteriorChunkStore.lean:424`, `:444`, `:464`,
+  `:484`) -> `hexact_of_segment_agrees` (`E1InteriorChunkExact.lean:213`)
+  -> `machineWords_length_eq_of_succ_lt_chunkCount` (`:90`), resting on
+  `chunkPayloadWords_get?_eq_take_drop` (`WordStore.lean:274`).
+* THE TABLES ARE NOT SINGLE-CHUNK.  `minRel`, `maxRel` and `argOffset` all
+  carry `relativeWidth` in `canonicalSummaryLayout`
+  (`E1InteriorSummaryGroup.lean:451`) -- verified by reading the layout,
+  not from the report -- and `E1InteriorChunkExact.lean:19-21` records
+  that width's chunk count as 2 from size 4 to 256.
+
+ONE CORRECTION OF RECORD AGAINST THE DELEGATION'S PHRASING.  It states the
+summary tables are two-chunk "at every shape evaluated".  That is true of
+the four sizes M3d-19 evaluated (8/16/64/256), but the tree's OWN
+evaluation at `E1InteriorChunkExact.lean:19-21` gives chunk count 1 at
+sizes 1024, 4096 and 65536.  Across everything evaluated in the tree the
+tables are multi-chunk at SMALL shapes and single-chunk at large ones.
+The load-bearing point survives and is sharper for it: single-chunk-ness
+is SHAPE-DEPENDENT, so vacuity can never be the ground at any shape.  The
+docstring was written to that, not to "every shape".
+
+Freshly evaluated here at `shape.size = 8`, the layout's four chunk counts
+are `(1, 2, 2, 2)`, reproducing M3d-19's figure independently.  Sizes
+16/64/256 were NOT re-evaluated this session -- each `#eval` builds the
+whole shape and the 1024 row did not return within budget -- so the
+docstring asserts only the size-8 tuple as directly evaluated and rests
+the 4..256 range on the in-tree table plus the width correspondence.
+
+The edit is docstring-only: no theorem, statement or proof changed.  Its
+citations to `ChunkExact`/`ChunkStore`/`StoreConcrete`/`SummaryGroup` are
+forward references in a comment (this module imports only
+`E1InteriorChunkFold`), matching existing practice in the other direction.
+
+### 3. THE FINDING THAT RESIZES ITEM 1: `maxRel`'S VALUE IS LOAD-BEARING
+
+The delegation directs that `maxRel` must not be optimised away, and
+grounds that in the POSITIONAL RECEIPT obligation, "not the value".  The
+receipt ground is real.  BUT THE VALUE GROUND IS ALSO REAL, and a block
+built on the delegation's framing alone would be UNSOUND.
+
+`canonicalRelativeRmmMachineSummaryComputation` (`InteriorDirectory.lean:2277`)
+ends in
+
+    match baseline, minRel, maxRel, argOffset with
+    | some b, some mn, some mx, some arg => some (b, mn, mx, arg)
+    | _, _, _, _ => none
+
+so `maxRel = none` forces the WHOLE summary to `none`, hence the
+min-candidate to `none`.  `bpRelativeSummaryMinCandidate`
+(`RelativeSummaryCandidate.lean:15`) then reads only `summary.1`,
+`summary.2.1` and `summary.2.2.2` -- confirmed at source, `maxRel` is
+`summary.2.2.1` and is never read.  So `maxRel` is discarded by the
+FUNCTION and load-bearing through the OPTION STRUCTURE.
+
+This is precisely the defect class the delegation warns about.  A block
+that keeps the `maxRel` READ (satisfying the receipt, and a read-count and
+trace-length check) but ignores its VALUE returns `some` wherever the
+route returns `none`.  Right shape, wrong content, invisible to every
+aggregate check.
+
+THE `none` CASE IS REACHABLE, NOT HYPOTHETICAL.
+`machineReadComputationAt` (`MachineChunkedTableProgram.lean:343`) reads
+`[deadAddress]` when `i >= entries.length`, and the decode of that is
+`none`.  So `none` IS the out-of-range arm -- exactly the `valid` flag the
+fold already tracks in `geomCats` (`E1InteriorSummaryGroup.lean:249`).
+
+WHAT THIS DOES AND DOES NOT SETTLE.  `minRel`, `maxRel` and `argOffset`
+are all read at the same index `block`, but against THREE DIFFERENT entry
+lists (`bpBlockRelativeMinExcessEntries`, `bpBlockRelativeMaxExcessEntries`,
+`bpBlockArgMinLocalOffsetEntries`).  If those lengths could differ there
+would be a `block` where `minRel` is `some` and `maxRel` is `none`.
+M3d-19's recorded anti-vacuity table has them EQUAL at all four sizes
+evaluated (`(1,2,2,2)`, `(1,3,3,3)`, `(2,9,9,9)`, `(4,28,28,28)`).  That
+is evaluation, not proof, and no lemma asserting the equality was found in
+the tree.  So the successor has a genuine fork, and it should be decided
+before instructions are written:
+
+  (a) prove `maxRel.entriesLen = minRel.entriesLen` (and `argOffset`'s),
+      after which the four-way `none` test collapses to two tests; or
+  (b) implement all four tests and prove nothing about the lengths.
+
+(a) is cheaper at runtime and costs a lemma; (b) is unconditional.  Either
+is sound; ASSUMING (a)'s equality without proving it is not.
+
+### 4. THE OPTION ENCODING THE BLOCK MUST HIT
+
+The established machine encoding of `Option (Nat x Nat)` is `bestOfRegs`
+(`E1FringeFoldBlock.lean:114`): `if bv = 0 then none else some (bv - 1, bp)`
+-- a value register shifted by `+1`, a raw position register.  The summary
+group's saved cells are shifted the SAME way (`geomRouteDecode`,
+`E1InteriorSummaryGroup.lean:651`: `none => 0`, `some v => v + 1`), so the
+consumer's arithmetic runs on shifted operands and the route's runs on
+unshifted ones.  Written out, with `span := bpSuperblockSpan blockSize
+blocksPerSuper`:
+
+    route value 1 = baseline + minRel - span = (sBase - 1) + (sMin - 1) - span
+    route value 2 = blockStartOf blockSize block + argOffset
+                  = block * blockSize + (sArg - 1)
+
+and the machine must save `value 1 + 1` and `value 2`.  EVERY subtraction
+there is Nat-truncated, and the shifts do not cancel by inspection.  This
+is a place to check content per position, not to simplify eagerly.
+`blockStartOf` is `block * blockSize` and `mulConst` is sound (settled).
+
+### 5. VERIFICATION LEDGER
+
+Under the `Global\RMQHeavyVerification` mutex:
+
+    lake build RMQ RMQPaper RMQExamples      LIB_BUILD_EXIT=0
+    lake build rmq_e1_machine_validate       VALIDATOR_BUILD_EXIT=0
+    lake exe rmq_e1_machine_validate         VALIDATOR_RUN_EXIT=0
+
+    Build completed successfully.
+    [279/282] Built RMQ.Core.WordRAM.E1InteriorChunkValue
+    [280/282] Built RMQ.Core.WordRAM.E1InteriorSummaryGroup
+
+Validator: `RESULT: PASS (with the whole-query comparison still OPEN)`,
+`wholeQueryComparisonAvailable=false`.  Phase 3h (fringe-arm preservation)
+`presFailures=0`, `presSentinelNonZero=true`, and its mutation phase 4g
+`mutantG_scratch_preservationFailures=36` with
+`mutantG_isPreservationOnly=true` -- the discriminators still bite.  The
+interior analogue of 3h remains unbuilt and is still owed.
+
+The edited module emits no warning; the thirteen in the log are all
+pre-existing (`SuccinctFinalRAM`, `ReviewerReachability{Small,Long,Sparse}`,
+`BPNavigationRAM`, `E1InteriorChunkFold`), matching M3d-19's record.
+
+`#print axioms` after a root build, importing the modules DIRECTLY:
+
+    interiorChunkFold_cOut_eq_routeDecode  [propext, Classical.choice, Quot.sound]
+    canonicalSummaryGroup_runsTo           [propext, Classical.choice, Quot.sound]
+    geomCell_maxRel_eq_routeDecode         [propext, Classical.choice, Quot.sound]
+    hexact_of_segment_agrees               [propext, Classical.choice, Quot.sound]
+
+Never `sorryAx`.  `lake env lean scripts/headline_axiom_check.lean` runs
+clean.  `design_decision_check.ps1 -Strict` `DD_EXIT=0` ("no
+design-sensitive paths detected"), `claim_drift_scan.ps1` `DRIFT_EXIT=0`,
+`paper_topology_lint.ps1` `TOPO_EXIT=0`.  `git diff --check` exit 0; the
+committed-range form flags whitespace solely in the inherited
+`docs/internal/B7_STEP2_WIP.patch`, the recorded exception.  Hygiene `rg`
+over the touched module is clean -- its only `partial` hit is the English
+word "partially" in prose at `:42`.  `maxHeartbeats` was not raised
+anywhere.
+
+NO DD WAS CLAIMED.  The maximum OBSERVED remains `DD-20260719-014`
+(M3d-19).  A docstring repair is not a design decision, and the strict
+checker agrees no design-sensitive path was touched.  The consolidated
+program-layout DD is still owed at the glue.
+
+KNOWN RED, externally owned, unchanged and not touched:
+`scripts/wordram_axiom_check.lean`, `scripts/axiom_check.lean`,
+`lake exe rmq_succinct_classic_validate` (COMPILE-time failure).
+
+### 6. MATRIX STATUS AT YIELD
+
+All eleven rows REQ-E1-01..11 remain OPEN.  This session closed none,
+weakened none, and edited no frozen row text.  No row's evidence changed:
+the repair was to a justification, not to a theorem, so nothing the matrix
+cites moved.
+
+### 7. RESUME POINT (M3d-21)
+
+All file:line verified at `ff9bee1`.
+
+1. ITEM 0 IS DONE.  `E1InteriorChunkValue.lean:521-555` now states the real
+   discharge route.  Nothing downstream depends on the text.
+2. THE NEXT BLOCK IS STILL THE MIN-CANDIDATE CONSUMER
+   (`InteriorDirectory.lean:2300`).  Read section 3 BEFORE writing
+   instructions: decide the (a)/(b) fork on the entry-length equality
+   first, because it determines how many `none` tests the block contains
+   and therefore its length, its category log and its receipt.
+3. THE ARITHMETIC IT OWES is in section 4, with the shift and the
+   Nat-truncation hazards written out.  Registers `100 .. 104` are TAKEN;
+   THE NEXT BLOCK OPENS AT `105`.  `iIdx` (`85`) is NOT preserved across a
+   summary group; `sBlock` (`100`) IS, and is the input.  Anything that
+   must survive a group satisfies `GroupUntouched`
+   (`E1InteriorSummaryGroup.lean:292`).
+4. THEN THE SPAN BLOCKS (`:2311`, `:2329`) -- the `none` arm must branch
+   PAST the summary group; both were re-read this session and both are
+   `FlatStoreComputation.pure none` on that arm -- and the TWO-SPAN BLOCKS
+   (`:2351`, `:2376`), where THE LEVEL READ IS THE UNCONDITIONAL HEAD of
+   every append chain.  Re-confirmed at source: in both two-span
+   computations the level-table read is the outermost `bind` and the whole
+   span structure sits inside its `some` arm.  Violating that order
+   presents as a whnf heartbeat timeout, NOT a type error, and must never
+   be met by raising `maxHeartbeats`.
+5. THEN the five-branch dispatch (`:2444`) and `hInterior` at
+   `E1CrossBlockArm.lean:1143`.  The interior has five branches and no
+   scan.  The arm's interior interface is
+   `bestOfRegs (regsI mMV) (regsI mMP) = interiorValue`
+   (`E1CrossBlockArm.lean:1184`) -- the consumer's output must land in that
+   encoding, which is the same shift the summary cells already use.
+6. ITEMS 6-7 OF THE PRIOR INVENTORY UNCHANGED AND UNBUILT: the closure
+   ladder (full LCA leg at canonical-store form; whole-query glue via
+   `E1RouteDecomposition` with result agreement on `(...).value` and
+   POSITIONAL receipt equality on `(...).trace`; category accounting across
+   ALL branches including selects-none and lca-none; the public `List Int`
+   corollary; the DERIVED all-size literal step total from the category
+   algebra and the caps 33/8/8 -- derive, never assert; the amended-target
+   Prop with its supersession note; the validator's whole-query phase; docs
+   and matrix closure; the ONE consolidated program-layout DD at the glue),
+   and an EXECUTED preservation check for the interior fold -- the
+   validator's phase 3h is fringe-arm only and still has no interior
+   analogue.
+7. THE M7 DOC CLAIM is scoped to QUERY TIME with construction-time
+   computation carved out as preprocessing (`bpSparseLevelCell`,
+   `SparseLevelTable.lean:55`).  Do not write it until the interior leg
+   exists.  The stale frozen-row anchor is a NOTE, already appended; do not
+   edit frozen requirement text.
+8. STANDING RULES, still five.  This session adds no sixth, and adds one
+   caution to rule 5: a delegation's GROUND for a premise can be sound but
+   INCOMPLETE.  `maxRel` really is owed to the receipt, and acting on that
+   ground alone would still have produced an unsound block, because the
+   value is owed to the option structure as well (section 3).  When a
+   prompt supplies the reason a thing is needed, check whether it is the
+   ONLY reason before designing to it.
