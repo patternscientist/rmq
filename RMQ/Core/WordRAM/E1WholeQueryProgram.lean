@@ -988,6 +988,145 @@ theorem wholeQueryOutput_agrees_with_noneWriter_iff
     rw [h]
     rfl
 
+/-! ## THE REPAIRED PATH, END TO END
+
+The strongest form of the repair's confirmation: not "the output stage runs
+from `5580`", but the whole query — guard, both selects, the join, the
+close/LCA leg's same-block arm, the rank leg and the halt — as ONE `RunsTo`
+from `initialState left right`.
+
+This is what the fall-through made impossible.  Under the unrepaired layout
+this derivation could not have been written at all: the close/LCA leg's exit
+was the `none` writer's base, so there was no stage to compose after it, and
+the run would have ended `halted` with `regOut = 0`.
+-/
+
+/-- A packet that decodes to `some c` is `c + 1`.  The inverse direction of
+`decodePacket_succ`, needed because the select legs export their answers
+through `decodePacket` while the join consumes the raw packet. -/
+theorem packet_of_decodePacket_eq_some {v c : Nat}
+    (h : decodePacket v = some c) : v = c + 1 := by
+  by_cases hz : v = 0
+  · rw [hz] at h; exact absurd h (by simp)
+  · have hv : v - 1 = c := by
+      simpa [decodePacket, hz] using h
+    omega
+
+/--
+THE WHOLE QUERY, EXECUTED, ON THE SAME-BLOCK ARM.
+
+From the query start state, on any valid range whose two selects both hit and
+whose two close positions land in the SAME summary block, the repaired program
+runs to a HALTED state at pc `5643`, emitting POSITIONALLY the concatenation
+of the four legs' route receipts, and leaves the rank leg's value in `regOut`.
+
+Universally quantified in shape, `n`, and the range: no sampling, no readiness
+guard, no size threshold.
+
+The four branch hypotheses are the ROUTE's own classification data
+(`wholeQueryBranch`, `E1RouteDecomposition.lean:223`), not machine-side
+paraphrases, so a caller discharges them once and both sides move together.
+
+**This run never visits `5644`.**  `RunsTo` is exact-fuel, so the halt at
+`5643` is reached by the enumerated steps above and by no others; the `none`
+writer's two instructions are not among them.
+-/
+theorem wholeQueryProgram_runsTo_sameBlock (shape : Cartesian.CartesianShape)
+    {n left right cl cr : Nat}
+    (hlt : left < right) (hbound : right ≤ n)
+    (hleftVal :
+      (concreteBPNativeSelectCloseGlobalWordTraceResult shape left).value =
+        some cl)
+    (hrightVal :
+      (concreteBPNativeSelectCloseGlobalWordTraceResult shape
+        (right - 1)).value = some cr)
+    (hsame :
+      blockOfClose (canonicalBPRelativeSummaryBlockSizeRaw shape) cl =
+        blockOfClose (canonicalBPRelativeSummaryBlockSizeRaw shape) cr) :
+    ∃ (regsF : RegFile) (answerClose : Nat),
+      RunsTo (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          (wholeQueryProgram shape n) (initialState left right)
+          ⟨regsF, 5643, true⟩
+        ((concreteBPNativeSelectCloseGlobalWordTraceResult shape left).trace ++
+          (concreteBPNativeSelectCloseGlobalWordTraceResult shape
+            (right - 1)).trace ++
+          (SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
+            shape (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape)
+            concreteBPNativeFringeChunkTraceSegment
+            (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+            (canonicalBPRelativeSummaryBlockSizeRaw shape) cl cr).trace ++
+          (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape
+            (answerClose + 1)).trace)
+        (guardAcceptCats ++
+          ([Category.registerWrite] ++
+            (selectCloseCats (wholeQuerySelData shape)
+              concreteBPNativeSelectCloseTraceSegmentLayout
+              concreteBPNativeRankCloseTraceSegmentBase
+              concreteBPNativeSelectChunkTraceSegment
+              (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+              (bpFringeChunkBits shape.bpCode.length) left ++
+              ([Category.registerWrite, Category.arithmetic] ++
+                selectCloseCats (wholeQuerySelData shape)
+                  concreteBPNativeSelectCloseTraceSegmentLayout
+                  concreteBPNativeRankCloseTraceSegmentBase
+                  concreteBPNativeSelectChunkTraceSegment
+                  (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+                  (bpFringeChunkBits shape.bpCode.length) (right - 1)))) ++
+          ([Category.comparison, Category.branch, Category.comparison,
+              Category.branch, Category.arithmetic, Category.arithmetic] ++
+            ((E1CloseDispatch.closeDispatchCats ++
+                E1SameBlockLeg.sameBlockLegCats shape
+                  concreteBPNativeFringeChunkTraceSegment
+                  (canonicalBPRelativeSummaryBlockSizeRaw shape) cl cr) ++
+              ([Category.registerWrite, Category.arithmetic] ++
+                (rankCloseHitCats
+                    (bpWordChunkCount (bpFringeChunkBits shape.bpCode.length)
+                      ((builtRelativeSplitBPCloseRankData shape).wordOffset
+                        (answerClose + 1))) ++
+                  [Category.registerWrite, Category.control]))))) ∧
+      some answerClose =
+        (SuccinctClose.ConcreteCompactBPCloseLCADirectory.bpChunkedSameBlockCloseDecodedTraceResultWithRankSeedAtSegmentWithStore
+          shape (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape)
+          concreteBPNativeFringeChunkTraceSegment
+          (concreteBPNativeSuccinctRMQGlobalReadStore shape)
+          (canonicalBPRelativeSummaryBlockSizeRaw shape) cl cr).value ∧
+      regsF regOut =
+        (concreteBPNativeChunkedRankCloseGlobalWordTraceResult shape
+          (answerClose + 1)).value := by
+  -- hosting, every base computed
+  have hguard : HostedAt (wholeQueryProgram shape n) 0
+      (guardBlock n (8 + (wholeQueryValidPath shape wholeQueryNoneExit).length)) :=
+    programSkeleton_hosts_guardBlock n _
+  have hvp : HostedAt (wholeQueryProgram shape n) 8
+      (wholeQueryValidPath shape wholeQueryNoneExit) :=
+    programSkeleton_hosts_validPath n _
+  obtain ⟨hthrough, hout⟩ := wholeQueryValidPath_hosts_outputStage shape hvp
+  obtain ⟨hprefix, hjoin, hcloseLca⟩ :=
+    wholeQueryValidPathThroughLca_hosts_closeLca shape hthrough
+  -- guard + both selects
+  obtain ⟨regs2, hrunP, hT1, hV, hZ, hOne⟩ :=
+    wholeQuerySelectPrefix_runsTo shape hguard hprefix hlt hbound
+  rw [hleftVal] at hT1
+  rw [hrightVal] at hV
+  -- the join: both packets are nonzero, so both branches fall through
+  obtain ⟨regs3, hrunJ, hClose, hRight⟩ :=
+    selectJoin_runsTo_hit shape hjoin regs2
+      (packet_of_decodePacket_eq_some hT1)
+      (packet_of_decodePacket_eq_some hV) hZ hOne
+  -- the close/LCA leg, same-block arm
+  obtain ⟨regs4, hrunC, hval, _hpres⟩ :=
+    E1WholeQueryCloseLca.closeLcaProgramAt_runsTo_same shape hcloseLca regs3
+      hClose hRight hsame
+  -- the output stage: rank leg and halt
+  obtain ⟨regs5, hrunO, hout'⟩ :=
+    wholeQueryOutputStage_runsTo shape hout regs4
+  refine ⟨regs5, regs4 fRes, ?_, hval, hout'⟩
+  have hpc : E1WholeQueryCloseLca.closeLcaExit 827 + 63 = 5643 := by
+    simp [E1WholeQueryCloseLca.closeLcaExit]
+  rw [hpc] at hrunO
+  have htrans := ((hrunP.trans hrunJ).trans hrunC).trans hrunO
+  simpa [List.append_assoc] using htrans
+
 /-! ## SCOPE, STATED HONESTLY
 
 What is EXECUTED above is the guard and both select legs — pc `0` to `821`.
