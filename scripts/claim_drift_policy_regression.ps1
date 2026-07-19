@@ -46,6 +46,16 @@ if ($currentEventVocabularyTerm.Count -ne 1 -or
   Write-Host "CLAIM-POLICY-REGRESSION: FAIL [r1r2-48147cb-current-event-vocabulary-config]"
   exit 1
 }
+$readWordAttribution = @(
+  $policyObject.requiredAttributions |
+    Where-Object id -eq 'required-current-readword-only-theorem-attribution'
+)
+if ($readWordAttribution.Count -ne 1 -or
+    -not [bool]$readWordAttribution[0].strict -or
+    [string]$readWordAttribution[0].requiredPattern -notmatch 'succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly') {
+  Write-Host "CLAIM-POLICY-REGRESSION: FAIL [r1r3-bad14d0-readword-attribution-config]"
+  exit 1
+}
 Write-Host "CLAIM-POLICY-REGRESSION: PASS [r1r2-48147cb-current-surface-registry]"
 
 $sourceManifestTerm = @($policyObject.terms | Where-Object id -eq 'typed-reviewer-source-manifest')
@@ -124,8 +134,24 @@ $fixtures = @(
   @{ id = "r1r2-48147cb-artifact-three-constructor-vocabulary"; relativePath = "artifact/CLAIMS.md"; reject = $true; termId = "forbidden-retired-current-event-vocabulary"; text = "Every actual emitted event is readWord, wordRank, or wordSelect." },
   @{ id = "r1r2-48147cb-correspondence-three-constructor-vocabulary"; relativePath = "docs/PAPER_CLAIM_CORRESPONDENCE.md"; reject = $true; termId = "forbidden-retired-current-event-vocabulary"; text = "The canonical trace proves every actual event is readWord, wordRank, or wordSelect." },
   @{ id = "r1r2-48147cb-family-three-constructor-vocabulary"; relativePath = "docs/FAMILY_SUMMARY.md"; reject = $true; termId = "forbidden-retired-current-event-vocabulary"; text = "The canonical trace proves every emitted event is one of the three genuine constructors." },
-  @{ id = "r1r2-current-readword-only-control"; relativePath = "docs/PAPER_CLAIM_CORRESPONDENCE.md"; reject = $false; termId = "forbidden-retired-current-event-vocabulary"; text = "Every emitted event is readWord on the current readWord-only route." },
-  @{ id = "r1r2-current-compatibility-labeled-control"; relativePath = "docs/FAMILY_SUMMARY.md"; reject = $false; termId = "forbidden-retired-current-event-vocabulary"; text = "The current route is readWord-only; wordRank and wordSelect are compatibility-only constructors and are never emitted." },
+  @{ id = "r1r3-a835720-readme-hyphenated-three-constructor-vocabulary"; relativePath = "README.md"; reject = $true; termId = "forbidden-retired-current-event-vocabulary"; text = "Every event actually emitted by the canonical whole-query trace is a payload read, word-rank, or word-select event." },
+  @{ id = "r1r3-a835720-readme-bounded-word-primitive-vocabulary"; relativePath = "README.md"; reject = $true; termId = "forbidden-retired-current-event-vocabulary"; text = "Every event is either a payload read or a bounded word primitive." },
+  @{ id = "r1r3-a835720-artifact-word-primitive-vocabulary"; relativePath = "artifact/CLAIMS.md"; reject = $true; termId = "forbidden-retired-current-event-vocabulary"; text = "Every event is a payload read or word primitive." },
+  @{ id = "r1r2-current-readword-only-control"; relativePath = "docs/PAPER_CLAIM_CORRESPONDENCE.md"; reject = $false; termId = "forbidden-retired-current-event-vocabulary"; text = "RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly proves every emitted event is readWord on the current readWord-only route." },
+  @{ id = "r1r2-current-compatibility-labeled-control"; relativePath = "docs/FAMILY_SUMMARY.md"; reject = $false; termId = "forbidden-retired-current-event-vocabulary"; text = "RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly proves the current route is readWord-only; wordRank and wordSelect are compatibility-only constructors and are never emitted." },
+  @{ id = "r1r3-compatibility-labeled-weaker-story-control"; relativePath = "README.md"; reject = $false; termId = "forbidden-retired-current-event-vocabulary"; text = "RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly proves the current route is readWord-only. The compatibility theorem says every event is a payload read or bounded word primitive." },
+
+  # Exact theorem-attribution misses reproduced from rejected R1-R3 candidate
+  # bad14d0f1f7561f5f4200c19259a4ae5c8375499.
+  @{ id = "r1r3-bad14d0-paper-main-missing-strong-alias"; relativePath = "docs/PAPER_MAIN_THEOREM.md"; reject = $true; termId = "required-current-readword-only-theorem-attribution"; text = "Every actual emitted event is proved to be readWord." },
+  @{ id = "r1r3-bad14d0-theorem-map-missing-strong-alias"; relativePath = "docs/PAPER_THEOREM_MAP.md"; reject = $true; termId = "required-current-readword-only-theorem-attribution"; text = "These anchors package that every emitted trace event is readWord." },
+  @{ id = "r1r3-bad14d0-trust-packet-missing-strong-alias"; relativePath = "docs/TRUST_AUDIT_PACKET.md"; reject = $true; termId = "required-current-readword-only-theorem-attribution"; text = "The checked type packages only genuine readWord events and no synthetic cost marker." },
+  @{ id = "r1r3-bad14d0-wordram-packet-missing-strong-alias"; relativePath = "docs/WORD_RAM_REVIEW_PACKET.md"; reject = $true; termId = "required-current-readword-only-theorem-attribution"; text = "The same execution proves every emitted event is readWord." },
+  @{ id = "r1r3-bad14d0-digestion-missing-strong-alias"; relativePath = "docs/digests/PROJECT_DIGESTION_CURRENT.md"; reject = $true; termId = "required-current-readword-only-theorem-attribution"; text = "The construction-facing theorem states that every emitted event is a payload-word read." },
+  @{ id = "r1r3-bad14d0-what-is-proved-missing-strong-alias"; relativePath = "docs/WHAT_IS_PROVED.md"; reject = $true; termId = "required-current-readword-only-theorem-attribution"; text = "The execution story proves every emitted event is a payload read." },
+  @{ id = "r1r3-bad14d0-artifact-readme-missing-strong-alias"; relativePath = "artifact/README.md"; reject = $true; termId = "required-current-readword-only-theorem-attribution"; text = "Every accepted emitted event is a payload read." },
+  @{ id = "r1r3-current-readword-strong-attribution-control"; relativePath = "docs/PAPER_MAIN_THEOREM.md"; reject = $false; termId = "required-current-readword-only-theorem-attribution"; text = "RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly proves every actual emitted event is readWord." },
+  @{ id = "r1r3-accurate-weaker-attribution-control"; relativePath = "docs/WHAT_IS_PROVED.md"; reject = $false; termId = "required-current-readword-only-theorem-attribution"; text = "RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly is the strong readWord-only theorem. RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultEventReadWordOrWordRankOrWordSelect is a weaker compatibility alias." },
 
   @{ id = "negated-canonical"; reject = $false; allowedMatch = $true; text = "No canonical execution theorem uses 2^128 as an activation premise." },
   @{ id = "negated-current-canonical"; reject = $false; allowedMatch = $true; text = "No current canonical reviewer route has 2 ^ 128 as an activation premise." },

@@ -104,10 +104,14 @@ For any prompt claiming that every live/current public documentation surface
 is synchronized, derive the read/verification inventory from
 `docs/internal/CLAIM_DRIFT_POLICY.json` `currentFactSurfacePathRegex`, not from a
 prompt-local hand list. Put `- Current-surface inventory:` in the prompt, name
-that registry and field, inspect every matched tracked path on the exact worker
-base, and include every path expected to need changes in write scope before
-`READY_TO_SEND`. A green strict scan is a lower bound, not evidence that the
-registry or term vocabulary is exhaustive.
+that registry and field, and before launch record the exact matched count, full
+matched-path list, and expected-repair-path list produced from the exact worker
+base. Inspect every matched tracked path yourself; do not delegate first
+discovery of the closed inventory to the worker. Include every expected repair
+path in write scope before `READY_TO_SEND`. The prompt preflight must reproduce
+the registry count/path set and verify every declared repair path is owned. A
+green strict scan is a lower bound, not evidence that the registry or term
+vocabulary is exhaustive.
 
 Put `Make the title of this chat exactly: ...` as the first line of the pasted
 worker prompt. A title shown only as identity metadata is not an instruction to

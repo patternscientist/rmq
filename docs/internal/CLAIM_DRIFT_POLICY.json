@@ -1,5 +1,5 @@
 {
-  "version": 16,
+  "version": 18,
   "updated": "2026-07-19",
   "currentFactSurfacePathRegex": "^(?:README\\.md|artifact/(?:CLAIMS|README)\\.md|docs/(?:FAMILY_SUMMARY|PAPER_CLAIM_CORRESPONDENCE|PAPER_MAIN_THEOREM|PAPER_MODEL_ADEQUACY|PAPER_THEOREM_MAP|WHAT_IS_PROVED|PAPER_RELATED_WORK|PUBLICATION_STRATEGY|RELATED_WORK_AND_LIMITATIONS|ROADMAP|TRUST_AUDIT_PACKET|WORD_RAM_REVIEW_PACKET)\\.md|docs/digests/PROJECT_DIGESTION_CURRENT\\.md|docs/internal/(?:CLAIM_DRIFT_POLICY\\.md|RMQ_FINAL_ROADMAP\\.md))$",
   "terms": [
@@ -173,7 +173,7 @@
     },
     {
       "id": "forbidden-retired-current-event-vocabulary",
-      "pattern": "(?i)(?:every\\s+(?:actual\\s+)?(?:emitted\\s+)?event\\b.{0,120}\\breadWord\\b.{0,80}\\bwordRank\\b.{0,80}\\bwordSelect\\b|one\\s+of\\s+the\\s+three\\s+genuine\\s+constructors)",
+      "pattern": "(?i)(?:every\\s+(?:actual\\s+)?(?:emitted\\s+)?event\\b.{0,120}\\breadWord\\b.{0,80}\\bwordRank\\b.{0,80}\\bwordSelect\\b|every\\s+event\\s+actually\\s+emitted\\b.{0,120}\\bpayload\\s+read\\b.{0,80}\\bword[- ]rank\\b.{0,80}\\bword[- ]select\\b|(?:every\\s+event|events)\\s+(?:is|are)(?:\\s+either)?\\s+(?:a\\s+)?(?:payload\\s+)?reads?\\s+or\\s+(?:a\\s+)?(?:bounded\\s+)?word\\s+primitives?|one\\s+of\\s+the\\s+three\\s+genuine\\s+constructors)",
       "status": "forbidden-weaker-three-constructor-vocabulary-for-current-readword-only-route-outside-frozen-history-or-explicit-compatibility-labeling",
       "strict": true,
       "scope": "current-fact-surface",
@@ -243,6 +243,16 @@
       "strict": true,
       "allowedPathRegex": "^docs/internal/|^docs/RMQ_EXTRACTION_FRONTIER\\.md$",
       "allowedLineRegex": "must not|planning|policy|scan|not erase|runnable"
+    }
+  ],
+  "requiredAttributions": [
+    {
+      "id": "required-current-readword-only-theorem-attribution",
+      "pathRegex": "^(?:README\\.md|artifact/(?:CLAIMS|README)\\.md|docs/(?:FAMILY_SUMMARY|PAPER_CLAIM_CORRESPONDENCE|PAPER_MAIN_THEOREM|PAPER_MODEL_ADEQUACY|PAPER_THEOREM_MAP|WHAT_IS_PROVED|PAPER_RELATED_WORK|PUBLICATION_STRATEGY|RELATED_WORK_AND_LIMITATIONS|ROADMAP|TRUST_AUDIT_PACKET|WORD_RAM_REVIEW_PACKET)\\.md|docs/digests/PROJECT_DIGESTION_CURRENT\\.md)$",
+      "claimPattern": "(?is)(?:every\\s+(?:(?:actual|accepted)\\s+)?(?:emitted\\s+)?(?:trace\\s+)?event.{0,120}(?:is|are|be)\\s+(?:a\\s+)?(?:genuine\\s+)?(?:payload(?:-word)?\\s+read|`?readWord`?)|only\\s+genuine\\s+`?readWord`?\\s+events|trace\\s+emits\\s+only\\s+`?readWord`?\\s+events|readWord[- ]only)",
+      "requiredPattern": "RMQ\\.Headlines\\.succinctRMQWholeQueryGlobalWordTraceResultReadWordOnly",
+      "status": "strong-current-readword-only-claim-must-name-the-strong-public-theorem",
+      "strict": true
     }
   ]
 }

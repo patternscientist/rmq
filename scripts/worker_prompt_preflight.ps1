@@ -199,9 +199,80 @@ try {
     Stop-Preflight "workflow-sensitive-write-scope-requires-wdd: scripts/gate.ps1 requires docs/internal/WORKFLOW_DESIGN_DECISIONS.md in the same write scope"
   }
 
-  if ($promptText -match '(?i)(?:CURRENT-SURFACE-SYNC|every\s+live(?:\s+current)?(?:\s+public)?(?:/documentation)?\s+surface)' -and
-      $promptText -notmatch '(?m)^- Current-surface inventory:\s*.*docs/internal/CLAIM_DRIFT_POLICY\.json.*currentFactSurfacePathRegex.*$') {
-    Stop-Preflight "exhaustive-current-surface-sync-requires-policy-registry: name docs/internal/CLAIM_DRIFT_POLICY.json currentFactSurfacePathRegex"
+  $isCurrentSurfaceSync =
+    $promptText -match '(?i)(?:CURRENT-SURFACE-SYNC|every\s+live(?:\s+current)?(?:\s+public)?(?:/documentation)?\s+surface)'
+  if ($isCurrentSurfaceSync) {
+    $inventoryMatch = [regex]::Match(
+      $promptText,
+      '(?m)^- Current-surface inventory:\s*(.+?)\s*$'
+    )
+    if (-not $inventoryMatch.Success -or
+        $inventoryMatch.Groups[1].Value -notmatch 'registry=docs/internal/CLAIM_DRIFT_POLICY\.json' -or
+        $inventoryMatch.Groups[1].Value -notmatch 'field=currentFactSurfacePathRegex') {
+      Stop-Preflight "exhaustive-current-surface-sync-requires-policy-registry: name docs/internal/CLAIM_DRIFT_POLICY.json currentFactSurfacePathRegex"
+    }
+
+    $inventoryValue = $inventoryMatch.Groups[1].Value
+    $countMatch = [regex]::Match($inventoryValue, '(?:^|;)\s*matched_count=(\d+)\s*(?:;|$)')
+    $inspectedMatch = [regex]::Match($inventoryValue, '(?:^|;)\s*inspected_paths=([^;]+)')
+    $repairMatch = [regex]::Match($inventoryValue, '(?:^|;)\s*expected_repair_paths=([^;]+)')
+    if (-not $countMatch.Success -or -not $inspectedMatch.Success -or -not $repairMatch.Success) {
+      Stop-Preflight "exhaustive-current-surface-sync-requires-attested-inventory: matched_count, inspected_paths, and expected_repair_paths are required"
+    }
+
+    $policyText = @(Invoke-Git @(
+        "show",
+        "${workerBaseSha}:docs/internal/CLAIM_DRIFT_POLICY.json"
+      )) -join [Environment]::NewLine
+    try {
+      $currentSurfacePolicy = $policyText | ConvertFrom-Json
+      $currentSurfaceRegex = [string]$currentSurfacePolicy.currentFactSurfacePathRegex
+      if ([string]::IsNullOrWhiteSpace($currentSurfaceRegex)) {
+        throw "currentFactSurfacePathRegex is empty"
+      }
+      $null = [regex]::new($currentSurfaceRegex)
+    } catch {
+      Stop-Preflight "worker-base current-surface registry is unreadable: $($_.Exception.Message)"
+    }
+
+    $matchedCurrentPaths = @(
+      Invoke-Git @("ls-tree", "-r", "--name-only", $workerBaseSha) |
+        ForEach-Object { $_.Trim().Replace('\', '/') } |
+        Where-Object { [regex]::IsMatch($_, $currentSurfaceRegex) } |
+        Sort-Object -Unique
+    )
+    $declaredCount = [int]$countMatch.Groups[1].Value
+    if ($declaredCount -ne $matchedCurrentPaths.Count) {
+      Stop-Preflight "exhaustive-current-surface-sync-count-mismatch: declared $declaredCount, exact base has $($matchedCurrentPaths.Count)"
+    }
+
+    $inspectedPaths = @(
+      $inspectedMatch.Groups[1].Value -split ',' |
+        ForEach-Object { $_.Trim().Replace('\', '/') } |
+        Where-Object { $_ }
+    )
+    if ($inspectedPaths.Count -ne @($inspectedPaths | Sort-Object -Unique).Count -or
+        @(Compare-Object -ReferenceObject $matchedCurrentPaths -DifferenceObject @($inspectedPaths | Sort-Object -Unique)).Count -ne 0) {
+      Stop-Preflight "exhaustive-current-surface-sync-path-set-mismatch: inspected_paths must equal the exact registry match set"
+    }
+
+    $repairPaths = @()
+    if ($repairMatch.Groups[1].Value.Trim() -ne 'NONE') {
+      $repairPaths = @(
+        $repairMatch.Groups[1].Value -split ',' |
+          ForEach-Object { $_.Trim().Replace('\', '/') } |
+          Where-Object { $_ } |
+          Sort-Object -Unique
+      )
+    }
+    foreach ($repairPath in $repairPaths) {
+      if ($repairPath -notin $matchedCurrentPaths) {
+        Stop-Preflight "exhaustive-current-surface-sync-repair-not-registered: $repairPath"
+      }
+      if (-not $writeScopeLine.Contains($repairPath)) {
+        Stop-Preflight "exhaustive-current-surface-sync-repair-outside-write-scope: $repairPath"
+      }
+    }
   }
 
   $acceptanceLine = [regex]::Match(
