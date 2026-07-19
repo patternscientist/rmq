@@ -11,7 +11,7 @@ trace are joined by
 The same checked theorem packages the at-most `2*n + o(n)` payload, its exact
 physical-word erasure, direct positional backing for successful reads, exact
 valid half-open leftmost RMQ answers, non-synthetic trace accounting, and the
-uniform charged-trace bound `76`. Controller operations remain outside the
+uniform charged-trace bound `207`. Controller operations remain outside the
 charged event model, so this is not a conventional word-RAM or Lean runtime
 bound.
 
@@ -32,10 +32,10 @@ execution:
 2. the physical reviewer words flatten exactly to that payload;
 3. every successful payload read in the canonical global trace is backed by
    the corresponding in-bounds physical word;
-4. every emitted event is a payload-word read, word-rank, or word-select event,
+4. every emitted event is a payload-word read,
    and no synthetic cost-only marker occurs;
 5. the non-synthetic certificate sum equals trace length and the same
-   `Costed.cost`, and is at most `76`;
+   `Costed.cost`, and is at most `207`;
 6. erasing the valid-query result gives the reference `scanWindow` answer.
 
 The lower side is packaged beside the upper side through the doubled-Catalan
@@ -48,12 +48,12 @@ The current cost is derived from the operations emitted by the accepted
 execution:
 
 ```text
-2 * select13 + (2 * rank4 + 2 * endpointFringe4 + interior30) + rank4 = 76
+2 * select35 + (2 * rank11 + 2 * fringe37 + interior30) + rank11 = 207
 ```
 
 `TraceResult.toCosted` charges trace length. Independently,
 `WordRAM.TraceEvent.nonSyntheticWeight` assigns unit certificate weight to the
-three genuine event constructors and zero to the synthetic marker. The
+genuine `readWord` constructor and zero to the synthetic marker. The
 canonical execution proves that all of its events are genuine and that the
 marker is absent. The checked certificate sum therefore equals both the trace
 length and the modeled cost before the uniform upper bound is applied.
@@ -80,8 +80,7 @@ payload and do not make every source active on every query.
 
 ## The Cost-Model Boundary
 
-The charged events are attempted payload-word reads and word-local rank/select
-primitives. The theorem does not charge instruction dispatch, input or register
+The charged events are attempted payload-word reads. The theorem does not charge instruction dispatch, input or register
 access, option tests, branching, arithmetic, decoding, local scanning,
 candidate merging, trace assembly, or the public validity guard. The current
 Lean theorem also does not prove:
@@ -90,7 +89,7 @@ Lean theorem also does not prove:
 - a serialized-payload API with a fully charged controller;
 - preprocessing time inside the same machine;
 - conventional word-RAM complexity for every controller operation; or
-- global minimality of the constant `76`.
+- global minimality of the constant `207`.
 
 Those are downstream machine-model or engineering obligations. They do not
 weaken the checked statement inside the explicit charged-trace model.

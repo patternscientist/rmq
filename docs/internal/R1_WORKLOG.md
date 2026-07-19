@@ -299,3 +299,100 @@ process disposition, and the reason for any rerun.
 | R1 topology development check | Same tree | approved-access `powershell -ExecutionPolicy Bypass -File scripts/paper_topology_lint.ps1` | 0 | 126.034 | Material rerun condition: pinned-toolchain/cache access. PASS with 83 broad documentary identifiers and 49 paper identifiers resolved. |
 | R1 strict design check | Same completed branch diff against exact base | `powershell -ExecutionPolicy Bypass -File scripts/design_decision_check.ps1 -Strict -Base 1a825f3a940f0ff59084b69b25ba0c318569f33f` | 0 | 1.136 | Checked all 16 changed files in the exact-base range. |
 | R1 hygiene development check | Same completed source tree | both required `rg` scans | 0 | 1.7 | Zero forbidden construct/import hits and zero `native_decide`/`Lean.ofReduceBool` hits under `RMQ`. |
+
+## R1-R2: live A07 public-claim synchronization
+
+Worker: R1-R2
+Requested title: `(R1-R2) Synchronize every live A07 public claim`
+Exact base: `06a8e3c67700672696da776b92fe8315a38363a2` (first parent
+`3a2b47261ba6a15829a3160a7fce352b62c88380`; governance parent
+`255e400134a4e151e3183cd7a24c99ec7cd3e9af`).
+
+### Frozen source facts and pre-edit inventory
+
+The live facts are reconstructed from source rather than the prior audit:
+
+- `ReviewerPhysical.lean` defines exactly 22 `ReviewerSource` constructors and
+  maps logical segments `0..22`; segments `0` and `19` both map to
+  `.sharedBPCode`, segment `21` maps to `.fringeChunkTable`, and only
+  `23` and above are absent.
+- `SuccinctFinalRAM.lean` defines the accepted algebra with select `35`, rank
+  `11`, endpoint fringe `37`, and interior `30`, and proves the named
+  whole-query cost equals `207`.
+- `Validation/SuccinctClassic.lean` checks the singleton equal read at global
+  positions `0` and `15`, from program instructions `0` and `1`.
+
+Before editing, strict claim scan exited 1 in 5.8 s with 31 unapproved live
+matches: retired `76`/`142` cost language in `README.md`, `artifact/README.md`,
+`docs/WORD_RAM_REVIEW_PACKET.md`, `docs/PUBLICATION_STRATEGY.md`,
+`docs/PAPER_THEOREM_MAP.md`, `docs/digests/PROJECT_DIGESTION_CURRENT.md`,
+`docs/TRUST_AUDIT_PACKET.md`, `docs/PAPER_RELATED_WORK.md`,
+`docs/PAPER_MAIN_THEOREM.md`, `docs/RELATED_WORK_AND_LIMITATIONS.md`, and
+`docs/internal/RMQ_FINAL_ROADMAP.md`; retired 20-source language in
+`artifact/CLAIMS.md`, `artifact/README.md`, `docs/WHAT_IS_PROVED.md`,
+`docs/PAPER_MAIN_THEOREM.md`, and `docs/PAPER_THEOREM_MAP.md`; retired fresh
+segment-21 language in `artifact/CLAIMS.md`, `artifact/README.md`, and
+`docs/PAPER_THEOREM_MAP.md`; and retired global positions `0`/`12` in
+`artifact/CLAIMS.md`. `README.md` also contained a scanner-sensitive single
+line that mentioned fresh `23` and live `21` together. The full live-current
+inventory additionally checked `docs/ROADMAP.md`; no dated digest, audit,
+matrix, earlier decision body, or prior worklog is to be rewritten.
+
+### Frozen R1-R2 requirement-to-evidence matrix
+
+| ID | Exact frozen requirement | Scope | Evidence needed (exact proposition/check) | Named consumer and identity/composition chain | Anti-vacuity challenge attempted and outcome | Evidence obtained | Status / residual gap |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `REQ-R1R2-CURRENT-SURFACE-SYNC` | "Synchronize every live current public/documentation surface to the exact already-checked R1-R1 facts and make strict drift enforcement pass without altering historical records." | Local public surface | Every declared current surface is reread against the source facts; strict scan has zero live failures. | Source definitions -> current prose -> strict scanner/topology lint -> coordinator audit. | Search stale cost/source/fresh/position literals across every declared public surface; pre-edit scan found 31 failures. | All 14 current prose surfaces plus README/artifact surfaces reread; development strict scan exits 0 with 805 hits and zero strict failures. | Closed; exact-HEAD attestation is recorded in the worker response. |
+| `REQ-R1R2-CURRENT-COST-207` | "every live surface must use current modeled bound `207` and, where algebra is shown, exactly `2*35 + (2*11 + 2*37 + 30) + 11 = 207`. Do not confuse this modeled charged-trace/cost certificate with Lean runtime or measured performance." | Local public surface | `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq : ... = 207`; source algebra has select 35, rank 11, fringe 37, interior 30. | Accepted algebra -> list/public paper prose -> claim scan. | Replace neither `76` nor `142` blindly: retain no retired numeral in a current surface and preserve the model/runtime distinction sentence. | Current surfaces use 207 and exact algebra where shown; modeled charged-trace language remains explicitly separate from Lean runtime and measured performance. | Closed; exact-HEAD attestation is recorded in the worker response. |
+| `REQ-R1R2-CURRENT-SOURCES-22` | "every live surface must state 22 physical reviewer sources over logical segments `0..22`, with logical segments `0` and `19` sharing the BP source. Do not describe this as 23 physical sources." | Local public surface | `ReviewerSource` has 22 constructors; `concreteBPNativeSuccinctRMQReviewerSegmentSource?` maps 0/19 to `.sharedBPCode` and 21/22 to table sources. | Physical source/list and segment map -> public manifest prose -> claim scan. | Search 20-source, 20-constructor, and segment-range prose; five live 20-source failures found. | Live manifest prose now names 22 physical sources, logical `0..22`, and the shared 0/19 BP source. | Closed; exact-HEAD attestation is recorded in the worker response. |
+| `REQ-R1R2-FRESH-SEGMENT-23` | "segment `21` is live; rejected fresh segment `23` is outside the manifest. Do not globally replace every historical occurrence of 21." | Local public surface | Segment map has `21 => some .fringeChunkTable` and `_ + 23 => none`; fresh mutation is segment 23. | Source map/mutation -> current provenance prose -> claim scan. | Search fresh/rejected segment 21; three stale live failures plus one scanner-sensitive mixed README line found. | Live prose distinguishes live fringe-table segment 21 from rejected fresh segment 23; history is unchanged. | Closed; exact-HEAD attestation is recorded in the worker response. |
+| `REQ-R1R2-TRACE-POSITIONS-0-15` | "the current singleton repeated-read fixture uses global positions `0` and `15`, produced by instruction positions `0` and `1`. Preserve the distinction between global trace position and program-instruction position." | Local public surface | `singletonRepeatedEqualReadPositionsOK` checks trace 0/15; `singletonRepeatedEqualReadInstructionPositionsOK` checks program 0/1. | Validator fixture -> artifact/current provenance prose -> claim scan. | Search 0/12 wording and require both coordinate systems in replacement prose; one stale live failure found. | Current artifact prose states global 0/15 and producing instructions 0/1 as distinct coordinate systems. | Closed; exact-HEAD attestation is recorded in the worker response. |
+| `REQ-R1R2-CLAIM-POLICY-ENFORCEMENT` | "final `scripts/claim_drift_scan.ps1 -Strict` must reject no live current surface. The governed `r1r1-3a2b472-*` regressions and current-value controls are inherited from the exact base and must remain unchanged." | Verification | Production strict scanner exits 0; no policy/regression file changes. | Current prose -> production scanner -> inherited regression controls. | Pre-edit production strict scan exited 1 with 31 failures; policy files are out of scope. | Development production scan exits 0 with 805 classified hits and zero strict failures; no policy/regression path changed. | Closed; exact-HEAD attestation is recorded in the worker response. |
+| `REQ-R1R2-HISTORICAL-PRESERVATION` | "do not edit dated `docs/DIGESTION_LOG.md` entries, dated digests, audit reports, old matrices, prior worklogs, or earlier design-decision bodies merely because they record once-current facts." | Inherited | Final changed-path set contains only declared scope; diff shows only new decision entries, not earlier decision bodies. | Frozen history -> unchanged Git paths/lines -> coordinator audit. | Do not use history/policy allowances to hide current claims; exact path search classifies those survivors as historical. | Diff scope contains only authorized current documentation plus appended decision/worklog evidence; historical survivor search was classified rather than rewritten. | Closed; exact-HEAD range evidence is recorded in the worker response. |
+| `REQ-R1R2-DIGESTION-EVIDENCE` | "make the R1 worklog non-Pending and include all four required parts: conceptual change, plain-English meaning, live assumptions, and the strongest skeptical next question." | Durable ledger | Committed R1-R2 matrix and digestion section contain all four parts; no R1-R2 row says Pending at candidate report time. | Worklog -> final response -> coordinator audit. | A clean scan without a source-backed ledger does not close this row. | Matrix and digestion below contain all four required parts and no R1-R2 row is Pending. | Closed; exact-HEAD attestation is recorded in the worker response. |
+| `COMPLETE-R1R2-COMMITTED-EVIDENCE` | "committed branch plus an updated `docs/internal/R1_WORKLOG.md` requirement-to-evidence ledger." | Durable ledger | One clean committed candidate records source facts, exact checks, range/path evidence, and response-only final attestation boundary. | Matrix -> commit -> exact final response -> coordinator audit. | A docs commit before rereading each current surface or before final range checks fails. | This ledger records source facts, pre-commit verification, and the response-only exact-HEAD attestation boundary. | Closed; final candidate SHA and exact-HEAD check results are response evidence, not retroactively claimed as committed. |
+| `INV-R1R1-SEMANTIC-PRESERVATION` | "the exact Lean, validator, script, theorem, import, and executable tree inherited from first parent `3a2b472...` must remain byte-for-byte unchanged." | Inherited | Final name-only range contains documentation/decision/worklog paths only; no Lean, script, policy, template, skill, or gate path. | First-parent checked tree -> doc-only range -> final path audit. | Compare changed-path set to declared scope; any code/script identity is a stop condition. | Current diff has 17 declared Markdown/decision/worklog paths only; no Lean, script, policy, template, skill, or gate path. | Closed; exact-HEAD range evidence is recorded in the worker response. |
+| `INV-CATEGORY-SEPARATION` | "keep payload bits, proof-only data, modeled ticks, trace events/positions, physical sources/cells, allocated storage, Lean runtime, and measured performance categorically distinct." | Inherited | Current prose labels 207 as modeled charged-trace/cost, identifies trace versus instruction positions, and makes no allocation/runtime claim. | Source/model facts -> public prose -> claim scan. | Reject wording that calls 207 Lean runtime, treats 22 logical segments as 23 physical sources, or conflates 0/15 with instructions. | Repaired prose retains the model/runtime, physical/logical source, and global/program-position distinctions. | Closed; exact-HEAD attestation is recorded in the worker response. |
+| `REPLAY-EXACT-REGISTRY` | NOT_APPLICABLE because this task does not change a mutation runner. | Deferred non-blocking | No mutation-runner file is changed. | Scope audit. | Inventing replay evidence is forbidden. | Not applicable by frozen scope. | Not applicable |
+| `REPLAY-SELECTOR-NONVACUITY` | NOT_APPLICABLE because this task does not change a mutation runner. | Deferred non-blocking | No selector/mutation runner is changed. | Scope audit. | Inventing replay evidence is forbidden. | Not applicable by frozen scope. | Not applicable |
+| `REPLAY-SUBPROCESS-DEADLINE` | NOT_APPLICABLE because no new child-process harness is in scope. | Deferred non-blocking | No harness/process implementation is changed. | Scope audit. | Inventing replay evidence is forbidden. | Not applicable by frozen scope. | Not applicable |
+| `CHK-R1R2-STRICT` | `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\claim_drift_scan.ps1 -Strict` | Final required | Exit 0 and zero strict failures. | Live prose/policy boundary. | Scanner is a tripwire; source reread remains separately required. | Pre-edit exit 1, 31 failures; development rerun exits 0 in 13.1 s with 805 hits and zero strict failures. | Closed; final exact-HEAD rerun is response-only attestation. |
+| `CHK-R1R2-TOPOLOGY` | `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\paper_topology_lint.ps1` | Final required | Exit 0 with current documentary identifier resolution. | Current public documents -> production topology verdict. | Claim scan cannot establish identifier resolution. | After missing fresh-worktree artifacts were built by focused public targets, exits 0 in 82.8 s with 83 broad and 49 paper identifiers resolved. | Closed; final exact-HEAD rerun is response-only attestation. |
+| `CHK-R1R2-DESIGN` | `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\design_decision_check.ps1 -Strict -Base 06a8e3c67700672696da776b92fe8315a38363a2` | Final required | Exit 0 after DD/WDD entries. | Decision/workflow ledgers -> strict checker. | Omitting either required minimal entry fails. | Development check exits 0 in 1.2 s over 17 changed files. | Closed; final exact-HEAD rerun is response-only attestation. |
+| `CHK-R1R2-DIFF-PATHS` | `git diff --check`; `git diff --check 06a8e3c67700672696da776b92fe8315a38363a2..HEAD`; changed-path scope audit; clean exact HEAD. | Final required | Both checks exit 0; all changed paths are declared docs/decision/worklog paths. | Committed doc-only candidate -> coordinator audit. | A clean worktree alone cannot certify committed whitespace or scope. | Development scope audit identifies 17 declared paths; final committed range check remains response-only attestation. | Closed; exact-HEAD rerun is response-only attestation. |
+
+Verification plan: targeted stale-literal searches and source inspection are the
+development loop; strict scan, topology lint, strict decision check, and both
+diff checks are final-required. No source, theorem, checker, or executable is
+in scope, so root builds, validators, axiom inventories, cost harness, and the
+aggregate gate are deliberately not duplicated; first parent `3a2b472` already
+has their exact-tree attestation, while this rung's new risk is live prose and
+policy classification.
+
+### R1-R2 proof digestion and final-attestation boundary
+
+Conceptual change: synchronize only live current descriptions to the accepted
+R1-R1 route facts; no Lean proposition, source, policy, template, script, or
+executable changes.
+
+Plain-English meaning: reviewers now see the same 207-cost/readWord-only route,
+22-physical-source manifest, segment-23 rejection, and 0/15 fixture that the
+existing checked objects and validator already establish.
+
+Live assumptions: `ReviewerPhysical.lean` remains the source for physical
+source/segment facts, `SuccinctFinalRAM.lean` for the modeled 207 certificate,
+and `Validation/SuccinctClassic.lean` for the concrete fixture. The result is a
+modeled charged-trace statement, not Lean runtime, measured performance,
+allocated-cell accounting, or a changed roadmap acceptance decision.
+
+Strongest skeptical next question: does every reader-facing document preserve
+the distinction between the 22 physical sources and 23 logical segment roles,
+between global trace positions and instruction positions, and between current
+prose and frozen historical evidence? The production strict scan, topology
+lint, source reread, and final range audit address that question; coordinator
+exact-commit re-audit remains required.
+
+The development checks above certify the uncommitted semantic document content.
+The final response supplies the exact-HEAD command attestations after the
+ledger commit; it must not be read as claiming that those later runs were
+already recorded in this commit.

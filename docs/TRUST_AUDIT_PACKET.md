@@ -19,9 +19,9 @@ trace. For every valid half-open query over a Cartesian shape, it packages:
 - payload length at most `2*n + overhead n`, with `overhead = o(n)`;
 - exact erasure of the physical reviewer words to that payload;
 - direct positional physical backing for every successful trace read;
-- only genuine read/rank/select events and no synthetic cost marker;
+- only genuine `readWord` events and no synthetic cost marker;
 - certificate weight equal to trace length and the same `Costed.cost`;
-- uniform charged-trace cost at most `76`; and
+- uniform charged-trace cost at most `207`; and
 - the exact leftmost RMQ answer.
 
 The ordinary-list endpoint is:
@@ -81,18 +81,18 @@ operands and results, and consumed footprint addresses.
 The current component derivation is:
 
 ```text
-2 * select13 + (2 * rank4 + 2 * endpointFringe4 + interior30) + rank4 = 76
+2 * select35 + (2 * rank11 + 2 * fringe37 + interior30) + rank11 = 207
 ```
 
 `TraceResult.toCosted` charges trace length. The separate
-`TraceEvent.nonSyntheticWeight` certificate assigns one to `readWord`,
-`wordRank`, and `wordSelect`, and zero to the synthetic compatibility marker.
+`TraceEvent.nonSyntheticWeight` certificate assigns one to `readWord` and zero
+to the synthetic compatibility marker.
 The canonical trace proves that every emitted event is genuine and no marker is
 present, so certificate weight equals both trace length and modeled cost.
 
 The theorem does not charge controller dispatch, input/register access, option
 tests, arithmetic, branching, decoding, local scanning, candidate merging,
-trace assembly, or the public validity guard. Consequently `76` is an explicit
+trace assembly, or the public validity guard. Consequently `207` is an explicit
 charged-trace bound, not conventional word-RAM time or compiled Lean runtime.
 
 ## Compatibility Boundary
@@ -128,7 +128,7 @@ The current theorem does not establish:
 - a fully charged small-step controller;
 - end-to-end preprocessing complexity in the same machine;
 - a serialized-payload query API with conventional word-RAM cost; or
-- global minimality of the numerical constant `76`.
+- global minimality of the numerical constant `207`.
 
 ## Reviewer Reading Order
 

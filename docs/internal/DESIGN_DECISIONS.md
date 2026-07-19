@@ -3589,3 +3589,40 @@ Consequences and evidence:
 - Focused builds, the post-change validator, public builds, axiom inventories,
   documentary checks, and the one final aggregate gate remain required before
   a candidate report. Coordinator exact-commit re-audit remains the next owner.
+
+## DD-20260719-001: synchronize live A07 prose to already-checked route facts (R1-R2)
+
+Status: Proposed repair record; coordinator re-audit and acceptance remain
+separate.
+
+Date: 2026-07-19
+
+Context: the exact R1-R1 theorem, validator, import, and executable tree is
+already checked, but live paper, artifact, roadmap, review, and current-digest
+surfaces still described retired cost, source, freshness, and fixture facts.
+
+Decision:
+
+Synchronize only the live current prose to the checked objects: modeled
+charged-trace cost `207 = 2*35 + (2*11 + 2*37 + 30) + 11`; 22 physical reviewer
+sources over logical segments `0..22` with segments `0` and `19` sharing the
+BP-code source; live segment `21` and rejected fresh segment `23`; and global
+fixture positions `0`/`15` produced by instruction positions `0`/`1`.
+No theorem, model, payload, validator, or public declaration identity changes.
+
+Rejected alternatives:
+
+- Leave the stale prose because the inherited Lean tree is green.
+- Blindly replace retired numerals in historical evidence.
+- Treat a strict scanner as a substitute for source-directed rereading.
+
+Consequences and evidence:
+
+- The modeled cost, trace positions, physical-source count, and runtime
+  nonclaims remain categorically distinct in current prose.
+- Dated digests, audits, old matrices, earlier worklogs, and prior decision
+  bodies remain historical evidence.
+- `ReviewerPhysical.lean`, `SuccinctFinalRAM.lean`, and
+  `Validation/SuccinctClassic.lean` are the source objects; strict claim scan,
+  topology lint, decision check, and committed-range checks are the process
+  evidence.

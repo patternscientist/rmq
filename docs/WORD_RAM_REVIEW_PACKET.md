@@ -12,11 +12,8 @@ substrate used by the query components. A `TraceResult` contains a value and an
 ordered event list; `TraceResult.toCosted` assigns cost equal to the event-list
 length.
 
-The canonical whole-query trace emits only:
-
-- `readWord` for an attempted indexed payload-word read;
-- `wordRank` for a word-local rank primitive; and
-- `wordSelect` for a word-local select primitive.
+The canonical whole-query trace emits only `readWord` events for attempted
+indexed payload-word reads.
 
 The compatibility constructor `syntheticCostOnlyPrimitive` exists in the trace
 datatype, but the canonical execution proves that it is absent.
@@ -46,8 +43,8 @@ producing instruction occurrence and prefix-folded state, then to its
 component-local occurrence, invocation parameters, source, and global offset.
 The source manifest is exhaustive for the canonical payload. Separate
 nonvacuity theorems witness every counted source and shared-BP consumer in some
-valid closed whole-query execution, while a fresh unused segment is rejected
-by the same operational relation.
+valid closed whole-query execution, while fresh segment `23` is rejected by
+the same operational relation and live segment `21` is the fringe chunk table.
 
 This is stronger than event-value membership or a category-only label: the
 evidence is attached to the indexed occurrence that was actually emitted.
@@ -73,16 +70,16 @@ wraparound.
 The canonical component cap is:
 
 ```text
-2 * select13 + (2 * rank4 + 2 * endpointFringe4 + interior30) + rank4 = 76
+2 * select35 + (2 * rank11 + 2 * fringe37 + interior30) + rank11 = 207
 ```
 
 The same execution proves:
 
-1. every emitted event is `readWord`, `wordRank`, or `wordSelect`;
+1. every emitted event is `readWord`;
 2. the synthetic marker is absent;
 3. the `nonSyntheticWeight` sum equals event-list length;
 4. that sum equals the same execution's `Costed.cost`; and
-5. the sum is at most `76`.
+5. the sum is at most `207`.
 
 The construction-facing theorem
 `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile`
@@ -94,7 +91,7 @@ query semantics.
 The event language does not currently charge controller dispatch,
 input/register access, option tests, arithmetic, branches, fixed-width decode,
 local BP scans, candidate merges, trace assembly, or the public validity guard.
-The checked `76` result is therefore a charged-trace theorem. It is not a claim
+The checked `207` result is therefore a charged-trace theorem. It is not a claim
 about compiled Lean time or a complete conventional word-RAM instruction
 count.
 

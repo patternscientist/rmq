@@ -64,7 +64,8 @@ candidates, subject to the novelty search described below — are:
 ### P0 — proof blockers closed; paper/artifact work remains
 
 1. **Cost model constant.** The current reviewer route is uniform for every
-   size and has the checked principled charged-trace bound `76`, with exact
+   size and has the checked principled charged-trace bound `207`, with algebra
+   `2*35 + (2*11 + 2*37 + 30) + 11 = 207` and exact
    `nonSyntheticWeight` certificate, emitted-trace-length, and `Costed`
    accounting for the canonical no-synthetic trace.
    Earlier checked cost and dispatch declarations live in the explicit
@@ -123,7 +124,7 @@ side:
 all-size theorem is now in place, so the highest-leverage move is paper/artifact
 packaging: a referee-grade theorem map, claim-to-check table, novelty search,
 related-work calibration, and reproduction script that make the current
-charged-trace `76` impossible to confuse with the explicitly quarantined
+charged-trace `207` impossible to confuse with the explicitly quarantined
 compatibility chronology.
 
 ## 4a. Status update (2026-07-06)
@@ -151,7 +152,7 @@ Landed on `main` since this document was written (through `3f6f1e3`):
 - **Historical cost-regime split:** detailed earlier cost and dispatch
   chronology is quarantined in the explicit compatibility history. The
   canonical reviewer route is uniform; the current theorem gives the checked charged-trace cap
-  `76`, while E1 fully charged controller simulation remains.
+  `207`, while E1 fully charged controller simulation remains.
 
 Remaining, in priority order: **paper/artifact packaging; novelty search;
 extraction + benchmarks; E1 fully charged simulation.**

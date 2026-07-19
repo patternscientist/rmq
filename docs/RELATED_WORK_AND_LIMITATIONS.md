@@ -53,13 +53,13 @@ remains a safe overapproximation.
 - No CPU, compiler, extraction, cache, or benchmarking claim is made.
 - The cost model is the repository's explicit modeled WordRAM/query-cost layer.
 - The current public all-size RMQ bound is the uniform canonical checked
-  charged-trace value `76`. Controller operations remain uncharged, so it is
+  charged-trace value `207 = 2*35 + (2*11 + 2*37 + 30) + 11`. Controller operations remain uncharged, so it is
   not a conventional word-RAM result. Earlier checked cost and dispatch
   surfaces are documented in the explicit
   [`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md).
 - The auxiliary logical layout footprint is not claimed minimal; the reviewer
   flat-physical footprint is execution-derived and recorded exactly.
 - The current theorem gives a tight component-wise cap but does not prove global minimality of
-  `76` across correlations between component maxima.
+  `207` across correlations between component maxima.
 - The cell-probe lower bounds of Liu-Yu/Liu are related work, not mechanized
   theorem content here.

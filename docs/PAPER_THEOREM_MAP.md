@@ -36,14 +36,17 @@ The final trace refines
 `SuccinctFinal.concreteBPNativeSuccinctRMQWholeQueryCanonicalInterpretedCosted`
 and is exact by
 `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact`.
-Its one typed 20-source manifest includes canonical close and covers every
-read-producing segment. For each indexed read, the provenance relation retains the global
+Its manifest has 22 physical sources over logical segments `0..22`, includes
+canonical close, and has logical segments `0` and `19` share the BP-code
+source. It covers every read-producing segment. For each indexed read, the
+provenance relation retains the global
 occurrence, program instruction occurrence, folded state, component-local
 occurrence, exact invocation parameters, source, and composed-trace offset.
 The query-independent manifest packet states that every counted source and
 exact shared-BP consumer has some successful actual closed-valid query witness.
 A checked bridge maps the successful positive predicate into the mutation-side
-arbitrary-result predicate, and fresh segment 21 fails that common relation.
+arbitrary-result predicate; fresh segment `23` fails that common relation,
+while live segment `21` is the fringe chunk table.
 It is consumed once outside the paper theorem's current-query quantifiers; the
 indexed forward theorem remains about the exact current trace. Region
 exclusivity, segment
@@ -57,7 +60,8 @@ first execution's consumed ordered physical footprint determines the complete
 physical trace, and a checked consumed-address disagreement changes it.
 The capacity is linear and the query-independent reviewer width has an explicit
 all-size logarithmic bound while covering stored/returned words, addresses, and
-primitive operands/results. The principled charged-trace cost is exactly `76`;
+primitive operands/results. The principled charged-trace cost is exactly
+`207 = 2*35 + (2*11 + 2*37 + 30) + 11`;
 earlier checked cost and dispatch rows live only in the explicit
 [`compatibility history`](digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md)
 and are not the current reviewer path.
@@ -83,7 +87,7 @@ theorem. The latter combines doubled-Catalan envelopes, the canonical reviewer
 payload bound and exact physical erasure, direct positional physical backing
 for every successful read, the canonical global trace, exact answers, both
 non-synthetic certificate equalities (trace length and `Costed.cost`), and the
-literal bound `76` in one checked type. No payload padding manufactures
+literal bound `207` in one checked type. No payload padding manufactures
 equality.
 
 ## Final Trace Model Adequacy
@@ -128,7 +132,7 @@ RMQ.Headlines.succinctRMQReviewerPhysicalFootprintAddressFits
 These are the reviewer-facing anchors for what the modeled constant query
 means. They package the existing final trace facts: `Costed` equals
 `TraceResult.toCosted`, the trace refines the interpreted whole-query program,
-the fixed modeled cost bound holds, trace events are reads or word primitives,
+the fixed modeled cost bound holds, every emitted trace event is `readWord`,
 reads match the global store, event data are bounded, no synthetic cost-only
 events appear, successful reads are backed by counted flat payload words, and
 the supplied-store replay is store-parametric under final-layout footprint
@@ -138,17 +142,17 @@ with the canonical global store recovers the canonical trace and exact result.
 The list-facing aliases expose the same footprint-agreement story at the
 ordinary `List Int` surface: the supplied-store query is equal to canonical
 `SuccinctClassic.queryCosted`, valid windows erase to the list RMQ answer, the
-principled `76` charged-trace bound transfers, and invalid ranges return `none`.
+principled `207` charged-trace bound transfers, and invalid ranges return `none`.
 The store/model aliases
 expose the direct supplied-store transfer theorems for counted flat-payload
 backing and modeled cost under footprint agreement.
 The current final global trace has the uniform canonical charged-trace bound
-`SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost = 76`.
-The checked sum is `2*13 + (2*4 + 2*4 + 30) + 4`. On the actual canonical
-trace, every event is proved to be `readWord`, `wordRank`, or `wordSelect`, the
+`SuccinctFinal.concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost = 207`.
+The checked sum is `2*35 + (2*11 + 2*37 + 30) + 11 = 207`. On the actual
+canonical trace, every emitted event is proved to be `readWord`, the
 synthetic fallback is absent, and the direct `WordRAM.TraceEvent.nonSyntheticWeight`
 certificate sum equals both emitted trace length and the `Costed` cost of the
-same execution before being bounded by `76`. That equality uses the canonical
+same execution before being bounded by `207`. That equality uses the canonical
 no-synthetic trace; `TraceResult.toCosted` charges trace length and would count
 a synthetic compatibility marker if present. A synthetic event cannot satisfy
 that classification and, wherever inserted, makes the certificate sum differ
@@ -157,11 +161,11 @@ history rather than in this current theorem map.
 Footprint-agreeing supplied-store and full-model aliases transfer the
 principled bound.
 
-This accounting charges payload reads and word-rank/select primitives only.
+This accounting charges emitted payload reads only.
 Controller dispatch, arithmetic, branching, decoding, local scanning, and
 candidate merging are documentary uncharged omissions because they are not
 events in the current trace. The current theorem does not predeclare them as a checked
-instruction vocabulary. Thus `76` is not a conventional word-RAM runtime
+instruction vocabulary. Thus `207` is not a conventional word-RAM runtime
 theorem; E1 must define a richer machine and prove that it simulates this same
 execution.
 

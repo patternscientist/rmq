@@ -3578,3 +3578,31 @@ Publication-facing significance:
 This is workflow infrastructure. It prevents a mechanically predictable scope
 block from interrupting a submission-hardening repair while preserving the
 same strict audit trail for aggregate-gate changes.
+
+## WDD-20260719-001: treat R1-R2 as public-claim synchronization, not roadmap change
+
+Status: Accepted.
+Date: 2026-07-19.
+Scope: live current documentation, `docs/internal/RMQ_FINAL_ROADMAP.md`, and
+the R1-R2 evidence ledger.
+
+Decision:
+
+The R1-R2 documentation repair synchronizes reviewer-facing descriptions to
+already-checked R1-R1 source facts. Updating the workflow-sensitive final
+roadmap is not a roadmap dependency, acceptance, workflow-command, command-
+ordering, gate-semantics, or executable-behavior change.
+
+Rejected alternatives:
+
+- Leave the live roadmap stale because it is workflow-sensitive.
+- Treat the prose repair as coordinator acceptance or a new roadmap node.
+- Edit historical roadmap/audit chronology to remove old facts.
+
+Consequences and evidence:
+
+- The roadmap remains an accurate current reader surface without changing its
+  dependency graph or acceptance ownership.
+- Coordinator exact-commit re-audit remains required.
+- The strict claim scan, topology lint, strict decision check, and committed
+  range audit record this limited workflow disposition.

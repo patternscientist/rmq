@@ -113,7 +113,8 @@ The provenance layer separates two semantic obligations: indexed occurrence
 provenance preserves invocation parameters for the exact current query, while
 a global packet proves every counted source has some actual successful
 closed-valid query witness under the same operational relation used to reject
-fresh segment `23`. Segment `21` is a live counted fringe chunk-table segment.
+fresh segment `23`.
+The live counted fringe chunk-table is logical segment `21`.
 The canonical reviewer route has one live public payload,
 `SuccinctClassic.buildPayload`. One pre-execution reviewer physical word list
 erases exactly to that payload. The existing supplied-store evaluator runs
@@ -139,7 +140,8 @@ as distinct obligations produced by program instructions `0` and `1`. The
 source witnesses use actual successful closed
 valid executions, including symbolic large witnesses for sources `12`--`19`;
 component may-read and earlier event-value facts remain compatibility facts. The
-current charged-trace cap is `207` (the retired silent in-word rank/select cap `142` is frozen as `canonicalSilentWordRankSelectQueryCost`, and the earlier event-silent-fringe cap `76` as `canonicalSilentFringeQueryCost`); detailed earlier cost and dispatch
+current modeled charged-trace cap is `207`, with algebra
+`2*35 + (2*11 + 2*37 + 30) + 11 = 207`; detailed earlier cost and dispatch
 chronology lives only in the
 [`compatibility history`](docs/digests/SUCCINCT_RMQ_COST_COMPATIBILITY_HISTORY.md)
 and has no reverse edge into the reviewer route.

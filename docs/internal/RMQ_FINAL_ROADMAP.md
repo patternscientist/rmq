@@ -127,8 +127,8 @@ and the fresh blind A04 audit recorded at
 `f5c2ab03a064e56f90a17574041cd116568416d8` on 2026-07-14.
 
 Every size uses `RelativeRmm.canonicalLayout` and the same close/LCA reviewer
-route. One exhaustive typed 22-source universe (23 logical segments;
-segments `0` and `19` share the BP-code source) includes canonical close
+route. One exhaustive typed universe has 22 physical sources over logical
+segments `0..22`; segments `0` and `19` share the BP-code source. It includes canonical close
 and the B2/B3 fringe/select chunk-table sources.
 For every indexed read, W19 retains the same global occurrence, program
 instruction occurrence, folded prefix state, component-local position, exact
@@ -196,15 +196,15 @@ remains coordinator-owned. A05 report commit `64cfd2d...` was read directly and
 was not merged.
 
 The unchanged uniform route now has the principled checked charged-trace sum
-`76 = 2*13 + (2*4 + 2*4 + 30) + 4`, proved by
+`207 = 2*35 + (2*11 + 2*37 + 30) + 11`, proved by
 `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq` and bounded
 against the global trace by
 `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_cost_le_principledAllSizeChargedTrace`.
-The actual event bridge classifies each emitted event as `readWord`, `wordRank`,
-or `wordSelect`, excludes the synthetic fallback, and proves that direct
+The actual event bridge classifies each emitted event as `readWord`, excludes
+the synthetic fallback, and proves that direct
 `WordRAM.TraceEvent.nonSyntheticWeight` certificate weights sum to both trace
 length and the `Costed` cost of the same execution before being bounded by
-`76`. This equality is canonical-trace evidence: `TraceResult.toCosted` charges
+`207`. This equality is canonical-trace evidence: `TraceResult.toCosted` charges
 trace length and would count a synthetic compatibility marker if one were
 present, while `nonSyntheticWeight` assigns that marker weight zero.
 
@@ -214,7 +214,7 @@ unqualified historical profiles remained coequal exports. The correction adds
 which combines the canonical reviewer payload, physical erasure, space
 envelopes, exact global execution, direct positional backing for every
 successful trace read, non-synthetic weight equality to trace length and the
-same `Costed.cost`, and `76` bound in one checked theorem. `RMQPaper` imports
+same `Costed.cost`, and `207` bound in one checked theorem. `RMQPaper` imports
 only its canonical headline alias. Historical source theorems remain reachable
 solely through the explicit `RMQ.Headlines.RMQCompatibility` module under
 `Legacy`/`Compatibility` names; compatibility-only W18 projections now live

@@ -2,9 +2,10 @@
 
 ## Canonical Reviewer Payload And Trace
 
-The occurrence-provenance layer preserves the exhaustive typed
-20-source universe, including canonical close, inside one whole-machine
-physical word list. That
+The occurrence-provenance layer preserves an exhaustive typed universe of 22
+physical sources over logical segments `0..22`, including canonical close;
+logical segments `0` and `19` share the BP-code source. It sits inside one
+whole-machine physical word list. That
 list erases exactly to the public `SuccinctClassic.buildPayload`. The existing
 supplied-store evaluator runs through an adapter that actually reads the supplied
 flat store at checked translated addresses; canonical flat-physical execution
@@ -21,15 +22,17 @@ component-local occurrence, invocation parameters, source, and offset in the
 composed trace for that exact query. Separately, the query-independent manifest
 packet proves every counted source and named shared-BP consumer has some
 successful witness through an actual closed whole-query execution under a
-valid ordinary `List Int` query. Fresh unused segment `21` is rejected by the
-same common closed-valid-occurrence predicate, with a checked bridge from the
+valid ordinary `List Int` query. Fresh unused segment `23` is rejected by the
+same common closed-valid-occurrence predicate; live segment `21` is the fringe
+chunk table. A checked bridge runs from the
 successful positive predicate to the mutation-side arbitrary-result predicate.
 The singleton executable regression checks that identical events at global
-positions `0` and `12` remain distinct obligations. Earlier event-value and
+positions `0` and `15`, produced by program instructions `0` and `1`, remain
+distinct obligations. Earlier event-value and
 component may-read facts remain compatibility facts only.
 The unchanged canonical execution now has the checked principled charged-trace
 cap `207 = 2*35 + (2*11 + 2*37 + 30) + 11`, and modeled cost is exactly emitted
-trace length. Payload-word reads and word-rank/select primitives are charged;
+trace length. The emitted payload-word reads are charged;
 controller dispatch, input/register access, arithmetic, branching, decoding,
 local scanning, candidate merging, trace assembly, and the validity guard are
 currently uncharged. Earlier cost and dispatch theorems are documented only in

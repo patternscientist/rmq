@@ -3,8 +3,9 @@
 ## Canonical Reviewer Route
 
 The final all-size reviewer trace uses one positive canonical block geometry and
-one exhaustive typed 20-source universe including canonical close. Physical
-regions are exclusive, every logical segment is covered, and legacy duplicate
+an exhaustive manifest of 22 physical sources over logical segments `0..22`, including canonical close;
+logical segments `0` and `19` share the BP-code source. Physical regions are
+exclusive, every logical segment is covered, and legacy duplicate
 close/interior storage is absent from the canonical payload and reachable only
 through compatibility surfaces. The provenance layer proves indexed occurrence provenance from
 the global trace through the actual program occurrence, folded prefix state,
@@ -31,7 +32,8 @@ satisfy the reviewer word bound.
 
 The final trace is exact through
 `concreteBPNativeSuccinctRMQWholeQueryGlobalWordTraceCosted_exact`. Its honest
-principled all-size charged-trace bound is `207`, checked by
+principled all-size charged-trace bound is
+`207 = 2*35 + (2*11 + 2*37 + 30) + 11`, checked by
 `concreteBPNativeSuccinctRMQPrincipledAllSizeChargedTraceCost_eq`; exact modeled
 cost is emitted trace length. Earlier checked cost and dispatch facts are
 indexed only in the explicit
@@ -70,7 +72,7 @@ aliases.
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelSoundnessExactOfFootprintGlobal` | List-facing supplied-store exactness: if a caller-provided store agrees with `SuccinctClassic.globalReadStore xs` on the final checked footprint, valid half-open queries through `SuccinctClassic.queryCostedWithStore` erase to the exact leftmost `List Int` RMQ answer. |
 | `RMQ.Headlines.listIntSuccinctRMQFinalFullModelCostLeOfFootprintGlobal` | List-facing supplied-store all-size cost transfer: under the same footprint agreement, `SuccinctClassic.queryCostedWithStore xs store left right` has modeled cost at most `SuccinctClassic.queryCost`. |
 | `RMQ.Headlines.succinctRMQCanonicalReviewerPayloadGlobalWordTraceTwoSidedProfile` | Canonical construction-facing capstone: doubled-Catalan space envelopes, the at-most `2*n + o(n)` canonical reviewer payload, exact physical erasure, direct positional physical backing for every successful read, exact canonical-global-trace answers, non-synthetic certificate weight equal to trace length and the same `Costed.cost`, and uniform bound `207`. |
-| `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` | All-size final-query execution story: the public costed query refines one globally segmented `WordRAM.TraceEvent` stream, every event is a payload read or bounded word primitive, and every read agrees with one concrete payload store. |
+| `RMQ.Headlines.succinctRMQGlobalPayloadStoreExecutionStory` | All-size final-query execution story: the public costed query refines one globally segmented `WordRAM.TraceEvent` stream, every emitted event is a payload read, and every read agrees with one concrete payload store. |
 | `RMQ.Headlines.succinctRMQGlobalPayloadStoreExtensionalExecutionStory` | Store-extensional all-size execution story: any read store agreeing with the concrete global store on emitted payload-read events validates the same final-query trace. |
 | `RMQ.Headlines.succinctRMQCanonicalInteriorDirectoryProfileAllSize` | Canonical all-size interior profile collecting exactness, `240`, component-store, footprint, backing, and reviewer-width guarantees. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultWithStoreEqGlobalOfFootprint` | Whole final query is store-parametric under agreement on the composed checked footprint. |
@@ -79,7 +81,7 @@ aliases.
 | `RMQ.Headlines.succinctRMQCanonicalReviewerValidQueryOperandsFit` | Valid query operands fit the same input/addressable-store/sentinel-derived width. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostLe` | The unchanged uniform canonical final trace has the principled charged-trace bound `207`. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceCostedCostEqTraceLength` | The modeled cost is exactly the emitted charged-event trace length. |
-| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultEventReadWordOrWordRankOrWordSelect` | Every actual emitted canonical event is a payload read, word-rank, or word-select event. |
+| `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultEventReadWordOrWordRankOrWordSelect` | Compatibility-named event-classification alias; on the current canonical route every emitted event is a payload read. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumEqCost` | For the canonical no-synthetic trace, the `nonSyntheticWeight` certificate sum equals the `Costed` cost of the same execution. |
 | `RMQ.Headlines.succinctRMQWholeQueryGlobalWordTraceResultNonSyntheticWeightSumLe207` | The non-synthetic-weighted actual emitted trace is at most `207`. |
 | `RMQ.Headlines.succinctRMQSyntheticCostOnlyPrimitiveMemBreaksNonSyntheticWeightLengthEquality` | A synthetic event anywhere in a trace breaks `nonSyntheticWeight`/length equality. |
@@ -229,8 +231,8 @@ It exposes the concrete flat payload layout
 the counted `concreteBPNativeSuccinctRMQPayload` itself, split as BP code,
 final rank/access payload, generic sparse-exception select payload, padding,
 and compact close/LCA payload. The canonical reviewer manifest replaces the old
-route-dependent source description with one typed 20-source universe. It
-includes canonical close, lists each named consumer (with BP code explicitly
+route-dependent source description with 22 physical sources over logical
+segments `0..22`. It includes canonical close, lists each named consumer (with BP code explicitly
 shared), and proves source/region and segment coverage universally without
 requiring one query to exercise mutually exclusive segments.
 Legacy finite-small interior store segments `26` and `27` now have empty source
