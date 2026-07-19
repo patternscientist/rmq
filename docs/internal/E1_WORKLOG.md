@@ -5643,10 +5643,12 @@ All file:line verified at this commit.
    `∀ a, store.readWord? segment (base + a) =
    (fixedWidthNatTableMachineWords table wordSize)[a]?`.  The interior
    store's segment/offset assignment is
-   `canonicalRelativeRmmInteriorComponentOffsets` (consumed at
-   `InteriorDirectory.lean:2282`, `:2317`, `:2335`); the store's word list
-   is `canonicalRelativeRmmInteriorComponentStore_words_toList`
-   (near `:1707`).  Deriving `hagree` from those two is the composition
+   `canonicalRelativeRmmInteriorComponentOffsets`
+   (`InteriorDirectory.lean:1614`, consumed at `:2282`, `:2317`, `:2335`);
+   the store's word list is
+   `canonicalRelativeRmmInteriorComponentStore_words_toList` (`:1665`;
+   note `:1707` is a USE site inside `..._words_size_eq`, not the
+   declaration).  Deriving `hagree` from those two is the composition
    step, and it is NOT yet done.  It is stated as a parameter rather than
    guessed; `segmentStore_agrees` shows it is satisfiable, which is not
    the same as showing it holds AT THE INTERIOR STORE.  That distinction
