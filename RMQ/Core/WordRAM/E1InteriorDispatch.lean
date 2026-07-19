@@ -877,6 +877,291 @@ theorem indexDecomp_runsTo (store : ReadStore) {program : E1Machine.Program}
       hr2, RegFile.write_other _ _ hT,
       hr1, RegFile.write_other _ _ hMacro]
 
+/-! ## THE SELECTOR, SIMULATED: EACH ROUTE CONDITION REACHES ITS ARM BASE
+
+Five lemmas, one per branch of
+`canonicalRelativeRmmInteriorRangeMinComputation`, each stating that the
+nine-instruction selector run under that branch's route condition lands
+at that arm's base -- and saying what it did to the register file on the
+way.
+
+**This is the correctness of the DISPATCH, separated from the correctness
+of the ARMS.**  The two are independent failures: an arm can be right and
+be reached on the wrong condition, and the close-leg lane's defect was
+the mirror -- the dispatch right and the arm's EXIT wrong.  Keeping them
+apart means each is refutable on its own.
+
+The conditions are the ones `interiorRangeMin_of_*` above read off the
+route, in the route's own `if`-order.  Nothing here mentions a store, and
+all five paths are read-free.
+
+`wT` is the only register the selector writes, and only on the four
+branches that reach the comparison; the `count = 0` path leaves the
+register file untouched entirely. -/
+
+/-- Branch 1: `count = 0` reaches `#0`, by two branches and no write. -/
+theorem dispatchSelector_reaches_arm0 (store : ReadStore)
+    {program : E1Machine.Program} {Q : Nat}
+    (hHost : HostedAt program (Q + 19) (dispatchSelector Q))
+    (regs : RegFile) (hCount : regs wCount = 0) (hOne : regs wOne = 1) :
+    RunsTo store program ⟨regs, Q + 19, false⟩ ⟨regs, armBase0 Q, false⟩ []
+      [Category.branch, Category.branch] := by
+  have hf : ∀ (k m : Nat) (instr : Instr), k < 9 →
+      (dispatchSelector Q)[k]? = some instr → Q + 19 + k = m →
+      program[m]? = some instr := by
+    intro k m instr hk hget hm
+    rw [← hm, hHost k hk, hget]
+  have h0 : program[Q + 19]? = some (.brNZ wCount (Q + 21)) :=
+    hf 0 _ _ (by omega) rfl (by omega)
+  have h1 : program[Q + 20]? = some (.brNZ wOne (Q + 28)) :=
+    hf 1 _ _ (by omega) rfl (by omega)
+  have s0 : RunsTo store program ⟨regs, Q + 19, false⟩
+      ⟨regs, Q + 20, false⟩ [] [Category.branch] := by
+    have h := RunsTo.brNZ_not_taken (store := store)
+      (s := (⟨regs, Q + 19, false⟩ : State)) rfl h0 (by simpa using hCount)
+    simpa [Nat.add_assoc] using h
+  have s1 : RunsTo store program ⟨regs, Q + 20, false⟩
+      ⟨regs, Q + 28, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_taken (store := store)
+      (s := (⟨regs, Q + 20, false⟩ : State)) rfl h1 (by simp [hOne])
+  simpa using s0.trans s1
+
+/-- Branch 2: a range inside one macro block reaches `#4`.  The
+comparison leaves `wT = 1`. -/
+theorem dispatchSelector_reaches_arm4 (store : ReadStore)
+    {program : E1Machine.Program} {Q : Nat}
+    (hHost : HostedAt program (Q + 19) (dispatchSelector Q))
+    (regs : RegFile) (count left : Nat)
+    (hCount : regs wCount = count) (hLeft : regs wLeft = left)
+    (hc : count ≠ 0) (hle : count ≤ left) :
+    RunsTo store program ⟨regs, Q + 19, false⟩
+      ⟨regs.write wT 1, armBase4 Q, false⟩ []
+      [Category.branch, Category.comparison, Category.branch] := by
+  have hf : ∀ (k m : Nat) (instr : Instr), k < 9 →
+      (dispatchSelector Q)[k]? = some instr → Q + 19 + k = m →
+      program[m]? = some instr := by
+    intro k m instr hk hget hm
+    rw [← hm, hHost k hk, hget]
+  have h0 : program[Q + 19]? = some (.brNZ wCount (Q + 21)) :=
+    hf 0 _ _ (by omega) rfl (by omega)
+  have h2 : program[Q + 21]? = some (.natLe wT wCount wLeft) :=
+    hf 2 _ _ (by omega) rfl (by omega)
+  have h3 : program[Q + 22]? = some (.brNZ wT (Q + 30)) :=
+    hf 3 _ _ (by omega) rfl (by omega)
+  have s0 : RunsTo store program ⟨regs, Q + 19, false⟩
+      ⟨regs, Q + 21, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_taken (store := store)
+      (s := (⟨regs, Q + 19, false⟩ : State)) rfl h0 (by simp [hCount, hc])
+  have s2 : RunsTo store program ⟨regs, Q + 21, false⟩
+      ⟨regs.write wT 1, Q + 22, false⟩ [] [Category.comparison] := by
+    have h := RunsTo.natLe (store := store)
+      (s := (⟨regs, Q + 21, false⟩ : State)) rfl h2
+    simpa [hCount, hLeft, hle] using h
+  have s3 : RunsTo store program ⟨regs.write wT 1, Q + 22, false⟩
+      ⟨regs.write wT 1, Q + 30, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_taken (store := store)
+      (s := (⟨regs.write wT 1, Q + 22, false⟩ : State)) rfl h3
+      (by simp [RegFile.write])
+  simpa using (s0.trans s2).trans s3
+
+/-- Branch 3: no whole middle macro reaches `#6`. -/
+theorem dispatchSelector_reaches_arm6 (store : ReadStore)
+    {program : E1Machine.Program} {Q : Nat}
+    (hHost : HostedAt program (Q + 19) (dispatchSelector Q))
+    (regs : RegFile) (count left : Nat)
+    (hCount : regs wCount = count) (hLeft : regs wLeft = left)
+    (hOne : regs wOne = 1) (hMid : regs uMid = 0)
+    (hc : count ≠ 0) (hgt : ¬ (count ≤ left)) :
+    RunsTo store program ⟨regs, Q + 19, false⟩
+      ⟨regs.write wT 0, armBase6 Q, false⟩ []
+      [Category.branch, Category.comparison, Category.branch,
+        Category.branch, Category.branch] := by
+  have hf : ∀ (k m : Nat) (instr : Instr), k < 9 →
+      (dispatchSelector Q)[k]? = some instr → Q + 19 + k = m →
+      program[m]? = some instr := by
+    intro k m instr hk hget hm
+    rw [← hm, hHost k hk, hget]
+  have h0 : program[Q + 19]? = some (.brNZ wCount (Q + 21)) :=
+    hf 0 _ _ (by omega) rfl (by omega)
+  have h2 : program[Q + 21]? = some (.natLe wT wCount wLeft) :=
+    hf 2 _ _ (by omega) rfl (by omega)
+  have h3 : program[Q + 22]? = some (.brNZ wT (Q + 30)) :=
+    hf 3 _ _ (by omega) rfl (by omega)
+  have h4 : program[Q + 23]? = some (.brNZ uMid (Q + 25)) :=
+    hf 4 _ _ (by omega) rfl (by omega)
+  have h5 : program[Q + 24]? = some (.brNZ wOne (Q + 540)) :=
+    hf 5 _ _ (by omega) rfl (by omega)
+  have s0 : RunsTo store program ⟨regs, Q + 19, false⟩
+      ⟨regs, Q + 21, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_taken (store := store)
+      (s := (⟨regs, Q + 19, false⟩ : State)) rfl h0 (by simp [hCount, hc])
+  have s2 : RunsTo store program ⟨regs, Q + 21, false⟩
+      ⟨regs.write wT 0, Q + 22, false⟩ [] [Category.comparison] := by
+    have h := RunsTo.natLe (store := store)
+      (s := (⟨regs, Q + 21, false⟩ : State)) rfl h2
+    simpa [hCount, hLeft, hgt] using h
+  have s3 : RunsTo store program ⟨regs.write wT 0, Q + 22, false⟩
+      ⟨regs.write wT 0, Q + 23, false⟩ [] [Category.branch] := by
+    have h := RunsTo.brNZ_not_taken (store := store)
+      (s := (⟨regs.write wT 0, Q + 22, false⟩ : State)) rfl h3
+      (by simp [RegFile.write])
+    simpa [Nat.add_assoc] using h
+  have s4 : RunsTo store program ⟨regs.write wT 0, Q + 23, false⟩
+      ⟨regs.write wT 0, Q + 24, false⟩ [] [Category.branch] := by
+    have h := RunsTo.brNZ_not_taken (store := store)
+      (s := (⟨regs.write wT 0, Q + 23, false⟩ : State)) rfl h4
+      (by show (regs.write wT 0) uMid = 0
+          rw [RegFile.write_other _ _ (by decide)]; exact hMid)
+    simpa [Nat.add_assoc] using h
+  have s5 : RunsTo store program ⟨regs.write wT 0, Q + 24, false⟩
+      ⟨regs.write wT 0, Q + 540, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_taken (store := store)
+      (s := (⟨regs.write wT 0, Q + 24, false⟩ : State)) rfl h5
+      (by show (regs.write wT 0) wOne ≠ 0
+          rw [RegFile.write_other _ _ (by decide), hOne]; omega)
+  simpa using ((s0.trans s2).trans s3).trans (s4.trans s5)
+
+/-- Branch 4: whole middle macros and no right remainder reaches `#7`. -/
+theorem dispatchSelector_reaches_arm7 (store : ReadStore)
+    {program : E1Machine.Program} {Q : Nat}
+    (hHost : HostedAt program (Q + 19) (dispatchSelector Q))
+    (regs : RegFile) (count left : Nat)
+    (hCount : regs wCount = count) (hLeft : regs wLeft = left)
+    (hOne : regs wOne = 1) (hMid : regs uMid ≠ 0) (hRight : regs uRight = 0)
+    (hc : count ≠ 0) (hgt : ¬ (count ≤ left)) :
+    RunsTo store program ⟨regs, Q + 19, false⟩
+      ⟨regs.write wT 0, armBase7 Q, false⟩ []
+      [Category.branch, Category.comparison, Category.branch,
+        Category.branch, Category.branch, Category.branch] := by
+  have hf : ∀ (k m : Nat) (instr : Instr), k < 9 →
+      (dispatchSelector Q)[k]? = some instr → Q + 19 + k = m →
+      program[m]? = some instr := by
+    intro k m instr hk hget hm
+    rw [← hm, hHost k hk, hget]
+  have h0 : program[Q + 19]? = some (.brNZ wCount (Q + 21)) :=
+    hf 0 _ _ (by omega) rfl (by omega)
+  have h2 : program[Q + 21]? = some (.natLe wT wCount wLeft) :=
+    hf 2 _ _ (by omega) rfl (by omega)
+  have h3 : program[Q + 22]? = some (.brNZ wT (Q + 30)) :=
+    hf 3 _ _ (by omega) rfl (by omega)
+  have h4 : program[Q + 23]? = some (.brNZ uMid (Q + 25)) :=
+    hf 4 _ _ (by omega) rfl (by omega)
+  have h6 : program[Q + 25]? = some (.brNZ uRight (Q + 27)) :=
+    hf 6 _ _ (by omega) rfl (by omega)
+  have h7 : program[Q + 26]? = some (.brNZ wOne (Q + 1585)) :=
+    hf 7 _ _ (by omega) rfl (by omega)
+  have s0 : RunsTo store program ⟨regs, Q + 19, false⟩
+      ⟨regs, Q + 21, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_taken (store := store)
+      (s := (⟨regs, Q + 19, false⟩ : State)) rfl h0 (by simp [hCount, hc])
+  have s2 : RunsTo store program ⟨regs, Q + 21, false⟩
+      ⟨regs.write wT 0, Q + 22, false⟩ [] [Category.comparison] := by
+    have h := RunsTo.natLe (store := store)
+      (s := (⟨regs, Q + 21, false⟩ : State)) rfl h2
+    simpa [hCount, hLeft, hgt] using h
+  have s3 : RunsTo store program ⟨regs.write wT 0, Q + 22, false⟩
+      ⟨regs.write wT 0, Q + 23, false⟩ [] [Category.branch] := by
+    have h := RunsTo.brNZ_not_taken (store := store)
+      (s := (⟨regs.write wT 0, Q + 22, false⟩ : State)) rfl h3
+      (by simp [RegFile.write])
+    simpa [Nat.add_assoc] using h
+  have s4 : RunsTo store program ⟨regs.write wT 0, Q + 23, false⟩
+      ⟨regs.write wT 0, Q + 25, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_taken (store := store)
+      (s := (⟨regs.write wT 0, Q + 23, false⟩ : State)) rfl h4
+      (by show (regs.write wT 0) uMid ≠ 0
+          rw [RegFile.write_other _ _ (by decide)]; exact hMid)
+  have s6 : RunsTo store program ⟨regs.write wT 0, Q + 25, false⟩
+      ⟨regs.write wT 0, Q + 26, false⟩ [] [Category.branch] := by
+    have h := RunsTo.brNZ_not_taken (store := store)
+      (s := (⟨regs.write wT 0, Q + 25, false⟩ : State)) rfl h6
+      (by show (regs.write wT 0) uRight = 0
+          rw [RegFile.write_other _ _ (by decide)]; exact hRight)
+    simpa [Nat.add_assoc] using h
+  have s7 : RunsTo store program ⟨regs.write wT 0, Q + 26, false⟩
+      ⟨regs.write wT 0, Q + 1585, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_taken (store := store)
+      (s := (⟨regs.write wT 0, Q + 26, false⟩ : State)) rfl h7
+      (by show (regs.write wT 0) wOne ≠ 0
+          rw [RegFile.write_other _ _ (by decide), hOne]; omega)
+  simpa using ((s0.trans s2).trans s3).trans (s4.trans (s6.trans s7))
+
+/-- Branch 5: everything else reaches `#8`, the arm with no terminator. -/
+theorem dispatchSelector_reaches_arm8 (store : ReadStore)
+    {program : E1Machine.Program} {Q : Nat}
+    (hHost : HostedAt program (Q + 19) (dispatchSelector Q))
+    (regs : RegFile) (count left : Nat)
+    (hCount : regs wCount = count) (hLeft : regs wLeft = left)
+    (hOne : regs wOne = 1) (hMid : regs uMid ≠ 0) (hRight : regs uRight ≠ 0)
+    (hc : count ≠ 0) (hgt : ¬ (count ≤ left)) :
+    RunsTo store program ⟨regs, Q + 19, false⟩
+      ⟨regs.write wT 0, armBase8 Q, false⟩ []
+      [Category.branch, Category.comparison, Category.branch,
+        Category.branch, Category.branch, Category.branch] := by
+  have hf : ∀ (k m : Nat) (instr : Instr), k < 9 →
+      (dispatchSelector Q)[k]? = some instr → Q + 19 + k = m →
+      program[m]? = some instr := by
+    intro k m instr hk hget hm
+    rw [← hm, hHost k hk, hget]
+  have h0 : program[Q + 19]? = some (.brNZ wCount (Q + 21)) :=
+    hf 0 _ _ (by omega) rfl (by omega)
+  have h2 : program[Q + 21]? = some (.natLe wT wCount wLeft) :=
+    hf 2 _ _ (by omega) rfl (by omega)
+  have h3 : program[Q + 22]? = some (.brNZ wT (Q + 30)) :=
+    hf 3 _ _ (by omega) rfl (by omega)
+  have h4 : program[Q + 23]? = some (.brNZ uMid (Q + 25)) :=
+    hf 4 _ _ (by omega) rfl (by omega)
+  have h6 : program[Q + 25]? = some (.brNZ uRight (Q + 27)) :=
+    hf 6 _ _ (by omega) rfl (by omega)
+  have h8 : program[Q + 27]? = some (.brNZ wOne (Q + 2630)) :=
+    hf 8 _ _ (by omega) rfl (by omega)
+  have s0 : RunsTo store program ⟨regs, Q + 19, false⟩
+      ⟨regs, Q + 21, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_taken (store := store)
+      (s := (⟨regs, Q + 19, false⟩ : State)) rfl h0 (by simp [hCount, hc])
+  have s2 : RunsTo store program ⟨regs, Q + 21, false⟩
+      ⟨regs.write wT 0, Q + 22, false⟩ [] [Category.comparison] := by
+    have h := RunsTo.natLe (store := store)
+      (s := (⟨regs, Q + 21, false⟩ : State)) rfl h2
+    simpa [hCount, hLeft, hgt] using h
+  have s3 : RunsTo store program ⟨regs.write wT 0, Q + 22, false⟩
+      ⟨regs.write wT 0, Q + 23, false⟩ [] [Category.branch] := by
+    have h := RunsTo.brNZ_not_taken (store := store)
+      (s := (⟨regs.write wT 0, Q + 22, false⟩ : State)) rfl h3
+      (by simp [RegFile.write])
+    simpa [Nat.add_assoc] using h
+  have s4 : RunsTo store program ⟨regs.write wT 0, Q + 23, false⟩
+      ⟨regs.write wT 0, Q + 25, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_taken (store := store)
+      (s := (⟨regs.write wT 0, Q + 23, false⟩ : State)) rfl h4
+      (by show (regs.write wT 0) uMid ≠ 0
+          rw [RegFile.write_other _ _ (by decide)]; exact hMid)
+  have s6 : RunsTo store program ⟨regs.write wT 0, Q + 25, false⟩
+      ⟨regs.write wT 0, Q + 27, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_taken (store := store)
+      (s := (⟨regs.write wT 0, Q + 25, false⟩ : State)) rfl h6
+      (by show (regs.write wT 0) uRight ≠ 0
+          rw [RegFile.write_other _ _ (by decide)]; exact hRight)
+  have s8 : RunsTo store program ⟨regs.write wT 0, Q + 27, false⟩
+      ⟨regs.write wT 0, Q + 2630, false⟩ [] [Category.branch] :=
+    RunsTo.brNZ_taken (store := store)
+      (s := (⟨regs.write wT 0, Q + 27, false⟩ : State)) rfl h8
+      (by show (regs.write wT 0) wOne ≠ 0
+          rw [RegFile.write_other _ _ (by decide), hOne]; omega)
+  simpa using ((s0.trans s2).trans s3).trans (s4.trans (s6.trans s8))
+
+/-- **THE FIVE ARM BASES ARE PAIRWISE DISTINCT.**  Cheap, and worth
+stating: the five reachability lemmas above would all still typecheck if
+two arms shared a base, and the block would then be silently wrong on one
+of the two conditions. -/
+theorem dispatch_arm_bases_distinct (Q : Nat) :
+    armBase0 Q ≠ armBase4 Q ∧ armBase0 Q ≠ armBase6 Q ∧
+      armBase0 Q ≠ armBase7 Q ∧ armBase0 Q ≠ armBase8 Q ∧
+      armBase4 Q ≠ armBase6 Q ∧ armBase4 Q ≠ armBase7 Q ∧
+      armBase4 Q ≠ armBase8 Q ∧ armBase6 Q ≠ armBase7 Q ∧
+      armBase6 Q ≠ armBase8 Q ∧ armBase7 Q ≠ armBase8 Q := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩ <;> simp <;> omega
+
 /-! ## THE WITNESS LAYOUT AND ITS IMPOSTOR
 
 The real block is 4204 instructions over five heavyweight sub-blocks and
