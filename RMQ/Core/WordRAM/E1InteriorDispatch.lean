@@ -405,7 +405,7 @@ branch, because that branch is not merged and this one may not edit it.
 `crossBlockArmProgramAt_runsTo`'s `hInterior` promises exactly FOUR
 register equalities (`fClose`, `fRight`, `mLV`, `mLP`) and is
 byte-identical on both branches -- re-checked this session at
-`E1CrossBlockArm.lean:1143`.  Stating this clause as a fifth conjunct of
+`E1CrossBlockArm.lean:1181`.  Stating this clause as a fifth conjunct of
 a four-conjunct premise does not typecheck.  It is proved here as a
 SEPARATE, ADDITIONAL export, so that it is already in hand when the
 close-leg branch merges and widens the premise. -/

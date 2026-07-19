@@ -89,7 +89,7 @@ next block opens at `118`.  Every register here satisfies
 `ChunkFoldUntouched r := r < 89 \/ 99 < r`
 (`E1InteriorChunkFold.lean:928`), so the scratch survives any later fold.
 The outputs are `mMV` (`77`) and `mMP` (`78`) -- the interior interface
-`crossBlockArmProgramAt_runsTo` names at `E1CrossBlockArm.lean:1184`.
+`crossBlockArmProgramAt_runsTo` names at `E1CrossBlockArm.lean:1196`.
 -/
 
 open RMQ
@@ -928,7 +928,7 @@ powerless and preservation is not a third check but the SECOND OF ONLY
 TWO.
 
 The four registers `crossBlockArmProgramAt_runsTo`'s `hInterior`
-(`E1CrossBlockArm.lean:1143`) requires to survive the interior all
+(`E1CrossBlockArm.lean:1181`) requires to survive the interior all
 satisfy this predicate; `legUntouched_at_crossBlockArm_operands` below
 evaluates that rather than asserting it. -/
 abbrev LegUntouched (r : Nat) : Prop :=

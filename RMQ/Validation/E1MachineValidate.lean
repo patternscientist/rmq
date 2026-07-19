@@ -986,21 +986,34 @@ What is missing now is construction, not adjudication.  The interior's
 atomic single-chunk read landed in M3d-11
 (`E1InteriorReadBlock.interiorReadNat`) and its eight-capped multi-chunk
 fold landed in M3d-12
-(`E1InteriorChunkFold.interiorChunkFold_runsTo`), but the five-branch
-interior composition and `hInterior` for
-`crossBlockArmProgramAt_runsTo` are not written, so there is still no
-whole-query program to run.  This harness reports the hole as OPEN rather
-than reporting a vacuous pass. -/
+(`E1InteriorChunkFold.interiorChunkFold_runsTo`).  THE INTERIOR LEG IS NOW
+BUILT: the five-branch interior composition
+(`E1InteriorDispatchCompose.canonicalInteriorDispatchBlock:89`, simulated
+by `interiorDispatchBlock_runsTo:816`) and `hInterior` for
+`crossBlockArmProgramAt_runsTo` (`interiorDispatch_hInterior:1171`,
+CONSUMED at `crossBlockArm_withCanonicalInterior_runsTo:1274`) are
+written, and the close leg has landed alongside them.
+
+What is still missing is the WHOLE-QUERY PROGRAM ITSELF.  No definition
+assembles the close legs and the interior into a single runnable query
+program -- there is no `wholeQueryProgram` in the tree -- so there is
+still nothing end-to-end to execute against the fixtures.
+`WholeQueryMachineAgrees` (`E1WholeQueryPublic.lean:114`) states the
+target this comparison would discharge; it is a predicate, not a program.
+This harness reports the hole as OPEN rather than reporting a vacuous
+pass. -/
 
 /-- Status of the whole-query comparison.  `false` means "not yet
 attachable", which is the honest state today. -/
 def wholeQueryComparisonAvailable : Bool := false
 
-/-- The attachment point.  When the interior leg unblocks, this becomes
-the end-to-end differential: build the whole-query program, run it on each
-fixture, and compare the answer register against `e.expected`.  It returns
-`none` today because the program does not exist -- NOT because the machine
-agreed with the reference. -/
+/-- The attachment point.  The interior leg has now landed, so what gates
+this is no longer the interior but the whole-query program: once some
+definition composes the close legs and the interior into one runnable
+program, this becomes the end-to-end differential -- build it, run it on
+each fixture, and compare the answer register against `e.expected`.  It
+returns `none` today because that program does not exist -- NOT because
+the machine agreed with the reference. -/
 def wholeQueryMismatches : Option (List Expectation) :=
   if wholeQueryComparisonAvailable then
     -- Attach here: run the whole-query machine per expectation and keep
@@ -2160,7 +2173,7 @@ def mainImpl : IO UInt32 := do
   IO.println s!"wholeQueryComparisonAvailable={wholeQueryComparisonAvailable}"
   match wholeQueryMismatches with
   | none =>
-      IO.println "wholeQueryComparison=OPEN (interior leg UNBUILT, not blocked: atom and eight-capped chunk fold landed, five-branch composition and hInterior not written; NOT a pass)"
+      IO.println "wholeQueryComparison=OPEN (whole-query PROGRAM not assembled, not blocked: interior leg and close leg are BUILT -- five-branch composition and hInterior ARE written -- but no definition composes them into one runnable query program, so nothing is compared here; NOT a pass)"
   | some ms =>
       IO.println s!"wholeQueryMismatches={ms.length}"
   IO.println ""

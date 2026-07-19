@@ -36,7 +36,7 @@ occupied, which is exactly the case this block must not assume.
 ## Where the result lands, and why
 
 In `mMV`/`mMP`, the same pair `spanBlock` and the 177-leg write, because
-`crossBlockArmProgramAt_runsTo`'s `hInterior` (`E1CrossBlockArm.lean:1143`)
+`crossBlockArmProgramAt_runsTo`'s `hInterior` (`E1CrossBlockArm.lean:1181`)
 reads the interior's answer from `bestOfRegs (regsI mMV) (regsI mMP)`.
 Every interior producer landing in one pair is what lets `#4`-`#9` compose
 without shuffling.  The block therefore merges a STASHED left candidate

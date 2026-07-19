@@ -15,7 +15,7 @@ THIS MODULE ELIMINATES THE HYPOTHESIS RATHER THAN WITNESSING IT.
 
 ## The target is not a matter of choice
 
-`crossBlockArmProgramAt_runsTo` (`E1CrossBlockArm.lean:1143`) fixes it.  Its
+`crossBlockArmProgramAt_runsTo` (`E1CrossBlockArm.lean:1181`) fixes it.  Its
 `hInterior` premise demands the interior leg's `RunsTo` at
 `concreteBPNativeSuccinctRMQGlobalReadStore shape` -- named in the theorem
 statement, not selectable by the interior's author.  So that store, at the
@@ -44,7 +44,7 @@ retained as the general lemmas these instantiate, exactly as
 `readWord?_slice` is retained beneath them; what changes is that the
 DELIVERED clauses -- the ones the summary group consumes -- carry no
 agreement hypothesis, matching every prior E1 module
-(`E1RankCanonical.lean:127`, `E1CrossBlockArm.lean:1143`,
+(`E1RankCanonical.lean:127`, `E1CrossBlockArm.lean:1181`,
 `ChargedRankSelectWiring.lean:970`).
 -/
 
