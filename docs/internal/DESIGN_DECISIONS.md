@@ -3621,3 +3621,74 @@ gap, but the resulting loop has no literal all-size iteration cap, which
 is in tension with REQ-E1-06(c) as frozen. This is flagged for coordinator
 adjudication in `docs/internal/E1_WORKLOG.md` (M3d-3 section 2) and is NOT
 decided here.
+
+## DD-20260718-012: E1 three-way candidate merge — biased option encoding as the cross-component interface, bank extension `75..84` (E1-R4q M3d-7)
+
+Date: 2026-07-18. Scope: the machine realization of the fused epilogue of
+the accepted cross-block close object
+`bpChunkedCrossBlockCloseTraceResultWithRankSeedAllSizeStructuralAtSegmentsWithStore`
+(`RMQ/Core/SuccinctClose/RelativeRmmMacro/ChargedFringeTrace.lean:1144`),
+namely `bpCandidateClose? (bpCandidateMerge3? left? middle? right?)`.
+Decided by: worker E1-R4q under the amended E1 contract (frozen matrix
+`E1_AMENDED_MACHINE_ACCEPTANCE_MATRIX.md` REQ-E1-01/02/06/08). Extends
+DD-20260718-009, -010 and -011.
+
+Decision (`RMQ/Core/WordRAM/E1CandMerge3.lean`, namespace
+`RMQ.WordRAM.E1CandMerge3`):
+
+- BANK EXTENSION `75..84`, above the dispatch bank `72..74`: `mLV = 75`,
+  `mLP = 76` (left candidate value/position), `mMV = 77`, `mMP = 78`
+  (middle), `mRV = 79`, `mRP = 80` (right), `mAV = 81`, `mAP = 82`
+  (accumulator), `mT = 83`, `mU = 84` (scratch). All fresh; no existing
+  register meaning is redefined. The block writes its
+  `bpCandidateClose?` payload into the EXISTING `fRes = 69`, the same
+  register the same-block leg uses, so the two dispatch arms converge on
+  one output register rather than introducing a second result surface.
+
+- OPTIONAL CANDIDATES USE THE `+1` BIAS already established by
+  DD-20260718-009 for the fold's best candidate (`0` encodes `none`,
+  `v + 1` encodes `some v`, decoded by `E1FringeFoldBlock.bestOfRegs`).
+  This is not merely consistency. The bias makes both comparisons DIRECT:
+  for two occupied candidates the biased test `v₁ + 1 < v₂ + 1` is
+  literally the route's `v₁ < v₂`, so no unbiasing arithmetic precedes
+  either `natLt`. That is what makes the block 16 instructions rather
+  than roughly 24, and it is why the accumulator invariant is stated in
+  biased form (`candMerge3Mid_runsTo`, `E1CandMerge3.lean:365`).
+
+- STRICT `natLt` AT BOTH COMPARISON SITES, never `natLe`.
+  `bpCandidateBetter` (`EndpointFringe/InteriorCandidate/Candidate.lean:15`)
+  uses strict `<`, so ties keep the LEFT candidate; since
+  `bpCandidateMerge3?` associates to the left (`:24`), the left fringe
+  wins ties over the interior and both win ties over the right fringe.
+  Using `natLe` anywhere would silently invert the accepted route's
+  leftmost tie-break.
+
+- THE BLOCK IS READ-FREE, matching the route: the epilogue rides a
+  `TraceResult.map`, which contributes no trace event. Recorded as
+  `candMerge3_readFree` (`:206`) and observed in execution by
+  `candMerge3Witness_readLogs_empty` (`:855`).
+
+- ALL SIX CONTROL PATHS ARE HANDLED, and the block deliberately does NOT
+  generalise from `E1SameBlockArm.sameBlockClose`. That epilogue is two
+  instructions with no option dispatch because `bpFringeCandGlobal` is
+  total into `some` (`ChargedFringeChunks.lean:1617`). Here `middle?` is
+  genuinely optional — the interior leg sits behind the guard
+  `leftBlock + 1 < rightBlock` whose else-branch is
+  `TraceResult.pure none` (`ChargedFringeTrace.lean:1163`) — so a real
+  three-way option-aware minimum is required.
+
+- THE CROSS-COMPONENT INTERFACE THIS FIXES, binding on the interior leg
+  when worker B7 unblocks it: `middle?` must be delivered as `mMV` (`77`)
+  holding `0` for `none` and `v + 1` for `some (v, _)`, and `mMP` (`78`)
+  holding the position, UNCONSTRAINED when absent (the block branches
+  away at `E+2` before reading `mMP`). Two alternatives are rejected
+  explicitly: an unbiased value plus a separate occupancy flag costs an
+  extra register and an extra test, changing every category log; and a
+  SENTINEL encoding (absent as a large value) would break the tie-break,
+  because a sentinel that ties with a real candidate takes the wrong
+  branch under strict `<`.
+
+Consequence for the ISA: NONE. The block introduces no constructor, no
+divisor, and no variable-operand arithmetic — it is `move`, `natLt`,
+`brNZ`, `const` and one `sub`. The ISA decision of DD-20260718-005 is
+unchanged.

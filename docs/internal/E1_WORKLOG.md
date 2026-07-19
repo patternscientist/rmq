@@ -3206,3 +3206,286 @@ NOTHING below is implemented.
    is at `RMQ/Validation/E1MachineValidate.lean`
    (`wholeQueryComparisonAvailable` / `wholeQueryMismatches`, phase 5) and
    is where the end-to-end machine-vs-`refRMQ` comparison attaches.
+
+## M3d-7 (worker E1-R4q): the three-way candidate merge, whole-program width, and the interior interface contract
+
+Branch `claude/b1-b2-charged-fringe-tables`, base `d90b062`, from HEAD
+`0e5360d` to `<HEAD>`.  Three milestones landed green and committed.
+
+### 1. THE THREE-WAY CANDIDATE MERGE (resume item 2) - LANDED
+
+`RMQ/Core/WordRAM/E1CandMerge3.lean`, new module.  This was the binding
+obstacle to the cross-block arm: before it, `rg` over `RMQ/Core/WordRAM/`
+for `bpCandidateMerge` / `candMerge` / `merge3` returned nothing.
+
+16 instructions, read-free, base-parametric, in three segments:
+`candMerge3Mid` (`:157`, 9 instructions, exit `E+9` on all three arms),
+`candMerge3Right` (`:175`, 5, exit `E+14` on both arms),
+`candMerge3Close` (`:190`, 2), composed at `candMerge3` (`:198`).
+
+The M3d-6 design survived contact with the proof; two things are worth
+recording because they are not obvious from the design note.
+
+WHY THE `+1` BIAS PAYS FOR ITSELF TWICE.  The house bias (`0` = `none`,
+`v + 1` = `some v`, decoded by `bestOfRegs`) was adopted for option
+encoding.  It also makes both comparisons DIRECT: for two occupied
+candidates the biased test `v₁ + 1 < v₂ + 1` is literally the route's
+`v₁ < v₂`, so no unbiasing arithmetic is needed before either `natLt`.
+That is why the block is 16 instructions and not ~24.  The accumulator
+invariant carrying this is `regs' mAV = (candAfterMid ...).1 + 1`
+(`candMerge3Mid_runsTo:365`), which is what lets the RIGHT phase compare
+without decoding.
+
+THE SIX PATHS FACTOR 3 x 2, AND SHOULD BE PROVED THAT WAY.  All three
+middle arms converge on `E+9` and both right arms on `E+14`, so the block
+splits into two lemmas (`candMerge3Mid_runsTo:365`,
+`candMerge3RightClose_runsTo:549`) whose case analyses are 3 and 2 rather
+than one analysis of 6.  `candMerge3_runsTo` (`:718`) composes them.  A
+single six-way proof would have been roughly twice the size for the same
+content.
+
+Also delivered: `candMerge3_fits` (`:324`), constructor-exhaustive with no
+wildcard arm and no divisor (hence no positivity side condition);
+`candMerge3_readFree` (`:206`); `candMerge3_hosting` (`:337`);
+`candMerge3Cats` (`:247`), a function of the route-side branch conditions,
+never a numeral.
+
+`bpFringeCandGlobal_isSome` (`:84`) fills a real gap found this session:
+the tree relies on `bpFringeCandGlobal` being total into `some` at several
+sites and in three prose comments, but had NO lemma for it -- every use
+discharged it inline.  It is one line (`cases candidate? <;> rfl`).
+
+### 2. ANTI-VACUITY BY EXECUTION, NOT ONLY HOSTING
+
+`candMerge3_runsTo`'s six-way case split would still typecheck if two arms
+had collapsed.  `candMerge3Witness_path1..6` (`:817`-`:841`) RUN the block
+on six concrete register files and observe six distinguishable halts.
+
+The paths are separated by BOTH observables the machine offers: modeled
+steps (`10, 11, 13, 14, 12, 13`, which alone separate five of six) and the
+close payload in `fRes` (`99, 200, 201, 302, 103, 304`, pairwise distinct,
+separating the two 13-step paths).
+`candMerge3Witness_paths_distinguishable` (`:843`) states the pairwise
+distinctness as a `Nodup` that fails if any two paths collapse;
+`candMerge3Witness_readLogs_empty` (`:855`) is the executed form of
+`candMerge3_readFree`.  All eight depend on NO axioms -- they are kernel
+computations, not `simp` arguments.
+
+### 3. WHOLE-PROGRAM WIDTH CERTIFICATES (resume item 3) - LANDED
+
+`RMQ/Core/WordRAM/E1ProgramWidth.lean`, new module.
+`sameBlockLegProgramAt_fits` (`:57`) covers all 173 instructions;
+`sameBlockDispatchProgram_fits` (`:141`) covers the dispatch composite,
+carrying the cross arm as a hypothesis so the certificate can be stated
+BEFORE the cross-block arm exists and will force it to be certified when
+it does.
+
+M3d-6 called this "assembly only".  It very nearly was, but two things it
+would not have predicted:
+
+* `rankCloseBlock` is instantiated at `L := shape.bpCode.length`, NOT the
+  `machineWordBits ...` the fold body uses, so the leg-level certificate
+  needs its OWN `shape.bpCode.length < 2 ^ w` hypothesis.  Passing the
+  fold's `L` silently unifies the implicits to a wrong segment
+  (`B + 111`) and fails with a membership mismatch, not a width error.
+* the fold back edge's condition register `fCnt` is an `abbrev`, opaque
+  to `omega` (the recurring M3d-4 gotcha), needing `show (52 : Nat) < 2 ^ w`.
+
+### 4. VALIDATOR (delegation item 4): PHASES 3e AND 4d
+
+`RMQ/Validation/E1MachineValidate.lean`.  The whole-query hole
+(`wholeQueryComparisonAvailable` / `wholeQueryMismatches`, phase 5) is
+UNTOUCHED and still reports `OPEN (interior leg blocked; NOT a pass)`.
+
+Phase 3e runs the merge on 36 fixtures against `refMerge3` (`:801`), an
+independent reference written from the specification.  It deliberately
+does NOT share the route's structure: the route is a LEFT-ASSOCIATED
+pairwise fold of option-lifted merges, while `refMerge3` flattens the
+options first and folds once.  Agreement is therefore a check on the
+association and the tie-break, not a restatement.  The value grids in
+`mergeCases` (`:817`) overlap so TIES occur in both directions -- a
+fixture set without ties could not distinguish `natLt` from `natLe`.
+
+`mergePathCoverage` (`:926`) checks all six control paths are reached; it
+is load-bearing, not decorative (see mutant D).
+
+THE MUTATION BAR WAS RAISED, NOT REUSED, AND THE REASON MATTERS.  Every
+earlier mutation in this harness is ultimately caught by RECEIPT diffing;
+phase 4c's mutant B is the sharpest, changing one operand and reaching the
+correct exit pc while its read log diverges.  THAT TEST IS UNAVAILABLE
+HERE: the merge block is read-free, so the honest run and every mutant
+produce the same empty receipt.
+
+* mutant C (`mutatedMergeCompare:871`) swaps the two operands of the right
+  comparison.  One operand, same length, same opcode-category sequence.
+  `exitFailures=0`, `mismatches=24`.
+* mutant D (`mutatedMergePosition:888`) makes the middle candidate's
+  POSITION move read the left candidate's position.  One operand, same
+  length, same opcode categories, and control flow COMPLETELY UNTOUCHED
+  -- so it agrees with the honest run on exit pc, halted flag, modeled
+  step count AND receipt.  `exitFailures=0`, `mismatches=8`.
+  `mergeMutantDIsValueOnly` (`:948`) CHECKS case-for-case that the first
+  three agree, so "only the value rejects it" is evidence rather than
+  commentary.  Mutant D is only visible on cases where the middle
+  candidate wins, which is why `mergePathCoverage` is load-bearing.
+
+Mutant D is strictly harder than mutant B: B was caught by the receipt,
+D cannot be.
+
+### 5. THE CROSS-BLOCK ASSEMBLY (delegation item 3): WHY IT STOPPED HERE
+
+The merge is built, so the M3d-6 obstacle is cleared.  The assembly
+nevertheless did NOT proceed, for a reason checked at source this session
+rather than assumed:
+
+THERE IS NO ARM PROGRAM LAYOUT.  `sameBlockLegProgramAt`
+(`E1SameBlockLeg.lean:595`) exists because someone built the leg's
+instruction-list form.  The fringe ARM has no counterpart: `fringeArm_runsTo`
+(`E1FringeArmBlock.lean:904`) is stated entirely against HOSTING
+HYPOTHESES, and `rg` for `fringeArmProgram` returns nothing.  Assembling
+the cross-block arm therefore needs, FIRST, an arm layout in the
+`sameBlockLegProgramAt` idiom, and only then a five-segment cross-block
+layout with a hole where the interior goes.  That is new construction,
+not assembly, and it is bigger than the merge was.
+
+This is a correction to the M3d-6 resume point, which listed item 4 as
+"the two seeds re-hosted, the two arms hosted" -- reading as though
+hosting the arms were a step of the same size as re-hosting the seeds.
+The seeds do have a layout form; the arms do not.
+
+### 6. THE INTERIOR INTERFACE OBLIGATION (stated precisely, as delegated)
+
+The merge now EXISTS, so the contract the interior leg must satisfy is no
+longer a design intention -- it is a signature.  When the interior
+unblocks (worker B7, `claude/b7-charged-sparse-level`; the route literal
+moves 207 -> 210), it must deliver `middle?` as:
+
+* `E1CandMerge3.mMV` (register `77`) holding the BIASED occupancy-and-value
+  word: `0` when `middle? = none`, `v + 1` when `middle? = some (v, _)`;
+* `E1CandMerge3.mMP` (register `78`) holding the POSITION `p` when
+  `middle? = some (_, p)`; UNCONSTRAINED when `middle? = none` (the block
+  never reads `mMP` on the absent path -- `candMerge3Mid:157`, `E+2`
+  branches away before any use).
+
+Any other encoding forces a redesign of the merge block.  In particular:
+
+* an UNBIASED value plus a separate occupancy flag would need an extra
+  register and an extra test, changing the instruction count and every
+  category log;
+* a sentinel encoding (`middle?` absent as a large value) would BREAK THE
+  TIE-BREAK: `bpCandidateBetter` uses strict `<` (`Candidate.lean:15`) so
+  ties keep the LEFT candidate, and a sentinel that happens to tie with a
+  real candidate would silently take the wrong branch.
+
+The left and right candidates are already occupied by construction, which
+is now a lemma rather than a per-site inline argument
+(`bpFringeCandGlobal_isSome`, `E1CandMerge3.lean:84`).  The merge's
+hypotheses `regs mLV = lv + 1` and `regs mRV = rv + 1`
+(`candMerge3_runsTo:718`) are exactly that fact, so the arms need no
+change.
+
+THE INTERIOR ITSELF is unchanged and still blocked, for the reason M3d-3
+section 2 records: `bpSparseLogSpan blockCount = 2 ^ Nat.log2 blockCount`
+(`EndpointFringe/PrefixRange/SparseArgMin.lean:598`) applied to
+`rightBlock - leftBlock - 1` (`ChargedFringeTrace.lean:1166`), derived at
+RUNTIME and reaching an accepted read address, with no literal all-size
+iteration cap.
+
+### 7. GOTCHAS RECORDED THIS SESSION (carry forward)
+
+1. `set ... with ...` is Mathlib and unavailable (M3d-4 gotcha 1 recurs).
+   The core-Lean replacement that behaves identically is
+   `obtain ⟨X, hX⟩ : ∃ z : RegFile, z = <expr> := ⟨_, rfl⟩`.  NOTE THE
+   BINDER NAME: writing `∃ q : RegFile, q = q.write ...` shadows the outer
+   `q` and fails with a confusing `Exists.intro ?m rfl` type mismatch, not
+   a shadowing warning.
+2. `obtain ⟨..⟩ := hr` CONSUMES `hr`.  If a later step needs the
+   undestructured hypothesis (e.g. to feed a preservation lemma expecting
+   the packed form), use `obtain ⟨..⟩ := id hr`.
+3. A CONDITIONAL REGISTER VALUE does not close by `simp [hX, RegFile.write]
+   <;> omega`: the goal becomes `(if a < b then 1 else 0) = 1` and `omega`
+   cannot see through the `if`.  Use
+   `rw [hX, RegFile.write_same]; exact if_pos (by omega)` (or `if_neg`).
+4. `(fun _ => 0 : RegFile).write ...` DOES NOT ELABORATE.  Lean types the
+   lambda as `Nat → Nat` before the ascription bites and reports
+   `The environment does not contain Function.write`.  Write
+   `RegFile.write (fun _ => 0) ...` in prefix form.
+5. `decide` REFUSES FREE VARIABLES, so a per-instruction property of a
+   base-parametric block (`.brNZ mMV (E + 4)`) cannot be closed by
+   `decide` even when the property is independent of `E`.  Use
+   `simp [Instr.category]`.  This is M3d-6 gotcha 2 in a new costume.
+6. BULK-INJECTING REGISTER ABBREVS INTO EVERY `simp` LIST IS A BAD TRADE.
+   It fixes the opaque-atom problem (M3d-2 gotcha 3) but produced 282
+   unused-simp-arg warnings.  The `linter.unusedSimpArgs` output names the
+   exact line and argument, so a short script can remove them iteratively;
+   one pass sufficed.  Better to add the two or three abbrevs a site
+   actually needs.
+7. `lake build RMQ` STILL DOES NOT BUILD THE VALIDATOR (M3d-6 gotcha 1).
+   Confirmed again this session.  `lake build rmq_e1_machine_validate` and
+   `lake exe rmq_e1_machine_validate` are separate, and both were run.
+
+### 8. VERIFICATION LEDGER (root builds, not per-file checks)
+
+`lake build RMQ` exit 0 at every commit.  `lake build
+rmq_e1_machine_validate` exit 0 and `lake exe rmq_e1_machine_validate`
+exit 0 at HEAD, recorded separately BECAUSE of gotcha 7.
+
+`#print axioms` run AFTER a root build on all nineteen theorems this
+session claims.  Never `sorryAx`.  The six execution witnesses, the
+`Nodup` distinguishability theorem, the empty-receipt theorem,
+`bpFringeCandGlobal_isSome` and `bpCandidateMerge3?_some_left_right`
+report NO axioms at all (kernel computation); the remainder report only
+`propext` / `Classical.choice` / `Quot.sound`.
+
+Validator figures, modeled and wall-clock kept apart: `mergeCases=36`,
+`mergePathCoverage=6`, `mergeExitFailures=0`, `mergeMismatches=0`,
+`mergeModeledSteps=431`, `mergeModeledReads=0`; `mergeWallClockMs=1`
+(this binary on this host; NOT evidence).  Mutations:
+`mergeMutationsAreReal=true`, `mutantC_compareSwap_exitFailures=0` /
+`mismatches=24`, `mutantD_position_exitFailures=0` / `mismatches=8`,
+`mutantD_isValueOnly=true`.  All pre-existing phases unchanged and still
+passing.  `RESULT: PASS (with the whole-query comparison still OPEN)`.
+
+### 9. MATRIX STATUS AT YIELD
+
+All rows REQ-E1-01..11 remain OPEN.  This session closed none and weakened
+none.  Matrix closure was impossible by construction: every row is
+whole-query scoped and the whole-query composition is downstream of the
+blocked interior leg.  Evidence accumulated is component-level and does
+NOT discharge any row.
+
+Component-level evidence added: REQ-E1-01 (the merge block, six paths
+executed onto distinguishable halts); REQ-E1-02 (the FIRST whole-program
+width certificates, plus the merge's own); REQ-E1-04 (nothing -- the merge
+is read-free, and the honest statement is that it has no receipt to
+compare); REQ-E1-06 (the merge's category log is a function of the
+route-side branch conditions); REQ-E1-08 (an independent reference for the
+merge, and a mutation that NO receipt diff could catch).
+
+### 10. RESUME POINT (M3d-8)
+
+NOTHING below is implemented.
+
+1. STILL BLOCKED: the interior-leg `Nat.log2` decision (M3d-3 section 2).
+   Items 2-4 are unaffected.
+2. BUILD THE FRINGE ARM'S PROGRAM LAYOUT, in the `sameBlockLegProgramAt`
+   idiom (`E1SameBlockLeg.lean:595`) -- an instruction-list form plus a
+   `..._hosts` decomposition and a `..._fits` certificate.  This is the
+   newly-identified prerequisite for the cross-block arm (section 5); the
+   arm's simulation `fringeArm_runsTo` (`E1FringeArmBlock.lean:904`)
+   already exists and is arm-agnostic, so this is layout work, not new
+   simulation work.
+3. THEN the cross-block layout: left seed, left arm, INTERIOR HOLE, right
+   seed, right arm, merge -- five sub-computations with non-adjacent seeds
+   (`ChargedFringeTrace.lean:1144-1181`).  State it with the interior as a
+   PARAMETER, as `sameBlockDispatchProgram_fits`
+   (`E1ProgramWidth.lean:141`) already does for the cross arm, so the
+   layout can be proved before the interior exists.
+4. The merge is READY and needs nothing further: its contract on the
+   interior is section 6 above, and it is base-parametric, so it drops
+   into any layout at any offset.
+5. WHOLE-QUERY GLUE, the derived all-size literal, and the amended target
+   Prop remain out of scope, all downstream of item 1.  The validator hole
+   is at `RMQ/Validation/E1MachineValidate.lean` phase 5
+   (`wholeQueryComparisonAvailable` / `wholeQueryMismatches`) and is where
+   the end-to-end machine-vs-`refRMQ` comparison attaches.
