@@ -273,11 +273,14 @@ def fringePrefixCats : List Category :=
 def fringeTailCats : List Category :=
   (fringeShift 0 0).map Instr.category ++ fringeAdvance.map Instr.category
 
-/-- Categories charged by the merge segment on the arm selected by the
-fold state at chunk `j`. -/
-def fringeMergeCatsAt (c : Nat) (relLo relHi j : Nat)
-    (best : Option (Nat × Nat)) (candValue : Nat) : List Category :=
-  if bpFringeChunkStartOff c relLo j < bpFringeChunkEndOff c relHi j then
+/--
+Categories charged by the merge segment on each of its four arms.  The
+arm is selected by exactly the conditions the accepted fold dispatches
+on, so no per-pass numeral is ever asserted.
+-/
+def fringeMergeArmCats (gated : Bool) (best : Option (Nat × Nat))
+    (candValue : Nat) : List Category :=
+  if gated then
     match best with
     | none =>
         [ .comparison, .branch, .branch, .arithmetic, .registerWrite
@@ -291,6 +294,15 @@ def fringeMergeCatsAt (c : Nat) (relLo relHi j : Nat)
           , .branch, .branch ]
   else
     [ .comparison, .branch, .branch ]
+
+/-- Categories charged by the merge segment on the arm selected by the
+fold state at chunk `j`. -/
+def fringeMergeCatsAt (c : Nat) (relLo relHi j : Nat)
+    (best : Option (Nat × Nat)) (candValue : Nat) : List Category :=
+  fringeMergeArmCats
+    (decide (bpFringeChunkStartOff c relLo j <
+      bpFringeChunkEndOff c relHi j))
+    best candValue
 
 /-- Category log of one full fold pass at chunk `j` from fold state
 `st`, including the back edge. -/
@@ -405,6 +417,279 @@ theorem fringeLoopBody_fits {w S c L LB : Nat}
       fX] <;>
     (try simp only [<- hMdef]) <;>
     omega
+
+/-! ## The keep-left merge is the identity on an absent candidate -/
+
+theorem bpFringeMergeCand_none (best : Option (Nat × Nat)) :
+    bpFringeMergeCand best none = best := by
+  cases best <;> rfl
+
+/-! ## Merge segment simulation (the four-way case analysis)
+
+This is the one segment of the whole E1 construction that cannot be a
+single `RunsTo.straight` call.  Each arm is composed instruction by
+instruction from the per-constructor step rules and the two `brNZ`
+helpers.
+-/
+
+/--
+Simulation of the branching keep-left merge: from `LB + 32` with the
+gate operands in `fA`/`fB`, the candidate in `fCV`/`fCP`, and the running
+best carried option-shifted in `fBV`/`fBP`, the merge segment runs to
+`LB + 45` emitting NO receipts, charging the arm's category log, and
+leaving in `fBV`/`fBP` exactly `bpFringeMergeCand` of the old best and
+the gated candidate.
+-/
+theorem fringeMerge_runsTo
+    (store : ReadStore) {program : E1Machine.Program} {LB : Nat}
+    (hMrg : HostedAt program (LB + 32) (fringeMerge LB))
+    (regs : RegFile) (a b cv cp : Nat)
+    (hOne : regs fOne = 1)
+    (hA : regs fA = a) (hB : regs fB = b)
+    (hCV : regs fCV = cv) (hCP : regs fCP = cp) :
+    ∃ regs' : RegFile,
+      RunsTo store program ⟨regs, LB + 32, false⟩ ⟨regs', LB + 45, false⟩
+        []
+        (fringeMergeArmCats (decide (a < b))
+          (bestOfRegs (regs fBV) (regs fBP)) cv) ∧
+      bestOfRegs (regs' fBV) (regs' fBP) =
+        bpFringeMergeCand (bestOfRegs (regs fBV) (regs fBP))
+          (if a < b then some (cv, cp) else none) ∧
+      (forall r, r ≠ fT -> r ≠ fU -> r ≠ fBV -> r ≠ fBP ->
+        regs' r = regs r) := by
+  -- fetch facts for the thirteen merge positions
+  have hf : forall (k m : Nat) (instr : Instr), k < 13 ->
+      (fringeMerge LB)[k]? = some instr -> LB + 32 + k = m ->
+      program[m]? = some instr := by
+    intro k m instr hk hget hm
+    rw [<- hm, hMrg k hk, hget]
+  have h32 : program[LB + 32]? = some (.natLt fT fA fB) :=
+    hf 0 _ _ (by omega) rfl (by omega)
+  have h33 : program[LB + 33]? = some (.brNZ fT (LB + 35)) :=
+    hf 1 _ _ (by omega) rfl (by omega)
+  have h34 : program[LB + 34]? = some (.brNZ fOne (LB + 45)) :=
+    hf 2 _ _ (by omega) rfl (by omega)
+  have h35 : program[LB + 35]? = some (.brNZ fBV (LB + 39)) :=
+    hf 3 _ _ (by omega) rfl (by omega)
+  have h36 : program[LB + 36]? = some (.add fBV fCV fOne) :=
+    hf 4 _ _ (by omega) rfl (by omega)
+  have h37 : program[LB + 37]? = some (.move fBP fCP) :=
+    hf 5 _ _ (by omega) rfl (by omega)
+  have h38 : program[LB + 38]? = some (.brNZ fOne (LB + 45)) :=
+    hf 6 _ _ (by omega) rfl (by omega)
+  have h39 : program[LB + 39]? = some (.add fT fCV fOne) :=
+    hf 7 _ _ (by omega) rfl (by omega)
+  have h40 : program[LB + 40]? = some (.natLt fU fT fBV) :=
+    hf 8 _ _ (by omega) rfl (by omega)
+  have h41 : program[LB + 41]? = some (.brNZ fU (LB + 43)) :=
+    hf 9 _ _ (by omega) rfl (by omega)
+  have h42 : program[LB + 42]? = some (.brNZ fOne (LB + 45)) :=
+    hf 10 _ _ (by omega) rfl (by omega)
+  have h43 : program[LB + 43]? = some (.add fBV fCV fOne) :=
+    hf 11 _ _ (by omega) rfl (by omega)
+  have h44 : program[LB + 44]? = some (.move fBP fCP) :=
+    hf 12 _ _ (by omega) rfl (by omega)
+  -- the gate comparison, common to all four arms
+  have hgate : RunsTo store program ⟨regs, LB + 32, false⟩
+      ⟨regs.write fT (if a < b then 1 else 0), LB + 33, false⟩ []
+      [Category.comparison] := by
+    have h := RunsTo.natLt (store := store)
+      (s := (⟨regs, LB + 32, false⟩ : State)) rfl h32
+    simpa [hA, hB] using h
+  by_cases hab : a < b
+  · -- gate taken: the candidate is present
+    rw [if_pos hab] at hgate
+    have hbr33 : RunsTo store program
+        ⟨regs.write fT 1, LB + 33, false⟩
+        ⟨regs.write fT 1, LB + 35, false⟩ [] [Category.branch] := by
+      have h := RunsTo.brNZ_taken (store := store)
+        (s := (⟨regs.write fT 1, LB + 33, false⟩ : State)) rfl h33
+        (by simp [RegFile.write])
+      simpa using h
+    by_cases hbv : regs fBV = 0
+    · -- ARM (ii): no incumbent best, take the candidate
+      have hbr35 : RunsTo store program
+          ⟨regs.write fT 1, LB + 35, false⟩
+          ⟨regs.write fT 1, LB + 36, false⟩ [] [Category.branch] := by
+        have h := RunsTo.brNZ_not_taken (store := store)
+          (s := (⟨regs.write fT 1, LB + 35, false⟩ : State)) rfl h35
+          (by simp [RegFile.write, fBV, fT, hbv])
+        simpa using h
+      have hadd : RunsTo store program
+          ⟨regs.write fT 1, LB + 36, false⟩
+          ⟨(regs.write fT 1).write fBV (cv + 1), LB + 37, false⟩ []
+          [Category.arithmetic] := by
+        have h := RunsTo.add (store := store)
+          (s := (⟨regs.write fT 1, LB + 36, false⟩ : State)) rfl h36
+        simpa [RegFile.write, fT, fCV, fOne, hCV, hOne] using h
+      have hmv : RunsTo store program
+          ⟨(regs.write fT 1).write fBV (cv + 1), LB + 37, false⟩
+          ⟨((regs.write fT 1).write fBV (cv + 1)).write fBP cp,
+            LB + 38, false⟩ [] [Category.registerWrite] := by
+        have h := RunsTo.move (store := store)
+          (s := (⟨(regs.write fT 1).write fBV (cv + 1), LB + 37,
+            false⟩ : State)) rfl h37
+        simpa [RegFile.write, fT, fBV, fCP, hCP] using h
+      have hbr38 : RunsTo store program
+          ⟨((regs.write fT 1).write fBV (cv + 1)).write fBP cp,
+            LB + 38, false⟩
+          ⟨((regs.write fT 1).write fBV (cv + 1)).write fBP cp,
+            LB + 45, false⟩ [] [Category.branch] := by
+        have h := RunsTo.brNZ_taken (store := store)
+          (s := (⟨((regs.write fT 1).write fBV (cv + 1)).write fBP cp,
+            LB + 38, false⟩ : State)) rfl h38
+          (by simp [RegFile.write, fOne, fT, fBV, fBP, hOne])
+        simpa using h
+      refine ⟨((regs.write fT 1).write fBV (cv + 1)).write fBP cp,
+        ?_, ?_, ?_⟩
+      · have hrun :=
+          ((((hgate.trans hbr33).trans hbr35).trans hadd).trans
+            hmv).trans hbr38
+        simpa [fringeMergeArmCats, bestOfRegs, hbv, hab] using hrun
+      · have e1 : (((regs.write fT 1).write fBV (cv + 1)).write fBP cp)
+            fBV = cv + 1 := by simp [RegFile.write, fBV, fBP]
+        have e2 : (((regs.write fT 1).write fBV (cv + 1)).write fBP cp)
+            fBP = cp := by simp [RegFile.write]
+        rw [e1, e2, if_pos hab, bestOfRegs_succ]
+        simp [bestOfRegs, hbv, bpFringeMergeCand]
+      · intro r hT hU hBV hBP
+        simp [RegFile.write, hBV, hBP, hT]
+    · -- incumbent best present: compare
+      have hbr35 : RunsTo store program
+          ⟨regs.write fT 1, LB + 35, false⟩
+          ⟨regs.write fT 1, LB + 39, false⟩ [] [Category.branch] := by
+        have h := RunsTo.brNZ_taken (store := store)
+          (s := (⟨regs.write fT 1, LB + 35, false⟩ : State)) rfl h35
+          (by simp [RegFile.write, fBV, fT, hbv])
+        simpa using h
+      have hadd39 : RunsTo store program
+          ⟨regs.write fT 1, LB + 39, false⟩
+          ⟨regs.write fT (cv + 1), LB + 40, false⟩ []
+          [Category.arithmetic] := by
+        have h := RunsTo.add (store := store)
+          (s := (⟨regs.write fT 1, LB + 39, false⟩ : State)) rfl h39
+        have hkey : (regs.write fT 1).write fT
+            ((regs.write fT 1) fCV + (regs.write fT 1) fOne) =
+            regs.write fT (cv + 1) := by
+          funext r
+          by_cases hr : r = fT
+          · subst hr
+            simp [RegFile.write, fCV, fT, fOne, hCV, hOne]
+          · simp [RegFile.write, hr]
+        rw [hkey] at h
+        simpa using h
+      have hlt40 : RunsTo store program
+          ⟨regs.write fT (cv + 1), LB + 40, false⟩
+          ⟨(regs.write fT (cv + 1)).write fU
+            (if cv + 1 < regs fBV then 1 else 0), LB + 41, false⟩ []
+          [Category.comparison] := by
+        have h := RunsTo.natLt (store := store)
+          (s := (⟨regs.write fT (cv + 1), LB + 40, false⟩ : State)) rfl h40
+        simpa [RegFile.write, fT, fBV] using h
+      by_cases hbetter : cv + 1 < regs fBV
+      · -- ARM (iii): candidate strictly better
+        rw [if_pos hbetter] at hlt40
+        have hbr41 : RunsTo store program
+            ⟨(regs.write fT (cv + 1)).write fU 1, LB + 41, false⟩
+            ⟨(regs.write fT (cv + 1)).write fU 1, LB + 43, false⟩ []
+            [Category.branch] := by
+          have h := RunsTo.brNZ_taken (store := store)
+            (s := (⟨(regs.write fT (cv + 1)).write fU 1, LB + 41,
+              false⟩ : State)) rfl h41 (by simp [RegFile.write])
+          simpa using h
+        have hadd43 : RunsTo store program
+            ⟨(regs.write fT (cv + 1)).write fU 1, LB + 43, false⟩
+            ⟨((regs.write fT (cv + 1)).write fU 1).write fBV (cv + 1),
+              LB + 44, false⟩ [] [Category.arithmetic] := by
+          have h := RunsTo.add (store := store)
+            (s := (⟨(regs.write fT (cv + 1)).write fU 1, LB + 43,
+              false⟩ : State)) rfl h43
+          simpa [RegFile.write, fT, fU, fCV, fOne, hCV, hOne] using h
+        have hmv44 : RunsTo store program
+            ⟨((regs.write fT (cv + 1)).write fU 1).write fBV (cv + 1),
+              LB + 44, false⟩
+            ⟨(((regs.write fT (cv + 1)).write fU 1).write fBV
+              (cv + 1)).write fBP cp, LB + 45, false⟩ []
+            [Category.registerWrite] := by
+          have h := RunsTo.move (store := store)
+            (s := (⟨((regs.write fT (cv + 1)).write fU 1).write fBV
+              (cv + 1), LB + 44, false⟩ : State)) rfl h44
+          simpa [RegFile.write, fT, fU, fBV, fCP, hCP] using h
+        refine ⟨(((regs.write fT (cv + 1)).write fU 1).write fBV
+          (cv + 1)).write fBP cp, ?_, ?_, ?_⟩
+        · have hrun :=
+            (((((hgate.trans hbr33).trans hbr35).trans hadd39).trans
+              hlt40).trans hbr41).trans (hadd43.trans hmv44)
+          simpa [fringeMergeArmCats, bestOfRegs, hbv, hab,
+            show cv < regs fBV - 1 from by omega] using hrun
+        · have e1 : ((((regs.write fT (cv + 1)).write fU 1).write fBV
+              (cv + 1)).write fBP cp) fBV = cv + 1 := by
+            simp [RegFile.write, fBV, fBP]
+          have e2 : ((((regs.write fT (cv + 1)).write fU 1).write fBV
+              (cv + 1)).write fBP cp) fBP = cp := by simp [RegFile.write]
+          rw [e1, e2, if_pos hab, bestOfRegs_merge_some hbv,
+            if_pos hbetter]
+        · intro r hT hU hBV hBP
+          simp [RegFile.write, hBV, hBP, hT, hU]
+      · -- ARM (iv): candidate not better, incumbent kept
+        rw [if_neg hbetter] at hlt40
+        have hbr41 : RunsTo store program
+            ⟨(regs.write fT (cv + 1)).write fU 0, LB + 41, false⟩
+            ⟨(regs.write fT (cv + 1)).write fU 0, LB + 42, false⟩ []
+            [Category.branch] := by
+          have h := RunsTo.brNZ_not_taken (store := store)
+            (s := (⟨(regs.write fT (cv + 1)).write fU 0, LB + 41,
+              false⟩ : State)) rfl h41 (by simp [RegFile.write])
+          simpa using h
+        have hbr42 : RunsTo store program
+            ⟨(regs.write fT (cv + 1)).write fU 0, LB + 42, false⟩
+            ⟨(regs.write fT (cv + 1)).write fU 0, LB + 45, false⟩ []
+            [Category.branch] := by
+          have h := RunsTo.brNZ_taken (store := store)
+            (s := (⟨(regs.write fT (cv + 1)).write fU 0, LB + 42,
+              false⟩ : State)) rfl h42
+            (by simp [RegFile.write, fOne, fT, fU, hOne])
+          simpa using h
+        refine ⟨(regs.write fT (cv + 1)).write fU 0, ?_, ?_, ?_⟩
+        · have hrun :=
+            ((((hgate.trans hbr33).trans hbr35).trans hadd39).trans
+              hlt40).trans (hbr41.trans hbr42)
+          simpa [fringeMergeArmCats, bestOfRegs, hbv, hab,
+            show ¬ (cv < regs fBV - 1) from by omega] using hrun
+        · have e1 : ((regs.write fT (cv + 1)).write fU 0) fBV =
+              regs fBV := by simp [RegFile.write, fT, fU, fBV]
+          have e2 : ((regs.write fT (cv + 1)).write fU 0) fBP =
+              regs fBP := by simp [RegFile.write, fT, fU, fBP]
+          rw [e1, e2, if_pos hab, bestOfRegs_merge_some hbv,
+            if_neg hbetter]
+        · intro r hT hU hBV hBP
+          simp [RegFile.write, hT, hU]
+  · -- ARM (i): gate closed, no candidate, best untouched
+    rw [if_neg hab] at hgate
+    have hbr33 : RunsTo store program
+        ⟨regs.write fT 0, LB + 33, false⟩
+        ⟨regs.write fT 0, LB + 34, false⟩ [] [Category.branch] := by
+      have h := RunsTo.brNZ_not_taken (store := store)
+        (s := (⟨regs.write fT 0, LB + 33, false⟩ : State)) rfl h33
+        (by simp [RegFile.write])
+      simpa using h
+    have hbr34 : RunsTo store program
+        ⟨regs.write fT 0, LB + 34, false⟩
+        ⟨regs.write fT 0, LB + 45, false⟩ [] [Category.branch] := by
+      have h := RunsTo.brNZ_taken (store := store)
+        (s := (⟨regs.write fT 0, LB + 34, false⟩ : State)) rfl h34
+        (by simp [RegFile.write, fOne, fT, hOne])
+      simpa using h
+    refine ⟨regs.write fT 0, ?_, ?_, ?_⟩
+    · have hrun := (hgate.trans hbr33).trans hbr34
+      simpa [fringeMergeArmCats, hab] using hrun
+    · have e1 : (regs.write fT 0) fBV = regs fBV := by
+        simp [RegFile.write, fT, fBV]
+      have e2 : (regs.write fT 0) fBP = regs fBP := by
+        simp [RegFile.write, fT, fBP]
+      rw [e1, e2, if_neg hab, bpFringeMergeCand_none]
+    · intro r hT hU hBV hBP
+      simp [RegFile.write, hT]
 
 end E1FringeFoldBlock
 end WordRAM
